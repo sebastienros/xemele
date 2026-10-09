@@ -4,11 +4,11 @@
   "milestone": "M0",
   "title": "Build and project bootstrap",
   "kind": "infrastructure",
-  "status": "implemented",
+  "status": "verified",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M0-build",
   "branch": "codex/m0-build",
   "base_revision": "1cf5adc70e93f53406d6ad51f3e99423d26918c6",
-  "integration_revision": null,
+  "integration_revision": "c7ecb084050b8c4cc014e7bc3f4b57f37f34413e",
   "depends_on": [],
   "goals": [
     "G16",
@@ -48,7 +48,8 @@
       "description": "Create buildable net10.0-only library/tool/test/benchmark/contract shells with pinned dependencies and SDK; no public runtime stubs.",
       "status": "passed",
       "evidence": [
-        "clean-bootstrap-checks"
+        "clean-bootstrap-checks",
+        "coordinator-integration"
       ]
     },
     {
@@ -56,7 +57,8 @@
       "description": "Restore, Release build, test discovery and help entry points succeed from a clean checkout; verify package contains no placeholder APIs.",
       "status": "passed",
       "evidence": [
-        "clean-bootstrap-checks"
+        "clean-bootstrap-checks",
+        "coordinator-integration"
       ]
     },
     {
@@ -64,7 +66,8 @@
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
       "status": "passed",
       "evidence": [
-        "clean-bootstrap-checks"
+        "clean-bootstrap-checks",
+        "coordinator-integration"
       ]
     }
   ],
@@ -84,11 +87,29 @@
       "result": "passed",
       "summary": "Clean source clone at implementation revision: pinned SDK 10.0.400; restore and ten-project Release build passed with zero warnings/errors; test discovery/execution exited 0 with zero tests in three intentionally empty shells; 16 help cases and 3 expected unknown-command exits passed; pack payload lib/net10.0/Xemele.dll only and no native assets; dotnet-inspect reported 0 exported types; task validator passed for 93 tasks. Uses existing NuGet cache; pack emits informational missing-readme notice. No runtime APIs or allocation benchmarks exist yet.",
       "artifact": "docs/reports/M0-build/verification.txt"
+    },
+    {
+      "id": "coordinator-integration",
+      "kind": "integration",
+      "revision": "c7ecb084050b8c4cc014e7bc3f4b57f37f34413e",
+      "command": "PATH='/Users/sebastienros/Library/Application Support/dotnetup/dotnet':$PATH DOTNET_ROOT='/Users/sebastienros/Library/Application Support/dotnetup/dotnet' python3 docs/reports/M0-build/verify.py",
+      "result": "passed",
+      "summary": "Clean temporary integration checkout: all ten projects restored and Release-built with zero warnings/errors; three empty test shells discovered/executed with exit 0 (zero tests); 16 help cases and three expected error exits passed; managed net10.0 package payload and zero exported runtime types confirmed; 93-task validation passed. Initial invocation selected another dotnet installation and failed SDK resolution; explicit installed pinned SDK selection resolved it. No runtime/conformance/performance claim.",
+      "artifact": "docs/reports/M0-build/integration-verification.txt"
+    },
+    {
+      "id": "coordinator-review",
+      "kind": "review",
+      "revision": "c7ecb084050b8c4cc014e7bc3f4b57f37f34413e",
+      "command": null,
+      "result": "passed",
+      "summary": "Reviewed all 25 changed paths against ownership and foundation contract; no public runtime stubs, unrelated changes, or unverified prerequisites. Internal CLI hooks match approved convention.",
+      "artifact": null
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Pinned net10.0 build/project infrastructure implemented at 5abe06eab83d09916c3eede99262be18ef07e736 with empty runtime library, empty test/contracts shells, four help entry points, internal partial CLI registration hooks and reproducible clean-checkout verification. Awaiting coordinator integration verification.",
+    "summary": "Integrated and verified bootstrap; runtime APIs and tests remain assigned to later tasks.",
     "checks": [
       "python3 docs/reports/M0-build/verify.py: passed in clean source clone at 5abe06eab83d09916c3eede99262be18ef07e736; full individual commands/output in docs/reports/M0-build/verification.txt",
       "dotnet restore; dotnet build -c Release --no-restore: passed, zero warnings/errors",
@@ -98,9 +119,8 @@
       "python3 tools/planning/tasks.py validate: passed, 93 tasks"
     ],
     "remaining": [
-      "Coordinator must integrate and rerun checks before verified; integration_revision remains null.",
-      "No runtime/benchmark cases exist yet; no allocation/performance evidence applies.",
-      "Package has informational missing-readme notice; publishing and license/distribution decisions remain outside this bootstrap task."
+      "Three test shells contain zero tests at bootstrap; no runtime behavior or allocation claim.",
+      "Package readme/license/distribution metadata remains assigned to later owners."
     ],
     "requests": []
   }
