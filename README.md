@@ -7,6 +7,7 @@ The goal is recognizable upstream concepts and behavior with idiomatic .NET APIs
 **Status:** design only; no library implementation exists yet. The documents below are proposals, and performance figures are targets, not measured results.
 
 - [Task tracking and session workflow](docs/tasks/README.md)
+- [Implementation orchestrator and worker prompts](docs/prompts/README.md)
 - [Milestone dependencies and parallel lanes](docs/milestones/README.md)
 - [Implementation contracts and API shapes](docs/specs/README.md)
 - [Roadmap and feature goals](docs/roadmap.md)
