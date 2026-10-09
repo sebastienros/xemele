@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "id": "M8-cli",
+  "milestone": "M8",
+  "title": "Schema CLI and cross-validator integration",
+  "kind": "feature",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "depends_on": [
+    "M8-rng-corpus",
+    "M8-xsd-corpus",
+    "M8-sch-corpus",
+    "M6-cli"
+  ],
+  "goals": [
+    "G13",
+    "G14",
+    "G15",
+    "G17"
+  ],
+  "specs": [
+    "docs/specs/schemas.md",
+    "docs/specs/integration.md"
+  ],
+  "owns": [
+    "src/Xemele.Tool/Commands/Validation/",
+    "tests/Xemele.Conformance.Tests/SchemaIntegration/",
+    "tests/Xemele.Fuzz/Validation/",
+    "tests/Xemele.Tests/M8-cli/",
+    "tests/fixtures/M8-cli/",
+    "benchmarks/Xemele.Benchmarks/M8-cli/",
+    "docs/api/M8-cli.txt",
+    "samples/M8-cli/",
+    "docs/reports/M8-cli/"
+  ],
+  "api_or_output": "Schema CLI commands and integration fixtures",
+  "acceptance": [
+    {
+      "id": "M8-cli-A1",
+      "description": "Add schema CLI commands and shared resolver/resource/fuzz regressions without HTML dependencies.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M8-cli-A2",
+      "description": "Public CLI/library cases and all three validator budget/concurrency tests pass.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M8-cli-A3",
+      "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}

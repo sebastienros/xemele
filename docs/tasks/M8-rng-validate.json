@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "id": "M8-rng-validate",
+  "milestone": "M8",
+  "title": "RELAX NG evaluation and facade",
+  "kind": "feature",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "depends_on": [
+    "M8-rng-compile",
+    "M8-facets"
+  ],
+  "goals": [
+    "G13"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/schemas.md"
+  ],
+  "owns": [
+    "src/Xemele/Validation/RelaxNg/Evaluation/",
+    "src/Xemele/Validation/RelaxNg/RelaxNgSchema.cs",
+    "tests/Xemele.Tests/M8-rng-validate/",
+    "tests/fixtures/M8-rng-validate/",
+    "benchmarks/Xemele.Benchmarks/M8-rng-validate/",
+    "docs/api/M8-rng-validate.txt",
+    "samples/M8-rng-validate/",
+    "docs/reports/M8-rng-validate/"
+  ],
+  "api_or_output": "RelaxNgSchema.Compile/Validate",
+  "acceptance": [
+    {
+      "id": "M8-rng-validate-A1",
+      "description": "Implement matching for attributes/interleave/lists/choices/recursion and advertised datatype libraries.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M8-rng-validate-A2",
+      "description": "Test valid/invalid instances, concurrent compiled schemas, diagnostics and bounded work.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M8-rng-validate-A3",
+      "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}

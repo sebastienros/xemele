@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "id": "M8-xsd-validate",
+  "milestone": "M8",
+  "title": "XSD core instance validation",
+  "kind": "feature",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "depends_on": [
+    "M8-xsd-content",
+    "M8-facets"
+  ],
+  "goals": [
+    "G14"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/schemas.md"
+  ],
+  "owns": [
+    "src/Xemele/Validation/Xsd/Evaluation/",
+    "tests/Xemele.Tests/M8-xsd-validate/",
+    "tests/fixtures/M8-xsd-validate/",
+    "benchmarks/Xemele.Benchmarks/M8-xsd-validate/",
+    "docs/api/M8-xsd-validate.txt",
+    "samples/M8-xsd-validate/",
+    "docs/reports/M8-xsd-validate/"
+  ],
+  "api_or_output": "Internal XmlSchemaValidator with approved identity hook",
+  "acceptance": [
+    {
+      "id": "M8-xsd-validate-A1",
+      "description": "Implement instance traversal, types/facets, xsi:type/nil, attributes/defaults/fixed and operation state through identity hook.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M8-xsd-validate-A2",
+      "description": "Test valid/invalid instances, detailed diagnostics, resolver grants, no silent DOM mutation and limits.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M8-xsd-validate-A3",
+      "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}

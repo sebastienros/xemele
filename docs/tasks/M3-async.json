@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "id": "M3-async",
+  "milestone": "M3",
+  "title": "Async input and output composition",
+  "kind": "feature",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "depends_on": [
+    "M3-sax",
+    "M3-reader",
+    "M3-writer"
+  ],
+  "goals": [
+    "G04",
+    "G05",
+    "G16"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/streaming.md",
+    "docs/specs/serialization.md"
+  ],
+  "owns": [
+    "src/Xemele/Streaming/Transport/",
+    "src/Xemele/Streaming/Sax/XmlSaxParser.Async.cs",
+    "src/Xemele/Streaming/Reader/XmlReader.Async.cs",
+    "src/Xemele/Serialization/Async/",
+    "src/Xemele/Parsing/Dom/Document.Async.cs",
+    "tests/Xemele.Tests/M3-async/",
+    "tests/fixtures/M3-async/",
+    "benchmarks/Xemele.Benchmarks/M3-async/",
+    "docs/api/M3-async.txt",
+    "samples/M3-async/",
+    "docs/reports/M3-async/"
+  ],
+  "api_or_output": "ParseAsync, ReadAsync, LoadAsync, SaveAsync, writer async methods",
+  "acceptance": [
+    {
+      "id": "M3-async-A1",
+      "description": "Add real async I/O for SAX/reader/DOM/writer/save with synchronous callbacks and cancellation; no Task.Run wrappers.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M3-async-A2",
+      "description": "Use a controlled stream requiring awaits/short reads; test cancellation, errors, no async-void callbacks and sync/async equality.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M3-async-A3",
+      "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "id": "M9-gate",
+  "milestone": "M9",
+  "title": "Verify stable release candidate",
+  "kind": "gate",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "depends_on": [
+    "M9-api",
+    "M9-performance",
+    "M9-distribution",
+    "M9-robustness"
+  ],
+  "goals": [
+    "G18"
+  ],
+  "specs": [
+    "docs/specs/release.md"
+  ],
+  "owns": [
+    "docs/reports/M9-gate/"
+  ],
+  "api_or_output": "Verify stable release candidate",
+  "acceptance": [
+    {
+      "id": "M9-gate-A1",
+      "description": "Verify all cumulative gates, API/performance/package/robustness evidence and resolved repair dependencies at final integrated revision.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M9-gate-A2",
+      "description": "Repeat affected acceptance checks on exact package revision; document exceptions and outstanding exclusions; publication remains separate.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M9-gate-A3",
+      "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "id": "M3-sax",
+  "milestone": "M3",
+  "title": "Synchronous SAX parser entry points",
+  "kind": "feature",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "depends_on": [
+    "M3-callbacks"
+  ],
+  "goals": [
+    "G04"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/streaming.md"
+  ],
+  "owns": [
+    "src/Xemele/Streaming/Sax/XmlSaxParser.cs",
+    "tests/Xemele.Tests/M3-sax/",
+    "tests/fixtures/M3-sax/",
+    "benchmarks/Xemele.Benchmarks/M3-sax/",
+    "docs/api/M3-sax.txt",
+    "samples/M3-sax/",
+    "docs/reports/M3-sax/"
+  ],
+  "api_or_output": "XmlSaxParser.Parse overloads",
+  "acceptance": [
+    {
+      "id": "M3-sax-A1",
+      "description": "Expose string/bytes/Stream callback parsing over existing engine with no DOM and preserved parser options.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M3-sax-A2",
+      "description": "Test event order, early delivery, namespace/default attributes, lexical events, user exception propagation and stream ownership.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M3-sax-A3",
+      "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}

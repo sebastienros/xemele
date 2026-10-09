@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "id": "M0-build",
+  "milestone": "M0",
+  "title": "Build and project bootstrap",
+  "kind": "infrastructure",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "depends_on": [],
+  "goals": [
+    "G16",
+    "G18"
+  ],
+  "specs": [
+    "docs/specs/foundation.md"
+  ],
+  "owns": [
+    "Xemele.slnx",
+    "global.json",
+    "Directory.Build.props",
+    "Directory.Packages.props",
+    ".editorconfig",
+    ".gitignore",
+    "src/Xemele/Xemele.csproj",
+    "src/Xemele.Tool/Xemele.Tool.csproj",
+    "src/Xemele.Tool/Program.cs",
+    "src/Xemele.Tool/CommandRegistry.cs",
+    "tests/Xemele.Tests/Xemele.Tests.csproj",
+    "tests/Xemele.Conformance.Tests/Xemele.Conformance.Tests.csproj",
+    "tests/Xemele.Differential.Tests/Xemele.Differential.Tests.csproj",
+    "tests/Xemele.TestUtilities/Xemele.TestUtilities.csproj",
+    "tests/Xemele.Fuzz/Xemele.Fuzz.csproj",
+    "tests/Xemele.Fuzz/Program.cs",
+    "tests/Contracts/Contracts.csproj",
+    "benchmarks/Xemele.Benchmarks/Xemele.Benchmarks.csproj",
+    "benchmarks/Xemele.Benchmarks/Program.cs",
+    "tools/CorpusManager/CorpusManager.csproj",
+    "tools/CorpusManager/Program.cs",
+    "docs/reports/M0-build/"
+  ],
+  "api_or_output": "Build and project bootstrap",
+  "acceptance": [
+    {
+      "id": "M0-build-A1",
+      "description": "Create buildable net10.0-only library/tool/test/benchmark/contract shells with pinned dependencies and SDK; no public runtime stubs.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M0-build-A2",
+      "description": "Restore, Release build, test discovery and help entry points succeed from a clean checkout; verify package contains no placeholder APIs.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M0-build-A3",
+      "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}

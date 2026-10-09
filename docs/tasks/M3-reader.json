@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "id": "M3-reader",
+  "milestone": "M3",
+  "title": "Pull reader and backpressure",
+  "kind": "feature",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "depends_on": [
+    "M3-callbacks"
+  ],
+  "goals": [
+    "G04"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/streaming.md"
+  ],
+  "owns": [
+    "src/Xemele/Streaming/Reader/XmlReader.cs",
+    "src/Xemele/Streaming/Reader/Tokens/",
+    "tests/Xemele.Tests/M3-reader/",
+    "tests/fixtures/M3-reader/",
+    "benchmarks/Xemele.Benchmarks/M3-reader/",
+    "docs/api/M3-reader.txt",
+    "samples/M3-reader/",
+    "docs/reports/M3-reader/"
+  ],
+  "api_or_output": "XmlReader.Create/Read, XmlTokenKind and current-token views",
+  "acceptance": [
+    {
+      "id": "M3-reader-A1",
+      "description": "Implement synchronous reader token/name/attribute views using core pause/resume without a hidden DOM or event backlog.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M3-reader-A2",
+      "description": "Test positioning, borrowed values, EOF/error/disposal behavior, text splitting and large-input live memory.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M3-reader-A3",
+      "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "id": "M2-resolver",
+  "milestone": "M2",
+  "title": "Bounded external resource resolution",
+  "kind": "feature",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "depends_on": [
+    "M2-contracts"
+  ],
+  "goals": [
+    "G09"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/integration.md"
+  ],
+  "owns": [
+    "src/Xemele/Resolution/Core/",
+    "src/Xemele/Options/Resources/",
+    "tests/Xemele.Tests/M2-resolver/",
+    "tests/fixtures/M2-resolver/",
+    "benchmarks/Xemele.Benchmarks/M2-resolver/",
+    "docs/api/M2-resolver.txt",
+    "samples/M2-resolver/",
+    "docs/reports/M2-resolver/"
+  ],
+  "api_or_output": "XmlResourceResolver, XmlResourceRequest, resolved resource, resource budgets",
+  "acceptance": [
+    {
+      "id": "M2-resolver-A1",
+      "description": "Implement explicit resolver/resource object, bounded sessions, source URI propagation, refusal and disposal.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M2-resolver-A2",
+      "description": "Offline tests prove no ambient file/network reads; test byte/count/cycle/cancellation limits and async override contract.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M2-resolver-A3",
+      "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}

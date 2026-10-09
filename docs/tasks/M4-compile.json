@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "id": "M4-compile",
+  "milestone": "M4",
+  "title": "XPath expression compilation",
+  "kind": "feature",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "depends_on": [
+    "M4-model"
+  ],
+  "goals": [
+    "G06"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/xpath.md"
+  ],
+  "owns": [
+    "src/Xemele/XPath/Compilation/",
+    "tests/Xemele.Tests/M4-compile/",
+    "tests/fixtures/M4-compile/",
+    "benchmarks/Xemele.Benchmarks/M4-compile/",
+    "docs/api/M4-compile.txt",
+    "samples/M4-compile/",
+    "docs/reports/M4-compile/"
+  ],
+  "api_or_output": "Internal XPathCompiler",
+  "acceptance": [
+    {
+      "id": "M4-compile-A1",
+      "description": "Implement XPath 1.0 lexer/parser, static resolution and precise compile diagnostics to immutable AST.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M4-compile-A2",
+      "description": "Test precedence, literals, all grammar productions, syntax errors and stable source positions.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M4-compile-A3",
+      "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "id": "M7-legacy",
+  "milestone": "M7",
+  "title": "Legacy libxml2-compatible HTML parser",
+  "kind": "feature",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "depends_on": [
+    "M7-html-model"
+  ],
+  "goals": [
+    "G10"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/html.md"
+  ],
+  "owns": [
+    "src/Xemele/Html/Legacy/",
+    "tests/Xemele.Tests/M7-legacy/",
+    "tests/fixtures/M7-legacy/",
+    "benchmarks/Xemele.Benchmarks/M7-legacy/",
+    "docs/api/M7-legacy.txt",
+    "samples/M7-legacy/",
+    "docs/reports/M7-legacy/"
+  ],
+  "api_or_output": "HtmlParser and legacy options",
+  "acceptance": [
+    {
+      "id": "M7-legacy-A1",
+      "description": "Implement pinned legacy HTML parsing/recovery profile using shared tree; keep XML behavior isolated.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M7-legacy-A2",
+      "description": "Differential fixtures verify auto-closing, void elements, malformed content and encoding decisions.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M7-legacy-A3",
+      "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}

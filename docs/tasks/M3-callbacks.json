@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "id": "M3-callbacks",
+  "milestone": "M3",
+  "title": "SAX data views and reusable handlers",
+  "kind": "feature",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "depends_on": [
+    "M3-contracts"
+  ],
+  "goals": [
+    "G04"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/streaming.md"
+  ],
+  "owns": [
+    "src/Xemele/Streaming/Callbacks/",
+    "tests/Xemele.Tests/M3-callbacks/",
+    "tests/fixtures/M3-callbacks/",
+    "benchmarks/Xemele.Benchmarks/M3-callbacks/",
+    "docs/api/M3-callbacks.txt",
+    "samples/M3-callbacks/",
+    "docs/reports/M3-callbacks/"
+  ],
+  "api_or_output": "IXmlSaxHandler, XmlSaxHandler, XmlSaxCallbacks, callback delegates/views",
+  "acceptance": [
+    {
+      "id": "M3-callbacks-A1",
+      "description": "Implement IXmlSaxHandler, no-op base, On* delegate adapter and borrowed namespace/attribute views.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M3-callbacks-A2",
+      "description": "Test optional handlers, delegate/subclass dispatch equivalence and zero per-notification wrapper allocations.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M3-callbacks-A3",
+      "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "id": "M1-syntax",
+  "milestone": "M1",
+  "title": "Resumable strict XML grammar",
+  "kind": "feature",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "depends_on": [
+    "M1-common"
+  ],
+  "goals": [
+    "G01",
+    "G04"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/parser.md"
+  ],
+  "owns": [
+    "src/Xemele/Parsing/Core/",
+    "src/Xemele/Parsing/Events/",
+    "tests/Xemele.Tests/M1-syntax/",
+    "tests/fixtures/M1-syntax/",
+    "benchmarks/Xemele.Benchmarks/M1-syntax/",
+    "docs/api/M1-syntax.txt",
+    "samples/M1-syntax/",
+    "docs/reports/M1-syntax/"
+  ],
+  "api_or_output": "XmlParserCore, IXmlEventSink, internal event views",
+  "acceptance": [
+    {
+      "id": "M1-syntax-A1",
+      "description": "Implement M1 XML grammar and borrowed event sink, pause/resume and bounded token/depth state; reject DTD syntax explicitly.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M1-syntax-A2",
+      "description": "Drive with a test sink independent of DOM/decoder; test syntax errors, namespaces, references, CDATA and arbitrary character splits.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M1-syntax-A3",
+      "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}

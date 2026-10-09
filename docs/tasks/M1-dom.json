@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "id": "M1-dom",
+  "milestone": "M1",
+  "title": "Compose input/parser/tree and factories",
+  "kind": "feature",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "depends_on": [
+    "M1-input",
+    "M1-tree",
+    "M1-syntax"
+  ],
+  "goals": [
+    "G01",
+    "G03"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/tree.md",
+    "docs/specs/parser.md"
+  ],
+  "owns": [
+    "src/Xemele/Parsing/Dom/",
+    "tests/Xemele.Tests/M1-dom/",
+    "tests/fixtures/M1-dom/",
+    "benchmarks/Xemele.Benchmarks/M1-dom/",
+    "docs/api/M1-dom.txt",
+    "samples/M1-dom/",
+    "docs/reports/M1-dom/"
+  ],
+  "api_or_output": "Document.Parse(string/ReadOnlySpan<byte>), Document.Load(Stream)",
+  "acceptance": [
+    {
+      "id": "M1-dom-A1",
+      "description": "Implement tree-building sink plus Document.Parse/Load strict factories and input ownership semantics.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M1-dom-A2",
+      "description": "Compare expected tree structures for UTF bytes/string/stream; verify malformed input and I/O failure handling.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M1-dom-A3",
+      "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}

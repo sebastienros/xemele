@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "id": "M4-model",
+  "milestone": "M4",
+  "title": "XPath AST and value model",
+  "kind": "feature",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "depends_on": [
+    "M4-contracts"
+  ],
+  "goals": [
+    "G06"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/xpath.md"
+  ],
+  "owns": [
+    "src/Xemele/XPath/Model/",
+    "tests/Xemele.Tests/M4-model/",
+    "tests/fixtures/M4-model/",
+    "benchmarks/Xemele.Benchmarks/M4-model/",
+    "docs/api/M4-model.txt",
+    "samples/M4-model/",
+    "docs/reports/M4-model/"
+  ],
+  "api_or_output": "XPathValue, XPathItem, contexts/options, internal AST/interfaces",
+  "acceptance": [
+    {
+      "id": "M4-model-A1",
+      "description": "Implement immutable AST, scalar/node-set values, item identities and internal navigation/function interfaces.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M4-model-A2",
+      "description": "Test conversion primitives, default/invalid values and equality for attributes/namespaces distinct from owners.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M4-model-A3",
+      "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}

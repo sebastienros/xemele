@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "id": "M8-xsd-facade",
+  "milestone": "M8",
+  "title": "Compose XSD public API",
+  "kind": "feature",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "depends_on": [
+    "M8-xsd-validate",
+    "M8-xsd-identity"
+  ],
+  "goals": [
+    "G14"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/schemas.md"
+  ],
+  "owns": [
+    "src/Xemele/Validation/Xsd/XmlSchema.cs",
+    "tests/Xemele.Tests/M8-xsd-facade/",
+    "tests/fixtures/M8-xsd-facade/",
+    "benchmarks/Xemele.Benchmarks/M8-xsd-facade/",
+    "docs/api/M8-xsd-facade.txt",
+    "samples/M8-xsd-facade/",
+    "docs/reports/M8-xsd-facade/"
+  ],
+  "api_or_output": "XmlSchema.Compile/Validate",
+  "acceptance": [
+    {
+      "id": "M8-xsd-facade-A1",
+      "description": "Compose schema compiler/core/identity constraints into immutable public compiled schemas.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M8-xsd-facade-A2",
+      "description": "Test all components through public API, concurrent validations, malformed schemas and resolver failures.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M8-xsd-facade-A3",
+      "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}

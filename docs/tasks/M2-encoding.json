@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "id": "M2-encoding",
+  "milestone": "M2",
+  "title": "Additional encoding compatibility",
+  "kind": "feature",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "depends_on": [
+    "M2-contracts"
+  ],
+  "goals": [
+    "G02"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/parser.md"
+  ],
+  "owns": [
+    "src/Xemele/Parsing/Input/",
+    "tests/Xemele.Tests/M2-encoding/",
+    "tests/fixtures/M2-encoding/",
+    "benchmarks/Xemele.Benchmarks/M2-encoding/",
+    "docs/api/M2-encoding.txt",
+    "samples/M2-encoding/",
+    "docs/reports/M2-encoding/"
+  ],
+  "api_or_output": "Extended decoding support; no process-global provider mutation",
+  "acceptance": [
+    {
+      "id": "M2-encoding-A1",
+      "description": "Implement approved legacy encoding table and incremental detection/conversion while preserving UTF behavior.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M2-encoding-A2",
+      "description": "Test declared aliases, malformed/unrepresentable data, provider availability and split sequences for every advertised encoding.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M2-encoding-A3",
+      "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}

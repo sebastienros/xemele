@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "id": "M1-input",
+  "milestone": "M1",
+  "title": "UTF input decoding and source mapping",
+  "kind": "feature",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "depends_on": [
+    "M1-common"
+  ],
+  "goals": [
+    "G02"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/parser.md"
+  ],
+  "owns": [
+    "src/Xemele/Parsing/Input/",
+    "tests/Xemele.Tests/M1-input/",
+    "tests/fixtures/M1-input/",
+    "benchmarks/Xemele.Benchmarks/M1-input/",
+    "docs/api/M1-input.txt",
+    "samples/M1-input/",
+    "docs/reports/M1-input/"
+  ],
+  "api_or_output": "Internal decoder/input routing contract",
+  "acceptance": [
+    {
+      "id": "M1-input-A1",
+      "description": "Implement incremental UTF-8/UTF-16 decoder with BOM/declaration reconciliation, scalar validation and original-byte locations.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M1-input-A2",
+      "description": "Test every split of representative BOM/scalar/newline sequences, invalid input and final incomplete sequences.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M1-input-A3",
+      "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}

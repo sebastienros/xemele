@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "id": "M2-recovery",
+  "milestone": "M2",
+  "title": "Explicit recovery and diagnostic results",
+  "kind": "feature",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "depends_on": [
+    "M2-conformance"
+  ],
+  "goals": [
+    "G01"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/parser.md"
+  ],
+  "owns": [
+    "src/Xemele/Parsing/Recovery/",
+    "src/Xemele/Parsing/Dom/Recovery.cs",
+    "src/Xemele/Options/Recovery/",
+    "tests/Xemele.Tests/M2-recovery/",
+    "tests/fixtures/M2-recovery/",
+    "benchmarks/Xemele.Benchmarks/M2-recovery/",
+    "docs/api/M2-recovery.txt",
+    "samples/M2-recovery/",
+    "docs/reports/M2-recovery/"
+  ],
+  "api_or_output": "Recovery options and Document.ParseWithDiagnostics",
+  "acceptance": [
+    {
+      "id": "M2-recovery-A1",
+      "description": "Implement documented recovery rules and ParseWithDiagnostics results through the shared engine policy hooks.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M2-recovery-A2",
+      "description": "Test each repair rule, IsComplete/IsWellFormed, bounded diagnostics, callback outcomes and unchanged strict rejection.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M2-recovery-A3",
+      "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}

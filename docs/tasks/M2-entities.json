@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "id": "M2-entities",
+  "milestone": "M2",
+  "title": "Integrate DTD/entities/defaults into XML core",
+  "kind": "feature",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "depends_on": [
+    "M2-resolver",
+    "M2-dtd"
+  ],
+  "goals": [
+    "G01",
+    "G07"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/parser.md",
+    "docs/specs/integration.md"
+  ],
+  "owns": [
+    "src/Xemele/Parsing/Entities/",
+    "src/Xemele/Parsing/Core/",
+    "src/Xemele/Options/XmlParseOptions.cs",
+    "src/Xemele/Tree/DtdMetadata/",
+    "tests/Xemele.Tests/M2-entities/",
+    "tests/fixtures/M2-entities/",
+    "benchmarks/Xemele.Benchmarks/M2-entities/",
+    "docs/api/M2-entities.txt",
+    "samples/M2-entities/",
+    "docs/reports/M2-entities/"
+  ],
+  "api_or_output": "Working DtdProcessing/Resolver options and parsed DTD metadata",
+  "acceptance": [
+    {
+      "id": "M2-entities-A1",
+      "description": "Connect DTD/resource hooks, entity expansion, attribute defaults/types and ID tracking using nonvalidating XML rules.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M2-entities-A2",
+      "description": "Verify defaulted attributes, entity/reference representation, standalone rules, cumulative amplification limits and no-resolver rejection.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M2-entities-A3",
+      "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}

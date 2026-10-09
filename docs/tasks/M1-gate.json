@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "id": "M1-gate",
+  "milestone": "M1",
+  "title": "Verify usable strict XML subset",
+  "kind": "gate",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "depends_on": [
+    "M1-corpus"
+  ],
+  "goals": [
+    "G01",
+    "G03",
+    "G05"
+  ],
+  "specs": [
+    "docs/specs/tree.md",
+    "docs/specs/parser.md",
+    "docs/specs/serialization.md"
+  ],
+  "owns": [
+    "docs/reports/M1-gate/"
+  ],
+  "api_or_output": "Verify usable strict XML subset",
+  "acceptance": [
+    {
+      "id": "M1-gate-A1",
+      "description": "Verify independently usable parse/mutate/serialize slice with declared subset and safe rejection of unsupported inputs.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M1-gate-A2",
+      "description": "Run cumulative checks, constructed-tree output and strict round-trip examples at integrated revision.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M1-gate-A3",
+      "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}

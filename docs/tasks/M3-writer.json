@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "id": "M3-writer",
+  "milestone": "M3",
+  "title": "Forward XML writer",
+  "kind": "feature",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "depends_on": [
+    "M3-contracts"
+  ],
+  "goals": [
+    "G05"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/serialization.md"
+  ],
+  "owns": [
+    "src/Xemele/Serialization/Writer/",
+    "tests/Xemele.Tests/M3-writer/",
+    "tests/fixtures/M3-writer/",
+    "benchmarks/Xemele.Benchmarks/M3-writer/",
+    "docs/api/M3-writer.txt",
+    "samples/M3-writer/",
+    "docs/reports/M3-writer/"
+  ],
+  "api_or_output": "XmlWriter sync surface and internal output pump",
+  "acceptance": [
+    {
+      "id": "M3-writer-A1",
+      "description": "Implement stateful forward writer, namespace/output policy and owned-buffer/leave-open behavior.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M3-writer-A2",
+      "description": "Test invalid method sequences, mixed content, escaping, encoding, flush, disposal and exact independent golden output.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M3-writer-A3",
+      "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}

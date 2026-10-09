@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "id": "M4-evaluate",
+  "milestone": "M4",
+  "title": "Evaluator and compiled query facade",
+  "kind": "feature",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "depends_on": [
+    "M4-compile",
+    "M4-navigation",
+    "M4-functions"
+  ],
+  "goals": [
+    "G06"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/xpath.md"
+  ],
+  "owns": [
+    "src/Xemele/XPath/Evaluation/",
+    "src/Xemele/XPath/XPathExpression.cs",
+    "tests/Xemele.Tests/M4-evaluate/",
+    "tests/fixtures/M4-evaluate/",
+    "benchmarks/Xemele.Benchmarks/M4-evaluate/",
+    "docs/api/M4-evaluate.txt",
+    "samples/M4-evaluate/",
+    "docs/reports/M4-evaluate/"
+  ],
+  "api_or_output": "XPathExpression.Compile/Evaluate",
+  "acceptance": [
+    {
+      "id": "M4-evaluate-A1",
+      "description": "Implement all operators/predicates, context position/size, variables/extensions, budgets and public compile/evaluate facade.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M4-evaluate-A2",
+      "description": "Test reusable/concurrent compiled expressions with separate contexts, mutation rules, cancellation and pathological expressions.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M4-evaluate-A3",
+      "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}

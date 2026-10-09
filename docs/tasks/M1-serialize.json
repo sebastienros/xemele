@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "id": "M1-serialize",
+  "milestone": "M1",
+  "title": "Serialize constructed and parsed trees",
+  "kind": "feature",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "depends_on": [
+    "M1-tree"
+  ],
+  "goals": [
+    "G05"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/tree.md",
+    "docs/specs/serialization.md"
+  ],
+  "owns": [
+    "src/Xemele/Serialization/Document/",
+    "src/Xemele/Serialization/Xml/",
+    "tests/Xemele.Tests/M1-serialize/",
+    "tests/fixtures/M1-serialize/",
+    "benchmarks/Xemele.Benchmarks/M1-serialize/",
+    "docs/api/M1-serialize.txt",
+    "samples/M1-serialize/",
+    "docs/reports/M1-serialize/"
+  ],
+  "api_or_output": "XmlSerializer, XmlSaveOptions, Document.ToXmlString/Save",
+  "acceptance": [
+    {
+      "id": "M1-serialize-A1",
+      "description": "Implement XML string/stream output, encoding declarations, namespace policy and partial Document save wrappers.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M1-serialize-A2",
+      "description": "Check golden bytes for independently constructed trees, mixed content, escapes, invalid output and stream ownership.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M1-serialize-A3",
+      "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}

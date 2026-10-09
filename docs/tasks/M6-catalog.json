@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "id": "M6-catalog",
+  "milestone": "M6",
+  "title": "XML catalogs and resolver composition",
+  "kind": "feature",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "depends_on": [
+    "M6-contracts"
+  ],
+  "goals": [
+    "G09"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/integration.md"
+  ],
+  "owns": [
+    "src/Xemele/Resolution/Catalogs/",
+    "tests/Xemele.Tests/M6-catalog/",
+    "tests/fixtures/M6-catalog/",
+    "benchmarks/Xemele.Benchmarks/M6-catalog/",
+    "docs/api/M6-catalog.txt",
+    "samples/M6-catalog/",
+    "docs/reports/M6-catalog/"
+  ],
+  "api_or_output": "XmlCatalog, CatalogResolver",
+  "acceptance": [
+    {
+      "id": "M6-catalog-A1",
+      "description": "Implement catalog parsing and mapping/delegation/rewrite/next-catalog policy with bounded cycles.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M6-catalog-A2",
+      "description": "Test precedence, public/system IDs, relative URIs, refusal and composed offline fallback.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M6-catalog-A3",
+      "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}

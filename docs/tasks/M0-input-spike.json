@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "id": "M0-input-spike",
+  "milestone": "M0",
+  "title": "Compare input and resumable dispatch",
+  "kind": "infrastructure",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "depends_on": [
+    "M0-build"
+  ],
+  "goals": [
+    "G02",
+    "G04",
+    "G18"
+  ],
+  "specs": [
+    "docs/specs/foundation.md",
+    "docs/specs/parser.md",
+    "docs/specs/streaming.md",
+    "docs/performance-coding.md"
+  ],
+  "owns": [
+    "experiments/Input/",
+    "docs/reports/M0-input-spike/"
+  ],
+  "api_or_output": "Compare input and resumable dispatch",
+  "acceptance": [
+    {
+      "id": "M0-input-spike-A1",
+      "description": "Compare UTF-8/character paths and resumable sink dispatch for byte/string callers and multilingual input.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M0-input-spike-A2",
+      "description": "Report conversion/allocation costs and demonstrate suspension inside a token without retaining full input.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M0-input-spike-A3",
+      "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M0-input-spike-A4",
+      "description": "Benchmark cached SearchValues versus simple span scans; constant ReadOnlySpan/UTF-8 literals versus array-backed tokens; and length-dispatched equality versus collision-checked fixed-ASCII hashing. Cover byte/char input, hits/misses, short/long tokens, case rules, non-ASCII and chunk boundaries. Report cold/warm allocations and inspect lowering-dependent cases.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}

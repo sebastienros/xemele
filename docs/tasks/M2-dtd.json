@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "id": "M2-dtd",
+  "milestone": "M2",
+  "title": "DTD grammar and declaration model",
+  "kind": "feature",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "depends_on": [
+    "M2-contracts"
+  ],
+  "goals": [
+    "G07"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/parser.md"
+  ],
+  "owns": [
+    "src/Xemele/Parsing/Dtd/",
+    "tests/Xemele.Tests/M2-dtd/",
+    "tests/fixtures/M2-dtd/",
+    "benchmarks/Xemele.Benchmarks/M2-dtd/",
+    "docs/api/M2-dtd.txt",
+    "samples/M2-dtd/",
+    "docs/reports/M2-dtd/"
+  ],
+  "api_or_output": "Internal DtdModel and declaration parser",
+  "acceptance": [
+    {
+      "id": "M2-dtd-A1",
+      "description": "Parse internal/external declarations, parameter entity grammar and defaults/types into immutable DtdModel through approved resource hooks.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M2-dtd-A2",
+      "description": "Test malformed declarations, recursive parameter entities and normalized declarations against pinned cases.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M2-dtd-A3",
+      "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}
