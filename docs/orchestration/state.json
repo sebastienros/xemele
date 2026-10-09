@@ -4,12 +4,34 @@
   "coordination_branch": "main",
   "max_concurrent_workers": 2,
   "last_verified_checkpoint": null,
-  "active_assignments": [],
+  "active_assignments": [
+    {
+      "task_id": "M0-tree-spike",
+      "chat_id": null,
+      "host_id": "local",
+      "worktree_path": null,
+      "branch": "codex/m0-tree-spike",
+      "base_revision": "5cb0e4eae1a0835a7455580bac25ee05ade7c463",
+      "claim_revision": null,
+      "setup_status": "claiming"
+    },
+    {
+      "task_id": "M0-input-spike",
+      "chat_id": null,
+      "host_id": "local",
+      "worktree_path": null,
+      "branch": "codex/m0-input-spike",
+      "base_revision": "5cb0e4eae1a0835a7455580bac25ee05ade7c463",
+      "claim_revision": null,
+      "setup_status": "claiming"
+    }
+  ],
   "integration_queue": [],
   "blockers": [],
   "next_actions": [
-    "Claim tree/input experiment lanes from verified bootstrap",
-    "Serialize benchmarks on shared host"
+    "Confirm isolated tree/input setup",
+    "Dispatch bounded experiment briefs",
+    "Review returned experiments"
   ],
   "last_verified_task": "M0-build",
   "last_integrated_revision": "c7ecb084050b8c4cc014e7bc3f4b57f37f34413e",
@@ -21,5 +43,6 @@
       "worktree_path": "/Users/sebastienros/.codex/worktrees/f235/xemele",
       "handoff_revision": "f17855d81e90e9e97181242bdfe4ccb5b8a007ae"
     }
-  ]
+  ],
+  "benchmark_policy": "Tree owns first benchmark slot; input prepares code and checks, waits for explicit timing authorization."
 }
