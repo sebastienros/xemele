@@ -1,0 +1,187 @@
+$ git rev-parse HEAD
+5abe06eab83d09916c3eede99262be18ef07e736
+Exit: 0
+
+$ dotnet --version
+10.0.400
+Exit: 0
+
+$ dotnet restore Xemele.slnx
+  Determining projects to restore...
+  Restored /private/tmp/xemele-M0-build-5abe06e/tools/CorpusManager/CorpusManager.csproj (in 48 ms).
+  Restored /private/tmp/xemele-M0-build-5abe06e/src/Xemele.Tool/Xemele.Tool.csproj (in 51 ms).
+  Restored /private/tmp/xemele-M0-build-5abe06e/tests/Xemele.Fuzz/Xemele.Fuzz.csproj (in 51 ms).
+  Restored /private/tmp/xemele-M0-build-5abe06e/src/Xemele/Xemele.csproj (in 48 ms).
+  Restored /private/tmp/xemele-M0-build-5abe06e/tests/Contracts/Contracts.csproj (in 51 ms).
+  Restored /private/tmp/xemele-M0-build-5abe06e/tests/Xemele.TestUtilities/Xemele.TestUtilities.csproj (in 51 ms).
+  Restored /private/tmp/xemele-M0-build-5abe06e/tests/Xemele.Tests/Xemele.Tests.csproj (in 151 ms).
+  Restored /private/tmp/xemele-M0-build-5abe06e/tests/Xemele.Differential.Tests/Xemele.Differential.Tests.csproj (in 151 ms).
+  Restored /private/tmp/xemele-M0-build-5abe06e/tests/Xemele.Conformance.Tests/Xemele.Conformance.Tests.csproj (in 151 ms).
+  Restored /private/tmp/xemele-M0-build-5abe06e/benchmarks/Xemele.Benchmarks/Xemele.Benchmarks.csproj (in 176 ms).
+Exit: 0
+
+$ dotnet build Xemele.slnx -c Release --no-restore
+  Xemele -> /private/tmp/xemele-M0-build-5abe06e/src/Xemele/bin/Release/net10.0/Xemele.dll
+  Contracts -> /private/tmp/xemele-M0-build-5abe06e/tests/Contracts/bin/Release/net10.0/Contracts.dll
+  Xemele.TestUtilities -> /private/tmp/xemele-M0-build-5abe06e/tests/Xemele.TestUtilities/bin/Release/net10.0/Xemele.TestUtilities.dll
+  CorpusManager -> /private/tmp/xemele-M0-build-5abe06e/tools/CorpusManager/bin/Release/net10.0/CorpusManager.dll
+  Xemele.Tool -> /private/tmp/xemele-M0-build-5abe06e/src/Xemele.Tool/bin/Release/net10.0/Xemele.Tool.dll
+  Xemele.Fuzz -> /private/tmp/xemele-M0-build-5abe06e/tests/Xemele.Fuzz/bin/Release/net10.0/Xemele.Fuzz.dll
+  Xemele.Differential.Tests -> /private/tmp/xemele-M0-build-5abe06e/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll
+  Xemele.Benchmarks -> /private/tmp/xemele-M0-build-5abe06e/benchmarks/Xemele.Benchmarks/bin/Release/net10.0/Xemele.Benchmarks.dll
+  Xemele.Tests -> /private/tmp/xemele-M0-build-5abe06e/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll
+  Xemele.Conformance.Tests -> /private/tmp/xemele-M0-build-5abe06e/tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:01.21
+Exit: 0
+
+$ dotnet test Xemele.slnx -c Release --no-build --list-tests
+Test run for /private/tmp/xemele-M0-build-5abe06e/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll (.NETCoreApp,Version=v10.0)
+Test run for /private/tmp/xemele-M0-build-5abe06e/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll (.NETCoreApp,Version=v10.0)
+Test run for /private/tmp/xemele-M0-build-5abe06e/tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll (.NETCoreApp,Version=v10.0)
+The following Tests are available:
+The following Tests are available:
+The following Tests are available:
+No test is available in /private/tmp/xemele-M0-build-5abe06e/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll. Make sure that test discoverer & executors are registered and platform & framework version settings are appropriate and try again.
+No test is available in /private/tmp/xemele-M0-build-5abe06e/tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll. Make sure that test discoverer & executors are registered and platform & framework version settings are appropriate and try again.
+No test is available in /private/tmp/xemele-M0-build-5abe06e/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll. Make sure that test discoverer & executors are registered and platform & framework version settings are appropriate and try again.
+Exit: 0
+
+$ dotnet test Xemele.slnx -c Release --no-build
+Test run for /private/tmp/xemele-M0-build-5abe06e/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll (.NETCoreApp,Version=v10.0)
+Test run for /private/tmp/xemele-M0-build-5abe06e/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll (.NETCoreApp,Version=v10.0)
+Test run for /private/tmp/xemele-M0-build-5abe06e/tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+A total of 1 test files matched the specified pattern.
+A total of 1 test files matched the specified pattern.
+No test is available in /private/tmp/xemele-M0-build-5abe06e/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll. Make sure that test discoverer & executors are registered and platform & framework version settings are appropriate and try again.
+No test is available in /private/tmp/xemele-M0-build-5abe06e/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll. Make sure that test discoverer & executors are registered and platform & framework version settings are appropriate and try again.
+No test is available in /private/tmp/xemele-M0-build-5abe06e/tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll. Make sure that test discoverer & executors are registered and platform & framework version settings are appropriate and try again.
+
+
+
+Additionally, path to test adapters can be specified using /TestAdapterPath command. Example  /TestAdapterPath:<pathToCustomAdapters>.
+Additionally, path to test adapters can be specified using /TestAdapterPath command. Example  /TestAdapterPath:<pathToCustomAdapters>.
+Additionally, path to test adapters can be specified using /TestAdapterPath command. Example  /TestAdapterPath:<pathToCustomAdapters>.
+Exit: 0
+
+$ dotnet run -c Release --no-build --project src/Xemele.Tool -- --help
+Xemele XML/HTML toolkit
+Usage: xemele <command> [options]
+  --help  Show help
+Exit: 0
+
+$ dotnet run -c Release --no-build --project src/Xemele.Tool -- -h
+Xemele XML/HTML toolkit
+Usage: xemele <command> [options]
+  --help  Show help
+Exit: 0
+
+$ dotnet run -c Release --no-build --project src/Xemele.Tool -- help
+Xemele XML/HTML toolkit
+Usage: xemele <command> [options]
+  --help  Show help
+Exit: 0
+
+$ dotnet run -c Release --no-build --project src/Xemele.Tool --
+Xemele XML/HTML toolkit
+Usage: xemele <command> [options]
+  --help  Show help
+Exit: 0
+
+$ dotnet run -c Release --no-build --project tests/Xemele.Fuzz -- --help
+Xemele fuzz harness
+Bootstrap shell: --help is the available command.
+Exit: 0
+
+$ dotnet run -c Release --no-build --project tests/Xemele.Fuzz -- -h
+Xemele fuzz harness
+Bootstrap shell: --help is the available command.
+Exit: 0
+
+$ dotnet run -c Release --no-build --project tests/Xemele.Fuzz -- help
+Xemele fuzz harness
+Bootstrap shell: --help is the available command.
+Exit: 0
+
+$ dotnet run -c Release --no-build --project tests/Xemele.Fuzz --
+Xemele fuzz harness
+Bootstrap shell: --help is the available command.
+Exit: 0
+
+$ dotnet run -c Release --no-build --project benchmarks/Xemele.Benchmarks -- --help
+Xemele benchmarks
+Usage: dotnet run -c Release --project benchmarks/Xemele.Benchmarks -- [BenchmarkDotNet options]
+Benchmark cases are added by feature tasks.
+Exit: 0
+
+$ dotnet run -c Release --no-build --project benchmarks/Xemele.Benchmarks -- -h
+Xemele benchmarks
+Usage: dotnet run -c Release --project benchmarks/Xemele.Benchmarks -- [BenchmarkDotNet options]
+Benchmark cases are added by feature tasks.
+Exit: 0
+
+$ dotnet run -c Release --no-build --project benchmarks/Xemele.Benchmarks -- help
+Xemele benchmarks
+Usage: dotnet run -c Release --project benchmarks/Xemele.Benchmarks -- [BenchmarkDotNet options]
+Benchmark cases are added by feature tasks.
+Exit: 0
+
+$ dotnet run -c Release --no-build --project benchmarks/Xemele.Benchmarks --
+Xemele benchmarks
+Usage: dotnet run -c Release --project benchmarks/Xemele.Benchmarks -- [BenchmarkDotNet options]
+Benchmark cases are added by feature tasks.
+Exit: 0
+
+$ dotnet run -c Release --no-build --project tools/CorpusManager -- --help
+Xemele corpus manager
+Bootstrap shell: --help is the available command.
+Exit: 0
+
+$ dotnet run -c Release --no-build --project tools/CorpusManager -- -h
+Xemele corpus manager
+Bootstrap shell: --help is the available command.
+Exit: 0
+
+$ dotnet run -c Release --no-build --project tools/CorpusManager -- help
+Xemele corpus manager
+Bootstrap shell: --help is the available command.
+Exit: 0
+
+$ dotnet run -c Release --no-build --project tools/CorpusManager --
+Xemele corpus manager
+Bootstrap shell: --help is the available command.
+Exit: 0
+
+$ dotnet run -c Release --no-build --project src/Xemele.Tool -- unknown
+Unknown command: unknown. Use --help for available commands.
+Exit: 2
+
+$ dotnet run -c Release --no-build --project tests/Xemele.Fuzz -- unknown
+Unknown command. Use --help for available commands.
+Exit: 2
+
+$ dotnet run -c Release --no-build --project tools/CorpusManager -- unknown
+Unknown command. Use --help for available commands.
+Exit: 2
+
+$ dotnet pack src/Xemele/Xemele.csproj -c Release --no-build -o artifacts/M0-build/packages
+  The package Xemele.1.0.0 is missing a readme. Go to https://aka.ms/nuget/authoring-best-practices/readme to learn why package readmes are important.
+  Successfully created package '/private/tmp/xemele-M0-build-5abe06e/artifacts/M0-build/packages/Xemele.1.0.0.nupkg'.
+Exit: 0
+
+Package library files: ["lib/net10.0/Xemele.dll"]; no native runtime assets.
+
+$ dnx dotnet-inspect -y -- type --library src/Xemele/bin/Release/net10.0/Xemele.dll --count
+0
+Exit: 0
+
+$ python3 tools/planning/tasks.py validate
+Validated 93 tasks: schema, evidence, acyclic dependencies, additive milestones, and ordered ownership.
+Exit: 0
+
+Passed bootstrap checks at 5abe06eab83d09916c3eede99262be18ef07e736. Test shells contain zero tests; no runtime APIs or benchmarks exist yet.

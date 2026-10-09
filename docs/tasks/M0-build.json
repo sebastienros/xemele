@@ -4,7 +4,7 @@
   "milestone": "M0",
   "title": "Build and project bootstrap",
   "kind": "infrastructure",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M0-build",
   "branch": "codex/m0-build",
   "base_revision": "1cf5adc70e93f53406d6ad51f3e99423d26918c6",
@@ -46,29 +46,62 @@
     {
       "id": "M0-build-A1",
       "description": "Create buildable net10.0-only library/tool/test/benchmark/contract shells with pinned dependencies and SDK; no public runtime stubs.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "clean-bootstrap-checks"
+      ]
     },
     {
       "id": "M0-build-A2",
       "description": "Restore, Release build, test discovery and help entry points succeed from a clean checkout; verify package contains no placeholder APIs.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "clean-bootstrap-checks"
+      ]
     },
     {
       "id": "M0-build-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "clean-bootstrap-checks"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "global.json: SDK 10.0.400, rollForward disabled; Directory.Build.props: net10.0, deterministic/nullable/analyzers/warnings-as-errors; Directory.Packages.props: central package pins",
+    "Xemele.slnx: ten SDK-default-glob projects and project references; src/Xemele/Xemele.csproj: empty packable managed library",
+    "src/Xemele.Tool/CommandRegistry.cs: internal optional partial registration hooks, ordinal help and unknown-command exit 2",
+    "src/Xemele.Tool/Program.cs; tests/Xemele.Fuzz/Program.cs; benchmarks/Xemele.Benchmarks/Program.cs; tools/CorpusManager/Program.cs: working help shells",
+    "docs/reports/M0-build/verify.py: reproducible bootstrap verification and package/public API inspection"
+  ],
+  "evidence": [
+    {
+      "id": "clean-bootstrap-checks",
+      "kind": "check",
+      "revision": "5abe06eab83d09916c3eede99262be18ef07e736",
+      "command": "python3 /private/tmp/xemele-M0-build-5abe06e/docs/reports/M0-build/verify.py",
+      "result": "passed",
+      "summary": "Clean source clone at implementation revision: pinned SDK 10.0.400; restore and ten-project Release build passed with zero warnings/errors; test discovery/execution exited 0 with zero tests in three intentionally empty shells; 16 help cases and 3 expected unknown-command exits passed; pack payload lib/net10.0/Xemele.dll only and no native assets; dotnet-inspect reported 0 exported types; task validator passed for 93 tasks. Uses existing NuGet cache; pack emits informational missing-readme notice. No runtime APIs or allocation benchmarks exist yet.",
+      "artifact": "docs/reports/M0-build/verification.txt"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "",
-    "checks": [],
-    "remaining": [],
+    "summary": "Pinned net10.0 build/project infrastructure implemented at 5abe06eab83d09916c3eede99262be18ef07e736 with empty runtime library, empty test/contracts shells, four help entry points, internal partial CLI registration hooks and reproducible clean-checkout verification. Awaiting coordinator integration verification.",
+    "checks": [
+      "python3 docs/reports/M0-build/verify.py: passed in clean source clone at 5abe06eab83d09916c3eede99262be18ef07e736; full individual commands/output in docs/reports/M0-build/verification.txt",
+      "dotnet restore; dotnet build -c Release --no-restore: passed, zero warnings/errors",
+      "dotnet test --list-tests and dotnet test: exit 0, three empty shells, zero tests",
+      "Four executable help entry points, all four help forms: passed; tool/fuzz/corpus unknown commands: expected exit 2",
+      "dotnet pack and dotnet-inspect: passed, net10.0 managed payload only, zero exported types",
+      "python3 tools/planning/tasks.py validate: passed, 93 tasks"
+    ],
+    "remaining": [
+      "Coordinator must integrate and rerun checks before verified; integration_revision remains null.",
+      "No runtime/benchmark cases exist yet; no allocation/performance evidence applies.",
+      "Package has informational missing-readme notice; publishing and license/distribution decisions remain outside this bootstrap task."
+    ],
     "requests": []
   }
 }
