@@ -218,7 +218,7 @@ public static class XmlSerializer
             reserved.Add(node.Prefix);
             foreach (var a in node.Attributes)
             {
-                Tick(); ValidateExpanded(a.LocalName, a.NamespaceUri, a.Prefix);
+                Tick(); ValidateExpanded(a.LocalName, a.NamespaceUri, a.Prefix, attribute: true);
                 if (!expanded.Add((a.NamespaceUri, a.LocalName))) Invalid();
                 reserved.Add(a.Prefix);
             }
@@ -331,9 +331,9 @@ public static class XmlSerializer
             if (prefix.Length != 0) ValidateName(prefix); ValidateText(uri);
             if (prefix == "xmlns" || uri == TreeValidation.XmlnsUri || (prefix == "xml") != (uri == TreeValidation.XmlUri) || prefix.Length != 0 && uri.Length == 0) Invalid();
         }
-        private void ValidateExpanded(string localName, string uri, string prefix)
+        private void ValidateExpanded(string localName, string uri, string prefix, bool attribute = false)
         {
-            ValidateName(localName); ValidateBinding(prefix, uri); if (localName == "xmlns") Invalid();
+            ValidateName(localName); ValidateBinding(prefix, uri); if (attribute && localName == "xmlns" && uri.Length == 0 && prefix.Length == 0) Invalid();
         }
         private void Delimiter(string value, ReadOnlySpan<char> delimiter)
         {

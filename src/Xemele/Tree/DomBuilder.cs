@@ -79,7 +79,7 @@ public sealed partial class XmlDocument
         {
             CheckState(); int e = Container(element, true);
             namespaceUri ??= ""; prefix ??= "";
-            TreeValidation.Expanded(localName, namespaceUri, prefix); TreeValidation.Text(value);
+            TreeValidation.Expanded(localName, namespaceUri, prefix, attribute: true); TreeValidation.Text(value);
             MemberChecks++;
             int slot = document.AppendMember(e, localName, value, namespaceUri, prefix, false);
             attributes++; version = document.MutationVersion;

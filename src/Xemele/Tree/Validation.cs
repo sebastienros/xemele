@@ -46,10 +46,11 @@ internal static class TreeValidation
         if (prefix == "xmlns" || uri == XmlnsUri || (prefix == "xml") != (uri == XmlUri) || (prefix.Length != 0 && uri.Length == 0))
             throw new ArgumentException("Reserved or empty namespace binding.");
     }
-    internal static void Expanded(string local, string uri, string prefix)
+    internal static void Expanded(string local, string uri, string prefix, bool attribute = false)
     {
         Name(local); Binding(prefix, uri);
-        if (local == "xmlns") throw new ArgumentException("xmlns is a reserved name.", nameof(local));
+        if (attribute && local == "xmlns" && uri.Length == 0 && prefix.Length == 0)
+            throw new ArgumentException("Use a namespace declaration for an unqualified xmlns attribute.", nameof(local));
     }
     internal static void Value(XmlNodeKind kind, string value)
     {
