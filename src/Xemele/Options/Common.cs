@@ -22,7 +22,7 @@ public sealed record XmlResourceLimits
             throw new ArgumentOutOfRangeException(nameof(XmlResourceLimits));
     }
 }
-public sealed record XmlParseOptions
+public sealed partial record XmlParseOptions
 {
     public XmlResourceLimits Limits { get; init; } = new();
 

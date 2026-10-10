@@ -13,7 +13,7 @@
   ],
   "id": "M2-entities-foundation",
   "title": "Additive entity options, metadata and integration hooks",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/M2-entities-foundation",
   "branch": "codex/m2-entities-foundation",
   "base_revision": "fc29fabcc82d05729a32f917b5fa4dde6ac135d8",
@@ -40,32 +40,108 @@
     {
       "id": "M2-entities-foundation-A1",
       "description": "Implement exact approved additive DtdProcessing/Resolver options, XmlDocumentType and document metadata storage, EntityUse/EntityExpansionRequest and IXmlEntityContext/IXmlDtdSink declarations, with narrow Common.cs and DomSink.cs partial modifiers and optional DOM metadata callback. No production entity/DOCTYPE parser or public stubs.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "exact-source-functional-checkpoint",
+        "owned-allocation-boundaries",
+        "independent-api-wiring-review",
+        "independent-foundation-review",
+        "exact-tested-source-byte-identity"
+      ]
     },
     {
       "id": "M2-entities-foundation-A2",
       "description": "Verify approved API/nullability/defaults, immutable metadata/model lifetime and storage, option snapshot preservation, optional sink compatibility and unchanged existing event contract. Earlier strict parsing and DOM behavior remains passing; options/metadata model evidence must not claim working entity parsing.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "exact-source-functional-checkpoint",
+        "owned-allocation-boundaries",
+        "independent-api-wiring-review",
+        "independent-foundation-review",
+        "exact-tested-source-byte-identity"
+      ]
     },
     {
       "id": "M2-entities-foundation-A3",
       "description": "Demonstrate actual additive API and metadata callback using only verified dependencies, record applicable owned allocation/performance boundaries and actual cumulative preservation checks at known revisions.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "exact-source-functional-checkpoint",
+        "owned-allocation-boundaries",
+        "independent-api-wiring-review",
+        "independent-foundation-review",
+        "exact-tested-source-byte-identity"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Options/XmlParseOptions.cs: exact Prohibit/Parse enum and DtdProcessing=Prohibit/Resolver=null additions; Common.cs only partial modifier.",
+    "src/Xemele/Tree/DtdMetadata/{XmlDocumentType.cs,Document.Dtd.cs,DomSink.Dtd.cs}: immutable lexical record, getter-only document/model storage, atomic null guards and optional true-returning DOM metadata callback; DomSink.cs only partial modifier.",
+    "src/Xemele/Parsing/Entities/Contracts/Entities.cs: exact internal EntityUse/EntityExpansionRequest/IXmlEntityContext/IXmlDtdSink declarations, no runtime entity context.",
+    "tests/Xemele.Tests/M2-entities-foundation/FoundationTests.cs: nine actual cases covering defaults/snapshots/record/null/model lifetime/storage/event compatibility/strict rejection/borrowed context/warm callback allocation.",
+    "samples/M2-entities-foundation/{Program.cs,Inventory.cs,Sample.csproj}: source-built options/manual owned metadata callback demonstration and independent ten-type reflection inventory.",
+    "docs/api/M2-entities-foundation.txt: 21 canonical NEW approved public declarations; internal inventory in docs/reports/M2-entities-foundation/internal-contract.txt.",
+    "docs/reports/M2-entities-foundation/{verify.py,checkpoint-5157ee5/,byte-identity.json,reviews.json,README.md}: actual cumulative/contract/provenance/allocation/scope evidence."
+  ],
+  "evidence": [
+    {
+      "id": "exact-source-functional-checkpoint",
+      "kind": "check",
+      "revision": "5157ee53b33654f13dc4a0b34cfc6d4e1aec07e9",
+      "command": "env DOTNET_ROOT='/Users/sebastienros/Library/Application Support/dotnetup/dotnet' PATH='/Users/sebastienros/Library/Application Support/dotnetup/dotnet:'\"$PATH\" DOTNET_CLI_USE_MSBUILD_SERVER=0 python3 -B docs/reports/M2-entities-foundation/verify.py --report-prefix checkpoint-5157ee5",
+      "result": "passed",
+      "summary": "Pinned Release SDK10.0.400/runtime10.0.11/macOSArm64:9 focused; actual MTP5023/direct XML+discovery4469runtime+255conformance+299differential allPass/0fail/0skip. Independent approved10-type/default/nullability/generated-record/unchanged event/optional hook inventory and compiled nullable mutation passed; exact authored manual-metadata/options sample passed. Public272=preserved251+approved21, registry3388; fresh complete copied BCL242 unique currentfullrevision responses/DLLhash unchanged. Inherited foundation/M1 protocol/compiler/ABI preservation, planning14/validate121 and claim..HEAD/staged/working/untracked ownership+three diffchecks passed. No production DOCTYPE/entity parsing implied. Two uncommitted preparation build failures corrected before this checkpoint, retained in owned logs.",
+      "artifact": "docs/reports/M2-entities-foundation/checkpoint-5157ee5/summary.json"
+    },
+    {
+      "id": "owned-allocation-boundaries",
+      "kind": "check",
+      "revision": "5157ee53b33654f13dc4a0b34cfc6d4e1aec07e9",
+      "command": "env DOTNET_ROOT='/Users/sebastienros/Library/Application Support/dotnetup/dotnet' PATH='/Users/sebastienros/Library/Application Support/dotnetup/dotnet:'\"$PATH\" DOTNET_CLI_USE_MSBUILD_SERVER=0 python3 -B docs/reports/M2-entities-foundation/verify.py --report-prefix checkpoint-5157ee5",
+      "result": "passed",
+      "summary": "Separate escaped synchronous counter boundaries over10000 operations: XmlDocumentType with existing immutable strings48B/op; options+limits record clone184B/op; warmed precreated-model metadata callback0B/op. Focused callback0B assertion passed. Cold setup/string/model construction and retained memory not measured; no throughput/timing/new BDN workload/dependency timing repeat, x64/Windows/AOT/entity-parser composition claim.",
+      "artifact": "docs/reports/M2-entities-foundation/checkpoint-5157ee5/allocations.txt"
+    },
+    {
+      "id": "independent-api-wiring-review",
+      "kind": "review",
+      "revision": "5157ee53b33654f13dc4a0b34cfc6d4e1aec07e9",
+      "command": null,
+      "result": "passed",
+      "summary": "Coordinator01a1230c-1353-7e01-afbe-a53c9c018264/local relayed independent api_wiring exact-source approval: ten-type/default/nullability/generated/optional-hook comparison and public251+21=272 correct; no blockers. Source-only/no execution.",
+      "artifact": "docs/reports/M2-entities-foundation/reviews.json"
+    },
+    {
+      "id": "independent-foundation-review",
+      "kind": "review",
+      "revision": "5157ee53b33654f13dc4a0b34cfc6d4e1aec07e9",
+      "command": null,
+      "result": "passed",
+      "summary": "Coordinator relayed independent foundation exact-source approval: shared edits partial-only; resolver snapshots/immutable metadata/null atomicity/manual callback distinct from pending parsing; separate owned allocation boundaries; no blockers. Source-only/no execution.",
+      "artifact": "docs/reports/M2-entities-foundation/reviews.json"
+    },
+    {
+      "id": "exact-tested-source-byte-identity",
+      "kind": "check",
+      "revision": "1a92375bb0e2ee7d84595f6ed80b922bf501d846",
+      "command": "Supplemental git ls-tree/cat-file manifest, worktree SHA256, committed/index/worktree/untracked diff comparison to exact5157ee53b33654f13dc4a0b34cfc6d4e1aec07e9",
+      "result": "passed",
+      "summary": "All144 tracked runtime/test/contract/sample/inventory/verifier/public-fragment files byte-identical to reviewed and tested checkpoint; index/worktree/untracked clean for sources; source..auditHEAD evidence-only. Checkpoint end audit shows only owned new report outputs; no source writes during checks. Initial verifier lacked explicit initial-clean guard; supplemental proof provided without repeating passing fulltests or allocation.",
+      "artifact": "docs/reports/M2-entities-foundation/byte-identity.json"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Additive independently reviewable foundation before tightly coupled core/entity/source/default integration. Original parent acceptance remains unchanged.",
-    "checks": [],
-    "remaining": [],
-    "requests": [
-      "Common.cs change restricted to making existing sealed Limits-only XmlParseOptions partial, preserving defaults and metadata; DtdProcessing/Resolver additions in own XmlParseOptions.cs. Recover belongs later recovery.",
-      "DomSink.cs change restricted to partial modifier; optional IXmlDtdSink implementation belongs Tree/DtdMetadata/DomSink.Dtd.cs. No required IXmlEventSink callback/factory/adapter changes."
-    ]
+    "summary": "Implemented additive foundation at exact reviewed/tested5157ee53b33654f13dc4a0b34cfc6d4e1aec07e9; final sources byte-identical. Strict earlier parser behavior preserved. Branch implementation only; coordinator must integrate and freshly verify. All owned paths and ownJSON released after clean final audit; stop pending focused follow-up.",
+    "checks": [
+      "Actual5023 MTP/direct XML/discovery4469+255+299 allPass/0skip;9 focused; approved10 inventory+compiled nullable mutation; public272/preserved251/additive21; registry3388; fresh complete copied BCL242 full-source/hash unchanged; inherited foundation/M1 compiler/ABI/protocol; planning14/validate121/scoped ownership/three diffchecks passed.",
+      "Record48B/options+limits clone184B/warm optional callback0B; no timing/dependency remeasurement or retained-memory/parser/platform claim.",
+      "Two independent coordinator-relayed source-only exact5157 approvals;144-file source/index/worktree byte-identity proof. Preparation build namespace/nullability/cancellation-analyzer errors retained, corrected before successful source checkpoint."
+    ],
+    "remaining": [
+      "Production DOCTYPE parsing/entity expansion/defaults/source stacks/standalone/exactly-once metadata scheduling and pause semantics remain downstream M2-entities; foundation does not implement or claim them.",
+      "Windows/x64/AOT and composition allocation/performance remain unrun/downstream. Coordinator owns fresh integration verification."
+    ],
+    "requests": []
   }
 }
