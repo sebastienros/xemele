@@ -432,8 +432,8 @@
       }
     }
   ],
-  "benchmark_policy": "ShortRun only; serialize host timing with explicit peer/root heavy-check park.",
-  "benchmark_owner": null,
+  "benchmark_policy": "Exclusive serializer20 ShortRun; root/DOM and future repair worker source/static only.",
+  "benchmark_owner": "M1-serialize",
   "pending_decisions": [],
   "decisions": {
     "project_license": "MIT",
@@ -487,5 +487,15 @@
   ],
   "timing_queue": [
     "M1-serialize"
-  ]
+  ],
+  "benchmark_window": {
+    "task_id": "M1-serialize",
+    "source_revision": "707d52bc2130492daa690c7255d91a9104edea59",
+    "runtime_revision": "972b438ef0fefbfc52f32e15c84bc6deb36c006d",
+    "cases": 20,
+    "parked": [
+      "coordinator",
+      "M1-dom explicit no active build/test processes"
+    ]
+  }
 }
