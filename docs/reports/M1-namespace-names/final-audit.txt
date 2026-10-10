@@ -1,0 +1,54 @@
+$ git rev-parse HEAD
+$ git diff --name-only 99944ee86788414e5750a1e6eecf8a38d76baf17 HEAD
+$ git diff --name-only HEAD
+$ git ls-files --others --exclude-standard
+$ git diff --check 99944ee86788414e5750a1e6eecf8a38d76baf17 HEAD
+$ git diff --check
+$ python3 -B tools/planning/tasks.py validate
+$ git rev-parse HEAD
+35925b42d361c22dc087747bc6db1c4a8aedbb1c
+
+exit=0
+Source revision 35925b42d361c22dc087747bc6db1c4a8aedbb1c
+$ git diff --name-only 99944ee86788414e5750a1e6eecf8a38d76baf17 HEAD
+docs/reports/M1-namespace-names/README.md
+docs/reports/M1-namespace-names/checks.txt
+docs/reports/M1-namespace-names/initial-focused.txt
+docs/reports/M1-namespace-names/initial-ipc-failure.txt
+docs/reports/M1-namespace-names/planning-unit-failure.txt
+docs/reports/M1-namespace-names/planning-validation.txt
+docs/reports/M1-namespace-names/runtime-api.json
+docs/reports/M1-namespace-names/verification-raw.txt
+docs/reports/M1-namespace-names/verify.py
+docs/specs/tree.md
+docs/tasks/M1-namespace-names.json
+samples/M1-namespace-names/Program.cs
+samples/M1-namespace-names/Sample.csproj
+src/Xemele/Serialization/Xml/XmlSerializer.cs
+src/Xemele/Tree/Document.cs
+src/Xemele/Tree/DomBuilder.cs
+src/Xemele/Tree/Validation.cs
+tests/Xemele.Tests/M1-namespace-names/NamespaceNameTests.cs
+tests/Xemele.Tests/M1-serialize/SerializerTests.cs
+tests/Xemele.Tests/M1-tree/TreeTests.cs
+
+exit=0
+$ git diff --name-only HEAD
+
+exit=0
+$ git ls-files --others --exclude-standard
+docs/reports/M1-namespace-names/final-audit.txt
+docs/reports/M1-namespace-names/initial-final-audit-failure.txt
+
+exit=0
+Owned-path audit passed at base 99944ee86788414e5750a1e6eecf8a38d76baf17
+$ git diff --check 99944ee86788414e5750a1e6eecf8a38d76baf17 HEAD
+
+exit=0
+$ git diff --check
+
+exit=0
+$ python3 -B tools/planning/tasks.py validate
+Validated 106 tasks: schema, evidence, acyclic dependencies, additive milestones, and ordered ownership.
+
+exit=0

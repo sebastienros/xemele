@@ -213,7 +213,7 @@ public class SerializerTests
     [InlineData("bad:name", "", "")] [InlineData("1bad", "", "")]
     [InlineData("ok", "u", "xmlns")] [InlineData("ok", "wrong", "xml")]
     [InlineData("ok", "http://www.w3.org/XML/1998/namespace", "p")]
-    [InlineData("xmlns", "", "")]
+    [InlineData("ok", "http://www.w3.org/2000/xmlns/", "p")]
     public void RevalidatesElementNamesAndReservedUris(string localName, string uri, string prefix)
     {
         var d = Root(out var r);

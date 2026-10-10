@@ -99,7 +99,7 @@ public class TreeTests
         foreach(var binding in new[]{("p",""),("xml","urn:wrong"),("p",TreeValidation.XmlUri),("xmlns","urn:x"),("p",TreeValidation.XmlnsUri)})
             Assert.Throws<ArgumentException>(()=>e.SetNamespaceDeclaration(binding.Item1,binding.Item2));
         e.SetNamespaceDeclaration("xml",TreeValidation.XmlUri); e.SetNamespaceDeclaration("","");
-        Assert.Throws<ArgumentException>(()=>d.CreateElement("xmlns")); Assert.Throws<ArgumentException>(()=>d.CreateElement("e","","p"));
+        Assert.Throws<ArgumentException>(()=>d.CreateElement("e", "urn:x", "xmlns")); Assert.Throws<ArgumentException>(()=>d.CreateElement("e","","p"));
         var a=e.SetAttribute("a","old"); var ns=e.SetNamespaceDeclaration("p","urn:p"); long v=d.MutationVersion;
         Assert.Throws<ArgumentException>(()=>a.Value="\0"); Assert.Throws<ArgumentException>(()=>ns.Value=""); Assert.Equal("old",a.Value); Assert.Equal("urn:p",ns.Value); Assert.Equal(v,d.MutationVersion);
         Assert.Throws<ArgumentNullException>(()=>d.CreateText(null!)); Assert.Throws<ArgumentNullException>(()=>d.CreateElement(null!));
