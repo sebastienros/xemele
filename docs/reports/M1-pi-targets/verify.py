@@ -56,7 +56,7 @@ def main(args):
     run('dotnet', '--info')
     if not args.contracts_only:
         run('dotnet', 'build', 'Xemele.slnx', *FLAGS)
-        for name in ['PiTargets', 'Dom', 'Input', 'Syntax', 'Tree', 'DomConstruction', 'Serialization']:
+        for name in ['PiTargets', 'Dom', 'Input', 'Syntax', 'Tree', 'DomConstruction', 'DomPersistence', 'NamespaceNames', 'Serialization']:
             output = run('dotnet', 'test', '--project', 'tests/Xemele.Tests', '-c', 'Release', '--no-build', '--no-restore', '--filter-namespace', 'Xemele.Tests.' + name)
             assert 'total: 0' not in output
         run('dotnet', 'test', '--solution', 'Xemele.slnx', '-c', 'Release', '--no-build', '--no-restore')
@@ -132,7 +132,13 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--contracts-only', action='store_true', help='Continue independent contract/sample/allocation/planning checks without repeating runtime suite.')
     parser.add_argument('--audit-base', help='Coordination revision before integration; default is current task base.')
+    parser.add_argument('--report-prefix', help='New owned report/artifact subdirectory; preserves earlier report files.')
     args = parser.parse_args()
+    if args.report_prefix:
+        assert args.report_prefix.replace('-', '').isalnum(), 'Invalid report prefix'
+        REPORT = REPORT / args.report_prefix
+        RAW = RAW / args.report_prefix
+        REPORT.mkdir(parents=True, exist_ok=True)
     try: main(args)
     finally:
         RAW.mkdir(parents=True, exist_ok=True)
