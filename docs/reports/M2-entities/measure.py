@@ -1,5 +1,5 @@
 """Requires an explicit bounded grant. No retries; declared class jobs; concise observations and generated-child provenance only."""
-import argparse,csv,hashlib,json,os,platform,re,shlex,shutil,subprocess,signal,time
+import argparse,csv,hashlib,json,math,os,platform,re,shlex,shutil,subprocess,signal,time
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[3]
 def bounded_wait(process, logfile, summary, total_seconds=1800, child_seconds=180):
@@ -19,28 +19,52 @@ def bounded_wait(process, logfile, summary, total_seconds=1800, child_seconds=18
    time.sleep(0.2)
   return process.wait(timeout=5)
  except BaseException:
+  termination_errors=[]
   try:os.killpg(process.pid,signal.SIGTERM)
   except ProcessLookupError:pass
+  except Exception as error:termination_errors.append(str(error))
   try:process.wait(timeout=5)
-  except subprocess.TimeoutExpired:
-   try:os.killpg(process.pid,signal.SIGKILL)
-   except ProcessLookupError:pass
-   process.wait(timeout=5)
-  summary['terminatedProcessGroup']=True
+  except subprocess.TimeoutExpired:pass
+  except Exception as error:termination_errors.append(str(error))
+  # A reaped parent does not prove descendants obeyed TERM. Always kill the
+  # remaining group, then verify disappearance before claiming termination.
+  try:os.killpg(process.pid,signal.SIGKILL)
+  except ProcessLookupError:pass
+  except Exception as error:termination_errors.append(str(error))
+  try:process.wait(timeout=5)
+  except Exception as error:termination_errors.append(str(error))
+  empty=False
+  for _ in range(100):
+   try:os.killpg(process.pid,0)
+   except ProcessLookupError:empty=True;break
+   except Exception as error:termination_errors.append(str(error));break
+   time.sleep(0.05)
+  summary['terminatedProcessGroup']=empty
+  if not empty:termination_errors.append('Process group still exists after KILL deadline.')
+  if termination_errors:summary['terminationErrors']=termination_errors
   raise
+
 
 def selected_observations(output):
  blocks=re.split(r'^// Benchmark: ',output,flags=re.MULTILINE)[1:]
- observations=[]
+ observations=[];scales={'ns':1,'us':1000,'μs':1000,'ms':1000000,'s':1000000000}
  for block in blocks:
   title=block.splitlines()[0];found=re.match(r'(Entity\w+Benchmarks)\.(\w+):',title);length=re.search(r'Length=(\d+)',title)
-  observations.append({'title':title,'case':(found[1],found[2],length[1] if length else '') if found else None,
-   'workloadActual':len(re.findall(r'^WorkloadActual\s+\d+:',block,re.MULTILINE)),
-   'workloadResult':len(re.findall(r'^WorkloadResult\s+\d+:',block,re.MULTILINE)),
-   'gcRecords':len(re.findall(r'^// GC:',block,re.MULTILINE)),
+  numeric={stage:[] for stage in ['Actual','Result']}
+  for stage in numeric:
+   pattern=r'^Workload'+stage+r'\s+(\d+):\s+(\d+) op,\s+([\d.eE+-]+)\s+(ns|us|μs|ms|s),\s+([\d.eE+-]+)\s+(ns|us|μs|ms|s)/op'
+   for match in re.finditer(pattern,block,re.MULTILINE):
+    numeric[stage].append({'iteration':int(match[1]),'operations':int(match[2]),'durationNs':float(match[3])*scales[match[4]],'nsPerOperation':float(match[5])*scales[match[6]]})
+  gc=[]
+  for match in re.finditer(r'^// GC:\s+(\d+) (\d+) (\d+) (\d+) (\d+)',block,re.MULTILINE):
+   operations=int(match[5]);gc.append({'gen0':int(match[1]),'gen1':int(match[2]),'gen2':int(match[3]),'allocatedBytes':int(match[4]),'operations':operations,'bytesPerOperation':int(match[4])/operations if operations else None})
+  observations.append({'case':(found[1],found[2],length[1] if length else '') if found else None,
+   'actual':numeric['Actual'],'result':numeric['Result'],'gc':gc,
    'childExits':re.findall(r'^// Benchmark Process (\d+) has exited with code (\d+)\.',block,re.MULTILINE),
    'environment':[line for line in block.splitlines() if line.startswith(('// Runtime=','// GC=','// HardwareIntrinsics='))]})
  return observations
+
+
 def main():
  p=argparse.ArgumentParser();p.add_argument('--exclusive-grant',required=True);p.add_argument('--report-prefix',required=True);p.add_argument('--mode',choices=['allocations','benchmarks'],required=True);a=p.parse_args();assert re.fullmatch('[a-z0-9-]+',a.report_prefix)
  report=ROOT/'docs/reports/M2-entities'/a.report_prefix;report.mkdir();raw=ROOT/'artifacts/M2-entities'/a.report_prefix;raw.mkdir(parents=True)
@@ -50,6 +74,11 @@ def main():
   dotnet=Path(shutil.which('dotnet')).resolve(strict=True);revision=subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip()
   known=json.loads((ROOT/'docs/reports/M2-entities/premeasurement.json').read_text());assert known['head']==revision
   source=hashes(known['compiledSources']);assert source==known['compiledSources'];binary=hashes(known['binaries']);assert binary==known['binaries']
+  sdk=subprocess.check_output([str(dotnet),'--version'],cwd=ROOT,text=True).strip();assert sdk=='10.0.400'
+  probe=ROOT/'docs/reports/M2-entities/provenance-probe/bin/Release/net10.0/EntityProvenanceProbe.dll'
+  parent_metadata=json.loads(subprocess.check_output([str(dotnet),str(probe),str(parent/'Xemele.EntitiesBenchmarks.dll'),str(ROOT/'samples/M2-entities/bin/Release/net10.0/Xemele.SyntaxSample.dll')],cwd=ROOT,text=True))
+  assert len(parent_metadata)==2 and all(m['runtime']=='10.0.11' and m['architecture']=='Arm64' and m['sourceVersion']=='1.0.0+'+revision for m in parent_metadata)
+  s['sdk']=sdk;s['hostExecutableSha256']=hashlib.sha256(dotnet.read_bytes()).hexdigest();s['runtime']='10.0.11';s['processArchitecture']='Arm64';s['parentAssemblyProvenance']=parent_metadata
   s.update(head=revision,compiledSourceRevision=known['correctnessSourceRevision'],host=platform.platform(),architecture=platform.machine(),sourceIdentitiesBefore=source,binaryIdentitiesBefore=binary)
   s['runtimeOverrides']={k:v for k,v in os.environ.items() if k.startswith(('DOTNET_','COMPlus_'))};assert not any(k.startswith('COMPlus_') or any(x in k.upper() for x in ['TIERED','GC','READYTORUN']) for k in s['runtimeOverrides'])
   if a.mode=='allocations':command=[str(dotnet),str(ROOT/'samples/M2-entities/bin/Release/net10.0/Xemele.SyntaxSample.dll'),'--allocations']
@@ -78,11 +107,16 @@ def main():
     length=re.search(r'Length=(\d+)',title);identity=(found[1],found[2],length[1] if length else '');assert identity in expected
     actual=len(re.findall(r'^WorkloadActual\s+\d+:',block,re.MULTILINE));result=len(re.findall(r'^WorkloadResult\s+\d+:',block,re.MULTILINE));gc=len(re.findall(r'^// GC:',block,re.MULTILINE));exits=re.findall(r'^// Benchmark Process (\d+) has exited with code (\d+)\.',block,re.MULTILINE)
     s['observations']=selected_observations(output)
+    row=s['observations'][len(observations)]
+    assert len(row['actual'])==len(row['result'])==3 and len(row['gc'])==1
+    for measurement in row['actual']+row['result']:
+     assert measurement['operations']>0 and math.isfinite(measurement['durationNs']) and measurement['durationNs']>0 and math.isfinite(measurement['nsPerOperation']) and measurement['nsPerOperation']>0
+    assert row['gc'][0]['operations']>0 and row['gc'][0]['allocatedBytes']>=0 and math.isfinite(row['gc'][0]['bytesPerOperation']) and all(m['operations']==row['gc'][0]['operations'] for m in row['actual']+row['result'])
     assert actual==result==3 and gc==1 and len(exits)==1 and exits[0][1]=='0';assert '.NET 10.0.11' in block and re.search('Arm64',block,re.IGNORECASE)
     execution=re.search(r'^// Execute: (.+) in (.+)$',block,re.MULTILINE);assert execution;argv=shlex.split(execution[1]);dll=next(v for v in argv if v.endswith('.dll'));cwd=Path(execution[2].strip());exe=cwd/dll;library=cwd/'Xemele.EntitiesBenchmarks.dll';assert exe.is_file() and library.is_file()
     assert hashlib.sha256(library.read_bytes()).hexdigest()==binary[str((parent/library.name).relative_to(ROOT))]
     metadata=json.loads(subprocess.check_output([str(dotnet),str(probe),str(exe),str(library)],cwd=ROOT,text=True));assert len(metadata)==2 and metadata[1]['sourceVersion']=='1.0.0+'+revision and all(x['runtime']=='10.0.11' and x['architecture']=='Arm64' for x in metadata)
-    observations.append({'case':identity,'workloadActual':actual,'workloadResult':result,'gcRecords':gc,'childPid':int(exits[0][0]),'exit':0});child_provenance.append({'case':identity,'executableSha256':metadata[0]['sha256'],'librarySha256':metadata[1]['sha256'],'librarySourceVersion':metadata[1]['sourceVersion'],'runtime':metadata[1]['runtime'],'coreLibrarySha256':metadata[1]['coreLibrarySha256'],'childEnvironment':[line for line in block.splitlines() if line.startswith(('// Runtime=','// GC=','// HardwareIntrinsics='))]})
+    observations.append(row);child_provenance.append({'case':identity,'executableSha256':metadata[0]['sha256'],'librarySha256':metadata[1]['sha256'],'librarySourceVersion':metadata[1]['sourceVersion'],'runtime':metadata[1]['runtime'],'coreLibrarySha256':metadata[1]['coreLibrarySha256'],'childEnvironment':[line for line in block.splitlines() if line.startswith(('// Runtime=','// GC=','// HardwareIntrinsics='))]})
    assert {tuple(o['case']) for o in observations}==expected and re.search(r'Global total time:.*executed benchmarks: 6',output)
    assert s['buildExits'] and all(code=='0' for code in s['buildExits'])
    s['benchmarks']=rows;s['observations']=observations;s['generatedChildProvenance']=child_provenance;s['environmentSummary']=[line.strip() for line in output.splitlines() if line.startswith('BenchmarkDotNet v') or '.NET SDK' in line or 'Arm64 RyuJIT' in line or 'Apple M' in line];s['timingLimit']='Informational macOS arm64; no cross-architecture release or speedup claim.'
