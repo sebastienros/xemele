@@ -112,6 +112,25 @@ public sealed class ContractTests
         Assert.Throws<OperationCanceledException>(() => second.Append("x", true, new Sink(), canceled));
     }
     [Fact]
+    public void CancellationInLastDataCallbackPreventsEofAndFaultsPump()
+    {
+        using var cancellation = CancellationTokenSource.CreateLinkedTokenSource(TestContext.Current.CancellationToken);
+        var scanner = new Pump(); var sink = new CancelingSink(cancellation);
+        Assert.Throws<OperationCanceledException>(() => scanner.Append("x", true, sink, cancellation.Token));
+        Assert.Equal(1, sink.DataEvents); Assert.Equal(0, sink.EndEvents);
+        Assert.Throws<InvalidOperationException>(() => scanner.Append([], true, sink, TestContext.Current.CancellationToken));
+    }
+    private sealed class CancelingSink(CancellationTokenSource cancellation) : ICharacterSink
+    {
+        public int DataEvents, EndEvents;
+        public bool Fragment(ReadOnlySpan<char> fragment, bool tokenEnded)
+        {
+            if (tokenEnded) EndEvents++;
+            else { DataEvents++; cancellation.Cancel(); }
+            return true;
+        }
+    }
+    [Fact]
     public void ReentrancyIsRejectedAndNoInputViewIsStored()
     {
         var scanner = new Pump(); var sink = new ReentrantSink(scanner);

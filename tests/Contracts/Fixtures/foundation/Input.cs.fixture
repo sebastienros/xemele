@@ -24,6 +24,7 @@ internal sealed class Pump
             if (!final) return new(input.Length, ScanStep.NeedInput);
             if (!eofPending)
             {
+                cancellationToken.ThrowIfCancellationRequested();
                 eofPending = true;
                 if (!sink.Fragment([], true)) return new(input.Length, ScanStep.Paused);
             }

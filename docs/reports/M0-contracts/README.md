@@ -14,7 +14,8 @@ no future DTD/resolver/recovery references; M2 preserves all M1 normalized membe
 Checks is a nonpackaged xunit.v3.mtp-v2 4.0.1/MTP executable. It checks handles,
 span usage, defaults/unlimited/invalid limits, diagnostic snapshots, result/error
 invariants, resolver exactly-once disposal, conformance failure/exclusion semantics,
-and pause/EOF/cancellation/callback/reentrancy/input-reference rules. The pump and
+and pause/EOF/cancellation/callback/reentrancy/input-reference rules, including
+cancellation in the last data callback suppressing EOF and faulting the pump. The pump and
 DOM are deliberately minimal contract models, not an XML parser or product tests.
 
 ## Reproduction
