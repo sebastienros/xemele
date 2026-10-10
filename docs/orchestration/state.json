@@ -51,6 +51,11 @@
       "task_id": "M1-tree",
       "finding": "Quadratic deep clone/import and linked member copy; value-arena final source needs focused review",
       "resolution": "Owner correcting while builds/tests parked"
+    },
+    {
+      "task_id": "M1-syntax",
+      "finding": "Malformed PI acceptance, quadratic mapped-pause validation and linear attacker-controlled name interning",
+      "resolution": "Owner correcting; executable rechecks pending after timing release"
     }
   ],
   "next_actions": [
@@ -390,7 +395,7 @@
     }
   ],
   "benchmark_policy": "Subsequent benchmarks default to ShortRun and require serialized timing slot; no active timing hold.",
-  "benchmark_owner": "M1-input",
+  "benchmark_owner": null,
   "pending_decisions": [],
   "decisions": {
     "project_license": "MIT",
@@ -439,12 +444,8 @@
       "revision": "96498992efa48d52b0e8b83058bd88dbdaf153c1"
     }
   ],
-  "benchmark_window": {
-    "source_revision": "bcd2dffa6e890ccfbd4e52e7f923a07e5e7ac17e",
-    "parked_tasks": [
-      "M1-tree",
-      "M1-syntax"
-    ],
-    "policy": "Exclusive eight-case ShortRun; all other builds/tests/heavy checks parked until release."
-  }
+  "timing_queue": [
+    "M1-tree",
+    "M1-syntax"
+  ]
 }
