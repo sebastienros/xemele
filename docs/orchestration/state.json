@@ -32,14 +32,10 @@
       "worktree_path": "/Users/sebastienros/.codex/worktrees/8a2c/xemele"
     }
   ],
-  "integration_queue": [],
-  "blockers": [
-    {
-      "task_id": "M1-serialize",
-      "finding": "Valid Unicode carried surrogate requires6145bytes, initial buffer check reserved6144; valid raw PI/comment/CDATA Stream output could throw",
-      "resolution": "Two source reviews agree; owner authored6148+partialConvert correction and nine transport/lexical regression families; execution pending syntax timing release"
-    }
+  "integration_queue": [
+    "M1-syntax"
   ],
+  "blockers": [],
   "next_actions": [
     "Run exclusive syntax21 ShortRun after fresh verifier readiness; serialization/root parked",
     "Integrate syntax and unlock DOM composition",
@@ -418,8 +414,8 @@
       }
     }
   ],
-  "benchmark_policy": "Exclusive21-case Syntax ShortRun; coordinator/serializer parked heavychecks.",
-  "benchmark_owner": "M1-syntax",
+  "benchmark_policy": "ShortRun only; serialize host timing with explicit peer/root heavy-check park.",
+  "benchmark_owner": null,
   "pending_decisions": [],
   "decisions": {
     "project_license": "MIT",
@@ -471,16 +467,6 @@
     }
   ],
   "timing_queue": [
-    "M1-syntax"
-  ],
-  "benchmark_window": {
-    "task_id": "M1-syntax",
-    "source_revision": "d4de9b394cec42fe8caa5c8deacc7c31ecc7b4b0",
-    "runtime_revision": "7ea67f77a7d878f510f2ea29e1d30bb187439c2a",
-    "cases": 21,
-    "parked": [
-      "coordinator",
-      "M1-serialize explicit noactiveprocesses"
-    ]
-  }
+    "M1-serialize"
+  ]
 }
