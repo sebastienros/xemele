@@ -4,11 +4,11 @@
   "milestone": "M1",
   "title": "Resumable strict XML grammar",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M1-syntax",
   "branch": "codex/m1-syntax",
   "base_revision": "dc20c884b3465af691077c50b747bcebb1c47365",
-  "integration_revision": null,
+  "integration_revision": "335268e544e361f2be64d9afe67bdf1794f0299b",
   "depends_on": [
     "M1-common"
   ],
@@ -40,7 +40,8 @@
         "known-revision-checks",
         "warm-cold-retained-dispatch",
         "exclusive-shortrun",
-        "independent-correction-reviews"
+        "independent-correction-reviews",
+        "integrated-syntax-verification"
       ]
     },
     {
@@ -51,7 +52,8 @@
         "known-revision-checks",
         "warm-cold-retained-dispatch",
         "exclusive-shortrun",
-        "independent-correction-reviews"
+        "independent-correction-reviews",
+        "integrated-syntax-verification"
       ]
     },
     {
@@ -62,7 +64,8 @@
         "known-revision-checks",
         "warm-cold-retained-dispatch",
         "exclusive-shortrun",
-        "independent-correction-reviews"
+        "independent-correction-reviews",
+        "integrated-syntax-verification"
       ]
     }
   ],
@@ -138,6 +141,15 @@
       "result": "failed",
       "summary": "Expanded PI multiple-whitespace oracle passed69/70 and exposed retained separator tab/space in body; no full-verifier pass inferred. Runtime correction7ea excludes full initial S and preserves later body whitespace, then70/70/final checks pass. Raw artifacts/M1-syntax/checks-b21b13c89583-1.txt retained.",
       "artifact": "docs/reports/M1-syntax/checks.md"
+    },
+    {
+      "id": "integrated-syntax-verification",
+      "kind": "integration",
+      "revision": "335268e544e361f2be64d9afe67bdf1794f0299b",
+      "command": "Pinned SDK10.0.400 DOTNET_CLI_USE_MSBUILD_SERVER=0 XEMELE_SYNTAX_PUBLIC_GOLDEN=tests/Contracts/Fixtures/M1/Tree.golden.txt python3 docs/reports/M1-syntax/verify.py",
+      "result": "passed",
+      "summary": "Fresh Common+Input+Tree+Syntax verifier exit0:70 focused/158 solution/11 foundation zero skips; actual approved192 public union and9-type80-row internal equality; explicitly rebuilt foundation139/173 and independent M1 model/protocol38 regressions; Python16/bootstrap, source and fresh-cache NuGet-only consumer/pack/harness/allocation, planning/diff pass. Warm10000appends0B; freshsetup8608B/warm6616B, informationalretained6872B. Run after timing stopped. Subsequently merged final reports/task metadata only, source/harness unchanged; no executable recheck needed for report-only delta.",
+      "artifact": "docs/reports/M1-syntax/integration.txt"
     }
   ],
   "blockers": [],
@@ -149,7 +161,6 @@
       "Three independent focused source reviews pass correction scopes/final PI delta; distinct/sharedprefix/culture/colliding-bucket tests verify runtime dictionary defense. Prior known failures and precommit limitations recorded honestly in checks.md."
     ],
     "remaining": [
-      "Coordinator integration and combined-tree verification required before verified. Supply XEMELE_SYNTAX_PUBLIC_GOLDEN=tests/Contracts/Fixtures/M1/Tree.golden.txt when verified Tree/public192 is integrated; verifier still performs mandatory exact compiler/fragment comparisons.",
       "M1-dom owns decoder/tree composition evidence; cross-architecture release confirmation/longer timings remain release work. Current single-Arm64 character/sink timings are provisional and dense tiny baseline cannot support speed conclusions."
     ],
     "requests": []

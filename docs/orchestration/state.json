@@ -9,18 +9,6 @@
   },
   "active_assignments": [
     {
-      "task_id": "M1-syntax",
-      "client_thread_id": "client-new-thread:35d07bc8-7e7c-406c-9fde-f71a7005d700",
-      "host_id": "local",
-      "branch": "codex/m1-syntax",
-      "base_revision": "dc20c884b3465af691077c50b747bcebb1c47365",
-      "claim_revision": "55768e6153d8c02e83c81d14562baf43e05ad509",
-      "setup_status": "dispatched",
-      "chat_id": "01a123ab-5dd9-7c53-9d31-46b24f19a8ed",
-      "worktree_path": "/Users/sebastienros/.codex/worktrees/b39d/xemele",
-      "wait_cursor": "e7178604-0842-4723-9cbd-17c463a973e4:1"
-    },
-    {
       "task_id": "M1-serialize",
       "client_thread_id": "client-new-thread:b7d624dd-a567-4431-9faa-19c6f94131c2",
       "host_id": "local",
@@ -32,17 +20,15 @@
       "worktree_path": "/Users/sebastienros/.codex/worktrees/8a2c/xemele"
     }
   ],
-  "integration_queue": [
-    "M1-syntax"
-  ],
+  "integration_queue": [],
   "blockers": [],
   "next_actions": [
-    "Run exclusive syntax21 ShortRun after fresh verifier readiness; serialization/root parked",
-    "Integrate syntax and unlock DOM composition",
-    "Continue serializer correctness after timing release"
+    "Claim and dispatch DOM composition with verified Input/Tree/Syntax",
+    "Run serializer20 ShortRun with root/DOM parked",
+    "Integrate serializer then M1 conformance and gate"
   ],
-  "last_verified_task": "M1-tree",
-  "last_integrated_revision": "49bd4ed2a23d061eef390285d156db4013813f5a",
+  "last_verified_task": "M1-syntax",
+  "last_integrated_revision": "335268e544e361f2be64d9afe67bdf1794f0299b",
   "completed_assignments": [
     {
       "task_id": "M0-build",
@@ -412,6 +398,23 @@
         "chat_archived": true,
         "worktree": "removed"
       }
+    },
+    {
+      "task_id": "M1-syntax",
+      "client_thread_id": "client-new-thread:35d07bc8-7e7c-406c-9fde-f71a7005d700",
+      "host_id": "local",
+      "branch": "codex/m1-syntax",
+      "base_revision": "dc20c884b3465af691077c50b747bcebb1c47365",
+      "claim_revision": "55768e6153d8c02e83c81d14562baf43e05ad509",
+      "setup_status": "verified",
+      "chat_id": "01a123ab-5dd9-7c53-9d31-46b24f19a8ed",
+      "worktree_path": "/Users/sebastienros/.codex/worktrees/b39d/xemele",
+      "wait_cursor": "e7178604-0842-4723-9cbd-17c463a973e4:1",
+      "implementation_revision": "d4de9b394cec42fe8caa5c8deacc7c31ecc7b4b0",
+      "handoff_revision": "027b0fcd29905760dc77074752f6f3c673ce4232",
+      "integration_revision": "335268e544e361f2be64d9afe67bdf1794f0299b",
+      "integration_worktree": "/private/tmp/xemele-integrate-m1-syntax",
+      "integration_branch": "codex/integrate-m1-syntax"
     }
   ],
   "benchmark_policy": "ShortRun only; serialize host timing with explicit peer/root heavy-check park.",
