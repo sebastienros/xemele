@@ -204,7 +204,7 @@ public static class XmlSerializer
                     Delimiter(node.Value, "--"); if (node.Value.EndsWith('-')) Invalid();
                     output.Write("<!--"); output.Write(node.Value); output.Write("-->"); break;
                 case XmlNodeKind.ProcessingInstruction:
-                    ValidateName(node.LocalName, true); if (node.LocalName.Equals("xml", StringComparison.OrdinalIgnoreCase)) Invalid();
+                    ValidateName(node.LocalName); if (node.LocalName.Equals("xml", StringComparison.OrdinalIgnoreCase)) Invalid();
                     Delimiter(node.Value, "?>"); output.Write("<?"); output.Write(node.LocalName);
                     if (node.Value.Length != 0) { output.Write(" "); output.Write(node.Value); } output.Write("?>"); break;
                 default: Invalid(); break;

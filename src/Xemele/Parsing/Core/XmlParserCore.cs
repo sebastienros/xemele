@@ -426,7 +426,7 @@ internal sealed class XmlParserCore : IDisposable
         {
             Work(work++); int c = rune.Value;
             if ((first ? !NameStart(c) : !NameChar(c))) return false;
-            if (qname && c == ':') { if (first || ++colons > 1) return false; first = true; }
+            if (c == ':') { if (!qname || first || ++colons > 1) return false; first = true; }
             else first = false;
         }
         return !first;
