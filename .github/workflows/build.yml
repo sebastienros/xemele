@@ -1,0 +1,43 @@
+name: Build and validate
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Validate planning records
+        run: python tools/planning/tasks.py validate
+      - name: Test fragment discovery
+        run: python -B -m unittest discover -s tests/Xemele.TestUtilities/Build -p 'test_*.py' -v
+      - name: Discover API and corpus fragments
+        run: python -B tools/ApiBaseline/discover.py --bootstrap-empty-api
+      - name: Restore
+        run: dotnet restore Xemele.slnx --disable-build-servers -m:1 -p:UseSharedCompilation=false
+      - name: Build
+        run: dotnet build Xemele.slnx -c Release --no-restore --disable-build-servers -m:1 -p:UseSharedCompilation=false
+      - name: Test
+        run: dotnet test Xemele.slnx -c Release --no-build --no-restore --disable-build-servers -m:1 -p:UseSharedCompilation=false --logger trx --results-directory artifacts/test-results
+      - name: Pack runtime
+        run: dotnet pack src/Xemele/Xemele.csproj -c Release --no-build --no-restore --disable-build-servers -m:1 -p:UseSharedCompilation=false -o artifacts/packages
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: results-${{ matrix.os }}
+          path: |
+            artifacts/test-results
+            artifacts/packages
+          if-no-files-found: ignore
