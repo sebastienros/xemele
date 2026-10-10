@@ -5,6 +5,21 @@ using Xemele;
 using Xemele.SerializationMeasurements;
 if (args.Contains("--allocation"))
 {
+    long staticBefore = GC.GetAllocatedBytesForCurrentThread();
+    System.Runtime.CompilerServices.RuntimeHelpers.RunClassConstructor(typeof(EscapeScanBenchmarks).TypeHandle);
+    Console.WriteLine($"cached SearchValues cold static initialization bytes={GC.GetAllocatedBytesForCurrentThread()-staticBefore}");
+    foreach (string corpus in new[] { "short-hit", "long-miss", "long-hit", "multilingual" })
+    {
+        var scan = new EscapeScanBenchmarks { Corpus = corpus }; scan.Setup();
+        int expected = scan.ScalarLoop();
+        if (scan.CachedSearchValues() != expected || scan.RuntimeIndexOfAny() != expected) throw new Exception("Scan oracle mismatch");
+        int checksum = 0;
+        long scanBefore = GC.GetAllocatedBytesForCurrentThread();
+        for (int i=0; i<1000; i++) checksum += scan.ScalarLoop() + scan.CachedSearchValues() + scan.RuntimeIndexOfAny();
+        long scanBytes = GC.GetAllocatedBytesForCurrentThread()-scanBefore;
+        Console.WriteLine($"corpus={corpus} warm borrowed three-scanner bytes/1000 repetitions={scanBytes}; checksum={checksum}");
+        if (scanBytes != 0) throw new Exception("Borrowed scan allocated");
+    }
     long coldBefore = GC.GetAllocatedBytesForCurrentThread();
     var first = Document(1); first.Save(Stream.Null);
     Console.WriteLine($"cold setup+first stream bytes={GC.GetAllocatedBytesForCurrentThread()-coldBefore}");
