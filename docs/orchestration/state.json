@@ -2,7 +2,7 @@
   "objective": "Complete initial release through verified M9-gate",
   "coordinator_chat_id": "01a1230c-1353-7e01-afbe-a53c9c018264",
   "coordination_branch": "main",
-  "max_concurrent_workers": 2,
+  "max_concurrent_workers": 3,
   "last_verified_checkpoint": null,
   "active_assignments": [
     {
@@ -17,29 +17,17 @@
       "setup_status": "review-correction",
       "implementation_revision": "1b315176c2694def00c94965ac2bdd9bdb535a90",
       "handoff_revision": "6e83fb304901a460a9983a7e337b42086f5238d7"
-    },
-    {
-      "task_id": "M0-corpora-wiring",
-      "chat_id": "01a1234a-c3c2-7831-9e3a-b6b54e4f09aa",
-      "client_thread_id": "client-new-thread:115b855b-934e-4c07-aac4-accac6485bc6",
-      "host_id": "local",
-      "branch": "codex/m0-corpora-wiring",
-      "worktree_path": "/Users/sebastienros/.codex/worktrees/c848/xemele",
-      "base_revision": "8423069bbd814f056c749a9206bae5b486e23bb6",
-      "claim_revision": "89bc3006e1f87d8f6ab585dc24bcf212af67bc69",
-      "setup_status": "dispatched"
     }
   ],
   "integration_queue": [],
   "blockers": [],
   "next_actions": [
-    "Review corrected extensible protocol client and integrate",
-    "Verify corpus CLI/CI wiring",
-    "Prioritize automatic reference build wiring before combined contract/API CI checks",
-    "Dispatch pinned native runners and API wiring with two-worker maximum"
+    "Integrate reviewed corrected reference protocol",
+    "Dispatch automatic runner build wiring and both pinned native lanes under three-worker cap",
+    "Dispatch compiled API CI wiring after automatic runner build verification"
   ],
-  "last_verified_task": "M0-contracts",
-  "last_integrated_revision": "13f3525bedc3e7ecf169cf32271587895d8c8c64",
+  "last_verified_task": "M0-corpora-wiring",
+  "last_integrated_revision": "c7f4cf8e1a6d6264bf25c09661406bad40220b74",
   "completed_assignments": [
     {
       "task_id": "M0-build",
@@ -150,6 +138,20 @@
       "implementation_revision": "028b30627d8d972183f7e80f4be2538bd0b0a59f",
       "handoff_revision": "c554809cb573f91f1afb2267700a46eed4f1fe1d",
       "integration_revision": "13f3525bedc3e7ecf169cf32271587895d8c8c64"
+    },
+    {
+      "task_id": "M0-corpora-wiring",
+      "chat_id": "01a1234a-c3c2-7831-9e3a-b6b54e4f09aa",
+      "client_thread_id": "client-new-thread:115b855b-934e-4c07-aac4-accac6485bc6",
+      "host_id": "local",
+      "branch": "codex/m0-corpora-wiring",
+      "worktree_path": "/Users/sebastienros/.codex/worktrees/c848/xemele",
+      "base_revision": "8423069bbd814f056c749a9206bae5b486e23bb6",
+      "claim_revision": "89bc3006e1f87d8f6ab585dc24bcf212af67bc69",
+      "setup_status": "verified",
+      "implementation_revision": "212a87e2903c8e8c70d606ac9b9a2cf57c22f877",
+      "handoff_revision": "b39090602ea812187415452a7cb25d6cba586658",
+      "integration_revision": "c7f4cf8e1a6d6264bf25c09661406bad40220b74"
     }
   ],
   "benchmark_policy": "Subsequent benchmarks default to ShortRun and require serialized timing slot; no active timing hold.",
@@ -159,7 +161,8 @@
     "project_license": "MIT",
     "authority": "User reply in coordinator chat on 2026-10-09",
     "test_runner": "User selected xunit.v3.mtp-v2 4.0.1 and Microsoft.Testing.Platform",
-    "benchmark_job": "User requested BenchmarkDotNet Job.ShortRun for all subsequent runs; preserve completed historical job evidence."
+    "benchmark_job": "User requested BenchmarkDotNet Job.ShortRun for all subsequent runs; preserve completed historical job evidence.",
+    "worker_concurrency": "User increased limit from 2 to 3 concurrent isolated worker chats on 2026-10-09; benchmark timing remains serialized."
   },
   "conventions_pending_review": {
     "api": "tools/ApiBaseline/README.md on codex/m0-ci defines xemele-api-v1 canonical JSONL with id/member/declaration",

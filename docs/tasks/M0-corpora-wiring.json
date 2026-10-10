@@ -4,11 +4,11 @@
   "milestone": "M0",
   "title": "Wire corpus commands and infrastructure checks",
   "kind": "infrastructure",
-  "status": "implemented",
+  "status": "verified",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M0-corpora-wiring",
   "branch": "codex/m0-corpora-wiring",
   "base_revision": "8423069bbd814f056c749a9206bae5b486e23bb6",
-  "integration_revision": null,
+  "integration_revision": "c7f4cf8e1a6d6264bf25c09661406bad40220b74",
   "depends_on": [
     "M0-corpora",
     "M0-tests-mtp"
@@ -32,7 +32,8 @@
       "status": "passed",
       "evidence": [
         "root-cli-and-focused-mtp",
-        "preservation-checks"
+        "preservation-checks",
+        "integrated-checks"
       ]
     },
     {
@@ -41,7 +42,8 @@
       "status": "passed",
       "evidence": [
         "root-cli-and-focused-mtp",
-        "preservation-checks"
+        "preservation-checks",
+        "integrated-checks"
       ]
     },
     {
@@ -50,7 +52,8 @@
       "status": "passed",
       "evidence": [
         "root-cli-and-focused-mtp",
-        "preservation-checks"
+        "preservation-checks",
+        "integrated-checks"
       ]
     }
   ],
@@ -78,6 +81,15 @@
       "result": "passed",
       "summary": "Integrated prerequisite solution and focused apps Release-built 0 warnings/errors; 24 focused tests passed, 0 skips, actual xunit.v3.mtp-v2 4.0.1/MTP inventory checked. Shared runner valid/missing/corrupt/unsupported cache checks and hashes passed; bootstrap independent source/fixture hashes and ElementTree expectations passed; discovery reports 2 fixtures/1 manifest/0 runtime declarations. All 13 discovery Python tests and 3 existing MTP smoke tests passed; each of 3 controlled failures exited2 with expected failure XML. Shared runner and 16 existing shell default/help checks, unknown exits, managed-only lib/net10.0/Xemele.dll package/no native payload and 101-task validation passed. Package emitted existing advisory about missing package readme. No parser conformance/allocation/benchmark or hosted matrix claim.",
       "artifact": "docs/reports/M0-corpora-wiring/preservation-verification.txt"
+    },
+    {
+      "id": "integrated-checks",
+      "kind": "integration",
+      "revision": "c7f4cf8e1a6d6264bf25c09661406bad40220b74",
+      "command": "Pinned SDK; python3 -B docs/reports/M0-corpora-wiring/check_cli.py; python3 -B docs/reports/M0-build/verify.py",
+      "result": "passed",
+      "summary": "24 focused MTP tests with0 skips;20 root CLI cases verify exact exit/provenance/outcome/cache hashes, allpositiveandnegativecases. Preserved solution restore/Release build,3 smoke passes+3 expected failures,16 help/defaults+3 unknown exits,managed-only pack/API0 and101 task validation. Hosted platforms unrun.",
+      "artifact": "docs/reports/M0-corpora-wiring/integration-verification.txt"
     }
   ],
   "blockers": [],
@@ -88,9 +100,7 @@
       "Existing M0-corpora/verify.py passed: solution/apps, 24 focused tests, 13 Python tests, 3 MTP passes/3 expected failures, bootstrap hashes/discovery/help/package/task validation; durable preservation-verification.txt.",
       "No runtime parser/scanner changes: hot-path allocation and benchmark evidence not applicable. No hosted OS/platform execution claimed."
     ],
-    "remaining": [
-      "Coordinator must integrate/reverify before setting verified. Hosted CI matrix not executed locally."
-    ],
+    "remaining": [],
     "requests": []
   }
 }
