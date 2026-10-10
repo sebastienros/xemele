@@ -1,0 +1,37 @@
+PASS: 8 construction fixtures; owner/identity/growth/cycle/sibling/deep-tree checks; ordinal Unicode/culture/miss oracle; 0 B warm borrowed lookup; name/text equivalence.
+; Assembly listing for method Probes:LiteralMatches(System.ReadOnlySpan`1[byte]):bool (FullOpts)
+; Emitting BLENDED_CODE for generic ARM64 on Apple
+; FullOpts code
+; optimized code
+; fp based frame
+; partially interruptible
+; No PGO data
+; 2 inlinees with PGO data; 5 single block inlinees; 0 inlinees without PGO data
+
+G_M000_IG01:                ;; offset=0x0000
+            stp     fp, lr, [sp, #-0x10]!
+            mov     fp, sp
+ 
+G_M000_IG02:                ;; offset=0x0008
+            cmp     w1, #4
+            bne     G_M000_IG05
+ 
+G_M000_IG03:                ;; offset=0x0010
+            movz    x1, #0x69E0
+            movk    x1, #627 LSL #16
+            movk    x1, #1 LSL #32
+            ldr     w0, [x0]
+            ldr     w1, [x1]
+            cmp     w0, w1
+            cset    x0, eq
+ 
+G_M000_IG04:                ;; offset=0x002C
+            ldp     fp, lr, [sp], #0x10
+            ret     lr
+ 
+G_M000_IG05:                ;; offset=0x0034
+            mov     w0, wzr
+            b       G_M000_IG04
+ 
+; Total bytes of code 60
+

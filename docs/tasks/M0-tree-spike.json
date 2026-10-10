@@ -4,7 +4,7 @@
   "milestone": "M0",
   "title": "Compare node representations",
   "kind": "infrastructure",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M0-tree-spike",
   "branch": "codex/m0-tree-spike",
   "base_revision": "5cb0e4eae1a0835a7455580bac25ee05ade7c463",
@@ -30,35 +30,140 @@
     {
       "id": "M0-tree-spike-A1",
       "description": "Benchmark arena handles versus object nodes for traversal, mutation, parse-like construction, retained memory and ergonomic examples.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "correctness",
+        "benchmarks",
+        "allocation-retention"
+      ]
     },
     {
       "id": "M0-tree-spike-A2",
       "description": "Record reproducible environment/data and raw comparative measurements; identify identity/ownership tradeoffs.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "benchmarks",
+        "allocation-retention",
+        "literal-lowering"
+      ]
     },
     {
       "id": "M0-tree-spike-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "experiment-build",
+        "correctness",
+        "solution-build",
+        "task-validation"
+      ]
     },
     {
       "id": "M0-tree-spike-A4",
       "description": "Measure borrowed-name lookup versus temporary string creation, repeated versus unique names, and owned text materialization. Record allocations and retained backing-storage costs with explicit persistence boundaries.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "correctness",
+        "benchmarks",
+        "allocation-retention",
+        "literal-lowering"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "experiments/Tree/Trees.cs: ArenaTree, Handle, ObjectTree, Tokens, Factory; task-local prototypes with identical topology and name ownership",
+    "experiments/Tree/Benchmarks.cs: Construction, Traversal, Mutation, Names, Text; 36 BDN MemoryDiagnoser cases",
+    "experiments/Tree/Program.cs: Checks, Measurements, Probes; correctness/0-B oracle, cold/warm allocation and live-heap/source ownership measurements",
+    "experiments/Tree/README.md: reproducible commands, dataset semantics and prototype boundaries",
+    "docs/reports/M0-tree-spike/README.md: comparative results, identity/ergonomic tradeoffs, provisional interpretation and required composition follow-ups"
+  ],
+  "evidence": [
+    {
+      "id": "experiment-build",
+      "kind": "check",
+      "revision": "24a0499f1d7c891a803bd8a370951f2a50e9a751",
+      "command": "dotnet build experiments/Tree/Tree.csproj -c Release",
+      "result": "passed",
+      "summary": "Passed with 0 warnings and 0 errors. net10.0-only independent experiment using centrally pinned BDN0.15.8.",
+      "artifact": "docs/reports/M0-tree-spike/build.txt"
+    },
+    {
+      "id": "correctness",
+      "kind": "check",
+      "revision": "24a0499f1d7c891a803bd8a370951f2a50e9a751",
+      "command": "dotnet run --project experiments/Tree/Tree.csproj -c Release --no-build -- --self-check",
+      "result": "passed",
+      "summary": "Passed8 construction fixtures, stable owner/index identity across growth, cycle/owner/root rejection, sibling moves, iterative depth50000, ordinal/culture/miss oracles, names/text equivalence and10000-hit0B borrowed lookup regression.",
+      "artifact": "docs/reports/M0-tree-spike/self-check.txt"
+    },
+    {
+      "id": "allocation-retention",
+      "kind": "check",
+      "revision": "24a0499f1d7c891a803bd8a370951f2a50e9a751",
+      "command": "dotnet run --project experiments/Tree/Tree.csproj -c Release --no-build -- --memory",
+      "result": "passed",
+      "summary": "Passed ownership assertions and warm borrowed lookup0B. Five16-document samples: retained16384-node repeated-name arena655778B versus objects1311082B; unique arena1310818B versus objects1966122B. Source weakref remains live for32-char borrowed view(~2MiB), dies for owned copy. First/next construction and fixture setup allocations explicitly reported; estimates exclude source/transient tables and are not RSS.",
+      "artifact": "docs/reports/M0-tree-spike/memory.json"
+    },
+    {
+      "id": "benchmarks",
+      "kind": "check",
+      "revision": "24a0499f1d7c891a803bd8a370951f2a50e9a751",
+      "command": "dotnet run --project experiments/Tree/Tree.csproj -c Release --no-build -- --filter '*' --artifacts docs/reports/M0-tree-spike/raw",
+      "result": "passed",
+      "summary": "Completed36/36 measured cases with non-null statistics and memory diagnostics, exit0. Apple M4 Pro Arm64 .NET10.0.11. Warm borrowed lookup0B versus40960/122880B per1024 temporary probes. Traversal and mutation0B; arena trades retained memory for slower traversal/relinking. Owned text88/16408B. Single launch/provisional synthetic timings, priority warning/outliers retained; no release or zero-latency claim.",
+      "artifact": "docs/reports/M0-tree-spike/raw/"
+    },
+    {
+      "id": "literal-lowering",
+      "kind": "check",
+      "revision": "24a0499f1d7c891a803bd8a370951f2a50e9a751",
+      "command": "DOTNET_TieredCompilation=0 DOTNET_JitDisasm='Probes:LiteralMatches' dotnet experiments/Tree/bin/Release/net10.0/Tree.dll --self-check",
+      "result": "passed",
+      "summary": "Self-check passed; captured .NET10 Arm64 FullOpts assembly with length check and32-bit loads/equality, no managed array creation/allocation helper for static UTF-8 literal probe. No scanner/hash optimization selected.",
+      "artifact": "docs/reports/M0-tree-spike/literal-jit.txt"
+    },
+    {
+      "id": "default-solution-build",
+      "kind": "check",
+      "revision": "24a0499f1d7c891a803bd8a370951f2a50e9a751",
+      "command": "dotnet build Xemele.slnx -c Release",
+      "result": "failed",
+      "summary": "No output for over90 seconds; terminated only this worker build PID19066. No passing result inferred. Successfully replaced by isolated single-node no-build-server command.",
+      "artifact": null
+    },
+    {
+      "id": "solution-build",
+      "kind": "check",
+      "revision": "24a0499f1d7c891a803bd8a370951f2a50e9a751",
+      "command": "dotnet build Xemele.slnx -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false",
+      "result": "passed",
+      "summary": "Passed in8.03s with0 warnings/errors; preserves earlier build milestone and adds no solution/shared changes.",
+      "artifact": "docs/reports/M0-tree-spike/solution-build.txt"
+    },
+    {
+      "id": "task-validation",
+      "kind": "check",
+      "revision": "24a0499f1d7c891a803bd8a370951f2a50e9a751",
+      "command": "python3 tools/planning/tasks.py validate",
+      "result": "passed",
+      "summary": "Passed93 tasks: schema, evidence, acyclic dependencies, additive milestones and ordered ownership.",
+      "artifact": "docs/reports/M0-tree-spike/task-validation.txt"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "",
-    "checks": [],
-    "remaining": [],
+    "summary": "Implemented isolated arena/object tree comparison and36 BDN cases; raw results/environment and ownership/identity/ergonomic analysis recorded. No runtime APIs or shared build files edited; source24a0499f1d7c891a803bd8a370951f2a50e9a751.",
+    "checks": [
+      "Experiment Release build/self-check/memory/JIT passed; all36 BDN cases measured.",
+      "Default solution build stalled and was terminated; no-build-server single-node Release solution build passed0 warnings/errors.",
+      "tasks.py validate passed93 tasks; benchmark lock released after final measurement."
+    ],
+    "remaining": [
+      "Coordinator review/integration and integrated checks; integration_revision deliberately null.",
+      "M0-contracts must weigh lower arena retained memory against slower prototype traversal/mutation and freeze lifetime/equality policy.",
+      "Future composition owners rerun actual parser/query/output workloads, table limits and source/chunk lifetimes; repeat on x64/Arm64 before release."
+    ],
     "requests": []
   }
 }

@@ -7,7 +7,7 @@ dotnet build experiments/Tree/Tree.csproj -c Release
 dotnet run --project experiments/Tree/Tree.csproj -c Release --no-build -- --self-check
 dotnet run --project experiments/Tree/Tree.csproj -c Release --no-build -- --memory
 dotnet run --project experiments/Tree/Tree.csproj -c Release --no-build -- --filter '*' --artifacts docs/reports/M0-tree-spike/raw
-DOTNET_TieredCompilation=0 DOTNET_JitDisasm='TreeSpike.Probes:LiteralMatches' dotnet run --project experiments/Tree/Tree.csproj -c Release --no-build -- --self-check
+DOTNET_TieredCompilation=0 DOTNET_JitDisasm='Probes:LiteralMatches' dotnet run --project experiments/Tree/Tree.csproj -c Release --no-build -- --self-check
 ```
 
 Acquire `/private/tmp/xemele-benchmark.lock` with atomic `mkdir` and record owner before timing; release only your own lock. The benchmark configuration uses one launch, two warmups, five 100 ms target measurement iterations. This is a bounded architecture spike, not a release qualification. BDN may choose more operations/pilot iterations to reach its target. Each Names invocation processes 1,024 tokens; mutation does two moves. BDN allocations are per invocation, not per token/move.
