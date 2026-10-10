@@ -91,6 +91,18 @@ class ImportTests(unittest.TestCase):
             self.assertEqual('unsupported-profile', result['outcome'])
             self.assertIn(reason, result['reasons'])
 
+    def test_declaration_gaps_do_not_predict_later_doctype_diagnostic(self):
+        case = next(c for c in self.inventory['cases'] if c['id'] == 'xmlconf/japanese/japanese.xml#pr-xml-euc-jp')
+        self.assertEqual('unsupported-profile', case['m1']['outcome'])
+        self.assertIn('encoding-outside-m1:euc-jp', case['m1']['reasons'])
+        self.assertIn('dtd-prohibited-in-m1', case['m1']['reasons'])
+        self.assertIsNone(case['m1']['contractRejection'])
+        for data, attrs in [(b'<?xml version="1.0" encoding="euc-jp"?><!DOCTYPE a><a/>', {}),
+                            (b'<?xml version="1.1"?><!DOCTYPE a><a/>', {'VERSION':'1.1'}),
+                            ('<!DOCTYPE a><a/>'.encode('utf-32be'), {})]:
+            self.assertIsNone(self.classify(data, **attrs)['contractRejection'])
+        self.assertEqual('rejected:XML.DtdProhibited', self.classify(b'<!DOCTYPE a><a/>')['contractRejection'])
+
     def test_zero_product_or_standards_passes(self):
         for c in self.inventory['cases']:
             self.assertFalse(c['m1']['productExecuted'])

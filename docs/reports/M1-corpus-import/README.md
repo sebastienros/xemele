@@ -34,8 +34,11 @@ M1 classification uses the frozen XML 1.0 Fifth Edition/namespaced UTF-8/UTF-16
 subset. It records unsupported-profile for DTD, external entity, validity,
 XML 1.1/NS 1.1, historical edition, namespace-disabled, other encoding and
 unspecified optional-error oracles. Reason counts overlap. `contractRejection`
-is a separate anticipated scope-rejection diagnostic for DTD/version/encoding
-cases; it never turns a standards gap into a pass. Pure malformed M1 syntax,
+is a separate anticipated scope-rejection diagnostic for DTD cases without
+encoding/version/signature gaps. When declaration or byte-decoder failure can
+precede DOCTYPE, it remains null; metadata inspection does not predict the first
+runtime error. In particular the EUC-JP Japanese case does not assert
+XML.DtdProhibited. The field it never turns a standards gap into a pass. Pure malformed M1 syntax,
 unknown general references and malformed encoding names remain supported
 rejections. Comments/CDATA/PIs do not create false DTD requirements. Local
 `xmlns` element/ordinary prefixed attribute names are not feature exclusions.

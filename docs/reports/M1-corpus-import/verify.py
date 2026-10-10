@@ -60,7 +60,7 @@ def main():
         for path in paths + work + staged + untracked:
             assert path.startswith(owned), 'Outside owned paths: ' + path
         LOG.append('Committed/working/staged/untracked path audit passed. No runtime/package changes. Public baseline: 215 rows.\n')
-        LOG.append('Full suite files provisioned and resources preserved offline; 14 Python + 14 MTP full-inventory tests passed; bootstrap checks passed. Product cases executed: 0; standards passed: 0.\n')
+        LOG.append('Full suite files provisioned and resources preserved offline; 15 Python + 14 MTP full-inventory tests passed; bootstrap checks passed. Product cases executed: 0; standards passed: 0.\n')
     finally:
         REPORT.parent.mkdir(parents=True, exist_ok=True)
         REPORT.write_text('\n'.join(LOG))

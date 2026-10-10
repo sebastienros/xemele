@@ -169,10 +169,12 @@ def classify(case, data):
     # Unknown entities without DTD remain supported rejection syntax, not a gap.
     outcome = 'unsupported-profile' if features else ('accepted' if attrs['TYPE'] == 'valid' else 'rejected')
     expected_m1 = None
-    if features and 'dtd-prohibited-in-m1' in features:
+    # Catalog feature inspection cannot establish first-error ordering across
+    # declaration/encoding/version and grammar failures. Leave that diagnostic
+    # unasserted rather than predicting a later DOCTYPE rejection.
+    earlier_scope_gap = any(f.startswith(('xml-1.1', 'encoding-outside', 'byte-signature')) for f in features)
+    if not earlier_scope_gap and 'dtd-prohibited-in-m1' in features:
         expected_m1 = 'rejected:XML.DtdProhibited'
-    elif features and any(f.startswith(('xml-1.1', 'encoding-outside', 'byte-signature')) for f in features):
-        expected_m1 = 'rejected:unsupported-version-or-encoding'
     return {'outcome': outcome, 'reasons': features or ['xml-1.0-fifth-edition-m1-' + outcome],
             'contractRejection': expected_m1, 'productExecuted': False, 'standardsPassed': False}
 
