@@ -1,0 +1,43 @@
+using System.Reflection;
+using Xemele.Parsing.Dtd;
+using Xemele.Parsing.Syntax;
+
+internal static class AbiChecks
+{
+    // Compare independently compiled frozen fixture ABI against actual integrated
+    // metadata. No parser method executes, and assemblies may differ in identity.
+    public static int Compare(string runtimePath)
+    {
+        var runtime = Assembly.LoadFrom(runtimePath);
+        Type[] models = [typeof(XmlDeclarationView), typeof(IXmlEventSink), typeof(XmlTextDeclaration), typeof(TextDeclarationResult)];
+        int checks = 0;
+        foreach (Type model in models)
+        {
+            Type actual = runtime.GetType(model.FullName!, throwOnError: true)!;
+            if (model.IsByRefLike != actual.IsByRefLike || model.IsValueType != actual.IsValueType ||
+                model.IsInterface != actual.IsInterface || model.IsSealed != actual.IsSealed)
+                throw new InvalidOperationException("ABI type shape mismatch " + model.FullName);
+            string[] expected = Shape(model), observed = Shape(actual);
+            if (!expected.SequenceEqual(observed))
+                throw new InvalidOperationException("ABI member mismatch " + model.FullName + "\nexpected " +
+                    string.Join("\n", expected) + "\nactual " + string.Join("\n", observed));
+            checks += 2;
+        }
+        Console.WriteLine("Preserved 4 actual internal declaration/sink/result ABI shapes against independently compiled frozen fixtures.");
+        return checks;
+    }
+    private static string Name(Type type) => type.IsByRef ? Name(type.GetElementType()!) + "&" :
+        type.IsGenericType ? type.GetGenericTypeDefinition().FullName + "<" + string.Join(",", type.GetGenericArguments().Select(Name)) + ">" : type.FullName!;
+    private static string[] Shape(Type type)
+    {
+        const BindingFlags flags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.DeclaredOnly;
+        string Parameters(MethodBase method) => string.Join(",", method.GetParameters().Select(p =>
+            Name(p.ParameterType) + ":" + p.Name + ":out=" + p.IsOut + ":in=" + p.IsIn + ":optional=" + p.IsOptional));
+        return type.GetConstructors(flags).Select(c => "ctor(" + Parameters(c) + ")")
+            .Concat(type.GetMethods(flags).Select(m => "method:" + m.Name + "(" + Parameters(m) + "):" + Name(m.ReturnType) +
+                ":static=" + m.IsStatic + ":virtual=" + m.IsVirtual + ":abstract=" + m.IsAbstract +
+                ":returnmods=" + string.Join(",", m.ReturnParameter.GetRequiredCustomModifiers().Select(Name))))
+            .Concat(type.GetProperties(flags).Select(p => "property:" + p.Name + ":" + Name(p.PropertyType) + ":read=" + p.CanRead + ":write=" + p.CanWrite))
+            .Order(StringComparer.Ordinal).ToArray();
+    }
+}

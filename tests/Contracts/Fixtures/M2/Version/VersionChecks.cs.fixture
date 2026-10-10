@@ -1,0 +1,131 @@
+// Independent finite declaration contract model. Never calls a runtime parser or
+// fixture grammar stub; these assertions are NOT XML implementation/conformance.
+using System.Text.RegularExpressions;
+using Xemele;
+using Xemele.Parsing.Dtd;
+using Xemele.Parsing.Syntax;
+
+internal static class VersionChecks
+{
+    private static int assertions;
+    private const string S = @"[ \t\r\n]";
+    private const string Eq = S + "*=" + S + "*";
+    private const string Version = "(?:'(?<version>1\\.[0-9]+)'|\"(?<version>1\\.[0-9]+)\")";
+    private const string Encoding = "(?:'(?<encoding>[A-Za-z][A-Za-z0-9._-]*)'|\"(?<encoding>[A-Za-z][A-Za-z0-9._-]*)\")";
+    private static readonly Regex Document = new(@"\A<\?xml" + S + "+version" + Eq + Version +
+        "(?:" + S + "+encoding" + Eq + Encoding + ")?(?:" + S + "+standalone" + Eq +
+        "(?:'(?<standalone>yes|no)'|\"(?<standalone>yes|no)\"))?" + S + @"*\?>\z",
+        RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture, TimeSpan.FromSeconds(5));
+    private static readonly Regex Text = new(@"\A<\?xml(?:" + S + "+version" + Eq + Version + ")?" +
+        S + "+encoding" + Eq + Encoding + S + @"*\?>\z",
+        RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture, TimeSpan.FromSeconds(5));
+
+    private static void Check(bool condition, string name)
+    {
+        if (!condition) throw new InvalidOperationException(name);
+        assertions++;
+    }
+    // Separate production-2 scalar/profile probes; no general content grammar model.
+    private static bool Xml10Scalar(int scalar) => scalar is 0x9 or 0xa or 0xd ||
+        scalar is >= 0x20 and <= 0xd7ff || scalar is >= 0xe000 and <= 0xfffd ||
+        scalar is >= 0x10000 and <= 0x10ffff;
+
+    public static void Main(string[] args)
+    {
+        var location = new XmlLocation(new Uri("https://fixture.invalid/final.xml"), 1, 1, 0);
+        var sink = new CapturingSink();
+        string[] versions = ["1.0", "1.1", "1.7", "1.00", "1.10", "1." + new string('9', 4096)];
+        foreach (string version in versions)
+        {
+            foreach (char quote in new[] { '\'', '"' })
+            {
+                string declaration = $"<?xml version={quote}{version}{quote} encoding='UTF-8' standalone='yes'?>";
+                var match = Document.Match(declaration);
+                Check(match.Success, "document grammar " + version.Length);
+                Check(match.Groups["version"].Value == version, "document literal version");
+                Check(match.Groups["encoding"].Value == "UTF-8" && match.Groups["standalone"].Value == "yes", "ordered fields");
+                // Existing ref-struct ABI: callback may copy for persistence, never retain view.
+                char[] temporary = version.ToCharArray();
+                Check(sink.Declaration(new XmlDeclarationView(temporary, "UTF-8", true, location)), "callback continues");
+                Array.Fill(temporary, 'x');
+                Check(sink.Version == version && sink.Encoding == "UTF-8" && sink.Standalone == true && sink.Location == location,
+                    "explicit callback copy survives borrowed buffer reuse");
+                string text = $"<?xml version={quote}{version}{quote} encoding='UTF-8'?>";
+                var textMatch = Text.Match(text);
+                Check(textMatch.Success, "text grammar");
+                var owned = new XmlTextDeclaration(textMatch.Groups["version"].Value, textMatch.Groups["encoding"].Value, location);
+                var result = new TextDeclarationResult(text.Length, TextDeclarationStep.Declared, owned, null, location);
+                Check(result.Declaration!.Value.Version == version && result.Declaration.Value.EncodingName == "UTF-8", "owned literal text version");
+                Check(result.Step == TextDeclarationStep.Declared && result.Consumed == text.Length && result.Diagnostic is null,
+                    "existing result shape");
+            }
+            Check(Document.IsMatch($"<?xml version='{version}'?>"), "optional document encoding/standalone");
+            // All 1.x labels retain the same effective profile.
+            foreach (int control in new[] { 0, 1, 0xb, 0xc, 0x1f, 0xd800, 0xfffe, 0x110000 })
+                Check(!Xml10Scalar(control), "XML1.1 label cannot admit forbidden literal/reference scalar");
+        }
+        var absent = Text.Match("<?xml encoding='UTF-8'?>");
+        Check(absent.Success && !absent.Groups["version"].Success, "optional text version");
+        var noVersion = new XmlTextDeclaration(null, absent.Groups["encoding"].Value, location);
+        Check(noVersion.Version is null, "absent version not fabricated");
+        Check(Document.IsMatch("<?xml\r\nversion \t= '1.10' encoding=\"UTF-8\" standalone='no' ?>"), "XML S/Eq and standalone no");
+        Check(Text.IsMatch("<?xml\tversion = '1.00'\r\nencoding = 'a_9.-' ?>"), "text whitespace/order/encoding name");
+        string[] invalid = ["", "1", "1.", "2.0", "0.1", "01.0", "1.-1", "1.+0", "1. 0", " 1.0", "1.0 ",
+            "1.0.0", "1.0x", "1.\u0660", "1.\uff10", "1.&#48;", "1.&#x30;", "1.\n0", "1.0\0"];
+        foreach (string version in invalid)
+        {
+            Check(!Document.IsMatch($"<?xml version='{version}'?>"), "invalid document ASCII literal");
+            Check(!Text.IsMatch($"<?xml version='{version}' encoding='UTF-8'?>"), "invalid text ASCII literal");
+        }
+        string[] invalidDocuments = ["<?xml?>", "<?xml encoding='UTF-8'?>", "<?xml encoding='UTF-8' version='1.0'?>",
+            "<?xml version='1.0' standalone='yes' encoding='UTF-8'?>", "<?xml version='1.0'version='1.0'?>",
+            "<?xml version='1.0\"?>", "<?xml version='1.0' encoding=''?>", "<?xml version='1.0' standalone='YES'?>",
+            " <?xml version='1.0'?>", "<?xml version='1.0'? >", "<?xml version='1.0'?>body"];
+        foreach (string declaration in invalidDocuments) Check(!Document.IsMatch(declaration), "invalid document structure");
+        string[] invalidTexts = ["<?xml ?>", "<?xml version='1.1'?>", "<?xml encoding='UTF-8' version='1.1'?>",
+            "<?xml encoding='UTF-8' standalone='yes'?>", "<?xml encoding='9bad'?>", "<?xml encoding='u:8'?>",
+            "<?xml version='1.1'encoding='UTF-8'?>", "<?xml version='1.1' encoding='UTF-8\"?>"];
+        foreach (string declaration in invalidTexts) Check(!Text.IsMatch(declaration), "invalid text structure");
+        foreach (int scalar in new[] { 9, 10, 13, 0x20, 0x85, 0x2028, 0xfffd, 0x10000, 0x10ffff })
+            Check(Xml10Scalar(scalar), "XML10 scalar boundary");
+        Check("a\u0085b\u2028c".Replace("\r\n", "\n").Replace('\r', '\n') == "a\u0085b\u2028c", "NEL/LS unchanged in XML10 newline model");
+        // Namespaces Third Edition section 5: prefix undeclaration forbidden;
+        // default namespace undeclaration allowed. This predicate is a profile model.
+        bool NamespaceBindingAllowed(string prefix, string uri) => prefix.Length == 0 || uri.Length != 0;
+        Check(!NamespaceBindingAllowed("p", ""), "XML1.1-only prefixed undeclaration rejected");
+        Check(NamespaceBindingAllowed("", ""), "default undeclaration preserved");
+        Check(NamespaceBindingAllowed("p", "urn:p"), "ordinary prefix binding preserved");
+        // Quota illustration only, no incremental runtime accounting claim.
+        string bounded = "<?xml version='1." + new string('0', 128) + "'?>";
+        Check(Document.IsMatch(bounded), "long leading-zero sequence is grammatical");
+        bool AdmittedToken(string token, int? cap) => cap is null || token.Length <= cap;
+        Check(AdmittedToken(bounded, bounded.Length), "exact token quota model");
+        Check(!AdmittedToken(bounded, bounded.Length - 1), "one-over token quota model");
+        Check(AdmittedToken(bounded, null), "null token quota model");
+        if (args.Length != 1) throw new ArgumentException("Pass freshly built runtime DLL for ABI comparison.");
+        assertions += AbiChecks.Compare(args[0]);
+        Console.WriteLine($"Passed {assertions} independent version/profile model assertions; no runtime parser executed.");
+    }
+
+    // Representative old sink implementation compiles without an added member.
+    private sealed class CapturingSink : IXmlEventSink
+    {
+        public string? Version, Encoding;
+        public bool? Standalone;
+        public XmlLocation Location;
+        public bool Declaration(XmlDeclarationView declaration)
+        {
+            Version = declaration.Version.ToString(); Encoding = declaration.EncodingName.ToString();
+            Standalone = declaration.Standalone; Location = declaration.Location; return true;
+        }
+        public bool StartDocument(XmlLocation location) => true;
+        public bool StartElement(XmlNameView name, bool isEmptyElement, XmlLocation location) => true;
+        public bool NamespaceDeclaration(XmlNamespaceView declaration) => true;
+        public bool Attribute(XmlAttributeView attribute) => true;
+        public bool StartElementContent() => true;
+        public bool EndElement(XmlNameView name, XmlLocation location) => true;
+        public bool StartText(XmlTextKind kind, ReadOnlySpan<char> target, XmlLocation location) => true;
+        public bool TextFragment(ReadOnlySpan<char> text, bool tokenEnded, XmlLocation location) => true;
+        public bool EndDocument(XmlLocation location) => true;
+    }
+}

@@ -159,7 +159,7 @@ persist by explicitly copying. There is no ReadOnlyMemory or retained rented
 array promise. No callback occurs after a structured rejection.
 
 For a successful source, the sequence is StartDocument once, optional Declaration
-once (only XML 1.0, lexical order version/encoding/standalone), prolog lexical
+once (VersionNum as specified below, lexical order version/encoding/standalone), prolog lexical
 content, root/content, epilog lexical content, EndDocument once. StartDocument
 can pause before consuming any input. Declaration gives borrowed version,
 encodingName (empty if absent), nullable standalone and location; it does not
@@ -204,9 +204,44 @@ callback it faults the outer operation. Cancellation checks occur at entry,
 before callbacks/reads, and at most every 4096 source units or bounded work steps.
 Changing sink identity or final flag after final=true is rejected without replay.
 
+## Declaration version contract — M2 correction
+
+[XML 1.0 Fifth Edition section 2.8, productions 23–26](https://www.w3.org/TR/REC-xml/#sec-prolog-dtd)
+defines VersionNum as literal ASCII `1.[0-9]+`. A document declaration requires
+VersionInfo first. Compatible `1.1`, `1.7`, `1.00`, `1.10` and longer digit
+sequences are accepted under the effective XML 1.0 Fifth Edition / Namespaces
+1.0 Third Edition profile; their lexical value does not activate XML 1.1.
+The specification recommends `1.0` for authors; that recommendation does not
+change the processor's acceptance grammar. Numeric conversion, fixed length,
+Unicode digits, signs, whitespace inside the value, references and normalization
+of leading zeros are forbidden. XML 1.1-only content remains rejected under
+XML 1.0 rules, including references to forbidden control characters and prefixed
+namespace undeclarations. NEL/U+2028 do not gain XML 1.1 newline normalization.
+
+[Section 4.3.1, production 77](https://www.w3.org/TR/REC-xml/#sec-TextDecl)
+uses the same VersionInfo optionally in external parsed-entity text declarations:
+version, when present, precedes mandatory encoding; standalone is forbidden.
+The effective profile also applies to external subsets and general/parameter
+entities. A missing text-declaration version remains null, not an invented `1.0`.
+XmlDeclarationView.Version borrows the exact literal lexical value through
+callback return; XmlTextDeclaration.Version owns that exact string when present.
+No ABI shape changes. Existing declaration placement, whitespace, matching quotes,
+encoding validation, standalone, event order, byte mapping, cancellation,
+TokenCharacters/DocumentCharacters/ExpandedCharacters accounting and bounded
+unfinished-token lifetime rules remain binding. Long versions are limited by
+the existing quotas before retention/delivery, not by a new version-specific cap.
+
+Corpus VERSION and source-purpose metadata describe original test intent; they
+alone do not determine acceptance under this effective profile. Evaluate both
+the declaration grammar and content against the selected normative editions.
+Independent models under `tests/Contracts/Fixtures/M2/Version/` demonstrate this
+contract, not parser implementation or corpus conformance. M2-version-declarations
+owns runtime guard and historical rejection-test transitions; this correction
+supersedes the earlier exact-`1.0` wording without rewriting historical evidence.
+
 ## Supported slice and ownership
 
-One root, XML 1.0 declarations, namespaces, predefined/numeric references, text,
+One root, XML 1.0 Fifth Edition declarations, namespaces, predefined/numeric references, text,
 comments, CDATA, PIs, normalization and strict Unicode. `<!DOCTYPE` rejects with
 XML.DtdProhibited at its opening delimiter, without resolving/accessing anything.
 Unknown general entity uses XML.UndeclaredEntity. Generic grammar rejection is
