@@ -13,8 +13,8 @@
       "client_thread_id": "client-new-thread:44740c37-3629-4d2c-8c2d-22c3370eee43",
       "host_id": "local",
       "branch": "codex/m1-dom",
-      "base_revision": "a3c7c669472fcd9ec35dfec3cd40aef1e6d0cda8",
-      "claim_revision": "93de9bf2a67ff30557821f6c6ac399c5266cf6f2",
+      "base_revision": "e07650c0111108103942f74b8072bfc62ec506a8",
+      "claim_revision": null,
       "setup_status": "renewing-claim",
       "chat_id": "01a123df-0348-7a81-9d6f-f4676934cb48",
       "worktree_path": "/Users/sebastienros/.codex/worktrees/a22a/xemele",
@@ -25,28 +25,50 @@
         "reason": "Suspended for now-verified linear DOM builder prerequisite; draft preserved."
       },
       "resume_evidence": "Worker confirmed main merge, renewed claim/four verified prerequisites, builder composition, focused 22/22 tests; no timing started.",
-      "review_revision": "e8694fabdb6b9c25e7112fb4a034adbf54ffd46e",
+      "review_revision": "752ec92591c0d31f1b9a90e6c834167d154aac70",
       "wait_cursor": "f824c6fd-79ae-4b74-b7cf-1220db648998:18",
-      "correctness_revision": "15e099bd11e25a5fc2576059a39a6c707a45feef",
-      "preserved_evidence_revision": "8155e7d0d7e89e714c992c82279549887b03f770",
+      "correctness_revision": "752ec92591c0d31f1b9a90e6c834167d154aac70",
+      "preserved_evidence_revision": "b4264b5c8d3b13a128957114fbec9f4dc89bf31c",
       "claim_history": [
         {
           "base_revision": "1f15653bf8f3ea4faab5fa5c15f10701971ff9ab",
           "claim_revision": "93de9bf2a67ff30557821f6c6ac399c5266cf6f2",
           "reason": "Suspended for trusted persistence prerequisite; source/evidence8155e7d preserved."
+        },
+        {
+          "base_revision": "a3c7c669472fcd9ec35dfec3cd40aef1e6d0cda8",
+          "claim_revision": "6dfbde16688cd1b071a6128e69b9ac362d850ac0",
+          "reason": "Namespace validator prerequisite now verified; source/evidence b426 preserved."
         }
-      ]
+      ],
+      "unapproved_guard_revision": "90fda442d313bcfd16f7a72cddca655005f638e3",
+      "peer_failure": "Temporary-guard branch full266/265passed: existing Tree warm allocation test4368B, focused14passed. Preserve failure; namespace owner owns TreeTests.cs and will investigate warm scope without weakening allocation requirement."
+    },
+    {
+      "task_id": "M1-corpus-import",
+      "client_thread_id": "client-new-thread:80690c67-e70d-40e9-9f53-c05fb6b14b89",
+      "host_id": "local",
+      "branch": "codex/m1-corpus-import",
+      "base_revision": "223f628d79e0fe430df435b48746eb4e68cd9a25",
+      "claim_revision": "7c44e76d1ba839b5c0c58dfad9791e3279bf793e",
+      "setup_status": "returned-correction",
+      "chat_id": "01a12414-2e0e-7611-8f8c-1f4c36cf431d",
+      "worktree_path": "/Users/sebastienros/.codex/worktrees/f2bd/xemele",
+      "review_revision": "2626bac69fd43a5dbcda364192db7c5dc655d0ea",
+      "handoff_revision": "e1cb4463cecded13e818d40527afbb9e92bc1ee7",
+      "review": "Full inventory/cache review passed; declaration-first diagnostic correction reviewed. Verifier integration audit-base fix pending."
     }
   ],
   "integration_queue": [],
   "blockers": [],
   "next_actions": [
-    "Resume DOM with verified persistence contract",
-    "Review corrected source and full combined DOM verification; then exclusive composition timings",
-    "Strict corpus and M1 gate after verified DOM"
+    "Integrate reviewed namespace repair and corpus import after final evidence/audits",
+    "Resume DOM after namespace repair verification, remove blanket guard and add positive cases",
+    "Claim planned synthetic planning-regression repair when worker slot releases",
+    "Run DOM benchmarks with exclusive host grant, then corpus join and M1-gate"
   ],
-  "last_verified_task": "M1-tree-dom-persistence",
-  "last_integrated_revision": "61fdfd8fe444eb0befc52c23d50f53a000cb0815",
+  "last_verified_task": "M1-namespace-names",
+  "last_integrated_revision": "6d202c4b900bbc7fad6f5f2a3783b77b2c4a31ae",
   "completed_assignments": [
     {
       "task_id": "M0-build",
@@ -517,7 +539,28 @@
       "integration_branch": "codex/integrate-m1-tree-dom-persistence",
       "integration_base": "56cdd818a3e47e7380e2484beb420feea3e59c0a",
       "implementation_revision": "ecd4a2961d3126257f9c4cdfdf28276ed9a35bad",
-      "integration_revision": "61fdfd8fe444eb0befc52c23d50f53a000cb0815"
+      "integration_revision": "61fdfd8fe444eb0befc52c23d50f53a000cb0815",
+      "cleanup": {
+        "chat_archived": true,
+        "worktree": "removed"
+      }
+    },
+    {
+      "task_id": "M1-namespace-names",
+      "client_thread_id": "client-new-thread:773979c6-8bd1-418d-91d2-7323da8ec148",
+      "host_id": "local",
+      "branch": "codex/m1-namespace-names",
+      "base_revision": "aac9fa0e656bb07a0d60d1b4561ba307061a27fb",
+      "claim_revision": "99944ee86788414e5750a1e6eecf8a38d76baf17",
+      "setup_status": "verified",
+      "chat_id": "01a12419-1bd2-7183-a965-c1f416e1e951",
+      "worktree_path": "/Users/sebastienros/.codex/worktrees/13ed/xemele",
+      "review_revision": "f3fe9d2843cde1e7bcd52334374e7aba9707d04e",
+      "review": "Independent scoped source review approved; worker244 full tests,API215,package,allocation checks passed. Separate stale planning scenarios recorded.",
+      "handoff_revision": "00a3532a8a79f0dbc2f570eca5e0777ce00b8c5e",
+      "integration_revision": "6d202c4b900bbc7fad6f5f2a3783b77b2c4a31ae",
+      "integration_worktree": "/private/tmp/xemele-integrate-m1-namespace-names",
+      "integration_branch": "codex/integrate-m1-namespace-names"
     }
   ],
   "benchmark_policy": "No active timing hold. Benchmark class configuration controls jobs; commands omit job arguments. Timing host remains serialized.",
@@ -545,6 +588,13 @@
         "M0-references-xmloxide"
       ],
       "reason": "Separate independently reviewable protocol/BCL and native/Rust runners before claims; preserve original join acceptance."
+    },
+    {
+      "parent": "M1-corpus",
+      "children": [
+        "M1-corpus-import"
+      ],
+      "reason": "Full-suite metadata import/classification is independently reviewable from runtime conformance/round trips; keep original parent acceptance as verification join and let verified contracts unlock import."
     }
   ],
   "reference_capability_notes": [
@@ -569,7 +619,8 @@
     "docs/orchestration/cleanup-M1-syntax.json",
     "docs/orchestration/cleanup-M1-serialize.json",
     "docs/orchestration/cleanup-M1-tree-dom-builder.json",
-    "docs/orchestration/cleanup-M1-benchmark-class-config.json"
+    "docs/orchestration/cleanup-M1-benchmark-class-config.json",
+    "docs/orchestration/cleanup-M1-tree-dom-persistence.json"
   ],
   "preserved_reference_sources": [
     {

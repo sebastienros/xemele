@@ -203,7 +203,7 @@ public sealed partial class XmlDocument
     internal int SetMember(int element, string local, string value, string uri, string prefix, bool ns)
     {
         Element(element);
-        if (ns) TreeValidation.Binding(prefix, value); else { TreeValidation.Expanded(local, uri, prefix); TreeValidation.Text(value); }
+        if (ns) TreeValidation.Binding(prefix, value); else { TreeValidation.Expanded(local, uri, prefix, attribute: true); TreeValidation.Text(value); }
         int found = Find(element, ns ? prefix : local, uri, ns);
         var slots = ns ? NamespaceSlots : AttributeSlots;
         if (found >= 0)

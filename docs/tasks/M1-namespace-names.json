@@ -1,0 +1,178 @@
+{
+  "schema_version": 1,
+  "id": "M1-namespace-names",
+  "milestone": "M1",
+  "title": "Correct reserved namespace prefix versus ordinary local name validation",
+  "kind": "feature",
+  "status": "verified",
+  "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M1-namespace-names",
+  "branch": "codex/m1-namespace-names",
+  "base_revision": "aac9fa0e656bb07a0d60d1b4561ba307061a27fb",
+  "integration_revision": "6d202c4b900bbc7fad6f5f2a3783b77b2c4a31ae",
+  "depends_on": [
+    "M1-contracts",
+    "M1-tree",
+    "M1-serialize",
+    "M1-tree-dom-persistence"
+  ],
+  "goals": [
+    "G01",
+    "G05"
+  ],
+  "specs": [
+    "docs/specs/tree.md",
+    "docs/specs/parser.md",
+    "docs/specs/serialization.md",
+    "docs/performance-coding.md"
+  ],
+  "owns": [
+    "docs/specs/tree.md",
+    "src/Xemele/Tree/Validation.cs",
+    "src/Xemele/Tree/Document.cs",
+    "src/Xemele/Tree/DomBuilder.cs",
+    "src/Xemele/Serialization/Xml/XmlSerializer.cs",
+    "tests/Xemele.Tests/M1-tree/TreeTests.cs",
+    "tests/Xemele.Tests/M1-serialize/SerializerTests.cs",
+    "tests/Xemele.Tests/M1-namespace-names/",
+    "samples/M1-namespace-names/",
+    "docs/reports/M1-namespace-names/"
+  ],
+  "api_or_output": "Unchanged public API; ordinary element local xmlns and namespace-qualified attribute local xmlns are legal, while xmlns prefix/URI and plain declaration attribute remain reserved",
+  "acceptance": [
+    {
+      "id": "M1-namespace-names-A1",
+      "description": "Clarify frozen tree wording and correct Tree/checked-builder/serializer validators per W3C Namespaces1.0: xmlns prefix and xmlns namespace URI are reserved, ordinary element local xmlns is legal, prefixed or namespaced ordinary attribute local xmlns is legal, unprefixed no-namespace attribute xmlns is a declaration and cannot be an ordinary attribute. Preserve namespace declaration representation and all xml binding rules, public shapes, validation precommit and error behavior. No new blanket DOM/syntax rejection.",
+      "status": "passed",
+      "evidence": [
+        "namespace-checks",
+        "coordinator-integrated-checks"
+      ]
+    },
+    {
+      "id": "M1-namespace-names-A2",
+      "description": "Verify element/ordinary attribute/declaration distinctions with independently confirmed W3C/BCL cases, original forbidden prefix/URI/binding and atomic mutation checks, checked and trusted model replay paths, namespace Strict/Repair output and round trips using independent reference only (no unmerged DOM). Update only the two incorrect earlier negative expectations, replacing with stronger actual reserved-name regressions rather than weakening other tests.",
+      "status": "passed",
+      "evidence": [
+        "namespace-checks",
+        "coordinator-integrated-checks"
+      ]
+    },
+    {
+      "id": "M1-namespace-names-A3",
+      "description": "Run focused and affected cumulative Tree/Serializer/builder/persistence/syntax checks, explicit approved actual public215/API models, independent source and fresh isolated local-package construction/serialization sample, relevant allocation checks and planning/committed diff/owned audit at known revision. No new scanning algorithm or workload change; reuse existing appropriate timing evidence unless genuine performance change requires exclusive measurements. Record exact corrected contract for DOM/corpus owners.",
+      "status": "passed",
+      "evidence": [
+        "namespace-checks",
+        "namespace-allocations",
+        "planning-validate",
+        "final-committed-audit",
+        "coordinator-integrated-checks"
+      ]
+    }
+  ],
+  "implementation": [
+    "src/Xemele/Tree/Validation.cs: TreeValidation.Expanded; Document.SetMember and DomBuilder.AppendAttribute supply attribute context.",
+    "src/Xemele/Serialization/Xml/XmlSerializer.cs: ValidateExpanded ordinary attribute context; element local xmlns accepted.",
+    "docs/specs/tree.md: reserved prefix/URI/declaration versus ordinary local name clarification.",
+    "tests/Xemele.Tests/M1-namespace-names/NamespaceNameTests.cs; samples/M1-namespace-names/Program.cs; docs/reports/M1-namespace-names/verify.py."
+  ],
+  "evidence": [
+    {
+      "id": "namespace-checks",
+      "kind": "check",
+      "revision": "b53dfce146fa8d5a9141985567111b8bf02e63f2",
+      "command": "dotnet test --solution Xemele.slnx -c Release --no-build --no-restore",
+      "result": "passed",
+      "summary": "Solution244/244 passed. Same known-revision run also passed focused Namespace21, Tree14, Serializer46, Builder11, Persistence8, Input10, Syntax70; Foundation11 and rebuilt139/173/8; rebuilt M1 models/protocol38; public215 golden+canonical; independent source and isolated package sample; ownership audit. Full launcher outcome is separately failed for its final additional planning unit-suite step.",
+      "artifact": "docs/reports/M1-namespace-names/verification-raw.txt"
+    },
+    {
+      "id": "namespace-allocations",
+      "kind": "check",
+      "revision": "b53dfce146fa8d5a9141985567111b8bf02e63f2",
+      "command": "dotnet test --project tests/Xemele.Tests -c Release --no-build --no-restore --filter-class Xemele.Tests.NamespaceNames.NamespaceNameTests; dotnet run --project samples/M1-namespace-names/Sample.csproj -c Release --no-build --no-restore -- --allocation",
+      "result": "passed",
+      "summary": "Warm context validation0B; existing Tree traversal/intern zero test passed focused14 and full244 unchanged. Namespace-shaped Strict stream2104B/op at both1KiB/1MiB after20 warm operations,10 measured; owned tree/text and cold setup excluded. No scan/workload change or timing run; existing approved timings reused. Peer-reported4368B failure not reproduced; cause unproven.",
+      "artifact": "docs/reports/M1-namespace-names/verification-raw.txt"
+    },
+    {
+      "id": "planning-validate",
+      "kind": "check",
+      "revision": "b53dfce146fa8d5a9141985567111b8bf02e63f2",
+      "command": "python3 tools/planning/tasks.py validate",
+      "result": "passed",
+      "summary": "Validated106 tasks: schema, evidence, acyclic dependencies, additive milestones, ordered ownership.",
+      "artifact": "docs/reports/M1-namespace-names/planning-validation.txt"
+    },
+    {
+      "id": "extra-planning-unit-failure",
+      "kind": "check",
+      "revision": "b53dfce146fa8d5a9141985567111b8bf02e63f2",
+      "command": "python3 -m unittest discover -s tools/planning -p 'test_*.py'",
+      "result": "failed",
+      "summary": "Additional suite failed3/14 stale M0 baseline assumptions; outside owned paths. Preserved and requested owner follow-up; required planning validator passes.",
+      "artifact": "docs/reports/M1-namespace-names/planning-unit-failure.txt"
+    },
+    {
+      "id": "initial-ipc-failure",
+      "kind": "check",
+      "revision": "f3fe9d2843cde1e7bcd52334374e7aba9707d04e",
+      "command": "dotnet test --project tests/Xemele.Tests -c Release --no-build --no-restore --filter-class Xemele.Tests.NamespaceNames.NamespaceNameTests",
+      "result": "failed",
+      "summary": "Sandbox named-pipe permission denied before tests, exit134. Authorized escalation rerun passed20/20.",
+      "artifact": "docs/reports/M1-namespace-names/initial-ipc-failure.txt"
+    },
+    {
+      "id": "initial-full-launcher",
+      "kind": "check",
+      "revision": "b53dfce146fa8d5a9141985567111b8bf02e63f2",
+      "command": "python3 docs/reports/M1-namespace-names/verify.py",
+      "result": "failed",
+      "summary": "Runtime/API/package/allocation/audit steps passed; extra final tools/planning unittest failed3/14, causing launcher exit1. Required planning validation run separately passed106. Launcher repaired to include only task-required planning validator; runtime not rerun because source unchanged.",
+      "artifact": "docs/reports/M1-namespace-names/verification-raw.txt"
+    },
+    {
+      "id": "final-committed-audit",
+      "kind": "check",
+      "revision": "35925b42d361c22dc087747bc6db1c4a8aedbb1c",
+      "command": "python3 -B - (import owned verify.py; audit_paths(); run python3 -B tools/planning/tasks.py validate)",
+      "result": "passed",
+      "summary": "Committed delta versus claim99944ee plus working/untracked audit and diff checks passed; planning106 passed with implemented metadata. Initial audit caught generated untracked Python caches from extra unit suite; removed caches only, source unchanged, rerun passes.",
+      "artifact": "docs/reports/M1-namespace-names/final-audit.txt"
+    },
+    {
+      "id": "coordinator-source-review",
+      "kind": "review",
+      "revision": "f3fe9d2843cde1e7bcd52334374e7aba9707d04e",
+      "command": null,
+      "result": "passed",
+      "summary": "Independent read-only review approved context distinction, reserved prefix/URI/xml guards, atomic mutation and checked/trusted BCL replay; no blocking findings. Public declarations unchanged.",
+      "artifact": null
+    },
+    {
+      "id": "coordinator-integrated-checks",
+      "kind": "integration",
+      "revision": "6d202c4b900bbc7fad6f5f2a3783b77b2c4a31ae",
+      "command": "Pinned SDK10.0.400 PATH/DOTNET_ROOT DOTNET_CLI_USE_MSBUILD_SERVER=0 python3 -B docs/reports/M1-namespace-names/verify.py --audit-base 89185b8d9ee323c69a0b544660ae7a8698b326e1",
+      "result": "passed",
+      "summary": "Fresh integration build zero warnings/errors; Namespace21, Tree14, Serializer46, Builder11, Persistence8, Input10, Syntax70; solution244 and Foundation11; rebuilt foundation139/173/8 and approved M1 models/protocol38. Actual215 golden/canonical, independent source and fresh isolated local NuGet package samples, warm context0B and Strict stream2104B/op at1KiB/1MiB. Tree zero-allocation test passes unchanged. Owned committed/working/untracked audit, committed/working whitespace, planning107 pass. Separate planning-unit failure recorded in new required repair; no timing claim.",
+      "artifact": "docs/reports/M1-namespace-names/integration-verification-raw.txt"
+    }
+  ],
+  "blockers": [],
+  "handoff": {
+    "summary": "Integrated verified namespace local-name correction; DOM may resume after renewed claim.",
+    "checks": [
+      "Required checks passed: namespace21; solution244; affected suites; Foundation11/rebuilt139/173/8; M1 models/protocol38; public215 golden+canonical; source/package sample; allocations; owned audit; planning106.",
+      "Additional planning unit suite failed3/14 stale baseline assertions; sandbox initial IPC failed then escalated20/20 passed. Failures preserved."
+    ],
+    "remaining": [
+      "Coordinator review/integration and combined verification required; integration_revision remains null.",
+      "Peer4368B Tree allocation failure not reproduced focused/full; retain unchanged0B threshold and rerun at integration."
+    ],
+    "requests": [
+      "Route tools/planning/test_tasks.py old M0 baseline assertions to owner (gate omission, unordered overlap, independent lanes); no out-of-scope edits made.",
+      "DOM/corpus owners: accept ordinary element LocalPart xmlns and qualified ordinary attribute LocalPart xmlns; separate plain xmlns declarations; reject xmlns prefix/URI and preserve xml bindings."
+    ]
+  }
+}

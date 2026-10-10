@@ -49,7 +49,14 @@ Validation precedes observable mutation. Reserved xml/xmlns names follow
 [Namespaces in XML](https://www.w3.org/TR/xml-names/#ns-decl); arbitrary namespace
 URI strings are preserved ordinally rather than URI-normalized. Prefix requires
 nonempty namespace URI; xml binds only its reserved URI and that URI uses xml;
-xmlns and its URI cannot be ordinary element/attribute names.
+the xmlns prefix and its reserved URI cannot be used by ordinary elements or
+attributes. The local name xmlns is legal for elements (including unprefixed
+elements in no namespace or a default namespace) and namespace-qualified
+ordinary attributes. An unprefixed, no-namespace attribute named xmlns is a
+default namespace declaration, represented only by SetNamespaceDeclaration,
+never SetAttribute or an ordinary checked-builder member. A namespaced ordinary
+attribute with local name xmlns and an initially empty prefix is legal for Repair,
+which supplies a nonempty prefix as for other namespaced attributes.
 
 ## Construction and mutation
 
