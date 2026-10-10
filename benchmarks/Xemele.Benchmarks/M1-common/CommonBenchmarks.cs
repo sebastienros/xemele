@@ -2,7 +2,7 @@ using BenchmarkDotNet.Attributes;
 using Xemele;
 using Xemele.Internal.Operations;
 
-[MemoryDiagnoser]
+[MemoryDiagnoser, ShortRunJob]
 public class CommonBenchmarks
 {
     private OperationBudget budget = null!;

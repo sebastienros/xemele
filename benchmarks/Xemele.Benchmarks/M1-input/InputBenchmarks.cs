@@ -5,7 +5,7 @@ using Xemele;
 using Xemele.Parsing.Input;
 using Xemele.Internal.Operations;
 
-[MemoryDiagnoser]
+[MemoryDiagnoser, ShortRunJob]
 public class InputBenchmarks
 {
     [Params("short", "long", "multilingual")] public string Corpus { get; set; } = "short";
@@ -50,7 +50,7 @@ public class InputBenchmarks
         if(r.Step!=DecodeStep.NeedInput)throw new Exception();return offsets[r.WrittenCharacters-1]+r.WrittenCharacters;
     }
 }
-[MemoryDiagnoser]
+[MemoryDiagnoser, ShortRunJob]
 public class InputOwnershipBenchmarks
 {
     private readonly char[] chars=new char[8];private readonly long[] offsets=new long[8];
