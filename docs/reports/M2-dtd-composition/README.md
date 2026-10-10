@@ -54,3 +54,14 @@ authored initial focused location/depth oracle mistakes at e5a99fe; benchmark
 public return/internal enum CS0050 at57b4e2e; indefinite comment workload correctly
 hit unchanged TokenCharacters during correctness at028f8af. All are explicit,
 with no passing outcome substituted or runtime quota relaxed.
+
+Final checkpoints: cumulative exact required-hook/source/provenance8dcc7c9;
+corrected full benchmark oracle6f65008; owned project filename repair719c630
+with unchanged runtime/workload/driver bytes and identical496compiled methods.
+The successful allocation probe at6f ran once; the first BDN attempt executed
+zero cases due to project discovery and remains failed. Renewed719 timing ran
+six cases once, with restore/build/parent/allchildren0 and raw archive
+SHA8e08bb4b1bc1a9c83756286f557f7b80963b3fdb6aa42fe3686f4ebc0b2646e1.
+Both scan sizes report0B in raw GC counters. Owned composition/model allocations
+are explicit; the large scan confidence interval is noisy and implies no speedup
+or regression claim. All grants ended with explicit host RELEASE ACKs.

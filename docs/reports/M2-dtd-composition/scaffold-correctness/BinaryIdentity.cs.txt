@@ -1,0 +1,29 @@
+using System.Reflection.Metadata;
+using System.Reflection.PortableExecutable;
+using System.Text.Json;
+static SortedDictionary<string,string> Bodies(string path)
+{
+    using var file = File.OpenRead(path); using var pe = new PEReader(file); var reader = pe.GetMetadataReader();
+    var bodies = new SortedDictionary<string,string>(StringComparer.Ordinal);
+    foreach (var handle in reader.MethodDefinitions)
+    {
+        var method = reader.GetMethodDefinition(handle); var type = reader.GetTypeDefinition(method.GetDeclaringType());
+        string typeName = reader.GetString(type.Name);
+        for (var parent = type.GetDeclaringType(); !parent.IsNil; parent = reader.GetTypeDefinition(parent).GetDeclaringType())
+            typeName = reader.GetString(reader.GetTypeDefinition(parent).Name) + "+" + typeName;
+        string key = reader.GetString(type.Namespace)+"."+typeName+"."+reader.GetString(method.Name)+":"+Convert.ToHexString(reader.GetBlobBytes(method.Signature));
+        string body = "no-body";
+        if (method.RelativeVirtualAddress != 0)
+        {
+            var b = pe.GetMethodBody(method.RelativeVirtualAddress);
+            body = Convert.ToHexString(b.GetILBytes()!) + "|stack=" + b.MaxStack + "|init=" + b.LocalVariablesInitialized + "|locals=" + (b.LocalSignature.IsNil ? "nil" : Convert.ToHexString(reader.GetBlobBytes(reader.GetStandaloneSignature(b.LocalSignature).Signature)));
+            foreach (var region in b.ExceptionRegions) body += "|"+region.Kind+":"+region.TryOffset+":"+region.TryLength+":"+region.HandlerOffset+":"+region.HandlerLength+":"+region.FilterOffset+":"+region.CatchType;
+        }
+        bodies.Add(key, body);
+    }
+    return bodies;
+}
+var old = Bodies(args[0]); var current = Bodies(args[1]);
+var delta = old.Keys.Union(current.Keys).Where(k => !old.TryGetValue(k,out var a) || !current.TryGetValue(k,out var b) || a != b).ToArray();
+Console.WriteLine(JsonSerializer.Serialize(new { oldMethods=old.Count,currentMethods=current.Count,matched=delta.Length==0,differences=delta,scope="all compiled method signatures and IL/maxstack/locals/EH; source byte identity separate; assembly commit metadata differs" }));
+Environment.ExitCode = delta.Length==0 ? 0 : 1;
