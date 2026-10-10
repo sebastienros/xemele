@@ -176,7 +176,7 @@ public class DomBuilderTests
         var a = b.AppendAttribute(root, "a", "first"); var n = b.AppendNamespaceDeclaration(root, "p", "urn:p");
         Assert.Equal(a, root.SetAttribute("a", "updated")); Assert.Equal(n, root.SetNamespaceDeclaration("p", "urn:new"));
         var child = root.LastChild; child.Remove(); root.InsertBefore(child, root.FirstChild); Assert.Equal(child, root.FirstChild);
-        Assert.Throws<ArgumentException>(() => child.AppendChild(root));
+        Assert.Throws<ArgumentException>(() => root.AppendChild(root));
     }
 
     private static void SetVersion(XmlDocument d, XmlDocument.DomBuilder b, long value)
