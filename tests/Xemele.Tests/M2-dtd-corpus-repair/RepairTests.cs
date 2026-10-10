@@ -106,7 +106,8 @@ public sealed class RepairTests
         Assert.Equal(DtdParseStep.NeedInput, internalOnly.Append(forward, [], false, Ct).Step);
         Assert.Equal(DtdParseStep.Rejected, internalOnly.Append("<!ENTITY later 'v'>", [], true, Ct).Step);
         using var laterPe = new DtdParser(DtdSubsetKind.Internal, new()); laterPe.ConfigureDeclarationReading(false);
-        Assert.Equal(DtdParseStep.Completed, laterPe.Append(forward + "<!ENTITY later 'v'><!ENTITY % p ' '>%p;", [], true, Ct).Step);
+        var laterPeResult = laterPe.Append(forward + "<!ENTITY later 'v'><!ENTITY % p ' '>%p;", [], true, Ct);
+        Assert.Equal(DtdParseStep.Rejected, laterPeResult.Step); Assert.Equal("DTD.InvalidDefault", laterPeResult.Diagnostic!.Code);
         using var external = new DtdParser(DtdSubsetKind.Internal, new()); external.ConfigureDeclarationReading(false, hasExternalSubset: true);
         Assert.Equal(DtdParseStep.NeedInput, external.Append(forward, [], false, Ct).Step);
         using var yes = new DtdParser(DtdSubsetKind.Internal, new()); yes.ConfigureDeclarationReading(true, hasExternalSubset: true);
@@ -125,9 +126,9 @@ public sealed class RepairTests
             "<!DOCTYPE doc SYSTEM '020.ent' [<!ATTLIST doc a1 CDATA '&e;'><!ENTITY e 'v1'>]><doc/>";
         using var core = new XmlParserCore(options, Primary); var sink = new DomSink(options);
         var result = core.Append(xml, [], true, sink, Ct);
-        Assert.Equal(standalone ? ScanStep.Rejected : ScanStep.Completed, result.Step);
-        if (!standalone) { Assert.Equal("v1", sink.Document.RootElement.GetAttribute("a1")); Assert.Single(resolver.Requests); Assert.Equal(1, resolver.Disposals); }
-        else { Assert.Equal("DTD.UndeclaredEntity", result.Diagnostic!.Code); Assert.Empty(resolver.Requests); Assert.True(sink.Document.RootElement.IsDefault); }
+        Assert.Equal(ScanStep.Rejected, result.Step);
+        Assert.Equal(standalone ? "DTD.UndeclaredEntity" : "DTD.InvalidDefault", result.Diagnostic!.Code);
+        Assert.Empty(resolver.Requests); Assert.Equal(0, resolver.Disposals); Assert.True(sink.Document.RootElement.IsDefault);
     }
     [Theory]
     [InlineData("<!ENTITY a:b 'unused'>", false)]

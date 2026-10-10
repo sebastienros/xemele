@@ -30,7 +30,7 @@ public sealed partial class XmlDocument
 
     internal void RefuseUnresolvedReferences()
     {
-        if (unresolvedReferences is { Count: > 0 })
+        if (unresolvedReferences is { Count: > 0 } || HasIncompleteAttributes)
             throw new InvalidOperationException("Document contains unresolved entity references.");
     }
 }

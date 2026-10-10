@@ -35,7 +35,7 @@ internal sealed partial class DtdParser
     {
         if (space && !RequiredSpace() || read == tokens.Count || !Peek.Literal)
         { if (!terminal) Reject("Expected quoted literal.", read < tokens.Count ? Peek.At : declarationAt); return null; }
-        return tokens[read++].Text;
+        lastLiteral = tokens[read].LiteralInfo; return tokens[read++].Text;
     }
     private void ParseDeclaration(CancellationToken cancellation)
     {
@@ -109,7 +109,7 @@ internal sealed partial class DtdParser
         while (!terminal && read < tokens.Count)
         {
             cancellation.ThrowIfCancellationRequested();
-            XmlLocation at = Peek.At; bool external = IsExternalDeclaration;
+            XmlLocation at = Peek.At, physicalAt = Peek.PhysicalAt; bool external = IsExternalDeclaration;
             string? name = Name(space: true); if (name is null || !RequiredSpace()) return;
             DtdAttributeType type; List<string> values = [];
             if (Take("CDATA")) type = DtdAttributeType.CData;
@@ -139,7 +139,17 @@ internal sealed partial class DtdParser
             else { kind = DtdDefaultKind.Value; value = Literal(); if (value is null) return; }
             if (value is not null && (DecodeLiteral(value, cancellation, false) is null ||
                 !IgnoreCurrentDeclaration && !ValidateDeclaredDefault(value, at, cancellation))) return;
-            if (!IgnoreCurrentDeclaration && !HasAttribute(element, name)) attributes.Add(new(element, name, type, values, kind, value, external, at));
+            if (!IgnoreCurrentDeclaration && !HasAttribute(element, name))
+            {
+                var attribute = new DtdAttributeDeclaration(element, name, type, values, kind, value, external, at);
+                attributes.Add(attribute);
+                if (value is not null && lastLiteral is { } info)
+                {
+                    var preceding = new Dictionary<string, DtdEntityDeclaration>(StringComparer.Ordinal);
+                    foreach (var entity in general) { cancellation.ThrowIfCancellationRequested(); preceding.TryAdd(entity.Name, entity); }
+                    DtdLiteralInfo.Defaults.Add(attribute, info with { PrecedingEntities = preceding, DeclarationLocation = physicalAt });
+                }
+            }
         }
     }
     private void ParseEntity(CancellationToken cancellation)
@@ -163,9 +173,35 @@ internal sealed partial class DtdParser
         var target = isParameter ? parameter : general;
         if (!IgnoreCurrentDeclaration && !HasEntity(target, name))
         {
-            target.Add(new(name, isParameter, replacement, system, pub, notation, IsExternalDeclaration, declarationAt));
+            var accepted = new DtdEntityDeclaration(name, isParameter, replacement, system, pub, notation, IsExternalDeclaration, declarationAt);
+            target.Add(accepted);
+            if (replacement is not null && lastLiteral is { } info)
+                DtdLiteralInfo.Entities.Add(accepted, MapEntityLiteral(info, replacement, cancellation));
             if (!isParameter && declarationInParameter && standaloneReadState) (parameterOriginGeneral ??= new(StringComparer.Ordinal)).Add(name);
         }
+    }
+    private DtdLiteralInfo MapEntityLiteral(DtdLiteralInfo info, string replacement, CancellationToken cancellation)
+    {
+        var locations = new List<XmlLocation>(); var origins = new List<bool>();
+        var starts = new List<int>(); var lengths = new List<int>(); var identities = new List<object>();
+        for (int i = 0; i < info.Text.Length; i++)
+        {
+            cancellation.ThrowIfCancellationRequested(); int start = i, width = 1;
+            if (info.Text[i] == '&' && i + 1 < info.Text.Length && info.Text[i + 1] == '#')
+            {
+                int end = info.Text.IndexOf(';', i + 2);
+                if (end >= 0 && UnprocessedNumeric(info.Text.AsSpan(i + 1, end - i - 1), out int scalar))
+                { i = end; width = scalar > 0xFFFF ? 2 : 1; }
+            }
+            for (int n = 0; n < width; n++)
+            {
+                locations.Add(info.Locations[start]); origins.Add(info.ExternalOrigins[start]);
+                starts.Add(info.PhysicalStarts![start]); identities.Add(info.PhysicalIdentities![start]);
+                lengths.Add(info.PhysicalStarts![i] + info.PhysicalLengths![i] - info.PhysicalStarts![start]);
+            }
+        }
+        if (locations.Count != replacement.Length) throw new InvalidOperationException("Entity literal mapping differs from decoded replacement.");
+        return info with { Text = replacement, Locations = locations.ToArray(), ExternalOrigins = origins.ToArray(), PhysicalStarts = starts.ToArray(), PhysicalLengths = lengths.ToArray(), PhysicalIdentities = identities.ToArray() };
     }
     private string? DecodeLiteral(string raw, CancellationToken cancellation, bool entity)
     {

@@ -14,7 +14,7 @@ namespace Xemele.Parsing.Syntax;
 internal sealed partial class XmlParserCore : IDisposable
 {
     private enum State { Data, Less, Bang, Tag, Close, Comment, CData, PiTarget, PiBody, Declaration, Reference, Doctype, DtdSubset, DtdClose }
-    private enum Delivery { None, Document, Tag, Close, Text, Declaration, DocumentType, UnresolvedReference, EndDocument }
+    private enum Delivery { None, Document, Tag, Close, Text, Declaration, DocumentType, IncompleteDefaults, UnresolvedReference, EndDocument }
     private readonly record struct Name(string Local, string Uri, string Prefix)
     {
         internal XmlNameView View => new(Local, Uri, Prefix);
@@ -27,6 +27,7 @@ internal sealed partial class XmlParserCore : IDisposable
         internal string Prefix, Uri;
         internal XmlLocation Location;
         internal string? OwnedName, OwnedValue;
+        internal AttributeInterpretation? Incomplete;
     }
     private readonly record struct Frame(Name Name, int BindingsStart, bool StandaloneWhitespaceDependency);
     private readonly record struct Binding(string Prefix, string Uri);
@@ -39,6 +40,17 @@ internal sealed partial class XmlParserCore : IDisposable
     private readonly List<Frame> frames = [];
     private char[] token = new char[128];
     private XmlLocation[] tokenLocations = new XmlLocation[128];
+    private readonly StringBuilder physicalTag = new();
+    private int[] physicalStarts = new int[128];
+    private int physicalScalar;
+    private XmlLocation attributePhysicalLocation;
+    private bool attributePhysicalOrigin;
+    private XmlLocation[] attributePhysicalLocations = [];
+    private bool[] attributePhysicalOrigins = [];
+    private string? attributePhysicalSpelling;
+    private int attributePhysicalSpellingStart, attributePhysicalSpellingLength;
+    private object? attributePhysicalIdentity;
+    private object?[] attributePhysicalIdentities = [];
     private AttributeToken[] attributes = new AttributeToken[8];
     private readonly char[] fragment = new char[8];
     private State state;
@@ -158,7 +170,7 @@ internal sealed partial class XmlParserCore : IDisposable
         try
         {
             if (disposed) return;
-            disposed = true; ClearUnresolvedReference(); token = []; tokenLocations = []; attributes = [];
+            disposed = true; ClearUnresolvedReference(); token = []; tokenLocations = []; physicalStarts = []; attributePhysicalLocations = []; attributePhysicalOrigins = []; attributePhysicalIdentities = []; attributePhysicalIdentity = null; attributePhysicalSpelling = null; physicalTag.Clear(); attributes = [];
             try { DisposeEntities(); }
             finally
             {
@@ -207,7 +219,13 @@ internal sealed partial class XmlParserCore : IDisposable
             ProcessDtdScalar(scalar, location);
             return;
         }
+        physicalScalar = scalar; attributePhysicalLocation = location; attributePhysicalOrigin = false; attributePhysicalSpelling = null; attributePhysicalIdentity = null;
         bool skip = normalizedCr && scalar == '\n'; normalizedCr = scalar == '\r';
+        if (skip && state == State.Tag && entities is not null)
+        {
+            if (physicalTag.Length == int.MaxValue) { Reject("XML.ResourceLimit", "Physical tag capacity exceeded.", location); return; }
+            physicalTag.Append('\n');
+        }
         if (skip) return;
         if (scalar == '\r') scalar = '\n';
         Process(scalar, location);
@@ -228,6 +246,20 @@ internal sealed partial class XmlParserCore : IDisposable
             int capacity = (int)Math.Min(int.MaxValue, Math.Max((long)tokenLength + width, (long)token.Length * 2));
             Array.Resize(ref token, capacity); Array.Resize(ref tokenLocations, capacity);
         }
+        if (state == State.Tag && entities is not null)
+        {
+            if (tokenLength + width > physicalStarts.Length) Array.Resize(ref physicalStarts, token.Length);
+            if (tokenLength + width > attributePhysicalLocations.Length)
+            { Array.Resize(ref attributePhysicalLocations, token.Length); Array.Resize(ref attributePhysicalOrigins, token.Length); Array.Resize(ref attributePhysicalIdentities, token.Length); }
+            for (int u = 0; u < width; u++) { attributePhysicalLocations[tokenLength + u] = attributePhysicalLocation; attributePhysicalOrigins[tokenLength + u] = attributePhysicalOrigin; attributePhysicalIdentities[tokenLength + u] = attributePhysicalIdentity; }
+            physicalStarts[tokenLength] = physicalTag.Length;
+            Span<char> original = stackalloc char[2]; int n = new Rune(physicalScalar == 0 ? scalar : physicalScalar).EncodeToUtf16(original);
+            ReadOnlySpan<char> spelling = attributePhysicalSpelling is not null
+                ? attributePhysicalSpelling.AsSpan(attributePhysicalSpellingStart, attributePhysicalSpellingLength) : original[..n];
+            if (physicalTag.Length > int.MaxValue - spelling.Length) { Reject("XML.ResourceLimit", "Physical tag capacity exceeded.", location); return false; }
+            physicalTag.Append(spelling);
+            if (width == 2) physicalStarts[tokenLength + 1] = physicalStarts[tokenLength];
+        }
         if (width == 1) { token[tokenLength] = (char)scalar; tokenLocations[tokenLength++] = location; }
         else
         {
@@ -236,7 +268,7 @@ internal sealed partial class XmlParserCore : IDisposable
         }
         return true;
     }
-    private void ResetToken() { tokenLength = 0; budget.Reset(Quota.TokenCharacters); }
+    private void ResetToken() { physicalTag.Clear(); if (attributePhysicalIdentities.Length != 0) Array.Clear(attributePhysicalIdentities); tokenLength = 0; budget.Reset(Quota.TokenCharacters); }
     private void BeginText(XmlTextKind kind, string piTarget, XmlLocation location)
     {
         textActive = true; textStarted = false; textKind = kind; target = piTarget; textLocation = location;
@@ -507,7 +539,10 @@ internal sealed partial class XmlParserCore : IDisposable
                     {
                         ref var a = ref attributes[deliveryIndex++ - attributeCount - 1];
                         if (a.Namespace) continue;
-                        keepGoing = sink.Attribute(new(a.Name.View, AttributeValue(a), a.Location));
+                        keepGoing = a.Incomplete is { } incomplete
+                            ? ((IXmlIncompleteAttributeSink)sink).IncompleteAttribute(new(a.Name.View, incomplete.LexicalValue,
+                                incomplete.IsTokenized, incomplete.ValueLocation, incomplete.Parts, incomplete.DefaultSequence))
+                            : sink.Attribute(new(a.Name.View, AttributeValue(a), a.Location));
                     }
                     else
                     {
@@ -536,8 +571,19 @@ internal sealed partial class XmlParserCore : IDisposable
                     }
                     finally { ClearUnresolvedReference(); }
                     break;
+                case Delivery.IncompleteDefaults:
+                    if (incompleteDefaultIndex == incompleteDefaults!.Count)
+                    { delivery = Delivery.None; continue; }
+                    var declaration = incompleteDefaults[incompleteDefaultIndex++];
+                    keepGoing = ((IXmlIncompleteAttributeSink)sink).IncompleteAttributeDefault(new(declaration.ElementName,
+                        declaration.AttributeName, declaration.Interpretation.LexicalValue, declaration.Interpretation.IsTokenized,
+                        declaration.IsExternal, declaration.Location, declaration.Interpretation.ValueLocation,
+                        declaration.Interpretation.Parts, declaration.Interpretation.DefaultSequence!.Value));
+                    if (incompleteDefaultIndex == incompleteDefaults.Count) delivery = Delivery.None;
+                    break;
                 case Delivery.DocumentType:
-                    delivery = Delivery.None;
+                    if (!PreflightIncompleteDefaults(sink)) { delivery = Delivery.None; continue; }
+                    delivery = incompleteDefaults is { Count: > 0 } ? Delivery.IncompleteDefaults : Delivery.None;
                     keepGoing = sink is not IXmlDtdSink dtdSink || dtdSink.DocumentType(documentType!, entities!.Model, doctypeLocation);
                     break;
                 case Delivery.Declaration:
@@ -693,6 +739,8 @@ internal sealed partial class XmlParserCore : IDisposable
             Work(n); ref var a = ref attributes[n]; var q = AttributeName(a);
             if (q.SequenceEqual("xmlns") || q.StartsWith("xmlns:"))
             {
+                if (a.Incomplete is { } incomplete)
+                { Reject("XML.UnresolvedNamespaceValue", "Namespace value contains unresolved entity references.", FirstUnknown(incomplete.Parts)); return; }
                 a.Namespace = true; a.Prefix = Intern(q.SequenceEqual("xmlns") ? ReadOnlySpan<char>.Empty : q[6..], a.Location);
                 a.Uri = Intern(AttributeValue(a), a.Location);
                 if (diagnostic is not null) return;
@@ -715,7 +763,11 @@ internal sealed partial class XmlParserCore : IDisposable
                 { Reject("XML.Namespace", "Duplicate expanded attribute name.", a.Location); return; }
             }
         }
-        if (diagnostic is not null || !Charge(Quota.Depth, 1, opening)) return;
+        if (diagnostic is not null) return;
+        for (int n = 0; n < attributeCount; n++)
+            if (attributes[n].Incomplete is { } incomplete && sinkIdentity is not IXmlIncompleteAttributeSink)
+            { Reject("XML.IncompleteAttributeSinkRequired", "Sink cannot represent incomplete attribute values.", FirstUnknown(incomplete.Parts)); return; }
+        if (!Charge(Quota.Depth, 1, opening)) return;
         frames.Add(new(deliveredName, bindingStart, StandaloneElementWhitespace(token.AsSpan(0, nameLength)))); rootSeen = true; deliveryIndex = 0; delivery = Delivery.Tag;
     }
     private void ParseClose()
