@@ -412,8 +412,8 @@
       }
     }
   ],
-  "benchmark_policy": "ShortRun only; exclusive timing must park root and all peer heavy checks.",
-  "benchmark_owner": null,
+  "benchmark_policy": "Exclusive21-case Syntax ShortRun; coordinator/serializer parked heavychecks.",
+  "benchmark_owner": "M1-syntax",
   "pending_decisions": [],
   "decisions": {
     "project_license": "MIT",
@@ -467,8 +467,14 @@
   "timing_queue": [
     "M1-syntax"
   ],
-  "pending_checks": {
-    "M1-syntax": "Owner adding fresh foundation builds and explicit integrated public golden override; runtime7ea reviewed/executed, harness rerun before timing",
-    "M1-serialize": "Parked no active processes, source/static only pending syntax timing"
+  "benchmark_window": {
+    "task_id": "M1-syntax",
+    "source_revision": "d4de9b394cec42fe8caa5c8deacc7c31ecc7b4b0",
+    "runtime_revision": "7ea67f77a7d878f510f2ea29e1d30bb187439c2a",
+    "cases": 21,
+    "parked": [
+      "coordinator",
+      "M1-serialize explicit noactiveprocesses"
+    ]
   }
 }
