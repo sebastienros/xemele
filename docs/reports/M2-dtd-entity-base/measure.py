@@ -72,27 +72,91 @@ def reject_unchanged_success(mode, known):
         require(tracked_inputs(inputs) != tracked_inputs(known['sources']), 'Unchanged successful observation may not be repeated')
 
 
-def source_inventory(dotnet, env, projects=None):
-    # MSBuild returns the actual SDK Compile item set, including generated assembly
-    # identity sources. Project references are explicitly enumerated for this driver.
+def generated_build_properties(text, generated, summary=None):
+    commands = [shlex.split(line[len('// start '):]) for line in text.splitlines() if line.startswith('// start ')]
+    context = {'observedCommands': commands}
+    if summary is not None:
+        summary['generatedBuilderContext'] = context
+    builds = [command for command in commands if len(command) > 1 and command[1] == 'build']
+    require(len(builds) == 1, 'Exact observed generated Builder command required')
+    command = builds[0]
+    require(command[command.index('-c') + 1] == 'Release', 'Generated Builder configuration differs')
+    properties = {}
+    for token in command:
+        if token.startswith('/p:'):
+            name, value = token[3:].split('=', 1)
+            require(name not in properties, 'Duplicate observed Builder property: ' + name)
+            properties[name] = value
+    expected = {'UseSharedCompilation': 'false', 'Deterministic': 'true', 'Optimize': 'true',
+                'ArtifactsPath': generated['buildRoot'] + '/', 'OutDir': generated['proof']['directory'] + '/',
+                'OutputPath': generated['proof']['directory'] + '/', 'PublishDir': generated['buildRoot'] + '/publish/'}
+    context.update(observedArgv=command, properties=dict(properties, Configuration='Release'), expectedProperties=dict(expected, Configuration='Release'))
+    require(properties == expected, 'Observed pinned Builder properties differ from generated artifact paths')
+    require(command[-2:] == ['--output', expected['OutDir']], 'Observed generated Builder output differs')
+    return context
+
+
+def inventory_query(command, env, record):
+    record['argv'] = command
+    process = subprocess.Popen(command, cwd=ROOT, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE, start_new_session=True)
+    try:
+        stdout, stderr = process.communicate(timeout=60)
+        record.update(exit=process.returncode, stdoutSha256=hashlib.sha256(stdout).hexdigest(), stderrSha256=hashlib.sha256(stderr).hexdigest(),
+                      diagnostics=diagnostic_facts(stdout.decode(errors='replace') + '\n' + stderr.decode(errors='replace')))
+        try:
+            os.killpg(process.pid, 0)
+        except ProcessLookupError:
+            record['processGroupEmpty'] = True
+        else:
+            raise RuntimeError('Inventory parent exited while process group remains active')
+    except BaseException as error:
+        record.update(exit=process.poll(), failure=type(error).__name__ + ': ' + str(error)[:500])
+        if isinstance(error, subprocess.TimeoutExpired):
+            record['diagnostics'] = diagnostic_facts((error.stdout or b'').decode(errors='replace') + '\n' + (error.stderr or b'').decode(errors='replace'))
+        try:
+            stop_group(process)
+            record['terminatedProcessGroup'] = True
+        except Exception as cleanup:
+            record['processCleanupFailure'] = str(cleanup)[:500]
+        raise
+    require(process.returncode == 0, 'Inventory query nonzero exit: ' + str(process.returncode))
+    require(len(stdout) + len(stderr) <= 64 * 1024 * 1024, 'Inventory output size exceeded')
+    return json.loads(stdout)
+
+
+def source_inventory(dotnet, env, projects=None, properties=None, summary=None):
+    # Evaluate the generated variant with the SAME global properties that its
+    # independently observed pinned Builder used; defaults describe another build.
     names = set()
     imported = set()
+    properties = properties or {'Configuration': 'Release'}
     for project in projects or [PROJECT, PRODUCT]:
-        raw = subprocess.check_output([str(dotnet), 'msbuild', str(project), '-p:Configuration=Release',
-                                       '-target:ResolveReferences;GenerateGlobalUsings;GenerateAssemblyInfo',
-                                       '-getItem:Compile,ReferencePath,Analyzer', '-getProperty:MSBuildAllProjects'],
-                                      cwd=ROOT, env=env, timeout=60)
-        result = json.loads(raw)
-        for item in result['Items']['Compile']:
-            path = Path(item['FullPath']).resolve()
-            names.add(path)
-        for kind in ['ReferencePath', 'Analyzer']:
+        record = {'project': str(project), 'globalProperties': properties}
+        if summary is not None:
+            summary.setdefault('inventoryQueries', []).append(record)
+        requested = ['MSBuildAllProjects', 'ProjectAssetsFile', 'MSBuildProjectExtensionsPath', *properties]
+        command = [str(dotnet), 'msbuild', str(project), *['-p:' + k + '=' + v for k, v in properties.items()],
+                   '-target:ResolveReferences;GenerateGlobalUsings;GenerateAssemblyInfo',
+                   '-getItem:Compile,ReferencePath,Analyzer', '-getProperty:' + ','.join(requested)]
+        result = inventory_query(command, env, record)
+        evaluated = result['Properties']
+        record['evaluatedProperties'] = evaluated
+        require(all(evaluated.get(name) == value for name, value in properties.items()), 'Evaluated build global properties differ')
+        for kind in ['Compile', 'ReferencePath', 'Analyzer']:
             names.update(Path(item['FullPath']).resolve() for item in result['Items'][kind])
-        obj = project.parent / 'obj'
-        names.update(p.resolve() for p in obj.glob('*.nuget.*') if p.is_file())
-        names.update(p.resolve() for p in obj.glob('project.assets.json'))
+        def evaluated_path(name):
+            value = evaluated.get(name)
+            require(value, 'Missing evaluated MSBuild property: ' + name)
+            path = Path(value)
+            return (path if path.is_absolute() else project.parent / path).resolve()
+        assets = evaluated_path('ProjectAssetsFile')
+        extensions = evaluated_path('MSBuildProjectExtensionsPath')
+        require(assets.is_file(), 'Missing actual evaluated assets: ' + str(assets))
+        require(extensions.is_dir(), 'Missing actual evaluated NuGet extensions: ' + str(extensions))
+        names.add(assets)
+        names.update(p.resolve() for p in extensions.glob('*.nuget.*') if p.is_file())
         imported.add(project.resolve())
-        imported.update(Path(p).resolve() for p in result['Properties']['MSBuildAllProjects'].split(';') if p)
+        imported.update(Path(p).resolve() for p in evaluated['MSBuildAllProjects'].split(';') if p)
     names.update(imported)
     names.update(p.resolve() for p in OWN.glob('*.py'))
     names.update((ROOT / n).resolve() for n in ['Directory.Build.props', 'Directory.Packages.props', 'global.json'])
@@ -160,8 +224,7 @@ def stop_group(process):
     raise RuntimeError('Process group survived termination deadline')
 
 
-def output_facts(log):
-    text = log.read_text(encoding='utf-8', errors='strict')
+def diagnostic_facts(text):
     # Retain concise infrastructure diagnostics before raw cleanup, including
     # generator/builder exceptions that precede every structured proof record.
     diagnostics = [line for line in text.splitlines()
@@ -170,6 +233,13 @@ def output_facts(log):
         'diagnostics': [line[:1000] for line in diagnostics[:20]],
         'diagnosticLineCount': len(diagnostics),
         'diagnosticsTruncated': len(diagnostics) > 20 or any(len(line) > 1000 for line in diagnostics),
+    }
+
+
+def output_facts(log):
+    text = log.read_text(encoding='utf-8', errors='strict')
+    return {
+        **diagnostic_facts(text),
         'generatedBuildExits': [int(v) for v in re.findall(r'// command took .*?exited with (-?\d+)', text)],
         'childExits': [int(v) for v in re.findall(r'// Benchmark Process \d+ has exited with code (-?\d+)', text)],
         'cases': re.findall(r'^// Benchmark: EntityBaseBenchmarks\.(\w+):', text, re.MULTILINE),
@@ -401,7 +471,7 @@ def main():
             require(identity['runtime'] == '.NET 10.0.11' and identity['architecture'] == 'Arm64', 'Unexpected pinned runtime/architecture')
             summary['correctnessOutput'] = run([dotnet, DRIVER, '--correctness'], env, raw, summary, total=60).strip()
             require(summary['correctnessOutput'] == 'Complete authored model and exact redirected resolver/output oracles passed; counters disabled.', 'Correctness output mismatch')
-            source = source_inventory(dotnet, env)
+            source = source_inventory(dotnet, env, summary=summary)
             runtime_root = Path(identity['coreLibrary']).parent
             known = {'head': revision, 'repositoryRoot': str(ROOT), 'identity': identity, 'sources': source, 'parentClosure': closure(PARENT),
                      'runtimeDirectory': str(runtime_root), 'runtimeClosure': closure(runtime_root), 'dotnetSha256': digest(dotnet),
@@ -432,7 +502,9 @@ def main():
                 path = Path(generated[field])
                 require(path.parent == Path(generated['buildRoot']) and digest(path) == generated['proof']['generatedInputs'].get(path.name), 'Missing independent generated project/code/script')
             require(Path(generated['generatedCode']).suffix == '.notcs', 'Generated code must be independently captured .notcs input')
-            generated['compiledInputs'] = source_inventory(dotnet, env, [Path(generated['generatedProject']), PROJECT, PRODUCT])
+            generated['builderContext'] = generated_build_properties(text, generated, summary)
+            require(generated['proof']['runtime']['informationalVersion'] == known['identity']['coreRuntimeBuild'], 'Independent child runtime full version differs from executing runtime')
+            generated['compiledInputs'] = source_inventory(dotnet, env, [Path(generated['generatedProject']), PROJECT, PRODUCT], generated['builderContext']['properties'], summary)
             # Capture the complete independently built child then discard every
             # generated payload. Later timing regenerates; it cannot adopt its
             # own freshly observed bytes as its approved expected identity.

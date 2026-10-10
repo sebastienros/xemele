@@ -17,12 +17,21 @@ try
     string malformed = Path.Combine(directory, "malformed.dll"); File.WriteAllText(malformed, "invalid PE metadata");
     CheckFailure(malformed, typeof(BadImageFormatException));
     string project = Path.Combine(directory, "fixture.csproj"), expected = Path.Combine(directory, "owned.csproj");
-    CheckBinding([expected], true);
-    CheckBinding([Path.Combine(directory, "foreign.csproj")], false);
-    CheckBinding([expected, expected], false);
-    CheckBinding([], false);
+    if (!args.Contains("--metadata-only"))
+    {
+        CheckBinding([expected], true);
+        CheckBinding([Path.Combine(directory, "foreign.csproj")], false);
+        CheckBinding([expected, expected], false);
+        CheckBinding([], false);
+        Console.WriteLine("Project binding controls passed: exact owned reference; wrong reference; duplicate reference; missing reference; no generator/builder/executor.");
+    }
+    var runtimeMetadata = EntityBaseProvenance.Metadata(typeof(object).Assembly.Location);
+    string runtimeVersion = typeof(object).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()!.InformationalVersion;
+    if (runtimeMetadata.GetProperty("informationalVersion").GetString() != runtimeVersion ||
+        runtimeMetadata.GetProperty("sha256").GetString() != EntityBaseProvenance.Hash(typeof(object).Assembly.Location))
+        throw new Exception("Actual CoreLib same-module informational version differs from executing runtime.");
     Console.WriteLine("Capture controls passed: complete closure; missing required entry; malformed required metadata; actual sibling/input hashes and exact primary metadata errors preserved; no engine/counters/timing.");
-    Console.WriteLine("Project binding controls passed: exact owned reference; wrong reference; duplicate reference; missing reference; no generator/builder/executor.");
+    Console.WriteLine("Runtime metadata control passed: actual CoreLib same-module attribute equals executing full informational version " + runtimeVersion);
 
     void CheckBinding(string[] references, bool wanted)
     {

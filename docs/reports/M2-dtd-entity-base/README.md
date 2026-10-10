@@ -22,7 +22,13 @@ Compilation inputs come from actual MSBuild Compile items for both referenced pr
 Imported build configuration, compiler references/analyzers, NuGet assets,
 generated assembly/global-using inputs and owned Python drivers are hashed too.
 Tracked inputs must equal their actual HEAD blobs. Generated and SDK/package
-inputs have explicit owners. The parent output and complete actual shared runtime
+inputs have explicit owners. Generated queries reuse the exact observed pinned
+Builder global properties, verify their evaluated values, and inventory the
+actual evaluated assets and NuGet extension paths. Query commands, properties,
+exits and bounded error diagnostics survive cleanup. Query process groups are
+bounded and reaped, including failures. Same-module PE attribute constructors
+are read so the independent child runtime full version must equal the executing
+parent runtime build before preparation can pass. The parent output and complete actual shared runtime
 directory are frozen along with the dotnet host, SDK, assembly informational
 versions and runtime/architecture. Preparation additionally invokes the pinned
 BenchmarkDotNet Generator and Builder directly, never Executor or engine, for

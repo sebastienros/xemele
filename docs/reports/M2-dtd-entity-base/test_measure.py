@@ -6,7 +6,7 @@ import importlib.util
 from pathlib import Path
 import tempfile
 import unittest
-from unittest.mock import patch
+from unittest.mock import patch, Mock
 
 spec = importlib.util.spec_from_file_location('entity_base_measure', Path(__file__).with_name('measure.py'))
 measure = importlib.util.module_from_spec(spec)
@@ -103,6 +103,70 @@ class MeasurementGuards(unittest.TestCase):
                 measure.benchmark_results('ENTITY_BASE_PROJECT_BINDING ' + json.dumps(actual) + '\n', Path(root), 'a' * 40,
                                           {'generated': {'projectBinding': {'expected': '/owned.csproj', 'actual': ['/owned.csproj'], 'passed': True}}}, summary)
         self.assertEqual(summary['benchmarks']['projectBindings'], [actual])
+
+    def test_generated_query_uses_exact_observed_builder_properties(self):
+        generated = {'buildRoot': '/owned/child', 'proof': {'directory': '/owned/child/bin/Release/net10.0'}}
+        line = '// start dotnet build -c Release --no-restore --nodeReuse:false /p:UseSharedCompilation=false /p:Deterministic=true /p:Optimize=true '
+        line += '/p:ArtifactsPath="/owned/child/" /p:OutDir="/owned/child/bin/Release/net10.0/" /p:OutputPath="/owned/child/bin/Release/net10.0/" /p:PublishDir="/owned/child/publish/" --output "/owned/child/bin/Release/net10.0/"\n'
+        context = measure.generated_build_properties(line, generated)
+        self.assertEqual(context['properties']['ArtifactsPath'], '/owned/child/')
+        self.assertEqual(context['properties']['Configuration'], 'Release')
+        self.assertEqual(context['observedArgv'][1], 'build')
+        summary = {}
+        with self.assertRaisesRegex(ValueError, 'properties differ'):
+            measure.generated_build_properties(line.replace('/owned/child/publish/', '/foreign/publish/'), generated, summary)
+        self.assertEqual(summary['generatedBuilderContext']['properties']['PublishDir'], '/foreign/publish/')
+        self.assertEqual(summary['generatedBuilderContext']['expectedProperties']['PublishDir'], '/owned/child/publish/')
+
+    def test_failed_inventory_query_retains_exact_diagnostics_and_exit(self):
+        actual = Mock(returncode=1, pid=42)
+        actual.communicate.return_value = (b'', b'error NETSDK1004: actual evaluated assets missing\n')
+        record = {}
+        with patch.object(measure.subprocess, 'Popen', return_value=actual), patch.object(measure.os, 'killpg', side_effect=ProcessLookupError):
+            with self.assertRaisesRegex(ValueError, 'nonzero exit: 1'):
+                measure.inventory_query(['dotnet', 'msbuild', '/actual.csproj'], {}, record)
+        self.assertEqual(record['exit'], 1)
+        self.assertEqual(record['diagnostics']['diagnostics'], ['error NETSDK1004: actual evaluated assets missing'])
+        self.assertEqual(record['argv'], ['dotnet', 'msbuild', '/actual.csproj'])
+
+    def test_timed_out_inventory_query_preserves_partial_diagnostics(self):
+        import subprocess
+        record = {}
+        actual = Mock(pid=42)
+        actual.poll.return_value = None
+        actual.communicate.side_effect = subprocess.TimeoutExpired('dotnet', 60, stderr=b'error: query timed out\n')
+        with patch.object(measure.subprocess, 'Popen', return_value=actual), patch.object(measure, 'stop_group') as cleanup:
+            with self.assertRaises(subprocess.TimeoutExpired):
+                measure.inventory_query(['dotnet', 'msbuild'], {}, record)
+        self.assertIsNone(record['exit'])
+        self.assertEqual(record['diagnostics']['diagnostics'], ['error: query timed out'])
+        self.assertTrue(record['terminatedProcessGroup'])
+        cleanup.assert_called_once_with(actual)
+
+    def test_inventory_requires_actual_assets_and_collects_actual_variant_inputs(self):
+        with tempfile.TemporaryDirectory() as root:
+            directory = Path(root)
+            project = directory / 'child.csproj'; project.write_text('<Project />')
+            extension = directory / 'actual-artifacts/obj/child'; extension.mkdir(parents=True)
+            assets = extension / 'project.assets.json'; assets.write_text('{}')
+            import_file = extension / 'child.csproj.nuget.g.props'; import_file.write_text('<Project />')
+            source = extension / 'AssemblyInfo.cs'; source.write_text('// actual variant')
+            reference = directory / 'actual-reference.dll'; reference.write_bytes(b'reference')
+            analyzer = directory / 'actual-analyzer.dll'; analyzer.write_bytes(b'analyzer')
+            properties = {'Configuration': 'Release', 'ArtifactsPath': str(directory / 'actual-artifacts') + '/'}
+            result = {'Properties': dict(properties, ProjectAssetsFile=str(assets), MSBuildProjectExtensionsPath=str(extension), MSBuildAllProjects=str(import_file)),
+                      'Items': {'Compile': [{'FullPath': str(source)}], 'ReferencePath': [{'FullPath': str(reference)}], 'Analyzer': [{'FullPath': str(analyzer)}]}}
+            summary = {}
+            with patch.object(measure, 'inventory_query', return_value=result) as query:
+                inventory = measure.source_inventory(Path('dotnet'), {}, [project], properties, summary)
+                command = query.call_args.args[0]
+                self.assertIn('-p:ArtifactsPath=' + properties['ArtifactsPath'], command)
+                for path in [assets, import_file, source, reference, analyzer]:
+                    self.assertEqual(inventory[str(path)]['sha256'], measure.digest(path))
+                self.assertEqual(summary['inventoryQueries'][0]['evaluatedProperties']['ProjectAssetsFile'], str(assets))
+                assets.unlink()
+                with self.assertRaisesRegex(ValueError, 'Missing actual evaluated assets'):
+                    measure.source_inventory(Path('dotnet'), {}, [project], properties, {})
 
     def test_actual_mismatching_hashes_and_partial_metrics_survive_early_failure(self):
         import json

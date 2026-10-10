@@ -23,11 +23,25 @@ internal static class EntityBaseProvenance
         foreach (var handle in reader.GetAssemblyDefinition().GetCustomAttributes())
         {
             var attribute = reader.GetCustomAttribute(handle);
-            if (attribute.Constructor.Kind != HandleKind.MemberReference) continue;
-            var member = reader.GetMemberReference((MemberReferenceHandle)attribute.Constructor);
-            if (member.Parent.Kind != HandleKind.TypeReference) continue;
-            var type = reader.GetTypeReference((TypeReferenceHandle)member.Parent);
-            if (reader.GetString(type.Namespace) != "System.Reflection" || reader.GetString(type.Name) != "AssemblyInformationalVersionAttribute") continue;
+            EntityHandle parent;
+            if (attribute.Constructor.Kind == HandleKind.MemberReference)
+                parent = reader.GetMemberReference((MemberReferenceHandle)attribute.Constructor).Parent;
+            else if (attribute.Constructor.Kind == HandleKind.MethodDefinition)
+                parent = reader.GetMethodDefinition((MethodDefinitionHandle)attribute.Constructor).GetDeclaringType();
+            else continue;
+            StringHandle typeNamespace, typeName;
+            if (parent.Kind == HandleKind.TypeReference)
+            {
+                var type = reader.GetTypeReference((TypeReferenceHandle)parent);
+                typeNamespace = type.Namespace; typeName = type.Name;
+            }
+            else if (parent.Kind == HandleKind.TypeDefinition)
+            {
+                var type = reader.GetTypeDefinition((TypeDefinitionHandle)parent);
+                typeNamespace = type.Namespace; typeName = type.Name;
+            }
+            else continue;
+            if (reader.GetString(typeNamespace) != "System.Reflection" || reader.GetString(typeName) != "AssemblyInformationalVersionAttribute") continue;
             var blob = reader.GetBlobReader(attribute.Value);
             if (blob.ReadUInt16() != 1) throw new InvalidDataException("Invalid assembly attribute prolog.");
             version = blob.ReadSerializedString();
