@@ -60,6 +60,10 @@ def main():
         assert any(key.startswith('Microsoft.Testing.Platform/') for key in assets)
         assert not any(key.startswith(('xunit/2', 'Microsoft.NET.Test.Sdk/')) for key in assets)
         LOG.append('Focused actual package inventory: ' + json.dumps(sorted(assets)) + '\n')
+        for option in [None, '--help', '-h', 'help']:
+            run(['dotnet', 'run', '--project', RUNNER_PROJECT, '-c', 'Release', '--no-build', '--no-restore', '--'] +
+                ([] if option is None else [option]))
+        run(['dotnet', 'run', '--project', RUNNER_PROJECT, '-c', 'Release', '--no-build', '--no-restore', '--', 'unknown'], 2)
         cache = ROOT / 'artifacts/M0-corpora/cache'
         if cache.exists(): shutil.rmtree(cache)
         missing = runner('provision', expected=1)

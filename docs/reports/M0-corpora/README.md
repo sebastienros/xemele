@@ -51,10 +51,13 @@ SHA-256, license/notice, adapter/profile. `ParserCasesExecuted` and
 by the future reporting contract, not frozen conformance outcome shapes.
 
 Outside-ownership follow-up: `tools/CorpusManager/Program.cs` remains the verified
-help-only bootstrap. Its owner should wire `import`/`provision` to this core once
-the command/reporting contract is agreed. The task-owned runner provides the
-complete usable demonstration in the meantime. Existing solution test projects
-are unchanged; the coordinator must explicitly run the focused report test app.
+help-only bootstrap. Its owner can replace the entry point with
+`return Xemele.CorpusInfrastructure.CorpusCommand.Run(args);` after approving the
+command/reporting contract. The internal core dispatch preserves help/default
+exit 0 and unknown/invalid command exit 2 and exposes import/provision. The
+task-owned runner calls that exact dispatch for the complete usable demonstration.
+Existing solution test projects are unchanged; the coordinator must explicitly
+run the focused report test app.
 
 This is filesystem/JSON/checksum infrastructure; no parser/scanner hot path is
 introduced. There is no parser allocation or benchmark claim.
