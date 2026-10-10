@@ -14,6 +14,10 @@ internal sealed partial class DtdParser : IDisposable
     private sealed class Source
     {
         internal readonly int Id;
+        // DeclSep replacement must be independently complete; in-declaration
+        // and conditional-header insertions may continue in the resumed source.
+        internal Lex Insertion;
+        internal int IncludeFloor;
         internal readonly bool External, Entered, LiteralExpansion;
         internal readonly string? Name, Text;
         internal int Index, Mode, Line, Column, High;
@@ -52,7 +56,7 @@ internal sealed partial class DtdParser : IDisposable
     private Lex lex, parameterResume;
     private string declaration = "";
     private char quote;
-    private int nextId = 1, declarationSource, lexicalSource, quoteSource, ignoreDepth, ignoreRun, gate;
+    private int nextId = 1, lexicalSource, quoteSource, ignoreDepth, ignoreRun, gate;
     private long documentScalars, tokenScalars, declarationScalars;
     private bool piData, declarationExternal, separator, tokenSpace, literalEntity, disposed, faulted, terminal;
     private XmlLocation declarationAt, tokenAt, parameterAt, lexicalAt;
@@ -237,9 +241,11 @@ internal sealed partial class DtdParser : IDisposable
         if (terminal || pending is not null) return;
         if (s.Entered)
         {
-            // A markup declaration/comment/PI/conditional delimiter cannot cross a PE boundary.
-            if (lexicalSource == s.Id && lex is Lex.Open or Lex.Bang or Lex.Keyword or Lex.CommentStart or Lex.Comment or Lex.CommentDash or Lex.CommentEnd or Lex.PiTarget or Lex.Pi or Lex.PiQuestion or Lex.Conditional or Lex.ConditionalEnd or Lex.Ignore ||
-                declarationSource == s.Id && declaration.Length != 0 || includes.Contains(s.Id) || lex == Lex.Parameter || lex == Lex.Literal && quoteSource == s.Id)
+            // PE Between Declarations is a WFC. Proper declaration/group/
+            // conditional nesting is validity-only for in-grammar insertions.
+            if (s.Insertion == Lex.Between && (lex != Lex.Between || includes.Count != s.IncludeFloor || declaration.Length != 0) ||
+                lexicalSource == s.Id && lex is Lex.Open or Lex.Bang or Lex.Keyword or Lex.CommentStart or Lex.Comment or Lex.CommentDash or Lex.CommentEnd or Lex.PiTarget or Lex.Pi or Lex.PiQuestion ||
+                lex == Lex.Parameter || lex == Lex.Literal && quoteSource == s.Id)
             { Reject("Markup crosses an entity boundary.", s.At(s.Eof)); return; }
             sources.RemoveAt(sources.Count - 1); active.Remove(s.Name!); s.Prolog?.Dispose(); budget.ExitEntity();
             return;

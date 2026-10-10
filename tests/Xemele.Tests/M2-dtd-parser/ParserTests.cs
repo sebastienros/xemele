@@ -39,7 +39,7 @@ public sealed class DtdParserTests
       (DtdSubsetKind.Internal, "<!ENTITY % p '%p;'>%p;", false),
       (DtdSubsetKind.Internal, "<!ENTITY % a '&#37;b;'><!ENTITY % b '&#37;a;'>%a;", false),
       (DtdSubsetKind.Internal, "<!ENTITY % p '<!ELEMENT r'>%p; EMPTY>", false),
-      (DtdSubsetKind.External, "<!ENTITY % p '(a'><!ELEMENT r %p;,b)>", false),
+      (DtdSubsetKind.External, "<!ENTITY % p '(a'><!ELEMENT r %p;,b)>", true),
       (DtdSubsetKind.Internal, "<!ENTITY amp '&amp;'>", false),
       (DtdSubsetKind.Internal, "<!ENTITY lt '&#60;'>", false),
       (DtdSubsetKind.Internal, "<!ENTITY gt SYSTEM 'x'>", false),
@@ -71,7 +71,23 @@ public sealed class DtdParserTests
         if (first.Step == DtdParseStep.NeedInput) Assert.Equal(split, first.Consumed);
         var last = first.Step == DtdParseStep.Rejected ? first : p.Append(text.AsSpan(split), [], true, TestContext.Current.CancellationToken);
         Assert.Equal(valid ? DtdParseStep.Completed : DtdParseStep.Rejected, last.Step);
-        if (valid) { Assert.NotNull(p.Model); Assert.Null(last.Diagnostic); Assert.Equal(text.Length - split, last.Consumed); }
+        if (valid)
+        {
+            Assert.NotNull(p.Model); Assert.Null(last.Diagnostic); Assert.Equal(text.Length - split, last.Consumed);
+            if (text == "<!ENTITY % p '(a'><!ELEMENT r %p;,b)>")
+            {
+                var model = p.Model; Assert.Single(model.Elements); Assert.Single(model.ParameterEntities);
+                Assert.Empty(model.Attributes); Assert.Empty(model.GeneralEntities); Assert.Empty(model.Notations);
+                var element = model.Elements[0]; Assert.Equal("r", element.Name); Assert.True(element.IsExternal);
+                Assert.Equal(new XmlLocation(null, 1, text.IndexOf("<!ELEMENT", StringComparison.Ordinal) + 1, null), element.Location);
+                Assert.Equal(DtdParticleKind.Sequence, element.Content.Kind); Assert.Equal(DtdOccurrence.Once, element.Content.Occurrence); Assert.Null(element.Content.Name);
+                Assert.Equal(new[] { "a", "b" }, element.Content.Children.Select(c => c.Name));
+                Assert.All(element.Content.Children, c => { Assert.Equal(DtdParticleKind.Name, c.Kind); Assert.Equal(DtdOccurrence.Once, c.Occurrence); Assert.Empty(c.Children); });
+                var pe = model.ParameterEntities[0]; Assert.Equal("p", pe.Name); Assert.True(pe.IsParameter); Assert.True(pe.IsExternal);
+                Assert.Equal("(a", pe.ReplacementText); Assert.Null(pe.SystemId); Assert.Null(pe.PublicId); Assert.Null(pe.NotationName);
+                Assert.Equal(new XmlLocation(null, 1, 1, null), pe.Location);
+            }
+        }
         else Assert.NotNull(last.Diagnostic);
         Assert.Throws<InvalidOperationException>(() => p.Append([], [], true, TestContext.Current.CancellationToken));
     }

@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><OutputType>Exe</OutputType><DefineConstants>$(DefineConstants);NONVALIDATING_DRIVER</DefineConstants><EnableDefaultCompileItems>false</EnableDefaultCompileItems><AssemblyName>Xemele.Benchmarks</AssemblyName></PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="BenchmarkDotNet" />
+    <ProjectReference Include="../../../src/Xemele/Xemele.csproj" />
+    <Compile Include="../../../benchmarks/Xemele.Benchmarks/M2-dtd-nonvalidating/NonvalidatingBenchmarks.cs" />
+    <Compile Include="../../../benchmarks/Xemele.Benchmarks/M2-dtd-entity-base/Provenance.cs" Link="Provenance.cs" />
+    <Compile Include="../M2-dtd-entity-base/MeasurementDriver.cs" Link="MeasurementDriver.cs" />
+    <Compile Include="../M2-dtd-entity-base/ProjectBinding.cs" Link="ProjectBinding.cs" />
+  </ItemGroup>
+</Project>

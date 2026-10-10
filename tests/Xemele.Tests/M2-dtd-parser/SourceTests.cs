@@ -108,9 +108,27 @@ public sealed class DtdParserSourceTests
     [InlineData("<!ELEMENT r (", "a)>")]
     public void ChildCannotCloseParentMarkup(string prefix, string child)
     {
-        using var p = new DtdParser(DtdSubsetKind.External, new());
-        var r = p.Append("<!ENTITY % a SYSTEM 'a'>" + prefix + "%a;", [], true, Ct); Assert.Equal(DtdParseStep.NeedEntity, r.Step); p.PushEntity(Child);
-        Assert.Equal(DtdParseStep.Rejected, p.Append(child, [], true, Ct).Step);
+        for (int split = 0; split <= child.Length; split++)
+        {
+            var ledger = new Ledger(); using var p = new DtdParser(DtdSubsetKind.External, new(), ledger, new(Parent, 1, 1, null));
+            const string entity = "<!ENTITY % a SYSTEM 'a'>";
+            var r = p.Append(entity + prefix + "%a;", [], true, Ct); Assert.Equal(DtdParseStep.NeedEntity, r.Step); p.PushEntity(Child);
+            Assert.Equal(DtdParseStep.NeedInput, p.Append(child.AsSpan(0, split), [], false, Ct).Step);
+            Assert.Equal(DtdParseStep.NeedInput, p.Append(child.AsSpan(split), [], true, Ct).Step);
+            Assert.Equal(DtdParseStep.Completed, p.Append([], [], true, Ct).Step);
+            Assert.Equal(1, ledger.Enters); Assert.Equal(1, ledger.Exits);
+            var model = p.Model; Assert.Single(model.Elements); Assert.Single(model.ParameterEntities);
+            Assert.Empty(model.GeneralEntities); Assert.Empty(model.Attributes); Assert.Empty(model.Notations);
+            var element = model.Elements[0]; Assert.Equal("r", element.Name); Assert.True(element.IsExternal);
+            Assert.Equal(new XmlLocation(Parent, 1, entity.Length + 1, null), element.Location);
+            Assert.Equal(DtdOccurrence.Once, element.Content.Occurrence); Assert.Null(element.Content.Name);
+            Assert.Equal(child == "EMPTY>" ? DtdParticleKind.Empty : DtdParticleKind.Sequence, element.Content.Kind);
+            if (child == "EMPTY>") Assert.Empty(element.Content.Children);
+            else { var name = Assert.Single(element.Content.Children); Assert.Equal(DtdParticleKind.Name, name.Kind); Assert.Equal("a", name.Name); Assert.Equal(DtdOccurrence.Once, name.Occurrence); Assert.Empty(name.Children); }
+            var pe = model.ParameterEntities[0]; Assert.Equal("a", pe.Name); Assert.True(pe.IsParameter); Assert.True(pe.IsExternal);
+            Assert.Null(pe.ReplacementText); Assert.Equal("a", pe.SystemId); Assert.Null(pe.PublicId); Assert.Null(pe.NotationName);
+            Assert.Equal(new XmlLocation(Parent, 1, 1, null), pe.Location);
+        }
     }
     [Fact]
     public void ExternalPeInReplacementLiteralUsesNoPaddingAndOwnQuotesAreData()
