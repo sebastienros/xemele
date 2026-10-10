@@ -58,3 +58,13 @@ The final harness copies the complete fresh runner build output into an ignored
 per-run directory before any consumer; historical builds cannot replace that
 pinned artifact. All242 record hashes/source builds and the unchanged copied DLL
 must match. Both failed attempts retain their actual source revisions/logs.
+
+Final source: 3fb839129af1e7c4352abe28460ee2d8a2421ec3.
+[Final summary](final/summary.json) records exit0:64 semantic model assertions,
+11 specific compile rejections, one detected compiled metadata mutation; five
+independent model assemblies preserve81 common and52 foundation resource members.
+Preserved foundation11/M1 protocol38/model comparisons plus solution801
+(247/255/299) all0fail0skip and actual API222. The242 actual reference records
+match the unchanged per-run pinned fresh engine hash and exact tested build.
+Planning14, validate110 and all owned-path/whitespace audits passed. This is
+branch implementation evidence; integration verification remains coordinator work.
