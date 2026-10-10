@@ -4,7 +4,7 @@
   "milestone": "M2",
   "title": "Complete strict XML/namespaces conformance",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "worker:M2-conformance",
   "branch": "codex/m2-conformance-final",
   "base_revision": "23bd03d4a752e1b8d621348088de3d960a721281",
@@ -45,23 +45,37 @@
     {
       "id": "M2-conformance-A1",
       "description": "Complete remaining XML 1.0 Fifth Edition and Namespaces 1.0 Third Edition cases and explicit applicability classification.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "final-profile-identity"
+      ]
     },
     {
       "id": "M2-conformance-A2",
       "description": "All applicable nonvalidating strict XML cases pass; all reference disagreements have resolved causes.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "final-profile-identity"
+      ]
     },
     {
       "id": "M2-conformance-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "final-profile-identity",
+        "final-profile-demo",
+        "final-profile-review",
+        "final-profile-planning"
+      ]
     }
   ],
-  "implementation": [],
+  "implementation": [
+    "samples/M2-conformance/Program.cs: authored public strict profile composition and compact actual model/output",
+    "tests/Xemele.Tests/M2-conformance/FinalJoinTests.cs: namespace/nonvalidating default/entity composition and symbolic default/content loss refusal",
+    "docs/reports/M2-conformance/join_identity.py: bounded inherited source/configuration/input/runtime/provenance/ancestry proof; no corpus workload replay",
+    "docs/reports/M2-conformance/join-identity.json and join-checks.json: joined scope/counts, inherited compatibility/performance, focused execution and corrections"
+  ],
   "evidence": [
     {
       "id": "scope-review-split",
@@ -71,14 +85,54 @@
       "result": "passed",
       "summary": "Two ordered independently reviewable boundaries identified: executable full-case applicability/offline reference contract then actual core/full-case execution. Current M1 classification242rejects/2343unsupported and BCL hardcoded inputURI do not establish full M2 conformance. Preserve original parentA1-A3; no implementation/tests performed by reviewer.",
       "artifact": null
+    },
+    {
+      "id": "final-profile-identity",
+      "kind": "check",
+      "revision": "a4f82173e1b0b30b736c0f5773cf3f841d17366d",
+      "command": "python3 -B docs/reports/M2-conformance/join_identity.py",
+      "result": "passed",
+      "summary": "All 9 prerequisites verified/ancestral; unchanged effective applicability 2585 original IDs/3386 byte-hashed resources, 89 executable/source and 188 runtime inputs. Reuses actual integrated grammar a42dea5 outcomes 1394 accepted/1191 rejected, all 1394 independent+bulk/pause models, 409 original suite+15 effective-profile overrides, 771 resolved disagreements, 644 mutual-success models, 2 symbolic defaults/2 unresolved occurrences. Prior 2157 focused checks, 372 API members/82 additive, actual source/package consumers and 0B borrowed evidence preserved by exact source/configuration/workload equality at original revisions; no fresh corpus/package/measurement claimed.",
+      "artifact": "docs/reports/M2-conformance/join-identity.json"
+    },
+    {
+      "id": "final-profile-demo",
+      "kind": "check",
+      "revision": "33310f8d01897967e2fa30e48d78c7796bb44b88",
+      "command": "Pinned dotnet Release build samples/M2-conformance/Sample.csproj and tests/Xemele.Tests/Xemele.Tests.csproj; execute Sample.dll; execute Xemele.Tests.dll -noColor -class Xemele.Tests.ConformanceJoin.FinalJoinTests",
+      "result": "passed",
+      "summary": "Both builds passed 0 warnings/errors after cancellation correction. 2 new tests passed/0 failed/skipped. Demo joined namespaces, compatible declarations, nonvalidating DTD/default and explicitly granted offline entity; 2 opens/2 disposals, 1 symbolic default/1 unresolved content anchor and 3 loss refusals. Tested implementation source unchanged at final identity revision. Existing public APIs only; no new members.",
+      "artifact": "docs/reports/M2-conformance/join-checks.json"
+    },
+    {
+      "id": "final-profile-review",
+      "kind": "review",
+      "revision": "a4f82173e1b0b30b736c0f5773cf3f841d17366d",
+      "command": "Bounded worker source review of final join sample/tests and inherited input/contract scope",
+      "result": "passed",
+      "summary": "Explicit allowlist/refusal, cancellation, disposal, authored expanded-name/default/entity model and loss refusal inspected. Runtime/configuration/API and prerequisite reports preserved. No blocker; combined M2 gate and cross-architecture release checks remain separate owning obligations.",
+      "artifact": "docs/reports/M2-conformance/join-checks.json"
+    },
+    {
+      "id": "final-profile-planning",
+      "kind": "check",
+      "revision": "a4f82173e1b0b30b736c0f5773cf3f841d17366d",
+      "command": "python3 tools/planning/tasks.py validate; git diff --check",
+      "result": "passed",
+      "summary": "Validated 138 tasks and owned whitespace check passed before evidence; final updated-record validation also required before handoff.",
+      "artifact": null
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Split before claim into ordered executable applicability/reference contract and strict core/corpus implementation; original A1-A3 preserved unchanged for final complete-profile integration join.",
-    "checks": [],
+    "summary": "Final strict XML 1.0 Fifth Edition / Namespaces 1.0 Third Edition nonvalidating composition delivered through existing public APIs; inherited full-case applicability/models/disagreements joined by exact immutable identity and verified prerequisite ancestry. No runtime/API changes.",
+    "checks": [
+      "Pinned Release sample/test builds passed (0 warnings/errors); 2 new join tests passed; actual demo model/output passed (2 granted opens/disposals, 3 loss refusals).",
+      "Identity proof passed: 2585 original IDs/3386 resource hashes, 89 executable/source inputs/188 runtime inputs; prior conformance, compatibility and measurement results retained at original revisions.",
+      "Planning validate/owned whitespace passed; initial analyzer and overbroad metadata identity assertions corrected and recorded."
+    ],
     "remaining": [
-      "Verify both children, then final complete-profile applicability/all applicable cases/resolved disagreements/preservation/API/package integration checks; no reduction of initial release scope."
+      "Coordinator review/integration and focused new join/identity/graph checks; mark verified only after integrated checks. Comprehensive combined checks belong to M2 gate; cross-architecture release validation remains later."
     ],
     "requests": []
   }
