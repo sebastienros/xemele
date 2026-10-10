@@ -4,11 +4,11 @@
   "milestone": "M2",
   "title": "Integrate DTD/entities/defaults into XML core",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M2-entities",
   "branch": "codex/m2-entities",
   "base_revision": "c88f4135c39b71b80a5993d60680ee9c082a32e8",
-  "integration_revision": null,
+  "integration_revision": "98c99e9895c3c4552b612f0e3fc5692324ecef08",
   "depends_on": [
     "M2-resolver",
     "M2-dtd",
@@ -49,7 +49,8 @@
         "final-preparation-17e85",
         "benchmark-17e85",
         "source-reviews",
-        "final-owned-audit"
+        "final-owned-audit",
+        "integrated-98c99e9"
       ]
     },
     {
@@ -62,7 +63,8 @@
         "final-preparation-17e85",
         "benchmark-17e85",
         "source-reviews",
-        "final-owned-audit"
+        "final-owned-audit",
+        "integrated-98c99e9"
       ]
     },
     {
@@ -75,7 +77,8 @@
         "final-preparation-17e85",
         "benchmark-17e85",
         "source-reviews",
-        "final-owned-audit"
+        "final-owned-audit",
+        "integrated-98c99e9"
       ]
     }
   ],
@@ -158,6 +161,15 @@
       "result": "passed",
       "summary": "Validated124tasks; committed/staged/working/untracked paths all owned; frozen foundation Contracts unchanged; all diffchecks pass; original compiled runtime/sample/benchmark input hashes unchanged successful correctness978. Evidence-only final changes; no repeat successful measurements or checks.",
       "artifact": "docs/reports/M2-entities/final-audit.json"
+    },
+    {
+      "id": "integrated-98c99e9",
+      "kind": "integration",
+      "revision": "98c99e9895c3c4552b612f0e3fc5692324ecef08",
+      "command": "SDK10.0.400/runtime10.0.11; python3 -B docs/reports/M2-entities/verify.py --expected-branch codex/integrate-m2-entities --audit-base 09b6b49810414ef73bfb0f129c0ca0fcccf4a62d --report-prefix integrated-98c99e9",
+      "result": "passed",
+      "summary": "Fresh integrated driverexit0/all54expectedcommandexits. FullMTP5148 and direct/discovery4594+255+299 allpass/0skip; own79/foundation9; earlieridentities preserved only2authorizedfoundationtransitions. API272/zeroadds; actualcompiledcontract=independentapprovedmodel; source/freshnupkg consumption and fulloracles/discovery pass; freshBCL242currentfullversion/239matchedrejections+3documenteddivergences/unchangedcopy; planning14/validate124/ownership/diffchecks. All367compiledinputSHA rootmatchedGit98/beforeafterunchanged;2actualframingchildpairs0/64000B and complete32000consumption/currentversions; rawremoved. Successfulstandalone961allocation/17e85timing preserved withoutrepetition. Coordination-only state change merged afterchecks; no compiledsource change.",
+      "artifact": "docs/reports/M2-entities/integrated-98c99e9/summary.json"
     }
   ],
   "blockers": [],
@@ -171,8 +183,7 @@
       "Final ownedpath allstates/diff/planning audits pass; historical full175 and initialtiming961 failures remain unverified at their original revisions."
     ],
     "remaining": [
-      "Coordinator integrate branch and run fresh applicable combined-tree checks before verified; no later-milestone dependency or peer branch required.",
-      "Only macOSArm64 evidence; eight pinned simple W3C cases are not full XML conformance/mixed-node ordering coverage."
+      "M2-entities integrated and verified; subsequent milestone tasks/gates remain to complete initialrelease through M9-gate."
     ],
     "requests": [
       "Consume existing foundation Contracts unchanged; the sole FoundationTests.cs transition preserves defaultProhibit/no-unrequested-resolver guarantees.",
