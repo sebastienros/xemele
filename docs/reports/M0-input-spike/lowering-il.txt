@@ -1,0 +1,226 @@
+Release IL inspection: .NET 10.0.11; SDK pinned by repository; assembly=Input
+
+get_Utf8Literal:
+IL_0000: ldsflda __StaticArrayInitTypeSize=6 3F6A34AF54AE1C0CC94F7FE21D0024917088788582255580EB2FCC2DF9C8B995
+IL_0005: ldc.i4.5 
+IL_0006: newobj Void .ctor(Void*, Int32)
+IL_000B: ret 
+
+get_CharLiteral:
+IL_0000: ldstr <?xml
+IL_0005: call System.ReadOnlySpan`1[System.Char] AsSpan(System.String)
+IL_000A: ret 
+
+get_ConstantBytes:
+IL_0000: ldsflda __StaticArrayInitTypeSize=3 F1945CD6C19E56B3C1C78943EF5EC18116907A4CA1EFC40A57D48AB1DB7ADFC5
+IL_0005: ldc.i4.3 
+IL_0006: newobj Void .ctor(Void*, Int32)
+IL_000B: ret 
+
+get_ConstantInts:
+IL_0000: ldtoken __StaticArrayInitTypeSize=12_Align=4 4636993D3E1DA4E9D6B8F87B79E8F7C6D018580D52661950EABC3845C5897A4D4
+IL_0005: call System.ReadOnlySpan`1[System.Int32] CreateSpan[Int32](System.RuntimeFieldHandle)
+IL_000A: ret 
+
+get_RuntimeBytes:
+IL_0000: ldc.i4.3 
+IL_0001: newarr System.Byte
+IL_0006: dup 
+IL_0007: ldc.i4.0 
+IL_0008: ldsfld Byte RuntimeByte
+IL_000D: stelem.i1 
+IL_000E: dup 
+IL_000F: ldc.i4.1 
+IL_0010: ldc.i4 187
+IL_0015: stelem.i1 
+IL_0016: dup 
+IL_0017: ldc.i4.2 
+IL_0018: ldc.i4 191
+IL_001D: stelem.i1 
+IL_001E: call System.ReadOnlySpan`1[System.Byte] op_Implicit(Byte[])
+IL_0023: ret 
+
+get_MutableBytes:
+IL_0000: ldc.i4.3 
+IL_0001: newarr System.Byte
+IL_0006: dup 
+IL_0007: ldtoken __StaticArrayInitTypeSize=3 F1945CD6C19E56B3C1C78943EF5EC18116907A4CA1EFC40A57D48AB1DB7ADFC5
+IL_000C: call Void InitializeArray(System.Array, System.RuntimeFieldHandle)
+IL_0011: call System.Span`1[System.Byte] op_Implicit(Byte[])
+IL_0016: ret 
+
+RuntimeLocalSum:
+IL_0000: ldloca.s 01
+IL_0002: initobj System.Runtime.CompilerServices.InlineArray3`1[System.Byte]
+IL_0008: ldloca.s 01
+IL_000A: ldc.i4.0 
+IL_000B: call Byte& InlineArrayElementRef[InlineArray3`1,Byte](System.Runtime.CompilerServices.InlineArray3`1[System.Byte] ByRef, Int32)
+IL_0010: ldsfld Byte RuntimeByte
+IL_0015: stind.i1 
+IL_0016: ldloca.s 01
+IL_0018: ldc.i4.1 
+IL_0019: call Byte& InlineArrayElementRef[InlineArray3`1,Byte](System.Runtime.CompilerServices.InlineArray3`1[System.Byte] ByRef, Int32)
+IL_001E: ldc.i4 187
+IL_0023: stind.i1 
+IL_0024: ldloca.s 01
+IL_0026: ldc.i4.2 
+IL_0027: call Byte& InlineArrayElementRef[InlineArray3`1,Byte](System.Runtime.CompilerServices.InlineArray3`1[System.Byte] ByRef, Int32)
+IL_002C: ldc.i4 191
+IL_0031: stind.i1 
+IL_0032: ldloca.s 01
+IL_0034: ldc.i4.3 
+IL_0035: call System.ReadOnlySpan`1[System.Byte] InlineArrayAsReadOnlySpan[InlineArray3`1,Byte](System.Runtime.CompilerServices.InlineArray3`1[System.Byte] ByRef, Int32)
+IL_003A: stloc.0 
+IL_003B: ldloca.s 00
+IL_003D: ldc.i4.0 
+IL_003E: call Byte& get_Item(Int32)
+IL_0043: ldind.u1 
+IL_0044: ldloca.s 00
+IL_0046: ldc.i4.1 
+IL_0047: call Byte& get_Item(Int32)
+IL_004C: ldind.u1 
+IL_004D: add 
+IL_004E: ldloca.s 00
+IL_0050: ldc.i4.2 
+IL_0051: call Byte& get_Item(Int32)
+IL_0056: ldind.u1 
+IL_0057: add 
+IL_0058: ret 
+
+MutableLocalSum:
+IL_0000: ldloca.s 01
+IL_0002: initobj System.Runtime.CompilerServices.InlineArray3`1[System.Byte]
+IL_0008: ldloca.s 01
+IL_000A: ldc.i4.0 
+IL_000B: call Byte& InlineArrayElementRef[InlineArray3`1,Byte](System.Runtime.CompilerServices.InlineArray3`1[System.Byte] ByRef, Int32)
+IL_0010: ldc.i4 239
+IL_0015: stind.i1 
+IL_0016: ldloca.s 01
+IL_0018: ldc.i4.1 
+IL_0019: call Byte& InlineArrayElementRef[InlineArray3`1,Byte](System.Runtime.CompilerServices.InlineArray3`1[System.Byte] ByRef, Int32)
+IL_001E: ldc.i4 187
+IL_0023: stind.i1 
+IL_0024: ldloca.s 01
+IL_0026: ldc.i4.2 
+IL_0027: call Byte& InlineArrayElementRef[InlineArray3`1,Byte](System.Runtime.CompilerServices.InlineArray3`1[System.Byte] ByRef, Int32)
+IL_002C: ldc.i4 191
+IL_0031: stind.i1 
+IL_0032: ldloca.s 01
+IL_0034: ldc.i4.3 
+IL_0035: call System.Span`1[System.Byte] InlineArrayAsSpan[InlineArray3`1,Byte](System.Runtime.CompilerServices.InlineArray3`1[System.Byte] ByRef, Int32)
+IL_003A: stloc.0 
+IL_003B: ldloca.s 00
+IL_003D: ldc.i4.0 
+IL_003E: call Byte& get_Item(Int32)
+IL_0043: ldind.u1 
+IL_0044: ldloca.s 00
+IL_0046: ldc.i4.1 
+IL_0047: call Byte& get_Item(Int32)
+IL_004C: ldind.u1 
+IL_004D: add 
+IL_004E: ldloca.s 00
+IL_0050: ldc.i4.2 
+IL_0051: call Byte& get_Item(Int32)
+IL_0056: ldind.u1 
+IL_0057: add 
+IL_0058: ret 
+
+.cctor:
+IL_0000: ldsflda __StaticArrayInitTypeSize=6 DACF5B5B9E89F3CDE440594AAAA3BBA6E4C30E8E42937E4A718564CB0965C63A
+IL_0005: ldc.i4.5 
+IL_0006: newobj Void .ctor(Void*, Int32)
+IL_000B: call System.Buffers.SearchValues`1[System.Byte] Create(System.ReadOnlySpan`1[System.Byte])
+IL_0010: stsfld System.Buffers.SearchValues`1[System.Byte] ByteStops
+IL_0015: ldstr "&<
+
+IL_001A: call System.ReadOnlySpan`1[System.Char] AsSpan(System.String)
+IL_001F: call System.Buffers.SearchValues`1[System.Char] Create(System.ReadOnlySpan`1[System.Char])
+IL_0024: stsfld System.Buffers.SearchValues`1[System.Char] CharStops
+IL_0029: ldc.i4.5 
+IL_002A: newarr System.Byte
+IL_002F: dup 
+IL_0030: ldtoken __StaticArrayInitTypeSize=5 6B22E9A26A4C136EB28E21AA78055A393990945606D78FC3F4442BACF21BF109
+IL_0035: call Void InitializeArray(System.Array, System.RuntimeFieldHandle)
+IL_003A: stsfld Byte[] ArrayBytes
+IL_003F: ldc.i4.5 
+IL_0040: newarr System.Char
+IL_0045: dup 
+IL_0046: ldtoken __StaticArrayInitTypeSize=10 59BFE009E3DF28161FE5ADAC4BFAA123E221721464DB4734F6F2B3EDCA4F29BD
+IL_004B: call Void InitializeArray(System.Array, System.RuntimeFieldHandle)
+IL_0050: stsfld Char[] ArrayChars
+IL_0055: ldc.i4 239
+IL_005A: stsfld Byte RuntimeByte
+IL_005F: ldc.i4.s 0C
+IL_0061: newarr System.String
+IL_0066: dup 
+IL_0067: ldc.i4.0 
+IL_0068: ldstr xml
+IL_006D: stelem.ref 
+IL_006E: dup 
+IL_006F: ldc.i4.1 
+IL_0070: ldstr UTF-8
+IL_0075: stelem.ref 
+IL_0076: dup 
+IL_0077: ldc.i4.2 
+IL_0078: ldstr PUBLIC
+IL_007D: stelem.ref 
+IL_007E: dup 
+IL_007F: ldc.i4.3 
+IL_0080: ldstr SYSTEM
+IL_0085: stelem.ref 
+IL_0086: dup 
+IL_0087: ldc.i4.4 
+IL_0088: ldstr CDATA
+IL_008D: stelem.ref 
+IL_008E: dup 
+IL_008F: ldc.i4.5 
+IL_0090: ldstr DOCTYPE
+IL_0095: stelem.ref 
+IL_0096: dup 
+IL_0097: ldc.i4.6 
+IL_0098: ldstr ELEMENT
+IL_009D: stelem.ref 
+IL_009E: dup 
+IL_009F: ldc.i4.7 
+IL_00A0: ldstr ATTLIST
+IL_00A5: stelem.ref 
+IL_00A6: dup 
+IL_00A7: ldc.i4.8 
+IL_00A8: ldstr ENTITY
+IL_00AD: stelem.ref 
+IL_00AE: dup 
+IL_00AF: ldc.i4.s 09
+IL_00B1: ldstr NOTATION
+IL_00B6: stelem.ref 
+IL_00B7: dup 
+IL_00B8: ldc.i4.s 0A
+IL_00BA: ldstr standalone
+IL_00BF: stelem.ref 
+IL_00C0: dup 
+IL_00C1: ldc.i4.s 0B
+IL_00C3: ldstr encoding
+IL_00C8: stelem.ref 
+IL_00C9: stsfld System.String[] Vocabulary
+IL_00CE: ldsfld System.String[] Vocabulary
+IL_00D3: ldsfld <>c <>9
+IL_00D8: ldftn UInt32 <.cctor>b__35_0(System.String)
+IL_00DE: newobj Void .ctor(System.Object, IntPtr)
+IL_00E3: call System.Collections.Generic.IEnumerable`1[System.UInt32] Select[String,UInt32](System.Collections.Generic.IEnumerable`1[System.String], System.Func`2[System.String,System.UInt32])
+IL_00E8: call UInt32[] ToArray[UInt32](System.Collections.Generic.IEnumerable`1[System.UInt32])
+IL_00ED: stsfld UInt32[] ExactHashes
+IL_00F2: ldsfld System.String[] Vocabulary
+IL_00F7: ldsfld <>c <>9
+IL_00FC: ldftn UInt32 <.cctor>b__35_1(System.String)
+IL_0102: newobj Void .ctor(System.Object, IntPtr)
+IL_0107: call System.Collections.Generic.IEnumerable`1[System.UInt32] Select[String,UInt32](System.Collections.Generic.IEnumerable`1[System.String], System.Func`2[System.String,System.UInt32])
+IL_010C: call UInt32[] ToArray[UInt32](System.Collections.Generic.IEnumerable`1[System.UInt32])
+IL_0111: stsfld UInt32[] FoldedHashes
+IL_0116: ldsfld System.String[] Vocabulary
+IL_011B: call System.Text.Encoding get_ASCII()
+IL_0120: dup 
+IL_0121: ldvirtftn Byte[] GetBytes(System.String)
+IL_0127: newobj Void .ctor(System.Object, IntPtr)
+IL_012C: call System.Collections.Generic.IEnumerable`1[System.Byte[]] Select[String,Byte[]](System.Collections.Generic.IEnumerable`1[System.String], System.Func`2[System.String,System.Byte[]])
+IL_0131: call Byte[][] ToArray[Byte[]](System.Collections.Generic.IEnumerable`1[System.Byte[]])
+IL_0136: stsfld Byte[][] Encoded
+IL_013B: ret 
