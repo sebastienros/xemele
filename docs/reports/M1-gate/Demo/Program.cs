@@ -39,7 +39,7 @@ foreach (var document in documents)
         Require(stream.CanWrite, "Save closed caller stream");
         stream.Position = 0;
         using var reader = XmlReader.Create(stream, new() { CloseInput = false, DtdProcessing = DtdProcessing.Prohibit });
-        Require(Signature(reader) == Signature(expected), "independent byte output model");
+        Require(ReaderSignature(reader) == Signature(expected), "independent byte output model");
         stream.Position = 0;
         Require(XDocument.Load(stream).RootElement.LastChild.GetTextContent() == "changed\r<", "byte semantic reparse");
     }
@@ -77,9 +77,9 @@ static void Require(bool condition, string message) { if (!condition) throw new 
 static string Signature(string xml)
 {
     using var reader = XmlReader.Create(new StringReader(xml), new() { DtdProcessing = DtdProcessing.Prohibit });
-    return Signature(reader);
+    return ReaderSignature(reader);
 }
-static string Signature(XmlReader reader)
+static string ReaderSignature(XmlReader reader)
 {
     var rows = new List<string>();
     while (reader.Read())

@@ -162,12 +162,12 @@ def main():
         source_demo = run('dotnet',REPORT_ROOT/'Demo/bin/Release/net10.0/Demo.dll')
         (report/'source-demo.txt').write_text(source_demo)
         # Config-only inspection; unchanged workload measurements remain dependency evidence.
-        benchmark_files = list((ROOT/'docs/reports').glob('M1-*/**/*.cs'))
+        benchmark_files = [ROOT/p for p in ['experiments/Tree/Benchmarks.cs','experiments/Input/Benchmarks.cs','benchmarks/Xemele.Benchmarks/M1-common/CommonBenchmarks.cs','benchmarks/Xemele.Benchmarks/M1-input/InputBenchmarks.cs','benchmarks/Xemele.Benchmarks/M1-serialize/SerializerBenchmarks.cs']]
         benchmark_classes = []
         import re
         for path in benchmark_files:
             text = path.read_text()
-            for match in re.finditer(r'((?:\[[^\]]+\]\s*)+)public (?:sealed )?class (\w+)',text):
+            for match in re.finditer(r'((?:\[[^\]]+\]\s*)+)(?:public |internal )?(?:sealed )?class (\w+)',text):
                 if 'MemoryDiagnoser' in match[1] or 'ShortRunJob' in match[1]:
                     assert 'MemoryDiagnoser' in match[1] and 'ShortRunJob' in match[1], str(path)
                     benchmark_classes.append(str(path.relative_to(ROOT))+':'+match[2])
@@ -195,6 +195,9 @@ def main():
         audit()
         (report/'summary.json').write_text(json.dumps(dict(sourceRevision=revision,host=platform.platform(),referenceProvenance=dict(runner=str(runner),runnerSha256=runner_hash,expectedBuild='1.0.0+'+revision,dotnet=str(dotnet),dotnetSha256=hashlib.sha256(dotnet.read_bytes()).hexdigest()),tests=counts,discovery=discovery,packageSha256=hashlib.sha256(package.read_bytes()).hexdigest(),allocationEvidence='Not applicable: verification harness only; no runtime edits or timing claims.',result='passed'),indent=2)+'\n')
     finally:
+        if sys.exc_info()[0] is not None:
+            import traceback
+            logs.append(traceback.format_exc())
         (report/'checks.txt.gz').write_bytes(gzip.compress('\n'.join(logs).encode(),mtime=0))
         print('Durable report: '+str(report),flush=True)
 
