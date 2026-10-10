@@ -179,6 +179,28 @@ public class DomBuilderTests
         Assert.Throws<ArgumentException>(() => root.AppendChild(root));
     }
 
+    [Fact]
+    public void WarmUniqueMemberHelpersAllocateZeroWithCapacityAndNamesPrepared()
+    {
+        var d = new XmlDocument(); var b = d.BeginDomConstruction(); var root = d.CreateElement("e"); b.AppendChild(d.DocumentNode, root);
+        d.Nodes.EnsureCapacity(2048); d.AttributeSlots.EnsureCapacity(2048); d.NamespaceSlots.EnsureCapacity(2048);
+        // Every element has a distinct expanded-key/prefix set: repeated names across
+        // elements remain valid unique members, not duplicate unchecked insertion.
+        for (int i = 0; i < 100; i++)
+        {
+            var e = d.CreateElement("e"); b.AppendChild(root, e); b.AppendAttribute(e, "a", "v"); b.AppendNamespaceDeclaration(e, "p", "urn:p");
+        }
+        long allocated = 0;
+        for (int i = 0; i < 1000; i++)
+        {
+            var e = d.CreateElement("e"); b.AppendChild(root, e);
+            long before = GC.GetAllocatedBytesForCurrentThread(); b.AppendAttribute(e, "a", "v"); b.AppendNamespaceDeclaration(e, "p", "urn:p");
+            allocated += GC.GetAllocatedBytesForCurrentThread() - before;
+        }
+        Assert.Equal(0, allocated); Assert.Equal(2200, b.MemberChecks);
+        Assert.Equal(1100, root.Children.Count); Assert.Equal("v", root.LastChild.Attributes[0].Value);
+    }
+
     private static void SetVersion(XmlDocument d, XmlDocument.DomBuilder b, long value)
     {
         typeof(XmlDocument).GetProperty("MutationVersion", BindingFlags.Instance | BindingFlags.NonPublic)!.SetValue(d, value);

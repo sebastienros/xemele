@@ -26,9 +26,11 @@ static class AllocationProbe
         }
         Build(names);
         before = GC.GetAllocatedBytesForCurrentThread(); var owned = Build(names); long ownedBytes = GC.GetAllocatedBytesForCurrentThread() - before;
-        long retainedBefore = GC.GetTotalMemory(true); var retained = Build(names); long retainedBytes = GC.GetTotalMemory(true) - retainedBefore;
-        Console.WriteLine($"cold document+builder setup={cold} B; fixture name setup={fixture} B; warm 4096 append helpers={helper} B; node arena growth={persistence} B; owned 512 attributes+512 declarations construction={ownedBytes} B; retained document delta={retainedBytes} B (GC estimate, shared fixture strings excluded)");
-        if (helper != 0 || owned.RootElement.Attributes.Count != 512 || retained.RootElement.NamespaceDeclarations.Count != 512) throw new Exception("Allocation/ownership probe mismatch.");
+        var retained = new XmlDocument[32]; long retainedBefore = GC.GetTotalMemory(true);
+        for (int i = 0; i < retained.Length; i++) retained[i] = Build(names);
+        long retainedBytes = (GC.GetTotalMemory(true) - retainedBefore) / retained.Length;
+        Console.WriteLine($"cold document+builder setup={cold} B; fixture name setup={fixture} B; warm 4096 append helpers={helper} B; node arena growth={persistence} B; owned 512 attributes+512 declarations construction={ownedBytes} B; retained document delta={retainedBytes} B/doc (32-document GC estimate, shared fixture strings excluded)");
+        if (helper != 0 || owned.RootElement.Attributes.Count != 512 || retained[^1].RootElement.NamespaceDeclarations.Count != 512) throw new Exception("Allocation/ownership probe mismatch.");
         GC.KeepAlive(first); GC.KeepAlive(owned); GC.KeepAlive(retained); GC.KeepAlive(names);
     }
 }
