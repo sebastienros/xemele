@@ -28,7 +28,8 @@
       "claim_revision": "c4f3e7a3910e130a2467733aa79558984463b244",
       "setup_status": "suspended-prerequisite",
       "chat_id": "01a123df-0348-7a81-9d6f-f4676934cb48",
-      "worktree_path": "/Users/sebastienros/.codex/worktrees/a22a/xemele"
+      "worktree_path": "/Users/sebastienros/.codex/worktrees/a22a/xemele",
+      "preserved_draft_revision": "4aef77b0e1fffca92322c096ce8a09c65f019845"
     },
     {
       "task_id": "M1-tree-dom-builder",
@@ -42,7 +43,9 @@
       "worktree_path": "/Users/sebastienros/.codex/worktrees/38a3/xemele"
     }
   ],
-  "integration_queue": [],
+  "integration_queue": [
+    "M1-serialize"
+  ],
   "blockers": [
     {
       "task_id": "M1-dom",
@@ -51,9 +54,9 @@
     }
   ],
   "next_actions": [
-    "Claim and dispatch DOM composition with verified Input/Tree/Syntax",
-    "Run serializer20 ShortRun with root/DOM parked",
-    "Integrate serializer then M1 conformance and gate"
+    "Integrate serializer handoff with existing runtime regressions",
+    "Review/test/measure and integrate linear tree builder repair",
+    "Resume preserved DOM draft only after repair verified and renewed claim"
   ],
   "last_verified_task": "M1-syntax",
   "last_integrated_revision": "335268e544e361f2be64d9afe67bdf1794f0299b",
@@ -449,8 +452,8 @@
       }
     }
   ],
-  "benchmark_policy": "Exclusive serializer20 ShortRun; root/DOM and future repair worker source/static only.",
-  "benchmark_owner": "M1-serialize",
+  "benchmark_policy": "ShortRun only; exclusive host timing parks all peer/root heavy checks.",
+  "benchmark_owner": null,
   "pending_decisions": [],
   "decisions": {
     "project_license": "MIT",
@@ -503,16 +506,6 @@
     }
   ],
   "timing_queue": [
-    "M1-serialize"
-  ],
-  "benchmark_window": {
-    "task_id": "M1-serialize",
-    "source_revision": "707d52bc2130492daa690c7255d91a9104edea59",
-    "runtime_revision": "972b438ef0fefbfc52f32e15c84bc6deb36c006d",
-    "cases": 20,
-    "parked": [
-      "coordinator",
-      "M1-dom explicit no active build/test processes"
-    ]
-  }
+    "M1-tree-dom-builder"
+  ]
 }
