@@ -51,3 +51,10 @@ The verifier rejects native wrong normalization and a mutated correct response a
 standard expectations. No Xemele runtime parser or product exclusion was added.
 Subprocess duration is not parser performance; no runtime hot-path/allocation or
 comparative timing experiment applies to this reference infrastructure task.
+
+The wrapper conservatively rejects literal document-level whitespace with an
+unsupported-normalization protocol diagnostic. It does not return success with
+missing events. Bounded decoded-source envelope inspection respects declaration,
+comment, PI, quoted tag, CDATA and DTD boundaries; ambiguity fails explicitly.
+The raw-probe reproduction records native document children separately. This
+boundary applies across supported encodings and does not exclude Xemele whitespace.

@@ -150,12 +150,136 @@ fn execute(request: &Value) -> Value {
             }
         }
     }
+    match document_whitespace(&text) {
+        Some(false) => {},
+        Some(true) => return failure("runner-failure", "protocol", "Unsupported normalization: pinned engine drops or collapses document-level whitespace."),
+        None => return failure("runner-failure", "protocol", "Unsupported normalization: ambiguous document envelope."),
+    }
     let mut events = Vec::new();
     let mut budget = XML;
     if let Err(e) = visit(&doc, doc.root(), &mut events, &mut budget) {
         return e;
     }
     json!({"protocolVersion":1,"engine":engine(),"outcome":"success","diagnostics":[],"events":events})
+}
+// After a successful native parse, inspect literal document boundaries on the
+// already decoded XML. Any outside-root whitespace is conservatively unsupported:
+// raw engine drops initial whitespace and collapses other misc runs. No events
+// are fabricated. Quote/comment/PI/CDATA/DTD delimiters never affect root depth.
+fn document_whitespace(text: &str) -> Option<bool> {
+    let s = text.strip_prefix('\u{feff}').unwrap_or(text);
+    let b = s.as_bytes();
+    let mut i = 0;
+    let mut depth = 0usize;
+    let mut root_seen = false;
+    let mut outside_space = false;
+    while i < b.len() {
+        if b[i] != b'<' {
+            if depth == 0 {
+                if matches!(b[i], b' ' | b'\t' | b'\r' | b'\n') {
+                    outside_space = true;
+                } else {
+                    return None;
+                }
+            }
+            i += 1;
+            continue;
+        }
+        if b[i..].starts_with(b"<!--") {
+            let n = s[i + 4..].find("-->")?;
+            i += 4 + n + 3;
+            continue;
+        }
+        if b[i..].starts_with(b"<?") {
+            let n = s[i + 2..].find("?>")?;
+            i += 2 + n + 2;
+            continue;
+        }
+        if b[i..].starts_with(b"<![CDATA[") {
+            if depth == 0 {
+                return None;
+            }
+            let n = s[i + 9..].find("]]>")?;
+            i += 9 + n + 3;
+            continue;
+        }
+        if b[i..].starts_with(b"<!DOCTYPE") {
+            if depth != 0 || root_seen {
+                return None;
+            }
+            let mut j = i + 9;
+            let mut brackets = 0usize;
+            let mut quote = None;
+            loop {
+                let byte = *b.get(j)?;
+                if let Some(q) = quote {
+                    if byte == q {
+                        quote = None;
+                    }
+                    j += 1;
+                } else if b[j..].starts_with(b"<!--") {
+                    let n = s[j + 4..].find("-->")?;
+                    j += 4 + n + 3;
+                } else if b[j..].starts_with(b"<?") {
+                    let n = s[j + 2..].find("?>")?;
+                    j += 2 + n + 2;
+                } else if byte == b'\'' || byte == b'"' {
+                    quote = Some(byte);
+                    j += 1;
+                } else if byte == b'[' {
+                    brackets += 1;
+                    j += 1;
+                } else if byte == b']' {
+                    brackets = brackets.checked_sub(1)?;
+                    j += 1;
+                } else if byte == b'>' && brackets == 0 {
+                    i = j + 1;
+                    break;
+                } else {
+                    j += 1;
+                }
+            }
+            continue;
+        }
+        if b[i..].starts_with(b"<!") {
+            return None;
+        }
+        let closing = b.get(i + 1) == Some(&b'/');
+        let mut j = i + 1;
+        let mut quote = None;
+        loop {
+            let byte = *b.get(j)?;
+            if let Some(q) = quote {
+                if byte == q {
+                    quote = None;
+                }
+            } else if byte == b'\'' || byte == b'"' {
+                quote = Some(byte);
+            } else if byte == b'>' {
+                break;
+            }
+            j += 1;
+        }
+        if closing {
+            depth = depth.checked_sub(1)?;
+        } else {
+            if depth == 0 {
+                if root_seen {
+                    return None;
+                }
+                root_seen = true;
+            }
+            if b.get(j.wrapping_sub(1)) != Some(&b'/') {
+                depth = depth.checked_add(1)?;
+            }
+        }
+        i = j + 1;
+    }
+    if depth != 0 || !root_seen {
+        None
+    } else {
+        Some(outside_space)
+    }
 }
 // The engine reserializes its DTD and drops parameter declarations. Inspect only
 // an actual prolog DOCTYPE, respecting quoted literals/comments/PIs. No regex or

@@ -26,7 +26,9 @@ or strict UTF-8 hint; invalid raw JSON wire UTF-8 exits 2 with stderr and no res
 for that line. XML payload decoding errors are parse rejection. Stdout carries
 only responses; framing/response bounds are measured in UTF-16 code units as in
 v1. Request storage has an additional conservative 4MiB raw-byte cap; oversized
-lines are drained and subsequent lines recover. Every quota is runner-failure/limit,
+lines are drained and subsequent lines recover. Strict incremental UTF-8
+validation includes discarded bytes, invalid continuation/overlong/surrogate/
+out-of-range sequences, and incomplete sequences at EOF. Every quota is runner-failure/limit,
 never an XML conformance verdict. Panic/I/O/nonzero process exits are infrastructure
 failures for the integrated client.
 
@@ -63,7 +65,13 @@ for untrusted reference workloads, as for other out-of-process engines.
 Known pinned-engine differences (not corrected or hidden): literal CRLF in an
 attribute becomes two spaces versus BCL one; CDATA retains CRLF versus BCL LF;
 initial prolog whitespace is dropped (later misc whitespace may collapse to LF).
-The verifier asserts these actual divergences separately. The known protocol XML
+The wrapper conservatively returns runner-failure/protocol with an unsupported
+normalization diagnostic for any literal document-level whitespace after native
+parse success. Bounded source-envelope inspection runs on decoded XML and respects
+quoted tags, comments, PIs, CDATA and DTD subsets. Ambiguous envelopes also fail
+explicitly. A separate raw-probe binary reproduces the actual unmodified native
+omission without claiming a v1 event response. The verifier asserts engine value
+divergences separately. The known protocol XML
 fixture and supported comparison fixtures still match BCL. This task does not
 establish general XML conformance or parser performance.
 

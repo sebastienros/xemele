@@ -108,9 +108,20 @@ try:
     assert a['events'][1]['value']=='😀x\r\ny' and b['events'][1]['value']=='😀x\ny'
     LOG.append('Pinned engine divergence retained: literal CRLF attributes produce two spaces; CDATA CRLF retained. BCL produces one space and LF respectively.\n')
     (CACHE/'divergence-responses.json').write_text(json.dumps({'xmloxide':a,'bcl':b},ensure_ascii=False,indent=2)+'\n')
-    a,b=wire([request('\r\n<r/>\r\n')])[0],wire([request('\r\n<r/>\r\n')],BCL)[0]
-    assert a['events'][0]['kind']=='start' and b['events'][0]=={'kind':'text','value':'\n'}
-    LOG.append('Pinned DOM drops leading prolog whitespace; retained actual output, no equality claim for that case.\n')
+    raw = subprocess.run([str(CACHE/'target/release/raw-probe')],input=b'\r\n<r/>\r\n',stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=15)
+    assert raw.returncode==0 and not raw.stderr
+    probe=json.loads(raw.stdout)
+    assert probe['rawDocumentChildren']==[{'kind':'element','name':'r'},{'kind':'text','value':'\n'}]
+    (CACHE/'raw-prolog-probe.json').write_bytes(raw.stdout)
+    for xml in ['\r\n<r/>\r\n', "<?xml version='1.0'?>\r\n<!-- ' > -->\t<r a='>'/>\n<?pi x?> ",
+                "<!--x--> <!DOCTYPE r [<!-- ] > --> <!ENTITY e '<x/> '>]><r>&e;</r>",
+                "<r><!-- > </r> --><![CDATA[< /r>]]><?pi >?></r>\n"]:
+        expect(request(xml),'runner-failure','protocol')
+    for encoding in ['utf-16','utf-8','latin1']:
+        xml = f'<?xml version="1.0" encoding="{encoding}"?>\r\n<r>é</r>\r\n'
+        expect(request(xml.encode(encoding)),'runner-failure','protocol')
+    expect(request('<r/>\n',encodingHint='utf-8'),'runner-failure','protocol')
+    LOG.append('Raw engine prolog omission reproduced separately; wrapper conservatively rejects document whitespace across supported encodings/declarations/comments/PIs/DTD/CRLF instead of claiming complete v1 events.\n')
     compare(request(b'\xef\xbb\xbf<r>bom</r>'))
     compare(request('<?xml version="1.0" encoding="utf-16"?><r>é</r>'.encode('utf-16')))
     compare(request('<?xml version="1.0" encoding="iso-8859-1"?><r>é</r>'.encode('latin1')))

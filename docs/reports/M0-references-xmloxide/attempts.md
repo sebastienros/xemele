@@ -21,3 +21,7 @@ content-model guards were audited and categorized as limits. Oversized wire drai
 now retain strict incremental UTF8 validation, including malformed bytes past the
 storage cap. The final verification is run after the implementation commit and
 supersedes these exploratory attempts. No unrun or failed attempt is passing evidence.
+
+Coordinator completeness follow-up after initial source commit c91e1fc added the
+conservative document-whitespace unsupported response and separate raw-engine
+probe. Final evidence will reference the superseding source revision.
