@@ -4,7 +4,7 @@
   "milestone": "M2",
   "title": "Isolated legacy decoder allocation measurement",
   "kind": "infrastructure",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M2-encoding-allocation-probe",
   "branch": "codex/m2-encoding-allocation-probe",
   "base_revision": "8af65f385654c382f201e1ad8c32f9be2cc3bb87",
@@ -37,7 +37,10 @@
         "known-source-checks",
         "mtp-unblocked-completion",
         "source-review",
-        "historical-preservation"
+        "historical-preservation",
+        "renewal-checks",
+        "renewal-source-integrity",
+        "root-first-integration-preservation"
       ]
     },
     {
@@ -48,7 +51,10 @@
         "known-source-checks",
         "mtp-unblocked-completion",
         "source-review",
-        "historical-preservation"
+        "historical-preservation",
+        "renewal-checks",
+        "renewal-source-integrity",
+        "root-first-integration-preservation"
       ]
     }
   ],
@@ -94,18 +100,44 @@
       "result": "passed",
       "summary": "Full298-test XML preserves actual unchanged Encoding5960B failure at historical integration (297Pass/1Fail); SHA256 manifest matches all copied bytes; historical cause unknown; no unmerged peer source imported.",
       "artifact": "docs/reports/M2-encoding-allocation-probe/history/integration-c455bdb-attempt1/preservation.json"
+    },
+    {
+      "id": "renewal-checks",
+      "kind": "check",
+      "revision": "c3690485bd4c3b421b1833ac4b245405cf2242a0",
+      "command": "DOTNET_ROOT=\"/Users/sebastienros/Library/Application Support/dotnetup/dotnet\" PATH=\"/Users/sebastienros/Library/Application Support/dotnetup/dotnet\":$PATH python3 -B docs/reports/M2-encoding-allocation-probe/verify.py --report-prefix renewal-c369048-attempt1 --expected-branch codex/m2-encoding-allocation-probe --audit-base f9ce78b1e1eb46f6726865c5f435365ab321b23b --runtime-count 298 --conformance-count 255 --differential-count 299 --api-count 251 --fixture-count 3388 --planning-count 14 --task-count 118 (authorized socket/network access from start)",
+      "result": "passed",
+      "summary": "One fresh committed merged-candidate run actual16/16 checks PASS: focused1/MTP852/direct298+255+299; exact3real0B/positive640000perlabel child pairs; original/equivalent/helper all3measured0B; seven actual rejection controls; API251/discovery3388/freshfullpinnedBCLcopybeforeM1build/242uniquefullrevisionrefs/unchangedcompletecopy; planning14/validate118/owned audits. No allocation retry/timing rerun.",
+      "artifact": "docs/reports/M2-encoding-allocation-probe/renewal-c369048-attempt1/summary.json"
+    },
+    {
+      "id": "renewal-source-integrity",
+      "kind": "check",
+      "revision": "c3690485bd4c3b421b1833ac4b245405cf2242a0",
+      "command": "git diff --exit-code 0b3caf048aea839b2d998306752dc75fcaa57686 HEAD -- tests/Xemele.Tests/M2-encoding/EncodingTests.cs tests/Xemele.Tests/M2-encoding-allocation-probe docs/reports/M2-encoding-allocation-probe/Diagnostics docs/reports/M2-encoding-allocation-probe/verify.py docs/reports/M2-encoding-allocation-probe/protocol_negative.py",
+      "result": "passed",
+      "summary": "Approved source-only review remains applicable: no owned Fact/helper/diagnostics/verifier/negative source delta. Exact renewed claim merged with only expected ownJSON conflict; all3dependencies verified. Fresh checks use merged fullrevision.",
+      "artifact": "docs/reports/M2-encoding-allocation-probe/README.md"
+    },
+    {
+      "id": "root-first-integration-preservation",
+      "kind": "check",
+      "revision": "c3690485bd4c3b421b1833ac4b245405cf2242a0",
+      "command": "Byte-identical copy and SHA256 equality of necessary integration-65f49b9-attempt1 full runtime XML/counts/raw logs/summary/driver",
+      "result": "passed",
+      "summary": "Preserved initial root15/16checkpass and cumulativeMTP851/852 unchangedResolver4080B failure; decoder controls/direct852 passed. Historical cause unknown, no unmerged peer code imported, original5960/socket failures preserved.",
+      "artifact": "docs/reports/M2-encoding-allocation-probe/history/integration-65f49b9-attempt1/preservation.json"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Isolated exact legacy Decode measurement complete on branch; declaration selection remains outside counters. Historical5960B failure and unknown cause preserved. Source-only independent approval and all actual completed checks pass through honest initial failed verifier plus blocked-only MTP completion. Renewed after verified resolver probe; prior evidence is historical until fresh merged-candidate checks complete.",
+    "summary": "Renewed from verified resolver probe. Approved decoder source unchanged; committed merged candidatec369048 actual16/16freshchecksPASS; all prior failed evidence retained. Implementation awaits coordinator integration verification.",
     "checks": [
-      "Known source0b3caf048aea839b2d998306752dc75fcaa57686: diagnostic3profiles0B; actual3childpairs real0/positive640000B perlabel; MTP1+852; direct298+255+299; API251/discovery3388/ref242 complete-copy unchanged; seven negative controls; planning14/validate116/ownedpaths.",
-      "Initial SDK sandbox named-pipe failures and missing2pairs preserved; no completed allocation or direct retry."
+      "Renewal c3690485bd4c3b421b1833ac4b245405cf2242a0: focused1/MTP852/direct298+255+299; exact3real0B+positive640000B/label pairs; original/equivalent/helperall3measured0B; negative7/API251/discovery3388/freshcompleteBCLcopybeforeM1build/ref242+unchangedhash/planning14/validate118/owned audits.",
+      "Approved0b3source/571evidence preserved unchanged, initialsocketfail and historicalEncoding5960B/rootResolver4080B preserved byte-identically; causesunknown."
     ],
     "remaining": [
-      "Rootcandidate65f49b9 all decodercontrols/direct852/API/ref/controls/planningpassed, cumulativeMTPResolver4080B failed; await verified resolvermeasurementrepair, preserve0b3/571 source/evidence.",
-      "Renewed after verified resolver measurement repair 4e558709ba99879b22a892d17912dd8204e5baea; preserve previous branch evidence and run fresh combined checks. No production changes or unchanged-candidate retries."
+      "Coordinator fresh combined integration verification and metadata only."
     ],
     "requests": []
   }
