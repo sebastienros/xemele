@@ -51,7 +51,7 @@ internal sealed class XmlParserCore : IDisposable
     private long? byteLength;
     private char high, quote;
     private bool normalizedCr, finalSeen, disposed, faulted, terminal, rootSeen, rootClosed;
-    private bool piImmediateClose;
+    private bool piImmediateClose, piSeparator;
     private bool textActive, textStarted, fragmentPending, fragmentEnded, emptyTag, endDocumentDelivered, declarationSeen;
     private bool declarationAllowed = true;
     private XmlTextKind textKind;
@@ -328,13 +328,17 @@ internal sealed class XmlParserCore : IDisposable
                     if (!Charge(Quota.TokenCharacters, 1, location)) return;
                     target = Intern(t, opening); tokenLength = 0; BeginText(XmlTextKind.ProcessingInstruction, target, opening);
                     declarationAllowed = false; state = State.PiBody; held = c == '?' ? 1 : 0; heldLocation = location;
-                    piImmediateClose = c == '?'; return;
+                    piImmediateClose = c == '?'; piSeparator = !piImmediateClose; return;
                 }
                 Store(c, location); return;
             case State.PiBody:
                 if (piImmediateClose && c != '>') { Reject("XML.Syntax", "PI data requires separating whitespace.", location); return; }
                 piImmediateClose = false;
                 if (!Charge(Quota.TokenCharacters, 1, location)) return;
+                // XML PI content excludes the complete S after its target.
+                // Whitespace after the first body scalar is ordinary content.
+                if (piSeparator && White(c)) return;
+                piSeparator = false;
                 if (held == 1 && c == '>') { held = 0; EndText(location); state = State.Data; return; }
                 if (c == '?')
                 {

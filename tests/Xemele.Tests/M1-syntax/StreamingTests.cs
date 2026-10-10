@@ -139,7 +139,7 @@ public sealed class StreamingTests
     [Fact]
     public void PiEmptyCloseRequiresImmediateGreaterThanAndWhitespaceNeighborsStayValid()
     {
-        foreach (string xml in new[] { "<?p?><r/>", "<r><?p ?x?></r>" })
+        foreach (string xml in new[] { "<?p?><r/>", "<r><?p ?x?></r>", "<?p \t\r\n?><r/>", "<?p \t ?x \t y?><r/>" })
             for (int split = 0; split <= xml.Length; split++)
             {
                 using var core = new XmlParserCore(new()); var sink = new CountingSink { Continue = false };

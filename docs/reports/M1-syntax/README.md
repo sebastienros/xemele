@@ -34,7 +34,9 @@ Raw character offsets are null. Byte mode validates mappings incrementally along
 unit per resume), rechecks caller-owned mutable tails, and requires
 CompleteByteSource exactly once before final Append; EOF uses that explicit length.
 
-Text, comments, CDATA and PI bodies stream as source arrives. A fixed eight-unit
+Text, comments, CDATA and PI bodies stream as source arrives. PI body content
+excludes the complete separator whitespace following its target; later body
+whitespace is preserved. An adjacent target question mark requires immediate >. A fixed eight-unit
 fragment buffer handles one scalar and up to two withheld delimiter characters.
 No document or final text token is buffered to manufacture streaming progress.
 A CR is emitted as LF immediately; the following literal LF is suppressed while
