@@ -30,7 +30,7 @@ public sealed class DtdGrammarPinnedTests
             Assert.Null(last.Diagnostic); Assert.Null(last.Entity); Model(parser.Model, oracle);
         }
     }
-    private static void Model(DtdModel model, string oracle)
+    private static void Model(Xemele.Parsing.Dtd.DtdModel model, string oracle)
     {
         // Expected declarations are authored from the pinned source, not a second parser.
         Assert.Empty(model.Notations);

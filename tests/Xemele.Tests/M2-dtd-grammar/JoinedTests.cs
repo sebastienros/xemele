@@ -52,7 +52,7 @@ public sealed class DtdGrammarJoinedTests
             }
         }
     }
-    private static DtdModel Framed(string text, long[] maps, long eof, int split, Ledger ledger)
+    private static Xemele.Parsing.Dtd.DtdModel Framed(string text, long[] maps, long eof, int split, Ledger ledger)
     {
         var uri = new Uri("https://join.invalid/external.dtd");
         using var f = new XmlTextDeclarationFramer(new(), ledger, uri);
