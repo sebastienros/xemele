@@ -163,7 +163,8 @@ def main():
             assert identity['Version'] == '10.0.11', identity
             assert Path(identity['CoreLibrary']).resolve() == (approved_runtime/'System.Private.CoreLib.dll').resolve()
             assert identity['CoreLibrarySha256'] == runtime_libraries[approved_runtime/'System.Private.CoreLib.dll']
-            assert identity['CoreLibraryInformationalVersion'].startswith('10.0.11+'), identity
+            assert re.fullmatch(r'10\.0\.11(?:-[0-9A-Za-z.-]+)?\+[0-9a-f]{40}',
+                                identity['CoreLibraryInformationalVersion']), identity
             assert identity['ProcessArchitecture'] == 'Arm64', identity
             summary['executingRuntime'] = identity
             summary['eventViewsPreserved'] = ['XmlDeclarationView', 'XmlNameView', 'XmlAttributeView', 'XmlNamespaceView']
