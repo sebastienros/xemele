@@ -4,7 +4,7 @@
   "milestone": "M2",
   "title": "Incremental external text-declaration framing",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M2-dtd-framing",
   "branch": "codex/m2-dtd-framing",
   "base_revision": "1a77b3598ed6084b17a69ca562d160f0d64a6be5",
@@ -37,7 +37,9 @@
       "status": "passed",
       "evidence": [
         "runtime-source-review",
-        "framing-focused-results"
+        "framing-focused-results",
+        "renewed-correctness",
+        "renewed-source-review"
       ]
     },
     {
@@ -45,16 +47,17 @@
       "description": "Every split proves declared/absent/rejected outcomes, mandatory encoding/version grammar, bounded prefix/carry, incremental live-budget refusal, exact/one-over limits, EOF/locations, cancellation/fault/disposal and owned snapshots.",
       "status": "passed",
       "evidence": [
-        "framing-focused-results"
+        "framing-focused-results",
+        "renewed-correctness"
       ]
     },
     {
       "id": "M2-dtd-framing-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "failed",
+      "status": "passed",
       "evidence": [
-        "initial-committed-checkpoint",
-        "bounded-committed-checkpoint"
+        "renewed-correctness",
+        "exclusive-measurement"
       ]
     }
   ],
@@ -101,22 +104,48 @@
       "result": "passed",
       "summary": "All1243actual framing tests in preserved direct-run XML have Pass outcomes; the same run failed one unrelated earlier M1 PI allocation assertion, recorded separately and never claimed overallpass. Covers exact grammar/splits/mappings/scalar quotas/lifetime/live-budget/real M1 decoder composition.",
       "artifact": "docs/reports/M2-dtd-framing/bounded-checkpoint/Xemele.Tests.xml.gz"
+    },
+    {
+      "id": "renewed-correctness",
+      "kind": "check",
+      "revision": "dbcd535e80f2da0b808a5d9e40af78fd8e75be19",
+      "command": "Pinned SDK10.0.400/runtime10.0.11 env; python3 -B docs/reports/M2-dtd-framing/verify.py --report-prefix renewed-correctness --audit-base 7034b2769307fbab70ea524ea2a16f5defa8e7d6 --expected-branch codex/m2-dtd-framing --expected-runtime-tests 1490 --expected-conformance-tests 255 --expected-differential-tests 299 --expected-public-api 222 --expected-fixtures 3388",
+      "result": "passed",
+      "summary": "All2044MTP/direct/discovery cases agree:1490runtime(247baseline+1243framing),255conformance,299differential,0fail0skip. Earlierfour missing lone-low-surrogate transport cases now discovered after ownedASCIIfixtureidentity fix; runtimeunchanged. Independent5types/48members=53inventory records/common-only approvedmatch/sample passed; untimed4x3x8192+6benchmarkoracles passed. Cold/owned768B,warm1000calls0B,GCretainedestimate160048B/1000results. API222/registry3388/freshcompleteBCLcopy242recordSHA+sourcebuild+unchangedDLL/planning14/validate114/renewedclaimownership/whitespace audits passed. Timing/Windows/x64/AOT/fullDTDcomposition unrun. Historicalfailures retained.",
+      "artifact": "docs/reports/M2-dtd-framing/renewed-correctness/summary.json"
+    },
+    {
+      "id": "renewed-source-review",
+      "kind": "review",
+      "revision": "dbcd535e80f2da0b808a5d9e40af78fd8e75be19",
+      "command": "Coordinator independent foundation review and explicit exclusive-host grant on source dbcd535",
+      "result": "passed",
+      "summary": "Coordinator independently approved ASCII fixture identity discovery correction, with no production/benchmark delta from reviewed source. Exact-source one-attempt timing grant issued after all peer/root heavy work parked.",
+      "artifact": null
+    },
+    {
+      "id": "exclusive-measurement",
+      "kind": "check",
+      "revision": "dbcd535e80f2da0b808a5d9e40af78fd8e75be19",
+      "command": "Pinned SDK10.0.400/runtime10.0.11 env; dotnet docs/reports/M2-dtd-framing/bin/Release/net10.0/Xemele.DtdFramingBenchmarks.dll --filter '*DtdFraming*' --artifacts artifacts/M2-dtd-framing/exclusive-renewed --buildTimeout 300 (authorized1200s process-group deadline)",
+      "result": "passed",
+      "summary": "One exclusive-host attempt: generated restore/build0; wrapper0 in41.914s;14cases,14childexits0,42positive actual observations(3/case),allchildrenstopped. All8scan rows8192operations/observation and0Bmanaged allocation; framer means324.28-337.44ns/8units and14046.14-18264.87ns/4096units. Owned absent/multilingual648B,short/chunked768B,malformed720B,longlabel25376B; short242.59ns,longlabel21061.39ns. Six scan minimum-iteration warnings/normal priority denied elevation; framer2.75-3.71x slower than narrowerscalar baseline,no speedupclaim. ProvisionalArm64framing only; full composition/x64/Windows/AOT unrun. Fullraw/archivehash/caseprogress/actualmemoryoutputs preserved; no retry. Initialblockedps/unit-parser diagnostics corrected and recorded without rerunning benchmark.",
+      "artifact": "docs/reports/M2-dtd-framing/exclusive-measurement/summary.json"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Renewed claim7034b276 adopted over verified base1a77b359; original runtime46104ce/sourcecea326c and all failures/review/evidence retained. Measurement prerequisites now integrated and verified; fresh current-source checks and exclusive timing remain pending.",
+    "summary": "Implemented incremental external TextDecl framing on renewed verified base; all A1-A3 passed at source dbcd535. No decoder/resolver/DOM/DTDgrammar dependency, no public API added. Fresh2044MTP/direct/discovery cases agree, all1243ownPass; exclusive14case/42observation measurement passed. Historicalfailedattempts retained. Await coordinator integrated verification; integration_revision null.",
     "checks": [
-      "At cea326c: actual independent common-only/approved fixture member inventory/shared constructor matched; working sample passed; unique Xemele.DtdFramingBenchmarks prepared; bounded4x3x8192oracle and6ownedworkloads passed without timing.",
-      "At cea326c: inherited models/foundation/MTP2040zero failures/skips/API222passed; subsequent direct1490 has one unchanged M1 PI712Bfailure,1243framingrecordsallPass. At46104ce: earlier MTPPI1944Bfailure and separate direct1490allPass preserved.",
-      "Allocation cold/ownedoperation768B;1000warmwhitespacecalls0B; retainedresults1000 GC estimate160048B (48B declaration struct); no timing or exact retainedobjectgraph claim.",
-      "Fresh pinned BCL output copied before inherited solution build, but final242record provenance verification unrun after PI failure. Final planning14/complete verifier audits unrun.",
-      "Lightweight final working-handoff metadata validation112 and exactclaim committed/staged/working/untracked ownership/whitespace audits passed; planning14 and full verifier provenance/final checks remain unrun."
+      "Fresh full verifier at dbcd535:1490runtime(247earlier+1243framing),255conformance,299differential allPass/noFail/noSkip; MTP2044/discovery2044 agree. ASCIIcase32 restores4previouslymissing low-surrogate MTP rows; actual4directPass proof archived.",
+      "Approved common-only actual/fixture inventory53records=5types+48members/sharedbudget constructor matched; working sample, cold/warm/retained probe and untimed4x3x8192+6workload oracle passed.",
+      "API222/registry3388/fresh complete pinned BCL242hashes+build+unchangedDLL/planning14/validate114/renewedclaim committed/staged/working/untracked owned+whitespace audits passed.",
+      "Exclusive command exact dbcd535: wrapper0/generatedbuild0/14childexits0/42actual observations; all8scan cases0B. Cold/owned768B; retainedGC estimate160048B/1000results; owned BDN648-25376B. Fullraw archive and CSV/Markdown/hash/progress outputs in exclusive-measurement."
     ],
     "remaining": [
-      "Fresh complete verifier at known repaired source with actual integrated counts; final reference242/planning14/validation112/owned audits.",
-      "Exclusive-host benchmark timing with existing MemoryDiagnoser/ShortRunJob classes; no timing grant or measurements yet.",
-      "Integrated verification and Windows/x64/AOT/fullDTDcomposition remain outside this checkpoint."
+      "Coordinator integrate and independently verify combined tree using actual combined test/API counts; preserve strict reference provenance and renewed claim ownership.",
+      "Measurements provisional: six short-iteration warnings and normal priority, slower2.75-3.71x than narrower baseline; no broad throughput optimization claim.",
+      "FullDTD/entity composition and x64/Windows/AOT release confirmations remain later tasks/gates."
     ],
     "requests": []
   }
