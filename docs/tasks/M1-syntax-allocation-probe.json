@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "id": "M1-syntax-allocation-probe",
+  "milestone": "M1",
+  "title": "Diagnose the warm syntax allocation measurement boundary",
+  "kind": "infrastructure",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "depends_on": [
+    "M1-dom-allocation-probe"
+  ],
+  "goals": [
+    "G03",
+    "G18"
+  ],
+  "specs": [
+    "docs/performance-coding.md",
+    "docs/specs/parser.md"
+  ],
+  "owns": [
+    "tests/Xemele.Tests/M1-syntax/StreamingTests.cs",
+    "tests/Xemele.Tests/M1-syntax-allocation-probe/",
+    "docs/reports/M1-syntax-allocation-probe/"
+  ],
+  "api_or_output": "Warm syntax zero-byte allocation probe with identical exercised logic and preserved progress/identity/lifetime checks",
+  "acceptance": [
+    {
+      "id": "M1-syntax-allocation-probe-A1",
+      "description": "Preserve baseline full287/288 unchanged syntax6000B failure and later288pass evidence; diagnose setup/first-use/steady scopes at verified source. Existing warmup discards100 Append results while measured10000 uses another callsite and checks progress. Establish equivalent warm/measured logic without lowering zero threshold, retries or increasing original warmup budget merely to pass. Restrict existing file changes to this probe/helper; production unchanged. If true steady allocation is demonstrated request runtime-owner repair rather than hide it. Historicalcause may remain unresolved if honestly documented.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M1-syntax-allocation-probe-A2",
+      "description": "Run controlled fresh focused and full288 solution at known source with default runtime settings/unchanged class parallelism; prove actual measured0B, preserve cold/setup/first-use evidence and failures. Run API222, offline fixture discovery, planning110/14regressions and committed-staged-working-untracked ownership/diff audits. No peer runtime/PI/corpus consumption or timing repetitions.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "Read-only review found concrete syntax warm/measured callsite/progress-check mismatch; no concrete recurring allocation identified. DOM probe baseline6000B failure retained despite later verified288pass. Separate owned assessment before combinedPI/gate.",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}
