@@ -1,7 +1,6 @@
 using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Jobs;
 using BenchmarkDotNet.Running;
-using Perfolizer.Horology;
 using InputSpike;
 
 if (args.Length == 0 || args[0] is "--help" or "help")
@@ -15,9 +14,15 @@ switch (args[0])
     case "allocations": InputSpike.Diagnostics.Allocations(); break;
     case "lowering": InputSpike.Diagnostics.Lowering(); break;
     case "benchmark":
-        var job = Job.Default.WithId("M0-Provisional").WithLaunchCount(1).WithWarmupCount(2).WithIterationCount(3)
-            .WithIterationTime(TimeInterval.FromMilliseconds(100));
-        BenchmarkSwitcher.FromAssembly(typeof(InputBenchmarks).Assembly).Run(args[1..], DefaultConfig.Instance.AddJob(job));
+        // BDN 0.15.8 gives a configured default precedence over --job.
+        IConfig config = args[1..].Any(IsJobOption) ? DefaultConfig.Instance
+            : DefaultConfig.Instance.AddJob(Job.ShortRun.AsDefault());
+        BenchmarkSwitcher.FromAssembly(typeof(InputBenchmarks).Assembly).Run(args[1..], config);
         break;
     default: throw new ArgumentException("Unknown command.");
 }
+
+static bool IsJobOption(string argument) =>
+    argument.Equals("--job", StringComparison.OrdinalIgnoreCase) ||
+    argument.StartsWith("--job=", StringComparison.OrdinalIgnoreCase) ||
+    argument.StartsWith("-j", StringComparison.OrdinalIgnoreCase);
