@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Text.Json;
 using static Xemele.Tests.Syntax.StreamingAllocationProbe;
 using System.Text;
 using System.Xml;
@@ -46,30 +47,58 @@ public sealed class StreamingTests
     [Fact]
     public void WarmRepeatedTagsAndStreamingUnicodeDispatchAllocateZero()
     {
+        var child = StreamingAllocationChild.EnterChild();
+        if (child is null)
+        {
+            // The same compiled Fact executes once in each guarded standalone
+            // child. Concurrent test classes remain enabled in this parent.
+            var pair = StreamingAllocationChild.RunPair();
+            TestContext.Current.TestOutputHelper!.WriteLine(
+                $"real={pair.Real.AllocatedBytes}; positive={pair.Positive.AllocatedBytes}; warm100={pair.Real.WarmBytes}; measured10000={pair.Real.AllocatedBytes}; measuredUnits={pair.Real.MeasuredUnits}; measuredCalls={pair.Real.MeasuredCalls}; totalUnits={pair.Real.TotalUnits}; totalCalls={pair.Real.TotalCalls}; completed=true; artifacts={pair.Directory}");
+            return;
+        }
+        bool positive = child.Mode == "positive";
         using var core = new XmlParserCore(new() { Limits = new() { DocumentCharacters = null, TokenCharacters = null } });
         var sink = new CountingSink(); var cancellation = TestContext.Current.CancellationToken;
+        object? escaped = null;
+        if (positive) sink.Hook = () => escaped = new byte[37];
         const string chunk = "<c a='v' xmlns:p='u' p:a='w'/>α😀&amp;\r\n";
+        string? sampleOutput = Environment.GetEnvironmentVariable("XEMELE_STREAMING_ALLOCATION_SAMPLE_OUTPUT");
+        StreamingAllocationSample[] warmSamples = sampleOutput is null ? [] : new StreamingAllocationSample[100];
+        StreamingAllocationSample[] measuredSamples = sampleOutput is null ? [] : new StreamingAllocationSample[10000];
+        Func<(long Units, long Calls)>? progress = sampleOutput is null ? null : () => (sink.Units, sink.Calls);
         core.Append("<r>", [], false, sink, cancellation);
-        // Both phases use the same checked Append call site. Capture both
-        // counters there so test context, caller dispatch and Assert are outside
-        // the synchronous borrowed primitive's exact-zero allocation scope.
-        long warmCalls = sink.Calls, warmUnits = sink.Units;
-        long warmBytes = AppendChecked(core, chunk, sink, cancellation, 100);
-        Assert.Equal(1199, sink.Calls - warmCalls);
-        Assert.Equal(500, sink.Units - warmUnits);
+        // Both phases use the same checked Append call site. Counters close
+        // before assertions, reports and finalization; no measured bytes are
+        // subtracted. The positive child intentionally allocates in sink.Hook.
+        long initialCalls = sink.Calls, initialUnits = sink.Units;
+        long warmBytes = AppendChecked(core, chunk, sink, cancellation, 100, warmSamples, progress);
+        long warmCalls = sink.Calls - initialCalls, warmUnits = sink.Units - initialUnits;
+        Assert.Equal(1199, warmCalls);
+        Assert.Equal(500, warmUnits);
         long calls = sink.Calls, units = sink.Units;
-        long allocated = AppendChecked(core, chunk, sink, cancellation, 10000);
-        Assert.Equal(0, allocated);
-        Assert.Equal(120000, sink.Calls - calls);
-        Assert.Equal(50000, sink.Units - units);
+        long surroundingBefore = GC.GetAllocatedBytesForCurrentThread();
+        long allocated = AppendChecked(core, chunk, sink, cancellation, 10000, measuredSamples, progress);
+        long surrounding = GC.GetAllocatedBytesForCurrentThread() - surroundingBefore;
+        long measuredCalls = sink.Calls - calls, measuredUnits = sink.Units - units;
         var completed = core.Append("</r>", [], true, sink, cancellation);
+        GC.KeepAlive(escaped);
+        // All formatting, provenance and serialization happen after measurement.
+        if (sampleOutput is not null)
+            File.WriteAllText(sampleOutput, JsonSerializer.Serialize(new { warmSamples, measuredSamples }));
+        StreamingAllocationChild.Write(child, warmBytes, allocated, warmUnits, warmCalls,
+            measuredUnits, measuredCalls, sink.Units, sink.Calls, completed, (escaped as byte[])?.Length ?? 0);
+        TestContext.Current.TestOutputHelper!.WriteLine(
+            $"mode={child.Mode}; primitive={allocated}; surrounding={surrounding}; measuredUnits={measuredUnits}; measuredCalls={measuredCalls}; sampled={sampleOutput is not null}");
+        if (positive) Assert.True(allocated > 0, "Escaped callback allocation must be detected.");
+        else Assert.Equal(0, allocated);
+        Assert.Equal(120000, measuredCalls);
+        Assert.Equal(50000, measuredUnits);
         Assert.Equal(ScanStep.Completed, completed.Step);
         Assert.Equal(4, completed.Consumed);
         Assert.Null(completed.Diagnostic);
         Assert.Equal(50500, sink.Units);
         Assert.Equal(121205, sink.Calls);
-        TestContext.Current.TestOutputHelper!.WriteLine(
-            $"warm100={warmBytes}; measured10000={allocated}; measuredUnits={sink.Units - units}; measuredCalls=120000; totalUnits={sink.Units}; totalCalls={sink.Calls}; completed=true");
     }
     [Fact]
     public void LocationOverflowIsStructuredAndSourceScalarQuotaPrecedesNormalization()
