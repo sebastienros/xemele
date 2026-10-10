@@ -52,9 +52,11 @@
       "branch": "codex/m1-planning-regressions",
       "base_revision": "9d618494d3575d7498cf02b28c8f46e9b1e1093f",
       "claim_revision": "4cd62f4d04afdbf46ab713fa22bd5d1b180b0afe",
-      "setup_status": "dispatched",
+      "setup_status": "returned-parked",
       "chat_id": "01a12424-f418-7981-883f-9713d5790ec0",
-      "worktree_path": "/Users/sebastienros/.codex/worktrees/c7bc/xemele"
+      "worktree_path": "/Users/sebastienros/.codex/worktrees/c7bc/xemele",
+      "review_revision": "d8e2e3648344e5c607044e8dc2b13ba140088cd7",
+      "handoff_revision": "d2c0b0b946bd49ee259bdc07f610259818743ef4"
     }
   ],
   "integration_queue": [],
@@ -579,11 +581,15 @@
       "review": "Full inventory/cache review passed; declaration-first diagnostic correction reviewed. Verifier integration audit-base fix pending.",
       "integration_revision": "0ca3c2ededc0275854ef8821dc00f3f56a56be58",
       "integration_worktree": "/private/tmp/xemele-integrate-m1-corpus-import",
-      "integration_branch": "codex/integrate-m1-corpus-import"
+      "integration_branch": "codex/integrate-m1-corpus-import",
+      "cleanup": {
+        "chat_archived": true,
+        "worktree": "removed"
+      }
     }
   ],
-  "benchmark_policy": "No active timing hold. Benchmark class configuration controls jobs; commands omit job arguments. Timing host remains serialized.",
-  "benchmark_owner": null,
+  "benchmark_policy": "DOM exclusive timing preparation: import/namespace verified-cleaned; planning worker finished and parks; root no builds/tests/hash/import/cleanup during grant. Light reads/reports only.",
+  "benchmark_owner": "M1-dom",
   "pending_decisions": [],
   "decisions": {
     "project_license": "MIT",
@@ -640,7 +646,8 @@
     "docs/orchestration/cleanup-M1-tree-dom-builder.json",
     "docs/orchestration/cleanup-M1-benchmark-class-config.json",
     "docs/orchestration/cleanup-M1-tree-dom-persistence.json",
-    "docs/orchestration/cleanup-M1-namespace-names.json"
+    "docs/orchestration/cleanup-M1-namespace-names.json",
+    "docs/orchestration/cleanup-M1-corpus-import.json"
   ],
   "preserved_reference_sources": [
     {
