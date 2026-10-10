@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "id": "M2-undeclared-contract",
+  "milestone": "M2",
+  "title": "Freeze nonvalidating undeclared-reference representation",
+  "kind": "contract",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "depends_on": [
+    "M2-version-contract",
+    "M2-entities",
+    "M2-conformance-profile"
+  ],
+  "goals": [
+    "G01",
+    "G07",
+    "G18"
+  ],
+  "specs": [
+    "docs/specs/parser.md",
+    "docs/decisions/M2/xml-resources.md"
+  ],
+  "owns": [
+    "docs/specs/parser.md",
+    "docs/decisions/M2/xml-resources.md",
+    "docs/decisions/M2/undeclared-references.md",
+    "tests/Contracts/Fixtures/M2/Undeclared/",
+    "samples/M2-undeclared-contract/",
+    "docs/reports/M2-undeclared-contract/"
+  ],
+  "api_or_output": "Precise compatible unresolved content-reference identity/location/lifetime/pause and DOM/diagnostic contract, no runtime implementation or public stubs",
+  "acceptance": [
+    {
+      "id": "M2-undeclared-contract-A1",
+      "description": "Freeze precise XML1.0 Fifth Edition EntityDeclared WFC versus VC applicability including no DTD, internal subset without/with PE references, standalone yes/no/absent, external subsets/PEs, declaration processing actually read, default attribute declaration-before-use and prohibited external/unparsed/recursive references. Independently assess original rmt-e3e-13 exact bytes/identity; do not label validity-only unresolved content as fatal, invent replacement character text, silently lose entity identity, or misuse unread external-entity notification as a mandatory unknown-entity callback. Preserve unchanged corpus applicability expectations and all existing required errors/resource denial semantics.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M2-undeclared-contract-A2",
+      "description": "Publish one concrete bounded compatible contract for unresolved content entity name/lexical reference and location, borrowed versus owned retention, event ordering/splits/pause/cancellation, DOM representation and diagnostic outcome. Resolve current event representation limitation and Factories any-diagnostic failure explicitly. Compile independently authored representative contract/model consumers including old sink compatibility and owned retention, negative controls for mismatch, while preserving all existing frozen public model shapes and four declaration/name/attribute/namespace ABI shapes. No library runtime edits, shared build/project changes, public stubs, or premature shipped API baseline entries. Identify exact subsequent implementation paths and any additive public API/fixture approval requirement before implementation; routine compatible contract choices are within task authority.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M2-undeclared-contract-A3",
+      "description": "Actual independent contract/model preservation and meaningful negative controls at known Git/source/binary/runtime identities, plus planning/ownership/diff validation. Source review separate from execution; no runtime/conformance/performance pass claim from model fixtures. Keep result summaries and source/binary hashes only, raw outputs transient inspected then removed. No unverified active peer dependency or later milestone requirement.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "Independent W3C4.1/source assessment: E13 nonstandalone internal-PE reference makes EntityDeclared validity-only. Existing event/DOM diagnostic behavior cannot faithfully express unresolved identity; freeze bounded compatible contract before grammar implementation.",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}
