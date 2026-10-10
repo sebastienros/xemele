@@ -65,6 +65,10 @@ def main():
                     LIBXML2_WITH_READLINE='OFF', LIBXML2_WITH_REGEXPS='OFF', LIBXML2_WITH_SAX1='OFF',
                     LIBXML2_WITH_TESTS='OFF', LIBXML2_WITH_THREADS='ON', LIBXML2_WITH_TLS='OFF',
                     LIBXML2_WITH_VALID='ON', LIBXML2_WITH_XINCLUDE='OFF', LIBXML2_WITH_XPATH='OFF')
+    # Fresh configuration avoids inheriting options or compiler launchers from a stale cache.
+    if BUILD.exists():
+        shutil.rmtree(BUILD)
+    os.environ['ZERO_AR_DATE'] = '1'
     config = [cmake, '-S', SOURCE, '-B', BUILD, '-G', 'Unix Makefiles', '-DCMAKE_C_COMPILER=' + cc]
     config += ['-D' + k + '=' + v for k, v in features.items()]
     print(run(config))

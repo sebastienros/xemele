@@ -50,8 +50,18 @@ hint uses the native BOM/declaration decoder, utf-8 hint also validates strictly
 Input XML 1.1 is rejected under the XML 1.0 profile. No benchmark/allocation or
 cross-platform support is claimed by these subprocess tests.
 
-Pending contract issue before completion: native xmlParseMisc consumes document
-whitespace outside the root without exposing reader or SAX text events. Current
-wrapper cannot faithfully normalize these nodes to BCL v1. This is reported to
-the coordinator; no fabricated whitespace reconstruction has been added. Do not
-use this pending implementation as a fully conforming differential reference.
+The pinned native parser's xmlParseMisc silently drops whitespace outside the
+root element. After native parsing succeeds, DocumentEnvelope conservatively
+checks only the literal document envelope, using BOM/signatures plus the native
+encoding name (UTF8, UTF16, UTF32 signatures, Latin1 and ASCII). It scans quoted
+tags, DTD subsets, comments, PIs and CDATA boundaries without generating XML
+semantics. Affected or ambiguous cases return runner-failure/protocol with an
+explicit Unsupported normalization message, never parse rejection or lossy
+success. BCL remains the v1 oracle for those cases. Inside-root whitespace is
+preserved. No shared protocol or Xemele feature exclusion is introduced.
+
+libxml2 also reports XML_WAR_NS_URI via a namespace error for non-ASCII namespace
+IRIs that BCL accepts. These real engine rejections are preserved. The production
+attribute sorter has a direct UTF-16 ordinal regression for supplementary and BMP
+namespaces/local names, independent of that native acceptance difference. The
+process comparison corpus exercises native-supported accented names.

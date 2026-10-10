@@ -1,5 +1,6 @@
 """Actual process comparison/security checks; generated transcripts stay ignored."""
 import base64
+import ctypes
 import json
 import os
 from pathlib import Path
@@ -56,9 +57,10 @@ try:
     flags = ['--disable-build-servers', '-m:1', '-p:UseSharedCompilation=false']
     for project in ['Libxml2/Libxml2Reference', 'Bcl/BclReference']:
         run(['dotnet', 'build', f'tools/ReferenceRunners/{project}.csproj', '-c', 'Release'] + flags)
+    run(['dotnet', 'run', '--project', 'tools/ReferenceRunners/Libxml2/Checks/NormalizationChecks.csproj', '-c', 'Release', '--disable-build-servers', '-p:UseSharedCompilation=false'])
     rich = '<!DOCTYPE r [<!ENTITY e "entity">]><r xmlns="urn:r" xmlns:p="urn:p" p:z="2" a="x&#10;y">A\r\n<![CDATA[B]]><!--ignore--><?p i?>&e;<p:é α="v"/><empty/>tail</r>'
-    # UTF-16 ordinal namespace ordering puts supplementary U+10000 before BMP U+E000.
-    ordinal = '<r xmlns:a="urn:𐀀" xmlns:b="urn:\ue000" b:x="2" a:x="1" é="3" z="4"/>'
+    # Supported native/BCL expanded names; separate sorter check covers surrogate ordering.
+    ordinal = '<r xmlns:a="urn:a" xmlns:b="urn:b" b:x="2" a:x="1" é="3" z="4"/>'
     external = '<!DOCTYPE r [<!ENTITY e SYSTEM "https://example.invalid/a/entity">]><r>&e;</r>'
     nested = '<!DOCTYPE r SYSTEM "https://example.invalid/a/root.dtd"><r>&e;</r>'
     good = [request(), request(rich), request(ordinal), request('<r/>'), request('<r> \t\r\n</r>'),
@@ -79,6 +81,53 @@ try:
     (REPORT / 'normalized-native.jsonl').write_bytes(payload)
     (REPORT / 'normalized-bcl.jsonl').write_bytes(bpayload)
     LOG.append(f'{len(good)} BCL-normalized equality cases passed: fixture, namespaces, UTF-16 ordinal, entities, defaults, CRLF, text coalescing, empty nodes, UTF8/UTF16, canonical/offline/nested resources.\n')
+    # Reproduce loss directly through the unmodified native reader, bypassing the envelope detector.
+    bridge = ctypes.CDLL(ENV['XEMELE_LIBXML2_BRIDGE'])
+    bridge.xb_create.argtypes = [ctypes.c_void_p, ctypes.c_int, ctypes.c_char_p, ctypes.c_void_p, ctypes.c_void_p]
+    bridge.xb_create.restype = ctypes.c_void_p
+    for method in ['xb_next', 'xb_type']:
+        getattr(bridge, method).argtypes = [ctypes.c_void_p]
+        getattr(bridge, method).restype = ctypes.c_int
+    bridge.xb_free.argtypes = [ctypes.c_void_p]
+    original = b' \r\n<r/>\r\n '
+    buffer = ctypes.create_string_buffer(original)
+    reader = bridge.xb_create(buffer, len(original), None, None, None)
+    assert reader
+    raw_types = []
+    try:
+        while bridge.xb_next(reader) == 1:
+            raw_types.append(bridge.xb_type(reader))
+    finally:
+        bridge.xb_free(reader)
+    assert raw_types == [1], raw_types
+    outside = [' \r\n<r/>\r\n ', '<?xml version="1.0"?>\n<r/>',
+               '<!--pre--> \t<?pi x?><r/>', '<r/><?pi x?> <!--post-->',
+               '<!DOCTYPE r [<!ENTITY e "value">]>\n<r>&e;</r>']
+    boundary_cases = [request(x) for x in outside]
+    boundary_cases += [request(x, encodingHint='utf-8') for x in outside]
+    boundary_cases += [request(('<?xml version="1.0" encoding="utf-16"?>' + x).encode('utf-16')) for x in [outside[0], outside[2], outside[3]]]
+    boundary_cases += [request(('<?xml version="1.0" encoding="utf-16be"?>' + outside[0]).encode('utf-16-be')),
+                       request(('<?xml version="1.0" encoding="iso-8859-1"?>' + outside[0]).encode('latin1')),
+                       request(b'\xef\xbb\xbf' + outside[0].encode())]
+    nr, payload = wire(NATIVE, boundary_cases + [request()])
+    br, _ = wire(BCL, boundary_cases)
+    assert all(r['outcome'] == 'success' and any(e['kind'] == 'text' for e in r['events']) for r in br)
+    assert all(r['outcome'] == 'runner-failure' and r['diagnostics'][0]['category'] == 'protocol'
+               and r['diagnostics'][0]['message'].startswith('Unsupported normalization:') for r in nr[:-1]), nr
+    assert nr[-1]['outcome'] == 'success'
+    (REPORT / 'unsupported-boundaries.jsonl').write_bytes(payload)
+    inside = ['<?xml version="1.0"?><!DOCTYPE r [<!-- ] > --><?p ] >?><!ENTITY e "[>]"><!ATTLIST r a CDATA " > ">]><!--pre--><?pi x?><r>&e;<![CDATA[ > < ]]><e a=" > "/> \r\n</r><!--post--><?pi x?>',
+              '<r> \r\n<![CDATA[ \t]]><e a="x > y"/> </r>',
+              '<?xml version="1.0" encoding="iso-8859-1"?><r>é </r>']
+    positive = [request(x) for x in inside[:-1]] + [request(inside[-1].encode('latin1'))]
+    positive += [request(('<?xml version="1.0" encoding="utf-16be"?><r> \r\n</r>').encode('utf-16-be')),
+                 request(('<?xml version="1.0" encoding="utf-16le"?><r> \r\n</r>').encode('utf-16-le'))]
+    nr, payload = wire(NATIVE, positive)
+    br, _ = wire(BCL, positive)
+    for a, b in zip(nr, br):
+        assert a['outcome'] == b['outcome'] == 'success' and a['events'] == b['events'], (a, b)
+    (REPORT / 'supported-boundaries.jsonl').write_bytes(payload)
+    LOG.append(f'Direct native loss reproduced: top-level CRLF whitespace absent from reader; {len(boundary_cases)} affected UTF8/UTF16/Latin1 envelope cases explicitly unsupported, {len(positive)} quoted-DTD/comment/PI/CDATA/inside-root/encoding cases preserve BCL events. No shared contract change.\n')
     known = request()
     bad = ['{bad json', 'null', 'x' * 1048577, dict(known, inputBase64='bad!'),
            dict(known, inputBase64=None), dict(known, protocolVersion=2), dict(known, operation='query'),
@@ -117,6 +166,10 @@ try:
     assert responses[-1]['outcome'] == 'success'
     (REPORT / 'quota.jsonl').write_bytes(payload)
     LOG.append('Native entity amplification and managed event quota are runner-failure/limit, stream recovers.\n')
+    iri = request('<r xmlns:a="urn:𐀀" xmlns:b="urn:\ue000" b:x="2" a:x="1"/>')
+    assert wire(NATIVE, [iri])[0][0]['outcome'] == 'parse-rejected'
+    assert wire(BCL, [iri])[0][0]['outcome'] == 'success'
+    LOG.append('Native namespace IRI rejection vs BCL acceptance preserved, not normalized into invented success. Direct production sorter check covers UTF16 ordinal.\n')
     unsupported = request('<?xml version="1.0" encoding="shift_jis"?><r/>')
     response = wire(NATIVE, [unsupported])[0][0]
     assert response['outcome'] == 'runner-failure' and response['diagnostics'][0]['category'] == 'protocol', response

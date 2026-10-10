@@ -82,3 +82,5 @@ const char *xb_error(session *s) {
 const char *xb_version(void) { return xmlParserVersion; }
 
 const char *xb_xml_version(session *s) { return (const char *)xmlTextReaderConstXmlVersion(s->reader); }
+
+const char *xb_encoding(session *s) { return (const char *)xmlTextReaderConstEncoding(s->reader); }

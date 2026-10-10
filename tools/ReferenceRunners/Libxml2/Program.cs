@@ -67,7 +67,10 @@ while (true)
         }
         if (request.EncodingHint == "utf-8") _ = new UTF8Encoding(false, true).GetCharCount(bytes);
         using var parser = new Parser(bytes, request.EncodingHint, resources);
-        response = Reply("success", [], parser.Read());
+        Event[] events = parser.Read();
+        string? unsupported = DocumentEnvelope.UnsupportedReason(bytes, request.EncodingHint, parser.EncodingName);
+        if (unsupported is not null) throw new Failure("protocol", "Unsupported normalization: " + unsupported);
+        response = Reply("success", [], events);
     }
     catch (Rejected ex) { response = Reply("parse-rejected", [new("xml", ex.Message)]); }
     catch (DecoderFallbackException ex) { response = Reply("parse-rejected", [new("xml", ex.Message)]); }
@@ -130,6 +133,7 @@ sealed class Parser : IDisposable
         }
         catch { loaderError = "infrastructure"; return 0; }
     }
+    public string EncodingName => Native.String(Native.xb_encoding(session));
     public Event[] Read()
     {
         var events = new List<Event>();
@@ -158,8 +162,7 @@ sealed class Parser : IDisposable
                     } while (Native.xb_next_attr(session) == 1);
                     _ = Native.xb_element(session);
                 }
-                events.Add(new("start", ns, name, Attributes: attributes.OrderBy(a => a.NamespaceUri, StringComparer.Ordinal)
-                    .ThenBy(a => a.LocalName, StringComparer.Ordinal).ToArray()));
+                events.Add(new("start", ns, name, Attributes: AttributeNormalization.Sort(attributes)));
                 if (empty) events.Add(new("end", ns, name));
             }
             else if (type == 15) events.Add(new("end", Native.String(Native.xb_ns(session)), Native.String(Native.xb_name(session))));
@@ -217,4 +220,5 @@ static class Native
     [DllImport(Library, CallingConvention = CallingConvention.Cdecl)] internal static extern IntPtr xb_error(IntPtr session);
     [DllImport(Library, CallingConvention = CallingConvention.Cdecl)] internal static extern IntPtr xb_version();
     [DllImport(Library, CallingConvention = CallingConvention.Cdecl)] internal static extern IntPtr xb_xml_version(IntPtr session);
+    [DllImport(Library, CallingConvention = CallingConvention.Cdecl)] internal static extern IntPtr xb_encoding(IntPtr session);
 }
