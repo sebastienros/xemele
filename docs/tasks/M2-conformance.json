@@ -4,11 +4,11 @@
   "milestone": "M2",
   "title": "Complete strict XML/namespaces conformance",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "worker:M2-conformance",
   "branch": "codex/m2-conformance-final",
   "base_revision": "23bd03d4a752e1b8d621348088de3d960a721281",
-  "integration_revision": null,
+  "integration_revision": "1a4881714bfefc548a1e81114d67eb42037d7bc2",
   "depends_on": [
     "M2-entities",
     "M2-encoding",
@@ -47,7 +47,8 @@
       "description": "Complete remaining XML 1.0 Fifth Edition and Namespaces 1.0 Third Edition cases and explicit applicability classification.",
       "status": "passed",
       "evidence": [
-        "final-profile-identity"
+        "final-profile-identity",
+        "conformance-integrated-join"
       ]
     },
     {
@@ -55,7 +56,8 @@
       "description": "All applicable nonvalidating strict XML cases pass; all reference disagreements have resolved causes.",
       "status": "passed",
       "evidence": [
-        "final-profile-identity"
+        "final-profile-identity",
+        "conformance-integrated-join"
       ]
     },
     {
@@ -66,7 +68,8 @@
         "final-profile-identity",
         "final-profile-demo",
         "final-profile-review",
-        "final-profile-planning"
+        "final-profile-planning",
+        "conformance-integrated-join"
       ]
     }
   ],
@@ -121,6 +124,15 @@
       "result": "passed",
       "summary": "Validated 138 tasks and owned whitespace check passed before evidence; final updated-record validation also required before handoff.",
       "artifact": null
+    },
+    {
+      "id": "conformance-integrated-join",
+      "kind": "integration",
+      "revision": "1a4881714bfefc548a1e81114d67eb42037d7bc2",
+      "command": "Root pinned Release sample/tests builds;public Sample.dll demo;FinalJoinTests actual2cases;join_identity.py;owned delta,planningvalidate,whitespace checks",
+      "result": "passed",
+      "summary": "Integrated public namespace/default/entity composition demo2grantedopens/2disposals and3 loss refusals matches authored output.2new actual join tests pass.2585 original IDs/3386resources/89sourceinputs/188runtimeinputs and verifiedprerequisiteancestry preserved;prior integrated independent1394models/771resolutions/API372+82/package/performance remainactual at originaltestedrevisions. No runtime/sourceAPI/sharedconfiguration changes.9owned integrationpaths;138-task graph valid.",
+      "artifact": "docs/reports/M2-conformance/coordinator-integration-summary.json"
     }
   ],
   "blockers": [],
@@ -131,9 +143,7 @@
       "Identity proof passed: 2585 original IDs/3386 resource hashes, 89 executable/source inputs/188 runtime inputs; prior conformance, compatibility and measurement results retained at original revisions.",
       "Planning validate/owned whitespace passed; initial analyzer and overbroad metadata identity assertions corrected and recorded."
     ],
-    "remaining": [
-      "Coordinator review/integration and focused new join/identity/graph checks; mark verified only after integrated checks. Comprehensive combined checks belong to M2 gate; cross-architecture release validation remains later."
-    ],
+    "remaining": [],
     "requests": []
   }
 }
