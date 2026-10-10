@@ -1,0 +1,23 @@
+namespace Xemele.Testing;
+public interface IConformanceCase
+{
+    string Id { get; }
+    string Profile { get; }
+    ConformanceOutcome Execute();
+}
+public enum ConformanceStatus { Accepted, Rejected, RunnerFailure, Excluded }
+public sealed record ConformanceDiagnostic(string Code, string Message, string? Resource, int Line, int Column);
+public sealed record ConformanceOutcome
+{
+    public ConformanceStatus Status { get; }
+    public IReadOnlyList<ConformanceDiagnostic> Diagnostics { get; }
+    public string? Reason { get; }
+    public ConformanceOutcome(ConformanceStatus status, IEnumerable<ConformanceDiagnostic> diagnostics, string? reason = null)
+    {
+        ArgumentNullException.ThrowIfNull(diagnostics);
+        if (!Enum.IsDefined(status)) throw new ArgumentOutOfRangeException(nameof(status));
+        if (status is ConformanceStatus.Excluded or ConformanceStatus.RunnerFailure && string.IsNullOrWhiteSpace(reason))
+            throw new ArgumentException("Failure/exclusion requires a reason.", nameof(reason));
+        Status = status; Diagnostics = Array.AsReadOnly(diagnostics.ToArray()); Reason = reason;
+    }
+}

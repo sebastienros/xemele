@@ -1,0 +1,37 @@
+namespace Xemele;
+// Minimal storage model to test the approved identity contract, not a DOM implementation.
+public sealed class XmlDocument
+{
+    private readonly List<string> names = [];
+    public XmlNode CreateElement(string name)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(name);
+        names.Add(name); return new(this, names.Count - 1);
+    }
+    internal string Name(int slot) => names[slot];
+    public XmlNode ImportNode(XmlNode node) => CreateElement(node.Name);
+}
+public readonly struct XmlNode : IEquatable<XmlNode>
+{
+    private readonly XmlDocument? owner;
+    private readonly int slot;
+    internal XmlNode(XmlDocument owner, int slot) { this.owner = owner; this.slot = slot; }
+    public bool IsDefault => owner is null;
+    public XmlDocument Owner => owner ?? throw new InvalidOperationException("Default node handle.");
+    public string Name => Owner.Name(slot);
+    public bool Equals(XmlNode other) => ReferenceEquals(owner, other.owner) && slot == other.slot;
+    public override bool Equals(object? obj) => obj is XmlNode other && Equals(other);
+    public override int GetHashCode() => HashCode.Combine(owner, slot);
+    public static bool operator ==(XmlNode left, XmlNode right) => left.Equals(right);
+    public static bool operator !=(XmlNode left, XmlNode right) => !left.Equals(right);
+}
+// Compile call-site ergonomics without supplying fake Parse implementations.
+public delegate XmlDocument SpanParser(ReadOnlySpan<char> input, XmlParseOptions? options, CancellationToken cancellationToken);
+public static class Usage
+{
+    public static XmlNode ParseAndImport(SpanParser parse, ReadOnlySpan<char> source, XmlDocument destination)
+    {
+        var parsed = parse(source, new() { Limits = new() { Depth = 128 } }, CancellationToken.None);
+        return destination.ImportNode(parsed.CreateElement("example"));
+    }
+}

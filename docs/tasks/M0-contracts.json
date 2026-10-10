@@ -63,13 +63,26 @@
       "evidence": []
     }
   ],
-  "implementation": [],
+  "implementation": [
+    "docs/decisions/M0/foundation.md: approved representation, scanner, stage/common limits, ownership and allocation decisions",
+    "docs/decisions/M0/conformance.md and tests/Contracts/Fixtures/foundation/Conformance.cs.fixture: frozen case interface and concrete outcome/schema",
+    "docs/decisions/M0/api-compatibility.md and docs/reports/M0-contracts/ApiCheck/Program.cs: compiled metadata extraction/normalization prototype and limits",
+    "docs/reports/M0-contracts/Fixtures/ and tests/Contracts/Fixtures/foundation/: separately compiled M1/M2 declarations, span usage, probe and golden fragments",
+    "docs/reports/M0-contracts/Checks/ContractTests.cs and verify.py: MTP semantics tests, actual signature mutation and preservation checks",
+    "LICENSE and THIRD-PARTY-NOTICES.md: user-chosen MIT and provenance policy"
+  ],
   "evidence": [],
   "blockers": [],
   "handoff": {
-    "summary": "",
+    "summary": "Foundation decisions and compiled stage fixtures implemented; final tested-revision checks/evidence pending.",
     "checks": [],
-    "remaining": [],
-    "requests": []
+    "remaining": [
+      "Record final checks at implementation commit before setting implemented."
+    ],
+    "requests": [
+      "Ordered CI/repair task: own tools/ApiBaseline/, tests/Xemele.TestUtilities/Build/, .github/workflows/build.yml; compose validated fragments in memory and compare runtime Release assembly using task-owned Roslyn checker; exact commands in docs/reports/M0-contracts/README.md.",
+      "M0-corpora-wiring: implement reviewed infrastructure outcomes from docs/decisions/M0/conformance.md without changing frozen IConformanceCase or established manifest schema.",
+      "Introducing tasks must expand normalizer/probes before shipping uncovered signature families; M1/later owners validate real XML composition, enforcing exact/one-over limits and x64/Arm64 release performance."
+    ]
   }
 }

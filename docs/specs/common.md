@@ -1,51 +1,51 @@
 # Shared runtime contract
 
-Initial decision owner: `M0-contracts`; implementation owner: `M1-common`. Later changes require an ordered contract/repair task.
+Initial decision owner: M0-contracts; implementation owner: M1-common.
+Later changes require an ordered contract/repair task. Exact representative
+compiled declarations are `tests/Contracts/Fixtures/foundation/Common.cs.fixture`;
+[foundation decisions](../decisions/M0/foundation.md) specify their semantics,
+constructor contracts, limits, units and owned/borrowed boundaries. These models
+are compiled per stage and never shipped as runtime stubs.
 
-Runtime hot paths must follow the [string/byte performance rules](../performance-coding.md). API contracts identify borrowed versus owned values and intentional allocation boundaries; feature evidence must include applicable allocation and benchmark results.
+M1 XmlParseOptions exposes only Limits. M2 additively adds Recover=false,
+DtdProcessing=Prohibit and Resolver=null, with working enum/resolver/resource
+APIs. M1 has no DTD/recovery/resolver references; unsupported DTD input is safely
+rejected. Enabling syntax never grants resource access. No later resolver type is
+needed to compile or use M1. XmlParseResult<T> constrains T to reference types;
+well-formed implies complete and nonnull Value. Results/exceptions own diagnostic
+snapshots; a parse exception requires at least one diagnostic.
 
-## Shapes
+The nullable positive limits record has explicit null unlimited opt-in, finite
+defaults, Int32/Int64 widths and exact units in the approved decision table.
+Validate before work. Exactly-at-limit succeeds; one-over rejects with checked
+arithmetic. Aggregate counters span nested resources and all sync/async/DOM/event
+paths. Representational capacities remain finite even with null input quotas.
 
-```csharp
-namespace Xemele;
+Locations use one-based normalized Unicode-scalar line/columns, zero unknown;
+original-source zero-based byte offsets are nullable and absent for character
+input. Resource URIs survive entity/include boundaries. Module-prefixed string
+codes are stable; each module owns its catalog, not a shared enum. Diagnostics
+are bounded, including terminal limit entries; no-error paths format no messages.
 
-public enum XmlDiagnosticSeverity { Warning, Error, Fatal }
-public readonly record struct XmlLocation(
-    Uri? SourceUri, int LineNumber, int LinePosition, long? ByteOffset);
-public sealed record XmlDiagnostic(
-    string Code, XmlDiagnosticSeverity Severity, string Message, XmlLocation Location);
-public sealed class XmlParseException : Exception
-{
-    public IReadOnlyList<XmlDiagnostic> Diagnostics { get; }
-}
-public sealed record XmlParseOptions
-{
-    public bool Recover { get; init; }
-    public XmlDtdProcessing DtdProcessing { get; init; }
-    public XmlResourceResolver? Resolver { get; init; }
-    public XmlResourceLimits Limits { get; init; }
-}
-public enum XmlDtdProcessing { Prohibit, Parse }
-public sealed record XmlParseResult<T>
-{
-    public T? Value { get; }
-    public bool IsComplete { get; }
-    public bool IsWellFormed { get; }
-    public IReadOnlyList<XmlDiagnostic> Diagnostics { get; }
-}
-```
+Strict Parse/Load return complete well-formed values or XmlParseException.
+TryParse handles structured syntax rejection without catching argument, I/O,
+cancellation or callback exceptions, including callback-thrown parse exceptions.
+M2 recovery has the distinct ParseWithDiagnostics API. Snapshot immutable options
+and limits per operation, with no global resolver/cache/callback state.
+Caller streams remain open; entry points close opened files. Resolver success
+transfers returned resource ownership to the parser for exactly-once disposal.
+Cancellation is an operation parameter checked at entry, before external work
+and at bounded intervals. Detailed pause/fault/EOF and decoding contracts are
+in the foundation decision; asynchronous state retains owners and offsets, never
+spans across awaits or views into returned buffers.
 
-This is the target M2 option surface. M1 exposes only implemented options: unsupported DTDs and recovery are rejected, and M2 adds their working properties/values. M1 does not reference an unimplemented resolver type. M0 fixtures distinguish stage-specific surfaces. Prefer additive overloads/properties with preserved defaults; never add abstract interface members to an already shipped public contract without a compatibility mechanism.
+Runtime hot paths follow [performance coding rules](../performance-coding.md).
+Allocation-free warm primitive targets are distinct from setup, persistence,
+pool growth, owned results and diagnostics; each implementing task supplies
+applicable evidence. M0 choices are provisional single-Arm64 synthetic evidence,
+with actual XML composition and cross-architecture release checks still required.
 
-`XmlResourceLimits` has finite limits for document characters, depth, attributes per element, token characters, interned names, entity nesting/expanded characters, external bytes/count, inclusion depth, diagnostics, and evaluation work. M0 must select concrete defaults, integer widths, units, and explicit unlimited opt-in representation. Limits must be enforced cumulatively, including nested resource operations; tests cover exactly-at-limit and one-over-limit cases.
-
-## Semantics
-
-- Position: one-based lines and Unicode-scalar columns in normalized XML input; unknown line/column is zero. Byte offset, when present, is zero-based in the original byte source. String input has no byte offset. Locations retain their resource URI across entity/include boundaries.
-- Diagnostic codes are stable module-prefixed strings (for example `XML1001`); each module owns its code catalog, avoiding a shared enum edit for every feature.
-- `Parse`/`Load` return complete strict results or throw `XmlParseException`. Recovery has a distinct `ParseWithDiagnostics` result API. `TryParse` reports syntax rejection without catching argument, I/O, cancellation, or user-callback exceptions.
-- Snapshot immutable options per operation. No global state, resolver, namespace cache, or error callback. Diagnostics collection is bounded.
-- Caller-owned streams stay open. File entry points close streams they open. Cancellation is checked at bounded work intervals and before external reads.
-- Resource resolution is denied by default; enabling DTD syntax does not grant access. Resource limits and cancellation apply equally to sync, async, DOM, and event paths.
-
-Every implementing task's public baseline fragment lives in `docs/api/<task-id>.txt`, as listed in its ownership record. M0 specifies how CI composes these into one checked assembly surface without rewriting unrelated fragments. Partial types can have members in multiple fragments; duplicate/conflicting member declarations fail validation.
+Public baseline fragments stay task-owned at docs/api/<task-id>.txt. The exact
+xemele-api-v1 canonical schema is tools/ApiBaseline/README.md. [Compiled comparison
+scheme](../decisions/M0/api-compatibility.md) compares member IDs and normalized
+metadata; inventory validation alone does not establish assembly compatibility.

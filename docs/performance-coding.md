@@ -65,3 +65,13 @@ Use the task's owned benchmark path and record evidence in its task record:
 5. Keep a correctness oracle and focused allocation regressions for paths promised allocation-free. Include invalid Unicode, collision/unknown tokens, truncated input, pool ownership, and culture independence as applicable. Inspect generated code when a compiler/JIT lowering is the reason for the claimed benefit.
 
 A feature task touching these paths is not verified without its relevant allocation evidence. Noisy timing on shared CI is informational; use the performance plan's repeatability/regression rules. If an optimization does not produce a repeatable benefit, retain the simpler implementation and record the result. Apply these gates as each milestone is built, not only during M9.
+
+## Approved M0 choices
+
+[Foundation decisions](decisions/M0/foundation.md) record the integrated tree and
+corrected input experiment revisions, memory/speed tradeoffs and allocation
+boundaries. Character scanning plus bounded strict byte decoding, durable owned
+DOM text, borrowed ordinal intern probes, cached state-specific multi-stop scans,
+static immutable literals and length-dispatched equality are the baseline choices.
+They do not replace per-task correctness/composition/measurement requirements.
+The superseded original 62 input/rejection cases are not decision evidence.

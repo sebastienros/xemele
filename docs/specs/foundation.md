@@ -8,7 +8,7 @@ Decision owner: `M0-contracts`. Runtime implementation begins in M1.
 
 Bootstrap also creates empty test projects (`Xemele.Tests`, `Xemele.Conformance.Tests`, `Xemele.Differential.Tests`, `Xemele.TestUtilities`), benchmark/fuzz/tool project shells, and their references. Executable shells can contain a working help-only entry point; no fake library implementation. Source files belong to feature tasks. Use explicit `Program.cs` only in bootstrap and route later commands through a registry convention approved here.
 
-Proposed CLI convention: an internal partial `CommandRegistry` declares optional `partial void` registration hooks for XML, HTML and validation commands. Bootstrap invokes these hooks; absent implementations are erased by the compiler. Each later command task implements its own hook in its owned folder. This is AOT-compatible, needs no runtime reflection, and lets the early help-only CLI compile without later command types. These internal hooks are not public placeholder functionality.
+Approved CLI convention: an internal partial `CommandRegistry` declares optional `partial void` registration hooks for XML, HTML and validation commands. Bootstrap invokes these hooks; absent implementations are erased by the compiler. Each later command task implements its own hook in its owned folder. This is AOT-compatible, needs no runtime reflection, and lets the early help-only CLI compile without later command types. These internal hooks are not public placeholder functionality.
 
 Parallel lanes after bootstrap: CI, corpus manager, reference runners, tree experiments, and input experiments. Each writes its own outputs. `M0-contracts` joins experiments, reviews the API specs, and records decisions; `M0-gate` joins all lanes.
 
@@ -27,7 +27,7 @@ public interface IConformanceCase
 }
 ```
 
-The contract task defines concrete outcome/schema types and per-case failure/exclusion reporting. Tests must not bootstrap their expectations using Xemele output.
+The approved concrete outcome/schema and per-case failure/exclusion contract is in [conformance decisions](../decisions/M0/conformance.md); the frozen interface is unchanged. Manifests use the exact schemaVersion: 1 field names established by tools/ApiBaseline/README.md. Tests must not bootstrap their expectations using Xemele output.
 
 ## Reference protocol
 
@@ -44,3 +44,13 @@ Operations are added by module task-owned adapters. M0 requires only one known X
 - Project license decision and provenance for imported code/data; if license choice is unavailable, record it as a distribution blocker without stopping independent experiments.
 
 API sketches must be expanded into task-owned declaration/usage fixtures under `tests/Contracts/Fixtures/<module>/`, compiled in a separate contract-check project that is not packaged. These fixtures can use test implementations; runtime packages must not ship stubs. Contract approval records the fixture revision and decisions; dependent workers consume that exact version.
+
+## Approved M0 decisions
+
+[Foundation decisions](../decisions/M0/foundation.md) freeze arena/value-handle
+identity, bounded character decoding/scanning, common numeric limits, lifetime,
+errors and stage surfaces using the integrated tree/input evidence.
+[Compiled API normalization](../decisions/M0/api-compatibility.md) complements
+canonical inventory checks. MIT is the user-approved license (LICENSE).
+The task-owned M1/M2 declaration and usage projects are nonpackaged models;
+compiled checks and golden fragments remain outside the public runtime/baselines.
