@@ -7,10 +7,11 @@
   "status": "in_progress",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M2-dtd-model",
   "branch": "codex/m2-dtd-model",
-  "base_revision": "b3e7230d6ba2fcf6ddf4e4986a44cfe4349d35d6",
+  "base_revision": "8af65f385654c382f201e1ad8c32f9be2cc3bb87",
   "integration_revision": null,
   "depends_on": [
-    "M2-contracts"
+    "M2-contracts",
+    "M2-resolver-allocation-probe"
   ],
   "goals": [
     "G07"
@@ -128,14 +129,15 @@
     "A2 cumulative direct suite fails unchanged resolver allocation test WarmBorrowedReadsAllocateNothing: expected0 actual4080B at ResolverTests.cs284. Coordinator resolver measurement repair/checkpoint must integrate before a bounded combined verification follow-up; no worker retry or peer changes."
   ],
   "handoff": {
-    "summary": "Immutable model complete and independently source-reviewed at e020db32fec509f122f0ffec37135ca2ee06724f. A1 passed; A2 partial/failed due required direct cumulative resolver allocation failure. Worker releases JSON/source ownership after evidence handoff; no further edits/checks without focused coordinator follow-up.",
+    "summary": "Immutable model complete and independently source-reviewed at e020db32fec509f122f0ffec37135ca2ee06724f. A1 passed; A2 partial/failed due required direct cumulative resolver allocation failure. Worker releases JSON/source ownership after evidence handoff; no further edits/checks without focused coordinator follow-up. Renewed claim f9ce78b1e1eb46f6726865c5f435365ab321b23b now provides verified resolver measurement repair; fresh combined verification pending.",
     "checks": [
       "Focused8/8; common-only sample/inventory11types154rows; retained source collected; informational model280/particle96/attribute160B per constructor, setup11744B.",
       "Historical/current MTP860/860; direct runtime305/306 (resolver allocation4080B failure), conformance255/255, differential299/299. No retries.",
       "API251/discovery3388; fresh242 pinned BCL records/source+hash preserved; planning14/validate118/owned paths/diff checks passed. Reports docs/reports/M2-dtd-model/first/."
     ],
     "remaining": [
-      "Coordinator integrates resolver measurement repair independently, then performs required combined complete verification before A2/implemented/verified. Preserve first-run failure evidence. No integration revision set."
+      "Coordinator integrates resolver measurement repair independently, then performs required combined complete verification before A2/implemented/verified. Preserve first-run failure evidence. No integration revision set.",
+      "Renewed after verified resolver measurement repair 4e558709ba99879b22a892d17912dd8204e5baea; preserve previous branch evidence and run fresh combined checks. No production changes or unchanged-candidate retries."
     ],
     "requests": [
       "Coordinator-owned follow-up only: integrate/recheck resolver allocation measurement repair; worker has no requested shared source/build/API changes."
