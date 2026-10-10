@@ -39,8 +39,9 @@ this change adds one runtime protocol test, so expected totals are 5069/4515.
 The later user artifact policy supersedes the original archive requirements.
 Generated logs/XML/gzip/child request/report/progress files and copied identity
 inventories are temporary verification inputs, never committed in the final tree.
-Existing integrated baseline XML is read transiently to compare all identities;
-only baseline source/SHA/count metadata is copied. The driver writes durable
+Canonical sorted baseline test identities were inspected against existing
+integrated XML. Future checks compare the exact canonical digest and count in
+verified baseline metadata; no raw XML or copied inventory is required. The driver writes durable
 summaries and temporary outputs under its ignored artifact directory. Remove that
 directory after inspection and before handoff. No successful measurement is rerun
 for this evidence-storage change; compiled test/helper/runtime inputs stay the

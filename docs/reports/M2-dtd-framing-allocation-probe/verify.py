@@ -117,12 +117,10 @@ def main():
             data = dict(total=len(tests),failed=sum(t.get('result') == 'Fail' for t in tests),skipped=sum(t.get('result') == 'Skip' for t in tests))
             data['framing'] = [dict(result=t.get('result'),output=t.findtext('output')) for t in tests if t.get('name','').endswith('WarmWhitespacePrimitiveHasNoAllocations')]
             baseline=json.loads((REPORT/'history/verified-cc4770b/summary.json').read_text())[assembly]
-            original_xml=ROOT/baseline['xmlPath']
-            require(hashlib.sha256(original_xml.read_bytes()).hexdigest()==baseline['xmlSha256'],'baseline XML identity')
             inherited=[(t.get('type'),t.get('method'),t.get('name')) for t in tests if t.get('type')!='Xemele.Tests.FramingAllocationProtocolTests']
-            expected=list(ET.fromstring(gzip.decompress(original_xml.read_bytes())).iter('test'))
-            expected_identities=sorted((t.get('type'),t.get('method'),t.get('name')) for t in expected)
-            require(sorted(inherited)==expected_identities,'inherited test identities changed')
+            identity_hash=hashlib.sha256(json.dumps(sorted(inherited),ensure_ascii=True,separators=(',',':')).encode()).hexdigest()
+            require(len(inherited)==baseline['count'] and identity_hash==baseline['identitySha256'],'inherited test identities changed')
+            data['inheritedIdentitySha256']=identity_hash
             data['preservedBaselineCount']=baseline['count']
             if assembly=='Xemele.Tests':
                 framing=[t for t in tests if t.get('type')=='Xemele.Tests.FramingTests']
