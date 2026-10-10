@@ -4,7 +4,7 @@
   "milestone": "M2",
   "title": "Integrate DTD/entities/defaults into XML core",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M2-entities",
   "branch": "codex/m2-entities",
   "base_revision": "c88f4135c39b71b80a5993d60680ee9c082a32e8",
@@ -42,23 +42,50 @@
     {
       "id": "M2-entities-A1",
       "description": "Connect DTD/resource hooks, entity expansion, attribute defaults/types and ID tracking using nonvalidating XML rules.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "correctness-978",
+        "allocation-961",
+        "final-preparation-17e85",
+        "benchmark-17e85",
+        "source-reviews",
+        "final-owned-audit"
+      ]
     },
     {
       "id": "M2-entities-A2",
       "description": "Verify defaulted attributes, entity/reference representation, standalone rules, cumulative amplification limits and no-resolver rejection.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "correctness-978",
+        "allocation-961",
+        "final-preparation-17e85",
+        "benchmark-17e85",
+        "source-reviews",
+        "final-owned-audit"
+      ]
     },
     {
       "id": "M2-entities-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "correctness-978",
+        "allocation-961",
+        "final-preparation-17e85",
+        "benchmark-17e85",
+        "source-reviews",
+        "final-owned-audit"
+      ]
     }
   ],
-  "implementation": [],
+  "implementation": [
+    "src/Xemele/Parsing/Entities/Runtime/: immutable XmlEntityContext, cumulative XmlEntityBudget, bounded ExternalXmlSource with decoder/location and exact ownership.",
+    "src/Xemele/Parsing/Core/: lazy DTD Parse composition, iterative entity value frames, default/type/ID handling, standalone/limits, per-call token binding and primary-error-preserving cleanup.",
+    "tests/Xemele.Tests/M2-entities/: 79 actual runtime/context/transport/default/quota/cancellation/ownership and pinned-document checks; authorized transitional FoundationTests.cs Parse theories only.",
+    "samples/M2-entities/: real DOM/SAX/context/stream sample, independently compiled contract, strict allocation/retention probe; benchmarks/Xemele.Benchmarks/M2-entities/: full authored DOM/Dtd and identity lookup oracles.",
+    "docs/reports/M2-entities/README.md: exact source/binary/provenance, actual results, historical failures, coverage limits and integration follow-up. Public API unchanged: no docs/api fragment added."
+  ],
   "evidence": [
     {
       "id": "full-175-framing-allocation-failure",
@@ -68,20 +95,88 @@
       "result": "failed",
       "summary": "Actual inherited fullMTP5147total/5146pass/1failure/0skip: unchanged FramingTests.WarmWhitespacePrimitiveHasNoAllocations exact0expected/6128Bobserved. DirectXML/discovery/API/contract/package/benchmarkoracles/fullreferenceprovenance/planning/finalaudits gated/unrun after failure. No entity measurements or unchangedguard retry; source175 and preservedfailure committed94c614d. Cause unresolved. Owner explicitly released allJSON/paths, clean/parked; narrow prerequisite repair must verify before renewed entity claim. Original A1-A3 pending.",
       "artifact": "docs/reports/M2-entities/correctness-175635c/summary.json"
+    },
+    {
+      "id": "correctness-978",
+      "kind": "check",
+      "revision": "978317bb347e3d7a70715e098b2c34530ef40656",
+      "command": "Pinned SDK10.0.400/runtime10.0.11; python3 -B docs/reports/M2-entities/verify.py --report-prefix correctness-978317b",
+      "result": "passed",
+      "summary": "Full MTP5148/0failure/0skip; direct/discovery4594runtime+255conformance+299differential; own79/foundation9; prior identities preserved with only two authorized transitional Parse-mode changes; framing1243/protocol1 preserved. ActualAPI272/zeroadditions; independent compiled actual=approved internal contracts. Source sample and fresh local package consumer full outputs/ownership pass. Main+standalone full benchmark oracles/discovery pass. Fresh complete BCL outputcopy242 full-source records/239matchedrejections/3documenteddivergences unchanged; all363 compiled input identities frozen; planning14 tests and validate124; owned allstates/diff audits passed. Raw current outputs removed; macOSArm64/eight pinned simple docs limitations.",
+      "artifact": "docs/reports/M2-entities/correctness-978317b/summary.json"
+    },
+    {
+      "id": "allocation-961",
+      "kind": "check",
+      "revision": "961a74831935635d8d20df499e8b9060fe9e0262",
+      "command": "Pinned SDK10.0.400/runtime10.0.11; python3 -B docs/reports/M2-entities/measure.py --exclusive-grant m2-entities-961-exclusive-20261010 --report-prefix exclusive-allocations-961 --mode allocations",
+      "result": "passed",
+      "summary": "Exactly one strict10000iteration allocation run: ordinaryWarm0B/entityWarm0B/borrowedLookup0B; coldCore69360024total/coldContext10720000total separate; escapedPositive320000total. Content oracles outsideinterval pass; caller charbuffer released and exact ownedDOM/DTD retained after one outsideintervalcollection. Source and parentbinary beforeafter identities frozen; rawremoved. Never repeated. Runtime/sample/timedbench source contents unchanged978.",
+      "artifact": "docs/reports/M2-entities/exclusive-allocations-961/summary.json"
+    },
+    {
+      "id": "initial-benchmark-961-unverified",
+      "kind": "check",
+      "revision": "961a74831935635d8d20df499e8b9060fe9e0262",
+      "command": "Pinned SDK10.0.400/runtime10.0.11; python3 -B docs/reports/M2-entities/measure.py --exclusive-grant m2-entities-961-exclusive-20261010 --report-prefix exclusive-benchmarks-961 --mode benchmarks",
+      "result": "failed",
+      "summary": "Six cases executed but wrapper generated-library SHA equality assertion failed. Actual childSHA was not captured before that assertion, so metadata and finalfreeze were gated/unrun. Parent seven binaries and365sources subsequently independently unchanged, but this does not reconstruct missing first child identity. Timing remains unverified; actual numeric prefix/failure retained; rawremoved. Later expectedvariant proof never retroactively admits these observations.",
+      "artifact": "docs/reports/M2-entities/exclusive-benchmarks-961/summary.json"
+    },
+    {
+      "id": "final-preparation-17e85",
+      "kind": "check",
+      "revision": "17e85d806303956303ee8a7591e3b777e78e1256",
+      "command": "Sequential dotnet build of Probe.csproj/Sample.csproj/Xemele.EntitiesBenchmarks.csproj/Xemele.Benchmarks.csproj/BuildOnly.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false; actual sample; benchmark --oracle/--list flat; BuildOnly exact parent/artifact/options twice; PE probe; python3 -B -m unittest discover -s docs/reports/M2-entities -p test_*.py -v",
+      "result": "passed",
+      "summary": "Five Release build exits0; full sample, standard/generated actual method oracles, main+standalone four-method/six-case discovery pass. Eleven lightweight tests pass including outer missingexe/library durability/primaryexception/cleanup controls. Two independent freshdirectory expected builds match ALL44 raw files and generatedproject/code at exact future artifact/outputpaths, full childversions current17e85/runtime10.0.11/Arm64. All367sources/eightparentbinaries unchanged beforeafter; original363 unchanged978. No workloads; transientpayloadsremoved. Mock preparation host-discovery errors preserved separately.",
+      "artifact": "docs/reports/M2-entities/final-preparation-17e85.json"
+    },
+    {
+      "id": "benchmark-17e85",
+      "kind": "check",
+      "revision": "17e85d806303956303ee8a7591e3b777e78e1256",
+      "command": "Pinned SDK10.0.400/runtime10.0.11; python3 -B docs/reports/M2-entities/measure.py --exclusive-grant m2-entities-17e85-variant-exclusive-20261010 --report-prefix exclusive-benchmarks-variant-final --mode benchmarks",
+      "result": "passed",
+      "summary": "Exactly one granted bounded invocation exit0; six cases/18Actual/18Result/6GC/all child+buildexits0. Each actual complete44file rawclosure+generatedproject/code equals independently prepared known17e85source variant, executable/productioncontainingassembly fullversions current/runtime10.0.11/Arm64. Final367source/eightparentbinary/preparationSHA freezes pass; allraw/generatedpayloadsremoved; nochildren. Lookup General3.790ns/Default3.742ns both0B; fullDOM composition retainedallocations and actual metrics recorded. Informational macOSArm64 ShortRun only; no speedup/crossarchitecture claim. Root independently accepted actual summaries/identities and releasedexclusivegrant.",
+      "artifact": "docs/reports/M2-entities/exclusive-benchmarks-variant-final/summary.json"
+    },
+    {
+      "id": "source-reviews",
+      "kind": "review",
+      "revision": "17e85d806303956303ee8a7591e3b777e78e1256",
+      "command": "Independent coordinator/reviewer source inspection",
+      "result": "passed",
+      "summary": "Runtime/accounting/API source reviews and final driver/raw44/source predicates/missingpayload correction approved. Reviews were source-only with no executable checks; actual correctness/allocation/timing checks are separate evidence. Root final audit accepted current367Git/sourceSHAs/eightparentbinarySHAs/expectedvariant/fullversions and concise successful measurement summary.",
+      "artifact": "docs/reports/M2-entities/final-source-review.json"
+    },
+    {
+      "id": "final-owned-audit",
+      "kind": "check",
+      "revision": "575622a5541a7a1f54ae28f62867199b1c5b2644",
+      "command": "python3 tools/planning/tasks.py validate; git diff --name-only a29d2dac7bdd4c36c51797bd21752ebcec6b81e9..HEAD; git diff --name-only; git diff --cached --name-only; git ls-files --others --exclude-standard; git diff --check for committed/staged/working; compare all paths against task owns and JSON",
+      "result": "passed",
+      "summary": "Validated124tasks; committed/staged/working/untracked paths all owned; frozen foundation Contracts unchanged; all diffchecks pass; original compiled runtime/sample/benchmark input hashes unchanged successful correctness978. Evidence-only final changes; no repeat successful measurements or checks.",
+      "artifact": "docs/reports/M2-entities/final-audit.json"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Renewed after verified integrated framing repair; preserved worker94c614d history and implementation; original acceptance remains pending.",
-    "checks": [],
+    "summary": "Original A1-A3 implemented on isolated branch using all six verified integrated prerequisites. Full correctness/API/package/preservation and strict allocation plus provenance-backed informational timing pass at their recorded revisions. No public additions/shared build or foundation Contracts edits. Historical failures remain explicit. Integration_revision remains null; coordinator owns integrated verification.",
+    "checks": [
+      "Full correctness978:5148pass/0fail/0skip; canonical earlier preservation; API272/zero additions; compiled actual=approved contracts; source+localpackage/sample+benchmark oracles; fresh fullBCL242 provenance; planning14/validate124.",
+      "One successful allocation961: warmed ordinary/entity/borrowedlookup0B, positivecontrol and outsideinterval retention pass; never repeated.",
+      "Final17e85 five builds/11 lightweight tests/fulloracles/discovery and two independent exact-path ALL44raw expected builds pass; original363 compiledinputs unchanged978.",
+      "One granted benchmark17e85: sixcases/18Actual/18Result/6GC/exits0; exact known-source completeclosure/project/code/fullversions;367sources/eightparents/manifest frozen; transientoutputsremoved; nochildren.",
+      "Final ownedpath allstates/diff/planning audits pass; historical full175 and initialtiming961 failures remain unverified at their original revisions."
+    ],
     "remaining": [
-      "Refresh preserved branch from renewed coordinated claim, strengthen full authored DTD/DOM benchmark oracles, then complete original correctness/API/package/provenance/allocations/timing and handoff."
+      "Coordinator integrate branch and run fresh applicable combined-tree checks before verified; no later-milestone dependency or peer branch required.",
+      "Only macOSArm64 evidence; eight pinned simple W3C cases are not full XML conformance/mixed-node ordering coverage."
     ],
     "requests": [
-      "Consume verified M2-entities-foundation options/metadata/hooks without editing its paths. Entity implementation lives outside Entities/Contracts; context implementation and core lazy creation/metadata delivery remain this parent runtime task.",
-      "Ordered narrow ownership of FoundationTests.cs only to replace transitional FoundationDoesNotEnableProductionDtdOrEntityParsing Parse-mode rejection when production parsing becomes implemented. Preserve all metadata/options/hook tests and strict default Prohibit/null-resolver/no-unrequested-open guarantees; add meaningful actual Parse behavior tests in own M2-entities tests. Earlier foundation verification/history remains unchanged.",
-      "Consume integrated verified M2-dtd-composition seed/preframed hooks for internalPE visibility/external declaration cursor/accounting; no DTD edits or caller buffering workaround. JSON-only ownership released to root before dependency patch.",
-      "Consume verified M2-resolver-cancellation exact per-call token binding before completing resumed resource composition; original accepted counters/handles/URIs stay in one operation. Root temporarily owns JSON by explicit worker release; implementation independent corrections continue."
+      "Consume existing foundation Contracts unchanged; the sole FoundationTests.cs transition preserves defaultProhibit/no-unrequested-resolver guarantees.",
+      "Explicit release of ALL M2-entities task JSON and owned paths to coordinator after final handoff; worker parked/noheavychildren. No successful allocation/timing repeats, no retrospective acceptance of failed961timing; new outputs remain concise summaries per user artifact policy."
     ]
   }
 }

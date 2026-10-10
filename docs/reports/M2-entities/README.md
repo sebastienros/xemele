@@ -28,3 +28,13 @@ These are informational macOS Arm64 ShortRun observations, not cross-architectur
 Historical failures remain recorded: the inherited framing allocation guard failed at175635c before its integrated narrow repair; initial benchmark961 executed cases but its generated-child SHA gate failed, so those timing observations remain unverified. No later build reconstructs that missing child identity. Preparation/mock/API-discovery failures have concise records and are not passing checks. Existing historical artifacts were not rewritten; new raw logs, XML, BenchmarkDotNet outputs and generated child payloads were removed after inspection. Only concise summaries, actual metrics, hashes and provenance remain.
 
 Eight pinned W3C simple document cases and the BCL whole-root oracle are limited coverage, not full XML conformance or a mixed-node ordering oracle. Only verified integrated prerequisites were consumed. The coordinator must integrate this branch and rerun relevant checks before marking it verified; no dependent milestone is unlocked by branch implementation alone.
+
+## Coordinator integration command
+
+After merging into main, run the following with pinned SDK10.0.400/runtime10.0.11 and an unused report prefix:
+
+```sh
+python3 -B docs/reports/M2-entities/verify.py --expected-branch main --audit-base a29d2dac7bdd4c36c51797bd21752ebcec6b81e9 --report-prefix integration-m2-entities-final
+```
+
+This runs fresh integrated correctness, contracts/API, package/sample/oracles, reference provenance and planning/ownership checks without timing or allocation mode. Preserve measured known-source results; do not repeat the successful allocation or timing runs. The committed premeasurement manifest describes measured17e85, so it is historical evidence after later metadata commits, not a grant to run against a different HEAD.
