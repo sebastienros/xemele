@@ -70,7 +70,7 @@ def main():
         summary['dotnetSha256'] = hashlib.sha256(dotnet.read_bytes()).hexdigest()
         source_paths = ['src/Xemele/Parsing/Dtd/Grammar/Values', 'tests/Xemele.Tests/M2-dtd-values',
                         'benchmarks/Xemele.Benchmarks/M2-dtd-values', 'samples/M2-dtd-values',
-                        'docs/reports/M2-dtd-values/Benchmarks.csproj', 'docs/reports/M2-dtd-values/BenchmarkDriver.cs',
+                        'docs/reports/M2-dtd-values/Xemele.DtdValuesBenchmarks.csproj', 'docs/reports/M2-dtd-values/BenchmarkDriver.cs',
                         'docs/reports/M2-dtd-values/verify.py']
         assert not run('git', 'diff', '--name-only', 'HEAD', '--', *source_paths).strip(), 'uncommitted tested sources'
         assert not run('git', 'ls-files', '--others', '--exclude-standard', '--', *source_paths).strip(), 'untracked tested sources'
@@ -99,9 +99,9 @@ def main():
         allocations = json.loads(run('dotnet', sample, '--allocations').strip().splitlines()[-1])
         (report/'allocations.json').write_text(json.dumps(allocations, indent=2)+'\n')
         summary['allocations'] = allocations
-        run('dotnet', 'build', REPORT/'Benchmarks.csproj', *FLAGS)
-        summary['benchmarkCorrectness'] = run('dotnet', REPORT/'bin/Release/net10.0/Benchmarks.dll', '--correctness').strip()
-        discovered = run('dotnet', REPORT/'bin/Release/net10.0/Benchmarks.dll', '--list', 'flat', '--filter', '*DtdValue*')
+        run('dotnet', 'build', REPORT/'Xemele.DtdValuesBenchmarks.csproj', *FLAGS)
+        summary['benchmarkCorrectness'] = run('dotnet', REPORT/'bin/Release/net10.0/Xemele.DtdValuesBenchmarks.dll', '--correctness').strip()
+        discovered = run('dotnet', REPORT/'bin/Release/net10.0/Xemele.DtdValuesBenchmarks.dll', '--list', 'flat', '--filter', '*DtdValue*')
         assert len(discovered.strip().splitlines()) == 2
         summary['benchmarksPrepared'] = discovered.strip().splitlines()
         run('python3', '-B', 'docs/reports/M1-corpus-import/provision.py')
