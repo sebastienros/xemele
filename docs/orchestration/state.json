@@ -17,29 +17,15 @@
       "client_thread_id": "client-new-thread:d6419990-e767-4ffc-b304-c69a6acff021"
     }
   ],
-  "integration_queue": [
-    {
-      "task_id": "M0-tests-mtp",
-      "chat_id": "01a1232c-f5a8-72b3-854a-7a9d23375000",
-      "host_id": "local",
-      "worktree_path": "/Users/sebastienros/.codex/worktrees/76b1/xemele",
-      "branch": "codex/m0-tests-mtp",
-      "base_revision": "ef1440ba86a5d9da50060ebe028cbb66a98a5fcf",
-      "claim_revision": "8cfde93e103ad178dab80ff8fff3b310db46658d",
-      "setup_status": "awaiting-integration",
-      "client_thread_id": "client-new-thread:2cdff4f6-7b40-4b0c-847f-1f7b49f95c4a",
-      "implementation_revision": "b0aba9365d2231d5bf8232ef76e91a62f7b81df9",
-      "handoff_revision": "8f33cc99ac8a55a9dfd9b66b9b9d7209d957d472"
-    }
-  ],
+  "integration_queue": [],
   "blockers": [],
   "next_actions": [
-    "Dispatch bounded ShortRun defaults worker",
-    "Review/integrate MTP and ShortRun serially",
-    "Then claim foundation contract and corpus/protocol lanes"
+    "Grant minimum ShortRun representative timing slot",
+    "Claim corpus or reference-protocol lane after verified MTP",
+    "After ShortRun integration claim foundation contract"
   ],
-  "last_verified_task": "M0-input-spike",
-  "last_integrated_revision": "62f4e25be185aa2c7f764ce0715fd3dc0f2456e4",
+  "last_verified_task": "M0-tests-mtp",
+  "last_integrated_revision": "0a6b343608397e4a34d18d995f2f4aef8e1e0088",
   "completed_assignments": [
     {
       "task_id": "M0-build",
@@ -94,10 +80,24 @@
       "handoff_revision": "5de3ba27dade7cb31702350308afc2dc3085d9c6",
       "implementation_revision": "87d101c7e9b09167b2d114f1f33ea5974680617d",
       "integration_revision": "62f4e25be185aa2c7f764ce0715fd3dc0f2456e4"
+    },
+    {
+      "task_id": "M0-tests-mtp",
+      "chat_id": "01a1232c-f5a8-72b3-854a-7a9d23375000",
+      "host_id": "local",
+      "worktree_path": "/Users/sebastienros/.codex/worktrees/76b1/xemele",
+      "branch": "codex/m0-tests-mtp",
+      "base_revision": "ef1440ba86a5d9da50060ebe028cbb66a98a5fcf",
+      "claim_revision": "8cfde93e103ad178dab80ff8fff3b310db46658d",
+      "setup_status": "verified",
+      "client_thread_id": "client-new-thread:2cdff4f6-7b40-4b0c-847f-1f7b49f95c4a",
+      "implementation_revision": "b0aba9365d2231d5bf8232ef76e91a62f7b81df9",
+      "handoff_revision": "8f33cc99ac8a55a9dfd9b66b9b9d7209d957d472",
+      "integration_revision": "0a6b343608397e4a34d18d995f2f4aef8e1e0088"
     }
   ],
   "benchmark_policy": "All experiment timing complete; CI and integrated checks released. Any later timing requires serial host lock.",
-  "benchmark_owner": null,
+  "benchmark_owner": "M0-bench-shortrun",
   "pending_decisions": [],
   "decisions": {
     "project_license": "MIT",
