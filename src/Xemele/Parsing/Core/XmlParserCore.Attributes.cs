@@ -19,8 +19,9 @@ internal sealed partial class XmlParserCore
     private DtdAttributeDeclaration? AttributeDeclaration(ReadOnlySpan<char> name)
     {
         if (dtdAttributes is null) return null;
-        foreach (var declaration in dtdAttributes)
+        for (int d = 0; d < dtdAttributes.Count; d++)
         {
+            var declaration = dtdAttributes[d];
             activeCancellation.ThrowIfCancellationRequested();
             if (name.SequenceEqual(declaration.Name)) return declaration;
         }
@@ -45,15 +46,39 @@ internal sealed partial class XmlParserCore
         // Normalization owns this bounded result through pending callbacks. It
         // cannot overwrite unconsumed tag suffixes when entities grow the value.
         string literal = new(token.AsSpan(start, i++ - start));
-        attribute.OwnedValue = NormalizeAttribute(literal, AttributeDeclaration(AttributeName(attribute)), attribute.Location);
+        var declaration = AttributeDeclaration(AttributeName(attribute));
+        var locations = tokenLocations.AsSpan(start, literal.Length).ToArray();
+        string? lexical = physicalTag.Length == 0 ? literal : OwnPhysicalAttribute(physicalStarts[start], physicalStarts[i - 1], attribute.Location);
+        if (diagnostic is not null) return false;
+        var valueLocation = locations.Length == 0 ? tokenLocations[i - 1] : locations[0];
+        attribute.OwnedValue = ExpandAttributeLiteral(literal, AttributeEntities(), valueLocation, locations, null, out var parts);
+        if (parts is not null) attribute.Incomplete = new(lexical!, valueLocation, parts, declaration is not null && declaration.Type != DtdAttributeType.CData);
+        else if (attribute.OwnedValue is { } complete) attribute.OwnedValue = NormalizeKnownAttribute(complete, declaration, valueLocation);
         return diagnostic is null;
+    }
+
+    private string? OwnPhysicalAttribute(int start, int end, XmlLocation at)
+    {
+        long scalars = 0;
+        for (int i = start; i < end; i++)
+        {
+            Work(i);
+            if (scalars == int.MaxValue || budget.Options.Limits.TokenCharacters is int max && scalars >= max)
+            { Reject("XML.ResourceLimit", "Physical attribute literal limit exceeded.", at); return null; }
+            scalars++; if (char.IsHighSurrogate(physicalTag[i])) i++;
+        }
+        return physicalTag.ToString(start, end - start);
     }
 
     private string? NormalizeAttribute(string literal, DtdAttributeDeclaration? declaration, XmlLocation at)
     {
         var table = AttributeEntities();
-        string? value = ExpandAttributeLiteral(literal, table, at);
-        if (value is null) return null;
+        string? value = ExpandAttributeLiteral(literal, table, at, null, null, out _);
+        return value is null ? null : NormalizeKnownAttribute(value, declaration, at);
+    }
+
+    private string? NormalizeKnownAttribute(string value, DtdAttributeDeclaration? declaration, XmlLocation at)
+    {
         if (declaration is not null && declaration.Type != DtdAttributeType.CData)
         {
             string normalized = CollapseSpaces(value);
@@ -104,8 +129,9 @@ internal sealed partial class XmlParserCore
 
     private bool ApplyDefaultAttributes(ReadOnlySpan<char> elementName)
     {
-        foreach (var declaration in dtdAttributes!)
+        for (int d = 0; d < dtdAttributes!.Count; d++)
         {
+            var declaration = dtdAttributes[d];
             activeCancellation.ThrowIfCancellationRequested();
             bool explicitValue = false;
             for (int i = 0; i < attributeCount; i++)
@@ -118,23 +144,31 @@ internal sealed partial class XmlParserCore
             { Reject("XML.Standalone", "Standalone document depends on an external default attribute.", opening); return false; }
             if (!ValidName(declaration.Name, true)) { Reject("XML.Namespace", "Default attribute is not a namespace name.", opening); return false; }
             if (!Charge(Quota.AttributesPerElement, 1, opening)) return false;
-            string? value = NormalizeAttribute(declaration.DefaultValue, declaration, opening);
+            AttributeInterpretation? incomplete = null;
+            incompleteDefaultByDeclaration?.TryGetValue(declaration, out incomplete);
+            if (standalone == true && incomplete?.ExternalDependency == true)
+            { Reject("XML.Standalone", "Standalone attribute depends on an external entity declaration.", opening); return false; }
+            string? value = incomplete is null ? NormalizeAttribute(declaration.DefaultValue, declaration, opening) : null;
             if (diagnostic is not null) return false;
             if (attributeCount == attributes.Length)
             {
                 if (attributeCount == Array.MaxLength) { Reject("XML.ResourceLimit", "Attribute capacity exceeded.", opening); return false; }
                 Array.Resize(ref attributes, (int)Math.Min(Array.MaxLength, (long)attributes.Length * 2));
             }
-            attributes[attributeCount++] = new() { OwnedName = declaration.Name, OwnedValue = value, Location = opening };
+            attributes[attributeCount++] = new() { OwnedName = declaration.Name, OwnedValue = value, Location = opening, Incomplete = incomplete };
         }
         return true;
     }
 
-    private sealed class AttributeGraphFrame(string text, string? name)
+    private sealed class AttributeGraphFrame(string text, string? name, XmlLocation[]? locations = null, bool[]? origins = null, XmlLocation at = default)
     {
         internal readonly string Text = text;
         internal readonly string? Name = name;
         internal int Index;
+        internal readonly XmlLocation[]? Locations = locations;
+        internal readonly bool[]? Origins = origins;
+        internal readonly XmlLocation Initial = at;
+        internal XmlLocation At(int index) => Locations is not null ? Locations[index] : Initial;
     }
 
     private bool CheckAttributeEntities(string literal, IReadOnlyDictionary<string, DtdEntityDeclaration> table, XmlLocation at, HashSet<string> seen)
@@ -180,16 +214,78 @@ internal sealed partial class XmlParserCore
         return true;
     }
 
+    private sealed record IncompleteDefault(string ElementName, string AttributeName, bool IsExternal,
+        XmlLocation Location, AttributeInterpretation Interpretation);
+    private List<IncompleteDefault>? incompleteDefaults;
+    private Dictionary<DtdAttributeDeclaration, AttributeInterpretation>? incompleteDefaultByDeclaration;
+    private int incompleteDefaultIndex;
+    private static XmlLocation FirstUnknown(XmlAttributeValuePart[] parts)
+    { foreach (var part in parts) if (part is XmlUnknownAttributeReference) return part.Location; throw new InvalidOperationException("Missing unknown part."); }
+    private bool PreflightIncompleteDefaults(IXmlEventSink sink)
+    {
+        if (incompleteDefaults is not { Count: > 0 } || sink is IXmlIncompleteAttributeSink) return true;
+        Reject("XML.IncompleteAttributeSinkRequired", "Sink cannot represent incomplete attribute defaults.", FirstUnknown(incompleteDefaults[0].Interpretation.Parts)); return false;
+    }
     private bool ValidateEffectiveDefaults()
     {
-        var table = AttributeEntities();
-        var seen = new HashSet<string>(StringComparer.Ordinal);
+        var finalTable = AttributeEntities();
         foreach (var declaration in entities!.Model.Attributes)
         {
             activeCancellation.ThrowIfCancellationRequested();
-            if (declaration.DefaultValue is not null &&
-                !CheckAttributeEntities(declaration.DefaultValue, table, declaration.Location, seen)) return false;
+            if (declaration.DefaultValue is not { } value) continue;
+            DtdLiteralInfo.Defaults.TryGetValue(declaration, out var info);
+            var table = info?.PrecedingEntities ?? finalTable;
+            // A known direct forward declaration is the independent declaration-
+            // order WFC, even when the missing-declaration sentence is VC-only.
+            for (int i = 0; i < value.Length; i++)
+            {
+                Work(i); if (value[i] != '&') continue;
+                int start = ++i; while (i < value.Length && value[i] != ';') { Work(i); i++; }
+                var name = value.AsSpan(start, i - start);
+                if (ScalarReference(name)) continue;
+                if (!Contains(table, name) && Contains(finalTable, name))
+                { Reject("DTD.InvalidDefault", "General entity must precede its direct use in an attribute default.", info?.Locations[start - 1] ?? declaration.Location); return false; }
+            }
+            bool missing = HasUnknown(value, table, new HashSet<string>(StringComparer.Ordinal), out bool externalDependency);
+            if (diagnostic is not null) return false;
+            if (!missing)
+            {
+                if (!CheckAttributeEntities(value, table, declaration.Location, new(StringComparer.Ordinal))) return false;
+                continue;
+            }
+            string? complete = ExpandAttributeLiteral(value, table, info?.ValueLocation ?? declaration.Location,
+                info?.Locations, info?.ExternalOrigins, out var parts, enforceStandalone: false);
+            if (diagnostic is not null) return false;
+            if (parts is null) continue;
+            incompleteDefaults ??= []; incompleteDefaultByDeclaration ??= new(ReferenceEqualityComparer.Instance);
+            if (incompleteDefaults.Count == Array.MaxLength) { Reject("XML.ResourceLimit", "Incomplete default capacity exceeded.", declaration.Location); return false; }
+            var interpretation = new AttributeInterpretation(info?.LexicalValue ?? value, info?.ValueLocation ?? declaration.Location,
+                parts, declaration.Type != DtdAttributeType.CData, incompleteDefaults.Count, externalDependency);
+            incompleteDefaults.Add(new(declaration.ElementName, declaration.Name, declaration.IsExternal, info?.DeclarationLocation ?? declaration.Location, interpretation));
+            incompleteDefaultByDeclaration.Add(declaration, interpretation);
         }
         return true;
+    }
+    private bool Contains(IReadOnlyDictionary<string, DtdEntityDeclaration> table, ReadOnlySpan<char> name)
+    { foreach (var entry in table) { activeCancellation.ThrowIfCancellationRequested(); if (name.SequenceEqual(entry.Key)) return true; } return false; }
+    private bool HasUnknown(string value, IReadOnlyDictionary<string, DtdEntityDeclaration> table, HashSet<string> seen, out bool externalDependency)
+    {
+        externalDependency = false;
+        var stack = new List<AttributeGraphFrame> { new(value, null) }; bool missing = false;
+        while (stack.Count != 0)
+        {
+            activeCancellation.ThrowIfCancellationRequested(); var frame = stack[^1];
+            if (frame.Index == frame.Text.Length) { stack.RemoveAt(stack.Count - 1); continue; }
+            if (frame.Text[frame.Index++] != '&') continue;
+            int start = frame.Index; while (frame.Index < frame.Text.Length && frame.Text[frame.Index] != ';') { Work(frame.Index); frame.Index++; }
+            if (frame.Index == frame.Text.Length) { Reject("DTD.InvalidDefault", "Unfinished default reference.", opening); return false; }
+            var name = frame.Text.AsSpan(start, frame.Index++ - start); if (ScalarReference(name)) continue;
+            DtdEntityDeclaration? entity = null;
+            foreach (var entry in table) { activeCancellation.ThrowIfCancellationRequested(); if (name.SequenceEqual(entry.Key)) { entity = entry.Value; break; } }
+            if (entity is null) { missing = true; continue; }
+            externalDependency |= entity.IsExternal;
+            if (entity.ReplacementText is { } text && seen.Add(entity.Name)) stack.Add(new(text, entity.Name));
+        }
+        return missing;
     }
 }

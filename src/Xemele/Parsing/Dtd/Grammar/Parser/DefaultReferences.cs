@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 namespace Xemele.Parsing.Dtd;
 internal sealed partial class DtdParser
 {
@@ -50,6 +51,28 @@ internal sealed partial class DtdParser
         }
         return true;
     }
+    private bool ValidateDirectDefaultOrder(CancellationToken cancellation)
+    {
+        if (!nonvalidatingReadState) return true;
+        foreach (var attribute in attributes)
+        {
+            cancellation.ThrowIfCancellationRequested();
+            if (attribute.DefaultValue is not { } value || !DtdLiteralInfo.Defaults.TryGetValue(attribute, out var info) || info.PrecedingEntities is not { } preceding) continue;
+            for (int i = 0; i < value.Length; i++)
+            {
+                cancellation.ThrowIfCancellationRequested(); if (value[i] != '&') continue;
+                int start = ++i; while (i < value.Length && value[i] != ';') { cancellation.ThrowIfCancellationRequested(); i++; }
+                var name = value.AsSpan(start, i - start);
+                if (name.IsEmpty || name[0] == '#' || name.SequenceEqual("lt") || name.SequenceEqual("gt") || name.SequenceEqual("amp") || name.SequenceEqual("apos") || name.SequenceEqual("quot")) continue;
+                bool before = false, after = false;
+                foreach (var entry in preceding) { cancellation.ThrowIfCancellationRequested(); if (name.SequenceEqual(entry.Key)) { before = true; break; } }
+                if (before) continue;
+                foreach (var entity in general) { cancellation.ThrowIfCancellationRequested(); if (name.SequenceEqual(entity.Name)) { after = true; break; } }
+                if (after) { Reject("General entity must precede its direct use in a default.", info.Locations[start - 1], "DTD.InvalidDefault"); return false; }
+            }
+        }
+        return true;
+    }
     // This validates only references resolvable in this subset's model. Unknown
     // names remain for the caller's effective (internal + external) table. It
     // neither applies a default nor recharges expansion work at its use site.
@@ -94,7 +117,7 @@ internal sealed partial class DtdParser
                 { cancellation.ThrowIfCancellationRequested(); if (firstName ? !ValueSyntax.IsNameStart(rune.Value) : !ValueSyntax.IsNameChar(rune.Value)) { Reject("Invalid entity name in a default replacement.", attribute.Location, "DTD.InvalidDefault"); return false; } firstName = false; }
                 if (name.SequenceEqual("lt") || name.SequenceEqual("gt") || name.SequenceEqual("amp") || name.SequenceEqual("apos") || name.SequenceEqual("quot")) continue;
                 DtdEntityDeclaration? declaration = null;
-                foreach (var entity in general) { cancellation.ThrowIfCancellationRequested(); if (name.SequenceEqual(entity.Name)) { declaration = entity; break; } }
+                foreach (var entity in DtdLiteralInfo.Defaults.TryGetValue(attribute, out var info) && info.PrecedingEntities is { } preceding ? preceding.Values : general) { cancellation.ThrowIfCancellationRequested(); if (name.SequenceEqual(entity.Name)) { declaration = entity; break; } }
                 if (declaration is null) continue;
                 if (declaration.SystemId is not null || declaration.NotationName is not null || declaration.ReplacementText is null || path.Contains(declaration.Name))
                 { Reject("Forbidden or recursive entity reference in an attribute default.", attribute.Location, "DTD.InvalidDefault"); return false; }
@@ -104,4 +127,14 @@ internal sealed partial class DtdParser
         }
         return true;
     }
+}
+
+// Weak declaration keys preserve frozen model constructors. The immutable sidecar
+// is owned by its declaration; it never retains input, decoder or parser buffers.
+internal sealed record DtdLiteralInfo(string LexicalValue, string Text, XmlLocation ValueLocation,
+    XmlLocation[] Locations, bool[] ExternalOrigins,
+    IReadOnlyDictionary<string, DtdEntityDeclaration>? PrecedingEntities = null, XmlLocation? DeclarationLocation = null)
+{
+    internal static readonly ConditionalWeakTable<DtdAttributeDeclaration, DtdLiteralInfo> Defaults = new();
+    internal static readonly ConditionalWeakTable<DtdEntityDeclaration, DtdLiteralInfo> Entities = new();
 }

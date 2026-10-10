@@ -10,7 +10,7 @@ public readonly struct XmlAttribute : IEquatable<XmlAttribute>
     public XmlNode OwnerElement => OwnerDocument.Handle(Data.Element);
     public bool IsAttached => Data.Attached;
     public string Prefix => Data.Prefix;
-    public string Value { get => Data.Value; set => OwnerDocument.MemberValue(Slot, value, false); }
+    public string Value { get { _ = Data; return Document!.ReadAttributeValue(Slot); } set => OwnerDocument.MemberValue(Slot, value, false); }
     public void Remove() => OwnerDocument.RemoveMember(Slot, false);
     public string LocalName => Data.Local;
     public string NamespaceUri => Data.Uri;

@@ -147,6 +147,7 @@ internal sealed partial class XmlParserCore
         // Publish cursor/index before grammar may push another source and grow
         // the value stack. No reference into its backing array survives Process.
         entitySources[^1] = source;
+        physicalScalar = scalar;
         Process(scalar, at);
         return true;
     }
@@ -168,6 +169,7 @@ internal sealed partial class XmlParserCore
     private void AbortEntities()
     {
         if (unresolvedPending) ClearUnresolvedReference();
+        Array.Clear(attributes, 0, attributeCount); physicalTag.Clear();
         // Called while preserving an existing callback/cancellation exception or
         // terminal diagnostic. Drain user cleanup failures without replacing it.
         try { resolution?.Abort(); } catch { }
@@ -200,6 +202,7 @@ internal sealed partial class XmlParserCore
         catch (Exception exception) { first ??= ExceptionDispatchInfo.Capture(exception); }
         finally { resolution = null; }
         entities = null; entityBudget = null;
+        incompleteDefaults?.Clear(); incompleteDefaultByDeclaration?.Clear(); physicalTag.Clear();
         attributeEntities = null; dtdAttributes = null; ids = null; internalSubset = null; internalModel = null;
         first?.Throw();
     }

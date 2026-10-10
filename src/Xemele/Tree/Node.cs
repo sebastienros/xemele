@@ -27,7 +27,7 @@ public readonly struct XmlNode : IEquatable<XmlNode>
     {
         Require(); ArgumentNullException.ThrowIfNull(localName);
         int i = Document!.Find(Slot, localName, namespaceUri ?? "", false);
-        return i < 0 ? null : Document.AttributeSlots[i].Value;
+        return i < 0 ? null : Document.ReadAttributeValue(i);
     }
     public XmlAttribute SetAttribute(string localName, string value, string? namespaceUri = null, string? prefix = null) =>
         new(OwnerDocument, OwnerDocument.SetMember(Slot, localName, value, namespaceUri ?? "", prefix ?? "", false));

@@ -9,11 +9,19 @@ internal sealed partial class DtdParser
         if (!Bounded(tokenScalars, at) || buffer.Length > int.MaxValue - 2) { if (!terminal) Refuse(ValueBudget.Limit(at)); return; }
         tokenScalars++;
         Span<char> pair = stackalloc char[2]; int count = ValueSyntax.WriteScalar(c, pair); buffer.Append(pair[..count]);
+        if (lex == Lex.Literal && !IgnoreCurrentDeclaration)
+            for (int i = 0; i < count; i++) { literalLocations.Add(physicalDtdLocation); literalOrigins.Add(Current.External || Current.Entered); }
     }
     private void BeginToken(XmlLocation at)
-    { scratch.Clear(); tokenScalars = 0; tokenAt = at; tokenSpace = separator; separator = false; }
+    { scratch.Clear(); tokenScalars = 0; tokenAt = at; tokenPhysicalAt = physicalDtdLocation; tokenSpace = separator; separator = false; }
     private void Emit(bool literal = false)
-    { tokens.Add(new(scratch.ToString(), literal, tokenSpace, tokenAt, Current.Id)); scratch.Clear(); tokenScalars = 0; }
+    {
+        string text = scratch.ToString();
+        var info = literal && !IgnoreCurrentDeclaration ? new DtdLiteralInfo(physicalLiteral.ToString(), text,
+            literalLocations.Count == 0 ? literalValueAt : literalLocations[0], literalLocations.ToArray(), literalOrigins.ToArray()) : null;
+        tokens.Add(new(text, literal, tokenSpace, tokenAt, Current.Id, info, tokenPhysicalAt)); scratch.Clear(); tokenScalars = 0;
+        physicalLiteral.Clear(); physicalLiteralScalars = 0; literalLocations.Clear(); literalOrigins.Clear();
+    }
     private void Symbol(int c, XmlLocation at)
     { tokens.Add(new(new string((char)c, 1), false, separator, at, Current.Id)); separator = false; }
     private void Process(int c, XmlLocation at, CancellationToken cancellation, bool replay = false)
@@ -67,6 +75,8 @@ internal sealed partial class DtdParser
                 if (c is '\'' or '"')
                 {
                     quote = (char)c; quoteSource = Current.Id; BeginToken(at); lex = Lex.Literal;
+                    physicalLiteral.Clear(); physicalLiteralScalars = 0; literalLocations.Clear(); literalOrigins.Clear();
+                    literalValueAt = new(at.SourceUri, at.LineNumber, at.LinePosition == 0 ? 0 : at.LinePosition + 1, null);
                     literalEntity = declaration == "ENTITY" && (tokens.Count == 1 || tokens.Count == 2 && tokens[0].Text == "%"); return;
                 }
                 if (ValueSyntax.IsNameChar(c)) { BeginToken(at); AddScalar(scratch, c, at); lex = Lex.Name; return; }
@@ -180,6 +190,7 @@ internal sealed partial class DtdParser
             // Nested internal PEs inherit that same containing source. An actual
             // external PE receives its redirected final URI when the caller pushes it.
             child = new(nextId++, Current.External || entity.SystemId is not null, new(Current.Uri, 1, 1, null), name, entity.ReplacementText, true, literal);
+            DtdLiteralInfo.Entities.TryGetValue(entity, out child.LiteralInfo);
             child.Insertion = parameterResume;
             child.IncludeFloor = parameterResume == Lex.Between ? includes.Count : Current.IncludeFloor;
             active.Add(name);

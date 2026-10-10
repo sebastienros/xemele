@@ -27,6 +27,7 @@ internal sealed partial class DtdParser : IDisposable
         internal Uri? Uri;
         internal bool Final, Cr;
         internal XmlTextDeclarationFramer? Prolog;
+        internal DtdLiteralInfo? LiteralInfo;
         internal readonly List<(int Scalar, XmlLocation At)> Prefix = new(7);
         internal Source(int id, bool external, XmlLocation at, string? name = null, string? text = null, bool entered = false, bool literal = false)
         { Id = id; External = external; Line = at.LineNumber; Column = at.LinePosition; Uri = at.SourceUri; Name = name; Text = text; Entered = entered; LiteralExpansion = literal; }
@@ -60,12 +61,27 @@ internal sealed partial class DtdParser : IDisposable
     private int nextId = 1, lexicalSource, quoteSource, ignoreDepth, ignoreRun, gate;
     private long documentScalars, tokenScalars, declarationScalars;
     private bool lexicalEntered, declarationInParameter, piData, declarationExternal, separator, tokenSpace, literalEntity, disposed, faulted, terminal;
-    private XmlLocation declarationAt, tokenAt, parameterAt, lexicalAt;
+    private XmlLocation declarationAt, tokenAt, parameterAt, lexicalAt, tokenPhysicalAt;
     private DtdEntityRequest? request;
     private Source? pending;
     private XmlDiagnostic? diagnostic;
     private DtdModel? model;
-    private readonly record struct Token(string Text, bool Literal, bool Space, XmlLocation At, int Source);
+    private readonly record struct Token(string Text, bool Literal, bool Space, XmlLocation At, int Source,
+        DtdLiteralInfo? LiteralInfo = null, XmlLocation PhysicalAt = default);
+    private readonly StringBuilder physicalLiteral = new();
+    private readonly List<XmlLocation> literalLocations = [];
+    private readonly List<bool> literalOrigins = [];
+    private DtdLiteralInfo? lastLiteral;
+    private XmlLocation literalValueAt, physicalDtdLocation;
+    private long physicalLiteralScalars;
+    private void CapturePhysicalLiteral(int scalar)
+    {
+        if (!(lex == Lex.Literal || lex == Lex.Parameter && parameterResume == Lex.Literal) || IgnoreCurrentDeclaration || Current.Id != quoteSource || scalar == quote) return;
+        Span<char> pair = stackalloc char[2]; int width = ValueSyntax.WriteScalar(scalar, pair);
+        if (physicalLiteralScalars == int.MaxValue || physicalLiteral.Length > int.MaxValue - width || limits.TokenCharacters is int max && physicalLiteralScalars >= max)
+        { Refuse(ValueBudget.Limit(Current.At())); return; }
+        physicalLiteralScalars++; physicalLiteral.Append(pair[..width]);
+    }
 
     public DtdParser(DtdSubsetKind kind, XmlResourceLimits limits, Uri? sourceUri = null) : this(kind, limits, new XmlLocation(sourceUri, 1, 1, null)) { }
     public DtdParser(DtdSubsetKind kind, XmlResourceLimits limits, XmlLocation initialLocation)
@@ -147,6 +163,7 @@ internal sealed partial class DtdParser : IDisposable
                     }
                     char c = available[0]; long? offset = !owned && submitted.Mode == 2 ? byteOffsets[consumed] : null;
                     XmlLocation at = s.High != 0 ? s.HighAt : s.At(offset);
+                    physicalDtdLocation = owned && s.LiteralInfo is { } info ? info.Locations[s.Index] : at;
                     if (s.High == 0 && char.IsHighSurrogate(c))
                     {
                         s.High = c; s.HighAt = at;
@@ -172,6 +189,7 @@ internal sealed partial class DtdParser : IDisposable
                     s.High = 0;
                     if (owned) s.Index++; else consumed++;
                     if (offset is long b) s.LastOffset = b;
+                    CapturePhysicalLiteral(scalar);
                     bool skipLf = scalar == '\n' && s.Cr;
                     if (!s.Advance(scalar)) { Reject("Source location overflow.", at, "XML.LocationLimit"); break; }
                     if (s.Prolog is not null) ProcessProlog(s, scalar, at, cancellationToken);
@@ -271,6 +289,7 @@ internal sealed partial class DtdParser : IDisposable
         // Applicability depends on the entire internal subset. The missing live
         // declaration was recorded at the default, so later declarations cannot
         // repair its order; a later PE can make Entity Declared validity-only.
+        if (!ValidateDirectDefaultOrder(cancellation)) return;
         if (undeclaredDefault is { } missing && !HasParameterReferences)
         { Reject("Entity must be declared before the attribute default.", missing, "DTD.UndeclaredEntity"); return; }
         if (!ValidateKnownDefaults(cancellation)) return;
@@ -296,7 +315,7 @@ internal sealed partial class DtdParser : IDisposable
     public void Dispose()
     {
         Enter(); try { if (disposed) return; disposed = true; Drain(null); }
-        finally { foreach (var s in sources) s.Prolog?.Dispose(); sources.Clear(); scratch.Clear(); reference.Clear(); tokens.Clear(); parameterOriginGeneral?.Clear(); Volatile.Write(ref gate, 0); }
+        finally { foreach (var s in sources) s.Prolog?.Dispose(); sources.Clear(); scratch.Clear(); reference.Clear(); tokens.Clear(); physicalLiteral.Clear(); literalLocations.Clear(); literalOrigins.Clear(); lastLiteral = null; parameterOriginGeneral?.Clear(); Volatile.Write(ref gate, 0); }
     }
     private sealed class LocalBudget(XmlResourceLimits limits) : IDtdBudget
     {
