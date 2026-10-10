@@ -4,11 +4,11 @@
   "milestone": "M0",
   "title": "Versioned reference protocol and BCL runner",
   "kind": "infrastructure",
-  "status": "implemented",
+  "status": "verified",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M0-references-protocol",
   "branch": "codex/m0-references-protocol",
   "base_revision": "460d286bb1ecb2efc83241068b2951db37713a4d",
-  "integration_revision": null,
+  "integration_revision": "f42779dcce6f57b4f38db5837708b840e1e842dc",
   "depends_on": [
     "M0-build",
     "M0-tests-mtp"
@@ -33,7 +33,9 @@
       "description": "Define the versioned JSONL request/response and operation payload contract, implement the BCL XML runner and managed reference process client, and run one known XML fixture with actual runtime/build metadata.",
       "status": "passed",
       "evidence": [
-        "wire-encoding-verification"
+        "wire-encoding-verification",
+        "integrated-reference-checks",
+        "independent-correction-review"
       ]
     },
     {
@@ -41,7 +43,9 @@
       "description": "Test request/response identity and semantic normalization, invalid protocol/requests, process failure categorization, timeout/cancellation, offline resource mapping and denied unconfigured external access; keep infrastructure failures distinct from parse rejection.",
       "status": "passed",
       "evidence": [
-        "wire-encoding-verification"
+        "wire-encoding-verification",
+        "integrated-reference-checks",
+        "independent-correction-review"
       ]
     },
     {
@@ -49,7 +53,9 @@
       "description": "Demonstrate the task using only verified M0-build; run focused tests and preserved bootstrap checks at a known implementation revision, record protocol/runner outputs and task validation.",
       "status": "passed",
       "evidence": [
-        "wire-encoding-verification"
+        "wire-encoding-verification",
+        "integrated-reference-checks",
+        "independent-correction-review"
       ]
     }
   ],
@@ -98,6 +104,24 @@
       "result": "passed",
       "summary": "Final full macOS arm64 SDK10.0.400 checks:51 focused tests0 failures0 skips;11 direct JSONL cases plus actual raw invalidUTF8 bytes inside otherwise valid request JSON string (no stdout, boundedstderr,exit2). Actual child invalidUTF8 response text inside valid JSON yields ReferenceFailureException encoding category; XML-base64 malformedUTF8 remains parse rejection separately. Explicit request encoding and raw BCL stdin/stdout; verifier diagnostic newline comparison portable for LF/CRLF. Runner/protocol/Differential/full solution Release builds0 warnings/errors;54 solution infrastructure passes0 product tests;3 intentional smoke failuresexit2;16 help/defaults,3 unknown-command exits2; managed-onlynet10.0 pack/API0;13 discoverytests;2 independentcorpusfixtures;99-task validationpass. Actual System.Xml10.0.0.0/.NET10.0.11/build1.0.0+97603064b1be1a31b9c33e6cce994c9382f7b590 preserved. Prior1b/ec35 reports archived; no otherplatform/runtimeconformance/native/performanceclaim.",
       "artifact": "docs/reports/M0-references-protocol/verification.txt"
+    },
+    {
+      "id": "integrated-reference-checks",
+      "kind": "integration",
+      "revision": "f42779dcce6f57b4f38db5837708b840e1e842dc",
+      "command": "Pinned .NET10 SDK; python3 -B docs/reports/M0-references-protocol/verify.py",
+      "result": "passed",
+      "summary": "Release builds0warnings/errors;51 focused tests/54solution infrastructure passes0product;11 JSONL cases+invalidrawUTF8wire;3 controlledsmokefailures exit2;preserved16help/default3unknown exits;managed-only pack/API0;13discovery/2independentfixtures;101taskvalidate. Strictencoding,shape/version/payload adapters,offline/quota/cancelcleanup verified; hosted/native/conformance/perf not claimed.",
+      "artifact": "docs/reports/M0-references-protocol/integration-verification.txt"
+    },
+    {
+      "id": "independent-correction-review",
+      "kind": "review",
+      "revision": "ec35b7dc805ed96bb32277c7f6fd66c392e34762",
+      "command": "Read-only /root/review_reference_protocol and focused correction rereview; coordinator strictwire delta review",
+      "result": "passed",
+      "summary": "Prior malformed diagnostic/event payload and numeric-version-overflow defects corrected with real child regressions; builtin XML validation cannot be bypassed, explicit custom payload hook documented with borrowed lifetime. Offline/quota/UTF8/cancellation/portablepaths coherent. Later strict wire input/writer delta and platformnewline verifier reviewed; final integrated tests passed.",
+      "artifact": null
     }
   ],
   "blockers": [],
@@ -109,7 +133,9 @@
       "Client invalid responseUTF8 inside validJSON is infrastructurefailure; BCL invalid raw requestUTF8 yields stderr/noresponse/exit2; base64 XML encoding classifications preserved. Payload/adapters/overflow regressions stillpass.",
       "Reference infrastructure only; allocation/parserperformance benchmarks notapplicable/notrun; only macOS arm64 validated."
     ],
-    "remaining": [],
+    "remaining": [
+      "Ordered M0-references-wiring adds automatic no-output runner ProjectReference before foundation reference join."
+    ],
     "requests": [
       "Coordinator accepted ordered M0-references-wiring follow-up: add <ProjectReference Include=\"../../tools/ReferenceRunners/Bcl/BclReference.csproj\" ReferenceOutputAssembly=\"false\" /> to tests/Xemele.Differential.Tests/Xemele.Differential.Tests.csproj. Until it lands build tools/ReferenceRunners/Bcl/BclReference.csproj explicitly before solution MTP tests, as task verifier does. No shared file edited."
     ]

@@ -4,38 +4,16 @@
   "coordination_branch": "main",
   "max_concurrent_workers": 3,
   "last_verified_checkpoint": null,
-  "active_assignments": [
-    {
-      "task_id": "M0-references-protocol",
-      "chat_id": "01a12340-dc1f-7691-b9ae-e811a23bd851",
-      "client_thread_id": "client-new-thread:f050f13b-e06e-4fa2-a28a-2ff21400a424",
-      "host_id": "local",
-      "branch": "codex/m0-references-protocol",
-      "worktree_path": "/Users/sebastienros/.codex/worktrees/b718/xemele",
-      "base_revision": "460d286bb1ecb2efc83241068b2951db37713a4d",
-      "claim_revision": "7e87312683cdf4a2a13bff483f207023ced0d813",
-      "setup_status": "review-correction-strict-wire-utf8",
-      "implementation_revision": "ec35b7dc805ed96bb32277c7f6fd66c392e34762",
-      "handoff_revision": "4c4cb464e570f5e6d675be77a199ee6a290a9eca"
-    }
-  ],
-  "integration_queue": [
-    {
-      "task_id": "M0-references-protocol",
-      "integration_branch": "codex/integrate-m0-protocol",
-      "integration_worktree": "/private/tmp/xemele-integrate-m0-protocol",
-      "tested_revision": "3a9aa48b6157d8b70dd671542997b173586e6868",
-      "checks": "passed; pending strict UTF8 wire correction and recheck before verified"
-    }
-  ],
+  "active_assignments": [],
+  "integration_queue": [],
   "blockers": [],
   "next_actions": [
-    "Review strict UTF8 wire correction and recheck protocol integration",
-    "Dispatch automatic runner build wiring + libxml2 + xmloxide as three separate workers after verified protocol",
-    "Dispatch API CI wiring when automatic runner build is verified"
+    "Dispatch automatic reference runner build wiring/libxml2/xmloxide at max3workers",
+    "After automatic build verification dispatch API/contract CI wiring",
+    "Review native engines then reference join and M0-gate"
   ],
-  "last_verified_task": "M0-corpora-wiring",
-  "last_integrated_revision": "c7f4cf8e1a6d6264bf25c09661406bad40220b74",
+  "last_verified_task": "M0-references-protocol",
+  "last_integrated_revision": "f42779dcce6f57b4f38db5837708b840e1e842dc",
   "completed_assignments": [
     {
       "task_id": "M0-build",
@@ -160,6 +138,20 @@
       "implementation_revision": "212a87e2903c8e8c70d606ac9b9a2cf57c22f877",
       "handoff_revision": "b39090602ea812187415452a7cb25d6cba586658",
       "integration_revision": "c7f4cf8e1a6d6264bf25c09661406bad40220b74"
+    },
+    {
+      "task_id": "M0-references-protocol",
+      "chat_id": "01a12340-dc1f-7691-b9ae-e811a23bd851",
+      "client_thread_id": "client-new-thread:f050f13b-e06e-4fa2-a28a-2ff21400a424",
+      "host_id": "local",
+      "branch": "codex/m0-references-protocol",
+      "worktree_path": "/Users/sebastienros/.codex/worktrees/b718/xemele",
+      "base_revision": "460d286bb1ecb2efc83241068b2951db37713a4d",
+      "claim_revision": "7e87312683cdf4a2a13bff483f207023ced0d813",
+      "setup_status": "verified",
+      "implementation_revision": "97603064b1be1a31b9c33e6cce994c9382f7b590",
+      "handoff_revision": "a4a86ccebe74ef3ac28bc2c187ab813823c6d638",
+      "integration_revision": "f42779dcce6f57b4f38db5837708b840e1e842dc"
     }
   ],
   "benchmark_policy": "Subsequent benchmarks default to ShortRun and require serialized timing slot; no active timing hold.",
