@@ -58,3 +58,8 @@ protocol controls without counters or benchmark execution, including malformed
 payloads/identities/counts, generated-source/closure/metadata changes, exit/runtime
 failures, exact allocation totals, deadlines, primary-error preservation and
 cleanup/summary-write denial. Test scratch is automatically removed.
+
+File capture continues after an unreadable file to retain readable sibling hashes.
+It publishes exact file-read errors and partial actual closure/input maps before
+rethrowing the original first read failure. The synthetic unreadable-file control
+checks both capture paths and durable evidence after cleanup.

@@ -66,8 +66,30 @@ bool measure = args.Length == 5 && args[3] == "--measure";
 if (args.Length != 3 && !measure) throw new ArgumentException("Provide assembly, artifact directory, summary; measurement additionally requires --measure and frozen preparation.");
 using var expected = measure ? JsonDocument.Parse(File.ReadAllText(args[4])) : null;
 static string Hash(string path) => Convert.ToHexStringLower(SHA256.HashData(File.ReadAllBytes(path)));
-static SortedDictionary<string, string> Closure(string directory) => new(Directory.EnumerateFiles(directory, "*", SearchOption.AllDirectories).ToDictionary(p => Path.GetRelativePath(directory, p), Hash), StringComparer.Ordinal);
-static SortedDictionary<string, string> Inputs(string directory) => new(Directory.EnumerateFiles(directory).Where(p => Path.GetExtension(p) is ".csproj" or ".notcs" or ".cs" or ".sh" or ".bat" or ".config").ToDictionary(p => Path.GetFileName(p), Hash), StringComparer.Ordinal);
+static SortedDictionary<string, string> CaptureFiles(string directory, IEnumerable<string> paths, string kind, JsonElement? expected)
+{
+    var actual = new SortedDictionary<string, string>(StringComparer.Ordinal);
+    var errors = new List<object>();
+    Exception? first = null;
+    foreach (string path in paths.Order(StringComparer.Ordinal))
+    {
+        string name = Path.GetRelativePath(directory, path);
+        try { actual.Add(name, Hash(path)); }
+        catch (Exception error) when (error is IOException or UnauthorizedAccessException)
+        {
+            errors.Add(new { file = name, path, type = error.GetType().Name, message = error.Message, hresult = error.HResult });
+            first ??= error;
+        }
+    }
+    if (first is not null)
+    {
+        Console.WriteLine("// VersionIdentityCheck: " + JsonSerializer.Serialize(new { kind, expected, actual, readErrors = errors, equal = false }));
+        System.Runtime.ExceptionServices.ExceptionDispatchInfo.Capture(first).Throw();
+    }
+    return actual;
+}
+static SortedDictionary<string, string> Closure(string directory, JsonElement? expected = null) => CaptureFiles(directory, Directory.EnumerateFiles(directory, "*", SearchOption.AllDirectories), "child-closure", expected);
+static SortedDictionary<string, string> Inputs(string directory, JsonElement? expected = null) => CaptureFiles(directory, Directory.EnumerateFiles(directory).Where(p => Path.GetExtension(p) is ".csproj" or ".notcs" or ".cs" or ".sh" or ".bat" or ".config"), "generated-inputs", expected);
 static void Equal(JsonElement expected, SortedDictionary<string, string> actual, int? count = null)
 {
     var known = expected.EnumerateObject().ToDictionary(p => p.Name, p => p.Value.GetString());
@@ -105,8 +127,8 @@ foreach (var partition in partitions)
     {
         string child = generated.ArtifactsPaths.BinariesDirectoryPath;
         string project = Path.GetDirectoryName(generated.ArtifactsPaths.ProjectFilePath)!;
-        Equal(expected!.RootElement.GetProperty("childClosure"), Closure(child), 47);
-        Equal(expected.RootElement.GetProperty("generatedInputIdentities"), Inputs(project));
+        Equal(expected!.RootElement.GetProperty("childClosure"), Closure(child, expected.RootElement.GetProperty("childClosure")), 47);
+        Equal(expected.RootElement.GetProperty("generatedInputIdentities"), Inputs(project, expected.RootElement.GetProperty("generatedInputIdentities")));
         string revision = expected.RootElement.GetProperty("revision").GetString()!;
         foreach (string name in expected.RootElement.GetProperty("childMetadata").EnumerateObject().Select(p => p.Name))
         {
@@ -124,18 +146,18 @@ foreach (var partition in partitions)
             Console.WriteLine("// VersionMetadataCheck: " + JsonSerializer.Serialize(new { name, expected = knownMetadata, actual = actualMetadata, equal }));
             if (!equal) throw new InvalidOperationException("Actual child metadata differs.");
         }
-        Console.WriteLine("// VersionFrozenChild: " + JsonSerializer.Serialize(new { child, project, files = Closure(child).Count, revision }));
+        Console.WriteLine("// VersionFrozenChild: " + JsonSerializer.Serialize(new { child, project, files = Closure(child, expected.RootElement.GetProperty("childClosure")).Count, revision }));
         foreach (var info in partition.Benchmarks)
         {
-            Equal(expected.RootElement.GetProperty("childClosure"), Closure(child), 47);
-            Equal(expected.RootElement.GetProperty("generatedInputIdentities"), Inputs(project));
+            Equal(expected.RootElement.GetProperty("childClosure"), Closure(child, expected.RootElement.GetProperty("childClosure")), 47);
+            Equal(expected.RootElement.GetProperty("generatedInputIdentities"), Inputs(project, expected.RootElement.GetProperty("generatedInputIdentities")));
             Console.WriteLine("// VersionCaseStart: " + JsonSerializer.Serialize(Identity(info.BenchmarkCase)));
             Console.WriteLine("// Benchmark: " + info.BenchmarkCase.DisplayInfo);
             var result = toolchain.Executor.Execute(new ExecuteParameters(built, info.BenchmarkCase, info.Id, ConsoleLogger.Default, resolver, 1, MemoryDiagnoser.Default));
             Console.WriteLine("// VersionCaseResult: " + JsonSerializer.Serialize(new { identity = Identity(info.BenchmarkCase), exit = result.ExitCode, process = result.ProcessId, executableFound = result.FoundExecutable, success = result.IsSuccess, errors = result.Errors }));
             if (!result.IsSuccess || result.ExitCode != 0 || !result.FoundExecutable || result.Errors.Count != 0) throw new InvalidOperationException("Actual benchmark child failed.");
-            Equal(expected.RootElement.GetProperty("childClosure"), Closure(child), 47);
-            Equal(expected.RootElement.GetProperty("generatedInputIdentities"), Inputs(project));
+            Equal(expected.RootElement.GetProperty("childClosure"), Closure(child, expected.RootElement.GetProperty("childClosure")), 47);
+            Equal(expected.RootElement.GetProperty("generatedInputIdentities"), Inputs(project, expected.RootElement.GetProperty("generatedInputIdentities")));
             executed++;
         }
     }

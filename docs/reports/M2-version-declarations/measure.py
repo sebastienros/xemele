@@ -10,10 +10,23 @@ class ProtocolError(RuntimeError): pass
 def require(value, message):
     if not value: raise ProtocolError(message)
 def digest(path): return hashlib.sha256(path.read_bytes()).hexdigest()
-def snapshot(directory):
-    return {str(p.relative_to(directory)):digest(p) for p in sorted(directory.rglob('*')) if p.is_file()}
-def generated_inputs(directory):
-    return {p.name:digest(p) for p in sorted(directory.iterdir()) if p.is_file() and p.suffix in ('.cs','.notcs','.csproj','.sh','.bat','.config')}
+def capture_files(files, key, evidence=None):
+    record={} if evidence is None else evidence
+    actual={};errors=[];record.update({'actual':actual,'readErrors':errors})
+    first=None
+    for path in files:
+        name=key(path)
+        try:actual[name]=digest(path)
+        except OSError as error:
+            errors.append({'file':name,'path':str(path),'type':type(error).__name__,'message':str(error),'errno':error.errno})
+            if first is None:first=error
+    if first is not None:raise first
+    return actual
+
+def snapshot(directory, evidence=None):
+    return capture_files((p for p in sorted(directory.rglob('*')) if p.is_file()),lambda p:str(p.relative_to(directory)),evidence)
+def generated_inputs(directory, evidence=None):
+    return capture_files((p for p in sorted(directory.iterdir()) if p.is_file() and p.suffix in ('.cs','.notcs','.csproj','.sh','.bat','.config')),lambda p:p.name,evidence)
 def expected_cases():
     return {('DeclarationVersionBenchmarks','ParseDocument',c,None) for c in ['1.0','1.10','long','invalid']} | {('TextDeclarationVersionBenchmarks','FrameOwned',c,b) for c in ['1.0','1.10','long','absent-version','invalid'] for b in [False,True]}
 def case_id(record):
@@ -274,14 +287,19 @@ def main(argv=None):
         require(digest(dotnet)==known['sdk']['hostSha256'] and run([dotnet,'--version']).strip()=='10.0.400' and run([dotnet,'--list-runtimes']).splitlines()==known['sdk']['runtimes'],'SDK host/runtime inventory differs.')
         primary_evidence={};summary.setdefault('primaryIdentityChecks',[]).append(primary_evidence)
         for name,expected in known['primaryClosures'].items():
-            actual={n:h for n,h in snapshot(RAW/f'build/bin/{name}/release').items() if name != 'BenchmarkDriver' or not n.startswith(known['generatedSubtree']+'/')}
-            primary_evidence[name]={'expected':expected,'actual':actual}
+            capture={'expected':expected};primary_evidence[name]=capture
+            actual={n:h for n,h in snapshot(RAW/f'build/bin/{name}/release',capture).items() if name != 'BenchmarkDriver' or not n.startswith(known['generatedSubtree']+'/')}
+            capture['actual']=actual
             require(actual==expected,'Primary binary closure differs: '+name)
         actual_primary=json.loads(run([dotnet,sample,'--identity']))
         summary.setdefault('primaryMetadataChecks',[]).append({'expected':known['sampleIdentity'],'actual':actual_primary})
         require(actual_primary==known['sampleIdentity'],'Actual primary source/full-version/runtime metadata differs.')
-        evidence={'expectedRevision':known['revision'],'actualRevision':revision,'expectedClosure':known['childClosure'],'actualClosure':snapshot(child),'expectedInputs':known['generatedInputIdentities'],'actualInputs':generated_inputs(project),'expectedMetadata':known['childMetadata'],'actualMetadata':{}}
+        evidence={'expectedRevision':known['revision'],'actualRevision':revision,'expectedClosure':known['childClosure'],'expectedInputs':known['generatedInputIdentities'],'expectedMetadata':known['childMetadata'],'actualMetadata':{}}
         summary.setdefault('variantIdentityChecks',[]).append(evidence)
+        for field,capture in [('actualClosure',lambda row:snapshot(child,row)),('actualInputs',lambda row:generated_inputs(project,row))]:
+            row={};evidence[field+'Capture']=row
+            try:evidence[field]=capture(row)
+            finally:evidence[field]=row.get('actual',{})
         metadata=evidence['actualMetadata']
         for name in known['childMetadata']:
             try:metadata[name]=json.loads(run([dotnet,sample,'--file-identity',child/name]))

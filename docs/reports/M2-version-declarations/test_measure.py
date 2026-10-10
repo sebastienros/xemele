@@ -6,6 +6,30 @@ spec=importlib.util.spec_from_file_location('version_measure',Path(__file__).wit
 m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
 
 class MeasurementProtocolTests(unittest.TestCase):
+    def test_unreadable_files_preserve_siblings_and_original_error_after_cleanup(self):
+        for method in [m.snapshot,m.generated_inputs]:
+            with self.subTest(method=method.__name__),tempfile.TemporaryDirectory() as temp:
+                directory=Path(temp)/'raw';directory.mkdir()
+                for name in ['a.cs','b.cs','c.cs','d.cs']:(directory/name).write_text(name)
+                original=PermissionError(13,'injected unreadable first file',str(directory/'a.cs'))
+                other=OSError(5,'injected unreadable later file',str(directory/'c.cs'))
+                digest=m.digest
+                def read(path):
+                    if path.name=='a.cs':raise original
+                    if path.name=='c.cs':raise other
+                    return digest(path)
+                evidence={'expected':{'a.cs':'expected-a'}}
+                with patch.object(m,'digest',side_effect=read):
+                    with self.assertRaises(PermissionError) as raised:method(directory,evidence)
+                self.assertIs(original,raised.exception)
+                self.assertEqual({'b.cs':digest(directory/'b.cs'),'d.cs':digest(directory/'d.cs')},evidence['actual'])
+                self.assertEqual(['a.cs','c.cs'],[r['file'] for r in evidence['readErrors']])
+                self.assertEqual([13,5],[r['errno'] for r in evidence['readErrors']])
+                summary={'capture':evidence,'failure':{'type':type(raised.exception).__name__,'message':str(raised.exception)}}
+                m.cleanup(summary,[directory])
+                durable=Path(temp)/'summary.json';durable.write_text(json.dumps(summary))
+                restored=json.loads(durable.read_text())
+                self.assertEqual(evidence,restored['capture']);self.assertFalse(directory.exists());self.assertTrue(restored['temporaryOutputsRemoved'])
     def fixture(self):
         revision='a'*40
         closure={('Xemele.dll' if i==0 else 'Xemele.Benchmarks.dll' if i==1 else 'child.dll' if i==2 else f'payload{i}'):f'{i:064x}' for i in range(47)}

@@ -1,14 +1,13 @@
 """Prepare frozen standalone boundaries and independent BDN children; never measure."""
 import hashlib, json, os, platform, shutil, signal, subprocess, sys
 from pathlib import Path
-from measure import validate_variant, validate_runtime, require_group_empty, terminate_group, case_id, expected_cases
+from measure import validate_variant, validate_runtime, require_group_empty, terminate_group, case_id, expected_cases, snapshot, generated_inputs
 ROOT=Path(__file__).resolve().parents[3]
 REPORT=ROOT/'docs/reports/M2-version-declarations'
 RAW=REPORT/'.measurement'
 FLAGS=['-c','Release','--disable-build-servers','-m:1','-p:UseSharedCompilation=false']
 
 def digest(path): return hashlib.sha256(path.read_bytes()).hexdigest()
-def closure(path): return {str(f.relative_to(path)):digest(f) for f in sorted(path.rglob('*')) if f.is_file()}
 def main():
     summary={'result':'failed','measured':False,'architecture':platform.machine(),'commands':[]}
     env=dict(os.environ,DOTNET_CLI_USE_MSBUILD_SERVER='0')
@@ -55,8 +54,13 @@ def main():
         generated=json.loads((RAW/'generation.json').read_text());assert len(generated)==1 and generated[0]['cases']==14 and generated[0]['built']
         child=Path(generated[0]['binaries']);project=Path(generated[0]['project'])
         summary['generated']=generated[0]
-        summary['generatedInputIdentities']={str(f.relative_to(project.parent)):digest(f) for f in sorted(project.parent.iterdir()) if f.is_file() and f.suffix in ('.cs','.notcs','.csproj','.config','.sh','.bat')}
-        summary['childClosure']=closure(child)
+        summary['fileCaptures']={}
+        def capture(name, action):
+            row={};summary['fileCaptures'][name]=row
+            try:return action(row)
+            finally:summary[name]=row.get('actual',{})
+        capture('generatedInputIdentities',lambda row:generated_inputs(project.parent,row))
+        capture('childClosure',lambda row:snapshot(child,row))
         assert len(summary['childClosure']) == 47 and 'Xemele.dll' in summary['childClosure'] and 'Xemele.Benchmarks.dll' in summary['childClosure']
         summary['caseIdentities'] = generated[0]['identities']
         assert len(summary['caseIdentities']) == 14
@@ -70,7 +74,12 @@ def main():
         # The generated child is separately frozen; exclude only its explicitly
         # named build subtree from the primary runtime closure (not its siblings).
         summary['generatedSubtree'] = project.parent.name
-        summary['primaryClosures']={name:{n:h for n,h in closure(build/f'bin/{name}/release').items() if name != 'BenchmarkDriver' or not n.startswith(summary['generatedSubtree']+'/')} for name in ['Sample','BenchmarkDriver','BuildOnly']}
+        summary['primaryClosures']={}
+        for name in ['Sample','BenchmarkDriver','BuildOnly']:
+            row={};summary['fileCaptures']['primary-'+name]=row
+            try:actual=snapshot(build/f'bin/{name}/release',row)
+            finally:summary['primaryClosures'][name]=row.get('actual',{})
+            summary['primaryClosures'][name]={n:h for n,h in actual.items() if name != 'BenchmarkDriver' or not n.startswith(summary['generatedSubtree']+'/')}
         summary['generatorIdentity'] = json.loads(run('dotnet',sample,'--file-identity',generator))
         lifecycle = json.loads(run('dotnet',generator,'--lifecycle-oracle',child/'Xemele.Benchmarks.dll'))
         assert lifecycle['mode'] == 'lifecycle-oracle' and len(lifecycle['cases']) == 14 and all(c['iterations'] == 1 and c['allocatedBytes'] == 0 for c in lifecycle['cases'])
