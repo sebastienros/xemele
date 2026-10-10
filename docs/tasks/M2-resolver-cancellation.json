@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "id": "M2-resolver-cancellation",
+  "milestone": "M2",
+  "title": "Per-call cancellation binding for persistent resource sessions",
+  "kind": "feature",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "depends_on": [
+    "M2-resolver"
+  ],
+  "goals": [
+    "G09"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/integration.md"
+  ],
+  "owns": [
+    "src/Xemele/Resolution/Core/XmlResolutionSession.cs",
+    "tests/Xemele.Tests/M2-resolver-cancellation/",
+    "benchmarks/Xemele.Benchmarks/M2-resolver-cancellation/",
+    "samples/M2-resolver-cancellation/",
+    "docs/reports/M2-resolver-cancellation/",
+    "docs/decisions/M2/resolver-cancellation.md"
+  ],
+  "api_or_output": "Nonpublic BindCancellationToken(CancellationToken token) preserving existing resolver session methods and public APIs",
+  "acceptance": [
+    {
+      "id": "M2-resolver-cancellation-A1",
+      "description": "Add exact per-call cancellation binding to an idle persistent resolution session; preserve constructor behavior, independent budget cancellation, all counters/handles/active URI keys and public APIs. Reject busy/reentrant/disposed/faulted binding; canceled binding faults and drains while preserving original exception/token.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M2-resolver-cancellation-A2",
+      "description": "Actual sync/async tests prove exact tokenB reaches resolver/async stream after tokenA, cancellation and primary exception preservation with all accepted resources disposed once, paused/resumed session state retains aggregate quotas/cycles/parent handles; old constructor-token behavior remains passing.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M2-resolver-cancellation-A3",
+      "description": "Demonstrate corrected session boundary using only verified dependencies, compiled internal-hook inventory and unchanged public API, meaningful allocation/performance evidence for successful binding, complete cumulative predecessor/provenance/package/planning checks at known source; no core consumer implementation claim.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "Independent production entity source review at27c1 found persistent session captures first Append token; core permits different resume tokens. Consumer released own JSON to coordinator; independent scoped work continues without using unverified repair.",
+    "checks": [],
+    "remaining": [],
+    "requests": [
+      "Core owner binds existing session once per Append after setting activeCancellation before pending work; new sessions already receive currenttoken. No stable CTS bridge/token identity substitution, no shared budget replacement."
+    ]
+  }
+}
