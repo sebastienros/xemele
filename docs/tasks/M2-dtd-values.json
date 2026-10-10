@@ -35,14 +35,18 @@
     {
       "id": "M2-dtd-values-A1",
       "description": "Implement internal value processing independently of parser/source-stack: decode XML character references in entity declaration values while retaining general references for use-site expansion; normalize attribute defaults only when explicitly applied with a supplied effective general-entity table, preserving CDATA/tokenized whitespace and direct-character-reference semantics. Reject malformed references/illegal scalars/literal less-than in attribute values/undeclared, external or unparsed attribute entities as required; preserve approved internal model/parser/framing signatures. No public stubs or premature default normalization at model publication. Expose a bounded incremental character-reference/value decoding seam for the future parser: every short split, including arbitrarily long leading-zero numeric references, must progress without buffering their raw spelling or borrowing input after return. Caller owns literal delimiters/PE composition/source newline normalization; reference-produced characters must not be normalized again.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "cumulative-values-checks"
+      ]
     },
     {
       "id": "M2-dtd-values-A2",
       "description": "Prove authored/pinned character-reference and whitespace/recursive general-reference cases, predefined behavior and distinct reference versus literal origin, effective-table/internal precedence supplied by caller, active-name cycles even with null EntityDepth, exact/one-over expansion/depth/token capacities and cancellation. Helper owns only actual expansion charges/owned output and borrows no input beyond call; grammar owns raw input/distinct retained-name accounting. Use verified unchanged IDtdBudget, no resolver/core/decoder/DOM dependency or external fetch. Test all character-reference/input/output boundaries, decimal/hex overflow and illegal/lone-surrogate scalars, leading-zero numeric state, literal versus reference whitespace and nested entity output, meaningful progress before EOF and exact consumed units. Publish the internal helper/accounting contract before dependent parser starts.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "cumulative-values-checks"
+      ]
     },
     {
       "id": "M2-dtd-values-A3",
@@ -51,13 +55,54 @@
       "evidence": []
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Parsing/Dtd/Grammar/Values/DtdValueDecoder.cs: bounded incremental numeric decoding and retained general references",
+    "src/Xemele/Parsing/Dtd/Grammar/Values/DtdValueProcessor.cs: applied default normalization, iterative expansion and accounting",
+    "docs/reports/M2-dtd-values/README.md: compiled internal helper/lifetime/accounting contract",
+    "tests/Xemele.Tests/M2-dtd-values/ValueTests.cs: 987 derived split/semantic/accounting/lifetime tests",
+    "samples/M2-dtd-values/Sample.csproj: independently compiled common/model-only usage and allocation/retention probes"
+  ],
+  "evidence": [
+    {
+      "id": "initial-build-failure",
+      "kind": "check",
+      "revision": "57e64571366538c41a5184297bd807ad5b70b991",
+      "command": "dotnet build tests/Xemele.Tests/Xemele.Tests.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false",
+      "result": "failed",
+      "summary": "17 owned xUnit1051 missing operation-token diagnostics; corrected without suppression; subsequent two local Drain signature diagnostics and missing-assembly attempt also preserved.",
+      "artifact": "docs/reports/M2-dtd-values/preparation.json"
+    },
+    {
+      "id": "sandbox-mtp-failure",
+      "kind": "check",
+      "revision": "a09d82de08b4875ae1066ceb343e8d6bc12c98fb",
+      "command": "python3 -B docs/reports/M2-dtd-values/verify.py --report-prefix correctness-a09d82d --expected-branch codex/m2-dtd-values",
+      "result": "failed",
+      "summary": "Focused987/sample/allocations/oracles passed; cumulative MTP Socket.Bind denied by sandbox. Full logs preserved; authorized local-socket escalation resolves environment refusal.",
+      "artifact": "docs/reports/M2-dtd-values/correctness-a09d82d/summary.json"
+    },
+    {
+      "id": "cumulative-values-checks",
+      "kind": "check",
+      "revision": "19b037a48d633a4348176ae386f989489ae63986",
+      "command": "python3 -B docs/reports/M2-dtd-values/verify.py --report-prefix correctness-socket-granted --expected-branch codex/m2-dtd-values",
+      "result": "passed",
+      "summary": "SDK10.0.400/runtime10.0.11/default GC/JIT on arm64; focused987; MTP3090/direct2536+255+299/discovery counts match; 251 compiled API/3388 registry; 242 fresh pinned current-revision reference records; planning14/validate120; complete ownership and whitespace audits. No timing.",
+      "artifact": "docs/reports/M2-dtd-values/correctness-socket-granted/summary.json"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Independently reviewable child of M2-dtd-grammar; approved parser/model/framing contracts and original parent A1-A3 preserved. Parser supplies parameter-entity-composed declaration literals; helper does not own PE source-stack grammar or raw-source/name charges.",
-    "checks": [],
-    "remaining": [],
+    "summary": "Working bounded declaration decoder and caller-applied attribute normalization; source contracts unchanged. Cumulative checks passed; independent review and exclusive BDN timing pending.",
+    "checks": [
+      "987 focused; 3090 cumulative; compiled API251/registry3388; reference242; planning14/validate120 at 19b037a",
+      "Sample-only retention probe at d7cd1386e8069fcd363748e382209745924ee8f3: build/semantics passed; first-use/setup432 B, warm0 B, owned920 B, retained GC-total-memory estimate96000 B for1000 result strings+array; no exact object census"
+    ],
+    "remaining": [
+      "Independent read-only review and any findings",
+      "Coordinator exclusive host grant, then applicable MemoryDiagnoser ShortRunJob timing",
+      "Final source/check evidence and implemented handoff"
+    ],
     "requests": []
   }
 }
