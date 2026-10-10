@@ -26,7 +26,7 @@ def main():
     def build(project): return run(DOTNET,'build',project,*FLAGS)
     try:
         head=run('git','rev-parse','HEAD').strip(); summary['head']=head
-        assert run('git','branch','--show-current').strip()=='codex/m2-undeclared-content'
+        assert run('git','branch','--show-current').strip()=='codex/m2-undeclared-attributes-runtime'
         inputs=run('git','ls-files','--','src','tests','samples','benchmarks','docs/api','docs/reports/M2-undeclared-attributes-runtime','Directory.Build.props','Directory.Build.targets','Directory.Packages.props','global.json').splitlines()
         sources={p:digest(ROOT/p) for p in inputs if Path(p).suffix in ('.cs','.csproj','.props','.targets','.fixture','.txt','.py','.json') and not p.startswith('docs/reports/M2-undeclared-attributes-runtime/') or p.startswith('docs/reports/M2-undeclared-attributes-runtime/') and Path(p).suffix in ('.cs','.csproj','.py')}
         for path in sources: assert (ROOT/path).read_bytes()==subprocess.check_output(['git','show',head+':'+path],cwd=ROOT),path+' differs from Git'
