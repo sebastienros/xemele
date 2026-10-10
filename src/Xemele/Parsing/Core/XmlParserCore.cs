@@ -43,6 +43,14 @@ internal sealed partial class XmlParserCore : IDisposable
     private readonly StringBuilder physicalTag = new();
     private int[] physicalStarts = new int[128];
     private int physicalScalar;
+    private XmlLocation attributePhysicalLocation;
+    private bool attributePhysicalOrigin;
+    private XmlLocation[] attributePhysicalLocations = [];
+    private bool[] attributePhysicalOrigins = [];
+    private string? attributePhysicalSpelling;
+    private int attributePhysicalSpellingStart, attributePhysicalSpellingLength;
+    private object? attributePhysicalIdentity;
+    private object?[] attributePhysicalIdentities = [];
     private AttributeToken[] attributes = new AttributeToken[8];
     private readonly char[] fragment = new char[8];
     private State state;
@@ -162,7 +170,7 @@ internal sealed partial class XmlParserCore : IDisposable
         try
         {
             if (disposed) return;
-            disposed = true; ClearUnresolvedReference(); token = []; tokenLocations = []; physicalStarts = []; physicalTag.Clear(); attributes = [];
+            disposed = true; ClearUnresolvedReference(); token = []; tokenLocations = []; physicalStarts = []; attributePhysicalLocations = []; attributePhysicalOrigins = []; attributePhysicalIdentities = []; attributePhysicalIdentity = null; attributePhysicalSpelling = null; physicalTag.Clear(); attributes = [];
             try { DisposeEntities(); }
             finally
             {
@@ -211,7 +219,7 @@ internal sealed partial class XmlParserCore : IDisposable
             ProcessDtdScalar(scalar, location);
             return;
         }
-        physicalScalar = scalar;
+        physicalScalar = scalar; attributePhysicalLocation = location; attributePhysicalOrigin = false; attributePhysicalSpelling = null; attributePhysicalIdentity = null;
         bool skip = normalizedCr && scalar == '\n'; normalizedCr = scalar == '\r';
         if (skip && state == State.Tag && entities is not null)
         {
@@ -241,10 +249,15 @@ internal sealed partial class XmlParserCore : IDisposable
         if (state == State.Tag && entities is not null)
         {
             if (tokenLength + width > physicalStarts.Length) Array.Resize(ref physicalStarts, token.Length);
+            if (tokenLength + width > attributePhysicalLocations.Length)
+            { Array.Resize(ref attributePhysicalLocations, token.Length); Array.Resize(ref attributePhysicalOrigins, token.Length); Array.Resize(ref attributePhysicalIdentities, token.Length); }
+            for (int u = 0; u < width; u++) { attributePhysicalLocations[tokenLength + u] = attributePhysicalLocation; attributePhysicalOrigins[tokenLength + u] = attributePhysicalOrigin; attributePhysicalIdentities[tokenLength + u] = attributePhysicalIdentity; }
             physicalStarts[tokenLength] = physicalTag.Length;
             Span<char> original = stackalloc char[2]; int n = new Rune(physicalScalar == 0 ? scalar : physicalScalar).EncodeToUtf16(original);
-            if (physicalTag.Length > int.MaxValue - n) { Reject("XML.ResourceLimit", "Physical tag capacity exceeded.", location); return false; }
-            physicalTag.Append(original[..n]);
+            ReadOnlySpan<char> spelling = attributePhysicalSpelling is not null
+                ? attributePhysicalSpelling.AsSpan(attributePhysicalSpellingStart, attributePhysicalSpellingLength) : original[..n];
+            if (physicalTag.Length > int.MaxValue - spelling.Length) { Reject("XML.ResourceLimit", "Physical tag capacity exceeded.", location); return false; }
+            physicalTag.Append(spelling);
             if (width == 2) physicalStarts[tokenLength + 1] = physicalStarts[tokenLength];
         }
         if (width == 1) { token[tokenLength] = (char)scalar; tokenLocations[tokenLength++] = location; }
@@ -255,7 +268,7 @@ internal sealed partial class XmlParserCore : IDisposable
         }
         return true;
     }
-    private void ResetToken() { physicalTag.Clear(); tokenLength = 0; budget.Reset(Quota.TokenCharacters); }
+    private void ResetToken() { physicalTag.Clear(); if (attributePhysicalIdentities.Length != 0) Array.Clear(attributePhysicalIdentities); tokenLength = 0; budget.Reset(Quota.TokenCharacters); }
     private void BeginText(XmlTextKind kind, string piTarget, XmlLocation location)
     {
         textActive = true; textStarted = false; textKind = kind; target = piTarget; textLocation = location;

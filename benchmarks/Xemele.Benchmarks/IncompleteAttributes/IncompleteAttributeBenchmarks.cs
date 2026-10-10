@@ -59,22 +59,72 @@ public class IncompleteAttributeBenchmarks
             catch (InvalidOperationException e) when (e.Message == "Attribute value contains unresolved entity references.") { }
             previous = child; index++;
         }
-        if (index != 2 || !previous.NextSibling.IsDefault || doc.Dtd is not { } dtd || dtd.Elements.Count != 0 || dtd.GeneralEntities.Count != 0 ||
-            dtd.Attributes.Count != 1 || dtd.ParameterEntities.Count != 1 || dtd.Notations.Count != 0 ||
-            dtd.ParameterEntities[0].Name != "p" || dtd.ParameterEntities[0].ReplacementText != "" ||
-            dtd.Attributes[0].Name != "a" || dtd.Attributes[0].DefaultValue != " A &x; B&#9;" || dtd.Attributes[0].Type != DtdAttributeType.NmTokens ||
-            doc.DocumentType?.Name != "r" || doc.DocumentType.SystemId is not null || doc.DocumentType.PublicId is not null)
-            throw new Exception("Actual complete model/tail oracle.");
+        if (index != 2 || !previous.NextSibling.IsDefault || doc.RootElement.FirstChild != doc.RootElement.Children[0] ||
+            doc.RootElement.LastChild != previous || doc.RootElement.Attributes.Count != 0 || doc.RootElement.NamespaceDeclarations.Count != 0 ||
+            !doc.RootElement.PreviousSibling.IsDefault || !doc.RootElement.NextSibling.IsDefault)
+            throw new Exception("Actual complete topology oracle.");
+        CheckMetadata(doc.DocumentType!, doc.Dtd!, At(0));
         try { doc.ToXmlString(); throw new Exception("Missing owner refusal."); }
         catch (InvalidOperationException e) when (e.Message == "Document contains unresolved entity references.") { }
         if (Environment.GetCommandLineArgs().Contains("--allocation")) BorrowedAllocation();
     }
+    private static XmlLocation At(int offset) => new(null, 1, offset + 1, null);
+    private static readonly string Literal = " A &x; B&#9;";
+    private static readonly XmlLocation DeclarationAt = At(Prefix.IndexOf(" a NMTOKENS", StringComparison.Ordinal) + 1);
+    private static readonly XmlLocation ValueAt = At(Prefix.IndexOf(Literal, StringComparison.Ordinal));
     private static void CheckParts(IReadOnlyList<XmlAttributeValuePart> parts)
     {
-        if (parts.Count != 3 || parts[0] is not XmlKnownAttributeText { Text: " A " } ||
-            parts[1] is not XmlUnknownAttributeReference { Name: "x", LexicalReference: "&x;" } || parts[2] is not XmlKnownAttributeText { Text: " B\t" } ||
-            parts[1].Location != new XmlLocation(null, 1, Prefix.IndexOf("&x;", StringComparison.Ordinal) + 1, null))
-            throw new Exception("Owned immutable stage-one parts oracle.");
+        if (parts.Count != 3) throw new Exception("Owned part count.");
+        CheckPart(parts[0], 0); CheckPart(parts[1], 1); CheckPart(parts[2], 2);
+    }
+    private static void CheckParts(ReadOnlySpan<XmlAttributeValuePart> parts)
+    {
+        if (parts.Length != 3) throw new Exception("Borrowed part count.");
+        for (int i = 0; i < parts.Length; i++) CheckPart(parts[i], i);
+    }
+    private static void CheckPart(XmlAttributeValuePart part, int index)
+    {
+        bool valid = index switch
+        {
+            0 => part is XmlKnownAttributeText { Text: " A " } && part.Location == ValueAt,
+            1 => part is XmlUnknownAttributeReference { Name: "x", LexicalReference: "&x;" } && part.Location == At(Prefix.IndexOf("&x;", StringComparison.Ordinal)),
+            2 => part is XmlKnownAttributeText { Text: " B\t" } && part.Location == At(Prefix.IndexOf(" B&#9;", StringComparison.Ordinal)),
+            _ => false
+        };
+        if (!valid) throw new Exception("Complete stage-one text/reference/location oracle.");
+    }
+    private static void CheckMetadata(XmlDocumentType type, DtdModel model, XmlLocation location)
+    {
+        if (type.Name != "r" || type.PublicId is not null || type.SystemId is not null ||
+            type.InternalSubset != Prefix[(Prefix.IndexOf('[') + 1)..Prefix.LastIndexOf(']')] || location != At(0) ||
+            model.Elements.Count != 0 || model.GeneralEntities.Count != 0 || model.Attributes.Count != 1 ||
+            model.ParameterEntities.Count != 1 || model.Notations.Count != 0)
+            throw new Exception("Complete DOCTYPE/effective table oracle.");
+        var parameter = model.ParameterEntities[0]; var attribute = model.Attributes[0];
+        if (parameter.Name != "p" || !parameter.IsParameter || parameter.ReplacementText != "" || parameter.SystemId is not null ||
+            parameter.PublicId is not null || parameter.NotationName is not null || parameter.IsExternal ||
+            parameter.Location != At(Prefix.IndexOf("<!ENTITY", StringComparison.Ordinal)) ||
+            attribute.ElementName != "item" || attribute.Name != "a" || attribute.Type != DtdAttributeType.NmTokens ||
+            attribute.Tokens.Count != 0 || attribute.DefaultKind != DtdDefaultKind.Value || attribute.DefaultValue != Literal ||
+            attribute.IsExternal || attribute.Location != DeclarationAt)
+            throw new Exception("Complete DTD declaration field/location oracle.");
+        if (!DtdLiteralInfo.Defaults.TryGetValue(attribute, out var literal) || !DtdLiteralInfo.Entities.TryGetValue(parameter, out var empty))
+            throw new Exception("Missing retained literal sidecars.");
+        CheckLiteral(literal, Literal, ValueAt, DeclarationAt, true);
+        CheckLiteral(empty, "", At(Prefix.IndexOf("''", StringComparison.Ordinal) + 1), null, false);
+    }
+    private static void CheckLiteral(DtdLiteralInfo literal, string text, XmlLocation valueAt, XmlLocation? declarationAt, bool preceding)
+    {
+        if (literal.Text != text || literal.LexicalValue != text || literal.PhysicalStream != text || literal.ValueLocation != valueAt ||
+            literal.DeclarationLocation != declarationAt || literal.Locations.Length != text.Length || literal.ExternalOrigins.Length != text.Length ||
+            literal.PhysicalStarts?.Length != text.Length || literal.PhysicalLengths?.Length != text.Length || literal.PhysicalIdentities?.Length != text.Length ||
+            (preceding ? literal.PrecedingEntities?.Count != 0 : literal.PrecedingEntities is not null))
+            throw new Exception("Complete retained literal/array/table oracle.");
+        for (int i = 0; i < text.Length; i++)
+            if (literal.Locations[i] != new XmlLocation(null, 1, valueAt.LinePosition + i, null) || literal.ExternalOrigins[i] ||
+                literal.PhysicalStarts![i] != i || literal.PhysicalLengths![i] != 1 || literal.PhysicalIdentities![i].GetType() != typeof(object) ||
+                !ReferenceEquals(literal.PhysicalIdentities[0], literal.PhysicalIdentities[i]))
+                throw new Exception("Retained physical maps/origin/owner oracle.");
     }
     private void BorrowedAllocation()
     {
@@ -102,13 +152,15 @@ public class IncompleteAttributeBenchmarks
         for (int i = 0; i < retainedDocuments.Length; i++) retainedDocuments[i] = XmlDocument.Parse(Document, options);
         long retainedBytes = GC.GetTotalMemory(true) - retainedBefore;
         GC.KeepAlive(retainedDocuments);
+        foreach (var retained in retainedDocuments) CheckMetadata(retained.DocumentType!, retained.Dtd!, At(0));
         DtdLiteralInfo.Defaults.TryGetValue(retainedDocuments[0].Dtd!.Attributes[0], out var literal);
         if (literal is null || literal.LexicalValue != " A &x; B&#9;" || literal.Locations.Length != literal.Text.Length ||
             literal.ExternalOrigins.Length != literal.Text.Length || literal.PrecedingEntities?.Count != 0)
             throw new Exception("Retained literal/location/table sidecar oracle.");
         Console.WriteLine("INCOMPLETE_EMPTY " + JsonSerializer.Serialize(new { iterations = 1024, emptySetupBytes, emptyGetterBytes,
             retainedDocuments = retainedDocuments.Length, retainedBytes, literalLocationEntries = literal.Locations.Length,
-            literalOriginEntries = literal.ExternalOrigins.Length, precedingEntityEntries = literal.PrecedingEntities!.Count,
+            literalOriginEntries = literal.ExternalOrigins.Length, physicalStartEntries = literal.PhysicalStarts!.Length,
+            physicalLengthEntries = literal.PhysicalLengths!.Length, physicalIdentityEntries = literal.PhysicalIdentities!.Length, precedingEntityEntries = literal.PrecedingEntities!.Count,
             boundedDefaultCount = 1, boundedPartCount = 3, boundedLexicalUnits = " A &x; B&#9;".Length, noSourceBuffersRetained = true }));
     }
     private static void AppendBorrowed(XmlParserCore core, OracleSink sink)
@@ -127,7 +179,8 @@ public class IncompleteAttributeBenchmarks
                 !view.AttributeName.SequenceEqual("a") || !view.LexicalValue.SequenceEqual(" A &x; B&#9;") ||
                 !view.IsTokenized || view.IsExternal || view.DeclarationSequence != 0 || view.Parts.Length != 3 ||
                 view.Parts[1] is not XmlUnknownAttributeReference { Name: "x", LexicalReference: "&x;" }) throw new Exception("Borrowed default oracle.");
-            Defaults++; return true;
+            if (view.DeclarationLocation != DeclarationAt || view.ValueLocation != ValueAt) throw new Exception("Borrowed declaration locations.");
+            CheckParts(view.Parts); Defaults++; return true;
         }
         public bool IncompleteAttribute(XmlIncompleteAttributeView view)
         {
@@ -137,10 +190,11 @@ public class IncompleteAttributeBenchmarks
                 view.Parts[0] is not XmlKnownAttributeText { Text: " A " } || view.Parts[1] is not XmlUnknownAttributeReference { Name: "x", LexicalReference: "&x;" } ||
                 view.Parts[2] is not XmlKnownAttributeText { Text: " B\t" } ||
                 view.Parts[1].Location != new XmlLocation(null, 1, Prefix.IndexOf("&x;", StringComparison.Ordinal) + 1, null)) throw new Exception("Borrowed resolved name/parts/order oracle.");
-            Values++; attributeDelivered = true; return true;
+            if (view.ValueLocation != ValueAt) throw new Exception("Borrowed value location.");
+            CheckParts(view.Parts); Values++; attributeDelivered = true; return true;
         }
         public bool DocumentType(XmlDocumentType t, DtdModel m, XmlLocation l)
-        { if (Stage != 1 || t.Name != "r" || m.Attributes.Count != 1 || m.ParameterEntities.Count != 1) throw new Exception("Borrowed metadata order."); return true; }
+        { if (Stage != 1) throw new Exception("Borrowed metadata order."); CheckMetadata(t, m, l); return true; }
         public bool StartDocument(XmlLocation l) { if (Stage != 0 || l != new XmlLocation(null, 1, 1, null)) throw new Exception("Document order."); Stage = 1; return true; }
         public bool Declaration(XmlDeclarationView v) => throw new Exception("Unexpected declaration.");
         public bool StartElement(XmlNameView v, bool empty, XmlLocation l)

@@ -94,6 +94,7 @@ internal sealed partial class XmlParserCore
         activeCancellation.ThrowIfCancellationRequested();
         int scalar;
         XmlLocation at = source.Reference;
+        attributePhysicalSpelling = null; attributePhysicalLocation = at; attributePhysicalOrigin = false; attributePhysicalIdentity = source.External;
         if (source.External is { } external)
         {
             if (!external.EnsureCharacters(activeCancellation))
@@ -112,6 +113,12 @@ internal sealed partial class XmlParserCore
         {
             string text = source.Declaration.ReplacementText!;
             if (source.Index == text.Length) return FinishEntitySource(source);
+            if (DtdLiteralInfo.Entities.TryGetValue(source.Declaration, out var literal))
+            {
+                attributePhysicalLocation = literal.Locations[source.Index]; attributePhysicalOrigin = literal.ExternalOrigins[source.Index];
+                attributePhysicalSpelling = literal.PhysicalStream; attributePhysicalIdentity = literal.PhysicalIdentities![source.Index];
+                attributePhysicalSpellingStart = literal.PhysicalStarts![source.Index]; attributePhysicalSpellingLength = literal.PhysicalLengths![source.Index];
+            }
             scalar = text[source.Index++];
             if (char.IsHighSurrogate((char)scalar))
             {
@@ -124,7 +131,13 @@ internal sealed partial class XmlParserCore
         if (!Charge(Quota.ExpandedCharacters, 1, at)) return true;
         if (source.External is not null)
         {
+            attributePhysicalLocation = at; physicalScalar = scalar;
             bool skip = source.Cr && scalar == '\n';
+            if (skip && state == State.Tag)
+            {
+                if (physicalTag.Length == int.MaxValue) { Reject("XML.ResourceLimit", "Physical tag capacity exceeded.", at); return true; }
+                physicalTag.Append('\n');
+            }
             if (scalar is '\r' or '\n')
             {
                 if (!skip)
@@ -147,7 +160,7 @@ internal sealed partial class XmlParserCore
         // Publish cursor/index before grammar may push another source and grow
         // the value stack. No reference into its backing array survives Process.
         entitySources[^1] = source;
-        physicalScalar = scalar;
+        if (source.External is null) physicalScalar = scalar;
         Process(scalar, at);
         return true;
     }
@@ -169,7 +182,7 @@ internal sealed partial class XmlParserCore
     private void AbortEntities()
     {
         if (unresolvedPending) ClearUnresolvedReference();
-        Array.Clear(attributes, 0, attributeCount); physicalTag.Clear();
+        Array.Clear(attributes, 0, attributeCount); attributePhysicalSpelling = null; attributePhysicalIdentity = null; Array.Clear(attributePhysicalIdentities); physicalTag.Clear();
         // Called while preserving an existing callback/cancellation exception or
         // terminal diagnostic. Drain user cleanup failures without replacing it.
         try { resolution?.Abort(); } catch { }

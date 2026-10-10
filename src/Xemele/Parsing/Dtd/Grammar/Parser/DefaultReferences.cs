@@ -117,7 +117,7 @@ internal sealed partial class DtdParser
                 { cancellation.ThrowIfCancellationRequested(); if (firstName ? !ValueSyntax.IsNameStart(rune.Value) : !ValueSyntax.IsNameChar(rune.Value)) { Reject("Invalid entity name in a default replacement.", attribute.Location, "DTD.InvalidDefault"); return false; } firstName = false; }
                 if (name.SequenceEqual("lt") || name.SequenceEqual("gt") || name.SequenceEqual("amp") || name.SequenceEqual("apos") || name.SequenceEqual("quot")) continue;
                 DtdEntityDeclaration? declaration = null;
-                foreach (var entity in DtdLiteralInfo.Defaults.TryGetValue(attribute, out var info) && info.PrecedingEntities is { } preceding ? preceding.Values : general) { cancellation.ThrowIfCancellationRequested(); if (name.SequenceEqual(entity.Name)) { declaration = entity; break; } }
+                foreach (var entity in nonvalidatingReadState && DtdLiteralInfo.Defaults.TryGetValue(attribute, out var info) && info.PrecedingEntities is { } preceding ? preceding.Values : general) { cancellation.ThrowIfCancellationRequested(); if (name.SequenceEqual(entity.Name)) { declaration = entity; break; } }
                 if (declaration is null) continue;
                 if (declaration.SystemId is not null || declaration.NotationName is not null || declaration.ReplacementText is null || path.Contains(declaration.Name))
                 { Reject("Forbidden or recursive entity reference in an attribute default.", attribute.Location, "DTD.InvalidDefault"); return false; }
@@ -133,7 +133,7 @@ internal sealed partial class DtdParser
 // is owned by its declaration; it never retains input, decoder or parser buffers.
 internal sealed record DtdLiteralInfo(string LexicalValue, string Text, XmlLocation ValueLocation,
     XmlLocation[] Locations, bool[] ExternalOrigins,
-    IReadOnlyDictionary<string, DtdEntityDeclaration>? PrecedingEntities = null, XmlLocation? DeclarationLocation = null)
+    IReadOnlyDictionary<string, DtdEntityDeclaration>? PrecedingEntities = null, XmlLocation? DeclarationLocation = null, string? PhysicalStream = null, int[]? PhysicalStarts = null, int[]? PhysicalLengths = null, object[]? PhysicalIdentities = null)
 {
     internal static readonly ConditionalWeakTable<DtdAttributeDeclaration, DtdLiteralInfo> Defaults = new();
     internal static readonly ConditionalWeakTable<DtdEntityDeclaration, DtdLiteralInfo> Entities = new();

@@ -47,11 +47,13 @@ internal sealed partial class XmlParserCore
         // cannot overwrite unconsumed tag suffixes when entities grow the value.
         string literal = new(token.AsSpan(start, i++ - start));
         var declaration = AttributeDeclaration(AttributeName(attribute));
-        var locations = tokenLocations.AsSpan(start, literal.Length).ToArray();
+        var locations = attributePhysicalLocations.AsSpan(start, literal.Length).ToArray();
+        var origins = attributePhysicalOrigins.AsSpan(start, literal.Length).ToArray();
+        var physicalIdentities = attributePhysicalIdentities.AsSpan(start, literal.Length).ToArray();
         string? lexical = physicalTag.Length == 0 ? literal : OwnPhysicalAttribute(physicalStarts[start], physicalStarts[i - 1], attribute.Location);
         if (diagnostic is not null) return false;
         var valueLocation = locations.Length == 0 ? tokenLocations[i - 1] : locations[0];
-        attribute.OwnedValue = ExpandAttributeLiteral(literal, AttributeEntities(), valueLocation, locations, null, out var parts);
+        attribute.OwnedValue = ExpandAttributeLiteral(literal, AttributeEntities(), valueLocation, locations, origins, out var parts, physicalIdentities: physicalIdentities);
         if (parts is not null) attribute.Incomplete = new(lexical!, valueLocation, parts, declaration is not null && declaration.Type != DtdAttributeType.CData);
         else if (attribute.OwnedValue is { } complete) attribute.OwnedValue = NormalizeKnownAttribute(complete, declaration, valueLocation);
         return diagnostic is null;
@@ -160,7 +162,7 @@ internal sealed partial class XmlParserCore
         return true;
     }
 
-    private sealed class AttributeGraphFrame(string text, string? name, XmlLocation[]? locations = null, bool[]? origins = null, XmlLocation at = default)
+    private sealed class AttributeGraphFrame(string text, string? name, XmlLocation[]? locations = null, bool[]? origins = null, XmlLocation at = default, object?[]? physicalIdentities = null)
     {
         internal readonly string Text = text;
         internal readonly string? Name = name;
@@ -168,6 +170,7 @@ internal sealed partial class XmlParserCore
         internal readonly XmlLocation[]? Locations = locations;
         internal readonly bool[]? Origins = origins;
         internal readonly XmlLocation Initial = at;
+        internal readonly object?[]? PhysicalIdentities = physicalIdentities;
         internal XmlLocation At(int index) => Locations is not null ? Locations[index] : Initial;
     }
 
@@ -254,7 +257,7 @@ internal sealed partial class XmlParserCore
                 continue;
             }
             string? complete = ExpandAttributeLiteral(value, table, info?.ValueLocation ?? declaration.Location,
-                info?.Locations, info?.ExternalOrigins, out var parts, enforceStandalone: false);
+                info?.Locations, info?.ExternalOrigins, out var parts, enforceStandalone: false, physicalIdentities: info?.PhysicalIdentities);
             if (diagnostic is not null) return false;
             if (parts is null) continue;
             incompleteDefaults ??= []; incompleteDefaultByDeclaration ??= new(ReferenceEqualityComparer.Instance);

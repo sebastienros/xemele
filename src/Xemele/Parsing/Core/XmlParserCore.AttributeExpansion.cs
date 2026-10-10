@@ -9,15 +9,15 @@ internal sealed partial class XmlParserCore
     private sealed record AttributeInterpretation(string LexicalValue, XmlLocation ValueLocation,
         XmlAttributeValuePart[] Parts, bool IsTokenized, int? DefaultSequence = null, bool ExternalDependency = false);
     private string? ExpandAttributeLiteral(string literal, IReadOnlyDictionary<string, DtdEntityDeclaration> table,
-        XmlLocation at, XmlLocation[]? locations, bool[]? origins, out XmlAttributeValuePart[]? incomplete, bool enforceStandalone = true)
+        XmlLocation at, XmlLocation[]? locations, bool[]? origins, out XmlAttributeValuePart[]? incomplete, bool enforceStandalone = true, object?[]? physicalIdentities = null)
     {
         incomplete = null;
         var output = new StringBuilder();
         var parts = new List<XmlAttributeValuePart>();
-        var stack = new List<AttributeGraphFrame> { new(literal, null, locations, origins, at) };
+        var stack = new List<AttributeGraphFrame> { new(literal, null, locations, origins, at, physicalIdentities) };
         var active = new HashSet<string>(StringComparer.Ordinal);
         long scalars = 0; bool unknown = false;
-        AttributeGraphFrame? runFrame = null; XmlLocation runLocation = at;
+        AttributeGraphFrame? runFrame = null; object? runIdentity = null; XmlLocation runLocation = at;
         try
         {
             while (stack.Count != 0 && diagnostic is null)
@@ -33,7 +33,9 @@ internal sealed partial class XmlParserCore
                 }
                 int index = frame.Index; XmlLocation location = frame.At(index);
                 bool excluded = frame.Origins is { } o && o[index];
-                if (runFrame != frame) { Flush(); runFrame = frame; runLocation = location; }
+                object? identity = frame.PhysicalIdentities?[index];
+                if (runFrame != frame || !ReferenceEquals(runIdentity, identity))
+                { Flush(); runFrame = frame; runIdentity = identity; runLocation = location; }
                 int scalar = TakeAttributeScalar(frame, location);
                 if (diagnostic is not null) return null;
                 if (scalar == '<') { Reject("XML.Syntax", "Literal less-than in attribute replacement.", location); return null; }
@@ -77,7 +79,7 @@ internal sealed partial class XmlParserCore
                 if (!Charge(Quota.EntityDepth, 1, location)) return null;
                 Flush(); runFrame = null;
                 DtdLiteralInfo.Entities.TryGetValue(entity, out var info);
-                try { stack.Add(new(entity.ReplacementText, entity.Name, info?.Locations, info?.ExternalOrigins, info?.ValueLocation ?? entity.Location)); }
+                try { stack.Add(new(entity.ReplacementText, entity.Name, info?.Locations, info?.ExternalOrigins, info?.ValueLocation ?? entity.Location, info?.PhysicalIdentities)); }
                 catch { budget.Release(Quota.EntityDepth, 1); throw; }
                 active.Add(entity.Name);
             }

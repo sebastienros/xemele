@@ -24,7 +24,9 @@ public sealed partial class XmlDocument
     {
         incompleteAttributeDefaults ??= [];
         incompleteAttributeDefaultView ??= incompleteAttributeDefaults.AsReadOnly();
-        incompleteAttributeDefaults.Add(declaration);
+        PreflightNames(declaration.ElementName, declaration.AttributeName);
+        string element = Intern(declaration.ElementName), attribute = Intern(declaration.AttributeName);
+        incompleteAttributeDefaults.Add(declaration with { ElementName = element, AttributeName = attribute });
     }
     internal void AddIncompleteValue(XmlAttribute attribute, XmlNode parent, string lexicalValue, bool isTokenized,
         XmlLocation location, int? defaultSequence, XmlAttributeValuePart[]? parts)

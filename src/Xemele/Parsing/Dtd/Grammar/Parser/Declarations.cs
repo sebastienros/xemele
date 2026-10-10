@@ -183,6 +183,7 @@ internal sealed partial class DtdParser
     private DtdLiteralInfo MapEntityLiteral(DtdLiteralInfo info, string replacement, CancellationToken cancellation)
     {
         var locations = new List<XmlLocation>(); var origins = new List<bool>();
+        var starts = new List<int>(); var lengths = new List<int>(); var identities = new List<object>();
         for (int i = 0; i < info.Text.Length; i++)
         {
             cancellation.ThrowIfCancellationRequested(); int start = i, width = 1;
@@ -192,10 +193,15 @@ internal sealed partial class DtdParser
                 if (end >= 0 && UnprocessedNumeric(info.Text.AsSpan(i + 1, end - i - 1), out int scalar))
                 { i = end; width = scalar > 0xFFFF ? 2 : 1; }
             }
-            for (int n = 0; n < width; n++) { locations.Add(info.Locations[start]); origins.Add(info.ExternalOrigins[start]); }
+            for (int n = 0; n < width; n++)
+            {
+                locations.Add(info.Locations[start]); origins.Add(info.ExternalOrigins[start]);
+                starts.Add(info.PhysicalStarts![start]); identities.Add(info.PhysicalIdentities![start]);
+                lengths.Add(info.PhysicalStarts![i] + info.PhysicalLengths![i] - info.PhysicalStarts![start]);
+            }
         }
         if (locations.Count != replacement.Length) throw new InvalidOperationException("Entity literal mapping differs from decoded replacement.");
-        return info with { Text = replacement, Locations = locations.ToArray(), ExternalOrigins = origins.ToArray() };
+        return info with { Text = replacement, Locations = locations.ToArray(), ExternalOrigins = origins.ToArray(), PhysicalStarts = starts.ToArray(), PhysicalLengths = lengths.ToArray(), PhysicalIdentities = identities.ToArray() };
     }
     private string? DecodeLiteral(string raw, CancellationToken cancellation, bool entity)
     {

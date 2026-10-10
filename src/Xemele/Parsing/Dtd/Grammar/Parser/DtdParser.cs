@@ -28,6 +28,7 @@ internal sealed partial class DtdParser : IDisposable
         internal bool Final, Cr;
         internal XmlTextDeclarationFramer? Prolog;
         internal DtdLiteralInfo? LiteralInfo;
+        internal readonly object PhysicalIdentity = new();
         internal readonly List<(int Scalar, XmlLocation At)> Prefix = new(7);
         internal Source(int id, bool external, XmlLocation at, string? name = null, string? text = null, bool entered = false, bool literal = false)
         { Id = id; External = external; Line = at.LineNumber; Column = at.LinePosition; Uri = at.SourceUri; Name = name; Text = text; Entered = entered; LiteralExpansion = literal; }
@@ -73,7 +74,14 @@ internal sealed partial class DtdParser : IDisposable
     private readonly List<bool> literalOrigins = [];
     private DtdLiteralInfo? lastLiteral;
     private XmlLocation literalValueAt, physicalDtdLocation;
-    private long physicalLiteralScalars;
+    private long physicalLiteralScalars, physicalStreamScalars;
+    private readonly StringBuilder literalPhysicalStream = new();
+    private readonly List<int> literalPhysicalStarts = [], literalPhysicalLengths = [];
+    private string? physicalDtdSpelling;
+    private int physicalDtdSpellingStart, physicalDtdSpellingLength, physicalDtdScalar;
+    private object literalPhysicalIdentity = new();
+    private object? physicalDtdIdentity;
+    private readonly List<object> literalPhysicalIdentities = [];
     private void CapturePhysicalLiteral(int scalar)
     {
         if (!(lex == Lex.Literal || lex == Lex.Parameter && parameterResume == Lex.Literal) || IgnoreCurrentDeclaration || Current.Id != quoteSource || scalar == quote) return;
@@ -130,7 +138,7 @@ internal sealed partial class DtdParser : IDisposable
         Enter(); int consumed = 0;
         try
         {
-            Check(); appendStarted = true; if (pending is not null) throw new InvalidOperationException("Supply the requested entity before appending.");
+            Check(); grammarCancellation = cancellationToken; appendStarted = true; if (pending is not null) throw new InvalidOperationException("Supply the requested entity before appending.");
             cancellationToken.ThrowIfCancellationRequested();
             int submittedIndex = sources.Count - 1; Source submitted = sources[submittedIndex];
             // Walk stable indices rather than searching the stack at every level.
@@ -164,6 +172,10 @@ internal sealed partial class DtdParser : IDisposable
                     char c = available[0]; long? offset = !owned && submitted.Mode == 2 ? byteOffsets[consumed] : null;
                     XmlLocation at = s.High != 0 ? s.HighAt : s.At(offset);
                     physicalDtdLocation = owned && s.LiteralInfo is { } info ? info.Locations[s.Index] : at;
+                    physicalDtdSpelling = owned ? s.LiteralInfo?.PhysicalStream : null;
+                    physicalDtdIdentity = owned ? s.LiteralInfo?.PhysicalIdentities?[s.Index] : null;
+                    physicalDtdSpellingStart = physicalDtdSpelling is not null ? s.LiteralInfo!.PhysicalStarts![s.Index] : 0;
+                    physicalDtdSpellingLength = physicalDtdSpelling is not null ? s.LiteralInfo!.PhysicalLengths![s.Index] : 0;
                     if (s.High == 0 && char.IsHighSurrogate(c))
                     {
                         s.High = c; s.HighAt = at;
@@ -189,9 +201,15 @@ internal sealed partial class DtdParser : IDisposable
                     s.High = 0;
                     if (owned) s.Index++; else consumed++;
                     if (offset is long b) s.LastOffset = b;
+                    physicalDtdScalar = scalar;
                     CapturePhysicalLiteral(scalar);
                     bool skipLf = scalar == '\n' && s.Cr;
                     if (!s.Advance(scalar)) { Reject("Source location overflow.", at, "XML.LocationLimit"); break; }
+                    if (skipLf && !owned && lex == Lex.Literal && !IgnoreCurrentDeclaration && literalPhysicalLengths.Count != 0)
+                    {
+                        if (!AppendPhysicalLiteral("\n", at)) break;
+                        literalPhysicalLengths[^1]++;
+                    }
                     if (s.Prolog is not null) ProcessProlog(s, scalar, at, cancellationToken);
                     else if (owned || !skipLf) Process(!owned && scalar == '\r' ? '\n' : scalar, at, cancellationToken);
                 }
@@ -315,7 +333,7 @@ internal sealed partial class DtdParser : IDisposable
     public void Dispose()
     {
         Enter(); try { if (disposed) return; disposed = true; Drain(null); }
-        finally { foreach (var s in sources) s.Prolog?.Dispose(); sources.Clear(); scratch.Clear(); reference.Clear(); tokens.Clear(); physicalLiteral.Clear(); literalLocations.Clear(); literalOrigins.Clear(); lastLiteral = null; parameterOriginGeneral?.Clear(); Volatile.Write(ref gate, 0); }
+        finally { foreach (var s in sources) s.Prolog?.Dispose(); sources.Clear(); scratch.Clear(); reference.Clear(); tokens.Clear(); ResetPhysicalLiteral(); physicalDtdSpelling = null; lastLiteral = null; parameterOriginGeneral?.Clear(); Volatile.Write(ref gate, 0); }
     }
     private sealed class LocalBudget(XmlResourceLimits limits) : IDtdBudget
     {

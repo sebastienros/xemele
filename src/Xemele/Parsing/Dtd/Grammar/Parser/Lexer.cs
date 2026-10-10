@@ -10,7 +10,36 @@ internal sealed partial class DtdParser
         tokenScalars++;
         Span<char> pair = stackalloc char[2]; int count = ValueSyntax.WriteScalar(c, pair); buffer.Append(pair[..count]);
         if (lex == Lex.Literal && !IgnoreCurrentDeclaration)
-            for (int i = 0; i < count; i++) { literalLocations.Add(physicalDtdLocation); literalOrigins.Add(Current.External || Current.Entered); }
+        {
+            int start = literalPhysicalStream.Length;
+            Span<char> physical = stackalloc char[2]; int physicalWidth = ValueSyntax.WriteScalar(physicalDtdScalar, physical);
+            ReadOnlySpan<char> spelling = physicalDtdSpelling is not null
+                ? physicalDtdSpelling.AsSpan(physicalDtdSpellingStart, physicalDtdSpellingLength) : physical[..physicalWidth];
+            if (!AppendPhysicalLiteral(spelling, at)) return;
+            for (int i = 0; i < count; i++)
+            {
+                literalLocations.Add(physicalDtdLocation); literalOrigins.Add(Current.External || Current.Entered);
+                literalPhysicalStarts.Add(start); literalPhysicalLengths.Add(spelling.Length);
+                literalPhysicalIdentities.Add(physicalDtdIdentity ?? (Current.Id == quoteSource ? literalPhysicalIdentity : Current.PhysicalIdentity));
+            }
+        }
+    }
+    private bool AppendPhysicalLiteral(ReadOnlySpan<char> spelling, XmlLocation at)
+    {
+        foreach (var rune in spelling.EnumerateRunes())
+        {
+            grammarCancellation.ThrowIfCancellationRequested();
+            if (physicalStreamScalars == int.MaxValue || limits.TokenCharacters is int max && physicalStreamScalars >= max)
+            { Refuse(ValueBudget.Limit(at)); return false; }
+            physicalStreamScalars++;
+        }
+        if (literalPhysicalStream.Length > int.MaxValue - spelling.Length) { Refuse(ValueBudget.Limit(at)); return false; }
+        literalPhysicalStream.Append(spelling); return true;
+    }
+    private void ResetPhysicalLiteral()
+    {
+        physicalLiteral.Clear(); physicalLiteralScalars = 0; literalLocations.Clear(); literalOrigins.Clear();
+        literalPhysicalStream.Clear(); physicalStreamScalars = 0; literalPhysicalStarts.Clear(); literalPhysicalLengths.Clear(); literalPhysicalIdentities.Clear();
     }
     private void BeginToken(XmlLocation at)
     { scratch.Clear(); tokenScalars = 0; tokenAt = at; tokenPhysicalAt = physicalDtdLocation; tokenSpace = separator; separator = false; }
@@ -18,9 +47,10 @@ internal sealed partial class DtdParser
     {
         string text = scratch.ToString();
         var info = literal && !IgnoreCurrentDeclaration ? new DtdLiteralInfo(physicalLiteral.ToString(), text,
-            literalLocations.Count == 0 ? literalValueAt : literalLocations[0], literalLocations.ToArray(), literalOrigins.ToArray()) : null;
+            literalLocations.Count == 0 ? literalValueAt : literalLocations[0], literalLocations.ToArray(), literalOrigins.ToArray(), PhysicalStream: literalPhysicalStream.ToString(),
+            PhysicalStarts: literalPhysicalStarts.ToArray(), PhysicalLengths: literalPhysicalLengths.ToArray(), PhysicalIdentities: literalPhysicalIdentities.ToArray()) : null;
         tokens.Add(new(text, literal, tokenSpace, tokenAt, Current.Id, info, tokenPhysicalAt)); scratch.Clear(); tokenScalars = 0;
-        physicalLiteral.Clear(); physicalLiteralScalars = 0; literalLocations.Clear(); literalOrigins.Clear();
+        ResetPhysicalLiteral();
     }
     private void Symbol(int c, XmlLocation at)
     { tokens.Add(new(new string((char)c, 1), false, separator, at, Current.Id)); separator = false; }
@@ -75,7 +105,8 @@ internal sealed partial class DtdParser
                 if (c is '\'' or '"')
                 {
                     quote = (char)c; quoteSource = Current.Id; BeginToken(at); lex = Lex.Literal;
-                    physicalLiteral.Clear(); physicalLiteralScalars = 0; literalLocations.Clear(); literalOrigins.Clear();
+                    ResetPhysicalLiteral();
+                    literalPhysicalIdentity = new();
                     literalValueAt = new(at.SourceUri, at.LineNumber, at.LinePosition == 0 ? 0 : at.LinePosition + 1, null);
                     literalEntity = declaration == "ENTITY" && (tokens.Count == 1 || tokens.Count == 2 && tokens[0].Text == "%"); return;
                 }
