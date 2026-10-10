@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "id": "M0-api-wiring",
+  "milestone": "M0",
+  "title": "Compare compiled runtime API and run foundation contract checks in CI",
+  "kind": "infrastructure",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "depends_on": [
+    "M0-contracts",
+    "M0-corpora-wiring"
+  ],
+  "goals": [
+    "G18"
+  ],
+  "specs": [
+    "docs/specs/foundation.md",
+    "docs/specs/common.md"
+  ],
+  "owns": [
+    "tools/ApiBaseline/",
+    "tests/Xemele.TestUtilities/Build/",
+    ".github/workflows/build.yml",
+    "docs/reports/M0-api-wiring/"
+  ],
+  "api_or_output": "Actual compiled runtime surface comparison and foundation usage checks",
+  "acceptance": [
+    {
+      "id": "M0-api-wiring-A1",
+      "description": "Compose validated task fragment member/declaration pairs with retained provenance and reject duplicate/conflicting entries. Compare union against actual Release runtime assembly using approved compiled normalizer; allow empty only through explicit bootstrap contract, never silently update fragments.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M0-api-wiring-A2",
+      "description": "Exercise missing/added/changed compiled surfaces and fragmented composition with real compiled fixtures; wire runtime API comparison and stage usage/normalizer negative checks into CI using portable pinned SDK environment. Keep contract models separate from shipped runtime API.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M0-api-wiring-A3",
+      "description": "Preserve prior discovery/corpus/MTP/help/package checks; record exact local outcomes and known revision/task validation, normalizer scope limits and honestly unrun platforms.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}
