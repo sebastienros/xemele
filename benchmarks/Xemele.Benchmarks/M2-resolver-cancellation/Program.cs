@@ -7,11 +7,21 @@ public static class BindingBenchmarkProgram
 {
     public static void Main(string[] args)
     {
-        if (args is ["--oracle"])
+        if (args.Length is 1 or 2 && args[0] == "--oracle")
         {
             var methods = new CancellationBindingBenchmarks();
             methods.Setup();
             try { methods.VerifyAllMethods(); } finally { methods.Cleanup(); }
+            if (args.Length == 2)
+            {
+                var assembly = System.Reflection.Assembly.LoadFrom(args[1]);
+                var type = assembly.GetType("CancellationBindingBenchmarks", throwOnError: true)!;
+                var mainMethods = Activator.CreateInstance(type)!;
+                type.GetMethod("Setup")!.Invoke(mainMethods, null);
+                try { type.GetMethod("VerifyAllMethods")!.Invoke(mainMethods, null); }
+                finally { type.GetMethod("Cleanup")!.Invoke(mainMethods, null); }
+                Console.WriteLine("Main benchmark assembly all-method correctness oracle passed.");
+            }
             using var a = new CancellationTokenSource(); using var b = new CancellationTokenSource();
             using var session = new XmlResolutionSession(null, new OperationBudget(new(), default), a.Token);
             session.BindCancellationToken(b.Token); a.Cancel(); session.BindCancellationToken(default);

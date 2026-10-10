@@ -50,8 +50,9 @@ def main():
             assert 'Runtime source build: 1.0.0+'+revision in run('dotnet',sample)
             run('dotnet','build','benchmarks/Xemele.Benchmarks/Xemele.Benchmarks.csproj',*FLAGS)
             run('dotnet','build','benchmarks/Xemele.Benchmarks/M2-resolver-cancellation/Xemele.ResolverSample.csproj',*FLAGS)
-            standalone=ROOT/'benchmarks/Xemele.Benchmarks/M2-resolver-cancellation/bin/Release/net10.0/Xemele.ResolverSample.dll'
-            assert 'oracle passed' in run('dotnet',standalone,'--oracle')
+            standalone=ROOT/'artifacts/M2-resolver-cancellation/standalone-bin/Release/net10.0/Xemele.ResolverSample.dll'
+            run('dotnet','build','benchmarks/Xemele.Benchmarks/Xemele.Benchmarks.csproj',*FLAGS)
+            assert 'oracle passed' in run('dotnet',standalone,'--oracle',ROOT/'benchmarks/Xemele.Benchmarks/bin/Release/net10.0/Xemele.Benchmarks.dll')
             for dll in [standalone,ROOT/'benchmarks/Xemele.Benchmarks/bin/Release/net10.0/Xemele.Benchmarks.dll']:
                 listing=run('dotnet',dll,'--list','flat','--filter','*CancellationBindingBenchmarks*')
                 assert all('CancellationBindingBenchmarks.'+name in listing for name in ['DirectCancellationChecks','BindExactToken','BindAlternatingToken'])
