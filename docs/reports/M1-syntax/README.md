@@ -84,7 +84,12 @@ output under ignored artifacts/M1-syntax/checks-<revision>-<attempt>.txt, compar
 public surface, compiles all approved M1 models/protocol probes, compares nine
 actual internal syntax types with their model, runs independent source and NuGet-only sample consumers, packs
 the runtime and records separate cold/warm/retained allocation boundaries.
-No empty docs/api/M1-syntax.txt or public syntax type is invented.
+No empty docs/api/M1-syntax.txt or public syntax type is invented. Foundation
+fixture projects are explicitly built before comparison, including on a fresh
+checkout. XEMELE_SYNTAX_PUBLIC_GOLDEN can select another approved combined public
+golden (for example verified M1 Tree); the default is Common.golden.txt. This is
+an exact compiled comparison, never a rebaseline or skip; fragment comparison
+remains mandatory too.
 
 The owned BenchmarkDotNet project filename and AssemblyName both match
 Xemele.SyntaxBenchmarks. Its linked benchmark source is excluded from accidental

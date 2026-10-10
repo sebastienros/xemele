@@ -37,8 +37,12 @@ def main():
     checker = ROOT / 'docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll'
     run('dotnet', 'build', 'docs/reports/M0-contracts/ApiCheck/ApiCheck.csproj', *FLAGS)
     for stage in ['M1', 'M2']:
+        run('dotnet', 'build', f'docs/reports/M0-contracts/Fixtures/{stage}/{stage}.csproj', *FLAGS)
         run('dotnet', checker, 'compare', ROOT / f'docs/reports/M0-contracts/Fixtures/{stage}/bin/Release/net10.0/Foundation{stage}.dll', ROOT / f'tests/Contracts/Fixtures/foundation/{stage}.golden.txt')
-    run('dotnet', checker, 'compare', ROOT / 'src/Xemele/bin/Release/net10.0/Xemele.dll', ROOT / 'tests/Contracts/Fixtures/M1/Common.golden.txt')
+    public_golden = Path(os.environ.get('XEMELE_SYNTAX_PUBLIC_GOLDEN', 'tests/Contracts/Fixtures/M1/Common.golden.txt'))
+    if not public_golden.is_absolute():
+        public_golden = ROOT / public_golden
+    run('dotnet', checker, 'compare', ROOT / 'src/Xemele/bin/Release/net10.0/Xemele.dll', public_golden)
     for lane in ['Common', 'Tree', 'Input', 'Syntax', 'Serializer', 'Dom', 'Protocol']:
         run('dotnet', 'build', f'docs/reports/M1-contracts/Projects/{lane}/{lane}.csproj', *FLAGS)
         dll = ROOT / f'docs/reports/M1-contracts/Projects/{lane}/bin/Release/net10.0/M1{lane}.dll'
