@@ -92,6 +92,7 @@ internal sealed partial class XmlParserCore : IDisposable
             try
             {
                 activeCancellation = cancellationToken;
+                resolution?.BindCancellationToken(cancellationToken);
                 cancellationToken.ThrowIfCancellationRequested();
                 while (true)
                 {
@@ -658,6 +659,15 @@ internal sealed partial class XmlParserCore : IDisposable
     }
     private int Reference(ReadOnlySpan<char> reference, XmlLocation location)
     {
+        int value = ScalarReferenceValue(reference, location);
+        if (diagnostic is not null || !Charge(Quota.EntityDepth, 1, location)) return 0;
+        try { Charge(Quota.ExpandedCharacters, 1, location); }
+        finally { budget.Release(Quota.EntityDepth, 1); }
+        return value;
+    }
+
+    private int ScalarReferenceValue(ReadOnlySpan<char> reference, XmlLocation location)
+    {
         int value;
         if (reference.SequenceEqual("lt")) value = '<';
         else if (reference.SequenceEqual("gt")) value = '>';
@@ -681,9 +691,6 @@ internal sealed partial class XmlParserCore : IDisposable
         {
             Reject(ValidName(reference, false) ? "XML.UndeclaredEntity" : "XML.Syntax", "Invalid or undeclared entity.", location); return 0;
         }
-        if (!Charge(Quota.EntityDepth, 1, location)) return 0;
-        try { Charge(Quota.ExpandedCharacters, 1, location); }
-        finally { budget.Release(Quota.EntityDepth, 1); }
         return value;
     }
     private void ParseDeclaration()

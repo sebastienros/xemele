@@ -52,11 +52,8 @@ internal sealed partial class XmlParserCore
     private string? NormalizeAttribute(string literal, DtdAttributeDeclaration? declaration, XmlLocation at)
     {
         var table = AttributeEntities();
-        if (!CheckAttributeEntities(literal, table, at, true)) return null;
-        var result = DtdValueProcessor.NormalizeAttributeDefault(literal, DtdAttributeType.CData,
-            table, budget.Options.Limits, at, entityBudget, activeCancellation);
-        if (result.Diagnostic is not null) { diagnostic = result.Diagnostic; return null; }
-        string value = result.Value!;
+        string? value = ExpandAttributeLiteral(literal, table, at);
+        if (value is null) return null;
         if (declaration is not null && declaration.Type != DtdAttributeType.CData)
         {
             string normalized = CollapseSpaces(value);
@@ -140,11 +137,9 @@ internal sealed partial class XmlParserCore
         internal int Index;
     }
 
-    private bool CheckAttributeEntities(string literal, IReadOnlyDictionary<string, DtdEntityDeclaration> table, XmlLocation at, bool useSite)
+    private bool CheckAttributeEntities(string literal, IReadOnlyDictionary<string, DtdEntityDeclaration> table, XmlLocation at, HashSet<string> seen)
     {
         activeCancellation.ThrowIfCancellationRequested();
-        if (!literal.AsSpan().ContainsAny('&', '<')) return true;
-        var seen = new HashSet<string>(StringComparer.Ordinal);
         var active = new HashSet<string>(StringComparer.Ordinal);
         var stack = new List<AttributeGraphFrame> { new(literal, null) };
         while (stack.Count != 0)
@@ -165,8 +160,9 @@ internal sealed partial class XmlParserCore
             { Work(frame.Index); frame.Index++; }
             if (frame.Index == frame.Text.Length) { Reject("XML.Syntax", "Unfinished attribute reference.", at); return false; }
             var name = frame.Text.AsSpan(start, frame.Index++ - start);
-            if (ScalarReference(name)) continue;
-            if (useSite ? !ValidName(name, false) : !EntityName(name))
+            if (ScalarReference(name))
+            { ScalarReferenceValue(name, at); if (diagnostic is not null) return false; continue; }
+            if (!EntityName(name))
             { Reject("XML.Syntax", "Invalid attribute entity reference name.", at); return false; }
             DtdEntityDeclaration? entity = null;
             if (table is Dictionary<string, DtdEntityDeclaration> dictionary)
@@ -177,8 +173,6 @@ internal sealed partial class XmlParserCore
             if (entity is null) { Reject("XML.UndeclaredEntity", "Undeclared attribute entity.", at); return false; }
             if (entity.SystemId is not null || entity.NotationName is not null || entity.ReplacementText is null)
             { Reject("XML.Syntax", "External or unparsed entity is forbidden in attributes.", at); return false; }
-            if (useSite && standalone == true && entity.IsExternal)
-            { Reject("XML.Standalone", "Standalone attribute depends on an external entity declaration.", at); return false; }
             if (active.Contains(entity.Name)) { Reject("XML.EntityCycle", "Recursive attribute entity.", at); return false; }
             if (seen.Contains(entity.Name)) continue;
             active.Add(entity.Name); stack.Add(new(entity.ReplacementText, entity.Name));
@@ -189,11 +183,12 @@ internal sealed partial class XmlParserCore
     private bool ValidateEffectiveDefaults()
     {
         var table = AttributeEntities();
+        var seen = new HashSet<string>(StringComparer.Ordinal);
         foreach (var declaration in entities!.Model.Attributes)
         {
             activeCancellation.ThrowIfCancellationRequested();
             if (declaration.DefaultValue is not null &&
-                !CheckAttributeEntities(declaration.DefaultValue, table, declaration.Location, false)) return false;
+                !CheckAttributeEntities(declaration.DefaultValue, table, declaration.Location, seen)) return false;
         }
         return true;
     }
