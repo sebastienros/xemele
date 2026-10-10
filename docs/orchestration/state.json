@@ -9,26 +9,38 @@
   },
   "active_assignments": [
     {
-      "task_id": "M1-serialize",
-      "client_thread_id": "client-new-thread:b7d624dd-a567-4431-9faa-19c6f94131c2",
+      "task_id": "M1-dom",
+      "client_thread_id": "client-new-thread:44740c37-3629-4d2c-8c2d-22c3370eee43",
       "host_id": "local",
-      "branch": "codex/m1-serialize",
-      "base_revision": "a3fbc9334a5bc465addf1ff8d3fb793b981ba047",
-      "claim_revision": "978a6be36b92cba0f9168db817629daaa5fee63d",
+      "branch": "codex/m1-dom",
+      "base_revision": "4af94600952d417c2d7418758c30131695cb3ecb",
+      "claim_revision": "c4f3e7a3910e130a2467733aa79558984463b244",
+      "setup_status": "suspended-prerequisite",
+      "chat_id": "01a123df-0348-7a81-9d6f-f4676934cb48",
+      "worktree_path": "/Users/sebastienros/.codex/worktrees/a22a/xemele",
+      "preserved_draft_revision": "4aef77b0e1fffca92322c096ce8a09c65f019845"
+    },
+    {
+      "task_id": "M1-benchmark-class-config",
+      "client_thread_id": "client-new-thread:b3aca5d6-0563-489b-a641-054c87fcc96b",
+      "host_id": "local",
+      "branch": "codex/m1-benchmark-class-config",
+      "base_revision": "6d3326fce6dcc979d243a6bdddc92f9ae2e1897e",
+      "claim_revision": "1246381a72839c7d6b77e05416985fa407baad6b",
       "setup_status": "dispatched",
-      "chat_id": "01a123ce-5193-7693-a1bd-dc24e15194ef",
-      "worktree_path": "/Users/sebastienros/.codex/worktrees/8a2c/xemele"
+      "chat_id": "01a123f2-d7e7-7263-8ba1-f6ac7dff7424",
+      "worktree_path": "/Users/sebastienros/.codex/worktrees/d888/xemele"
     }
   ],
   "integration_queue": [],
   "blockers": [],
   "next_actions": [
-    "Claim and dispatch DOM composition with verified Input/Tree/Syntax",
-    "Run serializer20 ShortRun with root/DOM parked",
-    "Integrate serializer then M1 conformance and gate"
+    "Renew DOM claim and resume preserved draft with verified builder contract",
+    "Review/integrate benchmark class migration",
+    "After DOM verification dispatch strict corpus and M1 gate"
   ],
-  "last_verified_task": "M1-syntax",
-  "last_integrated_revision": "335268e544e361f2be64d9afe67bdf1794f0299b",
+  "last_verified_task": "M1-tree-dom-builder",
+  "last_integrated_revision": "ed07308ffd599ce72aa8590b8f36ecc3fb11a441",
   "completed_assignments": [
     {
       "task_id": "M0-build",
@@ -414,10 +426,50 @@
       "handoff_revision": "027b0fcd29905760dc77074752f6f3c673ce4232",
       "integration_revision": "335268e544e361f2be64d9afe67bdf1794f0299b",
       "integration_worktree": "/private/tmp/xemele-integrate-m1-syntax",
-      "integration_branch": "codex/integrate-m1-syntax"
+      "integration_branch": "codex/integrate-m1-syntax",
+      "cleanup": {
+        "chat_archived": true,
+        "worktree": "removed"
+      }
+    },
+    {
+      "task_id": "M1-serialize",
+      "client_thread_id": "client-new-thread:b7d624dd-a567-4431-9faa-19c6f94131c2",
+      "host_id": "local",
+      "branch": "codex/m1-serialize",
+      "base_revision": "a3fbc9334a5bc465addf1ff8d3fb793b981ba047",
+      "claim_revision": "978a6be36b92cba0f9168db817629daaa5fee63d",
+      "setup_status": "verified",
+      "chat_id": "01a123ce-5193-7693-a1bd-dc24e15194ef",
+      "worktree_path": "/Users/sebastienros/.codex/worktrees/8a2c/xemele",
+      "implementation_revision": "c54d39be7c5a638b6cb591e1211fe435e760f529",
+      "handoff_revision": "07bc3a55bf1c0b0e7b2cd2f8023805b4ccbb7d76",
+      "integration_revision": "59f2e904d52a430f90c4f6f3aa2ed25423f35f3f",
+      "integration_worktree": "/private/tmp/xemele-integrate-m1-serialize",
+      "integration_branch": "codex/integrate-m1-serialize",
+      "cleanup": {
+        "chat_archived": true,
+        "worktree": "removed"
+      }
+    },
+    {
+      "task_id": "M1-tree-dom-builder",
+      "client_thread_id": "client-new-thread:2223ac2f-2efd-4647-ac16-10d9c07282eb",
+      "host_id": "local",
+      "branch": "codex/m1-tree-dom-builder",
+      "base_revision": "ed3d980890c172aa9a3d7c543b5fff5c11113456",
+      "claim_revision": "3c54a1b90d550ac13ff487af2f7d00d2b43f9fe5",
+      "setup_status": "verified",
+      "chat_id": "01a123e3-1f8d-7370-a821-1428a86d2686",
+      "worktree_path": "/Users/sebastienros/.codex/worktrees/38a3/xemele",
+      "implementation_revision": "8a5c714cabd1375f568a6b40b39628fba5b32453",
+      "handoff_revision": "175a83c8b5410ce9f2bfaa440658b0aa4498882a",
+      "integration_revision": "ed07308ffd599ce72aa8590b8f36ecc3fb11a441",
+      "integration_worktree": "/private/tmp/xemele-integrate-m1-tree-dom-builder",
+      "integration_branch": "codex/integrate-m1-tree-dom-builder"
     }
   ],
-  "benchmark_policy": "ShortRun only; serialize host timing with explicit peer/root heavy-check park.",
+  "benchmark_policy": "No active timing hold. Benchmark classes configure jobs; command job arguments and job-name narration omitted.",
   "benchmark_owner": null,
   "pending_decisions": [],
   "decisions": {
@@ -425,7 +477,8 @@
     "authority": "User reply in coordinator chat on 2026-10-09",
     "test_runner": "User selected xunit.v3.mtp-v2 4.0.1 and Microsoft.Testing.Platform",
     "benchmark_job": "User requested BenchmarkDotNet Job.ShortRun for all subsequent runs; preserve completed historical job evidence.",
-    "worker_concurrency": "User increased limit from 2 to 3 concurrent isolated worker chats on 2026-10-09; benchmark timing remains serialized."
+    "worker_concurrency": "User increased limit from 2 to 3 concurrent isolated worker chats on 2026-10-09; benchmark timing remains serialized.",
+    "benchmark_class_configuration": "User requires [MemoryDiagnoser, ShortRunJob] on benchmark classes; omit explicit job arguments and job-name narration in subsequent runs."
   },
   "conventions_pending_review": {
     "api": "tools/ApiBaseline/README.md on codex/m0-ci defines xemele-api-v1 canonical JSONL with id/member/declaration",
@@ -460,7 +513,9 @@
     "docs/orchestration/cleanup-M1-contracts.json",
     "docs/orchestration/cleanup-M1-common.json",
     "docs/orchestration/cleanup-M1-input.json",
-    "docs/orchestration/cleanup-M1-tree.json"
+    "docs/orchestration/cleanup-M1-tree.json",
+    "docs/orchestration/cleanup-M1-syntax.json",
+    "docs/orchestration/cleanup-M1-serialize.json"
   ],
   "preserved_reference_sources": [
     {
@@ -469,7 +524,5 @@
       "revision": "96498992efa48d52b0e8b83058bd88dbdaf153c1"
     }
   ],
-  "timing_queue": [
-    "M1-serialize"
-  ]
+  "timing_queue": []
 }
