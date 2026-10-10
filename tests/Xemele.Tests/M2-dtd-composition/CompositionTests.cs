@@ -21,10 +21,10 @@ public sealed class DtdCompositionTests
     {
         var ledger = new Ledger();
         var prior = Prior("<!ENTITY % x '<!ELEMENT via EMPTY>'><!ENTITY g 'inside'><!ELEMENT root ANY><!ATTLIST root a (one|two) 'one'><!NOTATION n SYSTEM 'old'>", ledger);
-        long before = ledger.Expanded; int names = ledger.Names;
+        long before = ledger.Expanded; int names = ledger.Names, calls = ledger.NameCalls;
         using var p = new DtdParser(DtdSubsetKind.External, new(), ledger, Origin);
         p.SeedPriorModel(prior, Ct);
-        Assert.Equal(before, ledger.Expanded); Assert.Equal(names, ledger.Names); Assert.Equal(0, ledger.Enters);
+        Assert.Equal(before, ledger.Expanded); Assert.Equal(names, ledger.Names); Assert.Equal(calls, ledger.NameCalls); Assert.Equal(0, ledger.Enters);
         p.SetFramedInitialSource(Origin);
         const string external = "%x;<!ENTITY % x 'wrong'><!ENTITY g 'outside'><!ELEMENT root EMPTY><!ATTLIST root a CDATA 'other'><!NOTATION n SYSTEM 'new'><!ATTLIST via b CDATA '&g;'>";
         Assert.Equal(DtdParseStep.Completed, p.Append(external, [], true, Ct).Step);
@@ -58,8 +58,8 @@ public sealed class DtdCompositionTests
     [Fact]
     public void SeedAndInitialHooksRejectIllegalTimingAndRemainTransactional()
     {
-        var prior = Prior("<!ENTITY % x '<!ELEMENT ok EMPTY>'>");
-        using var p = new DtdParser(DtdSubsetKind.External, new(), Origin);
+        var ledger = new Ledger(); var prior = Prior("<!ENTITY % x '<!ELEMENT ok EMPTY>'>", ledger);
+        using var p = new DtdParser(DtdSubsetKind.External, new(), ledger, Origin);
         using var cancel = new CancellationTokenSource(); cancel.Cancel();
         Assert.Throws<OperationCanceledException>(() => p.SeedPriorModel(prior, cancel.Token));
         Assert.Throws<ArgumentNullException>(() => p.SeedPriorModel(null!, Ct));
@@ -238,19 +238,17 @@ public sealed class DtdCompositionTests
     [Fact]
     public void SeedDeepParticlesAndNotationTokensAndFailureLeavePriorImmutable()
     {
-        DtdParticle particle = new(DtdParticleKind.Name, "leaf", DtdOccurrence.Once, []);
-        for (int i = 0; i < 12000; i++) particle = new(DtdParticleKind.Sequence, null, DtdOccurrence.Once, [particle]);
-        var element = new DtdElementDeclaration("root", particle, false, Origin);
-        var attribute = new DtdAttributeDeclaration("root", "a", DtdAttributeType.Notation, ["n"], DtdDefaultKind.Implied, null, false, Origin);
-        var prior = new Model([element], [attribute], [], [], []);
-        var ledger = new Ledger { MaxNames = 0 };
+        var ledger = new Ledger();
+        var prior = Prior("<!ELEMENT root " + new string('(', 12000) + "leaf" + new string(')', 12000) + "><!ATTLIST root a NOTATION (n) #IMPLIED>", ledger);
+        var element = prior.Elements[0]; var attribute = prior.Attributes[0];
+        ledger.MaxNames = ledger.Names; int previouslyCharged = ledger.Names;
         using var p = new DtdParser(DtdSubsetKind.External, new(), ledger, Origin);
         var broken = new Model([element, null!], [], [], [], []);
         Assert.Throws<NullReferenceException>(() => p.SeedPriorModel(broken, Ct));
         p.SeedPriorModel(prior, Ct); p.SetFramedInitialSource(Origin);
         Assert.Equal(DtdParseStep.Completed, p.Append("<!ELEMENT root (leaf)><!ATTLIST root a NOTATION (n) #IMPLIED>", [], true, Ct).Step);
         Assert.Same(element, Assert.Single(p.Model.Elements)); Assert.Same(attribute, Assert.Single(p.Model.Attributes));
-        Assert.Same(element, Assert.Single(prior.Elements)); Assert.Equal(0, ledger.Names);
+        Assert.Same(element, Assert.Single(prior.Elements)); Assert.Equal(previouslyCharged, ledger.Names);
     }
 
     [Theory]
@@ -340,6 +338,45 @@ public sealed class DtdCompositionTests
         }
     }
 
+    [Fact]
+    public void StandaloneSeedingRejectsUnaccountedPriorWorkAndLegacyParsingRemainsLegal()
+    {
+        var ledger = new Ledger(); var prior = Prior("<!ELEMENT first (second)>", ledger);
+        using var local = new DtdParser(DtdSubsetKind.External, new XmlResourceLimits { InternedNames = 1 }, Origin);
+        Assert.Throws<InvalidOperationException>(() => local.SeedPriorModel(prior, Ct));
+        Assert.Equal(DtdParseStep.Completed, local.Append("<!ELEMENT local EMPTY>", [], true, Ct).Step);
+        Assert.Equal(2, ledger.Names);
+        ledger.MaxNames = 2;
+        using var exact = new DtdParser(DtdSubsetKind.External, new(), ledger, Origin);
+        exact.SeedPriorModel(prior, Ct); exact.SetFramedInitialSource(Origin);
+        Assert.Equal(DtdParseStep.Completed, exact.Append("<!ELEMENT first (second)>", [], true, Ct).Step);
+        using var over = new DtdParser(DtdSubsetKind.External, new(), ledger, Origin);
+        over.SeedPriorModel(prior, Ct); over.SetFramedInitialSource(Origin);
+        var result = over.Append("<!ELEMENT third EMPTY>", [], true, Ct);
+        Assert.Equal(DtdParseStep.Rejected, result.Step); Assert.Equal("XML.ResourceLimit", result.Diagnostic!.Code);
+        Assert.Equal(2, ledger.Names);
+    }
+
+    [Theory]
+    [InlineData(2)]
+    [InlineData(3)]
+    public void SharedDistinctNameLedgerRetainsNamesDiscardedByFirstWinsModel(int maxNames)
+    {
+        var ledger = new Ledger { MaxNames = maxNames };
+        using var internalParser = new DtdParser(DtdSubsetKind.Internal, new(), ledger, Origin);
+        var r = internalParser.Append("<!ELEMENT r (a)><!ELEMENT r (b)>", [], true, Ct);
+        if (maxNames == 2)
+        { Assert.Equal(DtdParseStep.Rejected, r.Step); Assert.Equal("XML.ResourceLimit", r.Diagnostic!.Code); Assert.Equal(2, ledger.Names); return; }
+        Assert.Equal(DtdParseStep.Completed, r.Step); Assert.Equal(3, ledger.Names);
+        Assert.Equal("a", internalParser.Model.Elements[0].Content.Children[0].Name);
+        using var external = new DtdParser(DtdSubsetKind.External, new(), ledger, Origin);
+        int calls = ledger.NameCalls; external.SeedPriorModel(internalParser.Model, Ct); Assert.Equal(calls, ledger.NameCalls);
+        external.SetFramedInitialSource(Origin);
+        Assert.Equal(DtdParseStep.Completed, external.Append("<!ELEMENT r (b)>", [], true, Ct).Step);
+        Assert.Equal(calls + 1, ledger.NameCalls); Assert.Equal(3, ledger.Names);
+        Assert.Same(internalParser.Model.Elements[0], Assert.Single(external.Model.Elements));
+    }
+
     internal static long[] Maps(string text, long start = 3)
     {
         long[] result = new long[text.Length]; long offset = start;
@@ -370,12 +407,14 @@ public sealed class DtdCompositionTests
     }
     internal sealed class Ledger : IDtdBudget
     {
-        internal long Expanded, MaxExpanded = long.MaxValue; internal int Names, MaxNames = int.MaxValue, Enters, Exits, Depth, MaxDepth = int.MaxValue;
+        internal long Expanded, MaxExpanded = long.MaxValue; internal int NameCalls, Names, MaxNames = int.MaxValue, Enters, Exits, Depth, MaxDepth = int.MaxValue;
         internal Exception? Failure, ExitFailure;
+        private readonly HashSet<string> retainedNames = new(StringComparer.Ordinal);
         public XmlDiagnostic? ChargeExpandedCharacters(long count, XmlLocation at)
         { if (Failure is not null) throw Failure; if (count > MaxExpanded - Expanded) return ValueBudget.Limit(at); Expanded += count; return null; }
         public XmlDiagnostic? ChargeName(ReadOnlySpan<char> name, XmlLocation at)
-        { if (Names >= MaxNames) return ValueBudget.Limit(at); Names++; return null; }
+        { NameCalls++; foreach (var retained in retainedNames) if (name.SequenceEqual(retained)) return null;
+          if (Names >= MaxNames) return ValueBudget.Limit(at); retainedNames.Add(name.ToString()); Names++; return null; }
         public XmlDiagnostic? EnterEntity(XmlLocation at) { if (Depth >= MaxDepth) return ValueBudget.Limit(at); Enters++; Depth++; return null; }
         public void ExitEntity() { Exits++; Depth--; if (ExitFailure is not null) throw ExitFailure; }
     }

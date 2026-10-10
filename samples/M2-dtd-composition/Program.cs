@@ -3,11 +3,12 @@ using Xemele.Parsing.Dtd;
 if (args.Contains("--runtime")) { Console.WriteLine(Environment.Version); return; }
 if (args.Contains("--contract")) { Inventory.Print(); return; }
 var uri = new Uri("https://fixture.invalid/effective.dtd");
-using var prior = new DtdParser(DtdSubsetKind.Internal, new());
+var ledger = new OperationLedger();
+using var prior = new DtdParser(DtdSubsetKind.Internal, new(), ledger, new(null, 1, 1, null));
 if (prior.Append("<!ENTITY % x '<!ELEMENT child EMPTY>'><!ENTITY g 'inside'>", [], true, default).Step != DtdParseStep.Completed) throw new Exception("prior");
-using var parser = new DtdParser(DtdSubsetKind.External, new(), uri);
+using var parser = new DtdParser(DtdSubsetKind.External, new(), ledger, new(uri, 1, 1, null));
 parser.SeedPriorModel(prior.Model, default);
-using var framer = new XmlTextDeclarationFramer(new(), uri);
+using var framer = new XmlTextDeclarationFramer(new(), ledger, uri);
 const string text = "<?xml\r\nencoding='UTF-8'?>%x;<!ATTLIST child a CDATA '&g;'>";
 var frame = framer.Append(text, [], true, default);
 if (frame.Step != TextDeclarationStep.Declared) throw new Exception("frame");

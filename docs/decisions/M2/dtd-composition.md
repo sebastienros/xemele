@@ -4,13 +4,20 @@ The existing constructor inventory and public methods remain unchanged. Three
 assembly-internal instance hooks initialize independently framed external sources:
 
 - `void SeedPriorModel(DtdModel model, CancellationToken cancellationToken)`:
-  once on a fresh initial external parser, before any Append (including empty or
+  once on a fresh initial external parser with a shared operation ledger, before any Append (including empty or
   invalid submissions) and before CompleteByteSource. Stages ordered first-wins
   declaration collections and retained-name keys, reusing immutable declaration
   references, flags and locations. It performs no budget calls, expansion, or
   default application. Cancellation checks cover each declaration, particle,
   child and bounded name scan. Cancellation/allocation failure before publication
-  leaves the seed retryable without partial tables or ledger changes.
+  leaves the seed retryable without partial tables or ledger changes. Standalone local-budget
+  parsers reject seeding: they cannot inherit previously charged operation work.
+  The caller must use the same live ledger for prior internal parsing, framing
+  and external grammar; model objects do not carry ledger provenance. The live shared ledger must
+  deduplicate retained names ordinally across parser instances, including names
+  charged in declarations discarded by first-wins model output. Seeding itself
+  makes no ChargeName calls; later lookup misses can call the ledger for a name
+  absent from the model without recharging its existing distinct-name entry.
 - `void SetFramedInitialSource(XmlLocation firstLocation)`: once on the same
   fresh external parser; may run before or after seeding. URI must equal the
   constructor source URI (null permitted); line/column are both positive or both

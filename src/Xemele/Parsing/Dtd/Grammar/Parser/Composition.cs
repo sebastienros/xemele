@@ -18,6 +18,7 @@ internal sealed partial class DtdParser
         try
         {
             FreshExternal();
+            if (!shared) throw new InvalidOperationException("Prior models require the same shared operation ledger.");
             if (seeded) throw new InvalidOperationException("Prior model was already seeded.");
             ArgumentNullException.ThrowIfNull(model);
             cancellationToken.ThrowIfCancellationRequested();
