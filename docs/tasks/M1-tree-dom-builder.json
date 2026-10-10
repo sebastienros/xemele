@@ -4,11 +4,11 @@
   "milestone": "M1",
   "title": "Repair linear validated DOM tree construction boundary",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M1-tree-dom-builder",
   "branch": "codex/m1-tree-dom-builder",
   "base_revision": "ed3d980890c172aa9a3d7c543b5fff5c11113456",
-  "integration_revision": null,
+  "integration_revision": "ed07308ffd599ce72aa8590b8f36ecc3fb11a441",
   "depends_on": [
     "M1-tree",
     "M1-syntax"
@@ -37,7 +37,8 @@
       "status": "passed",
       "evidence": [
         "builder-source-review",
-        "builder-correctness"
+        "builder-correctness",
+        "integrated-builder-verification"
       ]
     },
     {
@@ -46,7 +47,8 @@
       "status": "passed",
       "evidence": [
         "builder-correctness",
-        "builder-source-review"
+        "builder-source-review",
+        "integrated-builder-verification"
       ]
     },
     {
@@ -56,7 +58,8 @@
       "evidence": [
         "builder-correctness",
         "builder-measurements",
-        "builder-annotation-build"
+        "builder-annotation-build",
+        "integrated-builder-verification"
       ]
     }
   ],
@@ -112,6 +115,15 @@
       "result": "skipped",
       "summary": "Two class-configured repetitions were cancelled after overlapping coordination steering, each wrapper exit143. Discovery12/one configuration observed, but incomplete measurement results were never accepted. Complete original12 remains separate; coordinator explicitly accepted unchanged runtime measurements and instructed no further timing.",
       "artifact": "docs/reports/M1-tree-dom-builder/bdn/benchmark-cancelled1.txt.gz"
+    },
+    {
+      "id": "integrated-builder-verification",
+      "kind": "integration",
+      "revision": "ed07308ffd599ce72aa8590b8f36ecc3fb11a441",
+      "command": "Pinned SDK10.0.400 DOTNET_CLI_USE_MSBUILD_SERVER=0 python3 docs/reports/M1-tree-dom-builder/verify.py --public-golden tests/Contracts/Fixtures/M1/Serializer.golden.txt",
+      "result": "passed",
+      "summary": "Fresh combined builder/Common/Input/Tree/Syntax/Serializer verifier exited0:11 builder,215 solution, Tree14/Input10/Syntax70, Foundation11 zero skips; exact215 approved public union/actual canonical fragments, rebuilt foundation139/173/ApiProbe8 and independent M1 models/protocol38; independent model replay sample, isolated NuGet-only consumer/pack/harness, warm child/member0B, separate setup/owned/retention probes, planning103/diff pass. All timing stopped before root checks. Final handoff then merged only reports/task metadata, runtime/tests/harness unchanged; historical worker evidence preserved.",
+      "artifact": "docs/reports/M1-tree-dom-builder/integration.txt"
     }
   ],
   "blockers": [],
@@ -122,7 +134,6 @@
       "All12 original measurement workloads passed; normal scheduling priority limitation recorded. Annotation-only8a5c714 driver build/discovery passed; two partial coordination-cancelled repeats never counted as passing. All worker processes stopped."
     ],
     "remaining": [
-      "Coordinator integration and combined verification required; integration_revision remains null. Runtime review atd492200 applies unchanged.",
       "End-to-end DOM confirmation and cross-architecture performance release checks remain with later owners."
     ],
     "requests": [

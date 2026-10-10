@@ -21,17 +21,6 @@
       "preserved_draft_revision": "4aef77b0e1fffca92322c096ce8a09c65f019845"
     },
     {
-      "task_id": "M1-tree-dom-builder",
-      "client_thread_id": "client-new-thread:2223ac2f-2efd-4647-ac16-10d9c07282eb",
-      "host_id": "local",
-      "branch": "codex/m1-tree-dom-builder",
-      "base_revision": "ed3d980890c172aa9a3d7c543b5fff5c11113456",
-      "claim_revision": "3c54a1b90d550ac13ff487af2f7d00d2b43f9fe5",
-      "setup_status": "dispatched",
-      "chat_id": "01a123e3-1f8d-7370-a821-1428a86d2686",
-      "worktree_path": "/Users/sebastienros/.codex/worktrees/38a3/xemele"
-    },
-    {
       "task_id": "M1-benchmark-class-config",
       "client_thread_id": "client-new-thread:b3aca5d6-0563-489b-a641-054c87fcc96b",
       "host_id": "local",
@@ -43,23 +32,15 @@
       "worktree_path": "/Users/sebastienros/.codex/worktrees/d888/xemele"
     }
   ],
-  "integration_queue": [
-    "M1-tree-dom-builder"
-  ],
-  "blockers": [
-    {
-      "task_id": "M1-dom",
-      "finding": "Requires verified linear tree builder before composition; task schema forbids started tasks with unverified prerequisites",
-      "resolution": "Suspend claim to planned, preserve worker draft/assignment, resume after repair; initial blocked-state validation failure corrected"
-    }
-  ],
+  "integration_queue": [],
+  "blockers": [],
   "next_actions": [
-    "Review/test/measure and integrate linear tree builder repair",
-    "Resume preserved DOM draft after repair verified and renewed claim",
-    "Verify DOM then strict corpus and M1 gate"
+    "Renew DOM claim and resume preserved draft with verified builder contract",
+    "Review/integrate benchmark class migration",
+    "After DOM verification dispatch strict corpus and M1 gate"
   ],
-  "last_verified_task": "M1-serialize",
-  "last_integrated_revision": "59f2e904d52a430f90c4f6f3aa2ed25423f35f3f",
+  "last_verified_task": "M1-tree-dom-builder",
+  "last_integrated_revision": "ed07308ffd599ce72aa8590b8f36ecc3fb11a441",
   "completed_assignments": [
     {
       "task_id": "M0-build",
@@ -470,6 +451,22 @@
         "chat_archived": true,
         "worktree": "removed"
       }
+    },
+    {
+      "task_id": "M1-tree-dom-builder",
+      "client_thread_id": "client-new-thread:2223ac2f-2efd-4647-ac16-10d9c07282eb",
+      "host_id": "local",
+      "branch": "codex/m1-tree-dom-builder",
+      "base_revision": "ed3d980890c172aa9a3d7c543b5fff5c11113456",
+      "claim_revision": "3c54a1b90d550ac13ff487af2f7d00d2b43f9fe5",
+      "setup_status": "verified",
+      "chat_id": "01a123e3-1f8d-7370-a821-1428a86d2686",
+      "worktree_path": "/Users/sebastienros/.codex/worktrees/38a3/xemele",
+      "implementation_revision": "8a5c714cabd1375f568a6b40b39628fba5b32453",
+      "handoff_revision": "175a83c8b5410ce9f2bfaa440658b0aa4498882a",
+      "integration_revision": "ed07308ffd599ce72aa8590b8f36ecc3fb11a441",
+      "integration_worktree": "/private/tmp/xemele-integrate-m1-tree-dom-builder",
+      "integration_branch": "codex/integrate-m1-tree-dom-builder"
     }
   ],
   "benchmark_policy": "No active timing hold. Benchmark classes configure jobs; command job arguments and job-name narration omitted.",
