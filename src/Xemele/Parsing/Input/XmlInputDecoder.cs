@@ -6,7 +6,7 @@ using Xemele.Internal.Operations;
 [assembly: InternalsVisibleTo("Xemele.InputSample")]
 namespace Xemele.Parsing.Input;
 
-internal enum XmlInputEncoding { Undetermined, Utf8, Utf16LittleEndian, Utf16BigEndian }
+internal enum XmlInputEncoding { Undetermined, Utf8, Utf16LittleEndian, Utf16BigEndian, Ascii, Latin1, Windows1252 }
 internal enum DecodeStep { NeedInput, NeedOutput, Completed, InvalidInput }
 internal readonly record struct DecodeResult(int ConsumedBytes, int WrittenCharacters, DecodeStep Step, XmlDiagnostic? Diagnostic);
 internal interface IXmlInputDecoder : IDisposable
@@ -29,6 +29,7 @@ internal sealed class XmlInputDecoder : IXmlInputDecoder
     // Snapshot/validation only: primary bytes are not external-resource quota units.
     private readonly OperationBudget budget;
     private bool bom, final, completed, rejected, disposed, declarationValidated, faulted;
+    private bool signatureSelected, provisionalNonAscii;
     private int active;
     private XmlInputEncoding encoding;
     public XmlInputEncoding Encoding { get { ObjectDisposedException.ThrowIf(disposed, this); return encoding; } }
@@ -81,6 +82,7 @@ internal sealed class XmlInputDecoder : IXmlInputDecoder
                 else if (available >= 4 && detection[0] == 0 && detection[1] == '<' && detection[2] == 0) encoding = XmlInputEncoding.Utf16BigEndian;
                 else encoding = XmlInputEncoding.Utf8;
                 bom = skip != 0;
+                signatureSelected = bom || encoding != XmlInputEncoding.Utf8;
                 int ownedSkip = Math.Min(skip, count);
                 int submittedSkip = skip - ownedSkip;
                 if (!Accept(submittedSkip)) return Error(0, 0, "XML.ResourceLimit", acceptedBytes);
@@ -100,6 +102,8 @@ internal sealed class XmlInputDecoder : IXmlInputDecoder
                 OperationStatus status;
                 if (encoding == XmlInputEncoding.Utf8)
                     status = Rune.DecodeFromUtf8(candidate[..available], out scalar, out bytes);
+                else if (encoding is XmlInputEncoding.Ascii or XmlInputEncoding.Latin1 or XmlInputEncoding.Windows1252)
+                    status = DecodeSingleByte(candidate[0], encoding, out scalar, out bytes);
                 else
                     status = DecodeUtf16(candidate[..available], encoding == XmlInputEncoding.Utf16LittleEndian, out scalar, out bytes);
                 if (status == OperationStatus.InvalidData || (status == OperationStatus.NeedMoreData && final))
@@ -119,6 +123,7 @@ internal sealed class XmlInputDecoder : IXmlInputDecoder
                 // Capture location before advancing; errors never partly emit a scalar.
                 XmlLocation at = location.Current(offset);
                 if (!location.TryAdvance(scalar)) return Reject(consumed, written, "XML.LocationLimit", at);
+                if (!declarationValidated && !signatureSelected && !scalar.IsAscii) provisionalNonAscii = true;
                 int units = scalar.EncodeToUtf16(output[written..]);
                 byteOffsets[written] = offset;
                 if (units == 2) byteOffsets[written + 1] = offset;
@@ -159,6 +164,26 @@ internal sealed class XmlInputDecoder : IXmlInputDecoder
         else { scalar = new Rune(first); used = 2; }
         return OperationStatus.Done;
     }
+    // ISO-8859-1 is an exact byte-to-scalar map; XML legality belongs to grammar.
+    // Undefined Windows-1252 slots are zero sentinels, never replacement output.
+    private static ReadOnlySpan<ushort> WindowsControls => [
+        0x20AC, 0, 0x201A, 0x0192, 0x201E, 0x2026, 0x2020, 0x2021,
+        0x02C6, 0x2030, 0x0160, 0x2039, 0x0152, 0, 0x017D, 0,
+        0, 0x2018, 0x2019, 0x201C, 0x201D, 0x2022, 0x2013, 0x2014,
+        0x02DC, 0x2122, 0x0161, 0x203A, 0x0153, 0, 0x017E, 0x0178];
+    private static OperationStatus DecodeSingleByte(byte value, XmlInputEncoding encoding, out Rune scalar, out int used)
+    {
+        scalar = default; used = 0;
+        if (encoding == XmlInputEncoding.Ascii && value > 0x7F) return OperationStatus.InvalidData;
+        int mapped = value;
+        if (encoding == XmlInputEncoding.Windows1252 && value is >= 0x80 and <= 0x9F)
+        {
+            mapped = WindowsControls[value - 0x80];
+            if (mapped == 0) return OperationStatus.InvalidData;
+        }
+        scalar = new Rune(mapped); used = 1;
+        return OperationStatus.Done;
+    }
     private static int Unit(ReadOnlySpan<byte> bytes, bool little) => little ? bytes[0] | bytes[1] << 8 : bytes[0] << 8 | bytes[1];
     private DecodeResult Error(int consumed, int written, string code, long offset) => Reject(consumed, written, code, location.Current(offset));
     private DecodeResult Reject(int consumed, int written, string code, XmlLocation at)
@@ -177,8 +202,24 @@ internal sealed class XmlInputDecoder : IXmlInputDecoder
         bool generic = EqualsAscii(encodingName, "UTF-16");
         bool le = EqualsAscii(encodingName, "UTF-16LE");
         bool be = EqualsAscii(encodingName, "UTF-16BE");
-        if (!empty && !utf8 && !generic && !le && !be)
+        XmlInputEncoding legacy = encodingName.Length switch
+        {
+            8 when EqualsAscii(encodingName, "US-ASCII") => XmlInputEncoding.Ascii,
+            10 when EqualsAscii(encodingName, "ISO-8859-1") => XmlInputEncoding.Latin1,
+            12 when EqualsAscii(encodingName, "WINDOWS-1252") => XmlInputEncoding.Windows1252,
+            _ => XmlInputEncoding.Undetermined
+        };
+        if (!empty && !utf8 && !generic && !le && !be && legacy == XmlInputEncoding.Undetermined)
             return Reject(0, 0, "INPUT.UnsupportedEncoding", location).Diagnostic;
+        if (legacy != XmlInputEncoding.Undetermined && !signatureSelected && encoding == XmlInputEncoding.Utf8)
+        {
+            // Composition validates the bounded ASCII declaration before body input.
+            // An unfinished UTF scalar or a non-ASCII prolog cannot be reinterpreted.
+            if (provisionalNonAscii || count != 0)
+                return Reject(0, 0, "INPUT.InvalidEncoding", location).Diagnostic;
+            encoding = legacy;
+            return null;
+        }
         bool match = encoding switch
         {
             XmlInputEncoding.Utf8 => empty || utf8,
