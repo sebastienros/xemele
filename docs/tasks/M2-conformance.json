@@ -11,7 +11,9 @@
   "integration_revision": null,
   "depends_on": [
     "M2-entities",
-    "M2-encoding"
+    "M2-encoding",
+    "M2-conformance-profile",
+    "M2-conformance-grammar"
   ],
   "goals": [
     "G01",
@@ -55,12 +57,24 @@
     }
   ],
   "implementation": [],
-  "evidence": [],
+  "evidence": [
+    {
+      "id": "scope-review-split",
+      "kind": "review",
+      "revision": "2a87059616babed36b9de77d01c1e97110525d38",
+      "command": "Independent bounded read-only review of task/spec/current corpus and BCL protocol",
+      "result": "passed",
+      "summary": "Two ordered independently reviewable boundaries identified: executable full-case applicability/offline reference contract then actual core/full-case execution. Current M1 classification242rejects/2343unsupported and BCL hardcoded inputURI do not establish full M2 conformance. Preserve original parentA1-A3; no implementation/tests performed by reviewer.",
+      "artifact": null
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "",
+    "summary": "Split before claim into ordered executable applicability/reference contract and strict core/corpus implementation; original A1-A3 preserved unchanged for final complete-profile integration join.",
     "checks": [],
-    "remaining": [],
+    "remaining": [
+      "Verify both children, then final complete-profile applicability/all applicable cases/resolved disagreements/preservation/API/package integration checks; no reduction of initial release scope."
+    ],
     "requests": []
   }
 }

@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "id": "M2-conformance-profile",
+  "milestone": "M2",
+  "title": "Freeze strict XML applicability and offline reference contract",
+  "kind": "feature",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "depends_on": [
+    "M2-entities",
+    "M2-encoding",
+    "M0-references"
+  ],
+  "goals": [
+    "G01",
+    "G18"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/parser.md",
+    "docs/decisions/M2/xml-resources.md"
+  ],
+  "owns": [
+    "tests/corpora/xml/m2-applicability.json",
+    "tests/Xemele.Conformance.Tests/XmlFull/Profile/",
+    "tests/Xemele.Differential.Tests/XmlFull/Profile/",
+    "tests/fixtures/M2-conformance/Profile/",
+    "samples/M2-conformance-profile/",
+    "docs/reports/M2-conformance-profile/",
+    "tools/ReferenceRunners/Bcl/Program.cs",
+    "tests/Xemele.Differential.Tests/Protocol/M2OfflineSourceTests.cs"
+  ],
+  "api_or_output": "Immutable full-corpus applicability ledger and executable offline reference/comparison contract",
+  "acceptance": [
+    {
+      "id": "M2-conformance-profile-A1",
+      "description": "Publish executable complete per-case applicability/expected-outcome classification for all 2585 original IDs and exact byte/resource identities against XML1.0 Fifth Edition, Namespaces1.0 Third Edition, nonvalidating obligations and frozen optional encoding profile. Preserve M1 metadata/bytes; precisely justify historical-edition, invalid, optional-error, namespace-disabled and encoding cases; no blanket exclusions or hiding product failures.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M2-conformance-profile-A2",
+      "description": "Freeze independent semantic comparison/source-URI/offline resource mapping and disagreement-evidence contract. Narrowly extend BCL runner existing options for explicit absolute source URI so relative/nested offline resources resolve without network/file access; preserve existing wire shapes/defaults and reject unknown/malformed options. Exercise representative successful/rejected/reference-limit cases and infrastructure negative controls with actual full-source runner identities.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M2-conformance-profile-A3",
+      "description": "Demonstrate independently compiled/executed classification/reference contract and representative model checks using verified prerequisites; preserve earlier tests/API/runner protocol behavior. Keep all remaining actual product failures visible for grammar child/final join, with concise summaries and transient-output cleanup; do not claim full product conformance.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "Coordinator split from M2-conformance; original complete-profile A1-A3 remain unchanged in parent join.",
+    "checks": [],
+    "remaining": [],
+    "requests": [
+      "Explicit ordered ownership of BCL Program.cs and additive M2OfflineSourceTests.cs only; no ReferenceProtocol contract/public wire shape, shared project/package or M1 corpus inventory/manifest edits. Existing options dictionary may carry a narrowly specified explicit source URI. Route any required outside-path change to coordinator.",
+      "Use pinned complete offline resources; verify paths/hashes and reject traversal/symlink/corruption/missing data. Missing/denied resources and runner failures are infrastructure failures, never passing XML rejection or product exclusions. Reference capability limitations remain distinct from Xemele support.",
+      "Current M1 inventory labels are historical evidence, not an M2 applicability oracle. Exact changed-edition and nonvalidating expectations require normative justification; disagreements need exact case/hash/engine/runtime/protocol evidence. No timing/allocation workload or performance-policy changes required for this contract-only assignment."
+    ]
+  }
+}
