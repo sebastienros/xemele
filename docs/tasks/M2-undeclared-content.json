@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "id": "M2-undeclared-content",
+  "milestone": "M2",
+  "title": "Preserve nonvalidating unresolved content references",
+  "kind": "feature",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "depends_on": [
+    "M2-undeclared-contract",
+    "M2-version-declarations",
+    "M2-dtd-nonvalidating"
+  ],
+  "goals": [
+    "G01",
+    "G07",
+    "G18"
+  ],
+  "specs": [
+    "docs/performance-coding.md",
+    "docs/specs/parser.md",
+    "docs/decisions/M2/xml-resources.md",
+    "docs/decisions/M2/undeclared-references.md"
+  ],
+  "owns": [
+    "src/Xemele/Parsing/Events/UnresolvedReferences.cs",
+    "src/Xemele/Parsing/Core/XmlParserCore.cs",
+    "src/Xemele/Parsing/Core/XmlParserCore.Doctype.cs",
+    "src/Xemele/Parsing/Core/XmlParserCore.Entities.cs",
+    "src/Xemele/Parsing/Dtd/Grammar/Parser/DtdParser.cs",
+    "src/Xemele/Parsing/Dtd/Grammar/Parser/Composition.cs",
+    "src/Xemele/Parsing/Entities/Runtime/XmlEntityContext.cs",
+    "src/Xemele/Tree/UnresolvedReferences/",
+    "src/Xemele/Tree/Document.cs",
+    "src/Xemele/Serialization/Xml/XmlSerializer.cs",
+    "tests/Xemele.Tests/Xml/UndeclaredReferences/",
+    "tests/fixtures/M2-undeclared-content/",
+    "tests/Contracts/Fixtures/M2/Undeclared/",
+    "benchmarks/Xemele.Benchmarks/UndeclaredReferences/",
+    "docs/api/M2-undeclared-content.txt",
+    "samples/M2-undeclared-content/",
+    "docs/reports/M2-undeclared-content/"
+  ],
+  "api_or_output": "Exact optional unresolved-reference callback, owned DOM provenance and conservative owner-wide loss refusal",
+  "acceptance": [
+    {
+      "id": "M2-undeclared-content-A1",
+      "description": "Implement verified EntityDeclared WFC versus VC content applicability using actual internal/external subset, PE-reference and first unread declaration provenance, standalone and active source state. Exact NCName/lexical identity/location; optional borrowed callback once in ordered text boundaries, bounded owned pending storage, all splits and surrogate/byte mapping, consumed counts/pause/resume/cancellation/fault cleanup and quotas. Old sinks refuse only new unresolved occurrences with XML.UnresolvedReferenceSinkRequired; capable sinks succeed with no diagnostic. Preserve declared expansions, resource denial, recursion, unparsed/external attribute errors and all existing event/model shapes.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M2-undeclared-content-A2",
+      "description": "Implement approved XmlUnresolvedReference record and nonnull read-only XmlDocument.UnresolvedReferences list with owned names/location/stable Parent/PreviousSibling/original ChildBoundary/Sequence. Actual DOM Parse/TryParse/Load succeeds without diagnostic and separates text around gaps. Original provenance survives mutation/detachment. Serializer/string/Stream/Save, aggregate GetTextContent, shallow/deep Clone and ImportNode refuse any unresolved source owner after existing argument/cancellation validation and before writes/BOM/destination mutation/copy allocation/traversal; clean sources keep prior behavior and may import into unresolved destination. Guard exact entrypoints and test forwarding APIs, stream no-write and destination no-mutation.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M2-undeclared-content-A3",
+      "description": "Independently authored actual parser/event/DOM/refusal models for exact original E13 bytes and paired contexts; all short splits/byte transports/pause/cancel/retention/quotas/old sink controls, unaffected previous identities preserved. Run relevant full correctness, approved additive API/compiled frozen model and ABI preservation, source/package consumers and original profile audit. Meaningful applicable allocations/benchmarks with MemoryDiagnoser and ShortRunJob at exact Git/source/generated child/runtime identities, source-reviewed counters-disabled preparation and explicit fresh exclusive host grant. Never repeat unchanged successful standalone observations or relax thresholds/options/runtime. Retain concise counts/metrics/hash/failure summaries only, inspect/remove raw artifacts, validate planning/ownership/diff; no model-only or reference-agreement conformance claims.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "Required ordered implementation of the verified contract; exact proposed additive record/member approved by independent review and coordinator. No implementation until active Core and DTD prerequisite owners are verified.",
+    "checks": [],
+    "remaining": [],
+    "requests": [
+      "Missing attribute/default value representations remain separate classified obligations; do not silently fabricate normalized values, misclassify VC as WFC or claim full corpus coverage. Report exact cases/required contract ownership if observed. Preserve forwarding APIs and test their real callees; request exact additional owned files before edits."
+    ]
+  }
+}
