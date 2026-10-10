@@ -459,8 +459,8 @@
       }
     }
   ],
-  "benchmark_policy": "ShortRun only; exclusive host timing parks all peer/root heavy checks.",
-  "benchmark_owner": null,
+  "benchmark_policy": "Exclusive12-case builder ShortRun; coordinator/DOM suspended heavy checks.",
+  "benchmark_owner": "M1-tree-dom-builder",
   "pending_decisions": [],
   "decisions": {
     "project_license": "MIT",
@@ -515,5 +515,15 @@
   ],
   "timing_queue": [
     "M1-tree-dom-builder"
-  ]
+  ],
+  "benchmark_window": {
+    "task_id": "M1-tree-dom-builder",
+    "source_revision": "4a5102bd7c1894e69f5d6be2a67fba839e9500ad",
+    "runtime_revision": "d492200b588514e673afe771011171bb91a94c49",
+    "cases": 12,
+    "parked": [
+      "coordinator",
+      "M1-dom suspended no active checks"
+    ]
+  }
 }
