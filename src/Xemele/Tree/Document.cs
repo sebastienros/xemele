@@ -3,6 +3,7 @@ using Xemele.Internal.Operations;
 namespace Xemele;
 public enum XmlNodeKind { Document, Element, Text, CData, Comment, ProcessingInstruction, Fragment }
 internal enum XmlTreeMutationKind { Insert, Remove, AttributeInsert, AttributeRemove, NamespaceInsert, NamespaceRemove, Value, Name }
+internal readonly record struct TreeCopyWork(long NodeVisits, long MemberVisits, long Links);
 internal readonly record struct XmlTreeMutation(XmlTreeMutationKind Kind, XmlNode Node, XmlNode OldParent, XmlNode NewParent, XmlAttribute Attribute, XmlNamespaceDeclaration NamespaceDeclaration);
 public sealed partial class XmlDocument
 {
@@ -30,6 +31,7 @@ public sealed partial class XmlDocument
     private readonly OperationBudget budget;
     private readonly XmlResourceLimits limits;
     internal long MutationVersion { get; private set; }
+    internal TreeCopyWork LastCopyWork { get; private set; }
     partial void OnMutationCommitted(in XmlTreeMutation mutation);
     internal void NotifyMutation(in XmlTreeMutation mutation) => OnMutationCommitted(in mutation);
     public XmlDocument() : this(new XmlResourceLimits()) { }
@@ -213,6 +215,13 @@ public sealed partial class XmlDocument
             if (changedPrefix) MemberNotify(element, found, false, XmlTreeMutationKind.Name);
             MemberNotify(element, found, ns, XmlTreeMutationKind.Value); return found;
         }
+        return AppendMember(element, local, value, uri, prefix, ns);
+    }
+    // Caller has validated bindings and uniqueness, or is copying a valid source
+    // member into a fresh element after full-copy preflight. No key scan is needed.
+    private int AppendMember(int element, string local, string value, string uri, string prefix, bool ns)
+    {
+        var slots = ns ? NamespaceSlots : AttributeSlots;
         EnsureVersions(1); CheckCapacity(slots);
         PreflightNames(ns ? prefix : local, ns ? value : uri, ns ? "" : prefix); Capacity(slots);
         var member = new MemberData(element, Intern(local), Intern(uri), Intern(prefix), ns ? Intern(value) : value);
@@ -255,37 +264,52 @@ public sealed partial class XmlDocument
     internal XmlNode Clone(XmlNode source, bool deep)
     {
         if (source.Kind != XmlNodeKind.Document) return Copy(source, deep);
-        var copy = new XmlDocument(limits); if (deep) foreach (var child in source.Children) copy.DocumentNode.AppendChild(copy.ImportNode(child));
+        var copy = new XmlDocument(limits);
+        if (deep) foreach (var child in source.Children)
+        {
+            // A valid document source already has legal ordered children and at
+            // most one root; every imported copy is detached and newly owned.
+            var imported = copy.ImportNode(child); copy.Link(0, imported.Slot, -1);
+        }
         return copy.DocumentNode;
     }
     private XmlNode Copy(XmlNode source, bool deep)
     {
         // Preflight all distinct names and structural versions before a quota rejection.
         var missing = new HashSet<string>(StringComparer.Ordinal);
+        int remainingNames = (limits.InternedNames ?? int.MaxValue) - names.Count;
         long nodeCount = 0, members = 0, edges = 0;
+        long nodeVisits = 0, memberVisits = 0, links = 0;
         XmlNode current = source;
         while (true)
         {
-            nodeCount++; if (current != source) edges++;
+            nodeCount++; nodeVisits++; if (current != source) edges++;
             Collect(current.LocalName); Collect(current.NamespaceUri); Collect(current.Prefix);
-            foreach (var a in current.Attributes) { members++; Collect(a.LocalName); Collect(a.NamespaceUri); Collect(a.Prefix); }
-            foreach (var n in current.NamespaceDeclarations) { members++; Collect(n.Prefix); Collect(n.Value); }
+            foreach (var a in current.Attributes) { members++; memberVisits++; Collect(a.LocalName); Collect(a.NamespaceUri); Collect(a.Prefix); }
+            foreach (var n in current.NamespaceDeclarations) { members++; memberVisits++; Collect(n.Prefix); Collect(n.Value); }
             if (!deep || !Advance(ref current, source)) break;
         }
         if (nodeCount > Array.MaxLength - Nodes.Count || members > Array.MaxLength - Math.Max(AttributeSlots.Count, NamespaceSlots.Count)) throw new InvalidOperationException("Tree capacity exceeded.");
         EnsureVersions(edges + members);
         if (missing.Count > (limits.InternedNames ?? int.MaxValue) - names.Count) throw new InvalidOperationException("Tree interned-name quota exceeded.");
-        XmlNode root = Shallow(source), target = root; current = source;
-        if (!deep) return root;
+        XmlNode root = Shallow(source, ref nodeVisits, ref memberVisits), target = root; current = source;
+        if (!deep) { LastCopyWork = new(nodeVisits, memberVisits, links); return root; }
         while (true)
         {
-            if (!current.FirstChild.IsDefault) { current = current.FirstChild; var child = Shallow(current); target.AppendChild(child); target = child; continue; }
+            if (!current.FirstChild.IsDefault) { current = current.FirstChild; var child = Shallow(current, ref nodeVisits, ref memberVisits); Link(target.Slot, child.Slot, -1); links++; target = child; continue; }
             while (current != source && current.NextSibling.IsDefault) { current = current.Parent; target = target.Parent; }
             if (current == source) break;
-            current = current.NextSibling; var sibling = Shallow(current); var parent = target.Parent; parent.AppendChild(sibling); target = sibling;
+            current = current.NextSibling; var sibling = Shallow(current, ref nodeVisits, ref memberVisits); var parent = target.Parent; Link(parent.Slot, sibling.Slot, -1); links++; target = sibling;
         }
+        LastCopyWork = new(nodeVisits, memberVisits, links);
         return root;
-        void Collect(string s) { if (s.Length != 0 && !names.ContainsKey(s)) missing.Add(s); }
+        void Collect(string s)
+        {
+            if (s.Length == 0 || names.ContainsKey(s) || missing.Contains(s)) return;
+            // Reject the one-over candidate before growing even the scratch set.
+            if (missing.Count == remainingNames) throw new InvalidOperationException("Tree interned-name quota exceeded.");
+            missing.Add(s);
+        }
     }
     private static bool Advance(ref XmlNode current, XmlNode root)
     {
@@ -294,11 +318,26 @@ public sealed partial class XmlDocument
         if (current == root) return false;
         current = current.NextSibling; return true;
     }
-    private XmlNode Shallow(XmlNode source)
+    private XmlNode Shallow(XmlNode source, ref long nodeVisits, ref long memberVisits)
     {
+        // Every target node is freshly detached. Preflight validated the complete
+        // source, destination quota/capacity and version budget; preserving the
+        // source topology cannot create a cycle or duplicate an expanded-name key.
         var result = Create(source.Kind, source.LocalName, source.NamespaceUri, source.Prefix, source.Value);
-        for (int i = 0; i < source.Attributes.Count; i++) { var a = source.Attributes[i]; result.SetAttribute(a.LocalName, a.Value, a.NamespaceUri, a.Prefix); }
-        for (int i = 0; i < source.NamespaceDeclarations.Count; i++) { var n = source.NamespaceDeclarations[i]; result.SetNamespaceDeclaration(n.Prefix, n.Value); }
+        nodeVisits++;
+        var owner = source.OwnerDocument;
+        for (int i = owner.Nodes[source.Slot].FirstAttribute; i >= 0;)
+        {
+            var member = owner.AttributeSlots[i]; // snapshot before destination arena growth
+            AppendMember(result.Slot, member.Local, member.Value, member.Uri, member.Prefix, false);
+            memberVisits++; i = member.Next;
+        }
+        for (int i = owner.Nodes[source.Slot].FirstNamespace; i >= 0;)
+        {
+            var member = owner.NamespaceSlots[i];
+            AppendMember(result.Slot, member.Local, member.Value, member.Uri, member.Prefix, true);
+            memberVisits++; i = member.Next;
+        }
         return result;
     }
 }

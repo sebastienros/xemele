@@ -237,4 +237,28 @@ public class TreeTests
             }
         }
     }
+    [Fact]
+    public void CopyWorkScalesLinearlyInDeepNodesAndHeavyMemberLists()
+    {
+        foreach(int depth in new[]{500,5000})
+        {
+            var d=new XmlDocument();var root=d.CreateElement("e");var current=root;
+            for(int i=1;i<depth;i++){var child=d.CreateElement("e");current.AppendChild(child);current=child;}
+            current.AppendChild(d.CreateText("payload"));
+            var destination=new XmlDocument();var imported=destination.ImportNode(root);
+            Assert.Equal("payload",imported.GetTextContent());
+            Assert.Equal(2L*(depth+1),destination.LastCopyWork.NodeVisits);Assert.Equal(0,destination.LastCopyWork.MemberVisits);Assert.Equal(depth,destination.LastCopyWork.Links);
+            long version=d.MutationVersion;var clone=root.Clone();Assert.Equal("payload",clone.GetTextContent());Assert.Equal(destination.LastCopyWork,d.LastCopyWork);Assert.Equal(version+depth,d.MutationVersion);
+        }
+        foreach(int count in new[]{64,1024})
+        {
+            var d=new XmlDocument();var root=d.CreateElement("e");
+            for(int i=0;i<count;i++){root.SetAttribute("a"+i,"v","urn:a","p");root.SetNamespaceDeclaration("p"+i,"urn:"+i);}
+            long version=d.MutationVersion;var clone=root.Clone(false);Assert.Equal(version+2L*count,d.MutationVersion);Assert.Equal(count,clone.Attributes.Count);Assert.Equal(count,clone.NamespaceDeclarations.Count);
+            Assert.Equal(2,d.LastCopyWork.NodeVisits);Assert.Equal(4L*count,d.LastCopyWork.MemberVisits);Assert.Equal(0,d.LastCopyWork.Links);
+            Assert.NotEqual(root.Attributes[0],clone.Attributes[0]);Assert.NotEqual(root.NamespaceDeclarations[0],clone.NamespaceDeclarations[0]);
+            Assert.Equal(root.Attributes[count-1].LocalName,clone.Attributes[count-1].LocalName);Assert.Equal(root.NamespaceDeclarations[count-1].Prefix,clone.NamespaceDeclarations[count-1].Prefix);
+            var destination=new XmlDocument();var imported=destination.ImportNode(root,false);Assert.Equal(d.LastCopyWork,destination.LastCopyWork);Assert.Equal(count,imported.Attributes.Count);
+        }
+    }
 }

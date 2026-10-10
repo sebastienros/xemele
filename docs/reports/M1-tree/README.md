@@ -35,9 +35,13 @@ owned by document storage, with no pooled or caller-buffer views. XML Name/NCNam
 and scalar validation uses Rune decoding and direct comparisons, without delimiter
 scanning optimizations or custom hash/SIMD machinery.
 
-Deep text traversal, import and clone are iterative. Insertion cycle checks walk
-ancestors; cloning a chain therefore has quadratic validation work in depth,
-while requiring bounded call stack. Indexers may walk links; linked foreach avoids
+Deep text traversal, import and clone are iterative. General insertion cycle checks
+walk ancestors. Copy preflights complete source topology, limits/capacities/version
+budget, then directly links fresh detached copies and appends known-unique members
+in source order. It never calls public insertion or scans destination member keys.
+Internal counters record actual preflight/copy node and member visits plus links;
+tests cover 500/5000-depth chains and 64/1024-member lists without latency thresholds.
+Indexers may walk links; linked foreach avoids
 repeated indexed scans. Copy operations allocate owned destination slots, a
 bounded missing-name preflight set, and interned strings on distinct-name misses.
 Text aggregation allocates StringBuilder capacity and the final owned string.
@@ -64,7 +68,8 @@ Timing requires the coordinator's exclusive window after all builds/tests end:
 `dotnet run --project docs/reports/M1-tree/Xemele.TreeBenchmarks.csproj -c Release --no-build -- --filter '*' --artifacts artifacts/M1-tree/bdn`.
 ShortRun compares short/long borrowed first/last-hit and miss batches with a
 linear ordinal oracle (three probes per operation), linked/indexed traversal with
-the same checksum, and representative 64-item owned tree construction. Setup and
+the same checksum, representative 64-item owned tree construction, document clone/tree import and
+512-attribute/512-declaration import. Setup and
 fixture generation are outside timed lookup/traversal. Construction intentionally
 includes its owner/slots/names/text setup and persistence. Timing is provisional
 single-host Arm64 evidence, with parser/output composition and x64 release
@@ -86,3 +91,10 @@ objects to contiguous value arenas before any timing. Physical array layout is n
 contract-frozen; this layout follows the approved arena retention direction. Prior
 object-slot check output is retained only as historical evidence under ignored
 artifacts, not as allocation/timing evidence for the final source.
+
+Independent review identified quadratic copy work in the initial implementation:
+public insertion walked ancestors and member copying used linked integer indexers
+and destination key scans. The final copy path uses direct private primitives only
+for fresh copies after full preflight, preserving quota, version and notification
+semantics. General public mutation validation is unchanged. Prior passing correctness
+results do not establish acceptable copy complexity.
