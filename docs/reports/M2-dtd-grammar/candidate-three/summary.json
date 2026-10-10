@@ -1,0 +1,37 @@
+{
+  "result": "failed",
+  "host": "macOS-15.8.1-arm64-arm-64bit-Mach-O",
+  "architecture": "arm64",
+  "timing": "not run; exclusive coordinator grant required",
+  "sourceRevision": "641b974f2d3b5b4051a02b8251f28269026f49f8",
+  "branch": "codex/m2-dtd-grammar",
+  "auditBase": "f8da650052ced1bfa741f378e324d443ee078fe4",
+  "dotnet": "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+  "dotnetSha256": "e86deb33d0dacad9cc1224466df6418149cb8e13cb8afd0dc6815ea6b7807975",
+  "internalApi": {
+    "matched": true,
+    "types": 20,
+    "inventory": "internal-contract.txt",
+    "nullableAndDefaults": true,
+    "compiledNullableMutationDetected": true
+  },
+  "derivedOwnTests": {
+    "facts": 2,
+    "inlineRows": 8,
+    "pinnedRows": 9,
+    "total": 19
+  },
+  "focusedTests": 19,
+  "allocations": {
+    "coldBytes": 18272,
+    "ownedBytes": 16440480,
+    "operations": 1000,
+    "ownedBytesPerOperation": 16440,
+    "runtime": "10.0.11",
+    "boundary": "Two parser setups, persisted declarations/models, effective table and owned normalized defaults; synchronous current-thread allocations. No zero-allocation composition promise. No retained-memory or cross-platform inference."
+  },
+  "benchmarkCorrectness": "10 authored full composition/model/default oracles and 10 timed-method output oracles passed.",
+  "benchmarksPrepared": [
+    "Xemele.Benchmarks.DtdGrammarJoinBenchmarks.EffectiveDefaults"
+  ]
+}

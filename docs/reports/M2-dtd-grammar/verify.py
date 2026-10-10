@@ -98,6 +98,15 @@ def main():
         run('dotnet', 'build', approved/'Approved.csproj', *FLAGS)
         assert run('dotnet', approved/'bin/Release/net10.0/Approved.dll', '--contract') != approved_inventory, 'nullable mutation not detected'
         summary['internalApi']['compiledNullableMutationDetected'] = True
+        pinned_metadata = json.loads((ROOT/'tests/fixtures/M2-dtd-grammar/pinned.json').read_text())
+        upstream = json.loads((ROOT/'tests/corpora/xml/inventory.json').read_text())
+        assert pinned_metadata['archiveSha256'] == upstream['archiveSha256'] and pinned_metadata['sourceUrl'] == upstream['sourceUrl']
+        upstream_files = {f['path']: f for f in upstream['files']}
+        upstream_cases = {c['id']: c for c in upstream['cases']}
+        for case in pinned_metadata['cases']:
+            assert upstream_cases[case['id']]['inputPath'] == case['resource'].replace('.dtd', '.xml')
+            assert case['sha256'] == upstream_files[case['resource']]['sha256'] and case['bytes'] == upstream_files[case['resource']]['bytes']
+        summary['pinnedProvenance'] = pinned_metadata
         own_sources = [p.read_text() for p in (ROOT/'tests/Xemele.Tests/M2-dtd-grammar').glob('*.cs')]
         fact_rows = sum(s.count('[Fact]') for s in own_sources)
         inline_rows = sum(s.count('[InlineData(') for s in own_sources)
@@ -117,6 +126,9 @@ def main():
         allocations = json.loads(run('dotnet', sample, '--allocations').strip().splitlines()[-1])
         (report/'allocations.json').write_text(json.dumps(allocations, indent=2)+'\n')
         summary['allocations'] = allocations
+        retained = json.loads(run('dotnet', sample, '--retained').strip().splitlines()[-1])
+        (report/'retained.json').write_text(json.dumps(retained, indent=2)+'\n')
+        summary['retainedEstimate'] = retained
         run('dotnet', 'build', REPORT/'Xemele.DtdGrammarJoinBenchmarks.csproj', *FLAGS)
         summary['benchmarkCorrectness'] = run('dotnet', REPORT/'bin/Release/net10.0/Xemele.DtdGrammarJoinBenchmarks.dll', '--correctness').strip()
         discovered = run('dotnet', REPORT/'bin/Release/net10.0/Xemele.DtdGrammarJoinBenchmarks.dll', '--list', 'flat', '--filter', '*DtdGrammarJoin*')
