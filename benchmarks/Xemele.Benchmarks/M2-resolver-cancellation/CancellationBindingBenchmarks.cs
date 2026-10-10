@@ -1,5 +1,5 @@
 using BenchmarkDotNet.Attributes;
-using BenchmarkDotNet.Running;
+using System.Reflection;
 using Xemele;
 using Xemele.Internal.Operations;
 using Xemele.Resolution.Core;
@@ -17,9 +17,8 @@ public class CancellationBindingBenchmarks
         source = new(); token = source.Token;
         budget = new(new XmlParseOptions(), default);
         session = new(null, budget, default);
-        // Correctness oracle runs outside measurement and throws on failure.
-        session.BindCancellationToken(token);
-        if (session.ResourcesOpened != 0 || session.BytesRead != 0) throw new InvalidOperationException();
+        // Exercise every measured method, including both alternating states.
+        VerifyAllMethods();
     }
     [Benchmark(Baseline = true)] public void DirectCancellationChecks() { token.ThrowIfCancellationRequested(); budget.CheckCancellation(); }
     [Benchmark] public void BindExactToken() => session.BindCancellationToken(token);
@@ -27,6 +26,17 @@ public class CancellationBindingBenchmarks
     {
         token = token.CanBeCanceled ? default : source.Token;
         session.BindCancellationToken(token);
+    }
+    public void VerifyAllMethods()
+    {
+        var field = typeof(XmlResolutionSession).GetField("cancellation", BindingFlags.Instance | BindingFlags.NonPublic)!;
+        DirectCancellationChecks(); BindExactToken();
+        if ((CancellationToken)field.GetValue(session)! != token || !token.CanBeCanceled) throw new InvalidOperationException("Exact benchmark token lost.");
+        BindAlternatingToken();
+        if ((CancellationToken)field.GetValue(session)! != default || token.CanBeCanceled) throw new InvalidOperationException("Default alternating token lost.");
+        BindAlternatingToken();
+        if ((CancellationToken)field.GetValue(session)! != source.Token || token != source.Token) throw new InvalidOperationException("Second alternating token lost.");
+        if (session.ResourcesOpened != 0 || session.BytesRead != 0) throw new InvalidOperationException("Binding changed counters.");
     }
     [GlobalCleanup] public void Cleanup() { session.Dispose(); source.Dispose(); }
 }

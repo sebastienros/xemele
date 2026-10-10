@@ -9,6 +9,9 @@ public static class BindingBenchmarkProgram
     {
         if (args is ["--oracle"])
         {
+            var methods = new CancellationBindingBenchmarks();
+            methods.Setup();
+            try { methods.VerifyAllMethods(); } finally { methods.Cleanup(); }
             using var a = new CancellationTokenSource(); using var b = new CancellationTokenSource();
             using var session = new XmlResolutionSession(null, new OperationBudget(new(), default), a.Token);
             session.BindCancellationToken(b.Token); a.Cancel(); session.BindCancellationToken(default);

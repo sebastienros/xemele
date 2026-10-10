@@ -11,6 +11,7 @@ CHECKER=ROOT/'docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dl
 def rows(path): return {r['member']:r['declaration'] for r in map(json.loads,path.read_text().splitlines()[1:])}
 def main():
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('--report-prefix',required=True);p.add_argument('--audit-base',default=CLAIM)
+    p.add_argument('--expected-branch',default='codex/m2-resolver-cancellation')
     p.add_argument('--runtime-count',type=int,default=4514);p.add_argument('--api-count',type=int,default=272)
     p.add_argument('--fixture-count',type=int,default=3388);p.add_argument('--task-count',type=int,default=123)
     a=p.parse_args();assert re.fullmatch('[a-z0-9-]+',a.report_prefix)
@@ -31,9 +32,10 @@ def main():
         run('git','merge-base','--is-ancestor','ab2fcabaf3cc984901f484c6fce1069c385e8c2f','HEAD')
         assert json.loads((ROOT/'docs/tasks/M2-resolver.json').read_text())['status']=='verified'
         run('git','merge-base','--is-ancestor','b12b688d64fb3604b365d6caebcd5e4ea84495a1','HEAD')
-        s['branch']=run('git','branch','--show-current').strip()
+        s['branch']=run('git','branch','--show-current').strip();assert s['branch']==a.expected_branch
         assert run('dotnet','--version').strip()=='10.0.400'
         task=json.loads((ROOT/'docs/tasks/M2-resolver-cancellation.json').read_text()); source=[x for x in task['owns'] if x != 'docs/reports/M2-resolver-cancellation/']
+        tracked=run('git','ls-files','--',*source).splitlines();identities={name:hashlib.sha256((ROOT/name).read_bytes()).hexdigest() for name in tracked};s['sourceIdentitiesBefore']=identities
         assert not run('git','diff','--name-only','HEAD','--',*source).strip()
         assert not run('git','ls-files','--others','--exclude-standard','--',*source).strip()
         run('python3','-B','docs/reports/M1-corpus-import/provision.py')
@@ -43,6 +45,7 @@ def main():
         run('dotnet','build','tools/ReferenceRunners/Bcl/BclReference.csproj',*FLAGS)
         runner=ROOT/'tools/ReferenceRunners/Bcl/bin/Release/net10.0/BclReference.dll'
         shutil.copytree(runner.parent,raw/'pinned-reference');pinned=raw/'pinned-reference'/runner.name
+        reference_files={str(f.relative_to(pinned.parent)):hashlib.sha256(f.read_bytes()).hexdigest() for f in pinned.parent.rglob('*') if f.is_file()}
         env['XEMELE_BCL_RUNNER']=str(pinned);runner_hash=hashlib.sha256(pinned.read_bytes()).hexdigest()
         # This historical harness runs independent M1 models/protocol/negative
         # compiler probes/foundation11 plus the actual current solution.
@@ -70,6 +73,8 @@ def main():
         records=[json.loads(f.read_text()) for f in (raw/'case-results').glob('reference-*.json')]
         assert len(records)==242 and len({r['id'] for r in records})==242
         assert hashlib.sha256(pinned.read_bytes()).hexdigest()==runner_hash
+        assert {str(f.relative_to(pinned.parent)):hashlib.sha256(f.read_bytes()).hexdigest() for f in pinned.parent.rglob('*') if f.is_file()}==reference_files
+        s['referenceOutputIdentities']=reference_files
         assert all(r['runnerSha256']==runner_hash and r['response']['engine']['build']=='1.0.0+'+revision for r in records)
         assert sum(r['comparison']=='matched-rejection' for r in records)==239
         assert sum(r['comparison']=='documented-reference-divergence' for r in records)==3
@@ -101,6 +106,8 @@ def main():
         for command in [('git','diff','--name-only',a.audit_base+'..HEAD'),('git','diff','--name-only'),('git','diff','--cached','--name-only'),('git','ls-files','--others','--exclude-standard')]:paths+=run(*command).splitlines()
         assert all(any(path.startswith(own) if own.endswith('/') else path==own for own in owned) for path in paths),paths
         for suffix in [a.audit_base+'..HEAD',None,'--cached']:run('git','diff','--check',*([suffix] if suffix else []))
+        s['sourceIdentitiesAfter']={name:hashlib.sha256((ROOT/name).read_bytes()).hexdigest() for name in tracked};assert s['sourceIdentitiesAfter']==identities
+        assert run('git','rev-parse','HEAD').strip()==revision;assert run('git','branch','--show-current').strip()==a.expected_branch
         s['ownedPaths']=sorted(set(paths));s['result']='passed'
         s['limitations']='macOSArm64 only; no core consumer implementation; no new allocation/timing mode in this check; existing guarded allocation regressions remain part of inherited full correctness suites'
     finally:

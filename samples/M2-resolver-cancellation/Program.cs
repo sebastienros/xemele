@@ -6,9 +6,11 @@ using Xemele.Internal.Operations;
 using Xemele.Resolution.Core;
 
 var method = typeof(XmlResolutionSession).GetMethod("BindCancellationToken", BindingFlags.Instance | BindingFlags.NonPublic)!;
-Require(method.IsAssembly && !method.IsStatic && method.ReturnType == typeof(void));
-Require(method.GetParameters().Length == 1 && method.GetParameters()[0].ParameterType == typeof(CancellationToken));
+HookInventory.Validate(method);
 Console.WriteLine("internal void Xemele.Resolution.Core.XmlResolutionSession.BindCancellationToken(System.Threading.CancellationToken token)");
+HookInventory.VerifyCompiledMutations();
+string sourceBuild = typeof(XmlResourceResolver).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()!.InformationalVersion;
+Console.WriteLine("Runtime source build: " + sourceBuild);
 using var a = new CancellationTokenSource(); using var b = new CancellationTokenSource();
 var resolver = new Resolver();
 using var session = new XmlResolutionSession(resolver, new OperationBudget(new(), default), a.Token);
@@ -33,7 +35,7 @@ if (args is ["--allocation"])
     for (int i = 0; i < 100000; i++) independent.BindCancellationToken((i & 1) == 0 ? b.Token : default);
     long guard = GC.GetAllocatedBytesForCurrentThread() - before;
     Require(borrowed == 0 && escaped > 0 && guard == 0);
-    Console.WriteLine(JsonSerializer.Serialize(new { iterations = 100000, borrowed, escapedIterations = 1000, escaped, guard, scope = "warm sequential binding; setup and error paths excluded" }));
+    Console.WriteLine(JsonSerializer.Serialize(new { sourceBuild, processId = Environment.ProcessId, runtime = Environment.Version.ToString(), iterations = 100000, borrowed, escapedIterations = 1000, escaped, guard, scope = "warm sequential binding; setup and error paths excluded" }));
 }
 else Require(args.Length == 0);
 return;
