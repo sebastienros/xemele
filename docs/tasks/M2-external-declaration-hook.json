@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "id": "M2-external-declaration-hook",
+  "milestone": "M2",
+  "title": "Expose framed external declaration metadata to Core",
+  "kind": "feature",
+  "status": "in_progress",
+  "owner": "worker:M2-external-declaration-hook",
+  "branch": "codex/m2-external-declaration-hook",
+  "base_revision": "e82db97101699f538a068b43fa7f3f8c06492ed3",
+  "integration_revision": null,
+  "depends_on": [
+    "M2-entities",
+    "M2-version-declarations",
+    "M2-undeclared-content"
+  ],
+  "goals": [
+    "G01",
+    "G18"
+  ],
+  "specs": [
+    "docs/specs/parser.md",
+    "docs/decisions/M2/xml-resources.md",
+    "docs/performance-coding.md"
+  ],
+  "owns": [
+    "src/Xemele/Parsing/Entities/Runtime/ExternalXmlSource.cs",
+    "tests/Xemele.Tests/M2-external-declaration-hook/",
+    "samples/M2-external-declaration-hook/",
+    "docs/reports/M2-external-declaration-hook/"
+  ],
+  "api_or_output": "Expose framed external declaration metadata to Core",
+  "acceptance": [
+    {
+      "id": "M2-external-declaration-hook-A1",
+      "description": "Expose existing successfully framed external text-declaration version and original declaration location internally to Core, including absent declaration distinction. Preserve exact literal bounded version, decoder validation/failure/cancellation/cleanup, source URI/byte/scalar location and fixed scratch behavior. No public API, Core composition policy, decoder or framer changes; retain existing owned metadata without unnecessary reparse/copy.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M2-external-declaration-hook-A2",
+      "description": "Actual framed-source tests for exact original E38.ent version1.1 metadata, absent version/declaration and explicit1.0/other permitted1.x, source location and byte mapping; splits, canceled/rejected sources, resolver disposal and retained metadata lifetime. Core E38 rejection is explicitly the dependent grammar task obligation after integration, not a hook-only completion claim.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M2-external-declaration-hook-A3",
+      "description": "Focused external source/framing/entity preservation and approved API compatibility at known revision; source/package entrypoint preservation as applicable; planning and owned diff. Assess allocation applicability for metadata retention: preserve verified unchanged measurements, do not add bespoke framework or timing for a passive hook with no new hot-path algorithm. New measurable work requires prepared bounded lease. Concise summaries and cleanup only.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "Small internal hook required by exact E38 compatibility defect; dependent grammar owns composition comparison.",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}

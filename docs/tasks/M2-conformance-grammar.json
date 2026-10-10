@@ -4,10 +4,10 @@
   "milestone": "M2",
   "title": "Complete strict XML grammar against classified corpus",
   "kind": "feature",
-  "status": "in_progress",
-  "owner": "worker:M2-conformance-grammar",
-  "branch": "codex/m2-conformance-grammar",
-  "base_revision": "9d445cc3356b841b9ac31d42e9190422144dac1d",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
   "integration_revision": null,
   "depends_on": [
     "M2-entities",
@@ -17,7 +17,10 @@
     "M2-dtd-entity-base",
     "M2-dtd-nonvalidating",
     "M2-undeclared-contract",
-    "M2-undeclared-content"
+    "M2-undeclared-content",
+    "M2-core-standalone",
+    "M2-dtd-corpus-repair",
+    "M2-external-declaration-hook"
   ],
   "goals": [
     "G01",
@@ -64,16 +67,13 @@
   "evidence": [],
   "blockers": [],
   "handoff": {
-    "summary": "Assessment: standalone S-origin fix owned by Core; DTD order/PE spacing/NCName and external version hook require owning repairs. Unknown attribute/default representation remains a separate required contract.",
+    "summary": "Original complete strict grammar A1-A3 preserved. Active standalone correction split with owner acknowledgement to M2-core-standalone; original grammar starts only after standalone, DTD corpus repair and external metadata hook are integrated verified.",
     "checks": [],
     "remaining": [],
     "requests": [
-      "{\"criterion\":\"A1/A2\",\"cases\":[\"not-wf-sa-180\",\"ibm-not-wf-P68-ibm68n07.xml\"],\"defect\":\"Default reference validation consults final general entity table; internal defaults incorrectly permit forward declarations.\",\"paths\":[\"src/Xemele/Parsing/Dtd/Grammar/Parser/DefaultReferences.cs\",\"src/Xemele/Parsing/Dtd/Grammar/Parser/Declarations.cs\"],\"smallestFix\":\"Validate entity-declared ordering at the default declaration using live declarations and origin/applicability; retain recursive and external-reference checks.\",\"proof\":\"Original exact bytes reject, prior declared entity defaults accept; VC-only unknown attributes/defaults require their distinct representation contract.\"}",
-      "{\"criterion\":\"A1/A2\",\"cases\":[\"valid-not-sa-020\"],\"defect\":\"<!ATTLIST%e;a1 CDATA \\\"v1\\\"> rejects DTD.Syntax although PE inclusion supplies spaces before and after doc.\",\"paths\":[\"src/Xemele/Parsing/Dtd/Grammar/Parser/Lexer.cs\",\"src/Xemele/Parsing/Dtd/Grammar/Parser/DtdParser.cs\"],\"smallestFix\":\"Recognize the declaration keyword boundary at a PE marker and preserve leading/trailing inclusion S.\",\"proof\":\"Original 020.xml/020.ent accepted, independent root doc has a1=v1, every PE-marker split; illegal internal-subset PE still rejects.\"}",
-      "{\"criterion\":\"A1/A2\",\"cases\":[\"ibm-1-1-valid-P05-ibm05v05.xml\",\"rmt-ns10-043\",\"rmt-ns10-044\",\"x-ibm-1-0.5-valid-P05-ibm05v05.xml\"],\"defect\":\"Unused colon-bearing entity/notation declarations accepted. Core only checks names on use and effective model would miss discarded duplicate declarations.\",\"paths\":[\"src/Xemele/Parsing/Dtd/Grammar/Parser/Declarations.cs\"],\"smallestFix\":\"NCName validation at every entity and notation declaration/reference token (including ignored duplicate declarations); keep QName element/attribute productions and NMTOKEN enumerations distinct.\",\"proof\":\"Four originals reject plus legal Fifth Edition non-ASCII declarations and colon/QName distinction controls.\"}",
-      "{\"criterion\":\"A1/A2\",\"cases\":[\"rmt-e2e-38\"],\"defect\":\"Implicit primary version 1.0 includes explicit external general entity version 1.1; source framing does not expose declaration version for composition policy.\",\"paths\":[\"src/Xemele/Parsing/Entities/Runtime/ExternalXmlSource.cs\"],\"smallestFix\":\"Expose existing framed declaration version/location internally for Core to enforce primary/external general entity version compatibility. Core comparison belongs to this worker after an integrated hook.\",\"proof\":\"Original E38 exact bytes reject, 1.0/absent-version external entity succeeds, compatibility policy for other 1.x primary versions remains explicit.\"}",
-      "{\"criterion\":\"A1/A2\",\"cases\":[\"VC-only unknown attribute/default-value contract\"],\"defect\":\"Verified unresolved-content contract expressly leaves unknown attribute/default values unrepresented; CheckAttributeEntities/ExpandAttributeLiteral reject as XML.UndeclaredEntity, which cannot satisfy required VC-only semantics.\",\"paths\":[\"docs/decisions/M2/undeclared-references.md\",\"src/Xemele/Parsing/Events/\",\"src/Xemele/Tree/\",\"src/Xemele/Parsing/Dtd/\"],\"smallestFix\":\"Coordinator needs an ordered explicit attribute/default representation contract and owning implementation; no fabricated empty values, WFC label or exclusion.\",\"proof\":\"Unknown explicit/default attribute with external subset or PE and standalone absent/no, loss guards, normalization/provenance and WFC standalone controls.\"}",
-      "Coordinator claims DTD seven-case repair and external framed-declaration hook. Both mandatory in planned conformance join. Grammar consumes only integrated verified repair code and records verified prerequisite IDs before implemented; original verified dependencies support independent Core work."
+      "M2-undeclared-content must be verified before full grammar begins; contract alone does not fulfill E13 runtime behavior. Preserve represented/unresolved identities and loss-refusal policy. Core standalone CDATA/direct-reference versus expanded-entity S-origin fix remains A1.",
+      "Coordinator claims DTD seven-case repair and external framed-declaration hook. Both are mandatory prerequisites of the planned conformance join. Grammar must consume their code only after integrated verification; append verified prerequisite IDs to its own record then, before implemented. The validator requires every started dependency already verified, so current Core work continues from original verified dependencies. Worker task-JSON-only hold acknowledged before this serialized note.",
+      "Existing standalone branch implementation/evidence retained by M2-core-standalone; no acceptance criterion removed or reported fulfilled by the split."
     ]
   }
 }

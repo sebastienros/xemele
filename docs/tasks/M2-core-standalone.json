@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "id": "M2-core-standalone",
+  "milestone": "M2",
+  "title": "Correct standalone whitespace source classification",
+  "kind": "feature",
+  "status": "in_progress",
+  "owner": "worker:M2-core-standalone",
+  "branch": "codex/m2-conformance-grammar",
+  "base_revision": "31dba58c0386e087ac2a3264567dfff3500ddd72",
+  "integration_revision": null,
+  "depends_on": [
+    "M2-undeclared-content",
+    "M2-conformance-profile",
+    "M2-encoding"
+  ],
+  "goals": [
+    "G01",
+    "G18"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/parser.md",
+    "docs/decisions/M2/xml-resources.md",
+    "docs/performance-coding.md"
+  ],
+  "owns": [
+    "src/Xemele/Parsing/Core/XmlParserCore.cs",
+    "tests/Xemele.Tests/M2-conformance/",
+    "benchmarks/Xemele.Benchmarks/M2-conformance/",
+    "samples/M2-conformance-grammar/",
+    "docs/reports/M2-conformance-grammar/"
+  ],
+  "api_or_output": "Exact standalone literal S versus CDATA/direct reference and expanded-entity provenance behavior",
+  "acceptance": [
+    {
+      "id": "M2-core-standalone-A1",
+      "description": "Correct only strict Core standalone element-content S source classification: literal S including expanded entity replacement through Data remains dependency-sensitive; CDATA and direct numeric references do not become literal S. Preserve all other event/lifetime/count/pause/cancel/quota/nonvalidating/source cleanup and entity/resource behavior.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M2-core-standalone-A2",
+      "description": "Exact original inv-not-sa14 bytes and granted sa.dtd accepted with independent complete semantic/DOM output. Paired literal S and entity-expanded S restrictions, CDATA/direct refs allowed, all short splits/callback pauses and byte transports/resolver cleanup, location/quotas and source retention controls. Preserve existing original corpus classification; other eight gaps remain in original grammar task.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M2-core-standalone-A3",
+      "description": "Preserve already passing 4709 broad and20 focused rows at exact original revisions; repeat only affected newly changed sources/controls. API290 and actual source/fresh package evidence, relevant allocation/timing via reused support with authored complete oracles, counters-disabled preparation and one bounded lease/final identities. Timing informational; no standalone measurements before lease. Planning/owned diff, concise summaries/raw cleanup; original grammar A1-A3 remain mandatory unfulfilled outside this correction.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "Coordinated active grammar scope split after worker acknowledged task-JSON-only hold/reassignment. Existing standalone implementation and passing evidence preserved; original grammar becomes planned until ordered repairs verified.",
+    "checks": [
+      "Original worker reports broad4709 and focused20 passing, API290/source-package at b2fe126; coordinator must inspect actual evidence before acceptance."
+    ],
+    "remaining": [],
+    "requests": [
+      "Preserve authored unknown attribute/default assessment and eight original gap requests as original grammar/contract handoff; no additional scope."
+    ]
+  }
+}
