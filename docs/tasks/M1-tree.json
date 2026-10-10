@@ -4,7 +4,7 @@
   "milestone": "M1",
   "title": "Managed tree and mutation",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M1-tree",
   "branch": "codex/m1-tree",
   "base_revision": "4a99c4229600b4fc5b2e218adc376e56cb0b0c80",
@@ -33,29 +33,118 @@
     {
       "id": "M1-tree-A1",
       "description": "Implement owned document/node/attribute/namespace storage, navigation, construction, mutation, clone/import and identity.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "tree-known-revision-checks",
+        "tree-allocation-boundaries",
+        "tree-exclusive-short-run",
+        "tree-final-copy-review"
+      ]
     },
     {
       "id": "M1-tree-A2",
       "description": "Test cycle/cross-document rejection, namespace identity, detached nodes, invalid handles, enumeration invalidation and allocation-free basic traversal.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "tree-known-revision-checks",
+        "tree-allocation-boundaries",
+        "tree-exclusive-short-run",
+        "tree-final-copy-review"
+      ]
     },
     {
       "id": "M1-tree-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "tree-known-revision-checks",
+        "tree-allocation-boundaries",
+        "tree-exclusive-short-run",
+        "tree-final-copy-review"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Tree/Document.cs: XmlDocument owned value arenas, preflighted mutation, iterative copy and text traversal; linear fresh-copy links and ordered known-unique member append after bounded complete preflight",
+    "src/Xemele/Tree/Node.cs and XmlAttribute.cs/XmlNamespaceDeclaration.cs: stable strong-owner handles",
+    "src/Xemele/Tree/XmlNodeChildren.cs, XmlAttributes.cs, XmlNamespaceDeclarations.cs: concrete versioned enumerators",
+    "src/Xemele/Tree/Validation.cs: XML 1.0 Fifth Edition names/scalars and reserved namespace bindings",
+    "src/Xemele/Tree/SlotArena.cs and InternProbe.cs: checked contiguous slots and borrowed ordinal lookup",
+    "docs/api/M1-tree.txt: 111 actual approved public rows, composes with 81 Common rows",
+    "tests/Xemele.Tests/M1-tree/TreeTests.cs: 13 adversarial/oracle/lifetime/allocation tests",
+    "samples/M1-tree/Program.cs: parser/output-independent tree construction and import",
+    "benchmarks/Xemele.Benchmarks/M1-tree/TreeBenchmarks.cs: semantic-oracle ShortRun harness"
+  ],
+  "evidence": [
+    {
+      "id": "tree-known-revision-checks",
+      "kind": "check",
+      "revision": "abdf9db8ade0b1e13fcbc8d45bdfdd941f35288f",
+      "command": "Pinned SDK 10.0.400 DOTNET_CLI_USE_MSBUILD_SERVER=0 python3 docs/reports/M1-tree/verify.py with authorized NuGet/MTP IPC",
+      "result": "passed",
+      "summary": "Final contiguous-arena source: zero-warning/error Release solution build; 14/14 tree, 78/78 full solution, 11/11 foundation tests, zero skipped. Actual runtime matches 192 approved Common+Tree members; actual task fragment comparison and discovery pass (111 Tree + 81 Common). Foundation 139/173 rows, six independent lane baselines and 38 protocol-model assertions preserved. 16 Python build-tool checks and bootstrap corpus pass. Tree/common source samples, runtime pack and isolated-cache package-only tree consumer pass. Task validation (101 tasks) and whitespace check pass. No peer historical reports rewritten. Count-based 500/5000-depth and 64/1024-member copy tests verify linear node/member visits, direct links, preserved order/identity and exact mutation version increments.",
+      "artifact": "docs/reports/M1-tree/checks.txt"
+    },
+    {
+      "id": "tree-allocation-boundaries",
+      "kind": "check",
+      "revision": "abdf9db8ade0b1e13fcbc8d45bdfdd941f35288f",
+      "command": "python3 docs/reports/M1-tree/verify.py; dotnet run --project docs/reports/M1-tree/Xemele.TreeBenchmarks.csproj -c Release --no-build -- --allocation",
+      "result": "passed",
+      "summary": "Focused warm traversal/borrowed-name regression: 0 B across 1000 full traversals (children/attributes/namespaces) and name probes. Standalone 10000 borrowed intern hits: 0 B. First-process and warm 64-item representative trees allocate 52560 B/tree; heap-minus-fragmentation estimate 18408 B/tree excluding preallocated handle array, informational. 1000 detached repeated-name nodes including arena growth allocate 281320 B; one new interned name plus detached node 320 B. Handles retain whole owner including detached/removed slots and names. Contiguous arenas reduce retained sample relative to historical per-slot objects but increase cumulative growth allocation; no speed claim. Clone/import checksum and identity oracle pass. Exclusive ten-case ShortRun subsequently completed with no overlapping builds/tests; see tree-exclusive-short-run.",
+      "artifact": "docs/reports/M1-tree/checks.txt"
+    },
+    {
+      "id": "tree-initial-copy-review",
+      "kind": "review",
+      "revision": "85902eaec0ba91aa032097c8f891a998a7f5261e",
+      "command": "Independent coordinator-routed read-only tree source review",
+      "result": "failed",
+      "summary": "Correctness passed but Copy used public insertion ancestor scans for deep trees and linked-index/key-scanned member copying, giving quadratic work. Fixed in f551c479357a108ff4bca10aeeedcf7aa49e3130 by private fresh-copy links/known-unique member append after complete preflight. Final complexity and version tests pass.",
+      "artifact": "docs/reports/M1-tree/README.md"
+    },
+    {
+      "id": "tree-final-copy-review",
+      "kind": "review",
+      "revision": "abdf9db8ade0b1e13fcbc8d45bdfdd941f35288f",
+      "command": "Independent read-only value-arena/linear-copy review at f551c479357a108ff4bca10aeeedcf7aa49e3130; coordinator comparison of abdf9db8ade0b1e13fcbc8d45bdfdd941f35288f delta",
+      "result": "passed",
+      "summary": "Coordinator reported independent final review had no blockers: linear fresh-copy paths, bounded intern preflight, safe value-arena ref lifetimes. Coordinator independently confirmed follow-up separates attribute/namespace arena capacity counts appropriately. Public general insertion validation remains intact.",
+      "artifact": null
+    },
+    {
+      "id": "tree-exclusive-short-run",
+      "kind": "check",
+      "revision": "abdf9db8ade0b1e13fcbc8d45bdfdd941f35288f",
+      "command": "Pinned SDK 10.0.400 DOTNET_CLI_USE_MSBUILD_SERVER=0 dotnet run --project docs/reports/M1-tree/Xemele.TreeBenchmarks.csproj -c Release --no-build -- --filter '*' --artifacts artifacts/M1-tree/bdn",
+      "result": "passed",
+      "summary": "Exclusive coordinator-granted window: final verifier session 17439 exited 0 before benchmark session 59530; input/syntax/root builds/tests parked. All 10 processes exited 0 and all 30 actual workload results inspected, not just driver status; 70.25 s elapsed. M4 Pro Arm64/macOS15.8.1/SDK10.0.400/.NET10.0.11 ShortRun (3 warmups/3 measurements). Linear vs borrowed three-probe batches: padding8 140.78/18.62 ns; padding80 143.48/50.68 ns, all 0 B/op. Indexed/linked 64-child checksum traversal 2629.1/175.3 ns, 0 B/op. Owned construction 10.293 us/52560 B; document clone 9.597 us/52784 B; tree import 9.643 us/52928 B; 512 attributes+512 declarations import 81.833 us/435240 B. Identical oracle semantics verified for lookup/traversal and copy setup; persistence cases are separate workloads. Provisional one-host ShortRun, no x64/parser/output or release speed claim. Whole-owner retention and cumulative array-growth allocation documented.",
+      "artifact": "docs/reports/M1-tree/bdn/benchmark-console.txt.gz"
+    },
+    {
+      "id": "tree-initial-package-cache-failure",
+      "kind": "check",
+      "revision": "f2c400d0170b9ae711068bbbcfd5020dd96fcb0e",
+      "command": "python3 docs/reports/M1-tree/verify.py",
+      "result": "failed",
+      "summary": "Initial known-revision verifier passed runtime/source/API checks but package consumer resolved stale Common-only package under same development version from global NuGet cache, yielding CS0246 XmlDocument. Owned verifier now uses isolated RestorePackagesPath; subsequent final source package consumer passed. Earlier sandbox restore NU1900 and precommit 8/10 assertion failures are honestly described in README, not passing evidence.",
+      "artifact": "docs/reports/M1-tree/README.md"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "",
-    "checks": [],
-    "remaining": [],
+    "summary": "M1 owned managed tree implements exact approved 111 public rows plus unchanged 81 Common rows. Contiguous checked arenas, stable detached handles, XML names/bindings, mutation/ordered members/global enumeration, iterative linear clone/import/text operations and optional postcommit hook. Initial review copy-complexity blocker resolved before final tests/timing. Source abdf9db8ade0b1e13fcbc8d45bdfdd941f35288f; integration remains coordinator-owned.",
+    "checks": [
+      "Final verify.py: 14/14 tree, 78/78 solution, 11/11 foundation; zero skipped; zero build warnings/errors; actual 192 ABI rows and model regressions; 38 protocol assertions; 16 Python checks/corpus; samples/runtime pack/isolated package consumer; task validation/whitespace passed.",
+      "Independent final arena/copy review passed; separate member capacities checked by coordinator. Count-based deep/member-heavy linear-work and version checks pass.",
+      "Exclusive ten-case ShortRun: every workload and process succeeded, no overlapped builds/tests. Warm traversal/probes 0 B/op; construction 52560 B, clone52784 B, import52928 B, member-heavy import435240 B. Raw compressed console and Markdown/CSV results retained under docs/reports/M1-tree/bdn/.",
+      "Initial sandbox restore, two precommit assertion errors, stale package cache and initial quadratic copy review failures are recorded and resolved, not treated as passing."
+    ],
+    "remaining": [
+      "Coordinator must integrate and rerun applicable checks before verified; integration_revision remains null.",
+      "Any retained handle keeps whole owner/arenas/names alive. Contiguous growth raises cumulative allocation while reducing this fixture retained estimate; owned construction/copy/text aggregation allocate.",
+      "ShortRun is provisional Arm64 only; actual parser/output composition and x64 release confirmation remain later evidence. General public insertion walks ancestors to reject cycles; preflighted copy uses linear direct links."
+    ],
     "requests": []
   }
 }
