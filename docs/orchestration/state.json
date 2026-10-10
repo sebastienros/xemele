@@ -6,17 +6,6 @@
   "last_verified_checkpoint": null,
   "active_assignments": [
     {
-      "task_id": "M0-bench-shortrun",
-      "chat_id": "01a12331-92da-7a43-879b-8c5ae25afddf",
-      "host_id": "local",
-      "worktree_path": "/Users/sebastienros/.codex/worktrees/bdd2/xemele",
-      "branch": "codex/m0-bench-shortrun",
-      "base_revision": "3e3ad48bfd358eb6b7aa4ce5d3499f6966e7cf53",
-      "claim_revision": "0116e05054fa6fb48e8c1470323ec97ed6c6a59e",
-      "setup_status": "dispatched-holding-timing",
-      "client_thread_id": "client-new-thread:d6419990-e767-4ffc-b304-c69a6acff021"
-    },
-    {
       "task_id": "M0-corpora",
       "chat_id": "01a12334-c43a-7e40-8249-68f8bc24d22e",
       "host_id": "local",
@@ -24,19 +13,19 @@
       "branch": "codex/m0-corpora",
       "base_revision": "73d8d8e0c24ead40a0721cd7143ed903008c2f46",
       "claim_revision": "f6d4bda1f6b51a9f4caaeec31d4115ea554c6f0b",
-      "setup_status": "dispatched-holding-builds",
+      "setup_status": "dispatched-validating",
       "client_thread_id": "client-new-thread:6bd1b904-55a4-434c-ae90-8f1712348126"
     }
   ],
   "integration_queue": [],
   "blockers": [],
   "next_actions": [
-    "Grant minimum ShortRun representative timing slot",
-    "Claim corpus or reference-protocol lane after verified MTP",
-    "After ShortRun integration claim foundation contract"
+    "Claim foundation contract with verified ShortRun/MTP and experiment evidence",
+    "Review corpus deliverable when returned",
+    "Dispatch reference protocol when capacity available"
   ],
-  "last_verified_task": "M0-tests-mtp",
-  "last_integrated_revision": "0a6b343608397e4a34d18d995f2f4aef8e1e0088",
+  "last_verified_task": "M0-bench-shortrun",
+  "last_integrated_revision": "6e39efe8d60eb89d9f1b5d7d52eb8591afdb35f8",
   "completed_assignments": [
     {
       "task_id": "M0-build",
@@ -105,10 +94,24 @@
       "implementation_revision": "b0aba9365d2231d5bf8232ef76e91a62f7b81df9",
       "handoff_revision": "8f33cc99ac8a55a9dfd9b66b9b9d7209d957d472",
       "integration_revision": "0a6b343608397e4a34d18d995f2f4aef8e1e0088"
+    },
+    {
+      "task_id": "M0-bench-shortrun",
+      "chat_id": "01a12331-92da-7a43-879b-8c5ae25afddf",
+      "host_id": "local",
+      "worktree_path": "/Users/sebastienros/.codex/worktrees/bdd2/xemele",
+      "branch": "codex/m0-bench-shortrun",
+      "base_revision": "3e3ad48bfd358eb6b7aa4ce5d3499f6966e7cf53",
+      "claim_revision": "0116e05054fa6fb48e8c1470323ec97ed6c6a59e",
+      "setup_status": "verified",
+      "client_thread_id": "client-new-thread:d6419990-e767-4ffc-b304-c69a6acff021",
+      "implementation_revision": "2e77234f797450c50da335a2d20a9d4e5968c41d",
+      "handoff_revision": "0bc24e9d1d3d3b6bbd288952ed001448481a4c57",
+      "integration_revision": "6e39efe8d60eb89d9f1b5d7d52eb8591afdb35f8"
     }
   ],
-  "benchmark_policy": "All experiment timing complete; CI and integrated checks released. Any later timing requires serial host lock.",
-  "benchmark_owner": "M0-bench-shortrun",
+  "benchmark_policy": "Subsequent benchmarks default to ShortRun and require serialized timing slot; no active timing hold.",
+  "benchmark_owner": null,
   "pending_decisions": [],
   "decisions": {
     "project_license": "MIT",

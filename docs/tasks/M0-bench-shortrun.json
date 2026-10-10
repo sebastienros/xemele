@@ -4,11 +4,11 @@
   "milestone": "M0",
   "title": "Configure ShortRun benchmark defaults",
   "kind": "infrastructure",
-  "status": "implemented",
+  "status": "verified",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M0-bench-shortrun",
   "branch": "codex/m0-bench-shortrun",
   "base_revision": "3e3ad48bfd358eb6b7aa4ce5d3499f6966e7cf53",
-  "integration_revision": null,
+  "integration_revision": "6e39efe8d60eb89d9f1b5d7d52eb8591afdb35f8",
   "depends_on": [
     "M0-build",
     "M0-tree-spike",
@@ -36,7 +36,8 @@
       "evidence": [
         "tree-shortrun",
         "input-shortrun",
-        "explicit-job"
+        "explicit-job",
+        "integrated-checks"
       ]
     },
     {
@@ -53,7 +54,8 @@
         "input-allocations",
         "bootstrap-help",
         "tree-shortrun",
-        "input-shortrun"
+        "input-shortrun",
+        "integrated-checks"
       ]
     },
     {
@@ -64,7 +66,8 @@
         "task-validation",
         "tree-shortrun",
         "input-shortrun",
-        "explicit-job"
+        "explicit-job",
+        "integrated-checks"
       ]
     }
   ],
@@ -191,6 +194,15 @@
       "result": "passed",
       "summary": "Validated 98 tasks: schema, evidence, acyclic dependencies, additive milestones, ordered ownership.",
       "artifact": "docs/reports/M0-bench-shortrun/task-validation.txt"
+    },
+    {
+      "id": "integrated-checks",
+      "kind": "integration",
+      "revision": "6e39efe8d60eb89d9f1b5d7d52eb8591afdb35f8",
+      "command": "Three Release harness builds --disable-build-servers -m:1 -p:UseSharedCompilation=false; Tree --self-check; Input check/allocations; benchmark --help; tasks.py validate",
+      "result": "passed",
+      "summary": "All three builds succeeded; tree checks, 83095 input assertions, warm allocation/source-lifetime checks and help passed. Validated 98 tasks. Worker raw ShortRun/Dry reports inspected; no new comparative timing warranted.",
+      "artifact": "docs/reports/M0-bench-shortrun/integration-verification.txt"
     }
   ],
   "blockers": [],
@@ -201,9 +213,7 @@
       "One default ShortRun case per experiment and one replacement Dry case passed at 2e77234f797450c50da335a2d20a9d4e5968c41d; shared timing lock released.",
       "tasks.py validate passed for 98 tasks. Initial failed override retained honestly; corrected check passed."
     ],
-    "remaining": [
-      "Coordinator must integrate and verify; integration_revision stays null. Configuration checks are not comparative performance or release evidence."
-    ],
+    "remaining": [],
     "requests": []
   }
 }

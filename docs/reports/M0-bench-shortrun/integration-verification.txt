@@ -1,0 +1,94 @@
+$ dotnet build experiments/Tree/Tree.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+  Determining projects to restore...
+  Restored /private/tmp/xemele-integrate-m0-shortrun/experiments/Tree/Tree.csproj (in 207 ms).
+  Tree -> /private/tmp/xemele-integrate-m0-shortrun/experiments/Tree/bin/Release/net10.0/Tree.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:01.63
+
+$ dotnet build experiments/Input/Input.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+  Determining projects to restore...
+  Restored /private/tmp/xemele-integrate-m0-shortrun/experiments/Input/Input.csproj (in 169 ms).
+  Input -> /private/tmp/xemele-integrate-m0-shortrun/experiments/Input/bin/Release/net10.0/Input.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:01.40
+
+$ dotnet build benchmarks/Xemele.Benchmarks/Xemele.Benchmarks.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+  Determining projects to restore...
+  Restored /private/tmp/xemele-integrate-m0-shortrun/src/Xemele/Xemele.csproj (in 29 ms).
+  Restored /private/tmp/xemele-integrate-m0-shortrun/benchmarks/Xemele.Benchmarks/Xemele.Benchmarks.csproj (in 156 ms).
+  Xemele -> /private/tmp/xemele-integrate-m0-shortrun/src/Xemele/bin/Release/net10.0/Xemele.dll
+  Xemele.Benchmarks -> /private/tmp/xemele-integrate-m0-shortrun/benchmarks/Xemele.Benchmarks/bin/Release/net10.0/Xemele.Benchmarks.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:01.95
+
+$ dotnet experiments/Tree/bin/Release/net10.0/Tree.dll --self-check
+PASS: 8 construction fixtures; owner/identity/growth/cycle/sibling/deep-tree checks; ordinal Unicode/culture/miss oracle; 0 B warm borrowed lookup; name/text equivalence.
+
+$ dotnet experiments/Input/bin/Release/net10.0/Input.dll check
+PASS 83095 assertions; every short two-part split; chunks 1..32; per-fragment suspension; long single-chunk bounded progress; malformed Unicode; matching oracle/collisions/cultures; scan and pipeline setup parity.
+
+$ dotnet experiments/Input/bin/Release/net10.0/Input.dll allocations
+Runtime=.NET 10.0.11; OS=macOS 15.8.1; Arch=Arm64; GC server=False; latency=Interactive
+Cold explicit Primitives initialization: 7992 B (SearchValues, array tokens, vocabulary, hash metadata, UTF8 token arrays, one-time LINQ delegates/enumerators). No fixture bytes included.
+Cold context construction: 496 B for two scanners, sinks, strict encoding/decoders (owned per context; not per token).
+AsciiShort/StringToCharacterCore: 0.00 B/op over 1000 operations; result=0
+AsciiShort/ByteToByteCore: 0.00 B/op over 1000 operations; result=0
+AsciiShort/ByteToCharacterScratch: 0.00 B/op over 1000 operations; result=0
+AsciiShort/StringToCharacterCorePaused: 0.00 B/op over 1000 operations; result=0
+AsciiShort/ByteToByteCorePaused: 0.00 B/op over 1000 operations; result=0
+AsciiShort/ByteToOwnedString: 80.00 B/op over 1000 operations; result=0
+AsciiShort/StringViaOwnedUtf8: 56.00 B/op over 1000 operations; result=0
+UnicodeShort/StringToCharacterCore: 0.00 B/op over 1000 operations; result=0
+UnicodeShort/ByteToByteCore: 0.00 B/op over 1000 operations; result=0
+UnicodeShort/ByteToCharacterScratch: 0.00 B/op over 1000 operations; result=0
+UnicodeShort/StringToCharacterCorePaused: 0.00 B/op over 1000 operations; result=0
+UnicodeShort/ByteToByteCorePaused: 0.00 B/op over 1000 operations; result=0
+UnicodeShort/ByteToOwnedString: 88.00 B/op over 1000 operations; result=0
+UnicodeShort/StringViaOwnedUtf8: 72.00 B/op over 1000 operations; result=0
+AsciiLong/StringToCharacterCore: 0.00 B/op over 1000 operations; result=0
+AsciiLong/ByteToByteCore: 0.00 B/op over 1000 operations; result=0
+AsciiLong/ByteToCharacterScratch: 0.00 B/op over 1000 operations; result=0
+AsciiLong/StringToCharacterCorePaused: 0.00 B/op over 1000 operations; result=0
+AsciiLong/ByteToByteCorePaused: 0.00 B/op over 1000 operations; result=0
+AsciiLong/ByteToOwnedString: 7448.00 B/op over 1000 operations; result=0
+AsciiLong/StringViaOwnedUtf8: 3736.00 B/op over 1000 operations; result=0
+UnicodeLong/StringToCharacterCore: 0.00 B/op over 1000 operations; result=0
+UnicodeLong/ByteToByteCore: 0.00 B/op over 1000 operations; result=0
+UnicodeLong/ByteToCharacterScratch: 0.00 B/op over 1000 operations; result=0
+UnicodeLong/StringToCharacterCorePaused: 0.00 B/op over 1000 operations; result=0
+UnicodeLong/ByteToByteCorePaused: 0.00 B/op over 1000 operations; result=0
+UnicodeLong/ByteToOwnedString: 7704.00 B/op over 1000 operations; result=0
+UnicodeLong/StringViaOwnedUtf8: 6168.00 B/op over 1000 operations; result=0
+Cached byte/char SearchValues: 0.00 B/op over 1000 operations; result=0
+Length match byte/char: 0.00 B/op over 1000 operations; result=0
+Hash match byte/char: 0.00 B/op over 1000 operations; result=0
+Chunk match: 0.00 B/op over 1000 operations; result=0
+Constant byte/char/int literals: 0.00 B/op over 1000 operations; result=0
+Runtime-valued readonly collection control: 32.00 B/op over 1000 operations; result=0
+Mutable collection control: 104.00 B/op over 1000 operations; result=0
+Runtime-valued local collection: 0.00 B/op over 1000 operations; result=0
+Mutable local collection: 0.00 B/op over 1000 operations; result=0
+Paused after 7 bytes in 4 MiB token: source collectible while scanner/sink remain alive; scanner retained input=0; decoder pending scalar <=3 bytes; callback stack scratch=128 UTF16 units.
+64 MiB synthetic single token from reusable 64 KiB chunk: 0 B processing allocations, 1 token, no document buffer; source chunk owns 65536 bytes plus array header.
+PASS warm allocation regressions and source collectability. Counters are synchronous current-thread allocations; no async claim.
+
+$ dotnet benchmarks/Xemele.Benchmarks/bin/Release/net10.0/Xemele.Benchmarks.dll --help
+Xemele benchmarks
+Usage: dotnet run -c Release --project benchmarks/Xemele.Benchmarks -- [BenchmarkDotNet options]
+Benchmark cases are added by feature tasks.
+
+$ python3 tools/planning/tasks.py validate
+Validated 98 tasks: schema, evidence, acyclic dependencies, additive milestones, and ordered ownership.
+
