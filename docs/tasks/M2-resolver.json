@@ -4,11 +4,11 @@
   "milestone": "M2",
   "title": "Bounded external resource resolution",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M2-resolver",
   "branch": "codex/m2-resolver",
   "base_revision": "1a77b3598ed6084b17a69ca562d160f0d64a6be5",
-  "integration_revision": null,
+  "integration_revision": "b12b688d64fb3604b365d6caebcd5e4ea84495a1",
   "depends_on": [
     "M2-contracts",
     "M2-pi-allocation-probe"
@@ -39,7 +39,8 @@
       "evidence": [
         "final-functional-checkpoint",
         "exclusive-allocation-timing",
-        "renewed-verified-prerequisites"
+        "renewed-verified-prerequisites",
+        "integrated-b12b688"
       ]
     },
     {
@@ -49,7 +50,8 @@
       "evidence": [
         "final-functional-checkpoint",
         "exclusive-allocation-timing",
-        "renewed-verified-prerequisites"
+        "renewed-verified-prerequisites",
+        "integrated-b12b688"
       ]
     },
     {
@@ -59,7 +61,8 @@
       "evidence": [
         "final-functional-checkpoint",
         "exclusive-allocation-timing",
-        "renewed-verified-prerequisites"
+        "renewed-verified-prerequisites",
+        "integrated-b12b688"
       ]
     }
   ],
@@ -134,11 +137,20 @@
       "result": "passed",
       "summary": "First bounded fresh attempt on verifiedbase1a77/claim7034 with integrated PI1143948 and Streaming8a254 prerequisites. Approved resolver C#/API/sample/benchmark source unchanged vs preserved5a52/e7cc. FullMTP844 and direct290/255/299 all0fail0skip; focused43. IndependentResolver114/filter29 and actualAPI251, discovery3388, fresh242 pinned completeBCL output before inheritedbuild/source42f1/hash/unchangedcopy, source+localnupkg sample, benchmark build/discovery only, planning14/validate114/allcommitted-staged-working-untracked claim-owned/diff audits passed. Source review/timing at e7cc retained; no successful timing repeat. Warm syncborrowedread0B regression passed; inheritedisolated allocation probes execute guarded exact-zero/escaped-positive controls. Historical counter cause remains unresolved; no concurrent/all-platform/AOT/suspendedIO allocation guarantee.",
       "artifact": "docs/reports/M2-resolver/renewed-42f1f45-attempt1/summary.json"
+    },
+    {
+      "id": "integrated-b12b688",
+      "kind": "integration",
+      "revision": "b12b688d64fb3604b365d6caebcd5e4ea84495a1",
+      "command": "python3 -B docs/reports/M2-resolver/verify.py --report-prefix integration-b12b688-attempt1 --audit-base bd7c9cf --runtime-count 298 --api-count 251 --fixture-count 3388 --task-count 114",
+      "result": "passed",
+      "summary": "Current-main combination includes verified encoding: full852 MTP/direct298+255+299 allPass/focused43; API251/independentResolver114 filtered29; discovery3388/freshBCL242 complete-copy fullrevision/hash unchanged; samples/freshlocalpackage; planning14/validate114/ownedpath+diff. Prior approved runtime/timing unchanged; parser/DTD composition and later platform gates remain future work.",
+      "artifact": "docs/reports/M2-resolver/integration-b12b688-attempt1/summary.json"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Renewed verified prerequisite claim7034 adopted in42f1f45 with zero resolver C#/API/sample/benchmark delta. First fresh844/full direct/focused43/API251/reference242/package/discovery3388/planning114/audits passed; historical evidence/timing preserved. Ready for coordinator integration; integration_revision null.",
+    "summary": "Verified bounded resource resolver contracts/session at b12b688d64fb3604b365d6caebcd5e4ea84495a1 with aggregate budgets, cancellation, cycle detection and exact handle disposal; integrated encoding preserved.",
     "checks": [
       "Final source e7cc0b5fd6480c4395e6dd861c5e28ed97815f2d:844 actual tests290/255/299 and43 focused, API251, independent model114/filter29, fresh reference242, local package consumer, planning14/validate112/all owned audits passed.",
       "Exclusive single8-case benchmark completed with24 measurements/eight child exits0;0B warm reads/1416B setup; ordinarypriorityArm64 and short intervals/provisional limitations preserved.",
@@ -146,7 +158,6 @@
       "Renewed source42f1f452df51e5ad713661fb3a749c612a847c0d: one fresh fullMTP844/direct290+255+299/focused43/API251/filter29/discovery3388/reference242+unchangedpinnedcopy/localpackage/planning14/114/claim7034 audits allPass. No timing repeat and no novel outside-owned edits."
     ],
     "remaining": [
-      "Coordinator integration verification/status verified; no worker integration_revision set.",
       "M2-entities owns DtdProcessing/Resolver options and parser composition; use one shared session/OperationBudget, final URI referrers, bounded Read APIs and Abort/AbortAsync before unwinding callback/parser errors outside resource methods.",
       "Real entity/parser end-to-end external-input, suspending async I/O allocation, x64/Windows/Linux/AOT performance confirmation belong composition/release gates."
     ],
