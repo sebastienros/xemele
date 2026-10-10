@@ -287,3 +287,17 @@ XmlParseResult<XmlDocument>; bounded recovery never masquerades as strict succes
 Exact signatures live in tests/Contracts/Fixtures/M2; declarations are models,
 not shipped APIs or full XML conformance evidence. The decision maps each hook,
 option and quota to its implementing task and specifies all unrecoverable errors.
+
+## Incomplete attribute/default values — M2 ordered addition
+
+[M2 incomplete attributes](../decisions/M2/undeclared-references.md#incomplete-attributedefault-values--m2-additive-contract)
+freezes the exact nonpackaged optional two-callback sink, symbolic stage-one
+parts, immutable declaration/applied-member provenance, guarded existing
+string getters and owner-wide loss refusal. No complete normalized value is
+inferred across unknown parts. Applied incomplete namespace bindings reject
+before start-tag callbacks with a representation diagnostic. Existing sink/views,
+DTD models and all current public signatures remain frozen. EntityDeclared
+applicability uses physical origins, actual PE references, first-unread processing
+and declaration order. Runtime implementation is a required ordered owning
+prerequisite of the conformance join; independently compiled models are not
+runtime acceptance evidence or a shipped API baseline.

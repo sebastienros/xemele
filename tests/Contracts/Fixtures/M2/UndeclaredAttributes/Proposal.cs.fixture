@@ -1,0 +1,55 @@
+// Nonpackaged proposal. No product declarations or API baseline entries.
+namespace Xemele
+{
+    public abstract record XmlAttributeValuePart(XmlLocation Location);
+    public sealed record XmlKnownAttributeText(string Text, XmlLocation Location) : XmlAttributeValuePart(Location);
+    public sealed record XmlUnknownAttributeReference(string Name, string LexicalReference,
+        XmlLocation Location) : XmlAttributeValuePart(Location);
+    public sealed record XmlIncompleteAttributeDefault(string ElementName, string AttributeName,
+        string LexicalValue, bool IsTokenized, bool IsExternal, XmlLocation DeclarationLocation,
+        XmlLocation ValueLocation, IReadOnlyList<XmlAttributeValuePart> Parts, int Sequence);
+    public sealed record XmlIncompleteAttributeValue(XmlAttribute Attribute, XmlNode Parent,
+        string LexicalValue, bool IsTokenized, XmlLocation ValueLocation,
+        XmlIncompleteAttributeDefault? Default, IReadOnlyList<XmlAttributeValuePart> Parts, int Sequence);
+    public sealed partial class XmlDocument
+    {
+        public IReadOnlyList<XmlIncompleteAttributeDefault> IncompleteAttributeDefaults { get; } =
+            Array.AsReadOnly(Array.Empty<XmlIncompleteAttributeDefault>());
+        public IReadOnlyList<XmlIncompleteAttributeValue> IncompleteAttributeValues { get; } =
+            Array.AsReadOnly(Array.Empty<XmlIncompleteAttributeValue>());
+    }
+}
+namespace Xemele.Parsing.Syntax
+{
+    internal readonly ref struct XmlIncompleteAttributeDefaultView(ReadOnlySpan<char> elementName,
+        ReadOnlySpan<char> attributeName, ReadOnlySpan<char> lexicalValue, bool isTokenized,
+        bool isExternal, Xemele.XmlLocation declarationLocation, Xemele.XmlLocation valueLocation,
+        ReadOnlySpan<Xemele.XmlAttributeValuePart> parts, int declarationSequence)
+    {
+        public ReadOnlySpan<char> ElementName { get; } = elementName;
+        public ReadOnlySpan<char> AttributeName { get; } = attributeName;
+        public ReadOnlySpan<char> LexicalValue { get; } = lexicalValue;
+        public bool IsTokenized { get; } = isTokenized;
+        public bool IsExternal { get; } = isExternal;
+        public Xemele.XmlLocation DeclarationLocation { get; } = declarationLocation;
+        public Xemele.XmlLocation ValueLocation { get; } = valueLocation;
+        public ReadOnlySpan<Xemele.XmlAttributeValuePart> Parts { get; } = parts;
+        public int DeclarationSequence { get; } = declarationSequence;
+    }
+    internal readonly ref struct XmlIncompleteAttributeView(XmlNameView name, ReadOnlySpan<char> lexicalValue,
+        bool isTokenized, Xemele.XmlLocation valueLocation, ReadOnlySpan<Xemele.XmlAttributeValuePart> parts,
+        int? defaultDeclarationSequence)
+    {
+        public XmlNameView Name { get; } = name;
+        public ReadOnlySpan<char> LexicalValue { get; } = lexicalValue;
+        public bool IsTokenized { get; } = isTokenized;
+        public Xemele.XmlLocation ValueLocation { get; } = valueLocation;
+        public ReadOnlySpan<Xemele.XmlAttributeValuePart> Parts { get; } = parts;
+        public int? DefaultDeclarationSequence { get; } = defaultDeclarationSequence;
+    }
+    internal interface IXmlIncompleteAttributeSink
+    {
+        bool IncompleteAttributeDefault(XmlIncompleteAttributeDefaultView declaration);
+        bool IncompleteAttribute(XmlIncompleteAttributeView attribute);
+    }
+}

@@ -1,0 +1,43 @@
+{
+  "revision": "1873f78c44d8b69a9bf704a15094dac33b037dae",
+  "failure": "/Users/sebastienros/.codex/worktrees/91b6/xemele/tests/corpora/xml/manifest.json: missing fixture xmlconf/eduni/errata-2e/E14.dtd",
+  "sourceClosureSha256": "6f283eded365fd377eb9fcd7d81064af4faae5fc61b361cbbd71f041388d6998",
+  "temporaryOutputsRemoved": true,
+  "diagnosis": "API composition at repository root also validates ignored corpus fixture files. No product parsing occurred. Compose the unchanged approved API fragments in a temporary API-only root, as the verified content-contract checker does.",
+  "metadataChecksPassed": 14,
+  "successfulBuilds": [
+    {
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "build",
+        "/Users/sebastienros/.codex/worktrees/91b6/xemele/src/Xemele/Xemele.csproj",
+        "-c",
+        "Release",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false",
+        "--artifacts-path",
+        "/private/tmp/attribute-contract-nk0f4as_/build"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    },
+    {
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "build",
+        "/Users/sebastienros/.codex/worktrees/91b6/xemele/docs/reports/M0-contracts/ApiCheck/ApiCheck.csproj",
+        "-c",
+        "Release",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false",
+        "--artifacts-path",
+        "/private/tmp/attribute-contract-nk0f4as_/build"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    }
+  ],
+  "scope": "No API comparison/model controls had run when this harness failure occurred; initial product/checker builds passed. Fresh builds at corrected harness revision were required to bind informational product version and new source closure."
+}

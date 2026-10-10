@@ -224,3 +224,252 @@ byte mappings, pauses, cancellation, actual borrowed lifetime, old sink refusal,
 mutation provenance and quotas. Contract model execution proves none of these
 parser behaviors. Runtime acceptance/allocation/full conformance remain later
 ordered-task evidence, not a dependency of this contract's model checks.
+
+## Incomplete attribute/default values — M2 additive contract
+
+Owner: M2-undeclared-attribute-contract. Exact declarations are the nonpackaged
+[proposal](../../../tests/Contracts/Fixtures/M2/UndeclaredAttributes/Proposal.cs.fixture).
+This section resolves the representation obligation above; it neither ships an
+API nor establishes parser conformance. Existing content events/provenance and
+all current public signatures, node kinds, sink/views and DtdModel/declaration
+shapes remain unchanged. No placeholder reaches the library or API baseline.
+
+### Applicability and declaration processing
+
+Apply XML 1.0 Fifth Edition sections 4.1, 3.3.3 and 5.1 to the **physical origin
+of each reference**, not merely the enclosing start tag. For a missing general
+reference outside an external subset/PE: no DTD, an internal-only subset with
+no actual lexical PE reference, or standalone=yes requires EntityDeclared WFC
+rejection. An external subset (read or unread) or actual PE reference with
+standalone absent/no makes missing declaration VC-only. A PE declaration is
+insufficient. Reading all sources does not promote VC to WFC. References inside
+external subsets/PEs are excluded from the first WFC sentence even if the caller
+is standalone=yes; do not reuse a document-attribute table for these origins.
+Standalone external dependency checks apply when a declaration is actually used.
+Predefined/numeric references keep their specified handling.
+
+Process declarations read before the first unread PE, with first-declaration
+precedence and internal-before-external processing. Without standalone=yes,
+entity/ATTLIST declarations after that boundary never enter the effective table,
+produce default events, allocate provenance, or resolve previously unknown names;
+lexical grammar/WFC/resource checking still applies. Standalone=yes continues
+processing as required, retaining origin/external dependency checks. Actual PE
+reference/read state is tracked independently of whether any declaration results.
+Unread external sources never grant permission to acquire denied resources.
+
+Direct general references in attribute defaults must have preceding declarations
+(section 4.1 WFC's separate order sentence); a declaration actually read later
+cannot retroactively satisfy that order. Reject an actual direct forward
+reference with DTD.InvalidDefault, including VC-only missing-name contexts.
+Indirect general-reference and PE-declaration ordering also has the explicit VC
+sentence: in a VC-only regime preserve an unresolved indirect use rather than
+using a later declaration to pretend normalization was complete. Where the WFC
+applies, reject unknown references. An absent, unread, or suppressed declaration
+in a VC-only context is **not proof of a known forward declaration**: preserve
+its unknown identity. Validate the effective declarations even if an element
+never uses a default or an explicit attribute overrides it. Do not defer all
+checks to a final merged entity table. The owning implementation must retain
+reference/declaration order and physical source mapping through internal sidecars;
+no frozen DTD public/model constructor changes are needed.
+
+The seven owned UTF-8 fixtures preserve authored assessment identities
+`unknown-attribute-0` through `-6`. Rows 0/1/3 are required WFC controls; 2/4/5/6
+are explicit/DTD-default VC-only capability gaps. Rows 5/6 use exactly the owned
+`urn:subset` resource text/hash in authored-identities.json. Historical product
+`1.0.0+588ae1cbcd74b2a585b8f779221baf88db389c5f` rejected all seven with
+XML.UndeclaredEntity; only the three WFC rows are correct expectations. These
+are authored inputs, not original corpus IDs. No accepted original attribute gap
+was identified in the separate nine-gap corpus assessment. The 2585 original
+cases, 3386 resource identities and applicability ledger remain unchanged.
+
+Malformed reference/name/scalar, literal `<`, direct/indirect external or unparsed
+attribute entities, recursion, resource denial, DTD prohibition, quotas and
+cancellation retain terminal outcomes. An unknown part never short-circuits the
+remaining literal or known replacement graph: later forbidden/scalar/cycle errors
+still reject before callbacks for that tag. Known values retain existing complete
+CDATA/tokenized normalization. NCName entity-name restrictions still apply.
+
+### Owned symbolic value and exact internal event
+
+The proposed `XmlAttributeValuePart` union has sealed known-text and unknown-
+reference records. Known Text is **stage-one attribute normalization** (literal
+whitespace mapped to spaces, numeric character-reference whitespace retained,
+known internal replacements expanded with their normal rules). It is not an
+independently tokenized normalized string. Ordered unknown parts own exact Name,
+`&Name;` LexicalReference and source-mapped opening `&` Location. LexicalReference
+is the exact recognized reference token in the active replacement stream; when
+entity-declaration numeric/PE processing assembled that token, it need not be
+a contiguous physical source substring. Preserve its opening scalar's original
+source mapping (for a numeric-produced ampersand, that numeric reference's `&`),
+rather than inventing a physical `&Name;` range. IsTokenized records the
+processed declaration's non-CDATA type. Tokenized trim/collapse is deferred for
+the **whole** value until all gaps are known: never trim/collapse each island or
+join islands across gaps. There is no complete-normalized-value member.
+For `a='  A &x; B&#x9;'`, known parts are `  A ` and ` B\t`; the gap is x,
+and no aggregate string can be inferred for either CDATA or tokenized form.
+Adjacent unknowns remain separate parts; empty known parts need not be stored.
+
+LexicalValue owns the entire quote-excluded literal **as physically authored**,
+before newline/character/entity-reference normalization; quote delimiter style
+is not promised. Nested known entities may introduce gaps not spelled in that
+outer literal. Part locations identify their physical declaration/replacement
+source, with correct URI/line/scalar column/byte offset or null for character
+input; never borrow the enclosing attribute location as an invented origin.
+Known runs split at physical origin changes. For normalized CRLF use the CR's
+location; for numeric/predefined expansion use its `&`. DTD lexer sidecars retain
+exact literal spelling and source mapping, including PE/entity declaration paths,
+before their normal model transformations. The applied-default ValueLocation and
+LexicalValue remain those of its declaration, not the element's opening tag.
+
+Add only optional internal `IXmlIncompleteAttributeSink` with two bool callbacks:
+`IncompleteAttributeDefault(XmlIncompleteAttributeDefaultView)` and
+`IncompleteAttribute(XmlIncompleteAttributeView)`. The first announces each
+**effective incomplete default declaration once**, in processing order, after
+complete DTD/effective-default validation and before the first element callback;
+it also covers unused/overridden defaults. DeclarationSequence is checked,
+zero-based order among incomplete defaults. No callback is promised for a
+suppressed/losing duplicate declaration. The second replaces exactly one ordinary
+Attribute callback for that same lexical attribute position; no empty/partial
+XmlAttributeView.Value event accompanies it. Name is fully namespace resolved.
+DefaultDeclarationSequence is null for explicit values, otherwise identifies a
+previously delivered incomplete-default event. Its parts are the immutable
+same declaration interpretation, not a second expansion or quota charge.
+
+Validate the complete start tag, namespace bindings, duplicate expanded names,
+known replacement graph, quotas and optional sink capability **before** its
+StartElement callback. Known explicit ordinary attributes retain source order;
+merged default attributes follow in effective declaration order; each position
+emits exactly one complete or incomplete attribute callback. Namespace callbacks
+remain first, then ordinary callbacks, then StartElementContent. Default events
+occur at the DTD boundary without inserting content/text events. An old sink
+encountering either new event rejects with terminal Error
+XML.IncompleteAttributeSinkRequired at the first unknown part's `&`, before
+partial callbacks for that affected tag/default batch. This is representation
+capability, not WFC/validity. A capable sink accepts ordinary gaps without
+successful diagnostics; TryParse/Finish/result invariants remain unchanged.
+
+Both views are readonly ref structs. Name/LexicalValue and Parts spans borrow
+only through callback return. Parts refer to immutable, already owned record
+strings and locations; retaining the span/array is forbidden, but copying the
+part sequence and retaining those immutable records is safe. No ReadOnlyMemory
+or rented-owner lifetime promise is added. The allocation cost of owned symbolic
+parts is explicit; no zero-allocation runtime claim is made here. Pending event
+owners are bounded and released on delivery/fault/disposal. A false return pauses
+after one delivery; next Append drains pending callbacks before new source,
+using the same sink/unconsumed suffix/sticky final flag. Cancellation before
+callbacks/completion and at existing bounded work cadence never replays a paused
+event. Callback exceptions fault the operation. Every source split, including
+CRLF/surrogates/reference delimiters and nested declaration boundaries, must
+preserve identical identity/order/locations. Complete-default and content events
+keep their existing semantics.
+
+### Namespace participation and DOM guards
+
+Processed complete defaults, including xmlns, participate before name resolution
+as today. Any **applied** incomplete xmlns/default binding rejects with Error
+XML.UnresolvedNamespaceValue at its first unknown reference before StartElement;
+it is a namespace representation capability failure, not EntityDeclared WFC.
+No invented URI, inherited-binding fallback or partially resolved element/ordinary
+attribute event is allowed. An overridden/unused incomplete namespace default
+can still be retained as declaration provenance without establishing a binding.
+Other duplicate/reserved/unbound prefix errors retain their existing diagnostics;
+no namespace-disabled mode or new parse option is introduced.
+
+Every DOM document exposes two nonnull read-only provenance snapshots:
+IncompleteAttributeDefaults and IncompleteAttributeValues, ordinarily empty.
+The former owns lexical declaration names/value, type/external flags, declaration
+and literal locations, immutable part snapshot and declaration sequence.
+The latter anchors each applied ordinary value to a real XmlAttribute handle and
+its Parent, owns its lexical value/location/parts and checked zero-based global
+applied-value Sequence, and links Default to the exact declaration record when
+applicable. Explicit values have null Default. Ordinary attributes still count
+and enumerate with exact names/order/owner/attachment and participate in duplicate
+checking; no omitted member or fake empty value is permitted. Internal member
+storage may hold null exclusively for incomplete values with matching sidecar
+provenance; existing public string-valued shapes remain unchanged.
+
+XmlAttribute.Value getter and XmlNode.GetAttribute for an incomplete member throw
+InvalidOperationException with message `Attribute value contains unresolved entity
+references.` Known unrelated attribute getters keep their values. Setters/removal
+keep original immutable parse provenance, even after detachment/replacement;
+conservatively a handle recorded as incomplete keeps refusing its Value getter.
+Consumers inspect the symbolic parts/provenance instead. Newly built documents
+have empty lists. Anchors retain owner lifetime like existing handles. The DOM
+sink copies spans/part sequence before callback return, never fabricates normalized
+Value and never promotes unknown data into IDs/type-dependent lookup.
+
+Extend the current centralized **owner-wide** output/copy/text refusal to a source
+owner with content gaps OR either incomplete-attribute list nonempty (including
+unused default declarations). Preserve its current exception/message
+`Document contains unresolved entity references.` and argument/cancellation-first
+entry behavior: XmlSerializer.Serialize(string/Stream), ToXmlString/Save,
+GetTextContent, Clone(shallow/deep/DocumentNode) and ImportNode must refuse before
+BOM/output writes, traversal, copy allocations or destination mutation. Inspecting
+known leaf/node/complete attribute values and provenance is allowed. Clean sources
+can still import into an incomplete destination; its provenance/output guard
+persists. Removing/mutating all anchors never enables output. No lossy opt-in,
+serializer lexical forwarding, or apparent complete copy is introduced. Existing
+forwarders use their actual centralized callees; tests must exercise those callees.
+
+TokenCharacters bounds physical literal/pending symbolic retained text and each
+expanded attribute's logical stage-one size before copying, with checked UTF-16
+capacity as well as scalar quotas; unknown lexical reference scalars participate
+in bounded storage but contribute no invented replacement to ExpandedCharacters.
+DocumentCharacters charges primary authored scalars once; actual known expansion
+work uses existing aggregate expansion/depth budgets once at its owner boundary.
+Static validation alone uses no replacement-output expansion charge. Constructing
+known parts of an incomplete default is actual bounded expansion work, charged
+once at declaration interpretation even if unused; applying its immutable
+interpretation neither reruns nor recharges that expansion. Fully known default
+values retain existing use-site accounting. Persisted names
+use InternedNames; explicit and applied default members use AttributesPerElement
+once (including namespaces). Default/part/provenance collections and Sequence
+have checked capacity; refusal is XML.ResourceLimit before retention/delivery,
+not successful partial output. Runtime allocation evidence must measure retained
+part/literal/location sidecars and empty-list ordinary paths explicitly.
+
+### Required ordered runtime owner
+
+Coordinator must create an owning implementation prerequisite of M2-conformance
+join. This contract alone never fulfills capability or conformance acceptance.
+Start runtime work only from the integrated verified contract and current Core
+standalone/DTD repair; source-only grammar assessment is no peer dependency.
+Order: (1) applicability/order/origin and sidecars; (2) bounded normalization and
+pending optional events; (3) DOM members/provenance/guards; (4) real transport,
+forwarding/negative/quota/allocation checks plus additive API/fixture integration;
+(5) verify/integrate, then the final grammar/conformance join. Grammar boundary
+repairs must be integrated before that join; if both touch DTD lexer/value files,
+serialize ownership on verified revisions. No recursive worker or later milestone.
+
+Smallest concrete requested runtime ownership (requests, no edits here):
+
+- New src/Xemele/Parsing/Events/IncompleteAttributes.cs; Core/XmlParserCore.cs,
+  XmlParserCore.Attributes.cs, XmlParserCore.AttributeExpansion.cs,
+  XmlParserCore.Doctype.cs, XmlParserCore.Resources.cs, XmlParserCore.Entities.cs
+  for pending tag/default delivery and effective provenance integration.
+- Dtd/Grammar/Parser/DtdParser.cs, Lexer.cs, Declarations.cs,
+  DefaultReferences.cs (literal processing is in Declarations.cs/Lexer.cs), and
+  Entities/Runtime/XmlEntityContext.cs for internal sidecars/reference ordering.
+  Keep DtdModel/DtdAttributeDeclaration/event views frozen.
+- New Tree/IncompleteAttributes/XmlIncompleteAttributeValues.cs,
+  XmlDocument.IncompleteAttributes.cs and DomSink.IncompleteAttributes.cs;
+  Tree/XmlAttribute.cs and Tree/Document.cs for nullable internal backing/guarded
+  getter and centralized RefuseUnresolvedReferences extension; Tree/Node.cs solely
+  for GetAttribute, which currently reads AttributeSlots[i].Value directly.
+  Serialization/Xml/XmlSerializer.cs requires only review if the existing
+  centralized guard reaches both real output entry points; no redundant write
+  ownership requested. Serialization/Document/Save.cs stays forwarding.
+- tests/Xemele.Tests/Xml/IncompleteAttributes/, benchmarks/Xemele.Benchmarks/
+  IncompleteAttributes/, docs/reports/M2-undeclared-attributes-runtime/,
+  samples/M2-undeclared-attributes-runtime/; approved new docs/api/
+  M2-undeclared-attributes.txt and fixture synchronization explicitly owned then.
+
+Required runtime tests include seven authored inputs, origin/order/first-unread
+matrix, unused/overridden defaults, direct/indirect gaps and later forbidden
+errors, exact known normalization (literal versus numeric whitespace), multiple
+adjacent gaps, namespace complete default/applicable refusal, enumeration/getters,
+all character/byte/entity splits and mappings, every callback pause/cancel/fault,
+old sinks, exact/one-over quotas, mutation/detachment, real no-write stream/BOM
+and no-mutation copy/refusal entry points. Existing 290-member ABI and content
+behavior remain passing. Model checks below do not execute any of these runtime
+paths. No incompatible public/ABI decision is required by this additive proposal.
