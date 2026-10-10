@@ -1,0 +1,117 @@
+{
+  "result": "passed",
+  "sourceRevision": "e7cc0b5fd6480c4395e6dd861c5e28ed97815f2d",
+  "command": "SDK10.0.400 env; dotnet benchmarks/Xemele.Benchmarks/bin/Release/net10.0/Xemele.Benchmarks.dll --filter '*ResolverBenchmarks*' --artifacts artifacts/M2-resolver/exclusive",
+  "invocations": 1,
+  "generatedBuildExit": 0,
+  "processExit": 0,
+  "children": [
+    {
+      "pid": "28431",
+      "exit": 0
+    },
+    {
+      "pid": "28507",
+      "exit": 0
+    },
+    {
+      "pid": "28512",
+      "exit": 0
+    },
+    {
+      "pid": "28515",
+      "exit": 0
+    },
+    {
+      "pid": "28518",
+      "exit": 0
+    },
+    {
+      "pid": "28521",
+      "exit": 0
+    },
+    {
+      "pid": "28533",
+      "exit": 0
+    },
+    {
+      "pid": "28607",
+      "exit": 0
+    }
+  ],
+  "actualMeasurements": 24,
+  "cases": [
+    {
+      "Method": "DirectRead",
+      "ChunkSize": "1",
+      "Mean": "0.3877 ns",
+      "Error": "0.4757 ns",
+      "StdDev": "0.0261 ns",
+      "Allocated": "0 B"
+    },
+    {
+      "Method": "BoundedRead",
+      "ChunkSize": "1",
+      "Mean": "4.5115 ns",
+      "Error": "0.2362 ns",
+      "StdDev": "0.0129 ns",
+      "Allocated": "0 B"
+    },
+    {
+      "Method": "BoundedAsyncRead",
+      "ChunkSize": "1",
+      "Mean": "21.3620 ns",
+      "Error": "0.5946 ns",
+      "StdDev": "0.0326 ns",
+      "Allocated": "0 B"
+    },
+    {
+      "Method": "SessionOpenReadDispose",
+      "ChunkSize": "1",
+      "Mean": "125.7113 ns",
+      "Error": "1.2090 ns",
+      "StdDev": "0.0663 ns",
+      "Allocated": "1416 B"
+    },
+    {
+      "Method": "DirectRead",
+      "ChunkSize": "4096",
+      "Mean": "33.0506 ns",
+      "Error": "7.3408 ns",
+      "StdDev": "0.4024 ns",
+      "Allocated": "0 B"
+    },
+    {
+      "Method": "BoundedRead",
+      "ChunkSize": "4096",
+      "Mean": "44.8278 ns",
+      "Error": "8.1298 ns",
+      "StdDev": "0.4456 ns",
+      "Allocated": "0 B"
+    },
+    {
+      "Method": "BoundedAsyncRead",
+      "ChunkSize": "4096",
+      "Mean": "60.0368 ns",
+      "Error": "29.6591 ns",
+      "StdDev": "1.6257 ns",
+      "Allocated": "0 B"
+    },
+    {
+      "Method": "SessionOpenReadDispose",
+      "ChunkSize": "4096",
+      "Mean": "166.2217 ns",
+      "Error": "107.4762 ns",
+      "StdDev": "5.8911 ns",
+      "Allocated": "1416 B"
+    }
+  ],
+  "warnings": [
+    "Eight high-priority permission failures; ordinary priority",
+    "One-byte direct baseline is near overhead; do not interpret its ratios as robust",
+    "Three measurements per case; broad intervals, particularly 4096-byte setup/async"
+  ],
+  "scope": "Exclusive ordinary-priority Arm64/.NET10.0.11 synthetic zero-fill stream. Async reads complete synchronously. Actual resolver async overrides/suspending cleanup covered by focused tests, not a zero-allocation suspended-I/O claim. No parser resource integration or x64/Windows/Linux/AOT performance claim. Warm primitive allocation excludes operation setup/persistence/private resolver memory.",
+  "oracles": "All43 focused/844 total source tests passed before timing at same e7cc source. Read counts consumed; 0B warm sync regression. CSV 6 read cases0B and 2 setup cases1416B verified; 24 actual rows/eight child exits0 verified. No blind repeats.",
+  "processes": "All child exits0; parent exit0; artifacts cleanup finished; no heavy/background command remains."
+}

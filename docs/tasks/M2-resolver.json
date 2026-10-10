@@ -4,7 +4,7 @@
   "milestone": "M2",
   "title": "Bounded external resource resolution",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M2-resolver",
   "branch": "codex/m2-resolver",
   "base_revision": "eef177e8176c87954f0ce2efd8098c3f7dbfbc79",
@@ -34,29 +34,108 @@
     {
       "id": "M2-resolver-A1",
       "description": "Implement explicit resolver/resource object, bounded sessions, source URI propagation, refusal and disposal.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "final-functional-checkpoint",
+        "exclusive-allocation-timing"
+      ]
     },
     {
       "id": "M2-resolver-A2",
       "description": "Offline tests prove no ambient file/network reads; test byte/count/cycle/cancellation limits and async override contract.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "final-functional-checkpoint",
+        "exclusive-allocation-timing"
+      ]
     },
     {
       "id": "M2-resolver-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "final-functional-checkpoint",
+        "exclusive-allocation-timing"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Resolution/Core/Resources.cs: actual Xemele resolver/kind/request/resource API with nullable refusal, mandatory token, validated Stream+Uri ownership and atomic sync/async disposal",
+    "src/Xemele/Resolution/Core/XmlResolutionSession.cs: explicit source handles, shared OperationBudget, aggregate count/bytes, active final URI aliases/fragments, exact single-byte EOF probe, cancellation, fault/drain-all and guarded individual-disposal cleanup",
+    "tests/Xemele.Tests/M2-resolver/ResolverTests.cs:43 actual offline, quota/source/cycle/cancellation/exception/async/disposal and warm borrowed-read allocation cases",
+    "docs/api/M2-resolver.txt:29 actual additive members; full union251, independent Resolver114 split Common81/resolver29/deferred entities DtdProcessing4",
+    "samples/M2-resolver/: independently executable offline resolver, bounded internal composition and preserved M1 parse; same fresh local nupkg consumer",
+    "benchmarks/Xemele.Benchmarks/M2-resolver/ResolverBenchmarks.cs and docs/reports/M2-resolver/: exclusive8-case allocation/timing observations, fresh source/API/model/package/provenance/audit harness supporting --audit-base"
+  ],
+  "evidence": [
+    {
+      "id": "sandbox-ipc-failure",
+      "kind": "check",
+      "revision": "3706904ac354fcd12baf1073f6172bbe84395b4e",
+      "command": "SDK10.0.400 env; python3 -B docs/reports/M2-resolver/verify.py --report-prefix first",
+      "result": "failed",
+      "summary": "Independent preserved model checks compiled; historical foundation MTP local named pipe failed permission denied. Remaining full/API/package/provenance checks unrun in this attempt. Authorized IPC rerun later passed; no product failure inferred.",
+      "artifact": "docs/reports/M2-resolver/first/summary.json"
+    },
+    {
+      "id": "initial-functional-checkpoint",
+      "kind": "check",
+      "revision": "3706904ac354fcd12baf1073f6172bbe84395b4e",
+      "command": "SDK10.0.400 env; python3 -B docs/reports/M2-resolver/verify.py --report-prefix authorized",
+      "result": "passed",
+      "summary": "Actual831 tests277/255/299, focused30/API251/provenance242/package/planning14/validate112/audits passed. Later reviewer found untested multi-handle/individual cleanup exception corners; corrected and superseded by final checkpoint.",
+      "artifact": "docs/reports/M2-resolver/authorized/summary.json"
+    },
+    {
+      "id": "fault-drain-checkpoint",
+      "kind": "check",
+      "revision": "cbaec3c9e225bb009c7e6d144c186d01c6ce6b73",
+      "command": "SDK10.0.400 env; python3 -B docs/reports/M2-resolver/verify.py --report-prefix fault-drain",
+      "result": "passed",
+      "summary": "Actual841 tests287/255/299, focused40/API251/provenance242/package/planning14/validate112/audits passed. Individual handle-disposal finding subsequently corrected by final source.",
+      "artifact": "docs/reports/M2-resolver/fault-drain/summary.json"
+    },
+    {
+      "id": "disposal-source-review",
+      "kind": "review",
+      "revision": "e7cc0b5fd6480c4395e6dd861c5e28ed97815f2d",
+      "command": "Coordinator independent reviewer approval communicated before host release",
+      "result": "passed",
+      "summary": "Independent source review approved nested individual cleanup fix; source review only. Subsequent actual final execution separately recorded.",
+      "artifact": "docs/reports/M2-resolver/disposal-final/summary.json"
+    },
+    {
+      "id": "final-functional-checkpoint",
+      "kind": "check",
+      "revision": "e7cc0b5fd6480c4395e6dd861c5e28ed97815f2d",
+      "command": "SDK10.0.400 env; python3 -B docs/reports/M2-resolver/verify.py --report-prefix disposal-final",
+      "result": "passed",
+      "summary": "macOSArm64/.NET10.0.11:43 focused and844 actual tests290/255/299 all0fail0skip; independent Resolver114 compiled, actualresolver29/fullAPI251 preserves earlier222. Foundation11/M1 models/protocol38 and compiler/ABI negatives preserved; all242 records match fresh full-source pinned reference hash/build, unchanged copy. Source/fresh local nupkg sample passed; planning14/validate112/committed/staged/working/untracked ownership against exactclaim/diff audits passed. Warm borrowed syncread0B assertion; firstsession2624B/warmMemoryStreamsetup1464B/noisy retained1000-session delta2628984B residual2256B. No future parser/DTD/options, cross-platform/AOT or suspended async allocation claim.",
+      "artifact": "docs/reports/M2-resolver/disposal-final/summary.json"
+    },
+    {
+      "id": "exclusive-allocation-timing",
+      "kind": "check",
+      "revision": "e7cc0b5fd6480c4395e6dd861c5e28ed97815f2d",
+      "command": "SDK10.0.400 env; dotnet benchmarks/Xemele.Benchmarks/bin/Release/net10.0/Xemele.Benchmarks.dll --filter '*ResolverBenchmarks*' --artifacts artifacts/M2-resolver/exclusive",
+      "result": "passed",
+      "summary": "Explicit exclusive host grant; one invocation/generatedbuild0/eight child exits0/24 actual measurements. Warm direct/bounded/synchronously-completing asyncread0B, session/open/read/dispose1416B at1/4096 bytes. OrdinarypriorityArm64 due8 priority permission warnings; three measurements/case, near-overhead1-byte baseline and broad intervals: provisional synthetic only. No parser/suspendedIO/x64 performance claim.",
+      "artifact": "docs/reports/M2-resolver/exclusive/summary.json"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "",
-    "checks": [],
-    "remaining": [],
+    "summary": "Foundation-compatible explicit resolver/resource API and independently usable bounded source sessions implemented. Multi-handle and individual disposal faults preserve primary exceptions and drain all parents exactly once. Ready for coordinator integration; integration_revision remains null.",
+    "checks": [
+      "Final source e7cc0b5fd6480c4395e6dd861c5e28ed97815f2d:844 actual tests290/255/299 and43 focused, API251, independent model114/filter29, fresh reference242, local package consumer, planning14/validate112/all owned audits passed.",
+      "Exclusive single8-case benchmark completed with24 measurements/eight child exits0;0B warm reads/1416B setup; ordinarypriorityArm64 and short intervals/provisional limitations preserved.",
+      "Initial sandbox IPC failure and superseded checkpoints retained; initial uncommitted preparation encountered xUnit cancellation/blocking analyzers and ambiguous target-typed constructor calls, corrected before source checkpoint."
+    ],
+    "remaining": [
+      "Coordinator integration verification/status verified; no worker integration_revision set.",
+      "M2-entities owns DtdProcessing/Resolver options and parser composition; use one shared session/OperationBudget, final URI referrers, bounded Read APIs and Abort/AbortAsync before unwinding callback/parser errors outside resource methods.",
+      "Real entity/parser end-to-end external-input, suspending async I/O allocation, x64/Windows/Linux/AOT performance confirmation belong composition/release gates."
+    ],
     "requests": []
   }
 }
