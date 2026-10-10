@@ -130,7 +130,7 @@ public class InputTests
         Assert.Equal(XmlInputEncoding.Undetermined,d.Encoding);
         var r=d.Decode("abcd"u8,new char[2],new long[2],true,TestContext.Current.CancellationToken); Assert.Equal(DecodeStep.NeedOutput,r.Step);
         Assert.Throws<InvalidOperationException>(()=>d.Decode([],new char[2],new long[2],false,TestContext.Current.CancellationToken));
-        r=d.Decode([],new char[2],new long[2],true,TestContext.Current.CancellationToken); Assert.Equal(DecodeStep.Completed,r.Step);
+        r=d.Decode("abcd"u8[r.ConsumedBytes..],new char[2],new long[2],true,TestContext.Current.CancellationToken); Assert.Equal(DecodeStep.Completed,r.Step);
         Assert.Null(d.ValidateDeclaration("UTF-8",default));
         Assert.Throws<InvalidOperationException>(()=>d.ValidateDeclaration("UTF-8",default));
         Assert.Throws<InvalidOperationException>(()=>d.Decode([],new char[2],new long[2],true,TestContext.Current.CancellationToken));
@@ -150,11 +150,11 @@ public class InputTests
         foreach(long limit in new[]{3L,4L})
         {
             using var bounded=new XmlInputDecoder(new(){Limits=new(){ExternalBytes=limit}});
-            r=bounded.Decode("abcd"u8,chars,offsets,true,TestContext.Current.CancellationToken);
-            Assert.Equal(limit==3?DecodeStep.InvalidInput:DecodeStep.NeedOutput,r.Step);
+            r=bounded.Decode("abcd"u8,new char[8],new long[8],true,TestContext.Current.CancellationToken);
+            Assert.Equal(limit==3?DecodeStep.InvalidInput:DecodeStep.Completed,r.Step);
         }
         using var overflow=new XmlInputDecoder(new(){Limits=new(){ExternalBytes=null}});
-        overflow.Decode("abcd"u8,chars,offsets,false,TestContext.Current.CancellationToken);
+        overflow.Decode("abcd"u8,new char[8],new long[8],false,TestContext.Current.CancellationToken);
         var budget=typeof(XmlInputDecoder).GetField("budget",BindingFlags.Instance|BindingFlags.NonPublic)!.GetValue(overflow)!;
         var counts=(long[])budget.GetType().GetField("counts",BindingFlags.Instance|BindingFlags.NonPublic)!.GetValue(budget)!;
         overflow.Decode([],chars,offsets,false,TestContext.Current.CancellationToken);
@@ -198,6 +198,20 @@ public class InputTests
             Assert.Equal("INPUT.EncodingMismatch",diagnostic!.Code);Assert.Equal(source.Length-1,consumed);
             Assert.Throws<InvalidOperationException>(()=>framed.Decode(source.AsSpan(consumed),chars,maps,true,TestContext.Current.CancellationToken));
         }
+    }
+    [Fact]
+    public void ContiguousErrorConsumptionStopsBeforeOffendingSequence()
+    {
+        foreach(byte[] bytes in new byte[][] { [0xFF,0x41,0x41,0x41], [0xEF,0xBB,0xBF,0xFF] })
+        {
+            using var d=new XmlInputDecoder(new());
+            var r=d.Decode(bytes,new char[8],new long[8],true,TestContext.Current.CancellationToken);
+            Assert.Equal(DecodeStep.InvalidInput,r.Step);Assert.Equal(bytes[0]==0xEF?3:0,r.ConsumedBytes);
+            Assert.Equal(r.ConsumedBytes,r.Diagnostic!.Location.ByteOffset);
+        }
+        using var validPrefix=new XmlInputDecoder(new());
+        var result=validPrefix.Decode([0x41,0x42,0xFF,0x44],new char[8],new long[8],true,TestContext.Current.CancellationToken);
+        Assert.Equal(2,result.ConsumedBytes);Assert.Equal(2,result.WrittenCharacters);Assert.Equal(2,result.Diagnostic!.Location.ByteOffset);
     }
     [Fact]
     public void WarmDecodeHasZeroAllocationWithBoundedState()

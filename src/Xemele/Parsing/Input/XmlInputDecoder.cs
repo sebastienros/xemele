@@ -55,13 +55,18 @@ internal sealed class XmlInputDecoder : IXmlInputDecoder
             int consumed = 0, written = 0;
             if (encoding == XmlInputEncoding.Undetermined)
             {
-                while (count < 4 && consumed < input.Length)
+                Span<byte> detection = stackalloc byte[4];
+                int available = count + Math.Min(4 - count, input.Length);
+                ((ReadOnlySpan<byte>)carry)[..count].CopyTo(detection);
+                input[..(available - count)].CopyTo(detection[count..]);
+                if (available < 4 && !final)
                 {
-                    if (!Accept(1)) return Error(consumed, written, "XML.ResourceLimit", acceptedBytes);
-                    carry[count++] = input[consumed++];
+                    int extra = available - count;
+                    if (!Accept(extra)) return Error(0, 0, "XML.ResourceLimit", acceptedBytes);
+                    detection[..available].CopyTo(carry); count = available;
+                    return new(extra, 0, DecodeStep.NeedInput, null);
                 }
-                if (count < 4 && !final) return new(consumed, 0, DecodeStep.NeedInput, null);
-                var prefix = ((ReadOnlySpan<byte>)carry)[..count];
+                ReadOnlySpan<byte> prefix = detection[..available];
                 if (prefix.StartsWith((ReadOnlySpan<byte>)[0, 0, 0xFE, 0xFF]) || prefix.StartsWith((ReadOnlySpan<byte>)[0xFF, 0xFE, 0, 0]) ||
                     prefix.SequenceEqual("\0\0\0<"u8) || prefix.SequenceEqual("<\0\0\0"u8) ||
                     prefix.SequenceEqual((ReadOnlySpan<byte>)[0, 0, 0x3C, 0]) || prefix.SequenceEqual((ReadOnlySpan<byte>)[0, 0x3C, 0, 0]) ||
@@ -71,11 +76,15 @@ internal sealed class XmlInputDecoder : IXmlInputDecoder
                 if (prefix.StartsWith((ReadOnlySpan<byte>)[0xEF, 0xBB, 0xBF])) { encoding = XmlInputEncoding.Utf8; skip = 3; }
                 else if (prefix.StartsWith((ReadOnlySpan<byte>)[0xFF, 0xFE])) { encoding = XmlInputEncoding.Utf16LittleEndian; skip = 2; }
                 else if (prefix.StartsWith((ReadOnlySpan<byte>)[0xFE, 0xFF])) { encoding = XmlInputEncoding.Utf16BigEndian; skip = 2; }
-                else if (count >= 4 && carry[0] == '<' && carry[1] == 0 && carry[3] == 0) encoding = XmlInputEncoding.Utf16LittleEndian;
-                else if (count >= 4 && carry[0] == 0 && carry[1] == '<' && carry[2] == 0) encoding = XmlInputEncoding.Utf16BigEndian;
+                else if (available >= 4 && detection[0] == '<' && detection[1] == 0 && detection[3] == 0) encoding = XmlInputEncoding.Utf16LittleEndian;
+                else if (available >= 4 && detection[0] == 0 && detection[1] == '<' && detection[2] == 0) encoding = XmlInputEncoding.Utf16BigEndian;
                 else encoding = XmlInputEncoding.Utf8;
                 bom = skip != 0;
-                Drop(skip); carryOffset = skip;
+                int ownedSkip = Math.Min(skip, count);
+                int submittedSkip = skip - ownedSkip;
+                if (!Accept(submittedSkip)) return Error(0, 0, "XML.ResourceLimit", acceptedBytes);
+                consumed = submittedSkip;
+                Drop(ownedSkip); carryOffset = skip;
             }
             Span<byte> candidate = stackalloc byte[4];
             while (count != 0 || consumed < input.Length)
