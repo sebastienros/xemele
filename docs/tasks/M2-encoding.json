@@ -7,10 +7,11 @@
   "status": "in_progress",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M2-encoding",
   "branch": "codex/m2-encoding",
-  "base_revision": "eef177e8176c87954f0ce2efd8098c3f7dbfbc79",
+  "base_revision": "1a77b3598ed6084b17a69ca562d160f0d64a6be5",
   "integration_revision": null,
   "depends_on": [
-    "M2-contracts"
+    "M2-contracts",
+    "M2-pi-allocation-probe"
   ],
   "goals": [
     "G02"
@@ -34,31 +35,102 @@
     {
       "id": "M2-encoding-A1",
       "description": "Implement approved legacy encoding table and incremental detection/conversion while preserving UTF behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "source-checks",
+        "allocation-boundaries",
+        "exclusive-timing"
+      ]
     },
     {
       "id": "M2-encoding-A2",
       "description": "Test declared aliases, malformed/unrepresentable data, provider availability and split sequences for every advertised encoding.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "source-checks",
+        "allocation-boundaries",
+        "exclusive-timing"
+      ]
     },
     {
       "id": "M2-encoding-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "source-checks",
+        "allocation-boundaries",
+        "exclusive-timing"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Parsing/Input/XmlInputDecoder.cs: internal Ascii/Latin1/Windows1252 cases, strict immutable byte map and declaration-boundary selection; unchanged decoder interface and bounded carry.",
+    "tests/Xemele.Tests/M2-encoding/EncodingTests.cs: eight actual runtime cases, independent exhaustive mapping and transport/output splits, strict negatives, locations and allocation regressions.",
+    "tests/Xemele.Tests/M1-dom/DomTests.cs: only assigned ISO-8859-1 unsupported-label row changed to ISO-8859-2.",
+    "samples/M2-encoding/Program.cs: independently usable public-only strict byte-document sample; package-only consumer verified.",
+    "benchmarks/Xemele.Benchmarks/M2-encoding/EncodingBenchmarks.cs and docs/reports/M2-encoding/: simple-loop comparison, public DOM workload, internal compiled shape, revision-pinned verifier and actual allocation/timing reports."
+  ],
+  "evidence": [
+    {
+      "id": "initial-discovery-failure",
+      "kind": "check",
+      "revision": "3595b19afbd620c147f5db68fd4e8196fab1b531",
+      "command": "python3 -B docs/reports/M2-encoding/verify.py --report-prefix source-3595b19-attempt1 --expected-branch codex/m2-encoding",
+      "result": "failed",
+      "summary": "Historical models and 809 cumulative tests passed, then discovery correctly rejected a header-only public fragment. Removed because the task adds only internals; no fabricated API declarations. Preserved failure.",
+      "artifact": "docs/reports/M2-encoding/source-3595b19-attempt1/summary.json"
+    },
+    {
+      "id": "source-checks",
+      "kind": "check",
+      "revision": "a1d0d1a46b2e47a1ee8864657f4e3d06f0fa8f3e",
+      "command": "python3 -B docs/reports/M2-encoding/verify.py --report-prefix source-a1d0d1a-attempt1 --expected-branch codex/m2-encoding",
+      "result": "passed",
+      "summary": "809 actual all-pass tests: runtime255 (eight new cases), conformance255, differential299; API222 preserved, independently compiled M2 model81 and exact internal44 rows; seven benchmark oracles; sample plus packed net10.0 consumer; fresh242 pinned BCL records with full tested revision/hash; planning14/validation112; committed/staged/working/untracked owned-path and whitespace audits.",
+      "artifact": "docs/reports/M2-encoding/source-a1d0d1a-attempt1/summary.json"
+    },
+    {
+      "id": "allocation-boundaries",
+      "kind": "check",
+      "revision": "a1d0d1a46b2e47a1ee8864657f4e3d06f0fa8f3e",
+      "command": "python3 -B docs/reports/M2-encoding/verify.py --report-prefix source-a1d0d1a-attempt1 --expected-branch codex/m2-encoding",
+      "result": "passed",
+      "summary": "Warm high-byte conversion tests allocate0 B; precreated decoder declaration matching0 B/op. Cold decoder setup2816 B; warm setup824 B/op; informational retained heap656 B/op (reference array excluded). Setup/persistence are distinct from primitives.",
+      "artifact": "docs/reports/M2-encoding/source-a1d0d1a-attempt1/allocations.txt"
+    },
+    {
+      "id": "initial-timing-build-failure",
+      "kind": "check",
+      "revision": "e3df9c35bedea4e7e160552559b7b6383aab9fff",
+      "command": "dotnet run --project docs/reports/M2-encoding/Xemele.EncodingBenchmarks.csproj -c Release --no-build -- --filter Encoding* --exporters json --artifacts /Users/sebastienros/.codex/worktrees/d13f/xemele/docs/reports/M2-encoding/timing-e3df9c3/bdn",
+      "result": "failed",
+      "summary": "Wrapper0 is not passing evidence: generated build1, actual0 measurements due to reused historical assembly identity. Failed report and generated wrong project preserved; fixed unique identity/friend at a1d0d1a and reran affected correctness first.",
+      "artifact": "docs/reports/M2-encoding/timing-e3df9c3/run.json"
+    },
+    {
+      "id": "exclusive-timing",
+      "kind": "check",
+      "revision": "a1d0d1a46b2e47a1ee8864657f4e3d06f0fa8f3e",
+      "command": "dotnet run --project docs/reports/M2-encoding/Xemele.EncodingBenchmarks.csproj -c Release --no-build -- --filter Encoding* --exporters json --artifacts /Users/sebastienros/.codex/worktrees/d13f/xemele/docs/reports/M2-encoding/timing-a1d0d1a/bdn",
+      "result": "passed",
+      "summary": "Authorized exclusive corrected invocation: wrapper/restore/build0, all13 child exits0, 13 genuine cases/39 actual observations; all12 primitive cases0 B/op. Decoder8byte77.90\u201379.56 ns/4096byte37.30\u201337.82 us; supported-fixture loop11.73\u201311.84 ns/6.14\u20136.22 us, no speedup claim. Public DOM28.014 us/58,256 B/op. Seven setup oracles pass; all children stopped. Arm64 only, ShortRun confidence intervals/high-priority-denied warnings explicit.",
+      "artifact": "docs/reports/M2-encoding/timing-a1d0d1a/run.json"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "",
-    "checks": [],
-    "remaining": [],
-    "requests": [
-      "Coordinator assigns only the declaration-before-malformed-body test row currently using ISO-8859-1: M2 now supports this encoding. Retain the complete meaningful unsupported-declaration/error-order test using a still-unsupported label, preserve all other M1 DOM tests/allocation helpers, and add positive/negative actual legacy encoding cases in M2-owned tests. Preserve original M1 evidence/immutable gate reports and demo source; future gate demonstrations must use current supported table."
-    ]
+    "summary": "Implemented strict declared US-ASCII/ISO-8859-1/Windows-1252 using only verified contracts and existing M1 composition. Source a1d0d1a46b2e47a1ee8864657f4e3d06f0fa8f3e; no public additions, no provider/global mutation, bounded four-byte state and original mappings preserved. Assigned historical unsupported-label row repaired only. Awaiting coordinator integration verification.",
+    "checks": [
+      "source-a1d0d1a-attempt1: actual809 tests/API222/internal44/model81/sevenoracles/sample+package/fresh242reference/planning14/validation112/ownedpath+diff passed.",
+      "timing-a1d0d1a:13 actual cases/39 observations/all13 children exit0; warm primitives0B; setup/retained/DOM allocations explicitly separate.",
+      "Preserved initial discovery failure and initial BDN wrapper0/generatedbuild1/actual0 attempt; corrections and full known-hash checks passed."
+    ],
+    "remaining": [
+      "Coordinator integrated attempt cd753170601936520d1d8efadb949852bacd083f failed unchanged PI1024B afterMTP809/API222passed; source/evidence/failure branch fc862e888a0089e6bd304b8c2586206353c94f66 preserved, await verified PI repair and renewed claim.",
+      "Coordinator integrates and verifies with current integrated counts; verifier supports explicit --audit-base/--expected-branch and runtime/conformance/differential/reference count arguments.",
+      "External TextDecl framing and entity composition belong to M2-dtd-framing/M2-entities; this branch has no unmerged dependency.",
+      "x64/Windows/Linux/AOT and release-scale performance checks unrun locally; Arm64 ShortRun results provisional, not a universal performance claim."
+    ],
+    "requests": []
   }
 }

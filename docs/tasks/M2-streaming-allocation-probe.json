@@ -1,0 +1,194 @@
+{
+  "schema_version": 1,
+  "id": "M2-streaming-allocation-probe",
+  "milestone": "M2",
+  "title": "Diagnose streaming allocation boundary in cumulative runner",
+  "kind": "infrastructure",
+  "status": "verified",
+  "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M2-streaming-allocation-probe",
+  "branch": "codex/m2-streaming-allocation-probe",
+  "base_revision": "31c323aac68c71a14706cc059d185f2965a869ec",
+  "integration_revision": "8a254d3c62aad297b88e2906f8b55e7bce04e30e",
+  "depends_on": [
+    "M2-contracts",
+    "M1-syntax-allocation-probe"
+  ],
+  "goals": [
+    "G03",
+    "G18"
+  ],
+  "specs": [
+    "docs/performance-coding.md",
+    "docs/specs/parser.md"
+  ],
+  "owns": [
+    "tests/Xemele.Tests/M1-syntax/StreamingTests.cs",
+    "tests/Xemele.Tests/M2-streaming-allocation-probe/",
+    "docs/reports/M2-streaming-allocation-probe/"
+  ],
+  "api_or_output": "Isolated synchronous checked streaming primitive allocation boundary; unchanged exact0B/default runtime/original100warm/10000measured, actual same Fact and escaped callback positive child.",
+  "acceptance": [
+    {
+      "id": "M2-streaming-allocation-probe-A1",
+      "description": "Preserve exact unchanged Streaming224B cumulative failure at PIrepair9286cd6 and separate801directpass. Diagnose setup/first-use/primitive and surrounding measurement/framework scopes with bounded controlled original-versus-equivalent experiment before choosing correction; do not infer historical cause without evidence. Retain existing production unchanged, exact0B, original100warm/10000measured, same checked Append workload/cancellation/sink/progress/completion, default JIT/GC/parallelism. ExistingStreamingTests.cs edits only probe/helper/imports; no other tests/thresholds/runtime changes. If genuine steady primitive allocation remains, request owning runtime repair.",
+      "status": "passed",
+      "evidence": [
+        "known-source-isolated-streaming-and-combination",
+        "actual-protocol-rejection-controls",
+        "archive-malformed-first-regression",
+        "readonly-isolation-protocol-review",
+        "package-free-counter-anomaly",
+        "failed-independent-integration",
+        "historical-preservation-and-control",
+        "coordinator-integrated-isolation",
+        "coordinator-integrated-rejection-and-archive"
+      ]
+    },
+    {
+      "id": "M2-streaming-allocation-probe-A2",
+      "description": "Known-source focused owned streaming correctness/allocation and independent bounded diagnostics pass with meaningful units/callback/completion and real0B primitive evidence. Execute cumulative MTP and separate runtime/API/discovery/reference/planning/ownership checks and preserve every outcome, including unrelated original PI failure if any; child must not conceal failures or claim complete combined verification. Original parent M2-pi-allocation-probe A2 retains mandatory allPass integrated combination before any consumer verification. No timing benchmarks or blind retries.",
+      "status": "passed",
+      "evidence": [
+        "known-source-isolated-streaming-and-combination",
+        "actual-protocol-rejection-controls",
+        "archive-malformed-first-regression",
+        "readonly-isolation-protocol-review",
+        "coordinator-integrated-isolation",
+        "coordinator-integrated-rejection-and-archive"
+      ]
+    }
+  ],
+  "implementation": [
+    "tests/Xemele.Tests/M1-syntax/StreamingTests.cs: WarmRepeatedTagsAndStreamingUnicodeDispatchAllocateZero asserts internally captured exact-zero primitive bytes and meaningful units/callback/completion totals.",
+    "tests/Xemele.Tests/M2-streaming-allocation-probe/StreamingAllocationProbe.cs: NoInlining AppendChecked shared with independent diagnostic; unchanged 100 warm/10000 measured checked Append workload.",
+    "docs/reports/M2-streaming-allocation-probe/Diagnostics/: fresh-process original external-counter versus equivalent captured-counter modes, separate cold/root/first-use/warm/completion accounting.",
+    "docs/reports/M2-streaming-allocation-probe/verify.py: immutable attempts, known-source/count/provenance/API/planning/ownership validation with every combined outcome retained.",
+    "docs/reports/M2-streaming-allocation-probe/README.md: controlled comparison, preserved history and unresolved historical causality.",
+    "tests/Xemele.Tests/M2-streaming-allocation-probe/StreamingAllocationChild.cs: versioned guarded same-Fact standalone real+escaped-sink-positive processes, strict executable/test/product/runtime/source/IL provenance, exact counts/completion, bounded kill-tree failure/log protocol; source checkpoint before checks."
+  ],
+  "evidence": [
+    {
+      "id": "known-source-streaming-and-cumulative",
+      "kind": "check",
+      "revision": "a53a15482ef6a540d66f2dbc294d2d86c84b3eba",
+      "command": "DOTNET_ROOT='/Users/sebastienros/Library/Application Support/dotnetup/dotnet' PATH='/Users/sebastienros/Library/Application Support/dotnetup/dotnet':$PATH DOTNET_CLI_USE_MSBUILD_SERVER=0 python3 -B docs/reports/M2-streaming-allocation-probe/verify.py --report-prefix source-final-attempt1 --expected-branch codex/m2-streaming-allocation-probe --audit-base 2578b2fe125005e0cabd4226d0fa1ba9ef464ee9 --runtime-count 247 --conformance-count 255 --differential-count 299 --api-count 222 --fixture-count 3388 --planning-count 14 --task-count 114",
+      "result": "passed",
+      "summary": "Release SDK10.0.400/runtime10.0.11 arm64 defaultJIT/GC/parallelism. FocusedStreaming1pass; cumulativeMTP801pass; separate247/255/299 directpass; diagnostic original0B/equivalent0B, warm100432B, measured10000=50000units/120000callbacks, total50500units/121205callbacks and1EndDocument. API222/discovery3388fixtures/reference242freshpinnedrecords/planning14regressions114tasks/ownership pass. No failed checks. Historical224B cause unresolved; no joint unmergedPI+consumer verification claim.",
+      "artifact": "docs/reports/M2-streaming-allocation-probe/source-final-attempt1/summary.json"
+    },
+    {
+      "id": "historical-preservation-and-control",
+      "kind": "check",
+      "revision": "a53a15482ef6a540d66f2dbc294d2d86c84b3eba",
+      "command": "python3 -B -c 'from pathlib import Path; import hashlib,json; history=Path('\"'\"'docs/reports/M2-streaming-allocation-probe/history'\"'\"'); original=Path('\"'\"'/Users/sebastienros/.codex/worktrees/b918/xemele/docs/reports/M2-pi-allocation-probe/source-9286cd6-attempt1'\"'\"'); hashes={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in history.iterdir()}; assert len(hashes)==5; assert all(p.read_bytes()==(original/p.name).read_bytes() for p in history.iterdir()); print(json.dumps(hashes,sort_keys=True))'",
+      "result": "passed",
+      "summary": "All five preserved report files byte-identical; unchanged historical Streaming224B cumulative failure and separate801directpass retained. Instrumented f71cee21791e399ccf00aa7033f33f246ec6223a cumulative801pass/directfocused inner0B outer0B; committed95006d164363656602b01185ca383b950d4e620a independent original and equivalent both0B. Preliminary uncommitted diagnostic prototype logs explicitly excluded as known-source criterion evidence. No historical framework/JIT cause inferred.",
+      "artifact": "docs/reports/M2-streaming-allocation-probe/source-final-attempt1/historical-preservation.json"
+    },
+    {
+      "id": "failed-independent-integration",
+      "kind": "check",
+      "revision": "f573a6c7ee8cb9ca122d2f3e260617ddd162800d",
+      "command": "python3 -B docs/reports/M2-streaming-allocation-probe/verify.py --report-prefix integration-f573a6c-attempt1 --expected-branch codex/integrate-m2-streaming-allocation-probe --audit-base b6ec87e --runtime-count 247 --conformance-count 255 --differential-count 299 --api-count 222 --fixture-count 3388 --planning-count 14 --task-count 114",
+      "result": "failed",
+      "summary": "Coordinator independent integration: ownedStreaming failed standalone direct247 at exactly3448B inside captured helper. Focused1, cumulative801, independentoriginal/equivalent0B, conformance255, differential299, API222, discovery3388, reference242, planning14/114 and ownership passed. This defeats complete correction; task reopened in_progress, unverified. Bounded per-Append sampling diagnostic pending; no cause inferred.",
+      "artifact": "docs/reports/M2-streaming-allocation-probe/history/integration-f573a6c-attempt1/summary.json"
+    },
+    {
+      "id": "bounded-per-append-sampling",
+      "kind": "check",
+      "revision": "4854b87ba019fef3999bbfa275299b8f10538ec6",
+      "command": "DOTNET_ROOT='/Users/sebastienros/Library/Application Support/dotnetup/dotnet' PATH='/Users/sebastienros/Library/Application Support/dotnetup/dotnet':$PATH DOTNET_CLI_USE_MSBUILD_SERVER=0 python3 -B docs/reports/M2-streaming-allocation-probe/sample_checks.py --report-prefix sample-4854b87-attempt1",
+      "result": "passed",
+      "summary": "Exactly one baseline standalone247pass, one sampled standalone247pass, one independent sampled process. Preallocated100warm/10000measured samples inside actualcheckedhelper: warmAppenditeration0=432B; allremainingwarm/measured Append/validation/observer/gap=0B. Allconsumed40UTF16/NeedInput;50000measuredunits120000callbacks, completion and50500totalunits121205callbacks. Testthread15/independentthread1 stable. Independent samplearray/delegatesetup727312B separatebeforewarm. No3448reproduction, cause/universalfix unresolved; this pass does not discharge failedA2. No fullsolutionretry or EventPipe run.",
+      "artifact": "docs/reports/M2-streaming-allocation-probe/sample-4854b87-attempt1/summary.json"
+    },
+    {
+      "id": "package-free-counter-anomaly",
+      "kind": "check",
+      "revision": "8e76f6ef620c6e4b16848e88bb314a95ae799083",
+      "command": "DOTNET_ROOT='/Users/sebastienros/Library/Application Support/dotnetup/dotnet' PATH='/Users/sebastienros/Library/Application Support/dotnetup/dotnet':$PATH DOTNET_CLI_USE_MSBUILD_SERVER=0 XEMELE_CONTROL_SOURCE_REVISION=8e76f6ef620c6e4b16848e88bb314a95ae799083 dotnet docs/reports/M2-streaming-allocation-probe/CounterControl/bin/Release/net10.0/CounterControl.dll",
+      "result": "failed",
+      "summary": "Single package-free countercontrol exits1 on .NET10.0.11/Arm64/defaultworkstationGC: baselinezero32/32=0, positive32/32=64B; boundedbackgroundpressure zero173x0/18x8136/1x7848, positive171x64/21x8200.253requests/Gen2count256/backgroundindex2->256 observed, noerror; packagesempty, IL/runtimeconfig/fullarrays/DLL/sourceSHA retained. This demonstrates counteranomaly independentofXemele/framework, notcauseofthehistorical224B/3448B. No retries/settings/threshold/warmbudget changes or subtraction.",
+      "artifact": "docs/reports/M2-streaming-allocation-probe/control-8e76f6e-attempt1/summary.json"
+    },
+    {
+      "id": "readonly-counter-control-review",
+      "kind": "review",
+      "revision": "8e76f6ef620c6e4b16848e88bb314a95ae799083",
+      "command": "Coordinator relayed read-only review_input_spike source and actual summary review; no rebuild or hash recomputation.",
+      "result": "passed",
+      "summary": "No blockers: empty interval only counterreads/SpinWait; storage/anchor/reflection/output outside; bounds/provenance/observedBGC support evaluating processisolation, not historicalcauseattribution. This is review evidence only; actual controlrunexit1 remainsfailed.",
+      "artifact": "docs/reports/M2-streaming-allocation-probe/README.md"
+    },
+    {
+      "id": "readonly-isolation-protocol-review",
+      "kind": "review",
+      "revision": "2c6970bc173c4744032751d9111fbbcad3e84fba",
+      "command": "Coordinator relayed independent review_input_spike read-only source review, then root review of1329strictJSON andb87archive deltas; no review execution.",
+      "result": "passed",
+      "summary": "No blockers: actualsameFact real+positive children, exactoneFactXML, provenance/guard/failurehandling, original100/10000/counts/completion/fulldelta/0 and positive escapedcallbacks; ownership/otherbodiesidentity/productionunchanged.1329strictJSON approved. b87archive two-pass preservation concern corrected in4e32dc8 and relevant fixturepassed. Review evidence only.",
+      "artifact": "docs/reports/M2-streaming-allocation-probe/README.md"
+    },
+    {
+      "id": "known-source-isolated-streaming-and-combination",
+      "kind": "check",
+      "revision": "b87a1a257bef91ab92404226d0f27e8b9154dc9f",
+      "command": "DOTNET_ROOT='/Users/sebastienros/Library/Application Support/dotnetup/dotnet' PATH='/Users/sebastienros/Library/Application Support/dotnetup/dotnet':$PATH DOTNET_CLI_USE_MSBUILD_SERVER=0 python3 -B docs/reports/M2-streaming-allocation-probe/verify.py --report-prefix isolated-b87a1a2-attempt1 --expected-branch codex/m2-streaming-allocation-probe --audit-base 2578b2fe125005e0cabd4226d0fa1ba9ef464ee9 --runtime-count 247 --conformance-count 255 --differential-count 299 --api-count 222 --fixture-count 3388 --planning-count 14 --task-count 114",
+      "result": "passed",
+      "summary": "SDK10.0.400/runtime10.0.11 defaultJIT/GC/testparallelism. FocusedMTP1pass/cumulative801pass/separate247+255+299pass/API222/discovery3388/reference242freshpinnedfullsource/SHA/planning14/114/ownership pass. Exactly3actualsameFact real+positive pairs (MTPapphost anddirectdotnet): real0B, positive7680000B; each100warm/10000measured,50000measuredunits120000callbacks,total50500units121205callbacks/completionconsumed4/nullDiagnostic. Test/product/source/runtime/helperIL/executable hashes pinned; everychildrawartifact archived. Independentoriginal/equivalent0B. Historical224B/3448B unresolved; synchronousisolatedscope only/no concurrent allocation guarantee; parentjointallPass stillrequired.",
+      "artifact": "docs/reports/M2-streaming-allocation-probe/isolated-b87a1a2-attempt1/summary.json"
+    },
+    {
+      "id": "actual-protocol-rejection-controls",
+      "kind": "check",
+      "revision": "885565abcc6c134d24b34ad9ed83ba6f591dc0b9",
+      "command": "DOTNET_ROOT='/Users/sebastienros/Library/Application Support/dotnetup/dotnet' PATH='/Users/sebastienros/Library/Application Support/dotnetup/dotnet':$PATH DOTNET_CLI_USE_MSBUILD_SERVER=0 python3 -B docs/reports/M2-streaming-allocation-probe/protocol_negative.py --report-prefix protocol-negative-attempt1 --known-request artifacts/M2-streaming-allocation-probe/child-runs/36970-40decb2bdc9648df9675b419d10076a2/real.request.json",
+      "result": "passed",
+      "summary": "7bounded actualcompiledb87Fact rejection controls: unknown/incomplete internalguard, missing-required/malformed/unknown-memberrequestJSON, provenance mismatch, host mismatch. Eachactualexit1/exactoneFactFail with intendedspecificdiagnostic; rawXML/stdout/stderr/requestretained. Driver885565 Pythononly; asserts no test/product source delta since compiledb87. No newFacts/rebuild/fullretry. This does not claim executed timeout/crash/postreportmeter/progresstamper coverage; those policies reviewedreadonly.",
+      "artifact": "docs/reports/M2-streaming-allocation-probe/protocol-negative-attempt1/summary.json"
+    },
+    {
+      "id": "archive-malformed-first-regression",
+      "kind": "check",
+      "revision": "885565abcc6c134d24b34ad9ed83ba6f591dc0b9",
+      "command": "python3 -B -m unittest discover -s docs/reports/M2-streaming-allocation-probe -p test_archive.py -v",
+      "result": "passed",
+      "summary": "1meaningful preservation regressionpassed: actualdriverarchive_child_files copies everyrawfile across bothdirectories before malformedfirstreport JSONdecodefailure; laterstdout/XML/report/exitbytes surviveexactly. Driver-onlyfix4e32dc8 tested, no C#sourcechanges after knownb87suite.",
+      "artifact": "docs/reports/M2-streaming-allocation-probe/protocol-negative-attempt1/archive-regression.txt.gz"
+    },
+    {
+      "id": "coordinator-integrated-isolation",
+      "kind": "integration",
+      "revision": "8a254d3c62aad297b88e2906f8b55e7bce04e30e",
+      "command": "python3 -B docs/reports/M2-streaming-allocation-probe/verify.py --report-prefix integration-8a254d3-attempt1 --expected-branch codex/integrate-m2-streaming-allocation-probe --audit-base 8e355e2 --runtime-count 247 --conformance-count 255 --differential-count 299 --api-count 222 --fixture-count 3388 --planning-count 14 --task-count 114",
+      "result": "passed",
+      "summary": "Independent fresh combined build: focused MTP1, cumulative801 and direct247/255/299 all pass. Three actual real children0B; three escaped callback controls7680000B, exact100warm/10000measured, counts/progress/completion and compiled-source/runtime/host/IL hashes checked from raw reports. API222/discovery3388/ref242 fresh pinned source/SHA/planning14/114/ownership pass. Default JIT/GC/class parallelism; production unchanged. Historical224B/3448B/control-exit1 preserved without causal attribution. Scope isolated synchronous primitive only.",
+      "artifact": "docs/reports/M2-streaming-allocation-probe/integration-8a254d3-attempt1/summary.json"
+    },
+    {
+      "id": "coordinator-integrated-rejection-and-archive",
+      "kind": "integration",
+      "revision": "8a254d3c62aad297b88e2906f8b55e7bce04e30e",
+      "command": "python3 -B docs/reports/M2-streaming-allocation-probe/test_archive.py; python3 -B docs/reports/M2-streaming-allocation-probe/protocol_negative.py --report-prefix integration-8a254d3-negative-attempt1 --known-request artifacts/M2-streaming-allocation-probe/child-runs/38466-7ccb90a18db54c67be0cc0c6160a3984/real.request.json",
+      "result": "passed",
+      "summary": "Archive regression1 passes. Actual compiled integrated-source Fact rejects seven invalid guard/schema/provenance/host requests with exactly one expected failed Fact and exit1 each; driver exit0. Negative XML/raw exits retained. Timeout/crash/post-report meter/progress tampering remain source-review evidence, not executed claims.",
+      "artifact": "docs/reports/M2-streaming-allocation-probe/integration-8a254d3-negative-attempt1/summary.json"
+    }
+  ],
+  "blockers": [],
+  "handoff": {
+    "summary": "Verified independent integrated isolation repair at 8a254d3c62aad297b88e2906f8b55e7bce04e30e. Full actual combined checks and exact-zero real/escaped-allocation controls passed; prior failures retained, historical causes unresolved.",
+    "checks": [
+      "Knowncompiledsource b87a1a257bef91ab92404226d0f27e8b9154dc9f: focused1/MTP801/direct247+255+299allpass; exactly3real0/positive7680000pairs,100warm10000measure/50000units120000callbacks/completion; MTPapphost+directdotnet actualsameFact/framework/executable/test/product/runtime/source/IL pinned.",
+      "Independent original/equivalent0B; API222/discovery3388/reference242freshpinnedsource/SHA/planning14/114/ownershipallpass. Everychildstdout/stderr/XML/report/request/invocation/exit archivedownedreports.",
+      "Driver-onlyHEAD885565abcc6c134d24b34ad9ed83ba6f591dc0b9:7guard/schema/provenance/host actualFact expectedexit1 failures checked, archive-malformed-first/laterraw preservation1pass. No C#source deltaafterb87/no redundant fullsuite retry.",
+      "Readonlyindependent review2c6970b and root1329strictJSON approved; b87archiveconcern fixedtwo-pass4e32dc8 and tested. No timingbenchmarks or GC/JIT/testparallelism overrides.",
+      "Independent integration8a254d3: focused1/MTP801/direct247/255/299/API222/ref242/discovery3388/planning14/114;3real0/3positive7680000;7expected rejects/archive1 allpass."
+    ],
+    "remaining": [
+      "PI parent still requires renewed claim and independent full joint verification before runtime consumers; no production capability or concurrent allocation guarantee added."
+    ],
+    "requests": []
+  }
+}

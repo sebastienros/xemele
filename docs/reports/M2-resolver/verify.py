@@ -4,13 +4,15 @@ from pathlib import Path
 import xml.etree.ElementTree as ET
 ROOT=Path(__file__).resolve().parents[3]
 REPORT=ROOT/'docs/reports/M2-resolver'
-CLAIM='2e3d6012e664baf7bf5b3f3085bcb04de7dfc02e'
+CLAIM='7034b2769307fbab70ea524ea2a16f5defa8e7d6'
 FLAGS=['-c','Release','--disable-build-servers','-m:1','-p:UseSharedCompilation=false']
 CHECKER=ROOT/'docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll'
 
 def rows(path): return {r['member']:r['declaration'] for r in map(json.loads,path.read_text().splitlines()[1:])}
 def main():
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('--report-prefix',required=True);p.add_argument('--audit-base',default=CLAIM)
+    p.add_argument('--runtime-count',type=int,default=290);p.add_argument('--api-count',type=int,default=251)
+    p.add_argument('--fixture-count',type=int,default=3388);p.add_argument('--task-count',type=int,default=114)
     a=p.parse_args();assert re.fullmatch('[a-z0-9-]+',a.report_prefix)
     report=REPORT/a.report_prefix;report.mkdir();raw=ROOT/'artifacts/M2-resolver'/a.report_prefix;raw.mkdir(parents=True)
     sdk=Path(shutil.which('dotnet')).resolve(strict=True)
@@ -34,6 +36,9 @@ def main():
         assert not run('git','diff','--name-only','HEAD','--',*source).strip()
         assert not run('git','ls-files','--others','--exclude-standard','--',*source).strip()
         run('python3','-B','docs/reports/M1-corpus-import/provision.py')
+        discovery=json.loads(run('python3','-B','tools/ApiBaseline/discover.py'))
+        assert discovery['fixtures']==a.fixture_count
+        s['discovery']=discovery
         run('dotnet','build','tools/ReferenceRunners/Bcl/BclReference.csproj',*FLAGS)
         runner=ROOT/'tools/ReferenceRunners/Bcl/bin/Release/net10.0/BclReference.dll'
         shutil.copytree(runner.parent,raw/'pinned-reference');pinned=raw/'pinned-reference'/runner.name
@@ -49,10 +54,11 @@ def main():
         s['independentModelMembers']=len(model);s['actualAdditiveResolverMembers']=len(selected);s['deferredModelMembers']='XmlDtdProcessing4 belongs to M2-entities; common81 already shipped'
         run('python3','-B','tools/ApiBaseline/compare.py','--report',report/'runtime-api.json')
         s['actualRuntimeMembers']=len(json.loads((report/'runtime-api.json').read_text())['provenance'])
+        assert s['actualRuntimeMembers']==a.api_count
         tests={}
-        for assembly,minimum in [('Xemele.Tests',290),('Xemele.Conformance.Tests',255),('Xemele.Differential.Tests',299)]:
+        for assembly,minimum in [('Xemele.Tests',a.runtime_count),('Xemele.Conformance.Tests',255),('Xemele.Differential.Tests',299)]:
             xml=raw/(assembly+'.xml');run('dotnet',ROOT/f'tests/{assembly}/bin/Release/net10.0/{assembly}.dll','-noColor','-result-xml',xml)
-            entries=list(ET.parse(xml).iter('test'));assert len(entries)>=minimum and all(t.get('result')=='Pass' for t in entries)
+            entries=list(ET.parse(xml).iter('test'));assert len(entries)==minimum and all(t.get('result')=='Pass' for t in entries)
             tests[assembly]={'total':len(entries),'failed':0,'skipped':0};(report/(assembly+'.xml.gz')).write_bytes(gzip.compress(xml.read_bytes(),mtime=0))
         focused=raw/'resolver.xml';run('dotnet',ROOT/'tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll','-noColor','-class','Xemele.Tests.Resolution.ResolverTests','-result-xml',focused)
         focused_tests=list(ET.parse(focused).iter('test'));assert len(focused_tests)==43 and all(t.get('result')=='Pass' for t in focused_tests)
@@ -78,7 +84,7 @@ def main():
         listing=run('dotnet',ROOT/'benchmarks/Xemele.Benchmarks/bin/Release/net10.0/Xemele.Benchmarks.dll','--list','flat','--filter','*ResolverBenchmarks*')
         assert all('ResolverBenchmarks.'+name in listing for name in ['DirectRead','BoundedRead','BoundedAsyncRead','SessionOpenReadDispose'])
         s['benchmarks']='built/discovered; timing requires separate exclusive-host grant'
-        run('python3','-B','-m','unittest','discover','-s','tools/planning','-p','test_tasks.py','-v');run('python3','-B','tools/planning/tasks.py','validate')
+        run('python3','-B','-m','unittest','discover','-s','tools/planning','-p','test_tasks.py','-v');validation=run('python3','-B','tools/planning/tasks.py','validate');assert f'Validated {a.task_count} tasks:' in validation
         task=json.loads((ROOT/'docs/tasks/M2-resolver.json').read_text());owned=task['owns']+['docs/tasks/M2-resolver.json'];paths=[]
         for command in [('git','diff','--name-only',a.audit_base+'..HEAD'),('git','diff','--name-only'),('git','diff','--cached','--name-only'),('git','ls-files','--others','--exclude-standard')]:paths+=run(*command).splitlines()
         assert all(any(path.startswith(own) if own.endswith('/') else path==own for own in owned) for path in paths),paths

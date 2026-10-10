@@ -49,7 +49,10 @@ state is installed implicitly.
 Pin SDK10.0.400/.NET10.0.11 via DOTNET_ROOT and PATH; set
 DOTNET_CLI_USE_MSBUILD_SERVER=0. Run `python3 -B docs/reports/M2-resolver/verify.py
 --report-prefix UNIQUE`. `--audit-base` supports integration audit roots, with no
-worker-branch name requirement; default is the exact coordinated claim2e3d601.
+worker-branch name requirement; default is the renewed exact coordinated claim7034b276. Historical checks used
+claim2e3d601. Renewed base1a77b359 contains independently verified PI/Streaming
+measurement isolation; this adoption changes no resolver C#/API/sample/benchmark
+source and does not repeat successful timing.
 Sources must be committed. Per-attempt durable summaries/compressed command logs
 and XML results live here; raw output/packages/reference copies live in ignored
 artifacts/M2-resolver. Fresh complete BCL output is copied before any solution

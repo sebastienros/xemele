@@ -8,14 +8,26 @@
     "integration_revision": "8c9bd349ed4156ea0295b5160d87d39434293bb2"
   },
   "active_assignments": [],
-  "integration_queue": [],
+  "integration_queue": [
+    {
+      "task_id": "M2-encoding",
+      "status": "failed-awaiting-PI-prerequisite",
+      "worktree_path": "/private/tmp/xemele-integrate-m2-encoding",
+      "branch": "codex/integrate-m2-encoding",
+      "tested_revision": "cd753170601936520d1d8efadb949852bacd083f",
+      "preserved_failure_revision": "fc862e888a0089e6bd304b8c2586206353c94f66",
+      "summary": "MTP809/API222pass then direct255/254pass1failurePI1024B; subsequentchecks unrun."
+    }
+  ],
   "blockers": [],
   "next_actions": [
-    "Claim and dispatch ready M2-resolver/M2-dtd-framing/M2-encoding in three isolated chats",
-    "Verify framing then dispatch grammar when capacity permits; serialized benchmarks"
+    "Renew clean preserved encoding/resolver/framing claims from now verified PI+Streaming prerequisites",
+    "Prioritize framing freshfullchecks and exclusive timing to unlock grammar; integrate approved ready workers serially",
+    "Archive completed PI worker and remove worktrees after durable ignored-artifact snapshot",
+    "Continue remaining milestones through verified M9-gate"
   ],
-  "last_verified_task": "M2-contracts",
-  "last_integrated_revision": "ab2fcabaf3cc984901f484c6fce1069c385e8c2f",
+  "last_verified_task": "M2-pi-allocation-probe",
+  "last_integrated_revision": "114394806e8b590abd6c6cdf7a9163433115629c",
   "completed_assignments": [
     {
       "task_id": "M0-build",
@@ -742,9 +754,63 @@
         "chat_archived": true,
         "worktree": "removed"
       }
+    },
+    {
+      "task_id": "M2-streaming-allocation-probe",
+      "chat_id": "01a124b3-7750-7e93-9988-70d37347ae73",
+      "host_id": "local",
+      "client_thread_id": "client-new-thread:777683c9-fdc7-4bca-9e57-b9b2c5681e22",
+      "worktree_path": "/Users/sebastienros/.codex/worktrees/f887/xemele",
+      "branch": "codex/m2-streaming-allocation-probe",
+      "base_revision": "31c323aac68c71a14706cc059d185f2965a869ec",
+      "claim_revision": "2578b2fe125005e0cabd4226d0fa1ba9ef464ee9",
+      "setup_status": "verified",
+      "review_revision": "2c6970bc173c4744032751d9111fbbcad3e84fba",
+      "review": "Independent source approval2c697 plus strictJSON/archive delta review; root fresh integrated allchecks and protocol negatives passed; historical causes unresolved.",
+      "wait_cursor": "f8188e8e-7560-4eb0-be73-29c362ec916f:51",
+      "diagnostic_revision": "8e76f6ef620c6e4b16848e88bb314a95ae799083",
+      "handoff_revision": "e02e3f5e84759000a8151a3ca57c49e92e52ffc0",
+      "integration_revision": "8a254d3c62aad297b88e2906f8b55e7bce04e30e",
+      "integration_worktree": "/private/tmp/xemele-integrate-m2-streaming-allocation-probe",
+      "integration_branch": "codex/integrate-m2-streaming-allocation-probe",
+      "cleanup": {
+        "chat_archived": true,
+        "worktree": "removed",
+        "record": "docs/orchestration/cleanup-M2-streaming-allocation-probe.json"
+      }
+    },
+    {
+      "task_id": "M2-pi-allocation-probe",
+      "chat_id": "01a124a8-7f9f-7962-9e3c-93808d11c528",
+      "host_id": "local",
+      "client_thread_id": "client-new-thread:3953f8ad-224c-4e18-aeb6-2e364dd3808b",
+      "worktree_path": "/Users/sebastienros/.codex/worktrees/b918/xemele",
+      "branch": "codex/m2-pi-allocation-probe",
+      "base_revision": "f1415a8355fc9084e919cc877e3c4e6d50690bf9",
+      "claim_revision": "b72c2a1bb2cf4f53c322b198f91923bfeed94b8f",
+      "setup_status": "verified",
+      "parked_ack": "Confirmedclaim/branch/noheavychecksstarted/nochildren; lightsourcepreparationonly.",
+      "preserved_draft_revision": "9286cd6cac00df0ccd5f4627d4c29e5046c16af3",
+      "preserved_evidence_revision": "3e9bd43179ee3599b7c4881455857dfde95e4ae8",
+      "ownership_ack": "Explicitclean/nochildren/noedits source/taskJSON ownershiprelinquished beforecoordinator child dependency/reset.",
+      "claim_history": [
+        {
+          "base_revision": "5e93e7a0a4300543fdca034422e508cdd28fd801",
+          "claim_revision": "c85e5994b3e82f7340849dd915b08ef1a84ece17",
+          "reason": "Suspended for now verified Streaming isolation repair; preserved3e9source/evidence."
+        }
+      ],
+      "worker_merge_revision": "45fb606b68d6959aa5bd028cf60a319aa0ffdd57",
+      "review_revision": "f3e47be7911fd3805b3ae424000e83ccdce370c4",
+      "handoff_revision": "c1d80477ef1ce3c9c32488a30ef84560df1526ec",
+      "integration_revision": "114394806e8b590abd6c6cdf7a9163433115629c",
+      "integration_worktree": "/private/tmp/xemele-integrate-m2-pi-allocation-probe",
+      "integration_branch": "codex/integrate-m2-pi-allocation-probe",
+      "review": "Independent source approvalf3e; root fresh jointall17checksPass and actual raw PI child/XML/exit/provenance verified; historicalcausesunresolved.",
+      "wait_cursor": "24af4cad-8f5d-420e-9f2a-dc8e2aec9535:16"
     }
   ],
-  "benchmark_policy": "No active timing hold. DOM completed16cases/16childzero/wrapperzero/48actualiterations and stoppedprocesses at source736734; ordinarypriorityArm64provisional. No repetitions. All future timing remainsserialized.",
+  "benchmark_policy": "Resolver completed8cases/all8child0/24actual, warmread0B/setup1416B/ordinarypriorityArm64 provisional e7cc. Encoding completed13/39 a1d. Allprocessesstopped; noactivehold.",
   "benchmark_owner": null,
   "pending_decisions": [],
   "decisions": {
@@ -784,6 +850,13 @@
         "M2-dtd-grammar"
       ],
       "reason": "External declaration recognition/framing and source-budget handoff are independently reviewable from full DTD grammar. Framing owns shared IDtdBudget; grammar depends on its verification. Original parent acceptance and gate reachability preserved."
+    },
+    {
+      "parent": "M2-pi-allocation-probe",
+      "children": [
+        "M2-streaming-allocation-probe"
+      ],
+      "reason": "Separate unrelated earlier Streaming224B allocation diagnostic from PI-owned probe before renewing claims; original PI A2 mandatory fulljoint allPass unchanged."
     }
   ],
   "reference_capability_notes": [
@@ -820,7 +893,8 @@
     "docs/orchestration/cleanup-M1-pi-targets.json",
     "docs/orchestration/cleanup-M1-corpus.json",
     "docs/orchestration/cleanup-M1-gate.json",
-    "docs/orchestration/cleanup-M2-contracts.json"
+    "docs/orchestration/cleanup-M2-contracts.json",
+    "docs/orchestration/cleanup-M2-streaming-allocation-probe.json"
   ],
   "preserved_reference_sources": [
     {
@@ -836,6 +910,75 @@
       "restriction": "Private offline source cache; retained XMLTEST redistribution clarification required before public fixture distribution."
     }
   ],
-  "timing_queue": [],
-  "metadata_correction": "PI rawAPI report uses inventory.apiDeclarations, not wrapper members. Initialrootmetadata assertion stopped before taskstate writes; d539f13 preserves actualpassing0869bde evidence, separateverifiedmetadata follows."
+  "timing_queue": [
+    "M2-resolver",
+    "M2-dtd-framing"
+  ],
+  "metadata_correction": "PI rawAPI report uses inventory.apiDeclarations, not wrapper members. Initialrootmetadata assertion stopped before taskstate writes; d539f13 preserves actualpassing0869bde evidence, separateverifiedmetadata follows.",
+  "suspended_assignments": [
+    {
+      "task_id": "M2-dtd-framing",
+      "chat_id": "01a1248f-bcb0-70c2-97e1-82986283ae2b",
+      "host_id": "local",
+      "client_thread_id": "client-new-thread:d83226e3-111f-41bb-833c-58e17b5fd98d",
+      "worktree_path": "/Users/sebastienros/.codex/worktrees/c303/xemele",
+      "branch": "codex/m2-dtd-framing",
+      "base_revision": "eef177e8176c87954f0ce2efd8098c3f7dbfbc79",
+      "claim_revision": "2e3d6012e664baf7bf5b3f3085bcb04de7dfc02e",
+      "setup_status": "suspended-for-prerequisite-repair",
+      "wait_cursor": "b324cc2e-d523-426b-a8a0-69c58df158d5:20",
+      "parked_ack": "Boundedcheckpoint cea326: MTP2040passed/API222; direct1490 failedunchangedPI712B afterprior1944B. Noheavychildren; committinghonesthandoff for narrowrepairdependency.",
+      "review_revision": "46104cecdce70170aea050612d13a77f1467251a",
+      "preserved_draft_revision": "cea326c7ed59ac53a832af2f8cc4e528a118d89a",
+      "preserved_evidence_revision": "25d879f7db7a02adae2cdc8a2a267ab55c4f13aa",
+      "ownership_ack": "Cleancheckout/own taskJSON untouched/noheavyprocesses; worker expressly relinquished metadata ownership before coordinator dependency/reset."
+    },
+    {
+      "task_id": "M2-encoding",
+      "chat_id": null,
+      "host_id": "local",
+      "client_thread_id": "client-new-thread:949ee3c9-a871-4025-b4d6-a153d7127f53",
+      "worktree_path": "/Users/sebastienros/.codex/worktrees/d13f/xemele",
+      "branch": "codex/m2-encoding",
+      "base_revision": "eef177e8176c87954f0ce2efd8098c3f7dbfbc79",
+      "claim_revision": "2e3d6012e664baf7bf5b3f3085bcb04de7dfc02e",
+      "setup_status": "suspended-for-prerequisite-repair",
+      "agent_name": "/root/m2_encoding",
+      "setup_note": "Encoding create_thread client neverregistered despite repeated listings; clean detached d13f worktree exists atclaim. Assignedbranch+sole boundedagent writer under promptfallback. Pendingchat initialinstruction read-only/wait; noimplementationbrief sent to it. Reconcile/archive iflate registration. Native Codex UI inspection unavailable bytoolpolicy; purposebuilt listings retained.",
+      "review_revision": "3595b19afbd620c147f5db68fd4e8196fab1b531",
+      "review": "Independent runtime approval3595b19; root e3df narrow harness/tests/APIemptyfragment removal delta approved. Actual809/809 API222/sample/package/provenance passed.",
+      "measurement_revision": "a1d0d1a46b2e47a1ee8864657f4e3d06f0fa8f3e",
+      "measurement_audit": "13children0/39actual;12loopdecoder0B;DOM58256B/28.014us;allstopped; highprioritypermissiondenied retained. Finaldurableimplementedhandoffpending.",
+      "preserved_draft_revision": "a1d0d1a46b2e47a1ee8864657f4e3d06f0fa8f3e",
+      "preserved_evidence_revision": "bbdd372fdeedc2400649b80b30421526a4ff31e7",
+      "ownership_ack": "Finalcleancommittedhandoff/allprocessesstopped/no furtherwrites untilfocusedfollowup. Coordinator accepted taskrecordownership."
+    },
+    {
+      "task_id": "M2-resolver",
+      "chat_id": "01a1248f-ac32-7bd2-b115-af952711a7e4",
+      "host_id": "local",
+      "client_thread_id": "client-new-thread:08f0bfe8-4096-40a2-ba27-881e84f00f85",
+      "worktree_path": "/Users/sebastienros/.codex/worktrees/6664/xemele",
+      "branch": "codex/m2-resolver",
+      "base_revision": "eef177e8176c87954f0ce2efd8098c3f7dbfbc79",
+      "claim_revision": "2e3d6012e664baf7bf5b3f3085bcb04de7dfc02e",
+      "setup_status": "suspended-for-prerequisite-repair",
+      "wait_cursor": "7547a146-162b-4afd-85fb-d232bcfb40a6:13",
+      "parked_ack": "Full841/API251/provenance/package/planningpassed cbaec, noheavychildren. Lightnestedhandlecleanup correctionpending.",
+      "review_revision": "e7cc0b5fd6480c4395e6dd861c5e28ed97815f2d",
+      "review": "Independent sourceapproval e7cc resolvesbothcleanupfindings; newfocused43/fullchecksawaitactualexecution.",
+      "measurement_revision": "e7cc0b5fd6480c4395e6dd861c5e28ed97815f2d",
+      "correctness_revision": "e7cc0b5fd6480c4395e6dd861c5e28ed97815f2d",
+      "preserved_draft_revision": "e7cc0b5fd6480c4395e6dd861c5e28ed97815f2d",
+      "preserved_evidence_revision": "5a52ef2744257e242ed178c1a2c8dbd71ef0b8db",
+      "ownership_ack": "Finalcleancommittedhandoff/allprocessesstopped/no furtherwrites untilfocusedfollowup. Coordinator accepted taskrecordownership.",
+      "handoff_correction": "Report-only finaltwoMarkdownhardbreak whitespace auditcorrected; priorfailedfinalaudit preservedmetadata-checks, currentcleandiff. ExplicitmetadataownershipACK received."
+    }
+  ],
+  "allocation_research": {
+    "issue": "https://github.com/dotnet/runtime/issues/134724",
+    "draft_fix": "https://github.com/dotnet/runtime/pull/134855",
+    "finding": "Draft fix describes abandoned allocation-context accounting producing phantom GC.GetAllocatedBytesForCurrentThread bytes; maintainer review approved, not merged at inspection. Independently reproduce controls on exact runtime before attributing Xemele failures. No threshold, retry, GC/JIT, or parallelism relaxation.",
+    "local_control": "8e76f6ef620c6e4b16848e88bb314a95ae799083: counter-control exit1 with no error; independently reproduced empty-interval anomaly under actual background collections. Historical Xemele failure causes remain unproved."
+  }
 }

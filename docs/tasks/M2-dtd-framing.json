@@ -7,10 +7,11 @@
   "status": "in_progress",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M2-dtd-framing",
   "branch": "codex/m2-dtd-framing",
-  "base_revision": "eef177e8176c87954f0ce2efd8098c3f7dbfbc79",
+  "base_revision": "1a77b3598ed6084b17a69ca562d160f0d64a6be5",
   "integration_revision": null,
   "depends_on": [
-    "M2-contracts"
+    "M2-contracts",
+    "M2-pi-allocation-probe"
   ],
   "goals": [
     "G07"
@@ -33,29 +34,93 @@
     {
       "id": "M2-dtd-framing-A1",
       "description": "Implement approved XmlTextDeclarationFramer/result/declaration and shared IDtdBudget independently of decoder/resolver/DOM; scalar/mapping/source cursor and exactly-once prefix handoff.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "runtime-source-review",
+        "framing-focused-results"
+      ]
     },
     {
       "id": "M2-dtd-framing-A2",
       "description": "Every split proves declared/absent/rejected outcomes, mandatory encoding/version grammar, bounded prefix/carry, incremental live-budget refusal, exact/one-over limits, EOF/locations, cancellation/fault/disposal and owned snapshots.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "framing-focused-results"
+      ]
     },
     {
       "id": "M2-dtd-framing-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "failed",
+      "evidence": [
+        "initial-committed-checkpoint",
+        "bounded-committed-checkpoint"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Parsing/Dtd/IDtdBudget.cs: exact common-only nullable owned diagnostic ledger contract",
+    "src/Xemele/Parsing/Dtd/Framing/XmlTextDeclarationFramer.cs: incremental grammar, bounded recognition/surrogate state, absolute mappings/scalar cursor, live charging and owned outcomes",
+    "tests/Xemele.Tests/M2-dtd-framing/FramingTests.cs:1243 actual split/grammar/quota/lifetime/decoder tests",
+    "samples/M2-dtd-framing/: working split-declaration/prefix sample and cold/warm/retained allocation probe",
+    "benchmarks/Xemele.Benchmarks/M2-dtd-framing/FramingBenchmarks.cs and docs/reports/M2-dtd-framing/: unique standalone benchmark assembly, bounded iteration oracle, independent actual/approved inventory, explicit integration count verifier and honest partial reports"
+  ],
+  "evidence": [
+    {
+      "id": "runtime-source-review",
+      "kind": "review",
+      "revision": "46104cecdce70170aea050612d13a77f1467251a",
+      "command": "Coordinator01a1230c-1353-7e01-afbe-a53c9c018264 independent read-only source review",
+      "result": "passed",
+      "summary": "Coordinator approved bounded recognition/incremental shared budget/mapping/lifecycle/common-only source. Later cea326c adds only own benchmark friend assembly to runtime source; no behavior change.",
+      "artifact": null
+    },
+    {
+      "id": "initial-committed-checkpoint",
+      "kind": "check",
+      "revision": "46104cecdce70170aea050612d13a77f1467251a",
+      "command": "Pinned SDK10.0.400 env; python3 -B docs/reports/M2-dtd-framing/verify.py --report-prefix checkpoint --audit-base 2e3d6012e664baf7bf5b3f3085bcb04de7dfc02e --expected-branch codex/m2-dtd-framing",
+      "result": "failed",
+      "summary": "Independent actual/approved framing inventory/sample/allocation/benchmark preparation and inherited model/foundation checks passed. Cumulative MTP failed unchanged M1 PI allocation assertion0expected/1944Bobserved (2040total/1failure/0skip); subsequent separate direct1490runtime allpassed. API/provenance/final planning/audits unrun in failed verifier. No timing.",
+      "artifact": "docs/reports/M2-dtd-framing/checkpoint/summary.json"
+    },
+    {
+      "id": "bounded-committed-checkpoint",
+      "kind": "check",
+      "revision": "cea326c7ed59ac53a832af2f8cc4e528a118d89a",
+      "command": "Pinned SDK10.0.400 env; python3 -B docs/reports/M2-dtd-framing/verify.py --report-prefix bounded-checkpoint --audit-base 2e3d6012e664baf7bf5b3f3085bcb04de7dfc02e --expected-branch codex/m2-dtd-framing --expected-runtime-tests 1490 --expected-conformance-tests 255 --expected-differential-tests 299 --expected-public-api 222",
+      "result": "failed",
+      "summary": "Approved common-only actual inventory/shared constructor/sample/bounded benchmark oracle passed. Inherited models/foundation/cumulative MTP2040/0failure/0skip and API222 passed. Subsequent direct1490runtime/1failure/0skip: unchanged M1 PI allocation expected0observed712B; all1243own framing tests passed. Warm whitespace0B; ownedoperation768B; retained GC estimate160048B/1000results. Final separateconformance/differentialXML/referenceprovenance/planning14/owned audits unrun. No timing, Windows/x64/AOT unrun; no runtime DTDgrammar/resolver/newdecoder claim.",
+      "artifact": "docs/reports/M2-dtd-framing/bounded-checkpoint/summary.json"
+    },
+    {
+      "id": "framing-focused-results",
+      "kind": "check",
+      "revision": "cea326c7ed59ac53a832af2f8cc4e528a118d89a",
+      "command": "dotnet tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -noColor -result-xml artifacts/M2-dtd-framing/bounded-checkpoint/Xemele.Tests.xml; inspect only actual FramingTests records",
+      "result": "passed",
+      "summary": "All1243actual framing tests in preserved direct-run XML have Pass outcomes; the same run failed one unrelated earlier M1 PI allocation assertion, recorded separately and never claimed overallpass. Covers exact grammar/splits/mappings/scalar quotas/lifetime/live-budget/real M1 decoder composition.",
+      "artifact": "docs/reports/M2-dtd-framing/bounded-checkpoint/Xemele.Tests.xml.gz"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "",
-    "checks": [],
-    "remaining": [],
-    "requests": []
+    "summary": "Runtime framing implemented and independently reviewed; all1243owntests pass, standalone actual/approved inventory and sample pass. Overall task in_progress: repeated unchanged M1 PI measurement failures block complete cumulative verification; timing remains unrun. Sources durably committed46104ce then cea326c; integration_revision null.",
+    "checks": [
+      "At cea326c: actual independent common-only/approved fixture member inventory/shared constructor matched; working sample passed; unique Xemele.DtdFramingBenchmarks prepared; bounded4x3x8192oracle and6ownedworkloads passed without timing.",
+      "At cea326c: inherited models/foundation/MTP2040zero failures/skips/API222passed; subsequent direct1490 has one unchanged M1 PI712Bfailure,1243framingrecordsallPass. At46104ce: earlier MTPPI1944Bfailure and separate direct1490allPass preserved.",
+      "Allocation cold/ownedoperation768B;1000warmwhitespacecalls0B; retainedresults1000 GC estimate160048B (48B declaration struct); no timing or exact retainedobjectgraph claim.",
+      "Fresh pinned BCL output copied before inherited solution build, but final242record provenance verification unrun after PI failure. Final planning14/complete verifier audits unrun.",
+      "Lightweight final working-handoff metadata validation112 and exactclaim committed/staged/working/untracked ownership/whitespace audits passed; planning14 and full verifier provenance/final checks remain unrun."
+    ],
+    "remaining": [
+      "Coordinator integrate measurement prerequisite repair and reset task dependency/claim, then resume from supplied bounded assignment.",
+      "Fresh complete verifier at known repaired source with actual integrated counts; final reference242/planning14/validation112/owned audits.",
+      "Exclusive-host benchmark timing with existing MemoryDiagnoser/ShortRunJob classes; no timing grant or measurements yet.",
+      "Integrated verification and Windows/x64/AOT/fullDTDcomposition remain outside this checkpoint."
+    ],
+    "requests": [
+      "Coordinator-owned narrow prerequisite repair in tests/Xemele.Tests/M1-pi-targets/PiTargetTests.cs: isolate measured primitive loop from runner/test-context allocations, retaining exact0B and meaningful progress assertions; no runtime changes or softened threshold. Worker performs no peer edit."
+    ]
   }
 }

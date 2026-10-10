@@ -1,0 +1,245 @@
+{
+  "schema_version": 1,
+  "id": "M2-pi-allocation-probe",
+  "milestone": "M2",
+  "title": "Stabilize equivalent warm PI allocation measurement",
+  "kind": "infrastructure",
+  "status": "verified",
+  "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M2-pi-allocation-probe",
+  "branch": "codex/m2-pi-allocation-probe",
+  "base_revision": "f1415a8355fc9084e919cc877e3c4e6d50690bf9",
+  "integration_revision": "114394806e8b590abd6c6cdf7a9163433115629c",
+  "depends_on": [
+    "M2-contracts",
+    "M1-pi-targets",
+    "M2-streaming-allocation-probe"
+  ],
+  "goals": [
+    "G03",
+    "G18"
+  ],
+  "specs": [
+    "docs/performance-coding.md",
+    "docs/specs/parser.md"
+  ],
+  "owns": [
+    "tests/Xemele.Tests/M1-pi-targets/PiTargetTests.cs",
+    "tests/Xemele.Tests/M2-pi-allocation-probe/",
+    "docs/reports/M2-pi-allocation-probe/"
+  ],
+  "api_or_output": "Equivalent warm100/measured10000 PI primitive measurement with exact zero-byte assertion and preserved progress/completion",
+  "acceptance": [
+    {
+      "id": "M2-pi-allocation-probe-A1",
+      "description": "Preserve framing checkpoint PI1944B and bounded-checkpoint PI712B failures plus separate passing runs; diagnose cold/setup/first-use and steady scopes without attributing historical failures to an unproved cause. Isolate identical warm and measured Append logic with checked consumption/progress and same sink/cancellation snapshot, retaining100 warmup/10000 measured/exact0B and default runtime settings. Only existing PI probe/helper changes; no other tests, production, parallelism, or thresholds changed. If actual steady runtime allocation remains, request runtime-owner repair.",
+      "status": "passed",
+      "evidence": [
+        "historical-failures",
+        "allocation-scopes",
+        "focused-pi",
+        "direct-runtime",
+        "independent-review",
+        "renewed-historical-and-scope-review",
+        "isolated-allocation-scopes",
+        "isolated-focused-mtp",
+        "isolated-joint-direct",
+        "isolated-independent-source-review",
+        "coordinator-integrated-pi-isolation"
+      ]
+    },
+    {
+      "id": "M2-pi-allocation-probe-A2",
+      "description": "At known source run bounded controlled fresh focused and cumulative MTP plus direct runtime checks, meaningful measured progress/completion and separated allocation scopes, API compatibility/discovery/planning regressions/validation/owned-path audits. Preserve failures and unrun checks. Make verifier accept actual integrated counts and unique output prefixes. No timing benchmarks or blind repetitions.",
+      "status": "passed",
+      "evidence": [
+        "initial-attempt-failed",
+        "cumulative-mtp-failed",
+        "direct-runtime",
+        "compatibility-planning-audits",
+        "isolated-joint-mtp",
+        "isolated-joint-direct",
+        "protocol-rejection-and-archive-controls",
+        "renewed-build-api-reference-planning-audits",
+        "isolated-independent-source-review",
+        "coordinator-integrated-pi-isolation"
+      ]
+    }
+  ],
+  "implementation": [
+    "tests/Xemele.Tests/M1-pi-targets/PiTargetTests.cs: only existing RepeatedBorrowedPiTargetsAllocateZeroAfterWarmup/imports changed; guarded actual compiled Fact realthenpositiveonce preserves original100warm/10000measured/exact0/defaults, same counting sink/TestContext token and meaningful phase/completion assertions.",
+    "tests/Xemele.Tests/M2-pi-allocation-probe/PiAllocationProbe.cs: both snapshots enclose whole NoInlining checked Append loop; same generic sink/cancellation/core/chunk call site for100warm and10000measured; no subtraction.",
+    "tests/Xemele.Tests/M2-pi-allocation-probe/PiAllocationChild.cs: escaped37-byte callback positive control; streamed executable/test/product/runtime/config/helperIL fingerprint; stricttypedJSON/oneFactXML/phasecounts/completion; fail on realnonzero/crash/timeout/missing/malformed/exit/provenance mismatch.",
+    "docs/reports/M2-pi-allocation-probe/Diagnostics/Program.cs and Diagnostics.csproj: independent linked actual checked helper source, original-shape comparison, separate setup/root/firstuse/warm/primitive/surrounding/completion scopes; sink/token replication limitations explicit.",
+    "docs/reports/M2-pi-allocation-probe/verify.py/protocol_negative.py/test_archive.py: archives raw child data before parsing/finally, actual compiled bounded rejection controls, full joint MTP/direct/API/freshreference/planning/owned unchanged-other-body checks; immutable prefixes and explicit integrated counts/branch/audit-base."
+  ],
+  "evidence": [
+    {
+      "id": "historical-failures",
+      "kind": "review",
+      "revision": "9286cd6cac00df0ccd5f4627d4c29e5046c16af3",
+      "command": "Review byte-for-byte copied checkpoint/bounded-checkpoint raw reports from preserved framing commit25d879f7db7a02adae2cdc8a2a267ab55c4f13aa",
+      "result": "passed",
+      "summary": "Preserved checkpoint1944B PI MTP failure at46104ce (2040 total) plus separate direct1490 pass; bounded712B direct1490 failure atcea326 plus separate earlier MTP2040 pass. Historical counts include unmerged framer tests; no causal attribution and no peer implementation imported.",
+      "artifact": "docs/reports/M2-pi-allocation-probe/history/"
+    },
+    {
+      "id": "initial-attempt-failed",
+      "kind": "check",
+      "revision": "0e04b7c968ddaf0920fac1f9b08c0e61286b3fd7",
+      "command": "python3 -B docs/reports/M2-pi-allocation-probe/verify.py --report-prefix source-0e04b7c-attempt1 --expected-branch codex/m2-pi-allocation-probe --audit-base c85e5994b3e82f7340849dd915b08ef1a84ece17 --runtime-count 247 --conformance-count 255 --differential-count 299 --api-count 222 --fixture-count 3388 --planning-count 14 --task-count 113",
+      "result": "failed",
+      "summary": "Incorrect new warm callback assertion expected603 actual1003; direct247/1failure before PI allocation scope; diagnostic progress assertions also failed. MTP sandbox SocketAsyncEngine/namedpipe failure prevented test execution. API222/discovery3388/directconformance255/directdifferential299/reference242/planning14/validation113/audits passed; no PI allocation value claimed. Corrected count10callbacks/chunk and used authorized escalation at new source.",
+      "artifact": "docs/reports/M2-pi-allocation-probe/source-0e04b7c-attempt1/summary.json"
+    },
+    {
+      "id": "allocation-scopes",
+      "kind": "check",
+      "revision": "9286cd6cac00df0ccd5f4627d4c29e5046c16af3",
+      "command": "dotnet docs/reports/M2-pi-allocation-probe/Diagnostics/bin/Release/net10.0/Xemele.SyntaxBenchmarks.dll original; dotnet docs/reports/M2-pi-allocation-probe/Diagnostics/bin/Release/net10.0/Xemele.SyntaxBenchmarks.dll equivalent",
+      "result": "passed",
+      "summary": "Fresh bounded process replication: setup6792B/root312B/firstPI368B/remaining99warm0B/completion0B in both; measured10000 original128B/equivalent0B. Both consumed complete chunks and delivered100000 measuredcallbacks/40000textunits and Completed4consumed. Replicated simple counting sink/CancellationToken.None differs from test sink/token; no timing/retention claim or historical-cause inference.",
+      "artifact": "docs/reports/M2-pi-allocation-probe/source-9286cd6-attempt1/equivalent-allocations.json"
+    },
+    {
+      "id": "focused-pi",
+      "kind": "check",
+      "revision": "9286cd6cac00df0ccd5f4627d4c29e5046c16af3",
+      "command": "dotnet test --project tests/Xemele.Tests -c Release --no-build --no-restore --filter-method Xemele.Tests.PiTargets.PiTargetTests.RepeatedBorrowedPiTargetsAllocateZeroAfterWarmup",
+      "result": "passed",
+      "summary": "Fresh focused MTP1 total/1pass/0failed/0skipped on .NET10.0.11/SDK10.0.400 arm64/default runtime and test settings; PI exact0B and complete consumption/callback/unit/completion assertions pass.",
+      "artifact": "docs/reports/M2-pi-allocation-probe/source-9286cd6-attempt1/checks.txt.gz"
+    },
+    {
+      "id": "cumulative-mtp-failed",
+      "kind": "check",
+      "revision": "9286cd6cac00df0ccd5f4627d4c29e5046c16af3",
+      "command": "dotnet test --solution Xemele.slnx -c Release --no-build --no-restore",
+      "result": "failed",
+      "summary": "801 total/800pass/1failure/0skip. PI passes; unchanged StreamingTests.WarmRepeatedTagsAndStreamingUnicodeDispatchAllocateZero observed224B vs0 at line58. Preserved without retry, exclusion, threshold/parallelism/runtime change or unproved attribution.",
+      "artifact": "docs/reports/M2-pi-allocation-probe/source-9286cd6-attempt1/checks.txt.gz"
+    },
+    {
+      "id": "direct-runtime",
+      "kind": "check",
+      "revision": "9286cd6cac00df0ccd5f4627d4c29e5046c16af3",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' /Users/sebastienros/.codex/worktrees/b918/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -noColor -result-xml /Users/sebastienros/.codex/worktrees/b918/xemele/artifacts/M2-pi-allocation-probe/source-9286cd6-attempt1/Xemele.Tests.xml\n'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' /Users/sebastienros/.codex/worktrees/b918/xemele/tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll -noColor -result-xml /Users/sebastienros/.codex/worktrees/b918/xemele/artifacts/M2-pi-allocation-probe/source-9286cd6-attempt1/Xemele.Conformance.Tests.xml\n'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' /Users/sebastienros/.codex/worktrees/b918/xemele/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll -noColor -result-xml /Users/sebastienros/.codex/worktrees/b918/xemele/artifacts/M2-pi-allocation-probe/source-9286cd6-attempt1/Xemele.Differential.Tests.xml",
+      "result": "passed",
+      "summary": "Separate fresh direct assemblies247runtime+255conformance+299differential=801 allPass/0fail/0skip; actual XML preserved. PI exact0B passes, and streaming test passes in this separate process. Fresh full BCL output pinned before solution build,242 unique reference records match source9286cd6 and unchanged runner SHA.",
+      "artifact": "docs/reports/M2-pi-allocation-probe/source-9286cd6-attempt1/summary.json"
+    },
+    {
+      "id": "compatibility-planning-audits",
+      "kind": "check",
+      "revision": "9286cd6cac00df0ccd5f4627d4c29e5046c16af3",
+      "command": "git diff --name-only c85e5994b3e82f7340849dd915b08ef1a84ece17 HEAD\ngit diff --name-only\ngit diff --cached --name-only\ngit ls-files --others --exclude-standard\ngit diff --name-only HEAD -- tests/Xemele.Tests/M1-pi-targets/PiTargetTests.cs tests/Xemele.Tests/M2-pi-allocation-probe/ docs/reports/M2-pi-allocation-probe/Diagnostics/ docs/reports/M2-pi-allocation-probe/verify.py\ngit ls-files --others --exclude-standard -- tests/Xemele.Tests/M1-pi-targets/PiTargetTests.cs tests/Xemele.Tests/M2-pi-allocation-probe/ docs/reports/M2-pi-allocation-probe/Diagnostics/ docs/reports/M2-pi-allocation-probe/verify.py\ngit diff --check c85e5994b3e82f7340849dd915b08ef1a84ece17 HEAD\ngit diff --check\ngit diff --cached --check\n'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' build tools/ReferenceRunners/Bcl/BclReference.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false\n'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' build Xemele.slnx -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false\n'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' build /Users/sebastienros/.codex/worktrees/b918/xemele/docs/reports/M2-pi-allocation-probe/Diagnostics/Diagnostics.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false\n'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' build docs/reports/M0-contracts/ApiCheck/ApiCheck.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false\npython3 -B tools/ApiBaseline/compare.py --report /Users/sebastienros/.codex/worktrees/b918/xemele/docs/reports/M2-pi-allocation-probe/source-9286cd6-attempt1/runtime-api.json\npython3 -B tools/ApiBaseline/discover.py\npython3 -B -m unittest discover -s tools/planning -p test_tasks.py -v\npython3 -B tools/planning/tasks.py validate\ngit diff --name-only c85e5994b3e82f7340849dd915b08ef1a84ece17 HEAD\ngit diff --name-only\ngit diff --cached --name-only\ngit ls-files --others --exclude-standard\ngit diff --name-only HEAD -- tests/Xemele.Tests/M1-pi-targets/PiTargetTests.cs tests/Xemele.Tests/M2-pi-allocation-probe/ docs/reports/M2-pi-allocation-probe/Diagnostics/ docs/reports/M2-pi-allocation-probe/verify.py\ngit ls-files --others --exclude-standard -- tests/Xemele.Tests/M1-pi-targets/PiTargetTests.cs tests/Xemele.Tests/M2-pi-allocation-probe/ docs/reports/M2-pi-allocation-probe/Diagnostics/ docs/reports/M2-pi-allocation-probe/verify.py\ngit diff --check c85e5994b3e82f7340849dd915b08ef1a84ece17 HEAD\ngit diff --check\ngit diff --cached --check",
+      "result": "passed",
+      "summary": "Independent passing subchecks: Release solution/diagnostic/checker builds0warnings0errors; compiled union222 matched; discovery222API/3388fixtures; planning14; validate113; source/working/staged/untracked and diff whitespace owned audits. Overall verifier exit1 due cumulative streaming allocation failure, not an overall allPass result.",
+      "artifact": "docs/reports/M2-pi-allocation-probe/source-9286cd6-attempt1/summary.json"
+    },
+    {
+      "id": "independent-review",
+      "kind": "review",
+      "revision": "9286cd6cac00df0ccd5f4627d4c29e5046c16af3",
+      "command": "Coordinator message confirms independent corrected-source review",
+      "result": "passed",
+      "summary": "Coordinator confirms independent review approves exact helper/counts/progress and honest evidence at corrected9286cd6; cumulative streaming failure acknowledged and no peer edits/blind retry authorized.",
+      "artifact": null
+    },
+    {
+      "id": "renewed-historical-and-scope-review",
+      "kind": "review",
+      "revision": "f3e47be7911fd3805b3ae424000e83ccdce370c4",
+      "command": "Review verified M2-streaming-allocation-probe README/control evidence and byte-identical encoding history preservation.json; coordinator-approved PI isolation proposal",
+      "result": "passed",
+      "summary": "Verified prerequisite counter controls reproduce positive empty-interval counter deltas during actual background collections on pinned10.0.11; not rerun here and not causal proof for historical PI/streaming failures. Coordinator approved the same narrow isolated synchronous actual-Fact design. Added byte-identical SHA-recorded historical PI1024B direct255failure atcd75317 with separate earlier cumulative809/API222pass; subsequentchecks unrun. All previous1944/712/128/224B/callback603 and sandbox failure evidence retained unchanged. No concurrent allocation guarantee.",
+      "artifact": "docs/reports/M2-pi-allocation-probe/history/encoding-integration-cd75317-attempt1/preservation.json"
+    },
+    {
+      "id": "isolated-allocation-scopes",
+      "kind": "check",
+      "revision": "f3e47be7911fd3805b3ae424000e83ccdce370c4",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' /Users/sebastienros/.codex/worktrees/b918/xemele/docs/reports/M2-pi-allocation-probe/Diagnostics/bin/Release/net10.0/Xemele.SyntaxBenchmarks.dll original\n'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' /Users/sebastienros/.codex/worktrees/b918/xemele/docs/reports/M2-pi-allocation-probe/Diagnostics/bin/Release/net10.0/Xemele.SyntaxBenchmarks.dll equivalent",
+      "result": "passed",
+      "summary": "Independent actual-helper-linked diagnostic retains100warm/10000measured. Both original-shape/equivalent: setup6792B/root312B/firstPI368B/remaining99warm0B/completion0B; old shape surrounding steady128B, equivalent whole checked primitive0B/surrounding0B. Measured100000callbacks/40000units/Completed4; no JIT/GC/classparallelism overrides, timing or retention claim. Diagnostics uses simple sink/None token; independently executed actual children use the real existing sink/TestContext token.",
+      "artifact": "docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1/equivalent-allocations.json"
+    },
+    {
+      "id": "isolated-focused-mtp",
+      "kind": "check",
+      "revision": "f3e47be7911fd3805b3ae424000e83ccdce370c4",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' test --project tests/Xemele.Tests -c Release --no-build --no-restore --filter-method '*RepeatedBorrowedPiTargetsAllocateZeroAfterWarmup*'",
+      "result": "passed",
+      "summary": "Fresh focused MTP exactly1 existing PI Fact passed/0failed/0skipped. The actual standalone guarded real/positive pair measured0B/6400000B, warm368B/64368B, original100/10000 and meaningful warm/measured/completion totals, with compiled-source/runtime/helperIL provenance validated. No added Fact or count exclusion.",
+      "artifact": "docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1/checks.txt.gz"
+    },
+    {
+      "id": "isolated-joint-mtp",
+      "kind": "check",
+      "revision": "f3e47be7911fd3805b3ae424000e83ccdce370c4",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' test --solution Xemele.slnx -c Release --no-build --no-restore",
+      "result": "passed",
+      "summary": "Full cumulative MTP801total/801pass/0failed/0skipped, runtime247+conformance255+differential299. Both PI and verified streaming allocation parents pass with default classparallelism; PI actual pair real0B/positive6400000B. Mandatory full joint check passed once, without retries or threshold/settings changes.",
+      "artifact": "docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1/checks.txt.gz"
+    },
+    {
+      "id": "isolated-joint-direct",
+      "kind": "check",
+      "revision": "f3e47be7911fd3805b3ae424000e83ccdce370c4",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' /Users/sebastienros/.codex/worktrees/b918/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -noColor -result-xml /Users/sebastienros/.codex/worktrees/b918/xemele/artifacts/M2-pi-allocation-probe/isolated-f3e47be-attempt1/Xemele.Tests.xml\n'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' /Users/sebastienros/.codex/worktrees/b918/xemele/tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll -noColor -result-xml /Users/sebastienros/.codex/worktrees/b918/xemele/artifacts/M2-pi-allocation-probe/isolated-f3e47be-attempt1/Xemele.Conformance.Tests.xml\n'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' /Users/sebastienros/.codex/worktrees/b918/xemele/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll -noColor -result-xml /Users/sebastienros/.codex/worktrees/b918/xemele/artifacts/M2-pi-allocation-probe/isolated-f3e47be-attempt1/Xemele.Differential.Tests.xml",
+      "result": "passed",
+      "summary": "Fresh direct runtime247/conformance255/differential299=801allPass/0fail/0skip XML preserved. Actual PI pair real0B/positive6400000B, warm368B/64368B, measured100000calls/40000units, total101005/40400, Completed4/nullDiagnostic. All3PIpairs (focusedMTP/cumulativeMTP/direct) pin host apphost-or-dotnet SHA, test/product sourceversions+SHA, active managed/native runtime SHA, runtimeconfig/helperIL; strict actual1FactXMLpass/PID/capability/phasecount/positiveescaped37 validated. Every invocation/request/stdout/stderr/XML/report/exit archived before parsing. Real child exact0B assertion remains; no subtraction or retry.",
+      "artifact": "docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1/child-provenance.json"
+    },
+    {
+      "id": "protocol-rejection-and-archive-controls",
+      "kind": "check",
+      "revision": "f3e47be7911fd3805b3ae424000e83ccdce370c4",
+      "command": "python3 -B -m unittest discover -s /Users/sebastienros/.codex/worktrees/b918/xemele/docs/reports/M2-pi-allocation-probe -p test_archive.py -v\npython3 -B /Users/sebastienros/.codex/worktrees/b918/xemele/docs/reports/M2-pi-allocation-probe/protocol_negative.py --report-prefix isolated-f3e47be-attempt1-protocol-negative --known-request /Users/sebastienros/.codex/worktrees/b918/xemele/artifacts/M2-pi-allocation-probe/child-runs/39938-a6b27836c2044d369ee1cbbafcae95bd/real.request.json --source-revision f3e47be7911fd3805b3ae424000e83ccdce370c4",
+      "result": "passed",
+      "summary": "Meaningful malformed-first report/later-raw preservation regression1passed. Seven bounded controls against actual compiled sourcef3e47be: unknown/incomplete mode, missingrequired/malformed/unknownmember JSON, provenance mismatch and configured-host mismatch; each actualexit1/one intended failedFact. These are successful rejection controls, not passing child allocation runs. Timeout/crash/postreporttamper policies reviewed in source, not executed negative controls; no claim otherwise.",
+      "artifact": "docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1-protocol-negative/summary.json"
+    },
+    {
+      "id": "renewed-build-api-reference-planning-audits",
+      "kind": "check",
+      "revision": "f3e47be7911fd3805b3ae424000e83ccdce370c4",
+      "command": "git diff --name-only b72c2a1bb2cf4f53c322b198f91923bfeed94b8f HEAD\ngit diff --name-only\ngit diff --cached --name-only\ngit ls-files --others --exclude-standard\ngit diff --name-only HEAD -- tests/Xemele.Tests/M1-pi-targets/PiTargetTests.cs tests/Xemele.Tests/M2-pi-allocation-probe/ docs/reports/M2-pi-allocation-probe/Diagnostics docs/reports/M2-pi-allocation-probe/verify.py\ngit ls-files --others --exclude-standard -- tests/Xemele.Tests/M1-pi-targets/PiTargetTests.cs tests/Xemele.Tests/M2-pi-allocation-probe/ docs/reports/M2-pi-allocation-probe/Diagnostics docs/reports/M2-pi-allocation-probe/verify.py\ngit diff --check b72c2a1bb2cf4f53c322b198f91923bfeed94b8f HEAD\ngit diff --check\ngit diff --check --cached\npython3 -B -m unittest discover -s /Users/sebastienros/.codex/worktrees/b918/xemele/docs/reports/M2-pi-allocation-probe -p test_archive.py -v\n'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' build tools/ReferenceRunners/Bcl/BclReference.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false\n'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' build Xemele.slnx -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false\n'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' build /Users/sebastienros/.codex/worktrees/b918/xemele/docs/reports/M2-pi-allocation-probe/Diagnostics -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false\n'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' build docs/reports/M0-contracts/ApiCheck/ApiCheck.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false\npython3 -B tools/ApiBaseline/compare.py --report /Users/sebastienros/.codex/worktrees/b918/xemele/docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1/runtime-api.json\npython3 -B tools/ApiBaseline/discover.py\npython3 -B -m unittest discover -s tools/planning -p test_tasks.py -v\npython3 -B tools/planning/tasks.py validate\ngit diff --name-only b72c2a1bb2cf4f53c322b198f91923bfeed94b8f HEAD\ngit diff --name-only\ngit diff --cached --name-only\ngit ls-files --others --exclude-standard\ngit diff --name-only HEAD -- tests/Xemele.Tests/M1-pi-targets/PiTargetTests.cs tests/Xemele.Tests/M2-pi-allocation-probe/ docs/reports/M2-pi-allocation-probe/Diagnostics docs/reports/M2-pi-allocation-probe/verify.py\ngit ls-files --others --exclude-standard -- tests/Xemele.Tests/M1-pi-targets/PiTargetTests.cs tests/Xemele.Tests/M2-pi-allocation-probe/ docs/reports/M2-pi-allocation-probe/Diagnostics docs/reports/M2-pi-allocation-probe/verify.py\ngit diff --check b72c2a1bb2cf4f53c322b198f91923bfeed94b8f HEAD\ngit diff --check\ngit diff --check --cached",
+      "result": "passed",
+      "summary": "Verifier overall exit0/allchecksPass at knownsourcef3e47be. Release reference/solution/diagnostic/checker0warning0error; APIcompiled222matched/discovery3388fixtures;242unique fresh BCL records sourcef3e47be and unchanged pinnedcomplete-output runnerSHA; planning14/validate114. Explicit committed/working/staged/untracked/source/diff audits pass and all other existing PI test bodies unchanged vs renewedclaim. Runtime/settings SDK10.0.400/.NET10.0.11/arm64/default. Unique reportprefix/explicit branch/base/countargs supported for independent integrated rerun.",
+      "artifact": "docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1/summary.json"
+    },
+    {
+      "id": "isolated-independent-source-review",
+      "kind": "review",
+      "revision": "f3e47be7911fd3805b3ae424000e83ccdce370c4",
+      "command": "Coordinator-supplied review_input_spike read-only source approval at exactf3e47be",
+      "result": "passed",
+      "summary": "Independent reviewer approves whole NoInlining counter loop/100warm10000/exact0/sink-token/counts-completion, actual sameFact children/strict provenance/failure policy, owned scope/unchanged other PI bodies and Streaming, mandatory full joint verifier/raw archival and honest128B/history. No blockers; read-only review, no execution. Coordinator inspected all passing known-source check outcomes.",
+      "artifact": null
+    },
+    {
+      "id": "coordinator-integrated-pi-isolation",
+      "kind": "integration",
+      "revision": "114394806e8b590abd6c6cdf7a9163433115629c",
+      "command": "python3 -B docs/reports/M2-pi-allocation-probe/verify.py --report-prefix integration-1143948-attempt1 --expected-branch codex/integrate-m2-pi-allocation-probe --audit-base ca5284846361b63a24c6abbcafdedbbe82925d1e --runtime-count 247 --conformance-count 255 --differential-count 299 --api-count 222 --fixture-count 3388 --planning-count 14 --task-count 114",
+      "result": "passed",
+      "summary": "Independent fresh joint integration all17checks pass: focused1/MTP801/direct247+255+299,3actual PI real0/positive6400000 pairs,100warm10000measure/40000units100000callbacks/total40400/101005/Completed consumed4/nullDiag; actual apphost/directdotnet/compiled test+product source/runtime/config/helperIL pins. Independent original comparison128B retained without cause claim; equivalent whole primitive0B. API222/discovery3388/reference242 fresh completeBCLsource+SHA/planning14/114/ownership; archive1 and seven actual protocol rejections pass. Full mandatory parent allPass fulfilled; no production/defaultGCJIT/classparallelism/threshold changes, no concurrent allocation guarantee.",
+      "artifact": "docs/reports/M2-pi-allocation-probe/integration-1143948-attempt1/summary.json"
+    }
+  ],
+  "blockers": [],
+  "handoff": {
+    "summary": "Verified independent fresh joint integrated PI isolation at 114394806e8b590abd6c6cdf7a9163433115629c. Original parent fullallPass fulfilled; historical failures and128B comparison retained, causes unresolved.",
+    "checks": [
+      "python3 -B docs/reports/M2-pi-allocation-probe/verify.py --report-prefix isolated-f3e47be-attempt1 --expected-branch codex/m2-pi-allocation-probe --audit-base b72c2a1bb2cf4f53c322b198f91923bfeed94b8f --runtime-count 247 --conformance-count 255 --differential-count 299 --api-count 222 --fixture-count 3388 --planning-count 14 --task-count 114: exit0/allchecksPass; actual raw command in checks.txt.gz.",
+      "Real3pairs0B/positive3pairs6400000B; measured100000callbacks40000units/total10100540400/Completed4/nullDiagnostic; warm368B/64368B. Independent originalshape128B/equivalentactualhelper0B; separate setup/root/firstuse/completion scopes retained.",
+      "Release0warnings0errors/API222/discovery3388/ref242sourceandSHA/planning14/validate114/allowned+unchangedotherbodies audits passed; archive1regression and7actualFactrejectioncontrols pass.",
+      "No allocation retries/timingbenchmark/production/peerhelpers/sharedproject/parallelism/JITGC changes. Crash/timeout/postreporttamper negative controls unrun; source rejection policy reviewed only.",
+      "Independent integration1143948 all17checksPass;801MTP/direct247/255/299;3PIreal0/positive6400000, allcounts/provenance;API222/ref242/planning114/7negative/archive1 pass."
+    ],
+    "remaining": [
+      "Isolated synchronous primitive scope only; no historical causal attribution or concurrent allocation guarantee."
+    ],
+    "requests": []
+  }
+}
