@@ -56,7 +56,7 @@ try:
                                       stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=15)
     assert encoding_failure.returncode == 2
     assert not encoding_failure.stdout
-    assert encoding_failure.stderr == b'Invalid UTF-8 protocol input.\n'
+    assert encoding_failure.stderr.decode('utf-8', errors='strict').splitlines() == ['Invalid UTF-8 protocol input.']
     LOG.append('Invalid raw UTF-8 JSON wire string rejected: no stdout; stderr Invalid UTF-8 protocol input.; exit2. XML payload encoding remains separate.\n')
     run(['dotnet', 'test', '--project', 'tests/Xemele.Differential.Tests/Xemele.Differential.Tests.csproj',
          '-c', 'Release', '--no-build', '--no-restore', '--no-ansi', '--no-progress',
