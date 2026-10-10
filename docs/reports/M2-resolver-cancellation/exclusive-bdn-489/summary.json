@@ -1,0 +1,56 @@
+{
+  "result": "passed",
+  "sourceRevision": "489fdfbb1881b873f67e67772f1b886c771d803c",
+  "exclusiveGrant": "m2-resolver-cancellation-489-bdn-only-20261010",
+  "parentExit": 0,
+  "generatedRestoreExit": 0,
+  "generatedBuildExit": 0,
+  "childExits": [
+    0,
+    0,
+    0
+  ],
+  "executedBenchmarks": 3,
+  "workloadActualObservations": 9,
+  "workloadResultObservations": 9,
+  "zeroGcRecords": 3,
+  "binarySha256Before": "726bf8c6a2ca00cb3b947a0e880863371a899a05c9bcf8ef2217089c8d257bec",
+  "binarySha256After": "726bf8c6a2ca00cb3b947a0e880863371a899a05c9bcf8ef2217089c8d257bec",
+  "job": "authored ShortRunJob/MemoryDiagnoser;3measurements/3warmups/1launch per case",
+  "host": "Apple M4 Pro/macOS15.8.1/Arm64/.NET10.0.11/SDK10.0.400; concurrent workstation GC",
+  "cwd": "/Users/sebastienros/.codex/worktrees/e1d1/xemele/benchmarks/Xemele.Benchmarks/M2-resolver-cancellation",
+  "command": "dotnet /Users/sebastienros/.codex/worktrees/e1d1/xemele/artifacts/M2-resolver-cancellation/standalone-bin/Release/net10.0/Xemele.ResolverSample.dll --filter '*CancellationBindingBenchmarks*' --artifacts /Users/sebastienros/.codex/worktrees/e1d1/xemele/artifacts/M2-resolver-cancellation/exclusive-bdn-corrected",
+  "cases": [
+    {
+      "Method": "DirectCancellationChecks",
+      "Mean": "0.0000 ns",
+      "Error": "0.0000 ns",
+      "StdDev": "0.0000 ns",
+      "Allocated": "0 B",
+      "Ratio": "?"
+    },
+    {
+      "Method": "BindExactToken",
+      "Mean": "0.7157 ns",
+      "Error": "0.0508 ns",
+      "StdDev": "0.0028 ns",
+      "Allocated": "0 B",
+      "Ratio": "?"
+    },
+    {
+      "Method": "BindAlternatingToken",
+      "Mean": "1.8642 ns",
+      "Error": "0.3371 ns",
+      "StdDev": "0.0185 ns",
+      "Allocated": "0 B",
+      "Ratio": "?"
+    }
+  ],
+  "limitations": [
+    "Ordinary priority after three permission-denied high-priority attempts.",
+    "Direct baseline WorkloadActual~0.91ns is below harness overhead; automatic BDN results are0ns and ratios unresolved. No zero-time or speedup claim.",
+    "Exact0.7157ns and alternating1.8642ns are provisional short-run overhead-adjusted microbenchmark observations; raw actual observations retained.",
+    "Warmed successful sequential binding only; construction, errors, suspended async I/O, consumer composition, retained memory and other platforms are not measured here.",
+    "Single successful BDN invocation after retained zero-case generator failure; allocation success atd44 not repeated."
+  ]
+}
