@@ -4,7 +4,7 @@
   "milestone": "M1",
   "title": "Strict subset corpus and round trips",
   "kind": "verification",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M1-corpus",
   "branch": "codex/m1-corpus",
   "base_revision": "c077de978218274a96aac3e7ce892ac0422bad71",
@@ -33,29 +33,109 @@
     {
       "id": "M1-corpus-A1",
       "description": "Import full XML suite metadata and classify M1-supported cases; report incomplete later capabilities as visible gaps.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "final-runtime-join",
+        "independent-source-review"
+      ]
     },
     {
       "id": "M1-corpus-A2",
       "description": "M1 cases and semantic round trips pass; full-suite discovery/counts are reproducible and no cases silently disappear.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "final-runtime-join",
+        "independent-source-review"
+      ]
     },
     {
       "id": "M1-corpus-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "final-runtime-join",
+        "independent-source-review"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "tests/Xemele.Conformance.Tests/XmlSubset/CorpusTests.cs \u2014 all242 original supported rejections, full2585 discovery/3386 resource integrity, bootstrap, independent lexical round-trip models and containment negatives",
+    "tests/Xemele.Differential.Tests/XmlSubset/ReferenceCorpusTests.cs; docs/reports/M1-corpus/reference-limitations.json \u2014 verified BCL protocol comparison239 matches/3 exact documented divergences; unchanged product rejection expectations",
+    "docs/reports/M1-corpus/verify.py; test_verify.py; Tests/; Consumer.cs.fixture \u2014 known-revision cumulative/API/package/planning/ownership checks and pinned fresh reference provenance",
+    "docs/reports/M1-corpus/final-provenance/ \u2014 durable all2585 per-case outcomes/reasons/diagnostics/rawreference responses, all3386 resource checks, API222, test XML, summary/hashes and full transcript"
+  ],
+  "evidence": [
+    {
+      "id": "pre-repair-checkpoint",
+      "kind": "check",
+      "revision": "28a740b84b9c1bc90a0d58aa037f20b5dfe8c6e1",
+      "command": "Direct built xUnit executable before source checkpoint f21e3c5 (working source hashes in pre-repair-summary.json)",
+      "result": "failed",
+      "summary": "Actual first253=252pass/1fail; complete500=495pass/5fail; zero skips. Product PI-target colon acceptance exposed twice; three independent BCL VersionNum acceptance divergences. Tested claim plus working harness later committed f21e3c5; not a clean passing source revision. Coordinator integrated separate verified PI repair; no fixture reclassification.",
+      "artifact": "docs/reports/M1-corpus/pre-repair-summary.json"
+    },
+    {
+      "id": "sandbox-restore",
+      "kind": "check",
+      "revision": "7a47bde55e2c999fd7039f69c0634ff08d1c3e0c",
+      "command": "python3 -B docs/reports/M1-corpus/verify.py --report-prefix final-7a47",
+      "result": "failed",
+      "summary": "Offline import/hash checks passed; solution restore stopped NU1900 because sandbox could not load NuGet vulnerability metadata. Product tests not executed. Authorized network retry retained separately.",
+      "artifact": "docs/reports/M1-corpus/final-7a47/checks.txt.gz"
+    },
+    {
+      "id": "per-assembly-count-correction",
+      "kind": "check",
+      "revision": "07cba5525e6b5f849ec3e68cce29d308e3356308",
+      "command": "python3 -B docs/reports/M1-corpus/verify.py --report-prefix final-network (authorized NuGet network)",
+      "result": "failed",
+      "summary": "Builds and501owned/247runtime tests passed zero skips. Verifier then stopped on erroneous300 expected rows for main assembly; baseline300 is cumulative247+1+52. No product failure; bounded verifier assertion corrected.",
+      "artifact": "docs/reports/M1-corpus/final-network/checks.txt.gz"
+    },
+    {
+      "id": "pre-provenance-complete-checks",
+      "kind": "check",
+      "revision": "19ffe58ee21d7673ac7dca0ee85eb1c6b888657f",
+      "command": "python3 -B docs/reports/M1-corpus/verify.py --report-prefix final-counts (authorized NuGet network)",
+      "result": "passed",
+      "summary": "801 cumulative and501owned rows passed zero skips; full inventory/resources/API222/freshpackage/planning14+110/owned audits passed. Reference hashes/builds recorded but caller overrides not yet pinned/asserted; this is historical evidence, superseded by final-provenance after independent-review correction.",
+      "artifact": "docs/reports/M1-corpus/final-counts/summary.json"
+    },
+    {
+      "id": "independent-source-review",
+      "kind": "review",
+      "revision": "054f240528bf4d4753b7bb5523aab2df1d7932b9",
+      "command": null,
+      "result": "passed",
+      "summary": "Coordinator reported independent corpus review approved normalization, resource/gap records and scoped1314/50 symlink skips; independent protocol review approved exact3-case ledger and final054f240 provenance correction (fresh runner hash/build for every record, override pinning, unchanged DLL and5 negative checks). Review is not test execution.",
+      "artifact": null
+    },
+    {
+      "id": "final-runtime-join",
+      "kind": "check",
+      "revision": "054f240528bf4d4753b7bb5523aab2df1d7932b9",
+      "command": "Pinned SDK10.0.400 DOTNET_CLI_USE_MSBUILD_SERVER=0 python3 -B docs/reports/M1-corpus/verify.py --report-prefix final-provenance (authorized NuGet network)",
+      "result": "passed",
+      "summary": "801 cumulative solution rows (247+255+299), separate501owned rows, zero failures/skips. All242 supported original-byte rejections incl042XML.Syntax pass; eight lexical models+five normalized models and bootstrap2 preserve semantics across string/span/UTF8/LE/BE+BOM/1byte streams/output. Full2585 identities with2343 explicit unrun gaps and3386 resource hashes; reference239matches+3 documented divergences, freshDLL/build054f240 enforced;5provenance negatives. API222 canonical+independentapprovedunion and fresh isolated NuGet consumer pass. Discovery3388,14planning regressions,110-task validation, committed/working/staged/untracked audits/diffs pass. Actual host macOSarm64 only. No runtime/timing/allocation changes or full-suite standards claim.",
+      "artifact": "docs/reports/M1-corpus/final-provenance/summary.json"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "",
-    "checks": [],
-    "remaining": [],
-    "requests": []
+    "summary": "Implemented strict M1 runtime join with full visible inventory, original-byte rejection checks, independent semantic round trips and explicit reference divergences; coordinator integration/reverification remains.",
+    "checks": [
+      "At054f240: owned501+solution801 pass zero skips; 242supported rejection IDs; 239BCLmatches+3exactdocumented divergences; unchanged2343unrun gaps/2585identities/3386resourcehashes.",
+      "API222 matches both fragment union and independently approved DOM/Serializer model union; fresh NuGet consumer and discovery3388 pass.",
+      "5provenance negatives+14planning regressions+110-task validation and committed/staged/working/untracked ownership/diff checks pass.",
+      "All pre-repair failures, sandbox NU1900 and administrative count-assertion failure preserved; final-provenance supersedes prior completion evidence."
+    ],
+    "remaining": [
+      "Coordinator must integrate, rerun verifier using --audit-base <pre-merge-main> and a new --report-prefix, then record integration evidence and set verified.",
+      "Windows/x64 checks unrun; prior source-fixture redistribution terms remain with corpus-import/release owners."
+    ],
+    "requests": [
+      "Preserve private /private/tmp/xemele-corpus-cache/w3c-xml-20130923 resources through worker cleanup; no public redistribution authorized.",
+      "Reference ledger deliberately requires System.Xml10.0.0.0/.NET10.0.11 for its exact3 divergences; future engine/outcome changes require independent reassessment, never automatic allowlist expansion."
+    ]
   }
 }
