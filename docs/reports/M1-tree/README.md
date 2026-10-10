@@ -98,3 +98,60 @@ and destination key scans. The final copy path uses direct private primitives on
 for fresh copies after full preflight, preserving quota, version and notification
 semantics. General public mutation validation is unchanged. Prior passing correctness
 results do not establish acceptable copy complexity.
+
+## Recorded final results
+
+Stable source: `abdf9db8ade0b1e13fcbc8d45bdfdd941f35288f`. Final verifier session
+17439 exited 0 before exclusive timing session 59530 began. The coordinator parked
+input, syntax and its own builds/tests for this window. All ten benchmark processes
+exited 0 with three actual workload results each; global elapsed time was 70.25 s.
+The full console is retained as `bdn/benchmark-console.txt.gz`; Markdown/CSV tables
+are in `bdn/`. Uncompressed BDN artifacts and verifier output remain ignored under
+`artifacts/M1-tree/`. No build/test overlapped timed workloads.
+
+Final verification: Release build zero warnings/errors; 14/14 focused tree,
+78/78 full solution and 11/11 foundation tests, no skips. Exact runtime matches
+192 approved Common+Tree members; 111 owned Tree rows compose with 81 unchanged
+Common rows. Foundation 139/173-row models, all six independent M1 public lanes,
+38 protocol-model assertions, 16 Python checks, bootstrap corpus, source samples,
+runtime pack and isolated package-only tree consumer pass. `checks.txt` is concise;
+`runtime-api.json` preserves actual compiled compatibility/provenance. Task validation
+and owned-path/whitespace audits pass.
+
+On Apple M4 Pro Arm64, macOS 15.8.1, SDK 10.0.400/.NET 10.0.11, ShortRun measured:
+
+| Workload | Mean | Managed allocation/op |
+| --- | ---: | ---: |
+| Linear intern oracle, padding 8 / 80 | 140.78 / 143.48 ns | 0 B |
+| Borrowed ordinal probe, padding 8 / 80 | 18.62 / 50.68 ns | 0 B |
+| Indexed / linked 64-child traversal | 2629.1 / 175.3 ns | 0 B |
+| Owned 64-item tree construction | 10.293 us | 52,560 B |
+| Owned document clone | 9.597 us | 52,784 B |
+| Import 64-item tree into fresh owner | 9.643 us | 52,928 B |
+| Import 512 attributes + 512 declarations | 81.833 us | 435,240 B |
+
+Lookup operations each batch three probes: first hit, last hit and miss among 64
+interned names. Padding is the configured suffix length, not total name length.
+Lookup/traversal pairs have identical semantic checksums. Construction and copy
+are distinct persistence workloads; their BDN ratios against traversal are not
+semantic speed comparisons. Three measurements on one Arm64 host are provisional,
+with substantial ShortRun confidence intervals; no cross-host/release speed claim.
+
+Per-thread allocation regressions measure 0 B over 1,000 complete child/attribute/
+namespace traversals plus borrowed probes and separately 10,000 borrowed intern
+hits. First-process representative construction and warm construction both allocate
+52,560 B/tree. Heap-minus-fragmentation estimate is 18,408 B retained/tree, excluding
+the preallocated handle array; GC estimates are informational. A batch of 1,000
+detached repeated-name nodes allocates 281,320 B including cumulative arena growth.
+One new interned name plus detached node allocates 320 B including dictionary growth.
+Unique names, slots, member state, common budget setup, growth arrays and copied
+results allocate; warm navigation/name lookup does not. Text aggregation allocates
+its builder and result separately.
+
+Historical per-slot objects used 24,728 B allocated and approximately 21,544 B
+retained for the same construction fixture. Value arenas trade more cumulative
+array-growth allocation for lower retained fixture storage, while keeping stable
+handle identities. These single-process retention estimates are not a release
+memory guarantee. Any surviving node/attribute/declaration retains the complete
+document arena, including detached/removed slots and interned names. Actual parser/
+output composition and x64 confirmation remain later-task/release evidence.
