@@ -4,7 +4,7 @@
   "milestone": "M1",
   "title": "Diagnose the warm syntax allocation measurement boundary",
   "kind": "infrastructure",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M1-syntax-allocation-probe",
   "branch": "codex/m1-syntax-allocation-probe",
   "base_revision": "51c60a3a5ab3ca14df616c03ebe96662579d670d",
@@ -30,23 +30,188 @@
     {
       "id": "M1-syntax-allocation-probe-A1",
       "description": "Preserve baseline full287/288 unchanged syntax6000B failure and later288pass evidence; diagnose setup/first-use/steady scopes at verified source. Existing warmup discards100 Append results while measured10000 uses another callsite and checks progress. Establish equivalent warm/measured logic without lowering zero threshold, retries or increasing original warmup budget merely to pass. Restrict existing file changes to this probe/helper; production unchanged. If true steady allocation is demonstrated request runtime-owner repair rather than hide it. Historicalcause may remain unresolved if honestly documented.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "allocation",
+        "focused",
+        "full",
+        "audit",
+        "historical-baseline",
+        "historical-later",
+        "historical-integrated"
+      ]
     },
     {
       "id": "M1-syntax-allocation-probe-A2",
       "description": "Run controlled fresh focused and full288 solution at known source with default runtime settings/unchanged class parallelism; prove actual measured0B, preserve cold/setup/first-use evidence and failures. Run API222, offline fixture discovery, planning110/14regressions and committed-staged-working-untracked ownership/diff audits. No peer runtime/PI/corpus consumption or timing repetitions.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "build",
+        "allocation",
+        "focused",
+        "full",
+        "api",
+        "discovery",
+        "planning",
+        "regressions",
+        "audit",
+        "diagnostic-build-failure",
+        "api-fixture-failure",
+        "planning-final-metadata"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "tests/Xemele.Tests/M1-syntax/StreamingTests.cs: WarmRepeatedTagsAndStreamingUnicodeDispatchAllocateZero and AppendChecked",
+    "docs/reports/M1-syntax-allocation-probe/Diagnostic/Program.cs: separated cold/setup/first-use/original/helper scopes",
+    "docs/reports/M1-syntax-allocation-probe/README.md: bounded diagnosis, preserved failures and limits"
+  ],
+  "evidence": [
+    {
+      "id": "historical-baseline",
+      "kind": "check",
+      "revision": "987aa47af7c744088ea3fe92e50563230ea8d6cd",
+      "command": "dotnet test --solution Xemele.slnx -c Release --no-build --no-restore",
+      "result": "failed",
+      "summary": "Preserved original source full287/288; unchanged syntax6000B, DOMpassed; historical cause unresolved.",
+      "artifact": "docs/reports/M1-syntax-allocation-probe/historical-baseline-full.txt.gz"
+    },
+    {
+      "id": "historical-later",
+      "kind": "check",
+      "revision": "46f90ea2324f33617b091adbf2b8dcba2d83da18",
+      "command": "dotnet test --solution Xemele.slnx -c Release --no-build --no-restore",
+      "result": "passed",
+      "summary": "Preserved later unchanged syntax full288/288; no causal claim.",
+      "artifact": "docs/reports/M1-syntax-allocation-probe/historical-dom-final-full.txt.gz"
+    },
+    {
+      "id": "historical-integrated",
+      "kind": "check",
+      "revision": "d95f12e36e76ce9a0a6722e13f7b5f775d015090",
+      "command": "dotnet test --solution Xemele.slnx -c Release --no-build --no-restore",
+      "result": "passed",
+      "summary": "Preserved independent integrated288/288; not reexecuted here.",
+      "artifact": "docs/reports/M1-syntax-allocation-probe/historical-dom-integration-full.txt.gz"
+    },
+    {
+      "id": "build",
+      "kind": "check",
+      "revision": "f0c42a85783479efd2c76566a230a1c2763a0579",
+      "command": "dotnet build Xemele.slnx -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false -p:NuGetAudit=false",
+      "result": "passed",
+      "summary": "Release0warnings0errors; test/production blobs identical at followup diagnosticfix revision.",
+      "artifact": "docs/reports/M1-syntax-allocation-probe/build.txt.gz"
+    },
+    {
+      "id": "diagnostic-build-failure",
+      "kind": "check",
+      "revision": "f0c42a85783479efd2c76566a230a1c2763a0579",
+      "command": "dotnet build docs/reports/M1-syntax-allocation-probe/Diagnostic -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false -p:NuGetAudit=false",
+      "result": "failed",
+      "summary": "Missing XmlLocation namespace import; corrected in e8b9f7b before diagnostic execution.",
+      "artifact": "docs/reports/M1-syntax-allocation-probe/diagnostic-build.txt.gz"
+    },
+    {
+      "id": "allocation",
+      "kind": "check",
+      "revision": "e8b9f7ba15e0a76101adba877b2569bba09f8c0f",
+      "command": "python3 -B docs/reports/M1-syntax-allocation-probe/run_checks.py diagnostic-build-fixed diagnostic-original diagnostic-helper",
+      "result": "passed",
+      "summary": "Fresh original/helper each0B measured10000; coldsetup6808B/root312B/firstchunk432B, setup7120B/warm100432B; units50500/callbacks121205/completed. No historical6000B cause proved.",
+      "artifact": "docs/reports/M1-syntax-allocation-probe/README.md"
+    },
+    {
+      "id": "focused",
+      "kind": "check",
+      "revision": "e8b9f7ba15e0a76101adba877b2569bba09f8c0f",
+      "command": "dotnet test --project tests/Xemele.Tests -c Release --no-build --no-restore --filter-method *WarmRepeatedTagsAndStreamingUnicodeDispatchAllocateZero*",
+      "result": "passed",
+      "summary": "Fresh1/1 no skips; actual same helper warm100/measured10000 and exact0B; progress/completion retained.",
+      "artifact": "docs/reports/M1-syntax-allocation-probe/focused.txt.gz"
+    },
+    {
+      "id": "full",
+      "kind": "check",
+      "revision": "e8b9f7ba15e0a76101adba877b2569bba09f8c0f",
+      "command": "dotnet test --solution Xemele.slnx -c Release --no-build --no-restore",
+      "result": "passed",
+      "summary": "Fresh default runtime/full288/288 no skips; class parallelism unchanged, no timing retries.",
+      "artifact": "docs/reports/M1-syntax-allocation-probe/full.txt.gz"
+    },
+    {
+      "id": "api-fixture-failure",
+      "kind": "check",
+      "revision": "e8b9f7ba15e0a76101adba877b2569bba09f8c0f",
+      "command": "python3 -B tools/ApiBaseline/compare.py --report docs/reports/M1-syntax-allocation-probe/runtime-api.json",
+      "result": "failed",
+      "summary": "Missing ignored pinned XML fixture E14.dtd before offline provisioning; retained.",
+      "artifact": "docs/reports/M1-syntax-allocation-probe/api.txt.gz"
+    },
+    {
+      "id": "api",
+      "kind": "check",
+      "revision": "e8b9f7ba15e0a76101adba877b2569bba09f8c0f",
+      "command": "python3 -B docs/reports/M1-syntax-allocation-probe/run_checks.py api-build; python3 -B tools/ApiBaseline/compare.py --report docs/reports/M1-syntax-allocation-probe/runtime-api.json (after provisioning)",
+      "result": "passed",
+      "summary": "API checker Release build0warnings0errors; matched222 compiled members.",
+      "artifact": "docs/reports/M1-syntax-allocation-probe/runtime-api.json"
+    },
+    {
+      "id": "discovery",
+      "kind": "check",
+      "revision": "e8b9f7ba15e0a76101adba877b2569bba09f8c0f",
+      "command": "python3 -B docs/reports/M1-corpus-import/provision.py; python3 -B tools/ApiBaseline/discover.py",
+      "result": "passed",
+      "summary": "Pinned ignored fixtures restored offline; discovery3388fixtures/222declarations, no peer report changes.",
+      "artifact": "docs/reports/M1-syntax-allocation-probe/discovery.txt.gz"
+    },
+    {
+      "id": "planning",
+      "kind": "check",
+      "revision": "e8b9f7ba15e0a76101adba877b2569bba09f8c0f",
+      "command": "python3 -B tools/planning/tasks.py validate",
+      "result": "passed",
+      "summary": "Validated110 tasks.",
+      "artifact": "docs/reports/M1-syntax-allocation-probe/planning.txt.gz"
+    },
+    {
+      "id": "regressions",
+      "kind": "check",
+      "revision": "e8b9f7ba15e0a76101adba877b2569bba09f8c0f",
+      "command": "python3 -B -m unittest discover -s tools/planning -p 'test_*.py' -v",
+      "result": "passed",
+      "summary": "14/14 planning regressions.",
+      "artifact": "docs/reports/M1-syntax-allocation-probe/regressions.txt.gz"
+    },
+    {
+      "id": "audit",
+      "kind": "check",
+      "revision": "e8b9f7ba15e0a76101adba877b2569bba09f8c0f",
+      "command": "git diff --check 98236f56 HEAD; git diff --check; git diff --cached --check; committed/staged/working/untracked ownership audits",
+      "result": "passed",
+      "summary": "All deltas owned; production/sharedbuild/API/classparallelism unchanged, other test bodies unchanged; source diff retained.",
+      "artifact": "docs/reports/M1-syntax-allocation-probe/audit.json"
+    },
+    {
+      "id": "planning-final-metadata",
+      "kind": "check",
+      "revision": "e8b9f7ba15e0a76101adba877b2569bba09f8c0f",
+      "command": "python3 -B tools/planning/tasks.py validate (with completed working task/evidence metadata)",
+      "result": "passed",
+      "summary": "Final task/evidence metadata validated110 tasks before evidence commit.",
+      "artifact": "docs/reports/M1-syntax-allocation-probe/planning-final-metadata.txt.gz"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Read-only review found concrete syntax warm/measured callsite/progress-check mismatch; no concrete recurring allocation identified. DOM probe baseline6000B failure retained despite later verified288pass. Separate owned assessment before combinedPI/gate.",
-    "checks": [],
-    "remaining": [],
+    "summary": "Equivalent noinline warm100/measured10000 helper with unchanged exact0B/progress/completion. Freshfocused1/full288/API222/discovery3388/planning110/14regressions passed. Cold/setup allocations explicit; historical6000B unexplained and preserved. Production unchanged.",
+    "checks": [
+      "Commands, source revisions, raw successes/failures and limitations in owned README and logs; no timing benchmarks."
+    ],
+    "remaining": [
+      "Coordinator integration/review and fresh combined checks before verified. Historical6000B allocation stack/root cause remains unresolved."
+    ],
     "requests": []
   }
 }

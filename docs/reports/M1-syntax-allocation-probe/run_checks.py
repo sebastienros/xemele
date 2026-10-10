@@ -29,6 +29,7 @@ commands = {
     "runtime": ["dotnet", "--info"],
 }
 commands["diagnostic-build-fixed"] = commands["diagnostic-build"]
+commands["api-provisioned"] = commands["api"]
 for name in sys.argv[1:]:
     destination = report / (name + ".txt.gz")
     if destination.exists():
