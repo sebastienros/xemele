@@ -4,7 +4,7 @@
   "milestone": "M0",
   "title": "CI and API baseline discovery",
   "kind": "infrastructure",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M0-ci",
   "branch": "codex/m0-ci",
   "base_revision": "9c630d1d83e37445ae619a778a90f87a148331ed",
@@ -38,14 +38,27 @@
     {
       "id": "M0-ci-A2",
       "description": "Run workflow-equivalent commands locally; missing fixtures/unsupported baseline formats fail with explicit errors.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "discovery-tests",
+        "default-missing-baseline",
+        "dotnet-restore",
+        "dotnet-release-build",
+        "dotnet-release-test",
+        "dotnet-runtime-pack"
+      ]
     },
     {
       "id": "M0-ci-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "bootstrap-discovery",
+        "planning-validation",
+        "dotnet-release-build",
+        "dotnet-release-test",
+        "dotnet-runtime-pack"
+      ]
     }
   ],
   "implementation": [
@@ -100,21 +113,73 @@
       "result": "passed",
       "summary": "Passed before implementation commit; only task-owned files added.",
       "artifact": null
+    },
+    {
+      "id": "dotnet-restore",
+      "kind": "check",
+      "revision": "891b493d2d6e4146ae08f11815446f43ddfb5917",
+      "command": "dotnet restore Xemele.slnx --disable-build-servers -m:1 -p:UseSharedCompilation=false",
+      "result": "passed",
+      "summary": "macOS, pinned SDK 10.0.400: all 10 solution projects restored/up to date. Nonfatal CSSM_ModuleLoad host diagnostic printed.",
+      "artifact": null
+    },
+    {
+      "id": "dotnet-release-build",
+      "kind": "check",
+      "revision": "891b493d2d6e4146ae08f11815446f43ddfb5917",
+      "command": "dotnet build Xemele.slnx -c Release --no-restore --disable-build-servers -m:1 -p:UseSharedCompilation=false",
+      "result": "passed",
+      "summary": "Built all 10 projects; 0 warnings, 0 errors.",
+      "artifact": null
+    },
+    {
+      "id": "dotnet-test-sandbox",
+      "kind": "check",
+      "revision": "891b493d2d6e4146ae08f11815446f43ddfb5917",
+      "command": "dotnet test Xemele.slnx -c Release --no-build --no-restore --disable-build-servers -m:1 -p:UseSharedCompilation=false --logger trx --results-directory artifacts/test-results",
+      "result": "failed",
+      "summary": "Initial sandbox run exited 1: VSTest SocketException (13), Permission denied binding local communication sockets; all three runs aborted. Approved escalation rerun below.",
+      "artifact": null
+    },
+    {
+      "id": "dotnet-release-test",
+      "kind": "check",
+      "revision": "891b493d2d6e4146ae08f11815446f43ddfb5917",
+      "command": "export DOTNET_ROOT='/Users/sebastienros/Library/Application Support/dotnetup/dotnet'\nexport PATH=\"$DOTNET_ROOT:$PATH\"\ndotnet --version\ndotnet test Xemele.slnx -c Release --no-build --no-restore --disable-build-servers -m:1 -p:UseSharedCompilation=false --logger trx --results-directory artifacts/test-results",
+      "result": "passed",
+      "summary": "Approved unsandboxed macOS rerun with SDK 10.0.400 exited 0. Three empty bootstrap test assemblies, zero .NET tests available/executed; no runtime/conformance pass claimed. Three successful-session TRX files in artifacts/test-results (_Mac_2026-10-09_17_15_00_net10.0 and [1]/[2]).",
+      "artifact": null
+    },
+    {
+      "id": "dotnet-runtime-pack",
+      "kind": "check",
+      "revision": "891b493d2d6e4146ae08f11815446f43ddfb5917",
+      "command": "dotnet pack src/Xemele/Xemele.csproj -c Release --no-build --no-restore --disable-build-servers -m:1 -p:UseSharedCompilation=false -o artifacts/packages",
+      "result": "passed",
+      "summary": "Created artifacts/packages/Xemele.1.0.0.nupkg. Nonfatal package readme recommendation; bootstrap package contains no runtime implementation.",
+      "artifact": null
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Committed cross-platform CI and strict versioned task-fragment discovery. Python/static checks passed. Waiting for coordinator timing-slot release before .NET checks; task remains in_progress. No runtime APIs or shared project changes.",
+    "summary": "Implemented three-platform CI plus versioned API/corpus fragment discovery using only verified M0-build. All local workflow-equivalent commands completed at source revision 891b493d2d6e4146ae08f11815446f43ddfb5917. No shared edits or runtime APIs.",
     "checks": [
       "python3 -B -m unittest discover -s tests/Xemele.TestUtilities/Build -p 'test_*.py' -v \u2014 13 tests passed; includes missing fixture, checksum, path escape, malformed/unsupported/duplicate/conflicting fragments, and CLI failure exit checks.",
       "python3 -B tools/ApiBaseline/discover.py --bootstrap-empty-api \u2014 Passed: 0 API fragments/declarations, 0 corpus manifests/fixtures, bootstrapEmptyApi true for verified empty runtime.",
       "python3 -B tools/ApiBaseline/discover.py \u2014 Expected negative check passed: exit 1 and explicit missing API baselines diagnostic.",
       "python3 tools/planning/tasks.py validate \u2014 Validated 93 tasks; schema, evidence, dependencies, additive milestones and ordered ownership.",
-      "git diff --check \u2014 Passed before implementation commit; only task-owned files added."
+      "git diff --check \u2014 Passed before implementation commit; only task-owned files added.",
+      "dotnet restore Xemele.slnx --disable-build-servers -m:1 -p:UseSharedCompilation=false \u2014 passed: macOS, pinned SDK 10.0.400: all 10 solution projects restored/up to date. Nonfatal CSSM_ModuleLoad host diagnostic printed.",
+      "dotnet build Xemele.slnx -c Release --no-restore --disable-build-servers -m:1 -p:UseSharedCompilation=false \u2014 passed: Built all 10 projects; 0 warnings, 0 errors.",
+      "dotnet test Xemele.slnx -c Release --no-build --no-restore --disable-build-servers -m:1 -p:UseSharedCompilation=false --logger trx --results-directory artifacts/test-results \u2014 failed: Initial sandbox run exited 1: VSTest SocketException (13), Permission denied binding local communication sockets; all three runs aborted. Approved escalation rerun below.",
+      "export DOTNET_ROOT='/Users/sebastienros/Library/Application Support/dotnetup/dotnet'\nexport PATH=\"$DOTNET_ROOT:$PATH\"\ndotnet --version\ndotnet test Xemele.slnx -c Release --no-build --no-restore --disable-build-servers -m:1 -p:UseSharedCompilation=false --logger trx --results-directory artifacts/test-results \u2014 passed: Approved unsandboxed macOS rerun with SDK 10.0.400 exited 0. Three empty bootstrap test assemblies, zero .NET tests available/executed; no runtime/conformance pass claimed. Three successful-session TRX files in artifacts/test-results (_Mac_2026-10-09_17_15_00_net10.0 and [1]/[2]).",
+      "dotnet pack src/Xemele/Xemele.csproj -c Release --no-build --no-restore --disable-build-servers -m:1 -p:UseSharedCompilation=false -o artifacts/packages \u2014 passed: Created artifacts/packages/Xemele.1.0.0.nupkg. Nonfatal package readme recommendation; bootstrap package contains no runtime implementation."
     ],
     "remaining": [
-      "Run exact workflow-equivalent .NET restore/Release build/test/pack at implementation revision after explicit timing-slot release.",
-      "A2 and A3 remain pending until those local checks complete. Windows/Linux and hosted CI not run locally."
+      "Coordinator integration and verification required before verified status.",
+      "Windows/Linux and hosted CI not executed locally. Zero bootstrap .NET tests is not a runtime/conformance pass.",
+      "Compiled assembly compatibility verification is outside declaration discovery and must be supplied by M0-contracts; CorpusManager verifies source payload checksums/provenance.",
+      "Runtime allocation/performance checks inapplicable to this offline Python/CI deliverable."
     ],
     "requests": [
       "M0-contracts and CorpusManager owners should consume documented API member identity and corpus schema in tools/ApiBaseline/README.md. Compiled assembly API comparison and source-payload provenance verification remain their responsibilities."
