@@ -7,12 +7,50 @@
     "task_id": "M0-gate",
     "integration_revision": "0711a15b0c5a695ca383a9cfe7f11c8326fde451"
   },
-  "active_assignments": [],
+  "active_assignments": [
+    {
+      "task_id": "M1-input",
+      "client_thread_id": "client-new-thread:2aa92240-32f6-430d-a256-0a03e8be034f",
+      "host_id": "local",
+      "branch": "codex/m1-input",
+      "base_revision": "52df006d4a2e00de486a3be15a563d15d22436ac",
+      "claim_revision": "4a99c4229600b4fc5b2e218adc376e56cb0b0c80",
+      "setup_status": "dispatched",
+      "chat_id": "01a123ab-1e55-7e10-b18f-cd7e28ec0235",
+      "worktree_path": "/Users/sebastienros/.codex/worktrees/d644/xemele",
+      "wait_cursor": "c5ddb2a0-6ed4-42e1-bc17-6f0d2b3a2075:1"
+    },
+    {
+      "task_id": "M1-tree",
+      "client_thread_id": "client-new-thread:6ec87822-c57a-4f6e-9af8-677412a2e782",
+      "host_id": "local",
+      "branch": "codex/m1-tree",
+      "base_revision": "4a99c4229600b4fc5b2e218adc376e56cb0b0c80",
+      "claim_revision": "dc20c884b3465af691077c50b747bcebb1c47365",
+      "setup_status": "dispatched",
+      "chat_id": "01a123ab-417a-7052-9ce8-0d6fb27a7a5d",
+      "worktree_path": "/Users/sebastienros/.codex/worktrees/3de1/xemele",
+      "wait_cursor": "f4ea8e61-216e-4c14-bd08-80ac9b4d5811:1"
+    },
+    {
+      "task_id": "M1-syntax",
+      "client_thread_id": "client-new-thread:35d07bc8-7e7c-406c-9fde-f71a7005d700",
+      "host_id": "local",
+      "branch": "codex/m1-syntax",
+      "base_revision": "dc20c884b3465af691077c50b747bcebb1c47365",
+      "claim_revision": "55768e6153d8c02e83c81d14562baf43e05ad509",
+      "setup_status": "dispatched",
+      "chat_id": "01a123ab-5dd9-7c53-9d31-46b24f19a8ed",
+      "worktree_path": "/Users/sebastienros/.codex/worktrees/b39d/xemele",
+      "wait_cursor": "e7178604-0842-4723-9cbd-17c463a973e4:1"
+    }
+  ],
   "integration_queue": [],
   "blockers": [],
   "next_actions": [
-    "Dispatch isolated M1-input/tree/syntax workers",
-    "Coordinate exclusive ShortRun windows; no builds/tests during timing"
+    "Review/integrate ready M1 runtime handoffs serially",
+    "Park other builds/tests before granting one ShortRun window",
+    "After tree verification dispatch serialization when a worker slot is free"
   ],
   "last_verified_task": "M1-common",
   "last_integrated_revision": "6861b34b35fb00e67193c6636c51caf31bbb1afa",
@@ -338,7 +376,11 @@
       "handoff_revision": "f9ce4a292ec557df53988c43798a0ac638e2cdf1",
       "integration_revision": "6861b34b35fb00e67193c6636c51caf31bbb1afa",
       "integration_worktree": "/private/tmp/xemele-integrate-m1-common",
-      "integration_branch": "codex/integrate-m1-common"
+      "integration_branch": "codex/integrate-m1-common",
+      "cleanup": {
+        "chat_archived": true,
+        "worktree": "removed"
+      }
     }
   ],
   "benchmark_policy": "Subsequent benchmarks default to ShortRun and require serialized timing slot; no active timing hold.",
@@ -381,7 +423,8 @@
   ],
   "cleanup_records": [
     "docs/orchestration/cleanup-M0.json",
-    "docs/orchestration/cleanup-M1-contracts.json"
+    "docs/orchestration/cleanup-M1-contracts.json",
+    "docs/orchestration/cleanup-M1-common.json"
   ],
   "preserved_reference_sources": [
     {
