@@ -1,3 +1,5 @@
+using BenchmarkDotNet.Configs;
+using BenchmarkDotNet.Jobs;
 using BenchmarkDotNet.Running;
 
 if (args.Length == 0 || args[0] is "--help" or "-h" or "help")
@@ -8,5 +10,6 @@ if (args.Length == 0 || args[0] is "--help" or "-h" or "help")
     return 0;
 }
 
-BenchmarkSwitcher.FromAssembly(typeof(Program).Assembly).Run(args);
+BenchmarkSwitcher.FromAssembly(typeof(Program).Assembly).Run(args,
+    DefaultConfig.Instance.AddJob(Job.ShortRun.AsDefault()));
 return 0;

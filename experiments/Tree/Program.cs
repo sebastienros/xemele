@@ -2,15 +2,13 @@ using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Exporters.Json;
 using BenchmarkDotNet.Jobs;
 using BenchmarkDotNet.Running;
-using Perfolizer.Horology;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
 using TreeSpike;
 
 if (args.Contains("--self-check", StringComparer.Ordinal)) { Checks.Run(); return; }
 if (args.Contains("--memory", StringComparer.Ordinal)) { Measurements.Run(); return; }
-var job = Job.Default.WithId("Provisional").WithLaunchCount(1).WithWarmupCount(2)
-    .WithIterationCount(5).WithIterationTime(TimeInterval.FromMilliseconds(100));
+var job = Job.ShortRun.AsDefault();
 BenchmarkSwitcher.FromAssembly(typeof(Construction).Assembly).Run(args,
     DefaultConfig.Instance.AddJob(job).AddExporter(JsonExporter.Full));
 

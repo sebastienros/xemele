@@ -1,7 +1,6 @@
 using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Jobs;
 using BenchmarkDotNet.Running;
-using Perfolizer.Horology;
 using InputSpike;
 
 if (args.Length == 0 || args[0] is "--help" or "help")
@@ -15,8 +14,7 @@ switch (args[0])
     case "allocations": InputSpike.Diagnostics.Allocations(); break;
     case "lowering": InputSpike.Diagnostics.Lowering(); break;
     case "benchmark":
-        var job = Job.Default.WithId("M0-Provisional").WithLaunchCount(1).WithWarmupCount(2).WithIterationCount(3)
-            .WithIterationTime(TimeInterval.FromMilliseconds(100));
+        var job = Job.ShortRun.AsDefault();
         BenchmarkSwitcher.FromAssembly(typeof(InputBenchmarks).Assembly).Run(args[1..], DefaultConfig.Instance.AddJob(job));
         break;
     default: throw new ArgumentException("Unknown command.");
