@@ -11,12 +11,12 @@ if (args.Contains("--correctness"))
         var b = new DtdCompositionBenchmarks { CommentScalars = length }; b.Setup();
         for (int i = 0; i < 10; i++)
         {
-            DtdCompositionBenchmarks.Check(b.SeedAndFramedComposition());
+            b.CheckResult(b.SeedAndFramedComposition());
             var seed = (DtdModel)b.SeedAndModelSnapshot();
             if (seed.Elements.Count != 0 || seed.GeneralEntities.Count != 1 || seed.ParameterEntities.Count != 1) throw new Exception("seed oracle");
         }
         var scan = new DtdFramedScanBenchmarks { CommentScalars = length }; scan.Setup();
-        for (int i = 0; i < 1024; i++) if (scan.BorrowedCommentScan() != DtdParseStep.NeedInput) throw new Exception("scan oracle");
+        for (int i = 0; i < 1024; i++) if (scan.BorrowedCommentScan() != (int)DtdParseStep.NeedInput) throw new Exception("scan oracle");
         scan.Cleanup();
     }
     Console.WriteLine("runtime=" + Environment.Version + "; two lengths, 20 composition/seed outputs and 2048 borrowed scan calls passed"); return;
@@ -26,7 +26,7 @@ if (args.Contains("--allocation"))
     // Initialization, owned seed/model output and borrowed steady scans are separate.
     long coldStart = GC.GetAllocatedBytesForCurrentThread();
     var cold = new DtdCompositionBenchmarks { CommentScalars = 32 }; cold.Setup();
-    DtdCompositionBenchmarks.Check(cold.SeedAndFramedComposition());
+    cold.CheckResult(cold.SeedAndFramedComposition());
     long coldSetupAndFirstComposition = GC.GetAllocatedBytesForCurrentThread() - coldStart;
     var b = new DtdCompositionBenchmarks { CommentScalars = 4096 }; b.Setup();
     for (int i = 0; i < 128; i++) { GC.KeepAlive(b.SeedAndFramedComposition()); GC.KeepAlive(b.SeedAndModelSnapshot()); }
@@ -39,7 +39,7 @@ if (args.Contains("--allocation"))
     var scan = new DtdFramedScanBenchmarks { CommentScalars = 4096 }; scan.Setup();
     for (int i = 0; i < 128; i++) scan.BorrowedCommentScan();
     start = GC.GetAllocatedBytesForCurrentThread();
-    for (int i = 0; i < 1024; i++) if (scan.BorrowedCommentScan() != DtdParseStep.NeedInput) throw new Exception("scan");
+    for (int i = 0; i < 1024; i++) if (scan.BorrowedCommentScan() != (int)DtdParseStep.NeedInput) throw new Exception("scan");
     long warmBorrowed = GC.GetAllocatedBytesForCurrentThread() - start; scan.Cleanup();
     start = GC.GetAllocatedBytesForCurrentThread();
     for (int i = 0; i < 1024; i++) GC.KeepAlive(new byte[128]);

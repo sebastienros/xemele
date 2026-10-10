@@ -111,6 +111,7 @@ def main():
         compile_paths.remove(composition)
         compile_paths.extend((ROOT/'samples/M2-dtd-composition').glob('*.cs'))
         compile_paths.append(ROOT/'samples/M2-dtd/Inventory.cs')
+        compile_paths.append(ROOT/'benchmarks/Xemele.Benchmarks/M2-dtd-composition/OperationLedger.cs')
         includes = ''.join('<Compile Include="'+str(path)+'" />' for path in compile_paths)
         (mutation/'Mutation.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><TargetFramework>net10.0</TargetFramework><OutputType>Exe</OutputType><Nullable>enable</Nullable><ImplicitUsings>enable</ImplicitUsings></PropertyGroup><ItemGroup>'+includes+'</ItemGroup></Project>')
         run('dotnet', 'build', mutation/'Mutation.csproj', *FLAGS)
@@ -152,6 +153,7 @@ def main():
         archive = ROOT/'docs/reports/M2-dtd-grammar/exclusive-d1dfbac/full-raw.zip'
         assert hashlib.sha256(archive.read_bytes()).hexdigest() == '067634a93eee38804668c4c2048534594dd0d8151bbea506bab8981aa86e8545'
         run('dotnet', 'build', ROOT/'docs/reports/M2-dtd-composition/Benchmarks.csproj', *FLAGS)
+        run('dotnet', 'build', ROOT/'benchmarks/Xemele.Benchmarks/Xemele.Benchmarks.csproj', *FLAGS)
         benchmark = ROOT/'docs/reports/M2-dtd-composition/bin/Release/net10.0/Xemele.DtdCompositionBenchmarks.dll'
         summary['benchmarkCorrectness'] = run('dotnet', benchmark, '--correctness').strip()
         summary['benchmarkDiscovery'] = run('dotnet', benchmark, '--list', 'flat').splitlines()

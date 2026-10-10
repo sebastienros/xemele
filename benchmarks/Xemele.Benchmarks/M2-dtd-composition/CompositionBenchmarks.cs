@@ -16,7 +16,7 @@ public class DtdCompositionBenchmarks
     {
         ledger = new OperationLedger(); prior = MakePrior(ledger);
         external = "<?xml\r\nencoding='UTF-8'?><!--" + new string('x', CommentScalars) + "😀中-->%x;<!ATTLIST child a CDATA '&g;'>";
-        Check(Run());
+        CheckResult(Run());
     }
     internal static DtdModel MakePrior(OperationLedger ledger)
     {
@@ -45,11 +45,26 @@ public class DtdCompositionBenchmarks
         if (p.Append([], [], true, default).Step != DtdParseStep.Completed) throw new Exception("seed");
         return p.Model;
     }
-    internal static void Check(object result)
+    internal void CheckResult(object result)
     {
         var model = (DtdModel)result;
-        if (model.Elements.Count != 1 || model.Elements[0].Name != "child" || model.ParameterEntities.Count != 1 || model.GeneralEntities.Count != 1 || model.Attributes.Count != 1 || model.GeneralEntities[0].ReplacementText != "inside" || !model.Elements[0].IsExternal) throw new Exception("composition oracle");
+        Check(model.Elements.Count == 1 && model.Attributes.Count == 1 && model.GeneralEntities.Count == 1 && model.ParameterEntities.Count == 1 && model.Notations.Count == 0);
+        var e = model.Elements[0];
+        Check(e.Name == "child" && e.IsExternal && e.Location == new XmlLocation(null, 1, 1, null));
+        Check(e.Content.Kind == DtdParticleKind.Empty && e.Content.Name is null && e.Content.Occurrence == DtdOccurrence.Once && e.Content.Children.Count == 0);
+        var a = model.Attributes[0];
+        Check(a.ElementName == "child" && a.Name == "a" && a.Type == DtdAttributeType.CData && a.Tokens.Count == 0 && a.DefaultKind == DtdDefaultKind.Value && a.DefaultValue == "&g;" && a.IsExternal && a.Location == new XmlLocation(Uri, 2, 47 + CommentScalars, null));
+        var g = model.GeneralEntities[0];
+        Check(g.Name == "g" && !g.IsParameter && g.ReplacementText == "inside" && g.SystemId is null && g.PublicId is null && g.NotationName is null && !g.IsExternal && g.Location == new XmlLocation(null, 1, 39, null));
+        var p = model.ParameterEntities[0];
+        Check(p.Name == "x" && p.IsParameter && p.ReplacementText == "<!ELEMENT child EMPTY>" && p.SystemId is null && p.PublicId is null && p.NotationName is null && !p.IsExternal && p.Location == new XmlLocation(null, 1, 1, null));
+        Check(ReferenceEquals(prior.GeneralEntities[0], g) && ReferenceEquals(prior.ParameterEntities[0], p));
+        var applied = DtdValueProcessor.NormalizeAttributeDefault(a.DefaultValue!, a.Type, model.GeneralEntities.ToDictionary(d => d.Name), new());
+        Check(applied.Diagnostic is null && applied.Value == "inside");
+        Check(ledger.Depth == 0);
+        static void Check(bool condition) { if (!condition) throw new Exception("authored complete model oracle"); }
     }
+
 }
 
 [MemoryDiagnoser, ShortRunJob]
@@ -66,6 +81,6 @@ public class DtdFramedScanBenchmarks
         parser.Append("<!--", [], false, default);
         fragment = new string('x', CommentScalars) + "中😀\r\n";
     }
-    [Benchmark] public DtdParseStep BorrowedCommentScan() => parser.Append(fragment, [], false, default).Step;
+    [Benchmark] public int BorrowedCommentScan() => (int)parser.Append(fragment, [], false, default).Step;
     [GlobalCleanup] public void Cleanup() => parser.Dispose();
 }
