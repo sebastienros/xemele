@@ -14,25 +14,20 @@ internal sealed class XmlEntityContext : IXmlEntityContext
     internal XmlEntityContext(DtdModel model, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(model);
+        cancellationToken.ThrowIfCancellationRequested();
         Model = model;
         foreach (var declaration in model.GeneralEntities)
-        { cancellationToken.ThrowIfCancellationRequested(); general.TryAdd(declaration.Name, declaration); }
-        var groups = new Dictionary<string, List<DtdAttributeDeclaration>>(StringComparer.Ordinal);
+        { CheckName(declaration.Name, cancellationToken); general.TryAdd(declaration.Name, declaration); }
+        var groups = new Dictionary<string, AttributeGroup>(StringComparer.Ordinal);
         foreach (var declaration in model.Attributes)
         {
-            cancellationToken.ThrowIfCancellationRequested();
+            CheckName(declaration.ElementName, cancellationToken); CheckName(declaration.Name, cancellationToken);
             if (!groups.TryGetValue(declaration.ElementName, out var group))
-                groups.Add(declaration.ElementName, group = []);
-            bool duplicate = false;
-            foreach (var earlier in group)
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-                if (earlier.Name == declaration.Name) { duplicate = true; break; }
-            }
-            if (!duplicate) group.Add(declaration);
+                groups.Add(declaration.ElementName, group = new());
+            if (group.Names.Add(declaration.Name)) group.Declarations.Add(declaration);
         }
         foreach (var group in groups)
-        { cancellationToken.ThrowIfCancellationRequested(); attributes.Add(group.Key, group.Value.AsReadOnly()); }
+        { cancellationToken.ThrowIfCancellationRequested(); attributes.Add(group.Key, group.Value.Declarations.AsReadOnly()); }
     }
 
     public bool TryGetGeneralEntity(ReadOnlySpan<char> name, out DtdEntityDeclaration? declaration) =>
@@ -44,34 +39,51 @@ internal sealed class XmlEntityContext : IXmlEntityContext
     // The internal subset has precedence over the external subset. Each source
     // model is ordered, so retaining the first matching declaration implements
     // first-declaration wins without conflating general and parameter entities.
-    internal static DtdModel Merge(DtdModel internalSubset, DtdModel externalSubset)
+    internal static DtdModel Merge(DtdModel internalSubset, DtdModel externalSubset, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(internalSubset);
         ArgumentNullException.ThrowIfNull(externalSubset);
+        cancellationToken.ThrowIfCancellationRequested();
         return new(
-            MergeByName(internalSubset.Elements, externalSubset.Elements, static d => d.Name),
-            MergeAttributes(internalSubset.Attributes, externalSubset.Attributes),
-            MergeByName(internalSubset.GeneralEntities, externalSubset.GeneralEntities, static d => d.Name),
-            MergeByName(internalSubset.ParameterEntities, externalSubset.ParameterEntities, static d => d.Name),
-            MergeByName(internalSubset.Notations, externalSubset.Notations, static d => d.Name));
+            MergeByName(internalSubset.Elements, externalSubset.Elements, static d => d.Name, cancellationToken),
+            MergeAttributes(internalSubset.Attributes, externalSubset.Attributes, cancellationToken),
+            MergeByName(internalSubset.GeneralEntities, externalSubset.GeneralEntities, static d => d.Name, cancellationToken),
+            MergeByName(internalSubset.ParameterEntities, externalSubset.ParameterEntities, static d => d.Name, cancellationToken),
+            MergeByName(internalSubset.Notations, externalSubset.Notations, static d => d.Name, cancellationToken));
     }
 
-    private static List<T> MergeByName<T>(IReadOnlyList<T> first, IReadOnlyList<T> second, Func<T, string> name)
+    private static List<T> MergeByName<T>(IReadOnlyList<T> first, IReadOnlyList<T> second, Func<T, string> name, CancellationToken cancellation)
     {
         var seen = new HashSet<string>(StringComparer.Ordinal);
         var result = new List<T>();
-        foreach (var declaration in first) if (seen.Add(name(declaration))) result.Add(declaration);
-        foreach (var declaration in second) if (seen.Add(name(declaration))) result.Add(declaration);
+        foreach (var declaration in first)
+        { CheckName(name(declaration), cancellation); if (seen.Add(name(declaration))) result.Add(declaration); }
+        foreach (var declaration in second)
+        { CheckName(name(declaration), cancellation); if (seen.Add(name(declaration))) result.Add(declaration); }
         return result;
     }
 
     private static List<DtdAttributeDeclaration> MergeAttributes(IReadOnlyList<DtdAttributeDeclaration> first,
-        IReadOnlyList<DtdAttributeDeclaration> second)
+        IReadOnlyList<DtdAttributeDeclaration> second, CancellationToken cancellation)
     {
         var seen = new HashSet<(string Element, string Attribute)>();
         var result = new List<DtdAttributeDeclaration>();
-        foreach (var declaration in first) if (seen.Add((declaration.ElementName, declaration.Name))) result.Add(declaration);
-        foreach (var declaration in second) if (seen.Add((declaration.ElementName, declaration.Name))) result.Add(declaration);
+        foreach (var declaration in first)
+        { CheckName(declaration.ElementName, cancellation); CheckName(declaration.Name, cancellation); if (seen.Add((declaration.ElementName, declaration.Name))) result.Add(declaration); }
+        foreach (var declaration in second)
+        { CheckName(declaration.ElementName, cancellation); CheckName(declaration.Name, cancellation); if (seen.Add((declaration.ElementName, declaration.Name))) result.Add(declaration); }
         return result;
+    }
+    private sealed class AttributeGroup
+    {
+        internal readonly HashSet<string> Names = new(StringComparer.Ordinal);
+        internal readonly List<DtdAttributeDeclaration> Declarations = [];
+    }
+
+    private static void CheckName(string name, CancellationToken cancellation)
+    {
+        cancellation.ThrowIfCancellationRequested();
+        for (int i = 0; i < name.Length; i += Math.Min(4096, name.Length - i))
+            cancellation.ThrowIfCancellationRequested();
     }
 }

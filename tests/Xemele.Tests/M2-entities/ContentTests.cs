@@ -11,7 +11,6 @@ public sealed class ContentTests
     [Theory]
     [InlineData("plain", "owned", "<r>owned</r>")]
     [InlineData("markup", "<b>text&amp;more</b>", "<r><b>text&more</b></r>")]
-    [InlineData("a:b", "colon", "<r>colon</r>")]
     [InlineData("pair", "\U0001F642", "<r>\U0001F642</r>")]
     public void ParsedInternalContentAtEveryPrimarySplitAndCallbackPause(string name, string replacement, string expected)
     {

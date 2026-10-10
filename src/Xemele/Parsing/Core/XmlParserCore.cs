@@ -13,8 +13,8 @@ namespace Xemele.Parsing.Syntax;
 // only tags/declarations/references/PI targets require bounded lexical scratch.
 internal sealed partial class XmlParserCore : IDisposable
 {
-    private enum State { Data, Less, Bang, Tag, Close, Comment, CData, PiTarget, PiBody, Declaration, Reference }
-    private enum Delivery { None, Document, Tag, Close, Text, Declaration, EndDocument }
+    private enum State { Data, Less, Bang, Tag, Close, Comment, CData, PiTarget, PiBody, Declaration, Reference, Doctype, DtdSubset, DtdClose }
+    private enum Delivery { None, Document, Tag, Close, Text, Declaration, DocumentType, EndDocument }
     private readonly record struct Name(string Local, string Uri, string Prefix)
     {
         internal XmlNameView View => new(Local, Uri, Prefix);
@@ -26,8 +26,9 @@ internal sealed partial class XmlParserCore : IDisposable
         internal Name Name;
         internal string Prefix, Uri;
         internal XmlLocation Location;
+        internal string? OwnedName, OwnedValue;
     }
-    private readonly record struct Frame(Name Name, int BindingsStart);
+    private readonly record struct Frame(Name Name, int BindingsStart, bool StandaloneWhitespaceDependency);
     private readonly record struct Binding(string Prefix, string Uri);
     private const string XmlUri = "http://www.w3.org/XML/1998/namespace";
     private const string XmlnsUri = "http://www.w3.org/2000/xmlns/";
@@ -82,7 +83,7 @@ internal sealed partial class XmlParserCore : IDisposable
             if (sinkIdentity is not null && !ReferenceEquals(sinkIdentity, sink)) throw new InvalidOperationException("Resume with the same sink.");
             if (finalSeen && !isFinalBlock) throw new InvalidOperationException("Final flag is sticky.");
             try { ValidateOffsets(input, byteOffsets, cancellationToken); }
-            catch (OperationCanceledException) { faulted = true; throw; }
+            catch (OperationCanceledException) { faulted = true; AbortEntities(); throw; }
             if (isFinalBlock && sourceMode == 2 && byteLength is null) throw new InvalidOperationException("CompleteByteSource must precede final byte input.");
             sinkIdentity = sink;
             finalSeen |= isFinalBlock;
@@ -191,6 +192,12 @@ internal sealed partial class XmlParserCore : IDisposable
         if (!XmlScalar(scalar)) { Reject("XML.Syntax", "Disallowed XML scalar.", location); return; }
         if (!Charge(Quota.DocumentCharacters, 1, location)) return;
         if (!position.TryAdvance(new Rune(scalar))) { Reject("XML.LocationLimit", "Location capacity exceeded.", location); return; }
+        if (state == State.DtdSubset)
+        {
+            normalizedCr = scalar == '\r';
+            ProcessDtdScalar(scalar, location);
+            return;
+        }
         bool skip = normalizedCr && scalar == '\n'; normalizedCr = scalar == '\r';
         if (skip) return;
         if (scalar == '\r') scalar = '\n';
@@ -228,6 +235,9 @@ internal sealed partial class XmlParserCore : IDisposable
     }
     private void QueueFragment(int scalar, XmlLocation location, int prefixCount = 0, char prefix = '\0')
     {
+        if (White(scalar) && textKind is XmlTextKind.Text or XmlTextKind.CData &&
+            frames.Count != 0 && frames[^1].StandaloneWhitespaceDependency)
+        { Reject("XML.Standalone", "Standalone document depends on external element-content whitespace.", location); return; }
         fragmentLength = prefixCount;
         for (int i = 0; i < prefixCount; i++) fragment[i] = prefix;
         if (scalar >= 0)
@@ -271,7 +281,16 @@ internal sealed partial class XmlParserCore : IDisposable
             case State.Bang:
                 if (!Store(c, location)) return;
                 var prefix = token.AsSpan(0, tokenLength);
-                if (prefix.SequenceEqual("DOCTYPE")) { Reject("XML.DtdProhibited", "DTD syntax is prohibited.", opening); return; }
+                if (prefix.SequenceEqual("DOCTYPE"))
+                {
+                    if (budget.Options.DtdProcessing == XmlDtdProcessing.Prohibit)
+                    { Reject("XML.DtdProhibited", "DTD syntax is prohibited.", opening); return; }
+                    if (rootSeen || doctypeSeen || entitySources is { Count: > 0 })
+                    { Reject("XML.Syntax", "Invalid DOCTYPE placement.", opening); return; }
+                    doctypeSeen = true; declarationAllowed = false; ResetToken(); state = State.Doctype; quote = '\0';
+                    entityBudget ??= new(budget, names);
+                    return;
+                }
                 if (prefix.SequenceEqual("--")) { tokenLength = 0; state = State.Comment; BeginText(XmlTextKind.Comment, "", opening); declarationAllowed = false; return; }
                 if (prefix.SequenceEqual("[CDATA["))
                 {
@@ -281,6 +300,20 @@ internal sealed partial class XmlParserCore : IDisposable
                 if (!"DOCTYPE".AsSpan().StartsWith(prefix) && !"--".AsSpan().StartsWith(prefix) && !"[CDATA[".AsSpan().StartsWith(prefix))
                     Reject("XML.Syntax", "Invalid markup declaration.", opening);
                 return;
+            case State.Doctype:
+                if (quote == 0 && c is '[' or '>')
+                {
+                    if (!ParseDoctypeHeader()) return;
+                    if (c == '[') BeginDtdSubset(); else CompleteDoctype();
+                    return;
+                }
+                if (quote == 0 && c is '\'' or '"') quote = (char)c;
+                else if (c == quote) quote = '\0';
+                Store(c, location); return;
+            case State.DtdClose:
+                if (White(c)) return;
+                if (c != '>') { Reject("XML.Syntax", "Expected DOCTYPE closing delimiter.", location); return; }
+                CompleteDoctype(); return;
             case State.Tag:
                 if (c == '>' && quote == 0) { if (Charge(Quota.TokenCharacters, 1, location)) ParseTag(); state = State.Data; return; }
                 if (quote == 0 && c is '\'' or '"') quote = (char)c;
@@ -398,16 +431,21 @@ internal sealed partial class XmlParserCore : IDisposable
                     {
                         ref var a = ref attributes[deliveryIndex++ - attributeCount - 1];
                         if (a.Namespace) continue;
-                        keepGoing = sink.Attribute(new(a.Name.View, token.AsSpan(a.ValueStart, a.ValueLength), a.Location));
+                        keepGoing = sink.Attribute(new(a.Name.View, AttributeValue(a), a.Location));
                     }
                     else
                     {
                         delivery = emptyTag ? Delivery.Close : Delivery.None;
+                        Array.Clear(attributes, 0, attributeCount);
                         keepGoing = sink.StartElementContent();
                     }
                     break;
                 case Delivery.Close:
                     delivery = Delivery.None; PopFrame(); keepGoing = sink.EndElement(deliveredName.View, opening); break;
+                case Delivery.DocumentType:
+                    delivery = Delivery.None;
+                    keepGoing = sink is not IXmlDtdSink dtdSink || dtdSink.DocumentType(documentType!, entities!.Model, doctypeLocation);
+                    break;
                 case Delivery.Declaration:
                     delivery = Delivery.None; keepGoing = sink.Declaration(new(version, token.AsSpan(encodingStart, encodingLength), standalone, opening)); break;
                 default:
@@ -509,7 +547,9 @@ internal sealed partial class XmlParserCore : IDisposable
         if (i >= tokenLength || token[i++] != '=') { Reject("XML.Syntax", "Expected attribute equals.", a.Location); return false; }
         SkipWhite(ref i);
         if (i >= tokenLength || token[i] is not ('\'' or '"')) { Reject("XML.Syntax", "Expected quoted attribute value.", a.Location); return false; }
-        char delimiter = token[i++]; a.ValueStart = i; int write = i;
+        char delimiter = token[i++]; a.ValueStart = i;
+        if (!declaration && entities is not null) return ReadDtdAttribute(ref i, ref a, delimiter);
+        int write = i;
         while (i < tokenLength && token[i] != delimiter)
         {
             Work(i); char c = token[i];
@@ -536,6 +576,7 @@ internal sealed partial class XmlParserCore : IDisposable
         if (rootClosed) { Reject("XML.Syntax", "Multiple root elements.", opening); return; }
         int i = 0; int nameLength = ReadName(ref i);
         if (!ValidName(token.AsSpan(0, nameLength), true)) { Reject("XML.Syntax", "Invalid element name.", opening); return; }
+        dtdAttributes = entities?.GetAttributes(token.AsSpan(0, nameLength));
         attributeCount = 0; emptyTag = false; budget.Reset(Quota.AttributesPerElement);
         while (i < tokenLength)
         {
@@ -551,14 +592,15 @@ internal sealed partial class XmlParserCore : IDisposable
             }
             attributes[attributeCount++] = a;
         }
+        if (entities is not null && !ApplyDefaultAttributes(token.AsSpan(0, nameLength))) return;
         int bindingStart = bindings.Count;
         for (int n = 0; n < attributeCount; n++)
         {
-            Work(n); ref var a = ref attributes[n]; var q = token.AsSpan(a.NameStart, a.NameLength);
+            Work(n); ref var a = ref attributes[n]; var q = AttributeName(a);
             if (q.SequenceEqual("xmlns") || q.StartsWith("xmlns:"))
             {
                 a.Namespace = true; a.Prefix = Intern(q.SequenceEqual("xmlns") ? ReadOnlySpan<char>.Empty : q[6..], a.Location);
-                a.Uri = Intern(token.AsSpan(a.ValueStart, a.ValueLength), a.Location);
+                a.Uri = Intern(AttributeValue(a), a.Location);
                 if (diagnostic is not null) return;
                 if (a.Prefix == "xmlns" || a.Uri == XmlnsUri || (a.Prefix == "xml") != (a.Uri == XmlUri) || (a.Prefix.Length != 0 && a.Uri.Length == 0))
                 { Reject("XML.Namespace", "Reserved namespace binding.", a.Location); return; }
@@ -571,7 +613,7 @@ internal sealed partial class XmlParserCore : IDisposable
         for (int n = 0; n < attributeCount; n++)
         {
             Work(n); ref var a = ref attributes[n]; if (a.Namespace) continue;
-            a.Name = Resolve(token.AsSpan(a.NameStart, a.NameLength), true, a.Location);
+            a.Name = Resolve(AttributeName(a), true, a.Location);
             for (int p = 0; p < n; p++)
             {
                 Work(p); ref var previous = ref attributes[p];
@@ -580,7 +622,7 @@ internal sealed partial class XmlParserCore : IDisposable
             }
         }
         if (diagnostic is not null || !Charge(Quota.Depth, 1, opening)) return;
-        frames.Add(new(deliveredName, bindingStart)); rootSeen = true; deliveryIndex = 0; delivery = Delivery.Tag;
+        frames.Add(new(deliveredName, bindingStart, StandaloneElementWhitespace(token.AsSpan(0, nameLength)))); rootSeen = true; deliveryIndex = 0; delivery = Delivery.Tag;
     }
     private void ParseClose()
     {
