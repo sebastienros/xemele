@@ -1,0 +1,216 @@
+Tested implementation revision: 5aa9ab77df7c822b8e976f6ef034ec49bc8421c6
+$ dotnet build docs/reports/M0-contracts/Checks/Checks.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  M1 -> /Users/sebastienros/.codex/worktrees/3855/xemele/docs/reports/M0-contracts/Fixtures/M1/bin/Release/net10.0/FoundationM1.dll
+  M2 -> /Users/sebastienros/.codex/worktrees/3855/xemele/docs/reports/M0-contracts/Fixtures/M2/bin/Release/net10.0/FoundationM2.dll
+  Checks -> /Users/sebastienros/.codex/worktrees/3855/xemele/docs/reports/M0-contracts/Checks/bin/Release/net10.0/Checks.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:02.77
+
+exit=0; expected=0
+$ dotnet build docs/reports/M0-contracts/ApiCheck/ApiCheck.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  ApiCheck -> /Users/sebastienros/.codex/worktrees/3855/xemele/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:01.22
+
+exit=0; expected=0
+$ dotnet test --project docs/reports/M0-contracts/Checks/Checks.csproj -c Release --no-build --no-restore
+Running tests from /Users/sebastienros/.codex/worktrees/3855/xemele/docs/reports/M0-contracts/Checks/bin/Release/net10.0/Checks.dll (net10.0|arm64)
+/Users/sebastienros/.codex/worktrees/3855/xemele/docs/reports/M0-contracts/Checks/bin/Release/net10.0/Checks.dll (net10.0|arm64) passed (363ms)
+
+Test run summary: Passed!
+  total: 10
+  failed: 0
+  succeeded: 10
+  skipped: 0
+  duration: 611ms
+
+exit=0; expected=0
+$ dotnet docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare docs/reports/M0-contracts/Fixtures/M1/bin/Release/net10.0/FoundationM1.dll tests/Contracts/Fixtures/foundation/M1.golden.txt
+Matched 139 compiled members
+
+exit=0; expected=0
+$ dotnet docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare docs/reports/M0-contracts/Fixtures/M2/bin/Release/net10.0/FoundationM2.dll tests/Contracts/Fixtures/foundation/M2.golden.txt
+Matched 173 compiled members
+
+exit=0; expected=0
+Additive stage check: 139 M1 members preserved within 173 M2 members
+$ dotnet build docs/reports/M0-contracts/Fixtures/ApiProbe/ApiProbe.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  ApiProbe -> /Users/sebastienros/.codex/worktrees/3855/xemele/docs/reports/M0-contracts/Fixtures/ApiProbe/bin/Release/net10.0/ApiProbe.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:01.03
+
+exit=0; expected=0
+$ dotnet docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare docs/reports/M0-contracts/Fixtures/ApiProbe/bin/Release/net10.0/ApiProbe.dll tests/Contracts/Fixtures/foundation/ApiProbe.golden.txt
+Matched 8 compiled members
+
+exit=0; expected=0
+$ dotnet docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare docs/reports/M0-contracts/Fixtures/M1/bin/Release/net10.0/FoundationM1.dll /var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-contract-negative-tor3e7zg/missing.txt
+API mismatch: missing, added, changed, reordered or noncanonical entries.
+
+exit=1; expected=1
+$ dotnet docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare docs/reports/M0-contracts/Fixtures/M1/bin/Release/net10.0/FoundationM1.dll /var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-contract-negative-tor3e7zg/added.txt
+API mismatch: missing, added, changed, reordered or noncanonical entries.
+
+exit=1; expected=1
+$ dotnet docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare docs/reports/M0-contracts/Fixtures/M1/bin/Release/net10.0/FoundationM1.dll /var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-contract-negative-tor3e7zg/changed.txt
+API mismatch: missing, added, changed, reordered or noncanonical entries.
+
+exit=1; expected=1
+$ dotnet build docs/reports/M0-contracts/Fixtures/ApiProbe/ApiProbe.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false -p:DefineConstants=MUTATED
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  ApiProbe -> /Users/sebastienros/.codex/worktrees/3855/xemele/docs/reports/M0-contracts/Fixtures/ApiProbe/bin/Release/net10.0/ApiProbe.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:01.12
+
+exit=0; expected=0
+$ dotnet docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare docs/reports/M0-contracts/Fixtures/ApiProbe/bin/Release/net10.0/ApiProbe.dll tests/Contracts/Fixtures/foundation/ApiProbe.golden.txt
+API mismatch: missing, added, changed, reordered or noncanonical entries.
+
+exit=1; expected=1
+$ dotnet docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll emit docs/reports/M0-contracts/Fixtures/ApiProbe/bin/Release/net10.0/ApiProbe.dll /var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-contract-negative-tor3e7zg/mutated.txt
+Emitted 9 members
+
+exit=0; expected=0
+Compiled mutation probes passed: constraints/interfaces/sealing/nullable/accessor visibility/optional default/virtual/constant/added method
+$ dotnet build docs/reports/M0-contracts/Fixtures/ApiProbe/ApiProbe.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  ApiProbe -> /Users/sebastienros/.codex/worktrees/3855/xemele/docs/reports/M0-contracts/Fixtures/ApiProbe/bin/Release/net10.0/ApiProbe.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:01.06
+
+exit=0; expected=0
+$ dotnet docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare docs/reports/M0-contracts/Fixtures/ApiProbe/bin/Release/net10.0/ApiProbe.dll tests/Contracts/Fixtures/foundation/ApiProbe.golden.txt
+Matched 8 compiled members
+
+exit=0; expected=0
+$ dotnet build Xemele.slnx -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Xemele -> /Users/sebastienros/.codex/worktrees/3855/xemele/src/Xemele/bin/Release/net10.0/Xemele.dll
+  Xemele.Benchmarks -> /Users/sebastienros/.codex/worktrees/3855/xemele/benchmarks/Xemele.Benchmarks/bin/Release/net10.0/Xemele.Benchmarks.dll
+  Xemele.Tool -> /Users/sebastienros/.codex/worktrees/3855/xemele/src/Xemele.Tool/bin/Release/net10.0/Xemele.Tool.dll
+  Contracts -> /Users/sebastienros/.codex/worktrees/3855/xemele/tests/Contracts/bin/Release/net10.0/Contracts.dll
+  Xemele.TestUtilities -> /Users/sebastienros/.codex/worktrees/3855/xemele/tests/Xemele.TestUtilities/bin/Release/net10.0/Xemele.TestUtilities.dll
+  Xemele.Conformance.Tests -> /Users/sebastienros/.codex/worktrees/3855/xemele/tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll
+  Xemele.Differential.Tests -> /Users/sebastienros/.codex/worktrees/3855/xemele/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll
+  Xemele.Fuzz -> /Users/sebastienros/.codex/worktrees/3855/xemele/tests/Xemele.Fuzz/bin/Release/net10.0/Xemele.Fuzz.dll
+  Xemele.Tests -> /Users/sebastienros/.codex/worktrees/3855/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll
+  CorpusManager -> /Users/sebastienros/.codex/worktrees/3855/xemele/tools/CorpusManager/bin/Release/net10.0/CorpusManager.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:07.61
+
+exit=0; expected=0
+$ dotnet test --solution Xemele.slnx -c Release --no-build --no-restore
+Running tests from /Users/sebastienros/.codex/worktrees/3855/xemele/tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll (net10.0|arm64)
+Running tests from /Users/sebastienros/.codex/worktrees/3855/xemele/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll (net10.0|arm64)
+Running tests from /Users/sebastienros/.codex/worktrees/3855/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll (net10.0|arm64)
+/Users/sebastienros/.codex/worktrees/3855/xemele/tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll (net10.0|arm64) passed (329ms)
+/Users/sebastienros/.codex/worktrees/3855/xemele/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll (net10.0|arm64) passed (346ms)
+/Users/sebastienros/.codex/worktrees/3855/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll (net10.0|arm64) passed (331ms)
+
+Test run summary: Passed!
+  /Users/sebastienros/.codex/worktrees/3855/xemele/tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll (net10.0|arm64) passed (329ms)
+  /Users/sebastienros/.codex/worktrees/3855/xemele/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll (net10.0|arm64) passed (346ms)
+  /Users/sebastienros/.codex/worktrees/3855/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll (net10.0|arm64) passed (331ms)
+
+  total: 3
+  failed: 0
+  succeeded: 3
+  skipped: 0
+  duration: 803ms
+
+exit=0; expected=0
+$ python3 -B -m unittest discover -s tests/Xemele.TestUtilities/Build -p test_*.py -v
+test_cli_failure_exit_and_explicit_error (test_discovery.DiscoveryTests.test_cli_failure_exit_and_explicit_error) ... ok
+test_distinct_ids_cannot_conflict_on_member (test_discovery.DiscoveryTests.test_distinct_ids_cannot_conflict_on_member) ... ok
+test_duplicate_and_conflicting_ids (test_discovery.DiscoveryTests.test_duplicate_and_conflicting_ids) ... ok
+test_duplicate_corpus_and_fixture (test_discovery.DiscoveryTests.test_duplicate_corpus_and_fixture) ... ok
+test_duplicate_json_fields (test_discovery.DiscoveryTests.test_duplicate_json_fields) ... ok
+test_fixture_traversal (test_discovery.DiscoveryTests.test_fixture_traversal) ... ok
+test_generated_sources_do_not_break_empty_bootstrap (test_discovery.DiscoveryTests.test_generated_sources_do_not_break_empty_bootstrap) ... ok
+test_metadata_schema_and_classification (test_discovery.DiscoveryTests.test_metadata_schema_and_classification) ... ok
+test_missing_baseline (test_discovery.DiscoveryTests.test_missing_baseline) ... ok
+test_missing_fixture_and_checksum (test_discovery.DiscoveryTests.test_missing_fixture_and_checksum) ... ok
+test_noncanonical_unknown_fields_and_unsorted (test_discovery.DiscoveryTests.test_noncanonical_unknown_fields_and_unsorted) ... ok
+test_unknown_and_empty_formats (test_discovery.DiscoveryTests.test_unknown_and_empty_formats) ... ok
+test_valid_fragments_and_fixture (test_discovery.DiscoveryTests.test_valid_fragments_and_fixture) ... ok
+
+----------------------------------------------------------------------
+Ran 13 tests in 0.098s
+
+OK
+
+exit=0; expected=0
+$ python3 tools/ApiBaseline/discover.py --bootstrap-empty-api
+{"apiDeclarations": 0, "apiFragments": [], "bootstrapEmptyApi": true, "corpusManifests": [], "fixtures": 0, "formatVersion": 1}
+
+exit=0; expected=0
+$ dotnet build experiments/Tree/Tree.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Tree -> /Users/sebastienros/.codex/worktrees/3855/xemele/experiments/Tree/bin/Release/net10.0/Tree.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:01.28
+
+exit=0; expected=0
+$ dotnet build experiments/Input/Input.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Input -> /Users/sebastienros/.codex/worktrees/3855/xemele/experiments/Input/bin/Release/net10.0/Input.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:01.28
+
+exit=0; expected=0
+$ dotnet run --project experiments/Tree/Tree.csproj -c Release --no-build -- --self-check
+PASS: 8 construction fixtures; owner/identity/growth/cycle/sibling/deep-tree checks; ordinal Unicode/culture/miss oracle; 0 B warm borrowed lookup; name/text equivalence.
+
+exit=0; expected=0
+$ dotnet run --project experiments/Input/Input.csproj -c Release --no-build -- check
+PASS 83095 assertions; every short two-part split; chunks 1..32; per-fragment suspension; long single-chunk bounded progress; malformed Unicode; matching oracle/collisions/cultures; scan and pipeline setup parity.
+
+exit=0; expected=0
+$ python3 tools/planning/tasks.py validate
+Validated 98 tasks: schema, evidence, acyclic dependencies, additive milestones, and ordered ownership.
+
+exit=0; expected=0
+All correctness checks passed; no new timing measured.
