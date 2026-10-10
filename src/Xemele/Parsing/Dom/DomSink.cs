@@ -54,19 +54,9 @@ internal sealed class DomSink : IXmlEventSink
         return false;
     }
     private string OwnName(ReadOnlySpan<char> value) => Document.FindInternedName(value) ?? value.ToString();
-    // Tree's frozen ordinary-name contract is narrower than namespace syntax:
-    // local xmlns is reserved even under an ordinary bound prefix. Supply that
-    // remaining proof with a fixed literal check before trusted persistence.
-    private bool OrdinaryName(XmlNameView name, XmlLocation location)
-    {
-        if (!name.LocalName.SequenceEqual("xmlns")) return true;
-        Diagnostic = new("XML.Namespace", XmlDiagnosticSeverity.Error, "xmlns is reserved for namespace declarations.", location);
-        return false;
-    }
     public bool StartElement(XmlNameView name, bool isEmptyElement, XmlLocation location)
     {
         cancellation.ThrowIfCancellationRequested();
-        if (!OrdinaryName(name, location)) return false;
         if (!Names(name.LocalName, name.NamespaceUri, name.Prefix, location)) return false;
         var element = builder.CreateSyntaxValidatedNode(XmlNodeKind.Element, OwnName(name.LocalName), OwnName(name.NamespaceUri), OwnName(name.Prefix), "", cancellation);
         builder.AppendSyntaxValidatedChild(parent, element, cancellation);
@@ -84,7 +74,6 @@ internal sealed class DomSink : IXmlEventSink
     {
         cancellation.ThrowIfCancellationRequested();
         var name = attribute.Name;
-        if (!OrdinaryName(name, attribute.Location)) return false;
         if (!Names(name.LocalName, name.NamespaceUri, name.Prefix, attribute.Location)) return false;
         builder.AppendSyntaxValidatedAttribute(parent, OwnName(name.LocalName), attribute.Value.ToString(), OwnName(name.NamespaceUri), OwnName(name.Prefix), cancellation);
         return true;

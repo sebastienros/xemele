@@ -8,21 +8,35 @@ namespace Xemele.Tests.Dom;
 public sealed class PersistenceTests
 {
     [Theory]
-    [InlineData("<xmlns/>")]
-    [InlineData("<p:xmlns xmlns:p='u'/>")]
-    [InlineData("<r xmlns:p='u' p:xmlns='v'/>")]
-    public void NarrowTreeReservedLocalNameContractRejectsBeforeTrustedPersistence(string source)
+    [InlineData("<xmlns/>", "", "", 0)]
+    [InlineData("<xmlns xmlns='urn:d'/>", "urn:d", "", 0)]
+    [InlineData("<p:xmlns xmlns:p='u'/>", "u", "p", 0)]
+    [InlineData("<xmlns xmlns:p='u' p:xmlns='v'/>", "", "", 1)]
+    public void LegalXmlnsLocalNamesRemainOrdinaryNamesOverAllTransports(string source, string uri, string prefix, int attributes)
     {
-        Assert.False(XmlDocument.TryParse(source, out var document, out var diagnostics, cancellationToken: TestContext.Current.CancellationToken));
-        Assert.Null(document); Assert.Equal("XML.Namespace", Assert.Single(diagnostics).Code);
+        void Check(XmlDocument document)
+        {
+            var root = document.RootElement;
+            Assert.Equal("xmlns", root.LocalName); Assert.Equal(uri, root.NamespaceUri); Assert.Equal(prefix, root.Prefix);
+            Assert.Equal(attributes, root.Attributes.Count);
+            if (attributes != 0)
+            {
+                var attribute = root.Attributes[0];
+                Assert.Equal("xmlns", attribute.LocalName); Assert.Equal("u", attribute.NamespaceUri); Assert.Equal("p", attribute.Prefix); Assert.Equal("v", attribute.Value);
+            }
+            // The test-only BCL oracle confirms the same namespace expansion.
+            var expected = System.Xml.Linq.XElement.Parse(source);
+            Assert.Equal(expected.Name.LocalName, root.LocalName); Assert.Equal(expected.Name.NamespaceName, root.NamespaceUri);
+        }
+        Assert.True(XmlDocument.TryParse(source, out var document, out var diagnostics, cancellationToken: TestContext.Current.CancellationToken));
+        Assert.Empty(diagnostics); Check(document!);
         byte[] bytes = Encoding.UTF8.GetBytes(source);
-        Assert.False(XmlDocument.TryParse(bytes.AsSpan(), out document, out diagnostics, cancellationToken: TestContext.Current.CancellationToken));
-        Assert.Null(document); Assert.Equal("XML.Namespace", Assert.Single(diagnostics).Code);
+        Assert.True(XmlDocument.TryParse(bytes.AsSpan(), out document, out diagnostics, cancellationToken: TestContext.Current.CancellationToken));
+        Assert.Empty(diagnostics); Check(document!);
         for (int size = 1; size <= bytes.Length + 1; size++)
         {
             using var stream = new DomTests.ChunkStream(bytes, size);
-            var exception = Assert.Throws<XmlParseException>(() => XmlDocument.Load(stream, cancellationToken: TestContext.Current.CancellationToken));
-            Assert.Equal("XML.Namespace", Assert.Single(exception.Diagnostics).Code);
+            Check(XmlDocument.Load(stream, cancellationToken: TestContext.Current.CancellationToken));
             Assert.False(stream.WasDisposed);
         }
     }

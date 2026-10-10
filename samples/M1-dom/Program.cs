@@ -41,3 +41,7 @@ if (!stream.CanRead || !XmlDocument.TryParse(xml.AsSpan(), out var successful, o
 if (XmlDocument.TryParse("<!DOCTYPE r><r/>", out var rejected, out var diagnostics) || rejected is not null || diagnostics.Count != 1 || diagnostics[0].Code != "XML.DtdProhibited")
     throw new InvalidOperationException("Strict rejection mismatch.");
 Console.WriteLine("Independent DOM factories: characters/bytes/stream; structure, ownership and strict rejection passed.");
+var legalName = XmlDocument.Parse("<xmlns xmlns:p='urn:p' p:xmlns='value'/>");
+if (legalName.RootElement.LocalName != "xmlns" || legalName.RootElement.GetAttribute("xmlns", "urn:p") != "value" || legalName.RootElement.NamespaceDeclarations.Count != 1)
+    throw new InvalidOperationException("Legal ordinary xmlns local name mismatch.");
+Console.WriteLine("Legal ordinary xmlns element/qualified attribute remain distinct from declarations.");
