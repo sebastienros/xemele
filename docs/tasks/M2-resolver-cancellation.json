@@ -4,11 +4,11 @@
   "milestone": "M2",
   "title": "Per-call cancellation binding for persistent resource sessions",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/M2-resolver-cancellation",
   "branch": "codex/m2-resolver-cancellation",
   "base_revision": "c0cb286e3e49aff00ccdeafad640bab89060ddbe",
-  "integration_revision": null,
+  "integration_revision": "cc4770bfc417dd81ea1744a54b477134a4f7e997",
   "depends_on": [
     "M2-resolver"
   ],
@@ -36,7 +36,8 @@
       "evidence": [
         "cumulative-source-0d",
         "scoped-discovery-489",
-        "independent-runtime-review"
+        "independent-runtime-review",
+        "integrated-cc4770b"
       ]
     },
     {
@@ -46,7 +47,8 @@
       "evidence": [
         "cumulative-source-0d",
         "scoped-discovery-489",
-        "independent-runtime-review"
+        "independent-runtime-review",
+        "integrated-cc4770b"
       ]
     },
     {
@@ -58,7 +60,8 @@
         "scoped-oracles-d44",
         "scoped-discovery-489",
         "exclusive-allocation-d44",
-        "exclusive-bdn-489"
+        "exclusive-bdn-489",
+        "integrated-cc4770b"
       ]
     }
   ],
@@ -168,20 +171,29 @@
       "result": "passed",
       "summary": "All changed paths belong to this task; implemented metadata validates123; all diff checks passed after raw-preserving export whitespace repair. Runtime/tests unchanged from full-passing0d; benchmark source unchanged from measured d44/489. Integration remains coordinator work.",
       "artifact": "docs/reports/M2-resolver-cancellation/final-audit/summary.json"
+    },
+    {
+      "id": "integrated-cc4770b",
+      "kind": "integration",
+      "revision": "cc4770bfc417dd81ea1744a54b477134a4f7e997",
+      "command": "PinnedSDK10.0.400/runtime10.0.11; python3 -B docs/reports/M2-resolver-cancellation/verify.py --report-prefix integration-attempt1 --audit-base beed577d0b3fe6340acc8ad295bedca72ef02c88 --expected-branch codex/integrate-m2-resolver-cancellation",
+      "result": "passed",
+      "summary": "Current-main combination actual5068MTP/direct4514+255+299 allzeroerror/fail/skip/notrun; focused18binding+43resolver; API272/independentResolver114/filter29/registry3388; compiledhookmandatorymetadata+fournegativecontrols; source and freshlocalnupkg exactfullrevision; freshcompleteBCL242/239match+3ledgerdivergences/fullsource/hash/entire7filepinnedoutputunchanged; source10ownedbeforeafter+independent103trackedcompiledfileidentities/actualXML inspected; main+standalonebuild/oracles/discovery; planning14/graph123/allownership+diffchecks. Reviewedruntime0d and measuredbench489 byte-identical; single0Ballocationwith56000Bpositive and9actual9result3children retained withoutrepeating. No fullcoreconsumer or otherplatform/performance release claim.",
+      "artifact": "docs/reports/M2-resolver-cancellation/integration-attempt1/summary.json"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Implemented exact per-call nonpublic cancellation binding for persistent idle resource sessions; guards, independent budget cancellation, state and primary exceptions preserved. Runtime source/tests frozen at0d, final scaffolding source489; no core consumer implementation claim.",
+    "summary": "Verified exact per-call cancellation binding on integrated current-main cc4770b; complete checks preserved. Core consumer must bind existing session per Append before pending work; own runtime/tests and prior measured semantics retained.",
     "checks": [
       "Full5068MTP/direct4514+255+299,18focused+43predecessor/API272/registry3388/freshBCL242239match+3documented/fullrevision/hash/source+package/M1compiledmodels/planning14/123 passed at0d.",
       "Reviewed scoped source/package/compiler metadata controls/main+standalone fullmethod oracles/discovery and identities passed at489;runtime/tests/benchmethods unchanged.",
       "Single exclusive allocation at d44: 100,000 warmed bindings = 0 B; 1,000 escaped controls = 56,000 B; 100,000 binding guards = 0 B. One successful BDN at 489: 3 cases, 9 actual/9 result observations, 3 zero-GC records and child exits 0; all 0 B. Baseline overhead, ordinary priority and Arm64 short-run limitations retained.",
       "Preparation analyzers, nested-generated-output build failure and first BDN zero-case generator failure retained;no successful allocation/timing repetition.",
-      "Final claim-relative committed/staged/working/untracked ownership and all diff audits passed after preserving raw exports and fixing generated Markdown whitespace. Planning validates123 implemented records; earlier audit failure retained."
+      "Final claim-relative committed/staged/working/untracked ownership and all diff audits passed after preserving raw exports and fixing generated Markdown whitespace. Planning validates123 implemented records; earlier audit failure retained.",
+      "Integratedcc4770b firstactualfull5068/API272/ref242/package/methodoracles/planning14graph123/sourceidentities+ownership passed; independentXML4514/255/299/18 and7fileBCL rehash match."
     ],
     "remaining": [
-      "Coordinator integrates and reruns fresh current-main full verifier using --expected-branch main and appropriate --audit-base;then records integration and sets verified.",
       "Consumer owner binds existing session once per Append after assigning activeCancellation and before pending resource work; new sessions receive current token through constructor. No consumer work in this branch.",
       "Other-platform and actual consumer composition performance belong later owning tasks;binding benchmarks cover only warm successful sequential calls."
     ],
