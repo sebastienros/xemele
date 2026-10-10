@@ -1,0 +1,83 @@
+{
+  "testedRevision": "4a03b32a4bc54ac3dc210db073e997030d7d6938",
+  "host": "macOS Arm64",
+  "sdk": "10.0.400",
+  "runtime": "10.0.11",
+  "build": "Release; --disable-build-servers -m:1 -p:UseSharedCompilation=false; DOTNET_CLI_USE_MSBUILD_SERVER=0",
+  "cumulativeTests": {
+    "total": 5163,
+    "passed": 5163,
+    "failed": 0,
+    "skipped": 0,
+    "previousBaseline": 5148,
+    "newCases": 15
+  },
+  "pythonContractControls": {
+    "passed": 8,
+    "failed": 0
+  },
+  "compiledApi": {
+    "matched": 272,
+    "assemblySha256": "b53bf002fdbc298d8b4e03547f2bb46898d5c5080f42507db9f06c36aad25fa0"
+  },
+  "classification": {
+    "originalCases": 2585,
+    "originalResourceIdentities": 3386,
+    "allResourcesHashVerified": true,
+    "noProductFailureExclusions": true
+  },
+  "fullProbe": {
+    "product:rejected": 1326,
+    "reference:rejected": 1914,
+    "product-expectation-match": 2446,
+    "reference:accepted": 671,
+    "product:accepted": 1259,
+    "product-expectation-gap": 139,
+    "matched": 635,
+    "model-disagreement": 1
+  },
+  "productGapRules": {
+    "well-formedness": 2,
+    "nonvalidating-validity": 8,
+    "valid-document": 3,
+    "effective-xml10": 120,
+    "namespace-ncname": 3,
+    "namespace-uri-optional-check": 3,
+    "fifth-edition-change": 1
+  },
+  "legacyPreservation": {
+    "productOriginalRejections": 242,
+    "bclMatches": 239,
+    "bclExactVersionSuffixDivergences": 3,
+    "bclPinnedRuntime": "10.0.11"
+  },
+  "staleBinaryNegative": {
+    "expectedAuditExit": 1,
+    "actualAuditExit": 1,
+    "failure": "stale BCL binary revision",
+    "outcome": "passed negative control",
+    "binarySourceRevision": "793d39cacf9014d53da93267efb41b3970d74e6a"
+  },
+  "limits": "classification/reference contract only; 139 product outcome gaps plus E18 product model gap remain; no complete product-conformance claim; no allocation/timing workloads",
+  "review": {
+    "reviewer": "coordinator independent API source reviewer",
+    "revision": "4a03b32a4bc54ac3dc210db073e997030d7d6938",
+    "result": "passed source-only review",
+    "scope": "source-version binding, first-declaration/NDATA used-source witnesses, selected external VersionNum rules; no reviewer execution claimed"
+  },
+  "independentE18ModelAssessment": {
+    "id": "xmlconf/eduni/errata-2e/errata2e.xml#rmt-e2e-18",
+    "inputSha256": "5968be3ce43799a857ff2cfba9a431b525087a3293230d74a5d7e8b5d2eb169b",
+    "canonicalOutput": {
+      "path": "xmlconf/eduni/errata-2e/out/E18.xml",
+      "bytes": 39,
+      "sha256": "6f408fff4e526b0f7ba4571b96a4d2b2249e05106b2e19b7e050db4798179f7a"
+    },
+    "independentExpectedModelSha256": "3c0ec688b6357710e11084a81ff3476fe0d9017e450b2270d30bad3bc8f98bc2",
+    "referenceMatchesExpected": true,
+    "productMatchesExpected": false,
+    "normative": "https://www.w3.org/TR/2008/REC-xml-20081126/#sec-external-ent",
+    "rationale": "Base is external entity containing declaration opener at point parsed; internal PE inclusion here is in primary source. Product resolves declaration-source subdir1 instead of primary base; keep visible product semantic gap."
+  },
+  "transientCleanup": "Inspected and removed 484 M1 raw case outputs, exploratory report, API provenance payload, stale-negative payload and empty MTP TestResults directory. Retained concise contract/provenance/failure evidence only; existing frozen historical reports unchanged."
+}

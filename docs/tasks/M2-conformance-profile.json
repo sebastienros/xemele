@@ -4,7 +4,7 @@
   "milestone": "M2",
   "title": "Freeze strict XML applicability and offline reference contract",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M2-conformance-profile",
   "branch": "codex/m2-conformance-profile",
   "base_revision": "bb3b4752aaeb93f13a6e5bf44026d061333d40fa",
@@ -38,33 +38,162 @@
     {
       "id": "M2-conformance-profile-A1",
       "description": "Publish executable complete per-case applicability/expected-outcome classification for all 2585 original IDs and exact byte/resource identities against XML1.0 Fifth Edition, Namespaces1.0 Third Edition, nonvalidating obligations and frozen optional encoding profile. Preserve M1 metadata/bytes; precisely justify historical-edition, invalid, optional-error, namespace-disabled and encoding cases; no blanket exclusions or hiding product failures.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "effective-classification",
+        "python-contract-controls",
+        "full-corpus-reference-contract",
+        "coordinator-source-review"
+      ]
     },
     {
       "id": "M2-conformance-profile-A2",
       "description": "Freeze independent semantic comparison/source-URI/offline resource mapping and disagreement-evidence contract. Narrowly extend BCL runner existing options for explicit absolute source URI so relative/nested offline resources resolve without network/file access; preserve existing wire shapes/defaults and reject unknown/malformed options. Exercise representative successful/rejected/reference-limit cases and infrastructure negative controls with actual full-source runner identities.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "release-build",
+        "full-corpus-reference-contract",
+        "stale-binary-control",
+        "cumulative-tests",
+        "independent-e18-model",
+        "coordinator-source-review"
+      ]
     },
     {
       "id": "M2-conformance-profile-A3",
       "description": "Demonstrate independently compiled/executed classification/reference contract and representative model checks using verified prerequisites; preserve earlier tests/API/runner protocol behavior. Keep all remaining actual product failures visible for grammar child/final join, with concise summaries and transient-output cleanup; do not claim full product conformance.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "release-build",
+        "python-contract-controls",
+        "cumulative-tests",
+        "compiled-api-preservation",
+        "planning-ownership-preservation",
+        "full-corpus-reference-contract"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "tests/corpora/xml/m2-applicability.json: all original IDs/resource identities and effective XML1.0 expectations",
+    "docs/reports/M2-conformance-profile/classify.py: deterministic normative classification, verified offline original bytes",
+    "tools/ReferenceRunners/Bcl/Program.cs: narrowly scoped options.sourceUri preserving default offline-only protocol",
+    "samples/M2-conformance-profile/Program.cs: independent exact-byte/source-URI composition and semantic model",
+    "docs/reports/M2-conformance-profile/audit.py: independent full corpus execution/provenance/gap ledger",
+    "tests/Xemele.Conformance.Tests/XmlFull/Profile/ApplicabilityTests.cs: complete identity contract and infrastructure negatives",
+    "tests/Xemele.Differential.Tests/Protocol/M2OfflineSourceTests.cs: nested offline source resolution/options negatives",
+    "tests/Xemele.Differential.Tests/XmlFull/Profile/SemanticModelTests.cs: independently specified DTD/default/reference models",
+    "docs/reports/M2-conformance-profile/child.py: bounded strict child exchange/process-group cleanup",
+    "docs/reports/M2-conformance-profile/test_contract.py: exact normative regressions and infrastructure/model negatives",
+    "docs/reports/M2-conformance-profile/observations.json and checks.json: concise original-ID/hash gap/provenance/execution evidence"
+  ],
+  "evidence": [
+    {
+      "id": "effective-classification",
+      "kind": "check",
+      "revision": "4a03b32a4bc54ac3dc210db073e997030d7d6938",
+      "command": "python3 -B docs/reports/M2-conformance-profile/classify.py --check",
+      "result": "passed",
+      "summary": "2585 original IDs and 3386 exact resource byte/hash identities; deterministic regeneration matched. Historical Name/scalar/second-root witnesses; effective 1.x, namespace and optional encoding rules; no product-based exclusions.",
+      "artifact": null
+    },
+    {
+      "id": "python-contract-controls",
+      "kind": "check",
+      "revision": "4a03b32a4bc54ac3dc210db073e997030d7d6938",
+      "command": "python3 -B -m unittest discover -s docs/reports/M2-conformance-profile -p test_*.py -v",
+      "result": "passed",
+      "summary": "8 passed. Exact primary/used TextDecl42.88 hashes; unused/unparsed/duplicate-first-declaration witnesses; malformed/single-root/matching-name model controls; strict child failures, timeout/descendant and both-child cleanup.",
+      "artifact": null
+    },
+    {
+      "id": "release-build",
+      "kind": "check",
+      "revision": "4a03b32a4bc54ac3dc210db073e997030d7d6938",
+      "command": "dotnet build Xemele.slnx -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false && dotnet build samples/M2-conformance-profile/Sample.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false",
+      "result": "passed",
+      "summary": "Both Release builds passed with zero warnings/errors under SDK10.0.400/.NET10.0.11/macOSArm64, DOTNET_CLI_USE_MSBUILD_SERVER=0; independently compiled runner/driver modules and original solution preserved.",
+      "artifact": null
+    },
+    {
+      "id": "full-corpus-reference-contract",
+      "kind": "check",
+      "revision": "4a03b32a4bc54ac3dc210db073e997030d7d6938",
+      "command": "python3 -B docs/reports/M2-conformance-profile/audit.py",
+      "result": "passed",
+      "summary": "All2585 exact original requests completed within bounded wrapper, no infrastructure failures; source-to-Git plus actual BCL/driver/product assembly source revision/runtime and entire source/build/output/runtime closure bound before/after. Product1259accepted/1326rejected;2446expectationmatches/139outcome gaps;635mutual model matches/1E18model gap;770reference disagreements retained individually. Exact3legacy suffix IDs/hashes/runtime/outcomes preserved. Concise observations.json only, no raw payloads.",
+      "artifact": null
+    },
+    {
+      "id": "stale-binary-control",
+      "kind": "check",
+      "revision": "4a03b32a4bc54ac3dc210db073e997030d7d6938",
+      "command": "python3 -B docs/reports/M2-conformance-profile/audit.py /private/tmp/m2-profile-stale-negative.json",
+      "result": "passed",
+      "summary": "Expected negative: old793d39c binary at4a03b32 exited1 with stale BCL binary revision, concise failed report and child cleanup; passed only after fresh known-revision compilation. Negative payload inspected then removed.",
+      "artifact": null
+    },
+    {
+      "id": "cumulative-tests",
+      "kind": "check",
+      "revision": "4a03b32a4bc54ac3dc210db073e997030d7d6938",
+      "command": "XEMELE_CORPUS_RESULTS=/private/tmp/m2-profile-test-results dotnet test --solution Xemele.slnx -c Release --no-build --no-progress",
+      "result": "passed",
+      "summary": "5163 passed,0failed,0skipped:5148prior baseline+15new C#cases. Includes offline source/protocol/DTD authored models/infrastructure negatives. Original242 product rejects and239BCL matches+3exact divergences independently inspected in transient outputs, then all484raw files removed.",
+      "artifact": null
+    },
+    {
+      "id": "compiled-api-preservation",
+      "kind": "check",
+      "revision": "4a03b32a4bc54ac3dc210db073e997030d7d6938",
+      "command": "python3 -B docs/reports/M1-corpus-import/provision.py && python3 -B tools/ApiBaseline/compare.py --report /private/tmp/m2-profile-api.json",
+      "result": "passed",
+      "summary": "Existing pinned offline provisioner verified/recreated ignored source fixtures without network or metadata changes; matched272compiled members. Full API payload inspected then removed; concise result/assembly hash retained in checks.json.",
+      "artifact": null
+    },
+    {
+      "id": "independent-e18-model",
+      "kind": "review",
+      "revision": "4a03b32a4bc54ac3dc210db073e997030d7d6938",
+      "command": "Independent XML1.0 output/model assessment from inventory-pinned out/E18.xml",
+      "result": "passed",
+      "summary": "Original canonical output39bytes SHA6f408fff4e526b0f7ba4571b96a4d2b2249e05106b2e19b7e050db4798179f7a; independent normalized model SHA3c0ec688b6357710e11084a81ff3476fe0d9017e450b2270d30bad3bc8f98bc2 matches actual BCL model, differs from product ee56e204f2623d4e78deb94dd0902cb244f6908e1daf287815f58ce6bd70eeed. XML4.2.2 base at declaration parsing identifies E18 as product source-base gap, not reference waiver.",
+      "artifact": null
+    },
+    {
+      "id": "coordinator-source-review",
+      "kind": "review",
+      "revision": "4a03b32a4bc54ac3dc210db073e997030d7d6938",
+      "command": "Coordinator independent API source review of 4a03b32a4bc54ac3dc210db073e997030d7d6938",
+      "result": "passed",
+      "summary": "Coordinator reported source-only approval: actual binary/source revision binding, first-declaration/NDATA used-source witnesses and selected externalVersionNum rules; no remaining bounded source blockers. Reviewer ran no checks; actual execution evidence is separately recorded.",
+      "artifact": null
+    },
+    {
+      "id": "planning-ownership-preservation",
+      "kind": "check",
+      "revision": "4a03b32a4bc54ac3dc210db073e997030d7d6938",
+      "command": "python3 tools/planning/tasks.py validate && git diff --check",
+      "result": "passed",
+      "summary": "Local126-task graph validated (no fixed count assertion; coordinator later graph not merged here); diff clean, all changed paths inside explicit ownership/own task JSON. No production, shared contract/build, M1 metadata/classification or API fragment changes.",
+      "artifact": null
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Coordinator split from M2-conformance; original complete-profile A1-A3 remain unchanged in parent join.",
-    "checks": [],
-    "remaining": [],
+    "summary": "Implemented complete effective XML1.0 applicability and bounded offline-source/reference/model contract. All2585IDs/3386resources preserved; 139 actual product outcome gaps plus independently established E18 product model gap remain visible. Full product conformance is not claimed. All task JSON and owned paths RELEASED; worker PARKED after handoff.",
+    "checks": [
+      "At4a03b32: Release solution/driver builds passed;8Pythoncontrols;complete classification regeneration/hash checks;bounded2585source-bound probes;5163MTPpassed;API272matched;planning/diff/ownership passed. macOSArm64 SDK10.0.400/runtime10.0.11 only.",
+      "Actual stale793binary control rejected at4a03b32;239BCLoriginalmatches+3exactVersionNumdivergences/242product rejects preserved.",
+      "Raw case/API/exploratory/negative payloads inspected then removed; concise source/binary/runtime identities/counts/gap/model hashes only. No allocation/timing workloads or cross-platform runs."
+    ],
+    "remaining": [
+      "Coordinator fresh integrated verification and verified metadata required.",
+      "Grammar/full-profile child must resolve139outcome gaps and E18 source-base model gap, independently verify full accepted normative models/transports; matching differential observations are not full conformance. See exactIDs/hashes in observations.json and independent E18 source/model in checks.json."
+    ],
     "requests": [
-      "Explicit ordered ownership of BCL Program.cs and additive M2OfflineSourceTests.cs only; no ReferenceProtocol contract/public wire shape, shared project/package or M1 corpus inventory/manifest edits. Existing options dictionary may carry a narrowly specified explicit source URI. Route any required outside-path change to coordinator.",
-      "Use pinned complete offline resources; verify paths/hashes and reject traversal/symlink/corruption/missing data. Missing/denied resources and runner failures are infrastructure failures, never passing XML rejection or product exclusions. Reference capability limitations remain distinct from Xemele support.",
-      "Current M1 inventory labels are historical evidence, not an M2 applicability oracle. Exact changed-edition and nonvalidating expectations require normative justification; disagreements need exact case/hash/engine/runtime/protocol evidence. No timing/allocation workload or performance-policy changes required for this contract-only assignment."
+      "VersionNum outside-owned correction already routed by coordinator to M2-version-contract/M2-version-declarations: docs/specs/parser.md; docs/decisions/M2/xml-resources.md149; runtime XmlParserCore.cs705 and Dtd/Framing/XmlTextDeclarationFramer.cs159-191 plus historical/transition tests. No runtime edits here.",
+      "Route remaining DTD.Syntax-only validity rejection and E18 internal-PE source-base composition gaps to an ordered owner if grammar ownership is insufficient (src/Xemele/Parsing/Dtd/Grammar/Parser/Composition.cs and DtdParser.cs; src/Xemele/Parsing/Entities/Runtime/XmlEntityContext.cs and ExternalXmlSource.cs); preserve exact corpus expectations rather than changing applicability. Product gap ledger contains exact affected IDs/input hashes.",
+      "Public DOM byte factories currently have no primary source-URI parameter; independent contract driver uses existing approved core/decoder source URI. No public API behavior is added or claimed by this profile task."
     ]
   }
 }
