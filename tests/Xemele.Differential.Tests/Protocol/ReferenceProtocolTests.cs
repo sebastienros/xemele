@@ -53,12 +53,16 @@ public sealed class ReferenceProtocolTests
         Assert.Equal(expected, result.RootElement.GetProperty("outcome").GetString());
     }
 
-    [Fact]
-    public async Task UsesOnlyOfflineResources()
+    [Theory]
+    [InlineData("https")]
+    [InlineData("file")]
+    public async Task UsesOnlyOfflineResources(string scheme)
     {
-        const string xml = "<!DOCTYPE r SYSTEM 'https://example.invalid/test.dtd'><r>&hello;</r>";
+        string uri = scheme == "file" ? new Uri(Path.Combine(Root, "global.json")).AbsoluteUri
+            : "https://example.invalid/test.dtd";
+        string xml = "<!DOCTYPE r SYSTEM '" + uri + "'><r>&hello;</r>";
         using var allowed = JsonDocument.Parse(await Run(Request(xml, new Dictionary<string, string>
-        { ["https://example.invalid/test.dtd"] = Convert.ToBase64String(Encoding.UTF8.GetBytes("<!ENTITY hello 'offline'>")) })));
+        { [uri] = Convert.ToBase64String(Encoding.UTF8.GetBytes("<!ENTITY hello 'offline'>")) })));
         Assert.Equal("success", allowed.RootElement.GetProperty("outcome").GetString());
         Assert.Equal("offline", allowed.RootElement.GetProperty("events")[1].GetProperty("value").GetString());
         using var denied = JsonDocument.Parse(await Run(Request(xml)));
