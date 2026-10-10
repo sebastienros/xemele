@@ -12,22 +12,22 @@ internal static class Inventory
             typeof(EntityUse), typeof(EntityExpansionRequest), typeof(IXmlEntityContext), typeof(IXmlDtdSink), typeof(IXmlEventSink), typeof(DomSink)];
         foreach(var type in types.OrderBy(t => t.FullName, StringComparer.Ordinal))
         {
-            Console.WriteLine($"{type.FullName}|sealed={type.IsSealed}|value={type.IsValueType}|public={type.IsPublic}|readonly={type.IsDefined(typeof(System.Runtime.CompilerServices.IsReadOnlyAttribute), false)}");
+            Console.WriteLine($"{type.FullName}|sealed={type.IsSealed}|value={type.IsValueType}");
             if(type.IsEnum) { foreach(var name in Enum.GetNames(type)) Console.WriteLine($"  enum:{name}={Convert.ToInt32(Enum.Parse(type,name))}"); continue; }
             if(type != typeof(XmlDocument) && type != typeof(DomSink))
                 foreach(var ctor in type.GetConstructors().OrderBy(c=>c.ToString(),StringComparer.Ordinal))
                     Console.WriteLine("  ctor:"+string.Join(';',ctor.GetParameters().Select(Param)));
             foreach(var method in type.GetMethods(BindingFlags.Instance|BindingFlags.Static|BindingFlags.Public|BindingFlags.NonPublic|BindingFlags.DeclaredOnly)
-                .Where(m=> (!m.IsSpecialName || m.Name.StartsWith("op_", StringComparison.Ordinal)) && (type == typeof(XmlDocument) ? m.Name == "SetDtdMetadata" : type == typeof(DomSink) ? m.Name == "DocumentType" : m.IsPublic))
+                .Where(m=> !m.IsSpecialName && (type == typeof(XmlDocument) ? m.Name == "SetDtdMetadata" : type == typeof(DomSink) ? m.Name == "DocumentType" : m.IsPublic))
                 .OrderBy(m=>m.ToString(),StringComparer.Ordinal))
-                Console.WriteLine("  method:"+method+"|public="+method.IsPublic+"|internal="+method.IsAssembly+"|"+nullable.Create(method.ReturnParameter).ReadState+"|"+string.Join(';',method.GetParameters().Select(Param)));
+                Console.WriteLine("  method:"+method+"|"+nullable.Create(method.ReturnParameter).ReadState+"|"+string.Join(';',method.GetParameters().Select(Param)));
             foreach(var property in type.GetProperties(BindingFlags.Instance|BindingFlags.Public|BindingFlags.NonPublic|BindingFlags.DeclaredOnly)
                 .Where(p=>type == typeof(XmlDocument) ? p.Name is "DocumentType" or "Dtd" : type != typeof(DomSink) && p.GetMethod!.IsPublic)
                 .OrderBy(p=>p.Name,StringComparer.Ordinal))
-                Console.WriteLine("  property:"+property.Name+"|"+property.PropertyType+"|"+nullable.Create(property).ReadState+"|set:"+(property.SetMethod is not null)+"|init="+(property.SetMethod?.ReturnParameter.GetRequiredCustomModifiers().Contains(typeof(System.Runtime.CompilerServices.IsExternalInit)) ?? false));
+                Console.WriteLine("  property:"+property.Name+"|"+property.PropertyType+"|"+nullable.Create(property).ReadState+"|set:"+(property.SetMethod is not null));
         }
         var options=new XmlParseOptions(); Console.WriteLine($"defaults:{options.DtdProcessing}|resolverNull={options.Resolver is null}|limits={options.Limits.Depth}");
         Console.WriteLine($"optionalDom={typeof(IXmlDtdSink).IsAssignableFrom(typeof(DomSink))}|eventDom={typeof(IXmlEventSink).IsAssignableFrom(typeof(DomSink))}");
-        string Param(ParameterInfo p)=>p.Name+":"+p.ParameterType+":out="+p.IsOut+":in="+p.IsIn+":"+nullable.Create(p).ReadState+":optional="+p.IsOptional+":default="+(p.HasDefaultValue?p.DefaultValue??"null":"none");
+        string Param(ParameterInfo p)=>p.Name+":"+p.ParameterType+":"+nullable.Create(p).ReadState+":optional="+p.IsOptional+":default="+(p.HasDefaultValue?p.DefaultValue??"null":"none");
     }
 }
