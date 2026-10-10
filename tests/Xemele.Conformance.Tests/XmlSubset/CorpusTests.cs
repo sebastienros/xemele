@@ -131,7 +131,7 @@ public sealed class CorpusTests
                 File.CreateSymbolicLink(Path.Combine(temporary, "link"), Path.Combine(temporary, "input"));
                 Directory.CreateSymbolicLink(Path.Combine(temporary, "root-link"), Path.Combine(temporary, "actual"));
             }
-            catch (Exception error) when (error is PlatformNotSupportedException or UnauthorizedAccessException || (OperatingSystem.IsWindows() && error is IOException))
+            catch (Exception error) when (error is PlatformNotSupportedException or UnauthorizedAccessException || (OperatingSystem.IsWindows() && error is IOException io && (io.HResult & 0xffff) is 1314 or 50))
             {
                 Assert.Skip("Symlink creation unavailable: " + error.GetType().Name + ": " + error.Message);
             }
