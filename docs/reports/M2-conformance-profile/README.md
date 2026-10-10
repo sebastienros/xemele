@@ -21,6 +21,9 @@ are distinct inputs. Each row retains historical TYPE/EDITION/VERSION/purpose
 and gives its effective expectation, exact rule and normative links.
 
 Earlier edition name restrictions are superseded by Fifth Edition [4]/[4a].
+Historical rows include original encoding-decoded Name/scalar witnesses checked
+against explicit [4]/[4a] ranges. The misleading Latin-1-declared UTF-8 bytes
+of rmt-014 contain U+00BF, which is not NameChar; that exact byte case rejects.
 Seven original IBM P89 cases still have two document elements: their edition
 annotation cannot erase that separate [1] violation. The ledger preserves both
 historical and Fifth Edition IDs even when their bytes are identical.
@@ -28,7 +31,9 @@ historical and Fifth Edition IDs even when their bytes are identical.
 XML §2.8 [26] permits `1.` followed by digits. Compatible 1.x declarations are
 processed using 1.0 rules. A VERSION=1.1 annotation is never an exclusion.
 XML1.1 C1 literal restrictions/version ordering do not apply; XML1.0 Char, S,
-name, newline and namespace rules do. C0 references prohibited by Char reject;
+name, newline and namespace rules do. Malformed primary/text declaration 42.88 versions in exact rmt-008/009 sources
+reject under [26], despite their historical optional-error labels.
+C0 references prohibited by Char reject;
 NEL/LSEP remain characters rather than line ends or S. Original XML1.1 canonical
 outputs cannot substitute for effective 1.0 models.
 
@@ -68,7 +73,12 @@ files and symlinks fail as infrastructure errors. Nested resource URIs resolve
 against the final containing resource URI. Offline keys contain only explicit
 verified resources; both HTTP and file URI resolution use memory, never network
 or filesystem fallback. Lexical external identifier closure is a provisioning
-superset, not a claim that unused/unparsed entities are read. E18 explicitly
+superset, not a claim that unused/unparsed entities are read. Classification
+properties use separate independent witnesses: primary bytes, the chosen
+read-all external subset, or an external general entity declared and directly
+referenced by document content outside the DTD/comments/CDATA. Its exact
+resource hash and reference name are recorded. Granted unused/unparsed
+resources never supply fatal scalar, encoding or version evidence. E18 explicitly
 includes the internal-PE declaration-origin path in subdir1 as well as its lexical
 subdir2 candidate and exact root path. The root path is a verified source identity,
 not an alias; a reference using it produces a visible semantic disagreement. Missing actual map requests fail the run; notation identifiers
@@ -106,3 +116,12 @@ assembly uses an existing friend identity solely for independent test compositio
 Public DOM byte entry points currently lack a primary source-URI parameter; the
 harness does not claim that additive public behavior exists. No runtime hot path,
 allocation or timing change is made by this task.
+
+The persistent audit has a 10-second per-exchange and 180-second total deadline,
+bounded strict UTF-8 lines/stderr, and reaps both process groups on failure.
+Exit codes/extra output/infrastructure failures gate success; failure produces
+a concise failed report rather than a passing partial observation. Source-to-Git
+identity and complete source/build, output/dependency, runtime and dotnet hashes
+are frozen before/after execution. `test_contract.py` exercises malformed models,
+malformed/unterminated UTF-8, nonzero exits, extra lines, timeout/descendant cleanup,
+both-child cleanup and exact classification regressions.

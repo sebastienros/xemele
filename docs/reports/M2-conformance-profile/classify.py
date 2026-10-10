@@ -34,6 +34,46 @@ def text(data):
 def xmlchar(c):
     return c in (9,10,13) or 0x20<=c<=0xd7ff or 0xe000<=c<=0xfffd or 0x10000<=c<=0x10ffff
 
+def namestart(c):
+    return c in (ord(':'),ord('_')) or any(lo<=c<=hi for lo,hi in ((0x41,0x5a),(0x61,0x7a),(0xc0,0xd6),(0xd8,0xf6),(0xf8,0x2ff),(0x370,0x37d),(0x37f,0x1fff),(0x200c,0x200d),(0x2070,0x218f),(0x2c00,0x2fef),(0x3001,0xd7ff),(0xf900,0xfdcf),(0xfdf0,0xfffd),(0x10000,0xeffff)))
+
+def namechar(c):
+    return namestart(c) or c in (ord('-'),ord('.'),0xb7) or 0x30<=c<=0x39 or 0x300<=c<=0x36f or 0x203f<=c<=0x2040
+
+def used_sources(primary, texts, files):
+    """Conservative independent witnesses for classification-sensitive sources.
+    This is not a general entity-expansion oracle. Lexical map grants elsewhere
+    never imply a read; only primary, chosen read-all external subset, and a
+    direct document-content reference to an external declaration prove a read.
+    """
+    cleaned=re.sub(r'<!--.*?-->|<!\[CDATA\[.*?\]\]>','',texts[primary],flags=re.S)
+    body=cleaned
+    start=body.find('<!DOCTYPE')
+    if start>=0:
+        depth=0;quote=None;end=start
+        for end in range(start,len(body)):
+            ch=body[end]
+            if quote:
+                if ch==quote: quote=None
+            elif ch in ("'",'"'): quote=ch
+            elif ch=='[': depth+=1
+            elif ch==']': depth-=1
+            elif ch=='>' and depth==0: break
+        body=body[:start]+body[end+1:]
+    selected={primary:{'path':primary,'kind':'primary','sha256':files[primary]['sha256']}}
+    literal=r"(?:\"[^\"]*\"|'[^']*')"
+    external=r'(?:SYSTEM\s+|PUBLIC\s+'+literal+r'\s+)('+literal+r')'
+    declarations=[]
+    for match in re.finditer(r'<!ENTITY\s+([^\s%]+)\s+'+external,cleaned):
+        if re.search(r'&'+re.escape(match[1])+r';',body): declarations.append((match[2][1:-1],'general-entity-content-reference',match[1]))
+    doctype=re.search(r'<!DOCTYPE\s+[^\s]+\s+'+external,cleaned)
+    if doctype: declarations.append((doctype[1][1:-1],'external-subset-read-profile',None))
+    for system,kind,name in declarations:
+        uri=urllib.parse.urljoin(BASE+primary,system);path=urllib.parse.unquote(uri.removeprefix(BASE))
+        if uri.startswith(BASE) and path in files:
+            selected[path]={'path':path,'kind':kind,'entityName':name,'systemId':system,'declarationPath':primary,'sha256':files[path]['sha256']}
+    return selected
+
 def build():
     inventory=json.loads((ROOT/'tests/corpora/xml/inventory.json').read_bytes())
     files={f['path']:f for f in inventory['files']}
@@ -55,6 +95,7 @@ def build():
                 if uri.startswith(BASE) and rel in files: pending.append(rel)
                 else: missing.add(uri)
         if sid=='rmt-e2e-18': seen.update(['xmlconf/eduni/errata-2e/subdir1/E18-ent','xmlconf/eduni/errata-2e/E18-ent'])
+        selected=used_sources(p,texts,files)
         outcomes=['accepted'] if a['TYPE'] in ('valid','invalid') else ['rejected']
         reason='well-formedness' if a['TYPE']=='not-wf' else 'nonvalidating-validity' if a['TYPE']=='invalid' else 'valid-document'
         refs=[XML+'#sec-conformance', XML+'#sec-well-formed']
@@ -79,10 +120,33 @@ def build():
                 if n not in (14,16,17,18): outcomes=['accepted']
             if sid in ('rmt-001','rmt-002','rmt-003','rmt-004','rmt-005','rmt-011','rmt-013','rmt-041'): outcomes=['accepted']
             if sid in ('rmt-055','rmt-056','rmt-057','rmt-e2e-50'): outcomes=['rejected']
+        version_evidence=[]
+        for q in [p]+([x for x in sorted(selected.keys()-{p}) if x.endswith('/009.ent')] if sid=='rmt-009' else []):
+            v=re.match(r'\ufeff?<\?xml\s[^?]*?version\s*=\s*([\'"])(.*?)\1',texts[q],flags=re.S)
+            if v:
+                version_evidence.append({'path':q,'version':v[2],'sha256':files[q]['sha256']})
+                if not re.fullmatch(r'1\.[0-9]+',v[2]):
+                    outcomes=['rejected'];reason='version-production26';refs=[XML+'#NT-VersionNum',XML+'#NT-TextDecl']
+                    rationale+=' Exact used source '+q+' declares '+repr(v[2])+', outside [26] 1.[0-9]+; historical optional-error label does not override mandatory grammar.'
+        historical_names=[]
+        if a.get('EDITION')=='1 2 3 4':
+            clean=re.sub(r'<!--.*?-->|<!\[CDATA\[.*?\]\]>','',t,flags=re.S)
+            if sid in ('not-wf-sa-140','not-wf-sa-141'):
+                clean=re.sub(r'&#(x[0-9A-Fa-f]+|[0-9]+);',lambda m:chr(int(m[1][1:],16) if m[1].startswith('x') else int(m[1])),clean)
+                rationale+=' These Name witnesses occur in the referenced internal e replacement; numeric references are expanded during EntityValue processing under XML4.5, before inclusion as markup.'
+            for kind,pattern in [('PI',r'<\?(?!xml\s)([^\s?]+)'),('element',r'</?([^\s<>!?/]+)')]:
+                for match in re.finditer(pattern,clean):
+                    name=match[1];points=[ord(x) for x in name]
+                    valid=bool(points) and namestart(points[0]) and all(namechar(x) for x in points[1:])
+                    historical_names.append({'kind':kind,'name':name,'scalars':[hex(x) for x in points],'fifthEditionName':valid})
+                    if not valid:
+                        outcomes=['rejected'];reason='historical-byte-name';refs=[XML+'#NT-Name',XML+'#charencoding']
+                        rationale+=' Original encoding-decoded Name '+repr(name)+' violates actual Fifth Edition [4]/[4a]; the historical descriptive character is not an oracle for these bytes.'
+            rationale+=' Exact original encoding-decoded Name token/scalar witnesses and individual Fifth Edition [4]/[4a] predicates are included independently of processor results.'
         # 1.0 Char applies to both literals and character references in every
         # parsed external resource; control references cannot bypass it.
         bad=[]; labels=[]
-        for q in sorted(seen):
+        for q in sorted(selected):
             s=texts[q]
             enc=re.match(r'\ufeff?<\?xml\s[^?]*encoding\s*=\s*[\'"]([^\'"]+)',s)
             if enc: labels.append({'path':q,'label':enc[1]})
@@ -92,9 +156,8 @@ def build():
             for m in re.finditer(r'&#(x[0-9A-Fa-f]+|[0-9]+);',cleaned):
                 scalar=int(m[1][1:],16) if m[1].startswith('x') else int(m[1])
                 if not xmlchar(scalar): bad.append({'path':q,'scalar':hex(scalar),'kind':'character-reference'});break
-        # Some resources are declared but never parsed (unparsed/unused entity).
-        # Fatal scalar evidence from such a resource needs explicit review rather
-        # than pretending a lexical provisioning closure is the parse graph.
+        # Classification properties inspect only independently witnessed used
+        # sources. Lexical provisioning grants never prove that a source is read.
         if bad and (a.get('VERSION')=='1.1' or a['RECOMMENDATION']=='XML1.1'):
             outcomes=['rejected']; reason='xml10-char';refs=[XML+'#NT-Char',XML+'#wf-Legalchar']
         unsupported=[e for e in labels if e['label'].upper() not in LABELS]
@@ -121,7 +184,7 @@ def build():
             outcomes=['rejected'];reason='historical-second-root';refs=[XML+'#NT-document']
             rationale+=' Inspected original has <animal/> followed by <IllegalExtender.../>: two document elements remain forbidden despite widened names.'
         namespace_evidence=[]
-        for q in sorted(seen):
+        for q in sorted(selected):
             cleaned=re.sub(r'<!--.*?-->|<!\[CDATA\[.*?\]\]>','',texts[q],flags=re.S)
             for m in re.finditer(r'<\?(?!xml\s)([^\s?]+)|<!ENTITY\s+(?:%\s+)?([^\s]+)|<!NOTATION\s+([^\s]+)',cleaned):
                 name=next(g for g in m.groups() if g is not None)
@@ -133,8 +196,8 @@ def build():
             outcomes=['rejected'];reason='xml10-char';refs=[XML+'#NT-Char']
         rows.append({'id':c['id'],'inputPath':p,'inputSha256':c['inputSha256'],'sourceUri':BASE+urllib.parse.quote(p,safe='/'),
             'sourceType':a['TYPE'],'sourceRecommendation':a['RECOMMENDATION'],'sourceEdition':a.get('EDITION'),
-            'sourceVersion':a.get('VERSION'),'sourceNamespace':a.get('NAMESPACE'),'expectedOutcomes':outcomes,
-            'rule':reason,'normative':refs,'rationale':rationale,'encodingDeclarations':labels,'scalarEvidence':bad,
+            'sourceVersion':a.get('VERSION'),'versionEvidence':version_evidence,'historicalNameEvidence':historical_names,'sourceNamespace':a.get('NAMESPACE'),'expectedOutcomes':outcomes,
+            'rule':reason,'normative':refs,'rationale':rationale,'classificationSources':list(selected.values()),'encodingDeclarations':labels,'scalarEvidence':bad,
             'offlinePaths':sorted(seen-{p}),'unmappedLexicalIdentifiers':sorted(missing),'model':'effective-xml10-events-v1',
             'productStatus':'not-executed'})
     return {'schemaVersion':1,'profile':'xml10-fifth-ns10-third-nonvalidating-m2-encodings',
