@@ -119,15 +119,20 @@ public class EncodingTests
     [Fact]
     public void WarmLegacyConversionAndDeclarationMatchingAllocateZero()
     {
-        foreach(string label in Labels)
+        var request = EncodingAllocationChild.EnterChild();
+        if (request is null)
         {
-            using var d=Selected(label);byte[] input=label=="Windows-1252" ? [0x80,0x97,0xE9,13,10] : label=="ISO-8859-1" ? [0x80,0xE9,13,10] : "abcd\r\n"u8.ToArray();char[] output=new char[8];long[] maps=new long[8];
-            for(int i=0;i<10000;i++)d.Decode(input,output,maps,false,TestContext.Current.CancellationToken);
-            long before=GC.GetAllocatedBytesForCurrentThread();
-            for(int i=0;i<10000;i++)d.Decode(input,output,maps,false,TestContext.Current.CancellationToken);
-            Assert.Equal(0,GC.GetAllocatedBytesForCurrentThread()-before);
+            EncodingAllocationChild.RunPair();
+            return;
         }
+        // Declaration selection is setup, outside every measured Decode loop.
+        var results = EncodingAllocationProbe.Run(Labels, Selected,
+            TestContext.Current.CancellationToken, request.Mode == "positive");
+        EncodingAllocationChild.Write(request, results);
+        foreach (var result in results)
+            Assert.Equal(request.Mode == "real" ? 0 : 640000, result.AllocatedBytes);
     }
+
     private sealed class SplitStream(byte[] source,int split):MemoryStream(source,false)
     {
         public override int Read(Span<byte> buffer) => base.Read(buffer[..Math.Min(buffer.Length,Position<split?split-(int)Position:(int)Length-(int)Position)]);
