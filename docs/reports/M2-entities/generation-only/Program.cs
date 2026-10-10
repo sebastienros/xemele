@@ -6,6 +6,7 @@ using BenchmarkDotNet.Loggers;
 using BenchmarkDotNet.Running;
 using BenchmarkDotNet.Toolchains;
 using System.Text.Json;
+using System.Reflection;
 using Xemele.Benchmarks;
 
 if (args.Length != 2) throw new ArgumentException("Provide temporary artifact directory and summary path.");
@@ -16,7 +17,10 @@ if (partitions.Sum(p => p.Benchmarks.Length) != 6) throw new InvalidOperationExc
 var outputs = new List<object>();
 foreach (var partition in partitions)
 {
-    var toolchain = partition.RepresentativeBenchmarkCase.Job.ResolveValue(InfrastructureMode.ToolchainCharacteristic, resolver);
+    // Use the installed runner's exact internal selector; this diagnostic never executes it.
+    var selector = typeof(IToolchain).Assembly.GetType("BenchmarkDotNet.Toolchains.ToolchainExtensions", true)!
+        .GetMethod("GetToolchain", BindingFlags.Static | BindingFlags.NonPublic, null, [typeof(BenchmarkCase)], null)!;
+    var toolchain = (IToolchain)selector.Invoke(null, [partition.RepresentativeBenchmarkCase])!;
     var generated = toolchain.Generator.GenerateProject(partition, ConsoleLogger.Default, Path.GetFullPath(args[0]));
     if (!generated.IsGenerateSuccess) throw new InvalidOperationException("Generation failed.", generated.GenerateException);
     var built = toolchain.Builder.Build(generated, partition, ConsoleLogger.Default);
