@@ -4,7 +4,7 @@
   "milestone": "M0",
   "title": "Compare compiled runtime API and run foundation contract checks in CI",
   "kind": "infrastructure",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M0-api-wiring",
   "branch": "codex/m0-api-wiring",
   "base_revision": "a265c1a1231ccac5f76a0cbc178d7fdcba9cc882",
@@ -32,29 +32,88 @@
     {
       "id": "M0-api-wiring-A1",
       "description": "Compose validated task fragment member/declaration pairs with retained provenance and reject duplicate/conflicting entries. Compare union against actual Release runtime assembly using approved compiled normalizer; allow empty only through explicit bootstrap contract, never silently update fragments.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "compiled-api-and-contracts"
+      ]
     },
     {
       "id": "M0-api-wiring-A2",
       "description": "Exercise missing/added/changed compiled surfaces and fragmented composition with real compiled fixtures; wire runtime API comparison and stage usage/normalizer negative checks into CI using portable pinned SDK environment. Keep contract models separate from shipped runtime API.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "compiled-api-and-contracts"
+      ]
     },
     {
       "id": "M0-api-wiring-A3",
       "description": "Preserve prior discovery/corpus/MTP/help/package checks; record exact local outcomes and known revision/task validation, normalizer scope limits and honestly unrun platforms.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "compiled-api-and-contracts",
+        "preserved-build-mtp-help-package",
+        "preserved-corpus-and-discovery"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "tools/ApiBaseline/compare.py: validated in-memory member union, original ID/source/line provenance, temporary id=member bridge to unchanged approved Release assembly normalizer; explicit double-checked empty bootstrap, actual assembly SHA-256 and nonzero mismatch/error exits.",
+    "tests/Xemele.TestUtilities/Build/test_composition.py: distinct inventory IDs, member ordering/provenance/no rewrites, duplicate/conflicting member rejection and explicit bootstrap tests; existing discovery tests retained.",
+    "docs/reports/M0-api-wiring/verify.py: portable pinned caller environment; builds runtime/checker/non-solution contract MTP and usage stages, golden/additive preservation, three fragmented real compiled fixture unions, missing/added/changed and bootstrap negatives, nine real signature mutation assertions/restoration; exact tested revision and host transcript.",
+    ".github/workflows/build.yml: focused API/contract verifier after normal Release solution build and new API report artifact; every earlier step/artifact preserved.",
+    "tools/ApiBaseline/README.md and docs/reports/M0-api-wiring/README.md: reproduction, provenance model, historical checker reuse, foundation-only normalizer limitations, no shipped fixture API or baseline regeneration."
+  ],
+  "evidence": [
+    {
+      "id": "sandbox-ipc-failure",
+      "kind": "check",
+      "revision": "385c93aefb8b3400c1ab3bc190c6897fed6ec9d6",
+      "command": "Pinned SDK10.0.400; DOTNET_CLI_USE_MSBUILD_SERVER=0 python3 -B docs/reports/M0-api-wiring/verify.py (sandboxed)",
+      "result": "failed",
+      "summary": "Release builds succeeded; native MTP dotnet test failed with named-pipe SocketException(13) Permission denied, exit -6. Not a passing test. Unchanged implementation passed after authorized IPC escalation.",
+      "artifact": "docs/reports/M0-api-wiring/sandbox-failure.txt"
+    },
+    {
+      "id": "compiled-api-and-contracts",
+      "kind": "check",
+      "revision": "385c93aefb8b3400c1ab3bc190c6897fed6ec9d6",
+      "command": "Pinned caller DOTNET_ROOT/PATH SDK10.0.400; DOTNET_CLI_USE_MSBUILD_SERVER=0 python3 -B docs/reports/M0-api-wiring/verify.py (authorized local IPC escalation)",
+      "result": "passed",
+      "summary": "macOS arm64: Release runtime/approved checker/stage/check/probe builds 0 warnings/errors;11 foundation MTP tests pass0fail0skip;16 Python discovery/composition tests pass.139 M1 members unchanged within173 M2;8-member probe golden.Three real compiled fixture unions with distinct IDs preserve provenance/member order and original bytes. Actual missing/added/changed unions and four invalid bootstrap paths exit1; source-empty inventory paired to nonempty actual assembly fails. MUTATED compiled fixture fails union/golden comparison and nine semantic facts change: constraints/interface/sealing/nullability/setter/default/virtual/constant/added method; normal build restored and8-member golden matches. Actual Release runtime matches0 members only under explicit bootstrap; report includes actual assembly hash.101-task validation passes. No unrestricted ABI/runtime parser/performance/hosted CI claim.",
+      "artifact": "docs/reports/M0-api-wiring/checks.txt"
+    },
+    {
+      "id": "preserved-build-mtp-help-package",
+      "kind": "check",
+      "revision": "385c93aefb8b3400c1ab3bc190c6897fed6ec9d6",
+      "command": "Pinned caller SDK10.0.400; DOTNET_CLI_USE_MSBUILD_SERVER=0 python3 -B docs/reports/M0-build/verify.py (authorized local IPC escalation)",
+      "result": "passed",
+      "summary": "Normal solution restore/Release build0warnings/errors creates required BCL runner without manual prebuild.54 existing MTP tests(51 protocol+3 smoke) pass0fail0skip;three controlled smoke failures exit2.16 shell help/default calls and3 unknown-command exits2 preserved. Managed-only package lib/net10.0/Xemele.dll has no native runtime assets; actual public type count0;101-task validation passes. Existing missing package-readme advisory unchanged. Local macOS arm64 only.",
+      "artifact": "docs/reports/M0-api-wiring/preservation-checks.txt"
+    },
+    {
+      "id": "preserved-corpus-and-discovery",
+      "kind": "check",
+      "revision": "385c93aefb8b3400c1ab3bc190c6897fed6ec9d6",
+      "command": "Pinned caller SDK10.0.400; DOTNET_CLI_USE_MSBUILD_SERVER=0 python3 -B docs/reports/M0-corpora-wiring/check_cli.py; python3 -B tests/Xemele.TestUtilities/Corpora/verify_bootstrap.py; python3 -B tools/ApiBaseline/discover.py --bootstrap-empty-api; git diff --check",
+      "result": "passed",
+      "summary": "24 focused corpus MTP tests pass0fail0skip;20 root offline CLI checks preserve exit/status/provenance/count/cache SHA-256 assertions. Independent bootstrap verifies2 fixtures/source hash and ElementTree accepted1/rejected1; zero Xemele parser cases. Discovery finds1 manifest/2 fixtures/0 API declarations/bootstrap empty. Diff whitespace check passes. Base/claim and all3 verified prerequisite integration revisions are ancestors of tested source HEAD. No native-peer source consumed; no hosted or parser-conformance claim.",
+      "artifact": "docs/reports/M0-api-wiring/corpus-checks.txt"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "",
-    "checks": [],
-    "remaining": [],
-    "requests": []
+    "summary": "Implemented compiled runtime API fragment union and outside-solution foundation CI checks; source/tested revision 385c93aefb8b3400c1ab3bc190c6897fed6ec9d6. Historical normalizer reused unchanged. All branch acceptance checks pass; coordinator integration/review required. integration_revision remains null.",
+    "checks": [
+      "Focused verifier:11 contract MTP +16 Python tests,139/173/8 stage/probe members,3 compiled fragmented unions and negative/bootstrap checks,9 real signature probes; actual runtime0 API;101-task validation.",
+      "Preservation:54 normal solution MTP pass +3 expected failures;16 help/default +3 unknown exits;managed-only package/API0;24 corpus MTP +20 offline CLI;independent2-fixture checks.",
+      "Initial sandbox native MTP IPC failure recorded separately; authorized escalated rerun passed. Runtime hot paths unchanged; no performance/allocation measurements applicable. Hosted Windows/Linux/macOS unrun."
+    ],
+    "remaining": [
+      "Coordinator independent compatibility review and serialized integration verification. Normalizer remains scoped to approved foundation families; expand probes/extractor before uncovered signature families ship."
+    ],
+    "requests": [
+      "Direct source/result message to coordinator was rejected by automatic approval review for missing trusted user authorization; coordinator can collect this chat final handoff through orchestration tools. No outside-owned code changes requested."
+    ]
   }
 }
