@@ -67,10 +67,14 @@ before shipping (custom compiler attributes, interop/layout, forwarding, explici
 interface dispatch, per-accessor attributes/event visibility). This prototype
 cannot establish unrestricted ABI or behavioral compatibility.
 
-Corpus wiring owner implements the concrete outcome shape in its owned
-infrastructure paths after review; it must preserve frozen IConformanceCase,
-manifest schemaVersion:1, rejection versus runner failure, reviewed exclusions,
-and independent expectations. No real corpus data is claimed by this contract.
+The first owning conformance consumer implements IConformanceCase/ConformanceOutcome
+when parser execution exists, preserving the frozen interface, manifest schemaVersion:1,
+rejection versus runner failure, reviewed exclusions and independent expectations.
+If an earlier concrete criterion requires shared implementation, create a separate
+precisely owned task. M0-corpora-wiring only wires the verified private
+ProvisionOutcome/report; its existing six outcomes describe provisioning, not
+Accepted/Rejected parser execution. This contract fixture does not broaden corpus
+wiring ownership or claim actual conformance execution.
 
 ## Performance evidence and limits
 

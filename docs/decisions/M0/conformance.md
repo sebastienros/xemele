@@ -2,8 +2,8 @@
 
 Keep the frozen IConformanceCase unchanged: Id, Profile, Execute returning
 ConformanceOutcome. Concrete representative declarations live in
-Conformance.cs.fixture (namespace Xemele.Testing); the corpus/reference owner
-implements infrastructure in its own paths. These declarations do not introduce
+Conformance.cs.fixture (namespace Xemele.Testing); the first owning conformance consumer
+implements infrastructure in its own paths when parser execution exists. These declarations do not introduce
 a dependency on the empty public runtime. The outcome snapshots a read-only
 list of infrastructure diagnostics: Code, Message, optional Resource, one-based
 Line/Column (zero unknown). Status is Accepted, Rejected, RunnerFailure, Excluded.
@@ -27,3 +27,11 @@ exact provisioned fixture bytes. Reports/exclusions live in the module's owned
 paths, not a global shared registry. Expected output comes from pinned standards/
 independent reference adapters, never Xemele output. No actual corpus is provisioned
 or executed by this foundation task.
+
+Provisioning is a separate operation. The verified private ProvisionOutcome/report
+and its six provisioning outcomes do not imply Accepted/Rejected parser execution.
+M0-corpora-wiring only wires those existing provisioning outputs. It does not own
+IConformanceCase/ConformanceOutcome implementation; route that to the first
+conformance consumer, or a separate precisely owned task if an earlier concrete
+criterion requires shared implementation. The declaration fixture remains a future
+consumer contract; no runtime parser is implemented by this task.
