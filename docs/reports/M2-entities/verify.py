@@ -6,12 +6,43 @@ ROOT=Path(__file__).resolve().parents[3]
 REPORT=ROOT/'docs/reports/M2-entities'
 CLAIM='a29d2dac7bdd4c36c51797bd21752ebcec6b81e9'
 FLAGS=['-c','Release','--disable-build-servers','-m:1','-p:UseSharedCompilation=false']
+def finalize(summary, commands, raw, child_root, prior_children, inherited_log, inherited_invoked, prior_log, report):
+ """Cleanup must preserve the primary check failure and still emit a summary."""
+ errors=[]
+ def guarded(label, action):
+  try:return action()
+  except Exception as error:errors.append({'stage':label,'type':type(error).__name__,'message':str(error)[:400]});return None
+ summary['commands']=commands;summary['artifactPolicy']='Summaries/provenance only; current generated outputs removed after inspection.'
+ new_children=guarded('enumerate-current-children',lambda:(set(child_root.iterdir())-prior_children) if child_root.exists() else set()) or set()
+ summary['temporaryChildPairsRemoved']=len(new_children);summary['framingChildSummaries']=[]
+ for directory in sorted(new_children):
+  pair={}
+  for mode in ['real','positive']:
+   payload=directory/(mode+'.report.json')
+   def summarize():
+    data=json.loads(payload.read_text())
+    result={k:data[k] for k in ['ProcessId','WarmIterations','MeasuredIterations','AllocatedBytes','WarmConsumed','MeasuredConsumed','FinalColumn']}
+    result['sourceVersion']=data['Actual']['ProductVersion'];result['productSha256']=data['Actual']['ProductSha256'];return result
+   if payload.exists():pair[mode]=guarded('parse-'+directory.name+'-'+mode,summarize)
+  summary['framingChildSummaries'].append(pair)
+ for directory in new_children:guarded('remove-current-child-'+directory.name,lambda d=directory:shutil.rmtree(d))
+ if raw.exists():guarded('remove-current-raw',lambda:shutil.rmtree(raw))
+ if inherited_invoked:
+  # Restore any pre-existing peer log exactly; only a newly created output is removed.
+  if prior_log is not None:guarded('restore-prior-inherited-log',lambda:inherited_log.write_bytes(prior_log))
+  elif inherited_log.exists():guarded('remove-current-inherited-log',inherited_log.unlink)
+ summary['temporaryOutputsRemoved']=not raw.exists() and all(not d.exists() for d in new_children)
+ if errors:summary['cleanupErrors']=errors;summary['result']='failed'
+ (report/'summary.json').write_text(json.dumps(summary,indent=2)+'\n')
+ return not errors
+
 def main():
  p=argparse.ArgumentParser();p.add_argument('--report-prefix',required=True);p.add_argument('--audit-base',default=CLAIM);p.add_argument('--expected-branch',default='codex/m2-entities');a=p.parse_args();assert re.fullmatch('[a-z0-9-]+',a.report_prefix)
  report=REPORT/a.report_prefix;report.mkdir();raw=ROOT/'artifacts/M2-entities'/a.report_prefix;raw.mkdir(parents=True)
  sdk=Path(shutil.which('dotnet')).resolve(strict=True)
  env=dict(os.environ,DOTNET_CLI_USE_MSBUILD_SERVER='0',XEMELE_DOTNET=str(sdk),XEMELE_CORPUS_RESOURCES='/private/tmp/xemele-corpus-cache/w3c-xml-20130923/resources/',XEMELE_CORPUS_RESULTS=str(raw/'case-results'))
  child_root=ROOT/'artifacts/M2-dtd-framing-allocation-probe/child-runs';prior_children=set(child_root.iterdir()) if child_root.exists() else set()
+ inherited_log=ROOT/'artifacts/M1-contracts/checks.txt';inherited_invoked=False;prior_log=None
  commands=[];s={'result':'failed','host':platform.platform(),'architecture':platform.machine(),'auditBase':a.audit_base}
  def run(*cmd,expected=0):
   cmd=list(map(str,cmd));cmd[0]=str(sdk) if cmd[0]=='dotnet' else cmd[0];print('$ '+shlex.join(cmd),flush=True)
@@ -32,6 +63,7 @@ def main():
   assert run('dotnet','--version').strip()=='10.0.400'
   run('python3','-B','docs/reports/M1-corpus-import/provision.py');registry=json.loads(run('python3','-B','tools/ApiBaseline/discover.py'));assert registry['fixtures']==3388 and registry['apiDeclarations']==272;s['registry']=registry
   run('dotnet','build','tools/ReferenceRunners/Bcl/BclReference.csproj',*FLAGS);runner=ROOT/'tools/ReferenceRunners/Bcl/bin/Release/net10.0/BclReference.dll';shutil.copytree(runner.parent,raw/'pinned-reference');pinned=raw/'pinned-reference'/runner.name;reference_files=identities(pinned.parent);runner_hash=hashlib.sha256(pinned.read_bytes()).hexdigest();env['XEMELE_BCL_RUNNER']=str(pinned)
+  prior_log=inherited_log.read_bytes() if inherited_log.exists() else None;inherited_invoked=True
   inherited=run('python3','-B','docs/reports/M1-contracts/verify.py')
   counts={};all_runtime=set();runtime_rows=[]
   for assembly in ['Xemele.Tests','Xemele.Conformance.Tests','Xemele.Differential.Tests']:
@@ -77,22 +109,10 @@ def main():
   owned=task['owns']+['docs/tasks/M2-entities.json'];assert all(any(path.startswith(o) if o.endswith('/') else path==o for o in owned) for path in paths),paths
   for suffix in [[a.audit_base+'..HEAD'],['--cached'],[]]:run('git','diff','--check',*suffix)
   after={n:hashlib.sha256((ROOT/n).read_bytes()).hexdigest() for n in tracked};assert after==before and run('git','rev-parse','HEAD').strip()==revision;global_after={n:hashlib.sha256((ROOT/n).read_bytes()).hexdigest() for n in global_sources};assert global_after==global_before;assert run('git','branch','--show-current').strip()==a.expected_branch;s['globalCompiledSourcesAfter']=global_after;s['sourceIdentitiesAfter']=after;s['ownedPaths']=sorted(set(paths));s['result']='passed';s['limitations']='macOS arm64 only; eight pinned simple document cases are not a full XML conformance oracle; timing/allocation modes held for exclusive grant.'
+ except Exception as error:
+  s.setdefault('failure',{'type':type(error).__name__,'message':str(error)[:1500]})
+  raise
  finally:
-  s['commands']=commands;s['artifactPolicy']='Concise summaries/provenance only; current generated XML/logs/copy/package/child payloads removed after actual inspection.'
-  new_children=(set(child_root.iterdir())-prior_children) if child_root.exists() else set()
-  s['temporaryChildPairsRemoved']=len(new_children)
-  s['framingChildSummaries']=[]
-  for directory in sorted(new_children):
-   pair={}
-   for mode in ['real','positive']:
-    payload=directory/(mode+'.report.json')
-    if payload.exists():
-     data=json.loads(payload.read_text());pair[mode]={k:data[k] for k in ['ProcessId','WarmIterations','MeasuredIterations','AllocatedBytes','WarmConsumed','MeasuredConsumed','FinalColumn']};pair[mode]['sourceVersion']=data['Actual']['ProductVersion'];pair[mode]['productSha256']=data['Actual']['ProductSha256']
-   s['framingChildSummaries'].append(pair)
-  for directory in new_children:shutil.rmtree(directory)
-  shutil.rmtree(raw)
-  inherited_log=ROOT/'artifacts/M1-contracts/checks.txt'
-  if inherited_log.exists():inherited_log.unlink()
-  s['temporaryOutputsRemoved']=not raw.exists() and all(not d.exists() for d in new_children)
-  (report/'summary.json').write_text(json.dumps(s,indent=2)+'\n')
+  clean=finalize(s,commands,raw,child_root,prior_children,inherited_log,inherited_invoked,prior_log,report)
+  if not clean and 'failure' not in s:raise AssertionError('Verification output cleanup failed; see summary.')
 if __name__=='__main__':main()
