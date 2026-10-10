@@ -112,9 +112,9 @@ internal static class ResolverAllocationChild
             && request.XmlPath == Path.Combine(request.Directory, mode + ".xml"), "Invalid child output paths.");
         string[] arguments = Environment.GetCommandLineArgs();
         string executable = Host();
-        string[] expectedArguments = Path.GetFileNameWithoutExtension(executable) == "dotnet"
-            ? [typeof(ResolverAllocationChild).Assembly.Location, "-noColor", "-method", Fact, "-result-xml", request.XmlPath]
-            : [executable, "-noColor", "-method", Fact, "-result-xml", request.XmlPath];
+        // .NET's argv[0] is the managed entry assembly for both dotnet and apphost.
+        string[] expectedArguments = [typeof(ResolverAllocationChild).Assembly.Location,
+            "-noColor", "-method", Fact, "-result-xml", request.XmlPath];
         Require(arguments.SequenceEqual(expectedArguments), "Child guard requires the exact standalone Fact invocation.");
         Require(request.Expected is not null && Fingerprint(Environment.ProcessPath!) == request.Expected, "Child executable/compiled product/runtime provenance mismatch.");
         return request;

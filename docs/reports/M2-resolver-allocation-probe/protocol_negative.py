@@ -57,7 +57,7 @@ def main():
             executable=known['Expected']['Executable'];command=[executable]
             if Path(executable).stem=='dotnet':command.append(known['Expected']['TestAssembly'])
             command+=['-noColor','-method',FACT,'-result-xml',str(directory/'real.xml')]
-            if name=='extra-runner-argument':command.append('-parallel')
+            if name=='extra-runner-argument':command.append('-noLogo')
             p=subprocess.run(command,cwd=ROOT,env=dict(env,**extra),text=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=40)
             (directory/'stdout.txt').write_text(p.stdout);(directory/'stderr.txt').write_text(p.stderr)
             logs.append(name+'\n'+shlex.join(command)+'\nextra='+repr(extra)+'\nexit='+str(p.returncode)+'\n'+p.stdout+'\n'+p.stderr)
