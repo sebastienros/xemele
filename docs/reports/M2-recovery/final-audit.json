@@ -1,0 +1,43 @@
+{
+  "head": "95705dca0b8ae52521c21737e3e4a34eef7b1dbb",
+  "mode": "scope-and-planning",
+  "result": "passed",
+  "commands": [
+    {
+      "argv": [
+        "python3",
+        "tools/planning/tasks.py",
+        "validate"
+      ],
+      "exit": 0,
+      "summary": "Validated 138 tasks: schema, evidence, acyclic dependencies, additive milestones, and ordered ownership."
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit": 0,
+      "summary": ""
+    }
+  ],
+  "outsideOwnership": [],
+  "changedTracked": [
+    "docs/tasks/M2-recovery.json"
+  ],
+  "newOwnedEvidence": [
+    "docs/reports/M2-recovery/allocation-host.json",
+    "docs/reports/M2-recovery/benchmark-host.json",
+    "docs/reports/M2-recovery/cleanup-correctness.json",
+    "docs/reports/M2-recovery/correctness-source.json",
+    "docs/reports/M2-recovery/final-handoff.json",
+    "docs/reports/M2-recovery/preparation.json",
+    "docs/reports/M2-recovery/prepare-host.json",
+    "docs/reports/M2-recovery/prepare-source.json",
+    "docs/reports/M2-recovery/strict-grammar-source.json"
+  ],
+  "archivePolicy": "Only source, task record, concise JSON evidence and immutable hash manifest staged. Raw measurement artifacts and generated child removed by guarded harness; temporary package archive/cache removed.",
+  "hostLeaseReleased": "m2-recovery-95705dc-sequence-20261010",
+  "childrenRemaining": 0
+}

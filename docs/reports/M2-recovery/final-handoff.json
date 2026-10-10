@@ -1,0 +1,128 @@
+{
+  "head": "95705dca0b8ae52521c21737e3e4a34eef7b1dbb",
+  "mode": "final-handoff",
+  "result": "passed",
+  "implementationRevision": "ecee7cacfda0f9825a1d5003278674859d641d03",
+  "sourceFollowupRevision": "95705dca0b8ae52521c21737e3e4a34eef7b1dbb",
+  "reportingPolicy": "Keep every observation at its actual tested revision. The followup adds a cleanup test and corpus adapter only; runtime implementation is unchanged. Evidence commit does not rebuild or relabel these binaries.",
+  "runtimeUnchangedFollowupPaths": [
+    "docs/reports/M2-recovery/preserve_grammar.py",
+    "tests/Xemele.Tests/M2-recovery/RecoveryLifecycleTests.cs"
+  ],
+  "correctness": {
+    "recoveryCases": 75,
+    "additionalCleanupRegression": 1,
+    "affectedStrictCases": 289,
+    "compiledApiMembers": 377,
+    "approvedRecoveryMembers": 5,
+    "sourceAndFreshPackageProductHashesEqual": true,
+    "consumerProductSha256": "131d31b80e382ba6517a294dc12a86d37946adf045f1f8e1a1c3e55a52b3fddd",
+    "strictCorpus": {
+      "product:rejected": 1191,
+      "reference:rejected": 1914,
+      "independent:normative-rejection": 1191,
+      "reference:accepted": 671,
+      "product:accepted": 1394,
+      "symbolic-default-declarations": 2,
+      "independent:accepted-model": 1394,
+      "unresolved-content-occurrences": 2,
+      "bulk-decode-all-callback-pause-models": 1394,
+      "reference:independent-model-match": 644,
+      "original-suite-output-models": 409,
+      "authored-effective10-output-overrides": 15,
+      "verified-original-resources": 3386,
+      "resolved-reference-disagreements": 771
+    },
+    "priorAcceptedModelHashesIdentical": true
+  },
+  "preparationManifestSha256": "bbecd2ec71ea4bec1188811e3755181898abab42d76eb0a76e2c4e7eb4f19ce7",
+  "runtime": {
+    "driver": "1.0.0+95705dca0b8ae52521c21737e3e4a34eef7b1dbb",
+    "product": "1.0.0+95705dca0b8ae52521c21737e3e4a34eef7b1dbb",
+    "runtime": ".NET 10.0.11",
+    "coreRuntimeBuild": "10.0.11-servicing.26373.116+e2f47b0110ed922f21a1522da67279133ce28f32",
+    "architecture": "Arm64",
+    "coreLibrary": "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App/10.0.11/System.Private.CoreLib.dll",
+    "coreLibrarySha256": "9ed74c2e2efeee87f1f2d7ffe1736b7e9164ce248516ea39402a725eedc87af6"
+  },
+  "allocations": {
+    "borrowedStrict": {
+      "records": [
+        {
+          "iterations": 1024,
+          "bytes": 0,
+          "positive": 768,
+          "setupBytes": 8776,
+          "callsPerOperation": 12,
+          "utf16OutputUnits": 5,
+          "boundedSetup": "token128, frame/binding/name warm capacity; no source retention",
+          "ownedResultsExcluded": true
+        }
+      ],
+      "validation": "passed"
+    },
+    "coldSetupAndCompleteOraclesBytes": 199280,
+    "strictOwnedResultBytesPerOperation": 12680.0,
+    "recoveryOwnedResultBytesPerOperation": 11776.0,
+    "positiveOwnedControlBytesPerOperation": 152.0,
+    "ownership": "Fixed core scratch, frames, bindings and interned names belong to the operation; measured steady borrowed scans retain no input. Result owns the legal editable DOM and diagnostic snapshot. Recovery error list and duplicate-index scratch allocate only on repair; byte decoder/adaptor scratch is operation setup, reused without whole-input buffering. Setup, DOM/name persistence, diagnostic/error results and cold oracles are outside the 0 B borrowed scan budget. Existing static token/scanner matchers are unchanged."
+  },
+  "benchmarks": {
+    "caseMeaning": {
+      "InternalNestedModel": "Strict ParseWithDiagnostics with owned DOM/result; original driver label retained by thin adapter",
+      "RedirectedComposition": "Recover=true ParseWithDiagnostics with two repairs and owned DOM/diagnostics/result"
+    },
+    "rows": [
+      {
+        "Method": "InternalNestedModel",
+        "Mean": "2.408 \u03bcs",
+        "Error": "0.3023 \u03bcs",
+        "StdDev": "0.0166 \u03bcs",
+        "Allocated": "12.34 KB",
+        "Gen0": "1.5068",
+        "Gen1": "0.0381",
+        "Gen2": null
+      },
+      {
+        "Method": "RedirectedComposition",
+        "Mean": "1.756 \u03bcs",
+        "Error": "0.0987 \u03bcs",
+        "StdDev": "0.0054 \u03bcs",
+        "Allocated": "11.5 KB",
+        "Gen0": "1.4076",
+        "Gen1": "0.0324",
+        "Gen2": null
+      }
+    ],
+    "caseChildExitCodes": {
+      "InternalNestedModel": [
+        0
+      ],
+      "RedirectedComposition": [
+        0
+      ]
+    },
+    "timingInterpretation": "Informational Arm64 observations of distinct workloads; no comparative speed or cross-architecture release claim."
+  },
+  "cleanup": {
+    "childrenRemaining": 0,
+    "temporaryMeasurementOutputsRemoved": true,
+    "preparedGeneratedChildRemoved": true,
+    "packageArchiveAndCacheRemoved": true,
+    "noRawArchiveTracked": true
+  },
+  "preservedFailureFacts": [
+    "Full inventory discovery initially stopped at a missing isolated-checkout corpus fixture; unchanged approved compiled checker directly matched the canonical API union. Root independently reported its API comparison and source/package consumers passing.",
+    "Fresh-package consumer initially rejected central inline versions (NU1008); isolated build passed with ManagePackageVersionsCentrally=false and separate intermediate path, without shared file changes.",
+    "Sandbox generated build stalled with no compiler child; only the task build was terminated, guarded failure/cleanup recorded. One bounded pinned host preparation then passed."
+  ],
+  "review": {
+    "coordinator": "01a1230c-1353-7e01-afbe-a53c9c018264/local",
+    "implementation": "Two bounded source reviews approved ecee7ca, no blockers/corrections.",
+    "followup": "Coordinator inspected/approved added cleanup regression at 95705dc and reported its focused check passed."
+  },
+  "remaining": [
+    "Coordinator integration verification and M2 gate."
+  ],
+  "outsideOwnershipRequests": []
+}
