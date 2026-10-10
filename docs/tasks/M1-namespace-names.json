@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "id": "M1-namespace-names",
+  "milestone": "M1",
+  "title": "Correct reserved namespace prefix versus ordinary local name validation",
+  "kind": "feature",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "depends_on": [
+    "M1-contracts",
+    "M1-tree",
+    "M1-serialize",
+    "M1-tree-dom-persistence"
+  ],
+  "goals": [
+    "G01",
+    "G05"
+  ],
+  "specs": [
+    "docs/specs/tree.md",
+    "docs/specs/parser.md",
+    "docs/specs/serialization.md",
+    "docs/performance-coding.md"
+  ],
+  "owns": [
+    "docs/specs/tree.md",
+    "src/Xemele/Tree/Validation.cs",
+    "src/Xemele/Tree/Document.cs",
+    "src/Xemele/Tree/DomBuilder.cs",
+    "src/Xemele/Serialization/Xml/XmlSerializer.cs",
+    "tests/Xemele.Tests/M1-tree/TreeTests.cs",
+    "tests/Xemele.Tests/M1-serialize/SerializerTests.cs",
+    "tests/Xemele.Tests/M1-namespace-names/",
+    "samples/M1-namespace-names/",
+    "docs/reports/M1-namespace-names/"
+  ],
+  "api_or_output": "Unchanged public API; ordinary element local xmlns and namespace-qualified attribute local xmlns are legal, while xmlns prefix/URI and plain declaration attribute remain reserved",
+  "acceptance": [
+    {
+      "id": "M1-namespace-names-A1",
+      "description": "Clarify frozen tree wording and correct Tree/checked-builder/serializer validators per W3C Namespaces1.0: xmlns prefix and xmlns namespace URI are reserved, ordinary element local xmlns is legal, prefixed or namespaced ordinary attribute local xmlns is legal, unprefixed no-namespace attribute xmlns is a declaration and cannot be an ordinary attribute. Preserve namespace declaration representation and all xml binding rules, public shapes, validation precommit and error behavior. No new blanket DOM/syntax rejection.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M1-namespace-names-A2",
+      "description": "Verify element/ordinary attribute/declaration distinctions with independently confirmed W3C/BCL cases, original forbidden prefix/URI/binding and atomic mutation checks, checked and trusted model replay paths, namespace Strict/Repair output and round trips using independent reference only (no unmerged DOM). Update only the two incorrect earlier negative expectations, replacing with stronger actual reserved-name regressions rather than weakening other tests.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M1-namespace-names-A3",
+      "description": "Run focused and affected cumulative Tree/Serializer/builder/persistence/syntax checks, explicit approved actual public215/API models, independent source and fresh isolated local-package construction/serialization sample, relevant allocation checks and planning/committed diff/owned audit at known revision. No new scanning algorithm or workload change; reuse existing appropriate timing evidence unless genuine performance change requires exclusive measurements. Record exact corrected contract for DOM/corpus owners.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "Ordered conformance repair for verified Tree/serializer ordinary local xmlns rejection; standard reserves prefix/declaration shape, not arbitrary LocalPart. Required before trusted DOM/corpus integration.",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}

@@ -15,7 +15,7 @@
       "branch": "codex/m1-dom",
       "base_revision": "a3c7c669472fcd9ec35dfec3cd40aef1e6d0cda8",
       "claim_revision": "6dfbde16688cd1b071a6128e69b9ac362d850ac0",
-      "setup_status": "corrected-source-review",
+      "setup_status": "suspended-prerequisite",
       "chat_id": "01a123df-0348-7a81-9d6f-f4676934cb48",
       "worktree_path": "/Users/sebastienros/.codex/worktrees/a22a/xemele",
       "preserved_draft_revision": "4aef77b0e1fffca92322c096ce8a09c65f019845",
@@ -27,15 +27,17 @@
       "resume_evidence": "Worker confirmed main merge, renewed claim/four verified prerequisites, builder composition, focused 22/22 tests; no timing started.",
       "review_revision": "752ec92591c0d31f1b9a90e6c834167d154aac70",
       "wait_cursor": "f824c6fd-79ae-4b74-b7cf-1220db648998:18",
-      "correctness_revision": "15e099bd11e25a5fc2576059a39a6c707a45feef",
-      "preserved_evidence_revision": "8155e7d0d7e89e714c992c82279549887b03f770",
+      "correctness_revision": "752ec92591c0d31f1b9a90e6c834167d154aac70",
+      "preserved_evidence_revision": "b4264b5c8d3b13a128957114fbec9f4dc89bf31c",
       "claim_history": [
         {
           "base_revision": "1f15653bf8f3ea4faab5fa5c15f10701971ff9ab",
           "claim_revision": "93de9bf2a67ff30557821f6c6ac399c5266cf6f2",
           "reason": "Suspended for trusted persistence prerequisite; source/evidence8155e7d preserved."
         }
-      ]
+      ],
+      "unapproved_guard_revision": "90fda442d313bcfd16f7a72cddca655005f638e3",
+      "peer_failure": "Temporary-guard branch full266/265passed: existing Tree warm allocation test4368B, focused14passed. Preserve failure; namespace owner owns TreeTests.cs and will investigate warm scope without weakening allocation requirement."
     },
     {
       "task_id": "M1-corpus-import",
@@ -50,11 +52,18 @@
     }
   ],
   "integration_queue": [],
-  "blockers": [],
+  "blockers": [
+    {
+      "task_id": "M1-dom",
+      "reason": "Tree/serializer incorrectly reject ordinary local xmlns; standards-conforming source accepted by core breaks old validators. Blanket DOM rejection not approved.",
+      "revision": "752ec92591c0d31f1b9a90e6c834167d154aac70",
+      "next_action": "Worker preserves current guard/source/checks and parks; ordered M1-namespace-names repair corrects owning validators then DOM positive tests replace temporary guard."
+    }
+  ],
   "next_actions": [
-    "Dispatch full XML suite metadata lane after setup",
-    "Review corrected DOM source and full checks, then exclusive timings",
-    "Integrate DOM/import, run strict corpus and M1 gate"
+    "Claim/dispatch ready namespace conformance correction",
+    "Continue independent full-suite import",
+    "After verified repair resume DOM, remove unapproved guard and add positive legal-name tests"
   ],
   "last_verified_task": "M1-tree-dom-persistence",
   "last_integrated_revision": "61fdfd8fe444eb0befc52c23d50f53a000cb0815",
