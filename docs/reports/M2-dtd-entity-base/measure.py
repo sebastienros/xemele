@@ -146,6 +146,20 @@ def stop_group(process):
     raise RuntimeError('Process group survived termination deadline')
 
 
+def output_facts(log):
+    text = log.read_text(encoding='utf-8', errors='strict')
+    return {
+        'generatedBuildExits': [int(v) for v in re.findall(r'// command took .*?exited with (-?\d+)', text)],
+        'childExits': [int(v) for v in re.findall(r'// Benchmark Process \d+ has exited with code (-?\d+)', text)],
+        'cases': re.findall(r'^// Benchmark: EntityBaseBenchmarks\.(\w+):', text, re.MULTILINE),
+        'actualObservationCount': len(re.findall(r'^WorkloadActual\s+\d+:', text, re.MULTILINE)),
+        'resultObservationCount': len(re.findall(r'^WorkloadResult\s+\d+:', text, re.MULTILINE)),
+        'gcRecords': [list(map(int, values)) for values in re.findall(r'^// GC:\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s*$', text, re.MULTILINE)],
+        'provenanceRecordCount': len(re.findall(r'^ENTITY_BASE_PROVENANCE ', text, re.MULTILINE)),
+        'infrastructureFailureFlags': [v for v in ['There are not any results runs', 'Generate Exception', 'Build Error', 'No Workload Results'] if v in text],
+    }
+
+
 def run(command, env, raw, summary, total=900, child=180):
     log = raw / ('command-' + str(len(summary.setdefault('commands', []))) + '.log')
     record = {'argv': [str(v) for v in command], 'totalDeadlineSeconds': total, 'childDeadlineSeconds': child}
@@ -159,6 +173,7 @@ def run(command, env, raw, summary, total=900, child=180):
         carry = ''
         try:
             while process.poll() is None:
+                require(log.stat().st_size <= 64 * 1024 * 1024, 'Bounded output size exceeded')
                 with log.open() as data:
                     data.seek(offset)
                     carry += data.read()
@@ -188,10 +203,19 @@ def run(command, env, raw, summary, total=900, child=180):
             else:
                 raise RuntimeError('Parent exited while process group remains active')
         except BaseException:
-            stop_group(process)
-            record['terminatedProcessGroup'] = True
+            try:
+                stop_group(process)
+                record['terminatedProcessGroup'] = True
+            except Exception as cleanup:
+                record['processCleanupFailure'] = str(cleanup)[:500]
+            record['exit'] = process.poll()
+            try:
+                record['outputFacts'] = output_facts(log)
+            except Exception as capture:
+                record['outputFactsFailure'] = str(capture)[:500]
             raise
     text = log.read_text(encoding='utf-8', errors='strict')
+    record['outputFacts'] = output_facts(log)
     require(record['exit'] == 0, 'Nonzero process exit: ' + str(record['exit']))
     return text
 
