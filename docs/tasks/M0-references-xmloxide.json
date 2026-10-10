@@ -4,11 +4,11 @@
   "milestone": "M0",
   "title": "Pinned xmloxide reference runner",
   "kind": "infrastructure",
-  "status": "implemented",
+  "status": "verified",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M0-references-xmloxide",
   "branch": "codex/m0-references-xmloxide",
   "base_revision": "d94fb3167cebcfef8f927c580770741441dd6e60",
-  "integration_revision": null,
+  "integration_revision": "8725495aaefa2c3a7d3e5944da442679dfb5ffb5",
   "depends_on": [
     "M0-references-protocol"
   ],
@@ -29,7 +29,9 @@
       "description": "Build xmloxide at exact commit 555055f1ea6bf9944488fd96415b6f03b5b43696 and implement its XML reference runner against the integrated protocol; record pinned Rust toolchain, compile options, enabled features and provenance.",
       "status": "passed",
       "evidence": [
-        "pinned-native-verification"
+        "pinned-native-verification",
+        "independent-native-review",
+        "integrated-native-protocol"
       ]
     },
     {
@@ -37,7 +39,9 @@
       "description": "Run the protocol known XML fixture and compare its normalized response against the integrated BCL runner; exercise invalid requests/input, offline resources and denied unconfigured external access with runner failures distinct from parse rejection.",
       "status": "passed",
       "evidence": [
-        "pinned-native-verification"
+        "pinned-native-verification",
+        "independent-native-review",
+        "integrated-native-protocol"
       ]
     },
     {
@@ -45,7 +49,9 @@
       "description": "Demonstrate task-private build scripts/runner and actual checks at known implementation revision using only integrated verified dependencies; preserve earlier behavior and validate task records.",
       "status": "passed",
       "evidence": [
-        "pinned-native-verification"
+        "pinned-native-verification",
+        "independent-native-review",
+        "integrated-native-protocol"
       ]
     }
   ],
@@ -64,11 +70,29 @@
       "result": "passed",
       "summary": "macOS arm64: actual git engine555055f1ea6bf9944488fd96415b6f03b5b43696/package0.5.0 with Rust1.95.0/Cargo1.95.0/aarch64-apple-darwin; offline locked release build and source/provenance checks pass;49 resolved package manifests and registry lock checksums recorded. 93 actual native/BCL response checks,3 Rust tests,6 raw invalidUTF8 cases plus validUTF8 BOM JSON rejection, separate raw omission probe,2 adversarial independent normalization-oracle assertions pass. Known v1 fixture and supported namespace/ordinal-UTF16/entity/text/encoding/empty fixtures match actual BCL. Per-request offline file/HTTPS/URN resources work, unconfigured file/network denied; external DTD/parameter entities/relative-context/document-whitespace incomplete normalization explicitly runner-failure/protocol, quotas runner-failure/limit. Actual CRLF native value bugs retained separately. Preserved integrated protocol verifier passes:51 focused/54 solution infrastructure tests0 product tests,11 directwire+invalidwire,3 intentional controlled smoke failures exit2,16help/default3unknowncommand,managed-only net10 pack/API0,13discovery2corpuschecks,101task validation. No shared/runtime/peer edits, other-platform/general-conformance/performance claim.",
       "artifact": "docs/reports/M0-references-xmloxide/verification.txt"
+    },
+    {
+      "id": "independent-native-review",
+      "kind": "review",
+      "revision": "c3b4854dec84053b5652964076a75063703eb16a",
+      "command": "Read-only review_xmloxide source/upstream assessment and9adversarial existing-binary probes; coordinator reviewed subsequent tracked probe atbeaee99",
+      "result": "passed",
+      "summary": "No blocking ownership/security/protocol/completeness defect. Request-owned no-I/O resolver; unsupported DTD/PE/relative context/whitespace failures, actual CRLFenginevalues preserved.9adversarial probes pass atbeaee99; trackedrawprobe correction reviewed, actual integrated freshbuild separately executed.",
+      "artifact": null
+    },
+    {
+      "id": "integrated-native-protocol",
+      "kind": "integration",
+      "revision": "8725495aaefa2c3a7d3e5944da442679dfb5ffb5",
+      "command": "Pinned SDK10.0.400 DOTNET_ROOT/PATH DOTNET_CLI_USE_MSBUILD_SERVER=0 python3 -B docs/reports/M0-references-xmloxide/verify.py",
+      "result": "passed",
+      "summary": "Actual lockedRust1.95.0 upstream555055f1ea6bf9944488fd96415b6f03b5b43696 freshintegrationtargetbuild/sourcecheck;93native/BCLresponsechecks,3Rusttests,6malformedUTF8/BOM checks,2independentoracleadversarial checks,rawnativeomission reproduction. Knownfixture/UTF16ordinal/encoding/entities supported comparisons pass;offlineisolation/denials/quotas/unsupported honest. Preserved51focused54solution tests0skip plus3controlledfailureexit2,Releasebuild/help/managedpackageAPI0/13discovery2fixtures/101tasks. macOSarm64 only;no parserperformance/conformance claim.",
+      "artifact": "docs/reports/M0-references-xmloxide/integration-verification.txt"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Implemented exact pinned xmloxide reference runner at beaee99cc9a39469b9c3e5a71fbef4cf467dfa1a; actual v1 events, strict bounded UTF8/framing, private locked/provenance build, request-owned offline resources and honest engine capability/value differences. Only owned paths and own JSON changed; integration_revision null.",
+    "summary": "Reviewed and verified integrated pinned xmloxide reference at 8725495aaefa2c3a7d3e5944da442679dfb5ffb5; actual engine and protocol checks pass with capability gaps and observed differences preserved.",
     "checks": [
       "Full verifier at beaee99cc9a39469b9c3e5a71fbef4cf467dfa1a passed:93 actual native/BCL responses,3Rust tests,6invalidUTF8wire+BOM handling,2independent-oracle adversarial checks; actual raw omission reproduced separately.",
       "Known v1 fixture and supported comparisons match BCL; blocked resources/unsupported capabilities/engine quotas classified as runner failures; actual invalid XML remains parse rejection.",
@@ -77,7 +101,6 @@
       "Final audit: all nine task-private build/runner/probe/license files tracked; no ignored source files under owned runner/report paths. Corrected complete revision supersedes earlier c3b local checks that used an ignored raw probe."
     ],
     "remaining": [
-      "Coordinator must integrate/review and rerun checks on combined revision before verified.",
       "Only macOS arm64 validated. External DTD/parameter entities/relative URI context and document-level whitespace normalization explicitly unsupported; use capable references for those cases. Native CRLF attribute/CDATA value differences do not replace independent XML expectations or exclude Xemele features.",
       "Locked url2.5.8 handles mapped absolute URI canonicalization; universal System.Uri equivalence for unusual URI syntax is not established. Upstream unused attribute/text-length limit options are not claimed; caller process timeouts remain infrastructure safeguards."
     ],
