@@ -4,11 +4,11 @@
   "milestone": "M0",
   "title": "Verify foundation checkpoint",
   "kind": "gate",
-  "status": "implemented",
+  "status": "verified",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M0-gate",
   "branch": "codex/m0-gate",
   "base_revision": "1710a9ac2dce59d441e383e779a5c6b497fe45dd",
-  "integration_revision": null,
+  "integration_revision": "0711a15b0c5a695ca383a9cfe7f11c8326fde451",
   "depends_on": [
     "M0-ci",
     "M0-corpora",
@@ -37,7 +37,9 @@
       "evidence": [
         "clean-checkpoint",
         "checkpoint-archive",
-        "reference-rebuild"
+        "reference-rebuild",
+        "coordinator-gate-review",
+        "integrated-foundation-gate"
       ]
     },
     {
@@ -47,7 +49,9 @@
       "evidence": [
         "clean-checkpoint",
         "reference-rebuild",
-        "ownership-allocations"
+        "ownership-allocations",
+        "coordinator-gate-review",
+        "integrated-foundation-gate"
       ]
     },
     {
@@ -58,7 +62,9 @@
         "clean-checkpoint",
         "checkpoint-archive",
         "reference-rebuild",
-        "ownership-allocations"
+        "ownership-allocations",
+        "coordinator-gate-review",
+        "integrated-foundation-gate"
       ]
     }
   ],
@@ -103,11 +109,29 @@
       "result": "passed",
       "summary": "Approved foundation/conformance/API decisions, declaration and usage fixtures/goldens, original corpus source/fixture/license/provenance and native lock/toolchain/config inputs archived by exact filename/blob/hash at fixed source revision. Original historical experiment and native evidence hashes indexed. Actual runtime restore graph contains no package libraries/project references; BCL automatic build edge is ReferenceOutputAssembly=false. Actual generated managed/native executable/library and upstream license SHA-256 inventory recorded. Local macOS15.8.1 Arm64/.NET10.0.11 only; hosted CI unrun.",
       "artifact": "docs/reports/M0-gate/checkpoint/checkpoint.json"
+    },
+    {
+      "id": "coordinator-gate-review",
+      "kind": "review",
+      "revision": "2341576c115fe254086eaf401f7b18f85bbbf5b6",
+      "command": "Coordinator read-only gate verifier/ownership/evidence review; independent fixed-Git archive checksum check",
+      "result": "passed",
+      "summary": "Only owned verifier/archive/task paths changed. All28snapshots/133historicalinputs match fixed source SHA256/lengths and archivebytes; gate calls actual clean builds/MTP/compiled APIs/corpus/real managed reference/allocation/escape checks; no arithmetic completion or new timing claim. ScopeM0infrastructure, actual runtimeAPIempty; hostedCIunrun retained.",
+      "artifact": null
+    },
+    {
+      "id": "integrated-foundation-gate",
+      "kind": "integration",
+      "revision": "0711a15b0c5a695ca383a9cfe7f11c8326fde451",
+      "command": "Pinned SDK10.0.400 DOTNET_ROOT/PATH DOTNET_CLI_USE_MSBUILD_SERVER=0 CMAKE3.31.6; python3 -B docs/reports/M0-gate/verify.py --fetch-libxml2 --output docs/reports/M0-gate/integration; independent archived-input Git SHA256 checks",
+      "result": "passed",
+      "summary": "Cleaned all tracked managed bin/obj, cleanReleasebootstrap0warnings/errors and54solutionMTP0skip/3expectedcontrolledfailures;11foundationMTP/16Pythondiscoverycomposition,139/173/8goldens+9actualsignaturemutations+runtimeemptyAPIchecks;24corpusMTP0skip/20offlineCLI and2independentfixtures. Fresh exactnative/Cargo builds;51realengine responses/12processcleanupchecks. Tree8cases/memoryretain/nameownership;Input83095assertions/strictboundary/sourcecollectability/64MiBreusedtoken0B/warmborrowed0B;negativeescapeCS9203 checks. All28snapshots133historicalinputs match fixedGit source;101taskvalidate,HEADunchanged,diffcheck pass. No new timing, hostedplatform/AOT/productparser/conformance claim. Native gaps preserved without scope reduction.",
+      "artifact": "docs/reports/M0-gate/integration/verification.txt"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "M0-gate implemented and all branch checks passed at fixed source 2341576c115fe254086eaf401f7b18f85bbbf5b6. Owned-only verifier and portable checkpoint archive; clean foundation joins actual bootstrap, contracts, corpus, rebuilt references and unchanged architecture experiments. Runtime source/API remains empty; coordinator integration verification still required.",
+    "summary": "Verified clean integrated M0 foundation checkpoint at 0711a15b0c5a695ca383a9cfe7f11c8326fde451 with actual combined infrastructure/contract/reference/resource/allocation checks and fixed input/provenance archive.",
     "checks": [
       "python3 -B docs/reports/M0-gate/verify.py --fetch-libxml2: passed with pinned SDK/native toolchains and authorized IPC/network; checkpoint/verification.txt plus focused transcripts.",
       "54 solution MTP + 3 expected exit2 failures; 11 contract MTP +16 Python tests;139/173/8 compiled members and real negative probes;24 corpus MTP/0 skip+20offline CLI;2 independent corpus fixtures.",

@@ -1,0 +1,574 @@
+Host: macOS-15.8.1-arm64-arm-64bit-Mach-O arm64
+
+$ git rev-parse HEAD
+0711a15b0c5a695ca383a9cfe7f11c8326fde451
+Exit: 0
+
+$ dotnet --version
+10.0.400
+Exit: 0
+
+$ dotnet restore tools/CorpusManager --disable-build-servers -m:1 -p:UseSharedCompilation=false
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+Exit: 0
+
+$ dotnet build tools/CorpusManager -c Release --no-restore --disable-build-servers -m:1 -p:UseSharedCompilation=false
+  CorpusManager -> /private/tmp/xemele-integrate-m0-gate/tools/CorpusManager/bin/Release/net10.0/CorpusManager.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:00.25
+Exit: 0
+
+$ dotnet restore docs/reports/M0-corpora/Tests/Xemele.CorpusInfrastructure.Tests.csproj --disable-build-servers -m:1 -p:UseSharedCompilation=false
+  Determining projects to restore...
+  Restored /private/tmp/xemele-integrate-m0-gate/docs/reports/M0-corpora/Tests/Xemele.CorpusInfrastructure.Tests.csproj (in 127 ms).
+  1 of 2 projects are up-to-date for restore.
+Exit: 0
+
+$ dotnet build docs/reports/M0-corpora/Tests/Xemele.CorpusInfrastructure.Tests.csproj -c Release --no-restore --disable-build-servers -m:1 -p:UseSharedCompilation=false
+  CorpusManager -> /private/tmp/xemele-integrate-m0-gate/tools/CorpusManager/bin/Release/net10.0/CorpusManager.dll
+  Xemele.CorpusInfrastructure.Tests -> /private/tmp/xemele-integrate-m0-gate/docs/reports/M0-corpora/Tests/bin/Release/net10.0/Xemele.CorpusInfrastructure.Tests.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:01.04
+Exit: 0
+
+$ dotnet test --project docs/reports/M0-corpora/Tests/Xemele.CorpusInfrastructure.Tests.csproj -c Release --no-build --no-restore --no-ansi --no-progress --minimum-expected-tests 24 --report-xunit-xml --results-directory /private/tmp/xemele-integrate-m0-gate/artifacts/M0-corpora-wiring/test-results
+Running tests from /private/tmp/xemele-integrate-m0-gate/docs/reports/M0-corpora/Tests/bin/Release/net10.0/Xemele.CorpusInfrastructure.Tests.dll (net10.0|arm64)
+/private/tmp/xemele-integrate-m0-gate/docs/reports/M0-corpora/Tests/bin/Release/net10.0/Xemele.CorpusInfrastructure.Tests.dll (net10.0|arm64) passed (446ms)
+
+  In process file artifacts produced:
+    - /private/tmp/xemele-integrate-m0-gate/artifacts/M0-corpora-wiring/test-results/sebastienros_Mac_2026-10-10_01_53_17.576579.xunit.xml
+
+Test run summary: Passed!
+  total: 24
+  failed: 0
+  succeeded: 24
+  skipped: 0
+  duration: 862ms
+Exit: 0
+
+Focused MTP tests: 24 passed, 0 capability-skipped.
+
+$ dotnet run --project tools/CorpusManager -c Release --no-build --no-restore --
+Xemele corpus manager
+Offline corpus infrastructure: import|provision <repository> <profile> [cache-directory]
+Imports pinned local bundles; provisioning uses only verified cached bytes. No parser execution.
+Exit: 0
+
+$ dotnet run --project tools/CorpusManager -c Release --no-build --no-restore -- --help
+Xemele corpus manager
+Offline corpus infrastructure: import|provision <repository> <profile> [cache-directory]
+Imports pinned local bundles; provisioning uses only verified cached bytes. No parser execution.
+Exit: 0
+
+$ dotnet run --project tools/CorpusManager -c Release --no-build --no-restore -- -h
+Xemele corpus manager
+Offline corpus infrastructure: import|provision <repository> <profile> [cache-directory]
+Imports pinned local bundles; provisioning uses only verified cached bytes. No parser execution.
+Exit: 0
+
+$ dotnet run --project tools/CorpusManager -c Release --no-build --no-restore -- help
+Xemele corpus manager
+Offline corpus infrastructure: import|provision <repository> <profile> [cache-directory]
+Imports pinned local bundles; provisioning uses only verified cached bytes. No parser execution.
+Exit: 0
+
+$ dotnet run --project tools/CorpusManager -c Release --no-build --no-restore -- unknown
+Unknown command or invalid arguments. Use --help for import|provision <repository> <profile> [cache-directory].
+Exit: 2
+
+$ dotnet run --project tools/CorpusManager -c Release --no-build --no-restore -- import
+Unknown command or invalid arguments. Use --help for import|provision <repository> <profile> [cache-directory].
+Exit: 2
+
+$ dotnet run --project tools/CorpusManager -c Release --no-build --no-restore -- provision /private/tmp/xemele-integrate-m0-gate
+Unknown command or invalid arguments. Use --help for import|provision <repository> <profile> [cache-directory].
+Exit: 2
+
+$ dotnet run --project tools/CorpusManager -c Release --no-build --no-restore -- import /private/tmp/xemele-integrate-m0-gate xml-well-formedness-bootstrap-v1 /private/tmp/xemele-integrate-m0-gate extra
+Unknown command or invalid arguments. Use --help for import|provision <repository> <profile> [cache-directory].
+Exit: 2
+
+$ dotnet run --project tools/CorpusManager -c Release --no-build --no-restore -- provision /private/tmp/xemele-integrate-m0-gate/artifacts/M0-corpora-wiring/cli-itps2jmg xml-well-formedness-bootstrap-v1 /private/tmp/xemele-integrate-m0-gate/artifacts/M0-corpora-wiring/cli-itps2jmg/artifacts/corpora
+{
+  "schemaVersion": 1,
+  "corpora": 1,
+  "total": 2,
+  "provisioned": 0,
+  "missingCache": 2,
+  "corruptCache": 0,
+  "unsupportedProfile": 0,
+  "excluded": 0,
+  "infrastructureFailure": 0,
+  "parserCasesExecuted": 0,
+  "standardsPassed": 0,
+  "reports": [
+    {
+      "CorpusId": "xemele-bootstrap-xml",
+      "Profile": "xml-well-formedness-bootstrap-v1",
+      "SourceUrl": "https://github.com/sebastienros/xemele",
+      "Revision": "sha256:26c425e1a95b3c6e35833b60ca1dd5f9b641269e238bd4de6187983cf3fbf946",
+      "SourceSha256": "26c425e1a95b3c6e35833b60ca1dd5f9b641269e238bd4de6187983cf3fbf946",
+      "License": "MIT",
+      "Notice": "Original synthetic fixtures by Xemele contributors, 2026. MIT terms in NOTICE.txt. Classifications authored from XML well-formedness rules; no Xemele output used.",
+      "AdapterVersion": "xemele-offline-bundle-v1",
+      "Cases": [
+        {
+          "Path": "empty-element.xml",
+          "Classification": "accepted",
+          "Outcome": "MissingCache",
+          "Detail": "Source payload is absent; offline provisioning performs no download.",
+          "CachePath": null
+        },
+        {
+          "Path": "unclosed-element.xml",
+          "Classification": "rejected",
+          "Outcome": "MissingCache",
+          "Detail": "Source payload is absent; offline provisioning performs no download.",
+          "CachePath": null
+        }
+      ],
+      "Total": 2,
+      "Provisioned": 0,
+      "MissingCache": 2,
+      "CorruptCache": 0,
+      "UnsupportedProfile": 0,
+      "Excluded": 0,
+      "InfrastructureFailure": 0,
+      "ParserCasesExecuted": 0,
+      "StandardsPassed": 0,
+      "Successful": false
+    }
+  ]
+}
+Exit: 1
+
+$ dotnet run --project tools/CorpusManager -c Release --no-build --no-restore -- import /private/tmp/xemele-integrate-m0-gate/artifacts/M0-corpora-wiring/cli-itps2jmg xml-well-formedness-bootstrap-v1 /private/tmp/xemele-integrate-m0-gate/artifacts/M0-corpora-wiring/cli-itps2jmg/artifacts/corpora
+{
+  "schemaVersion": 1,
+  "corpora": 1,
+  "total": 2,
+  "provisioned": 2,
+  "missingCache": 0,
+  "corruptCache": 0,
+  "unsupportedProfile": 0,
+  "excluded": 0,
+  "infrastructureFailure": 0,
+  "parserCasesExecuted": 0,
+  "standardsPassed": 0,
+  "reports": [
+    {
+      "CorpusId": "xemele-bootstrap-xml",
+      "Profile": "xml-well-formedness-bootstrap-v1",
+      "SourceUrl": "https://github.com/sebastienros/xemele",
+      "Revision": "sha256:26c425e1a95b3c6e35833b60ca1dd5f9b641269e238bd4de6187983cf3fbf946",
+      "SourceSha256": "26c425e1a95b3c6e35833b60ca1dd5f9b641269e238bd4de6187983cf3fbf946",
+      "License": "MIT",
+      "Notice": "Original synthetic fixtures by Xemele contributors, 2026. MIT terms in NOTICE.txt. Classifications authored from XML well-formedness rules; no Xemele output used.",
+      "AdapterVersion": "xemele-offline-bundle-v1",
+      "Cases": [
+        {
+          "Path": "empty-element.xml",
+          "Classification": "accepted",
+          "Outcome": "Provisioned",
+          "Detail": "Source and fixture SHA-256 verified; parser not executed.",
+          "CachePath": "/private/tmp/xemele-integrate-m0-gate/artifacts/M0-corpora-wiring/cli-itps2jmg/artifacts/corpora/fixtures/26c425e1a95b3c6e35833b60ca1dd5f9b641269e238bd4de6187983cf3fbf946/9bd4e7da69e147e60c9d5d9124a0c57ef34363668a3b97e42c618d0756eafb7e"
+        },
+        {
+          "Path": "unclosed-element.xml",
+          "Classification": "rejected",
+          "Outcome": "Provisioned",
+          "Detail": "Source and fixture SHA-256 verified; parser not executed.",
+          "CachePath": "/private/tmp/xemele-integrate-m0-gate/artifacts/M0-corpora-wiring/cli-itps2jmg/artifacts/corpora/fixtures/26c425e1a95b3c6e35833b60ca1dd5f9b641269e238bd4de6187983cf3fbf946/6aa53ba17ebbbcc127c87fd86705f80074c089478042c508673af62716d4377f"
+        }
+      ],
+      "Total": 2,
+      "Provisioned": 2,
+      "MissingCache": 0,
+      "CorruptCache": 0,
+      "UnsupportedProfile": 0,
+      "Excluded": 0,
+      "InfrastructureFailure": 0,
+      "ParserCasesExecuted": 0,
+      "StandardsPassed": 0,
+      "Successful": true
+    }
+  ]
+}
+Exit: 0
+
+$ dotnet run --project tools/CorpusManager -c Release --no-build --no-restore -- provision /private/tmp/xemele-integrate-m0-gate/artifacts/M0-corpora-wiring/cli-itps2jmg xml-well-formedness-bootstrap-v1 /private/tmp/xemele-integrate-m0-gate/artifacts/M0-corpora-wiring/cli-itps2jmg/artifacts/corpora
+{
+  "schemaVersion": 1,
+  "corpora": 1,
+  "total": 2,
+  "provisioned": 2,
+  "missingCache": 0,
+  "corruptCache": 0,
+  "unsupportedProfile": 0,
+  "excluded": 0,
+  "infrastructureFailure": 0,
+  "parserCasesExecuted": 0,
+  "standardsPassed": 0,
+  "reports": [
+    {
+      "CorpusId": "xemele-bootstrap-xml",
+      "Profile": "xml-well-formedness-bootstrap-v1",
+      "SourceUrl": "https://github.com/sebastienros/xemele",
+      "Revision": "sha256:26c425e1a95b3c6e35833b60ca1dd5f9b641269e238bd4de6187983cf3fbf946",
+      "SourceSha256": "26c425e1a95b3c6e35833b60ca1dd5f9b641269e238bd4de6187983cf3fbf946",
+      "License": "MIT",
+      "Notice": "Original synthetic fixtures by Xemele contributors, 2026. MIT terms in NOTICE.txt. Classifications authored from XML well-formedness rules; no Xemele output used.",
+      "AdapterVersion": "xemele-offline-bundle-v1",
+      "Cases": [
+        {
+          "Path": "empty-element.xml",
+          "Classification": "accepted",
+          "Outcome": "Provisioned",
+          "Detail": "Source and fixture SHA-256 verified; parser not executed.",
+          "CachePath": "/private/tmp/xemele-integrate-m0-gate/artifacts/M0-corpora-wiring/cli-itps2jmg/artifacts/corpora/fixtures/26c425e1a95b3c6e35833b60ca1dd5f9b641269e238bd4de6187983cf3fbf946/9bd4e7da69e147e60c9d5d9124a0c57ef34363668a3b97e42c618d0756eafb7e"
+        },
+        {
+          "Path": "unclosed-element.xml",
+          "Classification": "rejected",
+          "Outcome": "Provisioned",
+          "Detail": "Source and fixture SHA-256 verified; parser not executed.",
+          "CachePath": "/private/tmp/xemele-integrate-m0-gate/artifacts/M0-corpora-wiring/cli-itps2jmg/artifacts/corpora/fixtures/26c425e1a95b3c6e35833b60ca1dd5f9b641269e238bd4de6187983cf3fbf946/6aa53ba17ebbbcc127c87fd86705f80074c089478042c508673af62716d4377f"
+        }
+      ],
+      "Total": 2,
+      "Provisioned": 2,
+      "MissingCache": 0,
+      "CorruptCache": 0,
+      "UnsupportedProfile": 0,
+      "Excluded": 0,
+      "InfrastructureFailure": 0,
+      "ParserCasesExecuted": 0,
+      "StandardsPassed": 0,
+      "Successful": true
+    }
+  ]
+}
+Exit: 0
+
+$ dotnet run --project tools/CorpusManager -c Release --no-build --no-restore -- provision /private/tmp/xemele-integrate-m0-gate/artifacts/M0-corpora-wiring/cli-itps2jmg unsupported-profile /private/tmp/xemele-integrate-m0-gate/artifacts/M0-corpora-wiring/cli-itps2jmg/artifacts/corpora
+{
+  "schemaVersion": 1,
+  "corpora": 1,
+  "total": 2,
+  "provisioned": 0,
+  "missingCache": 0,
+  "corruptCache": 0,
+  "unsupportedProfile": 2,
+  "excluded": 0,
+  "infrastructureFailure": 0,
+  "parserCasesExecuted": 0,
+  "standardsPassed": 0,
+  "reports": [
+    {
+      "CorpusId": "xemele-bootstrap-xml",
+      "Profile": "xml-well-formedness-bootstrap-v1",
+      "SourceUrl": "https://github.com/sebastienros/xemele",
+      "Revision": "sha256:26c425e1a95b3c6e35833b60ca1dd5f9b641269e238bd4de6187983cf3fbf946",
+      "SourceSha256": "26c425e1a95b3c6e35833b60ca1dd5f9b641269e238bd4de6187983cf3fbf946",
+      "License": "MIT",
+      "Notice": "Original synthetic fixtures by Xemele contributors, 2026. MIT terms in NOTICE.txt. Classifications authored from XML well-formedness rules; no Xemele output used.",
+      "AdapterVersion": "xemele-offline-bundle-v1",
+      "Cases": [
+        {
+          "Path": "empty-element.xml",
+          "Classification": "accepted",
+          "Outcome": "UnsupportedProfile",
+          "Detail": "Profile is not supported by the requested adapter.",
+          "CachePath": null
+        },
+        {
+          "Path": "unclosed-element.xml",
+          "Classification": "rejected",
+          "Outcome": "UnsupportedProfile",
+          "Detail": "Profile is not supported by the requested adapter.",
+          "CachePath": null
+        }
+      ],
+      "Total": 2,
+      "Provisioned": 0,
+      "MissingCache": 0,
+      "CorruptCache": 0,
+      "UnsupportedProfile": 2,
+      "Excluded": 0,
+      "InfrastructureFailure": 0,
+      "ParserCasesExecuted": 0,
+      "StandardsPassed": 0,
+      "Successful": false
+    }
+  ]
+}
+Exit: 1
+
+$ dotnet run --project tools/CorpusManager -c Release --no-build --no-restore -- provision /private/tmp/xemele-integrate-m0-gate/artifacts/M0-corpora-wiring/cli-itps2jmg xml-well-formedness-bootstrap-v1 /private/tmp/xemele-integrate-m0-gate/artifacts/M0-corpora-wiring/cli-itps2jmg/artifacts/corpora
+{
+  "schemaVersion": 1,
+  "corpora": 1,
+  "total": 2,
+  "provisioned": 0,
+  "missingCache": 0,
+  "corruptCache": 2,
+  "unsupportedProfile": 0,
+  "excluded": 0,
+  "infrastructureFailure": 0,
+  "parserCasesExecuted": 0,
+  "standardsPassed": 0,
+  "reports": [
+    {
+      "CorpusId": "xemele-bootstrap-xml",
+      "Profile": "xml-well-formedness-bootstrap-v1",
+      "SourceUrl": "https://github.com/sebastienros/xemele",
+      "Revision": "sha256:26c425e1a95b3c6e35833b60ca1dd5f9b641269e238bd4de6187983cf3fbf946",
+      "SourceSha256": "26c425e1a95b3c6e35833b60ca1dd5f9b641269e238bd4de6187983cf3fbf946",
+      "License": "MIT",
+      "Notice": "Original synthetic fixtures by Xemele contributors, 2026. MIT terms in NOTICE.txt. Classifications authored from XML well-formedness rules; no Xemele output used.",
+      "AdapterVersion": "xemele-offline-bundle-v1",
+      "Cases": [
+        {
+          "Path": "empty-element.xml",
+          "Classification": "accepted",
+          "Outcome": "CorruptCache",
+          "Detail": "SHA-256 checksum mismatch.",
+          "CachePath": null
+        },
+        {
+          "Path": "unclosed-element.xml",
+          "Classification": "rejected",
+          "Outcome": "CorruptCache",
+          "Detail": "SHA-256 checksum mismatch.",
+          "CachePath": null
+        }
+      ],
+      "Total": 2,
+      "Provisioned": 0,
+      "MissingCache": 0,
+      "CorruptCache": 2,
+      "UnsupportedProfile": 0,
+      "Excluded": 0,
+      "InfrastructureFailure": 0,
+      "ParserCasesExecuted": 0,
+      "StandardsPassed": 0,
+      "Successful": false
+    }
+  ]
+}
+Exit: 1
+
+$ dotnet run --project tools/CorpusManager -c Release --no-build --no-restore -- import /private/tmp/xemele-integrate-m0-gate/artifacts/M0-corpora-wiring/cli-itps2jmg xml-well-formedness-bootstrap-v1 /private/tmp/xemele-integrate-m0-gate/artifacts/M0-corpora-wiring/cli-itps2jmg/artifacts/corpora
+{
+  "schemaVersion": 1,
+  "corpora": 1,
+  "total": 2,
+  "provisioned": 2,
+  "missingCache": 0,
+  "corruptCache": 0,
+  "unsupportedProfile": 0,
+  "excluded": 0,
+  "infrastructureFailure": 0,
+  "parserCasesExecuted": 0,
+  "standardsPassed": 0,
+  "reports": [
+    {
+      "CorpusId": "xemele-bootstrap-xml",
+      "Profile": "xml-well-formedness-bootstrap-v1",
+      "SourceUrl": "https://github.com/sebastienros/xemele",
+      "Revision": "sha256:26c425e1a95b3c6e35833b60ca1dd5f9b641269e238bd4de6187983cf3fbf946",
+      "SourceSha256": "26c425e1a95b3c6e35833b60ca1dd5f9b641269e238bd4de6187983cf3fbf946",
+      "License": "MIT",
+      "Notice": "Original synthetic fixtures by Xemele contributors, 2026. MIT terms in NOTICE.txt. Classifications authored from XML well-formedness rules; no Xemele output used.",
+      "AdapterVersion": "xemele-offline-bundle-v1",
+      "Cases": [
+        {
+          "Path": "empty-element.xml",
+          "Classification": "accepted",
+          "Outcome": "Provisioned",
+          "Detail": "Source and fixture SHA-256 verified; parser not executed.",
+          "CachePath": "/private/tmp/xemele-integrate-m0-gate/artifacts/M0-corpora-wiring/cli-itps2jmg/artifacts/corpora/fixtures/26c425e1a95b3c6e35833b60ca1dd5f9b641269e238bd4de6187983cf3fbf946/9bd4e7da69e147e60c9d5d9124a0c57ef34363668a3b97e42c618d0756eafb7e"
+        },
+        {
+          "Path": "unclosed-element.xml",
+          "Classification": "rejected",
+          "Outcome": "Provisioned",
+          "Detail": "Source and fixture SHA-256 verified; parser not executed.",
+          "CachePath": "/private/tmp/xemele-integrate-m0-gate/artifacts/M0-corpora-wiring/cli-itps2jmg/artifacts/corpora/fixtures/26c425e1a95b3c6e35833b60ca1dd5f9b641269e238bd4de6187983cf3fbf946/6aa53ba17ebbbcc127c87fd86705f80074c089478042c508673af62716d4377f"
+        }
+      ],
+      "Total": 2,
+      "Provisioned": 2,
+      "MissingCache": 0,
+      "CorruptCache": 0,
+      "UnsupportedProfile": 0,
+      "Excluded": 0,
+      "InfrastructureFailure": 0,
+      "ParserCasesExecuted": 0,
+      "StandardsPassed": 0,
+      "Successful": true
+    }
+  ]
+}
+Exit: 0
+
+$ dotnet run --project tools/CorpusManager -c Release --no-build --no-restore -- provision /private/tmp/xemele-integrate-m0-gate/artifacts/M0-corpora-wiring/cli-itps2jmg xml-well-formedness-bootstrap-v1 /private/tmp/xemele-integrate-m0-gate/artifacts/M0-corpora-wiring/cli-itps2jmg/artifacts/corpora
+{
+  "schemaVersion": 1,
+  "corpora": 1,
+  "total": 2,
+  "provisioned": 0,
+  "missingCache": 0,
+  "corruptCache": 0,
+  "unsupportedProfile": 0,
+  "excluded": 0,
+  "infrastructureFailure": 2,
+  "parserCasesExecuted": 0,
+  "standardsPassed": 0,
+  "reports": [
+    {
+      "CorpusId": "xemele-bootstrap-xml",
+      "Profile": "xml-well-formedness-bootstrap-v1",
+      "SourceUrl": "https://github.com/sebastienros/xemele",
+      "Revision": "sha256:26c425e1a95b3c6e35833b60ca1dd5f9b641269e238bd4de6187983cf3fbf946",
+      "SourceSha256": "26c425e1a95b3c6e35833b60ca1dd5f9b641269e238bd4de6187983cf3fbf946",
+      "License": "MIT",
+      "Notice": "Original synthetic fixtures by Xemele contributors, 2026. MIT terms in NOTICE.txt. Classifications authored from XML well-formedness rules; no Xemele output used.",
+      "AdapterVersion": "xemele-offline-bundle-v1",
+      "Cases": [
+        {
+          "Path": "empty-element.xml",
+          "Classification": "accepted",
+          "Outcome": "InfrastructureFailure",
+          "Detail": "Source cache payload is a directory, not a regular file.",
+          "CachePath": null
+        },
+        {
+          "Path": "unclosed-element.xml",
+          "Classification": "rejected",
+          "Outcome": "InfrastructureFailure",
+          "Detail": "Source cache payload is a directory, not a regular file.",
+          "CachePath": null
+        }
+      ],
+      "Total": 2,
+      "Provisioned": 0,
+      "MissingCache": 0,
+      "CorruptCache": 0,
+      "UnsupportedProfile": 0,
+      "Excluded": 0,
+      "InfrastructureFailure": 2,
+      "ParserCasesExecuted": 0,
+      "StandardsPassed": 0,
+      "Successful": false
+    }
+  ]
+}
+Exit: 1
+
+$ dotnet run --project tools/CorpusManager -c Release --no-build --no-restore -- provision /private/tmp/xemele-integrate-m0-gate/artifacts/M0-corpora-wiring/cli-itps2jmg xml-well-formedness-bootstrap-v1 /private/tmp/xemele-integrate-m0-gate/artifacts/M0-corpora-wiring/cli-itps2jmg/artifacts/corpora
+{
+  "schemaVersion": 1,
+  "corpora": 1,
+  "total": 2,
+  "provisioned": 0,
+  "missingCache": 1,
+  "corruptCache": 0,
+  "unsupportedProfile": 0,
+  "excluded": 1,
+  "infrastructureFailure": 0,
+  "parserCasesExecuted": 0,
+  "standardsPassed": 0,
+  "reports": [
+    {
+      "CorpusId": "xemele-bootstrap-xml",
+      "Profile": "xml-well-formedness-bootstrap-v1",
+      "SourceUrl": "https://github.com/sebastienros/xemele",
+      "Revision": "sha256:26c425e1a95b3c6e35833b60ca1dd5f9b641269e238bd4de6187983cf3fbf946",
+      "SourceSha256": "26c425e1a95b3c6e35833b60ca1dd5f9b641269e238bd4de6187983cf3fbf946",
+      "License": "MIT",
+      "Notice": "Original synthetic fixtures by Xemele contributors, 2026. MIT terms in NOTICE.txt. Classifications authored from XML well-formedness rules; no Xemele output used.",
+      "AdapterVersion": "xemele-offline-bundle-v1",
+      "Cases": [
+        {
+          "Path": "empty-element.xml",
+          "Classification": "accepted",
+          "Outcome": "Excluded",
+          "Detail": "Explicit test exclusion",
+          "CachePath": null
+        },
+        {
+          "Path": "unclosed-element.xml",
+          "Classification": "rejected",
+          "Outcome": "MissingCache",
+          "Detail": "Source payload is absent; offline provisioning performs no download.",
+          "CachePath": null
+        }
+      ],
+      "Total": 2,
+      "Provisioned": 0,
+      "MissingCache": 1,
+      "CorruptCache": 0,
+      "UnsupportedProfile": 0,
+      "Excluded": 1,
+      "InfrastructureFailure": 0,
+      "ParserCasesExecuted": 0,
+      "StandardsPassed": 0,
+      "Successful": false
+    }
+  ]
+}
+Exit: 1
+
+$ dotnet run --project tools/CorpusManager -c Release --no-build --no-restore -- provision /private/tmp/xemele-integrate-m0-gate/artifacts/M0-corpora-wiring/cli-itps2jmg xml-well-formedness-bootstrap-v1 /private/tmp/xemele-integrate-m0-gate/artifacts/M0-corpora-wiring/cli-itps2jmg/artifacts/corpora
+Corpus infrastructure error: 'm' is an invalid start of a property name. Expected a '"'. LineNumber: 0 | BytePositionInLine: 1.
+Exit: 1
+
+$ dotnet run --project tools/CorpusManager -c Release --no-build --no-restore -- import /private/tmp/xemele-integrate-m0-gate/artifacts/M0-corpora-wiring/cli-itps2jmg xml-well-formedness-bootstrap-v1 /private/tmp/xemele-integrate-m0-gate/artifacts/M0-corpora-wiring/cli-itps2jmg/artifacts/corpora
+Corpus infrastructure error: SHA-256 checksum mismatch.
+Exit: 1
+
+$ dotnet run --project tools/CorpusManager -c Release --no-build --no-restore -- import /private/tmp/xemele-integrate-m0-gate/artifacts/M0-corpora-wiring/cli-itps2jmg xml-well-formedness-bootstrap-v1 /private/tmp/xemele-integrate-m0-gate/artifacts/M0-corpora-wiring/cli-itps2jmg/artifacts/corpora
+{
+  "schemaVersion": 1,
+  "corpora": 0,
+  "total": 0,
+  "provisioned": 0,
+  "missingCache": 0,
+  "corruptCache": 0,
+  "unsupportedProfile": 0,
+  "excluded": 0,
+  "infrastructureFailure": 0,
+  "parserCasesExecuted": 0,
+  "standardsPassed": 0,
+  "reports": []
+}
+Exit: 1
+
+$ dotnet run --project tools/CorpusManager -c Release --no-build --no-restore -- provision /private/tmp/xemele-integrate-m0-gate/artifacts/M0-corpora-wiring/cli-itps2jmg xml-well-formedness-bootstrap-v1 /private/tmp/xemele-integrate-m0-gate/artifacts/M0-corpora-wiring/cli-itps2jmg/artifacts/corpora
+{
+  "schemaVersion": 1,
+  "corpora": 0,
+  "total": 0,
+  "provisioned": 0,
+  "missingCache": 0,
+  "corruptCache": 0,
+  "unsupportedProfile": 0,
+  "excluded": 0,
+  "infrastructureFailure": 0,
+  "parserCasesExecuted": 0,
+  "standardsPassed": 0,
+  "reports": []
+}
+Exit: 1
+
+Root CLI checks: 20 passed. Offline provisioning only; zero parser/standards cases. No hosted-platform claim.

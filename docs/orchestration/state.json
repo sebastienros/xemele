@@ -3,28 +3,19 @@
   "coordinator_chat_id": "01a1230c-1353-7e01-afbe-a53c9c018264",
   "coordination_branch": "main",
   "max_concurrent_workers": 3,
-  "last_verified_checkpoint": null,
-  "active_assignments": [
-    {
-      "task_id": "M0-gate",
-      "chat_id": "01a1237b-abb8-75a0-b1d1-e39ae1355df4",
-      "client_thread_id": "client-new-thread:02f6f23a-4a4e-4f4a-98b3-c8ecb703bc3e",
-      "host_id": "local",
-      "branch": "codex/m0-gate",
-      "worktree_path": "/Users/sebastienros/.codex/worktrees/d1ec/xemele",
-      "base_revision": "1710a9ac2dce59d441e383e779a5c6b497fe45dd",
-      "claim_revision": "b40b7b20e204f08fdec47e86501ab432a3d374bb",
-      "setup_status": "dispatched"
-    }
-  ],
+  "last_verified_checkpoint": {
+    "task_id": "M0-gate",
+    "integration_revision": "0711a15b0c5a695ca383a9cfe7f11c8326fde451"
+  },
+  "active_assignments": [],
   "integration_queue": [],
   "blockers": [],
   "next_actions": [
-    "Review actual clean integrated foundation gate checks and archived decisions/provenance",
-    "Verify M0-gate then claim ready M1 contract task"
+    "Claim ready M1-contracts and freeze strict-subset exact declarations/usage",
+    "Review API/allocation/lifetime coverage before parallel M1 runtime workers"
   ],
-  "last_verified_task": "M0-references",
-  "last_integrated_revision": "ecfcb658c3ef2a7aca2139f2cb96d757115df5f2",
+  "last_verified_task": "M0-gate",
+  "last_integrated_revision": "0711a15b0c5a695ca383a9cfe7f11c8326fde451",
   "completed_assignments": [
     {
       "task_id": "M0-build",
@@ -233,6 +224,20 @@
       "implementation_revision": "f2088e4b76c835daff21c0226f5dd3884a275b65",
       "handoff_revision": "d4c402dde48b237717491bd86c40ee95cfc6555a",
       "integration_revision": "ecfcb658c3ef2a7aca2139f2cb96d757115df5f2"
+    },
+    {
+      "task_id": "M0-gate",
+      "chat_id": "01a1237b-abb8-75a0-b1d1-e39ae1355df4",
+      "client_thread_id": "client-new-thread:02f6f23a-4a4e-4f4a-98b3-c8ecb703bc3e",
+      "host_id": "local",
+      "branch": "codex/m0-gate",
+      "worktree_path": "/Users/sebastienros/.codex/worktrees/d1ec/xemele",
+      "base_revision": "1710a9ac2dce59d441e383e779a5c6b497fe45dd",
+      "claim_revision": "b40b7b20e204f08fdec47e86501ab432a3d374bb",
+      "setup_status": "verified",
+      "implementation_revision": "2341576c115fe254086eaf401f7b18f85bbbf5b6",
+      "handoff_revision": "22b56d6d6e6698372606aaf9a2ddf869f8348d7d",
+      "integration_revision": "0711a15b0c5a695ca383a9cfe7f11c8326fde451"
     }
   ],
   "benchmark_policy": "Subsequent benchmarks default to ShortRun and require serialized timing slot; no active timing hold.",

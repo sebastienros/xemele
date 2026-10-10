@@ -1,0 +1,263 @@
+Host: macOS-15.8.1-arm64-arm-64bit-Mach-O; architecture=arm64
+$ git rev-parse HEAD
+0711a15b0c5a695ca383a9cfe7f11c8326fde451
+
+exit=0; expected=0
+Tested source revision: 0711a15b0c5a695ca383a9cfe7f11c8326fde451
+$ dotnet --version
+10.0.400
+
+exit=0; expected=0
+$ dotnet --info
+.NET SDK:
+ Version:           10.0.400
+ Commit:            14fbf8d527
+ Workload version:  10.0.400-manifests.330ea142
+ MSBuild version:   18.9.6+14fbf8d52
+
+Runtime Environment:
+ OS Name:     Mac OS X
+ OS Version:  15.8
+ OS Platform: Darwin
+ RID:         osx-arm64
+ Base Path:   /Users/sebastienros/Library/Application Support/dotnetup/dotnet/sdk/10.0.400/
+
+.NET workloads installed:
+There are no installed workloads to display.
+Configured to use workload sets when installing new manifests.
+No workload sets are installed. Run "dotnet workload restore" to install a workload set.
+
+Host:
+  Version:      11.0.0-rc.1.26425.128
+  Architecture: arm64
+  Commit:       3551975be0
+
+.NET SDKs installed:
+  8.0.424 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/sdk]
+  10.0.100 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/sdk]
+  10.0.400 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/sdk]
+  11.0.100-rc.1.26413.103 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/sdk]
+  11.0.100-rc.1.26425.128 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/sdk]
+
+.NET runtimes installed:
+  Microsoft.AspNetCore.App 8.0.30 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.AspNetCore.App]
+  Microsoft.AspNetCore.App 10.0.0 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.AspNetCore.App]
+  Microsoft.AspNetCore.App 10.0.11 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.AspNetCore.App]
+  Microsoft.AspNetCore.App 11.0.0-rc.1.26413.103 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.AspNetCore.App]
+  Microsoft.AspNetCore.App 11.0.0-rc.1.26425.128 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.AspNetCore.App]
+  Microsoft.NETCore.App 8.0.30 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App]
+  Microsoft.NETCore.App 10.0.0 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App]
+  Microsoft.NETCore.App 10.0.11 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App]
+  Microsoft.NETCore.App 11.0.0-rc.1.26413.103 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App]
+  Microsoft.NETCore.App 11.0.0-rc.1.26425.128 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App]
+
+Other architectures found:
+  None
+
+Environment variables:
+  DOTNET_CLI_USE_MSBUILD_SERVER            [0]
+  DOTNET_ROOT                              [/Users/sebastienros/Library/Application Support/dotnetup/dotnet]
+
+global.json file:
+  /private/tmp/xemele-integrate-m0-gate/global.json
+
+Learn more:
+  https://aka.ms/dotnet/info
+
+Download .NET:
+  https://aka.ms/dotnet/download
+
+exit=0; expected=0
+$ dotnet build /private/tmp/xemele-integrate-m0-gate/src/Xemele/Xemele.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Xemele -> /private/tmp/xemele-integrate-m0-gate/src/Xemele/bin/Release/net10.0/Xemele.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:00.41
+
+exit=0; expected=0
+$ dotnet build /private/tmp/xemele-integrate-m0-gate/docs/reports/M0-contracts/ApiCheck/ApiCheck.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+  Determining projects to restore...
+  Restored /private/tmp/xemele-integrate-m0-gate/docs/reports/M0-contracts/ApiCheck/ApiCheck.csproj (in 27 ms).
+  ApiCheck -> /private/tmp/xemele-integrate-m0-gate/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:01.26
+
+exit=0; expected=0
+$ dotnet build /private/tmp/xemele-integrate-m0-gate/docs/reports/M0-contracts/Checks/Checks.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+  Determining projects to restore...
+  Restored /private/tmp/xemele-integrate-m0-gate/docs/reports/M0-contracts/Fixtures/M1/M1.csproj (in 45 ms).
+  Restored /private/tmp/xemele-integrate-m0-gate/docs/reports/M0-contracts/Fixtures/M2/M2.csproj (in 45 ms).
+  Restored /private/tmp/xemele-integrate-m0-gate/docs/reports/M0-contracts/Checks/Checks.csproj (in 244 ms).
+  M1 -> /private/tmp/xemele-integrate-m0-gate/docs/reports/M0-contracts/Fixtures/M1/bin/Release/net10.0/FoundationM1.dll
+  M2 -> /private/tmp/xemele-integrate-m0-gate/docs/reports/M0-contracts/Fixtures/M2/bin/Release/net10.0/FoundationM2.dll
+  Checks -> /private/tmp/xemele-integrate-m0-gate/docs/reports/M0-contracts/Checks/bin/Release/net10.0/Checks.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:03.03
+
+exit=0; expected=0
+$ dotnet build /private/tmp/xemele-integrate-m0-gate/docs/reports/M0-contracts/Fixtures/ApiProbe/ApiProbe.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+  Determining projects to restore...
+  Restored /private/tmp/xemele-integrate-m0-gate/docs/reports/M0-contracts/Fixtures/ApiProbe/ApiProbe.csproj (in 28 ms).
+  ApiProbe -> /private/tmp/xemele-integrate-m0-gate/docs/reports/M0-contracts/Fixtures/ApiProbe/bin/Release/net10.0/ApiProbe.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:01.24
+
+exit=0; expected=0
+$ dotnet test --project /private/tmp/xemele-integrate-m0-gate/docs/reports/M0-contracts/Checks/Checks.csproj -c Release --no-build --no-restore
+Running tests from /private/tmp/xemele-integrate-m0-gate/docs/reports/M0-contracts/Checks/bin/Release/net10.0/Checks.dll (net10.0|arm64)
+/private/tmp/xemele-integrate-m0-gate/docs/reports/M0-contracts/Checks/bin/Release/net10.0/Checks.dll (net10.0|arm64) passed (457ms)
+
+Test run summary: Passed!
+  total: 11
+  failed: 0
+  succeeded: 11
+  skipped: 0
+  duration: 868ms
+
+exit=0; expected=0
+$ /opt/homebrew/opt/python@3.14/bin/python3.14 -B -m unittest discover -s tests/Xemele.TestUtilities/Build -p test_*.py -v
+test_duplicates_and_conflicts_under_distinct_ids (test_composition.CompositionTests.test_duplicates_and_conflicts_under_distinct_ids) ... ok
+test_empty_requires_explicit_inventory_bootstrap (test_composition.CompositionTests.test_empty_requires_explicit_inventory_bootstrap) ... ok
+test_member_order_and_distinct_id_provenance_without_rewrites (test_composition.CompositionTests.test_member_order_and_distinct_id_provenance_without_rewrites) ... ok
+test_cli_failure_exit_and_explicit_error (test_discovery.DiscoveryTests.test_cli_failure_exit_and_explicit_error) ... ok
+test_distinct_ids_cannot_conflict_on_member (test_discovery.DiscoveryTests.test_distinct_ids_cannot_conflict_on_member) ... ok
+test_duplicate_and_conflicting_ids (test_discovery.DiscoveryTests.test_duplicate_and_conflicting_ids) ... ok
+test_duplicate_corpus_and_fixture (test_discovery.DiscoveryTests.test_duplicate_corpus_and_fixture) ... ok
+test_duplicate_json_fields (test_discovery.DiscoveryTests.test_duplicate_json_fields) ... ok
+test_fixture_traversal (test_discovery.DiscoveryTests.test_fixture_traversal) ... ok
+test_generated_sources_do_not_break_empty_bootstrap (test_discovery.DiscoveryTests.test_generated_sources_do_not_break_empty_bootstrap) ... ok
+test_metadata_schema_and_classification (test_discovery.DiscoveryTests.test_metadata_schema_and_classification) ... ok
+test_missing_baseline (test_discovery.DiscoveryTests.test_missing_baseline) ... ok
+test_missing_fixture_and_checksum (test_discovery.DiscoveryTests.test_missing_fixture_and_checksum) ... ok
+test_noncanonical_unknown_fields_and_unsorted (test_discovery.DiscoveryTests.test_noncanonical_unknown_fields_and_unsorted) ... ok
+test_unknown_and_empty_formats (test_discovery.DiscoveryTests.test_unknown_and_empty_formats) ... ok
+test_valid_fragments_and_fixture (test_discovery.DiscoveryTests.test_valid_fragments_and_fixture) ... ok
+
+----------------------------------------------------------------------
+Ran 16 tests in 0.092s
+
+OK
+
+exit=0; expected=0
+$ dotnet /private/tmp/xemele-integrate-m0-gate/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare /private/tmp/xemele-integrate-m0-gate/docs/reports/M0-contracts/Fixtures/M1/bin/Release/net10.0/FoundationM1.dll /private/tmp/xemele-integrate-m0-gate/tests/Contracts/Fixtures/foundation/M1.golden.txt
+Matched 139 compiled members
+
+exit=0; expected=0
+$ dotnet /private/tmp/xemele-integrate-m0-gate/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare /private/tmp/xemele-integrate-m0-gate/docs/reports/M0-contracts/Fixtures/M2/bin/Release/net10.0/FoundationM2.dll /private/tmp/xemele-integrate-m0-gate/tests/Contracts/Fixtures/foundation/M2.golden.txt
+Matched 173 compiled members
+
+exit=0; expected=0
+$ dotnet /private/tmp/xemele-integrate-m0-gate/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare /private/tmp/xemele-integrate-m0-gate/docs/reports/M0-contracts/Fixtures/ApiProbe/bin/Release/net10.0/ApiProbe.dll /private/tmp/xemele-integrate-m0-gate/tests/Contracts/Fixtures/foundation/ApiProbe.golden.txt
+Matched 8 compiled members
+
+exit=0; expected=0
+Additive stages: 139 M1 members preserved within 173 M2 members.
+$ /opt/homebrew/opt/python@3.14/bin/python3.14 -B /private/tmp/xemele-integrate-m0-gate/tools/ApiBaseline/compare.py --root /var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-api-wiring-d0y9684t/M1 --assembly /private/tmp/xemele-integrate-m0-gate/docs/reports/M0-contracts/Fixtures/M1/bin/Release/net10.0/FoundationM1.dll --checker /private/tmp/xemele-integrate-m0-gate/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll --report /var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-api-wiring-d0y9684t/M1.json
+{"bootstrapEmptyApi": false, "checkerOutput": "Matched 139 compiled members", "matched": true, "members": 139, "report": "/var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-api-wiring-d0y9684t/M1.json"}
+
+exit=0; expected=0
+$ /opt/homebrew/opt/python@3.14/bin/python3.14 -B /private/tmp/xemele-integrate-m0-gate/tools/ApiBaseline/compare.py --root /var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-api-wiring-d0y9684t/M2 --assembly /private/tmp/xemele-integrate-m0-gate/docs/reports/M0-contracts/Fixtures/M2/bin/Release/net10.0/FoundationM2.dll --checker /private/tmp/xemele-integrate-m0-gate/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll --report /var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-api-wiring-d0y9684t/M2.json
+{"bootstrapEmptyApi": false, "checkerOutput": "Matched 173 compiled members", "matched": true, "members": 173, "report": "/var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-api-wiring-d0y9684t/M2.json"}
+
+exit=0; expected=0
+$ /opt/homebrew/opt/python@3.14/bin/python3.14 -B /private/tmp/xemele-integrate-m0-gate/tools/ApiBaseline/compare.py --root /var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-api-wiring-d0y9684t/ApiProbe --assembly /private/tmp/xemele-integrate-m0-gate/docs/reports/M0-contracts/Fixtures/ApiProbe/bin/Release/net10.0/ApiProbe.dll --checker /private/tmp/xemele-integrate-m0-gate/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll --report /var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-api-wiring-d0y9684t/ApiProbe.json
+{"bootstrapEmptyApi": false, "checkerOutput": "Matched 8 compiled members", "matched": true, "members": 8, "report": "/var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-api-wiring-d0y9684t/ApiProbe.json"}
+
+exit=0; expected=0
+$ /opt/homebrew/opt/python@3.14/bin/python3.14 -B /private/tmp/xemele-integrate-m0-gate/tools/ApiBaseline/compare.py --root /var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-api-wiring-d0y9684t/negative --assembly /private/tmp/xemele-integrate-m0-gate/docs/reports/M0-contracts/Fixtures/M1/bin/Release/net10.0/FoundationM1.dll --checker /private/tmp/xemele-integrate-m0-gate/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll --report /var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-api-wiring-d0y9684t/missing.json
+{"bootstrapEmptyApi": false, "checkerOutput": "API mismatch: missing, added, changed, reordered or noncanonical entries.", "matched": false, "members": 138, "report": "/var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-api-wiring-d0y9684t/missing.json"}
+
+exit=1; expected=1
+$ /opt/homebrew/opt/python@3.14/bin/python3.14 -B /private/tmp/xemele-integrate-m0-gate/tools/ApiBaseline/compare.py --root /var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-api-wiring-d0y9684t/negative --assembly /private/tmp/xemele-integrate-m0-gate/docs/reports/M0-contracts/Fixtures/M1/bin/Release/net10.0/FoundationM1.dll --checker /private/tmp/xemele-integrate-m0-gate/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll --report /var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-api-wiring-d0y9684t/added.json
+{"bootstrapEmptyApi": false, "checkerOutput": "API mismatch: missing, added, changed, reordered or noncanonical entries.", "matched": false, "members": 140, "report": "/var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-api-wiring-d0y9684t/added.json"}
+
+exit=1; expected=1
+$ /opt/homebrew/opt/python@3.14/bin/python3.14 -B /private/tmp/xemele-integrate-m0-gate/tools/ApiBaseline/compare.py --root /var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-api-wiring-d0y9684t/negative --assembly /private/tmp/xemele-integrate-m0-gate/docs/reports/M0-contracts/Fixtures/M1/bin/Release/net10.0/FoundationM1.dll --checker /private/tmp/xemele-integrate-m0-gate/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll --report /var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-api-wiring-d0y9684t/changed.json
+{"bootstrapEmptyApi": false, "checkerOutput": "API mismatch: missing, added, changed, reordered or noncanonical entries.", "matched": false, "members": 139, "report": "/var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-api-wiring-d0y9684t/changed.json"}
+
+exit=1; expected=1
+$ /opt/homebrew/opt/python@3.14/bin/python3.14 -B /private/tmp/xemele-integrate-m0-gate/tools/ApiBaseline/compare.py --root /var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-api-wiring-d0y9684t/negative --assembly /private/tmp/xemele-integrate-m0-gate/docs/reports/M0-contracts/Fixtures/M1/bin/Release/net10.0/FoundationM1.dll --checker /private/tmp/xemele-integrate-m0-gate/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll --report /var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-api-wiring-d0y9684t/false-bootstrap.json --bootstrap-empty-api
+{"bootstrapEmptyApi": true, "checkerOutput": "API mismatch: missing, added, changed, reordered or noncanonical entries.", "matched": false, "members": 0, "report": "/var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-api-wiring-d0y9684t/false-bootstrap.json"}
+
+exit=1; expected=1
+$ /opt/homebrew/opt/python@3.14/bin/python3.14 -B /private/tmp/xemele-integrate-m0-gate/tools/ApiBaseline/compare.py --root /var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-api-wiring-d0y9684t/negative --assembly /private/tmp/xemele-integrate-m0-gate/docs/reports/M0-contracts/Fixtures/M1/bin/Release/net10.0/FoundationM1.dll --checker /private/tmp/xemele-integrate-m0-gate/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll --report /var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-api-wiring-d0y9684t/implicit-bootstrap.json
+API comparison error: missing API baselines: expected docs/api/<task-id>.txt; bootstrap exemption requires an empty runtime project
+
+exit=1; expected=1
+$ /opt/homebrew/opt/python@3.14/bin/python3.14 -B /private/tmp/xemele-integrate-m0-gate/tools/ApiBaseline/compare.py --root /var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-api-wiring-d0y9684t/negative --assembly /private/tmp/xemele-integrate-m0-gate/docs/reports/M0-contracts/Fixtures/M1/bin/Release/net10.0/FoundationM1.dll --checker /private/tmp/xemele-integrate-m0-gate/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll --report /var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-api-wiring-d0y9684t/missing-project.json --bootstrap-empty-api
+API comparison error: missing API baselines: expected docs/api/<task-id>.txt; bootstrap exemption requires an empty runtime project
+
+exit=1; expected=1
+$ /opt/homebrew/opt/python@3.14/bin/python3.14 -B /private/tmp/xemele-integrate-m0-gate/tools/ApiBaseline/compare.py --root /var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-api-wiring-d0y9684t/negative --assembly /private/tmp/xemele-integrate-m0-gate/docs/reports/M0-contracts/Fixtures/M1/bin/Release/net10.0/FoundationM1.dll --checker /private/tmp/xemele-integrate-m0-gate/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll --report /var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-api-wiring-d0y9684t/source-bootstrap.json --bootstrap-empty-api
+API comparison error: missing API baselines: expected docs/api/<task-id>.txt; bootstrap exemption requires an empty runtime project
+
+exit=1; expected=1
+Compiled union checks: 3 fragmented positive assemblies; missing/added/changed mismatch exits; explicit bootstrap fails for nonempty compiled API, absent exemption/project and runtime sources; provenance/ordering/no rewrites passed.
+$ dotnet build /private/tmp/xemele-integrate-m0-gate/docs/reports/M0-contracts/Fixtures/ApiProbe/ApiProbe.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false -p:DefineConstants=MUTATED
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  ApiProbe -> /private/tmp/xemele-integrate-m0-gate/docs/reports/M0-contracts/Fixtures/ApiProbe/bin/Release/net10.0/ApiProbe.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:00.94
+
+exit=0; expected=0
+$ dotnet /private/tmp/xemele-integrate-m0-gate/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare /private/tmp/xemele-integrate-m0-gate/docs/reports/M0-contracts/Fixtures/ApiProbe/bin/Release/net10.0/ApiProbe.dll /private/tmp/xemele-integrate-m0-gate/tests/Contracts/Fixtures/foundation/ApiProbe.golden.txt
+API mismatch: missing, added, changed, reordered or noncanonical entries.
+
+exit=1; expected=1
+$ dotnet /private/tmp/xemele-integrate-m0-gate/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll emit /private/tmp/xemele-integrate-m0-gate/docs/reports/M0-contracts/Fixtures/ApiProbe/bin/Release/net10.0/ApiProbe.dll /var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-api-wiring-d0y9684t/mutated.txt
+Emitted 9 members
+
+exit=0; expected=0
+$ /opt/homebrew/opt/python@3.14/bin/python3.14 -B /private/tmp/xemele-integrate-m0-gate/tools/ApiBaseline/compare.py --root /var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-api-wiring-d0y9684t/ApiProbe --assembly /private/tmp/xemele-integrate-m0-gate/docs/reports/M0-contracts/Fixtures/ApiProbe/bin/Release/net10.0/ApiProbe.dll --checker /private/tmp/xemele-integrate-m0-gate/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll --report /var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-api-wiring-d0y9684t/mutated-union.json
+{"bootstrapEmptyApi": false, "checkerOutput": "API mismatch: missing, added, changed, reordered or noncanonical entries.", "matched": false, "members": 8, "report": "/var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-api-wiring-d0y9684t/mutated-union.json"}
+
+exit=1; expected=1
+9 real signature probes passed: constraints, interface, sealing, nullability, setter visibility, default, virtual, constant, added method.
+$ dotnet build /private/tmp/xemele-integrate-m0-gate/docs/reports/M0-contracts/Fixtures/ApiProbe/ApiProbe.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  ApiProbe -> /private/tmp/xemele-integrate-m0-gate/docs/reports/M0-contracts/Fixtures/ApiProbe/bin/Release/net10.0/ApiProbe.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:00.93
+
+exit=0; expected=0
+$ dotnet /private/tmp/xemele-integrate-m0-gate/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare /private/tmp/xemele-integrate-m0-gate/docs/reports/M0-contracts/Fixtures/ApiProbe/bin/Release/net10.0/ApiProbe.dll /private/tmp/xemele-integrate-m0-gate/tests/Contracts/Fixtures/foundation/ApiProbe.golden.txt
+Matched 8 compiled members
+
+exit=0; expected=0
+$ /opt/homebrew/opt/python@3.14/bin/python3.14 -B /private/tmp/xemele-integrate-m0-gate/tools/ApiBaseline/compare.py --bootstrap-empty-api --report /private/tmp/xemele-integrate-m0-gate/artifacts/M0-api-wiring/runtime-api.json
+{"bootstrapEmptyApi": true, "checkerOutput": "Matched 0 compiled members", "matched": true, "members": 0, "report": "/private/tmp/xemele-integrate-m0-gate/artifacts/M0-api-wiring/runtime-api.json"}
+
+exit=0; expected=0
+$ /opt/homebrew/opt/python@3.14/bin/python3.14 -B /private/tmp/xemele-integrate-m0-gate/tools/planning/tasks.py validate
+Validated 101 tasks: schema, evidence, acyclic dependencies, additive milestones, and ordered ownership.
+
+exit=0; expected=0
+Approved fixture/golden and existing task fragment bytes unchanged.
+Focused API/foundation checks passed. No runtime parser, unrestricted ABI, hosted platform or performance claim.
