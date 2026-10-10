@@ -16,20 +16,6 @@
       "setup_status": "dispatched",
       "client_thread_id": "client-new-thread:b8f007db-2882-41ee-8757-29d2fc29a42d",
       "wait_cursor": "a415d6fd-5c73-4f50-9d72-3a750b659b2f:27"
-    },
-    {
-      "task_id": "M0-ci",
-      "chat_id": "01a1231d-d535-7c21-91ec-e5125d07513d",
-      "host_id": "local",
-      "worktree_path": "/Users/sebastienros/.codex/worktrees/4c2e/xemele",
-      "branch": "codex/m0-ci",
-      "base_revision": "9c630d1d83e37445ae619a778a90f87a148331ed",
-      "claim_revision": "136dc0513bb861b9a48c80bee04d91b38ac0f701",
-      "setup_status": "resumed-checks",
-      "client_thread_id": "client-new-thread:d31ae09b-5f91-4c10-bcdd-1fec261550da",
-      "wait_cursor": "6c0e97f1-6559-4051-a9b8-d7474959a80f:10",
-      "implementation_revision": "891b493d2d6e4146ae08f11815446f43ddfb5917",
-      "handoff_revision": "87f06baf0a25f47cab3cad0d14c4dc76ca898b8d"
     }
   ],
   "integration_queue": [],
@@ -42,12 +28,12 @@
     }
   ],
   "next_actions": [
-    "Review/integrate corrected input experiment",
-    "Review/integrate CI discovery",
-    "Claim foundation contract and corpus or protocol lane within two-worker limit"
+    "Create user-requested narrow MTP test-runner migration repair",
+    "Review/integrate corrected input",
+    "Verify repair before further test-consuming assignments"
   ],
-  "last_verified_task": "M0-tree-spike",
-  "last_integrated_revision": "a09775893dc66b388fe0870a6ba010ed63d52c99",
+  "last_verified_task": "M0-ci",
+  "last_integrated_revision": "5a2701292bbb0f4cd51feb674db08850f6244507",
   "completed_assignments": [
     {
       "task_id": "M0-build",
@@ -72,6 +58,21 @@
       "integration_branch": "codex/integrate-m0-tree",
       "integration_worktree": "/private/tmp/xemele-integrate-m0-tree",
       "integration_revision": "a09775893dc66b388fe0870a6ba010ed63d52c99"
+    },
+    {
+      "task_id": "M0-ci",
+      "chat_id": "01a1231d-d535-7c21-91ec-e5125d07513d",
+      "host_id": "local",
+      "worktree_path": "/Users/sebastienros/.codex/worktrees/4c2e/xemele",
+      "branch": "codex/m0-ci",
+      "base_revision": "9c630d1d83e37445ae619a778a90f87a148331ed",
+      "claim_revision": "136dc0513bb861b9a48c80bee04d91b38ac0f701",
+      "setup_status": "verified",
+      "client_thread_id": "client-new-thread:d31ae09b-5f91-4c10-bcdd-1fec261550da",
+      "wait_cursor": "6c0e97f1-6559-4051-a9b8-d7474959a80f:10",
+      "implementation_revision": "891b493d2d6e4146ae08f11815446f43ddfb5917",
+      "handoff_revision": "1d7821ce1c3c3677289e3a1334b1feae83979e8a",
+      "integration_revision": "5a2701292bbb0f4cd51feb674db08850f6244507"
     }
   ],
   "benchmark_policy": "All experiment timing complete; CI and integrated checks released. Any later timing requires serial host lock.",
@@ -79,7 +80,8 @@
   "pending_decisions": [],
   "decisions": {
     "project_license": "MIT",
-    "authority": "User reply in coordinator chat on 2026-10-09"
+    "authority": "User reply in coordinator chat on 2026-10-09",
+    "test_runner": "User selected xunit.v3.mtp-v2 4.0.1 and Microsoft.Testing.Platform"
   },
   "conventions_pending_review": {
     "api": "tools/ApiBaseline/README.md on codex/m0-ci defines xemele-api-v1 canonical JSONL with id/member/declaration",

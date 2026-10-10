@@ -4,11 +4,11 @@
   "milestone": "M0",
   "title": "CI and API baseline discovery",
   "kind": "infrastructure",
-  "status": "implemented",
+  "status": "verified",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M0-ci",
   "branch": "codex/m0-ci",
   "base_revision": "9c630d1d83e37445ae619a778a90f87a148331ed",
-  "integration_revision": null,
+  "integration_revision": "5a2701292bbb0f4cd51feb674db08850f6244507",
   "depends_on": [
     "M0-build"
   ],
@@ -32,7 +32,8 @@
       "status": "passed",
       "evidence": [
         "discovery-tests",
-        "bootstrap-discovery"
+        "bootstrap-discovery",
+        "coordinator-integration"
       ]
     },
     {
@@ -45,7 +46,8 @@
         "dotnet-restore",
         "dotnet-release-build",
         "dotnet-release-test",
-        "dotnet-runtime-pack"
+        "dotnet-runtime-pack",
+        "coordinator-integration"
       ]
     },
     {
@@ -57,7 +59,8 @@
         "planning-validation",
         "dotnet-release-build",
         "dotnet-release-test",
-        "dotnet-runtime-pack"
+        "dotnet-runtime-pack",
+        "coordinator-integration"
       ]
     }
   ],
@@ -158,6 +161,24 @@
       "result": "passed",
       "summary": "Created artifacts/packages/Xemele.1.0.0.nupkg. Nonfatal package readme recommendation; bootstrap package contains no runtime implementation.",
       "artifact": null
+    },
+    {
+      "id": "coordinator-integration",
+      "kind": "integration",
+      "revision": "5a2701292bbb0f4cd51feb674db08850f6244507",
+      "command": "13 discovery unittests; discovery bootstrap/default negative; workflow-equivalent dotnet restore/build/test/pack with --disable-build-servers -m:1 -p:UseSharedCompilation=false; python3 tools/planning/tasks.py validate",
+      "result": "passed",
+      "summary": "Actual macOS integrated run:13 Python tests pass, bootstrap zero-fragment inventory succeeds, default missing baseline exits1 as intended;10-project Release build zero warnings/errors; test exits0 with zero .NET tests in3 empty shells; pack succeeds;96-task validator passes. Windows/Linux/hosted CI and compiled API compatibility unclaimed. Historical VSTest baseline; user-requested xunit.v3 MTP migration will be independently verified by narrow repair before future consumers.",
+      "artifact": "docs/reports/M0-ci/integration-checks.txt"
+    },
+    {
+      "id": "coordinator-review",
+      "kind": "review",
+      "revision": "5a2701292bbb0f4cd51feb674db08850f6244507",
+      "command": null,
+      "result": "passed",
+      "summary": "Reviewed6 changed paths against owns; explicit unsupported/missing/conflicting entries and checksum/path checks tested. Bootstrap exemption restricted to empty runtime. No peer changes or runtime stubs. Corpus/API conventions documented for their owners.",
+      "artifact": null
     }
   ],
   "blockers": [],
@@ -176,7 +197,6 @@
       "dotnet pack src/Xemele/Xemele.csproj -c Release --no-build --no-restore --disable-build-servers -m:1 -p:UseSharedCompilation=false -o artifacts/packages \u2014 passed: Created artifacts/packages/Xemele.1.0.0.nupkg. Nonfatal package readme recommendation; bootstrap package contains no runtime implementation."
     ],
     "remaining": [
-      "Coordinator integration and verification required before verified status.",
       "Windows/Linux and hosted CI not executed locally. Zero bootstrap .NET tests is not a runtime/conformance pass.",
       "Compiled assembly compatibility verification is outside declaration discovery and must be supplied by M0-contracts; CorpusManager verifies source payload checksums/provenance.",
       "Runtime allocation/performance checks inapplicable to this offline Python/CI deliverable."

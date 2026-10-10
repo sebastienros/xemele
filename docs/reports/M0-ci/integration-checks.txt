@@ -1,0 +1,92 @@
+$ python3 -B -m unittest discover -s tests/Xemele.TestUtilities/Build -p test_*.py -v
+test_cli_failure_exit_and_explicit_error (test_discovery.DiscoveryTests.test_cli_failure_exit_and_explicit_error) ... ok
+test_distinct_ids_cannot_conflict_on_member (test_discovery.DiscoveryTests.test_distinct_ids_cannot_conflict_on_member) ... ok
+test_duplicate_and_conflicting_ids (test_discovery.DiscoveryTests.test_duplicate_and_conflicting_ids) ... ok
+test_duplicate_corpus_and_fixture (test_discovery.DiscoveryTests.test_duplicate_corpus_and_fixture) ... ok
+test_duplicate_json_fields (test_discovery.DiscoveryTests.test_duplicate_json_fields) ... ok
+test_fixture_traversal (test_discovery.DiscoveryTests.test_fixture_traversal) ... ok
+test_generated_sources_do_not_break_empty_bootstrap (test_discovery.DiscoveryTests.test_generated_sources_do_not_break_empty_bootstrap) ... ok
+test_metadata_schema_and_classification (test_discovery.DiscoveryTests.test_metadata_schema_and_classification) ... ok
+test_missing_baseline (test_discovery.DiscoveryTests.test_missing_baseline) ... ok
+test_missing_fixture_and_checksum (test_discovery.DiscoveryTests.test_missing_fixture_and_checksum) ... ok
+test_noncanonical_unknown_fields_and_unsorted (test_discovery.DiscoveryTests.test_noncanonical_unknown_fields_and_unsorted) ... ok
+test_unknown_and_empty_formats (test_discovery.DiscoveryTests.test_unknown_and_empty_formats) ... ok
+test_valid_fragments_and_fixture (test_discovery.DiscoveryTests.test_valid_fragments_and_fixture) ... ok
+
+----------------------------------------------------------------------
+Ran 13 tests in 0.090s
+
+OK
+
+Exit: 0
+$ python3 -B tools/ApiBaseline/discover.py --bootstrap-empty-api
+{"apiDeclarations": 0, "apiFragments": [], "bootstrapEmptyApi": true, "corpusManifests": [], "fixtures": 0, "formatVersion": 1}
+
+Exit: 0
+$ python3 -B tools/ApiBaseline/discover.py
+discovery error: missing API baselines: expected docs/api/<task-id>.txt; bootstrap exemption requires an empty runtime project
+
+Exit: 1
+$ dotnet restore Xemele.slnx --disable-build-servers -m:1 -p:UseSharedCompilation=false
+  Determining projects to restore...
+  Restored /private/tmp/xemele-integrate-m0-ci/src/Xemele/Xemele.csproj (in 39 ms).
+  Restored /private/tmp/xemele-integrate-m0-ci/src/Xemele.Tool/Xemele.Tool.csproj (in 42 ms).
+  Restored /private/tmp/xemele-integrate-m0-ci/tools/CorpusManager/CorpusManager.csproj (in 39 ms).
+  Restored /private/tmp/xemele-integrate-m0-ci/tests/Xemele.TestUtilities/Xemele.TestUtilities.csproj (in 42 ms).
+  Restored /private/tmp/xemele-integrate-m0-ci/tests/Xemele.Fuzz/Xemele.Fuzz.csproj (in 42 ms).
+  Restored /private/tmp/xemele-integrate-m0-ci/tests/Contracts/Contracts.csproj (in 42 ms).
+  Restored /private/tmp/xemele-integrate-m0-ci/tests/Xemele.Conformance.Tests/Xemele.Conformance.Tests.csproj (in 110 ms).
+  Restored /private/tmp/xemele-integrate-m0-ci/tests/Xemele.Differential.Tests/Xemele.Differential.Tests.csproj (in 110 ms).
+  Restored /private/tmp/xemele-integrate-m0-ci/tests/Xemele.Tests/Xemele.Tests.csproj (in 110 ms).
+  Restored /private/tmp/xemele-integrate-m0-ci/benchmarks/Xemele.Benchmarks/Xemele.Benchmarks.csproj (in 135 ms).
+
+Exit: 0
+$ dotnet build Xemele.slnx -c Release --no-restore --disable-build-servers -m:1 -p:UseSharedCompilation=false
+  Xemele -> /private/tmp/xemele-integrate-m0-ci/src/Xemele/bin/Release/net10.0/Xemele.dll
+  Xemele.Benchmarks -> /private/tmp/xemele-integrate-m0-ci/benchmarks/Xemele.Benchmarks/bin/Release/net10.0/Xemele.Benchmarks.dll
+  Xemele.Tool -> /private/tmp/xemele-integrate-m0-ci/src/Xemele.Tool/bin/Release/net10.0/Xemele.Tool.dll
+  Contracts -> /private/tmp/xemele-integrate-m0-ci/tests/Contracts/bin/Release/net10.0/Contracts.dll
+  Xemele.TestUtilities -> /private/tmp/xemele-integrate-m0-ci/tests/Xemele.TestUtilities/bin/Release/net10.0/Xemele.TestUtilities.dll
+  Xemele.Conformance.Tests -> /private/tmp/xemele-integrate-m0-ci/tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll
+  Xemele.Differential.Tests -> /private/tmp/xemele-integrate-m0-ci/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll
+  Xemele.Fuzz -> /private/tmp/xemele-integrate-m0-ci/tests/Xemele.Fuzz/bin/Release/net10.0/Xemele.Fuzz.dll
+  Xemele.Tests -> /private/tmp/xemele-integrate-m0-ci/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll
+  CorpusManager -> /private/tmp/xemele-integrate-m0-ci/tools/CorpusManager/bin/Release/net10.0/CorpusManager.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:06.33
+
+Exit: 0
+$ dotnet test Xemele.slnx -c Release --no-build --no-restore --disable-build-servers -m:1 -p:UseSharedCompilation=false --logger trx --results-directory artifacts/test-results
+Test run for /private/tmp/xemele-integrate-m0-ci/tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+No test is available in /private/tmp/xemele-integrate-m0-ci/tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll. Make sure that test discoverer & executors are registered and platform & framework version settings are appropriate and try again.
+Results File: /private/tmp/xemele-integrate-m0-ci/artifacts/test-results/_Mac_2026-10-09_17_16_46_net10.0.trx
+
+Additionally, path to test adapters can be specified using /TestAdapterPath command. Example  /TestAdapterPath:<pathToCustomAdapters>.
+Test run for /private/tmp/xemele-integrate-m0-ci/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+No test is available in /private/tmp/xemele-integrate-m0-ci/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll. Make sure that test discoverer & executors are registered and platform & framework version settings are appropriate and try again.
+Results File: /private/tmp/xemele-integrate-m0-ci/artifacts/test-results/_Mac_2026-10-09_17_16_46_net10.0[1].trx
+
+Additionally, path to test adapters can be specified using /TestAdapterPath command. Example  /TestAdapterPath:<pathToCustomAdapters>.
+Test run for /private/tmp/xemele-integrate-m0-ci/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+No test is available in /private/tmp/xemele-integrate-m0-ci/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll. Make sure that test discoverer & executors are registered and platform & framework version settings are appropriate and try again.
+Results File: /private/tmp/xemele-integrate-m0-ci/artifacts/test-results/_Mac_2026-10-09_17_16_46_net10.0[2].trx
+
+Additionally, path to test adapters can be specified using /TestAdapterPath command. Example  /TestAdapterPath:<pathToCustomAdapters>.
+
+Exit: 0
+$ dotnet pack src/Xemele/Xemele.csproj -c Release --no-build --no-restore --disable-build-servers -m:1 -p:UseSharedCompilation=false -o artifacts/packages
+  The package Xemele.1.0.0 is missing a readme. Go to https://aka.ms/nuget/authoring-best-practices/readme to learn why package readmes are important.
+  Successfully created package '/private/tmp/xemele-integrate-m0-ci/artifacts/packages/Xemele.1.0.0.nupkg'.
+
+Exit: 0
+$ python3 tools/planning/tasks.py validate
+Validated 96 tasks: schema, evidence, acyclic dependencies, additive milestones, and ordered ownership.
+
+Exit: 0
