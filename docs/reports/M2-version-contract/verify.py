@@ -9,6 +9,7 @@ import json
 import os
 from pathlib import Path
 import re
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -102,7 +103,19 @@ def main():
             summary['expectedCompilerRejections'] = [n[2] for n in negatives]
             sys.path.insert(0, str(ROOT/'tools/ApiBaseline'))
             from compare import compare
-            api = compare(ROOT, runtime, checker)
+            # The shared discovery helper couples API and optional corpus materialization.
+            # Validate an exact API-only snapshot; this task claims no corpus discovery.
+            api_root = tmp/'api-snapshot'
+            (api_root/'docs/api').mkdir(parents=True)
+            api_sources = sorted((ROOT/'docs/api').glob('*.txt'))
+            assert api_sources, 'approved API fragments missing'
+            for source in api_sources:
+                target = api_root/'docs/api'/source.name
+                shutil.copyfile(source, target)
+                assert source.read_bytes() == target.read_bytes()
+            summary['apiSourceSha256'] = {str(p.relative_to(ROOT)): digest(p) for p in api_sources}
+            summary['apiScope'] = 'all approved API fragments; no corpus-discovery claim'
+            api = compare(api_root, runtime, checker)
             assert api['matched'], api['checkerOutput']
             results.append({'command': ['tools/ApiBaseline/compare.py::compare', str(runtime), str(checker)], 'exit': api['checkerExit'], 'expectedExit': 0})
             summary['actualApi'] = {'members': len(api['provenance']), 'assemblySha256': api['assemblySha256']}
@@ -136,6 +149,7 @@ def main():
         summary['temporaryOutputsRemoved'] = True
         summary['result'] = 'passed'
     except Exception as error:
+        summary['temporaryOutputsRemoved'] = True
         summary['failure'] = str(error)
     print(json.dumps(summary, indent=2), flush=True)
     return 0 if summary['result'] == 'passed' else 1

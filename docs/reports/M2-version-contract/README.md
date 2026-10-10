@@ -3,7 +3,9 @@
 `verify.py` compiles only explicit frozen model inputs and the owned version
 probes. It compares five public model baselines, executes inherited model checks,
 checks four internal declaration/sink/result shapes against the freshly built
-runtime, compares the actual product's approved public API, requires two specific
+runtime, compares the actual product's approved public API against an exact
+temporary copy of every approved API fragment (hashes recorded; shared discovery
+validates this API-only snapshot, without requiring corpus materialization), requires two specific
 compiler rejections and detects an actual public metadata mutation. It then runs
 the existing Xemele.Tests suite and planning tests/validation plus ownership and
 whitespace audits. Raw compiler outputs/XML/builds are held in an auto-cleaned
