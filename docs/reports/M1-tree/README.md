@@ -71,3 +71,9 @@ Initial sandbox test restore failed NU1900 because api.nuget.org DNS was blocked
 authorized network retry succeeded. The initial focused run passed 8/10; a wrong
 checksum and a quota test using an invalid binding were corrected, rather than
 changing runtime behavior to satisfy them. Failed checks are not passing evidence.
+
+The first known-revision verifier reached the package consumer, then found the
+previous Common-only package in the global NuGet cache under the same development
+version. The consumer now uses an isolated RestorePackagesPath; source/API tests
+already passed before that harness failure. Raw initial failure remains in ignored
+artifacts/M1-tree/verification-initial-cache-failure.txt.

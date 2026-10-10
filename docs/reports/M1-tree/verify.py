@@ -54,7 +54,7 @@ def main():
         directory=Path(directory)
         (directory/'Consumer.csproj').write_text(f'<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><TargetFramework>net10.0</TargetFramework><OutputType>Exe</OutputType><ImplicitUsings>enable</ImplicitUsings><Nullable>enable</Nullable></PropertyGroup><ItemGroup><PackageReference Include="Xemele" Version="{version}" /></ItemGroup></Project>')
         (directory/'Program.cs').write_text((ROOT/'samples/M1-tree/Program.cs').read_text())
-        run('dotnet','run','--project',directory/'Consumer.csproj','-c','Release','--disable-build-servers','-p:UseSharedCompilation=false',f'-p:RestoreSources={ARTIFACT / "packages"}')
+        run('dotnet','run','--project',directory/'Consumer.csproj','-c','Release','--disable-build-servers','-p:UseSharedCompilation=false',f'-p:RestoreSources={ARTIFACT / "packages"}',f'-p:RestorePackagesPath={directory / "isolated-packages"}')
     run('dotnet','build','docs/reports/M1-tree/Xemele.TreeBenchmarks.csproj',*FLAGS)
     run('dotnet','run','--project','docs/reports/M1-tree/Xemele.TreeBenchmarks.csproj','-c','Release','--no-build','--','--allocation')
     run('python3','tools/planning/tasks.py','validate')
@@ -64,4 +64,6 @@ if __name__=='__main__':
     finally:
         ARTIFACT.mkdir(parents=True,exist_ok=True)
         (ARTIFACT/'verification-raw.txt').write_text('\n'.join(LOG))
-        (REPORT/'checks.txt').write_text('\n'.join(LOG))
+        tokens=('Source revision','Host ','$ ','exit=','Build succeeded','Warning(s)','Error(s)','Matched ','total:','failed:','succeeded:','skipped:','Validated ','assertions','bytes','catalog:','Ran ','OK','compatibility','cold first','warm owned','clone/import')
+        concise=[line for block in LOG for line in block.splitlines() if any(token in line for token in tokens)]
+        (REPORT/'checks.txt').write_text('\n'.join(concise)+'\n')
