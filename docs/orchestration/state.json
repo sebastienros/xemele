@@ -21,11 +21,17 @@
     }
   ],
   "integration_queue": [],
-  "blockers": [],
+  "blockers": [
+    {
+      "task_id": "M1-corpus",
+      "reason": "Original supported namespacePI colon case042 accepted by product; rootconfirmed normativeNCName mismatch in core/Tree/Serializer. Worker checkpointing/parking; metadata suspension waitsack.",
+      "next_action": "Claim orderedM1-pi-targets repair; after parkedACK addparentdependency/suspendclaim, thenrenewafterverification."
+    }
+  ],
   "next_actions": [
-    "Claim readyM1-corpus runtimeexecution/semanticroundtripjoin",
-    "Aftercorpusverified dispatchM1-gate then M2contracts/independentreadylanes",
-    "Continue throughverifiedM9 withrealplatform/AOT/performanceevidence"
+    "Claim/dispatchedM1-pi-targets repair",
+    "Preserve/suspend corpus checkpoint then resume after verifiedrepair; referenceVersionNum divergences separatefromproductconformance",
+    "Aftercorpusverified M1-gate then onwardM9"
   ],
   "last_verified_task": "M1-dom",
   "last_integrated_revision": "693131dcb0a1e561c512900a75a7883920f82e5b",

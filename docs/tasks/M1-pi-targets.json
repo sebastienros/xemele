@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "id": "M1-pi-targets",
+  "milestone": "M1",
+  "title": "Enforce namespace-conforming processing instruction targets",
+  "kind": "feature",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "depends_on": [
+    "M1-dom",
+    "M1-serialize"
+  ],
+  "goals": [
+    "G01",
+    "G05"
+  ],
+  "specs": [
+    "docs/specs/parser.md",
+    "docs/specs/tree.md",
+    "docs/specs/serialization.md",
+    "docs/performance-coding.md"
+  ],
+  "owns": [
+    "docs/specs/tree.md",
+    "src/Xemele/Parsing/Core/XmlParserCore.cs",
+    "src/Xemele/Tree/Document.cs",
+    "src/Xemele/Serialization/Xml/XmlSerializer.cs",
+    "tests/Xemele.Tests/M1-tree/TreeTests.cs",
+    "tests/Xemele.Tests/M1-serialize/SerializerTests.cs",
+    "tests/Xemele.Tests/M1-pi-targets/",
+    "samples/M1-pi-targets/",
+    "docs/reports/M1-pi-targets/"
+  ],
+  "api_or_output": "Unchanged API; PI target NCName required by Namespaces1.0, no colon; QName element/attribute behavior preserved",
+  "acceptance": [
+    {
+      "id": "M1-pi-targets-A1",
+      "description": "Correct PI target validation consistently in core grammar, public tree factory and serializer preflight to NCName; retain case-insensitive xml prohibition, Unicode/quotas/cancellation/atomicity. Clarify tree spec namespaced PI target wording. Preserve element/attribute QName handling; do not add DOM blanket guard or modify corpus classifications. Replace only erroneous prior colon-PI positives with valid targets and strengthen colon negative tests.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M1-pi-targets-A2",
+      "description": "Test colon at start/middle/end/multiple, declaration versus xml-like valid PI targets, valid nonASCII/supplementary NCNames, malformed pairs, allshortinputsplit and byte/stream transports; core no successful PI callback on invalidtarget, public factory precommit, corrupt serializer rejection. Independently confirm W3CNamespaces1.0 section7/BCL and original pinned042 case with owned synthetic bytes rather than redistributing upstreamfixture.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M1-pi-targets-A3",
+      "description": "Run focused repair/prerequisite Syntax70/Tree14/Serializer46/DOM44/builder/persistence/namespace and full288baseline plus newcases; actualAPI222 union/canonical and internalInput41/Syntax9types80rows, source/fresh isolatedlocalNuGet sample, warm0B/appropriatesteadyallocchecks and planningregressions/validate/ownedcommitted-staged-working-untrackeddiff audits atknownrevision. Existing timings reusable only if no scanning/workload change; any newtiming needs exclusivegrant. Report corrected semantics for corpus owner.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "Corpus242 supportedrejections exposed accepted PI colon case rmt-ns10-042; W3CNamespaces1.0 section7 requiresNCName PI/entitytokens. Root confirmed original SHA2562ff7553efa457354141c5f61a7560112f22b528203ecd052d298da9eebfaa8e2. Tree spec and older positives incorrectly permitted XMLName colons.",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}
