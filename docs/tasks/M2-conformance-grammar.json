@@ -4,11 +4,11 @@
   "milestone": "M2",
   "title": "Complete strict XML grammar against classified corpus",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "worker:M2-conformance-grammar",
   "branch": "codex/m2-conformance-grammar-final",
   "base_revision": "011617e1f0566bb48766aadfed843bfb89db27b1",
-  "integration_revision": null,
+  "integration_revision": "8a98da8b987b19020ab7797c03a9ba845413be87",
   "depends_on": [
     "M2-entities",
     "M2-encoding",
@@ -53,7 +53,8 @@
       "evidence": [
         "grammar-focused-runtime",
         "grammar-full-independent",
-        "grammar-preserved-integrated-evidence"
+        "grammar-preserved-integrated-evidence",
+        "grammar-integrated-verification"
       ]
     },
     {
@@ -63,7 +64,8 @@
       "evidence": [
         "grammar-full-independent",
         "grammar-authored-oracle-controls",
-        "grammar-classification-regeneration"
+        "grammar-classification-regeneration",
+        "grammar-integrated-verification"
       ]
     },
     {
@@ -73,7 +75,8 @@
       "evidence": [
         "grammar-full-independent",
         "grammar-focused-runtime",
-        "grammar-preserved-integrated-evidence"
+        "grammar-preserved-integrated-evidence",
+        "grammar-integrated-verification"
       ]
     }
   ],
@@ -129,6 +132,15 @@
       "result": "passed",
       "summary": "Exact source/configuration/fixture/API/consumer/workload identity proven versus actual integrated correctness/API revision8b77daddc975093bed1fcf0cec28008201707ae2 and measured revision8d894a96b1ad99799fb3732683bc7f6dd0066141. Retains2157 integrated focused checks,372 public members/82 additive,frozen models/source-fresh-local-package consumers and applicable0B borrowed observations with positive controls,owned/cold/retained/timing results at their original revisions. No runtime/public API/build/package/workload change; no new allocation/timing execution or measurement lease needed. All full grammar execution/preparation inputs still match tested f3d1596 after preservation-helper/documentation-only commit.",
       "artifact": "docs/reports/M2-conformance-grammar/grammar-preservation-cd98149.json"
+    },
+    {
+      "id": "grammar-integrated-verification",
+      "kind": "integration",
+      "revision": "8a98da8b987b19020ab7797c03a9ba845413be87",
+      "command": "Root pinned Release tests/grammar driver/BCL builds;17 EffectiveGrammarTests;14 oracle controls;full_grammar.py integration-full-grammar;preserve_grammar.py coordinator-inherited-preservation;final tested-source hash equality/ownership/planning/whitespace",
+      "result": "passed",
+      "summary": "Integrated2585 original outcomes,1394 independent accepted semantic models and1394 bulk/pause runs,3386 resource identities,two symbolic defaults/two unresolved occurrences,409 canonical suite models plus15 effective10 overrides,771 exact normative reference resolutions and644 mutual-success model matches.17 new tests/14 authored controls pass. Recorded testedsource/input maps unchanged after metadata-only finalhandoff;2157 prior correctness/API372+82/source-fresh-package/applicable0B allocation evidence preserved. No runtime/sharedconfig changes or fresh measurement.",
+      "artifact": "docs/reports/M2-conformance-grammar/grammar-integration-summary.json"
     }
   ],
   "blockers": [],
@@ -141,9 +153,7 @@
       "Exact input identity preserves2157 previous integrated checks,API372/82,frozen models/source-fresh-package results,applicable borrowed0B/cold-owned-retained/informational Arm64 measurements at their actual prior revisions. No new performance runs.",
       "Planning validator and14 planning unit tests pass; ownership and whitespace checks pass. Concise count/hash/failure summaries retained; transient raw probe/test payloads removed."
     ],
-    "remaining": [
-      "Coordinator integrates and verifies this branch; integration_revision intentionally null. Comprehensive combined M2 gate/platform release validation remains its owning gate work."
-    ],
+    "remaining": [],
     "requests": []
   }
 }
