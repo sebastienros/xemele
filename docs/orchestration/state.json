@@ -13,9 +13,9 @@
       "client_thread_id": "client-new-thread:44740c37-3629-4d2c-8c2d-22c3370eee43",
       "host_id": "local",
       "branch": "codex/m1-dom",
-      "base_revision": "a3c7c669472fcd9ec35dfec3cd40aef1e6d0cda8",
-      "claim_revision": "6dfbde16688cd1b071a6128e69b9ac362d850ac0",
-      "setup_status": "suspended-prerequisite",
+      "base_revision": "e07650c0111108103942f74b8072bfc62ec506a8",
+      "claim_revision": null,
+      "setup_status": "renewing-claim",
       "chat_id": "01a123df-0348-7a81-9d6f-f4676934cb48",
       "worktree_path": "/Users/sebastienros/.codex/worktrees/a22a/xemele",
       "preserved_draft_revision": "4aef77b0e1fffca92322c096ce8a09c65f019845",
@@ -34,6 +34,11 @@
           "base_revision": "1f15653bf8f3ea4faab5fa5c15f10701971ff9ab",
           "claim_revision": "93de9bf2a67ff30557821f6c6ac399c5266cf6f2",
           "reason": "Suspended for trusted persistence prerequisite; source/evidence8155e7d preserved."
+        },
+        {
+          "base_revision": "a3c7c669472fcd9ec35dfec3cd40aef1e6d0cda8",
+          "claim_revision": "6dfbde16688cd1b071a6128e69b9ac362d850ac0",
+          "reason": "Namespace validator prerequisite now verified; source/evidence b426 preserved."
         }
       ],
       "unapproved_guard_revision": "90fda442d313bcfd16f7a72cddca655005f638e3",
@@ -55,14 +60,7 @@
     }
   ],
   "integration_queue": [],
-  "blockers": [
-    {
-      "task_id": "M1-dom",
-      "reason": "Tree/serializer incorrectly reject ordinary local xmlns; standards-conforming source accepted by core breaks old validators. Blanket DOM rejection not approved.",
-      "revision": "752ec92591c0d31f1b9a90e6c834167d154aac70",
-      "next_action": "Worker preserves current guard/source/checks and parks; ordered M1-namespace-names repair corrects owning validators then DOM positive tests replace temporary guard."
-    }
-  ],
+  "blockers": [],
   "next_actions": [
     "Integrate reviewed namespace repair and corpus import after final evidence/audits",
     "Resume DOM after namespace repair verification, remove blanket guard and add positive cases",
