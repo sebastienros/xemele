@@ -9,6 +9,9 @@ public sealed class ReferenceFailureException(string message) : Exception(messag
 public static class ReferenceProcess
 {
     public const int MaximumCharacters = 1_048_576;
+    public static string BuildConfiguration(string assemblyDirectory) =>
+        assemblyDirectory.Split(['/', '\\'], StringSplitOptions.RemoveEmptyEntries)
+            .Contains("Release", StringComparer.Ordinal) ? "Release" : "Debug";
 
     // A fresh owned child per request isolates state and makes EOF/exit part of validation.
     public static async Task<string> ExecuteAsync(string executable, IEnumerable<string> arguments,

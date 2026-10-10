@@ -81,7 +81,9 @@ while (true)
     }
     catch (XmlException ex) { response = deniedResource
         ? Reply("runner-failure", [new("resource-denied", ex.Message)])
+        : IsQuota(ex) ? Reply("runner-failure", [new("limit", ex.Message)])
         : Reply("parse-rejected", [new("xml", ex.Message)]); }
+    catch (DecoderFallbackException ex) { response = Reply("parse-rejected", [new("xml", ex.Message)]); }
     catch (Exception ex) { response = Reply("runner-failure", [new(ex is ArgumentException or JsonException or FormatException ? "protocol" : "infrastructure", ex.Message)]); }
     string output = JsonSerializer.Serialize(response, Wire.Json);
     if (output.Length > Wire.MaximumLineCharacters)
@@ -90,6 +92,13 @@ while (true)
     Response Reply(string outcome, Diagnostic[] diagnostics, Event[]? events = null) =>
         new(1, request?.CaseId, request?.Operation, engine, outcome, diagnostics, events);
 }
+
+// .NET 10 XmlReader quota diagnostics include the invariant setting name even
+// when the surrounding framework message is localized. Do not match prose or
+// classify arbitrary XmlException failures as quota failures.
+static bool IsQuota(XmlException error) =>
+    error.Message.Contains(nameof(XmlReaderSettings.MaxCharactersFromEntities), StringComparison.Ordinal)
+    || error.Message.Contains(nameof(XmlReaderSettings.MaxCharactersInDocument), StringComparison.Ordinal);
 
 sealed class OfflineResolver(Dictionary<string, byte[]> resources, Action denied) : XmlResolver
 {

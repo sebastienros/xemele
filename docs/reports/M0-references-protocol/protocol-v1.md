@@ -7,6 +7,11 @@ process per case and requires successful exit and exactly one response.
 Limits: request/response 1,048,576 UTF-16 characters; client caps stdout and stderr
 independently at that size. BCL XML document limit 1,048,576 decoded characters,
 entity expansion limit 262,144. Infrastructure limits are not conformance verdicts.
+Quota XmlExceptions are recognized only by .NET 10's invariant setting-name
+tokens (`MaxCharactersFromEntities`/`MaxCharactersInDocument`), not arbitrary
+localized prose. Boundary tests exercise accepted 262,000 and rejected 263,000
+expanded characters. Malformed UTF-8 is parse rejection with either auto encoding
+or the explicit strict UTF-8 hint.
 
 Request required fields: `protocolVersion:1`, nonempty `caseId`,
 `operation:"xml.events"`, `inputBase64` (original bytes), `profile:"xml-1.0"`.
