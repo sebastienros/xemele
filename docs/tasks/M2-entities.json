@@ -33,7 +33,8 @@
     "docs/api/M2-entities.txt",
     "samples/M2-entities/",
     "docs/reports/M2-entities/",
-    "src/Xemele/Options/Common.cs"
+    "src/Xemele/Options/Common.cs",
+    "src/Xemele/Parsing/Dom/DomSink.cs"
   ],
   "api_or_output": "Working DtdProcessing/Resolver options and parsed DTD metadata",
   "acceptance": [
@@ -64,7 +65,8 @@
     "checks": [],
     "remaining": [],
     "requests": [
-      "Coordinator explicitly assigned Common.cs to this ordered task to make existing XmlParseOptions partial (or move unchanged Limits-only declaration into already-owned XmlParseOptions.cs). Preserve current Common/API/defaults; add DtdProcessing/Resolver only in task-owned extension, leaving later Recover to recovery owner. No earlier task source changes before claim/implementation."
+      "Coordinator explicitly assigned Common.cs to this ordered task to make existing XmlParseOptions partial (or move unchanged Limits-only declaration into already-owned XmlParseOptions.cs). Preserve current Common/API/defaults; add DtdProcessing/Resolver only in task-owned extension, leaving later Recover to recovery owner. No earlier task source changes before claim/implementation.",
+      "Coordinator assigns DomSink.cs narrowly to make its class partial for an optional IXmlDtdSink implemented in already-owned Tree/DtdMetadata/DomSink.Dtd.cs. Preserve existing IXmlEventSink and DOM behavior; no factory/byte-adapter edits needed. Core lazily creates owned entity context and delivers completed immutable DTD metadata before root via optional internal sink."
     ]
   }
 }
