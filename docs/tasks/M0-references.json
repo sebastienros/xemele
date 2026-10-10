@@ -4,11 +4,11 @@
   "milestone": "M0",
   "title": "Pinned C/Rust/BCL reference runners",
   "kind": "infrastructure",
-  "status": "implemented",
+  "status": "verified",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M0-references",
   "branch": "codex/m0-references",
   "base_revision": "9591b28199c5238bc88032d70cf78e88b02178f4",
-  "integration_revision": null,
+  "integration_revision": "ecfcb658c3ef2a7aca2139f2cb96d757115df5f2",
   "depends_on": [
     "M0-references-protocol",
     "M0-references-libxml2",
@@ -35,7 +35,10 @@
       "status": "passed",
       "evidence": [
         "managed-reference-integration",
-        "private-native-builds"
+        "private-native-builds",
+        "independent-managed-join-review",
+        "integrated-real-engine-join",
+        "integrated-join-preservation"
       ]
     },
     {
@@ -44,7 +47,10 @@
       "status": "passed",
       "evidence": [
         "managed-reference-integration",
-        "preserved-protocol-foundation"
+        "preserved-protocol-foundation",
+        "independent-managed-join-review",
+        "integrated-real-engine-join",
+        "integrated-join-preservation"
       ]
     },
     {
@@ -56,7 +62,10 @@
         "private-native-builds",
         "preserved-protocol-foundation",
         "preserved-compiled-contracts",
-        "task-and-whitespace-validation"
+        "task-and-whitespace-validation",
+        "independent-managed-join-review",
+        "integrated-real-engine-join",
+        "integrated-join-preservation"
       ]
     }
   ],
@@ -111,11 +120,38 @@
       "result": "passed",
       "summary": "101 tasks schema/evidence/dependency/ownership validation and whitespace check pass; only task-owned integration/report paths and own task record changed.",
       "artifact": "docs/reports/M0-references/validation.txt"
+    },
+    {
+      "id": "independent-managed-join-review",
+      "kind": "review",
+      "revision": "f2088e4b76c835daff21c0226f5dd3884a275b65",
+      "command": "Read-only review_reference_protocol source and recorded51engine responses/metadata inspection",
+      "result": "passed",
+      "summary": "No blocker: real unchanged ReferenceProcess client; independent expected known events match all3; actual pinned metadata; capability/difference preservation,10malformed modes plus timeout/cancellation and PIDcleanup. Reviewer no rebuild; coordinator integrated checks separately executed.",
+      "artifact": null
+    },
+    {
+      "id": "integrated-real-engine-join",
+      "kind": "integration",
+      "revision": "ecfcb658c3ef2a7aca2139f2cb96d757115df5f2",
+      "command": "Exact native Libxml2/build.py --fetch with CMAKE3.31.6; Xmloxide/build.py --offline; pinned SDK Release Integration build --disable-build-servers -m:1 -p:UseSharedCompilation=false; docs/reports/M0-references/verify.py --output docs/reports/M0-references/integration",
+      "result": "passed",
+      "summary": "Fresh pinned native/Cargo and managed builds pass0warnings/errors;51realengine responses through production managed client, independent common fiveevent fixture and actualtestedrev metadata, invalidXML+7invalidrequests/engine, mapped/denied file/network resource bytes, externalDTD/whitespace honest unsupported,actualCRLF/IRI differences.12adversarial processchecks pass including reapedtimeout/cancelPIDs. Full native/provenance/build transcripts archived. macOSarm64 only;no runtime/generalconformance/performance claim.",
+      "artifact": "docs/reports/M0-references/integration/verification.txt"
+    },
+    {
+      "id": "integrated-join-preservation",
+      "kind": "integration",
+      "revision": "ecfcb658c3ef2a7aca2139f2cb96d757115df5f2",
+      "command": "Pinned SDK10.0.400 PATH/DOTNET_ROOT DOTNET_CLI_USE_MSBUILD_SERVER=0 python3 -B docs/reports/M0-references-protocol/verify.py; python3 tools/planning/tasks.py validate",
+      "result": "passed",
+      "summary": "51focused/54solution infrastructure tests0skip with3expectedcontrolledfailureexit2;11directBCLwire andmalformedUTF8;cleanReleasebuild/help/managedpackageAPI0;16discovery/compositionchecks;2independentcorpusfixtures;101-taskvalidate pass. Runtime remains sourceempty; no new timing warranted.",
+      "artifact": "docs/reports/M0-references/integration/preservation.txt"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Implemented three-engine join at f2088e4b76c835daff21c0226f5dd3884a275b65 using only verified child contracts; standalone integration executable calls unchanged production managed client and independent oracle. No shared project/solution/runtime changes; integration_revision remains null.",
+    "summary": "Reviewed and verified three-engine managed reference combination at ecfcb658c3ef2a7aca2139f2cb96d757115df5f2; actual independent semantic/events/metadata/resource/process checks passed; child limitations preserved.",
     "checks": [
       "51actual native/BCL responses and12adversarial process checks pass; truthful tested source metadata/private provenance/lock verified.",
       "51focused/54solution infrastructure tests,3expected smoke failures,16discovery/composition and2independent corpus checks pass;build/help/pack/API0 retained.",
@@ -123,7 +159,6 @@
       "101task validator and git diff --check pass; macOS15.8.1arm64 only; no runtime/performance/allocation claim."
     ],
     "remaining": [
-      "Coordinator must integrate and rerun checks before marking verified; native provisioning stays explicit and separate from ordinary solution tests.",
       "Native child capability gaps and genuine value/IRI differences remain explicitly recorded; use capable references and independent standards expectations without narrowing Xemele scope.",
       "Coordinator status message was rejected by automatic approval review because direct user authorization to send to that chat was not established; final handoff is provided in this chat."
     ],
