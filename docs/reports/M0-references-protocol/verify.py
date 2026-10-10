@@ -51,6 +51,13 @@ try:
     assert responses[0]['events'][1]['value'] == 'ok'
     (REPORT / 'wire-responses.jsonl').write_text(wire.stdout)
     LOG.append('11 direct wire cases passed; malformed/oversized requests and oversized response identity recovered; actual metadata/output: wire-responses.jsonl\n')
+    bad_wire = json.dumps(dict(known, caseId='invalid-marker')).encode('utf-8').replace(b'invalid-marker', b'\xff') + b'\n'
+    encoding_failure = subprocess.run(['dotnet', str(runner)], cwd=ROOT, input=bad_wire,
+                                      stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=15)
+    assert encoding_failure.returncode == 2
+    assert not encoding_failure.stdout
+    assert encoding_failure.stderr == b'Invalid UTF-8 protocol input.\n'
+    LOG.append('Invalid raw UTF-8 JSON wire string rejected: no stdout; stderr Invalid UTF-8 protocol input.; exit2. XML payload encoding remains separate.\n')
     run(['dotnet', 'test', '--project', 'tests/Xemele.Differential.Tests/Xemele.Differential.Tests.csproj',
          '-c', 'Release', '--no-build', '--no-restore', '--no-ansi', '--no-progress',
          '--filter-class', 'Xemele.Differential.Tests.Protocol.ReferenceProtocolTests'])

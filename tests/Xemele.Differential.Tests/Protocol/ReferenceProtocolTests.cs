@@ -76,6 +76,7 @@ public sealed class ReferenceProtocolTests
     [InlineData("exit")]
     [InlineData("invalid")]
     [InlineData("invalid-utf8")]
+    [InlineData("invalid-utf8-json-string")]
     [InlineData("extra-line")]
     [InlineData("unterminated")]
     [InlineData("identity")]
@@ -106,8 +107,9 @@ public sealed class ReferenceProtocolTests
     [InlineData("failure-events")]
     public async Task ActualChildFailuresAreInfrastructureFailures(string mode)
     {
-        await Assert.ThrowsAsync<ReferenceFailureException>(() => ReferenceProcess.ExecuteAsync("python3",
+        var failure = await Assert.ThrowsAsync<ReferenceFailureException>(() => ReferenceProcess.ExecuteAsync("python3",
             [Fixture, mode], Request("<r/>"), TimeSpan.FromSeconds(1), TestContext.Current.CancellationToken));
+        if (mode == "invalid-utf8-json-string") Assert.Contains("Malformed response encoding", failure.Message);
     }
 
     [Fact]

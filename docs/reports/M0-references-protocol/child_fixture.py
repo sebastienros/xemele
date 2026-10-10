@@ -95,6 +95,11 @@ else:
     elif mode in ('custom-payload', 'custom-invalid'):
         del response['events']
         response['fixtureValue'] = 'checked' if mode == 'custom-payload' else 42
+    elif mode == 'invalid-utf8-json-string':
+        response['events'] = [dict(text, value='invalid-marker')]
     else:
         raise ValueError('Unknown child mode: ' + mode)
-    print(json.dumps(response))
+    if mode == 'invalid-utf8-json-string':
+        sys.stdout.buffer.write(json.dumps(response).encode('utf-8').replace(b'invalid-marker', b'\xff') + b'\n')
+    else:
+        print(json.dumps(response))
