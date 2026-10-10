@@ -1,0 +1,94 @@
+{
+  "result": "passed",
+  "measuredRevision": "8d894a96b1ad99799fb3732683bc7f6dd0066141",
+  "preparedManifestSha256": "871e3bdb6865023431936fd3699d1445ed489d324ae15c635c15cfebb50055da",
+  "allocationBytes": {
+    "iterations": 1024,
+    "coldSetupAndOracles": 4165344,
+    "ownedModels": 26416688,
+    "ownedDocuments": 30713360,
+    "positiveControl": 155648
+  },
+  "borrowedAllocation": {
+    "records": [
+      {
+        "iterations": 1024,
+        "bytes": 0,
+        "utf16PerOperation": 7,
+        "persistedInterpretations": 1,
+        "persistedParts": 3,
+        "reusedApplications": 1152,
+        "emptyOrdinaryLists": true,
+        "coldAndOwnedExcluded": true
+      }
+    ],
+    "validation": "passed"
+  },
+  "ordinaryAndRetainedState": [
+    {
+      "iterations": 1024,
+      "emptySetupBytes": 1648,
+      "emptyGetterBytes": 0,
+      "retainedDocuments": 128,
+      "retainedBytes": 1175456,
+      "literalLocationEntries": 12,
+      "literalOriginEntries": 12,
+      "physicalStartEntries": 12,
+      "physicalLengthEntries": 12,
+      "physicalIdentityEntries": 12,
+      "precedingEntityEntries": 0,
+      "boundedDefaultCount": 1,
+      "boundedPartCount": 3,
+      "boundedLexicalUnits": 12,
+      "noSourceBuffersRetained": true
+    }
+  ],
+  "timingInformational": [
+    {
+      "case": "InternalNestedModel",
+      "meanNs": 7750.466666666667,
+      "allocatedBytesPerOperation": 25800.517944335938,
+      "childExits": [
+        0
+      ],
+      "actualCount": 3,
+      "resultCount": 3,
+      "gcCount": 1,
+      "provenancePairMatched": true
+    },
+    {
+      "case": "RedirectedComposition",
+      "meanNs": 7761.333333333333,
+      "allocatedBytesPerOperation": 29866.724609375,
+      "childExits": [
+        0
+      ],
+      "actualCount": 3,
+      "resultCount": 3,
+      "gcCount": 1,
+      "provenancePairMatched": true
+    }
+  ],
+  "phases": [
+    "streaming",
+    "pi",
+    "allocation",
+    "timing"
+  ],
+  "sequenceElapsedSeconds": 19.12399745802395,
+  "standaloneClosureUnchanged": true,
+  "streaming": {
+    "method": "Xemele.Tests.Syntax.StreamingTests.WarmRepeatedTagsAndStreamingUnicodeDispatchAllocateZero",
+    "passed": 1
+  },
+  "streamingCounts": "real=0; positive=7680000; warm100=432; measured10000=0; measuredUnits=50000; measuredCalls=120000; totalUnits=50500; totalCalls=121205; completed=true",
+  "pi": {
+    "method": "Xemele.Tests.PiTargets.PiTargetTests.RepeatedBorrowedPiTargetsAllocateZeroAfterWarmup",
+    "passed": 1
+  },
+  "piCounts": "real=0; positive=6400000; warm100=368; measured10000=0; measuredUnits=40000; measuredCalls=100000; totalUnits=40400; totalCalls=101005; completed=true",
+  "finalSourceFreezePassed": true,
+  "allChildExitsZero": true,
+  "allProcessGroupsEmpty": true,
+  "transientOutputsRemoved": true
+}
