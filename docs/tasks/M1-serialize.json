@@ -4,7 +4,7 @@
   "milestone": "M1",
   "title": "Serialize constructed and parsed trees",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M1-serialize",
   "branch": "codex/m1-serialize",
   "base_revision": "a3fbc9334a5bc465addf1ff8d3fb793b981ba047",
@@ -35,29 +35,123 @@
     {
       "id": "M1-serialize-A1",
       "description": "Implement XML string/stream output, encoding declarations, namespace policy and partial Document save wrappers.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "source-review",
+        "correctness-api-package",
+        "exclusive-short-run",
+        "allocation-oracle-followup"
+      ]
     },
     {
       "id": "M1-serialize-A2",
       "description": "Check golden bytes for independently constructed trees, mixed content, escapes, invalid output and stream ownership.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "source-review",
+        "correctness-api-package",
+        "exclusive-short-run",
+        "allocation-oracle-followup"
+      ]
     },
     {
       "id": "M1-serialize-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "source-review",
+        "correctness-api-package",
+        "exclusive-short-run",
+        "allocation-oracle-followup"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Serialization/Xml/XmlSerializer.cs: XmlSaveOptions, XmlSerializer; iterative SerializationOperation and buffered strict Output",
+    "src/Xemele/Serialization/Document/Save.cs: XmlDocument.ToXmlString and Save",
+    "tests/Xemele.Tests/M1-serialize/SerializerTests.cs: 46 actual independent-construction, lexical, namespace, transport and iterative tests",
+    "docs/api/M1-serialize.txt: 23 compiled-extraction serializer members preserving 192 verified Common/Tree members",
+    "samples/M1-serialize/Program.cs: independent string/UTF16BE stream sample and isolated NuGet-only consumer",
+    "benchmarks/Xemele.Benchmarks/M1-serialize/SerializerBenchmarks.cs: 20 ShortRun composition/scan alternatives"
+  ],
+  "evidence": [
+    {
+      "id": "restore-initial",
+      "kind": "check",
+      "revision": "972b438ef0fefbfc52f32e15c84bc6deb36c006d",
+      "command": "DOTNET_ROOT='/Users/sebastienros/Library/Application Support/dotnetup/dotnet' PATH='/Users/sebastienros/Library/Application Support/dotnetup/dotnet':$PATH DOTNET_CLI_USE_MSBUILD_SERVER=0 python3 docs/reports/M1-serialize/verify.py",
+      "result": "failed",
+      "summary": "Sandbox prevented NuGet audit service index access (NU1900); network-authorized rerun passed, no audit suppression.",
+      "artifact": "docs/reports/M1-serialize/restore-failure.txt.gz"
+    },
+    {
+      "id": "analyzer-initial",
+      "kind": "check",
+      "revision": "972b438ef0fefbfc52f32e15c84bc6deb36c006d",
+      "command": "DOTNET_ROOT='/Users/sebastienros/Library/Application Support/dotnetup/dotnet' PATH='/Users/sebastienros/Library/Application Support/dotnetup/dotnet':$PATH DOTNET_CLI_USE_MSBUILD_SERVER=0 python3 docs/reports/M1-serialize/verify.py",
+      "result": "failed",
+      "summary": "xUnit1051 required MTP cancellation tokens in tests; corrected by 5210b2a.",
+      "artifact": "docs/reports/M1-serialize/analyzer-failure.txt.gz"
+    },
+    {
+      "id": "surrogate-fixture-initial",
+      "kind": "check",
+      "revision": "5210b2a4d6b7a4daefdc98115a1dc5dc7c9e8e85",
+      "command": "DOTNET_ROOT='/Users/sebastienros/Library/Application Support/dotnetup/dotnet' PATH='/Users/sebastienros/Library/Application Support/dotnetup/dotnet':$PATH DOTNET_CLI_USE_MSBUILD_SERVER=0 python3 docs/reports/M1-serialize/verify.py",
+      "result": "failed",
+      "summary": "44/46 focused tests passed; two metadata string surrogate fixtures arrived as replacement text. Runtime-created raw UTF16 fixture correction passes.",
+      "artifact": "docs/reports/M1-serialize/metadata-surrogate-failure.txt.gz"
+    },
+    {
+      "id": "source-review",
+      "kind": "review",
+      "revision": "972b438ef0fefbfc52f32e15c84bc6deb36c006d",
+      "command": null,
+      "result": "passed",
+      "summary": "Coordinator two read-only reviewers identified encoder carry capacity bug in ea6d7ff; corrected with safe 6148-byte reserve plus partial progress, exact CDATA and broad PI/comment chunk regressions. Focused re-review passed with no residual namespace/lexical/API/stream/cancellation/complexity blockers.",
+      "artifact": "docs/reports/M1-serialize/README.md"
+    },
+    {
+      "id": "correctness-api-package",
+      "kind": "check",
+      "revision": "707d52bc2130492daa690c7255d91a9104edea59",
+      "command": "DOTNET_ROOT='/Users/sebastienros/Library/Application Support/dotnetup/dotnet' PATH='/Users/sebastienros/Library/Application Support/dotnetup/dotnet':$PATH DOTNET_CLI_USE_MSBUILD_SERVER=0 python3 docs/reports/M1-serialize/verify.py",
+      "result": "passed",
+      "summary": "Release zero warnings/errors; 46 serializer +134 full runtime +11 FoundationChecks pass. Six approved vectors execute actual independent trees; 215-member golden exact, 192 Common/Tree preserved +23 new actual-extracted members. Foundation M1/M2 and seven M1 model lanes pass; Protocol38 assertions; source sample + fresh isolated-cache/local-feed NuGet consumer pass. Allocation/retention, planning101/diff pass.",
+      "artifact": "docs/reports/M1-serialize/checks.txt"
+    },
+    {
+      "id": "exclusive-short-run",
+      "kind": "check",
+      "revision": "707d52bc2130492daa690c7255d91a9104edea59",
+      "command": "DOTNET_ROOT='/Users/sebastienros/Library/Application Support/dotnetup/dotnet' PATH='/Users/sebastienros/Library/Application Support/dotnetup/dotnet':$PATH DOTNET_CLI_USE_MSBUILD_SERVER=0 dotnet run --project docs/reports/M1-serialize/SerializerBenchmarks.csproj -c Release --no-build -- --filter '*' --artifacts artifacts/M1-serialize/bdn",
+      "result": "passed",
+      "summary": "Exclusive root-granted window: 20/20 ShortRun workloads and child exits0; 12+8 valid CSVs. Arm64 M4Pro/.NET10.0.11, elapsed152.04s. Streaming1.36KiB plain text,30.8KiB namespaced state. Delimiter-only SearchValues long gains are not full scalar-validation optimization evidence; fused serializer loop retained. Tiny short scanner baseline susceptible to overhead; no cross-platform/release timing claim.",
+      "artifact": "docs/reports/M1-serialize/bdn/benchmark-console.txt.gz"
+    },
+    {
+      "id": "allocation-oracle-followup",
+      "kind": "check",
+      "revision": "c54d39be7c5a638b6cb591e1211fe435e760f529",
+      "command": "DOTNET_ROOT='/Users/sebastienros/Library/Application Support/dotnetup/dotnet' PATH='/Users/sebastienros/Library/Application Support/dotnetup/dotnet':$PATH DOTNET_CLI_USE_MSBUILD_SERVER=0 dotnet build docs/reports/M1-serialize/SerializerBenchmarks.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false\nDOTNET_ROOT='/Users/sebastienros/Library/Application Support/dotnetup/dotnet' PATH='/Users/sebastienros/Library/Application Support/dotnetup/dotnet':$PATH DOTNET_CLI_USE_MSBUILD_SERVER=0 dotnet run --project docs/reports/M1-serialize/SerializerBenchmarks.csproj -c Release --no-build -- --allocation",
+      "result": "passed",
+      "summary": "Measurement-only driver follow-up, no runtime/timed workload changes: zero-warning Release build; all4 scan corpus oracles match, cached SearchValues cold2072B and combined3 warm scans0B/1000 repetitions per corpus. Stream1392B/op for16 and1M chars; string1528/4011735B; temporary1M document not retained.",
+      "artifact": "docs/reports/M1-serialize/allocation-followup.txt"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "",
-    "checks": [],
-    "remaining": [],
+    "summary": "Exact M1 XML1.0 string/incremental UTF8/16 serialization, temporary deterministic namespace repair/strict validation, mixed-content-safe formatting, validated lexical output and document wrappers. Implemented branch only, integration_revision unset.",
+    "checks": [
+      "707d52: verify.py exit0 (46 focused/134 full runtime/11 foundation; exact215 members; freshly built foundation/M1 models; actual vector bytes; independent sample and isolated-cache NuGet consumer).",
+      "707d52: 20 exclusive ShortRun cases successful; docs/reports/M1-serialize/bdn/ raw+CSV+Markdown.",
+      "c54d39: measurement-only driver zero-warning build; scan oracle/cold/warm allocation+retention pass.",
+      "Prior restore/analyzer/metadata-fixture failures preserved and resolved; docs/reports/M1-serialize/README.md explains scope."
+    ],
+    "remaining": [
+      "Coordinator integrate and rerun combined runtime/API/package checks before verified.",
+      "Cross-architecture/Windows/Linux release performance validation remains unrun; local Arm64 ShortRun is informational."
+    ],
     "requests": []
   }
 }
