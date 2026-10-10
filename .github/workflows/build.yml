@@ -29,6 +29,8 @@ jobs:
         run: dotnet restore Xemele.slnx --disable-build-servers -m:1 -p:UseSharedCompilation=false
       - name: Build
         run: dotnet build Xemele.slnx -c Release --no-restore --disable-build-servers -m:1 -p:UseSharedCompilation=false
+      - name: Compare compiled runtime API and verify foundation contracts
+        run: python -B docs/reports/M0-api-wiring/verify.py
       - name: Discover and execute MTP tests and verify failure exit codes
         run: python -B docs/reports/M0-tests-mtp/check_runner.py
       - name: Verify focused corpus MTP tests and root offline CLI
@@ -45,4 +47,5 @@ jobs:
             artifacts/test-results
             artifacts/packages
             artifacts/M0-corpora-wiring
+            artifacts/M0-api-wiring
           if-no-files-found: ignore
