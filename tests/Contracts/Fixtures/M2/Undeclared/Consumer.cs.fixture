@@ -45,6 +45,10 @@ internal static class Consumer
         Check(capability!.Location == at && capability.Code != "XML.UndeclaredEntity",
             "capability refusal distinct from WFC");
         Check(new XmlDocument().UnresolvedReferences.Count == 0, "non-null empty provenance");
+        var readOnly = (IList<XmlUnresolvedReference>)new XmlDocument().UnresolvedReferences;
+        bool immutable = false;
+        try { readOnly.Add(owned); } catch (NotSupportedException) { immutable = true; }
+        Check(immutable, "provenance collection rejects mutation");
 
         // Scripted events deliberately bypass parsing and node model stubs.
         var paused = new RetainingSink { PauseOnReference = true };
@@ -68,6 +72,12 @@ internal static class Consumer
         Check(new XmlParseResult<XmlDocument>(new(), true, true, []).Diagnostics.Count == 0,
             "successful model carries no warning to any-diagnostic factories");
         assertions += Preservation.Compare(args.Single());
+        Console.WriteLine("RuntimeIdentity:" + System.Text.Json.JsonSerializer.Serialize(new {
+            Version = Environment.Version.ToString(),
+            Framework = System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription,
+            CoreLibrary = typeof(object).Assembly.Location,
+            CoreLibraryVersion = typeof(object).Assembly.GetName().Version!.ToString()
+        }));
         Console.WriteLine($"Passed {assertions} contract/model assertions; no XML runtime behavior exercised.");
         return 0;
     }

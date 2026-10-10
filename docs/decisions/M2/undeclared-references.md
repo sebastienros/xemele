@@ -1,7 +1,7 @@
 # Nonvalidating unresolved content references
 
-Owner: M2-undeclared-contract. Source candidate; execution evidence is pending
-the coordinator's host release. This document freezes a subsequent implementation
+Owner: M2-undeclared-contract. Execution evidence is recorded separately in the
+task/report summary. This document freezes a subsequent implementation
 contract, not a claim that these capabilities are shipped.
 
 ## Applicability
@@ -60,10 +60,12 @@ it cannot supply `ent2`. The leading comment is not a declaration or exemption.
 The original case `xmlconf/eduni/errata-3e/errata3e.xml#rmt-e3e-13` must remain
 accepted in the existing applicability ledger, with an owned unresolved `ent2`
 occurrence. No corpus exclusions, edits or expectation changes are authorized.
-Assigned expected SHA-256:
+Independently verified SHA-256 (252 bytes):
 `40470ff5f2281476ed4521e066d85122e9cc240f1fa916f97bd095644540fa14`.
-Independent byte hash, original case ID, source URI, byte/line coordinates and
-ledger expectation verification remain pending execution; no hash pass is claimed.
+Original case identity/accepted ledger expectation also match. The reference
+begins at byte offset 239, line 7, scalar column 6, with source URI
+`https://xemele.invalid/corpus/xmlconf/eduni/errata-3e/E13.xml`.
+This is source/identity assessment, not runtime execution of the original case.
 
 ## Concrete event contract
 
@@ -161,6 +163,22 @@ record/member fixture and create an ordered task owning these paths:
 - Focused runtime tests and allocated/performance evidence under that task's
   assigned paths; contract fixture synchronization and one additive API fragment
   under their explicit owners. No current baseline entry is changed here.
+
+The precise existing runtime files needing review/ordered ownership are
+`src/Xemele/Parsing/Core/XmlParserCore.cs` (reference/delivery states),
+`src/Xemele/Parsing/Core/XmlParserCore.Doctype.cs` (subset applicability),
+`src/Xemele/Parsing/Core/XmlParserCore.Entities.cs` (active-source provenance),
+`src/Xemele/Parsing/Dtd/Grammar/Parser/DtdParser.cs` and `Composition.cs`
+(actual PE reference/read tracking), and
+`src/Xemele/Parsing/Entities/Runtime/XmlEntityContext.cs` (processed-declaration
+provenance). Prefer additive internal state/hooks over frozen model changes.
+New public source is `src/Xemele/Tree/UnresolvedReferences/XmlUnresolvedReference.cs`
+and `XmlDocument.UnresolvedReferences.cs`; the DOM partial is
+`src/Xemele/Tree/UnresolvedReferences/DomSink.UnresolvedReferences.cs`.
+Assign runtime tests `tests/Xemele.Tests/Xml/UndeclaredReferences/`, benchmark
+sources `benchmarks/Xemele.Benchmarks/UndeclaredReferences/` and approved additive
+baseline `docs/api/M2-undeclared-content.txt` only after exact fixture review.
+These are ownership requests, not edits made by this contract task.
 
 Existing `src/Xemele/Parsing/Events/Views.cs`, `Parsing/Dom/Factories.cs`,
 `Parsing/Dom/ByteDomAdapter.cs`, public node enum/handles and existing API fragments

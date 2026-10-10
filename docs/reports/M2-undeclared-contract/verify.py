@@ -65,6 +65,7 @@ def main():
                        'Directory.Packages.props', 'global.json', 'NuGet.config').strip(), 'preserved inputs changed'
         committed = run('git', 'ls-files', '--', 'src/Xemele', 'docs/api',
                         'tests/Contracts/Fixtures', 'samples/M2-undeclared-contract',
+                        'docs/reports/M2-undeclared-contract/verify.py',
                         'Directory.Build.props', 'Directory.Packages.props', 'global.json', 'NuGet.config').splitlines()
         source_hashes = {}
         for name in committed:
@@ -140,6 +141,9 @@ def main():
             consumer = artifacts/'bin/Sample/release/UndeclaredContract.dll'
             output = run('dotnet', consumer, runtime)
             summary['independentContractAssertions'] = int(re.search(r'Passed (\d+)', output)[1])
+            identity = json.loads(re.search(r'RuntimeIdentity:(.+)', output)[1])
+            identity['CoreLibrarySha256'] = digest(identity['CoreLibrary'])
+            summary['executingRuntime'] = identity
             summary['eventViewsPreserved'] = ['XmlDeclarationView', 'XmlNameView', 'XmlAttributeView', 'XmlNamespaceView']
             summary['consumerSha256'] = digest(consumer)
 
