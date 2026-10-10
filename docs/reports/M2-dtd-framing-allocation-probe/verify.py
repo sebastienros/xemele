@@ -251,8 +251,8 @@ def main():
             check('protocol-negatives', negative)
             run('dotnet','build','docs/reports/M0-contracts/ApiCheck/ApiCheck.csproj',*FLAGS)
             def api():
-                data=json.loads(run('python3','-B','tools/ApiBaseline/compare.py','--report',report / 'runtime-api.json'))
-                require(data['matched'] and data['members']==args.api_count,data);return data
+                data=json.loads(run('python3','-B','tools/ApiBaseline/compare.py','--report',raw / 'runtime-api.json'))
+                require(data['matched'] and data['members']==args.api_count,data);data.pop('report',None);return data
             check('compiled-api',api)
             def discovery():
                 data=json.loads(run('python3','-B','tools/ApiBaseline/discover.py'))
