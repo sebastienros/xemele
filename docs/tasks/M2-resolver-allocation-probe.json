@@ -1,0 +1,159 @@
+{
+  "schema_version": 1,
+  "id": "M2-resolver-allocation-probe",
+  "milestone": "M2",
+  "title": "Isolated borrowed resolver read allocation measurement",
+  "kind": "infrastructure",
+  "status": "verified",
+  "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M2-resolver-allocation-probe",
+  "branch": "codex/m2-resolver-allocation-probe",
+  "base_revision": "6285d7da2fa766ca0d0cdb624a1ed8aba7a22a2b",
+  "integration_revision": "4e558709ba99879b22a892d17912dd8204e5baea",
+  "depends_on": [
+    "M2-resolver",
+    "M2-pi-allocation-probe"
+  ],
+  "goals": [
+    "G03",
+    "G18"
+  ],
+  "specs": [
+    "docs/performance-coding.md",
+    "docs/specs/parser.md"
+  ],
+  "owns": [
+    "tests/Xemele.Tests/M2-resolver/ResolverTests.cs",
+    "tests/Xemele.Tests/M2-resolver-allocation-probe/",
+    "docs/reports/M2-resolver-allocation-probe/"
+  ],
+  "api_or_output": "Equivalent original borrowed resource Read allocation Fact,1000warm10000measured4096B reads, strict actualchild0B/positivecontrol and meaningful bytes/session progress.",
+  "acceptance": [
+    {
+      "id": "M2-resolver-allocation-probe-A1",
+      "description": "Preserve integrated65f49b9 Resolver4080B failure/historicaluncertainty; originalSession/DelegateResolver/ZeroStream/unboundedbytes/oneOpen/4096Bbuffer/location and1000warm10000measured Read calls preserved. BothreadsWHOLEmeasuredloop same synchronousNoInlininghelper/exact0B; validatefullread sizes/zeroedborrowedbuffer/sessionaggregatebytes/open+handleidentity/noEOF and meaningfulwork; setup/disposaloutsideinterval. StrictsameFact actualrealchild+escaped-allocationpositivechild/exactcurrenthost/knownargs/schema/request/token/PID/provenance/XMLaggregates/progress/deadline/rawfailpropagation/no retry. No production/otherResolvertestbodies/peerhelpers/threshold/profile/GC/JIT/parallelism changes/subtraction. Actualsteadyallocationrequiresproductionownerrepair.",
+      "status": "passed",
+      "evidence": [
+        "final-source-checks",
+        "actual-protocol-controls",
+        "historical-preservation",
+        "final-independent-review",
+        "integrated-checks"
+      ]
+    },
+    {
+      "id": "M2-resolver-allocation-probe-A2",
+      "description": "Committedsource bounded original/equivalent/helpercomparisons; freshfocused+cumulativeMTP/direct298+255+299,API251/discovery3388/ref242completepinnedoutputbeforeM1build/fullsourcehash/unchangedcopy; meaningfulpositive/readprogress and actualschema/guard/host/provenancerejectioncontrols/rawarchive; planning14/validate117/allownedpathsaudits. Uniqueattempt/count/auditargs; preservefailures/unrunchecks; no timing/blindrepeats.",
+      "status": "passed",
+      "evidence": [
+        "final-source-checks",
+        "actual-protocol-controls",
+        "historical-preservation",
+        "final-independent-review",
+        "integrated-checks"
+      ]
+    }
+  ],
+  "implementation": [
+    "tests/Xemele.Tests/M2-resolver/ResolverTests.cs: WarmBorrowedReadsAllocateNothing only",
+    "tests/Xemele.Tests/M2-resolver-allocation-probe/ResolverAllocationProbe.cs: ReadChecked",
+    "tests/Xemele.Tests/M2-resolver-allocation-probe/ResolverAllocationChild.cs: strict same-Fact real/positive pair",
+    "docs/reports/M2-resolver-allocation-probe/verify.py: immutable known-source checks and raw archive",
+    "docs/reports/M2-resolver-allocation-probe/protocol_negative.py: twelve actual rejection controls",
+    "docs/reports/M2-resolver-allocation-probe/Diagnostics/Program.cs: bounded original/equivalent/helper comparison"
+  ],
+  "evidence": [
+    {
+      "id": "final-source-checks",
+      "kind": "check",
+      "revision": "f69b6c788b67c2e1c25680d3f32d3489e8577b15",
+      "command": "DOTNET_ROOT=\"/Users/sebastienros/Library/Application Support/dotnetup/dotnet\" PATH=\"$DOTNET_ROOT:$PATH\" python3 -B docs/reports/M2-resolver-allocation-probe/verify.py --report-prefix source-final-attempt2 --expected-branch codex/m2-resolver-allocation-probe --audit-base c3fdcac954916d3d71469aa66cc0379808a75476 --runtime-count 298 --conformance-count 255 --differential-count 299 --api-count 251 --fixture-count 3388 --planning-count 14 --task-count 117",
+      "result": "passed",
+      "summary": "All16 checks passed. SDK10.0.400/runtime10.0.11/arm64/defaultGC/JIT/testparallelism; focused1/fullMTP852/direct298+255+299; each three real/positive pairs0/640000B and warm4096000/measured40960000/total45056000 bytes, one resolver call/open and original identity. Original/equivalent caller128B/helper0B (historical cause unresolved); API251/discovery3388/ref242 complete pinnedoutputcopy+unchangedhash/planning14/validate117/ownedpaths+all otherResolver bodies/production/peer/source integrity. No timing/benchmark rerun required. All raw requests/provenance/process/XML/outputs archived.",
+      "artifact": "docs/reports/M2-resolver-allocation-probe/source-final-attempt2/summary.json"
+    },
+    {
+      "id": "actual-protocol-controls",
+      "kind": "check",
+      "revision": "f69b6c788b67c2e1c25680d3f32d3489e8577b15",
+      "command": "python3 -B /Users/sebastienros/.codex/worktrees/ced7/xemele/docs/reports/M2-resolver-allocation-probe/protocol_negative.py --report-prefix source-final-attempt2-protocol-negative --known-request /Users/sebastienros/.codex/worktrees/ced7/xemele/artifacts/M2-resolver-allocation-probe/child-runs/61417-086e999d1f6d4fef9d307b7024440e08/real.request.json --source-revision f69b6c788b67c2e1c25680d3f32d3489e8577b15",
+      "result": "passed",
+      "summary": "Twelve actual compiled Fact rejection controls passed: unknown/incomplete guard, missing required/malformed/unknown schema fields, provenance/host/token/PID mismatch, outside canonical owned root, extra recognized runner argument, ancestor symlink escape. Exact final command known-request is recorded in checks.txt.gz; no rebuild/retries inside controls.",
+      "artifact": "docs/reports/M2-resolver-allocation-probe/source-final-attempt2-protocol-negative/summary.json"
+    },
+    {
+      "id": "historical-preservation",
+      "kind": "review",
+      "revision": "65f49b928795aa5e9156393780a61d3c81547b06",
+      "command": null,
+      "result": "passed",
+      "summary": "Preserved byte-identical historical summary/checks/runtimeXML/counts andSHA256manifest from failedcandidateb309a5a8c1b0951bf21d601a4caf8758d4ed79d5. Unchanged Resolver Fact4080B under cumulativeMTP851/852; cause unresolved, not reclassified as passing nor attributed to GC/JIT.",
+      "artifact": "docs/reports/M2-resolver-allocation-probe/history/integration-65f49b9-attempt1/preservation.json"
+    },
+    {
+      "id": "source-review-1d70",
+      "kind": "review",
+      "revision": "1d70eabdee870b1e59bfc341c319b70156c82514",
+      "command": null,
+      "result": "passed",
+      "summary": "Coordinator relayed review_input_spike source-only approval: exact args/recognized noLogo/nativehostguard/progress/NoInlining/work profile, no blockers; did not execute checks. Later nativeGC/canonical/XML strengthening and Python fixture correction submitted for narrow-delta review.",
+      "artifact": "docs/reports/M2-resolver-allocation-probe/README.md"
+    },
+    {
+      "id": "source-attempt1",
+      "kind": "check",
+      "revision": "98b36393b7efe276dae80694c30ccb751e3ab0b6",
+      "command": "DOTNET_ROOT=\"/Users/sebastienros/Library/Application Support/dotnetup/dotnet\" PATH=\"$DOTNET_ROOT:$PATH\" python3 -B docs/reports/M2-resolver-allocation-probe/verify.py --report-prefix source-attempt1 --expected-branch codex/m2-resolver-allocation-probe --audit-base c3fdcac954916d3d71469aa66cc0379808a75476 --runtime-count 298 --conformance-count 255 --differential-count 299 --api-count 251 --fixture-count 3388 --planning-count 14 --task-count 117",
+      "result": "failed",
+      "summary": "Initial guard failure before allocation; apphost argv assumption corrected. All actual outcomes and failures retained; later runs followed committed source corrections.",
+      "artifact": "docs/reports/M2-resolver-allocation-probe/source-attempt1/summary.json"
+    },
+    {
+      "id": "source-attempt2",
+      "kind": "check",
+      "revision": "1d70eabdee870b1e59bfc341c319b70156c82514",
+      "command": "DOTNET_ROOT=\"/Users/sebastienros/Library/Application Support/dotnetup/dotnet\" PATH=\"$DOTNET_ROOT:$PATH\" python3 -B docs/reports/M2-resolver-allocation-probe/verify.py --report-prefix source-attempt2 --expected-branch codex/m2-resolver-allocation-probe --audit-base c3fdcac954916d3d71469aa66cc0379808a75476 --runtime-count 298 --conformance-count 255 --differential-count 299 --api-count 251 --fixture-count 3388 --planning-count 14 --task-count 117",
+      "result": "passed",
+      "summary": "Passing corrected guard source, superseded by required nativeGC/canonical/XML strengthening. All actual outcomes and failures retained; later runs followed committed source corrections.",
+      "artifact": "docs/reports/M2-resolver-allocation-probe/source-attempt2/summary.json"
+    },
+    {
+      "id": "source-final-attempt1",
+      "kind": "check",
+      "revision": "88e3fd91708bf9777d3070f5d577e547d659cb0a",
+      "command": "DOTNET_ROOT=\"/Users/sebastienros/Library/Application Support/dotnetup/dotnet\" PATH=\"$DOTNET_ROOT:$PATH\" python3 -B docs/reports/M2-resolver-allocation-probe/verify.py --report-prefix source-final-attempt1 --expected-branch codex/m2-resolver-allocation-probe --audit-base c3fdcac954916d3d71469aa66cc0379808a75476 --runtime-count 298 --conformance-count 255 --differential-count 299 --api-count 251 --fixture-count 3388 --planning-count 14 --task-count 117",
+      "result": "failed",
+      "summary": "Measurements pass; symlink negative fixture failed before intended guard because target missing. All actual outcomes and failures retained; later runs followed committed source corrections.",
+      "artifact": "docs/reports/M2-resolver-allocation-probe/source-final-attempt1/summary.json"
+    },
+    {
+      "id": "final-independent-review",
+      "kind": "review",
+      "revision": "f69b6c788b67c2e1c25680d3f32d3489e8577b15",
+      "command": "Independent read-only review_input_spike final protocol delta",
+      "result": "passed",
+      "summary": "No blockers: native GC provenance, canonical ancestor symlinks and complete XML aggregates strengthen unchanged measured workload. No checks rerun by reviewer.",
+      "artifact": null
+    },
+    {
+      "id": "integrated-checks",
+      "kind": "integration",
+      "revision": "4e558709ba99879b22a892d17912dd8204e5baea",
+      "command": "python3 -B docs/reports/M2-resolver-allocation-probe/verify.py --report-prefix integration-4e55870-attempt1 --expected-branch codex/integrate-m2-resolver-allocation-probe --audit-base 40a3dbb --runtime-count 298 --conformance-count 255 --differential-count 299 --api-count 251 --fixture-count 3388 --planning-count 14 --task-count 118",
+      "result": "passed",
+      "summary": "Actual16checks pass; focused1/cumulative852/direct298+255+299/API251/discovery3388/freshcomplete pinned reference242 with full revision/hash/unchangedcopy/planning14/validate118/owned audit. Three real0B/positive640000B pairs each40960000 measured and45056000 total bytes;12 actual rejection controls. Default runtime settings; historical causality unresolved.",
+      "artifact": "docs/reports/M2-resolver-allocation-probe/integration-4e55870-attempt1/summary.json"
+    }
+  ],
+  "blockers": [],
+  "handoff": {
+    "summary": "Equivalent original1000warm/10000measured borrowed resolverRead Fact isolated with strict real0B/positive640000B child pair and full40960000 measured byteprogress. Final sourcef69b6c7 actualall16 checks pass; production and otherResolver tests unchanged. All historical/intermediate failures preserved without causeclaim.",
+    "checks": [
+      "Final committed source f69b6c788b67c2e1c25680d3f32d3489e8577b15: source-final-attempt2 all16 pass; direct298/255/299+cumulative852; API251/discovery3388/ref242/planning14/validate117.",
+      "Three real0/positive640000 pairs; exact original4096buffer/1000warm/10000measured and45056000 sessionbytes;12 protocol negative controls passed.",
+      "Task dotnet/test apphost process audit found no active children after verifier.",
+      "Coordinator integrated 4e558709ba99879b22a892d17912dd8204e5baea: actual all16checks pass on118-task graph."
+    ],
+    "remaining": [],
+    "requests": []
+  }
+}
