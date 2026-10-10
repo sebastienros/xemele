@@ -141,25 +141,24 @@ public class InputTests
         Assert.Throws<InvalidOperationException>(()=>cancelled.Decode([],new char[2],new long[2],true,TestContext.Current.CancellationToken));
     }
     [Fact]
-    public void CarryIsOwnedAndBudgetsEnforceOriginalBytesWithCheckedCapacity()
+    public void CarryIsOwnedAndPrimaryByteCounterHasIndependentCheckedCapacity()
     {
         using var d=new XmlInputDecoder(new());byte[] bytes=[0xEF,0xBB];
         Assert.Equal(DecodeStep.NeedInput,d.Decode(bytes,new char[2],new long[2],false,TestContext.Current.CancellationToken).Step);Array.Fill(bytes,(byte)0);
         char[] chars=new char[2];long[] offsets=new long[2];
         var r=d.Decode([0xBF,0x41],chars,offsets,true,TestContext.Current.CancellationToken);Assert.Equal(DecodeStep.Completed,r.Step);Assert.Equal('A',chars[0]);Assert.Equal(3,offsets[0]);
-        foreach(long limit in new[]{3L,4L})
+        foreach(long limit in new[]{1L,3L,4L})
         {
             using var bounded=new XmlInputDecoder(new(){Limits=new(){ExternalBytes=limit}});
             r=bounded.Decode("abcd"u8,new char[8],new long[8],true,TestContext.Current.CancellationToken);
-            Assert.Equal(limit==3?DecodeStep.InvalidInput:DecodeStep.Completed,r.Step);
+            Assert.Equal(DecodeStep.Completed,r.Step);Assert.Equal(4,r.ConsumedBytes);
         }
         using var overflow=new XmlInputDecoder(new(){Limits=new(){ExternalBytes=null}});
         overflow.Decode("abcd"u8,new char[8],new long[8],false,TestContext.Current.CancellationToken);
-        var budget=typeof(XmlInputDecoder).GetField("budget",BindingFlags.Instance|BindingFlags.NonPublic)!.GetValue(overflow)!;
-        var counts=(long[])budget.GetType().GetField("counts",BindingFlags.Instance|BindingFlags.NonPublic)!.GetValue(budget)!;
-        overflow.Decode([],chars,offsets,false,TestContext.Current.CancellationToken);
-        counts[7]=long.MaxValue;
-        Assert.Equal(DecodeStep.InvalidInput,overflow.Decode("z"u8,chars,offsets,true,TestContext.Current.CancellationToken).Step);
+        typeof(XmlInputDecoder).GetField("acceptedBytes",BindingFlags.Instance|BindingFlags.NonPublic)!.SetValue(overflow,long.MaxValue);
+        var overflowResult=overflow.Decode("z"u8,chars,offsets,true,TestContext.Current.CancellationToken);
+        Assert.Equal(DecodeStep.InvalidInput,overflowResult.Step);Assert.Equal(0,overflowResult.ConsumedBytes);
+        Assert.Equal(long.MaxValue,overflowResult.Diagnostic!.Location.ByteOffset);
     }
     [Fact]
     public void ByteAtATimeDrainAndDeclarationBeforeMalformedBodyHaveStableOrdering()

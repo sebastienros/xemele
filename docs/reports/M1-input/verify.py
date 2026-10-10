@@ -47,7 +47,7 @@ def main():
         directory=pathlib.Path(directory)
         (directory/'Consumer.csproj').write_text(f'<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><TargetFramework>net10.0</TargetFramework><OutputType>Exe</OutputType><AssemblyName>Xemele.InputSample</AssemblyName><ImplicitUsings>enable</ImplicitUsings><Nullable>enable</Nullable></PropertyGroup><ItemGroup><PackageReference Include="Xemele" Version="{version}" /></ItemGroup></Project>')
         (directory/'Program.cs').write_text((ROOT/'samples/M1-input/Program.cs').read_text())
-        run('dotnet','run','--project',directory/'Consumer.csproj','-c','Release','--disable-build-servers','-p:UseSharedCompilation=false',f'-p:RestoreSources={packages}')
+        run('dotnet','run','--project',directory/'Consumer.csproj','-c','Release','--disable-build-servers','-p:UseSharedCompilation=false',f'-p:RestoreSources={packages}',f'-p:RestorePackagesPath={directory / "packages"}')
     run('dotnet','build','docs/reports/M1-input/Xemele.InputBenchmarks.csproj',*FLAGS)
     run('dotnet','run','--project','docs/reports/M1-input/Xemele.InputBenchmarks.csproj','-c','Release','--no-build','--','--contract',ROOT/'docs/reports/M1-contracts/Projects/Input/bin/Release/net10.0/M1Input.dll')
     run('dotnet','run','--project','docs/reports/M1-input/Xemele.InputBenchmarks.csproj','-c','Release','--no-build','--','--allocation')
@@ -55,4 +55,14 @@ def main():
     run('git','diff','--check')
 if __name__=='__main__':
     try:main()
-    finally:(REPORT/'checks.txt').write_text('\n'.join(LOG))
+    finally:
+        raw=ROOT/'artifacts/M1-input/verification.txt'
+        raw.parent.mkdir(parents=True,exist_ok=True)
+        raw.write_text('\n'.join(LOG))
+        concise=[]
+        for entry in LOG:
+            for line in entry.splitlines():
+                stripped=line.strip()
+                if stripped.startswith(('$ ', 'exit=', 'Host ', 'Source revision ', 'Build succeeded', 'Build FAILED', 'total:', 'failed:', 'succeeded:', 'skipped:', 'Matched ', 'Passed ', 'Exact internal', 'Cold setup', 'Warm setup', 'Informational retained', 'Validated ', 'Ran ', 'UTF8 BOM:', 'RuntimeError:', 'Test run summary:')):
+                    concise.append(stripped)
+        (REPORT/'checks.txt').write_text('\n'.join(concise)+'\n')

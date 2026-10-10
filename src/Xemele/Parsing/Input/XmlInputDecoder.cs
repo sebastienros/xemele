@@ -26,6 +26,7 @@ internal sealed class XmlInputDecoder : IXmlInputDecoder
     private long carryOffset;
     private long acceptedBytes;
     private readonly ScalarLocation location;
+    // Snapshot/validation only: primary bytes are not external-resource quota units.
     private readonly OperationBudget budget;
     private bool bom, final, completed, rejected, disposed, declarationValidated, faulted;
     private int active;
@@ -133,8 +134,8 @@ internal sealed class XmlInputDecoder : IXmlInputDecoder
     }
     private bool Accept(int bytes)
     {
-        if (!budget.TryCharge(Quota.ExternalBytes, bytes)) return false;
-        acceptedBytes = budget.Count(Quota.ExternalBytes);
+        if (bytes > long.MaxValue - acceptedBytes) return false;
+        acceptedBytes += bytes;
         return true;
     }
     private void Drop(int bytes)
