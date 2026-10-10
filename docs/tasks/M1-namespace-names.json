@@ -62,7 +62,8 @@
       "evidence": [
         "namespace-checks",
         "namespace-allocations",
-        "planning-validate"
+        "planning-validate",
+        "final-committed-audit"
       ]
     }
   ],
@@ -126,6 +127,15 @@
       "result": "failed",
       "summary": "Runtime/API/package/allocation/audit steps passed; extra final tools/planning unittest failed3/14, causing launcher exit1. Required planning validation run separately passed106. Launcher repaired to include only task-required planning validator; runtime not rerun because source unchanged.",
       "artifact": "docs/reports/M1-namespace-names/verification-raw.txt"
+    },
+    {
+      "id": "final-committed-audit",
+      "kind": "check",
+      "revision": "35925b42d361c22dc087747bc6db1c4a8aedbb1c",
+      "command": "python3 -B - (import owned verify.py; audit_paths(); run python3 -B tools/planning/tasks.py validate)",
+      "result": "passed",
+      "summary": "Committed delta versus claim99944ee plus working/untracked audit and diff checks passed; planning106 passed with implemented metadata. Initial audit caught generated untracked Python caches from extra unit suite; removed caches only, source unchanged, rerun passes.",
+      "artifact": "docs/reports/M1-namespace-names/final-audit.txt"
     }
   ],
   "blockers": [],
