@@ -16,7 +16,10 @@ public class DtdCompositionBenchmarks
     {
         ledger = new OperationLedger(); prior = MakePrior(ledger);
         external = "<?xml\r\nencoding='UTF-8'?><!--" + new string('x', CommentScalars) + "😀中-->%x;<!ATTLIST child a CDATA '&g;'>";
+        long expandedBefore = ledger.Expanded; int namesBefore = ledger.Names;
         CheckResult(Run());
+        if (ledger.Expanded - expandedBefore != external.EnumerateRunes().Count() + 22 || ledger.Names - namesBefore != 2)
+            throw new Exception("initial composition ledger oracle");
     }
     internal static DtdModel MakePrior(OperationLedger ledger)
     {
@@ -45,6 +48,31 @@ public class DtdCompositionBenchmarks
         if (p.Append([], [], true, default).Step != DtdParseStep.Completed) throw new Exception("seed");
         return p.Model;
     }
+    internal void CheckCompositionOperation()
+    {
+        long expandedBefore = ledger.Expanded; int namesBefore = ledger.Names;
+        CheckResult(SeedAndFramedComposition());
+        if (ledger.Expanded - expandedBefore != external.EnumerateRunes().Count() + 22 || ledger.Names != namesBefore)
+            throw new Exception("warm once-only composition charges");
+    }
+    internal void CheckSeedOperation()
+    {
+        long expandedBefore = ledger.Expanded; int namesBefore = ledger.Names;
+        var model = (DtdModel)SeedAndModelSnapshot();
+        if (model.Elements.Count != 0 || model.Attributes.Count != 0 || model.Notations.Count != 0 || model.GeneralEntities.Count != 1 || model.ParameterEntities.Count != 1)
+            throw new Exception("seed ordered table oracle");
+        CheckEntities(model);
+        if (ledger.Expanded != expandedBefore || ledger.Names != namesBefore || ledger.Depth != 0)
+            throw new Exception("seed no-recharge oracle");
+    }
+    private void CheckEntities(DtdModel model)
+    {
+        var g = model.GeneralEntities[0]; var p = model.ParameterEntities[0];
+        Check(g.Name == "g" && !g.IsParameter && g.ReplacementText == "inside" && g.SystemId is null && g.PublicId is null && g.NotationName is null && !g.IsExternal && g.Location == new XmlLocation(null, 1, 39, null));
+        Check(p.Name == "x" && p.IsParameter && p.ReplacementText == "<!ELEMENT child EMPTY>" && p.SystemId is null && p.PublicId is null && p.NotationName is null && !p.IsExternal && p.Location == new XmlLocation(null, 1, 1, null));
+        Check(ReferenceEquals(prior.GeneralEntities[0], g) && ReferenceEquals(prior.ParameterEntities[0], p));
+        static void Check(bool condition) { if (!condition) throw new Exception("full seeded entity oracle"); }
+    }
     internal void CheckResult(object result)
     {
         var model = (DtdModel)result;
@@ -54,11 +82,7 @@ public class DtdCompositionBenchmarks
         Check(e.Content.Kind == DtdParticleKind.Empty && e.Content.Name is null && e.Content.Occurrence == DtdOccurrence.Once && e.Content.Children.Count == 0);
         var a = model.Attributes[0];
         Check(a.ElementName == "child" && a.Name == "a" && a.Type == DtdAttributeType.CData && a.Tokens.Count == 0 && a.DefaultKind == DtdDefaultKind.Value && a.DefaultValue == "&g;" && a.IsExternal && a.Location == new XmlLocation(Uri, 2, 47 + CommentScalars, null));
-        var g = model.GeneralEntities[0];
-        Check(g.Name == "g" && !g.IsParameter && g.ReplacementText == "inside" && g.SystemId is null && g.PublicId is null && g.NotationName is null && !g.IsExternal && g.Location == new XmlLocation(null, 1, 39, null));
-        var p = model.ParameterEntities[0];
-        Check(p.Name == "x" && p.IsParameter && p.ReplacementText == "<!ELEMENT child EMPTY>" && p.SystemId is null && p.PublicId is null && p.NotationName is null && !p.IsExternal && p.Location == new XmlLocation(null, 1, 1, null));
-        Check(ReferenceEquals(prior.GeneralEntities[0], g) && ReferenceEquals(prior.ParameterEntities[0], p));
+        CheckEntities(model);
         var applied = DtdValueProcessor.NormalizeAttributeDefault(a.DefaultValue!, a.Type, model.GeneralEntities.ToDictionary(d => d.Name), new());
         Check(applied.Diagnostic is null && applied.Value == "inside");
         Check(ledger.Depth == 0);

@@ -11,9 +11,7 @@ if (args.Contains("--correctness"))
         var b = new DtdCompositionBenchmarks { CommentScalars = length }; b.Setup();
         for (int i = 0; i < 10; i++)
         {
-            b.CheckResult(b.SeedAndFramedComposition());
-            var seed = (DtdModel)b.SeedAndModelSnapshot();
-            if (seed.Elements.Count != 0 || seed.GeneralEntities.Count != 1 || seed.ParameterEntities.Count != 1) throw new Exception("seed oracle");
+            b.CheckCompositionOperation(); b.CheckSeedOperation();
         }
         var scan = new DtdFramedScanBenchmarks { CommentScalars = length }; scan.Setup();
         for (int i = 0; i < 1024; i++) if (scan.BorrowedCommentScan() != (int)DtdParseStep.NeedInput) throw new Exception("scan oracle");
@@ -23,11 +21,13 @@ if (args.Contains("--correctness"))
 }
 if (args.Contains("--allocation"))
 {
-    // Initialization, owned seed/model output and borrowed steady scans are separate.
+    // Cold includes Setup (which composes/checks once), a second composed output,
+    // and both full correctness/default-normalization oracles; no subtraction.
+    // Owned warmed output and borrowed steady scans are separate boundaries.
     long coldStart = GC.GetAllocatedBytesForCurrentThread();
     var cold = new DtdCompositionBenchmarks { CommentScalars = 32 }; cold.Setup();
     cold.CheckResult(cold.SeedAndFramedComposition());
-    long coldSetupAndFirstComposition = GC.GetAllocatedBytesForCurrentThread() - coldStart;
+    long coldSetupTwoCompositionsAndOracles = GC.GetAllocatedBytesForCurrentThread() - coldStart;
     var b = new DtdCompositionBenchmarks { CommentScalars = 4096 }; b.Setup();
     for (int i = 0; i < 128; i++) { GC.KeepAlive(b.SeedAndFramedComposition()); GC.KeepAlive(b.SeedAndModelSnapshot()); }
     long start = GC.GetAllocatedBytesForCurrentThread();
@@ -47,7 +47,7 @@ if (args.Contains("--allocation"))
     var retained = Retention(); GC.Collect(); GC.WaitForPendingFinalizers(); GC.Collect();
     bool inputReleased = !retained.Input.IsAlive, mappingsReleased = !retained.Maps.IsAlive;
     if (warmBorrowed != 0 || positiveControl == 0 || !inputReleased || !mappingsReleased) throw new Exception("allocation/retention boundary");
-    Console.WriteLine(JsonSerializer.Serialize(new { runtime = Environment.Version.ToString(), iterations = 1024, coldSetupAndFirstComposition, ownedComposition, ownedSeed, warmBorrowed, positiveControl, inputReleased, mappingsReleased, retainedModelElements = retained.Model.Elements.Count }));
+    Console.WriteLine(JsonSerializer.Serialize(new { runtime = Environment.Version.ToString(), iterations = 1024, coldSetupTwoCompositionsAndOracles, ownedComposition, ownedSeed, warmBorrowed, positiveControl, inputReleased, mappingsReleased, retainedModelElements = retained.Model.Elements.Count }));
     GC.KeepAlive(retained.Model); return;
 }
 BenchmarkSwitcher.FromAssembly(typeof(DtdCompositionBenchmarks).Assembly).Run(args);

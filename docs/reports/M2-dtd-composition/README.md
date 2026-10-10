@@ -21,9 +21,17 @@ row identities must be present in the cumulative run. The original successful
 performance archive is hash-preserved and never rerun as a new measurement.
 
 The benchmark input has two authored sizes (32/4096 ASCII comment scalars, plus
-multilingual/supplementary/newline units). Cold setup+first composition, owned
+multilingual/supplementary/newline units). Cold setup+two compositions+both complete correctness/default-normalization
+oracles (no subtraction), owned
 seed/model output, complete seeded/framed composition, borrowed steady scanning,
 positive allocation controls and source/mapping release are separate boundaries.
+Setup charges the prior entity declarations, then one initial composition charges
+the exact external source scalar count plus22 PE-replacement scalars and adds
+child/a (two distinct names). Warm repetitions use that live ledger: composition
+adds the same exact scalar delta and zero distinct names; seed/snapshot adds
+zero expanded/name charges. Correctness checks pin these deltas outside timing.
+Seed-only output pins empty element/attribute/notation tables and every ordered
+entity field/location/reference identity, not only table counts.
 Prior immutable tables and the live ordinal-deduplicating operation ledger are
 initialized before warmed operations. Complete bounded comments reset token
 state each call; finite TokenCharacters is unchanged. The scan operation uses
