@@ -4,7 +4,7 @@
   "milestone": "M2",
   "title": "Incremental DTD grammar and immutable declarations",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/M2-dtd-grammar",
   "branch": "codex/m2-dtd-grammar",
   "base_revision": "ceea84b626686d35bf418d47ce20e731be3d614c",
@@ -35,29 +35,139 @@
     {
       "id": "M2-dtd-grammar-A1",
       "description": "Implement approved immutable DtdModel/particles/declarations and DtdParser internal/external grammar, parameter entities and defaults/types, using only verified shared budget/framing hooks.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "join-combined-checks",
+        "join-source-review"
+      ]
     },
     {
       "id": "M2-dtd-grammar-A2",
       "description": "Pinned and authored cases prove malformed/recursive/conditional/content-model declarations, first-declaration precedence, normalized defaults/entities, every split/push-source boundary, initial scalar cursor/absolute mappings, aggregate exact/one-over quotas, cancellation and borrowed input release.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "join-combined-checks",
+        "join-source-review"
+      ]
     },
     {
       "id": "M2-dtd-grammar-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "join-combined-checks",
+        "join-source-review",
+        "join-oracle-refresh",
+        "join-exclusive-timing",
+        "join-final-handoff-audit"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "Verified children unchanged: src/Xemele/Parsing/Dtd/Model/, Framing/, Grammar/Values/, Grammar/Parser/ and IDtdBudget.cs; all five dependency integration revisions remain ancestors.",
+    "tests/Xemele.Tests/M2-dtd-grammar/JoinedTests.cs: effective tables/default application, framing+grammar aggregate scalar budgets/mappings, pushed-source restoration/borrowed release, shared cleanup faults/cancellation/refusal.",
+    "tests/Xemele.Tests/M2-dtd-grammar/PinnedTests.cs and tests/fixtures/M2-dtd-grammar/pinned.json: nine exact private W3C external subset resources, hashes/IDs, independent model oracles and every short split.",
+    "samples/M2-dtd-grammar/Sample.csproj, Program.cs, Inventory.cs and benchmarks/Xemele.Benchmarks/M2-dtd-grammar/Join.cs: common-only approved inventory and bounded effective-table/default demonstration.",
+    "benchmarks/Xemele.Benchmarks/M2-dtd-grammar/JoinBenchmarks.cs and docs/reports/M2-dtd-grammar/BenchmarkDriver.cs: one owned composition workload with complete authored every-field/location oracle; unique common-only benchmark project.",
+    "docs/reports/M2-dtd-grammar/verify.py and unique candidate/oracle/exclusive reports: cumulative/API/reference/provenance/allocation/timing and ownership evidence; historical failures preserved."
+  ],
+  "evidence": [
+    {
+      "id": "join-first-build",
+      "kind": "check",
+      "revision": "6eda70d29118eb97459aa8560d5a8228009c2861",
+      "command": "python3 -B docs/reports/M2-dtd-grammar/verify.py --report-prefix candidate-one --expected-branch codex/m2-dtd-grammar",
+      "result": "failed",
+      "summary": "Common-only sample/API20 and nullable mutation passed; test build CS0118 from own DtdModel namespace collision. Later focused/cumulative/performance checks unrun. Corrected only own test type qualifications.",
+      "artifact": "docs/reports/M2-dtd-grammar/candidate-one/summary.json"
+    },
+    {
+      "id": "join-pinned-oracle",
+      "kind": "check",
+      "revision": "071c69249be96468d1046a27467373083d6b9f34",
+      "command": "python3 -B docs/reports/M2-dtd-grammar/verify.py --report-prefix candidate-two --expected-branch codex/m2-dtd-grammar",
+      "result": "failed",
+      "summary": "Focused19 ran:17pass,2fail from own Sun root oracle predicate; source declares root, not doc. Original failed XML retained; corrected predicate, no child source change. Cumulative/benchmark checks unrun.",
+      "artifact": "docs/reports/M2-dtd-grammar/candidate-two/summary.json"
+    },
+    {
+      "id": "join-benchmark-wiring",
+      "kind": "check",
+      "revision": "641b974f2d3b5b4051a02b8251f28269026f49f8",
+      "command": "python3 -B docs/reports/M2-dtd-grammar/verify.py --report-prefix candidate-three --expected-branch codex/m2-dtd-grammar",
+      "result": "failed",
+      "summary": "Focused19/sample/API20+mutation/allocation/benchmark oracles passed; inherited cumulative solution build failed CS0234 because owned benchmark depended on a helper only linked by sample. Helper moved within owned benchmark directory and linked from sample; no shared project edit. Cumulative suite/API251/reference completion/planning later stages unrun.",
+      "artifact": "docs/reports/M2-dtd-grammar/candidate-three/summary.json"
+    },
+    {
+      "id": "join-combined-checks",
+      "kind": "check",
+      "revision": "5215d71a309dade8295f77d070e1360afc4a257d",
+      "command": "python3 -B docs/reports/M2-dtd-grammar/verify.py --report-prefix candidate-four --expected-branch codex/m2-dtd-grammar",
+      "result": "passed",
+      "summary": "Focused19 includes nine pinned resources/775 every-short-split parses, independent model oracles and authored composed tables/framing/source/quotas/lifetimes. Fresh cumulative MTP5014 and direct/discovery4460+255+299 agree, allPass/noSkip; API20 approved actual+compiled nullable mutation/public251/registry3388; fresh complete copied pinned BCL242 actual records/current-source build/hash unchanged; sample/benchmark oracles; planning14/validate120; committed/staged/working/untracked owns+whitespace pass. Cold18272B; warm owned raw16440480B/1000=16440.48B; retained-GC315472B/100 includes immutable models, default arrays, boxed tuple holders and outer object[].",
+      "artifact": "docs/reports/M2-dtd-grammar/candidate-four/summary.json"
+    },
+    {
+      "id": "join-oracle-refresh",
+      "kind": "check",
+      "revision": "d1dfbac1d1b42d7cf220cb6300fe5c1646abe2cf",
+      "command": "python3 -B (recorded narrow inline verifier): dotnet build docs/reports/M2-dtd-grammar/Xemele.DtdGrammarJoinBenchmarks.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false; dotnet docs/reports/M2-dtd-grammar/bin/Release/net10.0/Xemele.DtdGrammarJoinBenchmarks.dll --correctness; sample build/output; planning tests/validate; owns/whitespace",
+      "result": "passed",
+      "summary": "Unique benchmark and sample Release builds pass; strengthened 10 complete frozen-field/location/model/default oracles and10 timed-output oracles pass; planning14/validate120 and owns/whitespace pass. Git proves runtime/test and timed Join/JoinBenchmarks bytes unchanged from combined-check source5215. Retained description corrected without rerunning unchanged allocation workload.",
+      "artifact": "docs/reports/M2-dtd-grammar/oracle-d1dfbac/summary.json"
+    },
+    {
+      "id": "join-source-review",
+      "kind": "review",
+      "revision": "d1dfbac1d1b42d7cf220cb6300fe5c1646abe2cf",
+      "command": null,
+      "result": "passed",
+      "summary": "Coordinator independent foundation/api_wiring source reviews approve joined accounting/lifetime/effective tables, pinned provenance, helper scope/API inventory and strengthened every-field/locations oracle/boxed retention label; source reviews are not execution.",
+      "artifact": "docs/reports/M2-dtd-grammar/reviews.json"
+    },
+    {
+      "id": "join-timing-capture-validator",
+      "kind": "check",
+      "revision": "d1dfbac1d1b42d7cf220cb6300fe5c1646abe2cf",
+      "command": "python3 -B (inline capture): dotnet docs/reports/M2-dtd-grammar/bin/Release/net10.0/Xemele.DtdGrammarJoinBenchmarks.dll --filter *DtdGrammarJoin* --artifacts artifacts/M2-dtd-grammar/exclusive-d1dfbac/bdn; cwd docs/reports/M2-dtd-grammar",
+      "result": "failed",
+      "summary": "Actual parent/generated restore/build/benchmark child exited0 and one workload completed, but inline report regex expected ns/op while actual observations correctly emitted us/op. Initial validator summary retained; no measurement rerun.",
+      "artifact": "docs/reports/M2-dtd-grammar/exclusive-d1dfbac/summary.json"
+    },
+    {
+      "id": "join-exclusive-timing",
+      "kind": "check",
+      "revision": "d1dfbac1d1b42d7cf220cb6300fe5c1646abe2cf",
+      "command": "python3 -B (inline offline verifier): unit-aware observation extraction and archive SHA validation; ps -axo pid,ppid,command",
+      "result": "passed",
+      "summary": "Exact-source coordinator exclusive grant. Offline unit-aware extraction from unchanged archive validates generated restore/build0,parent0,child0,one workload/three positive actual+result observations. Mean5.003us/Error0.0912us/StdDev0.0050us/MemoryDiagnoser16.05KB per owned composition; .NET10.0.11/SDK10.0.400/Arm64 M4Pro. High-priority Permission denied warning retained. Raw archive SHA256067634a93eee38804668c4c2048534594dd0d8151bbea506bab8981aa86e8545; display trailing whitespace cleaned only; actual process inventory proves no heavy children after exit; RELEASE ACK sent. No child timing or allocation retries.",
+      "artifact": "docs/reports/M2-dtd-grammar/exclusive-d1dfbac/measurement-validation.json"
+    },
+    {
+      "id": "join-final-handoff-audit",
+      "kind": "check",
+      "revision": "58155d4b6d85f11c73e7c8e29518bc5a65a822bb",
+      "command": "python3 -B (recorded inline final audit): git status --porcelain=v1; git diff --check f8da650052ced1bfa741f378e324d443ee078fe4..HEAD; git diff --check --cached; git diff --check; owned changed/untracked paths and all changed display whitespace; unchanged runtime/test/timed-source bytes; committed raw archive SHA; python3 -B tools/planning/tasks.py validate",
+      "result": "passed",
+      "summary": "Committed evidence/task tree clean and implemented/allA1-A3passed/integrationnull; base/allfive verified integration revisions ancestors. Claim..HEAD/staged/working diff checks and every changed path/display whitespace pass; no outside paths. Runtime/test/timed composition bytes unchanged from successful5215; committed raw archive SHA matches exact original067634a9...e8545. Planning validates120 tasks. Explicit release of all five owned subtrees plus own task JSON; no recursive workers or active scoped heavy children.",
+      "artifact": "docs/reports/M2-dtd-grammar/final-audit-58155d4/summary.json"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Integration/verification join of immutable model, external framing, independent value processing and full streaming DtdParser/source-stack children. Original A1-A3 unchanged; no scope reduction. Defaults are normalized when applied with effective table; parser and raw accounting remain one coherent state boundary.",
-    "checks": [],
-    "remaining": [],
+    "summary": "Implemented integration/verification join of unchanged verified common-only DTD children. Original A1-A3 preserved; concrete pinned/authored composed validation and sample, exact approved API inventory and actual combined evidence. Branch work only; coordinator must integrate and verify. Explicitly release all owned paths and own task JSON after final clean handoff; no recursive workers/heavy children.",
+    "checks": [
+      "Source5215: focused19 with775 pinned short-split parses and authored joins; MTP/direct/discovery5014=4460+255+299 allPass/noFail/noSkip, approvedAPI20+nullable mutation/public251/registry3388, fresh complete pinned BCL242/current-source build and unchanged hash, planning14/validate120 and owns/whitespace.",
+      "Sourced1dfbac: strengthened complete every-field/location benchmark oracle10 and timed-output oracle10, unique benchmark/sample builds and sample output, planning14/validate120 and scopes; runtime/tests/timed workload unchanged from successful5215.",
+      "Exact-source exclusive timing: restore/build/parent/child0,three positive actual+result observations,5.003us/16.05KB; raw archiveSHA067634a93eee38804668c4c2048534594dd0d8151bbea506bab8981aa86e8545; raw Permission denied priority warning retained. No measurement rerun; capture-unit parser failure retained and corrected offline.",
+      "Cold18272B; raw warm owned16440480B/1000=16440.48B; separate retained-GC315472B/100 outputs includes boxed tuple holders/outer array. Original incomplete retained label preserved with explicit correction. Prior namespace/oracle/helper-build failures retained.",
+      "Committed58155d4 final audit passed: clean tree/implemented/allA1-A3passed/integrationnull/verified ancestry; claim..HEAD+staged+working whitespace, all changed ownership/display text, unchanged checked runtime/tests/timing bytes and committed archiveSHA; validate120. All five owned subtrees and docs/tasks/M2-dtd-grammar.json explicitly released; no scoped heavy children or recursive workers."
+    ],
+    "remaining": [
+      "Coordinator fresh integrated verification before verified; integration_revision remains null.",
+      "Illustrative small owned Arm64 composition only: Windows/x64/AOT, large effective-table scaling and full XML DOCTYPE/general-entity composition unrun. Pinned subset resources do not claim full XML conformance. Retained GC value is an informational estimate; no zero-allocation composition promise."
+    ],
     "requests": []
   }
 }
