@@ -7,7 +7,20 @@
     "task_id": "M0-gate",
     "integration_revision": "0711a15b0c5a695ca383a9cfe7f11c8326fde451"
   },
-  "active_assignments": [],
+  "active_assignments": [
+    {
+      "task_id": "M1-common",
+      "client_thread_id": "client-new-thread:1ff0a8a0-2506-477a-84a2-6a6efbef5c12",
+      "host_id": "local",
+      "branch": "codex/m1-common",
+      "base_revision": "8621e00a22aef0210dbe7084d6e7836d4531d335",
+      "claim_revision": "79a771e91ad9b1b947382d647f5af999b175adca",
+      "setup_status": "dispatched",
+      "chat_id": "01a1239a-a466-7992-9b99-a2497fddd8be",
+      "worktree_path": "/Users/sebastienros/.codex/worktrees/4eac/xemele",
+      "wait_cursor": "e93241cd-e30a-427b-9fd8-d91287acee4f:1"
+    }
+  ],
   "integration_queue": [],
   "blockers": [],
   "next_actions": [
@@ -317,11 +330,15 @@
       "handoff_revision": "aefbb0392271842121dd5f647755ed0d81e3c08a",
       "integration_revision": "3bd8e87d180be3196313374b2f0171f55bcc9478",
       "integration_worktree": "/private/tmp/xemele-integrate-m1-contracts",
-      "integration_branch": "codex/integrate-m1-contracts"
+      "integration_branch": "codex/integrate-m1-contracts",
+      "cleanup": {
+        "chat_archived": true,
+        "worktree": "removed"
+      }
     }
   ],
   "benchmark_policy": "Subsequent benchmarks default to ShortRun and require serialized timing slot; no active timing hold.",
-  "benchmark_owner": null,
+  "benchmark_owner": "M1-common",
   "pending_decisions": [],
   "decisions": {
     "project_license": "MIT",
@@ -358,7 +375,10 @@
       "reason": "Copied self-contained tool data and verified binary hash/version before deleting old worker checkout."
     }
   ],
-  "cleanup_records": "docs/orchestration/cleanup-M0.json",
+  "cleanup_records": [
+    "docs/orchestration/cleanup-M0.json",
+    "docs/orchestration/cleanup-M1-contracts.json"
+  ],
   "preserved_reference_sources": [
     {
       "engine": "libxml2",
