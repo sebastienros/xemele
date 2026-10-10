@@ -44,8 +44,8 @@ public class SerializerTests
                 NamespaceHandling = j.TryGetProperty("NamespaceHandling", out var n) ? Enum.Parse<XmlNamespaceHandling>(n.GetString()!) : XmlNamespaceHandling.Strict,
                 Encoding = v.GetProperty("encoding").GetString() switch { "utf-16le" => new UnicodeEncoding(false, true, false), "utf-16be" => new UnicodeEncoding(true, true, false), _ => new UTF8Encoding(true, false) }
             };
-            Assert.Equal(v.GetProperty("string").GetString(), d.ToXmlString(options));
-            using var stream = new MemoryStream(); d.Save(stream, options);
+            Assert.Equal(v.GetProperty("string").GetString(), d.ToXmlString(options, cancellationToken: TestContext.Current.CancellationToken));
+            using var stream = new MemoryStream(); d.Save(stream, options, cancellationToken: TestContext.Current.CancellationToken);
             Assert.Equal(v.GetProperty("expectedHex").GetString(), Convert.ToHexStringLower(stream.ToArray())); count++;
         }
         Assert.Equal(6, count);
@@ -56,7 +56,7 @@ public class SerializerTests
         var d = Root(out var r); var t = d.CreateText("]"); r.AppendChild(t); r.AppendChild(d.CreateText("]")); r.AppendChild(d.CreateText(">&<\r\n\t🙂"));
         r.AppendChild(d.CreateComment("c")); r.AppendChild(d.CreateCData("<raw>")); r.AppendChild(d.CreateProcessingInstruction("p:q", "data")); r.AppendChild(d.CreateProcessingInstruction("z", ""));
         r.AppendChild(d.CreateText(">"));
-        Assert.Equal("<r>]]&gt;&amp;&lt;&#xD;\n\t🙂<!--c--><![CDATA[<raw>]]><?p:q data?><?z?>></r>", d.ToXmlString(Omit));
+        Assert.Equal("<r>]]&gt;&amp;&lt;&#xD;\n\t🙂<!--c--><![CDATA[<raw>]]><?p:q data?><?z?>></r>", d.ToXmlString(Omit, cancellationToken: TestContext.Current.CancellationToken));
         Assert.Equal(t, r.FirstChild); Assert.Equal(8, r.Children.Count);
     }
     [Fact]
@@ -64,20 +64,20 @@ public class SerializerTests
     {
         var d = Root(out var r); var a = d.CreateElement("a"); var b = d.CreateElement("b"); var c = d.CreateElement("c");
         r.AppendChild(d.CreateText(" ")); r.AppendChild(a); a.AppendChild(b); b.AppendChild(c); r.AppendChild(d.CreateCData(" "));
-        Assert.Equal("<r> <a>\n    <b>\n      <c/>\n    </b>\n  </a><![CDATA[ ]]></r>", d.ToXmlString(Omit with { Indent = true }));
+        Assert.Equal("<r> <a>\n    <b>\n      <c/>\n    </b>\n  </a><![CDATA[ ]]></r>", d.ToXmlString(Omit with { Indent = true }, cancellationToken: TestContext.Current.CancellationToken));
         var n = Root(out var root); root.AppendChild(n.CreateElement("a")); root.AppendChild(n.CreateComment("c"));
         n.DocumentNode.InsertBefore(n.CreateProcessingInstruction("p", ""), root); n.DocumentNode.AppendChild(n.CreateComment("after"));
-        Assert.Equal("<?xml version=\"1.0\"?>\n<?p?>\n<r>\n  <a/>\n  <!--c-->\n</r>\n<!--after-->", n.ToXmlString(new() { Indent = true }));
+        Assert.Equal("<?xml version=\"1.0\"?>\n<?p?>\n<r>\n  <a/>\n  <!--c-->\n</r>\n<!--after-->", n.ToXmlString(new() { Indent = true }, cancellationToken: TestContext.Current.CancellationToken));
     }
     [Fact]
     public void StrictChecksDefaultInheritedAttributeAndReservedBindings()
     {
-        var d = Root(out var r, "u"); Assert.Throws<InvalidOperationException>(() => d.ToXmlString(Omit)); r.SetNamespaceDeclaration("", "u");
-        var c = d.CreateElement("c"); r.AppendChild(c); Assert.Throws<InvalidOperationException>(() => d.ToXmlString(Omit)); c.SetNamespaceDeclaration("", "");
-        c.SetAttribute("a", "v", "a"); Assert.Throws<InvalidOperationException>(() => d.ToXmlString(Omit)); c.SetAttribute("a", "v", "a", "p");
+        var d = Root(out var r, "u"); Assert.Throws<InvalidOperationException>(() => d.ToXmlString(Omit, cancellationToken: TestContext.Current.CancellationToken)); r.SetNamespaceDeclaration("", "u");
+        var c = d.CreateElement("c"); r.AppendChild(c); Assert.Throws<InvalidOperationException>(() => d.ToXmlString(Omit, cancellationToken: TestContext.Current.CancellationToken)); c.SetNamespaceDeclaration("", "");
+        c.SetAttribute("a", "v", "a"); Assert.Throws<InvalidOperationException>(() => d.ToXmlString(Omit, cancellationToken: TestContext.Current.CancellationToken)); c.SetAttribute("a", "v", "a", "p");
         r.SetNamespaceDeclaration("p", "a"); c.SetAttribute("lang", "en", "http://www.w3.org/XML/1998/namespace", "xml");
-        Assert.Equal("<r xmlns=\"u\" xmlns:p=\"a\"><c xmlns=\"\" p:a=\"v\" xml:lang=\"en\"/></r>", d.ToXmlString(Omit));
-        c.SetNamespaceDeclaration("p", "b"); Assert.Throws<InvalidOperationException>(() => d.ToXmlString(Omit));
+        Assert.Equal("<r xmlns=\"u\" xmlns:p=\"a\"><c xmlns=\"\" p:a=\"v\" xml:lang=\"en\"/></r>", d.ToXmlString(Omit, cancellationToken: TestContext.Current.CancellationToken));
+        c.SetNamespaceDeclaration("p", "b"); Assert.Throws<InvalidOperationException>(() => d.ToXmlString(Omit, cancellationToken: TestContext.Current.CancellationToken));
     }
     [Fact]
     public void RepairConflictsReuseOrderingAndSiblingRestoration()
@@ -87,9 +87,9 @@ public class SerializerTests
         var child = d.CreateElement("c", "u", "p"); child.SetNamespaceDeclaration("ns3", "blocked"); r.AppendChild(child);
         var sibling = d.CreateElement("s", "other", "ns2"); r.AppendChild(sibling);
         var attr = r.Attributes[0]; long version = d.MutationVersion;
-        Assert.Equal("<ns1:r xmlns:p=\"wrong\" xmlns:z=\"attr\" xmlns:a=\"attr\" xmlns:ns1=\"u\" xmlns:ns3=\"other\" a:x=\"1\" ns3:y=\"2\"><p:c xmlns:ns3=\"blocked\" xmlns:p=\"u\"/><ns2:s xmlns:ns2=\"other\"/></ns1:r>", d.ToXmlString(Repair));
+        Assert.Equal("<ns1:r xmlns:p=\"wrong\" xmlns:z=\"attr\" xmlns:a=\"attr\" xmlns:ns1=\"u\" xmlns:ns3=\"other\" a:x=\"1\" ns3:y=\"2\"><p:c xmlns:ns3=\"blocked\" xmlns:p=\"u\"/><ns2:s xmlns:ns2=\"other\"/></ns1:r>", d.ToXmlString(Repair, cancellationToken: TestContext.Current.CancellationToken));
         Assert.Equal(version, d.MutationVersion); Assert.Equal("p", r.Prefix); Assert.Equal("p", attr.Prefix); Assert.Equal("wrong", r.NamespaceDeclarations[0].Value);
-        Assert.Equal(d.ToXmlString(Repair), d.ToXmlString(Repair));
+        Assert.Equal(d.ToXmlString(Repair, cancellationToken: TestContext.Current.CancellationToken), d.ToXmlString(Repair, cancellationToken: TestContext.Current.CancellationToken));
     }
     [Fact]
     public void RepairDefaultReplacementAndAttributeUpdatesPreserveOrder()
@@ -97,7 +97,7 @@ public class SerializerTests
         var d = Root(out var r); r.SetNamespaceDeclaration("", "bad"); r.SetNamespaceDeclaration("q", "u&\r");
         r.SetAttribute("a", "1"); r.SetAttribute("b", "2"); r.SetAttribute("a", "3"); r.RemoveAttribute("b"); r.SetAttribute("b", "4");
         var child = d.CreateElement("c", "u"); child.SetNamespaceDeclaration("", "conflict"); r.AppendChild(child);
-        Assert.Equal("<r xmlns=\"\" xmlns:q=\"u&amp;&#xD;\" a=\"3\" b=\"4\"><ns1:c xmlns=\"conflict\" xmlns:ns1=\"u\"/></r>", d.ToXmlString(Repair));
+        Assert.Equal("<r xmlns=\"\" xmlns:q=\"u&amp;&#xD;\" a=\"3\" b=\"4\"><ns1:c xmlns=\"conflict\" xmlns:ns1=\"u\"/></r>", d.ToXmlString(Repair, cancellationToken: TestContext.Current.CancellationToken));
         Assert.Equal("bad", r.NamespaceDeclarations[0].Value);
     }
     [Theory]
@@ -111,9 +111,9 @@ public class SerializerTests
         string label = page == 65001 ? "utf-8" : page == 1200 ? "utf-16le" : "utf-16be";
         string expected = (omit ? "" : $"<?xml version=\"1.0\" encoding=\"{label}\"?>") + "<r>" + r.FirstChild.Value + "</r>";
         byte[] preamble = !bom ? [] : page == 65001 ? [0xef, 0xbb, 0xbf] : page == 1200 ? [0xff, 0xfe] : [0xfe, 0xff];
-        using var s = new MemoryStream(); d.Save(s, o);
+        using var s = new MemoryStream(); d.Save(s, o, cancellationToken: TestContext.Current.CancellationToken);
         Assert.Equal(preamble.Concat(encoding.GetBytes(expected)), s.ToArray());
-        Assert.Equal((omit ? "" : "<?xml version=\"1.0\"?>") + "<r>" + r.FirstChild.Value + "</r>", d.ToXmlString(o));
+        Assert.Equal((omit ? "" : "<?xml version=\"1.0\"?>") + "<r>" + r.FirstChild.Value + "</r>", d.ToXmlString(o, cancellationToken: TestContext.Current.CancellationToken));
     }
     [Theory]
     [InlineData(XmlNodeKind.CData, 65001)] [InlineData(XmlNodeKind.Comment, 65001)] [InlineData(XmlNodeKind.ProcessingInstruction, 65001)]
@@ -137,8 +137,8 @@ public class SerializerTests
             };
             r.AppendChild(node);
             var encoding = Encoding.GetEncoding(page);
-            using var stream = new MemoryStream(); d.Save(stream, Omit with { Encoding = encoding });
-            Assert.Equal(encoding.GetBytes(d.ToXmlString(Omit)), stream.ToArray());
+            using var stream = new MemoryStream(); d.Save(stream, Omit with { Encoding = encoding }, cancellationToken: TestContext.Current.CancellationToken);
+            Assert.Equal(encoding.GetBytes(d.ToXmlString(Omit, cancellationToken: TestContext.Current.CancellationToken)), stream.ToArray());
         }
     }
     [Fact]
@@ -146,36 +146,36 @@ public class SerializerTests
     {
         var d = Root(out var r); r.AppendChild(d.CreateText(new string('x', 2040)));
         r.AppendChild(d.CreateCData(new string('a', 2046) + "é🙂" + new string('界', 2047)));
-        using var stream = new MemoryStream(); d.Save(stream, Omit);
-        Assert.Equal(Encoding.UTF8.GetBytes(d.ToXmlString(Omit)), stream.ToArray());
+        using var stream = new MemoryStream(); d.Save(stream, Omit, cancellationToken: TestContext.Current.CancellationToken);
+        Assert.Equal(Encoding.UTF8.GetBytes(d.ToXmlString(Omit, cancellationToken: TestContext.Current.CancellationToken)), stream.ToArray());
         Assert.True(stream.CanWrite);
     }
     [Fact]
     public void OptionsRootAndStreamValidationPrecedeOutput()
     {
         using var s = new RecordingStream(); var d = Root(out _);
-        Assert.Throws<ArgumentNullException>(() => XmlSerializer.Serialize(null!, s));
-        Assert.Throws<ArgumentNullException>(() => d.Save(null!));
-        Assert.Throws<ArgumentException>(() => d.Save(new MemoryStream([], false)));
-        Assert.Throws<ArgumentException>(() => d.Save(s, new() { Encoding = Encoding.ASCII }));
-        Assert.Throws<ArgumentException>(() => d.Save(s, new() { Encoding = null! }));
-        Assert.Throws<ArgumentException>(() => d.Save(s, new() { NamespaceHandling = (XmlNamespaceHandling)2 }));
-        Assert.Throws<InvalidOperationException>(() => new XmlDocument().Save(s));
+        Assert.Throws<ArgumentNullException>(() => XmlSerializer.Serialize(null!, s, cancellationToken: TestContext.Current.CancellationToken));
+        Assert.Throws<ArgumentNullException>(() => d.Save(null!, cancellationToken: TestContext.Current.CancellationToken));
+        Assert.Throws<ArgumentException>(() => d.Save(new MemoryStream([], false), cancellationToken: TestContext.Current.CancellationToken));
+        Assert.Throws<ArgumentException>(() => d.Save(s, new() { Encoding = Encoding.ASCII }, cancellationToken: TestContext.Current.CancellationToken));
+        Assert.Throws<ArgumentException>(() => d.Save(s, new() { Encoding = null! }, cancellationToken: TestContext.Current.CancellationToken));
+        Assert.Throws<ArgumentException>(() => d.Save(s, new() { NamespaceHandling = (XmlNamespaceHandling)2 }, cancellationToken: TestContext.Current.CancellationToken));
+        Assert.Throws<InvalidOperationException>(() => new XmlDocument().Save(s, cancellationToken: TestContext.Current.CancellationToken));
         Assert.Equal(0, s.Length); Assert.False(s.Closed); Assert.Equal(0, s.Flushes);
     }
     [Fact]
     public void IoFailureAndCancellationPropagateAndLeaveCallerOpen()
     {
         var d = Root(out var r); r.AppendChild(d.CreateText(new string('x', 100_000)));
-        using var success = new RecordingStream(); d.Save(success); Assert.True(success.Length > 100000); Assert.False(success.Closed); Assert.Equal(0, success.Flushes); Assert.True(success.MaxWrite <= 8192);
+        using var success = new RecordingStream(); d.Save(success, cancellationToken: TestContext.Current.CancellationToken); Assert.True(success.Length > 100000); Assert.False(success.Closed); Assert.Equal(0, success.Flushes); Assert.True(success.MaxWrite <= 8192);
         var error = new IOException("identity"); using var bad = new RecordingStream { Failure = error };
-        Assert.Same(error, Assert.Throws<IOException>(() => d.Save(bad))); Assert.True(bad.Length > 0); Assert.False(bad.Closed);
+        Assert.Same(error, Assert.Throws<IOException>(() => d.Save(bad, cancellationToken: TestContext.Current.CancellationToken))); Assert.True(bad.Length > 0); Assert.False(bad.Closed);
         using var source = new CancellationTokenSource(); using var canceled = new RecordingStream { Cancellation = source };
         var ex = Assert.Throws<OperationCanceledException>(() => d.Save(canceled, cancellationToken: source.Token));
         Assert.Equal(source.Token, ex.CancellationToken); Assert.True(canceled.Length > 0); Assert.False(canceled.Closed);
         using var pre = new RecordingStream(); Assert.Throws<OperationCanceledException>(() => d.Save(pre, cancellationToken: source.Token)); Assert.Equal(0, pre.Length);
         // Scratch returned on faults; a new operation remains usable.
-        Assert.Equal(d.ToXmlString(Omit), d.ToXmlString(Omit));
+        Assert.Equal(d.ToXmlString(Omit, cancellationToken: TestContext.Current.CancellationToken), d.ToXmlString(Omit, cancellationToken: TestContext.Current.CancellationToken));
     }
     [Theory]
     [InlineData(XmlNodeKind.Text, "\0")] [InlineData(XmlNodeKind.Text, "\ud800")]
@@ -186,18 +186,18 @@ public class SerializerTests
     {
         var d = Root(out var r); var node = kind switch { XmlNodeKind.Text => d.CreateText("ok"), XmlNodeKind.Comment => d.CreateComment("ok"), XmlNodeKind.CData => d.CreateCData("ok"), _ => d.CreateProcessingInstruction("pi", "ok") };
         r.AppendChild(node); d.Nodes[node.Slot].Value = value;
-        Assert.Throws<InvalidOperationException>(() => d.ToXmlString(Omit));
-        using var s = new RecordingStream(); Assert.Throws<InvalidOperationException>(() => d.Save(s)); Assert.False(s.Closed);
+        Assert.Throws<InvalidOperationException>(() => d.ToXmlString(Omit, cancellationToken: TestContext.Current.CancellationToken));
+        using var s = new RecordingStream(); Assert.Throws<InvalidOperationException>(() => d.Save(s, cancellationToken: TestContext.Current.CancellationToken)); Assert.False(s.Closed);
     }
     [Fact]
     public void RevalidatesNamesBindingsAndAttributeScalars()
     {
         var d = Root(out var r); var a = r.SetAttribute("a", "ok"); d.AttributeSlots[a.Slot].Value = "\0";
-        Assert.Throws<InvalidOperationException>(() => d.ToXmlString(Omit));
-        a.Value = "ok"; d.AttributeSlots[a.Slot].Prefix = "bad:name"; Assert.Throws<InvalidOperationException>(() => d.ToXmlString(Repair));
+        Assert.Throws<InvalidOperationException>(() => d.ToXmlString(Omit, cancellationToken: TestContext.Current.CancellationToken));
+        a.Value = "ok"; d.AttributeSlots[a.Slot].Prefix = "bad:name"; Assert.Throws<InvalidOperationException>(() => d.ToXmlString(Repair, cancellationToken: TestContext.Current.CancellationToken));
         d.AttributeSlots[a.Slot].Prefix = "";
         var n = r.SetNamespaceDeclaration("p", "u"); d.NamespaceSlots[n.Slot].Value = "http://www.w3.org/2000/xmlns/";
-        Assert.Throws<InvalidOperationException>(() => d.ToXmlString(Repair));
+        Assert.Throws<InvalidOperationException>(() => d.ToXmlString(Repair, cancellationToken: TestContext.Current.CancellationToken));
     }
     [Theory]
     [InlineData("bad:name", "", "")] [InlineData("1bad", "", "")]
@@ -208,7 +208,7 @@ public class SerializerTests
     {
         var d = Root(out var r);
         d.Nodes[r.Slot] = new XmlDocument.NodeData(XmlNodeKind.Element, localName, uri, prefix, "") { Parent = 0 };
-        Assert.Throws<InvalidOperationException>(() => d.ToXmlString(Repair));
+        Assert.Throws<InvalidOperationException>(() => d.ToXmlString(Repair, cancellationToken: TestContext.Current.CancellationToken));
     }
     [Theory]
     [InlineData("XmL")] [InlineData("1pi")] [InlineData("\ud800")]
@@ -216,14 +216,14 @@ public class SerializerTests
     {
         var d = Root(out var r); var pi = d.CreateProcessingInstruction("pi", "data"); r.AppendChild(pi);
         d.Nodes[pi.Slot] = new XmlDocument.NodeData(XmlNodeKind.ProcessingInstruction, target, "", "", "data") { Parent = r.Slot };
-        Assert.Throws<InvalidOperationException>(() => d.ToXmlString(Omit));
+        Assert.Throws<InvalidOperationException>(() => d.ToXmlString(Omit, cancellationToken: TestContext.Current.CancellationToken));
     }
     [Fact]
     public void DuplicateDeclarationsAreRejectedEvenInRepair()
     {
         var d = Root(out var r); r.SetNamespaceDeclaration("p", "u"); var n = r.SetNamespaceDeclaration("q", "v");
         d.NamespaceSlots[n.Slot].Prefix = "p";
-        Assert.Throws<InvalidOperationException>(() => d.ToXmlString(Repair));
+        Assert.Throws<InvalidOperationException>(() => d.ToXmlString(Repair, cancellationToken: TestContext.Current.CancellationToken));
     }
     [Fact]
     public void DeepTraversalAndScopeUndoHaveLinearCountedWork()
