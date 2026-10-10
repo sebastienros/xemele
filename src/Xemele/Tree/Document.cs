@@ -7,7 +7,7 @@ internal readonly record struct XmlTreeMutation(XmlTreeMutationKind Kind, XmlNod
 public sealed partial class XmlDocument
 {
     // Stable, never-reused slots. Handle retention deliberately retains the whole owner.
-    internal sealed class NodeData(XmlNodeKind kind, string local, string uri, string prefix, string value)
+    internal struct NodeData(XmlNodeKind kind, string local, string uri, string prefix, string value)
     {
         internal readonly XmlNodeKind Kind = kind;
         internal readonly string Local = local, Uri = uri, Prefix = prefix;
@@ -16,7 +16,7 @@ public sealed partial class XmlDocument
         internal int FirstAttribute = -1, LastAttribute = -1, AttributeCount;
         internal int FirstNamespace = -1, LastNamespace = -1, NamespaceCount;
     }
-    internal sealed class MemberData(int element, string local, string uri, string prefix, string value)
+    internal struct MemberData(int element, string local, string uri, string prefix, string value)
     {
         internal readonly int Element = element;
         internal readonly string Local = local, Uri = uri;
@@ -24,8 +24,8 @@ public sealed partial class XmlDocument
         internal int Previous = -1, Next = -1;
         internal bool Attached = true;
     }
-    internal readonly List<NodeData> Nodes = [];
-    internal readonly List<MemberData> AttributeSlots = [], NamespaceSlots = [];
+    internal readonly SlotArena<NodeData> Nodes = new();
+    internal readonly SlotArena<MemberData> AttributeSlots = new(), NamespaceSlots = new();
     private readonly Dictionary<string, string> names = new(StringComparer.Ordinal);
     private readonly OperationBudget budget;
     private readonly XmlResourceLimits limits;
@@ -60,11 +60,11 @@ public sealed partial class XmlDocument
         if (FindInternedName(value) is string found) return found;
         string owned = value.ToString(); names.Add(owned, owned); return owned;
     }
-    private static void CheckCapacity<T>(List<T> slots)
+    private static void CheckCapacity<T>(SlotArena<T> slots) where T : struct
     {
         if (slots.Count >= Array.MaxLength) throw new InvalidOperationException("Tree slot capacity exceeded.");
     }
-    private static void Capacity<T>(List<T> slots) => slots.EnsureCapacity(checked(slots.Count + 1));
+    private static void Capacity<T>(SlotArena<T> slots) where T : struct => slots.EnsureCapacity(checked(slots.Count + 1));
     private XmlNode Create(XmlNodeKind kind, string local, string uri, string prefix, string value)
     {
         CheckCapacity(Nodes); PreflightNames(local, uri, prefix); Capacity(Nodes);
@@ -93,17 +93,17 @@ public sealed partial class XmlDocument
     private void AdvanceVersion() { EnsureVersions(1); MutationVersion++; }
     internal void SetValue(int slot, string value)
     {
-        var n = Nodes[slot];
+        ref var n = ref Nodes[slot];
         if (n.Kind is XmlNodeKind.Element or XmlNodeKind.Document or XmlNodeKind.Fragment) throw new InvalidOperationException("Container value is read-only.");
         TreeValidation.Value(n.Kind, value); n.Value = value;
         NotifyMutation(new(XmlTreeMutationKind.Value, Handle(slot), default, default, default, default));
     }
     internal void Remove(int slot)
     {
-        var n = Nodes[slot];
+        ref var n = ref Nodes[slot];
         if (n.Kind == XmlNodeKind.Document) throw new InvalidOperationException("Document cannot detach.");
         if (n.Parent < 0) return;
-        AdvanceVersion(); int parent = n.Parent; var p = Nodes[parent];
+        AdvanceVersion(); int parent = n.Parent; ref var p = ref Nodes[parent];
         if (n.Previous >= 0) Nodes[n.Previous].Next = n.Next; else p.First = n.Next;
         if (n.Next >= 0) Nodes[n.Next].Previous = n.Previous; else p.Last = n.Previous;
         p.Count--; n.Parent = n.Previous = n.Next = -1;
@@ -111,7 +111,7 @@ public sealed partial class XmlDocument
     }
     private void Link(int parent, int child, int reference)
     {
-        AdvanceVersion(); var p = Nodes[parent]; var n = Nodes[child];
+        AdvanceVersion(); ref var p = ref Nodes[parent]; ref var n = ref Nodes[child];
         int previous = reference < 0 ? p.Last : Nodes[reference].Previous;
         n.Parent = parent; n.Previous = previous; n.Next = reference;
         if (previous >= 0) Nodes[previous].Next = child; else p.First = child;
@@ -121,7 +121,7 @@ public sealed partial class XmlDocument
     }
     internal void Insert(int parent, XmlNode child, XmlNode reference, bool before)
     {
-        var p = Nodes[parent];
+        ref var p = ref Nodes[parent];
         if (p.Kind is not (XmlNodeKind.Element or XmlNodeKind.Fragment or XmlNodeKind.Document)) throw new InvalidOperationException("Node cannot have children.");
         child.Require();
         if (!ReferenceEquals(child.Document, this)) throw new ArgumentException("Foreign child.", nameof(child));
@@ -132,7 +132,7 @@ public sealed partial class XmlDocument
             if (!ReferenceEquals(reference.Document, this) || Nodes[reference.Slot].Parent != parent) throw new ArgumentException("Reference is not a direct child.", nameof(reference));
             r = reference.Slot;
         }
-        var n = Nodes[child.Slot];
+        ref var n = ref Nodes[child.Slot];
         if (n.Kind == XmlNodeKind.Document) throw new ArgumentException("Document cannot be inserted.", nameof(child));
         for (int a = parent; a >= 0; a = Nodes[a].Parent) if (a == child.Slot) throw new ArgumentException("Cyclic insertion.", nameof(child));
         if (child.Slot == r) return;
@@ -179,12 +179,12 @@ public sealed partial class XmlDocument
     }
     internal void SetText(int slot, string value)
     {
-        var n = Nodes[slot];
+        ref var n = ref Nodes[slot];
         if (n.Kind == XmlNodeKind.Document) throw new InvalidOperationException("Document text replacement is forbidden.");
         if (n.Kind is not (XmlNodeKind.Element or XmlNodeKind.Fragment)) { SetValue(slot, value); return; }
         TreeValidation.Text(value); EnsureVersions((long)n.Count + (value.Length == 0 ? 0 : 1));
         XmlNode text = value.Length == 0 ? default : CreateText(value);
-        while (n.First >= 0) Remove(n.First);
+        while (Nodes[slot].First >= 0) Remove(Nodes[slot].First);
         if (!text.IsDefault) Link(slot, text.Slot, -1);
     }
     internal void Element(int slot)
@@ -206,7 +206,7 @@ public sealed partial class XmlDocument
         var slots = ns ? NamespaceSlots : AttributeSlots;
         if (found >= 0)
         {
-            var existing = slots[found];
+            ref var existing = ref slots[found];
             PreflightNames(ns ? value : prefix);
             bool changedPrefix = !ns && prefix != existing.Prefix;
             existing.Prefix = Intern(prefix); existing.Value = ns ? Intern(value) : value;
@@ -216,7 +216,7 @@ public sealed partial class XmlDocument
         EnsureVersions(1); CheckCapacity(slots);
         PreflightNames(ns ? prefix : local, ns ? value : uri, ns ? "" : prefix); Capacity(slots);
         var member = new MemberData(element, Intern(local), Intern(uri), Intern(prefix), ns ? Intern(value) : value);
-        int slot = slots.Count; var e = Nodes[element];
+        int slot = slots.Count; ref var e = ref Nodes[element];
         int last = ns ? e.LastNamespace : e.LastAttribute;
         member.Previous = last; slots.Add(member); AdvanceVersion();
         if (last >= 0) slots[last].Next = slot;
@@ -227,16 +227,16 @@ public sealed partial class XmlDocument
     }
     internal void MemberValue(int slot, string value, bool ns)
     {
-        var m = (ns ? NamespaceSlots : AttributeSlots)[slot];
+        ref var m = ref (ns ? NamespaceSlots : AttributeSlots)[slot];
         if (ns) { TreeValidation.Binding(m.Prefix, value); PreflightNames(value); value = Intern(value); }
         else TreeValidation.Text(value);
         m.Value = value; MemberNotify(m.Element, slot, ns, XmlTreeMutationKind.Value);
     }
     internal void RemoveMember(int slot, bool ns)
     {
-        var slots = ns ? NamespaceSlots : AttributeSlots; var m = slots[slot];
+        var slots = ns ? NamespaceSlots : AttributeSlots; ref var m = ref slots[slot];
         if (!m.Attached) return;
-        AdvanceVersion(); var e = Nodes[m.Element];
+        AdvanceVersion(); ref var e = ref Nodes[m.Element];
         if (m.Previous >= 0) slots[m.Previous].Next = m.Next;
         else if (ns) e.FirstNamespace = m.Next; else e.FirstAttribute = m.Next;
         if (m.Next >= 0) slots[m.Next].Previous = m.Previous;

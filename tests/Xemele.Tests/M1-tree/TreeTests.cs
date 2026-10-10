@@ -197,4 +197,44 @@ public class TreeTests
         }
         finally {System.Globalization.CultureInfo.CurrentCulture=prior;}
     }
+    [Fact]
+    public void EverySlotDomainSurvivesGrowthAndTextReplacementReacquiresStorage()
+    {
+        var d=new XmlDocument();var e=d.CreateElement("e");var first=d.CreateText("old");e.AppendChild(first);d.CreateText("fill-initial-four-slot-arena");
+        e.SetTextContent("replacement");Assert.Equal("replacement",e.FirstChild.Value);Assert.True(first.Parent.IsDefault);Assert.Equal(1,e.Children.Count);
+        var a=e.SetAttribute("a","v");var ns=e.SetNamespaceDeclaration("p","urn:p");
+        for(int i=0;i<1000;i++){e.SetAttribute("a"+i,"v");e.SetNamespaceDeclaration("p"+i,"urn:p"+i);}
+        Assert.Equal(a,e.Attributes[0]);Assert.Equal(ns,e.NamespaceDeclarations[0]);Assert.Equal(1001,e.Attributes.Count);Assert.Equal(1001,e.NamespaceDeclarations.Count);
+        a.Value="new";ns.Value="urn:new";Assert.Equal("new",e.GetAttribute("a"));Assert.Equal("urn:new",e.NamespaceDeclarations[0].Value);
+    }
+    [Fact]
+    public void DeterministicMoveRemoveSequenceMatchesIndependentListOracle()
+    {
+        var d=new XmlDocument();XmlNode[] parents=[d.CreateElement("left"),d.CreateElement("right")];
+        var model=new[]{new List<XmlNode>(),new List<XmlNode>()};
+        var children=Enumerable.Range(0,20).Select(i=>d.CreateText(i+"," )).ToArray();var random=new Random(482);
+        for(int step=0;step<1000;step++)
+        {
+            var child=children[random.Next(children.Length)];int p=random.Next(2);int operation=random.Next(3);
+            if(operation==0){child.Remove();foreach(var list in model)list.Remove(child);}
+            else if(operation==1||model[p].Count==0)
+            {
+                parents[p].AppendChild(child);foreach(var list in model)list.Remove(child);model[p].Add(child);
+            }
+            else
+            {
+                var reference=model[p][random.Next(model[p].Count)];parents[p].InsertBefore(child,reference);
+                if(child!=reference){foreach(var list in model)list.Remove(child);model[p].Insert(model[p].IndexOf(reference),child);}
+            }
+            for(int i=0;i<2;i++)
+            {
+                Assert.Equal(model[i].Count,parents[i].Children.Count);Assert.Equal(string.Concat(model[i].Select(n=>n.Value)),parents[i].GetTextContent());
+                for(int j=0;j<model[i].Count;j++)
+                {
+                    var n=model[i][j];Assert.Equal(n,parents[i].Children[j]);Assert.Equal(parents[i],n.Parent);
+                    Assert.Equal(j==0?default:model[i][j-1],n.PreviousSibling);Assert.Equal(j+1==model[i].Count?default:model[i][j+1],n.NextSibling);
+                }
+            }
+        }
+    }
 }

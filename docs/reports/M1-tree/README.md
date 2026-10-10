@@ -6,7 +6,7 @@ constructs and imports trees independently of parsing and serialization.
 
 ## Ownership and invariants
 
-Document-owned lists contain never-reused Int32 slots. Nodes, attributes and
+Document-owned value-slot arenas contain never-reused Int32 slots. Nodes, attributes and
 namespace declarations have separate slot domains and strong owner references.
 Detached nodes/removed member handles remain valid; removed members retain their
 original owning element. Any retained handle deliberately retains the whole
@@ -14,7 +14,10 @@ owner, including detached nodes, removed members, their text and interned names.
 This prevents dangling handles but retains the complete arena until every handle
 and the document are unreachable. There is no disposal or slot reclamation.
 
-Slots contain linked child/member order and stable data objects. Structural changes
+Contiguous value slots contain linked child/member order. Array growth uses 1.5x
+capacity; handles remain stable by index, and no movable storage reference escapes
+publicly. Mutation primitives hold internal refs only while their arena cannot
+grow; text replacement reacquires slots after allocating its new text. Structural changes
 preflight the checked Int64 global mutation version and report primitive changes
 through the optional erased partial hook. Values/prefix updates preserve membership
 identity and enumerator validity. Fragment transfers validate every prospective
@@ -77,3 +80,9 @@ previous Common-only package in the global NuGet cache under the same developmen
 version. The consumer now uses an isolated RestorePackagesPath; source/API tests
 already passed before that harness failure. Raw initial failure remains in ignored
 artifacts/M1-tree/verification-initial-cache-failure.txt.
+
+After the first complete verifier passed, storage was tightened from per-slot
+objects to contiguous value arenas before any timing. Physical array layout is not
+contract-frozen; this layout follows the approved arena retention direction. Prior
+object-slot check output is retained only as historical evidence under ignored
+artifacts, not as allocation/timing evidence for the final source.
