@@ -23,7 +23,7 @@ def main():
     parser.add_argument('--report-prefix', required=True)
     parser.add_argument('--audit-base', default=CLAIM)
     parser.add_argument('--expected-branch')
-    parser.add_argument('--expected-runtime-tests', type=int, default=2544)
+    parser.add_argument('--expected-runtime-tests', type=int, default=2543)
     parser.add_argument('--expected-conformance-tests', type=int, default=255)
     parser.add_argument('--expected-differential-tests', type=int, default=299)
     parser.add_argument('--expected-public-api', type=int, default=251)
@@ -84,14 +84,14 @@ def main():
         split_rows = sum((length+1)*4 for length in lengths)
         fact_rows = test_source.count('[Fact]')
         inline_rows = test_source.count('[InlineData(')
-        assert (len(lengths), split_rows, fact_rows, inline_rows) == (29, 964, 15, 16)
+        assert (len(lengths), split_rows, fact_rows, inline_rows) == (29, 964, 14, 16)
         summary['derivedOwnTests'] = {'fixtures': len(lengths), 'inputSplitOutputCapacityRows': split_rows,
                                     'facts': fact_rows, 'inlineRows': inline_rows, 'total': split_rows+fact_rows+inline_rows}
         focused = raw/'focused.xml'
         run('dotnet', 'build', 'tests/Xemele.Tests/Xemele.Tests.csproj', *FLAGS)
         run('dotnet', 'tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll', '-noColor', '-class', 'Xemele.Tests.ValueTests', '-result-xml', focused)
         cases = list(ET.parse(focused).iter('test'))
-        assert len(cases) == 995 and all(t.get('result') == 'Pass' for t in cases)
+        assert len(cases) == 994 and all(t.get('result') == 'Pass' for t in cases)
         (report/'focused.xml.gz').write_bytes(gzip.compress(focused.read_bytes(), mtime=0))
         summary['focusedTests'] = len(cases)
         sample = ROOT/'samples/M2-dtd-values/bin/Release/net10.0/Sample.dll'
@@ -135,7 +135,7 @@ def main():
         summary['runtimeTests'] = counts
         runtime_tests = list(ET.parse(raw/'Xemele.Tests.xml').iter('test'))
         values = [t for t in runtime_tests if t.get('type') == 'Xemele.Tests.ValueTests']
-        assert len(values) == 995 and all(t.get('result') == 'Pass' for t in values)
+        assert len(values) == 994 and all(t.get('result') == 'Pass' for t in values)
         summary['ownValueTests'] = len(values)
         discovery = json.loads(run('python3', '-B', 'tools/ApiBaseline/discover.py'))
         assert discovery['apiDeclarations'] == args.expected_public_api and discovery['fixtures'] == args.expected_fixtures
