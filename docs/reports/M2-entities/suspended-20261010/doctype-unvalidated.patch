@@ -1,0 +1,237 @@
+diff --git a/src/Xemele/Parsing/Core/XmlParserCore.cs b/src/Xemele/Parsing/Core/XmlParserCore.cs
+index dd96553..333fb03 100644
+--- a/src/Xemele/Parsing/Core/XmlParserCore.cs
++++ b/src/Xemele/Parsing/Core/XmlParserCore.cs
+@@ -13,8 +13,8 @@ namespace Xemele.Parsing.Syntax;
+ // only tags/declarations/references/PI targets require bounded lexical scratch.
+ internal sealed partial class XmlParserCore : IDisposable
+ {
+-    private enum State { Data, Less, Bang, Tag, Close, Comment, CData, PiTarget, PiBody, Declaration, Reference }
+-    private enum Delivery { None, Document, Tag, Close, Text, Declaration, EndDocument }
++    private enum State { Data, Less, Bang, Tag, Close, Comment, CData, PiTarget, PiBody, Declaration, Reference, Doctype, DtdSubset, DtdClose }
++    private enum Delivery { None, Document, Tag, Close, Text, Declaration, DocumentType, EndDocument }
+     private readonly record struct Name(string Local, string Uri, string Prefix)
+     {
+         internal XmlNameView View => new(Local, Uri, Prefix);
+@@ -191,6 +191,12 @@ internal sealed partial class XmlParserCore : IDisposable
+         if (!XmlScalar(scalar)) { Reject("XML.Syntax", "Disallowed XML scalar.", location); return; }
+         if (!Charge(Quota.DocumentCharacters, 1, location)) return;
+         if (!position.TryAdvance(new Rune(scalar))) { Reject("XML.LocationLimit", "Location capacity exceeded.", location); return; }
++        if (state == State.DtdSubset)
++        {
++            normalizedCr = scalar == '\r';
++            ProcessDtdScalar(scalar, location);
++            return;
++        }
+         bool skip = normalizedCr && scalar == '\n'; normalizedCr = scalar == '\r';
+         if (skip) return;
+         if (scalar == '\r') scalar = '\n';
+@@ -271,7 +277,16 @@ internal sealed partial class XmlParserCore : IDisposable
+             case State.Bang:
+                 if (!Store(c, location)) return;
+                 var prefix = token.AsSpan(0, tokenLength);
+-                if (prefix.SequenceEqual("DOCTYPE")) { Reject("XML.DtdProhibited", "DTD syntax is prohibited.", opening); return; }
++                if (prefix.SequenceEqual("DOCTYPE"))
++                {
++                    if (budget.Options.DtdProcessing == XmlDtdProcessing.Prohibit)
++                    { Reject("XML.DtdProhibited", "DTD syntax is prohibited.", opening); return; }
++                    if (rootSeen || doctypeSeen || entitySources is { Count: > 0 })
++                    { Reject("XML.Syntax", "Invalid DOCTYPE placement.", opening); return; }
++                    doctypeSeen = true; declarationAllowed = false; ResetToken(); state = State.Doctype; quote = '\0';
++                    entityBudget ??= new(budget, names);
++                    return;
++                }
+                 if (prefix.SequenceEqual("--")) { tokenLength = 0; state = State.Comment; BeginText(XmlTextKind.Comment, "", opening); declarationAllowed = false; return; }
+                 if (prefix.SequenceEqual("[CDATA["))
+                 {
+@@ -281,6 +296,20 @@ internal sealed partial class XmlParserCore : IDisposable
+                 if (!"DOCTYPE".AsSpan().StartsWith(prefix) && !"--".AsSpan().StartsWith(prefix) && !"[CDATA[".AsSpan().StartsWith(prefix))
+                     Reject("XML.Syntax", "Invalid markup declaration.", opening);
+                 return;
++            case State.Doctype:
++                if (quote == 0 && c is '[' or '>')
++                {
++                    if (!ParseDoctypeHeader()) return;
++                    if (c == '[') BeginDtdSubset(); else CompleteDoctype();
++                    return;
++                }
++                if (quote == 0 && c is '\'' or '"') quote = (char)c;
++                else if (c == quote) quote = '\0';
++                Store(c, location); return;
++            case State.DtdClose:
++                if (White(c)) return;
++                if (c != '>') { Reject("XML.Syntax", "Expected DOCTYPE closing delimiter.", location); return; }
++                CompleteDoctype(); return;
+             case State.Tag:
+                 if (c == '>' && quote == 0) { if (Charge(Quota.TokenCharacters, 1, location)) ParseTag(); state = State.Data; return; }
+                 if (quote == 0 && c is '\'' or '"') quote = (char)c;
+@@ -408,6 +437,10 @@ internal sealed partial class XmlParserCore : IDisposable
+                     break;
+                 case Delivery.Close:
+                     delivery = Delivery.None; PopFrame(); keepGoing = sink.EndElement(deliveredName.View, opening); break;
++                case Delivery.DocumentType:
++                    delivery = Delivery.None;
++                    keepGoing = sink is not IXmlDtdSink dtdSink || dtdSink.DocumentType(documentType!, entities!.Model, doctypeLocation);
++                    break;
+                 case Delivery.Declaration:
+                     delivery = Delivery.None; keepGoing = sink.Declaration(new(version, token.AsSpan(encodingStart, encodingLength), standalone, opening)); break;
+                 default:
+diff --git a/src/Xemele/Parsing/Core/XmlParserCore.Doctype.cs b/src/Xemele/Parsing/Core/XmlParserCore.Doctype.cs
+new file mode 100644
+index 0000000..55f66b6
+--- /dev/null
++++ b/src/Xemele/Parsing/Core/XmlParserCore.Doctype.cs
+@@ -0,0 +1,153 @@
++using System.Text;
++using Xemele.Parsing.Dtd;
++using Xemele.Parsing.Entities;
++
++namespace Xemele.Parsing.Syntax;
++
++internal sealed partial class XmlParserCore
++{
++    private bool doctypeSeen;
++    private XmlLocation doctypeLocation;
++    private string? doctypeName, doctypeSystem, doctypePublic;
++    private XmlDocumentType? documentType;
++    private DtdParser? dtdParser;
++    private StringBuilder? internalSubset;
++    private DtdModel? internalModel;
++    private bool subsetMarkup, subsetComment, subsetPi;
++    private char subsetQuote;
++    private int subsetPrefix, subsetDash;
++    private bool subsetQuestion;
++
++    private bool ParseDoctypeHeader()
++    {
++        int i = 0;
++        if (tokenLength == 0 || !White(token[0]))
++        { Reject("XML.Syntax", "DOCTYPE requires separating whitespace.", opening); return false; }
++        SkipWhite(ref i); int start = i;
++        while (i < tokenLength && !White(token[i])) { Work(i); i++; }
++        var name = token.AsSpan(start, i - start);
++        if (!EntityName(name)) { Reject("XML.Syntax", "Invalid DOCTYPE name.", opening); return false; }
++        doctypeName = Intern(name, opening); doctypeLocation = opening;
++        bool separator = i < tokenLength; SkipWhite(ref i);
++        doctypePublic = doctypeSystem = null;
++        if (i != tokenLength)
++        {
++            if (!separator) { Reject("XML.Syntax", "External identifier requires whitespace.", opening); return false; }
++            start = i; while (i < tokenLength && !White(token[i])) { Work(i); i++; }
++            var keyword = token.AsSpan(start, i - start);
++            bool isPublic = keyword.SequenceEqual("PUBLIC");
++            if (!isPublic && !keyword.SequenceEqual("SYSTEM"))
++            { Reject("XML.Syntax", "Invalid external identifier keyword.", opening); return false; }
++            if (i == tokenLength || !White(token[i])) { Reject("XML.Syntax", "External identifier requires whitespace.", opening); return false; }
++            SkipWhite(ref i);
++            if (isPublic)
++            {
++                doctypePublic = DoctypeLiteral(ref i, true);
++                if (diagnostic is not null) return false;
++                if (i == tokenLength || !White(token[i])) { Reject("XML.Syntax", "PUBLIC requires a system identifier.", opening); return false; }
++                SkipWhite(ref i);
++            }
++            doctypeSystem = DoctypeLiteral(ref i, false);
++            if (diagnostic is not null) return false;
++            SkipWhite(ref i);
++        }
++        if (i != tokenLength) { Reject("XML.Syntax", "Unexpected DOCTYPE header content.", opening); return false; }
++        return diagnostic is null;
++    }
++
++    private string? DoctypeLiteral(ref int i, bool publicId)
++    {
++        if (i == tokenLength || token[i] is not ('\'' or '"'))
++        { Reject("XML.Syntax", "Expected quoted external identifier.", opening); return null; }
++        char delimiter = token[i++]; int start = i;
++        while (i < tokenLength && token[i] != delimiter)
++        {
++            Work(i);
++            if (publicId && !(token[i] is ' ' or '\r' or '\n' or >= 'a' and <= 'z' or >= 'A' and <= 'Z' or >= '0' and <= '9' ||
++                "-'()+,./:=?;!*#@$_%".AsSpan().Contains(token[i])))
++            { Reject("XML.Syntax", "Invalid public identifier character.", tokenLocations[i]); return null; }
++            i++;
++        }
++        if (i == tokenLength) { Reject("XML.Syntax", "Unfinished external identifier.", opening); return null; }
++        string value = new(token.AsSpan(start, i++ - start));
++        if (publicId)
++        {
++            var normalized = new StringBuilder(); bool space = false;
++            foreach (char c in value)
++            {
++                activeCancellation.ThrowIfCancellationRequested();
++                if (White(c)) { space = normalized.Length != 0; continue; }
++                if (space) { normalized.Append(' '); space = false; }
++                normalized.Append(c);
++            }
++            value = normalized.ToString();
++        }
++        return value;
++    }
++
++    private void BeginDtdSubset()
++    {
++        state = State.DtdSubset;
++        internalSubset = new();
++        dtdParser = new(DtdSubsetKind.Internal, budget.Options.Limits, entityBudget!, position.Current());
++        subsetMarkup = subsetComment = subsetPi = subsetQuestion = false;
++        subsetQuote = '\0'; subsetPrefix = subsetDash = 0;
++        ResetToken();
++    }
++
++    private void ProcessDtdScalar(int scalar, XmlLocation location)
++    {
++        if (!subsetMarkup && scalar == ']')
++        {
++            if (sourceMode == 2) dtdParser!.CompleteByteSource(location.ByteOffset!.Value);
++            var completed = dtdParser!.Append([], [], true, activeCancellation);
++            if (completed.Step == DtdParseStep.Rejected) { diagnostic = completed.Diagnostic; return; }
++            if (completed.Step != DtdParseStep.Completed)
++            { Reject("XML.Syntax", "Internal subset did not complete.", location); return; }
++            internalModel = dtdParser.Model; dtdParser.Dispose(); dtdParser = null;
++            state = State.DtdClose; return;
++        }
++        Span<char> chars = stackalloc char[2]; Span<long> offsets = stackalloc long[2];
++        int count = new Rune(scalar).EncodeToUtf16(chars);
++        offsets.Fill(location.ByteOffset ?? 0);
++        if (internalSubset!.Length > int.MaxValue - count)
++        { Reject("XML.ResourceLimit", "Internal subset metadata capacity exceeded.", location); return; }
++        internalSubset.Append(chars[..count]);
++        var result = dtdParser!.Append(chars[..count], sourceMode == 2 ? offsets[..count] : [], false, activeCancellation);
++        if (result.Step == DtdParseStep.Rejected) { diagnostic = result.Diagnostic; return; }
++        if (result.Step == DtdParseStep.NeedEntity)
++        { Reject("XML.ResourceDenied", "External parameter entity composition is not yet available.", result.Entity!.Value.Location); return; }
++        TrackSubsetDelimiter(scalar);
++    }
++
++    private void TrackSubsetDelimiter(int c)
++    {
++        if (!subsetMarkup)
++        { if (c == '<') { subsetMarkup = true; subsetPrefix = 1; } return; }
++        if (subsetComment)
++        {
++            if (c == '>' && subsetDash == 2) { subsetMarkup = subsetComment = false; subsetDash = 0; }
++            else subsetDash = c == '-' ? Math.Min(2, subsetDash + 1) : 0;
++            return;
++        }
++        if (subsetPi)
++        { if (c == '>' && subsetQuestion) subsetMarkup = subsetPi = false; subsetQuestion = c == '?'; return; }
++        if (subsetQuote != 0) { if (c == subsetQuote) subsetQuote = '\0'; return; }
++        if (subsetPrefix == 1 && c == '?') { subsetPi = true; subsetPrefix = 0; return; }
++        if (subsetPrefix == 1 && c == '!' || subsetPrefix == 2 && c == '-') { subsetPrefix++; return; }
++        if (subsetPrefix == 3 && c == '-') { subsetComment = true; subsetPrefix = 0; subsetDash = 0; return; }
++        subsetPrefix = 0;
++        if (c is '\'' or '"') subsetQuote = (char)c;
++        else if (c == '>') subsetMarkup = false;
++    }
++
++    private void CompleteDoctype()
++    {
++        if (doctypeSystem is not null)
++        { Reject("XML.ResourceDenied", "External subset composition is not yet available.", doctypeLocation); return; }
++        entities = new XmlEntityContext(internalModel ?? new([], [], [], [], []), activeCancellation);
++        documentType = new(doctypeName!, doctypePublic, doctypeSystem, internalSubset?.ToString());
++        internalSubset = null; internalModel = null;
++        state = State.Data; delivery = Delivery.DocumentType; ResetToken();
++    }
++}

@@ -81,12 +81,14 @@ public sealed class FoundationTests
     [Theory]
     [InlineData(XmlDtdProcessing.Prohibit)]
     [InlineData(XmlDtdProcessing.Parse)]
-    public void FoundationDoesNotEnableProductionDtdOrEntityParsing(XmlDtdProcessing mode)
+    public void DefaultProhibitionAndNoUnrequestedResolverWorkRemain(XmlDtdProcessing mode)
     {
         var resolver = new RefusingResolver(); var options = new XmlParseOptions { DtdProcessing = mode, Resolver = resolver };
         Assert.True(XmlDocument.TryParse("<root/>", out var document, out _, options, TestContext.Current.CancellationToken)); Assert.Null(document!.DocumentType);
-        Assert.False(XmlDocument.TryParse("<!DOCTYPE root><root/>", out _, out var diagnostics, options, TestContext.Current.CancellationToken));
-        Assert.Equal("XML.DtdProhibited", diagnostics[0].Code);
+        bool admitted = XmlDocument.TryParse("<!DOCTYPE root><root/>", out var typed, out var diagnostics, options, TestContext.Current.CancellationToken);
+        Assert.Equal(mode == XmlDtdProcessing.Parse, admitted);
+        if (admitted) { Assert.Equal("root", typed!.DocumentType!.Name); Assert.Empty(diagnostics); }
+        else Assert.Equal("XML.DtdProhibited", diagnostics[0].Code);
         Assert.False(XmlDocument.TryParse("<root>&unknown;</root>", out _, out diagnostics, options, TestContext.Current.CancellationToken));
         Assert.Equal("XML.UndeclaredEntity", diagnostics[0].Code); Assert.Equal(0, resolver.Calls);
     }
