@@ -38,7 +38,23 @@
         }
       ],
       "audit_base": "bd91080000552a9e6ad449189f792837b6ac5476",
-      "wait_cursor": "adf78f00-edad-49e0-8e86-df4b3c822c7f:9"
+      "wait_cursor": "adf78f00-edad-49e0-8e86-df4b3c822c7f:12",
+      "partial_review": {
+        "revision": "5ff43a44e957654adfbf74b33c6d5d86398ba047",
+        "result": "Source-only corrections requested; no executed checks or acceptance approval",
+        "findings": [
+          "Declared general references admit colon, bypassing existing NCName validation; replace positive colon test with split/pause rejection, preserve lexical DTD Names grammar.",
+          "Append ValidateOffsets preflight cancellation misses AbortEntities; drain accepted depth immediately, preserving primary exception.",
+          "Entity EOF rejection consumes one parent scalar; stop before suffix, test exact consumed counts for unfinished markup/reference/open element.",
+          "Context construction and merge need bounded cancellation, including empty-model entry.",
+          "Attribute duplicate grouping is quadratic; use ordinal group keys or justify scaling."
+        ],
+        "reviewers": [
+          "review_foundation",
+          "review_api_wiring"
+        ],
+        "routing": "All corrections sent to active owning worker. No worker paths edited by coordinator. Original A1-A3 remain pending; review new committed production checkpoint and actual checks."
+      }
     }
   ],
   "integration_queue": [],
