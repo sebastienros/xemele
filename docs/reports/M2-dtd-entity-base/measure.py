@@ -148,7 +148,14 @@ def stop_group(process):
 
 def output_facts(log):
     text = log.read_text(encoding='utf-8', errors='strict')
+    # Retain concise infrastructure diagnostics before raw cleanup, including
+    # generator/builder exceptions that precede every structured proof record.
+    diagnostics = [line for line in text.splitlines()
+                   if re.search(r'\b(?:error|exception|timeout|timed out|Unhandled)\b', line, re.IGNORECASE)]
     return {
+        'diagnostics': [line[:1000] for line in diagnostics[:20]],
+        'diagnosticLineCount': len(diagnostics),
+        'diagnosticsTruncated': len(diagnostics) > 20 or any(len(line) > 1000 for line in diagnostics),
         'generatedBuildExits': [int(v) for v in re.findall(r'// command took .*?exited with (-?\d+)', text)],
         'childExits': [int(v) for v in re.findall(r'// Benchmark Process \d+ has exited with code (-?\d+)', text)],
         'cases': re.findall(r'^// Benchmark: EntityBaseBenchmarks\.(\w+):', text, re.MULTILINE),
@@ -377,6 +384,9 @@ def main():
             known = {'head': revision, 'repositoryRoot': str(ROOT), 'identity': identity, 'sources': source, 'parentClosure': closure(PARENT),
                      'runtimeDirectory': str(runtime_root), 'runtimeClosure': closure(runtime_root), 'dotnetSha256': digest(dotnet),
                      'sdk': run([dotnet, '--version'], env, raw, summary, total=30).strip()}
+            # Preserve the independently captured parent/source/runtime expectation
+            # even when generation fails before it can publish a child manifest.
+            summary['preparedIdentities'] = known
             require(known['sdk'] == '10.0.400', 'Unexpected pinned SDK')
             phase(summary, 'independent-generation-build-only')
             future_artifacts = ROOT / 'artifacts/M2-dtd-entity-base' / args.benchmark_report

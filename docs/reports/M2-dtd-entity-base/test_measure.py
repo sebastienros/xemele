@@ -49,6 +49,30 @@ class MeasurementGuards(unittest.TestCase):
                 with self.assertRaises(ValueError):
                     measure.benchmark_results(text, Path(root), 'a' * 40, {})
 
+    def test_build_failure_diagnostics_survive_without_structured_proof(self):
+        with tempfile.TemporaryDirectory() as root:
+            log = Path(root) / 'build.log'
+            log.write_text('// command took 1 sec and exited with 0\n'
+                           'Build timed out after 240 seconds.\n'
+                           'Unhandled exception. System.Exception: Independent generated build failed.\n')
+            facts = measure.output_facts(log)
+        self.assertEqual(facts['generatedBuildExits'], [0])
+        self.assertEqual(facts['buildOnlyRecords'], [])
+        self.assertEqual(facts['diagnostics'], ['Build timed out after 240 seconds.',
+                                              'Unhandled exception. System.Exception: Independent generated build failed.'])
+        self.assertEqual(facts['diagnosticLineCount'], 2)
+        self.assertFalse(facts['diagnosticsTruncated'])
+
+    def test_build_diagnostics_are_bounded(self):
+        with tempfile.TemporaryDirectory() as root:
+            log = Path(root) / 'build.log'
+            log.write_text(('error ' + 'x' * 1200 + '\n') * 25)
+            facts = measure.output_facts(log)
+        self.assertEqual(len(facts['diagnostics']), 20)
+        self.assertTrue(all(len(line) == 1000 for line in facts['diagnostics']))
+        self.assertEqual(facts['diagnosticLineCount'], 25)
+        self.assertTrue(facts['diagnosticsTruncated'])
+
     def test_actual_mismatching_hashes_and_partial_metrics_survive_early_failure(self):
         import json
         proof = {'stage': 'before', 'gatePassed': False, 'actual': {'closure': {'product.dll': 'actual-hash'}, 'generatedInputs': {'code.notcs': 'actual-code'}}}
