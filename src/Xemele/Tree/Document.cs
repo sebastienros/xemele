@@ -278,18 +278,19 @@ public sealed partial class XmlDocument
         // Preflight all distinct names and structural versions before a quota rejection.
         var missing = new HashSet<string>(StringComparer.Ordinal);
         int remainingNames = (limits.InternedNames ?? int.MaxValue) - names.Count;
-        long nodeCount = 0, members = 0, edges = 0;
+        long nodeCount = 0, members = 0, edges = 0, attributeCount = 0, namespaceCount = 0;
         long nodeVisits = 0, memberVisits = 0, links = 0;
         XmlNode current = source;
         while (true)
         {
             nodeCount++; nodeVisits++; if (current != source) edges++;
             Collect(current.LocalName); Collect(current.NamespaceUri); Collect(current.Prefix);
-            foreach (var a in current.Attributes) { members++; memberVisits++; Collect(a.LocalName); Collect(a.NamespaceUri); Collect(a.Prefix); }
-            foreach (var n in current.NamespaceDeclarations) { members++; memberVisits++; Collect(n.Prefix); Collect(n.Value); }
+            foreach (var a in current.Attributes) { members++; attributeCount++; memberVisits++; Collect(a.LocalName); Collect(a.NamespaceUri); Collect(a.Prefix); }
+            foreach (var n in current.NamespaceDeclarations) { members++; namespaceCount++; memberVisits++; Collect(n.Prefix); Collect(n.Value); }
             if (!deep || !Advance(ref current, source)) break;
         }
-        if (nodeCount > Array.MaxLength - Nodes.Count || members > Array.MaxLength - Math.Max(AttributeSlots.Count, NamespaceSlots.Count)) throw new InvalidOperationException("Tree capacity exceeded.");
+        if (nodeCount > Array.MaxLength - Nodes.Count || attributeCount > Array.MaxLength - AttributeSlots.Count || namespaceCount > Array.MaxLength - NamespaceSlots.Count)
+            throw new InvalidOperationException("Tree capacity exceeded.");
         EnsureVersions(edges + members);
         if (missing.Count > (limits.InternedNames ?? int.MaxValue) - names.Count) throw new InvalidOperationException("Tree interned-name quota exceeded.");
         XmlNode root = Shallow(source, ref nodeVisits, ref memberVisits), target = root; current = source;
