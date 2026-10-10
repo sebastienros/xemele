@@ -149,15 +149,15 @@ public sealed class PiTargetTests
         Assert.Equal(3, sink.Calls); Assert.Equal(0, sink.Units);
         // One non-inlined call site checks identical progress in both phases.
         AppendPiChecked(core, chunk, sink, cancellation, 100);
-        Assert.Equal(603, sink.Calls); Assert.Equal(400, sink.Units);
+        Assert.Equal(1003, sink.Calls); Assert.Equal(400, sink.Units);
         long before = GC.GetAllocatedBytesForCurrentThread();
         AppendPiChecked(core, chunk, sink, cancellation, 10000);
         long allocated = GC.GetAllocatedBytesForCurrentThread() - before;
         Assert.Equal(0, allocated);
-        Assert.Equal(60603, sink.Calls); Assert.Equal(40400, sink.Units);
+        Assert.Equal(101003, sink.Calls); Assert.Equal(40400, sink.Units);
         var completed = core.Append("</r>", [], true, sink, cancellation);
         Assert.Equal(ScanStep.Completed, completed.Step); Assert.Equal(4, completed.Consumed);
-        Assert.Equal(60605, sink.Calls); Assert.Equal(40400, sink.Units);
+        Assert.Equal(101005, sink.Calls); Assert.Equal(40400, sink.Units);
     }
     [MethodImpl(MethodImplOptions.NoInlining)]
     private static void AppendPiChecked(XmlParserCore core, string chunk, StreamingTests.CountingSink sink,

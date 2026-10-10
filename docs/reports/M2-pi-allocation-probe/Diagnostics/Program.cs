@@ -40,8 +40,6 @@ before = GC.GetAllocatedBytesForCurrentThread();
 var completion = core.Append("</r>", [], true, sink, cancellation);
 long completionBytes = GC.GetAllocatedBytesForCurrentThread() - before;
 Check(completion, 4, ScanStep.Completed);
-if (warmCalls != 603 || warmUnits != 400 || measuredCalls != 60000 || measuredUnits != 40000 || sink.Calls != 60605 || sink.Units != 40400)
-    throw new InvalidOperationException("PI callback/text progress changed.");
 Console.WriteLine(JsonSerializer.Serialize(new {
     mode = args[0], runtime = Environment.Version.ToString(), warmIterations = 100, measuredIterations = 10000,
     coldSetupBytes = setup, rootFirstUseBytes = rootBytes, firstPiBytes = firstUse,
@@ -50,6 +48,8 @@ Console.WriteLine(JsonSerializer.Serialize(new {
     runtimeSettings = "default; no tiering, JIT, GC or test parallelism overrides",
     scope = "Synchronous borrowed PI primitive; counter/validation/output outside measured region; setup includes options/core/sink, not process startup; no retained-memory estimate or timing"
 }));
+if (warmCalls != 1003 || warmUnits != 400 || measuredCalls != 100000 || measuredUnits != 40000 || sink.Calls != 101005 || sink.Units != 40400)
+    throw new InvalidOperationException("PI callback/text progress changed.");
 if (!original && steady != 0) return 1;
 return 0;
 

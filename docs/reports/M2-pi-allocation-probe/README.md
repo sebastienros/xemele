@@ -7,7 +7,7 @@ and no diagnostic. It retains the same sink/cancellation snapshot, 100 warmups,
 10,000 measured iterations, exact 0 B assertion, and default runtime/test settings.
 Setup, root, warm callback assertions, completion, and final callback assertions
 remain outside the allocation interval. Each chunk delivers three PI tokens,
-six callbacks, and four text units; measurement must deliver 60,000 callbacks
+ten callbacks, and four text units; measurement must deliver 100,000 callbacks
 and 40,000 units, then consume the four-unit closing tag and complete.
 
 `Diagnostics` is a separately compiled, synchronous replication using a simple
