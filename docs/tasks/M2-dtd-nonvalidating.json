@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "id": "M2-dtd-nonvalidating",
+  "milestone": "M2",
+  "title": "Separate DTD PE validity constraints from well-formedness",
+  "kind": "feature",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "depends_on": [
+    "M2-dtd-entity-base",
+    "M2-conformance-profile"
+  ],
+  "goals": [
+    "G01",
+    "G07",
+    "G18"
+  ],
+  "specs": [
+    "docs/performance-coding.md",
+    "docs/specs/parser.md",
+    "docs/decisions/M2/xml-resources.md",
+    "docs/decisions/M2/dtd-composition.md"
+  ],
+  "owns": [
+    "src/Xemele/Parsing/Dtd/Grammar/Parser/",
+    "tests/Xemele.Tests/M2-dtd-parser/ParserTests.cs",
+    "tests/Xemele.Tests/M2-dtd-parser/SourceTests.cs",
+    "tests/Xemele.Tests/M2-dtd-nonvalidating/",
+    "tests/fixtures/M2-dtd-nonvalidating/",
+    "benchmarks/Xemele.Benchmarks/M2-dtd-nonvalidating/",
+    "samples/M2-dtd-nonvalidating/",
+    "docs/reports/M2-dtd-nonvalidating/"
+  ],
+  "api_or_output": "Nonvalidating PE declaration/group/conditional nesting with preserved context-sensitive well-formedness and declaration bases",
+  "acceptance": [
+    {
+      "id": "M2-dtd-nonvalidating-A1",
+      "description": "Correct only Proper Declaration/PE, Group/PE and Conditional Section/PE Nesting validity-only fatal rejection in frozen nonvalidating profile. Preserve PE Between Declarations WFC: replacement referenced as DeclSep must independently supply complete extSubsetDecl grammar. Retain PE insertion/resume context and preserve malformed expanded grammar, internal-subset placement, literal quote containment, recursion, cancellation/quota, bounded input/suspension/count/pause/cleanup, and declaration opener source URI/location established by verified entity-base repair. No blanket removal of source EOF checks or public/model ABI changes.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M2-dtd-nonvalidating-A2",
+      "description": "Independently authored complete models/defaults for original xmltest invalid--005,invalid--006,invalid-not-sa-022; IBM ibm-invalid-P49-ibm49i01.xml,ibm-invalid-P50-ibm50i01.xml; errata2e rmt-e2e-14, exact inventory bytes/resources and immutable profile expectations. Exercise all short splits and external source suspension with paired true WFC errors. Authorize only inherited ParserTests external PE (a fragment and SourceTests ChildCannotCloseParentMarkup two-row rejection-to-acceptance transitions with full models/resource balance; preserve every other identity, internal-boundary incomplete declaration and all five ChildCannotLeaveOpenMarkup rejection rows. No unrelated historical benchmark changes.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M2-dtd-nonvalidating-A3",
+      "description": "Actual full correctness/preservation/API272/source and package consumer checks plus applicable allocation/timing evidence at frozen full Git/source/actual binary/runtime identities. Source review and counters-disabled independent generated child preparation before explicit exclusive host grant; no repeat of unchanged successful measurements, threshold/runtime/options relaxation or unverified peer dependency. All3386 resources/2585 original IDs/expected outcomes unchanged, six obligations fulfilled and remaining product gaps exposed. Concise result summaries only; inspect/remove raw outputs, planning graph/ownership/diff validation.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "Coordinator primary/source-only assessment routes six original validity-only overrejections to a narrowly ordered Parser repair after active entity-base task. No implementation yet; no exclusions or full conformance claim.",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "revision": "3d97f0068fb94c82bdc4a8358bd2216afbac09a3",
+  "kind": "source-only normative and owner assessment",
+  "reviewer": "review_api_wiring",
+  "executable_checks_run": false,
+  "normative_sources": [
+    "https://www.w3.org/TR/2008/REC-xml-20081126/#sec-prolog-dtd",
+    "https://www.w3.org/TR/2008/REC-xml-20081126/#sec-element-content",
+    "https://www.w3.org/TR/2008/REC-xml-20081126/#sec-condition-sect",
+    "https://www.w3.org/TR/2008/REC-xml-20081126/#sec-references",
+    "https://www.w3.org/TR/2008/REC-xml-20081126/#proc-types"
+  ],
+  "parser_repair": {
+    "task": "M2-dtd-nonvalidating",
+    "files": [
+      "DtdParser.cs",
+      "Lexer.cs",
+      "Declarations.cs"
+    ],
+    "boundary": "Selective validity-only source nesting acceptance, retain insertion context/DeclSep complete replacement WFC, opener attribution/literal boundaries/quotas/cancel/cleanup.",
+    "transition_files": [
+      "tests/Xemele.Tests/M2-dtd-parser/ParserTests.cs",
+      "tests/Xemele.Tests/M2-dtd-parser/SourceTests.cs"
+    ]
+  },
+  "core_obligations": {
+    "sun-inv-not-sa14": "CDATA whitespace is not production S; direct char references and expanded entity text require separate origin-sensitive oracles. Preserve existing standalone external default/entity/type dependencies.",
+    "rmt-e3e-13": "EntityDeclared validity-only after internalPE in nonstandalone; current XmlTextKind/IXmlEventSink has no unresolved-reference identity representation. Needs bounded contract owner for identity/location/pause/lifetime/DOM behavior. Nonfatal diagnostic alone conflicts with Factories Finish anydiagnostic failure; no fabricated ordinaryText or silent loss."
+  },
+  "reviewer_park_ack": "No executable checks/builds/imports/measurements/heavychildren."
+}
