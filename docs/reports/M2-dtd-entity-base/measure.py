@@ -73,13 +73,21 @@ def reject_unchanged_success(mode, known):
 
 
 def generated_build_properties(text, generated, summary=None):
-    commands = [shlex.split(line[len('// start '):]) for line in text.splitlines() if line.startswith('// start ')]
-    context = {'observedCommands': commands}
+    # The pinned logger appends " in <cwd>" outside the command string.
+    # Validate that context separately; it must never become a CLI argument.
+    starts = [line[len('// start '):].rsplit(' in ', 1)
+              for line in text.splitlines() if line.startswith('// start ')]
+    commands = [shlex.split(parts[0]) for parts in starts]
+    directories = [parts[1] if len(parts) == 2 else None for parts in starts]
+    context = {'observedCommands': commands, 'observedWorkingDirectories': directories}
     if summary is not None:
         summary['generatedBuilderContext'] = context
     builds = [command for command in commands if len(command) > 1 and command[1] == 'build']
     require(len(builds) == 1, 'Exact observed generated Builder command required')
     command = builds[0]
+    directory = directories[commands.index(command)]
+    context['workingDirectory'] = directory
+    require(directory == generated['buildRoot'], 'Observed generated Builder working directory differs')
     require(command[command.index('-c') + 1] == 'Release', 'Generated Builder configuration differs')
     properties = {}
     for token in command:

@@ -107,16 +107,22 @@ class MeasurementGuards(unittest.TestCase):
     def test_generated_query_uses_exact_observed_builder_properties(self):
         generated = {'buildRoot': '/owned/child', 'proof': {'directory': '/owned/child/bin/Release/net10.0'}}
         line = '// start dotnet build -c Release --no-restore --nodeReuse:false /p:UseSharedCompilation=false /p:Deterministic=true /p:Optimize=true '
-        line += '/p:ArtifactsPath="/owned/child/" /p:OutDir="/owned/child/bin/Release/net10.0/" /p:OutputPath="/owned/child/bin/Release/net10.0/" /p:PublishDir="/owned/child/publish/" --output "/owned/child/bin/Release/net10.0/"\n'
+        line += '/p:ArtifactsPath="/owned/child/" /p:OutDir="/owned/child/bin/Release/net10.0/" /p:OutputPath="/owned/child/bin/Release/net10.0/" /p:PublishDir="/owned/child/publish/" --output "/owned/child/bin/Release/net10.0/" in /owned/child\n'
         context = measure.generated_build_properties(line, generated)
         self.assertEqual(context['properties']['ArtifactsPath'], '/owned/child/')
         self.assertEqual(context['properties']['Configuration'], 'Release')
         self.assertEqual(context['observedArgv'][1], 'build')
+        self.assertEqual(context['workingDirectory'], '/owned/child')
+        self.assertEqual(context['observedArgv'][-2:], ['--output', '/owned/child/bin/Release/net10.0/'])
         summary = {}
         with self.assertRaisesRegex(ValueError, 'properties differ'):
             measure.generated_build_properties(line.replace('/owned/child/publish/', '/foreign/publish/'), generated, summary)
         self.assertEqual(summary['generatedBuilderContext']['properties']['PublishDir'], '/foreign/publish/')
         self.assertEqual(summary['generatedBuilderContext']['expectedProperties']['PublishDir'], '/owned/child/publish/')
+        summary = {}
+        with self.assertRaisesRegex(ValueError, 'working directory differs'):
+            measure.generated_build_properties(line.replace(' in /owned/child', ' in /foreign'), generated, summary)
+        self.assertEqual(summary['generatedBuilderContext']['workingDirectory'], '/foreign')
 
     def test_failed_inventory_query_retains_exact_diagnostics_and_exit(self):
         actual = Mock(returncode=1, pid=42)
