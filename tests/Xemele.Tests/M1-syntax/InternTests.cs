@@ -76,7 +76,7 @@ public sealed class InternTests
     {
         using var core = new XmlParserCore(new() { Limits = new() { InternedNames = 1 } }); var sink = new StreamingTests.CountingSink();
         var r = core.Append("<r><c/></r>", [], true, sink, TestContext.Current.CancellationToken);
-        Assert.Equal("XML.ResourceLimit", r.Diagnostic!.Code); Assert.Equal(1, Table(core).Count);
+        Assert.Equal("XML.ResourceLimit", r.Diagnostic!.Code); Assert.Single(Table(core));
         Assert.True(Table(core).ContainsKey("r")); Assert.False(Table(core).ContainsKey("c"));
     }
 }
