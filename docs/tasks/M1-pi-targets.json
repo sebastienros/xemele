@@ -4,11 +4,11 @@
   "milestone": "M1",
   "title": "Enforce namespace-conforming processing instruction targets",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M1-pi-targets",
   "branch": "codex/m1-pi-targets",
   "base_revision": "f493c411ca025f775e0f5522e06a67bf8f0c9132",
-  "integration_revision": null,
+  "integration_revision": "0869bde5bbebadb813e48f27a96fe35c01039f8f",
   "depends_on": [
     "M1-dom",
     "M1-serialize",
@@ -44,7 +44,9 @@
       "status": "passed",
       "evidence": [
         "source-review",
-        "renewed-complete-checks"
+        "renewed-complete-checks",
+        "integrated-complete",
+        "integrated-reviewed-source"
       ]
     },
     {
@@ -54,7 +56,9 @@
       "evidence": [
         "source-review",
         "renewed-complete-checks",
-        "original042-standard"
+        "original042-standard",
+        "integrated-complete",
+        "integrated-reviewed-source"
       ]
     },
     {
@@ -63,7 +67,9 @@
       "status": "passed",
       "evidence": [
         "source-review",
-        "renewed-complete-checks"
+        "renewed-complete-checks",
+        "integrated-complete",
+        "integrated-reviewed-source"
       ]
     }
   ],
@@ -139,19 +145,35 @@
       "result": "passed",
       "summary": "Complete fresh Release0warnings/errors;9focused lanes PI8/DOM44/Input10/Syntax70/Tree14/builder11/persistence8/namespace21/Serializer50; full300/Foundation11 no skips; foundation139/173/8+models/protocol38; API222 union/canonical; Input41/Syntax9types80rows; source/fresh isolatedlocalNuGet sample; borrowedPI0B/scanner0B/ownedDOM+serializer allocations and oracles; build16/planning14/validate110; committed-staged-working-untracked owned audits. No timing/retry; historical failures preserved.",
       "artifact": "docs/reports/M1-pi-targets/renewed-claim/checks-f363e7d9496f-1.txt.gz"
+    },
+    {
+      "id": "integrated-complete",
+      "kind": "integration",
+      "revision": "0869bde5bbebadb813e48f27a96fe35c01039f8f",
+      "command": "python3 -B docs/reports/M1-pi-targets/verify.py --audit-base 234c898 --report-prefix integration (after verified offline fixture provision)",
+      "result": "passed",
+      "summary": "Complete exit0: focused8/44/10/70/14/11/8/21/50,full300 no skips;Foundation11/models139/173/8/Common81/Tree192/Input81/Syntax81/Serializer215/Dom199/protocol38;actualAPI222/internalInput41/Syntax9types80rows;source+freshisolatedNuGet PI sample;DOM/serializer allocation/oracles;Build16/planning14/validate110;all ownership/diff audits. No timing repeats; historical216B/6000B unresolved/preserved.",
+      "artifact": "docs/reports/M1-pi-targets/integration/checks.txt"
+    },
+    {
+      "id": "integrated-reviewed-source",
+      "kind": "review",
+      "revision": "0869bde5bbebadb813e48f27a96fe35c01039f8f",
+      "command": "Root compared integrated product/spec/test blobs to independently reviewed d3eb4c8b15fa38f981d7fab5c903020e6d6f9067; reviewed verifier delta",
+      "result": "passed",
+      "summary": "All reviewed NCName runtime/spec/test blobs identical; independent review_api_wiring approval retained; verifier adds2focusedlanes/ownedprefix.",
+      "artifact": "docs/reports/M1-pi-targets/integration/review.json"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Consistent PI NCName/no-colon validation in core/factory/serializer with minimal source unchanged from approvedd3eb; QName behavior retained, tree spec corrected and focused regressions added. Renewed combined300 check passed after verified measurement prerequisites; branch implemented only.",
+    "summary": "Integrated NCName PI repair verified with300tests/API222/package/allocations. Original supported042 nowXML.Syntax; preserve corpus classification and exactBCL divergences.",
     "checks": [
       "Tested f363e7d: complete verifier exit0; full300/9focused lanes/Foundation11/API222/internal41+9types80rows/source+freshNuGet/allocation/oracles/build16/planning14/validate110/owned audits.",
       "All historical216B failures and300pass preserved; no cause inferred. Administrative initial inherited-metadata audit failure retained before any tests.",
       "No benchmark timings; PI and scanner warm0B, ownedDOM/serializer allocation scopes explicit."
     ],
-    "remaining": [
-      "Coordinator fresh integration verification before verified status. Historical216B/6000B causal explanations remain unresolved in verified probe reports; no universal stability claim."
-    ],
+    "remaining": [],
     "requests": [
       "Corpus owner: after integrated verification rerun preserved corpus242 supported rejections, including original rmt-ns10-042; PI colon targets now XML.Syntax. No fixture/classification edit required.",
       "Release owner: prior Arm64 timings remain informational; x64 release confirmation remains unrun."
