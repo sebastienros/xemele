@@ -18,6 +18,20 @@ DTD success: a declared required external subset/entity that cannot be supplied
 rejects with XML.ResourceDenied. Parse never implies network/file permission.
 No global default resolver, URI fetcher, cache or encoding-provider mutation.
 
+Declaration versions follow [XML 1.0 Fifth Edition section 2.8, production 26](https://www.w3.org/TR/REC-xml/#sec-prolog-dtd):
+literal ASCII `1.[0-9]+`, including compatible non-`1.0` values processed using
+this effective profile. [Text declarations, production 77](https://www.w3.org/TR/REC-xml/#sec-TextDecl)
+reuse optional VersionInfo before mandatory encoding, without standalone.
+Borrowed XmlDeclarationView.Version and owned nullable XmlTextDeclaration.Version
+retain exact lexical digits; no numeric conversion or ABI change. The normative
+[Namespaces 1.0 Third Edition](https://www.w3.org/TR/REC-xml-names/)
+profile remains binding. Version `1.1` does not enable XML 1.1 characters,
+reference rules, newline handling or prefixed namespace undeclarations. The
+existing declaration ordering, token/aggregate quotas, cancellation and lifetime
+contracts remain unchanged. See the parser declaration-version correction for
+precise grammar and implementing-task routing. Original corpus VERSION/purpose
+metadata does not replace evaluation under these effective normative editions.
+
 Recover=false remains default. Strict Parse/Load/TryParse reject Recover=true
 with ArgumentException before input or resolver work; only the distinct recovery
 family admits it. ParseWithDiagnostics/LoadWithDiagnostics with Recover=false
@@ -146,7 +160,7 @@ M1 already permits validation after successful decoder completion.
 
 TextDeclarationResult.Consumed counts this call's accepted UTF-16 units.
 NeedInput consumes all submitted input and is nonfinal. Declared owns a nonnull
-XmlTextDeclaration (version optional/only 1.0, encoding mandatory and nonempty,
+XmlTextDeclaration (version optional/literal ASCII `1.[0-9]+`, encoding mandatory and nonempty,
 no standalone); Absent has no declaration; Rejected owns Diagnostic only.
 Declared/Absent are one-time terminal decisions. NextLocation reports normalized
 scalar line/column immediately after the consumed prolog, with final source URI;

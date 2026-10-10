@@ -4,7 +4,7 @@
   "milestone": "M2",
   "title": "Correct Fifth Edition declaration version contract",
   "kind": "contract",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M2-version-contract",
   "branch": "codex/m2-version-contract",
   "base_revision": "0b2ecc8cc2dcdc6688eb8a1ff3a4bc25cbcc4fb6",
@@ -32,29 +32,111 @@
     {
       "id": "M2-version-contract-A1",
       "description": "Freeze XML1.0 Fifth Edition productions26/77: document required and text-declaration optional VersionInfo permits literal ASCII 1.[0-9]+; retain exact lexical version in existing borrowed callbacks and owned text-declaration results. Compatible1.x documents/entities are processed using XML1.0 Fifth Edition and Namespaces1.0 Third Edition rules, without enabling XML1.1 features. Preserve declaration order/encoding/standalone, bounded token/quota/cancellation/lifetime behavior and existing ABI shapes. Cite primary normative sources and distinguish source-purpose metadata from effective profile.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "normative-version-review",
+        "scoped-contract-preservation"
+      ]
     },
     {
       "id": "M2-version-contract-A2",
       "description": "Compile independent representative contract usage/models and executable semantic probes for1.0/1.1/1.7/1.00/1.10, long digits, invalid ASCII grammar and XML1.1-only content; preserve current approved compiled API shapes. Model checks are contract evidence, not parser implementation/conformance claims. Route exact historical1.1 negative-test transitions and runtime guards to M2-version-declarations, no runtime edits.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "scoped-contract-preservation"
+      ]
     },
     {
       "id": "M2-version-contract-A3",
       "description": "Record actual scoped contract/model/preservation and planning checks at known revisions; no dependency on active profile branch, runtime correction or later milestone. Keep summaries and source/binary identities only; remove generated raw outputs after inspection.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "scoped-contract-preservation",
+        "final-cleanup-driver-controls"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "docs/specs/parser.md: Declaration version contract \u2014 M2 correction; productions23\u201326/77, exact ASCII lexical1.x and effective XML1.0 Fifth/Namespaces1.0 Third profile, borrowed/owned retention, unchanged ordering/lifetime/quota/cancellation/ABI",
+    "docs/decisions/M2/xml-resources.md: corrected text-declaration version wording and normative profile/source-purpose distinction",
+    "tests/Contracts/Fixtures/M2/Version/VersionChecks.cs.fixture: independent representative declaration/profile/quota illustrations and old-sink/owned-result usage; no runtime grammar stub executed",
+    "tests/Contracts/Fixtures/M2/Version/AbiChecks.cs.fixture: four actual internal ABI shapes compared to compiled frozen fixtures with nullable/readonly metadata",
+    "docs/reports/M2-version-contract/verify.py: exact compiled model baselines/API272, negative metadata probes, inherited4594-test preservation, source/output identities, integration audit arguments and raw cleanup",
+    "docs/reports/M2-version-contract/README.md: scope, reproducible checks and exact runtime/historical-test transitions routed to M2-version-declarations",
+    "docs/reports/M2-version-contract/cleanup_checks.py and verify.py::finish_raw_outputs: 17 negative cleanup controls; primary failure preserved, inspection/removal errors collected, all known new paths attempted, history preserved and serializable failure summaries"
+  ],
+  "evidence": [
+    {
+      "id": "normative-version-review",
+      "kind": "review",
+      "revision": "61667d1a001dc8d66468be7080979a23c8a4d067",
+      "command": "Consult W3C REC-xml sections2.8/4.3.1/2.2/2.11 and REC-xml-names sections5/6; inspect owned specification delta and runtime transition references",
+      "result": "passed",
+      "summary": "Primary productions26/77 require literalASCII1.[0-9]+, document-required/text-optional VersionInfo; compatible1.x remains effectiveXML1.0Fifth/Namespaces1.0Third. Exact lexical borrowed/owned retention and existing ABI/order/quota/cancel/lifetime frozen. Models are contract illustrations; original VERSION/purpose metadata alone cannot classify effective outcomes. Two exactruntimeguards and two historical1.1 negatives routed to M2-version-declarations without runtime/test edits.",
+      "artifact": null
+    },
+    {
+      "id": "initial-corpus-discovery-failure",
+      "kind": "check",
+      "revision": "d69d0859a4e5333f46b1baa5994b672e230654f7",
+      "command": "SDK10.0.400 pinned PATH/DOTNET_ROOT; DOTNET_CLI_USE_MSBUILD_SERVER=0; python3 -B docs/reports/M2-version-contract/verify.py",
+      "result": "failed",
+      "summary": "Five independent publicmodels114/81/81/243/239, inherited64 assertions, version236 including4 basicactualABI shapes and2 specificcompiler failures passed. Shared API discovery then required missing ignored corpus xmlconf/eduni/errata-2e/E14.dtd; API/mutation/runtime/planning/laterownership unrun. Temporaryoutputs removed. Subsequent harness uses exact approved API-fragment snapshot, with no corpus-discovery claim.",
+      "artifact": null
+    },
+    {
+      "id": "initial-runtime-ancestry-failure",
+      "kind": "check",
+      "revision": "fe3546fd9bee54d1d898c1a52eb1c0e7d25a2635",
+      "command": "SDK10.0.400 pinned PATH/DOTNET_ROOT; DOTNET_CLI_USE_MSBUILD_SERVER=0; python3 -B docs/reports/M2-version-contract/verify.py",
+      "result": "failed",
+      "summary": "Fivebaselines/version236/inherited64/4basicactualABI/2specificcompilerfailures and actualAPI272/publicmetadata mutation passed. Inheritedruntime suite failed because system-temp assembly ancestry lacks repository task markers needed by existing allocation children; no runtime regression inferred. Planning/laterownership unrun. Temporaryoutputs removed; fixed owned-reportsubtree temporarybuild placement without changing tests/options/thresholds.",
+      "artifact": null
+    },
+    {
+      "id": "scoped-contract-preservation",
+      "kind": "check",
+      "revision": "61667d1a001dc8d66468be7080979a23c8a4d067",
+      "command": "DOTNET_ROOT='/Users/sebastienros/Library/Application Support/dotnetup/dotnet'; PATH pinned to DOTNET_ROOT; DOTNET_CLI_USE_MSBUILD_SERVER=0; python3 -B docs/reports/M2-version-contract/verify.py (Release --disable-build-servers -m:1 -p:UseSharedCompilation=false)",
+      "result": "passed",
+      "summary": "236 independentversion/profile assertions and64 inheritedmodels; frozenpublicmodels114/81/81/243/239; exact4actualinternal shapes include recursive nullable/readonly metadata;2 specificcompilefailures(CS8345/CS8852),2 real internalnullable/readonly mutations and1 publicmutation detected; actualAPI272 against exactallapprovedfragments, no corpus-discovery claim. All4594unique inheritedruntime tests passed0fail0skip (identity7cdf1436d06ded19272961b9c2b792b2ac907f23726d3266f21fa726862c6ce7). Planning14/validate128; fullcommitted/staged/working/untracked ownership and whitespace audits passed.105 runtime/test/buildinputs matchGit/auditbase;65file runtime/testoutputclosure unchanged before/after. Source/binary/checkidentities retained as concise summary only; alltemporary/newchildrawoutputs inspected/removed, historicaloutputs preserved. Separate active-runtime identity probe under sameSDKhost/env reports.NET10.0.11 Arm64, core informational10.0.11-servicing.26373.116+e2f47b0110ed922f21a1522da67279133ce28f32. No runtime declarationcorrection/fullcorpus conformance/crossplatform or newperformanceclaim.",
+      "artifact": "docs/reports/M2-version-contract/latest-summary.json"
+    },
+    {
+      "id": "final-cleanup-driver-controls",
+      "kind": "check",
+      "revision": "4c9f9cb49aa8f2050d3d0368001f5d58b735160b",
+      "command": "python3 -B docs/reports/M2-version-contract/cleanup_checks.py; python3 -B -m unittest discover -s tools/planning -p test_tasks.py; python3 -B tools/planning/tasks.py validate; git diff --check CLAIM HEAD / working / cached; exact delta and owned-path audits",
+      "result": "passed",
+      "summary": "17 cleanup controls passed: truncated report plus injected removal denial retains primary timeout, attempts other paths, preserves historical files and prints serializable summary; cleanup denial fails otherwise passing result, malformed-only inspection still cleans all new outputs. Planning14 and validation128 passed; committed/staged/working/untracked ownership and whitespace audits passed. Exact61667d1..4c9f9cb delta contains only verifier/cleanup controls/README; compiled model/product/test sources unchanged. Full successful model/API4594 preservation remains at61667d1, deliberately not rerun for driver-only delta. Separate same-host active-runtime identity probe.NET10.0.11 Arm64 recorded; concise summaries/source/binary hashes only; negative-control temporary outputs removed. Coordinator performs fresh integrated driver/model/runtime checks.",
+      "artifact": "docs/reports/M2-version-contract/latest-summary.json"
+    },
+    {
+      "id": "independent-foundation-source-approval",
+      "kind": "review",
+      "revision": "4c9f9cb49aa8f2050d3d0368001f5d58b735160b",
+      "command": "Independent foundation scoped source review; approval relayed by coordinator chat01a1230c-1353-7e01-afbe-a53c9c018264/local",
+      "result": "passed",
+      "summary": "Independent reviewer approved final scoped sources at4c9f9cb: prior nullable/readonly ABI comparison and truncated-report/finally cleanup blockers resolved; no remaining source blockers. Reviewer execution checks: none. Existing actual model/API/runtime evidence remains at61667d1 and cleanup/planning controls at4c9f9cb; fresh integrated execution remains coordinator responsibility.",
+      "artifact": null
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Coordinator ordered normative correction; historical verified evidence retained.",
-    "checks": [],
-    "remaining": [],
-    "requests": []
+    "summary": "Implemented the Fifth Edition declaration-version correction in isolated branch. Independent contract models, actual internal/public ABI and inherited runtime preserved. Final cleanup-only driver fix checked; awaiting coordinator integration verification.",
+    "checks": [
+      "At61667d1: independentversion236/inheritedmodel64; frozenmodels114/81/81/243/239;4actualABI shapes,2specificcompilefailures,2internalmetadata+1publicmetadata mutations detected; actualAPI272.",
+      "At61667d1: exact4594unique runtime tests0fail0skip; planning14/validate128;105inputGit/basehashes,65file unchangedoutputclosure; allscope/whitespaceaudits andrawcleanup passed. Concisesummaries/hashidentities only.",
+      "Failures honestly retained: d69d085 corpus-coupled discovery; fe3546f system-temp allocationchild repository ancestry. Both fixed; laterchecks unrun inthose attempts.",
+      "At4c9f9cb: 17 failure-path cleanup controls, planning14/validate128, exact three-file driver-only delta and all scope/whitespace audits passed. Product/tests/model files unchanged from tested61667d1; no repeated full-runtime claim at4c9f9cb.",
+      "Independent foundation source approval at4c9f9cb received through coordinator: nullable/readonly ABI and failure-path cleanup blockers resolved, no remaining source blockers. Review only; reviewer executed no checks."
+    ],
+    "remaining": [
+      "Coordinator review/integrate and run verifier with --audit-base <integration-base full SHA> --expected-branch <integration branch>; verifier also runs cleanup controls. Only coordinator sets verified and integration_revision.",
+      "No runtime versionguards/historicaltests changed here. Model scalar/namespace/newline/quota predicates are illustrations, not actual streaming/cancellation/pause/all-split/corpus enforcement evidence. Contract-only task has no newallocation/timing requirement; existing runtime suite preservation includes its inherited childchecks."
+    ],
+    "requests": [
+      "M2-version-declarations: src/Xemele/Parsing/Core/XmlParserCore.cs ParseDeclaration exact1.0 guard/canonicalassignment; src/Xemele/Parsing/Dtd/Framing/XmlTextDeclarationFramer.cs Process fixed3unit guard/exact1.0/canonicalownedresult; tests/Xemele.Tests/M1-syntax/SyntaxTests.cs version1.1 negativeInlineData; tests/Xemele.Tests/M2-dtd-framing/FramingTests.cs version1.1 encodingX invalidarray. Replace with bounded exactlexical ASCII1.[0-9]+ and positive coverage preserving existing profiles/quotas/byteboundaries/order/cancellation/lifetimes. Exactdetails in ownedREADME; no outsidepath edits by this worker."
+    ]
   }
 }
