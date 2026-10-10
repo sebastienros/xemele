@@ -159,11 +159,17 @@ internal sealed partial class DtdParser
         try
         {
             bool literal = parameterResume == Lex.Literal;
-            child = new(nextId++, Current.External || entity.SystemId is not null, new(entity.Location.SourceUri, 1, 1, null), name, entity.ReplacementText, true, literal);
+            // Internal replacement text is included in the current external source,
+            // independently of the source where its PE declaration was retained.
+            // Nested internal PEs inherit that same containing source. An actual
+            // external PE receives its redirected final URI when the caller pushes it.
+            child = new(nextId++, Current.External || entity.SystemId is not null, new(Current.Uri, 1, 1, null), name, entity.ReplacementText, true, literal);
             active.Add(name);
             if (!literal) Process(' ', parameterAt, cancellation);
             if (entity.ReplacementText is null)
-            { pending = child; request = new(name, entity.SystemId, entity.PublicId, parameterAt); }
+            // Resource resolution owns the declaration's system identifier/base;
+            // the reference cursor still owns entry budgets and local diagnostics.
+            { pending = child; request = new(name, entity.SystemId, entity.PublicId, entity.Location); }
             else sources.Add(child);
         }
         catch
