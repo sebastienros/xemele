@@ -4,7 +4,7 @@
   "milestone": "M0",
   "title": "Versioned reference protocol and BCL runner",
   "kind": "infrastructure",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M0-references-protocol",
   "branch": "codex/m0-references-protocol",
   "base_revision": "460d286bb1ecb2efc83241068b2951db37713a4d",
@@ -31,29 +31,57 @@
     {
       "id": "M0-references-protocol-A1",
       "description": "Define the versioned JSONL request/response and operation payload contract, implement the BCL XML runner and managed reference process client, and run one known XML fixture with actual runtime/build metadata.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "reference-verification"
+      ]
     },
     {
       "id": "M0-references-protocol-A2",
       "description": "Test request/response identity and semantic normalization, invalid protocol/requests, process failure categorization, timeout/cancellation, offline resource mapping and denied unconfigured external access; keep infrastructure failures distinct from parse rejection.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "reference-verification"
+      ]
     },
     {
       "id": "M0-references-protocol-A3",
       "description": "Demonstrate the task using only verified M0-build; run focused tests and preserved bootstrap checks at a known implementation revision, record protocol/runner outputs and task validation.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "reference-verification"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "tools/ReferenceRunners/Protocol/Contract.cs: v1 JSONL request/response, metadata, semantic event and diagnostic shapes; standalone sibling project",
+    "tools/ReferenceRunners/Bcl/Program.cs: actual System.Xml events reference, bounded wire framing, offline-only resolver, decoder/quota categorization and exact localized quota calibration",
+    "tests/Xemele.TestUtilities/References/ReferenceProcess.cs: bounded concurrent process pipes, ArgumentList launch, identity/framing/metadata checks, owned child kill/await and honest cancellation",
+    "tests/Xemele.Differential.Tests/Protocol/ReferenceProtocolTests.cs: 26 actual process/semantic/security/protocol/quota/portable-path tests",
+    "docs/reports/M0-references-protocol/protocol-v1.md and verify.py: frozen portable normalization and repeatable explicit runner build + focused/wire/preserved bootstrap checks"
+  ],
+  "evidence": [
+    {
+      "id": "reference-verification",
+      "kind": "check",
+      "revision": "1b315176c2694def00c94965ac2bdd9bdb535a90",
+      "command": "DOTNET_ROOT='/Users/sebastienros/Library/Application Support/dotnetup/dotnet' PATH='/Users/sebastienros/Library/Application Support/dotnetup/dotnet':$PATH DOTNET_CLI_USE_MSBUILD_SERVER=0 python3 -B docs/reports/M0-references-protocol/verify.py",
+      "result": "passed",
+      "summary": "macOS arm64 SDK10.0.400: runner/protocol and Differential Release builds 0 warnings/errors; 26 focused tests pass0 fail0 skip; 11 actual JSONL requests cover known fixture, malformed/oversized protocol and response-identity limits plus recovery. Actual metadata System.Xml10.0.0.0, .NET10.0.11, build1.0.0+1b315176c2694def00c94965ac2bdd9bdb535a90. Preserved solution restore/build, 29 infrastructure tests0 product tests, 3 intentional smoke failures exit2, 16 help/default invocations, 3 unknown-command exits2, managed-only net10.0 pack/API count0, 13 discovery tests, 2 independent corpus fixtures, and 99-task validation pass. Actual xunit.v3.mtp-v2 4.0.1 / MTP2.4.0 inventory preserved. Exploratory failures/interrupted sandbox command noted in attempts.txt. No native, other-platform, runtime conformance or performance claim.",
+      "artifact": "docs/reports/M0-references-protocol/verification.txt"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "",
-    "checks": [],
+    "summary": "Implemented v1 reference wire contract, BCL XML events runner and bounded managed client using integrated M0-build/M0-tests-mtp only. Source1b315176c2694def00c94965ac2bdd9bdb535a90; reviewed portable-path, malformed UTF8, quota and response-limit corrections covered. Ready for serialized coordinator integration; integration_revision remains null.",
+    "checks": [
+      "Full verifier passed at1b315176c2694def00c94965ac2bdd9bdb535a90; task-owned verification/bootstrap/wire reports preserved.",
+      "26 focused actual-process/normalization tests; 11 direct wire cases; 29 solution infrastructure passes and3 controlled failures; 13 discovery and2 independent corpus checks; task validation passes.",
+      "Reference infrastructure only; allocation/parser performance benchmarks not applicable and not run; only macOS arm64 validated."
+    ],
     "remaining": [],
-    "requests": []
+    "requests": [
+      "Coordinator accepted ordered M0-references-wiring follow-up: add <ProjectReference Include=\"../../tools/ReferenceRunners/Bcl/BclReference.csproj\" ReferenceOutputAssembly=\"false\" /> to tests/Xemele.Differential.Tests/Xemele.Differential.Tests.csproj. Until it lands build tools/ReferenceRunners/Bcl/BclReference.csproj explicitly before solution MTP tests, as task verifier does. No shared file edited."
+    ]
   }
 }
