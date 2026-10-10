@@ -65,7 +65,8 @@
         "task-and-whitespace-validation",
         "independent-managed-join-review",
         "integrated-real-engine-join",
-        "integrated-join-preservation"
+        "integrated-join-preservation",
+        "integration-final-whitespace"
       ]
     }
   ],
@@ -147,6 +148,24 @@
       "result": "passed",
       "summary": "51focused/54solution infrastructure tests0skip with3expectedcontrolledfailureexit2;11directBCLwire andmalformedUTF8;cleanReleasebuild/help/managedpackageAPI0;16discovery/compositionchecks;2independentcorpusfixtures;101-taskvalidate pass. Runtime remains sourceempty; no new timing warranted.",
       "artifact": "docs/reports/M0-references/integration/preservation.txt"
+    },
+    {
+      "id": "integration-transcript-whitespace",
+      "kind": "check",
+      "revision": "997fe8507f2e294d468886bbf81fc4f93dd3d6a1",
+      "command": "git diff --cached --check during integration metadata staging",
+      "result": "failed",
+      "summary": "Archived preservation output had an extra blank line at EOF; metadata commit advanced before this cosmetic failure was handled. Corrected in0200b1a; source/tests unaffected, final full integration diff now passes.",
+      "artifact": null
+    },
+    {
+      "id": "integration-final-whitespace",
+      "kind": "check",
+      "revision": "0200b1a1e44546ba5365cfbb51fadcf7a701c77a",
+      "command": "git diff --check 67c5281 HEAD",
+      "result": "passed",
+      "summary": "Full reference integration and metadata range passes whitespace check after transcript EOF correction. No implementation changes; actual runtime/native test results remain at ecfcb658.",
+      "artifact": null
     }
   ],
   "blockers": [],
