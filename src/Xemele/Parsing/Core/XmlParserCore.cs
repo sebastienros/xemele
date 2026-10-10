@@ -1,6 +1,8 @@
 using System.Text;
 using System.Threading;
 using Xemele.Internal.Operations;
+using Xemele.Parsing.Entities;
+using Xemele.Parsing.Dtd;
 using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("Xemele.SyntaxBenchmarks")]
 [assembly: InternalsVisibleTo("Xemele.SyntaxSample")]
@@ -9,7 +11,7 @@ namespace Xemele.Parsing.Syntax;
 // One operation owns its scratch, interned strings and open scopes. No source
 // memory or sink view survives a callback. Text is streamed at scalar boundaries;
 // only tags/declarations/references/PI targets require bounded lexical scratch.
-internal sealed class XmlParserCore : IDisposable
+internal sealed partial class XmlParserCore : IDisposable
 {
     private enum State { Data, Less, Bang, Tag, Close, Comment, CData, PiTarget, PiBody, Declaration, Reference }
     private enum Delivery { None, Document, Tag, Close, Text, Declaration, EndDocument }
@@ -92,9 +94,10 @@ internal sealed class XmlParserCore : IDisposable
                 cancellationToken.ThrowIfCancellationRequested();
                 while (true)
                 {
-                    if (diagnostic is not null) { terminal = true; return new(consumed, ScanStep.Rejected, diagnostic); }
+                    if (diagnostic is not null) { terminal = true; AbortEntities(); return new(consumed, ScanStep.Rejected, diagnostic); }
                     if (!Drain(sink, cancellationToken)) return new(consumed, ScanStep.Paused);
                     if (endDocumentDelivered) { terminal = true; return new(consumed, ScanStep.Completed); }
+                    if (DrainEntityScalar()) continue;
                     if (consumed == input.Length)
                     {
                         if (!isFinalBlock) return new(consumed, ScanStep.NeedInput);
@@ -126,7 +129,7 @@ internal sealed class XmlParserCore : IDisposable
                     }
                 }
             }
-            catch { faulted = true; throw; }
+            catch { faulted = true; AbortEntities(); throw; }
         }
         finally { Volatile.Write(ref gate, 0); }
     }
@@ -150,6 +153,7 @@ internal sealed class XmlParserCore : IDisposable
         {
             if (disposed) return;
             disposed = true; token = []; tokenLocations = []; attributes = [];
+            DisposeEntities();
             names.Clear(); names = null!;
             bindings.Clear(); bindings.TrimExcess(); frames.Clear(); frames.TrimExcess(); sinkIdentity = null;
         }
@@ -289,9 +293,11 @@ internal sealed class XmlParserCore : IDisposable
                 if (c == ';')
                 {
                     if (!Charge(Quota.TokenCharacters, 1, location)) return;
-                    int scalar = Reference(token.AsSpan(0, tokenLength), referenceLocation);
+                    var reference = token.AsSpan(0, tokenLength);
+                    bool pushed = PushGeneralEntity(reference, referenceLocation);
+                    int scalar = pushed ? -1 : Reference(reference, referenceLocation);
                     state = State.Data; tokenLength = 0; brackets = 0;
-                    if (diagnostic is null) QueueFragment(scalar, referenceLocation);
+                    if (diagnostic is null && !pushed) QueueFragment(scalar, referenceLocation);
                 }
                 else Store(c, location);
                 return;
@@ -581,6 +587,8 @@ internal sealed class XmlParserCore : IDisposable
         int i = 0; int length = ReadName(ref i); SkipWhite(ref i);
         if (i != tokenLength || !ValidName(token.AsSpan(0, length), true) || frames.Count == 0)
         { Reject("XML.Syntax", "Invalid end tag.", opening); return; }
+        if (entitySources is { Count: > 0 } && frames.Count <= entitySources[^1].ElementDepth)
+        { Reject("XML.Syntax", "Entity cannot close an element from its parent source.", opening); return; }
         var expected = frames[^1].Name; var q = token.AsSpan(0, length); int colon = Colon(q);
         var prefix = colon < 0 ? ReadOnlySpan<char>.Empty : q[..colon]; var local = colon < 0 ? q : q[(colon + 1)..];
         if (!Equal(prefix, expected.Prefix) || !Equal(local, expected.Local)) { Reject("XML.Syntax", "Mismatched end tag.", opening); return; }
@@ -617,7 +625,10 @@ internal sealed class XmlParserCore : IDisposable
         {
             Reject(ValidName(reference, false) ? "XML.UndeclaredEntity" : "XML.Syntax", "Invalid or undeclared entity.", location); return 0;
         }
-        Charge(Quota.ExpandedCharacters, 1, location); return value;
+        if (!Charge(Quota.EntityDepth, 1, location)) return 0;
+        try { Charge(Quota.ExpandedCharacters, 1, location); }
+        finally { budget.Release(Quota.EntityDepth, 1); }
+        return value;
     }
     private void ParseDeclaration()
     {
