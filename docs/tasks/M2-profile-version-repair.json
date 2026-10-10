@@ -4,7 +4,7 @@
   "milestone": "M2",
   "title": "Correct superseded E38 version applicability",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "worker:M2-profile-version-repair",
   "branch": "codex/m2-profile-version-repair",
   "base_revision": "52fb130878edb29b3d291f9271902fb41ec91f42",
@@ -37,29 +37,108 @@
     {
       "id": "M2-profile-version-repair-A1",
       "description": "Correct only the exact original xmlconf/eduni/errata-2e/errata2e.xml#rmt-e2e-38 effective expectation and deterministic classifier path under verified Fifth Edition version contract. Fourth Edition E10 explicitly reverses Second Edition E38; Fifth Edition [26] accepts1.[0-9]+ and [77] reuses VersionInfo. Preserve source TYPE/purpose, primary/entity original bytes, IDs/resource/grant metadata and all other case rows. No exclusion, runtime version rejection or profile/API change. Ledger aggregate classifications may change only as required by this one row. Cite exact normative rationale and historical distinction.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "normative-review",
+        "classification-controls"
+      ]
     },
     {
       "id": "M2-profile-version-repair-A2",
       "description": "Execute focused independent original byte/resource hash and semantic model controls: exact primary SHA b6be7039a5dfeaad8eaad16eb3976c754888985bdd598b518a81a0f9547e3cf6 and entity SHA028229ed9dda8481d7996ef03a1e17300255abef2bf082011312f09b28623eef; deterministic full classifier regeneration reproduces ledger with every other original row/resource unchanged. Actual integrated product case accepts independently authored complete nested foo/event/DOM model with explicit offline grants; preserve E38 source metadata, boundaries and cleanup. Paired malformed VersionNum/XML1.1-only content reject; no reference-agreement-only conformance claim.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "classification-controls",
+        "original-byte-model",
+        "focused-conformance"
+      ]
     },
     {
       "id": "M2-profile-version-repair-A3",
       "description": "Use only verified integrated source for actual focused checks, no active runtime peer dependency. Preserve previous passing API/ABI/performance evidence because no runtime/dependency/config change; no allocation/timing required for classification-only correction. Record exact revisions/source/runtime identities, relevant focused conformance/model checks and planning/owned diff; summaries only, raw cleanup. Coordinator focuses integrated original/model/classification controls; full corpus execution and disagreement resolution remain grammar/conformance join acceptance.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "focused-builds",
+        "original-byte-model",
+        "focused-conformance",
+        "ownership-planning"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "docs/reports/M2-conformance-profile/classify.py: exact E38 ID superseded-e38-version rule; tests/corpora/xml/m2-applicability.json: one row plus required counts",
+    "docs/reports/M2-profile-version-repair/verify.py: independent claim-ledger field/row/resource/hash preservation checks",
+    "samples/M2-profile-version-repair/Program.cs: original byte decoder/core/DOM/DTD oracle, 46 read boundaries, owned lifetime and explicit grants/cleanup; tests/fixtures/M2-conformance/ProfileVersionRepair/expected.json: independently authored complete model",
+    "tests/Xemele.Conformance.Tests/XmlFull/ProfileVersionRepair/E38ApplicabilityTests.cs: exact historical/effective regression; docs/reports/M2-profile-version-repair/README.md: rationale and reproduction"
+  ],
+  "evidence": [
+    {
+      "id": "normative-review",
+      "kind": "review",
+      "revision": "615cc5cdcbd6a74b7d63990124543e30d4041c02",
+      "command": "Primary-source review: https://www.w3.org/XML/xml-V10-4e-errata#E10; https://www.w3.org/TR/2008/REC-xml-20081126/#NT-VersionNum; #NT-TextDecl",
+      "result": "passed",
+      "summary": "E10 explicitly reverses Second Edition E38; Fifth Edition [26] is literal ASCII 1.[0-9]+ and [77] reuses optional VersionInfo. Exact original entity 1.1 with <foo/> and LF uses only XML1.0 features. Historical not-wf TYPE/purpose preserved; no runtime version guard or XML1.1 semantics.",
+      "artifact": null
+    },
+    {
+      "id": "classification-controls",
+      "kind": "check",
+      "revision": "615cc5cdcbd6a74b7d63990124543e30d4041c02",
+      "command": "python3 -B docs/reports/M2-profile-version-repair/verify.py; python3 -B docs/reports/M2-conformance-profile/classify.py --check",
+      "result": "passed",
+      "summary": "Passed. 2585 cases/3386 resource records: exact E38 only expectedOutcomes/rule/normative/rationale changed and required aggregate well-formedness 988->987/superseded-e38-version 0->1. All other 2584 rows, resource/grant metadata, file list and inventory hash unchanged. Full deterministic regeneration reproduced ledger and hash-verified every original resource. Actual E38.xml SHA256 b6be7039a5dfeaad8eaad16eb3976c754888985bdd598b518a81a0f9547e3cf6; E38.ent SHA256 028229ed9dda8481d7996ef03a1e17300255abef2bf082011312f09b28623eef.",
+      "artifact": null
+    },
+    {
+      "id": "focused-builds",
+      "kind": "check",
+      "revision": "615cc5cdcbd6a74b7d63990124543e30d4041c02",
+      "command": "dotnet build samples/M2-profile-version-repair/Sample.csproj -c Release --no-restore --disable-build-servers -m:1 -p:UseSharedCompilation=false; dotnet build tests/Xemele.Conformance.Tests/Xemele.Conformance.Tests.csproj -c Release --no-restore --disable-build-servers -m:1 -p:UseSharedCompilation=false",
+      "result": "passed",
+      "summary": "Both passed, 0 warnings/errors; SDK10.0.400. Initial restore builds used scoped -p:NuGetAudit=false with existing cached packages. Rebuild after implementation commit bound assembly revision; final driver also includes added actual external EOF assertion.",
+      "artifact": null
+    },
+    {
+      "id": "original-byte-model",
+      "kind": "check",
+      "revision": "615cc5cdcbd6a74b7d63990124543e30d4041c02",
+      "command": "dotnet samples/M2-profile-version-repair/bin/Release/net10.0/Xemele.Tests.dll \"$PWD\"",
+      "result": "passed",
+      "summary": "Passed: 46 complete independently authored models (each entity read size1..46, one-byte primary decoding),6 actual malformed-version/illegal-literal/illegal-reference/unbalanced-entity rejections and1 denied-grant control. Complete logical callback sequence/source line-column-byte offsets, DOM fields/links/whitespace, DOCTYPE/raw subset, complete DTD tables and declarations checked after core/decoder disposal; explicit exact URI/lexical ID grant, single open/exactly-once external disposal; external EOF original byte length. Product freshly built via ProjectReference from verified integrated checkout, no active peer binaries. Product informational revision1.0.0+615cc5cdcbd6a74b7d63990124543e30d4041c02; product SHA2561be1e953e271479a82f47d16e1fd759245b2ee5921cd49167e17bf3a0ee42020; runtime.NET10.0.11, build10.0.11-servicing.26373.116+e2f47b0110ed922f21a1522da67279133ce28f32; System.Private.CoreLib SHA2569ed74c2e2efeee87f1f2d7ffe1736b7e9164ce248516ea39402a725eedc87af6. No reference agreement used as oracle.",
+      "artifact": null
+    },
+    {
+      "id": "focused-conformance",
+      "kind": "check",
+      "revision": "615cc5cdcbd6a74b7d63990124543e30d4041c02",
+      "command": "dotnet run --project tests/Xemele.Conformance.Tests -c Release --no-build -- -namespace 'Xemele.Conformance.Tests.XmlFull.*' -noColor",
+      "result": "passed",
+      "summary": "Passed 4 tests,0 errors/failures/skips/not-run, including existing full-profile classification/resource/infrastructure controls and new exact E38 regression. Exploratory --filter-namespace invocation exited3 (unknown option, no tests executed); used runner-help documented -namespace for actual passing run.",
+      "artifact": null
+    },
+    {
+      "id": "ownership-planning",
+      "kind": "check",
+      "revision": "615cc5cdcbd6a74b7d63990124543e30d4041c02",
+      "command": "python3 -B tools/planning/tasks.py validate; git diff --check; git diff --name-only a0e243e85e0a7cf9a8ea74d8020893c42dde6b0f; git merge-base --is-ancestor 52fb130878edb29b3d291f9271902fb41ec91f42 HEAD",
+      "result": "passed",
+      "summary": "Passed validation of138 tasks and whitespace check. All8 implementation files inside task ownership. No runtime/API/dependency/config changes; earlier passing API/ABI/allocation/timing evidence remains applicable, no new performance measurement required. Claim/base integrated prerequisites preserved. Temporary sample/product/test build outputs removed after inspection; cache original inputs left read-only. Initial uncommitted negative harness attempt failed its grammar-code assertion because public byte entry had no primary URI and yielded resource denial; fixed by reusing exact URI-bound decoder/core/DOM path for both original and controls before committing. Final passing execution is the only model-conformance claim.",
+      "artifact": null
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "",
-    "checks": [],
-    "remaining": [],
+    "summary": "Exact E38 effective Fifth Edition acceptance correction only; deterministic ledger and complete independent original-byte model controls passed. Branch implemented, awaiting coordinator integration verification.",
+    "checks": [
+      "Full classifier regeneration and independent one-row/resource/hash preservation passed.",
+      "Release SDK10.0.400 builds passed; .NET10.0.11 original-byte 46 model/6 rejection/1 denial controls passed.",
+      "Focused full XML conformance4/4 passed; planning138 tasks and owned diff/whitespace passed.",
+      "Exploratory harness/runner invocation failures corrected before final checks; raw build outputs cleaned."
+    ],
+    "remaining": [
+      "Coordinator integrate and run focused original/model/classification/planning checks, then record integration revision and verified status. Full corpus execution/disagreement resolution remains later grammar/conformance join acceptance."
+    ],
     "requests": []
   }
 }

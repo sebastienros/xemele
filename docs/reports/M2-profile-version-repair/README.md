@@ -35,7 +35,7 @@ python3 -B docs/reports/M2-profile-version-repair/verify.py
 python3 -B docs/reports/M2-conformance-profile/classify.py --check
 dotnet build samples/M2-profile-version-repair/Sample.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false -p:NuGetAudit=false
 dotnet samples/M2-profile-version-repair/bin/Release/net10.0/Xemele.Tests.dll "$PWD"
-dotnet run --project tests/Xemele.Conformance.Tests -c Release --no-build -- --filter-namespace 'Xemele.Conformance.Tests.XmlFull.*'
+dotnet run --project tests/Xemele.Conformance.Tests -c Release --no-build -- -namespace 'Xemele.Conformance.Tests.XmlFull.*' -noColor
 python3 -B tools/planning/tasks.py validate
 git diff --check
 ```
