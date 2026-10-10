@@ -23,7 +23,7 @@ OWN = ROOT / 'docs/reports/M2-dtd-entity-base'
 PROJECT = OWN / 'Xemele.EntityBase.Measurements.csproj'
 PRODUCT = ROOT / 'src/Xemele/Xemele.csproj'
 PARENT = OWN / 'bin/Release/net10.0'
-DRIVER = PARENT / 'Xemele.EntityBase.Measurements.dll'
+DRIVER = PARENT / 'Xemele.Benchmarks.dll'
 FLAGS = ['-c', 'Release', '--disable-build-servers', '-m:1', '-p:UseSharedCompilation=false']
 EXPECTED = {'InternalNestedModel', 'RedirectedComposition'}
 

@@ -30,7 +30,7 @@ if (args is ["--generate-build-only", var artifacts])
     if (!built.IsBuildSuccess) throw new Exception("Independent generated build failed.");
     var paths = generated.ArtifactsPaths;
     var proof = EntityBaseProvenance.Capture(paths.BinariesDirectoryPath, paths.ExecutablePath, paths.BuildArtifactsDirectoryPath,
-        Path.Combine(paths.BinariesDirectoryPath, "Xemele.EntityBase.Measurements.dll"), Path.Combine(paths.BinariesDirectoryPath, "Xemele.dll"));
+        Path.Combine(paths.BinariesDirectoryPath, "Xemele.Benchmarks.dll"), Path.Combine(paths.BinariesDirectoryPath, "Xemele.dll"));
     Console.WriteLine("ENTITY_BASE_BUILD_ONLY " + JsonSerializer.Serialize(new
     {
         countersDisabled = true, executorInvoked = false, cases = new[] { "InternalNestedModel", "RedirectedComposition" },

@@ -10,8 +10,9 @@ docs/reports/M2-dtd-entity-base/measure.py --mode prepare --report preparation-N
 --benchmark-report benchmark-N`
 builds the isolated driver, executes only counters-disabled correctness and
 identity modes, and writes `preparation.json` after strict cleanup. It
-uses the uniquely named `Xemele.EntityBase.Measurements.csproj` and matching
-assembly. Both generation paths bind explicitly to its absolute path; generated
+uses the uniquely named `Xemele.EntityBase.Measurements.csproj` with its unique
+project filename and existing `Xemele.Benchmarks` friend assembly name.
+Both generation paths bind explicitly to its absolute path; generated
 projects must contain exactly its one ProjectReference before Builder starts.
 The wrapper retains that independent binding proof and requires the later
 generation to match it. Cleanup takes its directory baseline after parent build

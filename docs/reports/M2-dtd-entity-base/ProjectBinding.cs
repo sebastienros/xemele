@@ -39,7 +39,7 @@ internal static class EntityBaseProjectBinding
         {
             var file = new FileInfo(project);
             if (!file.Exists || file.Name != "Xemele.EntityBase.Measurements.csproj" ||
-                benchmarkTarget.Assembly.GetName().Name != "Xemele.EntityBase.Measurements")
+                benchmarkTarget.Assembly.GetName().Name != "Xemele.Benchmarks")
                 throw new InvalidDataException("Owned project/assembly binding differs.");
             return file;
         }
