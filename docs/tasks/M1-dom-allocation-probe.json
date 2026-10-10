@@ -4,7 +4,7 @@
   "milestone": "M1",
   "title": "Diagnose and stabilize the warm borrowed-name allocation measurement",
   "kind": "infrastructure",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M1-dom-allocation-probe",
   "branch": "codex/m1-dom-allocation-probe",
   "base_revision": "78ae04d908d9b4401f971ebb746630c58ca519f1",
@@ -30,23 +30,140 @@
     {
       "id": "M1-dom-allocation-probe-A1",
       "description": "Diagnose actual existing warmname-hit measurement at known verified source, preserve reproduction/first-use/setup evidence and exact borrowed-name identity assertions. If measured runtime truly allocates in steady state, report a runtime-owner repair request instead of masking it. Establish warm measurement scope with identical exercised logic/warmup and explicit setup separation; retain zero-byte threshold, independent owned-name identity and meaningful iteration count. Modify only that existing probe and necessary helper, preserving all other DOM tests.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "focused",
+        "full",
+        "allocation",
+        "audit"
+      ]
     },
     {
       "id": "M1-dom-allocation-probe-A2",
       "description": "Demonstrate actual steady0B with focused and full combined existing288 test solution at known revision in controlled fresh processes, meaningful warm/cold/setup measurements and retained diagnostic evidence. Preserve API222, production source unchanged, class parallelism/lifetime semantics and all failures. Run planning108+newtask validation/14regressions/committed-staged-working-untracked ownership audits and diffs; no benchmarktiming repetitions. Record why any harness change fixes the measured boundary, not runtime behavior or required performance target.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "build",
+        "focused",
+        "full",
+        "allocation",
+        "api",
+        "planning",
+        "regressions",
+        "discovery",
+        "audit",
+        "baseline-full"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "tests/Xemele.Tests/M1-dom/DomTests.cs: BorrowedNameHits and WarmBorrowedNameHitsAllocateZeroAndUseOwnedInternedStrings",
+    "docs/reports/M1-dom-allocation-probe/Diagnostic/Program.cs: separated allocation phases",
+    "docs/reports/M1-dom-allocation-probe/README.md: bounded diagnosis and limitations"
+  ],
+  "evidence": [
+    {
+      "id": "baseline-full",
+      "kind": "check",
+      "revision": "987aa47af7c744088ea3fe92e50563230ea8d6cd",
+      "command": "dotnet test --solution Xemele.slnx -c Release --no-build --no-restore",
+      "result": "failed",
+      "summary": "Original DOM probe passed; unrelated unchanged syntax warm allocation failed6000B;287/288. Retained; no cause inferred.",
+      "artifact": "docs/reports/M1-dom-allocation-probe/baseline-full.txt.gz"
+    },
+    {
+      "id": "build",
+      "kind": "check",
+      "revision": "46f90ea2324f33617b091adbf2b8dcba2d83da18",
+      "command": "dotnet build Xemele.slnx -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false -p:NuGetAudit=false",
+      "result": "passed",
+      "summary": "Release build0warnings0errors; earlier network/audit failure preserved.",
+      "artifact": "docs/reports/M1-dom-allocation-probe/final-build.txt.gz"
+    },
+    {
+      "id": "focused",
+      "kind": "check",
+      "revision": "46f90ea2324f33617b091adbf2b8dcba2d83da18",
+      "command": "dotnet test --project tests/Xemele.Tests -c Release --no-build --no-restore --filter-method *WarmBorrowedNameHitsAllocateZeroAndUseOwnedInternedStrings*",
+      "result": "passed",
+      "summary": "Fresh process1/1; identical10000hit warm/measured helper, independent borrowed input, all identities, exact0B.",
+      "artifact": "docs/reports/M1-dom-allocation-probe/final-focused.txt.gz"
+    },
+    {
+      "id": "full",
+      "kind": "check",
+      "revision": "46f90ea2324f33617b091adbf2b8dcba2d83da18",
+      "command": "dotnet test --solution Xemele.slnx -c Release --no-build --no-restore",
+      "result": "passed",
+      "summary": "Fresh default-tiering process288/288; no skips, production unchanged, existing parallelism. Does not establish historical216B or syntax6000B root cause.",
+      "artifact": "docs/reports/M1-dom-allocation-probe/final-full.txt.gz"
+    },
+    {
+      "id": "allocation",
+      "kind": "check",
+      "revision": "46f90ea2324f33617b091adbf2b8dcba2d83da18",
+      "command": "dotnet docs/reports/M1-dom-allocation-probe/Diagnostic/bin/Release/net10.0/Xemele.Tests.dll (once default; once DOTNET_TieredCompilation=0)",
+      "result": "passed",
+      "summary": "Counter0B; DOM setup10720B; reflection/input864B; first reflected hit0B; original warm24B default/0B tieringdisabled; original measured/helperfirst/helperwarm0B. Historical216B unreproduced; scope mismatch corrected without causal attribution.",
+      "artifact": "docs/reports/M1-dom-allocation-probe/README.md"
+    },
+    {
+      "id": "api",
+      "kind": "check",
+      "revision": "46f90ea2324f33617b091adbf2b8dcba2d83da18",
+      "command": "python3 -B tools/ApiBaseline/compare.py --report docs/reports/M1-dom-allocation-probe/runtime-api.json",
+      "result": "passed",
+      "summary": "Matched unchanged222 compiled members; approved checker Release build passed.",
+      "artifact": "docs/reports/M1-dom-allocation-probe/runtime-api.json"
+    },
+    {
+      "id": "planning",
+      "kind": "check",
+      "revision": "46f90ea2324f33617b091adbf2b8dcba2d83da18",
+      "command": "python3 tools/planning/tasks.py validate",
+      "result": "passed",
+      "summary": "Validated109 tasks.",
+      "artifact": "docs/reports/M1-dom-allocation-probe/planning.txt.gz"
+    },
+    {
+      "id": "regressions",
+      "kind": "check",
+      "revision": "46f90ea2324f33617b091adbf2b8dcba2d83da18",
+      "command": "python3 -B -m unittest discover -s tools/planning -p 'test_*.py' -v",
+      "result": "passed",
+      "summary": "14 planning regressions passed.",
+      "artifact": "docs/reports/M1-dom-allocation-probe/planning-regressions.txt.gz"
+    },
+    {
+      "id": "discovery",
+      "kind": "check",
+      "revision": "46f90ea2324f33617b091adbf2b8dcba2d83da18",
+      "command": "python3 -B tools/ApiBaseline/discover.py",
+      "result": "passed",
+      "summary": "Discovery passed after offline pinned fixture restoration; no peer report/metadata changes.",
+      "artifact": "docs/reports/M1-dom-allocation-probe/discovery.txt.gz"
+    },
+    {
+      "id": "audit",
+      "kind": "check",
+      "revision": "46f90ea2324f33617b091adbf2b8dcba2d83da18",
+      "command": "git diff --check 987aa47af7c744088ea3fe92e50563230ea8d6cd HEAD; git diff --check; git diff --cached --check; committed/staged/working/untracked ownership audit",
+      "result": "passed",
+      "summary": "All observed paths owned; production source unchanged; source diff retained.",
+      "artifact": "docs/reports/M1-dom-allocation-probe/source-audit.json"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Reviewed PI runtime repair changed only PI namevalidators; its combinedruns atd3eb show unchangedDOM namehitprobe216B twice (299/300), standalonefull300passed. EarlierDOM freshintegrated288passed. Investigate measurement cold/setup/tiering/context rather than loosenrequirement or attributecausewithoutproof. PI/Corpus draftspark afterack; no runtimeownership in this task.",
-    "checks": [],
-    "remaining": [],
-    "requests": []
+    "summary": "Identical non-inlined10000 identity-hit helper for warm/measurement; exact0B retained, independent input assertion. Fresh focused1/full288/API222/planning109/14 passed. Historical216B not reproduced or causally explained; no runtime repair claim.",
+    "checks": [
+      "See README.md/evidence and preserved successful/failed logs at46f90ea. No timing benchmarks."
+    ],
+    "remaining": [
+      "Coordinator independent review and integrated verification; historical216B cause unresolved despite corrected scope."
+    ],
+    "requests": [
+      "tests/Xemele.Tests/M1-syntax/StreamingTests.cs:59: assess unchanged warm syntax probe transient6000B baseline failure287/288. Outside ownership; final full288 passed, no retry or syntax changes."
+    ]
   }
 }

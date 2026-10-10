@@ -1,5 +1,6 @@
 using System.Text;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Xml.Linq;
 using Xemele.Parsing.Dom;
 using Xunit;
@@ -245,6 +246,16 @@ public sealed class DomTests
     }
 
     private delegate string NameProbe(ReadOnlySpan<char> name);
+    // Keep the same call site and identity branch in initialization and measurement.
+    // NoInlining prevents each caller from receiving a separately compiled loop.
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private static void BorrowedNameHits(NameProbe probe, string copiedProbe, string rootName)
+    {
+        for (int i = 0; i < 10000; i++)
+            if (!ReferenceEquals(rootName, probe(copiedProbe.AsSpan())))
+                throw new InvalidOperationException("Borrowed hit did not reuse owned name.");
+    }
+
     [Fact]
     public void WarmBorrowedNameHitsAllocateZeroAndUseOwnedInternedStrings()
     {
@@ -254,10 +265,10 @@ public sealed class DomTests
         var probe = typeof(DomSink).GetMethod("OwnName", BindingFlags.Instance | BindingFlags.NonPublic)!.CreateDelegate<NameProbe>(sink);
         string rootName = sink.Document.RootElement.LocalName;
         string copiedProbe = new string(new[] { 'r' });
-        for (int i = 0; i < 10000; i++) probe(copiedProbe.AsSpan());
+        Assert.NotSame(rootName, copiedProbe);
+        BorrowedNameHits(probe, copiedProbe, rootName);
         long before = GC.GetAllocatedBytesForCurrentThread();
-        for (int i = 0; i < 10000; i++)
-            if (!ReferenceEquals(rootName, probe(copiedProbe.AsSpan()))) throw new InvalidOperationException("Borrowed hit did not reuse owned name.");
+        BorrowedNameHits(probe, copiedProbe, rootName);
         long allocated = GC.GetAllocatedBytesForCurrentThread() - before;
         Assert.Equal(0L, allocated);
     }
