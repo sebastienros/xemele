@@ -277,11 +277,36 @@ public sealed class ResolverTests
     [Fact]
     public void WarmBorrowedReadsAllocateNothing()
     {
-        using var session = Session(new DelegateResolver(_ => new(new ZeroStream(), Source)), bytes: null);
-        using var handle = session.Open(Request(), Location).Resource!; byte[] buffer = new byte[4096];
-        for (int i=0; i<1000; i++) handle.Read(buffer, Location);
-        long before = GC.GetAllocatedBytesForCurrentThread(); for (int i=0; i<10000; i++) handle.Read(buffer, Location);
-        Assert.Equal(0, GC.GetAllocatedBytesForCurrentThread()-before);
+        var child = ResolverAllocationChild.EnterChild();
+        if (child is null)
+        {
+            var pair = ResolverAllocationChild.RunPair();
+            Assert.Equal(0, pair.Real.AllocatedBytes);
+            Assert.Equal(640000, pair.Positive.AllocatedBytes);
+            TestContext.Current.TestOutputHelper!.WriteLine(
+                $"real={pair.Real.AllocatedBytes}; positive={pair.Positive.AllocatedBytes}; warm1000={pair.Real.WarmBytes}; measured10000={pair.Real.MeasuredBytes}; total={pair.Real.TotalBytes}; artifacts={pair.Directory}");
+            return;
+        }
+        var cancellation = TestContext.Current.CancellationToken;
+        var stream = new ZeroStream();
+        var resolver = new DelegateResolver(_ => new(stream, Source));
+        using var session = Session(resolver, bytes: null);
+        var opened = session.Open(Request(), Location);
+        Assert.Null(opened.Diagnostic);
+        using var handle = opened.Resource!;
+        Assert.Same(stream, handle.Content); Assert.Same(Source, handle.SourceUri);
+        byte[] buffer = new byte[4096];
+        long warm = ResolverAllocationProbe.ReadChecked(session, handle, buffer, Location, cancellation, 1000);
+        long warmBytes = session.BytesRead;
+        long allocated = ResolverAllocationProbe.ReadChecked(session, handle, buffer, Location, cancellation, 10000, child.Mode == "positive");
+        long measuredBytes = session.BytesRead - warmBytes;
+        Assert.Equal(4096000, warmBytes); Assert.Equal(40960000, measuredBytes);
+        Assert.Equal(45056000, session.BytesRead); Assert.Equal(1, session.ResourcesOpened);
+        Assert.Equal(1, resolver.Calls); Assert.Same(stream, handle.Content); Assert.Same(Source, handle.SourceUri);
+        ResolverAllocationChild.Write(child, warm, allocated, warmBytes, measuredBytes, session.BytesRead,
+            session.ResourcesOpened, resolver.Calls, ResolverAllocationProbe.EscapedLength);
+        if (child.Mode == "positive") Assert.Equal(640000, allocated);
+        else Assert.Equal(0, allocated);
     }
 
     [Theory]
