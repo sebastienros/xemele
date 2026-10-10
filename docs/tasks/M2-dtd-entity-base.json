@@ -39,14 +39,20 @@
     {
       "id": "M2-dtd-entity-base-A1",
       "description": "Correct internal parameter-entity replacement inclusion base to the containing external entity where declaration opener is parsed, including nested internal PEs, rather than internal PE declaration origin. Preserve actual external resource redirected final URI, external-origin semantics, saved parent cursors, budgets/quota/cancellation/framing/count/cleanup and immutable model/constructor/API shapes. Use verified profile E18 exactoriginal identity and independent expected output, no corpus expectation weakening.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "correctness-6a15199",
+        "original-profile-6a15199"
+      ]
     },
     {
       "id": "M2-dtd-entity-base-A2",
       "description": "Correct external PE system-identifier resolution to its declaration base rather than reference-site base, with separate source-location/referrer identities as required by existing contract. Add exact requested-URI/referrer/complete callback/model oracles for E18, internal inclusion under primary/redirectedexternal/nestedcontexts, external PE declared in one externaldirectory and referenced from another, firstdeclaration wins, quota/cancel/denial/primary-error cleanup. Preserve inherited direct external final-URI composition outcomes; request additional paths if historical assertions need precise transitions.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "correctness-6a15199",
+        "original-profile-6a15199"
+      ]
     },
     {
       "id": "M2-dtd-entity-base-A3",
@@ -61,22 +67,63 @@
     "benchmarks/Xemele.Benchmarks/M2-dtd-entity-base/EntityBaseBenchmarks.cs: nested internal model and redirected complete-document workloads",
     "docs/reports/M2-dtd-entity-base/Measurements.csproj and MeasurementDriver.cs: isolated correctness/identity/allocation/benchmark driver",
     "benchmarks/Xemele.Benchmarks/M2-dtd-composition/CompositionBenchmarks.cs: sole CheckResult included-element URI oracle transitioned null to containing external Uri; seeded declaration and all other assertions unchanged",
-    "docs/reports/M2-dtd-entity-base/measure.py and test_measure.py: owned strict source/Git, compiled/build/Python input, parent/runtime/generated child closure before-after provenance; exact observation/GC/exit guards, bounded process groups, summary-only cleanup and unchanged-success rejection"
+    "docs/reports/M2-dtd-entity-base/measure.py and test_measure.py: owned strict source/Git, compiled/build/Python input, parent/runtime/generated child closure before-after provenance; exact observation/GC/exit guards, bounded process groups, summary-only cleanup and unchanged-success rejection",
+    "tests/Xemele.Tests/M2-dtd-entity-base/EntityBaseTests.cs: original E18 primary/all5 mapped resource exact byte/hash identities; independent canonical and semantic model hash; exact3 requests/referrers, complete callback and immutable DTD declaration model; synthetic quota/denial/cancellation/primary-error disposal",
+    "samples/M2-dtd-entity-base/: public source and fresh nupkg consumer exact request/referrer/text/open/disposal sample",
+    "benchmarks/Xemele.Benchmarks/M2-dtd-entity-base/Provenance.cs and MeasurementDriver.cs --generate-build-only: independent pinned generator+builder without executor; approved complete variant manifest gates actual loaded child before fixture/workload; actual expected mismatches published before refusal"
   ],
-  "evidence": [],
+  "evidence": [
+    {
+      "id": "correctness-6a15199",
+      "kind": "check",
+      "revision": "6a151999f177a479bdc3f9c4bb8e2bb9e1583639",
+      "command": "dotnet build Xemele.slnx -c Release --no-restore --disable-build-servers -m:1 -p:UseSharedCompilation=false; dotnet tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -noColor -result-xml artifacts/M2-dtd-entity-base/correctness-6a15199/unit.xml; dotnet tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll -noColor -result-xml artifacts/M2-dtd-entity-base/correctness-6a15199/conformance.xml; dotnet tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll -noColor -result-xml artifacts/M2-dtd-entity-base/correctness-6a15199/differential.xml",
+      "result": "passed",
+      "summary": "Release0warnings; all5172 tests passed (4603unit including9owned/E18,258conformance,311differential), nofailed/skipped. OriginalE18 full independent byte/model/callback/request/referrer/cleanup oracles passed. API272 and fresh packageconsumer passed; no public/model/constructor shape changes. Reports retain exact known source/binary/runtime identities and corrected initial failures; after-only identity limitation explicit. No standalone measurements yet.",
+      "artifact": "docs/reports/M2-dtd-entity-base/correctness-6a15199.json"
+    },
+    {
+      "id": "original-profile-6a15199",
+      "kind": "check",
+      "revision": "6a151999f177a479bdc3f9c4bb8e2bb9e1583639",
+      "command": "python3 -B docs/reports/M2-conformance-profile/audit.py docs/reports/M2-dtd-entity-base/profile-6a15199.json",
+      "result": "passed",
+      "summary": "All2585 original cases observed with frozen actual full Git/source/product/BCL/driver/runtime/output identities before-after. Original3386resources/expectations unchanged. E18 sole prior modeldisagreement resolved (636mutual-success matches), same139outcome gaps remain with unchanged exactID/inputhash/expectation/outcome. This passes scopedrepair/preservation, not wholeprofileconformance.",
+      "artifact": "docs/reports/M2-dtd-entity-base/profile-6a15199.json"
+    },
+    {
+      "id": "wrapper-controls-f2ec36f",
+      "kind": "check",
+      "revision": "f2ec36f4c6c540f5c4a4bea27c7c257dc4739c90",
+      "command": "python3 -B -m unittest discover -s docs/reports/M2-dtd-entity-base -p test_measure.py -v",
+      "result": "passed",
+      "summary": "8 synthetic controls passed, including actual mismatching hashes/partial metrics retention, pre-workload-gate unobserved-phase accounting, closure mutation, generated source freeze and unchanged-success refusal. No generation/preparation/allocation/timing executed.",
+      "artifact": "docs/reports/M2-dtd-entity-base/correctness-6a15199.json"
+    },
+    {
+      "id": "planning-6a15199",
+      "kind": "check",
+      "revision": "6a151999f177a479bdc3f9c4bb8e2bb9e1583639",
+      "command": "python3 -B -m unittest discover -s tools/planning -p test_tasks.py -v; python3 -B tools/planning/tasks.py validate",
+      "result": "passed",
+      "summary": "14controls passed; actual local129task graph validated. No historic hardcoded taskcount or unverifiedpeer dependency.",
+      "artifact": "docs/reports/M2-dtd-entity-base/correctness-6a15199.json"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Source candidate 7b933a53ddc3edb18e9def02bba378cabb893ab3 includes root-reviewed parser fixes, explicitly authorized historical oracle transition (scope commit 071b70d90cfe95a434961c156192f2badd6fc979), and source-only preparation/measurement wrapper plus child provenance instrumentation. HOST HOLD remains; PARK/no worker children. No compilation, tests, preparation, imports, counters or timing executed.",
+    "summary": "Correctness candidate6a151999f177a479bdc3f9c4bb8e2bb9e1583639; A1/A2 passed, A3pending and taskin_progress. Corrected independent measurement wrapper source candidatef2ec36f4c6c540f5c4a4bea27c7c257dc4739c90 ready for scopedreview. All correctness work authorized by HOST RELEASE completed; PARK/noheavychildren/no recursiveworkers. No standalone allocation/timing or new preparation/build-only generation executed.",
     "checks": [
-      "Setup: actual isolated checkout/clean assigned branch, base and coordinated claim ancestry verified. Implementation checks not run: explicit coordinator host hold.",
-      "git diff --check passed before source commit; no runtime or planning checks executed during HOST HOLD.",
-      "git diff --check passed for source-only wrapper and failure-accounting edits; new Python guard tests and C# child instrumentation not executed."
+      "Release solution0warnings; full5172tests/owned9includingoriginalE18 allpassed; API272matched; own source/freshpackageconsumer passed.",
+      "Original fullprofileaudit all2585cases/3386resources unchanged; E18modelgap resolved, same139otheroutcome gaps remainvisible. Wholeprofile is not claimed conformant.",
+      "8ownedwrappercontrols/14planningcontrols passed; actuallocal129graphvalidation passed; rawXML/API payload/nupkg/feed/packages removed, only concise summaries retained.",
+      "Initial infrastructure/ownedcompile/diagnostic failures corrected and honestly recorded; no GC/JIT/counter/threshold/options relaxation."
     ],
     "remaining": [
-      "Await HOST RELEASE before compilation, focused/full correctness, sample, API272/package, original 3386-resource/2585-case ledger and E18 exact independent-model checks, planning validation.",
-      "Review source candidate and counters-disabled preparation before fresh exclusive standalone allocation/benchmark grant; freeze actual full Git/source/binary/runtime/child identities.",
-      "Add original E18 exact byte/hash request/model oracle after the pinned offline corpus becomes available; current authored fixtures are independent synthetic base oracles.",
-      "Coordinator review of new strict wrapper/child instrumentation; after HOST RELEASE execute owned guard tests and counters-disabled preparation, fix any actual failures honestly before requesting exclusive measurement grant."
+      "Coordinator review of independently generated expectedvariant build-only preparation/pre-workload child gate and failure-preserving summary infrastructure atf2ec36f/6a15199.",
+      "After source-review approval: counters-disabled preparation/build-only generation, actual complete compiled/generated input/binary/fullversion/runtime identities, scoped oracle/provenance correctness; fix real failures before fresh explicit exclusive standalone allocation/benchmark grants.",
+      "A3requires actual relevant allocation/benchmark evidence and complete pre/post identities; current correctness summary explicitly identifies after-onlytestbinary closure limitation rather than inventing a beforefreeze.",
+      "Coordinator integration and fresh integrated checks/verified metadata remain; no main writes/push/archive by worker."
     ],
     "requests": []
   }
