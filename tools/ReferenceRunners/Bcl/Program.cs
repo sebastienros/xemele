@@ -51,9 +51,19 @@ while (true)
         request = JsonSerializer.Deserialize<Request>(line.ToString(), Wire.Json)
             ?? throw new ArgumentException("Null request.");
         if (request.ProtocolVersion != 1 || string.IsNullOrWhiteSpace(request.CaseId)
-            || request.Operation != "xml.events" || request.Profile != "xml-1.0"
-            || request.Options?.Count > 0)
+            || request.Operation != "xml.events" || request.Profile != "xml-1.0")
             throw new ArgumentException("Unsupported version, identity, operation, profile or options.");
+        string sourceUri = "urn:xemele:input";
+        foreach (var option in request.Options ?? [])
+        {
+            if (option.Key != "sourceUri" || option.Value.ValueKind != JsonValueKind.String)
+                throw new ArgumentException("Unsupported option; sourceUri requires an absolute URI string.");
+            string? value = option.Value.GetString();
+            if (value is null || !Uri.IsWellFormedUriString(value, UriKind.Absolute)
+                || !Uri.TryCreate(value, UriKind.Absolute, out var uri) || uri.Fragment.Length != 0)
+                throw new ArgumentException("sourceUri must be a well-formed absolute URI without a fragment.");
+            sourceUri = uri.AbsoluteUri;
+        }
         if (request.EncodingHint is not null && request.EncodingHint != "utf-8")
             throw new ArgumentException("Only absent or utf-8 encoding hint is supported.");
         byte[] input = Convert.FromBase64String(request.InputBase64);
@@ -69,8 +79,8 @@ while (true)
             MaxCharactersFromEntities = 262_144, IgnoreComments = true, IgnoreProcessingInstructions = true };
         using var stream = new MemoryStream(input);
         using var reader = request.EncodingHint is null
-            ? XmlReader.Create(stream, settings, "urn:xemele:input")
-            : XmlReader.Create(new StreamReader(stream, new UTF8Encoding(false, true), false), settings, "urn:xemele:input");
+            ? XmlReader.Create(stream, settings, sourceUri)
+            : XmlReader.Create(new StreamReader(stream, new UTF8Encoding(false, true), false), settings, sourceUri);
         var events = new List<Event>();
         while (reader.Read())
         {
