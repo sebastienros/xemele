@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "id": "M1-tree-dom-persistence",
+  "milestone": "M1",
+  "title": "Repair bounded DOM persistence of validated syntax",
+  "kind": "feature",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "depends_on": [
+    "M1-tree-dom-builder"
+  ],
+  "goals": [
+    "G01",
+    "G03"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/tree.md",
+    "docs/specs/parser.md",
+    "docs/performance-coding.md"
+  ],
+  "owns": [
+    "src/Xemele/Tree/DomBuilder.cs",
+    "src/Xemele/Tree/DomPersistence.cs",
+    "tests/Xemele.Tests/M1-tree-dom-persistence/",
+    "benchmarks/Xemele.Benchmarks/M1-tree-dom-persistence/",
+    "samples/M1-tree-dom-persistence/",
+    "docs/reports/M1-tree-dom-persistence/"
+  ],
+  "api_or_output": "Internal fresh-builder trusted syntax-validated node/member persistence; unchanged public API and validating general tree operations",
+  "acceptance": [
+    {
+      "id": "M1-tree-dom-persistence-A1",
+      "description": "Provide explicitly documented internal trusted syntax-prevalidated node/attribute/namespace persistence on the verified fresh construction builder, avoiding unbounded repeated scalar/name/delimiter validation loops. Preserve freshness/owner/container/legal kinds, root constraints, intern quota/capacity, precommit version checks and postcommit notifications. Existing public validating APIs and builder checked entry points remain unchanged; no parser dependency or public additions.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M1-tree-dom-persistence-A2",
+      "description": "Demonstrate independently validated syntax/model construction with long text, CDATA/comment/PI, names, attribute and namespace values; own strings and repeated borrowed name hits correctly. Verify state/freshness/foreign owner/legal kind/version/quota rejection and linear deep/member work; prove no repeated custom scalar validation scan. Keep cancellation at operation boundaries, avoiding unbounded own loops.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M1-tree-dom-persistence-A3",
+      "description": "Run meaningful helper/prerequisite correctness, actual approved public API comparison, independent source and isolated package model sample, warm/setup/owned allocation evidence and applicable comparable construction measurements at known revisions; preserve earlier behavior and record exact trust preconditions/signatures for DOM consumer. Benchmarks use class attributes; no job arguments or timing without exclusive grant.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "Repair prerequisite for independently reviewed DOM persistence cancellation gap; trusted boundary may consume only fully validated syntax names/scalars/delimiters/unique keys.",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}
