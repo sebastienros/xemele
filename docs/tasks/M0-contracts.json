@@ -4,11 +4,11 @@
   "milestone": "M0",
   "title": "Approve foundation decisions and contract fixture format",
   "kind": "contract",
-  "status": "implemented",
+  "status": "verified",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M0-contracts",
   "branch": "codex/m0-contracts",
   "base_revision": "afb8d9c64833e28cd2c9aa3d95bb601a18487a89",
-  "integration_revision": null,
+  "integration_revision": "13f3525bedc3e7ecf169cf32271587895d8c8c64",
   "depends_on": [
     "M0-tree-spike",
     "M0-input-spike",
@@ -44,7 +44,9 @@
       "status": "passed",
       "evidence": [
         "foundation-decisions",
-        "compiled-contracts-and-preservation"
+        "compiled-contracts-and-preservation",
+        "integrated-contract-checks",
+        "independent-review-and-correction"
       ]
     },
     {
@@ -52,7 +54,9 @@
       "description": "Compile representative contracts in net10.0 and review value-handle/spans/defaults/error semantics; record decision evidence separately from implementation.",
       "status": "passed",
       "evidence": [
-        "compiled-contracts-and-preservation"
+        "compiled-contracts-and-preservation",
+        "integrated-contract-checks",
+        "independent-review-and-correction"
       ]
     },
     {
@@ -60,7 +64,9 @@
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
       "status": "passed",
       "evidence": [
-        "compiled-contracts-and-preservation"
+        "compiled-contracts-and-preservation",
+        "integrated-contract-checks",
+        "independent-review-and-correction"
       ]
     },
     {
@@ -69,7 +75,9 @@
       "status": "passed",
       "evidence": [
         "measured-allocation-decisions",
-        "compiled-contracts-and-preservation"
+        "compiled-contracts-and-preservation",
+        "integrated-contract-checks",
+        "independent-review-and-correction"
       ]
     }
   ],
@@ -117,6 +125,24 @@
       "result": "failed",
       "summary": "Coordinator reported independent read-only review: foundation decisions, stages, ownership, MIT, provisional evidence and checker scope coherent; blocking synthetic pump EOF dispatch lacked a before-callback cancellation check. Resolved in 028b30627d8d972183f7e80f4be2538bd0b0a59f with immediate token check and focused passing regression requiring cancellation exception, zero EOF callbacks and terminal faulting. This records the original finding honestly, not final integration approval. Coordinator portability review of 81a69c6 also accepted caller-environment SDK verification/logging correction.",
       "artifact": "docs/reports/M0-contracts/README.md"
+    },
+    {
+      "id": "integrated-contract-checks",
+      "kind": "integration",
+      "revision": "13f3525bedc3e7ecf169cf32271587895d8c8c64",
+      "command": "Pinned caller SDK environment; python3 -B docs/reports/M0-contracts/verify.py",
+      "result": "passed",
+      "summary": "11 contract MTP tests;139 M1 declarations preserved within173 M2;8-member normalization probe and real signature mutation/missing/added/changed failures; clean fixture/tool/solution Release builds;3 existing MTP tests;13 discovery tests;integrated2 corpus manifests fixtures discovery;tree selfcheck and83095 input assertions;101 task validation. No fresh timings or runtime product APIs.",
+      "artifact": "docs/reports/M0-contracts/integration-checks.txt"
+    },
+    {
+      "id": "independent-review-and-correction",
+      "kind": "review",
+      "revision": "028b30627d8d972183f7e80f4be2538bd0b0a59f",
+      "command": "Read-only /root/review_foundation plus coordinator bounded-delta review",
+      "result": "passed",
+      "summary": "Foundation stages/ownership/numeric limits/MIT/measured tradeoffs and scoped metadata checker coherent. Reviewer found missing pre-EOF cancellation check at original source; final delta adds check and meaningful cancel-in-last-data callback regression, integrated11 tests pass. Portable SDK verifier honors caller environment. No unrestricted ABI/performance proof claimed.",
+      "artifact": null
     }
   ],
   "blockers": [],
@@ -128,7 +154,7 @@
       "Initial sandbox MTP stalled and its identified process was terminated; escalated prebuilt/final native MTP runs passed. Initial nested-fixture obj contamination and missing experiment build were corrected within owned paths before final passing run. No new timing/hosted CI claimed."
     ],
     "remaining": [
-      "Coordinator recheck of bounded review correction, integration and verification; worker does not set verified."
+      "Ordered M0-api-wiring integrates compiled comparison and contract checks into CI before M0-gate. Runtime implementation remains M1."
     ],
     "requests": [
       "Ordered CI/repair task: own tools/ApiBaseline/, tests/Xemele.TestUtilities/Build/, .github/workflows/build.yml; compose validated fragments in memory and compare runtime Release assembly using task-owned Roslyn checker; exact commands in docs/reports/M0-contracts/README.md.",
