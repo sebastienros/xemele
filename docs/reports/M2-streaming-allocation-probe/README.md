@@ -187,3 +187,35 @@ pinned and validated. Any realchildnonzero/crash/timeout/missing/malformedoutput
 fails theparent, without retries/subtraction. Defaulttestparallelism and runtime
 settings stayunchanged. Nothing is wired yet; assertionchanges await focused
 coordinator go-ahead. Historical failures remainunresolved and claim staysnarrow.
+
+## Approved conditional process isolation — source checkpoint
+
+Coordinator approved the concrete proposal after inspecting the pinned controls.
+A separate read-only reviewer found no control-source blockers; that is recorded
+as review evidence, not a test/rebuild. The actual control exit1 staysfailed.
+
+`StreamingAllocationChild.cs` is a narrow protocol for this existing Fact. The
+parent runs real then positive once, using its verified current dotnet/apphost
+or host beside the active runtime. Configured host inconsistencies fail. Every
+child validates a32-digit capability/expectedmode/liveparent/ownedrequestpath,
+exact standalone -method/-result-xml invocation and compiled provenance before
+executing. An arbitrary mode environment variable cannot silently bypass the
+canonical parent. Parent verifies oneFactXMLPass, PID/mode/capability/version,
+iterations/units/callbacks/consumption/nullDiagnostic/completion, executable SHA,
+test+product DLL SHA/sourceversions, active managed/native runtime SHA, actual
+checkedhelper IL SHA and runtimeconfig SHA. Provenance hashing streams files
+outside measurement, avoiding large temporary byte-array copies.
+
+The real child retains exactAssert.Equal(0,allocated). The positive child installs
+an escapednewbyte[37] sinkHook before root/warm-up and measures the same whole
+checkedAppend workload, requiringpositivebytes and the finalescapedarray37.
+Both still check100warm/10000measured and all original meaningful totals.
+Positive doesnotwarm real: it runsafter real in a different process. Parent test
+parallelism/defaultGC/JIT remain unchanged; no testcount/project/API changes.
+Childtimeout30s kills theprocess tree; drain/termination bounds5s. Invocation,
+stdout/stderr, exitmetadata and availableXML/report remain in uniqueownedignored
+artifacts on every success/failure; missing/malformed output, nonzerochildexit,
+provenance mismatch, timeout or realnonzero failsparent. No retry/subtraction.
+Source is committed before focused/full checks; these changes are not yet
+claimed tested. Historical in-process failures remainunresolved; only the
+isolated synchronous borrowed primitive is promised, no concurrent guarantee.
