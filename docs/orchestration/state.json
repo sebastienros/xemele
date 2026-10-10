@@ -6,18 +6,6 @@
   "last_verified_checkpoint": null,
   "active_assignments": [
     {
-      "task_id": "M0-tree-spike",
-      "chat_id": "01a12314-7e3b-7dd0-b8d5-8505edc07986",
-      "host_id": "local",
-      "worktree_path": "/Users/sebastienros/.codex/worktrees/c130/xemele",
-      "branch": "codex/m0-tree-spike",
-      "base_revision": "5cb0e4eae1a0835a7455580bac25ee05ade7c463",
-      "claim_revision": "33894407c6ced8041d488ec10939bf66a0705891",
-      "setup_status": "dispatched",
-      "client_thread_id": "client-new-thread:1cac6c56-4b2e-4608-9a57-4341e60e44aa",
-      "wait_cursor": "91f4072c-e0be-4aa5-9efb-267c96f9f3bb:23"
-    },
-    {
       "task_id": "M0-input-spike",
       "chat_id": "01a12314-8850-7ec0-8957-b09b5e74c0fa",
       "host_id": "local",
@@ -28,14 +16,42 @@
       "setup_status": "dispatched",
       "client_thread_id": "client-new-thread:b8f007db-2882-41ee-8757-29d2fc29a42d",
       "wait_cursor": "a415d6fd-5c73-4f50-9d72-3a750b659b2f:13"
+    },
+    {
+      "task_id": "M0-ci",
+      "chat_id": null,
+      "host_id": "local",
+      "worktree_path": null,
+      "branch": "codex/m0-ci",
+      "base_revision": "9c630d1d83e37445ae619a778a90f87a148331ed",
+      "claim_revision": null,
+      "setup_status": "claiming"
     }
   ],
-  "integration_queue": [],
+  "integration_queue": [
+    {
+      "task_id": "M0-tree-spike",
+      "chat_id": "01a12314-7e3b-7dd0-b8d5-8505edc07986",
+      "host_id": "local",
+      "worktree_path": "/Users/sebastienros/.codex/worktrees/c130/xemele",
+      "branch": "codex/m0-tree-spike",
+      "base_revision": "5cb0e4eae1a0835a7455580bac25ee05ade7c463",
+      "claim_revision": "33894407c6ced8041d488ec10939bf66a0705891",
+      "setup_status": "awaiting_integration",
+      "client_thread_id": "client-new-thread:1cac6c56-4b2e-4608-9a57-4341e60e44aa",
+      "wait_cursor": "91f4072c-e0be-4aa5-9efb-267c96f9f3bb:23",
+      "implementation_revision": "24a0499f1d7c891a803bd8a370951f2a50e9a751",
+      "handoff_revision": "31b4723f89ca0cbcd32d26e6c36ae892ca416ba1",
+      "integration_branch": "codex/integrate-m0-tree",
+      "integration_worktree": "/private/tmp/xemele-integrate-m0-tree",
+      "integration_revision": "ce3f17e62d889f694e8b8f6bb3c1456ef25f2f8b"
+    }
+  ],
   "blockers": [],
   "next_actions": [
-    "Confirm isolated tree/input setup",
-    "Dispatch bounded experiment briefs",
-    "Review returned experiments"
+    "CI prepares workflow/discovery without sustained builds during input timing",
+    "After input timings finish run tree integrated correctness/build checks",
+    "Integrate input then settle M0-contracts"
   ],
   "last_verified_task": "M0-build",
   "last_integrated_revision": "c7ecb084050b8c4cc014e7bc3f4b57f37f34413e",
