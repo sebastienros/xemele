@@ -1,0 +1,63 @@
+{
+  "driverRevision": "0b3caf048aea839b2d998306752dc75fcaa57686",
+  "compiledProvenance": {
+    "Executable": "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+    "ExecutableSha256": "E86DEB33D0DACAD9CC1224466DF6418149CB8E13CB8AFD0DC6815EA6B7807975",
+    "TestAssembly": "/Users/sebastienros/.codex/worktrees/eebd/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll",
+    "TestSha256": "A83162700027BCB81507945C920852C2C97D8830A3AFDE1CC7F339A7285E7CA9",
+    "TestVersion": "1.0.0+0b3caf048aea839b2d998306752dc75fcaa57686",
+    "ProductAssembly": "/Users/sebastienros/.codex/worktrees/eebd/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.dll",
+    "ProductSha256": "AD20EAF7D1304B969D5CB8C6A3F3E594FBA75A9D547AD3A4A3CB2872C8383CC2",
+    "ProductVersion": "1.0.0+0b3caf048aea839b2d998306752dc75fcaa57686",
+    "RuntimeVersion": "10.0.11",
+    "CoreLibrary": "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App/10.0.11/System.Private.CoreLib.dll",
+    "CoreLibrarySha256": "9ED74C2E2EFEEE87F1F2D7FFE1736B7E9164CE248516EA39402A725EEDC87AF6",
+    "NativeRuntimeSha256": "10B24D0B11C7F6D838114744097BF10DF9B08B906AFC9016567631A1C009DFD0",
+    "HelperIlSha256": "B96AF094656C4563F2BACFF086E70C2AF13F72F5FC1CBA2A5107B71BADAAB0AC",
+    "RuntimeConfigSha256": "9950D4583CFC9A106857C0D5B8A75B53E8774852B57B80BC3823A74D44A4D87F"
+  },
+  "checks": {
+    "unknown-mode": {
+      "result": "passed",
+      "actualExit": 1,
+      "total": 1,
+      "failure": "System.InvalidOperationException : Invalid internal Encoding child guard."
+    },
+    "incomplete-mode": {
+      "result": "passed",
+      "actualExit": 1,
+      "total": 1,
+      "failure": "System.InvalidOperationException : Invalid internal Encoding child guard."
+    },
+    "missing-required-field": {
+      "result": "passed",
+      "actualExit": 1,
+      "total": 1,
+      "failure": "System.Text.Json.JsonException : JSON deserialization for type 'Xemele.Tests.EncodingCompatibility.EncodingAllocationChild+Request' was missing required properties including: 'Expected'."
+    },
+    "malformed-json": {
+      "result": "passed",
+      "actualExit": 1,
+      "total": 1,
+      "failure": "System.Text.Json.JsonException : 'b' is an invalid start of a property name. Expected a '\\\"'. Path: $ | LineNumber: 0 | BytePositionInLine: 1.\n---- System.Text.Json.JsonReaderException : 'b' is an invalid start of a property name. Expected a '\\\"'. LineNumber: 0 | BytePositionInLine: 1."
+    },
+    "unknown-json-member": {
+      "result": "passed",
+      "actualExit": 1,
+      "total": 1,
+      "failure": "System.Text.Json.JsonException : The JSON property 'UnexpectedProtocolField' could not be mapped to any .NET member contained in type 'Xemele.Tests.EncodingCompatibility.EncodingAllocationChild+Request'."
+    },
+    "provenance-mismatch": {
+      "result": "passed",
+      "actualExit": 1,
+      "total": 1,
+      "failure": "System.InvalidOperationException : Child executable/compiled product/runtime provenance mismatch."
+    },
+    "host-mismatch": {
+      "result": "passed",
+      "actualExit": 1,
+      "total": 1,
+      "failure": "System.InvalidOperationException : Configured dotnet differs from the active runtime installation."
+    }
+  }
+}
