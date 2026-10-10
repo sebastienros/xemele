@@ -143,7 +143,7 @@ async def execute(report):
                 model_hashes[case['id']] = {'input': case['inputSha256'], 'events': hashed(expected.events),
                                           'provenance': hashed({k: details.get(k) for k in ('version', 'encoding', 'standalone', 'doctype', 'unresolved', 'incompleteDefaults', 'incompleteValues', 'resourceUris')})}
             else:
-                assert p['events'] is None and p['details'] is None
+                assert p.get('events') is None and p.get('details') is None
                 counts['independent:normative-rejection'] += 1
             if reference == 'accepted':
                 rm = audit.model(r['events'])
