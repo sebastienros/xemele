@@ -252,10 +252,11 @@ def main():
             assert all(t.get('result') == 'Pass' for t in tests_xml), 'runtime failure/skip'
             inherited = [t.get('name') for t in tests_xml if t.get('type') != 'Xemele.Tests.Versions.VersionTests']
             assert len(inherited) == 4593
-            transitions = [n for n in inherited if "<?xml version='1.1' encoding='X'?>" in n and 'expected: "Declared"' in n]
+            transitions = [n for n in inherited if "<?xml version='1.1' encoding='X'?>" in n and 'Declared' in n]
             assert len(transitions) == 70, len(transitions)
-            inherited = [n.replace('expected: "Declared"', 'expected: "Rejected"') if n in transitions else n for n in inherited]
-            inherited.append('Xemele.Tests.Syntax.SyntaxTests.InvalidSyntaxRejectsAtEverySplitWithoutReplayingCallbacks(xml: "<?xml version=\'1.1\'?><r/>", code: "XML.Syntax")')
+            inherited = [n.replace('Declared', 'Rejected') if n in transitions else n for n in inherited]
+            template = next(n for n in inherited if 'InvalidSyntaxRejectsAtEverySplitWithoutReplayingCallbacks' in n and " <?xml version='1.0'?><r/>" in n)
+            inherited.append(template.replace(" <?xml version='1.0'?><r/>", "<?xml version='1.1'?><r/>"))
             baseline = json.loads((ROOT/'docs/reports/M2-version-contract/integrated-summary.json').read_text())
             inherited_digest = hashlib.sha256(json.dumps(sorted(inherited)).encode()).hexdigest()
             assert inherited_digest == baseline['runtimeTestIdentitySha256'], inherited_digest
