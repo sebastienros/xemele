@@ -26,7 +26,8 @@
     "benchmarks/Xemele.Benchmarks/M2-encoding/",
     "docs/api/M2-encoding.txt",
     "samples/M2-encoding/",
-    "docs/reports/M2-encoding/"
+    "docs/reports/M2-encoding/",
+    "tests/Xemele.Tests/M1-dom/DomTests.cs"
   ],
   "api_or_output": "Extended decoding support; no process-global provider mutation",
   "acceptance": [
@@ -56,6 +57,8 @@
     "summary": "",
     "checks": [],
     "remaining": [],
-    "requests": []
+    "requests": [
+      "Coordinator assigns only the declaration-before-malformed-body test row currently using ISO-8859-1: M2 now supports this encoding. Retain the complete meaningful unsupported-declaration/error-order test using a still-unsupported label, preserve all other M1 DOM tests/allocation helpers, and add positive/negative actual legacy encoding cases in M2-owned tests. Preserve original M1 evidence/immutable gate reports and demo source; future gate demonstrations must use current supported table."
+    ]
   }
 }
