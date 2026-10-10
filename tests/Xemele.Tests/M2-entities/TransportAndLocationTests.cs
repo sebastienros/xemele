@@ -85,6 +85,15 @@ public sealed class TransportAndLocationTests
         Assert.Equal("INPUT.InvalidEncoding", Assert.Single(diagnostics).Code); Assert.Equal(1, resolver.Stream!.Disposals);
     }
 
+    [Fact]
+    public void ValidDecodedBodyPrefixGrammarFailurePrecedesLaterInvalidByte()
+    {
+        byte[] bytes = [.. Encoding.UTF8.GetBytes("<?xml encoding='UTF-8'?></r>"), 0xFF];
+        var resolver = new BinaryResolver(bytes, 4096);
+        Assert.False(XmlDocument.TryParse("<!DOCTYPE r [<!ENTITY e SYSTEM 'urn:entity'>]><r>&e;</r>", out _, out var diagnostics, Options(resolver), Cancellation));
+        Assert.Equal("XML.Syntax", Assert.Single(diagnostics).Code); Assert.Equal(1, resolver.Stream!.Disposals);
+    }
+
     private sealed class BinaryResolver(byte[] bytes, int size) : XmlResourceResolver
     {
         internal ProductionTests.BoundedStream? Stream;

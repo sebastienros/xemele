@@ -16,7 +16,8 @@ internal sealed class ExternalXmlSource : IDisposable
     private readonly char[] characters = new char[4096];
     private readonly long[] mappings = new long[4096];
     private int byteIndex, byteCount, characterIndex, characterCount;
-    private bool physicalEof, decoderCompleted, disposed;
+    private bool physicalEof, decoderCompleted, disposed, framed;
+    private XmlDiagnostic? pendingDecoderFailure;
     internal long ByteLength { get; private set; }
     internal Uri SourceUri => handle.SourceUri;
     internal XmlLocation FirstLocation { get; private set; }
@@ -78,6 +79,7 @@ internal sealed class ExternalXmlSource : IDisposable
                 prefix[..count].CopyTo(characters); offsets[..count].CopyTo(mappings);
                 characterIndex = 0; characterCount = count + suffix;
             }
+            framed = true;
             return true;
         }
     }
@@ -86,6 +88,7 @@ internal sealed class ExternalXmlSource : IDisposable
     {
         if (Diagnostic is not null) return false;
         if (characterIndex != characterCount) return true;
+        if (pendingDecoderFailure is not null) { Diagnostic = pendingDecoderFailure; return false; }
         return DecodeNext(4096, 4096, cancellation);
     }
 
@@ -108,7 +111,11 @@ internal sealed class ExternalXmlSource : IDisposable
                 characters.AsSpan(0, capacity), mappings.AsSpan(0, capacity), physicalEof, cancellation);
             byteIndex += result.ConsumedBytes; ByteLength = checked(ByteLength + result.ConsumedBytes);
             characterCount = result.WrittenCharacters;
-            if (result.Step == DecodeStep.InvalidInput) { Diagnostic = result.Diagnostic; return false; }
+            if (result.Step == DecodeStep.InvalidInput)
+            {
+                if (framed && characterCount != 0) { pendingDecoderFailure = result.Diagnostic; return true; }
+                Diagnostic = result.Diagnostic; return false;
+            }
             decoderCompleted = result.Step == DecodeStep.Completed;
             if (characterCount != 0) return true;
             if (decoderCompleted) return false;
