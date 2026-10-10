@@ -1,0 +1,42 @@
+{
+  "result": "passed",
+  "revision": "f3d1596715ff283231c42a65218804bac7ef9094",
+  "command": "dotnet tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -noColor -class Xemele.Tests.ConformanceGrammar.EffectiveGrammarTests -result-xml /private/tmp/m2-grammar-focused-f3d1596.xml",
+  "passed": 17,
+  "failed": 0,
+  "skipped": 0,
+  "identitySha256": "c528795091f083a6d3c11a23d0dfdccbab80f8e95fbae76bd00d130047d1ec31",
+  "testAssemblySha256": "cb7ca1effe64537a2c878907640862b1bb7930ac6c178c742570f17fd5e2b9e7",
+  "runtimeAssemblySha256": "5e9b6d106938d20e01d8e49b6fe10e1a1682b8db75550c750d0062fe65529072",
+  "oracleControls": {
+    "revision": "f3d1596715ff283231c42a65218804bac7ef9094",
+    "command": "python3 -B -m unittest discover -s docs/reports/M2-conformance-grammar -p test_semantic_oracle.py",
+    "passed": 14
+  },
+  "classificationRegeneration": {
+    "revision": "f3d1596715ff283231c42a65218804bac7ef9094",
+    "command": "python3 -B docs/reports/M2-conformance-profile/classify.py --check",
+    "cases": 2585,
+    "resources": 3386,
+    "result": "passed"
+  },
+  "builds": {
+    "configuration": "Release",
+    "sdk": "10.0.400",
+    "runtime": "10.0.11",
+    "projects": [
+      "samples/M2-conformance-grammar/Probe.csproj",
+      "tools/ReferenceRunners/Bcl/BclReference.csproj",
+      "tests/Xemele.Tests/Xemele.Tests.csproj"
+    ],
+    "flags": [
+      "--disable-build-servers",
+      "-m:1",
+      "-p:UseSharedCompilation=false",
+      "-p:NuGetAudit=false"
+    ],
+    "warnings": 0,
+    "errors": 0
+  },
+  "temporaryXmlRemoved": true
+}

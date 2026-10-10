@@ -4,7 +4,7 @@
   "milestone": "M2",
   "title": "Complete strict XML grammar against classified corpus",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "worker:M2-conformance-grammar",
   "branch": "codex/m2-conformance-grammar-final",
   "base_revision": "011617e1f0566bb48766aadfed843bfb89db27b1",
@@ -49,33 +49,101 @@
     {
       "id": "M2-conformance-grammar-A1",
       "description": "Implement remaining strict XML1.0 Fifth Edition/Namespaces1.0 Third Edition core behavior and required standalone checks against the verified full-corpus classification; keep lazy ordinary parsing, borrowed lifetime/count/pause/cleanup/quota contracts and nonvalidating rules.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "grammar-focused-runtime",
+        "grammar-full-independent",
+        "grammar-preserved-integrated-evidence"
+      ]
     },
     {
       "id": "M2-conformance-grammar-A2",
       "description": "Execute every applicable original case byte identity with explicit granted offline resources and independent expected semantic models; cover transport/split/boundary behavior and resolve every reference disagreement. Do not recategorize product failures as exclusions; route decoder/DTD/entity/resolver defects to owning repair tasks.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "grammar-full-independent",
+        "grammar-authored-oracle-controls",
+        "grammar-classification-regeneration"
+      ]
     },
     {
       "id": "M2-conformance-grammar-A3",
       "description": "Record complete correctness/preservation/API/package and meaningful applicable allocation/benchmark evidence at known source/binary revisions using verified dependencies only. Preserve M1/M2 inherited identities, no public stubs/shared project edits, summaries only and raw cleanup.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "grammar-full-independent",
+        "grammar-focused-runtime",
+        "grammar-preserved-integrated-evidence"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "samples/M2-conformance-grammar/Program.cs: original-byte decoder/core/DOM composition with all-callback pause/count checks, primary declaration, symbolic sidecar/unresolved anchor and resource ownership projection.",
+    "docs/reports/M2-conformance-grammar/semantic_oracle.py: independent original-byte normative semantic preparation, no product/reference inputs; XML newline/reference/default/PE/namespace rules and symbolic unused defaults.",
+    "tests/fixtures/M2-conformance/Grammar/effective10-output-overrides.json: 15 exact input/output-bound authored XML1.0 NEL/LSEP expectations preserving original XML1.1 canonical bytes.",
+    "tests/Xemele.Tests/M2-conformance/EffectiveGrammarTests.cs: 17 focused accepted/rejected grammar, every-character/surrogate-split, nonvalidating and symbolic provenance/loss-refusal regressions.",
+    "docs/reports/M2-conformance-grammar/full_grammar.py and preserve_grammar.py: revision-bound full corpus execution and explicit preservation of unchanged integrated correctness/API/package/model/performance inputs."
+  ],
+  "evidence": [
+    {
+      "id": "grammar-full-independent",
+      "kind": "check",
+      "revision": "f3d1596715ff283231c42a65218804bac7ef9094",
+      "command": "python3 -B docs/reports/M2-conformance-grammar/full_grammar.py grammar-independent-f3d1596",
+      "result": "passed",
+      "summary": "All2585 original IDs/byte outcomes pass:1394 accepted with independent normative semantic models and exact declaration/doctype/resource/provenance checks;1191 normative rejection. All1394 accepted models also pass bulk decode and every-callback pause. All3386 resource identities verified. Two symbolic default declarations and two unresolved content occurrences preserved.409 original canonical output models agree;15 exact authored effective10 overrides. All771 System.Xml expectation disagreements resolved by exact ID/hash/normative expectations;644 mutual-success independent models agree. Child exit/cleanup and before/after source-output-runtime closures pass.",
+      "artifact": "docs/reports/M2-conformance-grammar/grammar-independent-f3d1596.json"
+    },
+    {
+      "id": "grammar-focused-runtime",
+      "kind": "check",
+      "revision": "f3d1596715ff283231c42a65218804bac7ef9094",
+      "command": "dotnet tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -noColor -class Xemele.Tests.ConformanceGrammar.EffectiveGrammarTests -result-xml /private/tmp/m2-grammar-focused-f3d1596.xml",
+      "result": "passed",
+      "summary": "17 passed,0 failed/skipped. Authored Fifth Edition/supplementary name and numeric/normalization models hold at every character/surrogate split; mandatory profile errors reject; nonvalidating behavior and unresolved/incomplete provenance/loss refusal pass. Pinned SDK10.0.400/runtime10.0.11 Release builds have zero warnings/errors. Raw XML removed after concise identity/count recording.",
+      "artifact": "docs/reports/M2-conformance-grammar/grammar-focused-f3d1596.json"
+    },
+    {
+      "id": "grammar-authored-oracle-controls",
+      "kind": "check",
+      "revision": "f3d1596715ff283231c42a65218804bac7ef9094",
+      "command": "python3 -B -m unittest discover -s docs/reports/M2-conformance-grammar -p test_semantic_oracle.py",
+      "result": "passed",
+      "summary": "14 independent authored normative preparation controls pass: literal/reference/replacement whitespace, defaults and first declaration, PE inclusion/conditional status, namespace expansion, text/entity markup distinction, exact compatible declaration, double-BOM identity, first-unread processing, unknown content and symbolic unused default identity, ungranted/unsupported/invalid-decode preparation failure.",
+      "artifact": "docs/reports/M2-conformance-grammar/grammar-focused-f3d1596.json"
+    },
+    {
+      "id": "grammar-classification-regeneration",
+      "kind": "check",
+      "revision": "f3d1596715ff283231c42a65218804bac7ef9094",
+      "command": "python3 -B docs/reports/M2-conformance-profile/classify.py --check",
+      "result": "passed",
+      "summary": "Regenerated classification matches the immutable current effective ledger for2585 cases and3386 resources. No classifier, profile ledger, original case/resource, expectation or exclusion edit.",
+      "artifact": "docs/reports/M2-conformance-grammar/grammar-focused-f3d1596.json"
+    },
+    {
+      "id": "grammar-preserved-integrated-evidence",
+      "kind": "check",
+      "revision": "cd9814952bfcbe613ee593b2e80f7bcc1bd5bd82",
+      "command": "python3 -B docs/reports/M2-conformance-grammar/preserve_grammar.py grammar-preservation-cd98149",
+      "result": "passed",
+      "summary": "Exact source/configuration/fixture/API/consumer/workload identity proven versus actual integrated correctness/API revision8b77daddc975093bed1fcf0cec28008201707ae2 and measured revision8d894a96b1ad99799fb3732683bc7f6dd0066141. Retains2157 integrated focused checks,372 public members/82 additive,frozen models/source-fresh-local-package consumers and applicable0B borrowed observations with positive controls,owned/cold/retained/timing results at their original revisions. No runtime/public API/build/package/workload change; no new allocation/timing execution or measurement lease needed. All full grammar execution/preparation inputs still match tested f3d1596 after preservation-helper/documentation-only commit.",
+      "artifact": "docs/reports/M2-conformance-grammar/grammar-preservation-cd98149.json"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Original complete strict grammar A1-A3 preserved. Active standalone correction split with owner acknowledgement to M2-core-standalone; original grammar starts only after standalone, DTD corpus repair and external metadata hook are integrated verified.",
-    "checks": [],
-    "remaining": [],
-    "requests": [
-      "M2-undeclared-content must be verified before full grammar begins; contract alone does not fulfill E13 runtime behavior. Preserve represented/unresolved identities and loss-refusal policy. Core standalone CDATA/direct-reference versus expanded-entity S-origin fix remains A1.",
-      "Coordinator claims DTD seven-case repair and external framed-declaration hook. Both are mandatory prerequisites of the planned conformance join. Grammar must consume their code only after integrated verification; append verified prerequisite IDs to its own record then, before implemented. The validator requires every started dependency already verified, so current Core work continues from original verified dependencies. Worker task-JSON-only hold acknowledged before this serialized note.",
-      "Existing standalone branch implementation/evidence retained by M2-core-standalone; no acceptance criterion removed or reported fulfilled by the split."
-    ]
+    "summary": "Complete classified strict grammar verification from all13 integrated verified prerequisites. No remaining corpus runtime defects: all2585 outcomes and1394 independently prepared accepted models pass; all771 reference expectation disagreements resolved. Adds task-owned model interpreter/execution projection,exact historical-output overrides,17 focused runtime regressions and14 authored preparation controls. No runtime/API/shared configuration/classifier/corpus changes. Implementation/test source f3d1596715ff283231c42a65218804bac7ef9094; preservation checker/scope documentation cd9814952bfcbe613ee593b2e80f7bcc1bd5bd82. Historical reports,including standalone integration-summary,unchanged.",
+    "checks": [
+      "Pinned Release builds: grammar driver,BCL reference,runtime tests; zero warnings/errors.",
+      "Full grammar:2585 outcomes;1394 independent accepted models plus1394 bulk/all-callback-pause runs;3386 resource identities;409 suite outputs plus15 authored effective10 overrides;771 exact reference resolutions;two unknown content occurrences andtwo symbolic defaults; all child/source/output/runtime guards pass.",
+      "Focused17 runtime checks and14 independent oracle controls pass; full classification regenerates identically.",
+      "Exact input identity preserves2157 previous integrated checks,API372/82,frozen models/source-fresh-package results,applicable borrowed0B/cold-owned-retained/informational Arm64 measurements at their actual prior revisions. No new performance runs.",
+      "Planning validator and14 planning unit tests pass; ownership and whitespace checks pass. Concise count/hash/failure summaries retained; transient raw probe/test payloads removed."
+    ],
+    "remaining": [
+      "Coordinator integrates and verifies this branch; integration_revision intentionally null. Comprehensive combined M2 gate/platform release validation remains its owning gate work."
+    ],
+    "requests": []
   }
 }
