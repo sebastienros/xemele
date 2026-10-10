@@ -15,6 +15,11 @@ internal static class StreamingAllocationChild
     private const string RequestKey = "XEMELE_STREAMING_CHILD_REQUEST";
     private const string TokenKey = "XEMELE_STREAMING_CHILD_TOKEN";
     private const string SampleKey = "XEMELE_STREAMING_ALLOCATION_SAMPLE_OUTPUT";
+    private static readonly JsonSerializerOptions StrictJson = new()
+    {
+        RespectRequiredConstructorParameters = true,
+        UnmappedMemberHandling = System.Text.Json.Serialization.JsonUnmappedMemberHandling.Disallow
+    };
     internal sealed record Provenance(string Executable, string ExecutableSha256,
         string TestAssembly, string TestSha256, string TestVersion, string ProductAssembly,
         string ProductSha256, string ProductVersion, string RuntimeVersion,
@@ -94,7 +99,7 @@ internal static class StreamingAllocationChild
             return null;
         }
         Require(mode is "real" or "positive" && path is not null && token is not null, "Invalid internal streaming child guard.");
-        var request = JsonSerializer.Deserialize<Request>(File.ReadAllText(path!)) ?? throw new InvalidOperationException("Missing child request.");
+        var request = JsonSerializer.Deserialize<Request>(File.ReadAllText(path!), StrictJson) ?? throw new InvalidOperationException("Missing child request.");
         Require(request.Version == 1 && request.Mode == mode && request.Token == token && Guid.TryParseExact(token, "N", out _), "Mismatched child capability.");
         Require(request.ParentPid != Environment.ProcessId && request.ParentPid > 0, "Invalid child parent identity.");
         using (var parent = Process.GetProcessById(request.ParentPid)) Require(!parent.HasExited, "Child parent is no longer running.");
@@ -169,7 +174,7 @@ internal static class StreamingAllocationChild
             }
             Require(exited && drained && exitCode == 0, "Streaming " + mode + " child failed/timeout; retained artifacts: " + directory);
             Require(File.Exists(request.ReportPath) && File.Exists(request.XmlPath), "Streaming child output missing: " + directory);
-            var report = JsonSerializer.Deserialize<Report>(File.ReadAllText(request.ReportPath)) ?? throw new InvalidOperationException("Missing streaming report: " + directory);
+            var report = JsonSerializer.Deserialize<Report>(File.ReadAllText(request.ReportPath), StrictJson) ?? throw new InvalidOperationException("Missing streaming report: " + directory);
             var tests = XDocument.Load(request.XmlPath).Descendants("test").ToArray();
             Require(tests.Length == 1 && (string?)tests[0].Attribute("name") == Fact && (string?)tests[0].Attribute("result") == "Pass", "Child must run exactly the allocation Fact: " + directory);
             Require(report.Version == 1 && report.Mode == mode && report.Token == token && report.ProcessId == process.Id
