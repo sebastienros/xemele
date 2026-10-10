@@ -137,12 +137,14 @@ def validate_benchmarks(output):
     require(len(re.findall(r'^WorkloadResult\s+\d+:',output,re.MULTILINE))==42,'Exactly 42 raw Result records required.')
     require(len(re.findall(r'^// GC:',output,re.MULTILINE))==14,'Exactly 14 raw GC records required.')
     build_exits=[int(c) for c in re.findall(r'^// command took .* and exited with (-?\d+)',output,re.MULTILINE)]
-    require(len(build_exits)==2 and all(c==0 for c in build_exits),'Restore/build exits must both exist and succeed.')
+    require(build_exits==[],'Generation/restore/build must not execute inside timing lease.')
+    prepared=[json.loads(m[1]) for m in re.finditer(r'^// VersionPreparedBuild: (.+)$',output,re.MULTILINE)]
+    require(len(prepared)==1 and prepared[0]['built'] is True and prepared[0]['executionOnly'] is True,'Exactly one previously prepared successful build binding required.')
     frozen=[json.loads(m[1]) for m in re.finditer(r'^// VersionFrozenChild: (.+)$',output,re.MULTILINE)]
     require(len(frozen)==1 and frozen[0]['files']==47,'Exactly one complete frozen child binding required.')
     require(re.findall(r'^// VersionExecutedCases: (\d+)\s*$',output,re.MULTILINE)==['14'],'Exact executed-case total required.')
     validate_case_rows(rows)
-    return {'cases':rows,'actual':42,'result':42,'gc':14,'buildExits':build_exits,'frozenBinding':frozen[0]}
+    return {'cases':rows,'actual':42,'result':42,'gc':14,'buildExits':build_exits,'frozenBinding':frozen[0],'preparedBuild':prepared[0]}
 
 def validate_case_rows(rows):
     require(len(rows)==14 and {case_id(r['identity']) for r in rows}==expected_cases(),'Exactly14 unique retained case identities required.')
@@ -229,6 +231,9 @@ def validate_lifecycle(output, positive, known):
 
 def allocation_baselines(summary, known, preparation_sha):
     require(summary['result']=='passed' and summary['mode']=='allocations' and summary['revision']==known['revision'] and summary['preparationSha256']==preparation_sha,'A successful matching one-shot allocation phase is required before timing.')
+    require(len(summary['allocations'])==2,'Both immutable real/positive product boundary sets required.')
+    for positive,rows in zip([False,True],summary['allocations']):validate_allocations('\n'.join(map(json.dumps,rows)),positive,known['sampleIdentity'])
+    require(summary['allocations'][0][0]['ProcessId']!=summary['allocations'][1][0]['ProcessId'],'Immutable real/positive product children must be distinct.')
     payloads=summary['lifecycleAllocations'];require(len(payloads)==2,'Real and escaping-positive lifecycle children required.')
     require(payloads[0]['mode']=='lifecycle-real' and payloads[1]['mode']=='lifecycle-positive' and payloads[0]['processId']!=payloads[1]['processId'],'Lifecycle child modes/PIDs differ.')
     # Revalidate the durable metrics rather than accepting a result label alone.
@@ -239,13 +244,61 @@ def allocation_baselines(summary, known, preparation_sha):
     require(summary['before']==summary['after'],'Allocation source/binary/runtime before-after freeze differs.')
     return real
 
-def validate_gc_totals(benchmarks, baselines, evidence=None):
+def report_gc_totals(benchmarks, baselines, evidence=None):
     comparisons=[] if evidence is None else evidence
     for row in benchmarks['cases']:
         gc=row['gc'][0];baseline=baselines[case_id(row['identity'])];expected=gc['operations']*baseline
-        comparisons.append({'identity':row['identity'],'actualTotal':gc['allocatedBytes'],'operations':gc['operations'],'baselineBytesPerOperation':baseline,'expectedTotal':expected,'signedDifference':gc['allocatedBytes']-expected})
-    require(len(comparisons)==14 and all(r['signedDifference']==0 for r in comparisons),'Actual timed GC total differs from directly measured generated-method allocation oracle.')
-    return True
+        comparisons.append({'identity':row['identity'],'processAllocatedTotal':gc['allocatedBytes'],'operations':gc['operations'],'threadLifecycleBytesPerOperation':baseline,'threadDerivedTotal':expected,'signedCrossDomainDifference':gc['allocatedBytes']-expected})
+    require(len(comparisons)==14 and all(type(r['processAllocatedTotal']) is int and r['processAllocatedTotal']>0 and type(r['operations']) is int and r['operations']>0 for r in comparisons),'Exact positive process allocation totals and operation counts required for14 cases.')
+    return comparisons
+
+REUSED_ALLOCATION_SHA='8b921824dca0336f0c02f6666d4b4305915a7575a13cc4b89aecb86457d3790c'
+REUSED_PREPARATION_SHA='b5efad73d4731eb5a76857a992331390f70735acc2241111f8b1e0520b7ecc24'
+REUSED_REVISION='f2ecd0c35594baf7a43f8c0223fc7e961485fdbe'
+def lifecycle_source(text):
+    prefix=text.split('\nbool measure =',1)[0]
+    helper=next(line for line in text.splitlines() if line.startswith('static string Hash(string path)'))
+    return prefix+'\n'+helper
+
+def compiled_reuse_proof(original, current, evidence):
+    # Only Python/report/assembly revision metadata may change; all measured inputs stay exact.
+    def compiled(record):return {n:h for n,h in record['sourceIdentities'].items() if Path(n).suffix!='.py'}
+    old,new=compiled(original),compiled(current)
+    evidence.update({'originalRevision':original['revision'],'currentRevision':current['revision'],'originalCompiledInputs':old,'currentCompiledInputs':new,'originalRuntime':original['runtimeIdentities'],'currentRuntime':current['runtimeIdentities']})
+    path='docs/reports/M2-version-declarations/BuildOnly.cs'
+    if old.get(path)!=new.get(path):
+        oldtext=subprocess.check_output(['git','show',original['revision']+':'+path],cwd=ROOT,text=True)
+        currenttext=subprocess.check_output(['git','show',current['revision']+':'+path],cwd=ROOT,text=True)
+        oldlife=lifecycle_source(oldtext);newlife=lifecycle_source(currenttext)
+        evidence['unchangedLifecycleSourceSha256']=hashlib.sha256(oldlife.encode()).hexdigest()
+        require(oldlife==newlife,'Actual lifecycle workload/counter code changed; allocation reuse rejected.')
+        old=dict(old);new=dict(new);old.pop(path);new.pop(path)
+    require(old==new,'Compiled product/sample/benchmark/config/fixture inputs differ; allocation reuse rejected.')
+    require(original['sdk']==current['sdk'] and original['architecture']==current['architecture'] and original['runtimeIdentities']==current['runtimeIdentities'],'Pinned SDK/host/runtime payload differs; allocation reuse rejected.')
+    require(original['generatedInputIdentities']==current['generatedInputIdentities'] and original['caseIdentities']==current['caseIdentities'],'Generated workload/options/fixtures differ; allocation reuse rejected.')
+    # Preserve package/native/config/apphost identities; only project DLL/PDB revision metadata varies.
+    excluded=set(original['childMetadata'])|{str(Path(n).with_suffix('.pdb')) for n in original['childMetadata']}
+    olddeps={n:h for n,h in original['childClosure'].items() if n not in excluded}
+    newdeps={n:h for n,h in current['childClosure'].items() if n not in excluded}
+    evidence.update({'originalDependencyClosure':olddeps,'currentDependencyClosure':newdeps,'originalMetadata':original['childMetadata'],'currentMetadata':current['childMetadata']})
+    require(olddeps==newdeps,'Package/native/build configuration payload differs; allocation reuse rejected.')
+    require(set(original['childMetadata'])==set(current['childMetadata']),'Compiled assembly set differs.')
+    for name,oldmeta in original['childMetadata'].items():
+        newmeta=current['childMetadata'][name]
+        require(oldmeta['Name']==newmeta['Name'] and oldmeta['Version']==newmeta['Version'] and newmeta['FullVersion']=='1.0.0+'+current['revision'],'Actual current compiled identity differs beyond source revision metadata.')
+    evidence['counterDomain']='GC.GetAllocatedBytesForCurrentThread; unchanged BuildOnly.cs128 warm/512 measured delegates and Sample.cs24 warm pairs'
+    evidence['compiledEquivalencePassed']=True
+
+def reused_allocation(report, current, evidence):
+    allocation=report/('measurement-allocations-'+REUSED_REVISION+'-'+REUSED_PREPARATION_SHA+'-summary.json')
+    preparation=report/'preparation-f2ecd0c-summary.json'
+    require(digest(allocation)==REUSED_ALLOCATION_SHA and digest(preparation)==REUSED_PREPARATION_SHA,'Immutable allocation/preparation evidence hash differs.')
+    old=json.loads(preparation.read_text());summary=json.loads(allocation.read_text())
+    baselines=allocation_baselines(summary,old,REUSED_PREPARATION_SHA)
+    compiled_reuse_proof(old,current,evidence)
+    evidence.update({'allocationSha256':REUSED_ALLOCATION_SHA,'originalPreparationSha256':REUSED_PREPARATION_SHA,'productBoundaryChecks':'exact0/32/120064/positive64/ordinary96 revalidated; no replay'})
+    return allocation,baselines
+
 
 def attempt_post_freeze(summary, freeze):
     summary['postFreezeAttempted']=True
@@ -401,26 +454,29 @@ def main(argv=None):
             positive={case_id(c['identity']):c['bytesPerOperation'] for c in summary['lifecycleAllocations'][1]['cases']}
             require(summary['lifecycleAllocations'][0]['processId']!=summary['lifecycleAllocations'][1]['processId'] and all(positive[k]==real[k]+64 for k in expected_cases()),'Distinct lifecycle children and exact positive deltas required.')
         else:
-            allocation_path=allocation_report(REPORT,known,preparation_sha)
+            summary['allocationReuseEvidence']={}
+            allocation_path,baselines=reused_allocation(REPORT,known,summary['allocationReuseEvidence'])
             allocation_sha=digest(allocation_path)
-            baselines=allocation_baselines(json.loads(allocation_path.read_text()),known,preparation_sha)
+            require(known['generated']['built'] is True and all(c['exit']==0 for c in known['commands']),'Current-source preparation/build must succeed outside lease.')
+            summary['executionBoundary']='Already generated and built current-source47-file child; Executor only inside lease.'
             summary['allocationOracleSha256']=allocation_sha
-            command=[str(dotnet),str(generator),str(benchmark),str(RAW/'generated'),str(RAW/'measurement-generation.json'),'--measure',str(preparation)]
+            command=[str(dotnet),str(generator),str(benchmark),str(RAW/'generated'),str(RAW/'measurement-generation.json'),'--execute',str(preparation)]
             logfile=RAW/'benchmark.log';logs.append(logfile)
             with logfile.open('w') as stream:
                 process=subprocess.Popen(command,cwd=ROOT,env=env,stdout=stream,stderr=subprocess.STDOUT,start_new_session=True)
                 summary['activeCommand']={'command':command,'pid':process.pid}
-                status=bounded_wait(process,logfile,summary,total_seconds=remaining(),child_seconds=180,build_seconds=240)
+                status=bounded_wait(process,logfile,summary,total_seconds=remaining(),child_seconds=180)
             summary['commands'].append({'command':command,'exit':status});require(status==0,'Benchmark parent/build/child failed.')
             summary['streamedIdentityEvidence']=identity_records(logfile.read_text())
             summary['partialObservations']=[]
             observations(logfile.read_text(),summary['partialObservations'])
             summary['gcAllocationEvidence']={'oracleSha256':allocation_sha,'sourceRevision':known['revision'],'preparationSha256':preparation_sha,'oracleCounterDomain':'GC.GetAllocatedBytesForCurrentThread / 512 direct delegates','timedCounterDomain':'BenchmarkDotNet0.15.8 GC.GetTotalAllocatedBytes(precise:true) / generated workload operations','comparisons':[]}
-            validate_gc_totals({'cases':summary['partialObservations']},baselines,summary['gcAllocationEvidence']['comparisons'])
+            report_gc_totals({'cases':summary['partialObservations']},baselines,summary['gcAllocationEvidence']['comparisons'])
             summary['benchmarks']=validate_benchmarks(logfile.read_text())
-            summary['exactGcAllocationTotals']=True
+            summary['gcAllocationDomains']='Exact current-thread cold lifecycle and exact process-wide BDN totals reported separately; signed difference is not a same-domain equality gate.'
             require(digest(allocation_path)==allocation_sha,'Durable allocation oracle changed during timing.')
             binding=summary['benchmarks']['frozenBinding']
+            require(summary['benchmarks']['preparedBuild']['revision']==known['revision'],'Previously prepared build source binding differs.')
             require(binding['child']==str(child) and binding['project']==str(project) and binding['revision']==known['revision'],'Actual executed child binding differs.')
         summary['stage']='after-freeze';summary['after']=freeze();require(summary['after']==summary['before'],'Before/after actual runtime/source/binary freeze differs.')
         summary['result']='passed';summary['timingLimit']='Host-specific informational arm64 timings; no x64 release or speedup claim.'

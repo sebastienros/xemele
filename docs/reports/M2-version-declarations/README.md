@@ -30,20 +30,28 @@ fixture; the ordinary/long boundary probe has its authored 24 warm operations.
 The result includes exact allocation totals, consumed counts, six callbacks,
 retention, fresh PIDs and actual source/binary/runtime identities.
 
-Timing mode rebuilds the generated current-source variant, checks exact raw
-47-file closure and generated inputs before invoking any executor, and uses each
-class's `[MemoryDiagnoser, ShortRunJob]` without job overrides. It requires all
-14 exact identities, 42 Actual, 42 Result, 14 GC records, both restore/build exits,
-and every actual child exit. Each timed GC total must equal operation count times
-the directly measured generated-method allocation oracle; no rounding or relaxed
-counter tolerance is accepted. Full versions, source and primary/generated binary closures are checked before
-and after. Each actual consumer reports its loaded CoreLib path/full identity/
-MVID and executable identity; every file in that CoreLib-selected shared-runtime
-directory (native, BCL and runtime metadata) is hashed and compared before/after.
+Timing mode uses the independently generated/built current-source child from
+preparation. `BuildOnly --execute` reconstructs the prepared artifact descriptor
+and invokes only Executor; Generator/Builder are confined to preparation outside
+the host lease. Exact47-file closure,3generated inputs/current fullversions gate
+every case. Timing requires14 identities,42Actual,42Result,14GC and14 successful
+structured executor results with distinct positivePIDs; text exits may corroborate.
+Any generation/restore/build output inside the timing phase is rejected.
+
+The immutable f2 allocation pass is reused after exact product/sample/benchmark/
+config/fixture input, generated workload, package/native/runtime proof. The only
+C# harness change is the Executor-only path; its lifecycle prefix and Hash helper
+must match the original measured code exactly. Old and current raw/full-version
+identity chains stay separate; no allocation replay. Promised borrowed0 B,
+owned32/120064 B and exact positive totals are revalidated against original records.
+Current-thread cold lifecycle totals and process-wide BDN totals are reported as
+separate exact metrics with signed cross-domain differences. No same-domain
+match or zero cold/process allocation is claimed. Source/binary/runtime identities
+are checked before and after, and final freeze is attempted on validation failure.
 
 Modes are one-shot: a durable attempt summary prevents retries. Allocation mode
 has a 300-second total budget and 90-second child deadlines; timing has an
-1800-second total, 240-second build and 180-second child deadline. Timeout/failure
+1800-second total and180-second child deadline; builds occur before the lease. Timeout/failure
 terminates and reaps the process group, preserves the primary failure and attempts
 remaining cleanup. Even a zero-exit parent must leave an empty process group;
 surviving descendants are terminated and make the run fail. Actual/expected
@@ -74,14 +82,14 @@ normal output is disabled. Unclosed counter intervals are explicitly unavailable
 Corrected-source attempts use revision/preparation-specific summary filenames.
 Every existing attempt, including the original b5 failure, stays immutable.
 Reusing either a measured source revision or preparation identity is rejected.
-Timing requires exactly one matching allocation attempt and its strict pass.
+Timing reuses only the pinned immutable f2 allocation/preparation with exact measured-input equivalence and original strict product checks.
 The original failed attempt did not emit counters; its cause remains unknown.
 
 The direct executor's single structured result per case is authoritative:
 expected identity, positive distinct PID, integer zero exit, success, executable
 found and empty errors are required. Textual exits are optional corroboration;
 duplicates or conflicts are rejected. Every GC comparison and its source/oracle
-binding is published before strict acceptance. A post-freeze is attempted after
+binding is published before metric validation. A post-freeze is attempted after
 validation failure; any secondary freeze failure preserves the original cause.
 See `offline-timing-assessment.json` and `gc-domain-assessment.md`. Offline case
 acceptance does not convert the historical failed timing attempt into a pass.

@@ -62,8 +62,8 @@ if (args.Length >= 2 && args[0] is "--lifecycle" or "--lifecycle-oracle")
     return;
 }
 
-bool measure = args.Length == 5 && args[3] == "--measure";
-if (args.Length != 3 && !measure) throw new ArgumentException("Provide assembly, artifact directory, summary; measurement additionally requires --measure and frozen preparation.");
+bool measure = args.Length == 5 && args[3] == "--execute";
+if (args.Length != 3 && !measure) throw new ArgumentException("Provide assembly, artifact directory, summary; measurement additionally requires --execute and frozen preparation.");
 using var expected = measure ? JsonDocument.Parse(File.ReadAllText(args[4])) : null;
 static string Hash(string path) => Convert.ToHexStringLower(SHA256.HashData(File.ReadAllBytes(path)));
 static SortedDictionary<string, string> CaptureFiles(string directory, IEnumerable<string> paths, string kind, JsonElement? expected)
@@ -114,10 +114,24 @@ foreach (var partition in partitions)
     var selector = typeof(IToolchain).Assembly.GetType("BenchmarkDotNet.Toolchains.ToolchainExtensions", true)!
         .GetMethod("GetToolchain", BindingFlags.Static | BindingFlags.NonPublic, null, [typeof(BenchmarkCase)], null)!;
     var toolchain = (IToolchain)selector.Invoke(null, [partition.RepresentativeBenchmarkCase])!;
-    var generated = toolchain.Generator.GenerateProject(partition, ConsoleLogger.Default, Path.GetFullPath(args[1]));
-    if (!generated.IsGenerateSuccess) throw new InvalidOperationException("Generation failed.", generated.GenerateException);
-    var built = toolchain.Builder.Build(generated, partition, ConsoleLogger.Default);
-    outputs.Add(new { configurationOptions = options, generated = generated.IsGenerateSuccess, built = built.IsBuildSuccess, cases = partition.Benchmarks.Length,
+    BenchmarkDotNet.Toolchains.Results.GenerateResult generated;
+    BenchmarkDotNet.Toolchains.Results.BuildResult built;
+    if (measure)
+    {
+        var prepared = expected!.RootElement.GetProperty("generated");
+        if (!prepared.GetProperty("built").GetBoolean()) throw new InvalidOperationException("Prepared build did not succeed.");
+        var paths = prepared.GetProperty("artifacts").Deserialize<ArtifactsPaths>()!;
+        generated = BenchmarkDotNet.Toolchains.Results.GenerateResult.Success(paths, []);
+        built = BenchmarkDotNet.Toolchains.Results.BuildResult.Success(generated);
+        Console.WriteLine("// VersionPreparedBuild: " + JsonSerializer.Serialize(new { built = true, executionOnly = true, revision = expected.RootElement.GetProperty("revision").GetString() }));
+    }
+    else
+    {
+        generated = toolchain.Generator.GenerateProject(partition, ConsoleLogger.Default, Path.GetFullPath(args[1]));
+        if (!generated.IsGenerateSuccess) throw new InvalidOperationException("Generation failed.", generated.GenerateException);
+        built = toolchain.Builder.Build(generated, partition, ConsoleLogger.Default);
+    }
+    outputs.Add(new { artifacts = generated.ArtifactsPaths, executionOnly = measure, configurationOptions = options, generated = generated.IsGenerateSuccess, built = built.IsBuildSuccess, cases = partition.Benchmarks.Length,
         project = generated.ArtifactsPaths.ProjectFilePath, binaries = generated.ArtifactsPaths.BinariesDirectoryPath,
         executable = generated.ArtifactsPaths.ExecutablePath, benchmarkAssembly = partition.AssemblyLocation,
         identities = partition.Benchmarks.Select(info => Identity(info.BenchmarkCase)).ToArray() });
