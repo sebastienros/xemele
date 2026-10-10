@@ -4,11 +4,11 @@
   "milestone": "M1",
   "title": "Correct reserved namespace prefix versus ordinary local name validation",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M1-namespace-names",
   "branch": "codex/m1-namespace-names",
   "base_revision": "aac9fa0e656bb07a0d60d1b4561ba307061a27fb",
-  "integration_revision": null,
+  "integration_revision": "6d202c4b900bbc7fad6f5f2a3783b77b2c4a31ae",
   "depends_on": [
     "M1-contracts",
     "M1-tree",
@@ -44,7 +44,8 @@
       "description": "Clarify frozen tree wording and correct Tree/checked-builder/serializer validators per W3C Namespaces1.0: xmlns prefix and xmlns namespace URI are reserved, ordinary element local xmlns is legal, prefixed or namespaced ordinary attribute local xmlns is legal, unprefixed no-namespace attribute xmlns is a declaration and cannot be an ordinary attribute. Preserve namespace declaration representation and all xml binding rules, public shapes, validation precommit and error behavior. No new blanket DOM/syntax rejection.",
       "status": "passed",
       "evidence": [
-        "namespace-checks"
+        "namespace-checks",
+        "coordinator-integrated-checks"
       ]
     },
     {
@@ -52,7 +53,8 @@
       "description": "Verify element/ordinary attribute/declaration distinctions with independently confirmed W3C/BCL cases, original forbidden prefix/URI/binding and atomic mutation checks, checked and trusted model replay paths, namespace Strict/Repair output and round trips using independent reference only (no unmerged DOM). Update only the two incorrect earlier negative expectations, replacing with stronger actual reserved-name regressions rather than weakening other tests.",
       "status": "passed",
       "evidence": [
-        "namespace-checks"
+        "namespace-checks",
+        "coordinator-integrated-checks"
       ]
     },
     {
@@ -63,7 +65,8 @@
         "namespace-checks",
         "namespace-allocations",
         "planning-validate",
-        "final-committed-audit"
+        "final-committed-audit",
+        "coordinator-integrated-checks"
       ]
     }
   ],
@@ -136,11 +139,29 @@
       "result": "passed",
       "summary": "Committed delta versus claim99944ee plus working/untracked audit and diff checks passed; planning106 passed with implemented metadata. Initial audit caught generated untracked Python caches from extra unit suite; removed caches only, source unchanged, rerun passes.",
       "artifact": "docs/reports/M1-namespace-names/final-audit.txt"
+    },
+    {
+      "id": "coordinator-source-review",
+      "kind": "review",
+      "revision": "f3fe9d2843cde1e7bcd52334374e7aba9707d04e",
+      "command": null,
+      "result": "passed",
+      "summary": "Independent read-only review approved context distinction, reserved prefix/URI/xml guards, atomic mutation and checked/trusted BCL replay; no blocking findings. Public declarations unchanged.",
+      "artifact": null
+    },
+    {
+      "id": "coordinator-integrated-checks",
+      "kind": "integration",
+      "revision": "6d202c4b900bbc7fad6f5f2a3783b77b2c4a31ae",
+      "command": "Pinned SDK10.0.400 PATH/DOTNET_ROOT DOTNET_CLI_USE_MSBUILD_SERVER=0 python3 -B docs/reports/M1-namespace-names/verify.py --audit-base 89185b8d9ee323c69a0b544660ae7a8698b326e1",
+      "result": "passed",
+      "summary": "Fresh integration build zero warnings/errors; Namespace21, Tree14, Serializer46, Builder11, Persistence8, Input10, Syntax70; solution244 and Foundation11; rebuilt foundation139/173/8 and approved M1 models/protocol38. Actual215 golden/canonical, independent source and fresh isolated local NuGet package samples, warm context0B and Strict stream2104B/op at1KiB/1MiB. Tree zero-allocation test passes unchanged. Owned committed/working/untracked audit, committed/working whitespace, planning107 pass. Separate planning-unit failure recorded in new required repair; no timing claim.",
+      "artifact": "docs/reports/M1-namespace-names/integration-verification-raw.txt"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Corrected ordinary local xmlns versus reserved prefix/URI/declaration shape with unchanged public215 API; BCL-validated public/checked/trusted replay and Strict/Repair round trips. Runtime f3fe9d2; cumulative tested b53dfce.",
+    "summary": "Integrated verified namespace local-name correction; DOM may resume after renewed claim.",
     "checks": [
       "Required checks passed: namespace21; solution244; affected suites; Foundation11/rebuilt139/173/8; M1 models/protocol38; public215 golden+canonical; source/package sample; allocations; owned audit; planning106.",
       "Additional planning unit suite failed3/14 stale baseline assertions; sandbox initial IPC failed then escalated20/20 passed. Failures preserved."
