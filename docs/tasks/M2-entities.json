@@ -32,7 +32,8 @@
     "benchmarks/Xemele.Benchmarks/M2-entities/",
     "docs/api/M2-entities.txt",
     "samples/M2-entities/",
-    "docs/reports/M2-entities/"
+    "docs/reports/M2-entities/",
+    "src/Xemele/Options/Common.cs"
   ],
   "api_or_output": "Working DtdProcessing/Resolver options and parsed DTD metadata",
   "acceptance": [
@@ -62,6 +63,8 @@
     "summary": "",
     "checks": [],
     "remaining": [],
-    "requests": []
+    "requests": [
+      "Coordinator explicitly assigned Common.cs to this ordered task to make existing XmlParseOptions partial (or move unchanged Limits-only declaration into already-owned XmlParseOptions.cs). Preserve current Common/API/defaults; add DtdProcessing/Resolver only in task-owned extension, leaving later Recover to recovery owner. No earlier task source changes before claim/implementation."
+    ]
   }
 }
