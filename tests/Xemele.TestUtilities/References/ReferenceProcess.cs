@@ -25,7 +25,8 @@ public static class ReferenceProcess
         using var deadline = new CancellationTokenSource(timeout);
         using var linked = CancellationTokenSource.CreateLinkedTokenSource(deadline.Token, cancellationToken);
         var start = new ProcessStartInfo(executable) { UseShellExecute = false, RedirectStandardInput = true,
-            RedirectStandardOutput = true, RedirectStandardError = true };
+            RedirectStandardOutput = true, RedirectStandardError = true,
+            StandardOutputEncoding = new UTF8Encoding(false, true), StandardErrorEncoding = new UTF8Encoding(false, true) };
         foreach (var argument in arguments) start.ArgumentList.Add(argument);
         using var process = new Process { StartInfo = start };
         try { if (!process.Start()) throw new ReferenceFailureException("Child failed to start."); }
@@ -45,7 +46,9 @@ public static class ReferenceProcess
             string stdout = await output;
             string stderr = await errors;
             if (process.ExitCode != 0) throw new ReferenceFailureException($"Child exit {process.ExitCode}: {stderr}");
-            string line = stdout.TrimEnd('\r', '\n');
+            if (!stdout.EndsWith('\n')) throw new ReferenceFailureException("Unterminated response.");
+            string line = stdout[..^1];
+            if (line.EndsWith('\r')) line = line[..^1];
             if (line.Contains('\n') || line.Contains('\r')) throw new ReferenceFailureException("Multiple responses.");
             using var response = JsonDocument.Parse(line);
             var root = response.RootElement;
@@ -73,6 +76,7 @@ public static class ReferenceProcess
         catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
         { throw new ReferenceFailureException("Reference process timed out."); }
         catch (JsonException ex) { throw new ReferenceFailureException("Malformed response: " + ex.Message); }
+        catch (DecoderFallbackException ex) { throw new ReferenceFailureException("Malformed response encoding: " + ex.Message); }
         catch (KeyNotFoundException ex) { throw new ReferenceFailureException("Incomplete response: " + ex.Message); }
         catch (InvalidOperationException ex) { throw new ReferenceFailureException("Invalid response or process state: " + ex.Message); }
         finally

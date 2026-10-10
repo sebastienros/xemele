@@ -69,6 +69,9 @@ public sealed class ReferenceProtocolTests
     [Theory]
     [InlineData("exit")]
     [InlineData("invalid")]
+    [InlineData("invalid-utf8")]
+    [InlineData("extra-line")]
+    [InlineData("unterminated")]
     [InlineData("identity")]
     [InlineData("flood")]
     [InlineData("stderr-flood")]
@@ -83,9 +86,16 @@ public sealed class ReferenceProtocolTests
     public async Task CancellationPropagatesAfterChildCleanup()
     {
         using var cancel = CancellationTokenSource.CreateLinkedTokenSource(TestContext.Current.CancellationToken);
-        cancel.CancelAfter(TimeSpan.FromMilliseconds(200));
-        await Assert.ThrowsAnyAsync<OperationCanceledException>(() => ReferenceProcess.ExecuteAsync("python3",
-            [Fixture, "sleep"], Request("<r/>"), TimeSpan.FromSeconds(10), cancel.Token));
+        cancel.CancelAfter(TimeSpan.FromSeconds(1));
+        string pidFile = Path.GetTempFileName();
+        try
+        {
+            await Assert.ThrowsAnyAsync<OperationCanceledException>(() => ReferenceProcess.ExecuteAsync("python3",
+                [Fixture, "sleep", pidFile], Request("<r/>"), TimeSpan.FromSeconds(10), cancel.Token));
+            int pid = int.Parse(await File.ReadAllTextAsync(pidFile, TestContext.Current.CancellationToken), System.Globalization.CultureInfo.InvariantCulture);
+            Assert.Throws<ArgumentException>(() => System.Diagnostics.Process.GetProcessById(pid));
+        }
+        finally { File.Delete(pidFile); }
     }
 
     [Theory]
