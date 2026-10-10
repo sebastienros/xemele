@@ -31,7 +31,8 @@
     "tests/fixtures/M2-dtd-entity-base/",
     "benchmarks/Xemele.Benchmarks/M2-dtd-entity-base/",
     "samples/M2-dtd-entity-base/",
-    "docs/reports/M2-dtd-entity-base/"
+    "docs/reports/M2-dtd-entity-base/",
+    "benchmarks/Xemele.Benchmarks/M2-dtd-composition/CompositionBenchmarks.cs"
   ],
   "api_or_output": "Normative effective containing-external-source declaration base and declaration-owned external PE system-ID resolution; no public/model shape changes",
   "acceptance": [
@@ -58,12 +59,13 @@
     "src/Xemele/Parsing/Dtd/Grammar/Parser/Lexer.cs: ExpandParameter inherits Current.Uri for internal inclusion; retained entity.Location for external system-ID requests",
     "tests/Xemele.Tests/M2-dtd-entity-base/EntityBaseTests.cs: authored URI/referrer/full entity table and callback oracles; failure cleanup",
     "benchmarks/Xemele.Benchmarks/M2-dtd-entity-base/EntityBaseBenchmarks.cs: nested internal model and redirected complete-document workloads",
-    "docs/reports/M2-dtd-entity-base/Measurements.csproj and MeasurementDriver.cs: isolated correctness/identity/allocation/benchmark driver"
+    "docs/reports/M2-dtd-entity-base/Measurements.csproj and MeasurementDriver.cs: isolated correctness/identity/allocation/benchmark driver",
+    "benchmarks/Xemele.Benchmarks/M2-dtd-composition/CompositionBenchmarks.cs: sole CheckResult included-element URI oracle transitioned null to containing external Uri; seeded declaration and all other assertions unchanged"
   ],
   "evidence": [],
   "blockers": [],
   "handoff": {
-    "summary": "Source candidate prepared under coordinator HOST HOLD. No build, tests, imports, preparation, or measurements run. Parser-only two-site base repair; no model/public shape changes. Source candidate commit: 977d678f56e46a7d894c0704416849fbe154e770. PARK/no worker children.",
+    "summary": "Source candidate prepared under coordinator HOST HOLD. No build, tests, imports, preparation, or measurements run. Parser-only two-site base repair; no model/public shape changes. Source candidate commit: 977d678f56e46a7d894c0704416849fbe154e770. PARK/no worker children. Coordinator scope-extension commit 071b70d90cfe95a434961c156192f2badd6fc979 mirrored as owns-only delta; authorized one-line historical oracle transition completed. HOST HOLD remains.",
     "checks": [
       "Setup: actual isolated checkout/clean assigned branch, base and coordinated claim ancestry verified. Implementation checks not run: explicit coordinator host hold.",
       "git diff --check passed before source commit; no runtime or planning checks executed during HOST HOLD."
@@ -73,11 +75,6 @@
       "Review source candidate and counters-disabled preparation before fresh exclusive standalone allocation/benchmark grant; freeze actual full Git/source/binary/runtime/child identities.",
       "Add original E18 exact byte/hash request/model oracle after the pinned offline corpus becomes available; current authored fixtures are independent synthetic base oracles."
     ],
-    "requests": [
-      {
-        "path": "benchmarks/Xemele.Benchmarks/M2-dtd-composition/CompositionBenchmarks.cs",
-        "change": "CheckResult line81 currently expects included child element Location.SourceUri null. For source-corrected containing external origin, change only that element oracle to new XmlLocation(Uri,1,1,null). Keep seeded PE origin null on line72 and every count/charge/output assertion unchanged. Outside task ownership: require explicit scoped coordinator assignment before worker edit."
-      }
-    ]
+    "requests": []
   }
 }
