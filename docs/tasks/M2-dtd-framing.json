@@ -4,11 +4,11 @@
   "milestone": "M2",
   "title": "Incremental external text-declaration framing",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M2-dtd-framing",
   "branch": "codex/m2-dtd-framing",
   "base_revision": "b96b9d0a674dddfa6a9b3907cf947577ee8ba395",
-  "integration_revision": null,
+  "integration_revision": "ad034e41b7b770bca3869c5ad3a49a9354b288dd",
   "depends_on": [
     "M2-contracts",
     "M2-pi-allocation-probe",
@@ -41,7 +41,8 @@
         "framing-focused-results",
         "renewed-correctness",
         "renewed-source-review",
-        "combined-renewal-correctness"
+        "combined-renewal-correctness",
+        "renewed-integrated-checks"
       ]
     },
     {
@@ -51,7 +52,8 @@
       "evidence": [
         "framing-focused-results",
         "renewed-correctness",
-        "combined-renewal-correctness"
+        "combined-renewal-correctness",
+        "renewed-integrated-checks"
       ]
     },
     {
@@ -64,7 +66,8 @@
         "initial-committed-checkpoint",
         "bounded-committed-checkpoint",
         "integrated-tree-allocation-failure",
-        "combined-renewal-correctness"
+        "combined-renewal-correctness",
+        "renewed-integrated-checks"
       ]
     }
   ],
@@ -165,6 +168,15 @@
       "result": "passed",
       "summary": "Fresh combined candidate:2103 MTP/direct/discovery tests agree1549runtime=306verifiedprerequisite+1243framing,255conformance,299differential;zero failures/skips. Independent53records(common-only5types/48members)/sample/cold768B-owned768B/warm0B/GCretainedestimate160048B and untimed4x3x8192+6oracles passed. API251/registry3388/fresh complete BCL242hashes/sourcebuild/unchangedcopy/planning14/validate118/exactclaim owned+whitespace audits passed. Timed framer/interface/benchmark/driver/project bytes identical to dbcd, archiveSHA a9699017bf98b612b0c5be2ffbcf002b158cb9f80398eba94b67aa75f5271a53 unchanged; prior14case/42observation timing retained at dbcd, no rerun. Historical PI/Tree failures preserved; causes not inferred. Verified resolver/encoding/model present; full grammar/entity composition/Windows/x64/AOT remain later.",
       "artifact": "docs/reports/M2-dtd-framing/combined-renewal-correctness/summary.json"
+    },
+    {
+      "id": "renewed-integrated-checks",
+      "kind": "integration",
+      "revision": "ad034e41b7b770bca3869c5ad3a49a9354b288dd",
+      "command": "python3 -B docs/reports/M2-dtd-framing/verify.py --report-prefix integration-ad034e4-attempt1 --audit-base 836070fc8d697da1eccd0efe726e63bad8430b83 --expected-branch codex/integrate-m2-dtd-framing-renewed --expected-runtime-tests 1549 --expected-conformance-tests 255 --expected-differential-tests 299 --expected-public-api 251 --expected-fixtures 3388",
+      "result": "passed",
+      "summary": "Actual common-only approved53records/sample/cold768B/owned768B/warm0B/retainedGCestimate160048B and untimed4x3x8192+6oracles passed. Full2103 MTP/discovery/direct1549+255+299 allPass, framing1243; API251/fixtures3388/fresh242 fullcopied reference/fullrevisionhash/unchangedcopy/planning14/validate120/owned audits passed. d31b earlier failure ancestry retained. Runtime/ASCIItests/benchmark source byte-identical reviewed dbcd; prior actual14cases42observations/all14exit0/scans0B timing retained atdbcd without rerun; zipSHA a9699017bf98b612b0c5be2ffbcf002b158cb9f80398eba94b67aa75f5271a53 independently rehashed. FullDTDcomposition/Windows/x64/AOT remain future task checks.",
+      "artifact": "docs/reports/M2-dtd-framing/integration-ad034e4-attempt1/summary.json"
     }
   ],
   "blockers": [],
@@ -174,12 +186,10 @@
       "Fresh combined-renewal-correctness exit0 at ac9f423:1549runtime(306current+1243framing),255conformance,299differential,allPass/noFail/noSkip;MTP/discovery2103agree.",
       "Approved common-only actual53record inventory/sample/allocation and untimed4x3x8192+6oracles passed; API251/registry3388/fresh complete pinned BCL242hashes+sourcebuild+unchangedcopy/planning14/validate118/exactclaim committed/staged/working/untracked owned+whitespace audits passed.",
       "Source/runtime/tests/benchmark bytes unchanged from dbcd; only verifier claim/defaultcounts/Tree ancestry/scope changed after renewal. Coordinator read-only review approved verifier delta.",
-      "Prior successful timing retained at dbcd:14cases/42positive observations/all14childexit0/scans0B; archiveSHA a9699017bf98b612b0c5be2ffbcf002b158cb9f80398eba94b67aa75f5271a53. Proof combined-renewal-correctness/timing-reuse.json. No timing rerun."
+      "Prior successful timing retained at dbcd:14cases/42positive observations/all14childexit0/scans0B; archiveSHA a9699017bf98b612b0c5be2ffbcf002b158cb9f80398eba94b67aa75f5271a53. Proof combined-renewal-correctness/timing-reuse.json. No timing rerun.",
+      "Coordinator actual integrated2103 checks pass at ad034e41b7b770bca3869c5ad3a49a9354b288dd; graph120. Timing unchanged dbcd retained."
     ],
-    "remaining": [
-      "Coordinator integrate retained source/failure ancestry and verify combined tree with actual counts; record integration revision separately.",
-      "Provisional Arm64 framing measurements retain six short-iteration warnings/normal priority/slower-than-narrowerbaseline/no speedup claim. Full DTD grammar/entity composition and Windows/x64/AOT confirmation remain later."
-    ],
+    "remaining": [],
     "requests": []
   }
 }
