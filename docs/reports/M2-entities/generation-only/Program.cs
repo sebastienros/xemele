@@ -1,4 +1,5 @@
 using BenchmarkDotNet.Characteristics;
+using BenchmarkDotNet.ConsoleArguments;
 using BenchmarkDotNet.Extensions;
 using BenchmarkDotNet.Environments;
 using BenchmarkDotNet.Jobs;
@@ -10,7 +11,10 @@ using System.Reflection;
 
 if (args.Length != 3) throw new ArgumentException("Provide actual benchmark assembly, temporary artifact directory and summary path.");
 var assembly = Assembly.LoadFrom(Path.GetFullPath(args[0]));
-var infos = new[] { BenchmarkConverter.TypeToBenchmarks(assembly.GetType("Xemele.Benchmarks.EntityCompositionBenchmarks", true)!), BenchmarkConverter.TypeToBenchmarks(assembly.GetType("Xemele.Benchmarks.EntityLookupBenchmarks", true)!) };
+string[] options = ["--filter", "*Entity*Benchmarks*", "--artifacts", Path.GetFullPath(args[1]), "--keepFiles", "--buildTimeout", "240", "--stopOnFirstError"];
+var parsed = ConfigParser.Parse(options, ConsoleLogger.Default);
+if (!parsed.isSuccess) throw new InvalidOperationException("Exact measurement configuration did not parse.");
+var infos = new[] { BenchmarkConverter.TypeToBenchmarks(assembly.GetType("Xemele.Benchmarks.EntityCompositionBenchmarks", true)!, parsed.config), BenchmarkConverter.TypeToBenchmarks(assembly.GetType("Xemele.Benchmarks.EntityLookupBenchmarks", true)!, parsed.config) };
 var resolver = new CompositeResolver(EnvironmentResolver.Instance, InfrastructureResolver.Instance);
 var partitions = BenchmarkPartitioner.CreateForBuild(infos, resolver);
 if (partitions.Sum(p => p.Benchmarks.Length) != 6) throw new InvalidOperationException("Expected six authored generation cases.");
@@ -24,7 +28,7 @@ foreach (var partition in partitions)
     var generated = toolchain.Generator.GenerateProject(partition, ConsoleLogger.Default, Path.GetFullPath(args[1]));
     if (!generated.IsGenerateSuccess) throw new InvalidOperationException("Generation failed.", generated.GenerateException);
     var built = toolchain.Builder.Build(generated, partition, ConsoleLogger.Default);
-    outputs.Add(new { generated = generated.IsGenerateSuccess, built = built.IsBuildSuccess, cases = partition.Benchmarks.Length,
+    outputs.Add(new { configurationOptions = options, generated = generated.IsGenerateSuccess, built = built.IsBuildSuccess, cases = partition.Benchmarks.Length,
         project = generated.ArtifactsPaths.ProjectFilePath, binaries = generated.ArtifactsPaths.BinariesDirectoryPath,
         executable = generated.ArtifactsPaths.ExecutablePath, benchmarkAssembly = partition.AssemblyLocation });
     File.WriteAllText(args[2], JsonSerializer.Serialize(outputs));
