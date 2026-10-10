@@ -115,6 +115,41 @@ public class SerializerTests
         Assert.Equal(preamble.Concat(encoding.GetBytes(expected)), s.ToArray());
         Assert.Equal((omit ? "" : "<?xml version=\"1.0\"?>") + "<r>" + r.FirstChild.Value + "</r>", d.ToXmlString(o));
     }
+    [Theory]
+    [InlineData(XmlNodeKind.CData, 65001)] [InlineData(XmlNodeKind.Comment, 65001)] [InlineData(XmlNodeKind.ProcessingInstruction, 65001)]
+    [InlineData(XmlNodeKind.CData, 1200)] [InlineData(XmlNodeKind.Comment, 1200)] [InlineData(XmlNodeKind.ProcessingInstruction, 1200)]
+    [InlineData(XmlNodeKind.CData, 1201)] [InlineData(XmlNodeKind.Comment, 1201)] [InlineData(XmlNodeKind.ProcessingInstruction, 1201)]
+    public void RawLexicalChunksHandleEncoderSurrogateCarry(XmlNodeKind kind, int page)
+    {
+        // Vary prefix alignment so a retained high surrogate is followed by a
+        // low surrogate plus 2047 three-byte BMP scalars with 6144 bytes free.
+        foreach (int prefixLength in new[] { 0, 1, 952, 953, 2045, 2046, 2047, 3000 })
+        foreach (int targetLength in new[] { 2048, 3000 })
+        {
+            var d = Root(out var r);
+            if (prefixLength != 0) r.AppendChild(d.CreateText(new string('a', prefixLength)));
+            string value = new string('a', 2047) + "🙂" + new string('界', 2047);
+            var node = kind switch
+            {
+                XmlNodeKind.CData => d.CreateCData(value),
+                XmlNodeKind.Comment => d.CreateComment(value),
+                _ => d.CreateProcessingInstruction(new string('p', targetLength), value)
+            };
+            r.AppendChild(node);
+            var encoding = Encoding.GetEncoding(page);
+            using var stream = new MemoryStream(); d.Save(stream, Omit with { Encoding = encoding });
+            Assert.Equal(encoding.GetBytes(d.ToXmlString(Omit)), stream.ToArray());
+        }
+    }
+    [Fact]
+    public void Utf8CDataExactCarryCapacityRegression()
+    {
+        var d = Root(out var r); r.AppendChild(d.CreateText(new string('x', 2040)));
+        r.AppendChild(d.CreateCData(new string('a', 2046) + "é🙂" + new string('界', 2047)));
+        using var stream = new MemoryStream(); d.Save(stream, Omit);
+        Assert.Equal(Encoding.UTF8.GetBytes(d.ToXmlString(Omit)), stream.ToArray());
+        Assert.True(stream.CanWrite);
+    }
     [Fact]
     public void OptionsRootAndStreamValidationPrecedeOutput()
     {

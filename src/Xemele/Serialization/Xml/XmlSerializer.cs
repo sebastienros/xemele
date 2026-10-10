@@ -96,10 +96,15 @@ public static class XmlSerializer
                 if (builder is not null) builder.Append(text[..length]);
                 else
                 {
-                    if (8192 - buffered < 6144) Drain();
+                    // Include a pending surrogate from the preceding raw lexical
+                    // chunk in the worst-case UTF-8 capacity (6145 bytes).
+                    if (8192 - buffered < 6148) Drain();
                     encoder!.Convert(text[..length], bytes.AsSpan(buffered, 8192 - buffered), false, out int used, out int count, out _);
-                    if (used != length) throw new InvalidOperationException("Encoder buffer exhausted.");
                     buffered += count;
+                    // Convert may consume a partial chunk; preserve its progress
+                    // rather than rejecting valid text at a buffer boundary.
+                    length = used;
+                    if (used == 0) Drain();
                 }
                 text = text[length..];
             }
