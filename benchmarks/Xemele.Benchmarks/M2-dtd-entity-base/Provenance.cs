@@ -59,7 +59,8 @@ internal static class EntityBaseProvenance
 
     internal static JsonElement Capture(string directory, string entry, string project, string driver, string product, string stage = "capture")
     {
-        directory = Path.GetFullPath(directory); project = Path.GetFullPath(project);
+        directory = Path.TrimEndingDirectorySeparator(Path.GetFullPath(directory));
+        project = Path.TrimEndingDirectorySeparator(Path.GetFullPath(project));
         var errors = new List<object>(); Exception? primary = null;
         // Preserve every available actual file identity before opening required
         // assembly metadata. A bad file must not discard its valid siblings.

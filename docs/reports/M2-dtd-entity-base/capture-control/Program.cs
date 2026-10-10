@@ -10,6 +10,19 @@ try
     string survivor = Path.Combine(directory, "survivor.marker"), code = Path.Combine(directory, "fixture.notcs");
     File.WriteAllText(survivor, "owned sibling"); File.WriteAllText(code, "independent generated input");
     string valid = Assembly.GetExecutingAssembly().Location, product = typeof(XmlDocument).Assembly.Location;
+    if (args.Contains("--directory-only"))
+    {
+        var canonical = EntityBaseProvenance.Capture(directory, valid, directory, valid, product);
+        var trailing = EntityBaseProvenance.Capture(directory + Path.DirectorySeparatorChar, valid,
+            directory + Path.DirectorySeparatorChar, valid, product);
+        if (!EntityBaseProvenance.Equal(canonical, trailing)) throw new Exception("Same directory identity differs by ending separator.");
+        var different = System.Text.Json.Nodes.JsonNode.Parse(canonical.GetRawText())!;
+        different["directory"] = directory + "-different";
+        if (EntityBaseProvenance.Equal(canonical, JsonSerializer.SerializeToElement(different)))
+            throw new Exception("Different directory identity accepted.");
+        Console.WriteLine("Directory controls passed: same directory with/without ending separator accepted; different directory refused; full proof fields retained; no workload/counters/timing.");
+        return;
+    }
     if (args.Contains("--prepared-only"))
     {
         var expectedProof = EntityBaseProvenance.Capture(directory, valid, directory, valid, product);
