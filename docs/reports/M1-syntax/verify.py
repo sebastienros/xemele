@@ -66,7 +66,7 @@ def main():
         directory = Path(directory)
         (directory / 'Consumer.csproj').write_text(f'<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><TargetFramework>net10.0</TargetFramework><AssemblyName>Xemele.SyntaxSample</AssemblyName><OutputType>Exe</OutputType><ImplicitUsings>enable</ImplicitUsings><Nullable>enable</Nullable></PropertyGroup><ItemGroup><PackageReference Include="Xemele" Version="{version}" /></ItemGroup></Project>')
         (directory / 'Program.cs').write_text((ROOT / 'samples/M1-syntax/Program.cs').read_text())
-        run('dotnet', 'run', '--project', directory / 'Consumer.csproj', '-c', 'Release', '--disable-build-servers', '-p:UseSharedCompilation=false', f'-p:RestoreSources={packages}')
+        run('dotnet', 'run', '--project', directory / 'Consumer.csproj', '-c', 'Release', '--disable-build-servers', '-p:UseSharedCompilation=false', f'-p:RestoreSources={packages}', f'-p:RestorePackagesPath={directory / "packages"}')
     run('dotnet', 'build', 'docs/reports/M1-syntax/Xemele.SyntaxBenchmarks.csproj', *FLAGS)
     run('dotnet', 'run', '--project', 'docs/reports/M1-syntax/Xemele.SyntaxBenchmarks.csproj', '-c', 'Release', '--no-build', '--', '--allocation')
     run('python3', 'tools/planning/tasks.py', 'validate')

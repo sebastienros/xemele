@@ -220,7 +220,7 @@ public sealed class StreamingTests
     [Fact]
     public void IndependentBclOracleChecksResolvedNamesAttributesAndPiAtEverySplit()
     {
-        const string source = "<r p:a='v&#9;x' plain=' y\r\nz ' xmlns:p='u' xmlns='d' xml:lang='en'><?p ?x?><c xmlns='' p:b='&amp;'/><p:c xmlns:q='u' q:b='v'/></r>";
+        const string source = "<r p:a='v&#9;x' plain=' y\r\nz ' xmlns:p='u' xmlns='d' xml:lang='en'><?p \t ?x?><c xmlns='' p:b='&amp;'/><p:c xmlns:q='u' q:b='v'/></r>";
         var expected = new List<string>(); var pis = new List<(string Target, string Text)>();
         using (var reader = XmlReader.Create(new StringReader(source), new() { DtdProcessing = DtdProcessing.Prohibit }))
         {
