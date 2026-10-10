@@ -2,10 +2,10 @@
   "schema_version": 1,
   "milestone": "M2",
   "kind": "feature",
-  "status": "planned",
-  "owner": null,
-  "branch": null,
-  "base_revision": null,
+  "status": "in_progress",
+  "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M2-dtd-values",
+  "branch": "codex/m2-dtd-values",
+  "base_revision": "bacf6b4ed24a4338f25e2990efcf35c7e5da76fb",
   "integration_revision": null,
   "goals": [
     "G07"
@@ -34,13 +34,13 @@
   "acceptance": [
     {
       "id": "M2-dtd-values-A1",
-      "description": "Implement internal value processing independently of parser/source-stack: decode XML character references in entity declaration values while retaining general references for use-site expansion; normalize attribute defaults only when explicitly applied with a supplied effective general-entity table, preserving CDATA/tokenized whitespace and direct-character-reference semantics. Reject malformed references/illegal scalars/literal less-than in attribute values/undeclared, external or unparsed attribute entities as required; preserve approved internal model/parser/framing signatures. No public stubs or premature default normalization at model publication.",
+      "description": "Implement internal value processing independently of parser/source-stack: decode XML character references in entity declaration values while retaining general references for use-site expansion; normalize attribute defaults only when explicitly applied with a supplied effective general-entity table, preserving CDATA/tokenized whitespace and direct-character-reference semantics. Reject malformed references/illegal scalars/literal less-than in attribute values/undeclared, external or unparsed attribute entities as required; preserve approved internal model/parser/framing signatures. No public stubs or premature default normalization at model publication. Expose a bounded incremental character-reference/value decoding seam for the future parser: every short split, including arbitrarily long leading-zero numeric references, must progress without buffering their raw spelling or borrowing input after return. Caller owns literal delimiters/PE composition/source newline normalization; reference-produced characters must not be normalized again.",
       "status": "pending",
       "evidence": []
     },
     {
       "id": "M2-dtd-values-A2",
-      "description": "Prove authored/pinned character-reference and whitespace/recursive general-reference cases, predefined behavior and distinct reference versus literal origin, effective-table/internal precedence supplied by caller, active-name cycles even with null EntityDepth, exact/one-over expansion/depth/token capacities and cancellation. Helper owns only actual expansion charges/owned output and borrows no input beyond call; grammar owns raw input/distinct retained-name accounting. Use verified unchanged IDtdBudget, no resolver/core/decoder/DOM dependency or external fetch.",
+      "description": "Prove authored/pinned character-reference and whitespace/recursive general-reference cases, predefined behavior and distinct reference versus literal origin, effective-table/internal precedence supplied by caller, active-name cycles even with null EntityDepth, exact/one-over expansion/depth/token capacities and cancellation. Helper owns only actual expansion charges/owned output and borrows no input beyond call; grammar owns raw input/distinct retained-name accounting. Use verified unchanged IDtdBudget, no resolver/core/decoder/DOM dependency or external fetch. Test all character-reference/input/output boundaries, decimal/hex overflow and illegal/lone-surrogate scalars, leading-zero numeric state, literal versus reference whitespace and nested entity output, meaningful progress before EOF and exact consumed units. Publish the internal helper/accounting contract before dependent parser starts.",
       "status": "pending",
       "evidence": []
     },
