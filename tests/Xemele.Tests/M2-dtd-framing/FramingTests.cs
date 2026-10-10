@@ -303,13 +303,44 @@ public sealed class FramingTests
     [Fact]
     public void WarmWhitespacePrimitiveHasNoAllocations()
     {
+        var request = FramingAllocationChild.EnterChild();
+        if (request is null)
+        {
+            var pair = FramingAllocationChild.RunPair();
+            Assert.Equal(0, pair.Real.AllocatedBytes);
+            Assert.True(pair.Positive.AllocatedBytes > 0, pair.Directory);
+            return;
+        }
+        var cancellation = TestContext.Current.CancellationToken;
         using var f = new XmlTextDeclarationFramer(new() { TokenCharacters = null, ExpandedCharacters = null });
-        f.Append("<?xml ", [], false, TestContext.Current.CancellationToken);
-        const string spaces = "                                ";
-        for (int i = 0; i < 1000; i++) f.Append(spaces, [], false, TestContext.Current.CancellationToken);
-        long before = GC.GetAllocatedBytesForCurrentThread();
-        for (int i = 0; i < 1000; i++) f.Append(spaces, [], false, TestContext.Current.CancellationToken);
-        Assert.Equal(0, GC.GetAllocatedBytesForCurrentThread() - before);
+        var prefix = f.Append("<?xml ", [], false, cancellation);
+        Assert.Equal(6, prefix.Consumed);
+        Assert.Equal(TextDeclarationStep.NeedInput, prefix.Step);
+        Assert.Null(prefix.Diagnostic);
+        Assert.Null(prefix.Declaration);
+        object? escaped = null;
+        FramingAllocationChild.Stage(request, "warm-start");
+        var warm = FramingAllocationProbe.AppendChecked(f, cancellation, false, ref escaped);
+        FramingAllocationChild.Stage(request, "measured-start");
+        var measured = FramingAllocationProbe.AppendChecked(f, cancellation, request.Mode == "positive", ref escaped);
+        FramingAllocationChild.Stage(request, "measured-end");
+        var completion = f.Append(FramingAllocationProbe.Completion, [], true, cancellation);
+        FramingAllocationChild.Write(request, warm, measured, completion, (escaped as byte[])?.Length ?? 0);
+        Assert.Equal(32000, warm.Consumed);
+        Assert.Equal(32000, measured.Consumed);
+        Assert.Equal(new XmlLocation(null, 1, 32007, null), warm.Cursor);
+        Assert.Equal(new XmlLocation(null, 1, 64007, null), measured.Cursor);
+        Assert.Equal(TextDeclarationStep.Declared, completion.Step);
+        Assert.Equal(FramingAllocationProbe.Completion.Length, completion.Consumed);
+        Assert.Null(completion.Diagnostic);
+        Assert.Equal("X", completion.Declaration!.Value.EncodingName);
+        Assert.Equal(new XmlLocation(null, 1, 64007 + FramingAllocationProbe.Completion.Length, null), completion.NextLocation);
+        if (request.Mode == "real") Assert.Equal(0, measured.Bytes);
+        else
+        {
+            Assert.True(measured.Bytes > 0);
+            Assert.Equal(37, Assert.IsType<byte[]>(escaped).Length);
+        }
     }
     private sealed class Ledger(long maximum) : IDtdBudget
     {

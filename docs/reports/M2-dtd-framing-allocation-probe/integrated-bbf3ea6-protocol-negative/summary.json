@@ -1,0 +1,148 @@
+{
+  "driverRevision": "bbf3ea65ebe68a2433b867758378b9d0263175d2",
+  "compiledProvenance": {
+    "Executable": "/private/tmp/xemele-integrate-m2-dtd-framing-allocation-probe/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests",
+    "ExecutableSha256": "C00FD9CDDEDFDC2F3F6794FB4B9218CA9860D3A6E64B5F9C216EF3FE6E8B7E49",
+    "TestAssembly": "/private/tmp/xemele-integrate-m2-dtd-framing-allocation-probe/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll",
+    "TestSha256": "00BDEAEBC32795DC3E55DC73F1A815FF5B20D9F5723AFE2F168B5297E2C0B85B",
+    "TestVersion": "1.0.0+bbf3ea65ebe68a2433b867758378b9d0263175d2",
+    "ProductAssembly": "/private/tmp/xemele-integrate-m2-dtd-framing-allocation-probe/tests/Xemele.Tests/bin/Release/net10.0/Xemele.dll",
+    "ProductSha256": "CA9CF255C4720F8D1EABFFFDBEA1C03EBB4D79F098CDFC9CA59FE0C9804528BE",
+    "ProductVersion": "1.0.0+bbf3ea65ebe68a2433b867758378b9d0263175d2",
+    "RuntimeVersion": "10.0.11",
+    "CoreLibrary": "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App/10.0.11/System.Private.CoreLib.dll",
+    "CoreLibrarySha256": "9ED74C2E2EFEEE87F1F2D7FFE1736B7E9164CE248516EA39402A725EEDC87AF6",
+    "NativeRuntimeSha256": "10B24D0B11C7F6D838114744097BF10DF9B08B906AFC9016567631A1C009DFD0",
+    "HelperIlSha256": "BF392D5E1328E12F5D4C3DA97E8A32B338628E5C625DB0630F59A1EB33AB6C62",
+    "RuntimeConfigSha256": "9950D4583CFC9A106857C0D5B8A75B53E8774852B57B80BC3823A74D44A4D87F",
+    "ServerGc": false,
+    "GcLatencyMode": "Interactive",
+    "Architecture": "Arm64",
+    "RuntimeOverrides": "{\"DOTNET_CLI_TEST_COMMAND_WORKING_DIRECTORY\":\"/private/tmp/xemele-integrate-m2-dtd-framing-allocation-probe\",\"DOTNET_CLI_USE_MSBUILD_SERVER\":\"0\",\"DOTNET_ROOT\":\"/Users/sebastienros/Library/Application Support/dotnetup/dotnet\",\"DOTNET_ROOT_ARM64\":\"/Users/sebastienros/Library/Application Support/dotnetup/dotnet\"}",
+    "NativeGcLibrary": "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App/10.0.11/libclrgc.dylib",
+    "NativeGcSha256": "2A53559AC20A2896A7D1AFB427C73DCF781495349544E8B4B34E7D123CE39FFA",
+    "GcConfiguration": "{\"ConcurrentGC\":true,\"GCConserveMem\":0,\"GCCpuGroup\":false,\"GCDGen0GrowthMaxFactor\":0,\"GCDGen0GrowthMinFactor\":0,\"GCDGen0GrowthPercent\":0,\"GCDTargetTCP\":0,\"GCDynamicAdaptationMode\":1,\"GCGen0MaxBudget\":8388608,\"GCHeapAffinitizeMask\":0,\"GCHeapAffinitizeRanges\":\"\",\"GCHeapHardLimit\":0,\"GCHeapHardLimitLOH\":0,\"GCHeapHardLimitLOHPercent\":0,\"GCHeapHardLimitPOH\":0,\"GCHeapHardLimitPOHPercent\":0,\"GCHeapHardLimitPercent\":0,\"GCHeapHardLimitSOH\":0,\"GCHeapHardLimitSOHPercent\":0,\"GCHighMemPercent\":90,\"GCLargePages\":false,\"GCName\":\"\",\"GCPath\":\"\",\"GCRegionRange\":0,\"GCRegionSize\":0,\"HeapCount\":1,\"LOHThreshold\":85000,\"MaxHeapCount\":0,\"NoAffinitize\":false,\"RetainVM\":false,\"ServerGC\":false,\"UOHWaitBGCSizeIncPercent\":-1}"
+  },
+  "checks": {
+    "unknown-mode": {
+      "result": "passed",
+      "actualExit": 1,
+      "total": 1,
+      "failure": "System.InvalidOperationException : Invalid internal Framing child guard."
+    },
+    "incomplete-mode": {
+      "result": "passed",
+      "actualExit": 1,
+      "total": 1,
+      "failure": "System.InvalidOperationException : Invalid internal Framing child guard."
+    },
+    "missing-required-field": {
+      "result": "passed",
+      "actualExit": 1,
+      "total": 1,
+      "failure": "System.Text.Json.JsonException : JSON deserialization for type 'Xemele.Tests.FramingAllocationChild+Request' was missing required properties including: 'Expected'."
+    },
+    "malformed-json": {
+      "result": "passed",
+      "actualExit": 1,
+      "total": 1,
+      "failure": "System.Text.Json.JsonException : 'b' is an invalid start of a property name. Expected a '\\\"'. Path: $ | LineNumber: 0 | BytePositionInLine: 1.\n---- System.Text.Json.JsonReaderException : 'b' is an invalid start of a property name. Expected a '\\\"'. LineNumber: 0 | BytePositionInLine: 1."
+    },
+    "unknown-json-member": {
+      "result": "passed",
+      "actualExit": 1,
+      "total": 1,
+      "failure": "System.Text.Json.JsonException : The JSON property 'UnexpectedProtocolField' could not be mapped to any .NET member contained in type 'Xemele.Tests.FramingAllocationChild+Request'."
+    },
+    "provenance-mismatch": {
+      "result": "passed",
+      "actualExit": 1,
+      "total": 1,
+      "failure": "System.InvalidOperationException : Child executable/compiled product/runtime provenance mismatch."
+    },
+    "host-mismatch": {
+      "result": "passed",
+      "actualExit": 1,
+      "total": 1,
+      "failure": "System.InvalidOperationException : Configured dotnet differs from the active runtime installation."
+    },
+    "token-mismatch": {
+      "result": "passed",
+      "actualExit": 1,
+      "total": 1,
+      "failure": "System.InvalidOperationException : Mismatched child capability."
+    },
+    "version-mismatch": {
+      "result": "passed",
+      "actualExit": 1,
+      "total": 1,
+      "failure": "System.InvalidOperationException : Mismatched child capability."
+    },
+    "parent-mismatch": {
+      "result": "passed",
+      "actualExit": 1,
+      "total": 1,
+      "failure": "System.InvalidOperationException : Invalid child parent identity."
+    },
+    "output-path-mismatch": {
+      "result": "passed",
+      "actualExit": 1,
+      "total": 1,
+      "failure": "System.InvalidOperationException : Invalid child output paths."
+    },
+    "nested-unknown-member": {
+      "result": "passed",
+      "actualExit": 1,
+      "total": 1,
+      "failure": "System.Text.Json.JsonException : The JSON property 'UnknownNative' could not be mapped to any .NET member contained in type 'Xemele.Tests.FramingAllocationChild+Provenance'."
+    },
+    "helper-mismatch": {
+      "result": "passed",
+      "actualExit": 1,
+      "total": 1,
+      "failure": "System.InvalidOperationException : Child executable/compiled product/runtime provenance mismatch."
+    },
+    "native-mismatch": {
+      "result": "passed",
+      "actualExit": 1,
+      "total": 1,
+      "failure": "System.InvalidOperationException : Child executable/compiled product/runtime provenance mismatch."
+    },
+    "config-mismatch": {
+      "result": "passed",
+      "actualExit": 1,
+      "total": 1,
+      "failure": "System.InvalidOperationException : Child executable/compiled product/runtime provenance mismatch."
+    },
+    "gc-mismatch": {
+      "result": "passed",
+      "actualExit": 1,
+      "total": 1,
+      "failure": "System.InvalidOperationException : Child executable/compiled product/runtime provenance mismatch."
+    },
+    "native-gc-mismatch": {
+      "result": "passed",
+      "actualExit": 1,
+      "total": 1,
+      "failure": "System.InvalidOperationException : Child executable/compiled product/runtime provenance mismatch."
+    },
+    "gc-configuration-mismatch": {
+      "result": "passed",
+      "actualExit": 1,
+      "total": 1,
+      "failure": "System.InvalidOperationException : Child executable/compiled product/runtime provenance mismatch."
+    },
+    "test-source-mismatch": {
+      "result": "passed",
+      "actualExit": 1,
+      "total": 1,
+      "failure": "System.InvalidOperationException : Child executable/compiled product/runtime provenance mismatch."
+    },
+    "product-source-mismatch": {
+      "result": "passed",
+      "actualExit": 1,
+      "total": 1,
+      "failure": "System.InvalidOperationException : Child executable/compiled product/runtime provenance mismatch."
+    }
+  }
+}
