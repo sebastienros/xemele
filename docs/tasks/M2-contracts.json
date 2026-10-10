@@ -4,11 +4,11 @@
   "milestone": "M2",
   "title": "Freeze complete XML/resource contracts",
   "kind": "contract",
-  "status": "implemented",
+  "status": "verified",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M2-contracts",
   "branch": "codex/m2-contracts",
   "base_revision": "e3f3e2c92356b4225fa6a4a0b2df1bbc5e9d1fbf",
-  "integration_revision": null,
+  "integration_revision": "ab2fcabaf3cc984901f484c6fce1069c385e8c2f",
   "depends_on": [
     "M1-gate"
   ],
@@ -38,7 +38,8 @@
       "description": "Specify DtdModel/entity hooks, resolver final-URI ownership, profiles, complete limits and recovery result/API; preserve M1 defaults.",
       "status": "passed",
       "evidence": [
-        "independent-contract-checkpoint"
+        "independent-contract-checkpoint",
+        "integrated-contracts"
       ]
     },
     {
@@ -46,7 +47,8 @@
       "description": "Compile resolver/DTD/entity/recovery fixtures separately; every staged option has an implementing task.",
       "status": "passed",
       "evidence": [
-        "independent-contract-checkpoint"
+        "independent-contract-checkpoint",
+        "integrated-contracts"
       ]
     },
     {
@@ -54,7 +56,8 @@
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
       "status": "passed",
       "evidence": [
-        "independent-contract-checkpoint"
+        "independent-contract-checkpoint",
+        "integrated-contracts"
       ]
     }
   ],
@@ -91,18 +94,36 @@
       "result": "passed",
       "summary": "macOSArm64/.NET10.0.11: Resolver114/Dtd81/Encoding81/Entities243/Recovery239 independently compiled public model members; common81 and foundation resource52 preserved. 64 model semantics assertions,11 required compiler failures,1 real metadata mutation detected; M1 models/protocol38/10 negatives/3 ABI mutations/6 encoding vectors,foundation11 and solution801(runtime247/conformance255/differential299) all0fail0skip; actual API222 preserved. Fresh complete reference output pinned: all242 unique record DLL hashes/sourcebuilds and post-test unchanged pinned DLL passed. Planning14/validate110 and committed/working/staged/untracked owned-path/diff audits passed. M2 parser/resource/recovery/legacy decoding behavior not executed or claimed.",
       "artifact": "docs/reports/M2-contracts/final/summary.json"
+    },
+    {
+      "id": "integrated-contracts",
+      "kind": "integration",
+      "revision": "ab2fcabaf3cc984901f484c6fce1069c385e8c2f",
+      "command": "SDK10.0.400 env; python3 -B docs/reports/M2-contracts/verify.py --report-prefix integration --expected-branch codex/integrate-m2-contracts --audit-base b1edd3a569c73bb51bd0d8dcc07977c14bf7a6f7",
+      "result": "passed",
+      "summary": "Independent integrated execution:64 model assertions,11 specific compile failures,1 real metadata mutation detected; five independent model counts114/81/81/243/239; Common81/foundationresource52 preserved. Foundation11/M1 models/protocol38 preserved;801 actual runtime/conformance/differential tests247/255/299 zero failures/skips; API222;242 fresh pinned BCL record hashes/build/unchanged DLL verified; planning14/validation110/owned audits passed. No actual M2 runtime feature or timing claim.",
+      "artifact": "docs/reports/M2-contracts/integration/summary.json"
+    },
+    {
+      "id": "reconciled-planning-ownership",
+      "kind": "integration",
+      "revision": "73fa914edbae4d29d7b5624b238ce6a9f1704234",
+      "command": "planning unittest14; tasks.py validate; committed/staged/working/untracked ownership audit against00bd15d; git diff --check",
+      "result": "passed",
+      "summary": "Sole change after testedab2fcab is planned M2-encoding task ownership metadata; runtime/model/source unchanged verifiedbyexactdiff. New combined planning14/validation110/owned delta checks allpassed at73fa914.",
+      "artifact": "docs/reports/M2-contracts/integration-metadata-checks.txt"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Complete independently compilable M2 XML/resource/recovery/encoding contracts frozen on branch; no runtime/shared-path edits, no stubs packaged. Final source3fb839129af1e7c4352abe28460ee2d8a2421ec3 checked. Await coordinator integration verification.",
+    "summary": "Verified integrated M2 contract freeze; exact independently compiled models, owned resource/DTD/entity/recovery boundaries and additional encoding table; no M2 runtime implementation claim.",
     "checks": [
       "Final verifier exit0 at3fb839129af1e7c4352abe28460ee2d8a2421ec3:64 model assertions/11 compiler rejection probes/API mutation; five independent models and common81/foundation resource52 preserved.",
       "Preserved M1 models/protocol38/foundation11, all801 cumulative(runtime247/conformance255/differential299)0fail0skip and actual API222; pinned fresh runner242 actual record hashes/sourcebuilds/unchanged DLL; planning14/validate110; all owned-path/whitespace audits passed.",
-      "Earlier4d5 NU1900 and dcf fresh-runner rebuild failures preserved as failures with partial actual checks/unrun scope; final corrected engine copy passes."
+      "Earlier4d5 NU1900 and dcf fresh-runner rebuild failures preserved as failures with partial actual checks/unrun scope; final corrected engine copy passes.",
+      "Root integratedab2fcab:64/11/1 models and801tests/API222/provenance242 passed; only plannedmetadata afterward, separatelyvalidated73fa914."
     ],
     "remaining": [
-      "Coordinator must integrate and rerun verifier with --expected-branch <integration branch> --audit-base <pre-integration revision>, then set verified/integration_revision.",
       "No M2 runtime features, full XML corpus conformance, allocation/timing, Windows/x64/AOT behavior demonstrated here; implementing owners and later gates supply those checks."
     ],
     "requests": [

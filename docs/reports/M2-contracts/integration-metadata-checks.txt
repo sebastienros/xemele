@@ -1,0 +1,36 @@
+$ python3 -B -m unittest discover -s tools/planning -p test_tasks.py -v
+test_branch_implementation_does_not_unlock_dependents (test_tasks.TaskTrackingTests.test_branch_implementation_does_not_unlock_dependents) ... ok
+test_cycle_rejected (test_tasks.TaskTrackingTests.test_cycle_rejected) ... ok
+test_gate_cannot_omit_a_task (test_tasks.TaskTrackingTests.test_gate_cannot_omit_a_task) ... ok
+test_initial_readiness (test_tasks.TaskTrackingTests.test_initial_readiness) ... ok
+test_later_milestone_dependency_rejected (test_tasks.TaskTrackingTests.test_later_milestone_dependency_rejected) ... ok
+test_malformed_status_reports_error (test_tasks.TaskTrackingTests.test_malformed_status_reports_error) ... ok
+test_missing_integration_evidence_rejected (test_tasks.TaskTrackingTests.test_missing_integration_evidence_rejected) ... ok
+test_missing_specification_reports_error (test_tasks.TaskTrackingTests.test_missing_specification_reports_error) ... ok
+test_repository_graph_valid (test_tasks.TaskTrackingTests.test_repository_graph_valid) ... ok
+test_similar_prefixes_are_not_ownership_overlap (test_tasks.TaskTrackingTests.test_similar_prefixes_are_not_ownership_overlap) ... ok
+test_started_task_with_unverified_dependency_rejected (test_tasks.TaskTrackingTests.test_started_task_with_unverified_dependency_rejected) ... ok
+test_unordered_path_overlap_rejected_case_insensitively (test_tasks.TaskTrackingTests.test_unordered_path_overlap_rejected_case_insensitively) ... ok
+test_unproven_acceptance_rejected (test_tasks.TaskTrackingTests.test_unproven_acceptance_rejected) ... ok
+test_verified_bootstrap_unlocks_independent_lanes (test_tasks.TaskTrackingTests.test_verified_bootstrap_unlocks_independent_lanes) ... ok
+
+----------------------------------------------------------------------
+Ran 14 tests in 0.035s
+
+OK
+
+Exit:0
+$ python3 tools/planning/tasks.py validate
+Validated 110 tasks: schema, evidence, acyclic dependencies, additive milestones, and ordered ownership.
+
+Exit:0
+$ git diff --check 00bd15d HEAD
+
+Exit:0
+$ git diff --check
+
+Exit:0
+$ git diff --check --cached
+
+Exit:0
+Owned delta audit passed against current coordination00bd15d.
