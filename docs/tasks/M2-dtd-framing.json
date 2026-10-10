@@ -4,14 +4,15 @@
   "milestone": "M2",
   "title": "Incremental external text-declaration framing",
   "kind": "feature",
-  "status": "in_progress",
-  "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M2-dtd-framing",
-  "branch": "codex/m2-dtd-framing",
-  "base_revision": "1a77b3598ed6084b17a69ca562d160f0d64a6be5",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
   "integration_revision": null,
   "depends_on": [
     "M2-contracts",
-    "M2-pi-allocation-probe"
+    "M2-pi-allocation-probe",
+    "M2-tree-allocation-probe"
   ],
   "goals": [
     "G07"
@@ -54,7 +55,8 @@
       "status": "failed",
       "evidence": [
         "initial-committed-checkpoint",
-        "bounded-committed-checkpoint"
+        "bounded-committed-checkpoint",
+        "integrated-tree-allocation-failure"
       ]
     }
   ],
@@ -101,6 +103,15 @@
       "result": "passed",
       "summary": "All1243actual framing tests in preserved direct-run XML have Pass outcomes; the same run failed one unrelated earlier M1 PI allocation assertion, recorded separately and never claimed overallpass. Covers exact grammar/splits/mappings/scalar quotas/lifetime/live-budget/real M1 decoder composition.",
       "artifact": "docs/reports/M2-dtd-framing/bounded-checkpoint/Xemele.Tests.xml.gz"
+    },
+    {
+      "id": "integrated-tree-allocation-failure",
+      "kind": "integration",
+      "revision": "5109fe930fe45f7b485d4ed36c39b9c09b5ba625",
+      "command": "python3 -B docs/reports/M2-dtd-framing/verify.py --report-prefix integration-5109fe9-attempt1 --audit-base d3e4b1a --expected-branch codex/integrate-m2-dtd-framing --expected-runtime-tests 1541 --expected-public-api 251",
+      "result": "failed",
+      "summary": "Known integrated MTP2095/2094pass/1failure unchanged Tree allocation1064B. Model53/sample/allocations/untimed oracles passed; subsequent direct/API/reference/planning final checks unrun. Failure durable d31b5ac branch codex/integrate-m2-dtd-framing; source d77/timing preserved; task waits narrow repair, historical cause unresolved.",
+      "artifact": null
     }
   ],
   "blockers": [],
@@ -117,7 +128,8 @@
       "Coordinator integrate measurement prerequisite repair and reset task dependency/claim, then resume from supplied bounded assignment.",
       "Fresh complete verifier at known repaired source with actual integrated counts; final reference242/planning14/validation112/owned audits.",
       "Exclusive-host benchmark timing with existing MemoryDiagnoser/ShortRunJob classes; no timing grant or measurements yet.",
-      "Integrated verification and Windows/x64/AOT/fullDTDcomposition remain outside this checkpoint."
+      "Integrated verification and Windows/x64/AOT/fullDTDcomposition remain outside this checkpoint.",
+      "Await verified M2-tree-allocation-probe then renew retained d77 framing branch and integrated checks; successful unchanged-source timing requires no rerun."
     ],
     "requests": [
       "Coordinator-owned narrow prerequisite repair in tests/Xemele.Tests/M1-pi-targets/PiTargetTests.cs: isolate measured primitive loop from runner/test-context allocations, retaining exact0B and meaningful progress assertions; no runtime changes or softened threshold. Worker performs no peer edit."

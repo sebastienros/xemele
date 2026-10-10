@@ -7,37 +7,18 @@
     "task_id": "M1-gate",
     "integration_revision": "8c9bd349ed4156ea0295b5160d87d39434293bb2"
   },
-  "active_assignments": [
+  "active_assignments": [],
+  "integration_queue": [
     {
       "task_id": "M2-dtd-framing",
-      "chat_id": "01a1248f-bcb0-70c2-97e1-82986283ae2b",
-      "host_id": "local",
-      "client_thread_id": "client-new-thread:d83226e3-111f-41bb-833c-58e17b5fd98d",
-      "worktree_path": "/Users/sebastienros/.codex/worktrees/c303/xemele",
-      "branch": "codex/m2-dtd-framing",
-      "base_revision": "1a77b3598ed6084b17a69ca562d160f0d64a6be5",
-      "claim_revision": "7034b2769307fbab70ea524ea2a16f5defa8e7d6",
-      "setup_status": "timing-passed-final-handoff-pending",
-      "wait_cursor": "b324cc2e-d523-426b-a8a0-69c58df158d5:34",
-      "parked_ack": "Boundedcheckpoint cea326: MTP2040passed/API222; direct1490 failedunchangedPI712B afterprior1944B. Noheavychildren; committinghonesthandoff for narrowrepairdependency.",
-      "review_revision": "46104cecdce70170aea050612d13a77f1467251a",
-      "preserved_draft_revision": "cea326c7ed59ac53a832af2f8cc4e528a118d89a",
-      "preserved_evidence_revision": "25d879f7db7a02adae2cdc8a2a267ab55c4f13aa",
-      "ownership_ack": "Cleancheckout/own taskJSON untouched/noheavyprocesses; worker expressly relinquished metadata ownership before coordinator dependency/reset.",
-      "claim_history": [
-        {
-          "base_revision": "eef177e8176c87954f0ce2efd8098c3f7dbfbc79",
-          "claim_revision": "2e3d6012e664baf7bf5b3f3085bcb04de7dfc02e",
-          "reason": "Suspended for now verified PI and Streaming isolation prerequisites; originalsource/evidence preserved."
-        }
-      ],
-      "correctness_revision": "dbcd535e80f2da0b808a5d9e40af78fd8e75be19",
-      "review": "Independent renewed discovery-only delta approval; runtime unchanged; full2044 allPass, MTP/direct count correction includes4 low-surrogate cases.",
-      "measurement_revision": "dbcd535e80f2da0b808a5d9e40af78fd8e75be19",
-      "measurement_audit": "14actualcases/42observations/all14childexits0/wrapper0/generatedbuild0/41.914s; allchildrenstopped explicitACK, hostreleased."
+      "status": "failed-awaiting-tree-measurement-prerequisite",
+      "worktree_path": "/private/tmp/xemele-integrate-m2-dtd-framing",
+      "branch": "codex/integrate-m2-dtd-framing",
+      "tested_revision": "5109fe930fe45f7b485d4ed36c39b9c09b5ba625",
+      "preserved_failure_revision": "d31b5ac",
+      "summary": "FullMTP2095/2094pass, unchangedTree1064B failure; following direct/API/ref/audits unrun."
     }
   ],
-  "integration_queue": [],
   "blockers": [],
   "next_actions": [
     "Collect renewed encoding/resolver/framing claim ACKs and fresh bounded correctness evidence",
@@ -1016,7 +997,37 @@
   ],
   "timing_queue": [],
   "metadata_correction": "PI rawAPI report uses inventory.apiDeclarations, not wrapper members. Initialrootmetadata assertion stopped before taskstate writes; d539f13 preserves actualpassing0869bde evidence, separateverifiedmetadata follows.",
-  "suspended_assignments": [],
+  "suspended_assignments": [
+    {
+      "task_id": "M2-dtd-framing",
+      "chat_id": "01a1248f-bcb0-70c2-97e1-82986283ae2b",
+      "host_id": "local",
+      "client_thread_id": "client-new-thread:d83226e3-111f-41bb-833c-58e17b5fd98d",
+      "worktree_path": "/Users/sebastienros/.codex/worktrees/c303/xemele",
+      "branch": "codex/m2-dtd-framing",
+      "base_revision": "1a77b3598ed6084b17a69ca562d160f0d64a6be5",
+      "claim_revision": "7034b2769307fbab70ea524ea2a16f5defa8e7d6",
+      "setup_status": "suspended-awaiting-tree-measurement-prerequisite",
+      "wait_cursor": "b324cc2e-d523-426b-a8a0-69c58df158d5:34",
+      "parked_ack": "Boundedcheckpoint cea326: MTP2040passed/API222; direct1490 failedunchangedPI712B afterprior1944B. Noheavychildren; committinghonesthandoff for narrowrepairdependency.",
+      "review_revision": "46104cecdce70170aea050612d13a77f1467251a",
+      "preserved_draft_revision": "cea326c7ed59ac53a832af2f8cc4e528a118d89a",
+      "preserved_evidence_revision": "25d879f7db7a02adae2cdc8a2a267ab55c4f13aa",
+      "ownership_ack": "Finald77 clean/explicit taskJSON/source ownership released/no further checks or writes.",
+      "claim_history": [
+        {
+          "base_revision": "eef177e8176c87954f0ce2efd8098c3f7dbfbc79",
+          "claim_revision": "2e3d6012e664baf7bf5b3f3085bcb04de7dfc02e",
+          "reason": "Suspended for now verified PI and Streaming isolation prerequisites; originalsource/evidence preserved."
+        }
+      ],
+      "correctness_revision": "dbcd535e80f2da0b808a5d9e40af78fd8e75be19",
+      "review": "Independent renewed discovery-only delta approval; runtime unchanged; full2044 allPass, MTP/direct count correction includes4 low-surrogate cases.",
+      "measurement_revision": "dbcd535e80f2da0b808a5d9e40af78fd8e75be19",
+      "measurement_audit": "14actualcases/42observations/all14childexits0/wrapper0/generatedbuild0/41.914s; allchildrenstopped explicitACK, hostreleased.",
+      "handoff_revision": "d77bcc62595235ecaee4b732a62e605569664348"
+    }
+  ],
   "allocation_research": {
     "issue": "https://github.com/dotnet/runtime/issues/134724",
     "draft_fix": "https://github.com/dotnet/runtime/pull/134855",
