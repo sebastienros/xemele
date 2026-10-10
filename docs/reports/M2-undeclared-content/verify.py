@@ -77,7 +77,7 @@ def main():
                     for match in re.finditer('GetAllocatedBytesForCurrentThread|RunPair\\(',text):
                         methods=list(re.finditer(r'public (?:async )?(?:void|Task|ValueTask) (\w+)\(',text[:match.start()]))
                         if methods: held.add(methods[-1][1])
-                filters=[part for method in sorted(held) for part in ['-notmethod','*.'+method]]
+                filters=[part for method in sorted(held) for part in ['-method-','*.'+method]]
                 summary['heldAllocationMethods']=sorted(held); summary['heldReason']='No standalone allocation/counters before source review and explicit bounded host lease; prior passing unchanged observations are preserved.'
                 tests=ROOT/'tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll'; xml=temporary/'correctness.xml'
                 before={str(p):digest(p) for p in tests.parent.iterdir() if p.is_file()}
