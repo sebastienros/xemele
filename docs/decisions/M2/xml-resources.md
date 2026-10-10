@@ -1,5 +1,11 @@
 # Complete XML/resource freeze
 
+For EntityDeclared validity-only content cases, use the compatible identity,
+borrowed/owned lifetime, pause, DOM provenance and no-success-diagnostic rules in
+[undeclared references](undeclared-references.md). The optional event and proposed
+additive provenance API require ordered implementation; frozen existing models,
+resource denial, required WFC errors and declaration-version rules remain binding.
+
 Owner M2-contracts. Normative executable declarations live only in
 `tests/Contracts/Fixtures/M2/`; independent explicit-source projects live in
 `docs/reports/M2-contracts/Projects/`. They are nonpackaged models. Grammar/core/

@@ -1,0 +1,25 @@
+// Executable contract proposal only. Never included in the product or API baseline.
+namespace Xemele
+{
+    public sealed record XmlUnresolvedReference(string Name, string LexicalReference,
+        XmlLocation Location, XmlNode Parent, XmlNode PreviousSibling, int ChildBoundary, int Sequence);
+    public sealed partial class XmlDocument
+    {
+        public IReadOnlyList<XmlUnresolvedReference> UnresolvedReferences { get; } =
+            Array.AsReadOnly(Array.Empty<XmlUnresolvedReference>());
+    }
+}
+namespace Xemele.Parsing.Syntax
+{
+    internal readonly ref struct XmlUnresolvedReferenceView(ReadOnlySpan<char> name,
+        ReadOnlySpan<char> lexicalReference, Xemele.XmlLocation location)
+    {
+        public ReadOnlySpan<char> Name { get; } = name;
+        public ReadOnlySpan<char> LexicalReference { get; } = lexicalReference;
+        public Xemele.XmlLocation Location { get; } = location;
+    }
+    internal interface IXmlUnresolvedReferenceSink
+    {
+        bool UnresolvedReference(XmlUnresolvedReferenceView reference);
+    }
+}

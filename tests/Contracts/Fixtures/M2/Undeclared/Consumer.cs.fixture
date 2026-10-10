@@ -1,0 +1,189 @@
+// Independently authored consumer and scripted contract model; NO XML parser use.
+using Xemele;
+using Xemele.Parsing.Syntax;
+
+internal static class Consumer
+{
+    private static int assertions;
+    private static void Check(bool condition, string message)
+    {
+        if (!condition) throw new InvalidOperationException(message);
+        assertions++;
+    }
+    internal static bool HasIdentity(XmlUnresolvedReferenceView view) =>
+        IsNCName(view.Name) && view.LexicalReference.Length == view.Name.Length + 2 &&
+        view.LexicalReference[0] == '&' && view.LexicalReference[^1] == ';' &&
+        view.LexicalReference[1..^1].SequenceEqual(view.Name);
+
+    private static bool IsNCName(ReadOnlySpan<char> name)
+    {
+        if (name.IsEmpty) return false;
+        bool first = true;
+        while (!name.IsEmpty)
+        {
+            if (System.Text.Rune.DecodeFromUtf16(name, out var rune, out int consumed) !=
+                System.Buffers.OperationStatus.Done) return false;
+            int c = rune.Value;
+            bool start = c is '_' or >= 'A' and <= 'Z' or >= 'a' and <= 'z' or
+                >= 0xc0 and <= 0xd6 or >= 0xd8 and <= 0xf6 or >= 0xf8 and <= 0x2ff or
+                >= 0x370 and <= 0x37d or >= 0x37f and <= 0x1fff or >= 0x200c and <= 0x200d or
+                >= 0x2070 and <= 0x218f or >= 0x2c00 and <= 0x2fef or >= 0x3001 and <= 0xd7ff or
+                >= 0xf900 and <= 0xfdcf or >= 0xfdf0 and <= 0xfffd or >= 0x10000 and <= 0xeffff;
+            bool continuation = start || c is '-' or '.' or 0xb7 or >= '0' and <= '9' or
+                >= 0x300 and <= 0x36f or >= 0x203f and <= 0x2040;
+            if (first ? !start : !continuation) return false;
+            first = false; name = name[consumed..];
+        }
+        return true;
+    }
+
+    // A projection preflight model, not calls to the product tree/serializer.
+    private static void Project(IReadOnlyList<XmlUnresolvedReference> references, Action sideEffect)
+    {
+        if (references.Count != 0)
+            throw new InvalidOperationException("Document contains unresolved entity references.");
+        sideEffect();
+    }
+
+    public static int Main(string[] args)
+    {
+        try { return Run(args); }
+        catch (InvalidOperationException error) { Console.Error.WriteLine(error.Message); return 1; }
+    }
+    private static int Run(string[] args)
+    {
+        // Inherited exact view ABI compiled from frozen fixtures, not recreated here.
+        var at = new XmlLocation(new Uri("https://model.invalid/entity.xml"), 7, 6, 42);
+        char[] name = "ent2".ToCharArray(), lexical = "&ent2;".ToCharArray();
+        var sink = new RetainingSink();
+        Check(sink is IXmlEventSink, "old interface remains usable");
+        Check(sink.UnresolvedReference(new(name, lexical, at)), "capable callback");
+        Array.Fill(name, 'x'); Array.Fill(lexical, 'x');
+        var owned = sink.Occurrences.Single();
+        Check(owned.Name == "ent2" && owned.LexicalReference == "&ent2;" && owned.Location == at,
+            "owned retention survives borrowed input reuse");
+        Check(owned.ChildBoundary == 0 && owned.Sequence == 0, "initial gap coordinate");
+        foreach (string invalid in new[] { "&wrong;", "ent2", "&ent2", "ent2;", "&ent2;;", "&ENT2;" })
+            Check(!HasIdentity(new("ent2", invalid, at)), "mismatched lexical negative control");
+        Check(!HasIdentity(new("", "&;", at)), "empty identity negative");
+        Check(HasIdentity(new("\U00010000name", "&\U00010000name;", at)), "supplementary identity retained literally");
+        foreach (string invalidName in new[] { "p:name", ":name", "name:", "a::b", "9name", "a b", "a&b", "\ud800", "\udc00", "\U000f0000" })
+            Check(!HasIdentity(new(invalidName, "&" + invalidName + ";", at)), "NCName/profile malformed negative control");
+        foreach (string validName in new[] { "_", "n-1.\u00b7", "n\u0300", "\u0370", "\U000effff" })
+            Check(HasIdentity(new(validName, "&" + validName + ";", at)), "NCName profile valid boundary");
+
+        IXmlEventSink old = new OldSink();
+        Check(old is not IXmlUnresolvedReferenceSink, "old consumer requires no new method");
+        XmlDiagnostic? capability = old is IXmlUnresolvedReferenceSink ? null :
+            new("XML.UnresolvedReferenceSinkRequired", XmlDiagnosticSeverity.Error, "Sink cannot represent reference.", at);
+        Check(capability!.Location == at && capability.Code != "XML.UndeclaredEntity",
+            "capability refusal distinct from WFC");
+        Check(new XmlDocument().UnresolvedReferences.Count == 0, "non-null empty provenance");
+        var readOnly = (IList<XmlUnresolvedReference>)new XmlDocument().UnresolvedReferences;
+        bool immutable = false;
+        try { readOnly.Add(owned); } catch (NotSupportedException) { immutable = true; }
+        Check(immutable, "provenance collection rejects mutation");
+
+        // Scripted events deliberately bypass parsing and node model stubs.
+        var paused = new RetainingSink { PauseOnReference = true };
+        var events = new EventScript(paused, at);
+        Check(!events.Drain(default), "first reference pauses");
+        Check(paused.Trace.SequenceEqual(new[] { "text:a", "reference:x" }), "preceding text finishes first");
+        Check(!events.Drain(default), "consecutive reference pauses");
+        Check(paused.Trace.SequenceEqual(new[] { "text:a", "reference:x", "reference:y" }), "no replay on resume");
+        Check(events.Drain(default), "final remainder drains");
+        Check(paused.Trace.SequenceEqual(new[] { "text:a", "reference:x", "reference:y", "text:b" }), "exact gap order");
+        Check(paused.Occurrences.Select(r => r.ChildBoundary).SequenceEqual(new[] { 1, 1 }), "adjacent references share child gap");
+        Check(paused.Occurrences.Select(r => r.Sequence).SequenceEqual(new[] { 0, 1 }), "global identity sequence");
+        Check(paused.CharacterContent == "ab", "no invented replacement characters");
+        foreach (string operation in new[] { "SerializeString", "SerializeStream", "GetTextContent", "CloneDeep", "CloneShallow", "ImportDeep", "ImportShallow" })
+        {
+            int writes = 0;
+            bool refused = false;
+            try { Project(paused.Occurrences, () => writes++); }
+            catch (InvalidOperationException error)
+            { refused = error.Message == "Document contains unresolved entity references."; }
+            Check(refused && writes == 0, operation + " refuses before output or mutation");
+            Project(Array.Empty<XmlUnresolvedReference>(), () => writes++);
+            Check(writes == 1, operation + " clean-source behavior retained");
+        }
+        var cancelled = new RetainingSink { PauseOnReference = true };
+        var cancellationScript = new EventScript(cancelled, at);
+        Check(!cancellationScript.Drain(default), "pause before cancellation");
+        using var cts = new CancellationTokenSource(); cts.Cancel();
+        bool threw = false;
+        try { cancellationScript.Drain(cts.Token); } catch (OperationCanceledException) { threw = true; }
+        Check(threw && cancelled.Occurrences.Count == 1, "cancelled drain never replays delivered callback");
+        Check(new XmlParseResult<XmlDocument>(new(), true, true, []).Diagnostics.Count == 0,
+            "successful model carries no warning to any-diagnostic factories");
+        assertions += Preservation.Compare(args.Single());
+        Console.WriteLine("RuntimeIdentity:" + System.Text.Json.JsonSerializer.Serialize(new {
+            Version = Environment.Version.ToString(),
+            Framework = System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription,
+            CoreLibrary = typeof(object).Assembly.Location,
+            CoreLibraryVersion = typeof(object).Assembly.GetName().Version!.ToString(),
+            CoreLibraryInformationalVersion = typeof(object).Assembly.GetCustomAttributes(false)
+                .OfType<System.Reflection.AssemblyInformationalVersionAttribute>().Single().InformationalVersion,
+            ProcessArchitecture = System.Runtime.InteropServices.RuntimeInformation.ProcessArchitecture.ToString(),
+            OsArchitecture = System.Runtime.InteropServices.RuntimeInformation.OSArchitecture.ToString()
+        }));
+        Console.WriteLine($"Passed {assertions} contract/model assertions; no XML runtime behavior exercised.");
+        return 0;
+    }
+
+    private sealed class EventScript(RetainingSink sink, XmlLocation at)
+    {
+        private int next;
+        public bool Drain(CancellationToken cancellation)
+        {
+            while (next < 4)
+            {
+                cancellation.ThrowIfCancellationRequested();
+                int delivered = next++;
+                if (delivered == 0 || delivered == 3)
+                {
+                    sink.StartText(XmlTextKind.Text, [], at);
+                    sink.TextFragment(delivered == 0 ? "a" : "b", true, at);
+                }
+                else if (!sink.UnresolvedReference(new(delivered == 1 ? "x" : "y",
+                    delivered == 1 ? "&x;" : "&y;", at))) return false;
+            }
+            return true;
+        }
+    }
+    private sealed class RetainingSink : OldSink, IXmlUnresolvedReferenceSink
+    {
+        public List<XmlUnresolvedReference> Occurrences { get; } = [];
+        public List<string> Trace { get; } = [];
+        public bool PauseOnReference { get; init; }
+        public string CharacterContent { get; private set; } = "";
+        private int completedChildren;
+        public bool UnresolvedReference(XmlUnresolvedReferenceView view)
+        {
+            if (!HasIdentity(view)) throw new ArgumentException("Mismatched identity.");
+            Occurrences.Add(new(view.Name.ToString(), view.LexicalReference.ToString(), view.Location,
+                default, default, completedChildren, Occurrences.Count));
+            Trace.Add("reference:" + view.Name.ToString());
+            return !PauseOnReference;
+        }
+        public override bool TextFragment(ReadOnlySpan<char> text, bool tokenEnded, XmlLocation location)
+        {
+            if (!tokenEnded) throw new ArgumentException("This consumer receives scripted whole tokens only.");
+            Trace.Add("text:" + text.ToString()); CharacterContent += text.ToString(); completedChildren++;
+            return true;
+        }
+    }
+    private class OldSink : IXmlEventSink
+    {
+        public bool StartDocument(XmlLocation location) => true;
+        public bool Declaration(XmlDeclarationView declaration) => true;
+        public bool StartElement(XmlNameView name, bool isEmptyElement, XmlLocation location) => true;
+        public bool NamespaceDeclaration(XmlNamespaceView declaration) => true;
+        public bool Attribute(XmlAttributeView attribute) => true;
+        public bool StartElementContent() => true;
+        public bool EndElement(XmlNameView name, XmlLocation location) => true;
+        public bool StartText(XmlTextKind kind, ReadOnlySpan<char> target, XmlLocation location) => true;
+        public virtual bool TextFragment(ReadOnlySpan<char> text, bool tokenEnded, XmlLocation location) => true;
+        public bool EndDocument(XmlLocation location) => true;
+    }
+}

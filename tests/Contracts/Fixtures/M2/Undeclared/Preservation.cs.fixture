@@ -1,0 +1,45 @@
+using System.Reflection;
+using Xemele.Parsing.Syntax;
+using Xemele.Parsing.Dtd;
+
+internal static class Preservation
+{
+    public static int Compare(string target)
+    {
+        Assembly assembly = Assembly.LoadFrom(target);
+        Type[] frozen = [typeof(XmlDeclarationView), typeof(XmlNameView), typeof(XmlAttributeView),
+            typeof(XmlNamespaceView), typeof(IXmlEventSink), typeof(XmlTextDeclaration), typeof(TextDeclarationResult)];
+        foreach (Type model in frozen)
+        {
+            Type actual = assembly.GetType(model.FullName!, throwOnError: true)!;
+            if (!Shape(model).SequenceEqual(Shape(actual)))
+                throw new InvalidOperationException("Frozen ABI mismatch: " + model.FullName);
+        }
+        Console.WriteLine("Preserved seven frozen internal shapes, including all four event views.");
+        return frozen.Length;
+    }
+    private static string Name(Type type) => type.IsByRef ? Name(type.GetElementType()!) + "&" :
+        type.IsGenericType ? type.GetGenericTypeDefinition().FullName + "<" +
+            string.Join(",", type.GetGenericArguments().Select(Name)) + ">" : type.FullName!;
+    private static string Nullable(NullabilityInfo info) => info.ReadState + "/" + info.WriteState +
+        "[" + string.Join(",", info.GenericTypeArguments.Select(Nullable)) + "]" +
+        (info.ElementType is null ? "" : Nullable(info.ElementType));
+    private static string[] Shape(Type type)
+    {
+        const BindingFlags flags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.DeclaredOnly;
+        var nullable = new NullabilityInfoContext();
+        string Parameters(MethodBase method) => string.Join(",", method.GetParameters().Select(p =>
+            Name(p.ParameterType) + ":" + p.Name + ":" + p.IsIn + ":" + p.IsOut + ":" + p.IsOptional +
+            ":" + Nullable(nullable.Create(p))));
+        var header = "type:" + type.IsValueType + ":" + type.IsInterface + ":" + type.IsSealed + ":" + type.IsByRefLike +
+            ":readonly=" + type.GetCustomAttributesData().Any(a => a.AttributeType.FullName ==
+                "System.Runtime.CompilerServices.IsReadOnlyAttribute");
+        return new[] { header }.Concat(type.GetConstructors(flags).Select(c => "ctor:" + Parameters(c)))
+            .Concat(type.GetMethods(flags).Select(m => "method:" + m.Name + ":" + Parameters(m) + ":" + Name(m.ReturnType) +
+                ":" + m.IsStatic + ":" + m.IsAbstract + ":" + m.IsVirtual + ":" + Nullable(nullable.Create(m.ReturnParameter)) +
+                ":" + string.Join(",", m.ReturnParameter.GetRequiredCustomModifiers().Select(Name))))
+            .Concat(type.GetProperties(flags).Select(p => "property:" + p.Name + ":" + Name(p.PropertyType) +
+                ":" + p.CanRead + ":" + p.CanWrite + ":" + Nullable(nullable.Create(p))))
+            .Order(StringComparer.Ordinal).ToArray();
+    }
+}

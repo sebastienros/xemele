@@ -1,5 +1,11 @@
 # Input and parser contracts — M1
 
+The additive nonvalidating unresolved-content-reference contract is frozen in
+[M2 undeclared references](../decisions/M2/undeclared-references.md). It preserves
+the existing sink/views and distinguishes VC-only identity provenance from
+replacement character events and terminal diagnostics. This is a contract for
+an ordered implementation, not evidence of shipped support.
+
 Owner M1-contracts. Exact internal declarations are
 [Input.cs.fixture](../../tests/Contracts/Fixtures/M1/Input.cs.fixture) and
 [Syntax.cs.fixture](../../tests/Contracts/Fixtures/M1/Syntax.cs.fixture).
