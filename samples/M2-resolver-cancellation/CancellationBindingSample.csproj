@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><OutputType>Exe</OutputType><AssemblyName>Xemele.ResolverSample</AssemblyName></PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../src/Xemele/Xemele.csproj" Condition="'$(UsePackage)' != 'true'" />
+    <PackageReference Include="Xemele" Version="1.0.0" Condition="'$(UsePackage)' == 'true'" />
+  </ItemGroup>
+</Project>

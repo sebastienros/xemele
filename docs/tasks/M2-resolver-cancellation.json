@@ -1,0 +1,204 @@
+{
+  "schema_version": 1,
+  "id": "M2-resolver-cancellation",
+  "milestone": "M2",
+  "title": "Per-call cancellation binding for persistent resource sessions",
+  "kind": "feature",
+  "status": "verified",
+  "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/M2-resolver-cancellation",
+  "branch": "codex/m2-resolver-cancellation",
+  "base_revision": "c0cb286e3e49aff00ccdeafad640bab89060ddbe",
+  "integration_revision": "cc4770bfc417dd81ea1744a54b477134a4f7e997",
+  "depends_on": [
+    "M2-resolver"
+  ],
+  "goals": [
+    "G09"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/integration.md"
+  ],
+  "owns": [
+    "src/Xemele/Resolution/Core/XmlResolutionSession.cs",
+    "tests/Xemele.Tests/M2-resolver-cancellation/",
+    "benchmarks/Xemele.Benchmarks/M2-resolver-cancellation/",
+    "samples/M2-resolver-cancellation/",
+    "docs/reports/M2-resolver-cancellation/",
+    "docs/decisions/M2/resolver-cancellation.md"
+  ],
+  "api_or_output": "Nonpublic BindCancellationToken(CancellationToken token) preserving existing resolver session methods and public APIs",
+  "acceptance": [
+    {
+      "id": "M2-resolver-cancellation-A1",
+      "description": "Add exact per-call cancellation binding to an idle persistent resolution session; preserve constructor behavior, independent budget cancellation, all counters/handles/active URI keys and public APIs. Reject busy/reentrant/disposed/faulted binding; canceled binding faults and drains while preserving original exception/token.",
+      "status": "passed",
+      "evidence": [
+        "cumulative-source-0d",
+        "scoped-discovery-489",
+        "independent-runtime-review",
+        "integrated-cc4770b"
+      ]
+    },
+    {
+      "id": "M2-resolver-cancellation-A2",
+      "description": "Actual sync/async tests prove exact tokenB reaches resolver/async stream after tokenA, cancellation and primary exception preservation with all accepted resources disposed once, paused/resumed session state retains aggregate quotas/cycles/parent handles; old constructor-token behavior remains passing.",
+      "status": "passed",
+      "evidence": [
+        "cumulative-source-0d",
+        "scoped-discovery-489",
+        "independent-runtime-review",
+        "integrated-cc4770b"
+      ]
+    },
+    {
+      "id": "M2-resolver-cancellation-A3",
+      "description": "Demonstrate corrected session boundary using only verified dependencies, compiled internal-hook inventory and unchanged public API, meaningful allocation/performance evidence for successful binding, complete cumulative predecessor/provenance/package/planning checks at known source; no core consumer implementation claim.",
+      "status": "passed",
+      "evidence": [
+        "cumulative-source-0d",
+        "scoped-oracles-d44",
+        "scoped-discovery-489",
+        "exclusive-allocation-d44",
+        "exclusive-bdn-489",
+        "integrated-cc4770b"
+      ]
+    }
+  ],
+  "implementation": [
+    "src/Xemele/Resolution/Core/XmlResolutionSession.cs: BindCancellationToken stores exact caller token inside existing sequential guard, preserves independently canceled budget and drains faults without replacing primary exception",
+    "tests/Xemele.Tests/M2-resolver-cancellation/CancellationBindingTests.cs:18 actual sync/async/suspended resolver+stream, cancellation, busy/reentrant, metadata/state, quotas/cycles/terminal and cleanup cases",
+    "samples/M2-resolver-cancellation/: independently compiled exact internal-hook inventory with positive model/four access-default-name compiled mutations, paused parent/tokenB and source+freshlocalnupkg consumer",
+    "benchmarks/Xemele.Benchmarks/M2-resolver-cancellation/: authored ShortRunJob/MemoryDiagnoser3cases, exact/alternating-token all-method oracles in both main+standalone assemblies, owned generated-output isolation",
+    "docs/decisions/M2/resolver-cancellation.md; docs/reports/M2-resolver-cancellation/: frozen hook, cumulative/source/package/provenance, exclusive allocation/timing and honest retained failures"
+  ],
+  "evidence": [
+    {
+      "id": "preparation-analyzer-failure",
+      "kind": "check",
+      "revision": "55c1c47b9f29f4f7c53ceb842b19c2f96419b1d8",
+      "command": "PinnedSDK; dotnet build tests/Xemele.Tests/Xemele.Tests.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false",
+      "result": "failed",
+      "summary": "Uncommitted preparation over claim55c1:10 xUnit1051 errors; corrected nonvarying calls to use TestContext token before source0d checkpoint. Subsequent preparation build0warnings/errors, not executable acceptance.",
+      "artifact": "docs/reports/M2-resolver-cancellation/preparation/build-attempt1.log"
+    },
+    {
+      "id": "cumulative-source-0d",
+      "kind": "check",
+      "revision": "0d059c8f21b491e0c75994bbf13c991f9c6899b0",
+      "command": "PinnedSDK; python3 -B docs/reports/M2-resolver-cancellation/verify.py --report-prefix source-attempt1",
+      "result": "passed",
+      "summary": "FullMTP and direct5068=4514runtime+255conformance+299differential all0fail/skip/errors/notrun;18binding+43predecessor focused. API272, registry3388, independentResolver114/filter29, M1 models/compiler/ABI/protocol/foundation11 preserved. FreshcompleteBCL242 pinned before inheritedbuild/full0dsource/hash unchanged:239matches+3documenteddivergences. Source/freshlocalnupkg/internalinventory;main+standalone build/discovery;planning14/validate123/allownership+diff. Later scoped improvements leave runtime/tests unchanged.",
+      "artifact": "docs/reports/M2-resolver-cancellation/source-attempt1/summary.json"
+    },
+    {
+      "id": "independent-runtime-review",
+      "kind": "review",
+      "revision": "0d059c8f21b491e0c75994bbf13c991f9c6899b0",
+      "command": "Coordinator communicated independent foundation+API scoped source approval",
+      "result": "passed",
+      "summary": "Exact token store/Enter before mutation/drain/shared state and meaningful18tests approved. Executable acceptance recorded separately; requested inventory/benchmark oracle strengthening completed in later source.",
+      "artifact": "docs/reports/M2-resolver-cancellation/source-attempt1/summary.json"
+    },
+    {
+      "id": "scoped-output-collision",
+      "kind": "check",
+      "revision": "a70c590851b70b82539e553bd5ffedd9913c6ba5",
+      "command": "PinnedSDK; python3 -B docs/reports/M2-resolver-cancellation/scoped.py --report-prefix review-scoped-attempt1",
+      "result": "failed",
+      "summary": "18focused/source+package/compiledmetadata controls passed, then parentbenchmark rebuild failed8duplicate assembly attributes from nested generatedobj. Fixed only owned standalone props to move outputs into ignored artifacts; retained failure.",
+      "artifact": "docs/reports/M2-resolver-cancellation/review-scoped-attempt1/summary.json"
+    },
+    {
+      "id": "scoped-oracles-d44",
+      "kind": "check",
+      "revision": "d44c269a2391b680df6439eba36273dc6b5d6759",
+      "command": "PinnedSDK; python3 -B docs/reports/M2-resolver-cancellation/scoped.py --report-prefix review-scoped-attempt2",
+      "result": "passed",
+      "summary": "18focused;source+freshnupkg exactfullrevision, compiled positive+four access/default/name mutations;source/binary identities unchanged. Main+standalone all3method+two alternation-state oracles/listings, parent rebuild after standalone isolation, allbuilds0warnings/errors, validate123. No measurement in this check.",
+      "artifact": "docs/reports/M2-resolver-cancellation/review-scoped-attempt2/summary.json"
+    },
+    {
+      "id": "exclusive-allocation-d44",
+      "kind": "check",
+      "revision": "d44c269a2391b680df6439eba36273dc6b5d6759",
+      "command": "PinnedSDK; python3 -B docs/reports/M2-resolver-cancellation/scoped.py --report-prefix exclusive-allocation-d44 --allocation-grant m2-resolver-cancellation-d44-exclusive-20261010",
+      "result": "passed",
+      "summary": "Explicit exclusive grant; single actualexit0 invocation:100000warmborrowedbindings0B,1000escapedpositive allocations56000B,100000borrowedguard0B. Exactsource/runtime10.0.11/sampleSHA/source+binary before-after identities preserved. Setup/errors/async/retention excluded; no allocation rerun.",
+      "artifact": "docs/reports/M2-resolver-cancellation/exclusive-allocation-d44/summary.json"
+    },
+    {
+      "id": "exclusive-bdn-generator-failure",
+      "kind": "check",
+      "revision": "d44c269a2391b680df6439eba36273dc6b5d6759",
+      "command": "PinnedSDK; dotnet artifacts/M2-resolver-cancellation/standalone-bin/Release/net10.0/Xemele.ResolverSample.dll --filter '*CancellationBindingBenchmarks*' --artifacts artifacts/M2-resolver-cancellation/exclusive-bdn",
+      "result": "failed",
+      "summary": "Parentexit0 but semantic generator failure:two matching sample/benchmark project filenames;0builds/0children/0measurements. Host released; no rerun under first grant. Pinned official BDN source showed ancestor solution-root discovery invalidates cwd-only fix. Scoped sampleproject rename100%contents unchanged fixed filename collision.",
+      "artifact": "docs/reports/M2-resolver-cancellation/exclusive-bdn-attempt1/summary.json"
+    },
+    {
+      "id": "scoped-discovery-489",
+      "kind": "check",
+      "revision": "489fdfbb1881b873f67e67772f1b886c771d803c",
+      "command": "PinnedSDK; python3 -B docs/reports/M2-resolver-cancellation/scoped.py --report-prefix discovery-corrected-attempt1",
+      "result": "passed",
+      "summary": "18focused and source/freshlocalnupkg/fullrevision/compiler inventory+4mutations, bothmain+standalone all-method oracles/listings, allbuilds0warnings/errors, validate123/source identities. One matching projectfile repository-wide. Runtime/tests/entire benchmark source unchanged vsd44; allocation mode unchanged, success not repeated.",
+      "artifact": "docs/reports/M2-resolver-cancellation/discovery-corrected-attempt1/summary.json"
+    },
+    {
+      "id": "exclusive-bdn-489",
+      "kind": "check",
+      "revision": "489fdfbb1881b873f67e67772f1b886c771d803c",
+      "command": "PinnedSDK; exact standaloneproject cwd; dotnet /Users/sebastienros/.codex/worktrees/e1d1/xemele/artifacts/M2-resolver-cancellation/standalone-bin/Release/net10.0/Xemele.ResolverSample.dll --filter '*CancellationBindingBenchmarks*' --artifacts /Users/sebastienros/.codex/worktrees/e1d1/xemele/artifacts/M2-resolver-cancellation/exclusive-bdn-corrected",
+      "result": "passed",
+      "summary": "Renewed explicit BDN-only exclusive grant;single invocation,parent/restore/build/3children exit0,3cases/9Actual+9Result+3zeroGC records. All0B managed allocation;exactbinding0.7157ns/alternating1.8642ns provisional Arm64 short-run observations. Direct actual~0.91ns below harness overhead yields0adjusted/unresolved ratios; no zero-time/speedup claim. Ordinary priority after3permission warnings; no otherplatform/composition/retention/suspendedIO claim. BinarySHA unchanged726bf8...; host release before packaging.",
+      "artifact": "docs/reports/M2-resolver-cancellation/exclusive-bdn-489/summary.json"
+    },
+    {
+      "id": "final-audit-whitespace-failure",
+      "kind": "check",
+      "revision": "489fdfbb1881b873f67e67772f1b886c771d803c",
+      "command": "Claim-relative ownership and git diff --check final audit",
+      "result": "failed",
+      "summary": "Ownership passed but final diff check rejected generated BDN Markdown trailing spaces before audit completion. Shell continued to evidence commit c2de; no audit passing record claimed. Original raw Markdown retained compressed, display copies normalized; corrective final audit follows.",
+      "artifact": "docs/reports/M2-resolver-cancellation/final-audit/attempt1-failure.json"
+    },
+    {
+      "id": "final-owned-audit",
+      "kind": "check",
+      "revision": "47f6f43e37f14fba4374d1bbca7d5546739709a8",
+      "command": "git committed/working/staged/untracked path audit against claim55c1; git diff --check for all states; python3 -B tools/planning/tasks.py validate",
+      "result": "passed",
+      "summary": "All changed paths belong to this task; implemented metadata validates123; all diff checks passed after raw-preserving export whitespace repair. Runtime/tests unchanged from full-passing0d; benchmark source unchanged from measured d44/489. Integration remains coordinator work.",
+      "artifact": "docs/reports/M2-resolver-cancellation/final-audit/summary.json"
+    },
+    {
+      "id": "integrated-cc4770b",
+      "kind": "integration",
+      "revision": "cc4770bfc417dd81ea1744a54b477134a4f7e997",
+      "command": "PinnedSDK10.0.400/runtime10.0.11; python3 -B docs/reports/M2-resolver-cancellation/verify.py --report-prefix integration-attempt1 --audit-base beed577d0b3fe6340acc8ad295bedca72ef02c88 --expected-branch codex/integrate-m2-resolver-cancellation",
+      "result": "passed",
+      "summary": "Current-main combination actual5068MTP/direct4514+255+299 allzeroerror/fail/skip/notrun; focused18binding+43resolver; API272/independentResolver114/filter29/registry3388; compiledhookmandatorymetadata+fournegativecontrols; source and freshlocalnupkg exactfullrevision; freshcompleteBCL242/239match+3ledgerdivergences/fullsource/hash/entire7filepinnedoutputunchanged; source10ownedbeforeafter+independent103trackedcompiledfileidentities/actualXML inspected; main+standalonebuild/oracles/discovery; planning14/graph123/allownership+diffchecks. Reviewedruntime0d and measuredbench489 byte-identical; single0Ballocationwith56000Bpositive and9actual9result3children retained withoutrepeating. No fullcoreconsumer or otherplatform/performance release claim.",
+      "artifact": "docs/reports/M2-resolver-cancellation/integration-attempt1/summary.json"
+    }
+  ],
+  "blockers": [],
+  "handoff": {
+    "summary": "Verified exact per-call cancellation binding on integrated current-main cc4770b; complete checks preserved. Core consumer must bind existing session per Append before pending work; own runtime/tests and prior measured semantics retained.",
+    "checks": [
+      "Full5068MTP/direct4514+255+299,18focused+43predecessor/API272/registry3388/freshBCL242239match+3documented/fullrevision/hash/source+package/M1compiledmodels/planning14/123 passed at0d.",
+      "Reviewed scoped source/package/compiler metadata controls/main+standalone fullmethod oracles/discovery and identities passed at489;runtime/tests/benchmethods unchanged.",
+      "Single exclusive allocation at d44: 100,000 warmed bindings = 0 B; 1,000 escaped controls = 56,000 B; 100,000 binding guards = 0 B. One successful BDN at 489: 3 cases, 9 actual/9 result observations, 3 zero-GC records and child exits 0; all 0 B. Baseline overhead, ordinary priority and Arm64 short-run limitations retained.",
+      "Preparation analyzers, nested-generated-output build failure and first BDN zero-case generator failure retained;no successful allocation/timing repetition.",
+      "Final claim-relative committed/staged/working/untracked ownership and all diff audits passed after preserving raw exports and fixing generated Markdown whitespace. Planning validates123 implemented records; earlier audit failure retained.",
+      "Integratedcc4770b firstactualfull5068/API272/ref242/package/methodoracles/planning14graph123/sourceidentities+ownership passed; independentXML4514/255/299/18 and7fileBCL rehash match."
+    ],
+    "remaining": [
+      "Consumer owner binds existing session once per Append after assigning activeCancellation and before pending resource work; new sessions receive current token through constructor. No consumer work in this branch.",
+      "Other-platform and actual consumer composition performance belong later owning tasks;binding benchmarks cover only warm successful sequential calls."
+    ],
+    "requests": [
+      "Existing independently captured OperationBudget cancellation remains unchanged. Consumer must preserve that budget and pass exact per-call token through hook; no stable CTS/token-identity bridge."
+    ]
+  }
+}

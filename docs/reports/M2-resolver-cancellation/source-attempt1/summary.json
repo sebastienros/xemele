@@ -1,0 +1,84 @@
+{
+  "result": "passed",
+  "host": "macOS-15.8.1-arm64-arm-64bit-Mach-O",
+  "architecture": "arm64",
+  "auditBase": "55c1c47b9f29f4f7c53ceb842b19c2f96419b1d8",
+  "sourceRevision": "0d059c8f21b491e0c75994bbf13c991f9c6899b0",
+  "branch": "codex/m2-resolver-cancellation",
+  "discovery": {
+    "apiDeclarations": 272,
+    "apiFragments": [
+      "docs/api/M1-common.txt",
+      "docs/api/M1-dom.txt",
+      "docs/api/M1-serialize.txt",
+      "docs/api/M1-tree.txt",
+      "docs/api/M2-entities-foundation.txt",
+      "docs/api/M2-resolver.txt"
+    ],
+    "bootstrapEmptyApi": false,
+    "corpusManifests": [
+      "tests/corpora/bootstrap/manifest.json",
+      "tests/corpora/xml/manifest.json"
+    ],
+    "fixtures": 3388,
+    "formatVersion": 1
+  },
+  "independentModelMembers": 114,
+  "actualAdditiveResolverMembers": 29,
+  "deferredModelMembers": "XmlDtdProcessing4 belongs to M2-entities; common81 already shipped",
+  "actualRuntimeMembers": 272,
+  "bindingTests": 18,
+  "runtimeTests": {
+    "Xemele.Tests": {
+      "total": 4514,
+      "failed": 0,
+      "skipped": 0
+    },
+    "Xemele.Conformance.Tests": {
+      "total": 255,
+      "failed": 0,
+      "skipped": 0
+    },
+    "Xemele.Differential.Tests": {
+      "total": 299,
+      "failed": 0,
+      "skipped": 0
+    }
+  },
+  "resolverTests": 43,
+  "referenceProvenance": {
+    "records": 242,
+    "matches": 239,
+    "documentedDivergences": 3,
+    "runnerSha256": "d39cf10528e566aebe1783a42210508bd0b9eba2d336687a1c9d90aba0efaf47",
+    "sourceBuild": "1.0.0+0d059c8f21b491e0c75994bbf13c991f9c6899b0",
+    "pinnedOutput": "/Users/sebastienros/.codex/worktrees/e1d1/xemele/artifacts/M2-resolver-cancellation/source-attempt1/pinned-reference/BclReference.dll",
+    "sdk": "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+    "sdkSha256": "e86deb33d0dacad9cc1224466df6418149cb8e13cb8afd0dc6815ea6b7807975"
+  },
+  "compiledInternalHook": "internal void Xemele.Resolution.Core.XmlResolutionSession.BindCancellationToken(System.Threading.CancellationToken token)",
+  "packageSha256": "6b9b9a0a90457244004b938e0bcfe3cc7c95fd0c28b2c1d03fa26805a64c3521",
+  "packageConsumer": "passed exact independently compiled internal hook/token B/paused parent and M1 parse from freshly built local nupkg",
+  "benchmarks": "main and standalone built/discovered; standalone correctness oracle passed; timing/allocation mode held for exclusive grant",
+  "ownedPaths": [
+    "benchmarks/Xemele.Benchmarks/M2-resolver-cancellation/CancellationBindingBenchmarks.cs",
+    "benchmarks/Xemele.Benchmarks/M2-resolver-cancellation/Program.cs",
+    "benchmarks/Xemele.Benchmarks/M2-resolver-cancellation/Xemele.ResolverSample.csproj",
+    "docs/decisions/M2/resolver-cancellation.md",
+    "docs/reports/M2-resolver-cancellation/README.md",
+    "docs/reports/M2-resolver-cancellation/preparation/build-attempt1.log",
+    "docs/reports/M2-resolver-cancellation/source-attempt1/Xemele.Conformance.Tests.xml.gz",
+    "docs/reports/M2-resolver-cancellation/source-attempt1/Xemele.Differential.Tests.xml.gz",
+    "docs/reports/M2-resolver-cancellation/source-attempt1/Xemele.Tests.xml.gz",
+    "docs/reports/M2-resolver-cancellation/source-attempt1/binding.xml.gz",
+    "docs/reports/M2-resolver-cancellation/source-attempt1/inventory.txt",
+    "docs/reports/M2-resolver-cancellation/source-attempt1/reference-provenance.json",
+    "docs/reports/M2-resolver-cancellation/source-attempt1/runtime-api.json",
+    "docs/reports/M2-resolver-cancellation/verify.py",
+    "samples/M2-resolver-cancellation/Program.cs",
+    "samples/M2-resolver-cancellation/Xemele.ResolverSample.csproj",
+    "src/Xemele/Resolution/Core/XmlResolutionSession.cs",
+    "tests/Xemele.Tests/M2-resolver-cancellation/CancellationBindingTests.cs"
+  ],
+  "limitations": "macOSArm64 only; no core consumer implementation; no new allocation/timing mode in this check; existing guarded allocation regressions remain part of inherited full correctness suites"
+}
