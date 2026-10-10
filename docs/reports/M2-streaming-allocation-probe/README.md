@@ -136,3 +136,32 @@ a production repair request or a new correction. A coordinator-approved next
 experiment should target the preserved failing integration context with bounded
 allocation stack attribution, acknowledging small allocation sampling limits.
 The task remainsin_progress withA2failed; parent jointallPass remainsrequired.
+
+## Package-free allocation-counter controls (source before execution)
+
+The coordinator supplied [runtime issue134724](https://github.com/dotnet/runtime/issues/134724)
+and [draftfix134855](https://github.com/dotnet/runtime/pull/134855). Read on2026-10-10:
+the issue demonstrates positive empty-interval deltas during a bounded GC worker;
+the draft PR describes allocation-context accounting and has an approval, but
+remains unmerged. These sources guide the control, not an attribution of224B/3448B.
+
+`CounterControl/` has no package or project references and empty local
+Directory.Build imports. One .NET10.0.11 Release process runs32 baseline pairs
+and192 pressure pairs. ZeroWork is NoInlining, only two counter reads and
+SpinWait100000. PositiveWork allocates escapedbyte[37] (64B expected) and uses
+the same spin. Storage/output/reflection remain outside counters. A separate
+worker retains under28MiBlive, caps512 allocation/collection requests, and has
+startup/shutdown5s and overall20s deadlines. Nonblocking generation2 requests
+are explicit diagnostic pressure, not changed GC settings. Background memory
+info indices outside intervals establish whether an actual background collection
+was observed. Raw arrays, counts, IL and exact exit code are retained; an anomaly
+returns1, baseline/controlerror2, workererror3. No subtraction or selected retries.
+
+If this pinned runtime reproduces a counter anomaly with meaningful positive
+controls and actual background collections, the next proposal may isolate the
+whole unchanged synchronous primitive in a filtered standalone child process.
+That is conditional and not yet implemented. Any such proposal must preserve
+100warm/10000measured/exact0B/defaults/provenance, validate a same-workload escaped
+sink-allocation positive child, and fail parent checks for child allocation,
+crash, timeout or absent/malformed output. Historical in-process failures remain
+unresolved, with no concurrent allocation guarantee.
