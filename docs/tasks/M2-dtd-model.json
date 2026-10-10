@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "id": "M2-dtd-model",
+  "milestone": "M2",
+  "title": "Immutable DTD declarations and particle model",
+  "kind": "feature",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "depends_on": [
+    "M2-contracts"
+  ],
+  "goals": [
+    "G07"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/parser.md"
+  ],
+  "owns": [
+    "src/Xemele/Parsing/Dtd/Model/",
+    "tests/Xemele.Tests/M2-dtd-model/",
+    "tests/fixtures/M2-dtd-model/",
+    "samples/M2-dtd-model/",
+    "docs/reports/M2-dtd-model/"
+  ],
+  "api_or_output": "Complete common-only internal immutable DtdModel/declaration/particle types and enums; no parser/resolver/framer dependency or public additions.",
+  "acceptance": [
+    {
+      "id": "M2-dtd-model-A1",
+      "description": "Implement exactly approved DtdSubsetKind/DtdAttributeType/DtdDefaultKind/DtdParticleKind/DtdOccurrence,DtdParticle,DtdElementDeclaration,DtdAttributeDeclaration,DtdEntityDeclaration,DtdNotationDeclaration,DtdModel from verifiedfixture; recursivelyimmutable particle children and ordered read-only owned snapshots for all lists/tokens, retained strings/default/entity distinctions/source origins/nullability. Constructor persistence only; grammar owns first-declaration precedence and normalization, no parsing/stubs/futuredependency/global interning.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M2-dtd-model-A2",
+      "description": "Independent compiled approved model inventory matches actual exact types/members/nullability/enums; tests prove source-enumerable mutation cannot alter snapshots, one-shot enumeration/empty/nested particles/ordered declarations/separate entity tables/token sets/default/origin/locations and required null collections; common-only compilation/sample works without parser/framer/resolver. Record honest setup/persistence allocation/retained-lifetime evidence, no borrowed data hidden. Preserve cumulative integrated behavior, API251/discovery3388/fresh242pinned fullsource/hash references, planning14/validate118/ownedpaths.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "Extracted independent immutable model boundary from unclaimed M2-dtd-grammar. Original grammar acceptance preserved and now depends on this child; only verified M2 common/contracts required.",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}
