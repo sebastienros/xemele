@@ -67,12 +67,34 @@ public class StandaloneGrammarBenchmarks
             document.Dtd is not { } model || model.Elements.Count != 2 || model.GeneralEntities.Count != 2 || model.Attributes.Count != 0 ||
             model.ParameterEntities.Count != 0 || model.Notations.Count != 0 || resolver.Opens != opens + 1 || resolver.Disposals != closes + 1)
             throw new Exception("Complete authored DTD/resource oracle.");
+        RequireParticles(model.Elements[0].Content, model.Elements[1].Content);
+        RejectWrongParticles(new(DtdParticleKind.Sequence, null, DtdOccurrence.Once, model.Elements[0].Content.Children), model.Elements[1].Content);
+        RejectWrongParticles(new(DtdParticleKind.Sequence, null, DtdOccurrence.ZeroOrMore,
+            [new(DtdParticleKind.Name, "other", DtdOccurrence.Once, [])]), model.Elements[1].Content);
+        foreach (var entity in model.GeneralEntities)
+            if (entity.IsParameter || entity.IsExternal || entity.SystemId is not null || entity.PublicId is not null || entity.NotationName is not null)
+                throw new Exception("Complete authored internal parsed entity fields oracle.");
         if (model.Elements[0].Name != "r" || !model.Elements[0].IsExternal || model.Elements[0].Content.Kind != DtdParticleKind.Sequence ||
             model.Elements[1].Name != "child" || !model.Elements[1].IsExternal || model.Elements[1].Content.Kind != DtdParticleKind.Mixed ||
             model.GeneralEntities[0].Name != "reference" || model.GeneralEntities[0].ReplacementText != "&#32;" || model.GeneralEntities[0].IsExternal ||
             model.GeneralEntities[1].Name != "cdata" || model.GeneralEntities[1].ReplacementText != "<![CDATA[ ]]>" || model.GeneralEntities[1].IsExternal)
             throw new Exception("Authored declaration values/origin oracle.");
         if (Environment.GetCommandLineArgs().Contains("--allocation")) BorrowedAllocation();
+    }
+    private const string ParticleFailure = "Complete authored content particle oracle.";
+    private static void RequireParticles(DtdParticle root, DtdParticle child)
+    {
+        if (root.Kind != DtdParticleKind.Sequence || root.Name is not null || root.Occurrence != DtdOccurrence.ZeroOrMore ||
+            root.Children.Count != 1 || root.Children[0].Kind != DtdParticleKind.Name || root.Children[0].Name != "child" ||
+            root.Children[0].Occurrence != DtdOccurrence.Once || root.Children[0].Children.Count != 0 ||
+            child.Kind != DtdParticleKind.Mixed || child.Name is not null || child.Occurrence != DtdOccurrence.Once || child.Children.Count != 0)
+            throw new InvalidOperationException(ParticleFailure);
+    }
+    private static void RejectWrongParticles(DtdParticle root, DtdParticle child)
+    {
+        try { RequireParticles(root, child); }
+        catch (InvalidOperationException error) when (error.Message == ParticleFailure) { return; }
+        throw new Exception("Wrong occurrence/child-name negative control escaped the authored oracle.");
     }
     private void BorrowedAllocation()
     {
@@ -115,12 +137,16 @@ public class StandaloneGrammarBenchmarks
     private sealed class Offline : XmlResourceResolver
     {
         internal int Opens, Disposals;
+        // Immutable input/identity fixture construction belongs to setup. Each
+        // timed acquisition owns only its read-only wrapper and resource handle.
+        private readonly byte[] bytes = Encoding.UTF8.GetBytes(Subset);
+        private readonly Uri expected = new("urn:grammar:subset"), final = new("https://offline.invalid/grammar.dtd");
         public override XmlResolvedResource? Resolve(XmlResourceRequest request, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            if (request.Uri != new Uri("urn:grammar:subset") || request.SystemId != "urn:grammar:subset" || request.Kind != XmlResourceKind.ExternalSubset)
+            if (request.Uri != expected || request.SystemId != "urn:grammar:subset" || request.Kind != XmlResourceKind.ExternalSubset)
                 throw new Exception("Explicit resource grant.");
-            Opens++; return new(new Tracked(Encoding.UTF8.GetBytes(Subset), this), new Uri("https://offline.invalid/grammar.dtd"));
+            Opens++; return new(new Tracked(bytes, this), final);
         }
         private sealed class Tracked(byte[] bytes, Offline owner) : MemoryStream(bytes, false)
         { protected override void Dispose(bool disposing) { if (disposing) owner.Disposals++; base.Dispose(disposing); } }
