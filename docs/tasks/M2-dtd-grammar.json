@@ -4,11 +4,11 @@
   "milestone": "M2",
   "title": "Incremental DTD grammar and immutable declarations",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/M2-dtd-grammar",
   "branch": "codex/m2-dtd-grammar",
   "base_revision": "ceea84b626686d35bf418d47ce20e731be3d614c",
-  "integration_revision": null,
+  "integration_revision": "022bc0f2d049d07d258a7a388ad37f0b7573e405",
   "depends_on": [
     "M2-contracts",
     "M2-dtd-framing",
@@ -38,7 +38,8 @@
       "status": "passed",
       "evidence": [
         "join-combined-checks",
-        "join-source-review"
+        "join-source-review",
+        "integrated-022bc0f"
       ]
     },
     {
@@ -47,7 +48,8 @@
       "status": "passed",
       "evidence": [
         "join-combined-checks",
-        "join-source-review"
+        "join-source-review",
+        "integrated-022bc0f"
       ]
     },
     {
@@ -59,7 +61,8 @@
         "join-source-review",
         "join-oracle-refresh",
         "join-exclusive-timing",
-        "join-final-handoff-audit"
+        "join-final-handoff-audit",
+        "integrated-022bc0f"
       ]
     }
   ],
@@ -152,6 +155,15 @@
       "result": "passed",
       "summary": "Committed evidence/task tree clean and implemented/allA1-A3passed/integrationnull; base/allfive verified integration revisions ancestors. Claim..HEAD/staged/working diff checks and every changed path/display whitespace pass; no outside paths. Runtime/test/timed composition bytes unchanged from successful5215; committed raw archive SHA matches exact original067634a9...e8545. Planning validates120 tasks. Explicit release of all five owned subtrees plus own task JSON; no recursive workers or active scoped heavy children.",
       "artifact": "docs/reports/M2-dtd-grammar/final-audit-58155d4/summary.json"
+    },
+    {
+      "id": "integrated-022bc0f",
+      "kind": "integration",
+      "revision": "022bc0f2d049d07d258a7a388ad37f0b7573e405",
+      "command": "python3 -B docs/reports/M2-dtd-grammar/verify.py --report-prefix integration-attempt1 --audit-base c192f1bd5af512763fa3b7be4ff27d9bad35f1cc --expected-branch codex/integrate-m2-dtd-grammar",
+      "result": "passed",
+      "summary": "Actual known merge: focused19; cumulative MTP/direct/discovery5014=4460+255+299 allPass/noSkip; independently compiled approved API20+nullable mutation/public251/registry3388; fresh copied BCL242 full current revision/hash unchanged; planning14/validate120, owns and whitespace. Independent actualXML/source identity/raw SHA audit confirms all outcomes, no retiming. Cold18272B/owned16440.48B per composition, retained estimate315472B/100 includes boxed holders+array. Previous failures preserved.",
+      "artifact": "docs/reports/M2-dtd-grammar/integration-attempt1/summary.json"
     }
   ],
   "blockers": [],
@@ -162,12 +174,10 @@
       "Sourced1dfbac: strengthened complete every-field/location benchmark oracle10 and timed-output oracle10, unique benchmark/sample builds and sample output, planning14/validate120 and scopes; runtime/tests/timed workload unchanged from successful5215.",
       "Exact-source exclusive timing: restore/build/parent/child0,three positive actual+result observations,5.003us/16.05KB; raw archiveSHA067634a93eee38804668c4c2048534594dd0d8151bbea506bab8981aa86e8545; raw Permission denied priority warning retained. No measurement rerun; capture-unit parser failure retained and corrected offline.",
       "Cold18272B; raw warm owned16440480B/1000=16440.48B; separate retained-GC315472B/100 outputs includes boxed tuple holders/outer array. Original incomplete retained label preserved with explicit correction. Prior namespace/oracle/helper-build failures retained.",
-      "Committed58155d4 final audit passed: clean tree/implemented/allA1-A3passed/integrationnull/verified ancestry; claim..HEAD+staged+working whitespace, all changed ownership/display text, unchanged checked runtime/tests/timing bytes and committed archiveSHA; validate120. All five owned subtrees and docs/tasks/M2-dtd-grammar.json explicitly released; no scoped heavy children or recursive workers."
+      "Committed58155d4 final audit passed: clean tree/implemented/allA1-A3passed/integrationnull/verified ancestry; claim..HEAD+staged+working whitespace, all changed ownership/display text, unchanged checked runtime/tests/timing bytes and committed archiveSHA; validate120. All five owned subtrees and docs/tasks/M2-dtd-grammar.json explicitly released; no scoped heavy children or recursive workers.",
+      "Coordinator actual integrated verification at022bc0f2d049d07d258a7a388ad37f0b7573e405 passed; raw audit and reports durably committed before separate verified metadata."
     ],
-    "remaining": [
-      "Coordinator fresh integrated verification before verified; integration_revision remains null.",
-      "Illustrative small owned Arm64 composition only: Windows/x64/AOT, large effective-table scaling and full XML DOCTYPE/general-entity composition unrun. Pinned subset resources do not claim full XML conformance. Retained GC value is an informational estimate; no zero-allocation composition promise."
-    ],
+    "remaining": [],
     "requests": []
   }
 }
