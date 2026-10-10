@@ -1,0 +1,42 @@
+namespace Xemele.Parsing.Syntax;
+internal enum ScanStep { NeedInput, Paused, Completed, Rejected }
+internal readonly record struct ScanResult(int Consumed, ScanStep Step, Xemele.XmlDiagnostic? Diagnostic = null);
+internal readonly ref struct XmlNameView(ReadOnlySpan<char> localName, ReadOnlySpan<char> namespaceUri, ReadOnlySpan<char> prefix)
+{
+    public ReadOnlySpan<char> LocalName { get; } = localName;
+    public ReadOnlySpan<char> NamespaceUri { get; } = namespaceUri;
+    public ReadOnlySpan<char> Prefix { get; } = prefix;
+}
+internal readonly ref struct XmlAttributeView(XmlNameView name, ReadOnlySpan<char> value, Xemele.XmlLocation location)
+{
+    public XmlNameView Name { get; } = name;
+    public ReadOnlySpan<char> Value { get; } = value;
+    public Xemele.XmlLocation Location { get; } = location;
+}
+internal readonly ref struct XmlNamespaceView(ReadOnlySpan<char> prefix, ReadOnlySpan<char> namespaceUri, Xemele.XmlLocation location)
+{
+    public ReadOnlySpan<char> Prefix { get; } = prefix;
+    public ReadOnlySpan<char> NamespaceUri { get; } = namespaceUri;
+    public Xemele.XmlLocation Location { get; } = location;
+}
+internal readonly ref struct XmlDeclarationView(ReadOnlySpan<char> version, ReadOnlySpan<char> encodingName, bool? standalone, Xemele.XmlLocation location)
+{
+    public ReadOnlySpan<char> Version { get; } = version;
+    public ReadOnlySpan<char> EncodingName { get; } = encodingName;
+    public bool? Standalone { get; } = standalone;
+    public Xemele.XmlLocation Location { get; } = location;
+}
+internal enum XmlTextKind { Text, CData, Comment, ProcessingInstruction }
+internal interface IXmlEventSink
+{
+    bool StartDocument(Xemele.XmlLocation location);
+    bool Declaration(XmlDeclarationView declaration);
+    bool StartElement(XmlNameView name, bool isEmptyElement, Xemele.XmlLocation location);
+    bool NamespaceDeclaration(XmlNamespaceView declaration);
+    bool Attribute(XmlAttributeView attribute);
+    bool StartElementContent();
+    bool EndElement(XmlNameView name, Xemele.XmlLocation location);
+    bool StartText(XmlTextKind kind, ReadOnlySpan<char> target, Xemele.XmlLocation location);
+    bool TextFragment(ReadOnlySpan<char> text, bool tokenEnded, Xemele.XmlLocation location);
+    bool EndDocument(Xemele.XmlLocation location);
+}

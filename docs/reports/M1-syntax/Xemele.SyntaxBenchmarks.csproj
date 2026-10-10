@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk">
+<PropertyGroup><OutputType>Exe</OutputType><AssemblyName>Xemele.SyntaxBenchmarks</AssemblyName></PropertyGroup>
+<ItemGroup><Compile Remove="AbiProbe/**/*.cs" /><PackageReference Include="BenchmarkDotNet" />
+<ProjectReference Include="../../../src/Xemele/Xemele.csproj" />
+<Compile Include="../../../benchmarks/Xemele.Benchmarks/M1-syntax/SyntaxBenchmarks.cs" Link="SyntaxBenchmarks.cs" />
+</ItemGroup>
+</Project>
