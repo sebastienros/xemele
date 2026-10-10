@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "id": "M1-planning-regressions",
+  "milestone": "M1",
+  "title": "Keep synthetic planning regressions independent of evolving repository graph",
+  "kind": "infrastructure",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "depends_on": [
+    "M0-gate"
+  ],
+  "goals": [
+    "G18"
+  ],
+  "specs": [
+    "docs/tasks/README.md"
+  ],
+  "owns": [
+    "tools/planning/test_tasks.py",
+    "docs/reports/M1-planning-regressions/"
+  ],
+  "api_or_output": "Stable synthetic negative graph scenarios plus live repository validation",
+  "acceptance": [
+    {
+      "id": "M1-planning-regressions-A1",
+      "description": "Replace brittle live-graph assumptions with explicit isolated synthetic scenarios proving missing gate reachability, unordered case-insensitive path overlap, and independent bootstrap lanes; preserve all negative guarantees and live repository graph test. Do not relax tracker validation or remove failing test coverage.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M1-planning-regressions-A2",
+      "description": "Run all planning regression tests and tasks.py validate at known revision; prove each intended invalid mutation actually fails validation and readiness scenarios remain independent of new task splits/repairs.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "Namespace repair checks exposed three stale synthetic scenarios after earlier graph/task ownership changes; root reproduced 11 passed/3 failed at main1493e5c. Product checks unaffected.",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}
