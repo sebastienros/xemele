@@ -2,7 +2,7 @@
   "schema_version": 1,
   "milestone": "M2",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/M2-dtd-parser",
   "branch": "codex/m2-dtd-parser",
   "base_revision": "3a73ca514453b08550dbbe98e78ab97d6eb2735c",
@@ -36,29 +36,128 @@
     {
       "id": "M2-dtd-parser-A1",
       "description": "Implement unchanged approved DtdParser signatures and full ELEMENT/ATTLIST/ENTITY/NOTATION grammar, particles/types/raw defaults, first-declaration and internal-subset precedence, predefined restrictions/separate entity namespaces, using only verified model/framing/budget/value helper. Preserve character-reference declaration processing and general references; defaults remain available for effective-table normalization when applied. No public parser stubs or dependency on later entity composition.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "committed-full-correctness",
+        "independent-source-review"
+      ]
     },
     {
       "id": "M2-dtd-parser-A2",
       "description": "Implement bounded incremental source-state grammar with internal parameter expansion, external NeedEntity/PushEntity stack, INCLUDE/IGNORE/text declarations, internal PE placement and entity-boundary well-formedness. Exact submitted UTF16 Consumed/NeedInput/progress beforeEOF, source cursor restoration/absolute mappings/CRLF/surrogate/EOF semantics, original initial location, active cycles even nullDepth, aggregate charge-before-work/persistence, cancellation and borrowed-input release. No whole external-input buffering.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "committed-full-correctness",
+        "independent-source-review"
+      ]
     },
     {
       "id": "M2-dtd-parser-A3",
       "description": "Pinned/authored malformed/recursive/conditional/content-model/declaration tests across every short split and push-source boundary; exact/one-over quotas and cancellation; independent actual/approved parser inventory and common-only sample; fresh cumulative/API/reference/planning/owned checks and explicit allocation/performance evidence at known source with unchanged verified prerequisites.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "committed-full-correctness",
+        "independent-source-review",
+        "fresh-reference-provenance",
+        "allocation-boundaries",
+        "strengthened-independent-oracle",
+        "exclusive-parser-baseline"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Parsing/Dtd/Grammar/Parser/DtdParser.cs: approved incremental API, source scopes/cursors/EOF/shared and local budgets/cleanup",
+    "src/Xemele/Parsing/Dtd/Grammar/Parser/Lexer.cs: normalized scalar lexer, PE composition, conditional sections and streaming no-body scans",
+    "src/Xemele/Parsing/Dtd/Grammar/Parser/Declarations.cs: full declarations/content particles/raw defaults/value-helper seam/first declarations",
+    "src/Xemele/Parsing/Dtd/Grammar/Parser/DefaultReferences.cs: bounded internal-known-table reference WFC; external effective-table deferral",
+    "tests/Xemele.Tests/M2-dtd-parser/: 54 authored fixture every-split rows, protocol/location/quota/cleanup/default/regression coverage",
+    "samples/M2-dtd-parser/: common-only executable and independent actual inventory",
+    "docs/reports/M2-dtd-parser/verify.py and BenchmarkDriver.cs: unique full checks and independent complete model oracle"
+  ],
+  "evidence": [
+    {
+      "id": "candidate-one-analyzer-failure",
+      "kind": "check",
+      "revision": "dac7f8a3c2ce463f2b5144359cac0da9e4f85533",
+      "command": "python3 -B docs/reports/M2-dtd-parser/verify.py --report-prefix candidate-one --expected-branch codex/m2-dtd-parser",
+      "result": "failed",
+      "summary": "Approved/actual parser inventory matched; test build stopped on CA1831 test string slice. Corrected to AsSpan before next committed run; later steps unrun.",
+      "artifact": "docs/reports/M2-dtd-parser/candidate-one/summary.json"
+    },
+    {
+      "id": "candidate-two-benchmark-build-failure",
+      "kind": "check",
+      "revision": "6d83bf4a36cece2ad44167aa3c12505991822332",
+      "command": "python3 -B docs/reports/M2-dtd-parser/verify.py --report-prefix candidate-two --expected-branch codex/m2-dtd-parser",
+      "result": "failed",
+      "summary": "1895 focused tests/sample/API/allocation passed. Benchmark build stopped on CS0050 internal model return from public benchmark; corrected to object with no workload or result allocation change. Later cumulative steps unrun.",
+      "artifact": "docs/reports/M2-dtd-parser/candidate-two/summary.json"
+    },
+    {
+      "id": "committed-full-correctness",
+      "kind": "check",
+      "revision": "9dfe40858d443165c7ca07ba5f8c58d9adebfc53",
+      "command": "python3 -B docs/reports/M2-dtd-parser/verify.py --report-prefix candidate-four --expected-branch codex/m2-dtd-parser (pinned SDK PATH/DOTNET_ROOT; DOTNET_CLI_USE_MSBUILD_SERVER=0)",
+      "result": "passed",
+      "summary": "1898 focused tests (54 authored fixtures/1838 every-short-split rows,20 facts,40 inline rows); all4995 cumulative=4441runtime+255conformance+299diff passed without skip. Common-only sample and independently compiled approved/actual parser four-type inventory match (nullability/defaults/shared ctor). PublicAPI251; registry3388; planning14 and validate120; exactsource owns/diff passed; verified prerequisites unchanged. This run used earlier40-assertion benchmark oracle; strengthened oracle checked separately atf1070a8.",
+      "artifact": "docs/reports/M2-dtd-parser/candidate-four/summary.json"
+    },
+    {
+      "id": "fresh-reference-provenance",
+      "kind": "check",
+      "revision": "9dfe40858d443165c7ca07ba5f8c58d9adebfc53",
+      "command": "python3 -B docs/reports/M2-dtd-parser/verify.py --report-prefix candidate-four --expected-branch codex/m2-dtd-parser (pinned SDK PATH/DOTNET_ROOT; DOTNET_CLI_USE_MSBUILD_SERVER=0)",
+      "result": "passed",
+      "summary": "242 distinct fresh current-source BCL records; engine build1.0.0+9dfe40858d443165c7ca07ba5f8c58d9adebfc53; full copied output hash unchanged after inherited solution build and explicit suite.",
+      "artifact": "docs/reports/M2-dtd-parser/candidate-four/reference-provenance.json"
+    },
+    {
+      "id": "allocation-boundaries",
+      "kind": "check",
+      "revision": "9dfe40858d443165c7ca07ba5f8c58d9adebfc53",
+      "command": "dotnet samples/M2-dtd-parser/bin/Release/net10.0/Xemele.DtdParserSample.dll --allocations",
+      "result": "passed",
+      "summary": "Cold10440B; owned9216B/op for separately defined sample corpus; warmed comment scalar scan0B across1000 calls; retained2944048B estimate for1000 owned model snapshots+array after transient parser state collection. Runtime10.0.11 Arm64; setup/scratch/model persistence separated; no subtraction/retry/config changes.",
+      "artifact": "docs/reports/M2-dtd-parser/candidate-four/allocations.json"
+    },
+    {
+      "id": "strengthened-independent-oracle",
+      "kind": "check",
+      "revision": "f1070a8afffc32513fcf945de904decd05959933",
+      "command": "dotnet docs/reports/M2-dtd-parser/bin/Release/net10.0/Xemele.DtdParserBenchmarks.dll --correctness (pinned SDK10.0.400, committed-source Release rebuild; additional preparation commands/logs in artifact)",
+      "result": "passed",
+      "summary": "7940 independent full-model assertions for both whole/chunked1/64 workloads including particles/occurrences/childnames/types/tokens/raw defaults/complete entity fields/locations/notation inventory. Three benchmark methods discovered. Runtime/tests/timed workload unchanged from9d full checks; no broad rerun needed for oracle-only change.",
+      "artifact": "docs/reports/M2-dtd-parser/preparation-f1070a8/summary.json"
+    },
+    {
+      "id": "independent-source-review",
+      "kind": "review",
+      "revision": "f1070a8afffc32513fcf945de904decd05959933",
+      "command": "Coordinator reported bounded read-only foundation/api_wiring/runtime and pre-timing oracle audits",
+      "result": "passed",
+      "summary": "Source-only approvals at6d (foundation),9d (runtime API),f107 (final oracle/delta/identity) with all earlier findings resolved. No reviewer tests or new runtime execution claimed. Root granted exclusive timing atf107 after known-source checks and no-heavy-child inventory.",
+      "artifact": "docs/reports/M2-dtd-parser/reviews.json"
+    },
+    {
+      "id": "exclusive-parser-baseline",
+      "kind": "check",
+      "revision": "f1070a8afffc32513fcf945de904decd05959933",
+      "command": "dotnet docs/reports/M2-dtd-parser/bin/Release/net10.0/Xemele.DtdParserBenchmarks.dll --filter '*DtdParserBenchmarks*' --artifacts artifacts/M2-dtd-parser/exclusive-f1070a8 (pinned SDK PATH/DOTNET_ROOT; DOTNET_CLI_USE_MSBUILD_SERVER=0; root exclusive GRANT)",
+      "result": "passed",
+      "summary": "Actual6cases/18observations; generatedrestore/build,parent,all6children exit0; completed children inventory; fullraw SHA256f56ac1fc52d0af4f8200988cb0677d9297ec8faf2c8b522268654ed4802a985b. Borrowed scan1/64~56.11/57.61ns 0B; whole1/64~2.405/92.744us 8840/166221B; chunked~2.605/105.073us same allocation. Six priority-permission warnings, broad3sample CI retained. SingleArm64 M4Pro informational baseline; PE declarations retained without expansion/no PE scaling or speedup claim. No retry/job/GC/JIT/config changes. Initial postrun ps sandbox denial and corrected release ACK preserved; inventory/archive succeeded via authorized escalation; raw MD unchanged in archive/display MD/HTML trimmed only; first staged diff check found two generated HTML trailing-space rows, corrected before final evidence commit.",
+      "artifact": "docs/reports/M2-dtd-parser/exclusive-f1070a8/summary.json"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Independently reviewable child of M2-dtd-grammar; approved parser/model/framing contracts and original parent A1-A3 preserved.",
-    "checks": [],
-    "remaining": [],
+    "summary": "Common-only approved incremental DTD parser/source stack implemented in owned paths; no public APIs/shared prerequisites changed. Branch work only, coordinator must integrate and verify. Ownership released after final handoff; no recursive workers.",
+    "checks": [
+      "Knownruntime9dfe408:4995cumulative/1898focused, independentAPI/sample,251publicAPI/3388registry/242freshBCL/planning14+120/owns passed.",
+      "Knownprep/timingf1070a8:7940fullmodeloracles,6cases18samples allprocess exits0; warm scan0B. Raw failures/warnings and distinct allocation workloads retained."
+    ],
+    "remaining": [
+      "Coordinator integration and fresh combined-tree verification before verified. Windows/x64/AOT and full XML/PE/effective-table large-scale composition benchmarks unrun local limitations; no broad performance claim."
+    ],
     "requests": []
   }
 }
