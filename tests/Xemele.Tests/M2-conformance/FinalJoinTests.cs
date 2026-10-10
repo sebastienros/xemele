@@ -11,7 +11,7 @@ public sealed class FinalJoinTests
         Assert.Equal("7", document.RootElement.GetAttribute("id", "urn:part"));
         Assert.Equal("alpha beta", document.RootElement.GetAttribute("mode"));
         Assert.Equal("A&B", document.RootElement.GetTextContent());
-        Assert.Contains("A&amp;B", document.ToXmlString());
+        Assert.Contains("A&amp;B", document.ToXmlString(cancellationToken: TestContext.Current.CancellationToken));
     }
 
     [Fact]
@@ -28,6 +28,6 @@ public sealed class FinalJoinTests
         Assert.Equal("missing", reference.Name);
         Assert.Throws<InvalidOperationException>(() => document.RootElement.GetAttribute("a"));
         Assert.Throws<InvalidOperationException>(() => document.RootElement.GetTextContent());
-        Assert.Throws<InvalidOperationException>(() => document.ToXmlString());
+        Assert.Throws<InvalidOperationException>(() => document.ToXmlString(cancellationToken: TestContext.Current.CancellationToken));
     }
 }
