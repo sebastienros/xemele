@@ -6,17 +6,6 @@
   "last_verified_checkpoint": null,
   "active_assignments": [
     {
-      "task_id": "M0-references-wiring",
-      "chat_id": "01a12357-5923-7540-94d5-bac065799b10",
-      "client_thread_id": "client-new-thread:b14b4e1b-fcf1-4402-a013-4ab0599beefe",
-      "host_id": "local",
-      "branch": "codex/m0-references-wiring",
-      "worktree_path": "/Users/sebastienros/.codex/worktrees/77a5/xemele",
-      "base_revision": "d94fb3167cebcfef8f927c580770741441dd6e60",
-      "claim_revision": "f78ebe5e4bb39803e204589b04a8f54c24d0f4e6",
-      "setup_status": "dispatched"
-    },
-    {
       "task_id": "M0-references-libxml2",
       "chat_id": "01a12357-61a0-7dd1-b19a-660057f75709",
       "client_thread_id": "client-new-thread:b13323ad-21ed-4024-9764-aa7894905237",
@@ -42,12 +31,12 @@
   "integration_queue": [],
   "blockers": [],
   "next_actions": [
-    "Review automatic runner build wiring then dispatch API/contract CI task in freed slot",
-    "Review pinned libxml2/xmloxide metadata/normalization/offline checks",
+    "Claim compiled API/contract CI wiring in third slot",
+    "Review libxml2/xmloxide actual pinned builds and checks",
     "Integrate serially then reference join and M0-gate"
   ],
-  "last_verified_task": "M0-references-protocol",
-  "last_integrated_revision": "f42779dcce6f57b4f38db5837708b840e1e842dc",
+  "last_verified_task": "M0-references-wiring",
+  "last_integrated_revision": "78c39169fb585a5655588c2a5226347d72ebcef9",
   "completed_assignments": [
     {
       "task_id": "M0-build",
@@ -186,6 +175,20 @@
       "implementation_revision": "97603064b1be1a31b9c33e6cce994c9382f7b590",
       "handoff_revision": "a4a86ccebe74ef3ac28bc2c187ab813823c6d638",
       "integration_revision": "f42779dcce6f57b4f38db5837708b840e1e842dc"
+    },
+    {
+      "task_id": "M0-references-wiring",
+      "chat_id": "01a12357-5923-7540-94d5-bac065799b10",
+      "client_thread_id": "client-new-thread:b14b4e1b-fcf1-4402-a013-4ab0599beefe",
+      "host_id": "local",
+      "branch": "codex/m0-references-wiring",
+      "worktree_path": "/Users/sebastienros/.codex/worktrees/77a5/xemele",
+      "base_revision": "d94fb3167cebcfef8f927c580770741441dd6e60",
+      "claim_revision": "f78ebe5e4bb39803e204589b04a8f54c24d0f4e6",
+      "setup_status": "verified",
+      "implementation_revision": "38839de9d42062b734ec7caca44dd05b026bbe42",
+      "handoff_revision": "2e2d8d52cd62a4e00b6efe700648ab53150e4c2c",
+      "integration_revision": "78c39169fb585a5655588c2a5226347d72ebcef9"
     }
   ],
   "benchmark_policy": "Subsequent benchmarks default to ShortRun and require serialized timing slot; no active timing hold.",
@@ -212,5 +215,8 @@
       ],
       "reason": "Separate independently reviewable protocol/BCL and native/Rust runners before claims; preserve original join acceptance."
     }
+  ],
+  "reference_capability_notes": [
+    "Pinned xmloxide supports offline external general entities but lacks external DTD subset loading/nested relative resolution context; must report explicit runner-failure, not XML syntax rejection or Xemele feature exclusion."
   ]
 }

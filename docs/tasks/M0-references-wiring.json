@@ -4,11 +4,11 @@
   "milestone": "M0",
   "title": "Build reference runner with differential test suite",
   "kind": "infrastructure",
-  "status": "implemented",
+  "status": "verified",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M0-references-wiring",
   "branch": "codex/m0-references-wiring",
   "base_revision": "d94fb3167cebcfef8f927c580770741441dd6e60",
-  "integration_revision": null,
+  "integration_revision": "78c39169fb585a5655588c2a5226347d72ebcef9",
   "depends_on": [
     "M0-references-protocol"
   ],
@@ -30,7 +30,8 @@
       "status": "passed",
       "evidence": [
         "clean-wiring-verification",
-        "direct-project-build"
+        "direct-project-build",
+        "integrated-clean-build"
       ]
     },
     {
@@ -38,7 +39,8 @@
       "description": "From cleaned generated outputs run normal Release solution build and MTP solution tests without prebuilding runner manually. Real protocol/subprocess tests pass and controlled infrastructure failure checks remain effective.",
       "status": "passed",
       "evidence": [
-        "clean-wiring-verification"
+        "clean-wiring-verification",
+        "integrated-clean-build"
       ]
     },
     {
@@ -46,7 +48,8 @@
       "description": "Verify preserved bootstrap/help/managed package behavior and actual package graph plus task validation at a full known implementation revision.",
       "status": "passed",
       "evidence": [
-        "clean-wiring-verification"
+        "clean-wiring-verification",
+        "integrated-clean-build"
       ]
     }
   ],
@@ -81,6 +84,15 @@
       "result": "passed",
       "summary": "Coordinator follow-up: direct Release project build succeeds0warnings/errors, builds BclReference and ReferenceProtocol in Release without manual runner build. Solution clean-run evidence remains at source38839de unchanged.",
       "artifact": "docs/reports/M0-references-wiring/direct-project.txt"
+    },
+    {
+      "id": "integrated-clean-build",
+      "kind": "integration",
+      "revision": "78c39169fb585a5655588c2a5226347d72ebcef9",
+      "command": "Pinned SDK10.0.400; python3 -B docs/reports/M0-references-wiring/verify.py",
+      "result": "passed",
+      "summary": "Cleaned actual12 solution/reference project bin/obj; ordinary Release solution build creates Release BCL/protocol without manual prebuild.0warnings/errors; actual XML51protocol+3smoke=54passes0fail/skip;3 expected controlled failures;16help/default3unknown exits;runtime restore graph no deps;managed pack/API0;no-output buildedge inspected;101taskvalidation. No hosted/perf claim.",
+      "artifact": "docs/reports/M0-references-wiring/integration-verification.txt"
     }
   ],
   "blockers": [],
