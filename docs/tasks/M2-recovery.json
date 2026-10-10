@@ -4,11 +4,11 @@
   "milestone": "M2",
   "title": "Explicit recovery and diagnostic results",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "worker:M2-recovery",
   "branch": "codex/m2-recovery",
   "base_revision": "f4ffe8bb304a8e08034305ca6f7038e1c77869db",
-  "integration_revision": null,
+  "integration_revision": "a0112a899dd26757b2056aa166e4b828a95c6f86",
   "depends_on": [
     "M2-conformance"
   ],
@@ -42,7 +42,8 @@
       "evidence": [
         "source-correctness",
         "strict-corpus",
-        "bounded-source-review"
+        "bounded-source-review",
+        "coordinator-integration"
       ]
     },
     {
@@ -53,7 +54,8 @@
         "source-correctness",
         "affected-strict",
         "cleanup-regression",
-        "strict-corpus"
+        "strict-corpus",
+        "coordinator-integration"
       ]
     },
     {
@@ -65,7 +67,8 @@
         "host-preparation",
         "allocation-host",
         "benchmark-host",
-        "final-scope-planning"
+        "final-scope-planning",
+        "coordinator-integration"
       ]
     }
   ],
@@ -191,6 +194,15 @@
       "result": "passed",
       "summary": "Validated138 tasks; whitespace clean; all changed/untracked source/evidence belongs to M2-recovery. No children or raw measurement/package archive retained.",
       "artifact": "docs/reports/M2-recovery/final-audit.json"
+    },
+    {
+      "id": "coordinator-integration",
+      "kind": "integration",
+      "revision": "a0112a899dd26757b2056aa166e4b828a95c6f86",
+      "command": "Focused Release integration tests at beec5a4 (417) and added cleanup regression (1); compiled API377/source-fresh-package consumers; independent measurement/source preservation inspection; tasks.py validate; git diff --check",
+      "result": "passed",
+      "summary": "All actual focused executions pass; same runtime/config/API/consumer/workload bytes integrated. 365 measured tracked inputs unchanged; branch actual borrowed0B/1024 positive768, owned/setup allocations,2 successful timing children/final freezes preserved at95705dc. Comprehensive combined correctness remains M2-gate; no isolated allocation claim from ordinary focused correctness namespaces.",
+      "artifact": "docs/reports/M2-recovery/coordinator-integration-summary.json"
     }
   ],
   "blockers": [],
@@ -204,10 +216,7 @@
       "Initial cache inventory and sandbox preparation failures retained with exact scoped successful resolutions.",
       "Final planning, owned-path and whitespace validation recorded in final handoff audit."
     ],
-    "remaining": [
-      "Coordinator integration verification and M2 gate; integration_revision remains null.",
-      "Optional backlog only: strengthen borrowed name/text oracles; cross-architecture timing validation belongs to release performance work."
-    ],
+    "remaining": [],
     "requests": []
   }
 }
