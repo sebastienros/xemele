@@ -74,6 +74,13 @@ def main():
         (directory / 'AllocationProbe.cs').write_text((ROOT / 'samples/M1-tree-dom-persistence/AllocationProbe.cs').read_text())
         run('dotnet', 'run', '--project', directory / 'Consumer.csproj', '-c', 'Release', '--disable-build-servers', '-p:UseSharedCompilation=false', f'-p:RestoreSources={ARTIFACT / "packages"}', f'-p:RestorePackagesPath={directory / "isolated-packages"}')
     run('dotnet', 'build', 'benchmarks/Xemele.Benchmarks/Xemele.Benchmarks.csproj', *FLAGS)
+    run('dotnet', 'build', 'docs/reports/M1-tree-dom-persistence/Oracle/Oracle.csproj', *FLAGS)
+    run('dotnet', 'run', '--project', 'docs/reports/M1-tree-dom-persistence/Oracle/Oracle.csproj', '-c', 'Release', '--no-build', '--no-restore')
+    task = json.loads((ROOT / 'docs/tasks/M1-tree-dom-persistence.json').read_text())
+    changed = run('git', 'diff', '--name-only', task['base_revision']).splitlines()
+    allowed = task['owns'] + ['docs/tasks/M1-tree-dom-persistence.json']
+    assert all(any(path.startswith(owner) if owner.endswith('/') else path == owner for owner in allowed) for path in changed), changed
+    LOG.append('Owned-path audit passed')
     run('python3', 'tools/planning/tasks.py', 'validate')
     run('git', 'diff', '--check')
 
@@ -82,5 +89,5 @@ if __name__ == '__main__':
     finally:
         ARTIFACT.mkdir(parents=True, exist_ok=True)
         (ARTIFACT / 'verification-raw.txt').write_text('\n'.join(LOG))
-        tokens = ('Source revision', 'Host ', '$ ', 'exit=', 'Build succeeded', 'Warning(s)', 'Error(s)', 'Matched ', 'total:', 'failed:', 'succeeded:', 'skipped:', 'Validated ', 'assertions', 'compatibility', ' B;', 'Independent validated', 'catalog:')
+        tokens = ('Trusted boundary', 'Owned-path', 'Complete checked', 'Source revision', 'Host ', '$ ', 'exit=', 'Build succeeded', 'Warning(s)', 'Error(s)', 'Matched ', 'total:', 'failed:', 'succeeded:', 'skipped:', 'Validated ', 'assertions', 'compatibility', ' B;', 'Independent validated', 'catalog:')
         (REPORT / 'checks.txt').write_text('\n'.join(line for block in LOG for line in block.splitlines() if any(token in line for token in tokens)) + '\n')
