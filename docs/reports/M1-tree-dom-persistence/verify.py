@@ -95,7 +95,8 @@ def main():
 if __name__ == '__main__':
     try: main()
     finally:
-        ARTIFACT.mkdir(parents=True, exist_ok=True)
-        (ARTIFACT / 'verification-raw.txt').write_text('\n'.join(LOG))
-        tokens = ('Trusted boundary', 'Owned-path', 'Complete checked', 'Source revision', 'Host ', '$ ', 'exit=', 'Build succeeded', 'Warning(s)', 'Error(s)', 'Matched ', 'total:', 'failed:', 'succeeded:', 'skipped:', 'Validated ', 'assertions', 'compatibility', ' B;', 'Independent validated', 'catalog:')
-        (REPORT / 'checks.txt').write_text('\n'.join(line for block in LOG for line in block.splitlines() if any(token in line for token in tokens)) + '\n')
+        if LOG:
+            ARTIFACT.mkdir(parents=True, exist_ok=True)
+            (ARTIFACT / 'verification-raw.txt').write_text('\n'.join(LOG))
+            tokens = ('Trusted boundary', 'Owned-path', 'Complete checked', 'Source revision', 'Host ', '$ ', 'exit=', 'Build succeeded', 'Warning(s)', 'Error(s)', 'Matched ', 'total:', 'failed:', 'succeeded:', 'skipped:', 'Validated ', 'assertions', 'compatibility', ' B;', 'Independent validated', 'catalog:')
+            (REPORT / 'checks.txt').write_text('\n'.join(line for block in LOG for line in block.splitlines() if any(token in line for token in tokens)) + '\n')
