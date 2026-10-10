@@ -4,7 +4,7 @@
   "milestone": "M2",
   "title": "Isolated Tree traversal and intern allocation measurement",
   "kind": "infrastructure",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M2-tree-allocation-probe",
   "branch": "codex/m2-tree-allocation-probe",
   "base_revision": "f61e4d692719db15f36134969f7ca412b1a41c03",
@@ -31,23 +31,113 @@
     {
       "id": "M2-tree-allocation-probe-A1",
       "description": "Preserve integrated5109fe9 Tree1064B failure and honest historical uncertainty; original setup, one warm1000-iteration Walk and one measured1000-iteration Walk remain equivalent, consumed21000 and identity asserted. Both counters and full measured work in one synchronous NoInlining helper; no production/other test bodies, threshold/warm count/GC/JIT/test parallelism changes. Use reviewed PI/Streaming same-Fact process isolation with single real child plus meaningful positive-allocation child, exact-current-host/strict schema/provenance/guard/progress/timeout/raw failure propagation. If actual primitive allocation remains, request production owner repair instead of subtraction/retry.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "historical-tree1064-preservation",
+        "bounded-allocation-comparison",
+        "joint-real-positive-allocation",
+        "independent-source-review"
+      ]
     },
     {
       "id": "M2-tree-allocation-probe-A2",
       "description": "At committed source run bounded original/equivalent/helper diagnostic comparison without unproved attribution; fresh focused and cumulative MTP plus direct runtime/conformance/differential, API251/discovery3388/ref242 fresh complete pinned copy/full source/hash, meaningful consumed work, positive and protocol/schema/provenance rejection controls, planning14/task validation115/owned audits. Preserve every failure and unrun check; unique attempts and count arguments. No timing benchmarks or blind repeats.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "sandbox-build-failure",
+        "bounded-allocation-comparison",
+        "joint-real-positive-allocation",
+        "protocol-rejections-archive",
+        "all-known-source-checks",
+        "independent-source-review"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "tests/Xemele.Tests/M1-tree/TreeTests.cs: WarmTraversalAndRepeatedNameInternProbesAllocateNothing same-Fact real/positive isolated children; no other test bodies changed.",
+    "tests/Xemele.Tests/M2-tree-allocation-probe/TreeAllocationProbe.cs: Walk synchronous NoInlining whole traversal/intern counters,1000iterations/21000consumed; positive escaped37.",
+    "tests/Xemele.Tests/M2-tree-allocation-probe/TreeAllocationChild.cs: strict guarded same-Fact process/provenance/request/report/XML/work/identity validation and raw failure preservation.",
+    "docs/reports/M2-tree-allocation-probe/verify.py: unique known-source diagnostics,joint suites,reference/API/planning/ownership checks; protocol_negative.py and test_archive.py actual guard/schema/provenance rejections and archive regression."
+  ],
+  "evidence": [
+    {
+      "id": "historical-tree1064-preservation",
+      "kind": "check",
+      "revision": "1d1fadd6e159a524a19dd83de553a05ee9c66c10",
+      "command": "Copy and SHA256-check necessary historical raw files from /private/tmp/xemele-integrate-m2-dtd-framing/docs/reports/M2-dtd-framing/integration-5109fe9-attempt1; setup asserts root/branch/claim/base/dependency ancestors.",
+      "result": "passed",
+      "summary": "Byte-identical SHA256-recorded relevant framing5109fe9 history retained: full2095/2094pass with unchanged Tree1064B expected0. Historical cause unresolved; verified empty-counter controls support isolation rationale, not attribution. No unmerged framing runtime imported.",
+      "artifact": "docs/reports/M2-tree-allocation-probe/history/integration-5109fe9-attempt1/preservation.json"
+    },
+    {
+      "id": "sandbox-build-failure",
+      "kind": "check",
+      "revision": "1d1fadd6e159a524a19dd83de553a05ee9c66c10",
+      "command": "export DOTNET_ROOT='/Users/sebastienros/Library/Application Support/dotnetup/dotnet'\nexport PATH=\"$DOTNET_ROOT:$PATH\"\npython3 -B docs/reports/M2-tree-allocation-probe/verify.py --report-prefix source-1d1fadd-attempt1 --expected-branch codex/m2-tree-allocation-probe --audit-base 0a64aeb75f16d3670c2a165aba8e2d877db459f1 --runtime-count 298 --conformance-count 255 --differential-count 299 --api-count 251 --fixture-count 3388 --planning-count 14 --task-count 115",
+      "result": "failed",
+      "summary": "Sandboxed attempt exited1 during solution restore:4NU1900 vulnerability-data errors for blocked api.nuget.org; BCLbuild and archive1 passed. Diagnostics/focused/full/direct/API/discovery/reference/planning checks unrun in this attempt. Raw failure retained; authorized network escalation used next fresh prefix, no allocation retry.",
+      "artifact": "docs/reports/M2-tree-allocation-probe/source-1d1fadd-attempt1/summary.json"
+    },
+    {
+      "id": "bounded-allocation-comparison",
+      "kind": "check",
+      "revision": "1d1fadd6e159a524a19dd83de553a05ee9c66c10",
+      "command": "export DOTNET_ROOT='/Users/sebastienros/Library/Application Support/dotnetup/dotnet'\nexport PATH=\"$DOTNET_ROOT:$PATH\"\npython3 -B docs/reports/M2-tree-allocation-probe/verify.py --report-prefix source-1d1fadd-attempt2-network --expected-branch codex/m2-tree-allocation-probe --audit-base 0a64aeb75f16d3670c2a165aba8e2d877db459f1 --runtime-count 298 --conformance-count 255 --differential-count 299 --api-count 251 --fixture-count 3388 --planning-count 14 --task-count 115",
+      "result": "passed",
+      "summary": "One bounded original/equivalent/actual-helper diagnostic each0B; exact1000warm1000measured/21000consumed each and attributeidentity true on10.0.11. Actual helper linked directly. No warm count,threshold,GC/JIT/testparallelism edits, timing or historical cause claim.",
+      "artifact": "docs/reports/M2-tree-allocation-probe/source-1d1fadd-attempt2-network/helper-allocations.json"
+    },
+    {
+      "id": "joint-real-positive-allocation",
+      "kind": "check",
+      "revision": "1d1fadd6e159a524a19dd83de553a05ee9c66c10",
+      "command": "export DOTNET_ROOT='/Users/sebastienros/Library/Application Support/dotnetup/dotnet'\nexport PATH=\"$DOTNET_ROOT:$PATH\"\npython3 -B docs/reports/M2-tree-allocation-probe/verify.py --report-prefix source-1d1fadd-attempt2-network --expected-branch codex/m2-tree-allocation-probe --audit-base 0a64aeb75f16d3670c2a165aba8e2d877db459f1 --runtime-count 298 --conformance-count 255 --differential-count 299 --api-count 251 --fixture-count 3388 --planning-count 14 --task-count 115",
+      "result": "passed",
+      "summary": "Focused1/fullMTP852/direct298+255+299 allPass0fail0skip. Exactly3actual real/positive pairs:real warm0/measured0B and positive warm64000/measured64000B;1000iterations and21000consumed for both walks,attributeidentity,escaped37 control; actualhost/test+product fullsource/DLL/native runtime/runtimeconfig/helperIL/request/token/PID/progress/oneFactXML provenance validated. All raw artifacts archived before report parsing; exact0 assertion preserved,no subtraction/retries.",
+      "artifact": "docs/reports/M2-tree-allocation-probe/source-1d1fadd-attempt2-network/child-provenance.json"
+    },
+    {
+      "id": "protocol-rejections-archive",
+      "kind": "check",
+      "revision": "1d1fadd6e159a524a19dd83de553a05ee9c66c10",
+      "command": "export DOTNET_ROOT='/Users/sebastienros/Library/Application Support/dotnetup/dotnet'\nexport PATH=\"$DOTNET_ROOT:$PATH\"\npython3 -B docs/reports/M2-tree-allocation-probe/verify.py --report-prefix source-1d1fadd-attempt2-network --expected-branch codex/m2-tree-allocation-probe --audit-base 0a64aeb75f16d3670c2a165aba8e2d877db459f1 --runtime-count 298 --conformance-count 255 --differential-count 299 --api-count 251 --fixture-count 3388 --planning-count 14 --task-count 115",
+      "result": "passed",
+      "summary": "Archive malformed-first/later-raw preservation regression1passed;7actual standalone Fact rejection controls unknown/incomplete mode,missingrequired/malformed/unknownmemberJSON,provenance and configuredhost mismatch all actualexit1/exactonefailedFact. These are passing rejection checks. Timeout/crash/postreporttamper negative controls unrun; source policy only.",
+      "artifact": "docs/reports/M2-tree-allocation-probe/source-1d1fadd-attempt2-network-protocol-negative/summary.json"
+    },
+    {
+      "id": "all-known-source-checks",
+      "kind": "check",
+      "revision": "1d1fadd6e159a524a19dd83de553a05ee9c66c10",
+      "command": "export DOTNET_ROOT='/Users/sebastienros/Library/Application Support/dotnetup/dotnet'\nexport PATH=\"$DOTNET_ROOT:$PATH\"\npython3 -B docs/reports/M2-tree-allocation-probe/verify.py --report-prefix source-1d1fadd-attempt2-network --expected-branch codex/m2-tree-allocation-probe --audit-base 0a64aeb75f16d3670c2a165aba8e2d877db459f1 --runtime-count 298 --conformance-count 255 --differential-count 299 --api-count 251 --fixture-count 3388 --planning-count 14 --task-count 115",
+      "result": "passed",
+      "summary": "Verifier exit0/all17checksPass; Release reference/solution/diagnostic/APIchecker builds0warnings0errors; API251/discovery3388;242unique fullrevision/hash reference records with fresh completeBCLoutputcopy pinned before historicalM1solutionbuild and unchanged runnerSHA;records gzip and output hashmanifest retained. Planning14/validate115; committed,staged,working,untracked,source/otherTreebody/whitespace audits pass. SDK10.0.400/runtime10.0.11/arm64/defaultJITGCclassparallelism. Explicit integrated count/rootbranch/auditbase/freshprefix flags supported.",
+      "artifact": "docs/reports/M2-tree-allocation-probe/source-1d1fadd-attempt2-network/summary.json"
+    },
+    {
+      "id": "independent-source-review",
+      "kind": "review",
+      "revision": "1d1fadd6e159a524a19dd83de553a05ee9c66c10",
+      "command": "Coordinator message: independent read-only review_input_spike APPROVED exact source1d1fadd, no execution.",
+      "result": "passed",
+      "summary": "Independent reviewer approves unchanged exactfixture/1x1000warm/1x1000measured/21000sum/attributeidentity/bothcounters+wholeNoInliningwork/realexact0/meaningfulpositiveescaped1000 allocations;strictprovenance/knownargs/request/XMLtotals/progress/deadline/rawfailpropagation;no otherbodies/peer/runtime changes,historical1064Bcause unresolved. Read-only source review; no checks executed by reviewer.",
+      "artifact": null
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Narrow prerequisite after framer integration5109fe9: full2095 cases2094pass, unchanged Tree allocation Fact1064B. Failure preserved d31b5ac branch codex/integrate-m2-dtd-framing; no cause inferred.",
-    "checks": [],
-    "remaining": [],
+    "summary": "Implemented at source1d1fadd; exact Tree whole-scope same-Fact isolation and meaningfulpositive control. All17fresh known-source checks pass; unchanged historical1064Bcause unresolved. Independent read-only review approved; awaiting integration; integration_revision null.",
+    "checks": [
+      "export DOTNET_ROOT='/Users/sebastienros/Library/Application Support/dotnetup/dotnet'\nexport PATH=\"$DOTNET_ROOT:$PATH\"\npython3 -B docs/reports/M2-tree-allocation-probe/verify.py --report-prefix source-1d1fadd-attempt2-network --expected-branch codex/m2-tree-allocation-probe --audit-base 0a64aeb75f16d3670c2a165aba8e2d877db459f1 --runtime-count 298 --conformance-count 255 --differential-count 299 --api-count 251 --fixture-count 3388 --planning-count 14 --task-count 115: exit0/all17checksPass.",
+      "Focused1/fullMTP852/direct298/255/299 allPass;3real0/positive64000B;original/equivalent/helper0B;1000warm1000measured/21000consumed/identity.",
+      "API251/discovery3388/ref242fullsourcehash/freshcompleteBCLcopy/planning14/validate115/ownership pass;archive1/sevenactualnegativeguards pass.",
+      "Initial sandbox NU1900 restore failure retained; no diagnostics/tests there; next network-authorized attempt resolves restore, no blind allocation repeat."
+    ],
+    "remaining": [
+      "Coordinator fresh integrated checks before verified.",
+      "Historical Tree1064Bcause unresolved; isolated synchronous scope only,no concurrent allocation guarantee.",
+      "Crash/timeout/postreporttamper negative controls not executed; bounded source policies reviewed only."
+    ],
     "requests": []
   }
 }
