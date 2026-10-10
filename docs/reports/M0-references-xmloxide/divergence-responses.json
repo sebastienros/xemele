@@ -1,0 +1,74 @@
+{
+  "xmloxide": {
+    "caseId": "fixture",
+    "diagnostics": [],
+    "engine": {
+      "build": "beaee99cc9a39469b9c3e5a71fbef4cf467dfa1a; release opt3 lto=false codegen-units16 panic=unwind; xmloxide default-features=false features=[]; locked",
+      "name": "xmloxide",
+      "runtime": "rustc 1.95.0 (59807616e 2026-04-14); aarch64-apple-darwin",
+      "version": "0.5.0+555055f1ea6bf9944488fd96415b6f03b5b43696"
+    },
+    "events": [
+      {
+        "attributes": [
+          {
+            "localName": "a",
+            "namespaceUri": "",
+            "value": "a  b"
+          }
+        ],
+        "kind": "start",
+        "localName": "r",
+        "namespaceUri": ""
+      },
+      {
+        "kind": "text",
+        "value": "😀x\r\ny"
+      },
+      {
+        "kind": "end",
+        "localName": "r",
+        "namespaceUri": ""
+      }
+    ],
+    "operation": "xml.events",
+    "outcome": "success",
+    "protocolVersion": 1
+  },
+  "bcl": {
+    "protocolVersion": 1,
+    "caseId": "fixture",
+    "operation": "xml.events",
+    "engine": {
+      "name": "System.Xml",
+      "version": "10.0.0.0",
+      "runtime": ".NET 10.0.11",
+      "build": "1.0.0+beaee99cc9a39469b9c3e5a71fbef4cf467dfa1a"
+    },
+    "outcome": "success",
+    "diagnostics": [],
+    "events": [
+      {
+        "kind": "start",
+        "namespaceUri": "",
+        "localName": "r",
+        "attributes": [
+          {
+            "namespaceUri": "",
+            "localName": "a",
+            "value": "a b"
+          }
+        ]
+      },
+      {
+        "kind": "text",
+        "value": "😀x\ny"
+      },
+      {
+        "kind": "end",
+        "namespaceUri": "",
+        "localName": "r"
+      }
+    ]
+  }
+}
