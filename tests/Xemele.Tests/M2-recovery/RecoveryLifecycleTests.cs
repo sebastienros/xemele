@@ -89,6 +89,21 @@ public sealed class RecoveryLifecycleTests
         }
     }
     [Fact]
+    public void FaultOrCancellationDuringRepairedEntityCloseDisposesTheOpenResource()
+    {
+        const string input = "<!DOCTYPE r [<!ENTITY e SYSTEM 'urn:external'>]><r>&e;</r>";
+        var exception = new InvalidOperationException("recovery callback");
+        var resolver = new Resolver("<a><b></a>"); using var core = new XmlParserCore(Options(resolver)); core.EnableRecovery(new(128));
+        var sink = new Sink(); sink.Hook = () => { if (sink.Elements.LastOrDefault() == "-b") throw exception; };
+        Assert.Same(exception, Assert.Throws<InvalidOperationException>(() => core.Append(input, [], true, sink, TestContext.Current.CancellationToken)));
+        Assert.Equal(1, resolver.Opens); Assert.Equal(1, resolver.Disposals);
+        using var canceled = new CancellationTokenSource(); resolver = new Resolver("<a><b></a>");
+        using var cancelCore = new XmlParserCore(Options(resolver)); cancelCore.EnableRecovery(new(128)); sink = new Sink();
+        sink.Hook = () => { if (sink.Elements.LastOrDefault() == "-b") canceled.Cancel(); };
+        Assert.Throws<OperationCanceledException>(() => cancelCore.Append(input, [], true, sink, canceled.Token));
+        Assert.Equal(1, resolver.Opens); Assert.Equal(1, resolver.Disposals);
+    }
+    [Fact]
     public void DiscardedRootsRetainNeitherUnknownContentNorSymbolicAttributes()
     {
         const string input = "<!DOCTYPE r [<!ENTITY % p ''>%p;<!ATTLIST s a CDATA '&unknown;'>]><r/><s>&missing;</s>";
