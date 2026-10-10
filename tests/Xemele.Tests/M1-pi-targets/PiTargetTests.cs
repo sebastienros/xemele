@@ -140,16 +140,46 @@ public sealed class PiTargetTests
     [Fact]
     public void RepeatedBorrowedPiTargetsAllocateZeroAfterWarmup()
     {
+        var child = PiAllocationChild.EnterChild();
+        if (child is null)
+        {
+            // Each guarded child runs this same compiled Fact once; parent
+            // class parallelism and runtime defaults remain unchanged.
+            var pair = PiAllocationChild.RunPair();
+            TestContext.Current.TestOutputHelper!.WriteLine(
+                $"real={pair.Real.AllocatedBytes}; positive={pair.Positive.AllocatedBytes}; warm100={pair.Real.WarmBytes}; measured10000={pair.Real.AllocatedBytes}; measuredUnits={pair.Real.MeasuredUnits}; measuredCalls={pair.Real.MeasuredCalls}; totalUnits={pair.Real.TotalUnits}; totalCalls={pair.Real.TotalCalls}; completed=true; artifacts={pair.Directory}");
+            return;
+        }
+        bool positive = child.Mode == "positive";
         using var core = new XmlParserCore(new() { Limits = new() { DocumentCharacters = null } });
         var sink = new StreamingTests.CountingSink(); var cancellation = TestContext.Current.CancellationToken;
+        object? escaped = null;
+        if (positive) sink.Hook = () => escaped = new byte[37];
         const string chunk = "<?π.x-1 data?><?xml-stylesheet?><?\U00010000?>";
-        core.Append("<r>", [], false, sink, cancellation);
-        for (int i = 0; i < 100; i++) core.Append(chunk, [], false, sink, cancellation);
-        long before = GC.GetAllocatedBytesForCurrentThread();
-        for (int i = 0; i < 10000; i++)
-            if (core.Append(chunk, [], false, sink, cancellation).Step != ScanStep.NeedInput) throw new InvalidOperationException();
-        Assert.Equal(0, GC.GetAllocatedBytesForCurrentThread() - before);
-        Assert.Equal(ScanStep.Completed, core.Append("</r>", [], true, sink, cancellation).Step);
+        var root = core.Append("<r>", [], false, sink, cancellation);
+        Assert.Equal(ScanStep.NeedInput, root.Step); Assert.Equal(3, root.Consumed); Assert.Null(root.Diagnostic);
+        Assert.Equal(3, sink.Calls); Assert.Equal(0, sink.Units);
+        // Both counters and the whole checked loop share the same non-inlined
+        // helper; setup, assertions, reports and completion are outside it.
+        long warmBytes = PiAllocationProbe.AppendChecked(core, chunk, sink, cancellation, 100);
+        Assert.Equal(1003, sink.Calls); Assert.Equal(400, sink.Units);
+        long warmCalls = sink.Calls - 3, warmUnits = sink.Units;
+        long calls = sink.Calls, units = sink.Units;
+        long allocated = PiAllocationProbe.AppendChecked(core, chunk, sink, cancellation, 10000);
+        long measuredCalls = sink.Calls - calls, measuredUnits = sink.Units - units;
+        var completed = core.Append("</r>", [], true, sink, cancellation);
+        GC.KeepAlive(escaped);
+        // Preserve raw measurement before assertions, including a nonzero real
+        // result. The parent still fails on any child failure or invalid report.
+        PiAllocationChild.Write(child, warmBytes, allocated, warmUnits, warmCalls,
+            measuredUnits, measuredCalls, sink.Units, sink.Calls, completed, (escaped as byte[])?.Length ?? 0);
+        TestContext.Current.TestOutputHelper!.WriteLine(
+            $"mode={child.Mode}; primitive={allocated}; measuredUnits={measuredUnits}; measuredCalls={measuredCalls}");
+        if (positive) Assert.True(allocated > 0, "Escaped callback allocation must be detected.");
+        else Assert.Equal(0, allocated);
+        Assert.Equal(100000, measuredCalls); Assert.Equal(40000, measuredUnits);
+        Assert.Equal(ScanStep.Completed, completed.Step); Assert.Equal(4, completed.Consumed); Assert.Null(completed.Diagnostic);
+        Assert.Equal(101005, sink.Calls); Assert.Equal(40400, sink.Units);
     }
     [Fact]
     public void PiQuotaCancellationAndInternPrecommitRemainEnforced()

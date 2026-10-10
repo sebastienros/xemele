@@ -1,0 +1,223 @@
+{
+  "result": "passed",
+  "host": "macOS-15.8.1-arm64-arm-64bit-Mach-O",
+  "architecture": "arm64",
+  "timing": "not run",
+  "runtimeSettings": "default JIT/GC/test parallelism",
+  "arguments": {
+    "report_prefix": "source-final-attempt1",
+    "expected_branch": "codex/m2-streaming-allocation-probe",
+    "audit_base": "2578b2fe125005e0cabd4226d0fa1ba9ef464ee9",
+    "runtime_count": 247,
+    "conformance_count": 255,
+    "differential_count": 299,
+    "api_count": 222,
+    "fixture_count": 3388,
+    "planning_count": 14,
+    "task_count": 114
+  },
+  "checks": {
+    "diagnostic-original": {
+      "result": "passed",
+      "detail": {
+        "mode": "original",
+        "runtime": "10.0.11",
+        "warmIterations": 100,
+        "measuredIterations": 10000,
+        "counterOnly": 0,
+        "coldSetup": 6816,
+        "coldRoot": 312,
+        "firstChunk": 432,
+        "setup": 7128,
+        "warmPrimitive": null,
+        "warmSurrounding": 432,
+        "primitive": null,
+        "surrounding": 0,
+        "measured": 0,
+        "completionBytes": 0,
+        "warmCalls": 1199,
+        "warmUnits": 500,
+        "measuredCalls": 120000,
+        "measuredUnits": 50000,
+        "totalUnits": 50500,
+        "totalCalls": 121205,
+        "endDocuments": 1,
+        "completed": true,
+        "scope": "Synchronous checked borrowed Append; setup/root/first-use/caller/output reported separately; no timing or retained-memory estimate",
+        "runtimeSettings": "default JIT/GC; no overrides"
+      }
+    },
+    "diagnostic-equivalent": {
+      "result": "passed",
+      "detail": {
+        "mode": "equivalent",
+        "runtime": "10.0.11",
+        "warmIterations": 100,
+        "measuredIterations": 10000,
+        "counterOnly": 0,
+        "coldSetup": 6816,
+        "coldRoot": 312,
+        "firstChunk": 432,
+        "setup": 7128,
+        "warmPrimitive": 432,
+        "warmSurrounding": 432,
+        "primitive": 0,
+        "surrounding": 0,
+        "measured": 0,
+        "completionBytes": 0,
+        "warmCalls": 1199,
+        "warmUnits": 500,
+        "measuredCalls": 120000,
+        "measuredUnits": 50000,
+        "totalUnits": 50500,
+        "totalCalls": 121205,
+        "endDocuments": 1,
+        "completed": true,
+        "scope": "Synchronous checked borrowed Append; setup/root/first-use/caller/output reported separately; no timing or retained-memory estimate",
+        "runtimeSettings": "default JIT/GC; no overrides"
+      }
+    },
+    "focused-mtp": {
+      "result": "passed",
+      "detail": "Running tests from /Users/sebastienros/.codex/worktrees/f887/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll (net10.0|arm64)\n/Users/sebastienros/.codex/worktrees/f887/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll (net10.0|arm64) passed (418ms)\n\nTest run summary: Passed!\n  total: 1\n  failed: 0\n  succeeded: 1\n  skipped: 0\n  duration: 677ms\n"
+    },
+    "cumulative-mtp": {
+      "result": "passed",
+      "detail": "Running tests from /Users/sebastienros/.codex/worktrees/f887/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll (net10.0|arm64)\nRunning tests from /Users/sebastienros/.codex/worktrees/f887/xemele/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll (net10.0|arm64)\nRunning tests from /Users/sebastienros/.codex/worktrees/f887/xemele/tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll (net10.0|arm64)\n/Users/sebastienros/.codex/worktrees/f887/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll (net10.0|arm64) passed (1s 011ms)\n/Users/sebastienros/.codex/worktrees/f887/xemele/tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll (net10.0|arm64) passed (819ms)\n/Users/sebastienros/.codex/worktrees/f887/xemele/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll (net10.0|arm64) passed (16s 242ms)\n\nTest run summary: Passed!\n  /Users/sebastienros/.codex/worktrees/f887/xemele/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll (net10.0|arm64) passed (16s 242ms)\n  /Users/sebastienros/.codex/worktrees/f887/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll (net10.0|arm64) passed (1s 011ms)\n  /Users/sebastienros/.codex/worktrees/f887/xemele/tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll (net10.0|arm64) passed (819ms)\n\n  total: 801\n  failed: 0\n  succeeded: 801\n  skipped: 0\n  duration: 16s 467ms\n"
+    },
+    "direct-Xemele.Tests": {
+      "result": "passed",
+      "detail": {
+        "total": 247,
+        "failed": 0,
+        "skipped": 0,
+        "streaming": [
+          {
+            "result": "Pass",
+            "output": "warm100=432; measured10000=0; measuredUnits=50000; measuredCalls=120000; totalUnits=50500; totalCalls=121205; completed=true\n"
+          }
+        ]
+      }
+    },
+    "direct-Xemele.Conformance.Tests": {
+      "result": "passed",
+      "detail": {
+        "total": 255,
+        "failed": 0,
+        "skipped": 0,
+        "streaming": []
+      }
+    },
+    "direct-Xemele.Differential.Tests": {
+      "result": "passed",
+      "detail": {
+        "total": 299,
+        "failed": 0,
+        "skipped": 0,
+        "streaming": []
+      }
+    },
+    "reference-provenance": {
+      "result": "passed",
+      "detail": {
+        "records": 242,
+        "sourceRevision": "a53a15482ef6a540d66f2dbc294d2d86c84b3eba",
+        "runnerSha256": "13868e77d496384f924d843810d1f8e9b47b24d9c883c6a808e1cb0d47dfcaba",
+        "runner": "/Users/sebastienros/.codex/worktrees/f887/xemele/artifacts/M2-streaming-allocation-probe/source-final-attempt1/pinned-reference/BclReference.dll",
+        "dotnet": "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet"
+      }
+    },
+    "compiled-api": {
+      "result": "passed",
+      "detail": {
+        "bootstrapEmptyApi": false,
+        "checkerOutput": "Matched 222 compiled members",
+        "matched": true,
+        "members": 222,
+        "report": "/Users/sebastienros/.codex/worktrees/f887/xemele/docs/reports/M2-streaming-allocation-probe/source-final-attempt1/runtime-api.json"
+      }
+    },
+    "discovery": {
+      "result": "passed",
+      "detail": {
+        "apiDeclarations": 222,
+        "apiFragments": [
+          "docs/api/M1-common.txt",
+          "docs/api/M1-dom.txt",
+          "docs/api/M1-serialize.txt",
+          "docs/api/M1-tree.txt"
+        ],
+        "bootstrapEmptyApi": false,
+        "corpusManifests": [
+          "tests/corpora/bootstrap/manifest.json",
+          "tests/corpora/xml/manifest.json"
+        ],
+        "fixtures": 3388,
+        "formatVersion": 1
+      }
+    },
+    "planning-regressions": {
+      "result": "passed",
+      "detail": "test_branch_implementation_does_not_unlock_dependents (test_tasks.TaskTrackingTests.test_branch_implementation_does_not_unlock_dependents) ... ok\ntest_cycle_rejected (test_tasks.TaskTrackingTests.test_cycle_rejected) ... ok\ntest_gate_cannot_omit_a_task (test_tasks.TaskTrackingTests.test_gate_cannot_omit_a_task) ... ok\ntest_initial_readiness (test_tasks.TaskTrackingTests.test_initial_readiness) ... ok\ntest_later_milestone_dependency_rejected (test_tasks.TaskTrackingTests.test_later_milestone_dependency_rejected) ... ok\ntest_malformed_status_reports_error (test_tasks.TaskTrackingTests.test_malformed_status_reports_error) ... ok\ntest_missing_integration_evidence_rejected (test_tasks.TaskTrackingTests.test_missing_integration_evidence_rejected) ... ok\ntest_missing_specification_reports_error (test_tasks.TaskTrackingTests.test_missing_specification_reports_error) ... ok\ntest_repository_graph_valid (test_tasks.TaskTrackingTests.test_repository_graph_valid) ... ok\ntest_similar_prefixes_are_not_ownership_overlap (test_tasks.TaskTrackingTests.test_similar_prefixes_are_not_ownership_overlap) ... ok\ntest_started_task_with_unverified_dependency_rejected (test_tasks.TaskTrackingTests.test_started_task_with_unverified_dependency_rejected) ... ok\ntest_unordered_path_overlap_rejected_case_insensitively (test_tasks.TaskTrackingTests.test_unordered_path_overlap_rejected_case_insensitively) ... ok\ntest_unproven_acceptance_rejected (test_tasks.TaskTrackingTests.test_unproven_acceptance_rejected) ... ok\ntest_verified_bootstrap_unlocks_independent_lanes (test_tasks.TaskTrackingTests.test_verified_bootstrap_unlocks_independent_lanes) ... ok\n\n----------------------------------------------------------------------\nRan 14 tests in 0.027s\n\nOK\n"
+    },
+    "planning-validation": {
+      "result": "passed",
+      "detail": "Validated 114 tasks: schema, evidence, acyclic dependencies, additive milestones, and ordered ownership.\n"
+    },
+    "final-audit": {
+      "result": "passed",
+      "detail": {
+        "committed": [
+          "docs/reports/M2-streaming-allocation-probe/Diagnostics/Diagnostics.csproj",
+          "docs/reports/M2-streaming-allocation-probe/Diagnostics/Program.cs",
+          "docs/reports/M2-streaming-allocation-probe/README.md",
+          "docs/reports/M2-streaming-allocation-probe/experiment-95006d1-attempt1/diagnostic-build.txt.gz",
+          "docs/reports/M2-streaming-allocation-probe/experiment-95006d1-attempt1/equivalent.txt.gz",
+          "docs/reports/M2-streaming-allocation-probe/experiment-95006d1-attempt1/original.txt.gz",
+          "docs/reports/M2-streaming-allocation-probe/experiment-f71cee2-attempt1/0.txt.gz",
+          "docs/reports/M2-streaming-allocation-probe/experiment-f71cee2-attempt1/1.txt.gz",
+          "docs/reports/M2-streaming-allocation-probe/experiment-f71cee2-attempt1/2.txt.gz",
+          "docs/reports/M2-streaming-allocation-probe/experiment-f71cee2-attempt1/3.txt.gz",
+          "docs/reports/M2-streaming-allocation-probe/experiment-f71cee2-attempt1/4.txt.gz",
+          "docs/reports/M2-streaming-allocation-probe/experiment-f71cee2-attempt1/diagnostic-build.txt.gz",
+          "docs/reports/M2-streaming-allocation-probe/experiment-f71cee2-attempt1/direct-focused.txt.gz",
+          "docs/reports/M2-streaming-allocation-probe/experiment-f71cee2-attempt1/direct-focused.xml.gz",
+          "docs/reports/M2-streaming-allocation-probe/experiment-f71cee2-attempt1/equivalent.txt.gz",
+          "docs/reports/M2-streaming-allocation-probe/experiment-f71cee2-attempt1/original.txt.gz",
+          "docs/reports/M2-streaming-allocation-probe/history/Xemele.Conformance.Tests.xml.gz",
+          "docs/reports/M2-streaming-allocation-probe/history/Xemele.Differential.Tests.xml.gz",
+          "docs/reports/M2-streaming-allocation-probe/history/Xemele.Tests.xml.gz",
+          "docs/reports/M2-streaming-allocation-probe/history/checks.txt.gz",
+          "docs/reports/M2-streaming-allocation-probe/history/summary.json",
+          "docs/reports/M2-streaming-allocation-probe/verify.py",
+          "tests/Xemele.Tests/M1-syntax/StreamingTests.cs",
+          "tests/Xemele.Tests/M2-streaming-allocation-probe/StreamingAllocationProbe.cs"
+        ],
+        "working": [],
+        "staged": [],
+        "untracked": [
+          "docs/reports/M2-streaming-allocation-probe/source-final-attempt1/Xemele.Conformance.Tests-counts.json",
+          "docs/reports/M2-streaming-allocation-probe/source-final-attempt1/Xemele.Conformance.Tests.xml.gz",
+          "docs/reports/M2-streaming-allocation-probe/source-final-attempt1/Xemele.Differential.Tests-counts.json",
+          "docs/reports/M2-streaming-allocation-probe/source-final-attempt1/Xemele.Differential.Tests.xml.gz",
+          "docs/reports/M2-streaming-allocation-probe/source-final-attempt1/Xemele.Tests-counts.json",
+          "docs/reports/M2-streaming-allocation-probe/source-final-attempt1/Xemele.Tests.xml.gz",
+          "docs/reports/M2-streaming-allocation-probe/source-final-attempt1/audit.json",
+          "docs/reports/M2-streaming-allocation-probe/source-final-attempt1/equivalent-allocations.json",
+          "docs/reports/M2-streaming-allocation-probe/source-final-attempt1/original-allocations.json",
+          "docs/reports/M2-streaming-allocation-probe/source-final-attempt1/reference-provenance.json",
+          "docs/reports/M2-streaming-allocation-probe/source-final-attempt1/runtime-api.json"
+        ]
+      }
+    }
+  },
+  "sourceRevision": "a53a15482ef6a540d66f2dbc294d2d86c84b3eba",
+  "dotnetInfo": ".NET SDK:\n Version:           10.0.400\n Commit:            14fbf8d527\n Workload version:  10.0.400-manifests.330ea142\n MSBuild version:   18.9.6+14fbf8d52\n\nRuntime Environment:\n OS Name:     Mac OS X\n OS Version:  15.8\n OS Platform: Darwin\n RID:         osx-arm64\n Base Path:   /Users/sebastienros/Library/Application Support/dotnetup/dotnet/sdk/10.0.400/\n\n.NET workloads installed:\nThere are no installed workloads to display.\nConfigured to use workload sets when installing new manifests.\nNo workload sets are installed. Run \"dotnet workload restore\" to install a workload set.\n\nHost:\n  Version:      11.0.0-rc.1.26425.128\n  Architecture: arm64\n  Commit:       3551975be0\n\n.NET SDKs installed:\n  8.0.424 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/sdk]\n  10.0.100 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/sdk]\n  10.0.400 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/sdk]\n  11.0.100-rc.1.26413.103 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/sdk]\n  11.0.100-rc.1.26425.128 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/sdk]\n\n.NET runtimes installed:\n  Microsoft.AspNetCore.App 8.0.30 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.AspNetCore.App]\n  Microsoft.AspNetCore.App 10.0.0 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.AspNetCore.App]\n  Microsoft.AspNetCore.App 10.0.11 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.AspNetCore.App]\n  Microsoft.AspNetCore.App 11.0.0-rc.1.26413.103 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.AspNetCore.App]\n  Microsoft.AspNetCore.App 11.0.0-rc.1.26425.128 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.AspNetCore.App]\n  Microsoft.NETCore.App 8.0.30 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App]\n  Microsoft.NETCore.App 10.0.0 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App]\n  Microsoft.NETCore.App 10.0.11 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App]\n  Microsoft.NETCore.App 11.0.0-rc.1.26413.103 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App]\n  Microsoft.NETCore.App 11.0.0-rc.1.26425.128 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App]\n\nOther architectures found:\n  None\n\nEnvironment variables:\n  DOTNET_CLI_USE_MSBUILD_SERVER            [0]\n  DOTNET_ROOT                              [/Users/sebastienros/Library/Application Support/dotnetup/dotnet]\n\nglobal.json file:\n  /Users/sebastienros/.codex/worktrees/f887/xemele/global.json\n\nLearn more:\n  https://aka.ms/dotnet/info\n\nDownload .NET:\n  https://aka.ms/dotnet/download\n",
+  "sourceHashes": {
+    "tests/Xemele.Tests/M1-syntax/StreamingTests.cs": "9e854c2db6b18d96c911b951e0ce6981b67b678a30daf5e16d586a9e78858c88",
+    "tests/Xemele.Tests/M2-streaming-allocation-probe/StreamingAllocationProbe.cs": "56539798ad3d0d085a5e72b98f20c51a7317cfb80118f099367c9c187b810267",
+    "docs/reports/M2-streaming-allocation-probe/Diagnostics/Program.cs": "10c387f3fe1623fb75fd610f72f1b80ba15d3fff5ef792db78ee13f2f021e1a8"
+  },
+  "failedChecks": [],
+  "scope": "Narrow streaming allocation child. Parent PI mandatory integrated allPass criterion remains required before consumer verification."
+}
