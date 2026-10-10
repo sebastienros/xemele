@@ -4,7 +4,7 @@
   "milestone": "M1",
   "title": "Repair linear validated DOM tree construction boundary",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M1-tree-dom-builder",
   "branch": "codex/m1-tree-dom-builder",
   "base_revision": "ed3d980890c172aa9a3d7c543b5fff5c11113456",
@@ -34,29 +34,100 @@
     {
       "id": "M1-tree-dom-builder-A1",
       "description": "Provide a documented internal fresh DOM construction boundary with constant work per newly created detached child and parser-validated unique attribute/namespace member; preserve owner, legal document/root structure, intern quota/capacity/version and NotifyMutation preflight/postcommit behavior; public general mutation checks unchanged.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "builder-source-review",
+        "builder-correctness"
+      ]
     },
     {
       "id": "M1-tree-dom-builder-A2",
       "description": "Verify deep and member-heavy construction with count-based linear-work evidence, ownership/freshness/lifetime/order/identity checks, quota/capacity/version rejection without partial mutation, unchanged public API and earlier tree/input/syntax behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "builder-correctness",
+        "builder-source-review"
+      ]
     },
     {
       "id": "M1-tree-dom-builder-A3",
       "description": "Demonstrate helpers using only verified prerequisites and an independent model sink/sample, with actual warm/setup/owned allocation and applicable ShortRun comparison evidence at known source; no unmerged DOM or serializer dependency.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "builder-correctness",
+        "builder-measurements",
+        "builder-annotation-build"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Tree/DomBuilder.cs: XmlDocument.BeginDomConstruction and internal DomBuilder fresh-leaf/unique-member boundary",
+    "tests/Xemele.Tests/M1-tree-dom-builder/DomBuilderTests.cs: 11 invariants/count/allocation regression tests",
+    "samples/M1-tree-dom-builder/: independent owned syntax model replay and separate allocation/retention probes",
+    "benchmarks/Xemele.Benchmarks/M1-tree-dom-builder/DomBuilderBenchmarks.cs: 12 comparable construction cases",
+    "docs/reports/M1-tree-dom-builder/: internal consumer contract, known-revision verifier and durable results"
+  ],
+  "evidence": [
+    {
+      "id": "builder-source-review",
+      "kind": "review",
+      "revision": "d492200b588514e673afe771011171bb91a94c49",
+      "command": "Coordinator 01a1230c-1353-7e01-afbe-a53c9c018264 independent read-only review",
+      "result": "passed",
+      "summary": "Coordinator found no blockers in freshness/owner/container/cycle exclusion, outside structural counters/version, constant one-root bookkeeping, quota/capacity/version preflight/notifications and explicit trusted unique-member precondition. Runtime source unchanged in later commits. Review ran no tests.",
+      "artifact": "docs/reports/M1-tree-dom-builder/README.md"
+    },
+    {
+      "id": "builder-correctness",
+      "kind": "check",
+      "revision": "4a5102bd7c1894e69f5d6be2a67fba839e9500ad",
+      "command": "PATH=\"/Users/sebastienros/Library/Application Support/dotnetup/dotnet:$PATH\" DOTNET_CLI_USE_MSBUILD_SERVER=0 python3 docs/reports/M1-tree-dom-builder/verify.py",
+      "result": "passed",
+      "summary": "Pinned SDK10.0.400 Release zero warnings/errors; builder11/full169/Tree14/Input10/Syntax70/Foundation11 passed without skips. Explicitly rebuilt foundation M1/M2/ApiProbe and all M1 models/protocol38; actual mandatory fragment API and approved golden192 matched. Source model replay, isolated local-feed NuGet consumer, planning102 and diff checks passed. Warm4096 leaf attachments0B and warm1000 unique member pairs0B with prepared names/capacity; setup, owned growth and retained estimate separately reported.",
+      "artifact": "docs/reports/M1-tree-dom-builder/checks.txt"
+    },
+    {
+      "id": "builder-measurements",
+      "kind": "check",
+      "revision": "4a5102bd7c1894e69f5d6be2a67fba839e9500ad",
+      "command": "dotnet run --project benchmarks/Xemele.Benchmarks -c Release --no-build --no-restore -- --filter *DomBuilderBenchmarks* --job short --artifacts artifacts/M1-tree-dom-builder/bdn",
+      "result": "passed",
+      "summary": "Exclusive ordinary-priority M4Pro Arm64 .NET10.0.11:12 workloads each exited0 with3 actual measurements, one configuration. At2048 public/validated deep2333.795/91.351us, document4467.203/78.457us, member pairs10698.230/290.910us. Full construction adds64B builder; persistent storage comparable. Priority elevation denied, confidence ranges retained, provisional single-host results; composition/x64 remain follow-ups. Original rejected CLI spelling did not start timing; two later coordination-cancelled partial repeats are retained and not passing.",
+      "artifact": "docs/reports/M1-tree-dom-builder/bdn/workload-audit.txt"
+    },
+    {
+      "id": "builder-annotation-build",
+      "kind": "check",
+      "revision": "8a5c714cabd1375f568a6b40b39628fba5b32453",
+      "command": "dotnet build benchmarks/Xemele.Benchmarks/Xemele.Benchmarks.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false; class-configured targeted benchmark discovery without CLI job override",
+      "result": "passed",
+      "summary": "User-requested MemoryDiagnoser/ShortRunJob class annotation committed; Release build zero warnings/errors and discovery exactly12/one configuration. Runtime/hotpaths/tests unchanged. Both initiated partial repeats cancelled under overlapping coordinator instructions; neither accepted as completed. Coordinator accepted original12 complete measurements for unchanged runtime; no further timing.",
+      "artifact": "docs/reports/M1-tree-dom-builder/README.md"
+    },
+    {
+      "id": "builder-cancelled-repeats",
+      "kind": "check",
+      "revision": "8a5c714cabd1375f568a6b40b39628fba5b32453",
+      "command": "dotnet run --project benchmarks/Xemele.Benchmarks -c Release --no-build --no-restore -- --filter *DomBuilderBenchmarks* --artifacts artifacts/M1-tree-dom-builder/bdn",
+      "result": "skipped",
+      "summary": "Two class-configured repetitions were cancelled after overlapping coordination steering, each wrapper exit143. Discovery12/one configuration observed, but incomplete measurement results were never accepted. Complete original12 remains separate; coordinator explicitly accepted unchanged runtime measurements and instructed no further timing.",
+      "artifact": "docs/reports/M1-tree-dom-builder/bdn/benchmark-cancelled1.txt.gz"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Narrow repair requested by DOM owner after integrated public insertion/member key scans would make trusted parsed construction quadratic. Original verified tree evidence remains historical.",
-    "checks": [],
-    "remaining": [],
-    "requests": []
+    "summary": "Implemented exclusive internal fresh-document construction with newest detached leaf, previously built container, one-root bit and outside structural mutation detection; unique parser-validated members append via original primitives, preserving validation/quotas/versions/notifications. Public API192 unchanged on worker base; no parser/DOM/serializer dependency.",
+    "checks": [
+      "Known-source verifier at4a5102b passed builder11/full169 and prerequisite/model/API/sample/package/allocation checks. Original focused test9/10 had an incorrect text-parent cycle expectation; corrected test passes. Sandbox NuGet DNS/MTP IPC failures recovered with authorized escalation.",
+      "All12 original measurement workloads passed; normal scheduling priority limitation recorded. Annotation-only8a5c714 driver build/discovery passed; two partial coordination-cancelled repeats never counted as passing. All worker processes stopped."
+    ],
+    "remaining": [
+      "Coordinator integration and combined verification required; integration_revision remains null. Runtime review atd492200 applies unchanged.",
+      "End-to-end DOM confirmation and cross-architecture performance release checks remain with later owners."
+    ],
+    "requests": [
+      "DOM consumer: BeginDomConstruction only on fresh document; Create* then immediate AppendChild; AppendAttribute requires validated unique expanded key and AppendNamespaceDeclaration requires validated unique prefix. Probe borrowed callback names before materializing miss strings; own text before retaining. Exact contract in owned README.",
+      "Root verifier must use approved Serializer.golden.txt override for its combined215 API plus mandatory actual fragment comparison; worker evidence192 is historical. No public API fragment needed for internal helper."
+    ]
   }
 }
