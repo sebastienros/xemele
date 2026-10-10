@@ -1,0 +1,540 @@
+{
+  "result": "passed",
+  "host": "macOS-15.8.1-arm64-arm-64bit-Mach-O",
+  "architecture": "arm64",
+  "timing": "not run",
+  "runtimeSettings": "default JIT/GC/test parallelism",
+  "arguments": {
+    "report_prefix": "isolated-f3e47be-attempt1",
+    "expected_branch": "codex/m2-pi-allocation-probe",
+    "audit_base": "b72c2a1bb2cf4f53c322b198f91923bfeed94b8f",
+    "runtime_count": 247,
+    "conformance_count": 255,
+    "differential_count": 299,
+    "api_count": 222,
+    "fixture_count": 3388,
+    "planning_count": 14,
+    "task_count": 114
+  },
+  "checks": {
+    "archive-regression": {
+      "result": "passed",
+      "detail": "test_malformed_first_report_preserves_all_later_raw_files (test_archive.ChildArchiveTests.test_malformed_first_report_preserves_all_later_raw_files) ... ok\n\n----------------------------------------------------------------------\nRan 1 test in 0.057s\n\nOK\n"
+    },
+    "diagnostic-original": {
+      "result": "passed",
+      "detail": {
+        "mode": "original",
+        "runtime": "10.0.11",
+        "warmIterations": 100,
+        "measuredIterations": 10000,
+        "coldSetupBytes": 6792,
+        "rootFirstUseBytes": 312,
+        "firstPiBytes": 368,
+        "remaining99WarmBytes": 0,
+        "steadyBytes": 128,
+        "primitiveBytes": null,
+        "completionBytes": 0,
+        "warmCalls": 1003,
+        "warmUnits": 400,
+        "measuredCalls": 100000,
+        "measuredUnits": 40000,
+        "completed": "Completed",
+        "consumedCompletion": 4,
+        "runtimeSettings": "default; no tiering, JIT, GC or test parallelism overrides",
+        "scope": "Synchronous borrowed PI primitive; equivalent primitiveBytes snapshots enclose the whole linked checked loop; steadyBytes includes caller dispatch; setup/output/completion outside primitive; no retained-memory estimate or timing"
+      }
+    },
+    "diagnostic-equivalent": {
+      "result": "passed",
+      "detail": {
+        "mode": "equivalent",
+        "runtime": "10.0.11",
+        "warmIterations": 100,
+        "measuredIterations": 10000,
+        "coldSetupBytes": 6792,
+        "rootFirstUseBytes": 312,
+        "firstPiBytes": 368,
+        "remaining99WarmBytes": 0,
+        "steadyBytes": 0,
+        "primitiveBytes": 0,
+        "completionBytes": 0,
+        "warmCalls": 1003,
+        "warmUnits": 400,
+        "measuredCalls": 100000,
+        "measuredUnits": 40000,
+        "completed": "Completed",
+        "consumedCompletion": 4,
+        "runtimeSettings": "default; no tiering, JIT, GC or test parallelism overrides",
+        "scope": "Synchronous borrowed PI primitive; equivalent primitiveBytes snapshots enclose the whole linked checked loop; steadyBytes includes caller dispatch; setup/output/completion outside primitive; no retained-memory estimate or timing"
+      }
+    },
+    "focused-mtp": {
+      "result": "passed",
+      "detail": "Running tests from /Users/sebastienros/.codex/worktrees/b918/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll (net10.0|arm64)\n/Users/sebastienros/.codex/worktrees/b918/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll (net10.0|arm64) passed (934ms)\n\nTest run summary: Passed!\n  total: 1\n  failed: 0\n  succeeded: 1\n  skipped: 0\n  duration: 1s 228ms\n"
+    },
+    "cumulative-mtp": {
+      "result": "passed",
+      "detail": "Running tests from /Users/sebastienros/.codex/worktrees/b918/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll (net10.0|arm64)\nRunning tests from /Users/sebastienros/.codex/worktrees/b918/xemele/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll (net10.0|arm64)\nRunning tests from /Users/sebastienros/.codex/worktrees/b918/xemele/tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll (net10.0|arm64)\n/Users/sebastienros/.codex/worktrees/b918/xemele/tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll (net10.0|arm64) passed (880ms)\n/Users/sebastienros/.codex/worktrees/b918/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll (net10.0|arm64) passed (1s 342ms)\n/Users/sebastienros/.codex/worktrees/b918/xemele/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll (net10.0|arm64) passed (17s 130ms)\n\nTest run summary: Passed!\n  /Users/sebastienros/.codex/worktrees/b918/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll (net10.0|arm64) passed (1s 342ms)\n  /Users/sebastienros/.codex/worktrees/b918/xemele/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll (net10.0|arm64) passed (17s 130ms)\n  /Users/sebastienros/.codex/worktrees/b918/xemele/tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll (net10.0|arm64) passed (880ms)\n\n  total: 801\n  failed: 0\n  succeeded: 801\n  skipped: 0\n  duration: 17s 381ms\n"
+    },
+    "direct-Xemele.Tests": {
+      "result": "passed",
+      "detail": {
+        "total": 247,
+        "failed": 0,
+        "skipped": 0,
+        "pi": [
+          {
+            "result": "Pass",
+            "output": "real=0; positive=6400000; warm100=368; measured10000=0; measuredUnits=40000; measuredCalls=100000; totalUnits=40400; totalCalls=101005; completed=true; artifacts=/Users/sebastienros/.codex/worktrees/b918/xemele/artifacts/M2-pi-allocation-probe/child-runs/40259-d6903ddc8c684e488e545b03c36763ad\n"
+          }
+        ]
+      }
+    },
+    "direct-Xemele.Conformance.Tests": {
+      "result": "passed",
+      "detail": {
+        "total": 255,
+        "failed": 0,
+        "skipped": 0,
+        "pi": []
+      }
+    },
+    "direct-Xemele.Differential.Tests": {
+      "result": "passed",
+      "detail": {
+        "total": 299,
+        "failed": 0,
+        "skipped": 0,
+        "pi": []
+      }
+    },
+    "reference-provenance": {
+      "result": "passed",
+      "detail": {
+        "records": 242,
+        "sourceRevision": "f3e47be7911fd3805b3ae424000e83ccdce370c4",
+        "runnerSha256": "e680aa0e615118f2cb9a2a3989ddc68ed99bf08da91e648de50783710f49a3b6",
+        "runner": "/Users/sebastienros/.codex/worktrees/b918/xemele/artifacts/M2-pi-allocation-probe/isolated-f3e47be-attempt1/pinned-reference/BclReference.dll",
+        "dotnet": "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet"
+      }
+    },
+    "child-provenance": {
+      "result": "passed",
+      "detail": [
+        {
+          "directory": "39938-a6b27836c2044d369ee1cbbafcae95bd",
+          "reports": {
+            "real": {
+              "Version": 1,
+              "Mode": "real",
+              "Token": "a6b27836c2044d369ee1cbbafcae95bd",
+              "ProcessId": 39939,
+              "Actual": {
+                "Executable": "/Users/sebastienros/.codex/worktrees/b918/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests",
+                "ExecutableSha256": "C00FD9CDDEDFDC2F3F6794FB4B9218CA9860D3A6E64B5F9C216EF3FE6E8B7E49",
+                "TestAssembly": "/Users/sebastienros/.codex/worktrees/b918/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll",
+                "TestSha256": "4EE8FDE63ECFAEEFD3411A345F3A04312C51969D2A4B702E250884B4945E7522",
+                "TestVersion": "1.0.0+f3e47be7911fd3805b3ae424000e83ccdce370c4",
+                "ProductAssembly": "/Users/sebastienros/.codex/worktrees/b918/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.dll",
+                "ProductSha256": "DD989FD8975A9236E24C7B5636BA602B2BE644D381EBAA01D5CF4686D2185E1B",
+                "ProductVersion": "1.0.0+f3e47be7911fd3805b3ae424000e83ccdce370c4",
+                "RuntimeVersion": "10.0.11",
+                "CoreLibrary": "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App/10.0.11/System.Private.CoreLib.dll",
+                "CoreLibrarySha256": "9ED74C2E2EFEEE87F1F2D7FFE1736B7E9164CE248516EA39402A725EEDC87AF6",
+                "NativeRuntimeSha256": "10B24D0B11C7F6D838114744097BF10DF9B08B906AFC9016567631A1C009DFD0",
+                "HelperIlSha256": "4B855BE6032C91C0CEEB0C2A4DB86BC3C96647553BE41ABC7B0E33A3578AA2BB",
+                "RuntimeConfigSha256": "9950D4583CFC9A106857C0D5B8A75B53E8774852B57B80BC3823A74D44A4D87F"
+              },
+              "WarmIterations": 100,
+              "MeasuredIterations": 10000,
+              "WarmBytes": 368,
+              "AllocatedBytes": 0,
+              "WarmUnits": 400,
+              "WarmCalls": 1000,
+              "MeasuredUnits": 40000,
+              "MeasuredCalls": 100000,
+              "TotalUnits": 40400,
+              "TotalCalls": 101005,
+              "Completion": "Completed",
+              "CompletionConsumed": 4,
+              "DiagnosticCode": null,
+              "EscapedObjectLength": 0
+            },
+            "positive": {
+              "Version": 1,
+              "Mode": "positive",
+              "Token": "a6b27836c2044d369ee1cbbafcae95bd",
+              "ProcessId": 39940,
+              "Actual": {
+                "Executable": "/Users/sebastienros/.codex/worktrees/b918/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests",
+                "ExecutableSha256": "C00FD9CDDEDFDC2F3F6794FB4B9218CA9860D3A6E64B5F9C216EF3FE6E8B7E49",
+                "TestAssembly": "/Users/sebastienros/.codex/worktrees/b918/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll",
+                "TestSha256": "4EE8FDE63ECFAEEFD3411A345F3A04312C51969D2A4B702E250884B4945E7522",
+                "TestVersion": "1.0.0+f3e47be7911fd3805b3ae424000e83ccdce370c4",
+                "ProductAssembly": "/Users/sebastienros/.codex/worktrees/b918/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.dll",
+                "ProductSha256": "DD989FD8975A9236E24C7B5636BA602B2BE644D381EBAA01D5CF4686D2185E1B",
+                "ProductVersion": "1.0.0+f3e47be7911fd3805b3ae424000e83ccdce370c4",
+                "RuntimeVersion": "10.0.11",
+                "CoreLibrary": "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App/10.0.11/System.Private.CoreLib.dll",
+                "CoreLibrarySha256": "9ED74C2E2EFEEE87F1F2D7FFE1736B7E9164CE248516EA39402A725EEDC87AF6",
+                "NativeRuntimeSha256": "10B24D0B11C7F6D838114744097BF10DF9B08B906AFC9016567631A1C009DFD0",
+                "HelperIlSha256": "4B855BE6032C91C0CEEB0C2A4DB86BC3C96647553BE41ABC7B0E33A3578AA2BB",
+                "RuntimeConfigSha256": "9950D4583CFC9A106857C0D5B8A75B53E8774852B57B80BC3823A74D44A4D87F"
+              },
+              "WarmIterations": 100,
+              "MeasuredIterations": 10000,
+              "WarmBytes": 64368,
+              "AllocatedBytes": 6400000,
+              "WarmUnits": 400,
+              "WarmCalls": 1000,
+              "MeasuredUnits": 40000,
+              "MeasuredCalls": 100000,
+              "TotalUnits": 40400,
+              "TotalCalls": 101005,
+              "Completion": "Completed",
+              "CompletionConsumed": 4,
+              "DiagnosticCode": null,
+              "EscapedObjectLength": 37
+            }
+          }
+        },
+        {
+          "directory": "39942-9e6da332e9a4466e93c05751c092e7d4",
+          "reports": {
+            "real": {
+              "Version": 1,
+              "Mode": "real",
+              "Token": "9e6da332e9a4466e93c05751c092e7d4",
+              "ProcessId": 39945,
+              "Actual": {
+                "Executable": "/Users/sebastienros/.codex/worktrees/b918/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests",
+                "ExecutableSha256": "C00FD9CDDEDFDC2F3F6794FB4B9218CA9860D3A6E64B5F9C216EF3FE6E8B7E49",
+                "TestAssembly": "/Users/sebastienros/.codex/worktrees/b918/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll",
+                "TestSha256": "4EE8FDE63ECFAEEFD3411A345F3A04312C51969D2A4B702E250884B4945E7522",
+                "TestVersion": "1.0.0+f3e47be7911fd3805b3ae424000e83ccdce370c4",
+                "ProductAssembly": "/Users/sebastienros/.codex/worktrees/b918/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.dll",
+                "ProductSha256": "DD989FD8975A9236E24C7B5636BA602B2BE644D381EBAA01D5CF4686D2185E1B",
+                "ProductVersion": "1.0.0+f3e47be7911fd3805b3ae424000e83ccdce370c4",
+                "RuntimeVersion": "10.0.11",
+                "CoreLibrary": "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App/10.0.11/System.Private.CoreLib.dll",
+                "CoreLibrarySha256": "9ED74C2E2EFEEE87F1F2D7FFE1736B7E9164CE248516EA39402A725EEDC87AF6",
+                "NativeRuntimeSha256": "10B24D0B11C7F6D838114744097BF10DF9B08B906AFC9016567631A1C009DFD0",
+                "HelperIlSha256": "4B855BE6032C91C0CEEB0C2A4DB86BC3C96647553BE41ABC7B0E33A3578AA2BB",
+                "RuntimeConfigSha256": "9950D4583CFC9A106857C0D5B8A75B53E8774852B57B80BC3823A74D44A4D87F"
+              },
+              "WarmIterations": 100,
+              "MeasuredIterations": 10000,
+              "WarmBytes": 368,
+              "AllocatedBytes": 0,
+              "WarmUnits": 400,
+              "WarmCalls": 1000,
+              "MeasuredUnits": 40000,
+              "MeasuredCalls": 100000,
+              "TotalUnits": 40400,
+              "TotalCalls": 101005,
+              "Completion": "Completed",
+              "CompletionConsumed": 4,
+              "DiagnosticCode": null,
+              "EscapedObjectLength": 0
+            },
+            "positive": {
+              "Version": 1,
+              "Mode": "positive",
+              "Token": "9e6da332e9a4466e93c05751c092e7d4",
+              "ProcessId": 39954,
+              "Actual": {
+                "Executable": "/Users/sebastienros/.codex/worktrees/b918/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests",
+                "ExecutableSha256": "C00FD9CDDEDFDC2F3F6794FB4B9218CA9860D3A6E64B5F9C216EF3FE6E8B7E49",
+                "TestAssembly": "/Users/sebastienros/.codex/worktrees/b918/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll",
+                "TestSha256": "4EE8FDE63ECFAEEFD3411A345F3A04312C51969D2A4B702E250884B4945E7522",
+                "TestVersion": "1.0.0+f3e47be7911fd3805b3ae424000e83ccdce370c4",
+                "ProductAssembly": "/Users/sebastienros/.codex/worktrees/b918/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.dll",
+                "ProductSha256": "DD989FD8975A9236E24C7B5636BA602B2BE644D381EBAA01D5CF4686D2185E1B",
+                "ProductVersion": "1.0.0+f3e47be7911fd3805b3ae424000e83ccdce370c4",
+                "RuntimeVersion": "10.0.11",
+                "CoreLibrary": "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App/10.0.11/System.Private.CoreLib.dll",
+                "CoreLibrarySha256": "9ED74C2E2EFEEE87F1F2D7FFE1736B7E9164CE248516EA39402A725EEDC87AF6",
+                "NativeRuntimeSha256": "10B24D0B11C7F6D838114744097BF10DF9B08B906AFC9016567631A1C009DFD0",
+                "HelperIlSha256": "4B855BE6032C91C0CEEB0C2A4DB86BC3C96647553BE41ABC7B0E33A3578AA2BB",
+                "RuntimeConfigSha256": "9950D4583CFC9A106857C0D5B8A75B53E8774852B57B80BC3823A74D44A4D87F"
+              },
+              "WarmIterations": 100,
+              "MeasuredIterations": 10000,
+              "WarmBytes": 64368,
+              "AllocatedBytes": 6400000,
+              "WarmUnits": 400,
+              "WarmCalls": 1000,
+              "MeasuredUnits": 40000,
+              "MeasuredCalls": 100000,
+              "TotalUnits": 40400,
+              "TotalCalls": 101005,
+              "Completion": "Completed",
+              "CompletionConsumed": 4,
+              "DiagnosticCode": null,
+              "EscapedObjectLength": 37
+            }
+          }
+        },
+        {
+          "directory": "40259-d6903ddc8c684e488e545b03c36763ad",
+          "reports": {
+            "real": {
+              "Version": 1,
+              "Mode": "real",
+              "Token": "d6903ddc8c684e488e545b03c36763ad",
+              "ProcessId": 40262,
+              "Actual": {
+                "Executable": "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+                "ExecutableSha256": "E86DEB33D0DACAD9CC1224466DF6418149CB8E13CB8AFD0DC6815EA6B7807975",
+                "TestAssembly": "/Users/sebastienros/.codex/worktrees/b918/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll",
+                "TestSha256": "4EE8FDE63ECFAEEFD3411A345F3A04312C51969D2A4B702E250884B4945E7522",
+                "TestVersion": "1.0.0+f3e47be7911fd3805b3ae424000e83ccdce370c4",
+                "ProductAssembly": "/Users/sebastienros/.codex/worktrees/b918/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.dll",
+                "ProductSha256": "DD989FD8975A9236E24C7B5636BA602B2BE644D381EBAA01D5CF4686D2185E1B",
+                "ProductVersion": "1.0.0+f3e47be7911fd3805b3ae424000e83ccdce370c4",
+                "RuntimeVersion": "10.0.11",
+                "CoreLibrary": "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App/10.0.11/System.Private.CoreLib.dll",
+                "CoreLibrarySha256": "9ED74C2E2EFEEE87F1F2D7FFE1736B7E9164CE248516EA39402A725EEDC87AF6",
+                "NativeRuntimeSha256": "10B24D0B11C7F6D838114744097BF10DF9B08B906AFC9016567631A1C009DFD0",
+                "HelperIlSha256": "4B855BE6032C91C0CEEB0C2A4DB86BC3C96647553BE41ABC7B0E33A3578AA2BB",
+                "RuntimeConfigSha256": "9950D4583CFC9A106857C0D5B8A75B53E8774852B57B80BC3823A74D44A4D87F"
+              },
+              "WarmIterations": 100,
+              "MeasuredIterations": 10000,
+              "WarmBytes": 368,
+              "AllocatedBytes": 0,
+              "WarmUnits": 400,
+              "WarmCalls": 1000,
+              "MeasuredUnits": 40000,
+              "MeasuredCalls": 100000,
+              "TotalUnits": 40400,
+              "TotalCalls": 101005,
+              "Completion": "Completed",
+              "CompletionConsumed": 4,
+              "DiagnosticCode": null,
+              "EscapedObjectLength": 0
+            },
+            "positive": {
+              "Version": 1,
+              "Mode": "positive",
+              "Token": "d6903ddc8c684e488e545b03c36763ad",
+              "ProcessId": 40264,
+              "Actual": {
+                "Executable": "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+                "ExecutableSha256": "E86DEB33D0DACAD9CC1224466DF6418149CB8E13CB8AFD0DC6815EA6B7807975",
+                "TestAssembly": "/Users/sebastienros/.codex/worktrees/b918/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll",
+                "TestSha256": "4EE8FDE63ECFAEEFD3411A345F3A04312C51969D2A4B702E250884B4945E7522",
+                "TestVersion": "1.0.0+f3e47be7911fd3805b3ae424000e83ccdce370c4",
+                "ProductAssembly": "/Users/sebastienros/.codex/worktrees/b918/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.dll",
+                "ProductSha256": "DD989FD8975A9236E24C7B5636BA602B2BE644D381EBAA01D5CF4686D2185E1B",
+                "ProductVersion": "1.0.0+f3e47be7911fd3805b3ae424000e83ccdce370c4",
+                "RuntimeVersion": "10.0.11",
+                "CoreLibrary": "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App/10.0.11/System.Private.CoreLib.dll",
+                "CoreLibrarySha256": "9ED74C2E2EFEEE87F1F2D7FFE1736B7E9164CE248516EA39402A725EEDC87AF6",
+                "NativeRuntimeSha256": "10B24D0B11C7F6D838114744097BF10DF9B08B906AFC9016567631A1C009DFD0",
+                "HelperIlSha256": "4B855BE6032C91C0CEEB0C2A4DB86BC3C96647553BE41ABC7B0E33A3578AA2BB",
+                "RuntimeConfigSha256": "9950D4583CFC9A106857C0D5B8A75B53E8774852B57B80BC3823A74D44A4D87F"
+              },
+              "WarmIterations": 100,
+              "MeasuredIterations": 10000,
+              "WarmBytes": 64368,
+              "AllocatedBytes": 6400000,
+              "WarmUnits": 400,
+              "WarmCalls": 1000,
+              "MeasuredUnits": 40000,
+              "MeasuredCalls": 100000,
+              "TotalUnits": 40400,
+              "TotalCalls": 101005,
+              "Completion": "Completed",
+              "CompletionConsumed": 4,
+              "DiagnosticCode": null,
+              "EscapedObjectLength": 37
+            }
+          }
+        }
+      ]
+    },
+    "protocol-negatives": {
+      "result": "passed",
+      "detail": "unknown-mode {'result': 'passed', 'actualExit': 1, 'total': 1, 'failure': 'System.InvalidOperationException : Invalid internal PI child guard.'}\nincomplete-mode {'result': 'passed', 'actualExit': 1, 'total': 1, 'failure': 'System.InvalidOperationException : Invalid internal PI child guard.'}\nmissing-required-field {'result': 'passed', 'actualExit': 1, 'total': 1, 'failure': \"System.Text.Json.JsonException : JSON deserialization for type 'Xemele.Tests.PiTargets.PiAllocationChild+Request' was missing required properties including: 'Expected'.\"}\nmalformed-json {'result': 'passed', 'actualExit': 1, 'total': 1, 'failure': 'System.Text.Json.JsonException : \\'b\\' is an invalid start of a property name. Expected a \\'\\\\\"\\'. Path: $ | LineNumber: 0 | BytePositionInLine: 1.\\n---- System.Text.Json.JsonReaderException : \\'b\\' is an invalid start of a property name. Expected a \\'\\\\\"\\'. LineNumber: 0 | BytePositionInLine: 1.'}\nunknown-json-member {'result': 'passed', 'actualExit': 1, 'total': 1, 'failure': \"System.Text.Json.JsonException : The JSON property 'UnexpectedProtocolField' could not be mapped to any .NET member contained in type 'Xemele.Tests.PiTargets.PiAllocationChild+Request'.\"}\nprovenance-mismatch {'result': 'passed', 'actualExit': 1, 'total': 1, 'failure': 'System.InvalidOperationException : Child executable/compiled product/runtime provenance mismatch.'}\nhost-mismatch {'result': 'passed', 'actualExit': 1, 'total': 1, 'failure': 'System.InvalidOperationException : Configured dotnet differs from the active runtime installation.'}\n"
+    },
+    "compiled-api": {
+      "result": "passed",
+      "detail": {
+        "bootstrapEmptyApi": false,
+        "checkerOutput": "Matched 222 compiled members",
+        "matched": true,
+        "members": 222,
+        "report": "/Users/sebastienros/.codex/worktrees/b918/xemele/docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1/runtime-api.json"
+      }
+    },
+    "discovery": {
+      "result": "passed",
+      "detail": {
+        "apiDeclarations": 222,
+        "apiFragments": [
+          "docs/api/M1-common.txt",
+          "docs/api/M1-dom.txt",
+          "docs/api/M1-serialize.txt",
+          "docs/api/M1-tree.txt"
+        ],
+        "bootstrapEmptyApi": false,
+        "corpusManifests": [
+          "tests/corpora/bootstrap/manifest.json",
+          "tests/corpora/xml/manifest.json"
+        ],
+        "fixtures": 3388,
+        "formatVersion": 1
+      }
+    },
+    "planning-regressions": {
+      "result": "passed",
+      "detail": "test_branch_implementation_does_not_unlock_dependents (test_tasks.TaskTrackingTests.test_branch_implementation_does_not_unlock_dependents) ... ok\ntest_cycle_rejected (test_tasks.TaskTrackingTests.test_cycle_rejected) ... ok\ntest_gate_cannot_omit_a_task (test_tasks.TaskTrackingTests.test_gate_cannot_omit_a_task) ... ok\ntest_initial_readiness (test_tasks.TaskTrackingTests.test_initial_readiness) ... ok\ntest_later_milestone_dependency_rejected (test_tasks.TaskTrackingTests.test_later_milestone_dependency_rejected) ... ok\ntest_malformed_status_reports_error (test_tasks.TaskTrackingTests.test_malformed_status_reports_error) ... ok\ntest_missing_integration_evidence_rejected (test_tasks.TaskTrackingTests.test_missing_integration_evidence_rejected) ... ok\ntest_missing_specification_reports_error (test_tasks.TaskTrackingTests.test_missing_specification_reports_error) ... ok\ntest_repository_graph_valid (test_tasks.TaskTrackingTests.test_repository_graph_valid) ... ok\ntest_similar_prefixes_are_not_ownership_overlap (test_tasks.TaskTrackingTests.test_similar_prefixes_are_not_ownership_overlap) ... ok\ntest_started_task_with_unverified_dependency_rejected (test_tasks.TaskTrackingTests.test_started_task_with_unverified_dependency_rejected) ... ok\ntest_unordered_path_overlap_rejected_case_insensitively (test_tasks.TaskTrackingTests.test_unordered_path_overlap_rejected_case_insensitively) ... ok\ntest_unproven_acceptance_rejected (test_tasks.TaskTrackingTests.test_unproven_acceptance_rejected) ... ok\ntest_verified_bootstrap_unlocks_independent_lanes (test_tasks.TaskTrackingTests.test_verified_bootstrap_unlocks_independent_lanes) ... ok\n\n----------------------------------------------------------------------\nRan 14 tests in 0.054s\n\nOK\n"
+    },
+    "planning-validation": {
+      "result": "passed",
+      "detail": "Validated 114 tasks: schema, evidence, acyclic dependencies, additive milestones, and ordered ownership.\n"
+    },
+    "final-audit": {
+      "result": "passed",
+      "detail": {
+        "committed": [
+          "docs/reports/M2-pi-allocation-probe/Diagnostics/Diagnostics.csproj",
+          "docs/reports/M2-pi-allocation-probe/Diagnostics/Program.cs",
+          "docs/reports/M2-pi-allocation-probe/README.md",
+          "docs/reports/M2-pi-allocation-probe/handoff-audit.json",
+          "docs/reports/M2-pi-allocation-probe/history/bounded-checkpoint-checks.txt.gz",
+          "docs/reports/M2-pi-allocation-probe/history/bounded-checkpoint-summary.json",
+          "docs/reports/M2-pi-allocation-probe/history/checkpoint-checks.txt.gz",
+          "docs/reports/M2-pi-allocation-probe/history/checkpoint-summary.json",
+          "docs/reports/M2-pi-allocation-probe/history/encoding-integration-cd75317-attempt1/Xemele.Tests.xml.gz",
+          "docs/reports/M2-pi-allocation-probe/history/encoding-integration-cd75317-attempt1/checks.txt",
+          "docs/reports/M2-pi-allocation-probe/history/encoding-integration-cd75317-attempt1/preservation.json",
+          "docs/reports/M2-pi-allocation-probe/history/encoding-integration-cd75317-attempt1/raw-checks.txt.gz",
+          "docs/reports/M2-pi-allocation-probe/history/encoding-integration-cd75317-attempt1/summary.json",
+          "docs/reports/M2-pi-allocation-probe/history/runtime-after-mtp.xml.gz",
+          "docs/reports/M2-pi-allocation-probe/protocol_negative.py",
+          "docs/reports/M2-pi-allocation-probe/source-0e04b7c-attempt1/Xemele.Conformance.Tests.xml.gz",
+          "docs/reports/M2-pi-allocation-probe/source-0e04b7c-attempt1/Xemele.Differential.Tests.xml.gz",
+          "docs/reports/M2-pi-allocation-probe/source-0e04b7c-attempt1/Xemele.Tests.xml.gz",
+          "docs/reports/M2-pi-allocation-probe/source-0e04b7c-attempt1/audit.json",
+          "docs/reports/M2-pi-allocation-probe/source-0e04b7c-attempt1/checks.txt.gz",
+          "docs/reports/M2-pi-allocation-probe/source-0e04b7c-attempt1/reference-provenance.json",
+          "docs/reports/M2-pi-allocation-probe/source-0e04b7c-attempt1/runtime-api.json",
+          "docs/reports/M2-pi-allocation-probe/source-0e04b7c-attempt1/summary.json",
+          "docs/reports/M2-pi-allocation-probe/source-9286cd6-attempt1/Xemele.Conformance.Tests.xml.gz",
+          "docs/reports/M2-pi-allocation-probe/source-9286cd6-attempt1/Xemele.Differential.Tests.xml.gz",
+          "docs/reports/M2-pi-allocation-probe/source-9286cd6-attempt1/Xemele.Tests.xml.gz",
+          "docs/reports/M2-pi-allocation-probe/source-9286cd6-attempt1/audit.json",
+          "docs/reports/M2-pi-allocation-probe/source-9286cd6-attempt1/checks.txt.gz",
+          "docs/reports/M2-pi-allocation-probe/source-9286cd6-attempt1/equivalent-allocations.json",
+          "docs/reports/M2-pi-allocation-probe/source-9286cd6-attempt1/original-allocations.json",
+          "docs/reports/M2-pi-allocation-probe/source-9286cd6-attempt1/reference-provenance.json",
+          "docs/reports/M2-pi-allocation-probe/source-9286cd6-attempt1/runtime-api.json",
+          "docs/reports/M2-pi-allocation-probe/source-9286cd6-attempt1/summary.json",
+          "docs/reports/M2-pi-allocation-probe/test_archive.py",
+          "docs/reports/M2-pi-allocation-probe/verify.py",
+          "tests/Xemele.Tests/M1-pi-targets/PiTargetTests.cs",
+          "tests/Xemele.Tests/M2-pi-allocation-probe/PiAllocationChild.cs",
+          "tests/Xemele.Tests/M2-pi-allocation-probe/PiAllocationProbe.cs"
+        ],
+        "working": [],
+        "staged": [],
+        "untracked": [
+          "docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1-protocol-negative/checks.txt.gz",
+          "docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1-protocol-negative/host-mismatch/real.xml.gz",
+          "docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1-protocol-negative/host-mismatch/stderr.txt.gz",
+          "docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1-protocol-negative/host-mismatch/stdout.txt.gz",
+          "docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1-protocol-negative/incomplete-mode/real.xml.gz",
+          "docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1-protocol-negative/incomplete-mode/stderr.txt.gz",
+          "docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1-protocol-negative/incomplete-mode/stdout.txt.gz",
+          "docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1-protocol-negative/malformed-json/real.request.json.gz",
+          "docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1-protocol-negative/malformed-json/real.xml.gz",
+          "docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1-protocol-negative/malformed-json/stderr.txt.gz",
+          "docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1-protocol-negative/malformed-json/stdout.txt.gz",
+          "docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1-protocol-negative/missing-required-field/real.request.json.gz",
+          "docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1-protocol-negative/missing-required-field/real.xml.gz",
+          "docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1-protocol-negative/missing-required-field/stderr.txt.gz",
+          "docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1-protocol-negative/missing-required-field/stdout.txt.gz",
+          "docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1-protocol-negative/provenance-mismatch/real.request.json.gz",
+          "docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1-protocol-negative/provenance-mismatch/real.xml.gz",
+          "docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1-protocol-negative/provenance-mismatch/stderr.txt.gz",
+          "docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1-protocol-negative/provenance-mismatch/stdout.txt.gz",
+          "docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1-protocol-negative/summary.json",
+          "docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1-protocol-negative/unknown-json-member/real.request.json.gz",
+          "docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1-protocol-negative/unknown-json-member/real.xml.gz",
+          "docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1-protocol-negative/unknown-json-member/stderr.txt.gz",
+          "docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1-protocol-negative/unknown-json-member/stdout.txt.gz",
+          "docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1-protocol-negative/unknown-mode/real.xml.gz",
+          "docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1-protocol-negative/unknown-mode/stderr.txt.gz",
+          "docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1-protocol-negative/unknown-mode/stdout.txt.gz",
+          "docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1/Xemele.Conformance.Tests-counts.json",
+          "docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1/Xemele.Conformance.Tests.xml.gz",
+          "docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1/Xemele.Differential.Tests-counts.json",
+          "docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1/Xemele.Differential.Tests.xml.gz",
+          "docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1/Xemele.Tests-counts.json",
+          "docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1/Xemele.Tests.xml.gz",
+          "docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1/audit.json",
+          "docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1/child-provenance.json",
+          "docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1/child-runs/39938-a6b27836c2044d369ee1cbbafcae95bd/positive.exit.json.gz",
+          "docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1/child-runs/39938-a6b27836c2044d369ee1cbbafcae95bd/positive.invocation.json.gz",
+          "docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1/child-runs/39938-a6b27836c2044d369ee1cbbafcae95bd/positive.report.json.gz",
+          "docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1/child-runs/39938-a6b27836c2044d369ee1cbbafcae95bd/positive.request.json.gz",
+          "docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1/child-runs/39938-a6b27836c2044d369ee1cbbafcae95bd/positive.stderr.txt.gz",
+          "docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1/child-runs/39938-a6b27836c2044d369ee1cbbafcae95bd/positive.stdout.txt.gz",
+          "docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1/child-runs/39938-a6b27836c2044d369ee1cbbafcae95bd/positive.xml.gz",
+          "docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1/child-runs/39938-a6b27836c2044d369ee1cbbafcae95bd/real.exit.json.gz",
+          "docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1/child-runs/39938-a6b27836c2044d369ee1cbbafcae95bd/real.invocation.json.gz",
+          "docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1/child-runs/39938-a6b27836c2044d369ee1cbbafcae95bd/real.report.json.gz",
+          "docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1/child-runs/39938-a6b27836c2044d369ee1cbbafcae95bd/real.request.json.gz",
+          "docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1/child-runs/39938-a6b27836c2044d369ee1cbbafcae95bd/real.stderr.txt.gz",
+          "docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1/child-runs/39938-a6b27836c2044d369ee1cbbafcae95bd/real.stdout.txt.gz",
+          "docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1/child-runs/39938-a6b27836c2044d369ee1cbbafcae95bd/real.xml.gz",
+          "docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1/child-runs/39942-9e6da332e9a4466e93c05751c092e7d4/positive.exit.json.gz",
+          "docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1/child-runs/39942-9e6da332e9a4466e93c05751c092e7d4/positive.invocation.json.gz",
+          "docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1/child-runs/39942-9e6da332e9a4466e93c05751c092e7d4/positive.report.json.gz",
+          "docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1/child-runs/39942-9e6da332e9a4466e93c05751c092e7d4/positive.request.json.gz",
+          "docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1/child-runs/39942-9e6da332e9a4466e93c05751c092e7d4/positive.stderr.txt.gz",
+          "docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1/child-runs/39942-9e6da332e9a4466e93c05751c092e7d4/positive.stdout.txt.gz",
+          "docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1/child-runs/39942-9e6da332e9a4466e93c05751c092e7d4/positive.xml.gz",
+          "docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1/child-runs/39942-9e6da332e9a4466e93c05751c092e7d4/real.exit.json.gz",
+          "docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1/child-runs/39942-9e6da332e9a4466e93c05751c092e7d4/real.invocation.json.gz",
+          "docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1/child-runs/39942-9e6da332e9a4466e93c05751c092e7d4/real.report.json.gz",
+          "docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1/child-runs/39942-9e6da332e9a4466e93c05751c092e7d4/real.request.json.gz",
+          "docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1/child-runs/39942-9e6da332e9a4466e93c05751c092e7d4/real.stderr.txt.gz",
+          "docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1/child-runs/39942-9e6da332e9a4466e93c05751c092e7d4/real.stdout.txt.gz",
+          "docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1/child-runs/39942-9e6da332e9a4466e93c05751c092e7d4/real.xml.gz",
+          "docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1/child-runs/40259-d6903ddc8c684e488e545b03c36763ad/positive.exit.json.gz",
+          "docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1/child-runs/40259-d6903ddc8c684e488e545b03c36763ad/positive.invocation.json.gz",
+          "docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1/child-runs/40259-d6903ddc8c684e488e545b03c36763ad/positive.report.json.gz",
+          "docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1/child-runs/40259-d6903ddc8c684e488e545b03c36763ad/positive.request.json.gz",
+          "docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1/child-runs/40259-d6903ddc8c684e488e545b03c36763ad/positive.stderr.txt.gz",
+          "docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1/child-runs/40259-d6903ddc8c684e488e545b03c36763ad/positive.stdout.txt.gz",
+          "docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1/child-runs/40259-d6903ddc8c684e488e545b03c36763ad/positive.xml.gz",
+          "docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1/child-runs/40259-d6903ddc8c684e488e545b03c36763ad/real.exit.json.gz",
+          "docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1/child-runs/40259-d6903ddc8c684e488e545b03c36763ad/real.invocation.json.gz",
+          "docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1/child-runs/40259-d6903ddc8c684e488e545b03c36763ad/real.report.json.gz",
+          "docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1/child-runs/40259-d6903ddc8c684e488e545b03c36763ad/real.request.json.gz",
+          "docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1/child-runs/40259-d6903ddc8c684e488e545b03c36763ad/real.stderr.txt.gz",
+          "docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1/child-runs/40259-d6903ddc8c684e488e545b03c36763ad/real.stdout.txt.gz",
+          "docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1/child-runs/40259-d6903ddc8c684e488e545b03c36763ad/real.xml.gz",
+          "docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1/equivalent-allocations.json",
+          "docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1/original-allocations.json",
+          "docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1/reference-provenance.json",
+          "docs/reports/M2-pi-allocation-probe/isolated-f3e47be-attempt1/runtime-api.json"
+        ]
+      }
+    }
+  },
+  "sourceRevision": "f3e47be7911fd3805b3ae424000e83ccdce370c4",
+  "dotnetInfo": ".NET SDK:\n Version:           10.0.400\n Commit:            14fbf8d527\n Workload version:  10.0.400-manifests.330ea142\n MSBuild version:   18.9.6+14fbf8d52\n\nRuntime Environment:\n OS Name:     Mac OS X\n OS Version:  15.8\n OS Platform: Darwin\n RID:         osx-arm64\n Base Path:   /Users/sebastienros/Library/Application Support/dotnetup/dotnet/sdk/10.0.400/\n\n.NET workloads installed:\nThere are no installed workloads to display.\nConfigured to use workload sets when installing new manifests.\nNo workload sets are installed. Run \"dotnet workload restore\" to install a workload set.\n\nHost:\n  Version:      11.0.0-rc.1.26425.128\n  Architecture: arm64\n  Commit:       3551975be0\n\n.NET SDKs installed:\n  8.0.424 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/sdk]\n  10.0.100 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/sdk]\n  10.0.400 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/sdk]\n  11.0.100-rc.1.26413.103 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/sdk]\n  11.0.100-rc.1.26425.128 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/sdk]\n\n.NET runtimes installed:\n  Microsoft.AspNetCore.App 8.0.30 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.AspNetCore.App]\n  Microsoft.AspNetCore.App 10.0.0 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.AspNetCore.App]\n  Microsoft.AspNetCore.App 10.0.11 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.AspNetCore.App]\n  Microsoft.AspNetCore.App 11.0.0-rc.1.26413.103 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.AspNetCore.App]\n  Microsoft.AspNetCore.App 11.0.0-rc.1.26425.128 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.AspNetCore.App]\n  Microsoft.NETCore.App 8.0.30 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App]\n  Microsoft.NETCore.App 10.0.0 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App]\n  Microsoft.NETCore.App 10.0.11 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App]\n  Microsoft.NETCore.App 11.0.0-rc.1.26413.103 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App]\n  Microsoft.NETCore.App 11.0.0-rc.1.26425.128 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App]\n\nOther architectures found:\n  None\n\nEnvironment variables:\n  DOTNET_CLI_USE_MSBUILD_SERVER            [0]\n  DOTNET_ROOT                              [/Users/sebastienros/Library/Application Support/dotnetup/dotnet]\n\nglobal.json file:\n  /Users/sebastienros/.codex/worktrees/b918/xemele/global.json\n\nLearn more:\n  https://aka.ms/dotnet/info\n\nDownload .NET:\n  https://aka.ms/dotnet/download\n",
+  "sourceHashes": {
+    "tests/Xemele.Tests/M1-pi-targets/PiTargetTests.cs": "5653d5be4b7b22e07f4702f1c1859686255b126e7f44d6ac54c7242df7838174",
+    "tests/Xemele.Tests/M2-pi-allocation-probe/PiAllocationProbe.cs": "f18949a746fc99d94150994a4174829cd1186b19ad514a4b4cb0a02a9c34daaf",
+    "tests/Xemele.Tests/M2-pi-allocation-probe/PiAllocationChild.cs": "03b8397e159a409b56784bbf55850f15af066bdab266524253d4660993a902fd",
+    "docs/reports/M2-pi-allocation-probe/Diagnostics/Program.cs": "ba947be634280472cd8ebced9d29ba9ad6b596e796d838c2aa06a23a21be68d7"
+  },
+  "failedChecks": [],
+  "scope": "Isolated synchronous borrowed PI primitive; exact0B/no concurrent allocation guarantee. Full joint MTP/direct suites mandatory; historical failure causes unresolved."
+}

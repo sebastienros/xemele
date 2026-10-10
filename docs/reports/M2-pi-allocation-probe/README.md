@@ -113,3 +113,33 @@ differential/provenance/model/package/finalplanning checks were unrun in that
 attempt. This is historical unmerged encoding context, not current code or cause
 proof. Earlier PI1944/712/128B, streaming224B and callback603-correction records
 remain untouched. Source checkpoint changes have not yet been checked.
+
+## Single known-source check outcome
+
+`isolated-f3e47be-attempt1/` records the announced one-shot check at
+`f3e47be7911fd3805b3ae424000e83ccdce370c4`. Verifier exit0/all checks passed:
+focused1, joint MTP801, separate direct247/255/299, compiled API222,
+discovery3388fixtures,242freshreference records with source and unchanged runner
+SHA, planning14/validation114, meaningful archive1regression and ownership/
+unchanged-other-test-body audits. Release builds have0warnings/0errors.
+
+Exactly3actualFact pairs (focusedMTP/cumulativeMTP/direct) measured real0B and
+positive6400000B. Realwarm100=368B, positivewarm100=64368B; measured100000calls/
+40000units, totals101005/40400, Completed4/nullDiagnostic. Apphost and direct
+dotnet invocations both pass with pinned expected/actual provenance. Complete
+raw artifacts are compressed under `child-runs/`. The independent linked helper
+measured0B; old-shape fresh diagnostic reported128B, with separate setup6792B/
+root312B/firstPI368B/remaining99warm0B/completion0B. No historical cause inferred.
+
+`isolated-f3e47be-attempt1-protocol-negative/` retains seven actual compiled Fact
+rejection controls, each with one intended failed Fact and exit1: unknown/
+incomplete guard, missingrequired/malformed/unknownmember request JSON,
+provenance and configured-host mismatch. They succeeded as rejection controls;
+no allocation test was retried until success. Timeout/crash/post-reporttamper
+negative execution remains unrun; policy is reviewed source only.
+
+The task is implemented on this branch pending independent source/integration
+review and a fresh full joint integrated allPass run. `integration_revision`
+remains null; consumers must await coordinator verification. No further full
+check or benchmark is requested by these passing observations. Earlier immutable
+failed reports and the precise isolated synchronous scope remain preserved.
