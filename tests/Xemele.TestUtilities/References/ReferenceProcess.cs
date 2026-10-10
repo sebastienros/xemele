@@ -15,7 +15,8 @@ public static class ReferenceProcess
 
     // A fresh owned child per request isolates state and makes EOF/exit part of validation.
     public static async Task<string> ExecuteAsync(string executable, IEnumerable<string> arguments,
-        string request, TimeSpan timeout, CancellationToken cancellationToken = default)
+        string request, TimeSpan timeout, CancellationToken cancellationToken = default,
+        Func<JsonElement, bool>? validateSuccessPayload = null)
     {
         if (request.Length > MaximumCharacters || request.Contains('\n') || request.Contains('\r'))
             throw new ReferenceFailureException("Invalid request framing or length.");
@@ -69,8 +70,12 @@ public static class ReferenceProcess
                     throw new ReferenceFailureException("Missing engine metadata.");
             if (root.GetProperty("outcome").GetString() == "success")
             {
-                if (expectedOperation != "xml.events") throw new ReferenceFailureException("Unsupported success payload operation.");
-                foreach (var item in root.GetProperty("events").EnumerateArray()) ValidateEvent(item);
+                if (expectedOperation == "xml.events")
+                    foreach (var item in root.GetProperty("events").EnumerateArray()) ValidateEvent(item);
+                else if (validateSuccessPayload is null)
+                    throw new ReferenceFailureException("Unsupported success payload operation.");
+                if (validateSuccessPayload is not null && !validateSuccessPayload(root))
+                    throw new ReferenceFailureException("Adapter rejected success payload.");
             }
             else if (root.TryGetProperty("events", out _))
                 throw new ReferenceFailureException("Failure response must omit events.");

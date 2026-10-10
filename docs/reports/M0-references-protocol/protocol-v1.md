@@ -43,6 +43,17 @@ infrastructure failures, never a successful parse or invalid XML verdict.
 Cancellation propagates OperationCanceledException after killing and awaiting
 the owned child and its pipe operations. Client timeout throws ReferenceFailureException.
 
+`ReferenceProcess.ExecuteAsync` accepts an optional final
+`Func<JsonElement, bool> validateSuccessPayload` callback. Built-in `xml.events`
+successes always undergo strict v1 field validation; a callback may add checks
+but cannot bypass it. Other operations require a supplied callback returning true,
+after shared framing/identity/metadata/diagnostic validation. Callbacks inspect the
+complete response synchronously while its JsonDocument is alive (clone any element
+retained beyond the callback). Module-owned adapters supply their own validator
+without editing this earlier client. A false result is an infrastructure failure.
+Actual child tests use a synthetic `fixture.custom` payload to prove this boundary;
+no future parser/query/output operation is implemented or reserved by that fixture.
+
 Success includes `events` in document order. `start`/`end` use `namespaceUri`
 and `localName`, including explicit empty namespace string. Start has an
 `attributes` array (including empty), excluding xmlns declarations, sorted by

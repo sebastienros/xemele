@@ -92,6 +92,9 @@ else:
         response['diagnostics'] = [dict(category='note', message='', future=42)]
         response['events'] = [dict(start, future=True, attributes=[dict(attribute, future=42)]),
                               dict(text, future=42), dict(end, future=42)]
+    elif mode in ('custom-payload', 'custom-invalid'):
+        del response['events']
+        response['fixtureValue'] = 'checked' if mode == 'custom-payload' else 42
     else:
         raise ValueError('Unknown child mode: ' + mode)
     print(json.dumps(response))

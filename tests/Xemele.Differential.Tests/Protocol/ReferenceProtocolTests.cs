@@ -120,6 +120,25 @@ public sealed class ReferenceProtocolTests
     }
 
     [Fact]
+    public async Task OtherOperationsRequireExplicitPayloadValidator()
+    {
+        string request = Request("<r/>", operation: "fixture.custom");
+        var failure = await Assert.ThrowsAsync<ReferenceFailureException>(() => ReferenceProcess.ExecuteAsync("python3",
+            [Fixture, "custom-payload"], request, TimeSpan.FromSeconds(10), TestContext.Current.CancellationToken));
+        Assert.Contains("Unsupported success payload", failure.Message);
+        using var result = JsonDocument.Parse(await ReferenceProcess.ExecuteAsync("python3", [Fixture, "custom-payload"],
+            request, TimeSpan.FromSeconds(10), TestContext.Current.CancellationToken,
+            validateSuccessPayload: root => root.TryGetProperty("fixtureValue", out var value)
+                && value.ValueKind == JsonValueKind.String && value.GetString() == "checked"));
+        Assert.Equal("checked", result.RootElement.GetProperty("fixtureValue").GetString());
+        var invalid = await Assert.ThrowsAsync<ReferenceFailureException>(() => ReferenceProcess.ExecuteAsync("python3",
+            [Fixture, "custom-invalid"], request, TimeSpan.FromSeconds(10), TestContext.Current.CancellationToken,
+            validateSuccessPayload: root => root.TryGetProperty("fixtureValue", out var value)
+                && value.ValueKind == JsonValueKind.String));
+        Assert.Contains("Adapter rejected", invalid.Message);
+    }
+
+    [Fact]
     public async Task CancellationPropagatesAfterChildCleanup()
     {
         using var cancel = CancellationTokenSource.CreateLinkedTokenSource(TestContext.Current.CancellationToken);
