@@ -4,7 +4,7 @@
   "milestone": "M0",
   "title": "Migrate tests to xUnit v3 and Microsoft.Testing.Platform",
   "kind": "infrastructure",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M0-tests-mtp",
   "branch": "codex/m0-tests-mtp",
   "base_revision": "ef1440ba86a5d9da50060ebe028cbb66a98a5fcf",
@@ -38,29 +38,60 @@
     {
       "id": "M0-tests-mtp-A1",
       "description": "Apply user-requested central PackageVersion xunit.v3.mtp-v2 4.0.1 and global.json test runner Microsoft.Testing.Platform; adapt all three test projects and remove superseded VSTest/xUnit v2 package references, retaining net10.0-only SDK pin.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "clean-mtp-verification"
+      ]
     },
     {
       "id": "M0-tests-mtp-A2",
       "description": "Update owned CI workflow and reproducible bootstrap verifier for actual MTP invocation semantics. Clean restore/Release build/test discovery/test execution/pack and workflow-equivalent commands pass with actual xUnit v3 tests in all three test shells; test-runner failures propagate nonzero. Infrastructure smoke tests are reported separately from product conformance.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "clean-mtp-verification"
+      ]
     },
     {
       "id": "M0-tests-mtp-A3",
       "description": "Preserve verified bootstrap/discovery/experiments, inspect actual transitive package/runner inventory, record exact commands and outcomes at known implementation revision, and pass task graph validation. Do not rewrite historical passing evidence.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "clean-mtp-verification"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "Directory.Packages.props: sole test framework central pin xunit.v3.mtp-v2 4.0.1; global.json: Microsoft.Testing.Platform with unchanged 10.0.400 SDK pin.",
+    "tests/{Xemele.Tests,Xemele.Conformance.Tests,Xemele.Differential.Tests}/*.csproj: executable MTP test shells without VSTest/xUnit v2 references.",
+    "tests/{Xemele.Tests,Xemele.Conformance.Tests,Xemele.Differential.Tests}/Infrastructure/MtpRunnerSmokeTests.cs: Category=Infrastructure smoke assertion with controlled environment-triggered failure.",
+    "docs/reports/M0-tests-mtp/check_runner.py: per-project discovery, solution execution/TRX/XML, infrastructure/product count split, each project controlled assertion failure exit 2 validation.",
+    ".github/workflows/build.yml and docs/reports/M0-build/verify.py: shared native MTP runner verification; bootstrap writes new task artifacts and preserves historical evidence.",
+    "docs/reports/M0-tests-mtp/verify.py: clean generated outputs, bootstrap and workflow-equivalent validation, exact actual package inventory and dotnet-inspect metadata."
+  ],
+  "evidence": [
+    {
+      "id": "clean-mtp-verification",
+      "kind": "check",
+      "revision": "b0aba9365d2231d5bf8232ef76e91a62f7b81df9",
+      "command": "DOTNET_ROOT=\"/Users/sebastienros/Library/Application Support/dotnetup/dotnet\" PATH=\"$DOTNET_ROOT:$PATH\" DOTNET_CLI_USE_MSBUILD_SERVER=0 python3 -B docs/reports/M0-tests-mtp/verify.py",
+      "result": "passed",
+      "summary": "Clean project bin/obj removal, pinned SDK 10.0.400 restore, Release build (0 warnings/errors), all three test apps discovery (1 infrastructure test each), solution execution (3 passed, 0 product tests), controlled assertion failures (each exit 2 with expected XML/message), 13 Python discovery tests, empty API/corpus discovery, 16 shell help/default invocations, 3 unknown-command exits 2, managed-only net10.0 runtime pack and API count 0, workflow-equivalent pack, actual inventories/package metadata inspection, and 97-task validation passed on macOS arm64. No hosted CI OS matrix run is claimed. Initial sandbox-only restore (NU1900 connectivity) and test help (IPC permission) failed; authorized unsandboxed full verification passed without suppressing checks.",
+      "artifact": "docs/reports/M0-tests-mtp/verification.txt"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "User requested xunit.v3.mtp-v2 4.0.1 and Microsoft.Testing.Platform during orchestration; narrow ordered build/CI migration preserves historical verified evidence.",
-    "checks": [],
-    "remaining": [],
+    "summary": "Implemented requested xUnit v3/MTP v2 migration on assigned isolated branch; awaiting coordinator integration verification. Infrastructure smoke tests are explicitly separate from product conformance.",
+    "checks": [
+      "Full reproducible verifier passed at b0aba9365d2231d5bf8232ef76e91a62f7b81df9; transcript docs/reports/M0-tests-mtp/verification.txt.",
+      "All 3 tests discovered/executed; 3 infrastructure passes and 0 product tests. Each intentional assertion failure returns exit 2.",
+      "Actual inventory in each test app: xunit.v3.* 4.0.1, xunit.analyzers 2.1.0; Microsoft.Testing.Platform/MSBuild/Telemetry/TrxReport.Abstractions 2.4.0 transitively. No VSTest or xUnit v2 packages.",
+      "13 discovery Python tests, bootstrap, clean restore/Release build, workflow-equivalent commands and pack, package metadata/API count, task graph validation passed.",
+      "Allocation/benchmark evidence not applicable: build/test infrastructure only; future benchmarks use ShortRun per user steering."
+    ],
+    "remaining": [
+      "Coordinator review, integration, combined-tree checks and verified metadata. Hosted Windows/Linux/macOS CI matrix has not been executed locally."
+    ],
     "requests": []
   }
 }
