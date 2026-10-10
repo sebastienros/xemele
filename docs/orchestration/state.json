@@ -19,9 +19,9 @@
       "claim_revision": "2578b2fe125005e0cabd4226d0fa1ba9ef464ee9",
       "setup_status": "dispatched",
       "review_revision": "a53a15482ef6a540d66f2dbc294d2d86c84b3eba",
-      "review": "Prior a53 source approved but root integration f573 failed own helper 3448 B. Worker now runs bounded per-Append sampling and package-free empty/64 B positive controls on .NET 10.0.11. Runtime issue 134724 and draft PR 134855 identify plausible background-GC counter accounting defect; local cause remains unproved.",
-      "wait_cursor": "f8188e8e-7560-4eb0-be73-29c362ec916f:22",
-      "diagnostic_revision": "4854b87"
+      "review": "Bounded per-Append4854 sampling did not reproduce own3448B integrationfailure. Package-free8e76 controls on exact10.0.11 observed baseline32empty0/32positive64, BGCpressure19of192emptynonzero/171positive64, backgroundindices2->256; raw probeexit1 preserved. Owned sameassembly guarded process-isolated exact0 real+positivecontrol assertion authorized for implementation/review; no production/defaultJITGC/classparallelism/threshold changes.",
+      "wait_cursor": "f8188e8e-7560-4eb0-be73-29c362ec916f:28",
+      "diagnostic_revision": "8e76f6ef620c6e4b16848e88bb314a95ae799083"
     }
   ],
   "integration_queue": [
@@ -46,7 +46,7 @@
   ],
   "blockers": [],
   "next_actions": [
-    "Collect bounded per-Append experiment and package-free background-GC controls; review measurement correction preserving exact-zero workload requirements",
+    "Review and verify guarded same-assembly isolated whole-Append allocation assertion with real0/escaped-positive controls and strict child result/provenance checks",
     "Ifactualruntimeallocatorproved route narrowownedrepair; otherwise boundedmeasurementcorrection with evidence",
     "Thenverifychild and PIparentfulljoint allPass before renewing suspendedM2claims",
     "Keepfailedbranches/reports durable; no cleanup untilmergedverified"
@@ -963,6 +963,7 @@
   "allocation_research": {
     "issue": "https://github.com/dotnet/runtime/issues/134724",
     "draft_fix": "https://github.com/dotnet/runtime/pull/134855",
-    "finding": "Draft fix describes abandoned allocation-context accounting producing phantom GC.GetAllocatedBytesForCurrentThread bytes; maintainer review approved, not merged at inspection. Independently reproduce controls on exact runtime before attributing Xemele failures. No threshold, retry, GC/JIT, or parallelism relaxation."
+    "finding": "Draft fix describes abandoned allocation-context accounting producing phantom GC.GetAllocatedBytesForCurrentThread bytes; maintainer review approved, not merged at inspection. Independently reproduce controls on exact runtime before attributing Xemele failures. No threshold, retry, GC/JIT, or parallelism relaxation.",
+    "local_control": "8e76f6ef620c6e4b16848e88bb314a95ae799083: counter-control exit1 with no error; independently reproduced empty-interval anomaly under actual background collections. Historical Xemele failure causes remain unproved."
   }
 }
