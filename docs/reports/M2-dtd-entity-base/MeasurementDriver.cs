@@ -34,7 +34,7 @@ if (args is ["--generate-build-only", var artifacts])
     Console.WriteLine("ENTITY_BASE_BUILD_ONLY " + JsonSerializer.Serialize(new
     {
         countersDisabled = true, executorInvoked = false, cases = new[] { "InternalNestedModel", "RedirectedComposition" },
-        buildRoot = paths.BuildArtifactsDirectoryPath, generatedProject = paths.ProjectFilePath,
+        artifactsPaths = paths, buildRoot = paths.BuildArtifactsDirectoryPath, generatedProject = paths.ProjectFilePath,
         generatedCode = paths.ProgramCodePath, generatedScript = paths.BuildScriptFilePath, proof
     })); return;
 }

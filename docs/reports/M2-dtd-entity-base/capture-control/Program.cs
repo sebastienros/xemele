@@ -10,6 +10,24 @@ try
     string survivor = Path.Combine(directory, "survivor.marker"), code = Path.Combine(directory, "fixture.notcs");
     File.WriteAllText(survivor, "owned sibling"); File.WriteAllText(code, "independent generated input");
     string valid = Assembly.GetExecutingAssembly().Location, product = typeof(XmlDocument).Assembly.Location;
+    if (args.Contains("--prepared-only"))
+    {
+        var expectedProof = EntityBaseProvenance.Capture(directory, valid, directory, valid, product);
+        EntityBaseProjectBinding.ValidatePreparedProof(expectedProof);
+        var paths = new BenchmarkDotNet.Toolchains.ArtifactsPaths("root", directory, directory, "publish", code,
+            "app.config", "nuget.config", "project.csproj", "build.sh", valid, "program", "packages");
+        var serialized = JsonSerializer.SerializeToElement(paths);
+        var restored = serialized.Deserialize<BenchmarkDotNet.Toolchains.ArtifactsPaths>()!;
+        if (!EntityBaseProvenance.Equal(serialized, JsonSerializer.SerializeToElement(restored)))
+            throw new Exception("Prepared artifact paths did not roundtrip exactly.");
+        File.AppendAllText(code, " changed");
+        bool refused = false;
+        try { EntityBaseProjectBinding.ValidatePreparedProof(expectedProof); }
+        catch (InvalidDataException) { refused = true; }
+        if (!refused) throw new Exception("Changed prepared input was accepted.");
+        Console.WriteLine("Prepared reuse controls passed: frozen proof accepted; changed input refused; supported artifact paths roundtrip; no generator/builder/executor/counters/timing.");
+        return;
+    }
     var complete = EntityBaseProvenance.Capture(directory, valid, directory, valid, product);
     if (complete.GetProperty("closure").GetProperty("survivor.marker").GetString() != EntityBaseProvenance.Hash(survivor))
         throw new Exception("Positive complete closure control failed.");

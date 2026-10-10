@@ -201,6 +201,14 @@ def source_freeze(known):
     return result
 
 
+def parent_payload(known):
+    files = closure(PARENT)
+    if known and known.get('generated'):
+        prefix = str(Path(known['generated']['buildRoot']).relative_to(PARENT)) + '/'
+        files = {name: value for name, value in files.items() if not name.startswith(prefix)}
+    return files
+
+
 def parent_directories():
     return {p for p in PARENT.iterdir() if p.is_dir()} if PARENT.exists() else set()
 
@@ -260,6 +268,7 @@ def output_facts(log):
         'infrastructureFailureFlags': [v for v in ['There are not any results runs', 'Generate Exception', 'Build Error', 'No Workload Results'] if v in text],
         'provenanceRecords': records(text, 'ENTITY_BASE_PROVENANCE'),
         'gateFailures': records(text, 'ENTITY_BASE_GATE_FAILURE'),
+        'prebuiltRecords': records(text, 'ENTITY_BASE_PREBUILT'),
         'buildOnlyRecords': records(text, 'ENTITY_BASE_BUILD_ONLY'),
         'projectBindings': records(text, 'ENTITY_BASE_PROJECT_BINDING'),
     }
@@ -349,11 +358,19 @@ def run(command, env, raw, summary, total=900, child=180):
     return text
 
 
+def validate_execution_only(report, known):
+    require(report['buildExits'] == [], 'Restore/build occurred inside execution-only measurement phase')
+    expected_reuse = {'reused': True, 'generated': False, 'restored': False, 'built': False,
+                     'entry': known['generated']['proof']['entry']['path'], 'manifestSha256': known['preparationSha256']}
+    require(report['prebuiltRecords'] == [expected_reuse], 'Exact independently prepared child reuse required')
+
+
 def benchmark_results(text, raw, revision, known, summary=None):
     # Collect every available observation/proof BEFORE any acceptance guard. The
     # caller's summary remains populated if a later guard throws and raw is deleted.
     report = {'buildExits': [int(v) for v in re.findall(r'// command took .*?exited with (-?\d+)', text)],
               'observations': [], 'rows': [], 'validation': 'unrun',
+              'prebuiltRecords': records(text, 'ENTITY_BASE_PREBUILT'),
               'projectBindings': records(text, 'ENTITY_BASE_PROJECT_BINDING'),
               'expectedGenerated': known.get('generated'), 'gateFailures': records(text, 'ENTITY_BASE_GATE_FAILURE')}
     if summary is not None:
@@ -393,7 +410,7 @@ def benchmark_results(text, raw, revision, known, summary=None):
     report['validation'] = 'in_progress'
     require(report['projectBindings'] == [known.get('generated', {}).get('projectBinding')], 'Actual generated project binding differs from independent preparation')
     require(not any(v in text for v in ['There are not any results runs', 'Generate Exception', 'Build Error', 'No Workload Results']), 'Benchmark infrastructure failure')
-    require(report['buildExits'] == [0, 0], 'Expected exactly one successful generated restore/build')
+    validate_execution_only(report, known)
     require(re.search(r'Global total time:.*executed benchmarks: 2', text), 'Executed benchmark count mismatch')
     require(len(report['observations']) == 2, 'Expected two exact benchmark cases')
     expected = known['generated']['proof']
@@ -515,11 +532,11 @@ def main():
             generated['builderContext'] = generated_build_properties(text, generated, summary)
             require(generated['proof']['runtime']['informationalVersion'] == known['identity']['coreRuntimeBuild'], 'Independent child runtime full version differs from executing runtime')
             generated['compiledInputs'] = source_inventory(dotnet, env, [Path(generated['generatedProject']), PROJECT, PRODUCT], generated['builderContext']['properties'], summary)
-            # Capture the complete independently built child then discard every
-            # generated payload. Later timing regenerates; it cannot adopt its
-            # own freshly observed bytes as its approved expected identity.
+            # Retain only this frozen independently built child until execution.
+            # Timing reuses it through BDN's existing interfaces, without building.
             require(Path(generated['buildRoot']).is_relative_to(PARENT), 'Generated cleanup directory outside parent output')
-            shutil.rmtree(generated['buildRoot'])
+            require(closure(generated['proof']['directory']) == generated['proof']['closure'], 'Prepared child changed during input inventory')
+            require(source_freeze(generated['compiledInputs']) == generated['compiledInputs'], 'Prepared generated inputs changed')
         else:
             summary['preparationSha256Before'] = digest(preparation)
             known = json.loads(preparation.read_text())
@@ -527,7 +544,7 @@ def main():
             known['preparationSha256'] = summary['preparationSha256Before']
             require(known['head'] == revision and known['dotnetSha256'] == digest(dotnet), 'Stale preparation/head/host')
             require(source_freeze(known['sources']) == known['sources'], 'Prepared source inputs changed')
-            require(closure(PARENT) == known['parentClosure'] and closure(known['runtimeDirectory']) == known['runtimeClosure'], 'Prepared binary/runtime closure changed')
+            require(parent_payload(known) == known['parentClosure'] and closure(known['runtimeDirectory']) == known['runtimeClosure'], 'Prepared binary/runtime closure changed')
             reject_unchanged_success(args.mode, known)
             if args.mode == 'benchmark':
                 require(args.report == known['intendedBenchmarkReport'] and str(raw / 'bdn') == known['generatedArtifactsPath'], 'Benchmark path differs from approved generated preparation')
@@ -553,7 +570,7 @@ def main():
         stable = {k: v for k, v in summary['parentClosureAfter'].items() if k in known['parentClosure']}
         require(summary['sourceIdentitiesAfter'] == known['sources'] and stable == known['parentClosure'], 'Source/parent freeze changed')
         new_directories = ({p for p in PARENT.iterdir() if p.is_dir()} - original_directories)
-        extra = set(summary['parentClosureAfter']) - set(known['parentClosure'])
+        extra = set(parent_payload(known)) - set(known['parentClosure'])
         require(all(any((PARENT / name).is_relative_to(directory) for directory in new_directories) for name in extra), 'Unexpected new parent closure payload')
         require(closure(known['runtimeDirectory']) == known['runtimeClosure'] and digest(dotnet) == known['dotnetSha256'], 'Runtime/host freeze changed')
         require(git('rev-parse', 'HEAD').decode().strip() == revision, 'Git revision changed during execution')
@@ -579,14 +596,17 @@ def main():
                 summary['identityCaptureFailure'] = str(capture)[:500]
     finally:
         generated = parent_directories() - original_directories
-        outputs = [raw, *generated]
+        retained = Path(known['generated']['buildRoot']) if known and known.get('generated') and (args.mode == 'allocation' or args.mode == 'prepare' and summary['result'] == 'passed') else None
+        outputs = [raw, *[path for path in generated if path != retained]]
+        if args.mode == 'benchmark' and known and Path(known['generated']['buildRoot']).exists():
+            outputs.append(Path(known['generated']['buildRoot']))
         if future_artifacts is not None and future_artifacts.exists():
             outputs.append(future_artifacts)
         errors = cleanup_outputs(outputs)
         summary['temporaryOutputsRemoved'] = all(not p.exists() for p in outputs)
         if known:
             try:
-                actual = closure(PARENT)
+                actual = parent_payload(known)
                 summary['parentClosureAfterCleanup'] = actual
                 summary['parentCleanupDifferences'] = mismatch(known['parentClosure'], actual)
                 require(actual == known['parentClosure'], 'Cleanup changed frozen parent closure')

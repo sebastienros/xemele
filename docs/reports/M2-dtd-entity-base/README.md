@@ -36,9 +36,11 @@ the same two immutable declared cases/configuration and exact future artifact
 path. PE metadata probing reads the independently generated executable, rebuilt
 driver variant and product without running them. Full raw binary closure,
 generated code/project/script (including .notcs), actual compiled inputs/imports/
-references and complete source versions become the expected manifest. All
-generated payloads are then removed. The actual timed child must regenerate
-those exact approved inputs/bytes, not adopt its own observed closure as expected.
+references and complete source versions become the expected manifest. The frozen generated child is retained temporarily until the granted execution
+sequence. Existing BDN IGenerator/IBuilder interfaces return that independently
+prepared result to the pinned Executor; the execution phase performs no code
+generation, restore or compilation. The exact frozen proof is checked before
+reuse and again in child setup/cleanup. Timing removes the child and raw outputs.
 Correctness/API/package/corpus checks remain
 separate required evidence; preparation does not stand in for them.
 
@@ -62,8 +64,8 @@ rebuilt variant, exact Git revision and actual runtime, rejects missing or
 changed before/after proofs, and checks the final on-disk child closure. Exactly
 two distinct cases, three Actual and three Result observations per case, one GC
 record and one zero child exit are required. Raw operation counts must agree;
-finite positive durations and nonempty result rows are mandatory. Both generated
-restore/build exits and the parent exit must be zero. Process groups have bounded
+finite positive durations and nonempty result rows are mandatory. Preparation restore/build exits and the parent exit must be zero. Execution
+requires exact prepared-result reuse and rejects any restore/build observations. Process groups have bounded
 total/build/child deadlines and are terminated/reaped on failure.
 
 Allocation results distinguish cold setup plus correctness oracles, warmed owned

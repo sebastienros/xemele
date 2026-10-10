@@ -147,7 +147,7 @@ internal static class EntityBaseProvenance
         if (differences.Count != 0) throw new InvalidDataException("Independent generated child provenance gate failed before workload.");
     }
 
-    private static bool Equal(JsonElement left, JsonElement right)
+    internal static bool Equal(JsonElement left, JsonElement right)
     {
         if (left.ValueKind != right.ValueKind) return false;
         if (left.ValueKind == JsonValueKind.String) return left.GetString() == right.GetString();

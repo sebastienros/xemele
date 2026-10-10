@@ -94,6 +94,27 @@ class MeasurementGuards(unittest.TestCase):
                 self.assertEqual(measure.closure(parent), expected)
                 self.assertTrue((restored / 'dependency.dylib').exists())
 
+    def test_execution_reuses_only_independent_prebuilt_result(self):
+        known = {'generated': {'proof': {'entry': {'path': '/prepared/child.dll'}}}, 'preparationSha256': 'approved-hash'}
+        reused = {'reused': True, 'generated': False, 'restored': False, 'built': False,
+                  'entry': '/prepared/child.dll', 'manifestSha256': 'approved-hash'}
+        report = {'buildExits': [], 'prebuiltRecords': [reused]}
+        measure.validate_execution_only(report, known)
+        with self.assertRaisesRegex(ValueError, 'Restore/build occurred'):
+            measure.validate_execution_only(dict(report, buildExits=[0, 0]), known)
+        with self.assertRaisesRegex(ValueError, 'prepared child reuse'):
+            measure.validate_execution_only(dict(report, prebuiltRecords=[dict(reused, entry='/rebuilt/child.dll')]), known)
+
+    def test_parent_payload_preserves_parent_while_frozen_child_is_retained(self):
+        with tempfile.TemporaryDirectory() as root:
+            parent = Path(root); child = parent / 'prepared-child'; child.mkdir()
+            (parent / 'driver.dll').write_bytes(b'parent')
+            (child / 'child.dll').write_bytes(b'prepared')
+            with patch.object(measure, 'PARENT', parent):
+                self.assertEqual(measure.parent_payload({'generated': {'buildRoot': str(child)}}),
+                                 {'driver.dll': measure.digest(parent / 'driver.dll')})
+                self.assertTrue((child / 'child.dll').exists())
+
     def test_actual_binding_mismatch_is_retained_before_validation_refusal(self):
         import json
         actual = {'expected': '/owned.csproj', 'actual': ['/foreign.csproj'], 'passed': False}
