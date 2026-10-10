@@ -1,0 +1,576 @@
+{
+  "result": "passed",
+  "scope": "Nonpackaged independent contract/model checks; no product runtime/conformance or allocation claims",
+  "checks": [
+    {
+      "command": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    },
+    {
+      "command": [
+        "git",
+        "merge-base",
+        "--is-ancestor",
+        "22fd2f9",
+        "5c5c33fb6cee212734ca0320b8fe009cc380b05e"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    },
+    {
+      "command": [
+        "git",
+        "branch",
+        "--show-current"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    },
+    {
+      "command": [
+        "git",
+        "merge-base",
+        "--is-ancestor",
+        "40d9ec99496d234e8ede7b3a793e15c40edfb681",
+        "5c5c33fb6cee212734ca0320b8fe009cc380b05e"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    },
+    {
+      "command": [
+        "git",
+        "merge-base",
+        "--is-ancestor",
+        "071ba8895bd476af5163314bf2f25b714fa32d0a",
+        "5c5c33fb6cee212734ca0320b8fe009cc380b05e"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    },
+    {
+      "command": [
+        "git",
+        "ls-files",
+        "--",
+        "src/Xemele",
+        "docs/api",
+        "tests/Contracts/Fixtures",
+        "Directory.Build.props",
+        "Directory.Packages.props",
+        "global.json",
+        "NuGet.config",
+        "samples/M2-undeclared-attribute-contract",
+        "docs/reports/M2-undeclared-attribute-contract/verify.py",
+        "docs/decisions/M2/undeclared-references.md",
+        "docs/specs/parser.md",
+        "tests/corpora/xml/inventory.json",
+        "tests/corpora/xml/m2-applicability.json"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "22fd2f9",
+        "5c5c33fb6cee212734ca0320b8fe009cc380b05e",
+        "--",
+        "src"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "22fd2f9",
+        "5c5c33fb6cee212734ca0320b8fe009cc380b05e",
+        "--",
+        "docs/api"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "22fd2f9",
+        "5c5c33fb6cee212734ca0320b8fe009cc380b05e",
+        "--",
+        "Directory.Build.props"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "22fd2f9",
+        "5c5c33fb6cee212734ca0320b8fe009cc380b05e",
+        "--",
+        "Directory.Packages.props"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "22fd2f9",
+        "5c5c33fb6cee212734ca0320b8fe009cc380b05e",
+        "--",
+        "global.json"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "22fd2f9",
+        "5c5c33fb6cee212734ca0320b8fe009cc380b05e",
+        "--",
+        "NuGet.config"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "22fd2f9",
+        "5c5c33fb6cee212734ca0320b8fe009cc380b05e",
+        "--",
+        "tests/corpora/xml"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    },
+    {
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "--version"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    },
+    {
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "build",
+        "/private/tmp/xemele-integrate-m2-attribute-contract/src/Xemele/Xemele.csproj",
+        "-c",
+        "Release",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false",
+        "--artifacts-path",
+        "/private/tmp/attribute-contract-xj1xqc_w/build"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    },
+    {
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "build",
+        "/private/tmp/xemele-integrate-m2-attribute-contract/docs/reports/M0-contracts/ApiCheck/ApiCheck.csproj",
+        "-c",
+        "Release",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false",
+        "--artifacts-path",
+        "/private/tmp/attribute-contract-xj1xqc_w/build"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    },
+    {
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "/private/tmp/attribute-contract-xj1xqc_w/build/bin/ApiCheck/release/ApiCheck.dll",
+        "compare",
+        "/private/tmp/attribute-contract-xj1xqc_w/build/bin/Xemele/release/Xemele.dll",
+        "/private/tmp/attribute-contract-xj1xqc_w/public-api.txt"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    },
+    {
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "build",
+        "/private/tmp/xemele-integrate-m2-attribute-contract/samples/M2-undeclared-attribute-contract/Sample.csproj",
+        "-c",
+        "Release",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false",
+        "--artifacts-path",
+        "/private/tmp/attribute-contract-xj1xqc_w/build"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    },
+    {
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "/private/tmp/attribute-contract-xj1xqc_w/build/bin/Sample/release/AttributeContractConsumer.dll",
+        "/private/tmp/attribute-contract-xj1xqc_w/build/bin/Xemele/release/Xemele.dll",
+        "5c5c33fb6cee212734ca0320b8fe009cc380b05e"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    },
+    {
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "build",
+        "/private/tmp/xemele-integrate-m2-attribute-contract/samples/M2-undeclared-attribute-contract/Sample.csproj",
+        "-c",
+        "Release",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false",
+        "--artifacts-path",
+        "/private/tmp/attribute-contract-xj1xqc_w/probes",
+        "-p:ProbeSource=/private/tmp/attribute-contract-xj1xqc_w/borrowed-attribute.cs"
+      ],
+      "exit": 1,
+      "expectedExit": 1
+    },
+    {
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "build",
+        "/private/tmp/xemele-integrate-m2-attribute-contract/samples/M2-undeclared-attribute-contract/Sample.csproj",
+        "-c",
+        "Release",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false",
+        "--artifacts-path",
+        "/private/tmp/attribute-contract-xj1xqc_w/probes",
+        "-p:ProbeSource=/private/tmp/attribute-contract-xj1xqc_w/borrowed-default.cs"
+      ],
+      "exit": 1,
+      "expectedExit": 1
+    },
+    {
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "build",
+        "/private/tmp/xemele-integrate-m2-attribute-contract/samples/M2-undeclared-attribute-contract/Sample.csproj",
+        "-c",
+        "Release",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false",
+        "--artifacts-path",
+        "/private/tmp/attribute-contract-xj1xqc_w/probes",
+        "-p:ProbeSource=/private/tmp/attribute-contract-xj1xqc_w/immutable-record.cs"
+      ],
+      "exit": 1,
+      "expectedExit": 1
+    },
+    {
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "build",
+        "/private/tmp/xemele-integrate-m2-attribute-contract/samples/M2-undeclared-attribute-contract/Sample.csproj",
+        "-c",
+        "Release",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false",
+        "--artifacts-path",
+        "/private/tmp/attribute-contract-xj1xqc_w/probes",
+        "-p:ProbeSource=/private/tmp/attribute-contract-xj1xqc_w/no-complete-value.cs"
+      ],
+      "exit": 1,
+      "expectedExit": 1
+    },
+    {
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "build",
+        "/private/tmp/xemele-integrate-m2-attribute-contract/samples/M2-undeclared-attribute-contract/Sample.csproj",
+        "-c",
+        "Release",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false",
+        "--artifacts-path",
+        "/private/tmp/attribute-contract-xj1xqc_w/probes",
+        "-p:ProbeSource=/private/tmp/attribute-contract-xj1xqc_w/old-sink.cs"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    },
+    {
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "build",
+        "/private/tmp/attribute-contract-xj1xqc_w/Mutant.csproj",
+        "-c",
+        "Release",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false",
+        "--artifacts-path",
+        "/private/tmp/attribute-contract-xj1xqc_w/build"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    },
+    {
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "/private/tmp/attribute-contract-xj1xqc_w/build/bin/Sample/release/AttributeContractConsumer.dll",
+        "/private/tmp/attribute-contract-xj1xqc_w/build/bin/Mutant/release/Mutant.dll",
+        "5c5c33fb6cee212734ca0320b8fe009cc380b05e"
+      ],
+      "exit": 1,
+      "expectedExit": 1
+    },
+    {
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "build",
+        "/private/tmp/attribute-contract-xj1xqc_w/BadContract.csproj",
+        "-c",
+        "Release",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false",
+        "--artifacts-path",
+        "/private/tmp/attribute-contract-xj1xqc_w/build"
+      ],
+      "exit": 1,
+      "expectedExit": 1
+    },
+    {
+      "command": [
+        "python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tools/planning",
+        "-p",
+        "test_tasks.py"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    },
+    {
+      "command": [
+        "python3",
+        "-B",
+        "tools/planning/tasks.py",
+        "validate"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check",
+        "22fd2f9",
+        "HEAD"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--name-only",
+        "22fd2f9",
+        "HEAD"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--name-only",
+        "HEAD"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    },
+    {
+      "command": [
+        "git",
+        "ls-files",
+        "--others",
+        "--exclude-standard"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    },
+    {
+      "command": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    }
+  ],
+  "revision": "5c5c33fb6cee212734ca0320b8fe009cc380b05e",
+  "dependencies": {
+    "M2-undeclared-content": "40d9ec99496d234e8ede7b3a793e15c40edfb681",
+    "M2-conformance-profile": "071ba8895bd476af5163314bf2f25b714fa32d0a"
+  },
+  "sourceCount": 133,
+  "sourceClosureSha256": "a7169d03a0d1524a93e9a5c9f3220d145e42a1130b76ece7f73425078aeb42bf",
+  "proposalInputs": {
+    "docs/reports/M2-undeclared-attribute-contract/verify.py": "60c38142648a992dbaf97b1a976400f5f55d9d7f70df4f19b05ad1605d8273da",
+    "samples/M2-undeclared-attribute-contract/Model.csproj": "e6e0bd6edf432e2ffeb20c096ac69c2fb18e6bb79e7d4c701c75be98f21037c0",
+    "samples/M2-undeclared-attribute-contract/ModelAssembly.cs": "43a3bcfda26f22fe572a02fcbcec8837a65c295913d54411d82d8fb9d47bf8e5",
+    "samples/M2-undeclared-attribute-contract/Program.cs": "848b16543f950b3ce9dcd9b53eda884dff5d5c0c62dbe927c866c5b6644226b4",
+    "samples/M2-undeclared-attribute-contract/Sample.csproj": "71f2d1d054931d23953374a889d2a3863cf272d3181ee21270cd8f9d2abe2e29",
+    "tests/Contracts/Fixtures/M2/UndeclaredAttributes/Proposal.cs.fixture": "8d9802554673d0b445b856aa7da5a7d78f25e749e1837d8caef3a8b5118b68f9",
+    "tests/Contracts/Fixtures/M2/UndeclaredAttributes/authored-identities.json": "a9a9ef8e3a33d84ba5f3524c3508b9340099af992c04af8243c1b4e6dc9ab340",
+    "tests/Contracts/Fixtures/M2/UndeclaredAttributes/unknown-attribute-0.xml": "4acfa0560b7f6d4521431f01cb38eed9c66cb377d2869632db80e63cfc488750",
+    "tests/Contracts/Fixtures/M2/UndeclaredAttributes/unknown-attribute-1.xml": "7d79b3c891a6c53cde4d6a4c41c3426d85faa4ae197b548afa583b009cb4333b",
+    "tests/Contracts/Fixtures/M2/UndeclaredAttributes/unknown-attribute-2.xml": "c27a49643ffe02b00b28fe1690e6d3c37ce4951fa55f57a0ccf09575d9b3284e",
+    "tests/Contracts/Fixtures/M2/UndeclaredAttributes/unknown-attribute-3.xml": "52eab0957e491fbaa496136ad433fc2abde9a8ad867d663fd03abcd171104af6",
+    "tests/Contracts/Fixtures/M2/UndeclaredAttributes/unknown-attribute-4.xml": "8d4c01a2d5d596822ad027cef4ad97d6aca89db552869a647aae1ae9d1e86f94",
+    "tests/Contracts/Fixtures/M2/UndeclaredAttributes/unknown-attribute-5.xml": "47cc83a35ef81d772ab08b7124c5343193d426e2e90487296cb0b7fb84e0ea1e",
+    "tests/Contracts/Fixtures/M2/UndeclaredAttributes/unknown-attribute-6.xml": "ddb99dc0c6a4c6f1e76bc42ab4eb8af05991d56a95fd95fdba2b671663b5fdeb"
+  },
+  "authoredHistoricalIdentities": {
+    "count": 7,
+    "WfcControls": 3,
+    "VcRepresentationGaps": 4,
+    "hashBound": true,
+    "productObservationRevision": "588ae1cbcd74b2a585b8f779221baf88db389c5f",
+    "executedByThisTask": false
+  },
+  "originalCorpusPreserved": {
+    "cases": 2585,
+    "resources": 3386,
+    "inventorySha256": "8c2f37c0e8881f145874d413d1b6447ce116ab3d25b1994de483d5ef3e5d5c0c",
+    "ledgerSha256": "8c470970aabae386a2a705098a653f2d2233ad23aed9450a4ed325ce7db2026f",
+    "assessmentOnly": true
+  },
+  "pinnedRuntimeInputs": {
+    "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet": "e86deb33d0dacad9cc1224466df6418149cb8e13cb8afd0dc6815ea6b7807975",
+    "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App/10.0.11/System.Private.CoreLib.dll": "9ed74c2e2efeee87f1f2d7ffe1736b7e9164ce248516ea39402a725eedc87af6",
+    "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App/10.0.11/libcoreclr.dylib": "10b24d0b11c7f6d838114744097bf10df9b08b906afc9016567631a1c009dfd0",
+    "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App/10.0.11/libhostpolicy.dylib": "511e01af076a9c8b4f982c202f389bc8e5b19d77b2d2b2c8b713a240dc93b031"
+  },
+  "currentPublicApi": {
+    "members": 290,
+    "assemblySha256": "084e2b5440de6fa5faa3b486ca224714a7081bbb7da949475deb93e8322a6449",
+    "baselineSha256": "0db900b124c8f809257ffa66e1c9f2b0f54081fac8594292faad428b249b752e"
+  },
+  "modelAssertions": 145,
+  "executingRuntime": {
+    "Version": "10.0.11",
+    "CoreLibrary": "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App/10.0.11/System.Private.CoreLib.dll",
+    "ProcessArchitecture": "Arm64",
+    "CoreLibraryInformationalVersion": "10.0.11-servicing.26373.116+e2f47b0110ed922f21a1522da67279133ce28f32",
+    "CoreLibrarySha256": "9ed74c2e2efeee87f1f2d7ffe1736b7e9164ce248516ea39402a725eedc87af6"
+  },
+  "binaries": {
+    "/private/tmp/attribute-contract-xj1xqc_w/build/bin/Xemele/release/Xemele.dll": "084e2b5440de6fa5faa3b486ca224714a7081bbb7da949475deb93e8322a6449",
+    "/private/tmp/attribute-contract-xj1xqc_w/build/bin/ApiCheck/release/ApiCheck.dll": "9d8083adb282b1793ac1db4d5d4fea97ceeea691f9a7c167c64e523179f4bd4b",
+    "/private/tmp/attribute-contract-xj1xqc_w/build/bin/Sample/release/AttributeContractConsumer.dll": "9d7fb8bd91e5b33d640764886f9e11403c7d5deb7da2e87621a8e1f9e693a48c",
+    "/private/tmp/attribute-contract-xj1xqc_w/build/bin/Model/release/AttributeContractModel.dll": "b4f4ca5ec323f669f02eeb2b8d6a3deb51b3f7a737934657abfc2d50c212b23b"
+  },
+  "preservedModels": {
+    "frozenInternalShapes": 7,
+    "publicHandleAndContentShapes": 7,
+    "independentAssemblies": [
+      "AttributeContractModel",
+      "AttributeContractConsumer"
+    ]
+  },
+  "compilerNegatives": [
+    {
+      "name": "borrowed-attribute",
+      "requiredError": "CS8345"
+    },
+    {
+      "name": "borrowed-default",
+      "requiredError": "CS8345"
+    },
+    {
+      "name": "immutable-record",
+      "requiredError": "CS8852"
+    },
+    {
+      "name": "no-complete-value",
+      "requiredError": "CS1061"
+    }
+  ],
+  "oldSinkCompilesWithoutNewInterface": true,
+  "compiledAbiMismatchDetected": "readonly attribute view changed to mutable",
+  "proposalConsumerMismatchDetected": "CS0738 bool callback changed to int",
+  "changedSourceNegativeDetected": true,
+  "executedBinariesUnchanged": true,
+  "temporaryOutputsRemoved": true,
+  "planningControlCount": 14,
+  "planningValidation": "Validated 136 tasks: schema, evidence, acyclic dependencies, additive milestones, and ordered ownership.",
+  "ownedPaths": [
+    "docs/decisions/M2/undeclared-references.md",
+    "docs/reports/M2-undeclared-attribute-contract/README.md",
+    "docs/reports/M2-undeclared-attribute-contract/checks.json",
+    "docs/reports/M2-undeclared-attribute-contract/first-failure.json",
+    "docs/reports/M2-undeclared-attribute-contract/verify.py",
+    "docs/specs/parser.md",
+    "docs/tasks/M2-undeclared-attribute-contract.json",
+    "samples/M2-undeclared-attribute-contract/Model.csproj",
+    "samples/M2-undeclared-attribute-contract/ModelAssembly.cs",
+    "samples/M2-undeclared-attribute-contract/Program.cs",
+    "samples/M2-undeclared-attribute-contract/Sample.csproj",
+    "tests/Contracts/Fixtures/M2/UndeclaredAttributes/Proposal.cs.fixture",
+    "tests/Contracts/Fixtures/M2/UndeclaredAttributes/authored-identities.json",
+    "tests/Contracts/Fixtures/M2/UndeclaredAttributes/unknown-attribute-0.xml",
+    "tests/Contracts/Fixtures/M2/UndeclaredAttributes/unknown-attribute-1.xml",
+    "tests/Contracts/Fixtures/M2/UndeclaredAttributes/unknown-attribute-2.xml",
+    "tests/Contracts/Fixtures/M2/UndeclaredAttributes/unknown-attribute-3.xml",
+    "tests/Contracts/Fixtures/M2/UndeclaredAttributes/unknown-attribute-4.xml",
+    "tests/Contracts/Fixtures/M2/UndeclaredAttributes/unknown-attribute-5.xml",
+    "tests/Contracts/Fixtures/M2/UndeclaredAttributes/unknown-attribute-6.xml"
+  ],
+  "finalFrozenInputsUnchanged": true,
+  "workerRevision": "dc06853ed22a725730e1bd069e54610b40fdbaa9",
+  "workerOwnedPaths": 20,
+  "sourceReview": "review_foundation approved exact worker revision; no blockers; source-only",
+  "integrationAdaptation": "Original assignment ownership separately checked. In-memory candidate branch/base assertions use integration base22fd2f9; no worker/harness changes."
+}
