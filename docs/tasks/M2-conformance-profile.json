@@ -43,7 +43,8 @@
         "effective-classification",
         "python-contract-controls",
         "full-corpus-reference-contract",
-        "coordinator-source-review"
+        "coordinator-source-review",
+        "root-integrated-profile"
       ]
     },
     {
@@ -56,7 +57,8 @@
         "stale-binary-control",
         "cumulative-tests",
         "independent-e18-model",
-        "coordinator-source-review"
+        "coordinator-source-review",
+        "root-integrated-profile"
       ]
     },
     {
@@ -69,7 +71,8 @@
         "cumulative-tests",
         "compiled-api-preservation",
         "planning-ownership-preservation",
-        "full-corpus-reference-contract"
+        "full-corpus-reference-contract",
+        "root-integrated-profile"
       ]
     }
   ],
@@ -176,6 +179,15 @@
       "result": "passed",
       "summary": "Local126-task graph validated (no fixed count assertion; coordinator later graph not merged here); diff clean, all changed paths inside explicit ownership/own task JSON. No production, shared contract/build, M1 metadata/classification or API fragment changes.",
       "artifact": null
+    },
+    {
+      "id": "root-integrated-profile",
+      "kind": "integration",
+      "revision": "071ba8895bd476af5163314bf2f25b714fa32d0a",
+      "command": "Fresh Release solution/sample builds; classify.py --check; Python contract controls; full MTP plus direct execution/discovery preservation; scoped ApiCheck build and API compare; audit.py bounded 2585-case source-bound probe; planning tests/validate and ownership/diff checks (actual commands/exits in integrated-summary.json).",
+      "result": "passed",
+      "summary": "Actual root checks: 5163 passed/0 failed/skipped; exact inherited identities preserved (4594 runtime,255 conformance,299 differential),15 new tests; API272;2585 IDs/3386 resources;8 Python controls;14 planning controls/129-task graph. Full source/binary/runtime closure bound to integrated revision. 139 outcome gaps plus E18 model gap and770 reference disagreements preserved for later repairs/join; no full product conformance claim. Initial missing approved API checker build stopped remaining checks; built checker and resumed remaining checks successfully without repeating passed suite. Raw outputs inspected then removed; concise summary and first-failure record retained.",
+      "artifact": null
     }
   ],
   "blockers": [],
@@ -187,7 +199,6 @@
       "Raw case/API/exploratory/negative payloads inspected then removed; concise source/binary/runtime identities/counts/gap/model hashes only. No allocation/timing workloads or cross-platform runs."
     ],
     "remaining": [
-      "Coordinator fresh integrated verification and verified metadata required.",
       "Grammar/full-profile child must resolve139outcome gaps and E18 source-base model gap, independently verify full accepted normative models/transports; matching differential observations are not full conformance. See exactIDs/hashes in observations.json and independent E18 source/model in checks.json."
     ],
     "requests": [

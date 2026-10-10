@@ -1,0 +1,220 @@
+{
+  "result": "failed",
+  "revision": "071ba8895bd476af5163314bf2f25b714fa32d0a",
+  "auditBase": "a17eb7b02f81197dae6f5bd3cbc0a2ad001fcf77",
+  "commands": [
+    {
+      "command": [
+        "git",
+        "branch",
+        "--show-current"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "dotnet",
+        "--version"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "dotnet",
+        "--list-runtimes"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "python3",
+        "-B",
+        "docs/reports/M1-corpus-import/provision.py"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "dotnet",
+        "build",
+        "Xemele.slnx",
+        "-c",
+        "Release",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "dotnet",
+        "build",
+        "samples/M2-conformance-profile/Sample.csproj",
+        "-c",
+        "Release",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "python3",
+        "-B",
+        "docs/reports/M2-conformance-profile/classify.py",
+        "--check"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "docs/reports/M2-conformance-profile",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "dotnet",
+        "test",
+        "--solution",
+        "Xemele.slnx",
+        "-c",
+        "Release",
+        "--no-build",
+        "--no-progress"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "dotnet",
+        "test",
+        "--project",
+        "/private/tmp/xemele-integrate-m2-profile-a7829c2/tests/Xemele.Tests",
+        "-c",
+        "Release",
+        "--no-build",
+        "--no-restore",
+        "--list-tests"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "dotnet",
+        "/private/tmp/xemele-integrate-m2-profile-a7829c2/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll",
+        "-noColor",
+        "-result-xml",
+        "/var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-profile-integration-qu_x4l08/Xemele.Tests.xml"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "dotnet",
+        "test",
+        "--project",
+        "/private/tmp/xemele-integrate-m2-profile-a7829c2/tests/Xemele.Conformance.Tests",
+        "-c",
+        "Release",
+        "--no-build",
+        "--no-restore",
+        "--list-tests"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "dotnet",
+        "/private/tmp/xemele-integrate-m2-profile-a7829c2/tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll",
+        "-noColor",
+        "-result-xml",
+        "/var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-profile-integration-qu_x4l08/Xemele.Conformance.Tests.xml"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "dotnet",
+        "test",
+        "--project",
+        "/private/tmp/xemele-integrate-m2-profile-a7829c2/tests/Xemele.Differential.Tests",
+        "-c",
+        "Release",
+        "--no-build",
+        "--no-restore",
+        "--list-tests"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "dotnet",
+        "/private/tmp/xemele-integrate-m2-profile-a7829c2/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll",
+        "-noColor",
+        "-result-xml",
+        "/var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-profile-integration-qu_x4l08/Xemele.Differential.Tests.xml"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "python3",
+        "-B",
+        "tools/ApiBaseline/compare.py",
+        "--report",
+        "/var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-profile-integration-qu_x4l08/api.json"
+      ],
+      "exit": 1
+    }
+  ],
+  "runtime": [
+    "Microsoft.AspNetCore.App 8.0.30 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.AspNetCore.App]",
+    "Microsoft.AspNetCore.App 10.0.0 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.AspNetCore.App]",
+    "Microsoft.AspNetCore.App 10.0.11 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.AspNetCore.App]",
+    "Microsoft.AspNetCore.App 11.0.0-rc.1.26413.103 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.AspNetCore.App]",
+    "Microsoft.AspNetCore.App 11.0.0-rc.1.26425.128 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.AspNetCore.App]",
+    "Microsoft.NETCore.App 8.0.30 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App]",
+    "Microsoft.NETCore.App 10.0.0 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App]",
+    "Microsoft.NETCore.App 10.0.11 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App]",
+    "Microsoft.NETCore.App 11.0.0-rc.1.26413.103 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App]",
+    "Microsoft.NETCore.App 11.0.0-rc.1.26425.128 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App]"
+  ],
+  "pythonControls": 8,
+  "mtpTotal": 5163,
+  "directAndDiscoveryCounts": {
+    "Xemele.Tests": 4594,
+    "Xemele.Conformance.Tests": 258,
+    "Xemele.Differential.Tests": 311
+  },
+  "preservation": {
+    "Xemele.Tests": {
+      "count": 4594,
+      "exactPriorNamesSha256": "7cdf1436d06ded19272961b9c2b792b2ac907f23726d3266f21fa726862c6ce7"
+    },
+    "Xemele.Conformance.Tests": {
+      "inherited": 255,
+      "new": 3,
+      "inheritedIdentitySha256": "a43104c9986029e0680218003fc7d820c2583c42b53fe16a323f2cab04e634dc"
+    },
+    "Xemele.Differential.Tests": {
+      "inherited": 299,
+      "new": 12,
+      "inheritedIdentitySha256": "845b5c10e9d4952e309b2d419fcc429fe568c8496889dce7fe6ab319389cdc6e"
+    }
+  },
+  "failure": "['python3', '-B', 'tools/ApiBaseline/compare.py', '--report', '/var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-profile-integration-qu_x4l08/api.json'] failed: API comparison error: compiled assembly/checker missing; build both in Release first\n",
+  "transientCleanupErrors": [],
+  "transientOutputsRemoved": true
+}

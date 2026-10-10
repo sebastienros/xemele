@@ -1,0 +1,400 @@
+{
+  "result": "passed",
+  "revision": "071ba8895bd476af5163314bf2f25b714fa32d0a",
+  "auditBase": "a17eb7b02f81197dae6f5bd3cbc0a2ad001fcf77",
+  "commands": [
+    {
+      "command": [
+        "git",
+        "branch",
+        "--show-current"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "dotnet",
+        "--version"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "dotnet",
+        "--list-runtimes"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "python3",
+        "-B",
+        "docs/reports/M1-corpus-import/provision.py"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "dotnet",
+        "build",
+        "Xemele.slnx",
+        "-c",
+        "Release",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "dotnet",
+        "build",
+        "samples/M2-conformance-profile/Sample.csproj",
+        "-c",
+        "Release",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "python3",
+        "-B",
+        "docs/reports/M2-conformance-profile/classify.py",
+        "--check"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "docs/reports/M2-conformance-profile",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "dotnet",
+        "test",
+        "--solution",
+        "Xemele.slnx",
+        "-c",
+        "Release",
+        "--no-build",
+        "--no-progress"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "dotnet",
+        "test",
+        "--project",
+        "/private/tmp/xemele-integrate-m2-profile-a7829c2/tests/Xemele.Tests",
+        "-c",
+        "Release",
+        "--no-build",
+        "--no-restore",
+        "--list-tests"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "dotnet",
+        "/private/tmp/xemele-integrate-m2-profile-a7829c2/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll",
+        "-noColor",
+        "-result-xml",
+        "/var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-profile-integration-qu_x4l08/Xemele.Tests.xml"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "dotnet",
+        "test",
+        "--project",
+        "/private/tmp/xemele-integrate-m2-profile-a7829c2/tests/Xemele.Conformance.Tests",
+        "-c",
+        "Release",
+        "--no-build",
+        "--no-restore",
+        "--list-tests"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "dotnet",
+        "/private/tmp/xemele-integrate-m2-profile-a7829c2/tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll",
+        "-noColor",
+        "-result-xml",
+        "/var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-profile-integration-qu_x4l08/Xemele.Conformance.Tests.xml"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "dotnet",
+        "test",
+        "--project",
+        "/private/tmp/xemele-integrate-m2-profile-a7829c2/tests/Xemele.Differential.Tests",
+        "-c",
+        "Release",
+        "--no-build",
+        "--no-restore",
+        "--list-tests"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "dotnet",
+        "/private/tmp/xemele-integrate-m2-profile-a7829c2/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll",
+        "-noColor",
+        "-result-xml",
+        "/var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-profile-integration-qu_x4l08/Xemele.Differential.Tests.xml"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "python3",
+        "-B",
+        "tools/ApiBaseline/compare.py",
+        "--report",
+        "/var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-profile-integration-qu_x4l08/api.json"
+      ],
+      "exit": 1
+    }
+  ],
+  "runtime": [
+    "Microsoft.AspNetCore.App 8.0.30 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.AspNetCore.App]",
+    "Microsoft.AspNetCore.App 10.0.0 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.AspNetCore.App]",
+    "Microsoft.AspNetCore.App 10.0.11 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.AspNetCore.App]",
+    "Microsoft.AspNetCore.App 11.0.0-rc.1.26413.103 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.AspNetCore.App]",
+    "Microsoft.AspNetCore.App 11.0.0-rc.1.26425.128 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.AspNetCore.App]",
+    "Microsoft.NETCore.App 8.0.30 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App]",
+    "Microsoft.NETCore.App 10.0.0 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App]",
+    "Microsoft.NETCore.App 10.0.11 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App]",
+    "Microsoft.NETCore.App 11.0.0-rc.1.26413.103 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App]",
+    "Microsoft.NETCore.App 11.0.0-rc.1.26425.128 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App]"
+  ],
+  "pythonControls": 8,
+  "mtpTotal": 5163,
+  "directAndDiscoveryCounts": {
+    "Xemele.Tests": 4594,
+    "Xemele.Conformance.Tests": 258,
+    "Xemele.Differential.Tests": 311
+  },
+  "preservation": {
+    "Xemele.Tests": {
+      "count": 4594,
+      "exactPriorNamesSha256": "7cdf1436d06ded19272961b9c2b792b2ac907f23726d3266f21fa726862c6ce7"
+    },
+    "Xemele.Conformance.Tests": {
+      "inherited": 255,
+      "new": 3,
+      "inheritedIdentitySha256": "a43104c9986029e0680218003fc7d820c2583c42b53fe16a323f2cab04e634dc"
+    },
+    "Xemele.Differential.Tests": {
+      "inherited": 299,
+      "new": 12,
+      "inheritedIdentitySha256": "845b5c10e9d4952e309b2d419fcc429fe568c8496889dce7fe6ab319389cdc6e"
+    }
+  },
+  "transientCleanupErrors": [],
+  "transientOutputsRemoved": true,
+  "resolvedInfrastructureFailure": "['python3', '-B', 'tools/ApiBaseline/compare.py', '--report', '/var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-profile-integration-qu_x4l08/api.json'] failed: API comparison error: compiled assembly/checker missing; build both in Release first\n",
+  "remainingChecks": [
+    {
+      "command": [
+        "dotnet",
+        "build",
+        "docs/reports/M0-contracts/ApiCheck/ApiCheck.csproj",
+        "-c",
+        "Release",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "python3",
+        "-B",
+        "tools/ApiBaseline/compare.py",
+        "--report",
+        "/var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-profile-remaining-bt8eidam/api.json"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "python3",
+        "-B",
+        "docs/reports/M2-conformance-profile/audit.py",
+        "/var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-profile-remaining-bt8eidam/audit.json"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tools/planning",
+        "-p",
+        "test_*.py"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "python3",
+        "-B",
+        "tools/planning/tasks.py",
+        "validate"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check",
+        "a17eb7b02f81197dae6f5bd3cbc0a2ad001fcf77",
+        "HEAD"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--cached",
+        "--check"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--name-only",
+        "a17eb7b02f81197dae6f5bd3cbc0a2ad001fcf77",
+        "HEAD"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--name-only",
+        "HEAD"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--cached",
+        "--name-only"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "git",
+        "ls-files",
+        "--others",
+        "--exclude-standard"
+      ],
+      "exit": 0
+    }
+  ],
+  "api": {
+    "members": 272,
+    "assemblySha256": "b06f7a4222245f61c5792c5af32f5b0fd370a815d8e2a9d4ae76bbddf6114bee",
+    "checkerSha256": "7df0866be61a67973651e7ae8b2f969952727f8a65328995a5c537658a7052df"
+  },
+  "fullProbe": {
+    "product:rejected": 1326,
+    "reference:rejected": 1914,
+    "product-expectation-match": 2446,
+    "reference:accepted": 671,
+    "product:accepted": 1259,
+    "product-expectation-gap": 139,
+    "matched": 635,
+    "model-disagreement": 1
+  },
+  "sourceInputCount": 68,
+  "sourceInputSha256": "bd80a02f22dffe5b2c21bfafcfa2306bd0f072477df1f0311a20b57277e099f8",
+  "compiledOutputClosureCount": 16,
+  "compiledOutputClosureSha256": "aeabb4c95c4d22301e0b80b45f537a946529cadd2f9ef3cde7f5ef4ae9feaeca",
+  "engines": [
+    {
+      "build": "1.0.0+071ba8895bd476af5163314bf2f25b714fa32d0a",
+      "name": "System.Xml",
+      "runtime": ".NET 10.0.11",
+      "version": "10.0.0.0"
+    }
+  ],
+  "sourceVersionBinding": "Actual BCL/driver/product +full integrated revision gates passed by audit; full source/binary/runtime closure unchanged.",
+  "gapLedgerPreserved": true,
+  "productGapsCount": 140,
+  "referenceDisagreementsCount": 770,
+  "gapLedgerSha256": "613f35783bda3ed8de743b985b5da0c730c96ea2343496df6398b1540e4d11d5",
+  "referenceDisagreementsSha256": "5a3110a69a3fbdbf63990a77852358cba75ca10ea3d94316dac7f4051d6e4321",
+  "legacyVersionSuffixLimitations": [
+    "xmlconf/xmltest/xmltest.xml#not-wf-sa-102",
+    "xmlconf/oasis/oasis.xml#o-p26fail1",
+    "xmlconf/oasis/oasis.xml#o-p26fail2"
+  ],
+  "temporaryProbeOutputsRemoved": true,
+  "planning": "Validated 129 tasks: schema, evidence, acyclic dependencies, additive milestones, and ordered ownership.",
+  "ownedPaths": [
+    "docs/reports/M2-conformance-profile/README.md",
+    "docs/reports/M2-conformance-profile/audit.py",
+    "docs/reports/M2-conformance-profile/checks.json",
+    "docs/reports/M2-conformance-profile/child.py",
+    "docs/reports/M2-conformance-profile/classify.py",
+    "docs/reports/M2-conformance-profile/integrated-api-checker-failure.json",
+    "docs/reports/M2-conformance-profile/integrated-summary.json",
+    "docs/reports/M2-conformance-profile/observations.json",
+    "docs/reports/M2-conformance-profile/test_contract.py",
+    "docs/tasks/M2-conformance-profile.json",
+    "samples/M2-conformance-profile/Program.cs",
+    "samples/M2-conformance-profile/Sample.csproj",
+    "tests/Xemele.Conformance.Tests/XmlFull/Profile/ApplicabilityTests.cs",
+    "tests/Xemele.Differential.Tests/Protocol/M2OfflineSourceTests.cs",
+    "tests/Xemele.Differential.Tests/XmlFull/Profile/SemanticModelTests.cs",
+    "tests/corpora/xml/m2-applicability.json",
+    "tools/ReferenceRunners/Bcl/Program.cs"
+  ]
+}
