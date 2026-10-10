@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "id": "M2-streaming-allocation-probe",
+  "milestone": "M2",
+  "title": "Diagnose streaming allocation boundary in cumulative runner",
+  "kind": "infrastructure",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "depends_on": [
+    "M2-contracts",
+    "M1-syntax-allocation-probe"
+  ],
+  "goals": [
+    "G03",
+    "G18"
+  ],
+  "specs": [
+    "docs/performance-coding.md",
+    "docs/specs/parser.md"
+  ],
+  "owns": [
+    "tests/Xemele.Tests/M1-syntax/StreamingTests.cs",
+    "tests/Xemele.Tests/M2-streaming-allocation-probe/",
+    "docs/reports/M2-streaming-allocation-probe/"
+  ],
+  "api_or_output": "Controlled checked streaming primitive allocation boundary, unchanged exact0B/default runtime and original100warm/10000measured workload",
+  "acceptance": [
+    {
+      "id": "M2-streaming-allocation-probe-A1",
+      "description": "Preserve exact unchanged Streaming224B cumulative failure at PIrepair9286cd6 and separate801directpass. Diagnose setup/first-use/primitive and surrounding measurement/framework scopes with bounded controlled original-versus-equivalent experiment before choosing correction; do not infer historical cause without evidence. Retain existing production unchanged, exact0B, original100warm/10000measured, same checked Append workload/cancellation/sink/progress/completion, default JIT/GC/parallelism. ExistingStreamingTests.cs edits only probe/helper/imports; no other tests/thresholds/runtime changes. If genuine steady primitive allocation remains, request owning runtime repair.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M2-streaming-allocation-probe-A2",
+      "description": "Known-source focused owned streaming correctness/allocation and independent bounded diagnostics pass with meaningful units/callback/completion and real0B primitive evidence. Execute cumulative MTP and separate runtime/API/discovery/reference/planning/ownership checks and preserve every outcome, including unrelated original PI failure if any; child must not conceal failures or claim complete combined verification. Original parent M2-pi-allocation-probe A2 retains mandatory allPass integrated combination before any consumer verification. No timing benchmarks or blind retries.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "Narrow independent diagnostic child prerequisite to existing PImeasurement repair, keeping parent full allPass criterion. Current parent source9286cd6/evidence3e9bd43 preserved; source/runtime parser not changed.",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}
