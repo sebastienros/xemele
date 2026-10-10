@@ -73,6 +73,18 @@ public sealed class TransportAndLocationTests
         Assert.Equal(1, resolver.Stream!.Disposals);
     }
 
+    [Theory]
+    [InlineData("X")]
+    [InlineData("<b>")]
+    [InlineData("<?xml encoding='UTF-8'?>text")]
+    public void MalformedExternalBytesReturnStructuredDecoderFailure(string prefix)
+    {
+        byte[] bytes = [.. Encoding.UTF8.GetBytes(prefix), 0xFF];
+        var resolver = new BinaryResolver(bytes, 1);
+        Assert.False(XmlDocument.TryParse("<!DOCTYPE r [<!ENTITY e SYSTEM 'urn:entity'>]><r>&e;</r>", out _, out var diagnostics, Options(resolver), Cancellation));
+        Assert.Equal("INPUT.InvalidEncoding", Assert.Single(diagnostics).Code); Assert.Equal(1, resolver.Stream!.Disposals);
+    }
+
     private sealed class BinaryResolver(byte[] bytes, int size) : XmlResourceResolver
     {
         internal ProductionTests.BoundedStream? Stream;
