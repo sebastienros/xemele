@@ -4,11 +4,11 @@
   "milestone": "M2",
   "title": "Isolated legacy decoder allocation measurement",
   "kind": "infrastructure",
-  "status": "implemented",
+  "status": "verified",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M2-encoding-allocation-probe",
   "branch": "codex/m2-encoding-allocation-probe",
   "base_revision": "8af65f385654c382f201e1ad8c32f9be2cc3bb87",
-  "integration_revision": null,
+  "integration_revision": "6d952ca39d8d355583d7d19310f4d36634d813e9",
   "depends_on": [
     "M2-encoding",
     "M2-pi-allocation-probe",
@@ -40,7 +40,8 @@
         "historical-preservation",
         "renewal-checks",
         "renewal-source-integrity",
-        "root-first-integration-preservation"
+        "root-first-integration-preservation",
+        "renewed-integrated-checks"
       ]
     },
     {
@@ -54,7 +55,8 @@
         "historical-preservation",
         "renewal-checks",
         "renewal-source-integrity",
-        "root-first-integration-preservation"
+        "root-first-integration-preservation",
+        "renewed-integrated-checks"
       ]
     }
   ],
@@ -127,6 +129,15 @@
       "result": "passed",
       "summary": "Preserved initial root15/16checkpass and cumulativeMTP851/852 unchangedResolver4080B failure; decoder controls/direct852 passed. Historical cause unknown, no unmerged peer code imported, original5960/socket failures preserved.",
       "artifact": "docs/reports/M2-encoding-allocation-probe/history/integration-65f49b9-attempt1/preservation.json"
+    },
+    {
+      "id": "renewed-integrated-checks",
+      "kind": "integration",
+      "revision": "6d952ca39d8d355583d7d19310f4d36634d813e9",
+      "command": "python3 -B docs/reports/M2-encoding-allocation-probe/verify.py --report-prefix integration-6d952ca-attempt1 --expected-branch codex/integrate-m2-encoding-probe-renewed --audit-base afea2690aec63821bc4787a865df98f11f56f652 --runtime-count 298 --conformance-count 255 --differential-count 299 --api-count 251 --fixture-count 3388 --planning-count 14 --task-count 118",
+      "result": "passed",
+      "summary": "Actual16checks pass; focused1/fullMTP852/direct298+255+299/API251/discovery3388/freshfull pinned reference242/fullsourcehash/unchangedcopy/planning14/validate118/owned audit. Three actual pairs of3labels eachreal0B/positive640000B, original10000warm10000measured Decode/scalars/progress/offsets preserved;7actual rejectioncontrols. Earlier b309 failure ancestry and reports retained; reviewed source byte-identical0b3. Historical causality unresolved.",
+      "artifact": "docs/reports/M2-encoding-allocation-probe/integration-6d952ca-attempt1/summary.json"
     }
   ],
   "blockers": [],
@@ -134,11 +145,10 @@
     "summary": "Renewed from verified resolver probe. Approved decoder source unchanged; committed merged candidatec369048 actual16/16freshchecksPASS; all prior failed evidence retained. Implementation awaits coordinator integration verification.",
     "checks": [
       "Renewal c3690485bd4c3b421b1833ac4b245405cf2242a0: focused1/MTP852/direct298+255+299; exact3real0B+positive640000B/label pairs; original/equivalent/helperall3measured0B; negative7/API251/discovery3388/freshcompleteBCLcopybeforeM1build/ref242+unchangedhash/planning14/validate118/owned audits.",
-      "Approved0b3source/571evidence preserved unchanged, initialsocketfail and historicalEncoding5960B/rootResolver4080B preserved byte-identically; causesunknown."
+      "Approved0b3source/571evidence preserved unchanged, initialsocketfail and historicalEncoding5960B/rootResolver4080B preserved byte-identically; causesunknown.",
+      "Coordinator actual all16 integrated checks pass at 6d952ca39d8d355583d7d19310f4d36634d813e9"
     ],
-    "remaining": [
-      "Coordinator fresh combined integration verification and metadata only."
-    ],
+    "remaining": [],
     "requests": []
   }
 }
