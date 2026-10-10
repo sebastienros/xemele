@@ -4,7 +4,7 @@
   "milestone": "M1",
   "title": "Verify usable strict XML subset",
   "kind": "gate",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M1-gate",
   "branch": "codex/m1-gate",
   "base_revision": "d87002c9a18bb1c0d4ec106618f813ea37bc57b5",
@@ -37,29 +37,69 @@
     {
       "id": "M1-gate-A1",
       "description": "Verify independently usable parse/mutate/serialize slice with declared subset and safe rejection of unsupported inputs.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "strict-xml-checkpoint"
+      ]
     },
     {
       "id": "M1-gate-A2",
       "description": "Run cumulative checks, constructed-tree output and strict round-trip examples at integrated revision.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "strict-xml-checkpoint"
+      ]
     },
     {
       "id": "M1-gate-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "strict-xml-checkpoint"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "docs/reports/M1-gate/verify.py: main; owned checkpoint orchestration and provenance/audits",
+    "docs/reports/M1-gate/Demo/Program.cs: source and fresh-package independent semantic/constructed-output demonstration",
+    "docs/reports/M1-gate/README.md: supported subset and release limitations",
+    "docs/reports/M1-gate/test_verify.py: five reference provenance checks"
+  ],
+  "evidence": [
+    {
+      "id": "initial-gate-compile-failure",
+      "kind": "check",
+      "revision": "80ee540284ab02e64517177725adad857ca4f23a",
+      "command": "python3 -B docs/reports/M1-gate/verify.py --report-prefix first",
+      "result": "failed",
+      "summary": "Solution801, corpus501, foundation11 and models/API passed; new gate demo failed CS0128 due local helper name collision. Preserved initial results; gate-owned fix committed before subsequent run. No runtime defect or retry without a change.",
+      "artifact": "docs/reports/M1-gate/first/checks.txt.gz"
+    },
+    {
+      "id": "strict-xml-checkpoint",
+      "kind": "check",
+      "revision": "0e8f6929abc4f95e9608176c1db0dee8c0d7cf34",
+      "command": "DOTNET_ROOT=\"/Users/sebastienros/Library/Application Support/dotnetup/dotnet\" PATH=\"$DOTNET_ROOT:$PATH\" DOTNET_CLI_USE_MSBUILD_SERVER=0 python3 -B docs/reports/M1-gate/verify.py --report-prefix corrected",
+      "result": "passed",
+      "summary": "SDK10.0.400/.NET10.0.11/macOSArm64: solution801(247/255/299), owned corpus501, Foundation11 all0fail0skip; Foundation139/173/8 and independently compiled Common/Tree/Input/Syntax/Serializer/Dom models+protocol38 preserved. API222 canonical and independent DOM199/Serializer215 union; discovery3388; build/discovery16, provenance5, planning14 and validation110 passed. 3386 private original resource hashes; all2585 IDs with242 original byte rejections,239 BCL matches+3 exact documented divergences,2343 visible unrun capability gaps. Fresh BCL DLL/SDK hashes/full source revision recorded. Source/fresh isolated NuGet demo identical:8 input forms,mutation/identity,constructed exact output,independent XmlReader oracle,24 encoding saves/reparses,safe unsupported rejection+stream lifetime.16 benchmark classes configured.",
+      "artifact": "docs/reports/M1-gate/corrected/summary.json"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "",
-    "checks": [],
-    "remaining": [],
-    "requests": []
+    "summary": "M1 strict XML slice checkpoint implemented using only integrated verified prerequisites; independently usable source/fresh-package parse/mutate/serialize demonstrated. Initial gate helper compile failure preserved and corrected. Runtime unchanged; integration_revision remains null.",
+    "checks": [
+      "At0e8f692 corrected verifier exit0:801 cumulative+501 corpus+11 Foundation all0fail0skip; independentmodels/protocol/API222/discovery3388/bootstrap/build16/provenance5/planning14/validation110 and ownership/diff checks passed.",
+      "All2585 corpus IDs/3386 original resource hashes;242 rejections/239 matches+3 exact documented reference divergences/2343 explicit unrun later gaps. Fresh adapter+SDK SHA/source revision in corrected/summary.json.",
+      "Source/fresh isolated NuGet consumer byte-identical output:8 factory inputs,mutation and stable identity,constructed exact XML,independent System.Xml semantic oracle,24 encoded saves/reparses and safe rejection/stream-lifetime/cancellation.",
+      "Existing exact0B warm input/syntax/namespace/DOM probes passed in cumulative suite.16 benchmark class annotations inspected; no new timing measurements."
+    ],
+    "remaining": [
+      "Coordinator review/integration and checkpoint rerun at integrated revision required before verified.",
+      "Existing Arm64 timings remain provisional; Windows/x64/releaseAOT/full XML conformance remain later unrun gates. Historical216B/6000B allocation failures remain unexplained in owning reports."
+    ],
+    "requests": [
+      "Preserve private /private/tmp/xemele-corpus-cache/w3c-xml-20130923 through cleanup; no fixture publication. No production/shared-path repair requested."
+    ]
   }
 }

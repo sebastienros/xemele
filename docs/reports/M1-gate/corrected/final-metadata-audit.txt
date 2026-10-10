@@ -1,0 +1,55 @@
+$ git diff --name-only ed13ab8d34d42618944f6a7c6fc24634c787264e..HEAD
+docs/reports/M1-gate/Demo/Demo.csproj
+docs/reports/M1-gate/Demo/Program.cs
+docs/reports/M1-gate/README.md
+docs/reports/M1-gate/first/Xemele.Conformance.Tests.xml.gz
+docs/reports/M1-gate/first/Xemele.Differential.Tests.xml.gz
+docs/reports/M1-gate/first/Xemele.Tests.xml.gz
+docs/reports/M1-gate/first/approved-union.txt
+docs/reports/M1-gate/first/case-results.json
+docs/reports/M1-gate/first/checks.txt.gz
+docs/reports/M1-gate/first/foundation.xml.gz
+docs/reports/M1-gate/first/owned-paths.json
+docs/reports/M1-gate/first/owned.xml.gz
+docs/reports/M1-gate/first/resource-checks.json
+docs/reports/M1-gate/first/runtime-api.json
+docs/reports/M1-gate/test_verify.py
+docs/reports/M1-gate/verify.py
+
+$ git diff --name-only
+docs/reports/M1-gate/README.md
+docs/tasks/M1-gate.json
+
+$ git diff --cached --name-only
+
+$ git ls-files --others --exclude-standard
+docs/reports/M1-gate/corrected/Xemele.Conformance.Tests.xml.gz
+docs/reports/M1-gate/corrected/Xemele.Differential.Tests.xml.gz
+docs/reports/M1-gate/corrected/Xemele.Tests.xml.gz
+docs/reports/M1-gate/corrected/approved-union.txt
+docs/reports/M1-gate/corrected/benchmark-config.json
+docs/reports/M1-gate/corrected/case-results.json
+docs/reports/M1-gate/corrected/checks.txt.gz
+docs/reports/M1-gate/corrected/focused-coverage.json
+docs/reports/M1-gate/corrected/foundation.xml.gz
+docs/reports/M1-gate/corrected/owned-paths.json
+docs/reports/M1-gate/corrected/owned.xml.gz
+docs/reports/M1-gate/corrected/package-demo.txt
+docs/reports/M1-gate/corrected/resource-checks.json
+docs/reports/M1-gate/corrected/runtime-api.json
+docs/reports/M1-gate/corrected/source-demo.txt
+docs/reports/M1-gate/corrected/summary.json
+
+$ git diff --check ed13ab8d34d42618944f6a7c6fc24634c787264e..HEAD
+exit=0
+
+$ git diff --check
+exit=0
+
+$ git diff --cached --check
+exit=0
+
+$ python3 tools/planning/tasks.py validate
+Validated 110 tasks: schema, evidence, acyclic dependencies, additive milestones, and ordered ownership.
+exit=0
+All paths owned; no inherited coordinator metadata counted.
