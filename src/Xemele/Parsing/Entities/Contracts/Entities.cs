@@ -1,4 +1,4 @@
-// Nonpackaged integration hooks; no implementation peer dependency.
+// Internal integration contracts; the runtime context belongs to downstream composition.
 namespace Xemele.Parsing.Entities
 {
     internal enum EntityUse { Content, Attribute, Dtd }

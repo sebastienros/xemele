@@ -52,7 +52,7 @@ def main():
         run('dotnet','build',approved/'Approved.csproj',*FLAGS)
         assert run('dotnet',model)!=actual,'compiled nullability mutation not detected'
         source.write_text(original)
-        summary['approvedContract']={'types':10,'matched':True,'compiledNullableMutationDetected':True,'recoverExcludedAsDownstream':True}
+        summary['approvedContract']={'types':10,'matched':True,'compiledNullableMutationDetected':True,'recoverExcludedAsDownstream':True,'outInitOperatorsAndReadonly':True}
         sample_output=run('dotnet',sample)
         expected='defaults=Prohibit;resolver=True;clone=Parse;limitsOwned=True\nmanualCallback=True;name=root;entity=owned;rootAbsent=True\n'
         assert sample_output==expected

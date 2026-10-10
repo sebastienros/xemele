@@ -69,6 +69,8 @@ public sealed class FoundationTests
     public void OptionalDomCallbackStoresMetadataWithoutRequiredEventChanges()
     {
         IXmlEventSink old = new OldSink(); Assert.False(old is IXmlDtdSink);
+        using var core = new XmlParserCore(new());
+        Assert.Equal(ScanStep.Completed, core.Append("<root/>", [], true, old, TestContext.Current.CancellationToken).Step);
         var sink = new DomSink(new()); IXmlDtdSink optional = sink;
         var metadata = new XmlDocumentType("root", null, null, null); var model = new Xemele.Parsing.Dtd.DtdModel([], [], [], [], []);
         Assert.True(optional.DocumentType(metadata, model, default)); Assert.Same(metadata, sink.Document.DocumentType);
