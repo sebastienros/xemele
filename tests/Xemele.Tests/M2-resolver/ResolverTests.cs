@@ -392,6 +392,57 @@ public sealed class ResolverTests
         await Assert.ThrowsAsync<InvalidOperationException>(async () => await session.OpenAsync(Request(), Location));
     }
 
+    [Fact]
+    public void ChildDisposeFailureDrainsParentsBeforeNestedUsingUnwinds()
+    {
+        var primary = new IOException("child cleanup");
+        var parent = new CountingStream([]) { DisposeFailure = new IOException("parent cleanup") };
+        var child = new CountingStream([]) { DisposeFailure = primary };
+        int i=0; var session = Session(new DelegateResolver(_ => new(i == 0 ? parent : child, new Uri($"urn:nested-dispose:{i++}"))));
+        Assert.Same(primary, Assert.Throws<IOException>(() =>
+        {
+            using (session)
+            {
+                session.Open(Request(), Location);
+                using (session.Open(Request(), Location).Resource!) { }
+            }
+        }));
+        Assert.Equal(1, parent.SyncDisposals); Assert.Equal(1, child.SyncDisposals);
+        session.Dispose();
+    }
+    [Fact]
+    public async Task ChildDisposeAsyncFailureDrainsParentsBeforeNestedUsingUnwinds()
+    {
+        var primary = new IOException("child cleanup");
+        var parent = new CountingStream([]) { DisposeFailure = new IOException("parent cleanup") };
+        var child = new CountingStream([]) { DisposeFailure = primary };
+        parent.YieldOnDispose = true; child.YieldOnDispose = true;
+        int i=0; var session = Session(new AsyncResolver(_ => Task.FromResult<XmlResolvedResource?>(new(i == 0 ? parent : child, new Uri($"urn:nested-async-dispose:{i++}")))));
+        Assert.Same(primary, await Assert.ThrowsAsync<IOException>(async () =>
+        {
+            await using (session)
+            {
+                await session.OpenAsync(Request(), Location);
+                await using ((await session.OpenAsync(Request(), Location)).Resource!) { }
+            }
+        }));
+        Assert.Equal(1, parent.AsyncDisposals); Assert.Equal(1, child.AsyncDisposals);
+        Assert.Equal(0, parent.SyncDisposals); Assert.Equal(0, child.SyncDisposals);
+        await session.DisposeAsync();
+    }
+    [Fact]
+    public void IndividualDisposeFailureFaultsSessionWithoutRecursiveCleanup()
+    {
+        var streams = new List<CountingStream>(); int i=0;
+        var session = Session(new DelegateResolver(_ => { var stream = new CountingStream([]) { DisposeFailure = new IOException("cleanup") }; streams.Add(stream); return new(stream, new Uri($"urn:drain:{i++}")); }), count: null);
+        for (int n=0; n<200; n++) session.Open(Request(), Location);
+        var last = session.Open(Request(), Location).Resource!;
+        Assert.Throws<IOException>(last.Dispose);
+        Assert.All(streams, stream => Assert.Equal(1, stream.SyncDisposals));
+        Assert.Throws<InvalidOperationException>(() => session.Open(Request(), Location));
+        session.Dispose();
+    }
+
     private sealed class DelegateResolver(Func<XmlResourceRequest, XmlResolvedResource?> resolve) : XmlResourceResolver
     {
         internal int Calls;
@@ -406,6 +457,7 @@ public sealed class ResolverTests
     private sealed class CountingStream(byte[] bytes) : MemoryStream(bytes)
     {
         internal int SyncDisposals, AsyncDisposals, AsyncReads;
+        internal bool YieldOnDispose;
         internal readonly List<int> Requested = [];
         internal Exception? ReadFailure, DisposeFailure;
         internal Action? OnRead;
@@ -415,7 +467,7 @@ public sealed class ResolverTests
         public override int Read(Span<byte> buffer) { Requested.Add(buffer.Length); if (ReadFailure is not null) throw ReadFailure; int n = base.Read(buffer); OnRead?.Invoke(); return n; }
         public override ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default) { AsyncReads++; return ValueTask.FromResult(Read(buffer.Span)); }
         protected override void Dispose(bool disposing) { if (disposing) { SyncDisposals++; base.Dispose(disposing); if (DisposeFailure is not null) throw DisposeFailure; } }
-        public override ValueTask DisposeAsync() { AsyncDisposals++; base.Dispose(true); if (DisposeFailure is not null) throw DisposeFailure; return default; }
+        public override async ValueTask DisposeAsync() { AsyncDisposals++; if (YieldOnDispose) await Task.Yield(); base.Dispose(true); if (DisposeFailure is not null) throw DisposeFailure; }
     }
     private sealed class ZeroStream : Stream
     {

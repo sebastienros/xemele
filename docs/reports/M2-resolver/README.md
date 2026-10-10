@@ -34,7 +34,9 @@ rejection/cancellation. Wrapper sync/async disposal share an atomic claim. Sessi
 reject reentrancy and work after disposal. They are sequential, not concurrent.
 Stream/cancellation exceptions fault the session and drain all active sources
 before unwinding; secondary cleanup errors do not replace the primary exception.
-Faulted sessions reject later work. Parser/callback composition calls internal
+Individual handle disposal failures also fault/drain remaining parents before
+rethrowing their original error. A drain guard prevents recursive cleanup through
+failing parents. Faulted sessions reject later work. Parser/callback composition calls internal
 Abort/AbortAsync in its catch before rethrowing errors occurring outside session
 methods, making outer disposal harmless. Disposal without another error still reports its first
 failure after attempting all handles. Primary caller streams are not passed to

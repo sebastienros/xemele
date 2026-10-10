@@ -50,12 +50,12 @@ def main():
         run('python3','-B','tools/ApiBaseline/compare.py','--report',report/'runtime-api.json')
         s['actualRuntimeMembers']=len(json.loads((report/'runtime-api.json').read_text())['provenance'])
         tests={}
-        for assembly,minimum in [('Xemele.Tests',287),('Xemele.Conformance.Tests',255),('Xemele.Differential.Tests',299)]:
+        for assembly,minimum in [('Xemele.Tests',290),('Xemele.Conformance.Tests',255),('Xemele.Differential.Tests',299)]:
             xml=raw/(assembly+'.xml');run('dotnet',ROOT/f'tests/{assembly}/bin/Release/net10.0/{assembly}.dll','-noColor','-result-xml',xml)
             entries=list(ET.parse(xml).iter('test'));assert len(entries)>=minimum and all(t.get('result')=='Pass' for t in entries)
             tests[assembly]={'total':len(entries),'failed':0,'skipped':0};(report/(assembly+'.xml.gz')).write_bytes(gzip.compress(xml.read_bytes(),mtime=0))
         focused=raw/'resolver.xml';run('dotnet',ROOT/'tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll','-noColor','-class','Xemele.Tests.Resolution.ResolverTests','-result-xml',focused)
-        focused_tests=list(ET.parse(focused).iter('test'));assert len(focused_tests)==40 and all(t.get('result')=='Pass' for t in focused_tests)
+        focused_tests=list(ET.parse(focused).iter('test'));assert len(focused_tests)==43 and all(t.get('result')=='Pass' for t in focused_tests)
         s['runtimeTests']=tests;s['resolverTests']=len(focused_tests)
         records=[json.loads(f.read_text()) for f in (raw/'case-results').glob('reference-*.json')]
         assert len(records)==242 and len({r['id'] for r in records})==242

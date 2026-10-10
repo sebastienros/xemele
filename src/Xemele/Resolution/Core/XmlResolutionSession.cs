@@ -17,7 +17,7 @@ internal sealed class XmlResolutionSession : IDisposable, IAsyncDisposable
     private readonly CancellationToken cancellation;
     private readonly HashSet<string> active = new(StringComparer.Ordinal);
     private readonly HashSet<XmlResourceHandle> handles = new();
-    private bool disposed, busy, faulted;
+    private bool disposed, busy, faulted, draining;
     private XmlDiagnostic? terminal;
     internal long BytesRead { get; private set; }
     internal long ResourcesOpened => budget.Count(Quota.ExternalResources);
@@ -212,21 +212,37 @@ internal sealed class XmlResolutionSession : IDisposable, IAsyncDisposable
         if (busy) throw new InvalidOperationException("Cannot abort during resource work.");
         return FaultAndDrainAsync();
     }
+    internal void HandleDisposalFailed() => FaultAndDrain();
+    internal ValueTask HandleDisposalFailedAsync() => FaultAndDrainAsync();
     private void FaultAndDrain()
     {
         faulted = true;
-        while (handles.Count != 0)
+        // A failing parent's Dispose calls this hook too. The outer drain owns
+        // the remaining set; do not recurse through a malicious source stack.
+        if (draining) return;
+        draining = true;
+        try
         {
-            try { FirstHandle().Dispose(); } catch { }
+            while (handles.Count != 0)
+            {
+                try { FirstHandle().Dispose(); } catch { }
+            }
         }
+        finally { draining = false; }
     }
     private async ValueTask FaultAndDrainAsync()
     {
         faulted = true;
-        while (handles.Count != 0)
+        if (draining) return;
+        draining = true;
+        try
         {
-            try { await FirstHandle().DisposeAsync().ConfigureAwait(false); } catch { }
+            while (handles.Count != 0)
+            {
+                try { await FirstHandle().DisposeAsync().ConfigureAwait(false); } catch { }
+            }
         }
+        finally { draining = false; }
     }
 
     private XmlResourceHandle FirstHandle()
@@ -280,11 +296,15 @@ internal sealed class XmlResourceHandle : IDisposable, IAsyncDisposable
     public void Dispose()
     {
         if (disposed) return;
-        disposed = true; session.Release(this, key); resource.Dispose();
+        disposed = true; session.Release(this, key);
+        try { resource.Dispose(); }
+        catch { session.HandleDisposalFailed(); throw; }
     }
-    public ValueTask DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
-        if (disposed) return default;
-        disposed = true; session.Release(this, key); return resource.DisposeAsync();
+        if (disposed) return;
+        disposed = true; session.Release(this, key);
+        try { await resource.DisposeAsync().ConfigureAwait(false); }
+        catch { await session.HandleDisposalFailedAsync().ConfigureAwait(false); throw; }
     }
 }
