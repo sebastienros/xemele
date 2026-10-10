@@ -1,0 +1,21 @@
+using System.Text;
+namespace Xemele;
+public enum XmlNamespaceHandling { Strict, Repair }
+public sealed record XmlSaveOptions
+{
+    public bool Indent { get; init; }
+    public bool OmitXmlDeclaration { get; init; }
+    public Encoding Encoding { get; init; } = new UTF8Encoding(false, true);
+    public bool EmitByteOrderMark { get; init; }
+    public XmlNamespaceHandling NamespaceHandling { get; init; } = XmlNamespaceHandling.Strict;
+}
+public static class XmlSerializer
+{
+    public static string Serialize(XmlDocument document, XmlSaveOptions? options = null, CancellationToken cancellationToken = default) => throw new InvalidOperationException("Declaration model");
+    public static void Serialize(XmlDocument document, Stream output, XmlSaveOptions? options = null, CancellationToken cancellationToken = default) => throw new InvalidOperationException("Declaration model");
+}
+public sealed partial class XmlDocument
+{
+    public string ToXmlString(XmlSaveOptions? options = null, CancellationToken cancellationToken = default) => XmlSerializer.Serialize(this, options, cancellationToken);
+    public void Save(Stream output, XmlSaveOptions? options = null, CancellationToken cancellationToken = default) => XmlSerializer.Serialize(this, output, options, cancellationToken);
+}

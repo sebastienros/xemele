@@ -1,0 +1,14 @@
+namespace M1Usage;
+internal static class DomUsage
+{
+    internal static void Use(Stream source, CancellationToken token)
+    {
+        var options = new Xemele.XmlParseOptions { Limits = new() { Depth = 64 } };
+        _ = Xemele.XmlDocument.Parse("<r/>", options, token);
+        _ = Xemele.XmlDocument.Parse("<r/>".AsSpan(), options, token);
+        _ = Xemele.XmlDocument.Parse("<r/>"u8, options, token);
+        _ = Xemele.XmlDocument.Load(source, options, token);
+        if (Xemele.XmlDocument.TryParse("<r/>", out var document, out var diagnostics, options, token))
+        { _ = document!.RootElement; _ = diagnostics.Count; }
+    }
+}

@@ -1,0 +1,17 @@
+namespace M1Usage;
+internal static class SerializerUsage
+{
+    internal static string Use(Stream destination, CancellationToken token)
+    {
+        var document = new Xemele.XmlDocument();
+        var element = document.CreateElement("r", "urn:r", "p");
+        element.SetNamespaceDeclaration("p", "urn:r");
+        element.SetAttribute("id", "7");
+        element.AppendChild(document.CreateText("a&b"));
+        document.DocumentNode.AppendChild(element);
+        var options = new Xemele.XmlSaveOptions { NamespaceHandling = Xemele.XmlNamespaceHandling.Strict };
+        Xemele.XmlSerializer.Serialize(document, destination, options, token);
+        document.Save(destination, options, token);
+        return document.ToXmlString(options, token);
+    }
+}

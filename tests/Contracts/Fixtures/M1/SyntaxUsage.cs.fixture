@@ -1,0 +1,20 @@
+using Xemele.Parsing.Syntax;
+namespace M1Usage;
+internal static class SyntaxUsage
+{
+    internal static ScanResult Use(XmlParserCore core, ReadOnlySpan<char> input, ReadOnlySpan<long> offsets, Sink sink, CancellationToken token)
+        => core.Append(input, offsets, isFinalBlock: true, sink, token);
+}
+internal sealed class Sink : IXmlEventSink
+{
+    public bool StartDocument(Xemele.XmlLocation location) => true;
+    public bool Declaration(XmlDeclarationView declaration) => true;
+    public bool StartElement(XmlNameView name, bool isEmptyElement, Xemele.XmlLocation location) => true;
+    public bool NamespaceDeclaration(XmlNamespaceView declaration) => true;
+    public bool Attribute(XmlAttributeView attribute) => true;
+    public bool StartElementContent() => false;
+    public bool EndElement(XmlNameView name, Xemele.XmlLocation location) => true;
+    public bool StartText(XmlTextKind kind, ReadOnlySpan<char> target, Xemele.XmlLocation location) => true;
+    public bool TextFragment(ReadOnlySpan<char> text, bool tokenEnded, Xemele.XmlLocation location) => true;
+    public bool EndDocument(Xemele.XmlLocation location) => false;
+}

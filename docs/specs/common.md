@@ -49,3 +49,24 @@ Public baseline fragments stay task-owned at docs/api/<task-id>.txt. The exact
 xemele-api-v1 canonical schema is tools/ApiBaseline/README.md. [Compiled comparison
 scheme](../decisions/M0/api-compatibility.md) compares member IDs and normalized
 metadata; inventory validation alone does not establish assembly compatibility.
+
+## Exact M1 freeze
+
+M1 reuses Common.cs.fixture unchanged and compiles it without M2 symbols in each
+independent declaration project. Constructor semantics, nullable/width/default
+limits, diagnostics snapshot and strict success invariant remain M0's.
+[Strict-subset decisions](../decisions/M1/strict-subset.md) locate each exact
+M1 declaration and usage fixture. M1 has no public callback, forward writer,
+reader, resolver or async transport types. Internal source mappings are scalar
+first-byte offsets parallel to decoded UTF-16 units, with an explicit original
+byte length for EOF; raw decoder counts, scanner counts and normalized scalar
+locations must not be conflated. Common declares none of the decoder/core types.
+
+M1 result diagnostics are owned on rejection; internal decoding/scanning results
+carry a single owned terminal diagnostic. Internal callback exceptions never
+become syntax diagnostics. Public output errors use argument/operation exceptions,
+not parse rejection. Existing module-prefixed codes are strings, not a global
+enum. Tree construction has no parser or serialization dependency. Its default
+resource-limits enforcement and persistence measurements belong to M1-tree;
+parse limits apply at decoder/core/composition boundaries, with no shared mutable
+quota state or later feature automatically enabled by a common quota property.
