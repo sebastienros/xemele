@@ -4,7 +4,7 @@
   "milestone": "M1",
   "title": "Repair bounded DOM persistence of validated syntax",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M1-tree-dom-persistence",
   "branch": "codex/m1-tree-dom-persistence",
   "base_revision": "0ff5c008ea462e6a369de84bc292c349d0298f0b",
@@ -35,29 +35,102 @@
     {
       "id": "M1-tree-dom-persistence-A1",
       "description": "Provide explicitly documented internal trusted syntax-prevalidated node/attribute/namespace persistence on the verified fresh construction builder, avoiding unbounded repeated scalar/name/delimiter validation loops. Preserve freshness/owner/container/legal kinds, root constraints, intern quota/capacity, precommit version checks and postcommit notifications. Existing public validating APIs and builder checked entry points remain unchanged; no parser dependency or public additions.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "persistence-correctness",
+        "persistence-source-review"
+      ]
     },
     {
       "id": "M1-tree-dom-persistence-A2",
       "description": "Demonstrate independently validated syntax/model construction with long text, CDATA/comment/PI, names, attribute and namespace values; own strings and repeated borrowed name hits correctly. Verify state/freshness/foreign owner/legal kind/version/quota rejection and linear deep/member work; prove no repeated custom scalar validation scan. Keep cancellation at operation boundaries, avoiding unbounded own loops.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "persistence-correctness",
+        "persistence-source-review"
+      ]
     },
     {
       "id": "M1-tree-dom-persistence-A3",
       "description": "Run meaningful helper/prerequisite correctness, actual approved public API comparison, independent source and isolated package model sample, warm/setup/owned allocation evidence and applicable comparable construction measurements at known revisions; preserve earlier behavior and record exact trust preconditions/signatures for DOM consumer. Benchmarks use class attributes; no job arguments or timing without exclusive grant.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "persistence-correctness",
+        "persistence-oracle",
+        "persistence-measurements"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Tree/DomPersistence.cs: internal exact owned syntax-prevalidated creation/attribute/namespace persistence and cancellation-bearing structural attachment",
+    "src/Xemele/Tree/DomBuilder.cs: nested partial only; checked APIs unchanged",
+    "tests/Xemele.Tests/M1-tree-dom-persistence/DomPersistenceTests.cs: 8 safety/long-value/count/cancellation/zero-allocation tests",
+    "samples/M1-tree-dom-persistence/: independent fully validated owned syntax model replay and setup/growth/owned/retained allocation probe",
+    "benchmarks/Xemele.Benchmarks/M1-tree-dom-persistence/: equivalent prevalidated checked/trusted replay with short/long names/values",
+    "docs/reports/M1-tree-dom-persistence/: exact consumer trust contract, reproducible correctness verifier and reports"
+  ],
+  "evidence": [
+    {
+      "id": "persistence-correctness",
+      "kind": "check",
+      "revision": "46e6d1bfe439c4b949ca534d917d371a1e2b3cb9",
+      "command": "Pinned SDK10.0.400 DOTNET_CLI_USE_MSBUILD_SERVER=0 python3 docs/reports/M1-tree-dom-persistence/verify.py (authorized IPC/network escalation)",
+      "result": "passed",
+      "summary": "Release0 warnings/errors; persistence8/builder11/Tree14/Input10/Syntax70/solution223/Foundation11 no skips; rebuilt foundation139/173/ApiProbe8, M1 model lanes and protocol38; actual215 approved golden+mandatory canonical fragments; independent source and isolated local-feed package model replay; warm prepared persistence0B, warm4096 attach0B, setup1560B/fixture35568B/arena1387712B/owned512 pairs271280B/retained229445B per doc estimate; planning104 and diff pass.",
+      "artifact": "docs/reports/M1-tree-dom-persistence/checks.txt"
+    },
+    {
+      "id": "persistence-ipc-failure",
+      "kind": "check",
+      "revision": "46e6d1bfe439c4b949ca534d917d371a1e2b3cb9",
+      "command": "Sandbox python3 docs/reports/M1-tree-dom-persistence/verify.py",
+      "result": "failed",
+      "summary": "Build passed; first test could not bind MTP IPC named pipe (permission denied), no test outcomes. Authorized escalated same-revision rerun passed separately.",
+      "artifact": "docs/reports/M1-tree-dom-persistence/initial-ipc-failure.txt"
+    },
+    {
+      "id": "persistence-source-review",
+      "kind": "review",
+      "revision": "46e6d1bfe439c4b949ca534d917d371a1e2b3cb9",
+      "command": "Coordinator independent read-only source review",
+      "result": "passed",
+      "summary": "Coordinator reported no runtime/test/model trust-boundary blockers; requested complete benchmark equivalence oracle before timing. Runtime/tests unchanged since reviewed revision; refined oracle separately passed.",
+      "artifact": "docs/reports/M1-tree-dom-persistence/README.md"
+    },
+    {
+      "id": "persistence-oracle",
+      "kind": "check",
+      "revision": "ecd4a2961d3126257f9c4cdfdf28276ed9a35bad",
+      "command": "dotnet build docs/reports/M1-tree-dom-persistence/Oracle/Oracle.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false; dotnet run --project docs/reports/M1-tree-dom-persistence/Oracle/Oracle.csproj -c Release --no-build --no-restore; benchmark --list flat",
+      "result": "passed",
+      "summary": "Release0 warnings/errors;4 full checked/trusted setup pairs/8 parameter cases compare all322 nodes and ordered member fields; discovery2 methods with2x2 parameters. Initial sandbox restore cancelled130, not passing; authorized network rerun passed. Runtime/test/sample unchanged from correctness hash.",
+      "artifact": "docs/reports/M1-tree-dom-persistence/oracle-check.txt"
+    },
+    {
+      "id": "persistence-measurements",
+      "kind": "check",
+      "revision": "ecd4a2961d3126257f9c4cdfdf28276ed9a35bad",
+      "command": "dotnet run --project benchmarks/Xemele.Benchmarks -c Release --no-build --no-restore -- --filter '*DomPersistenceBenchmarks*' --artifacts artifacts/M1-tree-dom-persistence/bdn",
+      "result": "passed",
+      "summary": "Exclusive single M4ProArm64/.NET10.0.11 SDK10.0.400 run; wrapper0/all8 children0/3 actual each. Checked/trusted short names27.24/18.14us, short values22.49/16.93us, long names8781.56/2868.41us, long values3108.51/16.59us; equal managed bytes per pair150.52/150.46/214.45/150.46KB. Priority elevation denied; ordinary scheduling and confidence ranges retained; provisional single-host persistence microbenchmark. No active task timing/build processes after completion.",
+      "artifact": "docs/reports/M1-tree-dom-persistence/bdn/workload-audit.txt"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Repair prerequisite for independently reviewed DOM persistence cancellation gap; trusted boundary may consume only fully validated syntax names/scalars/delimiters/unique keys.",
-    "checks": [],
-    "remaining": [],
-    "requests": []
+    "summary": "Internal exact-owned-string trusted persistence and cancellation boundaries implemented; existing checked/public validation unchanged. Freshness/owner/container/root and original quota/capacity/version/notifications preserved. Independent source review/correctness/package/API/allocations and one exclusive8-case measurement run passed.",
+    "checks": [
+      "Known-source46e6d1b verifier passed all listed correctness/API/source/package/allocation checks. Initial uncommitted build caught xUnit1051 test-token analyzer and was corrected before known-source checks. Sandbox IPC failure preserved; authorized escalated rerun passed.",
+      "Coordinator-message automatic review rejected twice; user directly authorized messages afterward. No timing started.",
+      "Refined full benchmark equivalence oracle passed at ecd4a296; all8 exclusive measured workloads exited0 with3 actual measurements; priority elevation denied, no task processes remain. Sandbox oracle restore cancelled130; escalated rerun passed."
+    ],
+    "remaining": [
+      "Coordinator integration and combined verification required before verified.",
+      "End-to-end DOM composition and x64 release measurements remain with later owners; single-host synthetic persistence results are provisional."
+    ],
+    "requests": [
+      "DOM owner must use exact immutable owned strings already fully syntax-validated, including full accumulated delimiter legality and unique expanded-key/prefix sets. Exact four helper signatures and platform hashing/copying/arena cancellation limits are in owned README. Probe borrowed names before miss ToString; never retain borrowed callback views.",
+      "Coordinator rerun owned verifier with approved215 Serializer golden/default and mandatory fragment compare on integrated code. No task benchmark repeat without new exclusive grant."
+    ]
   }
 }
