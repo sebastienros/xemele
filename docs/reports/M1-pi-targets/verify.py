@@ -54,11 +54,12 @@ def main(args):
     audit(args.audit_base or json.loads((ROOT / 'docs/tasks/M1-pi-targets.json').read_text())['base_revision'])
     assert run('dotnet', '--version').strip() == json.loads((ROOT / 'global.json').read_text())['sdk']['version']
     run('dotnet', '--info')
-    run('dotnet', 'build', 'Xemele.slnx', *FLAGS)
-    for name in ['PiTargets', 'Dom', 'Input', 'Syntax', 'Tree', 'DomConstruction', 'Serialization']:
-        output = run('dotnet', 'test', '--project', 'tests/Xemele.Tests', '-c', 'Release', '--no-build', '--no-restore', '--filter-namespace', 'Xemele.Tests.' + name)
-        assert 'total: 0' not in output
-    run('dotnet', 'test', '--solution', 'Xemele.slnx', '-c', 'Release', '--no-build', '--no-restore')
+    if not args.contracts_only:
+        run('dotnet', 'build', 'Xemele.slnx', *FLAGS)
+        for name in ['PiTargets', 'Dom', 'Input', 'Syntax', 'Tree', 'DomConstruction', 'Serialization']:
+            output = run('dotnet', 'test', '--project', 'tests/Xemele.Tests', '-c', 'Release', '--no-build', '--no-restore', '--filter-namespace', 'Xemele.Tests.' + name)
+            assert 'total: 0' not in output
+        run('dotnet', 'test', '--solution', 'Xemele.slnx', '-c', 'Release', '--no-build', '--no-restore')
     run('dotnet', 'build', 'docs/reports/M0-contracts/Checks/Checks.csproj', *FLAGS)
     run('dotnet', 'test', '--project', 'docs/reports/M0-contracts/Checks/Checks.csproj', '-c', 'Release', '--no-build', '--no-restore')
     run('dotnet', 'build', 'docs/reports/M0-contracts/ApiCheck/ApiCheck.csproj', *FLAGS)
@@ -129,6 +130,7 @@ def main(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--contracts-only', action='store_true', help='Continue independent contract/sample/allocation/planning checks without repeating runtime suite.')
     parser.add_argument('--audit-base', help='Coordination revision before integration; default is current task base.')
     args = parser.parse_args()
     try: main(args)
