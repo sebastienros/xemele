@@ -7,7 +7,7 @@ ROOT = Path(__file__).resolve().parents[3]
 support = ROOT / 'docs/reports/M2-dtd-entity-base/measure.py'
 engine = types.ModuleType('entity_base_measurement_support')
 engine.__file__ = str(support)
-# Only task-owned transient artifact routing differs; all guards/control flow are reused.
+# Task-owned artifact routing and declared class labels; reused guards remain intact.
 exec(compile(support.read_text().replace("'artifacts/M2-dtd-entity-base'", "'artifacts/M2-dtd-nonvalidating'").replace("EntityBaseBenchmarks", "NonvalidatingBenchmarks"), str(support), 'exec'), engine.__dict__)
 engine.OWN = Path(__file__).resolve().parent
 engine.PROJECT = engine.OWN / 'Xemele.EntityBase.Measurements.csproj'
@@ -32,12 +32,32 @@ def run(command, *args, **kwargs):
     if '--allocation' in command:
         lines = output.splitlines()
         borrowed = [json.loads(line.removeprefix('NONVALIDATING_BORROWED ')) for line in lines if line.startswith('NONVALIDATING_BORROWED ')]
+        owned = '\n'.join(line for line in lines if not line.startswith('NONVALIDATING_BORROWED '))
+        summary = kwargs.get('summary', args[2] if len(args) >= 3 else None)
+        engine.require(summary is not None, 'Durable allocation summary required')
+        # Capture both observed owners before refusal, without changing the
+        # inherited exact five-key owned-metric acceptance protocol.
+        summary['allocationBytes'] = json.loads(owned)
+        summary['borrowedAllocation'] = {'records': borrowed, 'validation': 'failed'}
         engine.require(len(borrowed) == 1 and borrowed[0]['bytes'] == 0 and borrowed[0]['iterations'] == 1024, 'Borrowed allocation proof missing')
-        owned = json.loads('\n'.join(line for line in lines if not line.startswith('NONVALIDATING_BORROWED ')))
-        owned['borrowed'] = borrowed[0]
-        return json.dumps(owned)
+        summary['borrowedAllocation']['validation'] = 'passed'
+        return owned
     return output
 
 engine.run = run
+original_benchmark_results = engine.benchmark_results
+
+def benchmark_results(text, raw, revision, known, summary=None):
+    # A reporting-only commit does not change the independently compiled child.
+    # Keep actual Git HEAD guards in reused main; its version check must compare
+    # the frozen binary compilation revision explicitly recorded by the rebind.
+    runtime_revision = known.get('runtimeRevision', revision)
+    if runtime_revision != revision:
+        binding = known.get('reportingRebind', {})
+        engine.require(binding.get('runtimeHead') == runtime_revision and binding.get('reportingHead') == revision,
+                       'Reporting-only compilation revision binding missing')
+    return original_benchmark_results(text, raw, runtime_revision, known, summary)
+
+engine.benchmark_results = benchmark_results
 if __name__ == '__main__':
     engine.main()
