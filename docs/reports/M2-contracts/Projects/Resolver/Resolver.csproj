@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><AssemblyName>M2Resolver</AssemblyName><EnableDefaultCompileItems>false</EnableDefaultCompileItems></PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../../../../tests/Contracts/Fixtures/foundation/Common.cs.fixture" />
+    <Compile Include="../../../../../tests/Contracts/Fixtures/M2/Resolver.cs.fixture" />
+    <Compile Include="../../../../../tests/Contracts/Fixtures/M2/ResolverUsage.cs.fixture" />
+    <Compile Include="$(ProbeSource)" Condition="'$(ProbeSource)' != ''" />
+  </ItemGroup>
+</Project>

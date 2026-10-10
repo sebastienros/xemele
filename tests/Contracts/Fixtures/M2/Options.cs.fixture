@@ -1,0 +1,8 @@
+// Nonpackaged additive M2 declaration model.
+namespace Xemele;
+public sealed partial record XmlParseOptions
+{
+    public bool Recover { get; init; }
+    public XmlDtdProcessing DtdProcessing { get; init; } = XmlDtdProcessing.Prohibit;
+    public XmlResourceResolver? Resolver { get; init; }
+}

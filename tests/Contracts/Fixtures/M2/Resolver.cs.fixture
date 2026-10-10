@@ -1,0 +1,32 @@
+// Nonpackaged foundation-compatible resource model.
+namespace Xemele;
+public enum XmlDtdProcessing { Prohibit, Parse }
+public enum XmlResourceKind { ExternalSubset, ExternalEntity }
+public sealed record XmlResourceRequest(Uri Uri, Uri? Referrer, XmlResourceKind Kind)
+{
+    public string? SystemId { get; init; }
+    public string? PublicId { get; init; }
+}
+public abstract class XmlResourceResolver
+{
+    public abstract XmlResolvedResource? Resolve(XmlResourceRequest request, CancellationToken cancellationToken);
+    public virtual ValueTask<XmlResolvedResource?> ResolveAsync(XmlResourceRequest request, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        return ValueTask.FromResult(Resolve(request, cancellationToken));
+    }
+}
+public sealed class XmlResolvedResource : IDisposable, IAsyncDisposable
+{
+    private bool disposed;
+    public Stream Content { get; }
+    public Uri SourceUri { get; }
+    public XmlResolvedResource(Stream content, Uri sourceUri)
+    {
+        ArgumentNullException.ThrowIfNull(content); ArgumentNullException.ThrowIfNull(sourceUri);
+        if (!content.CanRead || !sourceUri.IsAbsoluteUri) throw new ArgumentException("Readable stream and absolute URI required.");
+        Content = content; SourceUri = sourceUri;
+    }
+    public void Dispose() { if (!disposed) { disposed = true; Content.Dispose(); } }
+    public async ValueTask DisposeAsync() { if (!disposed) { disposed = true; await Content.DisposeAsync(); } }
+}

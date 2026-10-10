@@ -70,3 +70,21 @@ enum. Tree construction has no parser or serialization dependency. Its default
 resource-limits enforcement and persistence measurements belong to M1-tree;
 parse limits apply at decoder/core/composition boundaries, with no shared mutable
 quota state or later feature automatically enabled by a common quota property.
+
+## Exact M2 freeze
+
+[M2 XML/resource decisions](../decisions/M2/xml-resources.md) supersede earlier
+M2 proposals while preserving foundation/M1 declarations and finite defaults.
+Separate nonpackaged resolver/DTD/encoding/entities/recovery projects compile
+only their required declarations. The foundation-compatible resolver types remain
+in Xemele, with nullable refusal and operation cancellation on sync/async methods.
+Request lexical SystemId/PublicId are additive init-only properties. Resource
+ownership uses the final absolute SourceUri; core never implicitly fetches.
+
+DtdProcessing and Resolver are M2-entities options; Recover is M2-recovery's
+separate partial option. Strict entry points reject Recover=true at entry.
+Diagnostics factories accept it explicitly. XML 1.0 nonvalidating processing,
+bounded repair rules, all quota units/aggregate boundaries, supported encoding
+labels, model hooks, metadata and staged implementation ownership are fixed by
+the decision and compiled fixture families. No runtime stub is delivered here.
+The coordinator-assigned ordered partial-options extension is recorded in the task handoff.

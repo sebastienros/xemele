@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><AssemblyName>M2Recovery</AssemblyName><EnableDefaultCompileItems>false</EnableDefaultCompileItems></PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../../../../tests/Contracts/Fixtures/M2/Common.cs.fixture" />
+    <Compile Include="../../../../../tests/Contracts/Fixtures/M2/Options.cs.fixture" />
+    <Compile Include="../../../../../tests/Contracts/Fixtures/M2/Resolver.cs.fixture" />
+    <Compile Include="../../../../../tests/Contracts/Fixtures/M1/Tree.cs.fixture" />
+    <Compile Include="../../../../../tests/Contracts/Fixtures/M1/Dom.cs.fixture" />
+    <Compile Include="../../../../../tests/Contracts/Fixtures/M2/Recovery.cs.fixture" />
+    <Compile Include="../../../../../tests/Contracts/Fixtures/M2/RecoveryUsage.cs.fixture" />
+    <Compile Include="$(ProbeSource)" Condition="'$(ProbeSource)' != ''" />
+  </ItemGroup>
+</Project>

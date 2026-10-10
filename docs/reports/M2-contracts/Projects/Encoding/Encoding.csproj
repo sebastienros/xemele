@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><AssemblyName>M2Encoding</AssemblyName><EnableDefaultCompileItems>false</EnableDefaultCompileItems></PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../../../../tests/Contracts/Fixtures/foundation/Common.cs.fixture" />
+    <Compile Include="../../../../../tests/Contracts/Fixtures/M2/Encoding.cs.fixture" />
+    <Compile Include="../../../../../tests/Contracts/Fixtures/M1/InputUsage.cs.fixture" />
+    <Compile Include="$(ProbeSource)" Condition="'$(ProbeSource)' != ''" />
+  </ItemGroup>
+</Project>
