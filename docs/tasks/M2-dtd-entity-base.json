@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "id": "M2-dtd-entity-base",
+  "milestone": "M2",
+  "title": "Correct DTD entity declaration and reference bases",
+  "kind": "feature",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "depends_on": [
+    "M2-dtd-composition",
+    "M2-entities",
+    "M2-conformance-profile"
+  ],
+  "goals": [
+    "G01",
+    "G07",
+    "G18"
+  ],
+  "specs": [
+    "docs/performance-coding.md",
+    "docs/specs/parser.md",
+    "docs/decisions/M2/xml-resources.md",
+    "docs/decisions/M2/dtd-composition.md"
+  ],
+  "owns": [
+    "src/Xemele/Parsing/Dtd/Grammar/Parser/",
+    "tests/Xemele.Tests/M2-dtd-entity-base/",
+    "tests/fixtures/M2-dtd-entity-base/",
+    "benchmarks/Xemele.Benchmarks/M2-dtd-entity-base/",
+    "samples/M2-dtd-entity-base/",
+    "docs/reports/M2-dtd-entity-base/"
+  ],
+  "api_or_output": "Normative effective containing-external-source declaration base and declaration-owned external PE system-ID resolution; no public/model shape changes",
+  "acceptance": [
+    {
+      "id": "M2-dtd-entity-base-A1",
+      "description": "Correct internal parameter-entity replacement inclusion base to the containing external entity where declaration opener is parsed, including nested internal PEs, rather than internal PE declaration origin. Preserve actual external resource redirected final URI, external-origin semantics, saved parent cursors, budgets/quota/cancellation/framing/count/cleanup and immutable model/constructor/API shapes. Use verified profile E18 exactoriginal identity and independent expected output, no corpus expectation weakening.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M2-dtd-entity-base-A2",
+      "description": "Correct external PE system-identifier resolution to its declaration base rather than reference-site base, with separate source-location/referrer identities as required by existing contract. Add exact requested-URI/referrer/complete callback/model oracles for E18, internal inclusion under primary/redirectedexternal/nestedcontexts, external PE declared in one externaldirectory and referenced from another, firstdeclaration wins, quota/cancel/denial/primary-error cleanup. Preserve inherited direct external final-URI composition outcomes; request additional paths if historical assertions need precise transitions.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M2-dtd-entity-base-A3",
+      "description": "Record actual full correctness/preservation/API/package and relevant allocation/benchmark evidence at frozen Git/source/actualbinary/runtime identities; original3386resources/2585case expectation ledger unchanged, E18 independentmodel fulfilled and all other gaps remainvisible. No unverified peer dependency, no Core/framer/sharedproject/API edits. Scoped source review and exclusive preparation/grant before standalone measurements, no repeats of unchanged successful observations or relaxed counters/options. Summaries only, transient raw output cleanup and actual planning validation.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "Coordinator exact E18 repair routed from independent original-output/model assessment and source-owner review; historical verified evidence retained.",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}
