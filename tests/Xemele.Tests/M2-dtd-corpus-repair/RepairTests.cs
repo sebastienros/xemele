@@ -77,7 +77,7 @@ public sealed class RepairTests
         var e = Assert.Single(doc.Dtd.Elements); Assert.Equal("doc", e.Name); Assert.True(e.IsExternal); Assert.Equal(DtdParticleKind.Mixed, e.Content.Kind); Assert.Equal(DtdOccurrence.Once, e.Content.Occurrence); Assert.Null(e.Content.Name); Assert.Empty(e.Content.Children);
         Assert.Equal(new XmlLocation(External, 2, 1, 21), e.Location);
         var a = Assert.Single(doc.Dtd.Attributes); Assert.Equal("doc", a.ElementName); Assert.Equal("a1", a.Name); Assert.Equal(DtdAttributeType.CData, a.Type); Assert.Equal(DtdDefaultKind.Value, a.DefaultKind); Assert.Equal("v1", a.DefaultValue); Assert.Empty(a.Tokens); Assert.True(a.IsExternal);
-        Assert.Equal(External, a.Location.SourceUri); Assert.Equal(3, a.Location.LineNumber); Assert.Equal(13, a.Location.LinePosition); Assert.Equal(External, doc.Dtd.ParameterEntities[0].Location.SourceUri);
+        Assert.Equal(External, a.Location.SourceUri); Assert.Equal(3, a.Location.LineNumber); Assert.Equal(13, a.Location.LinePosition); Assert.Equal(59, a.Location.ByteOffset); Assert.Equal(External, doc.Dtd.ParameterEntities[0].Location.SourceUri);
         var p = Assert.Single(doc.Dtd.ParameterEntities); Assert.Equal("e", p.Name); Assert.True(p.IsParameter); Assert.True(p.IsExternal); Assert.Equal("doc", p.ReplacementText); Assert.Null(p.SystemId); Assert.Null(p.PublicId); Assert.Null(p.NotationName); Assert.Equal(new XmlLocation(External, 1, 1, 0), p.Location);
     }
     [Theory]
@@ -111,6 +111,21 @@ public sealed class RepairTests
         Assert.Equal(DtdParseStep.Rejected, yes.Append(forward, [], false, Ct).Step);
         using var unread = new DtdParser(DtdSubsetKind.Internal, new()); unread.ConfigureDeclarationReading(false, new XmlLocation(null, 1, 1, null));
         Assert.Equal(DtdParseStep.Completed, unread.Append(forward, [], true, Ct).Step); Assert.Empty(unread.Model.Attributes);
+    }
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void CoreForwardsExternalSubsetApplicability(bool standalone)
+    {
+        var resolver = new Resolver(" "u8.ToArray(), 1);
+        var options = new XmlParseOptions { DtdProcessing = XmlDtdProcessing.Parse, Resolver = resolver };
+        string xml = (standalone ? "<?xml version='1.0' standalone='yes'?>" : "") +
+            "<!DOCTYPE doc SYSTEM '020.ent' [<!ATTLIST doc a1 CDATA '&e;'><!ENTITY e 'v1'>]><doc/>";
+        using var core = new XmlParserCore(options, Primary); var sink = new DomSink(options);
+        var result = core.Append(xml, [], true, sink, Ct);
+        Assert.Equal(standalone ? ScanStep.Rejected : ScanStep.Completed, result.Step);
+        if (!standalone) { Assert.Equal("v1", sink.Document.RootElement.GetAttribute("a1")); Assert.Single(resolver.Requests); Assert.Equal(1, resolver.Disposals); }
+        else { Assert.Equal("DTD.UndeclaredEntity", result.Diagnostic!.Code); Assert.Empty(resolver.Requests); Assert.True(sink.Document.RootElement.IsDefault); }
     }
     [Theory]
     [InlineData("<!ENTITY a:b 'unused'>", false)]

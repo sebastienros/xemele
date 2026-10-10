@@ -1,0 +1,28 @@
+{
+  "mode": "development-controls",
+  "result": "passed",
+  "head": "74b8c4b",
+  "resolvedFailures": [
+    {
+      "check": "initial test compilation",
+      "failure": "Three test authoring API mismatches: IsNone vs IsDefault; Load has no base URI overload.",
+      "fix": "Use existing IsDefault and mapped XmlParserCore composition with authored source URI."
+    },
+    {
+      "check": "original inventory assertions",
+      "failure": "Seven whitespace-sensitive JSON string comparisons failed.",
+      "fix": "Compare immutable resource metadata with JsonElement.DeepEquals."
+    },
+    {
+      "check": "accepted 020 authored oracle",
+      "failure": "Authored element byte offset was 23 instead of independently counted 21.",
+      "fix": "Count immutable CRLF source bytes; model oracle uses 21."
+    },
+    {
+      "check": "affected inherited tests",
+      "failure": "Three existing colon entity tests expected XML.Syntax; new declaration rejection returned DTD.Syntax.",
+      "fix": "Preserve established XML.Syntax category for NCName failures at declaration time."
+    }
+  ],
+  "rawOutputs": "Temporary, not retained. These were workspace development runs, not passing revision evidence."
+}
