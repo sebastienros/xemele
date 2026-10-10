@@ -188,6 +188,29 @@ public sealed class ValueTests
         for (int i = 0; i < 1000; i++) d.Decode("x&n;&#9;", output, false, TestContext.Current.CancellationToken);
         Assert.Equal(0, GC.GetAllocatedBytesForCurrentThread() - before);
     }
+    [Fact]
+    public void ProgressBeforeEofFinalStickinessAndReentrancy()
+    {
+        char[] output = new char[2]; using var d = new DtdValueDecoder(new());
+        var r = d.Decode("a&#9;", output, false, TestContext.Current.CancellationToken);
+        Assert.Equal(DtdValueStep.NeedInput, r.Step); Assert.Equal(5, r.Consumed); Assert.Equal(2, r.Written);
+        Assert.Equal("a\t", new string(output));
+        using var final = new DtdValueDecoder(new());
+        r = final.Decode("abc", output, true, TestContext.Current.CancellationToken);
+        Assert.Equal(DtdValueStep.NeedOutput, r.Step); Assert.Equal(3, r.Consumed);
+        Assert.Throws<InvalidOperationException>(() => final.Decode([], output, false, TestContext.Current.CancellationToken));
+        r = final.Decode([], output, true, TestContext.Current.CancellationToken);
+        Assert.Equal(DtdValueStep.Completed, r.Step); Assert.Equal('c', output[0]);
+        var ledger = new Ledger(10, 10); using var reentrant = new DtdValueDecoder(new(), default, ledger);
+        ledger.Callback = () =>
+        {
+            Assert.Throws<InvalidOperationException>(() => reentrant.Decode([], output, false, TestContext.Current.CancellationToken));
+            Assert.Throws<InvalidOperationException>(() => reentrant.Dispose());
+        };
+        Assert.Equal(DtdValueStep.Completed, reentrant.Decode("&#9;", output, true, TestContext.Current.CancellationToken).Step);
+        Assert.Throws<ArgumentNullException>(() => new DtdValueDecoder(null!));
+        Assert.Throws<ArgumentOutOfRangeException>(() => new DtdValueDecoder(new() { TokenCharacters = 0 }));
+    }
     private sealed class Ledger(long maximum, int maxDepth) : IDtdBudget
     {
         public long Expanded; public int Depth; public Action? Callback;
