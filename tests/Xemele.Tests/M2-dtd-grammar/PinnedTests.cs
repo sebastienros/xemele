@@ -36,7 +36,7 @@ public sealed class DtdGrammarPinnedTests
         Assert.Empty(model.Notations);
         if (oracle == "p31pass1") { Assert.Empty(model.Elements); Assert.Empty(model.Attributes); Assert.Empty(model.GeneralEntities); Assert.Empty(model.ParameterEntities); return; }
         var element = Assert.Single(model.Elements); Assert.True(element.IsExternal); Assert.Equal(DtdOccurrence.Once, element.Content.Occurrence); Assert.Null(element.Content.Name); Assert.Empty(element.Content.Children);
-        Assert.Equal(oracle.StartsWith("p", StringComparison.Ordinal) ? "doc" : oracle == "ibm32v01" ? "animal" : "root", element.Name);
+        Assert.Equal(oracle is "p30pass1" or "p62pass1" ? "doc" : oracle == "ibm32v01" ? "animal" : "root", element.Name);
         Assert.Equal(oracle == "pe00" ? DtdParticleKind.Mixed : DtdParticleKind.Empty, element.Content.Kind);
         if (oracle == "pe00")
         {
