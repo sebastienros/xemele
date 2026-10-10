@@ -105,3 +105,7 @@ passed. `audit.log` records every changed/untracked path, five byte-identical
 workload-body comparisons, the 5/6/1/2/2 annotation inventory, and unchanged
 runtime/API/tests/historical evidence. Acceptance is implemented on the worker
 branch; integration and integrated verification belong to the coordinator.
+
+## Integrated verification
+
+Coordinator verified integration `dcda23674cf94542e521ee1234fc242d6ecd289d` with all six compiled harness inventories, launcher modes, approved internal 41-row contract, unchanged compiled public 215 members, planning validation and clean diff. Independent read-only review found no blockers. Fresh outputs are `integration-discovery.log`, `integration-modes.log`, `integration-api-build.log` and `integration-api.json`; original worker evidence remains unchanged. No timing was executed.

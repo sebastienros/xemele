@@ -4,11 +4,11 @@
   "milestone": "M1",
   "title": "Configure benchmark jobs on classes and simplify launchers",
   "kind": "infrastructure",
-  "status": "implemented",
+  "status": "verified",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M1-benchmark-class-config",
   "branch": "codex/m1-benchmark-class-config",
   "base_revision": "6d3326fce6dcc979d243a6bdddc92f9ae2e1897e",
-  "integration_revision": null,
+  "integration_revision": "dcda23674cf94542e521ee1234fc242d6ecd289d",
   "depends_on": [
     "M1-common",
     "M1-input",
@@ -43,7 +43,8 @@
       "status": "passed",
       "evidence": [
         "compiled-discovery",
-        "owned-audit"
+        "owned-audit",
+        "integrated-checks"
       ]
     },
     {
@@ -52,7 +53,8 @@
       "status": "passed",
       "evidence": [
         "compiled-discovery",
-        "launcher-modes"
+        "launcher-modes",
+        "integrated-checks"
       ]
     },
     {
@@ -62,7 +64,8 @@
       "evidence": [
         "public-api",
         "owned-audit",
-        "launcher-modes"
+        "launcher-modes",
+        "integrated-checks"
       ]
     }
   ],
@@ -116,6 +119,24 @@
       "result": "passed",
       "summary": "All changed/untracked paths within task ownership; benchmark bodies byte-identical after removing added attribute names; runtime/API/tests/historical evidence preserved; diff clean; planning103 tasks valid. No broad runtime suite/package/timing runs claimed.",
       "artifact": "docs/reports/M1-benchmark-class-config/README.md"
+    },
+    {
+      "id": "independent-review",
+      "kind": "review",
+      "revision": "ee348728e310284eb2879e025ae011a138e2ad62",
+      "command": "Independent read-only review by review_foundation",
+      "result": "passed",
+      "summary": "16 class attributes, unchanged workloads, preserved modes/exporter/help/args; real compiled JSON inventories independently compared. No blockers; no reviewer execution.",
+      "artifact": null
+    },
+    {
+      "id": "integrated-checks",
+      "kind": "integration",
+      "revision": "dcda23674cf94542e521ee1234fc242d6ecd289d",
+      "command": "python3 docs/reports/M1-benchmark-class-config/verify.py current; python3 docs/reports/M1-benchmark-class-config/modes.py; dotnet build docs/reports/M0-contracts/ApiCheck/ApiCheck.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false; python3 -B tools/ApiBaseline/compare.py --report docs/reports/M1-benchmark-class-config/integration-api.json; git diff --check; python3 tools/planning/tasks.py validate",
+      "result": "passed",
+      "summary": "Fresh integrated six harness/checker builds and compiled metadata inventory match; all launcher modes/83095 Input assertions/borrowed allocations/internal41-row contract pass; compiled public215 unchanged; planning103 valid. No timing run required or executed.",
+      "artifact": "docs/reports/M1-benchmark-class-config/integration-discovery.log"
     }
   ],
   "blockers": [],
@@ -126,9 +147,7 @@
       "All launcher modes pass; Input41 internal rows and public215 rows match; allocation regressions pass.",
       "Planning103 tasks/diff/owned audit pass; durable reports include corrected initial probe failure."
     ],
-    "remaining": [
-      "Coordinator review, integration and integrated verification; integration_revision remains null."
-    ],
+    "remaining": [],
     "requests": []
   }
 }
