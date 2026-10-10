@@ -134,6 +134,22 @@ class MeasurementGuards(unittest.TestCase):
         self.assertEqual(record['exit'], 1)
         self.assertEqual(record['diagnostics']['diagnostics'], ['error NETSDK1004: actual evaluated assets missing'])
         self.assertEqual(record['argv'], ['dotnet', 'msbuild', '/actual.csproj'])
+        self.assertEqual(record['processId'], 42)
+
+    def test_orphaned_inventory_group_retains_primary_and_cleanup_failures(self):
+        actual = Mock(returncode=0, pid=42)
+        actual.poll.return_value = 0
+        actual.communicate.return_value = (b'{}', b'')
+        record = {}
+        with patch.object(measure.subprocess, 'Popen', return_value=actual), patch.object(measure.os, 'killpg'), \
+                patch.object(measure, 'stop_group', side_effect=PermissionError('exact denied cleanup')):
+            with self.assertRaisesRegex(RuntimeError, 'group remains active'):
+                measure.inventory_query(['dotnet', 'msbuild'], {}, record)
+        self.assertEqual(record['exit'], 0)
+        self.assertEqual(record['processId'], 42)
+        self.assertIn('group remains active', record['failure'])
+        self.assertEqual(record['processCleanupFailure'], 'exact denied cleanup')
+        self.assertIn('stdoutSha256', record)
 
     def test_timed_out_inventory_query_preserves_partial_diagnostics(self):
         import subprocess
@@ -166,6 +182,7 @@ class MeasurementGuards(unittest.TestCase):
             with patch.object(measure, 'inventory_query', return_value=result) as query:
                 inventory = measure.source_inventory(Path('dotnet'), {}, [project], properties, summary)
                 command = query.call_args.args[0]
+                self.assertIn('-nodeReuse:false', command)
                 self.assertIn('-p:ArtifactsPath=' + properties['ArtifactsPath'], command)
                 for path in [assets, import_file, source, reference, analyzer]:
                     self.assertEqual(inventory[str(path.resolve())]['sha256'], measure.digest(path))

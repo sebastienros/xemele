@@ -85,6 +85,7 @@ def generated_build_properties(text, generated, summary=None):
     builds = [command for command in commands if len(command) > 1 and command[1] == 'build']
     require(len(builds) == 1, 'Exact observed generated Builder command required')
     command = builds[0]
+    require('--nodeReuse:false' in command, 'Pinned generated Builder node reuse policy differs')
     directory = directories[commands.index(command)]
     context['workingDirectory'] = directory
     require(directory == generated['buildRoot'], 'Observed generated Builder working directory differs')
@@ -107,6 +108,7 @@ def generated_build_properties(text, generated, summary=None):
 def inventory_query(command, env, record):
     record['argv'] = command
     process = subprocess.Popen(command, cwd=ROOT, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE, start_new_session=True)
+    record['processId'] = process.pid
     try:
         stdout, stderr = process.communicate(timeout=60)
         record.update(exit=process.returncode, stdoutSha256=hashlib.sha256(stdout).hexdigest(), stderrSha256=hashlib.sha256(stderr).hexdigest(),
@@ -143,7 +145,7 @@ def source_inventory(dotnet, env, projects=None, properties=None, summary=None):
         if summary is not None:
             summary.setdefault('inventoryQueries', []).append(record)
         requested = ['MSBuildAllProjects', 'ProjectAssetsFile', 'MSBuildProjectExtensionsPath', *properties]
-        command = [str(dotnet), 'msbuild', str(project), *['-p:' + k + '=' + v for k, v in properties.items()],
+        command = [str(dotnet), 'msbuild', str(project), '-nodeReuse:false', *['-p:' + k + '=' + v for k, v in properties.items()],
                    '-target:ResolveReferences;GenerateGlobalUsings;GenerateAssemblyInfo',
                    '-getItem:Compile,ReferencePath,Analyzer', '-getProperty:' + ','.join(requested)]
         result = inventory_query(command, env, record)
