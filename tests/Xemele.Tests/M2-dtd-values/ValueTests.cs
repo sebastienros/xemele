@@ -211,6 +211,81 @@ public sealed class ValueTests
         Assert.Throws<ArgumentNullException>(() => new DtdValueDecoder(null!));
         Assert.Throws<ArgumentOutOfRangeException>(() => new DtdValueDecoder(new() { TokenCharacters = 0 }));
     }
+    [Fact]
+    public void DecoderCleanupPreservesPrimaryChargeExceptionAndStack()
+    {
+        var primary = new IOException("primary charge"); var secondary = new IOException("secondary exit");
+        var ledger = new ThrowingLedger { ChargeException = primary, FailAtCharge = 1, ExitExceptions = [secondary] };
+        using var decoder = new DtdValueDecoder(new(), default, ledger);
+        Assert.Same(primary, Assert.Throws<IOException>(() => decoder.Decode("&#9;", new char[2], true, TestContext.Current.CancellationToken)));
+        Assert.Contains(nameof(ThrowingLedger.ChargeExpandedCharacters), primary.StackTrace);
+        Assert.Equal(1, ledger.ExitCalls); Assert.Equal(0, ledger.Depth);
+        Assert.Throws<InvalidOperationException>(() => decoder.Decode([], new char[2], true, TestContext.Current.CancellationToken));
+    }
+    [Fact]
+    public void DecoderExitExceptionWithoutPrimaryPropagatesOnce()
+    {
+        var first = new IOException("exit"); var ledger = new ThrowingLedger { ExitExceptions = [first] };
+        using var decoder = new DtdValueDecoder(new(), default, ledger);
+        Assert.Same(first, Assert.Throws<IOException>(() => decoder.Decode("&#9;", new char[2], true, TestContext.Current.CancellationToken)));
+        Assert.Equal(1, ledger.ExitCalls); Assert.Equal(0, ledger.Depth);
+    }
+    [Theory]
+    [InlineData(false)] [InlineData(true)]
+    public void NestedCleanupDrainsAllFramesAndPreservesPrimary(bool numeric)
+    {
+        var primary = new IOException("primary");
+        var ledger = new ThrowingLedger { ChargeException = primary, FailAtCharge = numeric ? 8 : 4,
+            ExitExceptions = [new IOException("numeric or child exit"), new IOException("parent exit"), new IOException("outer exit")] };
+        var table = Table(("a", "&b;"), ("b", numeric ? "&#9;" : "x"));
+        Assert.Same(primary, Assert.Throws<IOException>(() => Normalize("&a;", table: table, ledger: ledger)));
+        Assert.Contains(nameof(ThrowingLedger.ChargeExpandedCharacters), primary.StackTrace);
+        Assert.Equal(numeric ? 3 : 2, ledger.ExitCalls); Assert.Equal(0, ledger.Depth);
+        Assert.Equal(numeric ? 3 : 2, ledger.AcceptedEntries);
+    }
+    [Theory]
+    [InlineData(false)] [InlineData(true)]
+    public void FirstExitExceptionPropagatesAfterAllParentsDrain(bool diagnostic)
+    {
+        var first = new IOException("first exit"); var second = new IOException("second exit");
+        var ledger = new ThrowingLedger { ExitExceptions = [first, second] };
+        var table = Table(("a", "&b;"), ("b", diagnostic ? "&undeclared;" : "x"));
+        Assert.Same(first, Assert.Throws<IOException>(() => Normalize("&a;", table: table, ledger: ledger)));
+        Assert.Equal(2, ledger.AcceptedEntries); Assert.Equal(2, ledger.ExitCalls); Assert.Equal(0, ledger.Depth);
+        Assert.Contains(nameof(ThrowingLedger.ExitEntity), first.StackTrace);
+    }
+    [Fact]
+    public void RefusedEntryNeverExitsAndCleanupCancellationStaysPrimary()
+    {
+        var first = new IOException("parent exit"); var ledger = new ThrowingLedger { MaxDepth = 1, ExitExceptions = [first] };
+        Assert.Same(first, Assert.Throws<IOException>(() => Normalize("&a;", table: Table(("a", "&b;"), ("b", "x")), ledger: ledger)));
+        Assert.Equal(2, ledger.EnterCalls); Assert.Equal(1, ledger.AcceptedEntries); Assert.Equal(1, ledger.ExitCalls); Assert.Equal(0, ledger.Depth);
+        var canceled = new OperationCanceledException("primary cancellation");
+        ledger = new() { ChargeException = canceled, FailAtCharge = 4, ExitExceptions = [first, new IOException("outer")] };
+        Assert.Same(canceled, Assert.Throws<OperationCanceledException>(() => Normalize("&a;", table: Table(("a", "&b;"), ("b", "x")), ledger: ledger)));
+        Assert.Equal(2, ledger.ExitCalls); Assert.Equal(0, ledger.Depth);
+    }
+    private sealed class ThrowingLedger : IDtdBudget
+    {
+        public int EnterCalls, AcceptedEntries, Depth, ExitCalls, ChargeCalls;
+        public int MaxDepth = int.MaxValue, FailAtCharge = int.MaxValue;
+        public Exception? ChargeException;
+        public Exception[] ExitExceptions = [];
+        public XmlDiagnostic? ChargeExpandedCharacters(long count, XmlLocation location)
+        { if (++ChargeCalls == FailAtCharge) throw ChargeException!; return null; }
+        public XmlDiagnostic? EnterEntity(XmlLocation location)
+        {
+            EnterCalls++;
+            if (Depth == MaxDepth) return new("TEST.Refused", XmlDiagnosticSeverity.Fatal, "Refused", location);
+            Depth++; AcceptedEntries++; return null;
+        }
+        public void ExitEntity()
+        {
+            Assert.True(Depth > 0); Depth--; int index = ExitCalls++;
+            if (index < ExitExceptions.Length) throw ExitExceptions[index];
+        }
+        public XmlDiagnostic? ChargeName(ReadOnlySpan<char> name, XmlLocation location) => throw new Exception("Caller owns names.");
+    }
     private sealed class Ledger(long maximum, int maxDepth) : IDtdBudget
     {
         public long Expanded; public int Depth; public Action? Callback;

@@ -1,4 +1,5 @@
 using System.Text;
+using System.Runtime.ExceptionServices;
 
 namespace Xemele.Parsing.Dtd;
 
@@ -101,16 +102,17 @@ internal static class DtdValueProcessor
                 if (diagnostic is not null) return new(null, diagnostic);
                 // Push before any operation which can throw; finally owns every entered frame.
                 try { frames.Add(new(entity.ReplacementText, 0, entity.Name)); }
-                catch { budget.Exit(); throw; }
+                catch { try { budget.Exit(); } catch { } throw; }
                 active.Add(entity.Name);
             }
             return new(output.ToString(), null);
         }
-        finally
+        catch
         {
-            for (int i = frames.Count - 1; i >= 0; i--)
-                if (frames[i].Name is not null) budget.Exit();
+            Drain(suppressExceptions: true);
+            throw;
         }
+        finally { Drain(suppressExceptions: false); }
 
         DtdNormalizedValue Failure(string message) => new(null, ValueSyntax.Error(message, location));
         bool Charge(long count)
@@ -121,8 +123,28 @@ internal static class DtdValueProcessor
         {
             diagnostic = budget.Enter(location);
             if (diagnostic is not null) return false;
-            try { return Charge(1) && Append(c); }
-            finally { budget.Exit(); }
+            bool success;
+            try { success = Charge(1) && Append(c); }
+            catch { try { budget.Exit(); } catch { } throw; }
+            budget.Exit();
+            return success;
+        }
+        void Drain(bool suppressExceptions)
+        {
+            ExceptionDispatchInfo? first = null;
+            while (frames.Count > 0)
+            {
+                Frame frame = frames[^1];
+                frames.RemoveAt(frames.Count - 1);
+                if (frame.Name is null) continue;
+                active.Remove(frame.Name);
+                try { budget.Exit(); }
+                catch (Exception exception)
+                {
+                    if (!suppressExceptions && first is null) first = ExceptionDispatchInfo.Capture(exception);
+                }
+            }
+            first?.Throw();
         }
         bool Append(int c)
         {

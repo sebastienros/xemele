@@ -107,7 +107,13 @@ internal sealed class DtdValueDecoder : IDisposable
                         refusal = budget.Enter(location);
                         if (refusal is not null) return RejectDiagnostic(refusal);
                         try { refusal = budget.Charge(1, location); }
-                        finally { budget.Exit(); }
+                        catch
+                        {
+                            // Cleanup must not replace the original ledger exception/stack.
+                            try { budget.Exit(); } catch { }
+                            throw;
+                        }
+                        budget.Exit();
                         if (refusal is not null) return RejectDiagnostic(refusal);
                     }
                     outputScalars++;

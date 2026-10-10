@@ -44,6 +44,17 @@ bounds decoder emitted replacement scalars and final normalized attribute scalar
 null quotas do not disable capacity or cycle safety. Cancellation is checked
 per source scalar/digit/table probe and at entry.
 
+Every accepted entry receives exactly one best-effort ExitEntity call. Frames are
+popped/unmarked before exit, all parent entries drain even if an exit throws,
+and an existing operation exception and its stack remain primary. With no prior
+exception, the first cleanup exception propagates after the complete drain.
+Refused EnterEntity receives no exit. Ledger exceptions are never syntax failures.
+
+Effective-table lookup is linear in table size for each general-reference probe.
+Its scaling on large tables is unmeasured; the narrow owned-output benchmark
+uses two entities and establishes no large-table throughput claim. A future
+composing owner must measure this cost before choosing an alternate lookup seam.
+
 These are internal helpers, not DtdParser/source-stack/public stubs. Standalone
 sample/benchmark projects compile only Common diagnostics/options, verified
 IDtdBudget/model, and owned values. Parser-composition and x64/AOT measurements
