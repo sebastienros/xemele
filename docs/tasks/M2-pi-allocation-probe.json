@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "id": "M2-pi-allocation-probe",
+  "milestone": "M2",
+  "title": "Stabilize equivalent warm PI allocation measurement",
+  "kind": "infrastructure",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "depends_on": [
+    "M2-contracts",
+    "M1-pi-targets"
+  ],
+  "goals": [
+    "G03",
+    "G18"
+  ],
+  "specs": [
+    "docs/performance-coding.md",
+    "docs/specs/parser.md"
+  ],
+  "owns": [
+    "tests/Xemele.Tests/M1-pi-targets/PiTargetTests.cs",
+    "tests/Xemele.Tests/M2-pi-allocation-probe/",
+    "docs/reports/M2-pi-allocation-probe/"
+  ],
+  "api_or_output": "Equivalent warm100/measured10000 PI primitive measurement with exact zero-byte assertion and preserved progress/completion",
+  "acceptance": [
+    {
+      "id": "M2-pi-allocation-probe-A1",
+      "description": "Preserve framing checkpoint PI1944B and bounded-checkpoint PI712B failures plus separate passing runs; diagnose cold/setup/first-use and steady scopes without attributing historical failures to an unproved cause. Isolate identical warm and measured Append logic with checked consumption/progress and same sink/cancellation snapshot, retaining100 warmup/10000 measured/exact0B and default runtime settings. Only existing PI probe/helper changes; no other tests, production, parallelism, or thresholds changed. If actual steady runtime allocation remains, request runtime-owner repair.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M2-pi-allocation-probe-A2",
+      "description": "At known source run bounded controlled fresh focused and cumulative MTP plus direct runtime checks, meaningful measured progress/completion and separated allocation scopes, API compatibility/discovery/planning regressions/validation/owned-path audits. Preserve failures and unrun checks. Make verifier accept actual integrated counts and unique output prefixes. No timing benchmarks or blind repetitions.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "Coordinator repair prerequisite for repeated earlier PI allocation probe failures while new framer-own1243tests pass. Historical raw reports remain on preserved framing branch25d879f7db7a02adae2cdc8a2a267ab55c4f13aa until integrated.",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}
