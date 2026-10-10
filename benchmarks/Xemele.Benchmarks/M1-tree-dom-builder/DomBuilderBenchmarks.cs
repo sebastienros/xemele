@@ -1,9 +1,10 @@
 using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Jobs;
 using Xemele;
 
 namespace Xemele.DomBuilderMeasurements;
 
-[MemoryDiagnoser]
+[MemoryDiagnoser, ShortRunJob]
 public class DomBuilderBenchmarks
 {
     [Params(256, 2048)] public int Count { get; set; }
