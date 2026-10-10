@@ -1,6 +1,7 @@
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text.Json;
+using System.Security.Cryptography;
 using BenchmarkDotNet.Running;
 using Xemele;
 using Xemele.Benchmarks;
@@ -13,7 +14,9 @@ if (args.Contains("--identity"))
         product = typeof(XmlDocument).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()!.InformationalVersion,
         runtime = RuntimeInformation.FrameworkDescription,
         coreRuntimeBuild = typeof(object).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()!.InformationalVersion,
-        architecture = RuntimeInformation.ProcessArchitecture.ToString()
+        architecture = RuntimeInformation.ProcessArchitecture.ToString(),
+        coreLibrary = typeof(object).Assembly.Location,
+        coreLibrarySha256 = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(typeof(object).Assembly.Location))).ToLowerInvariant()
     })); return;
 }
 if (args.Contains("--correctness"))

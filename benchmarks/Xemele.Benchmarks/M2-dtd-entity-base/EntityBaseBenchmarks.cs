@@ -2,6 +2,9 @@ using System.Text;
 using BenchmarkDotNet.Attributes;
 using Xemele;
 using Xemele.Parsing.Dtd;
+using System.Reflection;
+using System.Security.Cryptography;
+using System.Text.Json;
 
 namespace Xemele.Benchmarks;
 
@@ -15,7 +18,49 @@ public class EntityBaseBenchmarks
     private readonly FixtureResolver resolver = new();
 
     [GlobalSetup]
-    public void Setup() => Check();
+    public void Setup()
+    {
+        Check();
+        ChildIdentity("before");
+    }
+
+    [GlobalCleanup]
+    public void Cleanup() => ChildIdentity("after");
+
+    // Runs outside measured intervals. These records are transient wrapper input,
+    // never fixture payloads or persistent benchmark logs.
+    private static void ChildIdentity(string stage)
+    {
+        var entry = Assembly.GetEntryAssembly()!;
+        string directory = AppContext.BaseDirectory;
+        string? project = directory;
+        while (project is not null && !Directory.EnumerateFiles(project, "*.notcs").Any())
+            project = Directory.GetParent(project)?.FullName;
+        if (project is null) throw new Exception("Generated benchmark source directory missing.");
+        Console.WriteLine("ENTITY_BASE_PROVENANCE " + JsonSerializer.Serialize(new
+        {
+            stage, process = Environment.ProcessId, directory,
+            entry = Metadata(entry), driver = Metadata(typeof(EntityBaseBenchmarks).Assembly),
+            product = Metadata(typeof(XmlDocument).Assembly),
+            runtime = Metadata(typeof(object).Assembly),
+            closure = Files(directory, true),
+            generatedInputs = Files(project, false)
+        }));
+        static object Metadata(Assembly assembly) => new
+        {
+            path = assembly.Location,
+            informationalVersion = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion,
+            mvid = assembly.ManifestModule.ModuleVersionId,
+            sha256 = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(assembly.Location))).ToLowerInvariant()
+        };
+        static SortedDictionary<string, string> Files(string root, bool recursive)
+        {
+            var result = new SortedDictionary<string, string>(StringComparer.Ordinal);
+            foreach (string path in Directory.EnumerateFiles(root, "*", recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly))
+                result.Add(Path.GetRelativePath(root, path), Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(path))).ToLowerInvariant());
+            return result;
+        }
+    }
 
     [Benchmark]
     public object InternalNestedModel()
