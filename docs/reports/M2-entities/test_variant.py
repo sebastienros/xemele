@@ -22,10 +22,12 @@ class VariantGuards(unittest.TestCase):
  def test_stale_source_codegen_and_metadata_mismatch_rejected(self):
   with tempfile.TemporaryDirectory() as temp:
    root=Path(temp);expected,metadata,revision=self.fixture(root)
-   for changes in [('source','b'*40),('code','changed'),('runtime','10.0.12'),('sha','not expected')]:
+   for changes in [('source','b'*40),('code','changed'),('project','changed'),('sourceVersion','1.0.0+'+'b'*40),('runtime','10.0.12'),('sha','not expected')]:
     actual_metadata=copy.deepcopy(metadata);actual_inputs={'project':'p','code':'c'};actual_revision=revision
     if changes[0]=='source':actual_revision=changes[1]
     elif changes[0]=='code':actual_inputs['code']=changes[1]
+    elif changes[0]=='project':actual_inputs['project']=changes[1]
+    elif changes[0]=='sourceVersion':actual_metadata[1]['sourceVersion']=changes[1]
     elif changes[0]=='runtime':actual_metadata[1]['runtime']=changes[1]
     else:actual_metadata[1]['sha256']=changes[1]
     with self.subTest(change=changes[0]),self.assertRaises(ValueError):variant.validate(expected,expected['closureIdentities'],actual_inputs,actual_metadata,actual_revision)
