@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Xml;
 using Xemele.Parsing.Syntax;
@@ -143,13 +144,31 @@ public sealed class PiTargetTests
         using var core = new XmlParserCore(new() { Limits = new() { DocumentCharacters = null } });
         var sink = new StreamingTests.CountingSink(); var cancellation = TestContext.Current.CancellationToken;
         const string chunk = "<?π.x-1 data?><?xml-stylesheet?><?\U00010000?>";
-        core.Append("<r>", [], false, sink, cancellation);
-        for (int i = 0; i < 100; i++) core.Append(chunk, [], false, sink, cancellation);
+        var root = core.Append("<r>", [], false, sink, cancellation);
+        Assert.Equal(ScanStep.NeedInput, root.Step); Assert.Equal(3, root.Consumed);
+        Assert.Equal(3, sink.Calls); Assert.Equal(0, sink.Units);
+        // One non-inlined call site checks identical progress in both phases.
+        AppendPiChecked(core, chunk, sink, cancellation, 100);
+        Assert.Equal(603, sink.Calls); Assert.Equal(400, sink.Units);
         long before = GC.GetAllocatedBytesForCurrentThread();
-        for (int i = 0; i < 10000; i++)
-            if (core.Append(chunk, [], false, sink, cancellation).Step != ScanStep.NeedInput) throw new InvalidOperationException();
-        Assert.Equal(0, GC.GetAllocatedBytesForCurrentThread() - before);
-        Assert.Equal(ScanStep.Completed, core.Append("</r>", [], true, sink, cancellation).Step);
+        AppendPiChecked(core, chunk, sink, cancellation, 10000);
+        long allocated = GC.GetAllocatedBytesForCurrentThread() - before;
+        Assert.Equal(0, allocated);
+        Assert.Equal(60603, sink.Calls); Assert.Equal(40400, sink.Units);
+        var completed = core.Append("</r>", [], true, sink, cancellation);
+        Assert.Equal(ScanStep.Completed, completed.Step); Assert.Equal(4, completed.Consumed);
+        Assert.Equal(60605, sink.Calls); Assert.Equal(40400, sink.Units);
+    }
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private static void AppendPiChecked(XmlParserCore core, string chunk, StreamingTests.CountingSink sink,
+        CancellationToken cancellation, int iterations)
+    {
+        for (int i = 0; i < iterations; i++)
+        {
+            var result = core.Append(chunk, [], false, sink, cancellation);
+            if (result.Step != ScanStep.NeedInput || result.Consumed != chunk.Length || result.Diagnostic is not null)
+                throw new InvalidOperationException("PI append did not consume the complete chunk.");
+        }
     }
     [Fact]
     public void PiQuotaCancellationAndInternPrecommitRemainEnforced()
