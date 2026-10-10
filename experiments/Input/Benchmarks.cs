@@ -3,7 +3,7 @@ using BenchmarkDotNet.Attributes;
 
 namespace InputSpike;
 
-[MemoryDiagnoser]
+[MemoryDiagnoser, ShortRunJob]
 public class InputBenchmarks
 {
     [Params("AsciiShort", "UnicodeShort", "AsciiLong", "UnicodeLong")]
@@ -36,7 +36,7 @@ public class InputBenchmarks
     [Benchmark] public long StringViaOwnedUtf8() => Pump.Bytes(_utf8, _byteSink, Strict.GetBytes(_text), Chunk);
 }
 
-[MemoryDiagnoser]
+[MemoryDiagnoser, ShortRunJob]
 public class ScanBenchmarks
 {
     [Params("ShortEarly", "ShortLate", "ShortMiss", "LongEarly", "LongMiddle", "LongLate", "LongMiss", "UnicodeLate", "UnicodeMiss", "Dense")]
@@ -67,7 +67,7 @@ public class ScanBenchmarks
     [Benchmark] public int CharIndexOfControl() => _text.AsSpan().IndexOf('<');
 }
 
-[MemoryDiagnoser]
+[MemoryDiagnoser, ShortRunJob]
 public class MatchBenchmarks
 {
     [Params("xml", "standalone", "xnm", "standalonf", "DOCTYPE", "doctype", "UTF-8", "utf-8", "[ML", "éml", "standaloneX", "stand")]
@@ -85,7 +85,7 @@ public class MatchBenchmarks
     [Benchmark] public int CharHash() => Primitives.HashMatch(Token, IgnoreAsciiCase);
 }
 
-[MemoryDiagnoser]
+[MemoryDiagnoser, ShortRunJob]
 public class ChunkMatchBenchmarks
 {
     [Params("xml", "standalone", "standaloneX", "DOCTYPE", "doctype", "éml")]
@@ -111,7 +111,7 @@ public class ChunkMatchBenchmarks
     }
 }
 
-[MemoryDiagnoser]
+[MemoryDiagnoser, ShortRunJob]
 public class LiteralBenchmarks
 {
     [Params("<?xml", "<?xmX")] public string Token { get; set; } = "<?xml";
@@ -129,7 +129,7 @@ public class LiteralBenchmarks
     [Benchmark] public int MutableLocalCollection() => Primitives.MutableLocalSum();
 }
 
-[MemoryDiagnoser]
+[MemoryDiagnoser, ShortRunJob]
 public class RejectionBenchmarks
 {
     [Params("Overlong", "Surrogate", "Truncated")]

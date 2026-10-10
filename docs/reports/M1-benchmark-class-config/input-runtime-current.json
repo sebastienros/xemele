@@ -1,0 +1,34 @@
+[
+  {
+    "Type": "InputBenchmarks",
+    "Jobs": 1,
+    "LaunchCount": 1,
+    "WarmupCount": 3,
+    "IterationCount": 3,
+    "Diagnosers": [
+      "BenchmarkDotNet.Diagnosers.MemoryDiagnoser"
+    ],
+    "Inventory": [
+      "BoundedDecoder|[Corpus=long]",
+      "BoundedDecoder|[Corpus=multilingual]",
+      "BoundedDecoder|[Corpus=short]",
+      "StraightforwardStrictUtf8|[Corpus=long]",
+      "StraightforwardStrictUtf8|[Corpus=multilingual]",
+      "StraightforwardStrictUtf8|[Corpus=short]"
+    ]
+  },
+  {
+    "Type": "InputOwnershipBenchmarks",
+    "Jobs": 1,
+    "LaunchCount": 1,
+    "WarmupCount": 3,
+    "IterationCount": 3,
+    "Diagnosers": [
+      "BenchmarkDotNet.Diagnosers.MemoryDiagnoser"
+    ],
+    "Inventory": [
+      "MalformedDiagnostic|",
+      "Setup|"
+    ]
+  }
+]

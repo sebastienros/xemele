@@ -4,11 +4,11 @@
   "milestone": "M1",
   "title": "Configure benchmark jobs on classes and simplify launchers",
   "kind": "infrastructure",
-  "status": "in_progress",
+  "status": "verified",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M1-benchmark-class-config",
   "branch": "codex/m1-benchmark-class-config",
   "base_revision": "6d3326fce6dcc979d243a6bdddc92f9ae2e1897e",
-  "integration_revision": null,
+  "integration_revision": "dcda23674cf94542e521ee1234fc242d6ecd289d",
   "depends_on": [
     "M1-common",
     "M1-input",
@@ -40,28 +40,113 @@
     {
       "id": "M1-benchmark-class-config-A1",
       "description": "Apply explicit [MemoryDiagnoser, ShortRunJob] to every existing unannotated benchmark class in owned experiment/Common/Input/Serializer sources; remove redundant launcher-injected jobs while preserving allocation/ABI/model modes and workload semantics. Existing correctly annotated Tree/Syntax/builder classes remain untouched.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "compiled-discovery",
+        "owned-audit",
+        "integrated-checks"
+      ]
     },
     {
       "id": "M1-benchmark-class-config-A2",
       "description": "Verify real compiled BenchmarkDotNet discovery yields exactly one intended class-configured job and memory diagnoser for all owned classes, with unchanged case/workload inventory and command-line invocation omitting job arguments; build affected harnesses and preserve allocation/ABI modes.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "compiled-discovery",
+        "launcher-modes",
+        "integrated-checks"
+      ]
     },
     {
       "id": "M1-benchmark-class-config-A3",
       "description": "Preserve all historical verified source/evidence and actual runtime/public API; record checks at known revision, run planning validation and final owned-path audit. New timings are unnecessary if actual job configuration/workload identity is unchanged; do not claim unrun workloads.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "public-api",
+        "owned-audit",
+        "launcher-modes",
+        "integrated-checks"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "experiments/Tree/Benchmarks.cs; experiments/Input/Benchmarks.cs; benchmarks/Xemele.Benchmarks/M1-common/CommonBenchmarks.cs; M1-input/InputBenchmarks.cs; M1-serialize/SerializerBenchmarks.cs \u2014 16 explicit class annotations; workload bodies unchanged",
+    "experiments/Tree/Program.cs; experiments/Input/Program.cs; benchmarks/Xemele.Benchmarks/Program.cs; docs/reports/M1-common/Program.cs; docs/reports/M1-input/Program.cs; docs/reports/M1-serialize/BenchmarkDriver.cs \u2014 remove redundant injected jobs, retain exporter/help/argument and allocation/contract modes",
+    "docs/reports/M1-benchmark-class-config/ConfigCheck.csproj; Program.cs; verify.py; modes.py \u2014 actual compiled BDN discovery and independent launcher mode verification without timing; original/current inventories and durable logs"
+  ],
+  "evidence": [
+    {
+      "id": "compiled-discovery",
+      "kind": "check",
+      "revision": "e1ded29c1eeaa11b00707b1c625aec2e2bd9bfb6",
+      "command": "python3 docs/reports/M1-benchmark-class-config/verify.py current",
+      "result": "passed",
+      "summary": "Six affected harnesses/checker built zero warnings/errors; actual compiled discovery21 class occurrences/384 cases (16 distinct classes/351 cases); exactly1 job, memory diagnoser and launch/warmup/iteration1/3/3 per class and case; unchanged method/parameter inventories against original compiled claim. No timings.",
+      "artifact": "docs/reports/M1-benchmark-class-config/current.log"
+    },
+    {
+      "id": "mode-probe-wrong-model",
+      "kind": "check",
+      "revision": "e1ded29c1eeaa11b00707b1c625aec2e2bd9bfb6",
+      "command": "python3 docs/reports/M1-benchmark-class-config/modes.py",
+      "result": "failed",
+      "summary": "Initial verifier mistakenly selected older FoundationM1 model; contract comparison rejected empty Input namespace after other modes passed. Corrected verifier path in1ca7de9; no runtime or historical evidence edits.",
+      "artifact": "docs/reports/M1-benchmark-class-config/modes-wrong-model.log"
+    },
+    {
+      "id": "launcher-modes",
+      "kind": "check",
+      "revision": "1ca7de90fc18aa16a389337dda4b396851a679bb",
+      "command": "python3 docs/reports/M1-benchmark-class-config/modes.py",
+      "result": "passed",
+      "summary": "All six CLI lists, help forwarding, Tree self-check/memory, Input83095 assertions/allocations/lowering, Common setup allocation, Input allocation, Serializer allocation and actual approved Input41-row contract passed; historical contract file byte-identical. Borrowed scan0B; stream1392B/op at16/1000000 chars; no owner retention; setup figures/limits in report. No timings.",
+      "artifact": "docs/reports/M1-benchmark-class-config/modes.log"
+    },
+    {
+      "id": "public-api",
+      "kind": "check",
+      "revision": "e1ded29c1eeaa11b00707b1c625aec2e2bd9bfb6",
+      "command": "dotnet build docs/reports/M0-contracts/ApiCheck/ApiCheck.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false && python3 -B tools/ApiBaseline/compare.py --report docs/reports/M1-benchmark-class-config/runtime-api.json",
+      "result": "passed",
+      "summary": "Compiled public215 members matched approved baselines; runtime builds through affected harness references. No runtime/publicAPI/workload/historical report changes.",
+      "artifact": "docs/reports/M1-benchmark-class-config/runtime-api.json"
+    },
+    {
+      "id": "owned-audit",
+      "kind": "check",
+      "revision": "1ca7de90fc18aa16a389337dda4b396851a679bb",
+      "command": "python3 - (owned-path/workload audit heredoc); git diff --check; python3 tools/planning/tasks.py validate",
+      "result": "passed",
+      "summary": "All changed/untracked paths within task ownership; benchmark bodies byte-identical after removing added attribute names; runtime/API/tests/historical evidence preserved; diff clean; planning103 tasks valid. No broad runtime suite/package/timing runs claimed.",
+      "artifact": "docs/reports/M1-benchmark-class-config/README.md"
+    },
+    {
+      "id": "independent-review",
+      "kind": "review",
+      "revision": "ee348728e310284eb2879e025ae011a138e2ad62",
+      "command": "Independent read-only review by review_foundation",
+      "result": "passed",
+      "summary": "16 class attributes, unchanged workloads, preserved modes/exporter/help/args; real compiled JSON inventories independently compared. No blockers; no reviewer execution.",
+      "artifact": null
+    },
+    {
+      "id": "integrated-checks",
+      "kind": "integration",
+      "revision": "dcda23674cf94542e521ee1234fc242d6ecd289d",
+      "command": "python3 docs/reports/M1-benchmark-class-config/verify.py current; python3 docs/reports/M1-benchmark-class-config/modes.py; dotnet build docs/reports/M0-contracts/ApiCheck/ApiCheck.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false; python3 -B tools/ApiBaseline/compare.py --report docs/reports/M1-benchmark-class-config/integration-api.json; git diff --check; python3 tools/planning/tasks.py validate",
+      "result": "passed",
+      "summary": "Fresh integrated six harness/checker builds and compiled metadata inventory match; all launcher modes/83095 Input assertions/borrowed allocations/internal41-row contract pass; compiled public215 unchanged; planning103 valid. No timing run required or executed.",
+      "artifact": "docs/reports/M1-benchmark-class-config/integration-discovery.log"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "User requests job configuration on benchmark classes, no explicit job arguments or repetitive job-name narration. Narrow infrastructure migration preserves historical reports and runtime.",
-    "checks": [],
+    "summary": "16 benchmark classes annotated; six launcher job injections removed; workloads/exporter/help/allocation/ABI modes preserved. Sourcee1ded29; verifier correction1ca7de9. No new timing needed or run. Await coordinator integration verification.",
+    "checks": [
+      "Six real compiled inventories:21 class occurrences384 cases, one job/memory diagnoser1/3/3; all match original.",
+      "All launcher modes pass; Input41 internal rows and public215 rows match; allocation regressions pass.",
+      "Planning103 tasks/diff/owned audit pass; durable reports include corrected initial probe failure."
+    ],
     "remaining": [],
     "requests": []
   }

@@ -1,5 +1,3 @@
-using BenchmarkDotNet.Configs;
-using BenchmarkDotNet.Jobs;
 using BenchmarkDotNet.Running;
 using Xemele;
 using Xemele.SerializationMeasurements;
@@ -42,7 +40,7 @@ if (args.Contains("--allocation"))
     if (weak.IsAlive) throw new Exception("Serializer retained document");
     return;
 }
-BenchmarkSwitcher.FromAssembly(typeof(SerializerBenchmarks).Assembly).Run(args, DefaultConfig.Instance.AddJob(Job.ShortRun.AsDefault()));
+BenchmarkSwitcher.FromAssembly(typeof(SerializerBenchmarks).Assembly).Run(args);
 static XmlDocument Document(int length)
 {
     var d = new XmlDocument(); var r = d.CreateElement("r"); d.DocumentNode.AppendChild(r); r.AppendChild(d.CreateText(new string('x', length))); return d;

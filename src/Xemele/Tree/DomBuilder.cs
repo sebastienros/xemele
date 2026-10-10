@@ -17,7 +17,7 @@ public sealed partial class XmlDocument
         return new(this);
     }
 
-    internal sealed class DomBuilder
+    internal sealed partial class DomBuilder
     {
         private readonly XmlDocument document;
         private int nodes = 1, attributes, namespaces;

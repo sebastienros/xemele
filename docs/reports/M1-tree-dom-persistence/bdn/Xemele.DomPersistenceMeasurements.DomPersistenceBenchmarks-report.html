@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta charset='utf-8' />
+<title>Xemele.DomPersistenceMeasurements.DomPersistenceBenchmarks-20261009-211912</title>
+
+<style type="text/css">
+	table { border-collapse: collapse; display: block; width: 100%; overflow: auto; }
+	td, th { padding: 6px 13px; border: 1px solid #ddd; text-align: right; }
+	tr { background-color: #fff; border-top: 1px solid #ccc; }
+	tr:nth-child(even) { background: #f8f8f8; }
+</style>
+</head>
+<body>
+<pre><code>
+BenchmarkDotNet v0.15.8, macOS Sequoia 15.8.1 (24H32) [Darwin 24.6.0]
+Apple M4 Pro, 1 CPU, 14 logical and 14 physical cores
+.NET SDK 10.0.400
+  [Host]   : .NET 10.0.11 (10.0.11, 10.0.1126.37416), Arm64 RyuJIT armv8.0-a
+  ShortRun : .NET 10.0.11 (10.0.11, 10.0.1126.37416), Arm64 RyuJIT armv8.0-a
+</code></pre>
+<pre><code>Job=ShortRun  IterationCount=3  LaunchCount=1
+WarmupCount=3
+</code></pre>
+
+<table>
+<thead><tr><th>Method              </th><th>Length</th><th>Shape</th><th>Mean </th><th>Error </th><th>StdDev</th><th>Ratio</th><th>RatioSD</th><th>Gen0</th><th>Gen1</th><th>Allocated</th><th>Alloc Ratio</th>
+</tr>
+</thead><tbody><tr><td>CheckedPersistence</td><td>16</td><td>names</td><td>27.24 &mu;s</td><td>5.564 &mu;s</td><td>0.305 &mu;s</td><td>1.00</td><td>0.01</td><td>18.3716</td><td>3.6621</td><td>150.52 KB</td><td>1.00</td>
+</tr><tr><td>SyntaxValidatedPersistence</td><td>16</td><td>names</td><td>18.14 &mu;s</td><td>3.704 &mu;s</td><td>0.203 &mu;s</td><td>0.67</td><td>0.01</td><td>18.3716</td><td>3.6621</td><td>150.52 KB</td><td>1.00</td>
+</tr><tr><td>CheckedPersistence</td><td>16</td><td>values</td><td>22.49 &mu;s</td><td>1.787 &mu;s</td><td>0.098 &mu;s</td><td>1.00</td><td>0.01</td><td>18.3716</td><td>3.4790</td><td>150.46 KB</td><td>1.00</td>
+</tr><tr><td>SyntaxValidatedPersistence</td><td>16</td><td>values</td><td>16.93 &mu;s</td><td>1.532 &mu;s</td><td>0.084 &mu;s</td><td>0.75</td><td>0.00</td><td>18.3716</td><td>3.4790</td><td>150.46 KB</td><td>1.00</td>
+</tr><tr><td>CheckedPersistence</td><td>16384</td><td>names</td><td>8,781.56 &mu;s</td><td>4,586.704 &mu;s</td><td>251.413 &mu;s</td><td>1.00</td><td>0.03</td><td>15.6250</td><td>-</td><td>214.45 KB</td><td>1.00</td>
+</tr><tr><td>SyntaxValidatedPersistence</td><td>16384</td><td>names</td><td>2,868.41 &mu;s</td><td>1,166.918 &mu;s</td><td>63.963 &mu;s</td><td>0.33</td><td>0.01</td><td>23.4375</td><td>3.9063</td><td>214.45 KB</td><td>1.00</td>
+</tr><tr><td>CheckedPersistence</td><td>16384</td><td>values</td><td>3,108.51 &mu;s</td><td>1,980.668 &mu;s</td><td>108.567 &mu;s</td><td>1.001</td><td>0.04</td><td>15.6250</td><td>-</td><td>150.46 KB</td><td>1.00</td>
+</tr><tr><td>SyntaxValidatedPersistence</td><td>16384</td><td>values</td><td>16.59 &mu;s</td><td>9.196 &mu;s</td><td>0.504 &mu;s</td><td>0.005</td><td>0.00</td><td>18.3716</td><td>3.4790</td><td>150.46 KB</td><td>1.00</td>
+</tr></tbody></table>
+</body>
+</html>

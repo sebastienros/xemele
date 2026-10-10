@@ -1,7 +1,7 @@
 using BenchmarkDotNet.Attributes;
 namespace TreeSpike;
 
-[MemoryDiagnoser]
+[MemoryDiagnoser, ShortRunJob]
 public class Construction
 {
     [Params(1024, 16384)] public int Count { get; set; }
@@ -12,7 +12,7 @@ public class Construction
     [Benchmark] public ArenaTree Arena() => Factory.Arena(_tokens);
 }
 
-[MemoryDiagnoser]
+[MemoryDiagnoser, ShortRunJob]
 public class Traversal
 {
     [Params(1024, 16384)] public int Count { get; set; }
@@ -22,7 +22,7 @@ public class Traversal
     [Benchmark] public long Arena() => _arena.Traverse();
 }
 
-[MemoryDiagnoser]
+[MemoryDiagnoser, ShortRunJob]
 public class Mutation
 {
     [Params(1024, 16384)] public int Count { get; set; }
@@ -39,7 +39,7 @@ public class Mutation
     [Benchmark] public Handle Arena() { var leaf = new Handle(_arena, Count - 1); leaf.MoveTo(new Handle(_arena, 0)); leaf.MoveTo(new Handle(_arena, 1)); return leaf; }
 }
 
-[MemoryDiagnoser]
+[MemoryDiagnoser, ShortRunJob]
 public class Names
 {
     [Params(false, true)] public bool Unique { get; set; }
@@ -82,7 +82,7 @@ public class Names
     }
 }
 
-[MemoryDiagnoser]
+[MemoryDiagnoser, ShortRunJob]
 public class Text
 {
     [Params(32, 8192)] public int Length { get; set; }

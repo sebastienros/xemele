@@ -1,5 +1,3 @@
-using BenchmarkDotNet.Configs;
-using BenchmarkDotNet.Jobs;
 using BenchmarkDotNet.Running;
 using Xemele.Internal.Operations;
 if(args.Contains("--setup-allocation"))
@@ -24,5 +22,4 @@ if(args.Contains("--setup-allocation"))
     Console.WriteLine($"GC heap minus fragmentation delta: {((gcAfter.HeapSizeBytes-gcAfter.FragmentedBytes)-(gcBefore.HeapSizeBytes-gcBefore.FragmentedBytes))/(double)retained.Length} B/op; informational whole-process estimate.");
     GC.KeepAlive(retained); GC.KeepAlive(cold); return;
 }
-BenchmarkSwitcher.FromAssembly(typeof(Program).Assembly).Run(args,
-    DefaultConfig.Instance.AddJob(Job.ShortRun.AsDefault()));
+BenchmarkSwitcher.FromAssembly(typeof(Program).Assembly).Run(args);

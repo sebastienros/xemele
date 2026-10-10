@@ -13,34 +13,40 @@
       "client_thread_id": "client-new-thread:44740c37-3629-4d2c-8c2d-22c3370eee43",
       "host_id": "local",
       "branch": "codex/m1-dom",
-      "base_revision": "4af94600952d417c2d7418758c30131695cb3ecb",
-      "claim_revision": "c4f3e7a3910e130a2467733aa79558984463b244",
-      "setup_status": "suspended-prerequisite",
+      "base_revision": "a3c7c669472fcd9ec35dfec3cd40aef1e6d0cda8",
+      "claim_revision": "93de9bf2a67ff30557821f6c6ac399c5266cf6f2",
+      "setup_status": "renewing-claim",
       "chat_id": "01a123df-0348-7a81-9d6f-f4676934cb48",
       "worktree_path": "/Users/sebastienros/.codex/worktrees/a22a/xemele",
-      "preserved_draft_revision": "4aef77b0e1fffca92322c096ce8a09c65f019845"
-    },
-    {
-      "task_id": "M1-benchmark-class-config",
-      "client_thread_id": "client-new-thread:b3aca5d6-0563-489b-a641-054c87fcc96b",
-      "host_id": "local",
-      "branch": "codex/m1-benchmark-class-config",
-      "base_revision": "6d3326fce6dcc979d243a6bdddc92f9ae2e1897e",
-      "claim_revision": "1246381a72839c7d6b77e05416985fa407baad6b",
-      "setup_status": "dispatched",
-      "chat_id": "01a123f2-d7e7-7263-8ba1-f6ac7dff7424",
-      "worktree_path": "/Users/sebastienros/.codex/worktrees/d888/xemele"
+      "preserved_draft_revision": "4aef77b0e1fffca92322c096ce8a09c65f019845",
+      "previous_claim": {
+        "base_revision": "4af94600952d417c2d7418758c30131695cb3ecb",
+        "claim_revision": "c4f3e7a3910e130a2467733aa79558984463b244",
+        "reason": "Suspended for now-verified linear DOM builder prerequisite; draft preserved."
+      },
+      "resume_evidence": "Worker confirmed main merge, renewed claim/four verified prerequisites, builder composition, focused 22/22 tests; no timing started.",
+      "review_revision": "e8694fabdb6b9c25e7112fb4a034adbf54ffd46e",
+      "wait_cursor": "f824c6fd-79ae-4b74-b7cf-1220db648998:18",
+      "correctness_revision": "15e099bd11e25a5fc2576059a39a6c707a45feef",
+      "preserved_evidence_revision": "8155e7d0d7e89e714c992c82279549887b03f770",
+      "claim_history": [
+        {
+          "base_revision": "1f15653bf8f3ea4faab5fa5c15f10701971ff9ab",
+          "claim_revision": "93de9bf2a67ff30557821f6c6ac399c5266cf6f2",
+          "reason": "Suspended for trusted persistence prerequisite; source/evidence8155e7d preserved."
+        }
+      ]
     }
   ],
   "integration_queue": [],
   "blockers": [],
   "next_actions": [
-    "Renew DOM claim and resume preserved draft with verified builder contract",
-    "Review/integrate benchmark class migration",
-    "After DOM verification dispatch strict corpus and M1 gate"
+    "Resume DOM with verified persistence contract",
+    "Review corrected source and full combined DOM verification; then exclusive composition timings",
+    "Strict corpus and M1 gate after verified DOM"
   ],
-  "last_verified_task": "M1-tree-dom-builder",
-  "last_integrated_revision": "ed07308ffd599ce72aa8590b8f36ecc3fb11a441",
+  "last_verified_task": "M1-tree-dom-persistence",
+  "last_integrated_revision": "61fdfd8fe444eb0befc52c23d50f53a000cb0815",
   "completed_assignments": [
     {
       "task_id": "M0-build",
@@ -466,10 +472,55 @@
       "handoff_revision": "175a83c8b5410ce9f2bfaa440658b0aa4498882a",
       "integration_revision": "ed07308ffd599ce72aa8590b8f36ecc3fb11a441",
       "integration_worktree": "/private/tmp/xemele-integrate-m1-tree-dom-builder",
-      "integration_branch": "codex/integrate-m1-tree-dom-builder"
+      "integration_branch": "codex/integrate-m1-tree-dom-builder",
+      "cleanup": {
+        "chat_archived": true,
+        "worktree": "removed"
+      }
+    },
+    {
+      "task_id": "M1-benchmark-class-config",
+      "client_thread_id": "client-new-thread:b3aca5d6-0563-489b-a641-054c87fcc96b",
+      "host_id": "local",
+      "branch": "codex/m1-benchmark-class-config",
+      "base_revision": "6d3326fce6dcc979d243a6bdddc92f9ae2e1897e",
+      "claim_revision": "1246381a72839c7d6b77e05416985fa407baad6b",
+      "setup_status": "verified",
+      "chat_id": "01a123f2-d7e7-7263-8ba1-f6ac7dff7424",
+      "worktree_path": "/Users/sebastienros/.codex/worktrees/d888/xemele",
+      "implementation_revision": "1ca7de90fc18aa16a389337dda4b396851a679bb",
+      "handoff_revision": "ee348728e310284eb2879e025ae011a138e2ad62",
+      "integration_revision": "dcda23674cf94542e521ee1234fc242d6ecd289d",
+      "integration_worktree": "/private/tmp/xemele-integrate-m1-benchmark-class-config",
+      "integration_branch": "codex/integrate-m1-benchmark-class-config",
+      "cleanup": {
+        "chat_archived": true,
+        "worktree": "removed"
+      }
+    },
+    {
+      "task_id": "M1-tree-dom-persistence",
+      "client_thread_id": "client-new-thread:6f3bde9b-7d07-48a2-8e49-4990b7fd9d4e",
+      "host_id": "local",
+      "branch": "codex/m1-tree-dom-persistence",
+      "base_revision": "0ff5c008ea462e6a369de84bc292c349d0298f0b",
+      "claim_revision": "a5857810a88604ebca53f3fbc382d80d690e325e",
+      "setup_status": "verified",
+      "chat_id": "01a12401-739f-7d21-92b3-0e4d4bfe7fde",
+      "worktree_path": "/Users/sebastienros/.codex/worktrees/3f59/xemele",
+      "review_revision": "46e6d1bfe439c4b949ca534d917d371a1e2b3cb9",
+      "wait_cursor": "a7a0d283-bd95-481a-84d0-b5222601c579:14",
+      "measurement_revision": "ecd4a2961d3126257f9c4cdfdf28276ed9a35bad",
+      "measurement_audit": "8 cases,8 zero exits,24 actual/results; stopped-process acknowledgement received. Ordinary priority, prevalidated model scope.",
+      "handoff_revision": "d2c3d1141265657b79af409ea7d223b145e1e049",
+      "integration_worktree": "/private/tmp/xemele-integrate-m1-tree-dom-persistence",
+      "integration_branch": "codex/integrate-m1-tree-dom-persistence",
+      "integration_base": "56cdd818a3e47e7380e2484beb420feea3e59c0a",
+      "implementation_revision": "ecd4a2961d3126257f9c4cdfdf28276ed9a35bad",
+      "integration_revision": "61fdfd8fe444eb0befc52c23d50f53a000cb0815"
     }
   ],
-  "benchmark_policy": "No active timing hold. Benchmark classes configure jobs; command job arguments and job-name narration omitted.",
+  "benchmark_policy": "No active timing hold. Benchmark class configuration controls jobs; commands omit job arguments. Timing host remains serialized.",
   "benchmark_owner": null,
   "pending_decisions": [],
   "decisions": {
@@ -478,7 +529,8 @@
     "test_runner": "User selected xunit.v3.mtp-v2 4.0.1 and Microsoft.Testing.Platform",
     "benchmark_job": "User requested BenchmarkDotNet Job.ShortRun for all subsequent runs; preserve completed historical job evidence.",
     "worker_concurrency": "User increased limit from 2 to 3 concurrent isolated worker chats on 2026-10-09; benchmark timing remains serialized.",
-    "benchmark_class_configuration": "User requires [MemoryDiagnoser, ShortRunJob] on benchmark classes; omit explicit job arguments and job-name narration in subsequent runs."
+    "benchmark_class_configuration": "User requires [MemoryDiagnoser, ShortRunJob] on benchmark classes; omit explicit job arguments and job-name narration in subsequent runs.",
+    "task_authority": "User explicitly reinforced on 2026-10-09: chats have explicit permission to do what they need for their tasks. Original assigned scope/ownership and no remote publication remain."
   },
   "conventions_pending_review": {
     "api": "tools/ApiBaseline/README.md on codex/m0-ci defines xemele-api-v1 canonical JSONL with id/member/declaration",
@@ -515,7 +567,9 @@
     "docs/orchestration/cleanup-M1-input.json",
     "docs/orchestration/cleanup-M1-tree.json",
     "docs/orchestration/cleanup-M1-syntax.json",
-    "docs/orchestration/cleanup-M1-serialize.json"
+    "docs/orchestration/cleanup-M1-serialize.json",
+    "docs/orchestration/cleanup-M1-tree-dom-builder.json",
+    "docs/orchestration/cleanup-M1-benchmark-class-config.json"
   ],
   "preserved_reference_sources": [
     {
