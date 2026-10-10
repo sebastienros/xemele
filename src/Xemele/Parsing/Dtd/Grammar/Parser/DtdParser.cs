@@ -41,11 +41,11 @@ internal sealed partial class DtdParser : IDisposable
     private readonly bool shared;
     private readonly List<Source> sources = [];
     private readonly HashSet<string> active = new(StringComparer.Ordinal);
-    private readonly HashSet<string> names = new(StringComparer.Ordinal);
-    private readonly List<DtdElementDeclaration> elements = [];
-    private readonly List<DtdAttributeDeclaration> attributes = [];
-    private readonly List<DtdEntityDeclaration> general = [], parameter = [];
-    private readonly List<DtdNotationDeclaration> notations = [];
+    private HashSet<string> names = new(StringComparer.Ordinal);
+    private List<DtdElementDeclaration> elements = [];
+    private List<DtdAttributeDeclaration> attributes = [];
+    private List<DtdEntityDeclaration> general = [], parameter = [];
+    private List<DtdNotationDeclaration> notations = [];
     private readonly List<Token> tokens = [];
     private readonly StringBuilder scratch = new(), reference = new();
     private readonly Stack<int> includes = new();
@@ -93,7 +93,7 @@ internal sealed partial class DtdParser : IDisposable
         Enter(); int consumed = 0;
         try
         {
-            Check(); if (pending is not null) throw new InvalidOperationException("Supply the requested entity before appending.");
+            Check(); appendStarted = true; if (pending is not null) throw new InvalidOperationException("Supply the requested entity before appending.");
             cancellationToken.ThrowIfCancellationRequested();
             int submittedIndex = sources.Count - 1; Source submitted = sources[submittedIndex];
             // Walk stable indices rather than searching the stack at every level.

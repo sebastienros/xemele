@@ -4,7 +4,7 @@
   "milestone": "M2",
   "title": "Effective DTD seed and preframed source composition repair",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/M2-dtd-composition",
   "branch": "codex/m2-dtd-composition",
   "base_revision": "5924a7004386cc29ee568b1eb06ce5a6a860b8bb",
@@ -33,23 +33,46 @@
     {
       "id": "M2-dtd-composition-A1",
       "description": "Provide nonpublic fresh-external SeedPriorModel(model,cancellation), SetFramedInitialSource(firstLocation) and pending-PE PushFramedEntity(finalUri,firstLocation) hooks (precise shape frozen by owning repair), preserving existing constructors/methods. Seed prior immutable tables/internal precedence before grammar without re-expansion/recharge; framed source preserves actual cursor/absolute mapping/EOF and disables duplicate prolog framing without duplicate entity entry.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "required-hooks-cumulative",
+        "coordinated-source-review"
+      ]
     },
     {
       "id": "M2-dtd-composition-A2",
       "description": "Actual tests prove seeded internal PE/general declarations and firstwins, cancellation/illegal timing/no seed recharge; initial/nested preframed declared/absent sources with CRLF/supplementary every split/absolute EOF/prefix once/second text-declaration rejection; exact-oneover shared aggregate budgets and balanced source/depth/exception-preserving cleanup/parent suffix restoration.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "required-hooks-cumulative",
+        "final-benchmark-correctness",
+        "scaffold-identity-correctness",
+        "coordinated-source-review"
+      ]
     },
     {
       "id": "M2-dtd-composition-A3",
       "description": "Demonstrate common-only corrected composition and approved preserved API at known source; record relevant new allocation/performance and actual cumulative predecessor preservation/planning checks. Do not claim production core/entity/full XML conformance.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "required-hooks-cumulative",
+        "final-benchmark-correctness",
+        "scaffold-identity-correctness",
+        "exclusive-allocation",
+        "exclusive-timing",
+        "coordinated-source-review",
+        "final-owned-clean-audit"
+      ]
     }
   ],
-  "implementation": [],
+  "implementation": [
+    "src/Xemele/Parsing/Dtd/Grammar/Parser/Composition.cs: transactional shared-ledger SeedPriorModel and validated SetFramedInitialSource/PushFramedEntity; original signatures retained",
+    "src/Xemele/Parsing/Dtd/Grammar/Parser/DtdParser.cs: first Append freshness marker and replaceable staged tables",
+    "tests/Xemele.Tests/M2-dtd-composition/CompositionTests.cs:27 focused rows; split/cursor/EOF/seed/ledger/borrowed/cleanup contracts",
+    "docs/decisions/M2/dtd-composition.md: exact nonpublic hook and same-operation distinct-name contract",
+    "samples/M2-dtd-composition: common-only composed PE/default/cursor/rejection and independent preserved/new hook inventory",
+    "benchmarks/Xemele.Benchmarks/M2-dtd-composition and docs/reports/M2-dtd-composition: scoped correctness/measurement boundaries and raw evidence"
+  ],
   "evidence": [
     {
       "id": "initial-seed-defect",
@@ -68,13 +91,102 @@
       "result": "failed",
       "summary": "Existing local external prolog framing can consume second body declaration; pushed externalPE resets1:1/no preframed cursor hook. Proposed nonpublic initialization/seed/push hooks preserve constructors/methods and exactonce budget/source semantics. Source-only, executable framing reproduction/tests pending.",
       "artifact": null
+    },
+    {
+      "id": "required-hooks-cumulative",
+      "kind": "check",
+      "revision": "8dcc7c9498db988576dbc9d13b65e571fa4f1e6e",
+      "command": "python3 -B docs/reports/M2-dtd-composition/verify.py --report-prefix source-required-hooks --expected-branch codex/m2-dtd-composition",
+      "result": "passed",
+      "summary": "SDK10.0.400/runtime10.0.11; focused4189=4162previous+27new; pinned9/775splits; actual MTP/direct/discovery5050=4496+255+299 allPass/noFail/noSkip; approved20type allconstructor/publicmethod inventory and compilednullable mutation; exact3nonpublic hooks required/default/access/nullability plus compiledpublicaccess/optionaldefault mutations; exact seeded PE/general-default/identity/finalURI/seconddeclaration sample; standalone/main benchmark builds and pre-final-harness correctness/discovery; public272/registry3388; freshcomplete copiedBCL242 full8dcc source/hash unchanged; planning14/graph122/ownership/whitespace. Runtime/tests unchanged at6f65008; later benchmark fullseed/ledgeroracle additions checked separately.",
+      "artifact": "docs/reports/M2-dtd-composition/source-required-hooks/summary.json"
+    },
+    {
+      "id": "final-benchmark-correctness",
+      "kind": "check",
+      "revision": "6f65008a547d550ae915a20ed4f2c3c8bcd6cc8c",
+      "command": "python3 -B docs/reports/M2-dtd-composition/verify_benchmarks.py --report-prefix final-benchmark-correctness",
+      "result": "passed",
+      "summary": "Actual standalone/main Release builds0warn0error,3method discovery; two sizes,20 composition/seed pairs=40 full authored outputs plus2048 borrowed completecomment calls; full table/declaration/particle/attribute/entity/location/identity/default oracle and exact setup2names/warm0names/sourceScalars+22PE/seedzerocharges; no measurement.",
+      "artifact": "docs/reports/M2-dtd-composition/final-benchmark-correctness/summary.json"
+    },
+    {
+      "id": "exclusive-allocation",
+      "kind": "check",
+      "revision": "6f65008a547d550ae915a20ed4f2c3c8bcd6cc8c",
+      "command": "dotnet docs/reports/M2-dtd-composition/bin/Release/net10.0/Xemele.DtdCompositionBenchmarks.dll --allocation",
+      "result": "passed",
+      "summary": "Exclusive coordinator host grant; actual runtime10.0.11, approved DLL SHAa4563e44539811fc9aefc07dd599db3731697dede3a339c816003ded004608d2 unchanged; probeonce exit0. Coldsetup+twooutputs+bothoracles34568B (no subtraction);1024warmed ownedcomposition6922480B/seedmodel3899392B; borrowedscan0B; positivecontrol155648B; input/mapping weakreferences released with one model element retained. Not full XML or production core; Arm64 only. Successful probe will not be rerun.",
+      "artifact": "docs/reports/M2-dtd-composition/exclusive-6f65008/measurement.json"
+    },
+    {
+      "id": "exclusive-generation-failure",
+      "kind": "check",
+      "revision": "6f65008a547d550ae915a20ed4f2c3c8bcd6cc8c",
+      "command": "dotnet docs/reports/M2-dtd-composition/bin/Release/net10.0/Xemele.DtdCompositionBenchmarks.dll --filter *DtdCompositionBenchmarks* *DtdFramedScanBenchmarks* --artifacts docs/reports/M2-dtd-composition/exclusive-6f65008/raw",
+      "result": "failed",
+      "summary": "ONE granted invocation found6cases but BDN project generation could not find assemblynamed csproj because owned file is Benchmarks.csproj. ParentExit0; actualexecuted0, no generatedbuild/timingchild launched (exitcodes absent), no timing result. Stopped/releasedhost; no retry. All raw durable ZIP SHA4136aa55f7b09e39565190a17ad259dcea16317fbec325ae83bbbd9b24ed5c0a. Await scoped projectfilename repair and newhostgrant for failed timing only.",
+      "artifact": "docs/reports/M2-dtd-composition/exclusive-6f65008/measurement.json"
+    },
+    {
+      "id": "scaffold-identity-correctness",
+      "kind": "check",
+      "revision": "719c630d9f19e576cf14e44dc82b173fdb1b7c6b",
+      "command": "python3 -B docs/reports/M2-dtd-composition/verify_benchmarks.py --report-prefix scaffold-correctness; offline BCL metadata comparison of approved6f/current719 benchmark DLLs",
+      "result": "passed",
+      "summary": "Owned project filename matches AssemblyName, content byte-identical6f; only scoped verifier refs changed. Both Release builds/discovery3/fullmodel/fullseed/once-only ledger oracle20pairs=40outputs+2048scans passed. Runtime/benchmark/driver source bytes identical6f. BinarySHA changed with actual AssemblyInformationalVersion1.0.0+719c vs6f; compiled496method signatures/IL/maxstack/local signatures/EHshapes identical. Initial offline comparator nested<>c key failure preserved and corrected offline; no allocation rerun.",
+      "artifact": "docs/reports/M2-dtd-composition/scaffold-correctness/identity.json"
+    },
+    {
+      "id": "exclusive-timing",
+      "kind": "check",
+      "revision": "719c630d9f19e576cf14e44dc82b173fdb1b7c6b",
+      "command": "dotnet docs/reports/M2-dtd-composition/bin/Release/net10.0/Xemele.DtdCompositionBenchmarks.dll --filter *DtdCompositionBenchmarks* *DtdFramedScanBenchmarks* --artifacts docs/reports/M2-dtd-composition/exclusive-719c630/raw; python3 -B docs/reports/M2-dtd-composition/validate_measurement.py",
+      "result": "passed",
+      "summary": "Renewed exclusive BDNonly grant; ONE actual6case invocation; generatedrestore/build0, parent0/all6children0; SDK10.0.400/runtime10.0.11/Arm64 M4Pro; approvedcurrent DLL SHA c4f884c553317419f2dd8c41932322b34a7a001c1270c2f94d4442397889c50e unchanged. Source32/4096 composition1.4249us/19.1588us with6.6KB owned; seedmodel292.6ns/304.7ns with3.72KB owned; borrowed235.3ns/20.6977us with exactrawGC0B both lengths. Large borrowed CI noisy, no speedup/regression/crossarchitecture claim. Successful6f allocation never rerun. Durable rawZIP SHA8e08bb4b1bc1a9c83756286f557f7b80963b3fdb6aa42fe3686f4ebc0b2646e1; first0executedfailure remains failed and archived. Host RELEASE ACK sent after childexit.",
+      "artifact": "docs/reports/M2-dtd-composition/exclusive-719c630/measurement.json"
+    },
+    {
+      "id": "coordinated-source-review",
+      "kind": "review",
+      "revision": "719c630d9f19e576cf14e44dc82b173fdb1b7c6b",
+      "command": null,
+      "result": "passed",
+      "summary": "Coordinator01a1230c-1353-7e01-afbe-a53c9c018264 relayed source-only runtime346 approval of shared guard, same-operation dedup/no-recharge, framed identity/entry and tests; later approved fullmodel/seed/accounting/cold-boundary benchmark oracles and exact719 assemblymatching owned projectrename/verifier refs. Review is separate from executed checks. Runtime/tests unchanged after346; timing source/driver unchanged6f..719.",
+      "artifact": null
+    },
+    {
+      "id": "generated-raw-whitespace-audit-failure",
+      "kind": "check",
+      "revision": "c64b852f71225486a7bef4d0d86cf044c4acafb7",
+      "command": "git diff --check 7081ff55f81feaffc41a4008424ada14a8551113..HEAD",
+      "result": "failed",
+      "summary": "Actual final claimdiff audit reported generated BDN trailing spaces in duplicate plaintext logs/md/html; previous handoff wording prematurely said finaldiffclean, immediately corrected to coordinator. Working/staged checks were clean. Exact originals and both rawZIP/SHA unchanged; lossless gzip of checkout duplicates resolves audit without rewriting measurement. No runtime/workload/driver or measurement rerun.",
+      "artifact": "docs/reports/M2-dtd-composition/final-audit-whitespace-failure.txt"
+    },
+    {
+      "id": "final-owned-clean-audit",
+      "kind": "check",
+      "revision": "78b53d65a36e3d51ae0d1eef25df23c8fd47fa65",
+      "command": "python3 -B tools/planning/tasks.py validate; git diff --check 7081ff55f81feaffc41a4008424ada14a8551113..HEAD; git diff --check; git diff --check --cached; scoped committed/working/staged/untracked ownership and rawZIP/gzip identity checks",
+      "result": "passed",
+      "summary": "Each actual exit independently captured/inspected: validate122 and claim/working/staged diffchecks0; checkoutcleanbefore writing final report; all90changed paths owned. Both rawZIP/SHA unchanged; every compressed checkout mirror decompresses byte-identical to original archive entry. Earlier raw trailing-space failure preserved. No code/workload/measurement change.",
+      "artifact": "docs/reports/M2-dtd-composition/final-audit.json"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Narrow previously verified DTD owner repair discovered by claimed core/entity consumer. Original parser/parent evidence preserved; dependent external composition waits for integrated verified repair.",
-    "checks": [],
-    "remaining": [],
+    "summary": "Implemented exactly three nonpublic shared-operation seed/preframed source hooks. Immutable ordered first-wins tables/internal visibility and flags/locations preserved; validated actual framed cursor/absolute mapping/EOF and pending PE single entry/pop restore; no duplicate local prolog. All constructors/publicmethods preserved. Branch work implemented, integration_revision null; no core/entity/fullXML production claim.",
+    "checks": [
+      "required-hooks-cumulative8dcc: actual5050/focused4189/pinned9+775/API272/internal20+3hooks/access+nullable+optionaldefault compiledmutations/BCL242 full8dcccurrent/hash unchanged/planning14/graph122/ownership/whitespace passed",
+      "final6f and scaffold719 scoped builds/discovery/fullmodel/fullseed/exact ledger oracle20pairs=40outputs+2048scans passed; implementation byteidentity and496compiledmethods same; metadata source revision accurately differs",
+      "exclusive6f allocation ONCE passed; zero borrowed/positivecontrol/retention; cold setup+twooutputs+bothoracles included with no subtraction; raw aggregates recorded",
+      "first6f BDN projectgenerationfailed/parent0/executed0/no generatedbuild or timingchild preserved; owned filename corrected, renewed719 BDNonce6cases passed generatedrestore/build/parent/allchildren0; host released; bothrawarchives durable; no successful allocation or inherited timing rerun",
+      "Final78b53d6 audit: validate122/all3diffchecks0/clean/90ownedpaths/rawZIP+gzipidentity passed; generatedraw trailing-space audit failure c64 preserved and losslessly corrected."
+    ],
+    "remaining": [
+      "Coordinator must integrate/retest combined tree and record actual integration evidence before verified. Windows/x64/AOT/production core/full XML conformance unrun and outside scope."
+    ],
     "requests": []
   }
 }

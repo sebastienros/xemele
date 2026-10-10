@@ -1,0 +1,165 @@
+{
+  "result": "passed",
+  "sourceRevision": "719c630d9f19e576cf14e44dc82b173fdb1b7c6b",
+  "binarySha256": "c4f884c553317419f2dd8c41932322b34a7a001c1270c2f94d4442397889c50e",
+  "host": "macOS-15.8.1-arm64-arm-64bit-Mach-O",
+  "architecture": "arm64",
+  "exclusiveHostGrant": "coordinator01a1230c-1353-7e01-afbe-a53c9c018264 renewed allparkACKs cleaninventory; BDNonly once6cases",
+  "allocationNotRerun": true,
+  "command": [
+    "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+    "/Users/sebastienros/.codex/worktrees/453f/xemele/docs/reports/M2-dtd-composition/bin/Release/net10.0/Xemele.DtdCompositionBenchmarks.dll",
+    "--filter",
+    "*DtdCompositionBenchmarks*",
+    "*DtdFramedScanBenchmarks*",
+    "--artifacts",
+    "/Users/sebastienros/.codex/worktrees/453f/xemele/docs/reports/M2-dtd-composition/exclusive-719c630/raw"
+  ],
+  "parentExit": 0,
+  "binaryUnchanged": true,
+  "executedBenchmarks": 6,
+  "generatedRestoreExit": 0,
+  "generatedBuildExit": 0,
+  "childExitCodes": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "rawGcRecords": [
+    {
+      "class": "DtdCompositionBenchmarks",
+      "method": "SeedAndFramedComposition",
+      "commentScalars": 32,
+      "gcRaw": [
+        423,
+        5,
+        0,
+        3544288640,
+        524288
+      ],
+      "childExit": 0
+    },
+    {
+      "class": "DtdCompositionBenchmarks",
+      "method": "SeedAndModelSnapshot",
+      "commentScalars": 32,
+      "gcRaw": [
+        954,
+        7,
+        0,
+        7986184016,
+        2097152
+      ],
+      "childExit": 0
+    },
+    {
+      "class": "DtdCompositionBenchmarks",
+      "method": "SeedAndFramedComposition",
+      "commentScalars": 4096,
+      "gcRaw": [
+        26,
+        0,
+        0,
+        221518160,
+        32768
+      ],
+      "childExit": 0
+    },
+    {
+      "class": "DtdCompositionBenchmarks",
+      "method": "SeedAndModelSnapshot",
+      "commentScalars": 4096,
+      "gcRaw": [
+        954,
+        7,
+        0,
+        7986184016,
+        2097152
+      ],
+      "childExit": 0
+    },
+    {
+      "class": "DtdFramedScanBenchmarks",
+      "method": "BorrowedCommentScan",
+      "commentScalars": 32,
+      "gcRaw": [
+        0,
+        0,
+        0,
+        0,
+        4194304
+      ],
+      "childExit": 0
+    },
+    {
+      "class": "DtdFramedScanBenchmarks",
+      "method": "BorrowedCommentScan",
+      "commentScalars": 4096,
+      "gcRaw": [
+        0,
+        0,
+        0,
+        0,
+        32768
+      ],
+      "childExit": 0
+    }
+  ],
+  "resultRows": [
+    {
+      "Method": "SeedAndFramedComposition",
+      "CommentScalars": "32",
+      "Mean": "1,424.9 ns",
+      "Error": "32.13 ns",
+      "StdDev": "1.76 ns",
+      "Allocated": "6.6 KB"
+    },
+    {
+      "Method": "SeedAndModelSnapshot",
+      "CommentScalars": "32",
+      "Mean": "292.6 ns",
+      "Error": "37.42 ns",
+      "StdDev": "2.05 ns",
+      "Allocated": "3.72 KB"
+    },
+    {
+      "Method": "SeedAndFramedComposition",
+      "CommentScalars": "4096",
+      "Mean": "19,158.8 ns",
+      "Error": "759.25 ns",
+      "StdDev": "41.62 ns",
+      "Allocated": "6.6 KB"
+    },
+    {
+      "Method": "SeedAndModelSnapshot",
+      "CommentScalars": "4096",
+      "Mean": "304.7 ns",
+      "Error": "85.79 ns",
+      "StdDev": "4.70 ns",
+      "Allocated": "3.72 KB"
+    },
+    {
+      "Method": "BorrowedCommentScan",
+      "CommentScalars": "32",
+      "Mean": "235.3 ns",
+      "Error": "34.22 ns",
+      "StdDev": "1.88 ns",
+      "Allocated": "0 B"
+    },
+    {
+      "Method": "BorrowedCommentScan",
+      "CommentScalars": "4096",
+      "Mean": "20,697.7 ns",
+      "Error": "13,216.27 ns",
+      "StdDev": "724.43 ns",
+      "Allocated": "0 B"
+    }
+  ],
+  "rawArchiveSha256": "8e08bb4b1bc1a9c83756286f557f7b80963b3fdb6aa42fe3686f4ebc0b2646e1",
+  "allocationEvidence": "../exclusive-6f65008/measurement.json",
+  "allocationPreservedNotRerun": true,
+  "scope": "Arm64 common-only owned seed/model/framed composition and borrowed complete-comment scanning;20correctnesspairs=40ownedoutputs+2048scans outside timing. Coldprobeincludes setup+twooutputs+bothoracles, no subtraction. No full XML/core/resolver conformance, crossarchitecture or AOT claim."
+}
