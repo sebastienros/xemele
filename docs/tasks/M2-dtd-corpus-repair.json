@@ -33,7 +33,8 @@
     "benchmarks/Xemele.Benchmarks/M2-dtd-corpus-repair/",
     "samples/M2-dtd-corpus-repair/",
     "docs/reports/M2-dtd-corpus-repair/",
-    "src/Xemele/Parsing/Core/XmlParserCore.Doctype.cs"
+    "src/Xemele/Parsing/Core/XmlParserCore.Doctype.cs",
+    "tests/Xemele.Tests/M2-entities/ReviewRegressionTests.cs"
   ],
   "api_or_output": "Resolve seven original DTD grammar and namespace obligations",
   "acceptance": [
@@ -76,7 +77,8 @@
         "defect": "AttributeUseRejectsColonThroughExplicitNestedAndDefaultReferences line 93 asserts unused <!ENTITY a:b ...> accepts; all three rows conflict with A1/A2 rejecting unused colon declarations. XML.Syntax assertions now pass at declaration time.",
         "smallest_fix": "Replace only the final Assert.Equal Parse acceptance assertion with TryParse rejection plus XML.Syntax diagnostic assertion for the unused declaration. Keep the three existing reference-use rows and all other tests intact.",
         "proving_check": "Execute the actual three historical rows and owned NamespacesNamesAndInternalPlacementEverySplit, then affected correctness selection; no exclusions."
-      }
+      },
+      "Coordinator grants ReviewRegressionTests.cs solely the final unused-colon declaration acceptance assertion in AttributeUseRejectsColonThroughExplicitNestedAndDefaultReferences: change to actual XML.Syntax rejection. Preserve all three reference-use rows and every other assertion. A1/A2 original namespace obligations require this precise transition. Worker task-JSON-only hold acknowledged."
     ]
   }
 }
