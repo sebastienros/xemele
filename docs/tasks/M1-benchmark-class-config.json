@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "id": "M1-benchmark-class-config",
+  "milestone": "M1",
+  "title": "Configure benchmark jobs on classes and simplify launchers",
+  "kind": "infrastructure",
+  "status": "in_progress",
+  "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M1-benchmark-class-config",
+  "branch": "codex/m1-benchmark-class-config",
+  "base_revision": "6d3326fce6dcc979d243a6bdddc92f9ae2e1897e",
+  "integration_revision": null,
+  "depends_on": [
+    "M1-common",
+    "M1-input",
+    "M1-serialize"
+  ],
+  "goals": [
+    "G18"
+  ],
+  "specs": [
+    "docs/specs/foundation.md",
+    "docs/performance-coding.md"
+  ],
+  "owns": [
+    "experiments/Tree/Benchmarks.cs",
+    "experiments/Tree/Program.cs",
+    "experiments/Input/Benchmarks.cs",
+    "experiments/Input/Program.cs",
+    "benchmarks/Xemele.Benchmarks/Program.cs",
+    "benchmarks/Xemele.Benchmarks/M1-common/CommonBenchmarks.cs",
+    "benchmarks/Xemele.Benchmarks/M1-input/InputBenchmarks.cs",
+    "benchmarks/Xemele.Benchmarks/M1-serialize/SerializerBenchmarks.cs",
+    "docs/reports/M1-common/Program.cs",
+    "docs/reports/M1-input/Program.cs",
+    "docs/reports/M1-serialize/BenchmarkDriver.cs",
+    "docs/reports/M1-benchmark-class-config/"
+  ],
+  "api_or_output": "Every benchmark class carries MemoryDiagnoser and ShortRunJob; launchers do not inject redundant jobs",
+  "acceptance": [
+    {
+      "id": "M1-benchmark-class-config-A1",
+      "description": "Apply explicit [MemoryDiagnoser, ShortRunJob] to every existing unannotated benchmark class in owned experiment/Common/Input/Serializer sources; remove redundant launcher-injected jobs while preserving allocation/ABI/model modes and workload semantics. Existing correctly annotated Tree/Syntax/builder classes remain untouched.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M1-benchmark-class-config-A2",
+      "description": "Verify real compiled BenchmarkDotNet discovery yields exactly one intended class-configured job and memory diagnoser for all owned classes, with unchanged case/workload inventory and command-line invocation omitting job arguments; build affected harnesses and preserve allocation/ABI modes.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M1-benchmark-class-config-A3",
+      "description": "Preserve all historical verified source/evidence and actual runtime/public API; record checks at known revision, run planning validation and final owned-path audit. New timings are unnecessary if actual job configuration/workload identity is unchanged; do not claim unrun workloads.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "User requests job configuration on benchmark classes, no explicit job arguments or repetitive job-name narration. Narrow infrastructure migration preserves historical reports and runtime.",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}
