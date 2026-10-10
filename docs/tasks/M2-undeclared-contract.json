@@ -4,7 +4,7 @@
   "milestone": "M2",
   "title": "Freeze nonvalidating undeclared-reference representation",
   "kind": "contract",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M2-undeclared-contract",
   "branch": "codex/m2-undeclared-contract",
   "base_revision": "71204a6d975a6ba1feb5a837be037f72a01654fb",
@@ -36,29 +36,83 @@
     {
       "id": "M2-undeclared-contract-A1",
       "description": "Freeze precise XML1.0 Fifth Edition EntityDeclared WFC versus VC applicability including no DTD, internal subset without/with PE references, standalone yes/no/absent, external subsets/PEs, declaration processing actually read, default attribute declaration-before-use and prohibited external/unparsed/recursive references. Independently assess original rmt-e3e-13 exact bytes/identity; do not label validity-only unresolved content as fatal, invent replacement character text, silently lose entity identity, or misuse unread external-entity notification as a mandatory unknown-entity callback. Preserve unchanged corpus applicability expectations and all existing required errors/resource denial semantics.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "normative-source-review",
+        "independent-contract-verification"
+      ]
     },
     {
       "id": "M2-undeclared-contract-A2",
       "description": "Publish one concrete bounded compatible contract for unresolved content entity name/lexical reference and location, borrowed versus owned retention, event ordering/splits/pause/cancellation, DOM representation and diagnostic outcome. Resolve current event representation limitation and Factories any-diagnostic failure explicitly. Compile independently authored representative contract/model consumers including old sink compatibility and owned retention, negative controls for mismatch, while preserving all existing frozen public model shapes and four declaration/name/attribute/namespace ABI shapes. No library runtime edits, shared build/project changes, public stubs, or premature shipped API baseline entries. Identify exact subsequent implementation paths and any additive public API/fixture approval requirement before implementation; routine compatible contract choices are within task authority.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "normative-source-review",
+        "independent-contract-verification"
+      ]
     },
     {
       "id": "M2-undeclared-contract-A3",
       "description": "Actual independent contract/model preservation and meaningful negative controls at known Git/source/binary/runtime identities, plus planning/ownership/diff validation. Source review separate from execution; no runtime/conformance/performance pass claim from model fixtures. Keep result summaries and source/binary hashes only, raw outputs transient inspected then removed. No unverified active peer dependency or later milestone requirement.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "normative-source-review",
+        "independent-contract-verification"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "docs/decisions/M2/undeclared-references.md: applicability, exact E13, optional event, DOM provenance and owner-wide lossy-operation refusal",
+    "tests/Contracts/Fixtures/M2/Undeclared/Proposal.cs.fixture: nonpackaged additive contract proposal",
+    "tests/Contracts/Fixtures/M2/Undeclared/Consumer.cs.fixture: independent old-sink/retention/ordering/NCName/refusal model consumer",
+    "tests/Contracts/Fixtures/M2/Undeclared/Preservation.cs.fixture: exact seven-shape frozen ABI comparison",
+    "samples/M2-undeclared-contract/Sample.csproj: independent explicit-source net10.0 compilation",
+    "docs/reports/M2-undeclared-contract/verify.py: original identity, model/API/ABI negatives and final source/binary/runtime freeze"
+  ],
+  "evidence": [
+    {
+      "id": "normative-source-review",
+      "kind": "review",
+      "revision": "ba09a6f973554639c634737a8cd3bc8ebc4a6d84",
+      "command": null,
+      "result": "passed",
+      "summary": "Independently read primary XML1.0 Fifth Edition sections4.1,4.4.3,5.1 and Namespaces1.0 Third Edition7; reviewed integrated source event ABI, Factories.Finish, entity/default/declaration processing, node copy/text and serializer entrypoints. VC-only content is not a WFC, unknown-name notification is a product contract rather than unread-external-entity mandate; NCNames exclude colons. Exact original E13 independently read and classified; no corpus or runtime pass claimed. Coordinator findings resolved by NCName controls, owner-wide loss refusal and final source/actual-runtime freeze.",
+      "artifact": "docs/decisions/M2/undeclared-references.md"
+    },
+    {
+      "id": "independent-contract-verification",
+      "kind": "check",
+      "revision": "ba09a6f973554639c634737a8cd3bc8ebc4a6d84",
+      "command": "python3 -B docs/reports/M2-undeclared-contract/verify.py > /private/tmp/m2-undeclared-verifier-output.json",
+      "result": "passed",
+      "summary": "64 independent contract/model assertions plus64 inherited; actual272-member product API; frozen Resolver114/Dtd81/Encoding81/Entities243/Recovery239 model baselines; seven internal shapes including declaration/name/attribute/namespace views. Expected CS8345/CS8852, compiled readonly/nullability ABI mutations, public metadata mutation and changed-source byte control detected. Original E13 bytes252/SHA40470ff5f2281476ed4521e066d85122e9cc240f1fa916f97bd095644540fa14 and unchanged accepted ledger verified; ent2 at7:6/byte239. Actual SDK10.0.400/CoreCLR10.0.11 servicing.26373.116+e2f47b0110ed922f21a1522da67279133ce28f32 ARM64 recorded with source/binary/corelib/host/coreclr/hostpolicy hashes; finalHEAD/allfrozeninputs and tested binaries unchanged. Planning14 passed; validate131; ownership/diff passed. Temporary outputs/raw summary inspected then removed. No XML runtime, actual DOM/copy/serialization, allocation/timing or conformance pass claimed.",
+      "artifact": "docs/reports/M2-undeclared-contract/latest-summary.json"
+    },
+    {
+      "id": "runtime-label-gate-failure",
+      "kind": "check",
+      "revision": "a55178ded4cbdeae862d23bf1f3c7717631819df",
+      "command": "python3 -B docs/reports/M2-undeclared-contract/verify.py > /private/tmp/m2-undeclared-verifier-output.json",
+      "result": "failed",
+      "summary": "64 model assertions passed, then overly strict 10.0.11+ informational-label gate rejected actual approved10.0.11-servicing.26373.116+e2f47b0110ed922f21a1522da67279133ce28f32. Temporary outputs removed. Corrected formatting while retaining exact runtime byte/path/version freeze; subsequent finalverification passed.",
+      "artifact": "docs/reports/M2-undeclared-contract/runtime-label-gate-failure.json"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Independent W3C4.1/source assessment: E13 nonstandalone internal-PE reference makes EntityDeclared validity-only. Existing event/DOM diagnostic behavior cannot faithfully express unresolved identity; freeze bounded compatible contract before grammar implementation.",
-    "checks": [],
-    "remaining": [],
-    "requests": []
+    "summary": "Freeze optional borrowed unresolved-content callback and immutable owned document provenance with exact source location/child-boundary/sequence; no invented replacement events/success diagnostics. NCName names, old sink capability refusal, owner-wide serialization/clone/import/aggregate-text refusal prevent silent identity loss. No runtime/public-baseline/build edits; existing shapes preserved. Branch implemented, awaits coordinator review/integrated verification.",
+    "checks": [
+      "python3 -B docs/reports/M2-undeclared-contract/verify.py: passed at ba09a6f973554639c634737a8cd3bc8ebc4a6d84; 64+64 assertions, public272/model baselines/sevenABIs/meaningful negatives/finalfreeze/runtime10.0.11, planning14/validate131; model-only scope",
+      "Earlier a55178d runtime informational-label gate failed; corrected and independently rerun. Source and binary identities in concise reports; raw outputs removed."
+    ],
+    "remaining": [
+      "Coordinator independent source review, fresh integrated contract verification, then separate verified metadata. Runtime acceptance/splits/actual DOM pause/cancel/refusal/quota/performance/conformance remain ordered implementation evidence, not contract-task passes."
+    ],
+    "requests": [
+      "Review/freeze exact task-owned proposed XmlUnresolvedReference record and XmlDocument.UnresolvedReferences member before ordered runtime task; no new human approval prompt needed for routine compatible choice.",
+      "Create ordered runtime task owning src/Xemele/Parsing/Events/UnresolvedReferences.cs; Parsing/Core/XmlParserCore.cs, XmlParserCore.Doctype.cs, XmlParserCore.Entities.cs; Parsing/Dtd/Grammar/Parser/DtdParser.cs and Composition.cs; Parsing/Entities/Runtime/XmlEntityContext.cs; Tree/UnresolvedReferences/XmlUnresolvedReference.cs, XmlDocument.UnresolvedReferences.cs and DomSink.UnresolvedReferences.cs; Serialization/Xml/XmlSerializer.cs and Tree/Document.cs for loss-refusal preflight. Forwarders Serialization/Document/Save.cs and Tree/Node.cs need tests, no public signature changes.",
+      "Assign tests/Xemele.Tests/Xml/UndeclaredReferences/, benchmarks/Xemele.Benchmarks/UndeclaredReferences/, synchronized contract fixtures and approved docs/api/M2-undeclared-content.txt fragment to ordered owners; preserve old ABI and fully represented input behavior.",
+      "VC-only unresolved attributes/default values remain outside this content representation; ordered owner must assess unsupported value representation without misclassifying EntityDeclared VC as WFC, fabricating normalized values or claiming full corpus coverage."
+    ]
   }
 }
