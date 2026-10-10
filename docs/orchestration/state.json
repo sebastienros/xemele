@@ -7,28 +7,15 @@
     "task_id": "M0-gate",
     "integration_revision": "0711a15b0c5a695ca383a9cfe7f11c8326fde451"
   },
-  "active_assignments": [
-    {
-      "task_id": "M1-common",
-      "client_thread_id": "client-new-thread:1ff0a8a0-2506-477a-84a2-6a6efbef5c12",
-      "host_id": "local",
-      "branch": "codex/m1-common",
-      "base_revision": "8621e00a22aef0210dbe7084d6e7836d4531d335",
-      "claim_revision": "79a771e91ad9b1b947382d647f5af999b175adca",
-      "setup_status": "dispatched",
-      "chat_id": "01a1239a-a466-7992-9b99-a2497fddd8be",
-      "worktree_path": "/Users/sebastienros/.codex/worktrees/4eac/xemele",
-      "wait_cursor": "e93241cd-e30a-427b-9fd8-d91287acee4f:1"
-    }
-  ],
+  "active_assignments": [],
   "integration_queue": [],
   "blockers": [],
   "next_actions": [
-    "Claim/dispatch M1-common from verified contracts",
-    "Then dispatch three independent M1-input/tree/syntax lanes"
+    "Dispatch isolated M1-input/tree/syntax workers",
+    "Coordinate exclusive ShortRun windows; no builds/tests during timing"
   ],
-  "last_verified_task": "M1-contracts",
-  "last_integrated_revision": "3bd8e87d180be3196313374b2f0171f55bcc9478",
+  "last_verified_task": "M1-common",
+  "last_integrated_revision": "6861b34b35fb00e67193c6636c51caf31bbb1afa",
   "completed_assignments": [
     {
       "task_id": "M0-build",
@@ -335,10 +322,27 @@
         "chat_archived": true,
         "worktree": "removed"
       }
+    },
+    {
+      "task_id": "M1-common",
+      "client_thread_id": "client-new-thread:1ff0a8a0-2506-477a-84a2-6a6efbef5c12",
+      "host_id": "local",
+      "branch": "codex/m1-common",
+      "base_revision": "8621e00a22aef0210dbe7084d6e7836d4531d335",
+      "claim_revision": "79a771e91ad9b1b947382d647f5af999b175adca",
+      "setup_status": "verified",
+      "chat_id": "01a1239a-a466-7992-9b99-a2497fddd8be",
+      "worktree_path": "/Users/sebastienros/.codex/worktrees/4eac/xemele",
+      "wait_cursor": "e93241cd-e30a-427b-9fd8-d91287acee4f:1",
+      "implementation_revision": "937def8c23313ecdd087537906d08e81297baae7",
+      "handoff_revision": "f9ce4a292ec557df53988c43798a0ac638e2cdf1",
+      "integration_revision": "6861b34b35fb00e67193c6636c51caf31bbb1afa",
+      "integration_worktree": "/private/tmp/xemele-integrate-m1-common",
+      "integration_branch": "codex/integrate-m1-common"
     }
   ],
   "benchmark_policy": "Subsequent benchmarks default to ShortRun and require serialized timing slot; no active timing hold.",
-  "benchmark_owner": "M1-common",
+  "benchmark_owner": null,
   "pending_decisions": [],
   "decisions": {
     "project_license": "MIT",

@@ -1,0 +1,380 @@
+Host macOS-15.8.1-arm64-arm-64bit-Mach-O arm64
+$ git rev-parse HEAD
+6861b34b35fb00e67193c6636c51caf31bbb1afa
+
+exit=0
+Implementation revision 6861b34b35fb00e67193c6636c51caf31bbb1afa
+$ dotnet --version
+10.0.400
+
+exit=0
+$ dotnet --info
+.NET SDK:
+ Version:           10.0.400
+ Commit:            14fbf8d527
+ Workload version:  10.0.400-manifests.330ea142
+ MSBuild version:   18.9.6+14fbf8d52
+
+Runtime Environment:
+ OS Name:     Mac OS X
+ OS Version:  15.8
+ OS Platform: Darwin
+ RID:         osx-arm64
+ Base Path:   /Users/sebastienros/Library/Application Support/dotnetup/dotnet/sdk/10.0.400/
+
+.NET workloads installed:
+There are no installed workloads to display.
+Configured to use workload sets when installing new manifests.
+No workload sets are installed. Run "dotnet workload restore" to install a workload set.
+
+Host:
+  Version:      11.0.0-rc.1.26425.128
+  Architecture: arm64
+  Commit:       3551975be0
+
+.NET SDKs installed:
+  8.0.424 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/sdk]
+  10.0.100 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/sdk]
+  10.0.400 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/sdk]
+  11.0.100-rc.1.26413.103 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/sdk]
+  11.0.100-rc.1.26425.128 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/sdk]
+
+.NET runtimes installed:
+  Microsoft.AspNetCore.App 8.0.30 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.AspNetCore.App]
+  Microsoft.AspNetCore.App 10.0.0 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.AspNetCore.App]
+  Microsoft.AspNetCore.App 10.0.11 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.AspNetCore.App]
+  Microsoft.AspNetCore.App 11.0.0-rc.1.26413.103 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.AspNetCore.App]
+  Microsoft.AspNetCore.App 11.0.0-rc.1.26425.128 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.AspNetCore.App]
+  Microsoft.NETCore.App 8.0.30 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App]
+  Microsoft.NETCore.App 10.0.0 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App]
+  Microsoft.NETCore.App 10.0.11 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App]
+  Microsoft.NETCore.App 11.0.0-rc.1.26413.103 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App]
+  Microsoft.NETCore.App 11.0.0-rc.1.26425.128 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App]
+
+Other architectures found:
+  None
+
+Environment variables:
+  DOTNET_CLI_USE_MSBUILD_SERVER            [0]
+  DOTNET_ROOT                              [/Users/sebastienros/Library/Application Support/dotnetup/dotnet]
+
+global.json file:
+  /private/tmp/xemele-integrate-m1-common/global.json
+
+Learn more:
+  https://aka.ms/dotnet/info
+
+Download .NET:
+  https://aka.ms/dotnet/download
+
+exit=0
+$ dotnet build Xemele.slnx -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+  Determining projects to restore...
+  Restored /private/tmp/xemele-integrate-m1-common/tools/ReferenceRunners/Protocol/ReferenceProtocol.csproj (in 42 ms).
+  Restored /private/tmp/xemele-integrate-m1-common/src/Xemele/Xemele.csproj (in 42 ms).
+  Restored /private/tmp/xemele-integrate-m1-common/tools/ReferenceRunners/Bcl/BclReference.csproj (in 48 ms).
+  Restored /private/tmp/xemele-integrate-m1-common/tools/CorpusManager/CorpusManager.csproj (in 42 ms).
+  Restored /private/tmp/xemele-integrate-m1-common/tests/Xemele.Fuzz/Xemele.Fuzz.csproj (in 48 ms).
+  Restored /private/tmp/xemele-integrate-m1-common/tests/Xemele.TestUtilities/Xemele.TestUtilities.csproj (in 48 ms).
+  Restored /private/tmp/xemele-integrate-m1-common/src/Xemele.Tool/Xemele.Tool.csproj (in 48 ms).
+  Restored /private/tmp/xemele-integrate-m1-common/tests/Contracts/Contracts.csproj (in 48 ms).
+  Restored /private/tmp/xemele-integrate-m1-common/tests/Xemele.Conformance.Tests/Xemele.Conformance.Tests.csproj (in 149 ms).
+  Restored /private/tmp/xemele-integrate-m1-common/tests/Xemele.Differential.Tests/Xemele.Differential.Tests.csproj (in 149 ms).
+  Restored /private/tmp/xemele-integrate-m1-common/tests/Xemele.Tests/Xemele.Tests.csproj (in 149 ms).
+  Restored /private/tmp/xemele-integrate-m1-common/benchmarks/Xemele.Benchmarks/Xemele.Benchmarks.csproj (in 162 ms).
+  Xemele -> /private/tmp/xemele-integrate-m1-common/src/Xemele/bin/Release/net10.0/Xemele.dll
+  Xemele.Benchmarks -> /private/tmp/xemele-integrate-m1-common/benchmarks/Xemele.Benchmarks/bin/Release/net10.0/Xemele.Benchmarks.dll
+  Xemele.Tool -> /private/tmp/xemele-integrate-m1-common/src/Xemele.Tool/bin/Release/net10.0/Xemele.Tool.dll
+  Contracts -> /private/tmp/xemele-integrate-m1-common/tests/Contracts/bin/Release/net10.0/Contracts.dll
+  Xemele.TestUtilities -> /private/tmp/xemele-integrate-m1-common/tests/Xemele.TestUtilities/bin/Release/net10.0/Xemele.TestUtilities.dll
+  Xemele.Conformance.Tests -> /private/tmp/xemele-integrate-m1-common/tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll
+  ReferenceProtocol -> /private/tmp/xemele-integrate-m1-common/tools/ReferenceRunners/Protocol/bin/Debug/net10.0/ReferenceProtocol.dll
+  BclReference -> /private/tmp/xemele-integrate-m1-common/tools/ReferenceRunners/Bcl/bin/Release/net10.0/BclReference.dll
+  Xemele.Differential.Tests -> /private/tmp/xemele-integrate-m1-common/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll
+  Xemele.Fuzz -> /private/tmp/xemele-integrate-m1-common/tests/Xemele.Fuzz/bin/Release/net10.0/Xemele.Fuzz.dll
+  Xemele.Tests -> /private/tmp/xemele-integrate-m1-common/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll
+  CorpusManager -> /private/tmp/xemele-integrate-m1-common/tools/CorpusManager/bin/Release/net10.0/CorpusManager.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:08.69
+
+exit=0
+$ dotnet test --project tests/Xemele.Tests -c Release --no-build --no-restore --filter-class Xemele.Tests.Common.CommonTests
+Running tests from /private/tmp/xemele-integrate-m1-common/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll (net10.0|arm64)
+/private/tmp/xemele-integrate-m1-common/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll (net10.0|arm64) passed (373ms)
+
+Test run summary: Passed!
+  total: 10
+  failed: 0
+  succeeded: 10
+  skipped: 0
+  duration: 829ms
+
+exit=0
+$ dotnet test --solution Xemele.slnx -c Release --no-build --no-restore
+Running tests from /private/tmp/xemele-integrate-m1-common/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll (net10.0|arm64)
+Running tests from /private/tmp/xemele-integrate-m1-common/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll (net10.0|arm64)
+Running tests from /private/tmp/xemele-integrate-m1-common/tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll (net10.0|arm64)
+/private/tmp/xemele-integrate-m1-common/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll (net10.0|arm64) passed (328ms)
+/private/tmp/xemele-integrate-m1-common/tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll (net10.0|arm64) passed (340ms)
+/private/tmp/xemele-integrate-m1-common/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll (net10.0|arm64) passed (4s 949ms)
+
+Test run summary: Passed!
+  /private/tmp/xemele-integrate-m1-common/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll (net10.0|arm64) passed (4s 949ms)
+  /private/tmp/xemele-integrate-m1-common/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll (net10.0|arm64) passed (328ms)
+  /private/tmp/xemele-integrate-m1-common/tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll (net10.0|arm64) passed (340ms)
+
+  total: 64
+  failed: 0
+  succeeded: 64
+  skipped: 0
+  duration: 5s 295ms
+
+exit=0
+$ dotnet build docs/reports/M0-contracts/Checks/Checks.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+  Determining projects to restore...
+  Restored /private/tmp/xemele-integrate-m1-common/docs/reports/M0-contracts/Fixtures/M1/M1.csproj (in 33 ms).
+  Restored /private/tmp/xemele-integrate-m1-common/docs/reports/M0-contracts/Fixtures/M2/M2.csproj (in 33 ms).
+  Restored /private/tmp/xemele-integrate-m1-common/docs/reports/M0-contracts/Checks/Checks.csproj (in 155 ms).
+  M1 -> /private/tmp/xemele-integrate-m1-common/docs/reports/M0-contracts/Fixtures/M1/bin/Release/net10.0/FoundationM1.dll
+  M2 -> /private/tmp/xemele-integrate-m1-common/docs/reports/M0-contracts/Fixtures/M2/bin/Release/net10.0/FoundationM2.dll
+  Checks -> /private/tmp/xemele-integrate-m1-common/docs/reports/M0-contracts/Checks/bin/Release/net10.0/Checks.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:02.63
+
+exit=0
+$ dotnet test --project docs/reports/M0-contracts/Checks/Checks.csproj -c Release --no-build --no-restore
+Running tests from /private/tmp/xemele-integrate-m1-common/docs/reports/M0-contracts/Checks/bin/Release/net10.0/Checks.dll (net10.0|arm64)
+/private/tmp/xemele-integrate-m1-common/docs/reports/M0-contracts/Checks/bin/Release/net10.0/Checks.dll (net10.0|arm64) passed (354ms)
+
+Test run summary: Passed!
+  total: 11
+  failed: 0
+  succeeded: 11
+  skipped: 0
+  duration: 726ms
+
+exit=0
+$ dotnet build docs/reports/M0-contracts/ApiCheck/ApiCheck.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+  Determining projects to restore...
+  Restored /private/tmp/xemele-integrate-m1-common/docs/reports/M0-contracts/ApiCheck/ApiCheck.csproj (in 25 ms).
+  ApiCheck -> /private/tmp/xemele-integrate-m1-common/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:01.18
+
+exit=0
+$ dotnet /private/tmp/xemele-integrate-m1-common/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare /private/tmp/xemele-integrate-m1-common/docs/reports/M0-contracts/Fixtures/M1/bin/Release/net10.0/FoundationM1.dll /private/tmp/xemele-integrate-m1-common/tests/Contracts/Fixtures/foundation/M1.golden.txt
+Matched 139 compiled members
+
+exit=0
+$ dotnet /private/tmp/xemele-integrate-m1-common/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare /private/tmp/xemele-integrate-m1-common/docs/reports/M0-contracts/Fixtures/M2/bin/Release/net10.0/FoundationM2.dll /private/tmp/xemele-integrate-m1-common/tests/Contracts/Fixtures/foundation/M2.golden.txt
+Matched 173 compiled members
+
+exit=0
+$ dotnet /private/tmp/xemele-integrate-m1-common/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare /private/tmp/xemele-integrate-m1-common/src/Xemele/bin/Release/net10.0/Xemele.dll /private/tmp/xemele-integrate-m1-common/tests/Contracts/Fixtures/M1/Common.golden.txt
+Matched 81 compiled members
+
+exit=0
+$ dotnet build docs/reports/M1-contracts/Projects/Common/Common.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+  Determining projects to restore...
+  Restored /private/tmp/xemele-integrate-m1-common/docs/reports/M1-contracts/Projects/Common/Common.csproj (in 21 ms).
+  Common -> /private/tmp/xemele-integrate-m1-common/docs/reports/M1-contracts/Projects/Common/bin/Release/net10.0/M1Common.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:01.02
+
+exit=0
+$ dotnet /private/tmp/xemele-integrate-m1-common/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare /private/tmp/xemele-integrate-m1-common/docs/reports/M1-contracts/Projects/Common/bin/Release/net10.0/M1Common.dll /private/tmp/xemele-integrate-m1-common/tests/Contracts/Fixtures/M1/Common.golden.txt
+Matched 81 compiled members
+
+exit=0
+$ dotnet build docs/reports/M1-contracts/Projects/Tree/Tree.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+  Determining projects to restore...
+  Restored /private/tmp/xemele-integrate-m1-common/docs/reports/M1-contracts/Projects/Tree/Tree.csproj (in 21 ms).
+  Tree -> /private/tmp/xemele-integrate-m1-common/docs/reports/M1-contracts/Projects/Tree/bin/Release/net10.0/M1Tree.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:01.01
+
+exit=0
+$ dotnet /private/tmp/xemele-integrate-m1-common/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare /private/tmp/xemele-integrate-m1-common/docs/reports/M1-contracts/Projects/Tree/bin/Release/net10.0/M1Tree.dll /private/tmp/xemele-integrate-m1-common/tests/Contracts/Fixtures/M1/Tree.golden.txt
+Matched 192 compiled members
+
+exit=0
+$ dotnet build docs/reports/M1-contracts/Projects/Input/Input.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+  Determining projects to restore...
+  Restored /private/tmp/xemele-integrate-m1-common/docs/reports/M1-contracts/Projects/Input/Input.csproj (in 22 ms).
+  Input -> /private/tmp/xemele-integrate-m1-common/docs/reports/M1-contracts/Projects/Input/bin/Release/net10.0/M1Input.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:01.01
+
+exit=0
+$ dotnet /private/tmp/xemele-integrate-m1-common/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare /private/tmp/xemele-integrate-m1-common/docs/reports/M1-contracts/Projects/Input/bin/Release/net10.0/M1Input.dll /private/tmp/xemele-integrate-m1-common/tests/Contracts/Fixtures/M1/Input.golden.txt
+Matched 81 compiled members
+
+exit=0
+$ dotnet build docs/reports/M1-contracts/Projects/Syntax/Syntax.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+  Determining projects to restore...
+  Restored /private/tmp/xemele-integrate-m1-common/docs/reports/M1-contracts/Projects/Syntax/Syntax.csproj (in 22 ms).
+  Syntax -> /private/tmp/xemele-integrate-m1-common/docs/reports/M1-contracts/Projects/Syntax/bin/Release/net10.0/M1Syntax.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:01.01
+
+exit=0
+$ dotnet /private/tmp/xemele-integrate-m1-common/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare /private/tmp/xemele-integrate-m1-common/docs/reports/M1-contracts/Projects/Syntax/bin/Release/net10.0/M1Syntax.dll /private/tmp/xemele-integrate-m1-common/tests/Contracts/Fixtures/M1/Syntax.golden.txt
+Matched 81 compiled members
+
+exit=0
+$ dotnet build docs/reports/M1-contracts/Projects/Serializer/Serializer.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+  Determining projects to restore...
+  Restored /private/tmp/xemele-integrate-m1-common/docs/reports/M1-contracts/Projects/Serializer/Serializer.csproj (in 21 ms).
+  Serializer -> /private/tmp/xemele-integrate-m1-common/docs/reports/M1-contracts/Projects/Serializer/bin/Release/net10.0/M1Serializer.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:01.01
+
+exit=0
+$ dotnet /private/tmp/xemele-integrate-m1-common/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare /private/tmp/xemele-integrate-m1-common/docs/reports/M1-contracts/Projects/Serializer/bin/Release/net10.0/M1Serializer.dll /private/tmp/xemele-integrate-m1-common/tests/Contracts/Fixtures/M1/Serializer.golden.txt
+Matched 215 compiled members
+
+exit=0
+$ dotnet build docs/reports/M1-contracts/Projects/Dom/Dom.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+  Determining projects to restore...
+  Restored /private/tmp/xemele-integrate-m1-common/docs/reports/M1-contracts/Projects/Dom/Dom.csproj (in 22 ms).
+  Dom -> /private/tmp/xemele-integrate-m1-common/docs/reports/M1-contracts/Projects/Dom/bin/Release/net10.0/M1Dom.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:01.04
+
+exit=0
+$ dotnet /private/tmp/xemele-integrate-m1-common/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare /private/tmp/xemele-integrate-m1-common/docs/reports/M1-contracts/Projects/Dom/bin/Release/net10.0/M1Dom.dll /private/tmp/xemele-integrate-m1-common/tests/Contracts/Fixtures/M1/Dom.golden.txt
+Matched 199 compiled members
+
+exit=0
+$ dotnet build docs/reports/M1-contracts/Projects/Protocol/Protocol.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+  Determining projects to restore...
+  Restored /private/tmp/xemele-integrate-m1-common/docs/reports/M1-contracts/Projects/Protocol/Protocol.csproj (in 25 ms).
+  Protocol -> /private/tmp/xemele-integrate-m1-common/docs/reports/M1-contracts/Projects/Protocol/bin/Release/net10.0/M1Protocol.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:01.08
+
+exit=0
+$ dotnet /private/tmp/xemele-integrate-m1-common/docs/reports/M1-contracts/Projects/Protocol/bin/Release/net10.0/M1Protocol.dll
+Passed 38 contract-model assertions; no runtime parsing/decoding/serialization claim.
+
+exit=0
+$ python3 -B tools/ApiBaseline/discover.py
+{"apiDeclarations": 81, "apiFragments": ["docs/api/M1-common.txt"], "bootstrapEmptyApi": false, "corpusManifests": ["tests/corpora/bootstrap/manifest.json"], "fixtures": 2, "formatVersion": 1}
+
+exit=0
+$ python3 -B tools/ApiBaseline/compare.py --report /private/tmp/xemele-integrate-m1-common/docs/reports/M1-common/runtime-api.json
+{"bootstrapEmptyApi": false, "checkerOutput": "Matched 81 compiled members", "matched": true, "members": 81, "report": "/private/tmp/xemele-integrate-m1-common/docs/reports/M1-common/runtime-api.json"}
+
+exit=0
+$ python3 -B -m unittest discover -s tests/Xemele.TestUtilities/Build -p test_*.py -v
+test_duplicates_and_conflicts_under_distinct_ids (test_composition.CompositionTests.test_duplicates_and_conflicts_under_distinct_ids) ... ok
+test_empty_requires_explicit_inventory_bootstrap (test_composition.CompositionTests.test_empty_requires_explicit_inventory_bootstrap) ... ok
+test_member_order_and_distinct_id_provenance_without_rewrites (test_composition.CompositionTests.test_member_order_and_distinct_id_provenance_without_rewrites) ... ok
+test_cli_failure_exit_and_explicit_error (test_discovery.DiscoveryTests.test_cli_failure_exit_and_explicit_error) ... ok
+test_distinct_ids_cannot_conflict_on_member (test_discovery.DiscoveryTests.test_distinct_ids_cannot_conflict_on_member) ... ok
+test_duplicate_and_conflicting_ids (test_discovery.DiscoveryTests.test_duplicate_and_conflicting_ids) ... ok
+test_duplicate_corpus_and_fixture (test_discovery.DiscoveryTests.test_duplicate_corpus_and_fixture) ... ok
+test_duplicate_json_fields (test_discovery.DiscoveryTests.test_duplicate_json_fields) ... ok
+test_fixture_traversal (test_discovery.DiscoveryTests.test_fixture_traversal) ... ok
+test_generated_sources_do_not_break_empty_bootstrap (test_discovery.DiscoveryTests.test_generated_sources_do_not_break_empty_bootstrap) ... ok
+test_metadata_schema_and_classification (test_discovery.DiscoveryTests.test_metadata_schema_and_classification) ... ok
+test_missing_baseline (test_discovery.DiscoveryTests.test_missing_baseline) ... ok
+test_missing_fixture_and_checksum (test_discovery.DiscoveryTests.test_missing_fixture_and_checksum) ... ok
+test_noncanonical_unknown_fields_and_unsorted (test_discovery.DiscoveryTests.test_noncanonical_unknown_fields_and_unsorted) ... ok
+test_unknown_and_empty_formats (test_discovery.DiscoveryTests.test_unknown_and_empty_formats) ... ok
+test_valid_fragments_and_fixture (test_discovery.DiscoveryTests.test_valid_fragments_and_fixture) ... ok
+
+----------------------------------------------------------------------
+Ran 16 tests in 0.154s
+
+OK
+
+exit=0
+$ python3 -B tests/Xemele.TestUtilities/Corpora/verify_bootstrap.py
+{"fixturesVerified": 2, "independentElementTreeCrossCheck": {"accepted": 1, "rejected": 1}, "sourceSha256": "26c425e1a95b3c6e35833b60ca1dd5f9b641269e238bd4de6187983cf3fbf946", "xemeleParserCasesExecuted": 0}
+
+exit=0
+$ dotnet run --project samples/M1-common/Sample.csproj -c Release --disable-build-servers -p:UseSharedCompilation=false
+complete=False; wellFormed=False; code=sample.syntax
+XML parsing failed.
+
+exit=0
+$ dotnet pack src/Xemele/Xemele.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false --no-build --no-restore -o artifacts/M1-common/packages
+  The package Xemele.1.0.0 is missing a readme. Go to https://aka.ms/nuget/authoring-best-practices/readme to learn why package readmes are important.
+  Successfully created package '/private/tmp/xemele-integrate-m1-common/artifacts/M1-common/packages/Xemele.1.0.0.nupkg'.
+
+exit=0
+$ dotnet run --project /var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-common-package-mt6tm4z7/Consumer.csproj -c Release --disable-build-servers -p:UseSharedCompilation=false -p:RestoreSources=/private/tmp/xemele-integrate-m1-common/artifacts/M1-common/packages
+complete=False; wellFormed=False; code=sample.syntax
+XML parsing failed.
+
+exit=0
+$ dotnet build docs/reports/M1-common/Xemele.CommonBenchmarks.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+  Determining projects to restore...
+  Restored /private/tmp/xemele-integrate-m1-common/docs/reports/M1-common/Xemele.CommonBenchmarks.csproj (in 171 ms).
+  1 of 2 projects are up-to-date for restore.
+  Xemele -> /private/tmp/xemele-integrate-m1-common/src/Xemele/bin/Release/net10.0/Xemele.dll
+  Xemele.CommonBenchmarks -> /private/tmp/xemele-integrate-m1-common/docs/reports/M1-common/bin/Release/net10.0/Xemele.CommonBenchmarks.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:01.38
+
+exit=0
+$ dotnet run --project docs/reports/M1-common/Xemele.CommonBenchmarks.csproj -c Release --no-build -- --setup-allocation
+First operation construction on fresh process: 2696 B (includes static/JIT setup on this thread).
+Warm operation construction: 704 B/op.
+Escaping construction allocation: 704.00016 B/op.
+Retained operation heap estimate: 1241.6428 B/op (GC total-memory delta; excludes preallocated reference array).
+GC heap minus fragmentation delta: 535.40576 B/op; informational whole-process estimate.
+
+exit=0
+$ python3 tools/planning/tasks.py validate
+Validated 101 tasks: schema, evidence, acyclic dependencies, additive milestones, and ordered ownership.
+
+exit=0
+$ git diff --check
+
+exit=0
