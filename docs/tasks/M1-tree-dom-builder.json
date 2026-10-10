@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "id": "M1-tree-dom-builder",
+  "milestone": "M1",
+  "title": "Repair linear validated DOM tree construction boundary",
+  "kind": "feature",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "depends_on": [
+    "M1-tree",
+    "M1-syntax"
+  ],
+  "goals": [
+    "G01",
+    "G03"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/tree.md",
+    "docs/specs/parser.md"
+  ],
+  "owns": [
+    "src/Xemele/Tree/DomBuilder.cs",
+    "tests/Xemele.Tests/M1-tree-dom-builder/",
+    "benchmarks/Xemele.Benchmarks/M1-tree-dom-builder/",
+    "samples/M1-tree-dom-builder/",
+    "docs/reports/M1-tree-dom-builder/"
+  ],
+  "api_or_output": "Internal validated fresh-tree child/member construction helpers; unchanged public Common+Tree API",
+  "acceptance": [
+    {
+      "id": "M1-tree-dom-builder-A1",
+      "description": "Provide a documented internal fresh DOM construction boundary with constant work per newly created detached child and parser-validated unique attribute/namespace member; preserve owner, legal document/root structure, intern quota/capacity/version and NotifyMutation preflight/postcommit behavior; public general mutation checks unchanged.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M1-tree-dom-builder-A2",
+      "description": "Verify deep and member-heavy construction with count-based linear-work evidence, ownership/freshness/lifetime/order/identity checks, quota/capacity/version rejection without partial mutation, unchanged public API and earlier tree/input/syntax behavior.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M1-tree-dom-builder-A3",
+      "description": "Demonstrate helpers using only verified prerequisites and an independent model sink/sample, with actual warm/setup/owned allocation and applicable ShortRun comparison evidence at known source; no unmerged DOM or serializer dependency.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "Narrow repair requested by DOM owner after integrated public insertion/member key scans would make trusted parsed construction quadratic. Original verified tree evidence remains historical.",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}

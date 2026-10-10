@@ -4,7 +4,7 @@
   "milestone": "M1",
   "title": "Compose input/parser/tree and factories",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "blocked",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M1-dom",
   "branch": "codex/m1-dom",
   "base_revision": "4af94600952d417c2d7418758c30131695cb3ecb",
@@ -12,7 +12,8 @@
   "depends_on": [
     "M1-input",
     "M1-tree",
-    "M1-syntax"
+    "M1-syntax",
+    "M1-tree-dom-builder"
   ],
   "goals": [
     "G01",
@@ -55,7 +56,9 @@
   ],
   "implementation": [],
   "evidence": [],
-  "blockers": [],
+  "blockers": [
+    "Linear fresh-tree construction requires verified M1-tree-dom-builder; independent adapter/source work may continue, no helper consumption or executable readiness until integrated."
+  ],
   "handoff": {
     "summary": "",
     "checks": [],
