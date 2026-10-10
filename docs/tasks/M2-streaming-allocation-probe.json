@@ -4,11 +4,11 @@
   "milestone": "M2",
   "title": "Diagnose streaming allocation boundary in cumulative runner",
   "kind": "infrastructure",
-  "status": "implemented",
+  "status": "verified",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M2-streaming-allocation-probe",
   "branch": "codex/m2-streaming-allocation-probe",
   "base_revision": "31c323aac68c71a14706cc059d185f2965a869ec",
-  "integration_revision": null,
+  "integration_revision": "8a254d3c62aad297b88e2906f8b55e7bce04e30e",
   "depends_on": [
     "M2-contracts",
     "M1-syntax-allocation-probe"
@@ -39,7 +39,9 @@
         "readonly-isolation-protocol-review",
         "package-free-counter-anomaly",
         "failed-independent-integration",
-        "historical-preservation-and-control"
+        "historical-preservation-and-control",
+        "coordinator-integrated-isolation",
+        "coordinator-integrated-rejection-and-archive"
       ]
     },
     {
@@ -50,7 +52,9 @@
         "known-source-isolated-streaming-and-combination",
         "actual-protocol-rejection-controls",
         "archive-malformed-first-regression",
-        "readonly-isolation-protocol-review"
+        "readonly-isolation-protocol-review",
+        "coordinator-integrated-isolation",
+        "coordinator-integrated-rejection-and-archive"
       ]
     }
   ],
@@ -152,21 +156,38 @@
       "result": "passed",
       "summary": "1meaningful preservation regressionpassed: actualdriverarchive_child_files copies everyrawfile across bothdirectories before malformedfirstreport JSONdecodefailure; laterstdout/XML/report/exitbytes surviveexactly. Driver-onlyfix4e32dc8 tested, no C#sourcechanges after knownb87suite.",
       "artifact": "docs/reports/M2-streaming-allocation-probe/protocol-negative-attempt1/archive-regression.txt.gz"
+    },
+    {
+      "id": "coordinator-integrated-isolation",
+      "kind": "integration",
+      "revision": "8a254d3c62aad297b88e2906f8b55e7bce04e30e",
+      "command": "python3 -B docs/reports/M2-streaming-allocation-probe/verify.py --report-prefix integration-8a254d3-attempt1 --expected-branch codex/integrate-m2-streaming-allocation-probe --audit-base 8e355e2 --runtime-count 247 --conformance-count 255 --differential-count 299 --api-count 222 --fixture-count 3388 --planning-count 14 --task-count 114",
+      "result": "passed",
+      "summary": "Independent fresh combined build: focused MTP1, cumulative801 and direct247/255/299 all pass. Three actual real children0B; three escaped callback controls7680000B, exact100warm/10000measured, counts/progress/completion and compiled-source/runtime/host/IL hashes checked from raw reports. API222/discovery3388/ref242 fresh pinned source/SHA/planning14/114/ownership pass. Default JIT/GC/class parallelism; production unchanged. Historical224B/3448B/control-exit1 preserved without causal attribution. Scope isolated synchronous primitive only.",
+      "artifact": "docs/reports/M2-streaming-allocation-probe/integration-8a254d3-attempt1/summary.json"
+    },
+    {
+      "id": "coordinator-integrated-rejection-and-archive",
+      "kind": "integration",
+      "revision": "8a254d3c62aad297b88e2906f8b55e7bce04e30e",
+      "command": "python3 -B docs/reports/M2-streaming-allocation-probe/test_archive.py; python3 -B docs/reports/M2-streaming-allocation-probe/protocol_negative.py --report-prefix integration-8a254d3-negative-attempt1 --known-request artifacts/M2-streaming-allocation-probe/child-runs/38466-7ccb90a18db54c67be0cc0c6160a3984/real.request.json",
+      "result": "passed",
+      "summary": "Archive regression1 passes. Actual compiled integrated-source Fact rejects seven invalid guard/schema/provenance/host requests with exactly one expected failed Fact and exit1 each; driver exit0. Negative XML/raw exits retained. Timeout/crash/post-report meter/progress tampering remain source-review evidence, not executed claims.",
+      "artifact": "docs/reports/M2-streaming-allocation-probe/integration-8a254d3-negative-attempt1/summary.json"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Implemented reviewed conditional isolation of actualsynchronous borrowedAppend primitive with real0B + escapedcallbackpositive7680000B controls, exactoriginalworkload/defaults and strictprovenance. Production/other testbodies/sharedfiles unchanged. Historical224B and3448B failures preserved and unresolved; independent packagefree10.0.11 counteranomaly observed, actualcontrol exit1 remainsfailed.",
+    "summary": "Verified independent integrated isolation repair at 8a254d3c62aad297b88e2906f8b55e7bce04e30e. Full actual combined checks and exact-zero real/escaped-allocation controls passed; prior failures retained, historical causes unresolved.",
     "checks": [
       "Knowncompiledsource b87a1a257bef91ab92404226d0f27e8b9154dc9f: focused1/MTP801/direct247+255+299allpass; exactly3real0/positive7680000pairs,100warm10000measure/50000units120000callbacks/completion; MTPapphost+directdotnet actualsameFact/framework/executable/test/product/runtime/source/IL pinned.",
       "Independent original/equivalent0B; API222/discovery3388/reference242freshpinnedsource/SHA/planning14/114/ownershipallpass. Everychildstdout/stderr/XML/report/request/invocation/exit archivedownedreports.",
       "Driver-onlyHEAD885565abcc6c134d24b34ad9ed83ba6f591dc0b9:7guard/schema/provenance/host actualFact expectedexit1 failures checked, archive-malformed-first/laterraw preservation1pass. No C#source deltaafterb87/no redundant fullsuite retry.",
-      "Readonlyindependent review2c6970b and root1329strictJSON approved; b87archiveconcern fixedtwo-pass4e32dc8 and tested. No timingbenchmarks or GC/JIT/testparallelism overrides."
+      "Readonlyindependent review2c6970b and root1329strictJSON approved; b87archiveconcern fixedtwo-pass4e32dc8 and tested. No timingbenchmarks or GC/JIT/testparallelism overrides.",
+      "Independent integration8a254d3: focused1/MTP801/direct247/255/299/API222/ref242/discovery3388/planning14/114;3real0/3positive7680000;7expected rejects/archive1 allpass."
     ],
     "remaining": [
-      "Coordinator independently integrates finalbranch and runs fresh actualknown-sourceverifier with uniqueattempt/currentbranch/auditbase/actualcounts. integration_revision remainsnull; statusimplemented notverified.",
-      "Original M2-pi-allocation-probe A2 still mandates fulljointallPass afterchild+PI integration before anyconsumerverification. No unmergedPI implementation imported.",
-      "Historical224B/3448B causes unresolved; claim onlyisolatedsynchronous primitive, no concurrentallocationguarantee. Timeout/crash/postreportmeter/progresstamper negative execution notclaimed; policy reviewedreadonly."
+      "PI parent still requires renewed claim and independent full joint verification before runtime consumers; no production capability or concurrent allocation guarantee added."
     ],
     "requests": []
   }

@@ -7,23 +7,7 @@
     "task_id": "M1-gate",
     "integration_revision": "8c9bd349ed4156ea0295b5160d87d39434293bb2"
   },
-  "active_assignments": [
-    {
-      "task_id": "M2-streaming-allocation-probe",
-      "chat_id": "01a124b3-7750-7e93-9988-70d37347ae73",
-      "host_id": "local",
-      "client_thread_id": "client-new-thread:777683c9-fdc7-4bca-9e57-b9b2c5681e22",
-      "worktree_path": "/Users/sebastienros/.codex/worktrees/f887/xemele",
-      "branch": "codex/m2-streaming-allocation-probe",
-      "base_revision": "31c323aac68c71a14706cc059d185f2965a869ec",
-      "claim_revision": "2578b2fe125005e0cabd4226d0fa1ba9ef464ee9",
-      "setup_status": "dispatched",
-      "review_revision": "a53a15482ef6a540d66f2dbc294d2d86c84b3eba",
-      "review": "Bounded per-Append4854 sampling did not reproduce own3448B integrationfailure. Package-free8e76 controls on exact10.0.11 observed baseline32empty0/32positive64, BGCpressure19of192emptynonzero/171positive64, backgroundindices2->256; raw probeexit1 preserved. Owned sameassembly guarded process-isolated exact0 real+positivecontrol assertion authorized for implementation/review; no production/defaultJITGC/classparallelism/threshold changes.",
-      "wait_cursor": "f8188e8e-7560-4eb0-be73-29c362ec916f:28",
-      "diagnostic_revision": "8e76f6ef620c6e4b16848e88bb314a95ae799083"
-    }
-  ],
+  "active_assignments": [],
   "integration_queue": [
     {
       "task_id": "M2-encoding",
@@ -33,26 +17,16 @@
       "tested_revision": "cd753170601936520d1d8efadb949852bacd083f",
       "preserved_failure_revision": "fc862e888a0089e6bd304b8c2586206353c94f66",
       "summary": "MTP809/API222pass then direct255/254pass1failurePI1024B; subsequentchecks unrun."
-    },
-    {
-      "task_id": "M2-streaming-allocation-probe",
-      "status": "failed-own-helper-allocation-returned-worker",
-      "worktree_path": "/private/tmp/xemele-integrate-m2-streaming-allocation-probe",
-      "branch": "codex/integrate-m2-streaming-allocation-probe",
-      "tested_revision": "f573a6c7ee8cb9ca122d2f3e260617ddd162800d",
-      "preserved_failure_revision": "fcd1ff301c3be17dff2000d07031efcb58c16a9e",
-      "summary": "OwnStreaminghelper3448B direct247fail1; focused1/MTP801/diagnostics0/conformance255/differential299/API222/ref242/planning114allpassed. Chosenboundaryinsufficient."
     }
   ],
   "blockers": [],
   "next_actions": [
-    "Review and verify guarded same-assembly isolated whole-Append allocation assertion with real0/escaped-positive controls and strict child result/provenance checks",
-    "Ifactualruntimeallocatorproved route narrowownedrepair; otherwise boundedmeasurementcorrection with evidence",
-    "Thenverifychild and PIparentfulljoint allPass before renewing suspendedM2claims",
-    "Keepfailedbranches/reports durable; no cleanup untilmergedverified"
+    "Renew clean suspended PI allocation assignment with verified streaming isolation prerequisite; preserve original parent fulljoint allPass",
+    "Archive completed streaming chat/remove worktrees after durable ignored-artifact snapshot",
+    "Then resume encoding/resolver/framing from verified PI prerequisite, integrate serially and continue through M9-gate"
   ],
-  "last_verified_task": "M2-contracts",
-  "last_integrated_revision": "ab2fcabaf3cc984901f484c6fce1069c385e8c2f",
+  "last_verified_task": "M2-streaming-allocation-probe",
+  "last_integrated_revision": "8a254d3c62aad297b88e2906f8b55e7bce04e30e",
   "completed_assignments": [
     {
       "task_id": "M0-build",
@@ -779,6 +753,25 @@
         "chat_archived": true,
         "worktree": "removed"
       }
+    },
+    {
+      "task_id": "M2-streaming-allocation-probe",
+      "chat_id": "01a124b3-7750-7e93-9988-70d37347ae73",
+      "host_id": "local",
+      "client_thread_id": "client-new-thread:777683c9-fdc7-4bca-9e57-b9b2c5681e22",
+      "worktree_path": "/Users/sebastienros/.codex/worktrees/f887/xemele",
+      "branch": "codex/m2-streaming-allocation-probe",
+      "base_revision": "31c323aac68c71a14706cc059d185f2965a869ec",
+      "claim_revision": "2578b2fe125005e0cabd4226d0fa1ba9ef464ee9",
+      "setup_status": "verified",
+      "review_revision": "2c6970bc173c4744032751d9111fbbcad3e84fba",
+      "review": "Independent source approval2c697 plus strictJSON/archive delta review; root fresh integrated allchecks and protocol negatives passed; historical causes unresolved.",
+      "wait_cursor": "f8188e8e-7560-4eb0-be73-29c362ec916f:51",
+      "diagnostic_revision": "8e76f6ef620c6e4b16848e88bb314a95ae799083",
+      "handoff_revision": "e02e3f5e84759000a8151a3ca57c49e92e52ffc0",
+      "integration_revision": "8a254d3c62aad297b88e2906f8b55e7bce04e30e",
+      "integration_worktree": "/private/tmp/xemele-integrate-m2-streaming-allocation-probe",
+      "integration_branch": "codex/integrate-m2-streaming-allocation-probe"
     }
   ],
   "benchmark_policy": "Resolver completed8cases/all8child0/24actual, warmread0B/setup1416B/ordinarypriorityArm64 provisional e7cc. Encoding completed13/39 a1d. Allprocessesstopped; noactivehold.",
