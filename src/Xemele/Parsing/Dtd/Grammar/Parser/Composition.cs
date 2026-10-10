@@ -71,7 +71,8 @@ internal sealed partial class DtdParser
 
             void Remember(string name)
             {
-                for (int i = 0; i < name.Length; i += 4096) cancellationToken.ThrowIfCancellationRequested();
+                for (int i = 0; i < name.Length; i++)
+                    if ((i & 4095) == 0) cancellationToken.ThrowIfCancellationRequested();
                 cancellationToken.ThrowIfCancellationRequested();
                 newNames.Add(name);
             }

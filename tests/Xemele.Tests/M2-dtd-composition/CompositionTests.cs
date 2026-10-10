@@ -32,7 +32,7 @@ public sealed class DtdCompositionTests
         Assert.Same(prior.GeneralEntities[0], p.Model.GeneralEntities[0]); Assert.Same(prior.ParameterEntities[0], p.Model.ParameterEntities[0]); Assert.Same(prior.Notations[0], p.Model.Notations[0]);
         Assert.Equal(new[] { "root", "via" }, p.Model.Elements.Select(e => e.Name));
         Assert.False(p.Model.Elements[0].IsExternal); Assert.True(p.Model.Elements[1].IsExternal);
-        Assert.Equal(Origin, p.Model.Elements[0].Location);
+        Assert.Equal(new XmlLocation(Parent, 1, 57, null), p.Model.Elements[0].Location);
         var applied = DtdValueProcessor.NormalizeAttributeDefault(p.Model.Attributes[1].DefaultValue!, DtdAttributeType.CData, p.Model.GeneralEntities.ToDictionary(e => e.Name), new(), Origin, cancellationToken: Ct);
         Assert.Null(applied.Diagnostic); Assert.Equal("inside", applied.Value);
         Assert.Equal(1, ledger.Enters); Assert.Equal(1, ledger.Exits);
@@ -267,7 +267,8 @@ public sealed class DtdCompositionTests
         Assert.Equal(DtdParseStep.NeedInput, p.Append(framed.Body, framed.Maps, true, Ct).Step);
         Assert.Equal(DtdParseStep.Completed, p.Append(parent.AsSpan(r.Consumed), [], true, Ct).Step);
         Assert.Equal("x'\ty", Assert.Single(p.Model.GeneralEntities).ReplacementText);
-        Assert.Equal(1, ledger.Enters); Assert.Equal(1, ledger.Exits);
+        // The numeric replacement decoder also has its own balanced expansion entry.
+        Assert.Equal(2, ledger.Enters); Assert.Equal(2, ledger.Exits); Assert.Equal(0, ledger.Depth);
     }
 
     [Fact]
@@ -289,6 +290,54 @@ public sealed class DtdCompositionTests
         Assert.Equal(DtdParseStep.Completed, p.Append(saved, suffixMaps, true, Ct).Step);
         Assert.Equal("parent", Assert.Single(p.Model.Elements).Name); Assert.Equal(Parent, p.Model.Elements[0].Location.SourceUri);
         Assert.Equal(1, ledger.Exits);
+    }
+
+    [Theory]
+    [InlineData(1)]
+    [InlineData(2)]
+    public void SharedDepthExactAndOneOverRefusalBalanceAllAcceptedEntries(int maxDepth)
+    {
+        var ledger = new Ledger { MaxDepth = maxDepth };
+        using var p = new DtdParser(DtdSubsetKind.Internal, new(), ledger, Origin);
+        p.Append("<!ENTITY % a SYSTEM 'a'>%a;", [], true, Ct);
+        p.PushFramedEntity(Child, new(Child, 2, 3, null));
+        var r = p.Append("<!ENTITY % b SYSTEM 'b'>%b;", [], true, Ct);
+        if (maxDepth == 1)
+        {
+            Assert.Equal(DtdParseStep.Rejected, r.Step); Assert.Equal("XML.ResourceLimit", r.Diagnostic!.Code);
+            Assert.Equal(1, ledger.Enters); Assert.Equal(1, ledger.Exits);
+        }
+        else
+        {
+            Assert.Equal(DtdParseStep.NeedEntity, r.Step);
+            p.PushFramedEntity(Nested, new(Nested, 4, 9, null));
+            Assert.Equal(DtdParseStep.NeedInput, p.Append([], [], true, Ct).Step);
+            Assert.Equal(DtdParseStep.NeedInput, p.Append([], [], true, Ct).Step);
+            Assert.Equal(DtdParseStep.Completed, p.Append([], [], true, Ct).Step);
+            Assert.Equal(2, ledger.Enters); Assert.Equal(2, ledger.Exits);
+        }
+        Assert.Equal(0, ledger.Depth);
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData("<?xml\r\nencoding='UTF-8'?>")]
+    public void FramedChildBodyEverySplitAndAbsoluteEof(string prolog)
+    {
+        const string body = "<!--😀-->\r\n<!ELEMENT child EMPTY>";
+        for (int split = 0; split <= body.Length; split++)
+        {
+            var ledger = new Ledger(); using var p = new DtdParser(DtdSubsetKind.Internal, new(), ledger, Origin);
+            p.Append("<!ENTITY % a SYSTEM 'a'>%a;", [], true, Ct);
+            var framed = Frame(prolog + body, prolog.Length, Child, ledger);
+            p.PushFramedEntity(Child, framed.At);
+            Assert.Equal(DtdParseStep.NeedInput, p.Append(body.AsSpan(0, split), framed.Maps.AsSpan(0, split), false, Ct).Step);
+            p.CompleteByteSource(framed.Eof);
+            Assert.Equal(DtdParseStep.NeedInput, p.Append(body.AsSpan(split), framed.Maps.AsSpan(split), true, Ct).Step);
+            Assert.Equal(DtdParseStep.Completed, p.Append([], [], true, Ct).Step);
+            Assert.Equal(new XmlLocation(Child, prolog.Length == 0 ? 2 : 3, 1, 3 + Encoding.UTF8.GetByteCount(prolog + "<!--😀-->\r\n")), p.Model.Elements[0].Location);
+            Assert.Equal(1, ledger.Enters); Assert.Equal(1, ledger.Exits); Assert.Equal(ScalarCount(prolog + body), ledger.Expanded);
+        }
     }
 
     internal static long[] Maps(string text, long start = 3)
@@ -321,13 +370,13 @@ public sealed class DtdCompositionTests
     }
     internal sealed class Ledger : IDtdBudget
     {
-        internal long Expanded, MaxExpanded = long.MaxValue; internal int Names, MaxNames = int.MaxValue, Enters, Exits, Depth;
+        internal long Expanded, MaxExpanded = long.MaxValue; internal int Names, MaxNames = int.MaxValue, Enters, Exits, Depth, MaxDepth = int.MaxValue;
         internal Exception? Failure, ExitFailure;
         public XmlDiagnostic? ChargeExpandedCharacters(long count, XmlLocation at)
         { if (Failure is not null) throw Failure; if (count > MaxExpanded - Expanded) return ValueBudget.Limit(at); Expanded += count; return null; }
         public XmlDiagnostic? ChargeName(ReadOnlySpan<char> name, XmlLocation at)
         { if (Names >= MaxNames) return ValueBudget.Limit(at); Names++; return null; }
-        public XmlDiagnostic? EnterEntity(XmlLocation at) { Enters++; Depth++; return null; }
+        public XmlDiagnostic? EnterEntity(XmlLocation at) { if (Depth >= MaxDepth) return ValueBudget.Limit(at); Enters++; Depth++; return null; }
         public void ExitEntity() { Exits++; Depth--; if (ExitFailure is not null) throw ExitFailure; }
     }
 }
