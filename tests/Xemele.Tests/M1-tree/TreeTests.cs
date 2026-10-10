@@ -95,7 +95,7 @@ public class TreeTests
         Assert.Equal("\t\r\n😀",d.CreateText("\t\r\n😀").Value);
         Assert.Throws<ArgumentException>(()=>d.CreateComment("a--b")); Assert.Throws<ArgumentException>(()=>d.CreateComment("end-"));
         Assert.Throws<ArgumentException>(()=>d.CreateCData("]] >".Replace(" ",""))); Assert.Throws<ArgumentException>(()=>d.CreateProcessingInstruction("XML",""));
-        Assert.Throws<ArgumentException>(()=>d.CreateProcessingInstruction("valid","?>")); Assert.Equal("a:b",d.CreateProcessingInstruction("a:b","").LocalName);
+        Assert.Throws<ArgumentException>(()=>d.CreateProcessingInstruction("valid","?>")); Assert.Equal("a-b",d.CreateProcessingInstruction("a-b","").LocalName); Assert.Throws<ArgumentException>(()=>d.CreateProcessingInstruction("a:b",""));
         foreach(var binding in new[]{("p",""),("xml","urn:wrong"),("p",TreeValidation.XmlUri),("xmlns","urn:x"),("p",TreeValidation.XmlnsUri)})
             Assert.Throws<ArgumentException>(()=>e.SetNamespaceDeclaration(binding.Item1,binding.Item2));
         e.SetNamespaceDeclaration("xml",TreeValidation.XmlUri); e.SetNamespaceDeclaration("","");

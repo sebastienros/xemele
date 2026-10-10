@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Xml;
 using Xemele.Parsing.Syntax;
@@ -49,15 +50,23 @@ public sealed class StreamingTests
         var sink = new CountingSink(); var cancellation = TestContext.Current.CancellationToken;
         const string chunk = "<c a='v' xmlns:p='u' p:a='w'/>α😀&amp;\r\n";
         core.Append("<r>", [], false, sink, cancellation);
-        for (int i = 0; i < 100; i++) core.Append(chunk, [], false, sink, cancellation);
+        // Both phases exercise the same Append call site and progress checks.
+        // Setup and first-use costs remain outside the promised steady-state scope.
+        AppendChecked(core, chunk, sink, cancellation, 100);
         long before = GC.GetAllocatedBytesForCurrentThread();
-        for (int i = 0; i < 10000; i++)
+        AppendChecked(core, chunk, sink, cancellation, 10000);
+        Assert.Equal(0, GC.GetAllocatedBytesForCurrentThread() - before);
+        Assert.Equal(ScanStep.Completed, core.Append("</r>", [], true, sink, cancellation).Step);
+    }
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private static void AppendChecked(XmlParserCore core, string chunk, CountingSink sink,
+        CancellationToken cancellation, int iterations)
+    {
+        for (int i = 0; i < iterations; i++)
         {
             var r = core.Append(chunk, [], false, sink, cancellation);
             if (r.Step != ScanStep.NeedInput || r.Consumed != chunk.Length) throw new Exception("Warm grammar rejected.");
         }
-        Assert.Equal(0, GC.GetAllocatedBytesForCurrentThread() - before);
-        Assert.Equal(ScanStep.Completed, core.Append("</r>", [], true, sink, cancellation).Step);
     }
     [Fact]
     public void LocationOverflowIsStructuredAndSourceScalarQuotaPrecedesNormalization()

@@ -39,7 +39,8 @@ empty and its setter throws InvalidOperationException. Other Value setters own
 and validate their string. Names are immutable after construction.
 
 Names follow XML 1.0 Fifth Edition NCName for element/attribute local names and
-prefixes; PI targets use XML Name and cannot be any case spelling of xml.
+prefixes and PI targets; PI targets cannot be any case spelling of xml.
+PI targets contain no colon, as required by Namespaces in XML 1.0 section 7.
 Values must contain legal XML 1.0 scalar values, without unpaired surrogates.
 Comments reject -- and a trailing hyphen, CDATA rejects ]]>, PI data rejects ?>.
 ArgumentNullException handles required null strings; invalid names, values,

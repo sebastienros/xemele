@@ -1,0 +1,182 @@
+{
+  "schema_version": 1,
+  "id": "M1-pi-targets",
+  "milestone": "M1",
+  "title": "Enforce namespace-conforming processing instruction targets",
+  "kind": "feature",
+  "status": "verified",
+  "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M1-pi-targets",
+  "branch": "codex/m1-pi-targets",
+  "base_revision": "f493c411ca025f775e0f5522e06a67bf8f0c9132",
+  "integration_revision": "0869bde5bbebadb813e48f27a96fe35c01039f8f",
+  "depends_on": [
+    "M1-dom",
+    "M1-serialize",
+    "M1-dom-allocation-probe",
+    "M1-syntax-allocation-probe"
+  ],
+  "goals": [
+    "G01",
+    "G05"
+  ],
+  "specs": [
+    "docs/specs/parser.md",
+    "docs/specs/tree.md",
+    "docs/specs/serialization.md",
+    "docs/performance-coding.md"
+  ],
+  "owns": [
+    "docs/specs/tree.md",
+    "src/Xemele/Parsing/Core/XmlParserCore.cs",
+    "src/Xemele/Tree/Document.cs",
+    "src/Xemele/Serialization/Xml/XmlSerializer.cs",
+    "tests/Xemele.Tests/M1-tree/TreeTests.cs",
+    "tests/Xemele.Tests/M1-serialize/SerializerTests.cs",
+    "tests/Xemele.Tests/M1-pi-targets/",
+    "samples/M1-pi-targets/",
+    "docs/reports/M1-pi-targets/"
+  ],
+  "api_or_output": "Unchanged API; PI target NCName required by Namespaces1.0, no colon; QName element/attribute behavior preserved",
+  "acceptance": [
+    {
+      "id": "M1-pi-targets-A1",
+      "description": "Correct PI target validation consistently in core grammar, public tree factory and serializer preflight to NCName; retain case-insensitive xml prohibition, Unicode/quotas/cancellation/atomicity. Clarify tree spec namespaced PI target wording. Preserve element/attribute QName handling; do not add DOM blanket guard or modify corpus classifications. Replace only erroneous prior colon-PI positives with valid targets and strengthen colon negative tests.",
+      "status": "passed",
+      "evidence": [
+        "source-review",
+        "renewed-complete-checks",
+        "integrated-complete",
+        "integrated-reviewed-source"
+      ]
+    },
+    {
+      "id": "M1-pi-targets-A2",
+      "description": "Test colon at start/middle/end/multiple, declaration versus xml-like valid PI targets, valid nonASCII/supplementary NCNames, malformed pairs, allshortinputsplit and byte/stream transports; core no successful PI callback on invalidtarget, public factory precommit, corrupt serializer rejection. Independently confirm W3CNamespaces1.0 section7/BCL and original pinned042 case with owned synthetic bytes rather than redistributing upstreamfixture.",
+      "status": "passed",
+      "evidence": [
+        "source-review",
+        "renewed-complete-checks",
+        "original042-standard",
+        "integrated-complete",
+        "integrated-reviewed-source"
+      ]
+    },
+    {
+      "id": "M1-pi-targets-A3",
+      "description": "Run focused repair/prerequisite Syntax70/Tree14/Serializer46/DOM44/builder/persistence/namespace and full288baseline plus newcases; actualAPI222 union/canonical and internalInput41/Syntax9types80rows, source/fresh isolatedlocalNuGet sample, warm0B/appropriatesteadyallocchecks and planningregressions/validate/ownedcommitted-staged-working-untrackeddiff audits atknownrevision. Existing timings reusable only if no scanning/workload change; any newtiming needs exclusivegrant. Report corrected semantics for corpus owner.",
+      "status": "passed",
+      "evidence": [
+        "source-review",
+        "renewed-complete-checks",
+        "integrated-complete",
+        "integrated-reviewed-source"
+      ]
+    }
+  ],
+  "implementation": [
+    "src/Xemele/Parsing/Core/XmlParserCore.cs: ValidName NCName/non-QName versus QName handling",
+    "src/Xemele/Tree/Document.cs: CreateProcessingInstruction existing NCName validation",
+    "src/Xemele/Serialization/Xml/XmlSerializer.cs: Visit PI target validation",
+    "docs/specs/tree.md: PI target NCName contract correction",
+    "tests/Xemele.Tests/M1-pi-targets/PiTargetTests.cs: eight focused split/Unicode/transport/atomicity/corruption/allocation regressions",
+    "samples/M1-pi-targets/Program.cs: independent source/fresh NuGet consumer",
+    "docs/reports/M1-pi-targets/renewed-claim/README.md: final known-revision checks and preserved history"
+  ],
+  "evidence": [
+    {
+      "id": "historical-first-full",
+      "kind": "check",
+      "revision": "d3eb4c8b15fa38f981d7fab5c903020e6d6f9067",
+      "command": "dotnet test --solution Xemele.slnx -c Release --no-build --no-restore",
+      "result": "failed",
+      "summary": "299/300; unchanged DOM name-hit probe expected0B actual216B. No cause inferred.",
+      "artifact": "docs/reports/M1-pi-targets/checks-d3eb4c8b15fa-1.txt.gz"
+    },
+    {
+      "id": "historical-standalone-full",
+      "kind": "check",
+      "revision": "d3eb4c8b15fa38f981d7fab5c903020e6d6f9067",
+      "command": "dotnet test --solution Xemele.slnx -c Release --no-build --no-restore",
+      "result": "passed",
+      "summary": "Standalone unchanged300/300 no skips; did not resolve combined failure.",
+      "artifact": "docs/reports/M1-pi-targets/full-suite-passed.txt.gz"
+    },
+    {
+      "id": "historical-second-full",
+      "kind": "check",
+      "revision": "d3eb4c8b15fa38f981d7fab5c903020e6d6f9067",
+      "command": "dotnet test --solution Xemele.slnx -c Release --no-build --no-restore",
+      "result": "failed",
+      "summary": "Verifier restart299/300; unchanged DOM name-hit probe216B again. Parked pending verified scoped probe repairs.",
+      "artifact": "docs/reports/M1-pi-targets/checks-d3eb4c8b15fa-2.txt.gz"
+    },
+    {
+      "id": "renewed-inherited-metadata-audit",
+      "kind": "check",
+      "revision": "f363e7d9496f3f5fdc4d3d86f2b7325cf4629d5f",
+      "command": "python3 -B docs/reports/M1-pi-targets/verify.py --report-prefix renewed --audit-base f493c411ca025f775e0f5522e06a67bf8f0c9132",
+      "result": "failed",
+      "summary": "Before zero builds/tests: audit base included coordinator cleanup metadata inherited from renewed claim. Coordinator approved exact-claim audit base.",
+      "artifact": "docs/reports/M1-pi-targets/renewed/checks-f363e7d9496f-1.txt.gz"
+    },
+    {
+      "id": "source-review",
+      "kind": "review",
+      "revision": "d3eb4c8b15fa38f981d7fab5c903020e6d6f9067",
+      "command": "Coordinator independent read-only PI source/spec/old-positive/new-regression review",
+      "result": "passed",
+      "summary": "Coordinator approved exact minimal NCName product source and unchangedAPI222. Blobs remain identical in renewed tested source.",
+      "artifact": "docs/reports/M1-pi-targets/renewed-claim/README.md"
+    },
+    {
+      "id": "original042-standard",
+      "kind": "check",
+      "revision": "d3eb4c8b15fa38f981d7fab5c903020e6d6f9067",
+      "command": "Privately SHA256/read relevant original042 tokens; W3C Namespaces1.0 section7 inspection; owned synthetic/BCL test",
+      "result": "passed",
+      "summary": "Original SHA2562ff7553efa457354141c5f61a7560112f22b528203ecd052d298da9eebfaa8e2 confirmed; synthetic colon PI rejects XML.Syntax and namespace-aware BCL rejects. No upstream redistribution/classification changes.",
+      "artifact": "docs/reports/M1-pi-targets/original042.json"
+    },
+    {
+      "id": "renewed-complete-checks",
+      "kind": "check",
+      "revision": "f363e7d9496f3f5fdc4d3d86f2b7325cf4629d5f",
+      "command": "python3 -B docs/reports/M1-pi-targets/verify.py --report-prefix renewed-claim --audit-base e47dafd9879cf0aa8e2e368065a765fc4b834dcd",
+      "result": "passed",
+      "summary": "Complete fresh Release0warnings/errors;9focused lanes PI8/DOM44/Input10/Syntax70/Tree14/builder11/persistence8/namespace21/Serializer50; full300/Foundation11 no skips; foundation139/173/8+models/protocol38; API222 union/canonical; Input41/Syntax9types80rows; source/fresh isolatedlocalNuGet sample; borrowedPI0B/scanner0B/ownedDOM+serializer allocations and oracles; build16/planning14/validate110; committed-staged-working-untracked owned audits. No timing/retry; historical failures preserved.",
+      "artifact": "docs/reports/M1-pi-targets/renewed-claim/checks-f363e7d9496f-1.txt.gz"
+    },
+    {
+      "id": "integrated-complete",
+      "kind": "integration",
+      "revision": "0869bde5bbebadb813e48f27a96fe35c01039f8f",
+      "command": "python3 -B docs/reports/M1-pi-targets/verify.py --audit-base 234c898 --report-prefix integration (after verified offline fixture provision)",
+      "result": "passed",
+      "summary": "Complete exit0: focused8/44/10/70/14/11/8/21/50,full300 no skips;Foundation11/models139/173/8/Common81/Tree192/Input81/Syntax81/Serializer215/Dom199/protocol38;actualAPI222/internalInput41/Syntax9types80rows;source+freshisolatedNuGet PI sample;DOM/serializer allocation/oracles;Build16/planning14/validate110;all ownership/diff audits. No timing repeats; historical216B/6000B unresolved/preserved.",
+      "artifact": "docs/reports/M1-pi-targets/integration/checks.txt"
+    },
+    {
+      "id": "integrated-reviewed-source",
+      "kind": "review",
+      "revision": "0869bde5bbebadb813e48f27a96fe35c01039f8f",
+      "command": "Root compared integrated product/spec/test blobs to independently reviewed d3eb4c8b15fa38f981d7fab5c903020e6d6f9067; reviewed verifier delta",
+      "result": "passed",
+      "summary": "All reviewed NCName runtime/spec/test blobs identical; independent review_api_wiring approval retained; verifier adds2focusedlanes/ownedprefix.",
+      "artifact": "docs/reports/M1-pi-targets/integration/review.json"
+    }
+  ],
+  "blockers": [],
+  "handoff": {
+    "summary": "Integrated NCName PI repair verified with300tests/API222/package/allocations. Original supported042 nowXML.Syntax; preserve corpus classification and exactBCL divergences.",
+    "checks": [
+      "Tested f363e7d: complete verifier exit0; full300/9focused lanes/Foundation11/API222/internal41+9types80rows/source+freshNuGet/allocation/oracles/build16/planning14/validate110/owned audits.",
+      "All historical216B failures and300pass preserved; no cause inferred. Administrative initial inherited-metadata audit failure retained before any tests.",
+      "No benchmark timings; PI and scanner warm0B, ownedDOM/serializer allocation scopes explicit."
+    ],
+    "remaining": [],
+    "requests": [
+      "Corpus owner: after integrated verification rerun preserved corpus242 supported rejections, including original rmt-ns10-042; PI colon targets now XML.Syntax. No fixture/classification edit required.",
+      "Release owner: prior Arm64 timings remain informational; x64 release confirmation remains unrun."
+    ]
+  }
+}
