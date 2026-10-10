@@ -1,0 +1,70 @@
+{
+  "result": "failed",
+  "host": "macOS-15.8.1-arm64-arm-64bit-Mach-O",
+  "architecture": "arm64",
+  "timing": "not run; exclusive coordinator grant required",
+  "sourceRevision": "ef7ab314867fec4e33005043ffdc7aae6125e907",
+  "branch": "codex/integrate-m2-dtd-values",
+  "auditBase": "641f5e050713ee35d411f71ae031233208a357e0",
+  "dotnet": "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+  "dotnetSha256": "e86deb33d0dacad9cc1224466df6418149cb8e13cb8afd0dc6815ea6b7807975",
+  "derivedOwnTests": {
+    "fixtures": 29,
+    "inputSplitOutputCapacityRows": 964,
+    "facts": 14,
+    "inlineRows": 16,
+    "total": 994
+  },
+  "focusedTests": 994,
+  "allocations": {
+    "coldBytes": 432,
+    "setupBytesPerOperation": 432,
+    "warmPrimitiveBytes": 0,
+    "ownedBytesPerOperation": 920,
+    "retainedBytes": 96000,
+    "retainedResults": 1000,
+    "retainedMeaning": "GC total-memory estimate for 1000 owned eight-unit strings plus result array; input/table already live, transient builders/frames collected; separate from BDN GC settings",
+    "runtime": "10.0.11",
+    "ownership": "Decoder setup owns bounded scalar/numeric state. Normalization owns builder, iterative frames, cycle set and final string; table belongs to caller. Cold probe is first decoder use in a fresh process."
+  },
+  "benchmarkCorrectness": "30 bounded benchmark correctness assertions passed.",
+  "benchmarksPrepared": [
+    "Xemele.Benchmarks.DtdValueBenchmarks.BorrowedDeclaration",
+    "Xemele.Benchmarks.DtdValueBenchmarks.OwnedAttribute"
+  ],
+  "mtpTests": {
+    "total": 3097,
+    "failed": 0,
+    "skipped": 0
+  },
+  "publicApiMembers": 251,
+  "runtimeTests": {
+    "Xemele.Tests": {
+      "total": 2543,
+      "failed": 0,
+      "skipped": 0
+    },
+    "Xemele.Conformance.Tests": {
+      "total": 255,
+      "failed": 0,
+      "skipped": 0
+    },
+    "Xemele.Differential.Tests": {
+      "total": 299,
+      "failed": 0,
+      "skipped": 0
+    }
+  },
+  "ownValueTests": 994,
+  "discovery": {
+    "apiDeclarations": 251,
+    "fixtures": 3388
+  },
+  "referenceProvenance": {
+    "records": 242,
+    "runnerSha256": "34642d1f5be87b91c41250bc796382dc9bc7ec85959eba040a70b1b26d915d90",
+    "build": "1.0.0+ef7ab314867fec4e33005043ffdc7aae6125e907",
+    "completeFreshOutputCopied": true,
+    "unchangedAfterChecks": true
+  }
+}
