@@ -8,7 +8,7 @@ namespace Xemele.Parsing.Syntax;
 
 internal sealed partial class XmlParserCore
 {
-    private sealed class EntitySource(DtdEntityDeclaration declaration, XmlLocation reference, int elementDepth)
+    private struct EntitySource(DtdEntityDeclaration declaration, XmlLocation reference, int elementDepth)
     {
         internal readonly DtdEntityDeclaration Declaration = declaration;
         internal readonly XmlLocation Reference = reference;
@@ -68,8 +68,8 @@ internal sealed partial class XmlParserCore
             { Reject("XML.EntityCycle", "Recursive general entity reference.", reference); return true; }
         }
         if (!Charge(Quota.EntityDepth, 1, reference)) return true;
-        EntitySource sourceFrame;
-        try { entitySources.Add(sourceFrame = new(declaration, reference, frames.Count)); }
+        var sourceFrame = new EntitySource(declaration, reference, frames.Count);
+        try { entitySources.Add(sourceFrame); }
         catch { budget.Release(Quota.EntityDepth, 1); throw; }
         if (declaration.ReplacementText is null)
         {
@@ -82,6 +82,7 @@ internal sealed partial class XmlParserCore
                 var start = sourceFrame.External.FirstLocation;
                 sourceFrame.Line = start.LineNumber; sourceFrame.Column = start.LinePosition;
             }
+            entitySources[^1] = sourceFrame;
         }
         return true;
     }
@@ -138,11 +139,14 @@ internal sealed partial class XmlParserCore
                 source.Column++;
             }
             source.Cr = scalar == '\r';
-            if (skip) return true;
+            if (skip) { entitySources[^1] = source; return true; }
             if (scalar == '\r') scalar = '\n';
         }
         // Internal replacement text was normalized while declaring it; resolved
         // character references retain CR. External source newlines normalize once.
+        // Publish cursor/index before grammar may push another source and grow
+        // the value stack. No reference into its backing array survives Process.
+        entitySources[^1] = source;
         Process(scalar, at);
         return true;
     }
