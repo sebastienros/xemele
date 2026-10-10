@@ -1,0 +1,99 @@
+{
+  "result": "passed",
+  "host": "macOS-15.8.1-arm64-arm-64bit-Mach-O",
+  "architecture": "arm64",
+  "timing": "not run; exclusive coordinator grant required",
+  "sourceRevision": "19b037a48d633a4348176ae386f989489ae63986",
+  "branch": "codex/m2-dtd-values",
+  "auditBase": "91aacbb69d0d3d1ea86f6f745b4da993c22f2d92",
+  "dotnet": "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+  "dotnetSha256": "e86deb33d0dacad9cc1224466df6418149cb8e13cb8afd0dc6815ea6b7807975",
+  "derivedOwnTests": {
+    "fixtures": 29,
+    "inputSplitOutputCapacityRows": 964,
+    "facts": 11,
+    "inlineRows": 12,
+    "total": 987
+  },
+  "focusedTests": 987,
+  "allocations": {
+    "coldBytes": 432,
+    "setupBytesPerOperation": 432,
+    "warmPrimitiveBytes": 0,
+    "ownedBytesPerOperation": 920,
+    "runtime": "10.0.11",
+    "ownership": "Decoder setup owns bounded scalar/numeric state. Normalization owns builder, iterative frames, cycle set and final string; table belongs to caller. Cold probe is first decoder use in a fresh process."
+  },
+  "benchmarkCorrectness": "20 bounded benchmark correctness assertions passed.",
+  "benchmarksPrepared": [
+    "Xemele.Benchmarks.DtdValueBenchmarks.BorrowedDeclaration",
+    "Xemele.Benchmarks.DtdValueBenchmarks.OwnedAttribute"
+  ],
+  "mtpTests": {
+    "total": 3090,
+    "failed": 0,
+    "skipped": 0
+  },
+  "publicApiMembers": 251,
+  "runtimeTests": {
+    "Xemele.Tests": {
+      "total": 2536,
+      "failed": 0,
+      "skipped": 0
+    },
+    "Xemele.Conformance.Tests": {
+      "total": 255,
+      "failed": 0,
+      "skipped": 0
+    },
+    "Xemele.Differential.Tests": {
+      "total": 299,
+      "failed": 0,
+      "skipped": 0
+    }
+  },
+  "ownValueTests": 987,
+  "discovery": {
+    "apiDeclarations": 251,
+    "fixtures": 3388
+  },
+  "referenceProvenance": {
+    "records": 242,
+    "runnerSha256": "787ce3425a782af841b8f7628d1c1f197dce8c831dec8b9340a58b3b0c4b09ba",
+    "build": "1.0.0+19b037a48d633a4348176ae386f989489ae63986",
+    "completeFreshOutputCopied": true,
+    "unchangedAfterChecks": true
+  },
+  "ownedPaths": [
+    "benchmarks/Xemele.Benchmarks/M2-dtd-values/ValueBenchmarks.cs",
+    "docs/reports/M2-dtd-values/BenchmarkDriver.cs",
+    "docs/reports/M2-dtd-values/Benchmarks.csproj",
+    "docs/reports/M2-dtd-values/README.md",
+    "docs/reports/M2-dtd-values/correctness-a09d82d/allocations.json",
+    "docs/reports/M2-dtd-values/correctness-a09d82d/checks.txt.gz",
+    "docs/reports/M2-dtd-values/correctness-a09d82d/focused.xml.gz",
+    "docs/reports/M2-dtd-values/correctness-a09d82d/internal-contract.txt",
+    "docs/reports/M2-dtd-values/correctness-a09d82d/sample.txt",
+    "docs/reports/M2-dtd-values/correctness-a09d82d/summary.json",
+    "docs/reports/M2-dtd-values/correctness-socket-granted/Xemele.Conformance.Tests-discovery.txt.gz",
+    "docs/reports/M2-dtd-values/correctness-socket-granted/Xemele.Conformance.Tests.xml.gz",
+    "docs/reports/M2-dtd-values/correctness-socket-granted/Xemele.Differential.Tests-discovery.txt.gz",
+    "docs/reports/M2-dtd-values/correctness-socket-granted/Xemele.Differential.Tests.xml.gz",
+    "docs/reports/M2-dtd-values/correctness-socket-granted/Xemele.Tests-discovery.txt.gz",
+    "docs/reports/M2-dtd-values/correctness-socket-granted/Xemele.Tests.xml.gz",
+    "docs/reports/M2-dtd-values/correctness-socket-granted/allocations.json",
+    "docs/reports/M2-dtd-values/correctness-socket-granted/focused.xml.gz",
+    "docs/reports/M2-dtd-values/correctness-socket-granted/internal-contract.txt",
+    "docs/reports/M2-dtd-values/correctness-socket-granted/reference-provenance.json",
+    "docs/reports/M2-dtd-values/correctness-socket-granted/runtime-api.json",
+    "docs/reports/M2-dtd-values/correctness-socket-granted/sample.txt",
+    "docs/reports/M2-dtd-values/preparation.json",
+    "docs/reports/M2-dtd-values/verify.py",
+    "samples/M2-dtd-values/Program.cs",
+    "samples/M2-dtd-values/Sample.csproj",
+    "src/Xemele/Parsing/Dtd/Grammar/Values/DtdValueDecoder.cs",
+    "src/Xemele/Parsing/Dtd/Grammar/Values/DtdValueProcessor.cs",
+    "tests/Xemele.Tests/M2-dtd-values/ValueTests.cs"
+  ],
+  "scope": "This task implements bounded declaration value decoding and applied attribute default normalization. Combined candidate includes verified resolver, additional encoding and DTD model prerequisites; full DTD grammar/entity composition remains unimplemented. Windows/x64/AOT unrun here."
+}

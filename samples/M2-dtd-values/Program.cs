@@ -51,6 +51,16 @@ for (int i = 0; i < iterations; i++) DtdValueProcessor.NormalizeAttributeDefault
 before = GC.GetAllocatedBytesForCurrentThread();
 for (int i = 0; i < iterations; i++) DtdValueProcessor.NormalizeAttributeDefault("&outer; &#9;", DtdAttributeType.NmTokens, table, new());
 long ownedBytesPerOperation = (GC.GetAllocatedBytesForCurrentThread() - before) / iterations;
-Console.WriteLine(JsonSerializer.Serialize(new { coldBytes, setupBytesPerOperation, warmPrimitiveBytes, ownedBytesPerOperation, runtime = Environment.Version.ToString(),
+// Separate persistence estimate; forced collections are outside benchmark timing.
+GC.Collect(2, GCCollectionMode.Forced, true, true);
+GC.WaitForPendingFinalizers();
+long retainedBefore = GC.GetTotalMemory(true);
+string[] retained = new string[iterations];
+for (int i = 0; i < iterations; i++)
+    retained[i] = DtdValueProcessor.NormalizeAttributeDefault("&outer; &#9;", DtdAttributeType.NmTokens, table, new()).Value!;
+long retainedBytes = GC.GetTotalMemory(true) - retainedBefore;
+GC.KeepAlive(retained);
+Console.WriteLine(JsonSerializer.Serialize(new { coldBytes, setupBytesPerOperation, warmPrimitiveBytes, ownedBytesPerOperation, retainedBytes,
+    retainedResults = iterations, retainedMeaning = "GC total-memory estimate for 1000 owned eight-unit strings plus result array; input/table already live, transient builders/frames collected; separate from BDN GC settings", runtime = Environment.Version.ToString(),
     ownership = "Decoder setup owns bounded scalar/numeric state. Normalization owns builder, iterative frames, cycle set and final string; table belongs to caller. Cold probe is first decoder use in a fresh process." }));
 if (warmPrimitiveBytes != 0) throw new Exception("Warm primitive allocation.");
