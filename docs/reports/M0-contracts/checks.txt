@@ -1,4 +1,72 @@
-Tested implementation revision: 5aa9ab77df7c822b8e976f6ef034ec49bc8421c6
+Host: macOS-15.8.1-arm64-arm-64bit-Mach-O; architecture=arm64
+$ git rev-parse HEAD
+028b30627d8d972183f7e80f4be2538bd0b0a59f
+
+exit=0; expected=0
+Tested implementation revision: 028b30627d8d972183f7e80f4be2538bd0b0a59f
+$ dotnet --version
+10.0.400
+
+exit=0; expected=0
+$ dotnet --info
+.NET SDK:
+ Version:           10.0.400
+ Commit:            14fbf8d527
+ Workload version:  10.0.400-manifests.330ea142
+ MSBuild version:   18.9.6+14fbf8d52
+
+Runtime Environment:
+ OS Name:     Mac OS X
+ OS Version:  15.8
+ OS Platform: Darwin
+ RID:         osx-arm64
+ Base Path:   /Users/sebastienros/Library/Application Support/dotnetup/dotnet/sdk/10.0.400/
+
+.NET workloads installed:
+There are no installed workloads to display.
+Configured to use workload sets when installing new manifests.
+No workload sets are installed. Run "dotnet workload restore" to install a workload set.
+
+Host:
+  Version:      11.0.0-rc.1.26425.128
+  Architecture: arm64
+  Commit:       3551975be0
+
+.NET SDKs installed:
+  8.0.424 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/sdk]
+  10.0.100 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/sdk]
+  10.0.400 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/sdk]
+  11.0.100-rc.1.26413.103 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/sdk]
+  11.0.100-rc.1.26425.128 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/sdk]
+
+.NET runtimes installed:
+  Microsoft.AspNetCore.App 8.0.30 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.AspNetCore.App]
+  Microsoft.AspNetCore.App 10.0.0 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.AspNetCore.App]
+  Microsoft.AspNetCore.App 10.0.11 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.AspNetCore.App]
+  Microsoft.AspNetCore.App 11.0.0-rc.1.26413.103 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.AspNetCore.App]
+  Microsoft.AspNetCore.App 11.0.0-rc.1.26425.128 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.AspNetCore.App]
+  Microsoft.NETCore.App 8.0.30 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App]
+  Microsoft.NETCore.App 10.0.0 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App]
+  Microsoft.NETCore.App 10.0.11 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App]
+  Microsoft.NETCore.App 11.0.0-rc.1.26413.103 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App]
+  Microsoft.NETCore.App 11.0.0-rc.1.26425.128 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App]
+
+Other architectures found:
+  None
+
+Environment variables:
+  DOTNET_ROOT                              [/Users/sebastienros/Library/Application Support/dotnetup/dotnet]
+
+global.json file:
+  /Users/sebastienros/.codex/worktrees/3855/xemele/global.json
+
+Learn more:
+  https://aka.ms/dotnet/info
+
+Download .NET:
+  https://aka.ms/dotnet/download
+
+exit=0; expected=0
 $ dotnet build docs/reports/M0-contracts/Checks/Checks.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
   Determining projects to restore...
   All projects are up-to-date for restore.
@@ -10,7 +78,7 @@ Build succeeded.
     0 Warning(s)
     0 Error(s)
 
-Time Elapsed 00:00:02.77
+Time Elapsed 00:00:02.67
 
 exit=0; expected=0
 $ dotnet build docs/reports/M0-contracts/ApiCheck/ApiCheck.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
@@ -22,19 +90,19 @@ Build succeeded.
     0 Warning(s)
     0 Error(s)
 
-Time Elapsed 00:00:01.22
+Time Elapsed 00:00:01.25
 
 exit=0; expected=0
 $ dotnet test --project docs/reports/M0-contracts/Checks/Checks.csproj -c Release --no-build --no-restore
 Running tests from /Users/sebastienros/.codex/worktrees/3855/xemele/docs/reports/M0-contracts/Checks/bin/Release/net10.0/Checks.dll (net10.0|arm64)
-/Users/sebastienros/.codex/worktrees/3855/xemele/docs/reports/M0-contracts/Checks/bin/Release/net10.0/Checks.dll (net10.0|arm64) passed (363ms)
+/Users/sebastienros/.codex/worktrees/3855/xemele/docs/reports/M0-contracts/Checks/bin/Release/net10.0/Checks.dll (net10.0|arm64) passed (339ms)
 
 Test run summary: Passed!
-  total: 10
+  total: 11
   failed: 0
-  succeeded: 10
+  succeeded: 11
   skipped: 0
-  duration: 611ms
+  duration: 612ms
 
 exit=0; expected=0
 $ dotnet docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare docs/reports/M0-contracts/Fixtures/M1/bin/Release/net10.0/FoundationM1.dll tests/Contracts/Fixtures/foundation/M1.golden.txt
@@ -55,22 +123,22 @@ Build succeeded.
     0 Warning(s)
     0 Error(s)
 
-Time Elapsed 00:00:01.03
+Time Elapsed 00:00:01.08
 
 exit=0; expected=0
 $ dotnet docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare docs/reports/M0-contracts/Fixtures/ApiProbe/bin/Release/net10.0/ApiProbe.dll tests/Contracts/Fixtures/foundation/ApiProbe.golden.txt
 Matched 8 compiled members
 
 exit=0; expected=0
-$ dotnet docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare docs/reports/M0-contracts/Fixtures/M1/bin/Release/net10.0/FoundationM1.dll /var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-contract-negative-tor3e7zg/missing.txt
+$ dotnet docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare docs/reports/M0-contracts/Fixtures/M1/bin/Release/net10.0/FoundationM1.dll /var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-contract-negative-vklfk0u4/missing.txt
 API mismatch: missing, added, changed, reordered or noncanonical entries.
 
 exit=1; expected=1
-$ dotnet docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare docs/reports/M0-contracts/Fixtures/M1/bin/Release/net10.0/FoundationM1.dll /var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-contract-negative-tor3e7zg/added.txt
+$ dotnet docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare docs/reports/M0-contracts/Fixtures/M1/bin/Release/net10.0/FoundationM1.dll /var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-contract-negative-vklfk0u4/added.txt
 API mismatch: missing, added, changed, reordered or noncanonical entries.
 
 exit=1; expected=1
-$ dotnet docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare docs/reports/M0-contracts/Fixtures/M1/bin/Release/net10.0/FoundationM1.dll /var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-contract-negative-tor3e7zg/changed.txt
+$ dotnet docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare docs/reports/M0-contracts/Fixtures/M1/bin/Release/net10.0/FoundationM1.dll /var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-contract-negative-vklfk0u4/changed.txt
 API mismatch: missing, added, changed, reordered or noncanonical entries.
 
 exit=1; expected=1
@@ -83,14 +151,14 @@ Build succeeded.
     0 Warning(s)
     0 Error(s)
 
-Time Elapsed 00:00:01.12
+Time Elapsed 00:00:01.08
 
 exit=0; expected=0
 $ dotnet docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare docs/reports/M0-contracts/Fixtures/ApiProbe/bin/Release/net10.0/ApiProbe.dll tests/Contracts/Fixtures/foundation/ApiProbe.golden.txt
 API mismatch: missing, added, changed, reordered or noncanonical entries.
 
 exit=1; expected=1
-$ dotnet docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll emit docs/reports/M0-contracts/Fixtures/ApiProbe/bin/Release/net10.0/ApiProbe.dll /var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-contract-negative-tor3e7zg/mutated.txt
+$ dotnet docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll emit docs/reports/M0-contracts/Fixtures/ApiProbe/bin/Release/net10.0/ApiProbe.dll /var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-contract-negative-vklfk0u4/mutated.txt
 Emitted 9 members
 
 exit=0; expected=0
@@ -104,7 +172,7 @@ Build succeeded.
     0 Warning(s)
     0 Error(s)
 
-Time Elapsed 00:00:01.06
+Time Elapsed 00:00:01.03
 
 exit=0; expected=0
 $ dotnet docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare docs/reports/M0-contracts/Fixtures/ApiProbe/bin/Release/net10.0/ApiProbe.dll tests/Contracts/Fixtures/foundation/ApiProbe.golden.txt
@@ -129,27 +197,27 @@ Build succeeded.
     0 Warning(s)
     0 Error(s)
 
-Time Elapsed 00:00:07.61
+Time Elapsed 00:00:07.36
 
 exit=0; expected=0
 $ dotnet test --solution Xemele.slnx -c Release --no-build --no-restore
-Running tests from /Users/sebastienros/.codex/worktrees/3855/xemele/tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll (net10.0|arm64)
-Running tests from /Users/sebastienros/.codex/worktrees/3855/xemele/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll (net10.0|arm64)
 Running tests from /Users/sebastienros/.codex/worktrees/3855/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll (net10.0|arm64)
-/Users/sebastienros/.codex/worktrees/3855/xemele/tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll (net10.0|arm64) passed (329ms)
-/Users/sebastienros/.codex/worktrees/3855/xemele/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll (net10.0|arm64) passed (346ms)
-/Users/sebastienros/.codex/worktrees/3855/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll (net10.0|arm64) passed (331ms)
+Running tests from /Users/sebastienros/.codex/worktrees/3855/xemele/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll (net10.0|arm64)
+Running tests from /Users/sebastienros/.codex/worktrees/3855/xemele/tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll (net10.0|arm64)
+/Users/sebastienros/.codex/worktrees/3855/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll (net10.0|arm64) passed (324ms)
+/Users/sebastienros/.codex/worktrees/3855/xemele/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll (net10.0|arm64) passed (331ms)
+/Users/sebastienros/.codex/worktrees/3855/xemele/tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll (net10.0|arm64) passed (320ms)
 
 Test run summary: Passed!
-  /Users/sebastienros/.codex/worktrees/3855/xemele/tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll (net10.0|arm64) passed (329ms)
-  /Users/sebastienros/.codex/worktrees/3855/xemele/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll (net10.0|arm64) passed (346ms)
-  /Users/sebastienros/.codex/worktrees/3855/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll (net10.0|arm64) passed (331ms)
+  /Users/sebastienros/.codex/worktrees/3855/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll (net10.0|arm64) passed (324ms)
+  /Users/sebastienros/.codex/worktrees/3855/xemele/tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll (net10.0|arm64) passed (320ms)
+  /Users/sebastienros/.codex/worktrees/3855/xemele/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll (net10.0|arm64) passed (331ms)
 
   total: 3
   failed: 0
   succeeded: 3
   skipped: 0
-  duration: 803ms
+  duration: 750ms
 
 exit=0; expected=0
 $ python3 -B -m unittest discover -s tests/Xemele.TestUtilities/Build -p test_*.py -v
@@ -168,7 +236,7 @@ test_unknown_and_empty_formats (test_discovery.DiscoveryTests.test_unknown_and_e
 test_valid_fragments_and_fixture (test_discovery.DiscoveryTests.test_valid_fragments_and_fixture) ... ok
 
 ----------------------------------------------------------------------
-Ran 13 tests in 0.098s
+Ran 13 tests in 0.093s
 
 OK
 
@@ -186,7 +254,7 @@ Build succeeded.
     0 Warning(s)
     0 Error(s)
 
-Time Elapsed 00:00:01.28
+Time Elapsed 00:00:01.43
 
 exit=0; expected=0
 $ dotnet build experiments/Input/Input.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
@@ -198,7 +266,7 @@ Build succeeded.
     0 Warning(s)
     0 Error(s)
 
-Time Elapsed 00:00:01.28
+Time Elapsed 00:00:01.27
 
 exit=0; expected=0
 $ dotnet run --project experiments/Tree/Tree.csproj -c Release --no-build -- --self-check

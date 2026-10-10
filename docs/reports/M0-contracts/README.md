@@ -40,7 +40,10 @@ A first in-sandbox MTP invocation stalled before any output and only that proces
 was terminated. The prebuilt native MTP invocation succeeded with sandbox
 escalation. An initial full solution build caught nested fixture obj contamination;
 projects were moved into this owned report tree, without shared-project edits.
-These failed attempts are not recorded as passing checks. Later passing runs use
+Independent review found a missing before-EOF cancellation check in the synthetic
+pump. The fix adds that check and a regression proving zero EOF events and terminal
+faulting after cancellation from the last data callback.
+These failed attempts/findings are not recorded as passing checks. Later passing runs use
 the corrected layout; hosted CI and other operating systems have not run here.
 
 ## Exact shared follow-up request

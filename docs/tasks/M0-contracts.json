@@ -94,10 +94,10 @@
     {
       "id": "compiled-contracts-and-preservation",
       "kind": "check",
-      "revision": "5aa9ab77df7c822b8e976f6ef034ec49bc8421c6",
+      "revision": "028b30627d8d972183f7e80f4be2538bd0b0a59f",
       "command": "python3 docs/reports/M0-contracts/verify.py",
       "result": "passed",
-      "summary": "Pinned SDK 10.0.400 Release builds passed with no warnings/errors. 10/10 MTP contract tests, 139 M1 compiled members preserved within 173 M2, 8-member normalization golden, missing/added/changed baseline rejection and real mutated signature probes passed. Solution Release build, 3/3 existing MTP infrastructure tests, 13/13 Python discovery tests, empty-runtime discovery, tree 8-fixture self-check and corrected input 83,095 assertions passed. Planning validation passed for 98 tasks. Local Arm64 only; no new timing.",
+      "summary": "Pinned SDK 10.0.400 Release builds passed with no warnings/errors. 11/11 MTP contract tests (including last-data callback cancellation suppressing EOF and faulting scanner), 139 M1 compiled members preserved within 173 M2, 8-member normalization golden, missing/added/changed baseline rejection and real mutated signature probes passed. Solution Release build, 3/3 existing MTP infrastructure tests, 13/13 Python discovery tests, empty-runtime discovery, tree 8-fixture self-check and corrected input 83,095 assertions passed. Planning validation passed for 98 tasks. Local Arm64 only; no new timing. Caller SDK environment preserved; actual SDK version checked against global.json; transcript records actual host/architecture, full Git revision and runtime info.",
       "artifact": "docs/reports/M0-contracts/checks.txt"
     },
     {
@@ -108,18 +108,27 @@
       "result": "passed",
       "summary": "Reviewed integrated tree evidence at 24a0499f1d7c891a803bd8a370951f2a50e9a751, corrected input at 87d101c7e9b09167b2d114f1f33ea5974680617d and unchanged primitive suites at 662b15bb24ce340c301389e037277fd68d9f60ab. Recorded arena retained-memory benefit with slower traversal/mutation, borrowed intern hit and input/callback 0 B warm budgets, owned text retention boundary, conditional cached SearchValues, static span/literal lowering caveats, length-equality over slower hash candidate and separate cold/persistence/error/pool budgets. Original 62 affected input/rejection timings explicitly superseded; single-host synthetic timings provisional and future composition/x64/Arm64 release checks required.",
       "artifact": "docs/decisions/M0/foundation.md"
+    },
+    {
+      "id": "independent-review-and-resolution",
+      "kind": "review",
+      "revision": "5aa9ab77df7c822b8e976f6ef034ec49bc8421c6",
+      "command": null,
+      "result": "failed",
+      "summary": "Coordinator reported independent read-only review: foundation decisions, stages, ownership, MIT, provisional evidence and checker scope coherent; blocking synthetic pump EOF dispatch lacked a before-callback cancellation check. Resolved in 028b30627d8d972183f7e80f4be2538bd0b0a59f with immediate token check and focused passing regression requiring cancellation exception, zero EOF callbacks and terminal faulting. This records the original finding honestly, not final integration approval. Coordinator portability review of 81a69c6 also accepted caller-environment SDK verification/logging correction.",
+      "artifact": "docs/reports/M0-contracts/README.md"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Approved measured foundation decisions, MIT/provenance, exact stage/common/infra shapes and limits; compiled nonpackaged stage/usage models and SDK-Roslyn comparison prototype with actual negative probes. Public runtime remains empty. Implementation commit 5aa9ab77df7c822b8e976f6ef034ec49bc8421c6.",
+    "summary": "Approved measured foundation decisions, MIT/provenance, exact stage/common/infra shapes and limits; compiled nonpackaged models and SDK-Roslyn comparison prototype with actual negative probes. Final implementation/tested revision 028b30627d8d972183f7e80f4be2538bd0b0a59f includes caller-environment verifier portability and independently reviewed EOF cancellation correction. Public runtime remains empty.",
     "checks": [
-      "python3 docs/reports/M0-contracts/verify.py: passed at 5aa9ab77df7c822b8e976f6ef034ec49bc8421c6; durable transcript docs/reports/M0-contracts/checks.txt (10 contract MTP, 3 existing MTP smoke, 13 discovery tests; 139/173 stage members; normalizer mutation probes; tree/input self-checks; solution/fixture/tool builds; planning validation 98 tasks).",
+      "DOTNET_ROOT and PATH explicitly configured to pinned local SDK; python3 docs/reports/M0-contracts/verify.py: passed at 028b30627d8d972183f7e80f4be2538bd0b0a59f; durable host/revision transcript docs/reports/M0-contracts/checks.txt (11 contract MTP, 3 existing MTP smoke, 13 discovery tests; 139/173 stage members; real normalizer mutation probes; tree 8-fixture and input 83,095-assertion self-checks; solution/fixture/tool builds; planning validation 98 tasks).",
       "git diff --check: passed.",
       "Initial sandbox MTP stalled and its identified process was terminated; escalated prebuilt/final native MTP runs passed. Initial nested-fixture obj contamination and missing experiment build were corrected within owned paths before final passing run. No new timing/hosted CI claimed."
     ],
     "remaining": [
-      "Coordinator independent contract review, integration and verification; worker does not set verified."
+      "Coordinator recheck of bounded review correction, integration and verification; worker does not set verified."
     ],
     "requests": [
       "Ordered CI/repair task: own tools/ApiBaseline/, tests/Xemele.TestUtilities/Build/, .github/workflows/build.yml; compose validated fragments in memory and compare runtime Release assembly using task-owned Roslyn checker; exact commands in docs/reports/M0-contracts/README.md.",
