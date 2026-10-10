@@ -1,7 +1,7 @@
-using System.Runtime.CompilerServices;
 using System.Text.Json;
 using Xemele;
 using Xemele.Parsing.Syntax;
+using Xemele.Tests.PiTargets;
 
 // Diagnostic replication of the PI test's workload; does not change test execution
 // or substitute its independently run exact-zero assertion. Each mode starts fresh.
@@ -19,21 +19,22 @@ long rootBytes = GC.GetAllocatedBytesForCurrentThread() - before;
 Check(root, 3, ScanStep.NeedInput);
 before = GC.GetAllocatedBytesForCurrentThread();
 if (original) core.Append(chunk, [], false, sink, cancellation);
-else AppendChecked(core, chunk, sink, cancellation, 1);
+else PiAllocationProbe.AppendChecked(core, chunk, sink, cancellation, 1);
 long firstUse = GC.GetAllocatedBytesForCurrentThread() - before;
 before = GC.GetAllocatedBytesForCurrentThread();
 if (original)
     for (int i = 0; i < 99; i++) core.Append(chunk, [], false, sink, cancellation);
-else AppendChecked(core, chunk, sink, cancellation, 99);
+else PiAllocationProbe.AppendChecked(core, chunk, sink, cancellation, 99);
 long warmRemainder = GC.GetAllocatedBytesForCurrentThread() - before;
 long warmCalls = sink.Calls, warmUnits = sink.Units;
+long primitive = 0;
 before = GC.GetAllocatedBytesForCurrentThread();
 if (original)
 {
     for (int i = 0; i < 10000; i++)
         if (core.Append(chunk, [], false, sink, cancellation).Step != ScanStep.NeedInput) throw new InvalidOperationException();
 }
-else AppendChecked(core, chunk, sink, cancellation, 10000);
+else primitive = PiAllocationProbe.AppendChecked(core, chunk, sink, cancellation, 10000);
 long steady = GC.GetAllocatedBytesForCurrentThread() - before;
 long measuredCalls = sink.Calls - warmCalls, measuredUnits = sink.Units - warmUnits;
 before = GC.GetAllocatedBytesForCurrentThread();
@@ -43,26 +44,16 @@ Check(completion, 4, ScanStep.Completed);
 Console.WriteLine(JsonSerializer.Serialize(new {
     mode = args[0], runtime = Environment.Version.ToString(), warmIterations = 100, measuredIterations = 10000,
     coldSetupBytes = setup, rootFirstUseBytes = rootBytes, firstPiBytes = firstUse,
-    remaining99WarmBytes = warmRemainder, steadyBytes = steady, completionBytes,
+    remaining99WarmBytes = warmRemainder, steadyBytes = steady, primitiveBytes = original ? (long?)null : primitive, completionBytes,
     warmCalls, warmUnits, measuredCalls, measuredUnits, completed = completion.Step.ToString(), consumedCompletion = completion.Consumed,
     runtimeSettings = "default; no tiering, JIT, GC or test parallelism overrides",
-    scope = "Synchronous borrowed PI primitive; counter/validation/output outside measured region; setup includes options/core/sink, not process startup; no retained-memory estimate or timing"
+    scope = "Synchronous borrowed PI primitive; equivalent primitiveBytes snapshots enclose the whole linked checked loop; steadyBytes includes caller dispatch; setup/output/completion outside primitive; no retained-memory estimate or timing"
 }));
 if (warmCalls != 1003 || warmUnits != 400 || measuredCalls != 100000 || measuredUnits != 40000 || sink.Calls != 101005 || sink.Units != 40400)
     throw new InvalidOperationException("PI callback/text progress changed.");
-if (!original && steady != 0) return 1;
+if (!original && primitive != 0) return 1;
 return 0;
 
-[MethodImpl(MethodImplOptions.NoInlining)]
-static void AppendChecked(XmlParserCore core, string chunk, CountingSink sink, CancellationToken cancellation, int iterations)
-{
-    for (int i = 0; i < iterations; i++)
-    {
-        var result = core.Append(chunk, [], false, sink, cancellation);
-        if (result.Step != ScanStep.NeedInput || result.Consumed != chunk.Length || result.Diagnostic is not null)
-            throw new InvalidOperationException("PI append did not consume the complete chunk.");
-    }
-}
 static void Check(ScanResult result, int consumed, ScanStep step)
 {
     if (result.Step != step || result.Consumed != consumed || result.Diagnostic is not null)
