@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "milestone": "M2",
+  "kind": "feature",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "goals": [
+    "G07"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/parser.md",
+    "docs/decisions/M2/xml-resources.md"
+  ],
+  "id": "M2-dtd-parser",
+  "title": "Incremental DTD parser and parameter-entity source stack",
+  "depends_on": [
+    "M2-contracts",
+    "M2-dtd-framing",
+    "M2-dtd-model",
+    "M2-dtd-values"
+  ],
+  "owns": [
+    "src/Xemele/Parsing/Dtd/Grammar/Parser/",
+    "tests/Xemele.Tests/M2-dtd-parser/",
+    "tests/fixtures/M2-dtd-parser/",
+    "benchmarks/Xemele.Benchmarks/M2-dtd-parser/",
+    "samples/M2-dtd-parser/",
+    "docs/reports/M2-dtd-parser/"
+  ],
+  "api_or_output": "Exact approved common-only internal DtdParser/DtdParseStep/Result/EntityRequest with streaming grammar and owned DtdModel",
+  "acceptance": [
+    {
+      "id": "M2-dtd-parser-A1",
+      "description": "Implement unchanged approved DtdParser signatures and full ELEMENT/ATTLIST/ENTITY/NOTATION grammar, particles/types/raw defaults, first-declaration and internal-subset precedence, predefined restrictions/separate entity namespaces, using only verified model/framing/budget/value helper. Preserve character-reference declaration processing and general references; defaults remain available for effective-table normalization when applied. No public parser stubs or dependency on later entity composition.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M2-dtd-parser-A2",
+      "description": "Implement bounded incremental source-state grammar with internal parameter expansion, external NeedEntity/PushEntity stack, INCLUDE/IGNORE/text declarations, internal PE placement and entity-boundary well-formedness. Exact submitted UTF16 Consumed/NeedInput/progress beforeEOF, source cursor restoration/absolute mappings/CRLF/surrogate/EOF semantics, original initial location, active cycles even nullDepth, aggregate charge-before-work/persistence, cancellation and borrowed-input release. No whole external-input buffering.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M2-dtd-parser-A3",
+      "description": "Pinned/authored malformed/recursive/conditional/content-model/declaration tests across every short split and push-source boundary; exact/one-over quotas and cancellation; independent actual/approved parser inventory and common-only sample; fresh cumulative/API/reference/planning/owned checks and explicit allocation/performance evidence at known source with unchanged verified prerequisites.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "Independently reviewable child of M2-dtd-grammar; approved parser/model/framing contracts and original parent A1-A3 preserved.",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}

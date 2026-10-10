@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "milestone": "M2",
+  "kind": "feature",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "goals": [
+    "G07"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/parser.md",
+    "docs/decisions/M2/xml-resources.md"
+  ],
+  "id": "M2-dtd-values",
+  "title": "DTD declaration and attribute value processing",
+  "depends_on": [
+    "M2-contracts",
+    "M2-dtd-model",
+    "M2-dtd-framing"
+  ],
+  "owns": [
+    "src/Xemele/Parsing/Dtd/Grammar/Values/",
+    "tests/Xemele.Tests/M2-dtd-values/",
+    "tests/fixtures/M2-dtd-values/",
+    "benchmarks/Xemele.Benchmarks/M2-dtd-values/",
+    "samples/M2-dtd-values/",
+    "docs/reports/M2-dtd-values/"
+  ],
+  "api_or_output": "Working internal common-only DtdValueProcessor/helper contract; owned entity replacement and effective-table attribute default normalization",
+  "acceptance": [
+    {
+      "id": "M2-dtd-values-A1",
+      "description": "Implement internal value processing independently of parser/source-stack: decode XML character references in entity declaration values while retaining general references for use-site expansion; normalize attribute defaults only when explicitly applied with a supplied effective general-entity table, preserving CDATA/tokenized whitespace and direct-character-reference semantics. Reject malformed references/illegal scalars/literal less-than in attribute values/undeclared, external or unparsed attribute entities as required; preserve approved internal model/parser/framing signatures. No public stubs or premature default normalization at model publication.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M2-dtd-values-A2",
+      "description": "Prove authored/pinned character-reference and whitespace/recursive general-reference cases, predefined behavior and distinct reference versus literal origin, effective-table/internal precedence supplied by caller, active-name cycles even with null EntityDepth, exact/one-over expansion/depth/token capacities and cancellation. Helper owns only actual expansion charges/owned output and borrows no input beyond call; grammar owns raw input/distinct retained-name accounting. Use verified unchanged IDtdBudget, no resolver/core/decoder/DOM dependency or external fetch.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M2-dtd-values-A3",
+      "description": "Compile representative common-only helper usage and record exact internal helper contract at known source; focused and cumulative earlier-milestone/API/reference/planning/owned checks plus explicit cold/setup/warm primitive/owned-output allocation and applicable benchmark evidence. Owned result persistence allocations reported honestly; no speedup/zero-allocation/conformance claim from source inspection.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "Independently reviewable child of M2-dtd-grammar; approved parser/model/framing contracts and original parent A1-A3 preserved. Parser supplies parameter-entity-composed declaration literals; helper does not own PE source-stack grammar or raw-source/name charges.",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}
