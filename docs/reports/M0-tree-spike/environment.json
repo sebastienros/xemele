@@ -1,0 +1,22 @@
+{
+  "implementationRevision": "24a0499f1d7c891a803bd8a370951f2a50e9a751",
+  "cpu": "Apple M4 Pro",
+  "architecture": "Arm64",
+  "logicalCpuCount": 14,
+  "ramBytes": 51539607552,
+  "cpuDiscovery": "sysctl -n machdep.cpu.brand_string hw.memsize hw.ncpu (read-only sandbox escalation)",
+  "os": "macOS Sequoia 15.8.1 (24H32), Darwin 24.6.0",
+  "sdk": "10.0.400",
+  "runtime": ".NET 10.0.11 (10.0.1126.37416)",
+  "benchmarkDotNet": "0.15.8",
+  "gc": "Concurrent Workstation",
+  "jit": "Arm64 RyuJIT armv8.0-a; default tiering and dynamic PGO for benchmarks",
+  "job": {"launches": 1, "warmups": 2, "measurementIterations": 5, "targetIterationMilliseconds": 100},
+  "hostTimingLock": "/private/tmp/xemele-benchmark.lock",
+  "limitations": [
+    "BDN could not discover CPU model under sandbox; supplementary sysctl supplied model above.",
+    "BDN could not set high process priority (permission denied); timing remains informational.",
+    "Single host, single launch, synthetic fixtures, short target iterations; not release qualification.",
+    "No parser, namespaces or attribute workloads yet; composition and x64 confirmation remain for later owning tasks."
+  ]
+}
