@@ -123,3 +123,38 @@ later model/package/benchmark oracle checks were not rerun at90fda44.
 Source/task edits and all checks/timing are now stopped pending the ordered
 namespace correction. No measurement timing has run. Task criteria remain pending;
 the task record has not been edited during coordinator prerequisite serialization.
+
+## Final namespace-corrected source checkpoint
+
+After merging exact renewed claim `8f4b34912f6fcb0ec7d3f2d951801c8804400ba1`,
+the six prerequisites are verified ancestors. Runtime and test revision
+`73673440a1ee845dbf38b4f8c506a15dc225a375` removes the temporary guard entirely.
+Positive plain/default/prefixed `xmlns` element and qualified ordinary `p:xmlns`
+attribute cases assert structure and independent BCL name expansion over all
+input transports, keeping declarations separate. Source and package samples
+include the legal names and remain independent of serialization.
+
+`verify.py --audit-base 8f4b34912f6fcb0ec7d3f2d951801c8804400ba1` passed
+44 focused DOM and288 full solution tests without skips, Foundation11, all
+explicitly rebuilt declaration models/protocol38, actual API222 and actual
+seven-factory fragment, Input41 and Syntax9 types/80 rows, source and fresh isolated
+local-feed-only package sample, allocation probes, planning106, and explicit
+committed/working/untracked owned-path and whitespace audits. The historical Tree
+allocation failure is not reproduced: its unchanged test passes both focused and
+full lanes at this revision. The namespace owner's unrelated planning-unit failure
+remains in its historical report and belongs to the coordinator's separate repair;
+no planning tool or peer report was modified by this worker.
+
+Cold complete owned byte DOM469096B, warm byte468536B, warm character426664B;
+retained-owner GC estimate229782B/document over32 owners, excluding fixture strings.
+The first-use measurement precedes all parser warm-up in its process. Fixed scratch
+and durable output are included in complete-operation allocations; the name-hit
+primitive separately remains0B after its documented warm-up.
+
+All four measurement shapes' complete structural oracle passed outside timing:
+ASCII repeated markup, multilingual/dense references,131072-unit text and2048-depth
+elements. It compares every node kind/name/URI/prefix/value, ordered child shape,
+ordinary attributes and namespace declarations across character/byte/stream and
+whole-source decode baseline factories. Results own their complete document; fixture
+generation is outside measurement. No timing has run yet. One exclusive-host grant
+for16 cases is requested; criteria stay pending until review and measurement.
