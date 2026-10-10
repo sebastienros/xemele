@@ -1,0 +1,14 @@
+namespace Usage;
+internal static class Recovery
+{
+    internal static void Use(Stream stream)
+    {
+        var options = new Xemele.XmlParseOptions { Recover = true };
+        Xemele.XmlParseResult<Xemele.XmlDocument> result = Xemele.XmlDocument.ParseWithDiagnostics("<r>", options);
+        _ = Xemele.XmlDocument.ParseWithDiagnostics("<r>".AsSpan(), options);
+        _ = Xemele.XmlDocument.ParseWithDiagnostics("<r>"u8, options);
+        _ = Xemele.XmlDocument.LoadWithDiagnostics(stream, options);
+        _ = Xemele.XmlDocument.Parse("<r/>");
+        if (result.IsWellFormed) _ = result.Value!.RootElement;
+    }
+}

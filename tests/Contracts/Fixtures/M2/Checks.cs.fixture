@@ -1,0 +1,80 @@
+// Executed model semantics only: this does not parse XML.
+using Xemele;
+using Xemele.Parsing.Dtd;
+int checks = 0;
+void Check(bool condition) { checks++; if (!condition) throw new InvalidOperationException($"Contract assertion {checks}"); }
+void Throws<T>(Action action) where T : Exception { checks++; try { action(); } catch (T) { return; } throw new InvalidOperationException($"Expected {typeof(T).Name}"); }
+var options = new XmlParseOptions();
+Check(!options.Recover && options.DtdProcessing == XmlDtdProcessing.Prohibit && options.Resolver is null);
+var limits = new XmlResourceLimits();
+long?[] defaults = [limits.DocumentCharacters, limits.Depth, limits.AttributesPerElement, limits.TokenCharacters, limits.InternedNames,
+    limits.EntityDepth, limits.ExpandedCharacters, limits.ExternalBytes, limits.ExternalResources, limits.InclusionDepth, limits.Diagnostics, limits.EvaluationWork];
+Check(defaults.SequenceEqual(new long?[] {16_777_216,256,256,1_048_576,65_536,32,16_777_216,16_777_216,64,32,128,10_000_000}));
+foreach (var property in typeof(XmlResourceLimits).GetProperties())
+{
+    foreach (long bad in new long[] { 0, -1 })
+    {
+        var invalid = new XmlResourceLimits();
+        property.SetValue(invalid, property.PropertyType == typeof(int?) ? (object)(int)bad : bad);
+        Throws<ArgumentOutOfRangeException>(invalid.Validate);
+    }
+    var unlimited = new XmlResourceLimits(); property.SetValue(unlimited, null); unlimited.Validate(); Check(property.GetValue(unlimited) is null);
+}
+var diagnostic = new XmlDiagnostic("XML.Syntax", XmlDiagnosticSeverity.Fatal, "fixture", new(null, 1, 2, null));
+var diagnostics = new List<XmlDiagnostic> { diagnostic };
+var partial = new XmlParseResult<object>(new(), false, false, diagnostics);
+diagnostics.Clear(); Check(partial.Diagnostics.Count == 1 && partial.Value is not null && !partial.IsComplete && !partial.IsWellFormed);
+Throws<NotSupportedException>(() => ((IList<XmlDiagnostic>)partial.Diagnostics).Clear());
+var completeRecovered = new XmlParseResult<object>(new(), true, false, [diagnostic]); Check(completeRecovered.IsComplete && !completeRecovered.IsWellFormed);
+Check(new XmlParseResult<object>(null, false, false, [diagnostic]).Value is null);
+Throws<ArgumentException>(() => new XmlParseResult<object>(null, true, true, []));
+Throws<ArgumentException>(() => new XmlParseResult<object>(new(), false, true, []));
+Check(new XmlParseResult<object>(new(), true, true, []).IsWellFormed);
+Throws<ArgumentException>(() => new XmlParseException([]));
+var exception = new XmlParseException([diagnostic]); Check(exception.Diagnostics.Count == 1);
+var children = new List<DtdParticle>();
+var particle = new DtdParticle(DtdParticleKind.Sequence, null, DtdOccurrence.Once, children);
+children.Add(new(DtdParticleKind.Name, "r", DtdOccurrence.Once, [])); Check(particle.Children.Count == 0);
+Throws<NotSupportedException>(() => ((IList<DtdParticle>)particle.Children).Clear());
+var tokens = new List<string> { "yes", "no" };
+var attribute = new DtdAttributeDeclaration("r", "a", DtdAttributeType.Enumeration, tokens, DtdDefaultKind.Value, "yes", true, diagnostic.Location);
+tokens[0] = "changed"; Check(attribute.Tokens[0] == "yes");
+Throws<NotSupportedException>(() => ((IList<string>)attribute.Tokens).Clear());
+var entity = new DtdEntityDeclaration("e", false, "text", null, null, null, false, diagnostic.Location);
+var entities = new List<DtdEntityDeclaration> { entity };
+var model = new DtdModel([], [attribute], entities, [], []);
+entities.Clear(); Check(model.GeneralEntities.Count == 1 && model.Attributes[0] == attribute);
+Throws<NotSupportedException>(() => ((IList<DtdEntityDeclaration>)model.GeneralEntities).Clear());
+Throws<ArgumentNullException>(() => new DtdModel(null!, [], [], [], []));
+var finalUri = new Uri("https://fixture.invalid/final/entity.xml");
+Throws<ArgumentException>(() => new XmlResolvedResource(new MemoryStream(), new Uri("relative", UriKind.Relative)));
+Throws<ArgumentException>(() => new XmlResolvedResource(new WriteOnlyStream(), finalUri));
+var stream = new CountStream();
+var resource = new XmlResolvedResource(stream, finalUri);
+Check(ReferenceEquals(resource.Content, stream) && resource.SourceUri == finalUri);
+resource.Dispose(); await resource.DisposeAsync(); resource.Dispose(); Check(stream.Disposals == 1);
+stream = new CountStream(); resource = new(stream, finalUri); await resource.DisposeAsync(); resource.Dispose(); Check(stream.Disposals == 1 && stream.AsyncDisposals == 1);
+var resolver = new OfflineResolver();
+var request = new XmlResourceRequest(new Uri("https://fixture.invalid/request.xml"), finalUri, XmlResourceKind.ExternalEntity) { SystemId = "request.xml", PublicId = "fixture" };
+await using (var resolved = await resolver.ResolveAsync(request, default)) { Check(resolver.Calls == 1 && resolved!.SourceUri == finalUri); }
+using var cancelled = new CancellationTokenSource(); cancelled.Cancel();
+Throws<OperationCanceledException>(() => resolver.ResolveAsync(request, cancelled.Token).GetAwaiter().GetResult());
+Check(new DeniedResolver().Resolve(request, default) is null);
+Console.WriteLine($"Passed {checks} contract-model assertions; no XML parser declaration invoked.");
+sealed class CountStream : MemoryStream
+{
+    public int Disposals; public int AsyncDisposals;
+    protected override void Dispose(bool disposing) { if (disposing) Disposals++; base.Dispose(disposing); }
+    public override ValueTask DisposeAsync() { AsyncDisposals++; Dispose(); return ValueTask.CompletedTask; }
+}
+sealed class WriteOnlyStream : MemoryStream { public override bool CanRead => false; }
+sealed class OfflineResolver : XmlResourceResolver
+{
+    public int Calls;
+    public override XmlResolvedResource? Resolve(XmlResourceRequest request, CancellationToken cancellationToken)
+    { cancellationToken.ThrowIfCancellationRequested(); Calls++; return new(new CountStream(), new Uri("https://fixture.invalid/final/entity.xml")); }
+}
+sealed class DeniedResolver : XmlResourceResolver
+{
+    public override XmlResolvedResource? Resolve(XmlResourceRequest request, CancellationToken cancellationToken) => null;
+}

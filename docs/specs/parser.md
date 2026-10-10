@@ -228,3 +228,21 @@ all-callback pauses including start/empty-tag/end-document, invalid bytes/names/
 bindings/duplicate attributes, exact/one-over quotas, cancellation/fault/reentrancy,
 borrowed source release and zero-error allocation budgets. Full XML conformance
 cases remain explicit later-milestone failures, never hidden exclusions.
+
+## Additive M2 contract
+
+The [complete XML/resource decision](../decisions/M2/xml-resources.md) fixes the
+independent internal DtdParser/DtdModel and declaration/particle types,
+NeedEntity/PushEntity source stack, explicit shared IDtdBudget adapter, core
+entity lookup/default hooks and document metadata. DTD grammar references only
+common types, so it compiles without a resolver implementation. Entity composition
+joins verified resolver/DTD lanes and retains all M1 callback/count/lifetime rules.
+
+M2 decoder declarations preserve IXmlInputDecoder, DecodeResult and declaration
+validation, adding explicit single-byte enum cases and entity text-declaration
+policy. M2 strict XML/namespaces processing remains nonvalidating. Distinct
+ParseWithDiagnostics and LoadWithDiagnostics factories return the existing
+XmlParseResult<XmlDocument>; bounded recovery never masquerades as strict success.
+Exact signatures live in tests/Contracts/Fixtures/M2; declarations are models,
+not shipped APIs or full XML conformance evidence. The decision maps each hook,
+option and quota to its implementing task and specifies all unrecoverable errors.

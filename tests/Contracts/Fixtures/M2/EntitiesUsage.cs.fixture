@@ -1,0 +1,33 @@
+namespace Usage;
+internal sealed class Context : Xemele.Parsing.Entities.IXmlEntityContext
+{
+    public Xemele.Parsing.Dtd.DtdModel Model { get; } = new([], [], [], [], []);
+    public bool TryGetGeneralEntity(ReadOnlySpan<char> name, out Xemele.Parsing.Dtd.DtdEntityDeclaration? declaration) { declaration = null; return false; }
+    public IReadOnlyList<Xemele.Parsing.Dtd.DtdAttributeDeclaration> GetAttributes(ReadOnlySpan<char> elementName) => [];
+    internal static void Use()
+    {
+        var options = new Xemele.XmlParseOptions { DtdProcessing = Xemele.XmlDtdProcessing.Parse, Resolver = null };
+        using var core = new Xemele.Parsing.Syntax.XmlParserCore(options, new Context());
+        _ = new Xemele.XmlDocument().DocumentType;
+    }
+}
+
+internal static class ExternalComposition
+{
+    internal static void FrameAndValidate()
+    {
+        var uri = new Uri("https://fixture.invalid/final.dtd");
+        using var decoder = new Xemele.Parsing.Input.XmlInputDecoder(new(), uri);
+        using var framer = new Xemele.Parsing.Dtd.XmlTextDeclarationFramer(new(), uri);
+        Span<char> output = stackalloc char[8]; Span<long> offsets = stackalloc long[8];
+        var decoded = decoder.Decode("<?xml "u8, output, offsets, false, default);
+        var framed = framer.Append(output[..decoded.WrittenCharacters], offsets[..decoded.WrittenCharacters], false, default);
+        if (framed.Step == Xemele.Parsing.Dtd.TextDeclarationStep.Declared)
+            _ = decoder.ValidateDeclaration(framed.Declaration!.Value.EncodingName, framed.Declaration.Value.Location);
+        else if (framed.Step == Xemele.Parsing.Dtd.TextDeclarationStep.Absent)
+        {
+            _ = decoder.ValidateDeclaration([], new(uri, 1, 1, 0));
+            _ = framer.DrainPrefix(output, offsets);
+        }
+    }
+}

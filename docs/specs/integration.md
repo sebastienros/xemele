@@ -4,27 +4,33 @@ Resolver decision owner: `M2-contracts`; catalogs/inclusion/adapters/tool owner:
 
 ## Resolver boundary, implemented in M2
 
-```csharp
-namespace Xemele.Resolution;
-public readonly record struct XmlResourceRequest(
-    Uri? BaseUri, string? SystemId, string? PublicId, XmlResourceKind Kind);
-public abstract class XmlResourceResolver
-{
-    public abstract XmlResolvedResource Resolve(XmlResourceRequest request);
-    public virtual ValueTask<XmlResolvedResource> ResolveAsync(
-        XmlResourceRequest request, CancellationToken cancellationToken = default);
-}
-public sealed class XmlResolvedResource : IDisposable, IAsyncDisposable
-{
-    public XmlResolvedResource(Uri sourceUri, Stream content);
-    public Uri SourceUri { get; }
-    public Stream Content { get; }
-}
-```
+The exact nonpackaged declarations are
+[Resolver.cs.fixture](../../tests/Contracts/Fixtures/M2/Resolver.cs.fixture).
+They preserve the approved foundation M2 namespace Xemele and existing signatures:
+XmlResourceRequest(Uri Uri, Uri? Referrer, XmlResourceKind Kind), nullable sync
+Resolve(request, cancellationToken), virtual nullable ResolveAsync with the same
+operation token, and XmlResolvedResource(Stream content, Uri sourceUri).
+SystemId/PublicId are additive init-only lexical identifier properties on request.
+This replaces the stale Resolution namespace/BaseUri proposal; no foundation
+fixture or earlier runtime API changes.
 
-Returned resources and their streams are owned/disposed by the requesting resolution session; refusal throws a categorized resolution exception. `SourceUri` is the final absolute resolved URI used for relative references and locations. Async default behavior is explicitly documented (it may synchronously resolve); built-in async-capable adapters perform real async I/O. No hidden `Task.Run`.
+Requests have an absolute resolved Uri and null/absolute Referrer. Relative
+SystemId resolution occurs against the declaration's final source URI before
+calling the resolver; no base means XML.ResourceDenied. PublicId never grants
+implicit lookup. Resolve returning null means categorized structured denial;
+resolver-thrown exceptions propagate unchanged. The async fallback may resolve
+synchronously after checking cancellation; no hidden Task.Run. Real async adapters
+arrive with their owning modules.
 
-The bounded internal resolution session tracks resource count/bytes, nesting, cycles, cancellation, and diagnostics. User resolver code is an explicit trust boundary. Fixture resolvers are offline. The core never fetches a URI itself. DTD/external-entity processing is fully usable with a caller resolver before catalogs exist.
+The returned readable stream/wrapper transfers ownership to the session. Final
+absolute SourceUri controls nested bases, locations and active-cycle checks.
+[M2 decisions](../decisions/M2/xml-resources.md) fix exactly-once disposal, invalid
+return handling, count/byte quotas, cancellation, alias cycles, supported profiles
+and bounded byte-limit EOF probing. Caller-owned primary streams remain open.
+Parser grants never include an ambient file/network resolver. Fixture resolvers
+are offline; DTD/external entities are usable with a caller resolver before
+catalogs exist. These contracts are independent model evidence, not implemented
+resource I/O or parser behavior.
 
 ## M6 additive services
 
