@@ -4,6 +4,9 @@
 They use only verified M1 common primitives; no input decoder, DOM, serializer,
 System.Xml parser, native grammar, public placeholders or peer runtime is linked.
 The test-only BCL oracle is in owned tests and is never runtime delegation.
+The 100 generated documents compare concatenated text/CDATA and element counts;
+a separate every-split/pause oracle compares resolved element/attribute names,
+namespace declaration order/values, normalized attribute values and PI target/body.
 
 ## Operation and ownership
 
@@ -52,16 +55,19 @@ distinct owned local/prefix/namespace and PI target strings. Encoding labels bor
 declaration scratch and are not namespace/name interning. Common capacity limits
 still apply when a quota is explicitly unlimited. Location overflow is structured
 XML.LocationLimit. Cancellation precedes each callback/scalar and bounded inner
-work, including 4096-unit intern comparisons and 256-step name/attribute loops.
+work, including 4096-unit name comparisons/scans and 256-step name/attribute loops;
+borrowed dictionary hashing is a runtime operation over bounded token scratch.
 
 Setup allocates the core, immutable options/budget snapshot and initial scratch:
 128 UTF-16 units, 128 XmlLocation entries, eight attribute descriptors and eight
 fragment units. Lists grow at first scopes/interns. Scratch/descriptor growth and
 new distinct names/URIs are explicit ownership allocations. Already interned names
-are probed with borrowed spans, without temporary strings. Intern probing uses an
-ordinal bounded linear table rather than attacker-controlled hashing; cancellation
-bounds each comparison. Tag namespace/duplicate checks are bounded by attribute
-and depth limits. Dispose drops all list references and scratch owners.
+are probed with Dictionary's ordinal alternate span lookup, without temporary
+strings. The runtime retains its collision defenses, and InternedNames bounds
+owned keys before allocation. Tag namespace/duplicate checks are bounded by
+attribute and depth limits. Dispose drops dictionary capacity, list capacity,
+references and scratch owners. Test-only colliding initial buckets force and
+verify the runtime's defensive comparer transition on the pinned runtime.
 
 The warm target excludes setup, new unique names, scratch growth, owned diagnostics
 and sink persistence. Focused tests measure repeated tag/namespace/attribute/reference/

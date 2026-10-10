@@ -11,6 +11,9 @@ public sealed class SyntaxTests
         internal readonly List<XmlLocation> Locations = [];
         internal readonly List<(string Text, XmlLocation Location)> Fragments = [];
         internal readonly List<string> Tokens = [];
+        internal readonly List<(XmlTextKind Kind, string Target, string Text)> TextTokens = [];
+        private XmlTextKind currentKind;
+        private string currentTarget = "";
         internal readonly StringBuilder Text = new();
         internal bool Pause;
         internal int CallbackCount;
@@ -28,11 +31,11 @@ public sealed class SyntaxTests
         public bool StartElementContent() => Record("content");
         public bool EndElement(XmlNameView n, XmlLocation l) => Record($"end:{n.Prefix}:{n.LocalName}:{n.NamespaceUri}", l);
         public bool StartText(XmlTextKind kind, ReadOnlySpan<char> target, XmlLocation l)
-        { Text.Clear(); return Record($"text:{kind}:{target}", l); }
+        { Text.Clear(); currentKind = kind; currentTarget = new(target); return Record($"text:{kind}:{target}", l); }
         public bool TextFragment(ReadOnlySpan<char> text, bool end, XmlLocation l)
         {
             Fragments.Add((new(text), l)); Text.Append(text);
-            if (end) Tokens.Add(Text.ToString());
+            if (end) { string owned = Text.ToString(); Tokens.Add(owned); TextTokens.Add((currentKind, currentTarget, owned)); }
             return Record($"fragment:{text}:{end}", l);
         }
         public bool EndDocument(XmlLocation l) => Record("end-document", l);

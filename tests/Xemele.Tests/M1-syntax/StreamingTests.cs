@@ -217,6 +217,47 @@ public sealed class StreamingTests
             Assert.Equal(expected.ToString(), sink.Text.ToString()); Assert.Equal(children + 1, sink.Elements);
         }
     }
+    [Fact]
+    public void IndependentBclOracleChecksResolvedNamesAttributesAndPiAtEverySplit()
+    {
+        const string source = "<r p:a='v&#9;x' plain=' y\r\nz ' xmlns:p='u' xmlns='d' xml:lang='en'><?p ?x?><c xmlns='' p:b='&amp;'/><p:c xmlns:q='u' q:b='v'/></r>";
+        var expected = new List<string>(); var pis = new List<(string Target, string Text)>();
+        using (var reader = XmlReader.Create(new StringReader(source), new() { DtdProcessing = DtdProcessing.Prohibit }))
+        {
+            while (reader.Read())
+            {
+                if (reader.NodeType == XmlNodeType.Element)
+                {
+                    bool empty = reader.IsEmptyElement;
+                    string end = $"end:{reader.Prefix}:{reader.LocalName}:{reader.NamespaceURI}";
+                    expected.Add($"start:{reader.Prefix}:{reader.LocalName}:{reader.NamespaceURI}:{empty}");
+                    var namespaces = new List<string>(); var attributes = new List<string>();
+                    if (reader.MoveToFirstAttribute())
+                    {
+                        do
+                        {
+                            if (reader.NamespaceURI == "http://www.w3.org/2000/xmlns/") namespaces.Add($"namespace:{(reader.Prefix == "xmlns" ? reader.LocalName : "")}:{reader.Value}");
+                            else attributes.Add($"attribute:{reader.Prefix}:{reader.LocalName}:{reader.NamespaceURI}:{reader.Value}");
+                        } while (reader.MoveToNextAttribute());
+                        reader.MoveToElement();
+                    }
+                    expected.AddRange(namespaces); expected.AddRange(attributes); expected.Add("content");
+                    if (empty) expected.Add(end);
+                }
+                else if (reader.NodeType == XmlNodeType.EndElement) expected.Add($"end:{reader.Prefix}:{reader.LocalName}:{reader.NamespaceURI}");
+                else if (reader.NodeType == XmlNodeType.ProcessingInstruction) pis.Add((reader.Name, reader.Value));
+            }
+        }
+        for (int split = 0; split <= source.Length; split++)
+        {
+            using var core = new XmlParserCore(new()); var sink = new SyntaxTests.Sink { Pause = true }; int offset = 0; ScanResult r;
+            do { r = core.Append(source.AsSpan(offset, split - offset), [], false, sink, TestContext.Current.CancellationToken); offset += r.Consumed; } while (r.Step == ScanStep.Paused);
+            do { r = core.Append(source.AsSpan(offset), [], true, sink, TestContext.Current.CancellationToken); offset += r.Consumed; } while (r.Step == ScanStep.Paused);
+            Assert.Equal(ScanStep.Completed, r.Step);
+            Assert.Equal(expected, sink.Events.Where(e => e.StartsWith("start:", StringComparison.Ordinal) || e.StartsWith("end:", StringComparison.Ordinal) || e.StartsWith("namespace:", StringComparison.Ordinal) || e.StartsWith("attribute:", StringComparison.Ordinal) || e == "content"));
+            Assert.Equal(pis, sink.TextTokens.Where(t => t.Kind == XmlTextKind.ProcessingInstruction).Select(t => (t.Target, t.Text)));
+        }
+    }
     private sealed class OracleSink : IXmlEventSink
     {
         internal readonly StringBuilder Text = new(); internal int Elements; private XmlTextKind kind;

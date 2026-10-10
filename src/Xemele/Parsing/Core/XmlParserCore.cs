@@ -31,7 +31,7 @@ internal sealed class XmlParserCore : IDisposable
     private const string XmlnsUri = "http://www.w3.org/2000/xmlns/";
     private readonly OperationBudget budget;
     private readonly ScalarLocation position;
-    private readonly List<string> names = [];
+    private Dictionary<string, string> names = new(StringComparer.Ordinal);
     private readonly List<Binding> bindings = [];
     private readonly List<Frame> frames = [];
     private char[] token = new char[128];
@@ -150,7 +150,8 @@ internal sealed class XmlParserCore : IDisposable
         {
             if (disposed) return;
             disposed = true; token = []; tokenLocations = []; attributes = [];
-            names.Clear(); bindings.Clear(); frames.Clear(); sinkIdentity = null;
+            names.Clear(); names = null!;
+            bindings.Clear(); bindings.TrimExcess(); frames.Clear(); frames.TrimExcess(); sinkIdentity = null;
         }
         finally { Volatile.Write(ref gate, 0); }
     }
@@ -429,13 +430,13 @@ internal sealed class XmlParserCore : IDisposable
     private string Intern(ReadOnlySpan<char> value, XmlLocation location)
     {
         if (value.IsEmpty) return "";
-        for (int i = 0; i < names.Count; i++)
-        {
-            if ((i & 255) == 0) activeCancellation.ThrowIfCancellationRequested();
-            if (Equal(value, names[i])) return names[i];
-        }
+        activeCancellation.ThrowIfCancellationRequested();
+        // Ordinal's alternate lookup hashes borrowed UTF-16 directly and uses
+        // the runtime dictionary collision defense. Only a miss owns a string.
+        var lookup = names.GetAlternateLookup<ReadOnlySpan<char>>();
+        if (lookup.TryGetValue(value, out string? existing)) return existing;
         if (!Charge(Quota.InternedNames, 1, location)) return "";
-        string owned = new(value); names.Add(owned); return owned;
+        string owned = new(value); names.Add(owned, owned); return owned;
     }
     private int Colon(ReadOnlySpan<char> value)
     {
@@ -552,7 +553,7 @@ internal sealed class XmlParserCore : IDisposable
                 if (a.Prefix == "xmlns" || a.Uri == XmlnsUri || (a.Prefix == "xml") != (a.Uri == XmlUri) || (a.Prefix.Length != 0 && a.Uri.Length == 0))
                 { Reject("XML.Namespace", "Reserved namespace binding.", a.Location); return; }
                 for (int b = bindingStart; b < bindings.Count; b++)
-                { Work(b); if (bindings[b].Prefix == a.Prefix) { Reject("XML.Namespace", "Duplicate namespace declaration.", a.Location); return; } }
+                { Work(b); if (ReferenceEquals(bindings[b].Prefix, a.Prefix)) { Reject("XML.Namespace", "Duplicate namespace declaration.", a.Location); return; } }
                 bindings.Add(new(a.Prefix, a.Uri));
             }
         }
@@ -564,7 +565,7 @@ internal sealed class XmlParserCore : IDisposable
             for (int p = 0; p < n; p++)
             {
                 Work(p); ref var previous = ref attributes[p];
-                if (!previous.Namespace && previous.Name.Local == a.Name.Local && previous.Name.Uri == a.Name.Uri)
+                if (!previous.Namespace && ReferenceEquals(previous.Name.Local, a.Name.Local) && ReferenceEquals(previous.Name.Uri, a.Name.Uri))
                 { Reject("XML.Namespace", "Duplicate expanded attribute name.", a.Location); return; }
             }
         }
