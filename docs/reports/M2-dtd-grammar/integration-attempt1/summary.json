@@ -1,0 +1,227 @@
+{
+  "result": "passed",
+  "host": "macOS-15.8.1-arm64-arm-64bit-Mach-O",
+  "architecture": "arm64",
+  "timing": "not run; exclusive coordinator grant required",
+  "sourceRevision": "022bc0f2d049d07d258a7a388ad37f0b7573e405",
+  "branch": "codex/integrate-m2-dtd-grammar",
+  "auditBase": "c192f1bd5af512763fa3b7be4ff27d9bad35f1cc",
+  "dotnet": "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+  "dotnetSha256": "e86deb33d0dacad9cc1224466df6418149cb8e13cb8afd0dc6815ea6b7807975",
+  "internalApi": {
+    "matched": true,
+    "types": 20,
+    "inventory": "internal-contract.txt",
+    "nullableAndDefaults": true,
+    "compiledNullableMutationDetected": true
+  },
+  "pinnedProvenance": {
+    "sourceUrl": "https://www.w3.org/XML/Test/xmlts20130923.tar.gz",
+    "archiveSha256": "9b61db9f5dbffa545f4b8d78422167083a8568c59bd1129f94138f936cf6fc1f",
+    "scope": "Exact external subset resources only; authored expected declarations. No full XML conformance claim.",
+    "cases": [
+      {
+        "id": "xmlconf/oasis/oasis.xml#o-p30pass1",
+        "resource": "xmlconf/oasis/p30pass1.dtd",
+        "sha256": "ca9bdeb065fb1c8238d5721e775d806e640d24e79b0109e6b41417f41595ed4f",
+        "bytes": 26,
+        "valid": true,
+        "oracle": "p30pass1"
+      },
+      {
+        "id": "xmlconf/oasis/oasis.xml#o-p30fail1",
+        "resource": "xmlconf/oasis/p30fail1.dtd",
+        "sha256": "17bf783a9ebd1b6bcc64d6e393ad02174cf8e8903c84a4816f0e4cc061a3fddf",
+        "bytes": 79,
+        "valid": false,
+        "oracle": "p30fail1"
+      },
+      {
+        "id": "xmlconf/oasis/oasis.xml#o-p31pass1",
+        "resource": "xmlconf/oasis/p31pass1.dtd",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0,
+        "valid": true,
+        "oracle": "p31pass1"
+      },
+      {
+        "id": "xmlconf/oasis/oasis.xml#o-p31fail1",
+        "resource": "xmlconf/oasis/p31fail1.dtd",
+        "sha256": "8fc71e39d7535c3059fe241541b4b27c9c2e0666cf8e17859c9d472feb4cd94f",
+        "bytes": 44,
+        "valid": false,
+        "oracle": "p31fail1"
+      },
+      {
+        "id": "xmlconf/oasis/oasis.xml#o-p62pass1",
+        "resource": "xmlconf/oasis/p62pass1.dtd",
+        "sha256": "293b01777207ff99241add8cff1d77a2fd63127a1df796f30493af2445bc987d",
+        "bytes": 136,
+        "valid": true,
+        "oracle": "p62pass1"
+      },
+      {
+        "id": "xmlconf/oasis/oasis.xml#o-p62fail1",
+        "resource": "xmlconf/oasis/p62fail1.dtd",
+        "sha256": "6af4ad855009bf92b4c1f7ae169ff9f9cab9598a16a4c7d4c5ba9af9a35bcdaa",
+        "bytes": 40,
+        "valid": false,
+        "oracle": "p62fail1"
+      },
+      {
+        "id": "xmlconf/sun/sun-valid.xml#v-pe00",
+        "resource": "xmlconf/sun/valid/pe00.dtd",
+        "sha256": "770896d21d88df0f8b33bed2cdc949f3d9c39821197fecacf0f7c3ff7d04691b",
+        "bytes": 223,
+        "valid": true,
+        "oracle": "pe00"
+      },
+      {
+        "id": "xmlconf/sun/sun-valid.xml#pe01",
+        "resource": "xmlconf/sun/valid/pe01.dtd",
+        "sha256": "a8c5f1c37961dfd00ba1cdd5371e4c82d1a92dbdd02b443b51af6378db4800a9",
+        "bytes": 148,
+        "valid": true,
+        "oracle": "pe01"
+      },
+      {
+        "id": "xmlconf/ibm/ibm_oasis_valid.xml#ibm-valid-P32-ibm32v01.xml",
+        "resource": "xmlconf/ibm/valid/P32/ibm32v01.dtd",
+        "sha256": "40d0c898a768a5b7a7d7caadc77c26be93b046a49ef0d3457a974277b3a30707",
+        "bytes": 70,
+        "valid": true,
+        "oracle": "ibm32v01"
+      }
+    ]
+  },
+  "derivedOwnTests": {
+    "facts": 2,
+    "inlineRows": 8,
+    "pinnedRows": 9,
+    "total": 19
+  },
+  "focusedTests": 19,
+  "allocations": {
+    "coldBytes": 18272,
+    "ownedBytes": 16440480,
+    "operations": 1000,
+    "ownedBytesPerOperation": 16440.48,
+    "runtime": "10.0.11",
+    "boundary": "Two parser setups, persisted declarations/models, effective table and owned normalized defaults; synchronous current-thread allocations. No zero-allocation composition promise. No retained-memory or cross-platform inference."
+  },
+  "retainedEstimate": {
+    "retainedEstimate": 315472,
+    "results": 100,
+    "boundary": "Separate retained-GC estimate for composed immutable models, normalized default arrays, boxed tuple holders and their object array after parser scratch collection. Informational estimate, no threshold/retry/subtraction beyond the raw before/after difference."
+  },
+  "benchmarkCorrectness": "10 authored full composition/model/default oracles and 10 timed-method output oracles passed.",
+  "benchmarksPrepared": [
+    "Xemele.Benchmarks.DtdGrammarJoinBenchmarks.EffectiveDefaults"
+  ],
+  "mtpTests": {
+    "total": 5014,
+    "failed": 0,
+    "skipped": 0
+  },
+  "publicApiMembers": 251,
+  "runtimeTests": {
+    "Xemele.Tests": {
+      "total": 4460,
+      "failed": 0,
+      "skipped": 0
+    },
+    "Xemele.Conformance.Tests": {
+      "total": 255,
+      "failed": 0,
+      "skipped": 0
+    },
+    "Xemele.Differential.Tests": {
+      "total": 299,
+      "failed": 0,
+      "skipped": 0
+    }
+  },
+  "ownJoinTests": 19,
+  "discovery": {
+    "apiDeclarations": 251,
+    "fixtures": 3388
+  },
+  "referenceProvenance": {
+    "records": 242,
+    "runnerSha256": "0affb7fb8fc54562b3260e172895b2cc594fa015609544464e51e22403a2568a",
+    "build": "1.0.0+022bc0f2d049d07d258a7a388ad37f0b7573e405",
+    "completeFreshOutputCopied": true,
+    "unchangedAfterChecks": true
+  },
+  "ownedPaths": [
+    "benchmarks/Xemele.Benchmarks/M2-dtd-grammar/Join.cs",
+    "benchmarks/Xemele.Benchmarks/M2-dtd-grammar/JoinBenchmarks.cs",
+    "docs/reports/M2-dtd-grammar/BenchmarkDriver.cs",
+    "docs/reports/M2-dtd-grammar/README.md",
+    "docs/reports/M2-dtd-grammar/Xemele.DtdGrammarJoinBenchmarks.csproj",
+    "docs/reports/M2-dtd-grammar/candidate-four/Xemele.Conformance.Tests-discovery.txt.gz",
+    "docs/reports/M2-dtd-grammar/candidate-four/Xemele.Conformance.Tests.xml.gz",
+    "docs/reports/M2-dtd-grammar/candidate-four/Xemele.Differential.Tests-discovery.txt.gz",
+    "docs/reports/M2-dtd-grammar/candidate-four/Xemele.Differential.Tests.xml.gz",
+    "docs/reports/M2-dtd-grammar/candidate-four/Xemele.Tests-discovery.txt.gz",
+    "docs/reports/M2-dtd-grammar/candidate-four/Xemele.Tests.xml.gz",
+    "docs/reports/M2-dtd-grammar/candidate-four/allocations.json",
+    "docs/reports/M2-dtd-grammar/candidate-four/checks.txt.gz",
+    "docs/reports/M2-dtd-grammar/candidate-four/focused.xml.gz",
+    "docs/reports/M2-dtd-grammar/candidate-four/internal-contract.txt",
+    "docs/reports/M2-dtd-grammar/candidate-four/reference-provenance.json",
+    "docs/reports/M2-dtd-grammar/candidate-four/retained.json",
+    "docs/reports/M2-dtd-grammar/candidate-four/runtime-api.json",
+    "docs/reports/M2-dtd-grammar/candidate-four/sample.txt",
+    "docs/reports/M2-dtd-grammar/candidate-four/summary.json",
+    "docs/reports/M2-dtd-grammar/candidate-one/checks.txt.gz",
+    "docs/reports/M2-dtd-grammar/candidate-one/internal-contract.txt",
+    "docs/reports/M2-dtd-grammar/candidate-one/summary.json",
+    "docs/reports/M2-dtd-grammar/candidate-three/allocations.json",
+    "docs/reports/M2-dtd-grammar/candidate-three/checks.txt.gz",
+    "docs/reports/M2-dtd-grammar/candidate-three/focused.xml.gz",
+    "docs/reports/M2-dtd-grammar/candidate-three/internal-contract.txt",
+    "docs/reports/M2-dtd-grammar/candidate-three/sample.txt",
+    "docs/reports/M2-dtd-grammar/candidate-three/summary.json",
+    "docs/reports/M2-dtd-grammar/candidate-two/checks.txt.gz",
+    "docs/reports/M2-dtd-grammar/candidate-two/focused.xml.gz",
+    "docs/reports/M2-dtd-grammar/candidate-two/internal-contract.txt",
+    "docs/reports/M2-dtd-grammar/candidate-two/summary.json",
+    "docs/reports/M2-dtd-grammar/exclusive-d1dfbac/Xemele.Benchmarks.DtdGrammarJoinBenchmarks-report-github.md",
+    "docs/reports/M2-dtd-grammar/exclusive-d1dfbac/Xemele.Benchmarks.DtdGrammarJoinBenchmarks-report.csv",
+    "docs/reports/M2-dtd-grammar/exclusive-d1dfbac/Xemele.Benchmarks.DtdGrammarJoinBenchmarks-report.html",
+    "docs/reports/M2-dtd-grammar/exclusive-d1dfbac/full-raw.zip",
+    "docs/reports/M2-dtd-grammar/exclusive-d1dfbac/measurement-validation.json",
+    "docs/reports/M2-dtd-grammar/exclusive-d1dfbac/parent.txt.gz",
+    "docs/reports/M2-dtd-grammar/exclusive-d1dfbac/processes.txt",
+    "docs/reports/M2-dtd-grammar/exclusive-d1dfbac/summary.json",
+    "docs/reports/M2-dtd-grammar/final-audit-58155d4/checks.txt.gz",
+    "docs/reports/M2-dtd-grammar/final-audit-58155d4/summary.json",
+    "docs/reports/M2-dtd-grammar/integration-attempt1/Xemele.Conformance.Tests-discovery.txt.gz",
+    "docs/reports/M2-dtd-grammar/integration-attempt1/Xemele.Conformance.Tests.xml.gz",
+    "docs/reports/M2-dtd-grammar/integration-attempt1/Xemele.Differential.Tests-discovery.txt.gz",
+    "docs/reports/M2-dtd-grammar/integration-attempt1/Xemele.Differential.Tests.xml.gz",
+    "docs/reports/M2-dtd-grammar/integration-attempt1/Xemele.Tests-discovery.txt.gz",
+    "docs/reports/M2-dtd-grammar/integration-attempt1/Xemele.Tests.xml.gz",
+    "docs/reports/M2-dtd-grammar/integration-attempt1/allocations.json",
+    "docs/reports/M2-dtd-grammar/integration-attempt1/focused.xml.gz",
+    "docs/reports/M2-dtd-grammar/integration-attempt1/internal-contract.txt",
+    "docs/reports/M2-dtd-grammar/integration-attempt1/reference-provenance.json",
+    "docs/reports/M2-dtd-grammar/integration-attempt1/retained.json",
+    "docs/reports/M2-dtd-grammar/integration-attempt1/runtime-api.json",
+    "docs/reports/M2-dtd-grammar/integration-attempt1/sample.txt",
+    "docs/reports/M2-dtd-grammar/oracle-d1dfbac/checks.txt.gz",
+    "docs/reports/M2-dtd-grammar/oracle-d1dfbac/summary.json",
+    "docs/reports/M2-dtd-grammar/reviews.json",
+    "docs/reports/M2-dtd-grammar/verify.py",
+    "docs/tasks/M2-dtd-grammar.json",
+    "samples/M2-dtd-grammar/Inventory.cs",
+    "samples/M2-dtd-grammar/Program.cs",
+    "samples/M2-dtd-grammar/Sample.csproj",
+    "tests/Xemele.Tests/M2-dtd-grammar/JoinedTests.cs",
+    "tests/Xemele.Tests/M2-dtd-grammar/PinnedTests.cs",
+    "tests/fixtures/M2-dtd-grammar/README.md",
+    "tests/fixtures/M2-dtd-grammar/pinned.json"
+  ],
+  "scope": "Owned join validation/sample of verified common-only DTD children; no production runtime edits. Sample demonstrates effective-table composition without implementing the later production DOCTYPE/general-entity owner. Pinned subsets do not claim full XML conformance. Windows/x64/AOT unrun; new composition timing requires exclusive grant. Existing child timing is not rerun."
+}
