@@ -4,11 +4,11 @@
   "milestone": "M2",
   "title": "Expose framed external declaration metadata to Core",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "worker:M2-external-declaration-hook",
   "branch": "codex/m2-external-declaration-hook",
   "base_revision": "e82db97101699f538a068b43fa7f3f8c06492ed3",
-  "integration_revision": null,
+  "integration_revision": "554b5684ec2b7a3d5362cb17605a16872467ca5b",
   "depends_on": [
     "M2-entities",
     "M2-version-declarations",
@@ -37,7 +37,8 @@
       "status": "passed",
       "evidence": [
         "bounded-review",
-        "focused-preservation"
+        "focused-preservation",
+        "coordinator-integration"
       ]
     },
     {
@@ -46,7 +47,8 @@
       "status": "passed",
       "evidence": [
         "bounded-review",
-        "focused-preservation"
+        "focused-preservation",
+        "coordinator-integration"
       ]
     },
     {
@@ -55,7 +57,8 @@
       "status": "passed",
       "evidence": [
         "remaining-checks",
-        "bounded-review"
+        "bounded-review",
+        "coordinator-integration"
       ]
     }
   ],
@@ -126,19 +129,28 @@
       "result": "failed",
       "summary": "Foundation9/API290/source entrypoint passed; package product hash assertion rejected a transitive source rebuild with new embedded Git revision. Kept test binary identity, restored tested output copy and disabled transitive project rebuild; no runtime source change.",
       "artifact": "docs/reports/M2-external-declaration-hook/package-identity-failure.json"
+    },
+    {
+      "id": "coordinator-integration",
+      "kind": "integration",
+      "revision": "554b5684ec2b7a3d5362cb17605a16872467ca5b",
+      "command": "Reused verify.py in memory with isolated integration branch and separate report path; actual focused1376 plusfoundation9, approvedAPI290, source/fresh package identity, planning14/136 and ownership/diff checks. Exact commands in integration-summary.json.",
+      "result": "passed",
+      "summary": "1376 actual passing checks including17new;9foundation passed,API290matched,source/fresh package actual consumers and tested product byte identity passed. Passive bounded metadata reuse source approved; no new allocation/timing required. Core E38 compatibility remains original grammar obligation.",
+      "artifact": "docs/reports/M2-external-declaration-hook/integration-summary.json"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Implemented internal validated TextDeclaration hook only. Exact owned bounded version/location retained; absent declaration/version distinct; no Core compatibility enforcement or E38-fix claim. Integrated verification belongs to coordinator.",
+    "summary": "Integrated and verified internal framed metadata hook; original grammar still owns actual composition compatibility.",
     "checks": [
       "1376 scoped MTP checks passed including17new; separate9foundation passed; API290 matched; source+fresh package entrypoint/product identity passed.",
       "Planning14controls and validate134; bounded review/ownership/diff checks passed; original test and harness failures preserved with narrow fixes.",
       "No bespoke timing/allocation; passive metadata retention and inherited unchanged measurement evidence preserved."
     ],
-    "remaining": [
-      "Coordinator integrate/reverify; dependent Core grammar worker compares primary/external versions and addresses E38."
-    ],
-    "requests": []
+    "remaining": [],
+    "requests": [
+      "Original grammar composition-policy change may require scoped update of the existing hook test/sample public implicit1.0+external1.1 acceptance oracle; preserve exact E38 metadata test and use explicitly compatible primary context for hook-only preservation. Do not silently exclude inherited rows."
+    ]
   }
 }
