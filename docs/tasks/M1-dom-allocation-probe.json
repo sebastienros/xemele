@@ -4,11 +4,11 @@
   "milestone": "M1",
   "title": "Diagnose and stabilize the warm borrowed-name allocation measurement",
   "kind": "infrastructure",
-  "status": "implemented",
+  "status": "verified",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M1-dom-allocation-probe",
   "branch": "codex/m1-dom-allocation-probe",
   "base_revision": "78ae04d908d9b4401f971ebb746630c58ca519f1",
-  "integration_revision": null,
+  "integration_revision": "d95f12e36e76ce9a0a6722e13f7b5f775d015090",
   "depends_on": [
     "M1-dom"
   ],
@@ -35,7 +35,9 @@
         "focused",
         "full",
         "allocation",
-        "audit"
+        "audit",
+        "integrated-checks",
+        "independent-review"
       ]
     },
     {
@@ -52,7 +54,9 @@
         "regressions",
         "discovery",
         "audit",
-        "baseline-full"
+        "baseline-full",
+        "integrated-checks",
+        "independent-review"
       ]
     }
   ],
@@ -151,6 +155,24 @@
       "result": "passed",
       "summary": "All observed paths owned; production source unchanged; source diff retained.",
       "artifact": "docs/reports/M1-dom-allocation-probe/source-audit.json"
+    },
+    {
+      "id": "integrated-checks",
+      "kind": "integration",
+      "revision": "d95f12e36e76ce9a0a6722e13f7b5f775d015090",
+      "command": "Authorized isolated fresh build/focused/full/diagnostic/API/discovery/planning/regressions and owned delta checks; see integration-checks.json",
+      "result": "passed",
+      "summary": "Fresh focused1/full288 no skips; default diagnostic steady0B,setup10720B/reflection864B/originalwarm24B; API222; discovery3388; planning109/14regressions; production unchanged. Historical216B and baselineSyntax6000B unresolved, preserved.",
+      "artifact": "docs/reports/M1-dom-allocation-probe/integration-checks.json"
+    },
+    {
+      "id": "independent-review",
+      "kind": "review",
+      "revision": "46f90ea2324f33617b091adbf2b8dcba2d83da18",
+      "command": "Read-only independent review_input_spike source and raw diagnostic/full reports",
+      "result": "passed",
+      "summary": "Independent review_input_spike approved46f90ea; unchanged0B/identity10000 same noinline helper; historical216B unresolved; baselineSyntax6000B retained.",
+      "artifact": "docs/reports/M1-dom-allocation-probe/integration-audit.json"
     }
   ],
   "blockers": [],
@@ -160,7 +182,7 @@
       "See README.md/evidence and preserved successful/failed logs at46f90ea. No timing benchmarks."
     ],
     "remaining": [
-      "Coordinator independent review and integrated verification; historical216B cause unresolved despite corrected scope."
+      "Historical216B cause unresolved; bounded structural measurement repair verified, no runtime cause claim."
     ],
     "requests": [
       "tests/Xemele.Tests/M1-syntax/StreamingTests.cs:59: assess unchanged warm syntax probe transient6000B baseline failure287/288. Outside ownership; final full288 passed, no retry or syntax changes."
