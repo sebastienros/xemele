@@ -40,8 +40,11 @@ internal sealed class Scanner<T, TUnits> where T : unmanaged where TUnits : IUni
         while (consumed < input.Length)
         {
             ReadOnlySpan<T> remaining = input[consumed..];
-            int delimiter = TUnits.FindDelimiter(remaining);
-            int available = delimiter < 0 ? remaining.Length : delimiter;
+            // Search each payload unit once, plus one bounded boundary lookahead.
+            // Searching the full tail per fragment rescans long tokens quadratically.
+            int window = (int)Math.Min(remaining.Length, (long)quantum + 1);
+            int delimiter = TUnits.FindDelimiter(remaining[..window]);
+            int available = delimiter < 0 ? Math.Min(remaining.Length, quantum) : delimiter;
             int take = Math.Min(available, quantum);
             bool ended = delimiter >= 0 && take == available;
             ReadOnlySpan<T> fragment = remaining[..take];

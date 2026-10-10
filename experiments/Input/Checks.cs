@@ -64,12 +64,13 @@ internal static class Checks
         }
         var completedScanner = new Scanner<char, CharUnits>(); completedScanner.Append([], true, new CharSink());
         Reject(() => completedScanner.Append([], true, new CharSink()), "Completed state rejects append.");
+        LongChunkProgress();
         TokenChecks();
         foreach (string name in new[] { "ShortEarly", "ShortLate", "ShortMiss", "LongEarly", "LongMiddle", "LongLate", "LongMiss", "UnicodeLate", "UnicodeMiss", "Dense" })
             new ScanBenchmarks { Case = name }.Setup();
         foreach (string name in new[] { "AsciiShort", "UnicodeShort", "AsciiLong", "UnicodeLong" })
             foreach (int chunk in new[] { 7, 256 }) new InputBenchmarks { Case = name, Chunk = chunk }.Setup();
-        Console.WriteLine($"PASS {_checks} assertions; every short two-part split; chunks 1..32; per-fragment suspension; malformed Unicode; matching oracle/collisions/cultures; scan and pipeline setup parity.");
+        Console.WriteLine($"PASS {_checks} assertions; every short two-part split; chunks 1..32; per-fragment suspension; long single-chunk bounded progress; malformed Unicode; matching oracle/collisions/cultures; scan and pipeline setup parity.");
     }
     private static long Oracle(string text, out int tokens)
     {
@@ -78,6 +79,54 @@ internal static class Checks
         foreach (char c in text) checksum = unchecked(checksum * 31 + c);
         if (text.Length > 0 && text[^1] != '|') checksum = unchecked(checksum * 31 + '|');
         return checksum;
+    }
+    private sealed class ProgressSink<T> : IFragmentSink<T> where T : unmanaged
+    {
+        public int Units;
+        public int Ends;
+        public int Calls;
+        public int Largest;
+        public bool Pause;
+        public bool Fragment(ReadOnlySpan<T> fragment, bool ended)
+        {
+            Units += fragment.Length; Ends += ended ? 1 : 0; Calls++;
+            Largest = Math.Max(Largest, fragment.Length);
+            return !Pause;
+        }
+    }
+    private static void LongChunkProgress()
+    {
+        // All data is supplied in ONE large chunk; transport chunking must not hide tail rescans.
+        foreach (int length in new[] { 1, 63, 64, 65, 127, 128, 129, 4096, 1024 * 1024 })
+        foreach (bool delimiter in new[] { false, true })
+        foreach (bool pause in new[] { false, true })
+        {
+            string text = new string('x', length) + (delimiter ? "|" : "");
+            byte[] bytes = Encoding.UTF8.GetBytes(text);
+            var chars = new Scanner<char, CharUnits>(); var charSink = new ProgressSink<char> { Pause = pause };
+            var utf8 = new Scanner<byte, ByteUnits>(); var byteSink = new ProgressSink<byte> { Pause = pause };
+            int charOffset = 0, byteOffset = 0;
+            ScanResult charResult, byteResult;
+            do
+            {
+                charResult = chars.Append(text.AsSpan(charOffset), true, charSink, quantum: 64);
+                Require(charResult.Consumed <= (pause ? 65 : text.Length), "Character bounded progress.");
+                charOffset += charResult.Consumed;
+            } while (charResult.Step != Step.Completed);
+            do
+            {
+                byteResult = utf8.Append(bytes.AsSpan(byteOffset), true, byteSink, quantum: 64);
+                Require(byteResult.Consumed <= (pause ? 65 : bytes.Length), "Byte bounded progress.");
+                byteOffset += byteResult.Consumed;
+            } while (byteResult.Step != Step.Completed);
+            int calls = (length + 63) / 64 + (delimiter ? 0 : 1);
+            Require(charOffset == text.Length && byteOffset == bytes.Length, "Entire large chunk consumed.");
+            Require(charSink.Units == length && byteSink.Units == length && charSink.Ends == 1 && byteSink.Ends == 1, "Long-token fragment/end accounting.");
+            Require(charSink.Calls == calls && byteSink.Calls == calls && charSink.Largest <= 64 && byteSink.Largest <= 64, "Linear fragment count and bounded payload.");
+        }
+        // A maximal quantum must not overflow the lookahead length.
+        var scanner = new Scanner<char, CharUnits>(); var sink = new ProgressSink<char>();
+        Require(scanner.Append("x|", true, sink, int.MaxValue).Step == Step.Completed && sink.Ends == 1, "Checked lookahead for maximal quantum.");
     }
     private static void PauseBytes(byte[] input, long expected, int tokens)
     {
