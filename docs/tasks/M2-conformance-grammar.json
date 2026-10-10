@@ -4,10 +4,10 @@
   "milestone": "M2",
   "title": "Complete strict XML grammar against classified corpus",
   "kind": "feature",
-  "status": "in_progress",
-  "owner": "worker:M2-conformance-grammar",
-  "branch": "codex/m2-conformance-grammar",
-  "base_revision": "9d445cc3356b841b9ac31d42e9190422144dac1d",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
   "integration_revision": null,
   "depends_on": [
     "M2-entities",
@@ -17,7 +17,10 @@
     "M2-dtd-entity-base",
     "M2-dtd-nonvalidating",
     "M2-undeclared-contract",
-    "M2-undeclared-content"
+    "M2-undeclared-content",
+    "M2-core-standalone",
+    "M2-dtd-corpus-repair",
+    "M2-external-declaration-hook"
   ],
   "goals": [
     "G01",
@@ -64,12 +67,13 @@
   "evidence": [],
   "blockers": [],
   "handoff": {
-    "summary": "Coordinator split from M2-conformance; original complete-profile A1-A3 remain unchanged in parent join.",
+    "summary": "Original complete strict grammar A1-A3 preserved. Active standalone correction split with owner acknowledgement to M2-core-standalone; original grammar starts only after standalone, DTD corpus repair and external metadata hook are integrated verified.",
     "checks": [],
     "remaining": [],
     "requests": [
       "M2-undeclared-content must be verified before full grammar begins; contract alone does not fulfill E13 runtime behavior. Preserve represented/unresolved identities and loss-refusal policy. Core standalone CDATA/direct-reference versus expanded-entity S-origin fix remains A1.",
-      "Coordinator claims DTD seven-case repair and external framed-declaration hook. Both are mandatory prerequisites of the planned conformance join. Grammar must consume their code only after integrated verification; append verified prerequisite IDs to its own record then, before implemented. The validator requires every started dependency already verified, so current Core work continues from original verified dependencies. Worker task-JSON-only hold acknowledged before this serialized note."
+      "Coordinator claims DTD seven-case repair and external framed-declaration hook. Both are mandatory prerequisites of the planned conformance join. Grammar must consume their code only after integrated verification; append verified prerequisite IDs to its own record then, before implemented. The validator requires every started dependency already verified, so current Core work continues from original verified dependencies. Worker task-JSON-only hold acknowledged before this serialized note.",
+      "Existing standalone branch implementation/evidence retained by M2-core-standalone; no acceptance criterion removed or reported fulfilled by the split."
     ]
   }
 }
