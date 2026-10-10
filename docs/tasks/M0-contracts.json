@@ -4,7 +4,7 @@
   "milestone": "M0",
   "title": "Approve foundation decisions and contract fixture format",
   "kind": "contract",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M0-contracts",
   "branch": "codex/m0-contracts",
   "base_revision": "afb8d9c64833e28cd2c9aa3d95bb601a18487a89",
@@ -41,35 +41,99 @@
     {
       "id": "M0-contracts-A1",
       "description": "Resolve foundation decisions and concrete common/internal shapes, ownership and numeric limits; record project license decision and approve stage-specific contract fixtures.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "foundation-decisions",
+        "compiled-contracts-and-preservation"
+      ]
     },
     {
       "id": "M0-contracts-A2",
       "description": "Compile representative contracts in net10.0 and review value-handle/spans/defaults/error semantics; record decision evidence separately from implementation.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "compiled-contracts-and-preservation"
+      ]
     },
     {
       "id": "M0-contracts-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "compiled-contracts-and-preservation"
+      ]
     },
     {
       "id": "M0-contracts-A4",
       "description": "Define borrowed/owned data and allocation budgets in API contracts; record benchmark-backed SearchValues, immutable literal/table, fixed-token matching and buffer-lifetime decisions under the performance coding rules.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "measured-allocation-decisions",
+        "compiled-contracts-and-preservation"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "docs/decisions/M0/foundation.md: approved representation, scanner, stage/common limits, ownership and allocation decisions",
+    "docs/decisions/M0/conformance.md and tests/Contracts/Fixtures/foundation/Conformance.cs.fixture: frozen case interface and concrete outcome/schema",
+    "docs/decisions/M0/api-compatibility.md and docs/reports/M0-contracts/ApiCheck/Program.cs: compiled metadata extraction/normalization prototype and limits",
+    "docs/reports/M0-contracts/Fixtures/ and tests/Contracts/Fixtures/foundation/: separately compiled M1/M2 declarations, span usage, probe and golden fragments",
+    "docs/reports/M0-contracts/Checks/ContractTests.cs and verify.py: MTP semantics tests, actual signature mutation and preservation checks",
+    "LICENSE and THIRD-PARTY-NOTICES.md: user-chosen MIT and provenance policy"
+  ],
+  "evidence": [
+    {
+      "id": "foundation-decisions",
+      "kind": "review",
+      "revision": "5aa9ab77df7c822b8e976f6ef034ec49bc8421c6",
+      "command": null,
+      "result": "passed",
+      "summary": "Task-owner design review approves arena/value-handle identity and lifetime, character scanner/bounded strict decoder and pause/EOF/error semantics, exact M1/M2 common/options/resolver ownership and nullable numeric defaults, unchanged conformance case/schema, and user-chosen MIT. Compiled models remain outside the empty runtime; independent integration review belongs to coordinator.",
+      "artifact": "docs/decisions/M0/foundation.md"
+    },
+    {
+      "id": "compiled-contracts-and-preservation",
+      "kind": "check",
+      "revision": "028b30627d8d972183f7e80f4be2538bd0b0a59f",
+      "command": "python3 docs/reports/M0-contracts/verify.py",
+      "result": "passed",
+      "summary": "Pinned SDK 10.0.400 Release builds passed with no warnings/errors. 11/11 MTP contract tests (including last-data callback cancellation suppressing EOF and faulting scanner), 139 M1 compiled members preserved within 173 M2, 8-member normalization golden, missing/added/changed baseline rejection and real mutated signature probes passed. Solution Release build, 3/3 existing MTP infrastructure tests, 13/13 Python discovery tests, empty-runtime discovery, tree 8-fixture self-check and corrected input 83,095 assertions passed. Planning validation passed for 98 tasks. Local Arm64 only; no new timing. Caller SDK environment preserved; actual SDK version checked against global.json; transcript records actual host/architecture, full Git revision and runtime info.",
+      "artifact": "docs/reports/M0-contracts/checks.txt"
+    },
+    {
+      "id": "measured-allocation-decisions",
+      "kind": "review",
+      "revision": "5aa9ab77df7c822b8e976f6ef034ec49bc8421c6",
+      "command": null,
+      "result": "passed",
+      "summary": "Reviewed integrated tree evidence at 24a0499f1d7c891a803bd8a370951f2a50e9a751, corrected input at 87d101c7e9b09167b2d114f1f33ea5974680617d and unchanged primitive suites at 662b15bb24ce340c301389e037277fd68d9f60ab. Recorded arena retained-memory benefit with slower traversal/mutation, borrowed intern hit and input/callback 0 B warm budgets, owned text retention boundary, conditional cached SearchValues, static span/literal lowering caveats, length-equality over slower hash candidate and separate cold/persistence/error/pool budgets. Original 62 affected input/rejection timings explicitly superseded; single-host synthetic timings provisional and future composition/x64/Arm64 release checks required.",
+      "artifact": "docs/decisions/M0/foundation.md"
+    },
+    {
+      "id": "independent-review-and-resolution",
+      "kind": "review",
+      "revision": "5aa9ab77df7c822b8e976f6ef034ec49bc8421c6",
+      "command": null,
+      "result": "failed",
+      "summary": "Coordinator reported independent read-only review: foundation decisions, stages, ownership, MIT, provisional evidence and checker scope coherent; blocking synthetic pump EOF dispatch lacked a before-callback cancellation check. Resolved in 028b30627d8d972183f7e80f4be2538bd0b0a59f with immediate token check and focused passing regression requiring cancellation exception, zero EOF callbacks and terminal faulting. This records the original finding honestly, not final integration approval. Coordinator portability review of 81a69c6 also accepted caller-environment SDK verification/logging correction.",
+      "artifact": "docs/reports/M0-contracts/README.md"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "",
-    "checks": [],
-    "remaining": [],
-    "requests": []
+    "summary": "Approved measured foundation decisions, MIT/provenance, exact stage/common/infra shapes and limits; compiled nonpackaged models and SDK-Roslyn comparison prototype with actual negative probes. Final implementation/tested revision 028b30627d8d972183f7e80f4be2538bd0b0a59f includes caller-environment verifier portability and independently reviewed EOF cancellation correction. Public runtime remains empty.",
+    "checks": [
+      "DOTNET_ROOT and PATH explicitly configured to pinned local SDK; python3 docs/reports/M0-contracts/verify.py: passed at 028b30627d8d972183f7e80f4be2538bd0b0a59f; durable host/revision transcript docs/reports/M0-contracts/checks.txt (11 contract MTP, 3 existing MTP smoke, 13 discovery tests; 139/173 stage members; real normalizer mutation probes; tree 8-fixture and input 83,095-assertion self-checks; solution/fixture/tool builds; planning validation 98 tasks).",
+      "git diff --check: passed.",
+      "Initial sandbox MTP stalled and its identified process was terminated; escalated prebuilt/final native MTP runs passed. Initial nested-fixture obj contamination and missing experiment build were corrected within owned paths before final passing run. No new timing/hosted CI claimed."
+    ],
+    "remaining": [
+      "Coordinator recheck of bounded review correction, integration and verification; worker does not set verified."
+    ],
+    "requests": [
+      "Ordered CI/repair task: own tools/ApiBaseline/, tests/Xemele.TestUtilities/Build/, .github/workflows/build.yml; compose validated fragments in memory and compare runtime Release assembly using task-owned Roslyn checker; exact commands in docs/reports/M0-contracts/README.md.",
+      "First owning conformance consumer: implement IConformanceCase/ConformanceOutcome from docs/decisions/M0/conformance.md when parser execution exists; if an earlier concrete criterion requires it, create a separate precisely owned shared task. M0-corpora-wiring only wires verified private ProvisionOutcome/report and must preserve honest provisioning classifications without inferring Accepted/Rejected parser execution.",
+      "Introducing tasks must expand normalizer/probes before shipping uncovered signature families; M1/later owners validate real XML composition, enforcing exact/one-over limits and x64/Arm64 release performance."
+    ]
   }
 }
