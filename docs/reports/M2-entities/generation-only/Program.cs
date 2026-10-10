@@ -16,7 +16,7 @@ if (partitions.Sum(p => p.Benchmarks.Length) != 6) throw new InvalidOperationExc
 var outputs = new List<object>();
 foreach (var partition in partitions)
 {
-    var toolchain = partition.RepresentativeBenchmarkCase.GetToolchain();
+    var toolchain = partition.RepresentativeBenchmarkCase.Job.ResolveValue(InfrastructureMode.ToolchainCharacteristic, resolver);
     var generated = toolchain.Generator.GenerateProject(partition, ConsoleLogger.Default, Path.GetFullPath(args[0]));
     if (!generated.IsGenerateSuccess) throw new InvalidOperationException("Generation failed.", generated.GenerateException);
     var built = toolchain.Builder.Build(generated, partition, ConsoleLogger.Default);
