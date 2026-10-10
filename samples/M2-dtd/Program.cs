@@ -1,6 +1,7 @@
 using System.Text.Json;
 using Xemele.DtdParentSample;
 using Xemele.Parsing.Dtd;
+if (args.Contains("--runtime")) { Console.WriteLine(Environment.Version); return; }
 if (args.Contains("--contract")) { Inventory.Print(); return; }
 var result = Join.Run();
 Console.WriteLine(JsonSerializer.Serialize(new {

@@ -67,8 +67,7 @@ def main():
             run('git', 'merge-base', '--is-ancestor', prerequisite['integration_revision'], 'HEAD')
         assert run('dotnet', '--version').strip() == '10.0.400'
         runtime_info = run('dotnet', '--info')
-        assert re.search(r'Host:\s+Version:\s+10\.0\.11', runtime_info), 'unexpected runtime'
-        summary['runtime'] = '10.0.11'
+        assert 'Microsoft.NETCore.App 10.0.11 ' in runtime_info, 'required target runtime unavailable'
         summary['dotnet'] = str(dotnet)
         summary['dotnetSha256'] = hashlib.sha256(dotnet.read_bytes()).hexdigest()
         task = json.loads((ROOT/'docs/tasks/M2-dtd.json').read_text())
@@ -82,6 +81,9 @@ def main():
         assert not run('git', 'ls-files', '--others', '--exclude-standard', '--', *source_paths).strip(), 'untracked tested sources'
         sample = ROOT/'samples/M2-dtd/bin/Release/net10.0/Xemele.DtdParentSample.dll'
         run('dotnet', 'build', ROOT/'samples/M2-dtd/Sample.csproj', *FLAGS)
+        runtime = run('dotnet', sample, '--runtime').strip()
+        assert runtime == '10.0.11', 'unexpected actual net10 executable runtime'
+        summary['runtime'] = runtime
         (report/'internal-contract.txt').write_text(run('dotnet', sample, '--contract'))
         fixture = (ROOT/'tests/Contracts/Fixtures/M2/Dtd.cs.fixture').read_text()
         approved = raw/'approved'; approved.mkdir()
