@@ -1,0 +1,231 @@
+{
+  "result": "failed",
+  "host": "macOS-15.8.1-arm64-arm-64bit-Mach-O",
+  "architecture": "arm64",
+  "timing": "not run",
+  "runtimeSettings": "default JIT/GC/test parallelism",
+  "arguments": {
+    "report_prefix": "integration-f573a6c-attempt1",
+    "expected_branch": "codex/integrate-m2-streaming-allocation-probe",
+    "audit_base": "b6ec87e",
+    "runtime_count": 247,
+    "conformance_count": 255,
+    "differential_count": 299,
+    "api_count": 222,
+    "fixture_count": 3388,
+    "planning_count": 14,
+    "task_count": 114
+  },
+  "checks": {
+    "diagnostic-original": {
+      "result": "passed",
+      "detail": {
+        "mode": "original",
+        "runtime": "10.0.11",
+        "warmIterations": 100,
+        "measuredIterations": 10000,
+        "counterOnly": 0,
+        "coldSetup": 6816,
+        "coldRoot": 312,
+        "firstChunk": 432,
+        "setup": 7128,
+        "warmPrimitive": null,
+        "warmSurrounding": 432,
+        "primitive": null,
+        "surrounding": 0,
+        "measured": 0,
+        "completionBytes": 0,
+        "warmCalls": 1199,
+        "warmUnits": 500,
+        "measuredCalls": 120000,
+        "measuredUnits": 50000,
+        "totalUnits": 50500,
+        "totalCalls": 121205,
+        "endDocuments": 1,
+        "completed": true,
+        "scope": "Synchronous checked borrowed Append; setup/root/first-use/caller/output reported separately; no timing or retained-memory estimate",
+        "runtimeSettings": "default JIT/GC; no overrides"
+      }
+    },
+    "diagnostic-equivalent": {
+      "result": "passed",
+      "detail": {
+        "mode": "equivalent",
+        "runtime": "10.0.11",
+        "warmIterations": 100,
+        "measuredIterations": 10000,
+        "counterOnly": 0,
+        "coldSetup": 6816,
+        "coldRoot": 312,
+        "firstChunk": 432,
+        "setup": 7128,
+        "warmPrimitive": 432,
+        "warmSurrounding": 432,
+        "primitive": 0,
+        "surrounding": 0,
+        "measured": 0,
+        "completionBytes": 0,
+        "warmCalls": 1199,
+        "warmUnits": 500,
+        "measuredCalls": 120000,
+        "measuredUnits": 50000,
+        "totalUnits": 50500,
+        "totalCalls": 121205,
+        "endDocuments": 1,
+        "completed": true,
+        "scope": "Synchronous checked borrowed Append; setup/root/first-use/caller/output reported separately; no timing or retained-memory estimate",
+        "runtimeSettings": "default JIT/GC; no overrides"
+      }
+    },
+    "focused-mtp": {
+      "result": "passed",
+      "detail": "Running tests from /private/tmp/xemele-integrate-m2-streaming-allocation-probe/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll (net10.0|arm64)\n/private/tmp/xemele-integrate-m2-streaming-allocation-probe/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll (net10.0|arm64) passed (463ms)\n\nTest run summary: Passed!\n  total: 1\n  failed: 0\n  succeeded: 1\n  skipped: 0\n  duration: 909ms\n"
+    },
+    "cumulative-mtp": {
+      "result": "passed",
+      "detail": "Running tests from /private/tmp/xemele-integrate-m2-streaming-allocation-probe/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll (net10.0|arm64)\nRunning tests from /private/tmp/xemele-integrate-m2-streaming-allocation-probe/tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll (net10.0|arm64)\nRunning tests from /private/tmp/xemele-integrate-m2-streaming-allocation-probe/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll (net10.0|arm64)\n/private/tmp/xemele-integrate-m2-streaming-allocation-probe/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll (net10.0|arm64) passed (977ms)\n/private/tmp/xemele-integrate-m2-streaming-allocation-probe/tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll (net10.0|arm64) passed (749ms)\n/private/tmp/xemele-integrate-m2-streaming-allocation-probe/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll (net10.0|arm64) passed (17s 086ms)\n\nTest run summary: Passed!\n  /private/tmp/xemele-integrate-m2-streaming-allocation-probe/tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll (net10.0|arm64) passed (749ms)\n  /private/tmp/xemele-integrate-m2-streaming-allocation-probe/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll (net10.0|arm64) passed (977ms)\n  /private/tmp/xemele-integrate-m2-streaming-allocation-probe/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll (net10.0|arm64) passed (17s 086ms)\n\n  total: 801\n  failed: 0\n  succeeded: 801\n  skipped: 0\n  duration: 17s 519ms\n"
+    },
+    "direct-Xemele.Tests": {
+      "result": "failed",
+      "detail": "{'counts': {'total': 247, 'failed': 1, 'skipped': 0, 'streaming': [{'result': 'Fail', 'output': None}]}, 'error': \"$ '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' /private/tmp/xemele-integrate-m2-streaming-allocation-probe/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -noColor -result-xml /private/tmp/xemele-integrate-m2-streaming-allocation-probe/artifacts/M2-streaming-allocation-probe/integration-f573a6c-attempt1/Xemele.Tests.xml\\nxUnit.net v3 In-Process Runner v4.0.1+8ed8aa354c (64-bit .NET 10.0.11)\\n  Discovering: Xemele.Tests\\n  Discovered:  Xemele.Tests\\n  Starting:    Xemele.Tests\\n    Xemele.Tests.Syntax.StreamingTests.WarmRepeatedTagsAndStreamingUnicodeDispatchAllocateZero [FAIL]\\n      Assert.Equal() Failure: Values differ\\n      Expected: 0\\n      Actual:   3448\\n      Stack Trace:\\n        /_/tests/Xemele.Tests/M1-syntax/StreamingTests.cs(62,0): at Xemele.Tests.Syntax.StreamingTests.WarmRepeatedTagsAndStreamingUnicodeDispatchAllocateZero()\\n           at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)\\n           at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)\\n  Finished:    Xemele.Tests (ID = '35d053cb04d286b58fb3c1453f20c0072635603ab3f90b39d28fe56f62e8d17b')\\n=== TEST EXECUTION SUMMARY ===\\n   Xemele.Tests  Total: 247, Errors: 0, Failed: 1, Skipped: 0, Not Run: 0, Time: 0.723s\\n\\nexit=1\\n\"}"
+    },
+    "direct-Xemele.Conformance.Tests": {
+      "result": "passed",
+      "detail": {
+        "total": 255,
+        "failed": 0,
+        "skipped": 0,
+        "streaming": []
+      }
+    },
+    "direct-Xemele.Differential.Tests": {
+      "result": "passed",
+      "detail": {
+        "total": 299,
+        "failed": 0,
+        "skipped": 0,
+        "streaming": []
+      }
+    },
+    "reference-provenance": {
+      "result": "passed",
+      "detail": {
+        "records": 242,
+        "sourceRevision": "f573a6c7ee8cb9ca122d2f3e260617ddd162800d",
+        "runnerSha256": "24c2bce95ee73ccf0a06b33c5f68ddf405b533554ba9771b02648a692b59f024",
+        "runner": "/private/tmp/xemele-integrate-m2-streaming-allocation-probe/artifacts/M2-streaming-allocation-probe/integration-f573a6c-attempt1/pinned-reference/BclReference.dll",
+        "dotnet": "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet"
+      }
+    },
+    "compiled-api": {
+      "result": "passed",
+      "detail": {
+        "bootstrapEmptyApi": false,
+        "checkerOutput": "Matched 222 compiled members",
+        "matched": true,
+        "members": 222,
+        "report": "/private/tmp/xemele-integrate-m2-streaming-allocation-probe/docs/reports/M2-streaming-allocation-probe/integration-f573a6c-attempt1/runtime-api.json"
+      }
+    },
+    "discovery": {
+      "result": "passed",
+      "detail": {
+        "apiDeclarations": 222,
+        "apiFragments": [
+          "docs/api/M1-common.txt",
+          "docs/api/M1-dom.txt",
+          "docs/api/M1-serialize.txt",
+          "docs/api/M1-tree.txt"
+        ],
+        "bootstrapEmptyApi": false,
+        "corpusManifests": [
+          "tests/corpora/bootstrap/manifest.json",
+          "tests/corpora/xml/manifest.json"
+        ],
+        "fixtures": 3388,
+        "formatVersion": 1
+      }
+    },
+    "planning-regressions": {
+      "result": "passed",
+      "detail": "test_branch_implementation_does_not_unlock_dependents (test_tasks.TaskTrackingTests.test_branch_implementation_does_not_unlock_dependents) ... ok\ntest_cycle_rejected (test_tasks.TaskTrackingTests.test_cycle_rejected) ... ok\ntest_gate_cannot_omit_a_task (test_tasks.TaskTrackingTests.test_gate_cannot_omit_a_task) ... ok\ntest_initial_readiness (test_tasks.TaskTrackingTests.test_initial_readiness) ... ok\ntest_later_milestone_dependency_rejected (test_tasks.TaskTrackingTests.test_later_milestone_dependency_rejected) ... ok\ntest_malformed_status_reports_error (test_tasks.TaskTrackingTests.test_malformed_status_reports_error) ... ok\ntest_missing_integration_evidence_rejected (test_tasks.TaskTrackingTests.test_missing_integration_evidence_rejected) ... ok\ntest_missing_specification_reports_error (test_tasks.TaskTrackingTests.test_missing_specification_reports_error) ... ok\ntest_repository_graph_valid (test_tasks.TaskTrackingTests.test_repository_graph_valid) ... ok\ntest_similar_prefixes_are_not_ownership_overlap (test_tasks.TaskTrackingTests.test_similar_prefixes_are_not_ownership_overlap) ... ok\ntest_started_task_with_unverified_dependency_rejected (test_tasks.TaskTrackingTests.test_started_task_with_unverified_dependency_rejected) ... ok\ntest_unordered_path_overlap_rejected_case_insensitively (test_tasks.TaskTrackingTests.test_unordered_path_overlap_rejected_case_insensitively) ... ok\ntest_unproven_acceptance_rejected (test_tasks.TaskTrackingTests.test_unproven_acceptance_rejected) ... ok\ntest_verified_bootstrap_unlocks_independent_lanes (test_tasks.TaskTrackingTests.test_verified_bootstrap_unlocks_independent_lanes) ... ok\n\n----------------------------------------------------------------------\nRan 14 tests in 0.024s\n\nOK\n"
+    },
+    "planning-validation": {
+      "result": "passed",
+      "detail": "Validated 114 tasks: schema, evidence, acyclic dependencies, additive milestones, and ordered ownership.\n"
+    },
+    "final-audit": {
+      "result": "passed",
+      "detail": {
+        "committed": [
+          "docs/reports/M2-streaming-allocation-probe/Diagnostics/Diagnostics.csproj",
+          "docs/reports/M2-streaming-allocation-probe/Diagnostics/Program.cs",
+          "docs/reports/M2-streaming-allocation-probe/README.md",
+          "docs/reports/M2-streaming-allocation-probe/experiment-95006d1-attempt1/diagnostic-build.txt.gz",
+          "docs/reports/M2-streaming-allocation-probe/experiment-95006d1-attempt1/equivalent.txt.gz",
+          "docs/reports/M2-streaming-allocation-probe/experiment-95006d1-attempt1/original.txt.gz",
+          "docs/reports/M2-streaming-allocation-probe/experiment-f71cee2-attempt1/0.txt.gz",
+          "docs/reports/M2-streaming-allocation-probe/experiment-f71cee2-attempt1/1.txt.gz",
+          "docs/reports/M2-streaming-allocation-probe/experiment-f71cee2-attempt1/2.txt.gz",
+          "docs/reports/M2-streaming-allocation-probe/experiment-f71cee2-attempt1/3.txt.gz",
+          "docs/reports/M2-streaming-allocation-probe/experiment-f71cee2-attempt1/4.txt.gz",
+          "docs/reports/M2-streaming-allocation-probe/experiment-f71cee2-attempt1/diagnostic-build.txt.gz",
+          "docs/reports/M2-streaming-allocation-probe/experiment-f71cee2-attempt1/direct-focused.txt.gz",
+          "docs/reports/M2-streaming-allocation-probe/experiment-f71cee2-attempt1/direct-focused.xml.gz",
+          "docs/reports/M2-streaming-allocation-probe/experiment-f71cee2-attempt1/equivalent.txt.gz",
+          "docs/reports/M2-streaming-allocation-probe/experiment-f71cee2-attempt1/original.txt.gz",
+          "docs/reports/M2-streaming-allocation-probe/history/Xemele.Conformance.Tests.xml.gz",
+          "docs/reports/M2-streaming-allocation-probe/history/Xemele.Differential.Tests.xml.gz",
+          "docs/reports/M2-streaming-allocation-probe/history/Xemele.Tests.xml.gz",
+          "docs/reports/M2-streaming-allocation-probe/history/checks.txt.gz",
+          "docs/reports/M2-streaming-allocation-probe/history/summary.json",
+          "docs/reports/M2-streaming-allocation-probe/source-final-attempt1/Xemele.Conformance.Tests-counts.json",
+          "docs/reports/M2-streaming-allocation-probe/source-final-attempt1/Xemele.Conformance.Tests.xml.gz",
+          "docs/reports/M2-streaming-allocation-probe/source-final-attempt1/Xemele.Differential.Tests-counts.json",
+          "docs/reports/M2-streaming-allocation-probe/source-final-attempt1/Xemele.Differential.Tests.xml.gz",
+          "docs/reports/M2-streaming-allocation-probe/source-final-attempt1/Xemele.Tests-counts.json",
+          "docs/reports/M2-streaming-allocation-probe/source-final-attempt1/Xemele.Tests.xml.gz",
+          "docs/reports/M2-streaming-allocation-probe/source-final-attempt1/audit.json",
+          "docs/reports/M2-streaming-allocation-probe/source-final-attempt1/checks.txt.gz",
+          "docs/reports/M2-streaming-allocation-probe/source-final-attempt1/equivalent-allocations.json",
+          "docs/reports/M2-streaming-allocation-probe/source-final-attempt1/historical-preservation-check.txt.gz",
+          "docs/reports/M2-streaming-allocation-probe/source-final-attempt1/historical-preservation.json",
+          "docs/reports/M2-streaming-allocation-probe/source-final-attempt1/original-allocations.json",
+          "docs/reports/M2-streaming-allocation-probe/source-final-attempt1/reference-provenance.json",
+          "docs/reports/M2-streaming-allocation-probe/source-final-attempt1/runtime-api.json",
+          "docs/reports/M2-streaming-allocation-probe/source-final-attempt1/summary.json",
+          "docs/reports/M2-streaming-allocation-probe/verify.py",
+          "docs/tasks/M2-streaming-allocation-probe.json",
+          "tests/Xemele.Tests/M1-syntax/StreamingTests.cs",
+          "tests/Xemele.Tests/M2-streaming-allocation-probe/StreamingAllocationProbe.cs"
+        ],
+        "working": [],
+        "staged": [],
+        "untracked": [
+          "docs/reports/M2-streaming-allocation-probe/integration-f573a6c-attempt1/Xemele.Conformance.Tests-counts.json",
+          "docs/reports/M2-streaming-allocation-probe/integration-f573a6c-attempt1/Xemele.Conformance.Tests.xml.gz",
+          "docs/reports/M2-streaming-allocation-probe/integration-f573a6c-attempt1/Xemele.Differential.Tests-counts.json",
+          "docs/reports/M2-streaming-allocation-probe/integration-f573a6c-attempt1/Xemele.Differential.Tests.xml.gz",
+          "docs/reports/M2-streaming-allocation-probe/integration-f573a6c-attempt1/Xemele.Tests-counts.json",
+          "docs/reports/M2-streaming-allocation-probe/integration-f573a6c-attempt1/Xemele.Tests.xml.gz",
+          "docs/reports/M2-streaming-allocation-probe/integration-f573a6c-attempt1/audit.json",
+          "docs/reports/M2-streaming-allocation-probe/integration-f573a6c-attempt1/equivalent-allocations.json",
+          "docs/reports/M2-streaming-allocation-probe/integration-f573a6c-attempt1/original-allocations.json",
+          "docs/reports/M2-streaming-allocation-probe/integration-f573a6c-attempt1/reference-provenance.json",
+          "docs/reports/M2-streaming-allocation-probe/integration-f573a6c-attempt1/runtime-api.json"
+        ]
+      }
+    }
+  },
+  "sourceRevision": "f573a6c7ee8cb9ca122d2f3e260617ddd162800d",
+  "dotnetInfo": ".NET SDK:\n Version:           10.0.400\n Commit:            14fbf8d527\n Workload version:  10.0.400-manifests.330ea142\n MSBuild version:   18.9.6+14fbf8d52\n\nRuntime Environment:\n OS Name:     Mac OS X\n OS Version:  15.8\n OS Platform: Darwin\n RID:         osx-arm64\n Base Path:   /Users/sebastienros/Library/Application Support/dotnetup/dotnet/sdk/10.0.400/\n\n.NET workloads installed:\nThere are no installed workloads to display.\nConfigured to use workload sets when installing new manifests.\nNo workload sets are installed. Run \"dotnet workload restore\" to install a workload set.\n\nHost:\n  Version:      11.0.0-rc.1.26425.128\n  Architecture: arm64\n  Commit:       3551975be0\n\n.NET SDKs installed:\n  8.0.424 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/sdk]\n  10.0.100 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/sdk]\n  10.0.400 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/sdk]\n  11.0.100-rc.1.26413.103 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/sdk]\n  11.0.100-rc.1.26425.128 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/sdk]\n\n.NET runtimes installed:\n  Microsoft.AspNetCore.App 8.0.30 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.AspNetCore.App]\n  Microsoft.AspNetCore.App 10.0.0 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.AspNetCore.App]\n  Microsoft.AspNetCore.App 10.0.11 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.AspNetCore.App]\n  Microsoft.AspNetCore.App 11.0.0-rc.1.26413.103 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.AspNetCore.App]\n  Microsoft.AspNetCore.App 11.0.0-rc.1.26425.128 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.AspNetCore.App]\n  Microsoft.NETCore.App 8.0.30 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App]\n  Microsoft.NETCore.App 10.0.0 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App]\n  Microsoft.NETCore.App 10.0.11 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App]\n  Microsoft.NETCore.App 11.0.0-rc.1.26413.103 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App]\n  Microsoft.NETCore.App 11.0.0-rc.1.26425.128 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App]\n\nOther architectures found:\n  None\n\nEnvironment variables:\n  DOTNET_CLI_USE_MSBUILD_SERVER            [0]\n  DOTNET_ROOT                              [/Users/sebastienros/Library/Application Support/dotnetup/dotnet]\n\nglobal.json file:\n  /private/tmp/xemele-integrate-m2-streaming-allocation-probe/global.json\n\nLearn more:\n  https://aka.ms/dotnet/info\n\nDownload .NET:\n  https://aka.ms/dotnet/download\n",
+  "sourceHashes": {
+    "tests/Xemele.Tests/M1-syntax/StreamingTests.cs": "9e854c2db6b18d96c911b951e0ce6981b67b678a30daf5e16d586a9e78858c88",
+    "tests/Xemele.Tests/M2-streaming-allocation-probe/StreamingAllocationProbe.cs": "56539798ad3d0d085a5e72b98f20c51a7317cfb80118f099367c9c187b810267",
+    "docs/reports/M2-streaming-allocation-probe/Diagnostics/Program.cs": "10c387f3fe1623fb75fd610f72f1b80ba15d3fff5ef792db78ee13f2f021e1a8"
+  },
+  "failedChecks": [
+    "direct-Xemele.Tests"
+  ],
+  "scope": "Narrow streaming allocation child. Parent PI mandatory integrated allPass criterion remains required before consumer verification."
+}

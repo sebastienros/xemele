@@ -7,11 +7,12 @@
   "status": "in_progress",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M2-pi-allocation-probe",
   "branch": "codex/m2-pi-allocation-probe",
-  "base_revision": "5e93e7a0a4300543fdca034422e508cdd28fd801",
+  "base_revision": "f1415a8355fc9084e919cc877e3c4e6d50690bf9",
   "integration_revision": null,
   "depends_on": [
     "M2-contracts",
-    "M1-pi-targets"
+    "M1-pi-targets",
+    "M2-streaming-allocation-probe"
   ],
   "goals": [
     "G03",
@@ -131,9 +132,7 @@
       "artifact": null
     }
   ],
-  "blockers": [
-    "Cumulative MTP relevant-check gate fails outside owned PI probe: unchanged StreamingTests.WarmRepeatedTagsAndStreamingUnicodeDispatchAllocateZero observed224B; direct runtime separate process passes. Coordinator/runtime owner must assess before all-checks-passing completion."
-  ],
+  "blockers": [],
   "handoff": {
     "summary": "Narrow PI measurement repair implemented in branch source9286cd6; focused PI exact0B and all direct801 pass, original diagnostic128B/equivalent0B; overall check gate remains failing due unrelated cumulative streaming224B. Preserves historical PI1944B/712B and own incorrect-callback/sandbox failure attempt. Independent review approved; awaiting coordinator disposition; task remains in_progress.",
     "checks": [

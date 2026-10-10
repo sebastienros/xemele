@@ -1,0 +1,189 @@
+{
+  "result": "failed",
+  "host": "macOS-15.8.1-arm64-arm-64bit-Mach-O",
+  "architecture": "arm64",
+  "timing": "not run",
+  "runtimeSettings": "default JIT/GC/test parallelism",
+  "counts": {
+    "report_prefix": "source-9286cd6-attempt1",
+    "expected_branch": "codex/m2-pi-allocation-probe",
+    "audit_base": "c85e5994b3e82f7340849dd915b08ef1a84ece17",
+    "runtime_count": 247,
+    "conformance_count": 255,
+    "differential_count": 299,
+    "api_count": 222,
+    "fixture_count": 3388,
+    "planning_count": 14,
+    "task_count": 113
+  },
+  "checks": {
+    "diagnostic-original": {
+      "result": "passed",
+      "detail": {
+        "mode": "original",
+        "runtime": "10.0.11",
+        "warmIterations": 100,
+        "measuredIterations": 10000,
+        "coldSetupBytes": 6792,
+        "rootFirstUseBytes": 312,
+        "firstPiBytes": 368,
+        "remaining99WarmBytes": 0,
+        "steadyBytes": 128,
+        "completionBytes": 0,
+        "warmCalls": 1003,
+        "warmUnits": 400,
+        "measuredCalls": 100000,
+        "measuredUnits": 40000,
+        "completed": "Completed",
+        "consumedCompletion": 4,
+        "runtimeSettings": "default; no tiering, JIT, GC or test parallelism overrides",
+        "scope": "Synchronous borrowed PI primitive; counter/validation/output outside measured region; setup includes options/core/sink, not process startup; no retained-memory estimate or timing"
+      }
+    },
+    "diagnostic-equivalent": {
+      "result": "passed",
+      "detail": {
+        "mode": "equivalent",
+        "runtime": "10.0.11",
+        "warmIterations": 100,
+        "measuredIterations": 10000,
+        "coldSetupBytes": 6792,
+        "rootFirstUseBytes": 312,
+        "firstPiBytes": 368,
+        "remaining99WarmBytes": 0,
+        "steadyBytes": 0,
+        "completionBytes": 0,
+        "warmCalls": 1003,
+        "warmUnits": 400,
+        "measuredCalls": 100000,
+        "measuredUnits": 40000,
+        "completed": "Completed",
+        "consumedCompletion": 4,
+        "runtimeSettings": "default; no tiering, JIT, GC or test parallelism overrides",
+        "scope": "Synchronous borrowed PI primitive; counter/validation/output outside measured region; setup includes options/core/sink, not process startup; no retained-memory estimate or timing"
+      }
+    },
+    "focused-mtp": {
+      "result": "passed",
+      "detail": "Running tests from /Users/sebastienros/.codex/worktrees/b918/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll (net10.0|arm64)\n/Users/sebastienros/.codex/worktrees/b918/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll (net10.0|arm64) passed (359ms)\n\nTest run summary: Passed!\n  total: 1\n  failed: 0\n  succeeded: 1\n  skipped: 0\n  duration: 614ms\n"
+    },
+    "cumulative-mtp": {
+      "result": "failed",
+      "detail": "$ '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' test --solution Xemele.slnx -c Release --no-build --no-restore\nRunning tests from /Users/sebastienros/.codex/worktrees/b918/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll (net10.0|arm64)\nRunning tests from /Users/sebastienros/.codex/worktrees/b918/xemele/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll (net10.0|arm64)\nRunning tests from /Users/sebastienros/.codex/worktrees/b918/xemele/tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll (net10.0|arm64)\nfailed Xemele.Tests.Syntax.StreamingTests.WarmRepeatedTagsAndStreamingUnicodeDispatchAllocateZero (58ms)\n  from /Users/sebastienros/.codex/worktrees/b918/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll (net10.0|arm64)\n  Assert.Equal() Failure: Values differ\n  Expected: 0\n  Actual:   224\n    at Xemele.Tests.Syntax.StreamingTests.WarmRepeatedTagsAndStreamingUnicodeDispatchAllocateZero() in /_/tests/Xemele.Tests/M1-syntax/StreamingTests.cs:58\n    at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)\n    at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)\n/Users/sebastienros/.codex/worktrees/b918/xemele/tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll (net10.0|arm64) passed (740ms)\n/Users/sebastienros/.codex/worktrees/b918/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll (net10.0|arm64) failed with 1 error(s) (1s 013ms)\nExit code: 2\n/Users/sebastienros/.codex/worktrees/b918/xemele/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll (net10.0|arm64) passed (14s 560ms)\n\nTest run summary: Failed!\n  /Users/sebastienros/.codex/worktrees/b918/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll (net10.0|arm64) failed with 1 error(s) (1s 013ms)\n  /Users/sebastienros/.codex/worktrees/b918/xemele/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll (net10.0|arm64) passed (14s 560ms)\n  /Users/sebastienros/.codex/worktrees/b918/xemele/tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll (net10.0|arm64) passed (740ms)\n\n  total: 801\n  failed: 1\n  succeeded: 800\n  skipped: 0\n  duration: 14s 780ms\nTest run completed with non-success exit code: 2 (see: https://aka.ms/testingplatform/exitcodes)\n\nexit=2; expected=0\n"
+    },
+    "direct-Xemele.Tests": {
+      "result": "passed",
+      "detail": {
+        "total": 247,
+        "failed": 0,
+        "skipped": 0
+      }
+    },
+    "direct-Xemele.Conformance.Tests": {
+      "result": "passed",
+      "detail": {
+        "total": 255,
+        "failed": 0,
+        "skipped": 0
+      }
+    },
+    "direct-Xemele.Differential.Tests": {
+      "result": "passed",
+      "detail": {
+        "total": 299,
+        "failed": 0,
+        "skipped": 0
+      }
+    },
+    "reference-provenance": {
+      "result": "passed",
+      "detail": {
+        "records": 242,
+        "sourceRevision": "9286cd6cac00df0ccd5f4627d4c29e5046c16af3",
+        "runnerSha256": "a93fefe547145996f24a2d07fb776defe0c23e7a25d5d141eef1bb85c6551574",
+        "runner": "/Users/sebastienros/.codex/worktrees/b918/xemele/artifacts/M2-pi-allocation-probe/source-9286cd6-attempt1/pinned-reference/BclReference.dll",
+        "dotnet": "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet"
+      }
+    },
+    "compiled-api": {
+      "result": "passed",
+      "detail": {
+        "bootstrapEmptyApi": false,
+        "checkerOutput": "Matched 222 compiled members",
+        "matched": true,
+        "members": 222,
+        "report": "/Users/sebastienros/.codex/worktrees/b918/xemele/docs/reports/M2-pi-allocation-probe/source-9286cd6-attempt1/runtime-api.json"
+      }
+    },
+    "discovery": {
+      "result": "passed",
+      "detail": {
+        "apiDeclarations": 222,
+        "apiFragments": [
+          "docs/api/M1-common.txt",
+          "docs/api/M1-dom.txt",
+          "docs/api/M1-serialize.txt",
+          "docs/api/M1-tree.txt"
+        ],
+        "bootstrapEmptyApi": false,
+        "corpusManifests": [
+          "tests/corpora/bootstrap/manifest.json",
+          "tests/corpora/xml/manifest.json"
+        ],
+        "fixtures": 3388,
+        "formatVersion": 1
+      }
+    },
+    "planning-regressions": {
+      "result": "passed",
+      "detail": "test_branch_implementation_does_not_unlock_dependents (test_tasks.TaskTrackingTests.test_branch_implementation_does_not_unlock_dependents) ... ok\ntest_cycle_rejected (test_tasks.TaskTrackingTests.test_cycle_rejected) ... ok\ntest_gate_cannot_omit_a_task (test_tasks.TaskTrackingTests.test_gate_cannot_omit_a_task) ... ok\ntest_initial_readiness (test_tasks.TaskTrackingTests.test_initial_readiness) ... ok\ntest_later_milestone_dependency_rejected (test_tasks.TaskTrackingTests.test_later_milestone_dependency_rejected) ... ok\ntest_malformed_status_reports_error (test_tasks.TaskTrackingTests.test_malformed_status_reports_error) ... ok\ntest_missing_integration_evidence_rejected (test_tasks.TaskTrackingTests.test_missing_integration_evidence_rejected) ... ok\ntest_missing_specification_reports_error (test_tasks.TaskTrackingTests.test_missing_specification_reports_error) ... ok\ntest_repository_graph_valid (test_tasks.TaskTrackingTests.test_repository_graph_valid) ... ok\ntest_similar_prefixes_are_not_ownership_overlap (test_tasks.TaskTrackingTests.test_similar_prefixes_are_not_ownership_overlap) ... ok\ntest_started_task_with_unverified_dependency_rejected (test_tasks.TaskTrackingTests.test_started_task_with_unverified_dependency_rejected) ... ok\ntest_unordered_path_overlap_rejected_case_insensitively (test_tasks.TaskTrackingTests.test_unordered_path_overlap_rejected_case_insensitively) ... ok\ntest_unproven_acceptance_rejected (test_tasks.TaskTrackingTests.test_unproven_acceptance_rejected) ... ok\ntest_verified_bootstrap_unlocks_independent_lanes (test_tasks.TaskTrackingTests.test_verified_bootstrap_unlocks_independent_lanes) ... ok\n\n----------------------------------------------------------------------\nRan 14 tests in 0.031s\n\nOK\n"
+    },
+    "planning-validation": {
+      "result": "passed",
+      "detail": "Validated 113 tasks: schema, evidence, acyclic dependencies, additive milestones, and ordered ownership.\n"
+    },
+    "final-audit": {
+      "result": "passed",
+      "detail": {
+        "committed": [
+          "docs/reports/M2-pi-allocation-probe/Diagnostics/Diagnostics.csproj",
+          "docs/reports/M2-pi-allocation-probe/Diagnostics/Program.cs",
+          "docs/reports/M2-pi-allocation-probe/README.md",
+          "docs/reports/M2-pi-allocation-probe/history/bounded-checkpoint-checks.txt.gz",
+          "docs/reports/M2-pi-allocation-probe/history/bounded-checkpoint-summary.json",
+          "docs/reports/M2-pi-allocation-probe/history/checkpoint-checks.txt.gz",
+          "docs/reports/M2-pi-allocation-probe/history/checkpoint-summary.json",
+          "docs/reports/M2-pi-allocation-probe/history/runtime-after-mtp.xml.gz",
+          "docs/reports/M2-pi-allocation-probe/source-0e04b7c-attempt1/Xemele.Conformance.Tests.xml.gz",
+          "docs/reports/M2-pi-allocation-probe/source-0e04b7c-attempt1/Xemele.Differential.Tests.xml.gz",
+          "docs/reports/M2-pi-allocation-probe/source-0e04b7c-attempt1/Xemele.Tests.xml.gz",
+          "docs/reports/M2-pi-allocation-probe/source-0e04b7c-attempt1/audit.json",
+          "docs/reports/M2-pi-allocation-probe/source-0e04b7c-attempt1/checks.txt.gz",
+          "docs/reports/M2-pi-allocation-probe/source-0e04b7c-attempt1/reference-provenance.json",
+          "docs/reports/M2-pi-allocation-probe/source-0e04b7c-attempt1/runtime-api.json",
+          "docs/reports/M2-pi-allocation-probe/source-0e04b7c-attempt1/summary.json",
+          "docs/reports/M2-pi-allocation-probe/verify.py",
+          "tests/Xemele.Tests/M1-pi-targets/PiTargetTests.cs"
+        ],
+        "working": [],
+        "staged": [],
+        "untracked": [
+          "docs/reports/M2-pi-allocation-probe/source-9286cd6-attempt1/Xemele.Conformance.Tests.xml.gz",
+          "docs/reports/M2-pi-allocation-probe/source-9286cd6-attempt1/Xemele.Differential.Tests.xml.gz",
+          "docs/reports/M2-pi-allocation-probe/source-9286cd6-attempt1/Xemele.Tests.xml.gz",
+          "docs/reports/M2-pi-allocation-probe/source-9286cd6-attempt1/audit.json",
+          "docs/reports/M2-pi-allocation-probe/source-9286cd6-attempt1/equivalent-allocations.json",
+          "docs/reports/M2-pi-allocation-probe/source-9286cd6-attempt1/original-allocations.json",
+          "docs/reports/M2-pi-allocation-probe/source-9286cd6-attempt1/reference-provenance.json",
+          "docs/reports/M2-pi-allocation-probe/source-9286cd6-attempt1/runtime-api.json"
+        ]
+      }
+    }
+  },
+  "sourceRevision": "9286cd6cac00df0ccd5f4627d4c29e5046c16af3",
+  "dotnetInfo": ".NET SDK:\n Version:           10.0.400\n Commit:            14fbf8d527\n Workload version:  10.0.400-manifests.330ea142\n MSBuild version:   18.9.6+14fbf8d52\n\nRuntime Environment:\n OS Name:     Mac OS X\n OS Version:  15.8\n OS Platform: Darwin\n RID:         osx-arm64\n Base Path:   /Users/sebastienros/Library/Application Support/dotnetup/dotnet/sdk/10.0.400/\n\n.NET workloads installed:\nThere are no installed workloads to display.\nConfigured to use workload sets when installing new manifests.\nNo workload sets are installed. Run \"dotnet workload restore\" to install a workload set.\n\nHost:\n  Version:      11.0.0-rc.1.26425.128\n  Architecture: arm64\n  Commit:       3551975be0\n\n.NET SDKs installed:\n  8.0.424 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/sdk]\n  10.0.100 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/sdk]\n  10.0.400 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/sdk]\n  11.0.100-rc.1.26413.103 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/sdk]\n  11.0.100-rc.1.26425.128 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/sdk]\n\n.NET runtimes installed:\n  Microsoft.AspNetCore.App 8.0.30 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.AspNetCore.App]\n  Microsoft.AspNetCore.App 10.0.0 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.AspNetCore.App]\n  Microsoft.AspNetCore.App 10.0.11 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.AspNetCore.App]\n  Microsoft.AspNetCore.App 11.0.0-rc.1.26413.103 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.AspNetCore.App]\n  Microsoft.AspNetCore.App 11.0.0-rc.1.26425.128 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.AspNetCore.App]\n  Microsoft.NETCore.App 8.0.30 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App]\n  Microsoft.NETCore.App 10.0.0 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App]\n  Microsoft.NETCore.App 10.0.11 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App]\n  Microsoft.NETCore.App 11.0.0-rc.1.26413.103 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App]\n  Microsoft.NETCore.App 11.0.0-rc.1.26425.128 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App]\n\nOther architectures found:\n  None\n\nEnvironment variables:\n  DOTNET_CLI_USE_MSBUILD_SERVER            [0]\n  DOTNET_ROOT                              [/Users/sebastienros/Library/Application Support/dotnetup/dotnet]\n\nglobal.json file:\n  /Users/sebastienros/.codex/worktrees/b918/xemele/global.json\n\nLearn more:\n  https://aka.ms/dotnet/info\n\nDownload .NET:\n  https://aka.ms/dotnet/download\n",
+  "runtimeDllSourceSha256": "d74f344c604b9aa0d0fbb1f2f9f4c97210d1765359d140a8a2d9184c38742683",
+  "failedChecks": [
+    "cumulative-mtp"
+  ]
+}
