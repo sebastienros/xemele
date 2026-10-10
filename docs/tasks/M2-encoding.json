@@ -4,7 +4,7 @@
   "milestone": "M2",
   "title": "Additional encoding compatibility",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M2-encoding",
   "branch": "codex/m2-encoding",
   "base_revision": "1a77b3598ed6084b17a69ca562d160f0d64a6be5",
@@ -37,8 +37,8 @@
       "description": "Implement approved legacy encoding table and incremental detection/conversion while preserving UTF behavior.",
       "status": "passed",
       "evidence": [
-        "source-checks",
-        "allocation-boundaries",
+        "renewed-source-checks",
+        "renewed-allocation-checks",
         "exclusive-timing"
       ]
     },
@@ -47,8 +47,8 @@
       "description": "Test declared aliases, malformed/unrepresentable data, provider availability and split sequences for every advertised encoding.",
       "status": "passed",
       "evidence": [
-        "source-checks",
-        "allocation-boundaries",
+        "renewed-source-checks",
+        "renewed-allocation-checks",
         "exclusive-timing"
       ]
     },
@@ -57,8 +57,8 @@
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
       "status": "passed",
       "evidence": [
-        "source-checks",
-        "allocation-boundaries",
+        "renewed-source-checks",
+        "renewed-allocation-checks",
         "exclusive-timing"
       ]
     }
@@ -115,18 +115,37 @@
       "result": "passed",
       "summary": "Authorized exclusive corrected invocation: wrapper/restore/build0, all13 child exits0, 13 genuine cases/39 actual observations; all12 primitive cases0 B/op. Decoder8byte77.90\u201379.56 ns/4096byte37.30\u201337.82 us; supported-fixture loop11.73\u201311.84 ns/6.14\u20136.22 us, no speedup claim. Public DOM28.014 us/58,256 B/op. Seven setup oracles pass; all children stopped. Arm64 only, ShortRun confidence intervals/high-priority-denied warnings explicit.",
       "artifact": "docs/reports/M2-encoding/timing-a1d0d1a/run.json"
+    },
+    {
+      "id": "renewed-source-checks",
+      "kind": "check",
+      "revision": "3e61b0544ec29bdf60e88bb133210c339391e34e",
+      "command": "python3 -B docs/reports/M2-encoding/verify.py --report-prefix renewal-3e61b05-attempt1 --audit-base 7034b2769307fbab70ea524ea2a16f5defa8e7d6 --expected-branch codex/m2-encoding --runtime-tests 255 --conformance-tests 255 --differential-tests 299 --reference-records 242",
+      "result": "passed",
+      "summary": "Renewed verified-base merge, no runtime/own encoding C# changes: driver0; combinedMTP809 and direct255 runtime/255 conformance/299 differential allPass, API222,3388fixtures, internal44/model81, sevenoracles, sample+cleanpackageconsumer,242freshcompleteBCLreference records with fullsource revision/SHA, planning14/graph114; exact renewedclaim ownership and whitespace audits passed. Prior PI1024 failure remains preserved, historical cause unresolved; no GC/JIT/classparallelism or allocation-helper changes by encoding worker.",
+      "artifact": "docs/reports/M2-encoding/renewal-3e61b05-attempt1/summary.json"
+    },
+    {
+      "id": "renewed-allocation-checks",
+      "kind": "check",
+      "revision": "3e61b0544ec29bdf60e88bb133210c339391e34e",
+      "command": "python3 -B docs/reports/M2-encoding/verify.py --report-prefix renewal-3e61b05-attempt1 --audit-base 7034b2769307fbab70ea524ea2a16f5defa8e7d6 --expected-branch codex/m2-encoding --runtime-tests 255 --conformance-tests 255 --differential-tests 299 --reference-records 242",
+      "result": "passed",
+      "summary": "Fresh warm conversion tests and precreated declaration matching0B; coldsetup2816B/warmsetup824B/op/informationalretained656B/op. Source-integrity hashes confirm unchanged runtime/encodingbenchmarks from a1d, whose successful13child/39actual timing evidence is retained without repeat. No universal performance or other-platform claim.",
+      "artifact": "docs/reports/M2-encoding/renewal-3e61b05-attempt1/source-integrity.json"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Implemented strict declared US-ASCII/ISO-8859-1/Windows-1252 using only verified contracts and existing M1 composition. Source a1d0d1a46b2e47a1ee8864657f4e3d06f0fa8f3e; no public additions, no provider/global mutation, bounded four-byte state and original mappings preserved. Assigned historical unsupported-label row repaired only. Awaiting coordinator integration verification. Renewed claim7034b2769307fbab70ea524ea2a16f5defa8e7d6 adopted from verifiedbase1a77b3598ed6084b17a69ca562d160f0d64a6be5; fresh joint checks pending, historical evidence retained.",
+    "summary": "Renewed M2-encoding implemented at3e61b0544ec29bdf60e88bb133210c339391e34e on verifiedbase1a77b3598ed6084b17a69ca562d160f0d64a6be5/exactclaim7034b2769307fbab70ea524ea2a16f5defa8e7d6. Runtime and own test/benchmark/sample C# unchanged from a1d; all fresh checks pass, prior successful timing retained without repeat. Awaiting serialized coordinator integration verification.",
     "checks": [
       "source-a1d0d1a-attempt1: actual809 tests/API222/internal44/model81/sevenoracles/sample+package/fresh242reference/planning14/validation112/ownedpath+diff passed.",
       "timing-a1d0d1a:13 actual cases/39 observations/all13 children exit0; warm primitives0B; setup/retained/DOM allocations explicitly separate.",
-      "Preserved initial discovery failure and initial BDN wrapper0/generatedbuild1/actual0 attempt; corrections and full known-hash checks passed."
+      "Preserved initial discovery failure and initial BDN wrapper0/generatedbuild1/actual0 attempt; corrections and full known-hash checks passed.",
+      "renewal-3e61b05-attempt1: combinedMTP809/direct255255299 allPass;API222/discovery3388/ref242fresh fullrevision/SHA/internal44/model81/sevenoracles/sample+package/alloc0/planning14/validation114/renewedclaimownership passed.",
+      "Historical coordinator integrated cd753170601936520d1d8efadb949852bacd083f unchanged PI1024B failure afterMTP809/API222 remains preserved on fc862e888a0089e6bd304b8c2586206353c94f66; verified repairs now adopted, historical cause unresolved."
     ],
     "remaining": [
-      "Coordinator integrated attempt cd753170601936520d1d8efadb949852bacd083f failed unchanged PI1024B afterMTP809/API222passed; source/evidence/failure branch fc862e888a0089e6bd304b8c2586206353c94f66 preserved, await verified PI repair and renewed claim.",
       "Coordinator integrates and verifies with current integrated counts; verifier supports explicit --audit-base/--expected-branch and runtime/conformance/differential/reference count arguments.",
       "External TextDecl framing and entity composition belong to M2-dtd-framing/M2-entities; this branch has no unmerged dependency.",
       "x64/Windows/Linux/AOT and release-scale performance checks unrun locally; Arm64 ShortRun results provisional, not a universal performance claim."
