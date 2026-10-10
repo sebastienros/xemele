@@ -167,6 +167,7 @@ internal sealed partial class XmlParserCore
 
     private void AbortEntities()
     {
+        if (unresolvedPending) ClearUnresolvedReference();
         // Called while preserving an existing callback/cancellation exception or
         // terminal diagnostic. Drain user cleanup failures without replacing it.
         try { resolution?.Abort(); } catch { }

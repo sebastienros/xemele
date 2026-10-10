@@ -49,6 +49,7 @@ public static class XmlSerializer
         // caller fallback/preamble state and never invokes a caller encoding.
         int codePage = options.Encoding.CodePage;
         if (codePage is not (65001 or 1200 or 1201)) throw new ArgumentException("Unsupported encoding.", nameof(options));
+        document.RefuseUnresolvedReferences();
         int roots = 0, work = 0;
         foreach (var child in document.DocumentNode.Children)
         {

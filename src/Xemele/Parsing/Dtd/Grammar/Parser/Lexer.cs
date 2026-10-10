@@ -51,7 +51,18 @@ internal sealed partial class DtdParser
                 if (Space(c)) { separator = true; return; }
                 if (c == '>')
                 {
-                    ParseDeclaration(cancellation); if (terminal) return;
+                    // Syntax remains checked after the first unread PE. Only model
+                    // publication of entity/ATTLIST declarations is suppressed.
+                    int attributeStart = attributes.Count, generalStart = general.Count, parameterStart = parameter.Count;
+                    bool suppress = SuppressDeclarations && declaration is "ENTITY" or "ATTLIST";
+                    ParseDeclaration(cancellation);
+                    if (suppress)
+                    {
+                        attributes.RemoveRange(attributeStart, attributes.Count - attributeStart);
+                        general.RemoveRange(generalStart, general.Count - generalStart);
+                        parameter.RemoveRange(parameterStart, parameter.Count - parameterStart);
+                    }
+                    if (terminal) return;
                     tokens.Clear(); declaration = ""; declarationScalars = 0; lex = Lex.Between; separator = false; return;
                 }
                 if (c == '%')
@@ -143,13 +154,25 @@ internal sealed partial class DtdParser
         Reject("Invalid DTD syntax.", at);
     }
     private void BeginParameter(Lex resume, XmlLocation at)
-    { parameterResume = resume; parameterAt = at; reference.Clear(); referenceScalars = 0; lex = Lex.Parameter; }
+    { HasParameterReferences = true; parameterResume = resume; parameterAt = at; reference.Clear(); referenceScalars = 0; lex = Lex.Parameter; }
     private void ExpandParameter(string name, XmlLocation at, CancellationToken cancellation)
     {
+        if (name.AsSpan().Contains(':')) { Reject("Parameter entity names must be NCNames.", parameterAt); return; }
         if (active.Contains(name)) { Reject("Recursive parameter entity.", parameterAt, "DTD.EntityCycle"); return; }
         DtdEntityDeclaration? entity = null;
         foreach (var candidate in parameter) { cancellation.ThrowIfCancellationRequested(); if (candidate.Name == name) { entity = candidate; break; } }
-        if (entity is null) { Reject("Undeclared parameter entity.", parameterAt, "DTD.UndeclaredEntity"); return; }
+        if (entity is null)
+        {
+            if (!nonvalidatingReadState || standaloneReadState)
+            { Reject("Undeclared parameter entity.", parameterAt, "DTD.UndeclaredEntity"); return; }
+            FirstUnreadParameter ??= parameterAt;
+            // No replacement is invented. An unread declaration separator can
+            // simply end here; an unknown insertion within grammar cannot be
+            // represented by the current immutable declaration model.
+            if (parameterResume != Lex.Between)
+            { Reject("Unread parameter entity prevents representing this declaration.", parameterAt, "DTD.UnresolvedDeclaration"); return; }
+            lex = parameterResume; reference.Clear(); separator = true; return;
+        }
         lex = parameterResume; reference.Clear();
         if (nextId == int.MaxValue) { Refuse(ValueBudget.Limit(parameterAt)); return; }
         if (!Accept(budget.EnterEntity(parameterAt))) return;

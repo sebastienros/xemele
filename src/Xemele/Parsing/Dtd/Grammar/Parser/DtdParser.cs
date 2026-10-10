@@ -86,6 +86,20 @@ internal sealed partial class DtdParser : IDisposable
     private XmlTextDeclarationFramer MakeFramer(Uri? uri) => new(limits with { ExpandedCharacters = null }, uri);
     public DtdModel Model
     { get { ObjectDisposedException.ThrowIf(disposed, this); if (model is null || faulted) throw new InvalidOperationException("The initial subset is not complete."); return model; } }
+    internal bool HasParameterReferences { get; private set; }
+    internal XmlLocation? FirstUnreadParameter { get; private set; }
+    private bool nonvalidatingReadState, standaloneReadState;
+
+    internal void ConfigureDeclarationReading(bool standalone, XmlLocation? firstUnread = null)
+    {
+        Check();
+        if (appendStarted) throw new InvalidOperationException("Configure declaration reading before input.");
+        nonvalidatingReadState = true; standaloneReadState = standalone;
+        FirstUnreadParameter = firstUnread;
+    }
+
+    private bool SuppressDeclarations => nonvalidatingReadState && !standaloneReadState && FirstUnreadParameter is not null;
+
     private Source Current => sources[^1];
     private void Enter()
     { if (Interlocked.CompareExchange(ref gate, 1, 0) != 0) throw new InvalidOperationException("Parser is active."); }

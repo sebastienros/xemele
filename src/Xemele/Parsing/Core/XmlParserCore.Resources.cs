@@ -41,6 +41,7 @@ internal sealed partial class XmlParserCore
         {
             parser = new(DtdSubsetKind.External, budget.Options.Limits, entityBudget!,
                 new XmlLocation(source.SourceUri, 1, 1, null));
+            parser.ConfigureDeclarationReading(standalone == true, firstUnreadParameter);
             parser.SeedPriorModel(prior, activeCancellation);
             parser.SetFramedInitialSource(source.FirstLocation);
             return RunDtdSources(parser, source, null);
@@ -92,7 +93,12 @@ internal sealed partial class XmlParserCore
                     stack.RemoveAt(stack.Count - 1); current.Dispose();
                 }
                 if (result.Step == DtdParseStep.Rejected) { diagnostic = result.Diagnostic; return null; }
-                if (result.Step == DtdParseStep.Completed) return parser.Model;
+                if (result.Step == DtdParseStep.Completed)
+                {
+                    subsetHasParameterReferences |= parser.HasParameterReferences;
+                    firstUnreadParameter ??= parser.FirstUnreadParameter;
+                    return parser.Model;
+                }
                 if (result.Step == DtdParseStep.NeedEntity) pending = result.Entity;
             }
             return null;

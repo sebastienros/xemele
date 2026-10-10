@@ -6,7 +6,8 @@ namespace Xemele.Parsing.Syntax;
 
 internal sealed partial class XmlParserCore
 {
-    private bool doctypeSeen;
+    private bool doctypeSeen, subsetHasParameterReferences;
+    private XmlLocation? firstUnreadParameter;
     private XmlLocation doctypeLocation;
     private string? doctypeName, doctypeSystem, doctypePublic;
     private XmlDocumentType? documentType;
@@ -90,6 +91,7 @@ internal sealed partial class XmlParserCore
         state = State.DtdSubset;
         internalSubset = new();
         dtdParser = new(DtdSubsetKind.Internal, budget.Options.Limits, entityBudget!, position.Current());
+        dtdParser.ConfigureDeclarationReading(standalone == true);
         subsetMarkup = subsetComment = subsetPi = subsetQuestion = false;
         subsetQuote = '\0'; subsetPrefix = subsetDash = 0;
         ResetToken();
@@ -104,6 +106,8 @@ internal sealed partial class XmlParserCore
             if (completed.Step == DtdParseStep.Rejected) { diagnostic = completed.Diagnostic; return; }
             if (completed.Step != DtdParseStep.Completed)
             { Reject("XML.Syntax", "Internal subset did not complete.", location); return; }
+            subsetHasParameterReferences |= dtdParser.HasParameterReferences;
+            firstUnreadParameter ??= dtdParser.FirstUnreadParameter;
             internalModel = dtdParser.Model; dtdParser.Dispose(); dtdParser = null;
             state = State.DtdClose; return;
         }
