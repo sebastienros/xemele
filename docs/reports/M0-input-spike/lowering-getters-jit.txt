@@ -1,0 +1,133 @@
+; Assembly listing for method InputSpike.Primitives:get_RuntimeBytes():System.ReadOnlySpan`1[byte] (FullOpts)
+; Emitting BLENDED_CODE for generic ARM64 on Apple
+; FullOpts code
+; optimized code
+; fp based frame
+; partially interruptible
+; No PGO data
+; 1 inlinees with PGO data; 1 single block inlinees; 0 inlinees without PGO data
+
+G_M000_IG01:                ;; offset=0x0000
+            stp     fp, lr, [sp, #-0x10]!
+            mov     fp, sp
+ 
+G_M000_IG02:                ;; offset=0x0008
+            movz    x0, #0x3688
+            movk    x0, #0x551 LSL #16
+            movk    x0, #1 LSL #32
+            mov     x1, #3
+            bl      CORINFO_HELP_NEWARR_1_VC
+            mov     w1, #0xBBEF
+            strh    w1, [x0, #0x10]
+            mov     w1, #191
+            strb    w1, [x0, #0x12]
+            add     x0, x0, #16
+            mov     w1, #3
+ 
+G_M000_IG03:                ;; offset=0x0034
+            ldp     fp, lr, [sp], #0x10
+            ret     lr
+ 
+; Total bytes of code 60
+
+; Assembly listing for method InputSpike.Primitives:get_MutableBytes():System.Span`1[byte] (FullOpts)
+; Emitting BLENDED_CODE for generic ARM64 on Apple
+; FullOpts code
+; optimized code
+; fp based frame
+; partially interruptible
+; No PGO data
+; 1 inlinees with PGO data; 1 single block inlinees; 0 inlinees without PGO data
+
+G_M000_IG01:                ;; offset=0x0000
+            stp     fp, lr, [sp, #-0x10]!
+            mov     fp, sp
+ 
+G_M000_IG02:                ;; offset=0x0008
+            movz    x0, #0x3688
+            movk    x0, #0x551 LSL #16
+            movk    x0, #1 LSL #32
+            mov     x1, #3
+            bl      CORINFO_HELP_NEWARR_1_VC
+            movz    x1, #0xB490
+            movk    x1, #37 LSL #16
+            movk    x1, #1 LSL #32
+            ldrh    w2, [x1]
+            strh    w2, [x0, #0x10]
+            ldrb    w2, [x1, #0x02]
+            strb    w2, [x0, #0x12]
+            add     x0, x0, #16
+            mov     w1, #3
+ 
+G_M000_IG03:                ;; offset=0x0040
+            ldp     fp, lr, [sp], #0x10
+            ret     lr
+ 
+; Total bytes of code 72
+
+; Assembly listing for method InputSpike.Primitives:RuntimeLocalSum():int (FullOpts)
+; Emitting BLENDED_CODE for generic ARM64 on Apple
+; FullOpts code
+; optimized code
+; fp based frame
+; partially interruptible
+; No PGO data
+; 0 inlinees with PGO data; 6 single block inlinees; 0 inlinees without PGO data
+
+G_M000_IG01:                ;; offset=0x0000
+            stp     fp, lr, [sp, #-0x20]!
+            mov     fp, sp
+            str     xzr, [fp, #0x18]
+ 
+G_M000_IG02:                ;; offset=0x000C
+            mov     w0, #239
+            strb    w0, [fp, #0x18]
+            mov     w0, #187
+            strb    w0, [fp, #0x19]
+            mov     w0, #191
+            strb    w0, [fp, #0x1A]
+            ldrb    w0, [fp, #0x18]
+            ldrb    w1, [fp, #0x19]
+            add     w0, w0, w1
+            ldrb    w1, [fp, #0x1A]
+            add     w0, w0, w1
+ 
+G_M000_IG03:                ;; offset=0x0038
+            ldp     fp, lr, [sp], #0x20
+            ret     lr
+ 
+; Total bytes of code 64
+
+; Assembly listing for method InputSpike.Primitives:MutableLocalSum():int (FullOpts)
+; Emitting BLENDED_CODE for generic ARM64 on Apple
+; FullOpts code
+; optimized code
+; fp based frame
+; partially interruptible
+; No PGO data
+; 0 inlinees with PGO data; 6 single block inlinees; 0 inlinees without PGO data
+
+G_M000_IG01:                ;; offset=0x0000
+            stp     fp, lr, [sp, #-0x20]!
+            mov     fp, sp
+            str     xzr, [fp, #0x18]
+ 
+G_M000_IG02:                ;; offset=0x000C
+            mov     w0, #239
+            strb    w0, [fp, #0x18]
+            mov     w0, #187
+            strb    w0, [fp, #0x19]
+            mov     w0, #191
+            strb    w0, [fp, #0x1A]
+            ldrb    w0, [fp, #0x18]
+            ldrb    w1, [fp, #0x19]
+            add     w0, w0, w1
+            ldrb    w1, [fp, #0x1A]
+            add     w0, w0, w1
+ 
+G_M000_IG03:                ;; offset=0x0038
+            ldp     fp, lr, [sp], #0x20
+            ret     lr
+ 
+; Total bytes of code 64
+

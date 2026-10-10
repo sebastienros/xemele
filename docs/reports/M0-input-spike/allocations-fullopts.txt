@@ -1,0 +1,43 @@
+Runtime=.NET 10.0.11; OS=macOS 15.8.1; Arch=Arm64; GC server=False; latency=Interactive
+Cold explicit Primitives initialization: 7848 B (SearchValues, array tokens, vocabulary, hash metadata, UTF8 token arrays, one-time LINQ delegates/enumerators). No fixture bytes included.
+Cold context construction: 360 B for two scanners, sinks, strict encoding/decoders (owned per context; not per token).
+AsciiShort/StringToCharacterCore: 0.00 B/op over 1000 operations; result=0
+AsciiShort/ByteToByteCore: 0.00 B/op over 1000 operations; result=0
+AsciiShort/ByteToCharacterScratch: 0.00 B/op over 1000 operations; result=0
+AsciiShort/StringToCharacterCorePaused: 0.00 B/op over 1000 operations; result=0
+AsciiShort/ByteToByteCorePaused: 0.00 B/op over 1000 operations; result=0
+AsciiShort/ByteToOwnedString: 80.00 B/op over 1000 operations; result=0
+AsciiShort/StringViaOwnedUtf8: 56.00 B/op over 1000 operations; result=0
+UnicodeShort/StringToCharacterCore: 0.00 B/op over 1000 operations; result=0
+UnicodeShort/ByteToByteCore: 0.00 B/op over 1000 operations; result=0
+UnicodeShort/ByteToCharacterScratch: 0.00 B/op over 1000 operations; result=0
+UnicodeShort/StringToCharacterCorePaused: 0.00 B/op over 1000 operations; result=0
+UnicodeShort/ByteToByteCorePaused: 0.00 B/op over 1000 operations; result=0
+UnicodeShort/ByteToOwnedString: 88.00 B/op over 1000 operations; result=0
+UnicodeShort/StringViaOwnedUtf8: 72.00 B/op over 1000 operations; result=0
+AsciiLong/StringToCharacterCore: 0.00 B/op over 1000 operations; result=0
+AsciiLong/ByteToByteCore: 0.00 B/op over 1000 operations; result=0
+AsciiLong/ByteToCharacterScratch: 0.00 B/op over 1000 operations; result=0
+AsciiLong/StringToCharacterCorePaused: 0.00 B/op over 1000 operations; result=0
+AsciiLong/ByteToByteCorePaused: 0.00 B/op over 1000 operations; result=0
+AsciiLong/ByteToOwnedString: 7448.00 B/op over 1000 operations; result=0
+AsciiLong/StringViaOwnedUtf8: 3736.00 B/op over 1000 operations; result=0
+UnicodeLong/StringToCharacterCore: 0.00 B/op over 1000 operations; result=0
+UnicodeLong/ByteToByteCore: 0.00 B/op over 1000 operations; result=0
+UnicodeLong/ByteToCharacterScratch: 0.00 B/op over 1000 operations; result=0
+UnicodeLong/StringToCharacterCorePaused: 0.00 B/op over 1000 operations; result=0
+UnicodeLong/ByteToByteCorePaused: 0.00 B/op over 1000 operations; result=0
+UnicodeLong/ByteToOwnedString: 7704.00 B/op over 1000 operations; result=0
+UnicodeLong/StringViaOwnedUtf8: 6168.00 B/op over 1000 operations; result=0
+Cached byte/char SearchValues: 0.00 B/op over 1000 operations; result=0
+Length match byte/char: 0.00 B/op over 1000 operations; result=0
+Hash match byte/char: 0.00 B/op over 1000 operations; result=0
+Chunk match: 0.00 B/op over 1000 operations; result=0
+Constant byte/char/int literals: 0.00 B/op over 1000 operations; result=0
+Runtime-valued readonly collection control: 32.00 B/op over 1000 operations; result=0
+Mutable collection control: 32.00 B/op over 1000 operations; result=0
+Runtime-valued local collection: 0.00 B/op over 1000 operations; result=0
+Mutable local collection: 0.00 B/op over 1000 operations; result=0
+Paused after 7 bytes in 4 MiB token: source collectible while scanner/sink remain alive; scanner retained input=0; decoder pending scalar <=3 bytes; callback stack scratch=128 UTF16 units.
+64 MiB synthetic single token from reusable 64 KiB chunk: 0 B processing allocations, 1 token, no document buffer; source chunk owns 65536 bytes plus array header.
+PASS warm allocation regressions and source collectability. Counters are synchronous current-thread allocations; no async claim.

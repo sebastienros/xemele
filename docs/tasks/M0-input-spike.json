@@ -4,7 +4,7 @@
   "milestone": "M0",
   "title": "Compare input and resumable dispatch",
   "kind": "infrastructure",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M0-input-spike",
   "branch": "codex/m0-input-spike",
   "base_revision": "5cb0e4eae1a0835a7455580bac25ee05ade7c463",
@@ -32,35 +32,161 @@
     {
       "id": "M0-input-spike-A1",
       "description": "Compare UTF-8/character paths and resumable sink dispatch for byte/string callers and multilingual input.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "correctness",
+        "input-measurements"
+      ]
     },
     {
       "id": "M0-input-spike-A2",
       "description": "Report conversion/allocation costs and demonstrate suspension inside a token without retaining full input.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "allocation-retention",
+        "input-measurements"
+      ]
     },
     {
       "id": "M0-input-spike-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "builds",
+        "correctness",
+        "scope-review",
+        "task-validation"
+      ]
     },
     {
       "id": "M0-input-spike-A4",
       "description": "Benchmark cached SearchValues versus simple span scans; constant ReadOnlySpan/UTF-8 literals versus array-backed tokens; and length-dispatched equality versus collision-checked fixed-ASCII hashing. Cover byte/char input, hits/misses, short/long tokens, case rules, non-ASCII and chunk boundaries. Report cold/warm allocations and inspect lowering-dependent cases.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "correctness",
+        "primitive-measurements",
+        "input-measurements",
+        "allocation-retention",
+        "lowering"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "experiments/Input/Input.csproj; Program.cs: standalone net10.0 experiment with central BenchmarkDotNet 0.15.8 and explicit short exploratory job; no shared configuration changes",
+    "experiments/Input/Scanner.cs: borrowed generic byte/character fragment scanner, quantum+1 bounded delimiter search, consumed-unit pause/EOF contract, strict incremental UTF8/UTF16 sinks, bounded character scratch and explicit whole-conversion baselines",
+    "experiments/Input/Primitives.cs: cached SearchValues, static literal/local collection controls, length/equality and collision-checked fixed ASCII hashing, bounded overflow-checking chunk candidates",
+    "experiments/Input/Benchmarks.cs: 282 active cases across input/pause/rejection, scan, matcher/chunk, literal/lowering dimensions; Checks.cs: independent oracle, all short splits, invalid Unicode, culture/collision/random unknowns, long one-chunk progress",
+    "experiments/Input/Diagnostics.cs: cold/warm allocation regressions, 4 MiB paused source collectability, 64 MiB bounded streaming and IL inspection",
+    "docs/reports/M0-input-spike/results.md; matrix-summary.md; raw/suite-revisions.json; raw/active/; raw/superseded/: interpretation and durable revision-specific CSV/full JSON/raw logs; lowering-il.txt and lowering*-jit.txt; check_escape.py: compiler escape regression"
+  ],
+  "evidence": [
+    {
+      "id": "correctness",
+      "kind": "check",
+      "revision": "87d101c7e9b09167b2d114f1f33ea5974680617d",
+      "command": "dotnet run --project experiments/Input/Input.csproj -c Release --no-build -- check",
+      "result": "passed",
+      "summary": "83,095 assertions passed: all short byte/char splits, chunks 1..32, scalar carry/invalid Unicode, per-fragment pauses, independent oracle, exact/ASCII-fold matching, deliberate collisions, randomized unknowns/cultures, bounded candidate overflow, and long single-chunk tokens up to 1 MiB with bounded fragment/end/progress accounting. Search inspection confirms window bounded to quantum+1, avoiding repeated full-tail rescans. Synthetic token protocol, not XML correctness.",
+      "artifact": "docs/reports/M0-input-spike/correctness.txt"
+    },
+    {
+      "id": "allocation-retention",
+      "kind": "check",
+      "revision": "87d101c7e9b09167b2d114f1f33ea5974680617d",
+      "command": "dotnet run --project experiments/Input/Input.csproj -c Release --no-build -- allocations; DOTNET_TieredCompilation=0 DOTNET_JitDisasm='*b__*' DOTNET_JitStdOutFile='/Users/sebastienros/.codex/worktrees/5a7f/xemele/docs/reports/M0-input-spike/lowering-jit.txt' dotnet experiments/Input/bin/Release/net10.0/Input.dll allocations",
+      "result": "passed",
+      "summary": "Fresh default-tier setup: primitive initialization 7,992 B; both contexts/decoders 496 B. Borrowed native/scratch/paused pipelines, scans, matchers and static/local literals 0 B/op over 1,000 measured operations after 100 warm operations. Whole conversion arrays 56\u20136,168 B/op, strings 80\u20137,704 B/op. 4 MiB paused source collectible with scanner/sink alive; 64 MiB single token from reusable 64 KiB chunk processed at 0 B allocation. FullOpts setup 7,848/360 B; explicit returned arrays 32 B each vs default-tier 32/104 B; BDN specialized consumers differ, so no general allocation-free array-return claim. Synchronous per-thread counters only.",
+      "artifact": "docs/reports/M0-input-spike/allocations.txt"
+    },
+    {
+      "id": "primitive-measurements",
+      "kind": "check",
+      "revision": "662b15bb24ce340c301389e037277fd68d9f60ab",
+      "command": "dotnet run --project experiments/Input/Input.csproj -c Release --no-build -- benchmark --filter '*' --artifacts artifacts/M0-input-spike/benchmarks --exporters json csv",
+      "result": "passed",
+      "summary": "Original full BDN run completed 282 cases; active evidence retains only 220 unchanged primitive cases (24 chunk matches, 20 literals/lowering, 96 matches, 80 scans). All have 3 measured iterations and 0 B/op. Original 62 input/rejection cases explicitly superseded after coordinator found full-tail rescanning. Apple M4 Pro arm64, SDK 10.0.400/runtime 10.0.11, BDN 0.15.8; 1 launch/2 warmups/3x100ms exploratory iteration targets, exclusive timing slot. Cached five-stop scanning helps long hits/misses; small-vocabulary hash does not justify complexity; near-empty timings unrankable. CSV, full measurement JSON and console log retained; single-host provisional evidence.",
+      "artifact": "docs/reports/M0-input-spike/raw/suite-revisions.json"
+    },
+    {
+      "id": "input-measurements",
+      "kind": "check",
+      "revision": "87d101c7e9b09167b2d114f1f33ea5974680617d",
+      "command": "dotnet run --project experiments/Input/Input.csproj -c Release --no-build -- benchmark --filter '*InputBenchmarks*' '*RejectionBenchmarks*' --artifacts artifacts/M0-input-spike/corrected-benchmarks --exporters json csv",
+      "result": "passed",
+      "summary": "Corrected 62-case BDN run completed all 56 input/pause and 6 malformed-byte rejection cases, each with 3 measured iterations, in 98.28 seconds under continued exclusive lock. Native/scratch/paused pipelines 0 B/op; conversion arrays 56\u20136,168 B/op, strings 80\u20137,704 B/op; rejection 1,160\u20131,184 B/op. ASCII/multilingual, short/long, 7/256-unit chunks; equal checksum setup guards every input configuration. Raw CSV/full JSON/logs identify corrected source revision; old affected results retained as superseded. Lock released after final timing.",
+      "artifact": "docs/reports/M0-input-spike/results.md"
+    },
+    {
+      "id": "lowering",
+      "kind": "check",
+      "revision": "87d101c7e9b09167b2d114f1f33ea5974680617d",
+      "command": "dotnet experiments/Input/bin/Release/net10.0/Input.dll lowering; python3 docs/reports/M0-input-spike/check_escape.py; DOTNET_TieredCompilation=0 DOTNET_JitDisasm='*b__*' DOTNET_JitStdOutFile='/Users/sebastienros/.codex/worktrees/5a7f/xemele/docs/reports/M0-input-spike/lowering-jit.txt' dotnet experiments/Input/bin/Release/net10.0/Input.dll allocations; DOTNET_TieredCompilation=0 DOTNET_JitDisasm='*get_RuntimeBytes* *get_MutableBytes* *RuntimeLocalSum* *MutableLocalSum*' DOTNET_JitStdOutFile='/Users/sebastienros/.codex/worktrees/5a7f/xemele/docs/reports/M0-input-spike/lowering-getters-jit.txt' dotnet experiments/Input/bin/Release/net10.0/Input.dll allocations",
+      "result": "passed",
+      "summary": "IL confirms compiler static UTF8/byte data, interned char literal, constant int RuntimeHelpers.CreateSpan, inline-array local runtime/mutable collections, and explicit newarr return controls. Two unsafe returned span collection expressions fail with expected CS9203; negative-check script passes and cleans its owned temporary project. FullOpts arm64 consumer/getter output shows static constant folding and returned-array allocation helper. Counters vary by tier/call site and BDN controls approach empty overhead; no reliable literal-vs-array timing rank or universal allocation-free return claim.",
+      "artifact": "docs/reports/M0-input-spike/lowering-il.txt"
+    },
+    {
+      "id": "builds",
+      "kind": "check",
+      "revision": "87d101c7e9b09167b2d114f1f33ea5974680617d",
+      "command": "dotnet build experiments/Input/Input.csproj -c Release --no-restore --disable-build-servers -m:1 -p:UseSharedCompilation=false; dotnet build Xemele.slnx -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false",
+      "result": "passed",
+      "summary": "Focused experiment and all ten existing solution projects Release-built with zero warnings/errors. Central package reference and pinned SDK only; no runtime library/public API or shared configuration changes. Initial solution build stalled on reused MSBuild nodes and was canceled (exit 130); retry with isolated build flags passed. M0-build verified dependency integration revision is ancestor of task claim and implementation.",
+      "artifact": "docs/reports/M0-input-spike/solution-build.txt"
+    },
+    {
+      "id": "scope-review",
+      "kind": "review",
+      "revision": "87d101c7e9b09167b2d114f1f33ea5974680617d",
+      "command": null,
+      "result": "passed",
+      "summary": "Reviewed ownership, verified prerequisite ancestry, borrowed lifetimes, exact consumed counts/pauses/final flush, Unicode validation/carry, fixed matcher equality/collision/overflow and source retention. Coordinator identified full-tail rescans; correction uses bounded quantum+1 search and long single-chunk checks, followed by corrected affected-suite rerun. No public parser API, XML grammar, shared file, unmerged peer or later milestone dependency. Production/cross-architecture follow-ups explicit.",
+      "artifact": "docs/reports/M0-input-spike/review.md"
+    },
+    {
+      "id": "task-validation",
+      "kind": "check",
+      "revision": "87d101c7e9b09167b2d114f1f33ea5974680617d",
+      "command": "python3 tools/planning/tasks.py validate",
+      "result": "passed",
+      "summary": "Passed validation of 93 tasks: schema, evidence, acyclic dependencies, additive milestones and ordered ownership. Check executed after recording implemented status and criterion/evidence references.",
+      "artifact": "docs/reports/M0-input-spike/task-validation.txt"
+    },
+    {
+      "id": "initial-solution-build-canceled",
+      "kind": "check",
+      "revision": "33894407c6ced8041d488ec10939bf66a0705891",
+      "command": "dotnet build Xemele.slnx -c Release",
+      "result": "failed",
+      "summary": "Initial solution build at the claim checkout stalled before any MSBuild output with reused shared nodes. Owned experiment preparation was not yet committed and is outside the unchanged solution. Sent Ctrl-C, then terminated only worker build PID 18648 after cancellation did not finish; session reported exit 130. No peer/global build servers stopped. Final retry at corrected revision with disabled build servers, single node and shared compilation off passed with zero warnings/errors.",
+      "artifact": "docs/reports/M0-input-spike/results.md"
+    },
+    {
+      "id": "superseded-scanner-review",
+      "kind": "review",
+      "revision": "662b15bb24ce340c301389e037277fd68d9f60ab",
+      "command": null,
+      "result": "failed",
+      "summary": "Coordinator read-only review found Scanner.Append searching remaining full tail for every 64-unit fragment, causing repeated rescanning and quadratic work for long chunks contrary to performance rules. Corrected in 87d101c7e9b09167b2d114f1f33ea5974680617d with bounded quantum+1 search, long single-chunk progress checks, correctness/allocation rerun and remeasurement of affected 62 input/rejection cases. Old affected measurements remain under raw/superseded and are not current acceptance evidence. Unchanged primitive-suite results remain valid at their original revision.",
+      "artifact": "docs/reports/M0-input-spike/review.md"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "",
-    "checks": [],
-    "remaining": [],
+    "summary": "Implemented bounded input/dispatch experiment only in owned paths. Corrected reviewed quadratic tail scanning to quantum+1 window and remeasured affected suites. No runtime/public API change; architecture evidence provisional. Active 282 cases comprise 220 unchanged primitive cases at 662b15bb24ce340c301389e037277fd68d9f60ab plus 62 corrected input/rejection cases at 87d101c7e9b09167b2d114f1f33ea5974680617d; superseded reports retained.",
+    "checks": [
+      "Experiment and ten-project solution Release builds: passed, 0 warnings/errors; isolated flags resolved canceled shared-node stall (exit 130).",
+      "Correctness: 83,095 assertions passed, including long single-chunk progress and all short splits/invalid Unicode/collisions.",
+      "BDN: 282 active cases, 3 actual iterations each; required byte/char/case/length/hit/miss/chunk/multilingual dimensions; CPU/runtime/raw results in report.",
+      "Cold/warm/retained allocation checks: passed; borrowed primitives/dispatch 0 B/op, 4 MiB paused source collectible, 64 MiB token 0 B processing allocations.",
+      "IL/FullOpts JIT inspected; unsafe span-return negative compilation rejected as expected (CS9203).",
+      "python3 tools/planning/tasks.py validate: passed for 93 tasks."
+    ],
+    "remaining": [
+      "Coordinator must integrate and verify; integration_revision intentionally null.",
+      "M0-contracts reviews input/pause/lifetime design; M1-input/M1-syntax/M1-dom remeasure composed XML behavior and realistic workloads.",
+      "Single arm64 host/short exploratory timing only; cross-architecture and longer repeatability evidence required before release claims."
+    ],
     "requests": []
   }
 }
