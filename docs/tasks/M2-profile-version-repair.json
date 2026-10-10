@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "id": "M2-profile-version-repair",
+  "milestone": "M2",
+  "title": "Correct superseded E38 version applicability",
+  "kind": "feature",
+  "status": "in_progress",
+  "owner": "worker:M2-profile-version-repair",
+  "branch": "codex/m2-profile-version-repair",
+  "base_revision": "52fb130878edb29b3d291f9271902fb41ec91f42",
+  "integration_revision": null,
+  "depends_on": [
+    "M2-conformance-profile",
+    "M2-version-contract",
+    "M2-version-declarations",
+    "M2-external-declaration-hook"
+  ],
+  "goals": [
+    "G01",
+    "G18"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/parser.md",
+    "docs/decisions/M2/xml-resources.md"
+  ],
+  "owns": [
+    "tests/corpora/xml/m2-applicability.json",
+    "docs/reports/M2-conformance-profile/classify.py",
+    "tests/Xemele.Conformance.Tests/XmlFull/ProfileVersionRepair/",
+    "tests/fixtures/M2-conformance/ProfileVersionRepair/",
+    "samples/M2-profile-version-repair/",
+    "docs/reports/M2-profile-version-repair/"
+  ],
+  "api_or_output": "Exact E38 effective Fifth Edition accepted classification with independently expected byte-bound model; no runtime/API edits",
+  "acceptance": [
+    {
+      "id": "M2-profile-version-repair-A1",
+      "description": "Correct only the exact original xmlconf/eduni/errata-2e/errata2e.xml#rmt-e2e-38 effective expectation and deterministic classifier path under verified Fifth Edition version contract. Fourth Edition E10 explicitly reverses Second Edition E38; Fifth Edition [26] accepts1.[0-9]+ and [77] reuses VersionInfo. Preserve source TYPE/purpose, primary/entity original bytes, IDs/resource/grant metadata and all other case rows. No exclusion, runtime version rejection or profile/API change. Ledger aggregate classifications may change only as required by this one row. Cite exact normative rationale and historical distinction.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M2-profile-version-repair-A2",
+      "description": "Execute focused independent original byte/resource hash and semantic model controls: exact primary SHA b6be7039a5dfeaad8eaad16eb3976c754888985bdd598b518a81a0f9547e3cf6 and entity SHA028229ed9dda8481d7996ef03a1e17300255abef2bf082011312f09b28623eef; deterministic full classifier regeneration reproduces ledger with every other original row/resource unchanged. Actual integrated product case accepts independently authored complete nested foo/event/DOM model with explicit offline grants; preserve E38 source metadata, boundaries and cleanup. Paired malformed VersionNum/XML1.1-only content reject; no reference-agreement-only conformance claim.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M2-profile-version-repair-A3",
+      "description": "Use only verified integrated source for actual focused checks, no active runtime peer dependency. Preserve previous passing API/ABI/performance evidence because no runtime/dependency/config change; no allocation/timing required for classification-only correction. Record exact revisions/source/runtime identities, relevant focused conformance/model checks and planning/owned diff; summaries only, raw cleanup. Coordinator focuses integrated original/model/classification controls; full corpus execution and disagreement resolution remain grammar/conformance join acceptance.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}
