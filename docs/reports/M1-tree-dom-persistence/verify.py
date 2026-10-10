@@ -25,9 +25,22 @@ def run(*args):
         raise RuntimeError('\n'.join(LOG[-3:]))
     return result.stdout
 
+def audit_paths(audit_base=None):
+    task = json.loads((ROOT / 'docs/tasks/M1-tree-dom-persistence.json').read_text())
+    audit_base = audit_base or task['base_revision']
+    changed = run('git', 'diff', '--name-only', audit_base, 'HEAD').splitlines()
+    changed += run('git', 'diff', '--name-only', 'HEAD').splitlines()
+    changed += run('git', 'ls-files', '--others', '--exclude-standard').splitlines()
+    allowed = task['owns'] + ['docs/tasks/M1-tree-dom-persistence.json']
+    assert all(any(path.startswith(owner) if owner.endswith('/') else path == owner for owner in allowed) for path in changed), changed
+    LOG.append('Owned-path audit passed at base ' + audit_base)
+    run('git', 'diff', '--check', audit_base, 'HEAD')
+    run('git', 'diff', '--check')
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--public-golden', default='tests/Contracts/Fixtures/M1/Serializer.golden.txt')
+    parser.add_argument('--audit-base', help='Pre-merge coordination revision for the integration delta; defaults to the original task base')
     args = parser.parse_args()
     ARTIFACT.mkdir(parents=True, exist_ok=True)
     LOG.append(f'Host {platform.platform()} {platform.machine()}')
@@ -76,13 +89,8 @@ def main():
     run('dotnet', 'build', 'benchmarks/Xemele.Benchmarks/Xemele.Benchmarks.csproj', *FLAGS)
     run('dotnet', 'build', 'docs/reports/M1-tree-dom-persistence/Oracle/Oracle.csproj', *FLAGS)
     run('dotnet', 'run', '--project', 'docs/reports/M1-tree-dom-persistence/Oracle/Oracle.csproj', '-c', 'Release', '--no-build', '--no-restore')
-    task = json.loads((ROOT / 'docs/tasks/M1-tree-dom-persistence.json').read_text())
-    changed = run('git', 'diff', '--name-only', task['base_revision']).splitlines()
-    allowed = task['owns'] + ['docs/tasks/M1-tree-dom-persistence.json']
-    assert all(any(path.startswith(owner) if owner.endswith('/') else path == owner for owner in allowed) for path in changed), changed
-    LOG.append('Owned-path audit passed')
+    audit_paths(args.audit_base)
     run('python3', 'tools/planning/tasks.py', 'validate')
-    run('git', 'diff', '--check')
 
 if __name__ == '__main__':
     try: main()
