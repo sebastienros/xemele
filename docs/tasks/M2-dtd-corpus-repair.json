@@ -4,7 +4,7 @@
   "milestone": "M2",
   "title": "Resolve seven original DTD grammar and namespace obligations",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "worker:M2-dtd-corpus-repair",
   "branch": "codex/m2-dtd-corpus-repair",
   "base_revision": "e82db97101699f538a068b43fa7f3f8c06492ed3",
@@ -59,11 +59,14 @@
     {
       "id": "M2-dtd-corpus-repair-A3",
       "description": "Relevant focused and affected inherited correctness, API290 compatibility and actual source/fresh package consumer checks; applicable real allocation/timing evidence through reused verified support and one prepared exclusive sequence. State repeat reasons, preserve unchanged passing evidence, build outside lease, final identity and cleanup mandatory. Timing informational. Planning/owned diff validated, concise summaries only.",
-      "status": "pending",
+      "status": "passed",
       "evidence": [
         "focused-affected-correctness",
         "api-consumers",
-        "preparation-infrastructure"
+        "frozen-preparation",
+        "allocation",
+        "timing",
+        "final-audit"
       ]
     }
   ],
@@ -112,27 +115,60 @@
       "result": "failed",
       "summary": "Parent build, identity and counters-disabled authored oracles passed. Independent generated project binding and restore passed; generated build hit its 240-second deadline. No workload/counter/timing executor ran. Process group empty and temporary raw/generated outputs removed. Outside-sandbox preparation was rejected twice by automatic approval review; no host attempt started.",
       "artifact": "docs/reports/M2-dtd-corpus-repair/prepare-offline.json"
+    },
+    {
+      "id": "frozen-preparation",
+      "kind": "check",
+      "revision": "52ea90cb1b0997350a1726e8d0b5527bbb585524",
+      "command": "python3 -B docs/reports/M2-dtd-corpus-repair/measure.py --mode prepare --report prepare-frozen --benchmark-report benchmark-final",
+      "result": "passed",
+      "summary": "All four preparation phases passed; counters disabled. Frozen manifest covers 286 source inputs, 296 generated compiled inputs, 40 parent files, 47 child files and 188 runtime files. Earlier preparation failures resolved by scoped offline audit policy, approved temporary host build and positional adapter fix; 20 reused and 7 owned offline controls passed.",
+      "artifact": "docs/reports/M2-dtd-corpus-repair/prepare-frozen.json"
+    },
+    {
+      "id": "allocation",
+      "kind": "check",
+      "revision": "52ea90cb1b0997350a1726e8d0b5527bbb585524",
+      "command": "python3 -B docs/reports/M2-dtd-corpus-repair/measure.py --mode allocation --report allocation-final --exclusive-grant m2-dtd-corpus-repair-52ea90c-sequence-exclusive-20261010",
+      "result": "passed",
+      "summary": "One actual allocation execution passed under the bounded exclusive lease: 1024 borrowed operations, 2 UTF16 units each, 0 bytes with cold/owned excluded. Positive control 155648 bytes; cold 278688, owned models 5111808 and owned documents 67825408 bytes. Final identity and process guards passed.",
+      "artifact": "docs/reports/M2-dtd-corpus-repair/allocation-final.json"
+    },
+    {
+      "id": "timing",
+      "kind": "check",
+      "revision": "52ea90cb1b0997350a1726e8d0b5527bbb585524",
+      "command": "python3 -B docs/reports/M2-dtd-corpus-repair/measure.py --mode benchmark --report benchmark-final --exclusive-grant m2-dtd-corpus-repair-52ea90c-sequence-exclusive-20261010",
+      "result": "passed",
+      "summary": "One prebuilt two-case sequence passed, child exits 0/0 and four before/after gates. No generation, restore or build inside lease. InternalNestedModel 1.011 us, 4.88 KB; RedirectedComposition 6.133 us, 64.68 KB. Arm64 timing informational only; owned construction allocations are not retained heap. Final freeze and cleanup passed.",
+      "artifact": "docs/reports/M2-dtd-corpus-repair/benchmark-final.json"
+    },
+    {
+      "id": "final-audit",
+      "kind": "review",
+      "revision": "52ea90cb1b0997350a1726e8d0b5527bbb585524",
+      "command": null,
+      "result": "passed",
+      "summary": "Final report review: Preparation SHA256 unchanged at 7a9d06404456f730d1d073acb39499f6e162166296049f50996727d67edda6a6. Generated child, temporary parent binaries/obj, raw artifacts and inspection files removed after final identities passed. No executable children; lease released. Runtime/test/sample/benchmark source unchanged since passing correctness/API revision d9d2afe.",
+      "artifact": "docs/reports/M2-dtd-corpus-repair/final-handoff-audit.json"
     }
   ],
-  "blockers": [
-    "A3: generated child preparation timed out in sandbox. Direct user approval now received for temporary host build/freeze/cleanup. PARKED pending coordinator release from standalone exclusive sequence; no executable children, no worker allocation/timing sequence run."
-  ],
+  "blockers": [],
   "handoff": {
-    "summary": "A1/A2 implemented and bounded source review approved. Core forwarding and historical assertion transitions used exact coordinator grants. A3 correctness/API/source/fresh-package checks pass; actual measurement preparation remains incomplete.",
+    "summary": "All three criteria implemented on the isolated branch. Repairs cover live default declaration order/applicability, external PE keyword boundaries and entity/notation NCNames; exact original corpus/profile and complete models preserved. Awaiting coordinator integration verification.",
     "checks": [
-      "Release pinned SDK10.0.400/runtime10.0.11 build and MTP executable: 2129 passed, including 31 owned and three actual historical transition rows.",
-      "All current290 public members, frozen contract/model assertions, actual source and fresh local-package consumer passed at d9d2afe6538a2d3a22bcc56247526de295552c16.",
-      "20 reused support offline controls and 6 owned adapter controls passed; no counters/workloads run by these controls.",
-      "Planning validate passed for136 tasks; owned diff since8427948 metadata merge includes only granted paths."
+      "2129 actually executed correctness tests passed, including 31 owned and all three historical transition rows; zero failures/skips.",
+      "All current 290 public members, frozen model/contract assertions, actual source and fresh local-package consumer passed at d9d2afe6538a2d3a22bcc56247526de295552c16; unchanged source evidence preserved.",
+      "20 reused support and 7 owned adapter offline controls passed. Planning validate and owned-path audit passed.",
+      "Frozen preparation and exactly one allocation/prebuilt timing sequence passed at 52ea90cb1b0997350a1726e8d0b5527bbb585524. Borrowed allocation 0 bytes/1024 operations; positive control passed. Timing informational.",
+      "Final identities and cleanup passed; temporary binaries/raw outputs removed, no executable children, exclusive lease released."
     ],
     "remaining": [
-      "A3: prepare and freeze generated child, then receive one explicit bounded measurement lease, execute real allocation/timing, verify final identities and remove all temporary binaries/raw outputs. Timing informational only.",
-      "Preserve unchanged passing evidence: source changes only affect DTD declaration/default/PE paths and their inherited correctness; ordinary input, resolver reads, text framing, PI/core/tag scan and tree primitive observations are not rerun."
+      "Coordinator must integrate the branch and verify applicable checks on the combined tree before setting verified. Separate unknown-default contract obligation remains outside this task."
     ],
     "requests": [
-      "Resolved Doctype.cs forwarding request under coordinator grant8427948bc4e4b5178aac3df33ab6da6ec3d2a077.",
-      "Resolved only unused-colon assertion transition under exact ReviewRegressionTests.cs ownership grant99769bce1c2cff9125fd802f4bbb8730a8c250b0 (mirrored ownership without unverified peer runtime).",
-      "Direct user approval received for temporary host preparation/build freeze and cleanup after auto-review rejection; proceed only after coordinator PARK release. No host process has started."
+      "Resolved exact Doctype.cs forwarding grant8427948bc4e4b5178aac3df33ab6da6ec3d2a077 and unused-colon assertion grant99769bce1c2cff9125fd802f4bbb8730a8c250b0; no outstanding ownership request.",
+      "Direct user approval authorized temporary host build/freeze/cleanup after automatic approval rejection; build and bounded measurements completed, all temporary outputs removed."
     ]
   }
 }
