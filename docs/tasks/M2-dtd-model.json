@@ -4,7 +4,7 @@
   "milestone": "M2",
   "title": "Immutable DTD declarations and particle model",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M2-dtd-model",
   "branch": "codex/m2-dtd-model",
   "base_revision": "8af65f385654c382f201e1ad8c32f9be2cc3bb87",
@@ -36,13 +36,15 @@
       "evidence": [
         "model-focused",
         "independent-inventory-lifetime",
-        "independent-source-review"
+        "independent-source-review",
+        "renewed-source-preservation",
+        "renewed-model"
       ]
     },
     {
       "id": "M2-dtd-model-A2",
       "description": "Independent compiled approved model inventory matches actual exact types/members/nullability/enums; tests prove source-enumerable mutation cannot alter snapshots, one-shot enumeration/empty/nested particles/ordered declarations/separate entity tables/token sets/default/origin/locations and required null collections; common-only compilation/sample works without parser/framer/resolver. Record honest setup/persistence allocation/retained-lifetime evidence, no borrowed data hidden. Preserve cumulative integrated behavior, API251/discovery3388/fresh242pinned fullsource/hash references, planning14/validate118/ownedpaths.",
-      "status": "failed",
+      "status": "passed",
       "evidence": [
         "model-focused",
         "independent-inventory-lifetime",
@@ -50,7 +52,11 @@
         "mtp-and-preservation",
         "direct-cumulative",
         "planning-and-paths",
-        "initial-path-failure"
+        "initial-path-failure",
+        "renewed-source-preservation",
+        "renewed-model",
+        "renewed-combined-preservation",
+        "renewed-planning-audits"
       ]
     }
   ],
@@ -123,24 +129,55 @@
       "result": "failed",
       "summary": "Initial source preparation built actual common-only sample then approved project failed CS2001 on two common source paths (five parent levels instead of four). No focused/cumulative tests ran in that preparation. Corrected only project paths in b902b16 before final e020db3 verification.",
       "artifact": null
+    },
+    {
+      "id": "renewed-source-preservation",
+      "kind": "check",
+      "revision": "21e6c36ad7d2c01e43412f330f6a989c4a76cd6f",
+      "command": "git diff --exit-code e020db32fec509f122f0ffec37135ca2ee06724f HEAD -- src/Xemele/Parsing/Dtd/Model tests/Xemele.Tests/M2-dtd-model samples/M2-dtd-model docs/reports/M2-dtd-model/Approved docs/reports/M2-dtd-model/verify.py",
+      "result": "passed",
+      "summary": "Model/focused tests/sample/approved extraction/verifier byte-for-byte unchanged from independently reviewed e020db32fec509f122f0ffec37135ca2ee06724f. Exact renewed claim f9ce78b and verified base8af65f3/resolver integration4e558709 are ancestors; only ownJSON conflict resolved retaining prior evidence and main metadata. Prior CS2001 and Resolver4080B failures preserved.",
+      "artifact": "docs/reports/M2-dtd-model/renewal.md"
+    },
+    {
+      "id": "renewed-model",
+      "kind": "check",
+      "revision": "21e6c36ad7d2c01e43412f330f6a989c4a76cd6f",
+      "command": "DOTNET_ROOT='/Users/sebastienros/Library/Application Support/dotnetup/dotnet' PATH=\"$DOTNET_ROOT:$PATH\" python3 -B docs/reports/M2-dtd-model/verify.py --report-prefix renewed --audit-base f9ce78b1e1eb46f6726865c5f435365ab321b23b --runtime-count 306",
+      "result": "passed",
+      "summary": "Fresh combined pinned Release SDK10.0.400/runtime10.0.11/default settings: focused8/8; independently compiled approved11types/154 exact reflection rows match actual model/common-only source compilation; standalone sample works without parser/framer/resolver/DOM/core; sourceList capacity200000 and mutable character storage collected while model survives. Informational1000-operation allocations model280000B/particle96000B/attribute160000B, fixture setup11744B separate, no throughput/zero-allocation/retained-byte claim.",
+      "artifact": "docs/reports/M2-dtd-model/renewed/summary.json"
+    },
+    {
+      "id": "renewed-combined-preservation",
+      "kind": "check",
+      "revision": "21e6c36ad7d2c01e43412f330f6a989c4a76cd6f",
+      "command": "DOTNET_ROOT='/Users/sebastienros/Library/Application Support/dotnetup/dotnet' PATH=\"$DOTNET_ROOT:$PATH\" python3 -B docs/reports/M2-dtd-model/verify.py --report-prefix renewed --audit-base f9ce78b1e1eb46f6726865c5f435365ab321b23b --runtime-count 306",
+      "result": "passed",
+      "summary": "Fresh combined historical M1 contracts/protocol/negative/ABI/vector/foundation and complete current MTP860/860 pass. Full direct runtime306/306, conformance255/255, differential299/299 pass (860 total, baseline852+8). Verified resolver repair included; no retries/exclusions/new feature source/runtime setting changes. API251/discovery3388 preserved.242 unique records match fresh complete pinned BCL output copied before historical builds, unchanged SHA2567704d0331f7bfbae423fb92da2b51c2f00d13cbf2c4867e1df0e57b3809a01a8 and sourceBuild1.0.0+21e6c36ad7d2c01e43412f330f6a989c4a76cd6f.",
+      "artifact": "docs/reports/M2-dtd-model/renewed/summary.json"
+    },
+    {
+      "id": "renewed-planning-audits",
+      "kind": "check",
+      "revision": "21e6c36ad7d2c01e43412f330f6a989c4a76cd6f",
+      "command": "DOTNET_ROOT='/Users/sebastienros/Library/Application Support/dotnetup/dotnet' PATH=\"$DOTNET_ROOT:$PATH\" python3 -B docs/reports/M2-dtd-model/verify.py --report-prefix renewed --audit-base f9ce78b1e1eb46f6726865c5f435365ab321b23b --runtime-count 306",
+      "result": "passed",
+      "summary": "Planning14/14 and validate118 pass; source committed before check set; all committed/working/staged/untracked paths owned and diff checks pass against renewed mainclaim f9ce78b1e1eb46f6726865c5f435365ab321b23b. Final metadata clean/process audit follows.",
+      "artifact": "docs/reports/M2-dtd-model/renewed/summary.json"
     }
   ],
-  "blockers": [
-    "A2 cumulative direct suite fails unchanged resolver allocation test WarmBorrowedReadsAllocateNothing: expected0 actual4080B at ResolverTests.cs284. Coordinator resolver measurement repair/checkpoint must integrate before a bounded combined verification follow-up; no worker retry or peer changes."
-  ],
+  "blockers": [],
   "handoff": {
-    "summary": "Immutable model complete and independently source-reviewed at e020db32fec509f122f0ffec37135ca2ee06724f. A1 passed; A2 partial/failed due required direct cumulative resolver allocation failure. Worker releases JSON/source ownership after evidence handoff; no further edits/checks without focused coordinator follow-up. Renewed claim f9ce78b1e1eb46f6726865c5f435365ab321b23b now provides verified resolver measurement repair; fresh combined verification pending.",
+    "summary": "Implemented immutable DTD model on renewed verified resolver prerequisite; combined source21e6c36ad7d2c01e43412f330f6a989c4a76cd6f passes all actual required checks. Model source unchanged from independent approval e020; prior failed first evidence retained. Worker explicitly releases all source/JSON ownership after final clean handoff; no further work unless focused coordinator follow-up. Awaiting coordinator integration verification; integration_revision remains null.",
     "checks": [
-      "Focused8/8; common-only sample/inventory11types154rows; retained source collected; informational model280/particle96/attribute160B per constructor, setup11744B.",
-      "Historical/current MTP860/860; direct runtime305/306 (resolver allocation4080B failure), conformance255/255, differential299/299. No retries.",
-      "API251/discovery3388; fresh242 pinned BCL records/source+hash preserved; planning14/validate118/owned paths/diff checks passed. Reports docs/reports/M2-dtd-model/first/."
+      "Fresh combined model focused8/8/common-only sample/approved inventory11types154rows/lifetime all pass; model280/particle96/attribute160B per persistence constructor, cold setup11744B separate.",
+      "Historical/current fullMTP860/860 and direct306+255+299=860/860 pass, zero skips; API251/discovery3388/fresh242 pinned BCL source+hash unchanged; planning14/validate118/ownedpaths/diffchecks pass.",
+      "Reports docs/reports/M2-dtd-model/renewed/; originalCS2001/Resolver4080B failed evidence remains docs/reports/M2-dtd-model/first/ and task evidence. No retries of unchanged original candidate, peer edits, exclusions or production source deltas."
     ],
     "remaining": [
-      "Coordinator integrates resolver measurement repair independently, then performs required combined complete verification before A2/implemented/verified. Preserve first-run failure evidence. No integration revision set.",
-      "Renewed after verified resolver measurement repair 4e558709ba99879b22a892d17912dd8204e5baea; preserve previous branch evidence and run fresh combined checks. No production changes or unchanged-candidate retries."
+      "Coordinator performs integrated combined verification and sets verified/integration_revision only after actual passing integration checks."
     ],
-    "requests": [
-      "Coordinator-owned follow-up only: integrate/recheck resolver allocation measurement repair; worker has no requested shared source/build/API changes."
-    ]
+    "requests": []
   }
 }
