@@ -13,6 +13,8 @@ internal sealed partial class XmlParserCore
         internal readonly DtdEntityDeclaration Declaration = declaration;
         internal readonly XmlLocation Reference = reference;
         internal readonly int ElementDepth = elementDepth;
+        // Provenance identity must never retain a resource, decoder, or input owner.
+        internal readonly object PhysicalIdentity = new();
         internal int Index;
         internal ExternalXmlSource? External;
         internal int Line, Column;
@@ -94,7 +96,7 @@ internal sealed partial class XmlParserCore
         activeCancellation.ThrowIfCancellationRequested();
         int scalar;
         XmlLocation at = source.Reference;
-        attributePhysicalSpelling = null; attributePhysicalLocation = at; attributePhysicalOrigin = false; attributePhysicalIdentity = source.External;
+        attributePhysicalSpelling = null; attributePhysicalLocation = at; attributePhysicalOrigin = false; attributePhysicalIdentity = source.PhysicalIdentity;
         if (source.External is { } external)
         {
             if (!external.EnsureCharacters(activeCancellation))

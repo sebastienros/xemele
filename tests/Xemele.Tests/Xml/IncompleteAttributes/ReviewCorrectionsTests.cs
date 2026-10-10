@@ -82,6 +82,36 @@ public sealed class ReviewCorrectionsTests
         Assert.False(XmlDocument.TryParse(xml, out _, out var errors, exact with { Limits = new() { InternedNames = 7 } }, Ct));
         Assert.Equal("XML.ResourceLimit", Assert.Single(errors).Code);
     }
+    [Fact]
+    public void ExternalEntityPhysicalIdentitiesAreDistinctOpaqueTokens()
+    {
+        const string xml = "<!DOCTYPE r [<!ENTITY % p ''>%p;<!ENTITY a SYSTEM 'urn:entity'><!ENTITY b SYSTEM 'urn:entity'>]><r>&a;&b;</r>";
+        var resolver = new TransportAndGuardsTests.Resolver("urn:entity", "<n a='&gap;'/>", "urn:final", 1);
+        using var core = new XmlParserCore(RuntimeTests.Options with { Resolver = resolver }); var sink = new RuntimeTests.Sink(true);
+        const System.Reflection.BindingFlags flags = System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic;
+        var sourcesField = typeof(XmlParserCore).GetField("entitySources", flags)!;
+        var identityField = typeof(XmlParserCore).GetField("attributePhysicalIdentity", flags)!;
+        var identitiesField = typeof(XmlParserCore).GetField("attributePhysicalIdentities", flags)!;
+        var seen = new HashSet<object>(ReferenceEqualityComparer.Instance); int offset = 0; ScanResult result;
+        do
+        {
+            result = core.Append(xml.AsSpan(offset), [], true, sink, Ct); offset += result.Consumed;
+            if (sourcesField.GetValue(core) is System.Collections.IList sources)
+                foreach (var source in sources)
+                {
+                    var sourceType = source!.GetType();
+                    if (sourceType.GetField("External", flags)!.GetValue(source) is not { } owner) continue;
+                    var token = sourceType.GetField("PhysicalIdentity", flags)!.GetValue(source)!;
+                    Assert.IsType<object>(token); Assert.NotSame(owner, token); seen.Add(token);
+                }
+            if (identityField.GetValue(core) is { } current) Assert.IsType<object>(current);
+            foreach (var token in (object?[])identitiesField.GetValue(core)!)
+                if (token is not null) { Assert.IsType<object>(token); Assert.Contains(token, seen); }
+        } while (result.Step == ScanStep.Paused);
+        Assert.Equal(ScanStep.Completed, result.Step); Assert.Equal(xml.Length, offset); Assert.Equal(2, seen.Count);
+        Assert.Equal(2, resolver.Opens); Assert.Equal(2, resolver.Disposals);
+        Assert.Equal(2, sink.Dom.Document.IncompleteAttributeValues.Count);
+    }
     private sealed class SplitResolver(string body, int boundary) : XmlResourceResolver
     {
         internal int Opens, Disposals;
