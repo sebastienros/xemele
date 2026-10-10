@@ -1,6 +1,7 @@
 using System.Text;
 using Xemele.Parsing.Dtd;
 using Xunit;
+using Model = Xemele.Parsing.Dtd.DtdModel;
 namespace Xemele.Tests;
 
 public sealed class DtdCompositionTests
@@ -8,7 +9,7 @@ public sealed class DtdCompositionTests
     private static readonly Uri Parent = new("https://fixture.invalid/parent.dtd"), Child = new("https://fixture.invalid/child.dtd"), Nested = new("https://fixture.invalid/nested.dtd");
     private static CancellationToken Ct => TestContext.Current.CancellationToken;
     private static readonly XmlLocation Origin = new(Parent, 1, 1, null);
-    private static DtdModel Prior(string text, Ledger? ledger = null)
+    private static Model Prior(string text, Ledger? ledger = null)
     {
         using var p = new DtdParser(DtdSubsetKind.Internal, new(), ledger ?? new(), Origin);
         Assert.Equal(DtdParseStep.Completed, p.Append(text, [], true, Ct).Step);
@@ -241,10 +242,10 @@ public sealed class DtdCompositionTests
         for (int i = 0; i < 12000; i++) particle = new(DtdParticleKind.Sequence, null, DtdOccurrence.Once, [particle]);
         var element = new DtdElementDeclaration("root", particle, false, Origin);
         var attribute = new DtdAttributeDeclaration("root", "a", DtdAttributeType.Notation, ["n"], DtdDefaultKind.Implied, null, false, Origin);
-        var prior = new DtdModel([element], [attribute], [], [], []);
+        var prior = new Model([element], [attribute], [], [], []);
         var ledger = new Ledger { MaxNames = 0 };
         using var p = new DtdParser(DtdSubsetKind.External, new(), ledger, Origin);
-        var broken = new DtdModel([element, null!], [], [], [], []);
+        var broken = new Model([element, null!], [], [], [], []);
         Assert.Throws<NullReferenceException>(() => p.SeedPriorModel(broken, Ct));
         p.SeedPriorModel(prior, Ct); p.SetFramedInitialSource(Origin);
         Assert.Equal(DtdParseStep.Completed, p.Append("<!ELEMENT root (leaf)><!ATTLIST root a NOTATION (n) #IMPLIED>", [], true, Ct).Step);
