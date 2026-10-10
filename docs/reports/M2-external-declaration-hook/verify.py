@@ -14,7 +14,7 @@ def main():
     assert not report.exists()
     env = dict(os.environ, DOTNET_ROOT=str(SDK), PATH=str(SDK)+os.pathsep+os.environ.get('PATH',''), DOTNET_CLI_USE_MSBUILD_SERVER='0')
     resume = '--remaining' in sys.argv
-    summary = json.loads((OWN/'harness-discovery-failure.json').read_text()) if resume else {'checks':[]}
+    summary = json.loads((OWN/'package-identity-failure.json').read_text()) if resume else {'checks':[]}
     summary.setdefault('testRevision',summary.get('revision'))
     summary['result']='failed'
     summary.pop('failure',None)
@@ -53,26 +53,27 @@ def main():
                 summary['tests'] = {'passed':len(rows),'failed':0,'skipped':0,'owned':sum(row.get('type','').startswith('Xemele.Tests.ExternalDeclarationHook.') for row in rows)}
                 assert summary['tests']['owned']==17
                 summary['tests']['byType'] = {t:sum(r.get('type')==t for r in rows) for t in sorted({r.get('type') for r in rows})}
-            foundation_xml=temp/'foundation.xml'
-            run(DOTNET,test,'-noColor','-class','Xemele.Tests.EntitiesFoundation.*','-result-xml',foundation_xml)
-            foundation=list(ET.parse(foundation_xml).iter('test'))
-            assert foundation and all(r.get('result')=='Pass' for r in foundation)
-            summary['foundationTests']={'passed':len(foundation),'failed':0,'skipped':0,'revision':summary['testRevision']}
-            build('docs/reports/M0-contracts/ApiCheck/ApiCheck.csproj')
-            sys.path.insert(0,str(ROOT/'tools/ApiBaseline'))
-            from compare import compare
-            old_path = os.environ.get('PATH',''); os.environ['PATH']=env['PATH']
-            try:
-                snapshot=temp/'api-snapshot'; (snapshot/'docs/api').mkdir(parents=True)
-                for fragment in (ROOT/'docs/api').glob('*.txt'): shutil.copyfile(fragment,snapshot/'docs/api'/fragment.name)
-                api=compare(snapshot,runtime)
-                summary['apiScope']='All approved API fragments copied unchanged; API-only discovery snapshot, no corpus discovery claim.'
-            finally: os.environ['PATH']=old_path
-            assert api['matched'],api['checkerOutput']
-            assert len(api['provenance'])==290
-            summary['api']={'members':len(api['provenance']),'matched':True,'checkerOutput':api['checkerOutput']}
+            if 'api' not in summary:
+                foundation_xml=temp/'foundation.xml'
+                run(DOTNET,test,'-noColor','-class','Xemele.Tests.EntitiesFoundation.*','-result-xml',foundation_xml)
+                foundation=list(ET.parse(foundation_xml).iter('test'))
+                assert foundation and all(r.get('result')=='Pass' for r in foundation)
+                summary['foundationTests']={'passed':len(foundation),'failed':0,'skipped':0,'revision':summary['testRevision']}
+                build('docs/reports/M0-contracts/ApiCheck/ApiCheck.csproj')
+                sys.path.insert(0,str(ROOT/'tools/ApiBaseline'))
+                from compare import compare
+                old_path = os.environ.get('PATH',''); os.environ['PATH']=env['PATH']
+                try:
+                    snapshot=temp/'api-snapshot'; (snapshot/'docs/api').mkdir(parents=True)
+                    for fragment in (ROOT/'docs/api').glob('*.txt'): shutil.copyfile(fragment,snapshot/'docs/api'/fragment.name)
+                    api=compare(snapshot,runtime)
+                    summary['apiScope']='All approved API fragments copied unchanged; API-only discovery snapshot, no corpus discovery claim.'
+                finally: os.environ['PATH']=old_path
+                assert api['matched'],api['checkerOutput']
+                assert len(api['provenance'])==290
+                summary['api']={'members':len(api['provenance']),'matched':True,'checkerOutput':api['checkerOutput']}
             sample='samples/M2-external-declaration-hook/Sample.csproj'
-            build(sample)
+            build(sample,'-p:BuildProjectReferences=false')
             sample_path=ROOT/'samples/M2-external-declaration-hook/bin/Release/net10.0'
             summary['sourceEntrypoint']=run(DOTNET,sample_path/'Sample.dll')
             feed=temp/'feed'; run(DOTNET,'pack','src/Xemele/Xemele.csproj',*FLAGS,'--no-build','-o',feed)
@@ -95,7 +96,7 @@ def main():
         run('git','diff','--check')
         summary['result']='passed'
     except Exception as error:
-        summary['failure']=str(error); raise
+        summary['failure']=str(error) or type(error).__name__; raise
     finally:
         report.write_text(json.dumps(summary,indent=2)+'\n'); print(json.dumps({k:v for k,v in summary.items() if k in ['revision','result','failure','tests','api']}))
 if __name__=='__main__': main()
