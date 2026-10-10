@@ -32,3 +32,5 @@ is inspected here. Existing exact-zero warm syntax/DOM allocation tests run as
 part of the cumulative suite. Historical 216B/6000B probe failures have no proven
 cause; their records remain in the owning reports. Windows/x64/release AOT and
 full XML conformance remain later unrun release checks.
+
+Checkpoint results: corrected/summary.json records source 0e8f6929abc4f95e9608176c1db0dee8c0d7cf34 and passed commands/results in corrected/checks.txt.gz. All801 cumulative+501 subset+11 foundation tests passed with no skips. Source/package output is identical (source-demo.txt/package-demo.txt). Initial attempt at80ee540 failed only the gate demo local helper name collision; first/checks.txt.gz preserves that failure. The helper and benchmark lookup were corrected in0e8f692 before the complete successful run. Planning14/provenance5/build-discovery16 and validation110 passed. No production changes or timing repetition.
