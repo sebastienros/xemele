@@ -13,12 +13,12 @@ def run(*command):
     return result.stdout
 try:
     summary['sourceRevision'] = run('git','rev-parse','HEAD').strip()
-    sources = ['src/Xemele/Parsing/Dtd/Grammar/Parser','benchmarks/Xemele.Benchmarks/M2-dtd-composition','docs/reports/M2-dtd-composition/BenchmarkDriver.cs','docs/reports/M2-dtd-composition/Benchmarks.csproj','docs/reports/M2-dtd-composition/verify_benchmarks.py']
+    sources = ['src/Xemele/Parsing/Dtd/Grammar/Parser','benchmarks/Xemele.Benchmarks/M2-dtd-composition','docs/reports/M2-dtd-composition/BenchmarkDriver.cs','docs/reports/M2-dtd-composition/Xemele.DtdCompositionBenchmarks.csproj','docs/reports/M2-dtd-composition/verify_benchmarks.py']
     assert not run('git','diff','--name-only','HEAD','--',*sources).strip()
     assert not run('git','ls-files','--others','--exclude-standard','--',*sources).strip()
     dotnet = shutil.which('dotnet'); assert dotnet
     assert run(dotnet,'--version').strip() == '10.0.400'
-    run(dotnet,'build','docs/reports/M2-dtd-composition/Benchmarks.csproj',*FLAGS)
+    run(dotnet,'build','docs/reports/M2-dtd-composition/Xemele.DtdCompositionBenchmarks.csproj',*FLAGS)
     run(dotnet,'build','benchmarks/Xemele.Benchmarks/Xemele.Benchmarks.csproj',*FLAGS)
     dll = ROOT/'docs/reports/M2-dtd-composition/bin/Release/net10.0/Xemele.DtdCompositionBenchmarks.dll'
     correctness = run(dotnet,dll,'--correctness')

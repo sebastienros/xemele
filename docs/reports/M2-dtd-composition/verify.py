@@ -160,7 +160,7 @@ def main():
         # The parser changed: inherited timing is preservation evidence only.
         archive = ROOT/'docs/reports/M2-dtd-grammar/exclusive-d1dfbac/full-raw.zip'
         assert hashlib.sha256(archive.read_bytes()).hexdigest() == '067634a93eee38804668c4c2048534594dd0d8151bbea506bab8981aa86e8545'
-        run('dotnet', 'build', ROOT/'docs/reports/M2-dtd-composition/Benchmarks.csproj', *FLAGS)
+        run('dotnet', 'build', ROOT/'docs/reports/M2-dtd-composition/Xemele.DtdCompositionBenchmarks.csproj', *FLAGS)
         run('dotnet', 'build', ROOT/'benchmarks/Xemele.Benchmarks/Xemele.Benchmarks.csproj', *FLAGS)
         benchmark = ROOT/'docs/reports/M2-dtd-composition/bin/Release/net10.0/Xemele.DtdCompositionBenchmarks.dll'
         summary['benchmarkCorrectness'] = run('dotnet', benchmark, '--correctness').strip()
