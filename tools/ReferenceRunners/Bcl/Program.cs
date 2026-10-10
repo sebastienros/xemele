@@ -95,7 +95,12 @@ while (true)
     catch (Exception ex) { response = Reply("runner-failure", [new(ex is ArgumentException or JsonException or FormatException ? "protocol" : "infrastructure", ex.Message)]); }
     string output = JsonSerializer.Serialize(response, Wire.Json);
     if (output.Length > Wire.MaximumLineCharacters)
+    {
         output = JsonSerializer.Serialize(Reply("runner-failure", [new("limit", "Response exceeds line limit.")]), Wire.Json);
+        if (output.Length > Wire.MaximumLineCharacters)
+            output = JsonSerializer.Serialize(new Response(1, null, null, engine, "runner-failure",
+                [new("limit", "Identity cannot fit within response limit.")], null), Wire.Json);
+    }
     Console.Out.WriteLine(output);
     Response Reply(string outcome, Diagnostic[] diagnostics, Event[]? events = null) =>
         new(1, request?.CaseId, request?.Operation, engine, outcome, diagnostics, events);

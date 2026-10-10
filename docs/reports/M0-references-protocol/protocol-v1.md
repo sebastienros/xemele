@@ -32,6 +32,9 @@ omitted on requests that could not be decoded. Engine has `name` (System.Xml),
 `version` (actual assembly version), `runtime` (actual framework description),
 `build` (actual runner informational version including source revision when built
 by the SDK). It does not invent an independent BCL package or parser version.
+If echoing a huge request identity would itself exceed the response line limit,
+the limit failure omits identity; the client categorizes this as infrastructure
+failure. The limit applies to failure responses as well as successful payloads.
 Outcomes: `success`, `parse-rejected`, `runner-failure`. Diagnostics have category
 and human message. Categories: `xml`, `protocol`, `resource-denied`,
 `infrastructure`, `limit`. Unsupported requests, resource policy violations,

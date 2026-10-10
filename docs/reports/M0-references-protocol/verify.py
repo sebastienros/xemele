@@ -35,18 +35,22 @@ try:
              dict(known, inputBase64='invalid!'), dict(known, options={'unknown': True}),
              dict(known, profile='xml-1.1'), dict(known, encodingHint='latin1'),
              dict(known, offlineResources={'relative.dtd': 'AA=='}), known]
+    large_identity = dict(known, caseId='x' * (1048576 - len(json.dumps(dict(known, caseId=''))) - 1))
+    assert len(json.dumps(large_identity)) < 1048576
+    cases.insert(-1, large_identity)
     wire = subprocess.run(['dotnet', str(runner)], cwd=ROOT, text=True,
                           input='\n'.join(c if isinstance(c, str) else json.dumps(c) for c in cases)+'\n',
                           stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=15)
     assert wire.returncode == 0 and not wire.stderr
     responses = [json.loads(line) for line in wire.stdout.splitlines()]
     assert len(responses) == len(cases)
+    assert all(len(line) <= 1048576 for line in wire.stdout.splitlines())
     assert responses[0]['outcome'] == responses[-1]['outcome'] == 'success'
     assert all(r['outcome'] == 'runner-failure' for r in responses[1:-1])
     assert responses[0]['caseId'] == 'fixture'
     assert responses[0]['events'][1]['value'] == 'ok'
     (REPORT / 'wire-responses.jsonl').write_text(wire.stdout)
-    LOG.append('10 direct wire cases passed; malformed/oversized requests recovered; actual metadata/output: wire-responses.jsonl\n')
+    LOG.append('11 direct wire cases passed; malformed/oversized requests and oversized response identity recovered; actual metadata/output: wire-responses.jsonl\n')
     run(['dotnet', 'test', '--project', 'tests/Xemele.Differential.Tests/Xemele.Differential.Tests.csproj',
          '-c', 'Release', '--no-build', '--no-restore', '--no-ansi', '--no-progress',
          '--filter-class', 'Xemele.Differential.Tests.Protocol.ReferenceProtocolTests'])
