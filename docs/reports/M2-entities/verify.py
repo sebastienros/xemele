@@ -7,11 +7,11 @@ REPORT=ROOT/'docs/reports/M2-entities'
 CLAIM='b3705965c0ed3a27cad117f4fdcd5cee44738079'
 FLAGS=['-c','Release','--disable-build-servers','-m:1','-p:UseSharedCompilation=false']
 def main():
- p=argparse.ArgumentParser();p.add_argument('--report-prefix',required=True);a=p.parse_args();assert re.fullmatch('[a-z0-9-]+',a.report_prefix)
+ p=argparse.ArgumentParser();p.add_argument('--report-prefix',required=True);p.add_argument('--audit-base',default=CLAIM);p.add_argument('--expected-branch',default='codex/m2-entities');a=p.parse_args();assert re.fullmatch('[a-z0-9-]+',a.report_prefix)
  report=REPORT/a.report_prefix;report.mkdir();raw=ROOT/'artifacts/M2-entities'/a.report_prefix;raw.mkdir(parents=True)
  sdk=Path(shutil.which('dotnet')).resolve(strict=True)
  env=dict(os.environ,DOTNET_CLI_USE_MSBUILD_SERVER='0',XEMELE_DOTNET=str(sdk),XEMELE_CORPUS_RESOURCES='/private/tmp/xemele-corpus-cache/w3c-xml-20130923/resources/',XEMELE_CORPUS_RESULTS=str(raw/'case-results'))
- logs=[];s={'result':'failed','host':platform.platform(),'architecture':platform.machine(),'auditBase':CLAIM}
+ logs=[];s={'result':'failed','host':platform.platform(),'architecture':platform.machine(),'auditBase':a.audit_base}
  def run(*cmd,expected=0):
   cmd=list(map(str,cmd));cmd[0]=str(sdk) if cmd[0]=='dotnet' else cmd[0];print('$ '+shlex.join(cmd),flush=True)
   r=subprocess.run(cmd,cwd=ROOT,env=env,text=True,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,timeout=600)
@@ -19,12 +19,13 @@ def main():
  def identities(directory):return {str(f.relative_to(directory)):hashlib.sha256(f.read_bytes()).hexdigest() for f in directory.rglob('*') if f.is_file()}
  def save(name,data): (report/name).write_bytes(gzip.compress(data.encode() if isinstance(data,str) else data,mtime=0))
  try:
-  revision=run('git','rev-parse','HEAD').strip();s['sourceRevision']=revision;run('git','merge-base','--is-ancestor',CLAIM,'HEAD');assert run('git','branch','--show-current').strip()=='codex/m2-entities'
+  revision=run('git','rev-parse','HEAD').strip();s['sourceRevision']=revision;run('git','merge-base','--is-ancestor',CLAIM,'HEAD');run('git','merge-base','--is-ancestor',a.audit_base,'HEAD');assert run('git','branch','--show-current').strip()==a.expected_branch;s['expectedBranch']=a.expected_branch
   task=json.loads((ROOT/'docs/tasks/M2-entities.json').read_text())
   for dep in task['depends_on']:
    record=json.loads((ROOT/f'docs/tasks/{dep}.json').read_text());assert record['status']=='verified';run('git','merge-base','--is-ancestor',record['integration_revision'],'HEAD')
   source=[x for x in task['owns'] if not x.startswith('docs/reports/')];tracked=run('git','ls-files','--',*source).splitlines();before={n:hashlib.sha256((ROOT/n).read_bytes()).hexdigest() for n in tracked};s['sourceIdentitiesBefore']=before
   assert not run('git','diff','HEAD','--name-only','--',*source).strip();assert not run('git','ls-files','--others','--exclude-standard','--',*source).strip()
+  global_sources=[n for n in run('git','ls-files').splitlines() if n.endswith(('.cs','.csproj','.props','.targets','.slnx','.cs.fixture')) or n in ('global.json','NuGet.config')];global_before={n:hashlib.sha256((ROOT/n).read_bytes()).hexdigest() for n in global_sources};s['globalCompiledSourcesBefore']=global_before
   assert run('dotnet','--version').strip()=='10.0.400'
   run('python3','-B','docs/reports/M1-corpus-import/provision.py');registry=json.loads(run('python3','-B','tools/ApiBaseline/discover.py'));assert registry['fixtures']==3388 and registry['apiDeclarations']==272;s['registry']=registry
   run('dotnet','build','tools/ReferenceRunners/Bcl/BclReference.csproj',*FLAGS);runner=ROOT/'tools/ReferenceRunners/Bcl/bin/Release/net10.0/BclReference.dll';shutil.copytree(runner.parent,raw/'pinned-reference');pinned=raw/'pinned-reference'/runner.name;reference_files=identities(pinned.parent);runner_hash=hashlib.sha256(pinned.read_bytes()).hexdigest();env['XEMELE_BCL_RUNNER']=str(pinned)
@@ -41,6 +42,7 @@ def main():
   entity=[t for t in runtime_rows if t.get('type','').startswith('Xemele.Tests.Entities.')];foundation=[t for t in runtime_rows if t.get('type','').startswith('Xemele.Tests.EntitiesFoundation.')]
   assert entity and len(foundation)==9;assert counts['Xemele.Tests']['total']==4514+len(entity)
   totals=re.findall(r'^\s*total:\s*(\d+)\s*$',inherited,re.MULTILINE);assert totals and int(totals[-1])==sum(c['total'] for c in counts.values());s['mtpTotal']=int(totals[-1]);s['directAndDiscoveryTests']=counts;s['entityTests']=len(entity);s['foundationTests']=len(foundation)
+  run('python3','-B','docs/reports/M2-entities/preservation.py',a.report_prefix)
   s['foundationTransition']='Only two theory IDs replace transitional Parse rejection with real Parse admission; default Prohibit and no unrequested open remain tested.'
   run('python3','-B','tools/ApiBaseline/compare.py','--report',report/'runtime-api.json');api=json.loads((report/'runtime-api.json').read_text());assert api['matched'] and len(api['provenance'])==272;s['actualRuntimeMembers']=272;s['publicAdditions']=0
   run('dotnet','build','samples/M2-entities/Sample.csproj',*FLAGS);sample=ROOT/'samples/M2-entities/bin/Release/net10.0/Xemele.SyntaxSample.dll';assert run('dotnet',sample,'--runtime').strip()=='10.0.11'
@@ -68,10 +70,10 @@ def main():
   (report/'reference-provenance.json').write_text(json.dumps([{'id':r['id'],'runnerSha256':r['runnerSha256'],'build':r['response']['engine']['build']} for r in sorted(records,key=lambda r:r['id'])],indent=2)+'\n')
   run('python3','-B','-m','unittest','discover','-s','tools/planning','-p','test_tasks.py','-v');validation=run('python3','-B','tools/planning/tasks.py','validate');assert 'Validated 123 tasks:' in validation;s['planningValidation']=validation.strip()
   paths=[]
-  for cmd in [('git','diff','--name-only',CLAIM+'..HEAD'),('git','diff','--name-only'),('git','diff','--cached','--name-only'),('git','ls-files','--others','--exclude-standard')]:paths+=run(*cmd).splitlines()
+  for cmd in [('git','diff','--name-only',a.audit_base+'..HEAD'),('git','diff','--name-only'),('git','diff','--cached','--name-only'),('git','ls-files','--others','--exclude-standard')]:paths+=run(*cmd).splitlines()
   owned=task['owns']+['docs/tasks/M2-entities.json'];assert all(any(path.startswith(o) if o.endswith('/') else path==o for o in owned) for path in paths),paths
-  for suffix in [[CLAIM+'..HEAD'],['--cached'],[]]:run('git','diff','--check',*suffix)
-  after={n:hashlib.sha256((ROOT/n).read_bytes()).hexdigest() for n in tracked};assert after==before and run('git','rev-parse','HEAD').strip()==revision;s['sourceIdentitiesAfter']=after;s['ownedPaths']=sorted(set(paths));s['result']='passed';s['limitations']='macOS arm64 only; eight pinned simple document cases are not a full XML conformance oracle; timing/allocation modes held for exclusive grant.'
+  for suffix in [[a.audit_base+'..HEAD'],['--cached'],[]]:run('git','diff','--check',*suffix)
+  after={n:hashlib.sha256((ROOT/n).read_bytes()).hexdigest() for n in tracked};assert after==before and run('git','rev-parse','HEAD').strip()==revision;global_after={n:hashlib.sha256((ROOT/n).read_bytes()).hexdigest() for n in global_sources};assert global_after==global_before;assert run('git','branch','--show-current').strip()==a.expected_branch;s['globalCompiledSourcesAfter']=global_after;s['sourceIdentitiesAfter']=after;s['ownedPaths']=sorted(set(paths));s['result']='passed';s['limitations']='macOS arm64 only; eight pinned simple document cases are not a full XML conformance oracle; timing/allocation modes held for exclusive grant.'
  finally:
   save('checks.txt.gz','\n'.join(logs));(report/'summary.json').write_text(json.dumps(s,indent=2)+'\n')
 if __name__=='__main__':main()
