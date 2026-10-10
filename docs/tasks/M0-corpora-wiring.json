@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "id": "M0-corpora-wiring",
+  "milestone": "M0",
+  "title": "Wire corpus commands and infrastructure checks",
+  "kind": "infrastructure",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "depends_on": [
+    "M0-corpora",
+    "M0-tests-mtp"
+  ],
+  "goals": [
+    "G18"
+  ],
+  "specs": [
+    "docs/specs/foundation.md"
+  ],
+  "owns": [
+    "tools/CorpusManager/Program.cs",
+    ".github/workflows/build.yml",
+    "docs/reports/M0-corpora-wiring/"
+  ],
+  "api_or_output": "Root offline corpus CLI and CI execution of focused provisioning checks",
+  "acceptance": [
+    {
+      "id": "M0-corpora-wiring-A1",
+      "description": "Wire import/provision through the verified shared Core command dispatch; preserve all help aliases and unknown exit 2; actual nonempty successful import/provision exit 0 and failure outcomes exit 1 with honest provenance/counts.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M0-corpora-wiring-A2",
+      "description": "Register actual focused corpus MTP tests and offline provisioning checks in CI; avoid silently omitting tests outside the solution. Demonstrate root CLI valid/missing/corrupt/unsupported/malformed paths and failure exit codes on integrated prerequisites.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M0-corpora-wiring-A3",
+      "description": "Preserve bootstrap/MTP/help/package checks; record actual known-revision commands/outcomes and task validation, distinguishing local evidence from unrun hosted platforms.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}
