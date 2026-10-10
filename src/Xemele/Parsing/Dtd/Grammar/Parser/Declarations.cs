@@ -14,7 +14,7 @@ internal sealed partial class DtdParser
         if (space && !RequiredSpace() || read == tokens.Count || Peek.Literal || !ValidName(Peek.Text, nmtoken))
         { if (!terminal) Reject("Expected XML name.", read < tokens.Count ? Peek.At : declarationAt); return null; }
         Token token = tokens[read++];
-        if (!names.Contains(token.Text))
+        if (!IgnoreCurrentDeclaration && !names.Contains(token.Text))
         {
             if (!Accept(budget.ChargeName(token.Text, token.At))) return null;
             names.Add(token.Text);
@@ -136,7 +136,7 @@ internal sealed partial class DtdParser
             }
             else { kind = DtdDefaultKind.Value; value = Literal(); if (value is null) return; }
             if (value is not null && DecodeLiteral(value, cancellation, false) is null) return;
-            if (!HasAttribute(element, name)) attributes.Add(new(element, name, type, values, kind, value, external, at));
+            if (!IgnoreCurrentDeclaration && !HasAttribute(element, name)) attributes.Add(new(element, name, type, values, kind, value, external, at));
         }
     }
     private void ParseEntity(CancellationToken cancellation)
@@ -155,13 +155,15 @@ internal sealed partial class DtdParser
                 notation = Name(space: true); if (notation is null) return;
             }
         }
-        if (!isParameter && !Predefined(name, replacement)) { Reject("Invalid predefined entity redeclaration.", declarationAt); return; }
+        if (!isParameter && !(IgnoreCurrentDeclaration ? UnprocessedPredefined(name, replacement) : Predefined(name, replacement))) { Reject("Invalid predefined entity redeclaration.", declarationAt); return; }
         if (read != tokens.Count) return;
         var target = isParameter ? parameter : general;
-        if (!HasEntity(target, name)) target.Add(new(name, isParameter, replacement, system, pub, notation, IsExternalDeclaration, declarationAt));
+        if (!IgnoreCurrentDeclaration && !HasEntity(target, name)) target.Add(new(name, isParameter, replacement, system, pub, notation, IsExternalDeclaration, declarationAt));
     }
     private string? DecodeLiteral(string raw, CancellationToken cancellation, bool entity)
     {
+        if (IgnoreCurrentDeclaration)
+            return ValidateUnprocessedLiteral(raw, cancellation) ? raw : null;
         // Default declarations stay raw. Numeric references are validated here;
         // their expansion accounting and normalization belong to application.
         using var decoder = new DtdValueDecoder(entity ? limits : limits with { ExpandedCharacters = null, EntityDepth = null }, declarationAt, entity ? budget : null);
@@ -176,6 +178,86 @@ internal sealed partial class DtdParser
             if (r.Step == DtdValueStep.Completed) return entity ? result!.ToString() : raw;
         }
     }
+    // Ignored declarations still obey reference syntax/scalar WFCs. This is
+    // borrowed lexical validation: no replacement owner, decoder, name retention
+    // or expansion-budget work is created for a declaration not processed.
+    private bool ValidateUnprocessedLiteral(string raw, CancellationToken cancellation)
+    {
+        for (int i = 0; i < raw.Length; i++)
+        {
+            cancellation.ThrowIfCancellationRequested();
+            if (raw[i] != '&') continue;
+            int start = ++i;
+            while (i < raw.Length && raw[i] != ';') { cancellation.ThrowIfCancellationRequested(); i++; }
+            if (i == raw.Length || i == start)
+            { Reject("Invalid reference in ignored declaration.", declarationAt); return false; }
+            var name = raw.AsSpan(start, i - start);
+            if (name[0] == '#')
+            {
+                if (!UnprocessedNumeric(name, out _))
+                { Reject("Invalid numeric reference in ignored declaration.", declarationAt); return false; }
+            }
+            else
+            {
+                bool first = true;
+                foreach (var rune in name.EnumerateRunes())
+                {
+                    cancellation.ThrowIfCancellationRequested();
+                    if (first ? !ValueSyntax.IsNameStart(rune.Value) : !ValueSyntax.IsNameChar(rune.Value))
+                    { Reject("Invalid entity reference in ignored declaration.", declarationAt); return false; }
+                    first = false;
+                }
+            }
+        }
+        return true;
+    }
+    private bool UnprocessedNumeric(ReadOnlySpan<char> name, out int scalar)
+    {
+        scalar = 0; int i = 1, radix = 10;
+        if (i < name.Length && name[i] == 'x') { radix = 16; i++; }
+        int start = i;
+        for (; i < name.Length; i++)
+        {
+            grammarCancellation.ThrowIfCancellationRequested();
+            int digit = ValueSyntax.Digit(name[i], radix);
+            if (digit < 0 || scalar > (0x10FFFF - digit) / radix) return false;
+            scalar = scalar * radix + digit;
+        }
+        return i > start && ValueSyntax.IsXmlScalar(scalar);
+    }
+    private bool UnprocessedPredefined(string name, string? raw)
+    {
+        int expected = name switch { "lt" => 60, "amp" => 38, "gt" => 62, "apos" => 39, "quot" => 34, _ => -1 };
+        if (expected < 0) return true;
+        if (raw is null) return false;
+        int index = 0;
+        int Next()
+        {
+            grammarCancellation.ThrowIfCancellationRequested();
+            if (index == raw.Length) return -1;
+            char unit = raw[index++];
+            if (unit != '&' || index == raw.Length || raw[index] != '#') return unit;
+            int start = index;
+            while (index < raw.Length && raw[index] != ';') { grammarCancellation.ThrowIfCancellationRequested(); index++; }
+            if (index == raw.Length || !UnprocessedNumeric(raw.AsSpan(start, index - start), out int scalar)) return -1;
+            index++; return scalar;
+        }
+        // Validate the predefined declaration constraint by inspecting scalar
+        // syntax, without producing or retaining expanded replacement text.
+        int first = Next();
+        if (name is not ("lt" or "amp") && first == expected && Next() == -1) return true;
+        if (first != '&' || Next() != '#') return false;
+        int c = Next(), radix = 10, value = 0, digits = 0;
+        if (c == 'x') { radix = 16; c = Next(); }
+        while (c != ';' && c >= 0)
+        {
+            int digit = ValueSyntax.Digit(c, radix);
+            if (digit < 0 || value > (0x10FFFF - digit) / radix) return false;
+            value = value * radix + digit; digits++; c = Next();
+        }
+        return c == ';' && digits != 0 && value == expected && Next() == -1;
+    }
+
     private bool Predefined(string name, string? replacement)
     {
         int expected = name switch { "lt" => 60, "amp" => 38, "gt" => 62, "apos" => 39, "quot" => 34, _ => -1 };

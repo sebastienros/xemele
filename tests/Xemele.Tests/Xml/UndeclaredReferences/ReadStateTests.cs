@@ -37,6 +37,30 @@ public sealed class ReadStateTests
     }
 
     [Fact]
+    public void StandaloneMissingPeClassificationUsesActiveSourceOrigin()
+    {
+        var resolver = new Resolver("urn:subset", "%missing;<!ENTITY known 'K'><!ATTLIST r a CDATA #IMPLIED><!ELEMENT r ANY>");
+        var options = ContentTests.Options with { Resolver = resolver };
+        const string declaration = "<?xml version='1.0' standalone='yes'?>";
+        // Missing PE inside the acquired external subset is outside the WFC
+        // origin clause. Standalone still processes declarations after the gap.
+        var document = XmlDocument.Parse(declaration + "<!DOCTYPE r SYSTEM 'urn:subset'><r/>", options, Ct);
+        Assert.Empty(document.UnresolvedReferences);
+        Assert.Equal("known", Assert.Single(document.Dtd!.GeneralEntities).Name);
+        Assert.Equal("K", document.Dtd.GeneralEntities[0].ReplacementText);
+        Assert.True(document.Dtd.GeneralEntities[0].IsExternal);
+        Assert.Single(document.Dtd.Attributes); Assert.Single(document.Dtd.Elements);
+        Assert.Equal(1, resolver.Opens); Assert.Equal(1, resolver.Disposals);
+        Assert.False(XmlDocument.TryParse(declaration + "<!DOCTYPE r [%missing;<!ENTITY known 'K'>]><r/>", out _, out var errors, ContentTests.Options, Ct));
+        Assert.Equal("DTD.UndeclaredEntity", Assert.Single(errors).Code);
+        var peResolver = new Resolver("urn:pe", "%missing;<!ENTITY known 'K'>");
+        var peDocument = XmlDocument.Parse(declaration + "<!DOCTYPE r [<!ENTITY % pe SYSTEM 'urn:pe'>%pe;]><r/>",
+            ContentTests.Options with { Resolver = peResolver }, Ct);
+        Assert.Equal("known", Assert.Single(peDocument.Dtd!.GeneralEntities).Name);
+        Assert.Equal(1, peResolver.Opens); Assert.Equal(1, peResolver.Disposals);
+    }
+
+    [Fact]
     public void FirstUnreadExternalPeSuppressesLaterDeclarationsAndRetainsPriorInternalPrecedence()
     {
         var resolver = new Resolver("urn:subset", "<!ENTITY before 'wrong'>%missing;<!ENTITY after 'A'><!ATTLIST r a CDATA 'wrong'>");
@@ -93,6 +117,45 @@ public sealed class ReadStateTests
         Assert.Equal(0, ledger.Count(Xemele.Internal.Operations.Quota.ExpandedCharacters));
         foreach (var limits in new[] { exact.Limits with { TokenCharacters = 39 }, exact.Limits with { InternedNames = 2 }, exact.Limits with { DocumentCharacters = xml.Length - 1 } })
         { Assert.False(XmlDocument.TryParse(xml, out _, out var errors, exact with { Limits = limits }, Ct)); Assert.Equal("XML.ResourceLimit", Assert.Single(errors).Code); }
+    }
+
+    [Fact]
+    public void SuppressedDeclarationsValidateSyntaxWithoutRetentionOrReplacementExpansion()
+    {
+        const string baseline = "<!DOCTYPE r [<!ENTITY before 'B'>%missing;]><r>&before;&gap;</r>";
+        const string discarded = "<!DOCTYPE r [<!ENTITY before 'B'>%missing;<!ENTITY discarded '&#65;&#x42;'><!ENTITY % ignored 'value'><!ATTLIST r unused (a|b) '&#67;'>]><r>&before;&gap;</r>";
+        var options = ContentTests.Options with { Limits = new() { InternedNames = 3, ExpandedCharacters = 1, TokenCharacters = 64 } };
+        long[] Counts(string xml)
+        {
+            using var core = new XmlParserCore(options); var sink = new DomSink(options);
+            Assert.Equal(ScanStep.Completed, core.Append(xml, [], true, sink, Ct).Step);
+            Assert.Null(sink.Diagnostic); Assert.Single(sink.Document.Dtd!.GeneralEntities);
+            Assert.Empty(sink.Document.Dtd.Attributes); Assert.Empty(sink.Document.Dtd.ParameterEntities);
+            Assert.Equal("B", sink.Document.RootElement.FirstChild.Value);
+            Assert.Equal("gap", Assert.Single(sink.Document.UnresolvedReferences).Name);
+            var field = typeof(XmlParserCore).GetField("budget", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!;
+            var ledger = (Xemele.Internal.Operations.OperationBudget)field.GetValue(core)!;
+            return [ledger.Count(Xemele.Internal.Operations.Quota.InternedNames), ledger.Count(Xemele.Internal.Operations.Quota.ExpandedCharacters)];
+        }
+        Assert.Equal(new long[] { 3, 1 }, Counts(baseline)); Assert.Equal(Counts(baseline), Counts(discarded));
+        Assert.False(XmlDocument.TryParse(discarded, out _, out var namesError, options with { Limits = options.Limits with { InternedNames = 2 } }, Ct));
+        Assert.Equal("XML.ResourceLimit", Assert.Single(namesError).Code);
+        Assert.False(XmlDocument.TryParse(discarded.Replace("&before;&gap;", "&before;&before;&gap;", StringComparison.Ordinal), out _, out var expansionError, options, Ct));
+        Assert.Equal("XML.ResourceLimit", Assert.Single(expansionError).Code);
+        foreach (string invalid in new[] { "<!ENTITY discarded '&#0;'>", "<!ENTITY discarded '&#x;'>", "<!ATTLIST r unused BAD 'x'>", "<!ENTITY discarded >" })
+        {
+            string xml = "<!DOCTYPE r [%missing;" + invalid + "]><r/>";
+            Assert.False(XmlDocument.TryParse(xml, out _, out var errors, ContentTests.Options, Ct));
+            Assert.NotEqual("XML.UnresolvedReferenceSinkRequired", Assert.Single(errors).Code);
+        }
+        const string predefined = "<!DOCTYPE r [%missing;<!ENTITY lt '&#38;#60;'><!ENTITY amp '&#38;#38;'>]><r/>";
+        Assert.Empty(XmlDocument.Parse(predefined, ContentTests.Options, Ct).Dtd!.GeneralEntities);
+        var resolver = new Resolver("urn:subset", "%missing;<!ENTITY discarded '%side;'>");
+        var external = XmlDocument.Parse("<!DOCTYPE r SYSTEM 'urn:subset' [<!ENTITY % side SYSTEM 'urn:side'>]><r/>",
+            ContentTests.Options with { Resolver = resolver }, Ct);
+        Assert.Empty(external.Dtd!.GeneralEntities);
+        Assert.Equal("side", Assert.Single(external.Dtd.ParameterEntities).Name);
+        Assert.Equal(1, resolver.Opens); Assert.Equal(1, resolver.Disposals);
     }
 
     [Fact]

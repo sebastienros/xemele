@@ -98,6 +98,7 @@ internal sealed partial class DtdParser : IDisposable
         FirstUnreadParameter = firstUnread;
     }
 
+    private bool IgnoreCurrentDeclaration => SuppressDeclarations && declaration is "ENTITY" or "ATTLIST";
     private bool SuppressDeclarations => nonvalidatingReadState && !standaloneReadState && FirstUnreadParameter is not null;
 
     private Source Current => sources[^1];

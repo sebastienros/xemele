@@ -51,18 +51,7 @@ internal sealed partial class DtdParser
                 if (Space(c)) { separator = true; return; }
                 if (c == '>')
                 {
-                    // Syntax remains checked after the first unread PE. Only model
-                    // publication of entity/ATTLIST declarations is suppressed.
-                    int attributeStart = attributes.Count, generalStart = general.Count, parameterStart = parameter.Count;
-                    bool suppress = SuppressDeclarations && declaration is "ENTITY" or "ATTLIST";
-                    ParseDeclaration(cancellation);
-                    if (suppress)
-                    {
-                        attributes.RemoveRange(attributeStart, attributes.Count - attributeStart);
-                        general.RemoveRange(generalStart, general.Count - generalStart);
-                        parameter.RemoveRange(parameterStart, parameter.Count - parameterStart);
-                    }
-                    if (terminal) return;
+                    ParseDeclaration(cancellation); if (terminal) return;
                     tokens.Clear(); declaration = ""; declarationScalars = 0; lex = Lex.Between; separator = false; return;
                 }
                 if (c == '%')
@@ -158,12 +147,14 @@ internal sealed partial class DtdParser
     private void ExpandParameter(string name, XmlLocation at, CancellationToken cancellation)
     {
         if (name.AsSpan().Contains(':')) { Reject("Parameter entity names must be NCNames.", parameterAt); return; }
+        if (IgnoreCurrentDeclaration && parameterResume == Lex.Literal)
+        { lex = parameterResume; reference.Clear(); return; }
         if (active.Contains(name)) { Reject("Recursive parameter entity.", parameterAt, "DTD.EntityCycle"); return; }
         DtdEntityDeclaration? entity = null;
         foreach (var candidate in parameter) { cancellation.ThrowIfCancellationRequested(); if (candidate.Name == name) { entity = candidate; break; } }
         if (entity is null)
         {
-            if (!nonvalidatingReadState || standaloneReadState)
+            if (!nonvalidatingReadState || standaloneReadState && !Current.External && !Current.Entered)
             { Reject("Undeclared parameter entity.", parameterAt, "DTD.UndeclaredEntity"); return; }
             FirstUnreadParameter ??= parameterAt;
             // No replacement is invented. An unread declaration separator can
