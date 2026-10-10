@@ -38,7 +38,8 @@
       "status": "passed",
       "evidence": [
         "persistence-correctness",
-        "persistence-source-review"
+        "persistence-source-review",
+        "persistence-integration-harness-fix"
       ]
     },
     {
@@ -47,7 +48,8 @@
       "status": "passed",
       "evidence": [
         "persistence-correctness",
-        "persistence-source-review"
+        "persistence-source-review",
+        "persistence-integration-harness-fix"
       ]
     },
     {
@@ -57,7 +59,8 @@
       "evidence": [
         "persistence-correctness",
         "persistence-oracle",
-        "persistence-measurements"
+        "persistence-measurements",
+        "persistence-integration-harness-fix"
       ]
     }
   ],
@@ -114,6 +117,24 @@
       "result": "passed",
       "summary": "Exclusive single M4ProArm64/.NET10.0.11 SDK10.0.400 run; wrapper0/all8 children0/3 actual each. Checked/trusted short names27.24/18.14us, short values22.49/16.93us, long names8781.56/2868.41us, long values3108.51/16.59us; equal managed bytes per pair150.52/150.46/214.45/150.46KB. Priority elevation denied; ordinary scheduling and confidence ranges retained; provisional single-host persistence microbenchmark. No active task timing/build processes after completion.",
       "artifact": "docs/reports/M1-tree-dom-persistence/bdn/workload-audit.txt"
+    },
+    {
+      "id": "persistence-committed-diff-failure",
+      "kind": "check",
+      "revision": "a2d62048b10d1413114a3ce654db5d01efc23dcf",
+      "command": "git diff --check a5857810a88604ebca53f3fbc382d80d690e325e a2d62048b10d1413114a3ce654db5d01efc23dcf",
+      "result": "failed",
+      "summary": "Explicit committed delta caught four generated BDN Markdown/HTML trailing-whitespace lines. Earlier working-tree-only diff checks passed but did not inspect committed report lines; no runtime/test/measurement failure.",
+      "artifact": "docs/reports/M1-tree-dom-persistence/initial-committed-diff-failure.txt"
+    },
+    {
+      "id": "persistence-integration-harness-fix",
+      "kind": "check",
+      "revision": "af641b6b90077c1dd2cea01a41e89d598f71ac30",
+      "command": "Focused imported verifier audit_paths() with original task base and explicit claim base; unowned path rejection; git diff --check BASE HEAD; raw byte comparison; verify.py --help; planning validate",
+      "result": "passed",
+      "summary": "Default/explicit-base owned-path and committed-diff checks passed; unrelated coordinator path still rejects. --audit-base option available without rewriting task base or widening ownership. Raw gzip byte-identical SHA2569533f5cf052d290a88742fb29243d9da6eb82cb03d07b186598ff1fc513cd6b4. Runtime/tests/sample/workloads unchanged. Presentation-only whitespace normalized. Planning104 passed; no fullsuite/timing repeated.",
+      "artifact": "docs/reports/M1-tree-dom-persistence/integration-fix-checks.txt"
     }
   ],
   "blockers": [],
@@ -122,7 +143,8 @@
     "checks": [
       "Known-source46e6d1b verifier passed all listed correctness/API/source/package/allocation checks. Initial uncommitted build caught xUnit1051 test-token analyzer and was corrected before known-source checks. Sandbox IPC failure preserved; authorized escalated rerun passed.",
       "Coordinator-message automatic review rejected twice; user directly authorized messages afterward. No timing started.",
-      "Refined full benchmark equivalence oracle passed at ecd4a296; all8 exclusive measured workloads exited0 with3 actual measurements; priority elevation denied, no task processes remain. Sandbox oracle restore cancelled130; escalated rerun passed."
+      "Refined full benchmark equivalence oracle passed at ecd4a296; all8 exclusive measured workloads exited0 with3 actual measurements; priority elevation denied, no task processes remain. Sandbox oracle restore cancelled130; escalated rerun passed.",
+      "Initial explicit committed-delta check at a2d62048 failed4 generated presentation whitespace lines (earlier working-tree-only check insufficient). Normalized presentation files; raw unchanged. Focused af641b6 default/explicit audit-base checks and strict unowned-path rejection passed. No runtime/test/workload change or timing repetition."
     ],
     "remaining": [
       "Coordinator integration and combined verification required before verified.",
@@ -130,7 +152,8 @@
     ],
     "requests": [
       "DOM owner must use exact immutable owned strings already fully syntax-validated, including full accumulated delimiter legality and unique expanded-key/prefix sets. Exact four helper signatures and platform hashing/copying/arena cancellation limits are in owned README. Probe borrowed names before miss ToString; never retain borrowed callback views.",
-      "Coordinator rerun owned verifier with approved215 Serializer golden/default and mandatory fragment compare on integrated code. No task benchmark repeat without new exclusive grant."
+      "Coordinator rerun owned verifier with approved215 Serializer golden/default and mandatory fragment compare on integrated code. No task benchmark repeat without new exclusive grant.",
+      "For integration pass --audit-base <full pre-merge coordination revision>; verifier checks that committed delta and working/untracked paths strictly against task owns, plus committed and working whitespace checks."
     ]
   }
 }
