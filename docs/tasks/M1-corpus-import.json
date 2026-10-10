@@ -32,7 +32,8 @@
       "description": "Import full authoritative XML conformance suite metadata and required source fixtures with pinned source/revision/checksum/license provenance; preserve every discovered test identity including invalid and external-resource cases. Reuse verified corpus schema/provisioning; no incomplete bootstrap substitution or silent file/case loss.",
       "status": "passed",
       "evidence": [
-        "full-suite-checks"
+        "full-suite-checks",
+        "declaration-order-correction"
       ]
     },
     {
@@ -40,7 +41,8 @@
       "description": "Classify M1-supported cases from frozen feature contracts and metadata/source syntax requirements rather than product pass/fail; emit complete reproducible discovery totals, explicit visible later-capability gaps and classification reasons. Preserve unsupported/infrastructure outcomes distinctly; classification never claims parser execution or standards passes.",
       "status": "passed",
       "evidence": [
-        "full-suite-checks"
+        "full-suite-checks",
+        "declaration-order-correction"
       ]
     },
     {
@@ -48,7 +50,8 @@
       "description": "Demonstrate full pinned inventory and required resource containment/checksums with meaningful positive/negative/offline provisioning and classification checks through verified infrastructure; preserve earlier bootstrap discovery and publish owned report/consumer format for runtime conformance join. Run planning validation and committed/working/untracked owned-path audit at known revision.",
       "status": "passed",
       "evidence": [
-        "full-suite-checks"
+        "full-suite-checks",
+        "declaration-order-correction"
       ]
     }
   ],
@@ -75,16 +78,26 @@
       "result": "passed",
       "summary": "14 Python importer/classifier checks and 14 MTP actual-core inventory/provisioning tests passed, zero skipped; independent BCL catalog-only reader matches all 2585 identities/types. All 3386 archive files checksum-verified in offline transport and preserved URI tree/cache; missing/corrupt/rehashed-resource/metadata/containment/profile negatives passed. Existing 24 corpus tests passed, zero skipped; original two bootstrap expectations/checksums preserved. Combined discovery 3388 files, 215 runtime API baseline rows. 105-task planning validation, whitespace and committed/working/staged/untracked owned-path audits passed. Actual host macOS arm64 only. Zero product test cases executed; zero standards passes.",
       "artifact": "docs/reports/M1-corpus-import/verification.txt"
+    },
+    {
+      "id": "declaration-order-correction",
+      "kind": "check",
+      "revision": "2626bac69fd43a5dbcda364192db7c5dc655d0ea",
+      "command": "Pinned SDK10.0.400 DOTNET_CLI_USE_MSBUILD_SERVER=0 python3 -B docs/reports/M1-corpus-import/verify.py (authorized restore/MTP IPC)",
+      "result": "passed",
+      "summary": "Bounded independent-review correction: metadata inspection no longer anticipates XML.DtdProhibited when unsupported encoding/version/byte-signature can reject earlier. Exact Japanese EUC-JP source-case and synthetic encoding/version/signature regressions pass. Full rerun:15 Python,14 MTP actual-core full-inventory,24 preserved corpus tests; zero skipped. All2585 IDs/3386 file hashes and classification counts unchanged; offline preserved cache refreshed. Public baseline215, combined discovery3388, planning105 tasks and committed/working/staged/untracked owned-path audit passed. Zero product cases executed or standards passes. README grammar-only correction is the sole working-tree difference during run.",
+      "artifact": "docs/reports/M1-corpus-import/correction-verification.txt"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Full official W3C 20130923 inventory/provisioning and frozen-contract M1 classification; no parser execution. 2585 source IDs: 812 valid, 242 invalid, 1498 not-wf, 33 error; 323 external-entity cases. Classification 242 supported rejections and 2343 visible unsupported-profile cases; all upstream valid tests have DOCTYPE. Original source bytes/notices preserved privately without MIT relicensing. Branch implementation only; integration_revision null.",
+    "summary": "Full official W3C 20130923 inventory/provisioning and frozen-contract M1 classification; no parser execution. 2585 source IDs: 812 valid, 242 invalid, 1498 not-wf, 33 error; 323 external-entity cases. Classification 242 supported rejections and 2343 visible unsupported-profile cases; all upstream valid tests have DOCTYPE. Original source bytes/notices preserved privately without MIT relicensing. Branch implementation only; integration_revision null. Review correction removes ambiguous anticipated diagnostics where declaration/encoding/version/signature can fail before DOCTYPE; runtime first-error ordering is not inferred from metadata.",
     "checks": [
       "At 7a5358f1b5d0c314a83b4d42207d2bd83896cd1b: 14 Python + 14 focused MTP + 24 preserved corpus tests passed; zero skipped.",
       "Full inventory/primary/output checksums and offline actual-core provisioning; independent BCL metadata-only identity/type equality; missing/corrupt/containment/provenance/profile negative checks passed.",
       "Combined discovery 3388 files; original bootstrap 2 outcomes preserved; public API 215; 105-task validation and owned-path audit passed.",
-      "Sandbox NU1900 restore failure retained explicitly; authorized network/IPC rerun passed."
+      "Sandbox NU1900 restore failure retained explicitly; authorized network/IPC rerun passed.",
+      "Corrected source 2626bac69fd43a5dbcda364192db7c5dc655d0ea: 15 Python +14 actual-core MTP +24 preserved corpus MTP, zero skips; EUC-JP first-error prediction regression passes. No identity/checksum/classification changes; private cache refreshed."
     ],
     "remaining": [
       "Coordinator must integrate/recheck and mark verified; parent M1-corpus executes product conformance after verified DOM/serializer.",

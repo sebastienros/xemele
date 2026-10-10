@@ -38,7 +38,8 @@ is a separate anticipated scope-rejection diagnostic for DTD cases without
 encoding/version/signature gaps. When declaration or byte-decoder failure can
 precede DOCTYPE, it remains null; metadata inspection does not predict the first
 runtime error. In particular the EUC-JP Japanese case does not assert
-XML.DtdProhibited. The field it never turns a standards gap into a pass. Pure malformed M1 syntax,
+XML.DtdProhibited. This field never turns a standards gap into a pass. Pure
+malformed M1 syntax,
 unknown general references and malformed encoding names remain supported
 rejections. Comments/CDATA/PIs do not create false DTD requirements. Local
 `xmlns` element/ordinary prefixed attribute names are not feature exclusions.
