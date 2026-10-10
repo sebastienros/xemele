@@ -77,6 +77,16 @@ def main():
         sample = ROOT/'samples/M2-dtd-values/bin/Release/net10.0/Sample.dll'
         run('dotnet', 'build', ROOT/'samples/M2-dtd-values/Sample.csproj', *FLAGS)
         (report/'internal-contract.txt').write_text(run('dotnet', sample, '--contract'))
+        test_source = (ROOT/'tests/Xemele.Tests/M2-dtd-values/ValueTests.cs').read_text()
+        authored = test_source[test_source.index('Cases ='):test_source.index('public static IEnumerable')]
+        lengths = [len(json.loads('"'+spelling.replace('\\0', '\\u0000')+'"').encode('utf-16-le', errors='surrogatepass')) // 2
+                   for spelling in re.findall(r'\(\s*"((?:[^"\\]|\\.)*)"', authored)]
+        split_rows = sum((length+1)*4 for length in lengths)
+        fact_rows = test_source.count('[Fact]')
+        inline_rows = test_source.count('[InlineData(')
+        assert (len(lengths), split_rows, fact_rows, inline_rows) == (29, 964, 11, 12)
+        summary['derivedOwnTests'] = {'fixtures': len(lengths), 'inputSplitOutputCapacityRows': split_rows,
+                                    'facts': fact_rows, 'inlineRows': inline_rows, 'total': split_rows+fact_rows+inline_rows}
         focused = raw/'focused.xml'
         run('dotnet', 'build', 'tests/Xemele.Tests/Xemele.Tests.csproj', *FLAGS)
         run('dotnet', 'tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll', '-noColor', '-class', 'Xemele.Tests.ValueTests', '-result-xml', focused)
