@@ -63,3 +63,12 @@ Git and checked unchanged from the audit base. Product/test output closures are
 hashed before/after execution; exact test names have a durable aggregate identity.
 SDK host hash/runtime versions are included. These checks preserve inherited
 behavior and do not assert the runtime declaration correction is implemented.
+
+`cleanup_checks.py` supplies lightweight failure-path controls: a truncated child
+report plus injected filesystem denial must retain the primary timeout, attempt
+remaining removals, preserve historical files and leave a JSON-serializable
+summary. Inspection/removal errors are collected separately; either makes an
+otherwise passing run fail. The full verifier also invokes these controls.
+Run them independently with `python3 -B docs/reports/M2-version-contract/cleanup_checks.py`.
+The final cleanup-driver-only delta does not change the product, tests or compiled
+models; successful preservation evidence remains tied to its tested revision.

@@ -23,6 +23,43 @@ FLAGS = ['-c', 'Release', '--disable-build-servers', '-m:1', '-p:UseSharedCompil
 FIXTURE = ROOT / 'tests/Contracts/Fixtures/M2'
 
 
+
+def finish_raw_outputs(raw_root, existing_raw, raw_root_existed, summary):
+    """Inspect then attempt every new-path cleanup; retain any primary failure."""
+    inspection_errors, cleanup_errors, child_summaries = [], [], []
+    try:
+        new_raw = set(raw_root.rglob('*')) - existing_raw if raw_root.exists() else set()
+    except Exception as error:
+        new_raw = set()
+        cleanup_errors.append({'path': str(raw_root), 'operation': 'enumerate', 'error': str(error)})
+    for path in sorted(new_raw):
+        try:
+            if path.is_file() and path.name.endswith('.report.json'):
+                data = json.loads(path.read_text())
+                child_summaries.append({'task': path.relative_to(raw_root).parts[0], 'mode': data.get('Mode'),
+                                        'sha256': hashlib.sha256(path.read_bytes()).hexdigest()})
+        except Exception as error:
+            inspection_errors.append({'path': str(path), 'error': str(error)})
+    for path in sorted(new_raw, key=lambda p: len(p.parts), reverse=True):
+        try:
+            if path.is_file() or path.is_symlink(): path.unlink()
+            elif path.is_dir(): path.rmdir()
+        except Exception as error:
+            cleanup_errors.append({'path': str(path), 'operation': 'remove', 'error': str(error)})
+    try:
+        if not raw_root_existed and raw_root.exists(): raw_root.rmdir()
+    except Exception as error:
+        cleanup_errors.append({'path': str(raw_root), 'operation': 'remove root', 'error': str(error)})
+    summary['allocationChildSummaries'] = child_summaries
+    summary['inspectionErrors'] = inspection_errors
+    summary['cleanupErrors'] = cleanup_errors
+    summary['newRawOutputsRemoved'] = not cleanup_errors
+    if inspection_errors or cleanup_errors:
+        # A failed check keeps its original cause; cleanup cannot replace it.
+        summary.setdefault('failure', 'Raw output inspection/cleanup failed; see scoped errors.')
+        summary['result'] = 'failed'
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--audit-base', default=CLAIM)
@@ -38,6 +75,7 @@ def main():
     raw_root = ROOT/'artifacts'
     existing_raw = set(raw_root.rglob('*')) if raw_root.exists() else set()
     raw_root_existed = raw_root.exists()
+    temp_output = None
     def run(*command, expected=0):
         command = list(map(str, command))
         try:
@@ -85,8 +123,11 @@ def main():
         assert not run('git', 'diff', 'HEAD', '--', 'docs/specs/parser.md',
                        'docs/decisions/M2/xml-resources.md', 'tests/Contracts/Fixtures/M2/Version',
                        'docs/reports/M2-version-contract/verify.py').strip()
+        control_output = run('python3', '-B', 'docs/reports/M2-version-contract/cleanup_checks.py')
+        summary['cleanupControlAssertions'] = int(re.search(r'Passed (\d+)', control_output)[1])
         with tempfile.TemporaryDirectory(prefix='tmp-', dir=ROOT/'docs/reports/M2-version-contract') as tmp:
             tmp = Path(tmp)
+            temp_output = tmp
             artifacts = tmp/'build'
             output_args = [*FLAGS, '--artifacts-path', artifacts]
             run('dotnet', 'build', 'docs/reports/M0-contracts/ApiCheck/ApiCheck.csproj', *output_args)
@@ -227,23 +268,10 @@ def main():
         summary['temporaryOutputsRemoved'] = True
         summary['result'] = 'passed'
     except Exception as error:
-        summary['temporaryOutputsRemoved'] = True
+        summary['temporaryOutputsRemoved'] = temp_output is None or not temp_output.exists()
         summary['failure'] = str(error)
     finally:
-        # Inspect generated child summaries before discarding this run's raw data.
-        new_raw = set(raw_root.rglob('*')) - existing_raw if raw_root.exists() else set()
-        child_summaries = []
-        for path in sorted(new_raw):
-            if path.is_file() and path.name.endswith('.report.json'):
-                data = json.loads(path.read_text())
-                child_summaries.append({'task': path.relative_to(raw_root).parts[0], 'mode': data.get('Mode'),
-                                        'sha256': digest(path)})
-        summary['allocationChildSummaries'] = child_summaries
-        for path in sorted(new_raw, key=lambda p: len(p.parts), reverse=True):
-            if path.is_file() or path.is_symlink(): path.unlink()
-            elif path.is_dir(): path.rmdir()
-        if not raw_root_existed and raw_root.exists(): raw_root.rmdir()
-        summary['newRawOutputsRemoved'] = True
+        finish_raw_outputs(raw_root, existing_raw, raw_root_existed, summary)
     # Large input-list commands are recorded by their argument identity, not copied raw.
     for check in results:
         if len(check['command']) > 20:
