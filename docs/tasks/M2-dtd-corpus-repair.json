@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "id": "M2-dtd-corpus-repair",
+  "milestone": "M2",
+  "title": "Resolve seven original DTD grammar and namespace obligations",
+  "kind": "feature",
+  "status": "in_progress",
+  "owner": "worker:M2-dtd-corpus-repair",
+  "branch": "codex/m2-dtd-corpus-repair",
+  "base_revision": "e82db97101699f538a068b43fa7f3f8c06492ed3",
+  "integration_revision": null,
+  "depends_on": [
+    "M2-undeclared-content",
+    "M2-conformance-profile",
+    "M2-version-declarations"
+  ],
+  "goals": [
+    "G01",
+    "G18"
+  ],
+  "specs": [
+    "docs/specs/parser.md",
+    "docs/decisions/M2/xml-resources.md",
+    "docs/performance-coding.md"
+  ],
+  "owns": [
+    "src/Xemele/Parsing/Dtd/Grammar/Parser/DefaultReferences.cs",
+    "src/Xemele/Parsing/Dtd/Grammar/Parser/Declarations.cs",
+    "src/Xemele/Parsing/Dtd/Grammar/Parser/Lexer.cs",
+    "src/Xemele/Parsing/Dtd/Grammar/Parser/DtdParser.cs",
+    "tests/Xemele.Tests/M2-dtd-corpus-repair/",
+    "tests/fixtures/M2-dtd-corpus-repair/",
+    "benchmarks/Xemele.Benchmarks/M2-dtd-corpus-repair/",
+    "samples/M2-dtd-corpus-repair/",
+    "docs/reports/M2-dtd-corpus-repair/"
+  ],
+  "api_or_output": "Resolve seven original DTD grammar and namespace obligations",
+  "acceptance": [
+    {
+      "id": "M2-dtd-corpus-repair-A1",
+      "description": "Correct default entity declaration-order WFC using live declaration/origin/applicability; declaration keyword boundary at external PE inclusion with required surrounding S; entity and notation declaration NCNames including unused/duplicate declarations. Preserve QName element/attribute and NMTOKEN productions, nonvalidating rules, first-unread suppression, quotas, bounded source/pause/count/cleanup and model/API identities. No invented unknown attribute/default representation; that remaining contract obligation is separate.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M2-dtd-corpus-repair-A2",
+      "description": "Exact original inventory bytes/resources: not-wf-sa-180 and ibm-not-wf-P68-ibm68n07.xml reject forward defaults; valid-not-sa-020 accepts complete independent doc/a1=v1 model; ibm-1-1-valid-P05-ibm05v05.xml, rmt-ns10-043, rmt-ns10-044 and x-ibm-1-0.5-valid-P05-ibm05v05.xml reject colon declarations under frozen namespace profile. Cover all short split/PE boundaries, prior declared default success, internal PE WFC rejection, legal Fifth Edition names and QName/NMTOKEN distinctions. Corpus identity/expectations unchanged.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M2-dtd-corpus-repair-A3",
+      "description": "Relevant focused and affected inherited correctness, API290 compatibility and actual source/fresh package consumer checks; applicable real allocation/timing evidence through reused verified support and one prepared exclusive sequence. State repeat reasons, preserve unchanged passing evidence, build outside lease, final identity and cleanup mandatory. Timing informational. Planning/owned diff validated, concise summaries only.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "Owning repair for concrete M2-conformance-grammar A1/A2 findings; seven original cases, no Core/shared build writes.",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}
