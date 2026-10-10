@@ -4,11 +4,11 @@
   "milestone": "M0",
   "title": "Compare input and resumable dispatch",
   "kind": "infrastructure",
-  "status": "implemented",
+  "status": "verified",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M0-input-spike",
   "branch": "codex/m0-input-spike",
   "base_revision": "5cb0e4eae1a0835a7455580bac25ee05ade7c463",
-  "integration_revision": null,
+  "integration_revision": "62f4e25be185aa2c7f764ce0715fd3dc0f2456e4",
   "depends_on": [
     "M0-build"
   ],
@@ -35,7 +35,9 @@
       "status": "passed",
       "evidence": [
         "correctness",
-        "input-measurements"
+        "input-measurements",
+        "coordinator-integration",
+        "independent-readonly-review"
       ]
     },
     {
@@ -44,7 +46,9 @@
       "status": "passed",
       "evidence": [
         "allocation-retention",
-        "input-measurements"
+        "input-measurements",
+        "coordinator-integration",
+        "independent-readonly-review"
       ]
     },
     {
@@ -55,7 +59,9 @@
         "builds",
         "correctness",
         "scope-review",
-        "task-validation"
+        "task-validation",
+        "coordinator-integration",
+        "independent-readonly-review"
       ]
     },
     {
@@ -67,7 +73,9 @@
         "primitive-measurements",
         "input-measurements",
         "allocation-retention",
-        "lowering"
+        "lowering",
+        "coordinator-integration",
+        "independent-readonly-review"
       ]
     }
   ],
@@ -169,11 +177,29 @@
       "result": "failed",
       "summary": "Coordinator read-only review found Scanner.Append searching remaining full tail for every 64-unit fragment, causing repeated rescanning and quadratic work for long chunks contrary to performance rules. Corrected in 87d101c7e9b09167b2d114f1f33ea5974680617d with bounded quantum+1 search, long single-chunk progress checks, correctness/allocation rerun and remeasurement of affected 62 input/rejection cases. Old affected measurements remain under raw/superseded and are not current acceptance evidence. Unchanged primitive-suite results remain valid at their original revision.",
       "artifact": "docs/reports/M0-input-spike/review.md"
+    },
+    {
+      "id": "coordinator-integration",
+      "kind": "integration",
+      "revision": "62f4e25be185aa2c7f764ce0715fd3dc0f2456e4",
+      "command": "dotnet build experiments/Input/Input.csproj Release with isolated build flags; dotnet run Input -- check; same allocations; python3 docs/reports/M0-input-spike/check_escape.py; isolated Release solution build;13 discovery tests; task validation",
+      "result": "passed",
+      "summary": "Integrated corrected experiment passes83095 assertions,0B warm borrowed/scratch/paused regressions,4MiB source collectability and64MiB bounded streaming; expected CS9203 negative compiler checks pass. Experiment and all10 projects build0 warnings/errors;13 discovery tests and97-task validator pass. Existing282 BDN active cases reviewed independently (220 unchanged original/62 corrected); superseded cases excluded. No rerun of sustained timings; provisional Arm64/synthetic limitations remain.",
+      "artifact": "docs/reports/M0-input-spike/integration-checks.txt"
+    },
+    {
+      "id": "independent-readonly-review",
+      "kind": "review",
+      "revision": "5de3ba27dade7cb31702350308afc2dc3085d9c6",
+      "command": null,
+      "result": "passed",
+      "summary": "Independent read-only reviewer /root/review_input_spike found no actionable defect: bounded quantum+1 search, consumed/pause/EOF mechanics, borrowed lifetime/Unicode carry and test oracles reviewed. Parsed all6 active compressed reports:282 cases with3 actual workload measurements each and consistent exact revision mapping; obsolete62 cases segregated. Production XML/backpressure/async/hardware claims explicitly absent.",
+      "artifact": null
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Implemented bounded input/dispatch experiment only in owned paths. Corrected reviewed quadratic tail scanning to quantum+1 window and remeasured affected suites. No runtime/public API change; architecture evidence provisional. Active 282 cases comprise 220 unchanged primitive cases at 662b15bb24ce340c301389e037277fd68d9f60ab plus 62 corrected input/rejection cases at 87d101c7e9b09167b2d114f1f33ea5974680617d; superseded reports retained.",
+    "summary": "Integrated and verified corrected provisional input architecture experiment; full-tail-rescan review defect repaired and affected suites remeasured.",
     "checks": [
       "Experiment and ten-project solution Release builds: passed, 0 warnings/errors; isolated flags resolved canceled shared-node stall (exit 130).",
       "Correctness: 83,095 assertions passed, including long single-chunk progress and all short splits/invalid Unicode/collisions.",
@@ -183,7 +209,6 @@
       "python3 tools/planning/tasks.py validate: passed for 93 tasks."
     ],
     "remaining": [
-      "Coordinator must integrate and verify; integration_revision intentionally null.",
       "M0-contracts reviews input/pause/lifetime design; M1-input/M1-syntax/M1-dom remeasure composed XML behavior and realistic workloads.",
       "Single arm64 host/short exploratory timing only; cross-architecture and longer repeatability evidence required before release claims."
     ],

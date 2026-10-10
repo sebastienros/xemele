@@ -1,0 +1,122 @@
+$ dotnet build experiments/Input/Input.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+  Determining projects to restore...
+  Restored /private/tmp/xemele-integrate-m0-input/experiments/Input/Input.csproj (in 202 ms).
+  Input -> /private/tmp/xemele-integrate-m0-input/experiments/Input/bin/Release/net10.0/Input.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:01.56
+
+Exit: 0
+$ dotnet run --project experiments/Input/Input.csproj -c Release --no-build -- check
+PASS 83095 assertions; every short two-part split; chunks 1..32; per-fragment suspension; long single-chunk bounded progress; malformed Unicode; matching oracle/collisions/cultures; scan and pipeline setup parity.
+
+Exit: 0
+$ dotnet run --project experiments/Input/Input.csproj -c Release --no-build -- allocations
+Runtime=.NET 10.0.11; OS=macOS 15.8.1; Arch=Arm64; GC server=False; latency=Interactive
+Cold explicit Primitives initialization: 7992 B (SearchValues, array tokens, vocabulary, hash metadata, UTF8 token arrays, one-time LINQ delegates/enumerators). No fixture bytes included.
+Cold context construction: 496 B for two scanners, sinks, strict encoding/decoders (owned per context; not per token).
+AsciiShort/StringToCharacterCore: 0.00 B/op over 1000 operations; result=0
+AsciiShort/ByteToByteCore: 0.00 B/op over 1000 operations; result=0
+AsciiShort/ByteToCharacterScratch: 0.00 B/op over 1000 operations; result=0
+AsciiShort/StringToCharacterCorePaused: 0.00 B/op over 1000 operations; result=0
+AsciiShort/ByteToByteCorePaused: 0.00 B/op over 1000 operations; result=0
+AsciiShort/ByteToOwnedString: 80.00 B/op over 1000 operations; result=0
+AsciiShort/StringViaOwnedUtf8: 56.00 B/op over 1000 operations; result=0
+UnicodeShort/StringToCharacterCore: 0.00 B/op over 1000 operations; result=0
+UnicodeShort/ByteToByteCore: 0.00 B/op over 1000 operations; result=0
+UnicodeShort/ByteToCharacterScratch: 0.00 B/op over 1000 operations; result=0
+UnicodeShort/StringToCharacterCorePaused: 0.00 B/op over 1000 operations; result=0
+UnicodeShort/ByteToByteCorePaused: 0.00 B/op over 1000 operations; result=0
+UnicodeShort/ByteToOwnedString: 88.00 B/op over 1000 operations; result=0
+UnicodeShort/StringViaOwnedUtf8: 72.00 B/op over 1000 operations; result=0
+AsciiLong/StringToCharacterCore: 0.00 B/op over 1000 operations; result=0
+AsciiLong/ByteToByteCore: 0.00 B/op over 1000 operations; result=0
+AsciiLong/ByteToCharacterScratch: 0.00 B/op over 1000 operations; result=0
+AsciiLong/StringToCharacterCorePaused: 0.00 B/op over 1000 operations; result=0
+AsciiLong/ByteToByteCorePaused: 0.00 B/op over 1000 operations; result=0
+AsciiLong/ByteToOwnedString: 7448.00 B/op over 1000 operations; result=0
+AsciiLong/StringViaOwnedUtf8: 3736.00 B/op over 1000 operations; result=0
+UnicodeLong/StringToCharacterCore: 0.00 B/op over 1000 operations; result=0
+UnicodeLong/ByteToByteCore: 0.00 B/op over 1000 operations; result=0
+UnicodeLong/ByteToCharacterScratch: 0.00 B/op over 1000 operations; result=0
+UnicodeLong/StringToCharacterCorePaused: 0.00 B/op over 1000 operations; result=0
+UnicodeLong/ByteToByteCorePaused: 0.00 B/op over 1000 operations; result=0
+UnicodeLong/ByteToOwnedString: 7704.00 B/op over 1000 operations; result=0
+UnicodeLong/StringViaOwnedUtf8: 6168.00 B/op over 1000 operations; result=0
+Cached byte/char SearchValues: 0.00 B/op over 1000 operations; result=0
+Length match byte/char: 0.00 B/op over 1000 operations; result=0
+Hash match byte/char: 0.00 B/op over 1000 operations; result=0
+Chunk match: 0.00 B/op over 1000 operations; result=0
+Constant byte/char/int literals: 0.00 B/op over 1000 operations; result=0
+Runtime-valued readonly collection control: 32.00 B/op over 1000 operations; result=0
+Mutable collection control: 104.00 B/op over 1000 operations; result=0
+Runtime-valued local collection: 0.00 B/op over 1000 operations; result=0
+Mutable local collection: 0.00 B/op over 1000 operations; result=0
+Paused after 7 bytes in 4 MiB token: source collectible while scanner/sink remain alive; scanner retained input=0; decoder pending scalar <=3 bytes; callback stack scratch=128 UTF16 units.
+64 MiB synthetic single token from reusable 64 KiB chunk: 0 B processing allocations, 1 token, no document buffer; source chunk owns 65536 bytes plus array header.
+PASS warm allocation regressions and source collectability. Counters are synchronous current-thread allocations; no async claim.
+
+Exit: 0
+$ python3 docs/reports/M0-input-spike/check_escape.py
+  Determining projects to restore...
+  Restored /private/tmp/xemele-integrate-m0-input/experiments/Input/escape-r27x3zne/Escape.csproj (in 24 ms).
+/private/tmp/xemele-integrate-m0-input/experiments/Input/escape-r27x3zne/Escape.cs(5,51): error CS9203: A collection expression of type 'ReadOnlySpan<byte>' cannot be used in this context because it may be exposed outside of the current scope. [/private/tmp/xemele-integrate-m0-input/experiments/Input/escape-r27x3zne/Escape.csproj]
+/private/tmp/xemele-integrate-m0-input/experiments/Input/escape-r27x3zne/Escape.cs(6,43): error CS9203: A collection expression of type 'Span<byte>' cannot be used in this context because it may be exposed outside of the current scope. [/private/tmp/xemele-integrate-m0-input/experiments/Input/escape-r27x3zne/Escape.csproj]
+
+Build FAILED.
+
+/private/tmp/xemele-integrate-m0-input/experiments/Input/escape-r27x3zne/Escape.cs(5,51): error CS9203: A collection expression of type 'ReadOnlySpan<byte>' cannot be used in this context because it may be exposed outside of the current scope. [/private/tmp/xemele-integrate-m0-input/experiments/Input/escape-r27x3zne/Escape.csproj]
+/private/tmp/xemele-integrate-m0-input/experiments/Input/escape-r27x3zne/Escape.cs(6,43): error CS9203: A collection expression of type 'Span<byte>' cannot be used in this context because it may be exposed outside of the current scope. [/private/tmp/xemele-integrate-m0-input/experiments/Input/escape-r27x3zne/Escape.csproj]
+    0 Warning(s)
+    2 Error(s)
+
+Time Elapsed 00:00:00.52
+
+PASS: both returned span collection expressions rejected with CS9203; temporary files removed.
+
+Exit: 0
+$ dotnet build Xemele.slnx -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+  Determining projects to restore...
+  Restored /private/tmp/xemele-integrate-m0-input/tests/Xemele.Fuzz/Xemele.Fuzz.csproj (in 49 ms).
+  Restored /private/tmp/xemele-integrate-m0-input/tests/Xemele.TestUtilities/Xemele.TestUtilities.csproj (in 49 ms).
+  Restored /private/tmp/xemele-integrate-m0-input/tools/CorpusManager/CorpusManager.csproj (in 45 ms).
+  Restored /private/tmp/xemele-integrate-m0-input/src/Xemele/Xemele.csproj (in 45 ms).
+  Restored /private/tmp/xemele-integrate-m0-input/tests/Contracts/Contracts.csproj (in 49 ms).
+  Restored /private/tmp/xemele-integrate-m0-input/src/Xemele.Tool/Xemele.Tool.csproj (in 49 ms).
+  Restored /private/tmp/xemele-integrate-m0-input/tests/Xemele.Tests/Xemele.Tests.csproj (in 137 ms).
+  Restored /private/tmp/xemele-integrate-m0-input/tests/Xemele.Conformance.Tests/Xemele.Conformance.Tests.csproj (in 137 ms).
+  Restored /private/tmp/xemele-integrate-m0-input/tests/Xemele.Differential.Tests/Xemele.Differential.Tests.csproj (in 137 ms).
+  Restored /private/tmp/xemele-integrate-m0-input/benchmarks/Xemele.Benchmarks/Xemele.Benchmarks.csproj (in 166 ms).
+  Xemele -> /private/tmp/xemele-integrate-m0-input/src/Xemele/bin/Release/net10.0/Xemele.dll
+  Xemele.Benchmarks -> /private/tmp/xemele-integrate-m0-input/benchmarks/Xemele.Benchmarks/bin/Release/net10.0/Xemele.Benchmarks.dll
+  Xemele.Tool -> /private/tmp/xemele-integrate-m0-input/src/Xemele.Tool/bin/Release/net10.0/Xemele.Tool.dll
+  Contracts -> /private/tmp/xemele-integrate-m0-input/tests/Contracts/bin/Release/net10.0/Contracts.dll
+  Xemele.TestUtilities -> /private/tmp/xemele-integrate-m0-input/tests/Xemele.TestUtilities/bin/Release/net10.0/Xemele.TestUtilities.dll
+  Xemele.Conformance.Tests -> /private/tmp/xemele-integrate-m0-input/tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll
+  Xemele.Differential.Tests -> /private/tmp/xemele-integrate-m0-input/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll
+  Xemele.Fuzz -> /private/tmp/xemele-integrate-m0-input/tests/Xemele.Fuzz/bin/Release/net10.0/Xemele.Fuzz.dll
+  Xemele.Tests -> /private/tmp/xemele-integrate-m0-input/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll
+  CorpusManager -> /private/tmp/xemele-integrate-m0-input/tools/CorpusManager/bin/Release/net10.0/CorpusManager.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:07.77
+
+Exit: 0
+$ python3 -B -m unittest discover -s tests/Xemele.TestUtilities/Build -p test_*.py
+.............
+----------------------------------------------------------------------
+Ran 13 tests in 0.114s
+
+OK
+
+Exit: 0
+$ python3 tools/planning/tasks.py validate
+Validated 97 tasks: schema, evidence, acyclic dependencies, additive milestones, and ordered ownership.
+
+Exit: 0
