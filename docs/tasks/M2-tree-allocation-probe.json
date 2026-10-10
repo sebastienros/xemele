@@ -4,11 +4,11 @@
   "milestone": "M2",
   "title": "Isolated Tree traversal and intern allocation measurement",
   "kind": "infrastructure",
-  "status": "implemented",
+  "status": "verified",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M2-tree-allocation-probe",
   "branch": "codex/m2-tree-allocation-probe",
   "base_revision": "ab43206bb302321998161b3a09f4244e274338f4",
-  "integration_revision": null,
+  "integration_revision": "1813cf70dd585bb2d092ee03c9bc4375bae68e22",
   "depends_on": [
     "M1-tree",
     "M2-pi-allocation-probe",
@@ -41,7 +41,8 @@
         "root-c455-encoding-failure",
         "renewed-setup-source-equivalence",
         "renewed-real-positive-comparison",
-        "renewed-full-checks"
+        "renewed-full-checks",
+        "renewed-integrated-checks"
       ]
     },
     {
@@ -58,7 +59,8 @@
         "root-c455-encoding-failure",
         "renewed-setup-source-equivalence",
         "renewed-real-positive-comparison",
-        "renewed-full-checks"
+        "renewed-full-checks",
+        "renewed-integrated-checks"
       ]
     }
   ],
@@ -167,6 +169,15 @@
       "result": "passed",
       "summary": "Verifier exit0/all17checksPass at renewed committedsource1840902. Release reference/solution/diagnostic/checker builds0warnings0errors; API251/discovery3388/ref242unique fullrevisionhash with fresh completeBCLoutputcopy pinned before historicalM1solutionbuild and unchangedrunnerSHA; all242durable records gzip/outputmanifest retained. Planning14/validate118; exactnewclaim auditbase committed/staged/working/untracked/source/otherTreebody/diff checks pass. Archive1 and7actual guard/schema/provenance expected-rejection controls pass; all raw child/protocol artifacts retained. SDK10.0.400/runtime10.0.11/arm64/defaultJITGCclassparallelism. No timing/blindretry/cause attribution; timeout/crash/postreporttamper negative execution unrun.",
       "artifact": "docs/reports/M2-tree-allocation-probe/renewed-1840902-attempt1/summary.json"
+    },
+    {
+      "id": "renewed-integrated-checks",
+      "kind": "integration",
+      "revision": "1813cf70dd585bb2d092ee03c9bc4375bae68e22",
+      "command": "python3 -B docs/reports/M2-tree-allocation-probe/verify.py --report-prefix integration-1813cf7-attempt1 --expected-branch codex/integrate-m2-tree-probe-renewed --audit-base e3e2c325c9528ca7d709e27ca1d15267c48bc755 --runtime-count 306 --conformance-count 255 --differential-count 299 --api-count 251 --fixture-count 3388 --planning-count 14 --task-count 118",
+      "result": "passed",
+      "summary": "Actual17checks pass; focused1/fullMTP860/direct306+255+299/API251/discovery3388/freshfull pinned reference242/fullsourcehash/unchangedcopy/planning14/validate118/allowned audits/archive regression1 and7actual rejectioncontrols. Three Treepairs exactreal0B/positive64000B; original1000warm1000Walk each21000/attributeidentity true. Reviewed1d1 source unchanged; bd8 earlier failure ancestry retained, causesunresolved.",
+      "artifact": "docs/reports/M2-tree-allocation-probe/integration-1813cf7-attempt1/summary.json"
     }
   ],
   "blockers": [],
@@ -176,13 +187,10 @@
       "export DOTNET_ROOT='/Users/sebastienros/Library/Application Support/dotnetup/dotnet'\nexport PATH=\"$DOTNET_ROOT:$PATH\"\npython3 -B docs/reports/M2-tree-allocation-probe/verify.py --report-prefix renewed-1840902-attempt1 --expected-branch codex/m2-tree-allocation-probe --audit-base c347796669e94617f4fff50f384d4695510e93f4 --runtime-count 298 --conformance-count 255 --differential-count 299 --api-count 251 --fixture-count 3388 --planning-count 14 --task-count 118:exit0/all17checksPass; no retry.",
       "Focused1/fullMTP852/direct298/255/299 allPass0fail0skip;3real0/positive64000Bpairs;original/equivalent/helper0B,1000warm1000measured/21000sum/attributeidentity.",
       "API251/discovery3388/ref242sourcehashfreshcompleteBCLcopy/planning14/validate118/allowned+unchangedsource audits pass;archive1/sevenactualguard/schema/provenance rejection checks pass.",
-      "Original1d1/2cf and sandboxNU1900failed/unrun attempt retained; rootc455Encoding5960B16of17 failure byte-identical preserved, no Treecause inferred. Actual17check count correction retained."
+      "Original1d1/2cf and sandboxNU1900failed/unrun attempt retained; rootc455Encoding5960B16of17 failure byte-identical preserved, no Treecause inferred. Actual17check count correction retained.",
+      "Coordinator actual17checks/full860 passed at 1813cf70dd585bb2d092ee03c9bc4375bae68e22"
     ],
-    "remaining": [
-      "Root fresh independent integrated verification before verified.",
-      "Historical Tree1064B and Encoding5960B causes unresolved; isolated synchronous scope only,no concurrentallocation guarantee.",
-      "Crash/timeout/postreporttamper negative execution and timing unrun."
-    ],
+    "remaining": [],
     "requests": []
   }
 }
