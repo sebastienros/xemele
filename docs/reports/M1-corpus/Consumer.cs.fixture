@@ -1,0 +1,15 @@
+using System.Text;
+using Xemele;
+const string xml = "<!--before--><p:r xmlns:p='urn:p' a='&#x9;&#xA;&#xD;'>&#x1F600;<![CDATA[x<y]]><?work value?></p:r>";
+var document = XmlDocument.Parse(xml);
+if (document.RootElement.LocalName != "r" || document.RootElement.NamespaceUri != "urn:p" || document.RootElement.GetAttribute("a") != "\t\n\r" || document.DocumentNode.FirstChild.Kind != XmlNodeKind.Comment) throw new Exception("Independent input model mismatch");
+foreach (Encoding encoding in new Encoding[] { new UTF8Encoding(false, true), new UnicodeEncoding(false, false, true), new UnicodeEncoding(true, false, true) })
+{
+    using var output = new MemoryStream();
+    document.Save(output, new() { Encoding = encoding, EmitByteOrderMark = true });
+    output.Position = 0;
+    var roundTrip = XmlDocument.Load(output);
+    if (roundTrip.RootElement.GetTextContent() != "😀x<y" || roundTrip.RootElement.GetAttribute("a") != "\t\n\r" || roundTrip.RootElement.FirstChild.NextSibling.Kind != XmlNodeKind.CData || roundTrip.RootElement.LastChild.Kind != XmlNodeKind.ProcessingInstruction) throw new Exception("Round trip mismatch");
+}
+if (XmlDocument.TryParse("<?a:b bogus?><r/>", out var rejected, out var diagnostics) || rejected is not null || diagnostics[0].Code != "XML.Syntax") throw new Exception("PI repair lost");
+Console.WriteLine("Fresh NuGet consumer passed: independently specified names/values/lexical kinds, all three encodings and PI rejection.");

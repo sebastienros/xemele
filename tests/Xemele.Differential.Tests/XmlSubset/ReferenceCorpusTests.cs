@@ -32,17 +32,35 @@ public sealed class ReferenceCorpusTests
     }
     [Theory]
     [MemberData(nameof(Rejections))]
-    public async Task OriginalSupportedBytesAreRejectedByIndependentReferenceAndProduct(string id, string relative, string hash)
+    public async Task OriginalSupportedBytesRejectWithExplicitReferenceComparison(string id, string relative, string hash)
     {
-        string root = Path.GetFullPath(Environment.GetEnvironmentVariable("XEMELE_CORPUS_RESOURCES") ?? "/private/tmp/xemele-corpus-cache/w3c-xml-20130923/resources");
+        string root = Path.TrimEndingDirectorySeparator(Path.GetFullPath(Environment.GetEnvironmentVariable("XEMELE_CORPUS_RESOURCES") ?? "/private/tmp/xemele-corpus-cache/w3c-xml-20130923/resources"));
         string path = Path.GetFullPath(Path.Combine(root, relative));
-        Assert.StartsWith(root + Path.DirectorySeparatorChar, path, StringComparison.Ordinal);
-        for (FileSystemInfo? item = new FileInfo(path); item is not null && item.FullName != root; item = item is FileInfo f ? f.Directory : ((DirectoryInfo)item).Parent) Assert.Null(item.LinkTarget);
+        Assert.StartsWith(Path.EndsInDirectorySeparator(root) ? root : root + Path.DirectorySeparatorChar, path, StringComparison.Ordinal);
+        for (FileSystemInfo? item = new FileInfo(path); item is not null; item = item is FileInfo f ? f.Directory : ((DirectoryInfo)item).Parent)
+        { Assert.Null(item.LinkTarget); if (item.FullName == root) break; }
         byte[] bytes = File.ReadAllBytes(path);
         Assert.Equal(hash, Convert.ToHexStringLower(SHA256.HashData(bytes)));
         using var reference = await Reference(id, bytes);
         // runner-failure is an infrastructure failure, never a parser rejection/pass.
-        Assert.Equal("parse-rejected", reference.RootElement.GetProperty("outcome").GetString());
+        using var ledger = JsonDocument.Parse(File.ReadAllText(Path.Combine(Root, "docs/reports/M1-corpus/reference-limitations.json")));
+        var limitations = ledger.RootElement.GetProperty("cases").EnumerateArray().Where(c => c.GetProperty("id").GetString() == id).ToArray();
+        Assert.InRange(limitations.Length, 0, 1);
+        string outcome = reference.RootElement.GetProperty("outcome").GetString()!;
+        string comparison = limitations.Length == 0 ? "matched-rejection" : "documented-reference-divergence";
+        string directory = Environment.GetEnvironmentVariable("XEMELE_CORPUS_RESULTS") ?? Path.Combine(Root, "artifacts/M1-corpus/case-results");
+        Directory.CreateDirectory(directory);
+        string runner = Environment.GetEnvironmentVariable("XEMELE_BCL_RUNNER") ?? Path.Combine(Root, "tools/ReferenceRunners/Bcl/bin", ReferenceProcess.BuildConfiguration(AppContext.BaseDirectory), "net10.0/BclReference.dll");
+        File.WriteAllText(Path.Combine(directory, "reference-" + Convert.ToHexStringLower(SHA256.HashData(Encoding.UTF8.GetBytes(id))) + ".json"),
+            JsonSerializer.Serialize(new { id, sha256 = hash, comparison, runnerSha256 = Convert.ToHexStringLower(SHA256.HashData(File.ReadAllBytes(runner))), rawResponse = reference.RootElement.GetRawText(), response = reference.RootElement }));
+        if (limitations.Length != 0)
+        {
+            Assert.Equal(hash, Assert.Single(limitations).GetProperty("sha256").GetString());
+            foreach (string field in new[] { "name", "version", "runtime" })
+                Assert.Equal(ledger.RootElement.GetProperty("engine").GetProperty(field).GetString(), reference.RootElement.GetProperty("engine").GetProperty(field).GetString());
+            Assert.Equal(ledger.RootElement.GetProperty("referenceOutcome").GetString(), outcome);
+        }
+        else Assert.Equal("parse-rejected", outcome);
         Assert.False(XmlDocument.TryParse(bytes, out var document, out var diagnostics, cancellationToken: TestContext.Current.CancellationToken), id);
         Assert.Null(document); Assert.Single(diagnostics);
     }

@@ -22,12 +22,16 @@ public sealed class CorpusTests
     private static string Resources => Environment.GetEnvironmentVariable("XEMELE_CORPUS_RESOURCES") ?? "/private/tmp/xemele-corpus-cache/w3c-xml-20130923/resources";
     internal static byte[] VerifiedBytes(string root, string relative, string hash)
     {
-        string prefix = Path.GetFullPath(root) + Path.DirectorySeparatorChar;
+        root = Path.TrimEndingDirectorySeparator(Path.GetFullPath(root));
+        string prefix = Path.EndsInDirectorySeparator(root) ? root : root + Path.DirectorySeparatorChar;
         string path = Path.GetFullPath(Path.Combine(root, relative));
         if (!path.StartsWith(prefix, StringComparison.Ordinal) || relative.Split('/', '\\').Contains("..")) throw new InvalidDataException("Outside resource root.");
         // No symlink may redirect the hashed fixture outside the resource tree.
-        for (var item = new FileInfo(path) as FileSystemInfo; item is not null && item.FullName != Path.GetFullPath(root); item = item is FileInfo f ? f.Directory : ((DirectoryInfo)item).Parent)
-            if (item.LinkTarget is not null) throw new InvalidDataException("Symbolic resource path.");
+        for (var item = new FileInfo(path) as FileSystemInfo; item is not null; item = item is FileInfo f ? f.Directory : ((DirectoryInfo)item).Parent)
+            {
+                if (item.LinkTarget is not null) throw new InvalidDataException("Symbolic resource path.");
+                if (item.FullName == root) break;
+            }
         byte[] bytes = File.ReadAllBytes(path);
         if (!Convert.ToHexStringLower(SHA256.HashData(bytes)).Equals(hash, StringComparison.Ordinal)) throw new InvalidDataException("Resource hash mismatch.");
         return bytes;
@@ -43,10 +47,13 @@ public sealed class CorpusTests
     public void EverySupportedRejectionExecutesOriginalBytes(string id, string path, string hash)
     {
         byte[] bytes = VerifiedBytes(Resources, path, hash);
-        Assert.False(ProductDocument.TryParse(bytes, out var document, out var diagnostics, cancellationToken: TestContext.Current.CancellationToken), id);
+        bool accepted = ProductDocument.TryParse(bytes, out var document, out var diagnostics, cancellationToken: TestContext.Current.CancellationToken);
+        Record("product-", id, new { id, path, sha256 = hash, profile = "xml-1.0-fifth-edition-m1", outcome = accepted ? "accepted" : "rejected", diagnostics });
+        Assert.False(accepted, id);
         Assert.Null(document);
         var diagnostic = Assert.Single(diagnostics);
         Assert.True(diagnostic.Code.StartsWith("XML.", StringComparison.Ordinal) || diagnostic.Code.StartsWith("INPUT.", StringComparison.Ordinal), id);
+        if (path == "xmlconf/eduni/namespaces/1.0/042.xml") Assert.Equal("XML.Syntax", diagnostic.Code);
         Assert.NotEmpty(diagnostic.Message);
         Assert.True(diagnostic.Location.LineNumber >= 1 && diagnostic.Location.LinePosition >= 1, id);
         Assert.InRange(diagnostic.Location.ByteOffset!.Value, 0, bytes.LongLength);
@@ -91,7 +98,7 @@ public sealed class CorpusTests
         }
     }
     [Fact]
-    public void CorruptionMissingTraversalAndSymlinkAreInfrastructureFailures()
+    public void CorruptionMissingTraversalAndSiblingAreInfrastructureFailures()
     {
         string temporary = Path.Combine(Path.GetTempPath(), "xemele-corpus-negative-" + Guid.NewGuid());
         Directory.CreateDirectory(temporary);
@@ -100,13 +107,46 @@ public sealed class CorpusTests
             File.WriteAllText(Path.Combine(temporary, "input"), "<r/>");
             string hash = Convert.ToHexStringLower(SHA256.HashData(Encoding.UTF8.GetBytes("<r/>")));
             Assert.Equal("<r/>", Encoding.UTF8.GetString(VerifiedBytes(temporary, "input", hash)));
+            Assert.Equal("<r/>", Encoding.UTF8.GetString(VerifiedBytes(temporary + Path.DirectorySeparatorChar, "input", hash)));
+            Assert.Throws<InvalidDataException>(() => VerifiedBytes(temporary, temporary + "-sibling/input", hash));
             Assert.Throws<InvalidDataException>(() => VerifiedBytes(temporary, "input", new string('0', 64)));
             Assert.Throws<FileNotFoundException>(() => VerifiedBytes(temporary, "missing", hash));
             Assert.Throws<InvalidDataException>(() => VerifiedBytes(temporary, "../input", hash));
-            File.CreateSymbolicLink(Path.Combine(temporary, "link"), Path.Combine(temporary, "input"));
-            Assert.Throws<InvalidDataException>(() => VerifiedBytes(temporary, "link", hash));
+
         }
         finally { Directory.Delete(temporary, true); }
+    }
+    [Fact]
+    public void SymlinkResourceAndRootAreInfrastructureFailures()
+    {
+        string temporary = Path.Combine(Path.GetTempPath(), "xemele-corpus-symlink-" + Guid.NewGuid());
+        Directory.CreateDirectory(temporary);
+        try
+        {
+            File.WriteAllText(Path.Combine(temporary, "input"), "<r/>");
+            Directory.CreateDirectory(Path.Combine(temporary, "actual"));
+            File.WriteAllText(Path.Combine(temporary, "actual/input"), "<r/>");
+            try
+            {
+                File.CreateSymbolicLink(Path.Combine(temporary, "link"), Path.Combine(temporary, "input"));
+                Directory.CreateSymbolicLink(Path.Combine(temporary, "root-link"), Path.Combine(temporary, "actual"));
+            }
+            catch (Exception error) when (error is PlatformNotSupportedException or UnauthorizedAccessException || (OperatingSystem.IsWindows() && error is IOException))
+            {
+                Assert.Skip("Symlink creation unavailable: " + error.GetType().Name + ": " + error.Message);
+            }
+            string hash = Convert.ToHexStringLower(SHA256.HashData(Encoding.UTF8.GetBytes("<r/>")));
+            Assert.Throws<InvalidDataException>(() => VerifiedBytes(temporary, "link", hash));
+            Assert.Throws<InvalidDataException>(() => VerifiedBytes(Path.Combine(temporary, "root-link"), "input", hash));
+            Assert.Throws<InvalidDataException>(() => VerifiedBytes(temporary, "root-link/input", hash));
+        }
+        finally { Directory.Delete(temporary, true); }
+    }
+    private static void Record(string prefix, string id, object result)
+    {
+        string directory = Environment.GetEnvironmentVariable("XEMELE_CORPUS_RESULTS") ?? Path.Combine(Root, "artifacts/M1-corpus/case-results");
+        Directory.CreateDirectory(directory);
+        File.WriteAllText(Path.Combine(directory, prefix + Convert.ToHexStringLower(SHA256.HashData(Encoding.UTF8.GetBytes(id))) + ".json"), JsonSerializer.Serialize(result));
     }
     public static IEnumerable<object[]> Accepted() => new[]
     {
