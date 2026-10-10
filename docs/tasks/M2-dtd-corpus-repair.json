@@ -41,44 +41,98 @@
     {
       "id": "M2-dtd-corpus-repair-A1",
       "description": "Correct default entity declaration-order WFC using live declaration/origin/applicability; declaration keyword boundary at external PE inclusion with required surrounding S; entity and notation declaration NCNames including unused/duplicate declarations. Preserve QName element/attribute and NMTOKEN productions, nonvalidating rules, first-unread suppression, quotas, bounded source/pause/count/cleanup and model/API identities. No invented unknown attribute/default representation; that remaining contract obligation is separate.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "focused-affected-correctness",
+        "source-review"
+      ]
     },
     {
       "id": "M2-dtd-corpus-repair-A2",
       "description": "Exact original inventory bytes/resources: not-wf-sa-180 and ibm-not-wf-P68-ibm68n07.xml reject forward defaults; valid-not-sa-020 accepts complete independent doc/a1=v1 model; ibm-1-1-valid-P05-ibm05v05.xml, rmt-ns10-043, rmt-ns10-044 and x-ibm-1-0.5-valid-P05-ibm05v05.xml reject colon declarations under frozen namespace profile. Cover all short split/PE boundaries, prior declared default success, internal PE WFC rejection, legal Fifth Edition names and QName/NMTOKEN distinctions. Corpus identity/expectations unchanged.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "focused-affected-correctness",
+        "source-review"
+      ]
     },
     {
       "id": "M2-dtd-corpus-repair-A3",
       "description": "Relevant focused and affected inherited correctness, API290 compatibility and actual source/fresh package consumer checks; applicable real allocation/timing evidence through reused verified support and one prepared exclusive sequence. State repeat reasons, preserve unchanged passing evidence, build outside lease, final identity and cleanup mandatory. Timing informational. Planning/owned diff validated, concise summaries only.",
       "status": "pending",
-      "evidence": []
+      "evidence": [
+        "focused-affected-correctness",
+        "api-consumers",
+        "preparation-infrastructure"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
-  "blockers": [],
+  "implementation": [
+    "DefaultReferences.cs: ValidateDeclaredDefault checks the declaration-time live table and origins; missing declaration location waits only for whole-subset PE applicability, never later entity resolution.",
+    "Declarations.cs: NCName checks before declaration retention/deduplication, preserving QName and NMTOKEN productions; PE origin retention only where standalone WFC needs it.",
+    "Lexer.cs: complete external markup keyword permits adjacent PE inclusion and its required surrounding spaces.",
+    "XmlParserCore.Doctype.cs: authorized external-subset context forwarding only.",
+    "RepairTests.cs: seven immutable original inventory/profile cases, all short primary/PE splits and complete independent doc/a1=v1/DTD model, real rejection bytes and resource decode boundaries.",
+    "ReviewRegressionTests.cs: authorized unused-colon assertion transition only; reference-use rows retained.",
+    "DtdCorpusRepairBenchmarks.cs: complete independent live-default and original external-keyword DTD/default/document/event/pause/count oracles; reused verified driver, binding, provenance and process guards."
+  ],
+  "evidence": [
+    {
+      "id": "focused-affected-correctness",
+      "kind": "check",
+      "revision": "d9d2afe6538a2d3a22bcc56247526de295552c16",
+      "command": "python3 -B docs/reports/M2-dtd-corpus-repair/verify.py --mode correctness --report correctness-final",
+      "result": "passed",
+      "summary": "2129 actually executed tests passed, zero failures/skips; 31 owned rows and all three historical transition rows included. Changed DTD paths justify affected inherited repeats. Planning controls and validate passed; temporary XML removed.",
+      "artifact": "docs/reports/M2-dtd-corpus-repair/correctness-final.json"
+    },
+    {
+      "id": "api-consumers",
+      "kind": "check",
+      "revision": "d9d2afe6538a2d3a22bcc56247526de295552c16",
+      "command": "python3 -B docs/reports/M2-dtd-corpus-repair/verify.py --mode api --report api-final",
+      "result": "passed",
+      "summary": "All 290 current members match. Frozen model fixtures passed. Actual source and fresh local-package consumers passed the independently authored default/non-ASCII/three-rejection oracles. Temporary package, consumer build and package cache removed. Later changes only measurement adapter/evidence metadata; unchanged API/consumer proof preserved.",
+      "artifact": "docs/reports/M2-dtd-corpus-repair/api-final.json"
+    },
+    {
+      "id": "source-review",
+      "kind": "review",
+      "revision": "3d822d60e59bf14642a37583e3f4b1d8bdf4c3d4",
+      "command": null,
+      "result": "passed",
+      "summary": "Coordinator bounded source review at this full revision approved A1/A2 and complete event/DTD/default/workload oracles with no blocking findings. Subsequent commit 88f2a46 adds only the preserved preparation failure summary.",
+      "artifact": null
+    },
+    {
+      "id": "preparation-infrastructure",
+      "kind": "check",
+      "revision": "3d822d60e59bf14642a37583e3f4b1d8bdf4c3d4",
+      "command": "python3 -B docs/reports/M2-dtd-corpus-repair/measure.py --mode prepare --report prepare-offline --benchmark-report benchmark-final",
+      "result": "failed",
+      "summary": "Parent build, identity and counters-disabled authored oracles passed. Independent generated project binding and restore passed; generated build hit its 240-second deadline. No workload/counter/timing executor ran. Process group empty and temporary raw/generated outputs removed. Outside-sandbox preparation was rejected twice by automatic approval review; no host attempt started.",
+      "artifact": "docs/reports/M2-dtd-corpus-repair/prepare-offline.json"
+    }
+  ],
+  "blockers": [
+    "A3: generated child preparation timed out in sandbox. Direct user approval now received for temporary host build/freeze/cleanup. PARKED pending coordinator release from standalone exclusive sequence; no executable children, no worker allocation/timing sequence run."
+  ],
   "handoff": {
-    "summary": "Owning repair for concrete M2-conformance-grammar A1/A2 findings; seven original cases, no Core/shared build writes.",
-    "checks": [],
-    "remaining": [],
+    "summary": "A1/A2 implemented and bounded source review approved. Core forwarding and historical assertion transitions used exact coordinator grants. A3 correctness/API/source/fresh-package checks pass; actual measurement preparation remains incomplete.",
+    "checks": [
+      "Release pinned SDK10.0.400/runtime10.0.11 build and MTP executable: 2129 passed, including 31 owned and three actual historical transition rows.",
+      "All current290 public members, frozen contract/model assertions, actual source and fresh local-package consumer passed at d9d2afe6538a2d3a22bcc56247526de295552c16.",
+      "20 reused support offline controls and 6 owned adapter controls passed; no counters/workloads run by these controls.",
+      "Planning validate passed for136 tasks; owned diff since8427948 metadata merge includes only granted paths."
+    ],
+    "remaining": [
+      "A3: prepare and freeze generated child, then receive one explicit bounded measurement lease, execute real allocation/timing, verify final identities and remove all temporary binaries/raw outputs. Timing informational only.",
+      "Preserve unchanged passing evidence: source changes only affect DTD declaration/default/PE paths and their inherited correctness; ordinary input, resolver reads, text framing, PI/core/tag scan and tree primitive observations are not rerun."
+    ],
     "requests": [
-      {
-        "path": "src/Xemele/Parsing/Core/XmlParserCore.Doctype.cs",
-        "defect": "BeginDtdSubset passes only standalone to ConfigureDeclarationReading; the DTD parser cannot distinguish internal-only from documents with an external subset when applying Entity Declared WFC to defaults at declaration time.",
-        "smallest_fix": "Pass hasExternalSubset: doctypeSystem is not null to the new optional ConfigureDeclarationReading argument (owned DtdParser.cs implementation); no other Core changes.",
-        "proving_check": "DtdCorpusRepairTests.DefaultDeclarationApplicability: internal-only forward default rejects before later entity; external-subset VC-only default does not gain an early WFC rejection; standalone=yes still rejects."
-      },
-      "Coordinator grants Doctype.cs only for ConfigureDeclarationReading hasExternalSubset: doctypeSystem is not null forwarding; original grammar owns subsequent changes after this repair verified. Task-JSON-only hold acknowledged; no other Core writes.",
-      {
-        "path": "tests/Xemele.Tests/M2-entities/ReviewRegressionTests.cs",
-        "defect": "AttributeUseRejectsColonThroughExplicitNestedAndDefaultReferences line 93 asserts unused <!ENTITY a:b ...> accepts; all three rows conflict with A1/A2 rejecting unused colon declarations. XML.Syntax assertions now pass at declaration time.",
-        "smallest_fix": "Replace only the final Assert.Equal Parse acceptance assertion with TryParse rejection plus XML.Syntax diagnostic assertion for the unused declaration. Keep the three existing reference-use rows and all other tests intact.",
-        "proving_check": "Execute the actual three historical rows and owned NamespacesNamesAndInternalPlacementEverySplit, then affected correctness selection; no exclusions."
-      },
-      "Coordinator grants ReviewRegressionTests.cs solely the final unused-colon declaration acceptance assertion in AttributeUseRejectsColonThroughExplicitNestedAndDefaultReferences: change to actual XML.Syntax rejection. Preserve all three reference-use rows and every other assertion. A1/A2 original namespace obligations require this precise transition. Worker task-JSON-only hold acknowledged."
+      "Resolved Doctype.cs forwarding request under coordinator grant8427948bc4e4b5178aac3df33ab6da6ec3d2a077.",
+      "Resolved only unused-colon assertion transition under exact ReviewRegressionTests.cs ownership grant99769bce1c2cff9125fd802f4bbb8730a8c250b0 (mirrored ownership without unverified peer runtime).",
+      "Direct user approval received for temporary host preparation/build freeze and cleanup after auto-review rejection; proceed only after coordinator PARK release. No host process has started."
     ]
   }
 }
