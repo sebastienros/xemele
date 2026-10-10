@@ -1,0 +1,35 @@
+{
+  "head": "95705dca0b8ae52521c21737e3e4a34eef7b1dbb",
+  "mode": "focused-cleanup",
+  "result": "passed",
+  "commands": [
+    {
+      "argv": [
+        "dotnet",
+        "build",
+        "tests/Xemele.Tests/Xemele.Tests.csproj",
+        "-c",
+        "Release",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false"
+      ],
+      "exit": 0,
+      "outputSha256": "1b7338470fe164235f5f7160a785f77ede777d17a75ceaca1c7ee100c0e4b569",
+      "summary": "Build succeeded, 0 warnings/errors"
+    },
+    {
+      "argv": [
+        "dotnet",
+        "tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll",
+        "-method",
+        "Xemele.Tests.Recovery.RecoveryLifecycleTests.FaultOrCancellationDuringRepairedEntityCloseDisposesTheOpenResource",
+        "-noColor"
+      ],
+      "exit": 0,
+      "outputSha256": "0b68277c940d58f45b82d9a636c3675bb1da8dce27d4814007197b465ea599d7",
+      "summary": "1 passed: callback fault and cancellation during repaired external-entity close; exactly-once disposal"
+    }
+  ]
+}

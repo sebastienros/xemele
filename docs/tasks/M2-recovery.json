@@ -4,7 +4,7 @@
   "milestone": "M2",
   "title": "Explicit recovery and diagnostic results",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "worker:M2-recovery",
   "branch": "codex/m2-recovery",
   "base_revision": "f4ffe8bb304a8e08034305ca6f7038e1c77869db",
@@ -38,29 +38,176 @@
     {
       "id": "M2-recovery-A1",
       "description": "Implement documented recovery rules and ParseWithDiagnostics results through the shared engine policy hooks.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "source-correctness",
+        "strict-corpus",
+        "bounded-source-review"
+      ]
     },
     {
       "id": "M2-recovery-A2",
       "description": "Test each repair rule, IsComplete/IsWellFormed, bounded diagnostics, callback outcomes and unchanged strict rejection.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "source-correctness",
+        "affected-strict",
+        "cleanup-regression",
+        "strict-corpus"
+      ]
     },
     {
       "id": "M2-recovery-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "api-consumers-sample",
+        "host-preparation",
+        "allocation-host",
+        "benchmark-host",
+        "final-scope-planning"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Options/Recovery/Recovery.cs: XmlParseOptions.Recover=false",
+    "src/Xemele/Parsing/Recovery/XmlParserCore.Recovery.cs: bounded repair policy using existing engine hooks",
+    "src/Xemele/Parsing/Recovery/RecoveryDiagnostics.cs: owned bounded repairs with reserved terminal slot",
+    "src/Xemele/Parsing/Dom/Recovery.cs: four frozen synchronous diagnostic factories and existing byte-adapter composition",
+    "src/Xemele/Parsing/Core/XmlParserCore.cs: scoped outside-root/duplicate/close/physical-EOF hook calls preserving strict paths",
+    "src/Xemele/Parsing/Dom/Factories.cs: strict entry-point Recover admission guards",
+    "src/Xemele/Parsing/Dom/ByteDomAdapter.cs: partial modifier only",
+    "tests/Xemele.Tests/M2-recovery/: repair, fatal, location, callback, cancellation, resource and transport tests",
+    "docs/api/M2-recovery.txt: five frozen additive members",
+    "samples/M2-recovery/: real public sample",
+    "docs/reports/M2-recovery/Consumers/: frozen source and fresh local package consumers",
+    "benchmarks/Xemele.Benchmarks/M2-recovery/RecoveryBenchmarks.cs: complete oracles and borrowed/owned measurements"
+  ],
+  "evidence": [
+    {
+      "id": "source-correctness",
+      "kind": "check",
+      "revision": "ecee7cacfda0f9825a1d5003278674859d641d03",
+      "command": "Pinned dotnet build tests/Xemele.Tests/Xemele.Tests.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false -p:NuGetAudit=false; dotnet tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -namespace Xemele.Tests.Recovery -noColor",
+      "result": "passed",
+      "summary": "75 recovery cases passed; exact repair/fatal/flags/bounds/locations/transport and callback/resource lifecycle oracles. Build 0 warnings/errors. Actual commands and outcomes in report.",
+      "artifact": "docs/reports/M2-recovery/correctness-source.json"
+    },
+    {
+      "id": "affected-strict",
+      "kind": "check",
+      "revision": "ecee7cacfda0f9825a1d5003278674859d641d03",
+      "command": "dotnet tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -namespace Xemele.Tests.Conformance* -namespace Xemele.Tests.Entities -namespace Xemele.Tests.DtdNonvalidating -namespace Xemele.Tests.NamespaceNames -namespace Xemele.Tests.Syntax -namespace Xemele.Tests.Dom -method- *Allocate* -method- *Allocation* -noColor",
+      "result": "passed",
+      "summary": "289 affected strict/DOM/namespace/entity/conformance checks passed. Replayed because Core grammar branches and strict factory admission changed; allocation children excluded outside host lease.",
+      "artifact": "docs/reports/M2-recovery/correctness-source.json"
+    },
+    {
+      "id": "strict-corpus",
+      "kind": "check",
+      "revision": "ecee7cacfda0f9825a1d5003278674859d641d03",
+      "command": "python3 -B docs/reports/M2-recovery/preserve_grammar.py strict-grammar-source",
+      "result": "passed",
+      "summary": "2585 originals: 1394 accepted independent models and all-callback pause models, 1191 normative rejections; 3386 original resource hashes, 771 reference disagreements resolved. Accepted-model hashes equal verified prerequisite; children/closure/cleanup passed.",
+      "artifact": "docs/reports/M2-recovery/strict-grammar-source.json"
+    },
+    {
+      "id": "cleanup-regression",
+      "kind": "check",
+      "revision": "95705dca0b8ae52521c21737e3e4a34eef7b1dbb",
+      "command": "Pinned Release build; dotnet tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -method Xemele.Tests.Recovery.RecoveryLifecycleTests.FaultOrCancellationDuringRepairedEntityCloseDisposesTheOpenResource -noColor",
+      "result": "passed",
+      "summary": "One newly added focused check passed: callback exception identity and cancellation during repaired external-entity close dispose open resource exactly once. Passing 75/289/corpus observations were preserved.",
+      "artifact": "docs/reports/M2-recovery/cleanup-correctness.json"
+    },
+    {
+      "id": "api-consumers-sample",
+      "kind": "check",
+      "revision": "ecee7cacfda0f9825a1d5003278674859d641d03",
+      "command": "Approved ApiCheck compare src/Xemele/bin/Release/net10.0/Xemele.dll /tmp/m2-recovery-union.txt; pinned sample/source consumer/pack/fresh-package consumer commands recorded in report",
+      "result": "passed",
+      "summary": "377 compiled members match frozen canonical fragments, including exactly five recovery additions; real sample and exact frozen usage compile/run against source and freshly packed package. Observed product hashes equal; temporary package/cache removed.",
+      "artifact": "docs/reports/M2-recovery/correctness-source.json"
+    },
+    {
+      "id": "inventory-environment-attempt",
+      "kind": "check",
+      "revision": "ecee7cacfda0f9825a1d5003278674859d641d03",
+      "command": "python3 tools/ApiBaseline/compare.py --report /tmp/m2-recovery-api.json",
+      "result": "failed",
+      "summary": "Discovery stopped before ABI comparison at missing local corpus fixture E14.dtd. Direct API-only canonical union comparison passed separately; no source exclusion or unowned fixture edit. Coordinator independently reported full API377 comparison passing.",
+      "artifact": "docs/reports/M2-recovery/correctness-source.json"
+    },
+    {
+      "id": "sandbox-preparation-attempt",
+      "kind": "check",
+      "revision": "95705dca0b8ae52521c21737e3e4a34eef7b1dbb",
+      "command": "python3 -B docs/reports/M2-recovery/measure.py --mode prepare --report prepare-source --benchmark-report benchmark-source",
+      "result": "failed",
+      "summary": "Parent/oracles passed, generated binding/restore passed, but sandbox build stalled without compiler child. Scoped task build termination yielded guarded failure and complete temporary cleanup; one host preparation resolved it.",
+      "artifact": "docs/reports/M2-recovery/prepare-source.json"
+    },
+    {
+      "id": "host-preparation",
+      "kind": "check",
+      "revision": "95705dca0b8ae52521c21737e3e4a34eef7b1dbb",
+      "command": "python3 -B docs/reports/M2-recovery/measure.py --mode prepare --report prepare-host --benchmark-report benchmark-host",
+      "result": "passed",
+      "summary": "Counters disabled: parent/complete functional oracles and independent generated compilation passed; immutable complete source/binary/runtime identities and cleanup passed. Manifest bbecd2ec71ea4bec1188811e3755181898abab42d76eb0a76e2c4e7eb4f19ce7.",
+      "artifact": "docs/reports/M2-recovery/prepare-host.json"
+    },
+    {
+      "id": "allocation-host",
+      "kind": "check",
+      "revision": "95705dca0b8ae52521c21737e3e4a34eef7b1dbb",
+      "command": "python3 -B docs/reports/M2-recovery/measure.py --mode allocation --report allocation-host --exclusive-grant m2-recovery-95705dc-sequence-20261010",
+      "result": "passed",
+      "summary": "1024 warm borrowed strict dispatches: 0 B; positive control 768 B, setup 8776 B. Strict/recovery owned result allocations 12680/11776 B per op; owned positive control 152 B per op, cold setup/oracles separately recorded. Final freezes/cleanup passed.",
+      "artifact": "docs/reports/M2-recovery/allocation-host.json"
+    },
+    {
+      "id": "benchmark-host",
+      "kind": "check",
+      "revision": "95705dca0b8ae52521c21737e3e4a34eef7b1dbb",
+      "command": "python3 -B docs/reports/M2-recovery/measure.py --mode benchmark --report benchmark-host --exclusive-grant m2-recovery-95705dc-sequence-20261010",
+      "result": "passed",
+      "summary": "One authorized sequence with prebuilt child; two cases, both child exit0, complete before/after identity/source/closure freezes and raw/generated cleanup passed. Strict owned result 2.408us/12.34KB; repaired owned result 1.756us/11.5KB. Distinct workloads; Arm64 timing informational. Host released with no children before evidence inspection.",
+      "artifact": "docs/reports/M2-recovery/benchmark-host.json"
+    },
+    {
+      "id": "bounded-source-review",
+      "kind": "review",
+      "revision": "95705dca0b8ae52521c21737e3e4a34eef7b1dbb",
+      "command": null,
+      "result": "passed",
+      "summary": "Coordinator reported both bounded reviews approving ecee7ca with no blockers/corrections, and explicitly approved inspected 95705dc cleanup regression. No optional hardening promoted to acceptance blocker.",
+      "artifact": "docs/reports/M2-recovery/final-handoff.json"
+    },
+    {
+      "id": "final-scope-planning",
+      "kind": "check",
+      "revision": "95705dca0b8ae52521c21737e3e4a34eef7b1dbb",
+      "command": "python3 tools/planning/tasks.py validate; git diff --check; owned-path audit against M2-recovery owns and its JSON",
+      "result": "passed",
+      "summary": "Validated138 tasks; whitespace clean; all changed/untracked source/evidence belongs to M2-recovery. No children or raw measurement/package archive retained.",
+      "artifact": "docs/reports/M2-recovery/final-audit.json"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Predispatch source-only scope assessment: shared recovery hooks are absent. Coordinator grants exact Core policy callsites in XmlParserCore.cs (outside-root,duplicate expanded attributes,ancestor/unmatched close,EOF delivery) with strict/entity/atomic/fatal behavior preserved; Factories.cs only strict Recover=true guards before input/resolver work; ByteDomAdapter.cs only partial modifier. All recovery implementation/accumulation/adapters remain owned Parsing/Recovery and Dom/Recovery.cs partials; no second parser/input rewrite. No implementation or checks claimed; task starts only after conformance verified.",
-    "checks": [],
-    "remaining": [],
+    "summary": "Frozen synchronous recovery family and Recover=false option implemented through existing engine/decoder/DOM/resource composition. Only documented repairs; atomic start tags, fatal boundaries, strict rejection, editable partial trees and bounded owned diagnostics preserved. Scoped Core helper calls/strict factory guards; ByteDomAdapter only made partial. Source and cleanup followup commits ecee7cacfda0f9825a1d5003278674859d641d03 and 95705dca0b8ae52521c21737e3e4a34eef7b1dbb.",
+    "checks": [
+      "75 recovery cases, 289 affected strict checks and one added resource-cleanup regression passed at their recorded revisions.",
+      "Full strict corpus: 2585 cases; 1394 accepted/pause models and 1191 rejections; prior accepted-model hashes identical.",
+      "Compiled API377, frozen source/fresh package consumers and real sample passed; observed consumer product hashes equal.",
+      "Host preparation, one allocation and one prebuilt benchmark sequence passed under explicit lease; borrowed0B positive768B; all child/source/runtime/cleanup checks passed.",
+      "Initial cache inventory and sandbox preparation failures retained with exact scoped successful resolutions.",
+      "Final planning, owned-path and whitespace validation recorded in final handoff audit."
+    ],
+    "remaining": [
+      "Coordinator integration verification and M2 gate; integration_revision remains null.",
+      "Optional backlog only: strengthen borrowed name/text oracles; cross-architecture timing validation belongs to release performance work."
+    ],
     "requests": []
   }
 }
