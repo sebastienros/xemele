@@ -4,11 +4,11 @@
   "milestone": "M2",
   "title": "Preserve nonvalidating unresolved content references",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "worker:M2-undeclared-content",
   "branch": "codex/m2-undeclared-content",
   "base_revision": "942ed99082c9b515ad12977c1febab5d623c481b",
-  "integration_revision": null,
+  "integration_revision": "40d9ec99496d234e8ede7b3a793e15c40edfb681",
   "depends_on": [
     "M2-undeclared-contract",
     "M2-version-declarations",
@@ -55,7 +55,8 @@
       "status": "passed",
       "evidence": [
         "affected-runtime",
-        "direct-source-review"
+        "direct-source-review",
+        "coordinator-integration"
       ]
     },
     {
@@ -65,7 +66,8 @@
       "evidence": [
         "affected-runtime",
         "api-package",
-        "direct-source-review"
+        "direct-source-review",
+        "coordinator-integration"
       ]
     },
     {
@@ -82,7 +84,8 @@
         "task-allocation",
         "task-benchmarks",
         "historical-correctness",
-        "lease-review"
+        "lease-review",
+        "coordinator-integration"
       ]
     }
   ],
@@ -192,11 +195,20 @@
       "result": "passed",
       "summary": "Coordinator released lease and accepted existing standalone selected fingerprint guarantees; confirmed locale-satellite before/after closure is not an acceptance blocker and requires no hardening/replay. Raw outputs removed; no children.",
       "artifact": "docs/reports/M2-undeclared-content/inherited-allocations-2a26d90.json"
+    },
+    {
+      "id": "coordinator-integration",
+      "kind": "integration",
+      "revision": "40d9ec99496d234e8ede7b3a793e15c40edfb681",
+      "command": "Focused integrated test executable (2191 rows); approved API comparison (290 members); source/fresh local package consumers and byte identity; planning controls and graph validation; owned diff review. Exact commands in integration-summary.json.",
+      "result": "passed",
+      "summary": "2191 actual tests passed without failures/skips; API290 matched; source/package actual parsing/provenance/refusal and product byte identity passed. Branch measurements and unaffected passing evidence preserved. Original corpus retains 9 classified gaps; no full conformance claim.",
+      "artifact": "docs/reports/M2-undeclared-content/integration-summary.json"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Preserves eligible unresolved content references through ordered borrowed callbacks and owned DOM provenance; guards all lossy output/copy/traversal entrypoints. Single batched source/oracle corrections accepted; one exclusive measurement sequence passed and RELEASED; awaiting coordinator integration.",
+    "summary": "Integrated and verified unresolved content callbacks, owned DOM provenance and owner-wide loss guards; focused integration and preserved branch evidence pass.",
     "checks": [
       "2094affected+258conformance+311differential actual passing rows;18additive/290total public API, compiled models/ABI and source/package consumers pass.",
       "2585 original cases:2576 expectations matched;9 unchanged gaps; matching/reference observations not conformance claims.",
@@ -204,9 +216,7 @@
       "Historical broad execution counts unavailable; preserved successful exits/all-Pass checks and discovery strictly labeled. Four unchanged standalone measured paths not replayed.",
       "Coordinator confirms selected standalone fingerprints meet existing requirements; missing locale-satellite before/after comparison is explicitly unclaimed and not a blocker."
     ],
-    "remaining": [
-      "Coordinator integrate and run focused combined-tree correctness/API/planning checks; only coordinator may mark verified."
-    ],
+    "remaining": [],
     "requests": [
       "Missing attribute/default value representations remain separate classified obligations; do not silently fabricate normalized values, misclassify VC as WFC or claim full corpus coverage. Report exact cases/required contract ownership if observed. Preserve forwarding APIs and test their real callees; request exact additional owned files before edits.",
       "Coordinator grants Lexer.cs actual lexical PE reference/first-unread provenance and Resources.cs external DTD standalone/read-state transfer, solely for A1 approved applicability contract. Existing model shapes/resource outcomes preserved. Worker metadata hold acknowledged before serialized extension.",
