@@ -14,7 +14,7 @@ import xml.etree.ElementTree as ET
 
 ROOT = Path(__file__).resolve().parents[3]
 REPORT = ROOT / 'docs/reports/M2-dtd-framing'
-CLAIM = '7034b2769307fbab70ea524ea2a16f5defa8e7d6'
+CLAIM = 'd00c0d327478749a2c287a9aa31d75f319b6b451'
 FLAGS = ['-c', 'Release', '--disable-build-servers', '-m:1', '-p:UseSharedCompilation=false']
 
 
@@ -23,10 +23,10 @@ def main():
     parser.add_argument('--report-prefix', required=True)
     parser.add_argument('--audit-base', default=CLAIM)
     parser.add_argument('--expected-branch')
-    parser.add_argument('--expected-runtime-tests', type=int, default=1490)
+    parser.add_argument('--expected-runtime-tests', type=int, default=1549)
     parser.add_argument('--expected-conformance-tests', type=int, default=255)
     parser.add_argument('--expected-differential-tests', type=int, default=299)
-    parser.add_argument('--expected-public-api', type=int, default=222)
+    parser.add_argument('--expected-public-api', type=int, default=251)
     parser.add_argument('--expected-fixtures', type=int, default=3388)
     args = parser.parse_args()
     if not re.fullmatch('[a-z0-9-]+', args.report_prefix): parser.error('invalid report prefix')
@@ -61,9 +61,10 @@ def main():
         if args.expected_branch: assert branch == args.expected_branch
         summary.update(branch=branch, auditBase=args.audit_base)
         assert json.loads((ROOT/'docs/tasks/M2-contracts.json').read_text())['status'] == 'verified'
-        prerequisite = json.loads((ROOT/'docs/tasks/M2-pi-allocation-probe.json').read_text())
-        assert prerequisite['status'] == 'verified'
-        run('git', 'merge-base', '--is-ancestor', prerequisite['integration_revision'], 'HEAD')
+        for dependency in ['M2-pi-allocation-probe', 'M2-tree-allocation-probe']:
+            prerequisite = json.loads((ROOT/f'docs/tasks/{dependency}.json').read_text())
+            assert prerequisite['status'] == 'verified'
+            run('git', 'merge-base', '--is-ancestor', prerequisite['integration_revision'], 'HEAD')
         assert run('dotnet', '--version').strip() == '10.0.400'
         summary['dotnet'] = str(dotnet)
         summary['dotnetSha256'] = hashlib.sha256(dotnet.read_bytes()).hexdigest()
@@ -165,7 +166,7 @@ def main():
             run('git', 'diff', '--check', *([suffix] if suffix else []))
         summary['ownedPaths'] = sorted(set(paths))
         summary['result'] = 'passed'
-        summary['scope'] = 'Incremental external declaration framing only. Full DTD grammar/live resolver/additional encoding unimplemented; Windows/x64/AOT unrun.'
+        summary['scope'] = 'This task implements incremental external declaration framing. Combined candidate includes verified resolver, additional encoding and DTD model prerequisites; full DTD grammar/entity composition remains unimplemented. Windows/x64/AOT unrun here.'
     finally:
         (report/'checks.txt.gz').write_bytes(gzip.compress('\n'.join(logs).encode(), mtime=0))
         (report/'summary.json').write_text(json.dumps(summary, indent=2)+'\n')
