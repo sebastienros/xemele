@@ -8,24 +8,28 @@ public sealed partial class XmlDocument
 {
     public static XmlDocument Parse(string input, XmlParseOptions? options = null, CancellationToken cancellationToken = default)
     {
+        RejectStrictRecovery(options);
         ArgumentNullException.ThrowIfNull(input);
         return Parse(input.AsSpan(), options, cancellationToken);
     }
 
     public static XmlDocument Parse(ReadOnlySpan<char> input, XmlParseOptions? options = null, CancellationToken cancellationToken = default)
     {
+        RejectStrictRecovery(options);
         if (TryParse(input, out var document, out var diagnostics, options, cancellationToken)) return document!;
         throw new XmlParseException(diagnostics);
     }
 
     public static XmlDocument Parse(ReadOnlySpan<byte> input, XmlParseOptions? options = null, CancellationToken cancellationToken = default)
     {
+        RejectStrictRecovery(options);
         if (TryParse(input, out var document, out var diagnostics, options, cancellationToken)) return document!;
         throw new XmlParseException(diagnostics);
     }
 
     public static XmlDocument Load(Stream input, XmlParseOptions? options = null, CancellationToken cancellationToken = default)
     {
+        RejectStrictRecovery(options);
         ArgumentNullException.ThrowIfNull(input);
         var snapshot = new OperationBudget(options, cancellationToken).Options;
         using var adapter = new ByteDomAdapter(snapshot, cancellationToken);
@@ -43,12 +47,14 @@ public sealed partial class XmlDocument
 
     public static bool TryParse(string input, out XmlDocument? document, out IReadOnlyList<XmlDiagnostic> diagnostics, XmlParseOptions? options = null, CancellationToken cancellationToken = default)
     {
+        RejectStrictRecovery(options);
         ArgumentNullException.ThrowIfNull(input);
         return TryParse(input.AsSpan(), out document, out diagnostics, options, cancellationToken);
     }
 
     public static bool TryParse(ReadOnlySpan<char> input, out XmlDocument? document, out IReadOnlyList<XmlDiagnostic> diagnostics, XmlParseOptions? options = null, CancellationToken cancellationToken = default)
     {
+        RejectStrictRecovery(options);
         var snapshot = new OperationBudget(options, cancellationToken).Options;
         using var core = new XmlParserCore(snapshot);
         var sink = new DomSink(snapshot, cancellationToken: cancellationToken);
@@ -58,6 +64,7 @@ public sealed partial class XmlDocument
 
     public static bool TryParse(ReadOnlySpan<byte> input, out XmlDocument? document, out IReadOnlyList<XmlDiagnostic> diagnostics, XmlParseOptions? options = null, CancellationToken cancellationToken = default)
     {
+        RejectStrictRecovery(options);
         var snapshot = new OperationBudget(options, cancellationToken).Options;
         using var adapter = new ByteDomAdapter(snapshot, cancellationToken);
         adapter.Append(input);

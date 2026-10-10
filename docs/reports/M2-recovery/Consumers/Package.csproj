@@ -1,0 +1,8 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><OutputType>Exe</OutputType><EnableDefaultCompileItems>false</EnableDefaultCompileItems><BaseIntermediateOutputPath>obj/package/</BaseIntermediateOutputPath><OutputPath>bin/package/</OutputPath></PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Program.cs" />
+    <PackageReference Include="Xemele" Version="$(RecoveryPackageVersion)" />
+    <Compile Include="../../../../tests/Contracts/Fixtures/M2/RecoveryUsage.cs.fixture" Link="FrozenRecoveryUsage.cs" />
+  </ItemGroup>
+</Project>

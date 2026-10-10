@@ -5,7 +5,7 @@ namespace Xemele.Parsing.Dom;
 
 // Fixed setup scratch. No submitted byte/character view survives an operation.
 // The six-unit prefix distinguishes <?xml + whitespace from a PI target.
-internal sealed class ByteDomAdapter : IDisposable
+internal sealed partial class ByteDomAdapter : IDisposable
 {
     private readonly XmlInputDecoder decoder;
     private readonly XmlParserCore core;
