@@ -1,0 +1,35 @@
+{
+  "revision": "uncommitted preparation on claim 2e3d6012e664baf7bf5b3f3085bcb04de7dfc02e",
+  "checks": [
+    {
+      "command": "dotnet build tests/Xemele.Tests/Xemele.Tests.csproj Release pinned SDK",
+      "result": "failed",
+      "reason": "sandbox NuGet metadata lookup NU1900"
+    },
+    {
+      "command": "same build with authorized package restore",
+      "result": "failed",
+      "reason": "41 xUnit1051 cancellation analyzer errors; fixed by real TestContext cancellation tokens"
+    },
+    {
+      "command": "FramingTests focused initial execution",
+      "result": "failed",
+      "total": 1240,
+      "failed": 4,
+      "reason": "incorrect empty-source mapping mode, prefix and consumption/cursor expectations; corrected test expectations only"
+    },
+    {
+      "command": "FramingTests focused corrected execution",
+      "result": "passed",
+      "total": 1240,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "command": "sample initial execution",
+      "result": "failed",
+      "reason": "sample expected33 consumed units as31; corrected sample count"
+    }
+  ],
+  "scope": "Preparation only; final evidence must be at a committed source hash."
+}
