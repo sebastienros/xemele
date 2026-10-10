@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Contract compilation/metadata only. No product parse, corpus replay or measurement."""
-import hashlib,json,os,re,signal,subprocess,sys,tempfile
+import hashlib,json,os,re,shutil,signal,subprocess,sys,tempfile
 from pathlib import Path
 from xml.sax.saxutils import escape
 ROOT=Path(__file__).resolve().parents[3]
@@ -81,7 +81,9 @@ try:
   run(SDK,'build',ROOT/'docs/reports/M0-contracts/ApiCheck/ApiCheck.csproj',*flags)
   checker=art/'bin/ApiCheck/release/ApiCheck.dll'
   sys.path.insert(0,str(ROOT/'tools/ApiBaseline'));from compare import compose
-  union,api=compose(ROOT);baseline=temp/'public-api.txt';baseline.write_text(union)
+  api_root=temp/'api-root';(api_root/'docs/api').mkdir(parents=True)
+  for fragment in (ROOT/'docs/api').glob('*.txt'):shutil.copyfile(fragment,api_root/'docs/api'/fragment.name)
+  union,api=compose(api_root);baseline=temp/'public-api.txt';baseline.write_text(union)
   run(SDK,checker,'compare',product,baseline)
   assert len(api['provenance'])==290
   s['currentPublicApi']={'members':290,'assemblySha256':hashfile(product),'baselineSha256':hashfile(baseline)}
