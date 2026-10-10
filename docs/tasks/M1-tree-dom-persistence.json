@@ -35,14 +35,18 @@
     {
       "id": "M1-tree-dom-persistence-A1",
       "description": "Provide explicitly documented internal trusted syntax-prevalidated node/attribute/namespace persistence on the verified fresh construction builder, avoiding unbounded repeated scalar/name/delimiter validation loops. Preserve freshness/owner/container/legal kinds, root constraints, intern quota/capacity, precommit version checks and postcommit notifications. Existing public validating APIs and builder checked entry points remain unchanged; no parser dependency or public additions.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "persistence-correctness"
+      ]
     },
     {
       "id": "M1-tree-dom-persistence-A2",
       "description": "Demonstrate independently validated syntax/model construction with long text, CDATA/comment/PI, names, attribute and namespace values; own strings and repeated borrowed name hits correctly. Verify state/freshness/foreign owner/legal kind/version/quota rejection and linear deep/member work; prove no repeated custom scalar validation scan. Keep cancellation at operation boundaries, avoiding unbounded own loops.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "persistence-correctness"
+      ]
     },
     {
       "id": "M1-tree-dom-persistence-A3",
@@ -51,13 +55,44 @@
       "evidence": []
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Tree/DomPersistence.cs: internal exact owned syntax-prevalidated creation/attribute/namespace persistence and cancellation-bearing structural attachment",
+    "src/Xemele/Tree/DomBuilder.cs: nested partial only; checked APIs unchanged",
+    "tests/Xemele.Tests/M1-tree-dom-persistence/DomPersistenceTests.cs: 8 safety/long-value/count/cancellation/zero-allocation tests",
+    "samples/M1-tree-dom-persistence/: independent fully validated owned syntax model replay and setup/growth/owned/retained allocation probe",
+    "benchmarks/Xemele.Benchmarks/M1-tree-dom-persistence/: equivalent prevalidated checked/trusted replay with short/long names/values",
+    "docs/reports/M1-tree-dom-persistence/: exact consumer trust contract, reproducible correctness verifier and reports"
+  ],
+  "evidence": [
+    {
+      "id": "persistence-correctness",
+      "kind": "check",
+      "revision": "46e6d1bfe439c4b949ca534d917d371a1e2b3cb9",
+      "command": "Pinned SDK10.0.400 DOTNET_CLI_USE_MSBUILD_SERVER=0 python3 docs/reports/M1-tree-dom-persistence/verify.py (authorized IPC/network escalation)",
+      "result": "passed",
+      "summary": "Release0 warnings/errors; persistence8/builder11/Tree14/Input10/Syntax70/solution223/Foundation11 no skips; rebuilt foundation139/173/ApiProbe8, M1 model lanes and protocol38; actual215 approved golden+mandatory canonical fragments; independent source and isolated local-feed package model replay; warm prepared persistence0B, warm4096 attach0B, setup1560B/fixture35568B/arena1387712B/owned512 pairs271280B/retained229445B per doc estimate; planning104 and diff pass.",
+      "artifact": "docs/reports/M1-tree-dom-persistence/checks.txt"
+    },
+    {
+      "id": "persistence-ipc-failure",
+      "kind": "check",
+      "revision": "46e6d1bfe439c4b949ca534d917d371a1e2b3cb9",
+      "command": "Sandbox python3 docs/reports/M1-tree-dom-persistence/verify.py",
+      "result": "failed",
+      "summary": "Build passed; first test could not bind MTP IPC named pipe (permission denied), no test outcomes. Authorized escalated same-revision rerun passed separately.",
+      "artifact": "docs/reports/M1-tree-dom-persistence/initial-ipc-failure.txt"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Repair prerequisite for independently reviewed DOM persistence cancellation gap; trusted boundary may consume only fully validated syntax names/scalars/delimiters/unique keys.",
-    "checks": [],
-    "remaining": [],
+    "summary": "Trusted persistence implemented on fresh builder using original storage primitives; exact syntax/unique-key trust and platform work/cancellation scope documented. Correctness passed; awaiting independent review/exclusive timing grant.",
+    "checks": [
+      "Known-source46e6d1b verifier passed all listed correctness/API/source/package/allocation checks. Initial uncommitted build caught xUnit1051 test-token analyzer and was corrected before known-source checks. Sandbox IPC failure preserved; authorized escalated rerun passed.",
+      "Coordinator-message automatic review rejected twice; user directly authorized messages afterward. No timing started."
+    ],
+    "remaining": [
+      "Independent review and exclusive host measurement grant; 8 comparable workloads prepared."
+    ],
     "requests": []
   }
 }

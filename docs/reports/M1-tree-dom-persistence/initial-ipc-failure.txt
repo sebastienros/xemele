@@ -1,0 +1,126 @@
+Host macOS-15.8.1-arm64-arm-64bit-Mach-O arm64
+$ git rev-parse HEAD
+46e6d1bfe439c4b949ca534d917d371a1e2b3cb9
+
+exit=0
+Source revision 46e6d1bfe439c4b949ca534d917d371a1e2b3cb9
+$ dotnet --version
+10.0.400
+
+exit=0
+$ dotnet --info
+.NET SDK:
+ Version:           10.0.400
+ Commit:            14fbf8d527
+ Workload version:  10.0.400-manifests.330ea142
+ MSBuild version:   18.9.6+14fbf8d52
+
+Runtime Environment:
+ OS Name:     Mac OS X
+ OS Version:  15.8
+ OS Platform: Darwin
+ RID:         osx-arm64
+ Base Path:   /Users/sebastienros/Library/Application Support/dotnetup/dotnet/sdk/10.0.400/
+
+.NET workloads installed:
+There are no installed workloads to display.
+Configured to use workload sets when installing new manifests.
+No workload sets are installed. Run "dotnet workload restore" to install a workload set.
+
+Host:
+  Version:      11.0.0-rc.1.26425.128
+  Architecture: arm64
+  Commit:       3551975be0
+
+.NET SDKs installed:
+  8.0.424 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/sdk]
+  10.0.100 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/sdk]
+  10.0.400 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/sdk]
+  11.0.100-rc.1.26413.103 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/sdk]
+  11.0.100-rc.1.26425.128 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/sdk]
+
+.NET runtimes installed:
+  Microsoft.AspNetCore.App 8.0.30 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.AspNetCore.App]
+  Microsoft.AspNetCore.App 10.0.0 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.AspNetCore.App]
+  Microsoft.AspNetCore.App 10.0.11 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.AspNetCore.App]
+  Microsoft.AspNetCore.App 11.0.0-rc.1.26413.103 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.AspNetCore.App]
+  Microsoft.AspNetCore.App 11.0.0-rc.1.26425.128 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.AspNetCore.App]
+  Microsoft.NETCore.App 8.0.30 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App]
+  Microsoft.NETCore.App 10.0.0 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App]
+  Microsoft.NETCore.App 10.0.11 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App]
+  Microsoft.NETCore.App 11.0.0-rc.1.26413.103 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App]
+  Microsoft.NETCore.App 11.0.0-rc.1.26425.128 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App]
+
+Other architectures found:
+  None
+
+Environment variables:
+  DOTNET_CLI_USE_MSBUILD_SERVER            [0]
+  DOTNET_ROOT                              [/Users/sebastienros/Library/Application Support/dotnetup/dotnet]
+
+global.json file:
+  /Users/sebastienros/.codex/worktrees/3f59/xemele/global.json
+
+Learn more:
+  https://aka.ms/dotnet/info
+
+Download .NET:
+  https://aka.ms/dotnet/download
+
+exit=0
+Trusted boundary source audit: no validation calls or custom scan loops
+$ dotnet build Xemele.slnx -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+  Determining projects to restore...
+CSSM_ModuleLoad(): One or more parameters passed to a function were not valid.
+  All projects are up-to-date for restore.
+  Xemele -> /Users/sebastienros/.codex/worktrees/3f59/xemele/src/Xemele/bin/Release/net10.0/Xemele.dll
+  Xemele.Benchmarks -> /Users/sebastienros/.codex/worktrees/3f59/xemele/benchmarks/Xemele.Benchmarks/bin/Release/net10.0/Xemele.Benchmarks.dll
+  Xemele.Tool -> /Users/sebastienros/.codex/worktrees/3f59/xemele/src/Xemele.Tool/bin/Release/net10.0/Xemele.Tool.dll
+  Contracts -> /Users/sebastienros/.codex/worktrees/3f59/xemele/tests/Contracts/bin/Release/net10.0/Contracts.dll
+  Xemele.TestUtilities -> /Users/sebastienros/.codex/worktrees/3f59/xemele/tests/Xemele.TestUtilities/bin/Release/net10.0/Xemele.TestUtilities.dll
+  Xemele.Conformance.Tests -> /Users/sebastienros/.codex/worktrees/3f59/xemele/tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll
+  ReferenceProtocol -> /Users/sebastienros/.codex/worktrees/3f59/xemele/tools/ReferenceRunners/Protocol/bin/Debug/net10.0/ReferenceProtocol.dll
+  BclReference -> /Users/sebastienros/.codex/worktrees/3f59/xemele/tools/ReferenceRunners/Bcl/bin/Release/net10.0/BclReference.dll
+  Xemele.Differential.Tests -> /Users/sebastienros/.codex/worktrees/3f59/xemele/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll
+  Xemele.Fuzz -> /Users/sebastienros/.codex/worktrees/3f59/xemele/tests/Xemele.Fuzz/bin/Release/net10.0/Xemele.Fuzz.dll
+  Xemele.Tests -> /Users/sebastienros/.codex/worktrees/3f59/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll
+  CorpusManager -> /Users/sebastienros/.codex/worktrees/3f59/xemele/tools/CorpusManager/bin/Release/net10.0/CorpusManager.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:09.56
+
+exit=0
+$ dotnet test --project tests/Xemele.Tests -c Release --no-build --no-restore --filter-class Xemele.Tests.DomPersistence.DomPersistenceTests
+Process terminated.
+System.Net.Sockets.SocketException (13): Permission denied
+   at System.Net.Sockets.Socket.UpdateStatusAfterSocketErrorAndThrowException(SocketError error, Boolean disconnectOnFailure, String callerName)
+   at System.Net.Sockets.Socket.DoBind(EndPoint endPointSnapshot, SocketAddress socketAddress)
+   at System.Net.Sockets.Socket.Bind(EndPoint localEP)
+   at System.IO.Pipes.NamedPipeServerStream.SharedServer..ctor(String path, Int32 maxCount, Boolean isFirstPipeInstance)
+   at System.IO.Pipes.NamedPipeServerStream.SharedServer.Get(String path, Int32 maxCount, PipeOptions pipeOptions)
+   at System.IO.Pipes.NamedPipeServerStream.Create(String pipeName, PipeDirection direction, Int32 maxNumberOfServerInstances, PipeTransmissionMode transmissionMode, PipeOptions options, Int32 inBufferSize, Int32 outBufferSize, HandleInheritability inheritability)
+   at System.IO.Pipes.NamedPipeServerStream..ctor(String pipeName, PipeDirection direction, Int32 maxNumberOfServerInstances, PipeTransmissionMode transmissionMode, PipeOptions options, Int32 inBufferSize, Int32 outBufferSize)
+   at Microsoft.DotNet.Cli.Commands.Test.IPC.NamedPipeServer..ctor(String pipeName, Func`3 callback, Int32 maxNumberOfServerInstances, CancellationToken cancellationToken, Boolean skipUnknownMessages)
+   at Microsoft.DotNet.Cli.Commands.Test.TestApplication.WaitConnectionAsync(CancellationToken token)
+   at System.Environment.FailFast(System.Runtime.CompilerServices.StackCrawlMarkHandle, System.String, System.Runtime.CompilerServices.ObjectHandleOnStack, System.String)
+   at System.Environment.FailFast(System.Threading.StackCrawlMark ByRef, System.String, System.Exception, System.String)
+   at System.Environment.FailFast(System.String)
+   at Microsoft.DotNet.Cli.Commands.Test.TestApplication+<WaitConnectionAsync>d__21.MoveNext()
+   at System.Runtime.CompilerServices.AsyncMethodBuilderCore.Start[[Microsoft.DotNet.Cli.Commands.Test.TestApplication+<WaitConnectionAsync>d__21, dotnet, Version=10.0.400.0, Culture=neutral, PublicKeyToken=adb9793829ddae60]](<WaitConnectionAsync>d__21 ByRef)
+   at System.Runtime.CompilerServices.AsyncTaskMethodBuilder.Start[[Microsoft.DotNet.Cli.Commands.Test.TestApplication+<WaitConnectionAsync>d__21, dotnet, Version=10.0.400.0, Culture=neutral, PublicKeyToken=adb9793829ddae60]](<WaitConnectionAsync>d__21 ByRef)
+   at Microsoft.DotNet.Cli.Commands.Test.TestApplication.WaitConnectionAsync(System.Threading.CancellationToken)
+   at Microsoft.DotNet.Cli.Commands.Test.TestApplication+<>c__DisplayClass18_0+<<RunAsync>b__0>d.MoveNext()
+   at System.Runtime.CompilerServices.AsyncMethodBuilderCore.Start[[Microsoft.DotNet.Cli.Commands.Test.TestApplication+<>c__DisplayClass18_0+<<RunAsync>b__0>d, dotnet, Version=10.0.400.0, Culture=neutral, PublicKeyToken=adb9793829ddae60]](<<RunAsync>b__0>d ByRef)
+   at System.Runtime.CompilerServices.AsyncTaskMethodBuilder.Start[[Microsoft.DotNet.Cli.Commands.Test.TestApplication+<>c__DisplayClass18_0+<<RunAsync>b__0>d, dotnet, Version=10.0.400.0, Culture=neutral, PublicKeyToken=adb9793829ddae60]](<<RunAsync>b__0>d ByRef)
+   at Microsoft.DotNet.Cli.Commands.Test.TestApplication+<>c__DisplayClass18_0.<RunAsync>b__0()
+   at System.Threading.Tasks.Task`1[[System.__Canon, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]].InnerInvoke()
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(System.Threading.Thread, System.Threading.ExecutionContext, System.Threading.ContextCallback, System.Object)
+   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(System.Threading.Tasks.Task ByRef, System.Threading.Thread)
+   at System.Threading.ThreadPoolWorkQueue.Dispatch()
+   at System.Threading.PortableThreadPool+WorkerThread.WorkerThreadStart()
+   at System.Threading.Thread.StartCallback()
+
+exit=-6
