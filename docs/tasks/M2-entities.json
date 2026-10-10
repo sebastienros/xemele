@@ -4,17 +4,18 @@
   "milestone": "M2",
   "title": "Integrate DTD/entities/defaults into XML core",
   "kind": "feature",
-  "status": "in_progress",
-  "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/M2-entities",
-  "branch": "codex/m2-entities",
-  "base_revision": "7f79f5066d6361d2fdb0a5ae8975435555c319c2",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
   "integration_revision": null,
   "depends_on": [
     "M2-resolver",
     "M2-dtd",
     "M2-entities-foundation",
     "M2-dtd-composition",
-    "M2-resolver-cancellation"
+    "M2-resolver-cancellation",
+    "M2-dtd-framing-allocation-probe"
   ],
   "goals": [
     "G01",
@@ -58,12 +59,24 @@
     }
   ],
   "implementation": [],
-  "evidence": [],
+  "evidence": [
+    {
+      "id": "full-175-framing-allocation-failure",
+      "kind": "check",
+      "revision": "175635c331b0ef11259ad9614e56ad0403e82797",
+      "command": "SDK10.0.400/runtime10.0.11; python3 -B docs/reports/M2-entities/verify.py --report-prefix correctness-175635c",
+      "result": "failed",
+      "summary": "Actual inherited fullMTP5147total/5146pass/1failure/0skip: unchanged FramingTests.WarmWhitespacePrimitiveHasNoAllocations exact0expected/6128Bobserved. DirectXML/discovery/API/contract/package/benchmarkoracles/fullreferenceprovenance/planning/finalaudits gated/unrun after failure. No entity measurements or unchangedguard retry; source175 and preservedfailure committed94c614d. Cause unresolved. Owner explicitly released allJSON/paths, clean/parked; narrow prerequisite repair must verify before renewed entity claim. Original A1-A3 pending.",
+      "artifact": "docs/reports/M2-entities/correctness-175635c/summary.json"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Renew preserved worker5bc0/source58e65/focused58 after integrated verified per-call cancellation repaircc4770b. Original A1-A3 pending unchanged; consume exact BindCancellationToken hook then correct static numeric defaults and use-site validation work ordering/scaling before complete checks.",
+    "summary": "Preserved clean worker94c614d; original A1-A3 pending. Full175 failed inherited framing allocation guard6128B, preserved verbatim; no dependent checks or new measurements ran. All ownership released and worker parked. Claim reset planned solely for new unverified prerequisite; historical source/reviews remain partial.",
     "checks": [],
-    "remaining": [],
+    "remaining": [
+      "Await verified M2-dtd-framing-allocation-probe, then renew preserved entity claim and complete original acceptance, full correctness and exclusive composed measurements. Expand authored benchmark output oracles to full relevant immutable Dtd/declaration fields and DOM shape before timing."
+    ],
     "requests": [
       "Consume verified M2-entities-foundation options/metadata/hooks without editing its paths. Entity implementation lives outside Entities/Contracts; context implementation and core lazy creation/metadata delivery remain this parent runtime task.",
       "Ordered narrow ownership of FoundationTests.cs only to replace transitional FoundationDoesNotEnableProductionDtdOrEntityParsing Parse-mode rejection when production parsing becomes implemented. Preserve all metadata/options/hook tests and strict default Prohibit/null-resolver/no-unrequested-open guarantees; add meaningful actual Parse behavior tests in own M2-entities tests. Earlier foundation verification/history remains unchanged.",
