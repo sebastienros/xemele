@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "id": "M2-dtd-composition",
+  "milestone": "M2",
+  "title": "Effective DTD seed and preframed source composition repair",
+  "kind": "feature",
+  "status": "in_progress",
+  "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/M2-dtd-composition",
+  "branch": "codex/m2-dtd-composition",
+  "base_revision": "5924a7004386cc29ee568b1eb06ce5a6a860b8bb",
+  "integration_revision": null,
+  "depends_on": [
+    "M2-dtd"
+  ],
+  "goals": [
+    "G07"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/parser.md"
+  ],
+  "owns": [
+    "src/Xemele/Parsing/Dtd/Grammar/Parser/",
+    "tests/Xemele.Tests/M2-dtd-composition/",
+    "tests/fixtures/M2-dtd-composition/",
+    "benchmarks/Xemele.Benchmarks/M2-dtd-composition/",
+    "samples/M2-dtd-composition/",
+    "docs/reports/M2-dtd-composition/",
+    "docs/decisions/M2/dtd-composition.md"
+  ],
+  "api_or_output": "Nonpublic prior-model and validated preframed source hooks; all approved constructors/public methods preserved",
+  "acceptance": [
+    {
+      "id": "M2-dtd-composition-A1",
+      "description": "Provide nonpublic fresh-external SeedPriorModel(model,cancellation), SetFramedInitialSource(firstLocation) and pending-PE PushFramedEntity(finalUri,firstLocation) hooks (precise shape frozen by owning repair), preserving existing constructors/methods. Seed prior immutable tables/internal precedence before grammar without re-expansion/recharge; framed source preserves actual cursor/absolute mapping/EOF and disables duplicate prolog framing without duplicate entity entry.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M2-dtd-composition-A2",
+      "description": "Actual tests prove seeded internal PE/general declarations and firstwins, cancellation/illegal timing/no seed recharge; initial/nested preframed declared/absent sources with CRLF/supplementary every split/absolute EOF/prefix once/second text-declaration rejection; exact-oneover shared aggregate budgets and balanced source/depth/exception-preserving cleanup/parent suffix restoration.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M2-dtd-composition-A3",
+      "description": "Demonstrate common-only corrected composition and approved preserved API at known source; record relevant new allocation/performance and actual cumulative predecessor preservation/planning checks. Do not claim production core/entity/full XML conformance.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [
+    {
+      "id": "initial-seed-defect",
+      "kind": "check",
+      "revision": "5924a7004386cc29ee568b1eb06ce5a6a860b8bb",
+      "command": "dotnet build /private/tmp/xemele-dtd-effective-seed-repro/Repro.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false; dotnet /private/tmp/xemele-dtd-effective-seed-repro/bin/Release/net10.0/Repro.dll",
+      "result": "failed",
+      "summary": "Actual build and diagnostic reproduction exit0 on10.0.11: internal subset declares PE x/Completed/one PE; separate external %x; rejects DTD.UndeclaredEntity consumed3. Product composition expected existing internal declaration visibility; absence confirmed. This is failure evidence, not passing XML behavior.",
+      "artifact": "docs/reports/M2-dtd-composition/initial-seed-result.json"
+    },
+    {
+      "id": "initial-framing-review",
+      "kind": "review",
+      "revision": "5924a7004386cc29ee568b1eb06ce5a6a860b8bb",
+      "command": "Independent read-only review_input_spike inspection of verified parser/framer and approved composition rules",
+      "result": "failed",
+      "summary": "Existing local external prolog framing can consume second body declaration; pushed externalPE resets1:1/no preframed cursor hook. Proposed nonpublic initialization/seed/push hooks preserve constructors/methods and exactonce budget/source semantics. Source-only, executable framing reproduction/tests pending.",
+      "artifact": null
+    }
+  ],
+  "blockers": [],
+  "handoff": {
+    "summary": "Narrow previously verified DTD owner repair discovered by claimed core/entity consumer. Original parser/parent evidence preserved; dependent external composition waits for integrated verified repair.",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}

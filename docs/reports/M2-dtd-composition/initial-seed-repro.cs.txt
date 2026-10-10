@@ -1,0 +1,10 @@
+using System.Text.Json;
+using Xemele;
+using Xemele.Parsing.Dtd;
+const string inside = "<!ENTITY % x \"<!ENTITY e 'internal'>\">";
+using var internalParser = new DtdParser(DtdSubsetKind.Internal, new());
+var first = internalParser.Append(inside, [], true, default);
+using var externalParser = new DtdParser(DtdSubsetKind.External, new());
+var second = externalParser.Append("%x;", [], true, default);
+Console.WriteLine(JsonSerializer.Serialize(new { runtime = Environment.Version.ToString(), internalStep = first.Step.ToString(), internalParameterEntities = internalParser.Model.ParameterEntities.Count, externalStep = second.Step.ToString(), diagnostic = second.Diagnostic?.Code, second.Consumed }));
+if (first.Step != DtdParseStep.Completed || internalParser.Model.ParameterEntities.Count != 1 || second.Step != DtdParseStep.Rejected) throw new Exception("Repro precondition changed");
