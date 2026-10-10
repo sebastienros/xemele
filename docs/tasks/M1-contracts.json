@@ -4,11 +4,11 @@
   "milestone": "M1",
   "title": "Freeze strict XML subset contracts",
   "kind": "contract",
-  "status": "implemented",
+  "status": "verified",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M1-contracts",
   "branch": "codex/m1-contracts",
   "base_revision": "09e91c80a189fb90e932dcfac94be5b6cc19194a",
-  "integration_revision": null,
+  "integration_revision": "3bd8e87d180be3196313374b2f0171f55bcc9478",
   "depends_on": [
     "M0-gate"
   ],
@@ -40,7 +40,9 @@
       "description": "Expand exact M1 public/internal declarations, including tree collections/identity, decoder counts/locations and sink pause semantics.",
       "status": "passed",
       "evidence": [
-        "committed-contract-checks"
+        "committed-contract-checks",
+        "independent-contract-reviews",
+        "integrated-contract-checks"
       ]
     },
     {
@@ -48,7 +50,9 @@
       "description": "Compile usage fixtures for independent tree, decoder, sink and serializer implementations; ensure no M2+ type references.",
       "status": "passed",
       "evidence": [
-        "committed-contract-checks"
+        "committed-contract-checks",
+        "independent-contract-reviews",
+        "integrated-contract-checks"
       ]
     },
     {
@@ -56,7 +60,9 @@
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
       "status": "passed",
       "evidence": [
-        "committed-contract-checks"
+        "committed-contract-checks",
+        "independent-contract-reviews",
+        "integrated-contract-checks"
       ]
     }
   ],
@@ -77,6 +83,24 @@
       "result": "passed",
       "summary": "Six independent lane declaration/usage builds plus protocol build; public metadata matches and 81 frozen M0 common rows preserved; 38 protocol-model assertions, 10 expected compiler rejections, 3 actual compiled ABI mutation probes and 6 independent output-vector encoding checks. M0 foundation 11/11 and solution 54/54 tests, zero skipped; foundation M1/M2 goldens 139/173 rows; task validation and diff check passed. Models are nonpackaged; no production XML or allocation/performance claim.",
       "artifact": "docs/reports/M1-contracts/checks.txt"
+    },
+    {
+      "id": "independent-contract-reviews",
+      "kind": "review",
+      "revision": "6f21ab373eeb11e0d60a5e76517a065cec7fc466",
+      "command": "Read-only review_foundation and review_input_spike reviews",
+      "result": "passed",
+      "summary": "No blocking findings in approved public surface, identity/mutation/serialization, bounded decoder source mappings/declaration framing or pause/fault/EOF boundaries; 81 frozen common rows and six byte vectors independently checked. Runtime behavior and allocations remain enforcing-lane work.",
+      "artifact": null
+    },
+    {
+      "id": "integrated-contract-checks",
+      "kind": "integration",
+      "revision": "3bd8e87d180be3196313374b2f0171f55bcc9478",
+      "command": "Pinned SDK10.0.400 DOTNET_CLI_USE_MSBUILD_SERVER=0 python3 docs/reports/M1-contracts/verify.py with authorized network/MTP IPC",
+      "result": "passed",
+      "summary": "Fresh integrated run: six independent lane builds; 38 protocol-model assertions; ten expected compilation rejections; three compiled ABI mutations; six vector encoding checks; 81 frozen common declarations; 11/11 foundation and 54/54 solution tests, zero skipped; unchanged M1/M2 goldens; 101-task validation and whitespace check. No runtime XML or performance claim.",
+      "artifact": "docs/reports/M1-contracts/integration.txt"
     }
   ],
   "blockers": [],
@@ -88,7 +112,6 @@
       "Sandbox NuGet DNS development failure resolved through authorized final network/IPC run; no historical reports rewritten."
     ],
     "remaining": [
-      "Coordinator integration and combined-tree checks before verified; no open task criterion.",
       "Runtime lanes must implement/execute behavioral, borrowed-lifetime, adversarial-depth and allocation tests; contract models do not constitute shipped XML or performance evidence.",
       "Approved public normalizer ignores internal signatures; exact internal source and negative compilation probes freeze those boundaries without an unrestricted ABI claim."
     ],

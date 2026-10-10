@@ -1,0 +1,530 @@
+Host: macOS-15.8.1-arm64-arm-64bit-Mach-O, arm64
+$ git rev-parse HEAD
+3bd8e87d180be3196313374b2f0171f55bcc9478
+
+exit=0; expected=0
+Revision: 3bd8e87d180be3196313374b2f0171f55bcc9478
+$ dotnet --version
+10.0.400
+
+exit=0; expected=0
+$ dotnet build docs/reports/M0-contracts/ApiCheck/ApiCheck.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+  Determining projects to restore...
+  Restored /private/tmp/xemele-integrate-m1-contracts/docs/reports/M0-contracts/ApiCheck/ApiCheck.csproj (in 25 ms).
+  ApiCheck -> /private/tmp/xemele-integrate-m1-contracts/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:01.10
+
+exit=0; expected=0
+$ dotnet build /private/tmp/xemele-integrate-m1-contracts/docs/reports/M1-contracts/Projects/Common/Common.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+  Determining projects to restore...
+  Restored /private/tmp/xemele-integrate-m1-contracts/docs/reports/M1-contracts/Projects/Common/Common.csproj (in 21 ms).
+  Common -> /private/tmp/xemele-integrate-m1-contracts/docs/reports/M1-contracts/Projects/Common/bin/Release/net10.0/M1Common.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:00.99
+
+exit=0; expected=0
+$ dotnet /private/tmp/xemele-integrate-m1-contracts/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare /private/tmp/xemele-integrate-m1-contracts/docs/reports/M1-contracts/Projects/Common/bin/Release/net10.0/M1Common.dll /private/tmp/xemele-integrate-m1-contracts/tests/Contracts/Fixtures/M1/Common.golden.txt
+Matched 81 compiled members
+
+exit=0; expected=0
+$ dotnet build /private/tmp/xemele-integrate-m1-contracts/docs/reports/M1-contracts/Projects/Tree/Tree.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+  Determining projects to restore...
+  Restored /private/tmp/xemele-integrate-m1-contracts/docs/reports/M1-contracts/Projects/Tree/Tree.csproj (in 22 ms).
+  Tree -> /private/tmp/xemele-integrate-m1-contracts/docs/reports/M1-contracts/Projects/Tree/bin/Release/net10.0/M1Tree.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:01.01
+
+exit=0; expected=0
+$ dotnet /private/tmp/xemele-integrate-m1-contracts/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare /private/tmp/xemele-integrate-m1-contracts/docs/reports/M1-contracts/Projects/Tree/bin/Release/net10.0/M1Tree.dll /private/tmp/xemele-integrate-m1-contracts/tests/Contracts/Fixtures/M1/Tree.golden.txt
+Matched 192 compiled members
+
+exit=0; expected=0
+$ dotnet build /private/tmp/xemele-integrate-m1-contracts/docs/reports/M1-contracts/Projects/Input/Input.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+  Determining projects to restore...
+  Restored /private/tmp/xemele-integrate-m1-contracts/docs/reports/M1-contracts/Projects/Input/Input.csproj (in 21 ms).
+  Input -> /private/tmp/xemele-integrate-m1-contracts/docs/reports/M1-contracts/Projects/Input/bin/Release/net10.0/M1Input.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:00.99
+
+exit=0; expected=0
+$ dotnet /private/tmp/xemele-integrate-m1-contracts/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare /private/tmp/xemele-integrate-m1-contracts/docs/reports/M1-contracts/Projects/Input/bin/Release/net10.0/M1Input.dll /private/tmp/xemele-integrate-m1-contracts/tests/Contracts/Fixtures/M1/Input.golden.txt
+Matched 81 compiled members
+
+exit=0; expected=0
+$ dotnet build /private/tmp/xemele-integrate-m1-contracts/docs/reports/M1-contracts/Projects/Syntax/Syntax.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+  Determining projects to restore...
+  Restored /private/tmp/xemele-integrate-m1-contracts/docs/reports/M1-contracts/Projects/Syntax/Syntax.csproj (in 21 ms).
+  Syntax -> /private/tmp/xemele-integrate-m1-contracts/docs/reports/M1-contracts/Projects/Syntax/bin/Release/net10.0/M1Syntax.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:00.99
+
+exit=0; expected=0
+$ dotnet /private/tmp/xemele-integrate-m1-contracts/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare /private/tmp/xemele-integrate-m1-contracts/docs/reports/M1-contracts/Projects/Syntax/bin/Release/net10.0/M1Syntax.dll /private/tmp/xemele-integrate-m1-contracts/tests/Contracts/Fixtures/M1/Syntax.golden.txt
+Matched 81 compiled members
+
+exit=0; expected=0
+$ dotnet build /private/tmp/xemele-integrate-m1-contracts/docs/reports/M1-contracts/Projects/Serializer/Serializer.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+  Determining projects to restore...
+  Restored /private/tmp/xemele-integrate-m1-contracts/docs/reports/M1-contracts/Projects/Serializer/Serializer.csproj (in 21 ms).
+  Serializer -> /private/tmp/xemele-integrate-m1-contracts/docs/reports/M1-contracts/Projects/Serializer/bin/Release/net10.0/M1Serializer.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:00.98
+
+exit=0; expected=0
+$ dotnet /private/tmp/xemele-integrate-m1-contracts/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare /private/tmp/xemele-integrate-m1-contracts/docs/reports/M1-contracts/Projects/Serializer/bin/Release/net10.0/M1Serializer.dll /private/tmp/xemele-integrate-m1-contracts/tests/Contracts/Fixtures/M1/Serializer.golden.txt
+Matched 215 compiled members
+
+exit=0; expected=0
+$ dotnet build /private/tmp/xemele-integrate-m1-contracts/docs/reports/M1-contracts/Projects/Dom/Dom.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+  Determining projects to restore...
+  Restored /private/tmp/xemele-integrate-m1-contracts/docs/reports/M1-contracts/Projects/Dom/Dom.csproj (in 21 ms).
+  Dom -> /private/tmp/xemele-integrate-m1-contracts/docs/reports/M1-contracts/Projects/Dom/bin/Release/net10.0/M1Dom.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:01.06
+
+exit=0; expected=0
+$ dotnet /private/tmp/xemele-integrate-m1-contracts/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare /private/tmp/xemele-integrate-m1-contracts/docs/reports/M1-contracts/Projects/Dom/bin/Release/net10.0/M1Dom.dll /private/tmp/xemele-integrate-m1-contracts/tests/Contracts/Fixtures/M1/Dom.golden.txt
+Matched 199 compiled members
+
+exit=0; expected=0
+All 81 frozen M0 common members preserved.
+$ dotnet build /private/tmp/xemele-integrate-m1-contracts/docs/reports/M1-contracts/Projects/Protocol/Protocol.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+  Determining projects to restore...
+  Restored /private/tmp/xemele-integrate-m1-contracts/docs/reports/M1-contracts/Projects/Protocol/Protocol.csproj (in 24 ms).
+  Protocol -> /private/tmp/xemele-integrate-m1-contracts/docs/reports/M1-contracts/Projects/Protocol/bin/Release/net10.0/M1Protocol.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:01.07
+
+exit=0; expected=0
+$ dotnet /private/tmp/xemele-integrate-m1-contracts/docs/reports/M1-contracts/Projects/Protocol/bin/Release/net10.0/M1Protocol.dll
+Passed 38 contract-model assertions; no runtime parsing/decoding/serialization claim.
+
+exit=0; expected=0
+$ dotnet build /private/tmp/xemele-integrate-m1-contracts/docs/reports/M1-contracts/Projects/Tree/Tree.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false -p:ProbeSource=/var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-m1-probes-iqnyk8y3/tree-no-parser.cs
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+/var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-m1-probes-iqnyk8y3/tree-no-parser.cs(1,80): error CS0117: 'XmlDocument' does not contain a definition for 'Parse' [/private/tmp/xemele-integrate-m1-contracts/docs/reports/M1-contracts/Projects/Tree/Tree.csproj]
+
+Build FAILED.
+
+/var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-m1-probes-iqnyk8y3/tree-no-parser.cs(1,80): error CS0117: 'XmlDocument' does not contain a definition for 'Parse' [/private/tmp/xemele-integrate-m1-contracts/docs/reports/M1-contracts/Projects/Tree/Tree.csproj]
+    0 Warning(s)
+    1 Error(s)
+
+Time Elapsed 00:00:00.92
+
+exit=1; expected=1
+$ dotnet build /private/tmp/xemele-integrate-m1-contracts/docs/reports/M1-contracts/Projects/Serializer/Serializer.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false -p:ProbeSource=/var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-m1-probes-iqnyk8y3/serializer-no-parser.cs
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+/var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-m1-probes-iqnyk8y3/serializer-no-parser.cs(1,80): error CS0117: 'XmlDocument' does not contain a definition for 'Parse' [/private/tmp/xemele-integrate-m1-contracts/docs/reports/M1-contracts/Projects/Serializer/Serializer.csproj]
+
+Build FAILED.
+
+/var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-m1-probes-iqnyk8y3/serializer-no-parser.cs(1,80): error CS0117: 'XmlDocument' does not contain a definition for 'Parse' [/private/tmp/xemele-integrate-m1-contracts/docs/reports/M1-contracts/Projects/Serializer/Serializer.csproj]
+    0 Warning(s)
+    1 Error(s)
+
+Time Elapsed 00:00:00.92
+
+exit=1; expected=1
+$ dotnet build /private/tmp/xemele-integrate-m1-contracts/docs/reports/M1-contracts/Projects/Input/Input.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false -p:ProbeSource=/var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-m1-probes-iqnyk8y3/input-no-tree.cs
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+/var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-m1-probes-iqnyk8y3/input-no-tree.cs(1,72): error CS0234: The type or namespace name 'XmlDocument' does not exist in the namespace 'Xemele' (are you missing an assembly reference?) [/private/tmp/xemele-integrate-m1-contracts/docs/reports/M1-contracts/Projects/Input/Input.csproj]
+
+Build FAILED.
+
+/var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-m1-probes-iqnyk8y3/input-no-tree.cs(1,72): error CS0234: The type or namespace name 'XmlDocument' does not exist in the namespace 'Xemele' (are you missing an assembly reference?) [/private/tmp/xemele-integrate-m1-contracts/docs/reports/M1-contracts/Projects/Input/Input.csproj]
+    0 Warning(s)
+    1 Error(s)
+
+Time Elapsed 00:00:00.92
+
+exit=1; expected=1
+$ dotnet build /private/tmp/xemele-integrate-m1-contracts/docs/reports/M1-contracts/Projects/Syntax/Syntax.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false -p:ProbeSource=/var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-m1-probes-iqnyk8y3/syntax-no-forward-reader.cs
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+/var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-m1-probes-iqnyk8y3/syntax-no-forward-reader.cs(1,75): error CS0234: The type or namespace name 'XmlReader' does not exist in the namespace 'Xemele' (are you missing an assembly reference?) [/private/tmp/xemele-integrate-m1-contracts/docs/reports/M1-contracts/Projects/Syntax/Syntax.csproj]
+
+Build FAILED.
+
+/var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-m1-probes-iqnyk8y3/syntax-no-forward-reader.cs(1,75): error CS0234: The type or namespace name 'XmlReader' does not exist in the namespace 'Xemele' (are you missing an assembly reference?) [/private/tmp/xemele-integrate-m1-contracts/docs/reports/M1-contracts/Projects/Syntax/Syntax.csproj]
+    0 Warning(s)
+    1 Error(s)
+
+Time Elapsed 00:00:00.94
+
+exit=1; expected=1
+$ dotnet build /private/tmp/xemele-integrate-m1-contracts/docs/reports/M1-contracts/Projects/Syntax/Syntax.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false -p:ProbeSource=/var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-m1-probes-iqnyk8y3/no-retained-view.cs
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+/var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-m1-probes-iqnyk8y3/no-retained-view.cs(1,52): error CS8345: Field or auto-implemented property cannot be of type 'XmlNameView' unless it is an instance member of a ref struct. [/private/tmp/xemele-integrate-m1-contracts/docs/reports/M1-contracts/Projects/Syntax/Syntax.csproj]
+
+Build FAILED.
+
+/var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-m1-probes-iqnyk8y3/no-retained-view.cs(1,52): error CS8345: Field or auto-implemented property cannot be of type 'XmlNameView' unless it is an instance member of a ref struct. [/private/tmp/xemele-integrate-m1-contracts/docs/reports/M1-contracts/Projects/Syntax/Syntax.csproj]
+    0 Warning(s)
+    1 Error(s)
+
+Time Elapsed 00:00:00.87
+
+exit=1; expected=1
+$ dotnet build /private/tmp/xemele-integrate-m1-contracts/docs/reports/M1-contracts/Projects/Syntax/Syntax.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false -p:ProbeSource=/var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-m1-probes-iqnyk8y3/no-retained-span.cs
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+/var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-m1-probes-iqnyk8y3/no-retained-span.cs(1,52): error CS8345: Field or auto-implemented property cannot be of type 'ReadOnlySpan<char>' unless it is an instance member of a ref struct. [/private/tmp/xemele-integrate-m1-contracts/docs/reports/M1-contracts/Projects/Syntax/Syntax.csproj]
+
+Build FAILED.
+
+/var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-m1-probes-iqnyk8y3/no-retained-span.cs(1,52): error CS8345: Field or auto-implemented property cannot be of type 'ReadOnlySpan<char>' unless it is an instance member of a ref struct. [/private/tmp/xemele-integrate-m1-contracts/docs/reports/M1-contracts/Projects/Syntax/Syntax.csproj]
+    0 Warning(s)
+    1 Error(s)
+
+Time Elapsed 00:00:00.87
+
+exit=1; expected=1
+$ dotnet build /private/tmp/xemele-integrate-m1-contracts/docs/reports/M1-contracts/Projects/Syntax/Syntax.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false -p:ProbeSource=/var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-m1-probes-iqnyk8y3/reference-sink-required.cs
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+/var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-m1-probes-iqnyk8y3/reference-sink-required.cs(1,102): error CS0452: The type 'int' must be a reference type in order to use it as parameter 'TSink' in the generic type or method 'XmlParserCore.Append<TSink>(ReadOnlySpan<char>, ReadOnlySpan<long>, bool, TSink, CancellationToken)' [/private/tmp/xemele-integrate-m1-contracts/docs/reports/M1-contracts/Projects/Syntax/Syntax.csproj]
+
+Build FAILED.
+
+/var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-m1-probes-iqnyk8y3/reference-sink-required.cs(1,102): error CS0452: The type 'int' must be a reference type in order to use it as parameter 'TSink' in the generic type or method 'XmlParserCore.Append<TSink>(ReadOnlySpan<char>, ReadOnlySpan<long>, bool, TSink, CancellationToken)' [/private/tmp/xemele-integrate-m1-contracts/docs/reports/M1-contracts/Projects/Syntax/Syntax.csproj]
+    0 Warning(s)
+    1 Error(s)
+
+Time Elapsed 00:00:00.95
+
+exit=1; expected=1
+$ dotnet build /private/tmp/xemele-integrate-m1-contracts/docs/reports/M1-contracts/Projects/Input/Input.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false -p:ProbeSource=/var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-m1-probes-iqnyk8y3/byte-count-not-scalar-count.cs
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+/var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-m1-probes-iqnyk8y3/byte-count-not-scalar-count.cs(1,104): error CS1061: 'DecodeResult' does not contain a definition for 'Consumed' and no accessible extension method 'Consumed' accepting a first argument of type 'DecodeResult' could be found (are you missing a using directive or an assembly reference?) [/private/tmp/xemele-integrate-m1-contracts/docs/reports/M1-contracts/Projects/Input/Input.csproj]
+
+Build FAILED.
+
+/var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-m1-probes-iqnyk8y3/byte-count-not-scalar-count.cs(1,104): error CS1061: 'DecodeResult' does not contain a definition for 'Consumed' and no accessible extension method 'Consumed' accepting a first argument of type 'DecodeResult' could be found (are you missing a using directive or an assembly reference?) [/private/tmp/xemele-integrate-m1-contracts/docs/reports/M1-contracts/Projects/Input/Input.csproj]
+    0 Warning(s)
+    1 Error(s)
+
+Time Elapsed 00:00:00.95
+
+exit=1; expected=1
+$ dotnet build /private/tmp/xemele-integrate-m1-contracts/docs/reports/M1-contracts/Projects/Syntax/Syntax.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false -p:ProbeSource=/var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-m1-probes-iqnyk8y3/offset-width.cs
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+/var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-m1-probes-iqnyk8y3/offset-width.cs(1,132): error CS1503: Argument 2: cannot convert from 'int[]' to 'System.ReadOnlySpan<long>' [/private/tmp/xemele-integrate-m1-contracts/docs/reports/M1-contracts/Projects/Syntax/Syntax.csproj]
+
+Build FAILED.
+
+/var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-m1-probes-iqnyk8y3/offset-width.cs(1,132): error CS1503: Argument 2: cannot convert from 'int[]' to 'System.ReadOnlySpan<long>' [/private/tmp/xemele-integrate-m1-contracts/docs/reports/M1-contracts/Projects/Syntax/Syntax.csproj]
+    0 Warning(s)
+    1 Error(s)
+
+Time Elapsed 00:00:00.94
+
+exit=1; expected=1
+$ dotnet build /private/tmp/xemele-integrate-m1-contracts/docs/reports/M1-contracts/Projects/Dom/Dom.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false -p:ProbeSource=/var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-m1-probes-iqnyk8y3/no-recovery-options.cs
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+/var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-m1-probes-iqnyk8y3/no-recovery-options.cs(1,90): error CS0117: 'XmlParseOptions' does not contain a definition for 'Recover' [/private/tmp/xemele-integrate-m1-contracts/docs/reports/M1-contracts/Projects/Dom/Dom.csproj]
+
+Build FAILED.
+
+/var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-m1-probes-iqnyk8y3/no-recovery-options.cs(1,90): error CS0117: 'XmlParseOptions' does not contain a definition for 'Recover' [/private/tmp/xemele-integrate-m1-contracts/docs/reports/M1-contracts/Projects/Dom/Dom.csproj]
+    0 Warning(s)
+    1 Error(s)
+
+Time Elapsed 00:00:00.92
+
+exit=1; expected=1
+$ dotnet build /var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-m1-probes-iqnyk8y3/handle-readonly.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+  Determining projects to restore...
+  Restored /var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-m1-probes-iqnyk8y3/handle-readonly.csproj (in 21 ms).
+  handle-readonly -> /var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-m1-probes-iqnyk8y3/bin/Release/net10.0/Mutated.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:01.04
+
+exit=0; expected=0
+$ dotnet /private/tmp/xemele-integrate-m1-contracts/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare /var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-m1-probes-iqnyk8y3/bin/Release/net10.0/Mutated.dll /private/tmp/xemele-integrate-m1-contracts/tests/Contracts/Fixtures/M1/Tree.golden.txt
+API mismatch: missing, added, changed, reordered or noncanonical entries.
+
+exit=1; expected=1
+$ dotnet /private/tmp/xemele-integrate-m1-contracts/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll emit /var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-m1-probes-iqnyk8y3/bin/Release/net10.0/Mutated.dll /var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-m1-probes-iqnyk8y3/handle-readonly.txt
+Emitted 192 members
+
+exit=0; expected=0
+$ dotnet build /var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-m1-probes-iqnyk8y3/enumerator-kind.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+  Determining projects to restore...
+  Restored /var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-m1-probes-iqnyk8y3/enumerator-kind.csproj (in 25 ms).
+  enumerator-kind -> /var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-m1-probes-iqnyk8y3/bin/Release/net10.0/Mutated.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:00.99
+
+exit=0; expected=0
+$ dotnet /private/tmp/xemele-integrate-m1-contracts/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare /var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-m1-probes-iqnyk8y3/bin/Release/net10.0/Mutated.dll /private/tmp/xemele-integrate-m1-contracts/tests/Contracts/Fixtures/M1/Tree.golden.txt
+API mismatch: missing, added, changed, reordered or noncanonical entries.
+
+exit=1; expected=1
+$ dotnet /private/tmp/xemele-integrate-m1-contracts/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll emit /var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-m1-probes-iqnyk8y3/bin/Release/net10.0/Mutated.dll /var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-m1-probes-iqnyk8y3/enumerator-kind.txt
+Emitted 192 members
+
+exit=0; expected=0
+$ dotnet build /var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-m1-probes-iqnyk8y3/optional-default.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+  Determining projects to restore...
+  Restored /var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-m1-probes-iqnyk8y3/optional-default.csproj (in 25 ms).
+  optional-default -> /var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-m1-probes-iqnyk8y3/bin/Release/net10.0/Mutated.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:01.00
+
+exit=0; expected=0
+$ dotnet /private/tmp/xemele-integrate-m1-contracts/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare /var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-m1-probes-iqnyk8y3/bin/Release/net10.0/Mutated.dll /private/tmp/xemele-integrate-m1-contracts/tests/Contracts/Fixtures/M1/Tree.golden.txt
+API mismatch: missing, added, changed, reordered or noncanonical entries.
+
+exit=1; expected=1
+$ dotnet /private/tmp/xemele-integrate-m1-contracts/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll emit /var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-m1-probes-iqnyk8y3/bin/Release/net10.0/Mutated.dll /var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-m1-probes-iqnyk8y3/optional-default.txt
+Emitted 192 members
+
+exit=0; expected=0
+$ dotnet build /private/tmp/xemele-integrate-m1-contracts/docs/reports/M1-contracts/Projects/Common/Common.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Common -> /private/tmp/xemele-integrate-m1-contracts/docs/reports/M1-contracts/Projects/Common/bin/Release/net10.0/M1Common.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:00.39
+
+exit=0; expected=0
+$ dotnet /private/tmp/xemele-integrate-m1-contracts/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare /private/tmp/xemele-integrate-m1-contracts/docs/reports/M1-contracts/Projects/Common/bin/Release/net10.0/M1Common.dll /private/tmp/xemele-integrate-m1-contracts/tests/Contracts/Fixtures/M1/Common.golden.txt
+Matched 81 compiled members
+
+exit=0; expected=0
+$ dotnet build /private/tmp/xemele-integrate-m1-contracts/docs/reports/M1-contracts/Projects/Tree/Tree.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Tree -> /private/tmp/xemele-integrate-m1-contracts/docs/reports/M1-contracts/Projects/Tree/bin/Release/net10.0/M1Tree.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:00.96
+
+exit=0; expected=0
+$ dotnet /private/tmp/xemele-integrate-m1-contracts/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare /private/tmp/xemele-integrate-m1-contracts/docs/reports/M1-contracts/Projects/Tree/bin/Release/net10.0/M1Tree.dll /private/tmp/xemele-integrate-m1-contracts/tests/Contracts/Fixtures/M1/Tree.golden.txt
+Matched 192 compiled members
+
+exit=0; expected=0
+$ dotnet build /private/tmp/xemele-integrate-m1-contracts/docs/reports/M1-contracts/Projects/Input/Input.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Input -> /private/tmp/xemele-integrate-m1-contracts/docs/reports/M1-contracts/Projects/Input/bin/Release/net10.0/M1Input.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:00.99
+
+exit=0; expected=0
+$ dotnet /private/tmp/xemele-integrate-m1-contracts/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare /private/tmp/xemele-integrate-m1-contracts/docs/reports/M1-contracts/Projects/Input/bin/Release/net10.0/M1Input.dll /private/tmp/xemele-integrate-m1-contracts/tests/Contracts/Fixtures/M1/Input.golden.txt
+Matched 81 compiled members
+
+exit=0; expected=0
+$ dotnet build /private/tmp/xemele-integrate-m1-contracts/docs/reports/M1-contracts/Projects/Syntax/Syntax.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Syntax -> /private/tmp/xemele-integrate-m1-contracts/docs/reports/M1-contracts/Projects/Syntax/bin/Release/net10.0/M1Syntax.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:00.98
+
+exit=0; expected=0
+$ dotnet /private/tmp/xemele-integrate-m1-contracts/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare /private/tmp/xemele-integrate-m1-contracts/docs/reports/M1-contracts/Projects/Syntax/bin/Release/net10.0/M1Syntax.dll /private/tmp/xemele-integrate-m1-contracts/tests/Contracts/Fixtures/M1/Syntax.golden.txt
+Matched 81 compiled members
+
+exit=0; expected=0
+$ dotnet build /private/tmp/xemele-integrate-m1-contracts/docs/reports/M1-contracts/Projects/Serializer/Serializer.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Serializer -> /private/tmp/xemele-integrate-m1-contracts/docs/reports/M1-contracts/Projects/Serializer/bin/Release/net10.0/M1Serializer.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:00.99
+
+exit=0; expected=0
+$ dotnet /private/tmp/xemele-integrate-m1-contracts/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare /private/tmp/xemele-integrate-m1-contracts/docs/reports/M1-contracts/Projects/Serializer/bin/Release/net10.0/M1Serializer.dll /private/tmp/xemele-integrate-m1-contracts/tests/Contracts/Fixtures/M1/Serializer.golden.txt
+Matched 215 compiled members
+
+exit=0; expected=0
+$ dotnet build /private/tmp/xemele-integrate-m1-contracts/docs/reports/M1-contracts/Projects/Dom/Dom.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Dom -> /private/tmp/xemele-integrate-m1-contracts/docs/reports/M1-contracts/Projects/Dom/bin/Release/net10.0/M1Dom.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:00.98
+
+exit=0; expected=0
+$ dotnet /private/tmp/xemele-integrate-m1-contracts/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare /private/tmp/xemele-integrate-m1-contracts/docs/reports/M1-contracts/Projects/Dom/bin/Release/net10.0/M1Dom.dll /private/tmp/xemele-integrate-m1-contracts/tests/Contracts/Fixtures/M1/Dom.golden.txt
+Matched 199 compiled members
+
+exit=0; expected=0
+Passed 10 compilation-rejection probes, 3 compiled ABI mutation probes, 6 independent vector encoding checks.
+$ dotnet build docs/reports/M0-contracts/Checks/Checks.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+  Determining projects to restore...
+  Restored /private/tmp/xemele-integrate-m1-contracts/docs/reports/M0-contracts/Fixtures/M1/M1.csproj (in 32 ms).
+  Restored /private/tmp/xemele-integrate-m1-contracts/docs/reports/M0-contracts/Fixtures/M2/M2.csproj (in 32 ms).
+  Restored /private/tmp/xemele-integrate-m1-contracts/docs/reports/M0-contracts/Checks/Checks.csproj (in 149 ms).
+  M1 -> /private/tmp/xemele-integrate-m1-contracts/docs/reports/M0-contracts/Fixtures/M1/bin/Release/net10.0/FoundationM1.dll
+  M2 -> /private/tmp/xemele-integrate-m1-contracts/docs/reports/M0-contracts/Fixtures/M2/bin/Release/net10.0/FoundationM2.dll
+  Checks -> /private/tmp/xemele-integrate-m1-contracts/docs/reports/M0-contracts/Checks/bin/Release/net10.0/Checks.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:02.58
+
+exit=0; expected=0
+$ dotnet test --project docs/reports/M0-contracts/Checks/Checks.csproj -c Release --no-build --no-restore
+Running tests from /private/tmp/xemele-integrate-m1-contracts/docs/reports/M0-contracts/Checks/bin/Release/net10.0/Checks.dll (net10.0|arm64)
+/private/tmp/xemele-integrate-m1-contracts/docs/reports/M0-contracts/Checks/bin/Release/net10.0/Checks.dll (net10.0|arm64) passed (432ms)
+
+Test run summary: Passed!
+  total: 11
+  failed: 0
+  succeeded: 11
+  skipped: 0
+  duration: 872ms
+
+exit=0; expected=0
+$ dotnet /private/tmp/xemele-integrate-m1-contracts/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare /private/tmp/xemele-integrate-m1-contracts/docs/reports/M0-contracts/Fixtures/M1/bin/Release/net10.0/FoundationM1.dll /private/tmp/xemele-integrate-m1-contracts/tests/Contracts/Fixtures/foundation/M1.golden.txt
+Matched 139 compiled members
+
+exit=0; expected=0
+$ dotnet /private/tmp/xemele-integrate-m1-contracts/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare /private/tmp/xemele-integrate-m1-contracts/docs/reports/M0-contracts/Fixtures/M2/bin/Release/net10.0/FoundationM2.dll /private/tmp/xemele-integrate-m1-contracts/tests/Contracts/Fixtures/foundation/M2.golden.txt
+Matched 173 compiled members
+
+exit=0; expected=0
+$ dotnet build Xemele.slnx -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+  Determining projects to restore...
+  Restored /private/tmp/xemele-integrate-m1-contracts/tools/ReferenceRunners/Bcl/BclReference.csproj (in 47 ms).
+  Restored /private/tmp/xemele-integrate-m1-contracts/tools/CorpusManager/CorpusManager.csproj (in 44 ms).
+  Restored /private/tmp/xemele-integrate-m1-contracts/tests/Contracts/Contracts.csproj (in 47 ms).
+  Restored /private/tmp/xemele-integrate-m1-contracts/tests/Xemele.TestUtilities/Xemele.TestUtilities.csproj (in 47 ms).
+  Restored /private/tmp/xemele-integrate-m1-contracts/tools/ReferenceRunners/Protocol/ReferenceProtocol.csproj (in 44 ms).
+  Restored /private/tmp/xemele-integrate-m1-contracts/tests/Xemele.Fuzz/Xemele.Fuzz.csproj (in 47 ms).
+  Restored /private/tmp/xemele-integrate-m1-contracts/src/Xemele.Tool/Xemele.Tool.csproj (in 47 ms).
+  Restored /private/tmp/xemele-integrate-m1-contracts/src/Xemele/Xemele.csproj (in 44 ms).
+  Restored /private/tmp/xemele-integrate-m1-contracts/tests/Xemele.Differential.Tests/Xemele.Differential.Tests.csproj (in 142 ms).
+  Restored /private/tmp/xemele-integrate-m1-contracts/tests/Xemele.Tests/Xemele.Tests.csproj (in 142 ms).
+  Restored /private/tmp/xemele-integrate-m1-contracts/tests/Xemele.Conformance.Tests/Xemele.Conformance.Tests.csproj (in 142 ms).
+  Restored /private/tmp/xemele-integrate-m1-contracts/benchmarks/Xemele.Benchmarks/Xemele.Benchmarks.csproj (in 170 ms).
+  Xemele -> /private/tmp/xemele-integrate-m1-contracts/src/Xemele/bin/Release/net10.0/Xemele.dll
+  Xemele.Benchmarks -> /private/tmp/xemele-integrate-m1-contracts/benchmarks/Xemele.Benchmarks/bin/Release/net10.0/Xemele.Benchmarks.dll
+  Xemele.Tool -> /private/tmp/xemele-integrate-m1-contracts/src/Xemele.Tool/bin/Release/net10.0/Xemele.Tool.dll
+  Contracts -> /private/tmp/xemele-integrate-m1-contracts/tests/Contracts/bin/Release/net10.0/Contracts.dll
+  Xemele.TestUtilities -> /private/tmp/xemele-integrate-m1-contracts/tests/Xemele.TestUtilities/bin/Release/net10.0/Xemele.TestUtilities.dll
+  Xemele.Conformance.Tests -> /private/tmp/xemele-integrate-m1-contracts/tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll
+  ReferenceProtocol -> /private/tmp/xemele-integrate-m1-contracts/tools/ReferenceRunners/Protocol/bin/Debug/net10.0/ReferenceProtocol.dll
+  BclReference -> /private/tmp/xemele-integrate-m1-contracts/tools/ReferenceRunners/Bcl/bin/Release/net10.0/BclReference.dll
+  Xemele.Differential.Tests -> /private/tmp/xemele-integrate-m1-contracts/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll
+  Xemele.Fuzz -> /private/tmp/xemele-integrate-m1-contracts/tests/Xemele.Fuzz/bin/Release/net10.0/Xemele.Fuzz.dll
+  Xemele.Tests -> /private/tmp/xemele-integrate-m1-contracts/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll
+  CorpusManager -> /private/tmp/xemele-integrate-m1-contracts/tools/CorpusManager/bin/Release/net10.0/CorpusManager.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:08.42
+
+exit=0; expected=0
+$ dotnet test --solution Xemele.slnx -c Release --no-build --no-restore
+Running tests from /private/tmp/xemele-integrate-m1-contracts/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll (net10.0|arm64)
+Running tests from /private/tmp/xemele-integrate-m1-contracts/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll (net10.0|arm64)
+Running tests from /private/tmp/xemele-integrate-m1-contracts/tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll (net10.0|arm64)
+/private/tmp/xemele-integrate-m1-contracts/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll (net10.0|arm64) passed (346ms)
+/private/tmp/xemele-integrate-m1-contracts/tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll (net10.0|arm64) passed (344ms)
+/private/tmp/xemele-integrate-m1-contracts/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll (net10.0|arm64) passed (4s 753ms)
+
+Test run summary: Passed!
+  /private/tmp/xemele-integrate-m1-contracts/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll (net10.0|arm64) passed (346ms)
+  /private/tmp/xemele-integrate-m1-contracts/tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll (net10.0|arm64) passed (344ms)
+  /private/tmp/xemele-integrate-m1-contracts/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll (net10.0|arm64) passed (4s 753ms)
+
+  total: 54
+  failed: 0
+  succeeded: 54
+  skipped: 0
+  duration: 5s 182ms
+
+exit=0; expected=0
+$ python3 tools/planning/tasks.py validate
+Validated 101 tasks: schema, evidence, acyclic dependencies, additive milestones, and ordered ownership.
+
+exit=0; expected=0
+$ git diff --check
+
+exit=0; expected=0
+Passed: declarations/usage/protocol models/M0 preservation. No production XML or allocation behavior was executed.
