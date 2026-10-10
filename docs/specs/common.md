@@ -87,4 +87,4 @@ Diagnostics factories accept it explicitly. XML 1.0 nonvalidating processing,
 bounded repair rules, all quota units/aggregate boundaries, supported encoding
 labels, model hooks, metadata and staged implementation ownership are fixed by
 the decision and compiled fixture families. No runtime stub is delivered here.
-The required partial-options ownership repair is recorded in the task handoff.
+The coordinator-assigned ordered partial-options extension is recorded in the task handoff.

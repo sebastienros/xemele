@@ -111,7 +111,13 @@ def main():
         if not args.models_only:
             run('python3','-B','docs/reports/M1-corpus-import/provision.py')
             run('dotnet','build','tools/ReferenceRunners/Bcl/BclReference.csproj',*FLAGS)
-            runner_hash=hashlib.sha256(runner.read_bytes()).hexdigest()
+            # Historical solution builds may rewrite the original build output.
+            # Copy its entire fresh framework-dependent output before any consumer.
+            source_runner=runner
+            shutil.copytree(source_runner.parent,raw/'pinned-reference')
+            pinned_runner=raw/'pinned-reference'/source_runner.name
+            env['XEMELE_BCL_RUNNER']=str(pinned_runner)
+            runner_hash=hashlib.sha256(pinned_runner.read_bytes()).hexdigest()
             # Historical verifier writes only ignored artifacts, preserves all old model/golden files.
             run('python3','-B','docs/reports/M1-contracts/verify.py')
             run('python3','-B','tools/ApiBaseline/compare.py','--report',report/'runtime-api.json')
@@ -126,11 +132,11 @@ def main():
             summary['runtimeTests']=counts
             records=[json.loads(p.read_text()) for p in (raw/'case-results').glob('reference-*.json')]
             assert len(records)==242 and len({r['id'] for r in records})==242
-            assert hashlib.sha256(runner.read_bytes()).hexdigest()==runner_hash,'fresh reference runner changed'
+            assert hashlib.sha256(pinned_runner.read_bytes()).hexdigest()==runner_hash,'fresh reference runner changed'
             for record in records:
                 assert record['runnerSha256']==runner_hash,'reference runner hash is stale'
                 assert record['response']['engine']['build']=='1.0.0+'+revision,'reference adapter source revision is stale'
-            summary['referenceProvenance']={'records':242,'runner':str(runner),'runnerSha256':runner_hash,'expectedBuild':'1.0.0+'+revision,'dotnet':str(dotnet),'dotnetSha256':hashlib.sha256(dotnet.read_bytes()).hexdigest()}
+            summary['referenceProvenance']={'records':242,'runner':str(pinned_runner),'freshBuildOutput':str(source_runner),'runnerSha256':runner_hash,'expectedBuild':'1.0.0+'+revision,'dotnet':str(dotnet),'dotnetSha256':hashlib.sha256(dotnet.read_bytes()).hexdigest()}
             (report/'reference-provenance.json').write_text(json.dumps({'sourceRevision':revision,'records':[{'id':r['id'],'runnerSha256':r['runnerSha256'],'build':r['response']['engine']['build']} for r in sorted(records,key=lambda r:r['id'])]},indent=2)+'\n')
         else: summary['runtimeTests']='unrun during model-baseline preparation'
         run('python3','-B','-m','unittest','discover','-s','tools/planning','-p','test_tasks.py','-v')

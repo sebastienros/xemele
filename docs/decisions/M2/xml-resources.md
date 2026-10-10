@@ -306,13 +306,14 @@ resolver exceptions, including XmlParseException, propagate unchanged.
 | InclusionDepth | M6-XInclude; remains inactive in M2 |
 | EvaluationWork | query/validation owners in later milestones; remains inactive in M2 |
 
-Actual Options/Common.cs contains nonpartial XmlParseOptions. Coordinator must
-perform a narrow ordered ownership repair before M2-entities: split its unchanged
-Limits-only declaration to the already assigned Options/XmlParseOptions.cs and
-make it partial, or make the existing declaration partial under an explicitly
-owned repair. Its sealed record/public constructor/Limits metadata/defaults must
-remain identical. Then entities/recovery add separate partial declarations in
-their owned files. This contract does not perform that outside-path edit.
+Actual Options/Common.cs contains nonpartial XmlParseOptions. The coordinator
+has explicitly assigned M2-entities the narrow ordered extension of that file:
+make the unchanged Limits-only declaration partial (or split it to the already
+assigned Options/XmlParseOptions.cs), preserving sealed record/public constructor/
+Limits metadata/defaults, before adding DtdProcessing/Resolver. Recovery then
+adds Recover separately in its owned Options/Recovery partial file. This worker
+performs no outside-path runtime edit; the assignment is an implementation
+follow-up, not an outstanding demand for a separate repair task.
 
 No new timing measurements or hot-path implementation here. Fixtures establish
 syntax, model semantics and public baseline preservation only. Full XML parsing,

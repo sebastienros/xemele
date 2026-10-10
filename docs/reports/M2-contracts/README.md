@@ -35,9 +35,9 @@ real earlier-milestone runtime tests. Existing model/reports are never rewritten
 
 No M2 XML conformance, live I/O policy, repair, additional encoding behavior or
 allocation/performance pass is claimed. No timing slot is used. Windows/x64/AOT
-and full XML remain later unrun gates. Source Options/Common.cs requires the
-explicit coordinator-owned partial/split repair in the decision/handoff before
-additive options can be implemented in their assigned paths.
+and full XML remain later unrun gates. The coordinator explicitly assigned M2-entities the narrow Options/Common.cs
+partial/split extension before its additive options; recovery then adds its own
+partial option. This worker changes no runtime file.
 
 Coordinator integration runs set --expected-branch to the actual integration
 branch and --audit-base to its pre-integration revision. Claim/prerequisite
@@ -48,3 +48,12 @@ build. Caller XEMELE_DOTNET/runner overrides cannot produce reference evidence.
 The initial tested4d5ebd7 attempt preserved all M2/M1 model passes but failed
 NU1900 at foundation NuGet vulnerability lookup under the network sandbox;
 subsequent runtime/API/planning checks in that attempt were unrun.
+
+The corrected dcf950b attempt passed all64 model assertions/11 negatives, preserved
+foundation11/M1 models/protocol38/solution801 and actual API222, but correctly
+failed reference immutability after the historical solution build replaced the
+original runner output. No strict reference-provenance pass was recorded there.
+The final harness copies the complete fresh runner build output into an ignored
+per-run directory before any consumer; historical builds cannot replace that
+pinned artifact. All242 record hashes/source builds and the unchanged copied DLL
+must match. Both failed attempts retain their actual source revisions/logs.
