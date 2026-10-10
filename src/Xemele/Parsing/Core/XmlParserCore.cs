@@ -154,9 +154,13 @@ internal sealed partial class XmlParserCore : IDisposable
         {
             if (disposed) return;
             disposed = true; token = []; tokenLocations = []; attributes = [];
-            DisposeEntities();
-            names.Clear(); names = null!;
-            bindings.Clear(); bindings.TrimExcess(); frames.Clear(); frames.TrimExcess(); sinkIdentity = null;
+            try { DisposeEntities(); }
+            finally
+            {
+                names.Clear(); names = null!;
+                bindings.Clear(); bindings.TrimExcess();
+                budget.Release(Quota.Depth, frames.Count); frames.Clear(); frames.TrimExcess(); sinkIdentity = null;
+            }
         }
         finally { Volatile.Write(ref gate, 0); }
     }

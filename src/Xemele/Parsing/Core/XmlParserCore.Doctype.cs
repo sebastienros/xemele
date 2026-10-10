@@ -150,6 +150,7 @@ internal sealed partial class XmlParserCore
             if (model is null) return;
         }
         entities = new XmlEntityContext(model, activeCancellation);
+        if (!ValidateEffectiveDefaults()) return;
         documentType = new(doctypeName!, doctypePublic, doctypeSystem, internalSubset?.ToString());
         internalSubset = null; internalModel = null;
         state = State.Data; delivery = Delivery.DocumentType; ResetToken();

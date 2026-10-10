@@ -1,4 +1,5 @@
 using System.Text;
+using System.Runtime.ExceptionServices;
 using Xemele.Internal.Operations;
 using Xemele.Parsing.Dtd;
 using Xemele.Parsing.Entities;
@@ -158,26 +159,39 @@ internal sealed partial class XmlParserCore
 
     private void AbortEntities()
     {
-        resolution?.Abort();
-        DisposeEntities();
+        // Called while preserving an existing callback/cancellation exception or
+        // terminal diagnostic. Drain user cleanup failures without replacing it.
+        try { resolution?.Abort(); } catch { }
+        try { DisposeEntities(); } catch { }
     }
 
     private void DisposeEntities()
     {
+        ExceptionDispatchInfo? first = null;
         if (entitySources is not null)
         {
             while (entitySources.Count != 0)
             {
                 var source = entitySources[^1];
                 entitySources.RemoveAt(entitySources.Count - 1);
-                source.External?.Dispose();
-                budget.Release(Quota.EntityDepth, 1);
+                try { source.External?.Dispose(); }
+                catch (Exception exception) { first ??= ExceptionDispatchInfo.Capture(exception); }
+                finally
+                {
+                    try { budget.Release(Quota.EntityDepth, 1); }
+                    catch (Exception exception) { first ??= ExceptionDispatchInfo.Capture(exception); }
+                }
             }
             entitySources = null;
         }
-        dtdParser?.Dispose(); dtdParser = null;
-        resolution?.Dispose(); resolution = null;
+        try { dtdParser?.Dispose(); }
+        catch (Exception exception) { first ??= ExceptionDispatchInfo.Capture(exception); }
+        finally { dtdParser = null; }
+        try { resolution?.Dispose(); }
+        catch (Exception exception) { first ??= ExceptionDispatchInfo.Capture(exception); }
+        finally { resolution = null; }
         entities = null; entityBudget = null;
         attributeEntities = null; dtdAttributes = null; ids = null; internalSubset = null; internalModel = null;
+        first?.Throw();
     }
 }

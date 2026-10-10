@@ -52,7 +52,7 @@ internal sealed partial class XmlParserCore
     private string? NormalizeAttribute(string literal, DtdAttributeDeclaration? declaration, XmlLocation at)
     {
         var table = AttributeEntities();
-        if (standalone == true && !CheckStandaloneAttributeEntities(literal, table, at)) return null;
+        if (!CheckAttributeEntities(literal, table, at, true)) return null;
         var result = DtdValueProcessor.NormalizeAttributeDefault(literal, DtdAttributeType.CData,
             table, budget.Options.Limits, at, entityBudget, activeCancellation);
         if (result.Diagnostic is not null) { diagnostic = result.Diagnostic; return null; }
@@ -133,31 +133,67 @@ internal sealed partial class XmlParserCore
         return true;
     }
 
-    private bool CheckStandaloneAttributeEntities(string literal, IReadOnlyDictionary<string, DtdEntityDeclaration> table, XmlLocation at)
+    private sealed class AttributeGraphFrame(string text, string? name)
     {
-        // Inspect the reachable declaration graph once, before expansion. This
-        // avoids a second expansion (and second ledger charge) for standalone.
+        internal readonly string Text = text;
+        internal readonly string? Name = name;
+        internal int Index;
+    }
+
+    private bool CheckAttributeEntities(string literal, IReadOnlyDictionary<string, DtdEntityDeclaration> table, XmlLocation at, bool useSite)
+    {
+        activeCancellation.ThrowIfCancellationRequested();
+        if (!literal.AsSpan().ContainsAny('&', '<')) return true;
         var seen = new HashSet<string>(StringComparer.Ordinal);
-        var stack = new Stack<string>(); stack.Push(literal);
+        var active = new HashSet<string>(StringComparer.Ordinal);
+        var stack = new List<AttributeGraphFrame> { new(literal, null) };
         while (stack.Count != 0)
         {
-            string text = stack.Pop();
-            for (int i = 0; i < text.Length; i++)
+            activeCancellation.ThrowIfCancellationRequested();
+            var frame = stack[^1];
+            if (frame.Index == frame.Text.Length)
             {
-                Work(i); if (text[i] != '&') continue;
-                int start = ++i;
-                while (i < text.Length && text[i] != ';') { Work(i); i++; }
-                if (i == text.Length) break;
-                var name = text.AsSpan(start, i - start);
-                if (ScalarReference(name)) continue;
-                DtdEntityDeclaration? entity = null;
+                stack.RemoveAt(stack.Count - 1);
+                if (frame.Name is not null) { active.Remove(frame.Name); seen.Add(frame.Name); }
+                continue;
+            }
+            int c = frame.Text[frame.Index++];
+            if (c == '<') { Reject("XML.Syntax", "Literal less-than in attribute replacement.", at); return false; }
+            if (c != '&') continue;
+            int start = frame.Index;
+            while (frame.Index < frame.Text.Length && frame.Text[frame.Index] != ';')
+            { Work(frame.Index); frame.Index++; }
+            if (frame.Index == frame.Text.Length) { Reject("XML.Syntax", "Unfinished attribute reference.", at); return false; }
+            var name = frame.Text.AsSpan(start, frame.Index++ - start);
+            if (ScalarReference(name)) continue;
+            if (useSite ? !ValidName(name, false) : !EntityName(name))
+            { Reject("XML.Syntax", "Invalid attribute entity reference name.", at); return false; }
+            DtdEntityDeclaration? entity = null;
+            if (table is Dictionary<string, DtdEntityDeclaration> dictionary)
+                dictionary.GetAlternateLookup<ReadOnlySpan<char>>().TryGetValue(name, out entity);
+            else
                 foreach (var entry in table)
                 { activeCancellation.ThrowIfCancellationRequested(); if (name.SequenceEqual(entry.Key)) { entity = entry.Value; break; } }
-                if (entity is null) continue;
-                if (entity.IsExternal)
-                { Reject("XML.Standalone", "Standalone attribute depends on an external entity declaration.", at); return false; }
-                if (entity.ReplacementText is not null && seen.Add(entity.Name)) stack.Push(entity.ReplacementText);
-            }
+            if (entity is null) { Reject("XML.UndeclaredEntity", "Undeclared attribute entity.", at); return false; }
+            if (entity.SystemId is not null || entity.NotationName is not null || entity.ReplacementText is null)
+            { Reject("XML.Syntax", "External or unparsed entity is forbidden in attributes.", at); return false; }
+            if (useSite && standalone == true && entity.IsExternal)
+            { Reject("XML.Standalone", "Standalone attribute depends on an external entity declaration.", at); return false; }
+            if (active.Contains(entity.Name)) { Reject("XML.EntityCycle", "Recursive attribute entity.", at); return false; }
+            if (seen.Contains(entity.Name)) continue;
+            active.Add(entity.Name); stack.Add(new(entity.ReplacementText, entity.Name));
+        }
+        return true;
+    }
+
+    private bool ValidateEffectiveDefaults()
+    {
+        var table = AttributeEntities();
+        foreach (var declaration in entities!.Model.Attributes)
+        {
+            activeCancellation.ThrowIfCancellationRequested();
+            if (declaration.DefaultValue is not null &&
+                !CheckAttributeEntities(declaration.DefaultValue, table, declaration.Location, false)) return false;
         }
         return true;
     }

@@ -79,4 +79,17 @@ public sealed class ReviewRegressionTests
         Assert.ThrowsAny<OperationCanceledException>(() => new XmlEntityContext(empty, canceled.Token));
         Assert.ThrowsAny<OperationCanceledException>(() => XmlEntityContext.Merge(empty, empty, canceled.Token));
     }
+
+    [Theory]
+    [InlineData("<!ENTITY a:b 'v'>", "<r a='&a:b;'/>")]
+    [InlineData("<!ENTITY a:b 'v'><!ENTITY e '&a:b;'>", "<r a='&e;'/>")]
+    [InlineData("<!ENTITY a:b 'v'><!ATTLIST r a CDATA '&a:b;'>", "<r/>")]
+    public void AttributeUseRejectsColonThroughExplicitNestedAndDefaultReferences(string declarations, string body)
+    {
+        string input = "<!DOCTYPE r [" + declarations + "]>" + body;
+        var options = new XmlParseOptions { DtdProcessing = XmlDtdProcessing.Parse };
+        Assert.False(XmlDocument.TryParse(input, out _, out var diagnostics, options, Cancellation));
+        Assert.Equal("XML.Syntax", Assert.Single(diagnostics).Code);
+        Assert.Equal("r", XmlDocument.Parse("<!DOCTYPE r [<!ENTITY a:b 'v'>]><r/>", options, Cancellation).RootElement.LocalName);
+    }
 }
