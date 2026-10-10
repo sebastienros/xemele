@@ -69,11 +69,19 @@ public sealed class StandaloneOriginTests
         using (var core = new XmlParserCore(options, Context()))
             Assert.Equal(ScanStep.Completed, core.Append(input, [], true, new Sink(-1), Cancellation).Step);
         // A second reference exceeds the unchanged expansion ledger.
-        using (var core = new XmlParserCore(options, Context()))
+        using (var core = new XmlParserCore(options with { Limits = options.Limits with { DocumentCharacters = null } }, Context()))
             Assert.Equal("XML.ResourceLimit", core.Append(Prefix + "&#32;&#32;</r>", [], true, new Sink(-1), Cancellation).Diagnostic?.Code);
         const string cdata = Prefix + "<![CDATA[ \t\n]]></r>";
         using (var core = new XmlParserCore(new() { Limits = new() { DocumentCharacters = cdata.Length - 1 } }, Context()))
             Assert.Equal("XML.ResourceLimit", core.Append(cdata, [], true, new Sink(-1), Cancellation).Diagnostic?.Code);
+    }
+
+    [Fact]
+    public void CdataWhitespaceRetainsLexicalTokenQuota()
+    {
+        using var core = new XmlParserCore(new() { Limits = new() { TokenCharacters = 50 } }, Context());
+        string input = Prefix + "<![CDATA[" + new string(' ', 100) + "]]></r>";
+        Assert.Equal("XML.ResourceLimit", core.Append(input, [], true, new Sink(-1), Cancellation).Diagnostic?.Code);
     }
 
     private static XmlEntityContext Context(bool external = true) => new(new(
