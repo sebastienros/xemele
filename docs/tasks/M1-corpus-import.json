@@ -33,7 +33,8 @@
       "status": "passed",
       "evidence": [
         "full-suite-checks",
-        "declaration-order-correction"
+        "declaration-order-correction",
+        "integration-audit-base-checks"
       ]
     },
     {
@@ -42,7 +43,8 @@
       "status": "passed",
       "evidence": [
         "full-suite-checks",
-        "declaration-order-correction"
+        "declaration-order-correction",
+        "integration-audit-base-checks"
       ]
     },
     {
@@ -51,7 +53,8 @@
       "status": "passed",
       "evidence": [
         "full-suite-checks",
-        "declaration-order-correction"
+        "declaration-order-correction",
+        "integration-audit-base-checks"
       ]
     }
   ],
@@ -87,6 +90,15 @@
       "result": "passed",
       "summary": "Bounded independent-review correction: metadata inspection no longer anticipates XML.DtdProhibited when unsupported encoding/version/byte-signature can reject earlier. Exact Japanese EUC-JP source-case and synthetic encoding/version/signature regressions pass. Full rerun:15 Python,14 MTP actual-core full-inventory,24 preserved corpus tests; zero skipped. All2585 IDs/3386 file hashes and classification counts unchanged; offline preserved cache refreshed. Public baseline215, combined discovery3388, planning105 tasks and committed/working/staged/untracked owned-path audit passed. Zero product cases executed or standards passes. README grammar-only correction is the sole working-tree difference during run.",
       "artifact": "docs/reports/M1-corpus-import/correction-verification.txt"
+    },
+    {
+      "id": "integration-audit-base-checks",
+      "kind": "check",
+      "revision": "4307b94c14d3f050a39f27c460f8279f4d16f16e",
+      "command": "Pinned SDK10.0.400 DOTNET_CLI_USE_MSBUILD_SERVER=0 python3 -B docs/reports/M1-corpus-import/verify.py --audit-base e1cb4463cecded13e818d40527afbb9e92bc1ee7; python3 -B docs/reports/M1-corpus-import/verify.py --help and --invalid-option; git diff --check 7c44e76d1ba839b5c0c58dfad9791e3279bf793e..HEAD",
+      "result": "passed",
+      "summary": "Explicit audit base resolves to a commit and checks whitespace/ownership across committed base..HEAD plus working/staged/untracked paths; final worker default-base committed whitespace check also passes. Help exits0 and invalid CLI exits2 without changing existing verification report SHA-256; durable CLI transcript retained. Full rerun15 Python +14 actual-core MTP +24 preserved corpus MTP, zero skips; bootstrap2/discovery3388/API215/planning105 unchanged. Previous worker evidence reports preserved. Zero product executions/standards passes.",
+      "artifact": "docs/reports/M1-corpus-import/audit-base-verification.txt"
     }
   ],
   "blockers": [],
@@ -97,7 +109,8 @@
       "Full inventory/primary/output checksums and offline actual-core provisioning; independent BCL metadata-only identity/type equality; missing/corrupt/containment/provenance/profile negative checks passed.",
       "Combined discovery 3388 files; original bootstrap 2 outcomes preserved; public API 215; 105-task validation and owned-path audit passed.",
       "Sandbox NU1900 restore failure retained explicitly; authorized network/IPC rerun passed.",
-      "Corrected source 2626bac69fd43a5dbcda364192db7c5dc655d0ea: 15 Python +14 actual-core MTP +24 preserved corpus MTP, zero skips; EUC-JP first-error prediction regression passes. No identity/checksum/classification changes; private cache refreshed."
+      "Corrected source 2626bac69fd43a5dbcda364192db7c5dc655d0ea: 15 Python +14 actual-core MTP +24 preserved corpus MTP, zero skips; EUC-JP first-error prediction regression passes. No identity/checksum/classification changes; private cache refreshed.",
+      "Verifier audit-base source 4307b94c14d3f050a39f27c460f8279f4d16f16e: explicit e1cb446..HEAD committed whitespace/ownership and working/staged/untracked checks pass; original claim..HEAD whitespace check passes. Help/invalid CLI preserve existing report bytes. Full checks remain 15+14+24, zero skips."
     ],
     "remaining": [
       "Coordinator must integrate/recheck and mark verified; parent M1-corpus executes product conformance after verified DOM/serializer.",
@@ -106,7 +119,8 @@
     "requests": [
       "Preserve /private/tmp/xemele-corpus-cache/w3c-xml-20130923/ through worker cleanup. Archive, bundle, source/cache fixture hashes and resources/<original archive URI> are verified and usable offline by runtime join.",
       "Runtime join must use inventory.json case m1 outcomes/reasons; manifest accepted labels cover transport inventory only and never count XML acceptance or standards passes.",
-      "A clean checkout needs python3 -B docs/reports/M1-corpus-import/provision.py (restores preserved pinned archive offline; --download only if absent) before combined fixture discovery."
+      "A clean checkout needs python3 -B docs/reports/M1-corpus-import/provision.py (restores preserved pinned archive offline; --download only if absent) before combined fixture discovery.",
+      "Root integration run must supply --audit-base <pre-merge-main-commit> to audit only this integration delta. Default remains original worker claim; all earlier worker evidence files retained."
     ]
   }
 }

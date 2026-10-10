@@ -1,0 +1,24 @@
+Revision: 4307b94c14d3f050a39f27c460f8279f4d16f16e
+Existing report SHA-256: e4c9b0b3cab9debfa184030f6e8c14cb388b41def9210bbaccffda528ae7aca4
+Command: python3 -B docs/reports/M1-corpus-import/verify.py --help
+usage: verify.py [-h] [--audit-base AUDIT_BASE]
+
+Known-revision full inventory/provisioning verification; no product XML
+execution.
+
+options:
+  -h, --help            show this help message and exit
+  --audit-base AUDIT_BASE
+                        commit before owned integration delta (default:
+                        original worker claim)
+
+Exit: 0
+Command: python3 -B docs/reports/M1-corpus-import/verify.py --invalid-option
+usage: verify.py [-h] [--audit-base AUDIT_BASE]
+verify.py: error: unrecognized arguments: --invalid-option
+
+Exit: 2
+Help and invalid CLI preserved existing report bytes.
+Command: git diff --check 7c44e76d1ba839b5c0c58dfad9791e3279bf793e..HEAD
+
+Exit: 0
