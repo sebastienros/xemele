@@ -13,9 +13,9 @@
       "client_thread_id": "client-new-thread:44740c37-3629-4d2c-8c2d-22c3370eee43",
       "host_id": "local",
       "branch": "codex/m1-dom",
-      "base_revision": "1f15653bf8f3ea4faab5fa5c15f10701971ff9ab",
+      "base_revision": "a3c7c669472fcd9ec35dfec3cd40aef1e6d0cda8",
       "claim_revision": "93de9bf2a67ff30557821f6c6ac399c5266cf6f2",
-      "setup_status": "suspended-prerequisite",
+      "setup_status": "renewing-claim",
       "chat_id": "01a123df-0348-7a81-9d6f-f4676934cb48",
       "worktree_path": "/Users/sebastienros/.codex/worktrees/a22a/xemele",
       "preserved_draft_revision": "4aef77b0e1fffca92322c096ce8a09c65f019845",
@@ -28,44 +28,25 @@
       "review_revision": "e8694fabdb6b9c25e7112fb4a034adbf54ffd46e",
       "wait_cursor": "f824c6fd-79ae-4b74-b7cf-1220db648998:18",
       "correctness_revision": "15e099bd11e25a5fc2576059a39a6c707a45feef",
-      "preserved_evidence_revision": "8155e7d0d7e89e714c992c82279549887b03f770"
-    },
-    {
-      "task_id": "M1-tree-dom-persistence",
-      "client_thread_id": "client-new-thread:6f3bde9b-7d07-48a2-8e49-4990b7fd9d4e",
-      "host_id": "local",
-      "branch": "codex/m1-tree-dom-persistence",
-      "base_revision": "0ff5c008ea462e6a369de84bc292c349d0298f0b",
-      "claim_revision": "a5857810a88604ebca53f3fbc382d80d690e325e",
-      "setup_status": "integration-evidence-fix",
-      "chat_id": "01a12401-739f-7d21-92b3-0e4d4bfe7fde",
-      "worktree_path": "/Users/sebastienros/.codex/worktrees/3f59/xemele",
-      "review_revision": "46e6d1bfe439c4b949ca534d917d371a1e2b3cb9",
-      "wait_cursor": "a7a0d283-bd95-481a-84d0-b5222601c579:14",
-      "measurement_revision": "ecd4a2961d3126257f9c4cdfdf28276ed9a35bad",
-      "measurement_audit": "8 cases,8 zero exits,24 actual/results; stopped-process acknowledgement received. Ordinary priority, prevalidated model scope.",
-      "handoff_revision": "a2d62048b10d1413114a3ce654db5d01efc23dcf",
-      "integration_worktree": "/private/tmp/xemele-integrate-m1-tree-dom-persistence",
-      "integration_branch": "codex/integrate-m1-tree-dom-persistence",
-      "integration_base": "56cdd818a3e47e7380e2484beb420feea3e59c0a"
+      "preserved_evidence_revision": "8155e7d0d7e89e714c992c82279549887b03f770",
+      "claim_history": [
+        {
+          "base_revision": "1f15653bf8f3ea4faab5fa5c15f10701971ff9ab",
+          "claim_revision": "93de9bf2a67ff30557821f6c6ac399c5266cf6f2",
+          "reason": "Suspended for trusted persistence prerequisite; source/evidence8155e7d preserved."
+        }
+      ]
     }
   ],
   "integration_queue": [],
-  "blockers": [
-    {
-      "task_id": "M1-dom",
-      "reason": "Independent sink review found uncancellable repeated tree scalar/name validation for long logical tokens during DOM persistence.",
-      "revision": "e8694fabdb6b9c25e7112fb4a034adbf54ffd46e",
-      "next_action": "Worker preserves current checks/source; coordinate ordered helper repair or owned bounded-persistence remedy before integration."
-    }
-  ],
+  "blockers": [],
   "next_actions": [
-    "Collect committed report/audit correction then run fresh persistence integration checks",
-    "Verify helper and renew preserved DOM claim",
-    "Resume corrected DOM, strict corpus and M1 gate"
+    "Resume DOM with verified persistence contract",
+    "Review corrected source and full combined DOM verification; then exclusive composition timings",
+    "Strict corpus and M1 gate after verified DOM"
   ],
-  "last_verified_task": "M1-benchmark-class-config",
-  "last_integrated_revision": "dcda23674cf94542e521ee1234fc242d6ecd289d",
+  "last_verified_task": "M1-tree-dom-persistence",
+  "last_integrated_revision": "61fdfd8fe444eb0befc52c23d50f53a000cb0815",
   "completed_assignments": [
     {
       "task_id": "M0-build",
@@ -516,6 +497,27 @@
         "chat_archived": true,
         "worktree": "removed"
       }
+    },
+    {
+      "task_id": "M1-tree-dom-persistence",
+      "client_thread_id": "client-new-thread:6f3bde9b-7d07-48a2-8e49-4990b7fd9d4e",
+      "host_id": "local",
+      "branch": "codex/m1-tree-dom-persistence",
+      "base_revision": "0ff5c008ea462e6a369de84bc292c349d0298f0b",
+      "claim_revision": "a5857810a88604ebca53f3fbc382d80d690e325e",
+      "setup_status": "verified",
+      "chat_id": "01a12401-739f-7d21-92b3-0e4d4bfe7fde",
+      "worktree_path": "/Users/sebastienros/.codex/worktrees/3f59/xemele",
+      "review_revision": "46e6d1bfe439c4b949ca534d917d371a1e2b3cb9",
+      "wait_cursor": "a7a0d283-bd95-481a-84d0-b5222601c579:14",
+      "measurement_revision": "ecd4a2961d3126257f9c4cdfdf28276ed9a35bad",
+      "measurement_audit": "8 cases,8 zero exits,24 actual/results; stopped-process acknowledgement received. Ordinary priority, prevalidated model scope.",
+      "handoff_revision": "d2c3d1141265657b79af409ea7d223b145e1e049",
+      "integration_worktree": "/private/tmp/xemele-integrate-m1-tree-dom-persistence",
+      "integration_branch": "codex/integrate-m1-tree-dom-persistence",
+      "integration_base": "56cdd818a3e47e7380e2484beb420feea3e59c0a",
+      "implementation_revision": "ecd4a2961d3126257f9c4cdfdf28276ed9a35bad",
+      "integration_revision": "61fdfd8fe444eb0befc52c23d50f53a000cb0815"
     }
   ],
   "benchmark_policy": "No active timing hold. Benchmark class configuration controls jobs; commands omit job arguments. Timing host remains serialized.",
