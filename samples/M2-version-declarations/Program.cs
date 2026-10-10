@@ -67,9 +67,9 @@ static void Measure(bool positive, bool print, bool count = true)
     long ownedBytes = (count ? GC.GetAllocatedBytesForCurrentThread() : 0) - before;
     Require(owned.Step == TextDeclarationStep.Declared && owned.Consumed == 20 && owned.Declaration?.Version == version && owned.Declaration?.EncodingName == "UTF-8");
     framer.Dispose(); Require(owned.Declaration?.Version == version);
+    if (print) Console.WriteLine(JsonSerializer.Serialize(new { Mode = positive ? "positive" : "real", CoreBytes = coreBytes, DigitBytes = digitBytes, OwnedBytes = ownedBytes, VersionLength = version.Length, WarmCoreConsumed = prefix.Length, MeasuredCoreConsumed = scanned.Consumed, WarmFrameConsumed = framedWarm.Consumed, MeasuredFrameConsumed = digits.Consumed, CoreCallbacks = sink.Callbacks, RetainedVersion = owned.Declaration?.Version == version, Product = Identity(typeof(XmlDocument).Assembly), Probe = Identity(Assembly.GetExecutingAssembly()), Runtime = Environment.Version.ToString(), ProcessId = Environment.ProcessId }));
     if (count) Require(positive ? coreBytes > 0 && digitBytes > 0 && ((byte[])escaped!).Length == 37 : coreBytes == 0 && digitBytes == 0);
     if (count) Require(ownedBytes >= 2 * version.Length);
-    if (print) Console.WriteLine(JsonSerializer.Serialize(new { Mode = positive ? "positive" : "real", CoreBytes = coreBytes, DigitBytes = digitBytes, OwnedBytes = ownedBytes, VersionLength = version.Length, WarmCoreConsumed = prefix.Length, MeasuredCoreConsumed = scanned.Consumed, WarmFrameConsumed = framedWarm.Consumed, MeasuredFrameConsumed = digits.Consumed, CoreCallbacks = sink.Callbacks, RetainedVersion = owned.Declaration?.Version == version, Product = Identity(typeof(XmlDocument).Assembly), Probe = Identity(Assembly.GetExecutingAssembly()), Runtime = Environment.Version.ToString(), ProcessId = Environment.ProcessId }));
     GC.KeepAlive(escaped);
 }
 
@@ -96,8 +96,8 @@ static void MeasureOrdinary(bool positive, bool print, bool count = true)
     long ownedBytes = (count ? GC.GetAllocatedBytesForCurrentThread() : 0) - before;
     Require(owned.Step == TextDeclarationStep.Declared && owned.Consumed == 22 && owned.Declaration?.Version == "1.0" && owned.Declaration?.EncodingName == "UTF-8");
     framer.Dispose(); Require(owned.Declaration?.Version == "1.0");
-    if (count) Require(positive ? coreBytes > 0 && ownedBytes > 32 && ((byte[])escaped!).Length == 37 : coreBytes == 0 && ownedBytes == 32);
     if (print) Console.WriteLine(JsonSerializer.Serialize(new { Mode = positive ? "ordinary-positive" : "ordinary-real", CoreBytes = coreBytes, OwnedBytes = ownedBytes, Callbacks = sink.Callbacks, Product = Identity(typeof(XmlDocument).Assembly), Probe = Identity(Assembly.GetExecutingAssembly()), Runtime = Environment.Version.ToString(), ProcessId = Environment.ProcessId }));
+    if (count) Require(positive ? coreBytes > 0 && ownedBytes > 32 && ((byte[])escaped!).Length == 37 : coreBytes == 0 && ownedBytes == 32);
     GC.KeepAlive(escaped);
 }
 

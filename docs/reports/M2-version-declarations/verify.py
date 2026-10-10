@@ -117,7 +117,7 @@ def main():
         input_roots = ['src/Xemele', 'tests/Xemele.Tests', 'tests/Xemele.TestUtilities', 'tests/Xemele.Conformance.Tests', 'tests/Xemele.Differential.Tests', 'samples/M2-version-declarations', 'benchmarks/Xemele.Benchmarks', 'docs/reports/M2-version-declarations', 'tools/ReferenceRunners/Bcl', 'docs/reports/M0-contracts/ApiCheck']
         inputs = run('git', 'ls-files', '--', *input_roots, 'Directory.Build.props', 'Directory.Build.targets',
                      'Directory.Packages.props', 'global.json', 'NuGet.config').splitlines()
-        inputs = [p for p in inputs if Path(p).suffix in ('.cs', '.csproj', '.props', '.targets', '.json', '.config')]
+        inputs = [p for p in inputs if Path(p).suffix in ('.cs', '.csproj', '.props', '.targets', '.json', '.config', '.py')]
         assert inputs
         assert not run('git', 'diff', 'HEAD', '--', *inputs).strip(), 'runtime/test/build inputs differ from frozen commit'
         source_hashes = {}
