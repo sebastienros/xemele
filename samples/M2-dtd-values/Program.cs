@@ -15,6 +15,13 @@ if (args.Contains("--contract"))
     return;
 }
 char[] scratch = new char[64];
+long coldBytes = 0;
+if (args.Contains("--allocations"))
+{
+    long coldBefore = GC.GetAllocatedBytesForCurrentThread();
+    using var cold = new DtdValueDecoder(new()); cold.Decode("x&#9;", scratch, true);
+    coldBytes = GC.GetAllocatedBytesForCurrentThread() - coldBefore;
+}
 using var decoder = new DtdValueDecoder(new());
 var prefix = decoder.Decode("&#000", scratch, false);
 if (prefix.Consumed != 5 || prefix.Written != 0 || prefix.Step != DtdValueStep.NeedInput) throw new Exception("Progress.");
@@ -29,9 +36,7 @@ if (normalized.Value != "result \t") throw new Exception("Origin normalization."
 Console.WriteLine(JsonSerializer.Serialize(new { replacement, normalized.Value }));
 
 if (!args.Contains("--allocations")) return;
-long before = GC.GetAllocatedBytesForCurrentThread();
-using var cold = new DtdValueDecoder(new()); cold.Decode("x&#9;", scratch, true);
-long coldBytes = GC.GetAllocatedBytesForCurrentThread() - before;
+long before;
 const int iterations = 1000;
 for (int i = 0; i < iterations; i++) { using var setup = new DtdValueDecoder(new()); setup.Decode("x&#9;", scratch, true); }
 before = GC.GetAllocatedBytesForCurrentThread();
@@ -47,5 +52,5 @@ before = GC.GetAllocatedBytesForCurrentThread();
 for (int i = 0; i < iterations; i++) DtdValueProcessor.NormalizeAttributeDefault("&outer; &#9;", DtdAttributeType.NmTokens, table, new());
 long ownedBytesPerOperation = (GC.GetAllocatedBytesForCurrentThread() - before) / iterations;
 Console.WriteLine(JsonSerializer.Serialize(new { coldBytes, setupBytesPerOperation, warmPrimitiveBytes, ownedBytesPerOperation, runtime = Environment.Version.ToString(),
-    ownership = "Decoder setup owns bounded scalar/numeric state. Normalization owns builder, iterative frames, cycle set and final string; table belongs to caller. Cold probe follows sample initialization." }));
+    ownership = "Decoder setup owns bounded scalar/numeric state. Normalization owns builder, iterative frames, cycle set and final string; table belongs to caller. Cold probe is first decoder use in a fresh process." }));
 if (warmPrimitiveBytes != 0) throw new Exception("Warm primitive allocation.");

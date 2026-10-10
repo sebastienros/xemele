@@ -71,6 +71,7 @@ public sealed class ValueTests
     [InlineData(" &#9;&#10;&#13; ", " \t\n\r ", "\t\n\r")]
     [InlineData("&lt;&gt;&amp;&apos;&quot;", "<>&'\"", "<>&'\"")]
     [InlineData("&#x1F600;", "😀", "😀")]
+    [InlineData(" \u0085\u00A0 ", " \u0085\u00A0 ", "\u0085\u00A0")]
     public void AttributeWhitespaceAndPredefined(string source, string cdata, string tokenized)
     { Assert.Equal(cdata, Normalize(source).Value); Assert.Equal(tokenized, Normalize(source, DtdAttributeType.IdRefs).Value); }
     [Fact]
@@ -86,6 +87,17 @@ public sealed class ValueTests
         // Publication retains the declaration literal; helper cannot mutate its model.
         var declaration = new DtdAttributeDeclaration("e", "a", DtdAttributeType.CData, [], DtdDefaultKind.Value, "&outer;", true, default);
         Assert.Equal("&outer;", declaration.DefaultValue);
+    }
+    [Fact]
+    public void DirectCrTabDifferFromDecodedDeclarationCrTab()
+    {
+        char[] output = new char[8]; using var d = new DtdValueDecoder(new());
+        var r = d.Decode("&#xD;&#x9;", output, true);
+        var table = Table(("a", new string(output, 0, r.Written)));
+        Assert.Equal("\r\t", Normalize("&#xD;&#x9;").Value);
+        Assert.Equal("  ", Normalize("&a;", table: table).Value);
+        Assert.Equal("\r\t", Normalize("&#xD;&#x9;", DtdAttributeType.NmTokens).Value);
+        Assert.Equal("", Normalize("&a;", DtdAttributeType.NmTokens, table).Value);
     }
     [Theory]
     [InlineData("<")] [InlineData("&missing;")] [InlineData("&;")] [InlineData("&#x;")]
