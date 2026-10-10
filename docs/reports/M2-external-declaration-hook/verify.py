@@ -13,7 +13,10 @@ def main():
     report = OWN/'verification-summary.json'
     assert not report.exists()
     env = dict(os.environ, DOTNET_ROOT=str(SDK), PATH=str(SDK)+os.pathsep+os.environ.get('PATH',''), DOTNET_CLI_USE_MSBUILD_SERVER='0')
-    summary = {'result':'failed','checks':[]}
+    resume = '--remaining' in sys.argv
+    summary = json.loads((OWN/'harness-discovery-failure.json').read_text()) if resume else {'checks':[]}
+    summary['result']='failed'
+    summary.pop('failure',None)
     def run(*command):
         command = list(map(str,command))
         p = subprocess.run(command,cwd=ROOT,env=env,text=True,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,timeout=300)
@@ -23,32 +26,46 @@ def main():
     def build(project,*extra): return run(DOTNET,'build',project,*FLAGS,*extra)
     try:
         summary['revision'] = run('git','rev-parse','HEAD')
+        if not resume: summary['testRevision']=summary['revision']
         assert run('git','branch','--show-current') == 'codex/m2-external-declaration-hook'
         assert run(DOTNET,'--version') == '10.0.400'
         summary['runtime'] = run(DOTNET,'--list-runtimes').splitlines()
-        build('tests/Xemele.Tests/Xemele.Tests.csproj')
+        if not resume: build('tests/Xemele.Tests/Xemele.Tests.csproj')
         runtime = ROOT/'src/Xemele/bin/Release/net10.0/Xemele.dll'
         test = ROOT/'tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll'
-        summary['productSha256'] = digest(runtime)
-        summary['testSha256'] = digest(test)
+        if resume:
+            assert digest(runtime)==summary['productSha256'] and digest(test)==summary['testSha256']
+        else:
+            summary['productSha256'] = digest(runtime)
+            summary['testSha256'] = digest(test)
         with tempfile.TemporaryDirectory(prefix='xemele-hook-',dir='/private/tmp') as directory:
             temp = Path(directory)
-            filters = [part for pattern in ['Xemele.Tests.ExternalDeclarationHook.*','Xemele.Tests.Entities.*','Xemele.Tests.Versions.*','Xemele.Tests.FramingTests','Xemele.Tests.EncodingCompatibility.*'] for part in ['-class',pattern]]
-            held = ['Xemele.Tests.FramingTests.WarmWhitespacePrimitiveHasNoAllocations','Xemele.Tests.EncodingCompatibility.EncodingTests.WarmLegacyConversionAndDeclarationMatchingAllocateZero']
-            for method in held: filters += ['-method-',method]
-            summary['preservedUnchangedMeasurements'] = held
-            xml = temp/'tests.xml'
-            run(DOTNET,test,'-noColor',*filters,'-result-xml',xml)
-            rows = list(ET.parse(xml).iter('test'))
-            assert rows and all(row.get('result')=='Pass' for row in rows)
-            summary['tests'] = {'passed':len(rows),'failed':0,'skipped':0,'owned':sum(row.get('type','').startswith('Xemele.Tests.ExternalDeclarationHook.') for row in rows)}
-            assert summary['tests']['owned']==17
-            summary['tests']['byType'] = {t:sum(r.get('type')==t for r in rows) for t in sorted({r.get('type') for r in rows})}
+            if not resume:
+                filters = [part for pattern in ['Xemele.Tests.ExternalDeclarationHook.*','Xemele.Tests.Entities.*','Xemele.Tests.Versions.*','Xemele.Tests.FramingTests','Xemele.Tests.EncodingCompatibility.*'] for part in ['-class',pattern]]
+                held = ['Xemele.Tests.FramingTests.WarmWhitespacePrimitiveHasNoAllocations','Xemele.Tests.EncodingCompatibility.EncodingTests.WarmLegacyConversionAndDeclarationMatchingAllocateZero']
+                for method in held: filters += ['-method-',method]
+                summary['preservedUnchangedMeasurements'] = held
+                xml = temp/'tests.xml'
+                run(DOTNET,test,'-noColor',*filters,'-result-xml',xml)
+                rows = list(ET.parse(xml).iter('test'))
+                assert rows and all(row.get('result')=='Pass' for row in rows)
+                summary['tests'] = {'passed':len(rows),'failed':0,'skipped':0,'owned':sum(row.get('type','').startswith('Xemele.Tests.ExternalDeclarationHook.') for row in rows)}
+                assert summary['tests']['owned']==17
+                summary['tests']['byType'] = {t:sum(r.get('type')==t for r in rows) for t in sorted({r.get('type') for r in rows})}
+            foundation_xml=temp/'foundation.xml'
+            run(DOTNET,test,'-noColor','-class','Xemele.Tests.EntitiesFoundation.*','-result-xml',foundation_xml)
+            foundation=list(ET.parse(foundation_xml).iter('test'))
+            assert foundation and all(r.get('result')=='Pass' for r in foundation)
+            summary['foundationTests']={'passed':len(foundation),'failed':0,'skipped':0,'revision':summary['testRevision']}
             build('docs/reports/M0-contracts/ApiCheck/ApiCheck.csproj')
             sys.path.insert(0,str(ROOT/'tools/ApiBaseline'))
             from compare import compare
             old_path = os.environ.get('PATH',''); os.environ['PATH']=env['PATH']
-            try: api=compare(ROOT,runtime)
+            try:
+                snapshot=temp/'api-snapshot'; (snapshot/'docs/api').mkdir(parents=True)
+                for fragment in (ROOT/'docs/api').glob('*.txt'): shutil.copyfile(fragment,snapshot/'docs/api'/fragment.name)
+                api=compare(snapshot,runtime)
+                summary['apiScope']='All approved API fragments copied unchanged; API-only discovery snapshot, no corpus discovery claim.'
             finally: os.environ['PATH']=old_path
             assert api['matched'],api['checkerOutput']
             assert len(api['provenance'])==290
