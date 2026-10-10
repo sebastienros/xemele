@@ -1,0 +1,141 @@
+{
+  "result": "failed",
+  "host": "macOS-15.8.1-arm64-arm-64bit-Mach-O",
+  "architecture": "arm64",
+  "timing": "not run",
+  "runtimeSettings": "default JIT/GC/test parallelism",
+  "counts": {
+    "report_prefix": "source-0e04b7c-attempt1",
+    "expected_branch": "codex/m2-pi-allocation-probe",
+    "audit_base": "c85e5994b3e82f7340849dd915b08ef1a84ece17",
+    "runtime_count": 247,
+    "conformance_count": 255,
+    "differential_count": 299,
+    "api_count": 222,
+    "fixture_count": 3388,
+    "planning_count": 14,
+    "task_count": 113
+  },
+  "checks": {
+    "diagnostic-original": {
+      "result": "failed",
+      "detail": "$ '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' /Users/sebastienros/.codex/worktrees/b918/xemele/docs/reports/M2-pi-allocation-probe/Diagnostics/bin/Release/net10.0/Xemele.SyntaxBenchmarks.dll original\nUnhandled exception. System.InvalidOperationException: PI callback/text progress changed.\n   at Program.<Main>$(String[] args) in /_/docs/reports/M2-pi-allocation-probe/Diagnostics/Program.cs:line 44\n\nexit=-6; expected=0\n"
+    },
+    "diagnostic-equivalent": {
+      "result": "failed",
+      "detail": "$ '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' /Users/sebastienros/.codex/worktrees/b918/xemele/docs/reports/M2-pi-allocation-probe/Diagnostics/bin/Release/net10.0/Xemele.SyntaxBenchmarks.dll equivalent\nUnhandled exception. System.InvalidOperationException: PI callback/text progress changed.\n   at Program.<Main>$(String[] args) in /_/docs/reports/M2-pi-allocation-probe/Diagnostics/Program.cs:line 44\n\nexit=-6; expected=0\n"
+    },
+    "focused-mtp": {
+      "result": "failed",
+      "detail": "$ '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' test --project tests/Xemele.Tests -c Release --no-build --no-restore --filter-method Xemele.Tests.PiTargets.PiTargetTests.RepeatedBorrowedPiTargetsAllocateZeroAfterWarmup\nProcess terminated.\nSystem.Net.Sockets.SocketException (13): Permission denied\n   at System.Net.Sockets.Socket.UpdateStatusAfterSocketErrorAndThrowException(SocketError error, Boolean disconnectOnFailure, String callerName)\n   at System.Net.Sockets.Socket.DoBind(EndPoint endPointSnapshot, SocketAddress socketAddress)\n   at System.Net.Sockets.Socket.Bind(EndPoint localEP)\n   at System.IO.Pipes.NamedPipeServerStream.SharedServer..ctor(String path, Int32 maxCount, Boolean isFirstPipeInstance)\n   at System.IO.Pipes.NamedPipeServerStream.SharedServer.Get(String path, Int32 maxCount, PipeOptions pipeOptions)\n   at System.IO.Pipes.NamedPipeServerStream.Create(String pipeName, PipeDirection direction, Int32 maxNumberOfServerInstances, PipeTransmissionMode transmissionMode, PipeOptions options, Int32 inBufferSize, Int32 outBufferSize, HandleInheritability inheritability)\n   at System.IO.Pipes.NamedPipeServerStream..ctor(String pipeName, PipeDirection direction, Int32 maxNumberOfServerInstances, PipeTransmissionMode transmissionMode, PipeOptions options, Int32 inBufferSize, Int32 outBufferSize)\n   at Microsoft.DotNet.Cli.Commands.Test.IPC.NamedPipeServer..ctor(String pipeName, Func`3 callback, Int32 maxNumberOfServerInstances, CancellationToken cancellationToken, Boolean skipUnknownMessages)\n   at Microsoft.DotNet.Cli.Commands.Test.TestApplication.WaitConnectionAsync(CancellationToken token)\n   at System.Environment.FailFast(System.Runtime.CompilerServices.StackCrawlMarkHandle, System.String, System.Runtime.CompilerServices.ObjectHandleOnStack, System.String)\n   at System.Environment.FailFast(System.Threading.StackCrawlMark ByRef, System.String, System.Exception, System.String)\n   at System.Environment.FailFast(System.String)\n   at Microsoft.DotNet.Cli.Commands.Test.TestApplication+<WaitConnectionAsync>d__21.MoveNext()\n   at System.Runtime.CompilerServices.AsyncMethodBuilderCore.Start[[Microsoft.DotNet.Cli.Commands.Test.TestApplication+<WaitConnectionAsync>d__21, dotnet, Version=10.0.400.0, Culture=neutral, PublicKeyToken=adb9793829ddae60]](<WaitConnectionAsync>d__21 ByRef)\n   at System.Runtime.CompilerServices.AsyncTaskMethodBuilder.Start[[Microsoft.DotNet.Cli.Commands.Test.TestApplication+<WaitConnectionAsync>d__21, dotnet, Version=10.0.400.0, Culture=neutral, PublicKeyToken=adb9793829ddae60]](<WaitConnectionAsync>d__21 ByRef)\n   at Microsoft.DotNet.Cli.Commands.Test.TestApplication.WaitConnectionAsync(System.Threading.CancellationToken)\n   at Microsoft.DotNet.Cli.Commands.Test.TestApplication+<>c__DisplayClass18_0+<<RunAsync>b__0>d.MoveNext()\n   at System.Runtime.CompilerServices.AsyncMethodBuilderCore.Start[[Microsoft.DotNet.Cli.Commands.Test.TestApplication+<>c__DisplayClass18_0+<<RunAsync>b__0>d, dotnet, Version=10.0.400.0, Culture=neutral, PublicKeyToken=adb9793829ddae60]](<<RunAsync>b__0>d ByRef)\n   at System.Runtime.CompilerServices.AsyncTaskMethodBuilder.Start[[Microsoft.DotNet.Cli.Commands.Test.TestApplication+<>c__DisplayClass18_0+<<RunAsync>b__0>d, dotnet, Version=10.0.400.0, Culture=neutral, PublicKeyToken=adb9793829ddae60]](<<RunAsync>b__0>d ByRef)\n   at Microsoft.DotNet.Cli.Commands.Test.TestApplication+<>c__DisplayClass18_0.<RunAsync>b__0()\n   at System.Threading.Tasks.Task`1[[System.__Canon, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]].InnerInvoke()\n   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(System.Threading.Thread, System.Threading.ExecutionContext, System.Threading.ContextCallback, System.Object)\n   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(System.Threading.Tasks.Task ByRef, System.Threading.Thread)\n   at System.Threading.ThreadPoolWorkQueue.Dispatch()\n   at System.Threading.PortableThreadPool+WorkerThread.WorkerThreadStart()\n   at System.Threading.Thread.StartCallback()\n\nexit=-6; expected=0\n"
+    },
+    "cumulative-mtp": {
+      "result": "failed",
+      "detail": "$ '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' test --solution Xemele.slnx -c Release --no-build --no-restore\nProcess terminated.\nSystem.Net.Sockets.SocketException (13): Permission denied\n   at System.Net.Sockets.Socket.UpdateStatusAfterSocketErrorAndThrowException(SocketError error, Boolean disconnectOnFailure, String callerName)\n   at System.Net.Sockets.Socket.DoBind(EndPoint endPointSnapshot, SocketAddress socketAddress)\n   at System.Net.Sockets.Socket.Bind(EndPoint localEP)\n   at System.IO.Pipes.NamedPipeServerStream.SharedServer..ctor(String path, Int32 maxCount, Boolean isFirstPipeInstance)\n   at System.IO.Pipes.NamedPipeServerStream.SharedServer.Get(String path, Int32 maxCount, PipeOptions pipeOptions)\n   at System.IO.Pipes.NamedPipeServerStream.Create(String pipeName, PipeDirection direction, Int32 maxNumberOfServerInstances, PipeTransmissionMode transmissionMode, PipeOptions options, Int32 inBufferSize, Int32 outBufferSize, HandleInheritability inheritability)\n   at System.IO.Pipes.NamedPipeServerStream..ctor(String pipeName, PipeDirection direction, Int32 maxNumberOfServerInstances, PipeTransmissionMode transmissionMode, PipeOptions options, Int32 inBufferSize, Int32 outBufferSize)\n   at Microsoft.DotNet.Cli.Commands.Test.IPC.NamedPipeServer..ctor(String pipeName, Func`3 callback, Int32 maxNumberOfServerInstances, CancellationToken cancellationToken, Boolean skipUnknownMessages)\n   at Microsoft.DotNet.Cli.Commands.Test.TestApplication.WaitConnectionAsync(CancellationToken token)\n   at System.Environment.FailFast(System.Runtime.CompilerServices.StackCrawlMarkHandle, System.String, System.Runtime.CompilerServices.ObjectHandleOnStack, System.String)\n   at System.Environment.FailFast(System.Threading.StackCrawlMark ByRef, System.String, System.Exception, System.String)\n   at System.Environment.FailFast(System.String)\n   at Microsoft.DotNet.Cli.Commands.Test.TestApplication+<WaitConnectionAsync>d__21.MoveNext()\n   at System.Runtime.CompilerServices.AsyncMethodBuilderCore.Start[[Microsoft.DotNet.Cli.Commands.Test.TestApplication+<WaitConnectionAsync>d__21, dotnet, Version=10.0.400.0, Culture=neutral, PublicKeyToken=adb9793829ddae60]](<WaitConnectionAsync>d__21 ByRef)\n   at System.Runtime.CompilerServices.AsyncTaskMethodBuilder.Start[[Microsoft.DotNet.Cli.Commands.Test.TestApplication+<WaitConnectionAsync>d__21, dotnet, Version=10.0.400.0, Culture=neutral, PublicKeyToken=adb9793829ddae60]](<WaitConnectionAsync>d__21 ByRef)\n   at Microsoft.DotNet.Cli.Commands.Test.TestApplication.WaitConnectionAsync(System.Threading.CancellationToken)\n   at Microsoft.DotNet.Cli.Commands.Test.TestApplication+<>c__DisplayClass18_0+<<RunAsync>b__0>d.MoveNext()\n   at System.Runtime.CompilerServices.AsyncMethodBuilderCore.Start[[Microsoft.DotNet.Cli.Commands.Test.TestApplication+<>c__DisplayClass18_0+<<RunAsync>b__0>d, dotnet, Version=10.0.400.0, Culture=neutral, PublicKeyToken=adb9793829ddae60]](<<RunAsync>b__0>d ByRef)\n   at System.Runtime.CompilerServices.AsyncTaskMethodBuilder.Start[[Microsoft.DotNet.Cli.Commands.Test.TestApplication+<>c__DisplayClass18_0+<<RunAsync>b__0>d, dotnet, Version=10.0.400.0, Culture=neutral, PublicKeyToken=adb9793829ddae60]](<<RunAsync>b__0>d ByRef)\n   at Microsoft.DotNet.Cli.Commands.Test.TestApplication+<>c__DisplayClass18_0.<RunAsync>b__0()\n   at System.Threading.Tasks.Task`1[[System.__Canon, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]].InnerInvoke()\n   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(System.Threading.Thread, System.Threading.ExecutionContext, System.Threading.ContextCallback, System.Object)\n   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(System.Threading.Tasks.Task ByRef, System.Threading.Thread)\n   at System.Threading.ThreadPoolWorkQueue.Dispatch()\n   at System.Threading.PortableThreadPool+WorkerThread.WorkerThreadStart()\n   at System.Threading.Thread.StartCallback()\n\nexit=-6; expected=0\n"
+    },
+    "direct-Xemele.Tests": {
+      "result": "failed",
+      "detail": "$ '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' /Users/sebastienros/.codex/worktrees/b918/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -noColor -result-xml /Users/sebastienros/.codex/worktrees/b918/xemele/artifacts/M2-pi-allocation-probe/source-0e04b7c-attempt1/Xemele.Tests.xml\nxUnit.net v3 In-Process Runner v4.0.1+8ed8aa354c (64-bit .NET 10.0.11)\n  Discovering: Xemele.Tests\n  Discovered:  Xemele.Tests\n  Starting:    Xemele.Tests\n    Xemele.Tests.PiTargets.PiTargetTests.RepeatedBorrowedPiTargetsAllocateZeroAfterWarmup [FAIL]\n      Assert.Equal() Failure: Values differ\n      Expected: 603\n      Actual:   1003\n      Stack Trace:\n        /_/tests/Xemele.Tests/M1-pi-targets/PiTargetTests.cs(152,0): at Xemele.Tests.PiTargets.PiTargetTests.RepeatedBorrowedPiTargetsAllocateZeroAfterWarmup()\n           at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)\n           at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)\n  Finished:    Xemele.Tests (ID = '86e59b5a7b7e672fe1579a231284291082683ca453b6382f09537799c8d37d74')\n=== TEST EXECUTION SUMMARY ===\n   Xemele.Tests  Total: 247, Errors: 0, Failed: 1, Skipped: 0, Not Run: 0, Time: 0.712s\n\nexit=1; expected=0\n"
+    },
+    "direct-Xemele.Conformance.Tests": {
+      "result": "passed",
+      "detail": {
+        "total": 255,
+        "failed": 0,
+        "skipped": 0
+      }
+    },
+    "direct-Xemele.Differential.Tests": {
+      "result": "passed",
+      "detail": {
+        "total": 299,
+        "failed": 0,
+        "skipped": 0
+      }
+    },
+    "reference-provenance": {
+      "result": "passed",
+      "detail": {
+        "records": 242,
+        "sourceRevision": "0e04b7c968ddaf0920fac1f9b08c0e61286b3fd7",
+        "runnerSha256": "c8527478cc345b504427a1872d7f82671403551ccf850e7dd7b36f372115aad6",
+        "runner": "/Users/sebastienros/.codex/worktrees/b918/xemele/artifacts/M2-pi-allocation-probe/source-0e04b7c-attempt1/pinned-reference/BclReference.dll",
+        "dotnet": "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet"
+      }
+    },
+    "compiled-api": {
+      "result": "passed",
+      "detail": {
+        "bootstrapEmptyApi": false,
+        "checkerOutput": "Matched 222 compiled members",
+        "matched": true,
+        "members": 222,
+        "report": "/Users/sebastienros/.codex/worktrees/b918/xemele/docs/reports/M2-pi-allocation-probe/source-0e04b7c-attempt1/runtime-api.json"
+      }
+    },
+    "discovery": {
+      "result": "passed",
+      "detail": {
+        "apiDeclarations": 222,
+        "apiFragments": [
+          "docs/api/M1-common.txt",
+          "docs/api/M1-dom.txt",
+          "docs/api/M1-serialize.txt",
+          "docs/api/M1-tree.txt"
+        ],
+        "bootstrapEmptyApi": false,
+        "corpusManifests": [
+          "tests/corpora/bootstrap/manifest.json",
+          "tests/corpora/xml/manifest.json"
+        ],
+        "fixtures": 3388,
+        "formatVersion": 1
+      }
+    },
+    "planning-regressions": {
+      "result": "passed",
+      "detail": "test_branch_implementation_does_not_unlock_dependents (test_tasks.TaskTrackingTests.test_branch_implementation_does_not_unlock_dependents) ... ok\ntest_cycle_rejected (test_tasks.TaskTrackingTests.test_cycle_rejected) ... ok\ntest_gate_cannot_omit_a_task (test_tasks.TaskTrackingTests.test_gate_cannot_omit_a_task) ... ok\ntest_initial_readiness (test_tasks.TaskTrackingTests.test_initial_readiness) ... ok\ntest_later_milestone_dependency_rejected (test_tasks.TaskTrackingTests.test_later_milestone_dependency_rejected) ... ok\ntest_malformed_status_reports_error (test_tasks.TaskTrackingTests.test_malformed_status_reports_error) ... ok\ntest_missing_integration_evidence_rejected (test_tasks.TaskTrackingTests.test_missing_integration_evidence_rejected) ... ok\ntest_missing_specification_reports_error (test_tasks.TaskTrackingTests.test_missing_specification_reports_error) ... ok\ntest_repository_graph_valid (test_tasks.TaskTrackingTests.test_repository_graph_valid) ... ok\ntest_similar_prefixes_are_not_ownership_overlap (test_tasks.TaskTrackingTests.test_similar_prefixes_are_not_ownership_overlap) ... ok\ntest_started_task_with_unverified_dependency_rejected (test_tasks.TaskTrackingTests.test_started_task_with_unverified_dependency_rejected) ... ok\ntest_unordered_path_overlap_rejected_case_insensitively (test_tasks.TaskTrackingTests.test_unordered_path_overlap_rejected_case_insensitively) ... ok\ntest_unproven_acceptance_rejected (test_tasks.TaskTrackingTests.test_unproven_acceptance_rejected) ... ok\ntest_verified_bootstrap_unlocks_independent_lanes (test_tasks.TaskTrackingTests.test_verified_bootstrap_unlocks_independent_lanes) ... ok\n\n----------------------------------------------------------------------\nRan 14 tests in 0.034s\n\nOK\n"
+    },
+    "planning-validation": {
+      "result": "passed",
+      "detail": "Validated 113 tasks: schema, evidence, acyclic dependencies, additive milestones, and ordered ownership.\n"
+    },
+    "final-audit": {
+      "result": "passed",
+      "detail": {
+        "committed": [
+          "docs/reports/M2-pi-allocation-probe/Diagnostics/Diagnostics.csproj",
+          "docs/reports/M2-pi-allocation-probe/Diagnostics/Program.cs",
+          "docs/reports/M2-pi-allocation-probe/README.md",
+          "docs/reports/M2-pi-allocation-probe/history/bounded-checkpoint-checks.txt.gz",
+          "docs/reports/M2-pi-allocation-probe/history/bounded-checkpoint-summary.json",
+          "docs/reports/M2-pi-allocation-probe/history/checkpoint-checks.txt.gz",
+          "docs/reports/M2-pi-allocation-probe/history/checkpoint-summary.json",
+          "docs/reports/M2-pi-allocation-probe/history/runtime-after-mtp.xml.gz",
+          "docs/reports/M2-pi-allocation-probe/verify.py",
+          "tests/Xemele.Tests/M1-pi-targets/PiTargetTests.cs"
+        ],
+        "working": [],
+        "staged": [],
+        "untracked": [
+          "docs/reports/M2-pi-allocation-probe/source-0e04b7c-attempt1/Xemele.Conformance.Tests.xml.gz",
+          "docs/reports/M2-pi-allocation-probe/source-0e04b7c-attempt1/Xemele.Differential.Tests.xml.gz",
+          "docs/reports/M2-pi-allocation-probe/source-0e04b7c-attempt1/Xemele.Tests.xml.gz",
+          "docs/reports/M2-pi-allocation-probe/source-0e04b7c-attempt1/audit.json",
+          "docs/reports/M2-pi-allocation-probe/source-0e04b7c-attempt1/reference-provenance.json",
+          "docs/reports/M2-pi-allocation-probe/source-0e04b7c-attempt1/runtime-api.json"
+        ]
+      }
+    }
+  },
+  "sourceRevision": "0e04b7c968ddaf0920fac1f9b08c0e61286b3fd7",
+  "dotnetInfo": ".NET SDK:\n Version:           10.0.400\n Commit:            14fbf8d527\n Workload version:  10.0.400-manifests.330ea142\n MSBuild version:   18.9.6+14fbf8d52\n\nRuntime Environment:\n OS Name:     Mac OS X\n OS Version:  15.8\n OS Platform: Darwin\n RID:         osx-arm64\n Base Path:   /Users/sebastienros/Library/Application Support/dotnetup/dotnet/sdk/10.0.400/\n\n.NET workloads installed:\nThere are no installed workloads to display.\nConfigured to use workload sets when installing new manifests.\nNo workload sets are installed. Run \"dotnet workload restore\" to install a workload set.\n\nHost:\n  Version:      11.0.0-rc.1.26425.128\n  Architecture: arm64\n  Commit:       3551975be0\n\n.NET SDKs installed:\n  8.0.424 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/sdk]\n  10.0.100 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/sdk]\n  10.0.400 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/sdk]\n  11.0.100-rc.1.26413.103 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/sdk]\n  11.0.100-rc.1.26425.128 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/sdk]\n\n.NET runtimes installed:\n  Microsoft.AspNetCore.App 8.0.30 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.AspNetCore.App]\n  Microsoft.AspNetCore.App 10.0.0 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.AspNetCore.App]\n  Microsoft.AspNetCore.App 10.0.11 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.AspNetCore.App]\n  Microsoft.AspNetCore.App 11.0.0-rc.1.26413.103 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.AspNetCore.App]\n  Microsoft.AspNetCore.App 11.0.0-rc.1.26425.128 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.AspNetCore.App]\n  Microsoft.NETCore.App 8.0.30 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App]\n  Microsoft.NETCore.App 10.0.0 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App]\n  Microsoft.NETCore.App 10.0.11 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App]\n  Microsoft.NETCore.App 11.0.0-rc.1.26413.103 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App]\n  Microsoft.NETCore.App 11.0.0-rc.1.26425.128 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App]\n\nOther architectures found:\n  None\n\nEnvironment variables:\n  DOTNET_CLI_USE_MSBUILD_SERVER            [0]\n  DOTNET_ROOT                              [/Users/sebastienros/Library/Application Support/dotnetup/dotnet]\n\nglobal.json file:\n  /Users/sebastienros/.codex/worktrees/b918/xemele/global.json\n\nLearn more:\n  https://aka.ms/dotnet/info\n\nDownload .NET:\n  https://aka.ms/dotnet/download\n",
+  "runtimeDllSourceSha256": "f1caa6cba79729adbcd57e6b1bd5dd893509f2212e726a5c50f31395002d3a9b",
+  "failedChecks": [
+    "diagnostic-original",
+    "diagnostic-equivalent",
+    "focused-mtp",
+    "cumulative-mtp",
+    "direct-Xemele.Tests"
+  ]
+}
