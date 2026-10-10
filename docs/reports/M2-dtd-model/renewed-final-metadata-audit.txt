@@ -1,0 +1,70 @@
+Evidence/handoff revision: 06c5ad365920cf3de86decd97691540ef047c391
+$ git rev-parse HEAD
+06c5ad365920cf3de86decd97691540ef047c391
+exit=0
+
+$ git diff --name-only f9ce78b1e1eb46f6726865c5f435365ab321b23b..HEAD
+docs/reports/M2-dtd-model/Approved/Approved.csproj
+docs/reports/M2-dtd-model/Approved/ApprovedModel.cs
+docs/reports/M2-dtd-model/README.md
+docs/reports/M2-dtd-model/final-metadata-audit.txt
+docs/reports/M2-dtd-model/first/Xemele.Conformance.Tests.xml.gz
+docs/reports/M2-dtd-model/first/Xemele.Differential.Tests.xml.gz
+docs/reports/M2-dtd-model/first/Xemele.Tests.xml.gz
+docs/reports/M2-dtd-model/first/checks.txt.gz
+docs/reports/M2-dtd-model/first/focused.xml.gz
+docs/reports/M2-dtd-model/first/historical-checks.txt.gz
+docs/reports/M2-dtd-model/first/reference-provenance.json
+docs/reports/M2-dtd-model/first/runtime-api.json
+docs/reports/M2-dtd-model/first/summary.json
+docs/reports/M2-dtd-model/renewal.md
+docs/reports/M2-dtd-model/renewed/Xemele.Conformance.Tests.xml.gz
+docs/reports/M2-dtd-model/renewed/Xemele.Differential.Tests.xml.gz
+docs/reports/M2-dtd-model/renewed/Xemele.Tests.xml.gz
+docs/reports/M2-dtd-model/renewed/checks.txt.gz
+docs/reports/M2-dtd-model/renewed/focused.xml.gz
+docs/reports/M2-dtd-model/renewed/historical-checks.txt.gz
+docs/reports/M2-dtd-model/renewed/reference-provenance.json
+docs/reports/M2-dtd-model/renewed/runtime-api.json
+docs/reports/M2-dtd-model/renewed/summary.json
+docs/reports/M2-dtd-model/verify.py
+docs/tasks/M2-dtd-model.json
+samples/M2-dtd-model/ModelSample.csproj
+samples/M2-dtd-model/Program.cs
+src/Xemele/Parsing/Dtd/Model/Declarations.cs
+tests/Xemele.Tests/M2-dtd-model/ModelTests.cs
+exit=0
+
+$ git diff --name-only
+exit=0
+
+$ git diff --cached --name-only
+exit=0
+
+$ git ls-files --others --exclude-standard
+exit=0
+
+$ git status --porcelain
+exit=0
+
+$ git diff --check f9ce78b1e1eb46f6726865c5f435365ab321b23b..HEAD
+exit=0
+
+$ git diff --check
+exit=0
+
+$ git diff --check --cached
+exit=0
+
+$ git diff --exit-code e020db32fec509f122f0ffec37135ca2ee06724f HEAD -- src/Xemele/Parsing/Dtd/Model tests/Xemele.Tests/M2-dtd-model samples/M2-dtd-model docs/reports/M2-dtd-model/Approved docs/reports/M2-dtd-model/verify.py
+exit=0
+
+$ python3 tools/planning/tasks.py validate
+Validated 118 tasks: schema, evidence, acyclic dependencies, additive milestones, and ordered ownership.
+exit=0
+
+$ ps -axo pid,command (filtered for worker-root dotnet/verify children)
+No matching active processes.
+exit=0
+
+All changed paths owned; clean before this owned audit artifact; no source delta; explicit source/JSON ownership release.
