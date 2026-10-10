@@ -307,7 +307,7 @@ internal sealed partial class XmlParserCore : IDisposable
                     referenceLocation = location; state = State.Reference; return;
                 }
                 if (!textActive) { ResetToken(); BeginText(XmlTextKind.Text, "", location); declarationAllowed = false; }
-                if (frames.Count == 0 && !White(c)) { Reject("XML.Syntax", "Non-whitespace outside the root.", location); return; }
+                if (frames.Count == 0 && !White(c) && !RecoverOutsideText(location)) { Reject("XML.Syntax", "Non-whitespace outside the root.", location); return; }
                 if (c == '&' && AllowsUnresolvedContent)
                 {
                     // Unknown content ends the preceding text token. Bound its
@@ -352,7 +352,7 @@ internal sealed partial class XmlParserCore : IDisposable
                 if (prefix.SequenceEqual("--")) { tokenLength = 0; state = State.Comment; BeginText(XmlTextKind.Comment, "", opening); declarationAllowed = false; return; }
                 if (prefix.SequenceEqual("[CDATA["))
                 {
-                    if (frames.Count == 0) { Reject("XML.Syntax", "CDATA outside the root.", opening); return; }
+                    if (frames.Count == 0 && !RecoverOutsideCData()) { Reject("XML.Syntax", "CDATA outside the root.", opening); return; }
                     tokenLength = 0; state = State.CData; BeginText(XmlTextKind.CData, "", opening); declarationAllowed = false; return;
                 }
                 if (!"DOCTYPE".AsSpan().StartsWith(prefix) && !"--".AsSpan().StartsWith(prefix) && !"[CDATA[".AsSpan().StartsWith(prefix))
@@ -501,6 +501,7 @@ internal sealed partial class XmlParserCore : IDisposable
     {
         var eof = position.Current(sourceMode == 2 ? byteLength : null);
         if (high != 0) { Reject("XML.Syntax", "Incomplete surrogate at EOF.", highLocation); return; }
+        if (RecoverPhysicalEof(eof)) return;
         if (state != State.Data || frames.Count != 0 || !rootSeen) { Reject("XML.Syntax", "Incomplete XML document.", eof); return; }
         if (textActive) { EndText(eof); return; }
         opening = eof; delivery = Delivery.EndDocument;
@@ -509,6 +510,7 @@ internal sealed partial class XmlParserCore : IDisposable
     {
         while ((delivery != Delivery.None || unresolvedPending) && diagnostic is null)
         {
+            if (DrainDiscardedRecovery()) continue;
             if (delivery == Delivery.None) delivery = Delivery.UnresolvedReference;
             cancellation.ThrowIfCancellationRequested();
             bool keepGoing;
@@ -552,7 +554,8 @@ internal sealed partial class XmlParserCore : IDisposable
                     }
                     break;
                 case Delivery.Close:
-                    delivery = Delivery.None; PopFrame(); keepGoing = sink.EndElement(deliveredName.View, opening); break;
+                    var closingName = deliveredName;
+                    delivery = Delivery.None; PopFrame(); AdvanceRecoveryClose(); keepGoing = sink.EndElement(closingName.View, opening); break;
                 case Delivery.UnresolvedReference:
                     delivery = Delivery.None;
                     if (sink is not IXmlUnresolvedReferenceSink unresolvedSink)
@@ -713,7 +716,8 @@ internal sealed partial class XmlParserCore : IDisposable
     }
     private void ParseTag()
     {
-        if (rootClosed) { Reject("XML.Syntax", "Multiple root elements.", opening); return; }
+        PrepareRecoveryTag();
+        if (rootClosed && !RecoveryEnabled) { Reject("XML.Syntax", "Multiple root elements.", opening); return; }
         int i = 0; int nameLength = ReadName(ref i);
         if (!ValidName(token.AsSpan(0, nameLength), true)) { Reject("XML.Syntax", "Invalid element name.", opening); return; }
         dtdAttributes = entities?.GetAttributes(token.AsSpan(0, nameLength));
@@ -760,23 +764,26 @@ internal sealed partial class XmlParserCore : IDisposable
             {
                 Work(p); ref var previous = ref attributes[p];
                 if (!previous.Namespace && ReferenceEquals(previous.Name.Local, a.Name.Local) && ReferenceEquals(previous.Name.Uri, a.Name.Uri))
-                { Reject("XML.Namespace", "Duplicate expanded attribute name.", a.Location); return; }
+                { if (!RecoverDuplicateAttribute(n, a.Location)) { Reject("XML.Namespace", "Duplicate expanded attribute name.", a.Location); return; } break; }
             }
         }
         if (diagnostic is not null) return;
         for (int n = 0; n < attributeCount; n++)
             if (attributes[n].Incomplete is { } incomplete && sinkIdentity is not IXmlIncompleteAttributeSink)
             { Reject("XML.IncompleteAttributeSinkRequired", "Sink cannot represent incomplete attribute values.", FirstUnknown(incomplete.Parts)); return; }
+        if (!FinishRecoveryTag()) return;
         if (!Charge(Quota.Depth, 1, opening)) return;
         frames.Add(new(deliveredName, bindingStart, StandaloneElementWhitespace(token.AsSpan(0, nameLength)))); rootSeen = true; deliveryIndex = 0; delivery = Delivery.Tag;
     }
     private void ParseClose()
     {
         int i = 0; int length = ReadName(ref i); SkipWhite(ref i);
-        if (i != tokenLength || !ValidName(token.AsSpan(0, length), true) || frames.Count == 0)
+        if (i != tokenLength || !ValidName(token.AsSpan(0, length), true))
         { Reject("XML.Syntax", "Invalid end tag.", opening); return; }
         if (entitySources is { Count: > 0 } && frames.Count <= entitySources[^1].ElementDepth)
         { Reject("XML.Syntax", "Entity cannot close an element from its parent source.", opening); return; }
+        if (RecoverClosingTag(length)) return;
+        if (frames.Count == 0) { Reject("XML.Syntax", "Invalid end tag.", opening); return; }
         var expected = frames[^1].Name; var q = token.AsSpan(0, length); int colon = Colon(q);
         var prefix = colon < 0 ? ReadOnlySpan<char>.Empty : q[..colon]; var local = colon < 0 ? q : q[(colon + 1)..];
         if (!Equal(prefix, expected.Prefix) || !Equal(local, expected.Local)) { Reject("XML.Syntax", "Mismatched end tag.", opening); return; }
