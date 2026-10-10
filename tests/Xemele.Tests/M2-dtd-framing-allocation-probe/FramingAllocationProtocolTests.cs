@@ -25,6 +25,9 @@ public sealed class FramingAllocationProtocolTests
             report with { Actual = actual with { HelperIlSha256 = "wrong" } }, report with { Actual = actual with { NativeRuntimeSha256 = "wrong" } },
             report with { Actual = actual with { RuntimeConfigSha256 = "wrong" } }, report with { Actual = actual with { ServerGc = !actual.ServerGc } },
             report with { MeasuredConsumed = 31 }, report with { FinalColumn = 64020 }, report with { AllocatedBytes = 1 },
+            report with { Actual = actual with { NativeGcSha256 = "wrong" } }, report with { Actual = actual with { GcConfiguration = "{}" } },
+            report with { Actual = actual with { TestVersion = "1.0.0+" + new string('0', 40) } },
+            report with { Actual = actual with { ProductVersion = "1.0.0+" + new string('0', 40) } },
             report with { DiagnosticCode = "XML.Syntax" }, report with { EscapedObjectLength = 37 } })
             Assert.Throws<InvalidOperationException>(() => FramingAllocationChild.ParseAndValidateReport(JsonSerializer.Serialize(invalid), request, Environment.ProcessId, actual));
     }

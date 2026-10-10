@@ -117,6 +117,12 @@ def main():
             tests = list(ET.parse(xml).iter('test'))
             data = dict(total=len(tests),failed=sum(t.get('result') == 'Fail' for t in tests),skipped=sum(t.get('result') == 'Skip' for t in tests))
             data['framing'] = [dict(result=t.get('result'),output=t.findtext('output')) for t in tests if t.get('name','').endswith('WarmWhitespacePrimitiveHasNoAllocations')]
+            baseline=json.loads(gzip.decompress((REPORT/'history/verified-cc4770b'/(assembly+'-identities.json.gz')).read_bytes()))
+            original_xml=ROOT/baseline['xmlPath']
+            require(hashlib.sha256(original_xml.read_bytes()).hexdigest()==baseline['xmlSha256'],'baseline XML identity')
+            inherited=[(t.get('type'),t.get('method'),t.get('name')) for t in tests if t.get('type')!='Xemele.Tests.FramingAllocationProtocolTests']
+            require(sorted(inherited)==[tuple(row) for row in baseline['identities']],'inherited test identities changed')
+            data['preservedBaselineCount']=baseline['count']
             if assembly=='Xemele.Tests':
                 framing=[t for t in tests if t.get('type')=='Xemele.Tests.FramingTests']
                 require(len(framing)==1243,'framing identities/count changed')
@@ -159,6 +165,10 @@ def main():
                 require(hashlib.sha256(config.read_bytes()).hexdigest().upper()==actual['RuntimeConfigSha256'],'runtimeconfig')
                 native=Path(actual['CoreLibrary']).parent/'libcoreclr.dylib'
                 require(hashlib.sha256(native.read_bytes()).hexdigest().upper()==actual['NativeRuntimeSha256'],'native runtime')
+                require(hashlib.sha256(Path(actual['NativeGcLibrary']).read_bytes()).hexdigest().upper()==actual['NativeGcSha256'],'native GC')
+                configuration=json.loads(actual['GcConfiguration'])
+                require(configuration['GCName']=='' and configuration['GCPath']=='','default native GC')
+                require(actual['TestVersion']==actual['ProductVersion'] and actual['TestVersion'].endswith('+'+revision),'full matching compiled source')
                 stages=[json.loads(line) for line in (directory/(mode+'.progress.jsonl')).read_text().splitlines()]
                 require([p['stage'] for p in stages]==['warm-start','measured-start','measured-end','report-written'] and all(p['pid']==data['ProcessId'] for p in stages),'child stage progress')
                 xmltests=list(ET.parse(directory/(mode+'.xml')).iter('test'))
@@ -169,6 +179,7 @@ def main():
         summary['compiledSourceBefore']=compiled_source_hashes()
         require(run('git','branch','--show-current').strip()==args.expected_branch,'wrong branch')
         run('git','merge-base','--is-ancestor',CLAIM,'HEAD'); run('git','merge-base','--is-ancestor',args.audit_base,'HEAD')
+        run('git','merge-base','--is-ancestor','cc4770bfc417dd81ea1744a54b477134a4f7e997','HEAD')
         for dependency in ['M2-dtd-framing']:
             require(json.loads((ROOT / f'docs/tasks/{dependency}.json').read_text())['status']=='verified',dependency)
         audit(); check('archive-regression', lambda: run('python3','-B','-m','unittest','discover','-s',REPORT,'-p','test_archive.py','-v')); require(run('dotnet','--version').strip()=='10.0.400','SDK')
@@ -194,60 +205,60 @@ def main():
         if args.prepare_only:
             check('final-audit',audit)
             summary['result']='prepared';summary['allocationObservations']='unrun: requires exclusive coordinator grant'
-            return False
-        for mode in ['original','equivalent','helper']:
-            def diagnostic(mode=mode):
-                data=json.loads(run('dotnet',diagnostic_dll,mode).strip().splitlines()[-1])
-                (report / (mode+'-allocations.json')).write_text(json.dumps(data,indent=2)+'\n')
-                require(data['runtime']=='10.0.11' and data['warmIterations']==1000 and data['measuredIterations']==1000 and data['warmConsumed']==32000 and data['measuredConsumed']==32000 and data['warmColumn']==32007 and data['measuredColumn']==64007 and data['finalColumn']==64021 and data['completion']=='Declared',data)
-                if mode=='helper': require(data['primitiveBytes']==0,data)
-                return data
-            check('diagnostic-'+mode,diagnostic)
-        def focused():
-            output=run('dotnet','test','--project','tests/Xemele.Tests','-c','Release','--no-build','--no-restore','--filter-method','*WarmWhitespacePrimitiveHasNoAllocations*')
-            require(re.search(r'total:\s*1\b',output) is not None,'focused must execute one test')
-            return output
-        check('focused-mtp',focused)
-        def cumulative():
-            output=run('python3','-B','docs/reports/M1-contracts/verify.py')
-            require(re.search(r'total:\s*'+str(args.runtime_count+args.conformance_count+args.differential_count)+r'\b',output) is not None,'cumulative count')
-            return output
-        check('cumulative-mtp',cumulative)
-        for assembly,count in [('Xemele.Tests',args.runtime_count),('Xemele.Conformance.Tests',args.conformance_count),('Xemele.Differential.Tests',args.differential_count)]:
-            check('direct-'+assembly,lambda assembly=assembly,count=count: direct(assembly,count))
-        def provenance():
-            records=[json.loads(p.read_text()) for p in (raw / 'case-results').glob('reference-*.json')]
-            require(len(records)==242 and len({r['id'] for r in records})==242,'reference count')
-            require(directory_hashes(pinned.parent)==pinned_hashes,'complete pinned output changed')
-            require(all(r['runnerSha256']==runner_hash and r['response']['engine']['build']=='1.0.0+'+revision for r in records),'stale runner provenance')
-            data=dict(records=242,sourceRevision=revision,runnerSha256=runner_hash,runner=str(pinned),dotnet=str(dotnet))
-            (report / 'reference-provenance.json').write_text(json.dumps(data,indent=2)+'\n'); return data
-        check('reference-provenance',provenance)
-        check('child-provenance',children)
-        def negative():
-            requests=sorted(p for d in (set(child_root.iterdir()) - child_before) for p in d.glob('real.request.json'))
-            require(bool(requests), 'no valid child request for bounded negative controls')
-            return run('python3','-B', REPORT / 'protocol_negative.py', '--report-prefix', args.report_prefix+'-protocol-negative', '--known-request', requests[0], '--source-revision', revision)
-        check('protocol-negatives', negative)
-        run('dotnet','build','docs/reports/M0-contracts/ApiCheck/ApiCheck.csproj',*FLAGS)
-        def api():
-            data=json.loads(run('python3','-B','tools/ApiBaseline/compare.py','--report',report / 'runtime-api.json'))
-            require(data['matched'] and data['members']==args.api_count,data);return data
-        check('compiled-api',api)
-        def discovery():
-            data=json.loads(run('python3','-B','tools/ApiBaseline/discover.py'))
-            require(data['apiDeclarations']==args.api_count and data['fixtures']==args.fixture_count,data);return data
-        check('discovery',discovery)
-        def planning():
-            output=run('python3','-B','-m','unittest','discover','-s','tools/planning','-p','test_tasks.py','-v')
-            require(f'Ran {args.planning_count} tests' in output,'planning count');return output
-        check('planning-regressions',planning)
-        def validation():
-            output=run('python3','-B','tools/planning/tasks.py','validate')
-            require(f'Validated {args.task_count} tasks' in output,'task count');return output
-        check('planning-validation',validation);check('final-audit',audit)
-        summary['result']='failed' if failures else 'passed';summary['failedChecks']=failures
-        summary['scope']='Isolated synchronous whitespace framing primitive; exact0B/no concurrent allocation guarantee. Full joint MTP/direct suites mandatory; historical failure causes unresolved.'
+        else:
+            for mode in ['original','equivalent','helper']:
+                def diagnostic(mode=mode):
+                    data=json.loads(run('dotnet',diagnostic_dll,mode).strip().splitlines()[-1])
+                    (report / (mode+'-allocations.json')).write_text(json.dumps(data,indent=2)+'\n')
+                    require(data['runtime']=='10.0.11' and data['warmIterations']==1000 and data['measuredIterations']==1000 and data['warmConsumed']==32000 and data['measuredConsumed']==32000 and data['warmColumn']==32007 and data['measuredColumn']==64007 and data['finalColumn']==64021 and data['completion']=='Declared',data)
+                    if mode=='helper': require(data['primitiveBytes']==0,data)
+                    return data
+                check('diagnostic-'+mode,diagnostic)
+            def focused():
+                output=run('dotnet','test','--project','tests/Xemele.Tests','-c','Release','--no-build','--no-restore','--filter-method','*WarmWhitespacePrimitiveHasNoAllocations*')
+                require(re.search(r'total:\s*1\b',output) is not None,'focused must execute one test')
+                return output
+            check('focused-mtp',focused)
+            def cumulative():
+                output=run('python3','-B','docs/reports/M1-contracts/verify.py')
+                require(re.search(r'total:\s*'+str(args.runtime_count+args.conformance_count+args.differential_count)+r'\b',output) is not None,'cumulative count')
+                return output
+            check('cumulative-mtp',cumulative)
+            for assembly,count in [('Xemele.Tests',args.runtime_count),('Xemele.Conformance.Tests',args.conformance_count),('Xemele.Differential.Tests',args.differential_count)]:
+                check('direct-'+assembly,lambda assembly=assembly,count=count: direct(assembly,count))
+            def provenance():
+                records=[json.loads(p.read_text()) for p in (raw / 'case-results').glob('reference-*.json')]
+                require(len(records)==242 and len({r['id'] for r in records})==242,'reference count')
+                require(directory_hashes(pinned.parent)==pinned_hashes,'complete pinned output changed')
+                require(all(r['runnerSha256']==runner_hash and r['response']['engine']['build']=='1.0.0+'+revision for r in records),'stale runner provenance')
+                data=dict(records=242,sourceRevision=revision,runnerSha256=runner_hash,runner=str(pinned),dotnet=str(dotnet))
+                (report / 'reference-provenance.json').write_text(json.dumps(data,indent=2)+'\n'); return data
+            check('reference-provenance',provenance)
+            check('child-provenance',children)
+            def negative():
+                requests=sorted(p for d in (set(child_root.iterdir()) - child_before) for p in d.glob('real.request.json'))
+                require(bool(requests), 'no valid child request for bounded negative controls')
+                return run('python3','-B', REPORT / 'protocol_negative.py', '--report-prefix', args.report_prefix+'-protocol-negative', '--known-request', requests[0], '--source-revision', revision)
+            check('protocol-negatives', negative)
+            run('dotnet','build','docs/reports/M0-contracts/ApiCheck/ApiCheck.csproj',*FLAGS)
+            def api():
+                data=json.loads(run('python3','-B','tools/ApiBaseline/compare.py','--report',report / 'runtime-api.json'))
+                require(data['matched'] and data['members']==args.api_count,data);return data
+            check('compiled-api',api)
+            def discovery():
+                data=json.loads(run('python3','-B','tools/ApiBaseline/discover.py'))
+                require(data['apiDeclarations']==args.api_count and data['fixtures']==args.fixture_count,data);return data
+            check('discovery',discovery)
+            def planning():
+                output=run('python3','-B','-m','unittest','discover','-s','tools/planning','-p','test_tasks.py','-v')
+                require(f'Ran {args.planning_count} tests' in output,'planning count');return output
+            check('planning-regressions',planning)
+            def validation():
+                output=run('python3','-B','tools/planning/tasks.py','validate')
+                require(f'Validated {args.task_count} tasks' in output,'task count');return output
+            check('planning-validation',validation);check('final-audit',audit)
+            summary['result']='failed' if failures else 'passed';summary['failedChecks']=failures
+            summary['scope']='Isolated synchronous whitespace framing primitive; exact0B/no concurrent allocation guarantee. Full joint MTP/direct suites mandatory; historical failure causes unresolved.'
     except Exception as e:
         summary['failure']=str(e)
         summary['failedChecks']=failures

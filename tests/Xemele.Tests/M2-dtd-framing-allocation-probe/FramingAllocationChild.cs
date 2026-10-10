@@ -25,7 +25,7 @@ internal static class FramingAllocationChild
         string ProductSha256, string ProductVersion, string RuntimeVersion,
         string CoreLibrary, string CoreLibrarySha256, string NativeRuntimeSha256,
         string HelperIlSha256, string RuntimeConfigSha256, bool ServerGc, string GcLatencyMode,
-        string Architecture, string RuntimeOverrides);
+        string Architecture, string RuntimeOverrides, string NativeGcLibrary, string NativeGcSha256, string GcConfiguration);
     internal sealed record Request(int Version, string Mode, string Token, int ParentPid,
         string Directory, string XmlPath, string ReportPath, Provenance Expected);
     internal sealed record Report(int Version, string Mode, string Token, int ProcessId,
@@ -38,7 +38,18 @@ internal static class FramingAllocationChild
     {
         if (!condition) throw new InvalidOperationException(message);
     }
-    private static string Canonical(string path) => new FileInfo(Path.GetFullPath(path)).ResolveLinkTarget(true)?.FullName ?? Path.GetFullPath(path);
+    private static string Canonical(string path)
+    {
+        string full = Path.GetFullPath(path), root = Path.GetPathRoot(full)!;
+        string current = root;
+        foreach (string component in full[root.Length..].Split(Path.DirectorySeparatorChar, StringSplitOptions.RemoveEmptyEntries))
+        {
+            current = Path.Combine(current, component);
+            FileSystemInfo info = System.IO.Directory.Exists(current) ? new DirectoryInfo(current) : new FileInfo(current);
+            current = info.ResolveLinkTarget(true)?.FullName ?? current;
+        }
+        return current;
+    }
     private static string Hash(string path)
     {
         using var stream = File.OpenRead(path);
@@ -82,7 +93,12 @@ internal static class FramingAllocationChild
     private static Provenance Fingerprint(string executable)
     {
         Assembly test = typeof(FramingAllocationChild).Assembly, product = typeof(XmlTextDeclarationFramer).Assembly;
+        Require(System.Text.RegularExpressions.Regex.IsMatch(Version(test), @"\+[0-9a-f]{40}$")
+            && Version(test) == Version(product), "Missing full matching compiled source revision.");
         string runtime = RuntimeEnvironment.GetRuntimeDirectory();
+        string nativeGc = Path.Combine(runtime, OperatingSystem.IsMacOS() ? "libclrgc.dylib" : OperatingSystem.IsWindows() ? "clrgc.dll" : "libclrgc.so");
+        var configuration = GC.GetConfigurationVariables();
+        Require(configuration["GCName"].ToString() == "" && configuration["GCPath"].ToString() == "", "Framing probe requires the active default native GC library.");
         string native = Path.Combine(runtime, OperatingSystem.IsMacOS() ? "libcoreclr.dylib" : OperatingSystem.IsWindows() ? "coreclr.dll" : "libcoreclr.so");
         var helper = typeof(FramingAllocationProbe).GetMethod(nameof(FramingAllocationProbe.AppendChecked), BindingFlags.Static | BindingFlags.NonPublic)!;
         return new(Canonical(executable), Hash(executable), Canonical(test.Location), Hash(test.Location), Version(test),
@@ -93,7 +109,8 @@ internal static class FramingAllocationChild
             GCSettings.LatencyMode.ToString(), RuntimeInformation.ProcessArchitecture.ToString(),
             JsonSerializer.Serialize(Environment.GetEnvironmentVariables().Cast<System.Collections.DictionaryEntry>()
                 .Where(e => ((string)e.Key).StartsWith("DOTNET_", StringComparison.Ordinal) || ((string)e.Key).StartsWith("COMPlus_", StringComparison.Ordinal))
-                .OrderBy(e => (string)e.Key, StringComparer.Ordinal).ToDictionary(e => (string)e.Key, e => (string?)e.Value)));
+                .OrderBy(e => (string)e.Key, StringComparer.Ordinal).ToDictionary(e => (string)e.Key, e => (string?)e.Value)), Canonical(nativeGc), Hash(nativeGc),
+            JsonSerializer.Serialize(configuration.OrderBy(p => p.Key, StringComparer.Ordinal).ToDictionary(p => p.Key, p => p.Value)));
     }
     internal static Provenance CurrentProvenance() => Fingerprint(Host());
 

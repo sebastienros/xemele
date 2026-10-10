@@ -16,6 +16,27 @@ REPORT=Path(__file__).resolve().parent
 FACT='Xemele.Tests.FramingTests.WarmWhitespacePrimitiveHasNoAllocations'
 KEYS=['XEMELE_FRAMING_CHILD_MODE','XEMELE_FRAMING_CHILD_REQUEST','XEMELE_FRAMING_CHILD_TOKEN']
 
+def run_case(command, env, directory, destination, logs, name):
+    """Persist the current case even when subprocess fails or times out."""
+    stdout, stderr, exit_code, timed_out = '', '', None, False
+    (directory/'invocation.json').write_text(json.dumps(dict(command=command, extraEnvironment={k:v for k,v in env.items() if k in KEYS or k=='XEMELE_DOTNET'}),indent=2)+'\n')
+    try:
+        process=subprocess.run(command,cwd=ROOT,env=env,text=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=40)
+        stdout,stderr,exit_code=process.stdout,process.stderr,process.returncode
+        return process
+    except subprocess.TimeoutExpired as error:
+        timed_out=True
+        def decode(value): return value.decode(errors='replace') if isinstance(value,bytes) else value or ''
+        stdout,stderr=decode(error.stdout),decode(error.stderr)
+        raise
+    finally:
+        (directory/'stdout.txt').write_text(stdout);(directory/'stderr.txt').write_text(stderr)
+        (directory/'exit.json').write_text(json.dumps(dict(exitCode=exit_code,timedOut=timed_out))+'\n')
+        logs.append(name+'\n'+shlex.join(command)+'\nexit='+str(exit_code)+' timedOut='+str(timed_out)+'\n'+stdout+'\n'+stderr)
+        destination.mkdir(parents=True,exist_ok=True)
+        for file in directory.iterdir():
+            if file.is_file():(destination/(file.name+'.gz')).write_bytes(gzip.compress(file.read_bytes(),mtime=0))
+
 def main():
     parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--report-prefix',required=True);parser.add_argument('--known-request',required=True);parser.add_argument('--source-revision',required=True);args=parser.parse_args()
     report=REPORT/args.report_prefix;report.mkdir();known=json.loads(Path(args.known_request).read_text())
@@ -41,7 +62,11 @@ def main():
            ('helper-mismatch','request',None,'provenance mismatch'),
            ('native-mismatch','request',None,'provenance mismatch'),
            ('config-mismatch','request',None,'provenance mismatch'),
-           ('gc-mismatch','request',None,'provenance mismatch')]
+           ('gc-mismatch','request',None,'provenance mismatch'),
+           ('native-gc-mismatch','request',None,'provenance mismatch'),
+           ('gc-configuration-mismatch','request',None,'provenance mismatch'),
+           ('test-source-mismatch','request',None,'provenance mismatch'),
+           ('product-source-mismatch','request',None,'provenance mismatch')]
     logs=[];summary={'driverRevision':revision,'compiledProvenance':known['Expected'],'checks':{}}
     try:
         for name,kind,mode,message in cases:
@@ -63,21 +88,25 @@ def main():
                 if name=='native-mismatch':request['Expected']['NativeRuntimeSha256']='0'*64
                 if name=='config-mismatch':request['Expected']['RuntimeConfigSha256']='0'*64
                 if name=='gc-mismatch':request['Expected']['ServerGc']=not request['Expected']['ServerGc']
+                if name=='native-gc-mismatch':request['Expected']['NativeGcSha256']='0'*64
+                if name=='gc-configuration-mismatch':request['Expected']['GcConfiguration']='{}'
+                if name=='test-source-mismatch':request['Expected']['TestVersion']='1.0.0+'+'0'*40
+                if name=='product-source-mismatch':request['Expected']['ProductVersion']='1.0.0+'+'0'*40
                 request_path.write_text('{broken' if name=='malformed-json' else json.dumps(request))
                 extra=dict(XEMELE_FRAMING_CHILD_MODE='real',XEMELE_FRAMING_CHILD_REQUEST=str(request_path),XEMELE_FRAMING_CHILD_TOKEN=token)
             executable=known['Expected']['Executable'];command=[executable]
             if Path(executable).stem=='dotnet':command.append(known['Expected']['TestAssembly'])
             command+=['-noColor','-method',FACT,'-result-xml',str(directory/'real.xml')]
-            p=subprocess.run(command,cwd=ROOT,env=dict(env,**extra),text=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=40)
-            (directory/'stdout.txt').write_text(p.stdout);(directory/'stderr.txt').write_text(p.stderr)
-            logs.append(name+'\n'+shlex.join(command)+'\nextra='+repr(extra)+'\nexit='+str(p.returncode)+'\n'+p.stdout+'\n'+p.stderr)
-            for file in directory.iterdir():
-                dest=report/name;dest.mkdir(exist_ok=True);(dest/(file.name+'.gz')).write_bytes(gzip.compress(file.read_bytes(),mtime=0))
+            p=run_case(command,dict(env,**extra),directory,report/name,logs,name)
             tests=list(ET.parse(directory/'real.xml').iter('test'));failure=tests[0].findtext('failure/message') if tests else None
             accepted=p.returncode!=0 and len(tests)==1 and tests[0].get('name')==FACT and tests[0].get('result')=='Fail' and (message is None or message.lower() in (failure or '').lower())
             summary['checks'][name]=dict(result='passed' if accepted else 'failed',actualExit=p.returncode,total=len(tests),failure=failure)
             print(name,summary['checks'][name],flush=True)
+            if not accepted:raise AssertionError('Actual negative control failed: '+name)
         return int(any(c['result']!='passed' for c in summary['checks'].values()))
+    except Exception as error:
+        summary['failure']=repr(error)
+        raise
     finally:
         (report/'checks.txt.gz').write_bytes(gzip.compress('\n'.join(logs).encode(),mtime=0));(report/'summary.json').write_text(json.dumps(summary,indent=2)+'\n')
 
