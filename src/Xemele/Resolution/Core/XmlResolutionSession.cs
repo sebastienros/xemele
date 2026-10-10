@@ -45,19 +45,22 @@ internal sealed class XmlResolutionSession : IDisposable, IAsyncDisposable
     {
         Enter();
         XmlResolvedResource? acquired = null;
+        XmlResourceHandle? accepted = null;
         try
         {
             var rejection = BeforeOpen(request, location);
             if (rejection is not null) return new(null, rejection);
             acquired = resolver!.Resolve(request, cancellation);
-            CheckCancellation();
             var result = Accept(acquired, location);
-            if (result.Resource is not null) acquired = null; // Ownership transferred to registered handle.
+            accepted = result.Resource;
+            if (accepted is not null) acquired = null; // Ownership transferred to registered handle.
+            CheckCancellation();
             return result;
         }
         catch
         {
             // Cleanup must not replace a resolver/read/cancellation exception.
+            try { accepted?.Dispose(); } catch { }
             try { acquired?.Dispose(); } catch { }
             acquired = null; throw;
         }
@@ -68,18 +71,21 @@ internal sealed class XmlResolutionSession : IDisposable, IAsyncDisposable
     {
         Enter();
         XmlResolvedResource? acquired = null;
+        XmlResourceHandle? accepted = null;
         try
         {
             var rejection = BeforeOpen(request, location);
             if (rejection is not null) return new(null, rejection);
             acquired = await resolver!.ResolveAsync(request, cancellation).ConfigureAwait(false);
-            CheckCancellation();
             var result = Accept(acquired, location);
-            if (result.Resource is not null) acquired = null;
+            accepted = result.Resource;
+            if (accepted is not null) acquired = null;
+            CheckCancellation();
             return result;
         }
         catch
         {
+            try { if (accepted is not null) await accepted.DisposeAsync().ConfigureAwait(false); } catch { }
             try { if (acquired is not null) await acquired.DisposeAsync().ConfigureAwait(false); } catch { }
             acquired = null; throw;
         }
@@ -187,6 +193,12 @@ internal sealed class XmlResolutionSession : IDisposable, IAsyncDisposable
     }
     internal void Release(XmlResourceHandle handle, string key) { handles.Remove(handle); active.Remove(key); }
 
+    private XmlResourceHandle FirstHandle()
+    {
+        using var iterator = handles.GetEnumerator();
+        iterator.MoveNext(); return iterator.Current;
+    }
+
     public void Dispose()
     {
         if (disposed) return;
@@ -196,7 +208,7 @@ internal sealed class XmlResolutionSession : IDisposable, IAsyncDisposable
         // Release removes each handle; continue cleanup even if a stream throws.
         while (handles.Count != 0)
         {
-            var handle = handles.First();
+            var handle = FirstHandle();
             try { handle.Dispose(); } catch (Exception error) { failure ??= error; }
         }
         if (failure is not null) System.Runtime.ExceptionServices.ExceptionDispatchInfo.Capture(failure).Throw();
@@ -209,7 +221,7 @@ internal sealed class XmlResolutionSession : IDisposable, IAsyncDisposable
         Exception? failure = null;
         while (handles.Count != 0)
         {
-            var handle = handles.First();
+            var handle = FirstHandle();
             try { await handle.DisposeAsync().ConfigureAwait(false); } catch (Exception error) { failure ??= error; }
         }
         if (failure is not null) System.Runtime.ExceptionServices.ExceptionDispatchInfo.Capture(failure).Throw();

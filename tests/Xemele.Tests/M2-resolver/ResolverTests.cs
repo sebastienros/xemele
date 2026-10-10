@@ -161,6 +161,7 @@ public sealed class ResolverTests
         var resolver = new DelegateResolver(_ => { later.Cancel(); return new(stream, Source); });
         using var session = SessionWithToken(resolver, token: later.Token);
         Assert.Throws<OperationCanceledException>(() => session.Open(Request(), Location)); Assert.Equal(1, stream.SyncDisposals);
+        Assert.Equal(1, session.ResourcesOpened);
     }
     [Fact]
     public void CancellationBeforeReadAndEvery4096Bytes()
@@ -246,7 +247,7 @@ public sealed class ResolverTests
         var resolver = new AsyncResolver(async _ => { await Task.Yield(); cancellation.Cancel(); return new(stream, Source); });
         await using var session = SessionWithToken(resolver, token: cancellation.Token);
         await Assert.ThrowsAsync<OperationCanceledException>(async () => await session.OpenAsync(Request(), Location));
-        Assert.Equal(1, stream.AsyncDisposals); Assert.Equal(0, stream.SyncDisposals);
+        Assert.Equal(1, stream.AsyncDisposals); Assert.Equal(0, stream.SyncDisposals); Assert.Equal(1, session.ResourcesOpened);
     }
     [Fact]
     public async Task AsyncExceptionsAndCycleCleanupUseAsyncOwnership()
