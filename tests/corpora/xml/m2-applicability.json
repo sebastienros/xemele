@@ -107590,14 +107590,15 @@
       "historicalNameEvidence": [],
       "sourceNamespace": "yes",
       "expectedOutcomes": [
-        "rejected"
+        "accepted"
       ],
-      "rule": "well-formedness",
+      "rule": "superseded-e38-version",
       "normative": [
-        "https://www.w3.org/TR/2008/REC-xml-20081126/#sec-conformance",
-        "https://www.w3.org/TR/2008/REC-xml-20081126/#sec-well-formed"
+        "https://www.w3.org/XML/xml-V10-4e-errata#E10",
+        "https://www.w3.org/TR/2008/REC-xml-20081126/#NT-VersionNum",
+        "https://www.w3.org/TR/2008/REC-xml-20081126/#NT-TextDecl"
       ],
-      "rationale": "XML 1.0 document refers to 1.1 entity Source sections: E38.",
+      "rationale": "XML 1.0 document refers to 1.1 entity Source sections: E38. Fourth Edition E10 explicitly reverses Second Edition E38. Fifth Edition [26] admits literal 1.[0-9]+; [77] reuses optional VersionInfo. Original external version 1.1 with <foo/> uses only XML 1.0 features, so effective acceptance supersedes historical rejection; XML 1.1-only characters and malformed VersionNum remain forbidden.",
       "classificationSources": [
         {
           "path": "xmlconf/eduni/errata-2e/E38.xml",
@@ -127862,7 +127863,7 @@
     }
   ],
   "summary": {
-    "well-formedness": 988,
+    "well-formedness": 987,
     "version-production26": 7,
     "frozen-encoding": 27,
     "fifth-edition-change": 303,
@@ -127875,6 +127876,7 @@
     "effective-xml10": 199,
     "xml10-char": 62,
     "namespace-ncname": 7,
+    "superseded-e38-version": 1,
     "historical-byte-name": 1,
     "namespace-uri-optional-check": 3,
     "prefix-undeclaring": 5

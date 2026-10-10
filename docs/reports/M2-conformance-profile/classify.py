@@ -128,6 +128,13 @@ def build():
                 if n not in (14,16,17,18): outcomes=['accepted']
             if sid in ('rmt-001','rmt-002','rmt-003','rmt-004','rmt-005','rmt-011','rmt-013','rmt-041'): outcomes=['accepted']
             if sid in ('rmt-055','rmt-056','rmt-057','rmt-e2e-50'): outcomes=['rejected']
+        # Exact Second Edition E38 original: Fourth Edition E10 reversed its
+        # version restriction, incorporated into Fifth Edition [26] and [77].
+        # Historical source TYPE/purpose remain provenance, not effective rules.
+        if c['id']=='xmlconf/eduni/errata-2e/errata2e.xml#rmt-e2e-38':
+            outcomes=['accepted'];reason='superseded-e38-version'
+            refs=['https://www.w3.org/XML/xml-V10-4e-errata#E10',XML+'#NT-VersionNum',XML+'#NT-TextDecl']
+            rationale+=' Fourth Edition E10 explicitly reverses Second Edition E38. Fifth Edition [26] admits literal 1.[0-9]+; [77] reuses optional VersionInfo. Original external version 1.1 with <foo/> uses only XML 1.0 features, so effective acceptance supersedes historical rejection; XML 1.1-only characters and malformed VersionNum remain forbidden.'
         version_evidence=[]
         for q in sorted(selected):
             v=re.match(r'\ufeff?<\?xml\s[^?]*?version\s*=\s*([\'"])(.*?)\1',texts[q],flags=re.S)
