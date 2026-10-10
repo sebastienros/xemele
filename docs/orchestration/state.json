@@ -45,13 +45,10 @@
       "wait_cursor": "e7178604-0842-4723-9cbd-17c463a973e4:1"
     }
   ],
-  "integration_queue": [],
+  "integration_queue": [
+    "M1-input"
+  ],
   "blockers": [
-    {
-      "task_id": "M1-tree",
-      "finding": "Quadratic deep clone/import and linked member copy; value-arena final source needs focused review",
-      "resolution": "Owner correcting while builds/tests parked"
-    },
     {
       "task_id": "M1-syntax",
       "finding": "Malformed PI acceptance, quadratic mapped-pause validation and linear attacker-controlled name interning",
@@ -394,8 +391,8 @@
       }
     }
   ],
-  "benchmark_policy": "Subsequent benchmarks default to ShortRun and require serialized timing slot; no active timing hold.",
-  "benchmark_owner": null,
+  "benchmark_policy": "Exclusive ShortRun window: M1-tree; root and other workers parked for heavy checks.",
+  "benchmark_owner": "M1-tree",
   "pending_decisions": [],
   "decisions": {
     "project_license": "MIT",
@@ -447,5 +444,15 @@
   "timing_queue": [
     "M1-tree",
     "M1-syntax"
-  ]
+  ],
+  "benchmark_window": {
+    "task_id": "M1-tree",
+    "source_revision": "abdf9db8ade0b1e13fcbc8d45bdfdd941f35288f",
+    "parked": [
+      "coordinator",
+      "M1-input completed idle",
+      "M1-syntax confirmed timing hold/commentary fe5ab445"
+    ],
+    "cases": 10
+  }
 }
