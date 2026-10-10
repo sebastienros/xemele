@@ -4,11 +4,11 @@
   "milestone": "M2",
   "title": "Isolated borrowed resolver read allocation measurement",
   "kind": "infrastructure",
-  "status": "implemented",
+  "status": "verified",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M2-resolver-allocation-probe",
   "branch": "codex/m2-resolver-allocation-probe",
   "base_revision": "6285d7da2fa766ca0d0cdb624a1ed8aba7a22a2b",
-  "integration_revision": null,
+  "integration_revision": "4e558709ba99879b22a892d17912dd8204e5baea",
   "depends_on": [
     "M2-resolver",
     "M2-pi-allocation-probe"
@@ -35,7 +35,9 @@
       "evidence": [
         "final-source-checks",
         "actual-protocol-controls",
-        "historical-preservation"
+        "historical-preservation",
+        "final-independent-review",
+        "integrated-checks"
       ]
     },
     {
@@ -45,7 +47,9 @@
       "evidence": [
         "final-source-checks",
         "actual-protocol-controls",
-        "historical-preservation"
+        "historical-preservation",
+        "final-independent-review",
+        "integrated-checks"
       ]
     }
   ],
@@ -120,6 +124,24 @@
       "result": "failed",
       "summary": "Measurements pass; symlink negative fixture failed before intended guard because target missing. All actual outcomes and failures retained; later runs followed committed source corrections.",
       "artifact": "docs/reports/M2-resolver-allocation-probe/source-final-attempt1/summary.json"
+    },
+    {
+      "id": "final-independent-review",
+      "kind": "review",
+      "revision": "f69b6c788b67c2e1c25680d3f32d3489e8577b15",
+      "command": "Independent read-only review_input_spike final protocol delta",
+      "result": "passed",
+      "summary": "No blockers: native GC provenance, canonical ancestor symlinks and complete XML aggregates strengthen unchanged measured workload. No checks rerun by reviewer.",
+      "artifact": null
+    },
+    {
+      "id": "integrated-checks",
+      "kind": "integration",
+      "revision": "4e558709ba99879b22a892d17912dd8204e5baea",
+      "command": "python3 -B docs/reports/M2-resolver-allocation-probe/verify.py --report-prefix integration-4e55870-attempt1 --expected-branch codex/integrate-m2-resolver-allocation-probe --audit-base 40a3dbb --runtime-count 298 --conformance-count 255 --differential-count 299 --api-count 251 --fixture-count 3388 --planning-count 14 --task-count 118",
+      "result": "passed",
+      "summary": "Actual16checks pass; focused1/cumulative852/direct298+255+299/API251/discovery3388/freshcomplete pinned reference242 with full revision/hash/unchangedcopy/planning14/validate118/owned audit. Three real0B/positive640000B pairs each40960000 measured and45056000 total bytes;12 actual rejection controls. Default runtime settings; historical causality unresolved.",
+      "artifact": "docs/reports/M2-resolver-allocation-probe/integration-4e55870-attempt1/summary.json"
     }
   ],
   "blockers": [],
@@ -128,11 +150,10 @@
     "checks": [
       "Final committed source f69b6c788b67c2e1c25680d3f32d3489e8577b15: source-final-attempt2 all16 pass; direct298/255/299+cumulative852; API251/discovery3388/ref242/planning14/validate117.",
       "Three real0/positive640000 pairs; exact original4096buffer/1000warm/10000measured and45056000 sessionbytes;12 protocol negative controls passed.",
-      "Task dotnet/test apphost process audit found no active children after verifier."
+      "Task dotnet/test apphost process audit found no active children after verifier.",
+      "Coordinator integrated 4e558709ba99879b22a892d17912dd8204e5baea: actual all16checks pass on118-task graph."
     ],
-    "remaining": [
-      "Coordinator final narrow-delta review, integration and fresh combined verification on current118task coordination graph. Worker117task graph remains unchanged; integration_revision null."
-    ],
+    "remaining": [],
     "requests": []
   }
 }
