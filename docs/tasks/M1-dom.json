@@ -4,7 +4,7 @@
   "milestone": "M1",
   "title": "Compose input/parser/tree and factories",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M1-dom",
   "branch": "codex/m1-dom",
   "base_revision": "e07650c0111108103942f74b8072bfc62ec506a8",
@@ -40,29 +40,103 @@
     {
       "id": "M1-dom-A1",
       "description": "Implement tree-building sink plus Document.Parse/Load strict factories and input ownership semantics.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "correctness-final",
+        "review-final",
+        "composition-measurements"
+      ]
     },
     {
       "id": "M1-dom-A2",
       "description": "Compare expected tree structures for UTF bytes/string/stream; verify malformed input and I/O failure handling.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "correctness-final",
+        "review-final",
+        "composition-measurements"
+      ]
     },
     {
       "id": "M1-dom-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "correctness-final",
+        "review-final",
+        "composition-measurements"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Parsing/Dom/Factories.cs: seven frozen strict factories and owned diagnostic snapshots",
+    "src/Xemele/Parsing/Dom/DomSink.cs: class sink with operation token and verified syntax-prevalidated tree persistence",
+    "src/Xemele/Parsing/Dom/ByteDomAdapter.cs: byte-at-a-time declaration framing, fixed4096 UTF16/map scratch, exact byte EOF marker",
+    "tests/Xemele.Tests/M1-dom/:44 transport/structure/namespace/quota/ownership/cancellation cases",
+    "samples/M1-dom/Program.cs: independent source and isolated NuGet-only consumer",
+    "docs/api/M1-dom.txt: seven actual additions match approved model",
+    "benchmarks/Xemele.Benchmarks/M1-dom/DomBenchmarks.cs:16 complete-owned-output cases with full structure oracle"
+  ],
+  "evidence": [
+    {
+      "id": "correctness-final",
+      "kind": "check",
+      "revision": "73673440a1ee845dbf38b4f8c506a15dc225a375",
+      "command": "python3 docs/reports/M1-dom/verify.py --audit-base 8f4b34912f6fcb0ec7d3f2d951801c8804400ba1",
+      "result": "passed",
+      "summary": "Release zero warnings/errors;44DOM/288solution/Foundation11, no skips. Explicit foundation/M1 models and38protocol; API222 and7actual factories; Input41/Syntax9types80rows; source/fresh isolated local-feed NuGet consumer; allocation, planning107, committed/working/untracked audits.",
+      "artifact": "docs/reports/M1-dom/namespace-corrected-verification.txt.gz"
+    },
+    {
+      "id": "review-final",
+      "kind": "review",
+      "revision": "73673440a1ee845dbf38b4f8c506a15dc225a375",
+      "command": null,
+      "result": "passed",
+      "summary": "Coordinator relayed independent approval of legal namespace positives, token-aware trusted boundaries, complete benchmark structure oracle and approved222union/7DOM additions; old temporary guard removed.",
+      "artifact": "docs/reports/M1-dom/README.md"
+    },
+    {
+      "id": "composition-measurements",
+      "kind": "check",
+      "revision": "73673440a1ee845dbf38b4f8c506a15dc225a375",
+      "command": "dotnet run --project docs/reports/M1-dom/Benchmarks.csproj -c Release --no-build --no-restore -- --filter '*DomBenchmarks*' --artifacts artifacts/M1-dom/bdn",
+      "result": "passed",
+      "summary": "One exclusive run at reports-only HEAD260d1f3 with unchanged reviewed source:16workloads,16childexit0/wrapper0,48actualiterations. Arm64 ordinarypriority; honest time/allocation tables, cold/warm/retained evidence; provisional x64 release confirmation.",
+      "artifact": "docs/reports/M1-dom/bdn/benchmark-console.txt.gz"
+    },
+    {
+      "id": "initial-underwarmed-allocation",
+      "kind": "check",
+      "revision": "e8694fabdb6b9c25e7112fb4a034adbf54ffd46e",
+      "command": "python3 docs/reports/M1-dom/verify.py",
+      "result": "failed",
+      "summary": "Initial focused25:24passed; name probe after100warmupcalls measured24B. Runtime unchanged; documented10000call warmup gives steady0B.",
+      "artifact": "docs/reports/M1-dom/allocation-first-failure.txt.gz"
+    },
+    {
+      "id": "historical-peer-allocation",
+      "kind": "check",
+      "revision": "90fda442d313bcfd16f7a72cddca655005f638e3",
+      "command": "python3 docs/reports/M1-dom/verify.py --audit-base 6dfbde16688cd1b071a6128e69b9ac362d850ac0",
+      "result": "failed",
+      "summary": "Historical temporary-guard checkpoint:43DOMfocused passed; full266/265passed/one existing Tree allocation failure4368B. Guard removed after owning namespace correction; unchanged peer test passes focused/full final revision.",
+      "artifact": "docs/reports/M1-dom/peer-allocation-final-attempt-failure.txt.gz"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Reserved cancellation-corrected DOM752ec full checks passed; temporary blanket xmlns guard preserved unmerged and not approved. Suspend for owning namespace conformance repair, then remove guard and add positive legal-name tests.",
-    "checks": [],
-    "remaining": [],
-    "requests": []
+    "summary": "Implemented strict seven DOM factories over six verified prerequisites; token-aware trusted persistence and legal xmlns local names; one complete16case measurement. Await coordinator integration verification.",
+    "checks": [
+      "44DOM/288solution/Foundation11 pass; independent models/protocol38; actual API222/7fragment and internal41/9types80rows; source/fresh isolated NuGet consumer; planning107 and ownership/diff audits.",
+      "Exclusive16workloads/allchild+wrapperexit0/48actualmeasurements; raw/statistics/allocation/lifetime scopes durable in owned reports.",
+      "Historical failures preserved; final unchanged peer allocation test passes focused/full."
+    ],
+    "remaining": [
+      "Coordinator merge and combined verification before status verified; integration_revision remains null."
+    ],
+    "requests": [
+      "Release owner: confirm provisional Arm64 performance/allocation results on x64; no cross-architecture or full XML conformance claim."
+    ]
   }
 }

@@ -1,0 +1,235 @@
+Host macOS-15.8.1-arm64-arm-64bit-Mach-O arm64
+$ git rev-parse HEAD
+exit=0
+Source revision 73673440a1ee845dbf38b4f8c506a15dc225a375
+$ git diff --name-only 8f4b34912f6fcb0ec7d3f2d951801c8804400ba1 HEAD
+exit=0
+$ git diff --name-only HEAD
+exit=0
+$ git ls-files --others --exclude-standard
+exit=0
+$ git diff --check 8f4b34912f6fcb0ec7d3f2d951801c8804400ba1 HEAD
+exit=0
+$ git diff --check
+exit=0
+$ git rev-parse HEAD
+exit=0
+$ dotnet --version
+exit=0
+$ dotnet --info
+exit=0
+$ dotnet build Xemele.slnx -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+exit=0
+$ dotnet test --project tests/Xemele.Tests -c Release --no-build --no-restore --filter-namespace Xemele.Tests.Dom
+  total: 44
+  failed: 0
+  succeeded: 44
+  skipped: 0
+exit=0
+$ dotnet test --project tests/Xemele.Tests -c Release --no-build --no-restore --filter-namespace Xemele.Tests.Input
+  total: 10
+  failed: 0
+  succeeded: 10
+  skipped: 0
+exit=0
+$ dotnet test --project tests/Xemele.Tests -c Release --no-build --no-restore --filter-namespace Xemele.Tests.Syntax
+  total: 70
+  failed: 0
+  succeeded: 70
+  skipped: 0
+exit=0
+$ dotnet test --project tests/Xemele.Tests -c Release --no-build --no-restore --filter-namespace Xemele.Tests.Tree
+  total: 14
+  failed: 0
+  succeeded: 14
+  skipped: 0
+exit=0
+$ dotnet test --project tests/Xemele.Tests -c Release --no-build --no-restore --filter-namespace Xemele.Tests.DomConstruction
+  total: 11
+  failed: 0
+  succeeded: 11
+  skipped: 0
+exit=0
+$ dotnet test --project tests/Xemele.Tests -c Release --no-build --no-restore --filter-namespace Xemele.Tests.Serialization
+  total: 46
+  failed: 0
+  succeeded: 46
+  skipped: 0
+exit=0
+$ dotnet test --solution Xemele.slnx -c Release --no-build --no-restore
+  total: 288
+  failed: 0
+  succeeded: 288
+  skipped: 0
+exit=0
+$ dotnet build docs/reports/M0-contracts/Checks/Checks.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+exit=0
+$ dotnet test --project docs/reports/M0-contracts/Checks/Checks.csproj -c Release --no-build --no-restore
+  total: 11
+  failed: 0
+  succeeded: 11
+  skipped: 0
+exit=0
+$ dotnet build docs/reports/M0-contracts/ApiCheck/ApiCheck.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+exit=0
+$ dotnet build docs/reports/M0-contracts/Fixtures/M1/M1.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+exit=0
+$ dotnet /Users/sebastienros/.codex/worktrees/a22a/xemele/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare /Users/sebastienros/.codex/worktrees/a22a/xemele/docs/reports/M0-contracts/Fixtures/M1/bin/Release/net10.0/FoundationM1.dll /Users/sebastienros/.codex/worktrees/a22a/xemele/tests/Contracts/Fixtures/foundation/M1.golden.txt
+Matched 139 compiled members
+exit=0
+$ dotnet build docs/reports/M0-contracts/Fixtures/M2/M2.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+exit=0
+$ dotnet /Users/sebastienros/.codex/worktrees/a22a/xemele/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare /Users/sebastienros/.codex/worktrees/a22a/xemele/docs/reports/M0-contracts/Fixtures/M2/bin/Release/net10.0/FoundationM2.dll /Users/sebastienros/.codex/worktrees/a22a/xemele/tests/Contracts/Fixtures/foundation/M2.golden.txt
+Matched 173 compiled members
+exit=0
+$ dotnet build docs/reports/M0-contracts/Fixtures/ApiProbe/ApiProbe.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+exit=0
+$ dotnet /Users/sebastienros/.codex/worktrees/a22a/xemele/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare /Users/sebastienros/.codex/worktrees/a22a/xemele/docs/reports/M0-contracts/Fixtures/ApiProbe/bin/Release/net10.0/ApiProbe.dll /Users/sebastienros/.codex/worktrees/a22a/xemele/tests/Contracts/Fixtures/foundation/ApiProbe.golden.txt
+Matched 8 compiled members
+exit=0
+$ dotnet build docs/reports/M1-contracts/Projects/Common/Common.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+exit=0
+$ dotnet /Users/sebastienros/.codex/worktrees/a22a/xemele/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare /Users/sebastienros/.codex/worktrees/a22a/xemele/docs/reports/M1-contracts/Projects/Common/bin/Release/net10.0/M1Common.dll /Users/sebastienros/.codex/worktrees/a22a/xemele/tests/Contracts/Fixtures/M1/Common.golden.txt
+Matched 81 compiled members
+exit=0
+$ dotnet build docs/reports/M1-contracts/Projects/Tree/Tree.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+exit=0
+$ dotnet /Users/sebastienros/.codex/worktrees/a22a/xemele/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare /Users/sebastienros/.codex/worktrees/a22a/xemele/docs/reports/M1-contracts/Projects/Tree/bin/Release/net10.0/M1Tree.dll /Users/sebastienros/.codex/worktrees/a22a/xemele/tests/Contracts/Fixtures/M1/Tree.golden.txt
+Matched 192 compiled members
+exit=0
+$ dotnet build docs/reports/M1-contracts/Projects/Input/Input.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+exit=0
+$ dotnet /Users/sebastienros/.codex/worktrees/a22a/xemele/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare /Users/sebastienros/.codex/worktrees/a22a/xemele/docs/reports/M1-contracts/Projects/Input/bin/Release/net10.0/M1Input.dll /Users/sebastienros/.codex/worktrees/a22a/xemele/tests/Contracts/Fixtures/M1/Input.golden.txt
+Matched 81 compiled members
+exit=0
+$ dotnet build docs/reports/M1-contracts/Projects/Syntax/Syntax.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+exit=0
+$ dotnet /Users/sebastienros/.codex/worktrees/a22a/xemele/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare /Users/sebastienros/.codex/worktrees/a22a/xemele/docs/reports/M1-contracts/Projects/Syntax/bin/Release/net10.0/M1Syntax.dll /Users/sebastienros/.codex/worktrees/a22a/xemele/tests/Contracts/Fixtures/M1/Syntax.golden.txt
+Matched 81 compiled members
+exit=0
+$ dotnet build docs/reports/M1-contracts/Projects/Serializer/Serializer.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+exit=0
+$ dotnet /Users/sebastienros/.codex/worktrees/a22a/xemele/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare /Users/sebastienros/.codex/worktrees/a22a/xemele/docs/reports/M1-contracts/Projects/Serializer/bin/Release/net10.0/M1Serializer.dll /Users/sebastienros/.codex/worktrees/a22a/xemele/tests/Contracts/Fixtures/M1/Serializer.golden.txt
+Matched 215 compiled members
+exit=0
+$ dotnet build docs/reports/M1-contracts/Projects/Dom/Dom.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+exit=0
+$ dotnet /Users/sebastienros/.codex/worktrees/a22a/xemele/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare /Users/sebastienros/.codex/worktrees/a22a/xemele/docs/reports/M1-contracts/Projects/Dom/bin/Release/net10.0/M1Dom.dll /Users/sebastienros/.codex/worktrees/a22a/xemele/tests/Contracts/Fixtures/M1/Dom.golden.txt
+Matched 199 compiled members
+exit=0
+$ dotnet build docs/reports/M1-contracts/Projects/Protocol/Protocol.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+exit=0
+$ dotnet /Users/sebastienros/.codex/worktrees/a22a/xemele/docs/reports/M1-contracts/Projects/Protocol/bin/Release/net10.0/M1Protocol.dll
+Passed 38 contract-model assertions; no runtime parsing/decoding/serialization claim.
+exit=0
+$ dotnet /Users/sebastienros/.codex/worktrees/a22a/xemele/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare /Users/sebastienros/.codex/worktrees/a22a/xemele/src/Xemele/bin/Release/net10.0/Xemele.dll /Users/sebastienros/.codex/worktrees/a22a/xemele/docs/reports/M1-dom/approved-union.txt
+Matched 222 compiled members
+exit=0
+$ dotnet /Users/sebastienros/.codex/worktrees/a22a/xemele/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll emit /Users/sebastienros/.codex/worktrees/a22a/xemele/src/Xemele/bin/Release/net10.0/Xemele.dll /Users/sebastienros/.codex/worktrees/a22a/xemele/docs/reports/M1-dom/runtime-actual.txt
+exit=0
+$ python3 -B tools/ApiBaseline/discover.py
+exit=0
+$ python3 -B tools/ApiBaseline/compare.py --report /Users/sebastienros/.codex/worktrees/a22a/xemele/docs/reports/M1-dom/runtime-api.json
+{"bootstrapEmptyApi": false, "checkerOutput": "Matched 222 compiled members", "matched": true, "members": 222, "report": "/Users/sebastienros/.codex/worktrees/a22a/xemele/docs/reports/M1-dom/runtime-api.json"}
+exit=0
+$ python3 -B -m unittest discover -s tests/Xemele.TestUtilities/Build -p test_*.py -v
+exit=0
+$ python3 -B tests/Xemele.TestUtilities/Corpora/verify_bootstrap.py
+exit=0
+$ dotnet build docs/reports/M1-input/Xemele.InputBenchmarks.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+exit=0
+$ dotnet /Users/sebastienros/.codex/worktrees/a22a/xemele/docs/reports/M1-input/bin/Release/net10.0/Xemele.InputBenchmarks.dll --contract /Users/sebastienros/.codex/worktrees/a22a/xemele/docs/reports/M1-contracts/Projects/Input/bin/Release/net10.0/M1Input.dll
+Exact internal compiled surface: 41 rows match approved M1 Input model.
+exit=0
+$ dotnet build docs/reports/M1-syntax/AbiProbe/AbiProbe.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+exit=0
+$ dotnet /Users/sebastienros/.codex/worktrees/a22a/xemele/docs/reports/M1-syntax/AbiProbe/bin/Release/net10.0/AbiProbe.dll /Users/sebastienros/.codex/worktrees/a22a/xemele/docs/reports/M1-contracts/Projects/Syntax/bin/Release/net10.0/M1Syntax.dll /Users/sebastienros/.codex/worktrees/a22a/xemele/src/Xemele/bin/Release/net10.0/Xemele.dll /Users/sebastienros/.codex/worktrees/a22a/xemele/docs/reports/M1-dom/internal-syntax-abi.txt
+Matched 9 approved internal types, 80 declaration rows; no new public API family.
+exit=0
+$ dotnet build samples/M1-dom/Sample.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+exit=0
+$ dotnet run --project samples/M1-dom/Sample.csproj -c Release --no-build --no-restore
+Independent DOM factories: characters/bytes/stream; structure, ownership and strict rejection passed.
+exit=0
+$ dotnet run --project samples/M1-dom/Sample.csproj -c Release --no-build --no-restore -- --allocation
+Cold complete owned byte DOM: 469096 B; children=512
+Warm complete owned byte DOM: 468536 B; children=512
+Warm complete owned character DOM: 426664 B; children=512
+Retained owned DOM GC estimate: 229782 B/document; shared fixture excluded, 32 owners.
+Independent DOM factories: characters/bytes/stream; structure, ownership and strict rejection passed.
+exit=0
+$ dotnet pack src/Xemele/Xemele.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false --no-build --no-restore -o /Users/sebastienros/.codex/worktrees/a22a/xemele/artifacts/M1-dom/packages
+exit=0
+$ dotnet run --project /var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-dom-consumer-2tn4gwcp/Consumer.csproj -c Release --disable-build-servers -p:UseSharedCompilation=false -p:RestoreSources=/Users/sebastienros/.codex/worktrees/a22a/xemele/artifacts/M1-dom/packages -p:RestorePackagesPath=/var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-dom-consumer-2tn4gwcp/isolated-packages
+Independent DOM factories: characters/bytes/stream; structure, ownership and strict rejection passed.
+exit=0
+$ dotnet build docs/reports/M1-dom/Benchmarks.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+exit=0
+$ dotnet run --project docs/reports/M1-dom/Benchmarks.csproj -c Release --no-build --no-restore -- --oracle
+exit=0
+$ python3 tools/planning/tasks.py validate
+Validated 107 tasks: schema, evidence, acyclic dependencies, additive milestones, and ordered ownership.
+exit=0
+$ git diff --name-only 8f4b34912f6fcb0ec7d3f2d951801c8804400ba1 HEAD
+exit=0
+$ git diff --name-only HEAD
+exit=0
+$ git ls-files --others --exclude-standard
+exit=0
+$ git diff --check 8f4b34912f6fcb0ec7d3f2d951801c8804400ba1 HEAD
+exit=0
+$ git diff --check
+exit=0
+$ git rev-parse HEAD
+exit=0
