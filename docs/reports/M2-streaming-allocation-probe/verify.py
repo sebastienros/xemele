@@ -20,6 +20,15 @@ TASK = 'M2-streaming-allocation-probe'
 STREAMING = 'tests/Xemele.Tests/M1-syntax/StreamingTests.cs'
 FLAGS = ['-c', 'Release', '--disable-build-servers', '-m:1', '-p:UseSharedCompilation=false']
 
+def archive_child_files(directories, report):
+    """Copy all raw directories before any report JSON is parsed."""
+    for directory in directories:
+        dest = report / 'child-runs' / directory.name
+        dest.mkdir(parents=True)
+        for path in directory.iterdir():
+            if path.is_file():
+                (dest / (path.name + '.gz')).write_bytes(gzip.compress(path.read_bytes(), mtime=0))
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ['report-prefix', 'expected-branch', 'audit-base']:
@@ -93,11 +102,9 @@ def main():
     def children():
         directories = sorted(set(child_root.iterdir()) - child_before) if child_root.exists() else []
         details=[]
-        # Preserve every raw artifact before validating, including partial failures.
+        # Two passes: malformed JSON in any pair cannot prevent copying later pairs.
+        archive_child_files(directories, report)
         for directory in directories:
-            dest=report / 'child-runs' / directory.name; dest.mkdir(parents=True)
-            for path in directory.iterdir():
-                if path.is_file(): (dest / (path.name+'.gz')).write_bytes(gzip.compress(path.read_bytes(),mtime=0))
             pair={}
             for mode in ['real','positive']:
                 path=directory / (mode+'.report.json')
