@@ -1,0 +1,41 @@
+Xemele.Parsing.Input.DecodeResult: Boolean Equals(System.Object); parameters=obj:System.Object:False:
+Xemele.Parsing.Input.DecodeResult: Boolean Equals(Xemele.Parsing.Input.DecodeResult); parameters=other:Xemele.Parsing.Input.DecodeResult:False:
+Xemele.Parsing.Input.DecodeResult: Boolean op_Equality(Xemele.Parsing.Input.DecodeResult, Xemele.Parsing.Input.DecodeResult); parameters=left:Xemele.Parsing.Input.DecodeResult:False:;right:Xemele.Parsing.Input.DecodeResult:False:
+Xemele.Parsing.Input.DecodeResult: Boolean op_Inequality(Xemele.Parsing.Input.DecodeResult, Xemele.Parsing.Input.DecodeResult); parameters=left:Xemele.Parsing.Input.DecodeResult:False:;right:Xemele.Parsing.Input.DecodeResult:False:
+Xemele.Parsing.Input.DecodeResult: Int32 GetHashCode(); parameters=
+Xemele.Parsing.Input.DecodeResult: Int32 get_ConsumedBytes(); parameters=
+Xemele.Parsing.Input.DecodeResult: Int32 get_WrittenCharacters(); parameters=
+Xemele.Parsing.Input.DecodeResult: System.String ToString(); parameters=
+Xemele.Parsing.Input.DecodeResult: Void .ctor(Int32, Int32, Xemele.Parsing.Input.DecodeStep, Xemele.XmlDiagnostic); parameters=ConsumedBytes:System.Int32:False:;WrittenCharacters:System.Int32:False:;Step:Xemele.Parsing.Input.DecodeStep:False:;Diagnostic:Xemele.XmlDiagnostic:False:
+Xemele.Parsing.Input.DecodeResult: Void Deconstruct(Int32 ByRef, Int32 ByRef, Xemele.Parsing.Input.DecodeStep ByRef, Xemele.XmlDiagnostic ByRef); parameters=ConsumedBytes:System.Int32&:False:;WrittenCharacters:System.Int32&:False:;Step:Xemele.Parsing.Input.DecodeStep&:False:;Diagnostic:Xemele.XmlDiagnostic&:False:
+Xemele.Parsing.Input.DecodeResult: Xemele.Parsing.Input.DecodeStep get_Step(); parameters=
+Xemele.Parsing.Input.DecodeResult: Xemele.XmlDiagnostic get_Diagnostic(); parameters=
+Xemele.Parsing.Input.DecodeResult: property Int32 ConsumedBytes
+Xemele.Parsing.Input.DecodeResult: property Int32 WrittenCharacters
+Xemele.Parsing.Input.DecodeResult: property Xemele.Parsing.Input.DecodeStep Step
+Xemele.Parsing.Input.DecodeResult: property Xemele.XmlDiagnostic Diagnostic
+Xemele.Parsing.Input.DecodeResult: public=False; sealed=True; interface=False; enum=False; value=True; readonly=True
+Xemele.Parsing.Input.DecodeStep: field Int32 value__; constant=
+Xemele.Parsing.Input.DecodeStep: field Xemele.Parsing.Input.DecodeStep Completed; constant=2
+Xemele.Parsing.Input.DecodeStep: field Xemele.Parsing.Input.DecodeStep InvalidInput; constant=3
+Xemele.Parsing.Input.DecodeStep: field Xemele.Parsing.Input.DecodeStep NeedInput; constant=0
+Xemele.Parsing.Input.DecodeStep: field Xemele.Parsing.Input.DecodeStep NeedOutput; constant=1
+Xemele.Parsing.Input.DecodeStep: public=False; sealed=True; interface=False; enum=True; value=True; readonly=False
+Xemele.Parsing.Input.IXmlInputDecoder: Xemele.Parsing.Input.DecodeResult Decode(System.ReadOnlySpan`1[System.Byte], System.Span`1[System.Char], System.Span`1[System.Int64], Boolean, System.Threading.CancellationToken); parameters=input:System.ReadOnlySpan`1[System.Byte]:False:;output:System.Span`1[System.Char]:False:;byteOffsets:System.Span`1[System.Int64]:False:;isFinalBlock:System.Boolean:False:;cancellationToken:System.Threading.CancellationToken:False:
+Xemele.Parsing.Input.IXmlInputDecoder: Xemele.Parsing.Input.XmlInputEncoding get_Encoding(); parameters=
+Xemele.Parsing.Input.IXmlInputDecoder: Xemele.XmlDiagnostic ValidateDeclaration(System.ReadOnlySpan`1[System.Char], Xemele.XmlLocation); parameters=encodingName:System.ReadOnlySpan`1[System.Char]:False:;location:Xemele.XmlLocation:False:
+Xemele.Parsing.Input.IXmlInputDecoder: property Xemele.Parsing.Input.XmlInputEncoding Encoding
+Xemele.Parsing.Input.IXmlInputDecoder: public=False; sealed=False; interface=True; enum=False; value=False; readonly=False
+Xemele.Parsing.Input.XmlInputDecoder: Void .ctor(Xemele.XmlParseOptions, System.Uri); parameters=options:Xemele.XmlParseOptions:False:;sourceUri:System.Uri:True:
+Xemele.Parsing.Input.XmlInputDecoder: Void Dispose(); parameters=
+Xemele.Parsing.Input.XmlInputDecoder: Xemele.Parsing.Input.DecodeResult Decode(System.ReadOnlySpan`1[System.Byte], System.Span`1[System.Char], System.Span`1[System.Int64], Boolean, System.Threading.CancellationToken); parameters=input:System.ReadOnlySpan`1[System.Byte]:False:;output:System.Span`1[System.Char]:False:;byteOffsets:System.Span`1[System.Int64]:False:;isFinalBlock:System.Boolean:False:;cancellationToken:System.Threading.CancellationToken:False:
+Xemele.Parsing.Input.XmlInputDecoder: Xemele.Parsing.Input.XmlInputEncoding get_Encoding(); parameters=
+Xemele.Parsing.Input.XmlInputDecoder: Xemele.XmlDiagnostic ValidateDeclaration(System.ReadOnlySpan`1[System.Char], Xemele.XmlLocation); parameters=encodingName:System.ReadOnlySpan`1[System.Char]:False:;location:Xemele.XmlLocation:False:
+Xemele.Parsing.Input.XmlInputDecoder: property Xemele.Parsing.Input.XmlInputEncoding Encoding
+Xemele.Parsing.Input.XmlInputDecoder: public=False; sealed=True; interface=False; enum=False; value=False; readonly=False
+Xemele.Parsing.Input.XmlInputEncoding: field Int32 value__; constant=
+Xemele.Parsing.Input.XmlInputEncoding: field Xemele.Parsing.Input.XmlInputEncoding Undetermined; constant=0
+Xemele.Parsing.Input.XmlInputEncoding: field Xemele.Parsing.Input.XmlInputEncoding Utf16BigEndian; constant=3
+Xemele.Parsing.Input.XmlInputEncoding: field Xemele.Parsing.Input.XmlInputEncoding Utf16LittleEndian; constant=2
+Xemele.Parsing.Input.XmlInputEncoding: field Xemele.Parsing.Input.XmlInputEncoding Utf8; constant=1
+Xemele.Parsing.Input.XmlInputEncoding: public=False; sealed=True; interface=False; enum=True; value=True; readonly=False

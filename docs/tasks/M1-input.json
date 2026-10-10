@@ -33,14 +33,18 @@
     {
       "id": "M1-input-A1",
       "description": "Implement incremental UTF-8/UTF-16 decoder with BOM/declaration reconciliation, scalar validation and original-byte locations.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "known-revision-decoder-checks"
+      ]
     },
     {
       "id": "M1-input-A2",
       "description": "Test every split of representative BOM/scalar/newline sequences, invalid input and final incomplete sequences.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "known-revision-decoder-checks"
+      ]
     },
     {
       "id": "M1-input-A3",
@@ -49,13 +53,45 @@
       "evidence": []
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Parsing/Input/XmlInputDecoder.cs \u2014 exact internal Input contract; bounded strict UTF8/UTF16 detection/carry/scalar emission; original-byte maps; declaration reconciliation; independent checked primary-byte counter; common validated options snapshot; lifecycle/cancellation/location handling",
+    "tests/Xemele.Tests/M1-input/InputTests.cs \u2014 10 focused cases covering every representative two-part split, capacities, strict Unicode oracle/mapping, one-byte framing, declaration precedence, invalid signatures/sequences/final carry, source ownership, independent primary capacity and 0 B warm decode",
+    "samples/M1-input/ \u2014 actual internal interface compile/usage with BOM/raw counts/first-byte offsets; source and isolated NuGet-only binary consumption",
+    "docs/reports/M1-input/verify.py; Program.cs; internal-contract.txt; runtime-api.json \u2014 independent actual/model internal surface probe (41 rows) and unchanged compiled public ABI (81 common rows), prior functionality regression checks",
+    "benchmarks/Xemele.Benchmarks/M1-input/InputBenchmarks.cs; docs/reports/M1-input/Xemele.InputBenchmarks.csproj \u2014 built ShortRun semantic-oracle and setup/rejection harness; timing pending exclusive window"
+  ],
+  "evidence": [
+    {
+      "id": "known-revision-decoder-checks",
+      "kind": "check",
+      "revision": "bcd2dffa6e890ccfbd4e52e7f923a07e5e7ac17e",
+      "command": "Pinned SDK10.0.400 DOTNET_CLI_USE_MSBUILD_SERVER=0 python3 docs/reports/M1-input/verify.py (authorized NuGet/MTP IPC)",
+      "result": "passed",
+      "summary": "Release build zero warnings/errors; focused10/10, solution74/74, foundation11/11 with no skips; actual internal41 rows match approved Input model, unchanged public81 rows; all M1 model lanes and38 protocol assertions;16 Python build checks/bootstrap; source and fresh-cache isolated NuGet-only internal sample,pack,harnessbuild; warmdecode0 B/10000 operations; coldsetup2808 B,warmsetup816 B/op,informational heap-minus-fragmentation retention648 B/op excluding reference array; planning101-task validation/diff pass. Primary counter corrected to independent Int64 capacity, ExternalBytes1/3/4 do not limit primary. Timing not run; no DOM/syntax peer dependency. Full raw output ignored artifacts/M1-input/verification.txt.",
+      "artifact": "docs/reports/M1-input/checks.txt"
+    },
+    {
+      "id": "initial-package-cache-failure",
+      "kind": "check",
+      "revision": "4cb4a22249b1f5773af181900ab2a19420ab44e1",
+      "command": "python3 docs/reports/M1-input/verify.py",
+      "result": "failed",
+      "summary": "Package-only sample selected preexisting global NuGet same-version common package, missing internal Parsing namespace. Corrected probe isolates RestorePackagesPath and freshly packed feed; final bcd2dff verifier source/binary samples pass. Raw failure artifacts/M1-input/package-cache-failure.txt; no shared package/version changes.",
+      "artifact": "docs/reports/M1-input/README.md"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "",
-    "checks": [],
-    "remaining": [],
+    "summary": "Corrected bounded strict input runtime committed and full checks pass at bcd2dff. Exact internal41/public81 compiled surfaces; no peer dependencies/shared edits. Exclusive ShortRun timing still pending coordinator window; task remains in_progress.",
+    "checks": [
+      "Pinned final verifier at bcd2dffa6e890ccfbd4e52e7f923a07e5e7ac17e passed focused10/full74/foundation11, ABI/models/protocol, Python/bootstrap, source+fresh isolated packaged sample/pack, setup allocation, planning/diff.",
+      "Coordinator review corrected original wrong-scope ExternalBytes charge; primary now has independent checked counter. Detection peeks contiguous prefix to preserve error consumption.",
+      "Initial xUnit analyzer, malformed-test assumptions, sandbox MTP IPC and stale same-version package-cache failures corrected; raw logs remain ignored artifacts/M1-input."
+    ],
+    "remaining": [
+      "Await coordinator exclusive timing permission; no builds/tests running. Run eight targeted ShortRun cases, record results then set implemented if complete.",
+      "Coordinator independent rereview/integration verification required; no parser composition or cross-architecture release claim."
+    ],
     "requests": []
   }
 }

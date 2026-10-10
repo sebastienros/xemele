@@ -78,3 +78,11 @@ NuGet cache from an earlier common package, so the internal decoder namespace
 was absent. The corrected probe uses an isolated temporary RestorePackagesPath
 and only this task's freshly packed feed; no package version/shared file changes.
 Raw failed output is retained as artifacts/M1-input/package-cache-failure.txt.
+
+Final correctness source bcd2dffa6e890ccfbd4e52e7f923a07e5e7ac17e: focused10/10,
+solution74/74, foundation11/11 with no skipped tests; internal41/public81 rows,
+all model/protocol checks, Python/bootstrap, source+fresh packaged samples pass.
+Warm mixed decode is 0 B across10000 calls. Construction is2808 B fresh process,
+816 B/op warmed; informational retained heap-minus-fragmentation648 B/op excludes
+the preallocated reference array. No timing has run yet. Durable checks.txt keeps
+command/results/summaries; raw output is ignored artifacts/M1-input/verification.txt.
