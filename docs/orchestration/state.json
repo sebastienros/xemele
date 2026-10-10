@@ -32,7 +32,7 @@
       "chat_id": "01a1282c-2ca5-7c33-acc4-d032b0b51bfe",
       "worktree_path": "/Users/sebastienros/.codex/worktrees/0741/xemele",
       "setup_revision": "a00fd63a2e72b6b5e9ffeccefe659f39331172ca",
-      "worker_cursor": "c65f5750-2844-4e2b-904b-d4bc21177ae3:3",
+      "worker_cursor": "c65f5750-2844-4e2b-904b-d4bc21177ae3:11",
       "created_thread_directive_pending": false
     }
   ],
@@ -41,7 +41,7 @@
   "next_actions": [
     "Let recovery worker implement exact same-engine bounded repairs/diagnostic factories and affected preservation checks.",
     "Batch source review once; prepare outside one bounded measurement lease; integrate promptly after mandatory evidence.",
-    "Complete comprehensive M2gate then continue through verified M9gate."
+    "Complete comprehensive M2-gate, durably record results and cleanup, then pause as requested; do not start M3."
   ],
   "last_verified_task": {
     "task_id": "M2-conformance",
@@ -1263,5 +1263,11 @@
       ],
       "remaining_gate": "M2-gate"
     }
+  },
+  "pause_request": {
+    "requested_by": "user",
+    "after_verified_task": "M2-gate",
+    "action": "Finish integrated M2 verification and cleanup, then pause the active goal. Do not claim or dispatch M3 or later tasks until the user resumes.",
+    "status": "pending_m2_completion"
   }
 }
