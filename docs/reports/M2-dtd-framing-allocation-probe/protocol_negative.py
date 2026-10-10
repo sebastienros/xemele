@@ -97,7 +97,7 @@ def main():
             executable=known['Expected']['Executable'];command=[executable]
             if Path(executable).stem=='dotnet':command.append(known['Expected']['TestAssembly'])
             command+=['-noColor','-method',FACT,'-result-xml',str(directory/'real.xml')]
-            p=run_case(command,dict(env,**extra),directory,report/name,logs,name)
+            p=run_case(command,dict(env,**extra),directory,raw/"retained"/name,logs,name)
             tests=list(ET.parse(directory/'real.xml').iter('test'));failure=tests[0].findtext('failure/message') if tests else None
             accepted=p.returncode!=0 and len(tests)==1 and tests[0].get('name')==FACT and tests[0].get('result')=='Fail' and (message is None or message.lower() in (failure or '').lower())
             summary['checks'][name]=dict(result='passed' if accepted else 'failed',actualExit=p.returncode,total=len(tests),failure=failure)
@@ -108,6 +108,6 @@ def main():
         summary['failure']=repr(error)
         raise
     finally:
-        (report/'checks.txt.gz').write_bytes(gzip.compress('\n'.join(logs).encode(),mtime=0));(report/'summary.json').write_text(json.dumps(summary,indent=2)+'\n')
+        (raw/'checks.txt').write_text('\n'.join(logs));(report/'summary.json').write_text(json.dumps(summary,indent=2)+'\n')
 
 if __name__=='__main__':raise SystemExit(main())
