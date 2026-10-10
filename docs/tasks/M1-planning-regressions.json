@@ -4,7 +4,7 @@
   "milestone": "M1",
   "title": "Keep synthetic planning regressions independent of evolving repository graph",
   "kind": "infrastructure",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M1-planning-regressions",
   "branch": "codex/m1-planning-regressions",
   "base_revision": "9d618494d3575d7498cf02b28c8f46e9b1e1093f",
@@ -27,23 +27,69 @@
     {
       "id": "M1-planning-regressions-A1",
       "description": "Replace brittle live-graph assumptions with explicit isolated synthetic scenarios proving missing gate reachability, unordered case-insensitive path overlap, and independent bootstrap lanes; preserve all negative guarantees and live repository graph test. Do not relax tracker validation or remove failing test coverage.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "planning-regressions",
+        "fixture-independence",
+        "task-validation"
+      ]
     },
     {
       "id": "M1-planning-regressions-A2",
       "description": "Run all planning regression tests and tasks.py validate at known revision; prove each intended invalid mutation actually fails validation and readiness scenarios remain independent of new task splits/repairs.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "planning-regressions",
+        "fixture-independence",
+        "task-validation"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "tools/planning/test_tasks.py: TaskTrackingTests.setUp constructs a controlled eight-task graph and temporary specification; all 13 synthetic tests use it, while test_repository_graph_valid loads and validates the current repository.",
+    "tools/planning/test_tasks.py: gate omission identifies M0-ci exactly; case-insensitive collision identifies unordered M0-ci/M0-corpora, preserving all 14 original regression tests and unmodified tracker validation.",
+    "docs/reports/M1-planning-regressions/checks.txt and README.md: fixed-source checks, nine actual mutation diagnostics and repository-loader-disabled fixture independence audit."
+  ],
+  "evidence": [
+    {
+      "id": "planning-regressions",
+      "kind": "check",
+      "revision": "d8e2e3648344e5c607044e8dc2b13ba140088cd7",
+      "command": "python3 -B -m unittest discover -s tools/planning -p test_tasks.py",
+      "result": "passed",
+      "summary": "All 14 original tests pass, including live repository graph validation. Initial claim revision reproduced 11 passed/3 failed; synthetic gate omission, unordered case-insensitive ownership and five independent bootstrap lanes now use explicit graph edges/paths. Every negative scenario starts from a valid synthetic graph.",
+      "artifact": "docs/reports/M1-planning-regressions/checks.txt"
+    },
+    {
+      "id": "fixture-independence",
+      "kind": "check",
+      "revision": "d8e2e3648344e5c607044e8dc2b13ba140088cd7",
+      "command": "python3 -B - (in-memory unittest audit with tracker.load_tasks disabled and assertInvalid diagnostics; reproduction in docs/reports/M1-planning-regressions/README.md)",
+      "result": "passed",
+      "summary": "All 13 synthetic tests pass with repository task loading forced to raise; 0 loader calls. All nine intended invalid mutations produce the expected validator errors, including exact missing M0-ci reachability and mixed-case workflow subtree/file collision. Bootstrap and implemented-versus-verified readiness remain covered independently of new repository task splits/repairs.",
+      "artifact": "docs/reports/M1-planning-regressions/checks.txt"
+    },
+    {
+      "id": "task-validation",
+      "kind": "check",
+      "revision": "d8e2e3648344e5c607044e8dc2b13ba140088cd7",
+      "command": "python3 tools/planning/tasks.py validate; git diff --check",
+      "result": "passed",
+      "summary": "Validated all 107 live task records and clean diff whitespace at committed source revision. Tracker implementation unchanged; no runtime code/build/timing/allocation work applies.",
+      "artifact": "docs/reports/M1-planning-regressions/checks.txt"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Namespace repair checks exposed three stale synthetic scenarios after earlier graph/task ownership changes; root reproduced 11 passed/3 failed at main1493e5c. Product checks unaffected.",
-    "checks": [],
-    "remaining": [],
+    "summary": "Isolated planning regression graph and specification from evolving repository tasks; retained all 14 checks, exact negative guarantees and live graph validation. Branch implementation only; integration_revision remains unset.",
+    "checks": [
+      "14 planning regressions passed at d8e2e3648344e5c607044e8dc2b13ba140088cd7.",
+      "107 live tasks validate; git diff --check passed.",
+      "13 synthetic checks passed with repository loader disabled, zero load calls; nine actual validator rejections archived in checks.txt."
+    ],
+    "remaining": [
+      "Coordinator review/integration and applicable checks at the integrated revision before marking verified."
+    ],
     "requests": []
   }
 }
