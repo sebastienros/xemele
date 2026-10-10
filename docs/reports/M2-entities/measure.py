@@ -120,12 +120,15 @@ def main():
      assert measurement['operations']>0 and math.isfinite(measurement['durationNs']) and measurement['durationNs']>0 and math.isfinite(measurement['nsPerOperation']) and measurement['nsPerOperation']>0
     assert row['gc'][0]['operations']>0 and row['gc'][0]['allocatedBytes']>=0 and math.isfinite(row['gc'][0]['bytesPerOperation']) and all(m['operations']==row['gc'][0]['operations'] for m in row['actual']+row['result'])
     assert actual==result==3 and gc==1 and len(exits)==1 and exits[0][1]=='0';assert '.NET 10.0.11' in block and re.search('Arm64',block,re.IGNORECASE)
-    execution=re.search(r'^// Execute: (.+) in (.+)$',block,re.MULTILINE);assert execution;argv=shlex.split(execution[1]);dll=next(v for v in argv if v.endswith('.dll'));cwd=Path(execution[2].strip());exe=cwd/dll;library=cwd/'Xemele.EntitiesBenchmarks.dll';assert exe.is_file() and library.is_file()
-    actual_library_sha=hashlib.sha256(library.read_bytes()).hexdigest()
+    execution=re.search(r'^// Execute: (.+) in (.+)$',block,re.MULTILINE);assert execution;argv=shlex.split(execution[1]);dll=next(v for v in argv if v.endswith('.dll'));cwd=Path(execution[2].strip());exe=cwd/dll;library=cwd/'Xemele.EntitiesBenchmarks.dll'
     expected_variant=known['generatedVariant']
     actual_closure=variant.snapshot(cwd);generated_root=cwd.parent.parent.parent;actual_inputs={path.name:hashlib.sha256(path.read_bytes()).hexdigest() for path in generated_root.iterdir() if path.is_file() and path.suffix in ['.csproj','.notcs']}
-    pending={'case':identity,'actualLibrarySha256':actual_library_sha,'expectedLibrarySha256':expected_variant['closureIdentities']['Xemele.EntitiesBenchmarks.dll'],'executableSha256':hashlib.sha256(exe.read_bytes()).hexdigest(),'actualClosure':actual_closure,'actualGeneratedInputs':actual_inputs}
+    pending={'case':identity,'actualClosure':actual_closure,'actualGeneratedInputs':actual_inputs,'missingRequiredFiles':[path.name for path in (exe,library) if not path.is_file()]}
+    for field,path in [('actualLibrarySha256',library),('executableSha256',exe)]:
+     if path.is_file():pending[field]=hashlib.sha256(path.read_bytes()).hexdigest()
+    pending['expectedLibrarySha256']=expected_variant['closureIdentities']['Xemele.EntitiesBenchmarks.dll']
     child_provenance.append(pending);s['generatedChildProvenance']=child_provenance
+    if pending['missingRequiredFiles']:raise FileNotFoundError('Missing required generated files: '+', '.join(pending['missingRequiredFiles']))
     metadata=json.loads(subprocess.check_output([str(dotnet),str(probe),str(exe),str(library)],cwd=ROOT,text=True,timeout=30));pending['metadata']=metadata
     assert str(cwd)==expected_variant['generatedOutputPath']
     variant.validate(expected_variant,actual_closure,actual_inputs,metadata,revision)

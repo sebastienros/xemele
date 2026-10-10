@@ -1,0 +1,9 @@
+{
+  "result": "failed",
+  "command": "python3 -B -m unittest discover -s docs/reports/M2-entities -p 'test_*.py' -v",
+  "tests": 11,
+  "errors": 2,
+  "stage": "mock host discovery",
+  "error": "Mocked subprocess.check_output returned str to platform.platform file probe requiring bytes; neither subcase reached child-payload validation.",
+  "correction": "Mock platform.platform and platform.machine explicitly; no workload executed."
+}
