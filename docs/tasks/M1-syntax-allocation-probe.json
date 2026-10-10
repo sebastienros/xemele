@@ -4,11 +4,11 @@
   "milestone": "M1",
   "title": "Diagnose the warm syntax allocation measurement boundary",
   "kind": "infrastructure",
-  "status": "implemented",
+  "status": "verified",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M1-syntax-allocation-probe",
   "branch": "codex/m1-syntax-allocation-probe",
   "base_revision": "51c60a3a5ab3ca14df616c03ebe96662579d670d",
-  "integration_revision": null,
+  "integration_revision": "85ca7c92969c3355d3ab81b0cf588c21a34ea714",
   "depends_on": [
     "M1-dom-allocation-probe"
   ],
@@ -38,7 +38,9 @@
         "audit",
         "historical-baseline",
         "historical-later",
-        "historical-integrated"
+        "historical-integrated",
+        "integrated-checks",
+        "independent-review"
       ]
     },
     {
@@ -57,7 +59,9 @@
         "audit",
         "diagnostic-build-failure",
         "api-fixture-failure",
-        "planning-final-metadata"
+        "planning-final-metadata",
+        "integrated-checks",
+        "independent-review"
       ]
     }
   ],
@@ -201,6 +205,24 @@
       "result": "passed",
       "summary": "Final task/evidence metadata validated110 tasks before evidence commit.",
       "artifact": "docs/reports/M1-syntax-allocation-probe/planning-final-metadata.txt.gz"
+    },
+    {
+      "id": "integrated-checks",
+      "kind": "integration",
+      "revision": "85ca7c92969c3355d3ab81b0cf588c21a34ea714",
+      "command": "Fresh isolated Release build/focused/full/diagnostic/API/discovery/planning/regressions/owned delta checks; actual commands in integration-checks.json",
+      "result": "passed",
+      "summary": "Focused1/full288 no skips, measured10000 zeroB; coldsetup6808B/root312B/firstchunk432B/setup7120B/warm100432B/50500units/121205callbacks/completed;API222/discovery3388/planning110/14regressions;production unchanged. Historical6000B cause unresolved, retained.",
+      "artifact": "docs/reports/M1-syntax-allocation-probe/integration-checks.json"
+    },
+    {
+      "id": "independent-review",
+      "kind": "review",
+      "revision": "e8b9f7ba15e0a76101adba877b2569bba09f8c0f",
+      "command": "Read-only independent review_input_spike of probe and bounded diagnostic source",
+      "result": "passed",
+      "summary": "Independent review_input_spike approved f0c42a8/e8b9f7b: same noinline Append/progress logic,100warm/10000measured,exact0B,production/parallelism unchanged; no historical6000B causalclaim.",
+      "artifact": "docs/reports/M1-syntax-allocation-probe/integration-audit.json"
     }
   ],
   "blockers": [],
@@ -210,7 +232,7 @@
       "Commands, source revisions, raw successes/failures and limitations in owned README and logs; no timing benchmarks."
     ],
     "remaining": [
-      "Coordinator integration/review and fresh combined checks before verified. Historical6000B allocation stack/root cause remains unresolved."
+      "Historical6000B cause remains unresolved; no productioncause or universalstability claim."
     ],
     "requests": []
   }
