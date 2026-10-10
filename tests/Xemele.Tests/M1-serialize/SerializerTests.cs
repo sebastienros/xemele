@@ -54,9 +54,9 @@ public class SerializerTests
     public void AdjacentTextAndLexicalKindsEscapeWithoutCoalescing()
     {
         var d = Root(out var r); var t = d.CreateText("]"); r.AppendChild(t); r.AppendChild(d.CreateText("]")); r.AppendChild(d.CreateText(">&<\r\n\t🙂"));
-        r.AppendChild(d.CreateComment("c")); r.AppendChild(d.CreateCData("<raw>")); r.AppendChild(d.CreateProcessingInstruction("p:q", "data")); r.AppendChild(d.CreateProcessingInstruction("z", ""));
+        r.AppendChild(d.CreateComment("c")); r.AppendChild(d.CreateCData("<raw>")); r.AppendChild(d.CreateProcessingInstruction("p-q", "data")); r.AppendChild(d.CreateProcessingInstruction("z", ""));
         r.AppendChild(d.CreateText(">"));
-        Assert.Equal("<r>]]&gt;&amp;&lt;&#xD;\n\t🙂<!--c--><![CDATA[<raw>]]><?p:q data?><?z?>></r>", d.ToXmlString(Omit, cancellationToken: TestContext.Current.CancellationToken));
+        Assert.Equal("<r>]]&gt;&amp;&lt;&#xD;\n\t🙂<!--c--><![CDATA[<raw>]]><?p-q data?><?z?>></r>", d.ToXmlString(Omit, cancellationToken: TestContext.Current.CancellationToken));
         Assert.Equal(t, r.FirstChild); Assert.Equal(8, r.Children.Count);
     }
     [Fact]
@@ -221,7 +221,7 @@ public class SerializerTests
         Assert.Throws<InvalidOperationException>(() => d.ToXmlString(Repair, cancellationToken: TestContext.Current.CancellationToken));
     }
     [Theory]
-    [InlineData("XmL")] [InlineData("1pi")] 
+    [InlineData("XmL")] [InlineData("1pi")] [InlineData(":pi")] [InlineData("p:i")] [InlineData("pi:")] [InlineData("p:i:x")]
     public void RevalidatesPiTargets(string target)
     {
         var d = Root(out var r); var pi = d.CreateProcessingInstruction("pi", "data"); r.AppendChild(pi);

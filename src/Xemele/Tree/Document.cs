@@ -83,7 +83,7 @@ public sealed partial class XmlDocument
     public XmlNode CreateCData(string value) { TreeValidation.Value(XmlNodeKind.CData, value); return Create(XmlNodeKind.CData, "", "", "", value); }
     public XmlNode CreateProcessingInstruction(string target, string data)
     {
-        TreeValidation.Name(target, true); TreeValidation.Value(XmlNodeKind.ProcessingInstruction, data);
+        TreeValidation.Name(target); TreeValidation.Value(XmlNodeKind.ProcessingInstruction, data);
         if (target.Equals("xml", StringComparison.OrdinalIgnoreCase)) throw new ArgumentException("Reserved PI target.", nameof(target));
         return Create(XmlNodeKind.ProcessingInstruction, target, "", "", data);
     }
