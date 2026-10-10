@@ -27,6 +27,7 @@ public static class ReferenceProcess
         using var linked = CancellationTokenSource.CreateLinkedTokenSource(deadline.Token, cancellationToken);
         var start = new ProcessStartInfo(executable) { UseShellExecute = false, RedirectStandardInput = true,
             RedirectStandardOutput = true, RedirectStandardError = true,
+            StandardInputEncoding = new UTF8Encoding(false, true),
             StandardOutputEncoding = new UTF8Encoding(false, true), StandardErrorEncoding = new UTF8Encoding(false, true) };
         foreach (var argument in arguments) start.ArgumentList.Add(argument);
         using var process = new Process { StartInfo = start };
@@ -93,6 +94,7 @@ public static class ReferenceProcess
         { throw new ReferenceFailureException("Reference process timed out."); }
         catch (JsonException ex) { throw new ReferenceFailureException("Malformed response: " + ex.Message); }
         catch (DecoderFallbackException ex) { throw new ReferenceFailureException("Malformed response encoding: " + ex.Message); }
+        catch (EncoderFallbackException ex) { throw new ReferenceFailureException("Malformed request encoding: " + ex.Message); }
         catch (KeyNotFoundException ex) { throw new ReferenceFailureException("Incomplete response: " + ex.Message); }
         catch (InvalidOperationException ex) { throw new ReferenceFailureException("Invalid response or process state: " + ex.Message); }
         finally

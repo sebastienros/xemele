@@ -17,17 +17,31 @@ var quotaMessages = new HashSet<string>(StringComparer.Ordinal)
     QuotaMessage("<!DOCTYPE r [<!ENTITY x 'xx'>]><r>&x;</r>",
         new XmlReaderSettings { DtdProcessing = DtdProcessing.Parse, MaxCharactersFromEntities = 1 })
 };
+using var wireInput = new StreamReader(Console.OpenStandardInput(), new UTF8Encoding(false, true),
+    detectEncodingFromByteOrderMarks: false);
+using var wireOutput = new StreamWriter(Console.OpenStandardOutput(), new UTF8Encoding(false, true)) { AutoFlush = true };
 while (true)
 {
     var line = new StringBuilder();
     bool oversized = false;
     int ch;
-    while ((ch = Console.In.Read()) >= 0 && ch != '\n')
+    try
     {
-        if (line.Length < Wire.MaximumLineCharacters) line.Append((char)ch);
-        else oversized = true;
+        while ((ch = wireInput.Read()) >= 0 && ch != '\n')
+        {
+            if (line.Length < Wire.MaximumLineCharacters) line.Append((char)ch);
+            else oversized = true;
+        }
+        if (ch < 0 && line.Length == 0 && !oversized) break;
     }
-    if (ch < 0 && line.Length == 0 && !oversized) break;
+    catch (DecoderFallbackException)
+    {
+        // The wire cannot be decoded safely, so there is no trustworthy identity.
+        // Terminate this stream as infrastructure failure; never substitute U+FFFD.
+        Console.Error.WriteLine("Invalid UTF-8 protocol input.");
+        Environment.ExitCode = 2;
+        break;
+    }
     Request? request = null;
     bool deniedResource = false;
     Response response;
@@ -101,7 +115,7 @@ while (true)
             output = JsonSerializer.Serialize(new Response(1, null, null, engine, "runner-failure",
                 [new("limit", "Identity cannot fit within response limit.")], null), Wire.Json);
     }
-    Console.Out.WriteLine(output);
+    wireOutput.WriteLine(output);
     Response Reply(string outcome, Diagnostic[] diagnostics, Event[]? events = null) =>
         new(1, request?.CaseId, request?.Operation, engine, outcome, diagnostics, events);
 }

@@ -33,7 +33,7 @@
       "description": "Define the versioned JSONL request/response and operation payload contract, implement the BCL XML runner and managed reference process client, and run one known XML fixture with actual runtime/build metadata.",
       "status": "passed",
       "evidence": [
-        "response-validation-verification"
+        "wire-encoding-verification"
       ]
     },
     {
@@ -41,7 +41,7 @@
       "description": "Test request/response identity and semantic normalization, invalid protocol/requests, process failure categorization, timeout/cancellation, offline resource mapping and denied unconfigured external access; keep infrastructure failures distinct from parse rejection.",
       "status": "passed",
       "evidence": [
-        "response-validation-verification"
+        "wire-encoding-verification"
       ]
     },
     {
@@ -49,7 +49,7 @@
       "description": "Demonstrate the task using only verified M0-build; run focused tests and preserved bootstrap checks at a known implementation revision, record protocol/runner outputs and task validation.",
       "status": "passed",
       "evidence": [
-        "response-validation-verification"
+        "wire-encoding-verification"
       ]
     }
   ],
@@ -57,9 +57,10 @@
     "tools/ReferenceRunners/Protocol/Contract.cs: v1 JSONL request/response, metadata, semantic event and diagnostic shapes; standalone sibling project",
     "tools/ReferenceRunners/Bcl/Program.cs: actual System.Xml events reference, bounded wire framing, offline-only resolver, decoder/quota categorization and exact localized quota calibration",
     "tests/Xemele.TestUtilities/References/ReferenceProcess.cs: bounded concurrent process pipes, ArgumentList launch, identity/framing/metadata checks, owned child kill/await and honest cancellation",
-    "tests/Xemele.Differential.Tests/Protocol/ReferenceProtocolTests.cs: 50 actual process/semantic/security/protocol/quota/portable-path/payload-adapter tests",
+    "tests/Xemele.Differential.Tests/Protocol/ReferenceProtocolTests.cs: 51 actual process/semantic/security/protocol/quota/portable-path/payload-adapter/wire-encoding tests",
     "docs/reports/M0-references-protocol/protocol-v1.md and verify.py: frozen portable normalization and repeatable explicit runner build + focused/wire/preserved bootstrap checks",
-    "tests/Xemele.TestUtilities/References/ReferenceProcess.cs: strict required diagnostic and xml.events payload field validation; TryGetInt32 protocolVersion normalization; optional final Func<JsonElement,bool> validateSuccessPayload supports explicit module-owned non-XML adapters without bypassing shared or builtin validation"
+    "tests/Xemele.TestUtilities/References/ReferenceProcess.cs: strict required diagnostic and xml.events payload field validation; TryGetInt32 protocolVersion normalization; optional final Func<JsonElement,bool> validateSuccessPayload supports explicit module-owned non-XML adapters without bypassing shared or builtin validation",
+    "tools/ReferenceRunners/Bcl/Program.cs and tests/Xemele.TestUtilities/References/ReferenceProcess.cs: explicit strict UTF8 raw wire input/output/request writer; invalid input wire terminates stderr/exit2 without trusted identity; invalid response bytes inside valid JSON string produce ReferenceFailureException"
   ],
   "evidence": [
     {
@@ -87,17 +88,26 @@
       "command": "DOTNET_ROOT='/Users/sebastienros/Library/Application Support/dotnetup/dotnet' PATH='/Users/sebastienros/Library/Application Support/dotnetup/dotnet':$PATH DOTNET_CLI_USE_MSBUILD_SERVER=0 python3 -B docs/reports/M0-references-protocol/verify.py",
       "result": "passed",
       "summary": "Superseding full macOS arm64 verification with SDK10.0.400:50 focused tests0 failures0 skips, including22 actual child invalid-field/overflow cases, additive field preservation and explicit non-XML adapter/no-adapter/rejecting-adapter cases. 11 direct wire cases pass; actual System.Xml10.0.0.0/.NET10.0.11/build1.0.0+ec35b7dc805ed96bb32277c7f6fd66c392e34762 recorded. Runner/protocol/Differential and full solution Release builds0 warnings/errors;53 infrastructure solution passes0 product tests;3 intentional smoke failures exit2;16 help/defaults,3 unknown-command exits2; managed net10.0-only pack/API0;13 discovery tests;2 independent corpus fixtures;99-task validation pass. No native/runtime-conformance/performance/other-platform claim. Original reports preserved separately and independent failed review retained.",
+      "artifact": "docs/reports/M0-references-protocol/verification-ec35b7d.txt"
+    },
+    {
+      "id": "wire-encoding-verification",
+      "kind": "check",
+      "revision": "97603064b1be1a31b9c33e6cce994c9382f7b590",
+      "command": "DOTNET_ROOT='/Users/sebastienros/Library/Application Support/dotnetup/dotnet' PATH='/Users/sebastienros/Library/Application Support/dotnetup/dotnet':$PATH DOTNET_CLI_USE_MSBUILD_SERVER=0 python3 -B docs/reports/M0-references-protocol/verify.py",
+      "result": "passed",
+      "summary": "Final full macOS arm64 SDK10.0.400 checks:51 focused tests0 failures0 skips;11 direct JSONL cases plus actual raw invalidUTF8 bytes inside otherwise valid request JSON string (no stdout, boundedstderr,exit2). Actual child invalidUTF8 response text inside valid JSON yields ReferenceFailureException encoding category; XML-base64 malformedUTF8 remains parse rejection separately. Explicit request encoding and raw BCL stdin/stdout; verifier diagnostic newline comparison portable for LF/CRLF. Runner/protocol/Differential/full solution Release builds0 warnings/errors;54 solution infrastructure passes0 product tests;3 intentional smoke failuresexit2;16 help/defaults,3 unknown-command exits2; managed-onlynet10.0 pack/API0;13 discoverytests;2 independentcorpusfixtures;99-task validationpass. Actual System.Xml10.0.0.0/.NET10.0.11/build1.0.0+97603064b1be1a31b9c33e6cce994c9382f7b590 preserved. Prior1b/ec35 reports archived; no otherplatform/runtimeconformance/native/performanceclaim.",
       "artifact": "docs/reports/M0-references-protocol/verification.txt"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Superseding implemented handoff: source ec35b7dc805ed96bb32277c7f6fd66c392e34762 fixes independent response-shape and version-overflow findings, and adds explicit module-owned success payload validation hook. Original source/checks preserved historically with failed review; final checks pass. Uses only integrated prerequisites, no shared edits; integration_revision remains null.",
+    "summary": "Final superseding implemented handoff: tested source97603064b1be1a31b9c33e6cce994c9382f7b590 adds explicit strictUTF8 request/BCL wire boundary and actual malformed wire byte regressions after response-shape/version/adapters corrections. LF/CRLF verifier portability corrected. All finalchecks pass; integrated prerequisites only, sharedfiles untouched; integration_revision null.",
     "checks": [
-      "Full final verifier passed at ec35b7dc805ed96bb32277c7f6fd66c392e34762; task-owned current verification/bootstrap/wire reports supersede archived1b31517 reports.",
-      "50 focused tests;11 direct wire cases;53 solution infrastructure passes0 product tests and3 controlled failures;13 discovery,2 independent corpus checks;99-task validation passes.",
-      "Required diagnostic/event fields validated; overflowing versions yield infrastructure failure; optional explicit payload validator required for other success operations; positive additive fields preserved.",
-      "Reference infrastructure only; allocation/parser performance benchmarks not applicable and not run; only macOS arm64 validated."
+      "Final full verifier passed at97603064b1be1a31b9c33e6cce994c9382f7b590; task-owned current reports supersede archived1b31517/ec35b7d transcripts.",
+      "51 focused tests;11 JSONL cases plus raw malformedUTF8 wire;54 solution infrastructure passes0 product tests and3 controlledfailures;13 discovery,2 independentcorpusfixtures;99-task validation passes.",
+      "Client invalid responseUTF8 inside validJSON is infrastructurefailure; BCL invalid raw requestUTF8 yields stderr/noresponse/exit2; base64 XML encoding classifications preserved. Payload/adapters/overflow regressions stillpass.",
+      "Reference infrastructure only; allocation/parserperformance benchmarks notapplicable/notrun; only macOS arm64 validated."
     ],
     "remaining": [],
     "requests": [

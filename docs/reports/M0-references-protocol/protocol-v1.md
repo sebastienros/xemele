@@ -4,6 +4,14 @@ UTF-8 JSON Lines, one request and one response per LF-terminated line. CRLF is
 accepted by JSON whitespace rules. Logs belong only on stderr. The BCL process
 supports several requests until stdin EOF; the managed client uses one owned
 process per case and requires successful exit and exactly one response.
+Owned client request/stdout/stderr streams use explicit strict UTF-8; decoding
+errors (including invalid bytes inside otherwise valid JSON strings) are
+infrastructure failures. BCL raw stdin and stdout also use explicit strict UTF-8,
+without BOM-based encoding switching. Invalid stdin wire bytes terminate the
+stream with stderr `Invalid UTF-8 protocol input.` and exit 2, without a response
+for that input. Buffer read-ahead may reject the stream before earlier requests
+are emitted; no request identity from an invalid byte stream is trusted. This
+policy is distinct from malformed XML bytes carried inside valid base64 JSON.
 Limits: request/response 1,048,576 UTF-16 characters; client caps stdout and stderr
 independently at that size. BCL XML document limit 1,048,576 decoded characters,
 entity expansion limit 262,144. Infrastructure limits are not conformance verdicts.
