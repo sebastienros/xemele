@@ -1,9 +1,10 @@
 """Validate/package unchanged raw timing offline; never invokes .NET or measurement."""
-import csv, hashlib, json, re, zipfile
+import csv, hashlib, io, json, re, zipfile
 from pathlib import Path
 ROOT = Path(__file__).resolve().parents[3]
 r = ROOT/'docs/reports/M2-dtd-composition/exclusive-719c630'
-s = json.loads((r/'measurement.json').read_text()); text=(r/'benchmark.txt').read_text()
+s = json.loads((r/'measurement.json').read_text()); archive=r/'full-raw.zip'
+with zipfile.ZipFile(archive) as z: text=z.read('benchmark.txt').decode()
 assert s['parentExit']==0 and s['binaryUnchanged'] and s['allocationNotRerun']
 assert 'Global total time:' in text and re.search(r'Global total time:.*executed benchmarks: 6',text)
 assert 'There are not any results runs' not in text and 'Generate Exception' not in text
@@ -21,18 +22,15 @@ for case,counts in zip(cases,gc):
  if case[1]=='BorrowedCommentScan': assert counts[:4]==[0,0,0,0]
  records.append({'class':case[0],'method':case[1],'commentScalars':int(case[2]),'gcRaw':counts,'childExit':0})
 rows=[]
-for p in sorted((r/'raw/results').glob('*report.csv')):
- rows.extend(csv.DictReader(p.open(newline='')))
+with zipfile.ZipFile(archive) as z:
+ for name in sorted(z.namelist()):
+  if name.endswith('report.csv'): rows.extend(csv.DictReader(io.StringIO(z.read(name).decode())))
 assert len(rows)==6
 assert {(row['Method'],row['CommentScalars']) for row in rows}=={(m,n) for c,m,n in expected}
 for row in rows:
  assert row['Mean'] not in ['NA','?','']
  assert row['Allocated']=='0 B' if row['Method']=='BorrowedCommentScan' else row['Allocated'] not in ['NA','?','0 B','']
-archive=r/'full-raw.zip'
-with zipfile.ZipFile(archive,'w',zipfile.ZIP_DEFLATED) as z:
- z.write(r/'benchmark.txt','benchmark.txt')
- for f in sorted((r/'raw').rglob('*')):
-  if f.is_file(): z.write(f,str(f.relative_to(r)))
+assert hashlib.sha256(archive.read_bytes()).hexdigest()==s['rawArchiveSha256']
 s.update(result='passed',executedBenchmarks=6,generatedRestoreExit=build[0],generatedBuildExit=build[1],childExitCodes=children,rawGcRecords=records,
          resultRows=[{k:row[k] for k in ['Method','CommentScalars','Mean','Error','StdDev','Allocated']} for row in rows],
          rawArchiveSha256=hashlib.sha256(archive.read_bytes()).hexdigest(),
