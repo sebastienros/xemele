@@ -4,11 +4,11 @@
   "milestone": "M2",
   "title": "Correct superseded E38 version applicability",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "worker:M2-profile-version-repair",
   "branch": "codex/m2-profile-version-repair",
   "base_revision": "52fb130878edb29b3d291f9271902fb41ec91f42",
-  "integration_revision": null,
+  "integration_revision": "1ed65f194d654dafd7f371604188b5b419fa4eaf",
   "depends_on": [
     "M2-conformance-profile",
     "M2-version-contract",
@@ -40,7 +40,8 @@
       "status": "passed",
       "evidence": [
         "normative-review",
-        "classification-controls"
+        "classification-controls",
+        "integration-focused"
       ]
     },
     {
@@ -50,7 +51,8 @@
       "evidence": [
         "classification-controls",
         "original-byte-model",
-        "focused-conformance"
+        "focused-conformance",
+        "integration-focused"
       ]
     },
     {
@@ -61,7 +63,8 @@
         "focused-builds",
         "original-byte-model",
         "focused-conformance",
-        "ownership-planning"
+        "ownership-planning",
+        "integration-focused"
       ]
     }
   ],
@@ -125,20 +128,27 @@
       "result": "passed",
       "summary": "Passed validation of138 tasks and whitespace check. All8 implementation files inside task ownership. No runtime/API/dependency/config changes; earlier passing API/ABI/allocation/timing evidence remains applicable, no new performance measurement required. Claim/base integrated prerequisites preserved. Temporary sample/product/test build outputs removed after inspection; cache original inputs left read-only. Initial uncommitted negative harness attempt failed its grammar-code assertion because public byte entry had no primary URI and yielded resource denial; fixed by reusing exact URI-bound decoder/core/DOM path for both original and controls before committing. Final passing execution is the only model-conformance claim.",
       "artifact": null
+    },
+    {
+      "id": "integration-focused",
+      "kind": "integration",
+      "revision": "1ed65f194d654dafd7f371604188b5b419fa4eaf",
+      "command": "verify.py; classify.py --check; Release sample/conformance builds; original-byte sample; conformance.dll -namespace Xemele.Conformance.Tests.XmlFull.* -noColor; tasks.py validate; owned diff/dependency ancestry; git diff --check",
+      "result": "passed",
+      "summary": "46 original-byte independent models,6 rejection controls,1 denial;4 conformance tests passed zero failures/skips/not-run. Exact one-row ledger/regeneration/resources and138-task graph preserved; source/runtime identities durably summarized. No full-corpus semantic conformance claim.",
+      "artifact": "docs/reports/M2-profile-version-repair/integration-summary.json"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Exact E38 effective Fifth Edition acceptance correction only; deterministic ledger and complete independent original-byte model controls passed. Branch implemented, awaiting coordinator integration verification.",
+    "summary": "Integrated and verified exact E38 classification and independent original-byte controls; no runtime/API change.",
     "checks": [
       "Full classifier regeneration and independent one-row/resource/hash preservation passed.",
       "Release SDK10.0.400 builds passed; .NET10.0.11 original-byte 46 model/6 rejection/1 denial controls passed.",
       "Focused full XML conformance4/4 passed; planning138 tasks and owned diff/whitespace passed.",
       "Exploratory harness/runner invocation failures corrected before final checks; raw build outputs cleaned."
     ],
-    "remaining": [
-      "Coordinator integrate and run focused original/model/classification/planning checks, then record integration revision and verified status. Full corpus execution/disagreement resolution remains later grammar/conformance join acceptance."
-    ],
+    "remaining": [],
     "requests": []
   }
 }
