@@ -1,0 +1,28 @@
+{
+  "head": "bffcd4aa671fd8295b6569acff115db891f96833",
+  "mode": "evidence-preservation",
+  "result": "passed",
+  "canonicalDirectoryControls": {
+    "command": "dotnet build capture-control/Control.csproj; Control.dll --directory-only; dotnet build Xemele.EntityBase.Measurements.csproj",
+    "passed": 2,
+    "controlAndDriverBuildExit": 0,
+    "warnings": 0,
+    "errors": 0,
+    "controlBinObjRemoved": true
+  },
+  "successfulAllocationSha256": "782ff6e4180b81eb69dcc7f9e27bca113ca733fd02554f63b0e8df39a2b6f18b",
+  "measuredAllocationRevision": "137e8798594dca7bc67b95170073eded742b140c",
+  "trackedInputsChangedSinceAllocation": {
+    "benchmarks/Xemele.Benchmarks/M2-dtd-entity-base/Provenance.cs": {
+      "allocation": "e9d590722c0ec3c4c6050acc84f164b578ac7c16",
+      "timing": "431046b45bc517791d66aa2221cff03883d21d3d"
+    }
+  },
+  "runtimeClosureMatchesAllocation": true,
+  "coreRuntimeBuildMatchesAllocation": true,
+  "measuredProductBenchmarkConfigSourcesChanged": false,
+  "successfulCorrectnessRevision": "6a151999f177a479bdc3f9c4bb8e2bb9e1583639",
+  "actualChangedProductOwnedUnitSampleOrSharedBuildFilesSinceCorrectness": [],
+  "scope": "Preserves frozen earlier5172/E18/API/package/fullprofile evidence; no replay. Metadata-only compiled informationalversion changes and ownedprovenance directory normalization do not change measured product/workload/config/runtime inputs.",
+  "remainingOwnedDriverBinObjRemovedAfterSuccessfulFreeze": true
+}
