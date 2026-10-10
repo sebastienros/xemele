@@ -15,6 +15,7 @@ def main():
     env = dict(os.environ, DOTNET_ROOT=str(SDK), PATH=str(SDK)+os.pathsep+os.environ.get('PATH',''), DOTNET_CLI_USE_MSBUILD_SERVER='0')
     resume = '--remaining' in sys.argv
     summary = json.loads((OWN/'harness-discovery-failure.json').read_text()) if resume else {'checks':[]}
+    summary.setdefault('testRevision',summary.get('revision'))
     summary['result']='failed'
     summary.pop('failure',None)
     def run(*command):
