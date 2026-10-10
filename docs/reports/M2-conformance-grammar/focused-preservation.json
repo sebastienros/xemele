@@ -1,0 +1,28 @@
+{
+  "head": "1fcecb35951daed28d2c23d63cf19e20f79792f4",
+  "mode": "focused-preservation",
+  "result": "passed",
+  "focusedExecutionRevision": "38644588df4a7376cc25193187adfb7c16443f93",
+  "focused": {
+    "passed": 26,
+    "failed": 0,
+    "skipped": 0,
+    "identitySha256": "5d3ee06e83d663c14be3c1391fa72f15238b516b9ee932e239d86fd9748e92a6"
+  },
+  "rawXmlInspectedAndRemoved": true,
+  "planningRecovery": {
+    "unittest": {
+      "command": "python3 -B -m unittest discover -s tools/planning -p test_tasks.py",
+      "passed": 14,
+      "failed": 0
+    },
+    "validate": {
+      "command": "python3 -B tools/planning/tasks.py validate",
+      "result": "Validated 136 tasks"
+    },
+    "cause": "Concurrent metadata merge conflict temporarily affected planning; API/contracts/source-package byte identity already passed at 54b0b25. No unchanged expensive checks repeated."
+  },
+  "apiPackageIdentityReport": "api-package-identity.json",
+  "preservedBroadReport": "correctness-2dd188e.json",
+  "limitations": "Focused execution source revision recorded; original raw build/test logs are transient, no retroactive binary hash invented."
+}
