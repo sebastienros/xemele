@@ -70,3 +70,24 @@ runtime API baseline or real corpus. `.github/workflows/build.yml` runs discover
 planning validation, restore, Release build/test and runtime pack on Windows,
 Linux and macOS. Hosted executions require repository CI; local validation
 records its actual host and does not imply the other platforms ran.
+
+## Compiled comparison
+
+Build the approved `docs/reports/M0-contracts/ApiCheck/ApiCheck.csproj` and
+`src/Xemele/Xemele.csproj` in Release, then run
+`python -B tools/ApiBaseline/compare.py --bootstrap-empty-api --report artifacts/M0-api-wiring/runtime-api.json`.
+Comparison validates discovery first, composes member/declaration pairs in memory,
+and sends one temporary canonical fragment to the unchanged approved extractor.
+Original inventory IDs and source/line provenance remain in the JSON report; the
+comparison representation uses id=member. No task fragment is rewritten. Matching
+members with distinct IDs still fail as duplicates; conflicting declarations fail.
+Missing, added or changed compiled rows return 1, including a nonempty actual
+assembly paired with a bootstrap-empty inventory. Missing fragments require the
+explicit bootstrap flag and existing source-empty runtime project.
+
+`--root`, `--assembly` and `--checker` support isolated checks; defaults point to
+this repository's runtime/checker Release outputs. `--report` writes full provenance
+and prints a compact result; without it stdout is the complete JSON report.
+The checker scope is docs/decisions/M0/api-compatibility.md, including required
+future signature-family expansion. The CI verifier and focused reproduction live
+in docs/reports/M0-api-wiring/; contract fixtures are not shipped runtime baselines.
