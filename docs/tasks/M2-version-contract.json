@@ -110,6 +110,15 @@
       "result": "passed",
       "summary": "17 cleanup controls passed: truncated report plus injected removal denial retains primary timeout, attempts other paths, preserves historical files and prints serializable summary; cleanup denial fails otherwise passing result, malformed-only inspection still cleans all new outputs. Planning14 and validation128 passed; committed/staged/working/untracked ownership and whitespace audits passed. Exact61667d1..4c9f9cb delta contains only verifier/cleanup controls/README; compiled model/product/test sources unchanged. Full successful model/API4594 preservation remains at61667d1, deliberately not rerun for driver-only delta. Separate same-host active-runtime identity probe.NET10.0.11 Arm64 recorded; concise summaries/source/binary hashes only; negative-control temporary outputs removed. Coordinator performs fresh integrated driver/model/runtime checks.",
       "artifact": "docs/reports/M2-version-contract/latest-summary.json"
+    },
+    {
+      "id": "independent-foundation-source-approval",
+      "kind": "review",
+      "revision": "4c9f9cb49aa8f2050d3d0368001f5d58b735160b",
+      "command": "Independent foundation scoped source review; approval relayed by coordinator chat01a1230c-1353-7e01-afbe-a53c9c018264/local",
+      "result": "passed",
+      "summary": "Independent reviewer approved final scoped sources at4c9f9cb: prior nullable/readonly ABI comparison and truncated-report/finally cleanup blockers resolved; no remaining source blockers. Reviewer execution checks: none. Existing actual model/API/runtime evidence remains at61667d1 and cleanup/planning controls at4c9f9cb; fresh integrated execution remains coordinator responsibility.",
+      "artifact": null
     }
   ],
   "blockers": [],
@@ -119,7 +128,8 @@
       "At61667d1: independentversion236/inheritedmodel64; frozenmodels114/81/81/243/239;4actualABI shapes,2specificcompilefailures,2internalmetadata+1publicmetadata mutations detected; actualAPI272.",
       "At61667d1: exact4594unique runtime tests0fail0skip; planning14/validate128;105inputGit/basehashes,65file unchangedoutputclosure; allscope/whitespaceaudits andrawcleanup passed. Concisesummaries/hashidentities only.",
       "Failures honestly retained: d69d085 corpus-coupled discovery; fe3546f system-temp allocationchild repository ancestry. Both fixed; laterchecks unrun inthose attempts.",
-      "At4c9f9cb: 17 failure-path cleanup controls, planning14/validate128, exact three-file driver-only delta and all scope/whitespace audits passed. Product/tests/model files unchanged from tested61667d1; no repeated full-runtime claim at4c9f9cb."
+      "At4c9f9cb: 17 failure-path cleanup controls, planning14/validate128, exact three-file driver-only delta and all scope/whitespace audits passed. Product/tests/model files unchanged from tested61667d1; no repeated full-runtime claim at4c9f9cb.",
+      "Independent foundation source approval at4c9f9cb received through coordinator: nullable/readonly ABI and failure-path cleanup blockers resolved, no remaining source blockers. Review only; reviewer executed no checks."
     ],
     "remaining": [
       "Coordinator review/integrate and run verifier with --audit-base <integration-base full SHA> --expected-branch <integration branch>; verifier also runs cleanup controls. Only coordinator sets verified and integration_revision.",
