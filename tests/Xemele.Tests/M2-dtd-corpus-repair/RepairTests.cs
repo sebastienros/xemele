@@ -34,6 +34,8 @@ public sealed class RepairTests
         }
         byte[] bytes = Read(files[0]); Assert.Equal(original.GetProperty("inputSha256").GetString(), Convert.ToHexStringLower(SHA256.HashData(bytes)));
         string source = new UTF8Encoding(false, true).GetString(bytes);
+        if (!valid)
+        { Assert.False(XmlDocument.TryParse(bytes, out _, out var diagnostics, new() { DtdProcessing = XmlDtdProcessing.Parse }, Ct)); Assert.Single(diagnostics); }
         for (int split = 0; split <= source.Length; split++)
         {
             var resolver = valid ? new Resolver(Read(files.Single(f => f.GetProperty("path").GetString()!.EndsWith("020.ent", StringComparison.Ordinal))), 1) : null;

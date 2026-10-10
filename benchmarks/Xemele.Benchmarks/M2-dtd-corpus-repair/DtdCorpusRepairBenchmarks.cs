@@ -4,6 +4,8 @@ global using EntityBaseBenchmarks = Xemele.Benchmarks.DtdCorpusRepairBenchmarks;
 using System.Text.Json;
 using BenchmarkDotNet.Attributes;
 using Xemele.Parsing.Dtd;
+using Xemele.Parsing.Syntax;
+using Xemele.Parsing.Entities;
 namespace Xemele.Benchmarks;
 [MemoryDiagnoser, ShortRunJob]
 public class DtdCorpusRepairBenchmarks
@@ -40,7 +42,36 @@ public class DtdCorpusRepairBenchmarks
         var pe = m.ParameterEntities[0];
         if (pe.Name != "e" || !pe.IsParameter || !pe.IsExternal || pe.ReplacementText != "doc" || pe.SystemId is not null || pe.PublicId is not null || pe.NotationName is not null || pe.Location != new XmlLocation(External, 1, 1, 0)) throw new Exception("parameter oracle");
         resolver.Requests = resolver.Disposals = 0;
+        // Task-authored event order and all-callback pauses, outside counters.
+        using (var core = new XmlParserCore(new() { DtdProcessing = XmlDtdProcessing.Parse, Resolver = resolver }))
+        {
+            var sink = new EventOracle(); int consumed = 0; ScanResult result;
+            do { result = core.Append(Document.AsSpan(consumed), [], true, sink, default); consumed += result.Consumed; }
+            while (result.Step == ScanStep.Paused);
+            if (result.Step != ScanStep.Completed || consumed != Document.Length || sink.Index != 7 || resolver.Requests != 1 || resolver.Disposals != 1) throw new Exception("complete event/pause/count oracle");
+        }
+        resolver.Requests = resolver.Disposals = 0;
         if (Environment.GetCommandLineArgs().Contains("--allocation")) BorrowedAllocation();
+    }
+    private sealed class EventOracle : IXmlEventSink, IXmlDtdSink
+    {
+        internal int Index;
+        private bool At(int expected) { if (Index++ != expected) throw new Exception("event order"); return false; }
+        public bool StartDocument(XmlLocation at) => At(0);
+        public bool Declaration(XmlDeclarationView value) => throw new Exception("unexpected declaration");
+        public bool DocumentType(XmlDocumentType value, DtdModel model, XmlLocation at)
+        { if (value.Name != "doc" || model.Attributes.Count != 1 || model.Attributes[0].DefaultValue != "v1") throw new Exception("DTD event oracle"); return At(1); }
+        public bool StartElement(XmlNameView value, bool empty, XmlLocation at)
+        { if (empty || !value.LocalName.SequenceEqual("doc") || !value.Prefix.IsEmpty || !value.NamespaceUri.IsEmpty) throw new Exception("element event oracle"); return At(2); }
+        public bool NamespaceDeclaration(XmlNamespaceView value) => throw new Exception("unexpected namespace");
+        public bool Attribute(XmlAttributeView value)
+        { if (!value.Name.LocalName.SequenceEqual("a1") || !value.Value.SequenceEqual("v1")) throw new Exception("default event oracle"); return At(3); }
+        public bool StartElementContent() => At(4);
+        public bool EndElement(XmlNameView value, XmlLocation at)
+        { if (!value.LocalName.SequenceEqual("doc")) throw new Exception("end event oracle"); return At(5); }
+        public bool StartText(XmlTextKind kind, ReadOnlySpan<char> target, XmlLocation at) => throw new Exception("unexpected text");
+        public bool TextFragment(ReadOnlySpan<char> value, bool ended, XmlLocation at) => throw new Exception("unexpected fragment");
+        public bool EndDocument(XmlLocation at) => At(6);
     }
     private static void BorrowedAllocation()
     {

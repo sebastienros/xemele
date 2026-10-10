@@ -164,7 +164,7 @@ internal sealed partial class DtdParser
         if (!IgnoreCurrentDeclaration && !HasEntity(target, name))
         {
             target.Add(new(name, isParameter, replacement, system, pub, notation, IsExternalDeclaration, declarationAt));
-            if (!isParameter && declarationInParameter) (parameterOriginGeneral ??= new(StringComparer.Ordinal)).Add(name);
+            if (!isParameter && declarationInParameter && standaloneReadState) (parameterOriginGeneral ??= new(StringComparer.Ordinal)).Add(name);
         }
     }
     private string? DecodeLiteral(string raw, CancellationToken cancellation, bool entity)
