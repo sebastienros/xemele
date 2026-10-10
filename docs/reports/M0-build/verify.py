@@ -22,10 +22,10 @@ def run(args, expected=0):
 try:
     revision = run(["git", "rev-parse", "HEAD"]).strip()
     assert run(["dotnet", "--version"]).strip() == "10.0.400"
-    run(["dotnet", "restore", "Xemele.slnx"])
-    run(["dotnet", "build", "Xemele.slnx", "-c", "Release", "--no-restore"])
-    run(["dotnet", "test", "Xemele.slnx", "-c", "Release", "--no-build", "--list-tests"])
-    run(["dotnet", "test", "Xemele.slnx", "-c", "Release", "--no-build"])
+    isolated = ["--disable-build-servers", "-m:1", "-p:UseSharedCompilation=false"]
+    run(["dotnet", "restore", "Xemele.slnx"] + isolated)
+    run(["dotnet", "build", "Xemele.slnx", "-c", "Release", "--no-restore"] + isolated)
+    run([sys.executable, "-B", "docs/reports/M0-tests-mtp/check_runner.py"])
     for project in ["src/Xemele.Tool", "tests/Xemele.Fuzz", "benchmarks/Xemele.Benchmarks", "tools/CorpusManager"]:
         for arg in ["--help", "-h", "help", None]:
             command = ["dotnet", "run", "-c", "Release", "--no-build", "--project", project, "--"]
@@ -33,8 +33,8 @@ try:
             assert "Xemele" in output
     for project in ["src/Xemele.Tool", "tests/Xemele.Fuzz", "tools/CorpusManager"]:
         run(["dotnet", "run", "-c", "Release", "--no-build", "--project", project, "--", "unknown"], expected=2)
-    run(["dotnet", "pack", "src/Xemele/Xemele.csproj", "-c", "Release", "--no-build", "-o", "artifacts/M0-build/packages"])
-    package = root / "artifacts/M0-build/packages/Xemele.1.0.0.nupkg"
+    run(["dotnet", "pack", "src/Xemele/Xemele.csproj", "-c", "Release", "--no-build", "--no-restore", "-o", "artifacts/M0-tests-mtp/packages"] + isolated)
+    package = root / "artifacts/M0-tests-mtp/packages/Xemele.1.0.0.nupkg"
     with zipfile.ZipFile(package) as archive:
         library_files = [name for name in archive.namelist() if name.startswith("lib/")]
         assert library_files == ["lib/net10.0/Xemele.dll"], library_files
@@ -43,8 +43,8 @@ try:
     count = run(["dnx", "dotnet-inspect", "-y", "--", "type", "--library", "src/Xemele/bin/Release/net10.0/Xemele.dll", "--count"])
     assert count.strip() == "0", count
     run(["python3", "tools/planning/tasks.py", "validate"])
-    log.append(f"Passed bootstrap checks at {revision}. Test shells contain zero tests; no runtime APIs or benchmarks exist yet.\n")
+    log.append(f"Passed bootstrap checks at {revision}. MTP infrastructure smoke tests are reported separately; no runtime APIs or product conformance tests exist yet.\n")
 finally:
-    report = root / "artifacts/M0-build/verification.txt"
+    report = root / "artifacts/M0-tests-mtp/bootstrap-verification.txt"
     report.parent.mkdir(parents=True, exist_ok=True)
     report.write_text("\n".join(log))

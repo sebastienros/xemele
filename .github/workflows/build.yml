@@ -29,8 +29,8 @@ jobs:
         run: dotnet restore Xemele.slnx --disable-build-servers -m:1 -p:UseSharedCompilation=false
       - name: Build
         run: dotnet build Xemele.slnx -c Release --no-restore --disable-build-servers -m:1 -p:UseSharedCompilation=false
-      - name: Test
-        run: dotnet test Xemele.slnx -c Release --no-build --no-restore --disable-build-servers -m:1 -p:UseSharedCompilation=false --logger trx --results-directory artifacts/test-results
+      - name: Discover and execute MTP tests and verify failure exit codes
+        run: python -B docs/reports/M0-tests-mtp/check_runner.py
       - name: Pack runtime
         run: dotnet pack src/Xemele/Xemele.csproj -c Release --no-build --no-restore --disable-build-servers -m:1 -p:UseSharedCompilation=false -o artifacts/packages
       - uses: actions/upload-artifact@v4
