@@ -2,6 +2,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using Xemele.Internal.Operations;
 [assembly: InternalsVisibleTo("Xemele.DtdFramingSample")]
+[assembly: InternalsVisibleTo("Xemele.DtdFramingBenchmarks")]
 namespace Xemele.Parsing.Dtd;
 
 internal enum TextDeclarationStep { NeedInput, Declared, Absent, Rejected }

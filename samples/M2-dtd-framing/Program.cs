@@ -44,13 +44,23 @@ internal static class AllocationProbe
         before = GC.GetAllocatedBytesForCurrentThread();
         for (int i = 0; i < iterations; i++) primitive.Append(" \t\r\n", [], false, default);
         long warmPrimitiveBytes = GC.GetAllocatedBytesForCurrentThread() - before;
-        long retainedBefore = GC.GetTotalMemory(true);
+        _ = RetainResults(iterations); // Warm the persistence helper before measuring live storage.
+        Collect();
+        long retainedBefore = GC.GetTotalMemory(false);
         var retained = RetainResults(iterations);
-        long retainedBytes = GC.GetTotalMemory(true) - retainedBefore;
+        Collect();
+        long retainedBytes = GC.GetTotalMemory(false) - retainedBefore;
+        int declarationSize = System.Runtime.CompilerServices.Unsafe.SizeOf<XmlTextDeclaration>();
         GC.KeepAlive(retained);
         Console.WriteLine(JsonSerializer.Serialize(new { coldBytes, ownedPerOperation, warmPrimitiveBytes, retainedResults = iterations,
-            retainedBytes, retainedMeaning = "1000 owned five-character encoding strings and result array; GC total-memory estimate, no borrowed source retained", runtime = Environment.Version.ToString() }));
+            retainedBytes, declarationSize, retainedMeaning = "1000 owned five-character encoding strings and result array after forced compacting collections; GC total-memory estimate, no borrowed source retained", runtime = Environment.Version.ToString() }));
         if (warmPrimitiveBytes != 0) throw new Exception("Primitive allocated.");
+    }
+    private static void Collect()
+    {
+        GC.Collect(2, GCCollectionMode.Forced, true, true);
+        GC.WaitForPendingFinalizers();
+        GC.Collect(2, GCCollectionMode.Forced, true, true);
     }
     [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
     private static XmlTextDeclaration[] RetainResults(int count)

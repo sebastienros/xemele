@@ -23,6 +23,10 @@ def main():
     parser.add_argument('--report-prefix', required=True)
     parser.add_argument('--audit-base', default=CLAIM)
     parser.add_argument('--expected-branch')
+    parser.add_argument('--expected-runtime-tests', type=int, default=1490)
+    parser.add_argument('--expected-conformance-tests', type=int, default=255)
+    parser.add_argument('--expected-differential-tests', type=int, default=299)
+    parser.add_argument('--expected-public-api', type=int, default=222)
     args = parser.parse_args()
     if not re.fullmatch('[a-z0-9-]+', args.report_prefix): parser.error('invalid report prefix')
     report = REPORT / args.report_prefix
@@ -61,7 +65,8 @@ def main():
         summary['dotnetSha256'] = hashlib.sha256(dotnet.read_bytes()).hexdigest()
         source_paths = ['src/Xemele/Parsing/Dtd/IDtdBudget.cs', 'src/Xemele/Parsing/Dtd/Framing',
                         'tests/Xemele.Tests/M2-dtd-framing', 'benchmarks/Xemele.Benchmarks/M2-dtd-framing',
-                        'samples/M2-dtd-framing', 'docs/reports/M2-dtd-framing/Independent', 'docs/reports/M2-dtd-framing/verify.py']
+                        'samples/M2-dtd-framing', 'docs/reports/M2-dtd-framing/Independent', 'docs/reports/M2-dtd-framing/BenchmarkChecks',
+                        'docs/reports/M2-dtd-framing/Xemele.DtdFramingBenchmarks.csproj', 'docs/reports/M2-dtd-framing/BenchmarkDriver.cs', 'docs/reports/M2-dtd-framing/verify.py']
         assert not run('git', 'diff', '--name-only', 'HEAD', '--', *source_paths).strip(), 'uncommitted tested sources'
         assert not run('git', 'ls-files', '--others', '--exclude-standard', '--', *source_paths).strip(), 'untracked tested sources'
         run('dotnet', 'build', REPORT/'Independent/Independent.csproj', *FLAGS)
@@ -91,10 +96,12 @@ def main():
         allocations = json.loads(run('dotnet', sample, '--allocations').strip())
         (report/'allocations.json').write_text(json.dumps(allocations, indent=2)+'\n')
         summary['allocations'] = allocations
-        run('dotnet', 'build', ROOT/'benchmarks/Xemele.Benchmarks/Xemele.Benchmarks.csproj', *FLAGS)
-        discovered = run('dotnet', ROOT/'benchmarks/Xemele.Benchmarks/bin/Release/net10.0/Xemele.Benchmarks.dll', '--list', 'flat', '--filter', '*DtdFraming*')
+        run('dotnet', 'build', REPORT/'Xemele.DtdFramingBenchmarks.csproj', *FLAGS)
+        discovered = run('dotnet', REPORT/'bin/Release/net10.0/Xemele.DtdFramingBenchmarks.dll', '--list', 'flat', '--filter', '*DtdFraming*')
         assert len(discovered.strip().splitlines()) == 3
         summary['benchmarksPrepared'] = discovered.strip().splitlines()
+        run('dotnet', 'build', REPORT/'BenchmarkChecks/Check.csproj', *FLAGS)
+        summary['benchmarkCorrectness'] = run('dotnet', REPORT/'BenchmarkChecks/bin/Release/net10.0/Xemele.DtdFramingBenchmarkChecks.dll').strip()
         run('python3', '-B', 'docs/reports/M1-corpus-import/provision.py')
         run('dotnet', 'build', 'tools/ReferenceRunners/Bcl/BclReference.csproj', *FLAGS)
         original = ROOT/'tools/ReferenceRunners/Bcl/bin/Release/net10.0/BclReference.dll'
@@ -104,12 +111,15 @@ def main():
         runner_hash = hashlib.sha256(pinned.read_bytes()).hexdigest()
         run('python3', '-B', 'docs/reports/M1-contracts/verify.py')
         run('python3', '-B', 'tools/ApiBaseline/compare.py', '--report', report/'runtime-api.json')
+        api = json.loads((report/'runtime-api.json').read_text())
+        assert api['matched'] and len(api['provenance']) == args.expected_public_api
+        summary['publicApiMembers'] = len(api['provenance'])
         counts = {}
-        for assembly, minimum in [('Xemele.Tests', 1487), ('Xemele.Conformance.Tests', 255), ('Xemele.Differential.Tests', 299)]:
+        for assembly, expected in [('Xemele.Tests', args.expected_runtime_tests), ('Xemele.Conformance.Tests', args.expected_conformance_tests), ('Xemele.Differential.Tests', args.expected_differential_tests)]:
             xml = raw/(assembly+'.xml')
             run('dotnet', ROOT/f'tests/{assembly}/bin/Release/net10.0/{assembly}.dll', '-noColor', '-result-xml', xml)
             tests = list(ET.parse(xml).iter('test'))
-            assert len(tests) >= minimum and all(t.get('result') == 'Pass' for t in tests), (assembly, len(tests))
+            assert len(tests) == expected and all(t.get('result') == 'Pass' for t in tests), (assembly, len(tests), expected)
             counts[assembly] = {'total': len(tests), 'failed': 0, 'skipped': 0}
             (report/(assembly+'.xml.gz')).write_bytes(gzip.compress(xml.read_bytes(), mtime=0))
         summary['runtimeTests'] = counts

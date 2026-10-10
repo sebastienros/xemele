@@ -8,6 +8,7 @@ using System.Text;
 // Both loops charge raw scalars, normalize CRLF, check cancellation, advance the
 // cursor and count normalized token scalars. No optimized matcher is introduced.
 [MemoryDiagnoser, ShortRunJob]
+[InvocationCount(8192)]
 public class DtdFramingScanBenchmarks
 {
     [Params(8, 4096)] public int Length { get; set; }
@@ -21,13 +22,28 @@ public class DtdFramingScanBenchmarks
     public void Setup()
     {
         input = CrLf ? string.Concat(Enumerable.Repeat(" \t\r\n", Length / 4)) : new string(' ', Length);
+        Reset();
+        var expected = ScalarBaseline(); var actual = IncrementalFramer();
+        if (expected != actual) throw new Exception("Whitespace semantics differ.");
+        ValidateCheckpoint();
+    }
+    public void ValidateCheckpoint()
+    {
+        if (baseline.Current() != framer.Append([], [], false, default).NextLocation)
+            throw new Exception("Whitespace cursors differ.");
+    }
+    // IterationSetup forces unroll=1. The fixed 8192 calls accept at most
+    // 33,554,432 raw units per iteration, well within Int32 cursor/token limits.
+    // Both states restart together outside timing, including pilot/warmup stages.
+    [IterationSetup]
+    public void Reset()
+    {
+        framer?.Dispose();
         framer = new(new() { TokenCharacters = null, ExpandedCharacters = null });
         framer.Append("<?xml ", [], false, default);
         baseline = new(null);
         foreach (char c in "<?xml ") baseline.TryAdvance(new Rune(c));
-        raw = normalized = 6;
-        var expected = ScalarBaseline(); var actual = IncrementalFramer();
-        if (expected != actual) throw new Exception("Whitespace semantics differ.");
+        raw = normalized = 6; afterCr = false;
     }
     [Benchmark(Baseline = true)]
     public int ScalarBaseline()
