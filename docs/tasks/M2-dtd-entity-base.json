@@ -4,7 +4,7 @@
   "milestone": "M2",
   "title": "Correct DTD entity declaration and reference bases",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M2-dtd-entity-base",
   "branch": "codex/m2-dtd-entity-base",
   "base_revision": "a1dc369c84afd0d63c23067b96b66483e6b53866",
@@ -57,8 +57,15 @@
     {
       "id": "M2-dtd-entity-base-A3",
       "description": "Record actual full correctness/preservation/API/package and relevant allocation/benchmark evidence at frozen Git/source/actualbinary/runtime identities; original3386resources/2585case expectation ledger unchanged, E18 independentmodel fulfilled and all other gaps remainvisible. No unverified peer dependency, no Core/framer/sharedproject/API edits. Scoped source review and exclusive preparation/grant before standalone measurements, no repeats of unchanged successful observations or relaxed counters/options. Summaries only, transient raw output cleanup and actual planning validation.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "correctness-6a15199",
+        "original-profile-6a15199",
+        "allocation-137e879",
+        "preparation-bffcd4a",
+        "benchmark-bffcd4a",
+        "evidence-preservation-bffcd4a"
+      ]
     }
   ],
   "implementation": [
@@ -257,11 +264,38 @@
       "result": "failed",
       "summary": "SameleaseprebuiltExecutor/no generationrestorebuild. FirstInternalNestedModelchildexit255beforework; soleexpected/actualdirectorytrailingseparator mismatch,allclosure/input/metadatahashesmatched.0Actual/Result/GC observations;RedirectedCompositionunrun;finalfreezeunrun,parent0/groupempty/rawchildremoved/parentcleanupmatched. Leaseimmediatelyreleasedbeforeinspection;no retry/timingclaim.",
       "artifact": "docs/reports/M2-dtd-entity-base/benchmark-137e879.json"
+    },
+    {
+      "id": "preparation-bffcd4a",
+      "kind": "check",
+      "revision": "bffcd4aa671fd8295b6569acff115db891f96833",
+      "command": "python3 -B docs/reports/M2-dtd-entity-base/measure.py --mode prepare --report preparation-bffcd4a --benchmark-report benchmark-bffcd4a",
+      "result": "passed",
+      "summary": "Directcanonicaldirectory controls2passed,control+actualdriverbuild0warnings/errors. Changedprovenance-only preparationoutsidelease passed5commands+5queries0/emptygroups; expectedsource/parent/runtime/child/290generatedinputs/fullversions frozen; parentcleanupmatched. Product/workload/config/runtime matchimmutableallocation; no replay.",
+      "artifact": "docs/reports/M2-dtd-entity-base/preparation-bffcd4a.json"
+    },
+    {
+      "id": "benchmark-bffcd4a",
+      "kind": "check",
+      "revision": "bffcd4aa671fd8295b6569acff115db891f96833",
+      "command": "python3 -B docs/reports/M2-dtd-entity-base/measure.py --mode benchmark --report benchmark-bffcd4a --exclusive-grant m2-entity-base-bffcd4a-timing-exclusive-20261010",
+      "result": "passed",
+      "summary": "ONEtiming-onlylease/preparedchild(no generate/restore/build).2cases each3Actual+3Result+1GCconsistentoperations,onechildexit0,exactbefore/aftergatepassed/completefullversion/hash/inputproof matched. Source/parent/runtime/host/manifest/fullfinalfreeze passed. InternalNestedModel1.551us/5.43KB; RedirectedComposition10.204us/113.76KB; host-specificinformationalonly. Leaseimmediatelyreleased/nochildren beforeinspection; raw/generatedchildremoved/completeparentcleanupmatched.",
+      "artifact": "docs/reports/M2-dtd-entity-base/benchmark-bffcd4a.json"
+    },
+    {
+      "id": "evidence-preservation-bffcd4a",
+      "kind": "check",
+      "revision": "bffcd4aa671fd8295b6569acff115db891f96833",
+      "command": "Compare frozen allocation/preparation trackedinput/runtime maps; git diff --name-only 6a15199 bffcd4a -- src/Xemele tests/Xemele.Tests/M2-dtd-entity-base samples/M2-dtd-entity-base Directory.Build.props Directory.Packages.props global.json",
+      "result": "passed",
+      "summary": "Immutableallocation preservedsameSHA; onlytrackedmeasurementinputdeltaProvenancecanonicaldirectory; product/workload/config/fullruntimeunchanged. Nochanged product/ownedunit/sample/sharedbuildpaths since5172/E18/API/package/profilecorrectness6a. Allpriorfailureshonest. Remainingownmeasurementbin/objremovedafterfrozenidentitychecks.",
+      "artifact": "docs/reports/M2-dtd-entity-base/evidence-preservation-bffcd4a.json"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "EXECUTIONCOMPLETE/EXCLUSIVERELEASE/nochildren. Preparation137e879passed;singleallocationpassed;timingfailedbeforeworksoletrailingdirectoryslashmismatch. Exactfailedproof+allhashesretained;completeparentcleanupmatched/rawchildremoved. No automaticfix/retry orallocationreplay. A1/A2passed,A3pendingrequiredtiming.",
+    "summary": "IMPLEMENTED branchwork;A1/A2/A3passed. ExactDTDbasefix+originalE18/5172/API/package/profilepreserved; immutableallocation137e879 andstrict2caseprebuilt timingbffcd4a passed. Allleasephasesreleased/nochildren, allraw/generated/remainingownmeasurementbinariesremoved afteridentityfreeze. Readyforrootfocused integration; integration_revisionnull/notverified.",
     "checks": [
       "Release solution0warnings; full5172tests/owned9includingoriginalE18 allpassed; API272matched; own source/freshpackageconsumer passed.",
       "Original fullprofileaudit all2585cases/3386resources unchanged; E18modelgap resolved, same139otheroutcome gaps remainvisible. Wholeprofile is not claimed conformant.",
@@ -277,13 +311,12 @@
       "8f02d8a/afcd014 affected6Pythonunique controls ultimatelypassed; first5/6pathassertionfailure correctedonlytestcanonicalpath and rerunonlyfailed. C#4metadata controls passed withactualCoreLib10.0.11-servicing.26373.116+e2f47b0110ed922f21a1522da67279133ce28f32; actualdrivercompileafcd0140warnings/errors. Ownbin/obj/controloutputsremoved.",
       "e1parentoracle/2inputqueries/generatedexactbinding/restorebuild/fullruntimePEversion passed, parsercontextguardfailed. Source/parentpostcleanupmatched/rawgeneratedremoved. 3463294onlyaffectedparsercontrolpassed preservingexactproperties/output/cwdguards.",
       "e386exactbinding/generatedbuild/argvpropertiescwd/fullruntimechecks passed; queryexit0 thenorphan-group/EPERMfailure honestlyretained. PostfailurePS noheavychildren; completeparentpostcleanupmatched.54f70c2only3affectedcontrolspassed.",
-      "137e8792Python/3C#reusecontrols andactualdrivercompile0warnings/errors passed. Outsideleasepreparationpassed. ONEallocationpassed1024models/documents+positivecontrol/finalfreeze. Timingfirstchild255/beforegatefalse/0observations/2ndunrun/finalfreezeunrun; parent0/groupempty/cleanupmatched. No restoration/buildduringlease; releasedbeforeanalysis."
+      "137e8792Python/3C#reusecontrols andactualdrivercompile0warnings/errors passed. Outsideleasepreparationpassed. ONEallocationpassed1024models/documents+positivecontrol/finalfreeze. Timingfirstchild255/beforegatefalse/0observations/2ndunrun/finalfreezeunrun; parent0/groupempty/cleanupmatched. No restoration/buildduringlease; releasedbeforeanalysis.",
+      "bffcd4a2directorycontrols/compilerbuild/preparationoutsideleasepassed. ONEtiming-onlylease2cases3Actual/3Resulteach+GCaccounting,childexits0,fullbefore/afterindependentproof/finalfreeze/cleanupmatched. Allocation137e879immutableSHA preserved,no replay; actualsource/config/runtime equivalence recorded."
     ],
     "remaining": [
-      "ExactA3unmetcheck: actualfirstchildCapture.directory has trailing slash fromAppContextBaseDirectory; independentexpectedArtifactPaths.directory lacks it. All47binaryhashes,3generatedinputs,290compiledinputs andmetadata match. No timingobservations; required2caseexecutionstillmissing.",
-      "Rootowns ONE bounded directresolution: canonicalize Capture directory with Path.TrimEndingDirectorySeparator(Path.GetFullPath(directory)); focusedoffline proof comparison of identicaldirectory with/withoutendingseparator. Preserveallprovenanceguards; no workerincrementalredesign/sourcefix/retry.",
-      "Preserve passingallocation137e879 withoutreplay. Retainallpriorcorrectness/E18/API/package/profile results andinputproof. No fullsuite/preparation replay unlessmissingrequiredexecutionevidence requireschangedpreparedchild; rootdecides.",
-      "Rootintegration focusedexistingchecks thencomprehensiveM2gate; A3timingpending, taskin_progress. Successfulmanifest/preparation/results retained forofflineinspection; no scopeschildren."
+      "Coordinator temporary current-main merge andfixedfocused owned+existingparser/composition/resource/source-location/E18/API/source-package/planning/ownershipchecks; recordintegratedrevision/verified onlyafterpassing.",
+      "Preserveunchangedbranch5172/fullprofile evidence via recordedactualsource/config/runtime/inputproof; comprehensivecombinedsuite atM2gate. No newintegrationframework/branchfullsuite/standalone replay required."
     ],
     "requests": []
   }
