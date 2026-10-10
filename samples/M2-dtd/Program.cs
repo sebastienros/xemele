@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Xemele;
 using Xemele.DtdParentSample;
 using Xemele.Parsing.Dtd;
 if (args.Contains("--runtime")) { Console.WriteLine(Environment.Version); return; }
