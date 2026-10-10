@@ -32,7 +32,7 @@ try
     }, new JsonSerializerOptions { WriteIndented = true, Converters = { new JsonStringEnumConverter() } }));
     return reports.Length > 0 && reports.All(r => r.Successful) ? 0 : 1;
 }
-catch (Exception error) when (error is IOException or UnauthorizedAccessException or JsonException or FormatException)
+catch (Exception error) when (error is IOException or InvalidDataException or UnauthorizedAccessException or JsonException or FormatException)
 {
     Console.Error.WriteLine("Corpus infrastructure error: " + error.Message);
     return 1;
