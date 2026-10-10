@@ -4,11 +4,11 @@
   "milestone": "M2",
   "title": "Isolated DTD whitespace framing allocation measurement",
   "kind": "infrastructure",
-  "status": "implemented",
+  "status": "verified",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M2-dtd-framing-allocation-probe",
   "branch": "codex/m2-dtd-framing-allocation-probe",
   "base_revision": "4ee0843ebf1a0e8f974d9011d9ec066648b5f138",
-  "integration_revision": null,
+  "integration_revision": "bbf3ea65ebe68a2433b867758378b9d0263175d2",
   "depends_on": [
     "M2-dtd-framing"
   ],
@@ -36,7 +36,8 @@
         "independent-source-review",
         "exclusive-known-source-checks",
         "actual-protocol-rejections",
-        "summaries-only-policy-checks"
+        "summaries-only-policy-checks",
+        "coordinator-integrated-verification"
       ]
     },
     {
@@ -50,7 +51,8 @@
         "actual-protocol-rejections",
         "summaries-only-policy-checks",
         "final-metadata-audit",
-        "final-summary-driver-review"
+        "final-summary-driver-review",
+        "coordinator-integrated-verification"
       ]
     }
   ],
@@ -142,21 +144,29 @@
       "result": "passed",
       "summary": "Coordinator approved final metadata-only baseline comparison removing rawXML dependency; no blocker. Root independently reviewed canonical4514/255/299 pinned identities. Source-only review, no new allocation/full checks. Actual successful406 branch observations not repeated; all340compiledinputs unchanged.",
       "artifact": "docs/reports/M2-dtd-framing-allocation-probe/artifact-policy-summary.json"
+    },
+    {
+      "id": "coordinator-integrated-verification",
+      "kind": "integration",
+      "revision": "bbf3ea65ebe68a2433b867758378b9d0263175d2",
+      "command": "python3 -B docs/reports/M2-dtd-framing-allocation-probe/verify.py --report-prefix integrated-bbf3ea6 --expected-branch codex/integrate-m2-dtd-framing-allocation-probe --audit-base b081aeaa3e89a1b259485b865fdbe8495a14e370 --runtime-count 4515 --conformance-count 255 --differential-count 299 --api-count 272 --fixture-count 3388 --planning-count 14 --task-count 124",
+      "result": "passed",
+      "summary": "Fresh integrated current-main single invocation exit0; all17 checks passed. Focused1, cumulative5069, direct/discovery4515+255+299 allPass/noFail/noSkip; all5068 inherited identities and1243framing preserved. Three actual real0B/positive64000B pairs with complete32000warm/measured/final64021;20actual protocol negatives. API272/fixtures3388/fresh completeBCL242 with239matches and3existing divergences;340compiledsources unchanged and independently matchedGit; copied runner output unchanged; planning14/validate124/owned audits. Root independently inspected temporary XML/child/reference outcomes, then removed generated rawoutputs without archives. Source review is distinct from actual checks; historical6128B cause unproved. No runtime or timing changes.",
+      "artifact": "docs/reports/M2-dtd-framing-allocation-probe/integrated-bbf3ea6/summary.json"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Implemented exactzero isolated originalFact at measured406; finalsource7fb85f1 only summaries-only verifier/report policy changes with340compiledinputs unchanged. All A1-A2 branch checks passed; integration_revision null, coordinator alone marks verified. No runtime/publicAPI/entity/benchmark changes; historicalcause unproved.",
+    "summary": "Verified on integrated currentmain at bbf3ea65ebe68a2433b867758378b9d0263175d2; exactzero and original workload preserved. Concise results durable; raw generated outputs removed.",
     "checks": [
       "Exclusive source406 invocation exit0; focused1/cumulative5069/direct4515+255+299/discovery allPass/noFail/noSkip; prior5068identities+framing1243 preserved,one additive protocolFact.",
       "Three actualreal0B/positive64000B pairs,1000warm+1000measured32spacecalls/32000consumed each/finalcursor64021; defaultGC/JIT/classparallelism,allchildrenstopped.",
       "Actual20guard/schema/provenance negatives and report-schemaFact; archive/mockedtimeout2Python; API272/fixtures3388/reference242(239matched+3existingdivergences)/fullsource+completecopyunchanged/planning14/validate124/owned+3diffchecks passed.",
       "Coordinator inspected transient results and releasedexclusive grant; allraw/generatedartifactcopies removed under userpolicy, summaries/identities/failures retained. No successfulobservations repeated.",
-      "Finalsource7fb85f1f81533f3afe92557c4d83c894ddbfa8ce preservation2passed; all340compiledinputs equal measured406. No realchildtimeout/crash exercise, timing/Windows/x64/AOT/fullnewentity work/package smoke run. Baseline canonical digest/count metadata independently checked4514/255/299; finaldriver no rawXML dependency."
+      "Finalsource7fb85f1f81533f3afe92557c4d83c894ddbfa8ce preservation2passed; all340compiledinputs equal measured406. No realchildtimeout/crash exercise, timing/Windows/x64/AOT/fullnewentity work/package smoke run. Baseline canonical digest/count metadata independently checked4514/255/299; finaldriver no rawXML dependency.",
+      "Coordinator fresh integrated full verification passed; independent raw inspection and summaries-only cleanup complete."
     ],
-    "remaining": [
-      "Coordinator temporary integration/currentmain full verification using final summaries-only driver; record integration separately and mark verified."
-    ],
+    "remaining": [],
     "requests": []
   }
 }

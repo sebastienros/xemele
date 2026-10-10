@@ -17,8 +17,8 @@
       "branch": "codex/m2-dtd-framing-allocation-probe",
       "base_revision": "4ee0843ebf1a0e8f974d9011d9ec066648b5f138",
       "claim_revision": "59972855a3707a16a1e008488165ef5d0564e0c8",
-      "stage": "Actualfull406 passed; summary-only verifier7fb approved, owner finalmetadata/handoff pending; then root serializedcurrentmainintegrationchecks.",
-      "worker_cursor": "d8edad41-460d-490f-8d13-767d2788655d:43",
+      "stage": "Verified integrated; cleanup pending",
+      "worker_cursor": "d8edad41-460d-490f-8d13-767d2788655d:44",
       "preparation": "Actualprepare406solution+standalone+parentrebuild0warn/errors+2archivePythonregressions; rootverified340compiledsourcehashes against406 and beforeafterunchanged, current test/product/diagnosticDLL hashes verified. Baseline4514XML verified independently. No observationsyet.",
       "current_source_candidate": "406e95ad041d052bdf3acaa90a1b90b08bf79cbc",
       "source_review": {
@@ -32,23 +32,20 @@
       },
       "independent_result_inspection": "Rootparsed transientXML4515+255+299 allPass,340compiledbeforeafter equal, three0/64000B pairs complete32000warm/measured/final64021. Raw artifacts not retained under updatedpolicy.",
       "summary_only_verifier_revision": "7fb85f1f81533f3afe92557c4d83c894ddbfa8ce",
-      "summary_only_verifier_review": "Independent API source-only approval; preserves count/digest/provenance/failuregates and removesrawbaselineXML dependency. Rootindependently recomputed all4514/255/299 baselineidentitydigests fromverifiedXML. No rerun ofsuccessful406observations."
+      "summary_only_verifier_review": "Independent API source-only approval; preserves count/digest/provenance/failuregates and removesrawbaselineXML dependency. Rootindependently recomputed all4514/255/299 baselineidentitydigests fromverifiedXML. No rerun ofsuccessful406observations.",
+      "handoff_revision": "fd65bc20057af292ccf76bb176f4e861416da3dc",
+      "integration_revision": "bbf3ea65ebe68a2433b867758378b9d0263175d2"
     }
   ],
   "integration_queue": [],
-  "blockers": [
-    {
-      "task": "M2-entities",
-      "cause": "Untouched inherited framing allocation guard failed6128B in full175; narrowmeasurementrepair ready, cause unproved."
-    }
-  ],
+  "blockers": [],
   "next_actions": [
-    "Collect clean summary-only handoff/allownershiprelease; root serializedcurrentmainintegrationcheck, retain summaries and removegeneratedrawoutputs.",
-    "Verify/integrate guard repair, renew preserved entity claim without losing history.",
-    "Complete entity correctness/oracles/exclusive measurements/integration then M2-gate and M3-M9."
+    "Remove verified no-longer-needed repair and integration worktrees without generated-output archives; archive repair chat.",
+    "Renew preserved entity claim from verified repair and currentmain, strengthen authored oracles, then complete remaining checks.",
+    "Verify M2-gate then all remaining milestones through M9-gate."
   ],
-  "last_verified_task": "M2-resolver-cancellation",
-  "last_integrated_revision": "cc4770bfc417dd81ea1744a54b477134a4f7e997",
+  "last_verified_task": "M2-dtd-framing-allocation-probe",
+  "last_integrated_revision": "bbf3ea65ebe68a2433b867758378b9d0263175d2",
   "completed_assignments": [
     {
       "task_id": "M2-entities-foundation",
@@ -407,6 +404,6 @@
   "artifact_policy": {
     "authority": "User update: do not store test and benchmark artifacts; result summaries are fine.",
     "policy": "Retain concise actual result summaries, source/binary identities and verification metadata. Generated raw logs/XML/child payloads/benchmark output are transient for verification and removed before handoff; do not commit or archive them. No rewriting existing Git history or broad peer report deletion.",
-    "active_run": "Framing406 exclusive run remains untouched until completion; owner notified to send brief inspectable outcomes then summaries-only evidence."
+    "active_run": "Fresh integrated repair verified; all generated raw outputs removed after independent inspection."
   }
 }
