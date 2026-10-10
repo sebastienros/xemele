@@ -68,31 +68,32 @@ def selected_observations(output):
 def main():
  p=argparse.ArgumentParser();p.add_argument('--exclusive-grant',required=True);p.add_argument('--report-prefix',required=True);p.add_argument('--mode',choices=['allocations','benchmarks'],required=True);a=p.parse_args();assert re.fullmatch('[a-z0-9-]+',a.report_prefix)
  report=ROOT/'docs/reports/M2-entities'/a.report_prefix;report.mkdir();raw=ROOT/'artifacts/M2-entities'/a.report_prefix;raw.mkdir(parents=True)
- s={'result':'failed','exclusiveGrant':a.exclusive_grant,'mode':a.mode};generated=set();parent=ROOT/'docs/reports/M2-entities/benchmark-driver/bin/Release/net10.0';prior_dirs=set(parent.iterdir()) if parent.exists() else set();primary=None
+ s={'result':'failed','stage':'initial-provenance','exclusiveGrant':a.exclusive_grant,'mode':a.mode};generated=set();parent=ROOT/'docs/reports/M2-entities/benchmark-driver/bin/Release/net10.0';prior_dirs=set(parent.iterdir()) if parent.exists() else set();primary=None
  def hashes(names):return {n:hashlib.sha256((ROOT/n).read_bytes()).hexdigest() for n in names}
  try:
-  dotnet=Path(shutil.which('dotnet')).resolve(strict=True);revision=subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip()
+  dotnet=Path(shutil.which('dotnet')).resolve(strict=True);revision=subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True,timeout=30).strip()
   known=json.loads((ROOT/'docs/reports/M2-entities/premeasurement.json').read_text());assert known['head']==revision
   source=hashes(known['compiledSources']);assert source==known['compiledSources'];binary=hashes(known['binaries']);assert binary==known['binaries']
-  sdk=subprocess.check_output([str(dotnet),'--version'],cwd=ROOT,text=True).strip();assert sdk=='10.0.400'
+  sdk=subprocess.check_output([str(dotnet),'--version'],cwd=ROOT,text=True,timeout=30).strip();assert sdk=='10.0.400'
   probe=ROOT/'docs/reports/M2-entities/provenance-probe/bin/Release/net10.0/EntityProvenanceProbe.dll'
-  parent_metadata=json.loads(subprocess.check_output([str(dotnet),str(probe),str(parent/'Xemele.EntitiesBenchmarks.dll'),str(ROOT/'samples/M2-entities/bin/Release/net10.0/Xemele.SyntaxSample.dll')],cwd=ROOT,text=True))
+  parent_metadata=json.loads(subprocess.check_output([str(dotnet),str(probe),str(parent/'Xemele.EntitiesBenchmarks.dll'),str(ROOT/'samples/M2-entities/bin/Release/net10.0/Xemele.SyntaxSample.dll')],cwd=ROOT,text=True,timeout=30))
   assert len(parent_metadata)==2 and all(m['runtime']=='10.0.11' and m['architecture']=='Arm64' and m['sourceVersion']=='1.0.0+'+revision for m in parent_metadata)
   s['sdk']=sdk;s['hostExecutableSha256']=hashlib.sha256(dotnet.read_bytes()).hexdigest();s['runtime']='10.0.11';s['processArchitecture']='Arm64';s['parentAssemblyProvenance']=parent_metadata
   s.update(head=revision,compiledSourceRevision=known['correctnessSourceRevision'],host=platform.platform(),architecture=platform.machine(),sourceIdentitiesBefore=source,binaryIdentitiesBefore=binary)
   s['runtimeOverrides']={k:v for k,v in os.environ.items() if k.startswith(('DOTNET_','COMPlus_'))};assert not any(k.startswith('COMPlus_') or any(x in k.upper() for x in ['TIERED','GC','READYTORUN']) for k in s['runtimeOverrides'])
   if a.mode=='allocations':command=[str(dotnet),str(ROOT/'samples/M2-entities/bin/Release/net10.0/Xemele.SyntaxSample.dll'),'--allocations']
   else:command=[str(dotnet),str(parent/'Xemele.EntitiesBenchmarks.dll'),'--filter','*Entity*Benchmarks*','--artifacts',str(raw/'bdn'),'--keepFiles','--buildTimeout','240','--stopOnFirstError']
-  s['command']=shlex.join(command);print(s['command'],flush=True)
+  s['stage']='measurement-execution';s['command']=shlex.join(command);print(s['command'],flush=True)
   with (raw/'output.log').open('w') as output:
    process=subprocess.Popen(command,cwd=ROOT,env=dict(os.environ,DOTNET_CLI_USE_MSBUILD_SERVER='0'),stdout=output,stderr=subprocess.STDOUT,start_new_session=True);s['processId']=process.pid;status=bounded_wait(process,raw/'output.log',s)
   s['exit']=status;output=(raw/'output.log').read_text();s['selectedObservations']=selected_observations(output);s['buildExits']=re.findall(r'^// command took .* and exited with (\d+)',output,re.MULTILINE);print(output[-7000:],flush=True);assert status==0
   if a.mode=='allocations':
+   s['stage']='allocation-output-validation'
    found=re.search(r'iterations=(\d+);ordinaryWarm=(\d+);entityWarm=(\d+);borrowedLookup=(\d+);coldCore=(\d+);coldContext=(\d+);escapedPositive=(\d+)',output);assert found
    values=dict(zip(['iterations','ordinaryWarm','entityWarm','borrowedLookup','coldCore','coldContext','escapedPositive'],map(int,found.groups())));assert values['iterations']==10000 and values['ordinaryWarm']==values['entityWarm']==values['borrowedLookup']==0 and values['escapedPositive']>0
    assert 'retention=callerCharBufferReleased;ownedDtdAndDomPreserved;oneCollectionOutsideIntervals' in output;s['allocationBytes']=values;s['retention']='Exact owned DOM/DocumentType/subset/Dtd preserved; caller buffer released after one outside-interval collection.'
   else:
-   rows=[];expected={('EntityCompositionBenchmarks',m,str(n)) for m in ['InternalDocument','ExternalDocument'] for n in [16,4096]}|{('EntityLookupBenchmarks',m,'') for m in ['GeneralLookup','DefaultLookup']}
+   s['stage']='benchmark-case-validation';rows=[];s['benchmarks']=rows;expected={('EntityCompositionBenchmarks',m,str(n)) for m in ['InternalDocument','ExternalDocument'] for n in [16,4096]}|{('EntityLookupBenchmarks',m,'') for m in ['GeneralLookup','DefaultLookup']}
    for path in (raw/'bdn').rglob('*-report.csv'):
     with path.open() as data:
      for row in csv.DictReader(data):
@@ -100,7 +101,7 @@ def main():
       rows.append({'class':path.name.replace('-report.csv','').split('.')[-1],'method':row['Method'],'length':row.get('Length',''),'mean':row['Mean'],'error':row.get('Error'),'stddev':row.get('StdDev'),'allocated':row['Allocated'],'gen0':row.get('Gen0')})
    assert len(rows)==6 and {(r['class'],r['method'],r['length']) for r in rows}==expected
    blocks=re.split(r'^// Benchmark: ',output,flags=re.MULTILINE)[1:];assert len(blocks)==6
-   observations=[];child_provenance=[]
+   s['stage']='benchmark-observation-and-child-provenance';observations=[];child_provenance=[]
    probe=ROOT/'docs/reports/M2-entities/provenance-probe/bin/Release/net10.0/EntityProvenanceProbe.dll'
    for block in blocks:
     title=block.splitlines()[0];found=re.match(r'(Entity\w+Benchmarks)\.(\w+):',title);assert found
@@ -115,14 +116,14 @@ def main():
     assert actual==result==3 and gc==1 and len(exits)==1 and exits[0][1]=='0';assert '.NET 10.0.11' in block and re.search('Arm64',block,re.IGNORECASE)
     execution=re.search(r'^// Execute: (.+) in (.+)$',block,re.MULTILINE);assert execution;argv=shlex.split(execution[1]);dll=next(v for v in argv if v.endswith('.dll'));cwd=Path(execution[2].strip());exe=cwd/dll;library=cwd/'Xemele.EntitiesBenchmarks.dll';assert exe.is_file() and library.is_file()
     assert hashlib.sha256(library.read_bytes()).hexdigest()==binary[str((parent/library.name).relative_to(ROOT))]
-    metadata=json.loads(subprocess.check_output([str(dotnet),str(probe),str(exe),str(library)],cwd=ROOT,text=True));assert len(metadata)==2 and metadata[1]['sourceVersion']=='1.0.0+'+revision and all(x['runtime']=='10.0.11' and x['architecture']=='Arm64' for x in metadata)
+    metadata=json.loads(subprocess.check_output([str(dotnet),str(probe),str(exe),str(library)],cwd=ROOT,text=True,timeout=30));assert len(metadata)==2 and metadata[1]['sourceVersion']=='1.0.0+'+revision and all(x['runtime']=='10.0.11' and x['architecture']=='Arm64' for x in metadata)
     observations.append(row);child_provenance.append({'case':identity,'executableSha256':metadata[0]['sha256'],'librarySha256':metadata[1]['sha256'],'librarySourceVersion':metadata[1]['sourceVersion'],'runtime':metadata[1]['runtime'],'coreLibrarySha256':metadata[1]['coreLibrarySha256'],'childEnvironment':[line for line in block.splitlines() if line.startswith(('// Runtime=','// GC=','// HardwareIntrinsics='))]})
    assert {tuple(o['case']) for o in observations}==expected and re.search(r'Global total time:.*executed benchmarks: 6',output)
    assert s['buildExits'] and all(code=='0' for code in s['buildExits'])
    s['benchmarks']=rows;s['observations']=observations;s['generatedChildProvenance']=child_provenance;s['environmentSummary']=[line.strip() for line in output.splitlines() if line.startswith('BenchmarkDotNet v') or '.NET SDK' in line or 'Arm64 RyuJIT' in line or 'Apple M' in line];s['timingLimit']='Informational macOS arm64; no cross-architecture release or speedup claim.'
-  s['sourceIdentitiesAfter']=hashes(source);s['binaryIdentitiesAfter']=hashes(binary);assert s['sourceIdentitiesAfter']==source and s['binaryIdentitiesAfter']==binary;assert subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip()==revision;s['result']='passed'
- except Exception as error:
-  primary=error;s['failure']={'type':type(error).__name__,'message':str(error)[:1000]}
+  s['stage']='final-source-binary-freeze';s['sourceIdentitiesAfter']=hashes(source);s['binaryIdentitiesAfter']=hashes(binary);assert s['sourceIdentitiesAfter']==source and s['binaryIdentitiesAfter']==binary;assert subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True,timeout=30).strip()==revision;s['result']='passed'
+ except BaseException as error:
+  primary=error;s['failure']={'stage':s['stage'],'type':type(error).__name__,'message':str(error)[:1000]}
   if (raw/'output.log').exists():
    partial=(raw/'output.log').read_text();s['selectedObservations']=selected_observations(partial);s['buildExits']=re.findall(r'^// command took .* and exited with (\d+)',partial,re.MULTILINE);s['failure']['outputTail']=partial[-2500:]
   raise
