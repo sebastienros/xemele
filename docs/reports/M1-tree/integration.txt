@@ -1,0 +1,155 @@
+Host macOS-15.8.1-arm64-arm-64bit-Mach-O arm64
+$ git rev-parse HEAD
+exit=0
+Source revision 49bd4ed2a23d061eef390285d156db4013813f5a
+$ dotnet --version
+exit=0
+$ dotnet --info
+exit=0
+$ dotnet build Xemele.slnx -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+exit=0
+$ dotnet test --project tests/Xemele.Tests -c Release --no-build --no-restore --filter-class Xemele.Tests.Tree.TreeTests
+  total: 14
+  failed: 0
+  succeeded: 14
+  skipped: 0
+exit=0
+$ dotnet test --solution Xemele.slnx -c Release --no-build --no-restore
+  total: 88
+  failed: 0
+  succeeded: 88
+  skipped: 0
+exit=0
+$ dotnet build docs/reports/M0-contracts/Checks/Checks.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+exit=0
+$ dotnet test --project docs/reports/M0-contracts/Checks/Checks.csproj -c Release --no-build --no-restore
+  total: 11
+  failed: 0
+  succeeded: 11
+  skipped: 0
+exit=0
+$ dotnet build docs/reports/M0-contracts/ApiCheck/ApiCheck.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+exit=0
+$ dotnet build docs/reports/M0-contracts/Fixtures/M1/M1.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+exit=0
+$ dotnet /private/tmp/xemele-integrate-m1-tree/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare /private/tmp/xemele-integrate-m1-tree/docs/reports/M0-contracts/Fixtures/M1/bin/Release/net10.0/FoundationM1.dll /private/tmp/xemele-integrate-m1-tree/tests/Contracts/Fixtures/foundation/M1.golden.txt
+Matched 139 compiled members
+exit=0
+$ dotnet build docs/reports/M0-contracts/Fixtures/M2/M2.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+exit=0
+$ dotnet /private/tmp/xemele-integrate-m1-tree/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare /private/tmp/xemele-integrate-m1-tree/docs/reports/M0-contracts/Fixtures/M2/bin/Release/net10.0/FoundationM2.dll /private/tmp/xemele-integrate-m1-tree/tests/Contracts/Fixtures/foundation/M2.golden.txt
+Matched 173 compiled members
+exit=0
+$ dotnet /private/tmp/xemele-integrate-m1-tree/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare /private/tmp/xemele-integrate-m1-tree/src/Xemele/bin/Release/net10.0/Xemele.dll /private/tmp/xemele-integrate-m1-tree/tests/Contracts/Fixtures/M1/Tree.golden.txt
+Matched 192 compiled members
+exit=0
+$ dotnet build docs/reports/M1-contracts/Projects/Common/Common.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+exit=0
+$ dotnet /private/tmp/xemele-integrate-m1-tree/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare /private/tmp/xemele-integrate-m1-tree/docs/reports/M1-contracts/Projects/Common/bin/Release/net10.0/M1Common.dll /private/tmp/xemele-integrate-m1-tree/tests/Contracts/Fixtures/M1/Common.golden.txt
+Matched 81 compiled members
+exit=0
+$ dotnet build docs/reports/M1-contracts/Projects/Tree/Tree.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+exit=0
+$ dotnet /private/tmp/xemele-integrate-m1-tree/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare /private/tmp/xemele-integrate-m1-tree/docs/reports/M1-contracts/Projects/Tree/bin/Release/net10.0/M1Tree.dll /private/tmp/xemele-integrate-m1-tree/tests/Contracts/Fixtures/M1/Tree.golden.txt
+Matched 192 compiled members
+exit=0
+$ dotnet build docs/reports/M1-contracts/Projects/Input/Input.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+exit=0
+$ dotnet /private/tmp/xemele-integrate-m1-tree/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare /private/tmp/xemele-integrate-m1-tree/docs/reports/M1-contracts/Projects/Input/bin/Release/net10.0/M1Input.dll /private/tmp/xemele-integrate-m1-tree/tests/Contracts/Fixtures/M1/Input.golden.txt
+Matched 81 compiled members
+exit=0
+$ dotnet build docs/reports/M1-contracts/Projects/Syntax/Syntax.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+exit=0
+$ dotnet /private/tmp/xemele-integrate-m1-tree/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare /private/tmp/xemele-integrate-m1-tree/docs/reports/M1-contracts/Projects/Syntax/bin/Release/net10.0/M1Syntax.dll /private/tmp/xemele-integrate-m1-tree/tests/Contracts/Fixtures/M1/Syntax.golden.txt
+Matched 81 compiled members
+exit=0
+$ dotnet build docs/reports/M1-contracts/Projects/Serializer/Serializer.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+exit=0
+$ dotnet /private/tmp/xemele-integrate-m1-tree/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare /private/tmp/xemele-integrate-m1-tree/docs/reports/M1-contracts/Projects/Serializer/bin/Release/net10.0/M1Serializer.dll /private/tmp/xemele-integrate-m1-tree/tests/Contracts/Fixtures/M1/Serializer.golden.txt
+Matched 215 compiled members
+exit=0
+$ dotnet build docs/reports/M1-contracts/Projects/Dom/Dom.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+exit=0
+$ dotnet /private/tmp/xemele-integrate-m1-tree/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare /private/tmp/xemele-integrate-m1-tree/docs/reports/M1-contracts/Projects/Dom/bin/Release/net10.0/M1Dom.dll /private/tmp/xemele-integrate-m1-tree/tests/Contracts/Fixtures/M1/Dom.golden.txt
+Matched 199 compiled members
+exit=0
+$ dotnet build docs/reports/M1-contracts/Projects/Protocol/Protocol.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+exit=0
+$ dotnet /private/tmp/xemele-integrate-m1-tree/docs/reports/M1-contracts/Projects/Protocol/bin/Release/net10.0/M1Protocol.dll
+Passed 38 contract-model assertions; no runtime parsing/decoding/serialization claim.
+exit=0
+$ python3 -B tools/ApiBaseline/discover.py
+exit=0
+$ python3 -B tools/ApiBaseline/compare.py --report /private/tmp/xemele-integrate-m1-tree/docs/reports/M1-tree/runtime-api.json
+{"bootstrapEmptyApi": false, "checkerOutput": "Matched 192 compiled members", "matched": true, "members": 192, "report": "/private/tmp/xemele-integrate-m1-tree/docs/reports/M1-tree/runtime-api.json"}
+exit=0
+$ python3 -B -m unittest discover -s tests/Xemele.TestUtilities/Build -p test_*.py -v
+Ran 16 tests in 0.110s
+OK
+exit=0
+$ python3 -B tests/Xemele.TestUtilities/Corpora/verify_bootstrap.py
+exit=0
+$ dotnet run --project samples/M1-tree/Sample.csproj -c Release --disable-build-servers -p:UseSharedCompilation=false
+catalog: Managed trees; children=1; imported-owner=True
+exit=0
+$ dotnet run --project samples/M1-common/Sample.csproj -c Release --disable-build-servers -p:UseSharedCompilation=false
+exit=0
+$ dotnet pack src/Xemele/Xemele.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false --no-build --no-restore -o /private/tmp/xemele-integrate-m1-tree/artifacts/M1-tree/packages
+exit=0
+$ dotnet run --project /var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-tree-package-rkh7x6tu/Consumer.csproj -c Release --disable-build-servers -p:UseSharedCompilation=false -p:RestoreSources=/private/tmp/xemele-integrate-m1-tree/artifacts/M1-tree/packages -p:RestorePackagesPath=/var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-tree-package-rkh7x6tu/isolated-packages
+catalog: Managed trees; children=1; imported-owner=True
+exit=0
+$ dotnet build docs/reports/M1-tree/Xemele.TreeBenchmarks.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+exit=0
+$ dotnet run --project docs/reports/M1-tree/Xemele.TreeBenchmarks.csproj -c Release --no-build -- --allocation
+cold first representative tree allocation=52560 bytes; retains document through node handle
+warm owned representative tree=52560 bytes/tree; heap-minus-fragmentation estimate=18408 bytes/tree excluding handle array
+10000 warm borrowed intern hits=0 bytes
+1000 detached repeated-name nodes including arena growth=281320 bytes
+one new interned name and detached node=320 bytes
+clone/import semantic oracle: children=64/64; distinct=True
+exit=0
+$ python3 tools/planning/tasks.py validate
+Validated 101 tasks: schema, evidence, acyclic dependencies, additive milestones, and ordered ownership.
+exit=0
+$ git diff --check
+exit=0

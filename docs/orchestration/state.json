@@ -9,18 +9,6 @@
   },
   "active_assignments": [
     {
-      "task_id": "M1-tree",
-      "client_thread_id": "client-new-thread:6ec87822-c57a-4f6e-9af8-677412a2e782",
-      "host_id": "local",
-      "branch": "codex/m1-tree",
-      "base_revision": "4a99c4229600b4fc5b2e218adc376e56cb0b0c80",
-      "claim_revision": "dc20c884b3465af691077c50b747bcebb1c47365",
-      "setup_status": "dispatched",
-      "chat_id": "01a123ab-417a-7052-9ce8-0d6fb27a7a5d",
-      "worktree_path": "/Users/sebastienros/.codex/worktrees/3de1/xemele",
-      "wait_cursor": "f4ea8e61-216e-4c14-bd08-80ac9b4d5811:1"
-    },
-    {
       "task_id": "M1-syntax",
       "client_thread_id": "client-new-thread:35d07bc8-7e7c-406c-9fde-f71a7005d700",
       "host_id": "local",
@@ -42,12 +30,12 @@
     }
   ],
   "next_actions": [
-    "Review/integrate ready M1 runtime handoffs serially",
-    "Park other builds/tests before granting one ShortRun window",
-    "After tree verification dispatch serialization when a worker slot is free"
+    "Claim and dispatch M1-serialize against verified tree",
+    "Finish syntax executable/package checks then exclusive ShortRun",
+    "Integrate syntax, unlock DOM composition"
   ],
-  "last_verified_task": "M1-input",
-  "last_integrated_revision": "279482e8545cd5156ba37013e490209c8279fc3e",
+  "last_verified_task": "M1-tree",
+  "last_integrated_revision": "49bd4ed2a23d061eef390285d156db4013813f5a",
   "completed_assignments": [
     {
       "task_id": "M0-build",
@@ -396,6 +384,23 @@
         "chat_archived": true,
         "worktree": "removed"
       }
+    },
+    {
+      "task_id": "M1-tree",
+      "client_thread_id": "client-new-thread:6ec87822-c57a-4f6e-9af8-677412a2e782",
+      "host_id": "local",
+      "branch": "codex/m1-tree",
+      "base_revision": "4a99c4229600b4fc5b2e218adc376e56cb0b0c80",
+      "claim_revision": "dc20c884b3465af691077c50b747bcebb1c47365",
+      "setup_status": "verified",
+      "chat_id": "01a123ab-417a-7052-9ce8-0d6fb27a7a5d",
+      "worktree_path": "/Users/sebastienros/.codex/worktrees/3de1/xemele",
+      "wait_cursor": "f4ea8e61-216e-4c14-bd08-80ac9b4d5811:1",
+      "implementation_revision": "abdf9db8ade0b1e13fcbc8d45bdfdd941f35288f",
+      "handoff_revision": "795d1e3cfe7ea9258c45b0839185f00c8347d740",
+      "integration_revision": "49bd4ed2a23d061eef390285d156db4013813f5a",
+      "integration_worktree": "/private/tmp/xemele-integrate-m1-tree",
+      "integration_branch": "codex/integrate-m1-tree"
     }
   ],
   "benchmark_policy": "ShortRun only; exclusive timing must park root and all peer heavy checks.",

@@ -4,11 +4,11 @@
   "milestone": "M1",
   "title": "Managed tree and mutation",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M1-tree",
   "branch": "codex/m1-tree",
   "base_revision": "4a99c4229600b4fc5b2e218adc376e56cb0b0c80",
-  "integration_revision": null,
+  "integration_revision": "49bd4ed2a23d061eef390285d156db4013813f5a",
   "depends_on": [
     "M1-common"
   ],
@@ -38,7 +38,8 @@
         "tree-known-revision-checks",
         "tree-allocation-boundaries",
         "tree-exclusive-short-run",
-        "tree-final-copy-review"
+        "tree-final-copy-review",
+        "integrated-tree-verification"
       ]
     },
     {
@@ -49,7 +50,8 @@
         "tree-known-revision-checks",
         "tree-allocation-boundaries",
         "tree-exclusive-short-run",
-        "tree-final-copy-review"
+        "tree-final-copy-review",
+        "integrated-tree-verification"
       ]
     },
     {
@@ -60,7 +62,8 @@
         "tree-known-revision-checks",
         "tree-allocation-boundaries",
         "tree-exclusive-short-run",
-        "tree-final-copy-review"
+        "tree-final-copy-review",
+        "integrated-tree-verification"
       ]
     }
   ],
@@ -129,6 +132,15 @@
       "result": "failed",
       "summary": "Initial known-revision verifier passed runtime/source/API checks but package consumer resolved stale Common-only package under same development version from global NuGet cache, yielding CS0246 XmlDocument. Owned verifier now uses isolated RestorePackagesPath; subsequent final source package consumer passed. Earlier sandbox restore NU1900 and precommit 8/10 assertion failures are honestly described in README, not passing evidence.",
       "artifact": "docs/reports/M1-tree/README.md"
+    },
+    {
+      "id": "integrated-tree-verification",
+      "kind": "integration",
+      "revision": "49bd4ed2a23d061eef390285d156db4013813f5a",
+      "command": "Pinned SDK10.0.400 DOTNET_CLI_USE_MSBUILD_SERVER=0 python3 docs/reports/M1-tree/verify.py",
+      "result": "passed",
+      "summary": "Fresh Common+Input+Tree integrated verifier exited0: focused14/14, solution88/88, foundation11/11 zero skips; exact192 compiled public members and canonical fragment union, M0/M1 independent models/protocol38, Python16/bootstrap, tree/common source samples, pack and fresh isolated NuGet-only consumer, harness/allocation checks, planning/diff pass. Warm10000 borrowed intern hits0B; owned construction52560B, informational retained18408B. Earlier reports preserved unchanged; no benchmark repeated.",
+      "artifact": "docs/reports/M1-tree/integration.txt"
     }
   ],
   "blockers": [],
@@ -141,7 +153,6 @@
       "Initial sandbox restore, two precommit assertion errors, stale package cache and initial quadratic copy review failures are recorded and resolved, not treated as passing."
     ],
     "remaining": [
-      "Coordinator must integrate and rerun applicable checks before verified; integration_revision remains null.",
       "Any retained handle keeps whole owner/arenas/names alive. Contiguous growth raises cumulative allocation while reducing this fixture retained estimate; owned construction/copy/text aggregation allocate.",
       "ShortRun is provisional Arm64 only; actual parser/output composition and x64 release confirmation remain later evidence. General public insertion walks ancestors to reject cycles; preflighted copy uses linear direct links."
     ],
