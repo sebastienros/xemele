@@ -1,0 +1,10 @@
+{
+  "source": "XML 1.0 Fifth Edition sections 2.11 and 3.3.3; BCL cross-check independent of xmloxide",
+  "ruleUrls": ["https://www.w3.org/TR/2008/REC-xml-20081126/#sec-line-ends", "https://www.w3.org/TR/2008/REC-xml-20081126/#AVNormalize"],
+  "xml": "<r a='a\r\nb'>&#x1F600;<![CDATA[x\r\ny]]></r>",
+  "expectedEvents": [
+    {"kind":"start","namespaceUri":"","localName":"r","attributes":[{"namespaceUri":"","localName":"a","value":"a b"}]},
+    {"kind":"text","value":"😀x\ny"},
+    {"kind":"end","namespaceUri":"","localName":"r"}
+  ]
+}
