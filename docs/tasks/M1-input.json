@@ -4,7 +4,7 @@
   "milestone": "M1",
   "title": "UTF input decoding and source mapping",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M1-input",
   "branch": "codex/m1-input",
   "base_revision": "52df006d4a2e00de486a3be15a563d15d22436ac",
@@ -35,7 +35,9 @@
       "description": "Implement incremental UTF-8/UTF-16 decoder with BOM/declaration reconciliation, scalar validation and original-byte locations.",
       "status": "passed",
       "evidence": [
-        "known-revision-decoder-checks"
+        "known-revision-decoder-checks",
+        "independent-corrected-input-reviews",
+        "exclusive-short-run"
       ]
     },
     {
@@ -43,14 +45,20 @@
       "description": "Test every split of representative BOM/scalar/newline sequences, invalid input and final incomplete sequences.",
       "status": "passed",
       "evidence": [
-        "known-revision-decoder-checks"
+        "known-revision-decoder-checks",
+        "independent-corrected-input-reviews",
+        "exclusive-short-run"
       ]
     },
     {
       "id": "M1-input-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "known-revision-decoder-checks",
+        "independent-corrected-input-reviews",
+        "exclusive-short-run"
+      ]
     }
   ],
   "implementation": [
@@ -58,7 +66,7 @@
     "tests/Xemele.Tests/M1-input/InputTests.cs \u2014 10 focused cases covering every representative two-part split, capacities, strict Unicode oracle/mapping, one-byte framing, declaration precedence, invalid signatures/sequences/final carry, source ownership, independent primary capacity and 0 B warm decode",
     "samples/M1-input/ \u2014 actual internal interface compile/usage with BOM/raw counts/first-byte offsets; source and isolated NuGet-only binary consumption",
     "docs/reports/M1-input/verify.py; Program.cs; internal-contract.txt; runtime-api.json \u2014 independent actual/model internal surface probe (41 rows) and unchanged compiled public ABI (81 common rows), prior functionality regression checks",
-    "benchmarks/Xemele.Benchmarks/M1-input/InputBenchmarks.cs; docs/reports/M1-input/Xemele.InputBenchmarks.csproj \u2014 built ShortRun semantic-oracle and setup/rejection harness; timing pending exclusive window"
+    "benchmarks/Xemele.Benchmarks/M1-input/InputBenchmarks.cs; docs/reports/M1-input/Xemele.InputBenchmarks.csproj \u2014 eight exclusive successful ShortRun semantic-oracle/decoder/setup/rejection cases; final benchmark source7e7161f; durable BDN tables/CSV and initial-failure summary"
   ],
   "evidence": [
     {
@@ -78,19 +86,47 @@
       "result": "failed",
       "summary": "Package-only sample selected preexisting global NuGet same-version common package, missing internal Parsing namespace. Corrected probe isolates RestorePackagesPath and freshly packed feed; final bcd2dff verifier source/binary samples pass. Raw failure artifacts/M1-input/package-cache-failure.txt; no shared package/version changes.",
       "artifact": "docs/reports/M1-input/README.md"
+    },
+    {
+      "id": "independent-corrected-input-reviews",
+      "kind": "review",
+      "revision": "bcd2dffa6e890ccfbd4e52e7f923a07e5e7ac17e",
+      "command": "Coordinator reports two independent reviewer rechecks at bcd2dffa",
+      "result": "passed",
+      "summary": "Both reviewers confirmed original wrong-scope ExternalBytes primary charge and submitted-invalid-byte consumption findings resolved, with no residual blockers. Final runtime/test source unchanged after review; subsequent change only appends newline to short benchmark corpus.",
+      "artifact": null
+    },
+    {
+      "id": "initial-partial-timing-failure",
+      "kind": "check",
+      "revision": "8a88afb1b8548b07ef276d2320a24fe9f83db4ec",
+      "command": "dotnet run --project docs/reports/M1-input/Xemele.InputBenchmarks.csproj -c Release --no-build -- --filter '*' --artifacts artifacts/M1-input/bdn",
+      "result": "failed",
+      "summary": "Exclusive first ShortRun attempted eight cases; seven produced results, short strict oracle process exited255 after valid checked Int32 scalar-column capacity expired across repeated 67108864-op iterations. Outer driver exit0 did not mean success. Root authorized owned harness-only newline fix and retry; runtime counter not weakened. Raw initial output preserved ignored, fully superseded by complete retry.",
+      "artifact": "docs/reports/M1-input/README.md"
+    },
+    {
+      "id": "exclusive-short-run",
+      "kind": "check",
+      "revision": "7e7161f60014898ebca0b3dc916f886056247b21",
+      "command": "dotnet run --project docs/reports/M1-input/Xemele.InputBenchmarks.csproj -c Release --no-build -- --filter '*' --artifacts artifacts/M1-input/bdn (coordinator exclusive window, pinned SDK10.0.400)",
+      "result": "passed",
+      "summary": "Eight/eight ShortRun cases produced complete samples on M4Pro Arm64/macOS15.8.1/.NET10.0.11/BDN0.15.8; one launch, three warmups/measurements; no unrelated builds/tests overlapped. Oracle output/maps/checksum compare passed. All six steady oracle/decoder cases0 B/op. Means oracle/decoder ns: short8.969/57.233,long7220.297/34943.817,multilingual1530.262/6764.661; general bounded decoder slower, no speed/optimization claim. Setup816 B/op; malformed including setup888 B/op (72 B owned diagnostic, static message). Cold2808 B,warm816 B,informationalretained648 B from prior unchanged runtime. Short newline prevents columns overflowing; cumulative printed536870913 oracle calls plus at most67108864 diagnostic calls fits lineInt32, no runtime limit change. Session1873 harness build exited0 before52861 timings; generated BDN build precedes measurements; final process stopped and window explicitly released. Raw output ignored artifacts/M1-input/bdn and benchmark-console.txt; durable tables/CSV retained. No parser composition or timedUTF16/x64 release claim.",
+      "artifact": "docs/reports/M1-input/bdn/InputBenchmarks-report-github.md"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Corrected bounded strict input runtime committed and full checks pass at bcd2dff. Exact internal41/public81 compiled surfaces; no peer dependencies/shared edits. Exclusive ShortRun timing still pending coordinator window; task remains in_progress.",
+    "summary": "Implemented bounded strict M1 decoder with exact internal41/public81 compiled surfaces; primary source uses independent checked byte counter, preserves offending current-slice bytes, and validates declarations exactly once. Runtime/tests reviewed and full checks at bcd2dff; eight exclusive ShortRun cases pass with harness-only newline fix at7e7161f. No shared/peer/orchestration edits or later dependency.",
     "checks": [
-      "Pinned final verifier at bcd2dffa6e890ccfbd4e52e7f923a07e5e7ac17e passed focused10/full74/foundation11, ABI/models/protocol, Python/bootstrap, source+fresh isolated packaged sample/pack, setup allocation, planning/diff.",
-      "Coordinator review corrected original wrong-scope ExternalBytes charge; primary now has independent checked counter. Detection peeks contiguous prefix to preserve error consumption.",
-      "Initial xUnit analyzer, malformed-test assumptions, sandbox MTP IPC and stale same-version package-cache failures corrected; raw logs remain ignored artifacts/M1-input."
+      "Known-runtime-revision verifier bcd2dffa6e890ccfbd4e52e7f923a07e5e7ac17e passed focused10/10, solution74/74, foundation11/11, no skips; internal41/public81 ABI, model/protocol38, Python16/bootstrap, source and isolated fresh-package sample/pack/harness, planning/diff.",
+      "Two independent corrected input reviews: original ExternalBytes scope and eager detection consumption findings resolved; no residual blockers.",
+      "Exclusive eight-case ShortRun final7e7161f passed; warmoracle/decoder0 B/op, setup816 B/op, malformedinclsetup888 B/op; cold2808 B/warm816 B/informationalretained648 B. No speed claim.",
+      "Initial package-cache and short baseline column-overflow failures preserved/explicit; complete corrected runs supersede them. No timings overlapped other builds/tests; process stopped/window released."
     ],
     "remaining": [
-      "Await coordinator exclusive timing permission; no builds/tests running. Run eight targeted ShortRun cases, record results then set implemented if complete.",
-      "Coordinator independent rereview/integration verification required; no parser composition or cross-architecture release claim."
+      "Coordinator integration and fresh integrated verification; task is implemented, integration_revision remains null.",
+      "Later DOM adapter must reconcile declaration/absence before decoding body or forwarding events; this standalone decoder does not frame declarations. Actual parser composition and cross-architecture release performance remain composition/release evidence."
     ],
     "requests": []
   }

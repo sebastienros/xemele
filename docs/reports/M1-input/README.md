@@ -46,7 +46,7 @@ planning validation and whitespace. Shared historical reports are not written.
 
 The measurement harness is `Xemele.InputBenchmarks.csproj`; its filename equals
 its assembly name, and it links only the owned benchmark source. ShortRun uses
-short ASCII, 4096-byte ASCII with trailing newline, and multilingual/CRLF input.
+short ASCII with trailing newline, 4096-byte ASCII with trailing newline, and multilingual/CRLF input.
 GlobalSetup checks the straightforward strict Rune oracle against actual output,
 first-byte mappings and checksum. Steady UTF-8 cases begin after detection and
 compare full scalar validation/emission/mapping/location/count semantics; the
@@ -84,5 +84,54 @@ solution74/74, foundation11/11 with no skipped tests; internal41/public81 rows,
 all model/protocol checks, Python/bootstrap, source+fresh packaged samples pass.
 Warm mixed decode is 0 B across10000 calls. Construction is2808 B fresh process,
 816 B/op warmed; informational retained heap-minus-fragmentation648 B/op excludes
-the preallocated reference array. No timing has run yet. Durable checks.txt keeps
+the preallocated reference array. Durable checks.txt keeps
 command/results/summaries; raw output is ignored artifacts/M1-input/verification.txt.
+
+
+## Exclusive ShortRun evidence
+
+Runtime and focused-test source is unchanged from reviewed/checked
+bcd2dffa6e890ccfbd4e52e7f923a07e5e7ac17e. Final benchmark source is
+7e7161f60014898ebca0b3dc916f886056247b21 (only the short corpus newline changed).
+The coordinator parked tree/syntax builds, tests and benchmarks and held its
+exclusive lock. Harness-only repair build session1873 exited0 before final BDN
+session52861 started; generated BDN build completed before workload measurements.
+All eight final cases succeeded, including GlobalSetup output/mapping/checksum
+oracle checks. No unrelated build/test overlapped timing. The coordinator was
+notified of release immediately after process completion. Full raw console and
+BDN logs remain ignored at artifacts/M1-input/benchmark-console.txt and bdn/;
+durable BDN Markdown/CSV reports are in this report's bdn/ folder.
+
+Apple M4 Pro Arm64, macOS15.8.1, SDK10.0.400/runtime10.0.11, BDN0.15.8;
+ShortRun (one launch, three warmup/measurement iterations), MemoryDiagnoser.
+Short source is `<r/>` plus LF (5 bytes); long source is4095 ASCII characters plus
+LF (4096 bytes); multilingual is128 repetitions of é/astral/CRLF/中 (1408 bytes,
+768 UTF16 units). All fixture generation/clone/oracle setup is outside timing.
+
+| Corpus | Straightforward mean | Decoder mean | Warm allocation |
+|---|---:|---:|---:|
+| Short | 8.969 ns | 57.233 ns | 0 B/op both |
+| Long ASCII | 7220.297 ns | 34943.817 ns | 0 B/op both |
+| Multilingual | 1530.262 ns | 6764.661 ns | 0 B/op both |
+
+Construction:46.81 ns,816 B/op; malformed source plus construction and owned
+terminal diagnostic:66.60 ns,888 B/op. The diagnostic adds72 B in this harness;
+its message/code are static literals, and no exception is thrown. Construction
+includes options/limits snapshots and common budget/location state. ShortRun
+latencies are informational, with wide confidence intervals for tiny cases.
+The general decoder is slower than the assumed-complete UTF8 oracle; it also
+checks operation state, arbitrary output capacity, carry/final progress and
+checked counters. No optimization or speed victory is claimed. Invalid UTF16,
+chunk boundaries and declarations are correctness-test coverage, not a timed
+UTF16/composed-parser performance claim.
+
+Initial BDN run at8a88afb1b8548b07ef276d2320a24fe9f83db4ec attempted eight cases;
+seven produced results and the short oracle process exited255 after legitimate
+Int32 scalar-column overflow. The outer driver exited0 despite that failure;
+inspection caught it, so it is not a full passing run. Raw output/reports remain
+artifacts/M1-input/benchmark-initial-failed-console.txt and bdn-initial-failed/.
+Only the benchmark fixture changed to append LF; no runtime limit was weakened.
+The final short oracle printed536870913 workload calls and the decoder134217729;
+with at most one further67108864-call diagnostic iteration plus setup, each
+newline counter remains belowInt32.MaxValue. All final cases produced samples.
+The complete retry supersedes initial partial timings.
