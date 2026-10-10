@@ -2,21 +2,26 @@
 """Correctness only. Never runs new timings or silently rewrites approved baselines."""
 import json
 import os
+import platform
 from pathlib import Path
 import subprocess
 import tempfile
 
 ROOT = Path(__file__).resolve().parents[3]
-SDK = '/Users/sebastienros/Library/Application Support/dotnetup/dotnet'
+# Respect setup-dotnet, DOTNET_ROOT and the caller's PATH on every host.
 ENV = os.environ.copy()
-ENV['DOTNET_ROOT'] = SDK
-ENV['PATH'] = SDK + os.pathsep + ENV['PATH']
 LOG = []
 
 def run(*args, expected=0):
     LOG.append('$ ' + ' '.join(args))
-    result = subprocess.run(args, cwd=ROOT, env=ENV, text=True, stdout=subprocess.PIPE,
-                            stderr=subprocess.STDOUT, timeout=60)
+    try:
+        result = subprocess.run(args, cwd=ROOT, env=ENV, text=True, stdout=subprocess.PIPE,
+                                stderr=subprocess.STDOUT, timeout=60)
+    except subprocess.TimeoutExpired as error:
+        output = error.stdout or ""
+        LOG.append(output.decode(errors="replace") if isinstance(output, bytes) else output)
+        LOG.append("FAILED: command exceeded 60-second timeout; no passing result recorded.")
+        raise
     LOG.append(result.stdout)
     LOG.append(f'exit={result.returncode}; expected={expected}')
     if result.returncode != expected:
@@ -46,6 +51,12 @@ def rows(path):
 
 def main():
     os.chdir(ROOT)
+    LOG.append(f'Host: {platform.platform()}; architecture={platform.machine()}')
+    LOG.append('Tested implementation revision: ' + run('git', 'rev-parse', 'HEAD').strip())
+    expected_sdk = json.loads((ROOT / 'global.json').read_text())['sdk']['version']
+    actual_sdk = run('dotnet', '--version').strip()
+    assert actual_sdk == expected_sdk, f'SDK mismatch: expected {expected_sdk}, got {actual_sdk}'
+    run('dotnet', '--info')
     run('dotnet', 'build', 'docs/reports/M0-contracts/Checks/Checks.csproj', *FLAGS)
     run('dotnet', 'build', 'docs/reports/M0-contracts/ApiCheck/ApiCheck.csproj', *FLAGS)
     run('dotnet', 'test', '--project', 'docs/reports/M0-contracts/Checks/Checks.csproj', '-c', 'Release', '--no-build', '--no-restore')

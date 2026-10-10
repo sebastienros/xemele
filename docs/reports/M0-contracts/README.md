@@ -21,7 +21,10 @@ DOM are deliberately minimal contract models, not an XML parser or product tests
 
 Use SDK 10.0.400 (global.json) with DOTNET_ROOT and PATH prefix
 `/Users/sebastienros/Library/Application Support/dotnetup/dotnet` on this host.
-Run `python3 docs/reports/M0-contracts/verify.py`. It builds with
+The verifier preserves caller-configured DOTNET_ROOT/PATH (including setup-dotnet
+on CI), checks dotnet --version against global.json, and records the actual host,
+architecture and full Git revision. Run `python3 docs/reports/M0-contracts/verify.py`.
+It builds with
 `--disable-build-servers -m:1 -p:UseSharedCompilation=false`, runs native MTP using
 `dotnet test --project ... --no-build --no-restore`, compares stage goldens,
 checks M1 subset preservation, rejects missing/added/changed baseline inventories,
