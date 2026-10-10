@@ -78,7 +78,7 @@ public class DtdCompositionBenchmarks
         var model = (DtdModel)result;
         Check(model.Elements.Count == 1 && model.Attributes.Count == 1 && model.GeneralEntities.Count == 1 && model.ParameterEntities.Count == 1 && model.Notations.Count == 0);
         var e = model.Elements[0];
-        Check(e.Name == "child" && e.IsExternal && e.Location == new XmlLocation(null, 1, 1, null));
+        Check(e.Name == "child" && e.IsExternal && e.Location == new XmlLocation(Uri, 1, 1, null));
         Check(e.Content.Kind == DtdParticleKind.Empty && e.Content.Name is null && e.Content.Occurrence == DtdOccurrence.Once && e.Content.Children.Count == 0);
         var a = model.Attributes[0];
         Check(a.ElementName == "child" && a.Name == "a" && a.Type == DtdAttributeType.CData && a.Tokens.Count == 0 && a.DefaultKind == DtdDefaultKind.Value && a.DefaultValue == "&g;" && a.IsExternal && a.Location == new XmlLocation(Uri, 2, 47 + CommentScalars, null));

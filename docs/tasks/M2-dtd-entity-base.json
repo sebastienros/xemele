@@ -39,14 +39,20 @@
     {
       "id": "M2-dtd-entity-base-A1",
       "description": "Correct internal parameter-entity replacement inclusion base to the containing external entity where declaration opener is parsed, including nested internal PEs, rather than internal PE declaration origin. Preserve actual external resource redirected final URI, external-origin semantics, saved parent cursors, budgets/quota/cancellation/framing/count/cleanup and immutable model/constructor/API shapes. Use verified profile E18 exactoriginal identity and independent expected output, no corpus expectation weakening.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "correctness-6a15199",
+        "original-profile-6a15199"
+      ]
     },
     {
       "id": "M2-dtd-entity-base-A2",
       "description": "Correct external PE system-identifier resolution to its declaration base rather than reference-site base, with separate source-location/referrer identities as required by existing contract. Add exact requested-URI/referrer/complete callback/model oracles for E18, internal inclusion under primary/redirectedexternal/nestedcontexts, external PE declared in one externaldirectory and referenced from another, firstdeclaration wins, quota/cancel/denial/primary-error cleanup. Preserve inherited direct external final-URI composition outcomes; request additional paths if historical assertions need precise transitions.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "correctness-6a15199",
+        "original-profile-6a15199"
+      ]
     },
     {
       "id": "M2-dtd-entity-base-A3",
@@ -55,13 +61,230 @@
       "evidence": []
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Parsing/Dtd/Grammar/Parser/Lexer.cs: ExpandParameter inherits Current.Uri for internal inclusion; retained entity.Location for external system-ID requests",
+    "tests/Xemele.Tests/M2-dtd-entity-base/EntityBaseTests.cs: authored URI/referrer/full entity table and callback oracles; failure cleanup",
+    "benchmarks/Xemele.Benchmarks/M2-dtd-entity-base/EntityBaseBenchmarks.cs: nested internal model and redirected complete-document workloads",
+    "docs/reports/M2-dtd-entity-base/Measurements.csproj and MeasurementDriver.cs: isolated correctness/identity/allocation/benchmark driver",
+    "benchmarks/Xemele.Benchmarks/M2-dtd-composition/CompositionBenchmarks.cs: sole CheckResult included-element URI oracle transitioned null to containing external Uri; seeded declaration and all other assertions unchanged",
+    "docs/reports/M2-dtd-entity-base/measure.py and test_measure.py: owned strict source/Git, compiled/build/Python input, parent/runtime/generated child closure before-after provenance; exact observation/GC/exit guards, bounded process groups, summary-only cleanup and unchanged-success rejection",
+    "tests/Xemele.Tests/M2-dtd-entity-base/EntityBaseTests.cs: original E18 primary/all5 mapped resource exact byte/hash identities; independent canonical and semantic model hash; exact3 requests/referrers, complete callback and immutable DTD declaration model; synthetic quota/denial/cancellation/primary-error disposal",
+    "samples/M2-dtd-entity-base/: public source and fresh nupkg consumer exact request/referrer/text/open/disposal sample",
+    "benchmarks/Xemele.Benchmarks/M2-dtd-entity-base/Provenance.cs and MeasurementDriver.cs --generate-build-only: independent pinned generator+builder without executor; approved complete variant manifest gates actual loaded child before fixture/workload; actual expected mismatches published before refusal",
+    "benchmarks/Xemele.Benchmarks/M2-dtd-entity-base/Provenance.cs: Capture inventories available binary/generated-input identities before required metadata; partial per-file/per-metadata errors and surviving identities emitted before exact primary exception rethrow",
+    "docs/reports/M2-dtd-entity-base/Xemele.EntityBase.Measurements.csproj + ProjectBinding.cs: unique owned project with existing friend assembly identity, explicit CsProjGenerator project selection and exact one-reference proof/refusal before Builder in both paths; pinned builder/executor/validation forwarded. Wrapper preserves independent binding proof for later comparison.",
+    "docs/reports/M2-dtd-entity-base/measure.py: parent cleanup directory baseline reset after driver build (also failed builds); complete frozen parent closure captured and checked after cleanup with durable actual missing/extra/changed evidence.",
+    "measure.py: observed pinned Builder globalproperty capture/strict artifact-path comparison; sameproperty actual generated MSBuild queries and evaluated assets/extensions/imports/Compile/ReferencePath/Analyzer identities; bounded query diagnostic/exit/processgroup evidence survives cleanup.",
+    "Provenance.cs.Metadata: MemberReference/MethodDefinition and TypeReference/TypeDefinition attribute constructors handled; independently captured actual runtime informationalVersion required equal executing parentcoreRuntimeBuild."
+  ],
+  "evidence": [
+    {
+      "id": "correctness-6a15199",
+      "kind": "check",
+      "revision": "6a151999f177a479bdc3f9c4bb8e2bb9e1583639",
+      "command": "dotnet build Xemele.slnx -c Release --no-restore --disable-build-servers -m:1 -p:UseSharedCompilation=false; dotnet tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -noColor -result-xml artifacts/M2-dtd-entity-base/correctness-6a15199/unit.xml; dotnet tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll -noColor -result-xml artifacts/M2-dtd-entity-base/correctness-6a15199/conformance.xml; dotnet tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll -noColor -result-xml artifacts/M2-dtd-entity-base/correctness-6a15199/differential.xml",
+      "result": "passed",
+      "summary": "Release0warnings; all5172 tests passed (4603unit including9owned/E18,258conformance,311differential), nofailed/skipped. OriginalE18 full independent byte/model/callback/request/referrer/cleanup oracles passed. API272 and fresh packageconsumer passed; no public/model/constructor shape changes. Reports retain exact known source/binary/runtime identities and corrected initial failures; after-only identity limitation explicit. No standalone measurements yet.",
+      "artifact": "docs/reports/M2-dtd-entity-base/correctness-6a15199.json"
+    },
+    {
+      "id": "original-profile-6a15199",
+      "kind": "check",
+      "revision": "6a151999f177a479bdc3f9c4bb8e2bb9e1583639",
+      "command": "python3 -B docs/reports/M2-conformance-profile/audit.py docs/reports/M2-dtd-entity-base/profile-6a15199.json",
+      "result": "passed",
+      "summary": "All2585 original cases observed with frozen actual full Git/source/product/BCL/driver/runtime/output identities before-after. Original3386resources/expectations unchanged. E18 sole prior modeldisagreement resolved (636mutual-success matches), same139outcome gaps remain with unchanged exactID/inputhash/expectation/outcome. This passes scopedrepair/preservation, not wholeprofileconformance.",
+      "artifact": "docs/reports/M2-dtd-entity-base/profile-6a15199.json"
+    },
+    {
+      "id": "wrapper-controls-f2ec36f",
+      "kind": "check",
+      "revision": "f2ec36f4c6c540f5c4a4bea27c7c257dc4739c90",
+      "command": "python3 -B -m unittest discover -s docs/reports/M2-dtd-entity-base -p test_measure.py -v",
+      "result": "passed",
+      "summary": "8 synthetic controls passed, including actual mismatching hashes/partial metrics retention, pre-workload-gate unobserved-phase accounting, closure mutation, generated source freeze and unchanged-success refusal. No generation/preparation/allocation/timing executed.",
+      "artifact": "docs/reports/M2-dtd-entity-base/correctness-6a15199.json"
+    },
+    {
+      "id": "planning-6a15199",
+      "kind": "check",
+      "revision": "6a151999f177a479bdc3f9c4bb8e2bb9e1583639",
+      "command": "python3 -B -m unittest discover -s tools/planning -p test_tasks.py -v; python3 -B tools/planning/tasks.py validate",
+      "result": "passed",
+      "summary": "14controls passed; actual local129task graph validated. No historic hardcoded taskcount or unverifiedpeer dependency.",
+      "artifact": "docs/reports/M2-dtd-entity-base/correctness-6a15199.json"
+    },
+    {
+      "id": "capture-controls-8312c1d",
+      "kind": "check",
+      "revision": "8312c1df444f2bbcf4283fbebf301c5800a36d41",
+      "command": "python3 -B -m unittest discover -s docs/reports/M2-dtd-entity-base -p test_measure.py -v; dotnet build docs/reports/M2-dtd-entity-base/capture-control/Control.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false; dotnet docs/reports/M2-dtd-entity-base/capture-control/bin/Release/net10.0/Control.dll",
+      "result": "passed",
+      "summary": "9Python guards and3actual C# positive/missing-required-entry/malformed-required-metadata controls passed; available sibling/generated/bad-file hashes, exact metadata error identity and primary exception preserved in partial proof. No engine/counters/timing. Temporary control artifacts removed; successful5172/E18/API/package evidence not repeated.",
+      "artifact": "docs/reports/M2-dtd-entity-base/capture-controls-8312c1d.json"
+    },
+    {
+      "id": "prepare-d881a19",
+      "kind": "check",
+      "revision": "d881a190b813eb02e4097a85213532a3b80625eb",
+      "command": "DOTNET_ROOT=<pinned-dotnet-root> DOTNET_CLI_USE_MSBUILD_SERVER=0 python3 -B docs/reports/M2-dtd-entity-base/measure.py --mode prepare --report prepare-d881a19 --benchmark-report benchmark-d881a19",
+      "result": "failed",
+      "summary": "Driver Release build/identity/counters-disabled full model+resolver oracle passed. Generated restore exit0; generated builder driver exited -6 before manifest, process group empty; no workload/counters/timing. Final freeze unrun, no preparation produced; raw/generated artifacts removed. Exact build cause and unsaved before expectations are explicitly unavailable, not reconstructed.",
+      "artifact": "docs/reports/M2-dtd-entity-base/prepare-d881a19.json"
+    },
+    {
+      "id": "failure-controls-d1ee7dd",
+      "kind": "check",
+      "revision": "d1ee7dd19b162d0bcfa027b51f898ab1c38b9d88",
+      "command": "python3 -B -m unittest discover -s docs/reports/M2-dtd-entity-base -p test_measure.py -v; python3 -B tools/planning/tasks.py validate; git diff --check",
+      "result": "passed",
+      "summary": "11 wrapper controls passed including bounded pre-proof build exception retention; actual129task validation/diffcheck passed. Narrow reporting correction stores pre-generation expectations immediately. No preparation rerun or runtime/executor/counter/timing changes.",
+      "artifact": "docs/reports/M2-dtd-entity-base/failure-controls-d1ee7dd.json"
+    },
+    {
+      "id": "diagnostic-6d3dc79",
+      "kind": "check",
+      "revision": "6d3dc79606ac555495e1a7665e7fc05a273f1535",
+      "command": "DOTNET_ROOT=<pinned-dotnet-root> DOTNET_CLI_USE_MSBUILD_SERVER=0 python3 -B docs/reports/M2-dtd-entity-base/measure.py --mode prepare --report diagnostic-6d3dc79 --benchmark-report benchmark-6d3dc79",
+      "result": "failed",
+      "summary": "Single authorized diagnostic invocation: driverbuild0warnings/identity/full counters-disabled oracle passed; generatedrestore0 then exact240s buildtimeout, driverexit-6, processgroupempty. Complete279source/40parent/188runtime inputs and fullversions retained before; source/runtime/host match separate post-cleanup inspection; parent closure FAILS because cleanup removed9 restored dependency files (surviving hashesunchanged). Actual generated ProjectReference selects repositorywide benchmarkcsproj instead of isolated Measurements.csproj; linkage to timeout notisolated. Finalfreezeunrun/nochildmanifest/nopreparation/noExecutor/counters/timing. Raw/generated removed.",
+      "artifact": "docs/reports/M2-dtd-entity-base/diagnostic-6d3dc79.json"
+    },
+    {
+      "id": "controls-c84da29",
+      "kind": "check",
+      "revision": "c84da29b4b9fe83288978b960bce3b31ca11d55e",
+      "command": "python3 -B -m unittest discover -s docs/reports/M2-dtd-entity-base -p test_measure.py -v; dotnet build docs/reports/M2-dtd-entity-base/capture-control/Control.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false; dotnet docs/reports/M2-dtd-entity-base/capture-control/bin/Release/net10.0/Control.dll",
+      "result": "passed",
+      "summary": "13Python and7actualC# capture/binding controls passed; build0warnings/errors after identical network-escalated recovery from sandboxNU1900. Controlbin/obj removed. Scopedcontrols do not imply complete driver build passed.",
+      "artifact": "docs/reports/M2-dtd-entity-base/controls-c84da29.json"
+    },
+    {
+      "id": "preparation-c84da29",
+      "kind": "check",
+      "revision": "c84da29b4b9fe83288978b960bce3b31ca11d55e",
+      "command": "DOTNET_ROOT=<pinned-root> DOTNET_CLI_USE_MSBUILD_SERVER=0 python3 -B docs/reports/M2-dtd-entity-base/measure.py --mode prepare --report preparation-c84da29 --benchmark-report benchmark-c84da29",
+      "result": "failed",
+      "summary": "Single authorized changedpreparation, networkescalated: drivercompile exit1 CS0122 internal DtdParser/model access. Renamedassembly lacks existing friendidentity Xemele.Benchmarks. No identity/oracle/generation/finalfreeze/preparation/executor/counters/timing. Processgroupempty/rawremoved; failurediagnostics retained,23lines bounded20withtruncationexplicit. No retries/sourcefixes afterfailure.",
+      "artifact": "docs/reports/M2-dtd-entity-base/preparation-c84da29.json"
+    },
+    {
+      "id": "compiler-add12aa",
+      "kind": "check",
+      "revision": "add12aa04eccbbaed37bfb73888caec8c2f6c693",
+      "command": "DOTNET_ROOT=<pinned-root> DOTNET_CLI_USE_MSBUILD_SERVER=0 dotnet build docs/reports/M2-dtd-entity-base/Xemele.EntityBase.Measurements.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false",
+      "result": "passed",
+      "summary": "Actualowneddriver compilercontrol0warnings/errors; restoredXemele.Benchmarks friendassembly plus uniqueownedproject and BoundGenerator APIs compile together. Exact observeddriver/producthashes and generatedfullassemblyversion retained; noexecution/generation/counters/timing. Ownedbin/obj removedafterinspection. Priorcontrols13Python/7C# preservedwithoutrepeat.",
+      "artifact": "docs/reports/M2-dtd-entity-base/compiler-add12aa.json"
+    },
+    {
+      "id": "preparation-9719d2a",
+      "kind": "check",
+      "revision": "9719d2a2284d9b8be38ee9ff372a8f658e96c30d",
+      "command": "DOTNET_ROOT=<pinned-root> DOTNET_CLI_USE_MSBUILD_SERVER=0 python3 -B docs/reports/M2-dtd-entity-base/measure.py --mode prepare --report preparation-9719d2a --benchmark-report benchmark-9719d2a",
+      "result": "failed",
+      "summary": "Singlechangedpreparation: parentbuild/identity/fullcounters-disabledoracle passed; exactownedproject binding passed; generatedrestore/build exits[0,0], build-onlydriverexit0/noExecutor. Independent47filechildclosure+3generatedinputhashes andentry/driver/productfullversions match9719HEAD;280source/40parent/188runtime before identitiesretained. Generatedcompiledinputquery failed NETSDK1004 defaultobjassetsmissing (builder artifact/output properties omitted); finalfreezeunrun/nopreparation. GeneratedruntimePEinformationalVersion null, actualexecutingfullruntimebuild independentlyretained; noinventedcompletechildruntimeversion. Sources unchanged/completeparentpostcleanupmatched/rawgeneratedremoved/processgroupempty; no retry/allocation/timing.",
+      "artifact": "docs/reports/M2-dtd-entity-base/preparation-9719d2a.json"
+    },
+    {
+      "id": "query-runtime-controls-afcd014",
+      "kind": "check",
+      "revision": "afcd01425dbda0cdc635d8e442f5051a50f2d0af",
+      "command": "Affected Python inventory/diagnostic controls; dotnet build capture-control/Control.csproj and Control.dll --metadata-only; dotnet build Xemele.EntityBase.Measurements.csproj; python3 -B tools/planning/tasks.py validate; git diff --check",
+      "result": "passed",
+      "summary": "5of6Python firstpass8f02d8a; macOS /var->/private/var testpathassertion fixedafcd014 then onlyfailedcontrol passed. 4affectedC# metadata/closure controls passed at8f02d8a incl actualCoreLib fullversion/hash equal executingruntime; unchangedbindingcontrols skipped. Actualdrivercompileafcd0140warnings/errors; planning129/diffcheckpassed. Alltemporaryowncompileroutputsremoved. No generation/preparation/counters/timing/fullsuite repeat; actualgeneratedquery stillrequires fresh authorizedpreparation.",
+      "artifact": "docs/reports/M2-dtd-entity-base/query-runtime-controls-afcd014.json"
+    },
+    {
+      "id": "preparation-e1c44c6",
+      "kind": "check",
+      "revision": "e1c44c624c1b74ed37c630e938b36b534cf098b2",
+      "command": "DOTNET_ROOT=<pinned-root> DOTNET_CLI_USE_MSBUILD_SERVER=0 python3 -B docs/reports/M2-dtd-entity-base/measure.py --mode prepare --report preparation-e1c44c6 --benchmark-report benchmark-e1c44c6",
+      "result": "failed",
+      "summary": "Parentbuild/identity/fulloracle and2actualinputqueries passed; exactbinding/generatedrestore-build[0,0]/buildonlyexit0 passed. Completechild/runtimePEfullversion matchesexecutingparent; observedallglobalproperties matched. Parserguard failed because pinnedlog appends in <cwd> after --output and parsermistookcontextforargv. Actualgeneratedquery/finalfreezeunrun/nomanifest/noExecutor/counters/timing. Sourceunchanged/completeparentpostcleanupmatched/processgroupempty/rawgeneratedremoved; no retry.",
+      "artifact": "docs/reports/M2-dtd-entity-base/preparation-e1c44c6.json"
+    },
+    {
+      "id": "log-parser-controls-3463294",
+      "kind": "check",
+      "revision": "3463294530a6640238de9962d59196326adc6ab0",
+      "command": "python3 -B -m unittest test_measure.MeasurementGuards.test_generated_query_uses_exact_observed_builder_properties -v",
+      "result": "passed",
+      "summary": "Onlyaffectedpropertyparsercontrol passed afterminimalobservedlogger-contextcorrection; validatesexactcwd/argv/globalproperties andretainsactualmismatch. No generation/preparation/runtime/counter/timing/fullsuite repeat.",
+      "artifact": "docs/reports/M2-dtd-entity-base/log-parser-controls-3463294.json"
+    },
+    {
+      "id": "preparation-e38604d",
+      "kind": "check",
+      "revision": "e38604dfab49525fe3a255dc9337f38d8f0ac0af",
+      "command": "DOTNET_ROOT=<pinned-root> DOTNET_CLI_USE_MSBUILD_SERVER=0 python3 -B docs/reports/M2-dtd-entity-base/measure.py --mode prepare --report preparation-e38604d --benchmark-report benchmark-e38604d",
+      "result": "failed",
+      "summary": "Parentbuild/identity/fulloracle/2parentqueries andexactboundgeneratedrestore/build[0,0] passed; exactargv/properties/cwd guardspassed, actualCoreLibfullversionmatched. Generatedqueryexit0/emptydiagnostics but groupremained; terminationfailedEPERM. Laterprocesssnapshots noheavychildren; originalpidnotretained, originalsuccessfulgroupcleanupnotclaimed. Filesremoved/completeparentpostcleanupmatched. Generatedcompiledinputinventory/finalfreezeunrun/nomanifest/noExecutor/counters/timing.",
+      "artifact": "docs/reports/M2-dtd-entity-base/preparation-e38604d.json"
+    },
+    {
+      "id": "query-process-controls-54f70c2",
+      "kind": "check",
+      "revision": "54f70c2ba96861767965e7c6e5b0a87b90fe52aa",
+      "command": "ThreeaffectedPython queryprocess/property/actualassets controls -v",
+      "result": "passed",
+      "summary": "3affectedcontrols passed: matchingobservedMSBuildnodeReuse:false policy, querypid/actualexit/primaryorphan+cleanupEPERM retention, existingexactproperty/assetidentities. No freshpreparation/generation orunchangedfullsuite/controlrepetition.",
+      "artifact": "docs/reports/M2-dtd-entity-base/query-process-controls-54f70c2.json"
+    },
+    {
+      "id": "preparation-137e879",
+      "kind": "check",
+      "revision": "137e8798594dca7bc67b95170073eded742b140c",
+      "command": "python3 -B docs/reports/M2-dtd-entity-base/measure.py --mode prepare --report preparation-137e879 --benchmark-report benchmark-137e879",
+      "result": "passed",
+      "summary": "Outsidelease preparation passed: frozen47childfiles/290compiledinputs,5commands+5queries0/emptygroups,fullversions/source/runtime/parentfreeze matched; childretainedforlease.",
+      "artifact": "docs/reports/M2-dtd-entity-base/preparation-137e879.json"
+    },
+    {
+      "id": "allocation-137e879",
+      "kind": "check",
+      "revision": "137e8798594dca7bc67b95170073eded742b140c",
+      "command": "python3 -B docs/reports/M2-dtd-entity-base/measure.py --mode allocation --report allocation-137e879 --exclusive-grant m2-entity-base-137e879-sequence-exclusive-20261010",
+      "result": "passed",
+      "summary": "ONElease allocation1024iterations: cold137640B/models5693680B/documents119282480B/positive155648B. Strictvalidation/finalfreeze/parentcleanup passed; nozeroallocationclaim orreplay.",
+      "artifact": "docs/reports/M2-dtd-entity-base/allocation-137e879.json"
+    },
+    {
+      "id": "benchmark-137e879",
+      "kind": "check",
+      "revision": "137e8798594dca7bc67b95170073eded742b140c",
+      "command": "python3 -B docs/reports/M2-dtd-entity-base/measure.py --mode benchmark --report benchmark-137e879 --exclusive-grant m2-entity-base-137e879-sequence-exclusive-20261010",
+      "result": "failed",
+      "summary": "SameleaseprebuiltExecutor/no generationrestorebuild. FirstInternalNestedModelchildexit255beforework; soleexpected/actualdirectorytrailingseparator mismatch,allclosure/input/metadatahashesmatched.0Actual/Result/GC observations;RedirectedCompositionunrun;finalfreezeunrun,parent0/groupempty/rawchildremoved/parentcleanupmatched. Leaseimmediatelyreleasedbeforeinspection;no retry/timingclaim.",
+      "artifact": "docs/reports/M2-dtd-entity-base/benchmark-137e879.json"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Coordinator exact E18 repair routed from independent original-output/model assessment and source-owner review; historical verified evidence retained.",
-    "checks": [],
-    "remaining": [],
+    "summary": "EXECUTIONCOMPLETE/EXCLUSIVERELEASE/nochildren. Preparation137e879passed;singleallocationpassed;timingfailedbeforeworksoletrailingdirectoryslashmismatch. Exactfailedproof+allhashesretained;completeparentcleanupmatched/rawchildremoved. No automaticfix/retry orallocationreplay. A1/A2passed,A3pendingrequiredtiming.",
+    "checks": [
+      "Release solution0warnings; full5172tests/owned9includingoriginalE18 allpassed; API272matched; own source/freshpackageconsumer passed.",
+      "Original fullprofileaudit all2585cases/3386resources unchanged; E18modelgap resolved, same139otheroutcome gaps remainvisible. Wholeprofile is not claimed conformant.",
+      "8ownedwrappercontrols/14planningcontrols passed; actuallocal129graphvalidation passed; rawXML/API payload/nupkg/feed/packages removed, only concise summaries retained.",
+      "Initial infrastructure/ownedcompile/diagnostic failures corrected and honestly recorded; no GC/JIT/counter/threshold/options relaxation.",
+      "At8312c1d: 9Python/3C#capturecontrols passed; actual129planningvalidation and diffcheck passed. Controlbuild0warnings. Alltemporarycontrol outputs removed; fullsuite unchanged successful observations preserved.",
+      "Atd881a19 counters-disabled driverbuild/identity/fullauthoredoracle passed; independentgeneration failed beforemanifest, exactbuildercause notretained. At d1ee7dd 11wrappercontrols/129planningvalidation/diffcheck passed; prior5172/E18/API/package/profile preserved.",
+      "Diagnostic6d3dc79 driverbuild0warnings/counters-disabled fulloracle passed; restore0/build240stimeout/exit-6 preserved. Before279source/40parent/188runtime fullhashes and fullversions captured; read-onlypostcleanup source/runtime/host unchanged; parent9missingdependencyfiles, survivinghashesunchanged. Raw/generateddirs/preparation absent.",
+      "Source-only28b35df: planning129/diffcheckpassed; new compiler/binding/cleanup controls and builds UNRUN pending source-review execution authorization. No fullsuite repeat, generation, Executor, allocation or timing.",
+      "c84da29:13Python/7C#controls passed; sandboxNU1900 buildrecoveredwithidenticalflags/networkapproval; controlbin/objremoved. Preparationfailed driverCS0122 internalaccess beforeidentity/oracle/generation. No retriedsuccessfulcontrols/fullsuite/executor/counters/timing.",
+      "add12aa actualowneddrivercompilepassed0warnings/errors afterminimalfriendidentityfix; boundgenerator/control APIscompile. Observedhashes/version recorded,ownedbin/objremoved. No driverexecution/generation/preparation/allocation/timing/fullsuite repeat.",
+      "9719d2a parentbuild/identity/fulloracle andindependentexactboundgeneratedbuild passed; inventoryNETSDK1004 failed.280source/40parent/188runtime/47childfile/3generatedinput identitiesretained; sourcebeforeafter andcompleteparentpostcleanupmatched. GeneratedruntimePEversion null explicitlyrecorded whileexecutingfullruntimebuildretained. Raw/generatedremoved/nochildren.",
+      "8f02d8a/afcd014 affected6Pythonunique controls ultimatelypassed; first5/6pathassertionfailure correctedonlytestcanonicalpath and rerunonlyfailed. C#4metadata controls passed withactualCoreLib10.0.11-servicing.26373.116+e2f47b0110ed922f21a1522da67279133ce28f32; actualdrivercompileafcd0140warnings/errors. Ownbin/obj/controloutputsremoved.",
+      "e1parentoracle/2inputqueries/generatedexactbinding/restorebuild/fullruntimePEversion passed, parsercontextguardfailed. Source/parentpostcleanupmatched/rawgeneratedremoved. 3463294onlyaffectedparsercontrolpassed preservingexactproperties/output/cwdguards.",
+      "e386exactbinding/generatedbuild/argvpropertiescwd/fullruntimechecks passed; queryexit0 thenorphan-group/EPERMfailure honestlyretained. PostfailurePS noheavychildren; completeparentpostcleanupmatched.54f70c2only3affectedcontrolspassed.",
+      "137e8792Python/3C#reusecontrols andactualdrivercompile0warnings/errors passed. Outsideleasepreparationpassed. ONEallocationpassed1024models/documents+positivecontrol/finalfreeze. Timingfirstchild255/beforegatefalse/0observations/2ndunrun/finalfreezeunrun; parent0/groupempty/cleanupmatched. No restoration/buildduringlease; releasedbeforeanalysis."
+    ],
+    "remaining": [
+      "ExactA3unmetcheck: actualfirstchildCapture.directory has trailing slash fromAppContextBaseDirectory; independentexpectedArtifactPaths.directory lacks it. All47binaryhashes,3generatedinputs,290compiledinputs andmetadata match. No timingobservations; required2caseexecutionstillmissing.",
+      "Rootowns ONE bounded directresolution: canonicalize Capture directory with Path.TrimEndingDirectorySeparator(Path.GetFullPath(directory)); focusedoffline proof comparison of identicaldirectory with/withoutendingseparator. Preserveallprovenanceguards; no workerincrementalredesign/sourcefix/retry.",
+      "Preserve passingallocation137e879 withoutreplay. Retainallpriorcorrectness/E18/API/package/profile results andinputproof. No fullsuite/preparation replay unlessmissingrequiredexecutionevidence requireschangedpreparedchild; rootdecides.",
+      "Rootintegration focusedexistingchecks thencomprehensiveM2gate; A3timingpending, taskin_progress. Successfulmanifest/preparation/results retained forofflineinspection; no scopeschildren."
+    ],
     "requests": [
       "Serialized coordinator scope extension while worker idle/PARK at500d749: authorize only CheckResult child element Location.SourceUri null-to-Uri oracle transition in CompositionBenchmarks.cs; preserve seed declaration origin null and all other assertions. No historic performance rerun; changed runtime task obtains its own evidence."
     ]

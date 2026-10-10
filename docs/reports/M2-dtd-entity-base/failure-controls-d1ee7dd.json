@@ -1,0 +1,31 @@
+{
+  "head": "d1ee7dd19b162d0bcfa027b51f898ab1c38b9d88",
+  "mode": "controls",
+  "result": "passed",
+  "checks": [
+    {
+      "command": "python3 -B -m unittest discover -s docs/reports/M2-dtd-entity-base -p test_measure.py -v",
+      "exit": 0,
+      "passed": 11
+    },
+    {
+      "command": "python3 -B tools/planning/tasks.py validate",
+      "exit": 0,
+      "tasks": 129
+    },
+    {
+      "command": "git diff --check",
+      "exit": 0
+    }
+  ],
+  "changes": [
+    "Bounded infrastructure diagnostic lines retained before raw cleanup, including exception/timeout lines before structured proofs.",
+    "Pre-generation parent/source/runtime expectations saved immediately, preserving independently captured identities on failure."
+  ],
+  "unrun": [
+    "Corrected preparation",
+    "Standalone allocation",
+    "Timing/Executor",
+    "Full-suite repeat"
+  ]
+}

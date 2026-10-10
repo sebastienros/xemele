@@ -1,0 +1,47 @@
+{
+  "result": "passed",
+  "testedRevision": "8312c1df444f2bbcf4283fbebf301c5800a36d41",
+  "scope": "Only narrow failure-capture correction and isolated synthetic controls. Prior successful5172/E18/API272/package evidence at6a151999f177a479bdc3f9c4bb8e2bb9e1583639 preserved, fullsuite not rerun.",
+  "checks": [
+    {
+      "command": "python3 -B -m unittest discover -s docs/reports/M2-dtd-entity-base -p test_measure.py -v",
+      "result": "passed",
+      "count": 9,
+      "summary": "Includes JSON summary persistence of partial required-metadata proof: null missing entry, surviving sibling/.notcs hashes and exact System.IO.FileNotFoundException identity."
+    },
+    {
+      "command": "dotnet build docs/reports/M2-dtd-entity-base/capture-control/Control.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false",
+      "result": "passed",
+      "summary": "0warnings/0errors; no BenchmarkDotNet package/engine or preparation/generation."
+    },
+    {
+      "command": "dotnet docs/reports/M2-dtd-entity-base/capture-control/bin/Release/net10.0/Control.dll",
+      "result": "passed",
+      "count": 3,
+      "summary": "Positive complete closure; missing required entry preserves available actual sibling/generated input/othermetadata and exact FileNotFoundException; malformed required metadata preserves actual bad-filehash and exact BadImageFormatException. Exactly one partial failure record and no successful gate claimed."
+    },
+    {
+      "command": "python3 -B tools/planning/tasks.py validate; git diff --check",
+      "result": "passed",
+      "summary": "actual129 localgraph validated; source diff whitespace passed."
+    }
+  ],
+  "sourceToGitSha256": {
+    "benchmarks/Xemele.Benchmarks/M2-dtd-entity-base/Provenance.cs": "a14c692425948628868bc7eba844a4bcbda066ce02259c8893107ad2eec68dd6",
+    "docs/reports/M2-dtd-entity-base/test_measure.py": "fa1d5a210e15ad433306ac827b109aa573d8ad56c7afe9a376f664cd441a234c",
+    "docs/reports/M2-dtd-entity-base/capture-control/Control.csproj": "f1b8a9580dd9a87265a946eccbe81c46a478432858b1c6a9471ac132eeeb1078",
+    "docs/reports/M2-dtd-entity-base/capture-control/Program.cs": "0109629cf9773dacc01b098ecb10a5c040f10239e6fb8c81f5e66da0a8d92c78",
+    "docs/reports/M2-dtd-entity-base/capture-control/FixtureStub.cs": "b02a0740fa08612e453a4d93c18dfbdcc799e26ac9b899609747a0cb40fdb142"
+  },
+  "actualControlOutputClosureSha256": {
+    "Control": "9e63d85225cb70f25441e5ac6d2db9309dec4b2364ba19305638ece59ad2a69d",
+    "Control.deps.json": "b0b68fd38550fab196e63b5b2fb3080f7ae58ded1d94dd0f9f4009a04c7eae22",
+    "Control.dll": "6e27e85a2bef1d560b5915d461a1f9791f92805a7e8cd4c74c2133eda1c10e10",
+    "Control.pdb": "16d7b55df86523016dfd2267878dcfc19a73780d7a9b8c76ec0234fa1855156a",
+    "Control.runtimeconfig.json": "9950d4583cfc9a106857c0d5b8a75b53e8774852b57b80bc3823a74d44a4d87f",
+    "Xemele.dll": "99160d2a0812da6e8aa2a0f3dbaa2854edd5344fa946b30d8d7438817cff6699",
+    "Xemele.pdb": "ce64752122f7ec281fc1d4b44290d038dcb80a2c5847fc123c3f45e02ce9b458"
+  },
+  "measurementStatus": "No build-only generation/preparation/standalone allocation/timing invoked. Await corrected-source approval and fresh explicit exclusive grants.",
+  "cleanup": "Control bin/obj removed after inspection; C# temporary marker/.notcs directories removed by finally; no raw test/benchmark logs/XML/payload/archive retained."
+}

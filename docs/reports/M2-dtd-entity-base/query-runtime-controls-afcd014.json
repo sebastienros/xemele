@@ -1,0 +1,64 @@
+{
+  "head": "afcd01425dbda0cdc635d8e442f5051a50f2d0af",
+  "mode": "scoped-controls",
+  "result": "passed",
+  "sourceCorrection": "8f02d8a65d7979ba6b767c90535f523e04b93f1c",
+  "checks": [
+    {
+      "revision": "8f02d8a65d7979ba6b767c90535f523e04b93f1c",
+      "command": "python3 -B -m unittest <four new inventory controls and two affected diagnostic controls> -v",
+      "exit": 1,
+      "passed": 5,
+      "failed": 1,
+      "failure": "Temporary path assertion used /var spelling; inventory canonicalized to /private/var. KeyError in test only; exact actual resolved asset identities retained."
+    },
+    {
+      "revision": "afcd01425dbda0cdc635d8e442f5051a50f2d0af",
+      "command": "python3 -B -m unittest test_measure.MeasurementGuards.test_inventory_requires_actual_assets_and_collects_actual_variant_inputs -v",
+      "exit": 0,
+      "passed": 1,
+      "scope": "Only failed control rerun after test-only canonical-path correction."
+    },
+    {
+      "revision": "8f02d8a65d7979ba6b767c90535f523e04b93f1c",
+      "command": "dotnet build docs/reports/M2-dtd-entity-base/capture-control/Control.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false; dotnet docs/reports/M2-dtd-entity-base/capture-control/bin/Release/net10.0/Control.dll --metadata-only",
+      "buildExit": 0,
+      "warnings": 0,
+      "errors": 0,
+      "runExit": 0,
+      "passed": 4,
+      "scope": "3affected closure/partial-capture controls and1actual same-module CoreLib version/hash control; unchanged4binding controls skipped.",
+      "actualRuntimeFullVersion": "10.0.11-servicing.26373.116+e2f47b0110ed922f21a1522da67279133ce28f32"
+    },
+    {
+      "revision": "afcd01425dbda0cdc635d8e442f5051a50f2d0af",
+      "command": "dotnet build docs/reports/M2-dtd-entity-base/Xemele.EntityBase.Measurements.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false",
+      "exit": 0,
+      "warnings": 0,
+      "errors": 0,
+      "driverExecuted": false
+    },
+    {
+      "revision": "afcd01425dbda0cdc635d8e442f5051a50f2d0af",
+      "command": "python3 -B tools/planning/tasks.py validate; git diff --check",
+      "exit": 0,
+      "tasks": 129
+    }
+  ],
+  "observedCompiledOutputHashes": {
+    "docs/reports/M2-dtd-entity-base/bin/Release/net10.0/Xemele.Benchmarks.dll": "bc6866541eda55f34e5bf2f1ca3a00902e158c31ffb68b98de22af30145eb5a4",
+    "src/Xemele/bin/Release/net10.0/Xemele.dll": "8c4a615a0802d4472864fb6d1cc118a0dc334cef28b1c4abc2abeb15b396b4c1"
+  },
+  "actualAssemblyIdentitySource": {
+    "docs/reports/M2-dtd-entity-base/obj/Release/net10.0/Xemele.EntityBase.Measurements.AssemblyInfo.cs": "[assembly: System.Reflection.AssemblyInformationalVersionAttribute(\"1.0.0+afcd01425dbda0cdc635d8e442f5051a50f2d0af\")]"
+  },
+  "unrun": [
+    "generated input query on actual generated variant",
+    "generation",
+    "preparation",
+    "allocation",
+    "timing",
+    "fullsuite repeat"
+  ],
+  "temporaryOwnedCompilerOutputsRemoved": true
+}
