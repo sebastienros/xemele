@@ -11,6 +11,7 @@ internal sealed class DomSink : IXmlEventSink
 {
     private readonly OperationBudget budget;
     private readonly XmlInputDecoder? decoder;
+    private readonly XmlDocument.DomBuilder builder;
     private XmlNode parent;
     private XmlTextKind textKind;
     private string target = "";
@@ -23,6 +24,7 @@ internal sealed class DomSink : IXmlEventSink
     {
         budget = new(options, default);
         Document = new(options.Limits);
+        builder = Document.BeginDomConstruction();
         parent = Document.DocumentNode;
         this.decoder = decoder;
     }
@@ -54,21 +56,21 @@ internal sealed class DomSink : IXmlEventSink
     {
         if (!Names(name.LocalName, name.NamespaceUri, name.Prefix, location)) return false;
         var element = Document.CreateElement(OwnName(name.LocalName), OwnName(name.NamespaceUri), OwnName(name.Prefix));
-        parent.AppendChild(element);
+        builder.AppendChild(parent, element);
         parent = element;
         return true;
     }
     public bool NamespaceDeclaration(XmlNamespaceView declaration)
     {
         if (!Names(declaration.Prefix, declaration.NamespaceUri, [], declaration.Location)) return false;
-        parent.SetNamespaceDeclaration(OwnName(declaration.Prefix), OwnName(declaration.NamespaceUri));
+        builder.AppendNamespaceDeclaration(parent, OwnName(declaration.Prefix), OwnName(declaration.NamespaceUri));
         return true;
     }
     public bool Attribute(XmlAttributeView attribute)
     {
         var name = attribute.Name;
         if (!Names(name.LocalName, name.NamespaceUri, name.Prefix, attribute.Location)) return false;
-        parent.SetAttribute(OwnName(name.LocalName), attribute.Value.ToString(), OwnName(name.NamespaceUri), OwnName(name.Prefix));
+        builder.AppendAttribute(parent, OwnName(name.LocalName), attribute.Value.ToString(), OwnName(name.NamespaceUri), OwnName(name.Prefix));
         return true;
     }
     public bool StartElementContent() => true;
@@ -85,6 +87,11 @@ internal sealed class DomSink : IXmlEventSink
     {
         // Outer whitespace is delivered by syntax but cannot be a document child.
         if (textKind == XmlTextKind.Text && parent.Kind == XmlNodeKind.Document) return true;
+        if (fragment.Length > Array.MaxLength - text.Length)
+        {
+            Diagnostic = new("XML.ResourceLimit", XmlDiagnosticSeverity.Error, "DOM text capacity exceeded.", location);
+            return false;
+        }
         text.Append(fragment);
         if (!tokenEnded) return true;
         string value = text.ToString();
@@ -95,7 +102,7 @@ internal sealed class DomSink : IXmlEventSink
             XmlTextKind.Comment => Document.CreateComment(value),
             _ => Document.CreateProcessingInstruction(target, value)
         };
-        parent.AppendChild(node);
+        builder.AppendChild(parent, node);
         text.Clear();
         return true;
     }

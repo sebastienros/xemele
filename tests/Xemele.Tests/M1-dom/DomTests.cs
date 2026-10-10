@@ -1,4 +1,7 @@
 using System.Text;
+using System.Reflection;
+using System.Xml.Linq;
+using Xemele.Parsing.Dom;
 using Xunit;
 
 namespace Xemele.Tests.Dom;
@@ -86,7 +89,6 @@ public sealed class DomTests
     [InlineData("<p:r/>", "XML.Namespace")]
     [InlineData("<!DOCTYPE r><r/>", "XML.DtdProhibited")]
     [InlineData("<r>&unknown;</r>", "XML.UndeclaredEntity")]
-    [InlineData("<r>\ud800</r>", "XML.Syntax")]
     [InlineData("<r>&#0;</r>", "XML.Syntax")]
     public void StrictRejectionNeverAdvertisesAPartialDocument(string input, string code)
     {
@@ -100,6 +102,17 @@ public sealed class DomTests
             byte[] bytes = Encoding.UTF8.GetBytes(input);
             Assert.False(XmlDocument.TryParse(bytes.AsSpan(), out document, out diagnostics, cancellationToken: Cancellation));
             Assert.Null(document); Assert.Equal(code, Assert.Single(diagnostics).Code); Assert.NotNull(diagnostics[0].Location.ByteOffset);
+        }
+    }
+
+    [Fact]
+    public void UnpairedSurrogatesAreBuiltAtRuntimeToAvoidAttributeMetadataReplacement()
+    {
+        foreach (char unit in new[] { '\ud800', '\udc00' })
+        {
+            string input = "<r>" + unit + "</r>";
+            Assert.False(XmlDocument.TryParse(input, out var document, out var diagnostics, cancellationToken: Cancellation));
+            Assert.Null(document); Assert.Equal("XML.Syntax", Assert.Single(diagnostics).Code);
         }
     }
 
@@ -172,6 +185,112 @@ public sealed class DomTests
         using var cancellation = new CancellationTokenSource(); cancellation.Cancel();
         var exception = Assert.Throws<OperationCanceledException>(() => XmlDocument.TryParse("<r/>", out _, out _, cancellationToken: cancellation.Token));
         Assert.Equal(cancellation.Token, exception.CancellationToken);
+        using var duringRead = new CancellationTokenSource();
+        var sameFailure = new OperationCanceledException("read identity", duringRead.Token);
+        using var cancelledStream = new ChunkStream("<r/>"u8.ToArray(), 1) { BeforeRead = () => throw sameFailure };
+        Assert.Same(sameFailure, Assert.Throws<OperationCanceledException>(() => XmlDocument.Load(cancelledStream, cancellationToken: Cancellation)));
+        Assert.False(cancelledStream.WasDisposed);
+        using var cooperativeStream = new ChunkStream("<r/>"u8.ToArray(), 1) { BeforeRead = duringRead.Cancel };
+        exception = Assert.Throws<OperationCanceledException>(() => XmlDocument.Load(cooperativeStream, cancellationToken: duringRead.Token));
+        Assert.Equal(duringRead.Token, exception.CancellationToken);
+    }
+
+    [Fact]
+    public void DeepConstructionAndWideUniqueMembersUseLinearBuilderWork()
+    {
+        const int depth = 12000;
+        var options = new XmlParseOptions { Limits = new() { Depth = null, AttributesPerElement = null } };
+        string source = string.Concat(Enumerable.Repeat("<r>", depth)) + "x" + string.Concat(Enumerable.Repeat("</r>", depth));
+        using var adapter = new ByteDomAdapter(options, Cancellation);
+        adapter.Append(Encoding.UTF8.GetBytes(source)); adapter.Complete(); Assert.Null(adapter.Diagnostic);
+        var sink = typeof(ByteDomAdapter).GetField("sink", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(adapter)!;
+        var builder = (XmlDocument.DomBuilder)typeof(DomSink).GetField("builder", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(sink)!;
+        Assert.Equal(depth + 1, builder.ChildChecks);
+        Assert.Equal("x", adapter.Document.RootElement.GetTextContent());
+        var leaf = adapter.Document.RootElement;
+        for (int i = 1; i < depth; i++) leaf = leaf.FirstChild;
+        Assert.Equal(XmlNodeKind.Text, leaf.FirstChild.Kind);
+        string wide = "<r " + string.Join(" ", Enumerable.Range(0, 1024).Select(i => $"a{i}='x' xmlns:p{i}='u{i}'")) + "/>";
+        var document = XmlDocument.Parse(wide, options, Cancellation);
+        Assert.Equal(1024, document.RootElement.Attributes.Count); Assert.Equal(1024, document.RootElement.NamespaceDeclarations.Count);
+    }
+
+    [Fact]
+    public void AdapterBuildsBeforeEofAndNeverKeepsBorrowedChunks()
+    {
+        using var adapter = new ByteDomAdapter(new(), Cancellation);
+        byte[] chunk = Encoding.UTF8.GetBytes("<r><c>😀&amp;</c>");
+        adapter.Append(chunk); chunk.AsSpan().Fill(0xFF);
+        Assert.Null(adapter.Diagnostic); Assert.Equal("😀&", adapter.Document.RootElement.FirstChild.GetTextContent());
+        byte[] repeated = Encoding.UTF8.GetBytes("<c>α</c>");
+        for (int i = 0; i < 128; i++) adapter.Append(repeated);
+        repeated.AsSpan().Fill(0xFF);
+        Assert.Equal(129, adapter.Document.RootElement.Children.Count);
+        adapter.Append("</r>"u8); adapter.Complete(); Assert.Null(adapter.Diagnostic);
+        Assert.Equal("😀&" + new string('α', 128), adapter.Document.RootElement.GetTextContent());
+        Assert.Throws<InvalidOperationException>(adapter.Complete);
+    }
+
+    [Fact]
+    public void IndependentBclOracleMatchesDeclaredStrictSubset()
+    {
+        var bcl = XDocument.Parse(Body, LoadOptions.PreserveWhitespace);
+        var actual = XmlDocument.Parse(Body, cancellationToken: Cancellation).RootElement;
+        Assert.Equal(bcl.Root!.Name.LocalName, actual.LocalName); Assert.Equal(bcl.Root.Name.NamespaceName, actual.NamespaceUri);
+        Assert.Equal(bcl.Root.Value, actual.GetTextContent());
+        foreach (var attribute in bcl.Root.Attributes().Where(a => !a.IsNamespaceDeclaration))
+            Assert.Equal(attribute.Value, actual.GetAttribute(attribute.Name.LocalName, attribute.Name.NamespaceName));
+        Assert.Equal(bcl.Root.Nodes().Count(), actual.Children.Count);
+        Assert.Equal(bcl.Nodes().Count(), actual.OwnerDocument.DocumentNode.Children.Count);
+    }
+
+    private delegate string NameProbe(ReadOnlySpan<char> name);
+    [Fact]
+    public void WarmBorrowedNameHitsAllocateZeroAndUseOwnedInternedStrings()
+    {
+        var sink = new DomSink(new());
+        using var core = new Xemele.Parsing.Syntax.XmlParserCore(new());
+        core.Append("<r xmlns:p='urn:p' p:a='v'>", [], false, sink, Cancellation);
+        var probe = typeof(DomSink).GetMethod("OwnName", BindingFlags.Instance | BindingFlags.NonPublic)!.CreateDelegate<NameProbe>(sink);
+        string rootName = sink.Document.RootElement.LocalName;
+        string copiedProbe = new string(new[] { 'r' });
+        for (int i = 0; i < 100; i++) probe(copiedProbe.AsSpan());
+        long before = GC.GetAllocatedBytesForCurrentThread();
+        for (int i = 0; i < 10000; i++)
+            if (!ReferenceEquals(rootName, probe(copiedProbe.AsSpan()))) throw new InvalidOperationException("Borrowed hit did not reuse owned name.");
+        Assert.Equal(0, GC.GetAllocatedBytesForCurrentThread() - before);
+    }
+
+    [Fact]
+    public void LongTextAndScalarFragmentsPersistOneLogicalNode()
+    {
+        string text = new string('x', 65536) + "😀&β";
+        string source = "<r>" + new string('x', 65536) + "😀&amp;β</r>";
+        using var stream = new ChunkStream(Encoding.UTF8.GetBytes(source), 7);
+        var document = XmlDocument.Load(stream, cancellationToken: Cancellation);
+        Assert.Equal(1, document.RootElement.Children.Count); Assert.Equal(text, document.RootElement.FirstChild.Value);
+        Assert.Equal(text, document.RootElement.GetTextContent());
+    }
+
+    [Fact]
+    public void InvalidByteSequencesPreserveFirstScalarOffsetsAcrossAllReads()
+    {
+        foreach (byte[] invalid in new byte[][] { [0xFF], [0xC0, 0x80], [0xED, 0xA0, 0x80], [0xF4, 0x90, 0x80, 0x80], [0xF0, 0x9F, 0x98] })
+        {
+            byte[] bytes = [.. Encoding.UTF8.GetBytes("<r>😀\r\n"), .. invalid];
+            for (int read = 1; read <= bytes.Length + 1; read++)
+            {
+                using var stream = new ChunkStream(bytes, read);
+                var diagnostic = Assert.Single(Assert.Throws<XmlParseException>(() => XmlDocument.Load(stream, cancellationToken: Cancellation)).Diagnostics);
+                Assert.Equal("INPUT.InvalidEncoding", diagnostic.Code); Assert.Equal(9, diagnostic.Location.ByteOffset);
+                Assert.Equal(2, diagnostic.Location.LineNumber); Assert.Equal(1, diagnostic.Location.LinePosition);
+            }
+        }
+        foreach (byte[] bytes in new byte[][] { [0, 0, 0xFE, 0xFF], [0xFF, 0xFE, 0, 0], [0x4C, 0x6F, 0xA7, 0x94] })
+        {
+            Assert.False(XmlDocument.TryParse(bytes.AsSpan(), out _, out var diagnostics, cancellationToken: Cancellation));
+            Assert.Equal("INPUT.UnsupportedEncoding", Assert.Single(diagnostics).Code);
+        }
     }
 
     [Fact]
