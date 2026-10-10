@@ -4,13 +4,14 @@
   "milestone": "M2",
   "title": "Additional encoding compatibility",
   "kind": "feature",
-  "status": "implemented",
+  "status": "in_progress",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M2-encoding",
   "branch": "codex/m2-encoding",
-  "base_revision": "eef177e8176c87954f0ce2efd8098c3f7dbfbc79",
+  "base_revision": "1a77b3598ed6084b17a69ca562d160f0d64a6be5",
   "integration_revision": null,
   "depends_on": [
-    "M2-contracts"
+    "M2-contracts",
+    "M2-pi-allocation-probe"
   ],
   "goals": [
     "G02"
@@ -118,13 +119,14 @@
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Implemented strict declared US-ASCII/ISO-8859-1/Windows-1252 using only verified contracts and existing M1 composition. Source a1d0d1a46b2e47a1ee8864657f4e3d06f0fa8f3e; no public additions, no provider/global mutation, bounded four-byte state and original mappings preserved. Assigned historical unsupported-label row repaired only. Awaiting coordinator integration verification.",
+    "summary": "Implemented strict declared US-ASCII/ISO-8859-1/Windows-1252 using only verified contracts and existing M1 composition. Source a1d0d1a46b2e47a1ee8864657f4e3d06f0fa8f3e; no public additions, no provider/global mutation, bounded four-byte state and original mappings preserved. Assigned historical unsupported-label row repaired only. Awaiting coordinator integration verification. Renewed claim7034b2769307fbab70ea524ea2a16f5defa8e7d6 adopted from verifiedbase1a77b3598ed6084b17a69ca562d160f0d64a6be5; fresh joint checks pending, historical evidence retained.",
     "checks": [
       "source-a1d0d1a-attempt1: actual809 tests/API222/internal44/model81/sevenoracles/sample+package/fresh242reference/planning14/validation112/ownedpath+diff passed.",
       "timing-a1d0d1a:13 actual cases/39 observations/all13 children exit0; warm primitives0B; setup/retained/DOM allocations explicitly separate.",
       "Preserved initial discovery failure and initial BDN wrapper0/generatedbuild1/actual0 attempt; corrections and full known-hash checks passed."
     ],
     "remaining": [
+      "Coordinator integrated attempt cd753170601936520d1d8efadb949852bacd083f failed unchanged PI1024B afterMTP809/API222passed; source/evidence/failure branch fc862e888a0089e6bd304b8c2586206353c94f66 preserved, await verified PI repair and renewed claim.",
       "Coordinator integrates and verifies with current integrated counts; verifier supports explicit --audit-base/--expected-branch and runtime/conformance/differential/reference count arguments.",
       "External TextDecl framing and entity composition belong to M2-dtd-framing/M2-entities; this branch has no unmerged dependency.",
       "x64/Windows/Linux/AOT and release-scale performance checks unrun locally; Arm64 ShortRun results provisional, not a universal performance claim."
