@@ -21,6 +21,9 @@ internal sealed class ExternalXmlSource : IDisposable
     internal long ByteLength { get; private set; }
     internal Uri SourceUri => handle.SourceUri;
     internal XmlLocation FirstLocation { get; private set; }
+    // The framer already owns these bounded values. Publish only after decoder
+    // validation; null means no declaration, not an invented default version.
+    internal XmlTextDeclaration? TextDeclaration { get; private set; }
     internal XmlDiagnostic? Diagnostic { get; private set; }
     internal ReadOnlySpan<char> Characters => characters.AsSpan(characterIndex, characterCount - characterIndex);
     internal ReadOnlySpan<long> Mappings => mappings.AsSpan(characterIndex, characterCount - characterIndex);
@@ -79,6 +82,7 @@ internal sealed class ExternalXmlSource : IDisposable
                 prefix[..count].CopyTo(characters); offsets[..count].CopyTo(mappings);
                 characterIndex = 0; characterCount = count + suffix;
             }
+            TextDeclaration = result.Declaration;
             framed = true;
             return true;
         }
