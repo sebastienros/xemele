@@ -4,11 +4,11 @@
   "milestone": "M1",
   "title": "UTF input decoding and source mapping",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M1-input",
   "branch": "codex/m1-input",
   "base_revision": "52df006d4a2e00de486a3be15a563d15d22436ac",
-  "integration_revision": null,
+  "integration_revision": "279482e8545cd5156ba37013e490209c8279fc3e",
   "depends_on": [
     "M1-common"
   ],
@@ -37,7 +37,8 @@
       "evidence": [
         "known-revision-decoder-checks",
         "independent-corrected-input-reviews",
-        "exclusive-short-run"
+        "exclusive-short-run",
+        "integrated-decoder-verification"
       ]
     },
     {
@@ -47,7 +48,8 @@
       "evidence": [
         "known-revision-decoder-checks",
         "independent-corrected-input-reviews",
-        "exclusive-short-run"
+        "exclusive-short-run",
+        "integrated-decoder-verification"
       ]
     },
     {
@@ -57,7 +59,8 @@
       "evidence": [
         "known-revision-decoder-checks",
         "independent-corrected-input-reviews",
-        "exclusive-short-run"
+        "exclusive-short-run",
+        "integrated-decoder-verification"
       ]
     }
   ],
@@ -113,6 +116,15 @@
       "result": "passed",
       "summary": "Eight/eight ShortRun cases produced complete samples on M4Pro Arm64/macOS15.8.1/.NET10.0.11/BDN0.15.8; one launch, three warmups/measurements; no unrelated builds/tests overlapped. Oracle output/maps/checksum compare passed. All six steady oracle/decoder cases0 B/op. Means oracle/decoder ns: short8.969/57.233,long7220.297/34943.817,multilingual1530.262/6764.661; general bounded decoder slower, no speed/optimization claim. Setup816 B/op; malformed including setup888 B/op (72 B owned diagnostic, static message). Cold2808 B,warm816 B,informationalretained648 B from prior unchanged runtime. Short newline prevents columns overflowing; cumulative printed536870913 oracle calls plus at most67108864 diagnostic calls fits lineInt32, no runtime limit change. Session1873 harness build exited0 before52861 timings; generated BDN build precedes measurements; final process stopped and window explicitly released. Raw output ignored artifacts/M1-input/bdn and benchmark-console.txt; durable tables/CSV retained. No parser composition or timedUTF16/x64 release claim.",
       "artifact": "docs/reports/M1-input/bdn/InputBenchmarks-report-github.md"
+    },
+    {
+      "id": "integrated-decoder-verification",
+      "kind": "integration",
+      "revision": "279482e8545cd5156ba37013e490209c8279fc3e",
+      "command": "Pinned SDK10.0.400 DOTNET_CLI_USE_MSBUILD_SERVER=0 python3 docs/reports/M1-input/verify.py",
+      "result": "passed",
+      "summary": "Fresh combined tree verifier exited0: focused10/10, solution74/74, foundation11/11 zero skips; internal41/public81 compiled API, independent model/protocol38, Python16/bootstrap, source and fresh isolated NuGet-only consumer, pack/harness/allocation checks and planning/diff pass. Root executed after tree timing explicitly stopped; no timings repeated. Earlier worker reports preserved unchanged.",
+      "artifact": "docs/reports/M1-input/integration.txt"
     }
   ],
   "blockers": [],
@@ -125,7 +137,6 @@
       "Initial package-cache and short baseline column-overflow failures preserved/explicit; complete corrected runs supersede them. No timings overlapped other builds/tests; process stopped/window released."
     ],
     "remaining": [
-      "Coordinator integration and fresh integrated verification; task is implemented, integration_revision remains null.",
       "Later DOM adapter must reconcile declaration/absence before decoding body or forwarding events; this standalone decoder does not frame declarations. Actual parser composition and cross-architecture release performance remain composition/release evidence."
     ],
     "requests": []

@@ -1,0 +1,116 @@
+Host macOS-15.8.1-arm64-arm-64bit-Mach-O arm64
+$ git rev-parse HEAD
+exit=0
+Source revision 279482e8545cd5156ba37013e490209c8279fc3e
+$ dotnet --version
+exit=0
+$ dotnet --info
+exit=0
+$ dotnet build Xemele.slnx -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+Build succeeded.
+exit=0
+$ dotnet test --project tests/Xemele.Tests -c Release --no-build --no-restore --filter-class Xemele.Tests.Input.InputTests
+Test run summary: Passed!
+total: 10
+failed: 0
+succeeded: 10
+skipped: 0
+exit=0
+$ dotnet test --solution Xemele.slnx -c Release --no-build --no-restore
+Test run summary: Passed!
+total: 74
+failed: 0
+succeeded: 74
+skipped: 0
+exit=0
+$ dotnet build docs/reports/M0-contracts/Checks/Checks.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+Build succeeded.
+exit=0
+$ dotnet test --project docs/reports/M0-contracts/Checks/Checks.csproj -c Release --no-build --no-restore
+Test run summary: Passed!
+total: 11
+failed: 0
+succeeded: 11
+skipped: 0
+exit=0
+$ dotnet build docs/reports/M0-contracts/ApiCheck/ApiCheck.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+Build succeeded.
+exit=0
+$ dotnet /private/tmp/xemele-integrate-m1-input/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare /private/tmp/xemele-integrate-m1-input/src/Xemele/bin/Release/net10.0/Xemele.dll /private/tmp/xemele-integrate-m1-input/tests/Contracts/Fixtures/M1/Common.golden.txt
+Matched 81 compiled members
+exit=0
+$ dotnet build docs/reports/M1-contracts/Projects/Common/Common.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+Build succeeded.
+exit=0
+$ dotnet /private/tmp/xemele-integrate-m1-input/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare /private/tmp/xemele-integrate-m1-input/docs/reports/M1-contracts/Projects/Common/bin/Release/net10.0/M1Common.dll /private/tmp/xemele-integrate-m1-input/tests/Contracts/Fixtures/M1/Common.golden.txt
+Matched 81 compiled members
+exit=0
+$ dotnet build docs/reports/M1-contracts/Projects/Tree/Tree.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+Build succeeded.
+exit=0
+$ dotnet /private/tmp/xemele-integrate-m1-input/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare /private/tmp/xemele-integrate-m1-input/docs/reports/M1-contracts/Projects/Tree/bin/Release/net10.0/M1Tree.dll /private/tmp/xemele-integrate-m1-input/tests/Contracts/Fixtures/M1/Tree.golden.txt
+Matched 192 compiled members
+exit=0
+$ dotnet build docs/reports/M1-contracts/Projects/Input/Input.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+Build succeeded.
+exit=0
+$ dotnet /private/tmp/xemele-integrate-m1-input/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare /private/tmp/xemele-integrate-m1-input/docs/reports/M1-contracts/Projects/Input/bin/Release/net10.0/M1Input.dll /private/tmp/xemele-integrate-m1-input/tests/Contracts/Fixtures/M1/Input.golden.txt
+Matched 81 compiled members
+exit=0
+$ dotnet build docs/reports/M1-contracts/Projects/Syntax/Syntax.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+Build succeeded.
+exit=0
+$ dotnet /private/tmp/xemele-integrate-m1-input/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare /private/tmp/xemele-integrate-m1-input/docs/reports/M1-contracts/Projects/Syntax/bin/Release/net10.0/M1Syntax.dll /private/tmp/xemele-integrate-m1-input/tests/Contracts/Fixtures/M1/Syntax.golden.txt
+Matched 81 compiled members
+exit=0
+$ dotnet build docs/reports/M1-contracts/Projects/Serializer/Serializer.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+Build succeeded.
+exit=0
+$ dotnet /private/tmp/xemele-integrate-m1-input/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare /private/tmp/xemele-integrate-m1-input/docs/reports/M1-contracts/Projects/Serializer/bin/Release/net10.0/M1Serializer.dll /private/tmp/xemele-integrate-m1-input/tests/Contracts/Fixtures/M1/Serializer.golden.txt
+Matched 215 compiled members
+exit=0
+$ dotnet build docs/reports/M1-contracts/Projects/Dom/Dom.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+Build succeeded.
+exit=0
+$ dotnet /private/tmp/xemele-integrate-m1-input/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare /private/tmp/xemele-integrate-m1-input/docs/reports/M1-contracts/Projects/Dom/bin/Release/net10.0/M1Dom.dll /private/tmp/xemele-integrate-m1-input/tests/Contracts/Fixtures/M1/Dom.golden.txt
+Matched 199 compiled members
+exit=0
+$ dotnet build docs/reports/M1-contracts/Projects/Protocol/Protocol.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+Build succeeded.
+exit=0
+$ dotnet /private/tmp/xemele-integrate-m1-input/docs/reports/M1-contracts/Projects/Protocol/bin/Release/net10.0/M1Protocol.dll
+Passed 38 contract-model assertions; no runtime parsing/decoding/serialization claim.
+exit=0
+$ python3 -B tools/ApiBaseline/discover.py
+exit=0
+$ python3 -B tools/ApiBaseline/compare.py --report /private/tmp/xemele-integrate-m1-input/docs/reports/M1-input/runtime-api.json
+exit=0
+$ python3 -B -m unittest discover -s tests/Xemele.TestUtilities/Build -p test_*.py -v
+Ran 16 tests in 0.111s
+exit=0
+$ python3 -B tests/Xemele.TestUtilities/Corpora/verify_bootstrap.py
+exit=0
+$ dotnet run --project samples/M1-input/Sample.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+UTF8 BOM: 7 bytes, 4 raw UTF16 units, mappings 3/4/5/6; declaration reconciled.
+exit=0
+$ dotnet pack src/Xemele/Xemele.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false --no-build --no-restore -o artifacts/M1-input/packages
+exit=0
+$ dotnet run --project /var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-input-package-8bx_299k/Consumer.csproj -c Release --disable-build-servers -p:UseSharedCompilation=false -p:RestoreSources=/private/tmp/xemele-integrate-m1-input/artifacts/M1-input/packages -p:RestorePackagesPath=/var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-input-package-8bx_299k/packages
+UTF8 BOM: 7 bytes, 4 raw UTF16 units, mappings 3/4/5/6; declaration reconciled.
+exit=0
+$ dotnet build docs/reports/M1-input/Xemele.InputBenchmarks.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+Build succeeded.
+exit=0
+$ dotnet run --project docs/reports/M1-input/Xemele.InputBenchmarks.csproj -c Release --no-build -- --contract /private/tmp/xemele-integrate-m1-input/docs/reports/M1-contracts/Projects/Input/bin/Release/net10.0/M1Input.dll
+Exact internal compiled surface: 41 rows match approved M1 Input model.
+exit=0
+$ dotnet run --project docs/reports/M1-input/Xemele.InputBenchmarks.csproj -c Release --no-build -- --allocation
+Cold setup bytes: 2808
+Warm setup bytes/op: 816
+Informational retained heap-minus-fragmentation bytes/op (reference array excluded): 648
+exit=0
+$ python3 tools/planning/tasks.py validate
+Validated 101 tasks: schema, evidence, acyclic dependencies, additive milestones, and ordered ownership.
+exit=0
+$ git diff --check
+exit=0
