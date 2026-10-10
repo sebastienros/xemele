@@ -14,7 +14,7 @@ internal sealed class XmlResolutionSession : IDisposable, IAsyncDisposable
 {
     private readonly XmlResourceResolver? resolver;
     private readonly OperationBudget budget;
-    private readonly CancellationToken cancellation;
+    private CancellationToken cancellation;
     private readonly HashSet<string> active = new(StringComparer.Ordinal);
     private readonly HashSet<XmlResourceHandle> handles = new();
     private bool disposed, busy, faulted, draining;
@@ -28,6 +28,20 @@ internal sealed class XmlResolutionSession : IDisposable, IAsyncDisposable
         ArgumentNullException.ThrowIfNull(budget);
         this.resolver = resolver; this.budget = budget; this.cancellation = cancellation;
         CheckCancellation();
+    }
+
+    // A paused owner binds its next call's exact token before resource work.
+    // The independently constructed budget retains its own cancellation token.
+    internal void BindCancellationToken(CancellationToken token)
+    {
+        Enter();
+        try
+        {
+            cancellation = token;
+            CheckCancellation();
+        }
+        catch { FaultAndDrain(); throw; }
+        finally { busy = false; }
     }
 
     internal static ResourceRequestResult CreateRequest(string systemId, string? publicId, Uri? referrer,

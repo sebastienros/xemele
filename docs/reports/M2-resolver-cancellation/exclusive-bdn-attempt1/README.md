@@ -1,0 +1,1 @@
+Original raw Markdown is preserved losslessly in the .md.gz file and in the ignored BDN artifact directory. Its SHA256 is 842f2142a2f22db9b7c94febd32fe6954ac819061de176c09308f141645fe068. The plain .md is a display copy with trailing whitespace removed; CSV and compressed raw log retain original bytes. No runtime, benchmark or measurements changed.
