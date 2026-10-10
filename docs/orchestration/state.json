@@ -17,8 +17,8 @@
       "branch": "codex/m2-dtd-framing",
       "base_revision": "1a77b3598ed6084b17a69ca562d160f0d64a6be5",
       "claim_revision": "7034b2769307fbab70ea524ea2a16f5defa8e7d6",
-      "setup_status": "renewed-dispatched",
-      "wait_cursor": "b324cc2e-d523-426b-a8a0-69c58df158d5:20",
+      "setup_status": "active-discovery-correction",
+      "wait_cursor": "b324cc2e-d523-426b-a8a0-69c58df158d5:34",
       "parked_ack": "Boundedcheckpoint cea326: MTP2040passed/API222; direct1490 failedunchangedPI712B afterprior1944B. Noheavychildren; committinghonesthandoff for narrowrepairdependency.",
       "review_revision": "46104cecdce70170aea050612d13a77f1467251a",
       "preserved_draft_revision": "cea326c7ed59ac53a832af2f8cc4e528a118d89a",
@@ -41,7 +41,7 @@
       "branch": "codex/m2-encoding",
       "base_revision": "1a77b3598ed6084b17a69ca562d160f0d64a6be5",
       "claim_revision": "7034b2769307fbab70ea524ea2a16f5defa8e7d6",
-      "setup_status": "renewed-dispatched",
+      "setup_status": "implemented-awaiting-integration",
       "agent_name": "/root/m2_encoding",
       "setup_note": "Encoding create_thread client neverregistered despite repeated listings; clean detached d13f worktree exists atclaim. Assignedbranch+sole boundedagent writer under promptfallback. Pendingchat initialinstruction read-only/wait; noimplementationbrief sent to it. Reconcile/archive iflate registration. Native Codex UI inspection unavailable bytoolpolicy; purposebuilt listings retained.",
       "review_revision": "3595b19afbd620c147f5db68fd4e8196fab1b531",
@@ -57,7 +57,10 @@
           "claim_revision": "2e3d6012e664baf7bf5b3f3085bcb04de7dfc02e",
           "reason": "Suspended for now verified PI and Streaming isolation prerequisites; originalsource/evidence preserved."
         }
-      ]
+      ],
+      "worker_merge_revision": "3e61b0544ec29bdf60e88bb133210c339391e34e",
+      "handoff_revision": "4c48d3ff34c0b5edf0f73ceb68b3bad79488961b",
+      "parked_ack": "Fresh full checks passed; clean metadata/source ownership relinquished, no heavy work or further writes."
     },
     {
       "task_id": "M2-resolver",
@@ -68,8 +71,8 @@
       "branch": "codex/m2-resolver",
       "base_revision": "1a77b3598ed6084b17a69ca562d160f0d64a6be5",
       "claim_revision": "7034b2769307fbab70ea524ea2a16f5defa8e7d6",
-      "setup_status": "renewed-dispatched",
-      "wait_cursor": "7547a146-162b-4afd-85fb-d232bcfb40a6:13",
+      "setup_status": "active-checks",
+      "wait_cursor": "7547a146-162b-4afd-85fb-d232bcfb40a6:34",
       "parked_ack": "Full841/API251/provenance/package/planningpassed cbaec, noheavychildren. Lightnestedhandlecleanup correctionpending.",
       "review_revision": "e7cc0b5fd6480c4395e6dd861c5e28ed97815f2d",
       "review": "Independent sourceapproval e7cc resolvesbothcleanupfindings; newfocused43/fullchecksawaitactualexecution.",
@@ -85,13 +88,14 @@
           "claim_revision": "2e3d6012e664baf7bf5b3f3085bcb04de7dfc02e",
           "reason": "Suspended for now verified PI and Streaming isolation prerequisites; originalsource/evidence preserved."
         }
-      ]
+      ],
+      "worker_merge_revision": "42f1f452df51e5ad713661fb3a749c612a847c0d"
     }
   ],
   "integration_queue": [
     {
       "task_id": "M2-encoding",
-      "status": "failed-awaiting-PI-prerequisite",
+      "status": "renewed-implemented-awaiting-serialized-integration",
       "worktree_path": "/private/tmp/xemele-integrate-m2-encoding",
       "branch": "codex/integrate-m2-encoding",
       "tested_revision": "cd753170601936520d1d8efadb949852bacd083f",
@@ -887,7 +891,12 @@
       "integration_worktree": "/private/tmp/xemele-integrate-m2-pi-allocation-probe",
       "integration_branch": "codex/integrate-m2-pi-allocation-probe",
       "review": "Independent source approvalf3e; root fresh jointall17checksPass and actual raw PI child/XML/exit/provenance verified; historicalcausesunresolved.",
-      "wait_cursor": "24af4cad-8f5d-420e-9f2a-dc8e2aec9535:16"
+      "wait_cursor": "24af4cad-8f5d-420e-9f2a-dc8e2aec9535:16",
+      "cleanup": {
+        "chat_archived": true,
+        "worktree": "removed",
+        "record": "docs/orchestration/cleanup-M2-pi-allocation-probe.json"
+      }
     }
   ],
   "benchmark_policy": "Resolver completed8cases/all8child0/24actual, warmread0B/setup1416B/ordinarypriorityArm64 provisional e7cc. Encoding completed13/39 a1d. Allprocessesstopped; noactivehold.",
@@ -974,7 +983,8 @@
     "docs/orchestration/cleanup-M1-corpus.json",
     "docs/orchestration/cleanup-M1-gate.json",
     "docs/orchestration/cleanup-M2-contracts.json",
-    "docs/orchestration/cleanup-M2-streaming-allocation-probe.json"
+    "docs/orchestration/cleanup-M2-streaming-allocation-probe.json",
+    "docs/orchestration/cleanup-M2-pi-allocation-probe.json"
   ],
   "preserved_reference_sources": [
     {
