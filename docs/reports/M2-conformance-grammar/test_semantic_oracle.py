@@ -80,6 +80,15 @@ class AuthoredOracleTests(unittest.TestCase):
         self.assertEqual([{'name': 'missing', 'lexicalReference': '&missing;', 'parentNamespace': '',
                            'parentName': 'r', 'sourceUri': BASE, 'sequence': 0}], model.unresolved)
 
+    def test_unused_incomplete_default_is_a_symbolic_declaration(self):
+        model = self.expect("<!DOCTYPE r SYSTEM 'd'><r a='explicit'/>", [start(attributes=[attribute('explicit')]), end()],
+                            {'https://offline.invalid/d': b"<!ATTLIST r a NMTOKENS '  before &unknown; after&#9;'>"})
+        self.assertEqual([{'elementName': 'r', 'attributeName': 'a', 'lexicalValue': '  before &unknown; after&#9;',
+                           'isTokenized': True, 'isExternal': True, 'sequence': 0,
+                           'parts': [{'kind': 'known', 'text': '  before '},
+                                     {'kind': 'unknown', 'name': 'unknown', 'lexical': '&unknown;'},
+                                     {'kind': 'known', 'text': ' after\t'}]}], model.incomplete_defaults)
+
     def test_unsupported_or_ungranted_model_is_a_preparation_failure(self):
         with self.assertRaisesRegex(ValueError, 'ungranted'):
             Expected(b"<!DOCTYPE r SYSTEM 'missing'><r/>", BASE, {})

@@ -67,6 +67,7 @@ class Expected:
         self.declarations = []
         self.events = []
         self.unresolved = []
+        self.incomplete_defaults = []
         self.scopes = [{'xml': XML, '': ''}]
         self.names = []
         self.opens = []
@@ -210,32 +211,60 @@ class Expected:
         elif kind not in ('ELEMENT', 'NOTATION'):
             raise ValueError('unknown oracle declaration: ' + kind)
 
-    def attribute(self, literal, base, entity=False):
+    def attribute_parts(self, literal, base):
         # XML 3.3.3: normalize literal S, preserve numeric-reference characters;
         # reparse general entity replacement, whose numeric refs were processed
         # at declaration time, so their whitespace is now replacement literal S.
         result = []
+        known = []
+        def unknown(name):
+            if known:
+                result.append({'kind': 'known', 'text': ''.join(known)})
+                known.clear()
+            result.append({'kind': 'unknown', 'name': name, 'lexical': '&' + name + ';'})
         i = 0
         while i < len(literal):
             if literal[i] == '&':
                 end = literal.index(';', i)
                 name = literal[i + 1:end]
                 if name.startswith('#'):
-                    result.append(characters(literal[i:end + 1]))
+                    known.append(characters(literal[i:end + 1]))
                 elif name in PREDEFINED:
-                    result.append(PREDEFINED[name])
+                    known.append(PREDEFINED[name])
                 elif name in self.entities:
                     value, system, uri, _ = self.entities[name]
                     if system is not None:
                         raise ValueError('external oracle attribute entity')
-                    result.append(self.attribute(value, uri, True))
+                    for part in self.attribute_parts(value, uri):
+                        if part['kind'] == 'known':
+                            known.append(part['text'])
+                        else:
+                            unknown(part['name'])
                 else:
-                    raise ValueError('unknown oracle attribute requires symbolic model: ' + name)
+                    unknown(name)
                 i = end + 1
             else:
-                result.append(' ' if literal[i] in S else literal[i])
+                known.append(' ' if literal[i] in S else literal[i])
                 i += 1
-        return ''.join(result)
+        if known:
+            result.append({'kind': 'known', 'text': ''.join(known)})
+        return result
+
+    def attribute(self, literal, base):
+        parts = self.attribute_parts(literal, base)
+        if any(p['kind'] == 'unknown' for p in parts):
+            raise ValueError('applied unknown oracle attribute requires symbolic model')
+        return ''.join(p['text'] for p in parts)
+
+    def incomplete_default_models(self):
+        for (element, name), (type_, literal, base, external) in self.attributes.items():
+            if literal is None:
+                continue
+            parts = self.attribute_parts(literal, base)
+            if any(p['kind'] == 'unknown' for p in parts):
+                self.incomplete_defaults.append({'elementName': element, 'attributeName': name, 'lexicalValue': literal,
+                                                 'isTokenized': type_ != 'CDATA', 'isExternal': external,
+                                                 'sequence': len(self.incomplete_defaults), 'parts': parts})
 
     def text(self, value):
         if not value or not self.names:
@@ -275,6 +304,7 @@ class Expected:
                 if len(tokens) > 1:
                     text, uri = self.external(tokens[2 if tokens[1] == 'SYSTEM' else 3][1:-1], base)
                     self.dtd(text, uri, True)
+                self.incomplete_default_models()
                 i = end
             elif value.startswith('<![CDATA[', i):
                 end = value.index(']]>', i + 9)

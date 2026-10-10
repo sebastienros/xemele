@@ -60,4 +60,21 @@ public sealed class EffectiveGrammarTests
         Assert.Equal("before", reference.PreviousSibling.Value); Assert.Equal(0, reference.Sequence);
         Assert.Throws<InvalidOperationException>(() => document.RootElement.GetTextContent());
     }
+
+    [Fact]
+    public void IncompleteDefaultsKeepSymbolicStageOnePartsAndApplicationIdentity()
+    {
+        var document = XmlDocument.Parse("<!DOCTYPE r [<!ENTITY % p ''>%p;<!ATTLIST r a NMTOKENS '  before &unknown; after&#9;'>]><r/>",
+            new() { DtdProcessing = XmlDtdProcessing.Parse }, TestContext.Current.CancellationToken);
+        var declaration = Assert.Single(document.IncompleteAttributeDefaults);
+        var applied = Assert.Single(document.IncompleteAttributeValues);
+        Assert.Same(declaration, applied.Default); Assert.Same(declaration.Parts, applied.Parts);
+        Assert.Equal("  before &unknown; after&#9;", declaration.LexicalValue);
+        Assert.True(declaration.IsTokenized); Assert.False(declaration.IsExternal);
+        Assert.Equal("  before ", Assert.IsType<XmlKnownAttributeText>(declaration.Parts[0]).Text);
+        var unknown = Assert.IsType<XmlUnknownAttributeReference>(declaration.Parts[1]);
+        Assert.Equal("unknown", unknown.Name); Assert.Equal("&unknown;", unknown.LexicalReference);
+        Assert.Equal(" after\t", Assert.IsType<XmlKnownAttributeText>(declaration.Parts[2]).Text);
+        Assert.Throws<InvalidOperationException>(() => document.RootElement.GetAttribute("a"));
+    }
 }

@@ -125,9 +125,11 @@ async def execute(report):
                 unresolved = details['unresolved']
                 assert all(u['anchorValid'] and u['childBoundary'] >= 0 for u in unresolved)
                 assert [{k: u[k] for k in ('name', 'lexicalReference', 'parentNamespace', 'parentName', 'sourceUri', 'sequence')} for u in unresolved] == expected.unresolved
-                # Original accepted corpus has no incomplete attribute member;
-                # projection still explicitly represents their symbolic sidecars.
-                assert not details['incompleteDefaults'] and not details['incompleteValues']
+                assert details['incompleteDefaults'] == expected.incomplete_defaults, case['id'] + ' symbolic default gap'
+                # Original accepted cases override or never apply these defaults.
+                # Applied symbolic members remain explicit in this projection.
+                assert not details['incompleteValues'], case['id'] + ' applied symbolic member needs an authored expectation'
+                counts['symbolic-default-declarations'] += len(expected.incomplete_defaults)
                 assert details['resourceUris'] == expected.opens, case['id'] + ' resource origin mismatch'
                 assert details['disposals'] == p['opens'] == len(expected.opens)
                 counts['independent:accepted-model'] += 1
