@@ -11,9 +11,39 @@ internal static class Consumer
         assertions++;
     }
     internal static bool HasIdentity(XmlUnresolvedReferenceView view) =>
-        !view.Name.IsEmpty && view.LexicalReference.Length == view.Name.Length + 2 &&
+        IsNCName(view.Name) && view.LexicalReference.Length == view.Name.Length + 2 &&
         view.LexicalReference[0] == '&' && view.LexicalReference[^1] == ';' &&
         view.LexicalReference[1..^1].SequenceEqual(view.Name);
+
+    private static bool IsNCName(ReadOnlySpan<char> name)
+    {
+        if (name.IsEmpty) return false;
+        bool first = true;
+        while (!name.IsEmpty)
+        {
+            if (System.Text.Rune.DecodeFromUtf16(name, out var rune, out int consumed) !=
+                System.Buffers.OperationStatus.Done) return false;
+            int c = rune.Value;
+            bool start = c is '_' or >= 'A' and <= 'Z' or >= 'a' and <= 'z' or
+                >= 0xc0 and <= 0xd6 or >= 0xd8 and <= 0xf6 or >= 0xf8 and <= 0x2ff or
+                >= 0x370 and <= 0x37d or >= 0x37f and <= 0x1fff or >= 0x200c and <= 0x200d or
+                >= 0x2070 and <= 0x218f or >= 0x2c00 and <= 0x2fef or >= 0x3001 and <= 0xd7ff or
+                >= 0xf900 and <= 0xfdcf or >= 0xfdf0 and <= 0xfffd or >= 0x10000 and <= 0xeffff;
+            bool continuation = start || c is '-' or '.' or 0xb7 or >= '0' and <= '9' or
+                >= 0x300 and <= 0x36f or >= 0x203f and <= 0x2040;
+            if (first ? !start : !continuation) return false;
+            first = false; name = name[consumed..];
+        }
+        return true;
+    }
+
+    // A projection preflight model, not calls to the product tree/serializer.
+    private static void Project(IReadOnlyList<XmlUnresolvedReference> references, Action sideEffect)
+    {
+        if (references.Count != 0)
+            throw new InvalidOperationException("Document contains unresolved entity references.");
+        sideEffect();
+    }
 
     public static int Main(string[] args)
     {
@@ -37,6 +67,10 @@ internal static class Consumer
             Check(!HasIdentity(new("ent2", invalid, at)), "mismatched lexical negative control");
         Check(!HasIdentity(new("", "&;", at)), "empty identity negative");
         Check(HasIdentity(new("\U00010000name", "&\U00010000name;", at)), "supplementary identity retained literally");
+        foreach (string invalidName in new[] { "p:name", ":name", "name:", "a::b", "9name", "a b", "a&b", "\ud800", "\udc00", "\U000f0000" })
+            Check(!HasIdentity(new(invalidName, "&" + invalidName + ";", at)), "NCName/profile malformed negative control");
+        foreach (string validName in new[] { "_", "n-1.\u00b7", "n\u0300", "\u0370", "\U000effff" })
+            Check(HasIdentity(new(validName, "&" + validName + ";", at)), "NCName profile valid boundary");
 
         IXmlEventSink old = new OldSink();
         Check(old is not IXmlUnresolvedReferenceSink, "old consumer requires no new method");
@@ -62,6 +96,17 @@ internal static class Consumer
         Check(paused.Occurrences.Select(r => r.ChildBoundary).SequenceEqual(new[] { 1, 1 }), "adjacent references share child gap");
         Check(paused.Occurrences.Select(r => r.Sequence).SequenceEqual(new[] { 0, 1 }), "global identity sequence");
         Check(paused.CharacterContent == "ab", "no invented replacement characters");
+        foreach (string operation in new[] { "SerializeString", "SerializeStream", "GetTextContent", "CloneDeep", "CloneShallow", "ImportDeep", "ImportShallow" })
+        {
+            int writes = 0;
+            bool refused = false;
+            try { Project(paused.Occurrences, () => writes++); }
+            catch (InvalidOperationException error)
+            { refused = error.Message == "Document contains unresolved entity references."; }
+            Check(refused && writes == 0, operation + " refuses before output or mutation");
+            Project(Array.Empty<XmlUnresolvedReference>(), () => writes++);
+            Check(writes == 1, operation + " clean-source behavior retained");
+        }
         var cancelled = new RetainingSink { PauseOnReference = true };
         var cancellationScript = new EventScript(cancelled, at);
         Check(!cancellationScript.Drain(default), "pause before cancellation");

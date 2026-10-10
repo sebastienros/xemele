@@ -10,6 +10,9 @@ Normative basis: [XML 1.0 Fifth Edition 4.1](https://www.w3.org/TR/2008/REC-xml-
 [3.1](https://www.w3.org/TR/2008/REC-xml-20081126/#sec-starttags),
 [4.4.3](https://www.w3.org/TR/2008/REC-xml-20081126/#included-if-validating),
 and [5.1](https://www.w3.org/TR/2008/REC-xml-20081126/#proc-types).
+The frozen namespace profile also applies
+[Namespaces 1.0 Third Edition section 7](https://www.w3.org/TR/2009/REC-xml-names-20091208/#Conformance):
+entity names are NCNames, excluding every colon even in a VC-only context.
 
 For references outside an external subset or parameter entity, EntityDeclared
 is a WFC when there is no DTD, only an internal subset without PE references,
@@ -75,7 +78,7 @@ namespace view ABI exactly unchanged. Add the internal optional interface
 `bool UnresolvedReference(XmlUnresolvedReferenceView reference)`.
 The internal `readonly ref struct XmlUnresolvedReferenceView` has get-only
 `ReadOnlySpan<char> Name`, `ReadOnlySpan<char> LexicalReference`, and
-`XmlLocation Location`. Name is exact ordinal XML Name (not QName resolution);
+`XmlLocation Location`. Name is exact ordinal NCName (no colon/QName resolution);
 LexicalReference is the complete exact `&Name;`, and Location identifies its `&`.
 Location uses the active source's URI/scalar line/column/original byte mapping;
 character sources have null byte offset. No guessed enclosing-document location
@@ -127,15 +130,16 @@ occurrence order with checked Int32 capacity. Consecutive occurrences may share
 one boundary; Sequence distinguishes them. Text before/after a reference must
 remain distinct children so no gap is lost to coalescing. Parent and PreviousSibling
 are stable document handles; location and boundary describe the **original parse**.
-Mutation, clone and import do not rewrite or copy this provenance. Detached handles
-remain valid within their owner; new/imported documents begin with empty provenance.
+Mutation does not rewrite provenance. Detached handles remain valid within their
+owner; newly constructed documents begin with empty provenance. Copy and output
+operations follow the explicit refusal policy below, so they cannot discard gaps.
 This explicitly retains owners just as existing XmlNode handles do.
 
 For `<foo>a&ent2;b</foo>`, children are Text(a), Text(b), occurrence boundary=1,
-previous=Text(a), parent=foo. TextContent returns `ab`, the known character content,
-and the document list exposes the gap rather than asserting a replacement was
-empty. Consumers requiring complete expanded content must inspect the list.
-No serialization/roundtrip promise is introduced for this parse provenance.
+previous=Text(a), parent=foo. The known text nodes retain values `a` and `b`; no
+reference is represented as empty replacement text. Aggregate text projection
+and output/copy operations follow the refusal policy below. Consumers can inspect
+the list and individual known nodes without a fabricated expansion.
 Persisted names participate in InternedNames; reference tokens in TokenCharacters;
 original primary scalars in DocumentCharacters; no unknown replacement scalars
 are charged to ExpandedCharacters. Occurrence capacity is checked before copying;
@@ -147,6 +151,33 @@ with empty diagnostics. Factories.Finish stays unchanged: its current any-diagno
 failure remains correct because no warning is used as provenance. ByteDomAdapter
 also needs no warning transport or new successful diagnostic channel. Existing
 fatal/recovery behavior and XmlParseResult invariants remain untouched.
+
+## Lossy-operation refusal policy
+
+One conservative, owner-wide rule applies whenever the source owner document's
+UnresolvedReferences.Count is nonzero: XmlSerializer.Serialize (string or Stream),
+XmlDocument.ToXmlString/Save, XmlNode.GetTextContent, XmlNode.Clone (deep true or
+false, including DocumentNode), and XmlDocument.ImportNode refuse with
+InvalidOperationException, message `Document contains unresolved entity references.`
+The refusal happens after existing argument validation/cancellation at entry and
+before output/BOM writes, destination mutation, copy allocations or traversal.
+Import checks the **source owner**, not the destination. A clean source can still
+be imported into an unresolved destination, whose provenance remains intact and
+whose later output remains guarded. Cloning even an unrelated/detached child of
+an unresolved owner refuses; this deliberate conservative rule avoids uncertain
+scope inference after mutation. Removing/replacing text or elements never clears
+parse provenance or implicitly enables output. No lossy opt-in is introduced.
+
+Fully represented source documents retain their existing serialization, shallow/
+deep clone/import and GetTextContent behavior. Inspecting known leaf Value and
+the provenance list is allowed; those explicitly expose known data plus gaps,
+not complete expanded content. No successful serializer may emit
+`<foo>ab</foo>` from the unresolved example. Clone/import must not produce an
+apparently complete tree by erasing its provenance. The policy needs no public
+signature, node-kind, options or baseline changes beyond the proposed provenance.
+It is an implementation requirement in this milestone, not a deferred serializer
+feature. Scripted contract controls prove the refusal rule only; runtime guards
+must be tested at their true output/copy entry points by the subsequent owner.
 
 ## Ordered implementation request
 
@@ -179,6 +210,12 @@ Assign runtime tests `tests/Xemele.Tests/Xml/UndeclaredReferences/`, benchmark
 sources `benchmarks/Xemele.Benchmarks/UndeclaredReferences/` and approved additive
 baseline `docs/api/M2-undeclared-content.txt` only after exact fixture review.
 These are ownership requests, not edits made by this contract task.
+Also assign `src/Xemele/Serialization/Xml/XmlSerializer.cs` (Prepare before Output),
+`src/Xemele/Tree/Document.cs` (TextContent, Clone, ImportNode/Copy preflight), and
+tests for forwarding `src/Xemele/Serialization/Document/Save.cs` and
+`src/Xemele/Tree/Node.cs` APIs. The forwarding files need no signature edit;
+implementation can centralize their refusal in current callees. Add scoped
+stream-no-write and destination-no-mutation tests to the ordered runtime task.
 
 Existing `src/Xemele/Parsing/Events/Views.cs`, `Parsing/Dom/Factories.cs`,
 `Parsing/Dom/ByteDomAdapter.cs`, public node enum/handles and existing API fragments
