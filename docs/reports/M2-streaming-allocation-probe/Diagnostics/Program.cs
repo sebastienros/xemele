@@ -22,8 +22,9 @@ internal static class Program
     }
     private static void Main(string[] args)
     {
-        Require(args.Length == 1 && (args[0] == "original" || args[0] == "equivalent"));
-        bool equivalent = args[0] == "equivalent";
+        Require(args.Length == 1 && (args[0] == "original" || args[0] == "equivalent" || args[0] == "sampled"));
+        bool sampled = args[0] == "sampled";
+        bool equivalent = args[0] != "original";
         CancellationToken cancellation = default; // synchronous independent process, uncancelled like the test
         long before = GC.GetAllocatedBytesForCurrentThread();
         long counterOnly = GC.GetAllocatedBytesForCurrentThread() - before;
@@ -45,15 +46,20 @@ internal static class Program
         Require(root.Step == ScanStep.NeedInput && root.Consumed == 3 && root.Diagnostic is null);
         long calls = sink.Calls, units = sink.Units;
         before = GC.GetAllocatedBytesForCurrentThread();
+        StreamingAllocationSample[] warmSamples = sampled ? new StreamingAllocationSample[100] : [];
+        StreamingAllocationSample[] measuredSamples = sampled ? new StreamingAllocationSample[10000] : [];
+        Func<(long Units, long Calls)>? progress = sampled ? () => (sink.Units, sink.Calls) : null;
+        long samplingSetup = GC.GetAllocatedBytesForCurrentThread() - before;
+        before = GC.GetAllocatedBytesForCurrentThread();
         long? warmPrimitive = null;
-        if (equivalent) warmPrimitive = StreamingAllocationProbe.AppendChecked(core, Chunk, sink, cancellation, 100);
+        if (equivalent) warmPrimitive = StreamingAllocationProbe.AppendChecked(core, Chunk, sink, cancellation, 100, warmSamples, progress);
         else OriginalAppendChecked(core, Chunk, sink, cancellation, 100);
         long warmSurrounding = GC.GetAllocatedBytesForCurrentThread() - before;
         long warmCalls = sink.Calls - calls, warmUnits = sink.Units - units;
         calls = sink.Calls; units = sink.Units;
         before = GC.GetAllocatedBytesForCurrentThread();
         long? primitive = null;
-        if (equivalent) primitive = StreamingAllocationProbe.AppendChecked(core, Chunk, sink, cancellation, 10000);
+        if (equivalent) primitive = StreamingAllocationProbe.AppendChecked(core, Chunk, sink, cancellation, 10000, measuredSamples, progress);
         else OriginalAppendChecked(core, Chunk, sink, cancellation, 10000);
         long surrounding = GC.GetAllocatedBytesForCurrentThread() - before;
         long measured = equivalent ? primitive!.Value : surrounding;
@@ -63,9 +69,15 @@ internal static class Program
         long completionBytes = GC.GetAllocatedBytesForCurrentThread() - before;
         Require(warmCalls == 1199 && warmUnits == 500 && measuredUnits == 50000 && measuredCalls == 120000);
         Require(sink.Units == 50500 && completion.Step == ScanStep.Completed && completion.Consumed == 4 && completion.Diagnostic is null && sink.EndDocuments == 1);
+        if (sampled)
+        {
+            string path = Environment.GetEnvironmentVariable("XEMELE_STREAMING_ALLOCATION_SAMPLE_OUTPUT")
+                ?? throw new ArgumentException("Sample output path is required.");
+            File.WriteAllText(path, JsonSerializer.Serialize(new { warmSamples, measuredSamples }));
+        }
         Console.WriteLine(JsonSerializer.Serialize(new {
             mode = args[0], runtime = Environment.Version.ToString(), warmIterations = 100, measuredIterations = 10000,
-            counterOnly, coldSetup, coldRoot, firstChunk, setup, warmPrimitive, warmSurrounding,
+            samplingSetup, counterOnly, coldSetup, coldRoot, firstChunk, setup, warmPrimitive, warmSurrounding,
             primitive, surrounding, measured, completionBytes, warmCalls, warmUnits, measuredCalls, measuredUnits,
             totalUnits = sink.Units, totalCalls = sink.Calls, endDocuments = sink.EndDocuments, completed = true,
             scope = "Synchronous checked borrowed Append; setup/root/first-use/caller/output reported separately; no timing or retained-memory estimate",

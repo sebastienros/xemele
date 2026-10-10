@@ -4,7 +4,7 @@
   "milestone": "M2",
   "title": "Diagnose streaming allocation boundary in cumulative runner",
   "kind": "infrastructure",
-  "status": "implemented",
+  "status": "in_progress",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M2-streaming-allocation-probe",
   "branch": "codex/m2-streaming-allocation-probe",
   "base_revision": "31c323aac68c71a14706cc059d185f2965a869ec",
@@ -31,7 +31,7 @@
     {
       "id": "M2-streaming-allocation-probe-A1",
       "description": "Preserve exact unchanged Streaming224B cumulative failure at PIrepair9286cd6 and separate801directpass. Diagnose setup/first-use/primitive and surrounding measurement/framework scopes with bounded controlled original-versus-equivalent experiment before choosing correction; do not infer historical cause without evidence. Retain existing production unchanged, exact0B, original100warm/10000measured, same checked Append workload/cancellation/sink/progress/completion, default JIT/GC/parallelism. ExistingStreamingTests.cs edits only probe/helper/imports; no other tests/thresholds/runtime changes. If genuine steady primitive allocation remains, request owning runtime repair.",
-      "status": "passed",
+      "status": "pending",
       "evidence": [
         "known-source-streaming-and-cumulative",
         "historical-preservation-and-control"
@@ -40,9 +40,10 @@
     {
       "id": "M2-streaming-allocation-probe-A2",
       "description": "Known-source focused owned streaming correctness/allocation and independent bounded diagnostics pass with meaningful units/callback/completion and real0B primitive evidence. Execute cumulative MTP and separate runtime/API/discovery/reference/planning/ownership checks and preserve every outcome, including unrelated original PI failure if any; child must not conceal failures or claim complete combined verification. Original parent M2-pi-allocation-probe A2 retains mandatory allPass integrated combination before any consumer verification. No timing benchmarks or blind retries.",
-      "status": "passed",
+      "status": "failed",
       "evidence": [
-        "known-source-streaming-and-cumulative"
+        "known-source-streaming-and-cumulative",
+        "failed-independent-integration"
       ]
     }
   ],
@@ -71,19 +72,30 @@
       "result": "passed",
       "summary": "All five preserved report files byte-identical; unchanged historical Streaming224B cumulative failure and separate801directpass retained. Instrumented f71cee21791e399ccf00aa7033f33f246ec6223a cumulative801pass/directfocused inner0B outer0B; committed95006d164363656602b01185ca383b950d4e620a independent original and equivalent both0B. Preliminary uncommitted diagnostic prototype logs explicitly excluded as known-source criterion evidence. No historical framework/JIT cause inferred.",
       "artifact": "docs/reports/M2-streaming-allocation-probe/source-final-attempt1/historical-preservation.json"
+    },
+    {
+      "id": "failed-independent-integration",
+      "kind": "check",
+      "revision": "f573a6c7ee8cb9ca122d2f3e260617ddd162800d",
+      "command": "python3 -B docs/reports/M2-streaming-allocation-probe/verify.py --report-prefix integration-f573a6c-attempt1 --expected-branch codex/integrate-m2-streaming-allocation-probe --audit-base b6ec87e --runtime-count 247 --conformance-count 255 --differential-count 299 --api-count 222 --fixture-count 3388 --planning-count 14 --task-count 114",
+      "result": "failed",
+      "summary": "Coordinator independent integration: ownedStreaming failed standalone direct247 at exactly3448B inside captured helper. Focused1, cumulative801, independentoriginal/equivalent0B, conformance255, differential299, API222, discovery3388, reference242, planning14/114 and ownership passed. This defeats complete correction; task reopened in_progress, unverified. Bounded per-Append sampling diagnostic pending; no cause inferred.",
+      "artifact": "docs/reports/M2-streaming-allocation-probe/history/integration-f573a6c-attempt1/summary.json"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Explicit checked streaming primitive measurement boundary; no production/shared configuration/PI edits. Exact0B, original100warm/10000measured/defaultsettings preserved. No measured steady production allocation; historical224B causality unresolved.",
+    "summary": "Reopened: captured helper boundary failed independent integrated direct runtime suite at3448B. Branch allpass preserved but cannot establish complete fix.",
     "checks": [
       "Known source a53a15482ef6a540d66f2dbc294d2d86c84b3eba: focused1pass; cumulativeMTP801pass; direct247/255/299allpass; independent original/equivalent0B; units/callback/completion checks pass.",
       "API222; discovery3388fixtures; fresh pinnedBCL242records fullsourcehash/SHA256; planning14/114; ownership/sourcecommit/diff checks pass.",
-      "Five historicalrawreports byte-identical to PI source9286cd6-attempt1. Exploratory uncommittedprototype excluded from known-source evidence. No timing benchmarks run."
+      "Five historicalrawreports byte-identical to PI source9286cd6-attempt1. Exploratory uncommittedprototype excluded from known-source evidence. No timing benchmarks run.",
+      "Independent integrated f573a6c7ee8cb9ca122d2f3e260617ddd162800d: directStreaming3448B fails; all other listedchecks passed; rawreport copied byte-identical."
     ],
     "remaining": [
-      "Coordinator must independently review and integrate child, rerun bounded known-source checks with unique prefix/actualcounts, record integration_revision and verified status.",
-      "Original M2-pi-allocation-probe A2 still requires mandatory full jointallPass on integrated child+PI before any consumer verification. This child imports no unmergedPI source."
+      "Bounded per-Append allocation/callback progress diagnostic; report hypothesis/source before execution.",
+      "Historical224B and integrated3448B causes unresolved; no retryuntilpass, no productionedits or threshold/settings/warmbudget changes.",
+      "Coordinator must independently integrate and verify a supported fix; parent mandatory jointallPass remainsrequired."
     ],
     "requests": []
   }

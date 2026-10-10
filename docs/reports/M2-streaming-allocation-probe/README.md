@@ -77,3 +77,36 @@ A passing child run does not discharge the original PI parent's mandatory
 integrated combination criterion. That parent still requires full allPass
 verification after composition before encoding/resolver/framing consumers can
 be verified. Child status is `implemented` until independent integration checks.
+
+## Reopened after independent integration failure
+
+At integration `f573a6c7ee8cb9ca122d2f3e260617ddd162800d`, focused MTP1,
+cumulative MTP801, independent original/equivalent0B and API/reference/planning
+checks passed, but the standalone runtime247 suite failed this owned Streaming
+Fact with exactly3,448B returned from inside the helper. The other direct255/299
+suites passed. The byte-identical reports and SHA256 preservation record are
+under `history/integration-f573a6c-attempt1/`. Prior branch passes remain recorded,
+but this defeats a complete correction; the task is reopened and unverified.
+
+The next controlled diagnostic asks whether allocations occur within one Append
+(including its borrowed callbacks), after its progress checks, within the
+nonallocating progress observation, or between iterations. No cause is presumed.
+The actual helper accepts optional preallocated100/10000 value-type sample
+arrays and a precreated progress observer. Each sample stores zero-based
+iteration, Append/validation/observer/gap bytes, consumption/step, cumulative
+sink units/calls and thread ID. Both phases use the same checked Append call
+site. Returned total bytes are **never** adjusted/subtracted; exact0B still
+fails for any allocation. Samples are serialized only after measurement.
+
+The baseline has empty sample spans; the sampled test is enabled only by an
+owned output path in `XEMELE_STREAMING_ALLOCATION_SAMPLE_OUTPUT`. This is a
+logging choice, not a JIT/GC/parallelism override. Its arrays/delegate are
+allocated before warm-up and their setup is separated in the independent
+sampled diagnostic. Instrumentation may perturb runtime behavior, so a0B sampled
+run cannot erase3,448B or establish a fix. A nonzero Append scope alone cannot
+attribute an allocation to production rather than callbacks/runtime transitions;
+stack evidence would be needed for that attribution. dotnet-trace is available
+locally if a subsequent allocation observation warrants a bounded EventPipe
+experiment. No full-solution retry is planned: one baseline direct247 process,
+one sampled direct247 process and one independent sampled process will compare
+contexts, with every result retained. Source/hypothesis is sent before execution.

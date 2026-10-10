@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Text.Json;
 using static Xemele.Tests.Syntax.StreamingAllocationProbe;
 using System.Text;
 using System.Xml;
@@ -49,16 +50,27 @@ public sealed class StreamingTests
         using var core = new XmlParserCore(new() { Limits = new() { DocumentCharacters = null, TokenCharacters = null } });
         var sink = new CountingSink(); var cancellation = TestContext.Current.CancellationToken;
         const string chunk = "<c a='v' xmlns:p='u' p:a='w'/>α😀&amp;\r\n";
+        string? sampleOutput = Environment.GetEnvironmentVariable("XEMELE_STREAMING_ALLOCATION_SAMPLE_OUTPUT");
+        StreamingAllocationSample[] warmSamples = sampleOutput is null ? [] : new StreamingAllocationSample[100];
+        StreamingAllocationSample[] measuredSamples = sampleOutput is null ? [] : new StreamingAllocationSample[10000];
+        Func<(long Units, long Calls)>? progress = sampleOutput is null ? null : () => (sink.Units, sink.Calls);
         core.Append("<r>", [], false, sink, cancellation);
         // Both phases use the same checked Append call site. Capture both
         // counters there so test context, caller dispatch and Assert are outside
         // the synchronous borrowed primitive's exact-zero allocation scope.
         long warmCalls = sink.Calls, warmUnits = sink.Units;
-        long warmBytes = AppendChecked(core, chunk, sink, cancellation, 100);
+        long warmBytes = AppendChecked(core, chunk, sink, cancellation, 100, warmSamples, progress);
         Assert.Equal(1199, sink.Calls - warmCalls);
         Assert.Equal(500, sink.Units - warmUnits);
         long calls = sink.Calls, units = sink.Units;
-        long allocated = AppendChecked(core, chunk, sink, cancellation, 10000);
+        long surroundingBefore = GC.GetAllocatedBytesForCurrentThread();
+        long allocated = AppendChecked(core, chunk, sink, cancellation, 10000, measuredSamples, progress);
+        long surrounding = GC.GetAllocatedBytesForCurrentThread() - surroundingBefore;
+        // All formatting/serialization happens after both counters have closed.
+        if (sampleOutput is not null)
+            File.WriteAllText(sampleOutput, JsonSerializer.Serialize(new { warmSamples, measuredSamples }));
+        TestContext.Current.TestOutputHelper!.WriteLine(
+            $"primitive={allocated}; surrounding={surrounding}; measuredUnits={sink.Units - units}; measuredCalls={sink.Calls - calls}; sampled={sampleOutput is not null}");
         Assert.Equal(0, allocated);
         Assert.Equal(120000, sink.Calls - calls);
         Assert.Equal(50000, sink.Units - units);
