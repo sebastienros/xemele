@@ -54,19 +54,28 @@ public sealed class StreamingTests
         // Setup and first-use costs remain outside the promised steady-state scope.
         AppendChecked(core, chunk, sink, cancellation, 100);
         long before = GC.GetAllocatedBytesForCurrentThread();
-        AppendChecked(core, chunk, sink, cancellation, 10000);
-        Assert.Equal(0, GC.GetAllocatedBytesForCurrentThread() - before);
+        long primitive = AppendChecked(core, chunk, sink, cancellation, 10000);
+        long surrounding = GC.GetAllocatedBytesForCurrentThread() - before;
+        try { Assert.Equal(0, GC.GetAllocatedBytesForCurrentThread() - before); }
+        finally
+        {
+            TestContext.Current.TestOutputHelper!.WriteLine(
+                $"primitive={primitive}; surrounding={surrounding}; units={sink.Units}; calls={sink.Calls}");
+        }
         Assert.Equal(ScanStep.Completed, core.Append("</r>", [], true, sink, cancellation).Step);
     }
     [MethodImpl(MethodImplOptions.NoInlining)]
-    private static void AppendChecked(XmlParserCore core, string chunk, CountingSink sink,
+    private static long AppendChecked(XmlParserCore core, string chunk, CountingSink sink,
         CancellationToken cancellation, int iterations)
     {
+        long before = GC.GetAllocatedBytesForCurrentThread();
         for (int i = 0; i < iterations; i++)
         {
             var r = core.Append(chunk, [], false, sink, cancellation);
-            if (r.Step != ScanStep.NeedInput || r.Consumed != chunk.Length) throw new Exception("Warm grammar rejected.");
+            if (r.Step != ScanStep.NeedInput || r.Consumed != chunk.Length || r.Diagnostic is not null)
+                throw new Exception("Warm grammar rejected.");
         }
+        return GC.GetAllocatedBytesForCurrentThread() - before;
     }
     [Fact]
     public void LocationOverflowIsStructuredAndSourceScalarQuotaPrecedesNormalization()
