@@ -14,7 +14,7 @@ import xml.etree.ElementTree as ET
 
 ROOT = Path(__file__).resolve().parents[3]
 REPORT = ROOT / 'docs/reports/M2-dtd-framing'
-CLAIM = '2e3d6012e664baf7bf5b3f3085bcb04de7dfc02e'
+CLAIM = '7034b2769307fbab70ea524ea2a16f5defa8e7d6'
 FLAGS = ['-c', 'Release', '--disable-build-servers', '-m:1', '-p:UseSharedCompilation=false']
 
 
@@ -27,6 +27,7 @@ def main():
     parser.add_argument('--expected-conformance-tests', type=int, default=255)
     parser.add_argument('--expected-differential-tests', type=int, default=299)
     parser.add_argument('--expected-public-api', type=int, default=222)
+    parser.add_argument('--expected-fixtures', type=int, default=3388)
     args = parser.parse_args()
     if not re.fullmatch('[a-z0-9-]+', args.report_prefix): parser.error('invalid report prefix')
     report = REPORT / args.report_prefix
@@ -60,6 +61,9 @@ def main():
         if args.expected_branch: assert branch == args.expected_branch
         summary.update(branch=branch, auditBase=args.audit_base)
         assert json.loads((ROOT/'docs/tasks/M2-contracts.json').read_text())['status'] == 'verified'
+        prerequisite = json.loads((ROOT/'docs/tasks/M2-pi-allocation-probe.json').read_text())
+        assert prerequisite['status'] == 'verified'
+        run('git', 'merge-base', '--is-ancestor', prerequisite['integration_revision'], 'HEAD')
         assert run('dotnet', '--version').strip() == '10.0.400'
         summary['dotnet'] = str(dotnet)
         summary['dotnetSha256'] = hashlib.sha256(dotnet.read_bytes()).hexdigest()
@@ -90,6 +94,8 @@ def main():
         approved = run('dotnet', model/'bin/Release/net10.0/Model.dll', '--contract-inventory')
         assert inventory == approved, 'approved internal contract differs'
         summary['independentInternalContract'] = 'approved and implemented types/members/shared constructor match; no decoder/resolver/DOM/grammar sources'
+        summary['independentInventory'] = {'types': sum(not line.startswith('  ') for line in inventory.splitlines()),
+            'members': sum(line.startswith('  ') for line in inventory.splitlines())}
         run('dotnet', 'build', ROOT/'samples/M2-dtd-framing/Sample.csproj', *FLAGS)
         sample = ROOT/'samples/M2-dtd-framing/bin/Release/net10.0/Xemele.DtdFramingSample.dll'
         (report/'sample.txt').write_text(run('dotnet', sample))
@@ -109,13 +115,21 @@ def main():
         pinned = raw/'pinned-reference'/original.name
         env['XEMELE_BCL_RUNNER'] = str(pinned)
         runner_hash = hashlib.sha256(pinned.read_bytes()).hexdigest()
-        run('python3', '-B', 'docs/reports/M1-contracts/verify.py')
+        inherited = run('python3', '-B', 'docs/reports/M1-contracts/verify.py')
+        totals = re.findall(r'^\s*total:\s*(\d+)\s*$', inherited, re.MULTILINE)
+        expected_total = args.expected_runtime_tests + args.expected_conformance_tests + args.expected_differential_tests
+        assert totals and int(totals[-1]) == expected_total, ('MTP count', totals, expected_total)
+        summary['mtpTests'] = {'total': expected_total, 'failed': 0, 'skipped': 0}
         run('python3', '-B', 'tools/ApiBaseline/compare.py', '--report', report/'runtime-api.json')
         api = json.loads((report/'runtime-api.json').read_text())
         assert api['matched'] and len(api['provenance']) == args.expected_public_api
         summary['publicApiMembers'] = len(api['provenance'])
         counts = {}
         for assembly, expected in [('Xemele.Tests', args.expected_runtime_tests), ('Xemele.Conformance.Tests', args.expected_conformance_tests), ('Xemele.Differential.Tests', args.expected_differential_tests)]:
+            discovered_tests = run('dotnet', 'test', '--project', ROOT/f'tests/{assembly}', '-c', 'Release', '--no-build', '--no-restore', '--list-tests')
+            (report/(assembly+'-discovery.txt.gz')).write_bytes(gzip.compress(discovered_tests.encode(), mtime=0))
+            discoveries = re.findall(r'Discovered (\d+) tests\.', discovered_tests)
+            assert discoveries and int(discoveries[-1]) == expected, (assembly, discoveries, expected)
             xml = raw/(assembly+'.xml')
             run('dotnet', ROOT/f'tests/{assembly}/bin/Release/net10.0/{assembly}.dll', '-noColor', '-result-xml', xml)
             tests = list(ET.parse(xml).iter('test'))
@@ -123,6 +137,13 @@ def main():
             counts[assembly] = {'total': len(tests), 'failed': 0, 'skipped': 0}
             (report/(assembly+'.xml.gz')).write_bytes(gzip.compress(xml.read_bytes(), mtime=0))
         summary['runtimeTests'] = counts
+        runtime_tests = list(ET.parse(raw/'Xemele.Tests.xml').iter('test'))
+        framing = [t for t in runtime_tests if t.get('type') == 'Xemele.Tests.FramingTests']
+        assert len(framing) == 1243 and all(t.get('result') == 'Pass' for t in framing)
+        summary['ownFramingTests'] = len(framing)
+        discovery = json.loads(run('python3', '-B', 'tools/ApiBaseline/discover.py'))
+        assert discovery['apiDeclarations'] == args.expected_public_api and discovery['fixtures'] == args.expected_fixtures
+        summary['discovery'] = {'apiDeclarations': discovery['apiDeclarations'], 'fixtures': discovery['fixtures']}
         records = [json.loads(p.read_text()) for p in (raw/'case-results').glob('reference-*.json')]
         assert len(records) == 242 and len({r['id'] for r in records}) == 242
         assert hashlib.sha256(pinned.read_bytes()).hexdigest() == runner_hash

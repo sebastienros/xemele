@@ -21,10 +21,16 @@ public sealed class FramingTests
      "<?xml ENCODING='X'?>", "<?xml encoding='😀'?>", "\uD800", "\uDC00", "\0"];
     public static IEnumerable<object[]> Splits()
     {
+        // MTP's transport identity collapsed the lone-high/low-surrogate rows.
+        // An ASCII fixture identifier keeps every malformed UTF-16 case distinct.
+        int caseId = 0;
         foreach (var group in new[] { (Declared, TextDeclarationStep.Declared), (Absent, TextDeclarationStep.Absent), (Rejected, TextDeclarationStep.Rejected) })
             foreach (string text in group.Item1)
+            {
                 for (int split = 0; split <= text.Length; split++)
-                    foreach (bool mapped in new[] { false, true }) yield return [text, group.Item2.ToString(), split, mapped];
+                    foreach (bool mapped in new[] { false, true }) yield return [caseId, text, group.Item2.ToString(), split, mapped];
+                caseId++;
+            }
     }
     private static long[] Mappings(string text)
     {
@@ -39,8 +45,9 @@ public sealed class FramingTests
         return result;
     }
     [Theory, MemberData(nameof(Splits))]
-    public void EverySplit(string text, string expected, int split, bool mapped)
+    public void EverySplit(int caseId, string text, string expected, int split, bool mapped)
     {
+        Assert.InRange(caseId, 0, Declared.Length + Absent.Length + Rejected.Length - 1);
         using var oracle = new XmlTextDeclarationFramer(new(), Source);
         using var framer = new XmlTextDeclarationFramer(new(), Source);
         long[] offsets = mapped ? Mappings(text) : [];

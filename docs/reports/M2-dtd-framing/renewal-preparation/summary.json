@@ -1,0 +1,17 @@
+{
+  "revision": "cf975fd merge checkpoint; full hash in forthcoming source/check record",
+  "finding": "MTP discovered1486runtime vs direct1490; framingEverySplit MTP1222 vs direct1226. Exactly missing four lone-low-surrogate rows (splits0/1,mappedfalse/true). No duplicate direct test display/uniqueIDs. Add ASCIIcase identifier to owned testdata to disambiguate transport.",
+  "failedDiagnostics": [
+    {
+      "command": "dotnet runtime.dll --help",
+      "exit": 2,
+      "reason": "runner help exit; no test failure"
+    },
+    {
+      "command": "dotnet test --project tests/Xemele.Tests[/Xemele.Tests.csproj] -c Release --no-build --no-restore --filter-class or --filter-method with report-xunit options",
+      "exit": 5,
+      "reason": "zero tests matched in this argument path; no success claimed. Unfiltered directory --list-tests exit0 gave actual1486discovery."
+    }
+  ],
+  "runtimeSource": "Unchanged after cea326c; no peer edits; caseidentity change affects testing only."
+}
