@@ -162,7 +162,7 @@ class MeasurementGuards(unittest.TestCase):
                 command = query.call_args.args[0]
                 self.assertIn('-p:ArtifactsPath=' + properties['ArtifactsPath'], command)
                 for path in [assets, import_file, source, reference, analyzer]:
-                    self.assertEqual(inventory[str(path)]['sha256'], measure.digest(path))
+                    self.assertEqual(inventory[str(path.resolve())]['sha256'], measure.digest(path))
                 self.assertEqual(summary['inventoryQueries'][0]['evaluatedProperties']['ProjectAssetsFile'], str(assets))
                 assets.unlink()
                 with self.assertRaisesRegex(ValueError, 'Missing actual evaluated assets'):
