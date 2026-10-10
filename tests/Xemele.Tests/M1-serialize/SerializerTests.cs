@@ -178,8 +178,8 @@ public class SerializerTests
         Assert.Equal(d.ToXmlString(Omit, cancellationToken: TestContext.Current.CancellationToken), d.ToXmlString(Omit, cancellationToken: TestContext.Current.CancellationToken));
     }
     [Theory]
-    [InlineData(XmlNodeKind.Text, "\0")] [InlineData(XmlNodeKind.Text, "\ud800")]
-    [InlineData(XmlNodeKind.Text, "\udc00")] [InlineData(XmlNodeKind.Text, "\ufffe")]
+    [InlineData(XmlNodeKind.Text, "\0")] 
+     [InlineData(XmlNodeKind.Text, "\ufffe")]
     [InlineData(XmlNodeKind.Comment, "--")] [InlineData(XmlNodeKind.Comment, "x-")]
     [InlineData(XmlNodeKind.CData, "]]>")] [InlineData(XmlNodeKind.ProcessingInstruction, "?>")]
     public void RevalidatesLexicalStateAsOperationErrors(XmlNodeKind kind, string value)
@@ -188,6 +188,16 @@ public class SerializerTests
         r.AppendChild(node); d.Nodes[node.Slot].Value = value;
         Assert.Throws<InvalidOperationException>(() => d.ToXmlString(Omit, cancellationToken: TestContext.Current.CancellationToken));
         using var s = new RecordingStream(); Assert.Throws<InvalidOperationException>(() => d.Save(s, cancellationToken: TestContext.Current.CancellationToken)); Assert.False(s.Closed);
+    }
+    [Theory]
+    [InlineData(0xd800)] [InlineData(0xdc00)]
+    public void UnpairedSurrogatesAreConstructedAtRuntime(int codeUnit)
+    {
+        // Attribute metadata encodes strings as UTF-8 and cannot carry an
+        // unpaired surrogate; construct the invalid UTF-16 code unit at runtime.
+        string value = new((char)codeUnit, 1);
+        RevalidatesLexicalStateAsOperationErrors(XmlNodeKind.Text, value);
+        RevalidatesPiTargets(value);
     }
     [Fact]
     public void RevalidatesNamesBindingsAndAttributeScalars()
@@ -211,7 +221,7 @@ public class SerializerTests
         Assert.Throws<InvalidOperationException>(() => d.ToXmlString(Repair, cancellationToken: TestContext.Current.CancellationToken));
     }
     [Theory]
-    [InlineData("XmL")] [InlineData("1pi")] [InlineData("\ud800")]
+    [InlineData("XmL")] [InlineData("1pi")] 
     public void RevalidatesPiTargets(string target)
     {
         var d = Root(out var r); var pi = d.CreateProcessingInstruction("pi", "data"); r.AppendChild(pi);
