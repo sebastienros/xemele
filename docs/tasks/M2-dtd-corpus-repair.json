@@ -4,11 +4,11 @@
   "milestone": "M2",
   "title": "Resolve seven original DTD grammar and namespace obligations",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "worker:M2-dtd-corpus-repair",
   "branch": "codex/m2-dtd-corpus-repair",
   "base_revision": "e82db97101699f538a068b43fa7f3f8c06492ed3",
-  "integration_revision": null,
+  "integration_revision": "de8fceaaac3f0603033b810e41a0217f44662d27",
   "depends_on": [
     "M2-undeclared-content",
     "M2-conformance-profile",
@@ -44,7 +44,8 @@
       "status": "passed",
       "evidence": [
         "focused-affected-correctness",
-        "source-review"
+        "source-review",
+        "integrated-focused-checks"
       ]
     },
     {
@@ -53,7 +54,8 @@
       "status": "passed",
       "evidence": [
         "focused-affected-correctness",
-        "source-review"
+        "source-review",
+        "integrated-focused-checks"
       ]
     },
     {
@@ -66,7 +68,8 @@
         "frozen-preparation",
         "allocation",
         "timing",
-        "final-audit"
+        "final-audit",
+        "integrated-focused-checks"
       ]
     }
   ],
@@ -151,6 +154,15 @@
       "result": "passed",
       "summary": "Final report review: Preparation SHA256 unchanged at 7a9d06404456f730d1d073acb39499f6e162166296049f50996727d67edda6a6. Generated child, temporary parent binaries/obj, raw artifacts and inspection files removed after final identities passed. No executable children; lease released. Runtime/test/sample/benchmark source unchanged since passing correctness/API revision d9d2afe.",
       "artifact": "docs/reports/M2-dtd-corpus-repair/final-handoff-audit.json"
+    },
+    {
+      "id": "integrated-focused-checks",
+      "kind": "integration",
+      "revision": "de8fceaaac3f0603033b810e41a0217f44662d27",
+      "command": "In-memory existing verify.py api/correctness candidate adapter; exact owned/grant diff",
+      "result": "passed",
+      "summary": "2199 actual affected combined rows passed including31 owned, standalone/content/source-hook, zero failed/skipped;API290/frozen models and actual source/fresh package consumer passed.14 planning controls/137 graph;30 owned paths; all actual measurement identities/child exits/final freezes/cleanup inspected, no measurement replay.",
+      "artifact": "docs/reports/M2-dtd-corpus-repair/integration-summary.json"
     }
   ],
   "blockers": [],
@@ -164,7 +176,7 @@
       "Final identities and cleanup passed; temporary binaries/raw outputs removed, no executable children, exclusive lease released."
     ],
     "remaining": [
-      "Coordinator must integrate the branch and verify applicable checks on the combined tree before setting verified. Separate unknown-default contract obligation remains outside this task."
+      "Incomplete attribute runtime, remaining external-version compatibility, full conformance/recovery and M2 gate remain separate mandatory tasks."
     ],
     "requests": [
       "Resolved exact Doctype.cs forwarding grant8427948bc4e4b5178aac3df33ab6da6ec3d2a077 and unused-colon assertion grant99769bce1c2cff9125fd802f4bbb8730a8c250b0; no outstanding ownership request.",
