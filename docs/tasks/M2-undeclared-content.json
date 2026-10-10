@@ -4,7 +4,7 @@
   "milestone": "M2",
   "title": "Preserve nonvalidating unresolved content references",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "worker:M2-undeclared-content",
   "branch": "codex/m2-undeclared-content",
   "base_revision": "942ed99082c9b515ad12977c1febab5d623c481b",
@@ -52,29 +52,161 @@
     {
       "id": "M2-undeclared-content-A1",
       "description": "Implement verified EntityDeclared WFC versus VC content applicability using actual internal/external subset, PE-reference and first unread declaration provenance, standalone and active source state. Exact NCName/lexical identity/location; optional borrowed callback once in ordered text boundaries, bounded owned pending storage, all splits and surrogate/byte mapping, consumed counts/pause/resume/cancellation/fault cleanup and quotas. Old sinks refuse only new unresolved occurrences with XML.UnresolvedReferenceSinkRequired; capable sinks succeed with no diagnostic. Preserve declared expansions, resource denial, recursion, unparsed/external attribute errors and all existing event/model shapes.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "affected-runtime",
+        "direct-source-review"
+      ]
     },
     {
       "id": "M2-undeclared-content-A2",
       "description": "Implement approved XmlUnresolvedReference record and nonnull read-only XmlDocument.UnresolvedReferences list with owned names/location/stable Parent/PreviousSibling/original ChildBoundary/Sequence. Actual DOM Parse/TryParse/Load succeeds without diagnostic and separates text around gaps. Original provenance survives mutation/detachment. Serializer/string/Stream/Save, aggregate GetTextContent, shallow/deep Clone and ImportNode refuse any unresolved source owner after existing argument/cancellation validation and before writes/BOM/destination mutation/copy allocation/traversal; clean sources keep prior behavior and may import into unresolved destination. Guard exact entrypoints and test forwarding APIs, stream no-write and destination no-mutation.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "affected-runtime",
+        "api-package",
+        "direct-source-review"
+      ]
     },
     {
       "id": "M2-undeclared-content-A3",
       "description": "Independently authored actual parser/event/DOM/refusal models for exact original E13 bytes and paired contexts; all short splits/byte transports/pause/cancel/retention/quotas/old sink controls, unaffected previous identities preserved. Run relevant full correctness, approved additive API/compiled frozen model and ABI preservation, source/package consumers and original profile audit. Meaningful applicable allocations/benchmarks with MemoryDiagnoser and ShortRunJob at exact Git/source/generated child/runtime identities, source-reviewed counters-disabled preparation and explicit fresh exclusive host grant. Never repeat unchanged successful standalone observations or relax thresholds/options/runtime. Retain concise counts/metrics/hash/failure summaries only, inspect/remove raw artifacts, validate planning/ownership/diff; no model-only or reference-agreement conformance claims.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "affected-runtime",
+        "ordinary-suites",
+        "api-package",
+        "original-profile",
+        "preparation",
+        "inherited-allocations",
+        "task-allocation",
+        "task-benchmarks",
+        "historical-correctness",
+        "lease-review"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Parsing/Events/UnresolvedReferences.cs: optional borrowed callback; Core files: VC applicability and ordered owned pending delivery with bounded quotas/cancel/dispose cleanup.",
+    "src/Xemele/Parsing/Dtd/Grammar/Parser/{DtdParser,Lexer,Declarations,Composition}.cs: actual PE/read/source provenance; suppressed ENTITY/ATTLIST syntax checking without retained names, publication or replacement expansion.",
+    "src/Xemele/Tree/UnresolvedReferences/: approved owned record, read-only list and DOM boundary/sequence/parent/previous-sibling provenance.",
+    "src/Xemele/Tree/Document.cs and Serialization/Xml/XmlSerializer.cs: exact owner-wide loss refusal before traversal/output/copy; preserved validation ordering.",
+    "tests/Xemele.Tests/Xml/UndeclaredReferences/, fixtures, sample, additive API fragment and actual borrowed/owned/repeated workload oracles."
+  ],
+  "evidence": [
+    {
+      "id": "affected-runtime",
+      "kind": "check",
+      "revision": "2a26d9091f3d01812a45b663789dc6cb5daea1cf",
+      "command": "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -noColor -class Xemele.Tests.UndeclaredReferences.* -class Xemele.Tests.DtdCompositionTests -class Xemele.Tests.DtdGrammarJoinedTests -class Xemele.Tests.DtdGrammarPinnedTests -class Xemele.Tests.DtdParserTests -class Xemele.Tests.DtdParserBudgetTests -class Xemele.Tests.DtdParserSourceTests -class Xemele.Tests.DtdNonvalidating.* -class Xemele.Tests.DtdEntityBase.* -class Xemele.Tests.Entities.*",
+      "result": "passed",
+      "summary": "Actual2094 selected DTD/parser/entity/unresolved rows:0errors/failures/skips/not-run; includes27 owned rows and new active external subset/PE standalone, suppression budgets and malformed grammar controls.",
+      "artifact": "docs/reports/M2-undeclared-content/affected-correctness-2a26d90.json"
+    },
+    {
+      "id": "ordinary-suites",
+      "kind": "check",
+      "revision": "2a26d9091f3d01812a45b663789dc6cb5daea1cf",
+      "command": "dotnet tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll -noColor; dotnet tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll -noColor",
+      "result": "passed",
+      "summary": "Actual258 conformance+311 differential rows passed with0errors/failures/skips; binary and unchanged output-closure binding; no raw output retained.",
+      "artifact": "docs/reports/M2-undeclared-content/additional-correctness-2a26d90.json"
+    },
+    {
+      "id": "api-package",
+      "kind": "check",
+      "revision": "2a26d9091f3d01812a45b663789dc6cb5daea1cf",
+      "command": "python3 docs/reports/M2-undeclared-content/verify.py --mode api --report api-package-2a26d90",
+      "result": "passed",
+      "summary": "Independent approved additive18-member fragment, all290 public members,5 frozen public models, inherited model assertions and7 internal ABI shapes; actual source and fresh isolated package consumers match.",
+      "artifact": "docs/reports/M2-undeclared-content/api-package-2a26d90.json"
+    },
+    {
+      "id": "original-profile",
+      "kind": "check",
+      "revision": "2a26d9091f3d01812a45b663789dc6cb5daea1cf",
+      "command": "python3 -B docs/reports/M2-conformance-profile/audit.py <temporary owned observations>",
+      "result": "passed",
+      "summary": "2585 original-byte cases:2576 expectations matched,9 unchanged product gaps,770 reference disagreements. Observations only, not full conformance or model-agreement claims; raw data inspected/reduced/removed.",
+      "artifact": "docs/reports/M2-undeclared-content/original-profile-2a26d90.json"
+    },
+    {
+      "id": "direct-source-review",
+      "kind": "review",
+      "revision": "2a26d9091f3d01812a45b663789dc6cb5daea1cf",
+      "command": null,
+      "result": "passed",
+      "summary": "Coordinator directly accepted the single batched corrections at2a26d90, complete27focused/untimed oracles and A2 guard/provenance behavior; no additional source-review cycle.",
+      "artifact": null
+    },
+    {
+      "id": "preparation",
+      "kind": "check",
+      "revision": "2a26d9091f3d01812a45b663789dc6cb5daea1cf",
+      "command": "python3 docs/reports/M2-undeclared-content/measure.py --mode prepare --report preparation-2a26d90-suite-freeze --benchmark-report benchmark-2a26d90",
+      "result": "passed",
+      "summary": "Counters-disabled complete authored actual event/DOM oracles and independent generated build-only freeze; exact2 cases, no executor; manifest fd013cd7f690433c181ebd4b537618da013f19fcd461fb754eb21159e1af2599.",
+      "artifact": "docs/reports/M2-undeclared-content/preparation-2a26d90-suite-freeze.json"
+    },
+    {
+      "id": "inherited-allocations",
+      "kind": "check",
+      "revision": "2a26d9091f3d01812a45b663789dc6cb5daea1cf",
+      "command": "dotnet tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -noColor -method Xemele.Tests.Syntax.StreamingTests.WarmRepeatedTagsAndStreamingUnicodeDispatchAllocateZero; dotnet tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -noColor -method Xemele.Tests.PiTargets.PiTargetTests.RepeatedBorrowedPiTargetsAllocateZeroAfterWarmup",
+      "result": "passed",
+      "summary": "Each existing real/positive protocol executed exactly once in one approved lease: real0B, positive7680000B streaming/6400000B PI over10000 measured iterations; exact counts/finalization/selected provenance valid. Full24 readiness inputs unchanged;62-file after-only map records38locale satellites honestly, since protocols do not capture their before hashes.",
+      "artifact": "docs/reports/M2-undeclared-content/inherited-allocations-2a26d90.json"
+    },
+    {
+      "id": "task-allocation",
+      "kind": "check",
+      "revision": "2a26d9091f3d01812a45b663789dc6cb5daea1cf",
+      "command": "python3 docs/reports/M2-undeclared-content/measure.py --mode allocation --report allocation-2a26d90 --exclusive-grant m2-undeclared-2a26d90-sequence-exclusive-20261010",
+      "result": "passed",
+      "summary": "1024 actual borrowed repeated appends0B; cold186912B, owned event models21340880B, owned documents27427536B, positive155648B. Exact source/parent/runtime/preparation freeze and process cleanup passed.",
+      "artifact": "docs/reports/M2-undeclared-content/allocation-2a26d90.json"
+    },
+    {
+      "id": "task-benchmarks",
+      "kind": "check",
+      "revision": "2a26d9091f3d01812a45b663789dc6cb5daea1cf",
+      "command": "python3 docs/reports/M2-undeclared-content/measure.py --mode benchmark --report benchmark-2a26d90 --exclusive-grant m2-undeclared-2a26d90-sequence-exclusive-20261010",
+      "result": "passed",
+      "summary": "Single frozen ShortRun/MemoryDiagnoser execution: borrowed event6.443us/20.35KB; owned DOM6.996us/26.16KB; exact actual3 iterations each, both prebuilt child exits0, no build/generation, strict metric/source/child/runtime freeze passed. Child/raw outputs removed and lease RELEASED before evidence review.",
+      "artifact": "docs/reports/M2-undeclared-content/benchmark-2a26d90.json"
+    },
+    {
+      "id": "historical-correctness",
+      "kind": "check",
+      "revision": "f2f36c4643119dd6e560a69997f3c235168af69d",
+      "command": "See original preserved commands/filters in correctness-recovery.json",
+      "result": "passed",
+      "summary": "Two historical broad commands exited0 with all-Pass XML checks before reporter failure; executed counts unavailable after raw cleanup. Discovery4687 is explicitly discovery, not execution. Only affected rows rerun after runtime correction; no unchanged standalone observations replayed.",
+      "artifact": "docs/reports/M2-undeclared-content/correctness-recovery.json"
+    },
+    {
+      "id": "lease-review",
+      "kind": "review",
+      "revision": "2a26d9091f3d01812a45b663789dc6cb5daea1cf",
+      "command": null,
+      "result": "passed",
+      "summary": "Coordinator released lease and accepted existing standalone selected fingerprint guarantees; confirmed locale-satellite before/after closure is not an acceptance blocker and requires no hardening/replay. Raw outputs removed; no children.",
+      "artifact": "docs/reports/M2-undeclared-content/inherited-allocations-2a26d90.json"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Required ordered implementation of the verified contract; exact proposed additive record/member approved by independent review and coordinator. No implementation until active Core and DTD prerequisite owners are verified.",
-    "checks": [],
-    "remaining": [],
+    "summary": "Preserves eligible unresolved content references through ordered borrowed callbacks and owned DOM provenance; guards all lossy output/copy/traversal entrypoints. Single batched source/oracle corrections accepted; one exclusive measurement sequence passed and RELEASED; awaiting coordinator integration.",
+    "checks": [
+      "2094affected+258conformance+311differential actual passing rows;18additive/290total public API, compiled models/ABI and source/package consumers pass.",
+      "2585 original cases:2576 expectations matched;9 unchanged gaps; matching/reference observations not conformance claims.",
+      "Inherited streaming/PI real0B with positive controls; new borrowed1024appends0B; both frozen benchmarks pass full identities and MemoryDiagnoser; raw artifacts and generated child removed.",
+      "Historical broad execution counts unavailable; preserved successful exits/all-Pass checks and discovery strictly labeled. Four unchanged standalone measured paths not replayed.",
+      "Coordinator confirms selected standalone fingerprints meet existing requirements; missing locale-satellite before/after comparison is explicitly unclaimed and not a blocker."
+    ],
+    "remaining": [
+      "Coordinator integrate and run focused combined-tree correctness/API/planning checks; only coordinator may mark verified."
+    ],
     "requests": [
       "Missing attribute/default value representations remain separate classified obligations; do not silently fabricate normalized values, misclassify VC as WFC or claim full corpus coverage. Report exact cases/required contract ownership if observed. Preserve forwarding APIs and test their real callees; request exact additional owned files before edits.",
       "Additional ordered ownership requested: src/Xemele/Parsing/Dtd/Grammar/Parser/Lexer.cs, to track actual lexical PE references at BeginParameter, distinguish WFC from VC-only missing PE at ExpandParameter, retain first-unread-PE state and suppress subsequent entity/ATTLIST publication without changing frozen model shapes.",
