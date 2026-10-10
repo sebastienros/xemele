@@ -1,0 +1,495 @@
+$ dotnet /Users/sebastienros/.codex/worktrees/d888/xemele/experiments/Tree/bin/Release/net10.0/Tree.dll --list flat
+TreeSpike.Construction.Objects
+TreeSpike.Construction.Arena
+TreeSpike.Mutation.Objects
+TreeSpike.Mutation.Arena
+TreeSpike.Names.TemporaryLookup
+TreeSpike.Names.BorrowedLookup
+TreeSpike.Names.BorrowedIntern
+TreeSpike.Names.TemporaryIntern
+TreeSpike.Text.Owned
+TreeSpike.Text.RetainedView
+TreeSpike.Traversal.Objects
+TreeSpike.Traversal.Arena
+$ dotnet /Users/sebastienros/.codex/worktrees/d888/xemele/experiments/Input/bin/Release/net10.0/Input.dll benchmark --list flat
+InputSpike.ChunkMatchBenchmarks.ByteLength
+InputSpike.ChunkMatchBenchmarks.ByteHash
+InputSpike.ChunkMatchBenchmarks.CharLength
+InputSpike.ChunkMatchBenchmarks.CharHash
+InputSpike.InputBenchmarks.StringToCharacterCore
+InputSpike.InputBenchmarks.ByteToByteCore
+InputSpike.InputBenchmarks.ByteToCharacterScratch
+InputSpike.InputBenchmarks.StringToCharacterCorePaused
+InputSpike.InputBenchmarks.ByteToByteCorePaused
+InputSpike.InputBenchmarks.ByteToOwnedString
+InputSpike.InputBenchmarks.StringViaOwnedUtf8
+InputSpike.LiteralBenchmarks.ByteLiteral
+InputSpike.LiteralBenchmarks.ByteArray
+InputSpike.LiteralBenchmarks.CharLiteral
+InputSpike.LiteralBenchmarks.CharArray
+InputSpike.LiteralBenchmarks.ConstantCollection
+InputSpike.LiteralBenchmarks.ConstantIntCollection
+InputSpike.LiteralBenchmarks.RuntimeCollectionControl
+InputSpike.LiteralBenchmarks.MutableCollectionControl
+InputSpike.LiteralBenchmarks.RuntimeLocalCollection
+InputSpike.LiteralBenchmarks.MutableLocalCollection
+InputSpike.MatchBenchmarks.ByteLength
+InputSpike.MatchBenchmarks.ByteHash
+InputSpike.MatchBenchmarks.CharLength
+InputSpike.MatchBenchmarks.CharHash
+InputSpike.RejectionBenchmarks.ByteCore
+InputSpike.RejectionBenchmarks.CharacterScratch
+InputSpike.ScanBenchmarks.ByteCached
+InputSpike.ScanBenchmarks.ByteSimple
+InputSpike.ScanBenchmarks.CharCached
+InputSpike.ScanBenchmarks.CharSimple
+InputSpike.ScanBenchmarks.ByteSmallSet
+InputSpike.ScanBenchmarks.CharSmallSet
+InputSpike.ScanBenchmarks.ByteIndexOfControl
+InputSpike.ScanBenchmarks.CharIndexOfControl
+$ dotnet /Users/sebastienros/.codex/worktrees/d888/xemele/benchmarks/Xemele.Benchmarks/bin/Release/net10.0/Xemele.Benchmarks.dll --list flat
+CommonBenchmarks.StraightforwardCounter
+CommonBenchmarks.BoundedCounter
+CommonBenchmarks.OperationSetup
+CommonBenchmarks.OwnedExceptionSnapshot
+CommonBenchmarks.BoundedDiagnosticTruncation
+DelimiterBenchmarks.Loop
+DelimiterBenchmarks.SmallSet
+DelimiterBenchmarks.Cached
+InputBenchmarks.StraightforwardStrictUtf8
+InputBenchmarks.BoundedDecoder
+InputOwnershipBenchmarks.Setup
+InputOwnershipBenchmarks.MalformedDiagnostic
+SyntaxBenchmarks.WarmRepeatedTagAndUnicode
+SyntaxBenchmarks.ColdDocument
+SyntaxBenchmarks.StructuredRejection
+Xemele.SerializationMeasurements.EscapeScanBenchmarks.ScalarLoop
+Xemele.SerializationMeasurements.EscapeScanBenchmarks.CachedSearchValues
+Xemele.SerializationMeasurements.EscapeScanBenchmarks.RuntimeIndexOfAny
+Xemele.SerializationMeasurements.SerializerBenchmarks.OwnedString
+Xemele.SerializationMeasurements.SerializerBenchmarks.IncrementalStream
+Xemele.TreeMeasurements.InternBenchmarks.Baseline
+Xemele.TreeMeasurements.InternBenchmarks.BorrowedDictionary
+Xemele.TreeMeasurements.TreeBenchmarks.Indexed
+Xemele.TreeMeasurements.TreeBenchmarks.Linked
+Xemele.TreeMeasurements.TreeBenchmarks.ConstructOwnedTree
+Xemele.TreeMeasurements.TreeBenchmarks.CloneOwnedDocument
+Xemele.TreeMeasurements.TreeBenchmarks.ImportOwnedTree
+Xemele.TreeMeasurements.TreeBenchmarks.ImportMemberHeavy
+$ dotnet /Users/sebastienros/.codex/worktrees/d888/xemele/docs/reports/M1-common/bin/Release/net10.0/Xemele.CommonBenchmarks.dll --list flat
+CommonBenchmarks.StraightforwardCounter
+CommonBenchmarks.BoundedCounter
+CommonBenchmarks.OperationSetup
+CommonBenchmarks.OwnedExceptionSnapshot
+CommonBenchmarks.BoundedDiagnosticTruncation
+$ dotnet /Users/sebastienros/.codex/worktrees/d888/xemele/docs/reports/M1-input/bin/Release/net10.0/Xemele.InputBenchmarks.dll --list flat
+InputBenchmarks.StraightforwardStrictUtf8
+InputBenchmarks.BoundedDecoder
+InputOwnershipBenchmarks.Setup
+InputOwnershipBenchmarks.MalformedDiagnostic
+$ dotnet /Users/sebastienros/.codex/worktrees/d888/xemele/docs/reports/M1-serialize/bin/Release/net10.0/SerializerBenchmarks.dll --list flat
+Xemele.SerializationMeasurements.EscapeScanBenchmarks.ScalarLoop
+Xemele.SerializationMeasurements.EscapeScanBenchmarks.CachedSearchValues
+Xemele.SerializationMeasurements.EscapeScanBenchmarks.RuntimeIndexOfAny
+Xemele.SerializationMeasurements.SerializerBenchmarks.OwnedString
+Xemele.SerializationMeasurements.SerializerBenchmarks.IncrementalStream
+$ dotnet /Users/sebastienros/.codex/worktrees/d888/xemele/benchmarks/Xemele.Benchmarks/bin/Release/net10.0/Xemele.Benchmarks.dll --help
+Xemele benchmarks
+Usage: dotnet run -c Release --project benchmarks/Xemele.Benchmarks -- [BenchmarkDotNet options]
+Benchmark cases are added by feature tasks.
+$ dotnet /Users/sebastienros/.codex/worktrees/d888/xemele/experiments/Tree/bin/Release/net10.0/Tree.dll --self-check
+PASS: 8 construction fixtures; owner/identity/growth/cycle/sibling/deep-tree checks; ordinal Unicode/culture/miss oracle; 0 B warm borrowed lookup; name/text equivalence.
+$ dotnet /Users/sebastienros/.codex/worktrees/d888/xemele/experiments/Tree/bin/Release/net10.0/Tree.dll --memory
+{
+  "runtime": ".NET 10.0.11",
+  "os": "macOS 15.8.1",
+  "architecture": "Arm64",
+  "serverGc": false,
+  "records": [
+    {
+      "representation": "objects",
+      "nodes": 16384,
+      "unique": false,
+      "firstCallAllocation": 1443152,
+      "warmAllocation": 1443152,
+      "retainedBytesPerTreeMedian": 1311082,
+      "retainedSortedSamples": [
+        1311082,
+        1311082,
+        1311082,
+        1311082,
+        1311082
+      ]
+    },
+    {
+      "representation": "arena",
+      "nodes": 16384,
+      "unique": false,
+      "firstCallAllocation": 1312240,
+      "warmAllocation": 1312240,
+      "retainedBytesPerTreeMedian": 655778,
+      "retainedSortedSamples": [
+        655778,
+        655778,
+        655778,
+        655778,
+        655778
+      ]
+    },
+    {
+      "representation": "objects",
+      "nodes": 16384,
+      "unique": true,
+      "firstCallAllocation": 3039208,
+      "warmAllocation": 3039208,
+      "retainedBytesPerTreeMedian": 1966122,
+      "retainedSortedSamples": [
+        1966122,
+        1966122,
+        1966122,
+        1966122,
+        1966122
+      ]
+    },
+    {
+      "representation": "arena",
+      "nodes": 16384,
+      "unique": true,
+      "firstCallAllocation": 2908296,
+      "warmAllocation": 2908296,
+      "retainedBytesPerTreeMedian": 1310818,
+      "retainedSortedSamples": [
+        1310818,
+        1310818,
+        1310818,
+        1310818,
+        1310818
+      ]
+    },
+    {
+      "textOwnership": "borrowed-32-chars",
+      "backingSourceChars": 1048576,
+      "sourceAliveAfterFullGc": true,
+      "retainedBytes": 2097520
+    },
+    {
+      "textOwnership": "owned-32-chars",
+      "backingSourceChars": 1048576,
+      "sourceAliveAfterFullGc": false,
+      "retainedBytes": 112
+    },
+    {
+      "nameSetupFixtureAndTableAllocation": 134920,
+      "warmBorrowed1024LookupsAllocation": 0
+    }
+  ]
+}
+$ dotnet /Users/sebastienros/.codex/worktrees/d888/xemele/experiments/Input/bin/Release/net10.0/Input.dll help
+Input architecture spike (not an XML parser). Commands: check, allocations, lowering, benchmark [BDN options].
+$ dotnet /Users/sebastienros/.codex/worktrees/d888/xemele/experiments/Input/bin/Release/net10.0/Input.dll check
+PASS 83095 assertions; every short two-part split; chunks 1..32; per-fragment suspension; long single-chunk bounded progress; malformed Unicode; matching oracle/collisions/cultures; scan and pipeline setup parity.
+$ dotnet /Users/sebastienros/.codex/worktrees/d888/xemele/experiments/Input/bin/Release/net10.0/Input.dll allocations
+Runtime=.NET 10.0.11; OS=macOS 15.8.1; Arch=Arm64; GC server=False; latency=Interactive
+Cold explicit Primitives initialization: 7992 B (SearchValues, array tokens, vocabulary, hash metadata, UTF8 token arrays, one-time LINQ delegates/enumerators). No fixture bytes included.
+Cold context construction: 496 B for two scanners, sinks, strict encoding/decoders (owned per context; not per token).
+AsciiShort/StringToCharacterCore: 0.00 B/op over 1000 operations; result=0
+AsciiShort/ByteToByteCore: 0.00 B/op over 1000 operations; result=0
+AsciiShort/ByteToCharacterScratch: 0.00 B/op over 1000 operations; result=0
+AsciiShort/StringToCharacterCorePaused: 0.00 B/op over 1000 operations; result=0
+AsciiShort/ByteToByteCorePaused: 0.00 B/op over 1000 operations; result=0
+AsciiShort/ByteToOwnedString: 80.00 B/op over 1000 operations; result=0
+AsciiShort/StringViaOwnedUtf8: 56.00 B/op over 1000 operations; result=0
+UnicodeShort/StringToCharacterCore: 0.00 B/op over 1000 operations; result=0
+UnicodeShort/ByteToByteCore: 0.00 B/op over 1000 operations; result=0
+UnicodeShort/ByteToCharacterScratch: 0.00 B/op over 1000 operations; result=0
+UnicodeShort/StringToCharacterCorePaused: 0.00 B/op over 1000 operations; result=0
+UnicodeShort/ByteToByteCorePaused: 0.00 B/op over 1000 operations; result=0
+UnicodeShort/ByteToOwnedString: 88.00 B/op over 1000 operations; result=0
+UnicodeShort/StringViaOwnedUtf8: 72.00 B/op over 1000 operations; result=0
+AsciiLong/StringToCharacterCore: 0.00 B/op over 1000 operations; result=0
+AsciiLong/ByteToByteCore: 0.00 B/op over 1000 operations; result=0
+AsciiLong/ByteToCharacterScratch: 0.00 B/op over 1000 operations; result=0
+AsciiLong/StringToCharacterCorePaused: 0.00 B/op over 1000 operations; result=0
+AsciiLong/ByteToByteCorePaused: 0.00 B/op over 1000 operations; result=0
+AsciiLong/ByteToOwnedString: 7448.00 B/op over 1000 operations; result=0
+AsciiLong/StringViaOwnedUtf8: 3736.00 B/op over 1000 operations; result=0
+UnicodeLong/StringToCharacterCore: 0.00 B/op over 1000 operations; result=0
+UnicodeLong/ByteToByteCore: 0.00 B/op over 1000 operations; result=0
+UnicodeLong/ByteToCharacterScratch: 0.00 B/op over 1000 operations; result=0
+UnicodeLong/StringToCharacterCorePaused: 0.00 B/op over 1000 operations; result=0
+UnicodeLong/ByteToByteCorePaused: 0.00 B/op over 1000 operations; result=0
+UnicodeLong/ByteToOwnedString: 7704.00 B/op over 1000 operations; result=0
+UnicodeLong/StringViaOwnedUtf8: 6168.00 B/op over 1000 operations; result=0
+Cached byte/char SearchValues: 0.00 B/op over 1000 operations; result=0
+Length match byte/char: 0.00 B/op over 1000 operations; result=0
+Hash match byte/char: 0.00 B/op over 1000 operations; result=0
+Chunk match: 0.00 B/op over 1000 operations; result=0
+Constant byte/char/int literals: 0.00 B/op over 1000 operations; result=0
+Runtime-valued readonly collection control: 32.00 B/op over 1000 operations; result=0
+Mutable collection control: 104.00 B/op over 1000 operations; result=0
+Runtime-valued local collection: 0.00 B/op over 1000 operations; result=0
+Mutable local collection: 0.00 B/op over 1000 operations; result=0
+Paused after 7 bytes in 4 MiB token: source collectible while scanner/sink remain alive; scanner retained input=0; decoder pending scalar <=3 bytes; callback stack scratch=128 UTF16 units.
+64 MiB synthetic single token from reusable 64 KiB chunk: 0 B processing allocations, 1 token, no document buffer; source chunk owns 65536 bytes plus array header.
+PASS warm allocation regressions and source collectability. Counters are synchronous current-thread allocations; no async claim.
+$ dotnet /Users/sebastienros/.codex/worktrees/d888/xemele/experiments/Input/bin/Release/net10.0/Input.dll lowering
+Release IL inspection: .NET 10.0.11; SDK pinned by repository; assembly=Input
+
+get_Utf8Literal:
+IL_0000: ldsflda __StaticArrayInitTypeSize=6 3F6A34AF54AE1C0CC94F7FE21D0024917088788582255580EB2FCC2DF9C8B995
+IL_0005: ldc.i4.5 
+IL_0006: newobj Void .ctor(Void*, Int32)
+IL_000B: ret 
+
+get_CharLiteral:
+IL_0000: ldstr <?xml
+IL_0005: call System.ReadOnlySpan`1[System.Char] AsSpan(System.String)
+IL_000A: ret 
+
+get_ConstantBytes:
+IL_0000: ldsflda __StaticArrayInitTypeSize=3 F1945CD6C19E56B3C1C78943EF5EC18116907A4CA1EFC40A57D48AB1DB7ADFC5
+IL_0005: ldc.i4.3 
+IL_0006: newobj Void .ctor(Void*, Int32)
+IL_000B: ret 
+
+get_ConstantInts:
+IL_0000: ldtoken __StaticArrayInitTypeSize=12_Align=4 4636993D3E1DA4E9D6B8F87B79E8F7C6D018580D52661950EABC3845C5897A4D4
+IL_0005: call System.ReadOnlySpan`1[System.Int32] CreateSpan[Int32](System.RuntimeFieldHandle)
+IL_000A: ret 
+
+get_RuntimeBytes:
+IL_0000: ldc.i4.3 
+IL_0001: newarr System.Byte
+IL_0006: dup 
+IL_0007: ldc.i4.0 
+IL_0008: ldsfld Byte RuntimeByte
+IL_000D: stelem.i1 
+IL_000E: dup 
+IL_000F: ldc.i4.1 
+IL_0010: ldc.i4 187
+IL_0015: stelem.i1 
+IL_0016: dup 
+IL_0017: ldc.i4.2 
+IL_0018: ldc.i4 191
+IL_001D: stelem.i1 
+IL_001E: call System.ReadOnlySpan`1[System.Byte] op_Implicit(Byte[])
+IL_0023: ret 
+
+get_MutableBytes:
+IL_0000: ldc.i4.3 
+IL_0001: newarr System.Byte
+IL_0006: dup 
+IL_0007: ldtoken __StaticArrayInitTypeSize=3 F1945CD6C19E56B3C1C78943EF5EC18116907A4CA1EFC40A57D48AB1DB7ADFC5
+IL_000C: call Void InitializeArray(System.Array, System.RuntimeFieldHandle)
+IL_0011: call System.Span`1[System.Byte] op_Implicit(Byte[])
+IL_0016: ret 
+
+RuntimeLocalSum:
+IL_0000: ldloca.s 01
+IL_0002: initobj System.Runtime.CompilerServices.InlineArray3`1[System.Byte]
+IL_0008: ldloca.s 01
+IL_000A: ldc.i4.0 
+IL_000B: call Byte& InlineArrayElementRef[InlineArray3`1,Byte](System.Runtime.CompilerServices.InlineArray3`1[System.Byte] ByRef, Int32)
+IL_0010: ldsfld Byte RuntimeByte
+IL_0015: stind.i1 
+IL_0016: ldloca.s 01
+IL_0018: ldc.i4.1 
+IL_0019: call Byte& InlineArrayElementRef[InlineArray3`1,Byte](System.Runtime.CompilerServices.InlineArray3`1[System.Byte] ByRef, Int32)
+IL_001E: ldc.i4 187
+IL_0023: stind.i1 
+IL_0024: ldloca.s 01
+IL_0026: ldc.i4.2 
+IL_0027: call Byte& InlineArrayElementRef[InlineArray3`1,Byte](System.Runtime.CompilerServices.InlineArray3`1[System.Byte] ByRef, Int32)
+IL_002C: ldc.i4 191
+IL_0031: stind.i1 
+IL_0032: ldloca.s 01
+IL_0034: ldc.i4.3 
+IL_0035: call System.ReadOnlySpan`1[System.Byte] InlineArrayAsReadOnlySpan[InlineArray3`1,Byte](System.Runtime.CompilerServices.InlineArray3`1[System.Byte] ByRef, Int32)
+IL_003A: stloc.0 
+IL_003B: ldloca.s 00
+IL_003D: ldc.i4.0 
+IL_003E: call Byte& get_Item(Int32)
+IL_0043: ldind.u1 
+IL_0044: ldloca.s 00
+IL_0046: ldc.i4.1 
+IL_0047: call Byte& get_Item(Int32)
+IL_004C: ldind.u1 
+IL_004D: add 
+IL_004E: ldloca.s 00
+IL_0050: ldc.i4.2 
+IL_0051: call Byte& get_Item(Int32)
+IL_0056: ldind.u1 
+IL_0057: add 
+IL_0058: ret 
+
+MutableLocalSum:
+IL_0000: ldloca.s 01
+IL_0002: initobj System.Runtime.CompilerServices.InlineArray3`1[System.Byte]
+IL_0008: ldloca.s 01
+IL_000A: ldc.i4.0 
+IL_000B: call Byte& InlineArrayElementRef[InlineArray3`1,Byte](System.Runtime.CompilerServices.InlineArray3`1[System.Byte] ByRef, Int32)
+IL_0010: ldc.i4 239
+IL_0015: stind.i1 
+IL_0016: ldloca.s 01
+IL_0018: ldc.i4.1 
+IL_0019: call Byte& InlineArrayElementRef[InlineArray3`1,Byte](System.Runtime.CompilerServices.InlineArray3`1[System.Byte] ByRef, Int32)
+IL_001E: ldc.i4 187
+IL_0023: stind.i1 
+IL_0024: ldloca.s 01
+IL_0026: ldc.i4.2 
+IL_0027: call Byte& InlineArrayElementRef[InlineArray3`1,Byte](System.Runtime.CompilerServices.InlineArray3`1[System.Byte] ByRef, Int32)
+IL_002C: ldc.i4 191
+IL_0031: stind.i1 
+IL_0032: ldloca.s 01
+IL_0034: ldc.i4.3 
+IL_0035: call System.Span`1[System.Byte] InlineArrayAsSpan[InlineArray3`1,Byte](System.Runtime.CompilerServices.InlineArray3`1[System.Byte] ByRef, Int32)
+IL_003A: stloc.0 
+IL_003B: ldloca.s 00
+IL_003D: ldc.i4.0 
+IL_003E: call Byte& get_Item(Int32)
+IL_0043: ldind.u1 
+IL_0044: ldloca.s 00
+IL_0046: ldc.i4.1 
+IL_0047: call Byte& get_Item(Int32)
+IL_004C: ldind.u1 
+IL_004D: add 
+IL_004E: ldloca.s 00
+IL_0050: ldc.i4.2 
+IL_0051: call Byte& get_Item(Int32)
+IL_0056: ldind.u1 
+IL_0057: add 
+IL_0058: ret 
+
+.cctor:
+IL_0000: ldsflda __StaticArrayInitTypeSize=6 DACF5B5B9E89F3CDE440594AAAA3BBA6E4C30E8E42937E4A718564CB0965C63A
+IL_0005: ldc.i4.5 
+IL_0006: newobj Void .ctor(Void*, Int32)
+IL_000B: call System.Buffers.SearchValues`1[System.Byte] Create(System.ReadOnlySpan`1[System.Byte])
+IL_0010: stsfld System.Buffers.SearchValues`1[System.Byte] ByteStops
+IL_0015: ldstr "&<
+
+IL_001A: call System.ReadOnlySpan`1[System.Char] AsSpan(System.String)
+IL_001F: call System.Buffers.SearchValues`1[System.Char] Create(System.ReadOnlySpan`1[System.Char])
+IL_0024: stsfld System.Buffers.SearchValues`1[System.Char] CharStops
+IL_0029: ldc.i4.5 
+IL_002A: newarr System.Byte
+IL_002F: dup 
+IL_0030: ldtoken __StaticArrayInitTypeSize=5 6B22E9A26A4C136EB28E21AA78055A393990945606D78FC3F4442BACF21BF109
+IL_0035: call Void InitializeArray(System.Array, System.RuntimeFieldHandle)
+IL_003A: stsfld Byte[] ArrayBytes
+IL_003F: ldc.i4.5 
+IL_0040: newarr System.Char
+IL_0045: dup 
+IL_0046: ldtoken __StaticArrayInitTypeSize=10 59BFE009E3DF28161FE5ADAC4BFAA123E221721464DB4734F6F2B3EDCA4F29BD
+IL_004B: call Void InitializeArray(System.Array, System.RuntimeFieldHandle)
+IL_0050: stsfld Char[] ArrayChars
+IL_0055: ldc.i4 239
+IL_005A: stsfld Byte RuntimeByte
+IL_005F: ldc.i4.s 0C
+IL_0061: newarr System.String
+IL_0066: dup 
+IL_0067: ldc.i4.0 
+IL_0068: ldstr xml
+IL_006D: stelem.ref 
+IL_006E: dup 
+IL_006F: ldc.i4.1 
+IL_0070: ldstr UTF-8
+IL_0075: stelem.ref 
+IL_0076: dup 
+IL_0077: ldc.i4.2 
+IL_0078: ldstr PUBLIC
+IL_007D: stelem.ref 
+IL_007E: dup 
+IL_007F: ldc.i4.3 
+IL_0080: ldstr SYSTEM
+IL_0085: stelem.ref 
+IL_0086: dup 
+IL_0087: ldc.i4.4 
+IL_0088: ldstr CDATA
+IL_008D: stelem.ref 
+IL_008E: dup 
+IL_008F: ldc.i4.5 
+IL_0090: ldstr DOCTYPE
+IL_0095: stelem.ref 
+IL_0096: dup 
+IL_0097: ldc.i4.6 
+IL_0098: ldstr ELEMENT
+IL_009D: stelem.ref 
+IL_009E: dup 
+IL_009F: ldc.i4.7 
+IL_00A0: ldstr ATTLIST
+IL_00A5: stelem.ref 
+IL_00A6: dup 
+IL_00A7: ldc.i4.8 
+IL_00A8: ldstr ENTITY
+IL_00AD: stelem.ref 
+IL_00AE: dup 
+IL_00AF: ldc.i4.s 09
+IL_00B1: ldstr NOTATION
+IL_00B6: stelem.ref 
+IL_00B7: dup 
+IL_00B8: ldc.i4.s 0A
+IL_00BA: ldstr standalone
+IL_00BF: stelem.ref 
+IL_00C0: dup 
+IL_00C1: ldc.i4.s 0B
+IL_00C3: ldstr encoding
+IL_00C8: stelem.ref 
+IL_00C9: stsfld System.String[] Vocabulary
+IL_00CE: ldsfld System.String[] Vocabulary
+IL_00D3: ldsfld <>c <>9
+IL_00D8: ldftn UInt32 <.cctor>b__35_0(System.String)
+IL_00DE: newobj Void .ctor(System.Object, IntPtr)
+IL_00E3: call System.Collections.Generic.IEnumerable`1[System.UInt32] Select[String,UInt32](System.Collections.Generic.IEnumerable`1[System.String], System.Func`2[System.String,System.UInt32])
+IL_00E8: call UInt32[] ToArray[UInt32](System.Collections.Generic.IEnumerable`1[System.UInt32])
+IL_00ED: stsfld UInt32[] ExactHashes
+IL_00F2: ldsfld System.String[] Vocabulary
+IL_00F7: ldsfld <>c <>9
+IL_00FC: ldftn UInt32 <.cctor>b__35_1(System.String)
+IL_0102: newobj Void .ctor(System.Object, IntPtr)
+IL_0107: call System.Collections.Generic.IEnumerable`1[System.UInt32] Select[String,UInt32](System.Collections.Generic.IEnumerable`1[System.String], System.Func`2[System.String,System.UInt32])
+IL_010C: call UInt32[] ToArray[UInt32](System.Collections.Generic.IEnumerable`1[System.UInt32])
+IL_0111: stsfld UInt32[] FoldedHashes
+IL_0116: ldsfld System.String[] Vocabulary
+IL_011B: call System.Text.Encoding get_ASCII()
+IL_0120: dup 
+IL_0121: ldvirtftn Byte[] GetBytes(System.String)
+IL_0127: newobj Void .ctor(System.Object, IntPtr)
+IL_012C: call System.Collections.Generic.IEnumerable`1[System.Byte[]] Select[String,Byte[]](System.Collections.Generic.IEnumerable`1[System.String], System.Func`2[System.String,System.Byte[]])
+IL_0131: call Byte[][] ToArray[Byte[]](System.Collections.Generic.IEnumerable`1[System.Byte[]])
+IL_0136: stsfld Byte[][] Encoded
+IL_013B: ret 
+$ dotnet /Users/sebastienros/.codex/worktrees/d888/xemele/docs/reports/M1-common/bin/Release/net10.0/Xemele.CommonBenchmarks.dll --setup-allocation
+First operation construction on fresh process: 2696 B (includes static/JIT setup on this thread).
+Warm operation construction: 704 B/op.
+Escaping construction allocation: 704.00112 B/op.
+Retained operation heap estimate: 1085.58728 B/op (GC total-memory delta; excludes preallocated reference array).
+GC heap minus fragmentation delta: 535.40432 B/op; informational whole-process estimate.
+$ dotnet /Users/sebastienros/.codex/worktrees/d888/xemele/docs/reports/M1-input/bin/Release/net10.0/Xemele.InputBenchmarks.dll --allocation
+Cold setup bytes: 2808
+Warm setup bytes/op: 816
+Informational retained heap-minus-fragmentation bytes/op (reference array excluded): 648
+$ dotnet /Users/sebastienros/.codex/worktrees/d888/xemele/docs/reports/M1-serialize/bin/Release/net10.0/SerializerBenchmarks.dll --allocation
+cached SearchValues cold static initialization bytes=2072
+corpus=short-hit warm borrowed three-scanner bytes/1000 repetitions=0; checksum=3000
+corpus=long-miss warm borrowed three-scanner bytes/1000 repetitions=0; checksum=-3000
+corpus=long-hit warm borrowed three-scanner bytes/1000 repetitions=0; checksum=24573000
+corpus=multilingual warm borrowed three-scanner bytes/1000 repetitions=0; checksum=24573000
+cold setup+first stream bytes=12712
+length=16 warm stream bytes/op=1392; owned string bytes/op=1528
+length=1000000 warm stream bytes/op=1392; owned string bytes/op=4010920
+temporary owner retained=False; heap delta=1144
+$ dotnet build docs/reports/M1-contracts/Projects/Input/Input.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+  Determining projects to restore...
+CSSM_ModuleLoad(): One or more parameters passed to a function were not valid.
+  Restored /Users/sebastienros/.codex/worktrees/d888/xemele/docs/reports/M1-contracts/Projects/Input/Input.csproj (in 21 ms).
+  Input -> /Users/sebastienros/.codex/worktrees/d888/xemele/docs/reports/M1-contracts/Projects/Input/bin/Release/net10.0/M1Input.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:01.00
+$ dotnet /Users/sebastienros/.codex/worktrees/d888/xemele/docs/reports/M1-input/bin/Release/net10.0/Xemele.InputBenchmarks.dll --contract /Users/sebastienros/.codex/worktrees/d888/xemele/docs/reports/M1-contracts/Projects/Input/bin/Release/net10.0/M1Input.dll
+Exact internal compiled surface: 41 rows match approved M1 Input model.
+PASS: launcher discovery/help/check/allocation/lowering/contract modes; historical contract evidence unchanged.

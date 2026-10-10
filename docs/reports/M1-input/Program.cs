@@ -1,5 +1,3 @@
-using BenchmarkDotNet.Configs;
-using BenchmarkDotNet.Jobs;
 using BenchmarkDotNet.Running;
 using Xemele;
 using Xemele.Parsing.Input;
@@ -50,4 +48,4 @@ else if(args.Contains("--allocation"))
     long after=GC.GetGCMemoryInfo().HeapSizeBytes-GC.GetGCMemoryInfo().FragmentedBytes;
     Console.WriteLine($"Informational retained heap-minus-fragmentation bytes/op (reference array excluded): {(after-heap)/10000.0}");GC.KeepAlive(retained);
 }
-else BenchmarkSwitcher.FromAssembly(typeof(InputBenchmarks).Assembly).Run(args,DefaultConfig.Instance.AddJob(Job.ShortRun));
+else BenchmarkSwitcher.FromAssembly(typeof(InputBenchmarks).Assembly).Run(args);

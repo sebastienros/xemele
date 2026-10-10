@@ -1,7 +1,7 @@
 using System.Buffers;
 using BenchmarkDotNet.Attributes;
 namespace Xemele.SerializationMeasurements;
-[MemoryDiagnoser]
+[MemoryDiagnoser, ShortRunJob]
 public class SerializerBenchmarks
 {
     [Params("short", "long", "multilingual", "namespaces")] public string Corpus { get; set; } = "short";
@@ -23,7 +23,7 @@ public class SerializerBenchmarks
 }
 // Alternatives have identical delimiter-recognition semantics. Setup and input
 // generation stay outside timing; no custom SIMD or token hashes are proposed.
-[MemoryDiagnoser]
+[MemoryDiagnoser, ShortRunJob]
 public class EscapeScanBenchmarks
 {
     private static readonly SearchValues<char> Stops = SearchValues.Create("&<\"\t\n\r>");

@@ -1,0 +1,46 @@
+[
+  {
+    "Type": "Xemele.SerializationMeasurements.EscapeScanBenchmarks",
+    "Jobs": 1,
+    "LaunchCount": 1,
+    "WarmupCount": 3,
+    "IterationCount": 3,
+    "Diagnosers": [
+      "BenchmarkDotNet.Diagnosers.MemoryDiagnoser"
+    ],
+    "Inventory": [
+      "CachedSearchValues|[Corpus=long-hit]",
+      "CachedSearchValues|[Corpus=long-miss]",
+      "CachedSearchValues|[Corpus=multilingual]",
+      "CachedSearchValues|[Corpus=short-hit]",
+      "RuntimeIndexOfAny|[Corpus=long-hit]",
+      "RuntimeIndexOfAny|[Corpus=long-miss]",
+      "RuntimeIndexOfAny|[Corpus=multilingual]",
+      "RuntimeIndexOfAny|[Corpus=short-hit]",
+      "ScalarLoop|[Corpus=long-hit]",
+      "ScalarLoop|[Corpus=long-miss]",
+      "ScalarLoop|[Corpus=multilingual]",
+      "ScalarLoop|[Corpus=short-hit]"
+    ]
+  },
+  {
+    "Type": "Xemele.SerializationMeasurements.SerializerBenchmarks",
+    "Jobs": 1,
+    "LaunchCount": 1,
+    "WarmupCount": 3,
+    "IterationCount": 3,
+    "Diagnosers": [
+      "BenchmarkDotNet.Diagnosers.MemoryDiagnoser"
+    ],
+    "Inventory": [
+      "IncrementalStream|[Corpus=long]",
+      "IncrementalStream|[Corpus=multilingual]",
+      "IncrementalStream|[Corpus=namespaces]",
+      "IncrementalStream|[Corpus=short]",
+      "OwnedString|[Corpus=long]",
+      "OwnedString|[Corpus=multilingual]",
+      "OwnedString|[Corpus=namespaces]",
+      "OwnedString|[Corpus=short]"
+    ]
+  }
+]
