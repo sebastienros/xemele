@@ -1,0 +1,41 @@
+{
+  "sourceRevision": "7fb85f1f81533f3afe92557c4d83c894ddbfa8ce",
+  "measuredRevision": "406e95ad041d052bdf3acaa90a1b90b08bf79cbc",
+  "compiledInputs": 340,
+  "compiledInputsUnchangedFromMeasuredRevision": true,
+  "userInstruction": "don't store test and benchmark artifacts. Result summaries are fine.",
+  "driverChanges": "Durable summaries/identities only; raw/API output temporary. Future inherited test comparisons use pinned baseline canonical digest+count, without any rawXML dependency. No compiled Fact/helper/runtime/diagnostic change.",
+  "checks": {
+    "preservationRegressions": {
+      "passed": 2,
+      "revision": "7fb85f1f81533f3afe92557c4d83c894ddbfa8ce"
+    },
+    "planningRegressions": {
+      "passed": 14,
+      "revision": "9bb4822520dd5f8345f1db713ce9d752dbca78d2"
+    },
+    "taskValidation": {
+      "validated": 124,
+      "revision": "9bb4822520dd5f8345f1db713ce9d752dbca78d2"
+    },
+    "baselineCanonicalIdentityProof": {
+      "counts": [
+        4514,
+        255,
+        299
+      ],
+      "digestsMatchOriginalVerifiedXml": true,
+      "revision": "7fb85f1f81533f3afe92557c4d83c894ddbfa8ce",
+      "noCopiedInventoryOrNewRawOutput": true
+    }
+  },
+  "preservedFailure": "During working-tree summaries-only refactor, one mocked archive regression failed NameError due to renamed raw destination parameter. Fixed the owned function reference; at committed5c68883 both regressions pass. No allocation observation rerun.",
+  "removed": "Own copied historical raw/gzip/inventory artifacts, own generated XML/log/child/request/progress/report/temporary reference copies, own standalone diagnostic scratch outputs; existing peer history unchanged; no Git history rewrite.",
+  "heavyChecksAtFinalDriver": "Not rerun; full checks remain actual measured406 revision. Coordinator must run final integration checks before verified.",
+  "limitations": [
+    "Historical6128-byte failure cause unproved",
+    "No actual timeout/crash child exercise; preservation timeout regression mocked",
+    "No timing/benchmark rerun, Windows/x64/AOT unrun",
+    "No package smoke: no packaging/API/runtime changes"
+  ]
+}

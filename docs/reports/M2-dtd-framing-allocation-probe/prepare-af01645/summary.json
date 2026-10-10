@@ -1,0 +1,53 @@
+{
+  "result": "failed",
+  "host": "macOS-15.8.1-arm64-arm-64bit-Mach-O",
+  "architecture": "arm64",
+  "timing": "not run",
+  "runtimeSettings": "default JIT/GC/test parallelism",
+  "arguments": {
+    "report_prefix": "prepare-af01645",
+    "expected_branch": "codex/m2-dtd-framing-allocation-probe",
+    "audit_base": "59972855a3707a16a1e008488165ef5d0564e0c8",
+    "runtime_count": 4515,
+    "conformance_count": 255,
+    "differential_count": 299,
+    "api_count": 272,
+    "fixture_count": 3388,
+    "planning_count": 14,
+    "task_count": 124,
+    "prepare_only": true
+  },
+  "checks": {
+    "archive-regression": {
+      "result": "passed",
+      "detail": {
+        "passed": 1,
+        "scope": "temporary raw preservation; timeout regression mocked, no real childtimeout claim"
+      }
+    }
+  },
+  "sourceRevision": "af01645780a787470da4571fc643b3b3b15ddffc",
+  "dotnetInfo": {
+    "sdk": "10.0.400",
+    "runtime": "10.0.11",
+    "architecture": "arm64"
+  },
+  "sourceHashes": {
+    "tests/Xemele.Tests/M2-dtd-framing/FramingTests.cs": "3f481bf4b578729e5469ab048eca152eb79981204fb17bff92dfabcb8d592cb8",
+    "tests/Xemele.Tests/M2-dtd-framing-allocation-probe/FramingAllocationProbe.cs": "de84e8f1f2f00395d8d66aefe11b8ad6c26062a3e05ca0c0009a9ed44c999df6",
+    "tests/Xemele.Tests/M2-dtd-framing-allocation-probe/FramingAllocationChild.cs": "e0a77f7e8fef36c3c1de5194e939c369b88abbacdba480b8a0737b134d558460",
+    "docs/reports/M2-dtd-framing-allocation-probe/Diagnostics/Program.cs": "180450d2df998818c5c23fee8504965a9a91daace735f4c406acf598f2592cfa"
+  },
+  "failure": "Standalone diagnostic build failed CS7022: transitive xUnit generated a second entry point. Full solution build passed. No allocation observation ran; dependent diagnostic/focused/cumulative/direct/protocol/API/planning checks in this attempt were unrun. Fixed owned diagnostic project before a new preparation.",
+  "failedChecks": [
+    "diagnostic-build"
+  ],
+  "compiledSources": {
+    "count": 340,
+    "beforeSha256": "3db60a5ce5c3b32643ae5d43faa2bb4b6561057d78fc5217240653c1e51a2081",
+    "afterSha256": "3db60a5ce5c3b32643ae5d43faa2bb4b6561057d78fc5217240653c1e51a2081",
+    "unchanged": true
+  },
+  "allocationObservations": "unrun",
+  "artifactPolicy": "User requested summaries only after verification. Raw logs/XML/child/request/progress/report and copied inventories were inspected then removed; no measurement rerun, no history rewrite."
+}
