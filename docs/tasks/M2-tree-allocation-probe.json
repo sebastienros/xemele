@@ -4,7 +4,7 @@
   "milestone": "M2",
   "title": "Isolated Tree traversal and intern allocation measurement",
   "kind": "infrastructure",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M2-tree-allocation-probe",
   "branch": "codex/m2-tree-allocation-probe",
   "base_revision": "ab43206bb302321998161b3a09f4244e274338f4",
@@ -32,25 +32,33 @@
     {
       "id": "M2-tree-allocation-probe-A1",
       "description": "Preserve integrated5109fe9 Tree1064B failure and honest historical uncertainty; original setup, one warm1000-iteration Walk and one measured1000-iteration Walk remain equivalent, consumed21000 and identity asserted. Both counters and full measured work in one synchronous NoInlining helper; no production/other test bodies, threshold/warm count/GC/JIT/test parallelism changes. Use reviewed PI/Streaming same-Fact process isolation with single real child plus meaningful positive-allocation child, exact-current-host/strict schema/provenance/guard/progress/timeout/raw failure propagation. If actual primitive allocation remains, request production owner repair instead of subtraction/retry.",
-      "status": "pending",
+      "status": "passed",
       "evidence": [
         "historical-tree1064-preservation",
         "bounded-allocation-comparison",
         "joint-real-positive-allocation",
-        "independent-source-review"
+        "independent-source-review",
+        "root-c455-encoding-failure",
+        "renewed-setup-source-equivalence",
+        "renewed-real-positive-comparison",
+        "renewed-full-checks"
       ]
     },
     {
       "id": "M2-tree-allocation-probe-A2",
-      "description": "At committed source run bounded original/equivalent/helper diagnostic comparison without unproved attribution; fresh focused and cumulative MTP plus direct runtime/conformance/differential, API251/discovery3388/ref242 fresh complete pinned copy/full source/hash, meaningful consumed work, positive and protocol/schema/provenance rejection controls, planning14/task validation115/owned audits. Preserve every failure and unrun check; unique attempts and count arguments. No timing benchmarks or blind repeats.",
-      "status": "pending",
+      "description": "At committed source run bounded original/equivalent/helper diagnostic comparison without unproved attribution; fresh focused and cumulative MTP plus direct runtime/conformance/differential, API251/discovery3388/ref242 fresh complete pinned copy/full source/hash, meaningful consumed work, positive and protocol/schema/provenance rejection controls, planning14/task validation118/owned audits. Preserve every failure and unrun check; unique attempts and count arguments. No timing benchmarks or blind repeats.",
+      "status": "passed",
       "evidence": [
         "sandbox-build-failure",
         "bounded-allocation-comparison",
         "joint-real-positive-allocation",
         "protocol-rejections-archive",
         "all-known-source-checks",
-        "independent-source-review"
+        "independent-source-review",
+        "root-c455-encoding-failure",
+        "renewed-setup-source-equivalence",
+        "renewed-real-positive-comparison",
+        "renewed-full-checks"
       ]
     }
   ],
@@ -123,21 +131,57 @@
       "result": "passed",
       "summary": "Independent reviewer approves unchanged exactfixture/1x1000warm/1x1000measured/21000sum/attributeidentity/bothcounters+wholeNoInliningwork/realexact0/meaningfulpositiveescaped1000 allocations;strictprovenance/knownargs/request/XMLtotals/progress/deadline/rawfailpropagation;no otherbodies/peer/runtime changes,historical1064Bcause unresolved. Read-only source review; no checks executed by reviewer.",
       "artifact": null
+    },
+    {
+      "id": "root-c455-encoding-failure",
+      "kind": "check",
+      "revision": "c455bdb41e34a7a62589335bb9d1143df6ccc3d6",
+      "command": "Preserve root failed c455bdb raw summary/checks/direct XML/counts/Treechild/reference provenance from /private/tmp/xemele-integrate-m2-tree-allocation-probe; SHA256 byte-identical verification.",
+      "result": "failed",
+      "summary": "Fresh root combinedcandidate actual16/17checksPass: fullMTP852passed,all3Tree0B/positive64000Bpairs passed; directruntime298total297pass1unchanged EncodingTests.WarmLegacyConversionAndDeclarationMatchingAllocateZero5960Bexpected0 line128. No Tree primitive allocation exposed; cause unresolved, no retry/verified. Relevant raw files byte-identical copied with full source/archive revision+SHA records.",
+      "artifact": "docs/reports/M2-tree-allocation-probe/history/integration-c455bdb-attempt1/preservation.json"
+    },
+    {
+      "id": "renewed-setup-source-equivalence",
+      "kind": "check",
+      "revision": "184090226ffd253917802c3a1655f884ccb4398f",
+      "command": "git merge --no-commit --no-ff c347796669e94617f4fff50f384d4695510e93f4; assert exactroot/branch/claim/base/dependency ancestors; compare six relevant source files byte-for-byte to git show 1d1fadd6e159a524a19dd83de553a05ee9c66c10:path; git commit renewed candidate.",
+      "result": "passed",
+      "summary": "Exactnewclaimc347796669e94617f4fff50f384d4695510e93f4/baseab43206 ancestry,checkout/branch/clean start and verified M1/PI/Encoding integrateddependency ancestors asserted. Only expectedownJSON merge conflict resolved; peer metadata taken from mainclaim. Fact/helper/child/diagnostics/verifier/protocol byte-identical to independentreview approved1d1; no measurement/defaultJITGCparallelism/production/peer changes; no verifier renewalargs delta. All older evidence preserved; earlier18message typo corrected to actual17.",
+      "artifact": null
+    },
+    {
+      "id": "renewed-real-positive-comparison",
+      "kind": "check",
+      "revision": "184090226ffd253917802c3a1655f884ccb4398f",
+      "command": "export DOTNET_ROOT='/Users/sebastienros/Library/Application Support/dotnetup/dotnet'\nexport PATH=\"$DOTNET_ROOT:$PATH\"\npython3 -B docs/reports/M2-tree-allocation-probe/verify.py --report-prefix renewed-1840902-attempt1 --expected-branch codex/m2-tree-allocation-probe --audit-base c347796669e94617f4fff50f384d4695510e93f4 --runtime-count 298 --conformance-count 255 --differential-count 299 --api-count 251 --fixture-count 3388 --planning-count 14 --task-count 118",
+      "result": "passed",
+      "summary": "Onefresh bounded original/equivalent/helper comparison0B each,1000warm1000measure/21000sum/attributeidentity. Focused1/fullMTP852/direct298+255+299 allPass0fail0skip. Exactly3actualreal0B/positive64000Bpairs, warm0/64000B and measured0/64000B;1000warm1000measured,21000each,attributeidentitytrue,positiveescaped37. Strict real oneFactXML/compiled fullsource/DLL/currentdotnet-apphost/native runtime/config/helperIL/capability/PID/request/progress provenance passed. Raw failure archival all pairs retained.",
+      "artifact": "docs/reports/M2-tree-allocation-probe/renewed-1840902-attempt1/child-provenance.json"
+    },
+    {
+      "id": "renewed-full-checks",
+      "kind": "check",
+      "revision": "184090226ffd253917802c3a1655f884ccb4398f",
+      "command": "export DOTNET_ROOT='/Users/sebastienros/Library/Application Support/dotnetup/dotnet'\nexport PATH=\"$DOTNET_ROOT:$PATH\"\npython3 -B docs/reports/M2-tree-allocation-probe/verify.py --report-prefix renewed-1840902-attempt1 --expected-branch codex/m2-tree-allocation-probe --audit-base c347796669e94617f4fff50f384d4695510e93f4 --runtime-count 298 --conformance-count 255 --differential-count 299 --api-count 251 --fixture-count 3388 --planning-count 14 --task-count 118",
+      "result": "passed",
+      "summary": "Verifier exit0/all17checksPass at renewed committedsource1840902. Release reference/solution/diagnostic/checker builds0warnings0errors; API251/discovery3388/ref242unique fullrevisionhash with fresh completeBCLoutputcopy pinned before historicalM1solutionbuild and unchangedrunnerSHA; all242durable records gzip/outputmanifest retained. Planning14/validate118; exactnewclaim auditbase committed/staged/working/untracked/source/otherTreebody/diff checks pass. Archive1 and7actual guard/schema/provenance expected-rejection controls pass; all raw child/protocol artifacts retained. SDK10.0.400/runtime10.0.11/arm64/defaultJITGCclassparallelism. No timing/blindretry/cause attribution; timeout/crash/postreporttamper negative execution unrun.",
+      "artifact": "docs/reports/M2-tree-allocation-probe/renewed-1840902-attempt1/summary.json"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Renewed exactclaimc347796 after verified encoding repair; original reviewed source1d1fadd/evidence2cf0508 retained. Fresh combined checks pending; no measurement/source changes.",
+    "summary": "Renewed implemented source1840902 follows verified Encoding prerequisite; source/controls byte-identical to reviewed1d1. All17fresh combinedchecksPass at852, real0B/positive64000B exact originalprofile. Prior source/evidence and rootc4555960B Encoding failure preserved; causes unresolved. Integration revision unset; awaiting root independent integration.",
     "checks": [
-      "export DOTNET_ROOT='/Users/sebastienros/Library/Application Support/dotnetup/dotnet'\nexport PATH=\"$DOTNET_ROOT:$PATH\"\npython3 -B docs/reports/M2-tree-allocation-probe/verify.py --report-prefix source-1d1fadd-attempt2-network --expected-branch codex/m2-tree-allocation-probe --audit-base 0a64aeb75f16d3670c2a165aba8e2d877db459f1 --runtime-count 298 --conformance-count 255 --differential-count 299 --api-count 251 --fixture-count 3388 --planning-count 14 --task-count 115: exit0/all17checksPass.",
-      "Focused1/fullMTP852/direct298/255/299 allPass;3real0/positive64000B;original/equivalent/helper0B;1000warm1000measured/21000consumed/identity.",
-      "API251/discovery3388/ref242fullsourcehash/freshcompleteBCLcopy/planning14/validate115/ownership pass;archive1/sevenactualnegativeguards pass.",
-      "Initial sandbox NU1900 restore failure retained; no diagnostics/tests there; next network-authorized attempt resolves restore, no blind allocation repeat."
+      "export DOTNET_ROOT='/Users/sebastienros/Library/Application Support/dotnetup/dotnet'\nexport PATH=\"$DOTNET_ROOT:$PATH\"\npython3 -B docs/reports/M2-tree-allocation-probe/verify.py --report-prefix renewed-1840902-attempt1 --expected-branch codex/m2-tree-allocation-probe --audit-base c347796669e94617f4fff50f384d4695510e93f4 --runtime-count 298 --conformance-count 255 --differential-count 299 --api-count 251 --fixture-count 3388 --planning-count 14 --task-count 118:exit0/all17checksPass; no retry.",
+      "Focused1/fullMTP852/direct298/255/299 allPass0fail0skip;3real0/positive64000Bpairs;original/equivalent/helper0B,1000warm1000measured/21000sum/attributeidentity.",
+      "API251/discovery3388/ref242sourcehashfreshcompleteBCLcopy/planning14/validate118/allowned+unchangedsource audits pass;archive1/sevenactualguard/schema/provenance rejection checks pass.",
+      "Original1d1/2cf and sandboxNU1900failed/unrun attempt retained; rootc455Encoding5960B16of17 failure byte-identical preserved, no Treecause inferred. Actual17check count correction retained."
     ],
     "remaining": [
-      "Root integrationc455bdb full852MTPPass/TreepairsPass/API251/ref242/controls/planningPass butdirectruntimeEncoding5960B fail; await verified M2-encoding-allocation-probe and renew preserved1d1/2cf source/evidence.",
-      "Renewed after verified decoder repair6d952ca; preserve original source/evidence and root c455bdb Encoding5960B failure, run fresh combined candidate once.",
-      "Fresh renewed candidate checks at task-count118, pending."
+      "Root fresh independent integrated verification before verified.",
+      "Historical Tree1064B and Encoding5960B causes unresolved; isolated synchronous scope only,no concurrentallocation guarantee.",
+      "Crash/timeout/postreporttamper negative execution and timing unrun."
     ],
     "requests": []
   }
