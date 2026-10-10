@@ -26,13 +26,28 @@
       "branch": "codex/m1-dom",
       "base_revision": "4af94600952d417c2d7418758c30131695cb3ecb",
       "claim_revision": "c4f3e7a3910e130a2467733aa79558984463b244",
-      "setup_status": "dispatched",
+      "setup_status": "suspended-prerequisite",
       "chat_id": "01a123df-0348-7a81-9d6f-f4676934cb48",
       "worktree_path": "/Users/sebastienros/.codex/worktrees/a22a/xemele"
+    },
+    {
+      "task_id": "M1-tree-dom-builder",
+      "client_thread_id": "client-new-thread:2223ac2f-2efd-4647-ac16-10d9c07282eb",
+      "host_id": "local",
+      "branch": "codex/m1-tree-dom-builder",
+      "base_revision": "ed3d980890c172aa9a3d7c543b5fff5c11113456",
+      "claim_revision": "3c54a1b90d550ac13ff487af2f7d00d2b43f9fe5",
+      "setup_status": "pending"
     }
   ],
   "integration_queue": [],
-  "blockers": [],
+  "blockers": [
+    {
+      "task_id": "M1-dom",
+      "finding": "Requires verified linear tree builder before composition; task schema forbids started tasks with unverified prerequisites",
+      "resolution": "Suspend claim to planned, preserve worker draft/assignment, resume after repair; initial blocked-state validation failure corrected"
+    }
+  ],
   "next_actions": [
     "Claim and dispatch DOM composition with verified Input/Tree/Syntax",
     "Run serializer20 ShortRun with root/DOM parked",
