@@ -1,6 +1,7 @@
 using Xemele;
 using Xemele.Parsing.Dtd;
 if (args.Contains("--runtime")) { Console.WriteLine(Environment.Version); return; }
+if (args.Contains("--hooks")) { Environment.ExitCode = HookInventory.Print() ? 0 : 1; return; }
 if (args.Contains("--contract")) { Inventory.Print(); return; }
 var uri = new Uri("https://fixture.invalid/effective.dtd");
 var ledger = new OperationLedger();
