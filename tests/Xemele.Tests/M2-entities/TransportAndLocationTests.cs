@@ -94,6 +94,20 @@ public sealed class TransportAndLocationTests
         Assert.Equal("XML.Syntax", Assert.Single(diagnostics).Code); Assert.Equal(1, resolver.Stream!.Disposals);
     }
 
+    [Fact]
+    public void BufferedValidPrefixEventuallyPublishesDecoderFailureWithExactSourceOffset()
+    {
+        byte[] bytes = [.. Encoding.UTF8.GetBytes("<?xml encoding='UTF-8'?>prefix\r\n😀"), 0xFF];
+        var resolver = new BinaryResolver(bytes, 4096); using var core = new XmlParserCore(Options(resolver));
+        var sink = new ContentTests.RecordingSink();
+        var result = core.Append("<!DOCTYPE r [<!ENTITY e SYSTEM 'urn:entity'>]><r>&e;</r>", [], true, sink, Cancellation);
+        Assert.Equal(ScanStep.Rejected, result.Step); Assert.Equal("INPUT.InvalidEncoding", result.Diagnostic!.Code);
+        Assert.Equal(new Uri("https://final.example/entity"), result.Diagnostic.Location.SourceUri);
+        Assert.Equal(bytes.Length - 1, result.Diagnostic.Location.ByteOffset);
+        Assert.Equal(2, result.Diagnostic.Location.LineNumber); Assert.Equal(2, result.Diagnostic.Location.LinePosition);
+        Assert.Contains("prefix\n😀", sink.Output.ToString(), StringComparison.Ordinal); Assert.Equal(1, resolver.Stream!.Disposals);
+    }
+
     private sealed class BinaryResolver(byte[] bytes, int size) : XmlResourceResolver
     {
         internal ProductionTests.BoundedStream? Stream;

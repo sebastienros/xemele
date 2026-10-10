@@ -1,0 +1,8 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><OutputType>Exe</OutputType><AssemblyName>Xemele.EntitiesBenchmarks</AssemblyName></PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="BenchmarkDotNet" />
+    <Compile Include="../../../../src/Xemele/**/*.cs" Exclude="../../../../src/Xemele/bin/**;../../../../src/Xemele/obj/**" />
+    <Compile Include="../../../../benchmarks/Xemele.Benchmarks/M2-entities/EntityBenchmarks.cs" />
+  </ItemGroup>
+</Project>
