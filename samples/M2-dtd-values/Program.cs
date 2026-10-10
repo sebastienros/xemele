@@ -52,15 +52,25 @@ before = GC.GetAllocatedBytesForCurrentThread();
 for (int i = 0; i < iterations; i++) DtdValueProcessor.NormalizeAttributeDefault("&outer; &#9;", DtdAttributeType.NmTokens, table, new());
 long ownedBytesPerOperation = (GC.GetAllocatedBytesForCurrentThread() - before) / iterations;
 // Separate persistence estimate; forced collections are outside benchmark timing.
-GC.Collect(2, GCCollectionMode.Forced, true, true);
-GC.WaitForPendingFinalizers();
-long retainedBefore = GC.GetTotalMemory(true);
-string[] retained = new string[iterations];
-for (int i = 0; i < iterations; i++)
-    retained[i] = DtdValueProcessor.NormalizeAttributeDefault("&outer; &#9;", DtdAttributeType.NmTokens, table, new()).Value!;
-long retainedBytes = GC.GetTotalMemory(true) - retainedBefore;
+_ = Retain(iterations, table); Collect();
+long retainedBefore = GC.GetTotalMemory(false);
+string[] retained = Retain(iterations, table); Collect();
+long retainedBytes = GC.GetTotalMemory(false) - retainedBefore;
 GC.KeepAlive(retained);
 Console.WriteLine(JsonSerializer.Serialize(new { coldBytes, setupBytesPerOperation, warmPrimitiveBytes, ownedBytesPerOperation, retainedBytes,
     retainedResults = iterations, retainedMeaning = "GC total-memory estimate for 1000 owned eight-unit strings plus result array; input/table already live, transient builders/frames collected; separate from BDN GC settings", runtime = Environment.Version.ToString(),
     ownership = "Decoder setup owns bounded scalar/numeric state. Normalization owns builder, iterative frames, cycle set and final string; table belongs to caller. Cold probe is first decoder use in a fresh process." }));
 if (warmPrimitiveBytes != 0) throw new Exception("Warm primitive allocation.");
+
+static void Collect()
+{
+    GC.Collect(2, GCCollectionMode.Forced, true, true); GC.WaitForPendingFinalizers();
+    GC.Collect(2, GCCollectionMode.Forced, true, true);
+}
+[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
+static string[] Retain(int count, Dictionary<string, DtdEntityDeclaration> table)
+{
+    string[] results = new string[count];
+    for (int i = 0; i < count; i++) results[i] = DtdValueProcessor.NormalizeAttributeDefault("&outer; &#9;", DtdAttributeType.NmTokens, table, new()).Value!;
+    return results;
+}
