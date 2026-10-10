@@ -1,0 +1,137 @@
+$ dotnet build experiments/Tree/Tree.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+  Determining projects to restore...
+  Restored /private/tmp/xemele-integrate-m0-tree/experiments/Tree/Tree.csproj (in 177 ms).
+  Tree -> /private/tmp/xemele-integrate-m0-tree/experiments/Tree/bin/Release/net10.0/Tree.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:01.37
+
+Exit: 0
+$ dotnet run --project experiments/Tree/Tree.csproj -c Release --no-build -- --self-check
+PASS: 8 construction fixtures; owner/identity/growth/cycle/sibling/deep-tree checks; ordinal Unicode/culture/miss oracle; 0 B warm borrowed lookup; name/text equivalence.
+
+Exit: 0
+$ dotnet run --project experiments/Tree/Tree.csproj -c Release --no-build -- --memory
+{
+  "runtime": ".NET 10.0.11",
+  "os": "macOS 15.8.1",
+  "architecture": "Arm64",
+  "serverGc": false,
+  "records": [
+    {
+      "representation": "objects",
+      "nodes": 16384,
+      "unique": false,
+      "firstCallAllocation": 1443152,
+      "warmAllocation": 1443152,
+      "retainedBytesPerTreeMedian": 1311082,
+      "retainedSortedSamples": [
+        1311082,
+        1311082,
+        1311082,
+        1311082,
+        1311082
+      ]
+    },
+    {
+      "representation": "arena",
+      "nodes": 16384,
+      "unique": false,
+      "firstCallAllocation": 1312240,
+      "warmAllocation": 1312240,
+      "retainedBytesPerTreeMedian": 655778,
+      "retainedSortedSamples": [
+        655778,
+        655778,
+        655778,
+        655778,
+        655778
+      ]
+    },
+    {
+      "representation": "objects",
+      "nodes": 16384,
+      "unique": true,
+      "firstCallAllocation": 3039208,
+      "warmAllocation": 3039208,
+      "retainedBytesPerTreeMedian": 1966122,
+      "retainedSortedSamples": [
+        1966122,
+        1966122,
+        1966122,
+        1966122,
+        1966122
+      ]
+    },
+    {
+      "representation": "arena",
+      "nodes": 16384,
+      "unique": true,
+      "firstCallAllocation": 2908296,
+      "warmAllocation": 2908296,
+      "retainedBytesPerTreeMedian": 1310818,
+      "retainedSortedSamples": [
+        1310818,
+        1310818,
+        1310818,
+        1310818,
+        1310818
+      ]
+    },
+    {
+      "textOwnership": "borrowed-32-chars",
+      "backingSourceChars": 1048576,
+      "sourceAliveAfterFullGc": true,
+      "retainedBytes": 2097520
+    },
+    {
+      "textOwnership": "owned-32-chars",
+      "backingSourceChars": 1048576,
+      "sourceAliveAfterFullGc": false,
+      "retainedBytes": 112
+    },
+    {
+      "nameSetupFixtureAndTableAllocation": 134920,
+      "warmBorrowed1024LookupsAllocation": 0
+    }
+  ]
+}
+
+Exit: 0
+$ dotnet build Xemele.slnx -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+  Determining projects to restore...
+  Restored /private/tmp/xemele-integrate-m0-tree/src/Xemele/Xemele.csproj (in 41 ms).
+  Restored /private/tmp/xemele-integrate-m0-tree/tools/CorpusManager/CorpusManager.csproj (in 41 ms).
+  Restored /private/tmp/xemele-integrate-m0-tree/src/Xemele.Tool/Xemele.Tool.csproj (in 45 ms).
+  Restored /private/tmp/xemele-integrate-m0-tree/tests/Xemele.TestUtilities/Xemele.TestUtilities.csproj (in 45 ms).
+  Restored /private/tmp/xemele-integrate-m0-tree/tests/Contracts/Contracts.csproj (in 45 ms).
+  Restored /private/tmp/xemele-integrate-m0-tree/tests/Xemele.Fuzz/Xemele.Fuzz.csproj (in 45 ms).
+  Restored /private/tmp/xemele-integrate-m0-tree/tests/Xemele.Conformance.Tests/Xemele.Conformance.Tests.csproj (in 120 ms).
+  Restored /private/tmp/xemele-integrate-m0-tree/tests/Xemele.Differential.Tests/Xemele.Differential.Tests.csproj (in 120 ms).
+  Restored /private/tmp/xemele-integrate-m0-tree/tests/Xemele.Tests/Xemele.Tests.csproj (in 120 ms).
+  Restored /private/tmp/xemele-integrate-m0-tree/benchmarks/Xemele.Benchmarks/Xemele.Benchmarks.csproj (in 145 ms).
+  Xemele -> /private/tmp/xemele-integrate-m0-tree/src/Xemele/bin/Release/net10.0/Xemele.dll
+  Xemele.Benchmarks -> /private/tmp/xemele-integrate-m0-tree/benchmarks/Xemele.Benchmarks/bin/Release/net10.0/Xemele.Benchmarks.dll
+  Xemele.Tool -> /private/tmp/xemele-integrate-m0-tree/src/Xemele.Tool/bin/Release/net10.0/Xemele.Tool.dll
+  Contracts -> /private/tmp/xemele-integrate-m0-tree/tests/Contracts/bin/Release/net10.0/Contracts.dll
+  Xemele.TestUtilities -> /private/tmp/xemele-integrate-m0-tree/tests/Xemele.TestUtilities/bin/Release/net10.0/Xemele.TestUtilities.dll
+  Xemele.Conformance.Tests -> /private/tmp/xemele-integrate-m0-tree/tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll
+  Xemele.Differential.Tests -> /private/tmp/xemele-integrate-m0-tree/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll
+  Xemele.Fuzz -> /private/tmp/xemele-integrate-m0-tree/tests/Xemele.Fuzz/bin/Release/net10.0/Xemele.Fuzz.dll
+  Xemele.Tests -> /private/tmp/xemele-integrate-m0-tree/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll
+  CorpusManager -> /private/tmp/xemele-integrate-m0-tree/tools/CorpusManager/bin/Release/net10.0/CorpusManager.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:07.07
+
+Exit: 0
+$ python3 tools/planning/tasks.py validate
+Validated 96 tasks: schema, evidence, acyclic dependencies, additive milestones, and ordered ownership.
+
+Exit: 0

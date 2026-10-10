@@ -25,32 +25,14 @@
       "branch": "codex/m0-ci",
       "base_revision": "9c630d1d83e37445ae619a778a90f87a148331ed",
       "claim_revision": "136dc0513bb861b9a48c80bee04d91b38ac0f701",
-      "setup_status": "holding-builds-idle",
+      "setup_status": "resumed-checks",
       "client_thread_id": "client-new-thread:d31ae09b-5f91-4c10-bcdd-1fec261550da",
       "wait_cursor": "6c0e97f1-6559-4051-a9b8-d7474959a80f:10",
       "implementation_revision": "891b493d2d6e4146ae08f11815446f43ddfb5917",
       "handoff_revision": "87f06baf0a25f47cab3cad0d14c4dc76ca898b8d"
     }
   ],
-  "integration_queue": [
-    {
-      "task_id": "M0-tree-spike",
-      "chat_id": "01a12314-7e3b-7dd0-b8d5-8505edc07986",
-      "host_id": "local",
-      "worktree_path": "/Users/sebastienros/.codex/worktrees/c130/xemele",
-      "branch": "codex/m0-tree-spike",
-      "base_revision": "5cb0e4eae1a0835a7455580bac25ee05ade7c463",
-      "claim_revision": "33894407c6ced8041d488ec10939bf66a0705891",
-      "setup_status": "awaiting_integration",
-      "client_thread_id": "client-new-thread:1cac6c56-4b2e-4608-9a57-4341e60e44aa",
-      "wait_cursor": "91f4072c-e0be-4aa5-9efb-267c96f9f3bb:23",
-      "implementation_revision": "24a0499f1d7c891a803bd8a370951f2a50e9a751",
-      "handoff_revision": "31b4723f89ca0cbcd32d26e6c36ae892ca416ba1",
-      "integration_branch": "codex/integrate-m0-tree",
-      "integration_worktree": "/private/tmp/xemele-integrate-m0-tree",
-      "integration_revision": "ce3f17e62d889f694e8b8f6bb3c1456ef25f2f8b"
-    }
-  ],
+  "integration_queue": [],
   "blockers": [
     {
       "task_id": "M0-input-spike",
@@ -60,12 +42,12 @@
     }
   ],
   "next_actions": [
-    "CI prepares workflow/discovery without sustained builds during input timing",
-    "After input timings finish run tree integrated correctness/build checks",
-    "Integrate input then settle M0-contracts"
+    "Review/integrate corrected input experiment",
+    "Review/integrate CI discovery",
+    "Claim foundation contract and corpus or protocol lane within two-worker limit"
   ],
-  "last_verified_task": "M0-build",
-  "last_integrated_revision": "c7ecb084050b8c4cc014e7bc3f4b57f37f34413e",
+  "last_verified_task": "M0-tree-spike",
+  "last_integrated_revision": "a09775893dc66b388fe0870a6ba010ed63d52c99",
   "completed_assignments": [
     {
       "task_id": "M0-build",
@@ -73,10 +55,27 @@
       "branch": "codex/m0-build",
       "worktree_path": "/Users/sebastienros/.codex/worktrees/f235/xemele",
       "handoff_revision": "f17855d81e90e9e97181242bdfe4ccb5b8a007ae"
+    },
+    {
+      "task_id": "M0-tree-spike",
+      "chat_id": "01a12314-7e3b-7dd0-b8d5-8505edc07986",
+      "host_id": "local",
+      "worktree_path": "/Users/sebastienros/.codex/worktrees/c130/xemele",
+      "branch": "codex/m0-tree-spike",
+      "base_revision": "5cb0e4eae1a0835a7455580bac25ee05ade7c463",
+      "claim_revision": "33894407c6ced8041d488ec10939bf66a0705891",
+      "setup_status": "verified",
+      "client_thread_id": "client-new-thread:1cac6c56-4b2e-4608-9a57-4341e60e44aa",
+      "wait_cursor": "91f4072c-e0be-4aa5-9efb-267c96f9f3bb:23",
+      "implementation_revision": "24a0499f1d7c891a803bd8a370951f2a50e9a751",
+      "handoff_revision": "31b4723f89ca0cbcd32d26e6c36ae892ca416ba1",
+      "integration_branch": "codex/integrate-m0-tree",
+      "integration_worktree": "/private/tmp/xemele-integrate-m0-tree",
+      "integration_revision": "a09775893dc66b388fe0870a6ba010ed63d52c99"
     }
   ],
-  "benchmark_policy": "Tree timings complete (36/36); input explicitly authorized after release. Coordinator does no sustained measurements concurrently.",
-  "benchmark_owner": "M0-input-spike",
+  "benchmark_policy": "All experiment timing complete; CI and integrated checks released. Any later timing requires serial host lock.",
+  "benchmark_owner": null,
   "pending_decisions": [],
   "decisions": {
     "project_license": "MIT",

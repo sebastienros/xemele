@@ -4,11 +4,11 @@
   "milestone": "M0",
   "title": "Compare node representations",
   "kind": "infrastructure",
-  "status": "implemented",
+  "status": "verified",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M0-tree-spike",
   "branch": "codex/m0-tree-spike",
   "base_revision": "5cb0e4eae1a0835a7455580bac25ee05ade7c463",
-  "integration_revision": null,
+  "integration_revision": "a09775893dc66b388fe0870a6ba010ed63d52c99",
   "depends_on": [
     "M0-build"
   ],
@@ -34,7 +34,8 @@
       "evidence": [
         "correctness",
         "benchmarks",
-        "allocation-retention"
+        "allocation-retention",
+        "coordinator-integration"
       ]
     },
     {
@@ -44,7 +45,8 @@
       "evidence": [
         "benchmarks",
         "allocation-retention",
-        "literal-lowering"
+        "literal-lowering",
+        "coordinator-integration"
       ]
     },
     {
@@ -55,7 +57,8 @@
         "experiment-build",
         "correctness",
         "solution-build",
-        "task-validation"
+        "task-validation",
+        "coordinator-integration"
       ]
     },
     {
@@ -66,7 +69,8 @@
         "correctness",
         "benchmarks",
         "allocation-retention",
-        "literal-lowering"
+        "literal-lowering",
+        "coordinator-integration"
       ]
     }
   ],
@@ -149,18 +153,35 @@
       "result": "passed",
       "summary": "Passed93 tasks: schema, evidence, acyclic dependencies, additive milestones and ordered ownership.",
       "artifact": "docs/reports/M0-tree-spike/task-validation.txt"
+    },
+    {
+      "id": "coordinator-integration",
+      "kind": "integration",
+      "revision": "a09775893dc66b388fe0870a6ba010ed63d52c99",
+      "command": "dotnet build experiments/Tree/Tree.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false; dotnet run --project experiments/Tree/Tree.csproj -c Release --no-build -- --self-check; same --memory; dotnet build Xemele.slnx -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false; python3 tools/planning/tasks.py validate",
+      "result": "passed",
+      "summary": "Pinned SDK10.0.400 .NET10.0.11 Arm64. Integrated experiment and all ten bootstrap projects Release-build with zero warnings/errors. Self-check passes8 construction cases and identity/owner/cycle/depth/0B assertions. Ownership/retention and0B warm borrowed lookup reproduce worker results;96-task validator passes. No sustained benchmark rerun; reviewed preserved36 BDN cases all have statistics and memory data, and timing remains provisional.",
+      "artifact": "docs/reports/M0-tree-spike/integration-checks.txt"
+    },
+    {
+      "id": "coordinator-review",
+      "kind": "review",
+      "revision": "a09775893dc66b388fe0870a6ba010ed63d52c99",
+      "command": null,
+      "result": "passed",
+      "summary": "Reviewed prototype/source semantics, all37 changed paths against owns, benchmark checksums and raw36-case statistics/allocation records; no runtime stub or peer changes. Tradeoffs, default-handle limits and end-to-end/x64 follow-ups accurately documented. Only integrated M0-build prerequisite consumed.",
+      "artifact": null
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Implemented isolated arena/object tree comparison and36 BDN cases; raw results/environment and ownership/identity/ergonomic analysis recorded. No runtime APIs or shared build files edited; source24a0499f1d7c891a803bd8a370951f2a50e9a751.",
+    "summary": "Integrated and verified task-local tree architecture evidence; runtime representation remains a contract decision.",
     "checks": [
       "Experiment Release build/self-check/memory/JIT passed; all36 BDN cases measured.",
       "Default solution build stalled and was terminated; no-build-server single-node Release solution build passed0 warnings/errors.",
       "tasks.py validate passed93 tasks; benchmark lock released after final measurement."
     ],
     "remaining": [
-      "Coordinator review/integration and integrated checks; integration_revision deliberately null.",
       "M0-contracts must weigh lower arena retained memory against slower prototype traversal/mutation and freeze lifetime/equality policy.",
       "Future composition owners rerun actual parser/query/output workloads, table limits and source/chunk lifetimes; repeat on x64/Arm64 before release."
     ],
