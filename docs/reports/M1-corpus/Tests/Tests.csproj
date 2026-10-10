@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><IsTestProject>true</IsTestProject><OutputType>Exe</OutputType><AssemblyName>Xemele.XmlSubset.Tests</AssemblyName></PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="xunit.v3.mtp-v2" />
+    <ProjectReference Include="../../../../src/Xemele/Xemele.csproj" />
+    <ProjectReference Include="../../../../tests/Xemele.TestUtilities/Xemele.TestUtilities.csproj" />
+    <Compile Include="../../../../tests/Xemele.Conformance.Tests/XmlSubset/*.cs" Link="Conformance/%(Filename)%(Extension)" />
+    <Compile Include="../../../../tests/Xemele.Differential.Tests/XmlSubset/*.cs" Link="Differential/%(Filename)%(Extension)" />
+  </ItemGroup>
+</Project>
