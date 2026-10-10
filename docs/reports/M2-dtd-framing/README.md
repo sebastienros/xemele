@@ -1,7 +1,19 @@
 # Incremental external text declaration framing
 
-Task state: implemented, awaiting coordinator integration verification. Fresh renewed
-correctness verification passed at `dbcd535e80f2da0b808a5d9e40af78fd8e75be19` after
+Task state: implemented, awaiting coordinator integration verification. Fresh
+combined verification passed at `ac9f4233cf8fccb1a734dc1beb31a0e656a23fa6` after
+claim `d00c0d327478749a2c287a9aa31d75f319b6b451` over verified base
+`b96b9d0a674dddfa6a9b3907cf947577ee8ba395`. All 2103 MTP/direct/discovery tests agree:
+1549 runtime (306 current prerequisites +1243 framing), 255 conformance, 299
+differential, zero failures/skips. API251/registry3388/fresh reference242/
+planning14/validation118 and exact-claim ownership/whitespace audits passed.
+`combined-renewal-correctness/` preserves the new results and timing reuse proof.
+The combined candidate includes verified resolver, additional encoding and DTD
+model code; this task's framer still compiles independently with common-only
+sources. Full DTD grammar/entity composition remains later work.
+
+The original renewed correctness verification passed at
+`dbcd535e80f2da0b808a5d9e40af78fd8e75be19` after
 adopting renewed claim `7034b2769307fbab70ea524ea2a16f5defa8e7d6` and its verified
 measurement prerequisites. MTP, direct execution and discovery agree on 2,044
 tests (1490 runtime =247 earlier +1243 framing, 255 conformance, 299 differential),
@@ -97,15 +109,27 @@ confirmed no process-group survivors; an initial sandbox-blocked separate `ps`
 inspection was repeated successfully with authorized escalation. No timing retry
 was performed.
 
+The earlier root integration `5109fe930fe45f7b485d4ed36c39b9c09b5ba625` failed an
+unchanged Tree allocation assertion (1064 B); its failed integration evidence is
+retained in the task record and coordinator's durable failure branch. A verified
+Tree measurement prerequisite was adopted before the fresh combined check.
+No cause for historical allocation failures is inferred from later passes.
+Framing runtime, ASCII test identities and benchmark code remain unchanged from
+dbcd535. Successful 14-case/42-observation timing stays at that original source,
+with unchanged raw archive SHA256
+`a9699017bf98b612b0c5be2ffbcf002b158cb9f80398eba94b67aa75f5271a53`.
+No new timing grant or rerun occurred; combined correctness and original timing
+revisions remain distinct.
+
 For subsequent integration, run a fresh unique report using the pinned SDK
 environment and `verify.py --report-prefix <unique>`.
 The verifier accepts `--audit-base`, `--expected-branch`,
 `--expected-runtime-tests`, `--expected-conformance-tests`,
 `--expected-differential-tests`, and `--expected-public-api`. Worker counts are
-1490/255/299 and API222; integration must pass its actual combined counts. It
+1549/255/299 and API251; integration must pass its actual combined counts. It
 provisions the private corpus cache and copies a fresh complete BCL runner output
 before inherited solution builds, then checks all 242 record hashes/builds and
 the unchanged copied DLL when the preceding tests pass. No private corpus is
-published. Final planning14, validation112, and owned-path audits must be
+published. Final planning14, validation118, and owned-path audits must be
 recorded at the eventual integrated checkpoint; renewed correctness already
-passed planning14/validation114 and its owned-path audits.
+passed planning14/validation118 and its owned-path audits on the combined candidate.
