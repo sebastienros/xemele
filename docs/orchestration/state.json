@@ -7,7 +7,19 @@
     "task_id": "M0-gate",
     "integration_revision": "0711a15b0c5a695ca383a9cfe7f11c8326fde451"
   },
-  "active_assignments": [],
+  "active_assignments": [
+    {
+      "task_id": "M1-contracts",
+      "chat_id": "01a12387-5e54-7321-9c51-be673540f000",
+      "client_thread_id": "client-new-thread:a5414036-e3e7-4080-8115-832b96c9e339",
+      "host_id": "local",
+      "branch": "codex/m1-contracts",
+      "worktree_path": "/Users/sebastienros/.codex/worktrees/03e7/xemele",
+      "base_revision": "09e91c80a189fb90e932dcfac94be5b6cc19194a",
+      "claim_revision": "911ab34a014095d5411bba70bc54a428c3815956",
+      "setup_status": "dispatched"
+    }
+  ],
   "integration_queue": [],
   "blockers": [],
   "next_actions": [
@@ -267,5 +279,15 @@
   ],
   "reference_capability_notes": [
     "Pinned xmloxide supports offline external general entities but lacks external DTD subset loading/nested relative resolution context; must report explicit runner-failure, not XML syntax rejection or Xemele feature exclusion."
+  ],
+  "cleanup_policy": "User requested automatic chat archival and worktree deletion after merge, verified checks, durable evidence, and no remaining review/build need. Preserve needed ignored tools first.",
+  "preserved_toolchains": [
+    {
+      "name": "CMake",
+      "version": "3.31.6",
+      "path": "/private/tmp/xemele-toolchains/cmake-3.31.6/bin/cmake",
+      "sha256": "cb2cbe87f7a7914bec020cf4afcda9c0e64ded2c69ed70a75cd46a2b45674c80",
+      "reason": "Copied self-contained tool data and verified binary hash/version before deleting old worker checkout."
+    }
   ]
 }
