@@ -2,11 +2,11 @@
   "schema_version": 1,
   "milestone": "M2",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M2-dtd-values",
   "branch": "codex/m2-dtd-values",
   "base_revision": "bacf6b4ed24a4338f25e2990efcf35c7e5da76fb",
-  "integration_revision": null,
+  "integration_revision": "83f5ae087e0b8c46fa10a0600b559cb4f548c4f6",
   "goals": [
     "G07"
   ],
@@ -38,7 +38,8 @@
       "status": "passed",
       "evidence": [
         "final-values-checks",
-        "cleanup-review"
+        "cleanup-review",
+        "integration-final-correction"
       ]
     },
     {
@@ -47,7 +48,8 @@
       "status": "passed",
       "evidence": [
         "final-values-checks",
-        "cleanup-review"
+        "cleanup-review",
+        "integration-final-correction"
       ]
     },
     {
@@ -58,7 +60,8 @@
         "final-values-checks",
         "cleanup-review",
         "exclusive-values-timing",
-        "project-name-review"
+        "project-name-review",
+        "integration-final-correction"
       ]
     }
   ],
@@ -150,11 +153,29 @@
       "result": "passed",
       "summary": "Fresh exclusive coordinator grant; restore/build/parent and both benchmark children exit0; two completed methods, each3 actual result observations. Borrowed96.168ns/0B,owned218.523ns/920B. Ordinary-priority warning preserved; default settings unchanged. Full raw/hash, generated-build command outcomes, source hashes and release ACK recorded. Provisional Arm64 narrow workloads; no speedup/composition/large-table claim.",
       "artifact": "docs/reports/M2-dtd-values/exclusive-65edbdd/summary.json"
+    },
+    {
+      "id": "integration-attempt1",
+      "kind": "integration",
+      "revision": "ef7ab314867fec4e33005043ffdc7aae6125e907",
+      "command": "python3 -B docs/reports/M2-dtd-values/verify.py --report-prefix integration-ef7ab31-attempt1 --audit-base 641f5e050713ee35d411f71ae031233208a357e0 --expected-branch codex/integrate-m2-dtd-values",
+      "result": "failed",
+      "summary": "All actual focused994/cumulative3097/direct2543+255+299/discovery/API251/registry3388/fresh-reference242/planning14/validate120 checks passed; final diff whitespace check failed on two generated display Markdown spaces. Runtime and raw timing archive unchanged. Actual failure retained.",
+      "artifact": "docs/reports/M2-dtd-values/integration-ef7ab31-attempt1/summary.json"
+    },
+    {
+      "id": "integration-final-correction",
+      "kind": "integration",
+      "revision": "83f5ae087e0b8c46fa10a0600b559cb4f548c4f6",
+      "command": "python3 -B /private/tmp/xemele-finalize-values-integration.py",
+      "result": "passed",
+      "summary": "Independently rechecked actual focused/cumulative XML allPass at ef7, MTP3097/API251/registry3388/current ef7 fresh-reference242/planning14. Exact runtime/test/sample/workload/verifier source unchanged at descendant83. Display-only whitespace corrected and actual final diff checks/validate120 passed. Raw timing SHA rechecked: six actual observations/all two child exits0; no timing rerun or larger-table/composition claim. Original monolithic failure preserved.",
+      "artifact": "docs/reports/M2-dtd-values/integration-ef7ab31-attempt1/final-correction-check.json"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Implemented bounded internal declaration decoder and caller-applied attribute default normalization; approved model/parser/framing/IDtdBudget unchanged. Primary ledger faults preserved through exact-once full cleanup; independent review approved. Source65edbdd; all criteria branch-passed. Explicit release of all owned source and task JSON to coordinator after evidence commit; no worker children/heavy processes.",
+    "summary": "Implemented bounded internal declaration decoder and caller-applied attribute default normalization; approved model/parser/framing/IDtdBudget unchanged. Primary ledger faults preserved through exact-once full cleanup; independent review approved. Source65edbdd; all criteria branch-passed. Explicit release of all owned source and task JSON to coordinator after evidence commit; no worker children/heavy processes. Coordinator integrated and verified unchanged runtime; generated display whitespace correction verified separately with failure retained.",
     "checks": [
       "Fresh unique-project-final-checks at65edbdd: focused994/MTP3097/direct2543+255+299/discovery exact; compiled API251/registry3388; full pinned current-source reference242; planning14/validate120; all ownership/whitespace audits",
       "Independent common-only helper contract/sample and exact-content benchmark30 assertions passed",
