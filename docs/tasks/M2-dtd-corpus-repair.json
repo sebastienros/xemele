@@ -32,7 +32,8 @@
     "tests/fixtures/M2-dtd-corpus-repair/",
     "benchmarks/Xemele.Benchmarks/M2-dtd-corpus-repair/",
     "samples/M2-dtd-corpus-repair/",
-    "docs/reports/M2-dtd-corpus-repair/"
+    "docs/reports/M2-dtd-corpus-repair/",
+    "src/Xemele/Parsing/Core/XmlParserCore.Doctype.cs"
   ],
   "api_or_output": "Resolve seven original DTD grammar and namespace obligations",
   "acceptance": [
@@ -62,6 +63,13 @@
     "summary": "Owning repair for concrete M2-conformance-grammar A1/A2 findings; seven original cases, no Core/shared build writes.",
     "checks": [],
     "remaining": [],
-    "requests": []
+    "requests": [
+      {
+        "path": "src/Xemele/Parsing/Core/XmlParserCore.Doctype.cs",
+        "defect": "BeginDtdSubset passes only standalone to ConfigureDeclarationReading; the DTD parser cannot distinguish internal-only from documents with an external subset when applying Entity Declared WFC to defaults at declaration time.",
+        "smallest_fix": "Pass hasExternalSubset: doctypeSystem is not null to the new optional ConfigureDeclarationReading argument (owned DtdParser.cs implementation); no other Core changes.",
+        "proving_check": "DtdCorpusRepairTests.DefaultDeclarationApplicability: internal-only forward default rejects before later entity; external-subset VC-only default does not gain an early WFC rejection; standalone=yes still rejects."
+      }
+    ]
   }
 }

@@ -27,7 +27,7 @@ internal sealed partial class DtdParser
             case Lex.Between:
                 if (Space(c)) { separator = true; return; }
                 if (c == '%') { BeginParameter(Lex.Between, at); return; }
-                if (c == '<') { lexicalSource = Current.Id; lexicalAt = at; lex = Lex.Open; return; }
+                if (c == '<') { lexicalEntered = Current.Entered; lexicalSource = Current.Id; lexicalAt = at; lex = Lex.Open; return; }
                 if (c == ']' && includes.Count != 0) { lexicalSource = Current.Id; lexicalAt = at; ignoreRun = 1; lex = Lex.ConditionalEnd; return; }
                 break;
             case Lex.Open:
@@ -40,11 +40,15 @@ internal sealed partial class DtdParser
                 if (c is >= 'A' and <= 'Z') { BeginToken(at); AddScalar(scratch, c, at); lex = Lex.Keyword; return; }
                 break;
             case Lex.Keyword:
+                // Inclusion supplies the required S before/after a PE. A PE may
+                // follow the complete markup keyword without literal whitespace.
+                if (c == '%' && Current.External)
+                { BeginParameter(Lex.Keyword, at); return; }
                 if (c is >= 'A' and <= 'Z') { AddScalar(scratch, c, at); return; }
                 if (!Space(c)) break;
                 declaration = scratch.ToString(); scratch.Clear();
                 if (declaration is not ("ELEMENT" or "ATTLIST" or "ENTITY" or "NOTATION")) break;
-                declarationAt = lexicalAt; declarationExternal = Current.External; declarationScalars = declaration.Length + 3;
+                declarationAt = lexicalAt; declarationExternal = Current.External; declarationInParameter = lexicalEntered; declarationScalars = declaration.Length + 3;
                 if (!Bounded(declarationScalars - 1, at)) return;
                 separator = true; tokens.Clear(); lex = Lex.Declaration; return;
             case Lex.Declaration:

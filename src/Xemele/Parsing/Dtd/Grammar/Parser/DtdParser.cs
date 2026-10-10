@@ -49,6 +49,7 @@ internal sealed partial class DtdParser : IDisposable
     private List<DtdElementDeclaration> elements = [];
     private List<DtdAttributeDeclaration> attributes = [];
     private List<DtdEntityDeclaration> general = [], parameter = [];
+    private HashSet<string>? parameterOriginGeneral;
     private List<DtdNotationDeclaration> notations = [];
     private readonly List<Token> tokens = [];
     private readonly StringBuilder scratch = new(), reference = new();
@@ -58,7 +59,7 @@ internal sealed partial class DtdParser : IDisposable
     private char quote;
     private int nextId = 1, lexicalSource, quoteSource, ignoreDepth, ignoreRun, gate;
     private long documentScalars, tokenScalars, declarationScalars;
-    private bool piData, declarationExternal, separator, tokenSpace, literalEntity, disposed, faulted, terminal;
+    private bool lexicalEntered, declarationInParameter, piData, declarationExternal, separator, tokenSpace, literalEntity, disposed, faulted, terminal;
     private XmlLocation declarationAt, tokenAt, parameterAt, lexicalAt;
     private DtdEntityRequest? request;
     private Source? pending;
@@ -88,13 +89,14 @@ internal sealed partial class DtdParser : IDisposable
     { get { ObjectDisposedException.ThrowIf(disposed, this); if (model is null || faulted) throw new InvalidOperationException("The initial subset is not complete."); return model; } }
     internal bool HasParameterReferences { get; private set; }
     internal XmlLocation? FirstUnreadParameter { get; private set; }
-    private bool nonvalidatingReadState, standaloneReadState;
+    private bool nonvalidatingReadState, standaloneReadState, externalSubsetReadState;
+    private XmlLocation? undeclaredDefault;
 
-    internal void ConfigureDeclarationReading(bool standalone, XmlLocation? firstUnread = null)
+    internal void ConfigureDeclarationReading(bool standalone, XmlLocation? firstUnread = null, bool hasExternalSubset = false)
     {
         Check();
         if (appendStarted) throw new InvalidOperationException("Configure declaration reading before input.");
-        nonvalidatingReadState = true; standaloneReadState = standalone;
+        nonvalidatingReadState = true; standaloneReadState = standalone; externalSubsetReadState = hasExternalSubset;
         FirstUnreadParameter = firstUnread;
     }
 
@@ -266,6 +268,11 @@ internal sealed partial class DtdParser : IDisposable
             return;
         }
         if (lex != Lex.Between || includes.Count != 0 || declaration.Length != 0) { Reject("Incomplete DTD at EOF.", s.At(s.Eof)); return; }
+        // Applicability depends on the entire internal subset. The missing live
+        // declaration was recorded at the default, so later declarations cannot
+        // repair its order; a later PE can make Entity Declared validity-only.
+        if (undeclaredDefault is { } missing && !HasParameterReferences)
+        { Reject("Entity must be declared before the attribute default.", missing, "DTD.UndeclaredEntity"); return; }
         if (!ValidateKnownDefaults(cancellation)) return;
         model = new(elements, attributes, general, parameter, notations); terminal = true;
     }
@@ -289,7 +296,7 @@ internal sealed partial class DtdParser : IDisposable
     public void Dispose()
     {
         Enter(); try { if (disposed) return; disposed = true; Drain(null); }
-        finally { foreach (var s in sources) s.Prolog?.Dispose(); sources.Clear(); scratch.Clear(); reference.Clear(); tokens.Clear(); Volatile.Write(ref gate, 0); }
+        finally { foreach (var s in sources) s.Prolog?.Dispose(); sources.Clear(); scratch.Clear(); reference.Clear(); tokens.Clear(); parameterOriginGeneral?.Clear(); Volatile.Write(ref gate, 0); }
     }
     private sealed class LocalBudget(XmlResourceLimits limits) : IDtdBudget
     {
