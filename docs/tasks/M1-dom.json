@@ -4,11 +4,11 @@
   "milestone": "M1",
   "title": "Compose input/parser/tree and factories",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M1-dom",
   "branch": "codex/m1-dom",
   "base_revision": "e07650c0111108103942f74b8072bfc62ec506a8",
-  "integration_revision": null,
+  "integration_revision": "693131dcb0a1e561c512900a75a7883920f82e5b",
   "depends_on": [
     "M1-input",
     "M1-tree",
@@ -44,7 +44,8 @@
       "evidence": [
         "correctness-final",
         "review-final",
-        "composition-measurements"
+        "composition-measurements",
+        "coordinator-integration"
       ]
     },
     {
@@ -54,7 +55,8 @@
       "evidence": [
         "correctness-final",
         "review-final",
-        "composition-measurements"
+        "composition-measurements",
+        "coordinator-integration"
       ]
     },
     {
@@ -64,7 +66,8 @@
       "evidence": [
         "correctness-final",
         "review-final",
-        "composition-measurements"
+        "composition-measurements",
+        "coordinator-integration"
       ]
     }
   ],
@@ -122,19 +125,35 @@
       "result": "failed",
       "summary": "Historical temporary-guard checkpoint:43DOMfocused passed; full266/265passed/one existing Tree allocation failure4368B. Guard removed after owning namespace correction; unchanged peer test passes focused/full final revision.",
       "artifact": "docs/reports/M1-dom/peer-allocation-final-attempt-failure.txt.gz"
+    },
+    {
+      "id": "coordinator-integration-initial-fixture-failure",
+      "kind": "integration",
+      "revision": "693131dcb0a1e561c512900a75a7883920f82e5b",
+      "command": "Pinned SDK python3 -B docs/reports/M1-dom/verify.py --audit-base 18580d1dda9f5d70a89c912fc9bc1db6f963f8dc",
+      "result": "failed",
+      "summary": "Initial fresh integrated run passed runtime/models/API222 but discovery stopped because ignored fullcorpusfixtures absent in checkout. Restoring from verified offline cache resolved infrastructure without sourcechanges; complete retry separately recorded.",
+      "artifact": "docs/reports/M1-dom/integration-missing-fixtures-failure.txt.gz"
+    },
+    {
+      "id": "coordinator-integration",
+      "kind": "integration",
+      "revision": "693131dcb0a1e561c512900a75a7883920f82e5b",
+      "command": "Pinned SDK10.0.400 PATH/DOTNET_ROOT DOTNET_CLI_USE_MSBUILD_SERVER=0 python3 -B docs/reports/M1-corpus-import/provision.py; python3 -B docs/reports/M1-dom/verify.py --audit-base 18580d1dda9f5d70a89c912fc9bc1db6f963f8dc; python3 -B docs/reports/M1-dom/audit.py --base 18580d1dda9f5d70a89c912fc9bc1db6f963f8dc --transient; python3 -B -m unittest discover -s tools/planning -p test_tasks.py",
+      "result": "passed",
+      "summary": "Fresh integration with namespace/fullcorpus/planning repairs: Releasezero warnings/errors;44DOM/288solution/Foundation11, no skips; explicitfoundation139/173/8 andapprovedM1models/protocol38, actual222union/7factoryfragment, mandatorycanonicalfragments, Input41/Syntax9types80rows. Independent source and fresh isolatedlocalNuget sample, cold469096B/warmbyte468536B/warmchar426664B, retained229782B/doc inform, namehit0B; full4shapeallnodesoracle. Requiredplanning107 plus14regressions; committed/staged/working/untrackedowned audit and whitespace pass. Reviewed benchmarksource736734unchanged: root raw audit16zerochildexits/48actualiterations/all16workloads; no repeatedtiming. OrdinarypriorityArm64provisional/x64releaseconfirmation remainslater.",
+      "artifact": "docs/reports/M1-dom/integration-verification.txt.gz"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Implemented strict seven DOM factories over six verified prerequisites; token-aware trusted persistence and legal xmlns local names; one complete16case measurement. Await coordinator integration verification.",
+    "summary": "Integrated verified strict XML parse/load/tryparse factories and bounded byte/stream composition. Corpusruntimejoin nowready.",
     "checks": [
       "44DOM/288solution/Foundation11 pass; independent models/protocol38; actual API222/7fragment and internal41/9types80rows; source/fresh isolated NuGet consumer; planning107 and ownership/diff audits.",
       "Exclusive16workloads/allchild+wrapperexit0/48actualmeasurements; raw/statistics/allocation/lifetime scopes durable in owned reports.",
       "Historical failures preserved; final unchanged peer allocation test passes focused/full."
     ],
-    "remaining": [
-      "Coordinator merge and combined verification before status verified; integration_revision remains null."
-    ],
+    "remaining": [],
     "requests": [
       "Release owner: confirm provisional Arm64 performance/allocation results on x64; no cross-architecture or full XML conformance claim."
     ]
