@@ -21,7 +21,10 @@ original_inventory = engine.source_inventory
 def inventory(*args, **kwargs):
     args = list(args)
     args[1] = dict(args[1], NuGetAudit='false')
-    kwargs['properties'] = dict(kwargs.get('properties') or {'Configuration': 'Release'}, NuGetAudit='false')
+    if len(args) >= 4:
+        args[3] = dict(args[3] or {'Configuration': 'Release'}, NuGetAudit='false')
+    else:
+        kwargs['properties'] = dict(kwargs.get('properties') or {'Configuration': 'Release'}, NuGetAudit='false')
     result = original_inventory(*args, **kwargs)
     relative = str(support.relative_to(ROOT))
     committed = engine.git('show', 'HEAD:' + relative)

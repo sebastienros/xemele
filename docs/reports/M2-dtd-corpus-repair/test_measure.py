@@ -18,6 +18,13 @@ class AdapterTests(unittest.TestCase):
         self.assertEqual(adapter.engine.PROJECT.parent, adapter.engine.OWN)
         self.assertEqual(adapter.engine.PROJECT.name, 'Xemele.EntityBase.Measurements.csproj')
         self.assertEqual(adapter.engine.EXPECTED, {'InternalNestedModel', 'RedirectedComposition'})
+    def test_generated_inventory_positional_properties_preserve_freeze(self):
+        with patch.object(adapter, 'original_inventory', return_value={}) as inventory:
+            adapter.inventory('dotnet', {}, ['generated'], {'Configuration':'Release', 'Optimize':'true'}, {})
+            args, kwargs = inventory.call_args
+            self.assertEqual(args[1]['NuGetAudit'], 'false')
+            self.assertEqual(args[3], {'Configuration':'Release', 'Optimize':'true', 'NuGetAudit':'false'})
+            self.assertNotIn('properties', kwargs)
     def test_counter_disabled_commands_are_unchanged(self):
         with patch.object(adapter, 'original_run', return_value='oracle') as run:
             self.assertEqual(adapter.run(['dotnet', '--correctness']), 'oracle')
