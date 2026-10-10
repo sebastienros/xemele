@@ -4,11 +4,11 @@
   "milestone": "M1",
   "title": "Import full XML suite and classify strict subset metadata",
   "kind": "infrastructure",
-  "status": "implemented",
+  "status": "verified",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M1-corpus-import",
   "branch": "codex/m1-corpus-import",
   "base_revision": "223f628d79e0fe430df435b48746eb4e68cd9a25",
-  "integration_revision": null,
+  "integration_revision": "0ca3c2ededc0275854ef8821dc00f3f56a56be58",
   "depends_on": [
     "M1-contracts"
   ],
@@ -34,7 +34,8 @@
       "evidence": [
         "full-suite-checks",
         "declaration-order-correction",
-        "integration-audit-base-checks"
+        "integration-audit-base-checks",
+        "coordinator-integration"
       ]
     },
     {
@@ -44,7 +45,8 @@
       "evidence": [
         "full-suite-checks",
         "declaration-order-correction",
-        "integration-audit-base-checks"
+        "integration-audit-base-checks",
+        "coordinator-integration"
       ]
     },
     {
@@ -54,7 +56,8 @@
       "evidence": [
         "full-suite-checks",
         "declaration-order-correction",
-        "integration-audit-base-checks"
+        "integration-audit-base-checks",
+        "coordinator-integration"
       ]
     }
   ],
@@ -99,11 +102,29 @@
       "result": "passed",
       "summary": "Explicit audit base resolves to a commit and checks whitespace/ownership across committed base..HEAD plus working/staged/untracked paths; final worker default-base committed whitespace check also passes. Help exits0 and invalid CLI exits2 without changing existing verification report SHA-256; durable CLI transcript retained. Full rerun15 Python +14 actual-core MTP +24 preserved corpus MTP, zero skips; bootstrap2/discovery3388/API215/planning105 unchanged. Previous worker evidence reports preserved. Zero product executions/standards passes.",
       "artifact": "docs/reports/M1-corpus-import/audit-base-verification.txt"
+    },
+    {
+      "id": "coordinator-inventory-review",
+      "kind": "review",
+      "revision": "2626bac69fd43a5dbcda364192db7c5dc655d0ea",
+      "command": null,
+      "result": "passed",
+      "summary": "Independent read-only review verified reproducible identities2585, all3386 fixture/cache hashes, archive hash, source types and all812valid containingDOCTYPE. Declaration-first anticipated diagnostic defect corrected with test; reasons/classifications unchanged. Scope classification claims zero product executions and standards passes. Private fixture redistribution terms retained as publication prerequisite.",
+      "artifact": null
+    },
+    {
+      "id": "coordinator-integration",
+      "kind": "integration",
+      "revision": "0ca3c2ededc0275854ef8821dc00f3f56a56be58",
+      "command": "python3 -B docs/reports/M1-corpus-import/provision.py; pinnedSDK PATH/DOTNET_ROOT DOTNET_CLI_USE_MSBUILD_SERVER=0 python3 -B docs/reports/M1-corpus-import/verify.py --audit-base 804bec4a6b02cf06fae10eaa5950ce3797ad87d1",
+      "result": "passed",
+      "summary": "Fresh checkout restored exact archive/bundle/resources offline from preservedcache. 15Python+14actualcoreMTP+24preservedcorpusMTP pass zero skips; BCL metadata identities/types, fullresourcechecksums/negativecorruption/provenance/containment, bootstrap2 unchanged, discovery3388/API215, planning107, committed/working/staged/untrackedownership and whitespace checks pass. 2585cases/3386files,242supportedrejections/2343visibleunsupportedprofiles. Product executions0/standards0; parent runtime join remainsrequired. No runtimechanges/timings.",
+      "artifact": "docs/reports/M1-corpus-import/integration-verification.txt"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Full official W3C 20130923 inventory/provisioning and frozen-contract M1 classification; no parser execution. 2585 source IDs: 812 valid, 242 invalid, 1498 not-wf, 33 error; 323 external-entity cases. Classification 242 supported rejections and 2343 visible unsupported-profile cases; all upstream valid tests have DOCTYPE. Original source bytes/notices preserved privately without MIT relicensing. Branch implementation only; integration_revision null. Review correction removes ambiguous anticipated diagnostics where declaration/encoding/version/signature can fail before DOCTYPE; runtime first-error ordering is not inferred from metadata.",
+    "summary": "Full suite metadata and private offline cache integrated and verified; parent owns runtime execution and semantic round trips.",
     "checks": [
       "At 7a5358f1b5d0c314a83b4d42207d2bd83896cd1b: 14 Python + 14 focused MTP + 24 preserved corpus tests passed; zero skipped.",
       "Full inventory/primary/output checksums and offline actual-core provisioning; independent BCL metadata-only identity/type equality; missing/corrupt/containment/provenance/profile negative checks passed.",
