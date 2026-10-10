@@ -34,6 +34,8 @@ def main():
     env = dict(os.environ, DOTNET_CLI_USE_MSBUILD_SERVER='0', XEMELE_DOTNET=str(dotnet),
                XEMELE_CORPUS_RESOURCES='/private/tmp/xemele-corpus-cache/w3c-xml-20130923/resources/',
                XEMELE_CORPUS_RESULTS=str(raw / 'case-results'))
+    child_root = ROOT / 'artifacts/M2-streaming-allocation-probe/child-runs'
+    child_before = set(child_root.iterdir()) if child_root.exists() else set()
     logs, failures = [], []
     summary = dict(result='failed', host=platform.platform(), architecture=platform.machine(),
                    timing='not run', runtimeSettings='default JIT/GC/test parallelism', arguments=vars(args), checks={})
@@ -88,6 +90,31 @@ def main():
             require(error is None and len(tests)==count and all(t.get('result')=='Pass' for t in tests), dict(counts=data,error=error))
             return data
         raise AssertionError(error or 'missing XML')
+    def children():
+        directories = sorted(set(child_root.iterdir()) - child_before) if child_root.exists() else []
+        details=[]
+        # Preserve every raw artifact before validating, including partial failures.
+        for directory in directories:
+            dest=report / 'child-runs' / directory.name; dest.mkdir(parents=True)
+            for path in directory.iterdir():
+                if path.is_file(): (dest / (path.name+'.gz')).write_bytes(gzip.compress(path.read_bytes(),mtime=0))
+            pair={}
+            for mode in ['real','positive']:
+                path=directory / (mode+'.report.json')
+                if path.exists(): pair[mode]=json.loads(path.read_text())
+            details.append(dict(directory=directory.name,reports=pair))
+        (report / 'child-provenance.json').write_text(json.dumps(details,indent=2)+'\n')
+        require(len(directories)==3,'focused/cumulative/direct must each run one real+positive pair: '+str(len(directories)))
+        for pair in details:
+            reports=pair['reports']; require(set(reports)=={'real','positive'},pair)
+            for mode,data in reports.items():
+                require(data['Version']==1 and data['Mode']==mode and revision in data['Actual']['TestVersion'] and revision in data['Actual']['ProductVersion'] and data['Actual']['RuntimeVersion']=='10.0.11',data)
+                require(data['WarmIterations']==100 and data['MeasuredIterations']==10000 and data['MeasuredUnits']==50000 and data['MeasuredCalls']==120000 and data['TotalUnits']==50500 and data['TotalCalls']==121205 and data['Completion']=='Completed' and data['CompletionConsumed']==4 and data['DiagnosticCode'] is None,data)
+                require(data['AllocatedBytes']==0 if mode=='real' else data['AllocatedBytes']>0 and data['EscapedObjectLength']==37,data)
+                directory=child_root / pair['directory']
+                require(json.loads((directory / (mode+'.exit.json')).read_text())['exitCode']==0,'child exit')
+                require(json.loads((directory / (mode+'.request.json')).read_text())['Expected']==data['Actual'],'child compiled/runtime provenance')
+        return details
     try:
         revision = run('git','rev-parse','HEAD').strip(); summary['sourceRevision'] = revision
         require(run('git','branch','--show-current').strip()==args.expected_branch,'wrong branch')
@@ -132,6 +159,7 @@ def main():
             data=dict(records=242,sourceRevision=revision,runnerSha256=runner_hash,runner=str(pinned),dotnet=str(dotnet))
             (report / 'reference-provenance.json').write_text(json.dumps(data,indent=2)+'\n'); return data
         check('reference-provenance',provenance)
+        check('child-provenance',children)
         run('dotnet','build','docs/reports/M0-contracts/ApiCheck/ApiCheck.csproj',*FLAGS)
         def api():
             data=json.loads(run('python3','-B','tools/ApiBaseline/compare.py','--report',report / 'runtime-api.json'))
