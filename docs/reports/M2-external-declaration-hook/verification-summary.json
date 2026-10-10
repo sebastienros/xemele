@@ -1,0 +1,169 @@
+{
+  "result": "passed",
+  "checks": [
+    {
+      "command": "git rev-parse HEAD",
+      "exit": 0
+    },
+    {
+      "command": "git branch --show-current",
+      "exit": 0
+    },
+    {
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --version",
+      "exit": 0
+    },
+    {
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --list-runtimes",
+      "exit": 0
+    },
+    {
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' build tests/Xemele.Tests/Xemele.Tests.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false -p:NuGetAudit=false",
+      "exit": 0
+    },
+    {
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' /Users/sebastienros/.codex/worktrees/72d4/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -noColor -class 'Xemele.Tests.ExternalDeclarationHook.*' -class 'Xemele.Tests.Entities.*' -class 'Xemele.Tests.Versions.*' -class Xemele.Tests.FramingTests -class 'Xemele.Tests.EncodingCompatibility.*' -method- Xemele.Tests.FramingTests.WarmWhitespacePrimitiveHasNoAllocations -method- Xemele.Tests.EncodingCompatibility.EncodingTests.WarmLegacyConversionAndDeclarationMatchingAllocateZero -result-xml /private/tmp/xemele-hook-auazexpx/tests.xml",
+      "exit": 0
+    },
+    {
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' build docs/reports/M0-contracts/ApiCheck/ApiCheck.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false -p:NuGetAudit=false",
+      "exit": 0
+    },
+    {
+      "command": "git rev-parse HEAD",
+      "exit": 0
+    },
+    {
+      "command": "git branch --show-current",
+      "exit": 0
+    },
+    {
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --version",
+      "exit": 0
+    },
+    {
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --list-runtimes",
+      "exit": 0
+    },
+    {
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' /Users/sebastienros/.codex/worktrees/72d4/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -noColor -class 'Xemele.Tests.EntitiesFoundation.*' -result-xml /private/tmp/xemele-hook-dl_s0v59/foundation.xml",
+      "exit": 0
+    },
+    {
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' build docs/reports/M0-contracts/ApiCheck/ApiCheck.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false -p:NuGetAudit=false",
+      "exit": 0
+    },
+    {
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' build samples/M2-external-declaration-hook/Sample.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false -p:NuGetAudit=false",
+      "exit": 0
+    },
+    {
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' /Users/sebastienros/.codex/worktrees/72d4/xemele/samples/M2-external-declaration-hook/bin/Release/net10.0/Sample.dll",
+      "exit": 0
+    },
+    {
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' pack src/Xemele/Xemele.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false -p:NuGetAudit=false --no-build -o /private/tmp/xemele-hook-dl_s0v59/feed",
+      "exit": 0
+    },
+    {
+      "command": "git rev-parse HEAD",
+      "exit": 0
+    },
+    {
+      "command": "git branch --show-current",
+      "exit": 0
+    },
+    {
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --version",
+      "exit": 0
+    },
+    {
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --list-runtimes",
+      "exit": 0
+    },
+    {
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' build samples/M2-external-declaration-hook/Sample.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false -p:NuGetAudit=false -p:BuildProjectReferences=false",
+      "exit": 0
+    },
+    {
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' /Users/sebastienros/.codex/worktrees/72d4/xemele/samples/M2-external-declaration-hook/bin/Release/net10.0/Sample.dll",
+      "exit": 0
+    },
+    {
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' pack src/Xemele/Xemele.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false -p:NuGetAudit=false --no-build -o /private/tmp/xemele-hook-onifg7wi/feed",
+      "exit": 0
+    },
+    {
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' build samples/M2-external-declaration-hook/Sample.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false -p:NuGetAudit=false --artifacts-path /private/tmp/xemele-hook-onifg7wi/package-build -p:UsePackage=true -p:ManagePackageVersionsCentrally=false -p:RestoreSources=/private/tmp/xemele-hook-onifg7wi/feed -p:RestorePackagesPath=/private/tmp/xemele-hook-onifg7wi/packages",
+      "exit": 0
+    },
+    {
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' /private/tmp/xemele-hook-onifg7wi/package-build/bin/Sample/release/Sample.dll",
+      "exit": 0
+    },
+    {
+      "command": "python3 -B -m unittest discover -s tools/planning -p test_tasks.py",
+      "exit": 0
+    },
+    {
+      "command": "python3 -B tools/planning/tasks.py validate",
+      "exit": 0
+    },
+    {
+      "command": "git diff --check",
+      "exit": 0
+    }
+  ],
+  "revision": "ee46730ad07d3bbebe8a8025f168115bd55ae9f7",
+  "runtime": {
+    "executed": "Microsoft.NETCore.App 10.0.11",
+    "sdk": "10.0.400",
+    "architecture": "Arm64"
+  },
+  "productSha256": "18710347a9db69dd290be960326d9a1177c9e4e44c13578c5d284474b356652d",
+  "testSha256": "a0297ba2cf9fd5ab4e3271bf9adc15e268a25fcfb11bce2bdfc9276dbf595aa9",
+  "preservedUnchangedMeasurements": [
+    "Xemele.Tests.FramingTests.WarmWhitespacePrimitiveHasNoAllocations",
+    "Xemele.Tests.EncodingCompatibility.EncodingTests.WarmLegacyConversionAndDeclarationMatchingAllocateZero"
+  ],
+  "tests": {
+    "passed": 1376,
+    "failed": 0,
+    "skipped": 0,
+    "owned": 17,
+    "byType": {
+      "Xemele.Tests.EncodingCompatibility.EncodingTests": 7,
+      "Xemele.Tests.Entities.ContentTests": 11,
+      "Xemele.Tests.Entities.ContextTests": 4,
+      "Xemele.Tests.Entities.PinnedDocumentTests": 8,
+      "Xemele.Tests.Entities.ProductionTests": 15,
+      "Xemele.Tests.Entities.ResourceBoundaryTests": 10,
+      "Xemele.Tests.Entities.ResumeAndDefaultValidationTests": 9,
+      "Xemele.Tests.Entities.ReviewRegressionTests": 9,
+      "Xemele.Tests.Entities.TransportAndLocationTests": 13,
+      "Xemele.Tests.ExternalDeclarationHook.ExternalDeclarationTests": 17,
+      "Xemele.Tests.FramingTests": 1242,
+      "Xemele.Tests.Versions.VersionTests": 31
+    }
+  },
+  "testRevision": "d43d2b9eb6ef746acbb3cf331fe16831a235d219",
+  "foundationTests": {
+    "passed": 9,
+    "failed": 0,
+    "skipped": 0,
+    "revision": "d43d2b9eb6ef746acbb3cf331fe16831a235d219"
+  },
+  "apiScope": "All approved API fragments copied unchanged; API-only discovery snapshot, no corpus discovery claim.",
+  "api": {
+    "members": 290,
+    "matched": true,
+    "checkerOutput": "Matched 290 compiled members"
+  },
+  "sourceEntrypoint": "Actual source/package external version1.1 composition and disposal passed.",
+  "rebuiltSourceHash": "4a51416708a79c0a1bedbeb9ee6474c8d77f4c265f41b9a4a2b8c91c3819b49e",
+  "packageEntrypoint": "Actual source/package external version1.1 composition and disposal passed.",
+  "productByteIdentity": "source/test/source sample/fresh local package/packaged sample identical",
+  "temporaryOutputsRemoved": true,
+  "planningControls": "14 tests passed",
+  "planningValidation": "Validated 134 tasks: schema, evidence, acyclic dependencies, additive milestones, and ordered ownership."
+}

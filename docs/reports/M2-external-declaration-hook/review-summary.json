@@ -1,0 +1,31 @@
+{
+  "revision": "ee46730ad07d3bbebe8a8025f168115bd55ae9f7",
+  "testedSourceRevision": "d43d2b9eb6ef746acbb3cf331fe16831a235d219",
+  "sourceTestsSamplesUnchangedSinceTests": true,
+  "unchangedInheritedPaths": [
+    "src/Xemele/Parsing/Dtd/Framing/XmlTextDeclarationFramer.cs",
+    "src/Xemele/Parsing/Input",
+    "Directory.Build.props",
+    "Directory.Packages.props",
+    "global.json"
+  ],
+  "review": "One bounded source/test review: record assigned only after successful decoder validation; retained exact owned framer strings/location; absent remains null. Existing Core behavior preserved. No additional blocker.",
+  "allocationApplicability": "Passive retention of existing bounded owned record in source instance. No reparse, string copy, new scan, scratch growth or algorithm. Fixed in-instance storage and lifetime retention only; no bespoke benchmark or new measurement run. Existing verified unchanged decoder/framer/entity measurements preserved at dependency revisions.",
+  "requiredFollowup": "Dependent grammar task compares primary/external versions and addresses E38 after hook integration; coordinator performs integrated verification.",
+  "ownedPathsAudit": [
+    "docs/reports/M2-external-declaration-hook/harness-discovery-failure.json",
+    "docs/reports/M2-external-declaration-hook/initial-oracle-correction.json",
+    "docs/reports/M2-external-declaration-hook/package-identity-failure.json",
+    "docs/reports/M2-external-declaration-hook/resume-reporting-failure.json",
+    "docs/reports/M2-external-declaration-hook/review-summary.json",
+    "docs/reports/M2-external-declaration-hook/verification-summary.json",
+    "docs/reports/M2-external-declaration-hook/verify.py",
+    "docs/tasks/M2-external-declaration-hook.json",
+    "samples/M2-external-declaration-hook/Program.cs",
+    "samples/M2-external-declaration-hook/Sample.csproj",
+    "src/Xemele/Parsing/Entities/Runtime/ExternalXmlSource.cs",
+    "tests/Xemele.Tests/M2-external-declaration-hook/ExternalDeclarationTests.cs"
+  ],
+  "cleanup": "All build-created bin/obj directories removed; temporary raw MTP XML, local packages, package binaries and restore cache removed. No child process started. Only concise JSON summaries retained.",
+  "finalPlanning": "Validated134 after marking own task implemented; no integration claim."
+}

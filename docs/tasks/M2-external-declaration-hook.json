@@ -4,7 +4,7 @@
   "milestone": "M2",
   "title": "Expose framed external declaration metadata to Core",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "worker:M2-external-declaration-hook",
   "branch": "codex/m2-external-declaration-hook",
   "base_revision": "e82db97101699f538a068b43fa7f3f8c06492ed3",
@@ -34,29 +34,111 @@
     {
       "id": "M2-external-declaration-hook-A1",
       "description": "Expose existing successfully framed external text-declaration version and original declaration location internally to Core, including absent declaration distinction. Preserve exact literal bounded version, decoder validation/failure/cancellation/cleanup, source URI/byte/scalar location and fixed scratch behavior. No public API, Core composition policy, decoder or framer changes; retain existing owned metadata without unnecessary reparse/copy.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "bounded-review",
+        "focused-preservation"
+      ]
     },
     {
       "id": "M2-external-declaration-hook-A2",
       "description": "Actual framed-source tests for exact original E38.ent version1.1 metadata, absent version/declaration and explicit1.0/other permitted1.x, source location and byte mapping; splits, canceled/rejected sources, resolver disposal and retained metadata lifetime. Core E38 rejection is explicitly the dependent grammar task obligation after integration, not a hook-only completion claim.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "bounded-review",
+        "focused-preservation"
+      ]
     },
     {
       "id": "M2-external-declaration-hook-A3",
       "description": "Focused external source/framing/entity preservation and approved API compatibility at known revision; source/package entrypoint preservation as applicable; planning and owned diff. Assess allocation applicability for metadata retention: preserve verified unchanged measurements, do not add bespoke framework or timing for a passive hook with no new hot-path algorithm. New measurable work requires prepared bounded lease. Concise summaries and cleanup only.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "remaining-checks",
+        "bounded-review"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Parsing/Entities/Runtime/ExternalXmlSource.cs: TextDeclaration stores existing bounded XmlTextDeclaration only after successful decoder validation; exact version/encoding/location references retained, null absence preserved.",
+    "tests/Xemele.Tests/M2-external-declaration-hook/ExternalDeclarationTests.cs: actual internal framed-source tests and inventory-pinned exact E38 bytes; samples/M2-external-declaration-hook: actual unchanged public external composition source/package oracle."
+  ],
+  "evidence": [
+    {
+      "id": "initial-test-oracle",
+      "kind": "check",
+      "revision": "cb4dac3fa75c8c607775944688a518a5357dd75f",
+      "command": "dotnet Xemele.Tests.dll -noColor -class Xemele.Tests.ExternalDeclarationHook.*",
+      "result": "failed",
+      "summary": "Initial16:15passed/1failed due new E38 expected column37 instead of39; corrected test only, pinned bytes unchanged.",
+      "artifact": "docs/reports/M2-external-declaration-hook/initial-oracle-correction.json"
+    },
+    {
+      "id": "focused-preservation",
+      "kind": "check",
+      "revision": "d43d2b9eb6ef746acbb3cf331fe16831a235d219",
+      "command": "python3 -B docs/reports/M2-external-declaration-hook/verify.py",
+      "result": "passed",
+      "summary": "Release build0warnings/errors; actual MTP1376passed/0failed/0skipped including17new+1242framing+31version+79entity+7encoding. Product18710347a9db69dd290be960326d9a1177c9e4e44c13578c5d284474b356652d. Later API-discovery harness failure recorded separately; execution success preserved without repeat.",
+      "artifact": "docs/reports/M2-external-declaration-hook/harness-discovery-failure.json"
+    },
+    {
+      "id": "remaining-checks",
+      "kind": "check",
+      "revision": "ee46730ad07d3bbebe8a8025f168115bd55ae9f7",
+      "command": "python3 -B docs/reports/M2-external-declaration-hook/verify.py --remaining",
+      "result": "passed",
+      "summary": "Foundation9passed; approvedAPI290matched via unchanged API-fragment snapshot; source/fresh local package entrypoints passed with tested product byte identity across source/test/sample/package. Planning14controls/134tasks; diff check. src/tests/samples unchanged since d43d2b9. Prior discovery, resume-reporting and transitive-rebuild identity failures preserved; no product changes to resolve them. Temporary raw outputs removed.",
+      "artifact": "docs/reports/M2-external-declaration-hook/verification-summary.json"
+    },
+    {
+      "id": "bounded-review",
+      "kind": "review",
+      "revision": "ee46730ad07d3bbebe8a8025f168115bd55ae9f7",
+      "command": "git diff claim..HEAD; reviewed ExternalXmlSource and focused tests; source/test/sample preservation and ownership audit",
+      "result": "passed",
+      "summary": "One bounded review: A1/A2 covered without Core/framer/decoder/shared/public changes. Passive reuse existing bounded record: no new string allocation, reparse, scan or scratch; fixed instance storage/lifetime retained. Existing verified unchanged measurements preserved; no new timing/allocation run required or performed. Core compatibility/E38 rejection remains dependent task.",
+      "artifact": "docs/reports/M2-external-declaration-hook/review-summary.json"
+    },
+    {
+      "id": "harness-discovery",
+      "kind": "check",
+      "revision": "d43d2b9eb6ef746acbb3cf331fe16831a235d219",
+      "command": "python3 -B docs/reports/M2-external-declaration-hook/verify.py",
+      "result": "failed",
+      "summary": "1376 executed tests passed; combined API discovery stopped at absent checkout corpus fixture. Repaired with unchanged API-only snapshot; no source changes or correctness repeat.",
+      "artifact": "docs/reports/M2-external-declaration-hook/harness-discovery-failure.json"
+    },
+    {
+      "id": "resume-reporting",
+      "kind": "check",
+      "revision": "26fe3fb3db97bc24ceee33372f7cb8246c768fce",
+      "command": "python3 -B docs/reports/M2-external-declaration-hook/verify.py --remaining",
+      "result": "failed",
+      "summary": "Foundation execution exited0 but result summary failed on missing testRevision field in earlier report. No missing count claimed; narrow old-format handling repaired, foundation9 counted in subsequent check.",
+      "artifact": "docs/reports/M2-external-declaration-hook/resume-reporting-failure.json"
+    },
+    {
+      "id": "package-identity",
+      "kind": "check",
+      "revision": "c4e2367eb24d195ea92454838c322bebd37c31fd",
+      "command": "python3 -B docs/reports/M2-external-declaration-hook/verify.py --remaining",
+      "result": "failed",
+      "summary": "Foundation9/API290/source entrypoint passed; package product hash assertion rejected a transitive source rebuild with new embedded Git revision. Kept test binary identity, restored tested output copy and disabled transitive project rebuild; no runtime source change.",
+      "artifact": "docs/reports/M2-external-declaration-hook/package-identity-failure.json"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Small internal hook required by exact E38 compatibility defect; dependent grammar owns composition comparison.",
-    "checks": [],
-    "remaining": [],
+    "summary": "Implemented internal validated TextDeclaration hook only. Exact owned bounded version/location retained; absent declaration/version distinct; no Core compatibility enforcement or E38-fix claim. Integrated verification belongs to coordinator.",
+    "checks": [
+      "1376 scoped MTP checks passed including17new; separate9foundation passed; API290 matched; source+fresh package entrypoint/product identity passed.",
+      "Planning14controls and validate134; bounded review/ownership/diff checks passed; original test and harness failures preserved with narrow fixes.",
+      "No bespoke timing/allocation; passive metadata retention and inherited unchanged measurement evidence preserved."
+    ],
+    "remaining": [
+      "Coordinator integrate/reverify; dependent Core grammar worker compares primary/external versions and addresses E38."
+    ],
     "requests": []
   }
 }
