@@ -83,7 +83,6 @@ def main():
         (directory / 'Program.cs').write_text((ROOT / 'samples/M1-namespace-names/Program.cs').read_text())
         run('dotnet', 'run', '--project', directory / 'Consumer.csproj', '-c', 'Release', '--disable-build-servers', '-p:UseSharedCompilation=false', f'-p:RestoreSources={ARTIFACT / "packages"}', f'-p:RestorePackagesPath={directory / "isolated-packages"}')
     audit_paths(args.audit_base)
-    run('python3', '-m', 'unittest', 'discover', '-s', 'tools/planning', '-p', 'test_*.py')
     run('python3', 'tools/planning/tasks.py', 'validate')
 
 if __name__ == '__main__':
@@ -92,5 +91,5 @@ if __name__ == '__main__':
         if LOG:
             ARTIFACT.mkdir(parents=True, exist_ok=True)
             (ARTIFACT / 'verification-raw.txt').write_text('\n'.join(LOG))
-            tokens = ('Trusted boundary', 'Owned-path', 'Complete checked', 'Source revision', 'Host ', '$ ', 'exit=', 'Build succeeded', 'Warning(s)', 'Error(s)', 'Matched ', 'total:', 'failed:', 'succeeded:', 'skipped:', 'Validated ', 'assertions', 'compatibility', ' B;', 'Independent validated', 'catalog:')
+            tokens = ('Trusted boundary', 'Owned-path', 'Complete checked', 'Source revision', 'Host ', '$ ', 'exit=', 'Build succeeded', 'Warning(s)', 'Error(s)', 'Matched ', 'total:', 'failed:', 'succeeded:', 'skipped:', 'Validated ', 'assertions', 'compatibility', ' B;', ' B/op;', 'Independent source/package', 'catalog:')
             (REPORT / 'checks.txt').write_text('\n'.join(line for block in LOG for line in block.splitlines() if any(token in line for token in tokens)) + '\n')

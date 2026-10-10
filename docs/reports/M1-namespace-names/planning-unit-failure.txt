@@ -1,0 +1,48 @@
+$ git diff --check
+
+exit=0
+$ python3 -m unittest discover -s tools/planning -p test_*.py
+..F........F.F
+======================================================================
+FAIL: test_gate_cannot_omit_a_task (test_tasks.TaskTrackingTests.test_gate_cannot_omit_a_task)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sebastienros/.codex/worktrees/13ed/xemele/tools/planning/test_tasks.py", line 86, in test_gate_cannot_omit_a_task
+    self.assertInvalid("gate does not cover")
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sebastienros/.codex/worktrees/13ed/xemele/tools/planning/test_tasks.py", line 24, in assertInvalid
+    self.assertTrue(any(fragment in error for error in errors), errors)
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: False is not true : []
+
+======================================================================
+FAIL: test_unordered_path_overlap_rejected_case_insensitively (test_tasks.TaskTrackingTests.test_unordered_path_overlap_rejected_case_insensitively)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sebastienros/.codex/worktrees/13ed/xemele/tools/planning/test_tasks.py", line 74, in test_unordered_path_overlap_rejected_case_insensitively
+    self.assertInvalid("unordered ownership overlap")
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sebastienros/.codex/worktrees/13ed/xemele/tools/planning/test_tasks.py", line 24, in assertInvalid
+    self.assertTrue(any(fragment in error for error in errors), errors)
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: False is not true : []
+
+======================================================================
+FAIL: test_verified_bootstrap_unlocks_independent_lanes (test_tasks.TaskTrackingTests.test_verified_bootstrap_unlocks_independent_lanes)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sebastienros/.codex/worktrees/13ed/xemele/tools/planning/test_tasks.py", line 46, in test_verified_bootstrap_unlocks_independent_lanes
+    self.assertEqual({"M0-ci", "M0-corpora", "M0-references", "M0-tree-spike", "M0-input-spike"},
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                     {key for key, task in self.tasks.items() if tracker.ready(task, self.tasks)})
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Items in the first set but not the second:
+'M0-references'
+'M0-corpora'
+
+----------------------------------------------------------------------
+Ran 14 tests in 0.229s
+
+FAILED (failures=3)
+
+exit=1
