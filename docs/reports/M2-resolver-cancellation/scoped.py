@@ -42,11 +42,11 @@ def main():
             xml=raw/'binding.xml';run('dotnet',ROOT/'tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll','-noColor','-class','Xemele.Tests.Resolution.CancellationBindingTests','-result-xml',xml)
             entries=list(ET.parse(xml).iter('test'));assert len(entries)==18 and all(t.get('result')=='Pass' for t in entries)
             s['focusedTests']=18;(report/'binding.xml.gz').write_bytes(gzip.compress(xml.read_bytes(),mtime=0))
-            run('dotnet','build','samples/M2-resolver-cancellation/Xemele.ResolverSample.csproj',*FLAGS)
+            run('dotnet','build','samples/M2-resolver-cancellation/CancellationBindingSample.csproj',*FLAGS)
             output=run('dotnet',sample);assert 'four access/default/name mutations passed' in output and 'Runtime source build: 1.0.0+'+revision in output;s['inventoryAndMutations']=output
             run('dotnet','pack','src/Xemele/Xemele.csproj',*FLAGS,'--no-build','-o',raw/'feed')
             packages=list((raw/'feed').glob('*.nupkg'));assert len(packages)==1;s['packageSha256']=hashlib.sha256(packages[0].read_bytes()).hexdigest()
-            run('dotnet','build','samples/M2-resolver-cancellation/Xemele.ResolverSample.csproj',*FLAGS,'-p:UsePackage=true','-p:ManagePackageVersionsCentrally=false',f'-p:RestoreSources={raw}/feed',f'-p:RestorePackagesPath={raw}/packages','-p:NuGetAudit=false')
+            run('dotnet','build','samples/M2-resolver-cancellation/CancellationBindingSample.csproj',*FLAGS,'-p:UsePackage=true','-p:ManagePackageVersionsCentrally=false',f'-p:RestoreSources={raw}/feed',f'-p:RestorePackagesPath={raw}/packages','-p:NuGetAudit=false')
             assert 'Runtime source build: 1.0.0+'+revision in run('dotnet',sample)
             run('dotnet','build','benchmarks/Xemele.Benchmarks/Xemele.Benchmarks.csproj',*FLAGS)
             run('dotnet','build','benchmarks/Xemele.Benchmarks/M2-resolver-cancellation/Xemele.ResolverSample.csproj',*FLAGS)

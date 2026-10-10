@@ -36,3 +36,9 @@ Every verifier attempt creates a unique report directory containing compressed
 raw command logs, result XML, provenance and summary. Failed attempts remain
 visible. A successful branch checkpoint is `implemented`; the coordinator alone
 integrates, reruns checks and sets `verified`.
+
+The owned sample project is `samples/M2-resolver-cancellation/CancellationBindingSample.csproj`;
+its assembly name retains the existing friend name. The standalone benchmark
+project filename remains `Xemele.ResolverSample.csproj`, uniquely matching that
+assembly during BDN solution-root discovery. The first BDN generator failure is
+retained in `exclusive-bdn-attempt1/`; it produced zero timing measurements.

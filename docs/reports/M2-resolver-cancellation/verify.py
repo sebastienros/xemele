@@ -82,13 +82,13 @@ def main():
         (report/'reference-provenance.json').write_text(json.dumps([{'id':r['id'],'runnerSha256':r['runnerSha256'],'build':r['response']['engine']['build']} for r in sorted(records,key=lambda r:r['id'])],indent=2)+'\n')
         # Public package consumer uses exactly the same offline sample plus the
         # friend assembly composition checks; no copied future implementations.
-        run('dotnet','build','samples/M2-resolver-cancellation/Xemele.ResolverSample.csproj',*FLAGS)
+        run('dotnet','build','samples/M2-resolver-cancellation/CancellationBindingSample.csproj',*FLAGS)
         sample=run('dotnet',ROOT/'samples/M2-resolver-cancellation/bin/Release/net10.0/Xemele.ResolverSample.dll')
         assert 'M1 strict parse preserved' in sample and 'Exact token B' in sample;s['compiledInternalHook']=sample.splitlines()[0];(report/'inventory.txt').write_text(sample)
         run('dotnet','pack','src/Xemele/Xemele.csproj',*FLAGS,'--no-build','-o',raw/'feed')
         feed=raw/'feed';packages=list(feed.glob('*.nupkg'));assert len(packages)==1
         s['packageSha256']=hashlib.sha256(packages[0].read_bytes()).hexdigest()
-        run('dotnet','build','samples/M2-resolver-cancellation/Xemele.ResolverSample.csproj',*FLAGS,'-p:UsePackage=true','-p:ManagePackageVersionsCentrally=false',f'-p:RestoreSources={feed}',f'-p:RestorePackagesPath={raw}/packages','-p:NuGetAudit=false')
+        run('dotnet','build','samples/M2-resolver-cancellation/CancellationBindingSample.csproj',*FLAGS,'-p:UsePackage=true','-p:ManagePackageVersionsCentrally=false',f'-p:RestoreSources={feed}',f'-p:RestorePackagesPath={raw}/packages','-p:NuGetAudit=false')
         package_sample=run('dotnet',ROOT/'samples/M2-resolver-cancellation/bin/Release/net10.0/Xemele.ResolverSample.dll');assert 'M1 strict parse preserved' in package_sample
         s['packageConsumer']='passed exact independently compiled internal hook/token B/paused parent and M1 parse from freshly built local nupkg'
         run('dotnet','build','benchmarks/Xemele.Benchmarks/Xemele.Benchmarks.csproj',*FLAGS)
