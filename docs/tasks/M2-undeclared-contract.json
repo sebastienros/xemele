@@ -96,6 +96,24 @@
       "result": "failed",
       "summary": "64 model assertions passed, then overly strict 10.0.11+ informational-label gate rejected actual approved10.0.11-servicing.26373.116+e2f47b0110ed922f21a1522da67279133ce28f32. Temporary outputs removed. Corrected formatting while retaining exact runtime byte/path/version freeze; subsequent finalverification passed.",
       "artifact": "docs/reports/M2-undeclared-contract/runtime-label-gate-failure.json"
+    },
+    {
+      "id": "coordinator-source-review",
+      "kind": "review",
+      "revision": "ba09a6f973554639c634737a8cd3bc8ebc4a6d84",
+      "command": null,
+      "result": "passed",
+      "summary": "Independent API reviewer source-only approval: all four prior NCName, loss-refusal, final source/HEAD freeze and actual executing runtime/CoreLib identity blockers resolved. No executable checks by reviewer; exact additive public proposal approved for ordered narrow implementation.",
+      "artifact": null
+    },
+    {
+      "id": "integrated-contract-verification",
+      "kind": "integration",
+      "revision": "dfe2c5a5dba0155d207c1c93316a998fc901983f",
+      "command": "python3 -B docs/reports/M2-undeclared-contract/verify.py --audit-base f01ee6cb494a6d51987586e3245e1cb04b7cf03f --expected-branch codex/integrate-m2-undeclared-contract --output docs/reports/M2-undeclared-contract/integrated-summary.json",
+      "result": "passed",
+      "summary": "Fresh integrated checks passed:64 independent+64 inherited model assertions, actual272 API, five frozen public models and seven internal ABI shapes, compiler/compiled ABI/public metadata/source-freeze negative controls; actual10.0.11/CoreLib/source/binary freeze. Planning14/131 graph, ownership/diff passed. Root independently matched all125 compiled/spec/verifier input bytes to tested Git and reported aggregate plus runtime file hashes. Temporary compiler/raw outputs removed; model-only, no runtime/performance/conformance claim.",
+      "artifact": "docs/reports/M2-undeclared-contract/integrated-summary.json"
     }
   ],
   "blockers": [],
