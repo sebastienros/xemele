@@ -11,8 +11,7 @@
   "integration_queue": [],
   "blockers": [],
   "next_actions": [
-    "Archive completed runtime worker and delete both merged verified worktrees after recording cleanup.",
-    "Claim and dispatch M2-conformance-grammar from verified dependencies.",
+    "Claim and dispatch ready M2-conformance-grammar from verified dependencies.",
     "Complete conformance, recovery and M2 gate, then continue through M9 gate."
   ],
   "last_verified_task": {
@@ -1095,8 +1094,10 @@
       "worktree_path": "/Users/sebastienros/.codex/worktrees/c7ea/xemele",
       "handoff_revision": "8321870fd03bbd23b7dc945837f575648cbb3e1f",
       "integration_revision": "e4277a66884c35f45ea41e128450845afe7060d6",
-      "stage": "Verified integrated; cleanup pending",
-      "evidence": "docs/reports/M2-undeclared-attributes-runtime/integration-summary.json"
+      "stage": "Verified integrated and cleaned",
+      "evidence": "docs/reports/M2-undeclared-attributes-runtime/integration-summary.json",
+      "cleanup_status": "Worker archived; both worktrees deleted",
+      "cleanup_record": "docs/orchestration/cleanup-M2-undeclared-attributes-runtime.json"
     }
   ],
   "benchmark_grant": {
@@ -1171,13 +1172,7 @@
       "result": "Worker promptly reports allocation and frozen timing passed, no children, no builds/generation/retries/configuration changes. Independent concise evidence inspection underway after lease release."
     }
   ],
-  "temporary_integration_checkout": {
-    "path": "/private/tmp/xemele-integrate-m2-undeclared-attributes-runtime",
-    "revision": "8b77daddc975093bed1fcf0cec28008201707ae2",
-    "task_id": "M2-undeclared-attributes-runtime",
-    "status": "Verified integrated; remove after durable metadata",
-    "prepared_revision": "8d894a96b1ad99799fb3732683bc7f6dd0066141"
-  },
+  "temporary_integration_checkout": null,
   "attribute_capability_obligation": {
     "contract_task": "M2-undeclared-attribute-contract",
     "status": "Planned explicit existing contract obligation; four authored VC-only gaps, three WFC controls. Separate from nine original corpus gaps.",
