@@ -165,3 +165,25 @@ That is conditional and not yet implemented. Any such proposal must preserve
 sink-allocation positive child, and fail parent checks for child allocation,
 crash, timeout or absent/malformed output. Historical in-process failures remain
 unresolved, with no concurrent allocation guarantee.
+
+The single package-free run atsource
+`8e76f6ef620c6e4b16848e88bb314a95ae799083` reproduced a counter anomaly on
+.NET10.0.11/Arm64/workstationGC. Baseline zero32/32=0B and positive32/32=64B.
+Pressure zero173x0B,18x8,136B,1x7,848B; pressure positive171x64B,21x8,200B.
+It made253requests, recorded256generation2collections and background-info
+index2->256. No worker error occurred; the exact diagnostic exit1 is retained
+under `control-8e76f6e-attempt1/`, along with fullarrays/IL/package-emptyassets/
+runtimeconfig/assembly+sourceSHA. This is independent counter evidence, not
+causal proof for historical parser deltas and not a passing exact-zero test.
+
+A concrete conditional proposal was sent to the coordinator: a new owned
+StreamingAllocationChild process/protocol helper launches the actual compiled
+standalone test DLL with its existing-method filter and a recursion guard.
+The real child preserves the whole original synchronous workload and exactzero;
+a second positive child intentionally escapes byte[37] through the existing
+sink Hook during that same workload and must measurepositive. Structured report,
+oneFactXMLpass, runtime/compiled-source/module hashes/counts/completion would be
+pinned and validated. Any realchildnonzero/crash/timeout/missing/malformedoutput
+fails theparent, without retries/subtraction. Defaulttestparallelism and runtime
+settings stayunchanged. Nothing is wired yet; assertionchanges await focused
+coordinator go-ahead. Historical failures remainunresolved and claim staysnarrow.
