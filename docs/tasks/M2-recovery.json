@@ -28,7 +28,10 @@
     "benchmarks/Xemele.Benchmarks/M2-recovery/",
     "docs/api/M2-recovery.txt",
     "samples/M2-recovery/",
-    "docs/reports/M2-recovery/"
+    "docs/reports/M2-recovery/",
+    "src/Xemele/Parsing/Core/XmlParserCore.cs",
+    "src/Xemele/Parsing/Dom/Factories.cs",
+    "src/Xemele/Parsing/Dom/ByteDomAdapter.cs"
   ],
   "api_or_output": "Recovery options and Document.ParseWithDiagnostics",
   "acceptance": [
@@ -55,7 +58,7 @@
   "evidence": [],
   "blockers": [],
   "handoff": {
-    "summary": "",
+    "summary": "Predispatch source-only scope assessment: shared recovery hooks are absent. Coordinator grants exact Core policy callsites in XmlParserCore.cs (outside-root,duplicate expanded attributes,ancestor/unmatched close,EOF delivery) with strict/entity/atomic/fatal behavior preserved; Factories.cs only strict Recover=true guards before input/resolver work; ByteDomAdapter.cs only partial modifier. All recovery implementation/accumulation/adapters remain owned Parsing/Recovery and Dom/Recovery.cs partials; no second parser/input rewrite. No implementation or checks claimed; task starts only after conformance verified.",
     "checks": [],
     "remaining": [],
     "requests": []
