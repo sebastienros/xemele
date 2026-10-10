@@ -7,10 +7,11 @@
   "status": "in_progress",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M2-dtd-model",
   "branch": "codex/m2-dtd-model",
-  "base_revision": "b3e7230d6ba2fcf6ddf4e4986a44cfe4349d35d6",
+  "base_revision": "8af65f385654c382f201e1ad8c32f9be2cc3bb87",
   "integration_revision": null,
   "depends_on": [
-    "M2-contracts"
+    "M2-contracts",
+    "M2-resolver-allocation-probe"
   ],
   "goals": [
     "G07"
@@ -47,7 +48,9 @@
   "handoff": {
     "summary": "Extracted independent immutable model boundary from unclaimed M2-dtd-grammar. Original grammar acceptance preserved and now depends on this child; only verified M2 common/contracts required.",
     "checks": [],
-    "remaining": [],
+    "remaining": [
+      "Renewed after verified resolver measurement repair 4e558709ba99879b22a892d17912dd8204e5baea; preserve previous branch evidence and run fresh combined checks. No production changes or unchanged-candidate retries."
+    ],
     "requests": []
   }
 }
