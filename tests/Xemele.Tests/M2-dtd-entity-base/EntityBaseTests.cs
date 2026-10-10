@@ -170,7 +170,7 @@ public sealed class EntityBaseTests
         {
             var result = core.Append(input, [], true, sink, cancellation.Token);
             Assert.Equal(ScanStep.Rejected, result.Step);
-            Assert.Equal(failure == "quota" ? "XML.ResourceLimit" : "XML.ResourceDenied", result.Diagnostic!.Code);
+            Assert.Equal(failure == "quota" ? "XML.ExternalResourcesLimit" : "XML.ResourceDenied", result.Diagnostic!.Code);
             Assert.Equal(new Uri("https://fixture.invalid/declaration/ext.dtd"), result.Diagnostic.Location.SourceUri);
         }
         Assert.Equal(new[] { "document" }, sink.Events); Assert.Null(sink.Model);
