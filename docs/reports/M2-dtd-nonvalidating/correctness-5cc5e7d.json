@@ -1,0 +1,287 @@
+{
+  "mode": "correctness",
+  "result": "passed",
+  "head": "5cc5e7dc336f59b718f9a34a0885b28cd4269b7a",
+  "sdk": "10.0.400",
+  "runtime": {
+    "coreRuntimeBuild": "10.0.11-servicing.26373.116+e2f47b0110ed922f21a1522da67279133ce28f32",
+    "driverBuild": "1.0.0+5cc5e7dc336f59b718f9a34a0885b28cd4269b7a",
+    "productBuild": "1.0.0+5cc5e7dc336f59b718f9a34a0885b28cd4269b7a",
+    "runtime": ".NET 10.0.11"
+  },
+  "build": {
+    "command": "dotnet build Xemele.slnx -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false",
+    "warnings": 0,
+    "errors": 0
+  },
+  "testCollection": [
+    {
+      "command": "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet /Users/sebastienros/.codex/worktrees/640f/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -noColor -result-xml /Users/sebastienros/.codex/worktrees/640f/xemele/artifacts/M2-dtd-nonvalidating/correctness/Xemele.Tests.xml",
+      "exit": 0,
+      "counts": {
+        "total": "4668",
+        "passed": "4668",
+        "failed": "0",
+        "skipped": "0"
+      },
+      "failures": [],
+      "binaryAfterSha256": "0902f23f99ee52802d84d8122c88f0a4f89b53d901cca0748805d6eff179144e"
+    },
+    {
+      "command": "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet /Users/sebastienros/.codex/worktrees/640f/xemele/tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll -noColor -result-xml /Users/sebastienros/.codex/worktrees/640f/xemele/artifacts/M2-dtd-nonvalidating/correctness/Xemele.Conformance.Tests.xml",
+      "exit": 0,
+      "counts": {
+        "total": "258",
+        "passed": "258",
+        "failed": "0",
+        "skipped": "0"
+      },
+      "failures": [],
+      "binaryAfterSha256": "2f85b8332f41a700f04791e530208542bdde287c40c33540986d3c38c7a8c411"
+    },
+    {
+      "command": "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet /Users/sebastienros/.codex/worktrees/640f/xemele/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll -noColor -result-xml /Users/sebastienros/.codex/worktrees/640f/xemele/artifacts/M2-dtd-nonvalidating/correctness/Xemele.Differential.Tests.xml",
+      "exit": 0,
+      "counts": {
+        "total": "311",
+        "passed": "311",
+        "failed": "0",
+        "skipped": "0"
+      },
+      "failures": [],
+      "binaryAfterSha256": "517bf8163d6182f8b416a880eca17034a08be67b61d6b66dd43a8fedb888d1a2"
+    }
+  ],
+  "unitBinaryBefore": {
+    "Xemele.Tests": "0902f23f99ee52802d84d8122c88f0a4f89b53d901cca0748805d6eff179144e",
+    "Xemele.Conformance.Tests": "2f85b8332f41a700f04791e530208542bdde287c40c33540986d3c38c7a8c411",
+    "Xemele.Differential.Tests": "517bf8163d6182f8b416a880eca17034a08be67b61d6b66dd43a8fedb888d1a2"
+  },
+  "api": {
+    "command": "python3 -B tools/ApiBaseline/compare.py --report <transient api-provisioned.json>",
+    "matched": true,
+    "members": 272
+  },
+  "packageConsumer": {
+    "sourceProductSha256": "52410e260bfae27f145ab1c4659ef7d20e199ee45ab5a51b22009ed7255c4730",
+    "packageSha256": "c1b233ae89056d72ea781cb1cc4a5190316b0b4595cff5deb4560669d19c0516",
+    "consumerProductSha256": "52410e260bfae27f145ab1c4659ef7d20e199ee45ab5a51b22009ed7255c4730",
+    "freshCacheFeed": true,
+    "byteIdentityMatched": true,
+    "command": "dotnet pack src/Xemele/Xemele.csproj -c Release --no-build --no-restore --disable-build-servers -m:1 -p:UseSharedCompilation=false -o <fresh feed>; dotnet build samples/M2-dtd-nonvalidating/Sample.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false -p:UsePackage=true -p:ManagePackageVersionsCentrally=false -p:RestoreSources=<fresh feed> -p:RestorePackagesPath=<fresh cache>; dotnet <consumer Sample.dll>",
+    "output": "text=right!;default=ok;requests=3;disposed=3;product=1.0.0+5cc5e7dc336f59b718f9a34a0885b28cd4269b7a",
+    "sourceConsumerAlsoPassed": true,
+    "packAdvisory": "existing package missing-readme advisory"
+  },
+  "profile": {
+    "command": "python3 -B docs/reports/M2-conformance-profile/audit.py <transient profile.json>",
+    "originalIds": 2585,
+    "resources": 3386,
+    "expectedOutcomesUnchanged": true,
+    "counts": {
+      "product:rejected": 1194,
+      "reference:rejected": 1914,
+      "product-expectation-match": 2574,
+      "reference:accepted": 671,
+      "product:accepted": 1391,
+      "product-expectation-gap": 11,
+      "matched": 639
+    },
+    "assignedSixOriginalsFulfilled": true,
+    "originalModelAndDefaultOracles": "12 original rows (six with/without callback pause), each all primary splits and one-byte external reads; complete authored model/DOM/location/request/cleanup oracles",
+    "remainingProductGaps": [
+      {
+        "id": "xmlconf/xmltest/xmltest.xml#not-wf-sa-180",
+        "inputSha256": "7336ca347c971ae9adadfd1deffde9e53fb25b01b977fff19f8d0e26924eac86",
+        "expectedOutcomes": [
+          "rejected"
+        ],
+        "productOutcome": "accepted",
+        "productDiagnostic": null,
+        "referenceOutcome": "rejected",
+        "referenceCategory": "xml",
+        "comparison": "unavailable"
+      },
+      {
+        "id": "xmlconf/xmltest/xmltest.xml#valid-not-sa-020",
+        "inputSha256": "528c226a9eb4292b1c705b76a994adafe1349c6b1729856f643b50d87fb8abad",
+        "expectedOutcomes": [
+          "accepted"
+        ],
+        "productOutcome": "rejected",
+        "productDiagnostic": "DTD.Syntax",
+        "referenceOutcome": "accepted",
+        "referenceCategory": null,
+        "comparison": "unavailable"
+      },
+      {
+        "id": "xmlconf/sun/sun-invalid.xml#inv-not-sa14",
+        "inputSha256": "2457653d2adc9b4dc7fc2636c570861e2dec37b0a9bbe00d9c64b047147160dc",
+        "expectedOutcomes": [
+          "accepted"
+        ],
+        "productOutcome": "rejected",
+        "productDiagnostic": "XML.Standalone",
+        "referenceOutcome": "accepted",
+        "referenceCategory": null,
+        "comparison": "unavailable"
+      },
+      {
+        "id": "xmlconf/ibm/ibm_oasis_not-wf.xml#ibm-not-wf-P68-ibm68n07.xml",
+        "inputSha256": "f94ef66da341326af15331a6d0ebd26cacbdfd40d340c0d5fcf34f3857b72025",
+        "expectedOutcomes": [
+          "rejected"
+        ],
+        "productOutcome": "accepted",
+        "productDiagnostic": null,
+        "referenceOutcome": "rejected",
+        "referenceCategory": "xml",
+        "comparison": "unavailable"
+      },
+      {
+        "id": "xmlconf/ibm/xml-1.1/ibm_not-wf.xml#ibm-1-1-not-wf-P77-ibm77n09.xml",
+        "inputSha256": "e70b69178bed1c2ca04f7bce8f75032176bbf0f859edd91090e28a9180b63741",
+        "expectedOutcomes": [
+          "accepted"
+        ],
+        "productOutcome": "rejected",
+        "productDiagnostic": "XML.UndeclaredEntity",
+        "referenceOutcome": "rejected",
+        "referenceCategory": "xml",
+        "comparison": "unavailable"
+      },
+      {
+        "id": "xmlconf/ibm/xml-1.1/ibm_valid.xml#ibm-1-1-valid-P05-ibm05v05.xml",
+        "inputSha256": "0f999758e5b50a3205baed595acd70c904a323079827a064f16f42a338c0c214",
+        "expectedOutcomes": [
+          "rejected"
+        ],
+        "productOutcome": "accepted",
+        "productDiagnostic": null,
+        "referenceOutcome": "rejected",
+        "referenceCategory": "xml",
+        "comparison": "unavailable"
+      },
+      {
+        "id": "xmlconf/eduni/errata-2e/errata2e.xml#rmt-e2e-38",
+        "inputSha256": "b6be7039a5dfeaad8eaad16eb3976c754888985bdd598b518a81a0f9547e3cf6",
+        "expectedOutcomes": [
+          "rejected"
+        ],
+        "productOutcome": "accepted",
+        "productDiagnostic": null,
+        "referenceOutcome": "rejected",
+        "referenceCategory": "xml",
+        "comparison": "unavailable"
+      },
+      {
+        "id": "xmlconf/eduni/namespaces/1.0/rmt-ns10.xml#rmt-ns10-043",
+        "inputSha256": "8adddafc4435c4303a3e0a6b823cc6aeffa9f6e1a4983a228f0a94ffb0734bc7",
+        "expectedOutcomes": [
+          "rejected"
+        ],
+        "productOutcome": "accepted",
+        "productDiagnostic": null,
+        "referenceOutcome": "accepted",
+        "referenceCategory": null,
+        "comparison": "matched"
+      },
+      {
+        "id": "xmlconf/eduni/namespaces/1.0/rmt-ns10.xml#rmt-ns10-044",
+        "inputSha256": "47555bc24bcb1b73f0c01d060614b4d994296ef9d225860ab8261748a7511ed2",
+        "expectedOutcomes": [
+          "rejected"
+        ],
+        "productOutcome": "accepted",
+        "productDiagnostic": null,
+        "referenceOutcome": "accepted",
+        "referenceCategory": null,
+        "comparison": "matched"
+      },
+      {
+        "id": "xmlconf/eduni/errata-3e/errata3e.xml#rmt-e3e-13",
+        "inputSha256": "40470ff5f2281476ed4521e066d85122e9cc240f1fa916f97bd095644540fa14",
+        "expectedOutcomes": [
+          "accepted"
+        ],
+        "productOutcome": "rejected",
+        "productDiagnostic": "XML.UndeclaredEntity",
+        "referenceOutcome": "rejected",
+        "referenceCategory": "xml",
+        "comparison": "unavailable"
+      },
+      {
+        "id": "xmlconf/eduni/errata-4e/errata4e.xml#x-ibm-1-0.5-valid-P05-ibm05v05.xml",
+        "inputSha256": "df7efdac92874d0b37749cc45424828a814012a9a9bca9ef7746f986ae0600fa",
+        "expectedOutcomes": [
+          "rejected"
+        ],
+        "productOutcome": "accepted",
+        "productDiagnostic": null,
+        "referenceOutcome": "rejected",
+        "referenceCategory": "xml",
+        "comparison": "unavailable"
+      }
+    ],
+    "referenceDisagreements": 770,
+    "auditCleanupContractPassed": true,
+    "requiredBothChildrenZeroExitAndReaped": true
+  },
+  "freeze": {
+    "revision": "5cc5e7dc336f59b718f9a34a0885b28cd4269b7a",
+    "sourceInputsCount": 68,
+    "sourceInputManifestSha256": "a360f62fd1e6b6043431d8169a9c0ff865b92af063ba1f19c98039b000435a53",
+    "compiledFilesCount": 16,
+    "compiledClosureManifestSha256": "b9b310bedc19b4614f58dd24714fbfb77c37def9701c3627136fac5dfac2e521",
+    "runtimeFilesCount": 188,
+    "runtimeClosureManifestSha256": "3517657ff9c251aa3838418d48bd74366af26ef0853bf7766ce4520a07f3ee8e",
+    "dotnetExecutableSha256": "e86deb33d0dacad9cc1224466df6418149cb8e13cb8afd0dc6815ea6b7807975",
+    "beforeAfterEqual": true,
+    "driverBinarySha256": "f1ae1685997cd12c5130b607f5360330241a20313a9828a3b0622bfc4da7cfef",
+    "productBinarySha256": "52410e260bfae27f145ab1c4659ef7d20e199ee45ab5a51b22009ed7255c4730",
+    "fullProductRuntimeIdentities": [
+      {
+        "coreRuntimeBuild": "10.0.11-servicing.26373.116+e2f47b0110ed922f21a1522da67279133ce28f32",
+        "driverBuild": "1.0.0+5cc5e7dc336f59b718f9a34a0885b28cd4269b7a",
+        "productBuild": "1.0.0+5cc5e7dc336f59b718f9a34a0885b28cd4269b7a",
+        "runtime": ".NET 10.0.11"
+      }
+    ],
+    "corpusInventorySha256": "8c2f37c0e8881f145874d413d1b6447ce116ab3d25b1994de483d5ef3e5d5c0c",
+    "corpusExpectationsSha256": "8c470970aabae386a2a705098a653f2d2233ad23aed9450a4ed325ce7db2026f",
+    "corpusManifestSha256": "e655b802f4c3a6247ed02d2ed50f7b5482e901a608076361017a4f0984d75e2c"
+  },
+  "controls": {
+    "planningTests": 14,
+    "adapterTests": 5,
+    "taskValidation": 132,
+    "ownedChangedPaths": 16,
+    "gitDiffCheck": "passed",
+    "classifierCheck": "2585 original IDs/3386 resources unchanged"
+  },
+  "preFreezeCorrections": [
+    {
+      "stage": "compile",
+      "issue": "test oracle used nonexistent XmlElement/XmlText types and LINQ on custom struct enumerators",
+      "resolution": "use XmlNode and explicit foreach; rebuilt before frozen checks"
+    },
+    {
+      "stage": "focused controls",
+      "issue": "authored original offsets omitted CRLF bytes and quota code was guessed XML.LimitExceeded",
+      "resolution": "author original-byte offsets and preserve actual XML.ResourceLimit; new/paused tests passed before full freeze"
+    },
+    {
+      "stage": "restore",
+      "issue": "sandbox NuGet vulnerability service inaccessible NU1900",
+      "resolution": "authorized network recovery; no policy relaxation"
+    },
+    {
+      "stage": "API discovery",
+      "issue": "fresh checkout lacked ignored original fixture copies",
+      "resolution": "existing offline pinned provision.py; 272-member API check passed"
+    }
+  ],
+  "measurements": "unrun; explicit exclusive coordinator grant required",
+  "rawOutputs": "inspected and removed: focused/full test logs/XML, API/profile raw reports, fresh feed/package cache; original private corpus cache preserved",
+  "rawTransientOutputsRemoved": true
+}

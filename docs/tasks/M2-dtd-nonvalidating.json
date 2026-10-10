@@ -4,7 +4,7 @@
   "milestone": "M2",
   "title": "Separate DTD PE validity constraints from well-formedness",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M2-dtd-nonvalidating",
   "branch": "codex/m2-dtd-nonvalidating",
   "base_revision": "236cb9222334931d5c7d91ae6841b49138f9dd70",
@@ -39,20 +39,30 @@
     {
       "id": "M2-dtd-nonvalidating-A1",
       "description": "Correct only Proper Declaration/PE, Group/PE and Conditional Section/PE Nesting validity-only fatal rejection in frozen nonvalidating profile. Preserve PE Between Declarations WFC: replacement referenced as DeclSep must independently supply complete extSubsetDecl grammar. Retain PE insertion/resume context and preserve malformed expanded grammar, internal-subset placement, literal quote containment, recursion, cancellation/quota, bounded input/suspension/count/pause/cleanup, and declaration opener source URI/location established by verified entity-base repair. No blanket removal of source EOF checks or public/model ABI changes.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "frozen-correctness"
+      ]
     },
     {
       "id": "M2-dtd-nonvalidating-A2",
       "description": "Independently authored complete models/defaults for original xmltest invalid--005,invalid--006,invalid-not-sa-022; IBM ibm-invalid-P49-ibm49i01.xml,ibm-invalid-P50-ibm50i01.xml; errata2e rmt-e2e-14, exact inventory bytes/resources and immutable profile expectations. Exercise all short splits and external source suspension with paired true WFC errors. Authorize only inherited ParserTests external PE (a fragment and SourceTests ChildCannotCloseParentMarkup two-row rejection-to-acceptance transitions with full models/resource balance; preserve every other identity, internal-boundary incomplete declaration and all five ChildCannotLeaveOpenMarkup rejection rows. No unrelated historical benchmark changes.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "frozen-correctness"
+      ]
     },
     {
       "id": "M2-dtd-nonvalidating-A3",
       "description": "Actual full correctness/preservation/API272/source and package consumer checks plus applicable allocation/timing evidence at frozen full Git/source/actual binary/runtime identities. Source review and counters-disabled independent generated child preparation before explicit exclusive host grant; no repeat of unchanged successful measurements, threshold/runtime/options relaxation or unverified peer dependency. All3386 resources/2585 original IDs/expected outcomes unchanged, six obligations fulfilled and remaining product gaps exposed. Concise result summaries only; inspect/remove raw outputs, planning graph/ownership/diff validation.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "frozen-correctness",
+        "allocation-observation",
+        "benchmark-observation",
+        "reporting-rebind-controls",
+        "planning-ownership"
+      ]
     }
   ],
   "implementation": [
@@ -63,12 +73,65 @@
     "tests/fixtures/M2-dtd-nonvalidating/original-oracles.json: independently authored original corpus models and exact resource identities",
     "docs/reports/M2-dtd-nonvalidating/: thin reuse of integrated measurement/provenance/process guards; no counters executed before grant"
   ],
-  "evidence": [],
+  "evidence": [
+    {
+      "id": "frozen-correctness",
+      "kind": "check",
+      "revision": "5cc5e7dc336f59b718f9a34a0885b28cd4269b7a",
+      "command": "Pinned Release solution build; full Xemele.Tests, Xemele.Conformance.Tests and Xemele.Differential.Tests DLLs; API compare; source and fresh-package consumer; original profile audit; classifier check",
+      "result": "passed",
+      "summary": "4668 unit/258 conformance/311 differential; zero failures/skips. API272 and byte-identical fresh package consumer. All six original complete DTD/default/DOM/location/request/disposal oracles, every short split/callback pause and true-WFC controls passed. Immutable2585 IDs/3386 resources/profile expectations:2574 matches,11 exposed unrelated gaps. Source/product/runtime before-after freeze passed; no full conformance claim.",
+      "artifact": "docs/reports/M2-dtd-nonvalidating/correctness-5cc5e7d.json"
+    },
+    {
+      "id": "allocation-observation",
+      "kind": "check",
+      "revision": "7af415f0494435683f4b2d8cece91f6666f93a7c",
+      "command": "PATH=<pinned dotnet> DOTNET_CLI_USE_MSBUILD_SERVER=0 python3 -B docs/reports/M2-dtd-nonvalidating/measure.py --mode allocation --report allocation-7af415f --exclusive-grant m2-nonvalidating-7af415f-sequence-exclusive-20261010",
+      "result": "passed",
+      "summary": "1024 steady borrowed Appends allocated0B. Cold setup/oracles317656B; 1024 owned-model operations9191664B; owned-document operations166471280B; positive control155648B. Distinct owners retained; no complete-parse0B claim. Original five-key owned protocol and separate borrowed proof validated; final freezes passed; parent exit0, process group empty. Actual runtime compilation5cc5e7d retained through explicit offline reporting-only rebind.",
+      "artifact": "docs/reports/M2-dtd-nonvalidating/allocation-7af415f.json"
+    },
+    {
+      "id": "benchmark-observation",
+      "kind": "check",
+      "revision": "7af415f0494435683f4b2d8cece91f6666f93a7c",
+      "command": "PATH=<pinned dotnet> DOTNET_CLI_USE_MSBUILD_SERVER=0 python3 -B docs/reports/M2-dtd-nonvalidating/measure.py --mode benchmark --report benchmark-5cc5e7d --exclusive-grant m2-nonvalidating-7af415f-sequence-exclusive-20261010",
+      "result": "passed",
+      "summary": "Exactly2 frozen declared cases,6 Actual/6 Result/2 GC,2 child exits0; before/after independent binary/generated/input/runtime proofs and final closures equal. InternalNestedModel2.484us/8.77KB; RedirectedComposition10.222us/158.76KB. Timing informational Arm64. No build/generation/restore or configuration changes inside granted lease, no repeat of successful observations. Raw outputs/generated child removed; lease released/no children.",
+      "artifact": "docs/reports/M2-dtd-nonvalidating/benchmark-5cc5e7d.json"
+    },
+    {
+      "id": "reporting-rebind-controls",
+      "kind": "check",
+      "revision": "7af415f0494435683f4b2d8cece91f6666f93a7c",
+      "command": "python3 -B -m unittest discover -s docs/reports/M2-dtd-nonvalidating -p test_measure.py -v; offline hash/Git rebind of preparation",
+      "result": "passed",
+      "summary": "6 offline controls using exact correction-commit Python bytes; executed before commit, bytes verified identical afterward. Actual reused allocation acceptance retains original5 positive integer keys and separate borrowed proof; missing/nonzero/duplicate/wrong-count proof rejects. Exactly2 Python identities changed;279 other parent/289 generated inputs,40 parent/47 child/188 runtime files unchanged. Frozen actual full versions/source provenance preserved; no builds/tests/counters/workload execution for rebind.",
+      "artifact": "docs/reports/M2-dtd-nonvalidating/reporting-rebind-7af415f.json"
+    },
+    {
+      "id": "planning-ownership",
+      "kind": "check",
+      "revision": "7af415f0494435683f4b2d8cece91f6666f93a7c",
+      "command": "python3 -B -m unittest discover -s tools/planning -p test_tasks.py -v; python3 -B tools/planning/tasks.py validate; git diff --check; task-owned diff inspection",
+      "result": "passed",
+      "summary": "14 planning controls;132 actual tasks validated; original source and reporting commits modify only task-owned paths. Final metadata validation follows handoff update.",
+      "artifact": "docs/reports/M2-dtd-nonvalidating/completion-summary.json"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Scoped source candidate implemented; original six and paired WFC/pause/suspension controls pass before freeze. Full frozen correctness/ABI/package/profile evidence and source review next; allocation/timing await exclusive coordinator grant.",
-    "checks": [],
-    "remaining": [],
+    "summary": "Selective nonvalidating declaration/group/conditional PE nesting accepts six original cases; preserves DeclSep independently complete grammar, literal/source restrictions, opener bases, bounded streaming/quotas/cancellation/pause/cleanup and API272. Branch implementation complete; root alone integrates/verifies.",
+    "checks": [
+      "Frozen compilation5cc5e7d: full4668/258/311 tests, API272, source/fresh-package consumer byte identity, all original IDs/resource hashes/profile expectations unchanged;2574 matches/11 exposed unrelated gaps.",
+      "Reporter7af415f: prepared child rebind changes only2 Python identities; real0B borrowed/positive owned allocation plus two-case ShortRun observations/provenance/final freezes passed under one explicit exclusive sequence.",
+      "Lease released/no children; no successful observations repeated; raw logs/XML/feed/packages/generated and task measurement binaries removed."
+    ],
+    "remaining": [
+      "Root integration and scoped integrated checks; retain compiled runtime5cc5e7d/reporting7af415f provenance rather than attributing measured binaries to later metadata commits.",
+      "11 unrelated full-product conformance gaps remain outside this task and are exposed in the correctness report."
+    ],
     "requests": []
   }
 }
