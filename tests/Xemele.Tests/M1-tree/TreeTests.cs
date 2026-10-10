@@ -165,11 +165,28 @@ public class TreeTests
     [Fact]
     public void WarmTraversalAndRepeatedNameInternProbesAllocateNothing()
     {
+        var child = TreeAllocationChild.EnterChild();
+        if (child is null)
+        {
+            var pair = TreeAllocationChild.RunPair();
+            TestContext.Current.TestOutputHelper!.WriteLine(
+                $"real={pair.Real.AllocatedBytes}; positive={pair.Positive.AllocatedBytes}; consumed={pair.Real.MeasuredConsumed}; identity={pair.Real.AttributeIdentity}; artifacts={pair.Directory}");
+            return;
+        }
         var d=new XmlDocument();var e=d.CreateElement("e","urn:e","p");var a=e.SetAttribute("a","v");e.SetNamespaceDeclaration("p","urn:e");
         for(int i=0;i<10;i++)e.AppendChild(d.CreateText("x"));
-        long Walk(){long sum=0;for(int i=0;i<1000;i++){foreach(var n in e.Children)sum+=n.Value.Length;foreach(var x in e.Attributes)sum+=x.Value.Length;foreach(var ns in e.NamespaceDeclarations)sum+=ns.Value.Length;sum+=d.Intern("urn:e".AsSpan()).Length;}return sum;}
-        Walk();long before=GC.GetAllocatedBytesForCurrentThread();long consumed=Walk();long delta=GC.GetAllocatedBytesForCurrentThread()-before;
-        Assert.Equal(21000,consumed);Assert.Equal(0,delta);Assert.Equal(a,e.Attributes[0]);
+        bool positive = child.Mode == "positive";
+        object? escaped = null;
+        var warm = TreeAllocationProbe.Walk(d, e, positive, ref escaped);
+        var measured = TreeAllocationProbe.Walk(d, e, positive, ref escaped);
+        bool identity = a == e.Attributes[0];
+        GC.KeepAlive(escaped);
+        // Preserve actual nonzero results before the exact zero assertion.
+        TreeAllocationChild.Write(child, warm.Bytes, measured.Bytes, warm.Consumed, measured.Consumed,
+            identity, (escaped as byte[])?.Length ?? 0);
+        if (positive) Assert.True(measured.Bytes > 0, "Escaped allocation must be detected.");
+        else Assert.Equal(0, measured.Bytes);
+        Assert.Equal(21000, warm.Consumed); Assert.Equal(21000, measured.Consumed); Assert.Equal(a,e.Attributes[0]);
     }
     [Fact]
     public void HandlesKeepTheirOwnerAlive()
