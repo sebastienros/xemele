@@ -42,26 +42,26 @@ public sealed class ValueTests
                 Assert.True(r.Consumed > 0 || r.Written > 0);
             }
         }
-        var first = Drain(text.AsSpan(0, split), false);
-        var last = first.Step == DtdValueStep.Rejected ? first : Drain(text.AsSpan(split), true);
+        var first = Drain(text.AsSpan(0, split), false, TestContext.Current.CancellationToken);
+        var last = first.Step == DtdValueStep.Rejected ? first : Drain(text.AsSpan(split), true, TestContext.Current.CancellationToken);
         Assert.Equal(expected is null ? DtdValueStep.Rejected : DtdValueStep.Completed, last.Step);
         if (expected is not null) { Assert.Equal(expected, result.ToString()); Assert.Equal(text.Length, accepted); Assert.Null(last.Diagnostic); }
         else Assert.Equal("DTD.InvalidValue", last.Diagnostic!.Code);
-        Assert.Throws<InvalidOperationException>(() => decoder.Decode([], output, true));
+        Assert.Throws<InvalidOperationException>(() => decoder.Decode([], output, true, TestContext.Current.CancellationToken));
     }
     [Fact]
     public void LongLeadingZerosProgressAndBorrowedLifetime()
     {
         using var d = new DtdValueDecoder(new() { TokenCharacters = 1 });
         char[] output = new char[2]; char[] input = new string('0', 8192).ToCharArray();
-        Assert.Equal(2, d.Decode("&#", output, false).Consumed);
+        Assert.Equal(2, d.Decode("&#", output, false, TestContext.Current.CancellationToken).Consumed);
         for (int i = 0; i < 4; i++)
-        { var r = d.Decode(input, output, false); Assert.Equal(input.Length, r.Consumed); Assert.Equal(0, r.Written); Assert.Equal(DtdValueStep.NeedInput, r.Step); }
+        { var r = d.Decode(input, output, false, TestContext.Current.CancellationToken); Assert.Equal(input.Length, r.Consumed); Assert.Equal(0, r.Written); Assert.Equal(DtdValueStep.NeedInput, r.Step); }
         Array.Fill(input, 'x');
-        var end = d.Decode("9;", output, true); Assert.Equal(DtdValueStep.Completed, end.Step); Assert.Equal('\t', output[0]);
+        var end = d.Decode("9;", output, true, TestContext.Current.CancellationToken); Assert.Equal(DtdValueStep.Completed, end.Step); Assert.Equal('\t', output[0]);
         using var pair = new DtdValueDecoder(new());
-        input = [ '\uD83D' ]; pair.Decode(input, output, false); input[0] = 'x';
-        Assert.Equal(2, pair.Decode("\uDE00", output, true).Written); Assert.Equal("😀", new string(output));
+        input = [ '\uD83D' ]; pair.Decode(input, output, false, TestContext.Current.CancellationToken); input[0] = 'x';
+        Assert.Equal(2, pair.Decode("\uDE00", output, true, TestContext.Current.CancellationToken).Written); Assert.Equal("😀", new string(output));
     }
     private static Dictionary<string, DtdEntityDeclaration> Table(params (string Name, string Text)[] entries) => entries.ToDictionary(x => x.Name, x => new DtdEntityDeclaration(x.Name, false, x.Text, null, null, null, false, default), StringComparer.Ordinal);
     private static DtdNormalizedValue Normalize(string text, DtdAttributeType type = DtdAttributeType.CData, Dictionary<string, DtdEntityDeclaration>? table = null, XmlResourceLimits? limits = null, IDtdBudget? ledger = null)
@@ -78,7 +78,7 @@ public sealed class ValueTests
     public void DeclarationOriginForwardReferencesAndEffectiveTable()
     {
         char[] output = new char[64]; using var d = new DtdValueDecoder(new());
-        var decoded = d.Decode("&#9; &#38;#9; &forward;", output, true);
+        var decoded = d.Decode("&#9; &#38;#9; &forward;", output, true, TestContext.Current.CancellationToken);
         var table = Table(("outer", new string(output, 0, decoded.Written)), ("forward", "done"));
         Assert.Equal("  \t done", Normalize("&outer;", table: table).Value);
         Assert.Equal("\t done", Normalize("&outer;", DtdAttributeType.NmTokens, table).Value);
@@ -92,7 +92,7 @@ public sealed class ValueTests
     public void DirectCrTabDifferFromDecodedDeclarationCrTab()
     {
         char[] output = new char[8]; using var d = new DtdValueDecoder(new());
-        var r = d.Decode("&#xD;&#x9;", output, true);
+        var r = d.Decode("&#xD;&#x9;", output, true, TestContext.Current.CancellationToken);
         var table = Table(("a", new string(output, 0, r.Written)));
         Assert.Equal("\r\t", Normalize("&#xD;&#x9;").Value);
         Assert.Equal("  ", Normalize("&a;", table: table).Value);
@@ -140,11 +140,11 @@ public sealed class ValueTests
         Assert.NotNull(Normalize("  😀  x ", DtdAttributeType.IdRefs, limits: new() { TokenCharacters = 2 }).Diagnostic);
         Assert.Equal(" ", Normalize("&#32;", limits: new() { EntityDepth = 1, ExpandedCharacters = 1, TokenCharacters = 1 }).Value);
         using var d = new DtdValueDecoder(new() { ExpandedCharacters = 1, TokenCharacters = 1 });
-        Assert.Equal(DtdValueStep.Completed, d.Decode("&#x1F600;", new char[2], true).Step);
+        Assert.Equal(DtdValueStep.Completed, d.Decode("&#x1F600;", new char[2], true, TestContext.Current.CancellationToken).Step);
         using var over = new DtdValueDecoder(new() { ExpandedCharacters = 1 });
-        Assert.Equal("XML.ResourceLimit", over.Decode("&#65;&#66;", new char[4], true).Diagnostic!.Code);
+        Assert.Equal("XML.ResourceLimit", over.Decode("&#65;&#66;", new char[4], true, TestContext.Current.CancellationToken).Diagnostic!.Code);
         using var token = new DtdValueDecoder(new() { TokenCharacters = 1 });
-        Assert.Equal("XML.ResourceLimit", token.Decode("ab", new char[4], true).Diagnostic!.Code);
+        Assert.Equal("XML.ResourceLimit", token.Decode("ab", new char[4], true, TestContext.Current.CancellationToken).Diagnostic!.Code);
         Assert.True(DtdValueProcessor.CanAppend(int.MaxValue - 2, 2)); Assert.False(DtdValueProcessor.CanAppend(int.MaxValue - 1, 2));
     }
     [Fact]
@@ -158,18 +158,18 @@ public sealed class ValueTests
         Assert.Same(ledger.Refusal, rejected.Diagnostic); Assert.Equal(0, ledger.Depth);
         ledger = new(1, 1);
         using var d = new DtdValueDecoder(new(), default, ledger);
-        Assert.Equal(DtdValueStep.Completed, d.Decode("literal &name;&#9;", new char[32], true).Step);
+        Assert.Equal(DtdValueStep.Completed, d.Decode("literal &name;&#9;", new char[32], true, TestContext.Current.CancellationToken).Step);
         Assert.Equal(1, ledger.Expanded); Assert.Equal(0, ledger.Depth);
     }
     [Fact]
     public void CancellationExceptionsMisuseAndLifetime()
     {
         using var d = new DtdValueDecoder(new());
-        Assert.Throws<ArgumentException>(() => d.Decode("x", new char[1], false));
+        Assert.Throws<ArgumentException>(() => d.Decode("x", new char[1], false, TestContext.Current.CancellationToken));
         Assert.Throws<OperationCanceledException>(() => d.Decode("x", new char[2], false, new(true)));
-        Assert.Throws<InvalidOperationException>(() => d.Decode([], new char[2], true));
-        d.Dispose(); Assert.Throws<ObjectDisposedException>(() => d.Decode([], new char[2], true));
-        using var cancel = new CancellationTokenSource();
+        Assert.Throws<InvalidOperationException>(() => d.Decode([], new char[2], true, TestContext.Current.CancellationToken));
+        d.Dispose(); Assert.Throws<ObjectDisposedException>(() => d.Decode([], new char[2], true, TestContext.Current.CancellationToken));
+        using var cancel = CancellationTokenSource.CreateLinkedTokenSource(TestContext.Current.CancellationToken);
         var ledger = new Ledger(10000, 10) { Callback = () => cancel.Cancel() };
         Assert.Throws<OperationCanceledException>(() => DtdValueProcessor.NormalizeAttributeDefault("&a;", DtdAttributeType.CData, Table(("a", new string('x', 10000))), new(), sharedBudget: ledger, cancellationToken: cancel.Token));
         Assert.Equal(0, ledger.Depth);
@@ -183,9 +183,9 @@ public sealed class ValueTests
     {
         using var d = new DtdValueDecoder(new() { TokenCharacters = null, ExpandedCharacters = null });
         char[] output = new char[8];
-        for (int i = 0; i < 1000; i++) d.Decode("x&n;&#9;", output, false);
+        for (int i = 0; i < 1000; i++) d.Decode("x&n;&#9;", output, false, TestContext.Current.CancellationToken);
         long before = GC.GetAllocatedBytesForCurrentThread();
-        for (int i = 0; i < 1000; i++) d.Decode("x&n;&#9;", output, false);
+        for (int i = 0; i < 1000; i++) d.Decode("x&n;&#9;", output, false, TestContext.Current.CancellationToken);
         Assert.Equal(0, GC.GetAllocatedBytesForCurrentThread() - before);
     }
     private sealed class Ledger(long maximum, int maxDepth) : IDtdBudget
