@@ -33,7 +33,13 @@
     }
   ],
   "integration_queue": [],
-  "blockers": [],
+  "blockers": [
+    {
+      "task_id": "M1-serialize",
+      "finding": "Valid Unicode carried surrogate requires6145bytes, initial buffer check reserved6144; valid raw PI/comment/CDATA Stream output could throw",
+      "resolution": "Two source reviews agree; owner authored6148+partialConvert correction and nine transport/lexical regression families; execution pending syntax timing release"
+    }
+  ],
   "next_actions": [
     "Run exclusive syntax21 ShortRun after fresh verifier readiness; serialization/root parked",
     "Integrate syntax and unlock DOM composition",
