@@ -19,7 +19,9 @@
       "claim_revision": "2578b2fe125005e0cabd4226d0fa1ba9ef464ee9",
       "setup_status": "dispatched",
       "review_revision": "a53a15482ef6a540d66f2dbc294d2d86c84b3eba",
-      "review": "Sourcea53 independentlyapproved, butrootintegration f573 direct247 failedOWN measuredhelper3448B whilefocused1/MTP801/diagnostics0/API222/ref242/planning114passed. Existingworker resumedscientificperAppendattribution; notverified/no blindretry."
+      "review": "Prior a53 source approved but root integration f573 failed own helper 3448 B. Worker now runs bounded per-Append sampling and package-free empty/64 B positive controls on .NET 10.0.11. Runtime issue 134724 and draft PR 134855 identify plausible background-GC counter accounting defect; local cause remains unproved.",
+      "wait_cursor": "f8188e8e-7560-4eb0-be73-29c362ec916f:22",
+      "diagnostic_revision": "4854b87"
     }
   ],
   "integration_queue": [
@@ -44,7 +46,7 @@
   ],
   "blockers": [],
   "next_actions": [
-    "ExistingStreamingworker controlledperAppend allocation attribution afterhelper3448B integrationfailure; no moreblindretries/no threshold/JIT/warmbudget/parallelism changes",
+    "Collect bounded per-Append experiment and package-free background-GC controls; review measurement correction preserving exact-zero workload requirements",
     "Ifactualruntimeallocatorproved route narrowownedrepair; otherwise boundedmeasurementcorrection with evidence",
     "Thenverifychild and PIparentfulljoint allPass before renewing suspendedM2claims",
     "Keepfailedbranches/reports durable; no cleanup untilmergedverified"
@@ -957,5 +959,10 @@
       "preserved_evidence_revision": "3e9bd43179ee3599b7c4881455857dfde95e4ae8",
       "ownership_ack": "Explicitclean/nochildren/noedits source/taskJSON ownershiprelinquished beforecoordinator child dependency/reset."
     }
-  ]
+  ],
+  "allocation_research": {
+    "issue": "https://github.com/dotnet/runtime/issues/134724",
+    "draft_fix": "https://github.com/dotnet/runtime/pull/134855",
+    "finding": "Draft fix describes abandoned allocation-context accounting producing phantom GC.GetAllocatedBytesForCurrentThread bytes; maintainer review approved, not merged at inspection. Independently reproduce controls on exact runtime before attributing Xemele failures. No threshold, retry, GC/JIT, or parallelism relaxation."
+  }
 }
