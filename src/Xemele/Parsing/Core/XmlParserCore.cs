@@ -14,7 +14,7 @@ namespace Xemele.Parsing.Syntax;
 internal sealed partial class XmlParserCore : IDisposable
 {
     private enum State { Data, Less, Bang, Tag, Close, Comment, CData, PiTarget, PiBody, Declaration, Reference, Doctype, DtdSubset, DtdClose }
-    private enum Delivery { None, Document, Tag, Close, Text, Declaration, DocumentType, EndDocument }
+    private enum Delivery { None, Document, Tag, Close, Text, Declaration, DocumentType, UnresolvedReference, EndDocument }
     private readonly record struct Name(string Local, string Uri, string Prefix)
     {
         internal XmlNameView View => new(Local, Uri, Prefix);
@@ -57,6 +57,10 @@ internal sealed partial class XmlParserCore : IDisposable
     private bool piImmediateClose, piSeparator;
     private bool textActive, textStarted, fragmentPending, fragmentEnded, emptyTag, endDocumentDelivered, declarationSeen;
     private bool declarationAllowed = true;
+    private bool unresolvedPending;
+    private int unresolvedNameLength;
+    private long precedingReferenceTokenCharacters;
+    private bool independentReferenceToken;
     private XmlTextKind textKind;
     private string target = "";
     private int versionStart, versionLength, encodingStart, encodingLength;
@@ -154,7 +158,7 @@ internal sealed partial class XmlParserCore : IDisposable
         try
         {
             if (disposed) return;
-            disposed = true; token = []; tokenLocations = []; attributes = [];
+            disposed = true; ClearUnresolvedReference(); token = []; tokenLocations = []; attributes = [];
             try { DisposeEntities(); }
             finally
             {
@@ -275,6 +279,14 @@ internal sealed partial class XmlParserCore : IDisposable
                 }
                 if (!textActive) { ResetToken(); BeginText(XmlTextKind.Text, "", location); declarationAllowed = false; }
                 if (frames.Count == 0 && !White(c)) { Reject("XML.Syntax", "Non-whitespace outside the root.", location); return; }
+                if (c == '&' && AllowsUnresolvedContent)
+                {
+                    // Unknown content ends the preceding text token. Bound its
+                    // candidate independently while preserving old accounting if
+                    // lookup ultimately identifies a represented expansion.
+                    precedingReferenceTokenCharacters = budget.Count(Quota.TokenCharacters);
+                    independentReferenceToken = true; budget.Reset(Quota.TokenCharacters);
+                }
                 if (!Charge(Quota.TokenCharacters, 1, location)) return;
                 if (c == '&') { referenceLocation = location; tokenLength = 0; state = State.Reference; return; }
                 if (c == '>' && brackets >= 2) { Reject("XML.Syntax", "Literal ]]> in text.", location); return; }
@@ -339,6 +351,19 @@ internal sealed partial class XmlParserCore : IDisposable
                     if (!Charge(Quota.TokenCharacters, 1, location)) return;
                     var reference = token.AsSpan(0, tokenLength);
                     bool pushed = PushGeneralEntity(reference, referenceLocation);
+                    if (!pushed && !ScalarReference(reference) && ValidName(reference, false) &&
+                        AllowsUnresolvedContent)
+                    {
+                        independentReferenceToken = false;
+                        QueueUnresolvedReference();
+                        state = State.Data; brackets = 0;
+                        return;
+                    }
+                    if (independentReferenceToken)
+                    {
+                        independentReferenceToken = false;
+                        if (!Charge(Quota.TokenCharacters, precedingReferenceTokenCharacters, referenceLocation)) return;
+                    }
                     int scalar = pushed ? -1 : Reference(reference, referenceLocation);
                     state = State.Data; tokenLength = 0; brackets = 0;
                     if (diagnostic is null && !pushed)
@@ -405,6 +430,38 @@ internal sealed partial class XmlParserCore : IDisposable
                 held = c == '?' ? 1 : 0; Store(c, location); return;
         }
     }
+    private bool AllowsUnresolvedContent => standalone != true && doctypeSeen &&
+        (doctypeSystem is not null || subsetHasParameterReferences);
+
+    private void QueueUnresolvedReference()
+    {
+        // Persisted names use the existing operation-wide bounded intern table.
+        Intern(token.AsSpan(0, tokenLength), referenceLocation);
+        if (diagnostic is not null) return;
+        if (tokenLength > Array.MaxLength - 2)
+        { Reject("XML.ResourceLimit", "Reference capacity exceeded.", referenceLocation); return; }
+        unresolvedNameLength = tokenLength;
+        int length = tokenLength + 2;
+        if (length > token.Length)
+        {
+            int capacity = (int)Math.Min(Array.MaxLength, Math.Max((long)length, (long)token.Length * 2));
+            Array.Resize(ref token, capacity);
+            Array.Resize(ref tokenLocations, capacity);
+        }
+        token.AsSpan(0, tokenLength).CopyTo(token.AsSpan(1));
+        token[0] = '&'; token[length - 1] = ';'; tokenLength = length;
+        unresolvedPending = true;
+        if (textActive) EndText(referenceLocation);
+        else delivery = Delivery.UnresolvedReference;
+    }
+
+    private void ClearUnresolvedReference()
+    {
+        if (unresolvedNameLength != 0) Array.Clear(token, 0, unresolvedNameLength + 2);
+        unresolvedPending = false; unresolvedNameLength = 0; tokenLength = 0;
+        budget.Reset(Quota.TokenCharacters);
+    }
+
     private void FinalizeSource()
     {
         var eof = position.Current(sourceMode == 2 ? byteLength : null);
@@ -415,8 +472,9 @@ internal sealed partial class XmlParserCore : IDisposable
     }
     private bool Drain(IXmlEventSink sink, CancellationToken cancellation)
     {
-        while (delivery != Delivery.None && diagnostic is null)
+        while ((delivery != Delivery.None || unresolvedPending) && diagnostic is null)
         {
+            if (delivery == Delivery.None) delivery = Delivery.UnresolvedReference;
             cancellation.ThrowIfCancellationRequested();
             bool keepGoing;
             switch (delivery)
@@ -457,6 +515,24 @@ internal sealed partial class XmlParserCore : IDisposable
                     break;
                 case Delivery.Close:
                     delivery = Delivery.None; PopFrame(); keepGoing = sink.EndElement(deliveredName.View, opening); break;
+                case Delivery.UnresolvedReference:
+                    delivery = Delivery.None;
+                    if (sink is not IXmlUnresolvedReferenceSink unresolvedSink)
+                    {
+                        Reject("XML.UnresolvedReferenceSinkRequired", "Sink cannot represent unresolved entity references.", referenceLocation);
+                        ClearUnresolvedReference();
+                        continue;
+                    }
+                    // Mark delivery before invoking the sink: pauses, cancellation and
+                    // callback faults cannot replay this accepted occurrence.
+                    unresolvedPending = false;
+                    try
+                    {
+                        keepGoing = unresolvedSink.UnresolvedReference(new(token.AsSpan(1, unresolvedNameLength),
+                            token.AsSpan(0, unresolvedNameLength + 2), referenceLocation));
+                    }
+                    finally { ClearUnresolvedReference(); }
+                    break;
                 case Delivery.DocumentType:
                     delivery = Delivery.None;
                     keepGoing = sink is not IXmlDtdSink dtdSink || dtdSink.DocumentType(documentType!, entities!.Model, doctypeLocation);

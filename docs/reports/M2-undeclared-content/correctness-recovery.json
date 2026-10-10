@@ -1,0 +1,76 @@
+{
+  "head": "8dbc50717e9a46f8fa71af3647fdfebff9867fdc",
+  "mode": "correctness-recovery",
+  "result": "passed",
+  "scope": "No test replay. Recovery binds successful actual execution and all-Pass XML validation to unchanged compiled discovery; counts explicitly derived from discovery at the same compiled Git revision, not retained raw XML.",
+  "execution": {
+    "command": [
+      "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+      "/Users/sebastienros/.codex/worktrees/17e5/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll",
+      "-noColor",
+      "-method-",
+      "Xemele.Tests.EncodingCompatibility.EncodingTests.WarmLegacyConversionAndDeclarationMatchingAllocateZero",
+      "-method-",
+      "Xemele.Tests.FramingTests.WarmWhitespacePrimitiveHasNoAllocations",
+      "-method-",
+      "Xemele.Tests.PiTargets.PiTargetTests.RepeatedBorrowedPiTargetsAllocateZeroAfterWarmup",
+      "-method-",
+      "Xemele.Tests.Resolution.ResolverTests.WarmBorrowedReadsAllocateNothing",
+      "-method-",
+      "Xemele.Tests.Syntax.StreamingTests.WarmRepeatedTagsAndStreamingUnicodeDispatchAllocateZero",
+      "-method-",
+      "Xemele.Tests.Tree.TreeTests.WarmTraversalAndRepeatedNameInternProbesAllocateNothing",
+      "-result-xml",
+      "/Users/sebastienros/.codex/worktrees/17e5/xemele/docs/reports/M2-undeclared-content/checks-hu82a_ys/correctness.xml"
+    ],
+    "exit": 0
+  },
+  "reporterFailure": "Display-name duplicate assertion after exit-0 tests and all-Pass XML assertion. Temporary raw XML was already removed.",
+  "compiledDiscovery": {
+    "total": 4693,
+    "selected": 4687,
+    "held": 6,
+    "owned": 25,
+    "uniqueRunnerIds": 4687,
+    "runnerIdentitySha256": "4dcb00e213fc6982f73e161b064493297a2f02bb80abc92410033d4554019c78",
+    "repeatedDisplayNames": 1
+  },
+  "coverageDifference": {
+    "previousSelectedDiscoveryRows": 4677,
+    "addedInlineRows": 10,
+    "addedInlineMethods": [
+      "Xemele.Tests.Common.CommonTests.WarmCountersAndLocationsAllocateNothing",
+      "Xemele.Tests.Dom.DomTests.WarmBorrowedNameHitsAllocateZeroAndUseOwnedInternedStrings",
+      "Xemele.Tests.DomConstruction.DomBuilderTests.WarmFreshLeafAttachmentAllocatesZeroAndPublicMutationStillWorks",
+      "Xemele.Tests.DomConstruction.DomBuilderTests.WarmUniqueMemberHelpersAllocateZeroWithCapacityAndNamesPrepared",
+      "Xemele.Tests.DomPersistence.DomPersistenceTests.WarmPersistenceWithPreparedNamesAndCapacityAllocatesZero",
+      "Xemele.Tests.Entities.ContextTests.BorrowedLookupsHaveNoWarmAllocationAndCannotBeMutated",
+      "Xemele.Tests.EntitiesFoundation.FoundationTests.WarmMetadataAssignmentAndCallbackDoNotAllocate",
+      "Xemele.Tests.Input.InputTests.WarmDecodeHasZeroAllocationWithBoundedState",
+      "Xemele.Tests.NamespaceNames.NamespaceNameTests.WarmContextValidationUsesBorrowedNamesWithoutAllocations",
+      "Xemele.Tests.ValueTests.WarmBorrowedPrimitiveAllocatesNothing"
+    ],
+    "repeatReason": "Six-fact command was dispatched before coordinator narrow-recovery instruction arrived; no subsequent correctness replay."
+  },
+  "heldAllocationFacts": [
+    "Xemele.Tests.EncodingCompatibility.EncodingTests.WarmLegacyConversionAndDeclarationMatchingAllocateZero",
+    "Xemele.Tests.FramingTests.WarmWhitespacePrimitiveHasNoAllocations",
+    "Xemele.Tests.PiTargets.PiTargetTests.RepeatedBorrowedPiTargetsAllocateZeroAfterWarmup",
+    "Xemele.Tests.Resolution.ResolverTests.WarmBorrowedReadsAllocateNothing",
+    "Xemele.Tests.Syntax.StreamingTests.WarmRepeatedTagsAndStreamingUnicodeDispatchAllocateZero",
+    "Xemele.Tests.Tree.TreeTests.WarmTraversalAndRepeatedNameInternProbesAllocateNothing"
+  ],
+  "discoverySha256": "ef1794e2af0aa8b23ccbb497767110b78a7f0313be1dc50d33df829a057e5358",
+  "testsAssemblySha256": "78dda5e67cd9475892d7ba250e7a658af111305b4cfcf51114cf47ec5a206041",
+  "productAssemblySha256": "d03d163417080ff8f11d64b921ff3845225fe53ede692039312be812e36f23ea",
+  "sourceIdentitySha256": "62214e9a14c7b79e6df11a682f2e7b06f08c4d10a51b7401cdc842918a3ecf76",
+  "rawDiscoveryInspectedAndRemoved": true,
+  "actualExecutionCounts": {
+    "total": null,
+    "passed": null,
+    "failed": null,
+    "skipped": null,
+    "reason": "Actual stdout not retained; temporary XML removed before reporter assertion. Compiled discovery counts are not execution counts."
+  },
+  "binaryBindingLimits": "Current product hash matches preserved same-revision API result; current tests were built by recorded execution command at that revision and no later test build occurred before discovery. No independent pre-execution test binary hash survived the reporter failure."
+}

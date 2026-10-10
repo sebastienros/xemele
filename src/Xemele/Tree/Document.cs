@@ -167,6 +167,7 @@ public sealed partial class XmlDocument
     }
     internal string TextContent(int slot)
     {
+        RefuseUnresolvedReferences();
         var root = Nodes[slot];
         if (root.Kind is not (XmlNodeKind.Document or XmlNodeKind.Element or XmlNodeKind.Fragment)) return root.Value;
         var result = new StringBuilder();
@@ -259,10 +260,12 @@ public sealed partial class XmlDocument
     public XmlNode ImportNode(XmlNode source, bool deep = true)
     {
         source.Require(); if (source.Kind == XmlNodeKind.Document) throw new ArgumentException("Import document children instead.", nameof(source));
+        source.OwnerDocument.RefuseUnresolvedReferences();
         return Copy(source, deep);
     }
     internal XmlNode Clone(XmlNode source, bool deep)
     {
+        source.OwnerDocument.RefuseUnresolvedReferences();
         if (source.Kind != XmlNodeKind.Document) return Copy(source, deep);
         var copy = new XmlDocument(limits);
         if (deep) foreach (var child in source.Children)
