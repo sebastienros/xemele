@@ -1,7 +1,8 @@
 # Streaming allocation boundary
 
-Current state: **in_progress, unverified**. Independent integration failed the
-owned primitive at3,448B. Prior branch passes below are not a complete fix.
+Current state: **implemented, awaiting integration verification**. The reviewed
+conditional process-isolation scope passed known-source checks below. Historical
+in-process224B/3,448B failures remain preserved and unexplained.
 
 Only the streaming allocation Fact/helper/imports and owned diagnostic/report
 files change. Production source, default JIT/GC/test parallelism, exact 0 B,
@@ -219,3 +220,33 @@ provenance mismatch, timeout or realnonzero failsparent. No retry/subtraction.
 Source is committed before focused/full checks; these changes are not yet
 claimed tested. Historical in-process failures remainunresolved; only the
 isolated synchronous borrowed primitive is promised, no concurrent guarantee.
+
+## Final known-source outcome and driver-only follow-up
+
+`isolated-b87a1a2-attempt1/` records the single full check at
+`b87a1a257bef91ab92404226d0f27e8b9154dc9f`: focused1/cumulative801/direct247+255+299,
+API222/discovery3388/reference242/planning14/114/ownership and childprovenance
+allpassed. All three real/positive pairs measured0B/7,680,000B with original
+100warm/10000measured,50,000units/120,000callbacks and validatedcompletion.
+MTP apphost and directdotnet paths both passed. Every child raw invocation/
+request/stdout/stderr/XML/report/exit is compressed under that ownedreport.
+Independent original/equivalent diagnostics also measured0B. This establishes
+only the approved isolated synchronous scope; it doesnot attribute oldfailures.
+
+After those checks finished, reviewer-requested driver-only `4e32dc8` archives
+all directories before parsing any JSON. `test_archive.py` passed its meaningful
+malformed-first/later-raw-files preservation regression. Python-only driver
+`885565abcc6c134d24b34ad9ed83ba6f591dc0b9` then checked seven actualcompiledb87
+Fact rejection cases: unknown/incompleteguard, missing-required/malformed/
+unknown-memberrequestJSON, provenance and host mismatch. Each exited1 with
+exactlyone failedFact and the intendeddiagnostic. Raw data are under
+`protocol-negative-attempt1/`. No C#source changed after b87; the driver asserts
+that identity. No broad rebuild/retry was done for these driver-only additions.
+Timeout/crash/postreportmeter/progresstamper were reviewed policy, not executed
+negative controls; no claim otherwise is made.
+
+Task status is implemented, integration_revision null. Coordinator fresh
+integration must verify finalbranch and preserve any outcome before verified.
+The PI parent's mandatory integrated jointallPass remains required before
+consumer verification. Historicalcounter failures and packagefreecontrol exit1
+are retained as failed evidence, without subtraction/threshold/settings changes.
