@@ -4,11 +4,11 @@
   "milestone": "M0",
   "title": "Compare compiled runtime API and run foundation contract checks in CI",
   "kind": "infrastructure",
-  "status": "implemented",
+  "status": "verified",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M0-api-wiring",
   "branch": "codex/m0-api-wiring",
   "base_revision": "a265c1a1231ccac5f76a0cbc178d7fdcba9cc882",
-  "integration_revision": null,
+  "integration_revision": "9ca7e53a0a65f20406874fb2d8739b1da7507a5a",
   "depends_on": [
     "M0-contracts",
     "M0-corpora-wiring",
@@ -34,7 +34,10 @@
       "description": "Compose validated task fragment member/declaration pairs with retained provenance and reject duplicate/conflicting entries. Compare union against actual Release runtime assembly using approved compiled normalizer; allow empty only through explicit bootstrap contract, never silently update fragments.",
       "status": "passed",
       "evidence": [
-        "compiled-api-and-contracts"
+        "compiled-api-and-contracts",
+        "independent-api-review",
+        "integrated-api-contracts",
+        "integrated-api-preservation"
       ]
     },
     {
@@ -42,7 +45,10 @@
       "description": "Exercise missing/added/changed compiled surfaces and fragmented composition with real compiled fixtures; wire runtime API comparison and stage usage/normalizer negative checks into CI using portable pinned SDK environment. Keep contract models separate from shipped runtime API.",
       "status": "passed",
       "evidence": [
-        "compiled-api-and-contracts"
+        "compiled-api-and-contracts",
+        "independent-api-review",
+        "integrated-api-contracts",
+        "integrated-api-preservation"
       ]
     },
     {
@@ -52,7 +58,10 @@
       "evidence": [
         "compiled-api-and-contracts",
         "preserved-build-mtp-help-package",
-        "preserved-corpus-and-discovery"
+        "preserved-corpus-and-discovery",
+        "independent-api-review",
+        "integrated-api-contracts",
+        "integrated-api-preservation"
       ]
     }
   ],
@@ -99,18 +108,45 @@
       "result": "passed",
       "summary": "24 focused corpus MTP tests pass0fail0skip;20 root offline CLI checks preserve exit/status/provenance/count/cache SHA-256 assertions. Independent bootstrap verifies2 fixtures/source hash and ElementTree accepted1/rejected1; zero Xemele parser cases. Discovery finds1 manifest/2 fixtures/0 API declarations/bootstrap empty. Diff whitespace check passes. Base/claim and all3 verified prerequisite integration revisions are ancestors of tested source HEAD. No native-peer source consumed; no hosted or parser-conformance claim.",
       "artifact": "docs/reports/M0-api-wiring/corpus-checks.txt"
+    },
+    {
+      "id": "independent-api-review",
+      "kind": "review",
+      "revision": "385c93aefb8b3400c1ab3bc190c6897fed6ec9d6",
+      "command": "Read-only review_api_wiring source review;16 Python tests, actual runtime/fragmented compiled probe/missing-member comparison",
+      "result": "passed",
+      "summary": "No blocking composition/compiled-comparison/bootstrap/CI defect. Original IDs/provenance retained, canonical member union validated, actual assembly uses unchanged approved normalizer. Reviewer independently ran16Python/emptyruntime/8memberprobe/missing-member rejection; foundation coverage scoped, hosted CI unrun.",
+      "artifact": null
+    },
+    {
+      "id": "integrated-api-contracts",
+      "kind": "integration",
+      "revision": "9ca7e53a0a65f20406874fb2d8739b1da7507a5a",
+      "command": "Pinned SDK10.0.400 DOTNET_ROOT/PATH DOTNET_CLI_USE_MSBUILD_SERVER=0 python3 -B docs/reports/M0-api-wiring/verify.py",
+      "result": "passed",
+      "summary": "11foundation MTP/16Python tests;139/173/8membergoldens,3actualfragmentedfixtureunions,missing/added/changed/bootstrap negatives,9actualmutations/restoredgolden. Actual runtime empty public API only explicit bootstrap, SHA preserved. Approved bytes unchanged;101tasks validation. macOSarm64 scoped foundation normalizer only.",
+      "artifact": "docs/reports/M0-api-wiring/integration-checks.txt"
+    },
+    {
+      "id": "integrated-api-preservation",
+      "kind": "integration",
+      "revision": "9ca7e53a0a65f20406874fb2d8739b1da7507a5a",
+      "command": "Pinned SDK; python3 -B docs/reports/M0-build/verify.py; python3 -B docs/reports/M0-corpora-wiring/check_cli.py; python3 -B tests/Xemele.TestUtilities/Corpora/verify_bootstrap.py",
+      "result": "passed",
+      "summary": "NormalcleanReleasebuild0warnings/errors and54solutionMTP0skip(51protocol3smoke);3expectedfailureexit2;16helps3unknowns;managednet10package/publicAPI0.24corpusMTP0skip and20offlineCLIcases pass;2independentcorpusfixtures accepted1/rejected1 sourcehashverified;101-taskvalidate. No hostedCI/productparser/performance claim.",
+      "artifact": "docs/reports/M0-api-wiring/integration-preservation.txt"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Implemented compiled runtime API fragment union and outside-solution foundation CI checks; source/tested revision 385c93aefb8b3400c1ab3bc190c6897fed6ec9d6. Historical normalizer reused unchanged. All branch acceptance checks pass; coordinator integration/review required. integration_revision remains null.",
+    "summary": "Reviewed and verified integrated compiled API compatibility and foundation CI checks at 9ca7e53a0a65f20406874fb2d8739b1da7507a5a. Actual passing checks recorded separately from worker history.",
     "checks": [
       "Focused verifier:11 contract MTP +16 Python tests,139/173/8 stage/probe members,3 compiled fragmented unions and negative/bootstrap checks,9 real signature probes; actual runtime0 API;101-task validation.",
       "Preservation:54 normal solution MTP pass +3 expected failures;16 help/default +3 unknown exits;managed-only package/API0;24 corpus MTP +20 offline CLI;independent2-fixture checks.",
       "Initial sandbox native MTP IPC failure recorded separately; authorized escalated rerun passed. Runtime hot paths unchanged; no performance/allocation measurements applicable. Hosted Windows/Linux/macOS unrun."
     ],
     "remaining": [
-      "Coordinator independent compatibility review and serialized integration verification. Normalizer remains scoped to approved foundation families; expand probes/extractor before uncovered signature families ship."
+      "Foundation normalizer coverage only; expand probes/extractor before uncovered signature families ship. Hosted CI platforms remain unrun."
     ],
     "requests": [
       "Direct source/result message to coordinator was rejected by automatic approval review for missing trusted user authorization; coordinator can collect this chat final handoff through orchestration tools. No outside-owned code changes requested."
