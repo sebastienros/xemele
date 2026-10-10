@@ -4,7 +4,7 @@
   "milestone": "M2",
   "title": "DTD grammar and declaration model",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/M2-dtd",
   "branch": "codex/m2-dtd",
   "base_revision": "96e055eba6e82139e83a938c5f2ebb28f85e4e9b",
@@ -35,29 +35,102 @@
     {
       "id": "M2-dtd-A1",
       "description": "Parse internal/external declarations, parameter entity grammar and defaults/types into immutable DtdModel through approved resource hooks.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "parent-combined-checks",
+        "independent-source-review",
+        "unchanged-performance-applicability"
+      ]
     },
     {
       "id": "M2-dtd-A2",
       "description": "Test malformed declarations, recursive parameter entities and normalized declarations against pinned cases.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "parent-combined-checks",
+        "independent-source-review",
+        "unchanged-performance-applicability"
+      ]
     },
     {
       "id": "M2-dtd-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "parent-combined-checks",
+        "independent-source-review",
+        "unchanged-performance-applicability"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Parsing/Dtd/Model/Declarations.cs: immutable ordered model/particle/declaration snapshots (verified child implementation unchanged).",
+    "src/Xemele/Parsing/Dtd/Framing/XmlTextDeclarationFramer.cs and IDtdBudget.cs: common-only bounded external prolog framing and aggregate ledger hooks (verified child implementation unchanged).",
+    "src/Xemele/Parsing/Dtd/Grammar/Parser/{DtdParser,Lexer,Declarations,DefaultReferences}.cs: incremental declaration grammar, parameter sources, absolute locations and structured rejections (verified child implementation unchanged).",
+    "src/Xemele/Parsing/Dtd/Grammar/Values/{DtdValueDecoder,DtdValueProcessor}.cs: declaration decoding and caller-applied defaults using the effective entity table (verified child implementation unchanged).",
+    "samples/M2-dtd/{Sample.csproj,Composition.cs,Program.cs,Inventory.cs}: actual common-only effective-table/default sample, fixed caller-granted external parameter entity and approved internal API inventory.",
+    "docs/reports/M2-dtd/{verify.py,sample_oracle.py,internal-api.txt}: combined checks, independent authored output oracle and exact 20-type internal contract; explicit coordinator correction omits false public docs/api/M2-dtd.txt.",
+    "tests/Xemele.Tests/M2-dtd-{framing,model,values,parser,grammar}/: unchanged verified child cases reexecuted together; no extra tests added."
+  ],
+  "evidence": [
+    {
+      "id": "first-cli-host-failure",
+      "kind": "check",
+      "revision": "c63208a590a3610ffb6fea8c8261093dca0feb6a",
+      "command": "env DOTNET_ROOT='/Users/sebastienros/Library/Application Support/dotnetup/dotnet' PATH='/Users/sebastienros/Library/Application Support/dotnetup/dotnet:'\"$PATH\" DOTNET_CLI_USE_MSBUILD_SERVER=0 python3 -B docs/reports/M2-dtd/verify.py --report-prefix parent-c63208a --expected-branch codex/m2-dtd",
+      "result": "failed",
+      "summary": "Stopped before builds: verifier incorrectly required the dotnet CLI host to be 10.0.11; installed CLI host differs from the actual net10 target runtime. Corrected to inspect executable Environment.Version. All later checks unrun in this attempt. Raw commands/output retained.",
+      "artifact": "docs/reports/M2-dtd/parent-c63208a/summary.json"
+    },
+    {
+      "id": "sample-common-import-failure",
+      "kind": "check",
+      "revision": "a117925611f7e50bd70ff7ae72ba2d8f8b7a9a3b",
+      "command": "env DOTNET_ROOT='/Users/sebastienros/Library/Application Support/dotnetup/dotnet' PATH='/Users/sebastienros/Library/Application Support/dotnetup/dotnet:'\"$PATH\" DOTNET_CLI_USE_MSBUILD_SERVER=0 python3 -B docs/reports/M2-dtd/verify.py --report-prefix parent-a117925 --expected-branch codex/m2-dtd",
+      "result": "failed",
+      "summary": "Release sample build rejected CS0246 XmlLocation because Program.cs lacked using Xemele. Added only that import at a429a7a; no shared/runtime edits. All checks after the sample build unrun in this attempt. Raw commands/output retained.",
+      "artifact": "docs/reports/M2-dtd/parent-a117925/summary.json"
+    },
+    {
+      "id": "parent-combined-checks",
+      "kind": "check",
+      "revision": "a429a7a1fb17501f6f04c8005f936f7b19f25013",
+      "command": "env DOTNET_ROOT='/Users/sebastienros/Library/Application Support/dotnetup/dotnet' PATH='/Users/sebastienros/Library/Application Support/dotnetup/dotnet:'\"$PATH\" DOTNET_CLI_USE_MSBUILD_SERVER=0 python3 -B docs/reports/M2-dtd/verify.py --report-prefix parent-common-import --expected-branch codex/m2-dtd",
+      "result": "passed",
+      "summary": "Release SDK10.0.400/actual executable runtime10.0.11. All4162 focused DTD rows passed: framing1243/model8/values994/parser1898/join19; nine pinned private subsets hash/ID/model oracles and775 every-short-UTF16-split parses. MTP/direct XML/discovery5014=4460runtime+255conformance+299differential allPass/noFail/noSkip. Independent approved20-type API including nullability/defaults and compiled nullable mutation; exact two-output common-only model/default/granted-PE/final-URI/restored-cursor sample oracle. Public251/registry3388 unchanged. Fresh complete copied BCL242 unique responses source-build1.0.0+a429a7a1fb17501f6f04c8005f936f7b19f25013 and unchanged DLL SHA3869fcb1a0bf9be7a3dbf67470e5c35225bc8c89c19f98a49f4c288eaf744982. Inherited M0/M1 declaration/protocol/negative compiled ABI checks passed. Planning14/validate120 and claim..HEAD/staged/working/untracked ownership/whitespace checks passed.",
+      "artifact": "docs/reports/M2-dtd/parent-common-import/summary.json"
+    },
+    {
+      "id": "independent-source-review",
+      "kind": "review",
+      "revision": "a429a7a1fb17501f6f04c8005f936f7b19f25013",
+      "command": null,
+      "result": "passed",
+      "summary": "Coordinator01a1230c-1353-7e01-afbe-a53c9c018264 relayed independent read-only source approval at exact a429a7a: no blockers; common import sole delta from a117925; approved fixture/mutation/cumulative/reference/publicABI checks meaningful, authored consumed50/childcolumn25/parentcolumn57 confirmed, unchanged source/archive performance reuse and internal inventory path truthful. This is source review, separate from actual executed checks.",
+      "artifact": "docs/reports/M2-dtd/review.json"
+    },
+    {
+      "id": "unchanged-performance-applicability",
+      "kind": "check",
+      "revision": "a429a7a1fb17501f6f04c8005f936f7b19f25013",
+      "command": "env DOTNET_ROOT='/Users/sebastienros/Library/Application Support/dotnetup/dotnet' PATH='/Users/sebastienros/Library/Application Support/dotnetup/dotnet:'\"$PATH\" DOTNET_CLI_USE_MSBUILD_SERVER=0 python3 -B docs/reports/M2-dtd/verify.py --report-prefix parent-common-import --expected-branch codex/m2-dtd",
+      "result": "passed",
+      "summary": "Pure parent API/sample/evidence join makes no runtime hot-path edit. Actual git comparison proves runtime/timed workload bytes unchanged from verified d1dfbac1d1b42d7cf220cb6300fe5c1646abe2cf; raw performance archive SHA067634a93eee38804668c4c2048534594dd0d8151bbea506bab8981aa86e8545 unchanged. Reuses verified Arm64 two-subset/effective-default owned composition5.003us/16.05KB with child memory/cold/retained boundaries preserved. No timing/allocation rerun, no new performance claim. Windows/x64/AOT/large-table and later production DOCTYPE/entity composition unrun.",
+      "artifact": "docs/reports/M2-dtd/parent-common-import/summary.json"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Integration/verification join of independently reviewed external text-declaration framing and DTD grammar; original acceptance criteria unchanged.",
-    "checks": [],
-    "remaining": [],
+    "summary": "Implemented final parent join of unchanged verified common-only DTD children. Original A1-A3 passed through actual combined pinned/authored/cumulative verification, exact approved internal API and runnable sample. Branch work only; integration_revision null. Explicit coordinator correction publishes internal20 inventory in docs/reports/M2-dtd/internal-api.txt and omits docs/api/M2-dtd.txt public fiction. All owned paths and own task JSON released after final clean handoff; stop pending focused coordinator follow-up.",
+    "checks": [
+      "Sourcea429a7a: focused4162 plus actual nine pinned/775 short-split parses; MTP/direct/discovery5014=4460+255+299 allPass/noFail/noSkip.",
+      "Common-only sample exact authored model/default/grantedPE/saved-suffix/URI/scalarcursor outputs; independentapprovedAPI20+compiled nullable mutation; public251/registry3388/freshcomplete BCL242 fullcurrentrevision+unchangedDLLhash; inheritedM0/M1/planning14+validate120/ownership+whitespace passed.",
+      "Independent exacta429a7a read-only source review approved; no runtime/shared/peer source changes, no extra tests/count inflation. Prior CLI-host assertion and missing common namespace build failures retained with unrun downstream checks honest.",
+      "Unchanged d1 runtime/timed source/archiveSHA proof passed; preserved5.003us/16.05KB and child cold/allocation/retained evidence, no duplicate timing/allocation run."
+    ],
+    "remaining": [
+      "Coordinator integration and fresh combined verification before verified; worker integration_revision remains null. Windows/x64/AOT/full XML conformance and production DOCTYPE/general-entity/DOM/resource composition remain later enforcing owners/gates."
+    ],
     "requests": []
   }
 }
