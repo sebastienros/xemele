@@ -138,10 +138,10 @@ public sealed class DtdParserSourceTests
         internal int Enters, Exits, Names; internal long Expanded;
         internal int RefuseEnterAt = int.MaxValue; internal long MaxExpanded = long.MaxValue;
         internal Exception? ChargeException, ExitException;
-        internal Action? OnCharge;
+        internal Action? OnCharge, OnName;
         public XmlDiagnostic? ChargeExpandedCharacters(long count, XmlLocation at)
         { OnCharge?.Invoke(); if (ChargeException is not null) throw ChargeException; if (count > MaxExpanded - Expanded) return ValueBudget.Limit(at); Expanded += count; return null; }
-        public XmlDiagnostic? ChargeName(ReadOnlySpan<char> name, XmlLocation at) { Names++; return null; }
+        public XmlDiagnostic? ChargeName(ReadOnlySpan<char> name, XmlLocation at) { OnName?.Invoke(); Names++; return null; }
         public XmlDiagnostic? EnterEntity(XmlLocation at) { if (Enters == RefuseEnterAt) return ValueBudget.Limit(at); Enters++; return null; }
         public void ExitEntity() { Exits++; if (ExitException is not null) throw ExitException; }
     }

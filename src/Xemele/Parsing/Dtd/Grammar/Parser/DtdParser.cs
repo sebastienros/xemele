@@ -54,7 +54,7 @@ internal sealed partial class DtdParser : IDisposable
     private char quote;
     private int nextId = 1, declarationSource, lexicalSource, quoteSource, ignoreDepth, ignoreRun, gate;
     private long documentScalars, tokenScalars, declarationScalars;
-    private bool separator, tokenSpace, literalEntity, disposed, faulted, terminal;
+    private bool declarationExternal, separator, tokenSpace, literalEntity, disposed, faulted, terminal;
     private XmlLocation declarationAt, tokenAt, parameterAt, lexicalAt;
     private DtdEntityRequest? request;
     private Source? pending;
@@ -94,9 +94,10 @@ internal sealed partial class DtdParser : IDisposable
         try
         {
             Check(); if (pending is not null) throw new InvalidOperationException("Supply the requested entity before appending.");
-            Source submitted = Current;
-            // A suspended internal replacement is drained before the caller's source.
-            while (submitted.Text is not null) { submitted = sources[sources.IndexOf(submitted) - 1]; }
+            cancellationToken.ThrowIfCancellationRequested();
+            int submittedIndex = sources.Count - 1; Source submitted = sources[submittedIndex];
+            // Walk stable indices rather than searching the stack at every level.
+            while (submitted.Text is not null) { cancellationToken.ThrowIfCancellationRequested(); submitted = sources[--submittedIndex]; }
             Validate(input, byteOffsets, submitted, cancellationToken);
             if (submitted.Final && !isFinalBlock) throw new InvalidOperationException("Final input is sticky for its source.");
             if (isFinalBlock && (submitted.Mode == 2 || !byteOffsets.IsEmpty) && submitted.Eof is null)

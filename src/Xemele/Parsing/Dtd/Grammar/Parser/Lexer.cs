@@ -44,7 +44,7 @@ internal sealed partial class DtdParser
                 if (!Space(c)) break;
                 declaration = scratch.ToString(); scratch.Clear();
                 if (declaration is not ("ELEMENT" or "ATTLIST" or "ENTITY" or "NOTATION")) break;
-                declarationAt = lexicalAt; declarationSource = lexicalSource; declarationScalars = declaration.Length + 3;
+                declarationAt = lexicalAt; declarationSource = lexicalSource; declarationExternal = Current.External; declarationScalars = declaration.Length + 3;
                 if (!Bounded(declarationScalars - 1, at)) return;
                 separator = true; tokens.Clear(); lex = Lex.Declaration; return;
             case Lex.Declaration:

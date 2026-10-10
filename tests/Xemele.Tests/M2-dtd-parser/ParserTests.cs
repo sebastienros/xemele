@@ -116,6 +116,20 @@ public sealed class DtdParserTests
         for (int split = 0; split <= text.Length; split++)
         { using var p = new DtdParser(DtdSubsetKind.Internal, new()); var a = p.Append(text.AsSpan(0, split), [], false, TestContext.Current.CancellationToken); var b = a.Step == DtdParseStep.Rejected ? a : p.Append(text.AsSpan(split), [], true, TestContext.Current.CancellationToken); Assert.Equal(valid ? DtdParseStep.Completed : DtdParseStep.Rejected, b.Step); }
     }
+    [Theory]
+    [InlineData("<!ENTITY e '&#38;#0;'><!ATTLIST r a CDATA '&e;'>")]
+    [InlineData("<!ENTITY e '&#38;1bad;'><!ATTLIST r a CDATA '&e;'>")]
+    [InlineData("<!ENTITY e SYSTEM 'external'><!ATTLIST r a CDATA '&e;'>")]
+    [InlineData("<!ENTITY e '<'><!ATTLIST r a CDATA '&e;'>")]
+    [InlineData("<!ENTITY e '&e;'><!ATTLIST r a CDATA '&e;'>")]
+    public void InternalKnownTableRejectsExternalLocalTableDefersToEffectiveOverride(string text)
+    {
+        using var internalParser = new DtdParser(DtdSubsetKind.Internal, new()); Assert.Equal(DtdParseStep.Rejected, internalParser.Append(text, [], true, TestContext.Current.CancellationToken).Step);
+        using var externalParser = new DtdParser(DtdSubsetKind.External, new()); Assert.Equal(DtdParseStep.Completed, externalParser.Append(text, [], true, TestContext.Current.CancellationToken).Step);
+        var effective = new Dictionary<string, DtdEntityDeclaration>(StringComparer.Ordinal) { ["e"] = new("e", false, "safe", null, null, null, false, default) };
+        var raw = externalParser.Model.Attributes[0].DefaultValue!;
+        Assert.Equal("safe", DtdValueProcessor.NormalizeAttributeDefault(raw, DtdAttributeType.CData, effective, new(), default, null, TestContext.Current.CancellationToken).Value);
+    }
     [Fact]
     public void ProcessedParameterReplacementPreservesReferencedCrAndLf()
     {

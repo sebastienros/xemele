@@ -57,7 +57,7 @@ internal sealed partial class DtdParser
         if (content is null || terminal || read != tokens.Count) return;
         if (!HasElement(name)) elements.Add(new(name, content, IsExternalDeclaration, declarationAt));
     }
-    private bool IsExternalDeclaration => sources.Find(s => s.Id == declarationSource)?.External ?? Current.External;
+    private bool IsExternalDeclaration => declarationExternal;
     private DtdOccurrence Occurrence()
     { if (read < tokens.Count && Peek.Space && Peek.Text is "?" or "*" or "+") { Reject("Occurrence indicator must be adjacent.", Peek.At); return DtdOccurrence.Once; } if (Take("?")) return DtdOccurrence.Optional; if (Take("*")) return DtdOccurrence.ZeroOrMore; if (Take("+")) return DtdOccurrence.OneOrMore; return DtdOccurrence.Once; }
     private sealed class Group(int source)

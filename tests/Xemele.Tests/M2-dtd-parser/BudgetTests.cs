@@ -88,6 +88,35 @@ public sealed class DtdParserBudgetTests
         Assert.Throws<ArgumentOutOfRangeException>(() => new DtdParser(DtdSubsetKind.Internal, new() { EntityDepth = 0 }));
         Assert.Throws<ArgumentException>(() => new DtdParser(DtdSubsetKind.Internal, new(), new XmlLocation(null, 0, 1, null)));
     }
+    [Theory]
+    [InlineData("<!NOTATION n PUBLIC '", "'>")]
+    [InlineData("<!ELEMENT r (#PCDATA|", ")*>")]
+    public void CancellationDuringDeclarationValidationRemainsPrimary(string start, string end)
+    {
+        using var cts = new CancellationTokenSource(); var ledger = new DtdParserSourceTests.Ledger();
+        using var p = new DtdParser(DtdSubsetKind.Internal, new(), ledger, new(null, 1, 1, null));
+        // ChargeName is reached after the '>' starts declaration processing. Cancel
+        // there to require the subsequent custom scan to observe cancellation.
+        ledger.OnName = () => cts.Cancel();
+        Assert.Equal(DtdParseStep.NeedInput, p.Append(start + new string('x', 10000) + end[..^1], [], false, cts.Token).Step);
+        Assert.Throws<OperationCanceledException>(() => p.Append(end[^1..], [], true, cts.Token));
+        Assert.Throws<InvalidOperationException>(() => p.Append([], [], true, Ct));
+    }
+    [Fact]
+    public void DeepUnlimitedInternalStackSuspensionCancellationAndProvenance()
+    {
+        const int depth = 4100; var text = new System.Text.StringBuilder();
+        text.Append("<!ENTITY % leaf SYSTEM 'leaf'>");
+        for (int i = 0; i < depth; i++) text.Append("<!ENTITY % p").Append(i).Append(" '&#37;").Append(i + 1 == depth ? "leaf" : "p" + (i + 1)).Append(";'>");
+        text.Append("%p0;");
+        var ledger = new DtdParserSourceTests.Ledger(); using var p = new DtdParser(DtdSubsetKind.Internal, new() { EntityDepth = null }, ledger, new(new Uri("https://fixture.invalid/parent"), 2, 8, null));
+        Assert.Equal(DtdParseStep.NeedEntity, p.Append(text.ToString(), [], true, Ct).Step);
+        // Numeric references in declarations are transient entries, already exited.
+        Assert.Equal(depth + 1, ledger.Enters - ledger.Exits);
+        p.PushEntity(new("https://fixture.invalid/final")); Assert.Equal(DtdParseStep.NeedInput, p.Append("<!ELEMENT child EMPTY>", [], true, Ct).Step);
+        using var cts = new CancellationTokenSource(); cts.Cancel(); Assert.Throws<OperationCanceledException>(() => p.Append([], [], true, cts.Token));
+        Assert.Equal(ledger.Enters, ledger.Exits); Assert.Throws<InvalidOperationException>(() => p.Append([], [], true, Ct));
+    }
     [Fact]
     public void IgnoredBodyHasConstantScanStateAndCancellationBeforeInput()
     {

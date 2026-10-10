@@ -8,6 +8,8 @@ internal sealed partial class DtdParser
     // neither applies a default nor recharges expansion work at its use site.
     private bool ValidateKnownDefaults(CancellationToken cancellation)
     {
+        // An independently parsed external subset lacks the higher-precedence internal table.
+        if (sources[0].External || attributes.Count == 0) return true;
         var checkedEntities = new HashSet<string>(StringComparer.Ordinal);
         var path = new HashSet<string>(StringComparer.Ordinal);
         var stack = new Stack<DefaultFrame>();
@@ -30,7 +32,20 @@ internal sealed partial class DtdParser
                 if (frame.Index == frame.Text.Length) { Reject("Invalid reference in an attribute default.", attribute.Location, "DTD.InvalidDefault"); return false; }
                 ReadOnlySpan<char> name = frame.Text.AsSpan(start, frame.Index++ - start);
                 if (name.IsEmpty) { Reject("Empty entity reference.", attribute.Location, "DTD.InvalidDefault"); return false; }
-                if (name[0] == '#' || name.SequenceEqual("lt") || name.SequenceEqual("gt") || name.SequenceEqual("amp") || name.SequenceEqual("apos") || name.SequenceEqual("quot")) continue;
+                if (name[0] == '#')
+                {
+                    int i = 1, radix = 10, value = 0;
+                    if (i < name.Length && name[i] == 'x') { radix = 16; i++; }
+                    int first = i;
+                    for (; i < name.Length; i++)
+                    { cancellation.ThrowIfCancellationRequested(); int digit = ValueSyntax.Digit(name[i], radix); if (digit < 0 || value > (0x10FFFF - digit) / radix) break; value = value * radix + digit; }
+                    if (i != name.Length || i == first || !ValueSyntax.IsXmlScalar(value)) { Reject("Invalid numeric reference in a default replacement.", attribute.Location, "DTD.InvalidDefault"); return false; }
+                    continue;
+                }
+                bool firstName = true;
+                foreach (var rune in name.EnumerateRunes())
+                { cancellation.ThrowIfCancellationRequested(); if (firstName ? !ValueSyntax.IsNameStart(rune.Value) : !ValueSyntax.IsNameChar(rune.Value)) { Reject("Invalid entity name in a default replacement.", attribute.Location, "DTD.InvalidDefault"); return false; } firstName = false; }
+                if (name.SequenceEqual("lt") || name.SequenceEqual("gt") || name.SequenceEqual("amp") || name.SequenceEqual("apos") || name.SequenceEqual("quot")) continue;
                 DtdEntityDeclaration? declaration = null;
                 foreach (var entity in general) { cancellation.ThrowIfCancellationRequested(); if (name.SequenceEqual(entity.Name)) { declaration = entity; break; } }
                 if (declaration is null) continue;
