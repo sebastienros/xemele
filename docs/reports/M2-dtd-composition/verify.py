@@ -118,6 +118,14 @@ def main():
         mutated_output = run('dotnet', mutation/'bin/Release/net10.0/Mutation.dll', '--hooks', expected=1)
         assert mutated_output != hooks and 'SeedPriorModel|internal=False' in mutated_output
         summary['nonpublicHooks']['compiledAccessMutationDetected'] = True
+        default_mutation = composition.read_text().replace('CancellationToken cancellationToken)', 'CancellationToken cancellationToken = default)')
+        assert default_mutation != composition.read_text()
+        (mutation/'Composition.cs').write_text(default_mutation)
+        run('dotnet', 'build', mutation/'Mutation.csproj', *FLAGS)
+        default_output = run('dotnet', mutation/'bin/Release/net10.0/Mutation.dll', '--hooks', expected=1)
+        assert default_output != hooks and ':optional=True:default=null' in default_output
+        summary['nonpublicHooks']['compiledOptionalDefaultMutationDetected'] = True
+
         pinned_metadata = json.loads((ROOT/'tests/fixtures/M2-dtd-grammar/pinned.json').read_text())
         upstream = json.loads((ROOT/'tests/corpora/xml/inventory.json').read_text())
         assert pinned_metadata['archiveSha256'] == upstream['archiveSha256'] and pinned_metadata['sourceUrl'] == upstream['sourceUrl']
