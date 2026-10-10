@@ -4,7 +4,7 @@
   "milestone": "M2",
   "title": "Correct standalone whitespace source classification",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "worker:M2-core-standalone",
   "branch": "codex/m2-conformance-grammar",
   "base_revision": "31dba58c0386e087ac2a3264567dfff3500ddd72",
@@ -54,8 +54,17 @@
     {
       "id": "M2-core-standalone-A3",
       "description": "Preserve already passing 4709 broad and20 focused rows at exact original revisions; repeat only affected newly changed sources/controls. API290 and actual source/fresh package evidence, relevant allocation/timing via reused support with authored complete oracles, counters-disabled preparation and one bounded lease/final identities. Timing informational; no standalone measurements before lease. Planning/owned diff, concise summaries/raw cleanup; original grammar A1-A3 remain mandatory unfulfilled outside this correction.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "broad-preservation",
+        "api-package-preserved",
+        "api-package-byte-identity",
+        "planning-recovery",
+        "reviewed-oracle-preparation",
+        "allocation-reviewed",
+        "timing-reviewed",
+        "final-scoped-summary"
+      ]
     }
   ],
   "implementation": [
@@ -108,19 +117,56 @@
       "result": "passed",
       "summary": "14 planning controls passed,136 task records validated, diff clean after exact coordinator metadata merge resolution.",
       "artifact": "docs/reports/M2-conformance-grammar/focused-preservation.json"
+    },
+    {
+      "id": "reviewed-oracle-preparation",
+      "kind": "check",
+      "revision": "8d925b93beb8c5f44451dd5573ecbd663bec43f9",
+      "command": "python3 -B docs/reports/M2-conformance-grammar/measure.py --mode prepare --report preparation-standalone-reviewed --benchmark-report benchmark-standalone-reviewed",
+      "result": "passed",
+      "summary": "SDK10.0.400/runtime10.0.11 Arm64; corrected authored oracle/negative controls pass with counters disabled.285source/295generated compiled inputs;40parent/47child/188runtime closure files; no Executor. Frozen manifestSHA2b51720085a4dfcac33a722ec8f92b7031ed3430af1b69a6e9f6b1e8930fa504.",
+      "artifact": "docs/reports/M2-conformance-grammar/preparation-standalone-reviewed.json"
+    },
+    {
+      "id": "allocation-reviewed",
+      "kind": "check",
+      "revision": "8d925b93beb8c5f44451dd5573ecbd663bec43f9",
+      "command": "python3 -B docs/reports/M2-conformance-grammar/measure.py --mode allocation --report allocation-standalone-reviewed --exclusive-grant m2-core-standalone-8d925b9-sequence-exclusive-20261010",
+      "result": "passed",
+      "summary": "1024 warm borrowed grammar appends,37UTF16 units/op,0B. Cold setup/oracles226944B; owned Core7704B/op; owned external subset DOM69948.2B/op; positive control155648B total. Actual source/parent/runtime identities unchanged, process group empty.",
+      "artifact": "docs/reports/M2-conformance-grammar/allocation-standalone-reviewed.json"
+    },
+    {
+      "id": "timing-reviewed",
+      "kind": "check",
+      "revision": "8d925b93beb8c5f44451dd5573ecbd663bec43f9",
+      "command": "python3 -B docs/reports/M2-conformance-grammar/measure.py --mode benchmark --report benchmark-standalone-reviewed --exclusive-grant m2-core-standalone-8d925b9-sequence-exclusive-20261010",
+      "result": "passed",
+      "summary": "Two actual frozen cases: Core2.459us/7.52KB; external subset DOM9.973us/68.31KB. Informational Arm64 timing only. No restore/build/generation/retry; independent generated child identities and before/after gates passed; process group empty/raw and child outputs removed.",
+      "artifact": "docs/reports/M2-conformance-grammar/benchmark-standalone-reviewed.json"
+    },
+    {
+      "id": "final-scoped-summary",
+      "kind": "review",
+      "revision": "8d925b93beb8c5f44451dd5573ecbd663bec43f9",
+      "command": "Inspect actual prepared/measurement summaries and owned diff against coordinator claim8427948",
+      "result": "passed",
+      "summary": "Single bounded source-review correction accepted by coordinator; A1/A2 source and preserved checks accepted. Actual allocation/timing identities, output closures, process cleanup and scoped ownership checked. Original grammar/attribute contract remain separate unfulfilled join work.",
+      "artifact": "docs/reports/M2-conformance-grammar/final-summary.json"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Coordinated active grammar scope split after worker acknowledged task-JSON-only hold/reassignment. Existing standalone implementation and passing evidence preserved; original grammar becomes planned until ordered repairs verified.",
+    "summary": "Implemented scoped standalone S-origin correction. Literal S including entity-expanded Data remains dependency-sensitive; CDATA/direct numeric references accept. Original inv-not-sa14 independent oracle and source/resource identities preserved. No public/API or retained production state added.",
     "checks": [
-      "4709 broad actual passes preserved at2dd188e; focused26 at3864458. API290/contracts/consumers atb2fe126; source/feed/cache/consumer bytes identical at54b0b25; transient planning failure recovered at1fcecb3."
+      "4709 preserved broad passes;26focused passes. API290/contracts/source-package consumers and exact source/feed/fresh cache/consumer assembly identity. Recovered transient merge/planning failure without expensive reexecution.",
+      "Reviewed actual counters-disabled preparation and one granted exclusive sequence: borrowed0B/1024ops; Core2.459us7.52KB; external-subset DOM9.973us68.31KB, timing informational. Final source/binary/runtime identity gates and empty-group/raw/generated cleanup passed."
     ],
     "remaining": [
-      "Counters-disabled final preparation, complete actual source/binary/runtime/generated identities, one bounded exclusive allocation/timing lease and final ownership/evidence checks."
+      "Coordinator integration verification; comprehensive combined milestone checks belong to M2 gate."
     ],
     "requests": [
-      "Original eight grammar gap requests: docs/reports/M2-conformance-grammar/assessment.json; authored unknown attribute/default observations: unknown-attribute-assessment.json. No general grammar or attribute representation acceptance claimed by standalone correction."
+      "Original grammar eight-case repairs and unknown attribute/default representation stay outside this correction; assessments preserved in assessment.json and unknown-attribute-assessment.json."
     ]
   }
 }

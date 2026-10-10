@@ -1,0 +1,117 @@
+{
+  "head": "8d925b93beb8c5f44451dd5573ecbd663bec43f9",
+  "mode": "final-summary",
+  "result": "passed",
+  "task": "M2-core-standalone",
+  "lease": "m2-core-standalone-8d925b9-sequence-exclusive-20261010",
+  "leaseReleasedBeforeReviewMetadata": true,
+  "scope": "Standalone origin correction only; original grammar/attribute contract acceptance remains separate.",
+  "identityCounts": {
+    "sourceInputs": 285,
+    "parentOutputClosure": 40,
+    "runtimeClosure": 188,
+    "generatedChildClosure": 47,
+    "generatedCompiledInputs": 295
+  },
+  "preparationSha256": "2b51720085a4dfcac33a722ec8f92b7031ed3430af1b69a6e9f6b1e8930fa504",
+  "sourceIdentitySha256": "076acf9be3fecb4d2911c759a25a69b4db28f90b2a91d5ccfcf8508acef9d46a",
+  "actualRuntime": {
+    "driver": "1.0.0+8d925b93beb8c5f44451dd5573ecbd663bec43f9",
+    "product": "1.0.0+8d925b93beb8c5f44451dd5573ecbd663bec43f9",
+    "runtime": ".NET 10.0.11",
+    "coreRuntimeBuild": "10.0.11-servicing.26373.116+e2f47b0110ed922f21a1522da67279133ce28f32",
+    "architecture": "Arm64",
+    "coreLibrary": "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App/10.0.11/System.Private.CoreLib.dll",
+    "coreLibrarySha256": "9ed74c2e2efeee87f1f2d7ffe1736b7e9164ce248516ea39402a725eedc87af6"
+  },
+  "borrowedAllocation": {
+    "records": [
+      {
+        "iterations": 1024,
+        "utf16PerOperation": 37,
+        "bytes": 0,
+        "coldAndOwnedExcluded": true
+      }
+    ],
+    "validation": "passed"
+  },
+  "ownedAllocation": {
+    "iterations": 1024,
+    "coldSetupAndOracles": 226944,
+    "ownedModels": 7888896,
+    "ownedDocuments": 71626976,
+    "positiveControl": 155648,
+    "strictCoreBytesPerOperation": 7704.0,
+    "externalSubsetDomBytesPerOperation": 69948.21875,
+    "boundary": "Fixture cold setup/oracles; new Core operation and new owned DOM operation separately; borrowed warm interval excludes setup and persistence. No new retained production state was introduced. Separate retained-memory or cross-architecture measurements are not claimed."
+  },
+  "benchmarkRows": [
+    {
+      "Method": "InternalNestedModel",
+      "Mean": "2.459 \u03bcs",
+      "Error": "0.0882 \u03bcs",
+      "StdDev": "0.0048 \u03bcs",
+      "Allocated": "7.52 KB",
+      "Gen0": "0.9193",
+      "Gen1": "0.0076",
+      "Gen2": null
+    },
+    {
+      "Method": "RedirectedComposition",
+      "Mean": "9.973 \u03bcs",
+      "Error": "0.7804 \u03bcs",
+      "StdDev": "0.0428 \u03bcs",
+      "Allocated": "68.31 KB",
+      "Gen0": "8.3313",
+      "Gen1": "1.2512",
+      "Gen2": null
+    }
+  ],
+  "timingInterpretation": "Arm64 informational observations, no speedup or cross-domain allocation equality gate.",
+  "reviewCorrection": "Untimed exact root/child particles and entity fields asserted; wrong root occurrence and child-name controls reject. Immutable resolver bytes/URI fixture construction is outside timing.",
+  "preservedChecks": {
+    "broad": {
+      "revision": "2dd188e7859b4be23bef6a2c1282b4f85488d9cc",
+      "passed": 4709,
+      "allocationMethodsHeld": 6
+    },
+    "focused": {
+      "revision": "38644588df4a7376cc25193187adfb7c16443f93",
+      "passed": 26
+    },
+    "apiSourcePackage": {
+      "revision": "54b0b253ae5ab541d9ba3fd0585b9ec3ffc8d89b",
+      "approvedMembers": 290,
+      "assemblyIdentitySha256": "1459df7b5b6f142ba6fecc8bc491832ffd81ef053b93ed9abc14b61bd2606ea5",
+      "planningFailureRecoveredAt": "1fcecb35951daed28d2c23d63cf19e20f79792f4"
+    }
+  },
+  "preparationAttempts": {
+    "first": "NU1900 vulnerability service unavailable; no generation/execution. Narrow cached/offline build control passed.",
+    "second": "Obsolete preparation stopped for source review correction; sandbox group inspection denied. Raw outputs removed; stopped group subsequently independently checked empty.",
+    "final": "Reviewed source prepared successfully with actual generated inputs/closure and no Executor."
+  },
+  "cleanup": {
+    "actualMeasurementCommandExitCodes": [
+      0,
+      0
+    ],
+    "processGroupsEmpty": true,
+    "sourceFinalIdentitiesPassed": true,
+    "runtimeFinalIdentitiesPassed": true,
+    "parentClosureUnchanged": true,
+    "prebuiltGeneratedOutputRemoved": true,
+    "rawOutputsRemoved": true
+  },
+  "checkArtifacts": [
+    "correctness-2dd188e.json",
+    "focused-preservation.json",
+    "api-package-candidate.json",
+    "api-package-identity.json",
+    "preparation-standalone.json",
+    "preparation-standalone-offline.json",
+    "preparation-standalone-reviewed.json",
+    "allocation-standalone-reviewed.json",
+    "benchmark-standalone-reviewed.json"
+  ]
+}
