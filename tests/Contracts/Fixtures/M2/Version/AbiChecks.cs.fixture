@@ -15,7 +15,8 @@ internal static class AbiChecks
         {
             Type actual = runtime.GetType(model.FullName!, throwOnError: true)!;
             if (model.IsByRefLike != actual.IsByRefLike || model.IsValueType != actual.IsValueType ||
-                model.IsInterface != actual.IsInterface || model.IsSealed != actual.IsSealed)
+                model.IsInterface != actual.IsInterface || model.IsSealed != actual.IsSealed ||
+                Readonly(model) != Readonly(actual))
                 throw new InvalidOperationException("ABI type shape mismatch " + model.FullName);
             string[] expected = Shape(model), observed = Shape(actual);
             if (!expected.SequenceEqual(observed))
@@ -26,18 +27,25 @@ internal static class AbiChecks
         Console.WriteLine("Preserved 4 actual internal declaration/sink/result ABI shapes against independently compiled frozen fixtures.");
         return checks;
     }
+    private static bool Readonly(Type type) => type.GetCustomAttributesData().Any(a =>
+        a.AttributeType.FullName == "System.Runtime.CompilerServices.IsReadOnlyAttribute");
+    private static string Nullability(NullabilityInfo info) => info.ReadState + "/" + info.WriteState +
+        "[" + string.Join(",", info.GenericTypeArguments.Select(Nullability)) + "]" +
+        (info.ElementType is null ? "" : "element=" + Nullability(info.ElementType));
     private static string Name(Type type) => type.IsByRef ? Name(type.GetElementType()!) + "&" :
         type.IsGenericType ? type.GetGenericTypeDefinition().FullName + "<" + string.Join(",", type.GetGenericArguments().Select(Name)) + ">" : type.FullName!;
     private static string[] Shape(Type type)
     {
         const BindingFlags flags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.DeclaredOnly;
+        var nullable = new NullabilityInfoContext();
         string Parameters(MethodBase method) => string.Join(",", method.GetParameters().Select(p =>
-            Name(p.ParameterType) + ":" + p.Name + ":out=" + p.IsOut + ":in=" + p.IsIn + ":optional=" + p.IsOptional));
+            Name(p.ParameterType) + ":" + p.Name + ":out=" + p.IsOut + ":in=" + p.IsIn + ":optional=" + p.IsOptional + ":nullable=" + Nullability(nullable.Create(p))));
         return type.GetConstructors(flags).Select(c => "ctor(" + Parameters(c) + ")")
             .Concat(type.GetMethods(flags).Select(m => "method:" + m.Name + "(" + Parameters(m) + "):" + Name(m.ReturnType) +
                 ":static=" + m.IsStatic + ":virtual=" + m.IsVirtual + ":abstract=" + m.IsAbstract +
+                ":nullable=" + Nullability(nullable.Create(m.ReturnParameter)) +
                 ":returnmods=" + string.Join(",", m.ReturnParameter.GetRequiredCustomModifiers().Select(Name))))
-            .Concat(type.GetProperties(flags).Select(p => "property:" + p.Name + ":" + Name(p.PropertyType) + ":read=" + p.CanRead + ":write=" + p.CanWrite))
+            .Concat(type.GetProperties(flags).Select(p => "property:" + p.Name + ":" + Name(p.PropertyType) + ":read=" + p.CanRead + ":write=" + p.CanWrite + ":nullable=" + Nullability(nullable.Create(p))))
             .Order(StringComparer.Ordinal).ToArray();
     }
 }

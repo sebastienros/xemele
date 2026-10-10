@@ -4,6 +4,7 @@
 Prints concise counts and identities. Never writes logs/XML/baselines to the repo.
 Stops on the first unexpected result; failed/skipped checks are not passes.
 """
+import argparse
 import hashlib
 import json
 import os
@@ -23,13 +24,28 @@ FIXTURE = ROOT / 'tests/Contracts/Fixtures/M2'
 
 
 def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--audit-base', default=CLAIM)
+    parser.add_argument('--expected-branch', default='codex/m2-version-contract')
+    args = parser.parse_args()
+    if not re.fullmatch('[0-9a-f]{40}', args.audit_base):
+        parser.error('--audit-base must be a full revision')
     env = dict(os.environ, DOTNET_CLI_USE_MSBUILD_SERVER='0')
     results = []
     summary = {'result': 'failed', 'checks': results}
+    # Allocation children create private raw outputs under artifacts. Inventory
+    # existing entries first; preserve all prior files and remove only this run's.
+    raw_root = ROOT/'artifacts'
+    existing_raw = set(raw_root.rglob('*')) if raw_root.exists() else set()
+    raw_root_existed = raw_root.exists()
     def run(*command, expected=0):
         command = list(map(str, command))
-        process = subprocess.run(command, cwd=ROOT, env=env, stdout=subprocess.PIPE,
-                                 stderr=subprocess.STDOUT, text=True, timeout=300)
+        try:
+            process = subprocess.run(command, cwd=ROOT, env=env, stdout=subprocess.PIPE,
+                                     stderr=subprocess.STDOUT, text=True, timeout=300)
+        except subprocess.TimeoutExpired:
+            results.append({'command': command, 'result': 'timeout', 'timeoutSeconds': 300})
+            raise
         results.append({'command': command, 'exit': process.returncode, 'expectedExit': expected})
         if process.returncode != expected:
             print(process.stdout[-5000:], flush=True)
@@ -40,15 +56,36 @@ def main():
     try:
         revision = run('git', 'rev-parse', 'HEAD').strip()
         summary['revision'] = revision
+        branch = run('git', 'branch', '--show-current').strip()
+        assert branch == args.expected_branch, (branch, args.expected_branch)
+        run('git', 'merge-base', '--is-ancestor', args.audit_base, 'HEAD')
+        summary['auditBase'] = args.audit_base
+        summary['branch'] = branch
         run('git', 'merge-base', '--is-ancestor', CLAIM, 'HEAD')
         assert json.loads((ROOT/'docs/tasks/M2-contracts.json').read_text())['status'] == 'verified'
         run('git', 'merge-base', '--is-ancestor', 'ab2fcabaf3cc984901f484c6fce1069c385e8c2f', 'HEAD')
         assert run('dotnet', '--version').strip() == '10.0.400'
+        dotnet = Path(shutil.which('dotnet')).resolve()
+        summary['sdk'] = {'version': '10.0.400', 'host': str(dotnet), 'hostSha256': digest(dotnet),
+                          'runtimes': run('dotnet', '--list-runtimes').strip().splitlines()}
+        input_roots = ['src/Xemele', 'tests/Xemele.Tests', 'tests/Xemele.TestUtilities']
+        inputs = run('git', 'ls-files', '--', *input_roots, 'Directory.Build.props', 'Directory.Build.targets',
+                     'Directory.Packages.props', 'global.json', 'NuGet.config').splitlines()
+        inputs = [p for p in inputs if Path(p).suffix in ('.cs', '.csproj', '.props', '.targets', '.json', '.config')]
+        assert inputs
+        assert not run('git', 'diff', args.audit_base, '--', *inputs).strip(), 'runtime/test/build inputs changed'
+        source_hashes = {}
+        for name in inputs:
+            committed = subprocess.check_output(['git', 'show', f'{revision}:{name}'], cwd=ROOT)
+            assert (ROOT/name).read_bytes() == committed, name+' differs from Git'
+            source_hashes[name] = hashlib.sha256(committed).hexdigest()
+        summary['compiledInputCount'] = len(source_hashes)
+        summary['compiledInputSha256'] = hashlib.sha256(json.dumps(source_hashes, sort_keys=True).encode()).hexdigest()
         # Must verify committed sources; evidence metadata may subsequently change.
         assert not run('git', 'diff', 'HEAD', '--', 'docs/specs/parser.md',
                        'docs/decisions/M2/xml-resources.md', 'tests/Contracts/Fixtures/M2/Version',
                        'docs/reports/M2-version-contract/verify.py').strip()
-        with tempfile.TemporaryDirectory(prefix='xemele-version-contract-') as tmp:
+        with tempfile.TemporaryDirectory(prefix='tmp-', dir=ROOT/'docs/reports/M2-version-contract') as tmp:
             tmp = Path(tmp)
             artifacts = tmp/'build'
             output_args = [*FLAGS, '--artifacts-path', artifacts]
@@ -101,6 +138,30 @@ def main():
                 text = run('dotnet', 'build', project, *output_args, f'-p:ProbeSource={probe}', expected=1)
                 assert error in text, (name, error)
             summary['expectedCompilerRejections'] = [n[2] for n in negatives]
+            # Real compiled negative metadata: readonly and nullable changes must
+            # both be detected against the exact independently compiled fixture.
+            for mutation_name in ['nullable', 'readonly']:
+                mutation_dir = tmp/mutation_name; mutation_dir.mkdir()
+                mutation_paths = []
+                for source in paths[:-2]:
+                    content = source.read_text()
+                    if mutation_name == 'nullable' and source.name == 'Dtd.cs.fixture':
+                        assert 'XmlTextDeclaration(string? Version' in content
+                        content = content.replace('XmlTextDeclaration(string? Version', 'XmlTextDeclaration(string Version')
+                    if mutation_name == 'readonly' and source.name == 'Syntax.cs.fixture':
+                        assert 'internal readonly ref struct XmlDeclarationView' in content
+                        content = content.replace('internal readonly ref struct XmlDeclarationView', 'internal ref struct XmlDeclarationView')
+                    target = mutation_dir/source.name; target.write_text(content); mutation_paths.append(target)
+                mutation_project = mutation_dir/f'AbiMutation{mutation_name}.csproj'
+                mutation_project.write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup>'
+                    '<TargetFramework>net10.0</TargetFramework><Nullable>enable</Nullable><ImplicitUsings>enable</ImplicitUsings>'
+                    '<EnableDefaultCompileItems>false</EnableDefaultCompileItems></PropertyGroup><ItemGroup>' +
+                    ''.join(f'<Compile Include="{escape(str(p))}" />' for p in mutation_paths) + '</ItemGroup></Project>')
+                run('dotnet', 'build', mutation_project, *output_args)
+                mutated = artifacts/f'bin/AbiMutation{mutation_name}/release/AbiMutation{mutation_name}.dll'
+                failure = run('dotnet', model, mutated, expected=1)
+                assert 'ABI ' in failure and 'mismatch' in failure, mutation_name
+            summary['internalAbiMutationsDetected'] = ['nullable Version', 'readonly declaration view']
             sys.path.insert(0, str(ROOT/'tools/ApiBaseline'))
             from compare import compare
             # The shared discovery helper couples API and optional corpus materialization.
@@ -127,21 +188,38 @@ def main():
             run('dotnet', checker, 'compare', artifacts/'bin/Resolver/release/M2Resolver.dll',
                 FIXTURE/'Resolver.golden.txt', expected=1)
             summary['apiMutationDetected'] = True
+            closures = [artifacts/'bin/Xemele/release', artifacts/'bin/Xemele.Tests/release']
+            def closure():
+                return {str(p.relative_to(artifacts)): digest(p) for d in closures for p in sorted(d.rglob('*'))
+                        if p.is_file()}
+            before = closure()
+            assert before
+            summary['outputClosureFiles'] = len(before)
+            summary['outputClosureSha256'] = hashlib.sha256(json.dumps(before, sort_keys=True).encode()).hexdigest()
             xml = tmp/'runtime-tests.xml'
             tests = artifacts/'bin/Xemele.Tests/release/Xemele.Tests.dll'
             text = run('dotnet', tests, '-noColor', '-result-xml', xml)
             tests_xml = list(ET.parse(xml).iter('test'))
-            assert tests_xml and all(t.get('result') == 'Pass' for t in tests_xml), 'runtime failure/skip or empty results'
+            assert len(tests_xml) == 4594 and all(t.get('result') == 'Pass' for t in tests_xml), 'runtime failure/skip or lost inherited tests'
+            identities = sorted(t.get('name') for t in tests_xml)
+            assert len(set(identities)) == 4594, 'duplicate runtime test identities'
+            summary['runtimeTestIdentitySha256'] = hashlib.sha256(json.dumps(identities).encode()).hexdigest()
+            assert closure() == before, 'runtime/test output closure changed during execution'
+            summary['outputClosureUnchanged'] = True
             summary['runtimePreservation'] = {'total': len(tests_xml), 'passed': len(tests_xml), 'failed': 0, 'skipped': 0}
             summary['testsAssemblySha256'] = digest(tests)
             text = run('python3', '-B', '-m', 'unittest', 'discover', '-s', 'tools/planning', '-p', 'test_tasks.py')
             summary['planningTests'] = int(re.search(r'Ran (\d+) tests', text)[1])
             summary['planningValidation'] = run('python3', '-B', 'tools/planning/tasks.py', 'validate').strip()
+            run('git', 'diff', '--check', args.audit_base, 'HEAD')
             run('git', 'diff', '--check')
+            run('git', 'diff', '--cached', '--check')
             # Committed, staged, working and untracked paths must remain owned.
-            paths = set(run('git', 'diff', '--name-only', CLAIM, 'HEAD').splitlines())
+            paths = set(run('git', 'diff', '--name-only', args.audit_base, 'HEAD').splitlines())
             paths.update(run('git', 'diff', '--name-only', 'HEAD').splitlines())
-            paths.update(run('git', 'ls-files', '--others', '--exclude-standard').splitlines())
+            paths.update(run('git', 'diff', '--cached', '--name-only').splitlines())
+            paths.update(p for p in run('git', 'ls-files', '--others', '--exclude-standard').splitlines()
+                         if not (ROOT/p).is_relative_to(tmp))
             owned = json.loads((ROOT/'docs/tasks/M2-version-contract.json').read_text())['owns']
             owned.append('docs/tasks/M2-version-contract.json')
             assert all(any(p.startswith(o) if o.endswith('/') else p == o for o in owned) for p in paths), sorted(paths)
@@ -151,6 +229,28 @@ def main():
     except Exception as error:
         summary['temporaryOutputsRemoved'] = True
         summary['failure'] = str(error)
+    finally:
+        # Inspect generated child summaries before discarding this run's raw data.
+        new_raw = set(raw_root.rglob('*')) - existing_raw if raw_root.exists() else set()
+        child_summaries = []
+        for path in sorted(new_raw):
+            if path.is_file() and path.name.endswith('.report.json'):
+                data = json.loads(path.read_text())
+                child_summaries.append({'task': path.relative_to(raw_root).parts[0], 'mode': data.get('Mode'),
+                                        'sha256': digest(path)})
+        summary['allocationChildSummaries'] = child_summaries
+        for path in sorted(new_raw, key=lambda p: len(p.parts), reverse=True):
+            if path.is_file() or path.is_symlink(): path.unlink()
+            elif path.is_dir(): path.rmdir()
+        if not raw_root_existed and raw_root.exists(): raw_root.rmdir()
+        summary['newRawOutputsRemoved'] = True
+    # Large input-list commands are recorded by their argument identity, not copied raw.
+    for check in results:
+        if len(check['command']) > 20:
+            arguments = check['command']
+            check['command'] = arguments[:4] + ['<scoped compiled inputs>']
+            check['argumentCount'] = len(arguments)
+            check['argumentsSha256'] = hashlib.sha256(json.dumps(arguments).encode()).hexdigest()
     print(json.dumps(summary, indent=2), flush=True)
     return 0 if summary['result'] == 'passed' else 1
 

@@ -30,7 +30,7 @@ internal static class VersionChecks
         scalar is >= 0x20 and <= 0xd7ff || scalar is >= 0xe000 and <= 0xfffd ||
         scalar is >= 0x10000 and <= 0x10ffff;
 
-    public static void Main(string[] args)
+    public static int Main(string[] args)
     {
         var location = new XmlLocation(new Uri("https://fixture.invalid/final.xml"), 1, 1, 0);
         var sink = new CapturingSink();
@@ -103,8 +103,10 @@ internal static class VersionChecks
         Check(!AdmittedToken(bounded, bounded.Length - 1), "one-over token quota model");
         Check(AdmittedToken(bounded, null), "null token quota model");
         if (args.Length != 1) throw new ArgumentException("Pass freshly built runtime DLL for ABI comparison.");
-        assertions += AbiChecks.Compare(args[0]);
+        try { assertions += AbiChecks.Compare(args[0]); }
+        catch (InvalidOperationException error) { Console.WriteLine(error.Message); return 1; }
         Console.WriteLine($"Passed {assertions} independent version/profile model assertions; no runtime parser executed.");
+        return 0;
     }
 
     // Representative old sink implementation compiles without an added member.

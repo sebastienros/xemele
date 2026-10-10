@@ -3,13 +3,16 @@
 `verify.py` compiles only explicit frozen model inputs and the owned version
 probes. It compares five public model baselines, executes inherited model checks,
 checks four internal declaration/sink/result shapes against the freshly built
-runtime, compares the actual product's approved public API against an exact
+runtime (including nullable and readonly metadata, each exercised by a compiled
+negative mutation), compares the actual product's approved public API against an exact
 temporary copy of every approved API fragment (hashes recorded; shared discovery
 validates this API-only snapshot, without requiring corpus materialization), requires two specific
 compiler rejections and detects an actual public metadata mutation. It then runs
-the existing Xemele.Tests suite and planning tests/validation plus ownership and
+the exact inherited 4594-test Xemele.Tests suite and planning tests/validation plus ownership and
 whitespace audits. Raw compiler outputs/XML/builds are held in an auto-cleaned
-temporary directory; stdout supplies concise outcomes/identities only. Existing
+temporary directory under this owned report path (so inherited allocation
+children can locate repository markers); all newly created allocation child files
+are inspected and removed while pre-existing outputs remain intact. Stdout supplies concise outcomes/identities only. Existing
 historical reports are preserved. No corpus runner, benchmark or active peer
 branch is required. This is model/preservation evidence, not a corrected runtime
 parser or full XML conformance claim.
@@ -52,3 +55,11 @@ W3C primary sources consulted: [XML 1.0 Fifth Edition, section 2.8](https://www.
 and [Namespaces 1.0 Third Edition sections 5 and 6](https://www.w3.org/TR/REC-xml-names/#ns-qualnames).
 Source-purpose/VERSION metadata is retained as historical intent; effective
 expectations require declaration and content evaluation under these editions.
+
+For integration, pass `--audit-base <full integration-base hash>` and
+`--expected-branch <integration branch>`. The claim and verified prerequisite
+ancestry guards still apply. Runtime/test/build inputs are hashed against committed
+Git and checked unchanged from the audit base. Product/test output closures are
+hashed before/after execution; exact test names have a durable aggregate identity.
+SDK host hash/runtime versions are included. These checks preserve inherited
+behavior and do not assert the runtime declaration correction is implemented.
