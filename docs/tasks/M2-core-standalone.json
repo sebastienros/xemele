@@ -36,14 +36,20 @@
     {
       "id": "M2-core-standalone-A1",
       "description": "Correct only strict Core standalone element-content S source classification: literal S including expanded entity replacement through Data remains dependency-sensitive; CDATA and direct numeric references do not become literal S. Preserve all other event/lifetime/count/pause/cancel/quota/nonvalidating/source cleanup and entity/resource behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "broad-preservation",
+        "focused-standalone"
+      ]
     },
     {
       "id": "M2-core-standalone-A2",
       "description": "Exact original inv-not-sa14 bytes and granted sa.dtd accepted with independent complete semantic/DOM output. Paired literal S and entity-expanded S restrictions, CDATA/direct refs allowed, all short splits/callback pauses and byte transports/resolver cleanup, location/quotas and source retention controls. Preserve existing original corpus classification; other eight gaps remain in original grammar task.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "broad-preservation",
+        "focused-standalone"
+      ]
     },
     {
       "id": "M2-core-standalone-A3",
@@ -52,17 +58,69 @@
       "evidence": []
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Parsing/Core/XmlParserCore.cs: Process(State.Data) checks literal S; QueueFragment no longer classifies CDATA/direct reference results as S.",
+    "tests/Xemele.Tests/M2-conformance/: independently authored origin/split/pause/original-byte/transport/quota/cleanup oracles.",
+    "benchmarks/Xemele.Benchmarks/M2-conformance/StandaloneGrammarBenchmarks.cs: authored Core and redirected external-subset DOM cases; verified measurement support reused."
+  ],
+  "evidence": [
+    {
+      "id": "broad-preservation",
+      "kind": "check",
+      "revision": "2dd188e7859b4be23bef6a2c1282b4f85488d9cc",
+      "command": "python3 -B docs/reports/M2-conformance-grammar/verify.py --mode correctness --report correctness-2dd188e",
+      "result": "passed",
+      "summary": "4709 actual runtime rows passed, zero failed/skipped; six named allocation tests held. Output closure/source freeze preserved.",
+      "artifact": "docs/reports/M2-conformance-grammar/correctness-2dd188e.json"
+    },
+    {
+      "id": "focused-standalone",
+      "kind": "check",
+      "revision": "38644588df4a7376cc25193187adfb7c16443f93",
+      "command": "dotnet tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -noColor -namespace Xemele.Tests.ConformanceGrammar -result-xml /private/tmp/m2-grammar-focused-final.xml",
+      "result": "passed",
+      "summary": "26 actual rows passed, zero failed/skipped. Exact inv-not-sa14/sa.dtd bytes, every primary split/callback pause, parsed origin controls, UTF8/UTF16LE/BE BOM transports and bounded reads, quota and cleanup controls.",
+      "artifact": "docs/reports/M2-conformance-grammar/focused-preservation.json"
+    },
+    {
+      "id": "api-package-preserved",
+      "kind": "check",
+      "revision": "b2fe1264545717b56892e0af8c3e00736feaa5d4",
+      "command": "python3 -B docs/reports/M2-conformance-grammar/verify.py --mode api --report api-package-candidate",
+      "result": "passed",
+      "summary": "All290 approved members matched; independent contract models and source/fresh package consumers passed.",
+      "artifact": "docs/reports/M2-conformance-grammar/api-package-candidate.json"
+    },
+    {
+      "id": "api-package-byte-identity",
+      "kind": "check",
+      "revision": "54b0b253ae5ab541d9ba3fd0585b9ec3ffc8d89b",
+      "command": "python3 -B docs/reports/M2-conformance-grammar/verify.py --mode api --report api-package-identity",
+      "result": "failed",
+      "summary": "API290/contracts/source+fresh package behavior and identical source/feed/fresh cache/consumer assembly bytes passed. Overall script failed final planning controls during transient metadata merge conflict; recovered planning controls separately at1fcecb3 without repeating passing execution.",
+      "artifact": "docs/reports/M2-conformance-grammar/api-package-identity.json"
+    },
+    {
+      "id": "planning-recovery",
+      "kind": "check",
+      "revision": "1fcecb35951daed28d2c23d63cf19e20f79792f4",
+      "command": "python3 -B -m unittest discover -s tools/planning -p test_tasks.py; python3 -B tools/planning/tasks.py validate; git diff --check",
+      "result": "passed",
+      "summary": "14 planning controls passed,136 task records validated, diff clean after exact coordinator metadata merge resolution.",
+      "artifact": "docs/reports/M2-conformance-grammar/focused-preservation.json"
+    }
+  ],
   "blockers": [],
   "handoff": {
     "summary": "Coordinated active grammar scope split after worker acknowledged task-JSON-only hold/reassignment. Existing standalone implementation and passing evidence preserved; original grammar becomes planned until ordered repairs verified.",
     "checks": [
-      "Original worker reports broad4709 and focused20 passing, API290/source-package at b2fe126; coordinator must inspect actual evidence before acceptance."
+      "4709 broad actual passes preserved at2dd188e; focused26 at3864458. API290/contracts/consumers atb2fe126; source/feed/cache/consumer bytes identical at54b0b25; transient planning failure recovered at1fcecb3."
     ],
-    "remaining": [],
+    "remaining": [
+      "Counters-disabled final preparation, complete actual source/binary/runtime/generated identities, one bounded exclusive allocation/timing lease and final ownership/evidence checks."
+    ],
     "requests": [
-      "Preserve authored unknown attribute/default assessment and eight original gap requests as original grammar/contract handoff; no additional scope."
+      "Original eight grammar gap requests: docs/reports/M2-conformance-grammar/assessment.json; authored unknown attribute/default observations: unknown-attribute-assessment.json. No general grammar or attribute representation acceptance claimed by standalone correction."
     ]
   }
 }
