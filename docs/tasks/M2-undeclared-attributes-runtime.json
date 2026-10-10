@@ -8,11 +8,11 @@
   ],
   "id": "M2-undeclared-attributes-runtime",
   "title": "Implement bounded incomplete attribute and default values",
-  "status": "implemented",
+  "status": "verified",
   "owner": "worker:M2-undeclared-attributes-runtime",
   "branch": "codex/m2-undeclared-attributes-runtime",
   "base_revision": "93ae3bfef0628846e815fbcd2829242793112774",
-  "integration_revision": null,
+  "integration_revision": "e4277a66884c35f45ea41e128450845afe7060d6",
   "depends_on": [
     "M2-undeclared-attribute-contract",
     "M2-core-standalone",
@@ -62,7 +62,8 @@
       "evidence": [
         "runtime-full-correctness",
         "final-focused-correctness",
-        "source-resolution-review"
+        "source-resolution-review",
+        "integrated-verification"
       ]
     },
     {
@@ -72,7 +73,8 @@
       "evidence": [
         "runtime-full-correctness",
         "final-focused-correctness",
-        "source-resolution-review"
+        "source-resolution-review",
+        "integrated-verification"
       ]
     },
     {
@@ -84,7 +86,8 @@
         "measurement-preparation",
         "offline-preparation",
         "coordinator-performance",
-        "coordinator-focused-integration"
+        "coordinator-focused-integration",
+        "integrated-verification"
       ]
     }
   ],
@@ -165,20 +168,27 @@
       "result": "passed",
       "summary": "Coordinator-origin actual2157 focused cases,372 total/82 additive API,145 contract+22 shapes+64 model assertions, source/fresh package and planning checks pass. Runtime unchanged through measured8d894a96. Worker preserved branch4802/1981/API and prior preparation failure evidence; no worker rerun claimed.",
       "artifact": null
+    },
+    {
+      "id": "integrated-verification",
+      "kind": "integration",
+      "revision": "e4277a66884c35f45ea41e128450845afe7060d6",
+      "command": "Root focused tests/API-package at8b77; bounded allocation/timing/streaming/PI sequence at8d894; final complete source/config/API equality, owned integration delta, python3 tools/planning/tasks.py validate and git diff --check",
+      "result": "passed",
+      "summary": "Integrated2157 actual focused tests pass;372-member API/82 additive,145 contract/22 independent shapes/64 models/source-fresh-package preserved. Required borrowed0 B/1024 and positive/cold/owned/128 retained-document measurements pass; both timing children0,6 actual/6 result/2 GC/final source-binary-runtime identity gates and cleanup pass. Metadata-only changes preserve tested implementation; comprehensive combined conformance checks remain M2 gate. All45 integrated changed paths owned,138-task graph valid.",
+      "artifact": "docs/reports/M2-undeclared-attributes-runtime/integration-summary.json"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Implemented bounded incomplete attribute/default callbacks and owned symbolic provenance with physical origin/location fidelity, interned names and loss-refusing getters/output/copy. Accepted runtime4e45c2f unchanged; coordinator measured8d894a96 all phases pass. Metadata ownership returns to coordinator for merge and verified status.",
+    "summary": "Implemented bounded incomplete attribute/default callbacks and owned symbolic provenance with physical origin/location fidelity, interned names and loss-refusing getters/output/copy. Accepted runtime4e45c2f unchanged; coordinator measured8d894a96 all phases pass. Metadata ownership returns to coordinator for merge and verified status. Integrated verified with unchanged tested sources; cleanup follows.",
     "checks": [
       "Branch4802 historical correctness and1981 final affected cases pass, including40 owned. API372/82 additive, frozen shapes and source/fresh package consumers pass.",
       "Coordinator2157 focused integrated cases and API/source-package/model checks pass at8b77dadd; source unchanged through8d894a96.",
       "Coordinator exclusive sequence: streaming/PI real measured0 B with positive controls, borrowed attribute0 B/1024, ordinary empty getters0 B, separate positive/cold/owned/128-document retained controls; both timing children exit0 and all final identities/cleanup pass.",
       "Two worker sandbox generated-build timeouts preserved; exact offline adapter reused, coordinator outside-sandbox preparation passed. No further runtime, build or benchmark execution after accepted source."
     ],
-    "remaining": [
-      "Coordinator merge/reporting conflict resolution, integration evidence and verified task status; comprehensive combined checks at M2 gate."
-    ],
+    "remaining": [],
     "requests": []
   }
 }
