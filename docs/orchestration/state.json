@@ -31,11 +31,18 @@
       "chat_id": "01a127d3-bfbb-7190-9c66-4269550c7136",
       "worktree_path": "/Users/sebastienros/.codex/worktrees/c7ea/xemele",
       "setup_revision": "b4168a129669fec930f22e660945de4d8f785b5d",
-      "worker_cursor": "14c1d4eb-bbf6-4f0c-822f-804bb118d341:9",
+      "worker_cursor": "14c1d4eb-bbf6-4f0c-822f-804bb118d341:25",
       "ownership_extension": {
         "path": "src/Xemele/Tree/UnresolvedReferences/XmlDocument.UnresolvedReferences.cs",
         "scope": "Only central RefuseUnresolvedReferences also refusing nonempty incomplete attribute/default provenance; existing content/frozen shape preserved.",
         "task_json_hold_ack": true
+      },
+      "historical_test_extension": {
+        "path": "tests/Xemele.Tests/M2-dtd-corpus-repair/RepairTests.cs",
+        "scope": "Only two direct-forward expectations and exact diagnostic/resource/root assertions above; standalone yes preserved",
+        "criterion": "A1 declaration order and A2 preserved correctness under verified contract",
+        "evidence": "Frozen contract262-263 versus historical RepairTests109 and132; worker actual affected4793 run exposed two conflicting cases",
+        "hold_ack": true
       }
     }
   ],
@@ -348,7 +355,7 @@
       "host_id": "local",
       "branch": "codex/m2-profile-version-repair",
       "base_revision": "52fb130878edb29b3d291f9271902fb41ec91f42",
-      "stage": "Merged verified durably summarized; cleanup pending",
+      "stage": "Merged verified durably summarized; archived and both worktrees removed",
       "acceptance_before_dispatch": {
         "mandatory": [
           "A1 exact E38 classifier/ledger correction citing E10/Fifth Edition, every other original row/resource unchanged.",
@@ -376,7 +383,13 @@
       "worker_cursor": "697b483c-dc21-49da-910b-599ef2c44c5f:5",
       "handoff_revision": "6a9042431d1b7298f685529d82f6dfce09d02bcb",
       "integration_revision": "1ed65f194d654dafd7f371604188b5b419fa4eaf",
-      "integration_worktree": "/private/tmp/xemele-integrate-m2-profile-version-repair"
+      "integration_worktree": "/private/tmp/xemele-integrate-m2-profile-version-repair",
+      "cleanup": {
+        "chat_archived": true,
+        "worker_worktree_removed": true,
+        "integration_worktree_removed": true,
+        "raw_artifacts_retained": false
+      }
     }
   ],
   "benchmark_policy": "Successful previous measurements retained; future changed runtime measurements require complete preparation and exclusive grant.",
