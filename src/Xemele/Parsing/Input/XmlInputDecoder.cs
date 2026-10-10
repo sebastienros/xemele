@@ -3,6 +3,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using Xemele.Internal.Operations;
 [assembly: InternalsVisibleTo("Xemele.InputBenchmarks")]
+[assembly: InternalsVisibleTo("Xemele.EncodingBenchmarks")]
 [assembly: InternalsVisibleTo("Xemele.InputSample")]
 namespace Xemele.Parsing.Input;
 
