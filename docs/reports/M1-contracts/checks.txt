@@ -1,0 +1,40 @@
+M1-contracts committed implementation verification
+Revision: 6f21ab373eeb11e0d60a5e76517a065cec7fc466
+Branch: codex/m1-contracts
+Checkout: /Users/sebastienros/.codex/worktrees/03e7/xemele
+SDK: 10.0.400; host: macOS arm64
+DOTNET_ROOT: /Users/sebastienros/Library/Application Support/dotnetup/dotnet
+Command: DOTNET_CLI_USE_MSBUILD_SERVER=0 python3 docs/reports/M1-contracts/verify.py
+Execution: authorized network/test IPC escalation; exit 0.
+
+Independent Release declaration/usage compilation: Common, Tree, Input, Syntax,
+Serializer, Dom, Protocol; zero compiler warnings/errors in positive builds.
+Public normalized metadata matches: Common 81, Tree 192, Input 81, Syntax 81,
+Serializer 215, Dom 199 members. All 81 M0 common rows preserved exactly.
+Internal declarations validated by source compilation and ref-safety probes;
+the unchanged public normalizer does not inventory internals.
+Protocol executable: 38 assertions passed (synthetic model only).
+Expected compiler rejection probes: 10 passed with required diagnostic codes.
+Actual compiled public mutation probes: 3 passed (readonly, enumerator kind,
+optional default), each compared with unchanged approved normalizer and specific
+changed row verified. Six independent output vector encoding/BOM checks passed.
+
+M0 foundation Release build passed; tests 11 succeeded, 0 failed, 0 skipped.
+M0 foundation M1/M2 goldens matched 139/173 members respectively.
+Xemele.slnx Release build passed; tests 54 succeeded, 0 failed, 0 skipped.
+python3 tools/planning/tasks.py validate: validated all 101 tasks.
+git diff --check: passed.
+No existing foundation fixture/golden/checker/runtime/project/package/solution
+source was modified. Changed paths are restricted to task ownership.
+
+Earlier development run: M1 checks passed, then M0 restore failed NU1900 due to
+sandbox NuGet DNS. The final committed-revision run above reran it successfully
+with network access. Historical reports were not rewritten.
+
+Limits: no runtime XML parser/decoder/tree/serializer was implemented/executed;
+no new allocation/timing/native/corpus matrix or cross-architecture performance
+claims. Declaration bodies are nonpackaged fixtures only. Actual borrowed
+lifetime, strict XML behavior, construction/output vectors and allocation budgets
+must be verified by each runtime lane. Coordinator must integrate and rerun
+checks before marking verified. Full raw output: artifacts/M1-contracts/checks.txt
+(ignored; durable counts and limitations are recorded here and in task JSON).

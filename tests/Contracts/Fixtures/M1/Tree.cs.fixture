@@ -1,0 +1,122 @@
+// Exact declaration model only; never packaged or executed as a tree implementation.
+namespace Xemele;
+public enum XmlNodeKind { Document, Element, Text, CData, Comment, ProcessingInstruction, Fragment }
+public sealed partial class XmlDocument
+{
+    public XmlDocument() { }
+    public XmlDocument(XmlResourceLimits limits) { }
+    public XmlNode DocumentNode => throw new InvalidOperationException("Declaration model");
+    public XmlNode RootElement => throw new InvalidOperationException("Declaration model");
+    public XmlNode CreateElement(string localName, string? namespaceUri = null, string? prefix = null) => throw new InvalidOperationException("Declaration model");
+    public XmlNode CreateText(string value) => throw new InvalidOperationException("Declaration model");
+    public XmlNode CreateComment(string value) => throw new InvalidOperationException("Declaration model");
+    public XmlNode CreateCData(string value) => throw new InvalidOperationException("Declaration model");
+    public XmlNode CreateProcessingInstruction(string target, string data) => throw new InvalidOperationException("Declaration model");
+    public XmlNode CreateFragment() => throw new InvalidOperationException("Declaration model");
+    public XmlNode ImportNode(XmlNode source, bool deep = true) => throw new InvalidOperationException("Declaration model");
+    internal long MutationVersion => throw new InvalidOperationException("Declaration model");
+    // Optional index hooks are erased until an ordered owning extension supplies a body.
+    partial void OnMutationCommitted(in XmlTreeMutation mutation);
+    internal void NotifyMutation(in XmlTreeMutation mutation) => OnMutationCommitted(in mutation);
+}
+internal enum XmlTreeMutationKind { Insert, Remove, AttributeInsert, AttributeRemove, NamespaceInsert, NamespaceRemove, Value, Name }
+internal readonly record struct XmlTreeMutation(XmlTreeMutationKind Kind, XmlNode Node, XmlNode OldParent, XmlNode NewParent, XmlAttribute Attribute, XmlNamespaceDeclaration NamespaceDeclaration);
+public readonly struct XmlNode : IEquatable<XmlNode>
+{
+    public bool IsDefault => throw new InvalidOperationException("Declaration model");
+    public XmlDocument OwnerDocument => throw new InvalidOperationException("Declaration model");
+    public XmlNodeKind Kind => throw new InvalidOperationException("Declaration model");
+    public string LocalName => throw new InvalidOperationException("Declaration model");
+    public string NamespaceUri => throw new InvalidOperationException("Declaration model");
+    public string Prefix => throw new InvalidOperationException("Declaration model");
+    public string Value { get => throw new InvalidOperationException("Declaration model"); set => throw new InvalidOperationException("Declaration model"); }
+    public XmlNode Parent => throw new InvalidOperationException("Declaration model");
+    public XmlNode FirstChild => throw new InvalidOperationException("Declaration model");
+    public XmlNode LastChild => throw new InvalidOperationException("Declaration model");
+    public XmlNode PreviousSibling => throw new InvalidOperationException("Declaration model");
+    public XmlNode NextSibling => throw new InvalidOperationException("Declaration model");
+    public XmlNodeChildren Children => throw new InvalidOperationException("Declaration model");
+    public XmlAttributes Attributes => throw new InvalidOperationException("Declaration model");
+    public XmlNamespaceDeclarations NamespaceDeclarations => throw new InvalidOperationException("Declaration model");
+    public string GetTextContent() => throw new InvalidOperationException("Declaration model");
+    public void SetTextContent(string value) => throw new InvalidOperationException("Declaration model");
+    public string? GetAttribute(string localName, string? namespaceUri = null) => throw new InvalidOperationException("Declaration model");
+    public XmlAttribute SetAttribute(string localName, string value, string? namespaceUri = null, string? prefix = null) => throw new InvalidOperationException("Declaration model");
+    public bool RemoveAttribute(string localName, string? namespaceUri = null) => throw new InvalidOperationException("Declaration model");
+    public XmlNamespaceDeclaration SetNamespaceDeclaration(string prefix, string namespaceUri) => throw new InvalidOperationException("Declaration model");
+    public bool RemoveNamespaceDeclaration(string prefix) => throw new InvalidOperationException("Declaration model");
+    public void AppendChild(XmlNode child) => throw new InvalidOperationException("Declaration model");
+    public void InsertBefore(XmlNode child, XmlNode referenceChild) => throw new InvalidOperationException("Declaration model");
+    public void Remove() => throw new InvalidOperationException("Declaration model");
+    public XmlNode Clone(bool deep = true) => throw new InvalidOperationException("Declaration model");
+    public bool Equals(XmlNode other) => throw new InvalidOperationException("Declaration model");
+    public override bool Equals(object? other) => throw new InvalidOperationException("Declaration model");
+    public override int GetHashCode() => throw new InvalidOperationException("Declaration model");
+    public static bool operator ==(XmlNode left, XmlNode right) => left.Equals(right);
+    public static bool operator !=(XmlNode left, XmlNode right) => !left.Equals(right);
+}
+public readonly struct XmlAttribute : IEquatable<XmlAttribute>
+{
+    public bool IsDefault => throw new InvalidOperationException("Declaration model");
+    public XmlDocument OwnerDocument => throw new InvalidOperationException("Declaration model");
+    public XmlNode OwnerElement => throw new InvalidOperationException("Declaration model");
+    public bool IsAttached => throw new InvalidOperationException("Declaration model");
+    public string LocalName => throw new InvalidOperationException("Declaration model");
+    public string NamespaceUri => throw new InvalidOperationException("Declaration model");
+    public string Prefix => throw new InvalidOperationException("Declaration model");
+    public string Value { get => throw new InvalidOperationException("Declaration model"); set => throw new InvalidOperationException("Declaration model"); }
+    public void Remove() => throw new InvalidOperationException("Declaration model");
+    public bool Equals(XmlAttribute other) => throw new InvalidOperationException("Declaration model");
+    public override bool Equals(object? other) => throw new InvalidOperationException("Declaration model");
+    public override int GetHashCode() => throw new InvalidOperationException("Declaration model");
+    public static bool operator ==(XmlAttribute left, XmlAttribute right) => left.Equals(right);
+    public static bool operator !=(XmlAttribute left, XmlAttribute right) => !left.Equals(right);
+}
+public readonly struct XmlNamespaceDeclaration : IEquatable<XmlNamespaceDeclaration>
+{
+    public bool IsDefault => throw new InvalidOperationException("Declaration model");
+    public XmlDocument OwnerDocument => throw new InvalidOperationException("Declaration model");
+    public XmlNode OwnerElement => throw new InvalidOperationException("Declaration model");
+    public bool IsAttached => throw new InvalidOperationException("Declaration model");
+    public string Prefix => throw new InvalidOperationException("Declaration model");
+    public string Value { get => throw new InvalidOperationException("Declaration model"); set => throw new InvalidOperationException("Declaration model"); }
+    public void Remove() => throw new InvalidOperationException("Declaration model");
+    public bool Equals(XmlNamespaceDeclaration other) => throw new InvalidOperationException("Declaration model");
+    public override bool Equals(object? other) => throw new InvalidOperationException("Declaration model");
+    public override int GetHashCode() => throw new InvalidOperationException("Declaration model");
+    public static bool operator ==(XmlNamespaceDeclaration left, XmlNamespaceDeclaration right) => left.Equals(right);
+    public static bool operator !=(XmlNamespaceDeclaration left, XmlNamespaceDeclaration right) => !left.Equals(right);
+}
+public readonly struct XmlNodeChildren
+{
+    public int Count => throw new InvalidOperationException("Declaration model");
+    public XmlNode this[int index] => throw new InvalidOperationException("Declaration model");
+    public Enumerator GetEnumerator() => throw new InvalidOperationException("Declaration model");
+    public struct Enumerator
+    {
+        public XmlNode Current => throw new InvalidOperationException("Declaration model");
+        public bool MoveNext() => throw new InvalidOperationException("Declaration model");
+    }
+}
+public readonly struct XmlAttributes
+{
+    public int Count => throw new InvalidOperationException("Declaration model");
+    public XmlAttribute this[int index] => throw new InvalidOperationException("Declaration model");
+    public Enumerator GetEnumerator() => throw new InvalidOperationException("Declaration model");
+    public struct Enumerator
+    {
+        public XmlAttribute Current => throw new InvalidOperationException("Declaration model");
+        public bool MoveNext() => throw new InvalidOperationException("Declaration model");
+    }
+}
+public readonly struct XmlNamespaceDeclarations
+{
+    public int Count => throw new InvalidOperationException("Declaration model");
+    public XmlNamespaceDeclaration this[int index] => throw new InvalidOperationException("Declaration model");
+    public Enumerator GetEnumerator() => throw new InvalidOperationException("Declaration model");
+    public struct Enumerator
+    {
+        public XmlNamespaceDeclaration Current => throw new InvalidOperationException("Declaration model");
+        public bool MoveNext() => throw new InvalidOperationException("Declaration model");
+    }
+}

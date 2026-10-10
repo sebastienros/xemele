@@ -1,0 +1,145 @@
+[
+  {
+    "id": "mixed-utf8",
+    "actions": [
+      [
+        "element",
+        "r"
+      ],
+      [
+        "attribute",
+        "id",
+        "7"
+      ],
+      [
+        "text",
+        "a&b"
+      ]
+    ],
+    "options": {},
+    "string": "<?xml version=\"1.0\"?><r id=\"7\">a&amp;b</r>",
+    "byteText": "<?xml version=\"1.0\" encoding=\"utf-8\"?><r id=\"7\">a&amp;b</r>",
+    "encoding": "utf-8",
+    "bomHex": "",
+    "expectedHex": "3c3f786d6c2076657273696f6e3d22312e302220656e636f64696e673d227574662d38223f3e3c722069643d2237223e6126616d703b623c2f723e"
+  },
+  {
+    "id": "namespace-strict",
+    "actions": [
+      [
+        "element",
+        "r",
+        "urn:r",
+        "p"
+      ],
+      [
+        "namespace",
+        "p",
+        "urn:r"
+      ],
+      [
+        "attribute",
+        "id",
+        "7"
+      ]
+    ],
+    "options": {
+      "OmitXmlDeclaration": true
+    },
+    "string": "<p:r xmlns:p=\"urn:r\" id=\"7\"/>",
+    "byteText": "<p:r xmlns:p=\"urn:r\" id=\"7\"/>",
+    "encoding": "utf-8",
+    "bomHex": "",
+    "expectedHex": "3c703a7220786d6c6e733a703d2275726e3a72222069643d2237222f3e"
+  },
+  {
+    "id": "repair-attribute",
+    "actions": [
+      [
+        "element",
+        "r"
+      ],
+      [
+        "attribute",
+        "id",
+        "7",
+        "urn:a",
+        ""
+      ]
+    ],
+    "options": {
+      "OmitXmlDeclaration": true,
+      "NamespaceHandling": "Repair"
+    },
+    "string": "<r xmlns:ns1=\"urn:a\" ns1:id=\"7\"/>",
+    "byteText": "<r xmlns:ns1=\"urn:a\" ns1:id=\"7\"/>",
+    "encoding": "utf-8",
+    "bomHex": "",
+    "expectedHex": "3c7220786d6c6e733a6e73313d2275726e3a6122206e73313a69643d2237222f3e"
+  },
+  {
+    "id": "utf16le-bom",
+    "actions": [
+      [
+        "element",
+        "r"
+      ],
+      [
+        "text",
+        "🙂"
+      ]
+    ],
+    "options": {
+      "EmitByteOrderMark": true,
+      "Encoding": "utf-16le"
+    },
+    "string": "<?xml version=\"1.0\"?><r>🙂</r>",
+    "byteText": "<?xml version=\"1.0\" encoding=\"utf-16le\"?><r>🙂</r>",
+    "encoding": "utf-16le",
+    "bomHex": "fffe",
+    "expectedHex": "fffe3c003f0078006d006c002000760065007200730069006f006e003d00220031002e0030002200200065006e0063006f00640069006e0067003d0022007500740066002d00310036006c00650022003f003e003c0072003e003dd842de3c002f0072003e00"
+  },
+  {
+    "id": "utf16be-no-bom",
+    "actions": [
+      [
+        "element",
+        "r"
+      ]
+    ],
+    "options": {
+      "Encoding": "utf-16be"
+    },
+    "string": "<?xml version=\"1.0\"?><r/>",
+    "byteText": "<?xml version=\"1.0\" encoding=\"utf-16be\"?><r/>",
+    "encoding": "utf-16be",
+    "bomHex": "",
+    "expectedHex": "003c003f0078006d006c002000760065007200730069006f006e003d00220031002e0030002200200065006e0063006f00640069006e0067003d0022007500740066002d00310036006200650022003f003e003c0072002f003e"
+  },
+  {
+    "id": "attribute-controls",
+    "actions": [
+      [
+        "element",
+        "r"
+      ],
+      [
+        "attribute",
+        "a",
+        "\t\n\r\"&<"
+      ],
+      [
+        "text",
+        "\r"
+      ]
+    ],
+    "options": {
+      "OmitXmlDeclaration": true
+    },
+    "string": "<r a=\"&#x9;&#xA;&#xD;&quot;&amp;&lt;\">&#xD;</r>",
+    "byteText": "<r a=\"&#x9;&#xA;&#xD;&quot;&amp;&lt;\">&#xD;</r>",
+    "encoding": "utf-8",
+    "bomHex": "",
+    "expectedHex": "3c7220613d22262378393b262378413b262378443b2671756f743b26616d703b266c743b223e262378443b3c2f723e"
+  }
+]

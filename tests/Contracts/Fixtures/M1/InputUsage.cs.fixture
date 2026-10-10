@@ -1,0 +1,20 @@
+using Xemele.Parsing.Input;
+namespace M1Usage;
+internal static class InputUsage
+{
+    internal static DecodeResult Use(IXmlInputDecoder decoder, ReadOnlySpan<byte> source, Span<char> scratch, Span<long> offsets, CancellationToken token)
+    {
+        var result = decoder.Decode(source, scratch, offsets, true, token);
+        _ = decoder.ValidateDeclaration("utf-8", new(null, 1, 1, 0));
+        return result;
+    }
+}
+// Separately compiling implementation proves that input requires common only.
+internal sealed class DecoderImplementation : IXmlInputDecoder
+{
+    public XmlInputEncoding Encoding => XmlInputEncoding.Utf8;
+    public DecodeResult Decode(ReadOnlySpan<byte> input, Span<char> output, Span<long> byteOffsets, bool isFinalBlock, CancellationToken cancellationToken)
+        => throw new InvalidOperationException("Implementation shape only");
+    public Xemele.XmlDiagnostic? ValidateDeclaration(ReadOnlySpan<char> encodingName, Xemele.XmlLocation location) => null;
+    public void Dispose() { }
+}

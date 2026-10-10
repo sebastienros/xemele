@@ -1,0 +1,27 @@
+namespace M1Usage;
+internal static class TreeUsage
+{
+    internal static void Use()
+    {
+        var document = new Xemele.XmlDocument();
+        var root = document.CreateElement("r", "urn:r", "p");
+        document.DocumentNode.AppendChild(root);
+        var ns = root.SetNamespaceDeclaration("p", "urn:r");
+        var attribute = root.SetAttribute("id", "7");
+        attribute.Value = "8";
+        root.AppendChild(document.CreateText("x"));
+        root.AppendChild(document.CreateCData("y"));
+        root.AppendChild(document.CreateComment("z"));
+        root.InsertBefore(document.CreateProcessingInstruction("t", "data"), root.FirstChild);
+        var fragment = document.CreateFragment();
+        fragment.AppendChild(document.CreateElement("child"));
+        root.AppendChild(fragment);
+        foreach (var child in root.Children) { _ = child.Kind; _ = child.Parent == root; }
+        foreach (var a in root.Attributes) { _ = a.OwnerElement; _ = a.LocalName; }
+        foreach (var n in root.NamespaceDeclarations) { _ = n.Prefix; _ = n.Value; }
+        _ = root.GetAttribute("id"); _ = root.GetTextContent();
+        _ = document.ImportNode(root.Clone(), deep: false);
+        _ = default(Xemele.XmlNode).IsDefault;
+        root.RemoveAttribute("id"); ns.Remove(); root.Remove();
+    }
+}
