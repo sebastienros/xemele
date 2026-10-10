@@ -4,11 +4,11 @@
   "milestone": "M2",
   "title": "Immutable DTD declarations and particle model",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M2-dtd-model",
   "branch": "codex/m2-dtd-model",
   "base_revision": "8af65f385654c382f201e1ad8c32f9be2cc3bb87",
-  "integration_revision": null,
+  "integration_revision": "13010875c21e7c161ec180375019ee3c5ff61f59",
   "depends_on": [
     "M2-contracts",
     "M2-resolver-allocation-probe"
@@ -38,7 +38,8 @@
         "independent-inventory-lifetime",
         "independent-source-review",
         "renewed-source-preservation",
-        "renewed-model"
+        "renewed-model",
+        "integrated-model-checks"
       ]
     },
     {
@@ -56,7 +57,8 @@
         "renewed-source-preservation",
         "renewed-model",
         "renewed-combined-preservation",
-        "renewed-planning-audits"
+        "renewed-planning-audits",
+        "integrated-model-checks"
       ]
     }
   ],
@@ -165,6 +167,15 @@
       "result": "passed",
       "summary": "Planning14/14 and validate118 pass; source committed before check set; all committed/working/staged/untracked paths owned and diff checks pass against renewed mainclaim f9ce78b1e1eb46f6726865c5f435365ab321b23b. Final metadata clean/process audit follows.",
       "artifact": "docs/reports/M2-dtd-model/renewed/summary.json"
+    },
+    {
+      "id": "integrated-model-checks",
+      "kind": "integration",
+      "revision": "13010875c21e7c161ec180375019ee3c5ff61f59",
+      "command": "python3 -B docs/reports/M2-dtd-model/verify.py --report-prefix integration-1301087-attempt1 --expected-branch codex/integrate-m2-dtd-model --audit-base c347796669e94617f4fff50f384d4695510e93f4 --runtime-count 306 --task-count 118",
+      "result": "passed",
+      "summary": "Actual focused8/common-only independent11types154rows/lifetime ownership pass; historical contracts/MTP860 and direct306+255+299 allPass/no skips; API251/discovery3388/freshcomplete pinned reference242 currentrevisionhash/unchangedcopy/planning14/validate118/owned audits. Informative persistence280/96/160B per model/particle/attribute constructor, setup11744B separate; no parser/timing/zero-allocation claim.",
+      "artifact": "docs/reports/M2-dtd-model/integration-1301087-attempt1/summary.json"
     }
   ],
   "blockers": [],
@@ -173,11 +184,10 @@
     "checks": [
       "Fresh combined model focused8/8/common-only sample/approved inventory11types154rows/lifetime all pass; model280/particle96/attribute160B per persistence constructor, cold setup11744B separate.",
       "Historical/current fullMTP860/860 and direct306+255+299=860/860 pass, zero skips; API251/discovery3388/fresh242 pinned BCL source+hash unchanged; planning14/validate118/ownedpaths/diffchecks pass.",
-      "Reports docs/reports/M2-dtd-model/renewed/; originalCS2001/Resolver4080B failed evidence remains docs/reports/M2-dtd-model/first/ and task evidence. No retries of unchanged original candidate, peer edits, exclusions or production source deltas."
+      "Reports docs/reports/M2-dtd-model/renewed/; originalCS2001/Resolver4080B failed evidence remains docs/reports/M2-dtd-model/first/ and task evidence. No retries of unchanged original candidate, peer edits, exclusions or production source deltas.",
+      "Coordinator actual integration1301087: full860 MTP/direct and approved inventory/lifetime/reference/planning allPass."
     ],
-    "remaining": [
-      "Coordinator performs integrated combined verification and sets verified/integration_revision only after actual passing integration checks."
-    ],
+    "remaining": [],
     "requests": []
   }
 }
