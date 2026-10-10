@@ -4,11 +4,11 @@
   "milestone": "M1",
   "title": "Verify usable strict XML subset",
   "kind": "gate",
-  "status": "implemented",
+  "status": "verified",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M1-gate",
   "branch": "codex/m1-gate",
   "base_revision": "d87002c9a18bb1c0d4ec106618f813ea37bc57b5",
-  "integration_revision": null,
+  "integration_revision": "8c9bd349ed4156ea0295b5160d87d39434293bb2",
   "depends_on": [
     "M1-corpus",
     "M1-benchmark-class-config",
@@ -39,7 +39,8 @@
       "description": "Verify independently usable parse/mutate/serialize slice with declared subset and safe rejection of unsupported inputs.",
       "status": "passed",
       "evidence": [
-        "strict-xml-checkpoint"
+        "strict-xml-checkpoint",
+        "integrated-strict-xml-checkpoint"
       ]
     },
     {
@@ -47,7 +48,8 @@
       "description": "Run cumulative checks, constructed-tree output and strict round-trip examples at integrated revision.",
       "status": "passed",
       "evidence": [
-        "strict-xml-checkpoint"
+        "strict-xml-checkpoint",
+        "integrated-strict-xml-checkpoint"
       ]
     },
     {
@@ -55,7 +57,8 @@
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
       "status": "passed",
       "evidence": [
-        "strict-xml-checkpoint"
+        "strict-xml-checkpoint",
+        "integrated-strict-xml-checkpoint"
       ]
     }
   ],
@@ -83,19 +86,28 @@
       "result": "passed",
       "summary": "SDK10.0.400/.NET10.0.11/macOSArm64: solution801(247/255/299), owned corpus501, Foundation11 all0fail0skip; Foundation139/173/8 and independently compiled Common/Tree/Input/Syntax/Serializer/Dom models+protocol38 preserved. API222 canonical and independent DOM199/Serializer215 union; discovery3388; build/discovery16, provenance5, planning14 and validation110 passed. 3386 private original resource hashes; all2585 IDs with242 original byte rejections,239 BCL matches+3 exact documented divergences,2343 visible unrun capability gaps. Fresh BCL DLL/SDK hashes/full source revision recorded. Source/fresh isolated NuGet demo identical:8 input forms,mutation/identity,constructed exact output,independent XmlReader oracle,24 encoding saves/reparses,safe unsupported rejection+stream lifetime.16 benchmark classes configured.",
       "artifact": "docs/reports/M1-gate/corrected/summary.json"
+    },
+    {
+      "id": "integrated-strict-xml-checkpoint",
+      "kind": "integration",
+      "revision": "8c9bd349ed4156ea0295b5160d87d39434293bb2",
+      "command": "SDK10.0.400 env; python3 -B docs/reports/M1-gate/verify.py --report-prefix integration --audit-base d34f6944c3f1f0ea1da5f9e6760d3dc46373f730",
+      "result": "passed",
+      "summary": "Integrated verifier exit0 on macOSArm64:801 cumulative(247/255/299),501 corpus subset,11 foundation all0fail0skip; API222/canonical independent union,discovery3388,models/protocol38,build16/provenance5/planning14/validation110;3386 original resources/all2585 case IDs with242 rejections/239matches+3 exact divergences/2343 explicit later gaps. Source/fresh isolated NuGet demo identical,8 inputforms/24 saves/mutation/construction/safe rejection/lifetime;16 class configurations inspected. No production change or new timings; other required release platforms/AOT/fullXML remain later unrun.",
+      "artifact": "docs/reports/M1-gate/integration/summary.json"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "M1 strict XML slice checkpoint implemented using only integrated verified prerequisites; independently usable source/fresh-package parse/mutate/serialize demonstrated. Initial gate helper compile failure preserved and corrected. Runtime unchanged; integration_revision remains null.",
+    "summary": "Verified integrated M1 usable strict XML checkpoint; source/fresh local package independently demonstrate parse/mutate/serialize and safe unsupported rejection.",
     "checks": [
       "At0e8f692 corrected verifier exit0:801 cumulative+501 corpus+11 Foundation all0fail0skip; independentmodels/protocol/API222/discovery3388/bootstrap/build16/provenance5/planning14/validation110 and ownership/diff checks passed.",
       "All2585 corpus IDs/3386 original resource hashes;242 rejections/239 matches+3 exact documented reference divergences/2343 explicit unrun later gaps. Fresh adapter+SDK SHA/source revision in corrected/summary.json.",
       "Source/fresh isolated NuGet consumer byte-identical output:8 factory inputs,mutation and stable identity,constructed exact XML,independent System.Xml semantic oracle,24 encoded saves/reparses and safe rejection/stream-lifetime/cancellation.",
-      "Existing exact0B warm input/syntax/namespace/DOM probes passed in cumulative suite.16 benchmark class annotations inspected; no new timing measurements."
+      "Existing exact0B warm input/syntax/namespace/DOM probes passed in cumulative suite.16 benchmark class annotations inspected; no new timing measurements.",
+      "Root independently reran complete checkpoint at8c9bd349ed4156ea0295b5160d87d39434293bb2; actual801+501+11 all0fail0skip; evidence integration/summary.json."
     ],
     "remaining": [
-      "Coordinator review/integration and checkpoint rerun at integrated revision required before verified.",
       "Existing Arm64 timings remain provisional; Windows/x64/releaseAOT/full XML conformance remain later unrun gates. Historical216B/6000B allocation failures remain unexplained in owning reports."
     ],
     "requests": [
