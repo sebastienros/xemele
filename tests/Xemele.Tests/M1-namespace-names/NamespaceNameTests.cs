@@ -7,6 +7,23 @@ public class NamespaceNameTests
 {
     private static XmlSaveOptions Options(XmlNamespaceHandling handling) => new() { OmitXmlDeclaration = true, NamespaceHandling = handling };
 
+    [Fact]
+    public void WarmContextValidationUsesBorrowedNamesWithoutAllocations()
+    {
+        static void Validate()
+        {
+            for (int i = 0; i < 1000; i++)
+            {
+                TreeValidation.Expanded("xmlns", "", "");
+                TreeValidation.Expanded("xmlns", "urn:a", "p", attribute: true);
+                TreeValidation.Expanded("xmlns", "urn:a", "", attribute: true);
+            }
+        }
+        for (int i = 0; i < 20; i++) Validate();
+        long before = GC.GetAllocatedBytesForCurrentThread(); Validate();
+        Assert.Equal(0, GC.GetAllocatedBytesForCurrentThread() - before);
+    }
+
     // These models are independently accepted by BCL before trusted replay.
     [Theory]
     [InlineData("", "")]
