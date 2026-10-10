@@ -99,7 +99,7 @@ public sealed class DtdParserBudgetTests
         // there to require the subsequent custom scan to observe cancellation.
         ledger.OnName = () => cts.Cancel();
         Assert.Equal(DtdParseStep.NeedInput, p.Append(start + new string('x', 10000) + end[..^1], [], false, cts.Token).Step);
-        Assert.Throws<OperationCanceledException>(() => p.Append(end[^1..], [], true, cts.Token));
+        Assert.Throws<OperationCanceledException>(() => p.Append(end.AsSpan(end.Length - 1), [], true, cts.Token));
         Assert.Throws<InvalidOperationException>(() => p.Append([], [], true, Ct));
     }
     [Fact]
