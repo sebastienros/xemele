@@ -1,0 +1,432 @@
+$ git rev-parse HEAD
+f2088e4b76c835daff21c0226f5dd3884a275b65
+Exit: 0
+
+$ dotnet build tools/ReferenceRunners/Bcl/BclReference.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  ReferenceProtocol -> /Users/sebastienros/.codex/worktrees/3046/xemele/tools/ReferenceRunners/Protocol/bin/Release/net10.0/ReferenceProtocol.dll
+  BclReference -> /Users/sebastienros/.codex/worktrees/3046/xemele/tools/ReferenceRunners/Bcl/bin/Release/net10.0/BclReference.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:00.54
+Exit: 0
+
+$ dotnet build tests/Xemele.Differential.Tests/Xemele.Differential.Tests.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false
+  Determining projects to restore...
+  Restored /Users/sebastienros/.codex/worktrees/3046/xemele/tests/Xemele.Differential.Tests/Xemele.Differential.Tests.csproj (in 175 ms).
+  4 of 5 projects are up-to-date for restore.
+  Xemele -> /Users/sebastienros/.codex/worktrees/3046/xemele/src/Xemele/bin/Release/net10.0/Xemele.dll
+  Xemele.TestUtilities -> /Users/sebastienros/.codex/worktrees/3046/xemele/tests/Xemele.TestUtilities/bin/Release/net10.0/Xemele.TestUtilities.dll
+  ReferenceProtocol -> /Users/sebastienros/.codex/worktrees/3046/xemele/tools/ReferenceRunners/Protocol/bin/Release/net10.0/ReferenceProtocol.dll
+  BclReference -> /Users/sebastienros/.codex/worktrees/3046/xemele/tools/ReferenceRunners/Bcl/bin/Release/net10.0/BclReference.dll
+  Xemele.Differential.Tests -> /Users/sebastienros/.codex/worktrees/3046/xemele/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:01.86
+Exit: 0
+
+11 direct wire cases passed; malformed/oversized requests and oversized response identity recovered; actual metadata/output: wire-responses.jsonl
+
+Invalid raw UTF-8 JSON wire string rejected: no stdout; stderr Invalid UTF-8 protocol input.; exit2. XML payload encoding remains separate.
+
+$ dotnet test --project tests/Xemele.Differential.Tests/Xemele.Differential.Tests.csproj -c Release --no-build --no-restore --no-ansi --no-progress --filter-class Xemele.Differential.Tests.Protocol.ReferenceProtocolTests
+Running tests from /Users/sebastienros/.codex/worktrees/3046/xemele/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll (net10.0|arm64)
+/Users/sebastienros/.codex/worktrees/3046/xemele/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll (net10.0|arm64) passed (4s 884ms)
+
+Test run summary: Passed!
+  total: 51
+  failed: 0
+  succeeded: 51
+  skipped: 0
+  duration: 5s 128ms
+Exit: 0
+
+$ /opt/homebrew/opt/python@3.14/bin/python3.14 -B docs/reports/M0-build/verify.py
+$ git rev-parse HEAD
+f2088e4b76c835daff21c0226f5dd3884a275b65
+Exit: 0
+
+$ dotnet --version
+10.0.400
+Exit: 0
+
+$ dotnet restore Xemele.slnx --disable-build-servers -m:1 -p:UseSharedCompilation=false
+  Determining projects to restore...
+  Restored /Users/sebastienros/.codex/worktrees/3046/xemele/tests/Xemele.Fuzz/Xemele.Fuzz.csproj (in 44 ms).
+  Restored /Users/sebastienros/.codex/worktrees/3046/xemele/tools/CorpusManager/CorpusManager.csproj (in 41 ms).
+  Restored /Users/sebastienros/.codex/worktrees/3046/xemele/src/Xemele.Tool/Xemele.Tool.csproj (in 44 ms).
+  Restored /Users/sebastienros/.codex/worktrees/3046/xemele/tests/Contracts/Contracts.csproj (in 44 ms).
+  Restored /Users/sebastienros/.codex/worktrees/3046/xemele/tests/Xemele.Conformance.Tests/Xemele.Conformance.Tests.csproj (in 142 ms).
+  Restored /Users/sebastienros/.codex/worktrees/3046/xemele/tests/Xemele.Tests/Xemele.Tests.csproj (in 142 ms).
+  Restored /Users/sebastienros/.codex/worktrees/3046/xemele/benchmarks/Xemele.Benchmarks/Xemele.Benchmarks.csproj (in 179 ms).
+  5 of 12 projects are up-to-date for restore.
+Exit: 0
+
+$ dotnet build Xemele.slnx -c Release --no-restore --disable-build-servers -m:1 -p:UseSharedCompilation=false
+  Xemele -> /Users/sebastienros/.codex/worktrees/3046/xemele/src/Xemele/bin/Release/net10.0/Xemele.dll
+  Xemele.Benchmarks -> /Users/sebastienros/.codex/worktrees/3046/xemele/benchmarks/Xemele.Benchmarks/bin/Release/net10.0/Xemele.Benchmarks.dll
+  Xemele.Tool -> /Users/sebastienros/.codex/worktrees/3046/xemele/src/Xemele.Tool/bin/Release/net10.0/Xemele.Tool.dll
+  Contracts -> /Users/sebastienros/.codex/worktrees/3046/xemele/tests/Contracts/bin/Release/net10.0/Contracts.dll
+  Xemele.TestUtilities -> /Users/sebastienros/.codex/worktrees/3046/xemele/tests/Xemele.TestUtilities/bin/Release/net10.0/Xemele.TestUtilities.dll
+  Xemele.Conformance.Tests -> /Users/sebastienros/.codex/worktrees/3046/xemele/tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll
+  ReferenceProtocol -> /Users/sebastienros/.codex/worktrees/3046/xemele/tools/ReferenceRunners/Protocol/bin/Debug/net10.0/ReferenceProtocol.dll
+  BclReference -> /Users/sebastienros/.codex/worktrees/3046/xemele/tools/ReferenceRunners/Bcl/bin/Release/net10.0/BclReference.dll
+  Xemele.Differential.Tests -> /Users/sebastienros/.codex/worktrees/3046/xemele/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll
+  Xemele.Fuzz -> /Users/sebastienros/.codex/worktrees/3046/xemele/tests/Xemele.Fuzz/bin/Release/net10.0/Xemele.Fuzz.dll
+  Xemele.Tests -> /Users/sebastienros/.codex/worktrees/3046/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll
+  CorpusManager -> /Users/sebastienros/.codex/worktrees/3046/xemele/tools/CorpusManager/bin/Release/net10.0/CorpusManager.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:06.92
+Exit: 0
+
+$ /opt/homebrew/opt/python@3.14/bin/python3.14 -B docs/reports/M0-tests-mtp/check_runner.py
+$ git rev-parse HEAD
+f2088e4b76c835daff21c0226f5dd3884a275b65
+Exit: 0
+
+$ dotnet test --project tests/Xemele.Tests/Xemele.Tests.csproj -c Release --no-build --no-restore --no-ansi --no-progress --list-tests
+Discovering tests from /Users/sebastienros/.codex/worktrees/3046/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll (net10.0|arm64)
+
+Discovered 1 tests in assembly - /Users/sebastienros/.codex/worktrees/3046/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll (net10.0|arm64)
+  Xemele.Tests.Infrastructure.MtpRunnerSmokeTests.RunnerExecutesAndPropagatesControlledFailure
+
+Discovered 1 tests.
+
+Exit: 0
+
+$ dotnet test --project tests/Xemele.Conformance.Tests/Xemele.Conformance.Tests.csproj -c Release --no-build --no-restore --no-ansi --no-progress --list-tests
+Discovering tests from /Users/sebastienros/.codex/worktrees/3046/xemele/tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll (net10.0|arm64)
+
+Discovered 1 tests in assembly - /Users/sebastienros/.codex/worktrees/3046/xemele/tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll (net10.0|arm64)
+  Xemele.Conformance.Tests.Infrastructure.MtpRunnerSmokeTests.RunnerExecutesAndPropagatesControlledFailure
+
+Discovered 1 tests.
+
+Exit: 0
+
+$ dotnet test --project tests/Xemele.Differential.Tests/Xemele.Differential.Tests.csproj -c Release --no-build --no-restore --no-ansi --no-progress --list-tests
+Discovering tests from /Users/sebastienros/.codex/worktrees/3046/xemele/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll (net10.0|arm64)
+
+Discovered 52 tests in assembly - /Users/sebastienros/.codex/worktrees/3046/xemele/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll (net10.0|arm64)
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.NormalizesExpandedNamesAttributesTextAndEmptyElements
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.CategorizesParseAndProtocolFailures(xml: "<r>", operation: "xml.events", version: 1, expected: "parse-rejected")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.CategorizesParseAndProtocolFailures(xml: "<r>&MaxCharactersFromEntities;</r>", operation: "xml.events", version: 1, expected: "parse-rejected")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.CategorizesParseAndProtocolFailures(xml: "<r>&MaxCharactersInDocument;</r>", operation: "xml.events", version: 1, expected: "parse-rejected")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.CategorizesParseAndProtocolFailures(xml: "<r/>", operation: "unknown", version: 1, expected: "runner-failure")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.CategorizesParseAndProtocolFailures(xml: "<r/>", operation: "xml.events", version: 2, expected: "runner-failure")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.UsesOnlyOfflineResources(scheme: "https")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.UsesOnlyOfflineResources(scheme: "file")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.ActualChildFailuresAreInfrastructureFailures(mode: "exit")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.ActualChildFailuresAreInfrastructureFailures(mode: "text-namespace")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.ActualChildFailuresAreInfrastructureFailures(mode: "start-value")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.ActualChildFailuresAreInfrastructureFailures(mode: "end-attributes")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.ActualChildFailuresAreInfrastructureFailures(mode: "end-missing-namespace")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.ActualChildFailuresAreInfrastructureFailures(mode: "text-value-number")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.ActualChildFailuresAreInfrastructureFailures(mode: "text-missing-value")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.ActualChildFailuresAreInfrastructureFailures(mode: "attribute-value-number")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.ActualChildFailuresAreInfrastructureFailures(mode: "attribute-missing-value")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.ActualChildFailuresAreInfrastructureFailures(mode: "attribute-number")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.ActualChildFailuresAreInfrastructureFailures(mode: "start-attributes-missing")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.ActualChildFailuresAreInfrastructureFailures(mode: "start-name-number")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.ActualChildFailuresAreInfrastructureFailures(mode: "start-namespace-null")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.ActualChildFailuresAreInfrastructureFailures(mode: "start-missing-names")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.ActualChildFailuresAreInfrastructureFailures(mode: "event-number")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.ActualChildFailuresAreInfrastructureFailures(mode: "diagnostic-category-null")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.ActualChildFailuresAreInfrastructureFailures(mode: "diagnostic-message-number")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.ActualChildFailuresAreInfrastructureFailures(mode: "diagnostic-missing-category")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.ActualChildFailuresAreInfrastructureFailures(mode: "diagnostic-number")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.ActualChildFailuresAreInfrastructureFailures(mode: "version-exponent")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.ActualChildFailuresAreInfrastructureFailures(mode: "version-overflow")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.ActualChildFailuresAreInfrastructureFailures(mode: "sleep")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.ActualChildFailuresAreInfrastructureFailures(mode: "stderr-flood")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.ActualChildFailuresAreInfrastructureFailures(mode: "flood")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.ActualChildFailuresAreInfrastructureFailures(mode: "identity")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.ActualChildFailuresAreInfrastructureFailures(mode: "unterminated")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.ActualChildFailuresAreInfrastructureFailures(mode: "extra-line")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.ActualChildFailuresAreInfrastructureFailures(mode: "invalid-utf8-json-string")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.ActualChildFailuresAreInfrastructureFailures(mode: "invalid-utf8")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.ActualChildFailuresAreInfrastructureFailures(mode: "invalid")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.ActualChildFailuresAreInfrastructureFailures(mode: "unknown-kind")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.ActualChildFailuresAreInfrastructureFailures(mode: "failure-events")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.UnknownAdditiveFieldsAndExplicitEmptyValuesRemainValid
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.OtherOperationsRequireExplicitPayloadValidator
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.CancellationPropagatesAfterChildCleanup
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.BuildConfigurationIsPortable(path: "C:\\repo\\bin\\Release\\net10.0\\", expected: "Release")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.BuildConfigurationIsPortable(path: "/repo/bin/Release/net10.0/", expected: "Release")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.BuildConfigurationIsPortable(path: "C:\\repo\\bin\\Debug\\net10.0\\", expected: "Debug")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.BuildConfigurationIsPortable(path: "/repo/bin/Debug/net10.0/", expected: "Debug")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.MalformedUtf8IsParseRejection(hint: null)
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.MalformedUtf8IsParseRejection(hint: "utf-8")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.EntityQuotaIsInfrastructureLimit(count: 262, outcome: "success")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.EntityQuotaIsInfrastructureLimit(count: 263, outcome: "runner-failure")
+  Xemele.Differential.Tests.Infrastructure.MtpRunnerSmokeTests.RunnerExecutesAndPropagatesControlledFailure
+
+Discovered 52 tests.
+
+Exit: 0
+
+$ dotnet test --solution Xemele.slnx -c Release --no-build --no-restore --no-ansi --no-progress --minimum-expected-tests 1 --report-xunit-trx --report-xunit-xml --results-directory /Users/sebastienros/.codex/worktrees/3046/xemele/artifacts/test-results/mtp-8xmi7h90/success
+Running tests from /Users/sebastienros/.codex/worktrees/3046/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll (net10.0|arm64)
+Running tests from /Users/sebastienros/.codex/worktrees/3046/xemele/tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll (net10.0|arm64)
+Running tests from /Users/sebastienros/.codex/worktrees/3046/xemele/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll (net10.0|arm64)
+/Users/sebastienros/.codex/worktrees/3046/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll (net10.0|arm64) passed (335ms)
+/Users/sebastienros/.codex/worktrees/3046/xemele/tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll (net10.0|arm64) passed (325ms)
+/Users/sebastienros/.codex/worktrees/3046/xemele/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll (net10.0|arm64) passed (5s 016ms)
+
+  In process file artifacts produced:
+    - /Users/sebastienros/.codex/worktrees/3046/xemele/artifacts/test-results/mtp-8xmi7h90/success/sebastienros_Mac_2026-10-10_01_36_43.172841.trx
+    - /Users/sebastienros/.codex/worktrees/3046/xemele/artifacts/test-results/mtp-8xmi7h90/success/sebastienros_Mac_2026-10-10_01_36_43.172841.xunit.xml
+    - /Users/sebastienros/.codex/worktrees/3046/xemele/artifacts/test-results/mtp-8xmi7h90/success/sebastienros_Mac_2026-10-10_01_36_43.192437.trx
+    - /Users/sebastienros/.codex/worktrees/3046/xemele/artifacts/test-results/mtp-8xmi7h90/success/sebastienros_Mac_2026-10-10_01_36_43.192437.xunit.xml
+    - /Users/sebastienros/.codex/worktrees/3046/xemele/artifacts/test-results/mtp-8xmi7h90/success/sebastienros_Mac_2026-10-10_01_36_43.210918.trx
+    - /Users/sebastienros/.codex/worktrees/3046/xemele/artifacts/test-results/mtp-8xmi7h90/success/sebastienros_Mac_2026-10-10_01_36_43.210918.xunit.xml
+
+Test run summary: Passed!
+  /Users/sebastienros/.codex/worktrees/3046/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll (net10.0|arm64) passed (335ms)
+  /Users/sebastienros/.codex/worktrees/3046/xemele/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll (net10.0|arm64) passed (5s 016ms)
+  /Users/sebastienros/.codex/worktrees/3046/xemele/tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll (net10.0|arm64) passed (325ms)
+
+  total: 54
+  failed: 0
+  succeeded: 54
+  skipped: 0
+  duration: 5s 193ms
+Exit: 0
+
+Infrastructure tests: 54; product tests: 0. Infrastructure success is not product conformance evidence.
+
+$ dotnet test --project tests/Xemele.Tests/Xemele.Tests.csproj -c Release --no-build --no-restore --no-ansi --no-progress --filter-class Xemele.Tests.Infrastructure.MtpRunnerSmokeTests --environment XEMELE_MTP_SMOKE_FAIL=1 --report-xunit-xml --results-directory /Users/sebastienros/.codex/worktrees/3046/xemele/artifacts/test-results/mtp-8xmi7h90/controlled-failure-Xemele.Tests
+Running tests from /Users/sebastienros/.codex/worktrees/3046/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll (net10.0|arm64)
+failed Xemele.Tests.Infrastructure.MtpRunnerSmokeTests.RunnerExecutesAndPropagatesControlledFailure (4ms)
+  from /Users/sebastienros/.codex/worktrees/3046/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll (net10.0|arm64)
+  Intentional infrastructure failure used to verify the runner exit code.
+    at Xemele.Tests.Infrastructure.MtpRunnerSmokeTests.RunnerExecutesAndPropagatesControlledFailure() in /_/tests/Xemele.Tests/Infrastructure/MtpRunnerSmokeTests.cs:12
+    at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+    at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+/Users/sebastienros/.codex/worktrees/3046/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll (net10.0|arm64) failed with 1 error(s) (289ms)
+Exit code: 2
+
+  In process file artifacts produced:
+    - /Users/sebastienros/.codex/worktrees/3046/xemele/artifacts/test-results/mtp-8xmi7h90/controlled-failure-Xemele.Tests/sebastienros_Mac_2026-10-10_01_36_48.695827.xunit.xml
+
+Test run summary: Failed!
+  total: 1
+  failed: 1
+  succeeded: 0
+  skipped: 0
+  duration: 405ms
+Test run completed with non-success exit code: 2 (see: https://aka.ms/testingplatform/exitcodes)
+Exit: 2
+
+$ dotnet test --project tests/Xemele.Conformance.Tests/Xemele.Conformance.Tests.csproj -c Release --no-build --no-restore --no-ansi --no-progress --filter-class Xemele.Conformance.Tests.Infrastructure.MtpRunnerSmokeTests --environment XEMELE_MTP_SMOKE_FAIL=1 --report-xunit-xml --results-directory /Users/sebastienros/.codex/worktrees/3046/xemele/artifacts/test-results/mtp-8xmi7h90/controlled-failure-Xemele.Conformance.Tests
+Running tests from /Users/sebastienros/.codex/worktrees/3046/xemele/tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll (net10.0|arm64)
+failed Xemele.Conformance.Tests.Infrastructure.MtpRunnerSmokeTests.RunnerExecutesAndPropagatesControlledFailure (4ms)
+  from /Users/sebastienros/.codex/worktrees/3046/xemele/tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll (net10.0|arm64)
+  Intentional infrastructure failure used to verify the runner exit code.
+    at Xemele.Conformance.Tests.Infrastructure.MtpRunnerSmokeTests.RunnerExecutesAndPropagatesControlledFailure() in /_/tests/Xemele.Conformance.Tests/Infrastructure/MtpRunnerSmokeTests.cs:12
+    at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+    at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+/Users/sebastienros/.codex/worktrees/3046/xemele/tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll (net10.0|arm64) failed with 1 error(s) (287ms)
+Exit code: 2
+
+  In process file artifacts produced:
+    - /Users/sebastienros/.codex/worktrees/3046/xemele/artifacts/test-results/mtp-8xmi7h90/controlled-failure-Xemele.Conformance.Tests/sebastienros_Mac_2026-10-10_01_36_49.430187.xunit.xml
+
+Test run summary: Failed!
+  total: 1
+  failed: 1
+  succeeded: 0
+  skipped: 0
+  duration: 419ms
+Test run completed with non-success exit code: 2 (see: https://aka.ms/testingplatform/exitcodes)
+Exit: 2
+
+$ dotnet test --project tests/Xemele.Differential.Tests/Xemele.Differential.Tests.csproj -c Release --no-build --no-restore --no-ansi --no-progress --filter-class Xemele.Differential.Tests.Infrastructure.MtpRunnerSmokeTests --environment XEMELE_MTP_SMOKE_FAIL=1 --report-xunit-xml --results-directory /Users/sebastienros/.codex/worktrees/3046/xemele/artifacts/test-results/mtp-8xmi7h90/controlled-failure-Xemele.Differential.Tests
+Running tests from /Users/sebastienros/.codex/worktrees/3046/xemele/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll (net10.0|arm64)
+failed Xemele.Differential.Tests.Infrastructure.MtpRunnerSmokeTests.RunnerExecutesAndPropagatesControlledFailure (5ms)
+  from /Users/sebastienros/.codex/worktrees/3046/xemele/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll (net10.0|arm64)
+  Intentional infrastructure failure used to verify the runner exit code.
+    at Xemele.Differential.Tests.Infrastructure.MtpRunnerSmokeTests.RunnerExecutesAndPropagatesControlledFailure() in /_/tests/Xemele.Differential.Tests/Infrastructure/MtpRunnerSmokeTests.cs:12
+    at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+    at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+/Users/sebastienros/.codex/worktrees/3046/xemele/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll (net10.0|arm64) failed with 1 error(s) (310ms)
+Exit code: 2
+
+  In process file artifacts produced:
+    - /Users/sebastienros/.codex/worktrees/3046/xemele/artifacts/test-results/mtp-8xmi7h90/controlled-failure-Xemele.Differential.Tests/sebastienros_Mac_2026-10-10_01_36_50.148250.xunit.xml
+
+Test run summary: Failed!
+  total: 1
+  failed: 1
+  succeeded: 0
+  skipped: 0
+  duration: 426ms
+Test run completed with non-success exit code: 2 (see: https://aka.ms/testingplatform/exitcodes)
+Exit: 2
+
+Runner transcript: /Users/sebastienros/.codex/worktrees/3046/xemele/artifacts/test-results/mtp-8xmi7h90/runner-verification.txt
+Exit: 0
+
+$ dotnet run -c Release --no-build --project src/Xemele.Tool -- --help
+Xemele XML/HTML toolkit
+Usage: xemele <command> [options]
+  --help  Show help
+Exit: 0
+
+$ dotnet run -c Release --no-build --project src/Xemele.Tool -- -h
+Xemele XML/HTML toolkit
+Usage: xemele <command> [options]
+  --help  Show help
+Exit: 0
+
+$ dotnet run -c Release --no-build --project src/Xemele.Tool -- help
+Xemele XML/HTML toolkit
+Usage: xemele <command> [options]
+  --help  Show help
+Exit: 0
+
+$ dotnet run -c Release --no-build --project src/Xemele.Tool --
+Xemele XML/HTML toolkit
+Usage: xemele <command> [options]
+  --help  Show help
+Exit: 0
+
+$ dotnet run -c Release --no-build --project tests/Xemele.Fuzz -- --help
+Xemele fuzz harness
+Bootstrap shell: --help is the available command.
+Exit: 0
+
+$ dotnet run -c Release --no-build --project tests/Xemele.Fuzz -- -h
+Xemele fuzz harness
+Bootstrap shell: --help is the available command.
+Exit: 0
+
+$ dotnet run -c Release --no-build --project tests/Xemele.Fuzz -- help
+Xemele fuzz harness
+Bootstrap shell: --help is the available command.
+Exit: 0
+
+$ dotnet run -c Release --no-build --project tests/Xemele.Fuzz --
+Xemele fuzz harness
+Bootstrap shell: --help is the available command.
+Exit: 0
+
+$ dotnet run -c Release --no-build --project benchmarks/Xemele.Benchmarks -- --help
+Xemele benchmarks
+Usage: dotnet run -c Release --project benchmarks/Xemele.Benchmarks -- [BenchmarkDotNet options]
+Benchmark cases are added by feature tasks.
+Exit: 0
+
+$ dotnet run -c Release --no-build --project benchmarks/Xemele.Benchmarks -- -h
+Xemele benchmarks
+Usage: dotnet run -c Release --project benchmarks/Xemele.Benchmarks -- [BenchmarkDotNet options]
+Benchmark cases are added by feature tasks.
+Exit: 0
+
+$ dotnet run -c Release --no-build --project benchmarks/Xemele.Benchmarks -- help
+Xemele benchmarks
+Usage: dotnet run -c Release --project benchmarks/Xemele.Benchmarks -- [BenchmarkDotNet options]
+Benchmark cases are added by feature tasks.
+Exit: 0
+
+$ dotnet run -c Release --no-build --project benchmarks/Xemele.Benchmarks --
+Xemele benchmarks
+Usage: dotnet run -c Release --project benchmarks/Xemele.Benchmarks -- [BenchmarkDotNet options]
+Benchmark cases are added by feature tasks.
+Exit: 0
+
+$ dotnet run -c Release --no-build --project tools/CorpusManager -- --help
+Xemele corpus manager
+Offline corpus infrastructure: import|provision <repository> <profile> [cache-directory]
+Imports pinned local bundles; provisioning uses only verified cached bytes. No parser execution.
+Exit: 0
+
+$ dotnet run -c Release --no-build --project tools/CorpusManager -- -h
+Xemele corpus manager
+Offline corpus infrastructure: import|provision <repository> <profile> [cache-directory]
+Imports pinned local bundles; provisioning uses only verified cached bytes. No parser execution.
+Exit: 0
+
+$ dotnet run -c Release --no-build --project tools/CorpusManager -- help
+Xemele corpus manager
+Offline corpus infrastructure: import|provision <repository> <profile> [cache-directory]
+Imports pinned local bundles; provisioning uses only verified cached bytes. No parser execution.
+Exit: 0
+
+$ dotnet run -c Release --no-build --project tools/CorpusManager --
+Xemele corpus manager
+Offline corpus infrastructure: import|provision <repository> <profile> [cache-directory]
+Imports pinned local bundles; provisioning uses only verified cached bytes. No parser execution.
+Exit: 0
+
+$ dotnet run -c Release --no-build --project src/Xemele.Tool -- unknown
+Unknown command: unknown. Use --help for available commands.
+Exit: 2
+
+$ dotnet run -c Release --no-build --project tests/Xemele.Fuzz -- unknown
+Unknown command. Use --help for available commands.
+Exit: 2
+
+$ dotnet run -c Release --no-build --project tools/CorpusManager -- unknown
+Unknown command or invalid arguments. Use --help for import|provision <repository> <profile> [cache-directory].
+Exit: 2
+
+$ dotnet pack src/Xemele/Xemele.csproj -c Release --no-build --no-restore -o artifacts/M0-tests-mtp/packages --disable-build-servers -m:1 -p:UseSharedCompilation=false
+  The package Xemele.1.0.0 is missing a readme. Go to https://aka.ms/nuget/authoring-best-practices/readme to learn why package readmes are important.
+  Successfully created package '/Users/sebastienros/.codex/worktrees/3046/xemele/artifacts/M0-tests-mtp/packages/Xemele.1.0.0.nupkg'.
+Exit: 0
+
+$ dnx dotnet-inspect -y -- type --library src/Xemele/bin/Release/net10.0/Xemele.dll --count
+0
+Exit: 0
+
+$ python3 tools/planning/tasks.py validate
+Validated 101 tasks: schema, evidence, acyclic dependencies, additive milestones, and ordered ownership.
+Exit: 0
+
+Exit: 0
+
+$ /opt/homebrew/opt/python@3.14/bin/python3.14 -B -m unittest discover -s tests/Xemele.TestUtilities/Build -p 'test_*.py' -v
+test_duplicates_and_conflicts_under_distinct_ids (test_composition.CompositionTests.test_duplicates_and_conflicts_under_distinct_ids) ... ok
+test_empty_requires_explicit_inventory_bootstrap (test_composition.CompositionTests.test_empty_requires_explicit_inventory_bootstrap) ... ok
+test_member_order_and_distinct_id_provenance_without_rewrites (test_composition.CompositionTests.test_member_order_and_distinct_id_provenance_without_rewrites) ... ok
+test_cli_failure_exit_and_explicit_error (test_discovery.DiscoveryTests.test_cli_failure_exit_and_explicit_error) ... ok
+test_distinct_ids_cannot_conflict_on_member (test_discovery.DiscoveryTests.test_distinct_ids_cannot_conflict_on_member) ... ok
+test_duplicate_and_conflicting_ids (test_discovery.DiscoveryTests.test_duplicate_and_conflicting_ids) ... ok
+test_duplicate_corpus_and_fixture (test_discovery.DiscoveryTests.test_duplicate_corpus_and_fixture) ... ok
+test_duplicate_json_fields (test_discovery.DiscoveryTests.test_duplicate_json_fields) ... ok
+test_fixture_traversal (test_discovery.DiscoveryTests.test_fixture_traversal) ... ok
+test_generated_sources_do_not_break_empty_bootstrap (test_discovery.DiscoveryTests.test_generated_sources_do_not_break_empty_bootstrap) ... ok
+test_metadata_schema_and_classification (test_discovery.DiscoveryTests.test_metadata_schema_and_classification) ... ok
+test_missing_baseline (test_discovery.DiscoveryTests.test_missing_baseline) ... ok
+test_missing_fixture_and_checksum (test_discovery.DiscoveryTests.test_missing_fixture_and_checksum) ... ok
+test_noncanonical_unknown_fields_and_unsorted (test_discovery.DiscoveryTests.test_noncanonical_unknown_fields_and_unsorted) ... ok
+test_unknown_and_empty_formats (test_discovery.DiscoveryTests.test_unknown_and_empty_formats) ... ok
+test_valid_fragments_and_fixture (test_discovery.DiscoveryTests.test_valid_fragments_and_fixture) ... ok
+
+----------------------------------------------------------------------
+Ran 16 tests in 0.122s
+
+OK
+Exit: 0
+
+$ /opt/homebrew/opt/python@3.14/bin/python3.14 -B tests/Xemele.TestUtilities/Corpora/verify_bootstrap.py
+{"fixturesVerified": 2, "independentElementTreeCrossCheck": {"accepted": 1, "rejected": 1}, "sourceSha256": "26c425e1a95b3c6e35833b60ca1dd5f9b641269e238bd4de6187983cf3fbf946", "xemeleParserCasesExecuted": 0}
+Exit: 0
+
+$ /opt/homebrew/opt/python@3.14/bin/python3.14 -B tools/planning/tasks.py validate
+Validated 101 tasks: schema, evidence, acyclic dependencies, additive milestones, and ordered ownership.
+Exit: 0
+
+Checks passed at f2088e4b76c835daff21c0226f5dd3884a275b65; reference infrastructure only; no runtime conformance/platform/performance claim.
