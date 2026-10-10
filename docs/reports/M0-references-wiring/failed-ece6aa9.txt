@@ -1,0 +1,291 @@
+$ git rev-parse HEAD
+ece6aa92791c9e01f7234b547787289632a4e993
+Exit: 0
+
+$ dotnet --version
+10.0.400
+Exit: 0
+
+Cleaned 12 solution/reference projects; runner absent before build.
+
+$ /opt/homebrew/opt/python@3.14/bin/python3.14 -B docs/reports/M0-build/verify.py
+$ git rev-parse HEAD
+ece6aa92791c9e01f7234b547787289632a4e993
+Exit: 0
+
+$ dotnet --version
+10.0.400
+Exit: 0
+
+$ dotnet restore Xemele.slnx --disable-build-servers -m:1 -p:UseSharedCompilation=false
+  Determining projects to restore...
+  Restored /Users/sebastienros/.codex/worktrees/77a5/xemele/tests/Contracts/Contracts.csproj (in 48 ms).
+  Restored /Users/sebastienros/.codex/worktrees/77a5/xemele/src/Xemele/Xemele.csproj (in 44 ms).
+  Restored /Users/sebastienros/.codex/worktrees/77a5/xemele/tools/ReferenceRunners/Protocol/ReferenceProtocol.csproj (in 44 ms).
+  Restored /Users/sebastienros/.codex/worktrees/77a5/xemele/tools/CorpusManager/CorpusManager.csproj (in 44 ms).
+  Restored /Users/sebastienros/.codex/worktrees/77a5/xemele/tests/Xemele.Fuzz/Xemele.Fuzz.csproj (in 48 ms).
+  Restored /Users/sebastienros/.codex/worktrees/77a5/xemele/tools/ReferenceRunners/Bcl/BclReference.csproj (in 48 ms).
+  Restored /Users/sebastienros/.codex/worktrees/77a5/xemele/tests/Xemele.TestUtilities/Xemele.TestUtilities.csproj (in 48 ms).
+  Restored /Users/sebastienros/.codex/worktrees/77a5/xemele/src/Xemele.Tool/Xemele.Tool.csproj (in 48 ms).
+  Restored /Users/sebastienros/.codex/worktrees/77a5/xemele/tests/Xemele.Differential.Tests/Xemele.Differential.Tests.csproj (in 140 ms).
+  Restored /Users/sebastienros/.codex/worktrees/77a5/xemele/tests/Xemele.Tests/Xemele.Tests.csproj (in 140 ms).
+  Restored /Users/sebastienros/.codex/worktrees/77a5/xemele/tests/Xemele.Conformance.Tests/Xemele.Conformance.Tests.csproj (in 140 ms).
+  Restored /Users/sebastienros/.codex/worktrees/77a5/xemele/benchmarks/Xemele.Benchmarks/Xemele.Benchmarks.csproj (in 159 ms).
+Exit: 0
+
+$ dotnet build Xemele.slnx -c Release --no-restore --disable-build-servers -m:1 -p:UseSharedCompilation=false
+  Xemele -> /Users/sebastienros/.codex/worktrees/77a5/xemele/src/Xemele/bin/Release/net10.0/Xemele.dll
+  Xemele.Benchmarks -> /Users/sebastienros/.codex/worktrees/77a5/xemele/benchmarks/Xemele.Benchmarks/bin/Release/net10.0/Xemele.Benchmarks.dll
+  Xemele.Tool -> /Users/sebastienros/.codex/worktrees/77a5/xemele/src/Xemele.Tool/bin/Release/net10.0/Xemele.Tool.dll
+  Contracts -> /Users/sebastienros/.codex/worktrees/77a5/xemele/tests/Contracts/bin/Release/net10.0/Contracts.dll
+  Xemele.TestUtilities -> /Users/sebastienros/.codex/worktrees/77a5/xemele/tests/Xemele.TestUtilities/bin/Release/net10.0/Xemele.TestUtilities.dll
+  Xemele.Conformance.Tests -> /Users/sebastienros/.codex/worktrees/77a5/xemele/tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll
+  ReferenceProtocol -> /Users/sebastienros/.codex/worktrees/77a5/xemele/tools/ReferenceRunners/Protocol/bin/Debug/net10.0/ReferenceProtocol.dll
+  BclReference -> /Users/sebastienros/.codex/worktrees/77a5/xemele/tools/ReferenceRunners/Bcl/bin/Debug/net10.0/BclReference.dll
+  Xemele.Differential.Tests -> /Users/sebastienros/.codex/worktrees/77a5/xemele/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll
+  Xemele.Fuzz -> /Users/sebastienros/.codex/worktrees/77a5/xemele/tests/Xemele.Fuzz/bin/Release/net10.0/Xemele.Fuzz.dll
+  Xemele.Tests -> /Users/sebastienros/.codex/worktrees/77a5/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll
+  CorpusManager -> /Users/sebastienros/.codex/worktrees/77a5/xemele/tools/CorpusManager/bin/Release/net10.0/CorpusManager.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:09.29
+Exit: 0
+
+$ /opt/homebrew/opt/python@3.14/bin/python3.14 -B docs/reports/M0-tests-mtp/check_runner.py
+$ git rev-parse HEAD
+ece6aa92791c9e01f7234b547787289632a4e993
+Exit: 0
+
+$ dotnet test --project tests/Xemele.Tests/Xemele.Tests.csproj -c Release --no-build --no-restore --no-ansi --no-progress --list-tests
+Discovering tests from /Users/sebastienros/.codex/worktrees/77a5/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll (net10.0|arm64)
+
+Discovered 1 tests in assembly - /Users/sebastienros/.codex/worktrees/77a5/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll (net10.0|arm64)
+  Xemele.Tests.Infrastructure.MtpRunnerSmokeTests.RunnerExecutesAndPropagatesControlledFailure
+
+Discovered 1 tests.
+
+Exit: 0
+
+$ dotnet test --project tests/Xemele.Conformance.Tests/Xemele.Conformance.Tests.csproj -c Release --no-build --no-restore --no-ansi --no-progress --list-tests
+Discovering tests from /Users/sebastienros/.codex/worktrees/77a5/xemele/tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll (net10.0|arm64)
+
+Discovered 1 tests in assembly - /Users/sebastienros/.codex/worktrees/77a5/xemele/tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll (net10.0|arm64)
+  Xemele.Conformance.Tests.Infrastructure.MtpRunnerSmokeTests.RunnerExecutesAndPropagatesControlledFailure
+
+Discovered 1 tests.
+
+Exit: 0
+
+$ dotnet test --project tests/Xemele.Differential.Tests/Xemele.Differential.Tests.csproj -c Release --no-build --no-restore --no-ansi --no-progress --list-tests
+Discovering tests from /Users/sebastienros/.codex/worktrees/77a5/xemele/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll (net10.0|arm64)
+
+Discovered 52 tests in assembly - /Users/sebastienros/.codex/worktrees/77a5/xemele/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll (net10.0|arm64)
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.NormalizesExpandedNamesAttributesTextAndEmptyElements
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.CategorizesParseAndProtocolFailures(xml: "<r>", operation: "xml.events", version: 1, expected: "parse-rejected")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.CategorizesParseAndProtocolFailures(xml: "<r>&MaxCharactersFromEntities;</r>", operation: "xml.events", version: 1, expected: "parse-rejected")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.CategorizesParseAndProtocolFailures(xml: "<r>&MaxCharactersInDocument;</r>", operation: "xml.events", version: 1, expected: "parse-rejected")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.CategorizesParseAndProtocolFailures(xml: "<r/>", operation: "unknown", version: 1, expected: "runner-failure")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.CategorizesParseAndProtocolFailures(xml: "<r/>", operation: "xml.events", version: 2, expected: "runner-failure")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.UsesOnlyOfflineResources(scheme: "https")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.UsesOnlyOfflineResources(scheme: "file")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.ActualChildFailuresAreInfrastructureFailures(mode: "exit")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.ActualChildFailuresAreInfrastructureFailures(mode: "text-namespace")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.ActualChildFailuresAreInfrastructureFailures(mode: "start-value")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.ActualChildFailuresAreInfrastructureFailures(mode: "end-attributes")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.ActualChildFailuresAreInfrastructureFailures(mode: "end-missing-namespace")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.ActualChildFailuresAreInfrastructureFailures(mode: "text-value-number")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.ActualChildFailuresAreInfrastructureFailures(mode: "text-missing-value")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.ActualChildFailuresAreInfrastructureFailures(mode: "attribute-value-number")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.ActualChildFailuresAreInfrastructureFailures(mode: "attribute-missing-value")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.ActualChildFailuresAreInfrastructureFailures(mode: "attribute-number")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.ActualChildFailuresAreInfrastructureFailures(mode: "start-attributes-missing")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.ActualChildFailuresAreInfrastructureFailures(mode: "start-name-number")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.ActualChildFailuresAreInfrastructureFailures(mode: "start-namespace-null")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.ActualChildFailuresAreInfrastructureFailures(mode: "start-missing-names")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.ActualChildFailuresAreInfrastructureFailures(mode: "event-number")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.ActualChildFailuresAreInfrastructureFailures(mode: "diagnostic-category-null")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.ActualChildFailuresAreInfrastructureFailures(mode: "diagnostic-message-number")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.ActualChildFailuresAreInfrastructureFailures(mode: "diagnostic-missing-category")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.ActualChildFailuresAreInfrastructureFailures(mode: "diagnostic-number")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.ActualChildFailuresAreInfrastructureFailures(mode: "version-exponent")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.ActualChildFailuresAreInfrastructureFailures(mode: "version-overflow")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.ActualChildFailuresAreInfrastructureFailures(mode: "sleep")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.ActualChildFailuresAreInfrastructureFailures(mode: "stderr-flood")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.ActualChildFailuresAreInfrastructureFailures(mode: "flood")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.ActualChildFailuresAreInfrastructureFailures(mode: "identity")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.ActualChildFailuresAreInfrastructureFailures(mode: "unterminated")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.ActualChildFailuresAreInfrastructureFailures(mode: "extra-line")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.ActualChildFailuresAreInfrastructureFailures(mode: "invalid-utf8-json-string")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.ActualChildFailuresAreInfrastructureFailures(mode: "invalid-utf8")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.ActualChildFailuresAreInfrastructureFailures(mode: "invalid")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.ActualChildFailuresAreInfrastructureFailures(mode: "unknown-kind")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.ActualChildFailuresAreInfrastructureFailures(mode: "failure-events")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.UnknownAdditiveFieldsAndExplicitEmptyValuesRemainValid
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.OtherOperationsRequireExplicitPayloadValidator
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.CancellationPropagatesAfterChildCleanup
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.BuildConfigurationIsPortable(path: "C:\\repo\\bin\\Release\\net10.0\\", expected: "Release")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.BuildConfigurationIsPortable(path: "/repo/bin/Release/net10.0/", expected: "Release")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.BuildConfigurationIsPortable(path: "C:\\repo\\bin\\Debug\\net10.0\\", expected: "Debug")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.BuildConfigurationIsPortable(path: "/repo/bin/Debug/net10.0/", expected: "Debug")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.MalformedUtf8IsParseRejection(hint: null)
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.MalformedUtf8IsParseRejection(hint: "utf-8")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.EntityQuotaIsInfrastructureLimit(count: 262, outcome: "success")
+  Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.EntityQuotaIsInfrastructureLimit(count: 263, outcome: "runner-failure")
+  Xemele.Differential.Tests.Infrastructure.MtpRunnerSmokeTests.RunnerExecutesAndPropagatesControlledFailure
+
+Discovered 52 tests.
+
+Exit: 0
+
+$ dotnet test --solution Xemele.slnx -c Release --no-build --no-restore --no-ansi --no-progress --minimum-expected-tests 1 --report-xunit-trx --report-xunit-xml --results-directory /Users/sebastienros/.codex/worktrees/77a5/xemele/artifacts/test-results/mtp-z3a15z7q/success
+Running tests from /Users/sebastienros/.codex/worktrees/77a5/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll (net10.0|arm64)
+Running tests from /Users/sebastienros/.codex/worktrees/77a5/xemele/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll (net10.0|arm64)
+Running tests from /Users/sebastienros/.codex/worktrees/77a5/xemele/tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll (net10.0|arm64)
+/Users/sebastienros/.codex/worktrees/77a5/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll (net10.0|arm64) passed (335ms)
+/Users/sebastienros/.codex/worktrees/77a5/xemele/tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll (net10.0|arm64) passed (317ms)
+failed Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.MalformedUtf8IsParseRejection(hint: "utf-8") (195ms)
+  from /Users/sebastienros/.codex/worktrees/77a5/xemele/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll (net10.0|arm64)
+  Xunit.MicrosoftTestingPlatform.XunitException: Xemele.TestUtilities.References.ReferenceFailureException : Child exit 1: Could not execute because the specified command or file was not found.
+  
+    at Xemele.TestUtilities.References.ReferenceProcess.ExecuteAsync(String executable, IEnumerable`1 arguments, String request, TimeSpan timeout, CancellationToken cancellationToken, Func`2 validateSuccessPayload) in /_/tests/Xemele.TestUtilities/References/ReferenceProcess.cs:50
+    at Xemele.TestUtilities.References.ReferenceProcess.ExecuteAsync(String executable, IEnumerable`1 arguments, String request, TimeSpan timeout, CancellationToken cancellationToken, Func`2 validateSuccessPayload)
+    at Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.MalformedUtf8IsParseRejection(String hint) in /_/tests/Xemele.Differential.Tests/Protocol/ReferenceProtocolTests.cs:175
+    --- End of stack trace from previous location ---
+failed Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.MalformedUtf8IsParseRejection(hint: null) (101ms)
+  from /Users/sebastienros/.codex/worktrees/77a5/xemele/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll (net10.0|arm64)
+  Xunit.MicrosoftTestingPlatform.XunitException: Xemele.TestUtilities.References.ReferenceFailureException : Child exit 1: Could not execute because the specified command or file was not found.
+  
+    at Xemele.TestUtilities.References.ReferenceProcess.ExecuteAsync(String executable, IEnumerable`1 arguments, String request, TimeSpan timeout, CancellationToken cancellationToken, Func`2 validateSuccessPayload) in /_/tests/Xemele.TestUtilities/References/ReferenceProcess.cs:50
+    at Xemele.TestUtilities.References.ReferenceProcess.ExecuteAsync(String executable, IEnumerable`1 arguments, String request, TimeSpan timeout, CancellationToken cancellationToken, Func`2 validateSuccessPayload)
+    at Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.MalformedUtf8IsParseRejection(String hint) in /_/tests/Xemele.Differential.Tests/Protocol/ReferenceProtocolTests.cs:175
+    --- End of stack trace from previous location ---
+failed Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.EntityQuotaIsInfrastructureLimit(count: 263, outcome: "runner-failure") (107ms)
+  from /Users/sebastienros/.codex/worktrees/77a5/xemele/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll (net10.0|arm64)
+  Xunit.MicrosoftTestingPlatform.XunitException: Xemele.TestUtilities.References.ReferenceFailureException : Child exit 1: Could not execute because the specified command or file was not found.
+  
+    at Xemele.TestUtilities.References.ReferenceProcess.ExecuteAsync(String executable, IEnumerable`1 arguments, String request, TimeSpan timeout, CancellationToken cancellationToken, Func`2 validateSuccessPayload) in /_/tests/Xemele.TestUtilities/References/ReferenceProcess.cs:50
+    at Xemele.TestUtilities.References.ReferenceProcess.ExecuteAsync(String executable, IEnumerable`1 arguments, String request, TimeSpan timeout, CancellationToken cancellationToken, Func`2 validateSuccessPayload)
+    at Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.EntityQuotaIsInfrastructureLimit(Int32 count, String outcome) in /_/tests/Xemele.Differential.Tests/Protocol/ReferenceProtocolTests.cs:186
+    --- End of stack trace from previous location ---
+failed Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.EntityQuotaIsInfrastructureLimit(count: 262, outcome: "success") (101ms)
+  from /Users/sebastienros/.codex/worktrees/77a5/xemele/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll (net10.0|arm64)
+  Xunit.MicrosoftTestingPlatform.XunitException: Xemele.TestUtilities.References.ReferenceFailureException : Child exit 1: Could not execute because the specified command or file was not found.
+  
+    at Xemele.TestUtilities.References.ReferenceProcess.ExecuteAsync(String executable, IEnumerable`1 arguments, String request, TimeSpan timeout, CancellationToken cancellationToken, Func`2 validateSuccessPayload) in /_/tests/Xemele.TestUtilities/References/ReferenceProcess.cs:50
+    at Xemele.TestUtilities.References.ReferenceProcess.ExecuteAsync(String executable, IEnumerable`1 arguments, String request, TimeSpan timeout, CancellationToken cancellationToken, Func`2 validateSuccessPayload)
+    at Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.EntityQuotaIsInfrastructureLimit(Int32 count, String outcome) in /_/tests/Xemele.Differential.Tests/Protocol/ReferenceProtocolTests.cs:186
+    --- End of stack trace from previous location ---
+failed Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.CategorizesParseAndProtocolFailures(xml: "<r/>", operation: "xml.events", version: 2, expected: "runner-failure") (100ms)
+  from /Users/sebastienros/.codex/worktrees/77a5/xemele/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll (net10.0|arm64)
+  Xunit.MicrosoftTestingPlatform.XunitException: Xemele.TestUtilities.References.ReferenceFailureException : Child exit 1: Could not execute because the specified command or file was not found.
+  
+    at Xemele.TestUtilities.References.ReferenceProcess.ExecuteAsync(String executable, IEnumerable`1 arguments, String request, TimeSpan timeout, CancellationToken cancellationToken, Func`2 validateSuccessPayload) in /_/tests/Xemele.TestUtilities/References/ReferenceProcess.cs:50
+    at Xemele.TestUtilities.References.ReferenceProcess.ExecuteAsync(String executable, IEnumerable`1 arguments, String request, TimeSpan timeout, CancellationToken cancellationToken, Func`2 validateSuccessPayload)
+    at Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.CategorizesParseAndProtocolFailures(String xml, String operation, Int32 version, String expected) in /_/tests/Xemele.Differential.Tests/Protocol/ReferenceProtocolTests.cs:54
+    --- End of stack trace from previous location ---
+failed Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.CategorizesParseAndProtocolFailures(xml: "<r/>", operation: "unknown", version: 1, expected: "runner-failure") (98ms)
+  from /Users/sebastienros/.codex/worktrees/77a5/xemele/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll (net10.0|arm64)
+  Xunit.MicrosoftTestingPlatform.XunitException: Xemele.TestUtilities.References.ReferenceFailureException : Child exit 1: Could not execute because the specified command or file was not found.
+  
+    at Xemele.TestUtilities.References.ReferenceProcess.ExecuteAsync(String executable, IEnumerable`1 arguments, String request, TimeSpan timeout, CancellationToken cancellationToken, Func`2 validateSuccessPayload) in /_/tests/Xemele.TestUtilities/References/ReferenceProcess.cs:50
+    at Xemele.TestUtilities.References.ReferenceProcess.ExecuteAsync(String executable, IEnumerable`1 arguments, String request, TimeSpan timeout, CancellationToken cancellationToken, Func`2 validateSuccessPayload)
+    at Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.CategorizesParseAndProtocolFailures(String xml, String operation, Int32 version, String expected) in /_/tests/Xemele.Differential.Tests/Protocol/ReferenceProtocolTests.cs:54
+    --- End of stack trace from previous location ---
+failed Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.CategorizesParseAndProtocolFailures(xml: "<r>", operation: "xml.events", version: 1, expected: "parse-rejected") (113ms)
+  from /Users/sebastienros/.codex/worktrees/77a5/xemele/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll (net10.0|arm64)
+  Xunit.MicrosoftTestingPlatform.XunitException: Xemele.TestUtilities.References.ReferenceFailureException : Child exit 1: Could not execute because the specified command or file was not found.
+  
+    at Xemele.TestUtilities.References.ReferenceProcess.ExecuteAsync(String executable, IEnumerable`1 arguments, String request, TimeSpan timeout, CancellationToken cancellationToken, Func`2 validateSuccessPayload) in /_/tests/Xemele.TestUtilities/References/ReferenceProcess.cs:50
+    at Xemele.TestUtilities.References.ReferenceProcess.ExecuteAsync(String executable, IEnumerable`1 arguments, String request, TimeSpan timeout, CancellationToken cancellationToken, Func`2 validateSuccessPayload)
+    at Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.CategorizesParseAndProtocolFailures(String xml, String operation, Int32 version, String expected) in /_/tests/Xemele.Differential.Tests/Protocol/ReferenceProtocolTests.cs:54
+    --- End of stack trace from previous location ---
+failed Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.CategorizesParseAndProtocolFailures(xml: "<r>&MaxCharactersInDocument;</r>", operation: "xml.events", version: 1, expected: "parse-rejected") (105ms)
+  from /Users/sebastienros/.codex/worktrees/77a5/xemele/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll (net10.0|arm64)
+  Xunit.MicrosoftTestingPlatform.XunitException: Xemele.TestUtilities.References.ReferenceFailureException : Child exit 1: Could not execute because the specified command or file was not found.
+  
+    at Xemele.TestUtilities.References.ReferenceProcess.ExecuteAsync(String executable, IEnumerable`1 arguments, String request, TimeSpan timeout, CancellationToken cancellationToken, Func`2 validateSuccessPayload) in /_/tests/Xemele.TestUtilities/References/ReferenceProcess.cs:50
+    at Xemele.TestUtilities.References.ReferenceProcess.ExecuteAsync(String executable, IEnumerable`1 arguments, String request, TimeSpan timeout, CancellationToken cancellationToken, Func`2 validateSuccessPayload)
+    at Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.CategorizesParseAndProtocolFailures(String xml, String operation, Int32 version, String expected) in /_/tests/Xemele.Differential.Tests/Protocol/ReferenceProtocolTests.cs:54
+    --- End of stack trace from previous location ---
+failed Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.CategorizesParseAndProtocolFailures(xml: "<r>&MaxCharactersFromEntities;</r>", operation: "xml.events", version: 1, expected: "parse-rejected") (104ms)
+  from /Users/sebastienros/.codex/worktrees/77a5/xemele/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll (net10.0|arm64)
+  Xunit.MicrosoftTestingPlatform.XunitException: Xemele.TestUtilities.References.ReferenceFailureException : Child exit 1: Could not execute because the specified command or file was not found.
+  
+    at Xemele.TestUtilities.References.ReferenceProcess.ExecuteAsync(String executable, IEnumerable`1 arguments, String request, TimeSpan timeout, CancellationToken cancellationToken, Func`2 validateSuccessPayload) in /_/tests/Xemele.TestUtilities/References/ReferenceProcess.cs:50
+    at Xemele.TestUtilities.References.ReferenceProcess.ExecuteAsync(String executable, IEnumerable`1 arguments, String request, TimeSpan timeout, CancellationToken cancellationToken, Func`2 validateSuccessPayload)
+    at Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.CategorizesParseAndProtocolFailures(String xml, String operation, Int32 version, String expected) in /_/tests/Xemele.Differential.Tests/Protocol/ReferenceProtocolTests.cs:54
+    --- End of stack trace from previous location ---
+failed Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.NormalizesExpandedNamesAttributesTextAndEmptyElements (106ms)
+  from /Users/sebastienros/.codex/worktrees/77a5/xemele/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll (net10.0|arm64)
+  Xunit.MicrosoftTestingPlatform.XunitException: Xemele.TestUtilities.References.ReferenceFailureException : Child exit 1: Could not execute because the specified command or file was not found.
+  
+    at Xemele.TestUtilities.References.ReferenceProcess.ExecuteAsync(String executable, IEnumerable`1 arguments, String request, TimeSpan timeout, CancellationToken cancellationToken, Func`2 validateSuccessPayload) in /_/tests/Xemele.TestUtilities/References/ReferenceProcess.cs:50
+    at Xemele.TestUtilities.References.ReferenceProcess.ExecuteAsync(String executable, IEnumerable`1 arguments, String request, TimeSpan timeout, CancellationToken cancellationToken, Func`2 validateSuccessPayload)
+    at Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.NormalizesExpandedNamesAttributesTextAndEmptyElements() in /_/tests/Xemele.Differential.Tests/Protocol/ReferenceProtocolTests.cs:33
+    --- End of stack trace from previous location ---
+failed Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.UsesOnlyOfflineResources(scheme: "file") (105ms)
+  from /Users/sebastienros/.codex/worktrees/77a5/xemele/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll (net10.0|arm64)
+  Xunit.MicrosoftTestingPlatform.XunitException: Xemele.TestUtilities.References.ReferenceFailureException : Child exit 1: Could not execute because the specified command or file was not found.
+  
+    at Xemele.TestUtilities.References.ReferenceProcess.ExecuteAsync(String executable, IEnumerable`1 arguments, String request, TimeSpan timeout, CancellationToken cancellationToken, Func`2 validateSuccessPayload) in /_/tests/Xemele.TestUtilities/References/ReferenceProcess.cs:50
+    at Xemele.TestUtilities.References.ReferenceProcess.ExecuteAsync(String executable, IEnumerable`1 arguments, String request, TimeSpan timeout, CancellationToken cancellationToken, Func`2 validateSuccessPayload)
+    at Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.UsesOnlyOfflineResources(String scheme) in /_/tests/Xemele.Differential.Tests/Protocol/ReferenceProtocolTests.cs:66
+    --- End of stack trace from previous location ---
+failed Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.UsesOnlyOfflineResources(scheme: "https") (99ms)
+  from /Users/sebastienros/.codex/worktrees/77a5/xemele/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll (net10.0|arm64)
+  Xunit.MicrosoftTestingPlatform.XunitException: Xemele.TestUtilities.References.ReferenceFailureException : Child exit 1: Could not execute because the specified command or file was not found.
+  
+    at Xemele.TestUtilities.References.ReferenceProcess.ExecuteAsync(String executable, IEnumerable`1 arguments, String request, TimeSpan timeout, CancellationToken cancellationToken, Func`2 validateSuccessPayload) in /_/tests/Xemele.TestUtilities/References/ReferenceProcess.cs:50
+    at Xemele.TestUtilities.References.ReferenceProcess.ExecuteAsync(String executable, IEnumerable`1 arguments, String request, TimeSpan timeout, CancellationToken cancellationToken, Func`2 validateSuccessPayload)
+    at Xemele.Differential.Tests.Protocol.ReferenceProtocolTests.UsesOnlyOfflineResources(String scheme) in /_/tests/Xemele.Differential.Tests/Protocol/ReferenceProtocolTests.cs:66
+    --- End of stack trace from previous location ---
+/Users/sebastienros/.codex/worktrees/77a5/xemele/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll (net10.0|arm64) failed with 12 error(s) (4s 997ms)
+Exit code: 2
+
+  In process file artifacts produced:
+    - /Users/sebastienros/.codex/worktrees/77a5/xemele/artifacts/test-results/mtp-z3a15z7q/success/sebastienros_Mac_2026-10-10_01_07_15.616042.trx
+    - /Users/sebastienros/.codex/worktrees/77a5/xemele/artifacts/test-results/mtp-z3a15z7q/success/sebastienros_Mac_2026-10-10_01_07_15.616042.xunit.xml
+    - /Users/sebastienros/.codex/worktrees/77a5/xemele/artifacts/test-results/mtp-z3a15z7q/success/sebastienros_Mac_2026-10-10_01_07_15.634485.trx
+    - /Users/sebastienros/.codex/worktrees/77a5/xemele/artifacts/test-results/mtp-z3a15z7q/success/sebastienros_Mac_2026-10-10_01_07_15.634485.xunit.xml
+    - /Users/sebastienros/.codex/worktrees/77a5/xemele/artifacts/test-results/mtp-z3a15z7q/success/sebastienros_Mac_2026-10-10_01_07_15.625302.trx
+    - /Users/sebastienros/.codex/worktrees/77a5/xemele/artifacts/test-results/mtp-z3a15z7q/success/sebastienros_Mac_2026-10-10_01_07_15.625302.xunit.xml
+
+Test run summary: Failed!
+  /Users/sebastienros/.codex/worktrees/77a5/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll (net10.0|arm64) passed (335ms)
+  /Users/sebastienros/.codex/worktrees/77a5/xemele/tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll (net10.0|arm64) passed (317ms)
+  /Users/sebastienros/.codex/worktrees/77a5/xemele/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll (net10.0|arm64) failed with 12 error(s) (4s 997ms)
+
+  total: 54
+  failed: 12
+  succeeded: 42
+  skipped: 0
+  duration: 5s 123ms
+Test run completed with non-success exit code: 2 (see: https://aka.ms/testingplatform/exitcodes)
+Exit: 2
+
+Runner transcript: /Users/sebastienros/.codex/worktrees/77a5/xemele/artifacts/test-results/mtp-z3a15z7q/runner-verification.txt
+Traceback (most recent call last):
+  File "/Users/sebastienros/.codex/worktrees/77a5/xemele/docs/reports/M0-tests-mtp/check_runner.py", line 78, in <module>
+    main()
+    ~~~~^^
+  File "/Users/sebastienros/.codex/worktrees/77a5/xemele/docs/reports/M0-tests-mtp/check_runner.py", line 45, in main
+    run(command("--solution", "Xemele.slnx") + ["--minimum-expected-tests", "1",
+    ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        "--report-xunit-trx", "--report-xunit-xml", "--results-directory", str(success)])
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sebastienros/.codex/worktrees/77a5/xemele/docs/reports/M0-tests-mtp/check_runner.py", line 26, in run
+    raise RuntimeError(f"Expected exit {expected}, got {result.returncode}: {args}")
+RuntimeError: Expected exit 0, got 2: ['dotnet', 'test', '--solution', 'Xemele.slnx', '-c', 'Release', '--no-build', '--no-restore', '--no-ansi', '--no-progress', '--minimum-expected-tests', '1', '--report-xunit-trx', '--report-xunit-xml', '--results-directory', '/Users/sebastienros/.codex/worktrees/77a5/xemele/artifacts/test-results/mtp-z3a15z7q/success']
+Exit: 1
+
+Traceback (most recent call last):
+  File "/Users/sebastienros/.codex/worktrees/77a5/xemele/docs/reports/M0-build/verify.py", line 28, in <module>
+    run([sys.executable, "-B", "docs/reports/M0-tests-mtp/check_runner.py"])
+    ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sebastienros/.codex/worktrees/77a5/xemele/docs/reports/M0-build/verify.py", line 18, in run
+    raise RuntimeError(f"Expected exit {expected}: {args}")
+RuntimeError: Expected exit 0: ['/opt/homebrew/opt/python@3.14/bin/python3.14', '-B', 'docs/reports/M0-tests-mtp/check_runner.py']
+Exit: 1

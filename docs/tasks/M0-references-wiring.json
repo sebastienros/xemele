@@ -4,7 +4,7 @@
   "milestone": "M0",
   "title": "Build reference runner with differential test suite",
   "kind": "infrastructure",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M0-references-wiring",
   "branch": "codex/m0-references-wiring",
   "base_revision": "d94fb3167cebcfef8f927c580770741441dd6e60",
@@ -27,28 +27,60 @@
     {
       "id": "M0-references-wiring-A1",
       "description": "Add no-output ProjectReference to verified BclReference project so clean ordinary solution build produces the executable before differential protocol tests; do not add reference implementation to runtime package.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "clean-wiring-verification"
+      ]
     },
     {
       "id": "M0-references-wiring-A2",
       "description": "From cleaned generated outputs run normal Release solution build and MTP solution tests without prebuilding runner manually. Real protocol/subprocess tests pass and controlled infrastructure failure checks remain effective.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "clean-wiring-verification"
+      ]
     },
     {
       "id": "M0-references-wiring-A3",
       "description": "Verify preserved bootstrap/help/managed package behavior and actual package graph plus task validation at a full known implementation revision.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "clean-wiring-verification"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "tests/Xemele.Differential.Tests/Xemele.Differential.Tests.csproj: exact no-output BclReference ProjectReference; scoped ShouldUnsetParentConfigurationAndPlatform=false preserves Release configuration for runner outside solution.",
+    "docs/reports/M0-references-wiring/verify.py: cleans actual solution/project-reference bin/obj graph, executes existing ordinary solution/bootstrap/MTP verifier, checks actual XML counts, runner artifacts and runtime restore graph."
+  ],
+  "evidence": [
+    {
+      "id": "initial-clean-failure",
+      "kind": "check",
+      "revision": "ece6aa92791c9e01f7234b547787289632a4e993",
+      "command": "Pinned SDK10.0.400; python3 -B docs/reports/M0-references-wiring/verify.py",
+      "result": "failed",
+      "summary": "Exact reference alone built BCL runner in Debug during Release solution build. Twelve actual runner-dependent protocol tests failed missing Release executable. Preserved as historical evidence; superseded by scoped configuration fix.",
+      "artifact": "docs/reports/M0-references-wiring/failed-ece6aa9.txt"
+    },
+    {
+      "id": "clean-wiring-verification",
+      "kind": "check",
+      "revision": "38839de9d42062b734ec7caca44dd05b026bbe42",
+      "command": "DOTNET_ROOT='/Users/sebastienros/Library/Application Support/dotnetup/dotnet' PATH='/Users/sebastienros/Library/Application Support/dotnetup/dotnet':$PATH DOTNET_CLI_USE_MSBUILD_SERVER=0 python3 -B docs/reports/M0-references-wiring/verify.py",
+      "result": "passed",
+      "summary": "macOS arm64 SDK10.0.400: removed generated bin/obj from 12 actual solution/reference projects, proved runner absent, ordinary solution restore/Release build without manual runner build succeeded with 0 warnings/errors. BclReference Release executable and copied protocol assembly exist; native MTP XML confirms 51 protocol +3 smoke tests, 54 pass0 fail0 skip,0 product tests. All3 controlled smoke failures exit2. Preserved16 help/default invocations,3 unknown exits2, managed-only net10.0 package/API0, runtime assets graph empty libraries/targets/project refs, evaluated exact no-output build edge,101-task validation. MSBuild retains its default Debug configuration for the transitive protocol project and copies that assembly into runner output; all Release executable checks pass. No other-platform/native-engine/runtime-conformance/performance claim.",
+      "artifact": "docs/reports/M0-references-wiring/verification.txt"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "",
-    "checks": [],
+    "summary": "Implemented automatic BCL build edge and scoped solution configuration propagation; clean normal Release solution build produces runner before differential tests. Source38839de9d42062b734ec7caca44dd05b026bbe42 tested; integration_revision remains null.",
+    "checks": [
+      "Full clean verifier passed at source38839de9d42062b734ec7caca44dd05b026bbe42;51 protocol+3 smoke passes,3 intentional smoke failures exit2;bootstrap/help/pack/API/runtime graph/task validation pass.",
+      "Initial exact-reference-only attempt failed12 tests because solution unsets configuration for unlisted runner; archived failed transcript retained.",
+      "Runtime hot paths unchanged; allocation/performance measurements not applicable and not run. Only macOS arm64 checked."
+    ],
     "remaining": [],
     "requests": []
   }
