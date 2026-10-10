@@ -116,6 +116,7 @@ def main(args):
         (directory / 'Program.cs').write_text((ROOT / 'samples/M1-dom/Program.cs').read_text())
         run('dotnet', 'run', '--project', directory / 'Consumer.csproj', '-c', 'Release', '--disable-build-servers', '-p:UseSharedCompilation=false', f'-p:RestoreSources={RAW / "packages"}', f'-p:RestorePackagesPath={directory / "isolated-packages"}')
     run('dotnet', 'build', 'docs/reports/M1-dom/Benchmarks.csproj', *FLAGS)
+    run('dotnet', 'run', '--project', 'docs/reports/M1-dom/Benchmarks.csproj', '-c', 'Release', '--no-build', '--no-restore', '--', '--oracle')
     run('python3', 'tools/planning/tasks.py', 'validate')
     audit(args.audit_base or json.loads((ROOT / 'docs/tasks/M1-dom.json').read_text())['base_revision'])
 

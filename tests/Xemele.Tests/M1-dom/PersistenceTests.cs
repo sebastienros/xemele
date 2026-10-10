@@ -7,6 +7,39 @@ namespace Xemele.Tests.Dom;
 
 public sealed class PersistenceTests
 {
+    [Theory]
+    [InlineData("<xmlns/>")]
+    [InlineData("<p:xmlns xmlns:p='u'/>")]
+    [InlineData("<r xmlns:p='u' p:xmlns='v'/>")]
+    public void NarrowTreeReservedLocalNameContractRejectsBeforeTrustedPersistence(string source)
+    {
+        Assert.False(XmlDocument.TryParse(source, out var document, out var diagnostics, cancellationToken: TestContext.Current.CancellationToken));
+        Assert.Null(document); Assert.Equal("XML.Namespace", Assert.Single(diagnostics).Code);
+        byte[] bytes = Encoding.UTF8.GetBytes(source);
+        Assert.False(XmlDocument.TryParse(bytes.AsSpan(), out document, out diagnostics, cancellationToken: TestContext.Current.CancellationToken));
+        Assert.Null(document); Assert.Equal("XML.Namespace", Assert.Single(diagnostics).Code);
+        for (int size = 1; size <= bytes.Length + 1; size++)
+        {
+            using var stream = new DomTests.ChunkStream(bytes, size);
+            var exception = Assert.Throws<XmlParseException>(() => XmlDocument.Load(stream, cancellationToken: TestContext.Current.CancellationToken));
+            Assert.Equal("XML.Namespace", Assert.Single(exception.Diagnostics).Code);
+            Assert.False(stream.WasDisposed);
+        }
+    }
+
+    [Fact]
+    public void ImplicitXmlUriPersistenceQuotaRejectsStructurallyAndOwnsDiagnostics()
+    {
+        const string source = "<r xml:lang='en'/>";
+        var options = new XmlParseOptions { Limits = new() { InternedNames = 3 } };
+        Assert.False(XmlDocument.TryParse(source, out var document, out var diagnostics, options, TestContext.Current.CancellationToken));
+        Assert.Null(document); Assert.Equal("XML.ResourceLimit", Assert.Single(diagnostics).Code);
+        Assert.Throws<NotSupportedException>(() => ((IList<XmlDiagnostic>)diagnostics)[0] = new("test", XmlDiagnosticSeverity.Error, "test", default));
+        var exception = Assert.Throws<XmlParseException>(() => XmlDocument.Parse(source, options, TestContext.Current.CancellationToken));
+        Assert.Equal(diagnostics[0], Assert.Single(exception.Diagnostics));
+        document = XmlDocument.Parse(source, options with { Limits = options.Limits with { InternedNames = 4 } }, TestContext.Current.CancellationToken);
+        Assert.Equal("en", document.RootElement.GetAttribute("lang", "http://www.w3.org/XML/1998/namespace"));
+    }
     private static (string Source, string Value) Fixture(string shape)
     {
         string value = new('x', 32768);
