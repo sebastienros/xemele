@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Contract compilation/metadata only. No product parse, corpus replay or measurement."""
-import hashlib,json,os,re,subprocess,sys,tempfile
+import hashlib,json,os,re,signal,subprocess,sys,tempfile
 from pathlib import Path
 from xml.sax.saxutils import escape
 ROOT=Path(__file__).resolve().parents[3]
@@ -13,11 +13,21 @@ ENV['PATH']=str(SDK.parent)+os.pathsep+ENV.get('PATH','')
 REPORT=ROOT/f'docs/reports/{TASK}/checks.json'
 s={'result':'failed','scope':'Nonpackaged independent contract/model checks; no product runtime/conformance or allocation claims','checks':[]}
 def run(*cmd,expected=0):
- p=subprocess.run(list(map(str,cmd)),cwd=ROOT,env=ENV,text=True,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,timeout=300)
- s['checks'].append({'command':list(map(str,cmd)),'exit':p.returncode,'expectedExit':expected})
+ command=list(map(str,cmd))
+ p=subprocess.Popen(command,cwd=ROOT,env=ENV,text=True,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,start_new_session=True)
+ try:
+  output,_=p.communicate(timeout=180)
+ except subprocess.TimeoutExpired:
+  os.killpg(p.pid,signal.SIGKILL);p.communicate();raise RuntimeError('Bounded child timed out: '+str(cmd))
+ finally:
+  # This session/process group belongs only to this invocation; clear descendants.
+  try:os.killpg(p.pid,signal.SIGKILL)
+  except ProcessLookupError:pass
+ s['checks'].append({'command':command,'exit':p.returncode,'expectedExit':expected})
  if p.returncode!=expected:
-  print(p.stdout[-6500:],file=sys.stderr);raise RuntimeError('Unexpected command exit: '+str(cmd))
- return p.stdout
+  print(output[-6500:],file=sys.stderr);raise RuntimeError('Unexpected command exit: '+str(cmd))
+ return output
+
 def hashfile(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
 def freeze(paths):return {str(p):hashfile(p) for p in paths}
 def unchanged(values):
@@ -88,10 +98,11 @@ try:
   assert re.fullmatch(r'10\.0\.11(?:-[0-9A-Za-z.-]+)?\+[0-9a-f]{40}',ident['CoreLibraryInformationalVersion'])
   s['executingRuntime']=ident;s['binaries']=binaries
   s['preservedModels']={'frozenInternalShapes':7,'publicHandleAndContentShapes':7,'independentAssemblies':['AttributeContractModel','AttributeContractConsumer']}
+  probe_flags=[*FLAGS,'--artifacts-path',temp/'probes']
   negatives=[('borrowed-attribute','class Probe { Xemele.Parsing.Syntax.XmlIncompleteAttributeView retained; }','CS8345'),('borrowed-default','class Probe { Xemele.Parsing.Syntax.XmlIncompleteAttributeDefaultView retained; }','CS8345'),('immutable-record','class Probe { void Use(Xemele.XmlIncompleteAttributeValue v) { v.LexicalValue="lost"; } }','CS8852'),('no-complete-value','class Probe { string Use(Xemele.Parsing.Syntax.XmlIncompleteAttributeView v) => v.Value.ToString(); }','CS1061')]
   for name,code,error in negatives:
    probe=temp/(name+'.cs');probe.write_text(code)
-   output=run(SDK,'build',sample,*flags,'-p:ProbeSource='+str(probe),expected=1);assert error in output,name
+   output=run(SDK,'build',sample,*probe_flags,'-p:ProbeSource='+str(probe),expected=1);assert error in output,name
   s['compilerNegatives']=[{'name':n,'requiredError':e} for n,_,e in negatives]
   old=temp/'old-sink.cs';old.write_text('''using Xemele; using Xemele.Parsing.Syntax;
 sealed class OldSink : IXmlEventSink {
@@ -100,7 +111,7 @@ sealed class OldSink : IXmlEventSink {
  public bool Attribute(XmlAttributeView a)=>true;public bool StartElementContent()=>true;public bool EndElement(XmlNameView n,XmlLocation l)=>true;
  public bool StartText(XmlTextKind k,ReadOnlySpan<char> t,XmlLocation l)=>true;public bool TextFragment(ReadOnlySpan<char> t,bool e,XmlLocation l)=>true;public bool EndDocument(XmlLocation l)=>true; }
 ''')
-  run(SDK,'build',sample,*flags,'-p:ProbeSource='+str(old));s['oldSinkCompilesWithoutNewInterface']=True
+  run(SDK,'build',sample,*probe_flags,'-p:ProbeSource='+str(old));s['oldSinkCompilesWithoutNewInterface']=True
   # Compile deliberately changed frozen event metadata, then exercise real reflection comparison.
   syntax=temp/'mutated-syntax.cs';syntax.write_text((ROOT/'tests/Contracts/Fixtures/M2/Syntax.cs.fixture').read_text().replace('internal readonly ref struct XmlAttributeView','internal ref struct XmlAttributeView'))
   source_paths=[ROOT/f'tests/Contracts/Fixtures/{p}.cs.fixture' for p in ['M2/Common','M2/Options','M2/Resolver','M2/Dtd','M1/Tree','M2/Entities']]+[syntax]
@@ -125,8 +136,7 @@ sealed class OldSink : IXmlEventSink {
   try:unchanged(guard_hash)
   except RuntimeError:detected=True
   assert detected;s['changedSourceNegativeDetected']=True
-  # Only the intentionally rebuilt consumer changed; original measured model/product/checker remain frozen.
-  unchanged({p:h for p,h in binaries.items() if p!=str(consumer)})
+  unchanged(binaries);s['executedBinariesUnchanged']=True
  s['temporaryOutputsRemoved']=not temp.exists()
  output=run('python3','-B','-m','unittest','discover','-s','tools/planning','-p','test_tasks.py')
  s['planningControlCount']=int(re.search(r'Ran (\d+) tests',output)[1])
