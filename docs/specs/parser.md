@@ -80,7 +80,16 @@ use INPUT.UnsupportedEncoding; conflict uses INPUT.EncodingMismatch; malformed
 bytes use INPUT.InvalidEncoding. These are M1 scope choices informed by
 [XML encoding rules](https://www.w3.org/TR/REC-xml/#charencoding).
 Composition buffers only bounded prolog data charged to TokenCharacters and
-checks the declaration before interpreting body data; no whole-source decoding.
+checks the declaration before decoding body bytes; no whole-source decoding.
+The DOM byte adapter initially submits at most one new original byte per Decode,
+draining any detection carry output first, and feeds the core the corresponding
+characters/mappings. It retains at most the initial <?xml recognition prefix to
+recognize declaration absence; once absence is known it validates empty encodingName
+before further decoding. If a declaration is present, it continues byte-at-a-time
+until the core Declaration callback validates it, then switches to bulk scratch
+decoding. This simple bounded prolog path prevents a bulk Decode from rejecting
+body bytes under an unvalidated declaration or reporting the wrong first error.
+A future faster framing path requires equivalent boundary/error-order evidence.
 Composition also calls ValidateDeclaration with empty encodingName when no
 declaration is present, before the first non-declaration lexical/body event
 (or at EOF for empty/BOM-only input); this rejects BOM-less generic UTF-16.
