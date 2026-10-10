@@ -4,11 +4,11 @@
   "milestone": "M0",
   "title": "Corpus provisioning and provenance",
   "kind": "infrastructure",
-  "status": "implemented",
+  "status": "verified",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M0-corpora",
   "branch": "codex/m0-corpora",
   "base_revision": "73d8d8e0c24ead40a0721cd7143ed903008c2f46",
-  "integration_revision": null,
+  "integration_revision": "d1ebd86c9b894bcb96ab62b9292a5c677c8a5481",
   "depends_on": [
     "M0-build",
     "M0-tests-mtp"
@@ -34,7 +34,9 @@
       "status": "passed",
       "evidence": [
         "focused-and-preservation-checks",
-        "scope-and-provenance-review"
+        "scope-and-provenance-review",
+        "integration-checks",
+        "independent-review"
       ]
     },
     {
@@ -43,7 +45,9 @@
       "status": "passed",
       "evidence": [
         "focused-and-preservation-checks",
-        "scope-and-provenance-review"
+        "scope-and-provenance-review",
+        "integration-checks",
+        "independent-review"
       ]
     },
     {
@@ -52,7 +56,9 @@
       "status": "passed",
       "evidence": [
         "focused-and-preservation-checks",
-        "scope-and-provenance-review"
+        "scope-and-provenance-review",
+        "integration-checks",
+        "independent-review"
       ]
     }
   ],
@@ -92,6 +98,24 @@
       "result": "passed",
       "summary": "Reviewed changes against assigned ownership and integrated schema: task-private infrastructure and report apps only; no root/shared project/CLI/solution/package changes, runtime public APIs or future dependencies. Bootstrap data authored originally with explicit MIT notice and independently specified accepted/rejected classifications; source revision is content digest, not a fetched upstream tag. Checksum/provision success is explicitly separate from parser/standards evidence. Proposed reporting documented for contract owner. Verified installed xunit.v3.assert 4.0.1 Assert.Skip(string reason) with dotnet-inspect; test attempts symlink creation on every platform and dynamically skips only when capability/privilege is unavailable. Windows behavior was not executed here.",
       "artifact": "docs/provenance/bootstrap.md"
+    },
+    {
+      "id": "integration-checks",
+      "kind": "integration",
+      "revision": "d1ebd86c9b894bcb96ab62b9292a5c677c8a5481",
+      "command": "Pinned .NET SDK; python3 -B docs/reports/M0-corpora/verify.py",
+      "result": "passed",
+      "summary": "Release solution and focused apps 0 warnings/errors; all24 focused tests passed, symlink capability executed (0 skips). Source/fixture/cache checksum and six outcome demos,13 Python tests,3 MTP smoke passes/3 expected controlled failures,help/error exits and managed-only package passed. Validated99 tasks. No parser conformance or hosted-platform claim.",
+      "artifact": "docs/reports/M0-corpora/integration-verification.txt"
+    },
+    {
+      "id": "independent-review",
+      "kind": "review",
+      "revision": "905694a08b7b453bd5a8456e6135f87e3a398c1e",
+      "command": "Read-only independent reviewer /root/review_corpora",
+      "result": "passed",
+      "summary": "No blocking defect in offline checksum/provisioning, path containment/static symlinks, outcome counts/provenance, independent expectations or focused tests. Static review only; hostile concurrent filesystem changes and hosted platforms not assessed.",
+      "artifact": null
     }
   ],
   "blockers": [],
@@ -103,7 +127,7 @@
       "Installed xUnit v3 4.0.1 dynamic skip API verified using dotnet-inspect. Final capability-aware symlink test executed/passed on macOS arm64; no Windows execution claimed. Source factoring and runner help/unknown checks revalidated at final implementation revision."
     ],
     "remaining": [
-      "Coordinator must integrate, rerun applicable checks on combined revision, record integration evidence and set verified."
+      "Ordered M0-corpora-wiring owns root CLI and CI registration; required before M0-gate."
     ],
     "requests": [
       "tools/CorpusManager/Program.cs (outside ownership, coordinator accepted ordered follow-up): replace entry point with return Xemele.CorpusInfrastructure.CorpusCommand.Run(args); after command/report approval. Internal Run dispatch is in tools/CorpusManager/Core/CorpusCommand.cs and owned runner calls that exact code; retains help/default exit0 and unknown/invalid exit2, import/provision failures exit1. No duplicate implementation needed.",

@@ -6,17 +6,6 @@
   "last_verified_checkpoint": null,
   "active_assignments": [
     {
-      "task_id": "M0-corpora",
-      "chat_id": "01a12334-c43a-7e40-8249-68f8bc24d22e",
-      "host_id": "local",
-      "worktree_path": "/Users/sebastienros/.codex/worktrees/593c/xemele",
-      "branch": "codex/m0-corpora",
-      "base_revision": "73d8d8e0c24ead40a0721cd7143ed903008c2f46",
-      "claim_revision": "f6d4bda1f6b51a9f4caaeec31d4115ea554c6f0b",
-      "setup_status": "dispatched-validating",
-      "client_thread_id": "client-new-thread:6bd1b904-55a4-434c-ae90-8f1712348126"
-    },
-    {
       "task_id": "M0-contracts",
       "chat_id": "01a1233a-73d4-7db1-b604-34fa815b5b04",
       "client_thread_id": "client-new-thread:09aefb13-fc8c-4beb-b893-d48583d65452",
@@ -31,13 +20,12 @@
   "integration_queue": [],
   "blockers": [],
   "next_actions": [
-    "Review corpus implementation and integration requests",
-    "After corpus verification dispatch ordered root CLI/CI wiring task",
-    "Review foundation decisions and compiled contract fixtures",
-    "Dispatch reference protocol when a worker slot opens"
+    "Claim corpus CLI/CI wiring or reference protocol in free worker slot",
+    "Review foundation contract and owned compiled compatibility checker",
+    "Order shared compatibility wiring when foundation contract is verified"
   ],
-  "last_verified_task": "M0-bench-shortrun",
-  "last_integrated_revision": "6e39efe8d60eb89d9f1b5d7d52eb8591afdb35f8",
+  "last_verified_task": "M0-corpora",
+  "last_integrated_revision": "d1ebd86c9b894bcb96ab62b9292a5c677c8a5481",
   "completed_assignments": [
     {
       "task_id": "M0-build",
@@ -120,6 +108,20 @@
       "implementation_revision": "2e77234f797450c50da335a2d20a9d4e5968c41d",
       "handoff_revision": "0bc24e9d1d3d3b6bbd288952ed001448481a4c57",
       "integration_revision": "6e39efe8d60eb89d9f1b5d7d52eb8591afdb35f8"
+    },
+    {
+      "task_id": "M0-corpora",
+      "chat_id": "01a12334-c43a-7e40-8249-68f8bc24d22e",
+      "host_id": "local",
+      "worktree_path": "/Users/sebastienros/.codex/worktrees/593c/xemele",
+      "branch": "codex/m0-corpora",
+      "base_revision": "73d8d8e0c24ead40a0721cd7143ed903008c2f46",
+      "claim_revision": "f6d4bda1f6b51a9f4caaeec31d4115ea554c6f0b",
+      "setup_status": "verified",
+      "client_thread_id": "client-new-thread:6bd1b904-55a4-434c-ae90-8f1712348126",
+      "implementation_revision": "905694a08b7b453bd5a8456e6135f87e3a398c1e",
+      "handoff_revision": "2844abb7b5febfd3cc51ea723578e184941a4b93",
+      "integration_revision": "d1ebd86c9b894bcb96ab62b9292a5c677c8a5481"
     }
   ],
   "benchmark_policy": "Subsequent benchmarks default to ShortRun and require serialized timing slot; no active timing hold.",
