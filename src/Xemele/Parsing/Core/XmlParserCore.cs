@@ -244,9 +244,6 @@ internal sealed partial class XmlParserCore : IDisposable
     }
     private void QueueFragment(int scalar, XmlLocation location, int prefixCount = 0, char prefix = '\0')
     {
-        if (White(scalar) && textKind is XmlTextKind.Text or XmlTextKind.CData &&
-            frames.Count != 0 && frames[^1].StandaloneWhitespaceDependency)
-        { Reject("XML.Standalone", "Standalone document depends on external element-content whitespace.", location); return; }
         fragmentLength = prefixCount;
         for (int i = 0; i < prefixCount; i++) fragment[i] = prefix;
         if (scalar >= 0)
@@ -291,6 +288,12 @@ internal sealed partial class XmlParserCore : IDisposable
                 if (c == '&') { referenceLocation = location; tokenLength = 0; state = State.Reference; return; }
                 if (c == '>' && brackets >= 2) { Reject("XML.Syntax", "Literal ]]> in text.", location); return; }
                 brackets = c == ']' ? Math.Min(2, brackets + 1) : 0;
+                // The standalone dependency is on XML S in element content,
+                // not on whitespace produced by CDATA or a direct character
+                // reference. Parsed entity replacement enters this Data state
+                // again and therefore retains its literal-content origin.
+                if (White(c) && frames.Count != 0 && frames[^1].StandaloneWhitespaceDependency)
+                { Reject("XML.Standalone", "Standalone document depends on external element-content whitespace.", location); return; }
                 QueueFragment(c, location); return;
             case State.Less:
                 // The opening '<' is charged after a preceding text token has
