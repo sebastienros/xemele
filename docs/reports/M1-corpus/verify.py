@@ -86,8 +86,9 @@ def main():
         run('dotnet','build','Xemele.slnx',*FLAGS)
         run('dotnet','build','docs/reports/M1-corpus/Tests/Tests.csproj',*FLAGS)
         counts = {'owned':tests(ROOT/'docs/reports/M1-corpus/Tests/bin/Release/net10.0/Xemele.XmlSubset.Tests.dll','owned',501)}
-        for name, expected in [('Xemele.Tests',300),('Xemele.Conformance.Tests',None),('Xemele.Differential.Tests',None)]:
+        for name, expected in [('Xemele.Tests',247),('Xemele.Conformance.Tests',255),('Xemele.Differential.Tests',299)]:
             counts[name] = tests(ROOT/f'tests/{name}/bin/Release/net10.0/{name}.dll', name, expected)
+        assert sum(counts[name]['total'] for name in ['Xemele.Tests','Xemele.Conformance.Tests','Xemele.Differential.Tests']) == 801
         inventory = json.loads((ROOT/'tests/corpora/xml/inventory.json').read_text())
         cases = inventory['cases']
         product = {r['id']: r for p in (raw/'case-results').glob('product-*.json') for r in [json.loads(p.read_text())]}
