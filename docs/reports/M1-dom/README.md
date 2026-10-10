@@ -59,7 +59,7 @@ verification stopped with 24/25 focused tests passing: a 100-call warm-up left a
 evaluation did not remove it; documented 10000-call warm-up produced 0 B. The raw
 failed and passing known-revision attempts are compressed alongside this report.
 
-## Blocking review and next action
+## Historical blocking review at the first checkpoint
 
 Independent review found an unresolved bounded-cancellation problem: public tree
 creation and current builder member APIs repeat `TreeValidation` scans without
@@ -76,3 +76,50 @@ validation remains unchanged. The DOM worker must consume only an integrated,
 verified contract and then add cancellation regressions, rerun affected checks and
 request an exclusive grant for the 16 owned measurement cases. Task JSON has not
 been edited while the coordinator serializes prerequisite changes.
+
+## Verified persistence correction and second suspension
+
+The cancellation repair was integrated and verified before resuming this branch.
+At `752ec92591c0d31f1b9a90e6c834167d154aac70`, the sink forwards the actual
+operation token through every trusted create/attach/member helper and checks it
+before its own persistence callback work. It performs no duplicate Tree scalar,
+name or delimiter scans. Platform copying/hash/arena allocation is explicitly
+outside the bounded custom-loop claim. Seven 32768-character shape tests exercise
+Text/CDATA/Comment/PI/name/attribute/namespace persistence and owned lifetimes over
+all transports; seven deterministic wrappers cancel immediately before actual
+core-validated sink persistence callbacks and verify token identity and no partial
+attachment. All 39 DOM cases, 262 solution cases, prerequisites, Foundation11,
+explicit models/protocol38, actual public222/internal ABI, source/fresh isolated
+package sample, allocation and ownership checks passed. Full raw and concise
+results remain in `persistence-corrected-checks.txt[.gz]`.
+
+The default audit base initially included coordinator orchestration metadata in
+the renewed claim. It failed before builds/tests; no allowed paths were widened.
+The passing command uses `--audit-base 6dfbde16688cd1b071a6128e69b9ac362d850ac0`,
+the renewed coordination claim before worker feature changes. Committed plus
+working/untracked owned paths and whitespace are audited. That failed attempt is
+preserved in `renewed-base-audit-failure.txt.gz`.
+
+A subsequent trust audit found that Tree prohibits every ordinary localName
+`xmlns`, while Syntax accepts it. A temporary bounded sink rejection guard and
+three rejection cases were committed at
+`90fda442d313bcfd16f7a72cddca655005f638e3` before coordinator steering arrived.
+The coordinator clarified that Namespaces1.0 permits ordinary element localName
+`xmlns` and prefixed ordinary attributes `p:xmlns`; Tree/contract/serializer must
+be corrected by their owner. The temporary guard is **not approved** and must be
+removed when the verified correction restores this reserved DOM claim. Replace
+its rejection cases with positive structure/roundtrip cases. No such source is
+integrated or represented as a passing deliverable.
+
+At that temporary-guard revision, 43 focused DOM cases and prerequisite focused
+checks passed; full solution execution reported266 total/265 passed/one failure:
+existing `TreeTests.WarmTraversalAndRepeatedNameInternProbesAllocateNothing`
+measured4368B instead of zero at line172. That peer test had passed in its focused
+14-case lane earlier in the same attempt. No peer test/source was edited, no
+automatic repeat was run, and the failure is preserved in
+`peer-allocation-final-attempt-failure.txt.gz`. Verification stopped there, so the
+later model/package/benchmark oracle checks were not rerun at90fda44.
+
+Source/task edits and all checks/timing are now stopped pending the ordered
+namespace correction. No measurement timing has run. Task criteria remain pending;
+the task record has not been edited during coordinator prerequisite serialization.
