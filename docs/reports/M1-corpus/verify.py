@@ -7,6 +7,7 @@ import os
 from pathlib import Path
 import platform
 import shlex
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -16,6 +17,21 @@ import zipfile
 ROOT = Path(__file__).resolve().parents[3]
 REPORT_ROOT = ROOT / 'docs/reports/M1-corpus'
 FLAGS = ['-c', 'Release', '--disable-build-servers', '-m:1', '-p:UseSharedCompilation=false']
+
+
+def pinned_environment(inherited, raw, dotnet, runner):
+    # Caller convenience overrides cannot choose the evidence-producing engine.
+    return dict(inherited, DOTNET_CLI_USE_MSBUILD_SERVER='0',
+                PATH=str(dotnet.parent)+os.pathsep+inherited.get('PATH',''),
+                XEMELE_DOTNET=str(dotnet), XEMELE_BCL_RUNNER=str(runner),
+                XEMELE_CORPUS_RESULTS=str(raw/'case-results'),
+                XEMELE_CORPUS_RESOURCES='/private/tmp/xemele-corpus-cache/w3c-xml-20130923/resources/')
+
+
+def validate_reference_provenance(records, runner_hash, revision):
+    for record in records:
+        assert record['runnerSha256'] == runner_hash, 'Reference runner hash differs from freshly built checkout'
+        assert record['response']['engine']['build'] == '1.0.0+'+revision, 'Reference adapter build is not the tested source revision'
 
 
 def main():
@@ -29,9 +45,11 @@ def main():
     raw = ROOT / 'artifacts/M1-corpus' / args.report_prefix
     raw.mkdir(parents=True)
     logs = []
-    env = dict(os.environ, DOTNET_CLI_USE_MSBUILD_SERVER='0', XEMELE_CORPUS_RESULTS=str(raw / 'case-results'),
-               XEMELE_CORPUS_RESOURCES='/private/tmp/xemele-corpus-cache/w3c-xml-20130923/resources/')
+    dotnet = Path(shutil.which('dotnet') or 'dotnet-unavailable').resolve(strict=True)
+    runner = ROOT/'tools/ReferenceRunners/Bcl/bin/Release/net10.0/BclReference.dll'
+    env = pinned_environment(os.environ, raw, dotnet, runner)
     def run(*command, cwd=ROOT, timeout=300):
+        if command[0] == 'dotnet': command = (dotnet, *command[1:])
         print('$ ' + shlex.join(map(str, command)), flush=True)
         result = subprocess.run(list(map(str, command)), cwd=cwd, env=env, text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, timeout=timeout)
         entry = '$ ' + shlex.join(map(str, command)) + '\n' + result.stdout + f'\nExit:{result.returncode}\n'
@@ -85,6 +103,8 @@ def main():
         (report/'resource-checks.json').write_text(json.dumps(dict(sourceRevision=revision,resources=resources),indent=2)+'\n')
         run('dotnet','build','Xemele.slnx',*FLAGS)
         run('dotnet','build','docs/reports/M1-corpus/Tests/Tests.csproj',*FLAGS)
+        run('dotnet','build','tools/ReferenceRunners/Bcl/BclReference.csproj',*FLAGS)
+        runner_hash = hashlib.sha256(runner.read_bytes()).hexdigest()
         counts = {'owned':tests(ROOT/'docs/reports/M1-corpus/Tests/bin/Release/net10.0/Xemele.XmlSubset.Tests.dll','owned',501)}
         for name, expected in [('Xemele.Tests',247),('Xemele.Conformance.Tests',255),('Xemele.Differential.Tests',299)]:
             counts[name] = tests(ROOT/f'tests/{name}/bin/Release/net10.0/{name}.dll', name, expected)
@@ -94,6 +114,8 @@ def main():
         product = {r['id']: r for p in (raw/'case-results').glob('product-*.json') for r in [json.loads(p.read_text())]}
         reference = {r['id']: r for p in (raw/'case-results').glob('reference-*.json') for r in [json.loads(p.read_text())]}
         assert len(product) == len(reference) == 242
+        assert hashlib.sha256(runner.read_bytes()).hexdigest() == runner_hash, 'Fresh reference runner changed during tests'
+        validate_reference_provenance(reference.values(), runner_hash, revision)
         joined = []
         for case in cases:
             supported = case['m1']['outcome'] == 'rejected'
@@ -136,10 +158,11 @@ def main():
             (directory/'Program.cs').write_bytes((REPORT_ROOT/'Consumer.cs.fixture').read_bytes())
             run('dotnet','run','--project',directory/'Consumer.csproj','-c','Release','--disable-build-servers','-p:UseSharedCompilation=false',f'-p:RestoreSources={packages}',f'-p:RestorePackagesPath={directory/"isolated-packages"}')
         run(sys.executable,'-B','tests/Xemele.TestUtilities/Corpora/verify_bootstrap.py')
+        run(sys.executable,'-B','-m','unittest','discover','-s','docs/reports/M1-corpus','-p','test_verify.py','-v')
         run(sys.executable,'-B','-m','unittest','discover','-s','tools/planning','-p','test_tasks.py','-v')
         run(sys.executable,'-B','tools/planning/tasks.py','validate')
         audit()
-        (report/'summary.json').write_text(json.dumps(dict(sourceRevision=revision,host=platform.platform(),tests=counts,discovery=discovery,packageSha256=hashlib.sha256(package.read_bytes()).hexdigest(),allocationEvidence='Not applicable: verification harness only; no runtime edits or timing claims.',result='passed'),indent=2)+'\n')
+        (report/'summary.json').write_text(json.dumps(dict(sourceRevision=revision,host=platform.platform(),referenceProvenance=dict(runner=str(runner),runnerSha256=runner_hash,expectedBuild='1.0.0+'+revision,dotnet=str(dotnet),dotnetSha256=hashlib.sha256(dotnet.read_bytes()).hexdigest()),tests=counts,discovery=discovery,packageSha256=hashlib.sha256(package.read_bytes()).hexdigest(),allocationEvidence='Not applicable: verification harness only; no runtime edits or timing claims.',result='passed'),indent=2)+'\n')
     finally:
         (report/'checks.txt.gz').write_bytes(gzip.compress('\n'.join(logs).encode(),mtime=0))
         print('Durable report: '+str(report),flush=True)
