@@ -9,6 +9,14 @@ using Xemele.ReferenceProtocol;
 var engine = new Engine("System.Xml", typeof(XmlReader).Assembly.GetName().Version!.ToString(),
     RuntimeInformation.FrameworkDescription, Assembly.GetExecutingAssembly()
         .GetCustomAttribute<AssemblyInformationalVersionAttribute>()!.InformationalVersion);
+// Derive exact localized framework quota diagnostics from tiny controlled probes.
+// Matching only property names would misclassify an undeclared entity with that name.
+var quotaMessages = new HashSet<string>(StringComparer.Ordinal)
+{
+    QuotaMessage("<r/>", new XmlReaderSettings { MaxCharactersInDocument = 1 }),
+    QuotaMessage("<!DOCTYPE r [<!ENTITY x 'xx'>]><r>&x;</r>",
+        new XmlReaderSettings { DtdProcessing = DtdProcessing.Parse, MaxCharactersFromEntities = 1 })
+};
 while (true)
 {
     var line = new StringBuilder();
@@ -81,7 +89,7 @@ while (true)
     }
     catch (XmlException ex) { response = deniedResource
         ? Reply("runner-failure", [new("resource-denied", ex.Message)])
-        : IsQuota(ex) ? Reply("runner-failure", [new("limit", ex.Message)])
+        : quotaMessages.Contains(ex.Message) ? Reply("runner-failure", [new("limit", ex.Message)])
         : Reply("parse-rejected", [new("xml", ex.Message)]); }
     catch (DecoderFallbackException ex) { response = Reply("parse-rejected", [new("xml", ex.Message)]); }
     catch (Exception ex) { response = Reply("runner-failure", [new(ex is ArgumentException or JsonException or FormatException ? "protocol" : "infrastructure", ex.Message)]); }
@@ -93,12 +101,16 @@ while (true)
         new(1, request?.CaseId, request?.Operation, engine, outcome, diagnostics, events);
 }
 
-// .NET 10 XmlReader quota diagnostics include the invariant setting name even
-// when the surrounding framework message is localized. Do not match prose or
-// classify arbitrary XmlException failures as quota failures.
-static bool IsQuota(XmlException error) =>
-    error.Message.Contains(nameof(XmlReaderSettings.MaxCharactersFromEntities), StringComparison.Ordinal)
-    || error.Message.Contains(nameof(XmlReaderSettings.MaxCharactersInDocument), StringComparison.Ordinal);
+static string QuotaMessage(string xml, XmlReaderSettings settings)
+{
+    try
+    {
+        using var reader = XmlReader.Create(new StringReader(xml), settings);
+        while (reader.Read()) { }
+    }
+    catch (XmlException error) { return error.Message; }
+    throw new InvalidOperationException("Framework quota calibration failed.");
+}
 
 sealed class OfflineResolver(Dictionary<string, byte[]> resources, Action denied) : XmlResolver
 {

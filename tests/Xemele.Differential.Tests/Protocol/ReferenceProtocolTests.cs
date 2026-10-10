@@ -45,6 +45,8 @@ public sealed class ReferenceProtocolTests
 
     [Theory]
     [InlineData("<r>", "xml.events", 1, "parse-rejected")]
+    [InlineData("<r>&MaxCharactersFromEntities;</r>", "xml.events", 1, "parse-rejected")]
+    [InlineData("<r>&MaxCharactersInDocument;</r>", "xml.events", 1, "parse-rejected")]
     [InlineData("<r/>", "unknown", 1, "runner-failure")]
     [InlineData("<r/>", "xml.events", 2, "runner-failure")]
     public async Task CategorizesParseAndProtocolFailures(string xml, string operation, int version, string expected)
