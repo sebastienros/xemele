@@ -121,7 +121,11 @@ internal static class Consumer
             Version = Environment.Version.ToString(),
             Framework = System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription,
             CoreLibrary = typeof(object).Assembly.Location,
-            CoreLibraryVersion = typeof(object).Assembly.GetName().Version!.ToString()
+            CoreLibraryVersion = typeof(object).Assembly.GetName().Version!.ToString(),
+            CoreLibraryInformationalVersion = typeof(object).Assembly.GetCustomAttributes(false)
+                .OfType<System.Reflection.AssemblyInformationalVersionAttribute>().Single().InformationalVersion,
+            ProcessArchitecture = System.Runtime.InteropServices.RuntimeInformation.ProcessArchitecture.ToString(),
+            OsArchitecture = System.Runtime.InteropServices.RuntimeInformation.OSArchitecture.ToString()
         }));
         Console.WriteLine($"Passed {assertions} contract/model assertions; no XML runtime behavior exercised.");
         return 0;

@@ -43,6 +43,11 @@ def main():
     def digest(path):
         return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
+    def unchanged(expected):
+        for path, hash_value in expected.items():
+            if digest(path) != hash_value:
+                raise RuntimeError('Frozen input changed: ' + str(path))
+
     def project(path, sources, executable=False):
         path.write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><TargetFramework>net10.0</TargetFramework>'
             '<EnableDefaultCompileItems>false</EnableDefaultCompileItems><Nullable>enable</Nullable>'
@@ -65,13 +70,18 @@ def main():
                        'Directory.Packages.props', 'global.json', 'NuGet.config').strip(), 'preserved inputs changed'
         committed = run('git', 'ls-files', '--', 'src/Xemele', 'docs/api',
                         'tests/Contracts/Fixtures', 'samples/M2-undeclared-contract',
-                        'docs/reports/M2-undeclared-contract/verify.py',
+                        'docs/reports/M2-undeclared-contract/verify.py', 'docs/specs/parser.md',
+                        'docs/decisions/M2/xml-resources.md', 'docs/decisions/M2/undeclared-references.md',
+                        'docs/reports/M2-contracts/Projects', 'docs/reports/M0-contracts/ApiCheck',
+                        'tests/corpora/xml/inventory.json', 'tests/corpora/xml/m2-applicability.json',
                         'Directory.Build.props', 'Directory.Packages.props', 'global.json', 'NuGet.config').splitlines()
         source_hashes = {}
+        frozen_inputs = {}
         for name in committed:
             data = subprocess.check_output(['git', 'show', f"{summary['revision']}:{name}"], cwd=ROOT)
             assert (ROOT/name).read_bytes() == data, 'uncommitted source: ' + name
             source_hashes[name] = hashlib.sha256(data).hexdigest()
+            frozen_inputs[ROOT/name] = source_hashes[name]
         summary['sourceInputCount'] = len(source_hashes)
         summary['sourceInputSha256'] = hashlib.sha256(json.dumps(source_hashes, sort_keys=True).encode()).hexdigest()
         summary['proposalSourceSha256'] = {p: h for p, h in source_hashes.items() if '/Undeclared/' in p}
@@ -82,6 +92,7 @@ def main():
             '/private/tmp/xemele-corpus-cache/w3c-xml-20130923/resources'))/relative
         data = resource.read_bytes()
         observed = digest(resource)
+        frozen_inputs[resource] = observed
         assert observed == '40470ff5f2281476ed4521e066d85122e9cc240f1fa916f97bd095644540fa14'
         inventory = json.loads((ROOT/'tests/corpora/xml/inventory.json').read_text())
         originals = [c for c in inventory['cases'] if c['inputPath'] == relative]
@@ -102,6 +113,11 @@ def main():
         summary['sdk'] = {'version': run('dotnet', '--version').strip(), 'hostSha256': digest(SDK/'dotnet'),
             'runtimes': run('dotnet', '--list-runtimes').strip().splitlines()}
         assert summary['sdk']['version'] == '10.0.400'
+        approved_runtime = SDK/'shared/Microsoft.NETCore.App/10.0.11'
+        runtime_libraries = {p: digest(p) for p in
+            [SDK/'dotnet', approved_runtime/'System.Private.CoreLib.dll',
+             approved_runtime/'libcoreclr.dylib', approved_runtime/'libhostpolicy.dylib']}
+        frozen_inputs.update(runtime_libraries)
 
         with tempfile.TemporaryDirectory(prefix='tmp-', dir=ROOT/'docs/reports/M2-undeclared-contract') as directory:
             temporary = Path(directory)
@@ -139,10 +155,16 @@ def main():
             sample = ROOT/'samples/M2-undeclared-contract/Sample.csproj'
             run('dotnet', 'build', sample, *build)
             consumer = artifacts/'bin/Sample/release/UndeclaredContract.dll'
+            frozen_binaries = {p: digest(p) for p in [runtime, checker, consumer]}
             output = run('dotnet', consumer, runtime)
             summary['independentContractAssertions'] = int(re.search(r'Passed (\d+)', output)[1])
             identity = json.loads(re.search(r'RuntimeIdentity:(.+)', output)[1])
             identity['CoreLibrarySha256'] = digest(identity['CoreLibrary'])
+            assert identity['Version'] == '10.0.11', identity
+            assert Path(identity['CoreLibrary']).resolve() == (approved_runtime/'System.Private.CoreLib.dll').resolve()
+            assert identity['CoreLibrarySha256'] == runtime_libraries[approved_runtime/'System.Private.CoreLib.dll']
+            assert identity['CoreLibraryInformationalVersion'].startswith('10.0.11+'), identity
+            assert identity['ProcessArchitecture'] == 'Arm64', identity
             summary['executingRuntime'] = identity
             summary['eventViewsPreserved'] = ['XmlDeclarationView', 'XmlNameView', 'XmlAttributeView', 'XmlNamespaceView']
             summary['consumerSha256'] = digest(consumer)
@@ -186,6 +208,21 @@ def main():
             run('dotnet', checker, 'compare', artifacts/'bin/Resolver/release/M2Resolver.dll',
                 FIXTURES/'M2/Resolver.golden.txt', expected=1)
             summary['publicMetadataNegativeDetected'] = True
+            unchanged(frozen_binaries)
+            summary['verifiedBinariesUnchanged'] = True
+            # Real byte-change negative control of the same final-source freeze
+            # guard, entirely in temporary task-owned output (no repo tampering).
+            control = temporary/'freeze-control.txt'; control.write_text('committed-model-source')
+            control_hashes = {control: digest(control)}
+            unchanged(control_hashes)
+            control.write_text('mutated-model-source')
+            caught = False
+            try:
+                unchanged(control_hashes)
+            except RuntimeError as error:
+                caught = str(error).startswith('Frozen input changed:')
+            assert caught, 'changed source falsely accepted'
+            summary['sourceFreezeNegativeDetected'] = True
             summary['outputBinarySha256'] = {str(p.relative_to(artifacts)): digest(p)
                 for p in sorted(artifacts.glob('bin/*/release/*.dll'))}
 
@@ -202,6 +239,10 @@ def main():
         owned = own['owns'] + ['docs/tasks/M2-undeclared-contract.json']
         assert all(any(p.startswith(o) if o.endswith('/') else p == o for o in owned) for p in paths), sorted(paths)
         summary['ownedPaths'] = sorted(paths)
+        assert run('git', 'rev-parse', 'HEAD').strip() == summary['revision'], 'HEAD changed during checks'
+        unchanged(frozen_inputs)
+        summary['finalHeadAndInputsUnchanged'] = True
+        summary['frozenRuntimeLibrarySha256'] = {str(p): h for p, h in runtime_libraries.items()}
         summary['result'] = 'passed'
     except Exception as error:
         summary['failure'] = str(error)
