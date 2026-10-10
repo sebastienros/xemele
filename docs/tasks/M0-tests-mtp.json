@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "id": "M0-tests-mtp",
+  "milestone": "M0",
+  "title": "Migrate tests to xUnit v3 and Microsoft.Testing.Platform",
+  "kind": "infrastructure",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "depends_on": [
+    "M0-build",
+    "M0-ci"
+  ],
+  "goals": [
+    "G16",
+    "G18"
+  ],
+  "specs": [
+    "docs/specs/foundation.md"
+  ],
+  "owns": [
+    "Directory.Packages.props",
+    "global.json",
+    "tests/Xemele.Tests/Xemele.Tests.csproj",
+    "tests/Xemele.Conformance.Tests/Xemele.Conformance.Tests.csproj",
+    "tests/Xemele.Differential.Tests/Xemele.Differential.Tests.csproj",
+    "tests/Xemele.Tests/Infrastructure/MtpRunnerSmokeTests.cs",
+    "tests/Xemele.Conformance.Tests/Infrastructure/MtpRunnerSmokeTests.cs",
+    "tests/Xemele.Differential.Tests/Infrastructure/MtpRunnerSmokeTests.cs",
+    ".github/workflows/build.yml",
+    "docs/reports/M0-build/verify.py",
+    "docs/reports/M0-tests-mtp/"
+  ],
+  "api_or_output": "Pinned xunit.v3.mtp-v2 4.0.1 and Microsoft.Testing.Platform test infrastructure",
+  "acceptance": [
+    {
+      "id": "M0-tests-mtp-A1",
+      "description": "Apply user-requested central PackageVersion xunit.v3.mtp-v2 4.0.1 and global.json test runner Microsoft.Testing.Platform; adapt all three test projects and remove superseded VSTest/xUnit v2 package references, retaining net10.0-only SDK pin.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M0-tests-mtp-A2",
+      "description": "Update owned CI workflow and reproducible bootstrap verifier for actual MTP invocation semantics. Clean restore/Release build/test discovery/test execution/pack and workflow-equivalent commands pass with actual xUnit v3 tests in all three test shells; test-runner failures propagate nonzero. Infrastructure smoke tests are reported separately from product conformance.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M0-tests-mtp-A3",
+      "description": "Preserve verified bootstrap/discovery/experiments, inspect actual transitive package/runner inventory, record exact commands and outcomes at known implementation revision, and pass task graph validation. Do not rewrite historical passing evidence.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "User requested xunit.v3.mtp-v2 4.0.1 and Microsoft.Testing.Platform during orchestration; narrow ordered build/CI migration preserves historical verified evidence.",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}
