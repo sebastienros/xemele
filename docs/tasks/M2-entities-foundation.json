@@ -13,11 +13,11 @@
   ],
   "id": "M2-entities-foundation",
   "title": "Additive entity options, metadata and integration hooks",
-  "status": "implemented",
+  "status": "verified",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/M2-entities-foundation",
   "branch": "codex/m2-entities-foundation",
   "base_revision": "fc29fabcc82d05729a32f917b5fa4dde6ac135d8",
-  "integration_revision": null,
+  "integration_revision": "7e3a21485389c307fc853bf0c55863bd6ea1de69",
   "depends_on": [
     "M2-resolver",
     "M2-dtd"
@@ -46,7 +46,8 @@
         "owned-allocation-boundaries",
         "independent-api-wiring-review",
         "independent-foundation-review",
-        "exact-tested-source-byte-identity"
+        "exact-tested-source-byte-identity",
+        "integrated-7e3a214"
       ]
     },
     {
@@ -58,7 +59,8 @@
         "owned-allocation-boundaries",
         "independent-api-wiring-review",
         "independent-foundation-review",
-        "exact-tested-source-byte-identity"
+        "exact-tested-source-byte-identity",
+        "integrated-7e3a214"
       ]
     },
     {
@@ -70,7 +72,8 @@
         "owned-allocation-boundaries",
         "independent-api-wiring-review",
         "independent-foundation-review",
-        "exact-tested-source-byte-identity"
+        "exact-tested-source-byte-identity",
+        "integrated-7e3a214"
       ]
     }
   ],
@@ -128,6 +131,15 @@
       "result": "passed",
       "summary": "All144 tracked runtime/test/contract/sample/inventory/verifier/public-fragment files byte-identical to reviewed and tested checkpoint; index/worktree/untracked clean for sources; source..auditHEAD evidence-only. Checkpoint end audit shows only owned new report outputs; no source writes during checks. Initial verifier lacked explicit initial-clean guard; supplemental proof provided without repeating passing fulltests or allocation.",
       "artifact": "docs/reports/M2-entities-foundation/byte-identity.json"
+    },
+    {
+      "id": "integrated-7e3a214",
+      "kind": "integration",
+      "revision": "7e3a21485389c307fc853bf0c55863bd6ea1de69",
+      "command": "python3 -B docs/reports/M2-entities-foundation/verify.py --report-prefix integration-attempt1 --audit-base c79a0b38861802605773258535278d973e7555dd",
+      "result": "passed",
+      "summary": "Actual current-main integrated source: focused9; MTP/directXML/discovery5023=4469+255+299 allPass/noSkip; independently compiled approved10type nullable/default/generated/hooks plus compiled mutation; public251preserved+21approved=272/registry3388/freshcomplete copied BCL242 currentfullrevision+hashunchanged/planning14/validate121/owns+whitespace. Root confirmed clean initial tree and144manifest source identities pre/post checks. Actual synchronous allocations48Brecord/184Boptions-limitsclone/0Bwarmcallback. Foundation only, no coreDOCTYPE/entity execution or timing claim; earlier failures preserved.",
+      "artifact": "docs/reports/M2-entities-foundation/integration-attempt1/summary.json"
     }
   ],
   "blockers": [],
@@ -136,12 +148,10 @@
     "checks": [
       "Actual5023 MTP/direct XML/discovery4469+255+299 allPass/0skip;9 focused; approved10 inventory+compiled nullable mutation; public272/preserved251/additive21; registry3388; fresh complete copied BCL242 full-source/hash unchanged; inherited foundation/M1 compiler/ABI/protocol; planning14/validate121/scoped ownership/three diffchecks passed.",
       "Record48B/options+limits clone184B/warm optional callback0B; no timing/dependency remeasurement or retained-memory/parser/platform claim.",
-      "Two independent coordinator-relayed source-only exact5157 approvals;144-file source/index/worktree byte-identity proof. Preparation build namespace/nullability/cancellation-analyzer errors retained, corrected before successful source checkpoint."
+      "Two independent coordinator-relayed source-only exact5157 approvals;144-file source/index/worktree byte-identity proof. Preparation build namespace/nullability/cancellation-analyzer errors retained, corrected before successful source checkpoint.",
+      "Coordinator actual integrated verification7e3a21485389c307fc853bf0c55863bd6ea1de69 passed; reports and source audit committed before separate verified metadata."
     ],
-    "remaining": [
-      "Production DOCTYPE parsing/entity expansion/defaults/source stacks/standalone/exactly-once metadata scheduling and pause semantics remain downstream M2-entities; foundation does not implement or claim them.",
-      "Windows/x64/AOT and composition allocation/performance remain unrun/downstream. Coordinator owns fresh integration verification."
-    ],
+    "remaining": [],
     "requests": []
   }
 }
