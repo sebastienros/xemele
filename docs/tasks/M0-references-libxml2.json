@@ -4,11 +4,11 @@
   "milestone": "M0",
   "title": "Pinned libxml2 reference runner",
   "kind": "infrastructure",
-  "status": "implemented",
+  "status": "verified",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M0-references-libxml2",
   "branch": "codex/m0-references-libxml2",
   "base_revision": "d94fb3167cebcfef8f927c580770741441dd6e60",
-  "integration_revision": null,
+  "integration_revision": "46a100be2aecdaf1ee8a0ff29cdb31620d6aae9c",
   "depends_on": [
     "M0-references-protocol"
   ],
@@ -30,7 +30,9 @@
       "status": "passed",
       "evidence": [
         "pinned-native-and-protocol-checks",
-        "clean-native-reproducibility"
+        "clean-native-reproducibility",
+        "independent-final-review",
+        "integrated-native-protocol"
       ]
     },
     {
@@ -38,7 +40,9 @@
       "description": "Run the protocol known XML fixture and compare its normalized response against the integrated BCL runner; exercise invalid requests/input, offline resources and denied unconfigured external access with runner failures distinct from parse rejection.",
       "status": "passed",
       "evidence": [
-        "pinned-native-and-protocol-checks"
+        "pinned-native-and-protocol-checks",
+        "independent-final-review",
+        "integrated-native-protocol"
       ]
     },
     {
@@ -46,7 +50,9 @@
       "description": "Demonstrate task-private build scripts/runner and actual checks at known implementation revision using only integrated verified dependencies; preserve earlier behavior and validate task records.",
       "status": "passed",
       "evidence": [
-        "pinned-native-and-protocol-checks"
+        "pinned-native-and-protocol-checks",
+        "independent-final-review",
+        "integrated-native-protocol"
       ]
     }
   ],
@@ -86,11 +92,38 @@
       "result": "passed",
       "summary": "Second fresh CMake configuration/build at identical toolchain yields identical static-library SHA256028ba67cd39687ce3c6246e724de0c08114eadb665c0d0954a8c35490f4a8dc4 and bridge SHA2567140d1edf4e2e10f6e15693317cffa3d5025a178814010edecf8770bb8f8be21. Upstream/source/license/features captured in provenance; no host libxml2 linked.",
       "artifact": "docs/reports/M0-references-libxml2/reproducibility.json"
+    },
+    {
+      "id": "independent-final-review",
+      "kind": "review",
+      "revision": "150ed0e3eeceea0dfe030186cdd9dbbb59211aca",
+      "command": "Read-only reviewer review_libxml2 final source/evidence inspection and 24 existing-binary adversarial probes",
+      "result": "passed",
+      "summary": "No blocking detector/resolver/ownership/error defect; 9 matching successes,9 explicit unsupported responses,6 preserved native/BCL BOMless UTF16BE differences. Reviewer did not rebuild; integration check separately executed.",
+      "artifact": null
+    },
+    {
+      "id": "integration-initial-cache-missing",
+      "kind": "integration",
+      "revision": "46a100be2aecdaf1ee8a0ff29cdb31620d6aae9c",
+      "command": "Pinned SDK; python3 -B docs/reports/M0-references-libxml2/verify.py before upstream provisioning",
+      "result": "failed",
+      "summary": "Fresh integration checkout had no upstream cache; build refused missing exact source. Explicit --fetch provisioning succeeded; subsequent unchanged-source integrated verifier passed.",
+      "artifact": null
+    },
+    {
+      "id": "integrated-native-protocol",
+      "kind": "integration",
+      "revision": "46a100be2aecdaf1ee8a0ff29cdb31620d6aae9c",
+      "command": "Pinned SDK10.0.400 PATH/DOTNET_ROOT DOTNET_CLI_USE_MSBUILD_SERVER=0 and pinned CMAKE; python3 -B docs/reports/M0-references-libxml2/verify.py",
+      "result": "passed",
+      "summary": "Fresh exact upstream native build and actual16 supported BCL comparisons,16 explicit unsupported boundaries/native-loss reproduction,14 requestfailures/14XMLrejections/65resolvercases,quota/wire/identity/sorter checks. Preserved51focused54solution tests plus3controlledfailures,build/help/package/API0,13discovery/2fixtures/101-taskvalidation. macOSarm64 only. Integrated bridge SHA matches worker; static archive differs across checkout paths, so reproducibility claim remains same-checkout recorded builds.",
+      "artifact": "docs/reports/M0-references-libxml2/integration-verification.txt"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Implemented bounded pinned libxml2 v2.15.4 reference at tested150ed0e; real native events/offline context loaders, exact build/provenance/notices, strict v1 wire, native error/quota handling and faithful supported normalization. Coordinator-approved explicit unsupported detection prevents native document-whitespace loss from becoming success. Await serialized integration; integration_revision null.",
+    "summary": "Reviewed and integrated pinned libxml2 reference at 46a100be2aecdaf1ee8a0ff29cdb31620d6aae9c; actual integrated native/protocol checks passed. Explicit normalization capabilities and native differences preserved; no runtime parser or general conformance claim.",
     "checks": [
       "Full task verifier passed at150ed0e3eeceea0dfe030186cdd9dbbb59211aca; durableverification/provenance/fixture transcripts task-owned.",
       "Two fresh native builds have identical SHA256; CMake3.31.6/AppleClang17build1700.6.3.2/Make3.81/SDK26.2/macOSarm64/target15.0 pinned.",
@@ -99,7 +132,6 @@
       "Performance/allocation benchmarks not applicable to subprocess reference infrastructure and not run; no cross-platform/runtime-conformance claim."
     ],
     "remaining": [
-      "Coordinator independent review and integrated verification before statusverified.",
       "Document-level whitespace cases return explicit unsupported normalization; BCL remains v1 oracle, Xemele requirements remain intact.",
       "Nonbuilt-in encodings unsupported; native non-ASCII namespace IRI rejection differs from BCL and is preserved; other toolchains/platforms unverified."
     ],
