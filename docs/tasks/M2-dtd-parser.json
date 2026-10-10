@@ -2,11 +2,11 @@
   "schema_version": 1,
   "milestone": "M2",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/M2-dtd-parser",
   "branch": "codex/m2-dtd-parser",
   "base_revision": "3a73ca514453b08550dbbe98e78ab97d6eb2735c",
-  "integration_revision": null,
+  "integration_revision": "1a62f775f771a8dba3761436e663d743a3c5a424",
   "goals": [
     "G07"
   ],
@@ -39,7 +39,8 @@
       "status": "passed",
       "evidence": [
         "committed-full-correctness",
-        "independent-source-review"
+        "independent-source-review",
+        "coordinator-integrated-parser"
       ]
     },
     {
@@ -48,7 +49,8 @@
       "status": "passed",
       "evidence": [
         "committed-full-correctness",
-        "independent-source-review"
+        "independent-source-review",
+        "coordinator-integrated-parser"
       ]
     },
     {
@@ -61,7 +63,8 @@
         "fresh-reference-provenance",
         "allocation-boundaries",
         "strengthened-independent-oracle",
-        "exclusive-parser-baseline"
+        "exclusive-parser-baseline",
+        "coordinator-integrated-parser"
       ]
     }
   ],
@@ -146,11 +149,20 @@
       "result": "passed",
       "summary": "Actual6cases/18observations; generatedrestore/build,parent,all6children exit0; completed children inventory; fullraw SHA256f56ac1fc52d0af4f8200988cb0677d9297ec8faf2c8b522268654ed4802a985b. Borrowed scan1/64~56.11/57.61ns 0B; whole1/64~2.405/92.744us 8840/166221B; chunked~2.605/105.073us same allocation. Six priority-permission warnings, broad3sample CI retained. SingleArm64 M4Pro informational baseline; PE declarations retained without expansion/no PE scaling or speedup claim. No retry/job/GC/JIT/config changes. Initial postrun ps sandbox denial and corrected release ACK preserved; inventory/archive succeeded via authorized escalation; raw MD unchanged in archive/display MD/HTML trimmed only; first staged diff check found two generated HTML trailing-space rows, corrected before final evidence commit.",
       "artifact": "docs/reports/M2-dtd-parser/exclusive-f1070a8/summary.json"
+    },
+    {
+      "id": "coordinator-integrated-parser",
+      "kind": "integration",
+      "revision": "1a62f775f771a8dba3761436e663d743a3c5a424",
+      "command": "python3 -B docs/reports/M2-dtd-parser/verify.py --report-prefix integration-1a62f77-attempt1 --audit-base 560779adc4161b94c4c177777219e033954371da --expected-branch codex/integrate-m2-dtd-parser",
+      "result": "passed",
+      "summary": "Actual focused1898/cumulativeMTP4995/direct4441+255+299 allPass/discovery matching; independently compiled actual/approved4parsertypes matched; common-onlysample/cold10440owned9216warm0retained2944048 estimate/7940 modeloracles; publicAPI251/registry3388/freshcompletepinned currentintegrationref242/hashunchanged/planning14/validate120/owns+whitespaceallpass. Root actualXML/sourceidentity/rawtimingSHA auditpassed,6cases18observations/allchildren0 retainedunchangedf107; no timingrerun or PEcomposition/large-table claim.",
+      "artifact": "docs/reports/M2-dtd-parser/integration-1a62f77-attempt1/summary.json"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Common-only approved incremental DTD parser/source stack implemented in owned paths; no public APIs/shared prerequisites changed. Branch work only, coordinator must integrate and verify. Ownership released after final handoff; no recursive workers.",
+    "summary": "Common-only approved incremental DTD parser/source stack implemented in owned paths; no public APIs/shared prerequisites changed. Branch work only, coordinator must integrate and verify. Ownership released after final handoff; no recursive workers. Coordinator integrated reviewed source and verified actual combined checks; all earlier scope preserved.",
     "checks": [
       "Knownruntime9dfe408:4995cumulative/1898focused, independentAPI/sample,251publicAPI/3388registry/242freshBCL/planning14+120/owns passed.",
       "Knownprep/timingf1070a8:7940fullmodeloracles,6cases18samples allprocess exits0; warm scan0B. Raw failures/warnings and distinct allocation workloads retained."
