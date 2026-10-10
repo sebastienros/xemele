@@ -13,5 +13,6 @@ def validate(expected, actual_closure, actual_inputs, metadata, revision):
  for assembly in metadata:
   name=Path(assembly['path']).name
   if assembly['sha256']!=expected['closureIdentities'].get(name):raise ValueError('Metadata file identity differs from raw closure.')
+  if assembly['sourceVersion']!='1.0.0+'+revision:raise ValueError('Generated executable/production source version differs.')
   if assembly['runtime']!='10.0.11' or assembly['architecture']!='Arm64':raise ValueError('Child metadata probe host/runtime differs.')
  if metadata[1]['sourceVersion']!='1.0.0+'+revision:raise ValueError('Generated production/benchmark source version differs.')

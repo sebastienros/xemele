@@ -74,7 +74,10 @@ def main():
  try:
   dotnet=Path(shutil.which('dotnet')).resolve(strict=True);revision=subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True,timeout=30).strip()
   preparation_path=ROOT/'docs/reports/M2-entities/premeasurement.json';preparation_sha=hashlib.sha256(preparation_path.read_bytes()).hexdigest();known=json.loads(preparation_path.read_text());assert known['head']==revision
-  if a.mode=='benchmarks':assert known['generatedVariant']['sourceRevision']==revision
+  if a.mode=='benchmarks':
+   assert known['generatedVariant']['sourceRevision']==revision
+   assert known['generatedVariant']['artifactsPath']==str(raw/'bdn')
+   assert known['intendedBenchmarkReportPrefix']==a.report_prefix
   s['preparationSha256Before']=preparation_sha
   source=hashes(known['compiledSources']);assert source==known['compiledSources'];binary=hashes(known['binaries']);assert binary==known['binaries']
   sdk=subprocess.check_output([str(dotnet),'--version'],cwd=ROOT,text=True,timeout=30).strip();assert sdk=='10.0.400'
