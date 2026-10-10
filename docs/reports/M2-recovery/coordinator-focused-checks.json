@@ -1,0 +1,59 @@
+{
+  "revision": "beec5a44f892740df8c9849648f530eb67a24e8e",
+  "result": "passed",
+  "passed": 417,
+  "failed": 0,
+  "skipped": 0,
+  "identitySha256": "749f930936f19075e165eaf5e8554d9121db97829fc92cfc30520cd93a96fc17",
+  "commands": [
+    {
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "build",
+        "tests/Xemele.Tests/Xemele.Tests.csproj",
+        "-c",
+        "Release",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "/private/tmp/xemele-integrate-m2-recovery-ecee7ca/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll",
+        "-noColor",
+        "-namespace",
+        "Xemele.Tests.Recovery",
+        "-namespace",
+        "Xemele.Tests.Entities",
+        "-namespace",
+        "Xemele.Tests.Resolution",
+        "-namespace",
+        "Xemele.Tests.ConformanceGrammar",
+        "-namespace",
+        "Xemele.Tests.IncompleteAttributes",
+        "-namespace",
+        "Xemele.Tests.DtdEntityBase",
+        "-namespace",
+        "Xemele.Tests.DtdNonvalidating",
+        "-namespace",
+        "Xemele.Tests.DtdCorpusRepair",
+        "-namespace",
+        "Xemele.Tests.UndeclaredReferences",
+        "-namespace",
+        "Xemele.Tests.ExternalDeclarationHook",
+        "-result-xml",
+        "/var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-recovery-integration-l92m2qby/results.xml"
+      ],
+      "exitCode": 0
+    }
+  ],
+  "testedBinariesBeforeMetadataOnlyRebuild": {
+    "src/Xemele/bin/Release/net10.0/Xemele.dll": "01e660c4f40e48ffb378841d775fc467cecb11afc936eac2a864275f866fbac0",
+    "tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll": "7caf456adb0e07481dbfe0496e9d39bb37b6fcc4943bcd79080da0bccf81726a"
+  },
+  "scope": "Focused correctness only; any allocation assertions in selected namespaces were not isolated measurements and are not accepted performance evidence."
+}

@@ -1,0 +1,36 @@
+{
+  "revision": "b872672ea79987a6ffe5615d19f8b612f0dd928c",
+  "reason": "One added lifecycle regression changes test source only; preserve passing prior 417 correctness/API/consumer executions.",
+  "result": "passed",
+  "commands": [
+    {
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "build",
+        "tests/Xemele.Tests/Xemele.Tests.csproj",
+        "-c",
+        "Release",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll",
+        "-noColor",
+        "-method",
+        "Xemele.Tests.Recovery.RecoveryLifecycleTests.FaultOrCancellationDuringRepairedEntityCloseDisposesTheOpenResource",
+        "-result-xml",
+        "/var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-recovery-added-xu8indlz/result.xml"
+      ],
+      "exitCode": 0
+    }
+  ],
+  "passed": 1,
+  "failed": 0,
+  "skipped": 0
+}

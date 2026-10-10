@@ -1,0 +1,138 @@
+{
+  "revision": "beec5a44f892740df8c9849648f530eb67a24e8e",
+  "result": "passed",
+  "commands": [
+    {
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "build",
+        "docs/reports/M0-contracts/ApiCheck/ApiCheck.csproj",
+        "-c",
+        "Release",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "build",
+        "samples/M2-recovery/M2-recovery.csproj",
+        "-c",
+        "Release",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "build",
+        "docs/reports/M2-recovery/Consumers/Source.csproj",
+        "-c",
+        "Release",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll",
+        "compare",
+        "src/Xemele/bin/Release/net10.0/Xemele.dll",
+        "/var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-recovery-package-exlq4hn2/union.txt"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "samples/M2-recovery/bin/Release/net10.0/M2-recovery.dll"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "docs/reports/M2-recovery/Consumers/bin/Release/net10.0/Source.dll"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "pack",
+        "src/Xemele/Xemele.csproj",
+        "-c",
+        "Release",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false",
+        "-p:PackageVersion=0.0.0-recovery-beec5a44f892",
+        "-o",
+        "/var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-recovery-package-exlq4hn2/feed"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "build",
+        "docs/reports/M2-recovery/Consumers/Package.csproj",
+        "-c",
+        "Release",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false",
+        "-p:RecoveryPackageVersion=0.0.0-recovery-beec5a44f892",
+        "-p:RestoreSources=/var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-recovery-package-exlq4hn2/feed",
+        "-p:RestorePackagesPath=/var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-recovery-package-exlq4hn2/cache",
+        "-p:ManagePackageVersionsCentrally=false",
+        "-p:BaseIntermediateOutputPath=obj/package/"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "docs/reports/M2-recovery/Consumers/bin/package/net10.0/Package.dll"
+      ],
+      "exitCode": 0
+    }
+  ],
+  "api": {
+    "members": 377,
+    "canonicalSha256": "5e1dc1470c4ab2a1c501ece47453e4e86fe8a24922673694dcdf16cc781d4d5a",
+    "matched": true
+  },
+  "sampleOutput": "complete=True; wellFormed=False; diagnostics=2\n<report id=\"first\"><item>ready</item></report>\nXML.Recovery.DuplicateAttribute at 1:20; byteOffset=absent\nXML.Recovery.AncestorClose at 1:43; byteOffset=absent\nedited=yes",
+  "sourceConsumer": {
+    "result": "passed",
+    "api": "frozen four-factory usage plus runtime result oracle",
+    "assembly": "/private/tmp/xemele-integrate-m2-recovery-ecee7ca/docs/reports/M2-recovery/Consumers/bin/Release/net10.0/Xemele.dll",
+    "sha256": "01e660c4f40e48ffb378841d775fc467cecb11afc936eac2a864275f866fbac0",
+    "revision": "1.0.0+beec5a44f892740df8c9849648f530eb67a24e8e"
+  },
+  "packageSha256": "dd3df50c9d796c0a1f53ea1dd4ad9e7e5b89ed8dfab984f5c824d32eec2ceb06",
+  "packageConsumer": {
+    "result": "passed",
+    "api": "frozen four-factory usage plus runtime result oracle",
+    "assembly": "/private/tmp/xemele-integrate-m2-recovery-ecee7ca/docs/reports/M2-recovery/Consumers/bin/package/net10.0/Xemele.dll",
+    "sha256": "01e660c4f40e48ffb378841d775fc467cecb11afc936eac2a864275f866fbac0",
+    "revision": "1.0.0+beec5a44f892740df8c9849648f530eb67a24e8e"
+  },
+  "observedSourcePackageBinaryHashesEqual": true,
+  "temporaryPackageAndCacheRemoved": true
+}
