@@ -4,7 +4,7 @@
   "milestone": "M0",
   "title": "Configure ShortRun benchmark defaults",
   "kind": "infrastructure",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M0-bench-shortrun",
   "branch": "codex/m0-bench-shortrun",
   "base_revision": "3e3ad48bfd358eb6b7aa4ce5d3499f6966e7cf53",
@@ -32,29 +32,178 @@
     {
       "id": "M0-bench-shortrun-A1",
       "description": "Use BenchmarkDotNet Job.ShortRun as default for tree/input experiment and central benchmark entry points, honoring explicit later CLI job choices. Preserve actual workload semantics and historical measurement reports.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "tree-shortrun",
+        "input-shortrun",
+        "explicit-job"
+      ]
     },
     {
       "id": "M0-bench-shortrun-A2",
       "description": "Build all three harnesses, preserve experiment correctness/allocation checks and bootstrap benchmark help; confirm a bounded representative run reports the ShortRun job. Do not rerun the full previous matrices or rewrite their historical job evidence.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "tree-build",
+        "input-build",
+        "bootstrap-build",
+        "tree-check",
+        "tree-memory",
+        "input-check",
+        "input-allocations",
+        "bootstrap-help",
+        "tree-shortrun",
+        "input-shortrun"
+      ]
     },
     {
       "id": "M0-bench-shortrun-A3",
       "description": "Record actual tested implementation revision, commands and outputs plus task validation; future assignments receive user-selected ShortRun convention, with measurement limitations stated honestly.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "task-validation",
+        "tree-shortrun",
+        "input-shortrun",
+        "explicit-job"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "experiments/Tree/Program.cs: default Job.ShortRun.AsDefault, preserved JSON exporter; explicit CLI --job/-j bypasses custom default.",
+    "experiments/Input/Program.cs: same ShortRun default for benchmark command; correctness/allocation/lowering commands unchanged.",
+    "benchmarks/Xemele.Benchmarks/Program.cs: same ShortRun default; bootstrap help unchanged.",
+    "docs/reports/M0-bench-shortrun/README.md: tested revision/commands, raw outputs, failed initial override history, configuration-only limits and future ShortRun convention."
+  ],
+  "evidence": [
+    {
+      "id": "tree-build",
+      "kind": "check",
+      "revision": "2e77234f797450c50da335a2d20a9d4e5968c41d",
+      "command": "dotnet build experiments/Tree/Tree.csproj -c Release",
+      "result": "passed",
+      "summary": "Release build passed: 0 warnings, 0 errors.",
+      "artifact": "docs/reports/M0-bench-shortrun/tree-build.txt"
+    },
+    {
+      "id": "input-build",
+      "kind": "check",
+      "revision": "2e77234f797450c50da335a2d20a9d4e5968c41d",
+      "command": "dotnet build experiments/Input/Input.csproj -c Release",
+      "result": "passed",
+      "summary": "Release build passed: 0 warnings, 0 errors.",
+      "artifact": "docs/reports/M0-bench-shortrun/input-build.txt"
+    },
+    {
+      "id": "bootstrap-build",
+      "kind": "check",
+      "revision": "2e77234f797450c50da335a2d20a9d4e5968c41d",
+      "command": "dotnet build benchmarks/Xemele.Benchmarks/Xemele.Benchmarks.csproj -c Release",
+      "result": "passed",
+      "summary": "Release build passed: 0 warnings, 0 errors.",
+      "artifact": "docs/reports/M0-bench-shortrun/bootstrap-build.txt"
+    },
+    {
+      "id": "tree-check",
+      "kind": "check",
+      "revision": "2e77234f797450c50da335a2d20a9d4e5968c41d",
+      "command": "dotnet experiments/Tree/bin/Release/net10.0/Tree.dll --self-check",
+      "result": "passed",
+      "summary": "Passed 8 construction fixtures plus identity/growth/cycles/siblings/deep trees, ordinal Unicode/culture/misses, 0 B warm lookup and workload equivalence.",
+      "artifact": "docs/reports/M0-bench-shortrun/tree-check.txt"
+    },
+    {
+      "id": "tree-memory",
+      "kind": "check",
+      "revision": "2e77234f797450c50da335a2d20a9d4e5968c41d",
+      "command": "dotnet experiments/Tree/bin/Release/net10.0/Tree.dll --memory",
+      "result": "passed",
+      "summary": "Memory checks completed; borrowed text retains backing source, owned text releases it; warm borrowed 1024 lookups allocate 0 B. Cold/warm/retained tree samples preserved.",
+      "artifact": "docs/reports/M0-bench-shortrun/tree-memory.txt"
+    },
+    {
+      "id": "input-check",
+      "kind": "check",
+      "revision": "2e77234f797450c50da335a2d20a9d4e5968c41d",
+      "command": "dotnet experiments/Input/bin/Release/net10.0/Input.dll check",
+      "result": "passed",
+      "summary": "PASS 83095 assertions including splits, suspension, bounded progress, malformed Unicode, matching/cultures/collisions and workload parity.",
+      "artifact": "docs/reports/M0-bench-shortrun/input-check.txt"
+    },
+    {
+      "id": "input-allocations",
+      "kind": "check",
+      "revision": "2e77234f797450c50da335a2d20a9d4e5968c41d",
+      "command": "dotnet experiments/Input/bin/Release/net10.0/Input.dll allocations",
+      "result": "passed",
+      "summary": "Warm allocation regressions/source collectability passed. Borrowed processing 0 B/op; owned conversions and cold initialization remain reported. Synchronous current-thread counters only.",
+      "artifact": "docs/reports/M0-bench-shortrun/input-allocations.txt"
+    },
+    {
+      "id": "bootstrap-help",
+      "kind": "check",
+      "revision": "2e77234f797450c50da335a2d20a9d4e5968c41d",
+      "command": "dotnet benchmarks/Xemele.Benchmarks/bin/Release/net10.0/Xemele.Benchmarks.dll --help",
+      "result": "passed",
+      "summary": "Working bootstrap usage/help preserved; central harness has no benchmark cases yet.",
+      "artifact": "docs/reports/M0-bench-shortrun/bootstrap-help.txt"
+    },
+    {
+      "id": "tree-shortrun",
+      "kind": "check",
+      "revision": "2e77234f797450c50da335a2d20a9d4e5968c41d",
+      "command": "dotnet experiments/Tree/bin/Release/net10.0/Tree.dll --filter '*Text.RetainedView*32*' --artifacts docs/reports/M0-bench-shortrun/tree-short --exporters json",
+      "result": "passed",
+      "summary": "Exactly 1 case: Text.RetainedView Length32; ShortRun, LaunchCount1/WarmupCount3/IterationCount3; total 43.49s. Configuration validation only.",
+      "artifact": "docs/reports/M0-bench-shortrun/tree-short.txt"
+    },
+    {
+      "id": "input-shortrun",
+      "kind": "check",
+      "revision": "2e77234f797450c50da335a2d20a9d4e5968c41d",
+      "command": "dotnet experiments/Input/bin/Release/net10.0/Input.dll benchmark --filter '*LiteralBenchmarks.ByteLiteral*xml*' --artifacts docs/reports/M0-bench-shortrun/input-short --exporters json",
+      "result": "passed",
+      "summary": "Exactly 1 case: ByteLiteral token <?xml; ShortRun, LaunchCount1/WarmupCount3/IterationCount3; total 23.59s. Configuration validation only.",
+      "artifact": "docs/reports/M0-bench-shortrun/input-short.txt"
+    },
+    {
+      "id": "explicit-job",
+      "kind": "check",
+      "revision": "2e77234f797450c50da335a2d20a9d4e5968c41d",
+      "command": "dotnet experiments/Tree/bin/Release/net10.0/Tree.dll --job Dry --filter '*Text.RetainedView*32*' --artifacts docs/reports/M0-bench-shortrun/tree-dry --exporters json",
+      "result": "passed",
+      "summary": "Exactly 1 Dry case, no duplicate ShortRun; total 3.06s. This is job-selection validation, not timing evidence.",
+      "artifact": "docs/reports/M0-bench-shortrun/tree-dry.txt"
+    },
+    {
+      "id": "initial-override-failure",
+      "kind": "check",
+      "revision": "104ed1b870ab1bab528c230eebbab6f743af5ec8",
+      "command": "dotnet experiments/Tree/bin/Release/net10.0/Tree.dll --job Dry --filter '*Text.RetainedView*32*' --artifacts docs/reports/M0-bench-shortrun/tree-dry --exporters json",
+      "result": "failed",
+      "summary": "Initial unconditional AsDefault config ignored CLI Dry and executed ShortRun. Corrected in tested implementation revision; retained as failed check history.",
+      "artifact": "docs/reports/M0-bench-shortrun/initial-104ed1b/tree-dry.txt"
+    },
+    {
+      "id": "task-validation",
+      "kind": "check",
+      "revision": "2e77234f797450c50da335a2d20a9d4e5968c41d",
+      "command": "python3 tools/planning/tasks.py validate",
+      "result": "passed",
+      "summary": "Validated 98 tasks: schema, evidence, acyclic dependencies, additive milestones, ordered ownership.",
+      "artifact": "docs/reports/M0-bench-shortrun/task-validation.txt"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "User requested benchmarks run with ShortRun to limit duration. Ordered harness configuration change preserves completed measurements.",
-    "checks": [],
-    "remaining": [],
+    "summary": "All three harnesses default to real ShortRun; direct explicit CLI jobs bypass the global default to avoid BDN 0.15.8 precedence. Workloads and historical reports preserved. User-selected ShortRun convention documented for future assignments.",
+    "checks": [
+      "All three Release builds passed (0 warnings/errors). Tree self-check/memory and Input 83095 assertions/allocations passed. Bootstrap help passed.",
+      "One default ShortRun case per experiment and one replacement Dry case passed at 2e77234f797450c50da335a2d20a9d4e5968c41d; shared timing lock released.",
+      "tasks.py validate passed for 98 tasks. Initial failed override retained honestly; corrected check passed."
+    ],
+    "remaining": [
+      "Coordinator must integrate and verify; integration_revision stays null. Configuration checks are not comparative performance or release evidence."
+    ],
     "requests": []
   }
 }
