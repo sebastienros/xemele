@@ -18,7 +18,7 @@ public class InputBenchmarks
     [GlobalSetup]
     public void Setup()
     {
-        string text = Corpus switch { "long" => new string('a',4095) + "\n", "multilingual" => string.Concat(Enumerable.Repeat("é😀\r\n中",128)), _ => "<r/>" };
+        string text = Corpus switch { "long" => new string('a',4095) + "\n", "multilingual" => string.Concat(Enumerable.Repeat("é😀\r\n中",128)), _ => "<r/>\n" };
         bytes=Encoding.UTF8.GetBytes(text);chars=new char[text.Length+4];offsets=new long[chars.Length];
         decoder=new(new(){Limits=new(){ExternalBytes=null}});
         // Steady mid-source encoding already selected; baseline starts identically.
