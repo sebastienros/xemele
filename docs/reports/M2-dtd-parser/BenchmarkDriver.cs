@@ -1,5 +1,6 @@
 using BenchmarkDotNet.Running;
 using Xemele.Benchmarks;
+using Xemele.Parsing.Dtd;
 if (args.Contains("--correctness"))
 {
     int assertions = 0;
@@ -11,7 +12,7 @@ if (args.Contains("--correctness"))
             for (int i = 0; i < 10; i++)
             {
                 if (b.BorrowedScan() != "ascii中😀\r\n".Length) throw new Exception("Consumed."); assertions++;
-                var whole = b.OwnedGrammar(); var chunked = b.ChunkedGrammar();
+                var whole = (DtdModel)b.OwnedGrammar(); var chunked = (DtdModel)b.ChunkedGrammar();
                 if (whole.Elements.Count != count || chunked.Elements.Count != count || whole.Attributes.Count != 2 * count || chunked.Attributes.Count != 2 * count || whole.GeneralEntities[0].ReplacementText != "中😀" || chunked.GeneralEntities[0].ReplacementText != "中😀") throw new Exception("Model oracle."); assertions++;
             }
         } finally { b.Cleanup(); }

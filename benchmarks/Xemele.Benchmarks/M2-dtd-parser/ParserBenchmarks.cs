@@ -16,9 +16,9 @@ public class DtdParserBenchmarks
     }
     [GlobalCleanup] public void Cleanup() => scanner.Dispose();
     [Benchmark] public int BorrowedScan() => scanner.Append("ascii中😀\r\n", [], false, default).Consumed;
-    [Benchmark] public DtdModel OwnedGrammar()
+    [Benchmark] public object OwnedGrammar()
     { using var p = new DtdParser(DtdSubsetKind.Internal, new()); if (p.Append(corpus, [], true, default).Step != DtdParseStep.Completed) throw new Exception("Grammar corpus."); return p.Model; }
-    [Benchmark] public DtdModel ChunkedGrammar()
+    [Benchmark] public object ChunkedGrammar()
     {
         using var p = new DtdParser(DtdSubsetKind.Internal, new());
         for (int offset = 0; offset < corpus.Length; offset += 7)

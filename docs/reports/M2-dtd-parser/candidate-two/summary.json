@@ -1,0 +1,34 @@
+{
+  "result": "failed",
+  "host": "macOS-15.8.1-arm64-arm-64bit-Mach-O",
+  "architecture": "arm64",
+  "timing": "not run; exclusive coordinator grant required",
+  "sourceRevision": "6d83bf4a36cece2ad44167aa3c12505991822332",
+  "branch": "codex/m2-dtd-parser",
+  "auditBase": "aacf5a9444edfa174116022aea42998c5abcb4a2",
+  "dotnet": "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+  "dotnetSha256": "e86deb33d0dacad9cc1224466df6418149cb8e13cb8afd0dc6815ea6b7807975",
+  "internalApi": {
+    "matched": true,
+    "types": 4,
+    "inventory": "internal-contract.txt",
+    "nullableAndDefaults": true
+  },
+  "derivedOwnTests": {
+    "fixtures": 54,
+    "inputSplitRows": 1838,
+    "facts": 20,
+    "inlineRows": 37,
+    "total": 1895
+  },
+  "focusedTests": 1895,
+  "allocations": {
+    "coldBytes": 10440,
+    "ownedBytesPerOperation": 9216,
+    "warmPrimitiveBytes": 0,
+    "retainedBytes": 2944048,
+    "retainedResults": 1000,
+    "runtime": "10.0.11",
+    "ownership": "Parser setup owns cursor/collections/builders. Declaration scratch owns bounded lexical tokens. Model owns strings, particles, arrays. Cold includes first-use helpers. Warm comment scan has no persistence. Retained GC estimate includes 1000 model snapshots and result array after transient parser scratch collected."
+  }
+}
