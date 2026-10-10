@@ -9,17 +9,6 @@
   },
   "active_assignments": [
     {
-      "task_id": "M1-serialize",
-      "client_thread_id": "client-new-thread:b7d624dd-a567-4431-9faa-19c6f94131c2",
-      "host_id": "local",
-      "branch": "codex/m1-serialize",
-      "base_revision": "a3fbc9334a5bc465addf1ff8d3fb793b981ba047",
-      "claim_revision": "978a6be36b92cba0f9168db817629daaa5fee63d",
-      "setup_status": "dispatched",
-      "chat_id": "01a123ce-5193-7693-a1bd-dc24e15194ef",
-      "worktree_path": "/Users/sebastienros/.codex/worktrees/8a2c/xemele"
-    },
-    {
       "task_id": "M1-dom",
       "client_thread_id": "client-new-thread:44740c37-3629-4d2c-8c2d-22c3370eee43",
       "host_id": "local",
@@ -43,9 +32,7 @@
       "worktree_path": "/Users/sebastienros/.codex/worktrees/38a3/xemele"
     }
   ],
-  "integration_queue": [
-    "M1-serialize"
-  ],
+  "integration_queue": [],
   "blockers": [
     {
       "task_id": "M1-dom",
@@ -54,12 +41,12 @@
     }
   ],
   "next_actions": [
-    "Integrate serializer handoff with existing runtime regressions",
     "Review/test/measure and integrate linear tree builder repair",
-    "Resume preserved DOM draft only after repair verified and renewed claim"
+    "Resume preserved DOM draft after repair verified and renewed claim",
+    "Verify DOM then strict corpus and M1 gate"
   ],
-  "last_verified_task": "M1-syntax",
-  "last_integrated_revision": "335268e544e361f2be64d9afe67bdf1794f0299b",
+  "last_verified_task": "M1-serialize",
+  "last_integrated_revision": "59f2e904d52a430f90c4f6f3aa2ed25423f35f3f",
   "completed_assignments": [
     {
       "task_id": "M0-build",
@@ -450,6 +437,22 @@
         "chat_archived": true,
         "worktree": "removed"
       }
+    },
+    {
+      "task_id": "M1-serialize",
+      "client_thread_id": "client-new-thread:b7d624dd-a567-4431-9faa-19c6f94131c2",
+      "host_id": "local",
+      "branch": "codex/m1-serialize",
+      "base_revision": "a3fbc9334a5bc465addf1ff8d3fb793b981ba047",
+      "claim_revision": "978a6be36b92cba0f9168db817629daaa5fee63d",
+      "setup_status": "verified",
+      "chat_id": "01a123ce-5193-7693-a1bd-dc24e15194ef",
+      "worktree_path": "/Users/sebastienros/.codex/worktrees/8a2c/xemele",
+      "implementation_revision": "c54d39be7c5a638b6cb591e1211fe435e760f529",
+      "handoff_revision": "07bc3a55bf1c0b0e7b2cd2f8023805b4ccbb7d76",
+      "integration_revision": "59f2e904d52a430f90c4f6f3aa2ed25423f35f3f",
+      "integration_worktree": "/private/tmp/xemele-integrate-m1-serialize",
+      "integration_branch": "codex/integrate-m1-serialize"
     }
   ],
   "benchmark_policy": "ShortRun only; exclusive host timing parks all peer/root heavy checks.",

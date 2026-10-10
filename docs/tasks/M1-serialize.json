@@ -4,11 +4,11 @@
   "milestone": "M1",
   "title": "Serialize constructed and parsed trees",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M1-serialize",
   "branch": "codex/m1-serialize",
   "base_revision": "a3fbc9334a5bc465addf1ff8d3fb793b981ba047",
-  "integration_revision": null,
+  "integration_revision": "59f2e904d52a430f90c4f6f3aa2ed25423f35f3f",
   "depends_on": [
     "M1-tree"
   ],
@@ -40,7 +40,8 @@
         "source-review",
         "correctness-api-package",
         "exclusive-short-run",
-        "allocation-oracle-followup"
+        "allocation-oracle-followup",
+        "integrated-serializer-verification"
       ]
     },
     {
@@ -51,7 +52,8 @@
         "source-review",
         "correctness-api-package",
         "exclusive-short-run",
-        "allocation-oracle-followup"
+        "allocation-oracle-followup",
+        "integrated-serializer-verification"
       ]
     },
     {
@@ -62,7 +64,8 @@
         "source-review",
         "correctness-api-package",
         "exclusive-short-run",
-        "allocation-oracle-followup"
+        "allocation-oracle-followup",
+        "integrated-serializer-verification"
       ]
     }
   ],
@@ -137,6 +140,15 @@
       "result": "passed",
       "summary": "Measurement-only driver follow-up, no runtime/timed workload changes: zero-warning Release build; all4 scan corpus oracles match, cached SearchValues cold2072B and combined3 warm scans0B/1000 repetitions per corpus. Stream1392B/op for16 and1M chars; string1528/4011735B; temporary1M document not retained.",
       "artifact": "docs/reports/M1-serialize/allocation-followup.txt"
+    },
+    {
+      "id": "integrated-serializer-verification",
+      "kind": "integration",
+      "revision": "59f2e904d52a430f90c4f6f3aa2ed25423f35f3f",
+      "command": "Pinned SDK10.0.400 DOTNET_CLI_USE_MSBUILD_SERVER=0 python3 docs/reports/M1-serialize/verify.py at1edac8a05f532cf8f34872a1eda7fbd839b9602b; final measurement-only delta dotnet build docs/reports/M1-serialize/SerializerBenchmarks.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false then dotnet run --project docs/reports/M1-serialize/SerializerBenchmarks.csproj -c Release --no-build -- --allocation at59f2e904d52a430f90c4f6f3aa2ed25423f35f3f",
+      "result": "passed",
+      "summary": "Fresh combined Common/Input/Tree/Syntax/Serializer verifier exit0:46 focused/204 solution/11 foundation zero skips; exact215 approved public members and23 extracted serializer fragment, foundation139/173 and M1model/protocol38, source plus freshly packed isolated NuGet-only consumer/harness/allocation/planning/diff. Runtime/tests/verifier unchanged in final handoff; only15-line measurement-driver addition and reports/task metadata. Final integrated driver rebuild0 warnings/errors and allocation oracle exit0, all4 inputs/3 scanners0B warm; plain stream1392B for16/1M characters, string1528/4011735B, owner not retained. No timings repeated; worker20 successful exclusive ShortRun preserved.",
+      "artifact": "docs/reports/M1-serialize/integration.txt"
     }
   ],
   "blockers": [],
@@ -149,7 +161,6 @@
       "Prior restore/analyzer/metadata-fixture failures preserved and resolved; docs/reports/M1-serialize/README.md explains scope."
     ],
     "remaining": [
-      "Coordinator integrate and rerun combined runtime/API/package checks before verified.",
       "Cross-architecture/Windows/Linux release performance validation remains unrun; local Arm64 ShortRun is informational."
     ],
     "requests": []
