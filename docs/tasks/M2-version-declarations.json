@@ -4,7 +4,7 @@
   "milestone": "M2",
   "title": "Implement bounded Fifth Edition declaration versions",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M2-version-declarations",
   "branch": "codex/m2-version-declarations",
   "base_revision": "5ecb4ccf36bafab9e3b3101a1b478d696e88fb4e",
@@ -40,29 +40,139 @@
     {
       "id": "M2-version-declarations-A1",
       "description": "Implement verified literal ASCII1.[0-9]+ document/text-declaration contract preserving exact lexical version, optional text version and existing ABI. Keep bounded incremental framing, charge-before-growth quotas, cancellation, consumed counts, callback pause/resume, borrowed lifetime, lazy ordinary parsing and primary-error cleanup. No decoder/DTD grammar/resolver/shared-project edits; route additional ownership needs.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "worker-correctness-576a4ef"
+      ]
     },
     {
       "id": "M2-version-declarations-A2",
       "description": "Exercise all split boundaries and declaration callbacks plus byte-input external DTD/parameter/general entity composition and owned retention. Accept compatible1.1/1.7/1.00/1.10/long digits, reject empty/nonASCII digits/references/malformed order/2.0 and XML1.1-only content under effective XML1.0. Authorize only precise historic1.1 negatives in SyntaxTests and FramingTests to become success coverage; preserve all other inherited identities/outcomes and historical evidence.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "worker-correctness-576a4ef"
+      ]
     },
     {
       "id": "M2-version-declarations-A3",
       "description": "Record actual full current integrated dependency correctness/API/package/preservation and applicable allocation/benchmark evidence with frozen source/binary identities and exclusive measurement grant. Preserve previously successful unchanged standalone measurements without reruns, no retries or relaxed counters/thresholds. Dynamic planning/task counts; summaries only and transient output cleanup.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "worker-correctness-576a4ef",
+        "allocation-f2ecd0c-pass",
+        "timing-c7b5be7-pass"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Parsing/Core/XmlParserCore.cs: VersionNumber + borrowed versionStart/versionLength callback slice; ASCII literal 1.[0-9]+ with cancellation work checks.",
+    "src/Xemele/Parsing/Dtd/Framing/XmlTextDeclarationFramer.cs: incremental ASCII version recognition in shared bounded value scratch, exact owned string at declaration completion; canonical static 1.0 reused only for exact lexical 1.0.",
+    "tests/Xemele.Tests/M2-version-declarations/VersionTests.cs: 31 independent split/pause/ownership/quota/content-profile/byte external DTD+PE+general composition cases; only historic syntax 1.1 and framing 70 rows transition.",
+    "samples/M2-version-declarations/ and owned benchmarks: exact ordinary/long borrowed/owned probes plus full fixture oracles; strict allocation pass reused, prebuilt14-case timing/finalfreeze pass, counterdomains separated; original failures immutable."
+  ],
+  "evidence": [
+    {
+      "id": "pretest-python-failure",
+      "kind": "check",
+      "revision": "06293cc773231496d1a4e0e063194a5689b0d351",
+      "command": "DOTNET_ROOT=<pinned SDK> PATH=<SDK + system-only PATH> DOTNET_CLI_USE_MSBUILD_SERVER=0 python3 -B docs/reports/M2-version-declarations/verify.py",
+      "result": "failed",
+      "summary": "Model64/version236/ABI compiler+mutation checks passed; stopped before runtime tests because PATH selected Python3.9 and API helper Path.write_text newline support was unavailable. Transient output cleanup passed; summary only setup-failure-summary.json.",
+      "artifact": null
+    },
+    {
+      "id": "preservation-parser-failure",
+      "kind": "check",
+      "revision": "06293cc773231496d1a4e0e063194a5689b0d351",
+      "command": "DOTNET_ROOT=<pinned SDK> PATH=<SDK + original PATH> DOTNET_CLI_USE_MSBUILD_SERVER=0 python3 -B docs/reports/M2-version-declarations/verify.py",
+      "result": "failed",
+      "summary": "Full runtime suite process exit0 and API272 passed; post-test expected transition parser used unescaped MTP display quotes and failed before remaining suites/package checks. Parser corrected without changing expected identities/counts. Transient outputs removed; summary only preservation-parser-failure-summary.json.",
+      "artifact": null
+    },
+    {
+      "id": "worker-correctness-576a4ef",
+      "kind": "check",
+      "revision": "576a4ef28a5675879d4a58fb8ae75deede33ba71",
+      "command": "DOTNET_ROOT=\"/Users/sebastienros/Library/Application Support/dotnetup/dotnet\" PATH=\"/Users/sebastienros/Library/Application Support/dotnetup/dotnet:$PATH\" DOTNET_CLI_USE_MSBUILD_SERVER=0 python3 -B docs/reports/M2-version-declarations/verify.py",
+      "result": "passed",
+      "summary": "SDK10.0.400/runtime10.0.11 Arm64. Runtime4624 + conformance255 + differential299 =5178 passed, no failed/skipped; inherited4594 digest restored exactly with only authorized syntax1.1/70 framing transitions and 31 added cases. API272, model64/version236, internal ABI4 shapes, CS8345/CS8852 and compiled nullable/readonly/public mutation negatives passed. Fresh source + nupkg consumer product SHA d481f58d02c8312ba347315085714b643860bbb9957e4bdb3ef5b7ca2c802873/full1.0.0+576a4ef... match. Actual14 benchmark-method oracles and ordinary/long boundary oracles with counters disabled passed. Planning14 tests/128 dynamically validated tasks, source/output freeze, owned path/whitespace audits, cleanup17 controls passed; raw outputs removed. Inherited allocation Facts ran as suite correctness; no standalone performance run. Durable details latest-summary.json.",
+      "artifact": null
+    },
+    {
+      "id": "worker-preparation-6824cb1",
+      "kind": "check",
+      "revision": "6824cb1b1ca10be391ccb917d214a9ff1e7f04a1",
+      "command": "DOTNET_ROOT=\"/Users/sebastienros/Library/Application Support/dotnetup/dotnet\" PATH=\"/Users/sebastienros/Library/Application Support/dotnetup/dotnet:$PATH\" DOTNET_CLI_USE_MSBUILD_SERVER=0 python3 -B docs/reports/M2-version-declarations/prepare.py",
+      "result": "passed",
+      "summary": "READY AND PARK at6824cb1: pinned SDK10.0.400/runtime10.0.11 Arm64; frozen source-to-Git inputs, actual source probe/product full1.0.0+6824cb1..., counters-disabled ordinary/long callback-pause/completion/owned-retention oracles and all14 actual benchmark-method oracles. Independent generator built14 declared ShortRun cases without executor/timing; complete47-file child closure and2 generated project/code inputs hashed, actual product/benchmark/generated-host fullversions recorded in preparation-summary.json. Primary product SHA1b983f8cfc196836e8113837a444f32b65ebc49c88256892e69dd60142018c8a; generated product SHA7c02f2a7cd9f8a022a7661fe44b3318a118c020dd2c8fb05ba7aba79ce091c34. Source freeze unchanged. Scoped process inspection confirms no active dotnet children. No standalone measurement executed; prepared outputs transient until granted measurement/cleanup.",
+      "artifact": null
+    },
+    {
+      "id": "worker-measurement-infrastructure-6d01da7",
+      "kind": "check",
+      "revision": "6d01da7665b26c4439e4fa49da579b1452fcd06e",
+      "command": "python3 -B docs/reports/M2-version-declarations/test_measure.py; DOTNET_ROOT=<pinned SDK> PATH=<SDK + original PATH> DOTNET_CLI_USE_MSBUILD_SERVER=0 python3 -B docs/reports/M2-version-declarations/prepare.py",
+      "result": "passed",
+      "summary": "17 synthetic protocol tests passed (no counter/executor runs), including raw 47-file closure/project/notcs/script equality, current full-version/source binding, 14 exact case identities/42 Actual/42 Result/14 GC, exits/runtime/count/retention/allocation tampering, exact generated-method GC oracle totals, total/build/child deadlines, process-group termination/reaping, no retry, primary failure preservation and cleanup/summary-write denial. Fresh committed preparation at6d01da7: all18 commands exit0; frozen tracked prepare.py/verify.py/measure.py/test_measure.py and actual main benchmark + scoped C# inputs. Independently generated47-file current-source child,3 generated inputs, actual full1.0.0+6d01da7... metadata; 14 actual benchmark oracles plus14 generated-method independent consumed/callback oracles with counters disabled, ordinary/long boundary/retention oracles passed. Primary product SHA7e7a94a5539891860e5f38ccd84fd664347f3a51101e93bea0fd6236c51dc94a; generated product SHA2decf2f5f3a4bfd07a23197ec616c625d528609b44694c0a796f7ab2c98f6614. Source freeze unchanged; SDK10.0.400/runtime10.0.11 Arm64; no active scoped dotnet children. Superseded prepared outputs removed; summaries only retained. No standalone measurements executed.",
+      "artifact": null
+    },
+    {
+      "id": "allocation-b5a585e-failure",
+      "kind": "check",
+      "revision": "b5a585edbc408352a29efb81f17352510205f521",
+      "command": "python3 -B docs/reports/M2-version-declarations/measure.py --exclusive-grant m2-version-b5a585e-alloc-exclusive-20261010 --mode allocations",
+      "result": "failed",
+      "summary": "Driver exit1; first real sample child exit-6 with Version probe oracle failed before payload. Preflight full source/primary/generated/runtime freeze and counters-disabled oracles passed. Actual cause and counter values unknown. No positive/lifecycle/timing execution. Original summary retained unchanged; all transient outputs removed, group reaped, scoped nochildren. Source review separately found warmup allocation acceptance enabled; correction does not establish original runtime cause.",
+      "artifact": null
+    },
+    {
+      "id": "allocation-f2ecd0c-pass",
+      "kind": "check",
+      "revision": "f2ecd0c35594baf7a43f8c0223fc7e961485fdbe",
+      "command": "python3 -B docs/reports/M2-version-declarations/measure.py --exclusive-grant m2-version-f2ecd0c-alloc-exclusive-20261010 --mode allocations",
+      "result": "passed",
+      "summary": "One-shot driver exit0. Strict long/ordinary borrowed guard/digit0; owned120064/32; positive64 and ordinaryowned96. All14 generated lifecycle512 iteration consumed totals and exact positive+64 delta pass, distinctchildren. Full source/primary/generated/runtime before==after, allcommands0/groups empty, rawlogs removed. Successful observations preserved, never repeat; exact maps/results retained in correction-specific summary.",
+      "artifact": null
+    },
+    {
+      "id": "timing-f2ecd0c-failure",
+      "kind": "check",
+      "revision": "f2ecd0c35594baf7a43f8c0223fc7e961485fdbe",
+      "command": "python3 -B docs/reports/M2-version-declarations/measure.py --exclusive-grant m2-version-f2ecd0c-timing-exclusive-20261010 --mode benchmarks",
+      "result": "failed",
+      "summary": "Driver exit1 at textual child-exit guard:14 cases/42Actual/42Result/14GC and14structured child success+exit0, but0 parsed textualexitrecords. Beforefreeze and58 streamed raw closure/input checks/3metadata equal; postfreeze unrun. Read-only retained-summary GC comparison13exact; ParseDocument long actual4554456416 vs expected4553768960 (8192*555880), delta687456. No timingpass/retry/thresholdrelaxation/sourcefix; all raw/generated/preparedoutputs removed, nochildren. Immutable original timing+allocation summaries and concise numeric handoff retained.",
+      "artifact": null
+    },
+    {
+      "id": "timing-c7b5be7-pass",
+      "kind": "check",
+      "revision": "c7b5be7ef94cbcdced187f203e68d125cd3851fb",
+      "command": "python3 -B docs/reports/M2-version-declarations/measure.py --exclusive-grant m2-version-c7b5be7-timing-exclusive-20261010 --mode benchmarks",
+      "result": "passed",
+      "summary": "One-shot exit0; Executor-only frozen child,0builds insidelease, immutable f2 allocation reused after compiledsource/config/package/generated/runtime proof; strictproduct0/32/120064/positive unchanged. All14 successful distinctchildren/42Actual/42Result/14GC; complete source/primary/generated/runtime before==after. Exact threadcold/process metrics separated, long signedcross-domain687456 retained. Allraw/preparedoutputs removed,cleanup0,nochildren. Branch runtime/test inputs byte-identical to5178/API272 passed576a4ef; no correctness/allocation repeat. Informational Arm64, no integratedmain pass claim. Durable implemented-handoff.json + full correction-specific summary.",
+      "artifact": null
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Coordinator ordered normative correction; historical verified evidence retained.",
-    "checks": [],
-    "remaining": [],
+    "summary": "Implemented branch work: bounded exactASCII1.[0-9]+ versions,31 newcases and only authorized historictransitions. Preserved unchanged5178/API272/model/package correctness with actual current runtime/test byte proof; strict f2 allocation reused without replay. c7 Executor-only timing14children/42Actual42Result14GC passes final fullidentityfreeze with0 buildsinsidelease; process/threaddomain differences explicit and original failures kept. Raw/preparedoutputs removed, nochildren. No integratedverified claim.",
+    "checks": [
+      "Full verifier at576a4ef: 5178 tests passed; API272; package/source consumer and all14 benchmark oracles; dynamic planning128/14; cleanup/source/output audits.",
+      "Earlier Python-selection and display-name verifier failures retained as summary-only evidence; corrected before passing full verifier.",
+      "prepare.py at6824cb1: counters-disabled ordinary/long full boundary oracles and14 benchmark method oracles; independent47-file child closure/2 generated inputs/fullversions; no executor run; no active scoped dotnet children.",
+      "At6d01da7: test_measure.py exit0,17 synthetic controls; prepare.py exit0/all18 commands exit0, generated47 files +3 inputs and full metadata/source freeze; no counters or timed executor invoked; no active scoped dotnet children.",
+      "Corrected infrastructure: python3 -B docs/reports/M2-version-declarations/test_measure.py exit0,23 synthetic controls; python3 tools/planning/tasks.py validate exit0,128 tasks; git diff --check exit0. No new preparation, counters, or timing execution.",
+      "Unreadable-file correction: test_measure.py exit0,24 synthetic controls (23 preserved + injected unreadable closure/input control); planning validate exit0,128 tasks; diff --check exit0. Initial new-control cleanup argument TypeError corrected; concise observation retained in unreadable-file-control-summary.json. No preparation/generation/counter/timing runs.",
+      "Warmup correction: test_measure.py25 exit0; actual acceptance-helper compiler94 exit0; sample build exit0/0 warnings/errors without execution. Temporary compiler outputs removed; warmup-correction-summary.json retains actual b5 failure hash and correction proof.",
+      "f2 actual allocationexit0; timingexit1 retained permanently. Independent retained-summary comparison13exact and long mismatch687456; finalfreeze unrun. Allprepared/raw outputs removed; no scoped children; no retry.",
+      "Bounded fix:29 synthetic controls exit0; source syntax compile; offline retained14 case results pass, strictGC13exact/long +687456 persists. Root verified compiled258/311 discovery copied with exact3/12 additions and complete Git source binding. BDN0.15.8 source/net8DLL SHA identity inspected, no counters; validator-correction-summary.json.",
+      "Directfix:31 focused synthetic controls exit0; BuildOnly compile exit0/0warnings/errors without execution, outputs removed. Domain/reuse/control/compiler proof in domain-reuse-correction-summary.json; source/config/runtime/package/fixture mutations rejected.",
+      "Finaltiming c7 exit0/14 successfulchildren/42Actual42Result14GC/before==after/allcommands0/rawcleanup0; strictallocationreuse proof. Actual current runtime/test/config bytes match576a4ef correctness inputs; preserved5178/API272. implemented-handoff.json."
+    ],
+    "remaining": [
+      "Coordinator focused current-main temporary-merge integration checks/API/source+package/planning/ownership; comprehensive combined suite at M2-gate.",
+      "Coordinator marks verified only after integrated passing evidence; preserve unchanged successful standalone observations and all historical failure summaries."
+    ],
     "requests": []
   }
 }

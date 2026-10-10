@@ -1,0 +1,6 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><OutputType>Exe</OutputType><AssemblyName>Xemele.SyntaxSample</AssemblyName></PropertyGroup>
+  <ItemGroup><Compile Include="../../docs/reports/M2-version-declarations/RuntimeIdentity.cs" /></ItemGroup>
+  <ItemGroup Condition="'$(UsePackage)' != 'true'"><ProjectReference Include="../../src/Xemele/Xemele.csproj" /></ItemGroup>
+  <ItemGroup Condition="'$(UsePackage)' == 'true'"><PackageReference Include="Xemele" Version="1.0.0" /></ItemGroup>
+</Project>

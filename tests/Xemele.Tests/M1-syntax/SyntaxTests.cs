@@ -123,7 +123,6 @@ public sealed class SyntaxTests
     [InlineData("<?p??><r/>", "XML.Syntax")]
     [InlineData(" <?xml version='1.0'?><r/>", "XML.Syntax")]
     [InlineData("<?xml encoding='UTF-8' version='1.0'?><r/>", "XML.Syntax")]
-    [InlineData("<?xml version='1.1'?><r/>", "XML.Syntax")]
     [InlineData("<?xml version='1.0' standalone='yes' encoding='UTF-8'?><r/>", "XML.Syntax")]
     [InlineData("<?xml version='1.&#48;'?><r/>", "XML.Syntax")]
     [InlineData("<r>\u0001</r>", "XML.Syntax")]

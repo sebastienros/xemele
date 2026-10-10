@@ -1,0 +1,38 @@
+{
+  "result": "passed",
+  "measured": false,
+  "scope": "synthetic/compiler correction checks only; no preparation, generation, product execution, counter or timing replay",
+  "originalAllocationAttempt": {
+    "revision": "b5a585edbc408352a29efb81f17352510205f521",
+    "grant": "m2-version-b5a585e-alloc-exclusive-20261010",
+    "driverExit": 1,
+    "childExit": -6,
+    "failure": "Version probe oracle failed.",
+    "counterValues": "unknown; no payload emitted",
+    "sha256": "13649876c2720869efca3cd260d6b8b2bcf3abdbdd774914a755c96b656d2b34",
+    "report": "measurement-allocations-summary.json",
+    "historyUnchanged": true
+  },
+  "syntheticProtocol": {
+    "command": "python3 -B docs/reports/M2-version-declarations/test_measure.py",
+    "exit": 0,
+    "tests": 25,
+    "addedControl": "Correction-specific record preserves prior failure; repeated source or preparation is rejected; timing selects exactly one matching allocation record."
+  },
+  "compilerControl": {
+    "command": "dotnet run --project <temporary Control.csproj linking actual ProbeEvidence.cs and AcceptanceControl.cs> -c Release --disable-build-servers -p:UseSharedCompilation=false",
+    "exit": 0,
+    "checks": 94,
+    "initialChecks": 93,
+    "initialWarning": "CS0649: IntervalActive never assigned by initial synthetic fixture; explicit in-flight fixture added. Final control no warnings.",
+    "proof": "All24 long+ordinary warm pairs accept synthetic nonzero allocation values with enforcement disabled. Exact real/positive guard/digit/owned totals accepted; +1 mutation of every enforced boundary rejected. Functional warm failure emits structured counters/index/phase/boundary/consumption/callback/outcome evidence and terminates. Duplicate report prevented; in-flight unavailable counter status tested. No counter calls in linked helper/control."
+  },
+  "sampleCompilation": {
+    "command": "dotnet build samples/M2-version-declarations/Sample.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false --artifacts-path <temporary directory>",
+    "exit": 0,
+    "warnings": 0,
+    "errors": 0,
+    "executed": false
+  },
+  "temporaryCompilerOutputsRemoved": true
+}

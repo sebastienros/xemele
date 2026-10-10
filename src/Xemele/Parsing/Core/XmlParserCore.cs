@@ -58,8 +58,8 @@ internal sealed partial class XmlParserCore : IDisposable
     private bool textActive, textStarted, fragmentPending, fragmentEnded, emptyTag, endDocumentDelivered, declarationSeen;
     private bool declarationAllowed = true;
     private XmlTextKind textKind;
-    private string target = "", version = "";
-    private int encodingStart, encodingLength;
+    private string target = "";
+    private int versionStart, versionLength, encodingStart, encodingLength;
     private bool? standalone;
     private Name deliveredName;
 
@@ -462,7 +462,7 @@ internal sealed partial class XmlParserCore : IDisposable
                     keepGoing = sink is not IXmlDtdSink dtdSink || dtdSink.DocumentType(documentType!, entities!.Model, doctypeLocation);
                     break;
                 case Delivery.Declaration:
-                    delivery = Delivery.None; keepGoing = sink.Declaration(new(version, token.AsSpan(encodingStart, encodingLength), standalone, opening)); break;
+                    delivery = Delivery.None; keepGoing = sink.Declaration(new(token.AsSpan(versionStart, versionLength), token.AsSpan(encodingStart, encodingLength), standalone, opening)); break;
                 default:
                     delivery = Delivery.None; endDocumentDelivered = true; keepGoing = sink.EndDocument(opening); break;
             }
@@ -695,21 +695,31 @@ internal sealed partial class XmlParserCore : IDisposable
     }
     private void ParseDeclaration()
     {
-        int i = 3, count = 0; version = ""; encodingStart = encodingLength = 0; standalone = null;
+        int i = 3, count = 0; versionStart = versionLength = encodingStart = encodingLength = 0; standalone = null;
         while (i < tokenLength)
         {
             if (!White(token[i])) { Reject("XML.Syntax", "Declaration requires whitespace.", opening); return; }
             SkipWhite(ref i); if (i == tokenLength) break;
             if (!ReadAttribute(ref i, out var a, declaration: true)) return;
             var name = token.AsSpan(a.NameStart, a.NameLength); var value = token.AsSpan(a.ValueStart, a.ValueLength);
-            if (count == 0 && name.SequenceEqual("version") && value.SequenceEqual("1.0")) version = "1.0";
+            if (count == 0 && name.SequenceEqual("version") && VersionNumber(value)) { versionStart = a.ValueStart; versionLength = a.ValueLength; }
             else if (count == 1 && name.SequenceEqual("encoding") && EncodingName(value)) { encodingStart = a.ValueStart; encodingLength = a.ValueLength; }
             else if ((count == 1 || count == 2 && encodingLength != 0) && standalone is null && name.SequenceEqual("standalone") && (value.SequenceEqual("yes") || value.SequenceEqual("no"))) standalone = value.SequenceEqual("yes");
             else { Reject("XML.Syntax", "Invalid declaration order or value.", a.Location); return; }
             count++;
         }
-        if (version.Length == 0) { Reject("XML.Syntax", "Missing XML version.", opening); return; }
+        if (versionLength == 0) { Reject("XML.Syntax", "Missing XML version.", opening); return; }
         declarationSeen = true; declarationAllowed = false; delivery = Delivery.Declaration;
+    }
+    private bool VersionNumber(ReadOnlySpan<char> value)
+    {
+        if (value.Length < 3 || !value.StartsWith("1.")) return false;
+        for (int i = 2; i < value.Length; i++)
+        {
+            Work(i);
+            if (value[i] is < '0' or > '9') return false;
+        }
+        return true;
     }
     private bool EncodingName(ReadOnlySpan<char> value)
     {

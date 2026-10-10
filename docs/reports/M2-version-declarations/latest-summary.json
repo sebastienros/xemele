@@ -1,0 +1,1062 @@
+{
+  "result": "passed",
+  "checks": [
+    {
+      "command": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    },
+    {
+      "command": [
+        "git",
+        "branch",
+        "--show-current"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    },
+    {
+      "command": [
+        "git",
+        "merge-base",
+        "--is-ancestor",
+        "5f70770facf88b7670fe38c0ac63283feca3219f",
+        "HEAD"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    },
+    {
+      "command": [
+        "git",
+        "merge-base",
+        "--is-ancestor",
+        "5f70770facf88b7670fe38c0ac63283feca3219f",
+        "HEAD"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    },
+    {
+      "command": [
+        "git",
+        "merge-base",
+        "--is-ancestor",
+        "481a6090f67bb2191bb7a2d6eeebe19cb9e0b787",
+        "HEAD"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    },
+    {
+      "command": [
+        "git",
+        "merge-base",
+        "--is-ancestor",
+        "98c99e9895c3c4552b612f0e3fc5692324ecef08",
+        "HEAD"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    },
+    {
+      "command": [
+        "git",
+        "merge-base",
+        "--is-ancestor",
+        "bbf3ea65ebe68a2433b867758378b9d0263175d2",
+        "HEAD"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    },
+    {
+      "command": [
+        "dotnet",
+        "--version"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    },
+    {
+      "command": [
+        "dotnet",
+        "--list-runtimes"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    },
+    {
+      "command": [
+        "git",
+        "ls-files",
+        "--",
+        "src/Xemele",
+        "tests/Xemele.Tests",
+        "tests/Xemele.TestUtilities",
+        "tests/Xemele.Conformance.Tests",
+        "tests/Xemele.Differential.Tests",
+        "samples/M2-version-declarations",
+        "benchmarks/Xemele.Benchmarks",
+        "docs/reports/M2-version-declarations",
+        "tools/ReferenceRunners/Bcl",
+        "docs/reports/M0-contracts/ApiCheck",
+        "Directory.Build.props",
+        "Directory.Build.targets",
+        "Directory.Packages.props",
+        "global.json",
+        "NuGet.config"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "HEAD",
+        "--",
+        "<scoped compiled inputs>"
+      ],
+      "exit": 0,
+      "expectedExit": 0,
+      "argumentCount": 154,
+      "argumentsSha256": "0fc06fd3127cfbb2dd61a1b7b8734d81a6c40dc1eb1d61807937df987c944976"
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "HEAD",
+        "--",
+        "docs/specs/parser.md",
+        "docs/decisions/M2/xml-resources.md",
+        "tests/Contracts/Fixtures/M2/Version",
+        "docs/reports/M2-version-contract/verify.py"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    },
+    {
+      "command": [
+        "python3",
+        "-B",
+        "docs/reports/M2-version-contract/cleanup_checks.py"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    },
+    {
+      "command": [
+        "dotnet",
+        "build",
+        "docs/reports/M0-contracts/ApiCheck/ApiCheck.csproj",
+        "-c",
+        "Release",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false",
+        "--artifacts-path",
+        "/Users/sebastienros/.codex/worktrees/e92f/xemele/docs/reports/M2-version-declarations/tmp-ukp6xj0o/build"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    },
+    {
+      "command": [
+        "dotnet",
+        "build",
+        "/Users/sebastienros/.codex/worktrees/e92f/xemele/docs/reports/M2-contracts/Projects/Resolver/Resolver.csproj",
+        "-c",
+        "Release",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false",
+        "--artifacts-path",
+        "/Users/sebastienros/.codex/worktrees/e92f/xemele/docs/reports/M2-version-declarations/tmp-ukp6xj0o/build"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    },
+    {
+      "command": [
+        "dotnet",
+        "/Users/sebastienros/.codex/worktrees/e92f/xemele/docs/reports/M2-version-declarations/tmp-ukp6xj0o/build/bin/ApiCheck/release/ApiCheck.dll",
+        "compare",
+        "/Users/sebastienros/.codex/worktrees/e92f/xemele/docs/reports/M2-version-declarations/tmp-ukp6xj0o/build/bin/Resolver/release/M2Resolver.dll",
+        "/Users/sebastienros/.codex/worktrees/e92f/xemele/tests/Contracts/Fixtures/M2/Resolver.golden.txt"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    },
+    {
+      "command": [
+        "dotnet",
+        "build",
+        "/Users/sebastienros/.codex/worktrees/e92f/xemele/docs/reports/M2-contracts/Projects/Dtd/Dtd.csproj",
+        "-c",
+        "Release",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false",
+        "--artifacts-path",
+        "/Users/sebastienros/.codex/worktrees/e92f/xemele/docs/reports/M2-version-declarations/tmp-ukp6xj0o/build"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    },
+    {
+      "command": [
+        "dotnet",
+        "/Users/sebastienros/.codex/worktrees/e92f/xemele/docs/reports/M2-version-declarations/tmp-ukp6xj0o/build/bin/ApiCheck/release/ApiCheck.dll",
+        "compare",
+        "/Users/sebastienros/.codex/worktrees/e92f/xemele/docs/reports/M2-version-declarations/tmp-ukp6xj0o/build/bin/Dtd/release/M2Dtd.dll",
+        "/Users/sebastienros/.codex/worktrees/e92f/xemele/tests/Contracts/Fixtures/M2/Dtd.golden.txt"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    },
+    {
+      "command": [
+        "dotnet",
+        "build",
+        "/Users/sebastienros/.codex/worktrees/e92f/xemele/docs/reports/M2-contracts/Projects/Encoding/Encoding.csproj",
+        "-c",
+        "Release",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false",
+        "--artifacts-path",
+        "/Users/sebastienros/.codex/worktrees/e92f/xemele/docs/reports/M2-version-declarations/tmp-ukp6xj0o/build"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    },
+    {
+      "command": [
+        "dotnet",
+        "/Users/sebastienros/.codex/worktrees/e92f/xemele/docs/reports/M2-version-declarations/tmp-ukp6xj0o/build/bin/ApiCheck/release/ApiCheck.dll",
+        "compare",
+        "/Users/sebastienros/.codex/worktrees/e92f/xemele/docs/reports/M2-version-declarations/tmp-ukp6xj0o/build/bin/Encoding/release/M2Encoding.dll",
+        "/Users/sebastienros/.codex/worktrees/e92f/xemele/tests/Contracts/Fixtures/M2/Encoding.golden.txt"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    },
+    {
+      "command": [
+        "dotnet",
+        "build",
+        "/Users/sebastienros/.codex/worktrees/e92f/xemele/docs/reports/M2-contracts/Projects/Entities/Entities.csproj",
+        "-c",
+        "Release",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false",
+        "--artifacts-path",
+        "/Users/sebastienros/.codex/worktrees/e92f/xemele/docs/reports/M2-version-declarations/tmp-ukp6xj0o/build"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    },
+    {
+      "command": [
+        "dotnet",
+        "/Users/sebastienros/.codex/worktrees/e92f/xemele/docs/reports/M2-version-declarations/tmp-ukp6xj0o/build/bin/ApiCheck/release/ApiCheck.dll",
+        "compare",
+        "/Users/sebastienros/.codex/worktrees/e92f/xemele/docs/reports/M2-version-declarations/tmp-ukp6xj0o/build/bin/Entities/release/M2Entities.dll",
+        "/Users/sebastienros/.codex/worktrees/e92f/xemele/tests/Contracts/Fixtures/M2/Entities.golden.txt"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    },
+    {
+      "command": [
+        "dotnet",
+        "build",
+        "/Users/sebastienros/.codex/worktrees/e92f/xemele/docs/reports/M2-contracts/Projects/Recovery/Recovery.csproj",
+        "-c",
+        "Release",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false",
+        "--artifacts-path",
+        "/Users/sebastienros/.codex/worktrees/e92f/xemele/docs/reports/M2-version-declarations/tmp-ukp6xj0o/build"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    },
+    {
+      "command": [
+        "dotnet",
+        "/Users/sebastienros/.codex/worktrees/e92f/xemele/docs/reports/M2-version-declarations/tmp-ukp6xj0o/build/bin/ApiCheck/release/ApiCheck.dll",
+        "compare",
+        "/Users/sebastienros/.codex/worktrees/e92f/xemele/docs/reports/M2-version-declarations/tmp-ukp6xj0o/build/bin/Recovery/release/M2Recovery.dll",
+        "/Users/sebastienros/.codex/worktrees/e92f/xemele/tests/Contracts/Fixtures/M2/Recovery.golden.txt"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    },
+    {
+      "command": [
+        "dotnet",
+        "build",
+        "/Users/sebastienros/.codex/worktrees/e92f/xemele/docs/reports/M2-contracts/Projects/Checks/Checks.csproj",
+        "-c",
+        "Release",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false",
+        "--artifacts-path",
+        "/Users/sebastienros/.codex/worktrees/e92f/xemele/docs/reports/M2-version-declarations/tmp-ukp6xj0o/build"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    },
+    {
+      "command": [
+        "dotnet",
+        "/Users/sebastienros/.codex/worktrees/e92f/xemele/docs/reports/M2-version-declarations/tmp-ukp6xj0o/build/bin/Checks/release/M2Checks.dll"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    },
+    {
+      "command": [
+        "dotnet",
+        "build",
+        "/Users/sebastienros/.codex/worktrees/e92f/xemele/docs/reports/M2-version-declarations/tmp-ukp6xj0o/VersionModels.csproj",
+        "-c",
+        "Release",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false",
+        "--artifacts-path",
+        "/Users/sebastienros/.codex/worktrees/e92f/xemele/docs/reports/M2-version-declarations/tmp-ukp6xj0o/build"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    },
+    {
+      "command": [
+        "dotnet",
+        "build",
+        "tests/Xemele.Tests/Xemele.Tests.csproj",
+        "-c",
+        "Release",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false",
+        "--artifacts-path",
+        "/Users/sebastienros/.codex/worktrees/e92f/xemele/docs/reports/M2-version-declarations/tmp-ukp6xj0o/build"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    },
+    {
+      "command": [
+        "dotnet",
+        "/Users/sebastienros/.codex/worktrees/e92f/xemele/docs/reports/M2-version-declarations/tmp-ukp6xj0o/build/bin/VersionModels/release/VersionModels.dll",
+        "/Users/sebastienros/.codex/worktrees/e92f/xemele/docs/reports/M2-version-declarations/tmp-ukp6xj0o/build/bin/Xemele/release/Xemele.dll"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    },
+    {
+      "command": [
+        "dotnet",
+        "build",
+        "/Users/sebastienros/.codex/worktrees/e92f/xemele/docs/reports/M2-version-declarations/tmp-ukp6xj0o/VersionModels.csproj",
+        "-c",
+        "Release",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false",
+        "--artifacts-path",
+        "/Users/sebastienros/.codex/worktrees/e92f/xemele/docs/reports/M2-version-declarations/tmp-ukp6xj0o/build",
+        "-p:ProbeSource=/Users/sebastienros/.codex/worktrees/e92f/xemele/docs/reports/M2-version-declarations/tmp-ukp6xj0o/borrowed.cs"
+      ],
+      "exit": 1,
+      "expectedExit": 1
+    },
+    {
+      "command": [
+        "dotnet",
+        "build",
+        "/Users/sebastienros/.codex/worktrees/e92f/xemele/docs/reports/M2-version-declarations/tmp-ukp6xj0o/VersionModels.csproj",
+        "-c",
+        "Release",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false",
+        "--artifacts-path",
+        "/Users/sebastienros/.codex/worktrees/e92f/xemele/docs/reports/M2-version-declarations/tmp-ukp6xj0o/build",
+        "-p:ProbeSource=/Users/sebastienros/.codex/worktrees/e92f/xemele/docs/reports/M2-version-declarations/tmp-ukp6xj0o/owned.cs"
+      ],
+      "exit": 1,
+      "expectedExit": 1
+    },
+    {
+      "command": [
+        "dotnet",
+        "build",
+        "/Users/sebastienros/.codex/worktrees/e92f/xemele/docs/reports/M2-version-declarations/tmp-ukp6xj0o/nullable/AbiMutationnullable.csproj",
+        "-c",
+        "Release",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false",
+        "--artifacts-path",
+        "/Users/sebastienros/.codex/worktrees/e92f/xemele/docs/reports/M2-version-declarations/tmp-ukp6xj0o/build"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    },
+    {
+      "command": [
+        "dotnet",
+        "/Users/sebastienros/.codex/worktrees/e92f/xemele/docs/reports/M2-version-declarations/tmp-ukp6xj0o/build/bin/VersionModels/release/VersionModels.dll",
+        "/Users/sebastienros/.codex/worktrees/e92f/xemele/docs/reports/M2-version-declarations/tmp-ukp6xj0o/build/bin/AbiMutationnullable/release/AbiMutationnullable.dll"
+      ],
+      "exit": 1,
+      "expectedExit": 1
+    },
+    {
+      "command": [
+        "dotnet",
+        "build",
+        "/Users/sebastienros/.codex/worktrees/e92f/xemele/docs/reports/M2-version-declarations/tmp-ukp6xj0o/readonly/AbiMutationreadonly.csproj",
+        "-c",
+        "Release",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false",
+        "--artifacts-path",
+        "/Users/sebastienros/.codex/worktrees/e92f/xemele/docs/reports/M2-version-declarations/tmp-ukp6xj0o/build"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    },
+    {
+      "command": [
+        "dotnet",
+        "/Users/sebastienros/.codex/worktrees/e92f/xemele/docs/reports/M2-version-declarations/tmp-ukp6xj0o/build/bin/VersionModels/release/VersionModels.dll",
+        "/Users/sebastienros/.codex/worktrees/e92f/xemele/docs/reports/M2-version-declarations/tmp-ukp6xj0o/build/bin/AbiMutationreadonly/release/AbiMutationreadonly.dll"
+      ],
+      "exit": 1,
+      "expectedExit": 1
+    },
+    {
+      "command": [
+        "tools/ApiBaseline/compare.py::compare",
+        "/Users/sebastienros/.codex/worktrees/e92f/xemele/docs/reports/M2-version-declarations/tmp-ukp6xj0o/build/bin/Xemele/release/Xemele.dll",
+        "/Users/sebastienros/.codex/worktrees/e92f/xemele/docs/reports/M2-version-declarations/tmp-ukp6xj0o/build/bin/ApiCheck/release/ApiCheck.dll"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    },
+    {
+      "command": [
+        "dotnet",
+        "build",
+        "/Users/sebastienros/.codex/worktrees/e92f/xemele/docs/reports/M2-contracts/Projects/Resolver/Resolver.csproj",
+        "-c",
+        "Release",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false",
+        "--artifacts-path",
+        "/Users/sebastienros/.codex/worktrees/e92f/xemele/docs/reports/M2-version-declarations/tmp-ukp6xj0o/build",
+        "-p:ProbeSource=/Users/sebastienros/.codex/worktrees/e92f/xemele/docs/reports/M2-version-declarations/tmp-ukp6xj0o/mutation.cs"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    },
+    {
+      "command": [
+        "dotnet",
+        "/Users/sebastienros/.codex/worktrees/e92f/xemele/docs/reports/M2-version-declarations/tmp-ukp6xj0o/build/bin/ApiCheck/release/ApiCheck.dll",
+        "compare",
+        "/Users/sebastienros/.codex/worktrees/e92f/xemele/docs/reports/M2-version-declarations/tmp-ukp6xj0o/build/bin/Resolver/release/M2Resolver.dll",
+        "/Users/sebastienros/.codex/worktrees/e92f/xemele/tests/Contracts/Fixtures/M2/Resolver.golden.txt"
+      ],
+      "exit": 1,
+      "expectedExit": 1
+    },
+    {
+      "command": [
+        "dotnet",
+        "/Users/sebastienros/.codex/worktrees/e92f/xemele/docs/reports/M2-version-declarations/tmp-ukp6xj0o/build/bin/Xemele.Tests/release/Xemele.Tests.dll",
+        "-noColor",
+        "-result-xml",
+        "/Users/sebastienros/.codex/worktrees/e92f/xemele/docs/reports/M2-version-declarations/tmp-ukp6xj0o/runtime-tests.xml"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    },
+    {
+      "command": [
+        "dotnet",
+        "build",
+        "tools/ReferenceRunners/Bcl/BclReference.csproj",
+        "-c",
+        "Release",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false",
+        "--artifacts-path",
+        "/Users/sebastienros/.codex/worktrees/e92f/xemele/docs/reports/M2-version-declarations/tmp-ukp6xj0o/build"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    },
+    {
+      "command": [
+        "dotnet",
+        "build",
+        "tests/Xemele.Conformance.Tests/Xemele.Conformance.Tests.csproj",
+        "-c",
+        "Release",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false",
+        "--artifacts-path",
+        "/Users/sebastienros/.codex/worktrees/e92f/xemele/docs/reports/M2-version-declarations/tmp-ukp6xj0o/build"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    },
+    {
+      "command": [
+        "dotnet",
+        "/Users/sebastienros/.codex/worktrees/e92f/xemele/docs/reports/M2-version-declarations/tmp-ukp6xj0o/build/bin/Xemele.Conformance.Tests/release/Xemele.Conformance.Tests.dll",
+        "-noColor",
+        "-result-xml",
+        "/Users/sebastienros/.codex/worktrees/e92f/xemele/docs/reports/M2-version-declarations/tmp-ukp6xj0o/Xemele.Conformance.Tests.xml"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    },
+    {
+      "command": [
+        "dotnet",
+        "build",
+        "tests/Xemele.Differential.Tests/Xemele.Differential.Tests.csproj",
+        "-c",
+        "Release",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false",
+        "--artifacts-path",
+        "/Users/sebastienros/.codex/worktrees/e92f/xemele/docs/reports/M2-version-declarations/tmp-ukp6xj0o/build"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    },
+    {
+      "command": [
+        "dotnet",
+        "/Users/sebastienros/.codex/worktrees/e92f/xemele/docs/reports/M2-version-declarations/tmp-ukp6xj0o/build/bin/Xemele.Differential.Tests/release/Xemele.Differential.Tests.dll",
+        "-noColor",
+        "-result-xml",
+        "/Users/sebastienros/.codex/worktrees/e92f/xemele/docs/reports/M2-version-declarations/tmp-ukp6xj0o/Xemele.Differential.Tests.xml"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    },
+    {
+      "command": [
+        "dotnet",
+        "build",
+        "samples/M2-version-declarations/Sample.csproj",
+        "-c",
+        "Release",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false",
+        "--artifacts-path",
+        "/Users/sebastienros/.codex/worktrees/e92f/xemele/docs/reports/M2-version-declarations/tmp-ukp6xj0o/build"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    },
+    {
+      "command": [
+        "dotnet",
+        "/Users/sebastienros/.codex/worktrees/e92f/xemele/docs/reports/M2-version-declarations/tmp-ukp6xj0o/build/bin/Sample/release/Xemele.SyntaxSample.dll",
+        "--oracle"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    },
+    {
+      "command": [
+        "dotnet",
+        "/Users/sebastienros/.codex/worktrees/e92f/xemele/docs/reports/M2-version-declarations/tmp-ukp6xj0o/build/bin/Sample/release/Xemele.SyntaxSample.dll",
+        "--boundary-oracle"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    },
+    {
+      "command": [
+        "dotnet",
+        "/Users/sebastienros/.codex/worktrees/e92f/xemele/docs/reports/M2-version-declarations/tmp-ukp6xj0o/build/bin/Sample/release/Xemele.SyntaxSample.dll",
+        "--identity"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    },
+    {
+      "command": [
+        "dotnet",
+        "pack",
+        "src/Xemele/Xemele.csproj",
+        "-c",
+        "Release",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false",
+        "--artifacts-path",
+        "/Users/sebastienros/.codex/worktrees/e92f/xemele/docs/reports/M2-version-declarations/tmp-ukp6xj0o/build",
+        "--no-build",
+        "-o",
+        "/Users/sebastienros/.codex/worktrees/e92f/xemele/docs/reports/M2-version-declarations/tmp-ukp6xj0o/feed"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    },
+    {
+      "command": [
+        "dotnet",
+        "build",
+        "samples/M2-version-declarations/Sample.csproj",
+        "-c",
+        "Release",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false",
+        "--artifacts-path",
+        "/Users/sebastienros/.codex/worktrees/e92f/xemele/docs/reports/M2-version-declarations/tmp-ukp6xj0o/package-build",
+        "-p:UsePackage=true",
+        "-p:ManagePackageVersionsCentrally=false",
+        "-p:RestoreSources=/Users/sebastienros/.codex/worktrees/e92f/xemele/docs/reports/M2-version-declarations/tmp-ukp6xj0o/feed",
+        "-p:RestorePackagesPath=/Users/sebastienros/.codex/worktrees/e92f/xemele/docs/reports/M2-version-declarations/tmp-ukp6xj0o/packages",
+        "-p:NuGetAudit=false"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    },
+    {
+      "command": [
+        "dotnet",
+        "/Users/sebastienros/.codex/worktrees/e92f/xemele/docs/reports/M2-version-declarations/tmp-ukp6xj0o/package-build/bin/Sample/release/Xemele.SyntaxSample.dll",
+        "--oracle"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    },
+    {
+      "command": [
+        "dotnet",
+        "/Users/sebastienros/.codex/worktrees/e92f/xemele/docs/reports/M2-version-declarations/tmp-ukp6xj0o/package-build/bin/Sample/release/Xemele.SyntaxSample.dll",
+        "--identity"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    },
+    {
+      "command": [
+        "dotnet",
+        "build",
+        "benchmarks/Xemele.Benchmarks/Xemele.Benchmarks.csproj",
+        "-c",
+        "Release",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false",
+        "--artifacts-path",
+        "/Users/sebastienros/.codex/worktrees/e92f/xemele/docs/reports/M2-version-declarations/tmp-ukp6xj0o/build"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    },
+    {
+      "command": [
+        "dotnet",
+        "/Users/sebastienros/.codex/worktrees/e92f/xemele/docs/reports/M2-version-declarations/tmp-ukp6xj0o/build/bin/Xemele.Benchmarks/release/Xemele.Benchmarks.dll",
+        "--list",
+        "flat",
+        "--filter",
+        "*DeclarationVersionBenchmarks*"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    },
+    {
+      "command": [
+        "dotnet",
+        "build",
+        "docs/reports/M2-version-declarations/BenchmarkDriver.csproj",
+        "-c",
+        "Release",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false",
+        "--artifacts-path",
+        "/Users/sebastienros/.codex/worktrees/e92f/xemele/docs/reports/M2-version-declarations/tmp-ukp6xj0o/build"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    },
+    {
+      "command": [
+        "dotnet",
+        "/Users/sebastienros/.codex/worktrees/e92f/xemele/docs/reports/M2-version-declarations/tmp-ukp6xj0o/build/bin/BenchmarkDriver/release/Xemele.Benchmarks.dll",
+        "--oracle"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    },
+    {
+      "command": [
+        "python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tools/planning",
+        "-p",
+        "test_tasks.py"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    },
+    {
+      "command": [
+        "python3",
+        "-B",
+        "tools/planning/tasks.py",
+        "validate"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check",
+        "5f70770facf88b7670fe38c0ac63283feca3219f",
+        "HEAD"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--cached",
+        "--check"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--name-only",
+        "5f70770facf88b7670fe38c0ac63283feca3219f",
+        "HEAD"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--name-only",
+        "HEAD"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--cached",
+        "--name-only"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    },
+    {
+      "command": [
+        "git",
+        "ls-files",
+        "--others",
+        "--exclude-standard"
+      ],
+      "exit": 0,
+      "expectedExit": 0
+    }
+  ],
+  "revision": "576a4ef28a5675879d4a58fb8ae75deede33ba71",
+  "auditBase": "5f70770facf88b7670fe38c0ac63283feca3219f",
+  "branch": "codex/m2-version-declarations",
+  "sdk": {
+    "version": "10.0.400",
+    "host": "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+    "hostSha256": "e86deb33d0dacad9cc1224466df6418149cb8e13cb8afd0dc6815ea6b7807975",
+    "runtimes": [
+      "Microsoft.AspNetCore.App 8.0.30 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.AspNetCore.App]",
+      "Microsoft.AspNetCore.App 10.0.0 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.AspNetCore.App]",
+      "Microsoft.AspNetCore.App 10.0.11 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.AspNetCore.App]",
+      "Microsoft.AspNetCore.App 11.0.0-rc.1.26413.103 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.AspNetCore.App]",
+      "Microsoft.AspNetCore.App 11.0.0-rc.1.26425.128 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.AspNetCore.App]",
+      "Microsoft.NETCore.App 8.0.30 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App]",
+      "Microsoft.NETCore.App 10.0.0 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App]",
+      "Microsoft.NETCore.App 10.0.11 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App]",
+      "Microsoft.NETCore.App 11.0.0-rc.1.26413.103 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App]",
+      "Microsoft.NETCore.App 11.0.0-rc.1.26425.128 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App]"
+    ]
+  },
+  "compiledInputCount": 150,
+  "compiledInputSha256": "191fcbf6ffa282ad7bc3ec4c76fabea2d8a39d9013acab7c81fc20d0c59a7a28",
+  "cleanupControlAssertions": 17,
+  "inheritedModelAssertions": 64,
+  "preservedPublicModels": {
+    "Resolver": {
+      "members": 114,
+      "assemblySha256": "926660b5999f99b1e258a2e91750dc736555da3be0c7be8d8a06b7f2648f2bac",
+      "baselineSha256": "b5335e1df2d2eb59243830442191eaa43c2cccdf8c3f33764a79b7e9aff14349"
+    },
+    "Dtd": {
+      "members": 81,
+      "assemblySha256": "1e4932ccdcc894670406a0d4bf5e511561a1b99dfc8f68e561dcfa89e6cf9467",
+      "baselineSha256": "d3f7d9bb88204b758e7ff552afdf681208de1610e7af7448a5be1ef23d07c04b"
+    },
+    "Encoding": {
+      "members": 81,
+      "assemblySha256": "7187b3fe3b0fb7c90d92575d2119372638fefde44ce997d36e21d81e275eab49",
+      "baselineSha256": "d3f7d9bb88204b758e7ff552afdf681208de1610e7af7448a5be1ef23d07c04b"
+    },
+    "Entities": {
+      "members": 243,
+      "assemblySha256": "80dd4859e094c17b2e2374031bd660529bfef786d3fb26725975f9bcfaf2bd9a",
+      "baselineSha256": "d7341327a3e84a19878cc5d2e52765faef6952149634f1a76ffd74a685903af6"
+    },
+    "Recovery": {
+      "members": 239,
+      "assemblySha256": "94307145f10592652d2df82aa212560e94e3c3f8c5a1277920000d6a6b44a247",
+      "baselineSha256": "5c16caebb96474b5cdaac928293527da6acd2fab8035e0ed3a5afda583a37a18"
+    }
+  },
+  "versionModelAssertions": 236,
+  "internalAbiShapes": 4,
+  "modelSourceSha256": {
+    "tests/Contracts/Fixtures/M2/Common.cs.fixture": "27bd58e2f3499d9094e8aba5d9d34aec49db3c2955e4f54b3aac4069229959f2",
+    "tests/Contracts/Fixtures/M2/Options.cs.fixture": "e9da0855b99bee0f6ef6dd4b4fb4041b41cb48b3e432fb8d417702cd1833b6d6",
+    "tests/Contracts/Fixtures/M2/Resolver.cs.fixture": "bd13859e6ca154ac8fc3b5101e3007346dd62e7f1134952ec92d69649fdd9117",
+    "tests/Contracts/Fixtures/M2/Dtd.cs.fixture": "09dd04682a296c619da310549032fbe82747bc5ae07c8a6dc4a36e99f0f49749",
+    "tests/Contracts/Fixtures/M1/Tree.cs.fixture": "5fef8d8dbb9ac5b72ec1e7a6c7cd63824817b8668d24141ac069f30e56a8d7b1",
+    "tests/Contracts/Fixtures/M2/Entities.cs.fixture": "9b7e3902b2488bc6d5c30779204a2eef0f453ce6bb81e26e58096963827a0b80",
+    "tests/Contracts/Fixtures/M2/Syntax.cs.fixture": "db886c3ed93a1eb862b23f51dfbaf3dcb5bb4a4e140f0092d5db6ac6ab89114c",
+    "tests/Contracts/Fixtures/M2/Version/VersionChecks.cs.fixture": "cd72cf89735e82adf52c916c2e7bfb079c3080e0b0c3d5001a5b713199e2c7fe",
+    "tests/Contracts/Fixtures/M2/Version/AbiChecks.cs.fixture": "6dfdec07b8f03ed48d8b13a8682f31945f13ca4420b03e08f393ed516ac8f328"
+  },
+  "modelAssemblySha256": "179a56b8710543f807ae19ca25aa188c81d70b81ab58c3709ce77f73fad754a2",
+  "expectedCompilerRejections": [
+    "CS8345",
+    "CS8852"
+  ],
+  "internalAbiMutationsDetected": [
+    "nullable Version",
+    "readonly declaration view"
+  ],
+  "apiSourceSha256": {
+    "docs/api/M1-common.txt": "d3f7d9bb88204b758e7ff552afdf681208de1610e7af7448a5be1ef23d07c04b",
+    "docs/api/M1-dom.txt": "e4a15c3bd6206098363144ec57afe0a89b96b2de224f0f41b458db86869b3e82",
+    "docs/api/M1-serialize.txt": "275dfd69900d39cb49050928b2ad47bfb9fc9be429ddb99704f0a89c807da3e5",
+    "docs/api/M1-tree.txt": "784f4e7566f42c73cc152af780ac844b00f8ecf8e293ceefb50c7bee175d7bc2",
+    "docs/api/M2-entities-foundation.txt": "f7fa95b403180333d13fa250cdd906b56fd560eebadd0d8b558934358f61c179",
+    "docs/api/M2-resolver.txt": "1aae45e38022466720ca2eb93c73c35e6e79fc5312e4f029cea43f92a266c4f9"
+  },
+  "apiScope": "all approved API fragments; no corpus-discovery claim",
+  "actualApi": {
+    "members": 272,
+    "assemblySha256": "d481f58d02c8312ba347315085714b643860bbb9957e4bdb3ef5b7ca2c802873"
+  },
+  "apiMutationDetected": true,
+  "outputClosureFiles": 65,
+  "outputClosureSha256": "c5fef99f7c5765d24db507b7829d8f089db9d780eb091960d6c562bda808177b",
+  "preservation": {
+    "inherited": 4594,
+    "exactInheritedNameDigest": "7cdf1436d06ded19272961b9c2b792b2ac907f23726d3266f21fa726862c6ce7",
+    "authorizedSyntaxTransitions": 1,
+    "authorizedFramingRows": 70,
+    "newVersionTests": 31
+  },
+  "runtimeTestIdentitySha256": "c8e3ce8896e16d1b216f921fec3f61e3bf8d2f947e04135134d9fca8e0c70cf5",
+  "outputClosureUnchanged": true,
+  "runtimePreservation": {
+    "total": 4624,
+    "passed": 4624,
+    "failed": 0,
+    "skipped": 0
+  },
+  "testsAssemblySha256": "08ce4869ef8e605a59681499b8c6b24ff476a65eddf52626f062d6755bc79491",
+  "additionalSuites": {
+    "Xemele.Conformance.Tests": {
+      "total": 255,
+      "passed": 255,
+      "identitySha256": "a43104c9986029e0680218003fc7d820c2583c42b53fe16a323f2cab04e634dc",
+      "assemblySha256": "bc8ecd315d5f9b17d3777269dd149e283871387035c1b1f718d9535f7b3c7ba2"
+    },
+    "Xemele.Differential.Tests": {
+      "total": 299,
+      "passed": 299,
+      "identitySha256": "845b5c10e9d4952e309b2d419fcc429fe568c8496889dce7fe6ab319389cdc6e",
+      "assemblySha256": "91393fe9109f2ccae0553108bff9477cbc3c4b9c00cbb0ceaf8704c7b1feb371"
+    }
+  },
+  "sourceConsumer": "Passed 6 exact-version document/callback/owned-framing/public-DOM oracles.",
+  "boundaryOracle": "Passed long-version measured-boundary callback/pause/completion/owned-retention oracle; counters disabled.",
+  "sourceConsumerIdentity": {
+    "Product": {
+      "Name": "Xemele",
+      "Version": "1.0.0.0",
+      "FullVersion": "1.0.0+576a4ef28a5675879d4a58fb8ae75deede33ba71",
+      "Sha256": "d481f58d02c8312ba347315085714b643860bbb9957e4bdb3ef5b7ca2c802873"
+    },
+    "Probe": {
+      "Name": "Xemele.SyntaxSample",
+      "Version": "1.0.0.0",
+      "FullVersion": "1.0.0+576a4ef28a5675879d4a58fb8ae75deede33ba71",
+      "Sha256": "2aa418506fe74caf044c0aeb7846c0efda66cb12ffdff36c3cd96c3689d67f5a"
+    },
+    "Runtime": "10.0.11"
+  },
+  "packageSha256": "e00d766abb5fe8836be033c27491713c840a73e6263b5fb7c3a28dd2e972f6b6",
+  "packageConsumerIdentity": {
+    "Product": {
+      "Name": "Xemele",
+      "Version": "1.0.0.0",
+      "FullVersion": "1.0.0+576a4ef28a5675879d4a58fb8ae75deede33ba71",
+      "Sha256": "d481f58d02c8312ba347315085714b643860bbb9957e4bdb3ef5b7ca2c802873"
+    },
+    "Probe": {
+      "Name": "Xemele.SyntaxSample",
+      "Version": "1.0.0.0",
+      "FullVersion": "1.0.0+576a4ef28a5675879d4a58fb8ae75deede33ba71",
+      "Sha256": "9255d879771075fd341cbcc6d358d332018ab745048f21b8893f4d3bb164b39e"
+    },
+    "Runtime": "10.0.11"
+  },
+  "benchmarkDiscovery": "DeclarationVersionBenchmarks.ParseDocument\nTextDeclarationVersionBenchmarks.FrameOwned",
+  "benchmarkOracles": "Passed all 14 actual benchmark-method full document/framing fixture oracles.",
+  "sourceFreezeUnchanged": true,
+  "planningTests": 14,
+  "planningValidation": "Validated 128 tasks: schema, evidence, acyclic dependencies, additive milestones, and ordered ownership.",
+  "ownedPaths": [
+    "benchmarks/Xemele.Benchmarks/M2-version-declarations/VersionBenchmarks.cs",
+    "docs/reports/M2-version-declarations/BenchmarkDriver.cs",
+    "docs/reports/M2-version-declarations/BenchmarkDriver.csproj",
+    "docs/reports/M2-version-declarations/BuildOnly.cs",
+    "docs/reports/M2-version-declarations/BuildOnly.csproj",
+    "docs/reports/M2-version-declarations/preservation-parser-failure-summary.json",
+    "docs/reports/M2-version-declarations/setup-failure-summary.json",
+    "docs/reports/M2-version-declarations/verify.py",
+    "samples/M2-version-declarations/Program.cs",
+    "samples/M2-version-declarations/Sample.csproj",
+    "src/Xemele/Parsing/Core/XmlParserCore.cs",
+    "src/Xemele/Parsing/Dtd/Framing/XmlTextDeclarationFramer.cs",
+    "tests/Xemele.Tests/M1-syntax/SyntaxTests.cs",
+    "tests/Xemele.Tests/M2-dtd-framing/FramingTests.cs",
+    "tests/Xemele.Tests/M2-version-declarations/VersionTests.cs"
+  ],
+  "temporaryOutputsRemoved": true,
+  "allocationChildSummaries": [
+    {
+      "task": "M2-dtd-framing-allocation-probe",
+      "mode": "positive",
+      "sha256": "6d6791ad7a08df6c54d7da9832e4cf4623fddc2619f7b1001559b994cce87568"
+    },
+    {
+      "task": "M2-dtd-framing-allocation-probe",
+      "mode": "real",
+      "sha256": "8fc97da9ce2ed10282e82475bd20d5ef3fe59d3d12a976c9f2532d622ad86400"
+    },
+    {
+      "task": "M2-encoding-allocation-probe",
+      "mode": "positive",
+      "sha256": "0d5519a6f32241d4fd139c12a63de10c90ae322da6525bdcc78f351c2e3315b0"
+    },
+    {
+      "task": "M2-encoding-allocation-probe",
+      "mode": "real",
+      "sha256": "d0c38aa3d395b057fbdc72dc083730e3174cdd55c349e98dcc6a5ae615516454"
+    },
+    {
+      "task": "M2-pi-allocation-probe",
+      "mode": "positive",
+      "sha256": "fd929bcd73f213acb270c3ff5c8c43f838952b7c37b04f7700d8e8bcbad98203"
+    },
+    {
+      "task": "M2-pi-allocation-probe",
+      "mode": "real",
+      "sha256": "eb66ca700bd1289b47d380c0b9b887f6bf888353698d77606f66994169bec6a4"
+    },
+    {
+      "task": "M2-resolver-allocation-probe",
+      "mode": "positive",
+      "sha256": "17da3b249e988444c723b3932e5980f232e9778c3698b761cd0980382127c8b4"
+    },
+    {
+      "task": "M2-resolver-allocation-probe",
+      "mode": "real",
+      "sha256": "a1d391dc60bb9087be962342ece434405427867013c44ecc715a93cf69693ab2"
+    },
+    {
+      "task": "M2-streaming-allocation-probe",
+      "mode": "positive",
+      "sha256": "ca6c966f1b94cff03ba1c4ff5f075aa611572eaf82dbff739c71a877ca8c8604"
+    },
+    {
+      "task": "M2-streaming-allocation-probe",
+      "mode": "real",
+      "sha256": "53491889ccf92ebb32582acddd88420cf30454c814c88f94dd0583fe5b21a783"
+    },
+    {
+      "task": "M2-tree-allocation-probe",
+      "mode": "positive",
+      "sha256": "b65be7990befa5e6031bad01e222a5f70f619343a7aae1ed17e4bd6ae57cbaac"
+    },
+    {
+      "task": "M2-tree-allocation-probe",
+      "mode": "real",
+      "sha256": "6b31728cd1d286a59105c267376bb3b292ee22435bc8cf368daee08eb435ab7f"
+    }
+  ],
+  "inspectionErrors": [],
+  "cleanupErrors": [],
+  "newRawOutputsRemoved": true
+}

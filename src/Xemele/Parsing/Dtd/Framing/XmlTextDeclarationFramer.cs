@@ -10,7 +10,7 @@ internal readonly record struct XmlTextDeclaration(string? Version, string Encod
 internal readonly record struct TextDeclarationResult(int Consumed, TextDeclarationStep Step,
     XmlTextDeclaration? Declaration, XmlDiagnostic? Diagnostic, XmlLocation NextLocation);
 
-// Only recognition (seven units), one unfinished scalar and the encoding label
+// Only recognition (seven units), one unfinished scalar and bounded version/encoding values
 // survive Append. Whitespace and fixed grammar tokens never enter growable storage.
 internal sealed class XmlTextDeclarationFramer : IDisposable
 {
@@ -22,13 +22,13 @@ internal sealed class XmlTextDeclarationFramer : IDisposable
     private readonly ScalarLocation cursor;
     private PrefixChars prefix;
     private PrefixOffsets offsets;
-    private int prefixLength, prefixScalars, mode, gate, fieldIndex, valueIndex, encodingLength;
+    private int prefixLength, prefixScalars, mode, gate, fieldIndex, valueIndex, versionLength, encodingLength;
     private long lastOffset = -1, expanded, tokenScalars;
     private char high, quote;
     private XmlLocation highLocation, prefixLocation;
     private State state;
     private bool versionField, hasVersion, hasEncoding, separator, afterCr, disposed, faulted, terminal, drained;
-    private char[] encoding = [];
+    private char[] values = [];
     private TextDeclarationStep decision;
     private XmlTextDeclaration? declaration;
     private XmlDiagnostic? diagnostic;
@@ -156,27 +156,30 @@ internal sealed class XmlTextDeclarationFramer : IDisposable
             case State.Value:
                 if (c == quote)
                 {
-                    if (valueIndex == 0 || (versionField && valueIndex != 3)) break;
+                    if (valueIndex == 0 || (versionField && valueIndex < 3)) break;
                     if (versionField) { hasVersion = true; state = State.AfterVersion; }
                     else { hasEncoding = true; state = State.AfterEncoding; }
                     separator = false; return;
                 }
                 if (versionField)
                 {
-                    if (valueIndex >= 3 || c != "1.0"[valueIndex]) break;
+                    if (valueIndex == 0 ? c != '1' : valueIndex == 1 ? c != '.' : c is < '0' or > '9') break;
                 }
                 else
                 {
                     if (!IsLetter(c) && (valueIndex == 0 || !(c is >= '0' and <= '9' or '.' or '_' or '-'))) break;
-                    if (encodingLength == encoding.Length)
-                    {
-                        if (encodingLength == Array.MaxLength) { Reject("XML.ResourceLimit", "Encoding label capacity exceeded.", at); return; }
-                        int size = (int)Math.Min(Array.MaxLength, Math.Max(32L, (long)encodingLength * 2));
-                        if (limits.TokenCharacters is int max) size = Math.Min(size, max);
-                        Array.Resize(ref encoding, size);
-                    }
-                    encoding[encodingLength++] = (char)c;
                 }
+                // Append has charged aggregate work and token quota before retention/growth.
+                int length = versionLength + encodingLength;
+                if (length == values.Length)
+                {
+                    if (length == Array.MaxLength) { Reject("XML.ResourceLimit", "Declaration value capacity exceeded.", at); return; }
+                    int size = (int)Math.Min(Array.MaxLength, Math.Max(32L, (long)length * 2));
+                    if (limits.TokenCharacters is int max) size = Math.Min(size, max);
+                    Array.Resize(ref values, size);
+                }
+                values[length] = (char)c;
+                if (versionField) versionLength++; else encodingLength++;
                 valueIndex++; return;
             case State.AfterVersion:
                 if (IsSpace(c)) { separator = true; return; }
@@ -188,8 +191,8 @@ internal sealed class XmlTextDeclarationFramer : IDisposable
                 state = State.Close; return;
             case State.Close:
                 if (c != '>') break;
-                declaration = new(hasVersion ? "1.0" : null, new string(encoding, 0, encodingLength), prefixLocation);
-                encoding = []; encodingLength = 0;
+                declaration = new(hasVersion ? (values.AsSpan(0, versionLength).SequenceEqual("1.0") ? "1.0" : new string(values, 0, versionLength)) : null, new string(values, versionLength, encodingLength), prefixLocation);
+                values = []; versionLength = encodingLength = 0;
                 Decide(TextDeclarationStep.Declared); return;
         }
         Reject("XML.Syntax", "Invalid external text declaration.", at);
@@ -258,7 +261,7 @@ internal sealed class XmlTextDeclarationFramer : IDisposable
     public void Dispose()
     {
         Enter();
-        try { disposed = true; prefix = default; offsets = default; prefixLength = 0; high = '\0'; encoding = []; encodingLength = 0; declaration = null; diagnostic = null; }
+        try { disposed = true; prefix = default; offsets = default; prefixLength = 0; high = '\0'; values = []; versionLength = encodingLength = 0; declaration = null; diagnostic = null; }
         finally { Volatile.Write(ref gate, 0); }
     }
 }
