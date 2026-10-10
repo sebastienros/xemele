@@ -4,11 +4,11 @@
   "milestone": "M1",
   "title": "Keep synthetic planning regressions independent of evolving repository graph",
   "kind": "infrastructure",
-  "status": "implemented",
+  "status": "verified",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M1-planning-regressions",
   "branch": "codex/m1-planning-regressions",
   "base_revision": "9d618494d3575d7498cf02b28c8f46e9b1e1093f",
-  "integration_revision": null,
+  "integration_revision": "5a7e98d44e5903351dcf0a519c82b13cf8bb67f5",
   "depends_on": [
     "M0-gate"
   ],
@@ -31,7 +31,8 @@
       "evidence": [
         "planning-regressions",
         "fixture-independence",
-        "task-validation"
+        "task-validation",
+        "coordinator-integration"
       ]
     },
     {
@@ -41,7 +42,8 @@
       "evidence": [
         "planning-regressions",
         "fixture-independence",
-        "task-validation"
+        "task-validation",
+        "coordinator-integration"
       ]
     }
   ],
@@ -77,11 +79,29 @@
       "result": "passed",
       "summary": "Validated all 107 live task records and clean diff whitespace at committed source revision. Tracker implementation unchanged; no runtime code/build/timing/allocation work applies.",
       "artifact": "docs/reports/M1-planning-regressions/checks.txt"
+    },
+    {
+      "id": "coordinator-reviewed-source",
+      "kind": "review",
+      "revision": "d8e2e3648344e5c607044e8dc2b13ba140088cd7",
+      "command": null,
+      "result": "passed",
+      "summary": "Independent read-only reviewer approved valid8tasksyntheticbaseline, realgatecoverage and case-insensitiveunorderedownershipnegativecases, all14originaltests/liveactualgraph retained; trackerunchanged.",
+      "artifact": null
+    },
+    {
+      "id": "coordinator-integration",
+      "kind": "integration",
+      "revision": "5a7e98d44e5903351dcf0a519c82b13cf8bb67f5",
+      "command": "python3 -B -m unittest discover -s tools/planning -p test_tasks.py; python3 -B synthetic loader-isolation/mutation audit (README reproduction); python3 tools/planning/tasks.py validate; git diff --check aa30ea5fad0fd0b213ed803ae3300d0ed6361d10 HEAD; owned delta/status audit",
+      "result": "passed",
+      "summary": "Fresh combinedcheckout14tests passed,13syntheticcaseswithrepositoryloaderforbidden/0loadercalls; all9mutationsrejectedactualdiagnostics. Live107taskgraphvalid. Committed/workingwhitespace and ownership audited; onlyownedtest/report/taskJSONdelta, no runtime/APIchanges or timings.",
+      "artifact": null
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Isolated planning regression graph and specification from evolving repository tasks; retained all 14 checks, exact negative guarantees and live graph validation. Branch implementation only; integration_revision remains unset.",
+    "summary": "Integrated verified planningregressionfix; all14tests and livegraphvalidation pass.",
     "checks": [
       "14 planning regressions passed at d8e2e3648344e5c607044e8dc2b13ba140088cd7.",
       "107 live tasks validate; git diff --check passed.",
