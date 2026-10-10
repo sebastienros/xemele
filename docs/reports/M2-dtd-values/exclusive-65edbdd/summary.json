@@ -1,0 +1,70 @@
+{
+  "result": "passed",
+  "sourceRevision": "65edbdd671a65b1be96065f37386318f327b6c1e",
+  "command": "dotnet docs/reports/M2-dtd-values/bin/Release/net10.0/Xemele.DtdValuesBenchmarks.dll --filter '*DtdValue*' --artifacts artifacts/M2-dtd-values/exclusive-65edbdd --exporters json",
+  "environment": {
+    "DOTNET_ROOT": "/Users/sebastienros/Library/Application Support/dotnetup/dotnet",
+    "DOTNET_CLI_USE_MSBUILD_SERVER": "0",
+    "GC": "Concurrent Workstation; unchanged BDN defaults",
+    "sdk": "10.0.400",
+    "runtime": "10.0.11",
+    "cpu": "Apple M4 Pro",
+    "architecture": "Arm64"
+  },
+  "grant": "Explicit fresh coordinator grant65edbdd; all root/reviewer heavy work parked; no peer active",
+  "parentExit": 0,
+  "generatedBuild": {
+    "restoreExit": 0,
+    "buildExit": 0,
+    "rawCommandsAndOutcomes": "complete BDN raw log in full-raw.zip",
+    "sourceDirectory": "BDN removed generated boilerplate using its default artifacts cleanup; not retained or rerun"
+  },
+  "benchmarkChildren": [
+    {
+      "pid": 80041,
+      "exit": 0
+    },
+    {
+      "pid": 80044,
+      "exit": 0
+    }
+  ],
+  "executedBenchmarks": 2,
+  "measurements": {
+    "BorrowedDeclaration": {
+      "meanNs": 96.16764386494954,
+      "error99_9Ns": 5.1204710475878,
+      "allocatedBytesPerOperation": 0,
+      "actualResultSamples": 3
+    },
+    "OwnedAttribute": {
+      "meanNs": 218.5232044061025,
+      "error99_9Ns": 4.338031700563086,
+      "allocatedBytesPerOperation": 920,
+      "actualResultSamples": 3
+    }
+  },
+  "warnings": [
+    "Failed to set up high priority (Permission denied); no priority/GC/JIT/parallelism changes or retry"
+  ],
+  "allocationProbe": "unique-project-final-checks/allocations.json records first-use/setup432B,warm0B,owned920B and96000B GC retained estimate for1000 results+array; retained estimate includes runtime noise, not exact object census",
+  "limitations": [
+    "Provisional single Arm64 narrow microbenchmarks; no speedup or composition/conformance claim",
+    "Effective general-table lookup is linear; scaling of large tables unmeasured",
+    "Parser composition, x64/Windows/AOT checks remain integration/gate work"
+  ],
+  "sourceSha256": {
+    "src/Xemele/Parsing/Dtd/Grammar/Values/DtdValueDecoder.cs": "3bf08702347156d88f6e34b17e4907116504ea25c28cc87c4dc53bf09eaa40ce",
+    "src/Xemele/Parsing/Dtd/Grammar/Values/DtdValueProcessor.cs": "91003ef7371cd518c7b08a4162368870cbc3f0c27b6547209b14a4750a77b76e",
+    "tests/Xemele.Tests/M2-dtd-values/ValueTests.cs": "3aeaf728135a332b5163f2b1f95526af47e26656c653eace63f93e5aa1961a6e",
+    "benchmarks/Xemele.Benchmarks/M2-dtd-values/ValueBenchmarks.cs": "e430825b2603e577582790654fe6a86cd0e485c03b8414c53fd61c90eb60b5ab",
+    "samples/M2-dtd-values/Program.cs": "8ce74400f706e38bc0fedb57f89aeeaad6f46e50e4de41cef01272e0bedf92ec",
+    "samples/M2-dtd-values/Sample.csproj": "8bbd7687908da60c15920329adb728872eb6b1f088e2a0721960b11d6e677eec",
+    "docs/reports/M2-dtd-values/BenchmarkDriver.cs": "b257882c461f7497f49f4ec518c70762fbd68b68031cd3c8bc3c3f6c3ed653ed",
+    "docs/reports/M2-dtd-values/Xemele.DtdValuesBenchmarks.csproj": "4135dac9b9a94faf20fc267c734276007062f2fec08bb2b8d639ab07a8c910f8",
+    "docs/reports/M2-dtd-values/verify.py": "8c26b0bf5bbe74514357df0f72fb00c4b17af05eeb3e7ee25feb5a223e2efb1f"
+  },
+  "noActiveChildrenAtRelease": true,
+  "releaseAck": "Sent to coordinator after parent and all benchmark/build children exited; process inventory empty",
+  "rawArchiveSha256": "1f0432c3561da7fa640daacccde19cb26a0191165307969ec60a038a7040f1fe"
+}
