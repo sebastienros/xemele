@@ -1,0 +1,41 @@
+{
+  "head": "c84da29b4b9fe83288978b960bce3b31ca11d55e",
+  "mode": "controls",
+  "result": "passed",
+  "checks": [
+    {
+      "command": "python3 -B -m unittest discover -s docs/reports/M2-dtd-entity-base -p test_measure.py -v",
+      "exit": 0,
+      "passed": 13
+    },
+    {
+      "command": "DOTNET_ROOT=<pinned-root> DOTNET_CLI_USE_MSBUILD_SERVER=0 dotnet build docs/reports/M2-dtd-entity-base/capture-control/Control.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false",
+      "sandboxAttempt": {
+        "exit": 1,
+        "failure": "NU1900 vulnerability service https://api.nuget.org/v3/index.json unreachable; no compiler/control execution"
+      },
+      "identicalNetworkEscalatedRecovery": {
+        "exit": 0,
+        "warnings": 0,
+        "errors": 0
+      }
+    },
+    {
+      "command": "DOTNET_ROOT=<pinned-root> DOTNET_CLI_USE_MSBUILD_SERVER=0 dotnet docs/reports/M2-dtd-entity-base/capture-control/bin/Release/net10.0/Control.dll",
+      "exit": 0,
+      "passed": 7,
+      "cases": [
+        "complete closure",
+        "missing required entry",
+        "malformed required metadata",
+        "exact owned project reference",
+        "wrong project reference",
+        "duplicate project reference",
+        "missing project reference"
+      ]
+    }
+  ],
+  "temporaryControlBinObjRemoved": true,
+  "noGeneratorBuilderExecutorCountersTimingInControls": true,
+  "limitation": "Compiler controls compile guarded binding with fixture stub; whole driver compilation is separate and failed before preparation generation."
+}
