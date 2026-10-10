@@ -4,11 +4,11 @@
   "milestone": "M2",
   "title": "Separate DTD PE validity constraints from well-formedness",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M2-dtd-nonvalidating",
   "branch": "codex/m2-dtd-nonvalidating",
   "base_revision": "236cb9222334931d5c7d91ae6841b49138f9dd70",
-  "integration_revision": null,
+  "integration_revision": "3bd5e535e8b12c5802e38a0e2f858eb68823a92e",
   "depends_on": [
     "M2-dtd-entity-base",
     "M2-conformance-profile"
@@ -41,7 +41,8 @@
       "description": "Correct only Proper Declaration/PE, Group/PE and Conditional Section/PE Nesting validity-only fatal rejection in frozen nonvalidating profile. Preserve PE Between Declarations WFC: replacement referenced as DeclSep must independently supply complete extSubsetDecl grammar. Retain PE insertion/resume context and preserve malformed expanded grammar, internal-subset placement, literal quote containment, recursion, cancellation/quota, bounded input/suspension/count/pause/cleanup, and declaration opener source URI/location established by verified entity-base repair. No blanket removal of source EOF checks or public/model ABI changes.",
       "status": "passed",
       "evidence": [
-        "frozen-correctness"
+        "frozen-correctness",
+        "root-focused-integration"
       ]
     },
     {
@@ -49,7 +50,8 @@
       "description": "Independently authored complete models/defaults for original xmltest invalid--005,invalid--006,invalid-not-sa-022; IBM ibm-invalid-P49-ibm49i01.xml,ibm-invalid-P50-ibm50i01.xml; errata2e rmt-e2e-14, exact inventory bytes/resources and immutable profile expectations. Exercise all short splits and external source suspension with paired true WFC errors. Authorize only inherited ParserTests external PE (a fragment and SourceTests ChildCannotCloseParentMarkup two-row rejection-to-acceptance transitions with full models/resource balance; preserve every other identity, internal-boundary incomplete declaration and all five ChildCannotLeaveOpenMarkup rejection rows. No unrelated historical benchmark changes.",
       "status": "passed",
       "evidence": [
-        "frozen-correctness"
+        "frozen-correctness",
+        "root-focused-integration"
       ]
     },
     {
@@ -61,7 +63,8 @@
         "allocation-observation",
         "benchmark-observation",
         "reporting-rebind-controls",
-        "planning-ownership"
+        "planning-ownership",
+        "root-focused-integration"
       ]
     }
   ],
@@ -118,11 +121,20 @@
       "result": "passed",
       "summary": "14 planning controls;132 actual tasks validated; original source and reporting commits modify only task-owned paths. Final metadata validation follows handoff update.",
       "artifact": "docs/reports/M2-dtd-nonvalidating/completion-summary.json"
+    },
+    {
+      "id": "root-focused-integration",
+      "kind": "integration",
+      "revision": "3bd5e535e8b12c5802e38a0e2f858eb68823a92e",
+      "command": "Pinned Release builds; seven scoped test classes; approved API checker; source and fresh-package consumers; planning 14 controls and validate132; owned diff inspection.",
+      "result": "passed",
+      "summary": "1985 tests passed, 0 failed/skipped; API272; all six originals with split/pause/model/resource oracles; byte-identical source/package product. Full5237 branch correctness/profile and actual allocation/timing preserved. Comprehensive combined checks remain at M2 gate.",
+      "artifact": "docs/reports/M2-dtd-nonvalidating/integration-summary.json"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Selective nonvalidating declaration/group/conditional PE nesting accepts six original cases; preserves DeclSep independently complete grammar, literal/source restrictions, opener bases, bounded streaming/quotas/cancellation/pause/cleanup and API272. Branch implementation complete; root alone integrates/verifies.",
+    "summary": "Verified selective validity-only PE nesting correction integrated, preserving independently complete DeclSep replacements, lexical containment, expanded grammar, declaration opener bases and bounded resource behavior.",
     "checks": [
       "Frozen compilation5cc5e7d: full4668/258/311 tests, API272, source/fresh-package consumer byte identity, all original IDs/resource hashes/profile expectations unchanged;2574 matches/11 exposed unrelated gaps.",
       "Reporter7af415f: prepared child rebind changes only2 Python identities; real0B borrowed/positive owned allocation plus two-case ShortRun observations/provenance/final freezes passed under one explicit exclusive sequence.",
