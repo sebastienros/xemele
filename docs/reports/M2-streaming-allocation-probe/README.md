@@ -1,5 +1,8 @@
 # Streaming allocation boundary
 
+Current state: **in_progress, unverified**. Independent integration failed the
+owned primitive at3,448B. Prior branch passes below are not a complete fix.
+
 Only the streaming allocation Fact/helper/imports and owned diagnostic/report
 files change. Production source, default JIT/GC/test parallelism, exact 0 B,
 100 warm iterations and 10,000 measured iterations remain unchanged. Each
@@ -110,3 +113,26 @@ locally if a subsequent allocation observation warrants a bounded EventPipe
 experiment. No full-solution retry is planned: one baseline direct247 process,
 one sampled direct247 process and one independent sampled process will compare
 contexts, with every result retained. Source/hypothesis is sent before execution.
+
+The single announced comparison ran at source
+`4854b87ba019fef3999bbfa275299b8f10538ec6`; immutable output is under
+`sample-4854b87-attempt1/`. Both baseline and sampled standalone processes passed
+247/247. Their owned test output records primitive0B/surrounding0B,50,000measured
+units/120,000callbacks,50,500totalunits/121,205totalcallbacks and completion.
+Both sampled contexts recorded exactly432B inside warm Append iteration0,0B
+inside the remaining99warm calls, and0B in all10,000measured Append/validation/
+observer/gap samples. All samples consumed40UTF-16units and returnedNeedInput.
+Measured rows span units505..50,500 and callbacks1,214..121,202. Thread ID stayed
+15 in the test and1 independently. The independent sampling arrays/delegate
+setup was727,312B, reported separately before warm-up. Full100+10,000rows per
+context are preserved compressed, not just a filtered summary.
+
+The3,448B failure remains unexplained: these fresh processes and instrumented
+source did not reproduce it, and per-Append counters alone cannot distinguish
+production, callback, native/runtime/JIT causes. No further test retries or
+EventPipe run were made after this one comparison. There is no observed measured
+allocation here to attribute with stacks; there is also no evidence warranting
+a production repair request or a new correction. A coordinator-approved next
+experiment should target the preserved failing integration context with bounded
+allocation stack attribution, acknowledging small allocation sampling limits.
+The task remainsin_progress withA2failed; parent jointallPass remainsrequired.
