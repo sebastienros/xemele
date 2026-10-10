@@ -2,7 +2,7 @@
   "schema_version": 1,
   "milestone": "M2",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M2-dtd-values",
   "branch": "codex/m2-dtd-values",
   "base_revision": "bacf6b4ed24a4338f25e2990efcf35c7e5da76fb",
@@ -35,29 +35,137 @@
     {
       "id": "M2-dtd-values-A1",
       "description": "Implement internal value processing independently of parser/source-stack: decode XML character references in entity declaration values while retaining general references for use-site expansion; normalize attribute defaults only when explicitly applied with a supplied effective general-entity table, preserving CDATA/tokenized whitespace and direct-character-reference semantics. Reject malformed references/illegal scalars/literal less-than in attribute values/undeclared, external or unparsed attribute entities as required; preserve approved internal model/parser/framing signatures. No public stubs or premature default normalization at model publication. Expose a bounded incremental character-reference/value decoding seam for the future parser: every short split, including arbitrarily long leading-zero numeric references, must progress without buffering their raw spelling or borrowing input after return. Caller owns literal delimiters/PE composition/source newline normalization; reference-produced characters must not be normalized again.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "final-values-checks",
+        "cleanup-review"
+      ]
     },
     {
       "id": "M2-dtd-values-A2",
       "description": "Prove authored/pinned character-reference and whitespace/recursive general-reference cases, predefined behavior and distinct reference versus literal origin, effective-table/internal precedence supplied by caller, active-name cycles even with null EntityDepth, exact/one-over expansion/depth/token capacities and cancellation. Helper owns only actual expansion charges/owned output and borrows no input beyond call; grammar owns raw input/distinct retained-name accounting. Use verified unchanged IDtdBudget, no resolver/core/decoder/DOM dependency or external fetch. Test all character-reference/input/output boundaries, decimal/hex overflow and illegal/lone-surrogate scalars, leading-zero numeric state, literal versus reference whitespace and nested entity output, meaningful progress before EOF and exact consumed units. Publish the internal helper/accounting contract before dependent parser starts.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "final-values-checks",
+        "cleanup-review"
+      ]
     },
     {
       "id": "M2-dtd-values-A3",
       "description": "Compile representative common-only helper usage and record exact internal helper contract at known source; focused and cumulative earlier-milestone/API/reference/planning/owned checks plus explicit cold/setup/warm primitive/owned-output allocation and applicable benchmark evidence. Owned result persistence allocations reported honestly; no speedup/zero-allocation/conformance claim from source inspection.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "final-values-checks",
+        "cleanup-review",
+        "exclusive-values-timing",
+        "project-name-review"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Parsing/Dtd/Grammar/Values/DtdValueDecoder.cs: bounded incremental numeric decoding and retained general references",
+    "src/Xemele/Parsing/Dtd/Grammar/Values/DtdValueProcessor.cs: applied default normalization, iterative expansion and accounting",
+    "docs/reports/M2-dtd-values/README.md: compiled internal helper/lifetime/accounting contract",
+    "tests/Xemele.Tests/M2-dtd-values/ValueTests.cs: 994 derived split/semantic/accounting/lifetime/cleanup tests",
+    "samples/M2-dtd-values/Sample.csproj: independently compiled common/model-only usage and allocation/retention probes"
+  ],
+  "evidence": [
+    {
+      "id": "initial-build-failure",
+      "kind": "check",
+      "revision": "57e64571366538c41a5184297bd807ad5b70b991",
+      "command": "dotnet build tests/Xemele.Tests/Xemele.Tests.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false",
+      "result": "failed",
+      "summary": "17 owned xUnit1051 missing operation-token diagnostics; corrected without suppression; subsequent two local Drain signature diagnostics and missing-assembly attempt also preserved.",
+      "artifact": "docs/reports/M2-dtd-values/preparation.json"
+    },
+    {
+      "id": "sandbox-mtp-failure",
+      "kind": "check",
+      "revision": "a09d82de08b4875ae1066ceb343e8d6bc12c98fb",
+      "command": "python3 -B docs/reports/M2-dtd-values/verify.py --report-prefix correctness-a09d82d --expected-branch codex/m2-dtd-values",
+      "result": "failed",
+      "summary": "Focused987/sample/allocations/oracles passed; cumulative MTP Socket.Bind denied by sandbox. Full logs preserved; authorized local-socket escalation resolves environment refusal.",
+      "artifact": "docs/reports/M2-dtd-values/correctness-a09d82d/summary.json"
+    },
+    {
+      "id": "cumulative-values-checks",
+      "kind": "check",
+      "revision": "19b037a48d633a4348176ae386f989489ae63986",
+      "command": "python3 -B docs/reports/M2-dtd-values/verify.py --report-prefix correctness-socket-granted --expected-branch codex/m2-dtd-values",
+      "result": "passed",
+      "summary": "SDK10.0.400/runtime10.0.11/default GC/JIT on arm64; focused987; MTP3090/direct2536+255+299/discovery counts match; 251 compiled API/3388 registry; 242 fresh pinned current-revision reference records; planning14/validate120; complete ownership and whitespace audits. No timing.",
+      "artifact": "docs/reports/M2-dtd-values/correctness-socket-granted/summary.json"
+    },
+    {
+      "id": "initial-cleanup-review",
+      "kind": "review",
+      "revision": "be2f5ecf9074c6c007a0df67e48956f36734bc1e",
+      "command": "Independent read-only source review relayed by coordinator",
+      "result": "failed",
+      "summary": "Independent read-only source review reported ExitEntity cleanup masking ChargeExpandedCharacters primary exceptions and stopping parent drain; exact-output benchmark oracle/scaling disclosure also requested. Review was not test execution.",
+      "artifact": "docs/reports/M2-dtd-values/reviews.json"
+    },
+    {
+      "id": "cleanup-review",
+      "kind": "review",
+      "revision": "b65d0a91332f4dda1c62bc05ef4e53d7de9d8aff",
+      "command": "Independent narrow read-only source review relayed by coordinator",
+      "result": "passed",
+      "summary": "Coordinator relayed independent narrow read-only review approval of cleanup453ed975cb2614b2d9448b48143109c5c1d79599 plus verifier-only b65d0a9: accepted exits exactly once, complete drain, original exception identity/stack preserved or first cleanup propagated; rejected entries no exit; borrowed exact oracle and unmeasured linear table disclosure approved. No checks executed by review.",
+      "artifact": "docs/reports/M2-dtd-values/reviews.json"
+    },
+    {
+      "id": "project-name-review",
+      "kind": "review",
+      "revision": "65edbdd671a65b1be96065f37386318f327b6c1e",
+      "command": "Coordinator narrow source audit",
+      "result": "passed",
+      "summary": "Coordinator narrow source audit: owned project rename100% identical, four matching verifier references; runtime/tests/benchmark workloads/samples/driver unchanged. Independent runtime approval retained; review is not test execution.",
+      "artifact": "docs/reports/M2-dtd-values/reviews.json"
+    },
+    {
+      "id": "benchmark-generation-failure",
+      "kind": "check",
+      "revision": "b65d0a91332f4dda1c62bc05ef4e53d7de9d8aff",
+      "command": "dotnet docs/reports/M2-dtd-values/bin/Release/net10.0/Benchmarks.dll --filter '*DtdValue*' --artifacts artifacts/M2-dtd-values/exclusive-b65d0a9 --exporters json",
+      "result": "failed",
+      "summary": "Parent exit0 but BDN generator rejected duplicate project name; zero generated build/benchmark child/measurements. Full raw saved; scoped unique project rename resolved cause before fresh correctness and a new exclusive grant.",
+      "artifact": "docs/reports/M2-dtd-values/exclusive-b65d0a9-failed/summary.json"
+    },
+    {
+      "id": "final-values-checks",
+      "kind": "check",
+      "revision": "65edbdd671a65b1be96065f37386318f327b6c1e",
+      "command": "python3 -B docs/reports/M2-dtd-values/verify.py --report-prefix unique-project-final-checks --expected-branch codex/m2-dtd-values",
+      "result": "passed",
+      "summary": "SDK10.0.400/runtime10.0.11/default GC/JIT Arm64. Derived focused994=964 splits+14 facts+16 inline; MTP3097/direct2543+255+299/discovery exact. API251/registry3388; 242 full fresh pinned current-source BCL records; planning14/validate120; complete owned/staged/working/untracked/whitespace audit. Common-only compiled helper/sample, exact benchmark30 assertions. Cold/setup432B,warm0B,owned920B; retained estimate96000B/1000 results+array (runtime noise, not exact census).",
+      "artifact": "docs/reports/M2-dtd-values/unique-project-final-checks/summary.json"
+    },
+    {
+      "id": "exclusive-values-timing",
+      "kind": "check",
+      "revision": "65edbdd671a65b1be96065f37386318f327b6c1e",
+      "command": "dotnet docs/reports/M2-dtd-values/bin/Release/net10.0/Xemele.DtdValuesBenchmarks.dll --filter '*DtdValue*' --artifacts artifacts/M2-dtd-values/exclusive-65edbdd --exporters json",
+      "result": "passed",
+      "summary": "Fresh exclusive coordinator grant; restore/build/parent and both benchmark children exit0; two completed methods, each3 actual result observations. Borrowed96.168ns/0B,owned218.523ns/920B. Ordinary-priority warning preserved; default settings unchanged. Full raw/hash, generated-build command outcomes, source hashes and release ACK recorded. Provisional Arm64 narrow workloads; no speedup/composition/large-table claim.",
+      "artifact": "docs/reports/M2-dtd-values/exclusive-65edbdd/summary.json"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Independently reviewable child of M2-dtd-grammar; approved parser/model/framing contracts and original parent A1-A3 preserved. Parser supplies parameter-entity-composed declaration literals; helper does not own PE source-stack grammar or raw-source/name charges.",
-    "checks": [],
-    "remaining": [],
+    "summary": "Implemented bounded internal declaration decoder and caller-applied attribute default normalization; approved model/parser/framing/IDtdBudget unchanged. Primary ledger faults preserved through exact-once full cleanup; independent review approved. Source65edbdd; all criteria branch-passed. Explicit release of all owned source and task JSON to coordinator after evidence commit; no worker children/heavy processes.",
+    "checks": [
+      "Fresh unique-project-final-checks at65edbdd: focused994/MTP3097/direct2543+255+299/discovery exact; compiled API251/registry3388; full pinned current-source reference242; planning14/validate120; all ownership/whitespace audits",
+      "Independent common-only helper contract/sample and exact-content benchmark30 assertions passed",
+      "Exclusive BDN: restore/build/parent/two children exit0; borrowed96.168ns/0B,owned218.523ns/920B; cold/setup432B,warm0B,owned920B; retained GC-total-memory estimate96000B/1000 outputs+array",
+      "Initial analyzer/signature/missing-assembly/sandbox-socket failures, review blocker and duplicate-project zero-measurement attempt retained; fixed before final checks, no blind timing rerun"
+    ],
+    "remaining": [
+      "Coordinator integrated verification; worker status implemented only, integration_revision null",
+      "Large-table linear probe scaling unmeasured; composing owner must measure before selecting alternate lookup seam",
+      "End-to-end parser composition and x64/Windows/AOT checks remain later integration/gate work"
+    ],
     "requests": []
   }
 }
