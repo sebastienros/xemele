@@ -82,6 +82,23 @@ class MeasurementGuards(unittest.TestCase):
         self.assertEqual(row['gc'], [])
         self.assertEqual(summary['benchmarks']['gateFailures'], [failure])
 
+    def test_missing_required_metadata_partial_proof_survives_raw_summary_cleanup(self):
+        import json
+        proof = {'stage': 'before', 'gatePassed': False, 'captureComplete': False,
+                 'actual': {'closure': {'survivor.dll': 'actual-sibling'}, 'generatedInputs': {'child.notcs': 'actual-code'}, 'entry': None},
+                 'captureErrors': [{'phase': 'metadata', 'field': 'entry', 'path': '/missing.dll', 'type': 'System.IO.FileNotFoundException', 'message': 'missing required entry'}]}
+        text = '// Benchmark: EntityBaseBenchmarks.InternalNestedModel: fixture\nENTITY_BASE_PROVENANCE ' + json.dumps(proof) + '\n'
+        summary = {}
+        with tempfile.TemporaryDirectory() as root:
+            with self.assertRaises(ValueError):
+                measure.benchmark_results(text, Path(root), 'a' * 40, {}, summary)
+        saved = json.loads(json.dumps(summary))['benchmarks']['observations'][0]['proofs'][0]
+        self.assertEqual(saved['actual']['closure'], {'survivor.dll': 'actual-sibling'})
+        self.assertEqual(saved['actual']['generatedInputs'], {'child.notcs': 'actual-code'})
+        self.assertIsNone(saved['actual']['entry'])
+        self.assertEqual(saved['captureErrors'][0]['field'], 'entry')
+        self.assertEqual(saved['captureErrors'][0]['type'], 'System.IO.FileNotFoundException')
+
     def test_phase_accounting_preserves_true_passed_and_unrun_phases(self):
         summary = {'stage': 'initial', 'phases': {'initial': 'running', 'execution': 'unrun', 'validation': 'unrun', 'freeze': 'unrun'}}
         measure.phase(summary, 'execution')

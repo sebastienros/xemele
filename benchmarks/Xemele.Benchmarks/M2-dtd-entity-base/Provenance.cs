@@ -1,6 +1,7 @@
 using System.Reflection;
 using System.Reflection.Metadata;
 using System.Reflection.PortableExecutable;
+using System.Runtime.ExceptionServices;
 using System.Security.Cryptography;
 using System.Text.Json;
 
@@ -42,13 +43,58 @@ internal static class EntityBaseProvenance
         return result;
     }
 
-    internal static JsonElement Capture(string directory, string entry, string project, string driver, string product)
-        => JsonSerializer.SerializeToElement(new
+    internal static JsonElement Capture(string directory, string entry, string project, string driver, string product, string stage = "capture")
+    {
+        directory = Path.GetFullPath(directory); project = Path.GetFullPath(project);
+        var errors = new List<object>(); Exception? primary = null;
+        // Preserve every available actual file identity before opening required
+        // assembly metadata. A bad file must not discard its valid siblings.
+        var closure = CaptureFiles(directory, true);
+        var generatedInputs = CaptureFiles(project, false);
+        var actual = JsonSerializer.SerializeToElement(new
         {
-            directory = Path.GetFullPath(directory), projectDirectory = Path.GetFullPath(project),
-            entry = Metadata(entry), driver = Metadata(driver), product = Metadata(product), runtime = Metadata(typeof(object).Assembly.Location),
-            closure = Files(directory, true), generatedInputs = Files(project, false)
+            directory, projectDirectory = project, closure, generatedInputs,
+            entry = Probe("entry", entry), driver = Probe("driver", driver),
+            product = Probe("product", product), runtime = Probe("runtime", typeof(object).Assembly.Location)
         });
+        if (primary is not null)
+        {
+            try
+            {
+                Console.WriteLine("ENTITY_BASE_PROVENANCE " + JsonSerializer.Serialize(new
+                { stage, process = Environment.ProcessId, gatePassed = false, captureComplete = false, actual, captureErrors = errors }));
+            }
+            catch (Exception error) { primary.Data["provenanceWriteFailure"] = error.GetType().Name + ": " + error.Message; }
+            ExceptionDispatchInfo.Capture(primary).Throw();
+        }
+        return actual;
+
+        void Error(string phase, string field, string path, Exception error)
+        {
+            primary ??= error;
+            errors.Add(new { phase, field, path, type = error.GetType().FullName, message = error.Message });
+        }
+        JsonElement? Probe(string field, string path)
+        {
+            try { return Metadata(path); }
+            catch (Exception error) { Error("metadata", field, path, error); return null; }
+        }
+        SortedDictionary<string, string> CaptureFiles(string root, bool recursive)
+        {
+            var result = new SortedDictionary<string, string>(StringComparer.Ordinal);
+            try
+            {
+                foreach (string path in Directory.EnumerateFiles(root, "*", recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly))
+                {
+                    string relative = Path.GetRelativePath(root, path);
+                    try { result.Add(relative, Hash(path)); }
+                    catch (Exception error) { Error("file-hash", relative, path, error); }
+                }
+            }
+            catch (Exception error) { Error("file-enumeration", "directory", root, error); }
+            return result;
+        }
+    }
 
     internal static void Gate(string stage)
     {
@@ -64,7 +110,7 @@ internal static class EntityBaseProvenance
         using var document = JsonDocument.Parse(File.ReadAllBytes(manifest));
         var expected = document.RootElement.GetProperty("generated").GetProperty("proof");
         var actual = Capture(AppContext.BaseDirectory, Assembly.GetEntryAssembly()!.Location,
-            expected.GetProperty("projectDirectory").GetString()!, typeof(EntityBaseBenchmarks).Assembly.Location, typeof(XmlDocument).Assembly.Location);
+            expected.GetProperty("projectDirectory").GetString()!, typeof(EntityBaseBenchmarks).Assembly.Location, typeof(XmlDocument).Assembly.Location, stage);
         var differences = new List<object>();
         var compiledInputs = new SortedDictionary<string, string?>(StringComparer.Ordinal);
         string repository = document.RootElement.GetProperty("repositoryRoot").GetString()!;
