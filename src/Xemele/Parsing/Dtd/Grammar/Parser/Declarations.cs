@@ -4,6 +4,7 @@ internal sealed partial class DtdParser
     // Tokens are owned bounded declaration scratch. They are released at '>'; the
     // immutable model alone owns accepted names/defaults/content thereafter.
     private int read;
+    private CancellationToken grammarCancellation;
     private Token Peek => read < tokens.Count ? tokens[read] : default;
     private bool Take(string text) { if (read < tokens.Count && !Peek.Literal && Peek.Text == text) { read++; return true; } return false; }
     private bool Require(string text) { if (Take(text)) return true; Reject("Expected DTD token.", read < tokens.Count ? Peek.At : declarationAt); return false; }
@@ -20,12 +21,12 @@ internal sealed partial class DtdParser
         }
         return token.Text;
     }
-    private static bool ValidName(string? value, bool nmtoken = false)
+    private bool ValidName(string? value, bool nmtoken = false)
     {
         if (string.IsNullOrEmpty(value)) return false;
         bool first = true;
         foreach (var rune in value.EnumerateRunes())
-        { if (first && !nmtoken ? !ValueSyntax.IsNameStart(rune.Value) : !ValueSyntax.IsNameChar(rune.Value)) return false; first = false; }
+        { grammarCancellation.ThrowIfCancellationRequested(); if (first && !nmtoken ? !ValueSyntax.IsNameStart(rune.Value) : !ValueSyntax.IsNameChar(rune.Value)) return false; first = false; }
         return true;
     }
     private string? Literal(bool space = false)
@@ -36,7 +37,7 @@ internal sealed partial class DtdParser
     }
     private void ParseDeclaration(CancellationToken cancellation)
     {
-        read = 0;
+        read = 0; grammarCancellation = cancellation;
         switch (declaration)
         {
             case "ELEMENT": ParseElement(cancellation); break;
@@ -54,11 +55,11 @@ internal sealed partial class DtdParser
         else if (Take("ANY")) content = new(DtdParticleKind.Any, null, DtdOccurrence.Once, []);
         else content = Content(cancellation);
         if (content is null || terminal || read != tokens.Count) return;
-        if (!elements.Exists(x => x.Name == name)) elements.Add(new(name, content, IsExternalDeclaration, declarationAt));
+        if (!HasElement(name)) elements.Add(new(name, content, IsExternalDeclaration, declarationAt));
     }
     private bool IsExternalDeclaration => sources.Find(s => s.Id == declarationSource)?.External ?? Current.External;
     private DtdOccurrence Occurrence()
-    { if (Take("?")) return DtdOccurrence.Optional; if (Take("*")) return DtdOccurrence.ZeroOrMore; if (Take("+")) return DtdOccurrence.OneOrMore; return DtdOccurrence.Once; }
+    { if (read < tokens.Count && Peek.Space && Peek.Text is "?" or "*" or "+") { Reject("Occurrence indicator must be adjacent.", Peek.At); return DtdOccurrence.Once; } if (Take("?")) return DtdOccurrence.Optional; if (Take("*")) return DtdOccurrence.ZeroOrMore; if (Take("+")) return DtdOccurrence.OneOrMore; return DtdOccurrence.Once; }
     private sealed class Group(int source)
     { internal readonly List<DtdParticle> Children = []; internal string? Separator; internal readonly int Source = source; }
     private DtdParticle? Content(CancellationToken cancellation)
@@ -66,7 +67,7 @@ internal sealed partial class DtdParser
         if (!Require("(")) return null;
         if (Take("#"))
         {
-            if (!Require("PCDATA")) return null;
+            if (!Adjacent("PCDATA")) return null;
             List<DtdParticle> mixed = [];
             while (Take("|")) { string? name = Name(); if (name is null) return null; mixed.Add(new(DtdParticleKind.Name, name, DtdOccurrence.Once, [])); }
             if (!Require(")")) return null;
@@ -128,14 +129,14 @@ internal sealed partial class DtdParser
             DtdDefaultKind kind; string? value = null;
             if (Take("#"))
             {
-                if (Take("IMPLIED")) kind = DtdDefaultKind.Implied;
-                else if (Take("REQUIRED")) kind = DtdDefaultKind.Required;
-                else if (Take("FIXED")) { kind = DtdDefaultKind.Fixed; value = Literal(space: true); if (value is null) return; }
+                if (AdjacentTake("IMPLIED")) kind = DtdDefaultKind.Implied;
+                else if (AdjacentTake("REQUIRED")) kind = DtdDefaultKind.Required;
+                else if (AdjacentTake("FIXED")) { kind = DtdDefaultKind.Fixed; value = Literal(space: true); if (value is null) return; }
                 else { Reject("Invalid default declaration.", Peek.At); return; }
             }
             else { kind = DtdDefaultKind.Value; value = Literal(); if (value is null) return; }
             if (value is not null && DecodeLiteral(value, cancellation, false) is null) return;
-            if (!attributes.Exists(a => a.ElementName == element && a.Name == name)) attributes.Add(new(element, name, type, values, kind, value, external, at));
+            if (!HasAttribute(element, name)) attributes.Add(new(element, name, type, values, kind, value, external, at));
         }
     }
     private void ParseEntity(CancellationToken cancellation)
@@ -157,7 +158,7 @@ internal sealed partial class DtdParser
         if (!isParameter && !Predefined(name, replacement)) { Reject("Invalid predefined entity redeclaration.", declarationAt); return; }
         if (read != tokens.Count) return;
         var target = isParameter ? parameter : general;
-        if (!target.Exists(e => e.Name == name)) target.Add(new(name, isParameter, replacement, system, pub, notation, IsExternalDeclaration, declarationAt));
+        if (!HasEntity(target, name)) target.Add(new(name, isParameter, replacement, system, pub, notation, IsExternalDeclaration, declarationAt));
     }
     private string? DecodeLiteral(string raw, CancellationToken cancellation, bool entity)
     {
@@ -175,15 +176,21 @@ internal sealed partial class DtdParser
             if (r.Step == DtdValueStep.Completed) return entity ? result!.ToString() : raw;
         }
     }
-    private static bool Predefined(string name, string? replacement) => name switch
+    private bool Predefined(string name, string? replacement)
     {
-        "lt" => replacement is "&#60;" or "&#x3c;" or "&#x3C;",
-        "amp" => replacement is "&#38;" or "&#x26;",
-        "gt" => replacement is ">" or "&#62;" or "&#x3e;" or "&#x3E;",
-        "apos" => replacement is "'" or "&#39;" or "&#x27;",
-        "quot" => replacement is "\"" or "&#34;" or "&#x22;",
-        _ => true
-    };
+        int expected = name switch { "lt" => 60, "amp" => 38, "gt" => 62, "apos" => 39, "quot" => 34, _ => -1 };
+        if (expected < 0) return true;
+        if (replacement is null) return false;
+        if (name is not ("lt" or "amp") && replacement.Length == 1 && replacement[0] == expected) return true;
+        ReadOnlySpan<char> text = replacement;
+        if (text.Length < 4 || !text.StartsWith("&#") || text[^1] != ';') return false;
+        int i = 2, radix = 10, scalar = 0;
+        if (text[i] == 'x') { radix = 16; i++; }
+        int start = i;
+        for (; i < text.Length - 1; i++)
+        { grammarCancellation.ThrowIfCancellationRequested(); int d = ValueSyntax.Digit(text[i], radix); if (d < 0 || scalar > (0x10FFFF - d) / radix) return false; scalar = scalar * radix + d; }
+        return i > start && scalar == expected;
+    }
     private bool ExternalId(bool notation, out string? system, out string? pub)
     {
         system = pub = null;
@@ -191,16 +198,24 @@ internal sealed partial class DtdParser
         if (!Require("PUBLIC")) return false;
         pub = Literal(space: true); if (pub is null) return false;
         foreach (char c in pub)
+        { grammarCancellation.ThrowIfCancellationRequested();
             if (!(c is '\r' or '\n' or ' ' or >= 'a' and <= 'z' or >= 'A' and <= 'Z' or >= '0' and <= '9' || "-'()+,./:=?;!*#@$_%".Contains(c)))
             { Reject("Invalid public identifier character.", declarationAt); return false; }
+        }
         if (read < tokens.Count && Peek.Literal) system = Literal(space: true);
         else if (!notation) { Reject("PUBLIC entity identifier requires a system literal.", declarationAt); return false; }
         return !terminal;
     }
+    private bool AdjacentTake(string text) => read < tokens.Count && !Peek.Space && Take(text);
+    private bool Adjacent(string text) { if (AdjacentTake(text)) return true; Reject("Keyword must be adjacent to its marker.", read < tokens.Count ? Peek.At : declarationAt); return false; }
+    private bool HasElement(string name) { foreach (var e in elements) { grammarCancellation.ThrowIfCancellationRequested(); if (e.Name == name) return true; } return false; }
+    private bool HasAttribute(string element, string name) { foreach (var a in attributes) { grammarCancellation.ThrowIfCancellationRequested(); if (a.ElementName == element && a.Name == name) return true; } return false; }
+    private bool HasEntity(List<DtdEntityDeclaration> table, string name) { foreach (var e in table) { grammarCancellation.ThrowIfCancellationRequested(); if (e.Name == name) return true; } return false; }
+    private bool HasNotation(string name) { foreach (var n in notations) { grammarCancellation.ThrowIfCancellationRequested(); if (n.Name == name) return true; } return false; }
     private void ParseNotation()
     {
         string? name = Name(space: true); if (name is null || !RequiredSpace()) return;
         if (!ExternalId(true, out string? system, out string? pub)) return;
-        if (read == tokens.Count && !notations.Exists(n => n.Name == name)) notations.Add(new(name, system, pub, declarationAt));
+        if (read == tokens.Count && !HasNotation(name)) notations.Add(new(name, system, pub, declarationAt));
     }
 }

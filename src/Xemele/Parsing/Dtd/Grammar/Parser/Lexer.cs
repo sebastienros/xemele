@@ -2,6 +2,7 @@ using System.Text;
 namespace Xemele.Parsing.Dtd;
 internal sealed partial class DtdParser
 {
+    private long referenceScalars;
     private static bool Space(int c) => c is ' ' or '\t' or '\n' or '\r';
     private void AddScalar(StringBuilder buffer, int c, XmlLocation at)
     {
@@ -88,8 +89,8 @@ internal sealed partial class DtdParser
                 }
                 if (reference.Length == 0 ? !ValueSyntax.IsNameStart(c) : !ValueSyntax.IsNameChar(c)) break;
                 // Reference scratch has a separate scalar limit from the enclosing literal.
-                if (reference.Length >= int.MaxValue - 2 || limits.TokenCharacters is int max && reference.Length >= max) { Refuse(ValueBudget.Limit(at)); return; }
-                Span<char> pair = stackalloc char[2]; int units = ValueSyntax.WriteScalar(c, pair); reference.Append(pair[..units]); return;
+                if (reference.Length >= int.MaxValue - 2 || limits.TokenCharacters is int max && referenceScalars >= max) { Refuse(ValueBudget.Limit(at)); return; }
+                Span<char> pair = stackalloc char[2]; int units = ValueSyntax.WriteScalar(c, pair); reference.Append(pair[..units]); referenceScalars++; return;
             case Lex.CommentStart:
                 if (c == '-') { lex = Lex.Comment; tokenScalars = 0; return; } break;
             case Lex.Comment:
@@ -101,7 +102,7 @@ internal sealed partial class DtdParser
             case Lex.CommentEnd:
                 if (c == '>' && Current.Id == lexicalSource) { lex = Lex.Between; return; } break;
             case Lex.PiTarget:
-                if (scratch.Length == 0 ? ValueSyntax.IsNameStart(c) : ValueSyntax.IsNameChar(c)) { AddScalar(scratch, c, at); return; }
+                if (c != ':' && (scratch.Length == 0 ? ValueSyntax.IsNameStart(c) : ValueSyntax.IsNameChar(c))) { AddScalar(scratch, c, at); return; }
                 if (scratch.Length == 0 || scratch.ToString().Equals("xml", StringComparison.OrdinalIgnoreCase)) break;
                 scratch.Clear();
                 if (Space(c)) { lex = Lex.Pi; return; }
@@ -143,7 +144,7 @@ internal sealed partial class DtdParser
         Reject("Invalid DTD syntax.", at);
     }
     private void BeginParameter(Lex resume, XmlLocation at)
-    { parameterResume = resume; parameterAt = at; reference.Clear(); lex = Lex.Parameter; }
+    { parameterResume = resume; parameterAt = at; reference.Clear(); referenceScalars = 0; lex = Lex.Parameter; }
     private void ExpandParameter(string name, XmlLocation at, CancellationToken cancellation)
     {
         if (active.Contains(name)) { Reject("Recursive parameter entity.", parameterAt, "DTD.EntityCycle"); return; }
@@ -151,6 +152,7 @@ internal sealed partial class DtdParser
         foreach (var candidate in parameter) { cancellation.ThrowIfCancellationRequested(); if (candidate.Name == name) { entity = candidate; break; } }
         if (entity is null) { Reject("Undeclared parameter entity.", parameterAt, "DTD.UndeclaredEntity"); return; }
         lex = parameterResume; reference.Clear();
+        if (nextId == int.MaxValue) { Refuse(ValueBudget.Limit(parameterAt)); return; }
         if (!Accept(budget.EnterEntity(parameterAt))) return;
         Source? child = null;
         try

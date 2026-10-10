@@ -75,6 +75,21 @@ public sealed class DtdParserTests
         else Assert.NotNull(last.Diagnostic);
         Assert.Throws<InvalidOperationException>(() => p.Append([], [], true, TestContext.Current.CancellationToken));
     }
+    [Theory]
+    [InlineData("<?a:b?>", false)]
+    [InlineData("<!ELEMENT e (a ?)>", false)]
+    [InlineData("<!ELEMENT e ((a) *)>", false)]
+    [InlineData("<!ELEMENT e (# PCDATA)>", false)]
+    [InlineData("<!ATTLIST e a CDATA # IMPLIED>", false)]
+    [InlineData("<!ATTLIST e a CDATA # FIXED 'x'>", false)]
+    [InlineData("<!ENTITY lt '&#38;#00060;'>", true)]
+    [InlineData("<!ENTITY amp '&#38;#x00026;'>", true)]
+    [InlineData("<!ENTITY gt '&#38;#00062;'>", true)]
+    public void AdjacencyPiPolicyAndPredefinedSemanticSpellings(string text, bool valid)
+    {
+        for (int split = 0; split <= text.Length; split++)
+        { using var p = new DtdParser(DtdSubsetKind.Internal, new()); var a = p.Append(text.AsSpan(0, split), [], false, TestContext.Current.CancellationToken); var b = a.Step == DtdParseStep.Rejected ? a : p.Append(text.AsSpan(split), [], true, TestContext.Current.CancellationToken); Assert.Equal(valid ? DtdParseStep.Completed : DtdParseStep.Rejected, b.Step); }
+    }
     [Fact]
     public void ModelValuesPrecedenceAndNamespaces()
     {
