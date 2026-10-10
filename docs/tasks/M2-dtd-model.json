@@ -31,23 +31,114 @@
     {
       "id": "M2-dtd-model-A1",
       "description": "Implement exactly approved DtdSubsetKind/DtdAttributeType/DtdDefaultKind/DtdParticleKind/DtdOccurrence,DtdParticle,DtdElementDeclaration,DtdAttributeDeclaration,DtdEntityDeclaration,DtdNotationDeclaration,DtdModel from verifiedfixture; recursivelyimmutable particle children and ordered read-only owned snapshots for all lists/tokens, retained strings/default/entity distinctions/source origins/nullability. Constructor persistence only; grammar owns first-declaration precedence and normalization, no parsing/stubs/futuredependency/global interning.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "model-focused",
+        "independent-inventory-lifetime",
+        "independent-source-review"
+      ]
     },
     {
       "id": "M2-dtd-model-A2",
       "description": "Independent compiled approved model inventory matches actual exact types/members/nullability/enums; tests prove source-enumerable mutation cannot alter snapshots, one-shot enumeration/empty/nested particles/ordered declarations/separate entity tables/token sets/default/origin/locations and required null collections; common-only compilation/sample works without parser/framer/resolver. Record honest setup/persistence allocation/retained-lifetime evidence, no borrowed data hidden. Preserve cumulative integrated behavior, API251/discovery3388/fresh242pinned fullsource/hash references, planning14/validate118/ownedpaths.",
-      "status": "pending",
-      "evidence": []
+      "status": "failed",
+      "evidence": [
+        "model-focused",
+        "independent-inventory-lifetime",
+        "independent-source-review",
+        "mtp-and-preservation",
+        "direct-cumulative",
+        "planning-and-paths",
+        "initial-path-failure"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
-  "blockers": [],
+  "implementation": [
+    "src/Xemele/Parsing/Dtd/Model/Declarations.cs: exact internal DtdSubsetKind/DtdAttributeType/DtdDefaultKind/DtdParticleKind/DtdOccurrence and immutable DtdParticle/declaration/DtdModel types; owned ordered read-only snapshots; no parsing dependencies or public additions.",
+    "tests/Xemele.Tests/M2-dtd-model/ModelTests.cs: eight focused ownership, one-shot, nested particle, token/default/entity/origin/location and null collection Facts.",
+    "samples/M2-dtd-model/Program.cs and ModelSample.csproj: actual model plus M1 common only; independent reflection inventory, working sample, informational allocation and retained lifetime checks.",
+    "docs/reports/M2-dtd-model/Approved/ and verify.py: exact extracted pre-DtdParseStep fixture independently compiled and compared; cumulative runtime/reference/API/planning/audit evidence."
+  ],
+  "evidence": [
+    {
+      "id": "model-focused",
+      "kind": "check",
+      "revision": "e020db32fec509f122f0ffec37135ca2ee06724f",
+      "command": "DOTNET_ROOT='/Users/sebastienros/Library/Application Support/dotnetup/dotnet' PATH=\"$DOTNET_ROOT:$PATH\" python3 -B docs/reports/M2-dtd-model/verify.py --report-prefix first --runtime-count 306",
+      "result": "passed",
+      "summary": "Pinned Release SDK10.0.400/runtime10.0.11/default GC/JIT/parallelism: all eight focused model tests pass; source arrays/lists cannot mutate ordered read-only snapshots, IList writes reject, each one-shot source enumerated once, every particle kind/occurrence and attribute type/default retained, duplicates/entity namespaces/source origin/locations preserved, seven required null collections reject.",
+      "artifact": "docs/reports/M2-dtd-model/first/summary.json"
+    },
+    {
+      "id": "independent-inventory-lifetime",
+      "kind": "check",
+      "revision": "e020db32fec509f122f0ffec37135ca2ee06724f",
+      "command": "DOTNET_ROOT='/Users/sebastienros/Library/Application Support/dotnetup/dotnet' PATH=\"$DOTNET_ROOT:$PATH\" python3 -B docs/reports/M2-dtd-model/verify.py --report-prefix first --runtime-count 306",
+      "result": "passed",
+      "summary": "Actual model/common-only compilation and standalone sample pass with no parser/framer/resolver/core/DOM source or dependency. Exact extracted approved section SHA256 9ac8af386781573fad068ee7c68184d2996c8ff8737ab7a822e03c7f98a5df60 compiles separately; all11 types/154 constructor/member/nullability/record-init/enum inventory rows match. Caller List capacity200000 and mutable char source collected while model content survives. Informational1000-operation constructor allocations: model280000B, particle96000B, attribute160000B; setup11744B separately. No throughput/zero primitive/retained-byte-count claim.",
+      "artifact": "docs/reports/M2-dtd-model/first/summary.json"
+    },
+    {
+      "id": "independent-source-review",
+      "kind": "review",
+      "revision": "e020db32fec509f122f0ffec37135ca2ee06724f",
+      "command": null,
+      "result": "passed",
+      "summary": "Coordinator01a1230c-1353-7e01-afbe-a53c9c018264/local reported independent read-only source review approved this revision: exact internal model/signatures/nullability/enums/immutable ordered snapshots and focused tests, no blockers. This is source review, not executed verification.",
+      "artifact": null
+    },
+    {
+      "id": "mtp-and-preservation",
+      "kind": "check",
+      "revision": "e020db32fec509f122f0ffec37135ca2ee06724f",
+      "command": "DOTNET_ROOT='/Users/sebastienros/Library/Application Support/dotnetup/dotnet' PATH=\"$DOTNET_ROOT:$PATH\" python3 -B docs/reports/M2-dtd-model/verify.py --report-prefix first --runtime-count 306",
+      "result": "passed",
+      "summary": "Historical M1 declaration/protocol/negative/ABI/vector/foundation checks and current complete MTP passed860/860 (baseline852+8 new), no skips. Actual runtime API251 and discovery3388 preserved. Fresh complete BCL output copied before historical builds;242 unique records use sourceBuild1.0.0+e020db32fec509f122f0ffec37135ca2ee06724f and unchanged SHA256f38c661408e479debb3226b4d2e21b91adbdefaee9833e0488e595e120e278c1. Direct conformance255/255 and differential299/299 pass.",
+      "artifact": "docs/reports/M2-dtd-model/first/summary.json"
+    },
+    {
+      "id": "direct-cumulative",
+      "kind": "check",
+      "revision": "e020db32fec509f122f0ffec37135ca2ee06724f",
+      "command": "DOTNET_ROOT='/Users/sebastienros/Library/Application Support/dotnetup/dotnet' PATH=\"$DOTNET_ROOT:$PATH\" python3 -B docs/reports/M2-dtd-model/verify.py --report-prefix first --runtime-count 306",
+      "result": "failed",
+      "summary": "Full required direct runtime execution: Xemele.Tests306 total/305pass/1fail/0skip; unchanged ResolverTests.WarmBorrowedReadsAllocateNothing at tests/Xemele.Tests/M2-resolver/ResolverTests.cs284 expected0 actual4080B. Overall direct859/860. Preserved exact XML/log; no retry/exclusion/peer edit or cause assumption. Verifier completes unaffected checks and exits1; A2 remains incomplete.",
+      "artifact": "docs/reports/M2-dtd-model/first/summary.json"
+    },
+    {
+      "id": "planning-and-paths",
+      "kind": "check",
+      "revision": "e020db32fec509f122f0ffec37135ca2ee06724f",
+      "command": "DOTNET_ROOT='/Users/sebastienros/Library/Application Support/dotnetup/dotnet' PATH=\"$DOTNET_ROOT:$PATH\" python3 -B docs/reports/M2-dtd-model/verify.py --report-prefix first --runtime-count 306",
+      "result": "passed",
+      "summary": "Planning14/14 and validate118 pass; committed source, working/staged/untracked ownership and diff-check audits passed against claim5e114bcce7a3aabd8fb9b7bd267f2e205a863d8c. Final metadata audit follows.",
+      "artifact": "docs/reports/M2-dtd-model/first/summary.json"
+    },
+    {
+      "id": "initial-path-failure",
+      "kind": "check",
+      "revision": "2b86b44378122be15e15c7793de74ceacb2dc3e2",
+      "command": "dotnet build samples/M2-dtd-model/ModelSample.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false && dotnet build docs/reports/M2-dtd-model/Approved/Approved.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false",
+      "result": "failed",
+      "summary": "Initial source preparation built actual common-only sample then approved project failed CS2001 on two common source paths (five parent levels instead of four). No focused/cumulative tests ran in that preparation. Corrected only project paths in b902b16 before final e020db3 verification.",
+      "artifact": null
+    }
+  ],
+  "blockers": [
+    "A2 cumulative direct suite fails unchanged resolver allocation test WarmBorrowedReadsAllocateNothing: expected0 actual4080B at ResolverTests.cs284. Coordinator resolver measurement repair/checkpoint must integrate before a bounded combined verification follow-up; no worker retry or peer changes."
+  ],
   "handoff": {
-    "summary": "Extracted independent immutable model boundary from unclaimed M2-dtd-grammar. Original grammar acceptance preserved and now depends on this child; only verified M2 common/contracts required.",
-    "checks": [],
-    "remaining": [],
-    "requests": []
+    "summary": "Immutable model complete and independently source-reviewed at e020db32fec509f122f0ffec37135ca2ee06724f. A1 passed; A2 partial/failed due required direct cumulative resolver allocation failure. Worker releases JSON/source ownership after evidence handoff; no further edits/checks without focused coordinator follow-up.",
+    "checks": [
+      "Focused8/8; common-only sample/inventory11types154rows; retained source collected; informational model280/particle96/attribute160B per constructor, setup11744B.",
+      "Historical/current MTP860/860; direct runtime305/306 (resolver allocation4080B failure), conformance255/255, differential299/299. No retries.",
+      "API251/discovery3388; fresh242 pinned BCL records/source+hash preserved; planning14/validate118/owned paths/diff checks passed. Reports docs/reports/M2-dtd-model/first/."
+    ],
+    "remaining": [
+      "Coordinator integrates resolver measurement repair independently, then performs required combined complete verification before A2/implemented/verified. Preserve first-run failure evidence. No integration revision set."
+    ],
+    "requests": [
+      "Coordinator-owned follow-up only: integrate/recheck resolver allocation measurement repair; worker has no requested shared source/build/API changes."
+    ]
   }
 }
