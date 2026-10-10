@@ -4,7 +4,7 @@
   "milestone": "M0",
   "title": "Wire corpus commands and infrastructure checks",
   "kind": "infrastructure",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M0-corpora-wiring",
   "branch": "codex/m0-corpora-wiring",
   "base_revision": "8423069bbd814f056c749a9206bae5b486e23bb6",
@@ -29,29 +29,68 @@
     {
       "id": "M0-corpora-wiring-A1",
       "description": "Wire import/provision through the verified shared Core command dispatch; preserve all help aliases and unknown exit 2; actual nonempty successful import/provision exit 0 and failure outcomes exit 1 with honest provenance/counts.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "root-cli-and-focused-mtp",
+        "preservation-checks"
+      ]
     },
     {
       "id": "M0-corpora-wiring-A2",
       "description": "Register actual focused corpus MTP tests and offline provisioning checks in CI; avoid silently omitting tests outside the solution. Demonstrate root CLI valid/missing/corrupt/unsupported/malformed paths and failure exit codes on integrated prerequisites.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "root-cli-and-focused-mtp",
+        "preservation-checks"
+      ]
     },
     {
       "id": "M0-corpora-wiring-A3",
       "description": "Preserve bootstrap/MTP/help/package checks; record actual known-revision commands/outcomes and task validation, distinguishing local evidence from unrun hosted platforms.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "root-cli-and-focused-mtp",
+        "preservation-checks"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "tools/CorpusManager/Program.cs: same-assembly shared CorpusCommand.Run dispatch; no duplicated provisioning implementation.",
+    ".github/workflows/build.yml: explicit outside-solution focused MTP/root CLI verification, independent bootstrap checksum check and uploaded transcript/XML artifacts; all prior steps retained.",
+    "docs/reports/M0-corpora-wiring/check_cli.py: portable pinned-SDK verifier for 24 focused MTP tests and 20 real root CLI checks, exact exit/status/provenance/count/cache-byte assertions and disposable malformed/error repositories.",
+    "docs/reports/M0-corpora-wiring/README.md, verification.txt, preservation-verification.txt: reproduction instructions and actual known-revision transcripts."
+  ],
+  "evidence": [
+    {
+      "id": "root-cli-and-focused-mtp",
+      "kind": "check",
+      "revision": "212a87e2903c8e8c70d606ac9b9a2cf57c22f877",
+      "command": "Pinned SDK 10.0.400 on PATH with DOTNET_ROOT; DOTNET_CLI_USE_MSBUILD_SERVER=0 python3 -B docs/reports/M0-corpora-wiring/check_cli.py",
+      "result": "passed",
+      "summary": "macOS arm64: root CLI and outside-solution focused app restore/Release build with 0 warnings/errors, all 24 focused MTP tests passed with 0 capability skips. 20 actual root CLI checks passed: default/help aliases exit0; unknown and invalid arity exit2; nonempty import/provision exit0; missing/corrupt cache, unsupported profile, infrastructure directory failure, explicit exclusion, malformed manifest, corrupt import source and empty import/provision inventory exit1. Assertions verify all six counts sum to total, correct case outcomes/classifications and null failure cache paths, all provenance fields, actual successful cache SHA-256 and parserCasesExecuted/standardsPassed both zero. CI explicitly invokes this app despite no solution registration; uploads fresh XML/transcript. No unrun hosted-platform claim.",
+      "artifact": "docs/reports/M0-corpora-wiring/verification.txt"
+    },
+    {
+      "id": "preservation-checks",
+      "kind": "check",
+      "revision": "212a87e2903c8e8c70d606ac9b9a2cf57c22f877",
+      "command": "Pinned SDK 10.0.400 on PATH with DOTNET_ROOT; DOTNET_CLI_USE_MSBUILD_SERVER=0 python3 -B docs/reports/M0-corpora/verify.py",
+      "result": "passed",
+      "summary": "Integrated prerequisite solution and focused apps Release-built 0 warnings/errors; 24 focused tests passed, 0 skips, actual xunit.v3.mtp-v2 4.0.1/MTP inventory checked. Shared runner valid/missing/corrupt/unsupported cache checks and hashes passed; bootstrap independent source/fixture hashes and ElementTree expectations passed; discovery reports 2 fixtures/1 manifest/0 runtime declarations. All 13 discovery Python tests and 3 existing MTP smoke tests passed; each of 3 controlled failures exited2 with expected failure XML. Shared runner and 16 existing shell default/help checks, unknown exits, managed-only lib/net10.0/Xemele.dll package/no native payload and 101-task validation passed. Package emitted existing advisory about missing package readme. No parser conformance/allocation/benchmark or hosted matrix claim.",
+      "artifact": "docs/reports/M0-corpora-wiring/preservation-verification.txt"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "",
-    "checks": [],
-    "remaining": [],
+    "summary": "Root corpus CLI now uses verified Core dispatch; CI explicitly executes the focused MTP app and offline root command checks. All branch acceptance criteria implemented and tested at 212a87e2903c8e8c70d606ac9b9a2cf57c22f877; awaiting coordinator integration verification.",
+    "checks": [
+      "check_cli.py passed: 24 focused tests (0 skips), 20 actual root CLI checks; durable verification.txt.",
+      "Existing M0-corpora/verify.py passed: solution/apps, 24 focused tests, 13 Python tests, 3 MTP passes/3 expected failures, bootstrap hashes/discovery/help/package/task validation; durable preservation-verification.txt.",
+      "No runtime parser/scanner changes: hot-path allocation and benchmark evidence not applicable. No hosted OS/platform execution claimed."
+    ],
+    "remaining": [
+      "Coordinator must integrate/reverify before setting verified. Hosted CI matrix not executed locally."
+    ],
     "requests": []
   }
 }
