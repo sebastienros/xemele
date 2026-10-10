@@ -77,6 +77,9 @@ public sealed class DtdParserTests
     }
     [Theory]
     [InlineData("<?a:b?>", false)]
+    [InlineData("<?p?x?>", false)]
+    [InlineData("<?p??>", false)]
+    [InlineData("<?p ?x?>", true)]
     [InlineData("<!ELEMENT e (a ?)>", false)]
     [InlineData("<!ELEMENT e ((a) *)>", false)]
     [InlineData("<!ELEMENT e (# PCDATA)>", false)]

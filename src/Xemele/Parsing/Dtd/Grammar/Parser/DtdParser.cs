@@ -54,7 +54,7 @@ internal sealed partial class DtdParser : IDisposable
     private char quote;
     private int nextId = 1, declarationSource, lexicalSource, quoteSource, ignoreDepth, ignoreRun, gate;
     private long documentScalars, tokenScalars, declarationScalars;
-    private bool declarationExternal, separator, tokenSpace, literalEntity, disposed, faulted, terminal;
+    private bool piData, declarationExternal, separator, tokenSpace, literalEntity, disposed, faulted, terminal;
     private XmlLocation declarationAt, tokenAt, parameterAt, lexicalAt;
     private DtdEntityRequest? request;
     private Source? pending;

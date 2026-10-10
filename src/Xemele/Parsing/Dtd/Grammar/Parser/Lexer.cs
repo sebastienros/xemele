@@ -105,13 +105,14 @@ internal sealed partial class DtdParser
                 if (c != ':' && (scratch.Length == 0 ? ValueSyntax.IsNameStart(c) : ValueSyntax.IsNameChar(c))) { AddScalar(scratch, c, at); return; }
                 if (scratch.Length == 0 || scratch.ToString().Equals("xml", StringComparison.OrdinalIgnoreCase)) break;
                 scratch.Clear();
-                if (Space(c)) { lex = Lex.Pi; return; }
-                if (c == '?') { lex = Lex.PiQuestion; return; } break;
+                if (Space(c)) { piData = true; lex = Lex.Pi; return; }
+                if (c == '?') { piData = false; lex = Lex.PiQuestion; return; } break;
             case Lex.Pi:
                 if (!Bounded(tokenScalars, at)) return; tokenScalars++;
                 if (c == '?') lex = Lex.PiQuestion; return;
             case Lex.PiQuestion:
                 if (c == '>' && Current.Id == lexicalSource) { lex = Lex.Between; return; }
+                if (!piData) break;
                 if (!Bounded(tokenScalars, at)) return; tokenScalars++;
                 lex = c == '?' ? Lex.PiQuestion : Lex.Pi; return;
             case Lex.Conditional:

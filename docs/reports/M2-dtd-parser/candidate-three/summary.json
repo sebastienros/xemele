@@ -1,0 +1,117 @@
+{
+  "result": "passed",
+  "host": "macOS-15.8.1-arm64-arm-64bit-Mach-O",
+  "architecture": "arm64",
+  "timing": "not run; exclusive coordinator grant required",
+  "sourceRevision": "18be2ae5ffa2f64abe8a561391f52892cde8edc9",
+  "branch": "codex/m2-dtd-parser",
+  "auditBase": "aacf5a9444edfa174116022aea42998c5abcb4a2",
+  "dotnet": "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+  "dotnetSha256": "e86deb33d0dacad9cc1224466df6418149cb8e13cb8afd0dc6815ea6b7807975",
+  "internalApi": {
+    "matched": true,
+    "types": 4,
+    "inventory": "internal-contract.txt",
+    "nullableAndDefaults": true
+  },
+  "derivedOwnTests": {
+    "fixtures": 54,
+    "inputSplitRows": 1838,
+    "facts": 20,
+    "inlineRows": 37,
+    "total": 1895
+  },
+  "focusedTests": 1895,
+  "allocations": {
+    "coldBytes": 10440,
+    "ownedBytesPerOperation": 9216,
+    "warmPrimitiveBytes": 0,
+    "retainedBytes": 2944048,
+    "retainedResults": 1000,
+    "runtime": "10.0.11",
+    "ownership": "Parser setup owns cursor/collections/builders. Declaration scratch owns bounded lexical tokens. Model owns strings, particles, arrays. Cold includes first-use helpers. Warm comment scan has no persistence. Retained GC estimate includes 1000 model snapshots and result array after transient parser scratch collected."
+  },
+  "benchmarkCorrectness": "40 benchmark correctness assertions passed.",
+  "benchmarksPrepared": [
+    "Xemele.Benchmarks.DtdParserBenchmarks.BorrowedScan",
+    "Xemele.Benchmarks.DtdParserBenchmarks.OwnedGrammar",
+    "Xemele.Benchmarks.DtdParserBenchmarks.ChunkedGrammar"
+  ],
+  "mtpTests": {
+    "total": 4992,
+    "failed": 0,
+    "skipped": 0
+  },
+  "publicApiMembers": 251,
+  "runtimeTests": {
+    "Xemele.Tests": {
+      "total": 4438,
+      "failed": 0,
+      "skipped": 0
+    },
+    "Xemele.Conformance.Tests": {
+      "total": 255,
+      "failed": 0,
+      "skipped": 0
+    },
+    "Xemele.Differential.Tests": {
+      "total": 299,
+      "failed": 0,
+      "skipped": 0
+    }
+  },
+  "ownParserTests": 1895,
+  "discovery": {
+    "apiDeclarations": 251,
+    "fixtures": 3388
+  },
+  "referenceProvenance": {
+    "records": 242,
+    "runnerSha256": "9512469b2c577c7fa9baf984c0113f806fa38d50128b59c0109347bac6c2f02d",
+    "build": "1.0.0+18be2ae5ffa2f64abe8a561391f52892cde8edc9",
+    "completeFreshOutputCopied": true,
+    "unchangedAfterChecks": true
+  },
+  "ownedPaths": [
+    "benchmarks/Xemele.Benchmarks/M2-dtd-parser/ParserBenchmarks.cs",
+    "docs/reports/M2-dtd-parser/BenchmarkDriver.cs",
+    "docs/reports/M2-dtd-parser/README.md",
+    "docs/reports/M2-dtd-parser/Xemele.DtdParserBenchmarks.csproj",
+    "docs/reports/M2-dtd-parser/candidate-one/checks.txt.gz",
+    "docs/reports/M2-dtd-parser/candidate-one/internal-contract.txt",
+    "docs/reports/M2-dtd-parser/candidate-one/summary.json",
+    "docs/reports/M2-dtd-parser/candidate-three/Xemele.Conformance.Tests-discovery.txt.gz",
+    "docs/reports/M2-dtd-parser/candidate-three/Xemele.Conformance.Tests.xml.gz",
+    "docs/reports/M2-dtd-parser/candidate-three/Xemele.Differential.Tests-discovery.txt.gz",
+    "docs/reports/M2-dtd-parser/candidate-three/Xemele.Differential.Tests.xml.gz",
+    "docs/reports/M2-dtd-parser/candidate-three/Xemele.Tests-discovery.txt.gz",
+    "docs/reports/M2-dtd-parser/candidate-three/Xemele.Tests.xml.gz",
+    "docs/reports/M2-dtd-parser/candidate-three/allocations.json",
+    "docs/reports/M2-dtd-parser/candidate-three/focused.xml.gz",
+    "docs/reports/M2-dtd-parser/candidate-three/internal-contract.txt",
+    "docs/reports/M2-dtd-parser/candidate-three/reference-provenance.json",
+    "docs/reports/M2-dtd-parser/candidate-three/runtime-api.json",
+    "docs/reports/M2-dtd-parser/candidate-three/sample.txt",
+    "docs/reports/M2-dtd-parser/candidate-two/allocations.json",
+    "docs/reports/M2-dtd-parser/candidate-two/checks.txt.gz",
+    "docs/reports/M2-dtd-parser/candidate-two/focused.xml.gz",
+    "docs/reports/M2-dtd-parser/candidate-two/internal-contract.txt",
+    "docs/reports/M2-dtd-parser/candidate-two/sample.txt",
+    "docs/reports/M2-dtd-parser/candidate-two/summary.json",
+    "docs/reports/M2-dtd-parser/exploratory/first.xml.gz",
+    "docs/reports/M2-dtd-parser/exploratory/second.xml.gz",
+    "docs/reports/M2-dtd-parser/exploratory/summary.json",
+    "docs/reports/M2-dtd-parser/exploratory/third.xml.gz",
+    "docs/reports/M2-dtd-parser/verify.py",
+    "samples/M2-dtd-parser/Program.cs",
+    "samples/M2-dtd-parser/Sample.csproj",
+    "src/Xemele/Parsing/Dtd/Grammar/Parser/Declarations.cs",
+    "src/Xemele/Parsing/Dtd/Grammar/Parser/DefaultReferences.cs",
+    "src/Xemele/Parsing/Dtd/Grammar/Parser/DtdParser.cs",
+    "src/Xemele/Parsing/Dtd/Grammar/Parser/Lexer.cs",
+    "tests/Xemele.Tests/M2-dtd-parser/BudgetTests.cs",
+    "tests/Xemele.Tests/M2-dtd-parser/ParserTests.cs",
+    "tests/Xemele.Tests/M2-dtd-parser/SourceTests.cs"
+  ],
+  "scope": "This task implements common-only incremental DTD grammar/source stacks and owned models. General-content entity composition and DOCTYPE/effective-model merging remain caller work. Windows/x64/AOT unrun here; timing requires root exclusive grant."
+}
