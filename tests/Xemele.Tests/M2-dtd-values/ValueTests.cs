@@ -29,12 +29,12 @@ public sealed class ValueTests
         var result = new StringBuilder();
         char[] output = new char[capacity];
         int accepted = 0;
-        DtdValueResult Drain(ReadOnlySpan<char> input, bool final)
+        DtdValueResult Drain(ReadOnlySpan<char> input, bool final, CancellationToken cancellationToken)
         {
             int offset = 0;
             while (true)
             {
-                var r = decoder.Decode(input[offset..], output, final, TestContext.Current.CancellationToken);
+                var r = decoder.Decode(input[offset..], output, final, cancellationToken);
                 Assert.InRange(r.Consumed, 0, input.Length - offset); Assert.InRange(r.Written, 0, capacity);
                 result.Append(output.AsSpan(0, r.Written)); offset += r.Consumed; accepted += r.Consumed;
                 if (r.Step != DtdValueStep.NeedOutput)
