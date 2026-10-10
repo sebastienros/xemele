@@ -13,12 +13,18 @@
       "client_thread_id": "client-new-thread:44740c37-3629-4d2c-8c2d-22c3370eee43",
       "host_id": "local",
       "branch": "codex/m1-dom",
-      "base_revision": "4af94600952d417c2d7418758c30131695cb3ecb",
-      "claim_revision": "c4f3e7a3910e130a2467733aa79558984463b244",
-      "setup_status": "suspended-prerequisite",
+      "base_revision": "1f15653bf8f3ea4faab5fa5c15f10701971ff9ab",
+      "claim_revision": "93de9bf2a67ff30557821f6c6ac399c5266cf6f2",
+      "setup_status": "resumed",
       "chat_id": "01a123df-0348-7a81-9d6f-f4676934cb48",
       "worktree_path": "/Users/sebastienros/.codex/worktrees/a22a/xemele",
-      "preserved_draft_revision": "4aef77b0e1fffca92322c096ce8a09c65f019845"
+      "preserved_draft_revision": "4aef77b0e1fffca92322c096ce8a09c65f019845",
+      "previous_claim": {
+        "base_revision": "4af94600952d417c2d7418758c30131695cb3ecb",
+        "claim_revision": "c4f3e7a3910e130a2467733aa79558984463b244",
+        "reason": "Suspended for now-verified linear DOM builder prerequisite; draft preserved."
+      },
+      "resume_evidence": "Worker confirmed main merge, renewed claim/four verified prerequisites, builder composition, focused 22/22 tests; no timing started."
     },
     {
       "task_id": "M1-benchmark-class-config",
@@ -35,8 +41,8 @@
   "integration_queue": [],
   "blockers": [],
   "next_actions": [
-    "Renew DOM claim and resume preserved draft with verified builder contract",
-    "Review/integrate benchmark class migration",
+    "Review stable DOM composition and integrated tests",
+    "Review/integrate benchmark class configuration",
     "After DOM verification dispatch strict corpus and M1 gate"
   ],
   "last_verified_task": "M1-tree-dom-builder",
@@ -466,7 +472,11 @@
       "handoff_revision": "175a83c8b5410ce9f2bfaa440658b0aa4498882a",
       "integration_revision": "ed07308ffd599ce72aa8590b8f36ecc3fb11a441",
       "integration_worktree": "/private/tmp/xemele-integrate-m1-tree-dom-builder",
-      "integration_branch": "codex/integrate-m1-tree-dom-builder"
+      "integration_branch": "codex/integrate-m1-tree-dom-builder",
+      "cleanup": {
+        "chat_archived": true,
+        "worktree": "removed"
+      }
     }
   ],
   "benchmark_policy": "No active timing hold. Benchmark classes configure jobs; command job arguments and job-name narration omitted.",
@@ -515,7 +525,8 @@
     "docs/orchestration/cleanup-M1-input.json",
     "docs/orchestration/cleanup-M1-tree.json",
     "docs/orchestration/cleanup-M1-syntax.json",
-    "docs/orchestration/cleanup-M1-serialize.json"
+    "docs/orchestration/cleanup-M1-serialize.json",
+    "docs/orchestration/cleanup-M1-tree-dom-builder.json"
   ],
   "preserved_reference_sources": [
     {
