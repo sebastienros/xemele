@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "id": "M2-version-declarations",
+  "milestone": "M2",
+  "title": "Implement bounded Fifth Edition declaration versions",
+  "kind": "feature",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "depends_on": [
+    "M2-version-contract",
+    "M2-entities",
+    "M2-dtd-framing-allocation-probe"
+  ],
+  "goals": [
+    "G01",
+    "G07",
+    "G18"
+  ],
+  "specs": [
+    "docs/performance-coding.md",
+    "docs/specs/parser.md",
+    "docs/decisions/M2/xml-resources.md"
+  ],
+  "owns": [
+    "src/Xemele/Parsing/Core/XmlParserCore.cs",
+    "src/Xemele/Parsing/Dtd/Framing/XmlTextDeclarationFramer.cs",
+    "tests/Xemele.Tests/M1-syntax/SyntaxTests.cs",
+    "tests/Xemele.Tests/M2-dtd-framing/FramingTests.cs",
+    "tests/Xemele.Tests/M2-version-declarations/",
+    "tests/fixtures/M2-version-declarations/",
+    "benchmarks/Xemele.Benchmarks/M2-version-declarations/",
+    "samples/M2-version-declarations/",
+    "docs/reports/M2-version-declarations/"
+  ],
+  "api_or_output": "Implement bounded Fifth Edition declaration versions",
+  "acceptance": [
+    {
+      "id": "M2-version-declarations-A1",
+      "description": "Implement verified literal ASCII1.[0-9]+ document/text-declaration contract preserving exact lexical version, optional text version and existing ABI. Keep bounded incremental framing, charge-before-growth quotas, cancellation, consumed counts, callback pause/resume, borrowed lifetime, lazy ordinary parsing and primary-error cleanup. No decoder/DTD grammar/resolver/shared-project edits; route additional ownership needs.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M2-version-declarations-A2",
+      "description": "Exercise all split boundaries and declaration callbacks plus byte-input external DTD/parameter/general entity composition and owned retention. Accept compatible1.1/1.7/1.00/1.10/long digits, reject empty/nonASCII digits/references/malformed order/2.0 and XML1.1-only content under effective XML1.0. Authorize only precise historic1.1 negatives in SyntaxTests and FramingTests to become success coverage; preserve all other inherited identities/outcomes and historical evidence.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M2-version-declarations-A3",
+      "description": "Record actual full current integrated dependency correctness/API/package/preservation and applicable allocation/benchmark evidence with frozen source/binary identities and exclusive measurement grant. Preserve previously successful unchanged standalone measurements without reruns, no retries or relaxed counters/thresholds. Dynamic planning/task counts; summaries only and transient output cleanup.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "Coordinator ordered normative correction; historical verified evidence retained.",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}
