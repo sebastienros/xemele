@@ -4,7 +4,7 @@
   "milestone": "M1",
   "title": "Freeze strict XML subset contracts",
   "kind": "contract",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M1-contracts",
   "branch": "codex/m1-contracts",
   "base_revision": "09e91c80a189fb90e932dcfac94be5b6cc19194a",
@@ -38,29 +38,60 @@
     {
       "id": "M1-contracts-A1",
       "description": "Expand exact M1 public/internal declarations, including tree collections/identity, decoder counts/locations and sink pause semantics.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "committed-contract-checks"
+      ]
     },
     {
       "id": "M1-contracts-A2",
       "description": "Compile usage fixtures for independent tree, decoder, sink and serializer implementations; ensure no M2+ type references.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "committed-contract-checks"
+      ]
     },
     {
       "id": "M1-contracts-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "committed-contract-checks"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "docs/specs/common.md \u2014 unchanged M0 common surface plus exact M1 scope/allocation boundaries",
+    "docs/specs/tree.md; tests/Contracts/Fixtures/M1/Tree.cs.fixture \u2014 XmlDocument/XmlNode, ordered concrete collections, attribute/namespace identity, independent mutation hook",
+    "docs/specs/parser.md; tests/Contracts/Fixtures/M1/Input.cs.fixture; tests/Contracts/Fixtures/M1/Syntax.cs.fixture \u2014 byte/UTF-16 counts and source mappings, declaration-first framing, consumed pause/fault/EOF protocol and borrowed ref-struct events",
+    "docs/specs/serialization.md; tests/Contracts/Fixtures/M1/Serialization.cs.fixture; tests/Contracts/Fixtures/M1/Dom.cs.fixture \u2014 independent serializer/options and composed partial factories",
+    "tests/Contracts/Fixtures/M1/*Usage.cs.fixture; docs/reports/M1-contracts/Projects/ \u2014 independent compilation and representative calling fixtures",
+    "docs/decisions/M1/strict-subset.md; docs/reports/M1-contracts/verify.py; docs/reports/M1-contracts/checks.txt \u2014 decisions, model checks, compiler/API probes and known-revision evidence"
+  ],
+  "evidence": [
+    {
+      "id": "committed-contract-checks",
+      "kind": "check",
+      "revision": "6f21ab373eeb11e0d60a5e76517a065cec7fc466",
+      "command": "DOTNET_CLI_USE_MSBUILD_SERVER=0 python3 docs/reports/M1-contracts/verify.py (pinned SDK 10.0.400; authorized network/test IPC)",
+      "result": "passed",
+      "summary": "Six independent lane declaration/usage builds plus protocol build; public metadata matches and 81 frozen M0 common rows preserved; 38 protocol-model assertions, 10 expected compiler rejections, 3 actual compiled ABI mutation probes and 6 independent output-vector encoding checks. M0 foundation 11/11 and solution 54/54 tests, zero skipped; foundation M1/M2 goldens 139/173 rows; task validation and diff check passed. Models are nonpackaged; no production XML or allocation/performance claim.",
+      "artifact": "docs/reports/M1-contracts/checks.txt"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "",
-    "checks": [],
-    "remaining": [],
+    "summary": "Exact independent M1 common/tree/input/syntax/DOM/serializer contracts, declaration/usage fixtures and public model metadata frozen. XmlDocument/readonly XmlNode arena names match approved M0; decoder mappings, byte EOF marker, declaration-first adapter framing and callback pause semantics are explicit.",
+    "checks": [
+      "Pinned SDK10.0.400 verify.py at 6f21ab373eeb11e0d60a5e76517a065cec7fc466 passed: six independent lane builds, 38 protocol-model assertions, 10 compiler negative probes, 3 ABI mutation probes, 6 vector encoding checks.",
+      "M0 foundation tests 11/11, M1/M2 goldens unchanged; solution tests 54/54, zero skipped; task validator/diff check passed.",
+      "Sandbox NuGet DNS development failure resolved through authorized final network/IPC run; no historical reports rewritten."
+    ],
+    "remaining": [
+      "Coordinator integration and combined-tree checks before verified; no open task criterion.",
+      "Runtime lanes must implement/execute behavioral, borrowed-lifetime, adversarial-depth and allocation tests; contract models do not constitute shipped XML or performance evidence.",
+      "Approved public normalizer ignores internal signatures; exact internal source and negative compilation probes freeze those boundaries without an unrestricted ABI claim."
+    ],
     "requests": []
   }
 }
