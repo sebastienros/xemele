@@ -138,7 +138,7 @@ include the legal names and remain independent of serialization.
 44 focused DOM and288 full solution tests without skips, Foundation11, all
 explicitly rebuilt declaration models/protocol38, actual API222 and actual
 seven-factory fragment, Input41 and Syntax9 types/80 rows, source and fresh isolated
-local-feed-only package sample, allocation probes, planning106, and explicit
+local-feed-only package sample, allocation probes, planning107, and explicit
 committed/working/untracked owned-path and whitespace audits. The historical Tree
 allocation failure is not reproduced: its unchanged test passes both focused and
 full lanes at this revision. The namespace owner's unrelated planning-unit failure
@@ -158,3 +158,48 @@ ordinary attributes and namespace declarations across character/byte/stream and
 whole-source decode baseline factories. Results own their complete document; fixture
 generation is outside measurement. No timing has run yet. One exclusive-host grant
 for16 cases is requested; criteria stay pending until review and measurement.
+
+## Completed measurements and handoff
+
+Independent read-only review approved runtime/tests/workloads
+`73673440a1ee845dbf38b4f8c506a15dc225a375`. One coordinator-authorized exclusive
+run completed16 workloads, all16 children and wrapper exit0,48 actual measurements
+(three per case),105.38seconds. No repeat was initiated. The invocation used the
+owned driver, class attributes and no explicit job options. Raw console gzip,
+CSV/full statistical table and child/iteration audit are in `bdn/`.
+
+Host: Apple M4 Pro Arm64, macOS15.8.1, SDK10.0.400/.NET10.0.11, concurrent
+workstation GC. High-priority scheduling was denied for each workload; ordinary
+priority applies. The coordinator parked all other heavy task work. Confidence
+ranges and GC counts remain in the complete result table. These are provisional
+single-architecture measurements; x64 release confirmation remains required.
+
+| Healthy fixture | Whole decode then parse | Character parse | Byte parse | Stream load |
+| --- | ---: | ---: | ---: | ---: |
+| ASCII repeated markup |137.61µs|137.70µs|191.99µs|189.13µs|
+|2048-depth|326.74µs|332.39µs|499.23µs|464.65µs|
+|131072-unit text|2647.67µs|2470.23µs|3832.84µs|3993.91µs|
+|Multilingual/references|100.70µs|96.42µs|145.74µs|150.74µs|
+
+| Healthy fixture | Whole decode allocated | Character allocated | Byte allocated | Stream allocated |
+| --- | ---: | ---: | ---: | ---: |
+|ASCII repeated markup|178.52KB|166.98KB|207.87KB|211.95KB|
+|2048-depth|783.79KB|755.76KB|796.65KB|800.74KB|
+|131072-unit text|1055.39KB|799.29KB|840.19KB|844.27KB|
+|Multilingual/references|172.01KB|162.40KB|203.29KB|207.38KB|
+
+Byte/stream paths pay fixed decode/mapping scratch and encoding validation costs.
+They are slower in these fixtures; for long text, avoiding the whole decoded
+input string reduces allocation about20%. The straightforward required adapter is
+retained for declaration/error ordering and bounded stream transport. This run
+supports no scan/matcher optimization claim. The baseline comparison is restricted
+to identical successful fixture structures; malformed encoding/declaration order
+is covered by correctness tests. Every result is a complete owned document; setup,
+durable output, temporary buffers and arena growth are included. Fixture generation
+and complete structural oracle validation precede timing.
+
+Task is implemented on its branch after passed correctness, review and measurement.
+Coordinator integration/verification remains. No runtime/test/workload change
+followed the reviewed source. Historical suspension/failure evidence stays intact.
+Final ownership audits include committed delta, staged, working and untracked paths;
+use `audit.py --base <coordination-claim>` for independent integration verification.
