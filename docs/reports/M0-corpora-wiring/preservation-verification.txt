@@ -1,0 +1,727 @@
+Host: macOS-15.8.1-arm64-arm-64bit-Mach-O arm64
+
+$ git rev-parse HEAD
+212a87e2903c8e8c70d606ac9b9a2cf57c22f877
+Exit: 0
+
+$ dotnet --version
+10.0.400
+Exit: 0
+
+$ dotnet restore Xemele.slnx --disable-parallel -p:UseSharedCompilation=false -nodeReuse:false
+  Determining projects to restore...
+  Restored /Users/sebastienros/.codex/worktrees/c848/xemele/src/Xemele/Xemele.csproj (in 30 ms).
+  Restored /Users/sebastienros/.codex/worktrees/c848/xemele/tests/Xemele.Conformance.Tests/Xemele.Conformance.Tests.csproj (in 139 ms).
+  Restored /Users/sebastienros/.codex/worktrees/c848/xemele/src/Xemele.Tool/Xemele.Tool.csproj (in 0.8 ms).
+  Restored /Users/sebastienros/.codex/worktrees/c848/xemele/benchmarks/Xemele.Benchmarks/Xemele.Benchmarks.csproj (in 63 ms).
+  Restored /Users/sebastienros/.codex/worktrees/c848/xemele/tests/Contracts/Contracts.csproj (in 0.8 ms).
+  Restored /Users/sebastienros/.codex/worktrees/c848/xemele/tests/Xemele.Fuzz/Xemele.Fuzz.csproj (in 0.7 ms).
+  Restored /Users/sebastienros/.codex/worktrees/c848/xemele/tests/Xemele.Differential.Tests/Xemele.Differential.Tests.csproj (in 2 ms).
+  Restored /Users/sebastienros/.codex/worktrees/c848/xemele/tests/Xemele.Tests/Xemele.Tests.csproj (in 1 ms).
+  Restored /Users/sebastienros/.codex/worktrees/c848/xemele/tests/Xemele.TestUtilities/Xemele.TestUtilities.csproj (in 0.8 ms).
+  1 of 10 projects are up-to-date for restore.
+Exit: 0
+
+$ dotnet build Xemele.slnx -c Release --no-restore -p:UseSharedCompilation=false -nodeReuse:false
+  CorpusManager -> /Users/sebastienros/.codex/worktrees/c848/xemele/tools/CorpusManager/bin/Release/net10.0/CorpusManager.dll
+  Xemele -> /Users/sebastienros/.codex/worktrees/c848/xemele/src/Xemele/bin/Release/net10.0/Xemele.dll
+  Xemele.TestUtilities -> /Users/sebastienros/.codex/worktrees/c848/xemele/tests/Xemele.TestUtilities/bin/Release/net10.0/Xemele.TestUtilities.dll
+  Contracts -> /Users/sebastienros/.codex/worktrees/c848/xemele/tests/Contracts/bin/Release/net10.0/Contracts.dll
+  Xemele.Fuzz -> /Users/sebastienros/.codex/worktrees/c848/xemele/tests/Xemele.Fuzz/bin/Release/net10.0/Xemele.Fuzz.dll
+  Xemele.Tool -> /Users/sebastienros/.codex/worktrees/c848/xemele/src/Xemele.Tool/bin/Release/net10.0/Xemele.Tool.dll
+  Xemele.Benchmarks -> /Users/sebastienros/.codex/worktrees/c848/xemele/benchmarks/Xemele.Benchmarks/bin/Release/net10.0/Xemele.Benchmarks.dll
+  Xemele.Conformance.Tests -> /Users/sebastienros/.codex/worktrees/c848/xemele/tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll
+  Xemele.Differential.Tests -> /Users/sebastienros/.codex/worktrees/c848/xemele/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll
+  Xemele.Tests -> /Users/sebastienros/.codex/worktrees/c848/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:03.39
+Exit: 0
+
+$ dotnet restore docs/reports/M0-corpora/Tests/Xemele.CorpusInfrastructure.Tests.csproj --disable-parallel -p:UseSharedCompilation=false -nodeReuse:false
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+Exit: 0
+
+$ dotnet build docs/reports/M0-corpora/Tests/Xemele.CorpusInfrastructure.Tests.csproj -c Release --no-restore -p:UseSharedCompilation=false -nodeReuse:false
+  CorpusManager -> /Users/sebastienros/.codex/worktrees/c848/xemele/tools/CorpusManager/bin/Release/net10.0/CorpusManager.dll
+  Xemele.CorpusInfrastructure.Tests -> /Users/sebastienros/.codex/worktrees/c848/xemele/docs/reports/M0-corpora/Tests/bin/Release/net10.0/Xemele.CorpusInfrastructure.Tests.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:00.42
+Exit: 0
+
+$ dotnet restore docs/reports/M0-corpora/Runner/Xemele.CorpusRunner.csproj --disable-parallel -p:UseSharedCompilation=false -nodeReuse:false
+  Determining projects to restore...
+  Restored /Users/sebastienros/.codex/worktrees/c848/xemele/docs/reports/M0-corpora/Runner/Xemele.CorpusRunner.csproj (in 39 ms).
+  1 of 2 projects are up-to-date for restore.
+Exit: 0
+
+$ dotnet build docs/reports/M0-corpora/Runner/Xemele.CorpusRunner.csproj -c Release --no-restore -p:UseSharedCompilation=false -nodeReuse:false
+  CorpusManager -> /Users/sebastienros/.codex/worktrees/c848/xemele/tools/CorpusManager/bin/Release/net10.0/CorpusManager.dll
+  Xemele.CorpusRunner -> /Users/sebastienros/.codex/worktrees/c848/xemele/docs/reports/M0-corpora/Runner/bin/Release/net10.0/Xemele.CorpusRunner.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:01.17
+Exit: 0
+
+$ dotnet test --project docs/reports/M0-corpora/Tests/Xemele.CorpusInfrastructure.Tests.csproj -c Release --no-build --no-restore --no-ansi --no-progress --minimum-expected-tests 24 --report-xunit-xml --results-directory /Users/sebastienros/.codex/worktrees/c848/xemele/artifacts/M0-corpora/test-results
+Running tests from /Users/sebastienros/.codex/worktrees/c848/xemele/docs/reports/M0-corpora/Tests/bin/Release/net10.0/Xemele.CorpusInfrastructure.Tests.dll (net10.0|arm64)
+/Users/sebastienros/.codex/worktrees/c848/xemele/docs/reports/M0-corpora/Tests/bin/Release/net10.0/Xemele.CorpusInfrastructure.Tests.dll (net10.0|arm64) passed (540ms)
+
+  In process file artifacts produced:
+    - /Users/sebastienros/.codex/worktrees/c848/xemele/artifacts/M0-corpora/test-results/sebastienros_Mac_2026-10-10_00_53_53.826454.xunit.xml
+
+Test run summary: Passed!
+  total: 24
+  failed: 0
+  succeeded: 24
+  skipped: 0
+  duration: 700ms
+Exit: 0
+
+Focused infrastructure tests: 24 passed, 0 capability-skipped; parser cases executed: 0.
+
+Focused actual package inventory: ["CorpusManager/1.0.0", "Microsoft.ApplicationInsights/2.23.0", "Microsoft.Bcl.AsyncInterfaces/6.0.0", "Microsoft.Testing.Extensions.Telemetry/2.4.0", "Microsoft.Testing.Extensions.TrxReport.Abstractions/2.4.0", "Microsoft.Testing.Platform.MSBuild/2.4.0", "Microsoft.Testing.Platform/2.4.0", "Microsoft.Win32.Registry/5.0.0", "System.Security.AccessControl/6.0.1", "xunit.analyzers/2.1.0", "xunit.v3.assert/4.0.1", "xunit.v3.common/4.0.1", "xunit.v3.core.mtp-v2/4.0.1", "xunit.v3.extensibility.core/4.0.1", "xunit.v3.mtp-v2/4.0.1", "xunit.v3.runner.common/4.0.1", "xunit.v3.runner.inproc.console/4.0.1"]
+
+$ dotnet run --project docs/reports/M0-corpora/Runner/Xemele.CorpusRunner.csproj -c Release --no-build --no-restore --
+Xemele corpus manager
+Offline corpus infrastructure: import|provision <repository> <profile> [cache-directory]
+Imports pinned local bundles; provisioning uses only verified cached bytes. No parser execution.
+Exit: 0
+
+$ dotnet run --project docs/reports/M0-corpora/Runner/Xemele.CorpusRunner.csproj -c Release --no-build --no-restore -- --help
+Xemele corpus manager
+Offline corpus infrastructure: import|provision <repository> <profile> [cache-directory]
+Imports pinned local bundles; provisioning uses only verified cached bytes. No parser execution.
+Exit: 0
+
+$ dotnet run --project docs/reports/M0-corpora/Runner/Xemele.CorpusRunner.csproj -c Release --no-build --no-restore -- -h
+Xemele corpus manager
+Offline corpus infrastructure: import|provision <repository> <profile> [cache-directory]
+Imports pinned local bundles; provisioning uses only verified cached bytes. No parser execution.
+Exit: 0
+
+$ dotnet run --project docs/reports/M0-corpora/Runner/Xemele.CorpusRunner.csproj -c Release --no-build --no-restore -- help
+Xemele corpus manager
+Offline corpus infrastructure: import|provision <repository> <profile> [cache-directory]
+Imports pinned local bundles; provisioning uses only verified cached bytes. No parser execution.
+Exit: 0
+
+$ dotnet run --project docs/reports/M0-corpora/Runner/Xemele.CorpusRunner.csproj -c Release --no-build --no-restore -- unknown
+Unknown command or invalid arguments. Use --help for import|provision <repository> <profile> [cache-directory].
+Exit: 2
+
+$ dotnet run --project docs/reports/M0-corpora/Runner/Xemele.CorpusRunner.csproj -c Release --no-build --no-restore -- provision /Users/sebastienros/.codex/worktrees/c848/xemele xml-well-formedness-bootstrap-v1 /Users/sebastienros/.codex/worktrees/c848/xemele/artifacts/M0-corpora/cache
+{
+  "schemaVersion": 1,
+  "corpora": 1,
+  "total": 2,
+  "provisioned": 0,
+  "missingCache": 2,
+  "corruptCache": 0,
+  "unsupportedProfile": 0,
+  "excluded": 0,
+  "infrastructureFailure": 0,
+  "parserCasesExecuted": 0,
+  "standardsPassed": 0,
+  "reports": [
+    {
+      "CorpusId": "xemele-bootstrap-xml",
+      "Profile": "xml-well-formedness-bootstrap-v1",
+      "SourceUrl": "https://github.com/sebastienros/xemele",
+      "Revision": "sha256:26c425e1a95b3c6e35833b60ca1dd5f9b641269e238bd4de6187983cf3fbf946",
+      "SourceSha256": "26c425e1a95b3c6e35833b60ca1dd5f9b641269e238bd4de6187983cf3fbf946",
+      "License": "MIT",
+      "Notice": "Original synthetic fixtures by Xemele contributors, 2026. MIT terms in NOTICE.txt. Classifications authored from XML well-formedness rules; no Xemele output used.",
+      "AdapterVersion": "xemele-offline-bundle-v1",
+      "Cases": [
+        {
+          "Path": "empty-element.xml",
+          "Classification": "accepted",
+          "Outcome": "MissingCache",
+          "Detail": "Source payload is absent; offline provisioning performs no download.",
+          "CachePath": null
+        },
+        {
+          "Path": "unclosed-element.xml",
+          "Classification": "rejected",
+          "Outcome": "MissingCache",
+          "Detail": "Source payload is absent; offline provisioning performs no download.",
+          "CachePath": null
+        }
+      ],
+      "Total": 2,
+      "Provisioned": 0,
+      "MissingCache": 2,
+      "CorruptCache": 0,
+      "UnsupportedProfile": 0,
+      "Excluded": 0,
+      "InfrastructureFailure": 0,
+      "ParserCasesExecuted": 0,
+      "StandardsPassed": 0,
+      "Successful": false
+    }
+  ]
+}
+Exit: 1
+
+$ dotnet run --project docs/reports/M0-corpora/Runner/Xemele.CorpusRunner.csproj -c Release --no-build --no-restore -- import /Users/sebastienros/.codex/worktrees/c848/xemele xml-well-formedness-bootstrap-v1 /Users/sebastienros/.codex/worktrees/c848/xemele/artifacts/M0-corpora/cache
+{
+  "schemaVersion": 1,
+  "corpora": 1,
+  "total": 2,
+  "provisioned": 2,
+  "missingCache": 0,
+  "corruptCache": 0,
+  "unsupportedProfile": 0,
+  "excluded": 0,
+  "infrastructureFailure": 0,
+  "parserCasesExecuted": 0,
+  "standardsPassed": 0,
+  "reports": [
+    {
+      "CorpusId": "xemele-bootstrap-xml",
+      "Profile": "xml-well-formedness-bootstrap-v1",
+      "SourceUrl": "https://github.com/sebastienros/xemele",
+      "Revision": "sha256:26c425e1a95b3c6e35833b60ca1dd5f9b641269e238bd4de6187983cf3fbf946",
+      "SourceSha256": "26c425e1a95b3c6e35833b60ca1dd5f9b641269e238bd4de6187983cf3fbf946",
+      "License": "MIT",
+      "Notice": "Original synthetic fixtures by Xemele contributors, 2026. MIT terms in NOTICE.txt. Classifications authored from XML well-formedness rules; no Xemele output used.",
+      "AdapterVersion": "xemele-offline-bundle-v1",
+      "Cases": [
+        {
+          "Path": "empty-element.xml",
+          "Classification": "accepted",
+          "Outcome": "Provisioned",
+          "Detail": "Source and fixture SHA-256 verified; parser not executed.",
+          "CachePath": "/Users/sebastienros/.codex/worktrees/c848/xemele/artifacts/M0-corpora/cache/fixtures/26c425e1a95b3c6e35833b60ca1dd5f9b641269e238bd4de6187983cf3fbf946/9bd4e7da69e147e60c9d5d9124a0c57ef34363668a3b97e42c618d0756eafb7e"
+        },
+        {
+          "Path": "unclosed-element.xml",
+          "Classification": "rejected",
+          "Outcome": "Provisioned",
+          "Detail": "Source and fixture SHA-256 verified; parser not executed.",
+          "CachePath": "/Users/sebastienros/.codex/worktrees/c848/xemele/artifacts/M0-corpora/cache/fixtures/26c425e1a95b3c6e35833b60ca1dd5f9b641269e238bd4de6187983cf3fbf946/6aa53ba17ebbbcc127c87fd86705f80074c089478042c508673af62716d4377f"
+        }
+      ],
+      "Total": 2,
+      "Provisioned": 2,
+      "MissingCache": 0,
+      "CorruptCache": 0,
+      "UnsupportedProfile": 0,
+      "Excluded": 0,
+      "InfrastructureFailure": 0,
+      "ParserCasesExecuted": 0,
+      "StandardsPassed": 0,
+      "Successful": true
+    }
+  ]
+}
+Exit: 0
+
+$ dotnet run --project docs/reports/M0-corpora/Runner/Xemele.CorpusRunner.csproj -c Release --no-build --no-restore -- provision /Users/sebastienros/.codex/worktrees/c848/xemele xml-well-formedness-bootstrap-v1 /Users/sebastienros/.codex/worktrees/c848/xemele/artifacts/M0-corpora/cache
+{
+  "schemaVersion": 1,
+  "corpora": 1,
+  "total": 2,
+  "provisioned": 2,
+  "missingCache": 0,
+  "corruptCache": 0,
+  "unsupportedProfile": 0,
+  "excluded": 0,
+  "infrastructureFailure": 0,
+  "parserCasesExecuted": 0,
+  "standardsPassed": 0,
+  "reports": [
+    {
+      "CorpusId": "xemele-bootstrap-xml",
+      "Profile": "xml-well-formedness-bootstrap-v1",
+      "SourceUrl": "https://github.com/sebastienros/xemele",
+      "Revision": "sha256:26c425e1a95b3c6e35833b60ca1dd5f9b641269e238bd4de6187983cf3fbf946",
+      "SourceSha256": "26c425e1a95b3c6e35833b60ca1dd5f9b641269e238bd4de6187983cf3fbf946",
+      "License": "MIT",
+      "Notice": "Original synthetic fixtures by Xemele contributors, 2026. MIT terms in NOTICE.txt. Classifications authored from XML well-formedness rules; no Xemele output used.",
+      "AdapterVersion": "xemele-offline-bundle-v1",
+      "Cases": [
+        {
+          "Path": "empty-element.xml",
+          "Classification": "accepted",
+          "Outcome": "Provisioned",
+          "Detail": "Source and fixture SHA-256 verified; parser not executed.",
+          "CachePath": "/Users/sebastienros/.codex/worktrees/c848/xemele/artifacts/M0-corpora/cache/fixtures/26c425e1a95b3c6e35833b60ca1dd5f9b641269e238bd4de6187983cf3fbf946/9bd4e7da69e147e60c9d5d9124a0c57ef34363668a3b97e42c618d0756eafb7e"
+        },
+        {
+          "Path": "unclosed-element.xml",
+          "Classification": "rejected",
+          "Outcome": "Provisioned",
+          "Detail": "Source and fixture SHA-256 verified; parser not executed.",
+          "CachePath": "/Users/sebastienros/.codex/worktrees/c848/xemele/artifacts/M0-corpora/cache/fixtures/26c425e1a95b3c6e35833b60ca1dd5f9b641269e238bd4de6187983cf3fbf946/6aa53ba17ebbbcc127c87fd86705f80074c089478042c508673af62716d4377f"
+        }
+      ],
+      "Total": 2,
+      "Provisioned": 2,
+      "MissingCache": 0,
+      "CorruptCache": 0,
+      "UnsupportedProfile": 0,
+      "Excluded": 0,
+      "InfrastructureFailure": 0,
+      "ParserCasesExecuted": 0,
+      "StandardsPassed": 0,
+      "Successful": true
+    }
+  ]
+}
+Exit: 0
+
+$ dotnet run --project docs/reports/M0-corpora/Runner/Xemele.CorpusRunner.csproj -c Release --no-build --no-restore -- provision /Users/sebastienros/.codex/worktrees/c848/xemele unsupported-profile /Users/sebastienros/.codex/worktrees/c848/xemele/artifacts/M0-corpora/cache
+{
+  "schemaVersion": 1,
+  "corpora": 1,
+  "total": 2,
+  "provisioned": 0,
+  "missingCache": 0,
+  "corruptCache": 0,
+  "unsupportedProfile": 2,
+  "excluded": 0,
+  "infrastructureFailure": 0,
+  "parserCasesExecuted": 0,
+  "standardsPassed": 0,
+  "reports": [
+    {
+      "CorpusId": "xemele-bootstrap-xml",
+      "Profile": "xml-well-formedness-bootstrap-v1",
+      "SourceUrl": "https://github.com/sebastienros/xemele",
+      "Revision": "sha256:26c425e1a95b3c6e35833b60ca1dd5f9b641269e238bd4de6187983cf3fbf946",
+      "SourceSha256": "26c425e1a95b3c6e35833b60ca1dd5f9b641269e238bd4de6187983cf3fbf946",
+      "License": "MIT",
+      "Notice": "Original synthetic fixtures by Xemele contributors, 2026. MIT terms in NOTICE.txt. Classifications authored from XML well-formedness rules; no Xemele output used.",
+      "AdapterVersion": "xemele-offline-bundle-v1",
+      "Cases": [
+        {
+          "Path": "empty-element.xml",
+          "Classification": "accepted",
+          "Outcome": "UnsupportedProfile",
+          "Detail": "Profile is not supported by the requested adapter.",
+          "CachePath": null
+        },
+        {
+          "Path": "unclosed-element.xml",
+          "Classification": "rejected",
+          "Outcome": "UnsupportedProfile",
+          "Detail": "Profile is not supported by the requested adapter.",
+          "CachePath": null
+        }
+      ],
+      "Total": 2,
+      "Provisioned": 0,
+      "MissingCache": 0,
+      "CorruptCache": 0,
+      "UnsupportedProfile": 2,
+      "Excluded": 0,
+      "InfrastructureFailure": 0,
+      "ParserCasesExecuted": 0,
+      "StandardsPassed": 0,
+      "Successful": false
+    }
+  ]
+}
+Exit: 1
+
+$ dotnet run --project docs/reports/M0-corpora/Runner/Xemele.CorpusRunner.csproj -c Release --no-build --no-restore -- provision /Users/sebastienros/.codex/worktrees/c848/xemele xml-well-formedness-bootstrap-v1 /Users/sebastienros/.codex/worktrees/c848/xemele/artifacts/M0-corpora/cache
+{
+  "schemaVersion": 1,
+  "corpora": 1,
+  "total": 2,
+  "provisioned": 0,
+  "missingCache": 0,
+  "corruptCache": 2,
+  "unsupportedProfile": 0,
+  "excluded": 0,
+  "infrastructureFailure": 0,
+  "parserCasesExecuted": 0,
+  "standardsPassed": 0,
+  "reports": [
+    {
+      "CorpusId": "xemele-bootstrap-xml",
+      "Profile": "xml-well-formedness-bootstrap-v1",
+      "SourceUrl": "https://github.com/sebastienros/xemele",
+      "Revision": "sha256:26c425e1a95b3c6e35833b60ca1dd5f9b641269e238bd4de6187983cf3fbf946",
+      "SourceSha256": "26c425e1a95b3c6e35833b60ca1dd5f9b641269e238bd4de6187983cf3fbf946",
+      "License": "MIT",
+      "Notice": "Original synthetic fixtures by Xemele contributors, 2026. MIT terms in NOTICE.txt. Classifications authored from XML well-formedness rules; no Xemele output used.",
+      "AdapterVersion": "xemele-offline-bundle-v1",
+      "Cases": [
+        {
+          "Path": "empty-element.xml",
+          "Classification": "accepted",
+          "Outcome": "CorruptCache",
+          "Detail": "SHA-256 checksum mismatch.",
+          "CachePath": null
+        },
+        {
+          "Path": "unclosed-element.xml",
+          "Classification": "rejected",
+          "Outcome": "CorruptCache",
+          "Detail": "SHA-256 checksum mismatch.",
+          "CachePath": null
+        }
+      ],
+      "Total": 2,
+      "Provisioned": 0,
+      "MissingCache": 0,
+      "CorruptCache": 2,
+      "UnsupportedProfile": 0,
+      "Excluded": 0,
+      "InfrastructureFailure": 0,
+      "ParserCasesExecuted": 0,
+      "StandardsPassed": 0,
+      "Successful": false
+    }
+  ]
+}
+Exit: 1
+
+$ dotnet run --project docs/reports/M0-corpora/Runner/Xemele.CorpusRunner.csproj -c Release --no-build --no-restore -- import /Users/sebastienros/.codex/worktrees/c848/xemele xml-well-formedness-bootstrap-v1 /Users/sebastienros/.codex/worktrees/c848/xemele/artifacts/M0-corpora/cache
+{
+  "schemaVersion": 1,
+  "corpora": 1,
+  "total": 2,
+  "provisioned": 2,
+  "missingCache": 0,
+  "corruptCache": 0,
+  "unsupportedProfile": 0,
+  "excluded": 0,
+  "infrastructureFailure": 0,
+  "parserCasesExecuted": 0,
+  "standardsPassed": 0,
+  "reports": [
+    {
+      "CorpusId": "xemele-bootstrap-xml",
+      "Profile": "xml-well-formedness-bootstrap-v1",
+      "SourceUrl": "https://github.com/sebastienros/xemele",
+      "Revision": "sha256:26c425e1a95b3c6e35833b60ca1dd5f9b641269e238bd4de6187983cf3fbf946",
+      "SourceSha256": "26c425e1a95b3c6e35833b60ca1dd5f9b641269e238bd4de6187983cf3fbf946",
+      "License": "MIT",
+      "Notice": "Original synthetic fixtures by Xemele contributors, 2026. MIT terms in NOTICE.txt. Classifications authored from XML well-formedness rules; no Xemele output used.",
+      "AdapterVersion": "xemele-offline-bundle-v1",
+      "Cases": [
+        {
+          "Path": "empty-element.xml",
+          "Classification": "accepted",
+          "Outcome": "Provisioned",
+          "Detail": "Source and fixture SHA-256 verified; parser not executed.",
+          "CachePath": "/Users/sebastienros/.codex/worktrees/c848/xemele/artifacts/M0-corpora/cache/fixtures/26c425e1a95b3c6e35833b60ca1dd5f9b641269e238bd4de6187983cf3fbf946/9bd4e7da69e147e60c9d5d9124a0c57ef34363668a3b97e42c618d0756eafb7e"
+        },
+        {
+          "Path": "unclosed-element.xml",
+          "Classification": "rejected",
+          "Outcome": "Provisioned",
+          "Detail": "Source and fixture SHA-256 verified; parser not executed.",
+          "CachePath": "/Users/sebastienros/.codex/worktrees/c848/xemele/artifacts/M0-corpora/cache/fixtures/26c425e1a95b3c6e35833b60ca1dd5f9b641269e238bd4de6187983cf3fbf946/6aa53ba17ebbbcc127c87fd86705f80074c089478042c508673af62716d4377f"
+        }
+      ],
+      "Total": 2,
+      "Provisioned": 2,
+      "MissingCache": 0,
+      "CorruptCache": 0,
+      "UnsupportedProfile": 0,
+      "Excluded": 0,
+      "InfrastructureFailure": 0,
+      "ParserCasesExecuted": 0,
+      "StandardsPassed": 0,
+      "Successful": true
+    }
+  ]
+}
+Exit: 0
+
+$ /opt/homebrew/opt/python@3.14/bin/python3.14 -B tests/Xemele.TestUtilities/Corpora/verify_bootstrap.py
+{"fixturesVerified": 2, "independentElementTreeCrossCheck": {"accepted": 1, "rejected": 1}, "sourceSha256": "26c425e1a95b3c6e35833b60ca1dd5f9b641269e238bd4de6187983cf3fbf946", "xemeleParserCasesExecuted": 0}
+Exit: 0
+
+$ /opt/homebrew/opt/python@3.14/bin/python3.14 -B tools/ApiBaseline/discover.py --bootstrap-empty-api
+{"apiDeclarations": 0, "apiFragments": [], "bootstrapEmptyApi": true, "corpusManifests": ["tests/corpora/bootstrap/manifest.json"], "fixtures": 2, "formatVersion": 1}
+Exit: 0
+
+$ /opt/homebrew/opt/python@3.14/bin/python3.14 -B -m unittest discover -s tests/Xemele.TestUtilities/Build -p 'test_*.py' -v
+test_cli_failure_exit_and_explicit_error (test_discovery.DiscoveryTests.test_cli_failure_exit_and_explicit_error) ... ok
+test_distinct_ids_cannot_conflict_on_member (test_discovery.DiscoveryTests.test_distinct_ids_cannot_conflict_on_member) ... ok
+test_duplicate_and_conflicting_ids (test_discovery.DiscoveryTests.test_duplicate_and_conflicting_ids) ... ok
+test_duplicate_corpus_and_fixture (test_discovery.DiscoveryTests.test_duplicate_corpus_and_fixture) ... ok
+test_duplicate_json_fields (test_discovery.DiscoveryTests.test_duplicate_json_fields) ... ok
+test_fixture_traversal (test_discovery.DiscoveryTests.test_fixture_traversal) ... ok
+test_generated_sources_do_not_break_empty_bootstrap (test_discovery.DiscoveryTests.test_generated_sources_do_not_break_empty_bootstrap) ... ok
+test_metadata_schema_and_classification (test_discovery.DiscoveryTests.test_metadata_schema_and_classification) ... ok
+test_missing_baseline (test_discovery.DiscoveryTests.test_missing_baseline) ... ok
+test_missing_fixture_and_checksum (test_discovery.DiscoveryTests.test_missing_fixture_and_checksum) ... ok
+test_noncanonical_unknown_fields_and_unsorted (test_discovery.DiscoveryTests.test_noncanonical_unknown_fields_and_unsorted) ... ok
+test_unknown_and_empty_formats (test_discovery.DiscoveryTests.test_unknown_and_empty_formats) ... ok
+test_valid_fragments_and_fixture (test_discovery.DiscoveryTests.test_valid_fragments_and_fixture) ... ok
+
+----------------------------------------------------------------------
+Ran 13 tests in 0.100s
+
+OK
+Exit: 0
+
+$ /opt/homebrew/opt/python@3.14/bin/python3.14 -B docs/reports/M0-tests-mtp/check_runner.py
+$ git rev-parse HEAD
+212a87e2903c8e8c70d606ac9b9a2cf57c22f877
+Exit: 0
+
+$ dotnet test --project tests/Xemele.Tests/Xemele.Tests.csproj -c Release --no-build --no-restore --no-ansi --no-progress --list-tests
+Discovering tests from /Users/sebastienros/.codex/worktrees/c848/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll (net10.0|arm64)
+
+Discovered 1 tests in assembly - /Users/sebastienros/.codex/worktrees/c848/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll (net10.0|arm64)
+  Xemele.Tests.Infrastructure.MtpRunnerSmokeTests.RunnerExecutesAndPropagatesControlledFailure
+
+Discovered 1 tests.
+
+Exit: 0
+
+$ dotnet test --project tests/Xemele.Conformance.Tests/Xemele.Conformance.Tests.csproj -c Release --no-build --no-restore --no-ansi --no-progress --list-tests
+Discovering tests from /Users/sebastienros/.codex/worktrees/c848/xemele/tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll (net10.0|arm64)
+
+Discovered 1 tests in assembly - /Users/sebastienros/.codex/worktrees/c848/xemele/tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll (net10.0|arm64)
+  Xemele.Conformance.Tests.Infrastructure.MtpRunnerSmokeTests.RunnerExecutesAndPropagatesControlledFailure
+
+Discovered 1 tests.
+
+Exit: 0
+
+$ dotnet test --project tests/Xemele.Differential.Tests/Xemele.Differential.Tests.csproj -c Release --no-build --no-restore --no-ansi --no-progress --list-tests
+Discovering tests from /Users/sebastienros/.codex/worktrees/c848/xemele/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll (net10.0|arm64)
+
+Discovered 1 tests in assembly - /Users/sebastienros/.codex/worktrees/c848/xemele/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll (net10.0|arm64)
+  Xemele.Differential.Tests.Infrastructure.MtpRunnerSmokeTests.RunnerExecutesAndPropagatesControlledFailure
+
+Discovered 1 tests.
+
+Exit: 0
+
+$ dotnet test --solution Xemele.slnx -c Release --no-build --no-restore --no-ansi --no-progress --minimum-expected-tests 1 --report-xunit-trx --report-xunit-xml --results-directory /Users/sebastienros/.codex/worktrees/c848/xemele/artifacts/test-results/mtp-yhj9qm8b/success
+Running tests from /Users/sebastienros/.codex/worktrees/c848/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll (net10.0|arm64)
+Running tests from /Users/sebastienros/.codex/worktrees/c848/xemele/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll (net10.0|arm64)
+Running tests from /Users/sebastienros/.codex/worktrees/c848/xemele/tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll (net10.0|arm64)
+/Users/sebastienros/.codex/worktrees/c848/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll (net10.0|arm64) passed (346ms)
+/Users/sebastienros/.codex/worktrees/c848/xemele/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll (net10.0|arm64) passed (337ms)
+/Users/sebastienros/.codex/worktrees/c848/xemele/tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll (net10.0|arm64) passed (357ms)
+
+  In process file artifacts produced:
+    - /Users/sebastienros/.codex/worktrees/c848/xemele/artifacts/test-results/mtp-yhj9qm8b/success/sebastienros_Mac_2026-10-10_00_54_02.666862.trx
+    - /Users/sebastienros/.codex/worktrees/c848/xemele/artifacts/test-results/mtp-yhj9qm8b/success/sebastienros_Mac_2026-10-10_00_54_02.666862.xunit.xml
+    - /Users/sebastienros/.codex/worktrees/c848/xemele/artifacts/test-results/mtp-yhj9qm8b/success/sebastienros_Mac_2026-10-10_00_54_02.685081.trx
+    - /Users/sebastienros/.codex/worktrees/c848/xemele/artifacts/test-results/mtp-yhj9qm8b/success/sebastienros_Mac_2026-10-10_00_54_02.685081.xunit.xml
+    - /Users/sebastienros/.codex/worktrees/c848/xemele/artifacts/test-results/mtp-yhj9qm8b/success/sebastienros_Mac_2026-10-10_00_54_02.697745.trx
+    - /Users/sebastienros/.codex/worktrees/c848/xemele/artifacts/test-results/mtp-yhj9qm8b/success/sebastienros_Mac_2026-10-10_00_54_02.697745.xunit.xml
+
+Test run summary: Passed!
+  /Users/sebastienros/.codex/worktrees/c848/xemele/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll (net10.0|arm64) passed (337ms)
+  /Users/sebastienros/.codex/worktrees/c848/xemele/tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll (net10.0|arm64) passed (357ms)
+  /Users/sebastienros/.codex/worktrees/c848/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll (net10.0|arm64) passed (346ms)
+
+  total: 3
+  failed: 0
+  succeeded: 3
+  skipped: 0
+  duration: 549ms
+Exit: 0
+
+Infrastructure tests: 3; product tests: 0. Infrastructure success is not product conformance evidence.
+
+$ dotnet test --project tests/Xemele.Tests/Xemele.Tests.csproj -c Release --no-build --no-restore --no-ansi --no-progress --filter-class Xemele.Tests.Infrastructure.MtpRunnerSmokeTests --environment XEMELE_MTP_SMOKE_FAIL=1 --report-xunit-xml --results-directory /Users/sebastienros/.codex/worktrees/c848/xemele/artifacts/test-results/mtp-yhj9qm8b/controlled-failure-Xemele.Tests
+Running tests from /Users/sebastienros/.codex/worktrees/c848/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll (net10.0|arm64)
+failed Xemele.Tests.Infrastructure.MtpRunnerSmokeTests.RunnerExecutesAndPropagatesControlledFailure (5ms)
+  from /Users/sebastienros/.codex/worktrees/c848/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll (net10.0|arm64)
+  Intentional infrastructure failure used to verify the runner exit code.
+    at Xemele.Tests.Infrastructure.MtpRunnerSmokeTests.RunnerExecutesAndPropagatesControlledFailure() in /_/tests/Xemele.Tests/Infrastructure/MtpRunnerSmokeTests.cs:12
+    at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+    at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+/Users/sebastienros/.codex/worktrees/c848/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll (net10.0|arm64) failed with 1 error(s) (318ms)
+Exit code: 2
+
+  In process file artifacts produced:
+    - /Users/sebastienros/.codex/worktrees/c848/xemele/artifacts/test-results/mtp-yhj9qm8b/controlled-failure-Xemele.Tests/sebastienros_Mac_2026-10-10_00_54_03.703287.xunit.xml
+
+Test run summary: Failed!
+  total: 1
+  failed: 1
+  succeeded: 0
+  skipped: 0
+  duration: 459ms
+Test run completed with non-success exit code: 2 (see: https://aka.ms/testingplatform/exitcodes)
+Exit: 2
+
+$ dotnet test --project tests/Xemele.Conformance.Tests/Xemele.Conformance.Tests.csproj -c Release --no-build --no-restore --no-ansi --no-progress --filter-class Xemele.Conformance.Tests.Infrastructure.MtpRunnerSmokeTests --environment XEMELE_MTP_SMOKE_FAIL=1 --report-xunit-xml --results-directory /Users/sebastienros/.codex/worktrees/c848/xemele/artifacts/test-results/mtp-yhj9qm8b/controlled-failure-Xemele.Conformance.Tests
+Running tests from /Users/sebastienros/.codex/worktrees/c848/xemele/tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll (net10.0|arm64)
+failed Xemele.Conformance.Tests.Infrastructure.MtpRunnerSmokeTests.RunnerExecutesAndPropagatesControlledFailure (5ms)
+  from /Users/sebastienros/.codex/worktrees/c848/xemele/tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll (net10.0|arm64)
+  Intentional infrastructure failure used to verify the runner exit code.
+    at Xemele.Conformance.Tests.Infrastructure.MtpRunnerSmokeTests.RunnerExecutesAndPropagatesControlledFailure() in /_/tests/Xemele.Conformance.Tests/Infrastructure/MtpRunnerSmokeTests.cs:12
+    at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+    at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+/Users/sebastienros/.codex/worktrees/c848/xemele/tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll (net10.0|arm64) failed with 1 error(s) (337ms)
+Exit code: 2
+
+  In process file artifacts produced:
+    - /Users/sebastienros/.codex/worktrees/c848/xemele/artifacts/test-results/mtp-yhj9qm8b/controlled-failure-Xemele.Conformance.Tests/sebastienros_Mac_2026-10-10_00_54_04.527555.xunit.xml
+
+Test run summary: Failed!
+  total: 1
+  failed: 1
+  succeeded: 0
+  skipped: 0
+  duration: 471ms
+Test run completed with non-success exit code: 2 (see: https://aka.ms/testingplatform/exitcodes)
+Exit: 2
+
+$ dotnet test --project tests/Xemele.Differential.Tests/Xemele.Differential.Tests.csproj -c Release --no-build --no-restore --no-ansi --no-progress --filter-class Xemele.Differential.Tests.Infrastructure.MtpRunnerSmokeTests --environment XEMELE_MTP_SMOKE_FAIL=1 --report-xunit-xml --results-directory /Users/sebastienros/.codex/worktrees/c848/xemele/artifacts/test-results/mtp-yhj9qm8b/controlled-failure-Xemele.Differential.Tests
+Running tests from /Users/sebastienros/.codex/worktrees/c848/xemele/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll (net10.0|arm64)
+failed Xemele.Differential.Tests.Infrastructure.MtpRunnerSmokeTests.RunnerExecutesAndPropagatesControlledFailure (7ms)
+  from /Users/sebastienros/.codex/worktrees/c848/xemele/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll (net10.0|arm64)
+  Intentional infrastructure failure used to verify the runner exit code.
+    at Xemele.Differential.Tests.Infrastructure.MtpRunnerSmokeTests.RunnerExecutesAndPropagatesControlledFailure() in /_/tests/Xemele.Differential.Tests/Infrastructure/MtpRunnerSmokeTests.cs:12
+    at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+    at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+/Users/sebastienros/.codex/worktrees/c848/xemele/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll (net10.0|arm64) failed with 1 error(s) (326ms)
+Exit code: 2
+
+  In process file artifacts produced:
+    - /Users/sebastienros/.codex/worktrees/c848/xemele/artifacts/test-results/mtp-yhj9qm8b/controlled-failure-Xemele.Differential.Tests/sebastienros_Mac_2026-10-10_00_54_05.373301.xunit.xml
+
+Test run summary: Failed!
+  total: 1
+  failed: 1
+  succeeded: 0
+  skipped: 0
+  duration: 466ms
+Test run completed with non-success exit code: 2 (see: https://aka.ms/testingplatform/exitcodes)
+Exit: 2
+
+Runner transcript: /Users/sebastienros/.codex/worktrees/c848/xemele/artifacts/test-results/mtp-yhj9qm8b/runner-verification.txt
+Exit: 0
+
+$ dotnet run -c Release --no-build --no-restore --project src/Xemele.Tool --
+Xemele XML/HTML toolkit
+Usage: xemele <command> [options]
+  --help  Show help
+Exit: 0
+
+$ dotnet run -c Release --no-build --no-restore --project src/Xemele.Tool -- --help
+Xemele XML/HTML toolkit
+Usage: xemele <command> [options]
+  --help  Show help
+Exit: 0
+
+$ dotnet run -c Release --no-build --no-restore --project src/Xemele.Tool -- -h
+Xemele XML/HTML toolkit
+Usage: xemele <command> [options]
+  --help  Show help
+Exit: 0
+
+$ dotnet run -c Release --no-build --no-restore --project src/Xemele.Tool -- help
+Xemele XML/HTML toolkit
+Usage: xemele <command> [options]
+  --help  Show help
+Exit: 0
+
+$ dotnet run -c Release --no-build --no-restore --project tests/Xemele.Fuzz --
+Xemele fuzz harness
+Bootstrap shell: --help is the available command.
+Exit: 0
+
+$ dotnet run -c Release --no-build --no-restore --project tests/Xemele.Fuzz -- --help
+Xemele fuzz harness
+Bootstrap shell: --help is the available command.
+Exit: 0
+
+$ dotnet run -c Release --no-build --no-restore --project tests/Xemele.Fuzz -- -h
+Xemele fuzz harness
+Bootstrap shell: --help is the available command.
+Exit: 0
+
+$ dotnet run -c Release --no-build --no-restore --project tests/Xemele.Fuzz -- help
+Xemele fuzz harness
+Bootstrap shell: --help is the available command.
+Exit: 0
+
+$ dotnet run -c Release --no-build --no-restore --project benchmarks/Xemele.Benchmarks --
+Xemele benchmarks
+Usage: dotnet run -c Release --project benchmarks/Xemele.Benchmarks -- [BenchmarkDotNet options]
+Benchmark cases are added by feature tasks.
+Exit: 0
+
+$ dotnet run -c Release --no-build --no-restore --project benchmarks/Xemele.Benchmarks -- --help
+Xemele benchmarks
+Usage: dotnet run -c Release --project benchmarks/Xemele.Benchmarks -- [BenchmarkDotNet options]
+Benchmark cases are added by feature tasks.
+Exit: 0
+
+$ dotnet run -c Release --no-build --no-restore --project benchmarks/Xemele.Benchmarks -- -h
+Xemele benchmarks
+Usage: dotnet run -c Release --project benchmarks/Xemele.Benchmarks -- [BenchmarkDotNet options]
+Benchmark cases are added by feature tasks.
+Exit: 0
+
+$ dotnet run -c Release --no-build --no-restore --project benchmarks/Xemele.Benchmarks -- help
+Xemele benchmarks
+Usage: dotnet run -c Release --project benchmarks/Xemele.Benchmarks -- [BenchmarkDotNet options]
+Benchmark cases are added by feature tasks.
+Exit: 0
+
+$ dotnet run -c Release --no-build --no-restore --project tools/CorpusManager --
+Xemele corpus manager
+Offline corpus infrastructure: import|provision <repository> <profile> [cache-directory]
+Imports pinned local bundles; provisioning uses only verified cached bytes. No parser execution.
+Exit: 0
+
+$ dotnet run -c Release --no-build --no-restore --project tools/CorpusManager -- --help
+Xemele corpus manager
+Offline corpus infrastructure: import|provision <repository> <profile> [cache-directory]
+Imports pinned local bundles; provisioning uses only verified cached bytes. No parser execution.
+Exit: 0
+
+$ dotnet run -c Release --no-build --no-restore --project tools/CorpusManager -- -h
+Xemele corpus manager
+Offline corpus infrastructure: import|provision <repository> <profile> [cache-directory]
+Imports pinned local bundles; provisioning uses only verified cached bytes. No parser execution.
+Exit: 0
+
+$ dotnet run -c Release --no-build --no-restore --project tools/CorpusManager -- help
+Xemele corpus manager
+Offline corpus infrastructure: import|provision <repository> <profile> [cache-directory]
+Imports pinned local bundles; provisioning uses only verified cached bytes. No parser execution.
+Exit: 0
+
+$ dotnet run -c Release --no-build --no-restore --project src/Xemele.Tool -- unknown
+Unknown command: unknown. Use --help for available commands.
+Exit: 2
+
+$ dotnet run -c Release --no-build --no-restore --project tests/Xemele.Fuzz -- unknown
+Unknown command. Use --help for available commands.
+Exit: 2
+
+$ dotnet run -c Release --no-build --no-restore --project tools/CorpusManager -- unknown
+Unknown command or invalid arguments. Use --help for import|provision <repository> <profile> [cache-directory].
+Exit: 2
+
+$ dotnet pack src/Xemele/Xemele.csproj -c Release --no-build --no-restore -o artifacts/M0-corpora/packages
+  The package Xemele.1.0.0 is missing a readme. Go to https://aka.ms/nuget/authoring-best-practices/readme to learn why package readmes are important.
+  Successfully created package '/Users/sebastienros/.codex/worktrees/c848/xemele/artifacts/M0-corpora/packages/Xemele.1.0.0.nupkg'.
+Exit: 0
+
+$ /opt/homebrew/opt/python@3.14/bin/python3.14 tools/planning/tasks.py validate
+Validated 101 tasks: schema, evidence, acyclic dependencies, additive milestones, and ordered ownership.
+Exit: 0
+
+All checks passed. Offline provision/checksum evidence only; no Xemele conformance or hot-path performance claim.
