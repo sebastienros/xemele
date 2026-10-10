@@ -44,3 +44,10 @@ probe reports cold setup and aggregate warm owned synchronous allocations; it
 also records a separate informational retained-GC estimate for 100 composed
 outputs; it makes no zero-allocation composition promise. Child warm
 borrowed primitives have separately verified allocation evidence.
+
+The retained estimate includes each boxed `(DtdModel, string[])` tuple holder
+and the outer `object[]`, in addition to the immutable model/default outputs.
+Candidate-four raw output is preserved; the initially incomplete label is
+corrected here and in the sample without rerunning an unchanged allocation
+workload. The strengthened benchmark oracle checks every expected frozen field
+and all exact scalar locations (character input has null URI/byte offsets).

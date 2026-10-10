@@ -16,7 +16,7 @@ internal static class Allocations
         _ = Keep(count); Collect(); long before = GC.GetTotalMemory(false);
         var outputs = Keep(count); Collect(); long retainedEstimate = GC.GetTotalMemory(false) - before;
         Console.WriteLine(JsonSerializer.Serialize(new { retainedEstimate, results = count,
-            boundary = "Separate retained-GC estimate for composed immutable models, normalized defaults and their array after parser scratch collection. Informational estimate, no threshold/retry/subtraction beyond the raw before/after difference." }));
+            boundary = "Separate retained-GC estimate for composed immutable models, normalized default arrays, boxed tuple holders and their object array after parser scratch collection. Informational estimate, no threshold/retry/subtraction beyond the raw before/after difference." }));
         GC.KeepAlive(outputs);
     }
     private static void Collect()
