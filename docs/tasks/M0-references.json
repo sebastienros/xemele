@@ -3,14 +3,16 @@
   "id": "M0-references",
   "milestone": "M0",
   "title": "Pinned C/Rust/BCL reference runners",
-  "kind": "infrastructure",
+  "kind": "integration",
   "status": "planned",
   "owner": null,
   "branch": null,
   "base_revision": null,
   "integration_revision": null,
   "depends_on": [
-    "M0-build"
+    "M0-references-protocol",
+    "M0-references-libxml2",
+    "M0-references-xmloxide"
   ],
   "goals": [
     "G18"
@@ -49,7 +51,7 @@
   "evidence": [],
   "blockers": [],
   "handoff": {
-    "summary": "",
+    "summary": "Split before claim into protocol/BCL and independent pinned engine runners. This join retains all original cross-engine acceptance criteria and verifies their integrated combination.",
     "checks": [],
     "remaining": [],
     "requests": []

@@ -85,5 +85,16 @@
   "conventions_pending_review": {
     "api": "tools/ApiBaseline/README.md on codex/m0-ci defines xemele-api-v1 canonical JSONL with id/member/declaration",
     "corpus": "same report defines schemaVersion 1 metadata and path/sha256/classification fixtures; corpus owner must consume integrated convention"
-  }
+  },
+  "task_splits": [
+    {
+      "parent": "M0-references",
+      "children": [
+        "M0-references-protocol",
+        "M0-references-libxml2",
+        "M0-references-xmloxide"
+      ],
+      "reason": "Separate independently reviewable protocol/BCL and native/Rust runners before claims; preserve original join acceptance."
+    }
+  ]
 }

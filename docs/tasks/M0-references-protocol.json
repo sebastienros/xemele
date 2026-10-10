@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "id": "M0-references-protocol",
+  "milestone": "M0",
+  "title": "Versioned reference protocol and BCL runner",
+  "kind": "infrastructure",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "depends_on": [
+    "M0-build"
+  ],
+  "goals": [
+    "G18"
+  ],
+  "specs": [
+    "docs/specs/foundation.md"
+  ],
+  "owns": [
+    "tools/ReferenceRunners/Protocol/",
+    "tools/ReferenceRunners/Bcl/",
+    "tests/Xemele.TestUtilities/References/",
+    "tests/Xemele.Differential.Tests/Protocol/",
+    "docs/reports/M0-references-protocol/"
+  ],
+  "api_or_output": "Versioned reference protocol and BCL runner",
+  "acceptance": [
+    {
+      "id": "M0-references-protocol-A1",
+      "description": "Define the versioned JSONL request/response and operation payload contract, implement the BCL XML runner and managed reference process client, and run one known XML fixture with actual runtime/build metadata.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M0-references-protocol-A2",
+      "description": "Test request/response identity and semantic normalization, invalid protocol/requests, process failure categorization, timeout/cancellation, offline resource mapping and denied unconfigured external access; keep infrastructure failures distinct from parse rejection.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M0-references-protocol-A3",
+      "description": "Demonstrate the task using only verified M0-build; run focused tests and preserved bootstrap checks at a known implementation revision, record protocol/runner outputs and task validation.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}
