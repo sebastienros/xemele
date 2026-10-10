@@ -1,0 +1,140 @@
+{
+  "taskId": "M2-conformance-grammar",
+  "testedIntegrationRevision": "a42dea5ad251daac5c753198e9f82ce383dd249f",
+  "result": "passed",
+  "focusedChecks": {
+    "revision": "a42dea5ad251daac5c753198e9f82ce383dd249f",
+    "commands": [
+      {
+        "label": "build:tests/Xemele.Tests/Xemele.Tests.csproj",
+        "argv": [
+          "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+          "build",
+          "tests/Xemele.Tests/Xemele.Tests.csproj",
+          "-c",
+          "Release",
+          "--disable-build-servers",
+          "-m:1",
+          "-p:UseSharedCompilation=false",
+          "-p:NuGetAudit=false"
+        ],
+        "exit": 0
+      },
+      {
+        "label": "build:samples/M2-conformance-grammar/Probe.csproj",
+        "argv": [
+          "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+          "build",
+          "samples/M2-conformance-grammar/Probe.csproj",
+          "-c",
+          "Release",
+          "--disable-build-servers",
+          "-m:1",
+          "-p:UseSharedCompilation=false",
+          "-p:NuGetAudit=false"
+        ],
+        "exit": 0
+      },
+      {
+        "label": "build:tools/ReferenceRunners/Bcl/BclReference.csproj",
+        "argv": [
+          "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+          "build",
+          "tools/ReferenceRunners/Bcl/BclReference.csproj",
+          "-c",
+          "Release",
+          "--disable-build-servers",
+          "-m:1",
+          "-p:UseSharedCompilation=false",
+          "-p:NuGetAudit=false"
+        ],
+        "exit": 0
+      },
+      {
+        "label": "focused17",
+        "argv": [
+          "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+          "/private/tmp/xemele-integrate-m2-grammar/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll",
+          "-noColor",
+          "-class",
+          "Xemele.Tests.ConformanceGrammar.EffectiveGrammarTests",
+          "-result-xml",
+          "/var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-grammar-integration-2ks0b4f4/grammar.xml"
+        ],
+        "exit": 0
+      },
+      {
+        "label": "authored-oracle-controls14",
+        "argv": [
+          "python3",
+          "-B",
+          "/private/tmp/xemele-integrate-m2-grammar/docs/reports/M2-conformance-grammar/test_semantic_oracle.py"
+        ],
+        "exit": 0
+      },
+      {
+        "label": "full-original-semantics",
+        "argv": [
+          "python3",
+          "-B",
+          "/private/tmp/xemele-integrate-m2-grammar/docs/reports/M2-conformance-grammar/full_grammar.py",
+          "integration-full-grammar"
+        ],
+        "exit": 0
+      }
+    ],
+    "focusedTests": {
+      "passed": 17,
+      "failed": 0,
+      "skipped": 0,
+      "identitySha256": "7b635381d093c98e898ee0a6cc1fc72eeba6a5eb2febb85b56b6e13dc01990b4",
+      "testAssemblySha256": "8be02927c8c989452e7984dc34451b60048b31c86cd1f806d864eef0c6c9b116"
+    },
+    "result": "passed",
+    "temporaryXmlAndLogsRemoved": true
+  },
+  "originalByteModels": {
+    "counts": {
+      "product:rejected": 1191,
+      "reference:rejected": 1914,
+      "independent:normative-rejection": 1191,
+      "reference:accepted": 671,
+      "product:accepted": 1394,
+      "symbolic-default-declarations": 2,
+      "independent:accepted-model": 1394,
+      "unresolved-content-occurrences": 2,
+      "bulk-decode-all-callback-pause-models": 1394,
+      "reference:independent-model-match": 644,
+      "original-suite-output-models": 409,
+      "authored-effective10-output-overrides": 15,
+      "verified-original-resources": 3386,
+      "resolved-reference-disagreements": 771
+    },
+    "report": "docs/reports/M2-conformance-grammar/integration-full-grammar.json",
+    "reportSha256": "e850e5838f0d68482757d10c9a68662a7e4941f7203362dc7f033746b9d80f4b",
+    "all1394ModelHashesMatchWorker": true,
+    "all771ReferenceResolutionsMatchWorker": true,
+    "all424OriginalOutputWitnessesMatchWorker": true,
+    "sourceOutputRuntimeClosureUnchanged": true,
+    "childExitAndCleanup": "passed"
+  },
+  "projectionScope": "Expanded element names, ordinal expanded attribute values, ordered/coalesced content; exact version/encoding/standalone and DOCTYPE name; explicit symbolic default stage-one parts/unresolved content identity and valid owned anchors; exact offline resource opens/disposals. Lexical comments/PI/prefix/namespace order/full DTD metadata and physical mappings retain verified focused prerequisite evidence.",
+  "preservedEvidence": {
+    "runtimeSourceApiProjectsPackagesBenchmarksContractsAndConsumersUnchanged": true,
+    "correctnessRevision": "8b77daddc975093bed1fcf0cec28008201707ae2",
+    "correctnessActualPassed": 2157,
+    "apiMembers": 372,
+    "approvedAdditiveMembers": 82,
+    "apiSourceFreshPackage": "passed previously, unchanged relevant inputs",
+    "measuredRevision": "8d894a96b1ad99799fb3732683bc7f6dd0066141",
+    "borrowedBytes": 0,
+    "borrowedIterations": 1024,
+    "finalSourceBinaryRuntimeFreeze": "passed previously, unchanged measured inputs"
+  },
+  "sourceReview": "Bounded source-only oracle/projection review43c3755 approved. Root directly inspected f3d1596 symbolic model correction/test and actual integrated run. No blocking findings; optional untracked-input preflight and primary-failure/cleanup reporting hardening are follow-up backlog, not current evidence defects.",
+  "rawArtifactPolicy": "No raw test/benchmark archives; temporary XML/logs removed. Compiled integration inputs removed after durable merge/verification.",
+  "finalCombinationRevision": "8aad51047d46658f6390e8a538eb62379a7d9b4b",
+  "finalHandoffRevision": "b2dc3bf7cdd450c3795cc37af58933ecb32f4a06",
+  "allRecordedTestedSourceAndFixtureHashesUnchangedAfterHandoff": true,
+  "integratedOwnedPathCount": 15
+}

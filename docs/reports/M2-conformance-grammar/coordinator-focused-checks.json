@@ -1,0 +1,91 @@
+{
+  "revision": "a42dea5ad251daac5c753198e9f82ce383dd249f",
+  "commands": [
+    {
+      "label": "build:tests/Xemele.Tests/Xemele.Tests.csproj",
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "build",
+        "tests/Xemele.Tests/Xemele.Tests.csproj",
+        "-c",
+        "Release",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false"
+      ],
+      "exit": 0
+    },
+    {
+      "label": "build:samples/M2-conformance-grammar/Probe.csproj",
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "build",
+        "samples/M2-conformance-grammar/Probe.csproj",
+        "-c",
+        "Release",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false"
+      ],
+      "exit": 0
+    },
+    {
+      "label": "build:tools/ReferenceRunners/Bcl/BclReference.csproj",
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "build",
+        "tools/ReferenceRunners/Bcl/BclReference.csproj",
+        "-c",
+        "Release",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false"
+      ],
+      "exit": 0
+    },
+    {
+      "label": "focused17",
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "/private/tmp/xemele-integrate-m2-grammar/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll",
+        "-noColor",
+        "-class",
+        "Xemele.Tests.ConformanceGrammar.EffectiveGrammarTests",
+        "-result-xml",
+        "/var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-grammar-integration-2ks0b4f4/grammar.xml"
+      ],
+      "exit": 0
+    },
+    {
+      "label": "authored-oracle-controls14",
+      "argv": [
+        "python3",
+        "-B",
+        "/private/tmp/xemele-integrate-m2-grammar/docs/reports/M2-conformance-grammar/test_semantic_oracle.py"
+      ],
+      "exit": 0
+    },
+    {
+      "label": "full-original-semantics",
+      "argv": [
+        "python3",
+        "-B",
+        "/private/tmp/xemele-integrate-m2-grammar/docs/reports/M2-conformance-grammar/full_grammar.py",
+        "integration-full-grammar"
+      ],
+      "exit": 0
+    }
+  ],
+  "focusedTests": {
+    "passed": 17,
+    "failed": 0,
+    "skipped": 0,
+    "identitySha256": "7b635381d093c98e898ee0a6cc1fc72eeba6a5eb2febb85b56b6e13dc01990b4",
+    "testAssemblySha256": "8be02927c8c989452e7984dc34451b60048b31c86cd1f806d864eef0c6c9b116"
+  },
+  "result": "passed",
+  "temporaryXmlAndLogsRemoved": true
+}
