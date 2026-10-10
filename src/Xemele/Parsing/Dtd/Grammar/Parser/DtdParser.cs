@@ -153,7 +153,7 @@ internal sealed partial class DtdParser : IDisposable
                     bool skipLf = scalar == '\n' && s.Cr;
                     if (!s.Advance(scalar)) { Reject("Source location overflow.", at, "XML.LocationLimit"); break; }
                     if (s.Prolog is not null) ProcessProlog(s, scalar, at, cancellationToken);
-                    else if (!skipLf) Process(scalar == '\r' ? '\n' : scalar, at, cancellationToken);
+                    else if (owned || !skipLf) Process(!owned && scalar == '\r' ? '\n' : scalar, at, cancellationToken);
                 }
                 if (terminal) { Drain(null); return new(consumed, model is null ? DtdParseStep.Rejected : DtdParseStep.Completed, null, diagnostic); }
                 if (pending is not null) return new(consumed, DtdParseStep.NeedEntity, request, null);
@@ -244,6 +244,7 @@ internal sealed partial class DtdParser : IDisposable
             return;
         }
         if (lex != Lex.Between || includes.Count != 0 || declaration.Length != 0) { Reject("Incomplete DTD at EOF.", s.At(s.Eof)); return; }
+        if (!ValidateKnownDefaults(cancellation)) return;
         model = new(elements, attributes, general, parameter, notations); terminal = true;
     }
     private bool Accept(XmlDiagnostic? refusal) { if (refusal is null) return true; Refuse(refusal); return false; }

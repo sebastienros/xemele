@@ -103,6 +103,34 @@ public sealed class DtdParserTests
         Assert.Equal(" a z\t ", applied.Value);
         Assert.Equal(DtdParticleKind.Sequence, m.Elements[0].Content.Kind); Assert.Equal(DtdOccurrence.Optional, m.Elements[0].Content.Children[1].Occurrence);
     }
+    [Theory]
+    [InlineData("<!ENTITY e SYSTEM 'x'><!ATTLIST r a CDATA '&e;'>", false)]
+    [InlineData("<!ATTLIST r a CDATA '&e;'><!ENTITY e SYSTEM 'x'>", false)]
+    [InlineData("<!ENTITY e 'a&e;'><!ATTLIST r a CDATA '&e;'>", false)]
+    [InlineData("<!ENTITY e '&#60;'><!ATTLIST r a CDATA '&e;'>", false)]
+    [InlineData("<!ENTITY e '&#38;#60;'><!ATTLIST r a CDATA '&e;'>", true)]
+    [InlineData("<!ENTITY e '&later;'><!ATTLIST r a CDATA '&e;'>", true)]
+    [InlineData("<!ENTITY e '&f;'><!ENTITY f '<'><!ATTLIST r a CDATA '&e;'>", false)]
+    public void KnownDefaultReferencesWfAndUnresolvedEffectiveTableBoundary(string text, bool valid)
+    {
+        for (int split = 0; split <= text.Length; split++)
+        { using var p = new DtdParser(DtdSubsetKind.Internal, new()); var a = p.Append(text.AsSpan(0, split), [], false, TestContext.Current.CancellationToken); var b = a.Step == DtdParseStep.Rejected ? a : p.Append(text.AsSpan(split), [], true, TestContext.Current.CancellationToken); Assert.Equal(valid ? DtdParseStep.Completed : DtdParseStep.Rejected, b.Step); }
+    }
+    [Fact]
+    public void ProcessedParameterReplacementPreservesReferencedCrAndLf()
+    {
+        const string source = "<!ENTITY % p '&#13;'><!ENTITY % q '&#10;'><!ENTITY e '%p;%q;'><!ENTITY raw 'a\r\nb'>";
+        for (int split = 0; split <= source.Length; split++)
+        { using var p = new DtdParser(DtdSubsetKind.External, new()); p.Append(source.AsSpan(0, split), [], false, TestContext.Current.CancellationToken); Assert.Equal(DtdParseStep.Completed, p.Append(source.AsSpan(split), [], true, TestContext.Current.CancellationToken).Step); Assert.Equal("\r\n", p.Model.GeneralEntities[0].ReplacementText); Assert.Equal("a\nb", p.Model.GeneralEntities[1].ReplacementText); }
+    }
+    [Fact]
+    public void SupplementaryParameterNameCountsScalarsAtReference()
+    {
+        string name = string.Concat(Enumerable.Repeat("😀", 100)); string declaration = "<!ENTITY % " + name + " ' '>";
+        int count = declaration.EnumerateRunes().Count(); using var p = new DtdParser(DtdSubsetKind.Internal, new() { TokenCharacters = count });
+        Assert.Equal(DtdParseStep.Completed, p.Append(declaration + "%" + name + ";", [], true, TestContext.Current.CancellationToken).Step);
+        using var over = new DtdParser(DtdSubsetKind.Internal, new() { TokenCharacters = count - 1 }); Assert.Equal(DtdParseStep.Rejected, over.Append(declaration, [], true, TestContext.Current.CancellationToken).Step);
+    }
     [Fact]
     public void OneUnitChunksAndBorrowedRelease()
     {

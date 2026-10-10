@@ -69,7 +69,7 @@ internal sealed partial class DtdParser
         {
             if (!Adjacent("PCDATA")) return null;
             List<DtdParticle> mixed = [];
-            while (Take("|")) { string? name = Name(); if (name is null) return null; mixed.Add(new(DtdParticleKind.Name, name, DtdOccurrence.Once, [])); }
+            while (Take("|")) { cancellation.ThrowIfCancellationRequested(); string? name = Name(); if (name is null) return null; mixed.Add(new(DtdParticleKind.Name, name, DtdOccurrence.Once, [])); }
             if (!Require(")")) return null;
             DtdOccurrence occurrence = Occurrence();
             if (mixed.Count > 0 ? occurrence != DtdOccurrence.ZeroOrMore : occurrence is not (DtdOccurrence.Once or DtdOccurrence.ZeroOrMore))
