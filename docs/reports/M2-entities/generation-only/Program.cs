@@ -1,4 +1,5 @@
 using BenchmarkDotNet.Characteristics;
+using BenchmarkDotNet.Extensions;
 using BenchmarkDotNet.Environments;
 using BenchmarkDotNet.Jobs;
 using BenchmarkDotNet.Loggers;
