@@ -15,7 +15,7 @@ public sealed class FramingTests
     ["", "<", "<?", "<?x", "<?xm", "<?xml", "<?xml-stylesheet?>", " <?xml encoding='X'?>", "😀body", "<?xml😀tail", "\r\nbody", "中"];
     private static readonly string[] Rejected =
     ["<?xml ?>", "<?xml version='1.0'?>", "<?xml encoding=''?>", "<?xml encoding='9x'?>",
-     "<?xml encoding='u:8'?>", "<?xml version='1.1' encoding='X'?>", "<?xml encoding='X' standalone='yes'?>",
+     "<?xml encoding='u:8'?>", "<?xml encoding='X' standalone='yes'?>",
      "<?xml version='1.0'encoding='X'?>", "<?xml encoding='X' version='1.0'?>", "<?xml encoding='X'? >",
      "<?xml encoding='X'", "<?xml encoding='X'>", "<?xml encoding='X' encoding='X'?>",
      "<?xml ENCODING='X'?>", "<?xml encoding='😀'?>", "\uD800", "\uDC00", "\0"];
@@ -27,6 +27,15 @@ public sealed class FramingTests
         foreach (var group in new[] { (Declared, TextDeclarationStep.Declared), (Absent, TextDeclarationStep.Absent), (Rejected, TextDeclarationStep.Rejected) })
             foreach (string text in group.Item1)
             {
+                // Insert the authorized positive transition at its historical ID.
+                // Every other fixture keeps its inherited identity and outcome.
+                if (group.Item2 == TextDeclarationStep.Rejected && text == "<?xml encoding='X' standalone='yes'?>")
+                {
+                    const string compatible = "<?xml version='1.1' encoding='X'?>";
+                    for (int split = 0; split <= compatible.Length; split++)
+                        foreach (bool mapped in new[] { false, true }) yield return [caseId, compatible, TextDeclarationStep.Declared.ToString(), split, mapped];
+                    caseId++;
+                }
                 for (int split = 0; split <= text.Length; split++)
                     foreach (bool mapped in new[] { false, true }) yield return [caseId, text, group.Item2.ToString(), split, mapped];
                 caseId++;
@@ -47,7 +56,7 @@ public sealed class FramingTests
     [Theory, MemberData(nameof(Splits))]
     public void EverySplit(int caseId, string text, string expected, int split, bool mapped)
     {
-        Assert.InRange(caseId, 0, Declared.Length + Absent.Length + Rejected.Length - 1);
+        Assert.InRange(caseId, 0, Declared.Length + Absent.Length + Rejected.Length);
         using var oracle = new XmlTextDeclarationFramer(new(), Source);
         using var framer = new XmlTextDeclarationFramer(new(), Source);
         long[] offsets = mapped ? Mappings(text) : [];
