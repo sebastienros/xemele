@@ -4,7 +4,7 @@
   "milestone": "M0",
   "title": "Pinned libxml2 reference runner",
   "kind": "infrastructure",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M0-references-libxml2",
   "branch": "codex/m0-references-libxml2",
   "base_revision": "d94fb3167cebcfef8f927c580770741441dd6e60",
@@ -27,29 +27,82 @@
     {
       "id": "M0-references-libxml2-A1",
       "description": "Build libxml2 v2.15.4 at exact commit 96498992efa48d52b0e8b83058bd88dbdaf153c1 and implement its XML reference runner against the integrated protocol; record pinned toolchain, configure options, enabled features and provenance.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "pinned-native-and-protocol-checks",
+        "clean-native-reproducibility"
+      ]
     },
     {
       "id": "M0-references-libxml2-A2",
       "description": "Run the protocol known XML fixture and compare its normalized response against the integrated BCL runner; exercise invalid requests/input, offline resources and denied unconfigured external access with runner failures distinct from parse rejection.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "pinned-native-and-protocol-checks"
+      ]
     },
     {
       "id": "M0-references-libxml2-A3",
       "description": "Demonstrate task-private build scripts/runner and actual checks at known implementation revision using only integrated verified dependencies; preserve earlier behavior and validate task records.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "pinned-native-and-protocol-checks"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "tools/ReferenceRunners/Libxml2/build.py: immutable upstream fetch/commit checks, exact compiler/CMake/make/SDK/configuration, fresh static builds and checksum/feature/license provenance",
+    "tools/ReferenceRunners/Libxml2/bridge.c: real pinned reader, per-request resource loader/error capture, copied offline inputs and native reader scratch cleanup; no global loader or file/network fallback",
+    "tools/ReferenceRunners/Libxml2/Program.cs: v1 strict UTF8 JSONL, actual metadata/checksum verification, normalized native events, bounded quotas and rejection/failure separation",
+    "tools/ReferenceRunners/Libxml2/DocumentEnvelope.cs: conservative post-native unsupported normalization detection for omitted top-level whitespace or ambiguous encoding/envelope; no invented events",
+    "tools/ReferenceRunners/Libxml2/AttributeNormalization.cs and Checks/: production UTF16 ordinal sorter and ambiguous-encoding regressions",
+    "docs/reports/M0-references-libxml2/verify.py: native/BCL process checks, native-loss reproduction, unsupported/supported boundary tests, resolver lifecycle/security/quota cases, inherited checks",
+    "docs/reports/M0-references-libxml2/: durable actual verification/provenance/reproducibility/known-fixture outputs and upstream/component license notices"
+  ],
+  "evidence": [
+    {
+      "id": "known-revision-draft-failure",
+      "kind": "check",
+      "revision": "d695593d88385831041da4e3f6be3d158ddf293b",
+      "command": "Pinned .NET10.0.400; python3 -B docs/reports/M0-references-libxml2/verify.py",
+      "result": "failed",
+      "summary": "Supplementary namespace IRI equality assertion failed after real native namespace error capture; corrected test to preserve actual native rejection vs BCL acceptance and directly verify production UTF16 ordinal sorting. Superseded by final source check.",
+      "artifact": "docs/reports/M0-references-libxml2/attempts.md"
+    },
+    {
+      "id": "pinned-native-and-protocol-checks",
+      "kind": "check",
+      "revision": "150ed0e3eeceea0dfe030186cdd9dbbb59211aca",
+      "command": "Pinned .NET10.0.400 PATH/DOTNET_ROOT; python3 -B docs/reports/M0-references-libxml2/verify.py",
+      "result": "passed",
+      "summary": "Fresh pinned native build;16 supported BCL-normalized comparisons;16 explicit unsupported envelope cases/native-loss reproduction;production UTF16 ordinal/ambiguous-encoding checks;14 request failures;14 XML rejections;65 resolver lifecycle cases;native amplification/event quotas;strictUTF8 wire and identity bounds. Preserved51focused/54solution infrastructure passes,3expectedcontrolledfailures,CLI/build/pack/API,13discovery,2independentfixtures,101taskvalidate. Only macOSarm64; no parser-performance claim.",
+      "artifact": "docs/reports/M0-references-libxml2/verification.txt"
+    },
+    {
+      "id": "clean-native-reproducibility",
+      "kind": "check",
+      "revision": "150ed0e3eeceea0dfe030186cdd9dbbb59211aca",
+      "command": "python3 -B tools/ReferenceRunners/Libxml2/build.py; compare source/bridge-source/static-library/bridge SHA256 with the preceding verifier fresh build",
+      "result": "passed",
+      "summary": "Second fresh CMake configuration/build at identical toolchain yields identical static-library SHA256028ba67cd39687ce3c6246e724de0c08114eadb665c0d0954a8c35490f4a8dc4 and bridge SHA2567140d1edf4e2e10f6e15693317cffa3d5025a178814010edecf8770bb8f8be21. Upstream/source/license/features captured in provenance; no host libxml2 linked.",
+      "artifact": "docs/reports/M0-references-libxml2/reproducibility.json"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "",
-    "checks": [],
-    "remaining": [],
+    "summary": "Implemented bounded pinned libxml2 v2.15.4 reference at tested150ed0e; real native events/offline context loaders, exact build/provenance/notices, strict v1 wire, native error/quota handling and faithful supported normalization. Coordinator-approved explicit unsupported detection prevents native document-whitespace loss from becoming success. Await serialized integration; integration_revision null.",
+    "checks": [
+      "Full task verifier passed at150ed0e3eeceea0dfe030186cdd9dbbb59211aca; durableverification/provenance/fixture transcripts task-owned.",
+      "Two fresh native builds have identical SHA256; CMake3.31.6/AppleClang17build1700.6.3.2/Make3.81/SDK26.2/macOSarm64/target15.0 pinned.",
+      "16supportedBCLcomparisons/16unsupportedboundaries;14requestfailures/14XMLrejections/65resolvercases;quotas/wire/identity/productionordinal checks pass.",
+      "Preserved51focused/54solutioninfrastructure and3expectedfailure tests, CLI/build/pack/API,13discovery/2independentfixtures/101taskvalidation pass.",
+      "Performance/allocation benchmarks not applicable to subprocess reference infrastructure and not run; no cross-platform/runtime-conformance claim."
+    ],
+    "remaining": [
+      "Coordinator independent review and integrated verification before statusverified.",
+      "Document-level whitespace cases return explicit unsupported normalization; BCL remains v1 oracle, Xemele requirements remain intact.",
+      "Nonbuilt-in encodings unsupported; native non-ASCII namespace IRI rejection differs from BCL and is preserved; other toolchains/platforms unverified."
+    ],
     "requests": []
   }
 }
