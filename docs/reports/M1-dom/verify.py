@@ -14,10 +14,10 @@ RAW = ROOT / 'artifacts/M1-dom'
 FLAGS = ['-c', 'Release', '--disable-build-servers', '-m:1', '-p:UseSharedCompilation=false']
 LOG = []
 
-def run(*args):
+def run(*args, cwd=ROOT):
     args = list(map(str, args))
     print('$ ' + ' '.join(args), flush=True)
-    result = subprocess.run(args, cwd=ROOT, text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, timeout=240)
+    result = subprocess.run(args, cwd=cwd, text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, timeout=240)
     LOG.extend(['$ ' + ' '.join(args), result.stdout, f'exit={result.returncode}'])
     if result.returncode:
         raise RuntimeError('\n'.join(LOG[-3:]))
@@ -78,7 +78,13 @@ def main():
     run('python3', '-B', '-m', 'unittest', 'discover', '-s', 'tests/Xemele.TestUtilities/Build', '-p', 'test_*.py', '-v')
     run('python3', '-B', 'tests/Xemele.TestUtilities/Corpora/verify_bootstrap.py')
     run('dotnet', 'build', 'docs/reports/M1-input/Xemele.InputBenchmarks.csproj', *FLAGS)
-    run('dotnet', 'run', '--project', 'docs/reports/M1-input/Xemele.InputBenchmarks.csproj', '-c', 'Release', '--no-build', '--no-restore', '--', '--contract', ROOT / 'docs/reports/M1-contracts/Projects/Input/bin/Release/net10.0/M1Input.dll')
+    with tempfile.TemporaryDirectory(prefix='xemele-dom-input-probe-') as directory:
+        directory = Path(directory)
+        destination = directory / 'docs/reports/M1-input/internal-contract.txt'
+        destination.parent.mkdir(parents=True)
+        run('dotnet', ROOT / 'docs/reports/M1-input/bin/Release/net10.0/Xemele.InputBenchmarks.dll', '--contract', ROOT / 'docs/reports/M1-contracts/Projects/Input/bin/Release/net10.0/M1Input.dll', cwd=directory)
+        assert destination.read_bytes() == (ROOT / 'docs/reports/M1-input/internal-contract.txt').read_bytes()
+        (REPORT / 'internal-input-abi.txt').write_bytes(destination.read_bytes())
     run('dotnet', 'build', 'docs/reports/M1-syntax/AbiProbe/AbiProbe.csproj', *FLAGS)
     run('dotnet', ROOT / 'docs/reports/M1-syntax/AbiProbe/bin/Release/net10.0/AbiProbe.dll', ROOT / 'docs/reports/M1-contracts/Projects/Syntax/bin/Release/net10.0/M1Syntax.dll', ROOT / 'src/Xemele/bin/Release/net10.0/Xemele.dll', REPORT / 'internal-syntax-abi.txt')
     run('dotnet', 'build', 'samples/M1-dom/Sample.csproj', *FLAGS)

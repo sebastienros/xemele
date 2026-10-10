@@ -254,11 +254,12 @@ public sealed class DomTests
         var probe = typeof(DomSink).GetMethod("OwnName", BindingFlags.Instance | BindingFlags.NonPublic)!.CreateDelegate<NameProbe>(sink);
         string rootName = sink.Document.RootElement.LocalName;
         string copiedProbe = new string(new[] { 'r' });
-        for (int i = 0; i < 100; i++) probe(copiedProbe.AsSpan());
+        for (int i = 0; i < 10000; i++) probe(copiedProbe.AsSpan());
         long before = GC.GetAllocatedBytesForCurrentThread();
         for (int i = 0; i < 10000; i++)
             if (!ReferenceEquals(rootName, probe(copiedProbe.AsSpan()))) throw new InvalidOperationException("Borrowed hit did not reuse owned name.");
-        Assert.Equal(0, GC.GetAllocatedBytesForCurrentThread() - before);
+        long allocated = GC.GetAllocatedBytesForCurrentThread() - before;
+        Assert.Equal(0L, allocated);
     }
 
     [Fact]
