@@ -54,7 +54,13 @@ internal sealed class ExternalXmlSource : IDisposable
 
         bool FinishFrame(TextDeclarationResult result, XmlTextDeclarationFramer frame)
         {
-            if (result.Step == TextDeclarationStep.Rejected) { Diagnostic = result.Diagnostic; return false; }
+            if (result.Step == TextDeclarationStep.Rejected)
+            {
+                Diagnostic = result.Diagnostic;
+                if (decoderCompleted && Diagnostic is { Location.ByteOffset: null })
+                    Diagnostic = Diagnostic with { Location = Diagnostic.Location with { ByteOffset = ByteLength } };
+                return false;
+            }
             Diagnostic = decoder.ValidateDeclaration(result.Declaration is { } declaration ? declaration.EncodingName.AsSpan() : [],
                 result.Declaration?.Location ?? frame.PrefixLocation);
             if (Diagnostic is not null) return false;

@@ -150,7 +150,11 @@ internal sealed partial class XmlParserCore
     private bool FinishEntitySource(EntitySource source)
     {
         if (state != State.Data || frames.Count != source.ElementDepth)
-        { Reject("XML.Syntax", "General entity crosses a markup or element boundary.", source.Reference); return true; }
+        {
+            var eof = source.External is { } external
+                ? new XmlLocation(external.SourceUri, source.Line, source.Column, external.ByteLength) : source.Reference;
+            Reject("XML.Syntax", "General entity crosses a markup or element boundary.", eof); return true;
+        }
         source.External?.Dispose();
         entitySources!.RemoveAt(entitySources.Count - 1);
         budget.Release(Quota.EntityDepth, 1);
