@@ -1,0 +1,748 @@
+{
+  "result": "passed",
+  "testedSource": "5157ee53b33654f13dc4a0b34cfc6d4e1aec07e9",
+  "auditRevision": "1a92375bb0e2ee7d84595f6ed80b922bf501d846",
+  "files": 144,
+  "sourceWorktreeIndexAndCommittedBytesMatch": true,
+  "sourceToAuditDiffEvidenceOnly": [
+    "docs/reports/M2-entities-foundation/README.md",
+    "docs/reports/M2-entities-foundation/checkpoint-5157ee5/Xemele.Conformance.Tests-discovery.txt.gz",
+    "docs/reports/M2-entities-foundation/checkpoint-5157ee5/Xemele.Conformance.Tests.xml.gz",
+    "docs/reports/M2-entities-foundation/checkpoint-5157ee5/Xemele.Differential.Tests-discovery.txt.gz",
+    "docs/reports/M2-entities-foundation/checkpoint-5157ee5/Xemele.Differential.Tests.xml.gz",
+    "docs/reports/M2-entities-foundation/checkpoint-5157ee5/Xemele.Tests-discovery.txt.gz",
+    "docs/reports/M2-entities-foundation/checkpoint-5157ee5/Xemele.Tests.xml.gz",
+    "docs/reports/M2-entities-foundation/checkpoint-5157ee5/actual-contract.txt",
+    "docs/reports/M2-entities-foundation/checkpoint-5157ee5/allocations.txt",
+    "docs/reports/M2-entities-foundation/checkpoint-5157ee5/approved-contract.txt",
+    "docs/reports/M2-entities-foundation/checkpoint-5157ee5/checks.txt.gz",
+    "docs/reports/M2-entities-foundation/checkpoint-5157ee5/focused.xml.gz",
+    "docs/reports/M2-entities-foundation/checkpoint-5157ee5/runtime-api.json",
+    "docs/reports/M2-entities-foundation/checkpoint-5157ee5/sample.txt",
+    "docs/reports/M2-entities-foundation/checkpoint-5157ee5/summary.json",
+    "docs/reports/M2-entities-foundation/internal-contract.txt"
+  ],
+  "executionBoundary": "Checkpoint logs record tested HEAD and end-of-execution committed/staged/working/untracked audit: tracked runtime/tests/sample/inventory/verifier unchanged, only owned report outputs new. No source writes occurred while that check process ran. The verifier did not have an explicit initial clean guard; this supplemental git blob/worktree/index audit confirms exact reviewed/tested source bytes without repeating passing tests or allocation measurements.",
+  "manifest": [
+    {
+      "path": "docs/api/M2-entities-foundation.txt",
+      "gitBlob": "ea37f296e3f21ac7acca21d0e9ab0f48b434042f",
+      "sha256": "f7fa95b403180333d13fa250cdd906b56fd560eebadd0d8b558934358f61c179"
+    },
+    {
+      "path": "docs/reports/M2-entities-foundation/verify.py",
+      "gitBlob": "bf85ed16fad3c37d0b1daf9aedda8a007d4ac415",
+      "sha256": "d9ffa0b8962c6fa5055c7c28f07cfff86efaa22894687076ba51e9955c2ecc71"
+    },
+    {
+      "path": "samples/M2-entities-foundation/Inventory.cs",
+      "gitBlob": "a2ebe555643d49b2d934f67e084ef97ffe6b8bcc",
+      "sha256": "40aabbe2f52c039add966b3d3a5a7b17b82ed4813c3fb38048b82203a8b267f3"
+    },
+    {
+      "path": "samples/M2-entities-foundation/Program.cs",
+      "gitBlob": "2a8a7cc4e0be252db549e825216a07ea4341c16a",
+      "sha256": "6d143ea7776f096c9babb204768c3328b2c3b90696f33f7a0150093b4edcf9ad"
+    },
+    {
+      "path": "samples/M2-entities-foundation/Sample.csproj",
+      "gitBlob": "4337b0ab9ce085299a6c0b0c2e13325ff046f9d5",
+      "sha256": "e9d2786d358b8dbfcbc88b61de9606de50c661999ae7ca78869a843846880331"
+    },
+    {
+      "path": "src/Xemele.Tool/CommandRegistry.cs",
+      "gitBlob": "2328833855b5dca53fe5bbab79f014153f36fcb9",
+      "sha256": "fc0237693d65765dad672bed6cc774beeca54665136bae9c3294d0f36f1263e7"
+    },
+    {
+      "path": "src/Xemele.Tool/Program.cs",
+      "gitBlob": "dc114da5503c81f0baa16f08921e263e0d2811e4",
+      "sha256": "aa0a60464dcd2124d4e15372aa1f59b9fd29257dfbc3ee63777aa5d4e9d4bf62"
+    },
+    {
+      "path": "src/Xemele.Tool/Xemele.Tool.csproj",
+      "gitBlob": "f581c4ee76bd2330053bb5da835bcd1b7d1abdeb",
+      "sha256": "c40b65b4c501c793b90674a5beb700125c6d591279c89944f7123227b39e678e"
+    },
+    {
+      "path": "src/Xemele/Diagnostics/Common.cs",
+      "gitBlob": "9a5f82e41b59b2f9048e991e544c05284762542c",
+      "sha256": "ad15cff893b61d4c337b957db9be4e195a67c7f0e0b7d3e0c1b6f5998414207e"
+    },
+    {
+      "path": "src/Xemele/Internal/Operations/DiagnosticBuffer.cs",
+      "gitBlob": "efb050d569c46ac58fb387121d08c78e388515d9",
+      "sha256": "22ba085ca664720f38c3f878ca28d19ec3e090670fed94d9b6b4023e0275ce03"
+    },
+    {
+      "path": "src/Xemele/Internal/Operations/OperationBudget.cs",
+      "gitBlob": "ca3e213c7f6f4211d60199cf711d3be719bec307",
+      "sha256": "a5a7024ec7b84d93a6968f2996536178f2459dbf0fa1f980648b1a968ab6e969"
+    },
+    {
+      "path": "src/Xemele/Internal/Operations/ScalarLocation.cs",
+      "gitBlob": "43f0721b369a99d9204c4efe39de7b1f1b0b4e88",
+      "sha256": "c2c734799ca8fd05af930c7a082b0f9089eee45892a25c15b8ddcdbe8a1f7f2e"
+    },
+    {
+      "path": "src/Xemele/Options/Common.cs",
+      "gitBlob": "6ed3d9687f260caf67dfe68349d118e27c23b752",
+      "sha256": "211cefbb924ab566fe145e47fcfaf29fe6a8fb21233313bfd0e66663fdb0350d"
+    },
+    {
+      "path": "src/Xemele/Options/XmlParseOptions.cs",
+      "gitBlob": "58958302bb0b8dcc621daf05ab37296c79bd8cbe",
+      "sha256": "c323717e29d3242aa5883a47b6c018f1b1a81da6ab0c22c2c486c1139cb2742a"
+    },
+    {
+      "path": "src/Xemele/Parsing/Core/XmlParserCore.cs",
+      "gitBlob": "1c48a0a333eedcf7f12ea5e459776c5c0aac2df2",
+      "sha256": "0baa0a10767f6edb64500cdd416bc2462a93f008324167cabf36dbbabbf33d31"
+    },
+    {
+      "path": "src/Xemele/Parsing/Dom/ByteDomAdapter.cs",
+      "gitBlob": "e60fc9e1701ef61d1c25b087e47b43affa39b411",
+      "sha256": "9b92562fc520c8db4e55a351d6cb54c7983b9ba10a63fe508581438253a71b1f"
+    },
+    {
+      "path": "src/Xemele/Parsing/Dom/DomSink.cs",
+      "gitBlob": "2146691bc64c351d1d8339e2e30ed8e8c462b8d6",
+      "sha256": "569260443447f9273b05bbc3c82a2d4d220dbf9d6b37f513e6e6d552af2483b9"
+    },
+    {
+      "path": "src/Xemele/Parsing/Dom/Factories.cs",
+      "gitBlob": "5fcf785de066b4c67d211816d42a6e87f28fe5a8",
+      "sha256": "349a9087a692fc226032291ff6c5b497503ae14f6bd5c553862d960198edab8a"
+    },
+    {
+      "path": "src/Xemele/Parsing/Dtd/Framing/XmlTextDeclarationFramer.cs",
+      "gitBlob": "6725ae7058b416999f2de4274c6cf98c6a6a93f3",
+      "sha256": "3940149bd26b26465e980362711d654b622288e1084a94f51c0d47178191dfd1"
+    },
+    {
+      "path": "src/Xemele/Parsing/Dtd/Grammar/Parser/Declarations.cs",
+      "gitBlob": "b79d17b0d90a1d5dd4048fca83e133ec263c27fd",
+      "sha256": "234a723ce35a4195a831cd095e68c9ecfe371d19f299805e701af6157fe35e9a"
+    },
+    {
+      "path": "src/Xemele/Parsing/Dtd/Grammar/Parser/DefaultReferences.cs",
+      "gitBlob": "f1ef29e0ee96b312c8e07cb349ad4a0bef99e4ea",
+      "sha256": "e01b0acc6888c2e1b234043e0dea50fea36cf81f28f036806b833114ecabb8b2"
+    },
+    {
+      "path": "src/Xemele/Parsing/Dtd/Grammar/Parser/DtdParser.cs",
+      "gitBlob": "bd057f02e17443bcb59e75942aa8fc5bf3da1c02",
+      "sha256": "679734ae4f585126e5323ac86a5464663d99eebcaa4c047b7a2c28dfeae9d1d8"
+    },
+    {
+      "path": "src/Xemele/Parsing/Dtd/Grammar/Parser/Lexer.cs",
+      "gitBlob": "3e95e768d81829ee29680b93ced8af5140091858",
+      "sha256": "e503210d765dd4132a30f4eb29ca11fb1f469213ccd000e024f07715eeb3abf2"
+    },
+    {
+      "path": "src/Xemele/Parsing/Dtd/Grammar/Values/DtdValueDecoder.cs",
+      "gitBlob": "00964ff8e773b8f0093ebbd7bd4a6f7ecddfdcff",
+      "sha256": "3bf08702347156d88f6e34b17e4907116504ea25c28cc87c4dc53bf09eaa40ce"
+    },
+    {
+      "path": "src/Xemele/Parsing/Dtd/Grammar/Values/DtdValueProcessor.cs",
+      "gitBlob": "da2624c1253b1f05f65ea1e65d13079a957db682",
+      "sha256": "91003ef7371cd518c7b08a4162368870cbc3f0c27b6547209b14a4750a77b76e"
+    },
+    {
+      "path": "src/Xemele/Parsing/Dtd/IDtdBudget.cs",
+      "gitBlob": "08f39c720392eb1779a87bf9ce8cc9aeb711410f",
+      "sha256": "22018a065a453cef9bceeb900642ed7ebcd0e24b7f72249fc148d0b9fa17a0fe"
+    },
+    {
+      "path": "src/Xemele/Parsing/Dtd/Model/Declarations.cs",
+      "gitBlob": "db4542fc1219d830ebcb81979047aa4cc6e6285d",
+      "sha256": "18d37b85283d9ec3193501e4acd4b5ad45ee901e3060c63498ea6d535228ce60"
+    },
+    {
+      "path": "src/Xemele/Parsing/Entities/Contracts/Entities.cs",
+      "gitBlob": "cc8c4c12667438085b86fb5080eceea901ac0f9c",
+      "sha256": "e1b80a334b8bc470a8f2054dedacc68916eafabe23f99bd67d2f7eab8154a234"
+    },
+    {
+      "path": "src/Xemele/Parsing/Events/Views.cs",
+      "gitBlob": "e01a9f87114495a700328493c1016d08925c70f7",
+      "sha256": "2a43a29b62dc6b4d59a625ab25907593a9941b6290ad355477a50c9ffd28a4a6"
+    },
+    {
+      "path": "src/Xemele/Parsing/Input/XmlInputDecoder.cs",
+      "gitBlob": "402ed6b35f75df51aef2bef0a7577f4d24af1c95",
+      "sha256": "43662ff1d73d810c391b2c1a4b56a65b22eb4b8fcffa9035ce6bb732a3c38369"
+    },
+    {
+      "path": "src/Xemele/Resolution/Core/Resources.cs",
+      "gitBlob": "f8a5ec6d372be5670c05db99f1cedb03d996b5e7",
+      "sha256": "9e2b02feafd46b17ec4820cb26912ce9f758b160b204670f52c5b35cf855b5ea"
+    },
+    {
+      "path": "src/Xemele/Resolution/Core/XmlResolutionSession.cs",
+      "gitBlob": "06928272a1d1dfe506a0e359cf1003edcd86a433",
+      "sha256": "96993a19a9f76cc3b0671635d66fcf391a40767288877919580fd9450e3fb7d2"
+    },
+    {
+      "path": "src/Xemele/Serialization/Document/Save.cs",
+      "gitBlob": "09ef3be6ef0d9eed488a53d66846c04c85b00fe2",
+      "sha256": "e6411df14fa4a1074bd73d17157bcfa4d5a002df40ca4ce424025abcb036ef95"
+    },
+    {
+      "path": "src/Xemele/Serialization/Xml/XmlSerializer.cs",
+      "gitBlob": "3da98c136ad086b4630dfc4d1cd5f3d04a7c0610",
+      "sha256": "b11888d04bd855a2c2cf04e0700ac51236a0be3500e16c89078e6b612b13d509"
+    },
+    {
+      "path": "src/Xemele/Tree/Document.cs",
+      "gitBlob": "fe559926b2068bf4902225fc323896190669e47d",
+      "sha256": "1c8f9030f674ea9b61f27cef8c845b56e7e15dc8a68cb0bc80008c0732771655"
+    },
+    {
+      "path": "src/Xemele/Tree/DomBuilder.cs",
+      "gitBlob": "71f28e8cc3514b07baac06d229861186a10e808e",
+      "sha256": "58a6e1b3f5c3a7519a2fb4baeb865d82d392ccf92196602ac9744d78e87b03b7"
+    },
+    {
+      "path": "src/Xemele/Tree/DomPersistence.cs",
+      "gitBlob": "c0ec54091877f50123d80de2824ed9b9ed9fa167",
+      "sha256": "d81841a4d92207f1c23a9f8ab24e203b736a6dcdef87598910317d2a4e0de391"
+    },
+    {
+      "path": "src/Xemele/Tree/DtdMetadata/Document.Dtd.cs",
+      "gitBlob": "6af947acdfacdf69d807759335fa78b4c7c0c705",
+      "sha256": "845995bcbadba18eb54f742f007f898acb277c3260802eefe74638c27fb3d2bd"
+    },
+    {
+      "path": "src/Xemele/Tree/DtdMetadata/DomSink.Dtd.cs",
+      "gitBlob": "1b6ea2e80cfa5b2f367b1d4e01cb206faf7f5ddb",
+      "sha256": "8ab59db25af83c802456587ffa6e194696b100af4a14319d8a02bdf0adaae22d"
+    },
+    {
+      "path": "src/Xemele/Tree/DtdMetadata/XmlDocumentType.cs",
+      "gitBlob": "d3cab7574d92886b2fde0c292a3fafdb912840f4",
+      "sha256": "839bf8de37c0df3de0a065eee36ceab75de09a9016545222dd22f349a4ec4b84"
+    },
+    {
+      "path": "src/Xemele/Tree/InternProbe.cs",
+      "gitBlob": "5c7b3c8802adaee421a9bf8b45e98a83a12f9469",
+      "sha256": "c58bcf300096bfc64ad232a843a6e31943abf3db9f5ea60eaa2d239f7ef48775"
+    },
+    {
+      "path": "src/Xemele/Tree/Node.cs",
+      "gitBlob": "1f693666968b101cdaf8e9dc96cf34ae0633ae9f",
+      "sha256": "b0f4397569945b6c0ddf574ccea49dd1a91d98b86185cce9682be473b64354e4"
+    },
+    {
+      "path": "src/Xemele/Tree/SlotArena.cs",
+      "gitBlob": "d94871973dc3269c4f674e7976c2d55c39e3be80",
+      "sha256": "09f0722715566b7eb1289ac6e2e0d4e9dae036372694139d984988d3ef290d7b"
+    },
+    {
+      "path": "src/Xemele/Tree/Validation.cs",
+      "gitBlob": "7aa732810d586951fba8765512e2f14c00898ee3",
+      "sha256": "9d99fd2060ce37e28c8c413de399540180741f5e84112ebf2a13c7a71126be3c"
+    },
+    {
+      "path": "src/Xemele/Tree/XmlAttribute.cs",
+      "gitBlob": "7c8cb82c9bef761cfe6d788a0587708ebff3ac5f",
+      "sha256": "11d9470831c1ae9a36de1a57794543754a180bd228c0b6077fbca42a2a2a6590"
+    },
+    {
+      "path": "src/Xemele/Tree/XmlAttributes.cs",
+      "gitBlob": "78afa8b11e4ec637bdb815aa3b327cf63bb89bd3",
+      "sha256": "140b5cdbb428835694e5ca6c65d7633a25e3bc7ccc5b2c1beb85ef755474510a"
+    },
+    {
+      "path": "src/Xemele/Tree/XmlNamespaceDeclaration.cs",
+      "gitBlob": "957b1d6ab78e687a980a66ee417beddbd9d9e3b9",
+      "sha256": "761f3f32d533c32d06a2a8efb24a9b7c7428b2a5887ba3c256f571f91c9426b2"
+    },
+    {
+      "path": "src/Xemele/Tree/XmlNamespaceDeclarations.cs",
+      "gitBlob": "bf55024382cd352a99ecd4284c7bb662cc83a61d",
+      "sha256": "d83682535d9c92cb929d2ad0b0d3a29057c84179563545ad273771b479bea160"
+    },
+    {
+      "path": "src/Xemele/Tree/XmlNodeChildren.cs",
+      "gitBlob": "6c350f138e6f37432cd28269c0ce77d0a26ed38c",
+      "sha256": "74e540a9512ff6fac7a883774b51541329ee7b4fbe2af5c02811196ffedef285"
+    },
+    {
+      "path": "src/Xemele/Xemele.csproj",
+      "gitBlob": "5c60448219b3fb80ca29a1c0634b276d6a9c3f0d",
+      "sha256": "3a6d780efef2108d1c9a2d26abc6deb53a871644722de79c41f78e9958104cfd"
+    },
+    {
+      "path": "tests/Contracts/Contracts.csproj",
+      "gitBlob": "16835e67e570ca9b8ee72a10621fbc5f73803166",
+      "sha256": "eadfd121ef69d102cb530bc96e4f86ab1c15494218b99526dd50e22238b20193"
+    },
+    {
+      "path": "tests/Contracts/Fixtures/M1/Common.golden.txt",
+      "gitBlob": "4f00b16b99c3ef91ae393e84542b8b0545f3cdcb",
+      "sha256": "d3f7d9bb88204b758e7ff552afdf681208de1610e7af7448a5be1ef23d07c04b"
+    },
+    {
+      "path": "tests/Contracts/Fixtures/M1/Dom.cs.fixture",
+      "gitBlob": "29e1f331e50516c898d0b32c9b3e6dff46445739",
+      "sha256": "4e144d5125a94f99005848600447b8888e51a5e2d0104b9e7ceec0a2bd0eb518"
+    },
+    {
+      "path": "tests/Contracts/Fixtures/M1/Dom.golden.txt",
+      "gitBlob": "665db4c33f6c9c7e33d21e6375d0f246d6244635",
+      "sha256": "78799700a9e74290a7a07d57b4d326697e8575716bb28106908aa1120aa23756"
+    },
+    {
+      "path": "tests/Contracts/Fixtures/M1/DomUsage.cs.fixture",
+      "gitBlob": "8560d54e9094f6e6387dcec6752f4c0ea6078d80",
+      "sha256": "8e84cbf050de1bc8fc49c1ce4e3b01ab0781e3ff08f4a53e6230efa3b6d312ac"
+    },
+    {
+      "path": "tests/Contracts/Fixtures/M1/Input.cs.fixture",
+      "gitBlob": "b18f6a193a81ffe285aa7a3e274ae73f154d0144",
+      "sha256": "08d6edba11951229109fed9afab8fefa8dbe9069a1c81fcc473cb0dfd49313db"
+    },
+    {
+      "path": "tests/Contracts/Fixtures/M1/Input.golden.txt",
+      "gitBlob": "4f00b16b99c3ef91ae393e84542b8b0545f3cdcb",
+      "sha256": "d3f7d9bb88204b758e7ff552afdf681208de1610e7af7448a5be1ef23d07c04b"
+    },
+    {
+      "path": "tests/Contracts/Fixtures/M1/InputUsage.cs.fixture",
+      "gitBlob": "d237a2a3d1c7bf56cbfa40bdf59c3f565c9cb20f",
+      "sha256": "45df8c493957179950626baaa01f552fb53849f227fa7edbc53f5662b8131058"
+    },
+    {
+      "path": "tests/Contracts/Fixtures/M1/ProtocolChecks.cs.fixture",
+      "gitBlob": "44e023c652c64cc0640813affd5e956f9287ae63",
+      "sha256": "32f5523c157e32671bdd004706fe5404efc784373d8de9bdf9a67aeb771b0fd7"
+    },
+    {
+      "path": "tests/Contracts/Fixtures/M1/Serialization.cs.fixture",
+      "gitBlob": "59d3770b534d49b5b4b01a5db4df0551a24fe4bc",
+      "sha256": "322da412d11412b77c3d2e581087bc5db6851700a5bc5da85bbe543a28b04076"
+    },
+    {
+      "path": "tests/Contracts/Fixtures/M1/Serializer.golden.txt",
+      "gitBlob": "61714a76490542b9d8228a2fbcbbe2687555bbb8",
+      "sha256": "965502f06e9f8c344cf1d3d2db2d0b1bd89836f951bb90630678b44df8a90762"
+    },
+    {
+      "path": "tests/Contracts/Fixtures/M1/SerializerUsage.cs.fixture",
+      "gitBlob": "ce98bde9c5dfc8823fab5dd0653acaf86224a23e",
+      "sha256": "754ec4273e9eb880179348cd64115fd69eed35f22676c309776c64cb204a399d"
+    },
+    {
+      "path": "tests/Contracts/Fixtures/M1/Syntax.cs.fixture",
+      "gitBlob": "3ee041f15f4b2d90beef92208115fa9914a18985",
+      "sha256": "b79bd2b3a82f76684aa9a1ddf319cd960b9d5e495c255913d05847783566c7e8"
+    },
+    {
+      "path": "tests/Contracts/Fixtures/M1/Syntax.golden.txt",
+      "gitBlob": "4f00b16b99c3ef91ae393e84542b8b0545f3cdcb",
+      "sha256": "d3f7d9bb88204b758e7ff552afdf681208de1610e7af7448a5be1ef23d07c04b"
+    },
+    {
+      "path": "tests/Contracts/Fixtures/M1/SyntaxUsage.cs.fixture",
+      "gitBlob": "b87f81f2791b295b501efdeb74fb846951367291",
+      "sha256": "af0643c204d35a77e58316ea8d42c0db6a0f2f23d26d3cc1d09a90a540c2d161"
+    },
+    {
+      "path": "tests/Contracts/Fixtures/M1/Tree.cs.fixture",
+      "gitBlob": "6282e5488547a6084e8d9bbcf38182cfc03057e1",
+      "sha256": "5fef8d8dbb9ac5b72ec1e7a6c7cd63824817b8668d24141ac069f30e56a8d7b1"
+    },
+    {
+      "path": "tests/Contracts/Fixtures/M1/Tree.golden.txt",
+      "gitBlob": "e1a699cac59b1bf029b5c0eba98d64b24dd0f082",
+      "sha256": "c63d998e7d07c23c968a91a8a5ac63d24f194efd964a7402fa1c52b8300c5b28"
+    },
+    {
+      "path": "tests/Contracts/Fixtures/M1/TreeUsage.cs.fixture",
+      "gitBlob": "ecede75e9f239125499ab76cf37872df40de0f63",
+      "sha256": "e2ab69f4191139c984d455685bb6cda42c325ac445febabed29040398473c45d"
+    },
+    {
+      "path": "tests/Contracts/Fixtures/M1/serialization-vectors.json",
+      "gitBlob": "3e9600ee0fce7d92a3fdaa87c2678fc9410f0aa9",
+      "sha256": "cd6f319ed72af2e4839bb02ba048e337bd8f14f990589e59fe12cb5f4e93a9aa"
+    },
+    {
+      "path": "tests/Contracts/Fixtures/M2/Checks.cs.fixture",
+      "gitBlob": "a24ef875ecffe5c5e17f5234abba45c3f262070d",
+      "sha256": "ede07d04f700c3e2e1aa022d2093efca76dc26e210127bf8a734f1b75a532e5a"
+    },
+    {
+      "path": "tests/Contracts/Fixtures/M2/Common.cs.fixture",
+      "gitBlob": "7d8772179c5f82f21ca72f8eb01f5f5526268463",
+      "sha256": "27bd58e2f3499d9094e8aba5d9d34aec49db3c2955e4f54b3aac4069229959f2"
+    },
+    {
+      "path": "tests/Contracts/Fixtures/M2/DomMetadata.cs.fixture",
+      "gitBlob": "09f42060230d5185317667d9ebcb75614a93236b",
+      "sha256": "7382a228d249450d3895255b6157f82f8b09fbb77c813618996929e25ce2221d"
+    },
+    {
+      "path": "tests/Contracts/Fixtures/M2/Dtd.cs.fixture",
+      "gitBlob": "e0fba95eba6e8c044ad6ae77c86453d6106fbaa7",
+      "sha256": "09dd04682a296c619da310549032fbe82747bc5ae07c8a6dc4a36e99f0f49749"
+    },
+    {
+      "path": "tests/Contracts/Fixtures/M2/Dtd.golden.txt",
+      "gitBlob": "4f00b16b99c3ef91ae393e84542b8b0545f3cdcb",
+      "sha256": "d3f7d9bb88204b758e7ff552afdf681208de1610e7af7448a5be1ef23d07c04b"
+    },
+    {
+      "path": "tests/Contracts/Fixtures/M2/DtdUsage.cs.fixture",
+      "gitBlob": "b47cc0ccfeb4b12a98736a2236a429a609e7c897",
+      "sha256": "92e73aa6d96b51e8c5142f48db391f081d6aa7251b1c26c7bd86002cbb22ebd6"
+    },
+    {
+      "path": "tests/Contracts/Fixtures/M2/Encoding.cs.fixture",
+      "gitBlob": "70623f941dd0694578f8b92eaea98e709e20ca2d",
+      "sha256": "9f3f6b94b0f4ace6361c2e955b5eccb7a9ce08d103109f49414c38849e1a99d7"
+    },
+    {
+      "path": "tests/Contracts/Fixtures/M2/Encoding.golden.txt",
+      "gitBlob": "4f00b16b99c3ef91ae393e84542b8b0545f3cdcb",
+      "sha256": "d3f7d9bb88204b758e7ff552afdf681208de1610e7af7448a5be1ef23d07c04b"
+    },
+    {
+      "path": "tests/Contracts/Fixtures/M2/Entities.cs.fixture",
+      "gitBlob": "e24b1e970819d71d966b67a5ad6ea8db352ba03c",
+      "sha256": "9b7e3902b2488bc6d5c30779204a2eef0f453ce6bb81e26e58096963827a0b80"
+    },
+    {
+      "path": "tests/Contracts/Fixtures/M2/Entities.golden.txt",
+      "gitBlob": "0c17a81c6c63b5d1fd9f7483a84240becfcaba55",
+      "sha256": "d7341327a3e84a19878cc5d2e52765faef6952149634f1a76ffd74a685903af6"
+    },
+    {
+      "path": "tests/Contracts/Fixtures/M2/EntitiesUsage.cs.fixture",
+      "gitBlob": "9d35e9be7e1ded9c2d9e6ae32ce8ac72a62b7021",
+      "sha256": "9085490791cfd2ff18a47b7e58ad19a646ebfc07911519cff5e00343ce86c9a7"
+    },
+    {
+      "path": "tests/Contracts/Fixtures/M2/Options.cs.fixture",
+      "gitBlob": "9601c063bcb8f1c5b9a36630ee9b9d7a00c8a23c",
+      "sha256": "e9da0855b99bee0f6ef6dd4b4fb4041b41cb48b3e432fb8d417702cd1833b6d6"
+    },
+    {
+      "path": "tests/Contracts/Fixtures/M2/Recovery.cs.fixture",
+      "gitBlob": "1ffa5ceb51c639a81ef2d466f73cf70a839f3164",
+      "sha256": "e02a712d1822db9804bc75873db456af39ef45b580841b42bd07a6bbfba5f6df"
+    },
+    {
+      "path": "tests/Contracts/Fixtures/M2/Recovery.golden.txt",
+      "gitBlob": "584c86cee6b5caaa82184f9d9774519270e035e9",
+      "sha256": "5c16caebb96474b5cdaac928293527da6acd2fab8035e0ed3a5afda583a37a18"
+    },
+    {
+      "path": "tests/Contracts/Fixtures/M2/RecoveryUsage.cs.fixture",
+      "gitBlob": "8b0d885e85e0b431f2350069f9359cdbae231b5a",
+      "sha256": "5676d2c6ff3368d587fdb7d264615595eefca0a56ad959f3fc5d538822af1635"
+    },
+    {
+      "path": "tests/Contracts/Fixtures/M2/Resolver.cs.fixture",
+      "gitBlob": "3b39902cab80be11aa6dc5c43ca3bf13239b36cd",
+      "sha256": "bd13859e6ca154ac8fc3b5101e3007346dd62e7f1134952ec92d69649fdd9117"
+    },
+    {
+      "path": "tests/Contracts/Fixtures/M2/Resolver.golden.txt",
+      "gitBlob": "5af1d2a903130ea492112df480bee28840db1ba3",
+      "sha256": "b5335e1df2d2eb59243830442191eaa43c2cccdf8c3f33764a79b7e9aff14349"
+    },
+    {
+      "path": "tests/Contracts/Fixtures/M2/ResolverUsage.cs.fixture",
+      "gitBlob": "80e1254256f1534164c0d5d5e6e27ff6f8b01de5",
+      "sha256": "8ad914446be8919c62428037c0cb56d52f1939e551a39ae02b98035fe2b706d0"
+    },
+    {
+      "path": "tests/Contracts/Fixtures/M2/Syntax.cs.fixture",
+      "gitBlob": "c5a8f04c40a37e148279f71090055ac51adc4828",
+      "sha256": "db886c3ed93a1eb862b23f51dfbaf3dcb5bb4a4e140f0092d5db6ac6ab89114c"
+    },
+    {
+      "path": "tests/Contracts/Fixtures/foundation/ApiProbe.cs.fixture",
+      "gitBlob": "092f98d8bd1e880a098dccccc54bc8230ab1c009",
+      "sha256": "4410604f4405b4bd4d7cc0202166912459200a0cf4b3c95e24dc7d3e985b60c5"
+    },
+    {
+      "path": "tests/Contracts/Fixtures/foundation/ApiProbe.golden.txt",
+      "gitBlob": "1a8c5dac3ebbb4b7499a7d5f06754a3905162a10",
+      "sha256": "3487cbc78292288c5bc02d1f49ca206ed82ee250f05b56f740d95c4f6c62d784"
+    },
+    {
+      "path": "tests/Contracts/Fixtures/foundation/Common.cs.fixture",
+      "gitBlob": "fcbdd7182f4e4015b26e39f4f87461ecb1afefe9",
+      "sha256": "e2f20f54cfbc774f35ea0686e937ae69800b01470853c81ba6c417c40bafab5b"
+    },
+    {
+      "path": "tests/Contracts/Fixtures/foundation/Conformance.cs.fixture",
+      "gitBlob": "8dfb0053bb4efede32d6750a9287f250aa327fa8",
+      "sha256": "93c314f0828cde32d4141cdc635074aa0fd889aa723a1e694001f04a6e9b51bf"
+    },
+    {
+      "path": "tests/Contracts/Fixtures/foundation/Handles.cs.fixture",
+      "gitBlob": "c3a2dc441c6c60c540f6399e67a23026339c1e80",
+      "sha256": "38c903835b5e2617efbdbc7047e19439589537d266faff5354fb99f03754ad6d"
+    },
+    {
+      "path": "tests/Contracts/Fixtures/foundation/Input.cs.fixture",
+      "gitBlob": "a368468517fdd58d6e0fe1f460a05ed8c0383e41",
+      "sha256": "7c3ba91c7f3c9404d34ca528c033d036f13d5e14db12a52edb36ad61b94df379"
+    },
+    {
+      "path": "tests/Contracts/Fixtures/foundation/M1.golden.txt",
+      "gitBlob": "fae948ddc4e6665478cc8b3db107a38ea2a92885",
+      "sha256": "cfb3f48aa8c4a8ac4bb2abc9d827878b98b1f9fdaf8631d9f8eadb120f63d648"
+    },
+    {
+      "path": "tests/Contracts/Fixtures/foundation/M2.golden.txt",
+      "gitBlob": "f930e20007938b6634cd24cdb1bc8d4575ae67e5",
+      "sha256": "70e001970b6a632adf1f7c099c2e5cfe7afe4fd3826eb981e9e4cd9bde89d422"
+    },
+    {
+      "path": "tests/Xemele.Conformance.Tests/Infrastructure/MtpRunnerSmokeTests.cs",
+      "gitBlob": "8013e29c25b03cc9a4cc76b2f965d133a8e8d204",
+      "sha256": "2c6f360244f1d49589ab442ecedd31a10d1e57f245da8add22afb5549c045f25"
+    },
+    {
+      "path": "tests/Xemele.Conformance.Tests/Xemele.Conformance.Tests.csproj",
+      "gitBlob": "fef94ad3f2395b96e9590d84eb1a3cb23bbcfe6c",
+      "sha256": "78bca64a6606454cf4eac8d897b1131aa143e79d14935f15d8fc02ea96e5a1ca"
+    },
+    {
+      "path": "tests/Xemele.Conformance.Tests/XmlSubset/CorpusTests.cs",
+      "gitBlob": "9b61b38c51ddb647b42253e9010b7482b869701c",
+      "sha256": "a531d3753162bba34e9fe11515d35c7f566ee11d5852d713188d9c1137b9c342"
+    },
+    {
+      "path": "tests/Xemele.Differential.Tests/Infrastructure/MtpRunnerSmokeTests.cs",
+      "gitBlob": "4902c3a5e51019e4461ea949a4113bff8547d9b3",
+      "sha256": "f17a28bf81b44bdf424c705ec44248c6e448d28f4807000ceb12b1f6459aa705"
+    },
+    {
+      "path": "tests/Xemele.Differential.Tests/Protocol/ReferenceProtocolTests.cs",
+      "gitBlob": "b5189841db87057de05389dbca3697dcd275147a",
+      "sha256": "618ca26b5580969226717d8ef8d336bfb872c29715e9358fe93b818287cd154f"
+    },
+    {
+      "path": "tests/Xemele.Differential.Tests/Xemele.Differential.Tests.csproj",
+      "gitBlob": "8f9c20f2fbaaecbdcb1d31d3ae09a48f527c1be6",
+      "sha256": "352879bb7b97dc8a3d735786ff7126176ecbe2c34fa1703db05bcb2e8d1dec28"
+    },
+    {
+      "path": "tests/Xemele.Differential.Tests/XmlSubset/ReferenceCorpusTests.cs",
+      "gitBlob": "ffd60d702342872c1358bcc0bef2c57b9f014de3",
+      "sha256": "cb82e00d844914c22bbb7f793323c93077fc939055f4ea37990e9ceafa81c726"
+    },
+    {
+      "path": "tests/Xemele.TestUtilities/Build/test_composition.py",
+      "gitBlob": "e3d8f3a691dc35cae0d829b454de4e875196d037",
+      "sha256": "5fe0ec6160ef75c78dd52199a2376ec51e8e64e4f8395ec7d12fded3b135a9e2"
+    },
+    {
+      "path": "tests/Xemele.TestUtilities/Build/test_discovery.py",
+      "gitBlob": "5c0e7ce1a195db3b253b216f83ddbee719b2894b",
+      "sha256": "f8d04b803156c5ba03bcdd28c4a06fe6b6cb1384b2d5e578ddcbf3f5cfbc92a4"
+    },
+    {
+      "path": "tests/Xemele.TestUtilities/Corpora/verify_bootstrap.py",
+      "gitBlob": "cbf6c8d583bf974951d6dc6513144e0a64604228",
+      "sha256": "af8e0f760afec4adb8aa8e286c440814887240adbe417fd0337fd59abd7393eb"
+    },
+    {
+      "path": "tests/Xemele.TestUtilities/References/ReferenceProcess.cs",
+      "gitBlob": "ff076cbd3d3c47a8feafddc606c5cb88fffcdeaa",
+      "sha256": "232ebb7894ead5589c89f0b8c544ee62b051ae091217626b5781e2884bcafbd2"
+    },
+    {
+      "path": "tests/Xemele.TestUtilities/Xemele.TestUtilities.csproj",
+      "gitBlob": "16835e67e570ca9b8ee72a10621fbc5f73803166",
+      "sha256": "eadfd121ef69d102cb530bc96e4f86ab1c15494218b99526dd50e22238b20193"
+    },
+    {
+      "path": "tests/Xemele.Tests/Infrastructure/MtpRunnerSmokeTests.cs",
+      "gitBlob": "dcbaaec6edb3bd9f8b44527fd945e1665e45482b",
+      "sha256": "3b6df8dac52610ccdc752aa0dd3ff0d02a1910b1809ef85002a33bbf2a93955e"
+    },
+    {
+      "path": "tests/Xemele.Tests/M1-common/CommonTests.cs",
+      "gitBlob": "c0ce58d0f1eeb97785cd4fc5a96aa0f1d2e287b5",
+      "sha256": "338c509dc202211e53f57dde48f40543595b81faf49ccaa20bb6cc9621dbfa02"
+    },
+    {
+      "path": "tests/Xemele.Tests/M1-dom/DomTests.cs",
+      "gitBlob": "e83ca669da7efb0fda95f3bac088d058c83802e2",
+      "sha256": "446bbeb3d7f1aa9147450a6f82787667efbc15555a4f4df81b2e2b131c11ebe6"
+    },
+    {
+      "path": "tests/Xemele.Tests/M1-dom/PersistenceTests.cs",
+      "gitBlob": "05ce560dc381932a12c0d6381ec068fac0737acf",
+      "sha256": "7092fafb6377d41a5a93c81740faa7045ba372fb2dd85e077bb095f504abdd0a"
+    },
+    {
+      "path": "tests/Xemele.Tests/M1-input/InputTests.cs",
+      "gitBlob": "f8caee4755063a9786d12d4f4f53740fe8a83d53",
+      "sha256": "22c5a99d7a4d8ab859deeb3e3f3d35bafcae3892418c3d5286151824f685666d"
+    },
+    {
+      "path": "tests/Xemele.Tests/M1-namespace-names/NamespaceNameTests.cs",
+      "gitBlob": "7646800a75036eba835ee7bf5d909441bc806293",
+      "sha256": "1274903f427a518552b795ae2b3b5dddf0ed91c02a9e8550511ad5785efeb6ce"
+    },
+    {
+      "path": "tests/Xemele.Tests/M1-pi-targets/PiTargetTests.cs",
+      "gitBlob": "96579e7a0f26fbf39c303429e9984c10873c04bf",
+      "sha256": "5653d5be4b7b22e07f4702f1c1859686255b126e7f44d6ac54c7242df7838174"
+    },
+    {
+      "path": "tests/Xemele.Tests/M1-serialize/SerializerTests.cs",
+      "gitBlob": "378d2eee3fd884a4edba935b7220781061af6087",
+      "sha256": "38cc6d3178fcc2e8d3596c25946b9d06d4815336a9af3a84d883b0c9045f78be"
+    },
+    {
+      "path": "tests/Xemele.Tests/M1-syntax/InternTests.cs",
+      "gitBlob": "af6f5656e5baa57ee951762bb04d08dcebf6bdbc",
+      "sha256": "ca005f47d2f57c63171d2f0c1aa0fa02f32ab255293d1bb1f3271ba3c4a77f65"
+    },
+    {
+      "path": "tests/Xemele.Tests/M1-syntax/StreamingTests.cs",
+      "gitBlob": "2216d4636a8399bf0e87314a8c1cc6d9c6e61738",
+      "sha256": "7c52cf339eca3fd04c20d27849844db1fb93e996efc9dcbac9256e639b8911a3"
+    },
+    {
+      "path": "tests/Xemele.Tests/M1-syntax/SyntaxTests.cs",
+      "gitBlob": "06f32e0093d7f65c915ed6034a281731852ca767",
+      "sha256": "4a75ac4892c68229e7faf9abfef857fe0068e229ab146637f2e115f9370352cc"
+    },
+    {
+      "path": "tests/Xemele.Tests/M1-tree-dom-builder/DomBuilderTests.cs",
+      "gitBlob": "3f8ed1dd96ebaf5001f0ad5177c2cacb11fb234f",
+      "sha256": "caf2122cd27bc4cd19d86d8e4acedf1cd7e968768984cd4c191f38b8b239705f"
+    },
+    {
+      "path": "tests/Xemele.Tests/M1-tree-dom-persistence/DomPersistenceTests.cs",
+      "gitBlob": "8875a77bf847fdac6593cbe1b1fe10f885b21a94",
+      "sha256": "304dba05e8dfb3dff2a6e5d6ebcf3e8450628f3b5643ce9034985109dd6ea7c7"
+    },
+    {
+      "path": "tests/Xemele.Tests/M1-tree/TreeTests.cs",
+      "gitBlob": "54ee8385558daec2642cb53b8faba04dbed90851",
+      "sha256": "1d2d50a5f3b7c7123729f1a41c5c21b6571df28e06f812850e52c8a95204eb90"
+    },
+    {
+      "path": "tests/Xemele.Tests/M2-dtd-framing/FramingTests.cs",
+      "gitBlob": "417c0dffd8511cea7246ac5617077892992ac80d",
+      "sha256": "6f1697fe4a1c8654151afa15ca8f7e8085423d2461fbe32252e6e88af9aef031"
+    },
+    {
+      "path": "tests/Xemele.Tests/M2-dtd-grammar/JoinedTests.cs",
+      "gitBlob": "9a7f62ea745bbfb323110a5aee52981a30ab2ae4",
+      "sha256": "85c5a5cc7f004937060256f24729f89b702094df122fd402b8d99f8d81e67435"
+    },
+    {
+      "path": "tests/Xemele.Tests/M2-dtd-grammar/PinnedTests.cs",
+      "gitBlob": "f70e38df4d3a3387a521733afa83d668a66174a3",
+      "sha256": "f6d612fcf6d40d59fddb782d648798d700f1f4d4efaed34bfff126194054e5d7"
+    },
+    {
+      "path": "tests/Xemele.Tests/M2-dtd-model/ModelTests.cs",
+      "gitBlob": "ae8dcd5561371cd3d60dd8a88a202559b81ab13d",
+      "sha256": "9b99e88e5fb8653bea6d8b36b49589f2ef2e3620c15782292246b41ec4442699"
+    },
+    {
+      "path": "tests/Xemele.Tests/M2-dtd-parser/BudgetTests.cs",
+      "gitBlob": "d050c9886c0ed013abc7a8443550fa8a1158d1ea",
+      "sha256": "b2e3e4f4aa7f6447eeb7d281eb12ac95e9a6a3ab37e7b9a6333e8170ec3760ba"
+    },
+    {
+      "path": "tests/Xemele.Tests/M2-dtd-parser/ParserTests.cs",
+      "gitBlob": "97d20250b677912eac9767e4750021b15eb49ea0",
+      "sha256": "9522dd914802333d91eb19f0f6bcb51dd16648d109581fd5e63f235b97c77b53"
+    },
+    {
+      "path": "tests/Xemele.Tests/M2-dtd-parser/SourceTests.cs",
+      "gitBlob": "b6e0800579f9a8fa0493c176cd3098cbc227cc4e",
+      "sha256": "29229f7fdc4b1b9f7a54816f6a02972c2746bcf14a62539d8057754186250143"
+    },
+    {
+      "path": "tests/Xemele.Tests/M2-dtd-values/ValueTests.cs",
+      "gitBlob": "31cedf745387aafaef9aac4e033810467d81ca51",
+      "sha256": "3aeaf728135a332b5163f2b1f95526af47e26656c653eace63f93e5aa1961a6e"
+    },
+    {
+      "path": "tests/Xemele.Tests/M2-encoding-allocation-probe/EncodingAllocationChild.cs",
+      "gitBlob": "4345ead3881a9dcaaff0f13808bd1f3bf8853e9d",
+      "sha256": "4dc04922839da1f9b238197c6d8d5a2c4510f3256eb26b7bfc0065c6df6c986f"
+    },
+    {
+      "path": "tests/Xemele.Tests/M2-encoding-allocation-probe/EncodingAllocationProbe.cs",
+      "gitBlob": "abcfca4fd576e28a342d09673f112be9ea19720a",
+      "sha256": "3e2d55a8327c36c5d973843fe77366467b2e17054f4ee028e1b7cef2df09e2c1"
+    },
+    {
+      "path": "tests/Xemele.Tests/M2-encoding/EncodingTests.cs",
+      "gitBlob": "8ddf0b76f1a1937656d4e18990464aba7579e419",
+      "sha256": "39f49cbe6551e46d118b795aa14bc428960d5349c19831a095b66433f1a0ee77"
+    },
+    {
+      "path": "tests/Xemele.Tests/M2-entities-foundation/FoundationTests.cs",
+      "gitBlob": "71afec3237b41627ed5d0701f5a12c0d7b06034a",
+      "sha256": "f9f065ad917f3f9bde860af606c851324c3e674749198c19c5bc5fd2683d16cd"
+    },
+    {
+      "path": "tests/Xemele.Tests/M2-pi-allocation-probe/PiAllocationChild.cs",
+      "gitBlob": "52106d2ec65a23d58b92d5b30a8aa8aeb847a6d0",
+      "sha256": "03b8397e159a409b56784bbf55850f15af066bdab266524253d4660993a902fd"
+    },
+    {
+      "path": "tests/Xemele.Tests/M2-pi-allocation-probe/PiAllocationProbe.cs",
+      "gitBlob": "0d7970dee386358e1d803c8f780068772ea860db",
+      "sha256": "f18949a746fc99d94150994a4174829cd1186b19ad514a4b4cb0a02a9c34daaf"
+    },
+    {
+      "path": "tests/Xemele.Tests/M2-resolver-allocation-probe/ResolverAllocationChild.cs",
+      "gitBlob": "1d745ef49cefbdbc8d694d8418ba12acd693690d",
+      "sha256": "573005dd591d02f46da16e9613d822ae126fcd76c8c6230e7083cf1c8144f447"
+    },
+    {
+      "path": "tests/Xemele.Tests/M2-resolver-allocation-probe/ResolverAllocationProbe.cs",
+      "gitBlob": "23728230b831579700efcce9ecd43d4ef29c6a18",
+      "sha256": "1a0e72cfaa1d5a6315ecf1b38456f5b504c3d7b1a4b56d31fcb6bc60b26a9e4c"
+    },
+    {
+      "path": "tests/Xemele.Tests/M2-resolver/ResolverTests.cs",
+      "gitBlob": "45d8a348aa04acb255a4959455b662b81c716877",
+      "sha256": "6cd0b79eab3af31348f554186903dca163341553fd8cc8402d5aa8fec1d75fc3"
+    },
+    {
+      "path": "tests/Xemele.Tests/M2-streaming-allocation-probe/StreamingAllocationChild.cs",
+      "gitBlob": "6aa409e9d9ee5010a8099ad38d5b61fbcf3f8d27",
+      "sha256": "8c1d3530d0789d4668918b37bf451a1fabdcff68c2dab07e51931044a48f69c3"
+    },
+    {
+      "path": "tests/Xemele.Tests/M2-streaming-allocation-probe/StreamingAllocationProbe.cs",
+      "gitBlob": "d75453146b62a0c929e6caf070f9b39ffb67798f",
+      "sha256": "31d56015ab7caa8c046abb0cff8944b7e4b16b977a66882f8db319e61ec5fa76"
+    },
+    {
+      "path": "tests/Xemele.Tests/M2-tree-allocation-probe/TreeAllocationChild.cs",
+      "gitBlob": "a8df5a6806eeacd70304ef70b850d2b8b491d036",
+      "sha256": "4d6c8d47253232f87903fcd0c4b5d2c5d7f77d824244ab57d64c503b1f08b143"
+    },
+    {
+      "path": "tests/Xemele.Tests/M2-tree-allocation-probe/TreeAllocationProbe.cs",
+      "gitBlob": "250104358636b5236095332e5fb961e13d068a83",
+      "sha256": "c1f9623626466b2fb4f8a64f6d5eb98d86600d7bf18faf5a24b3722281653385"
+    },
+    {
+      "path": "tests/Xemele.Tests/Xemele.Tests.csproj",
+      "gitBlob": "fef94ad3f2395b96e9590d84eb1a3cb23bbcfe6c",
+      "sha256": "78bca64a6606454cf4eac8d897b1131aa143e79d14935f15d8fc02ea96e5a1ca"
+    }
+  ]
+}
