@@ -4,7 +4,7 @@
   "milestone": "M1",
   "title": "Import full XML suite and classify strict subset metadata",
   "kind": "infrastructure",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M1-corpus-import",
   "branch": "codex/m1-corpus-import",
   "base_revision": "223f628d79e0fe430df435b48746eb4e68cd9a25",
@@ -30,29 +30,97 @@
     {
       "id": "M1-corpus-import-A1",
       "description": "Import full authoritative XML conformance suite metadata and required source fixtures with pinned source/revision/checksum/license provenance; preserve every discovered test identity including invalid and external-resource cases. Reuse verified corpus schema/provisioning; no incomplete bootstrap substitution or silent file/case loss.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "full-suite-checks",
+        "declaration-order-correction",
+        "integration-audit-base-checks"
+      ]
     },
     {
       "id": "M1-corpus-import-A2",
       "description": "Classify M1-supported cases from frozen feature contracts and metadata/source syntax requirements rather than product pass/fail; emit complete reproducible discovery totals, explicit visible later-capability gaps and classification reasons. Preserve unsupported/infrastructure outcomes distinctly; classification never claims parser execution or standards passes.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "full-suite-checks",
+        "declaration-order-correction",
+        "integration-audit-base-checks"
+      ]
     },
     {
       "id": "M1-corpus-import-A3",
       "description": "Demonstrate full pinned inventory and required resource containment/checksums with meaningful positive/negative/offline provisioning and classification checks through verified infrastructure; preserve earlier bootstrap discovery and publish owned report/consumer format for runtime conformance join. Run planning validation and committed/working/untracked owned-path audit at known revision.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "full-suite-checks",
+        "declaration-order-correction",
+        "integration-audit-base-checks"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "tests/corpora/xml/manifest.json; inventory.json; NOTICE.md \u2014 pinned 20130923 full archive inventory, 2585 original identities, 3386 file checksums, explicit M1 feature outcomes and license/provenance facts",
+    "docs/reports/M1-corpus-import/import_suite.py; provision.py \u2014 contained catalog expansion, metadata-only classification, reproducible actual offline bundle and private preserved URI-resource/cache tree",
+    "docs/reports/M1-corpus-import/Tests/; test_import.py; Runner/; verify.py \u2014 actual verified infrastructure consumers, full positive/negative inventories and independent BCL catalog identity cross-check"
+  ],
+  "evidence": [
+    {
+      "id": "sandbox-restore-failure",
+      "kind": "check",
+      "revision": "7a5358f1b5d0c314a83b4d42207d2bd83896cd1b",
+      "command": "Pinned SDK10.0.400 DOTNET_CLI_USE_MSBUILD_SERVER=0 python3 -B docs/reports/M1-corpus-import/verify.py (sandbox attempt)",
+      "result": "failed",
+      "summary": "Importer reproducibility and 14 Python checks passed; owned runner built. Focused test restore failed NU1900 because sandbox DNS prevented api.nuget.org vulnerability metadata lookup. No test execution claimed by this attempt; authorized network/IPC retry succeeded.",
+      "artifact": "docs/reports/M1-corpus-import/sandbox-restore-failure.txt"
+    },
+    {
+      "id": "full-suite-checks",
+      "kind": "check",
+      "revision": "7a5358f1b5d0c314a83b4d42207d2bd83896cd1b",
+      "command": "Pinned SDK10.0.400 DOTNET_CLI_USE_MSBUILD_SERVER=0 python3 -B docs/reports/M1-corpus-import/verify.py (authorized network restore/MTP IPC)",
+      "result": "passed",
+      "summary": "14 Python importer/classifier checks and 14 MTP actual-core inventory/provisioning tests passed, zero skipped; independent BCL catalog-only reader matches all 2585 identities/types. All 3386 archive files checksum-verified in offline transport and preserved URI tree/cache; missing/corrupt/rehashed-resource/metadata/containment/profile negatives passed. Existing 24 corpus tests passed, zero skipped; original two bootstrap expectations/checksums preserved. Combined discovery 3388 files, 215 runtime API baseline rows. 105-task planning validation, whitespace and committed/working/staged/untracked owned-path audits passed. Actual host macOS arm64 only. Zero product test cases executed; zero standards passes.",
+      "artifact": "docs/reports/M1-corpus-import/verification.txt"
+    },
+    {
+      "id": "declaration-order-correction",
+      "kind": "check",
+      "revision": "2626bac69fd43a5dbcda364192db7c5dc655d0ea",
+      "command": "Pinned SDK10.0.400 DOTNET_CLI_USE_MSBUILD_SERVER=0 python3 -B docs/reports/M1-corpus-import/verify.py (authorized restore/MTP IPC)",
+      "result": "passed",
+      "summary": "Bounded independent-review correction: metadata inspection no longer anticipates XML.DtdProhibited when unsupported encoding/version/byte-signature can reject earlier. Exact Japanese EUC-JP source-case and synthetic encoding/version/signature regressions pass. Full rerun:15 Python,14 MTP actual-core full-inventory,24 preserved corpus tests; zero skipped. All2585 IDs/3386 file hashes and classification counts unchanged; offline preserved cache refreshed. Public baseline215, combined discovery3388, planning105 tasks and committed/working/staged/untracked owned-path audit passed. Zero product cases executed or standards passes. README grammar-only correction is the sole working-tree difference during run.",
+      "artifact": "docs/reports/M1-corpus-import/correction-verification.txt"
+    },
+    {
+      "id": "integration-audit-base-checks",
+      "kind": "check",
+      "revision": "4307b94c14d3f050a39f27c460f8279f4d16f16e",
+      "command": "Pinned SDK10.0.400 DOTNET_CLI_USE_MSBUILD_SERVER=0 python3 -B docs/reports/M1-corpus-import/verify.py --audit-base e1cb4463cecded13e818d40527afbb9e92bc1ee7; python3 -B docs/reports/M1-corpus-import/verify.py --help and --invalid-option; git diff --check 7c44e76d1ba839b5c0c58dfad9791e3279bf793e..HEAD",
+      "result": "passed",
+      "summary": "Explicit audit base resolves to a commit and checks whitespace/ownership across committed base..HEAD plus working/staged/untracked paths; final worker default-base committed whitespace check also passes. Help exits0 and invalid CLI exits2 without changing existing verification report SHA-256; durable CLI transcript retained. Full rerun15 Python +14 actual-core MTP +24 preserved corpus MTP, zero skips; bootstrap2/discovery3388/API215/planning105 unchanged. Previous worker evidence reports preserved. Zero product executions/standards passes.",
+      "artifact": "docs/reports/M1-corpus-import/audit-base-verification.txt"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Independent full-suite metadata/provisioning lane split before claim; runtime corpus conformance/round trips stay M1-corpus after verified DOM/serializer.",
-    "checks": [],
-    "remaining": [],
-    "requests": []
+    "summary": "Full official W3C 20130923 inventory/provisioning and frozen-contract M1 classification; no parser execution. 2585 source IDs: 812 valid, 242 invalid, 1498 not-wf, 33 error; 323 external-entity cases. Classification 242 supported rejections and 2343 visible unsupported-profile cases; all upstream valid tests have DOCTYPE. Original source bytes/notices preserved privately without MIT relicensing. Branch implementation only; integration_revision null. Review correction removes ambiguous anticipated diagnostics where declaration/encoding/version/signature can fail before DOCTYPE; runtime first-error ordering is not inferred from metadata.",
+    "checks": [
+      "At 7a5358f1b5d0c314a83b4d42207d2bd83896cd1b: 14 Python + 14 focused MTP + 24 preserved corpus tests passed; zero skipped.",
+      "Full inventory/primary/output checksums and offline actual-core provisioning; independent BCL metadata-only identity/type equality; missing/corrupt/containment/provenance/profile negative checks passed.",
+      "Combined discovery 3388 files; original bootstrap 2 outcomes preserved; public API 215; 105-task validation and owned-path audit passed.",
+      "Sandbox NU1900 restore failure retained explicitly; authorized network/IPC rerun passed.",
+      "Corrected source 2626bac69fd43a5dbcda364192db7c5dc655d0ea: 15 Python +14 actual-core MTP +24 preserved corpus MTP, zero skips; EUC-JP first-error prediction regression passes. No identity/checksum/classification changes; private cache refreshed.",
+      "Verifier audit-base source 4307b94c14d3f050a39f27c460f8279f4d16f16e: explicit e1cb446..HEAD committed whitespace/ownership and working/staged/untracked checks pass; original claim..HEAD whitespace check passes. Help/invalid CLI preserve existing report bytes. Full checks remain 15+14+24, zero skips."
+    ],
+    "remaining": [
+      "Coordinator must integrate/recheck and mark verified; parent M1-corpus executes product conformance after verified DOM/serializer.",
+      "No public redistribution of source fixtures; reconcile bundled XMLTEST archive-only redistribution restriction versus W3C FAQ distribution license before release."
+    ],
+    "requests": [
+      "Preserve /private/tmp/xemele-corpus-cache/w3c-xml-20130923/ through worker cleanup. Archive, bundle, source/cache fixture hashes and resources/<original archive URI> are verified and usable offline by runtime join.",
+      "Runtime join must use inventory.json case m1 outcomes/reasons; manifest accepted labels cover transport inventory only and never count XML acceptance or standards passes.",
+      "A clean checkout needs python3 -B docs/reports/M1-corpus-import/provision.py (restores preserved pinned archive offline; --download only if absent) before combined fixture discovery.",
+      "Root integration run must supply --audit-base <pre-merge-main-commit> to audit only this integration delta. Default remains original worker claim; all earlier worker evidence files retained."
+    ]
   }
 }
