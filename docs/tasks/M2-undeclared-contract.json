@@ -4,11 +4,11 @@
   "milestone": "M2",
   "title": "Freeze nonvalidating undeclared-reference representation",
   "kind": "contract",
-  "status": "implemented",
+  "status": "verified",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M2-undeclared-contract",
   "branch": "codex/m2-undeclared-contract",
   "base_revision": "71204a6d975a6ba1feb5a837be037f72a01654fb",
-  "integration_revision": null,
+  "integration_revision": "dfe2c5a5dba0155d207c1c93316a998fc901983f",
   "depends_on": [
     "M2-version-contract",
     "M2-entities",
@@ -39,7 +39,9 @@
       "status": "passed",
       "evidence": [
         "normative-source-review",
-        "independent-contract-verification"
+        "independent-contract-verification",
+        "coordinator-source-review",
+        "integrated-contract-verification"
       ]
     },
     {
@@ -48,7 +50,9 @@
       "status": "passed",
       "evidence": [
         "normative-source-review",
-        "independent-contract-verification"
+        "independent-contract-verification",
+        "coordinator-source-review",
+        "integrated-contract-verification"
       ]
     },
     {
@@ -57,7 +61,9 @@
       "status": "passed",
       "evidence": [
         "normative-source-review",
-        "independent-contract-verification"
+        "independent-contract-verification",
+        "coordinator-source-review",
+        "integrated-contract-verification"
       ]
     }
   ],
@@ -118,13 +124,13 @@
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Freeze optional borrowed unresolved-content callback and immutable owned document provenance with exact source location/child-boundary/sequence; no invented replacement events/success diagnostics. NCName names, old sink capability refusal, owner-wide serialization/clone/import/aggregate-text refusal prevent silent identity loss. No runtime/public-baseline/build edits; existing shapes preserved. Branch implemented, awaits coordinator review/integrated verification.",
+    "summary": "Verified integrated contract/model boundary; runtime unresolved content representation and loss refusal are ordered required implementation, not shipped behavior.",
     "checks": [
       "python3 -B docs/reports/M2-undeclared-contract/verify.py: passed at ba09a6f973554639c634737a8cd3bc8ebc4a6d84; 64+64 assertions, public272/model baselines/sevenABIs/meaningful negatives/finalfreeze/runtime10.0.11, planning14/validate131; model-only scope",
       "Earlier a55178d runtime informational-label gate failed; corrected and independently rerun. Source and binary identities in concise reports; raw outputs removed."
     ],
     "remaining": [
-      "Coordinator independent source review, fresh integrated contract verification, then separate verified metadata. Runtime acceptance/splits/actual DOM pause/cancel/refusal/quota/performance/conformance remain ordered implementation evidence, not contract-task passes."
+      "Create and verify narrow ordered runtime task from approved contract; actual parser/DOM/refusal/quota/performance/conformance evidence remains required."
     ],
     "requests": [
       "Review/freeze exact task-owned proposed XmlUnresolvedReference record and XmlDocument.UnresolvedReferences member before ordered runtime task; no new human approval prompt needed for routine compatible choice.",
