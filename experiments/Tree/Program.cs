@@ -8,9 +8,16 @@ using TreeSpike;
 
 if (args.Contains("--self-check", StringComparer.Ordinal)) { Checks.Run(); return; }
 if (args.Contains("--memory", StringComparer.Ordinal)) { Measurements.Run(); return; }
-var job = Job.ShortRun.AsDefault();
+// BDN 0.15.8 gives a configured default precedence over --job.
+var config = DefaultConfig.Instance.AddExporter(JsonExporter.Full);
+if (!args.Any(IsJobOption)) config = config.AddJob(Job.ShortRun.AsDefault());
 BenchmarkSwitcher.FromAssembly(typeof(Construction).Assembly).Run(args,
-    DefaultConfig.Instance.AddJob(job).AddExporter(JsonExporter.Full));
+    config);
+
+static bool IsJobOption(string argument) =>
+    argument.Equals("--job", StringComparison.OrdinalIgnoreCase) ||
+    argument.StartsWith("--job=", StringComparison.OrdinalIgnoreCase) ||
+    argument.StartsWith("-j", StringComparison.OrdinalIgnoreCase);
 
 internal static class Checks
 {
