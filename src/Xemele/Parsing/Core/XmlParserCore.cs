@@ -262,6 +262,12 @@ internal sealed partial class XmlParserCore : IDisposable
                     if (textActive) EndText(location);
                     return;
                 }
+                if (!textActive && c == '&' && entities is not null && frames.Count != 0)
+                {
+                    ResetToken(); declarationAllowed = false;
+                    if (!Charge(Quota.TokenCharacters, 1, location)) return;
+                    referenceLocation = location; state = State.Reference; return;
+                }
                 if (!textActive) { ResetToken(); BeginText(XmlTextKind.Text, "", location); declarationAllowed = false; }
                 if (frames.Count == 0 && !White(c)) { Reject("XML.Syntax", "Non-whitespace outside the root.", location); return; }
                 if (!Charge(Quota.TokenCharacters, 1, location)) return;
@@ -330,7 +336,11 @@ internal sealed partial class XmlParserCore : IDisposable
                     bool pushed = PushGeneralEntity(reference, referenceLocation);
                     int scalar = pushed ? -1 : Reference(reference, referenceLocation);
                     state = State.Data; tokenLength = 0; brackets = 0;
-                    if (diagnostic is null && !pushed) QueueFragment(scalar, referenceLocation);
+                    if (diagnostic is null && !pushed)
+                    {
+                        if (!textActive) BeginText(XmlTextKind.Text, "", referenceLocation);
+                        QueueFragment(scalar, referenceLocation);
+                    }
                 }
                 else Store(c, location);
                 return;

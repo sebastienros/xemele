@@ -35,6 +35,7 @@ internal sealed class ExternalXmlSource : IDisposable
     internal bool Frame(XmlResourceLimits limits, IDtdBudget budget, CancellationToken cancellation)
     {
         using var framer = new XmlTextDeclarationFramer(limits, budget, SourceUri);
+        bool characterInputSeen = false;
         while (Diagnostic is null)
         {
             cancellation.ThrowIfCancellationRequested();
@@ -44,6 +45,7 @@ internal sealed class ExternalXmlSource : IDisposable
                 var final = framer.Append([], [], true, cancellation);
                 return FinishFrame(final, framer);
             }
+            characterInputSeen = true;
             var result = framer.Append(Characters, Mappings, decoderCompleted, cancellation);
             Consume(result.Consumed);
             if (result.Step != TextDeclarationStep.NeedInput) return FinishFrame(result, framer);
@@ -63,7 +65,7 @@ internal sealed class ExternalXmlSource : IDisposable
                 // Prefix and an already-decoded detection carry suffix fit in
                 // fixed scratch. Drain owns no view after this method returns.
                 Span<char> prefix = stackalloc char[7]; Span<long> offsets = stackalloc long[7];
-                int count = frame.DrainPrefix(prefix, offsets);
+                int count = frame.DrainPrefix(prefix, characterInputSeen ? offsets : []);
                 int suffix = characterCount - characterIndex;
                 characters.AsSpan(characterIndex, suffix).CopyTo(characters.AsSpan(count));
                 mappings.AsSpan(characterIndex, suffix).CopyTo(mappings.AsSpan(count));
