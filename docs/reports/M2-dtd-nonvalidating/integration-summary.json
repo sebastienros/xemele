@@ -1,0 +1,162 @@
+{
+  "result": "passed",
+  "revision": "3bd5e535e8b12c5802e38a0e2f858eb68823a92e",
+  "workerRuntimeRevision": "5cc5e7dc336f59b718f9a34a0885b28cd4269b7a",
+  "workerReportingRevision": "7af415f0494435683f4b2d8cece91f6666f93a7c",
+  "focusedTests": {
+    "passed": 1985,
+    "failed": 0,
+    "skipped": 0,
+    "classes": {
+      "Xemele.Tests.DtdNonvalidating.BoundaryTests": {
+        "total": 22,
+        "passed": 22,
+        "failed": 0,
+        "skipped": 0
+      },
+      "Xemele.Tests.DtdNonvalidating.OriginalTests": {
+        "total": 13,
+        "passed": 13,
+        "failed": 0,
+        "skipped": 0
+      },
+      "Xemele.Tests.DtdParserTests": {
+        "total": 1866,
+        "passed": 1866,
+        "failed": 0,
+        "skipped": 0
+      },
+      "Xemele.Tests.DtdParserSourceTests": {
+        "total": 17,
+        "passed": 17,
+        "failed": 0,
+        "skipped": 0
+      },
+      "Xemele.Tests.DtdCompositionTests": {
+        "total": 27,
+        "passed": 27,
+        "failed": 0,
+        "skipped": 0
+      },
+      "Xemele.Tests.DtdEntityBase.EntityBaseTests": {
+        "total": 9,
+        "passed": 9,
+        "failed": 0,
+        "skipped": 0
+      },
+      "Xemele.Tests.Versions.VersionTests": {
+        "total": 31,
+        "passed": 31,
+        "failed": 0,
+        "skipped": 0
+      }
+    },
+    "originalSix": "All six original fixtures with complete model/default/location/referrer and disposal oracles across all primary splits and callback pauses passed."
+  },
+  "api": {
+    "members": 272,
+    "assemblySha256": "c1dc79a3fbd122d4ad1b982db8e453215165dd76732904f6787af83dd3989544",
+    "matched": true,
+    "checkerExit": 0
+  },
+  "sourceAndPackage": {
+    "sourceConsumer": "Nonvalidating sample passed: text=right!;default=ok;requests=3;disposed=3;product=1.0.0+3bd5e535e8b12c5802e38a0e2f858eb68823a92e",
+    "packageConsumer": "Nonvalidating sample passed: text=right!;default=ok;requests=3;disposed=3;product=1.0.0+3bd5e535e8b12c5802e38a0e2f858eb68823a92e",
+    "sourceProductSha256": "c1dc79a3fbd122d4ad1b982db8e453215165dd76732904f6787af83dd3989544",
+    "consumerProductSha256": "c1dc79a3fbd122d4ad1b982db8e453215165dd76732904f6787af83dd3989544",
+    "packageSha256": "3b123140cb558e8b047c88fe3ca1de9d6c7263b5d71ac558fddb2a5e55700082",
+    "freshFeedAndCache": true,
+    "commands": [
+      {
+        "command": [
+          "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+          "/private/tmp/xemele-integrate-m2-nonvalidating-7af/samples/M2-dtd-nonvalidating/bin/Release/net10.0/Sample.dll"
+        ],
+        "exit": 0,
+        "output": "Nonvalidating sample passed: text=right!;default=ok;requests=3;disposed=3;product=1.0.0+3bd5e535e8b12c5802e38a0e2f858eb68823a92e\n"
+      },
+      {
+        "command": [
+          "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+          "pack",
+          "src/Xemele/Xemele.csproj",
+          "-c",
+          "Release",
+          "--no-build",
+          "--no-restore",
+          "--disable-build-servers",
+          "-m:1",
+          "-p:UseSharedCompilation=false",
+          "-o",
+          "/var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-nonvalidating-package-69x94m7o/feed"
+        ],
+        "exit": 0,
+        "output": "  The package Xemele.1.0.0 is missing a readme. Go to https://aka.ms/nuget/authoring-best-practices/readme to learn why package readmes are important.\n  Successfully created package '/var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-nonvalidating-package-69x94m7o/feed/Xemele.1.0.0.nupkg'.\n"
+      },
+      {
+        "command": [
+          "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+          "build",
+          "samples/M2-dtd-nonvalidating/Sample.csproj",
+          "-c",
+          "Release",
+          "--disable-build-servers",
+          "-m:1",
+          "-p:UseSharedCompilation=false",
+          "-p:UsePackage=true",
+          "-p:ManagePackageVersionsCentrally=false",
+          "-p:RestoreSources=/var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-nonvalidating-package-69x94m7o/feed",
+          "-p:RestorePackagesPath=/var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-nonvalidating-package-69x94m7o/cache",
+          "-p:NuGetAudit=false",
+          "-p:ArtifactsPath=/var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-nonvalidating-package-69x94m7o/out"
+        ],
+        "exit": 0,
+        "output": "  Determining projects to restore...\n  Restored /private/tmp/xemele-integrate-m2-nonvalidating-7af/samples/M2-dtd-nonvalidating/Sample.csproj (in 64 ms).\n  Sample -> /var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-nonvalidating-package-69x94m7o/out/bin/Sample/release/Sample.dll\n\nBuild succeeded.\n    0 Warning(s)\n    0 Error(s)\n\nTime Elapsed 00:00:01.01\n"
+      },
+      {
+        "command": [
+          "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+          "/var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-nonvalidating-package-69x94m7o/out/bin/Sample/release/Sample.dll"
+        ],
+        "exit": 0,
+        "output": "Nonvalidating sample passed: text=right!;default=ok;requests=3;disposed=3;product=1.0.0+3bd5e535e8b12c5802e38a0e2f858eb68823a92e\n"
+      }
+    ]
+  },
+  "planning": {
+    "checks": 14,
+    "tasks": 132,
+    "result": "passed"
+  },
+  "preservation": "Full frozen branch 5237 correctness tests and 2574/2585 original corpus outcome matches preserved. No full correctness, corpus, allocation or timing replay. Comprehensive combined checks remain required at M2 gate. Eleven remaining product profile gaps remain visible.",
+  "allocation": {
+    "revision": "7af415f0494435683f4b2d8cece91f6666f93a7c",
+    "summarySha256": "1fc469ac852fa501b90af8c25d5110ad598bdf14ff08dc3934406e944b070834",
+    "borrowedBytes": 0,
+    "iterations": 1024,
+    "coldSetupAndOracles": 317656,
+    "ownedModels": 9191664,
+    "ownedDocuments": 166471280,
+    "positiveControl": 155648,
+    "finalFreeze": "passed"
+  },
+  "timing": {
+    "summarySha256": "91f585759bb4ad9231aac066f8ea27573367e6869ef1f826f7f95c342c483ebd",
+    "children": 2,
+    "exits": [
+      0,
+      0
+    ],
+    "Actual": 6,
+    "Result": 6,
+    "GC": 2,
+    "proofsAndFinalFreeze": "passed",
+    "buildInsideLease": false,
+    "meansInformationalArm64Ns": {
+      "InternalNestedModel": 2483.53,
+      "RedirectedComposition": 10222.07
+    }
+  },
+  "review": "One bounded independent source review approved runtime; one A3 payload reporting blocker fixed offline with actual reused acceptance controls, preserving runtime and frozen child identities.",
+  "cleanup": "Test XML/logs and fresh package/feed/cache outputs inspected then removed; concise summaries retained. Integration checkout will be removed after verified metadata is durably integrated."
+}
