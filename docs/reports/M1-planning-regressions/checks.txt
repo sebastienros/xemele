@@ -1,0 +1,46 @@
+Tested source revision: d8e2e3648344e5c607044e8dc2b13ba140088cd7
+
+Command: ['/opt/homebrew/opt/python@3.14/bin/python3.14', '-B', '-m', 'unittest', 'discover', '-s', 'tools/planning', '-p', 'test_tasks.py']
+Exit: 0
+..............
+----------------------------------------------------------------------
+Ran 14 tests in 0.056s
+
+OK
+
+Command: ['/opt/homebrew/opt/python@3.14/bin/python3.14', 'tools/planning/tasks.py', 'validate']
+Exit: 0
+Validated 107 tasks: schema, evidence, acyclic dependencies, additive milestones, and ordered ownership.
+
+Command: ['git', 'diff', '--check']
+Exit: 0
+
+Fixture independence audit: disable repository task loading; run every synthetic test and log all validator rejections.
+test_branch_implementation_does_not_unlock_dependents (test_tasks.TaskTrackingTests.test_branch_implementation_does_not_unlock_dependents) ... ok
+test_cycle_rejected (test_tasks.TaskTrackingTests.test_cycle_rejected) ... Rejected mutation (dependency cycle): ['dependency cycle at M0-build']
+ok
+test_gate_cannot_omit_a_task (test_tasks.TaskTrackingTests.test_gate_cannot_omit_a_task) ... Rejected mutation (M0-gate: gate does not cover ['M0-ci']): ["M0-gate: gate does not cover ['M0-ci']"]
+ok
+test_initial_readiness (test_tasks.TaskTrackingTests.test_initial_readiness) ... ok
+test_later_milestone_dependency_rejected (test_tasks.TaskTrackingTests.test_later_milestone_dependency_rejected) ... Rejected mutation (forward milestone): ['M0-build: forward milestone dependency: M1-gate']
+ok
+test_malformed_status_reports_error (test_tasks.TaskTrackingTests.test_malformed_status_reports_error) ... Rejected mutation (must be nonempty strings): ['M0-build: id/milestone/title/kind/status/api_or_output must be nonempty strings']
+ok
+test_missing_integration_evidence_rejected (test_tasks.TaskTrackingTests.test_missing_integration_evidence_rejected) ... Rejected mutation (passing integration evidence): ['M0-build: verified task requires passing integration evidence at integration_revision']
+ok
+test_missing_specification_reports_error (test_tasks.TaskTrackingTests.test_missing_specification_reports_error) ... Rejected mutation (missing specification): ['M0-build: missing specification: docs/specs/missing-file.md']
+ok
+test_similar_prefixes_are_not_ownership_overlap (test_tasks.TaskTrackingTests.test_similar_prefixes_are_not_ownership_overlap) ... ok
+test_started_task_with_unverified_dependency_rejected (test_tasks.TaskTrackingTests.test_started_task_with_unverified_dependency_rejected) ... Rejected mutation (started task has unverified dependency): ['M0-ci: started task has unverified dependency: M0-build']
+ok
+test_unordered_path_overlap_rejected_case_insensitively (test_tasks.TaskTrackingTests.test_unordered_path_overlap_rejected_case_insensitively) ... Rejected mutation (unordered ownership overlap: M0-ci / M0-corpora): ["unordered ownership overlap: M0-ci / M0-corpora: ('.github/workflows/', '.GITHUB/workflows/check.yml')"]
+ok
+test_unproven_acceptance_rejected (test_tasks.TaskTrackingTests.test_unproven_acceptance_rejected) ... Rejected mutation (without passing evidence): ['M0-build: M0-build-A1 marked passed without passing evidence']
+ok
+test_verified_bootstrap_unlocks_independent_lanes (test_tasks.TaskTrackingTests.test_verified_bootstrap_unlocks_independent_lanes) ... ok
+
+----------------------------------------------------------------------
+Ran 13 tests in 0.014s
+
+OK
+Repository loader calls: 0. All 13 synthetic tests passed independently; all 9 invalid mutations rejected.
