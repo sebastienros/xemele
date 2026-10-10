@@ -18,7 +18,7 @@ internal static class ExternalComposition
     {
         var uri = new Uri("https://fixture.invalid/final.dtd");
         using var decoder = new Xemele.Parsing.Input.XmlInputDecoder(new(), uri);
-        using var framer = new Xemele.Parsing.Dtd.XmlTextDeclarationFramer(new(), uri);
+        using var framer = new Xemele.Parsing.Dtd.XmlTextDeclarationFramer(new(), new Budget(), uri);
         Span<char> output = stackalloc char[8]; Span<long> offsets = stackalloc long[8];
         var decoded = decoder.Decode("<?xml "u8, output, offsets, false, default);
         var framed = framer.Append(output[..decoded.WrittenCharacters], offsets[..decoded.WrittenCharacters], false, default);
@@ -30,4 +30,12 @@ internal static class ExternalComposition
             _ = framer.DrainPrefix(output, offsets);
         }
     }
+}
+
+internal sealed class Budget : Xemele.Parsing.Dtd.IDtdBudget
+{
+    public Xemele.XmlDiagnostic? ChargeExpandedCharacters(long count, Xemele.XmlLocation location) => null;
+    public Xemele.XmlDiagnostic? ChargeName(ReadOnlySpan<char> name, Xemele.XmlLocation location) => null;
+    public Xemele.XmlDiagnostic? EnterEntity(Xemele.XmlLocation location) => null;
+    public void ExitEntity() { }
 }

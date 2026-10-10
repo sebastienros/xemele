@@ -8,6 +8,7 @@ from pathlib import Path
 import platform
 import re
 import shlex
+import shutil
 import subprocess
 import tempfile
 import xml.etree.ElementTree as ET
@@ -25,17 +26,23 @@ def main():
     parser.add_argument('--report-prefix',required=True)
     parser.add_argument('--emit-reviewed-model-baselines',action='store_true')
     parser.add_argument('--models-only',action='store_true')
+    parser.add_argument('--audit-base',default=CLAIM)
+    parser.add_argument('--expected-branch',default='codex/m2-contracts')
     args = parser.parse_args()
     if not re.fullmatch('[a-z0-9-]+',args.report_prefix): parser.error('invalid report prefix')
     report = REPORT/args.report_prefix; report.mkdir()
     raw = ROOT/'artifacts/M2-contracts'/args.report_prefix; raw.mkdir(parents=True)
-    env = dict(os.environ, DOTNET_CLI_USE_MSBUILD_SERVER='0',
+    dotnet = Path(shutil.which('dotnet') or 'dotnet-unavailable').resolve(strict=True)
+    runner = ROOT/'tools/ReferenceRunners/Bcl/bin/Release/net10.0/BclReference.dll'
+    env = dict(os.environ, DOTNET_CLI_USE_MSBUILD_SERVER='0', PATH=str(dotnet.parent)+os.pathsep+os.environ.get('PATH',''), XEMELE_DOTNET=str(dotnet),
         XEMELE_CORPUS_RESOURCES='/private/tmp/xemele-corpus-cache/w3c-xml-20130923/resources/',
         XEMELE_CORPUS_RESULTS=str(raw/'case-results'),
-        XEMELE_BCL_RUNNER=str(ROOT/'tools/ReferenceRunners/Bcl/bin/Release/net10.0/BclReference.dll'))
+        XEMELE_BCL_RUNNER=str(runner))
     logs=[]; summary={'result':'failed','host':platform.platform(),'architecture':platform.machine(), 'baselinePreparation':args.emit_reviewed_model_baselines}
     def run(*command, expected=0):
-        command=list(map(str,command)); print('$ '+shlex.join(command),flush=True)
+        command=list(map(str,command))
+        if command[0]=='dotnet':command[0]=str(dotnet)
+        print('$ '+shlex.join(command),flush=True)
         result=subprocess.run(command,cwd=ROOT,env=env,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,text=True,timeout=300)
         logs.append('$ '+shlex.join(command)+'\n'+result.stdout+f'\nexit={result.returncode}; expected={expected}\n')
         print(result.stdout[-1200:],flush=True)
@@ -48,10 +55,16 @@ def main():
         revision=run('git','rev-parse','HEAD').strip();summary['sourceRevision']=revision
         run('git','merge-base','--is-ancestor',CLAIM,'HEAD')
         run('git','merge-base','--is-ancestor','8c9bd349ed4156ea0295b5160d87d39434293bb2','HEAD')
-        assert run('git','branch','--show-current').strip()=='codex/m2-contracts'
+        assert run('git','branch','--show-current').strip()==args.expected_branch
+        run('git','merge-base','--is-ancestor',args.audit_base,'HEAD')
+        summary['auditBase']=args.audit_base;summary['expectedBranch']=args.expected_branch
         assert json.loads((ROOT/'docs/tasks/M1-gate.json').read_text())['status']=='verified'
         assert run('dotnet','--version').strip()=='10.0.400'
         run('dotnet','build','docs/reports/M0-contracts/ApiCheck/ApiCheck.csproj',*FLAGS)
+        if not args.emit_reviewed_model_baselines:
+            source_paths=['docs/specs/common.md','docs/specs/parser.md','docs/specs/integration.md','docs/decisions/M2','tests/Contracts/Fixtures/M2','docs/reports/M2-contracts/Projects','docs/reports/M2-contracts/verify.py']
+            assert not run('git','diff','--name-only','HEAD','--',*source_paths).strip(),'contract source must be committed before verification'
+            assert not run('git','ls-files','--others','--exclude-standard','--',*source_paths).strip(),'untracked contract source'
         model_counts={}
         for lane in LANES:
             run('dotnet','build',project(lane),*FLAGS)
@@ -98,6 +111,7 @@ def main():
         if not args.models_only:
             run('python3','-B','docs/reports/M1-corpus-import/provision.py')
             run('dotnet','build','tools/ReferenceRunners/Bcl/BclReference.csproj',*FLAGS)
+            runner_hash=hashlib.sha256(runner.read_bytes()).hexdigest()
             # Historical verifier writes only ignored artifacts, preserves all old model/golden files.
             run('python3','-B','docs/reports/M1-contracts/verify.py')
             run('python3','-B','tools/ApiBaseline/compare.py','--report',report/'runtime-api.json')
@@ -110,14 +124,22 @@ def main():
                 counts[assembly]={'total':len(tests),'failed':0,'skipped':0}
                 (report/(assembly+'.xml.gz')).write_bytes(gzip.compress(xml.read_bytes(),mtime=0))
             summary['runtimeTests']=counts
+            records=[json.loads(p.read_text()) for p in (raw/'case-results').glob('reference-*.json')]
+            assert len(records)==242 and len({r['id'] for r in records})==242
+            assert hashlib.sha256(runner.read_bytes()).hexdigest()==runner_hash,'fresh reference runner changed'
+            for record in records:
+                assert record['runnerSha256']==runner_hash,'reference runner hash is stale'
+                assert record['response']['engine']['build']=='1.0.0+'+revision,'reference adapter source revision is stale'
+            summary['referenceProvenance']={'records':242,'runner':str(runner),'runnerSha256':runner_hash,'expectedBuild':'1.0.0+'+revision,'dotnet':str(dotnet),'dotnetSha256':hashlib.sha256(dotnet.read_bytes()).hexdigest()}
+            (report/'reference-provenance.json').write_text(json.dumps({'sourceRevision':revision,'records':[{'id':r['id'],'runnerSha256':r['runnerSha256'],'build':r['response']['engine']['build']} for r in sorted(records,key=lambda r:r['id'])]},indent=2)+'\n')
         else: summary['runtimeTests']='unrun during model-baseline preparation'
         run('python3','-B','-m','unittest','discover','-s','tools/planning','-p','test_tasks.py','-v')
         run('python3','-B','tools/planning/tasks.py','validate')
         task=json.loads((ROOT/'docs/tasks/M2-contracts.json').read_text());owned=task['owns']+['docs/tasks/M2-contracts.json']
         paths=[]
-        for command in [('git','diff','--name-only',CLAIM+'..HEAD'),('git','diff','--name-only'),('git','diff','--cached','--name-only'),('git','ls-files','--others','--exclude-standard')]: paths.extend(run(*command).splitlines())
+        for command in [('git','diff','--name-only',args.audit_base+'..HEAD'),('git','diff','--name-only'),('git','diff','--cached','--name-only'),('git','ls-files','--others','--exclude-standard')]: paths.extend(run(*command).splitlines())
         assert all(any(path.startswith(own) if own.endswith('/') else path==own for own in owned) for path in paths),paths
-        for suffix in [CLAIM+'..HEAD',None,'--cached']:run('git','diff','--check',*([suffix] if suffix else []))
+        for suffix in [args.audit_base+'..HEAD',None,'--cached']:run('git','diff','--check',*([suffix] if suffix else []))
         summary['ownedPaths']=sorted(set(paths));summary['fixtureSha256']={str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(FIXTURE.glob('*')) if p.is_file()}
         summary['result']='passed';summary['scope']='Nonpackaged M2 declarations/models; preserved M1 actual runtime only. M2 parser/resource/encoding/recovery behavior unimplemented.'
     finally:

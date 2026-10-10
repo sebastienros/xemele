@@ -38,3 +38,13 @@ allocation/performance pass is claimed. No timing slot is used. Windows/x64/AOT
 and full XML remain later unrun gates. Source Options/Common.cs requires the
 explicit coordinator-owned partial/split repair in the decision/handoff before
 additive options can be implemented in their assigned paths.
+
+Coordinator integration runs set --expected-branch to the actual integration
+branch and --audit-base to its pre-integration revision. Claim/prerequisite
+ancestry remains independently required; branch/base overrides never relax owned
+path checks. The resolved SDK executable and fresh local BCL runner are pinned;
+all242 actual reference records must match its unchanged SHA256 and tested source
+build. Caller XEMELE_DOTNET/runner overrides cannot produce reference evidence.
+The initial tested4d5ebd7 attempt preserved all M2/M1 model passes but failed
+NU1900 at foundation NuGet vulnerability lookup under the network sandbox;
+subsequent runtime/API/planning checks in that attempt were unrun.

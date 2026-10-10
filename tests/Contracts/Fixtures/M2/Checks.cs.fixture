@@ -60,6 +60,9 @@ await using (var resolved = await resolver.ResolveAsync(request, default)) { Che
 using var cancelled = new CancellationTokenSource(); cancelled.Cancel();
 Throws<OperationCanceledException>(() => resolver.ResolveAsync(request, cancelled.Token).GetAwaiter().GetResult());
 Check(new DeniedResolver().Resolve(request, default) is null);
+var uncheckedResolver = new UncheckedResolver();
+Throws<OperationCanceledException>(() => uncheckedResolver.ResolveAsync(request, cancelled.Token).GetAwaiter().GetResult());
+Check(uncheckedResolver.Calls == 0);
 Console.WriteLine($"Passed {checks} contract-model assertions; no XML parser declaration invoked.");
 sealed class CountStream : MemoryStream
 {
@@ -77,4 +80,10 @@ sealed class OfflineResolver : XmlResourceResolver
 sealed class DeniedResolver : XmlResourceResolver
 {
     public override XmlResolvedResource? Resolve(XmlResourceRequest request, CancellationToken cancellationToken) => null;
+}
+
+sealed class UncheckedResolver : XmlResourceResolver
+{
+    public int Calls;
+    public override XmlResolvedResource? Resolve(XmlResourceRequest request, CancellationToken cancellationToken) { Calls++; return null; }
 }

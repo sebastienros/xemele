@@ -65,9 +65,9 @@ internal readonly record struct DtdEntityRequest(string Name, string? SystemId, 
 internal readonly record struct DtdParseResult(int Consumed, DtdParseStep Step, DtdEntityRequest? Entity, XmlDiagnostic? Diagnostic);
 internal interface IDtdBudget
 {
-    void ChargeExpandedCharacters(long count, XmlLocation location);
-    void ChargeName(ReadOnlySpan<char> name, XmlLocation location);
-    void EnterEntity(XmlLocation location);
+    XmlDiagnostic? ChargeExpandedCharacters(long count, XmlLocation location);
+    XmlDiagnostic? ChargeName(ReadOnlySpan<char> name, XmlLocation location);
+    XmlDiagnostic? EnterEntity(XmlLocation location);
     void ExitEntity();
 }
 internal sealed class DtdParser : IDisposable
@@ -90,6 +90,7 @@ internal readonly record struct TextDeclarationResult(int Consumed, TextDeclarat
 internal sealed class XmlTextDeclarationFramer : IDisposable
 {
     public XmlTextDeclarationFramer(XmlResourceLimits limits, Uri? sourceUri = null) { }
+    internal XmlTextDeclarationFramer(XmlResourceLimits limits, IDtdBudget budget, Uri? sourceUri = null) { }
     public TextDeclarationResult Append(ReadOnlySpan<char> input, ReadOnlySpan<long> byteOffsets,
         bool isFinalBlock, CancellationToken cancellationToken) => throw new InvalidOperationException("Declaration model");
     public XmlLocation PrefixLocation => throw new InvalidOperationException("Declaration model");

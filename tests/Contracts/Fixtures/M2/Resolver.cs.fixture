@@ -11,7 +11,10 @@ public abstract class XmlResourceResolver
 {
     public abstract XmlResolvedResource? Resolve(XmlResourceRequest request, CancellationToken cancellationToken);
     public virtual ValueTask<XmlResolvedResource?> ResolveAsync(XmlResourceRequest request, CancellationToken cancellationToken)
-        => ValueTask.FromResult(Resolve(request, cancellationToken));
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        return ValueTask.FromResult(Resolve(request, cancellationToken));
+    }
 }
 public sealed class XmlResolvedResource : IDisposable, IAsyncDisposable
 {

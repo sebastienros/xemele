@@ -123,9 +123,11 @@ constructor accepts operation accounting supplied by entity integration, enablin
 one shared charge ledger without a dependency on resolver internals. Enter/Exit
 track simultaneous expansion depth; ChargeExpandedCharacters charges scalars
 before expansion; ChargeName charges only distinct retained ordinal names. Quota
-rejections are structured terminal diagnostics; IDtdBudget implementations must
-signal quota refusal through an internal owned XmlParseException, caught only at
-these explicit budget-call boundaries, never around user callbacks. External
+rejections are structured terminal diagnostics: each charging/entry method returns
+null for acceptance or a nonnull owned XmlDiagnostic for refusal, before the extra
+work/persistence. DtdParser converts refusal to Rejected without exception transport;
+ExitEntity only balances an accepted entry. User callback exceptions are never
+caught as budget failures. External
 bytes/opens belong to resolution. Raw subset input/token limits are also enforced
 locally. No resource is opened by DtdParser itself.
 
@@ -151,8 +153,10 @@ scalar line/column immediately after the consumed prolog, with final source URI;
 its byte offset may be null until the next decoded scalar mapping is known.
 For Declared, composition initializes DtdParser at NextLocation. For Absent,
 framer.PrefixLocation reports the first held prefix unit's original source cursor;
-initialize grammar there before DrainPrefix. The decoder's original-byte mappings
-remain absolute, including BOMs. Newline normalization occurs once in the framer
+initialize grammar there before DrainPrefix. BOM-only Absent with zero held prefix and incomplete text-declaration EOF keep
+unknown byte boundaries null until composition supplies the actual original
+source length; never infer EOF from the last scalar's start. The decoder's
+original-byte mappings remain absolute, including BOMs. Newline normalization occurs once in the framer
 for declaration units and once in grammar for forwarded prefix/body; closing '>'
 resolves pending CR/scalar state before the declaration handoff. Cancellation/fault/disposal,
 source mapping/scalar location and bounded prolog TokenCharacters rules mirror
@@ -173,10 +177,25 @@ then the submitted unconsumed suffix resumes. No prefix/source view survives an
 Append return. This strips a text declaration without losing adjacent body units,
 counting them twice or guessing encoding from body text. All declaration and
 prefix original bytes still count ExternalBytes; declaration scalars count the
-shared expansion budget once, and prefix/body scalars are charged by grammar.
-Framer itself only enforces token/configuration limits; composer charges accepted
-declaration scalars after its decision, prefix via grammar on Absent. Malformed
-prolog rejection is early terminal and still charged for consumed source work.
+shared expansion budget incrementally once, and absent prefix/body scalars are
+charged by grammar.
+The internal framer constructor takes the same live IDtdBudget as DtdParser.
+Only the recognition prefix (at most seven UTF-16 units, including one whole
+supplementary scalar) may defer expansion charging. As soon as '<?xml' followed
+by whitespace establishes a declaration, the framer charges that accepted prefix
+once, before accepting further declaration input. It then charges each source
+scalar before consuming, normalizing, retaining or grammar processing it, across
+Append calls. Thus even TokenCharacters=null and a very long whitespace prolog
+cannot postpone ExpandedCharacters refusal until declaration completion. Refusal
+returns Rejected and stops immediately; no body bytes are decoded. A decoder may
+already have emitted one scalar into bounded scratch; that scalar is not accepted
+by the framer after refusal. For Absent the bounded held recognition prefix
+remains uncharged, is forwarded once and charged only by grammar. The composer
+never recharges declaration or forwarded prefix scalars. Standalone framer uses
+its own local aggregate expansion budget; the shared-budget constructor snapshots
+configuration and uses the supplied live ledger. Framer does not charge the
+primary document quota for external inputs. Malformed prolog rejection retains
+already charged declaration work and owns its terminal diagnostic.
 General parsed entities use the same framer, then the regular content grammar;
 no M3 reader or unmerged M2-encoding type is required for this composition.
 
