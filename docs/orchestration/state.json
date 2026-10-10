@@ -30,6 +30,15 @@
       "setup_status": "dispatched",
       "chat_id": "01a123e3-1f8d-7370-a821-1428a86d2686",
       "worktree_path": "/Users/sebastienros/.codex/worktrees/38a3/xemele"
+    },
+    {
+      "task_id": "M1-benchmark-class-config",
+      "client_thread_id": "client-new-thread:b3aca5d6-0563-489b-a641-054c87fcc96b",
+      "host_id": "local",
+      "branch": "codex/m1-benchmark-class-config",
+      "base_revision": "6d3326fce6dcc979d243a6bdddc92f9ae2e1897e",
+      "claim_revision": "1246381a72839c7d6b77e05416985fa407baad6b",
+      "setup_status": "pending"
     }
   ],
   "integration_queue": [
@@ -461,8 +470,8 @@
       }
     }
   ],
-  "benchmark_policy": "Class attributes configure benchmark jobs; serialized timing still parks all peer/root heavy checks. No active timing hold.",
-  "benchmark_owner": null,
+  "benchmark_policy": "Exclusive current builder repetition; all heavy host checks parked.",
+  "benchmark_owner": "M1-tree-dom-builder",
   "pending_decisions": [],
   "decisions": {
     "project_license": "MIT",
@@ -516,5 +525,16 @@
       "revision": "96498992efa48d52b0e8b83058bd88dbdaf153c1"
     }
   ],
-  "timing_queue": []
+  "timing_queue": [],
+  "benchmark_window": {
+    "task_id": "M1-tree-dom-builder",
+    "source_revision": "8a5c714cabd1375f568a6b40b39628fba5b32453",
+    "cases": 12,
+    "parked": [
+      "coordinator",
+      "M1-dom suspended",
+      "M1-benchmark-class-config awaits brief/parked"
+    ],
+    "note": "Finish current class-configured repetition, no more cancel/restart; previous complete and cancelled runs preserved separately."
+  }
 }
