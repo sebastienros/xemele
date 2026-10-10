@@ -1,0 +1,95 @@
+{
+  "testedRevision": "013f361fee99f084033b03621e5d0965e15304bb",
+  "commands": [
+    {
+      "label": "build:samples/M2-conformance/Sample.csproj",
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "build",
+        "samples/M2-conformance/Sample.csproj",
+        "-c",
+        "Release",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false"
+      ],
+      "exit": 0
+    },
+    {
+      "label": "build:tests/Xemele.Tests/Xemele.Tests.csproj",
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "build",
+        "tests/Xemele.Tests/Xemele.Tests.csproj",
+        "-c",
+        "Release",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false"
+      ],
+      "exit": 0
+    },
+    {
+      "label": "public-demo",
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "/private/tmp/xemele-integrate-m2-conformance/samples/M2-conformance/bin/Release/net10.0/Sample.dll"
+      ],
+      "exit": 0
+    },
+    {
+      "label": "focused2",
+      "argv": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "/private/tmp/xemele-integrate-m2-conformance/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll",
+        "-noColor",
+        "-class",
+        "Xemele.Tests.ConformanceJoin.FinalJoinTests",
+        "-result-xml",
+        "/var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-conformance-join-p0_e0976/tests.xml"
+      ],
+      "exit": 0
+    },
+    {
+      "label": "inherited-evidence-identity",
+      "argv": [
+        "python3",
+        "-B",
+        "/private/tmp/xemele-integrate-m2-conformance/docs/reports/M2-conformance/join_identity.py"
+      ],
+      "exit": 0
+    }
+  ],
+  "actualDemoOutput": {
+    "profile": "XML 1.0 Fifth Edition / Namespaces 1.0 Third Edition; nonvalidating",
+    "root": "{urn:root}r",
+    "attribute": "{urn:part}id=7",
+    "tokenizedDefault": "alpha beta",
+    "entity": "{urn:part}item:A&B",
+    "resourceOpens": 2,
+    "resourceDisposals": 2,
+    "symbolicDefaults": 1,
+    "unresolvedContent": 1,
+    "lossRefusals": 3
+  },
+  "focusedTests": {
+    "passed": 2,
+    "failed": 0,
+    "skipped": 0,
+    "identitySha256": "bc8e3ea6e62f945bb6b5823012e94a51fbeaca5ab40ff5f5debe5778cb4840f2"
+  },
+  "inheritedIdentityReport": "docs/reports/M2-conformance/coordinator-identity.json",
+  "result": "passed",
+  "temporaryXmlLogsRemoved": true,
+  "historicalIdentityReportPreserved": true,
+  "actualBinarySha256": {
+    "samples/M2-conformance/bin/Release/net10.0/Sample.dll": "f83e74ca2dcb271db4b29c9b040fef47105285ec3d80424d8213f5421c83f728",
+    "samples/M2-conformance/bin/Release/net10.0/Xemele.dll": "5a993b11682d3fb045fe54edfc67902ef1f2fd18674498458972ad5534743ffa",
+    "tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll": "5c3b03720ab1bc2e94c238e7d22c37eb39ba8e23d01fc67807fc3a15b04e5a23"
+  },
+  "sourceReview": "One bounded root review of56-line public demo,33-line new join tests and thin inherited identity check; no blocker. Preserves existing actual API/output behavior and prior full corpus independent models.",
+  "ownedIntegrationPaths": 9,
+  "scope": "Focused two new composition tests/demo. All prior corpus/API/package/performance checks preserved through actual byte/resource/runtime identity proof, not repeated or relabeled as fresh runs."
+}
