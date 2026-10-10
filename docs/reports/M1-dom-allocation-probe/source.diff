@@ -76,7 +76,7 @@ index 801e5b0..585a1f7 100644
  using Xunit;
 @@ -245,6 +246,16 @@ public sealed class DomTests
      }
- 
+
      private delegate string NameProbe(ReadOnlySpan<char> name);
 +    // Keep the same call site and identity branch in initialization and measurement.
 +    // NoInlining prevents each caller from receiving a separately compiled loop.
