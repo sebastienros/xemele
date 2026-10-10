@@ -4,7 +4,7 @@
   "milestone": "M1",
   "title": "Diagnostics and bounded operation primitives",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M1-common",
   "branch": "codex/m1-common",
   "base_revision": "8621e00a22aef0210dbe7084d6e7836d4531d335",
@@ -35,29 +35,85 @@
     {
       "id": "M1-common-A1",
       "description": "Implement approved diagnostics, exceptions, supported M1 options, finite budgets and cancellation counters.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "known-revision-runtime-checks",
+        "steady-primitives-and-boundaries"
+      ]
     },
     {
       "id": "M1-common-A2",
       "description": "Test positions, bounded diagnostic retention, budget thresholds, argument validation and cancellation. ",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "known-revision-runtime-checks",
+        "steady-primitives-and-boundaries"
+      ]
     },
     {
       "id": "M1-common-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "known-revision-runtime-checks",
+        "steady-primitives-and-boundaries"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Diagnostics/Common.cs \u2014 approved diagnostics, location, parse exception and generic result with owned snapshots/invariants",
+    "src/Xemele/Options/Common.cs \u2014 approved M1 options and all nullable positive default limits/widths; allocation-free validation",
+    "src/Xemele/Internal/Operations/OperationBudget.cs \u2014 per-operation options/limits snapshots, quota capacities, cancellation boundaries and counters",
+    "src/Xemele/Internal/Operations/DiagnosticBuffer.cs; ScalarLocation.cs \u2014 bounded owned terminal retention and normalized scalar locations with overflow rejection",
+    "tests/Xemele.Tests/M1-common/CommonTests.cs \u2014 10 focused cases, all limit defaults/invalid values/exact/one-over/unlimited representation, snapshots, locations, cancellation and 0 B warm regression",
+    "docs/api/M1-common.txt \u2014 81 actual compiled public declarations, exactly equal to approved Common model/golden",
+    "samples/M1-common/; docs/reports/M1-common/verify.py \u2014 independent source and packaged runtime sample; full checks and durable API report",
+    "benchmarks/Xemele.Benchmarks/M1-common/CommonBenchmarks.cs; docs/reports/M1-common/Xemele.CommonBenchmarks.csproj \u2014 isolated five-case ShortRun memory/latency harness"
+  ],
+  "evidence": [
+    {
+      "id": "known-revision-runtime-checks",
+      "kind": "check",
+      "revision": "937def8c23313ecdd087537906d08e81297baae7",
+      "command": "Pinned SDK 10.0.400 DOTNET_CLI_USE_MSBUILD_SERVER=0 python3 docs/reports/M1-common/verify.py (authorized NuGet/MTP IPC)",
+      "result": "passed",
+      "summary": "Release solution build zero warnings/errors; focused M1-common 10/10, full solution 64/64 and foundation 11/11, zero skipped. Foundation 139/173 rows unchanged; actual runtime matches 81 approved Common rows; six independent M1 lane builds/public model baselines and 38 protocol-model assertions preserved. API discovery/comparison nonempty matched 81; 16 build-tool Python tests and bootstrap corpus check pass. Runtime pack, source sample and separate NuGet-only consumer pass. Task validation and whitespace check pass.",
+      "artifact": "docs/reports/M1-common/checks.txt"
+    },
+    {
+      "id": "steady-primitives-and-boundaries",
+      "kind": "check",
+      "revision": "937def8c23313ecdd087537906d08e81297baae7",
+      "command": "dotnet run --project docs/reports/M1-common/Xemele.CommonBenchmarks.csproj -c Release --no-build -- --filter '*' --artifacts docs/reports/M1-common/bdn; python3 docs/reports/M1-common/verify.py",
+      "result": "passed",
+      "summary": "Five ShortRun cases completed on Apple M4 Pro Arm64 macOS 15.8.1, .NET 10.0.11. Warm straightforward/general counters both 0 B/op; general 0.9931 ns, baseline 0.5540 ns (tiny noisy informational timings, no speed victory). BDN setup 680 B/op; preexisting-diagnostic unthrown exception snapshot 208 B; bounded retention/truncation 216 B. Fresh-process construction 2696 B; standalone warm/escaping setup about 704 B/op; GC heap-minus-fragmentation retention estimate about 535 B/op, excludes reference array and is informational. Focused synchronous per-thread test measures 0 B over 10000 warm counter/location iterations. Final verification session 68314 exited 0 before benchmark session 52910 began; no builds/tests during timing. No actual parser composition or cross-architecture release claim.",
+      "artifact": "docs/reports/M1-common/bdn/results/CommonBenchmarks-report-github.md"
+    },
+    {
+      "id": "initial-benchmark-driver-failure",
+      "kind": "check",
+      "revision": "25c8375dddef0787de021b4a9030c387449aea1e",
+      "command": "dotnet run --project docs/reports/M1-common/Benchmarks.csproj -c Release --no-build -- --filter * --artifacts docs/reports/M1-common/bdn",
+      "result": "failed",
+      "summary": "BDN runner generation failed because assembly and project filenames differed; zero timed benchmarks. Fixed by owned project rename before final verification/timing. Raw failure preserved; precommit NU1900 sandbox restore failure was separately resolved by authorized NuGet build.",
+      "artifact": "docs/reports/M1-common/benchmark-failed-project-name.txt.gz"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "",
-    "checks": [],
-    "remaining": [],
+    "summary": "M1 common runtime implements the unchanged approved 81-row API, owned result/exception snapshots, all limits and per-operation budget/cancellation/scalar-location/diagnostic-retention helpers. Runtime/tests/API/sample source unchanged after independently reviewed 25c8375; later commits only repair/improve the benchmark harness. Final source 937def8c23313ecdd087537906d08e81297baae7.",
+    "checks": [
+      "verify.py at 937def8c23313ecdd087537906d08e81297baae7: 10/10 focused, 64/64 full solution, 11/11 foundation; zero skipped; six M1 lane baselines and 38 protocol-model assertions preserved.",
+      "Actual 81-row assembly/API/approved Common comparison, discovery, 16 Python tool checks, bootstrap corpus, runtime pack and source/package consumers passed.",
+      "Five exclusive ShortRun cases passed after final checks completed. Counters 0 B/op; setup 680 B BDN / 704 B standalone; exception snapshot 208 B; terminal retention 216 B. Raw successful and initial benchmark logs retained; first baseline was below measurable latency and superseded.",
+      "Initial precommit NuGet sandbox restore and BDN project-name failure resolved; neither claimed as passing.",
+      "Task validator, whitespace check and owned-path audit passed; no shared/peer/orchestration paths changed."
+    ],
+    "remaining": [
+      "Coordinator must integrate and rerun applicable combined-tree checks before marking verified.",
+      "Next enforcing consumers must obey documented units/counter scope and entry/external/bounded cancellation calls; parser/tree composition and x64/Arm64 release confirmation remain their later evidence, not a dependency of this common deliverable.",
+      "ShortRun timings are informational; exception benchmark constructs an unthrown exception using a preexisting diagnostic. GC.GetTotalMemory total delta was inflated relative to heap-minus-fragmentation and is retained only as raw telemetry, not a retained-size claim."
+    ],
     "requests": []
   }
 }
