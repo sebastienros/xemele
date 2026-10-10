@@ -1,0 +1,166 @@
+{
+  "task": "M2-undeclared-content",
+  "integrationRevision": "40d9ec99496d234e8ede7b3a793e15c40edfb681",
+  "workerRevision": "fa6333a69278bfaea0b97fad4d0aa8ddc198730a",
+  "ownership": {
+    "claim": "5a7b8336100693ac2af5aa4cb6547a583de1fbfe",
+    "changedPaths": 47,
+    "unowned": []
+  },
+  "focused": {
+    "command": [
+      "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+      "/private/tmp/xemele-integrate-m2-undeclared-2a2/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll",
+      "-noColor",
+      "-class",
+      "Xemele.Tests.UndeclaredReferences.*",
+      "-class",
+      "Xemele.Tests.DtdParserTests",
+      "-class",
+      "Xemele.Tests.DtdParserSourceTests",
+      "-class",
+      "Xemele.Tests.DtdCompositionTests",
+      "-class",
+      "Xemele.Tests.DtdEntityBase.EntityBaseTests",
+      "-class",
+      "Xemele.Tests.DtdNonvalidating.*",
+      "-class",
+      "Xemele.Tests.Versions.VersionTests",
+      "-class",
+      "Xemele.Tests.Syntax.SyntaxTests",
+      "-class",
+      "Xemele.Tests.Dom.*",
+      "-class",
+      "Xemele.Tests.DomPersistence.DomPersistenceTests",
+      "-class",
+      "Xemele.Tests.DomConstruction.DomBuilderTests",
+      "-class",
+      "Xemele.Tests.Tree.TreeTests",
+      "-class",
+      "Xemele.Tests.Serialization.SerializerTests",
+      "-method-",
+      "Xemele.Tests.Tree.TreeTests.WarmTraversalAndRepeatedNameInternProbesAllocateNothing"
+    ],
+    "exit": 0,
+    "actualConsoleCounts": {
+      "total": 2191,
+      "errors": 0,
+      "failed": 0,
+      "skipped": 0,
+      "notRun": 0
+    },
+    "testAssemblySha256": "f8f344279726517212ceb7dce9639a9c2bac2a633876db80580158d817901f47",
+    "binaryBeforeAfterEqual": true,
+    "classes": [
+      "Xemele.Tests.UndeclaredReferences.*",
+      "Xemele.Tests.DtdParserTests",
+      "Xemele.Tests.DtdParserSourceTests",
+      "Xemele.Tests.DtdCompositionTests",
+      "Xemele.Tests.DtdEntityBase.EntityBaseTests",
+      "Xemele.Tests.DtdNonvalidating.*",
+      "Xemele.Tests.Versions.VersionTests",
+      "Xemele.Tests.Syntax.SyntaxTests",
+      "Xemele.Tests.Dom.*",
+      "Xemele.Tests.DomPersistence.DomPersistenceTests",
+      "Xemele.Tests.DomConstruction.DomBuilderTests",
+      "Xemele.Tests.Tree.TreeTests",
+      "Xemele.Tests.Serialization.SerializerTests"
+    ],
+    "excludedUnchangedStandalone": "Tree warm traversal allocation; verified evidence preserved, no measurement replay."
+  },
+  "api": {
+    "members": 290,
+    "assemblySha256": "a1205da7069ce50c5f0b94daac45e43b9958370954400563be612dbfa3d9b99c",
+    "matched": true,
+    "checkerExit": 0
+  },
+  "package": {
+    "sourceConsumer": "Actual source/package parse, provenance and output refusal passed.",
+    "packageConsumer": "Actual source/package parse, provenance and output refusal passed.",
+    "sourceProductSha256": "c2665e0a34cc732e22227af1c534b4e7f6c694c052c5a7f8800114947e63af90",
+    "consumerProductSha256": "c2665e0a34cc732e22227af1c534b4e7f6c694c052c5a7f8800114947e63af90",
+    "packageSha256": "f8d14c16b4e2c90df1d1843a48c3d2b3ebdbc60b71d0249dfe0e8b3d36f18959",
+    "freshFeedAndCache": true,
+    "commands": [
+      {
+        "command": [
+          "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+          "/private/tmp/xemele-integrate-m2-undeclared-2a2/samples/M2-undeclared-content/bin/Release/net10.0/Sample.dll"
+        ],
+        "exit": 0
+      },
+      {
+        "command": [
+          "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+          "pack",
+          "src/Xemele/Xemele.csproj",
+          "-c",
+          "Release",
+          "--no-build",
+          "--no-restore",
+          "--disable-build-servers",
+          "-m:1",
+          "-p:UseSharedCompilation=false",
+          "-o",
+          "/var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-undeclared-package-9j06snsb/feed"
+        ],
+        "exit": 0
+      },
+      {
+        "command": [
+          "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+          "build",
+          "samples/M2-undeclared-content/Sample.csproj",
+          "-c",
+          "Release",
+          "--disable-build-servers",
+          "-m:1",
+          "-p:UseSharedCompilation=false",
+          "-p:UsePackage=true",
+          "-p:ManagePackageVersionsCentrally=false",
+          "-p:RestoreSources=/var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-undeclared-package-9j06snsb/feed",
+          "-p:RestorePackagesPath=/var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-undeclared-package-9j06snsb/cache",
+          "-p:NuGetAudit=false",
+          "-p:ArtifactsPath=/var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-undeclared-package-9j06snsb/out"
+        ],
+        "exit": 0
+      },
+      {
+        "command": [
+          "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+          "/var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/xemele-undeclared-package-9j06snsb/out/bin/Sample/release/Sample.dll"
+        ],
+        "exit": 0
+      }
+    ]
+  },
+  "planning": {
+    "controls": 14,
+    "validatedTasks": 132
+  },
+  "review": "One batched three corrections resolved at 2a26d90; 27 focused controls and complete untimed oracles passed.",
+  "preservedEvidence": {
+    "affectedTests": 2094,
+    "conformance": 258,
+    "differential": 311,
+    "originalCases": 2585,
+    "originalMatched": 2576,
+    "remainingGaps": 9,
+    "borrowedBytes": 0,
+    "allocationIterations": 1024,
+    "timingChildren": 2,
+    "childExits": [
+      0,
+      0
+    ],
+    "meansNsInformationalArm64": [
+      6443.5,
+      6996.2333
+    ],
+    "finalIdentity": "Passed; lease released before evidence review.",
+    "historicalBroadCounts": "Unavailable; successful exits/all-Pass prechecks retained, discovery not execution.",
+    "standaloneScope": "Existing selected fingerprints passed; historical locale-satellite before/after identity unclaimed."
+  },
+  "repeatReason": "Focused combined-tree checks cover new callbacks, DOM provenance and output/copy guards. Passing branch measurements and unaffected correctness retained.",
+  "artifactPolicy": "Concise summaries only; temporary raw outputs, package feed/cache and generated children removed."
+}
