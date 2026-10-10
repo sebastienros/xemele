@@ -41,7 +41,7 @@ public class EntityCompositionBenchmarks
         if (type is null || type.Name != "r" || type.PublicId is not null || type.SystemId is not null || type.InternalSubset != subset ||
             root.Kind != XmlNodeKind.Element || root.LocalName != "r" || root.Prefix != "" || root.NamespaceUri != "urn:r" ||
             root.Attributes.Count != 2 || root.NamespaceDeclarations.Count != 1 || root.Children.Count != 1 ||
-            root.NamespaceDeclarations[0].Prefix != "" || root.NamespaceDeclarations[0].NamespaceUri != "urn:r" ||
+            root.NamespaceDeclarations[0].Prefix != "" || root.NamespaceDeclarations[0].Value != "urn:r" ||
             root.Attributes[0].LocalName != "id" || root.Attributes[0].Prefix != "" || root.Attributes[0].NamespaceUri != "" || root.Attributes[0].Value != "one" ||
             root.Attributes[1].LocalName != "a" || root.Attributes[1].Prefix != "" || root.Attributes[1].NamespaceUri != "" || root.Attributes[1].Value != "owned tail" ||
             root.FirstChild.Kind != XmlNodeKind.Element || root.FirstChild.LocalName != "b" || root.FirstChild.Prefix != "" || root.FirstChild.NamespaceUri != "urn:r" ||
