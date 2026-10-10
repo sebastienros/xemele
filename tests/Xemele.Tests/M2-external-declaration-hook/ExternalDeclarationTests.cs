@@ -29,9 +29,9 @@ public sealed class ExternalDeclarationTests
             var declaration = fixture.Source.TextDeclaration!.Value;
             Assert.Equal("1.1", declaration.Version); Assert.Equal("utf-8", declaration.EncodingName);
             Assert.Equal(new XmlLocation(FinalUri, 1, 1, 0), declaration.Location);
-            Assert.Equal(new XmlLocation(FinalUri, 1, 37, null), fixture.Source.FirstLocation);
+            Assert.Equal(new XmlLocation(FinalUri, 1, 39, null), fixture.Source.FirstLocation);
             Assert.Equal("\n<foo/>\n", fixture.ReadBody(out var offsets));
-            Assert.Equal(Enumerable.Range(36, 10).Select(i => (long)i), offsets);
+            Assert.Equal(Enumerable.Range(38, 8).Select(i => (long)i), offsets);
             fixture.Dispose();
             Assert.Equal(declaration, fixture.Source.TextDeclaration);
             Assert.Equal("1.1", declaration.Version); Assert.Equal(1, fixture.Resolver.Stream!.Disposals);
@@ -109,6 +109,21 @@ public sealed class ExternalDeclarationTests
         Assert.Throws<OperationCanceledException>(() => during.Source.Frame(during.Options.Limits, during.Budget, cancel.Token));
         Assert.Null(during.Source.TextDeclaration); Assert.Equal(1, during.Resolver.Stream.Disposals);
         during.Dispose(); Assert.Equal(1, during.Resolver.Stream.Disposals);
+    }
+
+    [Fact]
+    public void LaterInvalidBodyByteRetainsSuccessfullyValidatedMetadata()
+    {
+        const string prolog = "<?xml version='1.10' encoding='UTF-8'?>";
+        using var fixture = new SourceFixture([.. Encoding.UTF8.GetBytes(prolog + "body"), 0xFF], 4096);
+        Assert.True(fixture.Frame()); var metadata = fixture.Source.TextDeclaration!.Value;
+        var body = new StringBuilder();
+        while (fixture.Source.EnsureCharacters(Cancellation))
+        { body.Append(fixture.Source.Characters); fixture.Source.Consume(fixture.Source.Characters.Length); }
+        Assert.Equal("body", body.ToString()); Assert.Equal("INPUT.InvalidEncoding", fixture.Source.Diagnostic!.Code);
+        Assert.Equal(prolog.Length + 4, fixture.Source.Diagnostic.Location.ByteOffset);
+        Assert.Equal("1.10", metadata.Version); Assert.Equal(metadata, fixture.Source.TextDeclaration);
+        fixture.Dispose(); Assert.Equal(1, fixture.Resolver.Stream!.Disposals);
     }
 
     [Fact]
