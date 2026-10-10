@@ -17,6 +17,8 @@ import sys
 import tempfile
 import xml.etree.ElementTree as ET
 from xml.sax.saxutils import escape
+from suite_baseline import SUITES, validate_suite
+from measure import validate_runtime
 
 ROOT = Path(__file__).resolve().parents[3]
 CLAIM = '5f70770facf88b7670fe38c0ac63283feca3219f'
@@ -64,6 +66,7 @@ def finish_raw_outputs(raw_root, existing_raw, raw_root_existed, summary):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--audit-base', default=CLAIM)
+    parser.add_argument('--integration-baseline', type=Path, help='Verified-main compiled discovery JSON; exact suite rows/additions and Git-bound sources')
     parser.add_argument('--expected-branch', default='codex/m2-version-declarations')
     args = parser.parse_args()
     if not re.fullmatch('[0-9a-f]{40}', args.audit_base):
@@ -107,6 +110,19 @@ def main():
         run('git', 'merge-base', '--is-ancestor', args.audit_base, 'HEAD')
         summary['auditBase'] = args.audit_base
         summary['branch'] = branch
+        integration_baseline=None
+        if args.integration_baseline:
+            integration_baseline=json.loads(args.integration_baseline.read_text())
+            assert integration_baseline['kind']=='verified-main-compiled-discovery'
+            assert integration_baseline['revision']==args.audit_base, 'Integration discovery revision must equal explicit audit base'
+            run('git','merge-base','--is-ancestor',integration_baseline['revision'],'HEAD')
+            expected_names=run('git','ls-tree','-r','--name-only',integration_baseline['revision'],'tests/Xemele.Conformance.Tests','tests/Xemele.Differential.Tests').splitlines()
+            expected_names={n for n in expected_names if Path(n).suffix in ('.cs','.csproj')}
+            assert set(integration_baseline['sourceIdentities'])==expected_names, 'Complete verified-main suite source identities required'
+            for n,h in integration_baseline['sourceIdentities'].items():
+                committed=subprocess.check_output(['git','show',integration_baseline['revision']+':'+n],cwd=ROOT)
+                assert hashlib.sha256(committed).hexdigest()==h and (ROOT/n).read_bytes()==committed, 'Integration baseline source differs: '+n
+            summary['integrationBaseline']={'revision':integration_baseline['revision'],'sha256':digest(args.integration_baseline),'sourceIdentities':integration_baseline['sourceIdentities']}
         run('git', 'merge-base', '--is-ancestor', CLAIM, 'HEAD')
         for prerequisite in ['481a6090f67bb2191bb7a2d6eeebe19cb9e0b787','98c99e9895c3c4552b612f0e3fc5692324ecef08','bbf3ea65ebe68a2433b867758378b9d0263175d2']:
             run('git','merge-base','--is-ancestor',prerequisite,'HEAD')
@@ -245,6 +261,11 @@ def main():
             assert before
             summary['outputClosureFiles'] = len(before)
             summary['outputClosureSha256'] = hashlib.sha256(json.dumps(before, sort_keys=True).encode()).hexdigest()
+            run('dotnet','build','samples/M2-version-declarations/Sample.csproj',*output_args)
+            sample = artifacts/'bin/Sample/release/Xemele.SyntaxSample.dll'
+            summary['runtimeBefore']=json.loads(run('dotnet',sample,'--runtime-identity'))
+            validate_runtime(summary['runtimeBefore'],summary['runtimeBefore'])
+            assert summary['runtimeBefore']['processSha256']==summary['sdk']['hostSha256'] and summary['runtimeBefore']['processPath']==str(dotnet), 'Actual runtime host differs from pinned SDK host'
             xml = tmp/'runtime-tests.xml'
             tests = artifacts/'bin/Xemele.Tests/release/Xemele.Tests.dll'
             text = run('dotnet', tests, '-noColor', '-result-xml', xml)
@@ -273,21 +294,18 @@ def main():
             runner = artifacts/'bin/BclReference/release/BclReference.dll'
             env['XEMELE_BCL_RUNNER'] = str(runner)
             summary['additionalSuites'] = {}
-            for assembly, expected_count, expected_digest in [('Xemele.Conformance.Tests',255,'a43104c9986029e0680218003fc7d820c2583c42b53fe16a323f2cab04e634dc'),('Xemele.Differential.Tests',299,'845b5c10e9d4952e309b2d419fcc429fe568c8496889dce7fe6ab319389cdc6e')]:
+            for assembly in SUITES:
                 run('dotnet', 'build', f'tests/{assembly}/{assembly}.csproj', *output_args)
                 test_dll = artifacts/f'bin/{assembly}/release/{assembly}.dll'
                 suite_xml = tmp/(assembly+'.xml')
                 frozen = {str(f): digest(f) for f in test_dll.parent.rglob('*') if f.is_file()}
                 run('dotnet', test_dll, '-noColor', '-result-xml', suite_xml)
                 rows = list(ET.parse(suite_xml).iter('test'))
-                ids = {(r.get('type'),r.get('method'),r.get('name')) for r in rows}
-                assert len(ids) == len(rows) == expected_count and all(r.get('result') == 'Pass' for r in rows)
-                identity_digest = hashlib.sha256(json.dumps(sorted(ids),ensure_ascii=True,separators=(',',':')).encode()).hexdigest()
-                assert identity_digest == expected_digest
+                ids = [(r.get('type'),r.get('method'),r.get('name')) for r in rows]
+                assert all(r.get('result') == 'Pass' for r in rows)
+                identity_evidence=validate_suite(assembly,ids,integration_baseline)
                 assert frozen == {str(f): digest(f) for f in test_dll.parent.rglob('*') if f.is_file()}
-                summary['additionalSuites'][assembly] = {'total':len(rows),'passed':len(rows),'identitySha256':identity_digest,'assemblySha256':digest(test_dll)}
-            run('dotnet', 'build', 'samples/M2-version-declarations/Sample.csproj', *output_args)
-            sample = artifacts/'bin/Sample/release/Xemele.SyntaxSample.dll'
+                summary['additionalSuites'][assembly] = dict(identity_evidence,passed=len(rows),assemblySha256=digest(test_dll))
             sample_output = run('dotnet', sample, '--oracle')
             summary['sourceConsumer'] = sample_output.strip()
             summary['boundaryOracle'] = run('dotnet', sample, '--boundary-oracle').strip()
@@ -309,6 +327,10 @@ def main():
             run('dotnet','build','docs/reports/M2-version-declarations/BenchmarkDriver.csproj',*output_args)
             summary['benchmarkOracles'] = run('dotnet',artifacts/'bin/BenchmarkDriver/release/Xemele.Benchmarks.dll','--oracle').strip()
             assert all((ROOT/n).read_bytes() == subprocess.check_output(['git','show',f'{revision}:{n}'],cwd=ROOT) for n in source_hashes)
+            assert closure() == before, 'runtime/test output closure changed before final freeze'
+            summary['runtimeAfter']=json.loads(run('dotnet',sample,'--runtime-identity'))
+            summary['runtimeIdentityEvidence']={}
+            validate_runtime(summary['runtimeBefore'],summary['runtimeAfter'],summary['runtimeIdentityEvidence'])
             summary['sourceFreezeUnchanged'] = True
 
             text = run('python3', '-B', '-m', 'unittest', 'discover', '-s', 'tools/planning', '-p', 'test_tasks.py')

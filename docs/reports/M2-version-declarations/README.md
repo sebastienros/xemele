@@ -76,3 +76,24 @@ Every existing attempt, including the original b5 failure, stays immutable.
 Reusing either a measured source revision or preparation identity is rejected.
 Timing requires exactly one matching allocation attempt and its strict pass.
 The original failed attempt did not emit counters; its cause remains unknown.
+
+The direct executor's single structured result per case is authoritative:
+expected identity, positive distinct PID, integer zero exit, success, executable
+found and empty errors are required. Textual exits are optional corroboration;
+duplicates or conflicts are rejected. Every GC comparison and its source/oracle
+binding is published before strict acceptance. A post-freeze is attempted after
+validation failure; any secondary freeze failure preserves the original cause.
+See `offline-timing-assessment.json` and `gc-domain-assessment.md`. Offline case
+acceptance does not convert the historical failed timing attempt into a pass.
+
+`verify.py --integration-baseline docs/reports/M2-version-declarations/integrated-profile-discovery.json`
+checks the integrated 258/311 suites using root's actual verified-main discovery
+at `705b1171d214cfb5ca86559a7622884fbe990e97`. Set `--audit-base` to that same
+revision after it is an ancestor of the integration checkout. Complete suite
+C#/project sources are bound to those Git bytes. Exactly the discovered 3/12
+[type, method, case display name] additions may be removed; the remaining actual
+execution XML names must reproduce the original 255/299 hashes. Only quoting of
+string delimiters is normalized for matching those exact added rows. Both actual
+execution and compiled discovery additions are retained as evidence. No namespace
+exemption or substituted discovery digest is used. The integrated suite has not
+been executed here.

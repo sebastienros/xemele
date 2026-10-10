@@ -141,12 +141,20 @@ def validate_benchmarks(output):
     frozen=[json.loads(m[1]) for m in re.finditer(r'^// VersionFrozenChild: (.+)$',output,re.MULTILINE)]
     require(len(frozen)==1 and frozen[0]['files']==47,'Exactly one complete frozen child binding required.')
     require(re.findall(r'^// VersionExecutedCases: (\d+)\s*$',output,re.MULTILINE)==['14'],'Exact executed-case total required.')
+    validate_case_rows(rows)
+    return {'cases':rows,'actual':42,'result':42,'gc':14,'buildExits':build_exits,'frozenBinding':frozen[0]}
+
+def validate_case_rows(rows):
+    require(len(rows)==14 and {case_id(r['identity']) for r in rows}==expected_cases(),'Exactly14 unique retained case identities required.')
     pids=[]
     for row in rows:
         require(len(row['actual'])==len(row['result'])==3 and len(row['gc'])==1,'Each case requires 3 Actual, 3 Result and 1 GC.')
         require([m['iteration'] for m in row['actual']]==[1,2,3] and [m['iteration'] for m in row['result']]==[1,2,3],'Exact iteration identities required.')
-        require(len(row['results'])==len(row['childExits'])==1,'Exactly one actual child result and exit required.')
-        result=row['results'][0];pid,code=row['childExits'][0]
+        require(len(row['results'])==1,'Exactly one authoritative structured child result required.')
+        result=row['results'][0];pid=result['process'];code=result['exit']
+        require(type(pid) is int and pid>0 and type(code) is int,'Actual child PID/exit must be literal positive PID/integer exit.')
+        require(len(row['childExits'])<=1,'Duplicate textual child exits rejected.')
+        if row['childExits']:require(tuple(row['childExits'][0])==(pid,code),'Textual child exit conflicts with structured result.')
         require(case_id(result['identity'])==case_id(row['identity']),'Actual child case identity differs.')
         require(result['exit']==code==0 and result['process']==pid and result['success'] is True and result['executableFound'] is True and result['errors']==[],'Actual child result/exit failed or differs.')
         pids.append(pid)
@@ -156,7 +164,7 @@ def validate_benchmarks(output):
             require(m['operations']==gc['operations'] and m['operations']>0 and math.isfinite(m['durationNs']) and m['durationNs']>0 and math.isfinite(m['nsPerOperation']) and m['nsPerOperation']>0,'Nonfinite or inconsistent workload observations.')
         row['gc'][0]['bytesPerOperation']=gc['allocatedBytes']/gc['operations']
     require(len(set(pids))==14,'Each declared case requires its own actual child process.')
-    return {'cases':rows,'actual':42,'result':42,'gc':14,'buildExits':build_exits,'frozenBinding':frozen[0]}
+    return rows
 
 def identity_records(output):
     result={'identityChecks':[],'metadataChecks':[],'parseFailures':[]}
@@ -231,11 +239,24 @@ def allocation_baselines(summary, known, preparation_sha):
     require(summary['before']==summary['after'],'Allocation source/binary/runtime before-after freeze differs.')
     return real
 
-def validate_gc_totals(benchmarks, baselines):
+def validate_gc_totals(benchmarks, baselines, evidence=None):
+    comparisons=[] if evidence is None else evidence
     for row in benchmarks['cases']:
-        gc=row['gc'][0];expected=baselines[case_id(row['identity'])]
-        require(gc['allocatedBytes']==gc['operations']*expected,'Actual timed GC total differs from directly measured generated-method allocation oracle.')
+        gc=row['gc'][0];baseline=baselines[case_id(row['identity'])];expected=gc['operations']*baseline
+        comparisons.append({'identity':row['identity'],'actualTotal':gc['allocatedBytes'],'operations':gc['operations'],'baselineBytesPerOperation':baseline,'expectedTotal':expected,'signedDifference':gc['allocatedBytes']-expected})
+    require(len(comparisons)==14 and all(r['signedDifference']==0 for r in comparisons),'Actual timed GC total differs from directly measured generated-method allocation oracle.')
     return True
+
+def attempt_post_freeze(summary, freeze):
+    summary['postFreezeAttempted']=True
+    try:
+        summary['after']=freeze()
+        require(summary['after']==summary['before'],'Before/after actual runtime/source/binary freeze differs.')
+    except BaseException as error:
+        summary['postFreezeFailure']={'type':type(error).__name__,'message':str(error)}
+        summary.setdefault('failure',{'stage':'after-freeze','type':type(error).__name__,'message':str(error)})
+        summary['result']='failed'
+
 
 def cleanup(summary, paths, remover=shutil.rmtree):
     errors=[]
@@ -394,8 +415,10 @@ def main(argv=None):
             summary['streamedIdentityEvidence']=identity_records(logfile.read_text())
             summary['partialObservations']=[]
             observations(logfile.read_text(),summary['partialObservations'])
+            summary['gcAllocationEvidence']={'oracleSha256':allocation_sha,'sourceRevision':known['revision'],'preparationSha256':preparation_sha,'oracleCounterDomain':'GC.GetAllocatedBytesForCurrentThread / 512 direct delegates','timedCounterDomain':'BenchmarkDotNet0.15.8 GC.GetTotalAllocatedBytes(precise:true) / generated workload operations','comparisons':[]}
+            validate_gc_totals({'cases':summary['partialObservations']},baselines,summary['gcAllocationEvidence']['comparisons'])
             summary['benchmarks']=validate_benchmarks(logfile.read_text())
-            summary['exactGcAllocationTotals']=validate_gc_totals(summary['benchmarks'],baselines)
+            summary['exactGcAllocationTotals']=True
             require(digest(allocation_path)==allocation_sha,'Durable allocation oracle changed during timing.')
             binding=summary['benchmarks']['frozenBinding']
             require(binding['child']==str(child) and binding['project']==str(project) and binding['revision']==known['revision'],'Actual executed child binding differs.')
@@ -415,6 +438,8 @@ def main(argv=None):
                 summary['partialAllocationPayloads']=[json.loads(line) for line in partial.splitlines() if line.startswith('{')]
             except Exception as inspection:summary['inspectionError']={'type':type(inspection).__name__,'message':str(inspection)}
     finally:
+        if args.mode=='benchmarks' and 'process' in locals() and 'before' in summary and 'after' not in summary:
+            attempt_post_freeze(summary,freeze)
         # Keep frozen preparation only between two successful one-shot modes.
         # Any failure removes all transient outputs; never retry that observation.
         final_mode=args.mode=='benchmarks' or summary['result']!='passed'

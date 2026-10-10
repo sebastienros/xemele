@@ -41,6 +41,45 @@ class MeasurementProtocolTests(unittest.TestCase):
             for revision,prep in [(known['revision'],'e'*64),('f'*40,sha),('b'*40,'e'*64),('f'*40,'c'*64)]:
                 with self.assertRaises(m.ProtocolError):m.attempt_report(report,'allocations',{'revision':revision},prep)
             self.assertEqual(original,legacy.read_bytes())
+    def test_authoritative_structured_results_with_optional_text_exits(self):
+        text=m.re.sub(r'^// Benchmark Process .+\n','',self.text(),flags=m.re.MULTILINE)
+        self.assertEqual(14,len(m.validate_benchmarks(text)['cases']))
+        resultline=next(l for l in text.splitlines() if l.startswith('// VersionCaseResult:'))
+        missing=text.replace(resultline+'\n','',1);duplicate=text.replace(resultline,resultline+'\n'+resultline,1)
+        values=[missing,duplicate,text.replace('"process": 1000','"process": 0',1),text.replace('"process": 1000','"process": true',1),text.replace('"process": 1001','"process": 1000',1),text.replace('"exit": 0','"exit": 1',1),text.replace(resultline,'// Benchmark Process 999 has exited with code 0.\n'+resultline,1),text.replace(resultline,'// Benchmark Process 1000 has exited with code 0.\n// Benchmark Process 1000 has exited with code 0.\n'+resultline,1)]
+        for value in values:
+            with self.assertRaises(m.ProtocolError):m.validate_benchmarks(value)
+    def test_late_gc_difference_preserves_all_comparisons_and_post_freeze_primary(self):
+        rows=m.validate_benchmarks(self.text());rows['cases'][-1]['gc'][0]['allocatedBytes']+=1;comparisons=[]
+        with self.assertRaises(m.ProtocolError):m.validate_gc_totals(rows,{c:4 for c in m.expected_cases()},comparisons)
+        self.assertEqual(14,len(comparisons));self.assertEqual(1,comparisons[-1]['signedDifference']);self.assertEqual(13,sum(r['signedDifference']==0 for r in comparisons))
+        original={'stage':'measurement','message':'original mismatch'};summary={'result':'failed','failure':original,'before':{'freeze':True}}
+        def broken():raise PermissionError('post-freeze failed')
+        m.attempt_post_freeze(summary,broken);self.assertIs(original,summary['failure']);self.assertTrue(summary['postFreezeAttempted']);self.assertEqual('PermissionError',summary['postFreezeFailure']['type'])
+        m.attempt_post_freeze(summary,lambda:{'freeze':True});self.assertEqual(summary['before'],summary['after']);self.assertIs(original,summary['failure'])
+    def test_integrated_suite_exact_additions_preserve_inherited_digest(self):
+        spec=importlib.util.spec_from_file_location('suite',Path(__file__).with_name('suite_baseline.py'));suite=importlib.util.module_from_spec(spec);spec.loader.exec_module(suite)
+        old=[('Old','M','one'),('Old','M','two')];new=[('Profile','M','three'),('Profile','M','four')]
+        baseline={'suites':{'test':{'discoveryExit':0,'total':4,'inheritedDiscoveryCount':2,'historicalExecutionIdentitySha256':suite.identity_digest(old),'addedExactIdentities':new}}}
+        with patch.dict(suite.SUITES,{'test':(2,suite.identity_digest(old),2)}):
+            self.assertEqual(4,suite.validate_suite('test',old+new,baseline)['total'])
+            self.assertEqual(2,suite.validate_suite('test',old)['total'])
+            for changed in [old+new[:-1],old+new+[('Profile','M','extra')],old[:1]+[('Old','M','changed')]+new,old+new+new[:1]]:
+                with self.assertRaises(AssertionError):suite.validate_suite('test',changed,baseline)
+            altered=copy.deepcopy(baseline);altered['suites']['test']['addedExactIdentities']=new[:1]+old[:1]
+            with self.assertRaises(AssertionError):suite.validate_suite('test',old+new,altered)
+    def test_real_compiled_profile_additions_require_exact_case_data(self):
+        spec=importlib.util.spec_from_file_location('suite',Path(__file__).with_name('suite_baseline.py'));suite=importlib.util.module_from_spec(spec);spec.loader.exec_module(suite)
+        baseline=json.loads(Path(__file__).with_name('integrated-profile-discovery.json').read_text())
+        for assembly,record in baseline['suites'].items():
+            count,digest,added=suite.SUITES[assembly];old=[('Historic','M',str(i)) for i in range(count)]
+            additions=[(t,m,suite.discovery_name(n)) for t,m,n in record['addedExactIdentities']]
+            testbaseline=copy.deepcopy(baseline);testbaseline['suites'][assembly]['historicalExecutionIdentitySha256']=suite.identity_digest(old)
+            with patch.dict(suite.SUITES,{assembly:(count,suite.identity_digest(old),added)}):
+                self.assertEqual(count+added,suite.validate_suite(assembly,old+additions,testbaseline)['total'])
+                for i in range(added):
+                    changed=list(additions);t,m,n=changed[i];changed[i]=(t,m,n+' changed-case')
+                    with self.assertRaises(AssertionError):suite.validate_suite(assembly,old+changed,testbaseline)
     def fixture(self):
         revision='a'*40
         closure={('Xemele.dll' if i==0 else 'Xemele.Benchmarks.dll' if i==1 else 'child.dll' if i==2 else f'payload{i}'):f'{i:064x}' for i in range(47)}
