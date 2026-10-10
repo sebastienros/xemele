@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "id": "M0-bench-shortrun",
+  "milestone": "M0",
+  "title": "Configure ShortRun benchmark defaults",
+  "kind": "infrastructure",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "depends_on": [
+    "M0-build",
+    "M0-tree-spike",
+    "M0-input-spike"
+  ],
+  "goals": [
+    "G18"
+  ],
+  "specs": [
+    "docs/specs/foundation.md",
+    "docs/performance-coding.md"
+  ],
+  "owns": [
+    "experiments/Tree/Program.cs",
+    "experiments/Input/Program.cs",
+    "benchmarks/Xemele.Benchmarks/Program.cs",
+    "docs/reports/M0-bench-shortrun/"
+  ],
+  "api_or_output": "BenchmarkDotNet Job.ShortRun defaults for all current harnesses",
+  "acceptance": [
+    {
+      "id": "M0-bench-shortrun-A1",
+      "description": "Use BenchmarkDotNet Job.ShortRun as default for tree/input experiment and central benchmark entry points, honoring explicit later CLI job choices. Preserve actual workload semantics and historical measurement reports.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M0-bench-shortrun-A2",
+      "description": "Build all three harnesses, preserve experiment correctness/allocation checks and bootstrap benchmark help; confirm a bounded representative run reports the ShortRun job. Do not rerun the full previous matrices or rewrite their historical job evidence.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M0-bench-shortrun-A3",
+      "description": "Record actual tested implementation revision, commands and outputs plus task validation; future assignments receive user-selected ShortRun convention, with measurement limitations stated honestly.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "User requested benchmarks run with ShortRun to limit duration. Ordered harness configuration change preserves completed measurements.",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}
