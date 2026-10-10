@@ -78,8 +78,7 @@ public class DtdFramedScanBenchmarks
     {
         parser = new(DtdSubsetKind.External, new XmlResourceLimits { DocumentCharacters = null, ExpandedCharacters = null });
         parser.SetFramedInitialSource(new(null, 1, 1, null));
-        parser.Append("<!--", [], false, default);
-        fragment = new string('x', CommentScalars) + "中😀\r\n";
+        fragment = "<!--" + new string('x', CommentScalars) + "中😀\r\n-->";
     }
     [Benchmark] public int BorrowedCommentScan() => (int)parser.Append(fragment, [], false, default).Step;
     [GlobalCleanup] public void Cleanup() => parser.Dispose();
