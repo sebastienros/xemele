@@ -19,14 +19,25 @@
       "chat_id": "01a123ab-5dd9-7c53-9d31-46b24f19a8ed",
       "worktree_path": "/Users/sebastienros/.codex/worktrees/b39d/xemele",
       "wait_cursor": "e7178604-0842-4723-9cbd-17c463a973e4:1"
+    },
+    {
+      "task_id": "M1-serialize",
+      "client_thread_id": "client-new-thread:b7d624dd-a567-4431-9faa-19c6f94131c2",
+      "host_id": "local",
+      "branch": "codex/m1-serialize",
+      "base_revision": "a3fbc9334a5bc465addf1ff8d3fb793b981ba047",
+      "claim_revision": "978a6be36b92cba0f9168db817629daaa5fee63d",
+      "setup_status": "dispatched",
+      "chat_id": "01a123ce-5193-7693-a1bd-dc24e15194ef",
+      "worktree_path": "/Users/sebastienros/.codex/worktrees/8a2c/xemele"
     }
   ],
   "integration_queue": [],
   "blockers": [
     {
       "task_id": "M1-syntax",
-      "finding": "Malformed PI acceptance, quadratic mapped-pause validation and linear attacker-controlled name interning",
-      "resolution": "Owner correcting; executable rechecks pending after timing release"
+      "finding": "Expanded independent PI oracle found separator whitespace retained in body",
+      "resolution": "Owner correcting and rerunning checks; no timing grant"
     }
   ],
   "next_actions": [
@@ -400,7 +411,11 @@
       "handoff_revision": "795d1e3cfe7ea9258c45b0839185f00c8347d740",
       "integration_revision": "49bd4ed2a23d061eef390285d156db4013813f5a",
       "integration_worktree": "/private/tmp/xemele-integrate-m1-tree",
-      "integration_branch": "codex/integrate-m1-tree"
+      "integration_branch": "codex/integrate-m1-tree",
+      "cleanup": {
+        "chat_archived": true,
+        "worktree": "removed"
+      }
     }
   ],
   "benchmark_policy": "ShortRun only; exclusive timing must park root and all peer heavy checks.",
@@ -445,7 +460,8 @@
     "docs/orchestration/cleanup-M0.json",
     "docs/orchestration/cleanup-M1-contracts.json",
     "docs/orchestration/cleanup-M1-common.json",
-    "docs/orchestration/cleanup-M1-input.json"
+    "docs/orchestration/cleanup-M1-input.json",
+    "docs/orchestration/cleanup-M1-tree.json"
   ],
   "preserved_reference_sources": [
     {
