@@ -5,6 +5,9 @@ import os
 import platform
 from pathlib import Path
 import subprocess
+import tempfile
+import zipfile
+import xml.etree.ElementTree as ET
 
 ROOT = Path(__file__).resolve().parents[3]
 REPORT = ROOT / 'docs/reports/M1-syntax'
@@ -51,6 +54,19 @@ def main():
     run('dotnet', 'build', 'docs/reports/M1-syntax/AbiProbe/AbiProbe.csproj', *FLAGS)
     run('dotnet', ROOT / 'docs/reports/M1-syntax/AbiProbe/bin/Release/net10.0/AbiProbe.dll', ROOT / 'docs/reports/M1-contracts/Projects/Syntax/bin/Release/net10.0/M1Syntax.dll', ROOT / 'src/Xemele/bin/Release/net10.0/Xemele.dll', REPORT / 'internal-abi.txt')
     run('dotnet', 'pack', 'src/Xemele/Xemele.csproj', *FLAGS, '--no-build', '--no-restore', '-o', 'artifacts/M1-syntax/packages')
+    packages = ROOT / 'artifacts/M1-syntax/packages'
+    package = next(packages.glob('Xemele.*.nupkg'))
+    with zipfile.ZipFile(package) as archive:
+        nuspec = ET.fromstring(archive.read(next(n for n in archive.namelist() if n.endswith('.nuspec'))))
+        version = next(n.text for n in nuspec.iter() if n.tag.endswith('}version'))
+        shipped = archive.namelist()
+        assert 'lib/net10.0/Xemele.dll' in shipped
+        assert not any('Foundation' in n or 'Contracts' in n for n in shipped)
+    with tempfile.TemporaryDirectory(prefix='xemele-syntax-package-') as directory:
+        directory = Path(directory)
+        (directory / 'Consumer.csproj').write_text(f'<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><TargetFramework>net10.0</TargetFramework><AssemblyName>Xemele.SyntaxSample</AssemblyName><OutputType>Exe</OutputType><ImplicitUsings>enable</ImplicitUsings><Nullable>enable</Nullable></PropertyGroup><ItemGroup><PackageReference Include="Xemele" Version="{version}" /></ItemGroup></Project>')
+        (directory / 'Program.cs').write_text((ROOT / 'samples/M1-syntax/Program.cs').read_text())
+        run('dotnet', 'run', '--project', directory / 'Consumer.csproj', '-c', 'Release', '--disable-build-servers', '-p:UseSharedCompilation=false', f'-p:RestoreSources={packages}')
     run('dotnet', 'build', 'docs/reports/M1-syntax/Xemele.SyntaxBenchmarks.csproj', *FLAGS)
     run('dotnet', 'run', '--project', 'docs/reports/M1-syntax/Xemele.SyntaxBenchmarks.csproj', '-c', 'Release', '--no-build', '--', '--allocation')
     run('python3', 'tools/planning/tasks.py', 'validate')
@@ -61,4 +77,10 @@ if __name__ == '__main__':
         main()
     finally:
         RAW.mkdir(parents=True, exist_ok=True)
-        (RAW / 'checks.txt').write_text('\n'.join(LOG))
+        revision = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()[:12]
+        attempt = 1
+        while (RAW / f'checks-{revision}-{attempt}.txt').exists():
+            attempt += 1
+        path = RAW / f'checks-{revision}-{attempt}.txt'
+        path.write_text('\n'.join(LOG))
+        print('Raw checks: ' + str(path), flush=True)

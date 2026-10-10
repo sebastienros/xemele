@@ -78,9 +78,9 @@ before finalization and verify lexical scratch stays at its initial size.
 
 Run `python3 docs/reports/M1-syntax/verify.py` using SDK 10.0.400 on PATH with
 DOTNET_CLI_USE_MSBUILD_SERVER=0. It preserves peer reports and models, records raw
-output under ignored artifacts/M1-syntax/checks.txt, compares the unchanged common
+output under ignored artifacts/M1-syntax/checks-<revision>-<attempt>.txt, compares the unchanged common
 public surface, compiles all approved M1 models/protocol probes, compares nine
-actual internal syntax types with their model, runs the independent sample, packs
+actual internal syntax types with their model, runs independent source and NuGet-only sample consumers, packs
 the runtime and records separate cold/warm/retained allocation boundaries.
 No empty docs/api/M1-syntax.txt or public syntax type is invented.
 
