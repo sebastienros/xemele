@@ -4,7 +4,7 @@
   "milestone": "M1",
   "title": "Resumable strict XML grammar",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M1-syntax",
   "branch": "codex/m1-syntax",
   "base_revision": "dc20c884b3465af691077c50b747bcebb1c47365",
@@ -35,29 +35,123 @@
     {
       "id": "M1-syntax-A1",
       "description": "Implement M1 XML grammar and borrowed event sink, pause/resume and bounded token/depth state; reject DTD syntax explicitly.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "known-revision-checks",
+        "warm-cold-retained-dispatch",
+        "exclusive-shortrun",
+        "independent-correction-reviews"
+      ]
     },
     {
       "id": "M1-syntax-A2",
       "description": "Drive with a test sink independent of DOM/decoder; test syntax errors, namespaces, references, CDATA and arbitrary character splits.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "known-revision-checks",
+        "warm-cold-retained-dispatch",
+        "exclusive-shortrun",
+        "independent-correction-reviews"
+      ]
     },
     {
       "id": "M1-syntax-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "known-revision-checks",
+        "warm-cold-retained-dispatch",
+        "exclusive-shortrun",
+        "independent-correction-reviews"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Parsing/Core/XmlParserCore.cs \u2014 independent resumable strict XML character grammar, namespace/expanded-name validation, scalar mappings/normalization, callback cursor, quotas and fault lifecycle; ordinal borrowed dictionary interning",
+    "src/Xemele/Parsing/Events/Views.cs \u2014 exact nine-type approved internal event/result ABI; no public syntax placeholder or empty API fragment",
+    "tests/Xemele.Tests/M1-syntax/ \u2014 70 focused cases including every-split/every-callback pause, malformed vectors, explicit byte EOF, 100000-character mapped linear-work/mutable-tail regression, 524288-unit streaming and 0 B warm dispatch",
+    "samples/M1-syntax/ \u2014 independent character/sink source and isolated NuGet-only sample pausing all callbacks",
+    "docs/reports/M1-syntax/AbiProbe/; internal-abi.txt; runtime-api.json \u2014 actual 9-type/80-row internal model equality and unchanged approved 81-row public ABI",
+    "benchmarks/Xemele.Benchmarks/M1-syntax/; docs/reports/M1-syntax/Xemele.SyntaxBenchmarks.csproj \u2014 21 exclusive ShortRun cases, delimiter oracles, complete character/sink ownership boundaries and setup/retention allocation mode",
+    "docs/reports/M1-syntax/verify.py; checks.md; performance.md; bdn/ \u2014 known-revision reproducible checks, approved combined public-golden override, exact results and durable failure/applicability summaries"
+  ],
+  "evidence": [
+    {
+      "id": "known-revision-checks",
+      "kind": "check",
+      "revision": "d4de9b394cec42fe8caa5c8deacc7c31ecc7b4b0",
+      "command": "Pinned SDK10.0.400 DOTNET_CLI_USE_MSBUILD_SERVER=0 python3 docs/reports/M1-syntax/verify.py (authorized NuGet/MTP IPC)",
+      "result": "passed",
+      "summary": "Release build zero warnings/errors; 70/70 focused, 134/134 full and 11/11 foundation, no skips. Explicit foundation fixture builds and 139/173 preserved rows; unchanged nonempty 81-row public API/discovery/fragments; nine actual approved internal types/80 declaration rows. Six independent M1 public model lanes and 38 protocol assertions, 16 Python checks/bootstrap corpus, runtime pack, source sample and isolated-cache NuGet-only consumer pass. Planning validation and whitespace pass. Raw artifacts/M1-syntax/checks-d4de9b394cec-1.txt; runtime unchanged since reviewed 7ea67f7.",
+      "artifact": "docs/reports/M1-syntax/checks.md"
+    },
+    {
+      "id": "warm-cold-retained-dispatch",
+      "kind": "check",
+      "revision": "d4de9b394cec42fe8caa5c8deacc7c31ecc7b4b0",
+      "command": "python3 docs/reports/M1-syntax/verify.py; owned SyntaxBenchmarks allocation mode and focused StreamingTests warm regression",
+      "result": "passed",
+      "summary": "0 B across 10000 warm tag/namespace/attribute/reference/CRLF/astral appends, 50500 emitted text units; separate focused synchronous regression also 0 B. Fresh-process-context setup 8608 B; warm construction/disposal 6616 B/op. One-open-root GC heap-minus-fragmentation retention estimate 6872 B/op excludes reference array and is informational. Long text emits 524288 units before finalization with initial lexical scratch unchanged; 100000-character mapped all-callback pauses validate work <= input length + callback count + 1, with mutable tails rechecked. Setup, unique strings, scratch growth, owned rejection and sink persistence excluded from warm claim.",
+      "artifact": "docs/reports/M1-syntax/performance.md"
+    },
+    {
+      "id": "exclusive-shortrun",
+      "kind": "check",
+      "revision": "d4de9b394cec42fe8caa5c8deacc7c31ecc7b4b0",
+      "command": "dotnet run --project docs/reports/M1-syntax/Xemele.SyntaxBenchmarks.csproj -c Release --no-build --no-restore -- --filter '*' --artifacts artifacts/M1-syntax/bdn (coordinator exclusive window)",
+      "result": "passed",
+      "summary": "All 21 workload processes exit0, three measured results each (63 total), nonmissing/non-NaN means/memory; outer process exit0/cleanup complete before release. BDN0.15.8, Apple M4 Pro Arm64 macOS15.8.1, .NET10.0.11/SDK10.0.400 normal priority. Warm repeated grammar 1012.4 ns/0 B; cold complete character/sink operation 1327.6 ns/7248 B; structured undeclared-entity rejection 472.8 ns/6688 B. 18 semantics-equal delimiter comparisons all0 B; dense direct baseline below resolution, tiny intervals noisy; long primitive candidates are not whole-parser evidence. No other builds/tests overlapped timing; BDN startup build precedes measurement. No decoder/DOM or cross-architecture performance claim.",
+      "artifact": "docs/reports/M1-syntax/performance.md"
+    },
+    {
+      "id": "independent-correction-reviews",
+      "kind": "review",
+      "revision": "7ea67f77a7d878f510f2ea29e1d30bb187439c2a",
+      "command": "Coordinator independent read-only PI/oracle and mapping/interning reviews at fe5ab4451206d2318c2eed7833fb462faad7da00; final PI separator delta review at 7ea67f77a7d878f510f2ea29e1d30bb187439c2a",
+      "result": "passed",
+      "summary": "Two focused correction reviews found no residual blockers: PI adjacency/separate full structural BCL oracle and incremental mutable mapping validation/ordinal alternate dictionary collision defenses. Third final source review confirms complete initial XML S exclusion, later body whitespace preservation and pause/split/CRLF/quota suitability. These are source reviews, not executable runs; harness-only commits after 7ea do not change runtime.",
+      "artifact": "docs/reports/M1-syntax/checks.md"
+    },
+    {
+      "id": "initial-build-analyzer-failure",
+      "kind": "check",
+      "revision": "fe5ab4451206d2318c2eed7833fb462faad7da00",
+      "command": "python3 docs/reports/M1-syntax/verify.py",
+      "result": "failed",
+      "summary": "Release build stopped at xUnit2013 one-key collection assertion; no tests ran in this attempt. Fixed in dcd2f51 before final checks. Raw artifacts/M1-syntax/checks-fe5ab445-build-failed.txt retained; durable failure summary in checks.md.",
+      "artifact": "docs/reports/M1-syntax/checks.md"
+    },
+    {
+      "id": "initial-package-cache-failure",
+      "kind": "check",
+      "revision": "1c22f6bb41eec6d0604049e8a8acddd41485f258",
+      "command": "python3 docs/reports/M1-syntax/verify.py",
+      "result": "failed",
+      "summary": "Tests/models/API/source sample passed but NuGet-only consumer reused a stale globally cached identical local package version and lacked new internal syntax types. b21b13c isolates RestorePackagesPath; final actual package consumer passes. Raw artifacts/M1-syntax/checks-1c22f6bb41ee-1.txt retained.",
+      "artifact": "docs/reports/M1-syntax/checks.md"
+    },
+    {
+      "id": "pi-separator-oracle-failure",
+      "kind": "check",
+      "revision": "b21b13c895836349c86107b10af57898d39858b4",
+      "command": "python3 docs/reports/M1-syntax/verify.py",
+      "result": "failed",
+      "summary": "Expanded PI multiple-whitespace oracle passed69/70 and exposed retained separator tab/space in body; no full-verifier pass inferred. Runtime correction7ea excludes full initial S and preserves later body whitespace, then70/70/final checks pass. Raw artifacts/M1-syntax/checks-b21b13c89583-1.txt retained.",
+      "artifact": "docs/reports/M1-syntax/checks.md"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "",
-    "checks": [],
-    "remaining": [],
+    "summary": "Independent internal strict XML core implements approved borrowed event ABI, namespace/name/reference/comment/CDATA/PI/declaration grammar, normalized scalar/original byte maps and explicit EOF, bounded ownership, quota/cancellation/fault/pause lifecycle. Reviewed runtime7ea67f7; final tested source/harnessd4de9b3. No input/tree/DOM/serializer peer dependency or public syntax placeholder.",
+    "checks": [
+      "Known source d4de9b3 verifier exit0:70 focused/134 solution/11 foundation, no skips; exact81 public and9-type80-row internal ABI; all model/protocol/Python/corpus/source+isolated-package/pack/planning checks pass.",
+      "Exclusive21 ShortRun cases all exit0/63 workload results: warm dispatch0 B, cold7248 B, structured rejection6688 B. Setup8608 B fresh/6616 B warm; retained estimate6872 B. All allocation boundaries/noisy primitive timings documented.",
+      "Three independent focused source reviews pass correction scopes/final PI delta; distinct/sharedprefix/culture/colliding-bucket tests verify runtime dictionary defense. Prior known failures and precommit limitations recorded honestly in checks.md."
+    ],
+    "remaining": [
+      "Coordinator integration and combined-tree verification required before verified. Supply XEMELE_SYNTAX_PUBLIC_GOLDEN=tests/Contracts/Fixtures/M1/Tree.golden.txt when verified Tree/public192 is integrated; verifier still performs mandatory exact compiler/fragment comparisons.",
+      "M1-dom owns decoder/tree composition evidence; cross-architecture release confirmation/longer timings remain release work. Current single-Arm64 character/sink timings are provisional and dense tiny baseline cannot support speed conclusions."
+    ],
     "requests": []
   }
 }
