@@ -40,14 +40,18 @@
     {
       "id": "M2-version-declarations-A1",
       "description": "Implement verified literal ASCII1.[0-9]+ document/text-declaration contract preserving exact lexical version, optional text version and existing ABI. Keep bounded incremental framing, charge-before-growth quotas, cancellation, consumed counts, callback pause/resume, borrowed lifetime, lazy ordinary parsing and primary-error cleanup. No decoder/DTD grammar/resolver/shared-project edits; route additional ownership needs.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "worker-correctness-576a4ef"
+      ]
     },
     {
       "id": "M2-version-declarations-A2",
       "description": "Exercise all split boundaries and declaration callbacks plus byte-input external DTD/parameter/general entity composition and owned retention. Accept compatible1.1/1.7/1.00/1.10/long digits, reject empty/nonASCII digits/references/malformed order/2.0 and XML1.1-only content under effective XML1.0. Authorize only precise historic1.1 negatives in SyntaxTests and FramingTests to become success coverage; preserve all other inherited identities/outcomes and historical evidence.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "worker-correctness-576a4ef"
+      ]
     },
     {
       "id": "M2-version-declarations-A3",
@@ -56,13 +60,53 @@
       "evidence": []
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Parsing/Core/XmlParserCore.cs: VersionNumber + borrowed versionStart/versionLength callback slice; ASCII literal 1.[0-9]+ with cancellation work checks.",
+    "src/Xemele/Parsing/Dtd/Framing/XmlTextDeclarationFramer.cs: incremental ASCII version recognition in shared bounded value scratch, exact owned string at declaration completion; canonical static 1.0 reused only for exact lexical 1.0.",
+    "tests/Xemele.Tests/M2-version-declarations/VersionTests.cs: 31 independent split/pause/ownership/quota/content-profile/byte external DTD+PE+general composition cases; only historic syntax 1.1 and framing 70 rows transition.",
+    "samples/M2-version-declarations/Program.cs and benchmarks/Xemele.Benchmarks/M2-version-declarations/VersionBenchmarks.cs: ordinary/long borrowed and owned boundary probes, positive controls, full benchmark-method oracles, MemoryDiagnoser + ShortRunJob; standalone measurements await exclusive grant."
+  ],
+  "evidence": [
+    {
+      "id": "pretest-python-failure",
+      "kind": "check",
+      "revision": "06293cc773231496d1a4e0e063194a5689b0d351",
+      "command": "DOTNET_ROOT=<pinned SDK> PATH=<SDK + system-only PATH> DOTNET_CLI_USE_MSBUILD_SERVER=0 python3 -B docs/reports/M2-version-declarations/verify.py",
+      "result": "failed",
+      "summary": "Model64/version236/ABI compiler+mutation checks passed; stopped before runtime tests because PATH selected Python3.9 and API helper Path.write_text newline support was unavailable. Transient output cleanup passed; summary only setup-failure-summary.json.",
+      "artifact": null
+    },
+    {
+      "id": "preservation-parser-failure",
+      "kind": "check",
+      "revision": "06293cc773231496d1a4e0e063194a5689b0d351",
+      "command": "DOTNET_ROOT=<pinned SDK> PATH=<SDK + original PATH> DOTNET_CLI_USE_MSBUILD_SERVER=0 python3 -B docs/reports/M2-version-declarations/verify.py",
+      "result": "failed",
+      "summary": "Full runtime suite process exit0 and API272 passed; post-test expected transition parser used unescaped MTP display quotes and failed before remaining suites/package checks. Parser corrected without changing expected identities/counts. Transient outputs removed; summary only preservation-parser-failure-summary.json.",
+      "artifact": null
+    },
+    {
+      "id": "worker-correctness-576a4ef",
+      "kind": "check",
+      "revision": "576a4ef28a5675879d4a58fb8ae75deede33ba71",
+      "command": "DOTNET_ROOT=\"/Users/sebastienros/Library/Application Support/dotnetup/dotnet\" PATH=\"/Users/sebastienros/Library/Application Support/dotnetup/dotnet:$PATH\" DOTNET_CLI_USE_MSBUILD_SERVER=0 python3 -B docs/reports/M2-version-declarations/verify.py",
+      "result": "passed",
+      "summary": "SDK10.0.400/runtime10.0.11 Arm64. Runtime4624 + conformance255 + differential299 =5178 passed, no failed/skipped; inherited4594 digest restored exactly with only authorized syntax1.1/70 framing transitions and 31 added cases. API272, model64/version236, internal ABI4 shapes, CS8345/CS8852 and compiled nullable/readonly/public mutation negatives passed. Fresh source + nupkg consumer product SHA d481f58d02c8312ba347315085714b643860bbb9957e4bdb3ef5b7ca2c802873/full1.0.0+576a4ef... match. Actual14 benchmark-method oracles and ordinary/long boundary oracles with counters disabled passed. Planning14 tests/128 dynamically validated tasks, source/output freeze, owned path/whitespace audits, cleanup17 controls passed; raw outputs removed. Inherited allocation Facts ran as suite correctness; no standalone performance run. Durable details latest-summary.json.",
+      "artifact": null
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Coordinator ordered normative correction; historical verified evidence retained.",
-    "checks": [],
-    "remaining": [],
+    "summary": "Runtime version repair and full current correctness/API/package preservation pass. Preparing independent child closure, then park for exclusive standalone measurement grant; task remains in_progress.",
+    "checks": [
+      "Full verifier at576a4ef: 5178 tests passed; API272; package/source consumer and all14 benchmark oracles; dynamic planning128/14; cleanup/source/output audits.",
+      "Earlier Python-selection and display-name verifier failures retained as summary-only evidence; corrected before passing full verifier."
+    ],
+    "remaining": [
+      "Prepare committed source + actual primary/generated-child binaries with full metadata and raw closure identities; report READY AND PARK.",
+      "Await explicit exclusive grant before ordinary/long standalone allocation real/positive children and ShortRunJob timings; preserve successful unchanged standalone observations without reruns.",
+      "After applicable measurements pass, separate evidence commit and implemented handoff; coordinator owns integration/verified status."
+    ],
     "requests": []
   }
 }
