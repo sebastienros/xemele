@@ -4,7 +4,7 @@
   "milestone": "M0",
   "title": "Corpus provisioning and provenance",
   "kind": "infrastructure",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M0-corpora",
   "branch": "codex/m0-corpora",
   "base_revision": "73d8d8e0c24ead40a0721cd7143ed903008c2f46",
@@ -31,29 +31,84 @@
     {
       "id": "M0-corpora-A1",
       "description": "Implement versioned manifests, checksum verification, cached offline provisioning, license provenance and honest outcome counts.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "focused-and-preservation-checks",
+        "scope-and-provenance-review"
+      ]
     },
     {
       "id": "M0-corpora-A2",
       "description": "Exercise valid/missing/corrupt cache, unsupported profile, infrastructure failure and explicit exclusion cases.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "focused-and-preservation-checks",
+        "scope-and-provenance-review"
+      ]
     },
     {
       "id": "M0-corpora-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "focused-and-preservation-checks",
+        "scope-and-provenance-review"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "tools/CorpusManager/Core/CorpusManifest.cs: internal schema-v1 validation, per-module discovery, duplicate identities and path/symlink containment",
+    "tools/CorpusManager/Core/CorpusProvisioner.cs: internal offline bundle import, source/fixture SHA-256 verification, atomic content-addressed cache provisioning and six distinct per-case outcomes/counts",
+    "tests/corpora/bootstrap/manifest.json, source.bundle.json, empty-element.xml, unclosed-element.xml, NOTICE.txt: original immutable MIT bootstrap source and fixture bytes",
+    "tests/Xemele.TestUtilities/Corpora/verify_bootstrap.py and docs/provenance/bootstrap.md: independent source/fixture checksum and expectation cross-check, provenance/license explanation",
+    "docs/reports/M0-corpora/Tests/ProvisioningTests.cs: 24 focused xUnit v3/MTP infrastructure tests referencing actual core project",
+    "tools/CorpusManager/Core/CorpusCommand.cs and docs/reports/M0-corpora/Runner/Program.cs: shared internal dispatch for import/provision demo and honest JSON/exit reporting; root CLI remains the existing bootstrap",
+    "docs/reports/M0-corpora/verify.py, README.md, verification.txt: reproducible focused/preservation checks and actual tested-revision transcript"
+  ],
+  "evidence": [
+    {
+      "id": "sandbox-attempt",
+      "kind": "check",
+      "revision": "4d38da4c9e5a561c8d977ec13d6537ee8a7d9600",
+      "command": "DOTNET_ROOT='/Users/sebastienros/Library/Application Support/dotnetup/dotnet' PATH='/Users/sebastienros/Library/Application Support/dotnetup/dotnet':$PATH DOTNET_CLI_USE_MSBUILD_SERVER=0 python3 -B docs/reports/M0-corpora/verify.py",
+      "result": "skipped",
+      "summary": "Initial sandboxed verification stalled in restore without output; worker stopped its own driver/follow-on build (exit 143). No completed correctness result is claimed for that attempt. Full known-revision verification subsequently ran with approved network/IPC access.",
+      "artifact": null
+    },
+    {
+      "id": "focused-and-preservation-checks",
+      "kind": "check",
+      "revision": "905694a08b7b453bd5a8456e6135f87e3a398c1e",
+      "command": "DOTNET_ROOT='/Users/sebastienros/Library/Application Support/dotnetup/dotnet' PATH='/Users/sebastienros/Library/Application Support/dotnetup/dotnet':$PATH DOTNET_CLI_USE_MSBUILD_SERVER=0 python3 -B docs/reports/M0-corpora/verify.py",
+      "result": "passed",
+      "summary": "Pinned SDK 10.0.400 on macOS arm64: integrated ten-project solution and two task-owned apps restored/Release-built with zero warnings/errors. Actual xunit.v3.mtp-v2 4.0.1/MTP 2.4.0 inventory verified. All 24 focused tests passed (0 skipped; symlink checks actually executed on macOS arm64), covering valid/missing/corrupt cache, wrong source/fixture hashes, valid checksum with invalid bundle, unsupported profile/adapter, explicit exclusion, infrastructure directory/write failures, metadata/schema/duplicate/path/symlink failures and corrupt output recovery. Actual demo missing-cache/corrupt-cache/unsupported-profile exits 1, import/offline provision exits 0, two output byte hashes checked; source SHA-256 26c425e1a95b3c6e35833b60ca1dd5f9b641269e238bd4de6187983cf3fbf946. Original MIT source/fixture hashes and independent ElementTree accepted/rejected cross-check passed. Integrated discovery found one corpus/two fixtures/zero runtime API declarations. Existing 13 Python tests passed; three existing MTP smoke tests passed and all three controlled failures returned exit 2. Shared core-command runner help/default (4) and unknown-command exit2 checks passed; sixteen bootstrap help/default invocations and three expected unknown-command exits passed. Managed-only net10.0 runtime pack checked. 98-task validator passed. Zero Xemele parser cases executed/standards passes; no hosted OS matrix or parser allocation/benchmark claim.",
+      "artifact": "docs/reports/M0-corpora/verification.txt"
+    },
+    {
+      "id": "scope-and-provenance-review",
+      "kind": "review",
+      "revision": "905694a08b7b453bd5a8456e6135f87e3a398c1e",
+      "command": null,
+      "result": "passed",
+      "summary": "Reviewed changes against assigned ownership and integrated schema: task-private infrastructure and report apps only; no root/shared project/CLI/solution/package changes, runtime public APIs or future dependencies. Bootstrap data authored originally with explicit MIT notice and independently specified accepted/rejected classifications; source revision is content digest, not a fetched upstream tag. Checksum/provision success is explicitly separate from parser/standards evidence. Proposed reporting documented for contract owner. Verified installed xunit.v3.assert 4.0.1 Assert.Skip(string reason) with dotnet-inspect; test attempts symlink creation on every platform and dynamically skips only when capability/privilege is unavailable. Windows behavior was not executed here.",
+      "artifact": "docs/provenance/bootstrap.md"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "",
-    "checks": [],
-    "remaining": [],
-    "requests": []
+    "summary": "Implemented schema-compatible offline corpus discovery/import/provisioning, original pinned MIT bootstrap provenance, per-case outcomes/counts and shared internal command dispatch with usable owned runner; all branch criteria pass at 905694a08b7b453bd5a8456e6135f87e3a398c1e. Requires coordinator integration verification before verified.",
+    "checks": [
+      "Full docs/reports/M0-corpora/verify.py passed at 905694a08b7b453bd5a8456e6135f87e3a398c1e; transcript docs/reports/M0-corpora/verification.txt. 24 focused tests, existing 13 Python tests/3 MTP smoke tests plus expected failures, Release builds, actual cache hashes/discovery/help/pack and task validation passed.",
+      "Initial sandbox attempt interrupted/stopped without full results; approved network/IPC run completed. No parser execution, allocation/performance or hosted-platform claim.",
+      "Installed xUnit v3 4.0.1 dynamic skip API verified using dotnet-inspect. Final capability-aware symlink test executed/passed on macOS arm64; no Windows execution claimed. Source factoring and runner help/unknown checks revalidated at final implementation revision."
+    ],
+    "remaining": [
+      "Coordinator must integrate, rerun applicable checks on combined revision, record integration evidence and set verified."
+    ],
+    "requests": [
+      "tools/CorpusManager/Program.cs (outside ownership, coordinator accepted ordered follow-up): replace entry point with return Xemele.CorpusInfrastructure.CorpusCommand.Run(args); after command/report approval. Internal Run dispatch is in tools/CorpusManager/Core/CorpusCommand.cs and owned runner calls that exact code; retains help/default exit0 and unknown/invalid exit2, import/provision failures exit1. No duplicate implementation needed.",
+      "M0-contracts reporting: consider exact internal provisioning outcomes/counts in docs/reports/M0-corpora/README.md when freezing IConformanceCase outcomes; this task does not preempt public shapes.",
+      "Shared CI/solution owners: explicitly invoke docs/reports/M0-corpora/Tests/Xemele.CorpusInfrastructure.Tests.csproj (xunit.v3.mtp-v2/MTP) or verification script; existing solution projects were not edited."
+    ]
   }
 }
