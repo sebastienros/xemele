@@ -1,3 +1,37 @@
+# Renewal after verified resolver measurement repair
+
+Current tested merged source: `c3690485bd4c3b421b1833ac4b245405cf2242a0`.
+Renewed claim/audit base: `f9ce78b1e1eb46f6726865c5f435365ab321b23b`;
+verified integrated base: `8af65f385654c382f201e1ad8c32f9be2cc3bb87`.
+All three task dependencies are verified, including resolver probe integration
+`4e558709ba99879b22a892d17912dd8204e5baea`.
+
+Only the expected own task JSON conflict required resolution on merge.
+Encoding Fact, own helpers, diagnostics, verifier and negative-control driver
+remain byte-identical to reviewed `0b3caf048aea839b2d998306752dc75fcaa57686`.
+The committed merged candidate received exactly one fresh full verifier run
+with authorized SDK socket/network permissions from the start, fresh immutable
+`renewal-c369048-attempt1` prefix and explicit renewed audit/count arguments.
+All 16 checks passed: focused 1, cumulative MTP 852, direct 298+255+299,
+original/equivalent/helper measured 0 B for all labels, three actual real/positive
+pairs (0/640,000 B per label; positive aggregate 1,920,000 B), seven actual
+protocol rejection controls, API 251/discovery 3,388, fresh complete pinned BCL
+copy before historical M1 solution build / 242 unique revision-tied references /
+unchanged full-copy hashes, planning 14 / validation 118 / ownership audits.
+All profiles, progress, outputs and strict compiled/native/config provenance
+passed. No timing run or allocation retry; default runtime settings.
+
+The earlier root integration `65f49b928795aa5e9156393780a61d3c81547b06`
+passed decoder controls and all direct suites but failed cumulative MTP solely
+on the unchanged Resolver warm Fact (4,080 B; 851/852 passed). Necessary full
+XML/raw check output/summary/driver bytes are copied with SHA256 verification to
+`history/integration-65f49b9-attempt1/`; failed ancestry/evidence remains preserved.
+This renewed candidate incorporates the separately verified resolver probe.
+Neither that outcome nor the current pass establishes the cause of the original
+Encoding 5,960 B result. Prior source/evidence and failed sandbox attempts remain
+unchanged below and in their archived prefixes. Coordinator fresh integration
+verification is still required; task remains implemented with integration null.
+
 # Legacy Decode allocation measurement
 
 Source: `0b3caf048aea839b2d998306752dc75fcaa57686`, branch
