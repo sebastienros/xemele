@@ -49,6 +49,44 @@ class MeasurementGuards(unittest.TestCase):
                 with self.assertRaises(ValueError):
                     measure.benchmark_results(text, Path(root), 'a' * 40, {})
 
+    def test_actual_mismatching_hashes_and_partial_metrics_survive_early_failure(self):
+        import json
+        proof = {'stage': 'before', 'gatePassed': False, 'actual': {'closure': {'product.dll': 'actual-hash'}, 'generatedInputs': {'code.notcs': 'actual-code'}}}
+        text = "// command took 1 seconds and exited with 1\n// Benchmark: EntityBaseBenchmarks.InternalNestedModel: fixture\n"
+        text += 'WorkloadActual 1: 8 op, 800 ns, 100 ns/op\n// GC: 0 0 0 128 8\n// Benchmark Process 42 has exited with code 1.\n'
+        text += 'ENTITY_BASE_PROVENANCE ' + json.dumps(proof) + '\n'
+        known = {'generated': {'proof': {'closure': {'product.dll': 'expected-hash'}, 'generatedInputs': {'code.notcs': 'expected-code'}}}}
+        summary = {}
+        with tempfile.TemporaryDirectory() as root:
+            with self.assertRaises(ValueError):
+                measure.benchmark_results(text, Path(root), 'a' * 40, known, summary)
+        row = summary['benchmarks']['observations'][0]
+        self.assertEqual(row['childExits'], [1])
+        self.assertEqual(row['gc'], [[0, 0, 0, 128, 8]])
+        self.assertEqual(row['actual'][0]['operations'], 8)
+        changed = row['comparisons'][0]['differences']['closure']['changed'][0]
+        self.assertEqual(changed, {'file': 'product.dll', 'expected': 'expected-hash', 'actual': 'actual-hash'})
+        self.assertEqual(row['proofs'][0]['actual']['generatedInputs']['code.notcs'], 'actual-code')
+
+    def test_failed_preworkload_gate_does_not_claim_unobserved_intervals(self):
+        import json
+        failure = {'stage': 'before', 'reason': 'manifest-hash', 'expected': 'approved', 'actual': 'changed'}
+        text = '// Benchmark: EntityBaseBenchmarks.RedirectedComposition: fixture\nENTITY_BASE_GATE_FAILURE ' + json.dumps(failure) + '\n'
+        summary = {}
+        with tempfile.TemporaryDirectory() as root:
+            with self.assertRaises(ValueError):
+                measure.benchmark_results(text, Path(root), 'a' * 40, {}, summary)
+        row = summary['benchmarks']['observations'][0]
+        self.assertEqual(row['actual'], [])
+        self.assertEqual(row['result'], [])
+        self.assertEqual(row['gc'], [])
+        self.assertEqual(summary['benchmarks']['gateFailures'], [failure])
+
+    def test_phase_accounting_preserves_true_passed_and_unrun_phases(self):
+        summary = {'stage': 'initial', 'phases': {'initial': 'running', 'execution': 'unrun', 'validation': 'unrun', 'freeze': 'unrun'}}
+        measure.phase(summary, 'execution')
+        self.assertEqual(summary['phases'], {'initial': 'passed', 'execution': 'running', 'validation': 'unrun', 'freeze': 'unrun'})
+
     def test_changed_task_metadata_does_not_allow_repeating_same_compiled_source(self):
         old = {'result': 'passed', 'mode': 'allocation', 'preparedIdentities': {'sources': {'owned.cs': {'gitBlob': 'blob-a', 'sha256': 'same'}, 'obj/AssemblyInfo.cs': {'sha256': 'revision-a'}}}}
         new = {'sources': {'owned.cs': {'gitBlob': 'blob-a', 'sha256': 'same'}, 'obj/AssemblyInfo.cs': {'sha256': 'revision-b'}}}
