@@ -4,11 +4,11 @@
   "milestone": "M2",
   "title": "Effective DTD seed and preframed source composition repair",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/M2-dtd-composition",
   "branch": "codex/m2-dtd-composition",
   "base_revision": "5924a7004386cc29ee568b1eb06ce5a6a860b8bb",
-  "integration_revision": null,
+  "integration_revision": "042718b60c2a8b88781c28b17a5b7cf0c067e867",
   "depends_on": [
     "M2-dtd"
   ],
@@ -36,7 +36,8 @@
       "status": "passed",
       "evidence": [
         "required-hooks-cumulative",
-        "coordinated-source-review"
+        "coordinated-source-review",
+        "integrated-042718b"
       ]
     },
     {
@@ -47,7 +48,8 @@
         "required-hooks-cumulative",
         "final-benchmark-correctness",
         "scaffold-identity-correctness",
-        "coordinated-source-review"
+        "coordinated-source-review",
+        "integrated-042718b"
       ]
     },
     {
@@ -61,7 +63,8 @@
         "exclusive-allocation",
         "exclusive-timing",
         "coordinated-source-review",
-        "final-owned-clean-audit"
+        "final-owned-clean-audit",
+        "integrated-042718b"
       ]
     }
   ],
@@ -172,6 +175,15 @@
       "result": "passed",
       "summary": "Each actual exit independently captured/inspected: validate122 and claim/working/staged diffchecks0; checkoutcleanbefore writing final report; all90changed paths owned. Both rawZIP/SHA unchanged; every compressed checkout mirror decompresses byte-identical to original archive entry. Earlier raw trailing-space failure preserved. No code/workload/measurement change.",
       "artifact": "docs/reports/M2-dtd-composition/final-audit.json"
+    },
+    {
+      "id": "integrated-042718b",
+      "kind": "integration",
+      "revision": "042718b60c2a8b88781c28b17a5b7cf0c067e867",
+      "command": "python3 -B docs/reports/M2-dtd-composition/verify.py --report-prefix integration-attempt1 --audit-base 6acd142a816f0a9432599e9ffc5576254b79f5d4 --expected-branch codex/integrate-m2-dtd-composition",
+      "result": "passed",
+      "summary": "Actual current-main combination: MTP/direct/discovery5050=4496+255+299 allPass/noSkip, focused4189=4162+27, pinned775; independently compiled20type preserved constructors/public methods, exact3 internal hooks with nullable/access/optional-default mutations; exact sample and full benchmark correctness/ledger deltas/builds/discovery; API272/registry3388; freshcomplete unchanged BCL242 full042718b build/hash; planning14/graph122/ownedpath+3diff checks. Root independently inspected XML and213source identities before/after, unchanged runtime/benchmarks since719, raw archive identities/generatedrestore/build/parent/all6child0 and18actual/result observations. Successful6f allocation and719 exclusive timing retained, no rerun. Common-only repair; productionCore/entities and crossarch/AOT remain later owning work.",
+      "artifact": "docs/reports/M2-dtd-composition/integration-attempt1/summary.json"
     }
   ],
   "blockers": [],
@@ -182,11 +194,10 @@
       "final6f and scaffold719 scoped builds/discovery/fullmodel/fullseed/exact ledger oracle20pairs=40outputs+2048scans passed; implementation byteidentity and496compiledmethods same; metadata source revision accurately differs",
       "exclusive6f allocation ONCE passed; zero borrowed/positivecontrol/retention; cold setup+twooutputs+bothoracles included with no subtraction; raw aggregates recorded",
       "first6f BDN projectgenerationfailed/parent0/executed0/no generatedbuild or timingchild preserved; owned filename corrected, renewed719 BDNonce6cases passed generatedrestore/build/parent/allchildren0; host released; bothrawarchives durable; no successful allocation or inherited timing rerun",
-      "Final78b53d6 audit: validate122/all3diffchecks0/clean/90ownedpaths/rawZIP+gzipidentity passed; generatedraw trailing-space audit failure c64 preserved and losslessly corrected."
+      "Final78b53d6 audit: validate122/all3diffchecks0/clean/90ownedpaths/rawZIP+gzipidentity passed; generatedraw trailing-space audit failure c64 preserved and losslessly corrected.",
+      "Coordinator actual integrated042718b full checks and independent source/XML/raw audit passed; verified metadata follows separate evidence commit."
     ],
-    "remaining": [
-      "Coordinator must integrate/retest combined tree and record actual integration evidence before verified. Windows/x64/AOT/production core/full XML conformance unrun and outside scope."
-    ],
+    "remaining": [],
     "requests": []
   }
 }
