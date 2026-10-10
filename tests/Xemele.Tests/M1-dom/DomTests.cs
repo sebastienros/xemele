@@ -118,7 +118,7 @@ public sealed class DomTests
     }
 
     [Theory]
-    [InlineData("ISO-8859-1", "INPUT.UnsupportedEncoding")]
+    [InlineData("ISO-8859-2", "INPUT.UnsupportedEncoding")]
     [InlineData("UTF-16", "INPUT.EncodingMismatch")]
     [InlineData("UTF-16LE", "INPUT.EncodingMismatch")]
     [InlineData("UTF-8x", "INPUT.UnsupportedEncoding")]
