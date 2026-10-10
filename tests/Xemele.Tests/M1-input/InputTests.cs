@@ -135,6 +135,7 @@ public class InputTests
         Assert.Throws<InvalidOperationException>(()=>d.ValidateDeclaration("UTF-8",default));
         Assert.Throws<InvalidOperationException>(()=>d.Decode([],new char[2],new long[2],true,TestContext.Current.CancellationToken));
         d.Dispose();d.Dispose();Assert.Throws<ObjectDisposedException>(()=>d.ValidateDeclaration("",default));
+        Assert.Throws<ObjectDisposedException>(()=>d.Encoding);
         using var cancelled=new XmlInputDecoder(new());using var token=new CancellationTokenSource();token.Cancel();
         var ex=Assert.Throws<OperationCanceledException>(()=>cancelled.Decode([],new char[2],new long[2],true,token.Token));Assert.Equal(token.Token,ex.CancellationToken);
         Assert.Throws<InvalidOperationException>(()=>cancelled.Decode([],new char[2],new long[2],true,TestContext.Current.CancellationToken));

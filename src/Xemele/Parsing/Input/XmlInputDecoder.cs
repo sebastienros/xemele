@@ -29,7 +29,8 @@ internal sealed class XmlInputDecoder : IXmlInputDecoder
     private readonly OperationBudget budget;
     private bool bom, final, completed, rejected, disposed, declarationValidated, faulted;
     private int active;
-    public XmlInputEncoding Encoding { get; private set; }
+    private XmlInputEncoding encoding;
+    public XmlInputEncoding Encoding { get { ObjectDisposedException.ThrowIf(disposed, this); return encoding; } }
 
     public XmlInputDecoder(XmlParseOptions options, Uri? sourceUri = null)
     {
@@ -52,7 +53,7 @@ internal sealed class XmlInputDecoder : IXmlInputDecoder
             cancellationToken.ThrowIfCancellationRequested();
             final |= isFinalBlock;
             int consumed = 0, written = 0;
-            if (Encoding == XmlInputEncoding.Undetermined)
+            if (encoding == XmlInputEncoding.Undetermined)
             {
                 while (count < 4 && consumed < input.Length)
                 {
@@ -67,12 +68,12 @@ internal sealed class XmlInputDecoder : IXmlInputDecoder
                     prefix.SequenceEqual((ReadOnlySpan<byte>)[0x4C, 0x6F, 0xA7, 0x94]))
                     return Error(consumed, 0, "INPUT.UnsupportedEncoding", 0);
                 int skip = 0;
-                if (prefix.StartsWith((ReadOnlySpan<byte>)[0xEF, 0xBB, 0xBF])) { Encoding = XmlInputEncoding.Utf8; skip = 3; }
-                else if (prefix.StartsWith((ReadOnlySpan<byte>)[0xFF, 0xFE])) { Encoding = XmlInputEncoding.Utf16LittleEndian; skip = 2; }
-                else if (prefix.StartsWith((ReadOnlySpan<byte>)[0xFE, 0xFF])) { Encoding = XmlInputEncoding.Utf16BigEndian; skip = 2; }
-                else if (count >= 4 && carry[0] == '<' && carry[1] == 0 && carry[3] == 0) Encoding = XmlInputEncoding.Utf16LittleEndian;
-                else if (count >= 4 && carry[0] == 0 && carry[1] == '<' && carry[2] == 0) Encoding = XmlInputEncoding.Utf16BigEndian;
-                else Encoding = XmlInputEncoding.Utf8;
+                if (prefix.StartsWith((ReadOnlySpan<byte>)[0xEF, 0xBB, 0xBF])) { encoding = XmlInputEncoding.Utf8; skip = 3; }
+                else if (prefix.StartsWith((ReadOnlySpan<byte>)[0xFF, 0xFE])) { encoding = XmlInputEncoding.Utf16LittleEndian; skip = 2; }
+                else if (prefix.StartsWith((ReadOnlySpan<byte>)[0xFE, 0xFF])) { encoding = XmlInputEncoding.Utf16BigEndian; skip = 2; }
+                else if (count >= 4 && carry[0] == '<' && carry[1] == 0 && carry[3] == 0) encoding = XmlInputEncoding.Utf16LittleEndian;
+                else if (count >= 4 && carry[0] == 0 && carry[1] == '<' && carry[2] == 0) encoding = XmlInputEncoding.Utf16BigEndian;
+                else encoding = XmlInputEncoding.Utf8;
                 bom = skip != 0;
                 Drop(skip); carryOffset = skip;
             }
@@ -87,10 +88,10 @@ internal sealed class XmlInputDecoder : IXmlInputDecoder
                 Rune scalar;
                 int bytes;
                 OperationStatus status;
-                if (Encoding == XmlInputEncoding.Utf8)
+                if (encoding == XmlInputEncoding.Utf8)
                     status = Rune.DecodeFromUtf8(candidate[..available], out scalar, out bytes);
                 else
-                    status = DecodeUtf16(candidate[..available], Encoding == XmlInputEncoding.Utf16LittleEndian, out scalar, out bytes);
+                    status = DecodeUtf16(candidate[..available], encoding == XmlInputEncoding.Utf16LittleEndian, out scalar, out bytes);
                 if (status == OperationStatus.InvalidData || (status == OperationStatus.NeedMoreData && final))
                     return Error(consumed, written, "INPUT.InvalidEncoding", offset);
                 if (status == OperationStatus.NeedMoreData)
@@ -158,7 +159,7 @@ internal sealed class XmlInputDecoder : IXmlInputDecoder
     public XmlDiagnostic? ValidateDeclaration(ReadOnlySpan<char> encodingName, XmlLocation location)
     {
         ObjectDisposedException.ThrowIf(disposed, this);
-        if (rejected || faulted || declarationValidated || Encoding == XmlInputEncoding.Undetermined || Volatile.Read(ref active) != 0)
+        if (rejected || faulted || declarationValidated || encoding == XmlInputEncoding.Undetermined || Volatile.Read(ref active) != 0)
             throw new InvalidOperationException("Declaration must be validated exactly once after detection.");
         declarationValidated = true;
         bool empty = encodingName.IsEmpty;
@@ -168,7 +169,7 @@ internal sealed class XmlInputDecoder : IXmlInputDecoder
         bool be = EqualsAscii(encodingName, "UTF-16BE");
         if (!empty && !utf8 && !generic && !le && !be)
             return Reject(0, 0, "INPUT.UnsupportedEncoding", location).Diagnostic;
-        bool match = Encoding switch
+        bool match = encoding switch
         {
             XmlInputEncoding.Utf8 => empty || utf8,
             XmlInputEncoding.Utf16LittleEndian => le || (bom && (empty || generic)),

@@ -24,6 +24,9 @@ public class InputBenchmarks
         // Steady mid-source encoding already selected; baseline starts identically.
         decoder.Decode("abcd"u8,chars,offsets,false,default);
         baselineLocation=new(null);for(int i=0;i<4;i++)baselineLocation.TryAdvance(new Rune('a'));baselineBytes=4;
+        long expected=StraightforwardStrictUtf8();
+        char[] expectedChars=(char[])chars.Clone();long[] expectedOffsets=(long[])offsets.Clone();
+        if(BoundedDecoder()!=expected || !chars.SequenceEqual(expectedChars) || !offsets.SequenceEqual(expectedOffsets))throw new Exception("Baseline semantics differ");
     }
     [Benchmark(Baseline=true)]
     public long StraightforwardStrictUtf8()
