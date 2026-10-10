@@ -1,0 +1,95 @@
+[
+  {
+    "Type": "CommonBenchmarks",
+    "Jobs": 1,
+    "LaunchCount": 1,
+    "WarmupCount": 3,
+    "IterationCount": 3,
+    "Diagnosers": [
+      "BenchmarkDotNet.Diagnosers.MemoryDiagnoser"
+    ],
+    "Inventory": [
+      "BoundedCounter|",
+      "BoundedDiagnosticTruncation|",
+      "OperationSetup|",
+      "OwnedExceptionSnapshot|",
+      "StraightforwardCounter|"
+    ]
+  },
+  {
+    "Type": "InputBenchmarks",
+    "Jobs": 1,
+    "LaunchCount": 1,
+    "WarmupCount": 3,
+    "IterationCount": 3,
+    "Diagnosers": [
+      "BenchmarkDotNet.Diagnosers.MemoryDiagnoser"
+    ],
+    "Inventory": [
+      "BoundedDecoder|[Corpus=long]",
+      "BoundedDecoder|[Corpus=multilingual]",
+      "BoundedDecoder|[Corpus=short]",
+      "StraightforwardStrictUtf8|[Corpus=long]",
+      "StraightforwardStrictUtf8|[Corpus=multilingual]",
+      "StraightforwardStrictUtf8|[Corpus=short]"
+    ]
+  },
+  {
+    "Type": "InputOwnershipBenchmarks",
+    "Jobs": 1,
+    "LaunchCount": 1,
+    "WarmupCount": 3,
+    "IterationCount": 3,
+    "Diagnosers": [
+      "BenchmarkDotNet.Diagnosers.MemoryDiagnoser"
+    ],
+    "Inventory": [
+      "MalformedDiagnostic|",
+      "Setup|"
+    ]
+  },
+  {
+    "Type": "Xemele.SerializationMeasurements.EscapeScanBenchmarks",
+    "Jobs": 1,
+    "LaunchCount": 1,
+    "WarmupCount": 3,
+    "IterationCount": 3,
+    "Diagnosers": [
+      "BenchmarkDotNet.Diagnosers.MemoryDiagnoser"
+    ],
+    "Inventory": [
+      "CachedSearchValues|[Corpus=long-hit]",
+      "CachedSearchValues|[Corpus=long-miss]",
+      "CachedSearchValues|[Corpus=multilingual]",
+      "CachedSearchValues|[Corpus=short-hit]",
+      "RuntimeIndexOfAny|[Corpus=long-hit]",
+      "RuntimeIndexOfAny|[Corpus=long-miss]",
+      "RuntimeIndexOfAny|[Corpus=multilingual]",
+      "RuntimeIndexOfAny|[Corpus=short-hit]",
+      "ScalarLoop|[Corpus=long-hit]",
+      "ScalarLoop|[Corpus=long-miss]",
+      "ScalarLoop|[Corpus=multilingual]",
+      "ScalarLoop|[Corpus=short-hit]"
+    ]
+  },
+  {
+    "Type": "Xemele.SerializationMeasurements.SerializerBenchmarks",
+    "Jobs": 1,
+    "LaunchCount": 1,
+    "WarmupCount": 3,
+    "IterationCount": 3,
+    "Diagnosers": [
+      "BenchmarkDotNet.Diagnosers.MemoryDiagnoser"
+    ],
+    "Inventory": [
+      "IncrementalStream|[Corpus=long]",
+      "IncrementalStream|[Corpus=multilingual]",
+      "IncrementalStream|[Corpus=namespaces]",
+      "IncrementalStream|[Corpus=short]",
+      "OwnedString|[Corpus=long]",
+      "OwnedString|[Corpus=multilingual]",
+      "OwnedString|[Corpus=namespaces]",
+      "OwnedString|[Corpus=short]"
+    ]
+  }
+]
