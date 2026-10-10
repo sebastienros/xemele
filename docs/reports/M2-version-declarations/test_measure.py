@@ -30,6 +30,17 @@ class MeasurementProtocolTests(unittest.TestCase):
                 durable=Path(temp)/'summary.json';durable.write_text(json.dumps(summary))
                 restored=json.loads(durable.read_text())
                 self.assertEqual(evidence,restored['capture']);self.assertFalse(directory.exists());self.assertTrue(restored['temporaryOutputsRemoved'])
+    def test_corrected_attempt_preserves_prior_failure_and_rejects_source_or_preparation_retry(self):
+        with tempfile.TemporaryDirectory() as temp:
+            report=Path(temp);legacy=report/'measurement-allocations-summary.json'
+            prior={'revision':'b'*40,'preparationSha256':'c'*64,'result':'failed','failure':{'message':'actual b5 oracle unknown counters'}}
+            legacy.write_text(json.dumps(prior));original=legacy.read_bytes();known={'revision':'a'*40};sha='d'*64
+            path=m.attempt_report(report,'allocations',known,sha);self.assertNotEqual(legacy,path)
+            path.write_text(json.dumps({'revision':known['revision'],'preparationSha256':sha,'result':'passed'}))
+            self.assertEqual(path,m.allocation_report(report,known,sha))
+            for revision,prep in [(known['revision'],'e'*64),('f'*40,sha),('b'*40,'e'*64),('f'*40,'c'*64)]:
+                with self.assertRaises(m.ProtocolError):m.attempt_report(report,'allocations',{'revision':revision},prep)
+            self.assertEqual(original,legacy.read_bytes())
     def fixture(self):
         revision='a'*40
         closure={('Xemele.dll' if i==0 else 'Xemele.Benchmarks.dll' if i==1 else 'child.dll' if i==2 else f'payload{i}'):f'{i:064x}' for i in range(47)}

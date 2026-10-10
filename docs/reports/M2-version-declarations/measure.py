@@ -248,6 +248,22 @@ def cleanup(summary, paths, remover=shutil.rmtree):
     if errors:
         summary.setdefault('failure',{'stage':'cleanup','type':'CleanupError','message':'Transient output cleanup failed.'});summary['result']='failed'
 
+def attempt_report(report, mode, known, preparation_sha):
+    revision=known['revision']
+    require(re.fullmatch(r'[0-9a-f]{40}',revision) and re.fullmatch(r'[0-9a-f]{64}',preparation_sha),'Valid correction source/preparation identity required.')
+    for previous in report.glob('measurement-'+mode+'*-summary.json'):
+        record=json.loads(previous.read_text())
+        require(record.get('revision')!=revision and record.get('preparationSha256')!=preparation_sha,'This source or preparation already has a durable attempt; no retry is allowed.')
+    return report/('measurement-'+mode+'-'+revision+'-'+preparation_sha+'-summary.json')
+
+def allocation_report(report, known, preparation_sha):
+    matches=[]
+    for path in report.glob('measurement-allocations*-summary.json'):
+        record=json.loads(path.read_text())
+        if record.get('revision')==known['revision'] and record.get('preparationSha256')==preparation_sha:matches.append(path)
+    require(len(matches)==1,'Exactly one durable allocation attempt for this source/preparation required.')
+    return matches[0]
+
 def main(argv=None):
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--exclusive-grant',required=True)
@@ -256,9 +272,11 @@ def main(argv=None):
     summary={'result':'failed','stage':'initial-provenance','exclusiveGrant':args.exclusive_grant,'mode':args.mode,'commands':[]}
     output_summary=REPORT/('measurement-'+args.mode+'-summary.json')
     deadline = time.monotonic() + (300 if args.mode == 'allocations' else 1800)
-    # A durable prior attempt is an explicit no-retry boundary; never overwrite it.
-    require(not output_summary.exists(),'This mode already has a durable attempt; no retry is allowed.')
     preparation=REPORT/'preparation-summary.json';known=None;logs=[];dotnet=None
+    # A corrected source receives its own attempt record; prior observations stay immutable.
+    if preparation.exists():
+        output_summary=attempt_report(REPORT,args.mode,json.loads(preparation.read_text()),digest(preparation))
+    else:require(not output_summary.exists(),'This mode already has a durable attempt; no retry is allowed.')
     env=dict(os.environ,DOTNET_CLI_USE_MSBUILD_SERVER='0')
     def remaining():
         seconds=deadline-time.monotonic()
@@ -362,7 +380,7 @@ def main(argv=None):
             positive={case_id(c['identity']):c['bytesPerOperation'] for c in summary['lifecycleAllocations'][1]['cases']}
             require(summary['lifecycleAllocations'][0]['processId']!=summary['lifecycleAllocations'][1]['processId'] and all(positive[k]==real[k]+64 for k in expected_cases()),'Distinct lifecycle children and exact positive deltas required.')
         else:
-            allocation_path=REPORT/'measurement-allocations-summary.json'
+            allocation_path=allocation_report(REPORT,known,preparation_sha)
             allocation_sha=digest(allocation_path)
             baselines=allocation_baselines(json.loads(allocation_path.read_text()),known,preparation_sha)
             summary['allocationOracleSha256']=allocation_sha

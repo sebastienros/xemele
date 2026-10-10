@@ -31,75 +31,128 @@ else if (args[0] == "--allocation")
 {
     bool positive = args.Length == 2 && args[1] == "positive";
     // Separate process warmup exercises the exact methods; no forced GC or JIT changes.
-    for (int i = 0; i < 24; i++) { Measure(false, false); MeasureOrdinary(false, false); }
+    for (int i = 0; i < 24; i++) { Measure(false, false, true, false, i); MeasureOrdinary(false, false, true, false, i); }
     Measure(positive, true); MeasureOrdinary(positive, true);
 }
 else throw new ArgumentException("Unknown mode.");
 
-static void Measure(bool positive, bool print, bool count = true)
+static void Measure(bool positive, bool print, bool count = true, bool enforceAllocations = true, int? warmIndex = null)
 {
-    string version = "1." + new string('9', 60000);
-    string prefix = "<?xml version='" + version[..50002];
-    string suffix = version[50002..] + "'?>";
-    string frameSuffix = version[50002..];
-    var sink = new Sink(version) { PauseDeclaration = true };
-    using var core = new XmlParserCore(new() { Limits = new() { TokenCharacters = null } });
-    var warm = core.Append(prefix, [], false, sink, default);
-    Require(warm.Step == ScanStep.NeedInput && warm.Consumed == prefix.Length && sink.Callbacks == 1);
-    long before = (count ? GC.GetAllocatedBytesForCurrentThread() : 0);
-    var scanned = core.Append(suffix, [], false, sink, default);
-    object? escaped = positive ? new byte[37] : null;
-    long coreBytes = (count ? GC.GetAllocatedBytesForCurrentThread() : 0) - before;
-    Require(scanned.Step == ScanStep.Paused && scanned.Consumed == suffix.Length && scanned.Diagnostic is null && sink.Callbacks == 2);
-    var complete = core.Append("<r/>", [], true, sink, default);
-    Require(complete.Step == ScanStep.Completed && complete.Consumed == 4 && sink.Callbacks == 6);
-    core.Dispose();
-    using var framer = new XmlTextDeclarationFramer(new() { TokenCharacters = null });
-    warm = default;
-    var framedWarm = framer.Append(prefix, [], false, default);
-    Require(framedWarm.Step == TextDeclarationStep.NeedInput && framedWarm.Consumed == prefix.Length);
-    before = (count ? GC.GetAllocatedBytesForCurrentThread() : 0);
-    var digits = framer.Append(frameSuffix, [], false, default);
-    escaped = positive ? new byte[37] : escaped;
-    long digitBytes = (count ? GC.GetAllocatedBytesForCurrentThread() : 0) - before;
-    Require(digits.Step == TextDeclarationStep.NeedInput && digits.Consumed == frameSuffix.Length && digits.NextLocation == new XmlLocation(null, 1, prefix.Length + frameSuffix.Length + 1, null));
-    before = (count ? GC.GetAllocatedBytesForCurrentThread() : 0);
-    var owned = framer.Append("' encoding='UTF-8'?>", [], true, default);
-    long ownedBytes = (count ? GC.GetAllocatedBytesForCurrentThread() : 0) - before;
-    Require(owned.Step == TextDeclarationStep.Declared && owned.Consumed == 20 && owned.Declaration?.Version == version && owned.Declaration?.EncodingName == "UTF-8");
-    framer.Dispose(); Require(owned.Declaration?.Version == version);
-    if (print) Console.WriteLine(JsonSerializer.Serialize(new { Mode = positive ? "positive" : "real", CoreBytes = coreBytes, DigitBytes = digitBytes, OwnedBytes = ownedBytes, VersionLength = version.Length, WarmCoreConsumed = prefix.Length, MeasuredCoreConsumed = scanned.Consumed, WarmFrameConsumed = framedWarm.Consumed, MeasuredFrameConsumed = digits.Consumed, CoreCallbacks = sink.Callbacks, RetainedVersion = owned.Declaration?.Version == version, Product = Identity(typeof(XmlDocument).Assembly), Probe = Identity(Assembly.GetExecutingAssembly()), Runtime = Environment.Version.ToString(), ProcessId = Environment.ProcessId }));
-    if (count) Require(positive ? coreBytes > 0 && digitBytes > 0 && ((byte[])escaped!).Length == 37 : coreBytes == 0 && digitBytes == 0);
-    if (count) Require(ownedBytes >= 2 * version.Length);
-    GC.KeepAlive(escaped);
+    var evidence = new ProbeEvidence("long", positive, count, enforceAllocations, warmIndex);
+    Sink? sink = null;
+    try
+    {
+        string version = "1." + new string('9', 60000);
+        string prefix = "<?xml version='" + version[..50002];
+        string suffix = version[50002..] + "'?>";
+        string frameSuffix = version[50002..];
+        sink = new Sink(version) { PauseDeclaration = true };
+        using var core = new XmlParserCore(new() { Limits = new() { TokenCharacters = null } });
+        evidence.Boundary = "core-prefix";
+        var warm = core.Append(prefix, [], false, sink, default);
+        evidence.Consumed = warm.Consumed; evidence.Callbacks = sink.Callbacks; evidence.Outcome = (int)warm.Step;
+        evidence.Check(warm.Step == ScanStep.NeedInput && warm.Consumed == prefix.Length && sink.Callbacks == 1, "long-functional-1");
+        evidence.Boundary = "core-workload";
+        evidence.IntervalActive = count;
+        long before = (count ? GC.GetAllocatedBytesForCurrentThread() : 0);
+        var scanned = core.Append(suffix, [], false, sink, default);
+        object? escaped = positive ? new byte[37] : null;
+        long coreBytes = (count ? GC.GetAllocatedBytesForCurrentThread() : 0) - before;
+        evidence.IntervalActive = false;
+        evidence.CoreBytes = coreBytes;
+        evidence.Consumed = scanned.Consumed; evidence.Callbacks = sink.Callbacks; evidence.Outcome = (int)scanned.Step;
+        evidence.Check(scanned.Step == ScanStep.Paused && scanned.Consumed == suffix.Length && scanned.Diagnostic is null && sink.Callbacks == 2, "long-functional-2");
+        evidence.Boundary = "core-completion";
+        var complete = core.Append("<r/>", [], true, sink, default);
+        evidence.Consumed = complete.Consumed; evidence.Callbacks = sink.Callbacks; evidence.Outcome = (int)complete.Step;
+        evidence.Check(complete.Step == ScanStep.Completed && complete.Consumed == 4 && sink.Callbacks == 6, "long-functional-3");
+        core.Dispose();
+        using var framer = new XmlTextDeclarationFramer(new() { TokenCharacters = null });
+        warm = default;
+        evidence.Boundary = "framing-prefix";
+        var framedWarm = framer.Append(prefix, [], false, default);
+        evidence.Consumed = framedWarm.Consumed; evidence.Callbacks = sink.Callbacks; evidence.Outcome = (int)framedWarm.Step;
+        evidence.Check(framedWarm.Step == TextDeclarationStep.NeedInput && framedWarm.Consumed == prefix.Length, "long-functional-4");
+        evidence.Boundary = "framing-workload";
+        evidence.IntervalActive = count;
+        before = (count ? GC.GetAllocatedBytesForCurrentThread() : 0);
+        var digits = framer.Append(frameSuffix, [], false, default);
+        escaped = positive ? new byte[37] : escaped;
+        long digitBytes = (count ? GC.GetAllocatedBytesForCurrentThread() : 0) - before;
+        evidence.IntervalActive = false;
+        evidence.DigitBytes = digitBytes;
+        evidence.Consumed = digits.Consumed; evidence.Callbacks = sink.Callbacks; evidence.Outcome = (int)digits.Step;
+        evidence.Check(digits.Step == TextDeclarationStep.NeedInput && digits.Consumed == frameSuffix.Length && digits.NextLocation == new XmlLocation(null, 1, prefix.Length + frameSuffix.Length + 1, null), "long-functional-5");
+        evidence.Boundary = "framing-workload";
+        evidence.IntervalActive = count;
+        before = (count ? GC.GetAllocatedBytesForCurrentThread() : 0);
+        var owned = framer.Append("' encoding='UTF-8'?>", [], true, default);
+        long ownedBytes = (count ? GC.GetAllocatedBytesForCurrentThread() : 0) - before;
+        evidence.IntervalActive = false;
+        evidence.OwnedBytes = ownedBytes;
+        evidence.Consumed = owned.Consumed; evidence.Callbacks = sink.Callbacks; evidence.Outcome = (int)owned.Step;
+        evidence.Check(owned.Step == TextDeclarationStep.Declared && owned.Consumed == 20 && owned.Declaration?.Version == version && owned.Declaration?.EncodingName == "UTF-8", "long-functional-6");
+        framer.Dispose(); evidence.Check(owned.Declaration?.Version == version, "long-functional-7");
+        if (print) Console.WriteLine(JsonSerializer.Serialize(new { Mode = positive ? "positive" : "real", CoreBytes = coreBytes, DigitBytes = digitBytes, OwnedBytes = ownedBytes, VersionLength = version.Length, WarmCoreConsumed = prefix.Length, MeasuredCoreConsumed = scanned.Consumed, WarmFrameConsumed = framedWarm.Consumed, MeasuredFrameConsumed = digits.Consumed, CoreCallbacks = sink.Callbacks, RetainedVersion = owned.Declaration?.Version == version, Product = Identity(typeof(XmlDocument).Assembly), Probe = Identity(Assembly.GetExecutingAssembly()), Runtime = Environment.Version.ToString(), ProcessId = Environment.ProcessId }));
+
+
+        evidence.Check(!positive || ((byte[])escaped!).Length == 37, "escaping-positive-wrapper");
+        evidence.AllocationChecks();
+        GC.KeepAlive(escaped);
+    }
+    catch (Exception error) { if (sink is not null) evidence.Callbacks = sink.Callbacks; evidence.Report(error); throw; }
 }
 
-static void MeasureOrdinary(bool positive, bool print, bool count = true)
+static void MeasureOrdinary(bool positive, bool print, bool count = true, bool enforceAllocations = true, int? warmIndex = null)
 {
-    var sink = new Sink("1.0") { PauseDeclaration = true };
-    using var core = new XmlParserCore(new());
-    var initial = core.Append("<?xml version='", [], false, sink, default);
-    Require(initial.Step == ScanStep.NeedInput && initial.Consumed == 15 && sink.Callbacks == 1);
-    long before = count ? GC.GetAllocatedBytesForCurrentThread() : 0;
-    var declaration = core.Append("1.0'?>", [], false, sink, default);
-    object? escaped = positive ? new byte[37] : null;
-    long coreBytes = (count ? GC.GetAllocatedBytesForCurrentThread() : 0) - before;
-    Require(declaration.Step == ScanStep.Paused && declaration.Consumed == 6 && sink.Callbacks == 2);
-    var complete = core.Append("<r/>", [], true, sink, default);
-    Require(complete.Step == ScanStep.Completed && complete.Consumed == 4 && sink.Callbacks == 6);
-    core.Dispose();
-    using var framer = new XmlTextDeclarationFramer(new());
-    var prefix = framer.Append("<?xml version='1", [], false, default);
-    Require(prefix.Step == TextDeclarationStep.NeedInput && prefix.Consumed == 16);
-    before = count ? GC.GetAllocatedBytesForCurrentThread() : 0;
-    var owned = framer.Append(".0' encoding='UTF-8'?>", [], true, default);
-    escaped = positive ? new byte[37] : escaped;
-    long ownedBytes = (count ? GC.GetAllocatedBytesForCurrentThread() : 0) - before;
-    Require(owned.Step == TextDeclarationStep.Declared && owned.Consumed == 22 && owned.Declaration?.Version == "1.0" && owned.Declaration?.EncodingName == "UTF-8");
-    framer.Dispose(); Require(owned.Declaration?.Version == "1.0");
-    if (print) Console.WriteLine(JsonSerializer.Serialize(new { Mode = positive ? "ordinary-positive" : "ordinary-real", CoreBytes = coreBytes, OwnedBytes = ownedBytes, Callbacks = sink.Callbacks, Product = Identity(typeof(XmlDocument).Assembly), Probe = Identity(Assembly.GetExecutingAssembly()), Runtime = Environment.Version.ToString(), ProcessId = Environment.ProcessId }));
-    if (count) Require(positive ? coreBytes > 0 && ownedBytes > 32 && ((byte[])escaped!).Length == 37 : coreBytes == 0 && ownedBytes == 32);
-    GC.KeepAlive(escaped);
+    var evidence = new ProbeEvidence("ordinary", positive, count, enforceAllocations, warmIndex);
+    Sink? sink = null;
+    try
+    {
+        sink = new Sink("1.0") { PauseDeclaration = true };
+        using var core = new XmlParserCore(new());
+        evidence.Boundary = "core-prefix";
+        var initial = core.Append("<?xml version='", [], false, sink, default);
+        evidence.Consumed = initial.Consumed; evidence.Callbacks = sink.Callbacks; evidence.Outcome = (int)initial.Step;
+        evidence.Check(initial.Step == ScanStep.NeedInput && initial.Consumed == 15 && sink.Callbacks == 1, "ordinary-functional-1");
+        evidence.Boundary = "core-workload";
+        evidence.IntervalActive = count;
+        long before = count ? GC.GetAllocatedBytesForCurrentThread() : 0;
+        var declaration = core.Append("1.0'?>", [], false, sink, default);
+        object? escaped = positive ? new byte[37] : null;
+        long coreBytes = (count ? GC.GetAllocatedBytesForCurrentThread() : 0) - before;
+        evidence.IntervalActive = false;
+        evidence.CoreBytes = coreBytes;
+        evidence.Consumed = declaration.Consumed; evidence.Callbacks = sink.Callbacks; evidence.Outcome = (int)declaration.Step;
+        evidence.Check(declaration.Step == ScanStep.Paused && declaration.Consumed == 6 && sink.Callbacks == 2, "ordinary-functional-2");
+        evidence.Boundary = "core-completion";
+        var complete = core.Append("<r/>", [], true, sink, default);
+        evidence.Consumed = complete.Consumed; evidence.Callbacks = sink.Callbacks; evidence.Outcome = (int)complete.Step;
+        evidence.Check(complete.Step == ScanStep.Completed && complete.Consumed == 4 && sink.Callbacks == 6, "ordinary-functional-3");
+        core.Dispose();
+        using var framer = new XmlTextDeclarationFramer(new());
+        evidence.Boundary = "framing-prefix";
+        var prefix = framer.Append("<?xml version='1", [], false, default);
+        evidence.Consumed = prefix.Consumed; evidence.Callbacks = sink.Callbacks; evidence.Outcome = (int)prefix.Step;
+        evidence.Check(prefix.Step == TextDeclarationStep.NeedInput && prefix.Consumed == 16, "ordinary-functional-4");
+        evidence.Boundary = "framing-workload";
+        evidence.IntervalActive = count;
+        before = count ? GC.GetAllocatedBytesForCurrentThread() : 0;
+        var owned = framer.Append(".0' encoding='UTF-8'?>", [], true, default);
+        escaped = positive ? new byte[37] : escaped;
+        long ownedBytes = (count ? GC.GetAllocatedBytesForCurrentThread() : 0) - before;
+        evidence.IntervalActive = false;
+        evidence.OwnedBytes = ownedBytes;
+        evidence.Consumed = owned.Consumed; evidence.Callbacks = sink.Callbacks; evidence.Outcome = (int)owned.Step;
+        evidence.Check(owned.Step == TextDeclarationStep.Declared && owned.Consumed == 22 && owned.Declaration?.Version == "1.0" && owned.Declaration?.EncodingName == "UTF-8", "ordinary-functional-5");
+        framer.Dispose(); evidence.Check(owned.Declaration?.Version == "1.0", "ordinary-functional-6");
+        if (print) Console.WriteLine(JsonSerializer.Serialize(new { Mode = positive ? "ordinary-positive" : "ordinary-real", CoreBytes = coreBytes, OwnedBytes = ownedBytes, Callbacks = sink.Callbacks, Product = Identity(typeof(XmlDocument).Assembly), Probe = Identity(Assembly.GetExecutingAssembly()), Runtime = Environment.Version.ToString(), ProcessId = Environment.ProcessId }));
+
+        evidence.Check(!positive || ((byte[])escaped!).Length == 37, "escaping-positive-wrapper");
+        evidence.AllocationChecks();
+        GC.KeepAlive(escaped);
+    }
+    catch (Exception error) { if (sink is not null) evidence.Callbacks = sink.Callbacks; evidence.Report(error); throw; }
 }
 
 internal sealed class Sink(string version) : IXmlEventSink

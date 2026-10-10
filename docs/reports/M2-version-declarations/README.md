@@ -63,3 +63,16 @@ File capture continues after an unreadable file to retain readable sibling hashe
 It publishes exact file-read errors and partial actual closure/input maps before
 rethrowing the original first read failure. The synthetic unreadable-file control
 checks both capture paths and durable evidence after cleanup.
+
+Warmup executes all 24 long/ordinary pairs with counter reads and functional
+checks unchanged. Only allocation acceptance is disabled during warmup; the
+subsequent real/positive observation enforces the same exact totals. Functional
+and allocation failures publish structured warm index, phase, boundary, counters,
+consumption, callback and outcome evidence outside intervals, including when
+normal output is disabled. Unclosed counter intervals are explicitly unavailable.
+
+Corrected-source attempts use revision/preparation-specific summary filenames.
+Every existing attempt, including the original b5 failure, stays immutable.
+Reusing either a measured source revision or preparation identity is rejected.
+Timing requires exactly one matching allocation attempt and its strict pass.
+The original failed attempt did not emit counters; its cause remains unknown.
