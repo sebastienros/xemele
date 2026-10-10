@@ -1,0 +1,184 @@
+[
+  {
+    "name": "provision",
+    "command": [
+      "python3",
+      "-B",
+      "docs/reports/M1-corpus-import/provision.py"
+    ],
+    "exit": 0,
+    "revision": "d95f12e36e76ce9a0a6722e13f7b5f775d015090"
+  },
+  {
+    "name": "build",
+    "command": [
+      "dotnet",
+      "build",
+      "Xemele.slnx",
+      "-c",
+      "Release",
+      "--disable-build-servers",
+      "-m:1",
+      "-p:UseSharedCompilation=false",
+      "-p:NuGetAudit=false"
+    ],
+    "exit": 0,
+    "revision": "d95f12e36e76ce9a0a6722e13f7b5f775d015090"
+  },
+  {
+    "name": "focused",
+    "command": [
+      "dotnet",
+      "test",
+      "--project",
+      "tests/Xemele.Tests",
+      "-c",
+      "Release",
+      "--no-build",
+      "--no-restore",
+      "--filter-method",
+      "*WarmBorrowedNameHitsAllocateZeroAndUseOwnedInternedStrings*"
+    ],
+    "exit": 0,
+    "revision": "d95f12e36e76ce9a0a6722e13f7b5f775d015090"
+  },
+  {
+    "name": "full",
+    "command": [
+      "dotnet",
+      "test",
+      "--solution",
+      "Xemele.slnx",
+      "-c",
+      "Release",
+      "--no-build",
+      "--no-restore"
+    ],
+    "exit": 0,
+    "revision": "d95f12e36e76ce9a0a6722e13f7b5f775d015090"
+  },
+  {
+    "name": "diagnostic-build",
+    "command": [
+      "dotnet",
+      "build",
+      "docs/reports/M1-dom-allocation-probe/Diagnostic",
+      "-c",
+      "Release",
+      "--disable-build-servers",
+      "-m:1",
+      "-p:UseSharedCompilation=false",
+      "-p:NuGetAudit=false"
+    ],
+    "exit": 0,
+    "revision": "d95f12e36e76ce9a0a6722e13f7b5f775d015090"
+  },
+  {
+    "name": "diagnostic",
+    "command": [
+      "dotnet",
+      "docs/reports/M1-dom-allocation-probe/Diagnostic/bin/Release/net10.0/Xemele.Tests.dll"
+    ],
+    "exit": 0,
+    "revision": "d95f12e36e76ce9a0a6722e13f7b5f775d015090"
+  },
+  {
+    "name": "api-build",
+    "command": [
+      "dotnet",
+      "build",
+      "docs/reports/M0-contracts/ApiCheck/ApiCheck.csproj",
+      "-c",
+      "Release",
+      "--disable-build-servers",
+      "-m:1",
+      "-p:UseSharedCompilation=false",
+      "-p:NuGetAudit=false"
+    ],
+    "exit": 0,
+    "revision": "d95f12e36e76ce9a0a6722e13f7b5f775d015090"
+  },
+  {
+    "name": "api",
+    "command": [
+      "python3",
+      "-B",
+      "tools/ApiBaseline/compare.py",
+      "--report",
+      "docs/reports/M1-dom-allocation-probe/integration-api.json"
+    ],
+    "exit": 0,
+    "revision": "d95f12e36e76ce9a0a6722e13f7b5f775d015090"
+  },
+  {
+    "name": "discovery",
+    "command": [
+      "python3",
+      "-B",
+      "tools/ApiBaseline/discover.py"
+    ],
+    "exit": 0,
+    "revision": "d95f12e36e76ce9a0a6722e13f7b5f775d015090"
+  },
+  {
+    "name": "planning",
+    "command": [
+      "python3",
+      "-B",
+      "tools/planning/tasks.py",
+      "validate"
+    ],
+    "exit": 0,
+    "revision": "d95f12e36e76ce9a0a6722e13f7b5f775d015090"
+  },
+  {
+    "name": "regressions",
+    "command": [
+      "python3",
+      "-B",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "tools/planning",
+      "-p",
+      "test_*.py",
+      "-v"
+    ],
+    "exit": 0,
+    "revision": "d95f12e36e76ce9a0a6722e13f7b5f775d015090"
+  },
+  {
+    "name": "committed-diff",
+    "command": [
+      "git",
+      "diff",
+      "--check",
+      "2e13e667af03125da88eacaea173d8b55c360fd5",
+      "HEAD"
+    ],
+    "exit": 0,
+    "revision": "d95f12e36e76ce9a0a6722e13f7b5f775d015090"
+  },
+  {
+    "name": "working-diff",
+    "command": [
+      "git",
+      "diff",
+      "--check"
+    ],
+    "exit": 0,
+    "revision": "d95f12e36e76ce9a0a6722e13f7b5f775d015090"
+  },
+  {
+    "name": "staged-diff",
+    "command": [
+      "git",
+      "diff",
+      "--cached",
+      "--check"
+    ],
+    "exit": 0,
+    "revision": "d95f12e36e76ce9a0a6722e13f7b5f775d015090"
+  }
+]
