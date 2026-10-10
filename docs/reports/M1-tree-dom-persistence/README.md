@@ -106,3 +106,7 @@ plus working changes. Use --audit-base with the pre-merge coordination revision
 for integration; its default remains the original task base. Allowed ownership
 is unchanged, and unrelated coordinator changes are excluded only by selecting
 the correct integration comparison base, never by widening allowed paths.
+
+## Integrated verification
+
+Full fresh checks passed at80dbc1bbd3abf5c71c3f266b2c9ae9ac2eddbd2b: helper8/solution223/Foundation11, prerequisites, explicit contracts/protocol38, public215, source and isolated package replay, allocation and complete oracle. Original check/API evidence preserved; new integration.txt/runtime-api-integration.json/integration-raw.txt.gz hold fresh results. Final61fdfd8fe444eb0befc52c23d50f53a000cb0815 only adds verifier LOG output guard; help/invalidCLI preserve reports and strict final ownership/diff/planning checks pass. Runtime/tests/workloads unchanged; no repeated timing or redundant full suite for CLI guard. Exact original failed diff retained separately in gzip; generated presentation normalized and accidental Python bytecode removed.
