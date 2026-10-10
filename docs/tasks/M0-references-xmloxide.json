@@ -4,7 +4,7 @@
   "milestone": "M0",
   "title": "Pinned xmloxide reference runner",
   "kind": "infrastructure",
-  "status": "implemented",
+  "status": "in_progress",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M0-references-xmloxide",
   "branch": "codex/m0-references-xmloxide",
   "base_revision": "d94fb3167cebcfef8f927c580770741441dd6e60",
@@ -27,48 +27,32 @@
     {
       "id": "M0-references-xmloxide-A1",
       "description": "Build xmloxide at exact commit 555055f1ea6bf9944488fd96415b6f03b5b43696 and implement its XML reference runner against the integrated protocol; record pinned Rust toolchain, compile options, enabled features and provenance.",
-      "status": "passed",
-      "evidence": [
-        "pinned-native-verification"
-      ]
+      "status": "pending",
+      "evidence": []
     },
     {
       "id": "M0-references-xmloxide-A2",
       "description": "Run the protocol known XML fixture and compare its normalized response against the integrated BCL runner; exercise invalid requests/input, offline resources and denied unconfigured external access with runner failures distinct from parse rejection.",
-      "status": "passed",
-      "evidence": [
-        "pinned-native-verification"
-      ]
+      "status": "pending",
+      "evidence": []
     },
     {
       "id": "M0-references-xmloxide-A3",
       "description": "Demonstrate task-private build scripts/runner and actual checks at known implementation revision using only integrated verified dependencies; preserve earlier behavior and validate task records.",
-      "status": "passed",
-      "evidence": [
-        "pinned-native-verification"
-      ]
+      "status": "pending",
+      "evidence": []
     }
   ],
   "implementation": [
     "tools/ReferenceRunners/Xmloxide/: exact git dependency, locked Rust1.95.0 private release build/provenance, actual bounded strict UTF8 v1 XML process and context-owned offline resolver",
     "docs/reports/M0-references-xmloxide/verify.py: actual native/BCL comparisons, protocol/resource/quotas/framing checks, independent normalization oracle and preserved protocol/foundation verifier",
     "docs/reports/M0-references-xmloxide/source-assessment.md: pinned API capabilities, primary baseline rules, upstream differences and reference-only limits",
-    "tools/ReferenceRunners/Xmloxide/src/bin/raw-probe.rs and source-envelope checks: separate actual native omission evidence; conservative unsupported v1 document-whitespace normalization, no fabricated missing events"
+    "tools/ReferenceRunners/Xmloxide/probes/raw_probe.rs and source-envelope checks: separate actual native omission evidence; conservative unsupported v1 document-whitespace normalization, no fabricated missing events"
   ],
-  "evidence": [
-    {
-      "id": "pinned-native-verification",
-      "kind": "check",
-      "revision": "c3b4854dec84053b5652964076a75063703eb16a",
-      "command": "DOTNET_ROOT='/Users/sebastienros/Library/Application Support/dotnetup/dotnet' PATH='/Users/sebastienros/Library/Application Support/dotnetup/dotnet':$PATH DOTNET_CLI_USE_MSBUILD_SERVER=0 python3 -B docs/reports/M0-references-xmloxide/verify.py",
-      "result": "passed",
-      "summary": "macOS arm64: actual git engine555055f1ea6bf9944488fd96415b6f03b5b43696/package0.5.0 with Rust1.95.0/Cargo1.95.0/aarch64-apple-darwin; offline locked release build and source/provenance checks pass;49 resolved package manifests and registry lock checksums recorded. 93 actual native/BCL response checks,3 Rust tests,6 raw invalidUTF8 cases plus validUTF8 BOM JSON rejection, separate raw omission probe,2 adversarial independent normalization-oracle assertions pass. Known v1 fixture and supported namespace/ordinal-UTF16/entity/text/encoding/empty fixtures match actual BCL. Per-request offline file/HTTPS/URN resources work, unconfigured file/network denied; external DTD/parameter entities/relative-context/document-whitespace incomplete normalization explicitly runner-failure/protocol, quotas runner-failure/limit. Actual CRLF native value bugs retained separately. Preserved integrated protocol verifier passes:51 focused/54 solution infrastructure tests0 product tests,11 directwire+invalidwire,3 intentional controlled smoke failures exit2,16help/default3unknowncommand,managed-only net10 pack/API0,13discovery2corpuschecks,101task validation. No shared/runtime/peer edits, other-platform/general-conformance/performance claim.",
-      "artifact": "docs/reports/M0-references-xmloxide/verification.txt"
-    }
-  ],
+  "evidence": [],
   "blockers": [],
   "handoff": {
-    "summary": "Implemented exact pinned xmloxide reference runner at c3b4854dec84053b5652964076a75063703eb16a; actual v1 events, strict bounded UTF8/framing, private locked/provenance build, request-owned offline resources and honest engine capability/value differences. Only owned paths and own JSON changed; integration_revision null.",
+    "summary": "Final audit found raw probe source ignored by shared bin rule; moved into tracked task-owned probes path. Superseding known-revision verification pending; prior source snapshot not a reproducible complete probe.",
     "checks": [
       "Full verifier at c3b4854dec84053b5652964076a75063703eb16a passed:93 actual native/BCL responses,3Rust tests,6invalidUTF8wire+BOM handling,2independent-oracle adversarial checks; actual raw omission reproduced separately.",
       "Known v1 fixture and supported comparisons match BCL; blocked resources/unsupported capabilities/engine quotas classified as runner failures; actual invalid XML remains parse rejection.",

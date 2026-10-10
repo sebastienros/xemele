@@ -25,3 +25,9 @@ supersedes these exploratory attempts. No unrun or failed attempt is passing evi
 Coordinator completeness follow-up after initial source commit c91e1fc added the
 conservative document-whitespace unsupported response and separate raw-engine
 probe. Final evidence will reference the superseding source revision.
+
+Final changed/ignored-file audit caught raw-probe source under ignored src/bin/.
+The source was moved to tracked probes/raw_probe.rs with explicit private Cargo
+bin registration. Earlier c3b checks ran locally with that ignored source, so they
+are superseded by a full rerun at the corrected tracked revision; no reproducible
+completion claim relies on that earlier snapshot.
