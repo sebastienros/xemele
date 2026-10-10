@@ -1,0 +1,71 @@
+{
+  "result": "prepared",
+  "host": "macOS-15.8.1-arm64-arm-64bit-Mach-O",
+  "architecture": "arm64",
+  "timing": "not run",
+  "runtimeSettings": "default JIT/GC/test parallelism",
+  "arguments": {
+    "report_prefix": "prepare-406e95a",
+    "expected_branch": "codex/m2-dtd-framing-allocation-probe",
+    "audit_base": "59972855a3707a16a1e008488165ef5d0564e0c8",
+    "runtime_count": 4515,
+    "conformance_count": 255,
+    "differential_count": 299,
+    "api_count": 272,
+    "fixture_count": 3388,
+    "planning_count": 14,
+    "task_count": 124,
+    "prepare_only": true
+  },
+  "checks": {
+    "archive-regression": {
+      "result": "passed",
+      "detail": {
+        "passed": 2,
+        "scope": "temporary raw preservation; timeout regression mocked, no real childtimeout claim"
+      }
+    },
+    "final-audit": {
+      "result": "passed",
+      "detail": {
+        "ownedPathScopeCounts": {
+          "committed": 17,
+          "working": 0,
+          "staged": 0,
+          "untracked": 11
+        },
+        "allPathsOwned": true,
+        "allOtherFramingBytesUnchanged": true,
+        "diffChecks": 3
+      }
+    }
+  },
+  "sourceRevision": "406e95ad041d052bdf3acaa90a1b90b08bf79cbc",
+  "dotnetInfo": {
+    "sdk": "10.0.400",
+    "runtime": "10.0.11",
+    "architecture": "arm64"
+  },
+  "sourceHashes": {
+    "tests/Xemele.Tests/M2-dtd-framing/FramingTests.cs": "3f481bf4b578729e5469ab048eca152eb79981204fb17bff92dfabcb8d592cb8",
+    "tests/Xemele.Tests/M2-dtd-framing-allocation-probe/FramingAllocationProbe.cs": "de84e8f1f2f00395d8d66aefe11b8ad6c26062a3e05ca0c0009a9ed44c999df6",
+    "tests/Xemele.Tests/M2-dtd-framing-allocation-probe/FramingAllocationChild.cs": "437c4130b56c4a27662d2b67a518546c7a2f72cd4c238cd1b87d9e1ef85b5e9c",
+    "docs/reports/M2-dtd-framing-allocation-probe/Diagnostics/Program.cs": "180450d2df998818c5c23fee8504965a9a91daace735f4c406acf598f2592cfa"
+  },
+  "preparedAssemblies": {
+    "tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll": "88bfacc5201f5deec89f52f063f65163beae7e9dd6191efc6dfded599fcc848d",
+    "src/Xemele/bin/Release/net10.0/Xemele.dll": "d61bdd0ab43cabfd499e7e5c6e284b9c9dd827f1c2ff0044f03101dc008ebe16"
+  },
+  "diagnosticIdentity": {
+    "sha256": "546bf261f3f9af6bce989b859091598f45d6fab25461dbf8061ffe197a145497",
+    "assembly": "Xemele.DtdFramingSample.dll"
+  },
+  "allocationObservations": "unrun: requires exclusive coordinator grant",
+  "compiledSources": {
+    "count": 340,
+    "beforeSha256": "e7ac2138247c318832bd21ea1e3f54e94b1f2fb3adc053454e65addb459c7db0",
+    "afterSha256": "e7ac2138247c318832bd21ea1e3f54e94b1f2fb3adc053454e65addb459c7db0",
+    "unchanged": true
+  },
+  "artifactPolicy": "User requested summaries only after verification. Raw logs/XML/child/request/progress/report and copied inventories were inspected then removed; no measurement rerun, no history rewrite."
+}

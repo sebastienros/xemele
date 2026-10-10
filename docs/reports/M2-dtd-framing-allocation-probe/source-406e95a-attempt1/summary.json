@@ -1,0 +1,378 @@
+{
+  "result": "passed",
+  "host": "macOS-15.8.1-arm64-arm-64bit-Mach-O",
+  "architecture": "arm64",
+  "timing": "not run",
+  "runtimeSettings": "default JIT/GC/test parallelism",
+  "arguments": {
+    "report_prefix": "source-406e95a-attempt1",
+    "expected_branch": "codex/m2-dtd-framing-allocation-probe",
+    "audit_base": "59972855a3707a16a1e008488165ef5d0564e0c8",
+    "runtime_count": 4515,
+    "conformance_count": 255,
+    "differential_count": 299,
+    "api_count": 272,
+    "fixture_count": 3388,
+    "planning_count": 14,
+    "task_count": 124,
+    "prepare_only": false
+  },
+  "checks": {
+    "archive-regression": {
+      "result": "passed",
+      "detail": {
+        "passed": 2,
+        "scope": "temporary raw preservation; timeout regression mocked, no real childtimeout claim"
+      }
+    },
+    "diagnostic-original": {
+      "result": "passed",
+      "detail": {
+        "mode": "original",
+        "runtime": "10.0.11",
+        "productVersion": "1.0.0+406e95ad041d052bdf3acaa90a1b90b08bf79cbc",
+        "warmIterations": 1000,
+        "measuredIterations": 1000,
+        "warmConsumed": 32000,
+        "measuredConsumed": 32000,
+        "warmBytes": 0,
+        "primitiveBytes": 0,
+        "warmColumn": 32007,
+        "measuredColumn": 64007,
+        "finalColumn": 64021,
+        "completion": "Declared",
+        "scope": "Bounded diagnostic once per fresh process; original reproduces TestContext lookup outside a running Fact, so cannot attribute historical test failure."
+      }
+    },
+    "diagnostic-equivalent": {
+      "result": "passed",
+      "detail": {
+        "mode": "equivalent",
+        "runtime": "10.0.11",
+        "productVersion": "1.0.0+406e95ad041d052bdf3acaa90a1b90b08bf79cbc",
+        "warmIterations": 1000,
+        "measuredIterations": 1000,
+        "warmConsumed": 32000,
+        "measuredConsumed": 32000,
+        "warmBytes": 0,
+        "primitiveBytes": 0,
+        "warmColumn": 32007,
+        "measuredColumn": 64007,
+        "finalColumn": 64021,
+        "completion": "Declared",
+        "scope": "Bounded diagnostic once per fresh process; original reproduces TestContext lookup outside a running Fact, so cannot attribute historical test failure."
+      }
+    },
+    "diagnostic-helper": {
+      "result": "passed",
+      "detail": {
+        "mode": "helper",
+        "runtime": "10.0.11",
+        "productVersion": "1.0.0+406e95ad041d052bdf3acaa90a1b90b08bf79cbc",
+        "warmIterations": 1000,
+        "measuredIterations": 1000,
+        "warmConsumed": 32000,
+        "measuredConsumed": 32000,
+        "warmBytes": 0,
+        "primitiveBytes": 0,
+        "warmColumn": 32007,
+        "measuredColumn": 64007,
+        "finalColumn": 64021,
+        "completion": "Declared",
+        "scope": "Bounded diagnostic once per fresh process; original reproduces TestContext lookup outside a running Fact, so cannot attribute historical test failure."
+      }
+    },
+    "focused-mtp": {
+      "result": "passed",
+      "detail": {
+        "total": 1,
+        "passed": 1,
+        "failed": 0,
+        "skipped": 0
+      }
+    },
+    "cumulative-mtp": {
+      "result": "passed",
+      "detail": {
+        "total": 5069,
+        "passed": 5069,
+        "failed": 0,
+        "skipped": 0,
+        "inheritedContractModelVerifier": "passed"
+      }
+    },
+    "direct-Xemele.Tests": {
+      "result": "passed",
+      "detail": {
+        "total": 4515,
+        "failed": 0,
+        "skipped": 0,
+        "framing": [
+          {
+            "result": "Pass",
+            "output": null
+          }
+        ],
+        "preservedBaselineCount": 4514,
+        "framingCount": 1243,
+        "addedProtocolCount": 1
+      }
+    },
+    "direct-Xemele.Conformance.Tests": {
+      "result": "passed",
+      "detail": {
+        "total": 255,
+        "failed": 0,
+        "skipped": 0,
+        "framing": [],
+        "preservedBaselineCount": 255
+      }
+    },
+    "direct-Xemele.Differential.Tests": {
+      "result": "passed",
+      "detail": {
+        "total": 299,
+        "failed": 0,
+        "skipped": 0,
+        "framing": [],
+        "preservedBaselineCount": 299
+      }
+    },
+    "reference-provenance": {
+      "result": "passed",
+      "detail": {
+        "records": 242,
+        "sourceRevision": "406e95ad041d052bdf3acaa90a1b90b08bf79cbc",
+        "runnerSha256": "a26eb47813221c255ce9187a1d43b24c20e9c548c93acd5355cff438bfa879b4",
+        "dotnet": "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "runnerAssembly": "BclReference.dll",
+        "comparisons": {
+          "matched-rejection": 239,
+          "documented-reference-divergence": 3
+        },
+        "completeCopiedReleaseOutputUnchanged": true
+      }
+    },
+    "child-provenance": {
+      "result": "passed",
+      "detail": {
+        "pairs": [
+          {
+            "directory": "40316-e201320a626d4e82a495a7d00fe4cf0a",
+            "measurements": {
+              "real": {
+                "ProcessId": 40331,
+                "WarmIterations": 1000,
+                "MeasuredIterations": 1000,
+                "WarmBytes": 0,
+                "AllocatedBytes": 0,
+                "WarmConsumed": 32000,
+                "MeasuredConsumed": 32000,
+                "WarmColumn": 32007,
+                "MeasuredColumn": 64007,
+                "FinalColumn": 64021,
+                "EscapedObjectLength": 0
+              },
+              "positive": {
+                "ProcessId": 40340,
+                "WarmIterations": 1000,
+                "MeasuredIterations": 1000,
+                "WarmBytes": 0,
+                "AllocatedBytes": 64000,
+                "WarmConsumed": 32000,
+                "MeasuredConsumed": 32000,
+                "WarmColumn": 32007,
+                "MeasuredColumn": 64007,
+                "FinalColumn": 64021,
+                "EscapedObjectLength": 37
+              }
+            }
+          },
+          {
+            "directory": "40876-b3b7e3fe670f47188469b5ad59d6ee9b",
+            "measurements": {
+              "real": {
+                "ProcessId": 40895,
+                "WarmIterations": 1000,
+                "MeasuredIterations": 1000,
+                "WarmBytes": 0,
+                "AllocatedBytes": 0,
+                "WarmConsumed": 32000,
+                "MeasuredConsumed": 32000,
+                "WarmColumn": 32007,
+                "MeasuredColumn": 64007,
+                "FinalColumn": 64021,
+                "EscapedObjectLength": 0
+              },
+              "positive": {
+                "ProcessId": 40913,
+                "WarmIterations": 1000,
+                "MeasuredIterations": 1000,
+                "WarmBytes": 0,
+                "AllocatedBytes": 64000,
+                "WarmConsumed": 32000,
+                "MeasuredConsumed": 32000,
+                "WarmColumn": 32007,
+                "MeasuredColumn": 64007,
+                "FinalColumn": 64021,
+                "EscapedObjectLength": 37
+              }
+            }
+          },
+          {
+            "directory": "41203-cddeedb2cb7b4351b1b8ce36e9bd7306",
+            "measurements": {
+              "real": {
+                "ProcessId": 41208,
+                "WarmIterations": 1000,
+                "MeasuredIterations": 1000,
+                "WarmBytes": 0,
+                "AllocatedBytes": 0,
+                "WarmConsumed": 32000,
+                "MeasuredConsumed": 32000,
+                "WarmColumn": 32007,
+                "MeasuredColumn": 64007,
+                "FinalColumn": 64021,
+                "EscapedObjectLength": 0
+              },
+              "positive": {
+                "ProcessId": 41214,
+                "WarmIterations": 1000,
+                "MeasuredIterations": 1000,
+                "WarmBytes": 0,
+                "AllocatedBytes": 64000,
+                "WarmConsumed": 32000,
+                "MeasuredConsumed": 32000,
+                "WarmColumn": 32007,
+                "MeasuredColumn": 64007,
+                "FinalColumn": 64021,
+                "EscapedObjectLength": 37
+              }
+            }
+          }
+        ],
+        "provenance": {
+          "Executable": "/Users/sebastienros/.codex/worktrees/640d/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests",
+          "ExecutableSha256": "C00FD9CDDEDFDC2F3F6794FB4B9218CA9860D3A6E64B5F9C216EF3FE6E8B7E49",
+          "TestAssembly": "/Users/sebastienros/.codex/worktrees/640d/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll",
+          "TestSha256": "88BFACC5201F5DEEC89F52F063F65163BEAE7E9DD6191EFC6DFDED599FCC848D",
+          "TestVersion": "1.0.0+406e95ad041d052bdf3acaa90a1b90b08bf79cbc",
+          "ProductAssembly": "/Users/sebastienros/.codex/worktrees/640d/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.dll",
+          "ProductSha256": "D61BDD0AB43CABFD499E7E5C6E284B9C9DD827F1C2FF0044F03101DC008EBE16",
+          "ProductVersion": "1.0.0+406e95ad041d052bdf3acaa90a1b90b08bf79cbc",
+          "RuntimeVersion": "10.0.11",
+          "CoreLibrary": "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App/10.0.11/System.Private.CoreLib.dll",
+          "CoreLibrarySha256": "9ED74C2E2EFEEE87F1F2D7FFE1736B7E9164CE248516EA39402A725EEDC87AF6",
+          "NativeRuntimeSha256": "10B24D0B11C7F6D838114744097BF10DF9B08B906AFC9016567631A1C009DFD0",
+          "HelperIlSha256": "BF392D5E1328E12F5D4C3DA97E8A32B338628E5C625DB0630F59A1EB33AB6C62",
+          "RuntimeConfigSha256": "9950D4583CFC9A106857C0D5B8A75B53E8774852B57B80BC3823A74D44A4D87F",
+          "ServerGc": false,
+          "GcLatencyMode": "Interactive",
+          "Architecture": "Arm64",
+          "RuntimeOverrides": "{\"DOTNET_CLI_TEST_COMMAND_WORKING_DIRECTORY\":\"/Users/sebastienros/.codex/worktrees/640d/xemele\",\"DOTNET_CLI_USE_MSBUILD_SERVER\":\"0\",\"DOTNET_ROOT\":\"/Users/sebastienros/Library/Application Support/dotnetup/dotnet\",\"DOTNET_ROOT_ARM64\":\"/Users/sebastienros/Library/Application Support/dotnetup/dotnet\"}",
+          "NativeGcLibrary": "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App/10.0.11/libclrgc.dylib",
+          "NativeGcSha256": "2A53559AC20A2896A7D1AFB427C73DCF781495349544E8B4B34E7D123CE39FFA",
+          "GcConfiguration": "{\"ConcurrentGC\":true,\"GCConserveMem\":0,\"GCCpuGroup\":false,\"GCDGen0GrowthMaxFactor\":0,\"GCDGen0GrowthMinFactor\":0,\"GCDGen0GrowthPercent\":0,\"GCDTargetTCP\":0,\"GCDynamicAdaptationMode\":1,\"GCGen0MaxBudget\":8388608,\"GCHeapAffinitizeMask\":0,\"GCHeapAffinitizeRanges\":\"\",\"GCHeapHardLimit\":0,\"GCHeapHardLimitLOH\":0,\"GCHeapHardLimitLOHPercent\":0,\"GCHeapHardLimitPOH\":0,\"GCHeapHardLimitPOHPercent\":0,\"GCHeapHardLimitPercent\":0,\"GCHeapHardLimitSOH\":0,\"GCHeapHardLimitSOHPercent\":0,\"GCHighMemPercent\":90,\"GCLargePages\":false,\"GCName\":\"\",\"GCPath\":\"\",\"GCRegionRange\":0,\"GCRegionSize\":0,\"HeapCount\":1,\"LOHThreshold\":85000,\"MaxHeapCount\":0,\"NoAffinitize\":false,\"RetainVM\":false,\"ServerGC\":false,\"UOHWaitBGCSizeIncPercent\":-1}"
+        },
+        "allProvenanceMatched": true,
+        "allProgressAndOneFactXmlChecked": true,
+        "allSixChildrenExitZero": true
+      }
+    },
+    "protocol-negatives": {
+      "result": "passed",
+      "detail": {
+        "cases": 20,
+        "passed": 20,
+        "allSameFactChildrenFailedAsExpected": true,
+        "allActualExits": 1,
+        "sourceRevision": "406e95ad041d052bdf3acaa90a1b90b08bf79cbc"
+      }
+    },
+    "compiled-api": {
+      "result": "passed",
+      "detail": {
+        "bootstrapEmptyApi": false,
+        "checkerOutput": "Matched 272 compiled members",
+        "matched": true,
+        "members": 272
+      }
+    },
+    "discovery": {
+      "result": "passed",
+      "detail": {
+        "apiDeclarations": 272,
+        "apiFragments": [
+          "docs/api/M1-common.txt",
+          "docs/api/M1-dom.txt",
+          "docs/api/M1-serialize.txt",
+          "docs/api/M1-tree.txt",
+          "docs/api/M2-entities-foundation.txt",
+          "docs/api/M2-resolver.txt"
+        ],
+        "bootstrapEmptyApi": false,
+        "corpusManifests": [
+          "tests/corpora/bootstrap/manifest.json",
+          "tests/corpora/xml/manifest.json"
+        ],
+        "fixtures": 3388,
+        "formatVersion": 1
+      }
+    },
+    "planning-regressions": {
+      "result": "passed",
+      "detail": {
+        "passed": 14
+      }
+    },
+    "planning-validation": {
+      "result": "passed",
+      "detail": {
+        "validated": 124
+      }
+    },
+    "final-audit": {
+      "result": "passed",
+      "detail": {
+        "ownedPathScopeCounts": {
+          "committed": 17,
+          "working": 0,
+          "staged": 0,
+          "untracked": 198
+        },
+        "allPathsOwned": true,
+        "allOtherFramingBytesUnchanged": true,
+        "diffChecks": 3
+      }
+    }
+  },
+  "sourceRevision": "406e95ad041d052bdf3acaa90a1b90b08bf79cbc",
+  "dotnetInfo": {
+    "sdk": "10.0.400",
+    "runtime": "10.0.11",
+    "architecture": "arm64"
+  },
+  "sourceHashes": {
+    "tests/Xemele.Tests/M2-dtd-framing/FramingTests.cs": "3f481bf4b578729e5469ab048eca152eb79981204fb17bff92dfabcb8d592cb8",
+    "tests/Xemele.Tests/M2-dtd-framing-allocation-probe/FramingAllocationProbe.cs": "de84e8f1f2f00395d8d66aefe11b8ad6c26062a3e05ca0c0009a9ed44c999df6",
+    "tests/Xemele.Tests/M2-dtd-framing-allocation-probe/FramingAllocationChild.cs": "437c4130b56c4a27662d2b67a518546c7a2f72cd4c238cd1b87d9e1ef85b5e9c",
+    "docs/reports/M2-dtd-framing-allocation-probe/Diagnostics/Program.cs": "180450d2df998818c5c23fee8504965a9a91daace735f4c406acf598f2592cfa"
+  },
+  "preparedAssemblies": {
+    "tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll": "88bfacc5201f5deec89f52f063f65163beae7e9dd6191efc6dfded599fcc848d",
+    "src/Xemele/bin/Release/net10.0/Xemele.dll": "d61bdd0ab43cabfd499e7e5c6e284b9c9dd827f1c2ff0044f03101dc008ebe16"
+  },
+  "diagnosticIdentity": {
+    "sha256": "546bf261f3f9af6bce989b859091598f45d6fab25461dbf8061ffe197a145497",
+    "assembly": "Xemele.DtdFramingSample.dll"
+  },
+  "failedChecks": [],
+  "scope": "Isolated synchronous whitespace framing primitive; exact0B/no concurrent allocation guarantee. Full joint MTP/direct suites mandatory; historical failure causes unresolved.",
+  "compiledSources": {
+    "count": 340,
+    "beforeSha256": "e7ac2138247c318832bd21ea1e3f54e94b1f2fb3adc053454e65addb459c7db0",
+    "afterSha256": "e7ac2138247c318832bd21ea1e3f54e94b1f2fb3adc053454e65addb459c7db0",
+    "unchanged": true
+  },
+  "artifactPolicy": "User requested summaries only after verification. Raw logs/XML/child/request/progress/report and copied inventories were inspected then removed; no measurement rerun, no history rewrite."
+}
