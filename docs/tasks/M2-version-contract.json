@@ -35,7 +35,8 @@
       "status": "passed",
       "evidence": [
         "normative-version-review",
-        "scoped-contract-preservation"
+        "scoped-contract-preservation",
+        "coordinator-integrated-version-contract"
       ]
     },
     {
@@ -43,7 +44,8 @@
       "description": "Compile independent representative contract usage/models and executable semantic probes for1.0/1.1/1.7/1.00/1.10, long digits, invalid ASCII grammar and XML1.1-only content; preserve current approved compiled API shapes. Model checks are contract evidence, not parser implementation/conformance claims. Route exact historical1.1 negative-test transitions and runtime guards to M2-version-declarations, no runtime edits.",
       "status": "passed",
       "evidence": [
-        "scoped-contract-preservation"
+        "scoped-contract-preservation",
+        "coordinator-integrated-version-contract"
       ]
     },
     {
@@ -52,7 +54,8 @@
       "status": "passed",
       "evidence": [
         "scoped-contract-preservation",
-        "final-cleanup-driver-controls"
+        "final-cleanup-driver-controls",
+        "coordinator-integrated-version-contract"
       ]
     }
   ],
@@ -119,6 +122,15 @@
       "result": "passed",
       "summary": "Independent reviewer approved final scoped sources at4c9f9cb: prior nullable/readonly ABI comparison and truncated-report/finally cleanup blockers resolved; no remaining source blockers. Reviewer execution checks: none. Existing actual model/API/runtime evidence remains at61667d1 and cleanup/planning controls at4c9f9cb; fresh integrated execution remains coordinator responsibility.",
       "artifact": null
+    },
+    {
+      "id": "coordinator-integrated-version-contract",
+      "kind": "integration",
+      "revision": "481a6090f67bb2191bb7a2d6eeebe19cb9e0b787",
+      "command": "SDK10.0.400 pinned DOTNET_ROOT/PATH; DOTNET_CLI_USE_MSBUILD_SERVER=0; python3 -B docs/reports/M2-version-contract/verify.py --audit-base 50092427e89883c7a214708384e0a408447e5a5f --expected-branch codex/integrate-m2-version-contract",
+      "result": "passed",
+      "summary": "Root actualfreshintegrated execution exit0:46 expectedexitgates matched;236 independentversion/profile+64inheritedmodels; fivefrozenmodels114/81/81/243/239;4actualinternalABI shapes includingnullability/readonly,2specificcompiler failures,2internal+1publicactualmetadata mutations detected; API272. All4594unique inheritedruntime tests0fail0skip, sameactualbranchidentitydigest.105compiledinputSHA independentlymatchedGit/current+aggregate;65file completeoutputclosure unchanged.17cleanupnegativecontrols/planning14/validate128/fullownedpath+whitespace gatespassed. Generatedtemporary/newchildrawoutputs removed, noinspection/cleanuperrors, conciseidentities only. Contractmodels/preservation evidence, notruntime declarationrepair/fullcorpus or newtimingclaim.",
+      "artifact": "docs/reports/M2-version-contract/integrated-summary.json"
     }
   ],
   "blockers": [],
@@ -129,7 +141,8 @@
       "At61667d1: exact4594unique runtime tests0fail0skip; planning14/validate128;105inputGit/basehashes,65file unchangedoutputclosure; allscope/whitespaceaudits andrawcleanup passed. Concisesummaries/hashidentities only.",
       "Failures honestly retained: d69d085 corpus-coupled discovery; fe3546f system-temp allocationchild repository ancestry. Both fixed; laterchecks unrun inthose attempts.",
       "At4c9f9cb: 17 failure-path cleanup controls, planning14/validate128, exact three-file driver-only delta and all scope/whitespace audits passed. Product/tests/model files unchanged from tested61667d1; no repeated full-runtime claim at4c9f9cb.",
-      "Independent foundation source approval at4c9f9cb received through coordinator: nullable/readonly ABI and failure-path cleanup blockers resolved, no remaining source blockers. Review only; reviewer executed no checks."
+      "Independent foundation source approval at4c9f9cb received through coordinator: nullable/readonly ABI and failure-path cleanup blockers resolved, no remaining source blockers. Review only; reviewer executed no checks.",
+      "Coordinator actualfreshintegrated481a609:236/64models,4ABI/3metadata mutationcontrols/API272/runtime4594allpass/17cleanupcontrols/planning14+128/46exitgates,105inputGitSHA/65outputclosure/finalrawcleanup independentlyinspected."
     ],
     "remaining": [
       "Coordinator review/integrate and run verifier with --audit-base <integration-base full SHA> --expected-branch <integration branch>; verifier also runs cleanup controls. Only coordinator sets verified and integration_revision.",
