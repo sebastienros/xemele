@@ -60,8 +60,8 @@ internal sealed partial class DtdParser
     private bool IsExternalDeclaration => declarationExternal;
     private DtdOccurrence Occurrence()
     { if (read < tokens.Count && Peek.Space && Peek.Text is "?" or "*" or "+") { Reject("Occurrence indicator must be adjacent.", Peek.At); return DtdOccurrence.Once; } if (Take("?")) return DtdOccurrence.Optional; if (Take("*")) return DtdOccurrence.ZeroOrMore; if (Take("+")) return DtdOccurrence.OneOrMore; return DtdOccurrence.Once; }
-    private sealed class Group(int source)
-    { internal readonly List<DtdParticle> Children = []; internal string? Separator; internal readonly int Source = source; }
+    private sealed class Group
+    { internal readonly List<DtdParticle> Children = []; internal string? Separator; }
     private DtdParticle? Content(CancellationToken cancellation)
     {
         if (!Require("(")) return null;
@@ -76,7 +76,7 @@ internal sealed partial class DtdParser
             { Reject("Invalid mixed content occurrence.", declarationAt); return null; }
             return new(DtdParticleKind.Mixed, null, occurrence, mixed);
         }
-        var stack = new Stack<Group>(); stack.Push(new(tokens[read - 1].Source));
+        var stack = new Stack<Group>(); stack.Push(new());
         bool child = true;
         while (!terminal && read < tokens.Count)
         {
@@ -84,13 +84,13 @@ internal sealed partial class DtdParser
             Group group = stack.Peek();
             if (child)
             {
-                if (Take("(")) { stack.Push(new(tokens[read - 1].Source)); child = true; continue; }
+                if (Take("(")) { stack.Push(new()); child = true; continue; }
                 string? name = Name(); if (name is null) return null;
                 group.Children.Add(new(DtdParticleKind.Name, name, Occurrence(), [])); child = false; continue;
             }
             if (Take(")"))
             {
-                if (group.Children.Count == 0 || tokens[read - 1].Source != group.Source) break;
+                if (group.Children.Count == 0) break;
                 var particle = new DtdParticle(group.Separator == "|" ? DtdParticleKind.Choice : DtdParticleKind.Sequence, null, Occurrence(), group.Children);
                 stack.Pop(); if (stack.Count == 0) return particle;
                 stack.Peek().Children.Add(particle); child = false; continue;

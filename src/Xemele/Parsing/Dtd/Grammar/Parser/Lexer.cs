@@ -44,14 +44,13 @@ internal sealed partial class DtdParser
                 if (!Space(c)) break;
                 declaration = scratch.ToString(); scratch.Clear();
                 if (declaration is not ("ELEMENT" or "ATTLIST" or "ENTITY" or "NOTATION")) break;
-                declarationAt = lexicalAt; declarationSource = lexicalSource; declarationExternal = Current.External; declarationScalars = declaration.Length + 3;
+                declarationAt = lexicalAt; declarationExternal = Current.External; declarationScalars = declaration.Length + 3;
                 if (!Bounded(declarationScalars - 1, at)) return;
                 separator = true; tokens.Clear(); lex = Lex.Declaration; return;
             case Lex.Declaration:
                 if (Space(c)) { separator = true; return; }
                 if (c == '>')
                 {
-                    if (Current.Id != declarationSource) { Reject("Declaration delimiter crosses an entity boundary.", at); return; }
                     ParseDeclaration(cancellation); if (terminal) return;
                     tokens.Clear(); declaration = ""; declarationScalars = 0; lex = Lex.Between; separator = false; return;
                 }
@@ -120,7 +119,6 @@ internal sealed partial class DtdParser
                 if (Space(c)) { if (scratch.Length != 0) separator = true; return; }
                 if (c == '[')
                 {
-                    if (Current.Id != lexicalSource) { Reject("Conditional delimiter crosses an entity boundary.", at); return; }
                     if (scratch.ToString() == "INCLUDE") { includes.Push(Current.Id); scratch.Clear(); lex = Lex.Between; return; }
                     if (scratch.ToString() == "IGNORE") { scratch.Clear(); ignoreDepth = 1; ignoreRun = 0; lex = Lex.Ignore; return; }
                     break;
@@ -129,7 +127,7 @@ internal sealed partial class DtdParser
                 AddScalar(scratch, c, at); return;
             case Lex.ConditionalEnd:
                 if (ignoreRun == 1 && c == ']') { ignoreRun = 2; return; }
-                if (ignoreRun == 2 && c == '>' && includes.Peek() == Current.Id && lexicalSource == Current.Id) { includes.Pop(); lex = Lex.Between; return; } break;
+                if (ignoreRun == 2 && c == '>' && includes.Count > Current.IncludeFloor) { includes.Pop(); lex = Lex.Between; return; } break;
             case Lex.Ignore:
                 // A three-character recognizer skips arbitrarily long IGNORE bodies, including nested sections.
                 if (ignoreRun == 0) { ignoreRun = c == '<' ? 1 : c == ']' ? 3 : 0; return; }
@@ -138,7 +136,7 @@ internal sealed partial class DtdParser
                 { if (c == '[') { if (ignoreDepth == int.MaxValue) { Refuse(ValueBudget.Limit(at)); return; } ignoreDepth++; ignoreRun = 0; } else ignoreRun = c == '<' ? 1 : c == ']' ? 3 : 0; return; }
                 if (ignoreRun == 3) { ignoreRun = c == ']' ? 4 : c == '<' ? 1 : 0; return; }
                 if (c == '>')
-                { ignoreRun = 0; if (--ignoreDepth == 0) { if (Current.Id != lexicalSource) { Reject("Ignored section crosses an entity boundary.", at); return; } lex = Lex.Between; } }
+                { ignoreRun = 0; if (--ignoreDepth == 0) lex = Lex.Between; }
                 else ignoreRun = c == ']' ? 4 : c == '<' ? 1 : 0;
                 return;
         }
@@ -164,6 +162,8 @@ internal sealed partial class DtdParser
             // Nested internal PEs inherit that same containing source. An actual
             // external PE receives its redirected final URI when the caller pushes it.
             child = new(nextId++, Current.External || entity.SystemId is not null, new(Current.Uri, 1, 1, null), name, entity.ReplacementText, true, literal);
+            child.Insertion = parameterResume;
+            child.IncludeFloor = parameterResume == Lex.Between ? includes.Count : Current.IncludeFloor;
             active.Add(name);
             if (!literal) Process(' ', parameterAt, cancellation);
             if (entity.ReplacementText is null)
