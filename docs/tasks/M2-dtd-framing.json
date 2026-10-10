@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "id": "M2-dtd-framing",
+  "milestone": "M2",
+  "title": "Incremental external text-declaration framing",
+  "kind": "feature",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "depends_on": [
+    "M2-contracts"
+  ],
+  "goals": [
+    "G07"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/parser.md"
+  ],
+  "owns": [
+    "src/Xemele/Parsing/Dtd/Framing/",
+    "src/Xemele/Parsing/Dtd/IDtdBudget.cs",
+    "tests/Xemele.Tests/M2-dtd-framing/",
+    "tests/fixtures/M2-dtd-framing/",
+    "benchmarks/Xemele.Benchmarks/M2-dtd-framing/",
+    "samples/M2-dtd-framing/",
+    "docs/reports/M2-dtd-framing/"
+  ],
+  "api_or_output": "Incremental external text-declaration framing",
+  "acceptance": [
+    {
+      "id": "M2-dtd-framing-A1",
+      "description": "Implement approved XmlTextDeclarationFramer/result/declaration and shared IDtdBudget independently of decoder/resolver/DOM; scalar/mapping/source cursor and exactly-once prefix handoff.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M2-dtd-framing-A2",
+      "description": "Every split proves declared/absent/rejected outcomes, mandatory encoding/version grammar, bounded prefix/carry, incremental live-budget refusal, exact/one-over limits, EOF/locations, cancellation/fault/disposal and owned snapshots.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M2-dtd-framing-A3",
+      "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}

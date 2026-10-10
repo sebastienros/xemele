@@ -11,7 +11,8 @@
   "integration_queue": [],
   "blockers": [],
   "next_actions": [
-    "Claim and dispatch ready M2-resolver/M2-dtd/M2-encoding in isolated workers; benchmark timing serialized"
+    "Claim and dispatch ready M2-resolver/M2-dtd-framing/M2-encoding in three isolated chats",
+    "Verify framing then dispatch grammar when capacity permits; serialized benchmarks"
   ],
   "last_verified_task": "M2-contracts",
   "last_integrated_revision": "ab2fcabaf3cc984901f484c6fce1069c385e8c2f",
@@ -775,6 +776,14 @@
         "M1-corpus-import"
       ],
       "reason": "Full-suite metadata import/classification is independently reviewable from runtime conformance/round trips; keep original parent acceptance as verification join and let verified contracts unlock import."
+    },
+    {
+      "parent": "M2-dtd",
+      "children": [
+        "M2-dtd-framing",
+        "M2-dtd-grammar"
+      ],
+      "reason": "External declaration recognition/framing and source-budget handoff are independently reviewable from full DTD grammar. Framing owns shared IDtdBudget; grammar depends on its verification. Original parent acceptance and gate reachability preserved."
     }
   ],
   "reference_capability_notes": [

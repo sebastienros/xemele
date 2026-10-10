@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "id": "M2-dtd-grammar",
+  "milestone": "M2",
+  "title": "Incremental DTD grammar and immutable declarations",
+  "kind": "feature",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "depends_on": [
+    "M2-contracts",
+    "M2-dtd-framing"
+  ],
+  "goals": [
+    "G07"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/parser.md"
+  ],
+  "owns": [
+    "src/Xemele/Parsing/Dtd/Grammar/",
+    "src/Xemele/Parsing/Dtd/Model/",
+    "tests/Xemele.Tests/M2-dtd-grammar/",
+    "tests/fixtures/M2-dtd-grammar/",
+    "benchmarks/Xemele.Benchmarks/M2-dtd-grammar/",
+    "samples/M2-dtd-grammar/",
+    "docs/reports/M2-dtd-grammar/"
+  ],
+  "api_or_output": "Incremental DTD grammar and immutable declarations",
+  "acceptance": [
+    {
+      "id": "M2-dtd-grammar-A1",
+      "description": "Implement approved immutable DtdModel/particles/declarations and DtdParser internal/external grammar, parameter entities and defaults/types, using only verified shared budget/framing hooks.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M2-dtd-grammar-A2",
+      "description": "Pinned and authored cases prove malformed/recursive/conditional/content-model declarations, first-declaration precedence, normalized defaults/entities, every split/push-source boundary, initial scalar cursor/absolute mappings, aggregate exact/one-over quotas, cancellation and borrowed input release.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M2-dtd-grammar-A3",
+      "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}
