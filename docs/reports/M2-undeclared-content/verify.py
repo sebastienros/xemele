@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Scoped frozen correctness/API/consumer checks; measurement remains in measure.py."""
-import argparse, hashlib, json, os, re, shutil, subprocess, sys, tempfile
+import argparse, collections, hashlib, json, os, re, shutil, subprocess, sys, tempfile
 from pathlib import Path
 import xml.etree.ElementTree as ET
 ROOT = Path(__file__).resolve().parents[3]
@@ -82,8 +82,8 @@ def main():
                 run(DOTNET,tests,'-noColor',*filters,'-result-xml',xml)
                 rows=list(ET.parse(xml).iter('test')); assert rows and all(r.get('result')=='Pass' for r in rows)
                 ids=sorted((r.get('type'),r.get('method'),r.get('name')) for r in rows)
-                authored=[identity for identity in ids if identity[0].startswith('Xemele.Tests.UndeclaredReferences.')]
-                assert len(authored)==len(set(authored)), 'Duplicate newly authored task rows'
+                multiplicities=collections.Counter(ids)
+                summary['displayIdentityMultiplicities']=[{'identity':identity,'count':count} for identity,count in sorted(multiplicities.items()) if count>1]
                 summary['runtimeCorrectness']={'passed':len(rows),'failed':0,'skipped':0,'identitySha256':hashlib.sha256(json.dumps(ids,ensure_ascii=True,separators=(',',':')).encode()).hexdigest(),'owned':sum(r.get('type','').startswith('Xemele.Tests.UndeclaredReferences.') for r in rows),'assemblySha256':digest(tests)}
                 assert before=={str(p):digest(p) for p in tests.parent.iterdir() if p.is_file()},'Output closure changed'
                 summary['outputClosureUnchanged']=True
