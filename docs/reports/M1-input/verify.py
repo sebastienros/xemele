@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Checks known input revision; never writes shared/peer reports."""
-import subprocess, pathlib, json, platform
+import subprocess, pathlib, json, platform, tempfile, zipfile
+import xml.etree.ElementTree as ET
 ROOT=pathlib.Path(__file__).resolve().parents[3]
 REPORT=ROOT/'docs/reports/M1-input'
 FLAGS=['-c','Release','--disable-build-servers','-m:1','-p:UseSharedCompilation=false']
@@ -36,6 +37,17 @@ def main():
     run('python3','-B','tests/Xemele.TestUtilities/Corpora/verify_bootstrap.py')
     run('dotnet','run','--project','samples/M1-input/Sample.csproj',*FLAGS)
     run('dotnet','pack','src/Xemele/Xemele.csproj',*FLAGS,'--no-build','--no-restore','-o','artifacts/M1-input/packages')
+    packages=ROOT/'artifacts/M1-input/packages'
+    package=next(packages.glob('Xemele.*.nupkg'))
+    with zipfile.ZipFile(package) as archive:
+        nuspec=ET.fromstring(archive.read(next(n for n in archive.namelist() if n.endswith('.nuspec'))))
+        version=next(n.text for n in nuspec.iter() if n.tag.endswith('}version'))
+        assert 'lib/net10.0/Xemele.dll' in archive.namelist()
+    with tempfile.TemporaryDirectory(prefix='xemele-input-package-') as directory:
+        directory=pathlib.Path(directory)
+        (directory/'Consumer.csproj').write_text(f'<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><TargetFramework>net10.0</TargetFramework><OutputType>Exe</OutputType><AssemblyName>Xemele.InputSample</AssemblyName><ImplicitUsings>enable</ImplicitUsings><Nullable>enable</Nullable></PropertyGroup><ItemGroup><PackageReference Include="Xemele" Version="{version}" /></ItemGroup></Project>')
+        (directory/'Program.cs').write_text((ROOT/'samples/M1-input/Program.cs').read_text())
+        run('dotnet','run','--project',directory/'Consumer.csproj','-c','Release','--disable-build-servers','-p:UseSharedCompilation=false',f'-p:RestoreSources={packages}')
     run('dotnet','build','docs/reports/M1-input/Xemele.InputBenchmarks.csproj',*FLAGS)
     run('dotnet','run','--project','docs/reports/M1-input/Xemele.InputBenchmarks.csproj','-c','Release','--no-build','--','--contract',ROOT/'docs/reports/M1-contracts/Projects/Input/bin/Release/net10.0/M1Input.dll')
     run('dotnet','run','--project','docs/reports/M1-input/Xemele.InputBenchmarks.csproj','-c','Release','--no-build','--','--allocation')
