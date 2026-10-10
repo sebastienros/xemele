@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><OutputType>Exe</OutputType><AssemblyName>Xemele.DtdFramingBenchmarks</AssemblyName><EnableDefaultCompileItems>false</EnableDefaultCompileItems></PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="BenchmarkDotNet" />
+    <ProjectReference Include="../../../src/Xemele/Xemele.csproj" />
+    <Compile Include="../../../benchmarks/Xemele.Benchmarks/M2-dtd-framing/FramingBenchmarks.cs" />
+    <Compile Include="BenchmarkDriver.cs" />
+  </ItemGroup>
+</Project>
