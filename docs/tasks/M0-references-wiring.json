@@ -29,7 +29,8 @@
       "description": "Add no-output ProjectReference to verified BclReference project so clean ordinary solution build produces the executable before differential protocol tests; do not add reference implementation to runtime package.",
       "status": "passed",
       "evidence": [
-        "clean-wiring-verification"
+        "clean-wiring-verification",
+        "direct-project-build"
       ]
     },
     {
@@ -71,6 +72,15 @@
       "result": "passed",
       "summary": "macOS arm64 SDK10.0.400: removed generated bin/obj from 12 actual solution/reference projects, proved runner absent, ordinary solution restore/Release build without manual runner build succeeded with 0 warnings/errors. BclReference Release executable and copied protocol assembly exist; native MTP XML confirms 51 protocol +3 smoke tests, 54 pass0 fail0 skip,0 product tests. All3 controlled smoke failures exit2. Preserved16 help/default invocations,3 unknown exits2, managed-only net10.0 package/API0, runtime assets graph empty libraries/targets/project refs, evaluated exact no-output build edge,101-task validation. MSBuild retains its default Debug configuration for the transitive protocol project and copies that assembly into runner output; all Release executable checks pass. No other-platform/native-engine/runtime-conformance/performance claim.",
       "artifact": "docs/reports/M0-references-wiring/verification.txt"
+    },
+    {
+      "id": "direct-project-build",
+      "kind": "check",
+      "revision": "6011f201c29450a20ec099c6162c48e296af48cc",
+      "command": "Pinned SDK10.0.400 DOTNET_CLI_USE_MSBUILD_SERVER=0 dotnet build tests/Xemele.Differential.Tests/Xemele.Differential.Tests.csproj -c Release --no-restore --disable-build-servers -m:1 -p:UseSharedCompilation=false",
+      "result": "passed",
+      "summary": "Coordinator follow-up: direct Release project build succeeds0warnings/errors, builds BclReference and ReferenceProtocol in Release without manual runner build. Solution clean-run evidence remains at source38839de unchanged.",
+      "artifact": "docs/reports/M0-references-wiring/direct-project.txt"
     }
   ],
   "blockers": [],
@@ -79,7 +89,8 @@
     "checks": [
       "Full clean verifier passed at source38839de9d42062b734ec7caca44dd05b026bbe42;51 protocol+3 smoke passes,3 intentional smoke failures exit2;bootstrap/help/pack/API/runtime graph/task validation pass.",
       "Initial exact-reference-only attempt failed12 tests because solution unsets configuration for unlisted runner; archived failed transcript retained.",
-      "Runtime hot paths unchanged; allocation/performance measurements not applicable and not run. Only macOS arm64 checked."
+      "Runtime hot paths unchanged; allocation/performance measurements not applicable and not run. Only macOS arm64 checked.",
+      "Coordinator configuration follow-up satisfied: scoped false property already present; direct Release project build also passes0warnings/errors at6011f201c29450a20ec099c6162c48e296af48cc."
     ],
     "remaining": [],
     "requests": []
