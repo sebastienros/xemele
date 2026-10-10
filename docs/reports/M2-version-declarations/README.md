@@ -36,14 +36,19 @@ class's `[MemoryDiagnoser, ShortRunJob]` without job overrides. It requires all
 14 exact identities, 42 Actual, 42 Result, 14 GC records, both restore/build exits,
 and every actual child exit. Each timed GC total must equal operation count times
 the directly measured generated-method allocation oracle; no rounding or relaxed
-counter tolerance is accepted. Full versions, SDK/runtime, source and primary/
-generated binary closures are checked before and after.
+counter tolerance is accepted. Full versions, source and primary/generated binary closures are checked before
+and after. Each actual consumer reports its loaded CoreLib path/full identity/
+MVID and executable identity; every file in that CoreLib-selected shared-runtime
+directory (native, BCL and runtime metadata) is hashed and compared before/after.
 
 Modes are one-shot: a durable attempt summary prevents retries. Allocation mode
 has a 300-second total budget and 90-second child deadlines; timing has an
 1800-second total, 240-second build and 180-second child deadline. Timeout/failure
 terminates and reaps the process group, preserves the primary failure and attempts
-remaining cleanup. Raw logs are removed after inspection; frozen binaries survive
+remaining cleanup. Even a zero-exit parent must leave an empty process group;
+surviving descendants are terminated and make the run fail. Actual/expected
+closure/input/metadata mismatch records and partial per-case observations are
+published before assertions and retained in summaries before raw cleanup. Raw logs are removed after inspection; frozen binaries survive
 only between successful allocation/timing phases, then are removed. Cleanup and
 summary-write failures remain distinct from the original failure. Timings are
 informational for the observed arm64 host.

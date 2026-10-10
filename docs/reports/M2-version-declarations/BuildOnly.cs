@@ -12,6 +12,9 @@ using System.Security.Cryptography;
 using BenchmarkDotNet.Toolchains.Parameters;
 using BenchmarkDotNet.Diagnosers;
 
+if (args.Length == 1 && args[0] == "--runtime-identity")
+{ Console.WriteLine(JsonSerializer.Serialize(RuntimePayload.Capture())); return; }
+
 if (args.Length >= 2 && args[0] is "--lifecycle" or "--lifecycle-oracle")
 {
     bool counters = args[0] == "--lifecycle";
@@ -68,7 +71,9 @@ static SortedDictionary<string, string> Inputs(string directory) => new(Director
 static void Equal(JsonElement expected, SortedDictionary<string, string> actual, int? count = null)
 {
     var known = expected.EnumerateObject().ToDictionary(p => p.Name, p => p.Value.GetString());
-    if (count is not null && actual.Count != count || actual.Count != known.Count || actual.Any(p => !known.TryGetValue(p.Key, out var value) || value != p.Value)) throw new InvalidOperationException("Frozen raw closure/input equality failed.");
+    bool equal = (count is null || actual.Count == count) && actual.Count == known.Count && actual.All(p => known.TryGetValue(p.Key, out var value) && value == p.Value);
+    Console.WriteLine("// VersionIdentityCheck: " + JsonSerializer.Serialize(new { kind = count is null ? "generated-inputs" : "child-closure", expected = known, actual, equal }));
+    if (!equal) throw new InvalidOperationException("Frozen raw closure/input equality failed.");
 }
 static object Identity(BenchmarkCase value) => new { type = value.Descriptor.Type.Name, method = value.Descriptor.WorkloadMethod.Name, corpus = value.Parameters.Items.Single(p => p.Name == "Corpus").Value.ToString(), chunked = value.Parameters.Items.Any(p => p.Name == "Chunked") ? (bool?)value.Parameters.Items.Single(p => p.Name == "Chunked").Value : null };
 var assembly = Assembly.LoadFrom(Path.GetFullPath(args[0]));
@@ -105,8 +110,19 @@ foreach (var partition in partitions)
         string revision = expected.RootElement.GetProperty("revision").GetString()!;
         foreach (string name in expected.RootElement.GetProperty("childMetadata").EnumerateObject().Select(p => p.Name))
         {
-            var actual = Assembly.LoadFile(Path.Combine(child, name));
-            if (actual.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion != "1.0.0+" + revision) throw new InvalidOperationException("Actual child full informational version differs.");
+            JsonElement knownMetadata = expected.RootElement.GetProperty("childMetadata").GetProperty(name);
+            Assembly actual;
+            try { actual = Assembly.LoadFile(Path.Combine(child, name)); }
+            catch (Exception error)
+            {
+                Console.WriteLine("// VersionMetadataCheck: " + JsonSerializer.Serialize(new { name, expected = knownMetadata, actual = (object?)null, equal = false, failure = new { type = error.GetType().Name, message = error.Message } }));
+                throw;
+            }
+            string? fullVersion = actual.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion;
+            var actualMetadata = new { Name = actual.GetName().Name, Version = actual.GetName().Version?.ToString(), FullVersion = fullVersion, Sha256 = Hash(Path.Combine(child, name)) };
+            bool equal = fullVersion == "1.0.0+" + revision && actualMetadata.Name == knownMetadata.GetProperty("Name").GetString() && actualMetadata.Version == knownMetadata.GetProperty("Version").GetString() && actualMetadata.Sha256 == knownMetadata.GetProperty("Sha256").GetString();
+            Console.WriteLine("// VersionMetadataCheck: " + JsonSerializer.Serialize(new { name, expected = knownMetadata, actual = actualMetadata, equal }));
+            if (!equal) throw new InvalidOperationException("Actual child metadata differs.");
         }
         Console.WriteLine("// VersionFrozenChild: " + JsonSerializer.Serialize(new { child, project, files = Closure(child).Count, revision }));
         foreach (var info in partition.Benchmarks)

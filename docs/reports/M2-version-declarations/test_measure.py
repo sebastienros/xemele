@@ -144,4 +144,71 @@ class MeasurementProtocolTests(unittest.TestCase):
                 self.assertEqual(1,m.main(['--exclusive-grant','synthetic-control-only','--mode','allocations']))
             summary=json.loads(captured.getvalue());self.assertEqual('FileNotFoundError',summary['failure']['type']);self.assertEqual('PermissionError',summary['summaryWriteError']['type']);self.assertTrue(summary['temporaryOutputsRemoved']);self.assertFalse(raw.exists())
 
+    def test_variant_mismatch_actual_expected_maps_survive_cleanup(self):
+        known=self.fixture();actual=dict(known['childClosure']);actual['Xemele.dll']='changed';evidence={}
+        with tempfile.TemporaryDirectory() as d:
+            raw=Path(d)/'raw';raw.mkdir();(raw/'child.dll').write_text('transient');summary={'result':'failed','variant':evidence}
+            with self.assertRaises(m.ProtocolError) as failure:m.validate_variant(known,actual,known['generatedInputIdentities'],known['childMetadata'],known['revision'],evidence)
+            summary['failure']={'type':type(failure.exception).__name__,'message':str(failure.exception)};m.cleanup(summary,[raw])
+            saved=Path(d)/'summary.json';saved.write_text(json.dumps(summary));restored=json.loads(saved.read_text())
+            self.assertEqual('changed',restored['variant']['actualClosure']['Xemele.dll']);self.assertEqual(known['childClosure']['Xemele.dll'],restored['variant']['expectedClosure']['Xemele.dll']);self.assertEqual(known['childMetadata'],restored['variant']['actualMetadata']);self.assertTrue(restored['temporaryOutputsRemoved'])
+    def test_streamed_csharp_mismatch_survives_malformed_case_parse(self):
+        mismatch={'kind':'child-closure','expected':{'a':'expected'},'actual':{'a':'changed'},'equal':False}
+        metadata={'name':'child.dll','expected':{'FullVersion':'expected'},'actual':{'FullVersion':'changed'},'equal':False}
+        text='// VersionIdentityCheck: '+json.dumps(mismatch)+'\n// VersionMetadataCheck: '+json.dumps(metadata)+'\n// VersionCaseStart: {truncated\n'
+        captured=m.identity_records(text)
+        with self.assertRaises(json.JSONDecodeError):m.observations(text)
+        with tempfile.TemporaryDirectory() as d:
+            raw=Path(d)/'raw';raw.mkdir();(raw/'log').write_text(text);summary={'result':'failed','streamed':captured,'failure':{'message':'primary parse failure'}};m.cleanup(summary,[raw]);saved=json.loads(json.dumps(summary))
+            self.assertEqual([mismatch],saved['streamed']['identityChecks']);self.assertEqual([metadata],saved['streamed']['metadataChecks']);self.assertTrue(saved['temporaryOutputsRemoved']);self.assertEqual('primary parse failure',saved['failure']['message'])
+    def runtime_fixture(self):
+        directory='/shared/Microsoft.NETCore.App/10.0.11';closure={f'file{i}.dll':f'{i:064x}' for i in range(110)}
+        closure.update({'System.Private.CoreLib.dll':'core','libcoreclr.dylib':'native','Microsoft.NETCore.App.deps.json':'metadata'})
+        return dict(runtime='10.0.11',architecture='Arm64',processPath='/sdk/dotnet',processSha256='host',runtimeDirectory=directory,coreLib=dict(path=directory+'/System.Private.CoreLib.dll',fullName='System.Private.CoreLib, Version=10.0.0.0',version='10.0.0.0',fullVersion='10.0.11+actual',mvid='loaded-mvid',sha256='core'),closure=closure)
+    def test_actual_runtime_native_bcl_metadata_and_loaded_path_changes_rejected(self):
+        known=self.runtime_fixture();self.assertTrue(m.validate_runtime(known,known))
+        for change in ['native','bcl','metadata','loaded-path','mvid','version','extra','missing']:
+            actual=copy.deepcopy(known);evidence={}
+            if change=='native':actual['closure']['libcoreclr.dylib']='changed'
+            elif change=='bcl':actual['closure']['file3.dll']='changed'
+            elif change=='metadata':actual['closure']['Microsoft.NETCore.App.deps.json']='changed'
+            elif change=='loaded-path':actual['coreLib']['path']='/wrong/CoreLib.dll'
+            elif change=='mvid':actual['coreLib']['mvid']='changed'
+            elif change=='version':actual['runtime']='10.0.12'
+            elif change=='extra':actual['closure']['extra']='extra'
+            else:actual['closure'].pop('file3.dll')
+            with self.subTest(change=change),self.assertRaises(m.ProtocolError):m.validate_runtime(known,actual,evidence)
+            self.assertEqual(actual,evidence['actual']);self.assertEqual(known,evidence['expected'])
+    def test_zero_exit_parent_residual_descendant_is_terminated_and_fails(self):
+        class Process:
+            pid=4321
+            def poll(self):return 0
+            def wait(self,timeout):return 0
+        alive=True;signals=[]
+        def kill(pid,sig):
+            nonlocal alive
+            signals.append(sig)
+            if sig==m.signal.SIGKILL:alive=False
+            if sig==0 and not alive:raise ProcessLookupError()
+        with tempfile.TemporaryDirectory() as d:
+            log=Path(d)/'log';log.write_text('');summary={}
+            with patch.object(m.os,'killpg',side_effect=kill),patch.object(m.time,'monotonic',side_effect=[0,0,2]):
+                with self.assertRaises(m.ProtocolError):m.bounded_wait(Process(),log,summary,total_seconds=10,child_seconds=10)
+            self.assertFalse(alive);self.assertEqual([0,m.signal.SIGTERM,m.signal.SIGKILL,0],signals);self.assertEqual([{'pid':4321,'exit':0}],summary['parentExits']);self.assertTrue(summary['processGroups'][0]['residualDescendants']);self.assertTrue(summary['terminatedProcessGroup'])
+    def test_zero_exit_parent_empty_group_is_verified(self):
+        class Process:
+            pid=5432
+            def poll(self):return 0
+            def wait(self,timeout):return 0
+        with tempfile.TemporaryDirectory() as d:
+            log=Path(d)/'log';log.write_text('');summary={}
+            with patch.object(m.os,'killpg',side_effect=ProcessLookupError()) as kill:
+                self.assertEqual(0,m.bounded_wait(Process(),log,summary,total_seconds=10,child_seconds=10))
+            self.assertEqual([((5432,0),{})],[(c.args,c.kwargs) for c in kill.call_args_list]);self.assertEqual([{'pid':5432,'emptyAfterReap':True}],summary['processGroups'])
+
+    def test_partial_actual_gc_records_survive_later_case_parse_failure(self):
+        text=self.text()+'// VersionCaseStart: {truncated\n';retained=[]
+        with self.assertRaises(json.JSONDecodeError):m.observations(text,retained)
+        self.assertEqual(15,len(retained));self.assertEqual(42,sum(len(r['actual']) for r in retained));self.assertEqual(14,sum(len(r['gc']) for r in retained));self.assertIn('identityParseFailure',retained[-1]);json.dumps(retained)
+
 if __name__=='__main__':unittest.main()

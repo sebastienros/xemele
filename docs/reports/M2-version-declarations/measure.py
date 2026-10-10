@@ -20,7 +20,9 @@ def case_id(record):
     require(set(record)=={'type','method','corpus','chunked'}, 'Case identity field set differs.')
     require(record['chunked'] is None or type(record['chunked']) is bool, 'Chunked identity must be bool/null.')
     return tuple(record[k] for k in ['type','method','corpus','chunked'])
-def validate_variant(known, actual_closure, actual_inputs, metadata, revision):
+def validate_variant(known, actual_closure, actual_inputs, metadata, revision, evidence=None):
+    record={'expectedRevision':known['revision'],'actualRevision':revision,'expectedClosure':known['childClosure'],'actualClosure':actual_closure,'expectedInputs':known['generatedInputIdentities'],'actualInputs':actual_inputs,'expectedMetadata':known['childMetadata'],'actualMetadata':metadata}
+    if evidence is not None:evidence.update(record)
     require(known['revision']==revision,'Generated reference revision differs.')
     require(len(known['childClosure'])==len(actual_closure)==47,'Expected exact complete 47-file child closure.')
     require(actual_closure==known['childClosure'],'Actual generated child raw closure differs from independently built current-source reference.')
@@ -47,8 +49,26 @@ def terminate_group(process, summary):
         except Exception as error:errors.append(str(error));break
         time.sleep(.05)
     summary['terminatedProcessGroup']=empty
+    summary.setdefault('terminatedGroups',[]).append({'pid':process.pid,'empty':empty})
     if not empty:errors.append('Process group survives bounded termination.')
     if errors:summary['terminationErrors']=errors
+
+def require_group_empty(process, summary, timeout_seconds=1):
+    deadline=time.monotonic()+timeout_seconds
+    while True:
+        try:os.killpg(process.pid,0)
+        except ProcessLookupError:
+            summary.setdefault('processGroups',[]).append({'pid':process.pid,'emptyAfterReap':True})
+            return
+        except Exception as error:
+            summary.setdefault('processGroups',[]).append({'pid':process.pid,'emptyAfterReap':False,'inspectionError':str(error)})
+            terminate_group(process,summary)
+            raise ProtocolError('Cannot establish empty process group after parent exit.') from error
+        if time.monotonic()>=deadline:
+            summary.setdefault('processGroups',[]).append({'pid':process.pid,'emptyAfterReap':False,'residualDescendants':True})
+            terminate_group(process,summary)
+            raise ProtocolError('Zero-exit parent left residual descendants; terminated process group.')
+        time.sleep(.05)
 
 def bounded_wait(process, logfile, summary, total_seconds, child_seconds, build_seconds=None):
     start=time.monotonic();child_start=start if build_seconds is None else None;read=0;carry='';build_done=build_seconds is None
@@ -68,17 +88,24 @@ def bounded_wait(process, logfile, summary, total_seconds, child_seconds, build_
                 summary['timeout']={'stage':stage,'elapsedSeconds':elapsed};raise TimeoutError('Bounded '+stage+' deadline exceeded.')
             time.sleep(.2)
         status=process.wait(timeout=5)
+        summary.setdefault('parentExits',[]).append({'pid':process.pid,'exit':status})
         # A nonzero parent may leave children alive even when its own process is reaped.
         if status!=0:terminate_group(process,summary)
+        else:require_group_empty(process,summary)
         return status
     except BaseException:
-        terminate_group(process,summary);raise
+        if not any(g['pid']==process.pid and g['empty'] for g in summary.get('terminatedGroups',[])):terminate_group(process,summary)
+        raise
 
-def observations(output):
+def observations(output, retained=None):
     blocks=re.split(r'^// VersionCaseStart: ',output,flags=re.MULTILINE)[1:]
-    rows=[];scales={'ns':1,'us':1000,'μs':1000,'ms':1000000,'s':1000000000}
+    rows=[] if retained is None else retained;scales={'ns':1,'us':1000,'μs':1000,'ms':1000000,'s':1000000000}
     for block in blocks:
-        row={'identity':json.loads(block.splitlines()[0]),'actual':[],'result':[],'gc':[]}
+        row={'actual':[],'result':[],'gc':[],'results':[]};rows.append(row)
+        try:row['identity']=json.loads(block.splitlines()[0])
+        except Exception as error:
+            row['identityParseFailure']={'type':type(error).__name__,'message':str(error),'identityLineSha256':hashlib.sha256(block.splitlines()[0].encode()).hexdigest()}
+            raise
         for stage,key in [('Actual','actual'),('Result','result')]:
             pattern=r'^Workload'+stage+r'\s+(\d+):\s+(\d+) op,\s+([\d.eE+-]+)\s+(ns|us|μs|ms|s),\s+([\d.eE+-]+)\s+(ns|us|μs|ms|s)/op\s*$'
             for m in re.finditer(pattern,block,re.MULTILINE):
@@ -88,7 +115,6 @@ def observations(output):
         row['childExits']=[(int(pid),int(code)) for pid,code in re.findall(r'^// Benchmark Process (\d+) has exited with code (-?\d+)\.',block,re.MULTILINE)]
         row['results']=[json.loads(m[1]) for m in re.finditer(r'^// VersionCaseResult: (.+)$',block,re.MULTILINE)]
         row['environment']=[line for line in block.splitlines() if line.startswith(('// Runtime=','// GC=','// HardwareIntrinsics='))]
-        rows.append(row)
     return rows
 
 def validate_benchmarks(output):
@@ -118,6 +144,29 @@ def validate_benchmarks(output):
         row['gc'][0]['bytesPerOperation']=gc['allocatedBytes']/gc['operations']
     require(len(set(pids))==14,'Each declared case requires its own actual child process.')
     return {'cases':rows,'actual':42,'result':42,'gc':14,'buildExits':build_exits,'frozenBinding':frozen[0]}
+
+def identity_records(output):
+    result={'identityChecks':[],'metadataChecks':[],'parseFailures':[]}
+    for line in output.splitlines():
+        for marker,key in [('// VersionIdentityCheck: ','identityChecks'),('// VersionMetadataCheck: ','metadataChecks')]:
+            if line.startswith(marker):
+                try:result[key].append(json.loads(line[len(marker):]))
+                except Exception as error:result['parseFailures'].append({'marker':marker,'type':type(error).__name__,'message':str(error)[:300]})
+    # Full mismatch maps survive cleanup; repeated successful maps need only counts.
+    result['successfulIdentityChecks']=sum(r.get('equal') is True for r in result['identityChecks'])
+    result['identityChecks']=[r for r in result['identityChecks'] if r.get('equal') is not True]
+    return result
+
+def validate_runtime(expected, actual, evidence=None):
+    if evidence is not None:evidence.update({'expected':expected,'actual':actual})
+    require(actual==expected,'Actual selected runtime complete payload/loaded identity differs.')
+    require(actual['runtime']=='10.0.11' and actual['architecture']=='Arm64','Actual executing runtime/architecture differs.')
+    core=actual['coreLib'];directory=Path(actual['runtimeDirectory'])
+    require(Path(core['path']).parent==directory and Path(core['path']).name=='System.Private.CoreLib.dll','Loaded CoreLib path does not bind selected runtime directory.')
+    require(directory.name=='10.0.11' and core['sha256']==actual['closure']['System.Private.CoreLib.dll'],'Loaded CoreLib identity/payload hash differs.')
+    require(core['fullName'] and core['fullVersion'] and core['mvid'] and len(actual['closure'])>100,'Complete selected runtime payload and loaded CoreLib metadata required.')
+    require(any(n.endswith(('.dylib','.so')) for n in actual['closure']) and any(n.endswith('.json') for n in actual['closure']),'Selected native/BCL/runtime metadata payload missing.')
+    return True
 
 def validate_allocations(output, positive, identity):
     rows=[json.loads(line) for line in output.splitlines() if line.startswith('{')]
@@ -208,7 +257,11 @@ def main(argv=None):
         try:stdout,_=child.communicate(timeout=min(limit,remaining()))
         except BaseException:terminate_group(child,summary);raise
         summary['commands'].append({'command':list(map(str,command)),'exit':child.returncode})
-        if child.returncode!=0:terminate_group(child,summary)
+        if child.returncode!=0:
+            terminate_group(child,summary)
+            exception=re.search(r'^Unhandled exception\. (.+)$',stdout,re.MULTILINE)
+            summary['commandFailure']={'command':list(map(str,command)),'exit':child.returncode,'primaryException':exception[1][:500] if exception else None}
+        else:require_group_empty(child,summary)
         require(child.returncode==0,'Provenance/oracle command failed; exit '+str(child.returncode))
         return stdout
     def freeze():
@@ -219,12 +272,31 @@ def main(argv=None):
         for n in known['sourceIdentities']:
             require((ROOT/n).read_bytes()==subprocess.check_output(['git','show',revision+':'+n],cwd=ROOT,timeout=min(30,remaining())),'Tracked source differs from Git: '+n)
         require(digest(dotnet)==known['sdk']['hostSha256'] and run([dotnet,'--version']).strip()=='10.0.400' and run([dotnet,'--list-runtimes']).splitlines()==known['sdk']['runtimes'],'SDK host/runtime inventory differs.')
-        for name,expected in known['primaryClosures'].items():require({n:h for n,h in snapshot(RAW/f'build/bin/{name}/release').items() if name != 'BenchmarkDriver' or not n.startswith(known['generatedSubtree']+'/')}==expected,'Primary binary closure differs: '+name)
-        require(json.loads(run([dotnet,sample,'--identity']))==known['sampleIdentity'],'Actual primary source/full-version/runtime metadata differs.')
-        metadata={name:json.loads(run([dotnet,sample,'--file-identity',child/name])) for name in known['childMetadata']}
-        validate_variant(known,snapshot(child),generated_inputs(project),metadata,revision)
+        primary_evidence={};summary.setdefault('primaryIdentityChecks',[]).append(primary_evidence)
+        for name,expected in known['primaryClosures'].items():
+            actual={n:h for n,h in snapshot(RAW/f'build/bin/{name}/release').items() if name != 'BenchmarkDriver' or not n.startswith(known['generatedSubtree']+'/')}
+            primary_evidence[name]={'expected':expected,'actual':actual}
+            require(actual==expected,'Primary binary closure differs: '+name)
+        actual_primary=json.loads(run([dotnet,sample,'--identity']))
+        summary.setdefault('primaryMetadataChecks',[]).append({'expected':known['sampleIdentity'],'actual':actual_primary})
+        require(actual_primary==known['sampleIdentity'],'Actual primary source/full-version/runtime metadata differs.')
+        evidence={'expectedRevision':known['revision'],'actualRevision':revision,'expectedClosure':known['childClosure'],'actualClosure':snapshot(child),'expectedInputs':known['generatedInputIdentities'],'actualInputs':generated_inputs(project),'expectedMetadata':known['childMetadata'],'actualMetadata':{}}
+        summary.setdefault('variantIdentityChecks',[]).append(evidence)
+        metadata=evidence['actualMetadata']
+        for name in known['childMetadata']:
+            try:metadata[name]=json.loads(run([dotnet,sample,'--file-identity',child/name]))
+            except Exception as error:
+                evidence.setdefault('metadataReadFailures',{})[name]={'type':type(error).__name__,'message':str(error)}
+                raise
+        validate_variant(known,evidence['actualClosure'],evidence['actualInputs'],metadata,revision,evidence)
+        runtime_checks={};summary.setdefault('runtimeIdentityChecks',[]).append(runtime_checks)
+        for name,binary in [('sample',sample),('generator',generator)]:
+            actual_runtime=json.loads(run([dotnet,binary,'--runtime-identity']))
+            runtime_checks[name]={'expected':known['runtimeIdentities'][name],'actual':actual_runtime}
+            validate_runtime(known['runtimeIdentities'][name],actual_runtime,runtime_checks[name])
+            require(actual_runtime['processSha256']==known['sdk']['hostSha256'],'Actual runtime host hash differs from pinned SDK host.')
         require(platform.machine()=='arm64' and known['architecture']=='arm64','Actual host architecture differs.')
-        return {'sourceFreeze':True,'primaryClosures':True,'generatedClosure':True,'metadata':metadata,'runtime':'10.0.11','architecture':'arm64'}
+        return {'sourceFreeze':True,'primaryClosures':True,'generatedClosure':True,'metadata':metadata,'runtime':'10.0.11','architecture':'arm64','runtimePayloads':{name:row['actual'] for name,row in runtime_checks.items()}}
     try:
         dotnet=Path(shutil.which('dotnet')).resolve()
         require(bool(args.exclusive_grant.strip()),'Explicit grant identifier must be nonempty.')
@@ -283,6 +355,9 @@ def main(argv=None):
                 summary['activeCommand']={'command':command,'pid':process.pid}
                 status=bounded_wait(process,logfile,summary,total_seconds=remaining(),child_seconds=180,build_seconds=240)
             summary['commands'].append({'command':command,'exit':status});require(status==0,'Benchmark parent/build/child failed.')
+            summary['streamedIdentityEvidence']=identity_records(logfile.read_text())
+            summary['partialObservations']=[]
+            observations(logfile.read_text(),summary['partialObservations'])
             summary['benchmarks']=validate_benchmarks(logfile.read_text())
             summary['exactGcAllocationTotals']=validate_gc_totals(summary['benchmarks'],baselines)
             require(digest(allocation_path)==allocation_sha,'Durable allocation oracle changed during timing.')
@@ -295,7 +370,10 @@ def main(argv=None):
         if 'process' in locals():summary['parentExitAfterFailure']=process.poll()
         if logs:
             try:
-                partial=logs[-1].read_text();summary['partialObservations']=observations(partial)
+                partial=logs[-1].read_text();summary['streamedIdentityEvidence']=identity_records(partial)
+                summary['partialObservations']=[]
+                try:observations(partial,summary['partialObservations'])
+                except Exception as parse_error:summary['caseParseFailure']={'type':type(parse_error).__name__,'message':str(parse_error)}
                 exceptions=re.findall(r'^Unhandled exception\. (.+)$',partial,re.MULTILINE)
                 if exceptions:summary['childPrimaryException']=exceptions[0][:500]
                 summary['partialAllocationPayloads']=[json.loads(line) for line in partial.splitlines() if line.startswith('{')]

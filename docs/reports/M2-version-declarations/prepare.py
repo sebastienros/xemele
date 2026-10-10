@@ -1,7 +1,7 @@
 """Prepare frozen standalone boundaries and independent BDN children; never measure."""
 import hashlib, json, os, platform, shutil, signal, subprocess, sys
 from pathlib import Path
-from measure import validate_variant, case_id, expected_cases
+from measure import validate_variant, validate_runtime, require_group_empty, terminate_group, case_id, expected_cases
 ROOT=Path(__file__).resolve().parents[3]
 REPORT=ROOT/'docs/reports/M2-version-declarations'
 RAW=REPORT/'.measurement'
@@ -19,6 +19,8 @@ def main():
         except subprocess.TimeoutExpired:
             os.killpg(child.pid,signal.SIGKILL);child.communicate();raise
         summary['commands'].append({'command':command,'exit':child.returncode})
+        if child.returncode:terminate_group(child,summary)
+        else:require_group_empty(child,summary)
         if child.returncode: raise RuntimeError(str(command)+': '+output[-2000:])
         return output
     try:
@@ -38,6 +40,12 @@ def main():
         sample=build/'bin/Sample/release/Xemele.SyntaxSample.dll'
         benchmark=build/'bin/BenchmarkDriver/release/Xemele.Benchmarks.dll'
         generator=build/'bin/BuildOnly/release/VersionBuildOnly.dll'
+        summary['runtimeIdentities'] = {}
+        for name,binary in [('sample',sample),('generator',generator)]:
+            actual_runtime=json.loads(run('dotnet',binary,'--runtime-identity'))
+            summary['runtimeIdentities'][name]=actual_runtime
+            validate_runtime(actual_runtime,actual_runtime)
+            assert actual_runtime['processSha256']==summary['sdk']['hostSha256']
         summary['sampleOracles']=[run('dotnet',sample,mode).strip() for mode in ['--oracle','--boundary-oracle']]
         summary['benchmarkOracle']=run('dotnet',benchmark,'--oracle').strip()
         summary['sampleIdentity']=json.loads(run('dotnet',sample,'--identity'))
@@ -68,9 +76,16 @@ def main():
         assert lifecycle['mode'] == 'lifecycle-oracle' and len(lifecycle['cases']) == 14 and all(c['iterations'] == 1 and c['allocatedBytes'] == 0 for c in lifecycle['cases'])
         assert lifecycle['product'] == summary['childMetadata']['Xemele.dll'] and lifecycle['benchmark'] == summary['childMetadata']['Xemele.Benchmarks.dll'] and lifecycle['probe'] == summary['generatorIdentity'] and lifecycle['runtime'] == '10.0.11' and lifecycle['architecture'] == 'Arm64'
         assert {case_id(c['identity']) for c in lifecycle['cases']} == expected_cases()
-        validate_variant(summary,summary['childClosure'],summary['generatedInputIdentities'],summary['childMetadata'],revision)
+        summary['variantIdentityEvidence']={}
+        validate_variant(summary,summary['childClosure'],summary['generatedInputIdentities'],summary['childMetadata'],revision,summary['variantIdentityEvidence'])
         summary['generatedLifecycleOracle'] = lifecycle
 
+        summary['runtimeIdentityChecks'] = {}
+        for name,binary in [('sample',sample),('generator',generator)]:
+            actual_runtime=json.loads(run('dotnet',binary,'--runtime-identity'))
+            evidence={'expected':summary['runtimeIdentities'][name],'actual':actual_runtime}
+            summary['runtimeIdentityChecks'][name]=evidence
+            validate_runtime(summary['runtimeIdentities'][name],actual_runtime,evidence)
         assert sources=={n:digest(ROOT/n) for n in names}
         summary['sourceFreezeUnchanged']=True;summary['result']='ready-and-parked'
     except Exception as error:

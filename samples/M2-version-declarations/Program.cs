@@ -24,6 +24,7 @@ if (args.Length == 0 || args[0] == "--oracle")
     Console.WriteLine("Passed 6 exact-version document/callback/owned-framing/public-DOM oracles.");
 }
 else if (args[0] == "--boundary-oracle") { Measure(false, false, false); MeasureOrdinary(false, false, false); Console.WriteLine("Passed long-version measured-boundary callback/pause/completion/owned-retention oracle; counters disabled."); }
+else if (args[0] == "--runtime-identity") Console.WriteLine(JsonSerializer.Serialize(RuntimePayload.Capture()));
 else if (args[0] == "--file-identity") Console.WriteLine(JsonSerializer.Serialize(Identity(Assembly.LoadFile(Path.GetFullPath(args[1])))));
 else if (args[0] == "--identity") Console.WriteLine(JsonSerializer.Serialize(new { Product = Identity(typeof(XmlDocument).Assembly), Probe = Identity(Assembly.GetExecutingAssembly()), Runtime = Environment.Version.ToString() }));
 else if (args[0] == "--allocation")
