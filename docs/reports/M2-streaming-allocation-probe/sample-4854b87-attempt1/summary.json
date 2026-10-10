@@ -1,0 +1,253 @@
+{
+  "sourceRevision": "4854b87ba019fef3999bbfa275299b8f10538ec6",
+  "checks": {
+    "runtime-build": {
+      "exit": 0,
+      "result": "passed"
+    },
+    "diagnostic-build": {
+      "exit": 0,
+      "result": "passed"
+    },
+    "direct-baseline": {
+      "exit": 0,
+      "result": "passed",
+      "counts": {
+        "total": 247,
+        "failed": 0,
+        "skipped": 0
+      },
+      "streaming": [
+        {
+          "result": "Pass",
+          "output": "primitive=0; surrounding=0; measuredUnits=50000; measuredCalls=120000; sampled=False\nwarm100=432; measured10000=0; measuredUnits=50000; measuredCalls=120000; totalUnits=50500; totalCalls=121205; completed=true\n",
+          "failure": null
+        }
+      ]
+    },
+    "direct-sampled": {
+      "exit": 0,
+      "result": "passed",
+      "counts": {
+        "total": 247,
+        "failed": 0,
+        "skipped": 0
+      },
+      "streaming": [
+        {
+          "result": "Pass",
+          "output": "primitive=0; surrounding=0; measuredUnits=50000; measuredCalls=120000; sampled=True\nwarm100=432; measured10000=0; measuredUnits=50000; measuredCalls=120000; totalUnits=50500; totalCalls=121205; completed=true\n",
+          "failure": null
+        }
+      ],
+      "samples": {
+        "warmSamples": {
+          "count": 100,
+          "nonzero": [
+            {
+              "Iteration": 0,
+              "AppendBytes": 432,
+              "ValidationBytes": 0,
+              "ObservationBytes": 0,
+              "GapBytes": 0,
+              "Consumed": 40,
+              "Step": 0,
+              "Units": 5,
+              "Calls": 14,
+              "ThreadId": 15
+            }
+          ],
+          "totals": {
+            "AppendBytes": 432,
+            "ValidationBytes": 0,
+            "ObservationBytes": 0,
+            "GapBytes": 0
+          },
+          "first": {
+            "Iteration": 0,
+            "AppendBytes": 432,
+            "ValidationBytes": 0,
+            "ObservationBytes": 0,
+            "GapBytes": 0,
+            "Consumed": 40,
+            "Step": 0,
+            "Units": 5,
+            "Calls": 14,
+            "ThreadId": 15
+          },
+          "last": {
+            "Iteration": 99,
+            "AppendBytes": 0,
+            "ValidationBytes": 0,
+            "ObservationBytes": 0,
+            "GapBytes": 0,
+            "Consumed": 40,
+            "Step": 0,
+            "Units": 500,
+            "Calls": 1202,
+            "ThreadId": 15
+          },
+          "threadIds": [
+            15
+          ],
+          "consumptionSteps": [
+            [
+              40,
+              0
+            ]
+          ]
+        },
+        "measuredSamples": {
+          "count": 10000,
+          "nonzero": [],
+          "totals": {
+            "AppendBytes": 0,
+            "ValidationBytes": 0,
+            "ObservationBytes": 0,
+            "GapBytes": 0
+          },
+          "first": {
+            "Iteration": 0,
+            "AppendBytes": 0,
+            "ValidationBytes": 0,
+            "ObservationBytes": 0,
+            "GapBytes": 0,
+            "Consumed": 40,
+            "Step": 0,
+            "Units": 505,
+            "Calls": 1214,
+            "ThreadId": 15
+          },
+          "last": {
+            "Iteration": 9999,
+            "AppendBytes": 0,
+            "ValidationBytes": 0,
+            "ObservationBytes": 0,
+            "GapBytes": 0,
+            "Consumed": 40,
+            "Step": 0,
+            "Units": 50500,
+            "Calls": 121202,
+            "ThreadId": 15
+          },
+          "threadIds": [
+            15
+          ],
+          "consumptionSteps": [
+            [
+              40,
+              0
+            ]
+          ]
+        }
+      }
+    },
+    "independent-sampled": {
+      "exit": 0,
+      "result": "passed",
+      "output": "{\"mode\":\"sampled\",\"runtime\":\"10.0.11\",\"warmIterations\":100,\"measuredIterations\":10000,\"samplingSetup\":727312,\"counterOnly\":0,\"coldSetup\":6816,\"coldRoot\":312,\"firstChunk\":432,\"setup\":7128,\"warmPrimitive\":432,\"warmSurrounding\":432,\"primitive\":0,\"surrounding\":0,\"measured\":0,\"completionBytes\":0,\"warmCalls\":1199,\"warmUnits\":500,\"measuredCalls\":120000,\"measuredUnits\":50000,\"totalUnits\":50500,\"totalCalls\":121205,\"endDocuments\":1,\"completed\":true,\"scope\":\"Synchronous checked borrowed Append; setup/root/first-use/caller/output reported separately; no timing or retained-memory estimate\",\"runtimeSettings\":\"default JIT/GC; no overrides\"}\n",
+      "samples": {
+        "warmSamples": {
+          "count": 100,
+          "nonzero": [
+            {
+              "Iteration": 0,
+              "AppendBytes": 432,
+              "ValidationBytes": 0,
+              "ObservationBytes": 0,
+              "GapBytes": 0,
+              "Consumed": 40,
+              "Step": 0,
+              "Units": 5,
+              "Calls": 14,
+              "ThreadId": 1
+            }
+          ],
+          "totals": {
+            "AppendBytes": 432,
+            "ValidationBytes": 0,
+            "ObservationBytes": 0,
+            "GapBytes": 0
+          },
+          "first": {
+            "Iteration": 0,
+            "AppendBytes": 432,
+            "ValidationBytes": 0,
+            "ObservationBytes": 0,
+            "GapBytes": 0,
+            "Consumed": 40,
+            "Step": 0,
+            "Units": 5,
+            "Calls": 14,
+            "ThreadId": 1
+          },
+          "last": {
+            "Iteration": 99,
+            "AppendBytes": 0,
+            "ValidationBytes": 0,
+            "ObservationBytes": 0,
+            "GapBytes": 0,
+            "Consumed": 40,
+            "Step": 0,
+            "Units": 500,
+            "Calls": 1202,
+            "ThreadId": 1
+          },
+          "threadIds": [
+            1
+          ],
+          "consumptionSteps": [
+            [
+              40,
+              0
+            ]
+          ]
+        },
+        "measuredSamples": {
+          "count": 10000,
+          "nonzero": [],
+          "totals": {
+            "AppendBytes": 0,
+            "ValidationBytes": 0,
+            "ObservationBytes": 0,
+            "GapBytes": 0
+          },
+          "first": {
+            "Iteration": 0,
+            "AppendBytes": 0,
+            "ValidationBytes": 0,
+            "ObservationBytes": 0,
+            "GapBytes": 0,
+            "Consumed": 40,
+            "Step": 0,
+            "Units": 505,
+            "Calls": 1214,
+            "ThreadId": 1
+          },
+          "last": {
+            "Iteration": 9999,
+            "AppendBytes": 0,
+            "ValidationBytes": 0,
+            "ObservationBytes": 0,
+            "GapBytes": 0,
+            "Consumed": 40,
+            "Step": 0,
+            "Units": 50500,
+            "Calls": 121202,
+            "ThreadId": 1
+          },
+          "threadIds": [
+            1
+          ],
+          "consumptionSteps": [
+            [
+              40,
+              0
+            ]
+          ]
+        }
+      }
+    }
+  },
+  "scope": "bounded allocation-location experiment; no fix/verification claim"
+}

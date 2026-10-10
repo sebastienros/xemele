@@ -1,0 +1,34 @@
+{
+  "result": "failed",
+  "host": "macOS-15.8.1-arm64-arm-64bit-Mach-O",
+  "architecture": "arm64",
+  "timing": "not run; exclusive coordinator grant required",
+  "sourceRevision": "46104cecdce70170aea050612d13a77f1467251a",
+  "branch": "codex/m2-dtd-framing",
+  "auditBase": "2e3d6012e664baf7bf5b3f3085bcb04de7dfc02e",
+  "dotnet": "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+  "dotnetSha256": "e86deb33d0dacad9cc1224466df6418149cb8e13cb8afd0dc6815ea6b7807975",
+  "independentInternalContract": "approved and implemented types/members/shared constructor match; no decoder/resolver/DOM/grammar sources",
+  "allocations": {
+    "coldBytes": 768,
+    "ownedPerOperation": 768,
+    "warmPrimitiveBytes": 0,
+    "retainedResults": 1000,
+    "retainedBytes": 160744,
+    "retainedMeaning": "1000 owned five-character encoding strings and result array; GC total-memory estimate, no borrowed source retained",
+    "runtime": "10.0.11"
+  },
+  "benchmarksPrepared": [
+    "DtdFramingOwnershipBenchmarks.FrameOwnedResult",
+    "DtdFramingScanBenchmarks.ScalarBaseline",
+    "DtdFramingScanBenchmarks.IncrementalFramer"
+  ],
+  "failure": "Inherited M1 cumulative MTP run: unchanged PiTargetTests.RepeatedBorrowedPiTargetsAllocateZeroAfterWarmup expected0 observed1944 managed bytes. MTP2040 total/1failure/0skip; conformance/differential passed. Subsequent API/provenance/planning/audits unrun in this attempt.",
+  "subsequentDirectRuntime": {
+    "command": "dotnet tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -noColor -result-xml /private/tmp/framing-all-checkpoint.xml",
+    "total": 1490,
+    "failed": 0,
+    "skipped": 0,
+    "revision": "46104cecdce70170aea050612d13a77f1467251a"
+  }
+}
