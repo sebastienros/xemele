@@ -1,4 +1,5 @@
 """Known-revision full inventory/provisioning verification; no product XML execution."""
+import argparse
 import json
 import os
 from pathlib import Path
@@ -25,6 +26,10 @@ def run(args, expected=0):
 
 
 def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--audit-base', default='7c44e76d1ba839b5c0c58dfad9791e3279bf793e',
+                        help='commit before owned integration delta (default: original worker claim)')
+    args = parser.parse_args()  # --help/invalid CLI must not replace a verification transcript.
     try:
         LOG.append(f'Host: {platform.platform()} {platform.machine()}\n')
         run(['git', 'rev-parse', 'HEAD'])
@@ -51,9 +56,13 @@ def main():
         run(['dotnet', 'build', 'docs/reports/M0-corpora/Tests/Xemele.CorpusInfrastructure.Tests.csproj', '-c', 'Release', '--disable-build-servers', '-m:1', '-p:UseSharedCompilation=false'])
         run(['dotnet', 'test', '--project', 'docs/reports/M0-corpora/Tests/Xemele.CorpusInfrastructure.Tests.csproj', '-c', 'Release', '--no-build', '--no-restore', '--no-ansi', '--no-progress', '--minimum-expected-tests', '24'])
         run([sys.executable, 'tools/planning/tasks.py', 'validate'])
+        audit_base = run(['git', 'rev-parse', '--verify', args.audit_base + '^{commit}']).strip()
+        LOG.append('Committed audit base: ' + audit_base + '\n')
+        run(['git', 'diff', '--check', audit_base + '..HEAD'])
         run(['git', 'diff', '--check'])
+        run(['git', 'diff', '--cached', '--check'])
         owned = ('tests/corpora/xml/', 'docs/reports/M1-corpus-import/', 'docs/tasks/M1-corpus-import.json')
-        paths = run(['git', 'diff', '--name-only', '7c44e76d1ba839b5c0c58dfad9791e3279bf793e']).splitlines()
+        paths = run(['git', 'diff', '--name-only', audit_base + '..HEAD']).splitlines()
         work = run(['git', 'diff', '--name-only']).splitlines()
         staged = run(['git', 'diff', '--cached', '--name-only']).splitlines()
         untracked = run(['git', 'ls-files', '--others', '--exclude-standard']).splitlines()

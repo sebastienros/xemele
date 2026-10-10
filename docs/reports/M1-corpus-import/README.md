@@ -82,5 +82,12 @@ required. Check every required byte against its inventory hash before execution.
 To restore a deleted checkout's ignored data, `provision.py` copies the archived
 cache back and regenerates/verifies metadata/bundle without download.
 
+For integration verification, pass `verify.py --audit-base <pre-merge-main-commit>`.
+The default is the original worker claim. The verifier resolves that commit,
+checks whitespace and owned paths across its committed `base..HEAD` delta, and
+separately checks working/staged/untracked paths. This prevents unrelated root
+coordination changes since the original claim from entering an integration audit.
+`--help` and invalid CLI arguments exit before changing verification transcripts.
+
 Redistribution clarification remains a pre-publication follow-up. No package,
 runtime, public API or benchmark implementation is changed by this task.
