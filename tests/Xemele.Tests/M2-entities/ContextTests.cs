@@ -14,7 +14,7 @@ public sealed class ContextTests
         var parameter = internalEntity with { IsParameter = true, ReplacementText = "parameter" };
         var attribute = Attribute("r", "a", " &e;  tail ", DtdAttributeType.NmTokens, true);
         var model = XmlEntityContext.Merge(new([], [], [internalEntity], [parameter], []),
-            new([], [attribute], [Entity("e", "outside") with { IsExternal = true }], [], []));
+            new([], [attribute], [Entity("e", "outside") with { IsExternal = true }], [], []), TestContext.Current.CancellationToken);
         var context = new XmlEntityContext(model);
         var result = DtdValueProcessor.NormalizeAttributeDefault(attribute.DefaultValue!, attribute.Type,
             context.GeneralEntities, new(), cancellationToken: TestContext.Current.CancellationToken);
@@ -32,7 +32,7 @@ public sealed class ContextTests
         var second = Attribute("r", "a", "second");
         var other = Attribute("s", "a", "other");
         var context = new XmlEntityContext(XmlEntityContext.Merge(new([], [first], [], [], []),
-            new([], [second, other], [], [], [])));
+            new([], [second, other], [], [], []), TestContext.Current.CancellationToken));
         Assert.Same(first, Assert.Single(context.GetAttributes("r")));
         Assert.Same(other, Assert.Single(context.GetAttributes("s")));
     }
