@@ -246,7 +246,7 @@ ByteDomAdapter.cs retain their existing core/sink construction paths. Their
 OperationBudget snapshot already uses options with { Limits = limits with { } },
 so additive option fields survive without changes there.
 
-Minimal outside-path assignment request: M2-entities must own
+The coordinator explicitly assigned M2-entities
 src/Xemele/Parsing/Dom/DomSink.cs solely to add the partial modifier to its sealed
 internal class. Additional interface/callback code belongs in its already owned
 Tree/DtdMetadata/DomSink.Dtd.cs, in the existing Parsing.Dom namespace. No factory,
@@ -329,7 +329,7 @@ resolver exceptions, including XmlParseException, propagate unchanged.
 | DtdModel/particle/declarations, parser/result/request, IDtdBudget, XmlTextDeclarationFramer/result | M2-dtd: Parsing/Dtd |
 | Decoder cases/text declaration detection/single-byte profiles | M2-encoding: Parsing/Input |
 | DtdProcessing/Resolver options, entity context/core constructor/expansion, shared budget adapter | M2-entities: Options/XmlParseOptions.cs, Parsing/Entities, Parsing/Core |
-| DocumentType/internal Dtd/SetDtdMetadata, optional IXmlDtdSink/DOM partial | M2-entities: Tree/DtdMetadata, Parsing/Entities; narrow DomSink.cs modifier assignment requested |
+| DocumentType/internal Dtd/SetDtdMetadata, optional IXmlDtdSink/DOM partial | M2-entities: Tree/DtdMetadata, Parsing/Entities; assigned narrow DomSink.cs partial modifier |
 | Complete strict grammar/namespaces and standalone checks | M2-conformance: Parsing/Core and full XML tests |
 | Recover option and diagnostics factories/repair policy | M2-recovery: Options/Recovery, Parsing/Recovery, Parsing/Dom/Recovery.cs |
 | InclusionDepth | M6-XInclude; remains inactive in M2 |
