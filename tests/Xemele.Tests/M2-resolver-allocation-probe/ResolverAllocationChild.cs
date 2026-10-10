@@ -23,7 +23,7 @@ internal static class ResolverAllocationChild
         string TestAssembly, string TestSha256, string TestVersion, string ProductAssembly,
         string ProductSha256, string ProductVersion, string RuntimeVersion,
         bool ServerGc, string GcConfiguration, string CoreLibrary, string CoreLibrarySha256, string NativeRuntimeSha256,
-        string HelperIlSha256, string RuntimeConfigSha256);
+        string NativeGcLibrary, string NativeGcSha256, string HelperIlSha256, string RuntimeConfigSha256);
     internal sealed record Request(int Version, string Mode, string Token, int ParentPid,
         string Directory, string XmlPath, string ReportPath, Provenance Expected);
     internal sealed record Report(int Version, string Mode, string Token, int ProcessId,
@@ -35,9 +35,19 @@ internal static class ResolverAllocationChild
     {
         if (!condition) throw new InvalidOperationException(message);
     }
-    private static string Canonical(string path) => new FileInfo(Path.GetFullPath(path)).ResolveLinkTarget(true)?.FullName ?? Path.GetFullPath(path);
-    private static string CanonicalDirectory(string path) => new DirectoryInfo(Path.GetFullPath(path)).ResolveLinkTarget(true)?.FullName.TrimEnd(Path.DirectorySeparatorChar)
-        ?? Path.GetFullPath(path).TrimEnd(Path.DirectorySeparatorChar);
+    private static string Canonical(string path)
+    {
+        string full = Path.GetFullPath(path), root = Path.GetPathRoot(full)!;
+        string current = root;
+        foreach (string component in full[root.Length..].Split(Path.DirectorySeparatorChar, StringSplitOptions.RemoveEmptyEntries))
+        {
+            current = Path.Combine(current, component);
+            FileSystemInfo info = System.IO.Directory.Exists(current) ? new DirectoryInfo(current) : new FileInfo(current);
+            current = info.ResolveLinkTarget(true)?.FullName ?? current;
+        }
+        return current;
+    }
+    private static string CanonicalDirectory(string path) => Canonical(path).TrimEnd(Path.DirectorySeparatorChar);
     private static string Hash(string path)
     {
         using var stream = File.OpenRead(path);
@@ -85,10 +95,13 @@ internal static class ResolverAllocationChild
             && Version(test) == Version(product), "Missing full matching compiled source revision.");
         string runtime = RuntimeEnvironment.GetRuntimeDirectory();
         string native = Path.Combine(runtime, OperatingSystem.IsMacOS() ? "libcoreclr.dylib" : OperatingSystem.IsWindows() ? "coreclr.dll" : "libcoreclr.so");
+        string nativeGc = Path.Combine(runtime, OperatingSystem.IsMacOS() ? "libclrgc.dylib" : OperatingSystem.IsWindows() ? "clrgc.dll" : "libclrgc.so");
+        var configuration = GC.GetConfigurationVariables();
+        Require(configuration["GCName"].ToString() == "" && configuration["GCPath"].ToString() == "", "Resolver probe requires the active default native GC library.");
         var helper = typeof(ResolverAllocationProbe).GetMethod(nameof(ResolverAllocationProbe.ReadChecked), BindingFlags.Static | BindingFlags.NonPublic)!;
         return new(Canonical(executable), Hash(executable), Canonical(test.Location), Hash(test.Location), Version(test),
             Canonical(product.Location), Hash(product.Location), Version(product), Environment.Version.ToString(), System.Runtime.GCSettings.IsServerGC, JsonSerializer.Serialize(GC.GetConfigurationVariables().OrderBy(p => p.Key).ToDictionary(p => p.Key, p => p.Value)),
-            Canonical(typeof(object).Assembly.Location), Hash(typeof(object).Assembly.Location), Hash(native),
+            Canonical(typeof(object).Assembly.Location), Hash(typeof(object).Assembly.Location), Hash(native), Canonical(nativeGc), Hash(nativeGc),
             Convert.ToHexString(SHA256.HashData(helper.GetMethodBody()!.GetILAsByteArray()!)),
             Hash(Path.ChangeExtension(test.Location, ".runtimeconfig.json")));
     }
@@ -178,9 +191,14 @@ internal static class ResolverAllocationChild
             var report = JsonSerializer.Deserialize<Report>(File.ReadAllText(request.ReportPath), StrictJson) ?? throw new InvalidOperationException("Missing Resolver report: " + directory);
             var document = XDocument.Load(request.XmlPath);
             var assemblies = document.Descendants("assembly").ToArray();
-            Require(assemblies.Length == 1 && (string?)assemblies[0].Attribute("total") == "1"
-                && (string?)assemblies[0].Attribute("passed") == "1" && (string?)assemblies[0].Attribute("failed") == "0"
-                && (string?)assemblies[0].Attribute("skipped") == "0", "Child XML aggregates mismatch: " + directory);
+            var collections = document.Descendants("collection").ToArray();
+            Require(assemblies.Length == 1 && collections.Length == 1
+                && (string?)assemblies[0].Attribute("name") == expected.TestAssembly
+                && (string?)assemblies[0].Attribute("errors") == "0"
+                && new[] { assemblies[0], collections[0] }.All(e =>
+                    (string?)e.Attribute("total") == "1" && (string?)e.Attribute("passed") == "1"
+                    && (string?)e.Attribute("failed") == "0" && (string?)e.Attribute("skipped") == "0"
+                    && (string?)e.Attribute("not-run") == "0"), "Child XML aggregates mismatch: " + directory);
             var tests = document.Descendants("test").ToArray();
             Require(tests.Length == 1 && (string?)tests[0].Attribute("name") == Fact && (string?)tests[0].Attribute("result") == "Pass", "Child must run exactly the allocation Fact: " + directory);
             Require(report.Version == 1 && report.Mode == mode && report.Token == token && report.ProcessId == process.Id

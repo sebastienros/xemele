@@ -36,7 +36,8 @@ def main():
            ('token-mismatch','request',None,'Mismatched child capability'),
            ('pid-mismatch','request',None,'Invalid child parent identity'),
            ('outside-artifact-root','request',None,'outside owned artifacts'),
-           ('extra-runner-argument','request',None,'exact standalone Fact invocation')]
+           ('extra-runner-argument','request',None,'exact standalone Fact invocation'),
+           ('symlink-root-escape','request',None,'outside owned artifacts')]
     logs=[];summary={'driverRevision':revision,'compiledProvenance':known['Expected'],'checks':{}}
     try:
         for name,kind,mode,message in cases:
@@ -51,6 +52,9 @@ def main():
                 if name=='token-mismatch':request['Token']=uuid.uuid4().hex
                 if name=='pid-mismatch':request['ParentPid']=0
                 if name=='outside-artifact-root':request['Directory']='/private/tmp'
+                if name=='symlink-root-escape':
+                    (directory/'escape').symlink_to('/private/tmp',target_is_directory=True)
+                    request['Directory']=str(directory/'escape'/'ancestor')
                 if name=='provenance-mismatch':request['Expected']['TestSha256']='0'*64
                 request_path.write_text('{broken' if name=='malformed-json' else json.dumps(request))
                 extra=dict(XEMELE_RESOLVER_CHILD_MODE='real',XEMELE_RESOLVER_CHILD_REQUEST=str(request_path),XEMELE_RESOLVER_CHILD_TOKEN=token)
@@ -62,7 +66,8 @@ def main():
             (directory/'stdout.txt').write_text(p.stdout);(directory/'stderr.txt').write_text(p.stderr)
             logs.append(name+'\n'+shlex.join(command)+'\nextra='+repr(extra)+'\nexit='+str(p.returncode)+'\n'+p.stdout+'\n'+p.stderr)
             for file in directory.iterdir():
-                dest=report/name;dest.mkdir(exist_ok=True);(dest/(file.name+'.gz')).write_bytes(gzip.compress(file.read_bytes(),mtime=0))
+                if file.is_file():
+                    dest=report/name;dest.mkdir(exist_ok=True);(dest/(file.name+'.gz')).write_bytes(gzip.compress(file.read_bytes(),mtime=0))
             tests=list(ET.parse(directory/'real.xml').iter('test'));failure=tests[0].findtext('failure/message') if tests else None
             accepted=p.returncode!=0 and len(tests)==1 and tests[0].get('name')==FACT and tests[0].get('result')=='Fail' and (message is None or message.lower() in (failure or '').lower())
             summary['checks'][name]=dict(result='passed' if accepted else 'failed',actualExit=p.returncode,total=len(tests),failure=failure)

@@ -72,7 +72,7 @@ def main():
             'working': ('git','diff','--name-only'), 'staged': ('git','diff','--cached','--name-only'),
             'untracked': ('git','ls-files','--others','--exclude-standard')}.items()}
         require(all(any(p.startswith(o) if o.endswith('/') else p == o for o in owned) for paths in scopes.values() for p in paths), scopes)
-        source = [PI, 'tests/Xemele.Tests/' + TASK + '/', str(REPORT.relative_to(ROOT) / 'Diagnostics'), str(Path(__file__).relative_to(ROOT))]
+        source = [PI, 'tests/Xemele.Tests/' + TASK + '/', str(REPORT.relative_to(ROOT) / 'Diagnostics'), str(Path(__file__).relative_to(ROOT)), str(REPORT.relative_to(ROOT) / 'protocol_negative.py')]
         require(not run('git','diff','--name-only','HEAD','--',*source).strip(), 'uncommitted source')
         require(not run('git','ls-files','--others','--exclude-standard','--',*source).strip(), 'untracked source')
         original = run('git','show',CLAIM + ':' + PI)
@@ -117,6 +117,7 @@ def main():
             for mode,data in reports.items():
                 require(data['Version']==1 and data['Mode']==mode and revision in data['Actual']['TestVersion'] and revision in data['Actual']['ProductVersion'] and data['Actual']['RuntimeVersion']=='10.0.11',data)
                 require(data['WarmIterations']==1000 and data['MeasuredIterations']==10000 and data['WarmReadBytes']==4096000 and data['MeasuredBytes']==40960000 and data['TotalBytes']==45056000 and data['ResourcesOpened']==1 and data['ResolverCalls']==1,data)
+                require(data['Actual']['NativeGcSha256'] and data['Actual']['NativeGcLibrary'].endswith('libclrgc.dylib'), data)
                 require(data['AllocatedBytes']==0 if mode=='real' else data['AllocatedBytes']==640000 and data['EscapedObjectLength']==37,data)
                 directory=child_root / pair['directory']
                 require(json.loads((directory / (mode+'.exit.json')).read_text())['exitCode']==0,'child exit')
