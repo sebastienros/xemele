@@ -52,7 +52,7 @@ parsers use bounded retention before constructing public results/exceptions.
 Run `python3 docs/reports/M1-common/verify.py` with pinned SDK 10.0.400 on PATH.
 Reports record known implementation revision; no peer report or golden is written.
 Benchmark harness is isolated here to avoid default source glob collisions:
-`dotnet run -c Release --project docs/reports/M1-common/Benchmarks.csproj -- --filter '*' --artifacts docs/reports/M1-common/bdn`.
+`dotnet run -c Release --project docs/reports/M1-common/Xemele.CommonBenchmarks.csproj -- --filter '*' --artifacts docs/reports/M1-common/bdn`.
 ShortRun compares a straightforward guarded counter to the general primitive;
 there is no optimization/speed claim. Setup and owned rejection snapshots are
 separate cases. `--setup-allocation` records fresh-process construction allocation,

@@ -64,8 +64,8 @@ def main():
         (directory/'Consumer.csproj').write_text(f'<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><TargetFramework>net10.0</TargetFramework><OutputType>Exe</OutputType><ImplicitUsings>enable</ImplicitUsings><Nullable>enable</Nullable></PropertyGroup><ItemGroup><PackageReference Include="Xemele" Version="{version}" /></ItemGroup></Project>')
         (directory/'Program.cs').write_text((ROOT/'samples/M1-common/Program.cs').read_text())
         run('dotnet','run','--project',directory/'Consumer.csproj','-c','Release','--disable-build-servers','-p:UseSharedCompilation=false',f'-p:RestoreSources={packages}')
-    run('dotnet','build','docs/reports/M1-common/Benchmarks.csproj',*FLAGS)
-    run('dotnet','run','--project','docs/reports/M1-common/Benchmarks.csproj','-c','Release','--no-build','--','--setup-allocation')
+    run('dotnet','build','docs/reports/M1-common/Xemele.CommonBenchmarks.csproj',*FLAGS)
+    run('dotnet','run','--project','docs/reports/M1-common/Xemele.CommonBenchmarks.csproj','-c','Release','--no-build','--','--setup-allocation')
     run('python3','tools/planning/tasks.py','validate')
     run('git','diff','--check')
 
