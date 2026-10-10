@@ -1,5 +1,5 @@
 using System.Reflection;
-using System.Runtime.CompilerServices;
+using static Xemele.Tests.Syntax.StreamingAllocationProbe;
 using System.Text;
 using System.Xml;
 using Xemele.Parsing.Syntax;
@@ -50,23 +50,26 @@ public sealed class StreamingTests
         var sink = new CountingSink(); var cancellation = TestContext.Current.CancellationToken;
         const string chunk = "<c a='v' xmlns:p='u' p:a='w'/>α😀&amp;\r\n";
         core.Append("<r>", [], false, sink, cancellation);
-        // Both phases exercise the same Append call site and progress checks.
-        // Setup and first-use costs remain outside the promised steady-state scope.
-        AppendChecked(core, chunk, sink, cancellation, 100);
-        long before = GC.GetAllocatedBytesForCurrentThread();
-        AppendChecked(core, chunk, sink, cancellation, 10000);
-        Assert.Equal(0, GC.GetAllocatedBytesForCurrentThread() - before);
-        Assert.Equal(ScanStep.Completed, core.Append("</r>", [], true, sink, cancellation).Step);
-    }
-    [MethodImpl(MethodImplOptions.NoInlining)]
-    private static void AppendChecked(XmlParserCore core, string chunk, CountingSink sink,
-        CancellationToken cancellation, int iterations)
-    {
-        for (int i = 0; i < iterations; i++)
-        {
-            var r = core.Append(chunk, [], false, sink, cancellation);
-            if (r.Step != ScanStep.NeedInput || r.Consumed != chunk.Length) throw new Exception("Warm grammar rejected.");
-        }
+        // Both phases use the same checked Append call site. Capture both
+        // counters there so test context, caller dispatch and Assert are outside
+        // the synchronous borrowed primitive's exact-zero allocation scope.
+        long warmCalls = sink.Calls, warmUnits = sink.Units;
+        long warmBytes = AppendChecked(core, chunk, sink, cancellation, 100);
+        Assert.Equal(1199, sink.Calls - warmCalls);
+        Assert.Equal(500, sink.Units - warmUnits);
+        long calls = sink.Calls, units = sink.Units;
+        long allocated = AppendChecked(core, chunk, sink, cancellation, 10000);
+        Assert.Equal(0, allocated);
+        Assert.Equal(120000, sink.Calls - calls);
+        Assert.Equal(50000, sink.Units - units);
+        var completed = core.Append("</r>", [], true, sink, cancellation);
+        Assert.Equal(ScanStep.Completed, completed.Step);
+        Assert.Equal(4, completed.Consumed);
+        Assert.Null(completed.Diagnostic);
+        Assert.Equal(50500, sink.Units);
+        Assert.Equal(121205, sink.Calls);
+        TestContext.Current.TestOutputHelper!.WriteLine(
+            $"warm100={warmBytes}; measured10000={allocated}; measuredUnits={sink.Units - units}; measuredCalls=120000; totalUnits={sink.Units}; totalCalls={sink.Calls}; completed=true");
     }
     [Fact]
     public void LocationOverflowIsStructuredAndSourceScalarQuotaPrecedesNormalization()
