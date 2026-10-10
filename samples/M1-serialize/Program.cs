@@ -1,0 +1,16 @@
+using System.Text;
+using Xemele;
+var document = new XmlDocument();
+var root = document.CreateElement("book", "urn:book", "b");
+root.SetNamespaceDeclaration("b", "urn:book");
+root.SetAttribute("id", "7"); root.AppendChild(document.CreateText("XML & 🙂"));
+document.DocumentNode.AppendChild(root);
+string text = document.ToXmlString();
+if (text != "<?xml version=\"1.0\"?><b:book xmlns:b=\"urn:book\" id=\"7\">XML &amp; 🙂</b:book>") throw new Exception("String mismatch");
+using var output = new MemoryStream();
+document.Save(output, new() { Encoding = new UnicodeEncoding(true, false, false), EmitByteOrderMark = true });
+if (output.ToArray()[0] != 0xfe || output.ToArray()[1] != 0xff) throw new Exception("BOM mismatch");
+string bytes = Encoding.BigEndianUnicode.GetString(output.ToArray().AsSpan(2));
+if (bytes != text.Replace("version=\"1.0\"", "version=\"1.0\" encoding=\"utf-16be\"", StringComparison.Ordinal)) throw new Exception("Transport mismatch");
+if (!output.CanWrite) throw new Exception("Caller stream closed");
+Console.WriteLine("Independent construction, string/UTF16BE stream/BOM verified.");
