@@ -9,6 +9,9 @@ internal sealed class Context : Xemele.Parsing.Entities.IXmlEntityContext
         var options = new Xemele.XmlParseOptions { DtdProcessing = Xemele.XmlDtdProcessing.Parse, Resolver = null };
         using var core = new Xemele.Parsing.Syntax.XmlParserCore(options, new Context());
         _ = new Xemele.XmlDocument().DocumentType;
+        Xemele.Parsing.Syntax.IXmlEventSink ordinary = new Xemele.Parsing.Dom.DomSink();
+        if (ordinary is Xemele.Parsing.Entities.IXmlDtdSink metadata)
+            _ = metadata.DocumentType(new("r", null, null, null), new Context().Model, new(null, 1, 1, null));
     }
 }
 

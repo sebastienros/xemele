@@ -225,6 +225,35 @@ Existing tree mutation does not recompute DTD defaults or pretend to revalidate.
 Metadata need not retain source/decode buffers. Serialization of DOCTYPE and
 DTD validation are not silently promised by this parse metadata addition.
 
+The optional internal IXmlDtdSink interface is implemented by the additive DOM
+partial sink, while IXmlEventSink keeps every existing required method unchanged.
+After full successful DOCTYPE/subset resolution, core calls DocumentType exactly
+once (if the sink implements this optional interface), before root StartElement.
+False pauses immediately after delivery; resumption never repeats the metadata
+callback. Cancellation/fault rules are identical to other callbacks. Core depends
+on immutable declaration/model types and this optional interface, never on DomSink
+or XmlDocument. Old standalone sinks can ignore metadata and still receive all
+strict lexical events. DomSink's extra partial implements the interface and calls
+an internal XmlDocument.SetDtdMetadata to store the completed model/metadata on
+its existing Document. Model compilation proves that the existing sink interface
+and the additive optional interface coexist; no model callback is executed as XML.
+
+The existing XmlParserCore(options, sourceUri) constructor remains independently
+usable; when Parse admits a DOCTYPE it lazily creates the entities-owned context,
+then uses it for parsing, lookup/expansion and metadata delivery. The explicit
+context constructor is an internal composition hook. Factories.cs and
+ByteDomAdapter.cs retain their existing core/sink construction paths. Their
+OperationBudget snapshot already uses options with { Limits = limits with { } },
+so additive option fields survive without changes there.
+
+Minimal outside-path assignment request: M2-entities must own
+src/Xemele/Parsing/Dom/DomSink.cs solely to add the partial modifier to its sealed
+internal class. Additional interface/callback code belongs in its already owned
+Tree/DtdMetadata/DomSink.Dtd.cs, in the existing Parsing.Dom namespace. No factory,
+adapter, existing required sink callback or public API edit is requested. This
+contract worker edits none of those runtime files. The representative
+DomMetadata.cs.fixture compiles both partial declarations independently.
+
 ## Encoding scope
 
 M2-encoding adds strict US-ASCII, ISO-8859-1 and Windows-1252 in addition to M1's
@@ -300,7 +329,7 @@ resolver exceptions, including XmlParseException, propagate unchanged.
 | DtdModel/particle/declarations, parser/result/request, IDtdBudget, XmlTextDeclarationFramer/result | M2-dtd: Parsing/Dtd |
 | Decoder cases/text declaration detection/single-byte profiles | M2-encoding: Parsing/Input |
 | DtdProcessing/Resolver options, entity context/core constructor/expansion, shared budget adapter | M2-entities: Options/XmlParseOptions.cs, Parsing/Entities, Parsing/Core |
-| DocumentType and internal Dtd | M2-entities: Tree/DtdMetadata |
+| DocumentType/internal Dtd/SetDtdMetadata, optional IXmlDtdSink/DOM partial | M2-entities: Tree/DtdMetadata, Parsing/Entities; narrow DomSink.cs modifier assignment requested |
 | Complete strict grammar/namespaces and standalone checks | M2-conformance: Parsing/Core and full XML tests |
 | Recover option and diagnostics factories/repair policy | M2-recovery: Options/Recovery, Parsing/Recovery, Parsing/Dom/Recovery.cs |
 | InclusionDepth | M6-XInclude; remains inactive in M2 |

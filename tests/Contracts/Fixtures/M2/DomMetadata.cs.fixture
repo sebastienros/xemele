@@ -1,0 +1,26 @@
+// Independently compiled representation of unchanged M1 sink + additive partial.
+// No tree/core/parser declaration is exercised as behavior.
+using Xemele.Parsing.Syntax;
+namespace Xemele.Parsing.Dom;
+internal sealed partial class DomSink : IXmlEventSink
+{
+    internal Xemele.XmlDocument Document { get; } = new();
+    public bool StartDocument(Xemele.XmlLocation location) => true;
+    public bool Declaration(XmlDeclarationView declaration) => true;
+    public bool StartElement(XmlNameView name, bool isEmptyElement, Xemele.XmlLocation location) => true;
+    public bool NamespaceDeclaration(XmlNamespaceView declaration) => true;
+    public bool Attribute(XmlAttributeView attribute) => true;
+    public bool StartElementContent() => true;
+    public bool EndElement(XmlNameView name, Xemele.XmlLocation location) => true;
+    public bool StartText(XmlTextKind kind, ReadOnlySpan<char> target, Xemele.XmlLocation location) => true;
+    public bool TextFragment(ReadOnlySpan<char> text, bool tokenEnded, Xemele.XmlLocation location) => true;
+    public bool EndDocument(Xemele.XmlLocation location) => true;
+}
+internal sealed partial class DomSink : Xemele.Parsing.Entities.IXmlDtdSink
+{
+    public bool DocumentType(Xemele.XmlDocumentType declaration, Xemele.Parsing.Dtd.DtdModel model, Xemele.XmlLocation location)
+    {
+        Document.SetDtdMetadata(declaration, model);
+        return true;
+    }
+}

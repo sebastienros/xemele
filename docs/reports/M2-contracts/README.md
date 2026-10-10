@@ -19,7 +19,8 @@ model baselines use the existing xemele-api-v1 extractor without changing it.
 
 Resolver and DTD lanes each use foundation common without M2 dependencies.
 Encoding uses foundation common plus the unchanged decoder interface.
-Entities composes independent DTD/resolver declarations and M1 tree/sink models;
+Entities composes independent DTD/resolver declarations, M1 tree/sink models and
+optional DTD metadata sink partials;
 Recovery composes resolver/options/M1 tree/strict factory declarations. None
 references the runtime assembly, shared test/build projects or unmerged code.
 The executed Checks model does not invoke any grammar/core/recovery declaration.
