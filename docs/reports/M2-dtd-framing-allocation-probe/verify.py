@@ -232,7 +232,7 @@ def main():
         run('dotnet','build','docs/reports/M0-contracts/ApiCheck/ApiCheck.csproj',*FLAGS)
         def api():
             data=json.loads(run('python3','-B','tools/ApiBaseline/compare.py','--report',report / 'runtime-api.json'))
-            require(data['matched'] and len(data['provenance'])==args.api_count,data);return dict(matched=data['matched'],members=len(data['provenance']))
+            require(data['matched'] and data['members']==args.api_count,data);return data
         check('compiled-api',api)
         def discovery():
             data=json.loads(run('python3','-B','tools/ApiBaseline/discover.py'))
