@@ -4,11 +4,11 @@
   "milestone": "M1",
   "title": "Strict subset corpus and round trips",
   "kind": "verification",
-  "status": "implemented",
+  "status": "verified",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M1-corpus",
   "branch": "codex/m1-corpus",
   "base_revision": "c077de978218274a96aac3e7ce892ac0422bad71",
-  "integration_revision": null,
+  "integration_revision": "e2194b466809b42d56611889c295872c3df7999c",
   "depends_on": [
     "M1-dom",
     "M1-serialize",
@@ -36,7 +36,10 @@
       "status": "passed",
       "evidence": [
         "final-runtime-join",
-        "independent-source-review"
+        "independent-source-review",
+        "integrated-runtime-corpus",
+        "integrated-case-join",
+        "independent-final-review"
       ]
     },
     {
@@ -45,7 +48,10 @@
       "status": "passed",
       "evidence": [
         "final-runtime-join",
-        "independent-source-review"
+        "independent-source-review",
+        "integrated-runtime-corpus",
+        "integrated-case-join",
+        "independent-final-review"
       ]
     },
     {
@@ -54,7 +60,10 @@
       "status": "passed",
       "evidence": [
         "final-runtime-join",
-        "independent-source-review"
+        "independent-source-review",
+        "integrated-runtime-corpus",
+        "integrated-case-join",
+        "independent-final-review"
       ]
     }
   ],
@@ -118,21 +127,45 @@
       "result": "passed",
       "summary": "801 cumulative solution rows (247+255+299), separate501owned rows, zero failures/skips. All242 supported original-byte rejections incl042XML.Syntax pass; eight lexical models+five normalized models and bootstrap2 preserve semantics across string/span/UTF8/LE/BE+BOM/1byte streams/output. Full2585 identities with2343 explicit unrun gaps and3386 resource hashes; reference239matches+3 documented divergences, freshDLL/build054f240 enforced;5provenance negatives. API222 canonical+independentapprovedunion and fresh isolated NuGet consumer pass. Discovery3388,14planning regressions,110-task validation, committed/working/staged/untracked audits/diffs pass. Actual host macOSarm64 only. No runtime/timing/allocation changes or full-suite standards claim.",
       "artifact": "docs/reports/M1-corpus/final-provenance/summary.json"
+    },
+    {
+      "id": "integrated-runtime-corpus",
+      "kind": "integration",
+      "revision": "e2194b466809b42d56611889c295872c3df7999c",
+      "command": "python3 -B docs/reports/M1-corpus/verify.py --audit-base a93009c331cb893d31fcc44d3837b42a180eac6f --report-prefix integration",
+      "result": "passed",
+      "summary": "Fresh integrated801 cumulative and501owned tests,no failures/skips;242originalbyte rejections incl042;239BCLmatches+3exactknownreference divergences;all2585IDs/2343reasonedunrun gaps/all3386resourceSHA checks. FreshSDK/runnerSHA/fullsourcebuild provenance everyreference;API222canonical+independentunion/freshisolatedNuGet/discovery3388/provenance5/planning14+110/ownedcommitted-staged-working-untracked/diffs. Productionunchanged,Windows/x64unrun.",
+      "artifact": "docs/reports/M1-corpus/integration/summary.json"
+    },
+    {
+      "id": "integrated-case-join",
+      "kind": "integration",
+      "revision": "e2194b466809b42d56611889c295872c3df7999c",
+      "command": "Root independently checked report counts/uniqueIDs/resource counts/allunrun gapreason andproduct rejection outcomes at source hash",
+      "result": "passed",
+      "summary": "2585unique/242executed/2343reasonedunrun/239matched/3documented divergences; no hidden cases or conflated reference/standards passes.",
+      "artifact": "docs/reports/M1-corpus/integration/case-results.json"
+    },
+    {
+      "id": "independent-final-review",
+      "kind": "review",
+      "revision": "e2194b466809b42d56611889c295872c3df7999c",
+      "command": "Read-only review_corpora and review_reference_protocol, followed by rootintegratedsource blob equality audit",
+      "result": "passed",
+      "summary": "Bounded normalizedroot/sibling/symlink1314or50 infrastructure behavior; exact3ledger productreject/239+3; freshSDK/adapterpin/hash/build/allrecords/negativechecks approved. No executablepass inferredfromsource; separateactualchecks above.",
+      "artifact": "docs/reports/M1-corpus/integration-review.json"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Implemented strict M1 runtime join with full visible inventory, original-byte rejection checks, independent semantic round trips and explicit reference divergences; coordinator integration/reverification remains.",
+    "summary": "Integrated strict XML corpus verification801/501 passed;242rejections/239matches3reference divergences/2343visible M1gaps/API222/freshpackage/provenance. Historicalfailures retained, fullplatformrelease checks remainlatergates.",
     "checks": [
       "At054f240: owned501+solution801 pass zero skips; 242supported rejection IDs; 239BCLmatches+3exactdocumented divergences; unchanged2343unrun gaps/2585identities/3386resourcehashes.",
       "API222 matches both fragment union and independently approved DOM/Serializer model union; fresh NuGet consumer and discovery3388 pass.",
       "5provenance negatives+14planning regressions+110-task validation and committed/staged/working/untracked ownership/diff checks pass.",
       "All pre-repair failures, sandbox NU1900 and administrative count-assertion failure preserved; final-provenance supersedes prior completion evidence."
     ],
-    "remaining": [
-      "Coordinator must integrate, rerun verifier using --audit-base <pre-merge-main> and a new --report-prefix, then record integration evidence and set verified.",
-      "Windows/x64 checks unrun; prior source-fixture redistribution terms remain with corpus-import/release owners."
-    ],
+    "remaining": [],
     "requests": [
       "Preserve private /private/tmp/xemele-corpus-cache/w3c-xml-20130923 resources through worker cleanup; no public redistribution authorized.",
       "Reference ledger deliberately requires System.Xml10.0.0.0/.NET10.0.11 for its exact3 divergences; future engine/outcome changes require independent reassessment, never automatic allowlist expansion."

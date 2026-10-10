@@ -7,38 +7,15 @@
     "task_id": "M0-gate",
     "integration_revision": "0711a15b0c5a695ca383a9cfe7f11c8326fde451"
   },
-  "active_assignments": [
-    {
-      "task_id": "M1-corpus",
-      "client_thread_id": "client-new-thread:f58ae59e-1234-4687-9377-da96baec712c",
-      "host_id": "local",
-      "chat_id": "01a12431-4564-7c83-95fe-940b907127dc",
-      "worktree_path": "/Users/sebastienros/.codex/worktrees/73f0/xemele",
-      "branch": "codex/m1-corpus",
-      "base_revision": "c077de978218274a96aac3e7ce892ac0422bad71",
-      "claim_revision": "cb30a8694072fa7e9dbf00a5dba1f40d800c6c28",
-      "setup_status": "resumed",
-      "preserved_draft_revision": "f21e3c5ae8c5998e7965704936f58d47225ce26d",
-      "preserved_evidence_revision": "6b5582c6329fbbbff3e0a77c7154cf27273bc464",
-      "parked_ack": "TaskJSONuntouched/checkoutclean/allchecksparked; pre-repair500rows495pass5fail: productPI2lanes plusBCLVersionNum3reference discrepancies.",
-      "claim_history": [
-        {
-          "base_revision": "ad2348aad9554f9426346bf430d1b7594b202b3f",
-          "claim_revision": "28a740b84b9c1bc90a0d58aa037f20b5dfe8c6e1",
-          "reason": "Suspended PI namespace defect nowverified; pre-repair500/495 failure evidence preserved."
-        }
-      ]
-    }
-  ],
+  "active_assignments": [],
   "integration_queue": [],
   "blockers": [],
   "next_actions": [
-    "Review corrected corpus portability/referenceledger/percase report source and actual knownhash checks",
-    "Verify corpus then M1-gate",
-    "Continue M2 onwardM9"
+    "Claim/dispatch M1-gate using only verifieddependencies and cumulative801/corpus/reference reports",
+    "After verifiedM1-gate dispatch M2contracts and continueM9"
   ],
-  "last_verified_task": "M1-pi-targets",
-  "last_integrated_revision": "0869bde5bbebadb813e48f27a96fe35c01039f8f",
+  "last_verified_task": "M1-corpus",
+  "last_integrated_revision": "e2194b466809b42d56611889c295872c3df7999c",
   "completed_assignments": [
     {
       "task_id": "M0-build",
@@ -694,6 +671,31 @@
         "chat_archived": true,
         "worktree": "removed"
       }
+    },
+    {
+      "task_id": "M1-corpus",
+      "client_thread_id": "client-new-thread:f58ae59e-1234-4687-9377-da96baec712c",
+      "host_id": "local",
+      "chat_id": "01a12431-4564-7c83-95fe-940b907127dc",
+      "worktree_path": "/Users/sebastienros/.codex/worktrees/73f0/xemele",
+      "branch": "codex/m1-corpus",
+      "base_revision": "c077de978218274a96aac3e7ce892ac0422bad71",
+      "claim_revision": "cb30a8694072fa7e9dbf00a5dba1f40d800c6c28",
+      "setup_status": "verified",
+      "preserved_draft_revision": "f21e3c5ae8c5998e7965704936f58d47225ce26d",
+      "preserved_evidence_revision": "6b5582c6329fbbbff3e0a77c7154cf27273bc464",
+      "parked_ack": "TaskJSONuntouched/checkoutclean/allchecksparked; pre-repair500rows495pass5fail: productPI2lanes plusBCLVersionNum3reference discrepancies.",
+      "claim_history": [
+        {
+          "base_revision": "ad2348aad9554f9426346bf430d1b7594b202b3f",
+          "claim_revision": "28a740b84b9c1bc90a0d58aa037f20b5dfe8c6e1",
+          "reason": "Suspended PI namespace defect nowverified; pre-repair500/495 failure evidence preserved."
+        }
+      ],
+      "handoff_revision": "3c4b688bbd58c32d95591569df0c468d88fd007b",
+      "integration_revision": "e2194b466809b42d56611889c295872c3df7999c",
+      "integration_worktree": "/private/tmp/xemele-integrate-m1-corpus",
+      "integration_branch": "codex/integrate-m1-corpus"
     }
   ],
   "benchmark_policy": "No active timing hold. DOM completed16cases/16childzero/wrapperzero/48actualiterations and stoppedprocesses at source736734; ordinarypriorityArm64provisional. No repetitions. All future timing remainsserialized.",
