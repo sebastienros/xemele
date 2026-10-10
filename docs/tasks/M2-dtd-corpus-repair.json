@@ -70,7 +70,13 @@
         "smallest_fix": "Pass hasExternalSubset: doctypeSystem is not null to the new optional ConfigureDeclarationReading argument (owned DtdParser.cs implementation); no other Core changes.",
         "proving_check": "DtdCorpusRepairTests.DefaultDeclarationApplicability: internal-only forward default rejects before later entity; external-subset VC-only default does not gain an early WFC rejection; standalone=yes still rejects."
       },
-      "Coordinator grants Doctype.cs only for ConfigureDeclarationReading hasExternalSubset: doctypeSystem is not null forwarding; original grammar owns subsequent changes after this repair verified. Task-JSON-only hold acknowledged; no other Core writes."
+      "Coordinator grants Doctype.cs only for ConfigureDeclarationReading hasExternalSubset: doctypeSystem is not null forwarding; original grammar owns subsequent changes after this repair verified. Task-JSON-only hold acknowledged; no other Core writes.",
+      {
+        "path": "tests/Xemele.Tests/M2-entities/ReviewRegressionTests.cs",
+        "defect": "AttributeUseRejectsColonThroughExplicitNestedAndDefaultReferences line 93 asserts unused <!ENTITY a:b ...> accepts; all three rows conflict with A1/A2 rejecting unused colon declarations. XML.Syntax assertions now pass at declaration time.",
+        "smallest_fix": "Replace only the final Assert.Equal Parse acceptance assertion with TryParse rejection plus XML.Syntax diagnostic assertion for the unused declaration. Keep the three existing reference-use rows and all other tests intact.",
+        "proving_check": "Execute the actual three historical rows and owned NamespacesNamesAndInternalPlacementEverySplit, then affected correctness selection; no exclusions."
+      }
     ]
   }
 }
