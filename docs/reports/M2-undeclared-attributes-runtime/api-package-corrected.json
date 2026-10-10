@@ -1,0 +1,429 @@
+{
+  "mode": "api",
+  "result": "passed",
+  "checks": [
+    {
+      "command": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "git",
+        "branch",
+        "--show-current"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "git",
+        "ls-files",
+        "--",
+        "src",
+        "tests",
+        "samples",
+        "benchmarks",
+        "docs/api",
+        "docs/reports/M2-undeclared-attributes-runtime",
+        "Directory.Build.props",
+        "Directory.Build.targets",
+        "Directory.Packages.props",
+        "global.json"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "--version"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "--list-runtimes"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "build",
+        "tests/Xemele.Tests/Xemele.Tests.csproj",
+        "-c",
+        "Release",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "build",
+        "docs/reports/M0-contracts/ApiCheck/ApiCheck.csproj",
+        "-c",
+        "Release",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "build",
+        "samples/M2-undeclared-attribute-contract/Sample.csproj",
+        "-c",
+        "Release",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "build",
+        "samples/M2-undeclared-attributes-runtime/ContractChecks.csproj",
+        "-c",
+        "Release",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "/Users/sebastienros/.codex/worktrees/c7ea/xemele/samples/M2-undeclared-attribute-contract/bin/Release/net10.0/AttributeContractConsumer.dll",
+        "/Users/sebastienros/.codex/worktrees/c7ea/xemele/src/Xemele/bin/Release/net10.0/Xemele.dll",
+        "4f81d2cf16ca93f40e7be04cf5bd1181e31bf017"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "/Users/sebastienros/.codex/worktrees/c7ea/xemele/samples/M2-undeclared-attributes-runtime/bin/Release/net10.0/AttributeContractConsumer.dll",
+        "/Users/sebastienros/.codex/worktrees/c7ea/xemele/src/Xemele/bin/Release/net10.0/Xemele.dll"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "/Users/sebastienros/.codex/worktrees/c7ea/xemele/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll",
+        "emit",
+        "/Users/sebastienros/.codex/worktrees/c7ea/xemele/samples/M2-undeclared-attribute-contract/bin/Release/net10.0/AttributeContractModel.dll",
+        "/Users/sebastienros/.codex/worktrees/c7ea/xemele/docs/reports/M2-undeclared-attributes-runtime/checks-hp2kvw6d/model.txt"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "build",
+        "docs/reports/M2-contracts/Projects/Resolver/Resolver.csproj",
+        "-c",
+        "Release",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "/Users/sebastienros/.codex/worktrees/c7ea/xemele/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll",
+        "compare",
+        "/Users/sebastienros/.codex/worktrees/c7ea/xemele/docs/reports/M2-contracts/Projects/Resolver/bin/Release/net10.0/M2Resolver.dll",
+        "/Users/sebastienros/.codex/worktrees/c7ea/xemele/tests/Contracts/Fixtures/M2/Resolver.golden.txt"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "build",
+        "docs/reports/M2-contracts/Projects/Dtd/Dtd.csproj",
+        "-c",
+        "Release",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "/Users/sebastienros/.codex/worktrees/c7ea/xemele/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll",
+        "compare",
+        "/Users/sebastienros/.codex/worktrees/c7ea/xemele/docs/reports/M2-contracts/Projects/Dtd/bin/Release/net10.0/M2Dtd.dll",
+        "/Users/sebastienros/.codex/worktrees/c7ea/xemele/tests/Contracts/Fixtures/M2/Dtd.golden.txt"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "build",
+        "docs/reports/M2-contracts/Projects/Encoding/Encoding.csproj",
+        "-c",
+        "Release",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "/Users/sebastienros/.codex/worktrees/c7ea/xemele/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll",
+        "compare",
+        "/Users/sebastienros/.codex/worktrees/c7ea/xemele/docs/reports/M2-contracts/Projects/Encoding/bin/Release/net10.0/M2Encoding.dll",
+        "/Users/sebastienros/.codex/worktrees/c7ea/xemele/tests/Contracts/Fixtures/M2/Encoding.golden.txt"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "build",
+        "docs/reports/M2-contracts/Projects/Entities/Entities.csproj",
+        "-c",
+        "Release",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "/Users/sebastienros/.codex/worktrees/c7ea/xemele/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll",
+        "compare",
+        "/Users/sebastienros/.codex/worktrees/c7ea/xemele/docs/reports/M2-contracts/Projects/Entities/bin/Release/net10.0/M2Entities.dll",
+        "/Users/sebastienros/.codex/worktrees/c7ea/xemele/tests/Contracts/Fixtures/M2/Entities.golden.txt"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "build",
+        "docs/reports/M2-contracts/Projects/Recovery/Recovery.csproj",
+        "-c",
+        "Release",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "/Users/sebastienros/.codex/worktrees/c7ea/xemele/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll",
+        "compare",
+        "/Users/sebastienros/.codex/worktrees/c7ea/xemele/docs/reports/M2-contracts/Projects/Recovery/bin/Release/net10.0/M2Recovery.dll",
+        "/Users/sebastienros/.codex/worktrees/c7ea/xemele/tests/Contracts/Fixtures/M2/Recovery.golden.txt"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "build",
+        "docs/reports/M2-contracts/Projects/Checks/Checks.csproj",
+        "-c",
+        "Release",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "/Users/sebastienros/.codex/worktrees/c7ea/xemele/docs/reports/M2-contracts/Projects/Checks/bin/Release/net10.0/M2Checks.dll"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "build",
+        "samples/M2-undeclared-attributes-runtime/Sample.csproj",
+        "-c",
+        "Release",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "/Users/sebastienros/.codex/worktrees/c7ea/xemele/samples/M2-undeclared-attributes-runtime/bin/Release/net10.0/Xemele.SyntaxSample.dll"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "pack",
+        "src/Xemele/Xemele.csproj",
+        "-c",
+        "Release",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false",
+        "--no-build",
+        "-o",
+        "/Users/sebastienros/.codex/worktrees/c7ea/xemele/docs/reports/M2-undeclared-attributes-runtime/checks-hp2kvw6d/feed"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "build",
+        "samples/M2-undeclared-attributes-runtime/Sample.csproj",
+        "-c",
+        "Release",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false",
+        "--artifacts-path",
+        "/Users/sebastienros/.codex/worktrees/c7ea/xemele/docs/reports/M2-undeclared-attributes-runtime/checks-hp2kvw6d/package-build",
+        "-p:UsePackage=true",
+        "-p:ManagePackageVersionsCentrally=false",
+        "-p:RestoreSources=/Users/sebastienros/.codex/worktrees/c7ea/xemele/docs/reports/M2-undeclared-attributes-runtime/checks-hp2kvw6d/feed",
+        "-p:RestorePackagesPath=/Users/sebastienros/.codex/worktrees/c7ea/xemele/docs/reports/M2-undeclared-attributes-runtime/checks-hp2kvw6d/packages"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "/Users/sebastienros/.codex/worktrees/c7ea/xemele/docs/reports/M2-undeclared-attributes-runtime/checks-hp2kvw6d/package-build/bin/Sample/release/Xemele.SyntaxSample.dll"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tools/planning",
+        "-p",
+        "test_tasks.py"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "python3",
+        "-B",
+        "tools/planning/tasks.py",
+        "validate"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit": 0
+    }
+  ],
+  "head": "4f81d2cf16ca93f40e7be04cf5bd1181e31bf017",
+  "runtime": [
+    "Microsoft.AspNetCore.App 8.0.30 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.AspNetCore.App]",
+    "Microsoft.AspNetCore.App 10.0.0 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.AspNetCore.App]",
+    "Microsoft.AspNetCore.App 10.0.11 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.AspNetCore.App]",
+    "Microsoft.AspNetCore.App 11.0.0-rc.1.26413.103 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.AspNetCore.App]",
+    "Microsoft.AspNetCore.App 11.0.0-rc.1.26425.128 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.AspNetCore.App]",
+    "Microsoft.NETCore.App 8.0.30 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App]",
+    "Microsoft.NETCore.App 10.0.0 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App]",
+    "Microsoft.NETCore.App 10.0.11 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App]",
+    "Microsoft.NETCore.App 11.0.0-rc.1.26413.103 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App]",
+    "Microsoft.NETCore.App 11.0.0-rc.1.26425.128 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App]"
+  ],
+  "dotnetSha256": "e86deb33d0dacad9cc1224466df6418149cb8e13cb8afd0dc6815ea6b7807975",
+  "frozenContractOutput": "Preserved seven frozen internal shapes, including all four event views.\nPassed 145 contract/model assertions; no product parsing or conformance execution.\nRuntimeIdentity:{\"Version\":\"10.0.11\",\"CoreLibrary\":\"/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App/10.0.11/System.Private.CoreLib.dll\",\"ProcessArchitecture\":\"Arm64\",\"CoreLibraryInformationalVersion\":\"10.0.11-servicing.26373.116\\u002Be2f47b0110ed922f21a1522da67279133ce28f32\"}",
+  "frozenShapeOutput": "Preserved seven frozen internal shapes, including all four event views.\nMatched 22 independent frozen internal/public/union shapes.",
+  "api": {
+    "additiveMembers": 82,
+    "allMembers": 372,
+    "assemblySha256": "7454dfda3647320a662c55f196a2531b84d545bf7be59bdf02b0c6ac46cb288c",
+    "baselineSha256": "a0de892b797e00eec8c40e39bc12d93c471394874d86c55e0d2ec9231079713b"
+  },
+  "frozenPublicModels": {
+    "Resolver": {
+      "assemblySha256": "ee7f877590f769e2aec785351c7c67a5e32baf3a895616f96aac55d7ca9a51fc",
+      "baselineSha256": "b5335e1df2d2eb59243830442191eaa43c2cccdf8c3f33764a79b7e9aff14349"
+    },
+    "Dtd": {
+      "assemblySha256": "d7f025752b086a9cae251228b652c765bcb875289e6f439764354f6c32eeaf84",
+      "baselineSha256": "d3f7d9bb88204b758e7ff552afdf681208de1610e7af7448a5be1ef23d07c04b"
+    },
+    "Encoding": {
+      "assemblySha256": "665147a1073f4d4430ae5ff5dc66513bd8d44021d21a0d724d1f8ecfa382692f",
+      "baselineSha256": "d3f7d9bb88204b758e7ff552afdf681208de1610e7af7448a5be1ef23d07c04b"
+    },
+    "Entities": {
+      "assemblySha256": "e1fb78bb388af101151af7e83883e14bcddbc19a53c587e6b1fc675e6c0ccadf",
+      "baselineSha256": "d7341327a3e84a19878cc5d2e52765faef6952149634f1a76ffd74a685903af6"
+    },
+    "Recovery": {
+      "assemblySha256": "255bae9723db356062c6bdf571ce6d92536305646465f27aa5f652403a288472",
+      "baselineSha256": "5c16caebb96474b5cdaac928293527da6acd2fab8035e0ed3a5afda583a37a18"
+    }
+  },
+  "frozenModelAssertions": "Passed 64 contract-model assertions; no XML parser declaration invoked.",
+  "sourceConsumer": "{\"values\":1,\"defaults\":1,\"parts\":3,\"lexical\":\" A \\u0026x; B\\u0026#9;\",\"Sequence\":0,\"known\":\"complete\"}",
+  "packageSha256": "54255186b96b508b6dc7e0e3abe624f476247108d009a0e11c8638bb452c2b6a",
+  "packageConsumer": "{\"values\":1,\"defaults\":1,\"parts\":3,\"lexical\":\" A \\u0026x; B\\u0026#9;\",\"Sequence\":0,\"known\":\"complete\"}",
+  "temporaryOutputsRemoved": true,
+  "sourceFreezeUnchanged": true,
+  "planning": "Validated 138 tasks: schema, evidence, acyclic dependencies, additive milestones, and ordered ownership.",
+  "sourceInputsSummary": {
+    "sha256": "193f6304bf1b8dc5292593515699aed964fdf5d776a7436d8c372d769e0cf20b",
+    "entries": 337
+  }
+}

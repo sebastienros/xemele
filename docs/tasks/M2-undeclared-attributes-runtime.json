@@ -58,32 +58,102 @@
     {
       "id": "M2-undeclared-attributes-runtime-A1",
       "description": "Implement the verified incomplete attribute/default contract in real Core, DTD and DOM paths: physical EntityDeclared WFC/VC origin/order/first-unread matrix, known normalization, exact symbolic lexical gaps, applicable/unused/overridden defaults and namespace participation/refusal. Deliver compatible optional callbacks with bounded borrowed lifetime and exact order/pause/cancel/count/quota behavior; preserve existing views, old sinks, 290-member API and content provenance. Never fabricate complete values or silently discard lexical identity. Node.cs ownership only GetAttribute direct slot-read guard; other existing shared shapes remain frozen.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "runtime-full-correctness",
+        "final-focused-correctness",
+        "source-resolution-review"
+      ]
     },
     {
       "id": "M2-undeclared-attributes-runtime-A2",
       "description": "Actual source/DOM/stream tests cover the exact seven authored input/resource identities (3 WFC controls and4 VC-only representations), origin/declaration-order/first-unread matrix, known literal/numeric normalization, direct/indirect/multiple adjacent gaps, later forbidden errors, unused/overridden defaults, incomplete namespace refusal, enumeration/getters/mutation/detachment, every short character/byte/entity split and mappings, callback pause/cancel/fault, old sinks, exact/one-over quotas. Actual serializer/BOM/Save and copy/text entry points prove no output or destination mutation before refusal. Preserve standalone/DTD repairs and original corpus applicability; no model-only runtime claims.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "runtime-full-correctness",
+        "final-focused-correctness",
+        "source-resolution-review"
+      ]
     },
     {
       "id": "M2-undeclared-attributes-runtime-A3",
       "description": "Compile independent frozen proposal/consumer and additive approved API fragment, preserve all prior public/internal shapes, prove real source/fresh package consumers. Run focused new and affected correctness plus planning/owned diff; preserve passing unchanged checks. Demonstrate zero warm borrowed allocation with positive owned controls and complete untimed oracles through reused verified measurement support; prepare/build outside one bounded exclusive sequence, require all children succeed, final identities and cleanup; timing informational. Keep concise summaries only and remove raw artifacts. Coordinator focused integration, comprehensive combined checks at M2 gate.",
-      "status": "pending",
-      "evidence": []
+      "status": "failed",
+      "evidence": [
+        "final-api-package",
+        "measurement-preparation"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "Core/DTD symbolic expansion and optional incomplete-attribute callbacks preserve authored literals, physical maps, declaration order and first-unread applicability; opaque source identities retain no resource owner.",
+    "Tree incomplete-attribute/default records intern names, share default interpretations, refuse direct getters and centralized output/copy/text entry points.",
+    "Owned 40-case runtime controls, frozen API fragment/source-package consumers, complete untimed benchmark oracles and thin reused measurement adapter."
+  ],
+  "evidence": [
+    {
+      "id": "runtime-full-correctness",
+      "kind": "check",
+      "revision": "5025d35dae37b6bf615389e8891610a4f3c7564b",
+      "command": "python3 -B docs/reports/M2-undeclared-attributes-runtime/verify.py --mode correctness --report correctness-review-corrections",
+      "result": "passed",
+      "summary": "4802 cases, including39 owned; zero failures/skips; six allocation methods held pending lease. Source and output closure unchanged.",
+      "artifact": "docs/reports/M2-undeclared-attributes-runtime/correctness-review-corrections.json"
+    },
+    {
+      "id": "final-focused-correctness",
+      "kind": "check",
+      "revision": "4e45c2f5d4c89594d46c31a50330df4e546b8192",
+      "command": "dotnet tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -noColor -namespace Xemele.Tests.IncompleteAttributes -namespace Xemele.Tests.DtdEntityBase -namespace Xemele.Tests.DtdNonvalidating -namespace Xemele.Tests.DtdCorpusRepair; then -class Xemele.Tests.DtdParserTests",
+      "result": "passed",
+      "summary": "115 affected cases (40 owned) and1866 DTD parser cases pass. Compiled output unchanged. Earlier empty discovery from combined class/namespace filters is separately recorded as failed evidence, not a pass.",
+      "artifact": "docs/reports/M2-undeclared-attributes-runtime/correctness-opaque-focused.json"
+    },
+    {
+      "id": "final-api-package",
+      "kind": "check",
+      "revision": "4e45c2f5d4c89594d46c31a50330df4e546b8192",
+      "command": "python3 -B docs/reports/M2-undeclared-attributes-runtime/verify.py --mode api --report api-package-opaque-identities",
+      "result": "passed",
+      "summary": "82 additive/372 total API members; independent frozen contract/model shapes and matching source/fresh local package consumers pass. Pinned SDK10.0.400/runtime10.0.11 Release; scoped offline NuGetAudit=false. Planning138 and diff checks pass.",
+      "artifact": "docs/reports/M2-undeclared-attributes-runtime/api-package-opaque-identities.json"
+    },
+    {
+      "id": "source-resolution-review",
+      "kind": "review",
+      "revision": "4e45c2f5d4c89594d46c31a50330df4e546b8192",
+      "command": null,
+      "result": "passed",
+      "summary": "Coordinator directly accepted opaque per-source identity/control after original four provenance/name/oracle review corrections were accepted at5025d35; no source-review blockers remain.",
+      "artifact": null
+    },
+    {
+      "id": "measurement-preparation",
+      "kind": "check",
+      "revision": "4e45c2f5d4c89594d46c31a50330df4e546b8192",
+      "command": "python3 -B docs/reports/M2-undeclared-attributes-runtime/measure.py --mode prepare --report preparation-opaque-identities --benchmark-report benchmark-opaque-identities",
+      "result": "failed",
+      "summary": "Parent build/identity/complete counters-disabled oracle and generated restore/binding passed. Generated build exceeded240s; parent exited-6. Process group empty and temporary outputs removed. No prepared child/manifest, allocation or timing workload. Earlier5025 preparation cancelled for authorized lifetime correction with process-group cleanup.",
+      "artifact": "docs/reports/M2-undeclared-attributes-runtime/preparation-opaque-identities.json"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "",
-    "checks": [],
-    "remaining": [],
+    "summary": "Accepted runtime4e45c2f and passing correctness/API preserved. Coordinator authorized exact verified offline adapter settings and one fresh counters-disabled preparation after six routing controls pass.",
+    "checks": [
+      "5025d35:4802 correctness cases pass;4e45c2f:1981 affected cases pass including40 owned.",
+      "4e45c2f:372/82 API, frozen shapes and source/package consumers pass;138-task validation and owned diff clean.",
+      "Counters-disabled preparation: parent/oracle/restore/binding passed; generated build timeout240s, cleaned process group/raw outputs."
+    ],
+    "remaining": [
+      "Complete the single coordinator-authorized counters-disabled preparation using verified offline adapter settings; no shared support/framework/deadline changes.",
+      "Successful frozen child preparation, READY/no-child acknowledgement and explicit exclusive host lease; unchanged streaming pair, PI pair, task allocation then timing sequence. No allocation/timing claims yet.",
+      "Compact final measurement evidence, task implemented handoff, coordinator integration verification."
+    ],
     "requests": [
       "Coordinator grants XmlDocument.UnresolvedReferences.cs only the existing RefuseUnresolvedReferences guard extension to also refuse either incomplete attribute/default provenance collection when nonempty. Preserve existing content message/behavior and frozen API/ABI; no unrelated edits. A1/A2 output/copy loss-refusal requires actual centralized guard. Worker acknowledged task-JSON-only hold.",
-      "Coordinator precise historical test transition grant: RepairTests.cs only DefaultDeclarationApplicability laterPe direct-forward expectation -> Rejected/DTD.InvalidDefault, and CoreForwardsExternalSubsetApplicability(false) -> same rejection before resource open/root callback. Preserve standalone=yes and every other test. Existing verified contract lines262-263 requires direct-forward rejection including VC-only; two old assertions conflict. Prove with these focused cases, owned runtime controls and affected preservation checks. TASK-JSON-ONLY HOLD acknowledged before grant; source work independent."
+      "Coordinator precise historical test transition grant: RepairTests.cs only DefaultDeclarationApplicability laterPe direct-forward expectation -> Rejected/DTD.InvalidDefault, and CoreForwardsExternalSubsetApplicability(false) -> same rejection before resource open/root callback. Preserve standalone=yes and every other test. Existing verified contract lines262-263 requires direct-forward rejection including VC-only; two old assertions conflict. Prove with these focused cases, owned runtime controls and affected preservation checks. TASK-JSON-ONLY HOLD acknowledged before grant; source work independent.",
+      "Preparation infrastructure failure at4e45c2f: generated build timeout240s after restore/project-binding success; no workload ran, process group empty/raw outputs removed. Preserve accepted source and passing correctness/API. Need coordinator review before a fresh preparation attempt; no deadline/job/framework changes made."
     ]
   }
 }
