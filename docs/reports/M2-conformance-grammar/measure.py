@@ -2,6 +2,7 @@
 from pathlib import Path
 import types
 import json
+import os
 
 ROOT = Path(__file__).resolve().parents[3]
 support = ROOT / 'docs/reports/M2-dtd-entity-base/measure.py'
@@ -60,4 +61,8 @@ def benchmark_results(text, raw, revision, known, summary=None):
 
 engine.benchmark_results = benchmark_results
 if __name__ == '__main__':
+    # Offline restore cannot consult vulnerability feeds; package/source hashes
+    # remain frozen by the unchanged verified identity guards. MSBuild imports
+    # this explicit environment property for parent and generated child restores.
+    os.environ['NuGetAudit'] = 'false'
     engine.main()
