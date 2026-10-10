@@ -4,7 +4,7 @@
   "milestone": "M0",
   "title": "Pinned C/Rust/BCL reference runners",
   "kind": "infrastructure",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M0-references",
   "branch": "codex/m0-references",
   "base_revision": "9591b28199c5238bc88032d70cf78e88b02178f4",
@@ -32,29 +32,101 @@
     {
       "id": "M0-references-A1",
       "description": "Implement versioned JSONL protocol and one XML fixture across pinned libxml2/xmloxide/BCL runners with build metadata.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "managed-reference-integration",
+        "private-native-builds"
+      ]
     },
     {
       "id": "M0-references-A2",
       "description": "Assert semantic response equality, process failure categorization, invalid requests, timeouts and offline resources.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "managed-reference-integration",
+        "preserved-protocol-foundation"
+      ]
     },
     {
       "id": "M0-references-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "managed-reference-integration",
+        "private-native-builds",
+        "preserved-protocol-foundation",
+        "preserved-compiled-contracts",
+        "task-and-whitespace-validation"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "tools/ReferenceRunners/Integration/ReferenceIntegration.csproj: explicit standalone infrastructure executable; native builds stay out of ordinary solution tests.",
+    "tools/ReferenceRunners/Integration/Program.cs: unchanged production ReferenceProcess client; independent known events, actual metadata, request/XML/resource/capability outcomes and process cleanup assertions.",
+    "docs/reports/M0-references/verify.py: explicit private binary/provenance requirements, tested revision and lock checks, durable actual wire/check reports.",
+    "docs/reports/M0-references/result.md: actual commands, outputs, platform and preserved native limitations; no runtime API/feature exclusions."
+  ],
+  "evidence": [
+    {
+      "id": "managed-reference-integration",
+      "kind": "check",
+      "revision": "f2088e4b76c835daff21c0226f5dd3884a275b65",
+      "command": "python3 -B docs/reports/M0-references/verify.py",
+      "result": "passed",
+      "summary": "51 actual engine responses validated through ReferenceProcess: independent five-event fixture matches all three; actual runner source/engine versions and private build metadata; seven invalid request cases per engine; invalid XML; mapped/denied network and file resources; explicit externalDTD/document-whitespace capability failures and preserved CRLF/IRI differences. Ten actual malformed/exit/overflow children plus timeout and cancellation checks pass; both sleep PIDs reaped before completion. macOS15.8.1 arm64 only.",
+      "artifact": "docs/reports/M0-references/verification.txt"
+    },
+    {
+      "id": "private-native-builds",
+      "kind": "check",
+      "revision": "f2088e4b76c835daff21c0226f5dd3884a275b65",
+      "command": "CMAKE='/Users/sebastienros/.codex/worktrees/0c66/xemele/artifacts/M0-references-libxml2/cmake-env/bin/cmake' python3 -B tools/ReferenceRunners/Libxml2/build.py --fetch; python3 -B tools/ReferenceRunners/Xmloxide/build.py --offline; dotnet build tools/ReferenceRunners/Integration/ReferenceIntegration.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false",
+      "result": "passed",
+      "summary": "Actual private libxml2 immutable96498992efa48d52b0e8b83058bd88dbdaf153c1 build with pinned AppleClang17build1700.6.3.2/CMake3.31.6/Make3.81/SDK26.2/arm64-target15.0; bridge unchanged at source revision, actual checksum compared by process. Actual xmloxide immutable555055f1ea6bf9944488fd96415b6f03b5b43696 Rust1.95.0/Cargo1.95.0 build at tested source using locked offline cache. SDK10.0.400 managed integration/BCL/libxml2 build0warnings/errors; reports include exact tool executable, commands, actual provenance/lock/license/linkage. No host parser fallback.",
+      "artifact": "docs/reports/M0-references/result.md"
+    },
+    {
+      "id": "preserved-protocol-foundation",
+      "kind": "check",
+      "revision": "f2088e4b76c835daff21c0226f5dd3884a275b65",
+      "command": "python3 -B docs/reports/M0-references-protocol/verify.py",
+      "result": "passed",
+      "summary": "51 focused protocol tests;54 solution infrastructure passes0product tests;3 deliberately failed smoke checks expectedexit2;11 direct BCL wire cases plus malformed rawUTF8; solution build/help/pack and runtime API0;16 discovery/composition checks;2 independent corpus fixtures;101task validation. Fresh artifact transcript copied into owned reports; historical reports untouched.",
+      "artifact": "docs/reports/M0-references/preserved-protocol-foundation.txt"
+    },
+    {
+      "id": "preserved-compiled-contracts",
+      "kind": "check",
+      "revision": "f2088e4b76c835daff21c0226f5dd3884a275b65",
+      "command": "python3 -B docs/reports/M0-contracts/verify.py",
+      "result": "passed",
+      "summary": "Foundation checks pass;139M1/173M2 compiled members,139 preserved additively;8probe members;compiled mutation rejection checks pass;54solution infrastructure tests;16discovery/composition checks;tree/input correctness self-checks pass without new timings;runtime remains empty;101task validation.",
+      "artifact": "docs/reports/M0-references/preserved-contracts.txt"
+    },
+    {
+      "id": "task-and-whitespace-validation",
+      "kind": "check",
+      "revision": "f2088e4b76c835daff21c0226f5dd3884a275b65",
+      "command": "python3 tools/planning/tasks.py validate; git diff --check",
+      "result": "passed",
+      "summary": "101 tasks schema/evidence/dependency/ownership validation and whitespace check pass; only task-owned integration/report paths and own task record changed.",
+      "artifact": "docs/reports/M0-references/validation.txt"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Split before claim into protocol/BCL and independent pinned engine runners. This join retains all original cross-engine acceptance criteria and verifies their integrated combination.",
-    "checks": [],
-    "remaining": [],
+    "summary": "Implemented three-engine join at f2088e4b76c835daff21c0226f5dd3884a275b65 using only verified child contracts; standalone integration executable calls unchanged production managed client and independent oracle. No shared project/solution/runtime changes; integration_revision remains null.",
+    "checks": [
+      "51actual native/BCL responses and12adversarial process checks pass; truthful tested source metadata/private provenance/lock verified.",
+      "51focused/54solution infrastructure tests,3expected smoke failures,16discovery/composition and2independent corpus checks pass;build/help/pack/API0 retained.",
+      "139M1/173M2 compiled contracts and mutation rejection probes plus tree/input correctness checks pass without new timings.",
+      "101task validator and git diff --check pass; macOS15.8.1arm64 only; no runtime/performance/allocation claim."
+    ],
+    "remaining": [
+      "Coordinator must integrate and rerun checks before marking verified; native provisioning stays explicit and separate from ordinary solution tests.",
+      "Native child capability gaps and genuine value/IRI differences remain explicitly recorded; use capable references and independent standards expectations without narrowing Xemele scope.",
+      "Coordinator status message was rejected by automatic approval review because direct user authorization to send to that chat was not established; final handoff is provided in this chat."
+    ],
     "requests": []
   }
 }

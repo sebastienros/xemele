@@ -1,0 +1,137 @@
+$ git init /Users/sebastienros/.codex/worktrees/3046/xemele/artifacts/M0-references-libxml2/upstream
+hint: Using 'master' as the name for the initial branch. This default branch name
+hint: is subject to change. To configure the initial branch name to use in all
+hint: of your new repositories, which will suppress this warning, call:
+hint:
+hint: 	git config --global init.defaultBranch <name>
+hint:
+hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+hint: 'development'. The just-created branch can be renamed via this command:
+hint:
+hint: 	git branch -m <name>
+$ git -C /Users/sebastienros/.codex/worktrees/3046/xemele/artifacts/M0-references-libxml2/upstream remote add origin https://gitlab.gnome.org/GNOME/libxml2.git
+$ git -C /Users/sebastienros/.codex/worktrees/3046/xemele/artifacts/M0-references-libxml2/upstream fetch --depth=1 origin 96498992efa48d52b0e8b83058bd88dbdaf153c1
+From https://gitlab.gnome.org/GNOME/libxml2
+ * branch            96498992efa48d52b0e8b83058bd88dbdaf153c1 -> FETCH_HEAD
+$ git -C /Users/sebastienros/.codex/worktrees/3046/xemele/artifacts/M0-references-libxml2/upstream checkout --detach 96498992efa48d52b0e8b83058bd88dbdaf153c1
+HEAD is now at 9649899 Release v2.15.4
+$ git -C /Users/sebastienros/.codex/worktrees/3046/xemele/artifacts/M0-references-libxml2/upstream rev-parse HEAD
+$ git -C /Users/sebastienros/.codex/worktrees/3046/xemele/artifacts/M0-references-libxml2/upstream status --porcelain --untracked-files=all
+$ /Users/sebastienros/.codex/worktrees/0c66/xemele/artifacts/M0-references-libxml2/cmake-env/bin/cmake --version
+$ /usr/bin/clang --version
+$ make --version
+$ xcrun --show-sdk-version
+$ xcrun --show-sdk-path
+$ /Users/sebastienros/.codex/worktrees/0c66/xemele/artifacts/M0-references-libxml2/cmake-env/bin/cmake -S /Users/sebastienros/.codex/worktrees/3046/xemele/artifacts/M0-references-libxml2/upstream -B /Users/sebastienros/.codex/worktrees/3046/xemele/artifacts/M0-references-libxml2/native-build -G Unix Makefiles -DCMAKE_C_COMPILER=/usr/bin/clang -DBUILD_SHARED_LIBS=OFF -DCMAKE_BUILD_TYPE=Release -DCMAKE_POSITION_INDEPENDENT_CODE=ON -DCMAKE_OSX_DEPLOYMENT_TARGET=15.0 -DCMAKE_OSX_ARCHITECTURES=arm64 -DCMAKE_OSX_SYSROOT=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -DCMAKE_C_FLAGS= -DCMAKE_C_FLAGS_RELEASE=-O3 -DNDEBUG -DLIBXML2_WITH_CATALOG=OFF -DLIBXML2_WITH_DEBUG=OFF -DLIBXML2_WITH_DOCS=OFF -DLIBXML2_WITH_HTML=OFF -DLIBXML2_WITH_HTTP=OFF -DLIBXML2_WITH_ICONV=OFF -DLIBXML2_WITH_ICU=OFF -DLIBXML2_WITH_ISO8859X=OFF -DLIBXML2_WITH_LEGACY=OFF -DLIBXML2_WITH_MODULES=OFF -DLIBXML2_WITH_OUTPUT=OFF -DLIBXML2_WITH_PATTERN=OFF -DLIBXML2_WITH_PROGRAMS=OFF -DLIBXML2_WITH_PUSH=ON -DLIBXML2_WITH_PYTHON=OFF -DLIBXML2_WITH_READLINE=OFF -DLIBXML2_WITH_REGEXPS=OFF -DLIBXML2_WITH_SAX1=OFF -DLIBXML2_WITH_TESTS=OFF -DLIBXML2_WITH_THREADS=ON -DLIBXML2_WITH_TLS=OFF -DLIBXML2_WITH_VALID=ON -DLIBXML2_WITH_XINCLUDE=OFF -DLIBXML2_WITH_XPATH=OFF
+-- The C compiler identification is AppleClang 17.0.0.17000603
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/clang - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Could NOT find PkgConfig (missing: PKG_CONFIG_EXECUTABLE)
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+-- Found Threads: TRUE
+-- Performing Test HAVE_FUNC_ATTRIBUTE_DESTRUCTOR
+-- Performing Test HAVE_FUNC_ATTRIBUTE_DESTRUCTOR - Success
+-- Looking for getentropy
+-- Looking for getentropy - found
+-- Looking for glob
+-- Looking for glob - found
+-- Looking for mmap
+-- Looking for mmap - found
+-- Looking for include file stdint.h
+-- Looking for include file stdint.h - found
+-- Configuring done (2.1s)
+-- Generating done (0.0s)
+-- Build files have been written to: /Users/sebastienros/.codex/worktrees/3046/xemele/artifacts/M0-references-libxml2/native-build
+$ /Users/sebastienros/.codex/worktrees/0c66/xemele/artifacts/M0-references-libxml2/cmake-env/bin/cmake --build /Users/sebastienros/.codex/worktrees/3046/xemele/artifacts/M0-references-libxml2/native-build --parallel 2
+[  4%] Building C object CMakeFiles/LibXml2.dir/buf.c.o
+[  9%] Building C object CMakeFiles/LibXml2.dir/chvalid.c.o
+[ 14%] Building C object CMakeFiles/LibXml2.dir/dict.c.o
+[ 19%] Building C object CMakeFiles/LibXml2.dir/encoding.c.o
+[ 23%] Building C object CMakeFiles/LibXml2.dir/entities.c.o
+[ 28%] Building C object CMakeFiles/LibXml2.dir/error.c.o
+[ 33%] Building C object CMakeFiles/LibXml2.dir/globals.c.o
+[ 38%] Building C object CMakeFiles/LibXml2.dir/hash.c.o
+[ 42%] Building C object CMakeFiles/LibXml2.dir/list.c.o
+[ 52%] Building C object CMakeFiles/LibXml2.dir/parser.c.o
+[ 52%] Building C object CMakeFiles/LibXml2.dir/parserInternals.c.o
+[ 57%] Building C object CMakeFiles/LibXml2.dir/SAX2.c.o
+[ 61%] Building C object CMakeFiles/LibXml2.dir/threads.c.o
+[ 66%] Building C object CMakeFiles/LibXml2.dir/tree.c.o
+[ 71%] Building C object CMakeFiles/LibXml2.dir/uri.c.o
+[ 76%] Building C object CMakeFiles/LibXml2.dir/valid.c.o
+[ 80%] Building C object CMakeFiles/LibXml2.dir/xmlIO.c.o
+[ 85%] Building C object CMakeFiles/LibXml2.dir/xmlmemory.c.o
+[ 90%] Building C object CMakeFiles/LibXml2.dir/xmlstring.c.o
+[ 95%] Building C object CMakeFiles/LibXml2.dir/xmlreader.c.o
+[100%] Linking C static library libxml2.a
+[100%] Built target LibXml2
+$ /usr/bin/clang -dynamiclib -target arm64-apple-macos15.0 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -Wl,-install_name,@rpath/libxemele_libxml2.dylib -O2 -std=c11 -Wall -Wextra -Werror -I/Users/sebastienros/.codex/worktrees/3046/xemele/artifacts/M0-references-libxml2/upstream/include -I/Users/sebastienros/.codex/worktrees/3046/xemele/artifacts/M0-references-libxml2/native-build /Users/sebastienros/.codex/worktrees/3046/xemele/tools/ReferenceRunners/Libxml2/bridge.c /Users/sebastienros/.codex/worktrees/3046/xemele/artifacts/M0-references-libxml2/native-build/libxml2.a -o /Users/sebastienros/.codex/worktrees/3046/xemele/artifacts/M0-references-libxml2/native-build/libxemele_libxml2.dylib
+
+$ otool -L /Users/sebastienros/.codex/worktrees/3046/xemele/artifacts/M0-references-libxml2/native-build/libxemele_libxml2.dylib
+$ /usr/bin/clang -dM -E -I/Users/sebastienros/.codex/worktrees/3046/xemele/artifacts/M0-references-libxml2/native-build -include libxml/xmlversion.h -x c /dev/null
+$ make --version
+$ xcrun --show-sdk-version
+Bridge: /Users/sebastienros/.codex/worktrees/3046/xemele/artifacts/M0-references-libxml2/native-build/libxemele_libxml2.dylib
+{
+  "upstream": "https://gitlab.gnome.org/GNOME/libxml2.git",
+  "commit": "96498992efa48d52b0e8b83058bd88dbdaf153c1",
+  "version": "2.15.4",
+  "sourceArchiveSha256": "1be1f01c02dd77b5ac13b391740681a915d65f0b69c3c8a9560891e35446cb08",
+  "license": "MIT",
+  "licenseSha256": "5d4873884a890122a4b9b20ad56ac6f7da1d796a5bfcf04a427970ac96217626",
+  "cmake": "cmake version 3.31.6",
+  "compiler": "Apple clang version 17.0.0 (clang-1700.6.3.2)\nTarget: arm64-apple-darwin24.6.0\nThread model: posix\nInstalledDir: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin",
+  "platform": "Darwin",
+  "architecture": "arm64",
+  "make": "GNU Make 3.81",
+  "sdk": "26.2",
+  "configure": {
+    "BUILD_SHARED_LIBS": "OFF",
+    "CMAKE_BUILD_TYPE": "Release",
+    "CMAKE_POSITION_INDEPENDENT_CODE": "ON",
+    "CMAKE_OSX_DEPLOYMENT_TARGET": "15.0",
+    "CMAKE_OSX_ARCHITECTURES": "arm64",
+    "CMAKE_OSX_SYSROOT": "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk",
+    "CMAKE_C_FLAGS": "",
+    "CMAKE_C_FLAGS_RELEASE": "-O3 -DNDEBUG",
+    "LIBXML2_WITH_CATALOG": "OFF",
+    "LIBXML2_WITH_DEBUG": "OFF",
+    "LIBXML2_WITH_DOCS": "OFF",
+    "LIBXML2_WITH_HTML": "OFF",
+    "LIBXML2_WITH_HTTP": "OFF",
+    "LIBXML2_WITH_ICONV": "OFF",
+    "LIBXML2_WITH_ICU": "OFF",
+    "LIBXML2_WITH_ISO8859X": "OFF",
+    "LIBXML2_WITH_LEGACY": "OFF",
+    "LIBXML2_WITH_MODULES": "OFF",
+    "LIBXML2_WITH_OUTPUT": "OFF",
+    "LIBXML2_WITH_PATTERN": "OFF",
+    "LIBXML2_WITH_PROGRAMS": "OFF",
+    "LIBXML2_WITH_PUSH": "ON",
+    "LIBXML2_WITH_PYTHON": "OFF",
+    "LIBXML2_WITH_READLINE": "OFF",
+    "LIBXML2_WITH_REGEXPS": "OFF",
+    "LIBXML2_WITH_SAX1": "OFF",
+    "LIBXML2_WITH_TESTS": "OFF",
+    "LIBXML2_WITH_THREADS": "ON",
+    "LIBXML2_WITH_TLS": "OFF",
+    "LIBXML2_WITH_VALID": "ON",
+    "LIBXML2_WITH_XINCLUDE": "OFF",
+    "LIBXML2_WITH_XPATH": "OFF"
+  },
+  "enabledFeatureMacros": [
+    "#define LIBXML_PUSH_ENABLED",
+    "#define LIBXML_READER_ENABLED",
+    "#define LIBXML_THREAD_ENABLED",
+    "#define LIBXML_TREE_ENABLED",
+    "#define LIBXML_VALID_ENABLED"
+  ],
+  "bridgeSourceSha256": "171dfe0e1e5ce9027d97486f492e3ab3bbf7e9b1d6ba95f45abd0a92b248dd5e",
+  "bridgeSha256": "7140d1edf4e2e10f6e15693317cffa3d5025a178814010edecf8770bb8f8be21",
+  "staticLibrarySha256": "028ba67cd39687ce3c6246e724de0c08114eadb665c0d0954a8c35490f4a8dc4",
+  "dynamicDependencies": "/Users/sebastienros/.codex/worktrees/3046/xemele/artifacts/M0-references-libxml2/native-build/libxemele_libxml2.dylib:\n\t@rpath/libxemele_libxml2.dylib (compatibility version 0.0.0, current version 0.0.0)\n\t/usr/lib/libSystem.B.dylib (compatibility version 1.0.0, current version 1356.0.0)"
+}
