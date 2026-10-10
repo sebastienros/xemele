@@ -4,11 +4,11 @@
   "milestone": "M2",
   "title": "Additional encoding compatibility",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "verified",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M2-encoding",
   "branch": "codex/m2-encoding",
   "base_revision": "1a77b3598ed6084b17a69ca562d160f0d64a6be5",
-  "integration_revision": null,
+  "integration_revision": "684228fb13f85f7aff5e9fd8266f4146cebf89ab",
   "depends_on": [
     "M2-contracts",
     "M2-pi-allocation-probe"
@@ -39,7 +39,8 @@
       "evidence": [
         "renewed-source-checks",
         "renewed-allocation-checks",
-        "exclusive-timing"
+        "exclusive-timing",
+        "integrated-684228f"
       ]
     },
     {
@@ -49,7 +50,8 @@
       "evidence": [
         "renewed-source-checks",
         "renewed-allocation-checks",
-        "exclusive-timing"
+        "exclusive-timing",
+        "integrated-684228f"
       ]
     },
     {
@@ -59,7 +61,8 @@
       "evidence": [
         "renewed-source-checks",
         "renewed-allocation-checks",
-        "exclusive-timing"
+        "exclusive-timing",
+        "integrated-684228f"
       ]
     }
   ],
@@ -133,11 +136,20 @@
       "result": "passed",
       "summary": "Fresh warm conversion tests and precreated declaration matching0B; coldsetup2816B/warmsetup824B/op/informationalretained656B/op. Source-integrity hashes confirm unchanged runtime/encodingbenchmarks from a1d, whose successful13child/39actual timing evidence is retained without repeat. No universal performance or other-platform claim.",
       "artifact": "docs/reports/M2-encoding/renewal-3e61b05-attempt1/source-integrity.json"
+    },
+    {
+      "id": "integrated-684228f",
+      "kind": "integration",
+      "revision": "684228fb13f85f7aff5e9fd8266f4146cebf89ab",
+      "command": "python3 -B docs/reports/M2-encoding/verify.py --report-prefix integration-684228f-attempt1 --audit-base f473bc7 --expected-branch codex/integrate-m2-encoding",
+      "result": "passed",
+      "summary": "Fresh integrated MTP809 and direct255/255/299 all pass; API222/internal44/model81/discovery3388; seven oracles, zero warm primitive allocation, sample and fresh local package; fresh complete pinned BCL242 full source revision/hash; planning14/validation114/owned-path and whitespace audits. Historical failed integration preserved, successful unchanged-source timing retained. Arm64 only; later platform gates remain unrun.",
+      "artifact": "docs/reports/M2-encoding/integration-684228f-attempt1/summary.json"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Renewed M2-encoding implemented at3e61b0544ec29bdf60e88bb133210c339391e34e on verifiedbase1a77b3598ed6084b17a69ca562d160f0d64a6be5/exactclaim7034b2769307fbab70ea524ea2a16f5defa8e7d6. Runtime and own test/benchmark/sample C# unchanged from a1d; all fresh checks pass, prior successful timing retained without repeat. Awaiting serialized coordinator integration verification.",
+    "summary": "Verified integrated strict US-ASCII/ISO-8859-1/Windows-1252 at 684228fb13f85f7aff5e9fd8266f4146cebf89ab; bounded decoder and existing UTF behavior preserved. No public API additions.",
     "checks": [
       "source-a1d0d1a-attempt1: actual809 tests/API222/internal44/model81/sevenoracles/sample+package/fresh242reference/planning14/validation112/ownedpath+diff passed.",
       "timing-a1d0d1a:13 actual cases/39 observations/all13 children exit0; warm primitives0B; setup/retained/DOM allocations explicitly separate.",
@@ -146,7 +158,6 @@
       "Historical coordinator integrated cd753170601936520d1d8efadb949852bacd083f unchanged PI1024B failure afterMTP809/API222 remains preserved on fc862e888a0089e6bd304b8c2586206353c94f66; verified repairs now adopted, historical cause unresolved."
     ],
     "remaining": [
-      "Coordinator integrates and verifies with current integrated counts; verifier supports explicit --audit-base/--expected-branch and runtime/conformance/differential/reference count arguments.",
       "External TextDecl framing and entity composition belong to M2-dtd-framing/M2-entities; this branch has no unmerged dependency.",
       "x64/Windows/Linux/AOT and release-scale performance checks unrun locally; Arm64 ShortRun results provisional, not a universal performance claim."
     ],
