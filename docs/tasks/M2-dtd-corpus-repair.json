@@ -4,7 +4,7 @@
   "milestone": "M2",
   "title": "Resolve seven original DTD grammar and namespace obligations",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "worker:M2-dtd-corpus-repair",
   "branch": "codex/m2-dtd-corpus-repair",
   "base_revision": "e82db97101699f538a068b43fa7f3f8c06492ed3",
@@ -41,30 +41,134 @@
     {
       "id": "M2-dtd-corpus-repair-A1",
       "description": "Correct default entity declaration-order WFC using live declaration/origin/applicability; declaration keyword boundary at external PE inclusion with required surrounding S; entity and notation declaration NCNames including unused/duplicate declarations. Preserve QName element/attribute and NMTOKEN productions, nonvalidating rules, first-unread suppression, quotas, bounded source/pause/count/cleanup and model/API identities. No invented unknown attribute/default representation; that remaining contract obligation is separate.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "focused-affected-correctness",
+        "source-review"
+      ]
     },
     {
       "id": "M2-dtd-corpus-repair-A2",
       "description": "Exact original inventory bytes/resources: not-wf-sa-180 and ibm-not-wf-P68-ibm68n07.xml reject forward defaults; valid-not-sa-020 accepts complete independent doc/a1=v1 model; ibm-1-1-valid-P05-ibm05v05.xml, rmt-ns10-043, rmt-ns10-044 and x-ibm-1-0.5-valid-P05-ibm05v05.xml reject colon declarations under frozen namespace profile. Cover all short split/PE boundaries, prior declared default success, internal PE WFC rejection, legal Fifth Edition names and QName/NMTOKEN distinctions. Corpus identity/expectations unchanged.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "focused-affected-correctness",
+        "source-review"
+      ]
     },
     {
       "id": "M2-dtd-corpus-repair-A3",
       "description": "Relevant focused and affected inherited correctness, API290 compatibility and actual source/fresh package consumer checks; applicable real allocation/timing evidence through reused verified support and one prepared exclusive sequence. State repeat reasons, preserve unchanged passing evidence, build outside lease, final identity and cleanup mandatory. Timing informational. Planning/owned diff validated, concise summaries only.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "focused-affected-correctness",
+        "api-consumers",
+        "frozen-preparation",
+        "allocation",
+        "timing",
+        "final-audit"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "DefaultReferences.cs: ValidateDeclaredDefault checks the declaration-time live table and origins; missing declaration location waits only for whole-subset PE applicability, never later entity resolution.",
+    "Declarations.cs: NCName checks before declaration retention/deduplication, preserving QName and NMTOKEN productions; PE origin retention only where standalone WFC needs it.",
+    "Lexer.cs: complete external markup keyword permits adjacent PE inclusion and its required surrounding spaces.",
+    "XmlParserCore.Doctype.cs: authorized external-subset context forwarding only.",
+    "RepairTests.cs: seven immutable original inventory/profile cases, all short primary/PE splits and complete independent doc/a1=v1/DTD model, real rejection bytes and resource decode boundaries.",
+    "ReviewRegressionTests.cs: authorized unused-colon assertion transition only; reference-use rows retained.",
+    "DtdCorpusRepairBenchmarks.cs: complete independent live-default and original external-keyword DTD/default/document/event/pause/count oracles; reused verified driver, binding, provenance and process guards."
+  ],
+  "evidence": [
+    {
+      "id": "focused-affected-correctness",
+      "kind": "check",
+      "revision": "d9d2afe6538a2d3a22bcc56247526de295552c16",
+      "command": "python3 -B docs/reports/M2-dtd-corpus-repair/verify.py --mode correctness --report correctness-final",
+      "result": "passed",
+      "summary": "2129 actually executed tests passed, zero failures/skips; 31 owned rows and all three historical transition rows included. Changed DTD paths justify affected inherited repeats. Planning controls and validate passed; temporary XML removed.",
+      "artifact": "docs/reports/M2-dtd-corpus-repair/correctness-final.json"
+    },
+    {
+      "id": "api-consumers",
+      "kind": "check",
+      "revision": "d9d2afe6538a2d3a22bcc56247526de295552c16",
+      "command": "python3 -B docs/reports/M2-dtd-corpus-repair/verify.py --mode api --report api-final",
+      "result": "passed",
+      "summary": "All 290 current members match. Frozen model fixtures passed. Actual source and fresh local-package consumers passed the independently authored default/non-ASCII/three-rejection oracles. Temporary package, consumer build and package cache removed. Later changes only measurement adapter/evidence metadata; unchanged API/consumer proof preserved.",
+      "artifact": "docs/reports/M2-dtd-corpus-repair/api-final.json"
+    },
+    {
+      "id": "source-review",
+      "kind": "review",
+      "revision": "3d822d60e59bf14642a37583e3f4b1d8bdf4c3d4",
+      "command": null,
+      "result": "passed",
+      "summary": "Coordinator bounded source review at this full revision approved A1/A2 and complete event/DTD/default/workload oracles with no blocking findings. Subsequent commit 88f2a46 adds only the preserved preparation failure summary.",
+      "artifact": null
+    },
+    {
+      "id": "preparation-infrastructure",
+      "kind": "check",
+      "revision": "3d822d60e59bf14642a37583e3f4b1d8bdf4c3d4",
+      "command": "python3 -B docs/reports/M2-dtd-corpus-repair/measure.py --mode prepare --report prepare-offline --benchmark-report benchmark-final",
+      "result": "failed",
+      "summary": "Parent build, identity and counters-disabled authored oracles passed. Independent generated project binding and restore passed; generated build hit its 240-second deadline. No workload/counter/timing executor ran. Process group empty and temporary raw/generated outputs removed. Outside-sandbox preparation was rejected twice by automatic approval review; no host attempt started.",
+      "artifact": "docs/reports/M2-dtd-corpus-repair/prepare-offline.json"
+    },
+    {
+      "id": "frozen-preparation",
+      "kind": "check",
+      "revision": "52ea90cb1b0997350a1726e8d0b5527bbb585524",
+      "command": "python3 -B docs/reports/M2-dtd-corpus-repair/measure.py --mode prepare --report prepare-frozen --benchmark-report benchmark-final",
+      "result": "passed",
+      "summary": "All four preparation phases passed; counters disabled. Frozen manifest covers 286 source inputs, 296 generated compiled inputs, 40 parent files, 47 child files and 188 runtime files. Earlier preparation failures resolved by scoped offline audit policy, approved temporary host build and positional adapter fix; 20 reused and 7 owned offline controls passed.",
+      "artifact": "docs/reports/M2-dtd-corpus-repair/prepare-frozen.json"
+    },
+    {
+      "id": "allocation",
+      "kind": "check",
+      "revision": "52ea90cb1b0997350a1726e8d0b5527bbb585524",
+      "command": "python3 -B docs/reports/M2-dtd-corpus-repair/measure.py --mode allocation --report allocation-final --exclusive-grant m2-dtd-corpus-repair-52ea90c-sequence-exclusive-20261010",
+      "result": "passed",
+      "summary": "One actual allocation execution passed under the bounded exclusive lease: 1024 borrowed operations, 2 UTF16 units each, 0 bytes with cold/owned excluded. Positive control 155648 bytes; cold 278688, owned models 5111808 and owned documents 67825408 bytes. Final identity and process guards passed.",
+      "artifact": "docs/reports/M2-dtd-corpus-repair/allocation-final.json"
+    },
+    {
+      "id": "timing",
+      "kind": "check",
+      "revision": "52ea90cb1b0997350a1726e8d0b5527bbb585524",
+      "command": "python3 -B docs/reports/M2-dtd-corpus-repair/measure.py --mode benchmark --report benchmark-final --exclusive-grant m2-dtd-corpus-repair-52ea90c-sequence-exclusive-20261010",
+      "result": "passed",
+      "summary": "One prebuilt two-case sequence passed, child exits 0/0 and four before/after gates. No generation, restore or build inside lease. InternalNestedModel 1.011 us, 4.88 KB; RedirectedComposition 6.133 us, 64.68 KB. Arm64 timing informational only; owned construction allocations are not retained heap. Final freeze and cleanup passed.",
+      "artifact": "docs/reports/M2-dtd-corpus-repair/benchmark-final.json"
+    },
+    {
+      "id": "final-audit",
+      "kind": "review",
+      "revision": "52ea90cb1b0997350a1726e8d0b5527bbb585524",
+      "command": null,
+      "result": "passed",
+      "summary": "Final report review: Preparation SHA256 unchanged at 7a9d06404456f730d1d073acb39499f6e162166296049f50996727d67edda6a6. Generated child, temporary parent binaries/obj, raw artifacts and inspection files removed after final identities passed. No executable children; lease released. Runtime/test/sample/benchmark source unchanged since passing correctness/API revision d9d2afe.",
+      "artifact": "docs/reports/M2-dtd-corpus-repair/final-handoff-audit.json"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Owning repair for concrete M2-conformance-grammar A1/A2 findings; seven original cases, no Core/shared build writes.",
-    "checks": [],
-    "remaining": [],
+    "summary": "All three criteria implemented on the isolated branch. Repairs cover live default declaration order/applicability, external PE keyword boundaries and entity/notation NCNames; exact original corpus/profile and complete models preserved. Awaiting coordinator integration verification.",
+    "checks": [
+      "2129 actually executed correctness tests passed, including 31 owned and all three historical transition rows; zero failures/skips.",
+      "All current 290 public members, frozen model/contract assertions, actual source and fresh local-package consumer passed at d9d2afe6538a2d3a22bcc56247526de295552c16; unchanged source evidence preserved.",
+      "20 reused support and 7 owned adapter offline controls passed. Planning validate and owned-path audit passed.",
+      "Frozen preparation and exactly one allocation/prebuilt timing sequence passed at 52ea90cb1b0997350a1726e8d0b5527bbb585524. Borrowed allocation 0 bytes/1024 operations; positive control passed. Timing informational.",
+      "Final identities and cleanup passed; temporary binaries/raw outputs removed, no executable children, exclusive lease released."
+    ],
+    "remaining": [
+      "Coordinator must integrate the branch and verify applicable checks on the combined tree before setting verified. Separate unknown-default contract obligation remains outside this task."
+    ],
     "requests": [
+      "Resolved exact Doctype.cs forwarding grant8427948bc4e4b5178aac3df33ab6da6ec3d2a077 and unused-colon assertion grant99769bce1c2cff9125fd802f4bbb8730a8c250b0; no outstanding ownership request.",
+      "Direct user approval authorized temporary host build/freeze/cleanup after automatic approval rejection; build and bounded measurements completed, all temporary outputs removed.",
       "Coordinator grants Doctype.cs only for ConfigureDeclarationReading hasExternalSubset: doctypeSystem is not null forwarding; original grammar owns subsequent changes after this repair verified. Task-JSON-only hold acknowledged; no other Core writes.",
       "Coordinator grants ReviewRegressionTests.cs solely the final unused-colon declaration acceptance assertion in AttributeUseRejectsColonThroughExplicitNestedAndDefaultReferences: change to actual XML.Syntax rejection. Preserve all three reference-use rows and every other assertion. A1/A2 original namespace obligations require this precise transition. Worker task-JSON-only hold acknowledged."
     ]

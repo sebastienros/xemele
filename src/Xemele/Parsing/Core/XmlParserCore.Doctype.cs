@@ -91,7 +91,7 @@ internal sealed partial class XmlParserCore
         state = State.DtdSubset;
         internalSubset = new();
         dtdParser = new(DtdSubsetKind.Internal, budget.Options.Limits, entityBudget!, position.Current());
-        dtdParser.ConfigureDeclarationReading(standalone == true);
+        dtdParser.ConfigureDeclarationReading(standalone == true, hasExternalSubset: doctypeSystem is not null);
         subsetMarkup = subsetComment = subsetPi = subsetQuestion = false;
         subsetQuote = '\0'; subsetPrefix = subsetDash = 0;
         ResetToken();

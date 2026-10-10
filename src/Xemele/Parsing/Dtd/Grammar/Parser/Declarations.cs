@@ -9,10 +9,12 @@ internal sealed partial class DtdParser
     private bool Take(string text) { if (read < tokens.Count && !Peek.Literal && Peek.Text == text) { read++; return true; } return false; }
     private bool Require(string text) { if (Take(text)) return true; Reject("Expected DTD token.", read < tokens.Count ? Peek.At : declarationAt); return false; }
     private bool RequiredSpace() { if (read < tokens.Count && Peek.Space) return true; Reject("Required whitespace is missing.", read < tokens.Count ? Peek.At : declarationAt); return false; }
-    private string? Name(bool nmtoken = false, bool space = false)
+    private string? Name(bool nmtoken = false, bool space = false, bool ncname = false)
     {
         if (space && !RequiredSpace() || read == tokens.Count || Peek.Literal || !ValidName(Peek.Text, nmtoken))
         { if (!terminal) Reject("Expected XML name.", read < tokens.Count ? Peek.At : declarationAt); return null; }
+        if (ncname && Peek.Text.AsSpan().Contains(':'))
+        { Reject("Entity and notation names must be NCNames.", Peek.At, "XML.Syntax"); return null; }
         Token token = tokens[read++];
         if (!IgnoreCurrentDeclaration && !names.Contains(token.Text))
         {
@@ -122,7 +124,7 @@ internal sealed partial class DtdParser
             {
                 bool notation = Take("NOTATION"); type = notation ? DtdAttributeType.Notation : DtdAttributeType.Enumeration;
                 if (notation && !RequiredSpace() || !Require("(")) return;
-                do { string? token = Name(nmtoken: !notation); if (token is null) return; values.Add(token); } while (Take("|"));
+                do { string? token = Name(nmtoken: !notation, ncname: notation); if (token is null) return; values.Add(token); } while (Take("|"));
                 if (!Require(")")) return;
             }
             if (!RequiredSpace()) return;
@@ -135,14 +137,15 @@ internal sealed partial class DtdParser
                 else { Reject("Invalid default declaration.", Peek.At); return; }
             }
             else { kind = DtdDefaultKind.Value; value = Literal(); if (value is null) return; }
-            if (value is not null && DecodeLiteral(value, cancellation, false) is null) return;
+            if (value is not null && (DecodeLiteral(value, cancellation, false) is null ||
+                !IgnoreCurrentDeclaration && !ValidateDeclaredDefault(value, at, cancellation))) return;
             if (!IgnoreCurrentDeclaration && !HasAttribute(element, name)) attributes.Add(new(element, name, type, values, kind, value, external, at));
         }
     }
     private void ParseEntity(CancellationToken cancellation)
     {
         bool isParameter = Take("%");
-        string? name = Name(space: true); if (name is null || !RequiredSpace()) return;
+        string? name = Name(space: true, ncname: true); if (name is null || !RequiredSpace()) return;
         string? replacement = null, system = null, pub = null, notation = null;
         if (Peek.Literal)
         { string? raw = Literal(); if (raw is null) return; replacement = DecodeLiteral(raw, cancellation, true); if (replacement is null) return; }
@@ -152,13 +155,17 @@ internal sealed partial class DtdParser
             if (read < tokens.Count)
             {
                 if (isParameter || !RequiredSpace() || !Require("NDATA")) return;
-                notation = Name(space: true); if (notation is null) return;
+                notation = Name(space: true, ncname: true); if (notation is null) return;
             }
         }
         if (!isParameter && !(IgnoreCurrentDeclaration ? UnprocessedPredefined(name, replacement) : Predefined(name, replacement))) { Reject("Invalid predefined entity redeclaration.", declarationAt); return; }
         if (read != tokens.Count) return;
         var target = isParameter ? parameter : general;
-        if (!IgnoreCurrentDeclaration && !HasEntity(target, name)) target.Add(new(name, isParameter, replacement, system, pub, notation, IsExternalDeclaration, declarationAt));
+        if (!IgnoreCurrentDeclaration && !HasEntity(target, name))
+        {
+            target.Add(new(name, isParameter, replacement, system, pub, notation, IsExternalDeclaration, declarationAt));
+            if (!isParameter && declarationInParameter && standaloneReadState) (parameterOriginGeneral ??= new(StringComparer.Ordinal)).Add(name);
+        }
     }
     private string? DecodeLiteral(string raw, CancellationToken cancellation, bool entity)
     {
@@ -296,7 +303,7 @@ internal sealed partial class DtdParser
     private bool HasNotation(string name) { foreach (var n in notations) { grammarCancellation.ThrowIfCancellationRequested(); if (n.Name == name) return true; } return false; }
     private void ParseNotation()
     {
-        string? name = Name(space: true); if (name is null || !RequiredSpace()) return;
+        string? name = Name(space: true, ncname: true); if (name is null || !RequiredSpace()) return;
         if (!ExternalId(true, out string? system, out string? pub)) return;
         if (read == tokens.Count && !HasNotation(name)) notations.Add(new(name, system, pub, declarationAt));
     }
