@@ -1,0 +1,62 @@
+{
+  "sourceRevision": "f1070a8afffc32513fcf945de904decd05959933",
+  "result": "passed",
+  "results": [
+    {
+      "command": [
+        "dotnet",
+        "build",
+        "docs/reports/M2-dtd-parser/Xemele.DtdParserBenchmarks.csproj",
+        "-c",
+        "Release",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false"
+      ],
+      "exit": 0,
+      "output": "  Determining projects to restore...\n  All projects are up-to-date for restore.\n  Xemele.DtdParserBenchmarks -> /Users/sebastienros/.codex/worktrees/8d8a/xemele/docs/reports/M2-dtd-parser/bin/Release/net10.0/Xemele.DtdParserBenchmarks.dll\n\nBuild succeeded.\n    0 Warning(s)\n    0 Error(s)\n\nTime Elapsed 00:00:01.10\n"
+    },
+    {
+      "command": [
+        "dotnet",
+        "docs/reports/M2-dtd-parser/bin/Release/net10.0/Xemele.DtdParserBenchmarks.dll",
+        "--correctness"
+      ],
+      "exit": 0,
+      "output": "7940 independent full-model benchmark correctness assertions passed.\n"
+    },
+    {
+      "command": [
+        "dotnet",
+        "docs/reports/M2-dtd-parser/bin/Release/net10.0/Xemele.DtdParserBenchmarks.dll",
+        "--list",
+        "flat",
+        "--filter",
+        "*DtdParser*"
+      ],
+      "exit": 0,
+      "output": "Xemele.Benchmarks.DtdParserBenchmarks.BorrowedScan\nXemele.Benchmarks.DtdParserBenchmarks.OwnedGrammar\nXemele.Benchmarks.DtdParserBenchmarks.ChunkedGrammar\n"
+    },
+    {
+      "command": [
+        "python3",
+        "-B",
+        "tools/planning/tasks.py",
+        "validate"
+      ],
+      "exit": 0,
+      "output": "Validated 120 tasks: schema, evidence, acyclic dependencies, additive milestones, and ordered ownership.\n"
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit": 0,
+      "output": ""
+    }
+  ],
+  "runtimeAndTimedWorkloadUnchangedFrom": "9dfe40858d443165c7ca07ba5f8c58d9adebfc53",
+  "timing": "not run; waiting root exclusive grant"
+}
