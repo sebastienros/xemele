@@ -4,6 +4,13 @@
   "tests": 3,
   "passed": 2,
   "errors": 1,
-  "reason": "Mocked subprocess failure reached shutil.which before the intended git check, so the test expected a summary before verifier initialization. The regression now supplies a known executable via mocked shutil.which to reach the intended early main check.",
-  "runtimeOrMeasurementExecuted": false
+  "reason": "Mocked subprocess failure reached platform.platform host discovery before the intended git check; regression now supplies known host and executable to reach the intended early main check.",
+  "runtimeOrMeasurementExecuted": false,
+  "committedAttempt": {
+    "revision": "402aaa2",
+    "tests": 3,
+    "passed": 2,
+    "errors": 1,
+    "reason": "Host discovery called mocked subprocess before main try/finally."
+  }
 }

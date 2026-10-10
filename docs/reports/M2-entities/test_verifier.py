@@ -16,7 +16,7 @@ class CleanupTests(unittest.TestCase):
  def test_early_main_failure_preserves_existing_inherited_log(self):
   with tempfile.TemporaryDirectory() as temp:
    root=Path(temp);log=root/'artifacts/M1-contracts/checks.txt';log.parent.mkdir(parents=True);log.write_bytes(b'prior peer log');error=RuntimeError('early git failure')
-   with patch.object(verify,'ROOT',root),patch.object(verify,'REPORT',root/'reports'),patch('sys.argv',['verify.py','--report-prefix','early']),patch.object(verify.shutil,'which',return_value='/usr/bin/true'),patch.object(verify.subprocess,'run',side_effect=error):
+   with patch.object(verify,'ROOT',root),patch.object(verify,'REPORT',root/'reports'),patch('sys.argv',['verify.py','--report-prefix','early']),patch.object(verify.shutil,'which',return_value='/usr/bin/true'),patch.object(verify.platform,'platform',return_value='mocked-host'),patch.object(verify.subprocess,'run',side_effect=error):
     (root/'reports').mkdir()
     with self.assertRaises(RuntimeError) as observed:verify.main()
    self.assertIs(error,observed.exception);self.assertEqual(b'prior peer log',log.read_bytes());saved=json.loads((root/'reports/early/summary.json').read_text());self.assertEqual('early git failure',saved['failure']['message']);self.assertTrue(saved['temporaryOutputsRemoved'])
