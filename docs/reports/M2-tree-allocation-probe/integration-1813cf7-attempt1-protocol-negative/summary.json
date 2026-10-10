@@ -1,0 +1,63 @@
+{
+  "driverRevision": "1813cf70dd585bb2d092ee03c9bc4375bae68e22",
+  "compiledProvenance": {
+    "Executable": "/private/tmp/xemele-integrate-m2-tree-probe-renewed/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests",
+    "ExecutableSha256": "C00FD9CDDEDFDC2F3F6794FB4B9218CA9860D3A6E64B5F9C216EF3FE6E8B7E49",
+    "TestAssembly": "/private/tmp/xemele-integrate-m2-tree-probe-renewed/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll",
+    "TestSha256": "8DEDADE3B6A1F37921BE8A20EC96E28BACE2AF7301FDC2BF0C9B316D68353136",
+    "TestVersion": "1.0.0+1813cf70dd585bb2d092ee03c9bc4375bae68e22",
+    "ProductAssembly": "/private/tmp/xemele-integrate-m2-tree-probe-renewed/tests/Xemele.Tests/bin/Release/net10.0/Xemele.dll",
+    "ProductSha256": "4DDD929EA732F6B85B93E5652AF10F101E2341C1D5E0046D324845D89525F387",
+    "ProductVersion": "1.0.0+1813cf70dd585bb2d092ee03c9bc4375bae68e22",
+    "RuntimeVersion": "10.0.11",
+    "CoreLibrary": "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App/10.0.11/System.Private.CoreLib.dll",
+    "CoreLibrarySha256": "9ED74C2E2EFEEE87F1F2D7FFE1736B7E9164CE248516EA39402A725EEDC87AF6",
+    "NativeRuntimeSha256": "10B24D0B11C7F6D838114744097BF10DF9B08B906AFC9016567631A1C009DFD0",
+    "HelperIlSha256": "124BB5EE2BBD94D2948811361FEA4B0D819A26563317696BF2E16B8111003C40",
+    "RuntimeConfigSha256": "9950D4583CFC9A106857C0D5B8A75B53E8774852B57B80BC3823A74D44A4D87F"
+  },
+  "checks": {
+    "unknown-mode": {
+      "result": "passed",
+      "actualExit": 1,
+      "total": 1,
+      "failure": "System.InvalidOperationException : Invalid internal Tree child guard."
+    },
+    "incomplete-mode": {
+      "result": "passed",
+      "actualExit": 1,
+      "total": 1,
+      "failure": "System.InvalidOperationException : Invalid internal Tree child guard."
+    },
+    "missing-required-field": {
+      "result": "passed",
+      "actualExit": 1,
+      "total": 1,
+      "failure": "System.Text.Json.JsonException : JSON deserialization for type 'Xemele.Tests.Tree.TreeAllocationChild+Request' was missing required properties including: 'Expected'."
+    },
+    "malformed-json": {
+      "result": "passed",
+      "actualExit": 1,
+      "total": 1,
+      "failure": "System.Text.Json.JsonException : 'b' is an invalid start of a property name. Expected a '\\\"'. Path: $ | LineNumber: 0 | BytePositionInLine: 1.\n---- System.Text.Json.JsonReaderException : 'b' is an invalid start of a property name. Expected a '\\\"'. LineNumber: 0 | BytePositionInLine: 1."
+    },
+    "unknown-json-member": {
+      "result": "passed",
+      "actualExit": 1,
+      "total": 1,
+      "failure": "System.Text.Json.JsonException : The JSON property 'UnexpectedProtocolField' could not be mapped to any .NET member contained in type 'Xemele.Tests.Tree.TreeAllocationChild+Request'."
+    },
+    "provenance-mismatch": {
+      "result": "passed",
+      "actualExit": 1,
+      "total": 1,
+      "failure": "System.InvalidOperationException : Child executable/compiled product/runtime provenance mismatch."
+    },
+    "host-mismatch": {
+      "result": "passed",
+      "actualExit": 1,
+      "total": 1,
+      "failure": "System.InvalidOperationException : Configured dotnet differs from the active runtime installation."
+    }
+  }
+}
