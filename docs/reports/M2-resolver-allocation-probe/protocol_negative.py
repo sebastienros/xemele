@@ -53,8 +53,8 @@ def main():
                 if name=='pid-mismatch':request['ParentPid']=0
                 if name=='outside-artifact-root':request['Directory']='/private/tmp'
                 if name=='symlink-root-escape':
-                    (directory/'escape').symlink_to('/private/tmp',target_is_directory=True)
-                    request['Directory']=str(directory/'escape'/'ancestor')
+                    (directory/'escape').symlink_to(ROOT,target_is_directory=True)
+                    request['Directory']=str(directory/'escape'/'docs')
                 if name=='provenance-mismatch':request['Expected']['TestSha256']='0'*64
                 request_path.write_text('{broken' if name=='malformed-json' else json.dumps(request))
                 extra=dict(XEMELE_RESOLVER_CHILD_MODE='real',XEMELE_RESOLVER_CHILD_REQUEST=str(request_path),XEMELE_RESOLVER_CHILD_TOKEN=token)
