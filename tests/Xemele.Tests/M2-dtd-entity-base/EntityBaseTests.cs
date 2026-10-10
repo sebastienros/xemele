@@ -1,6 +1,11 @@
 using System.Text;
+using System.Security.Cryptography;
+using System.Text.Json;
+using Xemele.Parsing.Input;
 using Xemele.Parsing.Dtd;
+using Xemele.Parsing.Entities;
 using Xemele.Parsing.Syntax;
+using DtdModelType = Xemele.Parsing.Dtd.DtdModel;
 using Xunit;
 
 namespace Xemele.Tests.DtdEntityBase;
@@ -10,6 +15,77 @@ public sealed class EntityBaseTests
     private static readonly Uri Primary = new("https://fixture.invalid/main/document.xml");
     private static CancellationToken Ct => TestContext.Current.CancellationToken;
     private static XmlParseOptions Options(Resolver resolver) => new() { DtdProcessing = XmlDtdProcessing.Parse, Resolver = resolver };
+
+    [Fact]
+    public void OriginalE18BytesHaveIndependentExpectedRequestsCallbacksAndCompleteDtdModel()
+    {
+        const string baseUri = "https://xemele.invalid/corpus/xmlconf/eduni/errata-2e/";
+        string resources = Environment.GetEnvironmentVariable("XEMELE_CORPUS_RESOURCES") ?? "/private/tmp/xemele-corpus-cache/w3c-xml-20130923/resources";
+        byte[] Read(string name, int length, string hash)
+        {
+            byte[] value = File.ReadAllBytes(Path.Combine(resources, "xmlconf/eduni/errata-2e", name));
+            Assert.Equal(length, value.Length); Assert.Equal(hash, Convert.ToHexStringLower(SHA256.HashData(value))); return value;
+        }
+        byte[] input = Read("E18.xml", 107, "5968be3ce43799a857ff2cfba9a431b525087a3293230d74a5d7e8b5d2eb169b");
+        var resolver = new Resolver();
+        var entries = new[]
+        {
+            ("E18-ent", 28, "e7a9fdebb7317d1073212319dcbc5b5f8579767eb2b6b4d6b9e6d2494ce11a57"),
+            ("subdir1/E18-ent", 27, "ecee6a41b9f298da762e1e87c91720d54c6da75ecd9ec40f7d560b2f065c914c"),
+            ("subdir1/E18-pe", 76, "0236d72a7cc8455872d2f5886a4a43cf7ad291a616b52ce7ac82559c8bf4f850"),
+            ("subdir2/E18-ent", 27, "3d708d346b5e26672c50fee84748a0b377dabe482cf8f0b2c848886724ca1449"),
+            ("subdir2/E18-extpe", 31, "62eddd46cd27a7726da7a5e84f00e0e5d3e53b26b89276fd8fdfb2c060da1b46")
+        };
+        foreach (var (path, length, hash) in entries)
+        {
+            byte[] value = Read(path, length, hash);
+            string text = new UTF8Encoding(false, true).GetString(value);
+            Assert.Equal(value, Encoding.UTF8.GetBytes(text));
+            resolver.Add(baseUri + path, baseUri + path, text);
+        }
+        byte[] canonical = Read("out/E18.xml", 39, "6f408fff4e526b0f7ba4571b96a4d2b2249e05106b2e19b7e050db4798179f7a");
+        Assert.Equal("<foo>entity from main dir, right!</foo>", Encoding.UTF8.GetString(canonical));
+        Uri source = new(baseUri + "E18.xml"), pe = new(baseUri + "subdir1/E18-pe");
+        var options = Options(resolver); using var decoder = new XmlInputDecoder(options, source);
+        using var core = new XmlParserCore(options, source); var sink = new Sink();
+        char[] characters = new char[2]; long[] offsets = new long[2]; int position = 0; bool validated = false;
+        while (true)
+        {
+            var decoded = decoder.Decode(input.AsSpan(position), characters, offsets, true, Ct);
+            position += decoded.ConsumedBytes; Assert.Null(decoded.Diagnostic);
+            if (!validated) { Assert.Null(decoder.ValidateDeclaration([], new(source, 1, 1, 0))); validated = true; }
+            var scanned = core.Append(characters.AsSpan(0, decoded.WrittenCharacters), offsets.AsSpan(0, decoded.WrittenCharacters), false, sink, Ct);
+            Assert.Null(scanned.Diagnostic); Assert.Equal(ScanStep.NeedInput, scanned.Step);
+            if (decoded.Step == DecodeStep.Completed) break;
+            Assert.Equal(DecodeStep.NeedOutput, decoded.Step);
+        }
+        Assert.Equal(input.Length, position); core.CompleteByteSource(input.Length);
+        Assert.Equal(ScanStep.Completed, core.Append([], [], true, sink, Ct).Step);
+        Assert.Equal("entity from main dir, right!", sink.Text.ToString());
+        Assert.Equal(new[] { "document", "dtd", "text:Text", "start:foo", "content", "text:Text", "end:foo", "text:Text", "complete" }, sink.Events);
+        var semantic = new[]
+        {
+            new SortedDictionary<string, object>(StringComparer.Ordinal) { ["attributes"] = Array.Empty<object>(), ["kind"] = "start", ["localName"] = sink.RootName!, ["namespaceUri"] = sink.RootNamespace! },
+            new SortedDictionary<string, object>(StringComparer.Ordinal) { ["kind"] = "text", ["value"] = sink.Text.ToString() },
+            new SortedDictionary<string, object>(StringComparer.Ordinal) { ["kind"] = "end", ["localName"] = sink.RootName!, ["namespaceUri"] = sink.RootNamespace! }
+        };
+        Assert.Equal("3c0ec688b6357710e11084a81ff3476fe0d9017e450b2270d30bad3bc8f98bc2", Convert.ToHexStringLower(SHA256.HashData(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(semantic)))));
+        Assert.Equal(3, resolver.Requests.Count);
+        Request(resolver.Requests[0], baseUri + "subdir1/E18-pe", source, XmlResourceKind.ExternalEntity, "subdir1/E18-pe");
+        Request(resolver.Requests[1], baseUri + "subdir2/E18-extpe", pe, XmlResourceKind.ExternalEntity, "../subdir2/E18-extpe");
+        Request(resolver.Requests[2], baseUri + "E18-ent", source, XmlResourceKind.ExternalEntity, "E18-ent");
+        var model = sink.Model!; Assert.Single(model.Elements); Assert.Empty(model.Attributes); Assert.Empty(model.Notations);
+        Assert.Single(model.GeneralEntities); Assert.Equal(3, model.ParameterEntities.Count);
+        var element = model.Elements[0]; Assert.Equal("foo", element.Name); Assert.False(element.IsExternal);
+        Assert.Equal(new XmlLocation(source, 2, 1, 16), element.Location);
+        Assert.Equal(DtdParticleKind.Any, element.Content.Kind); Assert.Null(element.Content.Name);
+        Assert.Equal(DtdOccurrence.Once, element.Content.Occurrence); Assert.Empty(element.Content.Children);
+        Entity(model.GeneralEntities[0], "ent", false, null, "E18-ent", false, new(source, 1, 1, null));
+        Entity(model.ParameterEntities[0], "pe", true, null, "subdir1/E18-pe", false, new(source, 3, 1, 35));
+        Entity(model.ParameterEntities[1], "extpe", true, null, "../subdir2/E18-extpe", true, new(pe, 1, 1, 0));
+        Entity(model.ParameterEntities[2], "intpe", true, "<!ENTITY ent SYSTEM 'E18-ent'>\n", null, true, new(pe, 2, 1, 48));
+        Cleanup(resolver);
+    }
 
     [Theory]
     [InlineData(false, false)]
@@ -119,7 +195,7 @@ public sealed class EntityBaseTests
         Assert.Null(result.Diagnostic); Assert.Equal(ScanStep.Completed, result.Step); Assert.Equal(input.Length, result.Consumed);
         return sink;
     }
-    private static void Model(DtdModel model, int general, int parameter)
+    private static void Model(DtdModelType model, int general, int parameter)
     {
         Assert.Empty(model.Elements); Assert.Empty(model.Attributes); Assert.Empty(model.Notations);
         Assert.Equal(general, model.GeneralEntities.Count); Assert.Equal(parameter, model.ParameterEntities.Count);
@@ -168,17 +244,20 @@ public sealed class EntityBaseTests
     {
         internal readonly List<string> Events = [];
         internal readonly StringBuilder Text = new();
-        internal DtdModel? Model;
+        internal DtdModelType? Model;
+        internal string? RootName, RootNamespace;
+        private int depth;
         public bool StartDocument(XmlLocation location) { Events.Add("document"); return true; }
         public bool Declaration(XmlDeclarationView declaration) { Events.Add("declaration"); return true; }
-        public bool DocumentType(XmlDocumentType declaration, DtdModel model, XmlLocation location) { Events.Add("dtd"); Model = model; return true; }
-        public bool StartElement(XmlNameView name, bool empty, XmlLocation location) { Events.Add("start:" + name.LocalName.ToString()); return true; }
+        public bool DocumentType(XmlDocumentType declaration, DtdModelType model, XmlLocation location) { Events.Add("dtd"); Model = model; return true; }
+        public bool StartElement(XmlNameView name, bool empty, XmlLocation location)
+        { if (depth == 0) { RootName = name.LocalName.ToString(); RootNamespace = name.NamespaceUri.ToString(); } depth++; Events.Add("start:" + name.LocalName.ToString()); return true; }
         public bool NamespaceDeclaration(XmlNamespaceView declaration) { Events.Add("namespace"); return true; }
         public bool Attribute(XmlAttributeView attribute) { Events.Add("attribute"); return true; }
         public bool StartElementContent() { Events.Add("content"); return true; }
-        public bool EndElement(XmlNameView name, XmlLocation location) { Events.Add("end:" + name.LocalName.ToString()); return true; }
+        public bool EndElement(XmlNameView name, XmlLocation location) { depth--; Events.Add("end:" + name.LocalName.ToString()); return true; }
         public bool StartText(XmlTextKind kind, ReadOnlySpan<char> target, XmlLocation location) { Events.Add("text:" + kind); return true; }
-        public bool TextFragment(ReadOnlySpan<char> text, bool ended, XmlLocation location) { Text.Append(text); return true; }
+        public bool TextFragment(ReadOnlySpan<char> text, bool ended, XmlLocation location) { if (depth > 0) Text.Append(text); return true; }
         public bool EndDocument(XmlLocation location) { Events.Add("complete"); return true; }
     }
 }
