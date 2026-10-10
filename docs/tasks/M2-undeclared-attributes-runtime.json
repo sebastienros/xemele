@@ -1,0 +1,84 @@
+{
+  "schema_version": 1,
+  "milestone": "M2",
+  "kind": "feature",
+  "goals": [
+    "G01",
+    "G18"
+  ],
+  "id": "M2-undeclared-attributes-runtime",
+  "title": "Implement bounded incomplete attribute and default values",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "depends_on": [
+    "M2-undeclared-attribute-contract",
+    "M2-core-standalone",
+    "M2-dtd-corpus-repair",
+    "M2-external-declaration-hook",
+    "M2-encoding"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/parser.md",
+    "docs/decisions/M2/undeclared-references.md",
+    "docs/decisions/M2/xml-resources.md",
+    "docs/performance-coding.md"
+  ],
+  "owns": [
+    "src/Xemele/Parsing/Events/IncompleteAttributes.cs",
+    "src/Xemele/Parsing/Core/XmlParserCore.cs",
+    "src/Xemele/Parsing/Core/XmlParserCore.Attributes.cs",
+    "src/Xemele/Parsing/Core/XmlParserCore.AttributeExpansion.cs",
+    "src/Xemele/Parsing/Core/XmlParserCore.Doctype.cs",
+    "src/Xemele/Parsing/Core/XmlParserCore.Resources.cs",
+    "src/Xemele/Parsing/Core/XmlParserCore.Entities.cs",
+    "src/Xemele/Parsing/Dtd/Grammar/Parser/DtdParser.cs",
+    "src/Xemele/Parsing/Dtd/Grammar/Parser/Lexer.cs",
+    "src/Xemele/Parsing/Dtd/Grammar/Parser/Declarations.cs",
+    "src/Xemele/Parsing/Dtd/Grammar/Parser/DefaultReferences.cs",
+    "src/Xemele/Parsing/Entities/Runtime/XmlEntityContext.cs",
+    "src/Xemele/Tree/IncompleteAttributes/",
+    "src/Xemele/Tree/XmlAttribute.cs",
+    "src/Xemele/Tree/Document.cs",
+    "src/Xemele/Tree/Node.cs",
+    "tests/Xemele.Tests/Xml/IncompleteAttributes/",
+    "benchmarks/Xemele.Benchmarks/IncompleteAttributes/",
+    "docs/reports/M2-undeclared-attributes-runtime/",
+    "samples/M2-undeclared-attributes-runtime/",
+    "docs/api/M2-undeclared-attributes.txt",
+    "tests/Contracts/Fixtures/M2/UndeclaredAttributes/"
+  ],
+  "api_or_output": "Real compatible optional incomplete attribute/default callbacks, bounded symbolic values, owned provenance and loss-refusing getters/output/copy",
+  "acceptance": [
+    {
+      "id": "M2-undeclared-attributes-runtime-A1",
+      "description": "Implement the verified incomplete attribute/default contract in real Core, DTD and DOM paths: physical EntityDeclared WFC/VC origin/order/first-unread matrix, known normalization, exact symbolic lexical gaps, applicable/unused/overridden defaults and namespace participation/refusal. Deliver compatible optional callbacks with bounded borrowed lifetime and exact order/pause/cancel/count/quota behavior; preserve existing views, old sinks, 290-member API and content provenance. Never fabricate complete values or silently discard lexical identity. Node.cs ownership only GetAttribute direct slot-read guard; other existing shared shapes remain frozen.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M2-undeclared-attributes-runtime-A2",
+      "description": "Actual source/DOM/stream tests cover the exact seven authored input/resource identities (3 WFC controls and4 VC-only representations), origin/declaration-order/first-unread matrix, known literal/numeric normalization, direct/indirect/multiple adjacent gaps, later forbidden errors, unused/overridden defaults, incomplete namespace refusal, enumeration/getters/mutation/detachment, every short character/byte/entity split and mappings, callback pause/cancel/fault, old sinks, exact/one-over quotas. Actual serializer/BOM/Save and copy/text entry points prove no output or destination mutation before refusal. Preserve standalone/DTD repairs and original corpus applicability; no model-only runtime claims.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M2-undeclared-attributes-runtime-A3",
+      "description": "Compile independent frozen proposal/consumer and additive approved API fragment, preserve all prior public/internal shapes, prove real source/fresh package consumers. Run focused new and affected correctness plus planning/owned diff; preserve passing unchanged checks. Demonstrate zero warm borrowed allocation with positive owned controls and complete untimed oracles through reused verified measurement support; prepare/build outside one bounded exclusive sequence, require all children succeed, final identities and cleanup; timing informational. Keep concise summaries only and remove raw artifacts. Coordinator focused integration, comprehensive combined checks at M2 gate.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}
