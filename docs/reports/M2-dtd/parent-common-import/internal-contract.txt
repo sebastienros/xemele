@@ -1,0 +1,252 @@
+Xemele.Parsing.Dtd.DtdAttributeDeclaration|sealed=True|value=False|interfaces=
+  ctor:True|elementName:System.String:NotNull:optional=False:default=none;name:System.String:NotNull:optional=False:default=none;type:Xemele.Parsing.Dtd.DtdAttributeType:NotNull:optional=False:default=none;tokens:System.Collections.Generic.IEnumerable`1[System.String]:NotNull:optional=False:default=none;defaultKind:Xemele.Parsing.Dtd.DtdDefaultKind:NotNull:optional=False:default=none;defaultValue:System.String:Nullable:optional=False:default=none;isExternal:System.Boolean:NotNull:optional=False:default=none;location:Xemele.XmlLocation:NotNull:optional=False:default=none
+  method:Boolean get_IsExternal()|NotNull|
+  method:System.Collections.Generic.IReadOnlyList`1[System.String] get_Tokens()|NotNull|
+  method:System.String get_DefaultValue()|Nullable|
+  method:System.String get_ElementName()|NotNull|
+  method:System.String get_Name()|NotNull|
+  method:Xemele.Parsing.Dtd.DtdAttributeType get_Type()|NotNull|
+  method:Xemele.Parsing.Dtd.DtdDefaultKind get_DefaultKind()|NotNull|
+  method:Xemele.XmlLocation get_Location()|NotNull|
+  property:DefaultKind|Xemele.Parsing.Dtd.DtdDefaultKind|NotNull|set:False
+  property:DefaultValue|System.String|Nullable|set:False
+  property:ElementName|System.String|NotNull|set:False
+  property:IsExternal|System.Boolean|NotNull|set:False
+  property:Location|Xemele.XmlLocation|NotNull|set:False
+  property:Name|System.String|NotNull|set:False
+  property:Tokens|System.Collections.Generic.IReadOnlyList`1[System.String]|NotNull|set:False
+  property:Type|Xemele.Parsing.Dtd.DtdAttributeType|NotNull|set:False
+Xemele.Parsing.Dtd.DtdAttributeType|sealed=True|value=True|interfaces=System.IComparable,System.IConvertible,System.IFormattable,System.ISpanFormattable
+  enum:CData=0
+  enum:Id=1
+  enum:IdRef=2
+  enum:IdRefs=3
+  enum:Entity=4
+  enum:Entities=5
+  enum:NmToken=6
+  enum:NmTokens=7
+  enum:Enumeration=8
+  enum:Notation=9
+Xemele.Parsing.Dtd.DtdDefaultKind|sealed=True|value=True|interfaces=System.IComparable,System.IConvertible,System.IFormattable,System.ISpanFormattable
+  enum:Implied=0
+  enum:Required=1
+  enum:Fixed=2
+  enum:Value=3
+Xemele.Parsing.Dtd.DtdElementDeclaration|sealed=True|value=False|interfaces=System.IEquatable`1[Xemele.Parsing.Dtd.DtdElementDeclaration]
+  ctor:True|Name:System.String:NotNull:optional=False:default=none;Content:Xemele.Parsing.Dtd.DtdParticle:NotNull:optional=False:default=none;IsExternal:System.Boolean:NotNull:optional=False:default=none;Location:Xemele.XmlLocation:NotNull:optional=False:default=none
+  method:Boolean Equals(System.Object)|NotNull|obj:System.Object:Nullable:optional=False:default=none
+  method:Boolean Equals(Xemele.Parsing.Dtd.DtdElementDeclaration)|NotNull|other:Xemele.Parsing.Dtd.DtdElementDeclaration:Nullable:optional=False:default=none
+  method:Boolean get_IsExternal()|NotNull|
+  method:Int32 GetHashCode()|NotNull|
+  method:System.String ToString()|NotNull|
+  method:System.String get_Name()|NotNull|
+  method:Void Deconstruct(System.String ByRef, Xemele.Parsing.Dtd.DtdParticle ByRef, Boolean ByRef, Xemele.XmlLocation ByRef)|NotNull|Name:System.String&:NotNull:optional=False:default=none;Content:Xemele.Parsing.Dtd.DtdParticle&:NotNull:optional=False:default=none;IsExternal:System.Boolean&:NotNull:optional=False:default=none;Location:Xemele.XmlLocation&:NotNull:optional=False:default=none
+  method:Void set_Content(Xemele.Parsing.Dtd.DtdParticle)|NotNull|value:Xemele.Parsing.Dtd.DtdParticle:NotNull:optional=False:default=none
+  method:Void set_IsExternal(Boolean)|NotNull|value:System.Boolean:NotNull:optional=False:default=none
+  method:Void set_Location(Xemele.XmlLocation)|NotNull|value:Xemele.XmlLocation:NotNull:optional=False:default=none
+  method:Void set_Name(System.String)|NotNull|value:System.String:NotNull:optional=False:default=none
+  method:Xemele.Parsing.Dtd.DtdElementDeclaration <Clone>$()|NotNull|
+  method:Xemele.Parsing.Dtd.DtdParticle get_Content()|NotNull|
+  method:Xemele.XmlLocation get_Location()|NotNull|
+  property:Content|Xemele.Parsing.Dtd.DtdParticle|NotNull|set:True
+  property:IsExternal|System.Boolean|NotNull|set:True
+  property:Location|Xemele.XmlLocation|NotNull|set:True
+  property:Name|System.String|NotNull|set:True
+Xemele.Parsing.Dtd.DtdEntityDeclaration|sealed=True|value=False|interfaces=System.IEquatable`1[Xemele.Parsing.Dtd.DtdEntityDeclaration]
+  ctor:True|Name:System.String:NotNull:optional=False:default=none;IsParameter:System.Boolean:NotNull:optional=False:default=none;ReplacementText:System.String:Nullable:optional=False:default=none;SystemId:System.String:Nullable:optional=False:default=none;PublicId:System.String:Nullable:optional=False:default=none;NotationName:System.String:Nullable:optional=False:default=none;IsExternal:System.Boolean:NotNull:optional=False:default=none;Location:Xemele.XmlLocation:NotNull:optional=False:default=none
+  method:Boolean Equals(System.Object)|NotNull|obj:System.Object:Nullable:optional=False:default=none
+  method:Boolean Equals(Xemele.Parsing.Dtd.DtdEntityDeclaration)|NotNull|other:Xemele.Parsing.Dtd.DtdEntityDeclaration:Nullable:optional=False:default=none
+  method:Boolean get_IsExternal()|NotNull|
+  method:Boolean get_IsParameter()|NotNull|
+  method:Int32 GetHashCode()|NotNull|
+  method:System.String ToString()|NotNull|
+  method:System.String get_Name()|NotNull|
+  method:System.String get_NotationName()|Nullable|
+  method:System.String get_PublicId()|Nullable|
+  method:System.String get_ReplacementText()|Nullable|
+  method:System.String get_SystemId()|Nullable|
+  method:Void Deconstruct(System.String ByRef, Boolean ByRef, System.String ByRef, System.String ByRef, System.String ByRef, System.String ByRef, Boolean ByRef, Xemele.XmlLocation ByRef)|NotNull|Name:System.String&:NotNull:optional=False:default=none;IsParameter:System.Boolean&:NotNull:optional=False:default=none;ReplacementText:System.String&:Nullable:optional=False:default=none;SystemId:System.String&:Nullable:optional=False:default=none;PublicId:System.String&:Nullable:optional=False:default=none;NotationName:System.String&:Nullable:optional=False:default=none;IsExternal:System.Boolean&:NotNull:optional=False:default=none;Location:Xemele.XmlLocation&:NotNull:optional=False:default=none
+  method:Void set_IsExternal(Boolean)|NotNull|value:System.Boolean:NotNull:optional=False:default=none
+  method:Void set_IsParameter(Boolean)|NotNull|value:System.Boolean:NotNull:optional=False:default=none
+  method:Void set_Location(Xemele.XmlLocation)|NotNull|value:Xemele.XmlLocation:NotNull:optional=False:default=none
+  method:Void set_Name(System.String)|NotNull|value:System.String:NotNull:optional=False:default=none
+  method:Void set_NotationName(System.String)|NotNull|value:System.String:Nullable:optional=False:default=none
+  method:Void set_PublicId(System.String)|NotNull|value:System.String:Nullable:optional=False:default=none
+  method:Void set_ReplacementText(System.String)|NotNull|value:System.String:Nullable:optional=False:default=none
+  method:Void set_SystemId(System.String)|NotNull|value:System.String:Nullable:optional=False:default=none
+  method:Xemele.Parsing.Dtd.DtdEntityDeclaration <Clone>$()|NotNull|
+  method:Xemele.XmlLocation get_Location()|NotNull|
+  property:IsExternal|System.Boolean|NotNull|set:True
+  property:IsParameter|System.Boolean|NotNull|set:True
+  property:Location|Xemele.XmlLocation|NotNull|set:True
+  property:Name|System.String|NotNull|set:True
+  property:NotationName|System.String|Nullable|set:True
+  property:PublicId|System.String|Nullable|set:True
+  property:ReplacementText|System.String|Nullable|set:True
+  property:SystemId|System.String|Nullable|set:True
+Xemele.Parsing.Dtd.DtdEntityRequest|sealed=True|value=True|interfaces=System.IEquatable`1[Xemele.Parsing.Dtd.DtdEntityRequest]
+  ctor:True|Name:System.String:NotNull:optional=False:default=none;SystemId:System.String:Nullable:optional=False:default=none;PublicId:System.String:Nullable:optional=False:default=none;Location:Xemele.XmlLocation:NotNull:optional=False:default=none
+  method:Boolean Equals(System.Object)|NotNull|obj:System.Object:Unknown:optional=False:default=none
+  method:Boolean Equals(Xemele.Parsing.Dtd.DtdEntityRequest)|NotNull|other:Xemele.Parsing.Dtd.DtdEntityRequest:NotNull:optional=False:default=none
+  method:Int32 GetHashCode()|NotNull|
+  method:System.String ToString()|Unknown|
+  method:System.String get_Name()|NotNull|
+  method:System.String get_PublicId()|Nullable|
+  method:System.String get_SystemId()|Nullable|
+  method:Void Deconstruct(System.String ByRef, System.String ByRef, System.String ByRef, Xemele.XmlLocation ByRef)|NotNull|Name:System.String&:NotNull:optional=False:default=none;SystemId:System.String&:Nullable:optional=False:default=none;PublicId:System.String&:Nullable:optional=False:default=none;Location:Xemele.XmlLocation&:NotNull:optional=False:default=none
+  method:Void set_Location(Xemele.XmlLocation)|NotNull|value:Xemele.XmlLocation:NotNull:optional=False:default=none
+  method:Void set_Name(System.String)|NotNull|value:System.String:NotNull:optional=False:default=none
+  method:Void set_PublicId(System.String)|NotNull|value:System.String:Nullable:optional=False:default=none
+  method:Void set_SystemId(System.String)|NotNull|value:System.String:Nullable:optional=False:default=none
+  method:Xemele.XmlLocation get_Location()|NotNull|
+  property:Location|Xemele.XmlLocation|NotNull|set:True
+  property:Name|System.String|NotNull|set:True
+  property:PublicId|System.String|Nullable|set:True
+  property:SystemId|System.String|Nullable|set:True
+Xemele.Parsing.Dtd.DtdModel|sealed=True|value=False|interfaces=
+  ctor:True|elements:System.Collections.Generic.IEnumerable`1[Xemele.Parsing.Dtd.DtdElementDeclaration]:NotNull:optional=False:default=none;attributes:System.Collections.Generic.IEnumerable`1[Xemele.Parsing.Dtd.DtdAttributeDeclaration]:NotNull:optional=False:default=none;generalEntities:System.Collections.Generic.IEnumerable`1[Xemele.Parsing.Dtd.DtdEntityDeclaration]:NotNull:optional=False:default=none;parameterEntities:System.Collections.Generic.IEnumerable`1[Xemele.Parsing.Dtd.DtdEntityDeclaration]:NotNull:optional=False:default=none;notations:System.Collections.Generic.IEnumerable`1[Xemele.Parsing.Dtd.DtdNotationDeclaration]:NotNull:optional=False:default=none
+  method:System.Collections.Generic.IReadOnlyList`1[Xemele.Parsing.Dtd.DtdAttributeDeclaration] get_Attributes()|NotNull|
+  method:System.Collections.Generic.IReadOnlyList`1[Xemele.Parsing.Dtd.DtdElementDeclaration] get_Elements()|NotNull|
+  method:System.Collections.Generic.IReadOnlyList`1[Xemele.Parsing.Dtd.DtdEntityDeclaration] get_GeneralEntities()|NotNull|
+  method:System.Collections.Generic.IReadOnlyList`1[Xemele.Parsing.Dtd.DtdEntityDeclaration] get_ParameterEntities()|NotNull|
+  method:System.Collections.Generic.IReadOnlyList`1[Xemele.Parsing.Dtd.DtdNotationDeclaration] get_Notations()|NotNull|
+  property:Attributes|System.Collections.Generic.IReadOnlyList`1[Xemele.Parsing.Dtd.DtdAttributeDeclaration]|NotNull|set:False
+  property:Elements|System.Collections.Generic.IReadOnlyList`1[Xemele.Parsing.Dtd.DtdElementDeclaration]|NotNull|set:False
+  property:GeneralEntities|System.Collections.Generic.IReadOnlyList`1[Xemele.Parsing.Dtd.DtdEntityDeclaration]|NotNull|set:False
+  property:Notations|System.Collections.Generic.IReadOnlyList`1[Xemele.Parsing.Dtd.DtdNotationDeclaration]|NotNull|set:False
+  property:ParameterEntities|System.Collections.Generic.IReadOnlyList`1[Xemele.Parsing.Dtd.DtdEntityDeclaration]|NotNull|set:False
+Xemele.Parsing.Dtd.DtdNotationDeclaration|sealed=True|value=False|interfaces=System.IEquatable`1[Xemele.Parsing.Dtd.DtdNotationDeclaration]
+  ctor:True|Name:System.String:NotNull:optional=False:default=none;SystemId:System.String:Nullable:optional=False:default=none;PublicId:System.String:Nullable:optional=False:default=none;Location:Xemele.XmlLocation:NotNull:optional=False:default=none
+  method:Boolean Equals(System.Object)|NotNull|obj:System.Object:Nullable:optional=False:default=none
+  method:Boolean Equals(Xemele.Parsing.Dtd.DtdNotationDeclaration)|NotNull|other:Xemele.Parsing.Dtd.DtdNotationDeclaration:Nullable:optional=False:default=none
+  method:Int32 GetHashCode()|NotNull|
+  method:System.String ToString()|NotNull|
+  method:System.String get_Name()|NotNull|
+  method:System.String get_PublicId()|Nullable|
+  method:System.String get_SystemId()|Nullable|
+  method:Void Deconstruct(System.String ByRef, System.String ByRef, System.String ByRef, Xemele.XmlLocation ByRef)|NotNull|Name:System.String&:NotNull:optional=False:default=none;SystemId:System.String&:Nullable:optional=False:default=none;PublicId:System.String&:Nullable:optional=False:default=none;Location:Xemele.XmlLocation&:NotNull:optional=False:default=none
+  method:Void set_Location(Xemele.XmlLocation)|NotNull|value:Xemele.XmlLocation:NotNull:optional=False:default=none
+  method:Void set_Name(System.String)|NotNull|value:System.String:NotNull:optional=False:default=none
+  method:Void set_PublicId(System.String)|NotNull|value:System.String:Nullable:optional=False:default=none
+  method:Void set_SystemId(System.String)|NotNull|value:System.String:Nullable:optional=False:default=none
+  method:Xemele.Parsing.Dtd.DtdNotationDeclaration <Clone>$()|NotNull|
+  method:Xemele.XmlLocation get_Location()|NotNull|
+  property:Location|Xemele.XmlLocation|NotNull|set:True
+  property:Name|System.String|NotNull|set:True
+  property:PublicId|System.String|Nullable|set:True
+  property:SystemId|System.String|Nullable|set:True
+Xemele.Parsing.Dtd.DtdOccurrence|sealed=True|value=True|interfaces=System.IComparable,System.IConvertible,System.IFormattable,System.ISpanFormattable
+  enum:Once=0
+  enum:Optional=1
+  enum:ZeroOrMore=2
+  enum:OneOrMore=3
+Xemele.Parsing.Dtd.DtdParseResult|sealed=True|value=True|interfaces=System.IEquatable`1[Xemele.Parsing.Dtd.DtdParseResult]
+  ctor:True|Consumed:System.Int32:NotNull:optional=False:default=none;Step:Xemele.Parsing.Dtd.DtdParseStep:NotNull:optional=False:default=none;Entity:System.Nullable`1[Xemele.Parsing.Dtd.DtdEntityRequest]:Nullable:optional=False:default=none;Diagnostic:Xemele.XmlDiagnostic:Nullable:optional=False:default=none
+  method:Boolean Equals(System.Object)|NotNull|obj:System.Object:Unknown:optional=False:default=none
+  method:Boolean Equals(Xemele.Parsing.Dtd.DtdParseResult)|NotNull|other:Xemele.Parsing.Dtd.DtdParseResult:NotNull:optional=False:default=none
+  method:Int32 GetHashCode()|NotNull|
+  method:Int32 get_Consumed()|NotNull|
+  method:System.Nullable`1[Xemele.Parsing.Dtd.DtdEntityRequest] get_Entity()|Nullable|
+  method:System.String ToString()|Unknown|
+  method:Void Deconstruct(Int32 ByRef, Xemele.Parsing.Dtd.DtdParseStep ByRef, System.Nullable`1[Xemele.Parsing.Dtd.DtdEntityRequest] ByRef, Xemele.XmlDiagnostic ByRef)|NotNull|Consumed:System.Int32&:NotNull:optional=False:default=none;Step:Xemele.Parsing.Dtd.DtdParseStep&:NotNull:optional=False:default=none;Entity:System.Nullable`1[Xemele.Parsing.Dtd.DtdEntityRequest]&:Nullable:optional=False:default=none;Diagnostic:Xemele.XmlDiagnostic&:Nullable:optional=False:default=none
+  method:Void set_Consumed(Int32)|NotNull|value:System.Int32:NotNull:optional=False:default=none
+  method:Void set_Diagnostic(Xemele.XmlDiagnostic)|NotNull|value:Xemele.XmlDiagnostic:Nullable:optional=False:default=none
+  method:Void set_Entity(System.Nullable`1[Xemele.Parsing.Dtd.DtdEntityRequest])|NotNull|value:System.Nullable`1[Xemele.Parsing.Dtd.DtdEntityRequest]:Nullable:optional=False:default=none
+  method:Void set_Step(Xemele.Parsing.Dtd.DtdParseStep)|NotNull|value:Xemele.Parsing.Dtd.DtdParseStep:NotNull:optional=False:default=none
+  method:Xemele.Parsing.Dtd.DtdParseStep get_Step()|NotNull|
+  method:Xemele.XmlDiagnostic get_Diagnostic()|Nullable|
+  property:Consumed|System.Int32|NotNull|set:True
+  property:Diagnostic|Xemele.XmlDiagnostic|Nullable|set:True
+  property:Entity|System.Nullable`1[Xemele.Parsing.Dtd.DtdEntityRequest]|Nullable|set:True
+  property:Step|Xemele.Parsing.Dtd.DtdParseStep|NotNull|set:True
+Xemele.Parsing.Dtd.DtdParseStep|sealed=True|value=True|interfaces=System.IComparable,System.IConvertible,System.IFormattable,System.ISpanFormattable
+  enum:NeedInput=0
+  enum:NeedEntity=1
+  enum:Completed=2
+  enum:Rejected=3
+Xemele.Parsing.Dtd.DtdParser|sealed=True|value=False|interfaces=System.IDisposable
+  ctor:True|kind:Xemele.Parsing.Dtd.DtdSubsetKind:NotNull:optional=False:default=none;limits:Xemele.XmlResourceLimits:NotNull:optional=False:default=none;sourceUri:System.Uri:Nullable:optional=True:default=null
+  ctor:False|kind:Xemele.Parsing.Dtd.DtdSubsetKind:NotNull:optional=False:default=none;limits:Xemele.XmlResourceLimits:NotNull:optional=False:default=none;budget:Xemele.Parsing.Dtd.IDtdBudget:NotNull:optional=False:default=none;initialLocation:Xemele.XmlLocation:NotNull:optional=False:default=none
+  ctor:True|kind:Xemele.Parsing.Dtd.DtdSubsetKind:NotNull:optional=False:default=none;limits:Xemele.XmlResourceLimits:NotNull:optional=False:default=none;initialLocation:Xemele.XmlLocation:NotNull:optional=False:default=none
+  method:Void CompleteByteSource(Int64)|NotNull|byteLength:System.Int64:NotNull:optional=False:default=none
+  method:Void Dispose()|NotNull|
+  method:Void PushEntity(System.Uri)|NotNull|finalSourceUri:System.Uri:NotNull:optional=False:default=none
+  method:Xemele.Parsing.Dtd.DtdModel get_Model()|NotNull|
+  method:Xemele.Parsing.Dtd.DtdParseResult Append(System.ReadOnlySpan`1[System.Char], System.ReadOnlySpan`1[System.Int64], Boolean, System.Threading.CancellationToken)|NotNull|input:System.ReadOnlySpan`1[System.Char]:NotNull:optional=False:default=none;byteOffsets:System.ReadOnlySpan`1[System.Int64]:NotNull:optional=False:default=none;isFinalBlock:System.Boolean:NotNull:optional=False:default=none;cancellationToken:System.Threading.CancellationToken:NotNull:optional=False:default=none
+  property:Model|Xemele.Parsing.Dtd.DtdModel|NotNull|set:False
+Xemele.Parsing.Dtd.DtdParticle|sealed=True|value=False|interfaces=
+  ctor:True|kind:Xemele.Parsing.Dtd.DtdParticleKind:NotNull:optional=False:default=none;name:System.String:Nullable:optional=False:default=none;occurrence:Xemele.Parsing.Dtd.DtdOccurrence:NotNull:optional=False:default=none;children:System.Collections.Generic.IEnumerable`1[Xemele.Parsing.Dtd.DtdParticle]:NotNull:optional=False:default=none
+  method:System.Collections.Generic.IReadOnlyList`1[Xemele.Parsing.Dtd.DtdParticle] get_Children()|NotNull|
+  method:System.String get_Name()|Nullable|
+  method:Xemele.Parsing.Dtd.DtdOccurrence get_Occurrence()|NotNull|
+  method:Xemele.Parsing.Dtd.DtdParticleKind get_Kind()|NotNull|
+  property:Children|System.Collections.Generic.IReadOnlyList`1[Xemele.Parsing.Dtd.DtdParticle]|NotNull|set:False
+  property:Kind|Xemele.Parsing.Dtd.DtdParticleKind|NotNull|set:False
+  property:Name|System.String|Nullable|set:False
+  property:Occurrence|Xemele.Parsing.Dtd.DtdOccurrence|NotNull|set:False
+Xemele.Parsing.Dtd.DtdParticleKind|sealed=True|value=True|interfaces=System.IComparable,System.IConvertible,System.IFormattable,System.ISpanFormattable
+  enum:Empty=0
+  enum:Any=1
+  enum:Name=2
+  enum:Sequence=3
+  enum:Choice=4
+  enum:Mixed=5
+Xemele.Parsing.Dtd.DtdSubsetKind|sealed=True|value=True|interfaces=System.IComparable,System.IConvertible,System.IFormattable,System.ISpanFormattable
+  enum:Internal=0
+  enum:External=1
+Xemele.Parsing.Dtd.IDtdBudget|sealed=False|value=False|interfaces=
+  method:Void ExitEntity()|NotNull|
+  method:Xemele.XmlDiagnostic ChargeExpandedCharacters(Int64, Xemele.XmlLocation)|Nullable|count:System.Int64:NotNull:optional=False:default=none;location:Xemele.XmlLocation:NotNull:optional=False:default=none
+  method:Xemele.XmlDiagnostic ChargeName(System.ReadOnlySpan`1[System.Char], Xemele.XmlLocation)|Nullable|name:System.ReadOnlySpan`1[System.Char]:NotNull:optional=False:default=none;location:Xemele.XmlLocation:NotNull:optional=False:default=none
+  method:Xemele.XmlDiagnostic EnterEntity(Xemele.XmlLocation)|Nullable|location:Xemele.XmlLocation:NotNull:optional=False:default=none
+Xemele.Parsing.Dtd.TextDeclarationResult|sealed=True|value=True|interfaces=System.IEquatable`1[Xemele.Parsing.Dtd.TextDeclarationResult]
+  ctor:True|Consumed:System.Int32:NotNull:optional=False:default=none;Step:Xemele.Parsing.Dtd.TextDeclarationStep:NotNull:optional=False:default=none;Declaration:System.Nullable`1[Xemele.Parsing.Dtd.XmlTextDeclaration]:Nullable:optional=False:default=none;Diagnostic:Xemele.XmlDiagnostic:Nullable:optional=False:default=none;NextLocation:Xemele.XmlLocation:NotNull:optional=False:default=none
+  method:Boolean Equals(System.Object)|NotNull|obj:System.Object:Unknown:optional=False:default=none
+  method:Boolean Equals(Xemele.Parsing.Dtd.TextDeclarationResult)|NotNull|other:Xemele.Parsing.Dtd.TextDeclarationResult:NotNull:optional=False:default=none
+  method:Int32 GetHashCode()|NotNull|
+  method:Int32 get_Consumed()|NotNull|
+  method:System.Nullable`1[Xemele.Parsing.Dtd.XmlTextDeclaration] get_Declaration()|Nullable|
+  method:System.String ToString()|Unknown|
+  method:Void Deconstruct(Int32 ByRef, Xemele.Parsing.Dtd.TextDeclarationStep ByRef, System.Nullable`1[Xemele.Parsing.Dtd.XmlTextDeclaration] ByRef, Xemele.XmlDiagnostic ByRef, Xemele.XmlLocation ByRef)|NotNull|Consumed:System.Int32&:NotNull:optional=False:default=none;Step:Xemele.Parsing.Dtd.TextDeclarationStep&:NotNull:optional=False:default=none;Declaration:System.Nullable`1[Xemele.Parsing.Dtd.XmlTextDeclaration]&:Nullable:optional=False:default=none;Diagnostic:Xemele.XmlDiagnostic&:Nullable:optional=False:default=none;NextLocation:Xemele.XmlLocation&:NotNull:optional=False:default=none
+  method:Void set_Consumed(Int32)|NotNull|value:System.Int32:NotNull:optional=False:default=none
+  method:Void set_Declaration(System.Nullable`1[Xemele.Parsing.Dtd.XmlTextDeclaration])|NotNull|value:System.Nullable`1[Xemele.Parsing.Dtd.XmlTextDeclaration]:Nullable:optional=False:default=none
+  method:Void set_Diagnostic(Xemele.XmlDiagnostic)|NotNull|value:Xemele.XmlDiagnostic:Nullable:optional=False:default=none
+  method:Void set_NextLocation(Xemele.XmlLocation)|NotNull|value:Xemele.XmlLocation:NotNull:optional=False:default=none
+  method:Void set_Step(Xemele.Parsing.Dtd.TextDeclarationStep)|NotNull|value:Xemele.Parsing.Dtd.TextDeclarationStep:NotNull:optional=False:default=none
+  method:Xemele.Parsing.Dtd.TextDeclarationStep get_Step()|NotNull|
+  method:Xemele.XmlDiagnostic get_Diagnostic()|Nullable|
+  method:Xemele.XmlLocation get_NextLocation()|NotNull|
+  property:Consumed|System.Int32|NotNull|set:True
+  property:Declaration|System.Nullable`1[Xemele.Parsing.Dtd.XmlTextDeclaration]|Nullable|set:True
+  property:Diagnostic|Xemele.XmlDiagnostic|Nullable|set:True
+  property:NextLocation|Xemele.XmlLocation|NotNull|set:True
+  property:Step|Xemele.Parsing.Dtd.TextDeclarationStep|NotNull|set:True
+Xemele.Parsing.Dtd.TextDeclarationStep|sealed=True|value=True|interfaces=System.IComparable,System.IConvertible,System.IFormattable,System.ISpanFormattable
+  enum:NeedInput=0
+  enum:Declared=1
+  enum:Absent=2
+  enum:Rejected=3
+Xemele.Parsing.Dtd.XmlTextDeclaration|sealed=True|value=True|interfaces=System.IEquatable`1[Xemele.Parsing.Dtd.XmlTextDeclaration]
+  ctor:True|Version:System.String:Nullable:optional=False:default=none;EncodingName:System.String:NotNull:optional=False:default=none;Location:Xemele.XmlLocation:NotNull:optional=False:default=none
+  method:Boolean Equals(System.Object)|NotNull|obj:System.Object:Unknown:optional=False:default=none
+  method:Boolean Equals(Xemele.Parsing.Dtd.XmlTextDeclaration)|NotNull|other:Xemele.Parsing.Dtd.XmlTextDeclaration:NotNull:optional=False:default=none
+  method:Int32 GetHashCode()|NotNull|
+  method:System.String ToString()|Unknown|
+  method:System.String get_EncodingName()|NotNull|
+  method:System.String get_Version()|Nullable|
+  method:Void Deconstruct(System.String ByRef, System.String ByRef, Xemele.XmlLocation ByRef)|NotNull|Version:System.String&:Nullable:optional=False:default=none;EncodingName:System.String&:NotNull:optional=False:default=none;Location:Xemele.XmlLocation&:NotNull:optional=False:default=none
+  method:Void set_EncodingName(System.String)|NotNull|value:System.String:NotNull:optional=False:default=none
+  method:Void set_Location(Xemele.XmlLocation)|NotNull|value:Xemele.XmlLocation:NotNull:optional=False:default=none
+  method:Void set_Version(System.String)|NotNull|value:System.String:Nullable:optional=False:default=none
+  method:Xemele.XmlLocation get_Location()|NotNull|
+  property:EncodingName|System.String|NotNull|set:True
+  property:Location|Xemele.XmlLocation|NotNull|set:True
+  property:Version|System.String|Nullable|set:True
+Xemele.Parsing.Dtd.XmlTextDeclarationFramer|sealed=True|value=False|interfaces=System.IDisposable
+  ctor:True|limits:Xemele.XmlResourceLimits:NotNull:optional=False:default=none;sourceUri:System.Uri:Nullable:optional=True:default=null
+  ctor:False|limits:Xemele.XmlResourceLimits:NotNull:optional=False:default=none;budget:Xemele.Parsing.Dtd.IDtdBudget:NotNull:optional=False:default=none;sourceUri:System.Uri:Nullable:optional=True:default=null
+  method:Int32 DrainPrefix(System.Span`1[System.Char], System.Span`1[System.Int64])|NotNull|output:System.Span`1[System.Char]:NotNull:optional=False:default=none;byteOffsets:System.Span`1[System.Int64]:NotNull:optional=False:default=none
+  method:Void Dispose()|NotNull|
+  method:Xemele.Parsing.Dtd.TextDeclarationResult Append(System.ReadOnlySpan`1[System.Char], System.ReadOnlySpan`1[System.Int64], Boolean, System.Threading.CancellationToken)|NotNull|input:System.ReadOnlySpan`1[System.Char]:NotNull:optional=False:default=none;byteOffsets:System.ReadOnlySpan`1[System.Int64]:NotNull:optional=False:default=none;isFinalBlock:System.Boolean:NotNull:optional=False:default=none;cancellationToken:System.Threading.CancellationToken:NotNull:optional=False:default=none
+  method:Xemele.XmlLocation get_PrefixLocation()|NotNull|
+  property:PrefixLocation|Xemele.XmlLocation|NotNull|set:False

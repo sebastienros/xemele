@@ -1,0 +1,181 @@
+{
+  "result": "passed",
+  "host": "macOS-15.8.1-arm64-arm-64bit-Mach-O",
+  "architecture": "arm64",
+  "timing": "unchanged verified dependencies reused; no runtime hot-path change or new measurement",
+  "sourceRevision": "a429a7a1fb17501f6f04c8005f936f7b19f25013",
+  "branch": "codex/m2-dtd",
+  "auditBase": "6090a26ef1d33bb4a1a0bf92e722e8400f25c3b8",
+  "dotnet": "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+  "dotnetSha256": "e86deb33d0dacad9cc1224466df6418149cb8e13cb8afd0dc6815ea6b7807975",
+  "runtime": "10.0.11",
+  "internalApi": {
+    "matched": true,
+    "types": 20,
+    "inventory": "internal-contract.txt",
+    "nullableAndDefaults": true,
+    "compiledNullableMutationDetected": true
+  },
+  "pinnedProvenance": {
+    "sourceUrl": "https://www.w3.org/XML/Test/xmlts20130923.tar.gz",
+    "archiveSha256": "9b61db9f5dbffa545f4b8d78422167083a8568c59bd1129f94138f936cf6fc1f",
+    "scope": "Exact external subset resources only; authored expected declarations. No full XML conformance claim.",
+    "cases": [
+      {
+        "id": "xmlconf/oasis/oasis.xml#o-p30pass1",
+        "resource": "xmlconf/oasis/p30pass1.dtd",
+        "sha256": "ca9bdeb065fb1c8238d5721e775d806e640d24e79b0109e6b41417f41595ed4f",
+        "bytes": 26,
+        "valid": true,
+        "oracle": "p30pass1"
+      },
+      {
+        "id": "xmlconf/oasis/oasis.xml#o-p30fail1",
+        "resource": "xmlconf/oasis/p30fail1.dtd",
+        "sha256": "17bf783a9ebd1b6bcc64d6e393ad02174cf8e8903c84a4816f0e4cc061a3fddf",
+        "bytes": 79,
+        "valid": false,
+        "oracle": "p30fail1"
+      },
+      {
+        "id": "xmlconf/oasis/oasis.xml#o-p31pass1",
+        "resource": "xmlconf/oasis/p31pass1.dtd",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0,
+        "valid": true,
+        "oracle": "p31pass1"
+      },
+      {
+        "id": "xmlconf/oasis/oasis.xml#o-p31fail1",
+        "resource": "xmlconf/oasis/p31fail1.dtd",
+        "sha256": "8fc71e39d7535c3059fe241541b4b27c9c2e0666cf8e17859c9d472feb4cd94f",
+        "bytes": 44,
+        "valid": false,
+        "oracle": "p31fail1"
+      },
+      {
+        "id": "xmlconf/oasis/oasis.xml#o-p62pass1",
+        "resource": "xmlconf/oasis/p62pass1.dtd",
+        "sha256": "293b01777207ff99241add8cff1d77a2fd63127a1df796f30493af2445bc987d",
+        "bytes": 136,
+        "valid": true,
+        "oracle": "p62pass1"
+      },
+      {
+        "id": "xmlconf/oasis/oasis.xml#o-p62fail1",
+        "resource": "xmlconf/oasis/p62fail1.dtd",
+        "sha256": "6af4ad855009bf92b4c1f7ae169ff9f9cab9598a16a4c7d4c5ba9af9a35bcdaa",
+        "bytes": 40,
+        "valid": false,
+        "oracle": "p62fail1"
+      },
+      {
+        "id": "xmlconf/sun/sun-valid.xml#v-pe00",
+        "resource": "xmlconf/sun/valid/pe00.dtd",
+        "sha256": "770896d21d88df0f8b33bed2cdc949f3d9c39821197fecacf0f7c3ff7d04691b",
+        "bytes": 223,
+        "valid": true,
+        "oracle": "pe00"
+      },
+      {
+        "id": "xmlconf/sun/sun-valid.xml#pe01",
+        "resource": "xmlconf/sun/valid/pe01.dtd",
+        "sha256": "a8c5f1c37961dfd00ba1cdd5371e4c82d1a92dbdd02b443b51af6378db4800a9",
+        "bytes": 148,
+        "valid": true,
+        "oracle": "pe01"
+      },
+      {
+        "id": "xmlconf/ibm/ibm_oasis_valid.xml#ibm-valid-P32-ibm32v01.xml",
+        "resource": "xmlconf/ibm/valid/P32/ibm32v01.dtd",
+        "sha256": "40d0c898a768a5b7a7d7caadc77c26be93b046a49ef0d3457a974277b3a30707",
+        "bytes": 70,
+        "valid": true,
+        "oracle": "ibm32v01"
+      }
+    ]
+  },
+  "pinnedSplitParses": 775,
+  "focusedTests": 4162,
+  "sampleOracle": "Exact independently authored model/default and granted-PE/source-cursor outputs matched.",
+  "performanceApplicability": {
+    "sourceRevision": "d1dfbac1d1b42d7cf220cb6300fe5c1646abe2cf",
+    "unchangedRuntimeAndTimedSource": true,
+    "archiveSha256": "067634a93eee38804668c4c2048534594dd0d8151bbea506bab8981aa86e8545",
+    "archive": "docs/reports/M2-dtd-grammar/exclusive-d1dfbac/full-raw.zip",
+    "mean": "5.003 us",
+    "ownedAllocation": "16.05 KB",
+    "scope": "Verified two-subset/effective-default composition on Arm64. Parent adds sample/API/check evidence only; no timing/allocation rerun and no new performance claim."
+  },
+  "mtpTests": {
+    "total": 5014,
+    "failed": 0,
+    "skipped": 0
+  },
+  "publicApiMembers": 251,
+  "runtimeTests": {
+    "Xemele.Tests": {
+      "total": 4460,
+      "failed": 0,
+      "skipped": 0
+    },
+    "Xemele.Conformance.Tests": {
+      "total": 255,
+      "failed": 0,
+      "skipped": 0
+    },
+    "Xemele.Differential.Tests": {
+      "total": 299,
+      "failed": 0,
+      "skipped": 0
+    }
+  },
+  "focusedClassCounts": {
+    "Xemele.Tests.DtdGrammarPinnedTests": 9,
+    "Xemele.Tests.FramingTests": 1243,
+    "Xemele.Tests.DtdGrammarJoinedTests": 10,
+    "Xemele.Tests.ValueTests": 994,
+    "Xemele.Tests.DtdModel.ModelTests": 8,
+    "Xemele.Tests.DtdParserTests": 1866,
+    "Xemele.Tests.DtdParserSourceTests": 17,
+    "Xemele.Tests.DtdParserBudgetTests": 15
+  },
+  "discovery": {
+    "apiDeclarations": 251,
+    "fixtures": 3388
+  },
+  "referenceProvenance": {
+    "records": 242,
+    "runnerSha256": "3869fcb1a0bf9be7a3dbf67470e5c35225bc8c89c19f98a49f4c288eaf744982",
+    "build": "1.0.0+a429a7a1fb17501f6f04c8005f936f7b19f25013",
+    "completeFreshOutputCopied": true,
+    "unchangedAfterChecks": true
+  },
+  "ownedPaths": [
+    "docs/reports/M2-dtd/README.md",
+    "docs/reports/M2-dtd/internal-api.txt",
+    "docs/reports/M2-dtd/parent-a117925/checks.txt.gz",
+    "docs/reports/M2-dtd/parent-a117925/summary.json",
+    "docs/reports/M2-dtd/parent-c63208a/checks.txt.gz",
+    "docs/reports/M2-dtd/parent-c63208a/summary.json",
+    "docs/reports/M2-dtd/parent-common-import/Xemele.Conformance.Tests-discovery.txt.gz",
+    "docs/reports/M2-dtd/parent-common-import/Xemele.Conformance.Tests.xml.gz",
+    "docs/reports/M2-dtd/parent-common-import/Xemele.Differential.Tests-discovery.txt.gz",
+    "docs/reports/M2-dtd/parent-common-import/Xemele.Differential.Tests.xml.gz",
+    "docs/reports/M2-dtd/parent-common-import/Xemele.Tests-discovery.txt.gz",
+    "docs/reports/M2-dtd/parent-common-import/Xemele.Tests.xml.gz",
+    "docs/reports/M2-dtd/parent-common-import/focused.xml.gz",
+    "docs/reports/M2-dtd/parent-common-import/internal-contract.txt",
+    "docs/reports/M2-dtd/parent-common-import/reference-provenance.json",
+    "docs/reports/M2-dtd/parent-common-import/runtime-api.json",
+    "docs/reports/M2-dtd/parent-common-import/sample.txt",
+    "docs/reports/M2-dtd/sample_oracle.py",
+    "docs/reports/M2-dtd/verify.py",
+    "samples/M2-dtd/Composition.cs",
+    "samples/M2-dtd/Inventory.cs",
+    "samples/M2-dtd/Program.cs",
+    "samples/M2-dtd/README.md",
+    "samples/M2-dtd/Sample.csproj"
+  ],
+  "scope": "Final parent join of verified common-only DTD children; no runtime or peer edits. Explicit coordinator correction publishes internal inventory in docs/reports/M2-dtd/internal-api.txt and omits a false public docs/api fragment. Sample is caller-granted demonstration composition; production DOCTYPE/general-entity work remains M2-entities. Pinned subsets are not full XML conformance. Windows/x64/AOT unrun. Child performance evidence unchanged and not rerun."
+}
