@@ -115,15 +115,22 @@ def main():
     assert row['gc'][0]['operations']>0 and row['gc'][0]['allocatedBytes']>=0 and math.isfinite(row['gc'][0]['bytesPerOperation']) and all(m['operations']==row['gc'][0]['operations'] for m in row['actual']+row['result'])
     assert actual==result==3 and gc==1 and len(exits)==1 and exits[0][1]=='0';assert '.NET 10.0.11' in block and re.search('Arm64',block,re.IGNORECASE)
     execution=re.search(r'^// Execute: (.+) in (.+)$',block,re.MULTILINE);assert execution;argv=shlex.split(execution[1]);dll=next(v for v in argv if v.endswith('.dll'));cwd=Path(execution[2].strip());exe=cwd/dll;library=cwd/'Xemele.EntitiesBenchmarks.dll';assert exe.is_file() and library.is_file()
-    assert hashlib.sha256(library.read_bytes()).hexdigest()==binary[str((parent/library.name).relative_to(ROOT))]
-    metadata=json.loads(subprocess.check_output([str(dotnet),str(probe),str(exe),str(library)],cwd=ROOT,text=True,timeout=30));assert len(metadata)==2 and metadata[1]['sourceVersion']=='1.0.0+'+revision and all(x['runtime']=='10.0.11' and x['architecture']=='Arm64' for x in metadata)
-    observations.append(row);child_provenance.append({'case':identity,'executableSha256':metadata[0]['sha256'],'librarySha256':metadata[1]['sha256'],'librarySourceVersion':metadata[1]['sourceVersion'],'runtime':metadata[1]['runtime'],'coreLibrarySha256':metadata[1]['coreLibrarySha256'],'childEnvironment':[line for line in block.splitlines() if line.startswith(('// Runtime=','// GC=','// HardwareIntrinsics='))]})
+    actual_library_sha=hashlib.sha256(library.read_bytes()).hexdigest()
+    pending={'case':identity,'actualLibrarySha256':actual_library_sha,'expectedLibrarySha256':binary[str((parent/library.name).relative_to(ROOT))],'executableSha256':hashlib.sha256(exe.read_bytes()).hexdigest()}
+    child_provenance.append(pending);s['generatedChildProvenance']=child_provenance
+    metadata=json.loads(subprocess.check_output([str(dotnet),str(probe),str(exe),str(library)],cwd=ROOT,text=True,timeout=30));pending['metadata']=metadata
+    assert actual_library_sha==pending['expectedLibrarySha256']
+    assert len(metadata)==2 and metadata[1]['sourceVersion']=='1.0.0+'+revision and all(x['runtime']=='10.0.11' and x['architecture']=='Arm64' for x in metadata)
+    observations.append(row)
    assert {tuple(o['case']) for o in observations}==expected and re.search(r'Global total time:.*executed benchmarks: 6',output)
    assert s['buildExits'] and all(code=='0' for code in s['buildExits'])
    s['benchmarks']=rows;s['observations']=observations;s['generatedChildProvenance']=child_provenance;s['environmentSummary']=[line.strip() for line in output.splitlines() if line.startswith('BenchmarkDotNet v') or '.NET SDK' in line or 'Arm64 RyuJIT' in line or 'Apple M' in line];s['timingLimit']='Informational macOS arm64; no cross-architecture release or speedup claim.'
   s['stage']='final-source-binary-freeze';s['sourceIdentitiesAfter']=hashes(source);s['binaryIdentitiesAfter']=hashes(binary);assert s['sourceIdentitiesAfter']==source and s['binaryIdentitiesAfter']==binary;assert subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True,timeout=30).strip()==revision;s['result']='passed'
  except BaseException as error:
   primary=error;s['failure']={'stage':s['stage'],'type':type(error).__name__,'message':str(error)[:1000]}
+  for field,names in [('sourceIdentitiesAfter',known['compiledSources'] if 'known' in locals() else {}),('binaryIdentitiesAfter',known['binaries'] if 'known' in locals() else {})]:
+   try:s[field]=hashes(names)
+   except Exception as identity_error:s.setdefault('identityCaptureErrors',[]).append(str(identity_error))
   if (raw/'output.log').exists():
    partial=(raw/'output.log').read_text();s['selectedObservations']=selected_observations(partial);s['buildExits']=re.findall(r'^// command took .* and exited with (\d+)',partial,re.MULTILINE);s['failure']['outputTail']=partial[-2500:]
   raise

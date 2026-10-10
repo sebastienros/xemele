@@ -1,0 +1,13 @@
+{
+  "package": "BenchmarkDotNet0.15.8",
+  "packageRepositoryCommit": "1e8238ef6c08e18821edae83ac8d6b0a2bb1bb98",
+  "sources": [
+    "https://raw.githubusercontent.com/dotnet/BenchmarkDotNet/v0.15.8/src/BenchmarkDotNet/Toolchains/DotNetCli/DotNetCliCommand.cs",
+    "https://raw.githubusercontent.com/dotnet/BenchmarkDotNet/v0.15.8/src/BenchmarkDotNet/Toolchains/CsProj/CsProjGenerator.cs",
+    "https://raw.githubusercontent.com/dotnet/BenchmarkDotNet/v0.15.8/src/BenchmarkDotNet/Templates/CsProj.txt",
+    "https://raw.githubusercontent.com/dotnet/BenchmarkDotNet/1e8238ef6c08e18821edae83ac8d6b0a2bb1bb98/src/BenchmarkDotNet/Running/BenchmarkRunnerClean.cs"
+  ],
+  "knownInputs": "Generated build uses ArtifactsPath + OutDir + OutputPath + PublishDir, deterministic/optimized Release/no shared compilation, project reference to actual benchmark project; parent standard outputs need not be the generated variant.",
+  "proposal": "Call installed toolchain Generator and Builder without Executor. Inspect current-source generated project/build flags and library metadata/IL/SHA; compare separately generated known-source variant. Lost961 child bytes cannot be established retrospectively.",
+  "observations": "No additional observations authorized."
+}
