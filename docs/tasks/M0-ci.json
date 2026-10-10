@@ -29,8 +29,11 @@
     {
       "id": "M0-ci-A1",
       "description": "Add cross-platform build/test workflow and discovery of per-task API/corpus fragments without generated central tracked indexes.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "discovery-tests",
+        "bootstrap-discovery"
+      ]
     },
     {
       "id": "M0-ci-A2",
@@ -45,13 +48,76 @@
       "evidence": []
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    ".github/workflows/build.yml: Windows/Linux/macOS planning, discovery, restore, Release build/test and pack workflow",
+    "tools/ApiBaseline/discover.py: discover(), versioned canonical API and corpus inventory with fail-fast validation",
+    "tools/ApiBaseline/README.md: producer conventions and explicit assembly compatibility verification boundary",
+    "tests/Xemele.TestUtilities/Build/test_discovery.py: 13 positive/negative discovery tests",
+    "docs/reports/M0-ci/README.md: bootstrap behavior and verification limits"
+  ],
+  "evidence": [
+    {
+      "id": "discovery-tests",
+      "kind": "check",
+      "revision": "891b493d2d6e4146ae08f11815446f43ddfb5917",
+      "command": "python3 -B -m unittest discover -s tests/Xemele.TestUtilities/Build -p 'test_*.py' -v",
+      "result": "passed",
+      "summary": "13 tests passed; includes missing fixture, checksum, path escape, malformed/unsupported/duplicate/conflicting fragments, and CLI failure exit checks.",
+      "artifact": null
+    },
+    {
+      "id": "bootstrap-discovery",
+      "kind": "check",
+      "revision": "891b493d2d6e4146ae08f11815446f43ddfb5917",
+      "command": "python3 -B tools/ApiBaseline/discover.py --bootstrap-empty-api",
+      "result": "passed",
+      "summary": "Passed: 0 API fragments/declarations, 0 corpus manifests/fixtures, bootstrapEmptyApi true for verified empty runtime.",
+      "artifact": null
+    },
+    {
+      "id": "default-missing-baseline",
+      "kind": "check",
+      "revision": "891b493d2d6e4146ae08f11815446f43ddfb5917",
+      "command": "python3 -B tools/ApiBaseline/discover.py",
+      "result": "passed",
+      "summary": "Expected negative check passed: exit 1 and explicit missing API baselines diagnostic.",
+      "artifact": null
+    },
+    {
+      "id": "planning-validation",
+      "kind": "check",
+      "revision": "891b493d2d6e4146ae08f11815446f43ddfb5917",
+      "command": "python3 tools/planning/tasks.py validate",
+      "result": "passed",
+      "summary": "Validated 93 tasks; schema, evidence, dependencies, additive milestones and ordered ownership.",
+      "artifact": null
+    },
+    {
+      "id": "owned-diff-check",
+      "kind": "check",
+      "revision": "891b493d2d6e4146ae08f11815446f43ddfb5917",
+      "command": "git diff --check",
+      "result": "passed",
+      "summary": "Passed before implementation commit; only task-owned files added.",
+      "artifact": null
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "",
-    "checks": [],
-    "remaining": [],
-    "requests": []
+    "summary": "Committed cross-platform CI and strict versioned task-fragment discovery. Python/static checks passed. Waiting for coordinator timing-slot release before .NET checks; task remains in_progress. No runtime APIs or shared project changes.",
+    "checks": [
+      "python3 -B -m unittest discover -s tests/Xemele.TestUtilities/Build -p 'test_*.py' -v \u2014 13 tests passed; includes missing fixture, checksum, path escape, malformed/unsupported/duplicate/conflicting fragments, and CLI failure exit checks.",
+      "python3 -B tools/ApiBaseline/discover.py --bootstrap-empty-api \u2014 Passed: 0 API fragments/declarations, 0 corpus manifests/fixtures, bootstrapEmptyApi true for verified empty runtime.",
+      "python3 -B tools/ApiBaseline/discover.py \u2014 Expected negative check passed: exit 1 and explicit missing API baselines diagnostic.",
+      "python3 tools/planning/tasks.py validate \u2014 Validated 93 tasks; schema, evidence, dependencies, additive milestones and ordered ownership.",
+      "git diff --check \u2014 Passed before implementation commit; only task-owned files added."
+    ],
+    "remaining": [
+      "Run exact workflow-equivalent .NET restore/Release build/test/pack at implementation revision after explicit timing-slot release.",
+      "A2 and A3 remain pending until those local checks complete. Windows/Linux and hosted CI not run locally."
+    ],
+    "requests": [
+      "M0-contracts and CorpusManager owners should consume documented API member identity and corpus schema in tools/ApiBaseline/README.md. Compiled assembly API comparison and source-payload provenance verification remain their responsibilities."
+    ]
   }
 }
