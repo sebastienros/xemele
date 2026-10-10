@@ -1,0 +1,120 @@
+{
+  "revision": "705b1171d214cfb5ca86559a7622884fbe990e97",
+  "purpose": "Compiled discovery summary of current-main profile additions for integration verifier; no correctness tests or measurements executed.",
+  "builds": "Both scoped projects exit0, zero warnings/errors; pinnedSDK10.0.400/runtime10.0.11.",
+  "limitations": [
+    "Default discovery delayed theories; corrected with explicit pre-enumeration.",
+    "Full discovery display-name digest differs from historical execution XML digest; no inherited execution identity pass claimed. Combined verifier must retain historical XML identity checks."
+  ],
+  "suites": {
+    "Xemele.Conformance.Tests": {
+      "discoveryExit": 0,
+      "total": 258,
+      "inheritedDiscoveryCount": 255,
+      "historicalExecutionIdentitySha256": "a43104c9986029e0680218003fc7d820c2583c42b53fe16a323f2cab04e634dc",
+      "addedExactIdentities": [
+        [
+          "Xemele.Conformance.Tests.XmlFull.Profile.ApplicabilityTests",
+          "EveryOriginalCaseAndResourceHasAnExecutableEffectiveXml10Expectation",
+          "Xemele.Conformance.Tests.XmlFull.Profile.ApplicabilityTests.EveryOriginalCaseAndResourceHasAnExecutableEffectiveXml10Expectation"
+        ],
+        [
+          "Xemele.Conformance.Tests.XmlFull.Profile.ApplicabilityTests",
+          "HistoricalAndCrossStandardPurposesNeverDisableEffectiveXml10Rules",
+          "Xemele.Conformance.Tests.XmlFull.Profile.ApplicabilityTests.HistoricalAndCrossStandardPurposesNeverDisableEffectiveXml10Rules"
+        ],
+        [
+          "Xemele.Conformance.Tests.XmlFull.Profile.ApplicabilityTests",
+          "MissingCorruptAbsoluteTraversalSiblingAndSymlinkAreInfrastructureFailures",
+          "Xemele.Conformance.Tests.XmlFull.Profile.ApplicabilityTests.MissingCorruptAbsoluteTraversalSiblingAndSymlinkAreInfrastructureFailures"
+        ]
+      ],
+      "assemblySha256": "74c7051df79bc4e0db6dbe082115578098426fd00d1230d944674e54325827e4",
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "/private/tmp/xemele-profile-discovery-705b/tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll",
+        "-noColor",
+        "-preEnumerateTheories",
+        "-list",
+        "full/json"
+      ]
+    },
+    "Xemele.Differential.Tests": {
+      "discoveryExit": 0,
+      "total": 311,
+      "inheritedDiscoveryCount": 299,
+      "historicalExecutionIdentitySha256": "845b5c10e9d4952e309b2d419fcc429fe568c8496889dce7fe6ab319389cdc6e",
+      "addedExactIdentities": [
+        [
+          "Xemele.Differential.Tests.Protocol.M2OfflineSourceTests",
+          "ExplicitSourcePreservesSuccessAndSyntaxRejection",
+          "Xemele.Differential.Tests.Protocol.M2OfflineSourceTests.ExplicitSourcePreservesSuccessAndSyntaxRejection(xml: \"<r/>\", outcome: \"success\")"
+        ],
+        [
+          "Xemele.Differential.Tests.Protocol.M2OfflineSourceTests",
+          "ExplicitSourcePreservesSuccessAndSyntaxRejection",
+          "Xemele.Differential.Tests.Protocol.M2OfflineSourceTests.ExplicitSourcePreservesSuccessAndSyntaxRejection(xml: \"<r>\", outcome: \"parse-rejected\")"
+        ],
+        [
+          "Xemele.Differential.Tests.Protocol.M2OfflineSourceTests",
+          "ExplicitSourceResolvesNestedRelativeResourcesOnlyFromMap",
+          "Xemele.Differential.Tests.Protocol.M2OfflineSourceTests.ExplicitSourceResolvesNestedRelativeResourcesOnlyFromMap(source: \"file:///offline/suite/main.xml\")"
+        ],
+        [
+          "Xemele.Differential.Tests.Protocol.M2OfflineSourceTests",
+          "ExplicitSourceResolvesNestedRelativeResourcesOnlyFromMap",
+          "Xemele.Differential.Tests.Protocol.M2OfflineSourceTests.ExplicitSourceResolvesNestedRelativeResourcesOnlyFromMap(source: \"https://offline.invalid/suite/main.xml\")"
+        ],
+        [
+          "Xemele.Differential.Tests.Protocol.M2OfflineSourceTests",
+          "MalformedSourceIsProtocolFailure",
+          "Xemele.Differential.Tests.Protocol.M2OfflineSourceTests.MalformedSourceIsProtocolFailure(source: \"\")"
+        ],
+        [
+          "Xemele.Differential.Tests.Protocol.M2OfflineSourceTests",
+          "MalformedSourceIsProtocolFailure",
+          "Xemele.Differential.Tests.Protocol.M2OfflineSourceTests.MalformedSourceIsProtocolFailure(source: \"https://offline.invalid/a b\")"
+        ],
+        [
+          "Xemele.Differential.Tests.Protocol.M2OfflineSourceTests",
+          "MalformedSourceIsProtocolFailure",
+          "Xemele.Differential.Tests.Protocol.M2OfflineSourceTests.MalformedSourceIsProtocolFailure(source: \"https://offline.invalid/main.xml#part\")"
+        ],
+        [
+          "Xemele.Differential.Tests.Protocol.M2OfflineSourceTests",
+          "MalformedSourceIsProtocolFailure",
+          "Xemele.Differential.Tests.Protocol.M2OfflineSourceTests.MalformedSourceIsProtocolFailure(source: \"relative.xml\")"
+        ],
+        [
+          "Xemele.Differential.Tests.Protocol.M2OfflineSourceTests",
+          "UnknownAndNonStringOptionsAreProtocolFailures",
+          "Xemele.Differential.Tests.Protocol.M2OfflineSourceTests.UnknownAndNonStringOptionsAreProtocolFailures"
+        ],
+        [
+          "Xemele.Differential.Tests.XmlFull.Profile.SemanticModelTests",
+          "IndependentlySpecifiedDtdAttributeAndTextModelsMatch",
+          "Xemele.Differential.Tests.XmlFull.Profile.SemanticModelTests.IndependentlySpecifiedDtdAttributeAndTextModelsMatch(xml: \"<!DOCTYPE r [<!ATTLIST r a CDATA 'a&#x9;b'>]><r/>\", attribute: \"a\\tb\", text: \"\")"
+        ],
+        [
+          "Xemele.Differential.Tests.XmlFull.Profile.SemanticModelTests",
+          "IndependentlySpecifiedDtdAttributeAndTextModelsMatch",
+          "Xemele.Differential.Tests.XmlFull.Profile.SemanticModelTests.IndependentlySpecifiedDtdAttributeAndTextModelsMatch(xml: \"<!DOCTYPE r [<!ENTITY e 'a&#xD;b'><!ATTLIST r a NM\"\u00b7\u00b7\u00b7, attribute: \"owned tail\", text: \"a\\rbc\")"
+        ],
+        [
+          "Xemele.Differential.Tests.XmlFull.Profile.SemanticModelTests",
+          "OptionalValidityErrorsDoNotBecomeGeneralDtdValidation",
+          "Xemele.Differential.Tests.XmlFull.Profile.SemanticModelTests.OptionalValidityErrorsDoNotBecomeGeneralDtdValidation"
+        ]
+      ],
+      "assemblySha256": "fd192c32cacc48a6e7ba55986061dcb9274f2d44f0717e131f57b43e4f74e3fb",
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "/private/tmp/xemele-profile-discovery-705b/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll",
+        "-noColor",
+        "-preEnumerateTheories",
+        "-list",
+        "full/json"
+      ]
+    }
+  }
+}
