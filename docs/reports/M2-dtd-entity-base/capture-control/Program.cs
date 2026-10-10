@@ -16,7 +16,35 @@ try
     CheckFailure(Path.Combine(directory, "missing.dll"), typeof(FileNotFoundException));
     string malformed = Path.Combine(directory, "malformed.dll"); File.WriteAllText(malformed, "invalid PE metadata");
     CheckFailure(malformed, typeof(BadImageFormatException));
+    string project = Path.Combine(directory, "fixture.csproj"), expected = Path.Combine(directory, "owned.csproj");
+    CheckBinding([expected], true);
+    CheckBinding([Path.Combine(directory, "foreign.csproj")], false);
+    CheckBinding([expected, expected], false);
+    CheckBinding([], false);
     Console.WriteLine("Capture controls passed: complete closure; missing required entry; malformed required metadata; actual sibling/input hashes and exact primary metadata errors preserved; no engine/counters/timing.");
+    Console.WriteLine("Project binding controls passed: exact owned reference; wrong reference; duplicate reference; missing reference; no generator/builder/executor.");
+
+    void CheckBinding(string[] references, bool wanted)
+    {
+        new System.Xml.Linq.XDocument(new System.Xml.Linq.XElement("Project", new System.Xml.Linq.XElement("ItemGroup",
+            references.Select(r => new System.Xml.Linq.XElement("ProjectReference", new System.Xml.Linq.XAttribute("Include", r)))))).Save(project);
+        var original = Console.Out; using var capture = new StringWriter(); Exception? failure = null;
+        try
+        {
+            Console.SetOut(capture);
+            try { EntityBaseProjectBinding.Check(project, expected); }
+            catch (Exception error) { failure = error; }
+        }
+        finally { Console.SetOut(original); }
+        if (wanted ? failure is not null : failure is not InvalidDataException) throw new Exception("Binding decision differs.");
+        const string prefix = "ENTITY_BASE_PROJECT_BINDING "; string line = capture.ToString().Trim();
+        if (!line.StartsWith(prefix, StringComparison.Ordinal) || line.Contains('\n')) throw new Exception("Binding proof missing.");
+        using var parsed = JsonDocument.Parse(line[prefix.Length..]); var proof = parsed.RootElement;
+        if (proof.GetProperty("passed").GetBoolean() != wanted || proof.GetProperty("expected").GetString() != expected ||
+            proof.GetProperty("generatedProjectSha256").GetString() != EntityBaseProvenance.Hash(project) ||
+            !proof.GetProperty("actual").EnumerateArray().Select(p => p.GetString()).SequenceEqual(references))
+            throw new Exception("Actual expected binding identity lost.");
+    }
 
     void CheckFailure(string required, Type errorType)
     {

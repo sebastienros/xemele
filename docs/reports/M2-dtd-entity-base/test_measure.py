@@ -73,6 +73,37 @@ class MeasurementGuards(unittest.TestCase):
         self.assertEqual(facts['diagnosticLineCount'], 25)
         self.assertTrue(facts['diagnosticsTruncated'])
 
+    def test_post_build_baseline_cleanup_preserves_restored_dependency_closure(self):
+        with tempfile.TemporaryDirectory() as root:
+            parent = Path(root)
+            (parent / 'driver.dll').write_bytes(b'parent')
+            with patch.object(measure, 'PARENT', parent):
+                initial = measure.parent_directories()
+                restored = parent / 'runtimes/osx-arm64/native'
+                restored.mkdir(parents=True)
+                (restored / 'dependency.dylib').write_bytes(b'restored dependency')
+                baseline = measure.parent_directories()
+                expected = measure.closure(parent)
+                child = parent / 'generated-child'
+                child.mkdir()
+                (child / 'generated.dll').write_bytes(b'generated child')
+                self.assertNotEqual(initial, baseline)
+                outputs = measure.parent_directories() - baseline
+                self.assertEqual(outputs, {child})
+                self.assertEqual(measure.cleanup_outputs(outputs), [])
+                self.assertEqual(measure.closure(parent), expected)
+                self.assertTrue((restored / 'dependency.dylib').exists())
+
+    def test_actual_binding_mismatch_is_retained_before_validation_refusal(self):
+        import json
+        actual = {'expected': '/owned.csproj', 'actual': ['/foreign.csproj'], 'passed': False}
+        summary = {}
+        with tempfile.TemporaryDirectory() as root:
+            with self.assertRaisesRegex(ValueError, 'project binding'):
+                measure.benchmark_results('ENTITY_BASE_PROJECT_BINDING ' + json.dumps(actual) + '\n', Path(root), 'a' * 40,
+                                          {'generated': {'projectBinding': {'expected': '/owned.csproj', 'actual': ['/owned.csproj'], 'passed': True}}}, summary)
+        self.assertEqual(summary['benchmarks']['projectBindings'], [actual])
+
     def test_actual_mismatching_hashes_and_partial_metrics_survive_early_failure(self):
         import json
         proof = {'stage': 'before', 'gatePassed': False, 'actual': {'closure': {'product.dll': 'actual-hash'}, 'generatedInputs': {'code.notcs': 'actual-code'}}}

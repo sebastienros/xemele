@@ -1,9 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup><OutputType>Exe</OutputType><EnableDefaultCompileItems>false</EnableDefaultCompileItems></PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="BenchmarkDotNet" />
     <ProjectReference Include="../../../../src/Xemele/Xemele.csproj" />
     <Compile Include="../../../../benchmarks/Xemele.Benchmarks/M2-dtd-entity-base/Provenance.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="FixtureStub.cs" />
+    <Compile Include="../ProjectBinding.cs" />
   </ItemGroup>
 </Project>

@@ -9,8 +9,15 @@ After source review and HOST RELEASE, `python3 -B
 docs/reports/M2-dtd-entity-base/measure.py --mode prepare --report preparation-N
 --benchmark-report benchmark-N`
 builds the isolated driver, executes only counters-disabled correctness and
-identity modes, and writes `preparation.json` after strict cleanup. Compilation
-inputs come from actual MSBuild Compile items for both referenced projects.
+identity modes, and writes `preparation.json` after strict cleanup. It
+uses the uniquely named `Xemele.EntityBase.Measurements.csproj` and matching
+assembly. Both generation paths bind explicitly to its absolute path; generated
+projects must contain exactly its one ProjectReference before Builder starts.
+The wrapper retains that independent binding proof and requires the later
+generation to match it. Cleanup takes its directory baseline after parent build
+and checks the complete frozen parent closure again after cleanup, preserving
+dependency directories restored by the parent build.
+Compilation inputs come from actual MSBuild Compile items for both referenced projects.
 Imported build configuration, compiler references/analyzers, NuGet assets,
 generated assembly/global-using inputs and owned Python drivers are hashed too.
 Tracked inputs must equal their actual HEAD blobs. Generated and SDK/package

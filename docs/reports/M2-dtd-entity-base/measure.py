@@ -20,10 +20,10 @@ import time
 
 ROOT = Path(__file__).resolve().parents[3]
 OWN = ROOT / 'docs/reports/M2-dtd-entity-base'
-PROJECT = OWN / 'Measurements.csproj'
+PROJECT = OWN / 'Xemele.EntityBase.Measurements.csproj'
 PRODUCT = ROOT / 'src/Xemele/Xemele.csproj'
 PARENT = OWN / 'bin/Release/net10.0'
-DRIVER = PARENT / 'Xemele.Benchmarks.dll'
+DRIVER = PARENT / 'Xemele.EntityBase.Measurements.dll'
 FLAGS = ['-c', 'Release', '--disable-build-servers', '-m:1', '-p:UseSharedCompilation=false']
 EXPECTED = {'InternalNestedModel', 'RedirectedComposition'}
 
@@ -127,6 +127,20 @@ def source_freeze(known):
     return result
 
 
+def parent_directories():
+    return {p for p in PARENT.iterdir() if p.is_dir()} if PARENT.exists() else set()
+
+
+def cleanup_outputs(outputs):
+    errors = []
+    for path in outputs:
+        try:
+            shutil.rmtree(path)
+        except Exception as error:
+            errors.append(str(error)[:500])
+    return errors
+
+
 def stop_group(process):
     for sig in [signal.SIGTERM, signal.SIGKILL]:
         try:
@@ -167,6 +181,7 @@ def output_facts(log):
         'provenanceRecords': records(text, 'ENTITY_BASE_PROVENANCE'),
         'gateFailures': records(text, 'ENTITY_BASE_GATE_FAILURE'),
         'buildOnlyRecords': records(text, 'ENTITY_BASE_BUILD_ONLY'),
+        'projectBindings': records(text, 'ENTITY_BASE_PROJECT_BINDING'),
     }
 
 
@@ -259,6 +274,7 @@ def benchmark_results(text, raw, revision, known, summary=None):
     # caller's summary remains populated if a later guard throws and raw is deleted.
     report = {'buildExits': [int(v) for v in re.findall(r'// command took .*?exited with (-?\d+)', text)],
               'observations': [], 'rows': [], 'validation': 'unrun',
+              'projectBindings': records(text, 'ENTITY_BASE_PROJECT_BINDING'),
               'expectedGenerated': known.get('generated'), 'gateFailures': records(text, 'ENTITY_BASE_GATE_FAILURE')}
     if summary is not None:
         summary['benchmarks'] = report
@@ -295,6 +311,7 @@ def benchmark_results(text, raw, revision, known, summary=None):
             report['rows'].extend({k: v.get(k) for k in ['Method', 'Mean', 'Error', 'StdDev', 'Allocated', 'Gen0', 'Gen1', 'Gen2']}
                                   for v in csv.DictReader(data))
     report['validation'] = 'in_progress'
+    require(report['projectBindings'] == [known.get('generated', {}).get('projectBinding')], 'Actual generated project binding differs from independent preparation')
     require(not any(v in text for v in ['There are not any results runs', 'Generate Exception', 'Build Error', 'No Workload Results']), 'Benchmark infrastructure failure')
     require(report['buildExits'] == [0, 0], 'Expected exactly one successful generated restore/build')
     require(re.search(r'Global total time:.*executed benchmarks: 2', text), 'Executed benchmark count mismatch')
@@ -356,12 +373,12 @@ def main():
     phases = ['initial', 'build-and-counters-disabled-oracles', 'independent-generation-build-only', 'final-freeze'] if args.mode == 'prepare' else ['initial', 'exclusive-execution', 'strict-result-validation', 'final-freeze']
     summary['phases'] = {name: 'unrun' for name in phases}
     summary['phases']['initial'] = 'running'
-    original_directories = {p for p in PARENT.iterdir() if p.is_dir()} if PARENT.exists() else set()
+    original_directories = parent_directories()
     failure = None
     known = None
     future_artifacts = None
     try:
-        env = dict(os.environ, DOTNET_CLI_USE_MSBUILD_SERVER='0')
+        env = dict(os.environ, DOTNET_CLI_USE_MSBUILD_SERVER='0', XEMELE_ENTITY_BASE_PROJECT=str(PROJECT))
         overrides = {k: v for k, v in env.items() if k.startswith(('DOTNET_', 'COMPlus_'))}
         require(not any(k.startswith('COMPlus_') or any(t in k.upper() for t in ['GC', 'TIERED', 'READYTORUN']) for k in overrides), 'Runtime policy override not permitted')
         summary['runtimeOverrides'] = overrides
@@ -373,7 +390,12 @@ def main():
         if args.mode == 'prepare':
             require(not preparation.exists(), 'Existing preparation requires coordinator review before replacement')
             phase(summary, 'build-and-counters-disabled-oracles')
-            run([dotnet, 'build', PROJECT, *FLAGS], env, raw, summary, total=240)
+            try:
+                run([dotnet, 'build', PROJECT, *FLAGS], env, raw, summary, total=240)
+            finally:
+                original_directories = parent_directories()
+            # Parent build may restore new dependency directories. They are
+            # expected parent payload, not transient generated child outputs.
             identity = json.loads(run([dotnet, DRIVER, '--identity'], env, raw, summary, total=30))
             require(identity['driver'] == identity['product'] == '1.0.0+' + revision, 'Prepared assembly source version mismatch')
             require(identity['runtime'] == '.NET 10.0.11' and identity['architecture'] == 'Arm64', 'Unexpected pinned runtime/architecture')
@@ -396,9 +418,13 @@ def main():
             text = run([dotnet, DRIVER, '--generate-build-only', known['generatedArtifactsPath']], env, raw, summary, total=300)
             candidates = records(text, 'ENTITY_BASE_BUILD_ONLY')
             summary['actualGeneratedBuildOnly'] = candidates
+            bindings = records(text, 'ENTITY_BASE_PROJECT_BINDING')
+            summary['actualProjectBindings'] = bindings
+            require(len(bindings) == 1 and bindings[0].get('passed') is True and bindings[0].get('expected') == str(PROJECT) and bindings[0].get('actual') == [str(PROJECT)], 'Generated owned project binding differs')
             require(len(candidates) == 1, 'Exact independent generated manifest record required')
             generated = candidates[0]
             known['generated'] = generated
+            generated['projectBinding'] = bindings[0]
             require(generated.get('countersDisabled') is True and generated.get('executorInvoked') is False and set(generated.get('cases', [])) == EXPECTED, 'Preparation executed a workload or changed cases')
             for field in ['entry', 'driver', 'product']:
                 require(generated['proof'][field]['informationalVersion'] == '1.0.0+' + revision, 'Independent generated source version differs: ' + field)
@@ -470,17 +496,20 @@ def main():
             except Exception as capture:
                 summary['identityCaptureFailure'] = str(capture)[:500]
     finally:
-        errors = []
-        generated = ({p for p in PARENT.iterdir() if p.is_dir()} - original_directories) if PARENT.exists() else set()
+        generated = parent_directories() - original_directories
         outputs = [raw, *generated]
         if future_artifacts is not None and future_artifacts.exists():
             outputs.append(future_artifacts)
-        for path in outputs:
+        errors = cleanup_outputs(outputs)
+        summary['temporaryOutputsRemoved'] = all(not p.exists() for p in outputs)
+        if known:
             try:
-                shutil.rmtree(path)
+                actual = closure(PARENT)
+                summary['parentClosureAfterCleanup'] = actual
+                summary['parentCleanupDifferences'] = mismatch(known['parentClosure'], actual)
+                require(actual == known['parentClosure'], 'Cleanup changed frozen parent closure')
             except Exception as error:
                 errors.append(str(error)[:500])
-        summary['temporaryOutputsRemoved'] = all(not p.exists() for p in outputs)
         if errors:
             summary.update(result='failed', cleanupErrors=errors)
         if summary['result'] == 'passed' and args.mode == 'prepare':
