@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Sequential checks at a committed revision; no timing or peer-report writes."""
 import json
+import argparse
 import platform
 from pathlib import Path
 import subprocess
@@ -33,10 +34,22 @@ def rows(path):
         result[row['member']] = row
     return result
 
-def main():
+def audit(base):
+    task = json.loads((ROOT / 'docs/tasks/M1-dom.json').read_text())
+    paths = set(run('git', 'diff', '--name-only', base, 'HEAD').splitlines())
+    paths.update(run('git', 'diff', '--name-only', 'HEAD').splitlines())
+    paths.update(run('git', 'ls-files', '--others', '--exclude-standard').splitlines())
+    for path in paths:
+        assert path == 'docs/tasks/M1-dom.json' or any(path.startswith(p) if p.endswith('/') else path == p for p in task['owns']), path
+    run('git', 'diff', '--check', base, 'HEAD')
+    run('git', 'diff', '--check')
+    (REPORT / 'owned-path-audit.txt').write_text('Audit base ' + base + '\nSource revision ' + run('git', 'rev-parse', 'HEAD').strip() + '\nCommitted delta plus working/untracked paths all owned:\n' + '\n'.join(sorted(paths)) + '\n')
+
+def main(args):
     RAW.mkdir(parents=True, exist_ok=True)
     LOG.append(f'Host {platform.platform()} {platform.machine()}')
     LOG.append('Source revision ' + run('git', 'rev-parse', 'HEAD').strip())
+    audit(args.audit_base or json.loads((ROOT / 'docs/tasks/M1-dom.json').read_text())['base_revision'])
     assert run('dotnet', '--version').strip() == json.loads((ROOT / 'global.json').read_text())['sdk']['version']
     run('dotnet', '--info')
     run('dotnet', 'build', 'Xemele.slnx', *FLAGS)
@@ -104,10 +117,13 @@ def main():
         run('dotnet', 'run', '--project', directory / 'Consumer.csproj', '-c', 'Release', '--disable-build-servers', '-p:UseSharedCompilation=false', f'-p:RestoreSources={RAW / "packages"}', f'-p:RestorePackagesPath={directory / "isolated-packages"}')
     run('dotnet', 'build', 'docs/reports/M1-dom/Benchmarks.csproj', *FLAGS)
     run('python3', 'tools/planning/tasks.py', 'validate')
-    run('git', 'diff', '--check')
+    audit(args.audit_base or json.loads((ROOT / 'docs/tasks/M1-dom.json').read_text())['base_revision'])
 
 if __name__ == '__main__':
-    try: main()
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--audit-base', help='Coordination revision before integration; default is current task base.')
+    args = parser.parse_args()
+    try: main(args)
     finally:
         RAW.mkdir(parents=True, exist_ok=True)
         revision = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()[:12]

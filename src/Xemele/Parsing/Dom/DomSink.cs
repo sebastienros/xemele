@@ -12,6 +12,7 @@ internal sealed class DomSink : IXmlEventSink
     private readonly OperationBudget budget;
     private readonly XmlInputDecoder? decoder;
     private readonly XmlDocument.DomBuilder builder;
+    private readonly CancellationToken cancellation;
     private XmlNode parent;
     private XmlTextKind textKind;
     private string target = "";
@@ -20,9 +21,10 @@ internal sealed class DomSink : IXmlEventSink
     internal XmlDiagnostic? Diagnostic { get; private set; }
     internal bool DeclarationValidated { get; private set; }
 
-    internal DomSink(XmlParseOptions options, XmlInputDecoder? decoder = null)
+    internal DomSink(XmlParseOptions options, XmlInputDecoder? decoder = null, CancellationToken cancellationToken = default)
     {
-        budget = new(options, default);
+        budget = new(options, cancellationToken);
+        cancellation = cancellationToken;
         Document = new(options.Limits);
         builder = Document.BeginDomConstruction();
         parent = Document.DocumentNode;
@@ -54,29 +56,33 @@ internal sealed class DomSink : IXmlEventSink
     private string OwnName(ReadOnlySpan<char> value) => Document.FindInternedName(value) ?? value.ToString();
     public bool StartElement(XmlNameView name, bool isEmptyElement, XmlLocation location)
     {
+        cancellation.ThrowIfCancellationRequested();
         if (!Names(name.LocalName, name.NamespaceUri, name.Prefix, location)) return false;
-        var element = Document.CreateElement(OwnName(name.LocalName), OwnName(name.NamespaceUri), OwnName(name.Prefix));
-        builder.AppendChild(parent, element);
+        var element = builder.CreateSyntaxValidatedNode(XmlNodeKind.Element, OwnName(name.LocalName), OwnName(name.NamespaceUri), OwnName(name.Prefix), "", cancellation);
+        builder.AppendSyntaxValidatedChild(parent, element, cancellation);
         parent = element;
         return true;
     }
     public bool NamespaceDeclaration(XmlNamespaceView declaration)
     {
+        cancellation.ThrowIfCancellationRequested();
         if (!Names(declaration.Prefix, declaration.NamespaceUri, [], declaration.Location)) return false;
-        builder.AppendNamespaceDeclaration(parent, OwnName(declaration.Prefix), OwnName(declaration.NamespaceUri));
+        builder.AppendSyntaxValidatedNamespaceDeclaration(parent, OwnName(declaration.Prefix), OwnName(declaration.NamespaceUri), cancellation);
         return true;
     }
     public bool Attribute(XmlAttributeView attribute)
     {
+        cancellation.ThrowIfCancellationRequested();
         var name = attribute.Name;
         if (!Names(name.LocalName, name.NamespaceUri, name.Prefix, attribute.Location)) return false;
-        builder.AppendAttribute(parent, OwnName(name.LocalName), attribute.Value.ToString(), OwnName(name.NamespaceUri), OwnName(name.Prefix));
+        builder.AppendSyntaxValidatedAttribute(parent, OwnName(name.LocalName), attribute.Value.ToString(), OwnName(name.NamespaceUri), OwnName(name.Prefix), cancellation);
         return true;
     }
     public bool StartElementContent() => true;
     public bool EndElement(XmlNameView name, XmlLocation location) { parent = parent.Parent; return true; }
     public bool StartText(XmlTextKind kind, ReadOnlySpan<char> piTarget, XmlLocation location)
     {
+        cancellation.ThrowIfCancellationRequested();
         textKind = kind;
         text.Clear();
         if (!Names(piTarget, [], [], location)) return false;
@@ -85,6 +91,7 @@ internal sealed class DomSink : IXmlEventSink
     }
     public bool TextFragment(ReadOnlySpan<char> fragment, bool tokenEnded, XmlLocation location)
     {
+        cancellation.ThrowIfCancellationRequested();
         // Outer whitespace is delivered by syntax but cannot be a document child.
         if (textKind == XmlTextKind.Text && parent.Kind == XmlNodeKind.Document) return true;
         if (fragment.Length > Array.MaxLength - text.Length)
@@ -95,14 +102,15 @@ internal sealed class DomSink : IXmlEventSink
         text.Append(fragment);
         if (!tokenEnded) return true;
         string value = text.ToString();
-        var node = textKind switch
+        XmlNodeKind kind = textKind switch
         {
-            XmlTextKind.Text => Document.CreateText(value),
-            XmlTextKind.CData => Document.CreateCData(value),
-            XmlTextKind.Comment => Document.CreateComment(value),
-            _ => Document.CreateProcessingInstruction(target, value)
+            XmlTextKind.Text => XmlNodeKind.Text,
+            XmlTextKind.CData => XmlNodeKind.CData,
+            XmlTextKind.Comment => XmlNodeKind.Comment,
+            _ => XmlNodeKind.ProcessingInstruction
         };
-        builder.AppendChild(parent, node);
+        var node = builder.CreateSyntaxValidatedNode(kind, kind == XmlNodeKind.ProcessingInstruction ? target : "", "", "", value, cancellation);
+        builder.AppendSyntaxValidatedChild(parent, node, cancellation);
         text.Clear();
         return true;
     }

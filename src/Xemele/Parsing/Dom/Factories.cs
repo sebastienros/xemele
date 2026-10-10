@@ -51,7 +51,7 @@ public sealed partial class XmlDocument
     {
         var snapshot = new OperationBudget(options, cancellationToken).Options;
         using var core = new XmlParserCore(snapshot);
-        var sink = new DomSink(snapshot);
+        var sink = new DomSink(snapshot, cancellationToken: cancellationToken);
         var result = core.Append(input, [], true, sink, cancellationToken);
         return Finish(sink.Document, sink.Diagnostic ?? result.Diagnostic, out document, out diagnostics);
     }

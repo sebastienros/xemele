@@ -25,7 +25,7 @@ internal sealed class ByteDomAdapter : IDisposable
     {
         decoder = new(options);
         core = new(options);
-        sink = new(options, decoder);
+        sink = new(options, decoder, cancellation);
         this.cancellation = cancellation;
     }
     internal void Append(ReadOnlySpan<byte> input)
