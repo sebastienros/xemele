@@ -14,17 +14,25 @@
       "worktree_path": "/Users/sebastienros/.codex/worktrees/b718/xemele",
       "base_revision": "460d286bb1ecb2efc83241068b2951db37713a4d",
       "claim_revision": "7e87312683cdf4a2a13bff483f207023ced0d813",
-      "setup_status": "review-correction",
-      "implementation_revision": "1b315176c2694def00c94965ac2bdd9bdb535a90",
-      "handoff_revision": "6e83fb304901a460a9983a7e337b42086f5238d7"
+      "setup_status": "review-correction-strict-wire-utf8",
+      "implementation_revision": "ec35b7dc805ed96bb32277c7f6fd66c392e34762",
+      "handoff_revision": "4c4cb464e570f5e6d675be77a199ee6a290a9eca"
     }
   ],
-  "integration_queue": [],
+  "integration_queue": [
+    {
+      "task_id": "M0-references-protocol",
+      "integration_branch": "codex/integrate-m0-protocol",
+      "integration_worktree": "/private/tmp/xemele-integrate-m0-protocol",
+      "tested_revision": "3a9aa48b6157d8b70dd671542997b173586e6868",
+      "checks": "passed; pending strict UTF8 wire correction and recheck before verified"
+    }
+  ],
   "blockers": [],
   "next_actions": [
-    "Integrate reviewed corrected reference protocol",
-    "Dispatch automatic runner build wiring and both pinned native lanes under three-worker cap",
-    "Dispatch compiled API CI wiring after automatic runner build verification"
+    "Review strict UTF8 wire correction and recheck protocol integration",
+    "Dispatch automatic runner build wiring + libxml2 + xmloxide as three separate workers after verified protocol",
+    "Dispatch API CI wiring when automatic runner build is verified"
   ],
   "last_verified_task": "M0-corpora-wiring",
   "last_integrated_revision": "c7f4cf8e1a6d6264bf25c09661406bad40220b74",
