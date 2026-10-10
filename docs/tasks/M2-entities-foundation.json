@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "milestone": "M2",
+  "kind": "feature",
+  "goals": [
+    "G01",
+    "G07"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/parser.md",
+    "docs/specs/integration.md"
+  ],
+  "id": "M2-entities-foundation",
+  "title": "Additive entity options, metadata and integration hooks",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "depends_on": [
+    "M2-resolver",
+    "M2-dtd"
+  ],
+  "owns": [
+    "src/Xemele/Options/Common.cs",
+    "src/Xemele/Options/XmlParseOptions.cs",
+    "src/Xemele/Tree/DtdMetadata/",
+    "src/Xemele/Parsing/Dom/DomSink.cs",
+    "src/Xemele/Parsing/Entities/Contracts/",
+    "tests/Xemele.Tests/M2-entities-foundation/",
+    "tests/fixtures/M2-entities-foundation/",
+    "benchmarks/Xemele.Benchmarks/M2-entities-foundation/",
+    "docs/api/M2-entities-foundation.txt",
+    "samples/M2-entities-foundation/",
+    "docs/reports/M2-entities-foundation/"
+  ],
+  "api_or_output": "Approved additive XmlParseOptions properties, immutable document DTD metadata and internal entity/sink hooks",
+  "acceptance": [
+    {
+      "id": "M2-entities-foundation-A1",
+      "description": "Implement exact approved additive DtdProcessing/Resolver options, XmlDocumentType and document metadata storage, EntityUse/EntityExpansionRequest and IXmlEntityContext/IXmlDtdSink declarations, with narrow Common.cs and DomSink.cs partial modifiers and optional DOM metadata callback. No production entity/DOCTYPE parser or public stubs.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M2-entities-foundation-A2",
+      "description": "Verify approved API/nullability/defaults, immutable metadata/model lifetime and storage, option snapshot preservation, optional sink compatibility and unchanged existing event contract. Earlier strict parsing and DOM behavior remains passing; options/metadata model evidence must not claim working entity parsing.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M2-entities-foundation-A3",
+      "description": "Demonstrate actual additive API and metadata callback using only verified dependencies, record applicable owned allocation/performance boundaries and actual cumulative preservation checks at known revisions.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "Additive independently reviewable foundation before tightly coupled core/entity/source/default integration. Original parent acceptance remains unchanged.",
+    "checks": [],
+    "remaining": [],
+    "requests": [
+      "Common.cs change restricted to making existing sealed Limits-only XmlParseOptions partial, preserving defaults and metadata; DtdProcessing/Resolver additions in own XmlParseOptions.cs. Recover belongs later recovery.",
+      "DomSink.cs change restricted to partial modifier; optional IXmlDtdSink implementation belongs Tree/DtdMetadata/DomSink.Dtd.cs. No required IXmlEventSink callback/factory/adapter changes."
+    ]
+  }
+}

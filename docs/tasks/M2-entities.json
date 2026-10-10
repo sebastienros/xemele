@@ -11,7 +11,8 @@
   "integration_revision": null,
   "depends_on": [
     "M2-resolver",
-    "M2-dtd"
+    "M2-dtd",
+    "M2-entities-foundation"
   ],
   "goals": [
     "G01",
@@ -25,16 +26,12 @@
   "owns": [
     "src/Xemele/Parsing/Entities/",
     "src/Xemele/Parsing/Core/",
-    "src/Xemele/Options/XmlParseOptions.cs",
-    "src/Xemele/Tree/DtdMetadata/",
     "tests/Xemele.Tests/M2-entities/",
     "tests/fixtures/M2-entities/",
     "benchmarks/Xemele.Benchmarks/M2-entities/",
     "docs/api/M2-entities.txt",
     "samples/M2-entities/",
-    "docs/reports/M2-entities/",
-    "src/Xemele/Options/Common.cs",
-    "src/Xemele/Parsing/Dom/DomSink.cs"
+    "docs/reports/M2-entities/"
   ],
   "api_or_output": "Working DtdProcessing/Resolver options and parsed DTD metadata",
   "acceptance": [
@@ -61,12 +58,11 @@
   "evidence": [],
   "blockers": [],
   "handoff": {
-    "summary": "",
+    "summary": "Core/entity/default integration after independently verified additive options/metadata/hooks foundation; original A1-A3 unchanged. Expansion, defaults/namespaces, external decoding/source stacks, budgets/cleanup and standalone rules remain one coherent runtime boundary.",
     "checks": [],
     "remaining": [],
     "requests": [
-      "Coordinator explicitly assigned Common.cs to this ordered task to make existing XmlParseOptions partial (or move unchanged Limits-only declaration into already-owned XmlParseOptions.cs). Preserve current Common/API/defaults; add DtdProcessing/Resolver only in task-owned extension, leaving later Recover to recovery owner. No earlier task source changes before claim/implementation.",
-      "Coordinator assigns DomSink.cs narrowly to make its class partial for an optional IXmlDtdSink implemented in already-owned Tree/DtdMetadata/DomSink.Dtd.cs. Preserve existing IXmlEventSink and DOM behavior; no factory/byte-adapter edits needed. Core lazily creates owned entity context and delivers completed immutable DTD metadata before root via optional internal sink."
+      "Consume verified M2-entities-foundation options/metadata/hooks without editing its paths. Entity implementation lives outside Entities/Contracts; context implementation and core lazy creation/metadata delivery remain this parent runtime task."
     ]
   }
 }
