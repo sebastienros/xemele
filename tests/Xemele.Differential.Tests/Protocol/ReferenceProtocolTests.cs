@@ -82,10 +82,41 @@ public sealed class ReferenceProtocolTests
     [InlineData("flood")]
     [InlineData("stderr-flood")]
     [InlineData("sleep")]
+    [InlineData("version-overflow")]
+    [InlineData("version-exponent")]
+    [InlineData("diagnostic-number")]
+    [InlineData("diagnostic-missing-category")]
+    [InlineData("diagnostic-message-number")]
+    [InlineData("diagnostic-category-null")]
+    [InlineData("event-number")]
+    [InlineData("start-missing-names")]
+    [InlineData("start-namespace-null")]
+    [InlineData("start-name-number")]
+    [InlineData("start-attributes-missing")]
+    [InlineData("attribute-number")]
+    [InlineData("attribute-missing-value")]
+    [InlineData("attribute-value-number")]
+    [InlineData("text-missing-value")]
+    [InlineData("text-value-number")]
+    [InlineData("end-missing-namespace")]
+    [InlineData("end-attributes")]
+    [InlineData("start-value")]
+    [InlineData("text-namespace")]
+    [InlineData("unknown-kind")]
+    [InlineData("failure-events")]
     public async Task ActualChildFailuresAreInfrastructureFailures(string mode)
     {
         await Assert.ThrowsAsync<ReferenceFailureException>(() => ReferenceProcess.ExecuteAsync("python3",
             [Fixture, mode], Request("<r/>"), TimeSpan.FromSeconds(1), TestContext.Current.CancellationToken));
+    }
+
+    [Fact]
+    public async Task UnknownAdditiveFieldsAndExplicitEmptyValuesRemainValid()
+    {
+        using var result = JsonDocument.Parse(await ReferenceProcess.ExecuteAsync("python3", [Fixture, "additive-fields"],
+            Request("<r/>"), TimeSpan.FromSeconds(10), TestContext.Current.CancellationToken));
+        Assert.Equal("success", result.RootElement.GetProperty("outcome").GetString());
+        Assert.Equal("", result.RootElement.GetProperty("events")[1].GetProperty("value").GetString());
     }
 
     [Fact]

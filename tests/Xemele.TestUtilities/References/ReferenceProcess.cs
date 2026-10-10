@@ -52,17 +52,28 @@ public static class ReferenceProcess
             if (line.Contains('\n') || line.Contains('\r')) throw new ReferenceFailureException("Multiple responses.");
             using var response = JsonDocument.Parse(line);
             var root = response.RootElement;
-            if (root.GetProperty("protocolVersion").GetInt32() != 1
+            var version = root.GetProperty("protocolVersion");
+            if (version.ValueKind != JsonValueKind.Number || !version.TryGetInt32(out int number) || number != 1
                 || root.GetProperty("caseId").GetString() != expectedCase
                 || root.GetProperty("operation").GetString() != expectedOperation)
                 throw new ReferenceFailureException("Response identity mismatch.");
             if (root.GetProperty("outcome").GetString() is not ("success" or "parse-rejected" or "runner-failure"))
                 throw new ReferenceFailureException("Unknown outcome.");
-            _ = root.GetProperty("diagnostics").EnumerateArray();
+            foreach (var diagnostic in root.GetProperty("diagnostics").EnumerateArray())
+            {
+                RequireString(diagnostic, "category");
+                RequireString(diagnostic, "message");
+            }
             foreach (string field in new[] { "name", "version", "runtime", "build" })
                 if (string.IsNullOrEmpty(root.GetProperty("engine").GetProperty(field).GetString()))
                     throw new ReferenceFailureException("Missing engine metadata.");
-            if (root.GetProperty("outcome").GetString() == "success") _ = root.GetProperty("events").EnumerateArray();
+            if (root.GetProperty("outcome").GetString() == "success")
+            {
+                if (expectedOperation != "xml.events") throw new ReferenceFailureException("Unsupported success payload operation.");
+                foreach (var item in root.GetProperty("events").EnumerateArray()) ValidateEvent(item);
+            }
+            else if (root.TryGetProperty("events", out _))
+                throw new ReferenceFailureException("Failure response must omit events.");
             return line;
 
             async Task Exchange()
@@ -89,6 +100,48 @@ public static class ReferenceProcess
                 if (task is not null)
                     try { await task; } catch (Exception) { /* Original operation carries the failure. */ }
         }
+    }
+
+    private static string RequireString(JsonElement value, string name, bool allowEmpty = true)
+    {
+        var field = value.GetProperty(name);
+        if (field.ValueKind != JsonValueKind.String || (!allowEmpty && field.GetString()!.Length == 0))
+            throw new ReferenceFailureException("Invalid string field: " + name);
+        return field.GetString()!;
+    }
+
+    private static void ValidateEvent(JsonElement item)
+    {
+        string kind = RequireString(item, "kind", allowEmpty: false);
+        switch (kind)
+        {
+            case "start":
+            case "end":
+                RequireString(item, "namespaceUri");
+                RequireString(item, "localName", allowEmpty: false);
+                RejectField(item, "value");
+                if (kind == "end") RejectField(item, "attributes");
+                else
+                    foreach (var attribute in item.GetProperty("attributes").EnumerateArray())
+                    {
+                        RequireString(attribute, "namespaceUri");
+                        RequireString(attribute, "localName", allowEmpty: false);
+                        RequireString(attribute, "value");
+                    }
+                break;
+            case "text":
+                RequireString(item, "value");
+                RejectField(item, "namespaceUri");
+                RejectField(item, "localName");
+                RejectField(item, "attributes");
+                break;
+            default: throw new ReferenceFailureException("Unknown xml.events kind.");
+        }
+    }
+
+    private static void RejectField(JsonElement item, string field)
+    {
+        if (item.TryGetProperty(field, out _)) throw new ReferenceFailureException("Inappropriate event field: " + field);
     }
 
     private static async Task<string> ReadBounded(StreamReader reader, CancellationToken token)
