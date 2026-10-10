@@ -57,8 +57,9 @@ try:
  s['authoredHistoricalIdentities']={'count':7,'WfcControls':3,'VcRepresentationGaps':4,'hashBound':True,'productObservationRevision':'588ae1cbcd74b2a585b8f779221baf88db389c5f','executedByThisTask':False}
  inventory=json.loads((ROOT/'tests/corpora/xml/inventory.json').read_text());ledger=json.loads((ROOT/'tests/corpora/xml/m2-applicability.json').read_text())
  assert len(inventory['cases'])==len(ledger['cases'])==2585
+ assert len(inventory['files'])==len(ledger['files'])==3386 and inventory['files']==ledger['files']
  assert {x['id']:x['inputSha256'] for x in inventory['cases']}=={x['id']:x['inputSha256'] for x in ledger['cases']}
- s['originalCorpusPreserved']={'cases':2585,'inventorySha256':hashfile(ROOT/'tests/corpora/xml/inventory.json'),'ledgerSha256':hashfile(ROOT/'tests/corpora/xml/m2-applicability.json'),'assessmentOnly':True}
+ s['originalCorpusPreserved']={'cases':2585,'resources':3386,'inventorySha256':hashfile(ROOT/'tests/corpora/xml/inventory.json'),'ledgerSha256':hashfile(ROOT/'tests/corpora/xml/m2-applicability.json'),'assessmentOnly':True}
  assert run(SDK,'--version').strip()=='10.0.400'
  rt=SDK.parent/'shared/Microsoft.NETCore.App/10.0.11'
  runtime_hashes=freeze([SDK,rt/'System.Private.CoreLib.dll',rt/'libcoreclr.dylib',rt/'libhostpolicy.dylib'])
@@ -136,6 +137,8 @@ sealed class OldSink : IXmlEventSink {
  assert all(any(p.startswith(o) if o.endswith('/') else p==o for o in owned) for p in changed),sorted(changed)
  s['ownedPaths']=sorted(changed);assert run('git','rev-parse','HEAD').strip()==rev
  unchanged(frozen);s['finalFrozenInputsUnchanged']=True;s['result']='passed'
-except Exception as e:s['failure']=str(e)
+except Exception as e:
+ s['failure']=str(e)
+ s['temporaryOutputsRemoved']='temp' not in globals() or not temp.exists()
 REPORT.write_text(json.dumps(s,indent=2)+'\n');print(json.dumps({k:v for k,v in s.items() if k not in ['checks','proposalInputs','pinnedRuntimeInputs','binaries','ownedPaths']},indent=2))
 sys.exit(0 if s['result']=='passed' else 1)
