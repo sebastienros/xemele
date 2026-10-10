@@ -32,8 +32,11 @@ Returned wrappers transfer ownership; failed acquisitions stay resolver-owned.
 A handle/session disposes every owned wrapper exactly once, including async
 rejection/cancellation. Wrapper sync/async disposal share an atomic claim. Sessions
 reject reentrancy and work after disposal. They are sequential, not concurrent.
-Stream/cancellation exceptions propagate; secondary cleanup errors do not replace
-the primary exception. Disposal without another error still reports its first
+Stream/cancellation exceptions fault the session and drain all active sources
+before unwinding; secondary cleanup errors do not replace the primary exception.
+Faulted sessions reject later work. Parser/callback composition calls internal
+Abort/AbortAsync in its catch before rethrowing errors occurring outside session
+methods, making outer disposal harmless. Disposal without another error still reports its first
 failure after attempting all handles. Primary caller streams are not passed to
 this session: deliberate non-owning adapters are required if a resolver grants
 caller-owned content. No resolver, file access, network fetch, cache or global

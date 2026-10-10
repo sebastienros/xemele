@@ -17,7 +17,7 @@ internal sealed class XmlResolutionSession : IDisposable, IAsyncDisposable
     private readonly CancellationToken cancellation;
     private readonly HashSet<string> active = new(StringComparer.Ordinal);
     private readonly HashSet<XmlResourceHandle> handles = new();
-    private bool disposed, busy;
+    private bool disposed, busy, faulted;
     private XmlDiagnostic? terminal;
     internal long BytesRead { get; private set; }
     internal long ResourcesOpened => budget.Count(Quota.ExternalResources);
@@ -45,51 +45,57 @@ internal sealed class XmlResolutionSession : IDisposable, IAsyncDisposable
     {
         Enter();
         XmlResolvedResource? acquired = null;
-        XmlResourceHandle? accepted = null;
         try
         {
             var rejection = BeforeOpen(request, location);
             if (rejection is not null) return new(null, rejection);
             acquired = resolver!.Resolve(request, cancellation);
             var result = Accept(acquired, location);
-            accepted = result.Resource;
-            if (accepted is not null) acquired = null; // Ownership transferred to registered handle.
+            if (result.Resource is not null) acquired = null; // Ownership transferred to registered handle.
             CheckCancellation();
+            if (acquired is not null)
+            {
+                var rejected = acquired; acquired = null; rejected.Dispose();
+            }
             return result;
         }
         catch
         {
-            // Cleanup must not replace a resolver/read/cancellation exception.
-            try { accepted?.Dispose(); } catch { }
+            // Drain the entire source stack before unwinding the primary error.
+            // Otherwise outer Dispose could replace it with a parent cleanup error.
+            FaultAndDrain();
             try { acquired?.Dispose(); } catch { }
             acquired = null; throw;
         }
-        finally { try { acquired?.Dispose(); } finally { busy = false; } }
+        finally { busy = false; }
     }
 
     internal async ValueTask<ResourceOpenResult> OpenAsync(XmlResourceRequest request, XmlLocation location)
     {
         Enter();
         XmlResolvedResource? acquired = null;
-        XmlResourceHandle? accepted = null;
         try
         {
             var rejection = BeforeOpen(request, location);
             if (rejection is not null) return new(null, rejection);
             acquired = await resolver!.ResolveAsync(request, cancellation).ConfigureAwait(false);
             var result = Accept(acquired, location);
-            accepted = result.Resource;
-            if (accepted is not null) acquired = null;
+            if (result.Resource is not null) acquired = null;
             CheckCancellation();
+            if (acquired is not null)
+            {
+                var rejected = acquired; acquired = null;
+                await rejected.DisposeAsync().ConfigureAwait(false);
+            }
             return result;
         }
         catch
         {
-            try { if (accepted is not null) await accepted.DisposeAsync().ConfigureAwait(false); } catch { }
+            await FaultAndDrainAsync().ConfigureAwait(false);
             try { if (acquired is not null) await acquired.DisposeAsync().ConfigureAwait(false); } catch { }
             acquired = null; throw;
         }
-        finally { try { if (acquired is not null) await acquired.DisposeAsync().ConfigureAwait(false); } finally { busy = false; } }
+        finally { busy = false; }
     }
 
     private XmlDiagnostic? BeforeOpen(XmlResourceRequest request, XmlLocation location)
@@ -131,6 +137,7 @@ internal sealed class XmlResolutionSession : IDisposable, IAsyncDisposable
     private void Enter()
     {
         ObjectDisposedException.ThrowIf(disposed, this);
+        if (faulted) throw new InvalidOperationException("A faulted resolution session cannot resume.");
         if (busy) throw new InvalidOperationException("Resolution sessions are sequential and cannot be reentered.");
         busy = true;
     }
@@ -153,7 +160,7 @@ internal sealed class XmlResolutionSession : IDisposable, IAsyncDisposable
             CheckCancellation();
             return result;
         }
-        catch { try { handle.Dispose(); } catch { } throw; }
+        catch { FaultAndDrain(); throw; }
         finally { busy = false; }
     }
     internal async ValueTask<ResourceReadResult> ReadAsync(XmlResourceHandle handle, Memory<byte> destination, XmlLocation location)
@@ -170,7 +177,7 @@ internal sealed class XmlResolutionSession : IDisposable, IAsyncDisposable
             CheckCancellation();
             return result;
         }
-        catch { try { await handle.DisposeAsync().ConfigureAwait(false); } catch { } throw; }
+        catch { await FaultAndDrainAsync().ConfigureAwait(false); throw; }
         finally { busy = false; }
     }
     private int ReadAllowance(int requested)
@@ -192,6 +199,35 @@ internal sealed class XmlResolutionSession : IDisposable, IAsyncDisposable
         return new(count, null);
     }
     internal void Release(XmlResourceHandle handle, string key) { handles.Remove(handle); active.Remove(key); }
+
+    // Composition catches parser/callback errors outside resource methods and
+    // calls Abort/AbortAsync before rethrowing, so outer cleanup is harmless.
+    internal void Abort()
+    {
+        if (busy) throw new InvalidOperationException("Cannot abort during resource work.");
+        FaultAndDrain();
+    }
+    internal ValueTask AbortAsync()
+    {
+        if (busy) throw new InvalidOperationException("Cannot abort during resource work.");
+        return FaultAndDrainAsync();
+    }
+    private void FaultAndDrain()
+    {
+        faulted = true;
+        while (handles.Count != 0)
+        {
+            try { FirstHandle().Dispose(); } catch { }
+        }
+    }
+    private async ValueTask FaultAndDrainAsync()
+    {
+        faulted = true;
+        while (handles.Count != 0)
+        {
+            try { await FirstHandle().DisposeAsync().ConfigureAwait(false); } catch { }
+        }
+    }
 
     private XmlResourceHandle FirstHandle()
     {

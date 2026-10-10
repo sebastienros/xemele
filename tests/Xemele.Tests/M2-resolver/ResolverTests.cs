@@ -70,10 +70,15 @@ public sealed class ResolverTests
     [Fact]
     public void RequestValidationHappensBeforeResolver()
     {
-        var resolver = new DelegateResolver(_ => null); using var session = Session(resolver);
-        Assert.Throws<ArgumentException>(() => session.Open(new(new("a", UriKind.Relative), null, XmlResourceKind.ExternalEntity), Location));
-        Assert.Throws<ArgumentException>(() => session.Open(new(Source, new("a", UriKind.Relative), XmlResourceKind.ExternalEntity), Location));
-        Assert.Throws<ArgumentException>(() => session.Open(new(Source, null, (XmlResourceKind)99), Location));
+        var resolver = new DelegateResolver(_ => null);
+        foreach (var request in new XmlResourceRequest[] {
+            new(new("a", UriKind.Relative), null, XmlResourceKind.ExternalEntity),
+            new(Source, new("a", UriKind.Relative), XmlResourceKind.ExternalEntity),
+            new(Source, null, (XmlResourceKind)99) })
+        {
+            using var session = Session(resolver);
+            Assert.Throws<ArgumentException>(() => session.Open(request, Location));
+        }
         Assert.Equal(0, resolver.Calls);
     }
     [Fact]
@@ -277,6 +282,114 @@ public sealed class ResolverTests
         for (int i=0; i<1000; i++) handle.Read(buffer, Location);
         long before = GC.GetAllocatedBytesForCurrentThread(); for (int i=0; i<10000; i++) handle.Read(buffer, Location);
         Assert.Equal(0, GC.GetAllocatedBytesForCurrentThread()-before);
+    }
+
+    [Theory]
+    [InlineData("read")] [InlineData("resolver")] [InlineData("cancel")] [InlineData("callback")]
+    public void PrimaryFailureDrainsAllActiveSourcesBeforeOuterUsingUnwinds(string failure)
+    {
+        using var cancellation = new CancellationTokenSource();
+        var primary = new XmlParseException([new("user.primary", XmlDiagnosticSeverity.Fatal, "primary", Location)]);
+        var secondary = new IOException("parent cleanup");
+        var streams = new[] { new CountingStream([1]) { DisposeFailure = secondary }, new CountingStream([1]) { DisposeFailure = secondary } };
+        int i=0;
+        var resolver = new DelegateResolver(_ => i == 2 ? throw primary : new(streams[i], new Uri($"urn:stack:{i++}")));
+        var session = SessionWithToken(resolver, cancellation.Token);
+        Exception? observed = null;
+        var escaped = Assert.ThrowsAny<Exception>(() =>
+        {
+            using (session)
+            {
+                session.Open(Request(), Location); var child = session.Open(Request(), Location).Resource!;
+                try
+                {
+                    if (failure == "read") { streams[1].ReadFailure = primary; child.Read(new byte[1], Location); }
+                    else if (failure == "resolver") session.Open(Request(), Location);
+                    else if (failure == "cancel") { cancellation.Cancel(); session.Open(Request(), Location); }
+                    else
+                    {
+                        try { throw primary; } catch { session.Abort(); throw; }
+                    }
+                }
+                catch (Exception error)
+                {
+                    observed = error;
+                    Assert.All(streams, stream => Assert.Equal(1, stream.SyncDisposals));
+                    Assert.Throws<InvalidOperationException>(() => session.Open(Request(), Location));
+                    Assert.Throws<InvalidOperationException>(() => child.Read(new byte[1], Location));
+                    throw;
+                }
+            }
+        });
+        Assert.Same(observed, escaped);
+        if (failure == "cancel") Assert.Equal(cancellation.Token, Assert.IsType<OperationCanceledException>(escaped).CancellationToken);
+        else Assert.Same(primary, escaped);
+        Assert.All(streams, stream => { Assert.Equal(1, stream.SyncDisposals); Assert.Equal(0, stream.AsyncDisposals); });
+    }
+    [Theory]
+    [InlineData("read")] [InlineData("resolver")] [InlineData("cancel")] [InlineData("callback")]
+    public async Task PrimaryAsyncFailureDrainsAllActiveSourcesBeforeOuterUsingUnwinds(string failure)
+    {
+        using var cancellation = new CancellationTokenSource();
+        var primary = new IOException("primary async"); var secondary = new IOException("parent cleanup");
+        var streams = new[] { new CountingStream([1]) { DisposeFailure = secondary }, new CountingStream([1]) { DisposeFailure = secondary } };
+        int i=0;
+        var resolver = new AsyncResolver(async _ => { await Task.Yield(); return i == 2 ? throw primary : new(streams[i], new Uri($"urn:async-stack:{i++}")); });
+        var session = SessionWithToken(resolver, cancellation.Token);
+        Exception? observed = null;
+        var escaped = await Assert.ThrowsAnyAsync<Exception>(async () =>
+        {
+            await using (session)
+            {
+                await session.OpenAsync(Request(), Location); var child = (await session.OpenAsync(Request(), Location)).Resource!;
+                try
+                {
+                    if (failure == "read") { streams[1].ReadFailure = primary; await child.ReadAsync(new byte[1], Location); }
+                    else if (failure == "resolver") await session.OpenAsync(Request(), Location);
+                    else if (failure == "cancel") { cancellation.Cancel(); await session.OpenAsync(Request(), Location); }
+                    else
+                    {
+                        try { throw primary; } catch { await session.AbortAsync(); throw; }
+                    }
+                }
+                catch (Exception error)
+                {
+                    observed = error;
+                    Assert.All(streams, stream => Assert.Equal(1, stream.AsyncDisposals));
+                    await Assert.ThrowsAsync<InvalidOperationException>(async () => await session.OpenAsync(Request(), Location));
+                    await Assert.ThrowsAsync<InvalidOperationException>(async () => await child.ReadAsync(new byte[1], Location));
+                    throw;
+                }
+            }
+        });
+        Assert.Same(observed, escaped);
+        if (failure == "cancel") Assert.Equal(cancellation.Token, Assert.IsType<OperationCanceledException>(escaped).CancellationToken);
+        else Assert.Same(primary, escaped);
+        Assert.All(streams, stream => { Assert.Equal(1, stream.AsyncDisposals); Assert.Equal(0, stream.SyncDisposals); });
+    }
+    [Fact]
+    public void RejectedWrapperCleanupExceptionFaultsAndDrainsParent()
+    {
+        var primary = new IOException("rejected cleanup");
+        var parent = new CountingStream([]) { DisposeFailure = new IOException("parent cleanup") };
+        var rejected = new CountingStream([]) { DisposeFailure = primary };
+        int i=0; using var session = Session(new DelegateResolver(_ => new(i++ == 0 ? parent : rejected, Source)));
+        session.Open(Request(), Location);
+        Assert.Same(primary, Assert.Throws<IOException>(() => session.Open(Request(), Location)));
+        Assert.Equal(1, parent.SyncDisposals); Assert.Equal(1, rejected.SyncDisposals);
+        Assert.Throws<InvalidOperationException>(() => session.Open(Request(), Location));
+    }
+    [Fact]
+    public async Task RejectedWrapperAsyncCleanupExceptionFaultsAndDrainsParent()
+    {
+        var primary = new IOException("rejected cleanup");
+        var parent = new CountingStream([]) { DisposeFailure = new IOException("parent cleanup") };
+        var rejected = new CountingStream([]) { DisposeFailure = primary };
+        int i=0; await using var session = Session(new AsyncResolver(_ => Task.FromResult<XmlResolvedResource?>(new(i++ == 0 ? parent : rejected, Source))));
+        await session.OpenAsync(Request(), Location);
+        Assert.Same(primary, await Assert.ThrowsAsync<IOException>(async () => await session.OpenAsync(Request(), Location)));
+        Assert.Equal(1, parent.AsyncDisposals); Assert.Equal(1, rejected.AsyncDisposals);
+        await Assert.ThrowsAsync<InvalidOperationException>(async () => await session.OpenAsync(Request(), Location));
     }
 
     private sealed class DelegateResolver(Func<XmlResourceRequest, XmlResolvedResource?> resolve) : XmlResourceResolver
