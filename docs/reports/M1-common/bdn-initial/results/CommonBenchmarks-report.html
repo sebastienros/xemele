@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta charset='utf-8' />
+<title>CommonBenchmarks-20261009-192808</title>
+
+<style type="text/css">
+	table { border-collapse: collapse; display: block; width: 100%; overflow: auto; }
+	td, th { padding: 6px 13px; border: 1px solid #ddd; text-align: right; }
+	tr { background-color: #fff; border-top: 1px solid #ccc; }
+	tr:nth-child(even) { background: #f8f8f8; }
+</style>
+</head>
+<body>
+<pre><code>
+BenchmarkDotNet v0.15.8, macOS Sequoia 15.8.1 (24H32) [Darwin 24.6.0]
+Apple M4 Pro, 1 CPU, 14 logical and 14 physical cores
+.NET SDK 10.0.400
+  [Host]   : .NET 10.0.11 (10.0.11, 10.0.1126.37416), Arm64 RyuJIT armv8.0-a
+  ShortRun : .NET 10.0.11 (10.0.11, 10.0.1126.37416), Arm64 RyuJIT armv8.0-a
+</code></pre>
+<pre><code>Job=ShortRun  IterationCount=3  LaunchCount=1
+WarmupCount=3
+</code></pre>
+
+<table>
+<thead><tr><th>Method               </th><th>Mean</th><th>Error</th><th>StdDev</th><th>Ratio</th><th>RatioSD</th><th>Gen0</th><th>Gen1</th><th>Allocated</th><th>Alloc Ratio</th>
+</tr>
+</thead><tbody><tr><td>StraightforwardCounter</td><td>0.0000 ns</td><td>0.0000 ns</td><td>0.0000 ns</td><td>?</td><td>?</td><td>-</td><td>-</td><td>-</td><td>?</td>
+</tr><tr><td>BoundedCounter</td><td>2.9080 ns</td><td>0.2064 ns</td><td>0.0113 ns</td><td>?</td><td>?</td><td>-</td><td>-</td><td>-</td><td>?</td>
+</tr><tr><td>OperationSetup</td><td>39.7108 ns</td><td>3.3494 ns</td><td>0.1836 ns</td><td>?</td><td>?</td><td>0.0812</td><td>0.0001</td><td>680 B</td><td>?</td>
+</tr><tr><td>OwnedExceptionSnapshot</td><td>13.9728 ns</td><td>2.4670 ns</td><td>0.1352 ns</td><td>?</td><td>?</td><td>0.0249</td><td>-</td><td>208 B</td><td>?</td>
+</tr><tr><td>BoundedDiagnosticTruncation</td><td>34.7676 ns</td><td>1.9426 ns</td><td>0.1065 ns</td><td>?</td><td>?</td><td>0.0258</td><td>-</td><td>216 B</td><td>?</td>
+</tr></tbody></table>
+</body>
+</html>

@@ -60,3 +60,34 @@ warm setup allocation and a GC heap-delta retention estimate separately.
 All timing is provisional on this host; no XML composition exists. Parser/tree
 consumers must provide composition evidence; x64/arm64 confirmation and longer
 runs remain release requirements. No static lookup tables or pool setup exists.
+
+## Recorded results
+
+Final source revision: `937def8c23313ecdd087537906d08e81297baae7`. `checks.txt` records all commands,
+SDK/host, 10 focused, 64 solution and 11 foundation passing tests, exact compiled
+API comparison, models, pack and both sample consumption modes. No skipped tests.
+Runtime/tests/API/sample source is unchanged from reviewed `25c8375`.
+
+Final ShortRun results are `bdn/results/CommonBenchmarks-report-github.md`, with
+raw BDN/console logs and CSV beside it. Baseline/general counters: 0 B/op and
+0.5540/0.9931 ns; these tiny noisy timings do not establish a throughput claim.
+Setup 680 B/op; exception construction with an already owned diagnostic 208 B/op
+(unthrown, excludes message construction/stack-trace capture); terminal retention
+216 B/op. Warm counter/location test measured 0 B across 10,000 iterations.
+Separate fresh-process construction: 2696 B; standalone warm/escaping setup about
+704 B/op. Different harness contexts are reported separately. Whole-process GC
+heap-minus-fragmentation estimate is about 535 B retained per operation, excluding
+the preallocated reference array. The GC.GetTotalMemory delta was inflated and is
+raw informational telemetry, not the retained-size conclusion.
+
+Timing order is explicit: final verification session 68314 returned exit 0 before
+final BDN session 52910 started. No builds/tests overlapped final timings. The
+previous successful session 92467 likewise followed verification session 52844's
+exit 0, but its cancelling increment/decrement baseline optimized below measurable
+latency; `bdn-initial`/`benchmark-initial.txt.gz` preserve it as superseded evidence.
+The first BDN driver failure timed zero cases; its log is preserved separately.
+No parser composition, x64 result or broad public performance victory is claimed.
+
+Raw console/BDN/failure logs are gzip compressed without changing their bytes;
+read them with gzip -dc. Generated Markdown/HTML has trailing spaces removed to
+pass the repository whitespace check. CSV values are unchanged.
