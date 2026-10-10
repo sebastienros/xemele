@@ -35,13 +35,13 @@ for command in ['help', 'check', 'allocations', 'lowering']:
 invoke('docs/reports/M1-common', 'Xemele.CommonBenchmarks', ['--setup-allocation'])
 invoke('docs/reports/M1-input', 'Xemele.InputBenchmarks', ['--allocation'])
 invoke('docs/reports/M1-serialize', 'SerializerBenchmarks', ['--allocation'])
-run(['dotnet', 'build', 'docs/reports/M0-contracts/Fixtures/M1/M1.csproj', *FLAGS])
+run(['dotnet', 'build', 'docs/reports/M1-contracts/Projects/Input/Input.csproj', *FLAGS])
 # The historical driver writes a relative report. Redirect its working directory
 # to a disposable directory so prior evidence stays untouched.
 with tempfile.TemporaryDirectory(prefix='xemele-input-contract-') as directory:
     destination = Path(directory) / 'docs/reports/M1-input'
     destination.mkdir(parents=True)
-    model = dll('docs/reports/M0-contracts/Fixtures/M1', 'FoundationM1')
+    model = dll('docs/reports/M1-contracts/Projects/Input', 'M1Input')
     invoke('docs/reports/M1-input', 'Xemele.InputBenchmarks', ['--contract', model], Path(directory))
     actual = (destination / 'internal-contract.txt').read_bytes()
     approved = (ROOT / 'docs/reports/M1-input/internal-contract.txt').read_bytes()
