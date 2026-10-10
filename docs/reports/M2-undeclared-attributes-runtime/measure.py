@@ -2,10 +2,6 @@
 from pathlib import Path
 import types
 import json
-import os
-
-# Scoped offline-compatible restore policy; package versions/assets remain frozen.
-os.environ["NuGetAudit"] = "false"
 
 ROOT = Path(__file__).resolve().parents[3]
 support = ROOT / 'docs/reports/M2-dtd-entity-base/measure.py'
@@ -17,9 +13,18 @@ engine.OWN = Path(__file__).resolve().parent
 engine.PROJECT = engine.OWN / 'Xemele.EntityBase.Measurements.csproj'
 engine.PARENT = engine.OWN / 'bin/Release/net10.0'
 engine.DRIVER = engine.PARENT / 'Xemele.Benchmarks.dll'
+# Offline preparation uses cached packages; vulnerability lookup is separate from
+# compiled source identity. Freeze its evaluated value for parent and child.
+engine.FLAGS = [*engine.FLAGS, '-p:NuGetAudit=false']
 original_inventory = engine.source_inventory
 
 def inventory(*args, **kwargs):
+    args = list(args)
+    args[1] = dict(args[1], NuGetAudit='false')
+    if len(args) >= 4:
+        args[3] = dict(args[3] or {'Configuration': 'Release'}, NuGetAudit='false')
+    else:
+        kwargs['properties'] = dict(kwargs.get('properties') or {'Configuration': 'Release'}, NuGetAudit='false')
     result = original_inventory(*args, **kwargs)
     relative = str(support.relative_to(ROOT))
     committed = engine.git('show', 'HEAD:' + relative)
@@ -32,6 +37,10 @@ original_run = engine.run
 
 def run(command, *args, **kwargs):
     command = ['*IncompleteAttributeBenchmarks*' if value == '*EntityBaseBenchmarks*' else value for value in command]
+    if args:
+        args = (dict(args[0], NuGetAudit='false'), *args[1:])
+    elif 'env' in kwargs:
+        kwargs['env'] = dict(kwargs['env'], NuGetAudit='false')
     output = original_run(command, *args, **kwargs)
     if '--allocation' in command:
         lines = output.splitlines()

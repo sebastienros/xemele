@@ -1,0 +1,170 @@
+{
+  "mode": "correctness",
+  "result": "passed",
+  "checks": [
+    {
+      "command": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "git",
+        "branch",
+        "--show-current"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "git",
+        "ls-files",
+        "--",
+        "src",
+        "tests",
+        "samples",
+        "benchmarks",
+        "docs/api",
+        "docs/reports/M2-undeclared-attributes-runtime",
+        "Directory.Build.props",
+        "Directory.Build.targets",
+        "Directory.Packages.props",
+        "global.json"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "--version"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "--list-runtimes"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "build",
+        "tests/Xemele.Tests/Xemele.Tests.csproj",
+        "-c",
+        "Release",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "/Users/sebastienros/.codex/worktrees/c7ea/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll",
+        "-noColor",
+        "-method-",
+        "Xemele.Tests.EncodingCompatibility.EncodingTests.WarmLegacyConversionAndDeclarationMatchingAllocateZero",
+        "-method-",
+        "Xemele.Tests.FramingTests.WarmWhitespacePrimitiveHasNoAllocations",
+        "-method-",
+        "Xemele.Tests.PiTargets.PiTargetTests.RepeatedBorrowedPiTargetsAllocateZeroAfterWarmup",
+        "-method-",
+        "Xemele.Tests.Resolution.ResolverTests.WarmBorrowedReadsAllocateNothing",
+        "-method-",
+        "Xemele.Tests.Syntax.StreamingTests.WarmRepeatedTagsAndStreamingUnicodeDispatchAllocateZero",
+        "-method-",
+        "Xemele.Tests.Tree.TreeTests.WarmTraversalAndRepeatedNameInternProbesAllocateNothing",
+        "-result-xml",
+        "/Users/sebastienros/.codex/worktrees/c7ea/xemele/docs/reports/M2-undeclared-attributes-runtime/checks-2adjnbl1/correctness.xml"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tools/planning",
+        "-p",
+        "test_tasks.py"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "python3",
+        "-B",
+        "tools/planning/tasks.py",
+        "validate"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit": 0
+    }
+  ],
+  "head": "5025d35dae37b6bf615389e8891610a4f3c7564b",
+  "runtime": [
+    "Microsoft.AspNetCore.App 8.0.30 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.AspNetCore.App]",
+    "Microsoft.AspNetCore.App 10.0.0 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.AspNetCore.App]",
+    "Microsoft.AspNetCore.App 10.0.11 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.AspNetCore.App]",
+    "Microsoft.AspNetCore.App 11.0.0-rc.1.26413.103 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.AspNetCore.App]",
+    "Microsoft.AspNetCore.App 11.0.0-rc.1.26425.128 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.AspNetCore.App]",
+    "Microsoft.NETCore.App 8.0.30 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App]",
+    "Microsoft.NETCore.App 10.0.0 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App]",
+    "Microsoft.NETCore.App 10.0.11 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App]",
+    "Microsoft.NETCore.App 11.0.0-rc.1.26413.103 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App]",
+    "Microsoft.NETCore.App 11.0.0-rc.1.26425.128 [/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App]"
+  ],
+  "dotnetSha256": "e86deb33d0dacad9cc1224466df6418149cb8e13cb8afd0dc6815ea6b7807975",
+  "heldAllocationMethods": [
+    "Xemele.Tests.EncodingCompatibility.EncodingTests.WarmLegacyConversionAndDeclarationMatchingAllocateZero",
+    "Xemele.Tests.FramingTests.WarmWhitespacePrimitiveHasNoAllocations",
+    "Xemele.Tests.PiTargets.PiTargetTests.RepeatedBorrowedPiTargetsAllocateZeroAfterWarmup",
+    "Xemele.Tests.Resolution.ResolverTests.WarmBorrowedReadsAllocateNothing",
+    "Xemele.Tests.Syntax.StreamingTests.WarmRepeatedTagsAndStreamingUnicodeDispatchAllocateZero",
+    "Xemele.Tests.Tree.TreeTests.WarmTraversalAndRepeatedNameInternProbesAllocateNothing"
+  ],
+  "heldReason": "No standalone allocation/counters before source review and explicit bounded host lease; prior passing unchanged observations are preserved.",
+  "displayIdentityMultiplicities": [
+    {
+      "identity": [
+        "Xemele.Tests.UndeclaredReferences.ContentTests",
+        "PairedWfcAndMalformedControls",
+        "Xemele.Tests.UndeclaredReferences.ContentTests.PairedWfcAndMalformedControls(xml: \\\"<!DOCTYPE r [<!ENTITY % p \\\\\\\"<!ENTITY known 'K'>\\\\\\\">%p\\\"\u00b7\u00b7\u00b7, code: \\\"XML.Syntax\\\")"
+      ],
+      "count": 3
+    }
+  ],
+  "runtimeCorrectness": {
+    "passed": 4802,
+    "failed": 0,
+    "skipped": 0,
+    "identitySha256": "d00eb9bf67ea8bd5038fa063abb965995cbf34d41c1eb859e12f6ebbc598e9e8",
+    "owned": 39,
+    "assemblySha256": "e0926c58005d821824ebfe18711ac42f9bdaca0b83fd2232d6dbf98df23eb53f"
+  },
+  "outputClosureUnchanged": true,
+  "temporaryOutputsRemoved": true,
+  "sourceFreezeUnchanged": true,
+  "planning": "Validated 138 tasks: schema, evidence, acyclic dependencies, additive milestones, and ordered ownership.",
+  "sourceInputsSummary": {
+    "sha256": "380b52f31694f5ecf283c8636c7d98136795176bde18c459f820e1672839ab6c",
+    "entries": 338
+  }
+}
