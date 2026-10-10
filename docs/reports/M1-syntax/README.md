@@ -27,7 +27,8 @@ Accepted tag data drains before more source is consumed. EndDocument can pause;
 its next empty final resume checks cancellation and completes without replay.
 The final flag is sticky. Append counts submitted UTF-16 units, while quotas and
 locations count source/normalized/expanded scalars according to their contracts.
-Raw character offsets are null. Byte mode validates original mappings and requires
+Raw character offsets are null. Byte mode validates mappings incrementally along accepted units (one preflight
+unit per resume), rechecks caller-owned mutable tails, and requires
 CompleteByteSource exactly once before final Append; EOF uses that explicit length.
 
 Text, comments, CDATA and PI bodies stream as source arrives. A fixed eight-unit

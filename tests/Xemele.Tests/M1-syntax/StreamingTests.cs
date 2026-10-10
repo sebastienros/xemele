@@ -137,6 +137,46 @@ public sealed class StreamingTests
         Assert.Throws<InvalidOperationException>(() => core.Append([], [], false, sink, TestContext.Current.CancellationToken));
     }
     [Fact]
+    public void PiEmptyCloseRequiresImmediateGreaterThanAndWhitespaceNeighborsStayValid()
+    {
+        foreach (string xml in new[] { "<?p?><r/>", "<r><?p ?x?></r>" })
+            for (int split = 0; split <= xml.Length; split++)
+            {
+                using var core = new XmlParserCore(new()); var sink = new CountingSink { Continue = false };
+                int offset = 0; ScanResult r;
+                do { r = core.Append(xml.AsSpan(offset, split - offset), [], false, sink, TestContext.Current.CancellationToken); offset += r.Consumed; } while (r.Step == ScanStep.Paused);
+                Assert.Equal(split, offset);
+                do { r = core.Append(xml.AsSpan(offset), [], true, sink, TestContext.Current.CancellationToken); offset += r.Consumed; } while (r.Step == ScanStep.Paused);
+                Assert.Equal(ScanStep.Completed, r.Step); Assert.Equal(xml.Length, offset);
+            }
+    }
+    [Fact]
+    public void LargeMappedPauseInputValidatesLinearWorkAndNeverTrustsMutableTail()
+    {
+        const int size = 100000;
+        string xml = "<r>" + new string('x', size) + "</r>";
+        long[] offsets = Enumerable.Range(0, xml.Length).Select(i => (long)i).ToArray();
+        using var core = new XmlParserCore(new()); var sink = new CountingSink { Continue = false };
+        var cancellation = TestContext.Current.CancellationToken;
+        core.CompleteByteSource(xml.Length); int consumed = 0; ScanResult r;
+        do
+        {
+            r = core.Append(xml.AsSpan(consumed), offsets.AsSpan(consumed), true, sink, cancellation);
+            consumed += r.Consumed;
+        } while (r.Step == ScanStep.Paused);
+        Assert.Equal(ScanStep.Completed, r.Step); Assert.Equal(xml.Length, consumed); Assert.Equal(size, sink.Units);
+        long checks = (long)typeof(XmlParserCore).GetField("mappingChecks", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(core)!;
+        Assert.InRange(checks, xml.Length, xml.Length + sink.Calls + 1);
+        using var changing = new XmlParserCore(new()); var s = new CountingSink { Continue = false };
+        long[] map = [0,1,2,3];
+        Assert.Equal(0, changing.Append("<r/>", map, false, s, cancellation).Consumed);
+        map[2] = -1;
+        Assert.Throws<ArgumentException>(() => changing.Append("<r/>", map, false, s, cancellation));
+        Assert.Throws<InvalidOperationException>(() => changing.Append([], [], false, s, cancellation));
+        using var beyond = new XmlParserCore(new()); beyond.CompleteByteSource(3);
+        Assert.Throws<ArgumentException>(() => beyond.Append("<r/>", new long[] {0,1,2,4}, true, new CountingSink(), cancellation));
+    }
+    [Fact]
     public void InternalAbiMatchesApprovedViewsAndCallbackShape()
     {
         Type[] views = [typeof(XmlNameView), typeof(XmlAttributeView), typeof(XmlNamespaceView), typeof(XmlDeclarationView)];

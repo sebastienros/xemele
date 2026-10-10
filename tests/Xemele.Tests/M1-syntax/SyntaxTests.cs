@@ -116,6 +116,8 @@ public sealed class SyntaxTests
     [InlineData("<!--a---><r/>", "XML.Syntax")]
     [InlineData("<![CDATA[x]]><r/>", "XML.Syntax")]
     [InlineData("<?XML x?><r/>", "XML.Syntax")]
+    [InlineData("<r><?p?x?></r>", "XML.Syntax")]
+    [InlineData("<?p??><r/>", "XML.Syntax")]
     [InlineData(" <?xml version='1.0'?><r/>", "XML.Syntax")]
     [InlineData("<?xml encoding='UTF-8' version='1.0'?><r/>", "XML.Syntax")]
     [InlineData("<?xml version='1.1'?><r/>", "XML.Syntax")]
@@ -197,8 +199,10 @@ public sealed class SyntaxTests
     {
         using var core = new XmlParserCore(new()); var sink = new Sink();
         Assert.Throws<ArgumentException>(() => core.Append("<r/>", new long[] {0}, false, sink, TestContext.Current.CancellationToken));
-        Assert.Throws<ArgumentException>(() => core.Append("<r/>", new long[] {0,2,1,3}, false, sink, TestContext.Current.CancellationToken));
-        Assert.Throws<ArgumentException>(() => core.Append("😀", new long[] {0,1}, false, sink, TestContext.Current.CancellationToken));
+        using (var decreasing = new XmlParserCore(new()))
+            Assert.Throws<ArgumentException>(() => decreasing.Append("<r/>", new long[] {0,2,1,3}, false, new Sink(), TestContext.Current.CancellationToken));
+        using (var pair = new XmlParserCore(new()))
+            Assert.Throws<ArgumentException>(() => pair.Append("😀", new long[] {0,1}, false, new Sink(), TestContext.Current.CancellationToken));
         core.Append("<r/>", new long[] {0,1,2,3}, false, sink, TestContext.Current.CancellationToken);
         Assert.Throws<InvalidOperationException>(() => core.Append([], [], true, sink, TestContext.Current.CancellationToken));
         Assert.Throws<ArgumentException>(() => core.Append(" ", [], false, sink, TestContext.Current.CancellationToken));

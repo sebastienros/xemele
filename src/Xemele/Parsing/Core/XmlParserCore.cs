@@ -47,9 +47,11 @@ internal sealed class XmlParserCore : IDisposable
     private int sourceMode, gate;
     private CancellationToken activeCancellation;
     private long lastOffset = -1;
+    private long mappingChecks;
     private long? byteLength;
     private char high, quote;
     private bool normalizedCr, finalSeen, disposed, faulted, terminal, rootSeen, rootClosed;
+    private bool piImmediateClose;
     private bool textActive, textStarted, fragmentPending, fragmentEnded, emptyTag, endDocumentDelivered, declarationSeen;
     private bool declarationAllowed = true;
     private XmlTextKind textKind;
@@ -102,6 +104,7 @@ internal sealed class XmlParserCore : IDisposable
                     cancellationToken.ThrowIfCancellationRequested();
                     char c = input[consumed];
                     long? offset = sourceMode == 2 ? byteOffsets[consumed] : null;
+                    if (offset is long original) ValidateMapping(original, c, nameof(byteOffsets));
                     var location = high != 0 ? highLocation : position.Current(offset);
                     if (high != 0)
                     {
@@ -161,19 +164,21 @@ internal sealed class XmlParserCore : IDisposable
         if (!offsets.IsEmpty && offsets.Length != input.Length) throw new ArgumentException("Parallel mappings must match input length.", nameof(offsets));
         int mode = offsets.IsEmpty ? 1 : 2;
         if (!input.IsEmpty && sourceMode != 0 && sourceMode != mode) throw new ArgumentException("Source mode cannot change.", nameof(offsets));
-        if (high != 0 && !input.IsEmpty && char.IsLowSurrogate(input[0]) && !offsets.IsEmpty && offsets[0] != highLocation.ByteOffset)
-            throw new ArgumentException("Surrogate mappings differ.", nameof(offsets));
-        long previous = lastOffset;
-        for (int i = 0; i < offsets.Length; i++)
-        {
-            if ((i & 4095) == 0) cancellation.ThrowIfCancellationRequested();
-            long current = offsets[i];
-            if (current < 0 || current < previous || (byteLength is long end && current > end)) throw new ArgumentException("Invalid original-byte mapping.", nameof(offsets));
-            if (i > 0 && char.IsLowSurrogate(input[i]) && char.IsHighSurrogate(input[i - 1]) && current != previous)
-                throw new ArgumentException("Surrogate mappings differ.", nameof(offsets));
-            previous = current;
-        }
+        cancellation.ThrowIfCancellationRequested();
+        // At most one preflight unit, even if a pending callback pauses before
+        // consuming input. The tail is caller-owned and can change on a resume.
+        if (!offsets.IsEmpty) ValidateMapping(offsets[0], input[0], nameof(offsets));
         if (!input.IsEmpty && sourceMode == 0) sourceMode = mode;
+    }
+    private void ValidateMapping(long current, char unit, string parameter)
+    {
+        // A saturating private work counter permits a count-based regression
+        // without timing shared-host tests or adding an ABI declaration.
+        if (mappingChecks < long.MaxValue) mappingChecks++;
+        if (current < 0 || current < lastOffset || (byteLength is long end && current > end))
+            throw new ArgumentException("Invalid original-byte mapping.", parameter);
+        if (high != 0 && char.IsLowSurrogate(unit) && current != highLocation.ByteOffset)
+            throw new ArgumentException("Surrogate mappings differ.", parameter);
     }
     private static bool XmlScalar(int c) => c is 9 or 10 or 13 || c is >= 0x20 and <= 0xD7FF || c is >= 0xE000 and <= 0xFFFD || c is >= 0x10000 and <= 0x10FFFF;
     private void AcceptScalar(int scalar, XmlLocation location)
@@ -321,10 +326,13 @@ internal sealed class XmlParserCore : IDisposable
                     }
                     if (!Charge(Quota.TokenCharacters, 1, location)) return;
                     target = Intern(t, opening); tokenLength = 0; BeginText(XmlTextKind.ProcessingInstruction, target, opening);
-                    declarationAllowed = false; state = State.PiBody; held = c == '?' ? 1 : 0; heldLocation = location; return;
+                    declarationAllowed = false; state = State.PiBody; held = c == '?' ? 1 : 0; heldLocation = location;
+                    piImmediateClose = c == '?'; return;
                 }
                 Store(c, location); return;
             case State.PiBody:
+                if (piImmediateClose && c != '>') { Reject("XML.Syntax", "PI data requires separating whitespace.", location); return; }
+                piImmediateClose = false;
                 if (!Charge(Quota.TokenCharacters, 1, location)) return;
                 if (held == 1 && c == '>') { held = 0; EndText(location); state = State.Data; return; }
                 if (c == '?')
@@ -429,21 +437,34 @@ internal sealed class XmlParserCore : IDisposable
         if (!Charge(Quota.InternedNames, 1, location)) return "";
         string owned = new(value); names.Add(owned); return owned;
     }
+    private int Colon(ReadOnlySpan<char> value)
+    {
+        for (int i = 0; i < value.Length;)
+        {
+            activeCancellation.ThrowIfCancellationRequested();
+            int count = Math.Min(4096, value.Length - i);
+            int found = value.Slice(i, count).IndexOf(':');
+            if (found >= 0) return i + found;
+            i += count;
+        }
+        return -1;
+    }
     private bool Equal(ReadOnlySpan<char> left, ReadOnlySpan<char> right)
     {
         if (left.Length != right.Length) return false;
-        for (int i = 0; i < left.Length; i += 4096)
+        for (int i = 0; i < left.Length;)
         {
             activeCancellation.ThrowIfCancellationRequested();
             int count = Math.Min(4096, left.Length - i);
             if (!left.Slice(i, count).SequenceEqual(right.Slice(i, count))) return false;
+            i += count;
         }
         return true;
     }
     private void Work(int i) { if ((i & 255) == 0) activeCancellation.ThrowIfCancellationRequested(); }
     private Name Resolve(ReadOnlySpan<char> qname, bool attribute, XmlLocation location)
     {
-        int colon = qname.IndexOf(':');
+        int colon = Colon(qname);
         var prefix = colon < 0 ? ReadOnlySpan<char>.Empty : qname[..colon];
         var local = colon < 0 ? qname : qname[(colon + 1)..];
         string uri = "";
@@ -555,7 +576,7 @@ internal sealed class XmlParserCore : IDisposable
         int i = 0; int length = ReadName(ref i); SkipWhite(ref i);
         if (i != tokenLength || !ValidName(token.AsSpan(0, length), true) || frames.Count == 0)
         { Reject("XML.Syntax", "Invalid end tag.", opening); return; }
-        var expected = frames[^1].Name; var q = token.AsSpan(0, length); int colon = q.IndexOf(':');
+        var expected = frames[^1].Name; var q = token.AsSpan(0, length); int colon = Colon(q);
         var prefix = colon < 0 ? ReadOnlySpan<char>.Empty : q[..colon]; var local = colon < 0 ? q : q[(colon + 1)..];
         if (!Equal(prefix, expected.Prefix) || !Equal(local, expected.Local)) { Reject("XML.Syntax", "Mismatched end tag.", opening); return; }
         deliveredName = expected; delivery = Delivery.Close;
