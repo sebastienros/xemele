@@ -63,9 +63,17 @@ def used_sources(primary, texts, files):
     selected={primary:{'path':primary,'kind':'primary','sha256':files[primary]['sha256']}}
     literal=r"(?:\"[^\"]*\"|'[^']*')"
     external=r'(?:SYSTEM\s+|PUBLIC\s+'+literal+r'\s+)('+literal+r')'
-    declarations=[]
-    for match in re.finditer(r'<!ENTITY\s+([^\s%]+)\s+'+external,cleaned):
-        if re.search(r'&'+re.escape(match[1])+r';',body): declarations.append((match[2][1:-1],'general-entity-content-reference',match[1]))
+    declarations=[];general_names=set()
+    # First declaration wins for every general entity kind. An internal or
+    # unparsed first declaration cannot be displaced by a later external one.
+    for match in re.finditer(r'<!ENTITY\s+([^\s%]+)\s+(.*?)(?=>)',cleaned,flags=re.S):
+        name=match[1]
+        if name in general_names: continue
+        general_names.add(name)
+        value=match[2]
+        external_match=re.match(external,value)
+        if external_match and not re.match(r'\s+NDATA\s',value[external_match.end():]) and re.search(r'&'+re.escape(name)+r';',body):
+            declarations.append((external_match[1][1:-1],'general-entity-content-reference',name))
     doctype=re.search(r'<!DOCTYPE\s+[^\s]+\s+'+external,cleaned)
     if doctype: declarations.append((doctype[1][1:-1],'external-subset-read-profile',None))
     for system,kind,name in declarations:
@@ -121,7 +129,7 @@ def build():
             if sid in ('rmt-001','rmt-002','rmt-003','rmt-004','rmt-005','rmt-011','rmt-013','rmt-041'): outcomes=['accepted']
             if sid in ('rmt-055','rmt-056','rmt-057','rmt-e2e-50'): outcomes=['rejected']
         version_evidence=[]
-        for q in [p]+([x for x in sorted(selected.keys()-{p}) if x.endswith('/009.ent')] if sid=='rmt-009' else []):
+        for q in sorted(selected):
             v=re.match(r'\ufeff?<\?xml\s[^?]*?version\s*=\s*([\'"])(.*?)\1',texts[q],flags=re.S)
             if v:
                 version_evidence.append({'path':q,'version':v[2],'sha256':files[q]['sha256']})

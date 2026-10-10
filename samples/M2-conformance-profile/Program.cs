@@ -1,4 +1,5 @@
-using System.Security.Cryptography;
+using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Json;
 using Xemele;
@@ -72,7 +73,7 @@ while (Console.ReadLine() is { } line)
     }
     catch (Exception error) { Write("runner-failure", error.GetType().Name, null); }
     void Write(string outcome, string? diagnostic, Event[]? events) => Console.WriteLine(JsonSerializer.Serialize(new
-    { caseId = request.CaseId, outcome, diagnostic, events, opens = resolver.Opens }, Wire.Json));
+    { caseId = request.CaseId, outcome, diagnostic, events, opens = resolver.Opens, identity = new { driverBuild = Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>()!.InformationalVersion, productBuild = typeof(XmlDocument).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()!.InformationalVersion, runtime = RuntimeInformation.FrameworkDescription, coreRuntimeBuild = typeof(object).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()!.InformationalVersion } }, Wire.Json));
 }
 
 static Event[] Model(XmlDocument document)

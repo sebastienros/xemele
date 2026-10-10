@@ -125,3 +125,12 @@ identity and complete source/build, output/dependency, runtime and dotnet hashes
 are frozen before/after execution. `test_contract.py` exercises malformed models,
 malformed/unterminated UTF-8, nonzero exits, extra lines, timeout/descendant cleanup,
 both-child cleanup and exact classification regressions.
+
+Actual BCL, driver and production assembly informational revisions must equal
+the tested Git revision; runtime identities must agree. Stable binary hashes
+without this source-version binding are rejected as stale. General entity read
+witnesses obey first-declaration-wins across internal, external and NDATA forms.
+Every independently selected external parsed source receives TextDecl version
+analysis; rmt-009 is a regression example, not an identity-based exemption.
+Semantic disagreements retain hashes of both normalized models and the first
+differing event, while the raw child payloads remain transient.

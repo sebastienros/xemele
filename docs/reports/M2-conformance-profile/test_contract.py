@@ -22,7 +22,7 @@ class ClassificationControls(unittest.TestCase):
             self.assertEqual(row['expectedOutcomes'],['rejected'])
             self.assertEqual(row['rule'],'version-production26')
             self.assertTrue(any(v['version']=='42.88' for v in row['versionEvidence']))
-        external=rows['xmlconf/eduni/xml-1.1/xml11.xml#rmt-009']['versionEvidence'][1]
+        external=next(e for e in rows['xmlconf/eduni/xml-1.1/xml11.xml#rmt-009']['versionEvidence'] if e['path'].endswith('/009.ent'))
         self.assertEqual(external['sha256'],'718d160c3348d2360097c40428752f13ef5af6704009c238c7a9ffec93759577')
         row=rows['xmlconf/eduni/xml-1.1/xml11.xml#rmt-014']
         self.assertEqual(row['expectedOutcomes'],['rejected'])
@@ -32,6 +32,9 @@ class ClassificationControls(unittest.TestCase):
         declarations="<!DOCTYPE r [<!ENTITY unused SYSTEM 'bad.ent'><!ENTITY unparsed SYSTEM 'bad.ent' NDATA n><!NOTATION n SYSTEM 'bad.ent'>]>"
         for content in ('<r/>','<r><!--&unused;--><![CDATA[&unused;]]></r>'):
             self.assertEqual(set(used_sources('main.xml',{'main.xml':declarations+content},files)),{'main.xml'})
+        for first in ("<!ENTITY unused 'ok'>","<!ENTITY unused SYSTEM 'bad.ent' NDATA n>"):
+            duplicate="<!DOCTYPE r ["+first+"<!ENTITY unused SYSTEM 'bad.ent'>]><r>&unused;</r>"
+            self.assertEqual(set(used_sources('main.xml',{'main.xml':duplicate},files)),{'main.xml'})
         used=used_sources('main.xml',{'main.xml':declarations+'<r>&unused;</r>'},files)
         self.assertEqual(set(used),{'main.xml','bad.ent'})
         self.assertEqual(used['bad.ent']['kind'],'general-entity-content-reference')

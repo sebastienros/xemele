@@ -69,7 +69,7 @@ async def main():
     legacy=json.loads((ROOT/'docs/reports/M1-corpus/reference-limitations.json').read_bytes())
     legacy_ids={c['id']:c['sha256'] for c in legacy['cases']}
     legacy_observed=[]
-    counts=collections.Counter();rows=[];refgaps=[];engines=set()
+    counts=collections.Counter();rows=[];refgaps=[];engines=set();product_identities=set()
     children=[];completed=False
     try:
         for binary in (product,runner): children.append(await Child.start([DOTNET,str(binary)]))
@@ -89,6 +89,10 @@ async def main():
                 elif response.get('events') is not None: raise ValueError('failure carried semantic events')
                 responses.append(response)
             p,r=responses
+            if not r['engine']['build'].endswith('+'+before['revision']): raise ValueError('stale BCL binary revision')
+            identity=p.get('identity',{})
+            if any(not isinstance(identity.get(k),str) or not identity[k].endswith('+'+before['revision']) for k in ('driverBuild','productBuild')) or identity.get('runtime')!=r['engine']['runtime'] or not isinstance(identity.get('coreRuntimeBuild'),str): raise ValueError('stale driver/product binary or runtime identity')
+            product_identities.add(json.dumps(identity,sort_keys=True))
             if c['id'] in legacy_ids:
                 if c['inputSha256']!=legacy_ids[c['id']] or r['outcome']!=legacy['referenceOutcome'] or any(r['engine'][k]!=v for k,v in legacy['engine'].items()): raise ValueError('exact legacy limitation changed')
                 legacy_observed.append(c['id'])
@@ -99,12 +103,16 @@ async def main():
             counts['product:'+outcome]+=1;counts['reference:'+ref]+=1
             mismatch=outcome not in expected
             comparison='unavailable'
+            comparison_details={}
             if outcome=='accepted' and ref=='accepted':
-                comparison='matched' if model(p['events'])==model(r['events']) else 'model-disagreement'
+                pm,rm=model(p['events']),model(r['events'])
+                comparison='matched' if pm==rm else 'model-disagreement'
+                if comparison=='model-disagreement':
+                    comparison_details={'productModelSha256':hashlib.sha256(json.dumps(pm,sort_keys=True,separators=(',',':')).encode()).hexdigest(),'referenceModelSha256':hashlib.sha256(json.dumps(rm,sort_keys=True,separators=(',',':')).encode()).hexdigest(),'firstDifferentEvent':next((i for i,(a,b) in enumerate(zip(pm,rm)) if a!=b),min(len(pm),len(rm)))}
                 counts[comparison]+=1
             row={'id':c['id'],'inputSha256':c['inputSha256'],'expectedOutcomes':expected,'productOutcome':outcome,
                 'productDiagnostic':p.get('diagnostic'),'referenceOutcome':ref,'referenceCategory':r['diagnostics'][0]['category'] if r['diagnostics'] else None,
-                'comparison':comparison}
+                'comparison':comparison,**comparison_details}
             if mismatch or comparison=='model-disagreement': rows.append(row)
             if ref not in expected:
                 refgaps.append(row | {'referenceObservation':r['diagnostics'][0]['message'][:240] if r['diagnostics'] else 'reference accepted'})
@@ -118,7 +126,7 @@ async def main():
             if primary is not None: primary.add_note('child cleanup failed: '+str(errors))
             else: raise RuntimeError('child cleanup failed: '+str(errors))
     if freeze()!=before: raise RuntimeError('source/build/output changed during audit')
-    report={'schemaVersion':1,'provenance':provenance,'engines':[json.loads(e) for e in sorted(engines)],
+    report={'schemaVersion':1,'productIdentities':[json.loads(i) for i in sorted(product_identities)],'provenance':provenance,'engines':[json.loads(e) for e in sorted(engines)],
         'legacyVersionSuffixLimitations':legacy_observed,'counts':dict(counts),'productGaps':rows,'referenceDisagreements':refgaps,
         'claim':'observations only; matching outcomes alone do not establish full product conformance'}
     path=pathlib.Path(sys.argv[1]) if len(sys.argv)>1 else ROOT/'docs/reports/M2-conformance-profile/observations.json'
