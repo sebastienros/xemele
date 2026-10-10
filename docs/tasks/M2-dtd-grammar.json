@@ -11,7 +11,8 @@
   "integration_revision": null,
   "depends_on": [
     "M2-contracts",
-    "M2-dtd-framing"
+    "M2-dtd-framing",
+    "M2-dtd-model"
   ],
   "goals": [
     "G07"
@@ -22,7 +23,6 @@
   ],
   "owns": [
     "src/Xemele/Parsing/Dtd/Grammar/",
-    "src/Xemele/Parsing/Dtd/Model/",
     "tests/Xemele.Tests/M2-dtd-grammar/",
     "tests/fixtures/M2-dtd-grammar/",
     "benchmarks/Xemele.Benchmarks/M2-dtd-grammar/",
@@ -54,7 +54,7 @@
   "evidence": [],
   "blockers": [],
   "handoff": {
-    "summary": "",
+    "summary": "Original parser/model acceptance unchanged; immutable declaration/particle model is implemented and verified by M2-dtd-model dependency. This task owns Grammar only; model has no need for unverified framer/resolver.",
     "checks": [],
     "remaining": [],
     "requests": []

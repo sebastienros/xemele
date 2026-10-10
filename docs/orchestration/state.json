@@ -7,27 +7,60 @@
     "task_id": "M1-gate",
     "integration_revision": "8c9bd349ed4156ea0295b5160d87d39434293bb2"
   },
-  "active_assignments": [],
+  "active_assignments": [
+    {
+      "task_id": "M2-dtd-framing",
+      "chat_id": "01a1248f-bcb0-70c2-97e1-82986283ae2b",
+      "host_id": "local",
+      "client_thread_id": "client-new-thread:d83226e3-111f-41bb-833c-58e17b5fd98d",
+      "worktree_path": "/Users/sebastienros/.codex/worktrees/c303/xemele",
+      "branch": "codex/m2-dtd-framing",
+      "base_revision": "b96b9d0a674dddfa6a9b3907cf947577ee8ba395",
+      "claim_revision": "7034b2769307fbab70ea524ea2a16f5defa8e7d6",
+      "setup_status": "renewal-claim-pending-dispatch",
+      "wait_cursor": "b324cc2e-d523-426b-a8a0-69c58df158d5:34",
+      "parked_ack": "Boundedcheckpoint cea326: MTP2040passed/API222; direct1490 failedunchangedPI712B afterprior1944B. Noheavychildren; committinghonesthandoff for narrowrepairdependency.",
+      "review_revision": "46104cecdce70170aea050612d13a77f1467251a",
+      "preserved_draft_revision": "cea326c7ed59ac53a832af2f8cc4e528a118d89a",
+      "preserved_evidence_revision": "25d879f7db7a02adae2cdc8a2a267ab55c4f13aa",
+      "ownership_ack": "Finald77 clean/explicit taskJSON/source ownership released/no further checks or writes.",
+      "claim_history": [
+        {
+          "base_revision": "eef177e8176c87954f0ce2efd8098c3f7dbfbc79",
+          "claim_revision": "2e3d6012e664baf7bf5b3f3085bcb04de7dfc02e",
+          "reason": "Suspended for now verified PI and Streaming isolation prerequisites; originalsource/evidence preserved."
+        },
+        {
+          "base_revision": "1a77b3598ed6084b17a69ca562d160f0d64a6be5",
+          "claim_revision": "7034b2769307fbab70ea524ea2a16f5defa8e7d6",
+          "reason": "Root5109Tree1064B failure retained; all required measurementrepair prerequisites nowverified."
+        }
+      ],
+      "correctness_revision": "dbcd535e80f2da0b808a5d9e40af78fd8e75be19",
+      "review": "Independent renewed discovery-only delta approval; runtime unchanged; full2044 allPass, MTP/direct count correction includes4 low-surrogate cases.",
+      "measurement_revision": "dbcd535e80f2da0b808a5d9e40af78fd8e75be19",
+      "measurement_audit": "14actualcases/42observations/all14childexits0/wrapper0/generatedbuild0/41.914s; allchildrenstopped explicitACK, hostreleased.",
+      "handoff_revision": "d77bcc62595235ecaee4b732a62e605569664348"
+    }
+  ],
   "integration_queue": [
     {
-      "task_id": "M2-encoding",
-      "status": "failed-awaiting-PI-prerequisite",
-      "worktree_path": "/private/tmp/xemele-integrate-m2-encoding",
-      "branch": "codex/integrate-m2-encoding",
-      "tested_revision": "cd753170601936520d1d8efadb949852bacd083f",
-      "preserved_failure_revision": "fc862e888a0089e6bd304b8c2586206353c94f66",
-      "summary": "MTP809/API222pass then direct255/254pass1failurePI1024B; subsequentchecks unrun."
+      "task_id": "M2-dtd-framing",
+      "status": "failed-awaiting-tree-measurement-prerequisite",
+      "worktree_path": "/private/tmp/xemele-integrate-m2-dtd-framing",
+      "branch": "codex/integrate-m2-dtd-framing",
+      "tested_revision": "5109fe930fe45f7b485d4ed36c39b9c09b5ba625",
+      "preserved_failure_revision": "d31b5ac184db0f62a31fd73a32a2a2cd9873a69a",
+      "summary": "FullMTP2095/2094pass, unchangedTree1064B failure; following direct/API/ref/audits unrun."
     }
   ],
   "blockers": [],
   "next_actions": [
-    "Renew clean preserved encoding/resolver/framing claims from now verified PI+Streaming prerequisites",
-    "Prioritize framing freshfullchecks and exclusive timing to unlock grammar; integrate approved ready workers serially",
-    "Archive completed PI worker and remove worktrees after durable ignored-artifact snapshot",
-    "Continue remaining milestones through verified M9-gate"
+    "Claim/renew retained DTD framing branch against verifiedTree/model/otherrepairs; fresh2103 combined checks, reuse unchanged successfultiming.",
+    "Verify framing then claim grammar/join/entities/conformance/recovery/M2gate and continue M3-M9."
   ],
-  "last_verified_task": "M2-pi-allocation-probe",
-  "last_integrated_revision": "114394806e8b590abd6c6cdf7a9163433115629c",
+  "last_verified_task": "M2-tree-allocation-probe",
+  "last_integrated_revision": "1813cf70dd585bb2d092ee03c9bc4375bae68e22",
   "completed_assignments": [
     {
       "task_id": "M0-build",
@@ -807,7 +840,216 @@
       "integration_worktree": "/private/tmp/xemele-integrate-m2-pi-allocation-probe",
       "integration_branch": "codex/integrate-m2-pi-allocation-probe",
       "review": "Independent source approvalf3e; root fresh jointall17checksPass and actual raw PI child/XML/exit/provenance verified; historicalcausesunresolved.",
-      "wait_cursor": "24af4cad-8f5d-420e-9f2a-dc8e2aec9535:16"
+      "wait_cursor": "24af4cad-8f5d-420e-9f2a-dc8e2aec9535:16",
+      "cleanup": {
+        "chat_archived": true,
+        "worktree": "removed",
+        "record": "docs/orchestration/cleanup-M2-pi-allocation-probe.json"
+      }
+    },
+    {
+      "task_id": "M2-encoding",
+      "chat_id": null,
+      "host_id": "local",
+      "client_thread_id": "client-new-thread:949ee3c9-a871-4025-b4d6-a153d7127f53",
+      "worktree_path": "/Users/sebastienros/.codex/worktrees/d13f/xemele",
+      "branch": "codex/m2-encoding",
+      "base_revision": "1a77b3598ed6084b17a69ca562d160f0d64a6be5",
+      "claim_revision": "7034b2769307fbab70ea524ea2a16f5defa8e7d6",
+      "setup_status": "verified",
+      "agent_name": "/root/m2_encoding",
+      "setup_note": "Encoding create_thread client neverregistered despite repeated listings; clean detached d13f worktree exists atclaim. Assignedbranch+sole boundedagent writer under promptfallback. Pendingchat initialinstruction read-only/wait; noimplementationbrief sent to it. Reconcile/archive iflate registration. Native Codex UI inspection unavailable bytoolpolicy; purposebuilt listings retained.",
+      "review_revision": "3595b19afbd620c147f5db68fd4e8196fab1b531",
+      "review": "Independent runtime approval3595b19; root e3df narrow harness/tests/APIemptyfragment removal delta approved. Actual809/809 API222/sample/package/provenance passed.",
+      "measurement_revision": "a1d0d1a46b2e47a1ee8864657f4e3d06f0fa8f3e",
+      "measurement_audit": "13children0/39actual;12loopdecoder0B;DOM58256B/28.014us;allstopped; highprioritypermissiondenied retained. Finaldurableimplementedhandoffpending.",
+      "preserved_draft_revision": "a1d0d1a46b2e47a1ee8864657f4e3d06f0fa8f3e",
+      "preserved_evidence_revision": "bbdd372fdeedc2400649b80b30421526a4ff31e7",
+      "ownership_ack": "Finalcleancommittedhandoff/allprocessesstopped/no furtherwrites untilfocusedfollowup. Coordinator accepted taskrecordownership.",
+      "claim_history": [
+        {
+          "base_revision": "eef177e8176c87954f0ce2efd8098c3f7dbfbc79",
+          "claim_revision": "2e3d6012e664baf7bf5b3f3085bcb04de7dfc02e",
+          "reason": "Suspended for now verified PI and Streaming isolation prerequisites; originalsource/evidence preserved."
+        }
+      ],
+      "worker_merge_revision": "3e61b0544ec29bdf60e88bb133210c339391e34e",
+      "handoff_revision": "4c48d3ff34c0b5edf0f73ceb68b3bad79488961b",
+      "parked_ack": "Fresh full checks passed; clean metadata/source ownership relinquished, no heavy work or further writes.",
+      "integration_revision": "684228fb13f85f7aff5e9fd8266f4146cebf89ab",
+      "integration_worktree": "/private/tmp/xemele-integrate-m2-encoding",
+      "integration_branch": "codex/integrate-m2-encoding",
+      "cleanup": {
+        "chat_archived": null,
+        "worktree": "removed",
+        "record": "docs/orchestration/cleanup-M2-encoding.json",
+        "note": "Bounded fallback agent completed; no registered app chat. Pending read-only client remains unregistered."
+      }
+    },
+    {
+      "task_id": "M2-resolver",
+      "chat_id": "01a1248f-ac32-7bd2-b115-af952711a7e4",
+      "host_id": "local",
+      "client_thread_id": "client-new-thread:08f0bfe8-4096-40a2-ba27-881e84f00f85",
+      "worktree_path": "/Users/sebastienros/.codex/worktrees/6664/xemele",
+      "branch": "codex/m2-resolver",
+      "base_revision": "1a77b3598ed6084b17a69ca562d160f0d64a6be5",
+      "claim_revision": "7034b2769307fbab70ea524ea2a16f5defa8e7d6",
+      "setup_status": "verified",
+      "wait_cursor": "7547a146-162b-4afd-85fb-d232bcfb40a6:34",
+      "parked_ack": "Explicit clean source/taskJSON ownership release; no builds/tests/hash/provision/heavy work or background processes.",
+      "review_revision": "e7cc0b5fd6480c4395e6dd861c5e28ed97815f2d",
+      "review": "Independent sourceapproval e7cc resolvesbothcleanupfindings; newfocused43/fullchecksawaitactualexecution.",
+      "measurement_revision": "e7cc0b5fd6480c4395e6dd861c5e28ed97815f2d",
+      "correctness_revision": "e7cc0b5fd6480c4395e6dd861c5e28ed97815f2d",
+      "preserved_draft_revision": "e7cc0b5fd6480c4395e6dd861c5e28ed97815f2d",
+      "preserved_evidence_revision": "5a52ef2744257e242ed178c1a2c8dbd71ef0b8db",
+      "ownership_ack": "Finalcleancommittedhandoff/allprocessesstopped/no furtherwrites untilfocusedfollowup. Coordinator accepted taskrecordownership.",
+      "handoff_correction": "Report-only finaltwoMarkdownhardbreak whitespace auditcorrected; priorfailedfinalaudit preservedmetadata-checks, currentcleandiff. ExplicitmetadataownershipACK received.",
+      "claim_history": [
+        {
+          "base_revision": "eef177e8176c87954f0ce2efd8098c3f7dbfbc79",
+          "claim_revision": "2e3d6012e664baf7bf5b3f3085bcb04de7dfc02e",
+          "reason": "Suspended for now verified PI and Streaming isolation prerequisites; originalsource/evidence preserved."
+        }
+      ],
+      "worker_merge_revision": "42f1f452df51e5ad713661fb3a749c612a847c0d",
+      "handoff_revision": "a7a56482f55ad12b2718bc1d7f199acc349d3f38",
+      "integration_revision": "b12b688d64fb3604b365d6caebcd5e4ea84495a1",
+      "integration_worktree": "/private/tmp/xemele-integrate-m2-resolver",
+      "integration_branch": "codex/integrate-m2-resolver",
+      "cleanup": {
+        "chat_archived": true,
+        "worktree": "removed",
+        "record": "docs/orchestration/cleanup-M2-resolver.json"
+      }
+    },
+    {
+      "task_id": "M2-resolver-allocation-probe",
+      "chat_id": "01a1252a-1fb6-7732-ab68-fdff5e9c9479",
+      "client_thread_id": "client-new-thread:ba378f52-0b4e-4c73-960f-98fb75a9b6a3",
+      "host_id": "local",
+      "worktree_path": "/Users/sebastienros/.codex/worktrees/ced7/xemele",
+      "branch": "codex/m2-resolver-allocation-probe",
+      "base_revision": "6285d7da2fa766ca0d0cdb624a1ed8aba7a22a2b",
+      "claim_revision": "c3fdcac954916d3d71469aa66cc0379808a75476",
+      "setup_status": "verified",
+      "setup_note": "Registeredactualpath; detachedsetupattached toclaimedbranchbefore fullbrief. InitialREADYwasbefore switch.",
+      "goal": "Exact borrowedresolverRead Fact1000warm10000measured4096B; strictsameFact0B/positive/meaningfulbyte+sessionprogress andfresh852/API251/ref242/planning14/117.",
+      "authorization": "Humanexplicitisolatedworker/scopedlocalcommits/network/socketchecks; no remote/recursiveworkers.",
+      "implementation_revision": "f69b6c788b67c2e1c25680d3f32d3489e8577b15",
+      "review_status": "Independent final delta approved without blockers",
+      "handoff_revision": "0fb4061447d566939f0e837b30d3632089c2f017",
+      "review_revision": "f69b6c788b67c2e1c25680d3f32d3489e8577b15",
+      "integration_revision": "4e558709ba99879b22a892d17912dd8204e5baea",
+      "integration_worktree": "/private/tmp/xemele-integrate-m2-resolver-allocation-probe",
+      "ownership_ack": "Clean final handoff; all source/task metadata ownership released, task children stopped.",
+      "cleanup": {
+        "chat_archived": true,
+        "worktree": "removed",
+        "integration_worktree": "removed",
+        "record": "docs/orchestration/cleanup-M2-resolver-allocation-probe.json"
+      }
+    },
+    {
+      "task_id": "M2-encoding-allocation-probe",
+      "chat_id": "01a1251d-37ba-7050-ba3d-f0af5eaf3033",
+      "client_thread_id": "client-new-thread:817653cb-e805-4de3-849f-6e763b3e0606",
+      "host_id": "local",
+      "worktree_path": "/Users/sebastienros/.codex/worktrees/eebd/xemele",
+      "branch": "codex/m2-encoding-allocation-probe",
+      "base_revision": "8af65f385654c382f201e1ad8c32f9be2cc3bb87",
+      "claim_revision": "f9ce78b1e1eb46f6726865c5f435365ab321b23b",
+      "setup_status": "verified",
+      "setup_note": "Registered chatactualpath confirmed; detachedsetup switchedto claimedbranch bycoordinator before fullbrief; initialREADY precededswitch.",
+      "goal": "Exact three legacylabels/10000warm10000measuredDecode perlabel; strictsameFactisolated0B/positivecontrol/meaningfulprogress and actualjoint852/API251/ref242/planning14/116.",
+      "authorization": "Humanexplicitisolatedworker/taskscopedlocalcommits/checkescalations; no remoteactions/recursiveworkers.",
+      "implementation_revision": "c3690485bd4c3b421b1833ac4b245405cf2242a0",
+      "setup_ack": "Exact renewed claim merged; only ownJSON conflict deliberately resolved preserving earlier evidence and main claim fields. Approved owned implementation/verifier unchanged; fresh unique candidate checks running.",
+      "review_status": "Approved0b3 source byte-identical in renewal, root owned/source audit and actualchecks pass",
+      "handoff_revision": "2fb023bafe4a4c8007bd4ea63d69c11b4b0ec5de",
+      "review_revision": "0b3caf048aea839b2d998306752dc75fcaa57686",
+      "ownership_ack": "Explicit clean final2fb release/all heavy children stopped.",
+      "claim_history": [
+        {
+          "base_revision": "54720a8cf75a830374348e5d6a5595f1fba5e229",
+          "claim_revision": "6f8d917a50fc8fe3c0d013c81809ad89b537ff9a",
+          "reason": "Prior root Resolver4080B failure preserved; verified resolver prerequisite now integrated."
+        }
+      ],
+      "integration_revision": "6d952ca39d8d355583d7d19310f4d36634d813e9",
+      "integration_worktree": "/private/tmp/xemele-integrate-m2-encoding-probe-renewed",
+      "cleanup": {
+        "chat_archived": true,
+        "worktree": "removed",
+        "integration_worktrees": "removed",
+        "record": "docs/orchestration/cleanup-M2-encoding-allocation-probe.json"
+      }
+    },
+    {
+      "task_id": "M2-dtd-model",
+      "chat_id": "01a12530-4f3e-7f71-8d58-c4219bd3d12b",
+      "client_thread_id": "client-new-thread:7d17e4d1-a63e-45fa-a7b5-a4de116ce90f",
+      "host_id": "local",
+      "worktree_path": "/Users/sebastienros/.codex/worktrees/eee1/xemele",
+      "branch": "codex/m2-dtd-model",
+      "base_revision": "8af65f385654c382f201e1ad8c32f9be2cc3bb87",
+      "claim_revision": "f9ce78b1e1eb46f6726865c5f435365ab321b23b",
+      "setup_status": "verified",
+      "setup_note": "Registered checkout switched to claimed branch before full bounded brief.",
+      "goal": "Exact approved immutable common-only DTD declaration model with owned collection snapshots, compiled inventory and focused ownership evidence.",
+      "authorization": "Human authorizes task-scoped isolated work, local commits and required checks. No remote publication.",
+      "implementation_revision": "21e6c36ad7d2c01e43412f330f6a989c4a76cd6f",
+      "review_revision": "e020db32fec509f122f0ffec37135ca2ee06724f",
+      "review_status": "Independent source approval; worker evidence running, unchanged Resolver4080B direct failure preserved; renewal after clean release.",
+      "claim_history": [
+        {
+          "base_revision": "b3e7230d6ba2fcf6ddf4e4986a44cfe4349d35d6",
+          "claim_revision": "5e114bcce7a3aabd8fb9b7bd267f2e205a863d8c",
+          "reason": "Worker860MTP pass/direct Resolver4080B failure preserved at515018b; clean release before verified prerequisite renewal."
+        }
+      ],
+      "preserved_handoff_revision": "515018b9ce84fe695e4ffc1cbb7ce5da55bb8a85",
+      "ownership_ack": "Explicit clean98f7 release/all heavy children stopped; worker actual860 checks pass at21e6 source.",
+      "setup_ack": "Exact renewed claim merged; only ownJSON conflict deliberately resolved preserving earlier evidence and main claim fields. Approved owned implementation/verifier unchanged; fresh unique candidate checks running.",
+      "handoff_revision": "98f7d5c3728e0e08e27dd54df63a84bad014f528",
+      "integration_revision": "13010875c21e7c161ec180375019ee3c5ff61f59",
+      "integration_worktree": "/private/tmp/xemele-integrate-m2-dtd-model",
+      "cleanup": {
+        "chat_archived": true,
+        "worktree": "removed",
+        "integration_worktree": "removed",
+        "record": "docs/orchestration/cleanup-M2-dtd-model.json"
+      }
+    },
+    {
+      "task_id": "M2-tree-allocation-probe",
+      "chat_id": "01a12512-5763-7073-b394-102f36b9bd9c",
+      "client_thread_id": "client-new-thread:4170d168-6909-425b-882c-d93280cbd067",
+      "host_id": "local",
+      "worktree_path": "/Users/sebastienros/.codex/worktrees/091f/xemele",
+      "branch": "codex/m2-tree-allocation-probe",
+      "base_revision": "ab43206bb302321998161b3a09f4244e274338f4",
+      "claim_revision": "c347796669e94617f4fff50f384d4695510e93f4",
+      "setup_status": "verified-awaiting-cleanup",
+      "setup_note": "Registeredchat confirmed actualpath, detachedsetup attached bycoordinator toclaimedbranch before fullbrief; initialREADY was priorbranchswitch.",
+      "goal": "Own exact existing Tree allocationFact, preserve warm/measured1000loop profile, reviewed strict childisolation, meaningfulpositivecontrol and freshjointchecks.",
+      "authorization": "Human explicitly authorizes isolatedworkers/taskscopedchecks/localcommits; no remote actions/recursiveworkers.",
+      "implementation_revision": "184090226ffd253917802c3a1655f884ccb4398f",
+      "setup_ack": "Exactclaim merged/only ownJSON conflict; approved1d1 source unchanged, fresh852 candidate checks running.",
+      "review_status": "Approved1d1 source byte-identical in renewal; actual17checks/full860 rootpassed.",
+      "handoff_revision": "47d49ff1262b2202ec38d52bda7268243b7b81d4",
+      "review_revision": "1d1fadd6e159a524a19dd83de553a05ee9c66c10",
+      "ownership_ack": "Clean47d explicitownershiprelease/stoppedchildren; reviewed1d1source unchanged, actual17checks852 workerpass. Root newer model adds8 tests, integratedcount860/direct306.",
+      "claim_history": [
+        {
+          "base_revision": "f61e4d692719db15f36134969f7ca412b1a41c03",
+          "claim_revision": "0a64aeb75f16d3670c2a165aba8e2d877db459f1",
+          "reason": "Rootc455 Encoding5960B failure preserved; prerequisite decoder repair nowverified."
+        }
+      ],
+      "integration_revision": "1813cf70dd585bb2d092ee03c9bc4375bae68e22",
+      "integration_worktree": "/private/tmp/xemele-integrate-m2-tree-probe-renewed"
     }
   ],
   "benchmark_policy": "Resolver completed8cases/all8child0/24actual, warmread0B/setup1416B/ordinarypriorityArm64 provisional e7cc. Encoding completed13/39 a1d. Allprocessesstopped; noactivehold.",
@@ -894,7 +1136,13 @@
     "docs/orchestration/cleanup-M1-corpus.json",
     "docs/orchestration/cleanup-M1-gate.json",
     "docs/orchestration/cleanup-M2-contracts.json",
-    "docs/orchestration/cleanup-M2-streaming-allocation-probe.json"
+    "docs/orchestration/cleanup-M2-streaming-allocation-probe.json",
+    "docs/orchestration/cleanup-M2-pi-allocation-probe.json",
+    "docs/orchestration/cleanup-M2-encoding.json",
+    "docs/orchestration/cleanup-M2-resolver.json",
+    "docs/orchestration/cleanup-M2-resolver-allocation-probe.json",
+    "docs/orchestration/cleanup-M2-encoding-allocation-probe.json",
+    "docs/orchestration/cleanup-M2-dtd-model.json"
   ],
   "preserved_reference_sources": [
     {
@@ -910,71 +1158,9 @@
       "restriction": "Private offline source cache; retained XMLTEST redistribution clarification required before public fixture distribution."
     }
   ],
-  "timing_queue": [
-    "M2-resolver",
-    "M2-dtd-framing"
-  ],
+  "timing_queue": [],
   "metadata_correction": "PI rawAPI report uses inventory.apiDeclarations, not wrapper members. Initialrootmetadata assertion stopped before taskstate writes; d539f13 preserves actualpassing0869bde evidence, separateverifiedmetadata follows.",
-  "suspended_assignments": [
-    {
-      "task_id": "M2-dtd-framing",
-      "chat_id": "01a1248f-bcb0-70c2-97e1-82986283ae2b",
-      "host_id": "local",
-      "client_thread_id": "client-new-thread:d83226e3-111f-41bb-833c-58e17b5fd98d",
-      "worktree_path": "/Users/sebastienros/.codex/worktrees/c303/xemele",
-      "branch": "codex/m2-dtd-framing",
-      "base_revision": "eef177e8176c87954f0ce2efd8098c3f7dbfbc79",
-      "claim_revision": "2e3d6012e664baf7bf5b3f3085bcb04de7dfc02e",
-      "setup_status": "suspended-for-prerequisite-repair",
-      "wait_cursor": "b324cc2e-d523-426b-a8a0-69c58df158d5:20",
-      "parked_ack": "Boundedcheckpoint cea326: MTP2040passed/API222; direct1490 failedunchangedPI712B afterprior1944B. Noheavychildren; committinghonesthandoff for narrowrepairdependency.",
-      "review_revision": "46104cecdce70170aea050612d13a77f1467251a",
-      "preserved_draft_revision": "cea326c7ed59ac53a832af2f8cc4e528a118d89a",
-      "preserved_evidence_revision": "25d879f7db7a02adae2cdc8a2a267ab55c4f13aa",
-      "ownership_ack": "Cleancheckout/own taskJSON untouched/noheavyprocesses; worker expressly relinquished metadata ownership before coordinator dependency/reset."
-    },
-    {
-      "task_id": "M2-encoding",
-      "chat_id": null,
-      "host_id": "local",
-      "client_thread_id": "client-new-thread:949ee3c9-a871-4025-b4d6-a153d7127f53",
-      "worktree_path": "/Users/sebastienros/.codex/worktrees/d13f/xemele",
-      "branch": "codex/m2-encoding",
-      "base_revision": "eef177e8176c87954f0ce2efd8098c3f7dbfbc79",
-      "claim_revision": "2e3d6012e664baf7bf5b3f3085bcb04de7dfc02e",
-      "setup_status": "suspended-for-prerequisite-repair",
-      "agent_name": "/root/m2_encoding",
-      "setup_note": "Encoding create_thread client neverregistered despite repeated listings; clean detached d13f worktree exists atclaim. Assignedbranch+sole boundedagent writer under promptfallback. Pendingchat initialinstruction read-only/wait; noimplementationbrief sent to it. Reconcile/archive iflate registration. Native Codex UI inspection unavailable bytoolpolicy; purposebuilt listings retained.",
-      "review_revision": "3595b19afbd620c147f5db68fd4e8196fab1b531",
-      "review": "Independent runtime approval3595b19; root e3df narrow harness/tests/APIemptyfragment removal delta approved. Actual809/809 API222/sample/package/provenance passed.",
-      "measurement_revision": "a1d0d1a46b2e47a1ee8864657f4e3d06f0fa8f3e",
-      "measurement_audit": "13children0/39actual;12loopdecoder0B;DOM58256B/28.014us;allstopped; highprioritypermissiondenied retained. Finaldurableimplementedhandoffpending.",
-      "preserved_draft_revision": "a1d0d1a46b2e47a1ee8864657f4e3d06f0fa8f3e",
-      "preserved_evidence_revision": "bbdd372fdeedc2400649b80b30421526a4ff31e7",
-      "ownership_ack": "Finalcleancommittedhandoff/allprocessesstopped/no furtherwrites untilfocusedfollowup. Coordinator accepted taskrecordownership."
-    },
-    {
-      "task_id": "M2-resolver",
-      "chat_id": "01a1248f-ac32-7bd2-b115-af952711a7e4",
-      "host_id": "local",
-      "client_thread_id": "client-new-thread:08f0bfe8-4096-40a2-ba27-881e84f00f85",
-      "worktree_path": "/Users/sebastienros/.codex/worktrees/6664/xemele",
-      "branch": "codex/m2-resolver",
-      "base_revision": "eef177e8176c87954f0ce2efd8098c3f7dbfbc79",
-      "claim_revision": "2e3d6012e664baf7bf5b3f3085bcb04de7dfc02e",
-      "setup_status": "suspended-for-prerequisite-repair",
-      "wait_cursor": "7547a146-162b-4afd-85fb-d232bcfb40a6:13",
-      "parked_ack": "Full841/API251/provenance/package/planningpassed cbaec, noheavychildren. Lightnestedhandlecleanup correctionpending.",
-      "review_revision": "e7cc0b5fd6480c4395e6dd861c5e28ed97815f2d",
-      "review": "Independent sourceapproval e7cc resolvesbothcleanupfindings; newfocused43/fullchecksawaitactualexecution.",
-      "measurement_revision": "e7cc0b5fd6480c4395e6dd861c5e28ed97815f2d",
-      "correctness_revision": "e7cc0b5fd6480c4395e6dd861c5e28ed97815f2d",
-      "preserved_draft_revision": "e7cc0b5fd6480c4395e6dd861c5e28ed97815f2d",
-      "preserved_evidence_revision": "5a52ef2744257e242ed178c1a2c8dbd71ef0b8db",
-      "ownership_ack": "Finalcleancommittedhandoff/allprocessesstopped/no furtherwrites untilfocusedfollowup. Coordinator accepted taskrecordownership.",
-      "handoff_correction": "Report-only finaltwoMarkdownhardbreak whitespace auditcorrected; priorfailedfinalaudit preservedmetadata-checks, currentcleandiff. ExplicitmetadataownershipACK received."
-    }
-  ],
+  "suspended_assignments": [],
   "allocation_research": {
     "issue": "https://github.com/dotnet/runtime/issues/134724",
     "draft_fix": "https://github.com/dotnet/runtime/pull/134855",

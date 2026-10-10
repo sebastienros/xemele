@@ -1,0 +1,81 @@
+{
+  "result": "passed",
+  "host": "macOS-15.8.1-arm64-arm-64bit-Mach-O",
+  "architecture": "arm64",
+  "auditBase": "2e3d6012e664baf7bf5b3f3085bcb04de7dfc02e",
+  "sourceRevision": "e7cc0b5fd6480c4395e6dd861c5e28ed97815f2d",
+  "branch": "codex/m2-resolver",
+  "independentModelMembers": 114,
+  "actualAdditiveResolverMembers": 29,
+  "deferredModelMembers": "XmlDtdProcessing4 belongs to M2-entities; common81 already shipped",
+  "actualRuntimeMembers": 251,
+  "runtimeTests": {
+    "Xemele.Tests": {
+      "total": 290,
+      "failed": 0,
+      "skipped": 0
+    },
+    "Xemele.Conformance.Tests": {
+      "total": 255,
+      "failed": 0,
+      "skipped": 0
+    },
+    "Xemele.Differential.Tests": {
+      "total": 299,
+      "failed": 0,
+      "skipped": 0
+    }
+  },
+  "resolverTests": 43,
+  "referenceProvenance": {
+    "records": 242,
+    "runnerSha256": "d582e8e997068a84ca9263328a1439ac8032f56afe4c07c716fb40e7c1de67ce",
+    "sourceBuild": "1.0.0+e7cc0b5fd6480c4395e6dd861c5e28ed97815f2d",
+    "pinnedOutput": "/Users/sebastienros/.codex/worktrees/6664/xemele/artifacts/M2-resolver/disposal-final/pinned-reference/BclReference.dll",
+    "sdk": "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+    "sdkSha256": "e86deb33d0dacad9cc1224466df6418149cb8e13cb8afd0dc6815ea6b7807975"
+  },
+  "allocationObservations": {
+    "firstSessionOpenDisposeBytes": 2624,
+    "warmSetupBytes": 1464,
+    "retained1000SessionsBytes": 2628984,
+    "residualAfterDisposeBytes": 2256,
+    "note": "GC heap deltas are noisy; retained sessions own keys/handles/resource buffers, no session read buffer. Async allocation requires BDN process diagnostics."
+  },
+  "packageSha256": "81dec41e7dce138ad8c6ece8ea5328e2f86c4455efcccd619850c87a450d2534",
+  "packageConsumer": "passed same public offline resolver and internal composition sample from freshly built local nupkg",
+  "benchmarks": "built/discovered; timing requires separate exclusive-host grant",
+  "ownedPaths": [
+    "benchmarks/Xemele.Benchmarks/M2-resolver/ResolverBenchmarks.cs",
+    "docs/api/M2-resolver.txt",
+    "docs/reports/M2-resolver/README.md",
+    "docs/reports/M2-resolver/authorized/Xemele.Conformance.Tests.xml.gz",
+    "docs/reports/M2-resolver/authorized/Xemele.Differential.Tests.xml.gz",
+    "docs/reports/M2-resolver/authorized/Xemele.Tests.xml.gz",
+    "docs/reports/M2-resolver/authorized/checks.txt.gz",
+    "docs/reports/M2-resolver/authorized/reference-provenance.json",
+    "docs/reports/M2-resolver/authorized/runtime-api.json",
+    "docs/reports/M2-resolver/authorized/summary.json",
+    "docs/reports/M2-resolver/disposal-final/Xemele.Conformance.Tests.xml.gz",
+    "docs/reports/M2-resolver/disposal-final/Xemele.Differential.Tests.xml.gz",
+    "docs/reports/M2-resolver/disposal-final/Xemele.Tests.xml.gz",
+    "docs/reports/M2-resolver/disposal-final/reference-provenance.json",
+    "docs/reports/M2-resolver/disposal-final/runtime-api.json",
+    "docs/reports/M2-resolver/fault-drain/Xemele.Conformance.Tests.xml.gz",
+    "docs/reports/M2-resolver/fault-drain/Xemele.Differential.Tests.xml.gz",
+    "docs/reports/M2-resolver/fault-drain/Xemele.Tests.xml.gz",
+    "docs/reports/M2-resolver/fault-drain/checks.txt.gz",
+    "docs/reports/M2-resolver/fault-drain/reference-provenance.json",
+    "docs/reports/M2-resolver/fault-drain/runtime-api.json",
+    "docs/reports/M2-resolver/fault-drain/summary.json",
+    "docs/reports/M2-resolver/first/checks.txt.gz",
+    "docs/reports/M2-resolver/first/summary.json",
+    "docs/reports/M2-resolver/verify.py",
+    "samples/M2-resolver/Program.cs",
+    "samples/M2-resolver/ResolverSample.csproj",
+    "src/Xemele/Resolution/Core/Resources.cs",
+    "src/Xemele/Resolution/Core/XmlResolutionSession.cs",
+    "tests/Xemele.Tests/M2-resolver/ResolverTests.cs"
+  ],
+  "limitations": "macOSArm64 only; no parser/DTD composition or future options; no timing in this check; async process allocations deferred to BDN"
+}

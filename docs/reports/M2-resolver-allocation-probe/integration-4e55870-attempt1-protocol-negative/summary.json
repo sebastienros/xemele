@@ -1,0 +1,97 @@
+{
+  "driverRevision": "4e558709ba99879b22a892d17912dd8204e5baea",
+  "compiledProvenance": {
+    "Executable": "/private/tmp/xemele-integrate-m2-resolver-allocation-probe/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests",
+    "ExecutableSha256": "C00FD9CDDEDFDC2F3F6794FB4B9218CA9860D3A6E64B5F9C216EF3FE6E8B7E49",
+    "TestAssembly": "/private/tmp/xemele-integrate-m2-resolver-allocation-probe/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll",
+    "TestSha256": "90B5B647EE54260D70BA1E93D243F5E799AB0C8E304E63460B00C2B858C859F5",
+    "TestVersion": "1.0.0+4e558709ba99879b22a892d17912dd8204e5baea",
+    "ProductAssembly": "/private/tmp/xemele-integrate-m2-resolver-allocation-probe/tests/Xemele.Tests/bin/Release/net10.0/Xemele.dll",
+    "ProductSha256": "197D2CB93EB429D7E69D040CB192E54A6CB87CB2FF8975288FAF027E4A16656D",
+    "ProductVersion": "1.0.0+4e558709ba99879b22a892d17912dd8204e5baea",
+    "RuntimeVersion": "10.0.11",
+    "ServerGc": false,
+    "GcConfiguration": "{\"ConcurrentGC\":true,\"GCConserveMem\":0,\"GCCpuGroup\":false,\"GCDGen0GrowthMaxFactor\":0,\"GCDGen0GrowthMinFactor\":0,\"GCDGen0GrowthPercent\":0,\"GCDTargetTCP\":0,\"GCDynamicAdaptationMode\":1,\"GCGen0MaxBudget\":8388608,\"GCHeapAffinitizeMask\":0,\"GCHeapAffinitizeRanges\":\"\",\"GCHeapHardLimit\":0,\"GCHeapHardLimitLOH\":0,\"GCHeapHardLimitLOHPercent\":0,\"GCHeapHardLimitPercent\":0,\"GCHeapHardLimitPOH\":0,\"GCHeapHardLimitPOHPercent\":0,\"GCHeapHardLimitSOH\":0,\"GCHeapHardLimitSOHPercent\":0,\"GCHighMemPercent\":90,\"GCLargePages\":false,\"GCName\":\"\",\"GCPath\":\"\",\"GCRegionRange\":0,\"GCRegionSize\":0,\"HeapCount\":1,\"LOHThreshold\":85000,\"MaxHeapCount\":0,\"NoAffinitize\":false,\"RetainVM\":false,\"ServerGC\":false,\"UOHWaitBGCSizeIncPercent\":-1}",
+    "CoreLibrary": "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App/10.0.11/System.Private.CoreLib.dll",
+    "CoreLibrarySha256": "9ED74C2E2EFEEE87F1F2D7FFE1736B7E9164CE248516EA39402A725EEDC87AF6",
+    "NativeRuntimeSha256": "10B24D0B11C7F6D838114744097BF10DF9B08B906AFC9016567631A1C009DFD0",
+    "NativeGcLibrary": "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App/10.0.11/libclrgc.dylib",
+    "NativeGcSha256": "2A53559AC20A2896A7D1AFB427C73DCF781495349544E8B4B34E7D123CE39FFA",
+    "HelperIlSha256": "FC9CEDE76D95991D960C14E4C889F64C70362C4B41955C744497C65D53104955",
+    "RuntimeConfigSha256": "9950D4583CFC9A106857C0D5B8A75B53E8774852B57B80BC3823A74D44A4D87F"
+  },
+  "checks": {
+    "unknown-mode": {
+      "result": "passed",
+      "actualExit": 1,
+      "total": 1,
+      "failure": "System.InvalidOperationException : Invalid internal Resolver child guard."
+    },
+    "incomplete-mode": {
+      "result": "passed",
+      "actualExit": 1,
+      "total": 1,
+      "failure": "System.InvalidOperationException : Invalid internal Resolver child guard."
+    },
+    "missing-required-field": {
+      "result": "passed",
+      "actualExit": 1,
+      "total": 1,
+      "failure": "System.Text.Json.JsonException : JSON deserialization for type 'Xemele.Tests.Resolution.ResolverAllocationChild+Request' was missing required properties including: 'Expected'."
+    },
+    "malformed-json": {
+      "result": "passed",
+      "actualExit": 1,
+      "total": 1,
+      "failure": "System.Text.Json.JsonException : 'b' is an invalid start of a property name. Expected a '\\\"'. Path: $ | LineNumber: 0 | BytePositionInLine: 1.\n---- System.Text.Json.JsonReaderException : 'b' is an invalid start of a property name. Expected a '\\\"'. LineNumber: 0 | BytePositionInLine: 1."
+    },
+    "unknown-json-member": {
+      "result": "passed",
+      "actualExit": 1,
+      "total": 1,
+      "failure": "System.Text.Json.JsonException : The JSON property 'UnexpectedProtocolField' could not be mapped to any .NET member contained in type 'Xemele.Tests.Resolution.ResolverAllocationChild+Request'."
+    },
+    "provenance-mismatch": {
+      "result": "passed",
+      "actualExit": 1,
+      "total": 1,
+      "failure": "System.InvalidOperationException : Child executable/compiled product/runtime provenance mismatch."
+    },
+    "host-mismatch": {
+      "result": "passed",
+      "actualExit": 1,
+      "total": 1,
+      "failure": "System.InvalidOperationException : Configured dotnet differs from the active runtime installation."
+    },
+    "token-mismatch": {
+      "result": "passed",
+      "actualExit": 1,
+      "total": 1,
+      "failure": "System.InvalidOperationException : Mismatched child capability."
+    },
+    "pid-mismatch": {
+      "result": "passed",
+      "actualExit": 1,
+      "total": 1,
+      "failure": "System.InvalidOperationException : Invalid child parent identity."
+    },
+    "outside-artifact-root": {
+      "result": "passed",
+      "actualExit": 1,
+      "total": 1,
+      "failure": "System.InvalidOperationException : Child request outside owned artifacts."
+    },
+    "extra-runner-argument": {
+      "result": "passed",
+      "actualExit": 1,
+      "total": 1,
+      "failure": "System.InvalidOperationException : Child guard requires the exact standalone Fact invocation."
+    },
+    "symlink-root-escape": {
+      "result": "passed",
+      "actualExit": 1,
+      "total": 1,
+      "failure": "System.InvalidOperationException : Child request outside owned artifacts."
+    }
+  }
+}

@@ -1,0 +1,56 @@
+Evidence/handoff revision: f8963ea228d0e477dacbed21ff6c6c3f195c9ca8
+$ git rev-parse HEAD
+f8963ea228d0e477dacbed21ff6c6c3f195c9ca8
+exit=0
+
+$ git diff --name-only 5e114bcce7a3aabd8fb9b7bd267f2e205a863d8c..HEAD
+docs/reports/M2-dtd-model/Approved/Approved.csproj
+docs/reports/M2-dtd-model/Approved/ApprovedModel.cs
+docs/reports/M2-dtd-model/README.md
+docs/reports/M2-dtd-model/first/Xemele.Conformance.Tests.xml.gz
+docs/reports/M2-dtd-model/first/Xemele.Differential.Tests.xml.gz
+docs/reports/M2-dtd-model/first/Xemele.Tests.xml.gz
+docs/reports/M2-dtd-model/first/checks.txt.gz
+docs/reports/M2-dtd-model/first/focused.xml.gz
+docs/reports/M2-dtd-model/first/historical-checks.txt.gz
+docs/reports/M2-dtd-model/first/reference-provenance.json
+docs/reports/M2-dtd-model/first/runtime-api.json
+docs/reports/M2-dtd-model/first/summary.json
+docs/reports/M2-dtd-model/verify.py
+docs/tasks/M2-dtd-model.json
+samples/M2-dtd-model/ModelSample.csproj
+samples/M2-dtd-model/Program.cs
+src/Xemele/Parsing/Dtd/Model/Declarations.cs
+tests/Xemele.Tests/M2-dtd-model/ModelTests.cs
+exit=0
+
+$ git diff --name-only
+exit=0
+
+$ git diff --cached --name-only
+exit=0
+
+$ git ls-files --others --exclude-standard
+exit=0
+
+$ git status --porcelain
+exit=0
+
+$ git diff --check 5e114bcce7a3aabd8fb9b7bd267f2e205a863d8c..HEAD
+exit=0
+
+$ git diff --check
+exit=0
+
+$ git diff --check --cached
+exit=0
+
+$ python3 tools/planning/tasks.py validate
+Validated 118 tasks: schema, evidence, acyclic dependencies, additive milestones, and ordered ownership.
+exit=0
+
+$ ps -axo pid,command (filtered for worker-root dotnet/verify children)
+No matching active processes.
+exit=0
+
+All changed paths owned; working tree clean before this owned audit artifact; source/JSON ownership released.

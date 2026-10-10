@@ -1,0 +1,154 @@
+{
+  "schema_version": 1,
+  "id": "M2-encoding-allocation-probe",
+  "milestone": "M2",
+  "title": "Isolated legacy decoder allocation measurement",
+  "kind": "infrastructure",
+  "status": "verified",
+  "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M2-encoding-allocation-probe",
+  "branch": "codex/m2-encoding-allocation-probe",
+  "base_revision": "8af65f385654c382f201e1ad8c32f9be2cc3bb87",
+  "integration_revision": "6d952ca39d8d355583d7d19310f4d36634d813e9",
+  "depends_on": [
+    "M2-encoding",
+    "M2-pi-allocation-probe",
+    "M2-resolver-allocation-probe"
+  ],
+  "goals": [
+    "G03",
+    "G18"
+  ],
+  "specs": [
+    "docs/performance-coding.md",
+    "docs/specs/parser.md"
+  ],
+  "owns": [
+    "tests/Xemele.Tests/M2-encoding/EncodingTests.cs",
+    "tests/Xemele.Tests/M2-encoding-allocation-probe/",
+    "docs/reports/M2-encoding-allocation-probe/"
+  ],
+  "api_or_output": "Equivalent legacy decoder warm/measured profile in synchronous isolated same-Fact children with meaningful positive control and exact zero-byte assertions.",
+  "acceptance": [
+    {
+      "id": "M2-encoding-allocation-probe-A1",
+      "description": "Preserve integrated c455bdb legacy decoding5960B failure and historical uncertainty. Keep original exact3labels/Selected setup/input/output/maps,10000 warm plus10000 measuredDecode calls PERLABEL/defaultcancellation snapshot, exact0B; bothreads and full measuredDecode loop within one synchronous NoInlining helper. Validate consumed/written/progress/offset/scalar outputs meaningfully; exact-current-host strict same-Fact realchild and escaped-allocation positivechild with full provenance/guard/args/schema/XML/timeout/rawfailurepropagation. No production/other Encoding test bodies/peerhelpers/threshold/warmprofile/GC/JIT/classparallelism changes/subtraction/retry. Existing declaration-selection setup remains outside measuredDecode scope; do not advertise unmeasured declaration matching. Actual steadyallocation needsproductionownerrepair.",
+      "status": "passed",
+      "evidence": [
+        "known-source-checks",
+        "mtp-unblocked-completion",
+        "source-review",
+        "historical-preservation",
+        "renewal-checks",
+        "renewal-source-integrity",
+        "root-first-integration-preservation",
+        "renewed-integrated-checks"
+      ]
+    },
+    {
+      "id": "M2-encoding-allocation-probe-A2",
+      "description": "Knownsource bounded original/equivalent/helper comparisons and fresh focused+cumulativeMTP/direct runtime298/conformance255/differential299, API251/discovery3388/freshcompletepinnedBCL242/fullsourcehash, exact positive/progress and schema/guard/provenance actualrejection controls/rawarchive, planning14/validation116/ownedallpaths; uniqueattempt/count/auditargs. Preserve every failure/unruncheck and historicalcauseunknown. No timing orblindrepetition.",
+      "status": "passed",
+      "evidence": [
+        "known-source-checks",
+        "mtp-unblocked-completion",
+        "source-review",
+        "historical-preservation",
+        "renewal-checks",
+        "renewal-source-integrity",
+        "root-first-integration-preservation",
+        "renewed-integrated-checks"
+      ]
+    }
+  ],
+  "implementation": [
+    "tests/Xemele.Tests/M2-encoding/EncodingTests.cs:WarmLegacyConversionAndDeclarationMatchingAllocateZero",
+    "tests/Xemele.Tests/M2-encoding-allocation-probe/EncodingAllocationProbe.cs:DecodeChecked",
+    "tests/Xemele.Tests/M2-encoding-allocation-probe/EncodingAllocationChild.cs",
+    "docs/reports/M2-encoding-allocation-probe/verify.py"
+  ],
+  "evidence": [
+    {
+      "id": "known-source-checks",
+      "kind": "check",
+      "revision": "0b3caf048aea839b2d998306752dc75fcaa57686",
+      "command": "DOTNET_ROOT=\"/Users/sebastienros/Library/Application Support/dotnetup/dotnet\" PATH=\"/Users/sebastienros/Library/Application Support/dotnetup/dotnet\":$PATH python3 -B docs/reports/M2-encoding-allocation-probe/verify.py --report-prefix source-0b3caf0-attempt1 --expected-branch codex/m2-encoding-allocation-probe --audit-base 6f8d917a50fc8fe3c0d013c81809ad89b537ff9a --runtime-count 298 --conformance-count 255 --differential-count 299 --api-count 251 --fixture-count 3388 --planning-count 14 --task-count 116",
+      "result": "failed",
+      "summary": "Initial verifier FAILED: MTP focused/cumulative denied at SDK named-pipe bind before tests; child expectation saw one of three pairs. Completed checks PASS: original/equivalent/helper measured0B all labels; direct298/255/299; exact real0/positive640000 perlabel; seven actual protocol rejections; API251/discovery3388/ref242 complete pinned copy unchanged/planning14/validate116/ownership audit. No completed check repeated.",
+      "artifact": "docs/reports/M2-encoding-allocation-probe/source-0b3caf0-attempt1/summary.json"
+    },
+    {
+      "id": "mtp-unblocked-completion",
+      "kind": "check",
+      "revision": "0b3caf048aea839b2d998306752dc75fcaa57686",
+      "command": "python3 -B /private/tmp/xemele-encoding-mtp-completion.py (authorized socket escalation; exact archived driver.py and commands)",
+      "result": "passed",
+      "summary": "Only two pre-test SDK-blocked checks executed once unsandboxed without rebuild: focused1Pass/cumulative852Pass. Combined actual focused/MTP/direct3 pairs, every real label0B and positive640000B/label (1920000Baggregate), exact checked profiles and same compiled full source/native/config/DLL provenance. First failed verifier remains failed.",
+      "artifact": "docs/reports/M2-encoding-allocation-probe/source-0b3caf0-mtp-unblocked-attempt1/summary.json"
+    },
+    {
+      "id": "source-review",
+      "kind": "review",
+      "revision": "0b3caf048aea839b2d998306752dc75fcaa57686",
+      "command": "Independent read-only review_input_spike via coordinator01a1230c-1353-7e01-afbe-a53c9c018264/local",
+      "result": "passed",
+      "summary": "Coordinator reported source-only independent APPROVED exact0b3caf048aea839b2d998306752dc75fcaa57686 no blockers; no executed checks claimed. Labels/setup/profile/whole-loop/progress/maps/exact controls/strict child provenance and scope preserved. Historical cause unresolved; declaration setup unmeasured.",
+      "artifact": "docs/reports/M2-encoding-allocation-probe/README.md"
+    },
+    {
+      "id": "historical-preservation",
+      "kind": "check",
+      "revision": "0b3caf048aea839b2d998306752dc75fcaa57686",
+      "command": "Byte-identical copy and SHA256 comparison of necessary integration-c455bdb-attempt1 runtime XML/counts/checks/summary/driver into task-owned history",
+      "result": "passed",
+      "summary": "Full298-test XML preserves actual unchanged Encoding5960B failure at historical integration (297Pass/1Fail); SHA256 manifest matches all copied bytes; historical cause unknown; no unmerged peer source imported.",
+      "artifact": "docs/reports/M2-encoding-allocation-probe/history/integration-c455bdb-attempt1/preservation.json"
+    },
+    {
+      "id": "renewal-checks",
+      "kind": "check",
+      "revision": "c3690485bd4c3b421b1833ac4b245405cf2242a0",
+      "command": "DOTNET_ROOT=\"/Users/sebastienros/Library/Application Support/dotnetup/dotnet\" PATH=\"/Users/sebastienros/Library/Application Support/dotnetup/dotnet\":$PATH python3 -B docs/reports/M2-encoding-allocation-probe/verify.py --report-prefix renewal-c369048-attempt1 --expected-branch codex/m2-encoding-allocation-probe --audit-base f9ce78b1e1eb46f6726865c5f435365ab321b23b --runtime-count 298 --conformance-count 255 --differential-count 299 --api-count 251 --fixture-count 3388 --planning-count 14 --task-count 118 (authorized socket/network access from start)",
+      "result": "passed",
+      "summary": "One fresh committed merged-candidate run actual16/16 checks PASS: focused1/MTP852/direct298+255+299; exact3real0B/positive640000perlabel child pairs; original/equivalent/helper all3measured0B; seven actual rejection controls; API251/discovery3388/freshfullpinnedBCLcopybeforeM1build/242uniquefullrevisionrefs/unchangedcompletecopy; planning14/validate118/owned audits. No allocation retry/timing rerun.",
+      "artifact": "docs/reports/M2-encoding-allocation-probe/renewal-c369048-attempt1/summary.json"
+    },
+    {
+      "id": "renewal-source-integrity",
+      "kind": "check",
+      "revision": "c3690485bd4c3b421b1833ac4b245405cf2242a0",
+      "command": "git diff --exit-code 0b3caf048aea839b2d998306752dc75fcaa57686 HEAD -- tests/Xemele.Tests/M2-encoding/EncodingTests.cs tests/Xemele.Tests/M2-encoding-allocation-probe docs/reports/M2-encoding-allocation-probe/Diagnostics docs/reports/M2-encoding-allocation-probe/verify.py docs/reports/M2-encoding-allocation-probe/protocol_negative.py",
+      "result": "passed",
+      "summary": "Approved source-only review remains applicable: no owned Fact/helper/diagnostics/verifier/negative source delta. Exact renewed claim merged with only expected ownJSON conflict; all3dependencies verified. Fresh checks use merged fullrevision.",
+      "artifact": "docs/reports/M2-encoding-allocation-probe/README.md"
+    },
+    {
+      "id": "root-first-integration-preservation",
+      "kind": "check",
+      "revision": "c3690485bd4c3b421b1833ac4b245405cf2242a0",
+      "command": "Byte-identical copy and SHA256 equality of necessary integration-65f49b9-attempt1 full runtime XML/counts/raw logs/summary/driver",
+      "result": "passed",
+      "summary": "Preserved initial root15/16checkpass and cumulativeMTP851/852 unchangedResolver4080B failure; decoder controls/direct852 passed. Historical cause unknown, no unmerged peer code imported, original5960/socket failures preserved.",
+      "artifact": "docs/reports/M2-encoding-allocation-probe/history/integration-65f49b9-attempt1/preservation.json"
+    },
+    {
+      "id": "renewed-integrated-checks",
+      "kind": "integration",
+      "revision": "6d952ca39d8d355583d7d19310f4d36634d813e9",
+      "command": "python3 -B docs/reports/M2-encoding-allocation-probe/verify.py --report-prefix integration-6d952ca-attempt1 --expected-branch codex/integrate-m2-encoding-probe-renewed --audit-base afea2690aec63821bc4787a865df98f11f56f652 --runtime-count 298 --conformance-count 255 --differential-count 299 --api-count 251 --fixture-count 3388 --planning-count 14 --task-count 118",
+      "result": "passed",
+      "summary": "Actual16checks pass; focused1/fullMTP852/direct298+255+299/API251/discovery3388/freshfull pinned reference242/fullsourcehash/unchangedcopy/planning14/validate118/owned audit. Three actual pairs of3labels eachreal0B/positive640000B, original10000warm10000measured Decode/scalars/progress/offsets preserved;7actual rejectioncontrols. Earlier b309 failure ancestry and reports retained; reviewed source byte-identical0b3. Historical causality unresolved.",
+      "artifact": "docs/reports/M2-encoding-allocation-probe/integration-6d952ca-attempt1/summary.json"
+    }
+  ],
+  "blockers": [],
+  "handoff": {
+    "summary": "Renewed from verified resolver probe. Approved decoder source unchanged; committed merged candidatec369048 actual16/16freshchecksPASS; all prior failed evidence retained. Implementation awaits coordinator integration verification.",
+    "checks": [
+      "Renewal c3690485bd4c3b421b1833ac4b245405cf2242a0: focused1/MTP852/direct298+255+299; exact3real0B+positive640000B/label pairs; original/equivalent/helperall3measured0B; negative7/API251/discovery3388/freshcompleteBCLcopybeforeM1build/ref242+unchangedhash/planning14/validate118/owned audits.",
+      "Approved0b3source/571evidence preserved unchanged, initialsocketfail and historicalEncoding5960B/rootResolver4080B preserved byte-identically; causesunknown.",
+      "Coordinator actual all16 integrated checks pass at 6d952ca39d8d355583d7d19310f4d36634d813e9"
+    ],
+    "remaining": [],
+    "requests": []
+  }
+}

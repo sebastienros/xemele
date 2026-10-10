@@ -4,14 +4,15 @@
   "milestone": "M2",
   "title": "Incremental external text-declaration framing",
   "kind": "feature",
-  "status": "implemented",
+  "status": "in_progress",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M2-dtd-framing",
   "branch": "codex/m2-dtd-framing",
-  "base_revision": "1a77b3598ed6084b17a69ca562d160f0d64a6be5",
+  "base_revision": "b96b9d0a674dddfa6a9b3907cf947577ee8ba395",
   "integration_revision": null,
   "depends_on": [
     "M2-contracts",
-    "M2-pi-allocation-probe"
+    "M2-pi-allocation-probe",
+    "M2-tree-allocation-probe"
   ],
   "goals": [
     "G07"
@@ -54,10 +55,13 @@
     {
       "id": "M2-dtd-framing-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "passed",
+      "status": "pending",
       "evidence": [
         "renewed-correctness",
-        "exclusive-measurement"
+        "exclusive-measurement",
+        "initial-committed-checkpoint",
+        "bounded-committed-checkpoint",
+        "integrated-tree-allocation-failure"
       ]
     }
   ],
@@ -131,11 +135,20 @@
       "result": "passed",
       "summary": "One exclusive-host attempt: generated restore/build0; wrapper0 in41.914s;14cases,14childexits0,42positive actual observations(3/case),allchildrenstopped. All8scan rows8192operations/observation and0Bmanaged allocation; framer means324.28-337.44ns/8units and14046.14-18264.87ns/4096units. Owned absent/multilingual648B,short/chunked768B,malformed720B,longlabel25376B; short242.59ns,longlabel21061.39ns. Six scan minimum-iteration warnings/normal priority denied elevation; framer2.75-3.71x slower than narrowerscalar baseline,no speedupclaim. ProvisionalArm64framing only; full composition/x64/Windows/AOT unrun. Fullraw/archivehash/caseprogress/actualmemoryoutputs preserved; no retry. Initialblockedps/unit-parser diagnostics corrected and recorded without rerunning benchmark.",
       "artifact": "docs/reports/M2-dtd-framing/exclusive-measurement/summary.json"
+    },
+    {
+      "id": "integrated-tree-allocation-failure",
+      "kind": "integration",
+      "revision": "5109fe930fe45f7b485d4ed36c39b9c09b5ba625",
+      "command": "python3 -B docs/reports/M2-dtd-framing/verify.py --report-prefix integration-5109fe9-attempt1 --audit-base d3e4b1a --expected-branch codex/integrate-m2-dtd-framing --expected-runtime-tests 1541 --expected-public-api 251",
+      "result": "failed",
+      "summary": "Known integrated MTP2095/2094pass/1failure unchanged Tree allocation1064B. Model53/sample/allocations/untimed oracles passed; subsequent direct/API/reference/planning final checks unrun. Failure durable d31b5ac branch codex/integrate-m2-dtd-framing; source d77/timing preserved; task waits narrow repair, historical cause unresolved.",
+      "artifact": null
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Implemented incremental external TextDecl framing on renewed verified base; all A1-A3 passed at source dbcd535. No decoder/resolver/DOM/DTDgrammar dependency, no public API added. Fresh2044MTP/direct/discovery cases agree, all1243ownPass; exclusive14case/42observation measurement passed. Historicalfailedattempts retained. Await coordinator integrated verification; integration_revision null.",
+    "summary": "Renewed claim d00c0d327 over verified combined base b96b9d0a adopted. Reviewed dbcd runtime/ASCII cases and d77 correctness/timing evidence preserved; root Tree1064B integration failure retained. Fresh 1549/255/299 combined checks pending; successful unchanged-source timing reused, no rerun.",
     "checks": [
       "Fresh full verifier at dbcd535:1490runtime(247earlier+1243framing),255conformance,299differential allPass/noFail/noSkip; MTP2044/discovery2044 agree. ASCIIcase32 restores4previouslymissing low-surrogate MTP rows; actual4directPass proof archived.",
       "Approved common-only actual/fixture inventory53records=5types+48members/sharedbudget constructor matched; working sample, cold/warm/retained probe and untimed4x3x8192+6workload oracle passed.",
@@ -143,9 +156,8 @@
       "Exclusive command exact dbcd535: wrapper0/generatedbuild0/14childexits0/42actual observations; all8scan cases0B. Cold/owned768B; retainedGC estimate160048B/1000results; owned BDN648-25376B. Fullraw archive and CSV/Markdown/hash/progress outputs in exclusive-measurement."
     ],
     "remaining": [
-      "Coordinator integrate and independently verify combined tree using actual combined test/API counts; preserve strict reference provenance and renewed claim ownership.",
-      "Measurements provisional: six short-iteration warnings and normal priority, slower2.75-3.71x than narrower baseline; no broad throughput optimization claim.",
-      "FullDTD/entity composition and x64/Windows/AOT release confirmations remain later tasks/gates."
+      "Fresh combined verifier with actual 1549 runtime +255 conformance +299 differential =2103, API251/registry3388/ref242/planning14/validate118 and exactclaim audits.",
+      "Coordinator integrated verification; provisional framing measurements/composition/x64/Windows/AOT confirmations remain as previously recorded."
     ],
     "requests": []
   }

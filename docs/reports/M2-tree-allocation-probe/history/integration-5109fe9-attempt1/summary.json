@@ -1,0 +1,32 @@
+{
+  "result": "failed",
+  "host": "macOS-15.8.1-arm64-arm-64bit-Mach-O",
+  "architecture": "arm64",
+  "timing": "not run; exclusive coordinator grant required",
+  "sourceRevision": "5109fe930fe45f7b485d4ed36c39b9c09b5ba625",
+  "branch": "codex/integrate-m2-dtd-framing",
+  "auditBase": "d3e4b1a",
+  "dotnet": "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+  "dotnetSha256": "e86deb33d0dacad9cc1224466df6418149cb8e13cb8afd0dc6815ea6b7807975",
+  "independentInternalContract": "approved and implemented types/members/shared constructor match; no decoder/resolver/DOM/grammar sources",
+  "independentInventory": {
+    "types": 5,
+    "members": 48
+  },
+  "allocations": {
+    "coldBytes": 768,
+    "ownedPerOperation": 768,
+    "warmPrimitiveBytes": 0,
+    "retainedResults": 1000,
+    "retainedBytes": 160048,
+    "declarationSize": 48,
+    "retainedMeaning": "1000 owned five-character encoding strings and result array after forced compacting collections; GC total-memory estimate, no borrowed source retained",
+    "runtime": "10.0.11"
+  },
+  "benchmarksPrepared": [
+    "DtdFramingOwnershipBenchmarks.FrameOwnedResult",
+    "DtdFramingScanBenchmarks.ScalarBaseline",
+    "DtdFramingScanBenchmarks.IncrementalFramer"
+  ],
+  "benchmarkCorrectness": "Prepared 4 scan combinations x3 iterations x8192 calls with equal cursor/consumption; 6 owned-result workloads; no timing."
+}
