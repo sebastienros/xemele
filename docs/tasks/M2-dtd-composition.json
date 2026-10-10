@@ -60,7 +60,8 @@
         "scaffold-identity-correctness",
         "exclusive-allocation",
         "exclusive-timing",
-        "coordinated-source-review"
+        "coordinated-source-review",
+        "final-owned-clean-audit"
       ]
     }
   ],
@@ -153,6 +154,24 @@
       "result": "passed",
       "summary": "Coordinator01a1230c-1353-7e01-afbe-a53c9c018264 relayed source-only runtime346 approval of shared guard, same-operation dedup/no-recharge, framed identity/entry and tests; later approved fullmodel/seed/accounting/cold-boundary benchmark oracles and exact719 assemblymatching owned projectrename/verifier refs. Review is separate from executed checks. Runtime/tests unchanged after346; timing source/driver unchanged6f..719.",
       "artifact": null
+    },
+    {
+      "id": "generated-raw-whitespace-audit-failure",
+      "kind": "check",
+      "revision": "c64b852f71225486a7bef4d0d86cf044c4acafb7",
+      "command": "git diff --check 7081ff55f81feaffc41a4008424ada14a8551113..HEAD",
+      "result": "failed",
+      "summary": "Actual final claimdiff audit reported generated BDN trailing spaces in duplicate plaintext logs/md/html; previous handoff wording prematurely said finaldiffclean, immediately corrected to coordinator. Working/staged checks were clean. Exact originals and both rawZIP/SHA unchanged; lossless gzip of checkout duplicates resolves audit without rewriting measurement. No runtime/workload/driver or measurement rerun.",
+      "artifact": "docs/reports/M2-dtd-composition/final-audit-whitespace-failure.txt"
+    },
+    {
+      "id": "final-owned-clean-audit",
+      "kind": "check",
+      "revision": "78b53d65a36e3d51ae0d1eef25df23c8fd47fa65",
+      "command": "python3 -B tools/planning/tasks.py validate; git diff --check 7081ff55f81feaffc41a4008424ada14a8551113..HEAD; git diff --check; git diff --check --cached; scoped committed/working/staged/untracked ownership and rawZIP/gzip identity checks",
+      "result": "passed",
+      "summary": "Each actual exit independently captured/inspected: validate122 and claim/working/staged diffchecks0; checkoutcleanbefore writing final report; all90changed paths owned. Both rawZIP/SHA unchanged; every compressed checkout mirror decompresses byte-identical to original archive entry. Earlier raw trailing-space failure preserved. No code/workload/measurement change.",
+      "artifact": "docs/reports/M2-dtd-composition/final-audit.json"
     }
   ],
   "blockers": [],
@@ -162,7 +181,8 @@
       "required-hooks-cumulative8dcc: actual5050/focused4189/pinned9+775/API272/internal20+3hooks/access+nullable+optionaldefault compiledmutations/BCL242 full8dcccurrent/hash unchanged/planning14/graph122/ownership/whitespace passed",
       "final6f and scaffold719 scoped builds/discovery/fullmodel/fullseed/exact ledger oracle20pairs=40outputs+2048scans passed; implementation byteidentity and496compiledmethods same; metadata source revision accurately differs",
       "exclusive6f allocation ONCE passed; zero borrowed/positivecontrol/retention; cold setup+twooutputs+bothoracles included with no subtraction; raw aggregates recorded",
-      "first6f BDN projectgenerationfailed/parent0/executed0/no generatedbuild or timingchild preserved; owned filename corrected, renewed719 BDNonce6cases passed generatedrestore/build/parent/allchildren0; host released; bothrawarchives durable; no successful allocation or inherited timing rerun"
+      "first6f BDN projectgenerationfailed/parent0/executed0/no generatedbuild or timingchild preserved; owned filename corrected, renewed719 BDNonce6cases passed generatedrestore/build/parent/allchildren0; host released; bothrawarchives durable; no successful allocation or inherited timing rerun",
+      "Final78b53d6 audit: validate122/all3diffchecks0/clean/90ownedpaths/rawZIP+gzipidentity passed; generatedraw trailing-space audit failure c64 preserved and losslessly corrected."
     ],
     "remaining": [
       "Coordinator must integrate/retest combined tree and record actual integration evidence before verified. Windows/x64/AOT/production core/full XML conformance unrun and outside scope."

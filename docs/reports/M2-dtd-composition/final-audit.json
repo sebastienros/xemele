@@ -1,0 +1,49 @@
+{
+  "result": "passed",
+  "sourceRevision": "78b53d65a36e3d51ae0d1eef25df23c8fd47fa65",
+  "checks": [
+    {
+      "command": [
+        "python3",
+        "-B",
+        "tools/planning/tasks.py",
+        "validate"
+      ],
+      "exit": 0,
+      "output": "Validated 122 tasks: schema, evidence, acyclic dependencies, additive milestones, and ordered ownership.\n"
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check",
+        "7081ff55f81feaffc41a4008424ada14a8551113..HEAD"
+      ],
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check",
+        "--cached"
+      ],
+      "exit": 0,
+      "output": ""
+    }
+  ],
+  "cleanBeforeReport": true,
+  "ownedPaths": 90,
+  "rawArchiveHashesPreserved": true,
+  "allCompressedMirrorsByteIdenticalToOriginalArchive": true
+}
