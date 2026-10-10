@@ -41,6 +41,14 @@ else if(args.Contains("--allocation"))
     long before=GC.GetAllocatedBytesForCurrentThread();
     for(int i=0;i<10000;i++)new XmlInputDecoder(new()).Dispose();
     Console.WriteLine($"Warm setup bytes/op: {(GC.GetAllocatedBytesForCurrentThread()-before)/10000.0}");
+    var matchers=new XmlInputDecoder[10000];char[] scratch=new char[4];long[] mapping=new long[4];
+    for(int i=0;i<matchers.Length;i++) { matchers[i]=new(new());matchers[i].Decode("abcd"u8,scratch,mapping,false,default); }
+    before=GC.GetAllocatedBytesForCurrentThread();
+    for(int i=0;i<matchers.Length;i++)if(matchers[i].ValidateDeclaration(i%3==0?"US-ASCII":i%3==1?"ISO-8859-1":"Windows-1252",default)!=null)throw new Exception();
+    long matchAllocated=GC.GetAllocatedBytesForCurrentThread()-before;
+    Console.WriteLine($"Warm declaration match bytes/op, setup excluded: {matchAllocated/10000.0}");
+    if(matchAllocated!=0)throw new Exception("Declaration matching allocated");
+    foreach(var matcher in matchers)matcher.Dispose();
     var retained=new XmlInputDecoder[10000];GC.Collect();GC.WaitForPendingFinalizers();GC.Collect();
     long heap=GC.GetGCMemoryInfo().HeapSizeBytes-GC.GetGCMemoryInfo().FragmentedBytes;
     for(int i=0;i<retained.Length;i++)retained[i]=new XmlInputDecoder(new());

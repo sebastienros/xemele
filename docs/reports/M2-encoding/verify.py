@@ -6,6 +6,7 @@ FLAGS=['-c','Release','--disable-build-servers','-m:1','-p:UseSharedCompilation=
 CLAIM='2e3d6012e664baf7bf5b3f3085bcb04de7dfc02e'
 def main():
     parser=argparse.ArgumentParser();parser.add_argument('--report-prefix',required=True);parser.add_argument('--audit-base',default=CLAIM);parser.add_argument('--expected-branch',required=True)
+    parser.add_argument('--runtime-tests',type=int,default=255);parser.add_argument('--conformance-tests',type=int,default=255);parser.add_argument('--differential-tests',type=int,default=299);parser.add_argument('--reference-records',type=int,default=242)
     args=parser.parse_args();assert re.fullmatch('[a-z0-9-]+',args.report_prefix)
     report=ROOT/'docs/reports/M2-encoding'/args.report_prefix;report.mkdir()
     raw=ROOT/'artifacts/M2-encoding'/args.report_prefix;raw.mkdir(parents=True)
@@ -36,15 +37,15 @@ def main():
         run('python3','-B','tools/ApiBaseline/discover.py')
         run('python3','-B','tools/ApiBaseline/compare.py','--report',report/'runtime-api.json')
         counts={}
-        for assembly,expected in [('Xemele.Tests',255),('Xemele.Conformance.Tests',255),('Xemele.Differential.Tests',299)]:
+        for assembly,expected in [('Xemele.Tests',args.runtime_tests),('Xemele.Conformance.Tests',args.conformance_tests),('Xemele.Differential.Tests',args.differential_tests)]:
             xml=raw/(assembly+'.xml');run('dotnet',ROOT/f'tests/{assembly}/bin/Release/net10.0/{assembly}.dll','-noColor','-result-xml',xml)
             tests=list(ET.parse(xml).iter('test'));assert len(tests)==expected and all(t.get('result')=='Pass' for t in tests),(assembly,len(tests))
             counts[assembly]={'total':len(tests),'failed':0,'skipped':0};(report/(assembly+'.xml.gz')).write_bytes(gzip.compress(xml.read_bytes(),mtime=0))
         summary['tests']=counts
-        records=[json.loads(p.read_text()) for p in (raw/'case-results').glob('reference-*.json')];assert len(records)==242 and len({r['id'] for r in records})==242
+        records=[json.loads(p.read_text()) for p in (raw/'case-results').glob('reference-*.json')];assert len(records)==args.reference_records and len({r['id'] for r in records})==args.reference_records
         assert hashlib.sha256(pinned.read_bytes()).hexdigest()==runner_hash
         assert all(r['runnerSha256']==runner_hash and r['response']['engine']['build']=='1.0.0+'+revision for r in records)
-        summary['reference']={'count':242,'runnerSha256':runner_hash,'build':'1.0.0+'+revision,'dotnet':str(dotnet),'dotnetSha256':hashlib.sha256(dotnet.read_bytes()).hexdigest()}
+        summary['reference']={'count':len(records),'runnerSha256':runner_hash,'build':'1.0.0+'+revision,'dotnet':str(dotnet),'dotnetSha256':hashlib.sha256(dotnet.read_bytes()).hexdigest()}
         checker=ROOT/'docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll'
         run('dotnet','build','docs/reports/M2-contracts/Projects/Encoding/Encoding.csproj',*FLAGS)
         model=ROOT/'docs/reports/M2-contracts/Projects/Encoding/bin/Release/net10.0/M2Encoding.dll'

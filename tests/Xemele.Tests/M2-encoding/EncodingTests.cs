@@ -121,7 +121,7 @@ public class EncodingTests
     {
         foreach(string label in Labels)
         {
-            using var d=Selected(label);byte[] input="abcd\r\n"u8.ToArray();char[] output=new char[8];long[] maps=new long[8];
+            using var d=Selected(label);byte[] input=label=="Windows-1252" ? [0x80,0x97,0xE9,13,10] : label=="ISO-8859-1" ? [0x80,0xE9,13,10] : "abcd\r\n"u8.ToArray();char[] output=new char[8];long[] maps=new long[8];
             for(int i=0;i<10000;i++)d.Decode(input,output,maps,false,TestContext.Current.CancellationToken);
             long before=GC.GetAllocatedBytesForCurrentThread();
             for(int i=0;i<10000;i++)d.Decode(input,output,maps,false,TestContext.Current.CancellationToken);
