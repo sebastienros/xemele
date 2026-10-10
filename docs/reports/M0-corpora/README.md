@@ -22,6 +22,11 @@ MTP infrastructure tests and their controlled failures, bootstrap help commands,
 managed-only runtime package payload, and task metadata validation. It reports
 its actual host, revision, and commands; it makes no hosted-platform claim.
 
+The symlink containment test attempts symbolic-link creation on every platform.
+If the OS denies creation capability/privilege, verified xUnit v3 `Assert.Skip`
+reports an explicit dynamic skip with the actual reason. Verification allows only
+that one capability skip; it never counts it as passed or suppresses other errors.
+
 Manual demo (offline, no parser execution):
 
 ```sh

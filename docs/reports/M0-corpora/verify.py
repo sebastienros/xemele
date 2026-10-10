@@ -1,7 +1,6 @@
 """Verify actual corpus infrastructure, runner, and preserved integrated bootstrap."""
 import hashlib
 import json
-import os
 from pathlib import Path
 import platform
 import shlex
@@ -49,8 +48,13 @@ def main():
              '--no-ansi', '--no-progress', '--minimum-expected-tests', '24', '--report-xunit-xml',
              '--results-directory', str(results)])
         executed = [test for path in results.glob('*.xunit.xml') for test in ET.parse(path).iter('test')]
-        assert len(executed) == 24 and all(test.get('result') == 'Pass' for test in executed)
-        LOG.append(f'Focused infrastructure tests: {len(executed)} passed; parser cases executed: 0.\n')
+        skipped = [test for test in executed if test.get('result') == 'Skip']
+        passed = [test for test in executed if test.get('result') == 'Pass']
+        assert len(executed) == 24 and len(passed) + len(skipped) == len(executed)
+        assert len(skipped) <= 1 and all(test.get('name', '').endswith('.SymlinkOutsideRepositoryFailsBeforeReadOrWrite') for test in skipped)
+        LOG.append(f'Focused infrastructure tests: {len(passed)} passed, {len(skipped)} capability-skipped; parser cases executed: 0.\n')
+        for test in skipped:
+            LOG.append('Explicit symlink capability skip: ' + ''.join(test.itertext()) + '\n')
         assets = json.loads((ROOT / 'docs/reports/M0-corpora/Tests/obj/project.assets.json').read_text())['libraries']
         assert 'xunit.v3.mtp-v2/4.0.1' in assets
         assert any(key.startswith('Microsoft.Testing.Platform/') for key in assets)

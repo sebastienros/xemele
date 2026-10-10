@@ -232,12 +232,19 @@ public sealed class ProvisioningTests : IDisposable
     [Fact]
     public void SymlinkOutsideRepositoryFailsBeforeReadOrWrite()
     {
-        if (OperatingSystem.IsWindows()) return; // Creating symlinks requires an OS capability not assumed here.
         var outside = Path.Combine(Path.GetTempPath(), "xemele-outside-" + Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(outside);
         try
         {
-            Directory.CreateSymbolicLink(Path.Combine(root, "escape"), outside);
+            try
+            {
+                Directory.CreateSymbolicLink(Path.Combine(root, "escape"), outside);
+            }
+            catch (Exception error) when (error is UnauthorizedAccessException or PlatformNotSupportedException ||
+                (OperatingSystem.IsWindows() && error is IOException && (error.HResult & 0xffff) == 1314))
+            {
+                Assert.Skip("Symbolic-link creation capability unavailable: " + error.Message);
+            }
             Assert.Throws<InvalidDataException>(() => new CorpusProvisioner(root, Path.Combine(root, "escape")).ImportSource(Load()));
             manifest["fixtures"]![0]!["path"] = "../../../escape/fixture.xml";
             Save();
