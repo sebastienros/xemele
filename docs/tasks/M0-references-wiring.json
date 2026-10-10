@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "id": "M0-references-wiring",
+  "milestone": "M0",
+  "title": "Build reference runner with differential test suite",
+  "kind": "infrastructure",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "depends_on": [
+    "M0-references-protocol"
+  ],
+  "goals": [
+    "G18"
+  ],
+  "specs": [
+    "docs/specs/foundation.md"
+  ],
+  "owns": [
+    "tests/Xemele.Differential.Tests/Xemele.Differential.Tests.csproj",
+    "docs/reports/M0-references-wiring/"
+  ],
+  "api_or_output": "Ordinary solution build produces required BCL subprocess runner",
+  "acceptance": [
+    {
+      "id": "M0-references-wiring-A1",
+      "description": "Add no-output ProjectReference to verified BclReference project so clean ordinary solution build produces the executable before differential protocol tests; do not add reference implementation to runtime package.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M0-references-wiring-A2",
+      "description": "From cleaned generated outputs run normal Release solution build and MTP solution tests without prebuilding runner manually. Real protocol/subprocess tests pass and controlled infrastructure failure checks remain effective.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M0-references-wiring-A3",
+      "description": "Verify preserved bootstrap/help/managed package behavior and actual package graph plus task validation at a full known implementation revision.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}
