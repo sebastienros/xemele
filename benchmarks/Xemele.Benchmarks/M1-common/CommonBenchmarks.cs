@@ -16,15 +16,17 @@ public class CommonBenchmarks
     public long StraightforwardCounter()
     {
         token.ThrowIfCancellationRequested();
+        if(baseline == 1048576) baseline = 0;
         if(baseline >= 1048576) throw new InvalidOperationException();
-        baseline++; baseline--; return baseline;
+        return ++baseline;
     }
     [Benchmark]
     public long BoundedCounter()
     {
         budget.CheckCancellation();
+        if(budget.Count(Quota.TokenCharacters) == 1048576) budget.Reset(Quota.TokenCharacters);
         if(!budget.TryCharge(Quota.TokenCharacters,1)) throw new InvalidOperationException();
-        budget.Release(Quota.TokenCharacters,1); return budget.Count(Quota.TokenCharacters);
+        return budget.Count(Quota.TokenCharacters);
     }
     [Benchmark]
     public object OperationSetup() => new OperationBudget(null,default);
