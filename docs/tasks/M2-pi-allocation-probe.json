@@ -4,11 +4,11 @@
   "milestone": "M2",
   "title": "Stabilize equivalent warm PI allocation measurement",
   "kind": "infrastructure",
-  "status": "implemented",
+  "status": "verified",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M2-pi-allocation-probe",
   "branch": "codex/m2-pi-allocation-probe",
   "base_revision": "f1415a8355fc9084e919cc877e3c4e6d50690bf9",
-  "integration_revision": null,
+  "integration_revision": "114394806e8b590abd6c6cdf7a9163433115629c",
   "depends_on": [
     "M2-contracts",
     "M1-pi-targets",
@@ -43,7 +43,8 @@
         "isolated-allocation-scopes",
         "isolated-focused-mtp",
         "isolated-joint-direct",
-        "isolated-independent-source-review"
+        "isolated-independent-source-review",
+        "coordinator-integrated-pi-isolation"
       ]
     },
     {
@@ -59,7 +60,8 @@
         "isolated-joint-direct",
         "protocol-rejection-and-archive-controls",
         "renewed-build-api-reference-planning-audits",
-        "isolated-independent-source-review"
+        "isolated-independent-source-review",
+        "coordinator-integrated-pi-isolation"
       ]
     }
   ],
@@ -214,19 +216,29 @@
       "result": "passed",
       "summary": "Independent reviewer approves whole NoInlining counter loop/100warm10000/exact0/sink-token/counts-completion, actual sameFact children/strict provenance/failure policy, owned scope/unchanged other PI bodies and Streaming, mandatory full joint verifier/raw archival and honest128B/history. No blockers; read-only review, no execution. Coordinator inspected all passing known-source check outcomes.",
       "artifact": null
+    },
+    {
+      "id": "coordinator-integrated-pi-isolation",
+      "kind": "integration",
+      "revision": "114394806e8b590abd6c6cdf7a9163433115629c",
+      "command": "python3 -B docs/reports/M2-pi-allocation-probe/verify.py --report-prefix integration-1143948-attempt1 --expected-branch codex/integrate-m2-pi-allocation-probe --audit-base ca5284846361b63a24c6abbcafdedbbe82925d1e --runtime-count 247 --conformance-count 255 --differential-count 299 --api-count 222 --fixture-count 3388 --planning-count 14 --task-count 114",
+      "result": "passed",
+      "summary": "Independent fresh joint integration all17checks pass: focused1/MTP801/direct247+255+299,3actual PI real0/positive6400000 pairs,100warm10000measure/40000units100000callbacks/total40400/101005/Completed consumed4/nullDiag; actual apphost/directdotnet/compiled test+product source/runtime/config/helperIL pins. Independent original comparison128B retained without cause claim; equivalent whole primitive0B. API222/discovery3388/reference242 fresh completeBCLsource+SHA/planning14/114/ownership; archive1 and seven actual protocol rejections pass. Full mandatory parent allPass fulfilled; no production/defaultGCJIT/classparallelism/threshold changes, no concurrent allocation guarantee.",
+      "artifact": "docs/reports/M2-pi-allocation-probe/integration-1143948-attempt1/summary.json"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Approved narrow actual-Fact PI process isolation implemented atf3e47be; original100warm/10000measured/exact0/defaultsettings and whole checked helper loop preserved. One bounded fresh verifier allPass: focused1/jointMTP801/direct247+255+299, actual3realpositivepairs0B/6400000B. Historical1944/712/1024/128PI and224streaming/callback603/sandbox failures retained without cause attribution. Only owned PI probe/helper/imports and diagnostic/report/task files changed; integration remains unverified.",
+    "summary": "Verified independent fresh joint integrated PI isolation at 114394806e8b590abd6c6cdf7a9163433115629c. Original parent fullallPass fulfilled; historical failures and128B comparison retained, causes unresolved.",
     "checks": [
       "python3 -B docs/reports/M2-pi-allocation-probe/verify.py --report-prefix isolated-f3e47be-attempt1 --expected-branch codex/m2-pi-allocation-probe --audit-base b72c2a1bb2cf4f53c322b198f91923bfeed94b8f --runtime-count 247 --conformance-count 255 --differential-count 299 --api-count 222 --fixture-count 3388 --planning-count 14 --task-count 114: exit0/allchecksPass; actual raw command in checks.txt.gz.",
       "Real3pairs0B/positive3pairs6400000B; measured100000callbacks40000units/total10100540400/Completed4/nullDiagnostic; warm368B/64368B. Independent originalshape128B/equivalentactualhelper0B; separate setup/root/firstuse/completion scopes retained.",
       "Release0warnings0errors/API222/discovery3388/ref242sourceandSHA/planning14/validate114/allowned+unchangedotherbodies audits passed; archive1regression and7actualFactrejectioncontrols pass.",
-      "No allocation retries/timingbenchmark/production/peerhelpers/sharedproject/parallelism/JITGC changes. Crash/timeout/postreporttamper negative controls unrun; source rejection policy reviewed only."
+      "No allocation retries/timingbenchmark/production/peerhelpers/sharedproject/parallelism/JITGC changes. Crash/timeout/postreporttamper negative controls unrun; source rejection policy reviewed only.",
+      "Independent integration1143948 all17checksPass;801MTP/direct247/255/299;3PIreal0/positive6400000, allcounts/provenance;API222/ref242/planning114/7negative/archive1 pass."
     ],
     "remaining": [
-      "Coordinator fresh integrated full joint allPass verification with current actual countargs before verified or consumer verification. Independent exactf3e47be source review approved without blockers. Isolated synchronous primitive scope only; no concurrent allocation guarantee or historicalcause claim."
+      "Isolated synchronous primitive scope only; no historical causal attribution or concurrent allocation guarantee."
     ],
     "requests": []
   }
