@@ -4,7 +4,7 @@
   "milestone": "M0",
   "title": "Verify foundation checkpoint",
   "kind": "gate",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "coordinator:01a1230c-1353-7e01-afbe-a53c9c018264/worker:M0-gate",
   "branch": "codex/m0-gate",
   "base_revision": "1710a9ac2dce59d441e383e779a5c6b497fe45dd",
@@ -33,29 +33,91 @@
     {
       "id": "M0-gate-A1",
       "description": "Verify clean bootstrap and infrastructure together; archive approved contracts, corpus and reference metadata.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "clean-checkpoint",
+        "checkpoint-archive",
+        "reference-rebuild"
+      ]
     },
     {
       "id": "M0-gate-A2",
       "description": "Clean Release build, infrastructure smoke checks and task graph validation pass at one integrated revision.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "clean-checkpoint",
+        "reference-rebuild",
+        "ownership-allocations"
+      ]
     },
     {
       "id": "M0-gate-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "clean-checkpoint",
+        "checkpoint-archive",
+        "reference-rebuild",
+        "ownership-allocations"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "docs/reports/M0-gate/verify.py: portable clean checkpoint verifier, integrated dependency ancestry, explicit pinned native provisioning, focused actual infrastructure/contract/corpus/reference and correctness/allocation checks; no new timing.",
+    "docs/reports/M0-gate/README.md: reproduction, evidence layout and preserved foundation/reference/platform limitations.",
+    "docs/reports/M0-gate/checkpoint/: fixed-revision transcripts, approved decision/fixture/golden/corpus snapshots, exact file/blob/SHA-256 inventory, original historical evidence index, fresh native provenance/real wire responses, actual artifact/license hashes."
+  ],
+  "evidence": [
+    {
+      "id": "clean-checkpoint",
+      "kind": "check",
+      "revision": "2341576c115fe254086eaf401f7b18f85bbbf5b6",
+      "command": "DOTNET_ROOT='/Users/sebastienros/Library/Application Support/dotnetup/dotnet'; PATH prefixed with DOTNET_ROOT; DOTNET_CLI_USE_MSBUILD_SERVER=0; CMAKE='/Users/sebastienros/.codex/worktrees/0c66/xemele/artifacts/M0-references-libxml2/cmake-env/bin/cmake'; python3 -B docs/reports/M0-gate/verify.py --fetch-libxml2",
+      "result": "passed",
+      "summary": "Authorized native IPC/network run. Cleaned bin/obj for all 24 tracked managed projects. Clean Release bootstrap 0 warnings/errors; 54 actual solution MTP tests passed, 0 skips; 3 intentional failures returned exit 2; 16 help/default and 3 unknown exits; managed-only net10.0 package, public API 0. Contract checks: 11 MTP and 16 Python tests; 139 M1/173 M2/8 probe compiled members, additive preservation, 3 fragmented unions, negative/bootstrap rejection and 9 signature probes. Corpus: 24 focused MTP, 0 skips, 20 root offline CLI checks; 2 independent source/fixture expectations, 1 accepted/1 rejected. 101-task validation and diff check pass. Infrastructure only, no Xemele parser/conformance claim.",
+      "artifact": "docs/reports/M0-gate/checkpoint/verification.txt"
+    },
+    {
+      "id": "reference-rebuild",
+      "kind": "check",
+      "revision": "2341576c115fe254086eaf401f7b18f85bbbf5b6",
+      "command": "Within gate verifier: python3 -B tools/ReferenceRunners/Libxml2/build.py --fetch; python3 -B tools/ReferenceRunners/Xmloxide/build.py --offline; dotnet build tools/ReferenceRunners/Integration/ReferenceIntegration.csproj -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false; python3 -B docs/reports/M0-references/verify.py --output docs/reports/M0-gate/checkpoint/references",
+      "result": "passed",
+      "summary": "Actual clean private native rebuilds: libxml2 commit 96498992efa48d52b0e8b83058bd88dbdaf153c1, CMake 3.31.6/Apple Clang 17/SDK26.2/macOS arm64 target15.0; xmloxide commit 555055f1ea6bf9944488fd96415b6f03b5b43696, Rust1.95.0 locked offline/no default features. All three actual runner metadata report tested source revision; native exact commit/config/features/lock/license/dependencies provenance recorded. 51 real engine responses and 12 adversarial process checks passed with independent known event expectations. Preserved unsupported whitespace/external-DTD/PE/relative-context gaps and observed CRLF-value/libxml2-IRI differences; no product scope narrowed.",
+      "artifact": "docs/reports/M0-gate/checkpoint/references/managed-checks.txt"
+    },
+    {
+      "id": "ownership-allocations",
+      "kind": "check",
+      "revision": "2341576c115fe254086eaf401f7b18f85bbbf5b6",
+      "command": "Within gate verifier: isolated Release experiment builds; dotnet experiments/Tree/bin/Release/net10.0/Tree.dll --self-check; same --memory; dotnet experiments/Input/bin/Release/net10.0/Input.dll check; same allocations; python3 -B docs/reports/M0-input-spike/check_escape.py",
+      "result": "passed",
+      "summary": "Tree 8 fixtures and owner/identity/growth/cycle/sibling/deep/culture oracles passed; warm borrowed lookup 0 B, borrowed 32-character view retains source (~2097520 B), owned copy releases it (~112 B). Input 83095 assertions passed; cold primitives/context 7992/496 B remain reported; warm borrowed primitives/dispatch 0 B/op, paused 4 MiB source collectible, 64 MiB reusable-chunk processing 0 B. Expected returned-span CS9203 rejections passed. No new timings; historical synthetic data/job definitions/source revisions indexed unchanged.",
+      "artifact": "docs/reports/M0-gate/checkpoint/input-allocations.txt"
+    },
+    {
+      "id": "checkpoint-archive",
+      "kind": "check",
+      "revision": "2341576c115fe254086eaf401f7b18f85bbbf5b6",
+      "command": "Within gate verifier: verified dependency status/ancestry; snapshot approved input bytes with Git blob and SHA-256; supplemental python3 stdin check of actual project.assets.json, BCL ProjectReference and generated/native/license artifact hashes",
+      "result": "passed",
+      "summary": "Approved foundation/conformance/API decisions, declaration and usage fixtures/goldens, original corpus source/fixture/license/provenance and native lock/toolchain/config inputs archived by exact filename/blob/hash at fixed source revision. Original historical experiment and native evidence hashes indexed. Actual runtime restore graph contains no package libraries/project references; BCL automatic build edge is ReferenceOutputAssembly=false. Actual generated managed/native executable/library and upstream license SHA-256 inventory recorded. Local macOS15.8.1 Arm64/.NET10.0.11 only; hosted CI unrun.",
+      "artifact": "docs/reports/M0-gate/checkpoint/checkpoint.json"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "",
-    "checks": [],
-    "remaining": [],
+    "summary": "M0-gate implemented and all branch checks passed at fixed source 2341576c115fe254086eaf401f7b18f85bbbf5b6. Owned-only verifier and portable checkpoint archive; clean foundation joins actual bootstrap, contracts, corpus, rebuilt references and unchanged architecture experiments. Runtime source/API remains empty; coordinator integration verification still required.",
+    "checks": [
+      "python3 -B docs/reports/M0-gate/verify.py --fetch-libxml2: passed with pinned SDK/native toolchains and authorized IPC/network; checkpoint/verification.txt plus focused transcripts.",
+      "54 solution MTP + 3 expected exit2 failures; 11 contract MTP +16 Python tests;139/173/8 compiled members and real negative probes;24 corpus MTP/0 skip+20offline CLI;2 independent corpus fixtures.",
+      "51 actual three-engine responses+12 adversarial process checks; full known source metadata/native provenance. Tree8/Input83095 checks, allocation/source lifetime/escape checks passed; no fresh timing.",
+      "101-task graph validation and git diff --check passed."
+    ],
+    "remaining": [
+      "Coordinator reruns clean integration at its fixed source revision and records integrated verification before setting verified.",
+      "Hosted Windows/Linux/macOS CI remains unrun locally; future composed product workloads/cross-architecture release timing and uncovered API normalizer probes remain with introducing owners."
+    ],
     "requests": []
   }
 }
