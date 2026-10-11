@@ -1,5 +1,10 @@
+using System.Runtime.InteropServices;
+using BenchmarkDotNet.Configs;
+using BenchmarkDotNet.Jobs;
 using BenchmarkDotNet.Running;
+using BenchmarkDotNet.Toolchains.InProcess.NoEmit;
 using Xemele.Benchmarks.M8DatatypesCore;
+if (RuntimeInformation.FrameworkDescription != ".NET 10.0.11") throw new InvalidOperationException("Pinned runtime required.");
 if (args is ["--control"])
 {
     foreach (string name in new[] { "short", "long", "multilingual", "whitespace" })
@@ -8,5 +13,14 @@ if (args is ["--control"])
         if (benchmark.ScalarLoop() != benchmark.RuneCore()) throw new InvalidOperationException("Baseline result changed.");
     }
     Console.WriteLine("PASS: four baseline/core fixtures consumed, no timing/counters/BDN.");
+    return;
 }
-else BenchmarkSwitcher.FromTypes([typeof(NormalizationBenchmarks)]).Run(args);
+if (args is not [var mode, var artifacts] || mode is not ("--discover" or "--benchmark")) throw new ArgumentException();
+var config = ManualConfig.Create(DefaultConfig.Instance).WithArtifactsPath(artifacts)
+    .AddJob(Job.Default.WithToolchain(InProcessNoEmitToolchain.Instance).AsMutator());
+var suite = BenchmarkConverter.TypeToBenchmarks(typeof(NormalizationBenchmarks), config);
+if (suite.BenchmarksCases.Length != 8 || suite.BenchmarksCases.Any(c => c.Job.Run.WarmupCount != 3 || c.Job.Run.IterationCount != 3 || c.Job.Run.LaunchCount != 1 || c.Job.Infrastructure.Toolchain != InProcessNoEmitToolchain.Instance)) throw new InvalidOperationException("Eight ShortRun NoEmit cases required.");
+Console.WriteLine("DISCOVERY:8 ShortRun NoEmit cases, no builds/generation.");
+if (mode == "--discover") return;
+var summary = BenchmarkRunner.Run(suite);
+if (summary.Reports.Length != 8 || summary.Reports.Any(r => !r.Success || r.ResultStatistics is null)) throw new InvalidOperationException("Benchmark failure.");

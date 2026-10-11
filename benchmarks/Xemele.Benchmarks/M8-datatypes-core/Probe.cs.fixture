@@ -46,7 +46,12 @@ sealed class Fixture
     internal readonly SchemaCompileOperation Operation = new(new() { MaxOperations = null, MaxComponents = null, Limits = new() { EvaluationWork = null } });
     private readonly char[] output = new char[2048];
     private readonly XmlDatatypeValue list;
-    internal Fixture() { list = DatatypeValues.CreateList(new("urn:probe", "list"), [], Operation); }
+    internal Fixture()
+    {
+        list = DatatypeValues.CreateList(new("urn:probe", "list"), [], Operation);
+        if (!DatatypeTypes.TryGet(DatatypeTypes.Name("decimal"), out _)) throw new InvalidOperationException();
+        GC.KeepAlive(DatatypeNormalization.Normalize(Long, XmlWhitespaceRule.Collapse, Operation));
+    }
     internal void Run(int route)
     {
         switch (route)
