@@ -26,46 +26,6 @@
       "additional_verified_prerequisite": "M4-model-construction",
       "source_candidate": "ea8431e0a0ac605958b0ba5c98600a33208f1a24",
       "correction_cycles": 1
-    },
-    {
-      "task_id": "M4-navigation",
-      "branch": "codex/m4-navigation",
-      "base_revision": "228d9eb1c0862861e70ca87601ee507a06228fd0",
-      "claim_revision": "46767a361dcd487bd2c4c37b9388e72ca1c225b3",
-      "stage": "implemented terminal handoff; integration pending",
-      "chat_id": "01a12939-b7f5-79f1-9d6d-6f81fdb5a2df",
-      "host_id": "local",
-      "worktree_path": "/Users/sebastienros/.codex/worktrees/a922/xemele",
-      "acceptance_before_dispatch": {
-        "mandatory": "Task A1/A2/A3 exact frozenprofile implementation and owned meaningful controls/sample/API preservation; no peer/future dependencies",
-        "integration": "Focused task tests + affectedmodel/tree/API/sample checks; cumulative milestone atM4gate",
-        "performance": "Borrowed primitives0B with positive controls; owned/cold separated; prepared fullclosures before one bounded exclusivegrant; exact [MemoryDiagnoser, ShortRunJob]; summariesonly"
-      },
-      "source_candidate": "802a2a0e746820cb73f388b6804e9740fafacdd5",
-      "prepared_revision": "bee37f243c67cda55d6d6b17df66ee1c8e372d68",
-      "preparation_sha256": "375169cc6e34d01bc04a206457970d7aef7f8292fc3294b0d80866d6c770b9f2",
-      "handoff_revision": "b536fdaa1b39a1d44abb8a78753d45d617f03d36"
-    },
-    {
-      "task_id": "M4-functions",
-      "branch": "codex/m4-functions",
-      "base_revision": "a3c2e7d52b8b162a8a92df951b9769eef055783e",
-      "claim_revision": "3ccb6d53a67ec589a8e1f29880dc868cefe4ce95",
-      "stage": "implemented terminal handoff; chat archived; integration pending",
-      "chat_id": "01a12939-ddaf-70d1-b2f4-ff843ab752f2",
-      "host_id": "local",
-      "worktree_path": "/Users/sebastienros/.codex/worktrees/7378/xemele",
-      "acceptance_before_dispatch": {
-        "mandatory": "Task A1/A2/A3 exact frozenprofile implementation and owned meaningful controls/sample/API preservation; no peer/future dependencies",
-        "integration": "Focused task tests + affectedmodel/tree/API/sample checks; cumulative milestone atM4gate",
-        "performance": "Borrowed primitives0B with positive controls; owned/cold separated; prepared fullclosures before one bounded exclusivegrant; exact [MemoryDiagnoser, ShortRunJob]; summariesonly"
-      },
-      "source_candidate": "b7d3a2ef368f78d5a766199dcbf619bc813915e7",
-      "correction_cycles": 1,
-      "preparation_sha256": "210b27c4d87e339dde145dfc9bcaa18f9450a7eb92290788c5443c67e034cc4f",
-      "prepared_revision": "4f0e27859955b737539711dc091f79a2123852f2",
-      "handoff_revision": "eb892b9758f421c431d0283e5a53999ee7571de8",
-      "worker_chat_archived": true
     }
   ],
   "integration_queue": [],
@@ -77,12 +37,12 @@
     }
   ],
   "next_actions": [
-    "Review completed compiler/navigation/function lanes independently before measurement",
-    "Serialize prepared exclusive measurements and focused integrations",
-    "Join evaluate, corpus and M4-gate; only then exactly-one M5 handoff"
+    "Focused source review of compiler correction cycle1; then ordinary frozen preparation and bounded exclusive allocation/ShortRun sequence.",
+    "Integrate compiler and start evaluator only when its three prerequisites verified.",
+    "Complete M4 corpus and gate preserving M0\u2013M3, then exactly one fresh M5 coordinator handoff."
   ],
-  "last_verified_task": "M4-model-construction",
-  "last_integrated_revision": "412bbd4a1f370b1d894f462c88667f39b7520c73",
+  "last_verified_task": "M4-navigation",
+  "last_integrated_revision": "972fd472a7fd692ed9c658a3cff5d7e4252d7473",
   "completed_assignments": [
     {
       "task_id": "M2-dtd-composition",
@@ -1615,6 +1575,22 @@
         "integration_worktree_removed": true,
         "generated_artifact_archive": false
       }
+    },
+    {
+      "task_id": "M4-navigation",
+      "chat_id": "01a12939-b7f5-79f1-9d6d-6f81fdb5a2df",
+      "handoff_revision": "b536fdaa1b39a1d44abb8a78753d45d617f03d36",
+      "integration_revision": "972fd472a7fd692ed9c658a3cff5d7e4252d7473",
+      "worker_chat_archived": true,
+      "checkout_present": false
+    },
+    {
+      "task_id": "M4-functions",
+      "chat_id": "01a12939-ddaf-70d1-b2f4-ff843ab752f2",
+      "handoff_revision": "eb892b9758f421c431d0283e5a53999ee7571de8",
+      "integration_revision": "d2cb0f3d1101028c3669591e99f1c2a70f4d1e2f",
+      "worker_chat_archived": true,
+      "checkout_present": false
     }
   ],
   "benchmark_grant": {
@@ -1773,28 +1749,9 @@
     "dispatch_after": "M2-conformance verified"
   },
   "milestone_progress": {
-    "M2": {
-      "verified": 36,
-      "total": 36,
-      "in_progress": [],
-      "remaining_gate": null
-    },
-    "M3": {
-      "verified": 19,
-      "total": 19,
-      "in_progress": [],
-      "remaining_gate": null
-    },
-    "M4": {
-      "verified": 3,
-      "total": 9,
-      "in_progress": [
-        "M4-compile",
-        "M4-navigation",
-        "M4-functions"
-      ],
-      "remaining_gate": "M4-gate"
-    }
+    "milestone": "M4",
+    "verified": 5,
+    "total": 9
   },
   "pause_request": {
     "requested_by": "user",
@@ -1849,7 +1806,7 @@
       "final_identity_exit": 0,
       "no_child": true,
       "actual_runtime": ".NET 10.0.11",
-      "inspection": "Worker release received before raw inspection; coordinator inspection pending."
+      "inspection": "Coordinator independently inspected actual10.0.11 allocation/10 BDN cases/inclusive GC and all117/40/195 full hashes. Raw removed after inspection acknowledgment."
     }
   },
   "offline_corpus_setup": {
