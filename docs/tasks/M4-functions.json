@@ -4,7 +4,7 @@
   "milestone": "M4",
   "title": "XPath core functions",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M4 coordinator / isolated M4-functions worker",
   "branch": "codex/m4-functions",
   "base_revision": "a3c2e7d52b8b162a8a92df951b9769eef055783e",
@@ -33,29 +33,130 @@
     {
       "id": "M4-functions-A1",
       "description": "Implement core function library, XPath string/number/boolean conversions and registration metadata.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "independent-source-review",
+        "function-correctness"
+      ]
     },
     {
       "id": "M4-functions-A2",
       "description": "Test every function with numeric edge cases, argument counts, Unicode and context dependencies using approved fakes.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "function-correctness",
+        "affected-model-correctness"
+      ]
     },
     {
       "id": "M4-functions-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "compiled-api",
+        "consumer-package",
+        "affected-model-correctness",
+        "prepared-build-controls",
+        "exact-allocation",
+        "bdn-microbenchmarks"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/XPath/Functions/CoreFunctions.cs: XPathCoreFunctions.Signatures/Invoke/Round and budget-aware conversion/string/ID helpers",
+    "tests/Xemele.Tests/M4-functions/FunctionTests.cs: all 27 frozen vectors and focused quota/cancellation/Unicode/numeric cases using owned snapshot fakes",
+    "tests/fixtures/M4-functions/core-vectors.json: exact frozen function inventory",
+    "samples/M4-functions/Program.cs and docs/reports/M4-functions/check_consumer.py: standalone production internal-lane consumers",
+    "docs/api/M4-functions.txt: header-only internal deliverable; compiled public inventory unchanged at 893",
+    "benchmarks/Xemele.Benchmarks/M4-functions/Probe.cs.fixture and docs/reports/M4-functions/performance.md: 13 successful ShortRun cases and exact standalone zero-allocation borrowed primitive domain"
+  ],
+  "evidence": [
+    {
+      "id": "independent-source-review",
+      "kind": "review",
+      "revision": "b7d3a2ef368f78d5a766199dcbf619bc813915e7",
+      "command": "Independent source-only review of 666c1720 then focused correction re-review b7d3a2e",
+      "result": "passed",
+      "summary": "One batched blocker for unpolled actual bulk copies fixed with polled string fills/ID scratch growth and deterministic cancellation controls; re-review approved with no residual findings.",
+      "artifact": "docs/reports/M4-functions/checks.md"
+    },
+    {
+      "id": "function-correctness",
+      "kind": "check",
+      "revision": "b7d3a2ef368f78d5a766199dcbf619bc813915e7",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -namespace Xemele.Tests.M4Functions -noLogo -noColor -parallelMode none -result-xml /private/tmp/m4-functions-b7d3a2e-tests.xml",
+      "result": "passed",
+      "summary": "30/30 passed; zero failures/skips. All27 frozen vectors, every arity, focus/types, numericIEEE/ties/sticky-tail oracles, scalarUnicode/XMLS, optional/item/node-set conversions, snapshot mutation, exact/oneover shared operations/string/node-set caps, actual-copy and callback cancellation/identity.",
+      "artifact": "docs/reports/M4-functions/checks.md"
+    },
+    {
+      "id": "affected-model-correctness",
+      "kind": "check",
+      "revision": "b7d3a2ef368f78d5a766199dcbf619bc813915e7",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -namespace Xemele.Tests.M4Model -noLogo -noColor -parallelMode none -result-xml /private/tmp/m4-functions-b7d3a2e-model-tests.xml",
+      "result": "passed",
+      "summary": "Affected model41/41 passed, zero failures/skips; earlier broad suites/measurements not rerun.",
+      "artifact": "docs/reports/M4-functions/checks.md"
+    },
+    {
+      "id": "compiled-api",
+      "kind": "check",
+      "revision": "b7d3a2ef368f78d5a766199dcbf619bc813915e7",
+      "command": "python3 docs/reports/M4-model/check_api.py --dotnet '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet'",
+      "result": "passed",
+      "summary": "Approved helper emitted/matched893 public members (173 model+720 prior), two corruption controls reject. Internal function library adds no public API; b7d3a2e correction leaves model/public declarations unchanged. Final ordinary preparation reran this check against the approved b7d3a2e runtime; original candidate proof remains described in checks.md.",
+      "artifact": "docs/reports/M4-functions/checks.md"
+    },
+    {
+      "id": "consumer-package",
+      "kind": "check",
+      "revision": "b7d3a2ef368f78d5a766199dcbf619bc813915e7",
+      "command": "python3 docs/reports/M4-functions/check_consumer.py --dotnet '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet'",
+      "result": "passed",
+      "summary": "Fresh isolated net10.0 local package friend consumer with copied global.json/private cache built zero warnings/errors and passed:27 signatures, scalar length3, substring emoji, number-2.5, shared charging. Source sample also passed. Internal-only lane, no facade/shared visibility edits; model/public/sample APIs unchanged at corrected revision. Final ordinary preparation reran this check against the approved b7d3a2e runtime; original candidate proof remains described in checks.md.",
+      "artifact": "docs/reports/M4-functions/checks.md"
+    },
+    {
+      "id": "prepared-build-controls",
+      "kind": "check",
+      "revision": "b7d3a2ef368f78d5a766199dcbf619bc813915e7",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' build docs/reports/M4-functions/Functions.Probe.csproj -c Release --no-restore -m:1 -nr:false -p:UseSharedCompilation=false; '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' build samples/M4-functions -c Release --no-restore -m:1 -nr:false -p:UseSharedCompilation=false; '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' docs/reports/M4-functions/bin/Release/net10.0/Xemele.Benchmarks.dll --control /private/tmp/m4-functions-b7d3a2e-control.json; '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' docs/reports/M4-functions/bin/Release/net10.0/Xemele.Benchmarks.dll --discover /private/tmp/m4-functions-b7d3a2e-discovery",
+      "result": "passed",
+      "summary": "Release builds zero warnings/errors. Counters-disabled semantic controls consumed33374208, longnumeric/Unicode/invalid oracle controls passed; exactly13 cases in one declared ShortRunNoEmit job (3warmups/3iterations/1launch). Source108/binary40/runtime195 freeze capture/check passed. No allocation/timing run.",
+      "artifact": "docs/reports/M4-functions/preparation.md"
+    },
+    {
+      "id": "exact-allocation",
+      "kind": "check",
+      "revision": "4f0e27859955b737539711dc091f79a2123852f2",
+      "command": "python3 docs/reports/M4-functions/run_measurements.py /private/tmp/m4-functions-4f0e278-frozen.json /private/tmp/m4-functions-4f0e278-measurements (--allocation phase)",
+      "result": "passed",
+      "summary": "Authorized once exclusive sequence; actual .NET10.0.11 Arm64. EXACT full measured loop0B/32768groups (229376borrowedinvocations), all128warm and128measured batchsamples0B; cold9176B/warm0; positive1048B; owned256format348160B/1360B-op, translate8192B/32B-op, sets79872B/312B-op. Both consumed33374208. Initial/final108source/40binary/195runtime maps unchanged; no retries/builds/source edits; actualnochildconfirmed after sandbox-denied initialscan corrected through readonlyescalation.",
+      "artifact": "docs/reports/M4-functions/performance.md"
+    },
+    {
+      "id": "bdn-microbenchmarks",
+      "kind": "check",
+      "revision": "4f0e27859955b737539711dc091f79a2123852f2",
+      "command": "python3 docs/reports/M4-functions/run_measurements.py /private/tmp/m4-functions-4f0e278-frozen.json /private/tmp/m4-functions-4f0e278-measurements (--benchmark phase)",
+      "result": "passed",
+      "summary": "13successful reports ONE declared ShortRun InProcessNoEmit (3warmups/3iterations/1launch); MemoryDiagnoser+ShortRunJob allclasses; noCLIjobflags/generation/build. Actual .NET10.0.11 SDK10.0.400 Arm64; global BDN94.29s. Borrowed roundeddisplaydash separate from exactstandalone0 gate; inclusive diagnostic totals/nonzero bytes preserved. Owned1360B/32B/312B; matchingsemantics materializedinput controls. UnknownCPU/prioritydenials retained; provisional until composition+M9hardware.",
+      "artifact": "docs/reports/M4-functions/performance.md"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "",
-    "checks": [],
-    "remaining": [],
+    "summary": "Implemented exact27 internal core functions with immutable model signatures, Unicode scalar and XPath numeric conversions, budget-aware owned strings/ID snapshots, allarity/focus validation and callbackexception identity. One reviewed bulk-copy cancellation blocker corrected and independently approved. Ready for serialized integration; no compiler/navigator/facade/peer dependencies.",
+    "checks": [
+      "Pinned Release builds zero warnings/errors; functions30/30, affected model41/41, compiledAPI893 and fresh source/localpackage friend consumer at approvedb7d3a2e",
+      "Authorized exclusive once measurement at4f0e278 actual.NET10.0.11; exact0B/32768groups/229376invocations plus128zero batchsamples in eachphase; positive1048B; cold9176B; ownedformat1360B/translate32B/IDset312B perop",
+      "13successful ShortRunNoEmitBDN cases;94.29s benchmarkelapsed, complete before/final identityunchanged; inclusive diagnostic allocations/roundeddisplay differences retained",
+      "Planning148 passed on implemented evidence working tree; full claim-relative16owned-path and whitespace checks passed; coordinator owns integration verification"
+    ],
+    "remaining": [
+      "Coordinator integrates and verifies relevant combined model/functions/API/sample checks; integration_revision deliberately null.",
+      "Microbenchmarks are provisional; composed query confirmation and M9 x64/Arm64 release checks remain their owners."
+    ],
     "requests": []
   }
 }

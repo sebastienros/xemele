@@ -1,0 +1,222 @@
+[
+  {
+    "id": "M4-contracts-A2-function-01",
+    "name": "last",
+    "min_arguments": 0,
+    "max_arguments": 0,
+    "expression": "last()",
+    "expected": 1
+  },
+  {
+    "id": "M4-contracts-A2-function-02",
+    "name": "position",
+    "min_arguments": 0,
+    "max_arguments": 0,
+    "expression": "position()",
+    "expected": 1
+  },
+  {
+    "id": "M4-contracts-A2-function-03",
+    "name": "count",
+    "min_arguments": 1,
+    "max_arguments": 1,
+    "expression": "count(/r/x)",
+    "expected": 2
+  },
+  {
+    "id": "M4-contracts-A2-function-04",
+    "name": "id",
+    "min_arguments": 1,
+    "max_arguments": 1,
+    "expression": "id(\"one one missing\")",
+    "expected": [
+      "/r/x[1]"
+    ],
+    "document": "ids",
+    "context": "/r"
+  },
+  {
+    "id": "M4-contracts-A2-function-05",
+    "name": "local-name",
+    "min_arguments": 0,
+    "max_arguments": 1,
+    "expression": "local-name(/r/p:y)",
+    "expected": "y"
+  },
+  {
+    "id": "M4-contracts-A2-function-06",
+    "name": "namespace-uri",
+    "min_arguments": 0,
+    "max_arguments": 1,
+    "expression": "namespace-uri(/r/p:y)",
+    "expected": "urn:p"
+  },
+  {
+    "id": "M4-contracts-A2-function-07",
+    "name": "name",
+    "min_arguments": 0,
+    "max_arguments": 1,
+    "expression": "name(/r/p:y)",
+    "expected": "p:y"
+  },
+  {
+    "id": "M4-contracts-A2-function-08",
+    "name": "string",
+    "min_arguments": 0,
+    "max_arguments": 1,
+    "expression": "string(/r/x[1])",
+    "expected": "ABC"
+  },
+  {
+    "id": "M4-contracts-A2-function-09",
+    "name": "concat",
+    "min_arguments": 2,
+    "max_arguments": null,
+    "expression": "concat(\"a\",\"b\",\"c\")",
+    "expected": "abc"
+  },
+  {
+    "id": "M4-contracts-A2-function-10",
+    "name": "starts-with",
+    "min_arguments": 2,
+    "max_arguments": 2,
+    "expression": "starts-with(\"abc\",\"ab\")",
+    "expected": true
+  },
+  {
+    "id": "M4-contracts-A2-function-11",
+    "name": "contains",
+    "min_arguments": 2,
+    "max_arguments": 2,
+    "expression": "contains(\"abc\",\"b\")",
+    "expected": true
+  },
+  {
+    "id": "M4-contracts-A2-function-12",
+    "name": "substring-before",
+    "min_arguments": 2,
+    "max_arguments": 2,
+    "expression": "substring-before(\"abc\",\"b\")",
+    "expected": "a"
+  },
+  {
+    "id": "M4-contracts-A2-function-13",
+    "name": "substring-after",
+    "min_arguments": 2,
+    "max_arguments": 2,
+    "expression": "substring-after(\"abc\",\"b\")",
+    "expected": "c"
+  },
+  {
+    "id": "M4-contracts-A2-function-14",
+    "name": "substring",
+    "min_arguments": 2,
+    "max_arguments": 3,
+    "expression": "substring(\"12345\",1.5,2.6)",
+    "expected": "234"
+  },
+  {
+    "id": "M4-contracts-A2-function-15",
+    "name": "string-length",
+    "min_arguments": 0,
+    "max_arguments": 1,
+    "expression": "string-length(\"A😀B\")",
+    "expected": 3
+  },
+  {
+    "id": "M4-contracts-A2-function-16",
+    "name": "normalize-space",
+    "min_arguments": 0,
+    "max_arguments": 1,
+    "expression": "normalize-space(\"  A\t B\n \")",
+    "expected": "A B"
+  },
+  {
+    "id": "M4-contracts-A2-function-17",
+    "name": "translate",
+    "min_arguments": 3,
+    "max_arguments": 3,
+    "expression": "translate(\"abba\",\"ab\",\"X\")",
+    "expected": "XX"
+  },
+  {
+    "id": "M4-contracts-A2-function-18",
+    "name": "boolean",
+    "min_arguments": 1,
+    "max_arguments": 1,
+    "expression": "boolean(/r/x)",
+    "expected": true
+  },
+  {
+    "id": "M4-contracts-A2-function-19",
+    "name": "not",
+    "min_arguments": 1,
+    "max_arguments": 1,
+    "expression": "not(/r/missing)",
+    "expected": true
+  },
+  {
+    "id": "M4-contracts-A2-function-20",
+    "name": "true",
+    "min_arguments": 0,
+    "max_arguments": 0,
+    "expression": "true()",
+    "expected": true
+  },
+  {
+    "id": "M4-contracts-A2-function-21",
+    "name": "false",
+    "min_arguments": 0,
+    "max_arguments": 0,
+    "expression": "false()",
+    "expected": false
+  },
+  {
+    "id": "M4-contracts-A2-function-22",
+    "name": "lang",
+    "min_arguments": 1,
+    "max_arguments": 1,
+    "expression": "lang(\"en\")",
+    "expected": true
+  },
+  {
+    "id": "M4-contracts-A2-function-23",
+    "name": "number",
+    "min_arguments": 0,
+    "max_arguments": 1,
+    "expression": "number(\" -2.5 \")",
+    "expected": -2.5
+  },
+  {
+    "id": "M4-contracts-A2-function-24",
+    "name": "sum",
+    "min_arguments": 1,
+    "max_arguments": 1,
+    "expression": "sum(/r/x/@n)",
+    "expected": 3
+  },
+  {
+    "id": "M4-contracts-A2-function-25",
+    "name": "floor",
+    "min_arguments": 1,
+    "max_arguments": 1,
+    "expression": "floor(-1.2)",
+    "expected": -2
+  },
+  {
+    "id": "M4-contracts-A2-function-26",
+    "name": "ceiling",
+    "min_arguments": 1,
+    "max_arguments": 1,
+    "expression": "ceiling(-1.2)",
+    "expected": -1
+  },
+  {
+    "id": "M4-contracts-A2-function-27",
+    "name": "round",
+    "min_arguments": 1,
+    "max_arguments": 1,
+    "expression": "round(-1.5)",
+    "expected": -1
+  }
+]
