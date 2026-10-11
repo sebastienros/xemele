@@ -1,0 +1,28 @@
+using Xemele;
+using Xemele.Validation;
+var registry = new XmlDatatypeRegistry();
+var library = registry.Find(DatatypeTypes.XsdNamespace)!;
+var context = new SchemaNamespaceContext(new Dictionary<string, string> { ["p"] = "urn:values", ["q"] = "urn:values" }, "", null);
+var operation = new SchemaCompileOperation();
+XmlDatatypeValue Parse(string type, string input)
+{
+    if (!library.TryParse(DatatypeTypes.Name(type), input, context, operation, out var value, out var error))
+        throw new InvalidOperationException(error?.Code);
+    return value!;
+}
+var document = XmlDocument.Parse("<root names='one two'>1.00</root>");
+if (!library.ValueEquals(Parse("decimal", "1.00"), Parse("integer", "1"), operation)) throw new InvalidOperationException();
+var list = Parse("NMTOKENS", " one\t根 two ");
+if (list.Items?.Count != 3 || list.Items[1].TypeName != DatatypeTypes.Name("NMTOKEN")) throw new InvalidOperationException();
+if (!library.ValueEquals(Parse("QName", "p:a"), Parse("QName", "q:a"), operation)) throw new InvalidOperationException();
+if (library.Compare(Parse("dateTime", "2000-01-01T00:00:00"), Parse("dateTime", "2000-01-01T00:00:00Z"), operation) != XmlValueOrder.Indeterminate)
+    throw new InvalidOperationException();
+var union = library.CreateUnion(new("urn:consumer", "union"), list, operation);
+if (!ReferenceEquals(union.SelectedMember, list)) throw new InvalidOperationException();
+var rng = registry.Find(DatatypeTypes.RngNamespace)!;
+if (!rng.TryParse(new(rng.NamespaceUri, "decimal"), "1", context, operation, out var alias, out _) || !library.ValueEquals(alias!, Parse("integer", "1"), operation))
+    throw new InvalidOperationException();
+if (args.Contains("--xml-only") && typeof(XmlDocument).Assembly.GetTypes().Any(t => t.Namespace is string ns &&
+    (ns.Contains("Html", StringComparison.OrdinalIgnoreCase) || ns.StartsWith("Xemele.Css", StringComparison.Ordinal)))) throw new InvalidOperationException();
+GC.KeepAlive(document);
+Console.WriteLine("PASS: genuine XML-only capable complete-library consumer: numeric/QName/temporal/list/union/RNG joins.");

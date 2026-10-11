@@ -1,0 +1,103 @@
+using System.Runtime.InteropServices;
+using System.Security.Cryptography;
+using System.Text;
+using System.Text.Json;
+using Xemele.Validation;
+if (args is not [var mode, var output] || mode is not ("--control" or "--measure")) throw new ArgumentException();
+if (RuntimeInformation.FrameworkDescription != ".NET 10.0.11") throw new InvalidOperationException();
+bool measure = mode == "--measure";
+long coldStart = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+var fixture = new Fixture();
+long coldSetupBytes = measure ? GC.GetAllocatedBytesForCurrentThread() - coldStart : 0;
+var rows = new List<object>();
+for (int route = 0; route < Fixture.Names.Length; route++)
+{
+    long firstStart = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+    fixture.Run(route);
+    long firstRouteBytes = measure ? GC.GetAllocatedBytesForCurrentThread() - firstStart : 0;
+    for (int warm = 1; warm < 32; warm++) fixture.Run(route);
+    long[] distribution = new long[64];
+    for (int i = 0; i < distribution.Length; i++)
+    {
+        long start = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+        fixture.Run(route);
+        distribution[i] = measure ? GC.GetAllocatedBytesForCurrentThread() - start : 0;
+    }
+    rows.Add(new { route, name = Fixture.Names[route], firstRouteBytes, operations = 64, distribution });
+    if (measure && (route < 8 ? distribution.Any(n => n != 0) : distribution.Any(n => n <= 0)))
+    {
+        // Persist measured prefix/failure before asserting; zero targets remain exact.
+        File.WriteAllText(output, JsonSerializer.Serialize(new { status = "failed", failedRoute = route,
+            mode, runtime = RuntimeInformation.FrameworkDescription, architecture = RuntimeInformation.ProcessArchitecture.ToString(), coldSetupBytes,
+            sourceRevision = Environment.GetEnvironmentVariable("XEMELE_DATATYPE_COMPOSITION_REVISION"),
+            assemblySha256 = Hash(typeof(SchemaCompileOptions).Assembly.Location), probeSha256 = Hash(typeof(Fixture).Assembly.Location), inputSha256 = Fixture.InputHash, rows },
+            new JsonSerializerOptions { WriteIndented = true }));
+        throw new InvalidOperationException("Allocation boundary failed: " + route);
+    }
+}
+long positiveStart = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+var positive = new byte[1024]; GC.KeepAlive(positive);
+long positiveBytes = measure ? GC.GetAllocatedBytesForCurrentThread() - positiveStart : 0;
+if (measure && positiveBytes < 1024) throw new InvalidOperationException("Positive control failed.");
+long retainedBefore = measure ? GC.GetTotalMemory(true) : 0;
+var retained = new XmlDatatypeValue[256];
+for (int i = 0; i < retained.Length; i++) retained[i] = fixture.Parse("NMTOKENS", Fixture.Long);
+long retainedAfter = measure ? GC.GetTotalMemory(true) : 0;
+GC.KeepAlive(retained); GC.KeepAlive(fixture);
+File.WriteAllText(output, JsonSerializer.Serialize(new { mode, runtime = RuntimeInformation.FrameworkDescription,
+    architecture = RuntimeInformation.ProcessArchitecture.ToString(), os = RuntimeInformation.OSDescription,
+    serverGc = System.Runtime.GCSettings.IsServerGC, coldSetupBytes, positiveBytes, retainedBefore, retainedAfter, retainedCount = retained.Length,
+    sourceRevision = Environment.GetEnvironmentVariable("XEMELE_DATATYPE_COMPOSITION_REVISION"),
+    assemblySha256 = Hash(typeof(SchemaCompileOptions).Assembly.Location), probeSha256 = Hash(typeof(Fixture).Assembly.Location), inputSha256 = Fixture.InputHash, rows },
+    new JsonSerializerOptions { WriteIndented = true }));
+Console.WriteLine($"{mode}: 18 consumed composition routes, 32 warm/64 samples; counters {(measure ? "enabled" : "disabled")}");
+static string Hash(string path) => Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(path)));
+sealed class Fixture
+{
+    static Fixture() { }
+    internal const string Short = " a\tb\r\n根 ";
+    internal static readonly string Long = " \t根" + new string('a', 512) + " b\n c ";
+    internal static readonly string[] Names = ["registry canonical lookup", "registry RNG lookup", "missing type lookup", "library decimal equality", "library list hash", "invalid boolean", "empty builtin list", "invalid Unicode", "owned normalization", "owned short builtin list", "owned long builtin list/pool warmed", "owned canonical decimal", "owned RNG alias", "owned CreateList", "owned CreateUnion", "owned Retype", "registry setup", "owned pooled long string"];
+    internal static readonly string InputHash = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(Short + Long + "1.00" + "1" + "bad" + " \t " + "\ud800")));
+    private readonly XmlDatatypeRegistry registry = new();
+    private readonly IXmlDatatypeLibrary library, rng;
+    private readonly SchemaNamespaceContext context = new(new Dictionary<string, string>(), "", null);
+    private readonly ISchemaOperation operation = new SchemaCompileOperation(new() { MaxOperations = null, MaxComponents = null, Limits = new() { EvaluationWork = null } });
+    private readonly XmlDatatypeValue decimalValue, integer, list;
+    private readonly XmlDatatypeValue[] items;
+    internal Fixture()
+    {
+        library = registry.Find(DatatypeTypes.XsdNamespace)!; rng = registry.Find(DatatypeTypes.RngNamespace)!;
+        decimalValue = Parse("decimal", "1.00"); integer = Parse("integer", "1"); list = Parse("NMTOKENS", Short); items = [integer];
+    }
+    internal XmlDatatypeValue Parse(string type, string input)
+    {
+        if (!library.TryParse(DatatypeTypes.Name(type), input, context, operation, out var value, out _)) throw new InvalidOperationException();
+        return value!;
+    }
+    internal void Run(int route)
+    {
+        switch (route)
+        {
+            case 0: if (!ReferenceEquals(library, registry.Find(DatatypeTypes.XsdNamespace)) || !library.IsDefined(DatatypeTypes.Name("decimal"))) throw new InvalidOperationException(); break;
+            case 1: if (!ReferenceEquals(rng, registry.Find(DatatypeTypes.RngNamespace))) throw new InvalidOperationException(); break;
+            case 2: if (registry.FindType(new("urn:missing", "decimal")) is not null) throw new InvalidOperationException(); break;
+            case 3: if (!library.ValueEquals(decimalValue, integer, operation)) throw new InvalidOperationException(); break;
+            case 4: if (library.ValueHashCode(list, operation) != library.ValueHashCode(list, operation)) throw new InvalidOperationException(); break;
+            case 5: if (library.TryParse(DatatypeTypes.Name("boolean"), "bad", context, operation, out _, out var invalid) || invalid != DatatypeErrors.InvalidLexical) throw new InvalidOperationException(); break;
+            case 6: if (library.TryParse(DatatypeTypes.Name("NMTOKENS"), " \t ", context, operation, out _, out _)) throw new InvalidOperationException(); break;
+            case 7: if (library.TryParse(DatatypeTypes.Name("string"), "\ud800", context, operation, out _, out var unicode) || unicode != DatatypeErrors.InvalidUnicode) throw new InvalidOperationException(); break;
+            case 8: GC.KeepAlive(library.Normalize(Short, XmlWhitespaceRule.Collapse, operation)); break;
+            case 9: GC.KeepAlive(Parse("NMTOKENS", Short)); break;
+            case 10: GC.KeepAlive(Parse("NMTOKENS", Long)); break;
+            case 11: GC.KeepAlive(Parse("decimal", "1.00")); break;
+            case 12: if (!rng.TryParse(new(rng.NamespaceUri, "decimal"), "1", context, operation, out var alias, out _)) throw new InvalidOperationException(); GC.KeepAlive(alias); break;
+            case 13: GC.KeepAlive(library.CreateList(new("urn:probe", "list"), items, operation)); break;
+            case 14: GC.KeepAlive(library.CreateUnion(new("urn:probe", "union"), list, operation)); break;
+            case 15: GC.KeepAlive(library.Retype(new("urn:probe", "derived"), integer, operation)); break;
+            case 16: GC.KeepAlive(new XmlDatatypeRegistry()); break;
+            case 17: GC.KeepAlive(Parse("string", Long)); break;
+            default: throw new ArgumentOutOfRangeException(nameof(route));
+        }
+    }
+}
