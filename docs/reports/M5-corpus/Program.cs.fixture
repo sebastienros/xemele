@@ -1,0 +1,108 @@
+using System.Runtime.InteropServices;
+using System.Security.Cryptography;
+using System.Text.Json;
+using System.Xml;
+using Xemele;
+using Xemele.Validation;
+using Xemele.Conformance.Tests.Dtd;
+
+if (args is not [var report]) throw new ArgumentException("report path required");
+if (RuntimeInformation.FrameworkDescription != ".NET 10.0.11") throw new InvalidOperationException("Runtime10.0.11 required");
+using var manifest = JsonDocument.Parse(File.ReadAllBytes("tests/corpora/dtd/applicability.json"));
+var files = manifest.RootElement.GetProperty("files").EnumerateArray().ToDictionary(f => f.GetProperty("path").GetString()!, f => f.GetProperty("sha256").GetString()!);
+var cache = Environment.GetEnvironmentVariable("XEMELE_CORPUS_RESOURCES") ?? "/private/tmp/xemele-corpus-cache/w3c-xml-20130923/resources";
+byte[] Read(string path)
+{
+    if (Path.IsPathRooted(path) || path.Split('/').Any(p => p is "." or ".." or "") || path.Contains('\\')) throw new InvalidDataException("Unsafe path");
+    var info = new FileInfo(Path.Combine(cache,path));
+    for (FileSystemInfo? i=info; i is not null; i=i is FileInfo f?f.Directory:((DirectoryInfo)i).Parent)
+    { if(i.LinkTarget is not null) throw new InvalidDataException("Symlink"); if(i.FullName==cache) break; }
+    byte[] data=File.ReadAllBytes(info.FullName);
+    if(Convert.ToHexStringLower(SHA256.HashData(data))!=files[path]) throw new InvalidDataException("Hash mismatch:"+path);
+    return data;
+}
+foreach(var file in files.Keys) Read(file);
+var rows = new List<object>(); int failures=0;
+foreach (var c in manifest.RootElement.GetProperty("cases").EnumerateArray())
+{
+    var id=c.GetProperty("id").GetString()!; var scope=c.GetProperty("scope").GetString(); var path=c.GetProperty("inputPath").GetString()!;
+    var allowed = c.GetProperty("offlinePaths").EnumerateArray().Select(p=>p.GetString()!).ToHashSet();
+    var uri=new Uri(c.GetProperty("sourceUri").GetString()!);var input=Read(path);
+    var resolver = new ProductResolver(allowed, Read);
+    string outcome;string[] codes=[];
+    try
+    {
+        var document=SourceContext.Parse(input,uri,resolver);
+        if(scope=="associated-dtd")
+        {
+            var result=DtdSchema.FromDocument(document).Validate(document);
+            outcome=!result.IsComplete?"incomplete":result.IsValid?"valid":"invalid";
+            codes=result.Diagnostics.Select(d=>d.Code).ToArray();
+        }
+        else outcome="accepted";
+    }
+    catch(XmlParseException error) { codes=error.Diagnostics.Select(d=>d.Code).ToArray();outcome=codes.Any(s=>s.Contains("Limit",StringComparison.Ordinal)||s.Contains("Incomplete",StringComparison.Ordinal))?"incomplete":"rejected"; }
+    catch(Exception error) {outcome="infrastructure";codes=[error.GetType().Name+":"+error.Message];}
+    // Resolver/IO/programmer exceptions are infrastructure failures, never invalidity.
+    if(resolver.Disposals!=resolver.Opens) throw new InvalidDataException("Resource lifetime:"+id);
+    var referenceResolver=new ReferenceResolver(allowed,Read);
+    string reference;var referenceCodes=new List<string>();
+    try
+    {
+        var settings=new XmlReaderSettings { DtdProcessing=DtdProcessing.Parse, XmlResolver=referenceResolver, ValidationType=scope=="associated-dtd"?ValidationType.DTD:ValidationType.None, MaxCharactersInDocument=16_777_216, MaxCharactersFromEntities=16_777_216 };
+        settings.ValidationEventHandler+=(_,e)=> {if(e.Severity==System.Xml.Schema.XmlSeverityType.Error) referenceCodes.Add(e.Message);};
+        using var reader=XmlReader.Create(new MemoryStream(input,false),settings,uri.AbsoluteUri);
+        while(reader.Read()) {}
+        reference=scope=="associated-dtd"?(referenceCodes.Count==0?"valid":"invalid"):"accepted";
+    }
+    catch(XmlException error) {reference="rejected";referenceCodes.Add(error.Message);}
+    catch(Exception error) {reference="infrastructure";referenceCodes.Add(error.GetType().Name+":"+error.Message);}
+    var expected=c.GetProperty("expected").EnumerateArray().Select(e=>e.GetString()).ToArray();
+    bool pass=expected.Contains(outcome)||scope=="associated-dtd"&&expected.Contains("invalid")&&outcome=="rejected";
+    if(!pass) failures++;
+    rows.Add(new {id,scope,expected,outcome,codes,reference,referenceErrors=referenceCodes,pass,opens=resolver.Opens,disposals=resolver.Disposals});
+}
+var canonicalRows=new List<object>();
+using var vectors=JsonDocument.Parse(File.ReadAllBytes("tests/corpora/c14n/vectors.json"));
+foreach(var c in vectors.RootElement.EnumerateArray())
+{
+    var id=c.GetProperty("id").GetString()!;int mode=c.GetProperty("mode").GetInt32();string xml=c.GetProperty("xml").GetString()!;
+    bool comments=c.TryGetProperty("comments",out var cv)&&cv.GetBoolean();
+    string? expression=c.TryGetProperty("expression",out var ev)?ev.GetString():null;
+    string[] prefixes=c.TryGetProperty("prefixes",out var pv)?pv.EnumerateArray().Select(p=>p.GetString()!).ToArray():[];
+    var document=SourceContext.Parse(System.Text.Encoding.UTF8.GetBytes(xml),new Uri("https://corpus.invalid/input.xml"),new VectorResolver(c));
+    using var bytes=new MemoryStream();var options=new Xemele.Serialization.XmlCanonicalizationOptions {Mode=(Xemele.Serialization.XmlCanonicalizationMode)mode,IncludeComments=comments,InclusivePrefixes=prefixes};
+    if(expression is null) Xemele.Serialization.XmlCanonicalizer.Canonicalize(document,bytes,options);
+    else Xemele.Serialization.XmlCanonicalizer.Canonicalize(Xemele.XPath.XPathExpression.Compile(expression).Evaluate(document.DocumentNode).AsNodeSet(),bytes,options);
+    byte[] actual=bytes.ToArray();bool pass=actual.AsSpan().SequenceEqual(System.Text.Encoding.UTF8.GetBytes(c.GetProperty("expected").GetString()!));
+    bool? referencePass=null;
+    if(mode!=1) referencePass=actual.AsSpan().SequenceEqual(Xemele.Differential.Tests.DtdCanonical.ReferenceAlgorithm.Reference(xml,mode,comments,expression,prefixes));
+    if(!pass || referencePass==false)failures++;
+    canonicalRows.Add(new{id,mode,comments,pass,referencePass,actualBase64=Convert.ToBase64String(actual)});
+}
+File.WriteAllText(report,JsonSerializer.Serialize(new {runtime=RuntimeInformation.FrameworkDescription,architecture=RuntimeInformation.ProcessArchitecture.ToString(),revision=typeof(Xemele.XmlDocument).Assembly.GetCustomAttributes(typeof(System.Reflection.AssemblyInformationalVersionAttribute),false).Cast<System.Reflection.AssemblyInformationalVersionAttribute>().Single().InformationalVersion,sourceFiles=files.Count,total=rows.Count,failures,rows,canonicalRows},new JsonSerializerOptions {WriteIndented=true}));
+Console.WriteLine($"Actual{RuntimeInformation.FrameworkDescription}/{RuntimeInformation.ProcessArchitecture};{rows.Count}cases;{failures}failures;{files.Count}hashverifiedresources");
+return failures==0?0:1;
+
+sealed class ProductResolver(HashSet<string> allowed,Func<string,byte[]> read):XmlResourceResolver
+{
+    public int Opens,Disposals;
+    internal static string PathFor(Uri uri)
+    {const string prefix="https://xemele.invalid/corpus/";if(!uri.AbsoluteUri.StartsWith(prefix,StringComparison.Ordinal))throw new InvalidDataException("Ambient resource denied:"+uri);return Uri.UnescapeDataString(uri.AbsoluteUri[prefix.Length..]);}
+    public override XmlResolvedResource? Resolve(XmlResourceRequest request,CancellationToken cancellationToken)
+    {cancellationToken.ThrowIfCancellationRequested();string path=PathFor(request.Uri);if(!allowed.Contains(path))throw new InvalidDataException("Unfrozen dependency:"+path);Opens++;return new(new Tracked(read(path),this),request.Uri);}
+    sealed class Tracked(byte[] data,ProductResolver owner):MemoryStream(data,false)
+    {protected override void Dispose(bool disposing){if(disposing)owner.Disposals++;base.Dispose(disposing);}}
+}
+sealed class ReferenceResolver(HashSet<string> allowed,Func<string,byte[]> read):System.Xml.XmlResolver
+{
+    public override System.Net.ICredentials? Credentials {set {}}
+    public override object GetEntity(Uri absoluteUri,string? role,Type? ofObjectToReturn)
+    {var path=ProductResolver.PathFor(absoluteUri);if(!allowed.Contains(path))throw new InvalidDataException("Unfrozen reference dependency:"+path);return new MemoryStream(read(path),false);}
+}
+
+sealed class VectorResolver(JsonElement vector):XmlResourceResolver
+{
+    public override XmlResolvedResource? Resolve(XmlResourceRequest request,CancellationToken token)
+    {token.ThrowIfCancellationRequested();if(!vector.TryGetProperty("external",out var map)||!map.TryGetProperty(request.Uri.AbsoluteUri,out var value))throw new InvalidDataException("Unmapped vector resource");return new(new MemoryStream(System.Text.Encoding.UTF8.GetBytes(value.GetString()!),false),request.Uri);}
+}
