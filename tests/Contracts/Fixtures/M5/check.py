@@ -10,7 +10,7 @@ def run(args):
     return p.returncode,p.stdout
 
 def main():
-    parser=argparse.ArgumentParser();parser.add_argument('--dotnet',required=True);parser.add_argument('--emit',action='store_true');a=parser.parse_args()
+    parser=argparse.ArgumentParser();parser.add_argument('--dotnet',required=True);parser.add_argument('--emit',action='store_true');parser.add_argument('--ownership-base',default='0f772c8da2e2f68d1a0f1b987ec95c03c89288fe');a=parser.parse_args()
     code,out=run([a.dotnet,'--version']);assert code==0 and out.strip()=='10.0.400',out
     lanes=['DtdConsumer','C14NConsumer','ApiCheck']
     for lane in lanes:
@@ -38,7 +38,7 @@ def main():
         assert '<IsPackable>false</IsPackable>' in project
         assert 'ProjectReference' in project
         assert ('../Dtd.cs.fixture' in project) != ('../Canonicalization.cs.fixture' in project)
-    code,out=run(['git','diff','--name-only','0f772c8da2e2f68d1a0f1b987ec95c03c89288fe','--']);assert code==0
+    code,out=run(['git','diff','--name-only',a.ownership_base,'--']);assert code==0
     code,untracked=run(['git','ls-files','--others','--exclude-standard']);assert code==0
     owned=lambda p:p in ['docs/tasks/M5-contracts.json','docs/specs/dtd-c14n.md'] or any(p.startswith(x) for x in ['tests/Contracts/Fixtures/M5/','docs/decisions/M5/','docs/reports/M5-contracts/'])
     assert all(owned(p) for p in (out+untracked).splitlines()),out+untracked
