@@ -84,3 +84,22 @@ accounting engine or serializer tests were run. Coordinator must review/integrat
 and verify both ordered repair prerequisites before starting M8-model.
 
 Coordinator bounded source-only review accepted all seven corrections at1d04aee14084ede266b64796c5db1461901925d9, and root inspected/accepted the final four-line fixture/check path alignment at2a41475dd531f18391219ae6a679a844019ea165. This is review evidence, not an additional execution claim.
+
+## Coordinator integrated verification
+
+Combined implementation `7ca8b9752b27df2ca6b91a6679555af7cb34f97d` passed the
+normal check with `--ownership-base a191325c6ea8524a114b1238aadbe9c18c3bb926`:
+eight XML-only consumers and prerequisite probes, exact API counts
+316/316/316/316/444/615/479/319, 48 rejecting controls, 427 inventory entries,
+pinned grammar and declarative report expectation; actual runtime 10.0.11.
+Planning validated 171 tasks and whitespace checks passed. Coordinator inspected
+all 47 owned changed paths including the task JSON. A preliminary coordinator
+assertion expected the worker message's incorrect count46; it stopped before
+path validation, and the corrected actual47-path ownership check passed.
+
+Final integration `75ffea4f1a249315da3fbd72fc3ad3f996c5c8c1` also preserves worker
+handoff `6b91df73843359cc0ad7011bac98478074780c54`. Its only differences from the
+tested combination are this report and task review metadata. Exact two-file
+comparison, planning171 and whitespace checks passed; prior execution remains
+valid without rebuilding unchanged declarations or inputs. Source review accepted
+all seven contract corrections; no runtime validator/performance claim is made.
