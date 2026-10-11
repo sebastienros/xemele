@@ -12,6 +12,11 @@ if (args is ["--allocation", var path])
     await Allocation.Run(path);
     return;
 }
+if (args is ["--control", var controlPath])
+{
+    await Allocation.Control(controlPath);
+    return;
+}
 if (args is not ["--benchmark", var artifacts]) throw new ArgumentException("Use --allocation <report> or --benchmark <artifacts>.");
 BenchmarkRunner.Run<ResourceBenchmarks>(ManualConfig.Create(DefaultConfig.Instance).WithArtifactsPath(artifacts));
 
@@ -33,11 +38,11 @@ internal sealed class Fixture(int bytes)
 {
     internal const string Prefix = "<!DOCTYPE r [<!ENTITY e SYSTEM 'https://example.test/e'>]><r>&e;";
     internal const string Tail = "</r>";
-    internal XmlParseOptions Options(bool suspend) => new()
+    internal XmlParseOptions Options(bool suspend, bool unlimitedToken = true) => new()
     {
         DtdProcessing = XmlDtdProcessing.Parse,
         Resolver = new Resolver(bytes, suspend),
-        Limits = new() { ExternalBytes = null, ExpandedCharacters = null }
+        Limits = new() { ExternalBytes = null, ExpandedCharacters = null, TokenCharacters = unlimitedToken ? null : new XmlResourceLimits().TokenCharacters }
     };
     internal long ParseSync()
     {
@@ -118,6 +123,40 @@ internal sealed class Fixture(int bytes)
 
 internal static class Allocation
 {
+    internal static async Task Control(string path)
+    {
+        const int bytes = 1048577;
+        var fixture = new Fixture(bytes);
+        var defaults = await Parse(false);
+        var unlimited = await Parse(true);
+        if (defaults.Step != ScanStep.Rejected || defaults.Diagnostic?.Code != "XML.ResourceLimit" ||
+            !defaults.Diagnostic.Message.Contains("TokenCharacters", StringComparison.Ordinal) || unlimited.Step != ScanStep.Completed)
+            throw new InvalidOperationException($"Quota control failed: {defaults.Step}/{defaults.Diagnostic?.Message}, unlimited {unlimited.Step}.");
+        var report = new { bytes, defaults = new { step = defaults.Step.ToString(), defaults.Diagnostic.Code, defaults.Diagnostic.Message }, unlimited = unlimited.Step.ToString() };
+        File.WriteAllText(path, JsonSerializer.Serialize(report, new JsonSerializerOptions { WriteIndented = true }));
+        Console.WriteLine(File.ReadAllText(path));
+
+        async Task<ScanResult> Parse(bool unlimitedToken)
+        {
+            await using var core = new XmlParserCore(fixture.Options(false, unlimitedToken), asyncResources: true);
+            var sink = new Fixture.CounterSink();
+            var result = core.Append(Fixture.Prefix, [], false, sink, default);
+            if (result.Step != ScanStep.NeedResource) throw new InvalidOperationException("Control boundary failed.");
+            await core.AdvanceResourceAsync();
+            while (true)
+            {
+                result = core.Append([], [], false, sink, default);
+                if (result.Step == ScanStep.NeedResource) { await core.AdvanceResourceAsync(); continue; }
+                if (result.Step == ScanStep.Rejected) return result;
+                if (result.Step != ScanStep.NeedInput) throw new InvalidOperationException("Control progress failed.");
+                break;
+            }
+            result = core.Append(Fixture.Tail, [], true, sink, default);
+            if (sink.Count != bytes) throw new InvalidOperationException("Control content oracle failed.");
+            return result;
+        }
+    }
+
     internal static async Task Run(string path)
     {
         // Warm runtime and suspended continuations before measuring. Process-wide
@@ -175,7 +214,7 @@ internal static class Allocation
             long before = GC.GetTotalAllocatedBytes(true);
             result = core.Append([], [], false, sink, default);
             total += GC.GetTotalAllocatedBytes(true) - before;
-            if (result.Step != ScanStep.NeedResource) throw new InvalidOperationException("Primitive progress failed.");
+            if (result.Step != ScanStep.NeedResource) throw new InvalidOperationException($"Primitive progress failed at {i}: {result.Step}, {result.Diagnostic?.Code}: {result.Diagnostic?.Message}");
             await core.AdvanceResourceAsync();
         }
         if (sink.Count <= 512 * 4096) throw new InvalidOperationException("Primitive correctness failed.");
