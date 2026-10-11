@@ -8,9 +8,24 @@ using Xemele;
 using Xemele.Streaming;
 using Xemele.Benchmarks.Push;
 
-if (args is ["--benchmark", var artifacts])
+if (args is [var benchmarkMode, var artifacts] && benchmarkMode is "--benchmark" or "--benchmark-check")
 {
-    BenchmarkRunner.Run([typeof(PushAppendBenchmarks), typeof(PushDocumentBenchmarks)], ManualConfig.Create(DefaultConfig.Instance).WithArtifactsPath(artifacts)); return;
+    var config = ManualConfig.Create(DefaultConfig.Instance).WithArtifactsPath(artifacts);
+    var runs = new[] { BenchmarkConverter.TypeToBenchmarks(typeof(PushAppendBenchmarks), config), BenchmarkConverter.TypeToBenchmarks(typeof(PushDocumentBenchmarks), config) };
+    var cases = runs.SelectMany(r => r.BenchmarksCases).ToArray();
+    if (runs.Length != 2 || runs[0].BenchmarksCases.Length != 2 || runs[1].BenchmarksCases.Length != 1 || cases.Length != 3 ||
+        cases.Any(c => c.Job.Run.IterationCount != 3 || c.Job.Run.WarmupCount != 1 || c.Job.Run.InvocationCount is not (64 or 256) ||
+            c.Job.Infrastructure.Toolchain.GetType().FullName != "BenchmarkDotNet.Toolchains.InProcess.Emit.InProcessEmitToolchain"))
+        throw new InvalidOperationException("Expected exactly three bounded benchmark cases, no duplicate jobs.");
+    Console.WriteLine("GUARD: 3 cases in 2 classes; 3 iterations, 1 warmup, 64/256 invocations.");
+    if (benchmarkMode == "--benchmark-check") return;
+    var summaries = BenchmarkRunner.Run(runs);
+    var reports = summaries.SelectMany(s => s.Reports).ToArray();
+    if (summaries.Length != 2 || summaries.Any(s => s.HasCriticalValidationErrors) || reports.Length != 3 ||
+        reports.Any(r => !r.Success || r.ResultStatistics is null || r.ExecuteResults.Any(e => e.ExitCode != 0)))
+        throw new InvalidOperationException("Benchmark completion oracle failed: not all three cases succeeded.");
+    Console.WriteLine("COMPLETION: exactly 3 successful benchmark cases with statistics and successful execution exits.");
+    return;
 }
 if (args is not [var mode, var reportPath] || mode is not ("--control" or "--allocation")) throw new ArgumentException("Use --control|--allocation <report> or --benchmark <artifacts>.");
 bool measure = mode == "--allocation";
@@ -28,13 +43,21 @@ object positive = new byte[1024];
 long positiveBytes = measure ? GC.GetTotalAllocatedBytes(true) - begin : 0; GC.KeepAlive(positive);
 if (h.Characters != 640L * chunk.Length || measure && (warmBytes != 0 || positiveBytes <= 0)) throw new InvalidOperationException($"Warm oracle {h.Characters}/{warmBytes}/{positiveBytes} failed.");
 int[] beforeCapacities = Capacities(p);
+long[] liveHeapSamples = measure ? new long[64] : [];
 long retainedBefore = measure ? GC.GetTotalMemory(true) : 0;
 long beforeText = h.Characters;
 int stressChunks = measure ? 262144 : 4096;
-for (int i = 0; i < stressChunks; i++) p.Append(chunk);
+for (int i = 0; i < stressChunks; i++)
+{
+    p.Append(chunk);
+    // Sample every 16 MiB with the accepting parser and all retained state alive.
+    if (measure && (i + 1) % 4096 == 0) liveHeapSamples[(i + 1) / 4096 - 1] = GC.GetTotalMemory(true);
+}
+GC.KeepAlive(p);
 long retainedAfter = measure ? GC.GetTotalMemory(true) : 0;
 int[] afterCapacities = Capacities(p);
-if (measure && retainedAfter - retainedBefore > 1024 * 1024) throw new InvalidOperationException("Retained memory grew by more than the 1 MiB noise allowance across 1 GiB input.");
+long peakLiveHeap = measure ? liveHeapSamples.Max() : 0;
+if (measure && Math.Max(peakLiveHeap, retainedAfter) - retainedBefore > 1024 * 1024) throw new InvalidOperationException("Retained memory grew by more than the 1 MiB noise allowance across 1 GiB input.");
 if (!beforeCapacities.SequenceEqual(afterCapacities) || h.Characters - beforeText != (long)stressChunks * chunk.Length) throw new InvalidOperationException("Retained control failed.");
 p.Append("</r>"u8); p.Complete();
 if (h.Completed != 1 || h.Starts != 1 || h.Ends != 1 || typeof(XmlPushParser).GetField("pump", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(p) is not null) throw new InvalidOperationException("Completion/release failed.");
@@ -47,7 +70,7 @@ var report = new { mode, revision = Environment.GetEnvironmentVariable("XEMELE_P
     os = RuntimeInformation.OSDescription, architecture = RuntimeInformation.ProcessArchitecture.ToString(),
     assemblySha256 = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(typeof(XmlPushParser).Assembly.Location))),
     setupBytes, warmupChunks = 128, measuredChunks = 512, chunkBytes = chunk.Length, warmBytes, positiveBytes,
-    beforeCapacities, afterCapacities, retainedBefore, retainedAfter, retainedStressBytes = (long)stressChunks * chunk.Length,
+    beforeCapacities, afterCapacities, retainedBefore, retainedAfter, liveHeapSamples, peakLiveHeap, maximumLiveDelta = peakLiveHeap - retainedBefore, terminalCharacters = h.Characters, terminalStarts = h.Starts, terminalEnds = h.Ends, terminalCompletions = h.Completed, liveSampleIntervalBytes = 16 * 1024 * 1024, retainedNoiseAllowanceBytes = 1024 * 1024, retainedStressBytes = (long)stressChunks * chunk.Length,
     documentOperations = 32, documentBytes };
 File.WriteAllText(reportPath, JsonSerializer.Serialize(report, new JsonSerializerOptions { WriteIndented = true }));
 Console.WriteLine(File.ReadAllText(reportPath));
