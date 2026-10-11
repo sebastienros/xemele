@@ -24,8 +24,14 @@ def capture():
     runtime=pathlib.Path('/Users/sebastienros/Library/Application Support/dotnetup/dotnet')
     runtime_files=[runtime/'dotnet'] + [p for p in (runtime/'sdk/10.0.400').rglob('*') if p.is_file()] + [p for p in (runtime/'shared/Microsoft.NETCore.App/10.0.11').rglob('*') if p.is_file()] + [p for p in (runtime/'host/fxr').rglob('*') if p.is_file()]
     host={'platform':platform.platform(),'machine':platform.machine(),'cpuCount':os.cpu_count(),'cpu':subprocess.check_output(['sysctl','-n','machdep.cpu.brand_string'],text=True).strip(),'memoryBytes':subprocess.check_output(['sysctl','-n','hw.memsize'],text=True).strip()}
-    environment_sha256=hashlib.sha256(json.dumps(dict(os.environ),sort_keys=True).encode()).hexdigest()
-    return {'host':host,'inheritedEnvironmentSha256':environment_sha256,'revision':subprocess.check_output(['git','rev-parse','HEAD'],cwd=root,text=True).strip(),'source':{str(p):digest(p) for p in sorted(set(sources))},'binary':binaries,'runtime':{str(p):digest(p) for p in runtime_files}}
+    # Shell bookkeeping and connector/session variables may change between tool
+    # invocations. Freeze only effective runtime-relevant inherited settings;
+    # exact planned launch overrides are part of the frozen source/plan closure.
+    plan=json.loads((root/'docs/reports/M4-evaluate/measurement-plan.json').read_text())
+    environment={key:value for key,value in os.environ.items() if key in {'PATH','LANG','LC_ALL','LC_CTYPE','MallocNanoZone','LD_LIBRARY_PATH'} or key.startswith(('DOTNET_','COMPlus_','CORECLR_','DYLD_'))}
+    environment.update(plan['environment'])
+    environment_sha256=hashlib.sha256(json.dumps(environment,sort_keys=True).encode()).hexdigest()
+    return {'host':host,'effectiveRuntimeEnvironmentSha256':environment_sha256,'revision':subprocess.check_output(['git','rev-parse','HEAD'],cwd=root,text=True).strip(),'source':{str(p):digest(p) for p in sorted(set(sources))},'binary':binaries,'runtime':{str(p):digest(p) for p in runtime_files}}
 mode,path=sys.argv[1:];path=pathlib.Path(path);actual=capture()
 if mode=='capture':path.write_text(json.dumps(actual,indent=2,sort_keys=True)+'\n')
 elif mode=='check':assert json.loads(path.read_text())==actual,'Prepared source/binary/runtime identity changed'
