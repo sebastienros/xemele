@@ -4,7 +4,7 @@
   "milestone": "M4",
   "title": "Axes and document ordering",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M4 coordinator / isolated M4-navigation worker",
   "branch": "codex/m4-navigation",
   "base_revision": "228d9eb1c0862861e70ca87601ee507a06228fd0",
@@ -33,29 +33,105 @@
     {
       "id": "M4-navigation-A1",
       "description": "Implement all axes with distinct namespace/attribute items, ordering/deduplication and context node rules.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "navigation-correctness"
+      ]
     },
     {
       "id": "M4-navigation-A2",
       "description": "Test reverse-axis order, in-scope namespaces, attributes, detached trees and invalid/mixed-document inputs.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "navigation-correctness"
+      ]
     },
     {
       "id": "M4-navigation-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "navigation-api-consumer",
+        "navigation-planning",
+        "navigation-target-runtime-performance",
+        "navigation-source-review"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/XPath/Navigation/XPathNavigator.cs: XPathNavigator implements IXPathNavigator; bounded entry snapshot, thirteen axes, Rebind/Normalize, SelectId/FindLanguage",
+    "tests/Xemele.Tests/M4-navigation/NavigationTests.cs and DifferentialTests.cs: quota/mutation/order/ID/lang/incomplete/cancellation and pinned-reference cases",
+    "docs/api/M4-navigation.txt: zero public members; samples/M4-navigation/Program.cs: independently compiled friend seam"
+  ],
+  "evidence": [
+    {
+      "id": "navigation-correctness",
+      "kind": "check",
+      "revision": "802a2a0e746820cb73f388b6804e9740fafacdd5",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' build tests/Xemele.Tests -c Release --no-restore -m:1 -nr:false -p:UseSharedCompilation=false; '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -namespace Xemele.Tests.M4Navigation -namespace Xemele.Tests.M4Model -noColor",
+      "result": "passed",
+      "summary": "Release 0 warnings/errors; 55 passed, 0 failed/skipped on .NET10.0.11; two all-context thirteen-axis differential vectors plus focused metadata/limits/mutation/cancellation. Earlier test preparation failures corrected and retained in report. Pinned SDK absolute path documented in measurement plan.",
+      "artifact": "docs/reports/M4-navigation/checks.md"
+    },
+    {
+      "id": "navigation-api-consumer",
+      "kind": "check",
+      "revision": "802a2a0e746820cb73f388b6804e9740fafacdd5",
+      "command": "python3 docs/reports/M4-model/check_api.py --dotnet '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet'; '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' build samples/M4-navigation -c Release -m:1 -nr:false -p:UseSharedCompilation=false; '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' samples/M4-navigation/bin/Release/net10.0/Xemele.Tests.dll; python3 docs/reports/M4-navigation/check_consumer.py --dotnet '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet'",
+      "result": "passed",
+      "summary": "Actual893 members unchanged (720 earlier+173model); two corruption controls rejected. Independent source sample and fresh isolated packed production friend-seam consumer printed logical text=12.5; retained attribute=v; language=en; axes=13. No public additions.",
+      "artifact": "docs/reports/M4-navigation/checks.md"
+    },
+    {
+      "id": "navigation-planning",
+      "kind": "check",
+      "revision": "802a2a0e746820cb73f388b6804e9740fafacdd5",
+      "command": "python3 tools/planning/tasks.py validate; git diff --cached --check",
+      "result": "passed",
+      "summary": "148 tasks validated; candidate staged whitespace check passed; all eight candidate paths are task-owned.",
+      "artifact": null
+    },
+    {
+      "id": "navigation-source-review",
+      "kind": "review",
+      "revision": "802a2a0e746820cb73f388b6804e9740fafacdd5",
+      "command": "Independent source-only review via coordinator 01a12903-1caa-7f32-b0e3-e66b49cea7a6/local",
+      "result": "passed",
+      "summary": "Coordinator reported independent source-only review approved candidate 802a2a0 with no concrete blockers; no measurements performed.",
+      "artifact": "docs/reports/M4-navigation/checks.md"
+    },
+    {
+      "id": "navigation-measurement-runtime-mismatch",
+      "kind": "check",
+      "revision": "d79ffea3ca933f38227a8cfc74b31d49454832b4",
+      "command": "python3 docs/reports/M4-navigation/run_measurements.py --exclusive-grant",
+      "result": "failed",
+      "summary": "ONE authorized sequence: allocation0/benchmark0 and ten BDN cases successful; exact warmed primitive totals0B over65536 groups, owned totals positive. Initial/final nominal freeze0. Wrapper1/PermissionError on sandbox cleanup; independent escalated read-only process inventory confirmed0 scoped processes before raw inspection. Actual runtime10.0.0 due stale effective runtimeconfig despite property10.0.11, so required10.0.11 performance evidence is not satisfied. Retained heap estimate also not reliably attributable. No retries authorized or performed.",
+      "artifact": "docs/reports/M4-navigation/performance.md"
+    },
+    {
+      "id": "navigation-target-runtime-performance",
+      "kind": "check",
+      "revision": "bee37f243c67cda55d6d6b17df66ee1c8e372d68",
+      "command": "python3 docs/reports/M4-navigation/run_measurements.py --exclusive-grant (authorized require_escalated; both plan arrays use explicit --fx-version 10.0.11)",
+      "result": "passed",
+      "summary": "ONE separately granted corrected sequence; actualFrameworkDescription/all10BDNcases.NET10.0.11 SDK10.0.400 Arm64; wrapper/allocation/benchmark/initialidentity/finalidentity0; no_child=true and release before raw inspection. 65536warm+65536measured primitivegroups each0B;128batchdistributions all0; consumed1703936 each; cold165224B,128owned snapshots16449040B,axis3670304B,normalize48128B,value89088B. Ten declaredShortRunNoEmit cases71.49sec. Prior10.0.0targetfailure retained. Process-heap retained estimate noisy/not a sizeclaim; benchmarkrounding/harness totals disclosed.",
+      "artifact": "docs/reports/M4-navigation/performance.md"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "",
-    "checks": [],
-    "remaining": [],
+    "summary": "Implements bounded immutable navigation entry snapshot and all13axes with namespace/attribute/logical-text identities, order/rebind/normalization, retained-DTD declaredIDs, empty-stop xml:lang and incomplete rejection. Independent source review approved. Actual10.0.11 target performance now passed in separate explicitly granted sequence; prior failed target/probe cleanup history preserved. Branch implemented; integrated verification remains coordinator-owned.",
+    "checks": [
+      "Release build 0warnings/errors;55navigation+model tests passed;API893 preserved;standalone/freshpackage friendseam sample passed",
+      "Planning148 and allowned paths/whitespace checks passed",
+      "Target10.0.11 exact warm primitives0B, cold/owned storage positive/bounded;10BDNShortRun cases passed;all phase/identity exits0,nochildren;original10.0.0attempt retained as failed target evidence"
+    ],
+    "remaining": [
+      "Coordinator integration verification; comprehensive cumulative/M4gate checks",
+      "End-to-end evaluator and x64 release performance confirmation belong to future composition/gate work; no current claim",
+      "Exact retained size not established by noisy process-heap estimate; no retained-size claim"
+    ],
     "requests": []
   }
 }
