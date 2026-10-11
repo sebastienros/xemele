@@ -1,7 +1,7 @@
 # Additive HTML processing instructions
 
 Owner: M7-html-pi-contract; implementation: M7-html-pi-model, M7-tokenizer,
-M7-treebuilder and M7-html-serialize in dependency order. This repairs an omission
+M7-builder and M7-serialize in dependency order. This repairs an omission
 in the original six-kind freeze without changing any existing public member.
 
 ## Authority and complete algorithm boundary
