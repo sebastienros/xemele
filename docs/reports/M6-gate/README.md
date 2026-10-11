@@ -1,0 +1,13 @@
+# M6 XML beta checkpoint
+
+Preparation starts from verified M6 integration `9968203ec8f627b8da86dc96649bf6309a60eebb` and task base `647c894aaae62377fba11fd0d13199b858640a9b`. This gate owns only this report subtree and its task record. No runtime/build/test contracts are changed.
+
+The owned adapters reuse the M5 gate's bounded preparation, original grammar oracle, fixed-seed M4 fuzz and official API inventory checker. The public XML sample and external package/trim/native consumer use the verified M6 integration harnesses unchanged. The CLI check runs seven examples and all 57 independent managed/native process controls. Package outputs remain unpublished and local; actual deployment scope is osx-arm64.
+
+Full tests include allocation assertions and run only after the coordinator's durable exclusive exact lease. `run_tests.py --identity-control` performs the same initial/final checks with no test executions. The run wrapper checks identity before work, serially executes three invariant-culture test DLLs (300 seconds each, 1000 seconds total), and finally cleans only its owned process groups and checks identity even on failure. The flag alone is not authorization. Raw inspection follows durable release. There is no benchmark rerun or new throughput claim.
+
+`freeze.py` hashes all tracked source/config/task/harness files, generated obj state, checkout bin outputs, the complete SDK 10.0.400/runtime 10.0.11/host closure and all ignored copied original corpus resources. All 3386 frozen original files are copied from the existing cache into `tests/corpora/xml/xmlconf`, without symlinks or downloads; original cache is preserved. `XEMELE_CORPUS_RESOURCES` explicitly selects `/private/tmp/xemele-m6-gate/tests/corpora/xml`. Complete effective child environment is hashed deterministically; values that may be secrets are never written. Per-key hashes permit independent session-difference review. Runtime controls are readable. `SHLVL=1` is explicit; session identity remains hashed.
+
+Postlease verification checks the exact earlier M5 test-name digests and counts (5932 unit, 384 conformance, 481 differential), removing only exact new M6 class prefixes. Counts alone cannot establish preservation. Original grammar remains 2585 cases and 3386 resources with unchanged independent normative models, callback pauses, output witnesses and reference disagreement resolutions. API inventory must match 1054 members. Preparation and ordinary postlease checks are separate from leased allocation tests.
+
+Final executable evidence, closure hashes, actual counts and limitations will be recorded after the authorized run. No pending check is represented as passing.

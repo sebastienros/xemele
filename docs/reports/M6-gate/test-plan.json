@@ -1,0 +1,74 @@
+{
+  "total_max_seconds": 1000,
+  "initial_identity_max_seconds": 40,
+  "final_identity_max_seconds": 40,
+  "environment": {
+    "DOTNET_ROLL_FORWARD": "Disable",
+    "DOTNET_TieredCompilation": "0",
+    "DOTNET_TieredPGO": "0",
+    "DOTNET_ReadyToRun": "0",
+    "DOTNET_CLI_USE_MSBUILD_SERVER": "0",
+    "MSBUILDDISABLENODEREUSE": "1",
+    "XEMELE_DOTNET": "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+    "PATH": "/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/Library/Apple/usr/bin:/usr/local/share/dotnet:~/.dotnet/tools:/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/sebastienros/.codex/tmp/arg0/codex-arg0OoFPzq:/Users/sebastienros/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/override:/var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/aspire-19585-visual-XXXXXX.IjYMZTMU7B/stable/bin:/Users/sebastienros/.dotnetup:/Users/sebastienros/Library/Application Support/dotnetup/dotnet:/Users/sebastienros/.bun/bin:/Users/sebastienros/Library/Android/sdk/platform-tools:/Users/sebastienros/Library/Android/sdk/emulator:/Users/sebastienros/.dotnet/tools:/Applications/Visual Studio Code.app/Contents/Resources/app/bin:/Users/sebastienros/.aspire/bin:/Library/Java/JavaVirtualMachines/temurin-25.jdk/Contents/Home/bin:/opt/homebrew/Cellar/zplug/2.4.2/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/Users/sebastienros/.cargo/bin:/Users/sebastienros/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/fallback:/Applications/ChatGPT.app/Contents/Resources:/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS",
+    "XEMELE_BCL_RUNNER": "/private/tmp/xemele-m6-gate/tools/ReferenceRunners/Bcl/bin/Release/net10.0/BclReference.dll",
+    "SHLVL": "1",
+    "XEMELE_CORPUS_RESOURCES": "/private/tmp/xemele-m6-gate/tests/corpora/xml"
+  },
+  "runs": [
+    {
+      "name": "Xemele.Tests",
+      "max_seconds": 300,
+      "log": "artifacts/M6-gate/Xemele.Tests.log",
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "--fx-version",
+        "10.0.11",
+        "/private/tmp/xemele-m6-gate/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll",
+        "-parallelMode",
+        "none",
+        "-culture",
+        "invariant",
+        "-noColor",
+        "-result-xml",
+        "/private/tmp/xemele-m6-gate/artifacts/M6-gate/Xemele.Tests.xml"
+      ]
+    },
+    {
+      "name": "Xemele.Conformance.Tests",
+      "max_seconds": 300,
+      "log": "artifacts/M6-gate/Xemele.Conformance.Tests.log",
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "--fx-version",
+        "10.0.11",
+        "/private/tmp/xemele-m6-gate/tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll",
+        "-parallelMode",
+        "none",
+        "-culture",
+        "invariant",
+        "-noColor",
+        "-result-xml",
+        "/private/tmp/xemele-m6-gate/artifacts/M6-gate/Xemele.Conformance.Tests.xml"
+      ]
+    },
+    {
+      "name": "Xemele.Differential.Tests",
+      "max_seconds": 300,
+      "log": "artifacts/M6-gate/Xemele.Differential.Tests.log",
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "--fx-version",
+        "10.0.11",
+        "/private/tmp/xemele-m6-gate/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll",
+        "-parallelMode",
+        "none",
+        "-culture",
+        "invariant",
+        "-noColor",
+        "-result-xml",
+        "/private/tmp/xemele-m6-gate/artifacts/M6-gate/Xemele.Differential.Tests.xml"
+      ]
+    }
+  ]
+}
