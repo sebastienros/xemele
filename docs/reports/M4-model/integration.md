@@ -1,0 +1,9 @@
+# M4 model integrated verification
+
+Integrated revision `9e748c8f3fbf66e197113c19e8fc5addc4734609` includes final worker `2045c4b42cb804665b58b9d3492fecbaee7c8908`, against prior main `9ef81f7b46699549193daaa3a2b750ff18409f3e`. All 22 changed paths are model-owned or its task record. No earlier runtime implementation changed. Independent source review approved the corrected model at dbbf5cb; the only subsequent runtime delta removes trailing whitespace.
+
+Pinned SDK10.0.400/runtime10.0.11 Release builds of runtime/tests, API extractor, and source sample passed with zero warnings/errors. Focused model41/41 and affected tree13/13 passed with no failures/skips; the unchanged earlier allocation test was excluded. Compiled API173 model plus720 earlier members equals893; two comparison corruption controls reject. Source sample and fresh local packed net10.0 consumer passed. `python3 tools/planning/tasks.py validate` passed148; owned diff whitespace and path checks passed. Commands are recorded in checks.md/task evidence; integration used the identical focused commands at this revision.
+
+The reviewed measurement evidence at e919eac is preserved without rerun: standalone exact0B across65536 primitive groups/all128batches; cold10320B, warm1448B, positive1048B; boxed owned sets3688B/op, owned formats1448B/op. Ten ShortRun InProcessNoEmit cases succeeded using `[MemoryDiagnoser, ShortRunJob]`; summaries retain inclusive GC totals and provisional timing limits. Original128B failure remains unattributed. Runtime source/DLL matched before and after the prepared sequence; final integration changes only metadata relative to the measured runtime. Raw/prepared worker outputs were removed after inspection; no raw benchmark output committed.
+
+Full cumulative milestone qualification remains M4-gate; composed-query performance and M9 hardware confirmation remain explicit follow-ups.

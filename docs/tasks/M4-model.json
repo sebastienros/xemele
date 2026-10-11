@@ -4,11 +4,11 @@
   "milestone": "M4",
   "title": "XPath AST and value model",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M4 coordinator / isolated model worker",
   "branch": "codex/m4-model",
   "base_revision": "32ce18d69428dd8eba8f6c2754b5b28497cc5d5b",
-  "integration_revision": null,
+  "integration_revision": "9e748c8f3fbf66e197113c19e8fc5addc4734609",
   "depends_on": [
     "M4-contracts"
   ],
@@ -37,7 +37,8 @@
       "evidence": [
         "independent-source-review",
         "model-correctness",
-        "compiled-api"
+        "compiled-api",
+        "integrated-focused-verification"
       ]
     },
     {
@@ -46,7 +47,8 @@
       "status": "passed",
       "evidence": [
         "model-correctness",
-        "allocation-corrected"
+        "allocation-corrected",
+        "integrated-focused-verification"
       ]
     },
     {
@@ -60,7 +62,8 @@
         "consumer-package",
         "discovery-planning",
         "allocation-corrected",
-        "bdn-microbenchmarks"
+        "bdn-microbenchmarks",
+        "integrated-focused-verification"
       ]
     }
   ],
@@ -155,6 +158,15 @@
       "result": "passed",
       "summary": "API discovery893declarations/3388fixturehashes (inventory only), exact3386ignored approved-cache copies verified; manifests/originals/exclusions unchanged. Planning148 schema/dependencies/orderedownership valid; full committed owned diff whitespace passes. All changed paths within model owns plus own task JSON. No remote pushes/children/peer dependencies. Final implemented metadata/report checkpoint3b6fca8 validated148 and full22owned-path diff/whitespace; executable evidence remains pinned to its actual prior revisions.",
       "artifact": "docs/reports/M4-model/checks.md"
+    },
+    {
+      "id": "integrated-focused-verification",
+      "kind": "check",
+      "revision": "9e748c8f3fbf66e197113c19e8fc5addc4734609",
+      "command": "Focused model41/tree13, compiled API893, source/fresh-package consumer, planning148 and owned-path/whitespace checks; see integration.md",
+      "result": "passed",
+      "summary": "Integrated code passed all applicable focused checks; measurement evidence preserved without rerun.",
+      "artifact": "docs/reports/M4-model/integration.md"
     }
   ],
   "blockers": [],
@@ -168,7 +180,6 @@
       "Planning148, API discovery893/3388hashes, full owned diff whitespace/path checks passed"
     ],
     "remaining": [
-      "Coordinator must integrate and rerun applicable combined correctness/API/planning checks before verified.",
       "Compiler/evaluator use ContextTokens/ContextCharacters and operation-aware context/result entry points; navigator constructs captured items after its own budget checks.",
       "Model micro evidence requires composed query confirmation and M9 x64/Arm64 release hardware validation."
     ],
