@@ -1,0 +1,53 @@
+{
+  "sourceRevision": "c999c2cf9d836990c0342445ed68bc844e14bd79",
+  "runtime": "10.0.11",
+  "sdk": "10.0.400",
+  "architecture": "Arm64",
+  "maximumSeconds": 600,
+  "ownership": "M8-datatypes-core normalization/setup/composites only; no other worker, resolver or model measurement",
+  "commands": [
+    [
+      "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+      "--fx-version",
+      "10.0.11",
+      "/Users/sebastienros/.codex/worktrees/3ebd/xemele/benchmarks/Xemele.Benchmarks/M8-datatypes-core/bin/probe/net10.0/Xemele.Benchmarks.dll",
+      "--measure",
+      "/Users/sebastienros/.codex/worktrees/3ebd/xemele/artifacts/M8-datatypes-core/measurement/allocations.json"
+    ],
+    [
+      "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+      "--fx-version",
+      "10.0.11",
+      "/Users/sebastienros/.codex/worktrees/3ebd/xemele/benchmarks/Xemele.Benchmarks/M8-datatypes-core/bin/Release/net10.0/Xemele.Benchmarks.dll",
+      "--benchmark",
+      "/Users/sebastienros/.codex/worktrees/3ebd/xemele/artifacts/M8-datatypes-core/measurement/bdn"
+    ]
+  ],
+  "binaries": {
+    "src/Xemele/bin/Release/net10.0/Xemele.dll": "90949b21eec2a5e12d4db9f4fdc69fade973891197989e8e970e596c696e3085",
+    "benchmarks/Xemele.Benchmarks/M8-datatypes-core/bin/probe/net10.0/Xemele.Benchmarks.dll": "5112dbcb011525a4e1da099c13728f536322345e221d2c1616c4299f3030e432",
+    "benchmarks/Xemele.Benchmarks/M8-datatypes-core/bin/Release/net10.0/Xemele.Benchmarks.dll": "900901d4ada818efb95baeeb8f3fa6d83decf19cb7ccb67ebf804b5a81b3fafd"
+  },
+  "inputsSha256": "332F005DB8EBE104D0919D530A6B81FCA67FD35A08E94B20EB23FDA03B8471EE",
+  "sourceFiles": {
+    "src/Xemele/Validation/Datatypes/Values/Core/Values.cs": "bd17c1ef6f57d62bd6d72885698322a2a009f901844c6312e0b016c3237905db",
+    "src/Xemele/Validation/Datatypes/Values/Core/Metadata.cs": "b2da9bcf4e4492eda52fb350388ddde9e223c52b0cc5d6db34746ff4558dbe97",
+    "src/Xemele/Validation/Datatypes/Values/Core/Normalization.cs": "ed4a6a8f9de27932c431da12b4275bf383337e59d72fb153ef368e0b04f0da69",
+    "src/Xemele/Validation/Datatypes/Values/Core/Family.cs": "93852a06cb19c88649e37138000ce0416fa1e3ce5b5f2c9751d6464d204e5639",
+    "tests/Xemele.Tests/M8-datatypes-core/CoreTests.cs": "efdaf4ba58460f73b7709d520019af2e829077ebdc996cc1b3ae8c9ec698972d"
+  },
+  "controls": [
+    "10routes32warm64samples/counters-disabled pass",
+    "four baseline/core fixtures consumed pass",
+    "8ShortRun NoEmit cases exactly asserted; no generated build",
+    "30focused correctness tests=18owned12priorModel; all pass",
+    "publicunion1393 match",
+    "normal+XML-only genuine consumer pass"
+  ],
+  "processInspection": {
+    "defaultSandbox": "ps denied; no measurement launched",
+    "elevatedPreflight": "python3 docs/reports/M8-datatypes-core/preflight.py passed;10route counters-disabled control;direct child reaped and group absence confirmed",
+    "measurementExecution": "exec_command sandbox_permissions=require_escalated is required for the same ps permission; source/binaries unchanged",
+    "supervisor": "ps permission verified at entry before counters;owned group absence asserted after each child"
+  }
+}

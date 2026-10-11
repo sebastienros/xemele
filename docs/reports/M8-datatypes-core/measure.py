@@ -14,10 +14,12 @@ if sys.argv[1:] != ['--granted']:
  raise SystemExit('Requires explicit coordinator grant before --granted.')
 env = os.environ.copy()
 env['PATH'] = str(Path(net).parent) + os.pathsep + env.get('PATH', '')
-env['XEMELE_DATATYPE_CORE_REVISION'] = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=root, text=True).strip()
+env['XEMELE_DATATYPE_CORE_REVISION'] = json.loads((root / 'docs/reports/M8-datatypes-core/preparation.json').read_text())['sourceRevision']
 env['NuGetAudit'] = 'false'
 env['RuntimeFrameworkVersion'] = '10.0.11'
 env['UseSharedCompilation'] = 'false'
+preflight = subprocess.check_output(['ps', '-axo', 'pid=,ppid=,pgid=,stat='], text=True).splitlines()
+assert any(int(row.split()[0]) == os.getpid() for row in preflight if row.strip()), 'Process permission preflight failed.'
 end = time.monotonic() + 600
 lifecycle = []
 status = 0
@@ -41,7 +43,10 @@ for index, argv in enumerate(commands):
    process.wait()
   try: os.killpg(process.pid, signal.SIGKILL)
   except ProcessLookupError: pass
-  lifecycle.append({'command': index, 'pid': process.pid, 'exit': code, 'reason': reason, 'directChildReaped': process.returncode is not None})
+  rows = subprocess.check_output(['ps', '-axo', 'pid=,ppid=,pgid=,stat='], text=True).splitlines()
+  owned = [row.split() for row in rows if row.strip() and int(row.split()[2]) == process.pid]
+  if owned: raise RuntimeError('Owned process group remains after kill/reap.')
+  lifecycle.append({'ownedGroupAbsent': True, 'command': index, 'pid': process.pid, 'exit': code, 'reason': reason, 'directChildReaped': process.returncode is not None})
   if code: status = 1; break
 (out / 'lifecycle.json').write_text(json.dumps({'status': status, 'lifecycle': lifecycle}, indent=2))
 print('LIFECYCLE RELEASE: approved sequence stopped; process groups terminated; direct children reaped; results not inspected.', flush=True)
