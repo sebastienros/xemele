@@ -4,7 +4,7 @@
   "milestone": "M5",
   "title": "Verify validating XML checkpoint",
   "kind": "gate",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M5 gate worker /root/validation_model",
   "branch": "codex/m5-gate",
   "base_revision": "d68d924f0a089ecf2c3effa64faf65856886b046",
@@ -33,29 +33,143 @@
     {
       "id": "M5-gate-A1",
       "description": "Verify independent DTD validation and canonicalization plus all earlier behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "exclusive-suites",
+        "grammar",
+        "fuzz",
+        "api",
+        "package",
+        "planning"
+      ]
     },
     {
       "id": "M5-gate-A2",
       "description": "Cumulative suite passes without catalog/HTML/schema implementation.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "exclusive-suites",
+        "grammar",
+        "fuzz",
+        "api",
+        "package",
+        "planning"
+      ]
     },
     {
       "id": "M5-gate-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "exclusive-suites",
+        "grammar",
+        "fuzz",
+        "api",
+        "package",
+        "planning"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "docs/reports/M5-gate/verify.py: phased inherited gate checks, exact-runtime host adapter and external empty-cache preview consumer",
+    "docs/reports/M5-gate/run_tests.py + test-plan.json + freeze.py: bounded exclusive run-only suites and full closure checks",
+    "docs/reports/M5-gate/Demo/Program.cs: independent public M3/M4/M5 demo, three canonical algorithms and DtdSchema reuse"
+  ],
+  "evidence": [
+    {
+      "id": "preparation",
+      "kind": "check",
+      "revision": "8a0c9d893eb000e2995d454b792d3d0130cc17ba",
+      "command": "python3 -B docs/reports/M5-gate/verify.py prepare",
+      "result": "passed",
+      "summary": "Final solution/BCL/auxiliary forced builds0warnings/errors; actual four configs10.0.11 and public source demo passed.",
+      "artifact": "docs/reports/M5-gate/summary.json"
+    },
+    {
+      "id": "initial-build",
+      "kind": "check",
+      "revision": "8a0c9d893eb000e2995d454b792d3d0130cc17ba",
+      "command": "python3 -B docs/reports/M5-gate/verify.py prepare",
+      "result": "failed",
+      "summary": "Initial Contracts nested ApiCheck CS0234; owner repair integrated and final build passed. Initial stale10.0.0 configs caught before test execution; forced regeneration passed.",
+      "artifact": "docs/reports/M5-gate/README.md"
+    },
+    {
+      "id": "exclusive-suites",
+      "kind": "check",
+      "revision": "8a0c9d893eb000e2995d454b792d3d0130cc17ba",
+      "command": "python3 -B docs/reports/M5-gate/run_tests.py --exclusive-grant",
+      "result": "passed",
+      "summary": "Single durable exclusive lease;6797/6797 passed5932+384+481; actual10.0.11; full8666/335/3852 identity unchanged; no children. Includes12 provenance-bound inherited allocation child reports, all real measured0 with positive controls.",
+      "artifact": "docs/reports/M5-gate/summary.json"
+    },
+    {
+      "id": "grammar-preconditions",
+      "kind": "check",
+      "revision": "8a0c9d893eb000e2995d454b792d3d0130cc17ba",
+      "command": "python3 -B docs/reports/M5-gate/verify.py grammar",
+      "result": "failed",
+      "summary": "Two zero-case informationalversion preconditions failed after docs-only commits. Authorized postlease driver/product/reference rebuild at fixed8a0 corrected identity; original oracle unchanged.",
+      "artifact": "docs/reports/M5-gate/README.md"
+    },
+    {
+      "id": "grammar",
+      "kind": "check",
+      "revision": "8a0c9d893eb000e2995d454b792d3d0130cc17ba",
+      "command": "python3 -B docs/reports/M5-gate/verify.py grammar",
+      "result": "passed",
+      "summary": "2585original cases1394accepted1191rejected;3386hashverified resources; all1394callbackpause models;409original output models+15unchanged authored overrides;771resolved BCL disagreements.",
+      "artifact": "docs/reports/M5-gate/summary.json"
+    },
+    {
+      "id": "fuzz",
+      "kind": "check",
+      "revision": "8a0c9d893eb000e2995d454b792d3d0130cc17ba",
+      "command": "python3 -B docs/reports/M5-gate/verify.py fuzz",
+      "result": "passed",
+      "summary": "Actual10.0.11;seed1295276112;768generated/768reused/128invalid/32mutation/32quota/64cancellation.",
+      "artifact": "docs/reports/M5-gate/summary.json"
+    },
+    {
+      "id": "api",
+      "kind": "check",
+      "revision": "8a0c9d893eb000e2995d454b792d3d0130cc17ba",
+      "command": "python3 -B docs/reports/M5-gate/verify.py api",
+      "result": "passed",
+      "summary": "Official inventory matched948 compiled members after postlease runtime rebuild; exact pinned runtime shim.",
+      "artifact": "docs/reports/M5-gate/summary.json"
+    },
+    {
+      "id": "package",
+      "kind": "check",
+      "revision": "8a0c9d893eb000e2995d454b792d3d0130cc17ba",
+      "command": "python3 -B docs/reports/M5-gate/verify.py package",
+      "result": "passed",
+      "summary": "Unpublished local1.0.0-m5-preview net10-only package; DLLhash equals948API-tested assembly; external initially absent cache/localfeed-only public consumer output identical to source demo.",
+      "artifact": "docs/reports/M5-gate/summary.json"
+    },
+    {
+      "id": "planning",
+      "kind": "check",
+      "revision": "8a0c9d893eb000e2995d454b792d3d0130cc17ba",
+      "command": "python3 tools/planning/tasks.py validate",
+      "result": "passed",
+      "summary": "Validated160 tasks after final implemented evidence update.",
+      "artifact": "docs/reports/M5-gate/summary.json"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Reserved original gate checkout reclaimed after verified build repair; resume preparation and exact frozen cumulative checks.",
-    "checks": [],
-    "remaining": [],
+    "summary": "Bounded cumulative M5 gate implemented on isolated branch with verified dependencies; no product changes. Original grammar and inherited narrow allocation regressions preserve earlier behavior; updated standalone public validation/canonicalization consumer and948API passed. Historical SourceCore streaming throughput timings remain historical.",
+    "checks": [
+      "6797allpassed actual.NET10.0.11",
+      "Original2585grammar/3386resources/all1394callbackpause models",
+      "M4fixedseedfuzz all expected counts",
+      "Official948API and local empty-cache public package consumer passed"
+    ],
+    "remaining": [
+      "Coordinator integrated verification; retain raw evidence until independent inspection ACK; retain unpublished package for coordinator copying."
+    ],
     "requests": []
   }
 }
