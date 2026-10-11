@@ -1,0 +1,131 @@
+using System.Buffers;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using System.Text.Json;
+using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Configs;
+using BenchmarkDotNet.Running;
+using BenchmarkDotNet.Jobs;
+using BenchmarkDotNet.Toolchains.InProcess.NoEmit;
+using Xemele.XPath;
+using Xemele.XPath.Internal;
+
+if(args is [var runMode,var artifacts] && runMode is "--discover" or "--benchmark")
+{
+    var config=ManualConfig.Create(DefaultConfig.Instance).WithArtifactsPath(artifacts).AddJob(Job.Default.WithToolchain(InProcessNoEmitToolchain.Instance).AsMutator());
+    var suites=new[]{typeof(LexicalBenchmarks),typeof(DelimiterBenchmarks),typeof(VocabularyBenchmarks),typeof(CompileBenchmarks),typeof(ContextBenchmarks)}.Select(t=>BenchmarkConverter.TypeToBenchmarks(t,config)).ToArray();
+    var cases=suites.SelectMany(s=>s.BenchmarksCases).ToArray();
+    if(cases.Length!=21 || cases.Any(c=>c.Job.Run.WarmupCount!=3 || c.Job.Run.IterationCount!=3 || c.Job.Run.LaunchCount!=1 || c.Job.Infrastructure.Toolchain!=InProcessNoEmitToolchain.Instance) || cases.Select(c=>c.Job.Id).Distinct().Count()!=1) throw new Exception("Expected 21 cases in one ShortRun NoEmit job.");
+    Console.WriteLine("Compiler discovery: 21 cases; one ShortRun; InProcessNoEmit; warmup=3/iterations=3/launch=1; no build/generation.");
+    if(runMode=="--discover") return;
+    var summaries=BenchmarkRunner.Run(suites);
+    if(summaries.Sum(s=>s.Reports.Length)!=21 || summaries.SelectMany(s=>s.Reports).Any(r=>!r.Success || r.ResultStatistics is null)) throw new Exception("Expected 21 successful reports.");
+    return;
+}
+if(args is not [var mode,var output] || mode is not ("--control" or "--allocation")) throw new Exception("Use --control|--allocation <output> or --discover|--benchmark <artifacts>.");
+bool measure=mode=="--allocation";
+// All fixtures/distribution arrays are outside measured primitive work.
+string[] inputs=[Fixtures.Short,Fixtures.Long]; long[] warm=new long[32],steady=new long[32];
+long start=measure?GC.GetAllocatedBytesForCurrentThread():0;
+var context=XPathStaticContext.FromOptions(null); var compiler=new XPathCompiler();
+var coldAst=compiler.Compile(Fixtures.Short,context,default);
+long cold=measure?GC.GetAllocatedBytesForCurrentThread()-start:0;
+Fixtures.Controls();
+long consumed=0;
+for(int i=0;i<warm.Length;i++) consumed+=Batch(inputs,measure,out warm[i]);
+start=measure?GC.GetAllocatedBytesForCurrentThread():0;
+for(int i=0;i<steady.Length;i++) consumed+=Batch(inputs,measure,out steady[i]);
+long primitive=measure?GC.GetAllocatedBytesForCurrentThread()-start:0;
+start=measure?GC.GetAllocatedBytesForCurrentThread():0;
+long positive=Fixtures.Scan(Fixtures.Long,true);
+long positiveBytes=measure?GC.GetAllocatedBytesForCurrentThread()-start:0;
+start=measure?GC.GetAllocatedBytesForCurrentThread():0;
+for(int i=0;i<32;i++) GC.KeepAlive(compiler.Compile(Fixtures.Short,context,default));
+long owned=measure?GC.GetAllocatedBytesForCurrentThread()-start:0;
+start=measure?GC.GetAllocatedBytesForCurrentThread():0;
+for(int i=0;i<32;i++) GC.KeepAlive(XPathStaticContext.FromOptions(Fixtures.Options));
+long contexts=measure?GC.GetAllocatedBytesForCurrentThread()-start:0;
+File.WriteAllText(output,JsonSerializer.Serialize(new{mode,runtime=RuntimeInformation.FrameworkDescription,architecture=RuntimeInformation.ProcessArchitecture.ToString(),coldSetupBytes=cold,warmDistribution=warm,steadyDistribution=steady,primitiveBytes=primitive,positiveBytes,ownedCompileBytes=owned,ownedContextBytes=contexts,batches=32,groupsPerBatch=32,operations=2048,consumed,positive},new JsonSerializerOptions{WriteIndented=true}));
+if(measure && (primitive!=0 || steady.Any(b=>b!=0) || positiveBytes<=0 || owned<=0 || contexts<=0)) throw new Exception("Allocation gate/control failure.");
+GC.KeepAlive(coldAst);Console.WriteLine($"{mode} complete; 2048 borrowed scans; consumed={consumed}; materialized={positive}");
+[MethodImpl(MethodImplOptions.NoInlining)]
+static long Batch(string[] inputs,bool measure,out long bytes)
+{
+    long start=measure?GC.GetAllocatedBytesForCurrentThread():0, result=0;
+    for(int i=0;i<32;i++) foreach(string input in inputs) result+=Fixtures.Scan(input,false)+Fixtures.Vocabulary("ancestor-or-self",false)+Fixtures.Stops(input,0);
+    bytes=measure?GC.GetAllocatedBytesForCurrentThread()-start:0;return result;
+}
+internal static class Fixtures
+{
+    internal static readonly string Short="//book[@id='b1']/title";
+    internal static readonly string Long="//"+string.Join("/",Enumerable.Repeat("根😀[2]",256));
+    internal static readonly string Invalid="'"+new string('根',8192)+"\uD800'";
+    internal static readonly XPathCompileOptions Options=new(){Namespaces=new Dictionary<string,string>{{"p","urn:catalog"}},Functions=[new(new("urn:catalog","select"),1,2)]};
+    private static readonly SearchValues<char> Delimiters=SearchValues.Create("'\"<>&");
+    private static readonly string[] Axes=["child","descendant","parent","ancestor","following-sibling","preceding-sibling","following","preceding","attribute","namespace","self","descendant-or-self","ancestor-or-self"];
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    internal static long Scan(string input,bool materialize)
+    {
+        var lexer=new XPathLexer(input,default,null,0);long sum=0;
+        for(var token=lexer.Next();token.Kind!=XPathTokenKind.End;token=lexer.Next())
+        {
+            int length;
+            if(materialize) {string owned=new(lexer.Text(token));length=owned.Length;GC.KeepAlive(owned);} else length=lexer.Text(token).Length;
+            sum+=token.Start+length+(int)token.Kind;
+        }
+        return sum;
+    }
+    internal static int Stops(string input,int mode) => mode switch {0=>Loop(input),1=>input.AsSpan().IndexOfAny("'\"<>&"),2=>input.AsSpan().IndexOfAny(Delimiters),_=>Minimum(input)};
+    private static int Loop(ReadOnlySpan<char> input) {for(int i=0;i<input.Length;i++) if(input[i] is '\'' or '"' or '<' or '>' or '&') return i;return -1;}
+    private static int Minimum(ReadOnlySpan<char> input)
+    {int found=-1;foreach(char c in "'\"<>&") {int next=input.IndexOf(c);if(next>=0 && (found<0 || next<found)) found=next;} return found;}
+    internal static int Vocabulary(string input,bool baseline)
+    {if(!baseline)return (int?)XPathCompiler.Axis(input)??-1;for(int i=0;i<Axes.Length;i++) if(input.AsSpan().SequenceEqual(Axes[i]))return i;return -1;}
+    internal static object Compile(string input,XPathStaticContext context)
+    {try{return new XPathCompiler().Compile(input,context,default);}catch(XPathCompileException e){return e.Diagnostic;}}
+    internal static void Controls()
+    {
+        foreach(string input in new[]{Short,Long,"1+2", "'a\"b'", "and and and", "p:根😀|p:*", " ",""}) if(Scan(input,false)!=Scan(input,true)) throw new Exception("Materialization semantic mismatch.");
+        foreach(string input in new[]{"", "abc", "'", "x&", "x'\"&",new string('根',8192)+"<",new string('根',8192),"😀>"}) for(int mode=1;mode<4;mode++) if(Stops(input,mode)!=Stops(input,0)) throw new Exception("Delimiter oracle mismatch.");
+        foreach(string input in Axes.Concat(new[]{"", "Child", "ancestor-or-selfx", "根", new string('x',10000)})) if(Vocabulary(input,false)!=Vocabulary(input,true)) throw new Exception("Vocabulary oracle mismatch.");
+        foreach(string input in new[]{Invalid,"'unfinished","\uD800"}) {try{Scan(input,false);throw new Exception("Expected malformed rejection.");}catch(XPathCompileException e){if(e.Diagnostic.Code!="XPATH-SYNTAX")throw;} }
+    }
+}
+[MemoryDiagnoser, ShortRunJob]
+public class LexicalBenchmarks
+{
+    [Params("short","longUnicode")] public string Case {get;set;}="";private string input="";
+    [GlobalSetup] public void Setup()=>input=Case=="short"?Fixtures.Short:Fixtures.Long;
+    [Benchmark(Baseline=true)] public long Materialized()=>Fixtures.Scan(input,true);
+    [Benchmark] public long Borrowed()=>Fixtures.Scan(input,false);
+}
+[MemoryDiagnoser, ShortRunJob]
+public class DelimiterBenchmarks
+{
+    [Params("short","longUnicode")] public string Case {get;set;}="";private string input="";
+    [GlobalSetup] public void Setup()=>input=Case=="short"?"x'":new string('根',8192)+"'";
+    [Benchmark(Baseline=true)] public int Loop()=>Fixtures.Stops(input,0);
+    [Benchmark] public int IndexOfAny()=>Fixtures.Stops(input,1);
+    [Benchmark] public int SearchValues()=>Fixtures.Stops(input,2);
+    [Benchmark] public int IndexOf()=>Fixtures.Stops(input,3);
+}
+[MemoryDiagnoser, ShortRunJob]
+public class VocabularyBenchmarks
+{
+    [Params("ancestor-or-self","ancestor-or-selfx")] public string Input {get;set;}="";
+    [Benchmark(Baseline=true)] public int SequenceEqualLoop()=>Fixtures.Vocabulary(Input,true);
+    [Benchmark] public int SpanDispatch()=>Fixtures.Vocabulary(Input,false);
+}
+[MemoryDiagnoser, ShortRunJob]
+public class CompileBenchmarks
+{
+    [Params("short","longUnicode","invalid")] public string Case {get;set;}="";private string input="";private XPathStaticContext context=null!;
+    [GlobalSetup] public void Setup(){input=Case switch{"short"=>Fixtures.Short,"longUnicode"=>Fixtures.Long,_=>Fixtures.Invalid};context=XPathStaticContext.FromOptions(null);}
+    [Benchmark] public object OwnedAstOrDiagnostic()=>Fixtures.Compile(input,context);
+}
+[MemoryDiagnoser, ShortRunJob]
+public class ContextBenchmarks
+{
+    [Params(false,true)] public bool Registered {get;set;}
+    [Benchmark] public object OwnedContext()=>XPathStaticContext.FromOptions(Registered?Fixtures.Options:null);
+}
