@@ -9,17 +9,6 @@
   },
   "active_assignments": [
     {
-      "task_id": "M3-reader",
-      "branch": "codex/m3-reader",
-      "base_revision": "dd3a54bf12b9238f6174d38541a5783b29cc7e0f",
-      "claim_revision": "c288bc52ed51924977ffdf778a8bce7825947b91",
-      "chat_id": "01a12891-0d19-7b92-ab84-5ae7f32673f8",
-      "host_id": "local",
-      "worktree_path": "/Users/sebastienros/.codex/worktrees/a98a/xemele",
-      "stage": "Measurement released; final evidence and handoff underway",
-      "acceptance_before_dispatch": "Frozen synchronousadapter contracts A1/A2, standalone/API preservation A3, bounded ownedstate/realallocationpositivecontrols; focusedintegration; measurements park until serial lease"
-    },
-    {
       "task_id": "M3-resource-mode",
       "branch": "codex/m3-resource-mode",
       "base_revision": "2a061b60c922efdf4984ff23f46a6a50eb1b8034",
@@ -62,8 +51,8 @@
     "Integrate completed reader and dispatch push",
     "Finish guarded resource mode, then dispatch async input"
   ],
-  "last_verified_task": "M3-async-writer",
-  "last_integrated_revision": "080b518581f5e6439df81f2851de2a67d27d56a1",
+  "last_verified_task": "M3-reader",
+  "last_integrated_revision": "dfe9509d792ce51ef15ed15814115c6293428379",
   "completed_assignments": [
     {
       "task_id": "M2-dtd-composition",
@@ -1420,6 +1409,19 @@
         "chat_archived": true,
         "branch_preserved": true
       }
+    },
+    {
+      "task_id": "M3-reader",
+      "branch": "codex/m3-reader",
+      "base_revision": "dd3a54bf12b9238f6174d38541a5783b29cc7e0f",
+      "claim_revision": "c288bc52ed51924977ffdf778a8bce7825947b91",
+      "chat_id": "01a12891-0d19-7b92-ab84-5ae7f32673f8",
+      "host_id": "local",
+      "worktree_path": "/Users/sebastienros/.codex/worktrees/a98a/xemele",
+      "stage": "Verified; cleanup pending",
+      "acceptance_before_dispatch": "Frozen synchronousadapter contracts A1/A2, standalone/API preservation A3, bounded ownedstate/realallocationpositivecontrols; focusedintegration; measurements park until serial lease",
+      "handoff_revision": "b0079eb21eb2da5a0cab8794f95f6253247b06ef",
+      "integration_revision": "dfe9509d792ce51ef15ed15814115c6293428379"
     }
   ],
   "benchmark_grant": {
@@ -1522,11 +1524,11 @@
       "remaining_gate": null
     },
     "M3": {
-      "verified": 10,
+      "verified": 11,
       "total": 18,
       "in_progress": [
-        "M3-reader",
-        "M3-resource-mode"
+        "M3-resource-mode",
+        "M3-async-serialization"
       ],
       "remaining_gate": "M3-gate"
     }

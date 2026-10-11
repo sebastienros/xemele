@@ -4,11 +4,11 @@
   "milestone": "M3",
   "title": "Pull reader and backpressure",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M3 coordinator 01a1284a-8826-7fc2-af44-74552db608f2 / reader worker",
   "branch": "codex/m3-reader",
   "base_revision": "dd3a54bf12b9238f6174d38541a5783b29cc7e0f",
-  "integration_revision": null,
+  "integration_revision": "dfe9509d792ce51ef15ed15814115c6293428379",
   "depends_on": [
     "M3-callbacks",
     "M3-async-resources",
@@ -40,7 +40,8 @@
       "evidence": [
         "reader-focused",
         "reader-api",
-        "reader-allocation-memory"
+        "reader-allocation-memory",
+        "coordinator-integration"
       ]
     },
     {
@@ -49,7 +50,8 @@
       "status": "passed",
       "evidence": [
         "reader-focused",
-        "reader-allocation-memory"
+        "reader-allocation-memory",
+        "coordinator-integration"
       ]
     },
     {
@@ -63,7 +65,8 @@
         "reader-allocation-memory",
         "reader-bdn",
         "reader-abi-owner-review",
-        "reader-planning"
+        "reader-planning",
+        "coordinator-integration"
       ]
     }
   ],
@@ -166,11 +169,20 @@
       "result": "passed",
       "summary": "145 tasks validate; git diff --check passes. Implementation writes limited to reader owns and its task record.",
       "artifact": "docs/reports/M3-reader/results.md"
+    },
+    {
+      "id": "coordinator-integration",
+      "kind": "integration",
+      "revision": "dfe9509d792ce51ef15ed15814115c6293428379",
+      "command": "Pinned Release test build; Xemele.Tests.dll -namespace Xemele.Tests.ReaderRuntime -namespace Xemele.Tests.StreamingPump; separate Common/Input/Syntax/Dom/Entities preservation; official tools/ApiBaseline/compare.py; tasks.py validate",
+      "result": "passed",
+      "summary": "Build 0 warnings/errors; 44 reader/pump tests and separate 212 preservation tests passed with no failures/errors/skips. Verified M3-scan-abi repair resolves historical worker ABI failure without rewriting that evidence. Official inventory matched 706 compiled members with exact private offline fixtures; 147-task validation passed. Read-only independent reviewer found no concrete A1/A2 blocker. Final metadata merge changed no source/tests/API. Existing allocation/live-memory/BDN observations preserved.",
+      "artifact": "docs/reports/M3-reader/integration-focused.xml"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Synchronous partial XmlReader now validates/snapshots lazily, pauses the verified pump on one accepted current token and retains only bounded current scratch/owned rows. Exact17enum values, kind-specific defaults, original locations, paired empty/CData events, strict fatal errors, EOF, cancellation/guards and aborting leave-open cleanup implemented. Reviewed cleanup failure always releases cursor arrays. No async stub or DOM/backlog.",
+    "summary": "Verified integrated forward reader and borrowed current token views; 44 focused and 212 preservation checks, API706 pass.",
     "checks": [
       "Pinned Release runtime/test/sample/probe/actual parent benchmark builds: passed,0warnings/errors.",
       "44/44 focused reader/pump tests; exact39fixture/678composed compiled API rows; standalone sample;145task planning validation: passed.",
@@ -179,14 +191,7 @@
       "Earlier preservation local211/212, sole preexisting ABI expectation failure; owning coordinator repair integrated/verified dbfb42ac39751f03065f42534f38332c27dcca27 reports69syntax+focusedABI passing.",
       "Full API inventory/corpus discovery failed missing E14.dtd; independent approved compiled comparisons passed."
     ],
-    "remaining": [
-      "Coordinator integrates and verifies combined reader tree including verified owning ABI repair; no integration_revision set here.",
-      "Full1GiB qualification remains mandatory M3-corpus per coordinator assignment; this feature measured1/8MiB.",
-      "BDN inclusive2B scope has not been independently attributed; raw results remain explicit, direct primitive0B positive-controlled gate passes."
-    ],
-    "requests": [
-      "Corpus owner/coordinator: provision missing tests/corpora/xml/xmlconf/eduni/errata-2e/E14.dtd for complete API inventory/corpus discovery; no exclusion requested.",
-      "Future async reader: consume verified owning pump/core resource-mode hook before additive partial uses async resolver/transport on this synchronous-created state; current sync reader does not depend on unmerged repair."
-    ]
+    "remaining": [],
+    "requests": []
   }
 }
