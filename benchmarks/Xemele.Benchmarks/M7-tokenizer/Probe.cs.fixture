@@ -29,12 +29,13 @@ int consumed = 0;
 foreach (string kind in new[] { "short-hit", "short-miss", "long-late-hit", "long-miss", "dense", "multilingual" })
 {
     string input = TokenizerBenchmarks.PrimitiveInput(kind);
+    string referenceInput = TokenizerBenchmarks.ReferenceInput(kind);
     if (TokenizerBenchmarks.Digits(input) != TokenizerBenchmarks.FrameworkDigits(input)) throw new Exception("Primitive oracle mismatch.");
-    for (int i = 0; i < 1000; i++) { consumed = TokenizerBenchmarks.Digits(input); HtmlNamedReferences.Match(input, true, out _, out named); }
+    for (int i = 0; i < 1000; i++) { consumed = TokenizerBenchmarks.Digits(input); HtmlNamedReferences.Match(referenceInput, true, out _, out named); }
     for (int batch = 0; batch < 16; batch++)
     {
         before = GC.GetAllocatedBytesForCurrentThread();
-        for (int i = 0; i < 1024; i++) { consumed = TokenizerBenchmarks.Digits(input); HtmlNamedReferences.Match(input, true, out _, out named); }
+        for (int i = 0; i < 1024; i++) { consumed = TokenizerBenchmarks.Digits(input); HtmlNamedReferences.Match(referenceInput, true, out _, out named); }
         allocated = GC.GetAllocatedBytesForCurrentThread() - before;
         Print("steady-borrowed-digit-and-reference-" + kind, allocated, 1024);
         if (allocated != 0) throw new Exception("Borrowed lexical primitive allocated.");

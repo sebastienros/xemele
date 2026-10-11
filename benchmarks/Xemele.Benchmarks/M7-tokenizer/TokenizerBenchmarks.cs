@@ -18,6 +18,12 @@ public class TokenizerBenchmarks
         "long-miss" => new string('x', 4096), "dense" => string.Concat(Enumerable.Repeat("0123456789abcdefABCDEF;#&", 128)),
         "multilingual" => "123尾😀éＦff", _ => throw new ArgumentException(),
     };
+    internal static string ReferenceInput(string kind) => kind switch
+    {
+        "short-hit" => "amp;", "short-miss" => "xyz;", "long-late-hit" => "CounterClockwiseContourIntegral;",
+        "long-miss" => new string('x', 4096), "dense" => "NotEqualTilde;", "multilingual" => "amp;尾😀",
+        _ => throw new ArgumentException(),
+    };
     internal static int Digits(ReadOnlySpan<char> input)
     {
         int result = 0; foreach (char c in input) result = unchecked(result * 17 + HtmlTokenizer.Digit(c, 16)); return result;
@@ -32,7 +38,7 @@ public class TokenizerBenchmarks
         }
         return result;
     }
-    internal const string OwnedInput = "<!doctype html><div a='&amp;' b='😀'>owned multilingual 尾巴 &notin;<!-- comment --><script><!--<script>x</script>--></script></div>";
+    internal const string OwnedInput = "<!doctype html><?Build raw &amp; 😀?><div a='&amp;' b='😀'>owned multilingual 尾巴 &notin;<!-- comment --><script><!--<script>x</script>--></script></div>";
     internal static string OwnedFixture(string kind) => kind switch
     {
         "short-hit" => "a&amp;b", "short-miss" => "&notit; &unknown;",
