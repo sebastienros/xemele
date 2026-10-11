@@ -1,0 +1,6 @@
+<Project Sdk="Microsoft.NET.Sdk">
+<PropertyGroup><OutputType>Exe</OutputType><AssemblyName>Xemele.Benchmarks</AssemblyName><EnableDefaultCompileItems>false</EnableDefaultCompileItems></PropertyGroup>
+<ItemGroup><Compile Include="../../../samples/M8-datatypes/Consumer.cs.fixture" />
+<ProjectReference Include="../../../src/Xemele/Xemele.csproj" Condition="'$(DatatypesXmlOnly)' != 'true'" />
+<ProjectReference Include="XmlOnly/XmlOnly.csproj" Condition="'$(DatatypesXmlOnly)' == 'true'" /></ItemGroup>
+</Project>
