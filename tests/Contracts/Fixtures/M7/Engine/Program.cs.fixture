@@ -1,5 +1,5 @@
 using Xemele.Html;
-static void Contract() { var doc = Html5Parser.Parse("<!doctype html><template><p>x</p></template>"); var context=doc.CreateElement("table"); var fragment=Html5Parser.ParseFragment("<tr><td>x",new(context,HtmlQuirksMode.Quirks)); context.AppendChild(fragment); _=HtmlSerializer.Serialize(doc); _=HtmlParser.Parse("<P>x"); using var input=new MemoryStream(new byte[]{60,112,62}); _=Html5Parser.Load(input); HtmlSerializer.Save(doc,input); }
+static void Contract() { var doc = Html5Parser.Parse("<!doctype html><template><p>x</p></template>"); var context=doc.CreateElement("table"); var fragment=Html5Parser.ParseFragment("<tr><td>x",new(context,HtmlQuirksMode.Quirks)); context.AppendChild(doc.Import(fragment)); _=HtmlSerializer.Serialize(doc); _=HtmlParser.Parse("<P>x"); using var input=new MemoryStream(new byte[]{60,112,62}); _=Html5Parser.Load(input); HtmlSerializer.Save(doc,input); }
 // Signature consumer is compiled but deliberately never invokes declaration stubs.
 Action contract = Contract; GC.KeepAlive(contract);
 var xml = new Xemele.XmlDocument(); var root = xml.CreateElement("root"); xml.DocumentNode.AppendChild(root); root.AppendChild(xml.CreateText("preserved"));
