@@ -33,3 +33,7 @@ lacked ignored XML resources. Preparation-only tuple plan-path failure was repai
 in 05c8cb6 before successful controls. The first control negative intentionally
 rejects a changed environment; positive/final-positive pass. No full cumulative
 suite ran on this worker; coordinator integrated verification owns that check.
+
+## Coordinator integrated verification
+
+Integrated checkpoint `d619732f09cd0980010265b11b738cb67bade06f`: fresh pinned Release builds and nine focused tests passed on actual .NET 10.0.11, with zero failures/skips/errors/not-run. HTML/XML sample passed. Official discovery composed with bootstrap disabled and the approved M0 checker matched all 1200 compiled members, preserving the 1054 predecessors; all 3388 manifest fixtures checked. Planning164 and diff checks passed. Root independently inspected the released frozen allocation/12-case BDN evidence; runtime, tests, fixtures, benchmarks and sample sources are unchanged from leased `2ae7416`. No measured workload repeated. Two coordinator Python report/import mistakes were corrected using preserved passing outputs, without repeating builds/tests/API execution.

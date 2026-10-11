@@ -4,11 +4,11 @@
   "milestone": "M7",
   "title": "HTML token and tree-builder boundaries",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M7 coordinator /root/html_model",
   "branch": "codex/m7-html-model",
   "base_revision": "36ed57e022e25f2ea333012600af048048d37f44",
-  "integration_revision": null,
+  "integration_revision": "d619732f09cd0980010265b11b738cb67bade06f",
   "depends_on": [
     "M7-contracts"
   ],
@@ -39,7 +39,8 @@
         "focused-model",
         "sample-api",
         "prepared-measurements",
-        "inventory-planning"
+        "inventory-planning",
+        "root-integrated-model"
       ]
     },
     {
@@ -50,7 +51,8 @@
         "focused-model",
         "sample-api",
         "prepared-measurements",
-        "inventory-planning"
+        "inventory-planning",
+        "root-integrated-model"
       ]
     },
     {
@@ -61,7 +63,8 @@
         "focused-model",
         "sample-api",
         "prepared-measurements",
-        "inventory-planning"
+        "inventory-planning",
+        "root-integrated-model"
       ]
     }
   ],
@@ -109,6 +112,15 @@
       "result": "passed",
       "summary": "Official API/corpus discovery passed after unchanged cached originals provisioned;164 valid tasks;diff clean, owned paths only.",
       "artifact": "docs/reports/M7-html-model/validation.md"
+    },
+    {
+      "id": "root-integrated-model",
+      "kind": "integration",
+      "revision": "d619732f09cd0980010265b11b738cb67bade06f",
+      "command": "Pinned SDK10.0.400 forced10.0.11 Release builds; explicit --fx-version10.0.11 namespace model9 tests/sample/approved M0 API checker against official compose(root,False)1200-member union; python3 tools/planning/tasks.py validate; git diff --check",
+      "result": "passed",
+      "summary": "Root independently parsed9 passed/0failed/0skipped/errors actual.NET10.0.11;sample HTML+XML passed; official full1200 compiled members matched including1054 predecessors,3388 manifestfixtures/bootstrapFalse,planning164/diff. Root inspected released2ae7416 frozen3642/43/3852 closure and raw135allocation rows/12BDN cases;128borrowed batches0,mutation/query0;cold/owned/retained costs separate,arm64 timings provisional. No runtime/tests/fixtures/benchmarks/sample changed from measured2ae7416 to integrated checkpoint; no measurement repeated.",
+      "artifact": "docs/reports/M7-html-model/validation.md"
     }
   ],
   "blockers": [],
@@ -117,11 +129,10 @@
     "checks": [
       "9 focused tests passed actual .NET10.0.11;146-member API/sample/negative control and deterministic generation pass.",
       "Prepared exclusive allocation/12-case BDN run complete with owned cleanup/frozen closure; lease released before inspection.",
-      "Official API/corpus discovery,164-task validation and diff pass."
+      "Official API/corpus discovery,164-task validation and diff pass.",
+      "Root integrated d619732:9actual10.0.11tests/sample/full1200compiledAPI/planning164/diff passed; released raw measurements independently inspected."
     ],
-    "remaining": [
-      "Coordinator integrated verification; future tokenizer/tree-builder/engine owners must confirm complete composed HTML behavior/performance. No x64/complete-engine/historical-throughput claim."
-    ],
+    "remaining": [],
     "requests": []
   }
 }
