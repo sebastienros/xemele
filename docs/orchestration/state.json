@@ -28,7 +28,7 @@
     }
   ],
   "next_actions": [
-    "Wait only for model measurement lifecycle, immediately release durable lease on completion/failure before raw inspection."
+    "Independently inspect released model raw allocation/BDN/identity results; record exact measured revision and boundaries, integrate only after accepted actual evidence."
   ],
   "last_verified_task": "M7-contracts",
   "last_integrated_revision": "d0792dc31ae93b1918fc9437e98b862db3dde191",
@@ -2028,7 +2028,7 @@
   },
   "measurement_lease": {
     "id": "m7-html-model-2ae7416",
-    "status": "granted",
+    "status": "released",
     "revision": "2ae7416e1d7eb96a453fbb5afdbefda3ffe02114",
     "executor_agent_id": "/root/html_model",
     "duration_limit_seconds": 1050,
@@ -2039,7 +2039,18 @@
       "Executor clean prepared2ae7416 READY/PARK;focused9actual10.0.11tests/sample/API146/fullinventory3386/12NoEmit discovery;exact wrapper controls positives0/unknownnegative1/nochildren independently inspected;no measurements or pending writes.",
       "Independent source reviewer approved2ae7416 corrected identity-PG wrapper/querywarmup/source;terminal PARK no workload/edit/livehandles.",
       "Contracts/review terminal, completed checkouts removed;no other active assignment. Root independent closure3642/43/3852/revision/host/readableenv matched f9ae44ac;safe perkey proves CODEX_THREAD_ID sole sessiondifference; intended executor fullenv controls pass. Root fresh scoped workload inventory0;root PARK."
-    ]
+    ],
+    "released_at_utc": "2026-10-11T12:42:42.130250+00:00",
+    "release": {
+      "wrapper_exit": 0,
+      "initial_identity_exit": 0,
+      "allocation_exit": 0,
+      "benchmark_exit": 0,
+      "final_identity_exit": 0,
+      "no_child": true,
+      "manifest_sha256_unchanged": "f9ae44ac95240605a71fa98123fd2d6685b073db2712162efb6675192a8f74a9",
+      "inspection": "Not yet inspected. Successful lifecycle reported before durable release; raw inspection permitted after release commit."
+    }
   },
   "offline_corpus_setup": {
     "checkout": "/private/tmp/xemele-m3-integration",
