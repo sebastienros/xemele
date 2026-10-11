@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "id": "M5-dtd-declaration-provenance",
+  "milestone": "M5",
+  "title": "Retain duplicate DTD declaration validity evidence",
+  "kind": "feature",
+  "status": "in_progress",
+  "owner": "M5 isolated DTD declaration provenance worker",
+  "branch": "codex/m5-dtd-declaration-provenance",
+  "base_revision": "4e13c32ed3da5e90d28af028c4a1e70e27e9b97c",
+  "integration_revision": null,
+  "depends_on": [
+    "M5-contracts"
+  ],
+  "goals": [
+    "G07"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/dtd-c14n.md"
+  ],
+  "owns": [
+    "src/Xemele/Parsing/Dtd/Grammar/Parser/Declarations.cs",
+    "src/Xemele/Parsing/Dtd/Grammar/Parser/DtdParser.cs",
+    "src/Xemele/Parsing/Dtd/Grammar/Parser/Composition.cs",
+    "src/Xemele/Parsing/Dtd/Model/Declarations.cs",
+    "tests/Xemele.Tests/M5-dtd-declaration-provenance/",
+    "docs/reports/M5-dtd-declaration-provenance/"
+  ],
+  "api_or_output": "Internal immutable bounded first duplicate element/notation validity diagnostic on DtdModel; preserved nonvalidating first bindings",
+  "acceptance": [
+    {
+      "id": "M5-dtd-declaration-provenance-A1",
+      "description": "Retain one owned duplicate element/notation validity diagnostic and original location without changing successful nonvalidating parse or first-binding declarations; valid DTDs add no diagnostic allocation.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M5-dtd-declaration-provenance-A2",
+      "description": "Preserve diagnostic across model seeding/internal-external composition; test within/cross-subset and parameter entity duplicates, source locations, async processing, repeated permitted attribute/entity firstbindings and bounded retention.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M5-dtd-declaration-provenance-A3",
+      "description": "Preserve earlier DTD/parser/API semantics and record relevant actual checks and allocation applicability at known revision using verified dependencies only.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "Compiler review found M2 effective model loses XML validity-only declaration duplicates; upcoming facade will check retained diagnostic before internal compilation.",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}
