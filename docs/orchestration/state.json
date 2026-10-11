@@ -7,8 +7,8 @@
   "coordination_branch": "main",
   "max_concurrent_workers": 3,
   "last_verified_checkpoint": "M7-gate",
-  "last_verified_task": "M8-model",
-  "last_integrated_revision": "04a2d5f95ffdb8b9c43cf7602bef0f8c65d6e16f",
+  "last_verified_task": "M8-source-locations",
+  "last_integrated_revision": "e6af71af0cafbcfdad83b62ddc746ffc3f959eb9",
   "active_assignments": [
     {
       "task_id": "M8-regex",
@@ -91,11 +91,9 @@
   ],
   "integration_queue": [],
   "next_actions": [
-    "Claim and implement bounded source-location repair in coordinator isolated checkout; retain3 worker chat limit and no lease overlap.",
-    "Collect source-ready drafts for three active workers, request bounded read-only reviews; prepare allocation/performance outside serialized leases.",
-    "After model verification prioritize regex, datatype-core and XSD compile; datatype families are disjoint children followed by original complete-library join.",
-    "Complete ready M8 lanes with at most3 workers; prepare/park/grant/release bounded measurements.",
-    "Verify cumulative M8 gate and terminal cleanup, then transfer sole writes back to main."
+    "Join verified source locations into XSD compiler; finish one review correction batch",
+    "Complete regex remaining-only measurement and core prepared measurement under separate leases",
+    "Integrate verified workers and dispatch only newly ready M8 tasks; no M9"
   ],
   "implementation_worker_policy": {
     "model": "gpt-6.1-sol",
@@ -215,17 +213,11 @@
   "current_milestone": "M8",
   "milestone_completion_scope": "Complete integrated verified M8-gate; terminal workers and cleanup; preserve earlier evidence/caches; transfer sole writes to main. Do not create M9.",
   "milestone_progress": "4 of26 M8 tasks verified/cleaned; regex/datatype-core/XSDcompile claimed for independent implementation.",
-  "blockers": [
-    {
-      "task": "M8-xsd-compile",
-      "scope": "Granular original-source provenance",
-      "resolution": "Read-only review confirms shared repair needed. New M8-source-locations owns explicit prior shared files; root will implement bounded repair in isolated branch without fourth worker. Existing XSD worker continues independent code; add dependency only after repair verified (validator disallows active task unverified dependency)."
-    }
-  ],
+  "blockers": [],
   "pending_decisions": [],
   "timing_queue": [
-    "M8-source-locations root prepared allocation pair, thirty seconds; not granted",
-    "M8-datatypes-core reviewed NoEmit sequence, six hundred seconds; not granted"
+    "M8-regex prepared remaining-only allocation probe and NoEmit sequence, six hundred seconds; not granted",
+    "M8-datatypes-core prepared NoEmit sequence, identity manifest enhancement pending; not granted"
   ],
   "completed_assignments": [
     {
@@ -509,12 +501,13 @@
     "branch": "codex/m8-source-locations",
     "base_revision": "1d3f2e09e3d604f4377ece942805435e07345e36",
     "worktree": "/private/tmp/xemele-m8-source-locations",
-    "stage": "Source accepted;177focused tests,1393public/316frozen API and baseline7/candidate10 counters-disabled controls passed; no measurement yet",
+    "stage": "Verified at e6af71af after combined tests and allocation pair; cleanup pending",
     "acceptance": "Copied source locations in document-owned sidecar, revision qualification, source URI without declaration, scope helpers; focused provenance and compatibility checks plus measured metadata/lookup costs before verify",
     "reviewer": "/root/review_m8_model",
     "worker_slots": "No fourth implementation chat;3 existing worker chats continue independent work.",
     "claim_revision": "33659d7bd7a576d8e2b8e11fb38fd90ed927642d",
     "source_revision": "0315f407f6e15091932d90c498759d3e80612baf",
-    "baseline_worktree": "/private/tmp/xemele-m8-source-locations-baseline"
+    "baseline_worktree": "/private/tmp/xemele-m8-source-locations-baseline",
+    "integration_revision": "e6af71af0cafbcfdad83b62ddc746ffc3f959eb9"
   }
 }

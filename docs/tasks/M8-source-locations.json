@@ -4,11 +4,11 @@
   "milestone": "M8",
   "title": "Retain original XML source locations for schema compilation",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M8 coordinator bounded shared repair",
   "branch": "codex/m8-source-locations",
   "base_revision": "1d3f2e09e3d604f4377ece942805435e07345e36",
-  "integration_revision": null,
+  "integration_revision": "e6af71af0cafbcfdad83b62ddc746ffc3f959eb9",
   "depends_on": [
     "M8-model",
     "M5-dtd-instance-provenance"
@@ -39,7 +39,8 @@
       "status": "passed",
       "evidence": [
         "source-review",
-        "focused-correctness"
+        "focused-correctness",
+        "integrated-checks"
       ]
     },
     {
@@ -48,7 +49,8 @@
       "status": "passed",
       "evidence": [
         "source-review",
-        "focused-correctness"
+        "focused-correctness",
+        "integrated-checks"
       ]
     },
     {
@@ -58,7 +60,8 @@
       "evidence": [
         "source-review",
         "focused-correctness",
-        "allocation-pair"
+        "allocation-pair",
+        "integrated-checks"
       ]
     }
   ],
@@ -94,6 +97,15 @@
       "result": "passed",
       "summary": "Baseline seven and candidate ten routes, each sixteen warmups plus sixty-four consumed samples; new lookups zero bytes, owned parse overhead measured, positive controls 1048 bytes, cold/retained costs reported; twenty identities stable and lifecycle closed before raw inspection.",
       "artifact": "docs/reports/M8-source-locations/allocations.md"
+    },
+    {
+      "id": "integrated-checks",
+      "kind": "integration",
+      "revision": "e6af71af0cafbcfdad83b62ddc746ffc3f959eb9",
+      "command": "python3 docs/reports/M8-source-locations/integration-commands.py",
+      "result": "passed",
+      "summary": "Combined-tree cache-only Release builds zero warnings/errors; 177 actual Arm64 .NET 10.0.11 tests passed with zero errors/failures/skips/not-run; public API 1393 and frozen model 316 matched; 176-task validation and whitespace passed. Source inputs match measured and reviewed implementation.",
+      "artifact": "docs/reports/M8-source-locations/integration.md"
     }
   ],
   "blockers": [],
@@ -102,11 +114,10 @@
     "checks": [
       "177 focused correctness cases passed; full public API 1393 and frozen model 316 unchanged",
       "Prepared baseline/candidate allocation pair passed under lease; lookups zero bytes; metadata costs explicitly measured",
-      "Planning validates 176 tasks; whitespace check passed"
+      "Planning validates 176 tasks; whitespace check passed",
+      "Combined integration e6af71af: 177 tests, public/frozen API 1393/316 and planning passed"
     ],
-    "remaining": [
-      "Combined-tree verification and coordination integration"
-    ],
+    "remaining": [],
     "requests": [
       "XSD compiler must join only after this task is verified and use local scope lookup for declaration/particle/constraint positions."
     ]
