@@ -4,11 +4,11 @@
   "milestone": "M3",
   "title": "Switch streaming resource mode at idle token boundaries",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M3 coordinator 01a1284a-8826-7fc2-af44-74552db608f2 / resource mode worker",
   "branch": "codex/m3-resource-mode",
   "base_revision": "2a061b60c922efdf4984ff23f46a6a50eb1b8034",
-  "integration_revision": null,
+  "integration_revision": "75e7342a9468d3eb32cafb12262e8b8ac4301045",
   "depends_on": [
     "M3-streaming-pump",
     "M3-async-resources"
@@ -41,7 +41,8 @@
         "focused-correctness",
         "compiled-api",
         "planning-validator",
-        "independent-source-review"
+        "independent-source-review",
+        "coordinator-integrated"
       ]
     },
     {
@@ -52,7 +53,8 @@
         "focused-correctness",
         "compiled-api",
         "planning-validator",
-        "independent-source-review"
+        "independent-source-review",
+        "coordinator-integrated"
       ]
     },
     {
@@ -68,7 +70,8 @@
         "process-wide-allocations",
         "resource-mode-bdn",
         "diff-check",
-        "independent-source-review"
+        "independent-source-review",
+        "coordinator-integrated"
       ]
     }
   ],
@@ -161,19 +164,25 @@
       "result": "passed",
       "summary": "Coordinator reported independent source-only review approved exact ede12339 with no concrete A1/A2 blockers; no extra executions. Root independently inspected raw allocation0/positive4120/setup61040. Integrated combined writer/reader checks remain coordinator-owned.",
       "artifact": null
+    },
+    {
+      "id": "coordinator-integrated",
+      "kind": "integration",
+      "revision": "75e7342a9468d3eb32cafb12262e8b8ac4301045",
+      "command": "Pinned Release build; Xemele.Tests.dll -namespace Xemele.Tests.ResourceMode -namespace Xemele.Tests.AsyncResources -namespace Xemele.Tests.StreamingPump -namespace Xemele.Tests.Entities -namespace Xemele.Tests.Resolution -namespace Xemele.Tests.ReaderRuntime -namespace Xemele.Tests.Sax -parallelMode none; official API compare; task validate",
+      "result": "passed",
+      "summary": "Latest combined writer/reader/SAX/core: build 0 warnings/errors, 251 tests passed with 0 failures/errors/skips, including original allocation regressions; official full discovery API706 matched; independent substantial source-only review approved. Actual standalone zero-selection and three-case evidence preserved without rerun.",
+      "artifact": "docs/reports/M3-resource-mode/integration.xml"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Implemented narrow internal idle resource mode bridge and synchronous abort after async advancement; preserved constructors/manual NeedResource and frozen public API. All branch acceptance checks passed at ede12339; independent source-only review approved; awaiting integrated verification.",
+    "summary": "Verified guarded resource mode and synchronous abort after async resource use; 251 integrated tests and unchanged API706 pass.",
     "checks": [
       "Release tests/probe0warnings/errors;218focused passed(18own+29asyncresources+33pump+78entities+60resolution); approved655compiled API matched;147-task validation/diff clean.",
       "Granted serial lease:1,048,576 warmed pump/core/no-op selections0B, positive4120B; setup61040B separated. Three fixed BDN MemoryDiagnoser cases0B; timings informational. Allocation/BDN/sequence exited0 and all children/session reaped before RELEASED/report inspection."
     ],
-    "remaining": [
-      "Coordinator integrated checks/verification against latest combined writer/reader source.",
-      "Future M3-async-input composition measurement; broader architecture/release performance qualification remains later performance work."
-    ],
+    "remaining": [],
     "requests": []
   }
 }
