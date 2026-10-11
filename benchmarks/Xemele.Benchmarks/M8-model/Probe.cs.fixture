@@ -1,0 +1,127 @@
+// Thin allocation-only driver following the integrated M8 accounting/M5 model
+// probe's warmed distributions, positive control and owned setup separation.
+using System.Runtime.InteropServices;
+using System.Security.Cryptography;
+using System.Text;
+using System.Text.Json;
+using Xemele;
+using Xemele.Validation;
+using Xemele.XPath;
+
+if (args is not [var mode, var output] || mode is not ("--control" or "--measure")) throw new ArgumentException("Use --control|--measure <output>.");
+if (RuntimeInformation.FrameworkDescription != ".NET 10.0.11") throw new InvalidOperationException("Pinned runtime required.");
+bool measure = mode == "--measure";
+long coldStart = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+var fixtures = new Fixture();
+long coldSetupBytes = measure ? GC.GetAllocatedBytesForCurrentThread() - coldStart : 0;
+var rows = new List<object>();
+for (int route = 0; route < 11; route++)
+{
+    for (int warm = 0; warm < 32; warm++) fixtures.Run(route);
+    var distribution = new long[64];
+    long start = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+    for (int operation = 0; operation < 64; operation++)
+    {
+        long before = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+        fixtures.Run(route);
+        distribution[operation] = measure ? GC.GetAllocatedBytesForCurrentThread() - before : 0;
+    }
+    long bytes = measure ? GC.GetAllocatedBytesForCurrentThread() - start : 0;
+    if (measure && (route < 6 ? bytes != 0 || distribution.Any(b => b != 0) : bytes <= 0 || distribution.Any(b => b <= 0)))
+        throw new InvalidOperationException("Allocation boundary control failed for route " + route);
+    rows.Add(new { route, name = Fixture.Names[route], operations = 64, bytes, distribution });
+}
+long positiveStart = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+var positive = new byte[1024]; GC.KeepAlive(positive);
+long positiveBytes = measure ? GC.GetAllocatedBytesForCurrentThread() - positiveStart : 0;
+if (measure && positiveBytes < 1024) throw new InvalidOperationException("Positive control failed.");
+long retainedBefore = measure ? GC.GetTotalMemory(true) : 0;
+var retained = new SchemaNamespaceContext[256];
+for (int i = 0; i < retained.Length; i++) retained[i] = new(Fixture.Prefixes, "", Fixture.Source);
+long retainedAfter = measure ? GC.GetTotalMemory(true) : 0;
+GC.KeepAlive(retained); GC.KeepAlive(fixtures);
+File.WriteAllText(output, JsonSerializer.Serialize(new { mode, runtime = RuntimeInformation.FrameworkDescription,
+    architecture = RuntimeInformation.ProcessArchitecture.ToString(), os = RuntimeInformation.OSDescription,
+    serverGc = System.Runtime.GCSettings.IsServerGC,
+    assemblySha256 = Hash(typeof(SchemaCompileOptions).Assembly.Location), probeSha256 = Hash(typeof(Fixture).Assembly.Location),
+    inputSha256 = Convert.ToHexString(SHA256.HashData(Fixture.XmlBytes)),
+    sourceRevision = Environment.GetEnvironmentVariable("XEMELE_MODEL_REVISION"), coldSetupBytes, positiveBytes,
+    retainedBefore, retainedAfter, retainedContexts = retained.Length, rows }, new JsonSerializerOptions { WriteIndented = true }));
+Console.WriteLine($"{mode}: 11 consumed cases, 32 warm + 64 operations each; counters {(measure ? "enabled" : "disabled")}");
+static string Hash(string path) => Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(path)));
+
+internal sealed class Fixture
+{
+    internal static readonly string[] Names = ["M5 baseline charge", "M8 compile charge/components", "M8 validation adapter charge", "owned namespace lookup", "baseline borrowed stream read", "tracked schema borrowed read", "compile operation setup", "namespace/report snapshots", "direct M4 accounting", "capped shared XPath join", "owned external schema composition"];
+    internal static readonly Uri Source = new("urn:m8:probe");
+    internal static readonly Dictionary<string, string> Prefixes = new() { ["p"] = "urn:p" };
+    internal static readonly byte[] XmlBytes = Encoding.UTF8.GetBytes("<r xmlns:p='urn:p'>根😀</r>");
+    private readonly ValidationOperation baseline = new(new() { MaxOperations = null, Limits = new() { EvaluationWork = null } });
+    private readonly ISchemaOperation compile = new SchemaCompileOperation(new() { MaxOperations = null, MaxComponents = null, Limits = new() { EvaluationWork = null } });
+    private readonly ISchemaOperation validation = new SchemaValidationOperation(new() { MaxOperations = null, Limits = new() { EvaluationWork = null } });
+    private readonly SchemaNamespaceContext namespaces = new(Prefixes, "", Source);
+    private readonly SchemaResourceLoader loader;
+    private readonly ZeroStream stream = new();
+    private readonly byte[] buffer = new byte[256];
+    private readonly XmlNode root;
+    private readonly XPathExpression expression = XPathExpression.Compile("string(/r)");
+    private readonly XPathContext xpath = new();
+    private readonly XmlResourceResolver resolver = new Resolver();
+    internal Fixture()
+    {
+        var operation = new SchemaCompileOperation(new() { MaxOperations = null, Limits = new() { EvaluationWork = null, ExternalBytes = null } });
+        loader = new(null, operation);
+        root = XmlDocument.Parse(XmlBytes.AsSpan()).RootElement;
+        var context = new SchemaCompileContext();
+        using var input = new MemoryStream(XmlBytes, writable: false);
+        var parsed = context.Parse(input); parsed.CheckUnchanged();
+        if (parsed.Context(parsed.Document.RootElement).Prefixes["p"] != "urn:p") throw new InvalidOperationException("Composition control failed.");
+    }
+    internal void Run(int route)
+    {
+        switch (route)
+        {
+            case 0: if (!baseline.ChargeOperations()) throw new InvalidOperationException(); break;
+            case 1: if (!compile.Charge(1, default) || !compile.ChargeComponents(1, default)) throw new InvalidOperationException(); break;
+            case 2: if (!validation.Charge(1, default)) throw new InvalidOperationException(); break;
+            case 3: if (!namespaces.Prefixes.TryGetValue("p", out var uri) || uri != "urn:p") throw new InvalidOperationException(); break;
+            case 4: if (stream.Read(buffer.AsSpan()) != 256 || buffer[0] != 0) throw new InvalidOperationException(); break;
+            case 5: if (loader.Read(stream, buffer.AsSpan(), Source) != 256 || buffer[0] != 0) throw new InvalidOperationException(); break;
+            case 6: GC.KeepAlive(new SchemaCompileOperation()); break;
+            case 7:
+                var snapshot = new SchemaNamespaceContext(Prefixes, "", Source);
+                var report = new SchematronResult(new(true, []), "#ALL", null, snapshot.Prefixes, [new(0, null, null)], [new(0, 0, 0, "/r", "/r")], []);
+                if (report.ActivePatterns[0].Id is not null || report.Namespaces["p"] != "urn:p") throw new InvalidOperationException();
+                GC.KeepAlive(report); break;
+            case 8:
+                if (expression.EvaluateWithAccounting(root, xpath, out long used).AsString() != "根😀" || used <= 0) throw new InvalidOperationException(); break;
+            case 9:
+                if (SchemaXPath.Evaluate(expression, root, xpath, validation).AsString() != "根😀") throw new InvalidOperationException(); break;
+            case 10:
+                var context = new SchemaCompileContext(new() { Resolver = resolver });
+                var document = context.Resources.Load(new("urn:m8:probe", null, SchemaResourcePurpose.XsdInclude, default), context.Operation);
+                if (document.RootElement.GetTextContent() != "根😀" || context.Resources.SourceUri(document) != Source) throw new InvalidOperationException();
+                GC.KeepAlive(document); break;
+            default: throw new ArgumentOutOfRangeException(nameof(route));
+        }
+    }
+    private sealed class Resolver : XmlResourceResolver
+    {
+        public override XmlResolvedResource? Resolve(XmlResourceRequest request, CancellationToken token)
+        { token.ThrowIfCancellationRequested(); return new(new MemoryStream(XmlBytes, writable: false), Source); }
+    }
+    private sealed class ZeroStream : Stream
+    {
+        public override bool CanRead => true;
+        public override bool CanWrite => false;
+        public override bool CanSeek => false;
+        public override long Length => throw new NotSupportedException();
+        public override long Position { get => throw new NotSupportedException(); set => throw new NotSupportedException(); }
+        public override int Read(byte[] buffer, int offset, int count) => Read(buffer.AsSpan(offset, count));
+        public override int Read(Span<byte> destination) { destination.Clear(); return destination.Length; }
+        public override void Flush() { }
+        public override long Seek(long offset, SeekOrigin origin) => throw new NotSupportedException();
+        public override void SetLength(long value) => throw new NotSupportedException();
+        public override void Write(byte[] buffer, int offset, int count) => throw new NotSupportedException();
+    }
+}
