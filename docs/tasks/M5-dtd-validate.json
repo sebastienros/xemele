@@ -4,7 +4,7 @@
   "milestone": "M5",
   "title": "DTD instance validation",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M5 isolated DTD instance validation worker",
   "branch": "codex/m5-dtd-validate",
   "base_revision": "eccc8fa5254218d47ab688cbef28c4f154ae34cd",
@@ -39,29 +39,106 @@
     {
       "id": "M5-dtd-validate-A1",
       "description": "Implement DtdSchema compile/validate facade, content/attribute checks, IDs/IDREFs and entity/notation constraints.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "functional",
+        "performance"
+      ]
     },
     {
       "id": "M5-dtd-validate-A2",
       "description": "Test valid/invalid documents, default/fixed/required semantics, nonmutation and standalone profile cases.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "functional"
+      ]
     },
     {
       "id": "M5-dtd-validate-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "demo",
+        "preservation",
+        "planning"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Validation/Dtd/DtdSchema.cs: frozen compile/from-document/validate facade",
+    "src/Xemele/Validation/Dtd/Evaluation/: current DOM evaluation, borrowed QName lookup and resolver-aware bounded subset reading",
+    "tests/Xemele.Tests/M5-dtd-validate/:89 functional cases",
+    "samples/M5-dtd-validate/: real executable and isolated allocation domains",
+    "benchmarks/Xemele.Benchmarks/M5-dtd-validate/:14 ShortRun NoEmit cases",
+    "docs/api/M5-dtd-validate.txt: exact four-member surface",
+    "docs/reports/M5-dtd-validate/README.md"
+  ],
+  "evidence": [
+    {
+      "id": "functional",
+      "kind": "check",
+      "revision": "455000b57f583ea132488b7fcc240c54e37ed15f",
+      "command": "Release server-disabled no-restore test build; pinned --fx-version10.0.11 Xemele.Tests.dll -namespace Xemele.Tests.DtdValidation",
+      "result": "passed",
+      "summary": "89 focused tests pass on actual.NET10.0.11; build zero warnings/errors.",
+      "artifact": "docs/reports/M5-dtd-validate/README.md"
+    },
+    {
+      "id": "preservation",
+      "kind": "check",
+      "revision": "455000b57f583ea132488b7fcc240c54e37ed15f",
+      "command": "Pinned --fx-version10.0.11 Xemele.Tests.dll selected DtdParser/Composition/Grammar/Nonvalidating/M5DtdModel/DeclarationProvenance/SourceProvenance/ReadCompleteness classes -method- *Allocation*",
+      "result": "passed",
+      "summary": "2091 earlier functional cases passed; no measurement methods, zero failed/skipped/notrun.",
+      "artifact": "docs/reports/M5-dtd-validate/README.md"
+    },
+    {
+      "id": "demo",
+      "kind": "check",
+      "revision": "455000b57f583ea132488b7fcc240c54e37ed15f",
+      "command": "Release sample/probe builds; pinned --fx-version10.0.11 sample --control and probe --discover <output>; python3 docs/reports/M5-validation-model/check_api.py",
+      "result": "passed",
+      "summary": "Counters-disabled demo and14case discovery pass,948-member fullAPI union matches.",
+      "artifact": "docs/reports/M5-dtd-validate/README.md"
+    },
+    {
+      "id": "performance",
+      "kind": "check",
+      "revision": "455000b57f583ea132488b7fcc240c54e37ed15f",
+      "command": "python3 docs/reports/M5-dtd-validate/run_measurements.py --exclusive-grant",
+      "result": "passed",
+      "summary": "Exact prepared exclusive sequence all phase/identity exits0/nochild; fourwarmQName zero numerators; owned allocation domains and all14 BDN cases recorded with inclusive GC numerators/denominators.",
+      "artifact": "docs/reports/M5-dtd-validate/README.md"
+    },
+    {
+      "id": "planning",
+      "kind": "check",
+      "revision": "455000b57f583ea132488b7fcc240c54e37ed15f",
+      "command": "python3 tools/planning/tasks.py validate; git diff --check",
+      "result": "passed",
+      "summary": "156 task records validate; diff check passes.",
+      "artifact": "docs/reports/M5-dtd-validate/README.md"
+    },
+    {
+      "id": "review",
+      "kind": "review",
+      "revision": "455000b57f583ea132488b7fcc240c54e37ed15f",
+      "command": "Coordinator source and independent raw-result inspection",
+      "result": "passed",
+      "summary": "Coordinator approved scalar metering, original-profile whitespace guards, CDATA structural rejection and indexed borrowed lookups; inspected all14 GC records/runtime/summaries and allocation domains. Cleanup acknowledged after durable summary commit; generated raw files deleted.",
+      "artifact": "docs/reports/M5-dtd-validate/README.md"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "",
-    "checks": [],
-    "remaining": [],
+    "summary": "Implemented frozen DtdSchema facade and bounded immutable-schema current DOM validation, without augmentation/fetch/normalization.89 focused and2091 preservation cases pass at455000b; exact prepared measurement evidence recorded.",
+    "checks": [
+      "Actual .NET10.0.11 Release builds/tests/API948/156planning pass.",
+      "Exclusive prepared allocation+14BDNcases successful with full matching identities and no children."
+    ],
+    "remaining": [
+      "Coordinator integration verification."
+    ],
     "requests": []
   }
 }
