@@ -73,7 +73,7 @@ An incomplete input or exhausted operation returns false/false and a Fatal entry
 String/stream instance syntax rejection similarly returns incomplete results,
 while argument, I/O, callback and cancellation exceptions propagate. Those
 conveniences parse with strict M2 defaults, DTD prohibited and no resolver; a
-caller needing retained DTD ENTITY/NOTATION context supplies a parsed document.
+caller needing retained DTD ENTITY/ENTITIES context supplies a parsed document.
 Cancelled operations throw OperationCanceledException at entry, before external
 calls, during traversal/scanning and before returning success. No catch-all
 translation. Input streams are never disposed by the facade.
@@ -108,10 +108,13 @@ regex state transition, lexical conversion step, value comparison/hash and
 identity tuple comparison, before work; zero performs cancellation polling.
 Facades share one compile operation across all finalization passes, one validation
 operation across content/datatype/identity evaluations. New per-expression M4
-limits do not reset the enclosing budget: reserve/charge their permitted work
-from the remaining schema budget or use a model-owned bridge to M4's existing
-internal budget in the final assembly. Count actual work, never allocate a fresh
-10M quota for every test. Poll loops in bounded intervals even with null caps.
+limits do not reset the enclosing budget. ISchemaOperation.RemainingWork is
+null for an unlimited enclosing budget, otherwise the nonnegative effective cap
+minus already consumed work; it never returns a negative value. Use the exact
+ordered internal adapter below, cap to min(remaining/per-expression), and charge
+actual consumed work in finally. Do not precharge the entire allowance or silently
+reset work between tests. Count actual work, never allocate a fresh quota for
+every test. Poll loops in bounded intervals even with null caps.
 
 Shared ISchemaOperation is implemented by M8-model, adapting M5
 ValidationOperation for run accounting and diagnostics without changing that
@@ -132,6 +135,18 @@ is null by default, selecting schema defaultPhase or #ALL; an unknown runtime
 phase is ArgumentException before instance traversal. Compile rejects duplicate
 or undefined phase/pattern references as SCH.Phase. #ALL activates concrete
 patterns in schema order; #DEFAULT resolves schema default, falling back #ALL.
+Phases map source IDs to SchematronCompiledPhase(Id,Lets,ActivePatternKeys).
+Only the selected phase's lets are evaluated, after schema lets and before
+pattern lets; #ALL has no named-phase let scope. Phase selection cannot change
+one published schema's bindings or leak into another run. A let name duplicate
+within a scope is a compile error; permitted inner-scope shadowing is isolated.
+Two phases can assign different values to the same variable for one shared
+pattern. Phase active references use declared authored pattern IDs at compile
+time, then immutable keys; unnamed patterns participate in #ALL without fake
+source IDs. The project's supporting grammar pin in sources.json has phase
+p*,let*,active*, optional concrete pattern id and rule/check subject. The ISO2016
+publication remains the normative selected edition, and the pin is not a claim
+to implement a later edition.
 
 ## Resource boundary and required ordered repair
 
@@ -161,14 +176,60 @@ are never fetched: the explicitly compiled set alone defines available types.
 
 Required coordinator ownership request: add Schema=5 to
 src/Xemele/Resolution/Core/Resources.cs, preserving all existing values/members.
-Suggested new owning repair paths: docs/api/M8-schema-resource-kind.txt for the
-additive enum field, tests/Xemele.Tests/M8-schema-resource-kind/ for resolver
+Suggested new owning repair paths: docs/api/M8-resource-kind.txt for the
+additive enum field, tests/Xemele.Tests/M8-resource-kind/ for resolver
 authorization and existing 0–4 kind behavior, and that repair task's JSON/report.
 Do not rewrite old baseline fragments to conceal an additive member. The present fixtures use only the named internal
 constant `(XmlResourceKind)5`; actual M2 probes demonstrate values 0–4, lexical
 request fields and disposal. They do not claim a named Schema field already ships.
 No dependent model implementation may start before that ordered ownership is
 established and the additive contract can be implemented under it.
+
+## Ordered XPath accounting join — M8-xpath-accounting
+
+M4's current XPathExpression privately constructs XPathBudget, so public
+Evaluate cannot supply spent work. A model-only shim over that public method
+is insufficient. The ordered repair owns src/Xemele/XPath/XPathExpression.cs
+and new src/Xemele/XPath/Evaluation/Accounting.cs, with additive internal
+baseline/tests under docs/api/M8-xpath-accounting.txt and
+tests/Xemele.Tests/M8-xpath-accounting/. Existing public members and behavior
+remain unchanged. Required internal instance overloads on XPathExpression are:
+
+```csharp
+internal XPathValue EvaluateWithAccounting(XmlNode context, XPathContext? options, out long operations);
+internal XPathValue EvaluateWithAccounting(XPathItem context, XPathContext? options, out long operations);
+```
+
+Thin internal static Xemele.XPath.Internal.XPathEvaluationAccounting forwards
+to those overloads with the existing expression as its first argument; exact
+signatures are XPathAccounting.cs.fixture. This static declaration allows the
+current fixture to consume the real sealed/nonpartial M4 expression type, without
+shadowing it or claiming the adapter already exists in the runtime.
+
+Initialize operations=0 before guards. Instantiate exactly the same budget/path
+as existing Evaluate, including context validation, variable/function snapshot,
+input/navigation, binding and expression evaluation. In finally copy the actual
+XPathBudget.Operations, even on evaluation limit, cancellation, callback failure
+or argument refusal after budget creation; before creation it stays zero.
+Rejected attempted work is not added to the successful-charge count. Do not catch
+or translate engine/callback exceptions in the adapter. Delegate existing public
+Evaluate to an equivalent core, preserving public results/exception provenance.
+
+The compiled AccountingJoin.cs.fixture caps both XmlNode/XPathItem overloads to
+min(enclosing RemainingWork, per-expression MaxOperations), preserving other
+M4 limits and the shared cancellation token; zero remaining refuses before
+creating invalid zero-cap M4 options. It charges out actual count in finally,
+then the enclosing caller checks IsComplete before publishing any success.
+A caller translating an XPath failure must do so after accounting; no accounting
+exception may conceal an existing callback failure. If cancellation prevents
+the M5 charge, preserve the primary exception; an aborted operation must not
+publish success. The report contains no successful result in this case.
+
+Actual success/failure count, repeated-expression shared cap, exact-limit/one-over
+and preservation tests belong to M8-xpath-accounting. Present fixtures establish
+only that the exact proposed join and current M4 types compile. That ordered
+repair and M8-resource-kind must verify before M8-model starts; neither shared
+source is edited by this contract worker.
 
 ## Datatype, regex and facet joins
 
@@ -199,8 +260,9 @@ URI and list/union values follow their actual value spaces. Equality/hash are
 consistent across comparable derived types and numeric primitives where XSD
 permits equality, including identity tuple keys; prefixes do not affect QName
 identity. NaN equality follows XSD, not CLR operators. XSD language whiteSpace
-uses XML #x9/#xA/#xD/#x20 only. NOTATION/ENTITY instance declaration checks belong
-to XSD validation, while datatype lexical/value behavior remains shared.
+uses XML #x9/#xA/#xD/#x20 only. NOTATION checks use the schema notation declarations; ENTITY/ENTITIES use
+retained DTD unparsed entities. Both belong to XSD validation, while datatype
+lexical/value behavior remains shared.
 
 M8-regex implements IXmlSchemaRegexCompiler/Matcher; program subclasses are
 immutable and opaque. Its grammar is XSD1.0 Appendix F, with Unicode scalar
@@ -257,12 +319,22 @@ emits RNG.Instance at the instance source, restrictions emit schema locations.
 
 M8-xsd-compile owns declarations/terms/particles/component tables/IXsdCompiler
 in Xsd.cs.fixture. Expand model/attribute groups during component compilation,
-retaining particle locations; preserve local element IDs independently of global
+retaining particle locations; attribute-use default/fixed overrides also retain
+their own SchemaNamespaceContext and XmlLocation in XsdAttributeBinding. Resolve
+QName values from the actual constraint's namespace map: a referenced declaration's
+map is used only for the declaration constraint; a local override uses the local
+binding map, which can assign the same prefix a different URI. Do not replace
+either map with the instance's namespace context. Carry local locations into
+compile diagnostics and effective typed values; preserve local element IDs independently of global
 name dictionaries. Names map expanded namespace/local names, not lexical QName.
 Simple types remain explicit XmlDatatypeDefinitions; built-in anyType and
 anySimpleType are not unspecified missing types. Anonymous types receive stable
 internal names and Anonymous=true; xsi:type may resolve only declarations with
-Anonymous=false. Simple datatype definitions also retain Anonymous and Final
+Anonymous=false. Element Block uses distinct XsdElementBlock values Substitution/Restriction/
+Extension; complex-type Block uses XsdTypeBlock Restriction/Extension and means
+prohibited substitutions. Final controls derivation separately: Substitution
+is never a Final derivation. Expand #all into the relevant block/final set.
+Simple datatype definitions also retain Anonymous and Final
 derivation sets, so restrictions/list/union compilation cannot lose final controls. Recursive type refs are bounded graph
 edges. Chameleon include and redefine resolve component identity correctly.
 Global namespace/type lookup is derived from sealed tables, not caller maps.
@@ -288,8 +360,13 @@ are supplied as dependencies, not hidden static singleton engines.
 
 M8-xsd-validate implements IXsdEvaluator. It dispatches to supplied content and
 facet engines, validates attributes/simple/mixed content, xsi:type/nil, root/local
-declarations, effective defaults/fixed, block/final and substitution, notation/
-entity and ID/IDREF document-wide consistency. Content programs are compiled once by the facade and supplied as a sealed
+declarations, effective defaults/fixed, block/final and substitution, schema NOTATION/
+DTD ENTITY and ID/IDREF document-wide consistency. XsdCompiledSchema.Notations
+is a sealed expanded-name table of XsdNotationDeclaration (public/system ID,
+namespace/base context and location); NOTATION values must resolve declared
+schema notations and satisfy their required enumeration restrictions. NOTATION
+is not a DTD notation-table check. ENTITY/ENTITIES, separately, require retained
+DTD unparsed-entity context. Content programs are compiled once by the facade and supplied as a sealed
 type-name dictionary; the evaluator never recompiles content on each run. A
 nonnull factory requires a nonnull identity program, and conversely. Null
 identityFactory/program is solely
@@ -334,11 +411,15 @@ language: translate its union/location predicates into a root-context selector
 with equivalent matching, not blindly Evaluate(contextString, documentRoot).
 Reject constructs outside that binding, not valid constructs the worker dislikes.
 No implicit default namespace for XPath names; sch:ns supplies prefix bindings.
+Concrete patterns retain optional authored Id=null separately from their stable
+nonnegative Key assigned in declaration order; never synthesize an authored ID.
+Compiled rules retain stable schema-wide Key, and each fired event gets a unique
+per-result Key, even when two rules have identical context/location strings.
 A document node and attributes are valid contexts. First matching rule per node
 per active pattern wins, rules retain declaration order, patterns run in schema
 order and matched nodes in document order. position()/last() focus at an assert
 is the matched node singleton, per XPath1 rule binding, not the selection array.
-Lets evaluate in schema/pattern/rule scopes with dependency order, no unresolved
+Lets evaluate in schema/selected-phase/pattern/rule scopes with dependency order, no unresolved
 or circular variables; inner bindings shadow outer scope under the binding rules.
 Dynamic diagnostics/properties/name/value-of evaluate in the assertion focus.
 All typed expressions/variables are M4 XPathValue/XPathExpression, not CLR dynamic
@@ -347,29 +428,44 @@ formatting span/emph/dir annotations never suppress their contained text.
 
 A failed assertion is SCH.Assert Error and invalidates ValidationResult. A
 successful report is SCH.Report Warning and remains a structured finding;
-role/flag strings are metadata, not hidden severity policies. False reports
+role/flag strings are metadata, not hidden severity policies. Subject is retained
+as source text plus compiled XPathExpression on rules/checks. A check subject
+overrides the rule subject; otherwise use the rule subject, then context node.
+Evaluate subjects from the original assertion singleton focus with the same lets
+and accounting; they never change test/message focus. A subject must evaluate to
+a node-set; choose the first node in document order for the reported location.
+An empty subject set produces an empty reported Location and unknown
+SourceLocation, preserving the nonempty context location; a non-node-set or
+failed evaluation is SCH.XPath and incomplete, not an assertion failure. False reports
 and true assertions produce no finding. Findings snapshot ID/role/flag,
-pattern/context/test, deterministic namespace-independent instance location,
-source location, expanded text and diagnostic/property references in declared
+PatternKey/FiredRuleKey plus nullable authored PatternId, context/test,
+deterministic namespace-independent reported subject location/source location,
+separate ContextLocation/ContextSourceLocation for the assertion focus, expanded text and diagnostic/property references in declared
 order. Unknown source locations use shared zero/null semantics; never store
 XmlNode handles in results. Public constructors snapshot collections, reject
 null records/required strings, undefined kinds and inconsistent validation
-status. Findings have owned strings and remain usable after documents change.
+status. Result construction also rejects duplicate/negative active-pattern or
+fired-event keys, findings referencing absent events, event/pattern mismatches,
+and authored IDs inconsistent with the active-pattern record. Optional authored
+IDs may be null. Context and reported subject locations remain independent. Findings have owned strings and remain usable after documents change.
 
 SchematronResult owns the M5 ValidationResult, selected concrete phase, title,
 namespace map, active-pattern/fired-rule traces and findings. Fatal XPath/resource/
 quota errors terminate the run with SCH.XPath or VALIDATION.Limit and incomplete
 result; never treat them as a failed assertion. ActivePatterns/FiredRules/Findings
-preserve evaluation order, with pattern/context/location identifying which fired
-rule produced a finding. Records and traces charge the same operation and finding
+preserve evaluation order, with explicit PatternKey and FiredRuleKey identifying which fired event produced
+a finding; no string-based join is allowed. Records and traces charge the same operation and finding
 count obeys Limits.Diagnostics, including warning reports and terminal refusal.
 
 M8-sch-report owns SchematronReport in Reporting. SerializeSvrl returns an owned
 XML string; SaveSvrl writes UTF-8 without BOM/declaration, leaves output open and
 propagates write/cancellation exceptions. Namespace is
 `http://purl.oclc.org/dsdl/svrl`; output root schematron-output has phase/title,
-ns-prefix-in-attribute-values entries sorted by prefix, then active-pattern,
-fired-rule and their failed-assert/successful-report entries in trace order.
+ns-prefix-in-attribute-values entries sorted by prefix, then for each active pattern in collection order, active-pattern with its
+optional authored id/name, its fired events in collection order, and each event's
+findings in collection order. Join solely by explicit keys; patterns/events with
+zero findings still appear. A subject differing from the rule context cannot
+alter the join. Null authored IDs are omitted, not synthesized.
 Findings include test/location and nonnull id/role/flag, text, diagnostic-reference
 (@diagnostic) and property-reference (@property). Empty optional attributes are
 preserved if present; absent values omitted. Escaping uses XML serialization,

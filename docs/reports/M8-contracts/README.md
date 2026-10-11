@@ -26,9 +26,9 @@ ships. The dependency assembly is inspected for absence of HTML/CSS types.
 The owned extractor includes public and internal declarations, uses dependency
 metadata to resolve value types/nullability, compares exact canonical member rows,
 and rejects separately mutated member presence, nullable, init-only and internal
-work-width metadata. Inventory checks enforce every built-in datatype/facet,
+work-width metadata, plus optional authored pattern-ID and fired-event-key controls. Inventory checks enforce every built-in datatype/facet,
 identity family and 2016 properties as well as per-entry ownership/disposition.
-The 410 inventory entries are required scope/exclusions, not executed corpus cases.
+The current 427 inventory entries are required scope/exclusions, not executed corpus cases.
 
 Allocation/performance measurement is inapplicable: this task modifies no runtime
 hot path. Corpus pinning, actual validator coverage and cumulative gates remain

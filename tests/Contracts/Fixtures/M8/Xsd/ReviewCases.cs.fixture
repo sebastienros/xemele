@@ -1,0 +1,22 @@
+using Xemele;
+using Xemele.Validation;
+internal static class XsdReviewConsumers
+{
+    internal static void BlockAndContextAndNotation(XsdCompiledSchema schema)
+    {
+        var globalContext = new SchemaNamespaceContext(new Dictionary<string,string> { ["p"]="urn:global" },"",new Uri("urn:global"));
+        var localContext = new SchemaNamespaceContext(new Dictionary<string,string> { ["p"]="urn:local" },"",new Uri("urn:local"));
+        var name = new SchemaName("urn:types","value");
+        var declaration = new XsdAttributeDeclaration(0,name,new("http://www.w3.org/2001/XMLSchema","QName"),"p:item",null,globalContext,default);
+        var binding = new XsdAttributeBinding(0,XsdAttributeUse.Optional,"p:item",null,localContext,new(new Uri("urn:local"),1,1,null));
+        var element = new XsdElementDeclaration(0,name,name,false,false,null,null,null,
+            [XsdElementBlock.Substitution],[],[],globalContext,default);
+        var type = new XsdTypeDefinition(name,null,XsdDerivation.Extension,false,false,[],
+            [XsdTypeBlock.Extension],XsdContentKind.Empty,null,null,[binding],null,default);
+        var notation = new XsdNotationDeclaration(new("urn:types","image"),"public-image","image.bin",globalContext,default);
+        var notations = new Dictionary<SchemaName,XsdNotationDeclaration> { [notation.Name]=notation };
+        _=notations[notation.Name].PublicId; _=schema.Notations.TryGetValue(notation.Name,out var existing);
+        _=declaration.Context.Prefixes["p"]; _=binding.Context.Prefixes["p"];
+        _=element.Block; _=type.Block; _=existing;
+    }
+}

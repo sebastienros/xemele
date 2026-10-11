@@ -39,20 +39,25 @@ public sealed record SchematronFinding
     public string? Id { get; }
     public string? Role { get; }
     public string? Flag { get; }
-    public string PatternId { get; }
+    public int PatternKey { get; }
+    public int FiredRuleKey { get; }
+    public string? PatternId { get; }
     public string RuleContext { get; }
     public string Test { get; }
     public string Location { get; }
     public XmlLocation SourceLocation { get; }
+    public string ContextLocation { get; }
+    public XmlLocation ContextSourceLocation { get; }
     public string Text { get; }
     public IReadOnlyList<SchematronDiagnosticReference> Diagnostics { get; }
     public IReadOnlyList<SchematronPropertyReference> Properties { get; }
     public SchematronFinding(SchematronFindingKind kind, string? id, string? role, string? flag,
-        string patternId, string ruleContext, string test, string location, XmlLocation sourceLocation,
+        int patternKey, int firedRuleKey, string? patternId, string ruleContext, string test,
+        string location, XmlLocation sourceLocation, string contextLocation, XmlLocation contextSourceLocation,
         string text, IEnumerable<SchematronDiagnosticReference> diagnostics, IEnumerable<SchematronPropertyReference> properties) { throw new InvalidOperationException("Declaration only"); }
 }
-public sealed record SchematronFiredRule(string PatternId, string Context, string Location);
-public sealed record SchematronActivePattern(string Id, string? Name);
+public sealed record SchematronFiredRule(int Key, int PatternKey, int RuleKey, string Context, string Location);
+public sealed record SchematronActivePattern(int Key, string? Id, string? Name);
 public sealed class SchematronResult
 {
     public ValidationResult Validation { get; }
@@ -75,6 +80,7 @@ internal interface ISchemaOperation
     XmlResourceLimits Limits { get; }
     CancellationToken CancellationToken { get; }
     bool IsComplete { get; }
+    long? RemainingWork { get; }
     bool Charge(long work, XmlLocation location);
     bool ChargeComponents(int count, XmlLocation location);
     bool AddDiagnostic(XmlDiagnostic diagnostic);

@@ -30,14 +30,19 @@ validation returns an incomplete invalid result with a fatal diagnostic.
 `XmlResourceLimits`, MaxOperations=10,000,000, MaxComponents=100,000 and operation
 CancellationToken. Schematron wraps these options, fixes ISO/IEC 19757-3:2016 and
 XPath 1.0, and exposes independent finite M4 compile/evaluation limits. Phase
-selection is per validation. All resource/work limits aggregate across imports,
+selection and phase-level let scope are per validation; optional authored pattern
+IDs remain nullable, with explicit stable pattern/fired-event keys for detached
+SVRL ordering and subject locations separate from assertion focus. All resource/work limits aggregate across imports,
 includes, nested schemas and regex/datatype evaluation; exactly-at-limit succeeds.
 
 The ordered shared repair adds **`XmlResourceKind.Schema = 5`** without changing
 values 0–4. Fixtures use a named internal constant `(XmlResourceKind)5` against
 current M2, and explicitly do not claim the runtime has this named enum member.
 Schema access must never be disguised as entity or XInclude access. The coordinator
-must assign the shared resolver source before model implementation starts.
+must assign the shared resolver source before model implementation starts. A second ordered internal M4 accounting
+repair exposes actual operations even on failure; capped per-expression evaluation
+and final actual charging enforce one shared schema work budget. Exact adapter
+shapes are frozen in XPathAccounting.cs.fixture, not claimed as current runtime APIs.
 
 ## Complete release profiles and independent lanes
 

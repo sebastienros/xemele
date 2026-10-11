@@ -2,6 +2,9 @@
 """Compile independent M8 declarations; execute only integrated M2/M4/M5 APIs."""
 import argparse
 import json
+import hashlib
+import re
+import xml.etree.ElementTree as ET
 import subprocess
 import tempfile
 from pathlib import Path
@@ -50,6 +53,8 @@ for lane in lanes:
         ('nullable', [row.replace('XmlResourceResolver?', 'XmlResourceResolver') for row in rows]),
         ('init-only', [row.replace('init=True', 'init=False') for row in rows]),
         ('internal-work-width', [row.replace('Charge(System.Int64 work', 'Charge(System.Int32 work') for row in rows]),
+        ('optional-pattern-id', [row.replace('System.String? Xemele.Validation.SchematronActivePattern.Id', 'System.String Xemele.Validation.SchematronActivePattern.Id') for row in rows]),
+        ('missing-event-association', [row for row in rows if '"id":"P:Xemele.Validation.SchematronFinding.FiredRuleKey"' not in row]),
     ]:
         assert bad_rows != rows, (lane, label)
         with tempfile.TemporaryDirectory(prefix='m8-api-control-') as temp:
@@ -57,7 +62,7 @@ for lane in lanes:
             bad.write_text('\n'.join(bad_rows) + '\n')
             output = run([a.dotnet, '--fx-version', '10.0.11', str(checker), 'compare', str(assembly), str(bad)], expected=1)
             assert 'API mismatch' in output
-print('PASS: 32 rejecting member/nullable/init-only/internal-work-width API controls', flush=True)
+print('PASS: 48 rejecting member/nullable/init-only/work-width/optional-ID/event-key API controls', flush=True)
 
 inventory = json.loads((root / 'docs/decisions/M8/inventory.json').read_text())
 assert inventory['profiles'] == ['rng-xml-2001', 'xsd-1.0-second-edition', 'schematron-iso2016-xpath1-svrl']
@@ -72,7 +77,24 @@ assert {e['id'] for e in inventory['features']['datatypes']} == set('anySimpleTy
 assert set('length minLength maxLength pattern enumeration whiteSpace maxInclusive maxExclusive minInclusive minExclusive totalDigits fractionDigits'.split()) <= {e['id'] for e in inventory['features']['facets']}
 assert {'key', 'unique', 'keyref'} <= {e['id'] for e in inventory['features']['xsd-identity']}
 assert {'property', 'properties', 'abstract-pattern', 'extends'} <= {e['id'] for e in inventory['features']['schematron-compilation']}
+assert {'phase-lets', 'optional-pattern-ID', 'subject-expression-retention'} <= {e['id'] for e in inventory['features']['schematron-compilation']}
+assert {'element-substitution-block', 'complex-type-prohibited-substitutions', 'local-attribute-value-context', 'schema-notation-table'} <= {e['id'] for e in inventory['features']['xsd-composition']}
 print('PASS: ' + str(sum(map(len, inventory['features'].values()))) + ' classified inventory entries', flush=True)
+
+sources = json.loads((root / 'docs/decisions/M8/sources.json').read_text())
+assert sources['selected_edition'] == 'ISO/IEC 19757-3:2016'
+grammar = (here / 'References/schematron.rnc').read_bytes()
+assert hashlib.sha256(grammar).hexdigest() == sources['supporting_grammar']['sha256']
+text = re.sub(r'\s+', ' ', grammar.decode())
+phase = text.split('phase = element phase')[1].split('properties = element properties')[0]
+pattern = text.split('pattern = element pattern')[1].split('phase = element phase')[0]
+assert '(p*, let*, active*)' in phase and 'attribute id { xsd:ID }?' in pattern
+assert 'attribute subject { pathValue }?' in text
+svrl = ET.parse(here / 'Reporting/review-detached.svrl.xml').getroot()
+assert [element.tag.rsplit('}', 1)[-1] for element in svrl] == ['active-pattern', 'fired-rule', 'active-pattern', 'fired-rule', 'successful-report']
+assert all('id' not in element.attrib for element in svrl if element.tag.endswith('active-pattern'))
+assert svrl[-1].attrib['location'] == '/root/child' and svrl[1].attrib['context'] == '/root'
+print('PASS: pinned supporting ISO2016 grammar digest/phase lets/optional IDs/subject; detached SVRL scenario expectation (no runtime serializer claim)', flush=True)
 
 owned = lambda s: s in ['docs/specs/schemas.md', 'docs/tasks/M8-contracts.json'] or any(s.startswith(x) for x in ['tests/Contracts/Fixtures/M8/', 'docs/decisions/M8/', 'docs/reports/M8-contracts/'])
 for args in [['git', 'diff', '--name-only', a.ownership_base], ['git', 'ls-files', '--others', '--exclude-standard']]:

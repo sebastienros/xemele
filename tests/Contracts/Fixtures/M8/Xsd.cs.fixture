@@ -1,6 +1,8 @@
 using System.Numerics;
 namespace Xemele.Validation;
 internal enum XsdDerivation { None, Restriction, Extension, List, Union }
+internal enum XsdElementBlock { Substitution, Restriction, Extension }
+internal enum XsdTypeBlock { Restriction, Extension }
 internal enum XsdContentKind { Empty, Simple, ElementOnly, Mixed }
 internal enum XsdProcessContents { Strict, Lax, Skip }
 internal enum XsdAttributeUse { Optional, Required, Prohibited }
@@ -13,18 +15,22 @@ internal sealed record XsdWildcardTerm(XsdWildcard Wildcard) : XsdTerm;
 internal sealed record XsdGroupTerm(XsdCompositor Compositor, IReadOnlyList<XsdParticle> Particles) : XsdTerm;
 internal sealed record XsdParticle(XsdTerm Term, BigInteger MinOccurs, BigInteger? MaxOccurs, XmlLocation Location);
 internal sealed record XsdAttributeDeclaration(int Id, SchemaName Name, SchemaName Type, string? DefaultValue, string? FixedValue, SchemaNamespaceContext Context, XmlLocation Location);
-internal sealed record XsdAttributeBinding(int DeclarationId, XsdAttributeUse Use, string? DefaultValue, string? FixedValue);
+internal sealed record XsdAttributeBinding(int DeclarationId, XsdAttributeUse Use, string? DefaultValue, string? FixedValue,
+    SchemaNamespaceContext Context, XmlLocation Location);
 internal sealed record XsdTypeDefinition(SchemaName Name, SchemaName? BaseType, XsdDerivation Derivation,
-    bool Abstract, bool Anonymous, IReadOnlyList<XsdDerivation> Final, XsdContentKind ContentKind, SchemaName? SimpleType,
+    bool Abstract, bool Anonymous, IReadOnlyList<XsdDerivation> Final, IReadOnlyList<XsdTypeBlock> Block, XsdContentKind ContentKind, SchemaName? SimpleType,
     XsdParticle? Particle, IReadOnlyList<XsdAttributeBinding> Attributes, XsdWildcard? AnyAttribute, XmlLocation Location);
 internal sealed record XsdElementDeclaration(int Id, SchemaName Name, SchemaName Type, bool Abstract, bool Nillable,
-    string? DefaultValue, string? FixedValue, SchemaName? SubstitutionGroup, IReadOnlyList<XsdDerivation> Block,
+    string? DefaultValue, string? FixedValue, SchemaName? SubstitutionGroup, IReadOnlyList<XsdElementBlock> Block,
     IReadOnlyList<XsdDerivation> Final, IReadOnlyList<int> IdentityConstraints, SchemaNamespaceContext Context, XmlLocation Location);
 internal sealed record XsdIdentityConstraint(int Id, SchemaName Name, XsdIdentityKind Kind, string Selector,
     IReadOnlyList<string> Fields, SchemaName? Refer, SchemaNamespaceContext Context, XmlLocation Location);
+internal sealed record XsdNotationDeclaration(SchemaName Name, string? PublicId, string? SystemId,
+    SchemaNamespaceContext Context, XmlLocation Location);
 internal sealed record XsdCompiledSchema(IReadOnlyList<XsdElementDeclaration> Elements,
     IReadOnlyList<XsdAttributeDeclaration> Attributes, IReadOnlyList<XsdTypeDefinition> Types,
     IReadOnlyList<XmlDatatypeDefinition> SimpleTypes, IReadOnlyList<XsdIdentityConstraint> Identities,
+    IReadOnlyDictionary<SchemaName, XsdNotationDeclaration> Notations,
     IReadOnlyDictionary<SchemaName, int> GlobalElements, IReadOnlyDictionary<SchemaName, int> GlobalAttributes,
     IXmlDatatypeRegistry Datatypes);
 internal interface IXsdCompiler

@@ -1,0 +1,16 @@
+using Xemele;
+using Xemele.Validation;
+internal static class ReportingReviewConsumers
+{
+    internal static string DetachedOrder()
+    {
+        // Two unnamed patterns; first has no findings. Both fired at the same context.
+        // Authored IDs stay null; explicit ordinal/event keys carry the association.
+        var result = new SchematronResult(new ValidationResult(true, [new("SCH.Report",XmlDiagnosticSeverity.Warning,"found",default)]),
+            "#ALL", null, new Dictionary<string,string>(), [new(0,null,null),new(1,null,null)],
+            [new(0,0,0,"/root","/root"),new(1,1,1,"/root","/root")],
+            [new(SchematronFindingKind.SuccessfulReport, null,null,null,1,1,null,"/root","true()",
+                "/root/child",default,"/root",default,"found",[],[])]);
+        return SchematronReport.SerializeSvrl(result);
+    }
+}

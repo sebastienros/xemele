@@ -65,7 +65,7 @@ try
     static bool Visible(ISymbol symbol) => symbol.DeclaredAccessibility is Accessibility.Public or Accessibility.Internal or Accessibility.Protected or Accessibility.ProtectedOrInternal or Accessibility.ProtectedAndInternal;
     void Type(INamedTypeSymbol type)
     {
-        if (!Visible(type) || type.IsImplicitlyDeclared || !type.ContainingNamespace.ToDisplayString().StartsWith("Xemele.Validation", StringComparison.Ordinal)) return;
+        if (!Visible(type) || type.IsImplicitlyDeclared || !(type.ContainingNamespace.ToDisplayString().StartsWith("Xemele.Validation", StringComparison.Ordinal) || type.ContainingNamespace.ToDisplayString() == "Xemele.XPath.Internal")) return;
         Add(type);
         foreach (var member in type.GetMembers())
         {
