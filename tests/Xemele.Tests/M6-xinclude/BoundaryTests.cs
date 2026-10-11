@@ -80,6 +80,13 @@ public sealed class BoundaryTests
         Assert.False(result.Success); Assert.Equal("XINCLUDE.Limit", result.Diagnostics[^1].Code);
         Assert.Equal(5, resolver.ReadBytes); Assert.Equal(5, resolver.MaxRequest); Assert.Equal(1, resolver.Disposals);
     }
+    [Theory] [InlineData(" x ", true)] [InlineData(" x ", false)]
+    public void IdWhitespaceNormalizationIsXmlOnly(string value, bool success)
+    {
+        var input = XmlDocument.Parse($"<r xmlns:xi='{Xi}'><a xml:id='{value}'/><xi:include xpointer='x'/></r>", cancellationToken: TestContext.Current.CancellationToken);
+        var result = XIncludeProcessor.Process(input, cancellationToken: TestContext.Current.CancellationToken);
+        Assert.Equal(success, result.Success);
+    }
     [Fact] public void DiagnosticsQuotaIncludesTerminalLimitEntry()
     {
         var input = XmlDocument.Parse($"<r xmlns:xi='{Xi}'><xi:include href='a'><xi:fallback/></xi:include><xi:include href='b'><xi:fallback/></xi:include></r>", cancellationToken: TestContext.Current.CancellationToken);

@@ -56,7 +56,7 @@ internal sealed partial class IncludeOperation
             foreach (var item in input.DocumentNode.Children)
             {
                 XmlNode copy;
-                try { copy = captured.ImportNode(item); }
+                try { copy = CaptureTree(item, captured); }
                 catch (InvalidOperationException) { throw new Rejection("Limit"); }
                 captured.DocumentNode.AppendChild(copy);
                 CopyIds(item, copy, sourceIds, ids);
@@ -72,6 +72,25 @@ internal sealed partial class IncludeOperation
             AddDiagnostic(failure.Code, XmlDiagnosticSeverity.Error, failure.Uri);
             return new(null, diagnostics, included);
         }
+    }
+    private XmlNode CaptureTree(XmlNode source, XmlDocument destination)
+    {
+        XmlNode root = destination.ImportNode(source, false);
+        var pending = new Stack<(XmlNode Source, XmlNode Target)>();
+        pending.Push((source, root));
+        while (pending.Count != 0)
+        {
+            token.ThrowIfCancellationRequested();
+            var next = pending.Pop();
+            foreach (var child in next.Source.Children)
+            {
+                token.ThrowIfCancellationRequested();
+                var copy = destination.ImportNode(child, false);
+                next.Target.AppendChild(copy);
+                pending.Push((child, copy));
+            }
+        }
+        return root;
     }
     private static void Complete(XmlDocument document)
     {

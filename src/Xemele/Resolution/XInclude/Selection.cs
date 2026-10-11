@@ -24,6 +24,7 @@ internal sealed partial class IncludeOperation
             if (options.Limits.AttributesPerElement is int maximum && node.Attributes.Count > maximum) throw new Rejection("Limit");
             foreach (var attribute in node.Attributes)
             {
+                token.ThrowIfCancellationRequested();
                 CheckToken(attribute.LocalName.Length); CheckToken(attribute.Value.Length);
                 bool id = attribute.LocalName == "id" && attribute.NamespaceUri == Xml;
                 if (!id && document.ValidationSourceContentRevision == document.ContentRevision && document.ContentRevision >= 0 && document.Dtd is { } model)
@@ -33,18 +34,20 @@ internal sealed partial class IncludeOperation
                 if (id)
                 {
                     if (!ids.TryGetValue(node.Slot, out var values)) ids.Add(node.Slot, values = new(StringComparer.Ordinal));
-                    values.Add(attribute.Value.Trim());
+                    ReadOnlySpan<char> normalized = attribute.Value.AsSpan().Trim(" \t\r\n");
+                    values.Add(normalized.Length == attribute.Value.Length ? attribute.Value : normalized.ToString());
                 }
             }
 
         }
     }
-    private static void CopyIds(XmlNode source, XmlNode copy, Dictionary<int, HashSet<string>> from, Dictionary<int, HashSet<string>> to)
+    private void CopyIds(XmlNode source, XmlNode copy, Dictionary<int, HashSet<string>> from, Dictionary<int, HashSet<string>> to)
     {
         var pending = new Stack<(XmlNode Source, XmlNode Copy)>();
         pending.Push((source, copy));
         while (pending.Count != 0)
         {
+            token.ThrowIfCancellationRequested();
             var pair = pending.Pop();
             if (from.TryGetValue(pair.Source.Slot, out var values)) to.Add(pair.Copy.Slot, values);
             var a = pair.Source.FirstChild; var b = pair.Copy.FirstChild;
