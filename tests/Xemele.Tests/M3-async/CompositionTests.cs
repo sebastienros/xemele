@@ -40,7 +40,7 @@ public sealed class CompositionTests
         Assert.Equal("tail界", text.ToString()); Assert.Equal("StartDocument", tokens[0]); Assert.Equal("EndDocument", tokens[^1]);
         Assert.False(await reader.ReadAsync(Ct)); Assert.Equal(XmlTokenKind.None, reader.TokenKind);
         var reloadInput = new InputStream(expected); var reloaded = await XmlDocument.LoadAsync(reloadInput, cancellationToken: Ct);
-        Assert.Equal(document.ToXmlString(new() { OmitXmlDeclaration = true }), reloaded.ToXmlString(new() { OmitXmlDeclaration = true }));
+        Assert.Equal(document.ToXmlString(new() { OmitXmlDeclaration = true }, Ct), reloaded.ToXmlString(new() { OmitXmlDeclaration = true }, Ct));
         Assert.True(source.Reads > 1); Assert.True(save.Writes > 0); Assert.InRange(save.MaxWrite, 1, 8192);
         Assert.Equal(0, save.Flushes); Assert.Equal(0, source.Disposals); Assert.Equal(0, save.Disposals);
         Assert.True(source.CanRead); Assert.True(save.CanWrite); Assert.True(saxInput.CanRead); Assert.True(readerInput.CanRead); Assert.True(reloadInput.CanRead);
