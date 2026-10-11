@@ -1,0 +1,129 @@
+{
+  "schema_version": 1,
+  "id": "M7-css-xml-contract",
+  "milestone": "M7",
+  "title": "Freeze additive CSS XML-tree overloads",
+  "kind": "contract",
+  "status": "verified",
+  "owner": "M7 coordinator /root/css_xml_contract",
+  "branch": "codex/m7-css-xml-contract",
+  "base_revision": "f82719b45c20386f0ab6356b74b00eaeb6d0b7b9",
+  "integration_revision": "383c7eef263280dfcd3433f165260070e9094b61",
+  "depends_on": [
+    "M7-contracts",
+    "M7-html-model"
+  ],
+  "goals": [
+    "G12"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/html.md"
+  ],
+  "owns": [
+    "docs/specs/html.md",
+    "tests/Contracts/Fixtures/M7/Selector.cs.fixture",
+    "tests/Contracts/Fixtures/M7/Selector.golden.txt",
+    "tests/Contracts/Fixtures/M7/Selector/Program.cs.fixture",
+    "docs/decisions/M7/css-xml.md",
+    "docs/reports/M7-css-xml-contract/"
+  ],
+  "api_or_output": "Additive CssSelector Matches(XmlNode)/Select(XmlNode) and exact XML case/namespace/scope semantics; preserve HTML overloads",
+  "acceptance": [
+    {
+      "id": "M7-css-xml-contract-A1",
+      "description": "Freeze additive actual XmlNode overloads and case/namespace/scope/default-handle/result semantics satisfying M7-css-A2 without weakening HTML or XML contracts.",
+      "status": "passed",
+      "evidence": [
+        "xml-selector-semantic-review",
+        "actual-model-additive-ownership"
+      ]
+    },
+    {
+      "id": "M7-css-xml-contract-A2",
+      "description": "Compile independent XML and HTML selector usage against verified model/tree only; exact compiled fixture baseline and rejecting missing-member control pass; preserve earlier contracts.",
+      "status": "passed",
+      "evidence": [
+        "declaration-api-controls",
+        "actual-model-additive-ownership"
+      ]
+    },
+    {
+      "id": "M7-css-xml-contract-A3",
+      "description": "Record owned implementation files, actual commands/revisions and planning checks; no runtime stub or later dependency.",
+      "status": "passed",
+      "evidence": [
+        "actual-model-additive-ownership",
+        "planning-validation"
+      ]
+    }
+  ],
+  "implementation": [
+    "docs/specs/html.md: additive two-graph CSS namespace/default-handle contract",
+    "docs/decisions/M7/css-xml.md: exact XML name/scope/root/result semantics and validation boundary",
+    "tests/Contracts/Fixtures/M7/Selector.cs.fixture: Matches(XmlNode) and Select(XmlNode), unchanged HTML overloads",
+    "tests/Contracts/Fixtures/M7/Selector.golden.txt: exactly two additional compiled methods",
+    "tests/Contracts/Fixtures/M7/Selector/Program.cs.fixture: typed XML/HTML signature consumers and actual XML preservation probes",
+    "docs/reports/M7-css-xml-contract/ActualModels/: nonpackaged actual-model consumers, assembly identity and HTML probe",
+    "docs/reports/M7-css-xml-contract/check.py: actual model check, additive baseline and strict ownership audit"
+  ],
+  "evidence": [
+    {
+      "id": "xml-selector-semantic-review",
+      "kind": "review",
+      "revision": "365b6745316726ea085034f21214806afaeb9312",
+      "command": null,
+      "result": "passed",
+      "summary": "Reviewed additive declarations and exact two-graph matrix: XML ordinal names including XHTML, unchanged HTML casing, namespace snapshots/default type, scope/root/query bounds, actual attributes, detached/current mutations, snapshots and default/null rules. No shipped runtime stub or later dependency.",
+      "artifact": "docs/decisions/M7/css-xml.md"
+    },
+    {
+      "id": "declaration-api-controls",
+      "kind": "check",
+      "revision": "365b6745316726ea085034f21214806afaeb9312",
+      "command": "NoWarn=CS0436 python3 tests/Contracts/Fixtures/M7/check.py --ownership-base 365b6745316726ea085034f21214806afaeb9312 --dotnet '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet'",
+      "result": "passed",
+      "summary": "Three nonpackaged declaration lanes and XML probes pass; Engine 173 / Tokenizer 116 / Selector 133 compiled members; three missing-member controls reject. Explicit NoWarn=CS0436 handles intentional fixture/runtime duplicate HTML models. Final checker ownership base is source HEAD; full task ownership separately audited.",
+      "artifact": "docs/reports/M7-css-xml-contract/verification.md"
+    },
+    {
+      "id": "actual-model-additive-ownership",
+      "kind": "check",
+      "revision": "365b6745316726ea085034f21214806afaeb9312",
+      "command": "python3 docs/reports/M7-css-xml-contract/check.py --ownership-base 67c9894f783898715e735359500ad89292b07c39 --dotnet '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet'",
+      "result": "passed",
+      "summary": "Normal warnings-as-errors build zero warnings/errors without Model.cs.fixture; actual XML/HTML signature consumers, model assembly identity, HTML/XML tree and streaming probes pass on 10.0.11. Exact +2 Selector methods; earlier declarations unchanged. Full claim-to-current owned paths and whitespace pass.",
+      "artifact": "docs/reports/M7-css-xml-contract/verification.md"
+    },
+    {
+      "id": "planning-validation",
+      "kind": "check",
+      "revision": "365b6745316726ea085034f21214806afaeb9312",
+      "command": "python3 tools/planning/tasks.py validate",
+      "result": "passed",
+      "summary": "Validated 165 tasks: schema, evidence, acyclic dependencies, additive milestones and ordered ownership.",
+      "artifact": "docs/reports/M7-css-xml-contract/verification.md"
+    },
+    {
+      "id": "root-integrated-contract",
+      "kind": "integration",
+      "revision": "383c7eef263280dfcd3433f165260070e9094b61",
+      "command": "NoWarn=CS0436 python3 tests/Contracts/Fixtures/M7/check.py --ownership-base 383c7eef263280dfcd3433f165260070e9094b61 --dotnet <pinned-host>; pinned restore/build ActualModels; pinned --fx-version 10.0.11 ActualModels.dll; strict worker claim-to-handoff owned-path audit; planning validate; git diff --check",
+      "result": "passed",
+      "summary": "Root independently verified integrated Engine173/Tokenizer116/Selector133 exact baselines and all3 missing-member controls; actual HTML/XML consumers compile without suppression zero warnings/errors and execute tree/stream/assembly-identity probes on10.0.11; full10path worker ownership audit; planning167. Only nonpackaged duplicate-model declaration lanes suppress CS0436. No runtime selector or performance claim.",
+      "artifact": "docs/reports/M7-css-xml-contract/integration.md"
+    }
+  ],
+  "blockers": [],
+  "handoff": {
+    "summary": "Additive XML selector contract and actual-model consumers implemented; HTML signatures and prior baselines preserved. No runtime selector implementation shipped.",
+    "checks": [
+      "NoWarn=CS0436 python3 tests/Contracts/Fixtures/M7/check.py --ownership-base 365b6745316726ea085034f21214806afaeb9312 --dotnet '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' \u2014 passed",
+      "python3 docs/reports/M7-css-xml-contract/check.py --ownership-base 67c9894f783898715e735359500ad89292b07c39 --dotnet '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' \u2014 passed",
+      "python3 tools/planning/tasks.py validate \u2014 passed 165 tasks",
+      "Initial unsuppressed frozen fixture compile failed 40 CS0436 duplicate-model errors; coordinator-approved explicit suppression in declaration lanes plus clean independent actual-model consumer resolves contract workflow."
+    ],
+    "remaining": [],
+    "requests": []
+  }
+}
