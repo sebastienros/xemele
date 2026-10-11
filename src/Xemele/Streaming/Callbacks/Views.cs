@@ -1,0 +1,134 @@
+// All spans and collection views expire when their delivering callback returns.
+using Xemele;
+namespace Xemele.Streaming;
+public enum XmlDtdDeclarationKind { Element = 0, Attribute = 1, Entity = 2, Notation = 3 }
+public enum XmlDtdDefaultKind { None = 0, Implied = 1, Required = 2, Fixed = 3, Value = 4 }
+public readonly ref struct XmlAttributeItem
+{
+    internal XmlAttributeItem(ReadOnlySpan<char> p0, ReadOnlySpan<char> p1, ReadOnlySpan<char> p2, ReadOnlySpan<char> p3, bool p4, bool p5, ReadOnlySpan<XmlAttributeValuePart> p6, XmlLocation p7) { LocalName = p0; Prefix = p1; NamespaceUri = p2; Value = p3; IsDefaulted = p4; IsValueComplete = p5; ValueParts = p6; Location = p7; }
+    public ReadOnlySpan<char> LocalName { get; }
+    public ReadOnlySpan<char> Prefix { get; }
+    public ReadOnlySpan<char> NamespaceUri { get; }
+    public ReadOnlySpan<char> Value { get; }
+    public bool IsDefaulted { get; }
+    public bool IsValueComplete { get; }
+    public ReadOnlySpan<XmlAttributeValuePart> ValueParts { get; }
+    public XmlLocation Location { get; }
+}
+public readonly ref struct XmlNamespaceItem
+{
+    internal XmlNamespaceItem(ReadOnlySpan<char> p0, ReadOnlySpan<char> p1, XmlLocation p2) { Prefix = p0; NamespaceUri = p1; Location = p2; }
+    public ReadOnlySpan<char> Prefix { get; }
+    public ReadOnlySpan<char> NamespaceUri { get; }
+    public XmlLocation Location { get; }
+}
+public readonly ref struct XmlStartElement
+{
+    internal XmlStartElement(ReadOnlySpan<char> p0, ReadOnlySpan<char> p1, ReadOnlySpan<char> p2, XmlAttributeView p3, XmlNamespaceView p4, bool p5, XmlLocation p6) { LocalName = p0; Prefix = p1; NamespaceUri = p2; Attributes = p3; NamespaceDeclarations = p4; IsEmptyElement = p5; Location = p6; }
+    public ReadOnlySpan<char> LocalName { get; }
+    public ReadOnlySpan<char> Prefix { get; }
+    public ReadOnlySpan<char> NamespaceUri { get; }
+    public XmlAttributeView Attributes { get; }
+    public XmlNamespaceView NamespaceDeclarations { get; }
+    public bool IsEmptyElement { get; }
+    public XmlLocation Location { get; }
+}
+public readonly ref struct XmlEndElement
+{
+    internal XmlEndElement(ReadOnlySpan<char> p0, ReadOnlySpan<char> p1, ReadOnlySpan<char> p2, XmlLocation p3) { LocalName = p0; Prefix = p1; NamespaceUri = p2; Location = p3; }
+    public ReadOnlySpan<char> LocalName { get; }
+    public ReadOnlySpan<char> Prefix { get; }
+    public ReadOnlySpan<char> NamespaceUri { get; }
+    public XmlLocation Location { get; }
+}
+public readonly ref struct XmlDeclaration
+{
+    internal XmlDeclaration(ReadOnlySpan<char> p0, ReadOnlySpan<char> p1, bool? p2, XmlLocation p3) { Version = p0; EncodingName = p1; Standalone = p2; Location = p3; }
+    public ReadOnlySpan<char> Version { get; }
+    public ReadOnlySpan<char> EncodingName { get; }
+    public bool? Standalone { get; }
+    public XmlLocation Location { get; }
+}
+public readonly ref struct XmlDocumentTypeView
+{
+    internal XmlDocumentTypeView(ReadOnlySpan<char> p0, ReadOnlySpan<char> p1, ReadOnlySpan<char> p2, bool p3, bool p4, XmlLocation p5) { Name = p0; PublicId = p1; SystemId = p2; HasPublicId = p3; HasSystemId = p4; Location = p5; }
+    public ReadOnlySpan<char> Name { get; }
+    public ReadOnlySpan<char> PublicId { get; }
+    public ReadOnlySpan<char> SystemId { get; }
+    public bool HasPublicId { get; }
+    public bool HasSystemId { get; }
+    public XmlLocation Location { get; }
+}
+public readonly ref struct XmlDtdDeclaration
+{
+    internal XmlDtdDeclaration(XmlDtdDeclarationKind p0, ReadOnlySpan<char> p1, ReadOnlySpan<char> p2, ReadOnlySpan<char> p3, ReadOnlySpan<char> p4, XmlDtdDefaultKind p5, ReadOnlySpan<char> p6, bool p7, ReadOnlySpan<char> p8, bool p9, ReadOnlySpan<char> p10, bool p11, ReadOnlySpan<char> p12, bool p13, bool? p14, XmlLocation p15) { Kind = p0; Name = p1; ElementName = p2; ContentModel = p3; AttributeType = p4; DefaultKind = p5; Value = p6; HasValue = p7; SystemId = p8; HasSystemId = p9; PublicId = p10; HasPublicId = p11; NotationName = p12; IsParameter = p13; IsExternal = p14; Location = p15; }
+    public XmlDtdDeclarationKind Kind { get; }
+    public ReadOnlySpan<char> Name { get; }
+    public ReadOnlySpan<char> ElementName { get; }
+    public ReadOnlySpan<char> ContentModel { get; }
+    public ReadOnlySpan<char> AttributeType { get; }
+    public XmlDtdDefaultKind DefaultKind { get; }
+    public ReadOnlySpan<char> Value { get; }
+    public bool HasValue { get; }
+    public ReadOnlySpan<char> SystemId { get; }
+    public bool HasSystemId { get; }
+    public ReadOnlySpan<char> PublicId { get; }
+    public bool HasPublicId { get; }
+    public ReadOnlySpan<char> NotationName { get; }
+    public bool IsParameter { get; }
+    public bool? IsExternal { get; }
+    public XmlLocation Location { get; }
+}
+public readonly ref struct XmlSkippedEntity
+{
+    internal XmlSkippedEntity(ReadOnlySpan<char> p0, ReadOnlySpan<char> p1, bool p2, XmlLocation p3) { Name = p0; LexicalReference = p1; IsParameter = p2; Location = p3; }
+    public ReadOnlySpan<char> Name { get; }
+    public ReadOnlySpan<char> LexicalReference { get; }
+    public bool IsParameter { get; }
+    public XmlLocation Location { get; }
+}
+// Ordinary owners are retained by the pump; views borrow their storage only during delivery.
+internal readonly record struct AttributeRow(string LocalName, string Prefix, string NamespaceUri,
+    string Value, bool IsDefaulted, bool IsValueComplete, ReadOnlyMemory<XmlAttributeValuePart> ValueParts,
+    XmlLocation Location);
+internal readonly record struct NamespaceRow(string Prefix, string NamespaceUri, XmlLocation Location);
+public readonly ref struct XmlAttributeView
+{
+    private readonly ReadOnlySpan<AttributeRow> rows;
+    internal XmlAttributeView(ReadOnlySpan<AttributeRow> rows) { this.rows = rows; }
+    public int Count => rows.Length;
+    public XmlAttributeItem this[int index] { get { if ((uint)index >= (uint)rows.Length) throw new ArgumentOutOfRangeException(nameof(index)); var row = rows[index]; return new(row.LocalName, row.Prefix, row.NamespaceUri, row.IsValueComplete ? row.Value.AsSpan() : [], row.IsDefaulted, row.IsValueComplete, row.IsValueComplete ? [] : row.ValueParts.Span, row.Location); } }
+    public Enumerator GetEnumerator() => new(this);
+    public ref struct Enumerator
+    {
+        private readonly XmlAttributeView view;
+        private int index;
+        internal Enumerator(XmlAttributeView view) { this.view = view; index = -1; }
+        public XmlAttributeItem Current => view[index];
+        public bool MoveNext()
+        {
+            if (index < view.Count) index++;
+            return index < view.Count;
+        }
+    }
+}
+public readonly ref struct XmlNamespaceView
+{
+    private readonly ReadOnlySpan<NamespaceRow> rows;
+    internal XmlNamespaceView(ReadOnlySpan<NamespaceRow> rows) { this.rows = rows; }
+    public int Count => rows.Length;
+    public XmlNamespaceItem this[int index] { get { if ((uint)index >= (uint)rows.Length) throw new ArgumentOutOfRangeException(nameof(index)); var row = rows[index]; return new(row.Prefix, row.NamespaceUri, row.Location); } }
+    public Enumerator GetEnumerator() => new(this);
+    public ref struct Enumerator
+    {
+        private readonly XmlNamespaceView view;
+        private int index;
+        internal Enumerator(XmlNamespaceView view) { this.view = view; index = -1; }
+        public XmlNamespaceItem Current => view[index];
+        public bool MoveNext()
+        {
+            if (index < view.Count) index++;
+            return index < view.Count;
+        }
+    }
+}
