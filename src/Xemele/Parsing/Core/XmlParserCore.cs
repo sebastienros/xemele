@@ -11,7 +11,7 @@ namespace Xemele.Parsing.Syntax;
 // One operation owns its scratch, interned strings and open scopes. No source
 // memory or sink view survives a callback. Text is streamed at scalar boundaries;
 // only tags/declarations/references/PI targets require bounded lexical scratch.
-internal sealed partial class XmlParserCore : IDisposable
+internal sealed partial class XmlParserCore : IDisposable, IAsyncDisposable
 {
     private enum State { Data, Less, Bang, Tag, Close, Comment, CData, PiTarget, PiBody, Declaration, Reference, Doctype, DtdSubset, DtdClose }
     private enum Delivery { None, Document, Tag, Close, Text, Declaration, DocumentType, IncompleteDefaults, UnresolvedReference, EndDocument }
@@ -79,10 +79,11 @@ internal sealed partial class XmlParserCore : IDisposable
     private bool? standalone;
     private Name deliveredName;
 
-    public XmlParserCore(XmlParseOptions options, Uri? sourceUri = null)
+    public XmlParserCore(XmlParseOptions options, Uri? sourceUri = null, bool asyncResources = false)
     {
         ArgumentNullException.ThrowIfNull(options);
         if (sourceUri is { IsAbsoluteUri: false }) throw new ArgumentException("Source URI must be absolute.", nameof(sourceUri));
+        this.asyncResources = asyncResources;
         budget = new(options, default);
         position = new(sourceUri);
     }
@@ -99,7 +100,7 @@ internal sealed partial class XmlParserCore : IDisposable
             if (sinkIdentity is not null && !ReferenceEquals(sinkIdentity, sink)) throw new InvalidOperationException("Resume with the same sink.");
             if (finalSeen && !isFinalBlock) throw new InvalidOperationException("Final flag is sticky.");
             try { ValidateOffsets(input, byteOffsets, cancellationToken); }
-            catch (OperationCanceledException) { faulted = true; AbortEntities(); throw; }
+            catch (OperationCanceledException) { faulted = true; AbortOrDeferEntities(); throw; }
             if (isFinalBlock && sourceMode == 2 && byteLength is null) throw new InvalidOperationException("CompleteByteSource must precede final byte input.");
             sinkIdentity = sink;
             finalSeen |= isFinalBlock;
@@ -108,13 +109,20 @@ internal sealed partial class XmlParserCore : IDisposable
             try
             {
                 activeCancellation = cancellationToken;
-                resolution?.BindCancellationToken(cancellationToken);
+                if (!asyncResources) resolution?.BindCancellationToken(cancellationToken);
                 cancellationToken.ThrowIfCancellationRequested();
                 while (true)
                 {
-                    if (diagnostic is not null) { terminal = true; AbortEntities(); return new(consumed, ScanStep.Rejected, diagnostic); }
+                    if (diagnostic is not null)
+                    {
+                        if (asyncResources && !asyncCleanupCompleted)
+                        { resourceWork = ResourceWork.Cleanup; return new(consumed, ScanStep.NeedResource); }
+                        terminal = true; AbortOrDeferEntities(); return new(consumed, ScanStep.Rejected, diagnostic);
+                    }
+                    if (resourceWork != ResourceWork.None) return new(consumed, ScanStep.NeedResource);
                     if (!Drain(sink, cancellationToken)) return new(consumed, ScanStep.Paused);
                     if (endDocumentDelivered) { terminal = true; return new(consumed, ScanStep.Completed); }
+                    if (asyncResources && DrainAsyncDtd()) continue;
                     if (DrainEntityScalar()) continue;
                     if (consumed == input.Length)
                     {
@@ -147,7 +155,7 @@ internal sealed partial class XmlParserCore : IDisposable
                     }
                 }
             }
-            catch { faulted = true; AbortEntities(); throw; }
+            catch { faulted = true; AbortOrDeferEntities(); throw; }
         }
         finally { Volatile.Write(ref gate, 0); }
     }
@@ -170,6 +178,7 @@ internal sealed partial class XmlParserCore : IDisposable
         try
         {
             if (disposed) return;
+            if (asyncResources) throw new InvalidOperationException("Use DisposeAsync for an async resource core.");
             disposed = true; ClearUnresolvedReference(); token = []; tokenLocations = []; physicalStarts = []; attributePhysicalLocations = []; attributePhysicalOrigins = []; attributePhysicalIdentities = []; attributePhysicalIdentity = null; attributePhysicalSpelling = null; physicalTag.Clear(); attributes = [];
             try { DisposeEntities(); }
             finally

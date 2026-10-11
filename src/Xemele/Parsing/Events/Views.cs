@@ -1,5 +1,5 @@
 namespace Xemele.Parsing.Syntax;
-internal enum ScanStep { NeedInput, Paused, Completed, Rejected }
+internal enum ScanStep { NeedInput, Paused, Completed, Rejected, NeedResource }
 internal readonly record struct ScanResult(int Consumed, ScanStep Step, Xemele.XmlDiagnostic? Diagnostic = null);
 internal readonly ref struct XmlNameView(ReadOnlySpan<char> localName, ReadOnlySpan<char> namespaceUri, ReadOnlySpan<char> prefix)
 {

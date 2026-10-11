@@ -120,7 +120,14 @@ internal sealed partial class XmlParserCore
         var result = dtdParser!.Append(chars[..count], sourceMode == 2 ? offsets[..count] : [], false, activeCancellation);
         if (result.Step == DtdParseStep.Rejected) { diagnostic = result.Diagnostic; return; }
         if (result.Step == DtdParseStep.NeedEntity)
-        { RunDtdSources(dtdParser, null, result.Entity); if (diagnostic is not null) return; }
+        {
+            if (asyncResources)
+            {
+                asyncDtdParser = dtdParser; asyncDtdPending = result.Entity;
+                resourceWork = ResourceWork.OpenParameter;
+            }
+            else { RunDtdSources(dtdParser, null, result.Entity); if (diagnostic is not null) return; }
+        }
         TrackSubsetDelimiter(scalar);
     }
 
@@ -148,8 +155,12 @@ internal sealed partial class XmlParserCore
     private void CompleteDoctype()
     {
         var model = internalModel ?? new([], [], [], [], []);
-        if (doctypeSystem is not null)
+        if (doctypeSystem is not null && !asyncSubsetRead)
         {
+            if (asyncResources)
+            {
+                internalModel = model; resourceWork = ResourceWork.OpenSubset; return;
+            }
             model = ParseExternalSubset(model);
             if (model is null) return;
         }
