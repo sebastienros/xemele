@@ -17,7 +17,7 @@
     }
   ],
   "next_actions": [
-    "Clean finished M5 gate/integration checkouts; exactly one fresh M6 read-only setup then durable sole-writer transfer and activation."
+    "Exactly one fresh M6 read-only setup, READY then durable sole-writer transfer and explicit ACTIVATE."
   ],
   "last_verified_task": "M5-gate",
   "last_integrated_revision": "a7654c83d95174a57105c13b2e70ba0425664e09",
@@ -798,9 +798,16 @@
       "worktree": "/private/tmp/xemele-m5-gate",
       "branch": "codex/m5-gate",
       "base_revision": "d68d924f0a089ecf2c3effa64faf65856886b046",
-      "stage": "Verified integrated gate; clean checkout cleanup follows",
+      "stage": "Verified; clean gate and integration checkouts removed, no workloads; package retained on main",
       "integration_revision": "a7654c83d95174a57105c13b2e70ba0425664e09",
-      "final_handoff_revision": "d25347929df4171772b9cc1820144337bcbdd117"
+      "final_handoff_revision": "d25347929df4171772b9cc1820144337bcbdd117",
+      "cleanup": {
+        "worker_worktree_removed": true,
+        "integration_worktree_removed": true,
+        "raw_inspected_then_deleted": true,
+        "package_retained": "artifacts/M5-gate/packages/Xemele.1.0.0-m5-preview.nupkg",
+        "package_sha256": "e6b7fffa966dd5df2d92177721789a4c33a13166f9da15d2e96c6f224e3b00ba"
+      }
     }
   ],
   "benchmark_policy": "Successful previous measurements retained; future changed runtime measurements require complete preparation and exclusive grant.",
