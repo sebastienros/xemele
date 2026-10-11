@@ -4,11 +4,11 @@
   "milestone": "M6",
   "title": "Add catalog and inclusion resource request kinds",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M6 coordinator worker M6-resource-kinds",
   "branch": "codex/m6-resource-kinds",
   "base_revision": "c1561c06b783cb7a5f5790ef26cdae8a8c10ca49",
-  "integration_revision": null,
+  "integration_revision": "95bc7e9674df4ad3450bebed808df19ef790a8a1",
   "depends_on": [
     "M6-contracts",
     "M2-resolver"
@@ -34,7 +34,8 @@
       "status": "passed",
       "evidence": [
         "compiled-api",
-        "build"
+        "build",
+        "integrated-kinds"
       ]
     },
     {
@@ -43,7 +44,8 @@
       "status": "passed",
       "evidence": [
         "focused-tests",
-        "earlier-resolver"
+        "earlier-resolver",
+        "integrated-kinds"
       ]
     },
     {
@@ -53,7 +55,8 @@
       "evidence": [
         "planning",
         "build",
-        "compiled-api"
+        "compiled-api",
+        "integrated-kinds"
       ]
     }
   ],
@@ -107,20 +110,27 @@
       "result": "passed",
       "summary": "Pinned SDK10.0.400 build passed zero warnings/errors; identical implementation bytes built before commit. Cache-only restore passed; initial stalled restore attempts and exact-owned-PID cleanup documented.",
       "artifact": "docs/reports/M6-resource-kinds/verification.md"
+    },
+    {
+      "id": "integrated-kinds",
+      "kind": "integration",
+      "revision": "95bc7e9674df4ad3450bebed808df19ef790a8a1",
+      "command": "Fresh bounded cache-only pinned restore/forced build; direct --fx-version10.0.11 test DLL -class ResourceKindTests and five exact earlier -method filters; approved compiled API extractor+union; planning validate; scoped ps; git diff --check",
+      "result": "passed",
+      "summary": "Fresh combined build0warnings/errors;20new+5prior allpassed/0fail0skip actual.NET10.0.11 XML; compiled complete951-member union matches948old+3 enum fields. Source worker-to-combined diff only coordinator state. Root independently parsed both worker and integrated actual XML/API outputs; ownPG cleanup/final scoped process inventory nochildren. All161records validate, whitespace clean. Enum-only no allocation/timing applicability.",
+      "artifact": "docs/reports/M6-resource-kinds/verification.md"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Enum-only additive resource kinds, actual three-row baseline; 20 focused plus 5 earlier tests passed on .NET10.0.11.",
+    "summary": "Verified integrated additive catalog/include resource kinds; no resolver algorithm/signature change.",
     "checks": [
       "Pinned restore/forced Release build passed",
       "25 selected tests passed",
       "951-member compiled API union matched; 948 prior declarations preserved",
       "161 task records validated"
     ],
-    "remaining": [
-      "Coordinator integrated verification required; no allocation/timing run applicable to enum-only change."
-    ],
+    "remaining": [],
     "requests": []
   }
 }
