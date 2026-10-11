@@ -15,9 +15,15 @@ was corrected and edge regressions were added. Third focused:79/81 passed;
 failures were bare `id` selector anchoring and the shared model referrer bug.
 Bare id was fixed; its focused regression then exposed a second source defect,
 unused abstract diagnostic references being accepted. An authored-reference pass
-now validates these independently of concrete expansion. No failed run is
-represented as a pass. Final source revision/checks and measurement remain
-pending, as does the independently owned model repair.
+now validates these independently of concrete expansion. Targeted regressions
+then proved preparatory token-limit misclassification (2/3 passed), inclusion
+cycle severity (0/1 passed), and outer-self-shadow initialization (0/1 passed).
+Corrections preserve fatal SCHEMA.Limit and SCHEMA.ResourceCycle, charge every
+foreign/inclusion/fragment child edge and whitespace scan, accept unnamespaced
+annotations, and evaluate a shadow initializer using the outer same-name value.
+The independent-review batch now passes92/93; only the normative final-referrer
+case remains failing on the independently owned shared-model defect. No failed
+run is represented as a pass. Final source/checks and measurement remain pending.
 
 Only setup/owned graph allocation measurement is planned. There is no scan
 optimizer, throughput claim, borrowed primitive zero-allocation claim, BDN run,

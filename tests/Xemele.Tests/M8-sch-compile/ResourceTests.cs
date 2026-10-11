@@ -61,7 +61,7 @@ public sealed class ResourceTests
         var streams = new List<CountStream>();
         var options = Options(new Resolver((_, _) => { var stream = new CountStream("<pattern xmlns='" + Ns + "'>" + Include("urn:alias") + "</pattern>"); streams.Add(stream); return new(stream, new("urn:final")); }));
         var error = Assert.Throws<SchemaCompileException>(() => Compile(Schema(Include("urn:first")), options));
-        Assert.Equal("SCHEMA.ResourceCycle", error.Diagnostics[0].Code); Assert.Equal(new Uri("urn:final"), error.Diagnostics[0].Location.SourceUri);
+        Assert.Equal("SCHEMA.ResourceCycle", error.Diagnostics[0].Code); Assert.Equal(XmlDiagnosticSeverity.Fatal, error.Diagnostics[0].Severity); Assert.Equal(new Uri("urn:final"), error.Diagnostics[0].Location.SourceUri);
         Assert.Equal(2, streams.Count); Assert.All(streams, s => Assert.Equal(1, s.Disposals));
     }
 
@@ -172,4 +172,71 @@ public sealed class ResourceTests
         text.Append('x'); for (int i = 0; i < 2000; i++) text.Append("</a:n>"); text.Append("</assert></rule></pattern></schema>");
         Assert.Equal("SCHEMA.Limit", Assert.Throws<SchemaCompileException>(() => Compile(text.ToString(), new() { Schema = new() { MaxOperations = null, MaxComponents = null, Limits = new() { Depth = null, EvaluationWork = null } } })).Diagnostics[^1].Code);
     }
+    [Theory]
+    [InlineData(0)] [InlineData(1)] [InlineData(2)]
+    public void EveryIndependentXPathQuotaProducesCompileLimitDiagnostics(int limit)
+    {
+        var limits = limit switch { 0 => new Xemele.XPath.XPathCompileLimits { MaxTokens = 1 }, 1 => new Xemele.XPath.XPathCompileLimits { MaxAstNodes = 1 }, _ => new Xemele.XPath.XPathCompileLimits { MaxDepth = 1 } };
+        Assert.Equal("SCHEMA.Limit", Assert.Throws<SchemaCompileException>(() => Compile(Schema(Pattern(Rule(content: "<assert test='(1+2)*3=9'/>"))), new() { XPathLimits = limits })).Diagnostics[^1].Code);
+    }
+
+    [Theory]
+    [InlineData(false)] [InlineData(true)]
+    public void ForeignAndFragmentTraversalChargeEveryCommentAndPiEdge(bool fragment)
+    {
+        string Source(int count)
+        {
+            string trivia = string.Concat(Enumerable.Repeat("<!--comment--><?p text?>", count));
+            string annotated = "<note xmlns=''>" + trivia + "<nested>ignored</nested>" +
+                (fragment ? "<pattern xmlns='" + Ns + "' id='p'>" + Rule() + "</pattern>" : "") + "</note>";
+            return Schema(annotated + (fragment ? Include("#p") : Pattern(Rule())));
+        }
+        long Count(string source)
+        {
+            var document = XmlDocument.Parse(source, cancellationToken: TestContext.Current.CancellationToken);
+            var operation = new Counting(new SchemaCompileOperation()); new SchematronCompiler().Compile(document, new(), operation); return operation.Work;
+        }
+        long first = Count(Source(0)), second = Count(Source(10));
+        Assert.Equal(fragment ? 40 : 20, second - first);
+        var options = new SchematronCompileOptions { Schema = new() { MaxOperations = second } };
+        var doc = XmlDocument.Parse(Source(10), cancellationToken: TestContext.Current.CancellationToken);
+        new SchematronCompiler().Compile(doc, options, new SchemaCompileOperation(options.Schema));
+        var under = options with { Schema = options.Schema with { MaxOperations = second - 1 } };
+        Assert.Equal("SCHEMA.Limit", Assert.Throws<SchemaCompileException>(() => new SchematronCompiler().Compile(doc, under, new SchemaCompileOperation(under.Schema))).Diagnostics[^1].Code);
+        using var cancellation = new CancellationTokenSource();
+        var cancel = new CancelDuringWork(new SchemaCompileOperation(new() { CancellationToken = cancellation.Token }), cancellation);
+        var many = XmlDocument.Parse(Source(200), cancellationToken: TestContext.Current.CancellationToken);
+        Assert.Throws<OperationCanceledException>(() => new SchematronCompiler().Compile(many, new(), cancel));
+    }
+
+    [Fact]
+    public void IncludeTriviaAndStructuralWhitespaceHaveExactAggregateWorkCharges()
+    {
+        long Count(string trivia, string gap)
+        {
+            var doc = XmlDocument.Parse(Schema("<include href='urn:p'>" + trivia + "</include>" + gap), cancellationToken: TestContext.Current.CancellationToken);
+            var options = Options(new Resolver((r, _) => new(new CountStream("<pattern xmlns='" + Ns + "'/>") , r.Uri)));
+            var operation = new Counting(new SchemaCompileOperation(options.Schema)); new SchematronCompiler().Compile(doc, options, operation); return operation.Work;
+        }
+        long baseline = Count("", " ");
+        Assert.Equal(2, Count("<!--c--><?p text?>", " ") - baseline);
+        // The same existing text node adds four scalars to snapshot and to White.
+        Assert.Equal(8, Count("", "     ") - baseline);
+    }
+
+    [Theory]
+    [InlineData(0)] [InlineData(1)] [InlineData(2)]
+    public void PreparatoryTokenLimitsKeepFatalProvenanceForAllRoutes(int route)
+    {
+        string source = route switch {
+            0 => Schema(Pattern(Rule(content: "<assert test='(1+2)*3=9'/>"))),
+            1 => Schema(Pattern(Rule("$node"), "abstract='true' id='t'") + Pattern("<param name='node' value='root'/>", "is-a='t'")),
+            _ => Schema(Pattern(Rule("item | @code"))) };
+        int cap = route == 1 ? 1 : 2;
+        var error = Assert.Throws<SchemaCompileException>(() => Compile(source, new() { XPathLimits = new() { MaxTokens = cap }, Schema = new() { BaseUri = new("urn:token:source") } }));
+        Assert.Equal("SCHEMA.Limit", error.Diagnostics[^1].Code); Assert.Equal(XmlDiagnosticSeverity.Fatal, error.Diagnostics[^1].Severity);
+        Assert.Equal(new Uri("urn:token:source"), error.Diagnostics[^1].Location.SourceUri); Assert.True(error.Diagnostics[^1].Location.LinePosition > 0);
+        Assert.Equal("SCH.XPath", Assert.Throws<SchemaCompileException>(() => Compile(Schema(Pattern(Rule(content: "<assert test='1 + '/>"))))).Diagnostics[0].Code);
+    }
+
 }

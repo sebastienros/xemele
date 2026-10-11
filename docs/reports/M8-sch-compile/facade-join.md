@@ -26,7 +26,12 @@ phase cannot resolve a reference. Phase-only names valid for every activating
 named phase are accepted, as required by the TwoPhaseLets frozen fixture.
 `#ALL` supplies no named-phase lets; if that run actually evaluates a phase-only
 missing variable, the evaluator must emit incomplete SCH.XPath. Universally
-unresolved names and let dependency cycles are compile errors. This error timing
+unresolved names and let dependency cycles are compile errors. In a shadowing
+let initializer only a reference to its own expanded name can resolve the outer
+binding; other locally declared names remain dependency edges. The evaluator
+must evaluate each initializer before replacing the visible outer value. Thus
+schema x=1, pattern x=$x+1 and rule x=$x+1 yields3, while global/self-without-outer
+and local x=$y,y=$x cycles remain errors. This error timing
 is the coordinator's bounded contract interpretation; the validator must prove
 it with #ALL/#DEFAULT/named-phase and cross-run concurrency tests.
 

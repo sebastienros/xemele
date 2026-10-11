@@ -191,4 +191,36 @@ public sealed class CompilerTests
         Assert.Empty(Compile(Schema(Pattern("<rule abstract='true' id='r'><assert test='true()'/></rule>", "abstract='true' id='p'"))).Patterns);
     }
 
+    [Fact]
+    public void ShadowingLetCanReferToTheOuterBindingInItsOwnValue()
+    {
+        var graph = Compile(Schema("<let name='x' value='1'/>" +
+            Pattern("<let name='x' value='$x+1'/><rule context='root'><let name='x' value='$x+1'/><assert test='$x=3'/></rule>")));
+        var document = XmlDocument.Parse("<root/>", cancellationToken: TestContext.Current.CancellationToken);
+        var variables = new Dictionary<XPathExpandedName, XPathValue>();
+        var name = new XPathExpandedName("", "x");
+        variables[name] = graph.Lets[0].Value.Evaluate(document.RootElement);
+        variables[name] = graph.Patterns[0].Lets[0].Value.Evaluate(document.RootElement, new() { Variables = variables });
+        variables[name] = graph.Patterns[0].Rules[0].Lets[0].Value.Evaluate(document.RootElement, new() { Variables = variables });
+        Assert.Equal(3d, variables[name].AsNumber());
+        Assert.True(graph.Patterns[0].Rules[0].Checks[0].Test.Evaluate(document.RootElement, new() { Variables = variables }).AsBoolean());
+    }
+
+    [Fact]
+    public void UnnamespacedAnnotationsAreIgnoredButNestedExecutableSyntaxIsRejected()
+    {
+        Assert.Single(Compile(Schema("<note xmlns=''><nested>annotation</nested></note>" + Pattern(Rule()))).Patterns);
+        Assert.Equal("SCH.QueryBinding", Reject(Schema("<note xmlns=''><xsl:template xmlns:xsl='http://www.w3.org/1999/XSL/Transform'/></note>" + Pattern(Rule()))).Diagnostics[0].Code);
+        Assert.Equal("SCH.QueryBinding", Reject(Schema("<let name='content'><note xmlns=''>template value</note></let>" + Pattern(Rule()))).Diagnostics[0].Code);
+    }
+
+    [Fact]
+    public void SelfWithoutOuterAndOtherLocalEdgesCannotEscapeCyclesThroughOuterNames()
+    {
+        Assert.Equal("SCH.XPath", Reject(Schema("<let name='x' value='$x'/>" + Pattern(Rule()))).Diagnostics[0].Code);
+        Assert.Equal("SCH.XPath", Reject(Schema(Pattern("<let name='x' value='$x'/>" + Rule()))).Diagnostics[0].Code);
+        Assert.Equal("SCH.XPath", Reject(Schema("<let name='x' value='1'/>" + Pattern("<let name='x' value='$y'/><let name='y' value='$x'/>" + Rule()))).Diagnostics[0].Code);
+        Assert.Equal("SCH.SchemaRestriction", Reject(Schema("<let name='x' value='1'/>" + Pattern("<let name='x' value='2'/><let name='x' value='3'/>" + Rule()))).Diagnostics[0].Code);
+    }
+
 }

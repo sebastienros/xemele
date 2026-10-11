@@ -159,9 +159,13 @@ internal sealed class SchematronCompiler : ISchematronCompiler
         {
             if (depth >= 256) Limit(scope.Location(element), "Schema annotation depth exceeded.");
             Work(1, scope.Location(element));
-            if (element.NamespaceUri.Length == 0 || element.NamespaceUri == "http://www.w3.org/1999/XSL/Transform")
+            if (element.NamespaceUri == "http://www.w3.org/1999/XSL/Transform")
                 throw Error("SCH.QueryBinding", "Foreign executable syntax is unsupported.", scope.Location(element));
-            foreach (var child in element.Children) if (child.Kind == XmlNodeKind.Element) CheckForeign(child, scope, depth + 1);
+            foreach (var child in element.Children)
+            {
+                Work(1, scope.Location(child));
+                if (child.Kind == XmlNodeKind.Element) CheckForeign(child, scope, depth + 1);
+            }
         }
 
         private void Include(Node parent, XmlNode include, SchemaDocumentScope source, int depth, bool extend)
@@ -169,10 +173,18 @@ internal sealed class SchematronCompiler : ISchematronCompiler
             var location = source.Location(include);
             if (extend ? parent.Name != "rule" : parent.Name is not ("schema" or "pattern" or "phase" or "rule" or "diagnostics"))
                 throw Error("SCH.SchemaRestriction", "Inclusion is not allowed in this position.", location);
-            foreach (var a in include.Attributes) if (a.NamespaceUri.Length == 0 && a.LocalName != "href") throw Error("SCH.SchemaRestriction", "Invalid inclusion attribute.", location);
+            foreach (var a in include.Attributes)
+            {
+                Work(1, source.Location(a));
+                if (a.NamespaceUri.Length == 0 && a.LocalName != "href") throw Error("SCH.SchemaRestriction", "Invalid inclusion attribute.", location);
+            }
             foreach (var c in include.Children)
-                if (c.Kind == XmlNodeKind.Element && c.NamespaceUri == Namespace || c.Kind is XmlNodeKind.Text or XmlNodeKind.CData && !White(c.Value))
-                    throw Error("SCH.SchemaRestriction", "Inclusions must be empty.", location);
+            {
+                var childLocation = source.Location(c); Work(1, childLocation);
+                if (c.Kind == XmlNodeKind.Element && c.NamespaceUri == Namespace || c.Kind is XmlNodeKind.Text or XmlNodeKind.CData && !White(c.Value, childLocation))
+                    throw Error("SCH.SchemaRestriction", "Inclusions must be empty.", childLocation);
+                if (c.Kind == XmlNodeKind.Element) CheckForeign(c, source, depth + 1);
+            }
             string href = include.GetAttribute("href") ?? throw Error("SCH.SchemaRestriction", "Missing inclusion href.", location);
             Scan(href, location); int separator = href.IndexOf('#');
             string fragment = separator < 0 ? "" : Uri.UnescapeDataString(href[(separator + 1)..]);
@@ -198,7 +210,8 @@ internal sealed class SchematronCompiler : ISchematronCompiler
                         var candidate = stack.Pop(); Work(1, location);
                         if (candidate.GetAttribute("id") == fragment || candidate.GetAttribute("id", TreeValidation.XmlUri) == fragment)
                         { if (!selected.IsDefault) throw Error("SCH.SchemaRestriction", "Ambiguous inclusion fragment.", location); selected = candidate; }
-                        foreach (var c in candidate.Children) if (c.Kind == XmlNodeKind.Element) stack.Push(c);
+                        foreach (var c in candidate.Children)
+                        { Work(1, scope.Location(c)); if (c.Kind == XmlNodeKind.Element) stack.Push(c); }
                     }
                     if (selected.IsDefault) throw Error("SCH.SchemaRestriction", "Missing inclusion fragment.", location);
                 }
@@ -263,7 +276,7 @@ internal sealed class SchematronCompiler : ISchematronCompiler
             {
                 Work(1, child);
                 if (child.Name == "#text")
-                { if (!Message(node.Name) && !White(child.Text!)) Fail(child, "SCH.SchemaRestriction", "Unexpected schema text."); continue; }
+                { if (!Message(node.Name) && !White(child.Text!, child.Location)) Fail(child, "SCH.SchemaRestriction", "Unexpected schema text."); continue; }
                 int next = node.Name == "schema" && child.Name == "p" && stage >= 5 ? 6 : Stage(node, child.Name);
                 if (next < 0 || next < stage) Fail(child, "SCH.SchemaRestriction", "Invalid child or declaration order.");
                 stage = next; counts[child.Name] = counts.GetValueOrDefault(child.Name) + 1;
@@ -356,7 +369,7 @@ internal sealed class SchematronCompiler : ISchematronCompiler
                     }
                 }
             }
-            catch (XPathCompileException) { Fail(source, "SCH.XPath", "Invalid abstract XPath expression."); }
+            catch (XPathCompileException error) { if (error.Diagnostic.Category == XPathDiagnosticCategory.CompileLimit) Limit(source.Location, "XPath compilation limit exceeded."); Fail(source, "SCH.XPath", "Invalid abstract XPath expression."); }
             if (output is null) return text;
             Append(output, text.AsSpan(copied), source); return output.ToString();
         }
@@ -465,6 +478,7 @@ internal sealed class SchematronCompiler : ISchematronCompiler
                     foreach (var reference in refs)
                     {
                         Work(1, node);
+                        if (reference == name && outer.Contains(reference)) continue;
                         if (localNames.Contains(reference)) { if (!done.Contains(reference)) ready = false; }
                         else if (!outer.Contains(reference)) Fail(node, "SCH.XPath", "Unresolved let variable.");
                     }
@@ -494,7 +508,7 @@ internal sealed class SchematronCompiler : ISchematronCompiler
                     }
                 }
             }
-            catch (XPathCompileException) { Fail(node, "SCH.XPath", "Invalid XPath expression."); }
+            catch (XPathCompileException error) { if (error.Diagnostic.Category == XPathDiagnosticCategory.CompileLimit) Limit(node.Location, "XPath compilation limit exceeded."); Fail(node, "SCH.XPath", "Invalid XPath expression."); }
             return result;
         }
         private XPathExpression Expression(string text, HashSet<XPathExpandedName> scope, Node node)
@@ -516,7 +530,7 @@ internal sealed class SchematronCompiler : ISchematronCompiler
             Scan(text, node.Location); var tokens = new List<XPathToken>();
             var lexer = new XPathLexer(text, operation.CancellationToken, options.XPathLimits.MaxTokens, 0);
             try { while (true) { var t = lexer.Next(); Work(1, node); if (t.Kind == XPathTokenKind.End) break; tokens.Add(t); } }
-            catch (XPathCompileException) { Fail(node, "SCH.XPath", "Invalid rule match pattern."); }
+            catch (XPathCompileException error) { if (error.Diagnostic.Category == XPathDiagnosticCategory.CompileLimit) Limit(node.Location, "XPath compilation limit exceeded."); Fail(node, "SCH.XPath", "Invalid rule match pattern."); }
             var result = new StringBuilder(); int start = 0, brackets = 0;
             for (int i = 0; i <= tokens.Count; i++)
             {
@@ -662,14 +676,18 @@ internal sealed class SchematronCompiler : ISchematronCompiler
             return false;
         }
         private static bool Space(char value) => value is ' ' or '\t' or '\r' or '\n';
-        private static bool White(string value) { foreach (char c in value) if (!Space(c)) return false; return true; }
+        private bool White(string value, XmlLocation location) { foreach (char c in value) { Work(1, location); if (!Space(c)) return false; } return true; }
         private void Scan(string text, XmlLocation location) { foreach (var rune in text.EnumerateRunes()) Work(1, location); }
         private void Work(long amount, Node node) => Work(amount, node.Location);
         private void Work(long amount, XmlLocation location) { if (!operation.Charge(amount, location)) throw SchemaSnapshots.Failure(operation); }
         private void Components(int count, Node node) => Components(count, node.Location);
         private void Components(int count, XmlLocation location) { if (!operation.ChargeComponents(count, location)) throw SchemaSnapshots.Failure(operation); }
         private SchemaCompileException Error(string code, string message, XmlLocation location)
-        { var diagnostic = new XmlDiagnostic(code, XmlDiagnosticSeverity.Error, message, location); operation.AddDiagnostic(diagnostic); return operation.IsComplete ? new([diagnostic]) : SchemaSnapshots.Failure(operation); }
+        {
+            if (code == "SCHEMA.ResourceCycle") { operation.Refuse(code, message, location); return SchemaSnapshots.Failure(operation); }
+            var diagnostic = new XmlDiagnostic(code, XmlDiagnosticSeverity.Error, message, location);
+            operation.AddDiagnostic(diagnostic); return operation.IsComplete ? new([diagnostic]) : SchemaSnapshots.Failure(operation);
+        }
         [DoesNotReturn] private void Fail(Node node, string code, string message) => throw Error(code, message, node.Location);
         [DoesNotReturn] private void Limit(XmlLocation location, string message) { operation.Refuse("SCHEMA.Limit", message, location); throw SchemaSnapshots.Failure(operation); }
     }
