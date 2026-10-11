@@ -4,11 +4,11 @@
   "milestone": "M6",
   "title": "XInclude processing",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M6 coordinator worker M6-xinclude",
   "branch": "codex/m6-xinclude",
   "base_revision": "a0267fba4ba8dce9e79717fef248c45b4b1355a9",
-  "integration_revision": null,
+  "integration_revision": "49851e34db9291f5679219807c7f2122506a6b1d",
   "depends_on": [
     "M6-contracts",
     "M6-resource-kinds",
@@ -38,7 +38,8 @@
       "status": "passed",
       "evidence": [
         "focused-correctness",
-        "source-review"
+        "source-review",
+        "integrated-checks"
       ]
     },
     {
@@ -47,7 +48,8 @@
       "status": "passed",
       "evidence": [
         "focused-correctness",
-        "source-review"
+        "source-review",
+        "integrated-checks"
       ]
     },
     {
@@ -58,7 +60,8 @@
         "focused-correctness",
         "public-sample-api",
         "allocation-benchmark",
-        "source-review"
+        "source-review",
+        "integrated-checks"
       ]
     }
   ],
@@ -122,6 +125,15 @@
       "result": "failed",
       "summary": "Earlier20830a5 control: full child environment hash differed between sandbox capture and elevated wrapper; no measured phase ran, cleanup no children. Corrected same-context positive control passed, unknown-variable negative control rejected as expected before the frozen lease.",
       "artifact": "docs/reports/M6-xinclude/results.md"
+    },
+    {
+      "id": "integrated-checks",
+      "kind": "integration",
+      "revision": "49851e34db9291f5679219807c7f2122506a6b1d",
+      "command": "Fresh isolated offlinecache restore/forcedRelease builds tests,publicsample,approvedApiCheck RuntimeFrameworkVersion10.0.11; pinned --fx-version10.0.11 xUnit method-only M6XInclude classes/AdapterTests/SharedParserBudgetTests/SyntaxTests/ContentTests/ResolverTests; publicsample; scoped API union; planning validate; diffcheck",
+      "result": "passed",
+      "summary": "233tests passed0failed/skipped, XML actual .NET10.0.11; sample trueasync passed actual10.0.11;1031API matched1008inherited+23;162tasksvalidate; zero build warnings/errors; independently sixBDNcases/allocation/runtime/lifecycle rawinspection and sourcecorrection approvals retained.",
+      "artifact": "docs/reports/M6-xinclude/results.md"
     }
   ],
   "blockers": [],
@@ -130,11 +142,10 @@
     "checks": [
       "Fresh pinned .NET10.0.11 preparation all13 phases exit0/nochildren; focused97 pass, sample trueasync pass, compiled API974=951+23, planning162.",
       "Exact same-context identity positive and unknown-variable negative controls; single exclusive measurement initial/final closure and two measured phases exit0/nochildren.",
-      "Raw measurement statistics inspected after durable release; summaries/limitations in docs/reports/M6-xinclude/results.md."
+      "Raw measurement statistics inspected after durable release; summaries/limitations in docs/reports/M6-xinclude/results.md.",
+      "Fresh combined233 actual10.0.11 tests/publicsample/API1031/planning162; independent six-case raw/runtime/GC/sourceapproved"
     ],
-    "remaining": [
-      "Coordinator must integrate and run fresh combined-tree correctness/API/regressions before verified. Cross-architecture release validation remains milestone/release scope."
-    ],
+    "remaining": [],
     "requests": []
   }
 }

@@ -104,3 +104,7 @@ final wrapper exit was 0 and no children remained. Raw allocation, preparation,
 identity and BDN artifacts were inspected after durable release and remain ignored
 under `artifacts/M6-xinclude/` for coordinator inspection. Only this summary and
 analysis are committed; no raw measurement logs are committed or deleted.
+
+## Integrated verification
+
+Candidate `49851e34db9291f5679219807c7f2122506a6b1d` includes verified adapters and shared-parser/resource-kind repairs. Fresh offlinecache restores and forced Release builds of tests/publicsample/approvedAPIextractor pass with zero warnings/errors. XML confirms233selected tests passed0failed/skipped on actual .NET10.0.11:97XInclude,23adapters,6sharedbudget,107earlier syntax/entity/resolver cases. Publicsync/trueasyncsample passed;1031compiledAPI members match1008inherited+23XInclude. Planning162 and whitespacechecks pass. Root independently inspected six nonempty BDNCSVmeans/runtime/ShortRunNoEmit headers and positive ownedcold/sync/trueasync/retained/positivecontrol allocationlog. Integer-divided sample means are not exactinclusive numerators; limitation retained. Lifecycle closure/cleanup and source approvals independently checked. No measurements repeated during integration.
