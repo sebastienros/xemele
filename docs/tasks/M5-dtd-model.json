@@ -4,7 +4,7 @@
   "milestone": "M5",
   "title": "Compile DTD content models",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M5 isolated DTD model worker",
   "branch": "codex/m5-dtd-model",
   "base_revision": "728e9aa278282c0f93db8ac4ed19b27385cfae6a",
@@ -33,29 +33,109 @@
     {
       "id": "M5-dtd-model-A1",
       "description": "Compile M2 declaration model into content-model validators and attribute/notation constraints.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "functional",
+        "performance"
+      ]
     },
     {
       "id": "M5-dtd-model-A2",
       "description": "Test mixed/sequence/choice/occurrence models and invalid declaration constraints.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "functional"
+      ]
     },
     {
       "id": "M5-dtd-model-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "demo",
+        "preservation",
+        "planning"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Validation/Dtd/Compilation/DtdCompiler.cs: immutable bounded position automata, declaration validity and aggregate M2 default normalization",
+    "src/Xemele/Validation/Dtd/Compilation/CompiledModel.cs: borrowed indexed ordinal lookups and attribute value constraints",
+    "src/Xemele/Validation/Dtd/Compilation/ContentModel.cs: reusable integer cursor automaton",
+    "tests/Xemele.Tests/M5-dtd-model/CompilationTests.cs: 71 cases, exhaustive independent language oracle and concurrent reuse",
+    "samples/M5-dtd-model/Program.cs: standalone internal-only demonstration/control/allocation domains",
+    "benchmarks/Xemele.Benchmarks/M5-dtd-model/: ShortRun NoEmit benchmark/probe",
+    "docs/reports/M5-dtd-model/README.md: interface freeze, exact results and limitations"
+  ],
+  "evidence": [
+    {
+      "id": "functional",
+      "kind": "check",
+      "revision": "3ccd3c2ad9adefce71ebf943d48ceaa5c846541d",
+      "command": "DOTNET_CLI_USE_MSBUILD_SERVER=0 MSBUILDDISABLENODEREUSE=1 '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' build tests/Xemele.Tests -c Release --no-restore -p:UseSharedCompilation=false --disable-build-servers -m:1; '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -class 'Xemele.Tests.M5DtdModel.*' -noLogo",
+      "result": "passed",
+      "summary": "Release build zero warnings/errors; explicit actual .NET 10.0.11: 71 focused tests, zero failed/skipped; includes independent exhaustive oracle, 64 concurrent reuses, exact aggregate quotas and empty-model entry cancellation.",
+      "artifact": "docs/reports/M5-dtd-model/README.md"
+    },
+    {
+      "id": "preservation",
+      "kind": "check",
+      "revision": "3ccd3c2ad9adefce71ebf943d48ceaa5c846541d",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -class 'Xemele.Tests.DtdModel.*' -class 'Xemele.Tests.M5ValidationModel.*' -noLogo",
+      "result": "passed",
+      "summary": "26 existing M2 declaration-model/shared M5 validation cases pass, no failures/skips. Broader preservation belongs to integrated M5 gate.",
+      "artifact": "docs/reports/M5-dtd-model/README.md"
+    },
+    {
+      "id": "demo",
+      "kind": "check",
+      "revision": "3ccd3c2ad9adefce71ebf943d48ceaa5c846541d",
+      "command": "DOTNET_CLI_USE_MSBUILD_SERVER=0 MSBUILDDISABLENODEREUSE=1 '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' build samples/M5-dtd-model -c Release --no-restore -p:UseSharedCompilation=false --disable-build-servers -m:1; '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 samples/M5-dtd-model/bin/Release/net10.0/Xemele.DtdModelSample.dll --control",
+      "result": "passed",
+      "summary": "Nonpackaged internal friend consumer builds and prints actual .NET10.0.11/Arm64; accepts \u540d,last, normalized default one, unparsed entity e. No public stub/API fragment.",
+      "artifact": "docs/reports/M5-dtd-model/README.md"
+    },
+    {
+      "id": "performance",
+      "kind": "check",
+      "revision": "d43355552ebc1a685ce45afcf8434a5da0a7482c",
+      "command": "python3 docs/reports/M5-dtd-model/run_measurements.py --exclusive-grant",
+      "result": "passed",
+      "summary": "Prepared grant/release, both phase exits0/initial+finalidentity0/no_childtrue; ten warm0B/100000; fixture22712B; owned531200B/100; wholeheapretained158752B/100; all24ShortRunNoEmitcases. Exact inclusive GC24rows disclosed including2352/2640B totals despite rounded allocationdash; no overhead subtraction. Before later compiler-entryguard: unchanged borrowed methods reusable evidence; cold means informational priorguard only.",
+      "artifact": "docs/reports/M5-dtd-model/README.md"
+    },
+    {
+      "id": "review",
+      "kind": "review",
+      "revision": "3ccd3c2ad9adefce71ebf943d48ceaa5c846541d",
+      "command": "Coordinator source and independent raw-result inspection",
+      "result": "passed",
+      "summary": "Coordinator caught interface enumeration before first measurement (indexed repair), empty-model entry cancellation after sequence (guard+test at final revision), inspected actual ten zero numerators, all24 GC records, runtime and BDN results; raw cleanup ACK only after summary commit.",
+      "artifact": "docs/reports/M5-dtd-model/README.md"
+    },
+    {
+      "id": "planning",
+      "kind": "check",
+      "revision": "3ccd3c2ad9adefce71ebf943d48ceaa5c846541d",
+      "command": "python3 tools/planning/tasks.py validate; git diff --check",
+      "result": "passed",
+      "summary": "153 task records validate; whitespace check passes.",
+      "artifact": null
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "",
-    "checks": [],
-    "remaining": [],
+    "summary": "Implemented immutable internal DTD compiler, deterministic position automata, attribute/notation/default constraints, borrowed no-allocation warm paths and bounded/cancelable compilation. Final71 focused+26 preservationcases pass; measured d43355524cases and tenwarmzero counters retain exact provenance. Awaiting coordinator integration verification.",
+    "checks": [
+      "71 focused tests and 26 earlier/shared cases all pass on explicit .NET10.0.11 at3ccd3c2.",
+      "Sample build/control pass; planning153/diffchecks pass.",
+      "Prepared exclusive measurement all phases/identities0/nochild; raw inspection acknowledged; report exact24GCsummary/no unexplained subtraction."
+    ],
+    "remaining": [
+      "Coordinator reviewed integration and combined checks; task remains implemented only.",
+      "Future evaluator owns DOM text/REQUIRED/FIXED/document-wide ID/IDREF rules and full-tree composition.",
+      "Raw-source declaration uniqueness belongs to separately integrated coordinator repair main14b7510 and later facade, without unverified peer dependency."
+    ],
     "requests": []
   }
 }
