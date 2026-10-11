@@ -85,4 +85,33 @@ public sealed class SharedParserBudgetTests
         }
         Assert.Equal(".NET 10.0.11", RuntimeInformation.FrameworkDescription);
     }
+
+    [Fact]
+    public void SharedOptionsRetainEntityResolverAndExactExpansionLimit()
+    {
+        const string xml = "<!DOCTYPE r [<!ENTITY e SYSTEM 'entity.ent'>]><r>&e;</r>";
+        var resolver = new EntityResolver();
+        var budget = new OperationBudget(new() { DtdProcessing = XmlDtdProcessing.Parse, Resolver = resolver,
+            Limits = new() { ExpandedCharacters = 4, ExternalResources = null, ExternalBytes = null } }, default);
+        Assert.Null(Characters(xml, budget)); Assert.Equal(2, budget.Count(Quota.ExpandedCharacters));
+        Assert.Null(Characters(xml, budget)); Assert.Equal(4, budget.Count(Quota.ExpandedCharacters));
+        Assert.NotNull(Characters(xml, budget)); Assert.Equal(4, budget.Count(Quota.ExpandedCharacters));
+        Assert.Equal(3, resolver.Calls); Assert.Equal(3, resolver.Disposals);
+        Assert.Equal(0, budget.Count(Quota.EntityDepth)); Assert.Equal(0, budget.Count(Quota.Depth));
+    }
+
+    private sealed class EntityResolver : XmlResourceResolver
+    {
+        internal int Calls, Disposals;
+        public override XmlResolvedResource? Resolve(XmlResourceRequest request, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested(); Calls++;
+            return new(new EntityStream(this), new("https://fixture.invalid/entity-final"));
+        }
+        private sealed class EntityStream(EntityResolver owner) : MemoryStream("xy"u8.ToArray())
+        {
+            protected override void Dispose(bool disposing)
+            { if (disposing) owner.Disposals++; base.Dispose(disposing); }
+        }
+    }
 }
