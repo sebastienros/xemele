@@ -5,7 +5,7 @@ namespace Xemele.XPath;
 internal readonly record struct ItemIdentity(XPathItemKind Kind, XmlNode Node, XmlAttribute Attribute, string? NamespacePrefix);
 public readonly struct XPathItem : IEquatable<XPathItem>
 {
-    private sealed record Metadata(string StringValue, string LocalName, string NamespaceUri, string Prefix, string Name);
+    private sealed record Metadata(string StringValue, string LocalName, string NamespaceUri, string Prefix, string Name, long ContentRevision);
     private readonly Metadata? metadata;
     internal readonly ItemIdentity Identity;
     // Navigator uses captured, budget-checked fields. This path never rereads live topology/values.
@@ -15,7 +15,7 @@ public readonly struct XPathItem : IEquatable<XPathItem>
         if (identity.Node.IsDefault || (identity.Kind == XPathItemKind.Attribute && (identity.Attribute.IsDefault || !ReferenceEquals(identity.Attribute.Document, identity.Node.Document))) ||
             (identity.Kind != XPathItemKind.Attribute && !identity.Attribute.IsDefault) ||
             (identity.Kind == XPathItemKind.Namespace ? identity.NamespacePrefix is null : identity.NamespacePrefix is not null)) throw new ArgumentException("Invalid captured item identity.", nameof(identity));
-        Identity = identity; metadata = new(value, local, uri, prefix, prefix.Length == 0 ? local : string.Concat(prefix, ":", local));
+        Identity = identity; metadata = new(value, local, uri, prefix, prefix.Length == 0 ? local : string.Concat(prefix, ":", local), identity.Node.OwnerDocument.ContentRevision);
     }
     private Metadata Data => metadata ?? throw new InvalidOperationException("Default XPath item.");
     public bool IsDefault => metadata is null;
@@ -29,6 +29,7 @@ public readonly struct XPathItem : IEquatable<XPathItem>
     public XmlAttribute? Attribute { get { _ = Data; return Identity.Kind == XPathItemKind.Attribute ? Identity.Attribute : null; } }
     public XmlNode? OwnerElement { get { _ = Data; return Identity.Kind is XPathItemKind.Attribute or XPathItemKind.Namespace ? Identity.Node : null; } }
     internal XmlDocument Document => Identity.Node.OwnerDocument;
+    internal long CapturedContentRevision => Data.ContentRevision;
     internal static void RequireConnected(XmlNode node)
     {
         if (node.IsDefault || node.Kind == XmlNodeKind.Fragment) throw new ArgumentException("Require a document-connected node.", nameof(node));
