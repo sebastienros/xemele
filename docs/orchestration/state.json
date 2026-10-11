@@ -9,10 +9,33 @@
   "last_verified_checkpoint": "M7-gate",
   "last_verified_task": "M8-contracts",
   "last_integrated_revision": "75ffea4f1a249315da3fbd72fc3ad3f996c5c8c1",
-  "active_assignments": [],
+  "active_assignments": [
+    {
+      "task_id": "M8-resource-kind",
+      "branch": "codex/m8-resource-kind",
+      "base_revision": "3000efdc9d9c1768810ace6372ad52aa51be6bd2",
+      "stage": "Claimed; worker creation pending",
+      "acceptance_before_dispatch": {
+        "mandatory": "Exact Schema=5; values0-4 unchanged; schema authorization/forwarding/disposal; inherited undefined-kind5->6 transition recorded; additive public field API.",
+        "integration": "Focused new and prior M2 resolver/M6 kind/catalog tests, actual pinned runtime, compiled public API union, planning/diff. No hot-path change or measurement required.",
+        "review": "One batched bounded correction; preserve passing source evidence; after two cycles coordinator chooses direct fix/owning repair/external blocker."
+      }
+    },
+    {
+      "task_id": "M8-xpath-accounting",
+      "branch": "codex/m8-xpath-accounting",
+      "base_revision": "3000efdc9d9c1768810ace6372ad52aa51be6bd2",
+      "stage": "Claimed; worker creation pending",
+      "acceptance_before_dispatch": {
+        "mandatory": "Exact frozen internal node/item accounting adapter; actual operations on success/failure; capped remaining allowance/exact-limit runs; exception/cancellation behavior and unchanged public API.",
+        "integration": "Focused accounting and affected XPath regressions, public API unchanged, prepared owned-allocation parity under bounded lease; no fresh campaign for unchanged primitives.",
+        "review": "One batched bounded correction; preserve passing source evidence; after two cycles coordinator chooses direct fix/owning repair/external blocker."
+      }
+    }
+  ],
   "integration_queue": [],
   "next_actions": [
-    "Finish terminal M8-contracts cleanup; claim and dispatch M8-resource-kind and M8-xpath-accounting with Sol/high isolated workers.",
+    "Create and activate two claimed Sol/high isolated workers; then review/integrate each serially.",
     "Verify both prerequisites then M8-model; schedule at most three ready lanes.",
     "Complete cumulative M8 gate, terminal cleanup and sole-writer transfer to main."
   ],
@@ -132,7 +155,7 @@
   },
   "current_milestone": "M8",
   "milestone_completion_scope": "Complete integrated verified M8-gate; terminal workers and cleanup; preserve earlier evidence/caches; transfer sole writes to main. Do not create M9.",
-  "milestone_progress": "M8-contracts verified; resource-kind and XPath-accounting ready; model awaits both. M7 remains last verified gate.",
+  "milestone_progress": "M8-contracts verified and terminal; resource-kind/accounting claimed for isolated implementation; model awaits both.",
   "blockers": [],
   "pending_decisions": [],
   "timing_queue": [],
@@ -141,7 +164,7 @@
       "task_id": "M8-contracts",
       "branch": "codex/m8-contracts",
       "base_revision": "2ac5a78d92e1ce0cafca317d3b193a475e8ab8bb",
-      "stage": "Verified integrated; terminal confirmation and cleanup pending",
+      "stage": "Verified and terminal; both checkouts removed, chat archived",
       "acceptance_before_dispatch": {
         "mandatory": "Exact public/internal interfaces, edition/binding/report/profile and diagnostics; independent nonpackaged fixtures against integrated resolver/XPath/validation; complete scope inventory and lane ownership; no runtime stubs.",
         "integration": "Run owned contract fixture checks, inspect declared API/output and negative controls, tasks.py validate. No runtime hot-path changes; measurement not applicable."
@@ -151,7 +174,7 @@
       "host_id": "local",
       "chat_id": "01a12c6e-24cc-73c2-b99f-c24dc7adbb37",
       "worktree_path": "/Users/sebastienros/.codex/worktrees/f449/xemele",
-      "worker_cursor": "bab2792c-0a98-4be3-8352-650cb6f55ec0:47",
+      "worker_cursor": "bab2792c-0a98-4be3-8352-650cb6f55ec0:54",
       "setup": "Root verified clean detached claim HEAD; worker instructed to create assigned branch",
       "contract_decision": "Use XmlResourceKind.Schema=5, not ExternalEntity, for schema resource policy; ordered M8-resource-kind owns existing source file and additive baseline. Contract worker records freeze/request only.",
       "reviewer": "/root/review_m8_contract",
@@ -181,7 +204,14 @@
       "handoff_revision": "6b91df73843359cc0ad7011bac98478074780c54",
       "integration_revision": "75ffea4f1a249315da3fbd72fc3ad3f996c5c8c1",
       "integration_worktree": "/private/tmp/xemele-integrate-m8-contracts",
-      "cleanup_status": "Pending terminal check then remove worker/integration checkouts and archive chat; tracked evidence preserved."
+      "cleanup_status": "Clean merged worker terminal; both checkouts removed; chat archived; no source or retained prior cache/artifact deleted.",
+      "verified_metadata_revision": "3000efdc9d9c1768810ace6372ad52aa51be6bd2",
+      "cleanup": {
+        "chat_archived": true,
+        "worker_worktree_removed": true,
+        "integration_worktree_removed": true,
+        "record": "docs/orchestration/cleanup-M8-contracts.json"
+      }
     }
   ],
   "measurement_lease_history": [],
