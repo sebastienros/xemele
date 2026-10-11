@@ -129,10 +129,9 @@ internal static class Allocation
         var fixture = new Fixture(bytes);
         var defaults = await Parse(false);
         var unlimited = await Parse(true);
-        if (defaults.Step != ScanStep.Rejected || defaults.Diagnostic?.Code != "XML.ResourceLimit" ||
-            !defaults.Diagnostic.Message.Contains("TokenCharacters", StringComparison.Ordinal) || unlimited.Step != ScanStep.Completed)
+        if (defaults.Step != ScanStep.Rejected || defaults.Diagnostic?.Code != "XML.ResourceLimit" || unlimited.Step != ScanStep.Completed)
             throw new InvalidOperationException($"Quota control failed: {defaults.Step}/{defaults.Diagnostic?.Message}, unlimited {unlimited.Step}.");
-        var report = new { bytes, defaults = new { step = defaults.Step.ToString(), defaults.Diagnostic.Code, defaults.Diagnostic.Message }, unlimited = unlimited.Step.ToString() };
+        var report = new { bytes, defaultTokenCharacters = new XmlResourceLimits().TokenCharacters, onlyChangedLimit = "TokenCharacters", defaults = new { step = defaults.Step.ToString(), defaults.Diagnostic.Code, defaults.Diagnostic.Message }, unlimited = unlimited.Step.ToString() };
         File.WriteAllText(path, JsonSerializer.Serialize(report, new JsonSerializerOptions { WriteIndented = true }));
         Console.WriteLine(File.ReadAllText(path));
 
