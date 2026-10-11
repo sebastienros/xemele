@@ -4,7 +4,7 @@
   "milestone": "M4",
   "title": "XPath conformance and benchmarks",
   "kind": "verification",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M4 corpus worker coordinated by 01a12903-1caa-7f32-b0e3-e66b49cea7a6",
   "branch": "codex/m4-corpus",
   "base_revision": "61d71bd1ddbeb655f810dcfbd4e05cba7961598b",
@@ -31,29 +31,110 @@
     {
       "id": "M4-corpus-A1",
       "description": "Complete per-feature XPath inventory and pinned comparison cases including attribute/namespace results.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "frozen-runtime-corpus",
+        "pinned-reference",
+        "source-review"
+      ]
     },
     {
       "id": "M4-corpus-A2",
       "description": "All advertised XPath 1.0 cases pass; compile/evaluate benchmarks and regressions are recorded independently.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "frozen-runtime-corpus",
+        "deterministic-fuzz",
+        "performance-applicability"
+      ]
     },
     {
       "id": "M4-corpus-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "frozen-runtime-corpus",
+        "pinned-reference",
+        "deterministic-fuzz",
+        "planning-owned-checks"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "tests/corpora/xpath/inventory.json: unchanged frozen105-vector inventory",
+    "tests/Xemele.Conformance.Tests/XPath/InventoryTests.cs: production runtime typed/address/proximity oracles",
+    "tests/Xemele.Differential.Tests/XPath/ReferenceTests.cs: pinned metadata/order/Boolean/Unicode controls",
+    "tests/Xemele.Fuzz/XPath/DeterministicCorpus.cs and docs/reports/M4-corpus/Fuzz.Driver.csproj: deterministic owned callable driver",
+    "docs/reports/M4-corpus/coverage.md, differential.md, checks.md, performance.md: durable summaries and verified benchmark applicability"
+  ],
+  "evidence": [
+    {
+      "id": "frozen-runtime-corpus",
+      "kind": "check",
+      "revision": "75aed259b8d3e9b250799a08586de6d41c9e4186",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll -namespace Xemele.Conformance.Tests.XPath -culture invariant -result-xml /private/tmp/m4-corpus-conformance.xml",
+      "result": "passed",
+      "summary": "106 passed:105 unchanged vectors plus inventory/runtime guard; all reverse proximity sequences checked. Actual75aed25 plus final three assertions byte-equivalent to a5159eb; relevant Release build0 warnings/errors. Root inspected successful raw XML.",
+      "artifact": "docs/reports/M4-corpus/checks.md"
+    },
+    {
+      "id": "pinned-reference",
+      "kind": "check",
+      "revision": "67786348b9da264c5ebfb441f9de5094e1f084dc",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll -namespace Xemele.Differential.Tests.XPath -culture invariant -result-xml /private/tmp/m4-corpus-differential.xml",
+      "result": "passed",
+      "summary": "156 passed,0 errors/failures/skips; actualclaim plus authored files byte-equivalent to a5159eb; explicit BCL Unicode/order classifications. Root inspected successful XML/log.",
+      "artifact": "docs/reports/M4-corpus/differential.md"
+    },
+    {
+      "id": "deterministic-fuzz",
+      "kind": "check",
+      "revision": "67786348b9da264c5ebfb441f9de5094e1f084dc",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 docs/reports/M4-corpus/bin/Release/net10.0/Fuzz.Driver.dll",
+      "result": "passed",
+      "summary": "Seed1295276112:768 generated/768 reuse comparisons,128 invalid grammar,32 mutation,32 exact/one-over quota pairs,64 token cancellation controls. Actualclaim plus authored files byte-equivalent to a5159eb; root inspected JSON.",
+      "artifact": "docs/reports/M4-corpus/differential.md"
+    },
+    {
+      "id": "performance-applicability",
+      "kind": "check",
+      "revision": "a5159eb52f13552ef33bcf0c31ab0178b2e75dd8",
+      "command": "git diff --exit-code 07487607b3df13cba3b8bcd523e47d544da589be -- src/Xemele Directory.Build.props Directory.Packages.props global.json benchmarks/Xemele.Benchmarks/M4-evaluate",
+      "result": "passed",
+      "summary": "No differences; reuse verified independent two compile/six evaluation cases at frozen0748760 unchanged runtime/benchmark inputs. Exact MemoryDiagnoser+ShortRunJob, actual.NET10.0.11; no new run or zero query claim.",
+      "artifact": "docs/reports/M4-corpus/performance.md"
+    },
+    {
+      "id": "source-review",
+      "kind": "review",
+      "revision": "a5159eb52f13552ef33bcf0c31ab0178b2e75dd8",
+      "command": "coordinator-requested independent source-only review",
+      "result": "passed",
+      "summary": "Approved75aed25 and three Number-kind assertion correction at a5159eb, no residual blockers; no independent test execution.",
+      "artifact": "docs/reports/M4-corpus/checks.md"
+    },
+    {
+      "id": "planning-owned-checks",
+      "kind": "check",
+      "revision": "a5159eb52f13552ef33bcf0c31ab0178b2e75dd8",
+      "command": "python3 tools/planning/tasks.py validate; git diff --check",
+      "result": "passed",
+      "summary": "150 tasks valid; owned whitespace check exit0; repeated after final task metadata.",
+      "artifact": "docs/reports/M4-corpus/checks.md"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "",
-    "checks": [],
-    "remaining": [],
+    "summary": "Implemented all105 frozen runtime vectors, pinned156-test differential lane and deterministic fuzz regression driver. No runtime/shared/frozen expectation edits. Verified separate compile/evaluate performance reused with unchanged input provenance. Await root combined integration verification.",
+    "checks": [
+      "106 conformance /156 differential pass actual.NET10.0.11 invariant culture; real claim/source-equivalence provenance in checks.md",
+      "Fuzz768 generated+768 reuse,128 invalid,32 mutation,32 quota pairs,64 cancellation; Release builds0 warnings/errors",
+      "Independent source review approved finala5159eb; planning150 and whitespace pass",
+      "Actual authored harness failures preserved as worker-observed historical failures; no skipped/unrun pass claims"
+    ],
+    "remaining": [
+      "Root integrate and rerun focused106/156/fuzz/planning on combined revision; gate owns cumulative earlier-milestone verification."
+    ],
     "requests": []
   }
 }
