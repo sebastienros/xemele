@@ -37,29 +37,129 @@
     {
       "id": "M8-model-A1",
       "description": "Implement common compile options/context and immutable datatype/pattern/component interfaces from the frozen contract.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "source-build",
+        "frozen-model-api",
+        "model-tests"
+      ]
     },
     {
       "id": "M8-model-A2",
       "description": "Test ownership, diagnostics, namespaces, source locations and independent run-state boundaries.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "model-tests",
+        "affected-tests"
+      ]
     },
     {
       "id": "M8-model-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
       "status": "pending",
-      "evidence": []
+      "evidence": [
+        "xml-only-consumer",
+        "public-api",
+        "allocation-preparation",
+        "planning-whitespace"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Validation/SchemaCommon/Model.cs: frozen public options/results and internal datatype/facet/regex/operation/resource contracts",
+    "src/Xemele/Validation/SchemaCommon/Snapshots.cs and CompileContext.cs: owned input/namespace snapshots and revision guards",
+    "src/Xemele/Validation/SchemaCommon/Operations.cs: compile accounting and existing-M5 run adapter",
+    "src/Xemele/Validation/SchemaCommon/Parsing.cs and ResourceLoader.cs: strict structured parsing, aggregate quotas and exactly-once transferred ownership",
+    "src/Xemele/Validation/SchemaCommon/XPathJoin.cs: capped actual M4 accounting with primary-exception preservation",
+    "docs/api/M8-model.txt; samples/M8-model/; docs/reports/M8-model/; tests/Xemele.Tests/M8-model/; benchmarks/Xemele.Benchmarks/M8-model/"
+  ],
+  "evidence": [
+    {
+      "id": "source-build",
+      "kind": "check",
+      "revision": "2ac7e6034a82d371e76608d0ad11fe2e2d8c8ea0",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' build tests/Xemele.Tests/Xemele.Tests.csproj -c Release --no-restore --disable-build-servers -p:UseSharedCompilation=false -m:1 -v:q",
+      "result": "passed",
+      "summary": "Release build: zero warnings/errors.",
+      "artifact": "docs/reports/M8-model/README.md"
+    },
+    {
+      "id": "model-tests",
+      "kind": "check",
+      "revision": "2ac7e6034a82d371e76608d0ad11fe2e2d8c8ea0",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -namespace Xemele.Tests.M8Model -parallelMode none -noLogo -noColor",
+      "result": "passed",
+      "summary": "20 passed; zero failed/skipped; model snapshots, report joins, actual scalar/expansion/resource/work boundaries and ownership.",
+      "artifact": "docs/reports/M8-model/README.md"
+    },
+    {
+      "id": "affected-tests",
+      "kind": "check",
+      "revision": "2ac7e6034a82d371e76608d0ad11fe2e2d8c8ea0",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -class Xemele.Tests.Resolution.ResolverTests -class Xemele.Tests.M8XPathAccounting.AccountingTests -class Xemele.Tests.M5ValidationModel.ValidationModelTests -class Xemele.Tests.M5ValidationSourceProvenance.SourceProvenanceTests -class Xemele.Tests.ValidationMetadata.ValidationMetadataTests -class Xemele.Tests.M4Evaluate.EvaluationTests -method- Xemele.Tests.Resolution.ResolverTests.WarmBorrowedReadsAllocateNothing -parallelMode none -noLogo -noColor",
+      "result": "passed",
+      "summary": "189 passed; zero failed/skipped; latent measurement case explicitly excluded.",
+      "artifact": "docs/reports/M8-model/README.md"
+    },
+    {
+      "id": "frozen-model-api",
+      "kind": "check",
+      "revision": "2ac7e6034a82d371e76608d0ad11fe2e2d8c8ea0",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 docs/reports/M8-model/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare src/Xemele/bin/Release/net10.0/Xemele.dll tests/Contracts/Fixtures/M8/Model.golden.txt",
+      "result": "passed",
+      "summary": "316 frozen public/internal declarations matched.",
+      "artifact": "docs/reports/M8-model/README.md"
+    },
+    {
+      "id": "public-api",
+      "kind": "check",
+      "revision": "2ac7e6034a82d371e76608d0ad11fe2e2d8c8ea0",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 docs/reports/M8-model/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare src/Xemele/bin/Release/net10.0/Xemele.dll docs/api/M8-model.txt",
+      "result": "passed",
+      "summary": "139 additive public declarations matched.",
+      "artifact": "docs/reports/M8-model/README.md"
+    },
+    {
+      "id": "xml-only-consumer",
+      "kind": "check",
+      "revision": "2ac7e6034a82d371e76608d0ad11fe2e2d8c8ea0",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' build samples/M8-model/Model.Consumer.csproj -c Release --no-restore --disable-build-servers -p:UseSharedCompilation=false -p:ModelXmlOnly=true -m:1 -v:q && '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 samples/M8-model/bin/Release/net10.0/Xemele.Benchmarks.dll",
+      "result": "passed",
+      "summary": "XML-only consumer build/execution passed with real shared model/context, M4 accounting, M5 adapter/DTD behavior; no later engine dependency.",
+      "artifact": "docs/reports/M8-model/README.md"
+    },
+    {
+      "id": "allocation-preparation",
+      "kind": "check",
+      "revision": "2ac7e6034a82d371e76608d0ad11fe2e2d8c8ea0",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' build benchmarks/Xemele.Benchmarks/M8-model/Model.Probe.csproj -c Release --no-restore --disable-build-servers -p:UseSharedCompilation=false -m:1 -v:q && env DOTNET_TieredCompilation=0 DOTNET_gcServer=0 DOTNET_GCConcurrent=0 XEMELE_MODEL_REVISION=2ac7e6034a82d371e76608d0ad11fe2e2d8c8ea0 '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 benchmarks/Xemele.Benchmarks/M8-model/bin/Release/net10.0/Xemele.Benchmarks.dll --control artifacts/M8-model/control.json",
+      "result": "passed",
+      "summary": "11 cases; each 32 warm + 64 consumed iterations; counters disabled. Allocation measurement has not run and requires root lease.",
+      "artifact": "docs/reports/M8-model/README.md"
+    },
+    {
+      "id": "planning-whitespace",
+      "kind": "check",
+      "revision": "2ac7e6034a82d371e76608d0ad11fe2e2d8c8ea0",
+      "command": "python3 tools/planning/tasks.py validate && git diff --check",
+      "result": "passed",
+      "summary": "171 tasks validated; whitespace passed.",
+      "artifact": "docs/reports/M8-model/README.md"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "",
-    "checks": [],
-    "remaining": [],
+    "summary": "Source and counters-disabled allocation preparation committed; A1/A2 pass. A3 requires coordinator allocation lease before final evidence/implemented status. Root accepted three draft fixes at identical source hashes.",
+    "checks": [
+      "20 model tests and 189 affected prerequisite tests passed at source revision 2ac7e6034a82d371e76608d0ad11fe2e2d8c8ea0; old resolver allocation method explicitly excluded.",
+      "316 frozen model declarations and 139 public declarations matched; XML-only compiled/executed consumer passed.",
+      "Release builds and 11-case counters-disabled allocation control passed; planning/whitespace passed.",
+      "Incident: pre-commit class selection inadvertently ran old resolver allocation child without lease. Parent 73852 and children 73855/73856 exited/reaped; no remaining processes. Its allocations are excluded from M8 evidence; full lifecycle/argv in owned report."
+    ],
+    "remaining": [
+      "Root must PARK peers/main and GRANT the exact one-attempt <=30s allocation command in docs/reports/M8-model/README.md; prepared binaries/input/runtime hashes in preparation.json.",
+      "After child completion: RELEASE lifecycle before raw inspection, wait for root acknowledgement, then record actual allocation evidence and finish A3."
+    ],
     "requests": []
   }
 }
