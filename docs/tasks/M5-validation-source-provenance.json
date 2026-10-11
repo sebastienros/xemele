@@ -4,11 +4,11 @@
   "milestone": "M5",
   "title": "Retain completed DOM source revision for standalone validation",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M5 isolated validation source provenance worker",
   "branch": "codex/m5-validation-source-provenance",
   "base_revision": "095db5550e5df6a2ad7764b6534352255c6c09b1",
-  "integration_revision": null,
+  "integration_revision": "349dd8ad7575617274985795bd70890d134db80d",
   "depends_on": [
     "M5-validation-metadata",
     "M5-canonical-provenance"
@@ -34,7 +34,8 @@
       "status": "passed",
       "evidence": [
         "focused-checks",
-        "build-api"
+        "build-api",
+        "integration-verification"
       ]
     },
     {
@@ -42,7 +43,8 @@
       "description": "Prove unchanged parsed standalone numeric-reference whitespace remains traceable, all current DOM mutations make revision differ, incomplete/recovered inputs cannot establish safe provenance, cancellation does not stamp completion.",
       "status": "passed",
       "evidence": [
-        "focused-checks"
+        "focused-checks",
+        "integration-verification"
       ]
     },
     {
@@ -52,7 +54,8 @@
       "evidence": [
         "build-api",
         "generated-storage",
-        "planning"
+        "planning",
+        "integration-verification"
       ]
     }
   ],
@@ -97,6 +100,15 @@
       "result": "passed",
       "summary": "All155task records validate; final updated record revalidated before handoff.",
       "artifact": "docs/reports/M5-validation-source-provenance/README.md"
+    },
+    {
+      "id": "integration-verification",
+      "kind": "integration",
+      "revision": "349dd8ad7575617274985795bd70890d134db80d",
+      "command": "Release server-disabled no-restore test build; explicit --fx-version10.0.11 xunit selected source/canonical/compiler/declaration/metadata/shared/Tree/Dom/Recovery/M4*/AsyncInput namespaces with both borrowed allocation methods excluded; python3 docs/reports/M5-validation-model/check_api.py; python3 tools/planning/tasks.py validate",
+      "result": "passed",
+      "summary": "Clean build;724tests pass no failures/skips/notrun;944API matched;155tasks validate. Root source review approved465761d scalarstamp+cancelfirst/recoveryguard and actualgetter/setterIL16Bnullablelogicalpayload qualification; no counter/timing claims.",
+      "artifact": "docs/reports/M5-validation-source-provenance/README.md"
     }
   ],
   "blockers": [],
@@ -106,10 +118,7 @@
       "191 actual.NET10.0.11 focused checks passed; allocation method excluded.",
       "Release builds clean; compiledAPI921unchanged; getter/setter IL and16Blogicalnullable payload checked; planning155valid."
     ],
-    "remaining": [
-      "Coordinator integrate/verify repair before facade consumes; consumer requires complete source and nonnegative matching revision.",
-      "Combined M5 preservation remains milestone gate."
-    ],
+    "remaining": [],
     "requests": []
   }
 }
