@@ -1,0 +1,80 @@
+{
+  "total_max_seconds": 1100,
+  "initial_identity_max_seconds": 45,
+  "final_identity_max_seconds": 45,
+  "environment": {
+    "DOTNET_TieredCompilation": "0",
+    "DOTNET_TieredPGO": "0",
+    "DOTNET_ReadyToRun": "0",
+    "DOTNET_ROLL_FORWARD": "Disable",
+    "DOTNET_ROOT": "/Users/sebastienros/Library/Application Support/dotnetup/dotnet",
+    "DOTNET_CLI_USE_MSBUILD_SERVER": "0",
+    "DOTNET_CLI_DO_NOT_USE_MSBUILD_SERVER": "1",
+    "MSBUILDDISABLENODEREUSE": "1",
+    "LANG": "C.UTF-8",
+    "LC_ALL": "C.UTF-8",
+    "LC_CTYPE": "C.UTF-8",
+    "MallocNanoZone": "0",
+    "SHLVL": "1",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "XEMELE_DOTNET": "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+    "XEMELE_BCL_RUNNER": "/private/tmp/xemele-m7-gate/tools/ReferenceRunners/Bcl/bin/Release/net10.0/BclReference.dll",
+    "XEMELE_CORPUS_RESOURCES": "/private/tmp/xemele-m7-gate/tests/corpora/xml"
+  },
+  "runs": [
+    {
+      "name": "Xemele.Tests",
+      "max_seconds": 300,
+      "log": "artifacts/M7-gate/Xemele.Tests.log",
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "--fx-version",
+        "10.0.11",
+        "/private/tmp/xemele-m7-gate/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll",
+        "-parallelMode",
+        "none",
+        "-culture",
+        "invariant",
+        "-noColor",
+        "-result-xml",
+        "/private/tmp/xemele-m7-gate/artifacts/M7-gate/Xemele.Tests.xml"
+      ]
+    },
+    {
+      "name": "Xemele.Conformance.Tests",
+      "max_seconds": 300,
+      "log": "artifacts/M7-gate/Xemele.Conformance.Tests.log",
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "--fx-version",
+        "10.0.11",
+        "/private/tmp/xemele-m7-gate/tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll",
+        "-parallelMode",
+        "none",
+        "-culture",
+        "invariant",
+        "-noColor",
+        "-result-xml",
+        "/private/tmp/xemele-m7-gate/artifacts/M7-gate/Xemele.Conformance.Tests.xml"
+      ]
+    },
+    {
+      "name": "Xemele.Differential.Tests",
+      "max_seconds": 300,
+      "log": "artifacts/M7-gate/Xemele.Differential.Tests.log",
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "--fx-version",
+        "10.0.11",
+        "/private/tmp/xemele-m7-gate/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll",
+        "-parallelMode",
+        "none",
+        "-culture",
+        "invariant",
+        "-noColor",
+        "-result-xml",
+        "/private/tmp/xemele-m7-gate/artifacts/M7-gate/Xemele.Differential.Tests.xml"
+      ]
+    }
+  ]
+}
