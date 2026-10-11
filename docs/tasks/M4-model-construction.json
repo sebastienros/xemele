@@ -4,7 +4,7 @@
   "milestone": "M4",
   "title": "Bound cancellation during XPath model construction",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M4 coordinator 01a12903-1caa-7f32-b0e3-e66b49cea7a6",
   "branch": "codex/m4-model-construction",
   "base_revision": "3cd997baa17a34776304a2cf7b3cac48edc146ff",
@@ -32,23 +32,56 @@
     {
       "id": "M4-model-construction-A1",
       "description": "Add internal cancellation-aware expanded-name, AST name/PI/signature validation and collection-copy construction entry points; preserve existing constructor signatures, invariants and public API.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "focused-checks",
+        "source-review"
+      ]
     },
     {
       "id": "M4-model-construction-A2",
       "description": "Prove cancellation at entry and during controlled collection copying, valid/invalid Unicode and names/PI validation, prior model41 controls and compiled API893 preservation at integrated revision. Compiler consumes verified overloads and proves long-input cancellation in its own task.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "focused-checks",
+        "source-review"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "Cancellation-aware internal construction overloads in Values.cs/Ast.cs; preserved old signatures",
+    "Contexts.cs ModelGuard polled validation/copy overloads; ContextScan.Text entry checkpoint",
+    "12 meaningful owned construction controls plus preserved41 model controls"
+  ],
+  "evidence": [
+    {
+      "id": "focused-checks",
+      "kind": "check",
+      "revision": "412bbd4a1f370b1d894f462c88667f39b7520c73",
+      "command": "Pinned dotnet build tests/Xemele.Tests and docs/reports/M4-contracts/ApiCheck -c Release --no-restore -m:1 -nr:false -p:UseSharedCompilation=false; Xemele.Tests.dll -namespace Xemele.Tests.M4ModelConstruction -namespace Xemele.Tests.M4Model -noLogo -noColor -parallelMode none; python3 docs/reports/M4-model/check_api.py --dotnet pinned; python3 tools/planning/tasks.py validate; git diff --check 7a6577c HEAD",
+      "result": "passed",
+      "summary": "Release builds zero warnings/errors;53 focused tests passed (12 new+41 prior), exact public893 preserved; planning149/owned whitespace passed.",
+      "artifact": "docs/reports/M4-model-construction/checks.md"
+    },
+    {
+      "id": "source-review",
+      "kind": "review",
+      "revision": "412bbd4a1f370b1d894f462c88667f39b7520c73",
+      "command": "Independent source-only review of repair diff by review_m4_model",
+      "result": "passed",
+      "summary": "No concrete blockers: validation/signatures/immutable snapshots and bounded polling preserved. Reviewer ran no executable checks.",
+      "artifact": "docs/reports/M4-model-construction/checks.md"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Compiler found constructor rescans and AST array copies without cancellation polling; no exemption for engine construction.",
-    "checks": [],
-    "remaining": [],
+    "summary": "Bounded validated construction overloads ready for integrated compiler use; no public changes.",
+    "checks": [
+      "53/53 focused tests, API893, planning149, independent source approval"
+    ],
+    "remaining": [
+      "Compiler must use new overloads and prove long-input cancellation/full compile materialization under its own task."
+    ],
     "requests": []
   }
 }
