@@ -7,7 +7,17 @@
     "task_id": "M6-gate",
     "integration_revision": "f7412c6ef5c5552e7194781e4724253244cdb6bb"
   },
-  "active_assignments": [],
+  "active_assignments": [
+    {
+      "task_id": "M7-contracts",
+      "agent_id": "/root/contracts",
+      "status": "running isolated contract assignment",
+      "branch": "codex/m7-contracts",
+      "worktree": "/private/tmp/xemele-m7-contracts",
+      "base_revision": "e1fcc99ebd921637fe2c10e3966864bd6840aab8",
+      "claim_revision": "9e530764937150f85998d5db7807fd6581d9d425"
+    }
+  ],
   "integration_queue": [],
   "blockers": [
     {
@@ -17,7 +27,7 @@
     }
   ],
   "next_actions": [
-    "Claim ready M7-contracts on main and implement through isolated owned-path work; complete verified M7-gate then exactly one fresh M8 read-only coordinator setup and durable sole-writer handoff."
+    "Review M7-contracts exact API/profile freeze and compiled consumers; integrate and verify before dependent implementation claims."
   ],
   "last_verified_task": "M6-gate",
   "last_integrated_revision": "f7412c6ef5c5552e7194781e4724253244cdb6bb",
@@ -1991,7 +2001,7 @@
     "implementation_started": false,
     "dispatch_after": "M2-conformance verified"
   },
-  "milestone_progress": "M6 contracts+resource kinds verified; adapters/catalog/XInclude isolated implementation underway.",
+  "milestone_progress": "M7-contracts claimed; isolated worker implementing exact HTML/CSS freeze.",
   "pause_request": {
     "requested_by": "user",
     "after_verified_task": "M2-gate",
@@ -2327,80 +2337,13 @@
   ],
   "workers": [
     {
-      "task_id": "M6-adapters",
-      "agent_id": "/root/adapters",
-      "status": "terminal verified; raw independently inspected and durable reports committed",
-      "worktree": "/private/tmp/xemele-m6-adapters",
-      "branch": "codex/m6-adapters",
-      "claim_revision": "fb19185edb63e2e81483ee3fd0f06a03917505dc",
-      "integration_revision": "dd9850b0a78d9ecaea167d0f1dc92dcb1a24aba5",
-      "metadata_revision": "4b888aa67f50fa1f7cda1ec584ddea0ba20b0c0e",
-      "cleanup": "Clean worker/integration worktrees authorized removal after required ignored rawinspection; no pending review/buildneed; commits retained"
-    },
-    {
-      "task_id": "M6-catalog",
-      "agent_id": "/root/catalog",
-      "status": "terminal verified integrated265tests/API1052; rawindependently inspected",
-      "worktree": "/private/tmp/xemele-m6-catalog",
-      "branch": "codex/m6-catalog",
-      "claim_revision": "8c50d2c2ea43d158d4b4a3d5cb7cf1240a9923eb",
-      "integration_revision": "f41cab7fbbc964dd99fa18209ce6b54169b9c5e7",
-      "metadata_revision": "fcbfcedc2133143e2da5e1fa677cc33d185e57b6",
-      "cleanup": "Cleanworker/integrationcheckouts authorizedremoval afterrequiredrawinspection; commits retained/no pendingreview/buildneed"
-    },
-    {
-      "task_id": "M6-xinclude",
-      "agent_id": "/root/xinclude",
-      "status": "terminal verified,independently inspected raw and source reports durable",
-      "worktree": "/private/tmp/xemele-m6-xinclude",
-      "branch": "codex/m6-xinclude",
-      "claim_revision": "8c50d2c2ea43d158d4b4a3d5cb7cf1240a9923eb",
-      "integration_revision": "49851e34db9291f5679219807c7f2122506a6b1d",
-      "metadata_revision": "c0721e6a68a7ae8262dc5a3d3464cc6b670d6465",
-      "cleanup": "Cleanworker/integrationcheckouts approved removal afterrequiredrawinspection; no pendingreview/buildneed; commits retained"
-    },
-    {
-      "task_id": "M6-cli",
-      "agent_id": "/root/cli",
-      "status": "Verified integrated; clean checkouts removed afterraw/nativeinspection",
-      "branch": "codex/m6-cli",
-      "worktree": "/private/tmp/xemele-m6-cli",
-      "base_revision": "747404760141674718c49a353e4f0f6745787528",
-      "integration_revision": "d331ea7d667eeb15ff0a216f6b5d964db8032a52",
-      "cleanup": "Root checked57managed/57nativecontrols/sample/API/nativehash and independentlyreran57native+272tests; nopendingreview/buildneed,commitsretained"
-    },
-    {
-      "task_id": "M6-source-uri",
-      "agent_id": "/root/source_uri",
-      "status": "Verified integrated; raw independently inspected; clean checkouts removed",
-      "branch": "codex/m6-source-uri",
-      "worktree": "/private/tmp/xemele-m6-source-uri",
-      "base_revision": "40d41743c6af34c92cf8eea766beb6f39200ff25",
-      "integration_revision": "75355ca8104535940ebdbb5f76679951cac13016",
-      "metadata_revision": "747404760141674718c49a353e4f0f6745787528",
-      "cleanup": "Required raw/build/API/sample inspected; no children or pending review/build; clean worker/integration removed, commits retained"
-    },
-    {
-      "task_id": "M6-integration",
-      "agent_id": "/root/integration",
-      "status": "Verified integrated; clean checkouts and ownedexternalconsumers removed afterinspection",
-      "branch": "codex/m6-integration",
-      "worktree": "/private/tmp/xemele-m6-integration",
-      "base_revision": "d068f9bde24d76a10b88535a70bc5c597b99f59f",
-      "integration_revision": "9968203ec8f627b8da86dc96649bf6309a60eebb",
-      "cleanup": "Worker/root XML,source/package/trim/nativeoutputs+SDK+DLL/nupkg/nativehash inspected; nochildren/pendingreview;4exactconsumerdirs+2cleancheckoutsremoved,commits/reportretained"
-    },
-    {
-      "task_id": "M6-gate",
-      "agent_id": "/root/gate",
-      "status": "Verified/fullyinspected/cleancheckouts+ownedconsumersremoved; terminalPARK",
-      "branch": "codex/m6-gate",
-      "worktree": "/private/tmp/xemele-m6-gate",
-      "base_revision": "ede07b133fc39cb5931f34441a95bb2db3280140",
-      "prepared_revision": "d771e10343d81044b8e8f03e4d28b97bc24f88e5",
-      "manifest_sha256": "5f9d0c5806e14a2f274a0121f48e337e8b64ae86bc247a1a6308ebed915a322a",
-      "integration_revision": "f7412c6ef5c5552e7194781e4724253244cdb6bb",
-      "cleanup": "RootallXML/allocation/grammar/fuzz/API/package/CLI/runtimeSDK inspected; retainedunpublishedpackage+manifestprimary artifacts;2cleancheckouts+3exactconsumerdirs removed;no pendingreview/buildneed;commits/summariesretained"
+      "task_id": "M7-contracts",
+      "agent_id": "/root/contracts",
+      "status": "running isolated contract assignment",
+      "branch": "codex/m7-contracts",
+      "worktree": "/private/tmp/xemele-m7-contracts",
+      "base_revision": "e1fcc99ebd921637fe2c10e3966864bd6840aab8",
+      "claim_revision": "9e530764937150f85998d5db7807fd6581d9d425"
     }
   ],
   "adapter_prelease_review": {
