@@ -4,11 +4,11 @@
   "milestone": "M3",
   "title": "Streaming equivalence and memory acceptance",
   "kind": "verification",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M3 coordinator / corpus worker",
   "branch": "codex/m3-corpus",
   "base_revision": "7d0b248143fb63491043e3c5e6829b2ae6c30b42",
-  "integration_revision": null,
+  "integration_revision": "88659a145b847957572bd3d3ab89f00e4c815aa2",
   "depends_on": [
     "M3-push",
     "M3-async"
@@ -36,7 +36,8 @@
       "evidence": [
         "repaired-streaming-focused",
         "repaired-fuzz-controls",
-        "bcl-differential"
+        "bcl-differential",
+        "integrated-corpus"
       ]
     },
     {
@@ -49,7 +50,8 @@
         "memory-sax-observations",
         "memory-async-sax",
         "memory-remaining-three",
-        "streaming-memory-closure"
+        "streaming-memory-closure",
+        "integrated-corpus"
       ]
     },
     {
@@ -61,7 +63,8 @@
         "repaired-streaming-focused",
         "repaired-fuzz-controls",
         "streaming-memory-closure",
-        "completed-planning-validation"
+        "completed-planning-validation",
+        "integrated-corpus"
       ]
     }
   ],
@@ -228,11 +231,20 @@
       "result": "passed",
       "summary": "Validated 148 tasks: schema, evidence, acyclic dependencies, additive milestones and ordered ownership. Rechecked after implemented evidence update.",
       "artifact": null
+    },
+    {
+      "id": "integrated-corpus",
+      "kind": "integration",
+      "revision": "88659a145b847957572bd3d3ab89f00e4c815aa2",
+      "command": "Review actual repaired9test/97fuzz/2585fixture and5GiBraw reports; git diff --quiet f3e60c5 HEAD -- src tests samples Directory.Build.props Directory.Packages.props global.json docs/reports/M3-corpus/Runner; tasks.py validate",
+      "result": "passed",
+      "summary": "Worker tested exact main-repair combination; integrated source/tests/build/profile/runner closures unchanged since f3e60c5, own-path audit clean,148validator passed. Five streaming1GiB observations remain valid via96file source proof, actual0direct4runs plus reviewed completedSAX observations with failedoptionalRSSwrapper preserved. API720 unchanged since verifiedrepair; cumulative true-sourcecontext conformance reservedgate.",
+      "artifact": "docs/reports/M3-corpus/memory-summary.md"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Implemented original-byte DOM/SAX/push/pull/async equivalence, deterministic chunks, fuzz and generated 1 GiB semantic/live acceptance. Verified DOM repair merged at f3e60c5e6227ee8efda010283d4b16191a74810b; all corpus criteria pass on branch. Public no-base agreement is explicitly distinct from M2 source-context conformance. No worker runtime or shared-file edits.",
+    "summary": "Verified integrated public original-byte equivalence, random chunks,97fuzz, five1GiB live-memory/earlycallback results; all failures preserved honestly.",
     "checks": [
       "Three affected controlled Release builds exit 0 using SDK 10.0.400/runtime 10.0.11.",
       "Streaming tests 9/9 pass; all 2,585 unchanged original fixtures execute: 1,169 accepted/1,416 rejected, zero mismatches. 316 no-base denials before resolver calls; 218 source-context differences.",

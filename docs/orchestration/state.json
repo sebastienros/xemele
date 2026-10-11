@@ -22,11 +22,11 @@
     }
   ],
   "next_actions": [
-    "Confirm corpus worker setup and dispatch bounded qualification",
-    "Verify M3-corpus then integrated M3-gate",
+    "Claim and verify cumulative M3-gate",
+    "Clean terminal corpus worktree after durable integration",
     "Create exactly one M4 coordinator after verified M3-gate"
   ],
-  "last_verified_task": "M3-dom-decoder-terminal",
+  "last_verified_task": "M3-corpus",
   "last_integrated_revision": "b962203e823fa816da38909a426158a7dac90781",
   "completed_assignments": [
     {
@@ -1591,11 +1591,9 @@
       "remaining_gate": null
     },
     "M3": {
-      "verified": 17,
+      "verified": 18,
       "total": 19,
-      "in_progress": [
-        "M3-corpus"
-      ],
+      "in_progress": [],
       "remaining_gate": "M3-gate"
     }
   },
@@ -1651,13 +1649,14 @@
   },
   "m3_corpus_assignment": {
     "task": "M3-corpus",
-    "status": "waiting verified DOM repair",
+    "status": "verified; terminal worker, cleanup pending",
     "hostId": "local",
     "branch": "codex/m3-corpus",
     "base_revision": "7d0b248143fb63491043e3c5e6829b2ae6c30b42",
     "claim_revision": "1e770d0958f830786ffa2fa92ea9214f40f05ebd",
     "threadId": "01a128da-7c1f-77f3-80c6-5a73028f2504",
-    "worktree": "/Users/sebastienros/.codex/worktrees/2f9d/xemele"
+    "worktree": "/Users/sebastienros/.codex/worktrees/2f9d/xemele",
+    "integration_revision": "88659a145b847957572bd3d3ab89f00e4c815aa2"
   },
   "m3_chat_coordination_authorization": "Human explicitly renewed bounded worker and M4 successor messaging authorization after auto-review rejected recovered transcript; corpus dispatch succeeded.",
   "m3_dom_decoder_repair": {
