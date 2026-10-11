@@ -4,7 +4,7 @@
   "milestone": "M4",
   "title": "Evaluator and compiled query facade",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M4 coordinator / isolated M4-evaluate worker",
   "branch": "codex/m4-evaluate",
   "base_revision": "26bf9773355d4ffff16b5fcf64bdc680b99e39ea",
@@ -37,20 +37,41 @@
     {
       "id": "M4-evaluate-A1",
       "description": "Implement all operators/predicates, context position/size, variables/extensions, budgets and public compile/evaluate facade.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "focused-candidate",
+        "final-source-review",
+        "frozen-lifecycle",
+        "owned-allocation",
+        "owned-benchmark"
+      ]
     },
     {
       "id": "M4-evaluate-A2",
       "description": "Test reusable/concurrent compiled expressions with separate contexts, mutation rules, cancellation and pathological expressions.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "focused-candidate",
+        "final-source-review",
+        "frozen-lifecycle",
+        "owned-allocation",
+        "owned-benchmark"
+      ]
     },
     {
       "id": "M4-evaluate-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "api-candidate",
+        "public-consumer",
+        "source-sample",
+        "final-source-review",
+        "frozen-lifecycle",
+        "owned-allocation",
+        "owned-benchmark",
+        "final-planning-whitespace"
+      ]
     }
   ],
   "implementation": [
@@ -114,21 +135,58 @@
       "result": "passed",
       "summary": "Independent narrow source reviewer and coordinator approve final candidate with no residual blocker; source-only, no independent executable run. Prior semantics/ownership reviews and verified repair adoption preserved.",
       "artifact": "docs/reports/M4-evaluate/checks.md"
+    },
+    {
+      "id": "frozen-lifecycle",
+      "kind": "check",
+      "revision": "07487607b3df13cba3b8bcd523e47d544da589be",
+      "command": "python3 docs/reports/M4-evaluate/run_measurements.py --exclusive-grant",
+      "result": "passed",
+      "summary": "Exactly one coordinator grant900s. Direct control/discovery/allocation/benchmark0, wrapper0, initial/final closure0; no_child true. Actual.NET10.0.11 Arm64, source148/binary43/runtime3852 maps unchanged; release before raw inspection; no retries. Independent coordinator inspection acknowledged.",
+      "artifact": "docs/reports/M4-evaluate/performance.md"
+    },
+    {
+      "id": "owned-allocation",
+      "kind": "check",
+      "revision": "07487607b3df13cba3b8bcd523e47d544da589be",
+      "command": "python3 docs/reports/M4-evaluate/run_measurements.py --exclusive-grant (prepared --allocation phase)",
+      "result": "passed",
+      "summary": "Cold inclusive setup223968B; positive control1048B. Each of8 owned compile/evaluation cases warms16 then64 measured operations; exact positive per-operation frequencies/totals/consumed results preserved in performance.md. Retained16 long expressions+16 path results with fixture live:474352 to1994016B, informational delta1519664B. No whole-query zero claim.",
+      "artifact": "docs/reports/M4-evaluate/performance.md"
+    },
+    {
+      "id": "owned-benchmark",
+      "kind": "check",
+      "revision": "07487607b3df13cba3b8bcd523e47d544da589be",
+      "command": "python3 docs/reports/M4-evaluate/run_measurements.py --exclusive-grant (prepared --benchmark phase)",
+      "result": "passed",
+      "summary": "All8 MemoryDiagnoser/ShortRun cases pass, single3warmup/3iteration/1launch NoEmit job; actual.NET10.0.11 SDK10.0.400 AppleM4ProArm64; global50.79s. Exact inclusive GC allocation numerators/ops and collection counts preserved alongside means; timings single-host informational.",
+      "artifact": "docs/reports/M4-evaluate/performance.md"
+    },
+    {
+      "id": "final-planning-whitespace",
+      "kind": "check",
+      "revision": "07487607b3df13cba3b8bcd523e47d544da589be",
+      "command": "python3 tools/planning/tasks.py validate; git diff --check; git diff --check 5fc1081c43469dc36ed0e16254959f17c8f8358d HEAD",
+      "result": "passed",
+      "summary": "150 tasks validate; current owned summary/task edits and committed branch diff whitespace pass. Executed at frozen HEAD after release with only final summary/task metadata dirty; runtime/fixture inputs unchanged.",
+      "artifact": "docs/reports/M4-evaluate/checks.md"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Final source candidate83dac3a adopts verified model-context repair and passes163 focused/API897/source/fresh public consumer checks; awaiting final narrow review and frozen performance host grant.",
+    "summary": "Implemented public XPathExpression compiler/evaluator with explicit frames, all operators/predicates/focus, snapshot-rebound variables/extensions, quotas/cancellation and callback identity. Verified model-context repair adopted; approved final runtime83dac3a, measured frozen0748760. All owned criteria pass; coordinator integration/verification remains.",
     "checks": [
-      "163 focused pass at mergeHEAD with exact source-equivalent83dac3a; actual10.0.11",
-      "API897 and two drift controls pass at83dac3a",
-      "Source and fresh public NuGet consumer pass at83dac3a",
-      "Planning150 and owned diff whitespace pass"
+      "163 focused tests pass on actual10.0.11 with exact83dac3a source equivalence at mergecdf30a9; no unrelated cumulative rerun",
+      "API897=177XPath+720legacy and2 drift controls pass at83dac3a; exact4-row facade",
+      "Source sample and fresh empty-cache public NuGet consumer pass at83dac3a",
+      "Independent semantic/ownership and final narrow source reviews approve",
+      "One granted0748760 lifecycle all exits0/closure0/no_child true;8BDN cases and owned cold/warm/retained allocations pass",
+      "Planning150/owned whitespace check recorded in final handoff"
     ],
     "remaining": [
-      "Fresh frozen probe/control/discovery/closure preparation",
-      "Explicit exclusive measurement grant and allocation/timing evidence",
-      "Coordinator integration and verification"
+      "Coordinator integrate the task branch and run combined applicable verification; leave integration_revision unset here",
+      "M4-gate cumulative suite and M9 cross-architecture release validation"
     ],
     "requests": []
   }
