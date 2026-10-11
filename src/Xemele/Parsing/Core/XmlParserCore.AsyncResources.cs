@@ -9,7 +9,7 @@ namespace Xemele.Parsing.Syntax;
 internal sealed partial class XmlParserCore
 {
     private enum ResourceWork { None, OpenSubset, OpenParameter, OpenGeneral, RefillDtd, FinishDtd, RefillGeneral, FinishGeneral, Cleanup }
-    private readonly bool asyncResources;
+    private bool asyncResources;
     private ResourceWork resourceWork;
     private DtdParser? asyncDtdParser;
     private List<ExternalXmlSource>? asyncDtdSources;

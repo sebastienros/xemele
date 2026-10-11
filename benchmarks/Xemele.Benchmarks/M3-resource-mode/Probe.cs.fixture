@@ -1,0 +1,102 @@
+using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Security.Cryptography;
+using System.Text.Json;
+using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Running;
+using Xemele;
+using Xemele.Parsing.Syntax;
+using Xemele.Streaming;
+
+if (args is ["--benchmark", var artifacts])
+{
+    var suite = typeof(ResourceModeBenchmarks).GetMethods()
+        .Where(method => method.GetCustomAttribute<BenchmarkAttribute>() is not null)
+        .Select(method => method.Name).Order(StringComparer.Ordinal).ToArray();
+    if (!suite.SequenceEqual(new[] { "CoreIdleSelection", "NoOp", "PumpIdleSelection" }))
+        throw new InvalidOperationException("Expected exactly three benchmark cases.");
+    Console.WriteLine("BENCHMARK_SUITE_GATE: exactly 3 cases, one CLI in-process job.");
+    BenchmarkSwitcher.FromTypes([typeof(ResourceModeBenchmarks)]).Run(
+        ["--filter", "*", "--inProcess", "--warmupCount", "3", "--iterationCount", "3", "--artifacts", artifacts]);
+    return;
+}
+if (args is not [var mode, var path] || mode is not ("--control" or "--allocation"))
+    throw new ArgumentException("Use --control|--allocation report, or --benchmark artifacts.");
+bool measure = mode == "--allocation";
+long start = measure ? GC.GetTotalAllocatedBytes(true) : 0;
+using var fixture = new Fixture();
+long coldOwnedSetup = measure ? GC.GetTotalAllocatedBytes(true) - start : 0;
+for (int i = 0; i < 128; i++) { fixture.PumpSelection(); fixture.CoreSelection(); fixture.NoOp(); }
+start = measure ? GC.GetTotalAllocatedBytes(true) : 0;
+for (int i = 0; i < 1024; i++) fixture.PumpSelection();
+long pumpAllocated = measure ? GC.GetTotalAllocatedBytes(true) - start : 0;
+start = measure ? GC.GetTotalAllocatedBytes(true) : 0;
+for (int i = 0; i < 1024; i++) fixture.CoreSelection();
+long coreAllocated = measure ? GC.GetTotalAllocatedBytes(true) - start : 0;
+start = measure ? GC.GetTotalAllocatedBytes(true) : 0;
+for (int i = 0; i < 1024; i++) fixture.NoOp();
+long noOpAllocated = measure ? GC.GetTotalAllocatedBytes(true) - start : 0;
+start = measure ? GC.GetTotalAllocatedBytes(true) : 0;
+object positive = new byte[4096];
+long positiveAllocated = measure ? GC.GetTotalAllocatedBytes(true) - start : 0;
+GC.KeepAlive(positive);
+if (measure && (pumpAllocated != 0 || coreAllocated != 0 || noOpAllocated != 0 || positiveAllocated <= 0))
+    throw new InvalidOperationException($"Allocation oracle failed: {pumpAllocated}/{coreAllocated}/{noOpAllocated}/{positiveAllocated}.");
+fixture.Check();
+var report = new
+{
+    mode, revision = Environment.GetEnvironmentVariable("XEMELE_RESOURCE_MODE_REVISION"),
+    runtime = RuntimeInformation.FrameworkDescription, os = RuntimeInformation.OSDescription,
+    architecture = RuntimeInformation.ProcessArchitecture.ToString(),
+    assemblySha256 = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(typeof(XmlParseOptions).Assembly.Location))),
+    probeSha256 = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(Assembly.GetExecutingAssembly().Location))),
+    warmupBatches = 128, measuredBatches = 1024, selectionsPerBatch = 1024,
+    pumpAllocated, coreAllocated, noOpAllocated, positiveAllocated, coldOwnedSetup,
+    pumpBoundary = "paused text token with retained primary tail; no advancement during selection",
+    corpus = "<r>x followed by caller-owned primary input, nonfinal UTF-8",
+    composition = "Future M3-async-input owns end-to-end mixed reader measurement; no adapter exists in this task."
+};
+File.WriteAllText(path, JsonSerializer.Serialize(report, new JsonSerializerOptions { WriteIndented = true }));
+Console.WriteLine(File.ReadAllText(path));
+
+[MemoryDiagnoser]
+public class ResourceModeBenchmarks
+{
+    private Fixture fixture = null!;
+    [GlobalSetup] public void Setup() => fixture = new();
+    [Benchmark(Baseline = true, OperationsPerInvoke = 1024)] public int NoOp() => fixture.NoOp();
+    [Benchmark(OperationsPerInvoke = 1024)] public int PumpIdleSelection() => fixture.PumpSelection();
+    [Benchmark(OperationsPerInvoke = 1024)] public int CoreIdleSelection() => fixture.CoreSelection();
+    [GlobalCleanup] public void Cleanup() => fixture.Dispose();
+}
+
+internal sealed class Fixture : IDisposable
+{
+    private readonly XmlStreamingPump pump = new(new());
+    private readonly XmlParserCore core = new(new());
+    private readonly Sink sink = new();
+    private int noOp;
+    internal Fixture()
+    {
+        pump.Supply("<r>x"u8.ToArray(), false);
+        if (pump.Advance(sink, default) != StreamingStep.Paused || sink.Characters != 1)
+            throw new InvalidOperationException("Expected paused text token.");
+    }
+    internal int NoOp() { for (int i = 0; i < 1024; i++) noOp++; return noOp; }
+    internal int PumpSelection() { for (int i = 0; i < 1024; i++) pump.SetAsyncResources((i & 1) != 0); return 1024; }
+    internal int CoreSelection() { for (int i = 0; i < 1024; i++) core.SetAsyncResources((i & 1) != 0); return 1024; }
+    internal void Check()
+    {
+        if (sink.Characters != 1 || !Mode(pump) || !Mode(core)) throw new InvalidOperationException("Selection mutated parsing or lost mode.");
+        pump.SetAsyncResources(false); core.SetAsyncResources(false);
+        if (pump.Advance(sink, default) != StreamingStep.NeedInput || sink.Characters != 1)
+            throw new InvalidOperationException("Cursor moved during mode selection.");
+    }
+    private static bool Mode(object owner) => (bool)owner.GetType().GetField("asyncResources", BindingFlags.NonPublic | BindingFlags.Instance)!.GetValue(owner)!;
+    public void Dispose() { pump.Dispose(); core.Dispose(); }
+    private sealed class Sink : XmlStreamingSink
+    {
+        internal int Characters;
+        public override bool Text(ReadOnlySpan<char> text, XmlLocation location) { Characters += text.Length; return false; }
+    }
+}
