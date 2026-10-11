@@ -73,6 +73,14 @@ internal static class Checks
             Assert(invoke.ReturnType == method.ReturnType && invoke.GetParameters().Select(p => p.ParameterType).SequenceEqual(method.GetParameters().Select(p => p.ParameterType)), "delegate signature: " + method.Name);
             Assert(typeof(XmlSaxCallbacks).GetMethod(method.Name)!.DeclaringType == typeof(XmlSaxCallbacks), "concrete callback dispatch");
         }
+        var notation = new XmlDtdDeclaration(XmlDtdDeclarationKind.Notation, "n", "", "", "", XmlDtdDefaultKind.None,
+            "", false, "urn:notation", true, "", false, "", false, null, new(null, 1, 1, null));
+        var entity = new XmlDtdDeclaration(XmlDtdDeclarationKind.Entity, "e", "", "", "", XmlDtdDefaultKind.None,
+            "body", true, "", false, "", false, "", false, true, new(null, 2, 1, null));
+        Assert(notation.Kind == XmlDtdDeclarationKind.Notation && notation.IsExternal is null && notation.HasSystemId,
+            "populated notation has unknown declaration provenance");
+        Assert(entity.Kind == XmlDtdDeclarationKind.Entity && entity.IsExternal == true && entity.HasValue,
+            "entity retains known declaration provenance independently of resource identifier");
         List<string> left = [], right = [];
         Emit(new Subclass(left));
         Emit(new XmlSaxCallbacks
