@@ -1,4 +1,3 @@
-using System.Text;
 namespace Xemele.Html;
 public static class HtmlParser
 {
@@ -16,10 +15,10 @@ internal ref struct LegacyParser
  private readonly XmlResourceLimits limits;
  private readonly List<HtmlNode> stack=new();
  private readonly LegacyBuffer buffer=new();
- private readonly Dictionary<string,string> names=new(StringComparer.Ordinal);
+ private readonly LegacyNamePool names;
  private int tokenScalars,insertState,discardDepth,textMode;
  private long expanded;
- internal LegacyParser(LegacyInput input,XmlResourceLimits limits){this.input=input;this.limits=limits;document=new(limits);document.SetMetadata(HtmlQuirksMode.Quirks,false);}
+ internal LegacyParser(LegacyInput input,XmlResourceLimits limits){this.input=input;this.limits=limits;names=new(limits.InternedNames);document=new(limits);document.SetMetadata(HtmlQuirksMode.Quirks,false);}
  internal HtmlDocument Run()
  {
   while(input.Peek()>=0)
@@ -50,13 +49,13 @@ internal ref struct LegacyParser
  {
   input.NameMode(true);Reset();int sourceCount=0,utf8Bytes=0;while(input.Peek()>=0){int c=input.Peek();if(sourceCount!=0&&(c is '/' or '>'||Space(c)||attribute&&c=='='))break;c=Fold(input.Take());sourceCount++;if(limits.TokenCharacters is int limit&&sourceCount>limit)Fail("token-limit","Token name quota exceeded.");if(c==0)c=0xFFFD;int width=c<128?1:c<2048?2:c<65536?3:4;if(utf8Bytes+width<=100){Append(c);utf8Bytes+=width;}}
 
-  input.NameMode(false);var lookup=names.GetAlternateLookup<ReadOnlySpan<char>>();if(lookup.TryGetValue(buffer.Written,out string? existing))return existing;
-  if(limits.InternedNames is int max&&names.Count>=max)Fail("name-limit","Interned-name quota exceeded.");string result=buffer.ToString();names.Add(result,result);return result;
+  input.NameMode(false);return names.Get(buffer.Written);
  }
  private void Push(string name)
  {
   if(limits.Depth is int max&&stack.Count>=max)Fail("depth-limit","Open-element quota exceeded.");
-  var node=document.CreateElement(name);Parent.AppendChild(node);stack.Add(node);if(name=="head")insertState=Math.Max(insertState,1);if(name=="body")insertState=2;
+  HtmlNode? node=null;if(name=="html"&&stack.Count==0)foreach(var child in document.DocumentNode.Children)if(child.Kind==HtmlNodeKind.Element){node=child;break;}
+  if(node==null){node=document.CreateElement(name);Parent.AppendChild(node);}stack.Add(node);if(name=="head")insertState=Math.Max(insertState,1);if(name=="body")insertState=2;
  }
  private void Pop(){if(stack.Count!=0)stack.RemoveAt(stack.Count-1);textMode=0;}
  private void Implied(string name)
@@ -71,15 +70,15 @@ internal ref struct LegacyParser
   bool discard=name=="html"&&stack.Count>0||name=="head"&&stack.Count!=1||name=="body"&&stack.Exists(static n=>n.LocalName=="body");
   if(discard)discardDepth++;
   HtmlNode? element=null;if(!discard){Push(name);element=stack[^1];}
-  long attributeCharacters=0;int accepted=0;var seen=discard?new HashSet<string>(StringComparer.Ordinal):null;
+  long attributeCharacters=0;int accepted=0;var seen=discard||element?.Attributes.Count>0?new HashSet<string>(StringComparer.Ordinal):null;
   while(true)
   {
    Blanks();int c=input.Peek();if(c<0||c=='>'||input.Match("/>"))break;if(c=='/'){input.Take();continue;}
    string attribute=Name(true);Blanks();string value=LegacyRules.Boolean(attribute)?attribute:"";if(input.Peek()=='='){input.Take();Blanks();value=AttributeValue();}
    Expanded(value);attributeCharacters=checked(attributeCharacters+Count(attribute)+Count(value));if(limits.TokenCharacters is int max&&attributeCharacters>max)Fail("token-limit","Aggregate attribute token quota exceeded.");
-   if(element?.GetAttribute(attribute)!=null||seen!=null&&!seen.Add(attribute))continue;
+   if(seen!=null?!seen.Add(attribute):element?.GetAttribute(attribute)!=null)continue;
    if(limits.AttributesPerElement is int amax&&++accepted>amax)Fail("attribute-limit","Attribute quota exceeded.");
-   element?.SetAttribute(new(attribute,value));
+   if(element!=null&&element.GetAttribute(attribute)==null)element.SetAttribute(new(attribute,value));
   }
   if(input.Peek()<0){if(element!=null){element.Remove();Pop();}return;}
   if(name=="meta"&&element!=null)Meta(element);

@@ -18,7 +18,7 @@ internal ref struct LegacyInput
  private int start,count;
  private int line=1,column=1;
  private bool skipLf;
- private int encoding; // 0 Latin1, 1 UTF8, 2 UTF16LE, 3 UTF16BE, 4 ASCII, 5 UTF32LE, 6 UTF32BE
+ private int encoding; // 0 Windows1252, 1 UTF8, 2 UTF16LE, 3 UTF16BE, >=12 pinned ISO8859 tables
  private readonly bool encoded;
  private bool encodingLocked,stopped;
  private ReplayBytes replay;
@@ -72,7 +72,7 @@ internal ref struct LegacyInput
   if(encoding==0&&!encodingLocked&&b>=128){if(nameMode)currentEncoding=1;else{encoding=LegacyEncoding.Sniff(bytes.Slice(byteIndex-1,windowEnd-byteIndex+1));encodingLocked=true;currentEncoding=encoding;}}
   if(currentEncoding==0||currentEncoding>=10){int mapped=LegacyCharsets.Map(currentEncoding,b);if(mapped==0&&b>=128){stopped=true;return -1;}return mapped;}if(currentEncoding==4)return b<128?b:0xFFFD;
   if(encoding is 2 or 3){int b2=Byte();if(b2<0){stopped=true;return -1;}int u=encoding==2?b|(b2<<8):(b<<8)|b2;if(u is >=0xD800 and <=0xDBFF){int c=Byte(),d=Byte();if(c<0||d<0){stopped=true;return -1;}int low=encoding==2?c|(d<<8):(c<<8)|d;if(low is >=0xDC00 and <=0xDFFF)return 0x10000+((u-0xD800)<<10)+low-0xDC00;stopped=true;return -1;}if(u is >=0xDC00 and <=0xDFFF){stopped=true;return -1;}return u;}
-  if(encoding is 5 or 6){int c=Byte(),d=Byte(),e=Byte();if(c<0||d<0||e<0)return 0xFFFD;long cp=encoding==5?(long)b|((long)c<<8)|((long)d<<16)|((long)e<<24):((long)b<<24)|((long)c<<16)|((long)d<<8)|(long)(uint)e;return cp<=0x10FFFF&&cp is not (>=0xD800 and <=0xDFFF)?(int)cp:0xFFFD;}
+
   if(b<128)return b;int n=b is >=0xC2 and <=0xDF?1:b is >=0xE0 and <=0xEF?2:b is >=0xF0 and <=0xF4?3:0;if(n==0)return 0xFFFD;int value=b&((1<<(6-n))-1);
   Span<byte> tail=stackalloc byte[3];int read=0;
   for(int i=0;i<n;i++){int next=Byte();if(next<0)return InvalidUtf8(tail[..read]);tail[read++]=(byte)next;if(next is <0x80 or >0xBF)return InvalidUtf8(tail[..read]);value=(value<<6)|(next&63);}
@@ -104,8 +104,6 @@ internal static class LegacyEncoding
  {
   bom=0;
   if(bytes.StartsWith<byte>([0xEF,0xBB,0xBF])){bom=3;return 1;}
-  if(bytes.StartsWith<byte>([0xFF,0xFE,0,0])){bom=4;return 5;}
-  if(bytes.StartsWith<byte>([0,0,0xFE,0xFF])){bom=4;return 6;}
   if(bytes.StartsWith<byte>([0xFF,0xFE])){bom=2;return 2;}if(bytes.StartsWith<byte>([0xFE,0xFF])){bom=2;return 3;}
   return 0;
  }

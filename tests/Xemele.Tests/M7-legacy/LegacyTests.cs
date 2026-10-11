@@ -5,14 +5,31 @@ using Xunit;
 namespace Xemele.Tests.LegacyHtml;
 public sealed class LegacyTests
 {
- private static string Fixture(){var path=Directory.GetCurrentDirectory();while(!File.Exists(Path.Combine(path,"tests/fixtures/M7-legacy/oracle.json")))path=Directory.GetParent(path)?.FullName??throw new InvalidOperationException();return Path.Combine(path,"tests/fixtures/M7-legacy/oracle.json");}
+ private static string Fixture(string name="oracle.json"){var path=Directory.GetCurrentDirectory();while(!File.Exists(Path.Combine(path,"tests/fixtures/M7-legacy/oracle.json")))path=Directory.GetParent(path)?.FullName??throw new InvalidOperationException();return Path.Combine(path,"tests/fixtures/M7-legacy",name);}
  public static IEnumerable<object[]> Cases(){using var json=JsonDocument.Parse(File.ReadAllText(Fixture()));foreach(var item in json.RootElement.EnumerateArray())yield return [item.Clone()];}
  [Theory,MemberData(nameof(Cases))]public void PinnedLibxml2Trees(JsonElement item)
  {
-  string id=item.GetProperty("id").GetString()!;byte[] bytes=Convert.FromBase64String(item.GetProperty("bytes").GetString()!);string expected=Normalize(JsonNode.Parse(item.GetProperty("tree").GetRawText())!.AsArray()).ToJsonString();
+  string id=item.GetProperty("id").GetString()!;byte[] bytes=Convert.FromBase64String(item.GetProperty("bytes").GetString()!);string expected=Expected(item);
   Assert.True(expected==Tree(HtmlParser.Parse(bytes)),id+" bytes\nexpected "+expected+"\nactual "+Tree(HtmlParser.Parse(bytes)));
   if(item.TryGetProperty("text",out var text))Assert.True(expected==Tree(HtmlParser.Parse(text.GetString()!)),id+" characters\nexpected "+expected+"\nactual "+Tree(HtmlParser.Parse(text.GetString()!)));
   foreach(int chunk in new[]{1,3,17,1024}){using var stream=new ChunkStream(bytes,chunk);Assert.Equal(expected,Tree(HtmlParser.Load(stream,cancellationToken:TestContext.Current.CancellationToken)));Assert.True(stream.CanRead);}
+ }
+ private static string Expected(JsonElement item)
+ {
+  using var adaptations=JsonDocument.Parse(File.ReadAllText(Fixture("adaptations.json")));var native=item.GetProperty("tree");
+  if(adaptations.RootElement.TryGetProperty(item.GetProperty("id").GetString()!,out var adapted))native=adapted.GetProperty("managedTree");
+  return Normalize(JsonNode.Parse(native.GetRawText())!.AsArray()).ToJsonString();
+ }
+ [Fact]public void EveryRawNativeShortReadControlHasManagedCoalescedCoverage()
+ {
+  using var native=JsonDocument.Parse(File.ReadAllText(Fixture("native-io.json")));using var fixtures=JsonDocument.Parse(File.ReadAllText(Fixture()));int differences=0,cases=0;
+  foreach(var control in native.RootElement.EnumerateArray())
+  {
+   var item=fixtures.RootElement.EnumerateArray().Single(v=>v.GetProperty("id").GetString()==control.GetProperty("id").GetString());string expected=Expected(item);byte[] bytes=Convert.FromBase64String(item.GetProperty("bytes").GetString()!);
+   Assert.Equal(expected,Normalize(JsonNode.Parse(control.GetProperty("streams").GetProperty("4096").GetRawText())!.AsArray()).ToJsonString());
+   foreach(var raw in control.GetProperty("streams").EnumerateObject()){cases++;if(raw.Value.GetRawText()!=control.GetProperty("memory").GetRawText())differences++;using var stream=new ChunkStream(bytes,int.Parse(raw.Name));Assert.Equal(expected,Tree(HtmlParser.Load(stream,cancellationToken:TestContext.Current.CancellationToken)));}
+  }
+  Assert.True(cases>0);Assert.True(differences>0);
  }
  private static JsonArray Normalize(JsonArray nodes)
  {
