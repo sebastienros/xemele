@@ -4,7 +4,7 @@
   "milestone": "M3",
   "title": "Synchronous SAX parser entry points",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M3 coordinator 01a1284a-8826-7fc2-af44-74552db608f2 / sax worker",
   "branch": "codex/m3-sax",
   "base_revision": "dd3a54bf12b9238f6174d38541a5783b29cc7e0f",
@@ -53,7 +53,7 @@
     {
       "id": "M3-sax-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
+      "status": "passed",
       "evidence": [
         "sample",
         "compiled-api",
@@ -62,7 +62,9 @@
         "measurement-parked",
         "feature-probe-preparation",
         "bounded-measurement-parked",
-        "feature-control"
+        "feature-control",
+        "feature-allocation",
+        "feature-bdn"
       ]
     }
   ],
@@ -171,26 +173,43 @@
       "result": "passed",
       "summary": "Exit 0 within 20-second timeout. Exactly 330000 UTF16 units across 10000 warmup + 100000 borrowed dispatch/copy iterations; copied 4096 bytes matched input; all operation scopes executed; generated stream delivered exactly 8388608 bytes. ALL allocation counters, Stopwatch timing and retained-memory collections disabled. Printed zero bytes/timings/retention are placeholders, NOT measurements or evidence of zero allocation. No executable children remain. Exact command plus probe/runtime/BDN SHA256 recorded in control.json.",
       "artifact": "docs/reports/M3-sax/control.json"
+    },
+    {
+      "id": "feature-allocation",
+      "kind": "check",
+      "revision": "0f214e5f21ac144bd4e29bb2aefd96eb43ad3b1a",
+      "command": "python3 -B docs/reports/M3-sax/measure.py",
+      "result": "passed",
+      "summary": "Exact prepared exclusive root lease m3-sax-0f214e-measure <=90s; allocation child <=30s exited 0. Frozen hashes match control. Warm borrowed HandlerSink.Text+4096-byte copying: 100000 operations 0B, positive control 4120B, consumed330000/copy oracle passed. Cold operation51448B; warm string51400B/op, bytes56192B/op, stream56256B/op. Setup and owned completion/diagnostic results counted separately; no whole-parser zero-allocation claim. Generated8MiB delivered exactly8388608; sampled live delta136312B <=2MiB and post-disposal -560B <=1MiB. Full1GiB still required in M3-corpus. No children remain.",
+      "artifact": "docs/reports/M3-sax/allocation.txt"
+    },
+    {
+      "id": "feature-bdn",
+      "kind": "check",
+      "revision": "0f214e5f21ac144bd4e29bb2aefd96eb43ad3b1a",
+      "command": "Prebuilt child of python3 -B docs/reports/M3-sax/measure.py: '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' benchmarks/Xemele.Benchmarks/bin/Release/net10.0/Xemele.Benchmarks.dll --filter '*Xemele.Benchmarks.Sax.SaxBenchmarks*' --job Dry --inProcess --artifacts docs/reports/M3-sax/bdn",
+      "result": "passed",
+      "summary": "Exit0; exactly8 cases (4 methods x 2 lengths), one Dry/in-process job, MemoryDiagnoser allocation columns present; raw short/long ASCII+multilingual SAX/string/byte/stream and prior DOM composition results retained. Shared host contended; timings and generated ratios informational ONLY with no speed/comparison/regression/repeatability claim. Dry allocations are cold whole-operation results, separate from feature-allocation warmed zero primitive. Arm64 .NET10.0.11 workstationGC, x64 release check outstanding.",
+      "artifact": "docs/reports/M3-sax/bdn/results/Xemele.Benchmarks.Sax.SaxBenchmarks-report.csv"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Synchronous SAX runtime implementation at 0f51da9a2715314c32ffbd898ccce1f3b7cee15c; revised frozen feature probe at 0f214e5f21ac144bd4e29bb2aefd96eb43ad3b1a. A1/A2 passed and A3 measurements pending; no runtime changes in this preparation follow-up.",
+    "summary": "Implemented six frozen synchronous SAX overloads and completion record on isolated codex/m3-sax. Runtime0f51da9, frozen probe0f214e. All acceptance criteria passed on branch; integration_revision remains null. No shared paths or async stubs.",
     "checks": [
-      "Release builds: five projects passed",
-      "SAX 20/20 and preservation 309/309 passed",
-      "Standalone sample passed; exact frozen/API equality 16/655 rows passed",
-      "Task validator passed; inventory wrapper failed missing unprovisioned E14.dtd",
-      "Allocation/BDN NOT RUN: prebuilt and parked pending explicit root lease",
-      "Counters/timers/retention-GC disabled control --control 8388608: exit 0 inside <=20s, count/copy/delivery gates passed; frozen binary SHA256 captured. No actual measurement executed."
+      "Release build5projects passed; probe/BDN frozen rebuild2projects passed",
+      "Focused SAX20/20 and preservation309/309 passed",
+      "Standalone sample passed; compiled frozen16/API655 rows passed",
+      "Counters-disabled8MiB control exit0 <=20s; exact frozen hashes match",
+      "Authorized allocation+BDN lease exit0: 0B warm borrowed primitive, 4120B positive control, bounded8MiB retention; exactly8BDN cases with MemoryDiagnoser completed",
+      "Planning validation passed; discovery wrapper historical missing unprovisioned E14.dtd failure retained honestly"
     ],
     "remaining": [
-      "Root lease for python3 -B docs/reports/M3-sax/measure.py at prepared source 0f214e5f21ac144bd4e29bb2aefd96eb43ad3b1a with <=90-second total timeout (allocation <=30s then BDN remaining); no builds inside lease.",
-      "Record real allocation/performance evidence after inspecting controls, retention oracle and eight BDN results, then validate and set implemented if A3 passes.",
-      "Full 1GiB streaming memory acceptance remains mandatory in M3-corpus; coordinator integration checks and x64 release confirmation remain outstanding."
+      "Coordinator integration and relevant combined correctness/API/validator checks; only coordinator sets verified.",
+      "Full1GiB streaming memory acceptance remains mandatory in M3-corpus; x64 hardware confirmation remains release scope."
     ],
     "requests": [
-      "Corpus provisioning owner/coordinator: make tests/corpora/xml/xmlconf/eduni/errata-2e/E14.dtd available before repository inventory wrapper; no source/API repair needed."
+      "Corpus provisioning owner/coordinator: provide tests/corpora/xml/xmlconf/eduni/errata-2e/E14.dtd if absent in integration checkout before discovery wrapper. Independent compiled API comparison passes; no runtime/shared API repair required."
     ]
   }
 }

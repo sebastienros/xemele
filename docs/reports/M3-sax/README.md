@@ -65,8 +65,8 @@ The second child runs eight end-to-end BenchmarkDotNet Dry/in-process cases,
 with MemoryDiagnoser, short/long ASCII and multilingual text, and SAX/DOM results
 consumed. Dry timing is a smoke measurement and cannot establish a speed benefit.
 Raw outputs live under this owned report directory. Allocation controls and the
-retention oracle fail the command if their assertions fail. No measurement has
-run until the task evidence explicitly records its tested revision and outcome.
+retention oracle fail the command if their assertions fail. Measurement results are recorded below and in the task evidence at the frozen
+source revision.
 
 Prepared control, before any counter attribution, runs the same warm-up and
 100000 borrowed dispatch/copy operations, all six operation scopes, and 8 MiB
@@ -85,5 +85,42 @@ delta <=2 MiB and post-disposal delta <=1 MiB. Whole-operation setup and owned
 results are reported separately without a zero-allocation claim. BDN must finish
 all eight cases with allocation columns; inspect its output, since process exit
 alone cannot prove benchmark success. Control has now run successfully: see control.json and control.txt. Its printed
-zero metrics are disabled placeholders. Allocation and BDN measurements remain
-parked pending explicit root lease.
+zero metrics are disabled placeholders. Allocation and BDN measurements subsequently completed under the explicit root
+lease; see measurement.json, allocation.txt and benchmark.txt.
+
+## Measured feature evidence
+
+Frozen probe source: `0f214e5f21ac144bd4e29bb2aefd96eb43ad3b1a`; unchanged runtime
+implementation: `0f51da9a2715314c32ffbd898ccce1f3b7cee15c`. Exact prebuilt hashes
+match the earlier counters-disabled control (control.json / measurement.json).
+Lease `m3-sax-0f214e-measure` ran the prepared command unchanged; script and both
+children exited 0, and all eight BDN Dry/in-process cases completed. No builds,
+source changes, option changes or retries occurred inside the lease.
+
+100000 warmed borrowed HandlerSink.Text dispatches plus bounded 4096-byte span
+copies allocated **0 B**. Positive allocation control allocated **4120 B**.
+Warm-up/setup owners precede that measured scope; its exact callback/copy oracle
+passed. The synchronous per-thread counter applies to this synchronous scope;
+it makes no async or global-allocation claim.
+
+Parser operation allocations are explicitly nonzero and include pump/core
+setup, fixed scratch, names and owned outputs: cold string 51448 B; warm string
+51400 B/op, byte span 56192 B/op, Stream 56256 B/op. Diagnostic factory results
+include setup plus owned completion/snapshot: valid empty-element result
+51464.48 B/op, malformed result 51600 B/op (100 operations each). These are
+whole operations, not zero-allocation promises.
+
+The generated 8MiB stream delivered exactly 8388608 text bytes with no
+corpus-sized input owner. GC live-memory samples every 1MiB found a maximum
+**136312 B** increase from the forced-GC baseline; after parser disposal the
+delta was **-560 B** (sampling/baseline variation). Gates <=2MiB live and <=1MiB
+post-disposal passed. This feature evidence does not establish 1GiB acceptance;
+that remains mandatory in M3-corpus.
+
+BDN MemoryDiagnoser completed four methods at 32 and 16384 characters: string,
+byte-span and Stream SAX plus the prior DOM path, including multilingual tails.
+Its cold whole-operation allocation columns are in the raw CSV/Markdown reports.
+Do not interpret generated timing ratios as a comparison: this was a Dry
+one-iteration run on a contended shared host (coordinator reported an unowned
+CPU-heavy process). Timing is informational only, with no repeatability,
+regression or comparative claim. All raw outputs and context are retained.
