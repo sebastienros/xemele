@@ -4,11 +4,11 @@
   "milestone": "M7",
   "title": "WHATWG tree construction and fragments",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M7 coordinator /root/builder",
   "branch": "codex/m7-builder-continuation",
   "base_revision": "b5a449e353526d791b4739b0b733d1896cbe44d1",
-  "integration_revision": null,
+  "integration_revision": "ed7c82190b2b6b55ec54f0fb49576905ee9834bd",
   "depends_on": [
     "M7-tokenizer",
     "M7-html-parsed-text-model"
@@ -39,7 +39,8 @@
       "evidence": [
         "focused-correctness",
         "released-measurements",
-        "static-table-lowering"
+        "static-table-lowering",
+        "M7-builder-root-integration"
       ]
     },
     {
@@ -48,7 +49,8 @@
       "status": "passed",
       "evidence": [
         "focused-correctness",
-        "wpt-resource-audit"
+        "wpt-resource-audit",
+        "M7-builder-root-integration"
       ]
     },
     {
@@ -62,7 +64,8 @@
         "encoding-reproducibility",
         "probe-oracles",
         "released-measurements",
-        "planning-validation"
+        "planning-validation",
+        "M7-builder-root-integration"
       ]
     }
   ],
@@ -160,6 +163,14 @@
       "result": "passed",
       "summary": "169task schema/evidence/dependency/ownership records validate; whitespace check clean.",
       "artifact": "docs/reports/M7-builder/final-handoff.md"
+    },
+    {
+      "id": "M7-builder-root-integration",
+      "kind": "integration",
+      "result": "passed",
+      "command": "Pinned10.0.400/10.0.11 Release build;113focused tests;officialAPI+negativecontrols;sample;encodinggenerator;planningvalidate;diffcheck",
+      "revision": "ed7c82190b2b6b55ec54f0fb49576905ee9834bd",
+      "report": "docs/reports/M7-builder/verification.md"
     }
   ],
   "blockers": [],
