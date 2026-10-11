@@ -4,7 +4,7 @@
   "milestone": "M7",
   "title": "WHATWG tree construction and fragments",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M7 coordinator /root/builder",
   "branch": "codex/m7-builder-continuation",
   "base_revision": "b5a449e353526d791b4739b0b733d1896cbe44d1",
@@ -35,42 +35,146 @@
     {
       "id": "M7-builder-A1",
       "description": "Implement insertion modes, adoption/foster rules, foreign content, templates and contextual fragment parsing.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "focused-correctness",
+        "released-measurements",
+        "static-table-lowering"
+      ]
     },
     {
       "id": "M7-builder-A2",
       "description": "Applicable WPT tree/fragment vectors pass with scripting/browser exclusions explicitly classified.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "focused-correctness",
+        "wpt-resource-audit"
+      ]
     },
     {
       "id": "M7-builder-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "focused-correctness",
+        "official-api",
+        "public-sample",
+        "encoding-reproducibility",
+        "probe-oracles",
+        "released-measurements",
+        "planning-validation"
+      ]
     }
   ],
   "implementation": [
     "src/Xemele/Html5/Html5Parser.cs: four public entry points",
     "src/Xemele/Html5/TreeConstruction/: operation-owned tree stack/formatting/modes and bounded WHATWG byte decoding"
   ],
-  "evidence": [],
+  "evidence": [
+    {
+      "id": "focused-correctness",
+      "kind": "check",
+      "revision": "9abeeb9c8e21c47ace9f949b76b14de372271f39",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -namespace Xemele.Tests.HtmlTreeConstruction -namespace Xemele.Tests.HtmlTokenization -namespace Xemele.Tests.HtmlModel -namespace Xemele.Tests.HtmlProcessingInstructions -namespace Xemele.Tests.HtmlParsedText -result-xml artifacts/M7-builder/final-9abeeb9.xml",
+      "result": "passed",
+      "summary": "113/113 pass:69builder+44verified dependency tests,0errors/failures/skips. Includes14316public WPT lanes,336static configurations/899exact original assertions/15template support resources,2231named references and resumed foster/adoption/move/copy/patch witnesses. Frozen unchanged Release test/runtime binaries; actual.NET10.0.11Arm64.",
+      "artifact": "docs/reports/M7-builder/final-handoff.md"
+    },
+    {
+      "id": "wpt-resource-audit",
+      "kind": "review",
+      "revision": "9abeeb9c8e21c47ace9f949b76b14de372271f39",
+      "command": "Manual per-resource original expectation/provenance review plus focused-correctness run",
+      "result": "passed",
+      "summary": "Full166resource hash-checked ledger complete. Actual browser execution dependencies explicitly classified; all applicable parser static/vector assertions pass. Root approved exact frozen-model projections and deferred one serializer-owned noscript innerHTML assertion, preserved explicitly and not claimed passing.",
+      "artifact": "tests/fixtures/M7-builder/resource-dispositions.json"
+    },
+    {
+      "id": "official-api",
+      "kind": "check",
+      "revision": "9abeeb9c8e21c47ace9f949b76b14de372271f39",
+      "command": "python3 docs/reports/M7-builder/check_api.py",
+      "result": "passed",
+      "summary": "Official compiled1235declarations match:1230predecessors unchanged+4parser methods+publictype;3388fixtureSHA inventory/bootstrapFalse; missing/added/changed negative controls reject.0cache files newly copied in final run.",
+      "artifact": "docs/api/M7-builder.txt"
+    },
+    {
+      "id": "public-sample",
+      "kind": "check",
+      "revision": "9abeeb9c8e21c47ace9f949b76b14de372271f39",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 samples/M7-builder/bin/Release/net10.0/M7-builder.dll",
+      "result": "passed",
+      "summary": "Four public entrypoints demonstrated:character Parse,byte Parse,caller-owned Load stream,contextual tbody ParseFragment. Caller stream remains open; no later/unmerged milestone dependency.",
+      "artifact": "samples/M7-builder/Program.cs"
+    },
+    {
+      "id": "encoding-reproducibility",
+      "kind": "check",
+      "revision": "9abeeb9c8e21c47ace9f949b76b14de372271f39",
+      "command": "python3 docs/reports/M7-builder/generate_encoding_tables.py --check",
+      "result": "passed",
+      "summary": "All228labels/91711index cells reproduce exactly from pinned original bytes.",
+      "artifact": "docs/reports/M7-builder/generate_encoding_tables.py"
+    },
+    {
+      "id": "probe-oracles",
+      "kind": "check",
+      "revision": "9abeeb9c8e21c47ace9f949b76b14de372271f39",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 benchmarks/Xemele.Benchmarks/M7-builder/bin/Release/net10.0/Xemele.Benchmarks.dll --verify",
+      "result": "passed",
+      "summary": "Correctness-only228byte/char labels and6prescan/scan fixture oracles pass; --discover-owned with artifact path discovers24ShortRunNoEmit3warmup/3actual/1launch affected cases.",
+      "artifact": "benchmarks/Xemele.Benchmarks/M7-builder/Probe.cs.fixture"
+    },
+    {
+      "id": "released-measurements",
+      "kind": "check",
+      "revision": "9abeeb9c8e21c47ace9f949b76b14de372271f39",
+      "command": "python3 -B docs/reports/M7-builder/run_measurements.py --exclusive-grant",
+      "result": "passed",
+      "summary": "Durable root GRANT/RELEASEm7-builder-9abeeb9; overall/initial/allocation/24ownedBDN/final all0/nochildtrue; unchanged manifesta9ae60f09d887d26645cde614ff5fb2c4771bcc48146bb96ea86aabbf5713976 (3905source145binary3852runtime).96x1024borrowed operations0B; cold28896B,positive1048B,cache48B,oracle152120B; explicit DOM/stream/fragment/clone and retained2977512B/128docs. Foster N/2N ratios1.980/1.990/1.995; adoption1.988/1.994/1.997;24affectedBDN142.84s. Retain48unchanged primitive timings at5d4de99 with6exact sourceSHA proofs. SingleArm64/no universal speedup/x64 release claim.",
+      "artifact": "docs/reports/M7-builder/final-measurements.md"
+    },
+    {
+      "id": "first-growth-failure",
+      "kind": "check",
+      "revision": "5d4de9951572e1b79d5480b7d1af8c820d19d6e6",
+      "command": "python3 -B docs/reports/M7-builder/run_measurements.py --exclusive-grant",
+      "result": "failed",
+      "summary": "First granted72case lifecycle passed but foster allocation ratios2.204/2.400/2.676 failed growth assessment. Reported before bounded source correction; superseded by released-measurements. No hidden retries or source tuning during leases.",
+      "artifact": "docs/reports/M7-builder/measurements.md"
+    },
+    {
+      "id": "static-table-lowering",
+      "kind": "check",
+      "revision": "9abeeb9c8e21c47ace9f949b76b14de372271f39",
+      "command": "'/Users/sebastienros/.nuget/packages/dotnet-inspect.osx-arm64/0.24.0/tools/any/osx-arm64/dotnet-inspect' member HtmlEncodingTables -m big5 --all --library src/Xemele/bin/Release/net10.0/Xemele.dll -S IL --print -n 60",
+      "result": "passed",
+      "summary": "Actual Release big5 and windows_1252 getters:ldtokenPrivateImplementationDetails/callRuntimeHelpers.CreateSpan<int>/ret; no array construction in these representative large/small getters. Retained local tool0.24.0; no network input.",
+      "artifact": "docs/reports/M7-builder/final-measurements.md"
+    },
+    {
+      "id": "planning-validation",
+      "kind": "check",
+      "revision": "9abeeb9c8e21c47ace9f949b76b14de372271f39",
+      "command": "python3 tools/planning/tasks.py validate; git diff --check",
+      "result": "passed",
+      "summary": "169task schema/evidence/dependency/ownership records validate; whitespace check clean.",
+      "artifact": "docs/reports/M7-builder/final-handoff.md"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Sole-writer continuation preserves checkpoint8d2d366/claim713f91d/baseb5a449e on codex/m7-builder-continuation. Full166resource ledger and static assertions closed; noscript seed corrected. Released first measurement exposed repeated-foster allocation growth; bounded per-node resumed-text buffering correction passes correctness. Task remains in_progress until freshly granted affected measurements and evidence.",
+    "summary": "Implemented branch work at9abeeb9 on codex/m7-builder-continuation, preserving claim713f91d/baseb5a449e/checkpoint8d2d366 and verified ancestors. WHATWG document/contextual fragment builder, bounded byte decoding, complete166resource dispositions and original static expectations pass. Released repeated-foster growth defect corrected and measured linear allocated-byte growth. Coordinator must integrate and verify.",
     "checks": [
-      "Pinned SDK10.0.400/runtime10.0.11 Release builds zero warnings/errors;69builder tests pass, including336static configurations/899 unchanged template+MathML+SVG assertions,2231named references and full14316public-lane WPT executions with zero mismatches.",
-      "44focused inherited tokenizer/model/PI/parsed-text tests pass.",
-      "Official union1235 (1230unchanged predecessors+4parser methods+type), fixtures3388/bootstrapFalse, missing/added/changed negatives pass; four-entrypoint sample builds/runs.",
-      "Generated228labels/91711cells check and planning169/diff checks pass.",
-      "Correctness-only probe228byte/char labels and6prescan/scan oracles pass;72original and24affected NoEmit ShortRun cases discovered. First exclusive72case run passed lifecycle and0B borrowed controls, but repeated-foster growth failed; see measurements.md.",
-      "Post-fix Release tests113/113 pass (69builder+44dependencies), including14,316WPT executions and336static configurations/899assertions. API1235/3388/bootstrapFalse plus3negative controls and4entrypoint sample pass. Initial unquoted patch PI witness failed and was corrected to the required quoted attribute; later run passes."
+      "Pinned SDK10.0.400/runtime10.0.11 Release builds zero warnings/errors;113focused tests pass (69builder+44dependency),14316WPT lanes/336static configs899assertions/2231named refs.",
+      "Official1235API/1230unchanged predecessors/3388SHA inventory/bootstrapFalse; missing/added/changed negatives reject;4entrypoint sample/callerstream ownership pass.",
+      "Generator228labels/91711cells; correctnessprobe228labels6oracles; planning169/diff checks pass. Representative static getter IL confirmed.",
+      "Granted/released9abeeb9 frozen sequence overall/initial/allocation/owned24BDN/final0/nochildtrue;96x1024borrowed0B; owned/cold/cache/oracle/retained costs explicit; foster/adoptionN2N allocations approximately linear;48unchanged primitive rows retained with6SHA proofs.",
+      "Historical firstgrowth failure, corrected patch-witness quoting and invocation/harness failures preserved in reports; no failed run claimed passing."
     ],
     "remaining": [
-      "Root review stable bounded source/probe diff; prepare fresh exact-wrapper identity controls and manifest.",
-      "Root durable exclusive grant/fresh peer PARKs required for150s allocation+750s affected24case BDN sequence; total1150s including bounded identity/cleanup. Reuse48unchanged primitive rows from released run1.",
-      "Root release before raw inspection; assess corrected N/2N allocation growth, record actual acceptance evidence, and hand off implemented branch for integration."
+      "Coordinator integrate branch and rerun applicable checks on combined tree before setting verified; integration_revision intentionally null.",
+      "No additional measurement/tuning requested. Timing remains informational on this Arm64 host; x64/arm64 release validation belongs to later performance ownership."
     ],
     "requests": [
       "M7-serializer: retained noscript-template-querySelector.html exact assertion noscriptNode.innerHTML == '&lt;div&gt;&lt;/div&gt;'; input <template id=\"template1\"><noscript><div></div></noscript></template>, ScriptingEnabled=true. Original bytes retained. Root approved deferral; parser textnode/text/null-descendant assertions pass; serialization assertion not marked passed."

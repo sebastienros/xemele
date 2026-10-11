@@ -1,4 +1,8 @@
-# Released measurement checkpoint5d4de99
+# Historical released measurement checkpoint5d4de99
+
+The growth defect below was corrected at9abeeb9 and exclusively remeasured. See
+`final-measurements.md` for the final ownership/growth results. This historical
+checkpoint preserves the failed observation and is not final acceptance evidence.
 
 Actual.NET10.0.11Arm64; pinnedSDK10.0.400. RootdurableGRANT m7-builder-5d4de99;
 durableRELEASE confirmed before raw inspection. Sole sequence initial/allocation/

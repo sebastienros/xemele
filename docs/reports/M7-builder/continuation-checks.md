@@ -1,4 +1,8 @@
-# Continuation correctness and prepared measurements
+# Historical continuation preparation
+
+This is the premeasurement preparation snapshot. Final measured implementation and
+corrected growth evidence are recorded in `final-measurements.md` and
+`final-handoff.md`; the unmeasured statements below describe this earlier stage.
 
 Isolated checkout `/Users/sebastienros/.codex/worktrees/464f/xemele`, branch
 `codex/m7-builder-continuation`; preserves checkpoint8d2d366, claim713f91d and
