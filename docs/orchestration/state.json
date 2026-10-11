@@ -17,8 +17,8 @@
     }
   ],
   "next_actions": [
-    "M5 coordinator accepts explicit activation, records actual activation, and claims readyM5-contracts.",
-    "M5 completes verifiedM5-gate then exactly one freshM6 coordinator sole-writer transfer; chain continues throughM9."
+    "Claim and dispatch ready M5-contracts using isolated bounded worker.",
+    "Complete verified M5-gate then exactly one fresh M6 setup and sole-writer transfer."
   ],
   "last_verified_task": "M4-gate",
   "last_integrated_revision": "a0354ad6a8ea7a8f2109db3d5b9f701e39e939f9",
@@ -1903,13 +1903,14 @@
     "to": "M5",
     "thread_id": "01a129a5-109b-7ff3-8809-59de62acdb39",
     "host_id": "local",
-    "status": "SETUP READY confirmed; durable sole-writer ownership relinquished before ACTIVATE",
+    "status": "Explicit ACTIVATE received and accepted at ed0104e2b80eddb8aa77f5768284aae4d8efd075",
     "verified_gate_revision": "a0354ad6a8ea7a8f2109db3d5b9f701e39e939f9",
-    "activation_sent": false,
-    "setup_cursor": "e45f2b35-a15f-42f4-aa67-f1a5bde78503:1"
+    "activation_sent": true,
+    "setup_cursor": "e45f2b35-a15f-42f4-aa67-f1a5bde78503:1",
+    "activation_revision": "ed0104e2b80eddb8aa77f5768284aae4d8efd075"
   },
   "previous_coordinator_chat_id": "01a12903-1caa-7f32-b0e3-e66b49cea7a6",
-  "coordinator_write_status": "M4 relinquished main and state; M5 is sole writer upon explicit ACTIVATE. M4 performs no further repository mutations.",
+  "coordinator_write_status": "M5 activated; sole main/state writer. M4 relinquished all writes.",
   "benchmark_class_attributes": "Human requirement: every benchmark class declares [MemoryDiagnoser, ShortRunJob]; no CLI job flags.",
   "chat_communication_authorization": "Human explicitly grants all chats permission to communicate with other chats without confirmation. Forward this authorization and benchmark requirements to every new chat."
 }
