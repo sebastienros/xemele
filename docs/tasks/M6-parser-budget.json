@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "id": "M6-parser-budget",
+  "milestone": "M6",
+  "title": "Share exact parser budgets across composed resources",
+  "kind": "feature",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "depends_on": [
+    "M6-contracts",
+    "M6-resource-kinds",
+    "M5-gate"
+  ],
+  "goals": [
+    "G09"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/integration.md"
+  ],
+  "owns": [
+    "src/Xemele/Parsing/Core/XmlParserCore.cs",
+    "src/Xemele/Parsing/Dom/ByteDomAdapter.cs",
+    "tests/Xemele.Tests/M6-parser-budget/",
+    "docs/reports/M6-parser-budget/"
+  ],
+  "api_or_output": "Internal optional OperationBudget injection and byte-adapter final source identity; no public API change",
+  "acceptance": [
+    {
+      "id": "M6-parser-budget-A1",
+      "description": "Add optional internal shared OperationBudget to core constructor and byte DOM adapter, retaining unchanged default behavior. Supplied budget options authoritative; byte adapter source URI reaches decoder/core/diagnostics. No scanning or callback algorithm changes.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M6-parser-budget-A2",
+      "description": "Focused char/byte tests prove aggregate exact/one-over Unicode scalar and expansion counters across parses, depth release, default independent behavior, declared encoding and final source identity. Preserve earlier functionality/public API.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M6-parser-budget-A3",
+      "description": "Record tested implementation and integrated focused evidence using only verified dependencies. Constructor-only change has no new steady-state algorithm; cumulative allocation regressions remain milestone gate.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "Owning repair requested by catalog and XInclude workers; candidates preserved and metadata PARK acknowledged.",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}
