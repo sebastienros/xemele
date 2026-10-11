@@ -44,12 +44,12 @@ internal static class XmlCommands
                 var options = new XmlParseOptions { DtdProcessing = invocation.Has("--allow-dtd") ? XmlDtdProcessing.Parse : XmlDtdProcessing.Prohibit, Resolver = resolver };
                 XmlDocument document;
                 Stream input = OpenInput(invocation.Get("--input"));
-                try { document = XmlDocument.Load(input, options, token); }
+                try { document = source is null ? XmlDocument.Load(input, options, token) : XmlDocument.Load(input, options, source, token); }
                 finally { if (invocation.Get("--input") is not null) input.Dispose(); }
                 switch (command)
                 {
                     case "validate-dtd":
-                        var validation = DtdSchema.Compile(ReadText(invocation.Get("--dtd")!), resolver, cancellationToken: token).Validate(document, new() { CancellationToken = token });
+                        var validation = DtdSchema.Compile(ReadText(invocation.Get("--dtd")!), resolver, null, InvocationUri(invocation.Get("--dtd")!), token).Validate(document, new() { CancellationToken = token });
                         if (!validation.IsValid || !validation.IsComplete) throw new RejectionException(string.Join("; ", validation.Diagnostics.Select(d => d.Message)));
                         break;
                     case "canonicalize":

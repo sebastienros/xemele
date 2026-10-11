@@ -15,6 +15,12 @@ try
     string catalog = Path.Combine(folder, "catalog.xml");
     File.WriteAllText(catalog, "<catalog xmlns=\"urn:oasis:names:tc:entity:xmlns:xml:catalog\"><uri name=\"urn:sample\" uri=\"input.xml\"/></catalog>");
     if (registry.Run(["catalog", "--catalog", catalog, "--uri", "urn:sample", "--output", output]) != 0 || File.ReadAllText(output).Trim() != new Uri(input).AbsoluteUri) throw new InvalidOperationException("catalog");
+    string declarations = Path.Combine(folder, "elements.dtd"); File.WriteAllText(declarations, "<!ELEMENT r (item)><!ELEMENT item (#PCDATA)>");
+    File.WriteAllText(dtd, "<!ENTITY % declarations SYSTEM \"elements.dtd\">%declarations;");
+    if (registry.Run(["validate-dtd", "--input", input, "--dtd", dtd, "--allow-root", folder, "--output", output]) != 0) throw new InvalidOperationException("relative parameter entity");
+    File.WriteAllText(Path.Combine(folder, "entity.ent"), "relative entity");
+    File.WriteAllText(input, "<!DOCTYPE r [<!ENTITY e SYSTEM \"entity.ent\">]><r>&e;</r>");
+    if (registry.Run(["parse", "--input", input, "--allow-dtd", "--allow-root", folder, "--output", output]) != 0 || File.ReadAllText(output) != "<r>relative entity</r>") throw new InvalidOperationException("relative general entity");
     using (var canceled = new CancellationTokenSource())
     {
         canceled.Cancel();
