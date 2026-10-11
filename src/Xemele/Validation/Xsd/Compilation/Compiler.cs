@@ -145,7 +145,7 @@ internal sealed class XsdCompilation
             }
             else
             {
-                var loaded = loader.Load(new(href!, context.BaseUri, kind, At(source, node)), op);
+                var loaded = loader.Load(new(href!, source.Scope.SourceUri, kind, At(source, node)), context.BaseUri, op);
                 using var traversal = loader.EnterComposition(At(source, node));
                 imported = Load(new(loaded, op, loader.SourceUri(loaded)), ns, kind);
             }
