@@ -13,7 +13,8 @@
     "M3-sax",
     "M3-reader",
     "M3-async-resources",
-    "M3-streaming-pump"
+    "M3-streaming-pump",
+    "M3-resource-mode"
   ],
   "goals": [
     "G04",
@@ -33,7 +34,9 @@
     "benchmarks/Xemele.Benchmarks/M3-async-input/",
     "docs/api/M3-async-input.txt",
     "samples/M3-async-input/",
-    "docs/reports/M3-async-input/"
+    "docs/reports/M3-async-input/",
+    "src/Xemele/Streaming/Reader/XmlReader.cs",
+    "docs/api/M3-reader.txt"
   ],
   "api_or_output": "ParseAsync, ReadAsync, LoadAsync and LoadWithDiagnosticsAsync",
   "acceptance": [
@@ -63,6 +66,9 @@
     "summary": "Focused child of M3-async; parent retains original integrated acceptance.",
     "checks": [],
     "remaining": [],
-    "requests": []
+    "requests": [
+      "Coordinator grants existing XmlReader.cs only sync Read idle mode selection insertion after completed guard; future async partial uses verified M3-resource-mode setter. Preserve frozen sync behavior and prior source checks.",
+      "Coordinator grants docs/api/M3-reader.txt existing T:XmlReader only IAsyncDisposable type interface addition after reader verified; preserve existing IDs and members."
+    ]
   }
 }

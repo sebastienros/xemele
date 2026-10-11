@@ -1,0 +1,44 @@
+// Nonpackaged declaration fixture. Bodies are consumer-test fakes, never runtime APIs.
+using Xemele;
+namespace Xemele.Streaming;
+public sealed record XmlSaxCompletion;
+public static partial class XmlSaxParser
+{
+    public static void Parse(string xml, IXmlSaxHandler handler, XmlParseOptions? options = null, CancellationToken cancellationToken = default) => throw new NotSupportedException("Declaration fixture only.");
+    public static XmlParseResult<XmlSaxCompletion> ParseWithDiagnostics(string xml, IXmlSaxHandler handler, XmlParseOptions? options = null, CancellationToken cancellationToken = default) => throw new NotSupportedException("Declaration fixture only.");
+    public static void Parse(ReadOnlySpan<byte> xml, IXmlSaxHandler handler, XmlParseOptions? options = null, CancellationToken cancellationToken = default) => throw new NotSupportedException("Declaration fixture only.");
+    public static XmlParseResult<XmlSaxCompletion> ParseWithDiagnostics(ReadOnlySpan<byte> xml, IXmlSaxHandler handler, XmlParseOptions? options = null, CancellationToken cancellationToken = default) => throw new NotSupportedException("Declaration fixture only.");
+    public static void Parse(Stream input, IXmlSaxHandler handler, XmlParseOptions? options = null, CancellationToken cancellationToken = default) => throw new NotSupportedException("Declaration fixture only.");
+    public static XmlParseResult<XmlSaxCompletion> ParseWithDiagnostics(Stream input, IXmlSaxHandler handler, XmlParseOptions? options = null, CancellationToken cancellationToken = default) => throw new NotSupportedException("Declaration fixture only.");
+}
+public sealed class XmlPushParser : IDisposable
+{
+    public XmlPushParser(IXmlSaxHandler handler, XmlParseOptions? options = null, CancellationToken cancellationToken = default) { }
+    public void Append(ReadOnlySpan<byte> input) { }
+    public void Complete() { }
+    public void Dispose() { }
+}
+public enum XmlTokenKind { None = 0, StartDocument = 1, Declaration = 2, StartElement = 3, EndElement = 4, Text = 5, Comment = 6, ProcessingInstruction = 7, StartCData = 8, EndCData = 9, StartDtd = 10, DtdDeclaration = 11, EndDtd = 12, SkippedEntity = 13, IncompleteAttributeDefault = 14, Diagnostic = 15, EndDocument = 16 }
+public sealed partial class XmlReader : IDisposable
+{
+    private XmlReader() { }
+    public static XmlReader Create(Stream input, XmlParseOptions? options = null, CancellationToken cancellationToken = default) => new();
+    public bool Read() => false;
+    public void Dispose() { }
+    public XmlTokenKind TokenKind => default;
+    public ReadOnlySpan<char> ValueSpan => default;
+    public ReadOnlySpan<char> LocalName => default;
+    public ReadOnlySpan<char> Prefix => default;
+    public ReadOnlySpan<char> NamespaceUri => default;
+    public ReadOnlySpan<char> Target => default;
+    public XmlAttributeView Attributes => default;
+    public XmlNamespaceView NamespaceDeclarations => default;
+    public bool IsEmptyElement => default;
+    public XmlDeclaration Declaration => default;
+    public XmlDocumentTypeView DocumentType => default;
+    public XmlDtdDeclaration DtdDeclaration => default;
+    public XmlSkippedEntity SkippedEntity => default;
+    public XmlIncompleteAttributeDefault? IncompleteAttributeDefault => default;
+    public XmlDiagnostic? Diagnostic => default;
+    public XmlLocation Location => default;
+}

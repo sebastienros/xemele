@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "id": "M3-scan-abi",
+  "milestone": "M3",
+  "title": "Preserve original scan state ABI with async resource extension",
+  "kind": "feature",
+  "status": "verified",
+  "owner": "M3 coordinator 01a1284a-8826-7fc2-af44-74552db608f2",
+  "branch": "codex/m3-scan-abi",
+  "base_revision": "a081aaff454260cbb0b634f15bbd7355f95c5059",
+  "integration_revision": "dbfb42ac39751f03065f42534f38332c27dcca27",
+  "depends_on": [
+    "M1-syntax",
+    "M3-async-resources"
+  ],
+  "goals": [
+    "G04"
+  ],
+  "specs": [
+    "docs/specs/streaming.md"
+  ],
+  "owns": [
+    "tests/Xemele.Tests/M1-syntax/StreamingTests.cs",
+    "docs/reports/M3-scan-abi/"
+  ],
+  "api_or_output": "Updated internal ABI compatibility expectation only; no runtime change",
+  "acceptance": [
+    {
+      "id": "M3-scan-abi-A1",
+      "description": "Update obsolete four-state scan ABI assertion for the verified additive NeedResource state; preserve original four numeric values and all callback/view assertions.",
+      "status": "passed",
+      "evidence": [
+        "syntax-build",
+        "integration"
+      ]
+    },
+    {
+      "id": "M3-scan-abi-A2",
+      "description": "Pass focused internal ABI assertion and full syntax namespace at known integrated revision plus task validation; no runtime/API baseline edits.",
+      "status": "passed",
+      "evidence": [
+        "syntax-build",
+        "integration"
+      ]
+    }
+  ],
+  "implementation": [
+    "tests/Xemele.Tests/M1-syntax/StreamingTests.cs: original NeedInput/Paused/Completed/Rejected numeric values0\u20133 preserved; additive NeedResource4 admitted; remaining ABI/view/callback assertions unchanged."
+  ],
+  "evidence": [
+    {
+      "id": "syntax-build",
+      "kind": "check",
+      "revision": "8bbd541cb0aa2cf7906b65d72a122ad173836106",
+      "command": "Pinned SDK10 Release single-node restore/build, then Xemele.Tests.dll -namespace Xemele.Tests.Syntax -namespace Xemele.Tests.Streaming -parallelMode none -result-xml /private/tmp/m3-scan-abi.xml",
+      "result": "passed",
+      "summary": "Build0warnings/errors;69 syntax tests0fail/skip. Namespace Streaming yielded no extra tests; all69 actualtests in Syntax. Existing allocation regression real0/positive7680000, no runtimechanges.",
+      "artifact": "docs/reports/M3-scan-abi/syntax.xml"
+    },
+    {
+      "id": "integration",
+      "kind": "integration",
+      "revision": "dbfb42ac39751f03065f42534f38332c27dcca27",
+      "command": "Xemele.Tests.dll -method Xemele.Tests.Syntax.StreamingTests.InternalAbiMatchesApprovedViewsAndCallbackShape -parallelMode none -result-xml /private/tmp/m3-scan-abi-integrated.xml; python3 tools/planning/tasks.py validate",
+      "result": "passed",
+      "summary": "Focused ABI test1passed0fail/skip;146taskvalidationpassed. Combinedmain delta onlyorchestrationmetadata; runtime/testsourceclosure identicalto successful69testrevision, so preserve that evidence.",
+      "artifact": "docs/reports/M3-scan-abi/integration.xml"
+    }
+  ],
+  "blockers": [],
+  "handoff": {
+    "summary": "Obsolete internal assertion repaired for verified additive asyncresource suspension; original enumvalues and restofABItest preserved.",
+    "checks": [
+      "69 syntax tests, focusedintegrated ABI1, Releasebuild0warnings/errors,146validator"
+    ],
+    "remaining": [],
+    "requests": []
+  }
+}
