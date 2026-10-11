@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "id": "M5-dtd-read-completeness",
+  "milestone": "M5",
+  "title": "Retain unread DTD parameter-entity completeness evidence",
+  "kind": "feature",
+  "status": "in_progress",
+  "owner": "M5 isolated DTD completeness worker",
+  "branch": "codex/m5-dtd-read-completeness",
+  "base_revision": "5810975bb426f8de2972e6bed3a2ecbd1dd57640",
+  "integration_revision": null,
+  "depends_on": [
+    "M5-dtd-declaration-provenance"
+  ],
+  "goals": [
+    "G07"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/dtd-c14n.md"
+  ],
+  "owns": [
+    "src/Xemele/Parsing/Dtd/Model/Declarations.cs",
+    "src/Xemele/Parsing/Dtd/Grammar/Parser/DtdParser.cs",
+    "src/Xemele/Parsing/Dtd/Grammar/Parser/Composition.cs",
+    "tests/Xemele.Tests/M5-dtd-read-completeness/",
+    "docs/reports/M5-dtd-read-completeness/"
+  ],
+  "api_or_output": "Internal immutable nullable DtdModel.UnreadParameterLocation; preserves successful nonvalidating parsing and prior model composition",
+  "acceptance": [
+    {
+      "id": "M5-dtd-read-completeness-A1",
+      "description": "Retain first unread parameter entity original location in immutable effective DTD model without changing parser declaration reading or adding public APIs/raw lexical storage.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M5-dtd-read-completeness-A2",
+      "description": "Preserve first incompleteness through transactional prior-model seeding/internal-external/PE composition; test original source URI and byte offsets, sync/async, cancellation and complete models.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M5-dtd-read-completeness-A3",
+      "description": "Preserve earlier nonvalidating parser/model/declaration diagnostics/API and record actual focused checks, scalar storage/generated-code allocation applicability and planning validation at known revision.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "Facade review found skipped undeclared PE evidence remains only on parser and is lost by DtdModel; FromDocument must never silently treat this effective model as complete.",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}
