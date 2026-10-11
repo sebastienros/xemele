@@ -4,7 +4,7 @@
   "milestone": "M8",
   "title": "XSD numeric datatype value family",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M8 coordinator01a12c6c-b333-71d3-877f-0d186618e21d / assigned isolated worker",
   "branch": "codex/m8-datatypes-numeric",
   "base_revision": "7f1d2c64a0c1812e8e49d4ee6dd130e9e7955230",
@@ -34,7 +34,10 @@
       "description": "Implement XSD1.0 decimal/integer/float/double and all built-in numeric derivations through the verified core family contract. Retain arbitrary decimal/integer precision, exact built-in ranges, INF/-INF/NaN/signed-zero behavior and prescribed equality/order/hash including compatible derived numeric values. No CLR decimal/double truncation for arbitrary decimal/integer values.",
       "status": "passed",
       "evidence": [
-        "focused-correctness"
+        "focused-correctness",
+        "source-review",
+        "allocation-performance",
+        "measurement-review"
       ]
     },
     {
@@ -42,14 +45,22 @@
       "description": "Test valid/invalid lexical grammar, insignificant zeros, large magnitudes/precision, range edges, NaN/infinities/zero signs, cross-numeric equality/hash/order and applicable digit measures. Charge actual lexical/conversion/comparison work and bounded growth, with exact-limit, one-over and cancellation cases.",
       "status": "passed",
       "evidence": [
-        "focused-correctness"
+        "focused-correctness",
+        "source-review",
+        "allocation-performance",
+        "measurement-review"
       ]
     },
     {
       "id": "M8-datatypes-numeric-A3",
       "description": "Compile against only verified model/core dependencies; record focused regression and meaningful allocation/performance evidence at the tested source. Preserve public APIs and leave final library dispatch/composition to M8-datatypes.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "focused-correctness",
+        "source-review",
+        "allocation-performance",
+        "measurement-review"
+      ]
     }
   ],
   "implementation": [
@@ -85,20 +96,42 @@
       "result": "passed",
       "summary": "Coordinator independent read-only reviewer accepted corrected source; arbitrary original-span IEEE conversion polling finding resolved, max opaque input1116chars, no remaining blockers. Reviewer performed no test execution. Accepted file hashes recorded in correctness.md.",
       "artifact": "docs/reports/M8-datatypes-numeric/correctness.md"
+    },
+    {
+      "id": "allocation-performance",
+      "kind": "check",
+      "revision": "9dee538394f076df86ea12ea282126fbe39da8f2",
+      "command": "python3 /Users/sebastienros/.codex/worktrees/5d48/xemele/docs/reports/M8-datatypes-numeric/measure.py --granted 0efa1f6acf38bb562cdc6b0e747e8c5fef5cd593e3a6a070d9e2a4f2138fdae7",
+      "result": "passed",
+      "summary": "Exclusive sequence once,71.7019s,status0,438identities stable,children reaped/groups absent/logs closed,RELEASEACK before raw inspection.13routes\u00d764samples:8borrowed routes uniformly0B;owneddecimalshort112,long8280,float56,zero64,setup512;positive1048,cold67040.10NoEmitShortRunBDN cases complete. Rounded BDNzeros have nonzero unattributed GCaggregates preserved; priority denied timing informational; retained processheap estimate separate from value allocations.",
+      "artifact": "docs/reports/M8-datatypes-numeric/allocations.md"
+    },
+    {
+      "id": "measurement-review",
+      "kind": "review",
+      "revision": "9dee538394f076df86ea12ea282126fbe39da8f2",
+      "command": null,
+      "result": "passed",
+      "summary": "Coordinator independently inspected lifecycle,13\u00d764distributions,all10BDNcases and nonzero raw GC residuals after durable release. No rerun; informational timing and retained-size limitations recorded.",
+      "artifact": "docs/reports/M8-datatypes-numeric/measurement-summary.json"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Numeric source independently accepted;106focused checks passed;authorized allocation/BDN sequence remains before implemented.",
+    "summary": "Implemented immutable exact XSD1.0 numeric family: arbitrary decimal/integer precision and built-in ranges; bounded IEEE conversion with correct ties/sticky/signs; value equality/order/hash/digits through verified core. Accepted source and known-revision correctness plus exclusive allocation/BDN evidence passed;awaiting coordinator integration.",
     "checks": [
-      "106focused correctness cases passed,1393API members matched,normal/XML-only consumers passed",
-      "Counter-disabled13route probe and all BDNcontrols/exact10NoEmit discovery passed",
-      "Elevated process inspection/reap/group-absence preflight passed",
-      "tasks.py validate and git diff --check passed"
+      "python3 docs/reports/M8-datatypes-numeric/checks.py:106pass(76numeric+18core+12model),zero failures/errors/skips/not-run,1393API members matched,normal/XML-only genuine consumers passed",
+      "Independent read-only source review accepted9dee538;reviewer executed no tests",
+      "Counter-disabled13route/allmethod controls,exact10NoEmit discovery,elevated process/identity preflights passed",
+      "Granted measurement once:71.7019s,438identities stable,8borrowed probe routes64zeros each,owned allocations separated,10ShortRunBDN cases completed;rawresiduals/priority/retainedlimitations preserved",
+      "python3 tools/planning/tasks.py validate and git diff --check passed"
     ],
     "remaining": [
-      "Identity freeze/verification and root explicit GRANT, then bounded allocation/BDN evidence"
+      "Coordinator integrate/rerun applicable correctness and record verified integration",
+      "Downstream M8-datatypes composition and M8-facets digit predicates; x64/end-to-end confirmation at release"
     ],
-    "requests": []
+    "requests": [
+      "M8-facets: preserve formal totalDigits(.001)=3; reject under2,accept under3;1.00/zero pass1; totalDigits0 invalid. See numeric-owned joins.md;no shared change requested."
+    ]
   }
 }
