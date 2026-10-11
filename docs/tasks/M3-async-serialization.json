@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "milestone": "M3",
+  "kind": "feature",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "id": "M3-async-serialization",
+  "title": "Async DOM serialization and Save wrapper",
+  "depends_on": [
+    "M3-async-writer"
+  ],
+  "goals": [
+    "G05",
+    "G16"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/serialization.md"
+  ],
+  "owns": [
+    "src/Xemele/Serialization/Async/Dom/",
+    "src/Xemele/Parsing/Dom/Document.Save.Async.cs",
+    "tests/Xemele.Tests/M3-async-serialization/",
+    "benchmarks/Xemele.Benchmarks/M3-async-serialization/",
+    "docs/api/M3-async-serialization.txt",
+    "samples/M3-async-serialization/",
+    "docs/reports/M3-async-serialization/"
+  ],
+  "api_or_output": "XmlAsyncSerializer.SerializeAsync and XmlDocument.SaveAsync",
+  "acceptance": [
+    {
+      "id": "M3-async-serialization-A1",
+      "description": "Implement separate frozen XmlAsyncSerializer.SerializeAsync and XmlDocument.SaveAsync partial with exactly M1 DOM output/validation/ownership semantics including full mixed-content indentation lookahead; iterative bounded incremental async output.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M3-async-serialization-A2",
+      "description": "Test independent M1 goldens and sync/async equality, mixed content beyond forward-writer restriction, UTF/BOM/namespace policy, delayed async-only output, cancellation/errors/no flush/leave-open and deep/large trees without whole-output buffering.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M3-async-serialization-A3",
+      "description": "Demonstrate only verified dependencies; actual compiled API, real allocation/bounded scratch and retained memory evidence, preserve M1 and forward writer checks and validate known revision.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "Focused child of M3-async; parent retains original integrated acceptance.",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}

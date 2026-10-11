@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "milestone": "M3",
+  "kind": "feature",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "id": "M3-async-writer",
+  "title": "Genuine async forward writer transport",
+  "depends_on": [
+    "M3-writer"
+  ],
+  "goals": [
+    "G05",
+    "G16"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/serialization.md"
+  ],
+  "owns": [
+    "src/Xemele/Serialization/Async/Writer/",
+    "tests/Xemele.Tests/M3-async-writer/",
+    "benchmarks/Xemele.Benchmarks/M3-async-writer/",
+    "docs/api/M3-async-writer.txt",
+    "samples/M3-async-writer/",
+    "docs/reports/M3-async-writer/"
+  ],
+  "api_or_output": "All frozen async XmlWriter methods and bounded output continuation",
+  "acceptance": [
+    {
+      "id": "M3-async-writer-A1",
+      "description": "Implement frozen async XmlWriter methods and IAsyncDisposable through additive partials with bounded WriteAsync transport, retained owners/cursors, operation+call tokens and guard across awaits; exact sync lexical/state/namespace semantics and leave-open abort.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M3-async-writer-A2",
+      "description": "Prove delayed async-only output, short bounded writes, equality across encoding/BOM/namespaces/escaping/text splits/indent, cancellation/reentrancy/errors/primary exception identity and exactly-once scratch release without synchronous I/O or Task.Run bridges.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M3-async-writer-A3",
+      "description": "Compile and demonstrate without later adapters; record compiled API, real buffered primitive/allocation-positive and setup/continuation/retained scratch evidence, preserve verified sync writer/earlier serialization and validate known revisions.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "Focused child of M3-async; parent retains original integrated acceptance.",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}

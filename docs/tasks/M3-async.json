@@ -3,18 +3,16 @@
   "id": "M3-async",
   "milestone": "M3",
   "title": "Async input and output composition",
-  "kind": "feature",
+  "kind": "verification",
   "status": "planned",
   "owner": null,
   "branch": null,
   "base_revision": null,
   "integration_revision": null,
   "depends_on": [
-    "M3-sax",
-    "M3-reader",
-    "M3-writer",
-    "M3-async-resources",
-    "M3-streaming-pump"
+    "M3-async-writer",
+    "M3-async-serialization",
+    "M3-async-input"
   ],
   "goals": [
     "G04",
@@ -27,11 +25,6 @@
     "docs/specs/serialization.md"
   ],
   "owns": [
-    "src/Xemele/Streaming/Transport/",
-    "src/Xemele/Streaming/Sax/XmlSaxParser.Async.cs",
-    "src/Xemele/Streaming/Reader/XmlReader.Async.cs",
-    "src/Xemele/Serialization/Async/",
-    "src/Xemele/Parsing/Dom/Document.Async.cs",
     "tests/Xemele.Tests/M3-async/",
     "tests/fixtures/M3-async/",
     "benchmarks/Xemele.Benchmarks/M3-async/",
@@ -64,7 +57,7 @@
   "evidence": [],
   "blockers": [],
   "handoff": {
-    "summary": "",
+    "summary": "Integration join over separately owned async writer, DOM serialization, and async input children; original product A1/A2/A3 retained.",
     "checks": [],
     "remaining": [],
     "requests": []

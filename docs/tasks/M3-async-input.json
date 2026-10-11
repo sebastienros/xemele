@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "milestone": "M3",
+  "kind": "feature",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "id": "M3-async-input",
+  "title": "Async SAX reader and DOM input composition",
+  "depends_on": [
+    "M3-sax",
+    "M3-reader",
+    "M3-async-resources",
+    "M3-streaming-pump"
+  ],
+  "goals": [
+    "G04",
+    "G16"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/streaming.md",
+    "docs/specs/serialization.md"
+  ],
+  "owns": [
+    "src/Xemele/Streaming/Transport/",
+    "src/Xemele/Streaming/Sax/XmlSaxParser.Async.cs",
+    "src/Xemele/Streaming/Reader/XmlReader.Async.cs",
+    "src/Xemele/Parsing/Dom/Document.Async.cs",
+    "tests/Xemele.Tests/M3-async-input/",
+    "benchmarks/Xemele.Benchmarks/M3-async-input/",
+    "docs/api/M3-async-input.txt",
+    "samples/M3-async-input/",
+    "docs/reports/M3-async-input/"
+  ],
+  "api_or_output": "ParseAsync, ReadAsync, LoadAsync and LoadWithDiagnosticsAsync",
+  "acceptance": [
+    {
+      "id": "M3-async-input-A1",
+      "description": "Add frozen real async SAX Parse/ParseWithDiagnostics, reader ReadAsync/IAsyncDisposable, and DOM Load/LoadWithDiagnostics through bounded transport/core pump; synchronous callbacks, call+operation tokens, true async external resolution and fault cleanup.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M3-async-input-A2",
+      "description": "Prove actually awaited short reads and async-only resolver streams, sync/async token/DOM/event equality, recovery/diagnostics, EOF/current view lifetime, cancellation/reentrancy/error identity and leave-open exactly-once async cleanup without Task.Run bridges.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M3-async-input-A3",
+      "description": "Demonstrate only verified dependencies; compiled APIs, real buffered primitive and async process-wide allocation/retained scratch evidence; preserve earlier sync input and validate known tested revision.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "Focused child of M3-async; parent retains original integrated acceptance.",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}
