@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "id": "M3-attribute-metadata",
+  "milestone": "M3",
+  "title": "Carry explicit defaulted attribute metadata through internal event views",
+  "kind": "feature",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "depends_on": [
+    "M3-contracts"
+  ],
+  "goals": [
+    "G04",
+    "G16"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/streaming.md"
+  ],
+  "owns": [
+    "src/Xemele/Parsing/Core/XmlParserCore.cs",
+    "src/Xemele/Parsing/Core/XmlParserCore.Attributes.cs",
+    "src/Xemele/Parsing/Events/Views.cs",
+    "src/Xemele/Parsing/Events/IncompleteAttributes.cs",
+    "tests/Xemele.Tests/M3-attribute-metadata/",
+    "benchmarks/Xemele.Benchmarks/M3-attribute-metadata/",
+    "docs/reports/M3-attribute-metadata/"
+  ],
+  "api_or_output": "Carry explicit defaulted attribute metadata through internal event views",
+  "acceptance": [
+    {
+      "id": "M3-attribute-metadata-A1",
+      "description": "Add explicit defaulted metadata to complete and incomplete internal attribute events, setting it only for synthesized DTD defaults and preserving explicit attributes and locations.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M3-attribute-metadata-A2",
+      "description": "Test defaulted/explicit override, namespaces, incomplete default parts and pause/no-replay; record applicable zero-allocation borrowed event evidence.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M3-attribute-metadata-A3",
+      "description": "Preserve integrated M2 behavior and compile existing sinks; run focused regression checks and task validation at a known revision.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "Required contract bridge; location inference cannot establish defaulted status.",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}

@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "id": "M3-async-resources",
+  "milestone": "M3",
+  "title": "Suspend core external resource work for genuine async I/O",
+  "kind": "feature",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "depends_on": [
+    "M3-attribute-metadata"
+  ],
+  "goals": [
+    "G04",
+    "G16"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/streaming.md"
+  ],
+  "owns": [
+    "src/Xemele/Parsing/Core/XmlParserCore.cs",
+    "src/Xemele/Parsing/Core/XmlParserCore.Resources.cs",
+    "src/Xemele/Parsing/Core/XmlParserCore.Doctype.cs",
+    "src/Xemele/Parsing/Core/XmlParserCore.Entities.cs",
+    "src/Xemele/Parsing/Core/XmlParserCore.AsyncResources.cs",
+    "src/Xemele/Parsing/Entities/Runtime/ExternalXmlSource.cs",
+    "src/Xemele/Parsing/Events/Views.cs",
+    "tests/Xemele.Tests/M3-async-resources/",
+    "benchmarks/Xemele.Benchmarks/M3-async-resources/",
+    "docs/reports/M3-async-resources/"
+  ],
+  "api_or_output": "Suspend core external resource work for genuine async I/O",
+  "acceptance": [
+    {
+      "id": "M3-async-resources-A1",
+      "description": "Provide optional internal async resource mode and explicit suspend/resume boundary for external subsets, nested parameter/general entities, framing/refill/EOF cleanup using existing resolution session async APIs; no Task.Run, sync-over-async, whole-resource buffering, or spans retained across awaits.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M3-async-resources-A2",
+      "description": "Prove delayed async-only resolver/stream open/read/disposal, exact consumed input, sequential callback pause/no-replay, token rebinding/cancellation, aggregate quotas/cycles/locations, and exactly-once cleanup preserving primary exceptions.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M3-async-resources-A3",
+      "description": "Preserve sync M2 behavior; demonstrate bounded scratch and real allocation evidence with focused correctness checks and task validation at a known revision.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "Read-only source review identifies synchronous external subset/PE/general entity and cleanup sites; repair core continuation rather than prebuffer resources.",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}
