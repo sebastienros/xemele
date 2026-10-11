@@ -4,11 +4,11 @@
   "milestone": "M6",
   "title": "Remove zero-member CLI API fragment from official inventory",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M6 coordinator root owning repair",
   "branch": "codex/m6-cli-api-fragment",
   "base_revision": "8b4206d5c3339df1439488c546d7e85a8e1c7d07",
-  "integration_revision": null,
+  "integration_revision": "0b185dd098882e42430148864b4545c18ed1d15e",
   "depends_on": [
     "M6-cli"
   ],
@@ -30,7 +30,8 @@
       "status": "passed",
       "evidence": [
         "official-api",
-        "source-review"
+        "source-review",
+        "fresh-integration"
       ]
     },
     {
@@ -39,7 +40,8 @@
       "status": "passed",
       "evidence": [
         "official-api",
-        "source-review"
+        "source-review",
+        "fresh-integration"
       ]
     }
   ],
@@ -64,6 +66,15 @@
       "result": "passed",
       "summary": "Approved owning headeronly deletion; removeszero declarations,preserves1054union,no discoveryweakening. No executable reviewer checks.",
       "artifact": null
+    },
+    {
+      "id": "fresh-integration",
+      "kind": "integration",
+      "revision": "0b185dd098882e42430148864b4545c18ed1d15e",
+      "command": "Freshisolated cachedrestore+forcedRelease runtime/extractorbuilds;officialAPIcompare explicitfx10.0.11;planning164/diff/scopedps",
+      "result": "passed",
+      "summary": "OfficialcompiledAPI1054matched/bootstrapfalse/originalofflinefixtureinventory3388 (3386original+2bootstrap);twozero-warningbuilds;164tasksvalid;nochildren;onlyheaderzeroAPIfiledeleted,allremainingdeclarationfragmentsunchanged. No runtime/sharedtool changes.",
+      "artifact": "docs/reports/M6-cli-api-fragment/README.md"
     }
   ],
   "blockers": [],
@@ -72,9 +83,7 @@
     "checks": [
       "OfficialcompiledAPI1054,164taskvalidate,diff,source-onlyapproval"
     ],
-    "remaining": [
-      "Freshintegrationverification"
-    ],
+    "remaining": [],
     "requests": []
   }
 }
