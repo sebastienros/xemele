@@ -4,7 +4,7 @@
   "milestone": "M6",
   "title": "Freeze resources and integration contracts",
   "kind": "contract",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M6 coordinator contract worker",
   "branch": "codex/m6-contracts",
   "base_revision": "b585aa38819683e2026e6f833b63dd027716e653",
@@ -32,29 +32,82 @@
     {
       "id": "M6-contracts-A1",
       "description": "Specify catalog profile/precedence, XInclude mutation/results/XPointer subset, adapter methods and CLI codes.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "M6-contracts-compiled-usage",
+        "M6-contracts-source-review",
+        "M6-contracts-planning"
+      ]
     },
     {
       "id": "M6-contracts-A2",
       "description": "Compile each independent lane against M2 resolver and prior APIs; define AOT-safe CLI registration.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "M6-contracts-compiled-usage",
+        "M6-contracts-source-review",
+        "M6-contracts-planning"
+      ]
     },
     {
       "id": "M6-contracts-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "M6-contracts-compiled-usage",
+        "M6-contracts-source-review",
+        "M6-contracts-planning"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "docs/decisions/M6/resources-integration.md \u2014 exact Catalogs 1.0, XInclude subset/result/quotas, BCL positioning and static XML CLI contract",
+    "docs/specs/integration.md \u2014 M6 exact freeze and prerequisite resource-kind repair",
+    "tests/Contracts/Fixtures/M6/ \u2014 four independent nonpackaged usage projects, compile-only extern API models, 101 canonical public members and 16 future acceptance vectors",
+    "docs/reports/M6-contracts/README.md \u2014 reproducible checks, explicit compilation/runtime limits and initial corrected failures"
+  ],
+  "evidence": [
+    {
+      "id": "M6-contracts-compiled-usage",
+      "kind": "check",
+      "revision": "b7881d7bd335a8bf53909929d5ef156450494bb4",
+      "command": "python3 tests/Contracts/Fixtures/M6/check.py --dotnet '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --verify-existing",
+      "result": "passed",
+      "summary": "Four independently built lanes re-executed actual prior DOM/deep-import APIs on Environment.Version 10.0.11; forced runtimeconfigs checked. Catalog21/XInclude23/Interop57 canonical members matched; three missing-member API controls reject. CLI executes unchanged linked M0 static partial registry: probe0/unknown2; code enum1/3 checked. 16 future acceptance vectors and two inventory controls validate; owned-only diff and no new authored .cs globs. Recheck explicitly reused local prepared artifacts, not a new build. Initial local-source SDK10.0.400 restore/no-incremental builds succeeded for all five projects; Catalog was selectively rebuilt for its final private constructor. README preserves exploratory warning/glob failures and corrections. No M6 extern member executed.",
+      "artifact": "docs/reports/M6-contracts/checks.txt"
+    },
+    {
+      "id": "M6-contracts-source-review",
+      "kind": "review",
+      "revision": "b7881d7bd335a8bf53909929d5ef156450494bb4",
+      "command": "Coordinator /root/contract_review independent source review, relayed by /root; final reviewed fixture/source corrections inspected",
+      "result": "passed",
+      "summary": "Source-only review approved A1/A2 after public-only SystemId routing, per-field effective quota minimum/shared entity+include ledger, private catalog/result constructors and generated-file glob exclusion corrections. Review is not an executed check or conformance evidence.",
+      "artifact": "docs/decisions/M6/resources-integration.md"
+    },
+    {
+      "id": "M6-contracts-planning",
+      "kind": "check",
+      "revision": "b7881d7bd335a8bf53909929d5ef156450494bb4",
+      "command": "python3 tools/planning/tasks.py validate",
+      "result": "passed",
+      "summary": "Validated all160 records: schema, evidence, acyclic dependencies, additive milestones and ordered ownership. Earlier source/build/package/contract files unchanged against coordinated claim.",
+      "artifact": null
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "",
-    "checks": [],
-    "remaining": [],
-    "requests": []
+    "summary": "M6 independent contracts frozen with compiled representative usage and actual prior APIs; no runtime M6 implementation/stubs. All criteria passed on isolated branch; integrated verification remains coordinator-owned.",
+    "checks": [
+      "python3 tests/Contracts/Fixtures/M6/check.py --dotnet '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --verify-existing \u2014 passed at b7881d7bd335a8bf53909929d5ef156450494bb4; see report; existing local artifacts rechecked without rebuilding",
+      "python3 tools/planning/tasks.py validate \u2014 all160 passed",
+      "Initial local-source pinned restores/no-incremental builds for four lanes and owned ApiCheck \u2014 passed; final Catalog private-constructor change selectively rebuilt; initial exploratory extern-constructor warning/glob assertion failures corrected and preserved in README"
+    ],
+    "remaining": [
+      "Coordinator rerun fresh default full check on integrated repair/contracts before verified; runtime owners add actual behavior/API baselines and allocation evidence, M6 CLI/samples/gate actual AOT/package smoke."
+    ],
+    "requests": [
+      "Before catalog/XInclude runtime lanes, arrange an ordered owning repair of src/Xemele/Resolution/Core/Resources.cs: append Catalog=2, XIncludeXml=3, XIncludeText=4 preserving ExternalSubset=0/ExternalEntity=1; supply its additive compiled API baseline and undefined-kind regression checks. M2 XmlResolutionSession currently Enum.IsDefined rejects future kinds. Do not edit prior declaration fixture enums or imply current support from numeric casts."
+    ]
   }
 }
