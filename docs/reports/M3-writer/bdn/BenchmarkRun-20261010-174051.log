@@ -1,0 +1,2189 @@
+// Validating benchmarks:
+// ***** BenchmarkRunner: Start   *****
+// ***** Found 24 benchmark(s) in total *****
+// ***** Building 1 exe(s) in Parallel: Start   *****
+// ***** Done, took 00:00:00 (0.02 sec)   *****
+// Found 6 benchmarks:
+//   WriterBenchmarks.Forward: InProcess(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1) [Corpus=long-ascii]
+//   WriterBenchmarks.Dom: InProcess(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1) [Corpus=long-ascii]
+//   WriterBenchmarks.Forward: InProcess(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1) [Corpus=multilingual]
+//   WriterBenchmarks.Dom: InProcess(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1) [Corpus=multilingual]
+//   WriterBenchmarks.Forward: InProcess(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1) [Corpus=short]
+//   WriterBenchmarks.Dom: InProcess(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1) [Corpus=short]
+
+// **************************
+// Benchmark: WriterBenchmarks.Forward: InProcess(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1) [Corpus=long-ascii]
+// *** Execute ***
+// Launch: 1 / 1
+// ! Failed to set up priority High for process System.Diagnostics.Process (dotnet). Make sure you have the right permissions. Message: Permission denied
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.8
+// Runtime=.NET 10.0.11 (10.0.11, 10.0.1126.37416), Arm64 RyuJIT armv8.0-a
+// GC=Concurrent Workstation
+// HardwareIntrinsics=ArmBase+AdvSimd,AES,CRC32,DP,RDM,SHA1,SHA256 VectorSize=128
+// Job: Job-RKTMLY(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1)
+
+OverheadJitting  1: 1 op, 79625.00 ns, 79.6250 us/op
+WorkloadJitting  1: 1 op, 2121583.00 ns, 2.1216 ms/op
+
+OverheadJitting  2: 16 op, 189583.00 ns, 11.8489 us/op
+WorkloadJitting  2: 16 op, 32823042.00 ns, 2.0514 ms/op
+
+WorkloadPilot    1: 16 op, 32242417.00 ns, 2.0152 ms/op
+WorkloadPilot    2: 64 op, 161179125.00 ns, 2.5184 ms/op
+WorkloadPilot    3: 48 op, 86839083.00 ns, 1.8091 ms/op
+WorkloadPilot    4: 64 op, 127606875.00 ns, 1.9939 ms/op
+
+OverheadWarmup   1: 64 op, 1625.00 ns, 25.3906 ns/op
+OverheadWarmup   2: 64 op, 291.00 ns, 4.5469 ns/op
+OverheadWarmup   3: 64 op, 42.00 ns, 0.6563 ns/op
+OverheadWarmup   4: 64 op, 41.00 ns, 0.6406 ns/op
+OverheadWarmup   5: 64 op, 84.00 ns, 1.3125 ns/op
+OverheadWarmup   6: 64 op, 83.00 ns, 1.2969 ns/op
+OverheadWarmup   7: 64 op, 334.00 ns, 5.2188 ns/op
+OverheadWarmup   8: 64 op, 250.00 ns, 3.9063 ns/op
+
+OverheadActual   1: 64 op, 291.00 ns, 4.5469 ns/op
+OverheadActual   2: 64 op, 208.00 ns, 3.2500 ns/op
+OverheadActual   3: 64 op, 208.00 ns, 3.2500 ns/op
+OverheadActual   4: 64 op, 84.00 ns, 1.3125 ns/op
+OverheadActual   5: 64 op, 125.00 ns, 1.9531 ns/op
+OverheadActual   6: 64 op, 83.00 ns, 1.2969 ns/op
+OverheadActual   7: 64 op, 84.00 ns, 1.3125 ns/op
+OverheadActual   8: 64 op, 83.00 ns, 1.2969 ns/op
+OverheadActual   9: 64 op, 83.00 ns, 1.2969 ns/op
+OverheadActual  10: 64 op, 41.00 ns, 0.6406 ns/op
+OverheadActual  11: 64 op, 84.00 ns, 1.3125 ns/op
+OverheadActual  12: 64 op, 83.00 ns, 1.2969 ns/op
+OverheadActual  13: 64 op, 83.00 ns, 1.2969 ns/op
+OverheadActual  14: 64 op, 250.00 ns, 3.9063 ns/op
+OverheadActual  15: 64 op, 125.00 ns, 1.9531 ns/op
+OverheadActual  16: 64 op, 84.00 ns, 1.3125 ns/op
+OverheadActual  17: 64 op, 83.00 ns, 1.2969 ns/op
+OverheadActual  18: 64 op, 84.00 ns, 1.3125 ns/op
+OverheadActual  19: 64 op, 250.00 ns, 3.9063 ns/op
+OverheadActual  20: 64 op, 166.00 ns, 2.5938 ns/op
+
+WorkloadWarmup   1: 64 op, 117744500.00 ns, 1.8398 ms/op
+
+WorkloadActual   1: 64 op, 140518000.00 ns, 2.1956 ms/op
+WorkloadActual   2: 64 op, 121815000.00 ns, 1.9034 ms/op
+WorkloadActual   3: 64 op, 121927542.00 ns, 1.9051 ms/op
+
+WorkloadResult   1: 64 op, 140517916.00 ns, 2.1956 ms/op
+WorkloadResult   2: 64 op, 121814916.00 ns, 1.9034 ms/op
+WorkloadResult   3: 64 op, 121927458.00 ns, 1.9051 ms/op
+// GC:  0 0 0 115224 64
+// Threading:  0 0 64
+
+// ! Failed to set up priority Normal for process System.Diagnostics.Process (dotnet). Make sure you have the right permissions. Message: Operation not permitted
+
+Mean = 2.001 ms, StdErr = 0.097 ms (4.85%), N = 3, StdDev = 0.168 ms
+Min = 1.903 ms, Q1 = 1.904 ms, Median = 1.905 ms, Q3 = 2.050 ms, Max = 2.196 ms
+IQR = 0.146 ms, LowerFence = 1.685 ms, UpperFence = 2.270 ms
+ConfidenceInterval = [-1.068 ms; 5.070 ms] (CI 99.9%), Margin = 3.069 ms (153.34% of Mean)
+Skewness = 0.38, Kurtosis = 0.67, MValue = 2
+
+// ** Remained 23 (95.8%) benchmark(s) to run. Estimated finish 2026-10-10 17:41 (0h 0m from now) **
+// **************************
+// Benchmark: WriterBenchmarks.Dom: InProcess(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1) [Corpus=long-ascii]
+// *** Execute ***
+// Launch: 1 / 1
+// ! Failed to set up priority High for process System.Diagnostics.Process (dotnet). Make sure you have the right permissions. Message: Permission denied
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.8
+// Runtime=.NET 10.0.11 (10.0.11, 10.0.1126.37416), Arm64 RyuJIT armv8.0-a
+// GC=Concurrent Workstation
+// HardwareIntrinsics=ArmBase+AdvSimd,AES,CRC32,DP,RDM,SHA1,SHA256 VectorSize=128
+// Job: Job-RKTMLY(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1)
+
+OverheadJitting  1: 1 op, 90042.00 ns, 90.0420 us/op
+WorkloadJitting  1: 1 op, 1853584.00 ns, 1.8536 ms/op
+
+OverheadJitting  2: 16 op, 163500.00 ns, 10.2188 us/op
+WorkloadJitting  2: 16 op, 28206292.00 ns, 1.7629 ms/op
+
+WorkloadPilot    1: 16 op, 29069875.00 ns, 1.8169 ms/op
+WorkloadPilot    2: 64 op, 119551333.00 ns, 1.8680 ms/op
+
+OverheadWarmup   1: 64 op, 1500.00 ns, 23.4375 ns/op
+OverheadWarmup   2: 64 op, 291.00 ns, 4.5469 ns/op
+OverheadWarmup   3: 64 op, 83.00 ns, 1.2969 ns/op
+OverheadWarmup   4: 64 op, 291.00 ns, 4.5469 ns/op
+OverheadWarmup   5: 64 op, 83.00 ns, 1.2969 ns/op
+OverheadWarmup   6: 64 op, 208.00 ns, 3.2500 ns/op
+OverheadWarmup   7: 64 op, 42.00 ns, 0.6563 ns/op
+
+OverheadActual   1: 64 op, 83.00 ns, 1.2969 ns/op
+OverheadActual   2: 64 op, 208.00 ns, 3.2500 ns/op
+OverheadActual   3: 64 op, 167.00 ns, 2.6094 ns/op
+OverheadActual   4: 64 op, 125.00 ns, 1.9531 ns/op
+OverheadActual   5: 64 op, 208.00 ns, 3.2500 ns/op
+OverheadActual   6: 64 op, 84.00 ns, 1.3125 ns/op
+OverheadActual   7: 64 op, 84.00 ns, 1.3125 ns/op
+OverheadActual   8: 64 op, 84.00 ns, 1.3125 ns/op
+OverheadActual   9: 64 op, 84.00 ns, 1.3125 ns/op
+OverheadActual  10: 64 op, 42.00 ns, 0.6563 ns/op
+OverheadActual  11: 64 op, 250.00 ns, 3.9063 ns/op
+OverheadActual  12: 64 op, 84.00 ns, 1.3125 ns/op
+OverheadActual  13: 64 op, 84.00 ns, 1.3125 ns/op
+OverheadActual  14: 64 op, 41.00 ns, 0.6406 ns/op
+OverheadActual  15: 64 op, 83.00 ns, 1.2969 ns/op
+OverheadActual  16: 64 op, 83.00 ns, 1.2969 ns/op
+OverheadActual  17: 64 op, 83.00 ns, 1.2969 ns/op
+OverheadActual  18: 64 op, 83.00 ns, 1.2969 ns/op
+OverheadActual  19: 64 op, 83.00 ns, 1.2969 ns/op
+OverheadActual  20: 64 op, 83.00 ns, 1.2969 ns/op
+
+WorkloadWarmup   1: 64 op, 123690958.00 ns, 1.9327 ms/op
+
+WorkloadActual   1: 64 op, 113202417.00 ns, 1.7688 ms/op
+WorkloadActual   2: 64 op, 103094209.00 ns, 1.6108 ms/op
+WorkloadActual   3: 64 op, 103502750.00 ns, 1.6172 ms/op
+
+WorkloadResult   1: 64 op, 113202333.00 ns, 1.7688 ms/op
+WorkloadResult   2: 64 op, 103094125.00 ns, 1.6108 ms/op
+WorkloadResult   3: 64 op, 103502666.00 ns, 1.6172 ms/op
+// GC:  0 0 0 114248 64
+// Threading:  0 0 64
+
+// ! Failed to set up priority Normal for process System.Diagnostics.Process (dotnet). Make sure you have the right permissions. Message: Operation not permitted
+
+Mean = 1.666 ms, StdErr = 0.052 ms (3.10%), N = 3, StdDev = 0.089 ms
+Min = 1.611 ms, Q1 = 1.614 ms, Median = 1.617 ms, Q3 = 1.693 ms, Max = 1.769 ms
+IQR = 0.079 ms, LowerFence = 1.496 ms, UpperFence = 1.811 ms
+ConfidenceInterval = [0.035 ms; 3.297 ms] (CI 99.9%), Margin = 1.631 ms (97.92% of Mean)
+Skewness = 0.38, Kurtosis = 0.67, MValue = 2
+
+// ** Remained 22 (91.7%) benchmark(s) to run. Estimated finish 2026-10-10 17:41 (0h 0m from now) **
+// **************************
+// Benchmark: WriterBenchmarks.Forward: InProcess(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1) [Corpus=multilingual]
+// *** Execute ***
+// Launch: 1 / 1
+// ! Failed to set up priority High for process System.Diagnostics.Process (dotnet). Make sure you have the right permissions. Message: Permission denied
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.8
+// Runtime=.NET 10.0.11 (10.0.11, 10.0.1126.37416), Arm64 RyuJIT armv8.0-a
+// GC=Concurrent Workstation
+// HardwareIntrinsics=ArmBase+AdvSimd,AES,CRC32,DP,RDM,SHA1,SHA256 VectorSize=128
+// Job: Job-RKTMLY(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1)
+
+OverheadJitting  1: 1 op, 112375.00 ns, 112.3750 us/op
+WorkloadJitting  1: 1 op, 3483458.00 ns, 3.4835 ms/op
+
+OverheadJitting  2: 16 op, 205834.00 ns, 12.8646 us/op
+WorkloadJitting  2: 16 op, 54741084.00 ns, 3.4213 ms/op
+
+WorkloadPilot    1: 16 op, 55098416.00 ns, 3.4437 ms/op
+WorkloadPilot    2: 32 op, 108424500.00 ns, 3.3883 ms/op
+
+OverheadWarmup   1: 32 op, 1167.00 ns, 36.4688 ns/op
+OverheadWarmup   2: 32 op, 42.00 ns, 1.3125 ns/op
+OverheadWarmup   3: 32 op, 416.00 ns, 13.0000 ns/op
+OverheadWarmup   4: 32 op, 250.00 ns, 7.8125 ns/op
+OverheadWarmup   5: 32 op, 208.00 ns, 6.5000 ns/op
+OverheadWarmup   6: 32 op, 42.00 ns, 1.3125 ns/op
+OverheadWarmup   7: 32 op, 42.00 ns, 1.3125 ns/op
+OverheadWarmup   8: 32 op, 42.00 ns, 1.3125 ns/op
+
+OverheadActual   1: 32 op, 291.00 ns, 9.0938 ns/op
+OverheadActual   2: 32 op, 84.00 ns, 2.6250 ns/op
+OverheadActual   3: 32 op, 42.00 ns, 1.3125 ns/op
+OverheadActual   4: 32 op, 0.00 ns, 0.0000 ns/op
+OverheadActual   5: 32 op, 42.00 ns, 1.3125 ns/op
+OverheadActual   6: 32 op, 208.00 ns, 6.5000 ns/op
+OverheadActual   7: 32 op, 41.00 ns, 1.2813 ns/op
+OverheadActual   8: 32 op, 167.00 ns, 5.2188 ns/op
+OverheadActual   9: 32 op, 42.00 ns, 1.3125 ns/op
+OverheadActual  10: 32 op, 41.00 ns, 1.2813 ns/op
+OverheadActual  11: 32 op, 42.00 ns, 1.3125 ns/op
+OverheadActual  12: 32 op, 41.00 ns, 1.2813 ns/op
+OverheadActual  13: 32 op, 0.00 ns, 0.0000 ns/op
+OverheadActual  14: 32 op, 42.00 ns, 1.3125 ns/op
+OverheadActual  15: 32 op, 42.00 ns, 1.3125 ns/op
+OverheadActual  16: 32 op, 42.00 ns, 1.3125 ns/op
+OverheadActual  17: 32 op, 41.00 ns, 1.2813 ns/op
+OverheadActual  18: 32 op, 0.00 ns, 0.0000 ns/op
+OverheadActual  19: 32 op, 0.00 ns, 0.0000 ns/op
+OverheadActual  20: 32 op, 42.00 ns, 1.3125 ns/op
+
+WorkloadWarmup   1: 32 op, 109344334.00 ns, 3.4170 ms/op
+
+WorkloadActual   1: 32 op, 109105417.00 ns, 3.4095 ms/op
+WorkloadActual   2: 32 op, 108045042.00 ns, 3.3764 ms/op
+WorkloadActual   3: 32 op, 107537167.00 ns, 3.3605 ms/op
+
+WorkloadResult   1: 32 op, 109105375.00 ns, 3.4095 ms/op
+WorkloadResult   2: 32 op, 108045000.00 ns, 3.3764 ms/op
+WorkloadResult   3: 32 op, 107537125.00 ns, 3.3605 ms/op
+// GC:  0 0 0 65416 32
+// Threading:  0 0 32
+
+// ! Failed to set up priority Normal for process System.Diagnostics.Process (dotnet). Make sure you have the right permissions. Message: Operation not permitted
+
+Mean = 3.382 ms, StdErr = 0.014 ms (0.43%), N = 3, StdDev = 0.025 ms
+Min = 3.361 ms, Q1 = 3.368 ms, Median = 3.376 ms, Q3 = 3.393 ms, Max = 3.410 ms
+IQR = 0.025 ms, LowerFence = 3.332 ms, UpperFence = 3.430 ms
+ConfidenceInterval = [2.926 ms; 3.838 ms] (CI 99.9%), Margin = 0.456 ms (13.49% of Mean)
+Skewness = 0.22, Kurtosis = 0.67, MValue = 2
+
+// ** Remained 21 (87.5%) benchmark(s) to run. Estimated finish 2026-10-10 17:41 (0h 0m from now) **
+// **************************
+// Benchmark: WriterBenchmarks.Dom: InProcess(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1) [Corpus=multilingual]
+// *** Execute ***
+// Launch: 1 / 1
+// ! Failed to set up priority High for process System.Diagnostics.Process (dotnet). Make sure you have the right permissions. Message: Permission denied
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.8
+// Runtime=.NET 10.0.11 (10.0.11, 10.0.1126.37416), Arm64 RyuJIT armv8.0-a
+// GC=Concurrent Workstation
+// HardwareIntrinsics=ArmBase+AdvSimd,AES,CRC32,DP,RDM,SHA1,SHA256 VectorSize=128
+// Job: Job-RKTMLY(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1)
+
+OverheadJitting  1: 1 op, 95208.00 ns, 95.2080 us/op
+WorkloadJitting  1: 1 op, 3113125.00 ns, 3.1131 ms/op
+
+OverheadJitting  2: 16 op, 227000.00 ns, 14.1875 us/op
+WorkloadJitting  2: 16 op, 50472458.00 ns, 3.1545 ms/op
+
+WorkloadPilot    1: 16 op, 50350541.00 ns, 3.1469 ms/op
+WorkloadPilot    2: 32 op, 99839083.00 ns, 3.1200 ms/op
+
+OverheadWarmup   1: 32 op, 1125.00 ns, 35.1563 ns/op
+OverheadWarmup   2: 32 op, 167.00 ns, 5.2188 ns/op
+OverheadWarmup   3: 32 op, 208.00 ns, 6.5000 ns/op
+OverheadWarmup   4: 32 op, 0.00 ns, 0.0000 ns/op
+OverheadWarmup   5: 32 op, 42.00 ns, 1.3125 ns/op
+OverheadWarmup   6: 32 op, 0.00 ns, 0.0000 ns/op
+
+OverheadActual   1: 32 op, 208.00 ns, 6.5000 ns/op
+OverheadActual   2: 32 op, 41.00 ns, 1.2813 ns/op
+OverheadActual   3: 32 op, 209.00 ns, 6.5313 ns/op
+OverheadActual   4: 32 op, 166.00 ns, 5.1875 ns/op
+OverheadActual   5: 32 op, 42.00 ns, 1.3125 ns/op
+OverheadActual   6: 32 op, 41.00 ns, 1.2813 ns/op
+OverheadActual   7: 32 op, 41.00 ns, 1.2813 ns/op
+OverheadActual   8: 32 op, 0.00 ns, 0.0000 ns/op
+OverheadActual   9: 32 op, 42.00 ns, 1.3125 ns/op
+OverheadActual  10: 32 op, 0.00 ns, 0.0000 ns/op
+OverheadActual  11: 32 op, 0.00 ns, 0.0000 ns/op
+OverheadActual  12: 32 op, 0.00 ns, 0.0000 ns/op
+OverheadActual  13: 32 op, 83.00 ns, 2.5938 ns/op
+OverheadActual  14: 32 op, 83.00 ns, 2.5938 ns/op
+OverheadActual  15: 32 op, 42.00 ns, 1.3125 ns/op
+OverheadActual  16: 32 op, 0.00 ns, 0.0000 ns/op
+OverheadActual  17: 32 op, 41.00 ns, 1.2813 ns/op
+OverheadActual  18: 32 op, 0.00 ns, 0.0000 ns/op
+OverheadActual  19: 32 op, 41.00 ns, 1.2813 ns/op
+OverheadActual  20: 32 op, 0.00 ns, 0.0000 ns/op
+
+WorkloadWarmup   1: 32 op, 100251875.00 ns, 3.1329 ms/op
+
+WorkloadActual   1: 32 op, 99674875.00 ns, 3.1148 ms/op
+WorkloadActual   2: 32 op, 100647541.00 ns, 3.1452 ms/op
+WorkloadActual   3: 32 op, 99333500.00 ns, 3.1042 ms/op
+
+WorkloadResult   1: 32 op, 99674834.00 ns, 3.1148 ms/op
+WorkloadResult   2: 32 op, 100647500.00 ns, 3.1452 ms/op
+WorkloadResult   3: 32 op, 99333459.00 ns, 3.1042 ms/op
+// GC:  0 0 0 63560 32
+// Threading:  0 0 32
+
+// ! Failed to set up priority Normal for process System.Diagnostics.Process (dotnet). Make sure you have the right permissions. Message: Operation not permitted
+
+Mean = 3.121 ms, StdErr = 0.012 ms (0.39%), N = 3, StdDev = 0.021 ms
+Min = 3.104 ms, Q1 = 3.110 ms, Median = 3.115 ms, Q3 = 3.130 ms, Max = 3.145 ms
+IQR = 0.021 ms, LowerFence = 3.079 ms, UpperFence = 3.161 ms
+ConfidenceInterval = [2.733 ms; 3.510 ms] (CI 99.9%), Margin = 0.389 ms (12.45% of Mean)
+Skewness = 0.28, Kurtosis = 0.67, MValue = 2
+
+// ** Remained 20 (83.3%) benchmark(s) to run. Estimated finish 2026-10-10 17:41 (0h 0m from now) **
+// **************************
+// Benchmark: WriterBenchmarks.Forward: InProcess(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1) [Corpus=short]
+// *** Execute ***
+// Launch: 1 / 1
+// ! Failed to set up priority High for process System.Diagnostics.Process (dotnet). Make sure you have the right permissions. Message: Permission denied
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.8
+// Runtime=.NET 10.0.11 (10.0.11, 10.0.1126.37416), Arm64 RyuJIT armv8.0-a
+// GC=Concurrent Workstation
+// HardwareIntrinsics=ArmBase+AdvSimd,AES,CRC32,DP,RDM,SHA1,SHA256 VectorSize=128
+// Job: Job-RKTMLY(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1)
+
+OverheadJitting  1: 1 op, 95959.00 ns, 95.9590 us/op
+WorkloadJitting  1: 1 op, 63750.00 ns, 63.7500 us/op
+
+OverheadJitting  2: 16 op, 190333.00 ns, 11.8958 us/op
+WorkloadJitting  2: 16 op, 226834.00 ns, 14.1771 us/op
+
+WorkloadPilot    1: 16 op, 59500.00 ns, 3.7188 us/op
+WorkloadPilot    2: 26896 op, 101614084.00 ns, 3.7780 us/op
+WorkloadPilot    3: 26480 op, 99044916.00 ns, 3.7404 us/op
+WorkloadPilot    4: 26736 op, 100277708.00 ns, 3.7507 us/op
+WorkloadPilot    5: 26672 op, 100835916.00 ns, 3.7806 us/op
+
+OverheadWarmup   1: 26672 op, 45125.00 ns, 1.6918 ns/op
+OverheadWarmup   2: 26672 op, 34042.00 ns, 1.2763 ns/op
+OverheadWarmup   3: 26672 op, 34167.00 ns, 1.2810 ns/op
+OverheadWarmup   4: 26672 op, 37041.00 ns, 1.3888 ns/op
+OverheadWarmup   5: 26672 op, 36917.00 ns, 1.3841 ns/op
+OverheadWarmup   6: 26672 op, 36958.00 ns, 1.3856 ns/op
+OverheadWarmup   7: 26672 op, 35500.00 ns, 1.3310 ns/op
+
+OverheadActual   1: 26672 op, 38042.00 ns, 1.4263 ns/op
+OverheadActual   2: 26672 op, 33792.00 ns, 1.2669 ns/op
+OverheadActual   3: 26672 op, 36792.00 ns, 1.3794 ns/op
+OverheadActual   4: 26672 op, 36625.00 ns, 1.3732 ns/op
+OverheadActual   5: 26672 op, 36458.00 ns, 1.3669 ns/op
+OverheadActual   6: 26672 op, 36417.00 ns, 1.3654 ns/op
+OverheadActual   7: 26672 op, 33583.00 ns, 1.2591 ns/op
+OverheadActual   8: 26672 op, 34125.00 ns, 1.2794 ns/op
+OverheadActual   9: 26672 op, 33500.00 ns, 1.2560 ns/op
+OverheadActual  10: 26672 op, 33292.00 ns, 1.2482 ns/op
+OverheadActual  11: 26672 op, 33375.00 ns, 1.2513 ns/op
+OverheadActual  12: 26672 op, 33334.00 ns, 1.2498 ns/op
+OverheadActual  13: 26672 op, 33333.00 ns, 1.2497 ns/op
+OverheadActual  14: 26672 op, 36125.00 ns, 1.3544 ns/op
+OverheadActual  15: 26672 op, 36917.00 ns, 1.3841 ns/op
+OverheadActual  16: 26672 op, 33416.00 ns, 1.2528 ns/op
+OverheadActual  17: 26672 op, 42167.00 ns, 1.5809 ns/op
+OverheadActual  18: 26672 op, 33583.00 ns, 1.2591 ns/op
+
+WorkloadWarmup   1: 26672 op, 99744333.00 ns, 3.7397 us/op
+
+WorkloadActual   1: 26672 op, 99565958.00 ns, 3.7330 us/op
+WorkloadActual   2: 26672 op, 99396500.00 ns, 3.7266 us/op
+WorkloadActual   3: 26672 op, 100155625.00 ns, 3.7551 us/op
+
+WorkloadResult   1: 26672 op, 99531999.50 ns, 3.7317 us/op
+WorkloadResult   2: 26672 op, 99362541.50 ns, 3.7254 us/op
+WorkloadResult   3: 26672 op, 100121666.50 ns, 3.7538 us/op
+// GC:  5 0 0 44608456 26672
+// Threading:  0 0 26672
+
+// ! Failed to set up priority Normal for process System.Diagnostics.Process (dotnet). Make sure you have the right permissions. Message: Operation not permitted
+
+Mean = 3.737 μs, StdErr = 0.009 μs (0.23%), N = 3, StdDev = 0.015 μs
+Min = 3.725 μs, Q1 = 3.729 μs, Median = 3.732 μs, Q3 = 3.743 μs, Max = 3.754 μs
+IQR = 0.014 μs, LowerFence = 3.707 μs, UpperFence = 3.764 μs
+ConfidenceInterval = [3.464 μs; 4.010 μs] (CI 99.9%), Margin = 0.273 μs (7.29% of Mean)
+Skewness = 0.31, Kurtosis = 0.67, MValue = 2
+
+// ** Remained 19 (79.2%) benchmark(s) to run. Estimated finish 2026-10-10 17:41 (0h 0m from now) **
+// **************************
+// Benchmark: WriterBenchmarks.Dom: InProcess(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1) [Corpus=short]
+// *** Execute ***
+// Launch: 1 / 1
+// ! Failed to set up priority High for process System.Diagnostics.Process (dotnet). Make sure you have the right permissions. Message: Permission denied
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.8
+// Runtime=.NET 10.0.11 (10.0.11, 10.0.1126.37416), Arm64 RyuJIT armv8.0-a
+// GC=Concurrent Workstation
+// HardwareIntrinsics=ArmBase+AdvSimd,AES,CRC32,DP,RDM,SHA1,SHA256 VectorSize=128
+// Job: Job-RKTMLY(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1)
+
+OverheadJitting  1: 1 op, 95750.00 ns, 95.7500 us/op
+WorkloadJitting  1: 1 op, 79208.00 ns, 79.2080 us/op
+
+OverheadJitting  2: 16 op, 189417.00 ns, 11.8386 us/op
+WorkloadJitting  2: 16 op, 251542.00 ns, 15.7214 us/op
+
+WorkloadPilot    1: 16 op, 70209.00 ns, 4.3881 us/op
+WorkloadPilot    2: 22800 op, 101487125.00 ns, 4.4512 us/op
+WorkloadPilot    3: 22480 op, 100959833.00 ns, 4.4911 us/op
+WorkloadPilot    4: 22272 op, 99219625.00 ns, 4.4549 us/op
+WorkloadPilot    5: 22448 op, 100512000.00 ns, 4.4775 us/op
+
+OverheadWarmup   1: 22448 op, 32625.00 ns, 1.4534 ns/op
+OverheadWarmup   2: 22448 op, 31375.00 ns, 1.3977 ns/op
+OverheadWarmup   3: 22448 op, 28916.00 ns, 1.2881 ns/op
+OverheadWarmup   4: 22448 op, 32000.00 ns, 1.4255 ns/op
+OverheadWarmup   5: 22448 op, 35708.00 ns, 1.5907 ns/op
+OverheadWarmup   6: 22448 op, 36125.00 ns, 1.6093 ns/op
+OverheadWarmup   7: 22448 op, 36375.00 ns, 1.6204 ns/op
+OverheadWarmup   8: 22448 op, 31833.00 ns, 1.4181 ns/op
+OverheadWarmup   9: 22448 op, 29291.00 ns, 1.3048 ns/op
+OverheadWarmup  10: 22448 op, 32084.00 ns, 1.4293 ns/op
+
+OverheadActual   1: 22448 op, 31792.00 ns, 1.4163 ns/op
+OverheadActual   2: 22448 op, 31875.00 ns, 1.4199 ns/op
+OverheadActual   3: 22448 op, 32250.00 ns, 1.4367 ns/op
+OverheadActual   4: 22448 op, 31500.00 ns, 1.4032 ns/op
+OverheadActual   5: 22448 op, 31500.00 ns, 1.4032 ns/op
+OverheadActual   6: 22448 op, 31375.00 ns, 1.3977 ns/op
+OverheadActual   7: 22448 op, 32125.00 ns, 1.4311 ns/op
+OverheadActual   8: 22448 op, 32167.00 ns, 1.4330 ns/op
+OverheadActual   9: 22448 op, 32167.00 ns, 1.4330 ns/op
+OverheadActual  10: 22448 op, 32250.00 ns, 1.4367 ns/op
+OverheadActual  11: 22448 op, 35916.00 ns, 1.6000 ns/op
+OverheadActual  12: 22448 op, 31417.00 ns, 1.3995 ns/op
+OverheadActual  13: 22448 op, 31542.00 ns, 1.4051 ns/op
+OverheadActual  14: 22448 op, 31625.00 ns, 1.4088 ns/op
+OverheadActual  15: 22448 op, 31458.00 ns, 1.4014 ns/op
+
+WorkloadWarmup   1: 22448 op, 100635500.00 ns, 4.4830 us/op
+
+WorkloadActual   1: 22448 op, 100256833.00 ns, 4.4662 us/op
+WorkloadActual   2: 22448 op, 100204375.00 ns, 4.4638 us/op
+WorkloadActual   3: 22448 op, 100515375.00 ns, 4.4777 us/op
+
+WorkloadResult   1: 22448 op, 100225041.00 ns, 4.4648 us/op
+WorkloadResult   2: 22448 op, 100172583.00 ns, 4.4624 us/op
+WorkloadResult   3: 22448 op, 100483583.00 ns, 4.4763 us/op
+// GC:  4 0 0 35570504 22448
+// Threading:  0 0 22448
+
+// ! Failed to set up priority Normal for process System.Diagnostics.Process (dotnet). Make sure you have the right permissions. Message: Operation not permitted
+
+Mean = 4.468 μs, StdErr = 0.004 μs (0.10%), N = 3, StdDev = 0.007 μs
+Min = 4.462 μs, Q1 = 4.464 μs, Median = 4.465 μs, Q3 = 4.471 μs, Max = 4.476 μs
+IQR = 0.007 μs, LowerFence = 4.453 μs, UpperFence = 4.481 μs
+ConfidenceInterval = [4.333 μs; 4.603 μs] (CI 99.9%), Margin = 0.135 μs (3.03% of Mean)
+Skewness = 0.34, Kurtosis = 0.67, MValue = 2
+
+// ** Remained 18 (75.0%) benchmark(s) to run. Estimated finish 2026-10-10 17:41 (0h 0m from now) **
+// ***** BenchmarkRunner: Finish  *****
+
+// * Export *
+  artifacts/M3-writer/bdn/results/Xemele.M3WriterMeasurements.WriterBenchmarks-report.csv
+  artifacts/M3-writer/bdn/results/Xemele.M3WriterMeasurements.WriterBenchmarks-report-github.md
+  artifacts/M3-writer/bdn/results/Xemele.M3WriterMeasurements.WriterBenchmarks-report.html
+
+// * Detailed results *
+WriterBenchmarks.Forward: InProcess(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1) [Corpus=long-ascii]
+Runtime = ; GC = 
+Mean = 2.001 ms, StdErr = 0.097 ms (4.85%), N = 3, StdDev = 0.168 ms
+Min = 1.903 ms, Q1 = 1.904 ms, Median = 1.905 ms, Q3 = 2.050 ms, Max = 2.196 ms
+IQR = 0.146 ms, LowerFence = 1.685 ms, UpperFence = 2.270 ms
+ConfidenceInterval = [-1.068 ms; 5.070 ms] (CI 99.9%), Margin = 3.069 ms (153.34% of Mean)
+Skewness = 0.38, Kurtosis = 0.67, MValue = 2
+-------------------- Histogram --------------------
+[1.896 ms ; 2.203 ms) | @@@
+---------------------------------------------------
+
+WriterBenchmarks.Dom: InProcess(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1) [Corpus=long-ascii]
+Runtime = ; GC = 
+Mean = 1.666 ms, StdErr = 0.052 ms (3.10%), N = 3, StdDev = 0.089 ms
+Min = 1.611 ms, Q1 = 1.614 ms, Median = 1.617 ms, Q3 = 1.693 ms, Max = 1.769 ms
+IQR = 0.079 ms, LowerFence = 1.496 ms, UpperFence = 1.811 ms
+ConfidenceInterval = [0.035 ms; 3.297 ms] (CI 99.9%), Margin = 1.631 ms (97.92% of Mean)
+Skewness = 0.38, Kurtosis = 0.67, MValue = 2
+-------------------- Histogram --------------------
+[1.608 ms ; 1.771 ms) | @@@
+---------------------------------------------------
+
+WriterBenchmarks.Forward: InProcess(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1) [Corpus=multilingual]
+Runtime = ; GC = 
+Mean = 3.382 ms, StdErr = 0.014 ms (0.43%), N = 3, StdDev = 0.025 ms
+Min = 3.361 ms, Q1 = 3.368 ms, Median = 3.376 ms, Q3 = 3.393 ms, Max = 3.410 ms
+IQR = 0.025 ms, LowerFence = 3.332 ms, UpperFence = 3.430 ms
+ConfidenceInterval = [2.926 ms; 3.838 ms] (CI 99.9%), Margin = 0.456 ms (13.49% of Mean)
+Skewness = 0.22, Kurtosis = 0.67, MValue = 2
+-------------------- Histogram --------------------
+[3.338 ms ; 3.432 ms) | @@@
+---------------------------------------------------
+
+WriterBenchmarks.Dom: InProcess(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1) [Corpus=multilingual]
+Runtime = ; GC = 
+Mean = 3.121 ms, StdErr = 0.012 ms (0.39%), N = 3, StdDev = 0.021 ms
+Min = 3.104 ms, Q1 = 3.110 ms, Median = 3.115 ms, Q3 = 3.130 ms, Max = 3.145 ms
+IQR = 0.021 ms, LowerFence = 3.079 ms, UpperFence = 3.161 ms
+ConfidenceInterval = [2.733 ms; 3.510 ms] (CI 99.9%), Margin = 0.389 ms (12.45% of Mean)
+Skewness = 0.28, Kurtosis = 0.67, MValue = 2
+-------------------- Histogram --------------------
+[3.085 ms ; 3.165 ms) | @@@
+---------------------------------------------------
+
+WriterBenchmarks.Forward: InProcess(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1) [Corpus=short]
+Runtime = ; GC = 
+Mean = 3.737 μs, StdErr = 0.009 μs (0.23%), N = 3, StdDev = 0.015 μs
+Min = 3.725 μs, Q1 = 3.729 μs, Median = 3.732 μs, Q3 = 3.743 μs, Max = 3.754 μs
+IQR = 0.014 μs, LowerFence = 3.707 μs, UpperFence = 3.764 μs
+ConfidenceInterval = [3.464 μs; 4.010 μs] (CI 99.9%), Margin = 0.273 μs (7.29% of Mean)
+Skewness = 0.31, Kurtosis = 0.67, MValue = 2
+-------------------- Histogram --------------------
+[3.712 μs ; 3.767 μs) | @@@
+---------------------------------------------------
+
+WriterBenchmarks.Dom: InProcess(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1) [Corpus=short]
+Runtime = ; GC = 
+Mean = 4.468 μs, StdErr = 0.004 μs (0.10%), N = 3, StdDev = 0.007 μs
+Min = 4.462 μs, Q1 = 4.464 μs, Median = 4.465 μs, Q3 = 4.471 μs, Max = 4.476 μs
+IQR = 0.007 μs, LowerFence = 4.453 μs, UpperFence = 4.481 μs
+ConfidenceInterval = [4.333 μs; 4.603 μs] (CI 99.9%), Margin = 0.135 μs (3.03% of Mean)
+Skewness = 0.34, Kurtosis = 0.67, MValue = 2
+-------------------- Histogram --------------------
+[4.456 μs ; 4.483 μs) | @@@
+---------------------------------------------------
+
+// * Summary *
+
+BenchmarkDotNet v0.15.8, macOS Sequoia 15.8.1 (24H32) [Darwin 24.6.0]
+Unknown processor
+.NET SDK 10.0.400
+  [Host] : .NET 10.0.11 (10.0.11, 10.0.1126.37416), Arm64 RyuJIT armv8.0-a
+
+Job=InProcess  Toolchain=InProcessEmitToolchain  IterationCount=3  
+IterationTime=100ms  WarmupCount=1  
+
+| Method  | Corpus       | Mean         | Error         | StdDev      | Ratio | RatioSD | Gen0   | Allocated | Alloc Ratio |
+|-------- |------------- |-------------:|--------------:|------------:|------:|--------:|-------:|----------:|------------:|
+| Forward | long-ascii   | 2,001.356 μs | 3,068.8909 μs | 168.2163 μs |  1.20 |    0.10 |      - |   1.76 KB |        1.01 |
+| Dom     | long-ascii   | 1,665.620 μs | 1,631.0140 μs |  89.4014 μs |  1.00 |    0.06 |      - |   1.74 KB |        1.00 |
+|         |              |              |               |             |       |         |        |           |             |
+| Forward | multilingual | 3,382.161 μs |   456.1964 μs |  25.0057 μs |  1.08 |    0.01 |      - |      2 KB |        1.03 |
+| Dom     | multilingual | 3,121.415 μs |   388.7201 μs |  21.3071 μs |  1.00 |    0.01 |      - |   1.94 KB |        1.00 |
+|         |              |              |               |             |       |         |        |           |             |
+| Forward | short        |     3.737 μs |     0.2726 μs |   0.0149 μs |  0.84 |    0.00 | 0.1875 |   1.63 KB |        1.05 |
+| Dom     | short        |     4.468 μs |     0.1353 μs |   0.0074 μs |  1.00 |    0.00 | 0.1782 |   1.55 KB |        1.00 |
+
+// * Warnings *
+MinIterationTime
+  WriterBenchmarks.Dom: InProcess     -> The minimum observed iteration time is 99.334ms which is very small. It's recommended to increase it to at least 100ms using more operations.
+  WriterBenchmarks.Forward: InProcess -> The minimum observed iteration time is 99.397ms which is very small. It's recommended to increase it to at least 100ms using more operations.
+
+// * Legends *
+  Corpus      : Value of the 'Corpus' parameter
+  Mean        : Arithmetic mean of all measurements
+  Error       : Half of 99.9% confidence interval
+  StdDev      : Standard deviation of all measurements
+  Ratio       : Mean of the ratio distribution ([Current]/[Baseline])
+  RatioSD     : Standard deviation of the ratio distribution ([Current]/[Baseline])
+  Gen0        : GC Generation 0 collects per 1000 operations
+  Allocated   : Allocated memory per single operation (managed only, inclusive, 1KB = 1024B)
+  Alloc Ratio : Allocated memory ratio distribution ([Current]/[Baseline])
+  1 μs        : 1 Microsecond (0.000001 sec)
+
+// * Diagnostic Output - MemoryDiagnoser *
+
+
+// ***** BenchmarkRunner: End *****
+Run time: 00:00:05 (5.42 sec), executed benchmarks: 6
+
+// Found 18 benchmarks:
+//   WriterScanBenchmarks.Scalar: InProcess(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1) [Corpus=dense]
+//   WriterScanBenchmarks.Cached: InProcess(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1) [Corpus=dense]
+//   WriterScanBenchmarks.Runtime: InProcess(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1) [Corpus=dense]
+//   WriterScanBenchmarks.Scalar: InProcess(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1) [Corpus=long-hit]
+//   WriterScanBenchmarks.Cached: InProcess(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1) [Corpus=long-hit]
+//   WriterScanBenchmarks.Runtime: InProcess(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1) [Corpus=long-hit]
+//   WriterScanBenchmarks.Scalar: InProcess(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1) [Corpus=long-miss]
+//   WriterScanBenchmarks.Cached: InProcess(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1) [Corpus=long-miss]
+//   WriterScanBenchmarks.Runtime: InProcess(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1) [Corpus=long-miss]
+//   WriterScanBenchmarks.Scalar: InProcess(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1) [Corpus=multilingual]
+//   WriterScanBenchmarks.Cached: InProcess(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1) [Corpus=multilingual]
+//   WriterScanBenchmarks.Runtime: InProcess(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1) [Corpus=multilingual]
+//   WriterScanBenchmarks.Scalar: InProcess(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1) [Corpus=short-hit]
+//   WriterScanBenchmarks.Cached: InProcess(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1) [Corpus=short-hit]
+//   WriterScanBenchmarks.Runtime: InProcess(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1) [Corpus=short-hit]
+//   WriterScanBenchmarks.Scalar: InProcess(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1) [Corpus=short-miss]
+//   WriterScanBenchmarks.Cached: InProcess(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1) [Corpus=short-miss]
+//   WriterScanBenchmarks.Runtime: InProcess(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1) [Corpus=short-miss]
+
+// **************************
+// Benchmark: WriterScanBenchmarks.Scalar: InProcess(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1) [Corpus=dense]
+// *** Execute ***
+// Launch: 1 / 1
+// ! Failed to set up priority High for process System.Diagnostics.Process (dotnet). Make sure you have the right permissions. Message: Permission denied
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.8
+// Runtime=.NET 10.0.11 (10.0.11, 10.0.1126.37416), Arm64 RyuJIT armv8.0-a
+// GC=Concurrent Workstation
+// HardwareIntrinsics=ArmBase+AdvSimd,AES,CRC32,DP,RDM,SHA1,SHA256 VectorSize=128
+// Job: Job-RKTMLY(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1)
+
+OverheadJitting  1: 1 op, 141459.00 ns, 141.4590 us/op
+WorkloadJitting  1: 1 op, 103792.00 ns, 103.7920 us/op
+
+OverheadJitting  2: 16 op, 219667.00 ns, 13.7292 us/op
+WorkloadJitting  2: 16 op, 165458.00 ns, 10.3411 us/op
+
+WorkloadPilot    1: 16 op, 750.00 ns, 46.8750 ns/op
+WorkloadPilot    2: 2133344 op, 11190000.00 ns, 5.2453 ns/op
+WorkloadPilot    3: 19064736 op, 95883542.00 ns, 5.0294 ns/op
+WorkloadPilot    4: 19883232 op, 100496500.00 ns, 5.0543 ns/op
+WorkloadPilot    5: 19785008 op, 55869375.00 ns, 2.8238 ns/op
+WorkloadPilot    6: 35412976 op, 35781541.00 ns, 1.0104 ns/op
+WorkloadPilot    7: 98969968 op, 99673083.00 ns, 1.0071 ns/op
+WorkloadPilot    8: 99294592 op, 100603291.00 ns, 1.0132 ns/op
+WorkloadPilot    9: 98699152 op, 99995208.00 ns, 1.0131 ns/op
+WorkloadPilot   10: 98703888 op, 99855250.00 ns, 1.0117 ns/op
+WorkloadPilot   11: 98846976 op, 99729959.00 ns, 1.0089 ns/op
+WorkloadPilot   12: 99114640 op, 99777583.00 ns, 1.0067 ns/op
+WorkloadPilot   13: 99335584 op, 100241292.00 ns, 1.0091 ns/op
+
+OverheadWarmup   1: 99335584 op, 126674083.00 ns, 1.2752 ns/op
+OverheadWarmup   2: 99335584 op, 125886500.00 ns, 1.2673 ns/op
+OverheadWarmup   3: 99335584 op, 124525834.00 ns, 1.2536 ns/op
+OverheadWarmup   4: 99335584 op, 124478792.00 ns, 1.2531 ns/op
+OverheadWarmup   5: 99335584 op, 125186625.00 ns, 1.2602 ns/op
+OverheadWarmup   6: 99335584 op, 127356250.00 ns, 1.2821 ns/op
+OverheadWarmup   7: 99335584 op, 125377875.00 ns, 1.2622 ns/op
+OverheadWarmup   8: 99335584 op, 124725000.00 ns, 1.2556 ns/op
+OverheadWarmup   9: 99335584 op, 125647000.00 ns, 1.2649 ns/op
+OverheadWarmup  10: 99335584 op, 124098208.00 ns, 1.2493 ns/op
+
+OverheadActual   1: 99335584 op, 124241416.00 ns, 1.2507 ns/op
+OverheadActual   2: 99335584 op, 124570708.00 ns, 1.2540 ns/op
+OverheadActual   3: 99335584 op, 126301916.00 ns, 1.2715 ns/op
+OverheadActual   4: 99335584 op, 125796125.00 ns, 1.2664 ns/op
+OverheadActual   5: 99335584 op, 125307541.00 ns, 1.2615 ns/op
+OverheadActual   6: 99335584 op, 124924792.00 ns, 1.2576 ns/op
+OverheadActual   7: 99335584 op, 127222000.00 ns, 1.2807 ns/op
+OverheadActual   8: 99335584 op, 124892583.00 ns, 1.2573 ns/op
+OverheadActual   9: 99335584 op, 125965292.00 ns, 1.2681 ns/op
+OverheadActual  10: 99335584 op, 126678833.00 ns, 1.2753 ns/op
+OverheadActual  11: 99335584 op, 127117209.00 ns, 1.2797 ns/op
+OverheadActual  12: 99335584 op, 127558292.00 ns, 1.2841 ns/op
+OverheadActual  13: 99335584 op, 133564125.00 ns, 1.3446 ns/op
+OverheadActual  14: 99335584 op, 126559166.00 ns, 1.2741 ns/op
+OverheadActual  15: 99335584 op, 127969250.00 ns, 1.2883 ns/op
+
+WorkloadWarmup   1: 99335584 op, 100276000.00 ns, 1.0095 ns/op
+
+WorkloadActual   1: 99335584 op, 100238375.00 ns, 1.0091 ns/op
+WorkloadActual   2: 99335584 op, 100804583.00 ns, 1.0148 ns/op
+WorkloadActual   3: 99335584 op, 100986167.00 ns, 1.0166 ns/op
+
+WorkloadResult   1: 99335584 op, 0.00 ns, 0.0000 ns/op
+WorkloadResult   2: 99335584 op, 0.00 ns, 0.0000 ns/op
+WorkloadResult   3: 99335584 op, 0.00 ns, 0.0000 ns/op
+// GC:  0 0 0 5328 99335584
+// Threading:  0 0 99335584
+
+// ! Failed to set up priority Normal for process System.Diagnostics.Process (dotnet). Make sure you have the right permissions. Message: Operation not permitted
+
+Mean = 0.000 ns, StdErr = 0.000 ns (NaN%), N = 3, StdDev = 0.000 ns
+Min = 0.000 ns, Q1 = 0.000 ns, Median = 0.000 ns, Q3 = 0.000 ns, Max = 0.000 ns
+IQR = 0.000 ns, LowerFence = 0.000 ns, UpperFence = 0.000 ns
+ConfidenceInterval = [0.000 ns; 0.000 ns] (CI 99.9%), Margin = 0.000 ns (NaN% of Mean)
+Skewness = NaN, Kurtosis = NaN, MValue = 2
+
+// ** Remained 17 (70.8%) benchmark(s) to run. Estimated finish 2026-10-10 17:41 (0h 0m from now) **
+// **************************
+// Benchmark: WriterScanBenchmarks.Cached: InProcess(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1) [Corpus=dense]
+// *** Execute ***
+// Launch: 1 / 1
+// ! Failed to set up priority High for process System.Diagnostics.Process (dotnet). Make sure you have the right permissions. Message: Permission denied
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.8
+// Runtime=.NET 10.0.11 (10.0.11, 10.0.1126.37416), Arm64 RyuJIT armv8.0-a
+// GC=Concurrent Workstation
+// HardwareIntrinsics=ArmBase+AdvSimd,AES,CRC32,DP,RDM,SHA1,SHA256 VectorSize=128
+// Job: Job-RKTMLY(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1)
+
+OverheadJitting  1: 1 op, 85125.00 ns, 85.1250 us/op
+WorkloadJitting  1: 1 op, 54459.00 ns, 54.4590 us/op
+
+OverheadJitting  2: 16 op, 173084.00 ns, 10.8178 us/op
+WorkloadJitting  2: 16 op, 161834.00 ns, 10.1146 us/op
+
+WorkloadPilot    1: 16 op, 1125.00 ns, 70.3125 ns/op
+WorkloadPilot    2: 1422224 op, 11080333.00 ns, 7.7908 ns/op
+WorkloadPilot    3: 12835584 op, 101167208.00 ns, 7.8818 ns/op
+WorkloadPilot    4: 12687504 op, 18934458.00 ns, 1.4924 ns/op
+WorkloadPilot    5: 67007488 op, 100679500.00 ns, 1.5025 ns/op
+WorkloadPilot    6: 66555248 op, 100931500.00 ns, 1.5165 ns/op
+
+OverheadWarmup   1: 66555248 op, 84777458.00 ns, 1.2738 ns/op
+OverheadWarmup   2: 66555248 op, 84771375.00 ns, 1.2737 ns/op
+OverheadWarmup   3: 66555248 op, 84433083.00 ns, 1.2686 ns/op
+OverheadWarmup   4: 66555248 op, 84894375.00 ns, 1.2755 ns/op
+OverheadWarmup   5: 66555248 op, 84334750.00 ns, 1.2671 ns/op
+OverheadWarmup   6: 66555248 op, 84547084.00 ns, 1.2703 ns/op
+OverheadWarmup   7: 66555248 op, 84318000.00 ns, 1.2669 ns/op
+
+OverheadActual   1: 66555248 op, 85099667.00 ns, 1.2786 ns/op
+OverheadActual   2: 66555248 op, 84248916.00 ns, 1.2658 ns/op
+OverheadActual   3: 66555248 op, 83514500.00 ns, 1.2548 ns/op
+OverheadActual   4: 66555248 op, 83717042.00 ns, 1.2579 ns/op
+OverheadActual   5: 66555248 op, 85682791.00 ns, 1.2874 ns/op
+OverheadActual   6: 66555248 op, 85299083.00 ns, 1.2816 ns/op
+OverheadActual   7: 66555248 op, 84618375.00 ns, 1.2714 ns/op
+OverheadActual   8: 66555248 op, 84539334.00 ns, 1.2702 ns/op
+OverheadActual   9: 66555248 op, 84589958.00 ns, 1.2710 ns/op
+OverheadActual  10: 66555248 op, 83923375.00 ns, 1.2610 ns/op
+OverheadActual  11: 66555248 op, 84669250.00 ns, 1.2722 ns/op
+OverheadActual  12: 66555248 op, 85279000.00 ns, 1.2813 ns/op
+OverheadActual  13: 66555248 op, 83804167.00 ns, 1.2592 ns/op
+OverheadActual  14: 66555248 op, 84833666.00 ns, 1.2746 ns/op
+OverheadActual  15: 66555248 op, 83846625.00 ns, 1.2598 ns/op
+
+WorkloadWarmup   1: 66555248 op, 103118500.00 ns, 1.5494 ns/op
+
+WorkloadActual   1: 66555248 op, 100890500.00 ns, 1.5159 ns/op
+WorkloadActual   2: 66555248 op, 102047584.00 ns, 1.5333 ns/op
+WorkloadActual   3: 66555248 op, 102571875.00 ns, 1.5412 ns/op
+
+WorkloadResult   1: 66555248 op, 16300542.00 ns, 0.2449 ns/op
+WorkloadResult   2: 66555248 op, 17457626.00 ns, 0.2623 ns/op
+WorkloadResult   3: 66555248 op, 17981917.00 ns, 0.2702 ns/op
+// GC:  0 0 0 5328 66555248
+// Threading:  0 0 66555248
+
+// ! Failed to set up priority Normal for process System.Diagnostics.Process (dotnet). Make sure you have the right permissions. Message: Operation not permitted
+
+Mean = 0.259 ns, StdErr = 0.007 ns (2.88%), N = 3, StdDev = 0.013 ns
+Min = 0.245 ns, Q1 = 0.254 ns, Median = 0.262 ns, Q3 = 0.266 ns, Max = 0.270 ns
+IQR = 0.013 ns, LowerFence = 0.235 ns, UpperFence = 0.285 ns
+ConfidenceInterval = [0.023 ns; 0.495 ns] (CI 99.9%), Margin = 0.236 ns (91.00% of Mean)
+Skewness = -0.23, Kurtosis = 0.67, MValue = 2
+
+// ** Remained 16 (66.7%) benchmark(s) to run. Estimated finish 2026-10-10 17:41 (0h 0m from now) **
+// **************************
+// Benchmark: WriterScanBenchmarks.Runtime: InProcess(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1) [Corpus=dense]
+// *** Execute ***
+// Launch: 1 / 1
+// ! Failed to set up priority High for process System.Diagnostics.Process (dotnet). Make sure you have the right permissions. Message: Permission denied
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.8
+// Runtime=.NET 10.0.11 (10.0.11, 10.0.1126.37416), Arm64 RyuJIT armv8.0-a
+// GC=Concurrent Workstation
+// HardwareIntrinsics=ArmBase+AdvSimd,AES,CRC32,DP,RDM,SHA1,SHA256 VectorSize=128
+// Job: Job-RKTMLY(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1)
+
+OverheadJitting  1: 1 op, 108416.00 ns, 108.4160 us/op
+WorkloadJitting  1: 1 op, 77875.00 ns, 77.8750 us/op
+
+OverheadJitting  2: 16 op, 189792.00 ns, 11.8620 us/op
+WorkloadJitting  2: 16 op, 159083.00 ns, 9.9427 us/op
+
+WorkloadPilot    1: 16 op, 2500.00 ns, 156.2500 ns/op
+WorkloadPilot    2: 640000 op, 3385375.00 ns, 5.2896 ns/op
+WorkloadPilot    3: 18904848 op, 100544709.00 ns, 5.3185 ns/op
+WorkloadPilot    4: 18802432 op, 97485375.00 ns, 5.1847 ns/op
+WorkloadPilot    5: 19287440 op, 33355334.00 ns, 1.7294 ns/op
+WorkloadPilot    6: 57824160 op, 87738417.00 ns, 1.5173 ns/op
+WorkloadPilot    7: 65905184 op, 98737875.00 ns, 1.4982 ns/op
+WorkloadPilot    8: 66747632 op, 100011167.00 ns, 1.4983 ns/op
+WorkloadPilot    9: 66740192 op, 99246125.00 ns, 1.4871 ns/op
+WorkloadPilot   10: 67247152 op, 101101750.00 ns, 1.5034 ns/op
+
+OverheadWarmup   1: 67247152 op, 83731875.00 ns, 1.2451 ns/op
+OverheadWarmup   2: 67247152 op, 84830417.00 ns, 1.2615 ns/op
+OverheadWarmup   3: 67247152 op, 83533958.00 ns, 1.2422 ns/op
+OverheadWarmup   4: 67247152 op, 84352458.00 ns, 1.2544 ns/op
+OverheadWarmup   5: 67247152 op, 85032542.00 ns, 1.2645 ns/op
+OverheadWarmup   6: 67247152 op, 85313500.00 ns, 1.2687 ns/op
+OverheadWarmup   7: 67247152 op, 84306292.00 ns, 1.2537 ns/op
+
+OverheadActual   1: 67247152 op, 85177000.00 ns, 1.2666 ns/op
+OverheadActual   2: 67247152 op, 83893584.00 ns, 1.2475 ns/op
+OverheadActual   3: 67247152 op, 85060708.00 ns, 1.2649 ns/op
+OverheadActual   4: 67247152 op, 85348958.00 ns, 1.2692 ns/op
+OverheadActual   5: 67247152 op, 84448709.00 ns, 1.2558 ns/op
+OverheadActual   6: 67247152 op, 84011666.00 ns, 1.2493 ns/op
+OverheadActual   7: 67247152 op, 84379959.00 ns, 1.2548 ns/op
+OverheadActual   8: 67247152 op, 83279792.00 ns, 1.2384 ns/op
+OverheadActual   9: 67247152 op, 85410000.00 ns, 1.2701 ns/op
+OverheadActual  10: 67247152 op, 84971875.00 ns, 1.2636 ns/op
+OverheadActual  11: 67247152 op, 83581000.00 ns, 1.2429 ns/op
+OverheadActual  12: 67247152 op, 84652375.00 ns, 1.2588 ns/op
+OverheadActual  13: 67247152 op, 85198042.00 ns, 1.2669 ns/op
+OverheadActual  14: 67247152 op, 84476666.00 ns, 1.2562 ns/op
+OverheadActual  15: 67247152 op, 85798041.00 ns, 1.2759 ns/op
+
+WorkloadWarmup   1: 67247152 op, 99635334.00 ns, 1.4816 ns/op
+
+WorkloadActual   1: 67247152 op, 99187542.00 ns, 1.4750 ns/op
+WorkloadActual   2: 67247152 op, 98629250.00 ns, 1.4667 ns/op
+WorkloadActual   3: 67247152 op, 98715834.00 ns, 1.4680 ns/op
+
+WorkloadResult   1: 67247152 op, 14535167.00 ns, 0.2161 ns/op
+WorkloadResult   2: 67247152 op, 13976875.00 ns, 0.2078 ns/op
+WorkloadResult   3: 67247152 op, 14063459.00 ns, 0.2091 ns/op
+// GC:  0 0 0 5328 67247152
+// Threading:  0 0 67247152
+
+// ! Failed to set up priority Normal for process System.Diagnostics.Process (dotnet). Make sure you have the right permissions. Message: Operation not permitted
+
+Mean = 0.211 ns, StdErr = 0.003 ns (1.22%), N = 3, StdDev = 0.004 ns
+Min = 0.208 ns, Q1 = 0.208 ns, Median = 0.209 ns, Q3 = 0.213 ns, Max = 0.216 ns
+IQR = 0.004 ns, LowerFence = 0.202 ns, UpperFence = 0.219 ns
+ConfidenceInterval = [0.130 ns; 0.293 ns] (CI 99.9%), Margin = 0.082 ns (38.63% of Mean)
+Skewness = 0.35, Kurtosis = 0.67, MValue = 2
+
+// ** Remained 15 (62.5%) benchmark(s) to run. Estimated finish 2026-10-10 17:41 (0h 0m from now) **
+// **************************
+// Benchmark: WriterScanBenchmarks.Scalar: InProcess(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1) [Corpus=long-hit]
+// *** Execute ***
+// Launch: 1 / 1
+// ! Failed to set up priority High for process System.Diagnostics.Process (dotnet). Make sure you have the right permissions. Message: Permission denied
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.8
+// Runtime=.NET 10.0.11 (10.0.11, 10.0.1126.37416), Arm64 RyuJIT armv8.0-a
+// GC=Concurrent Workstation
+// HardwareIntrinsics=ArmBase+AdvSimd,AES,CRC32,DP,RDM,SHA1,SHA256 VectorSize=128
+// Job: Job-RKTMLY(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1)
+
+OverheadJitting  1: 1 op, 84500.00 ns, 84.5000 us/op
+WorkloadJitting  1: 1 op, 55166.00 ns, 55.1660 us/op
+
+OverheadJitting  2: 16 op, 187208.00 ns, 11.7005 us/op
+WorkloadJitting  2: 16 op, 261875.00 ns, 16.3672 us/op
+
+WorkloadPilot    1: 16 op, 94125.00 ns, 5.8828 us/op
+WorkloadPilot    2: 17008 op, 100148209.00 ns, 5.8883 us/op
+WorkloadPilot    3: 16992 op, 99317417.00 ns, 5.8450 us/op
+WorkloadPilot    4: 17120 op, 100263458.00 ns, 5.8565 us/op
+WorkloadPilot    5: 17088 op, 101050125.00 ns, 5.9135 us/op
+
+OverheadWarmup   1: 17088 op, 24167.00 ns, 1.4143 ns/op
+OverheadWarmup   2: 17088 op, 27625.00 ns, 1.6166 ns/op
+OverheadWarmup   3: 17088 op, 24375.00 ns, 1.4264 ns/op
+OverheadWarmup   4: 17088 op, 22667.00 ns, 1.3265 ns/op
+OverheadWarmup   5: 17088 op, 24208.00 ns, 1.4167 ns/op
+OverheadWarmup   6: 17088 op, 24167.00 ns, 1.4143 ns/op
+
+OverheadActual   1: 17088 op, 24291.00 ns, 1.4215 ns/op
+OverheadActual   2: 17088 op, 24333.00 ns, 1.4240 ns/op
+OverheadActual   3: 17088 op, 24375.00 ns, 1.4264 ns/op
+OverheadActual   4: 17088 op, 24167.00 ns, 1.4143 ns/op
+OverheadActual   5: 17088 op, 24208.00 ns, 1.4167 ns/op
+OverheadActual   6: 17088 op, 24250.00 ns, 1.4191 ns/op
+OverheadActual   7: 17088 op, 24375.00 ns, 1.4264 ns/op
+OverheadActual   8: 17088 op, 24375.00 ns, 1.4264 ns/op
+OverheadActual   9: 17088 op, 24584.00 ns, 1.4387 ns/op
+OverheadActual  10: 17088 op, 27083.00 ns, 1.5849 ns/op
+OverheadActual  11: 17088 op, 24125.00 ns, 1.4118 ns/op
+OverheadActual  12: 17088 op, 24042.00 ns, 1.4070 ns/op
+OverheadActual  13: 17088 op, 24125.00 ns, 1.4118 ns/op
+OverheadActual  14: 17088 op, 24417.00 ns, 1.4289 ns/op
+OverheadActual  15: 17088 op, 24625.00 ns, 1.4411 ns/op
+
+WorkloadWarmup   1: 17088 op, 100620166.00 ns, 5.8884 us/op
+
+WorkloadActual   1: 17088 op, 100261291.00 ns, 5.8674 us/op
+WorkloadActual   2: 17088 op, 100250000.00 ns, 5.8667 us/op
+WorkloadActual   3: 17088 op, 99421375.00 ns, 5.8182 us/op
+
+WorkloadResult   1: 17088 op, 100236958.00 ns, 5.8659 us/op
+WorkloadResult   2: 17088 op, 100225667.00 ns, 5.8653 us/op
+WorkloadResult   3: 17088 op, 99397042.00 ns, 5.8168 us/op
+// GC:  0 0 0 5328 17088
+// Threading:  0 0 17088
+
+// ! Failed to set up priority Normal for process System.Diagnostics.Process (dotnet). Make sure you have the right permissions. Message: Operation not permitted
+
+Mean = 5.849 μs, StdErr = 0.016 μs (0.28%), N = 3, StdDev = 0.028 μs
+Min = 5.817 μs, Q1 = 5.841 μs, Median = 5.865 μs, Q3 = 5.866 μs, Max = 5.866 μs
+IQR = 0.025 μs, LowerFence = 5.804 μs, UpperFence = 5.902 μs
+ConfidenceInterval = [5.335 μs; 6.364 μs] (CI 99.9%), Margin = 0.514 μs (8.79% of Mean)
+Skewness = -0.38, Kurtosis = 0.67, MValue = 2
+
+// ** Remained 14 (58.3%) benchmark(s) to run. Estimated finish 2026-10-10 17:41 (0h 0m from now) **
+// **************************
+// Benchmark: WriterScanBenchmarks.Cached: InProcess(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1) [Corpus=long-hit]
+// *** Execute ***
+// Launch: 1 / 1
+// ! Failed to set up priority High for process System.Diagnostics.Process (dotnet). Make sure you have the right permissions. Message: Permission denied
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.8
+// Runtime=.NET 10.0.11 (10.0.11, 10.0.1126.37416), Arm64 RyuJIT armv8.0-a
+// GC=Concurrent Workstation
+// HardwareIntrinsics=ArmBase+AdvSimd,AES,CRC32,DP,RDM,SHA1,SHA256 VectorSize=128
+// Job: Job-RKTMLY(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1)
+
+OverheadJitting  1: 1 op, 114208.00 ns, 114.2080 us/op
+WorkloadJitting  1: 1 op, 126667.00 ns, 126.6670 us/op
+
+OverheadJitting  2: 16 op, 190083.00 ns, 11.8802 us/op
+WorkloadJitting  2: 16 op, 155792.00 ns, 9.7370 us/op
+
+WorkloadPilot    1: 16 op, 6083.00 ns, 380.1875 ns/op
+WorkloadPilot    2: 263040 op, 83824042.00 ns, 318.6741 ns/op
+WorkloadPilot    3: 313808 op, 100259084.00 ns, 319.4918 ns/op
+WorkloadPilot    4: 313008 op, 99878708.00 ns, 319.0931 ns/op
+WorkloadPilot    5: 313392 op, 99180333.00 ns, 316.4737 ns/op
+WorkloadPilot    6: 315984 op, 101449500.00 ns, 321.0590 ns/op
+WorkloadPilot    7: 311472 op, 99550542.00 ns, 319.6131 ns/op
+WorkloadPilot    8: 312880 op, 99988459.00 ns, 319.5745 ns/op
+WorkloadPilot    9: 312928 op, 99183417.00 ns, 316.9528 ns/op
+WorkloadPilot   10: 315504 op, 99799125.00 ns, 316.3165 ns/op
+WorkloadPilot   11: 316144 op, 101485458.00 ns, 321.0102 ns/op
+
+OverheadWarmup   1: 316144 op, 372084.00 ns, 1.1769 ns/op
+OverheadWarmup   2: 316144 op, 367584.00 ns, 1.1627 ns/op
+OverheadWarmup   3: 316144 op, 372875.00 ns, 1.1794 ns/op
+OverheadWarmup   4: 316144 op, 408958.00 ns, 1.2936 ns/op
+OverheadWarmup   5: 316144 op, 370750.00 ns, 1.1727 ns/op
+OverheadWarmup   6: 316144 op, 369333.00 ns, 1.1682 ns/op
+OverheadWarmup   7: 316144 op, 377292.00 ns, 1.1934 ns/op
+OverheadWarmup   8: 316144 op, 367042.00 ns, 1.1610 ns/op
+
+OverheadActual   1: 316144 op, 371959.00 ns, 1.1765 ns/op
+OverheadActual   2: 316144 op, 398000.00 ns, 1.2589 ns/op
+OverheadActual   3: 316144 op, 414042.00 ns, 1.3097 ns/op
+OverheadActual   4: 316144 op, 367833.00 ns, 1.1635 ns/op
+OverheadActual   5: 316144 op, 371667.00 ns, 1.1756 ns/op
+OverheadActual   6: 316144 op, 367125.00 ns, 1.1613 ns/op
+OverheadActual   7: 316144 op, 376375.00 ns, 1.1905 ns/op
+OverheadActual   8: 316144 op, 451333.00 ns, 1.4276 ns/op
+OverheadActual   9: 316144 op, 375583.00 ns, 1.1880 ns/op
+OverheadActual  10: 316144 op, 370583.00 ns, 1.1722 ns/op
+OverheadActual  11: 316144 op, 369125.00 ns, 1.1676 ns/op
+OverheadActual  12: 316144 op, 396708.00 ns, 1.2548 ns/op
+OverheadActual  13: 316144 op, 404292.00 ns, 1.2788 ns/op
+OverheadActual  14: 316144 op, 370250.00 ns, 1.1711 ns/op
+OverheadActual  15: 316144 op, 375875.00 ns, 1.1889 ns/op
+
+WorkloadWarmup   1: 316144 op, 100650417.00 ns, 318.3689 ns/op
+
+WorkloadActual   1: 316144 op, 100050833.00 ns, 316.4723 ns/op
+WorkloadActual   2: 316144 op, 100057375.00 ns, 316.4930 ns/op
+WorkloadActual   3: 316144 op, 100478875.00 ns, 317.8263 ns/op
+
+WorkloadResult   1: 316144 op, 99675250.00 ns, 315.2843 ns/op
+WorkloadResult   2: 316144 op, 99681792.00 ns, 315.3050 ns/op
+WorkloadResult   3: 316144 op, 100103292.00 ns, 316.6383 ns/op
+// GC:  0 0 0 5328 316144
+// Threading:  0 0 316144
+
+// ! Failed to set up priority Normal for process System.Diagnostics.Process (dotnet). Make sure you have the right permissions. Message: Operation not permitted
+
+Mean = 315.743 ns, StdErr = 0.448 ns (0.14%), N = 3, StdDev = 0.776 ns
+Min = 315.284 ns, Q1 = 315.295 ns, Median = 315.305 ns, Q3 = 315.972 ns, Max = 316.638 ns
+IQR = 0.677 ns, LowerFence = 314.279 ns, UpperFence = 316.987 ns
+ConfidenceInterval = [301.589 ns; 329.896 ns] (CI 99.9%), Margin = 14.153 ns (4.48% of Mean)
+Skewness = 0.38, Kurtosis = 0.67, MValue = 2
+
+// ** Remained 13 (54.2%) benchmark(s) to run. Estimated finish 2026-10-10 17:41 (0h 0m from now) **
+// **************************
+// Benchmark: WriterScanBenchmarks.Runtime: InProcess(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1) [Corpus=long-hit]
+// *** Execute ***
+// Launch: 1 / 1
+// ! Failed to set up priority High for process System.Diagnostics.Process (dotnet). Make sure you have the right permissions. Message: Permission denied
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.8
+// Runtime=.NET 10.0.11 (10.0.11, 10.0.1126.37416), Arm64 RyuJIT armv8.0-a
+// GC=Concurrent Workstation
+// HardwareIntrinsics=ArmBase+AdvSimd,AES,CRC32,DP,RDM,SHA1,SHA256 VectorSize=128
+// Job: Job-RKTMLY(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1)
+
+OverheadJitting  1: 1 op, 77417.00 ns, 77.4170 us/op
+WorkloadJitting  1: 1 op, 92209.00 ns, 92.2090 us/op
+
+OverheadJitting  2: 16 op, 201666.00 ns, 12.6041 us/op
+WorkloadJitting  2: 16 op, 168750.00 ns, 10.5469 us/op
+
+WorkloadPilot    1: 16 op, 14875.00 ns, 929.6875 ns/op
+WorkloadPilot    2: 107568 op, 74280583.00 ns, 690.5454 ns/op
+WorkloadPilot    3: 144816 op, 100239667.00 ns, 692.1864 ns/op
+WorkloadPilot    4: 144480 op, 99622833.00 ns, 689.5268 ns/op
+WorkloadPilot    5: 145040 op, 101358167.00 ns, 698.8291 ns/op
+WorkloadPilot    6: 143104 op, 100176708.00 ns, 700.0273 ns/op
+
+OverheadWarmup   1: 143104 op, 186208.00 ns, 1.3012 ns/op
+OverheadWarmup   2: 143104 op, 181792.00 ns, 1.2703 ns/op
+OverheadWarmup   3: 143104 op, 187792.00 ns, 1.3123 ns/op
+OverheadWarmup   4: 143104 op, 199084.00 ns, 1.3912 ns/op
+OverheadWarmup   5: 143104 op, 188083.00 ns, 1.3143 ns/op
+OverheadWarmup   6: 143104 op, 191125.00 ns, 1.3356 ns/op
+OverheadWarmup   7: 143104 op, 175375.00 ns, 1.2255 ns/op
+
+OverheadActual   1: 143104 op, 184167.00 ns, 1.2869 ns/op
+OverheadActual   2: 143104 op, 183791.00 ns, 1.2843 ns/op
+OverheadActual   3: 143104 op, 180167.00 ns, 1.2590 ns/op
+OverheadActual   4: 143104 op, 189125.00 ns, 1.3216 ns/op
+OverheadActual   5: 143104 op, 188083.00 ns, 1.3143 ns/op
+OverheadActual   6: 143104 op, 192625.00 ns, 1.3460 ns/op
+OverheadActual   7: 143104 op, 179375.00 ns, 1.2535 ns/op
+OverheadActual   8: 143104 op, 181833.00 ns, 1.2706 ns/op
+OverheadActual   9: 143104 op, 183334.00 ns, 1.2811 ns/op
+OverheadActual  10: 143104 op, 188375.00 ns, 1.3164 ns/op
+OverheadActual  11: 143104 op, 188000.00 ns, 1.3137 ns/op
+OverheadActual  12: 143104 op, 171625.00 ns, 1.1993 ns/op
+OverheadActual  13: 143104 op, 169917.00 ns, 1.1874 ns/op
+OverheadActual  14: 143104 op, 170125.00 ns, 1.1888 ns/op
+OverheadActual  15: 143104 op, 183000.00 ns, 1.2788 ns/op
+
+WorkloadWarmup   1: 143104 op, 99406458.00 ns, 694.6449 ns/op
+
+WorkloadActual   1: 143104 op, 98493250.00 ns, 688.2634 ns/op
+WorkloadActual   2: 143104 op, 98987208.00 ns, 691.7152 ns/op
+WorkloadActual   3: 143104 op, 99707375.00 ns, 696.7476 ns/op
+
+WorkloadResult   1: 143104 op, 98309916.00 ns, 686.9823 ns/op
+WorkloadResult   2: 143104 op, 98803874.00 ns, 690.4340 ns/op
+WorkloadResult   3: 143104 op, 99524041.00 ns, 695.4665 ns/op
+// GC:  0 0 0 5328 143104
+// Threading:  0 0 143104
+
+// ! Failed to set up priority Normal for process System.Diagnostics.Process (dotnet). Make sure you have the right permissions. Message: Operation not permitted
+
+Mean = 690.961 ns, StdErr = 2.463 ns (0.36%), N = 3, StdDev = 4.267 ns
+Min = 686.982 ns, Q1 = 688.708 ns, Median = 690.434 ns, Q3 = 692.950 ns, Max = 695.467 ns
+IQR = 4.242 ns, LowerFence = 682.345 ns, UpperFence = 699.313 ns
+ConfidenceInterval = [613.123 ns; 768.799 ns] (CI 99.9%), Margin = 77.838 ns (11.27% of Mean)
+Skewness = 0.12, Kurtosis = 0.67, MValue = 2
+
+// ** Remained 12 (50.0%) benchmark(s) to run. Estimated finish 2026-10-10 17:41 (0h 0m from now) **
+// **************************
+// Benchmark: WriterScanBenchmarks.Scalar: InProcess(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1) [Corpus=long-miss]
+// *** Execute ***
+// Launch: 1 / 1
+// ! Failed to set up priority High for process System.Diagnostics.Process (dotnet). Make sure you have the right permissions. Message: Permission denied
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.8
+// Runtime=.NET 10.0.11 (10.0.11, 10.0.1126.37416), Arm64 RyuJIT armv8.0-a
+// GC=Concurrent Workstation
+// HardwareIntrinsics=ArmBase+AdvSimd,AES,CRC32,DP,RDM,SHA1,SHA256 VectorSize=128
+// Job: Job-RKTMLY(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1)
+
+OverheadJitting  1: 1 op, 91208.00 ns, 91.2080 us/op
+WorkloadJitting  1: 1 op, 55625.00 ns, 55.6250 us/op
+
+OverheadJitting  2: 16 op, 188084.00 ns, 11.7553 us/op
+WorkloadJitting  2: 16 op, 301209.00 ns, 18.8256 us/op
+
+WorkloadPilot    1: 16 op, 108042.00 ns, 6.7526 us/op
+WorkloadPilot    2: 14816 op, 87658375.00 ns, 5.9165 us/op
+WorkloadPilot    3: 16912 op, 99914083.00 ns, 5.9079 us/op
+WorkloadPilot    4: 16928 op, 99049208.00 ns, 5.8512 us/op
+WorkloadPilot    5: 17104 op, 100668375.00 ns, 5.8857 us/op
+WorkloadPilot    6: 16992 op, 101143916.00 ns, 5.9524 us/op
+WorkloadPilot    7: 16800 op, 99983833.00 ns, 5.9514 us/op
+WorkloadPilot    8: 16816 op, 99925792.00 ns, 5.9423 us/op
+WorkloadPilot    9: 16832 op, 99758916.00 ns, 5.9267 us/op
+WorkloadPilot   10: 16880 op, 99210208.00 ns, 5.8774 us/op
+WorkloadPilot   11: 17024 op, 101509708.00 ns, 5.9627 us/op
+
+OverheadWarmup   1: 17024 op, 26917.00 ns, 1.5811 ns/op
+OverheadWarmup   2: 17024 op, 24250.00 ns, 1.4245 ns/op
+OverheadWarmup   3: 17024 op, 24417.00 ns, 1.4343 ns/op
+OverheadWarmup   4: 17024 op, 24958.00 ns, 1.4660 ns/op
+OverheadWarmup   5: 17024 op, 23584.00 ns, 1.3853 ns/op
+OverheadWarmup   6: 17024 op, 22250.00 ns, 1.3070 ns/op
+OverheadWarmup   7: 17024 op, 22833.00 ns, 1.3412 ns/op
+OverheadWarmup   8: 17024 op, 24250.00 ns, 1.4245 ns/op
+OverheadWarmup   9: 17024 op, 24250.00 ns, 1.4245 ns/op
+
+OverheadActual   1: 17024 op, 22750.00 ns, 1.3363 ns/op
+OverheadActual   2: 17024 op, 24292.00 ns, 1.4269 ns/op
+OverheadActual   3: 17024 op, 24417.00 ns, 1.4343 ns/op
+OverheadActual   4: 17024 op, 24500.00 ns, 1.4391 ns/op
+OverheadActual   5: 17024 op, 27833.00 ns, 1.6349 ns/op
+OverheadActual   6: 17024 op, 24166.00 ns, 1.4195 ns/op
+OverheadActual   7: 17024 op, 24125.00 ns, 1.4171 ns/op
+OverheadActual   8: 17024 op, 24625.00 ns, 1.4465 ns/op
+OverheadActual   9: 17024 op, 25041.00 ns, 1.4709 ns/op
+OverheadActual  10: 17024 op, 25000.00 ns, 1.4685 ns/op
+OverheadActual  11: 17024 op, 25209.00 ns, 1.4808 ns/op
+OverheadActual  12: 17024 op, 27875.00 ns, 1.6374 ns/op
+OverheadActual  13: 17024 op, 28292.00 ns, 1.6619 ns/op
+OverheadActual  14: 17024 op, 22917.00 ns, 1.3462 ns/op
+OverheadActual  15: 17024 op, 24334.00 ns, 1.4294 ns/op
+
+WorkloadWarmup   1: 17024 op, 100374333.00 ns, 5.8960 us/op
+
+WorkloadActual   1: 17024 op, 100577167.00 ns, 5.9080 us/op
+WorkloadActual   2: 17024 op, 99513667.00 ns, 5.8455 us/op
+WorkloadActual   3: 17024 op, 101624458.00 ns, 5.9695 us/op
+
+WorkloadResult   1: 17024 op, 100552667.00 ns, 5.9065 us/op
+WorkloadResult   2: 17024 op, 99489167.00 ns, 5.8441 us/op
+WorkloadResult   3: 17024 op, 101599958.00 ns, 5.9680 us/op
+// GC:  0 0 0 5328 17024
+// Threading:  0 0 17024
+
+// ! Failed to set up priority Normal for process System.Diagnostics.Process (dotnet). Make sure you have the right permissions. Message: Operation not permitted
+
+Mean = 5.906 μs, StdErr = 0.036 μs (0.61%), N = 3, StdDev = 0.062 μs
+Min = 5.844 μs, Q1 = 5.875 μs, Median = 5.907 μs, Q3 = 5.937 μs, Max = 5.968 μs
+IQR = 0.062 μs, LowerFence = 5.782 μs, UpperFence = 6.030 μs
+ConfidenceInterval = [4.775 μs; 7.037 μs] (CI 99.9%), Margin = 1.131 μs (19.15% of Mean)
+Skewness = -0.01, Kurtosis = 0.67, MValue = 2
+
+// ** Remained 11 (45.8%) benchmark(s) to run. Estimated finish 2026-10-10 17:41 (0h 0m from now) **
+// **************************
+// Benchmark: WriterScanBenchmarks.Cached: InProcess(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1) [Corpus=long-miss]
+// *** Execute ***
+// Launch: 1 / 1
+// ! Failed to set up priority High for process System.Diagnostics.Process (dotnet). Make sure you have the right permissions. Message: Permission denied
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.8
+// Runtime=.NET 10.0.11 (10.0.11, 10.0.1126.37416), Arm64 RyuJIT armv8.0-a
+// GC=Concurrent Workstation
+// HardwareIntrinsics=ArmBase+AdvSimd,AES,CRC32,DP,RDM,SHA1,SHA256 VectorSize=128
+// Job: Job-RKTMLY(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1)
+
+OverheadJitting  1: 1 op, 96500.00 ns, 96.5000 us/op
+WorkloadJitting  1: 1 op, 55959.00 ns, 55.9590 us/op
+
+OverheadJitting  2: 16 op, 158834.00 ns, 9.9271 us/op
+WorkloadJitting  2: 16 op, 153709.00 ns, 9.6068 us/op
+
+WorkloadPilot    1: 16 op, 7375.00 ns, 460.9375 ns/op
+WorkloadPilot    2: 216960 op, 68758333.00 ns, 316.9171 ns/op
+WorkloadPilot    3: 315552 op, 100643500.00 ns, 318.9443 ns/op
+WorkloadPilot    4: 313536 op, 99855667.00 ns, 318.4823 ns/op
+WorkloadPilot    5: 314000 op, 100322083.00 ns, 319.4971 ns/op
+WorkloadPilot    6: 312992 op, 100069792.00 ns, 319.7200 ns/op
+
+OverheadWarmup   1: 312992 op, 366375.00 ns, 1.1706 ns/op
+OverheadWarmup   2: 312992 op, 369542.00 ns, 1.1807 ns/op
+OverheadWarmup   3: 312992 op, 369000.00 ns, 1.1789 ns/op
+OverheadWarmup   4: 312992 op, 370583.00 ns, 1.1840 ns/op
+OverheadWarmup   5: 312992 op, 408250.00 ns, 1.3043 ns/op
+OverheadWarmup   6: 312992 op, 374542.00 ns, 1.1967 ns/op
+
+OverheadActual   1: 312992 op, 370334.00 ns, 1.1832 ns/op
+OverheadActual   2: 312992 op, 389917.00 ns, 1.2458 ns/op
+OverheadActual   3: 312992 op, 397458.00 ns, 1.2699 ns/op
+OverheadActual   4: 312992 op, 396959.00 ns, 1.2683 ns/op
+OverheadActual   5: 312992 op, 379125.00 ns, 1.2113 ns/op
+OverheadActual   6: 312992 op, 407917.00 ns, 1.3033 ns/op
+OverheadActual   7: 312992 op, 386041.00 ns, 1.2334 ns/op
+OverheadActual   8: 312992 op, 396333.00 ns, 1.2663 ns/op
+OverheadActual   9: 312992 op, 394333.00 ns, 1.2599 ns/op
+OverheadActual  10: 312992 op, 389917.00 ns, 1.2458 ns/op
+OverheadActual  11: 312992 op, 410875.00 ns, 1.3127 ns/op
+OverheadActual  12: 312992 op, 445250.00 ns, 1.4226 ns/op
+OverheadActual  13: 312992 op, 405542.00 ns, 1.2957 ns/op
+OverheadActual  14: 312992 op, 393167.00 ns, 1.2562 ns/op
+OverheadActual  15: 312992 op, 433375.00 ns, 1.3846 ns/op
+
+WorkloadWarmup   1: 312992 op, 99698834.00 ns, 318.5348 ns/op
+
+WorkloadActual   1: 312992 op, 98753625.00 ns, 315.5149 ns/op
+WorkloadActual   2: 312992 op, 100185417.00 ns, 320.0894 ns/op
+WorkloadActual   3: 312992 op, 100279791.00 ns, 320.3909 ns/op
+
+WorkloadResult   1: 312992 op, 98357292.00 ns, 314.2486 ns/op
+WorkloadResult   2: 312992 op, 99789084.00 ns, 318.8231 ns/op
+WorkloadResult   3: 312992 op, 99883458.00 ns, 319.1246 ns/op
+// GC:  0 0 0 5328 312992
+// Threading:  0 0 312992
+
+// ! Failed to set up priority Normal for process System.Diagnostics.Process (dotnet). Make sure you have the right permissions. Message: Operation not permitted
+
+Mean = 317.399 ns, StdErr = 1.578 ns (0.50%), N = 3, StdDev = 2.732 ns
+Min = 314.249 ns, Q1 = 316.536 ns, Median = 318.823 ns, Q3 = 318.974 ns, Max = 319.125 ns
+IQR = 2.438 ns, LowerFence = 312.879 ns, UpperFence = 322.631 ns
+ConfidenceInterval = [267.551 ns; 367.246 ns] (CI 99.9%), Margin = 49.848 ns (15.71% of Mean)
+Skewness = -0.38, Kurtosis = 0.67, MValue = 2
+
+// ** Remained 10 (41.7%) benchmark(s) to run. Estimated finish 2026-10-10 17:41 (0h 0m from now) **
+// **************************
+// Benchmark: WriterScanBenchmarks.Runtime: InProcess(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1) [Corpus=long-miss]
+// *** Execute ***
+// Launch: 1 / 1
+// ! Failed to set up priority High for process System.Diagnostics.Process (dotnet). Make sure you have the right permissions. Message: Permission denied
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.8
+// Runtime=.NET 10.0.11 (10.0.11, 10.0.1126.37416), Arm64 RyuJIT armv8.0-a
+// GC=Concurrent Workstation
+// HardwareIntrinsics=ArmBase+AdvSimd,AES,CRC32,DP,RDM,SHA1,SHA256 VectorSize=128
+// Job: Job-RKTMLY(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1)
+
+OverheadJitting  1: 1 op, 97083.00 ns, 97.0830 us/op
+WorkloadJitting  1: 1 op, 61417.00 ns, 61.4170 us/op
+
+OverheadJitting  2: 16 op, 163125.00 ns, 10.1953 us/op
+WorkloadJitting  2: 16 op, 201375.00 ns, 12.5859 us/op
+
+WorkloadPilot    1: 16 op, 13584.00 ns, 849.0000 ns/op
+WorkloadPilot    2: 117792 op, 80366834.00 ns, 682.2775 ns/op
+WorkloadPilot    3: 146576 op, 99560708.00 ns, 679.2429 ns/op
+WorkloadPilot    4: 147232 op, 101348541.00 ns, 688.3595 ns/op
+WorkloadPilot    5: 145280 op, 100827709.00 ns, 694.0233 ns/op
+WorkloadPilot    6: 144096 op, 98806875.00 ns, 685.7017 ns/op
+WorkloadPilot    7: 145840 op, 100314459.00 ns, 687.8391 ns/op
+
+OverheadWarmup   1: 145840 op, 171916.00 ns, 1.1788 ns/op
+OverheadWarmup   2: 145840 op, 176042.00 ns, 1.2071 ns/op
+OverheadWarmup   3: 145840 op, 175584.00 ns, 1.2039 ns/op
+OverheadWarmup   4: 145840 op, 198083.00 ns, 1.3582 ns/op
+OverheadWarmup   5: 145840 op, 177125.00 ns, 1.2145 ns/op
+
+OverheadActual   1: 145840 op, 179500.00 ns, 1.2308 ns/op
+OverheadActual   2: 145840 op, 177125.00 ns, 1.2145 ns/op
+OverheadActual   3: 145840 op, 177291.00 ns, 1.2157 ns/op
+OverheadActual   4: 145840 op, 188917.00 ns, 1.2954 ns/op
+OverheadActual   5: 145840 op, 177375.00 ns, 1.2162 ns/op
+OverheadActual   6: 145840 op, 198459.00 ns, 1.3608 ns/op
+OverheadActual   7: 145840 op, 216042.00 ns, 1.4814 ns/op
+OverheadActual   8: 145840 op, 179666.00 ns, 1.2319 ns/op
+OverheadActual   9: 145840 op, 187791.00 ns, 1.2877 ns/op
+OverheadActual  10: 145840 op, 189625.00 ns, 1.3002 ns/op
+OverheadActual  11: 145840 op, 196208.00 ns, 1.3454 ns/op
+OverheadActual  12: 145840 op, 187708.00 ns, 1.2871 ns/op
+OverheadActual  13: 145840 op, 178625.00 ns, 1.2248 ns/op
+OverheadActual  14: 145840 op, 184875.00 ns, 1.2677 ns/op
+OverheadActual  15: 145840 op, 195875.00 ns, 1.3431 ns/op
+
+WorkloadWarmup   1: 145840 op, 99445833.00 ns, 681.8831 ns/op
+
+WorkloadActual   1: 145840 op, 99946333.00 ns, 685.3150 ns/op
+WorkloadActual   2: 145840 op, 100348250.00 ns, 688.0708 ns/op
+WorkloadActual   3: 145840 op, 99827708.00 ns, 684.5016 ns/op
+
+WorkloadResult   1: 145840 op, 99758625.00 ns, 684.0279 ns/op
+WorkloadResult   2: 145840 op, 100160542.00 ns, 686.7837 ns/op
+WorkloadResult   3: 145840 op, 99640000.00 ns, 683.2145 ns/op
+// GC:  0 0 0 5328 145840
+// Threading:  0 0 145840
+
+// ! Failed to set up priority Normal for process System.Diagnostics.Process (dotnet). Make sure you have the right permissions. Message: Operation not permitted
+
+Mean = 684.675 ns, StdErr = 1.080 ns (0.16%), N = 3, StdDev = 1.871 ns
+Min = 683.214 ns, Q1 = 683.621 ns, Median = 684.028 ns, Q3 = 685.406 ns, Max = 686.784 ns
+IQR = 1.785 ns, LowerFence = 680.944 ns, UpperFence = 688.083 ns
+ConfidenceInterval = [650.548 ns; 718.803 ns] (CI 99.9%), Margin = 34.128 ns (4.98% of Mean)
+Skewness = 0.3, Kurtosis = 0.67, MValue = 2
+
+// ** Remained 9 (37.5%) benchmark(s) to run. Estimated finish 2026-10-10 17:41 (0h 0m from now) **
+// **************************
+// Benchmark: WriterScanBenchmarks.Scalar: InProcess(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1) [Corpus=multilingual]
+// *** Execute ***
+// Launch: 1 / 1
+// ! Failed to set up priority High for process System.Diagnostics.Process (dotnet). Make sure you have the right permissions. Message: Permission denied
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.8
+// Runtime=.NET 10.0.11 (10.0.11, 10.0.1126.37416), Arm64 RyuJIT armv8.0-a
+// GC=Concurrent Workstation
+// HardwareIntrinsics=ArmBase+AdvSimd,AES,CRC32,DP,RDM,SHA1,SHA256 VectorSize=128
+// Job: Job-RKTMLY(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1)
+
+OverheadJitting  1: 1 op, 84709.00 ns, 84.7090 us/op
+WorkloadJitting  1: 1 op, 60667.00 ns, 60.6670 us/op
+
+OverheadJitting  2: 16 op, 178875.00 ns, 11.1797 us/op
+WorkloadJitting  2: 16 op, 256291.00 ns, 16.0182 us/op
+
+WorkloadPilot    1: 16 op, 100833.00 ns, 6.3021 us/op
+WorkloadPilot    2: 15872 op, 94504916.00 ns, 5.9542 us/op
+WorkloadPilot    3: 16800 op, 100722542.00 ns, 5.9954 us/op
+WorkloadPilot    4: 16688 op, 100398625.00 ns, 6.0162 us/op
+WorkloadPilot    5: 16624 op, 98323583.00 ns, 5.9146 us/op
+WorkloadPilot    6: 16912 op, 100643792.00 ns, 5.9510 us/op
+
+OverheadWarmup   1: 16912 op, 29209.00 ns, 1.7271 ns/op
+OverheadWarmup   2: 16912 op, 23958.00 ns, 1.4166 ns/op
+OverheadWarmup   3: 16912 op, 24125.00 ns, 1.4265 ns/op
+OverheadWarmup   4: 16912 op, 24167.00 ns, 1.4290 ns/op
+OverheadWarmup   5: 16912 op, 23958.00 ns, 1.4166 ns/op
+OverheadWarmup   6: 16912 op, 24000.00 ns, 1.4191 ns/op
+OverheadWarmup   7: 16912 op, 24166.00 ns, 1.4289 ns/op
+OverheadWarmup   8: 16912 op, 24041.00 ns, 1.4215 ns/op
+
+OverheadActual   1: 16912 op, 23167.00 ns, 1.3699 ns/op
+OverheadActual   2: 16912 op, 23959.00 ns, 1.4167 ns/op
+OverheadActual   3: 16912 op, 23958.00 ns, 1.4166 ns/op
+OverheadActual   4: 16912 op, 24000.00 ns, 1.4191 ns/op
+OverheadActual   5: 16912 op, 24250.00 ns, 1.4339 ns/op
+OverheadActual   6: 16912 op, 24333.00 ns, 1.4388 ns/op
+OverheadActual   7: 16912 op, 26834.00 ns, 1.5867 ns/op
+OverheadActual   8: 16912 op, 26916.00 ns, 1.5915 ns/op
+OverheadActual   9: 16912 op, 22125.00 ns, 1.3082 ns/op
+OverheadActual  10: 16912 op, 22375.00 ns, 1.3230 ns/op
+OverheadActual  11: 16912 op, 27250.00 ns, 1.6113 ns/op
+OverheadActual  12: 16912 op, 27584.00 ns, 1.6310 ns/op
+OverheadActual  13: 16912 op, 27750.00 ns, 1.6408 ns/op
+OverheadActual  14: 16912 op, 28000.00 ns, 1.6556 ns/op
+OverheadActual  15: 16912 op, 22500.00 ns, 1.3304 ns/op
+OverheadActual  16: 16912 op, 28084.00 ns, 1.6606 ns/op
+OverheadActual  17: 16912 op, 27958.00 ns, 1.6531 ns/op
+OverheadActual  18: 16912 op, 28042.00 ns, 1.6581 ns/op
+OverheadActual  19: 16912 op, 28084.00 ns, 1.6606 ns/op
+OverheadActual  20: 16912 op, 26917.00 ns, 1.5916 ns/op
+
+WorkloadWarmup   1: 16912 op, 99826334.00 ns, 5.9027 us/op
+
+WorkloadActual   1: 16912 op, 101897958.00 ns, 6.0252 us/op
+WorkloadActual   2: 16912 op, 100786417.00 ns, 5.9595 us/op
+WorkloadActual   3: 16912 op, 100323042.00 ns, 5.9321 us/op
+
+WorkloadResult   1: 16912 op, 101871083.00 ns, 6.0236 us/op
+WorkloadResult   2: 16912 op, 100759542.00 ns, 5.9579 us/op
+WorkloadResult   3: 16912 op, 100296167.00 ns, 5.9305 us/op
+// GC:  0 0 0 5328 16912
+// Threading:  0 0 16912
+
+// ! Failed to set up priority Normal for process System.Diagnostics.Process (dotnet). Make sure you have the right permissions. Message: Operation not permitted
+
+Mean = 5.971 μs, StdErr = 0.028 μs (0.46%), N = 3, StdDev = 0.048 μs
+Min = 5.930 μs, Q1 = 5.944 μs, Median = 5.958 μs, Q3 = 5.991 μs, Max = 6.024 μs
+IQR = 0.047 μs, LowerFence = 5.874 μs, UpperFence = 6.061 μs
+ConfidenceInterval = [5.098 μs; 6.844 μs] (CI 99.9%), Margin = 0.873 μs (14.62% of Mean)
+Skewness = 0.25, Kurtosis = 0.67, MValue = 2
+
+// ** Remained 8 (33.3%) benchmark(s) to run. Estimated finish 2026-10-10 17:41 (0h 0m from now) **
+// **************************
+// Benchmark: WriterScanBenchmarks.Cached: InProcess(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1) [Corpus=multilingual]
+// *** Execute ***
+// Launch: 1 / 1
+// ! Failed to set up priority High for process System.Diagnostics.Process (dotnet). Make sure you have the right permissions. Message: Permission denied
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.8
+// Runtime=.NET 10.0.11 (10.0.11, 10.0.1126.37416), Arm64 RyuJIT armv8.0-a
+// GC=Concurrent Workstation
+// HardwareIntrinsics=ArmBase+AdvSimd,AES,CRC32,DP,RDM,SHA1,SHA256 VectorSize=128
+// Job: Job-RKTMLY(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1)
+
+OverheadJitting  1: 1 op, 108792.00 ns, 108.7920 us/op
+WorkloadJitting  1: 1 op, 69541.00 ns, 69.5410 us/op
+
+OverheadJitting  2: 16 op, 203792.00 ns, 12.7370 us/op
+WorkloadJitting  2: 16 op, 208292.00 ns, 13.0183 us/op
+
+WorkloadPilot    1: 16 op, 7750.00 ns, 484.3750 ns/op
+WorkloadPilot    2: 206464 op, 65972541.00 ns, 319.5353 ns/op
+WorkloadPilot    3: 312960 op, 100553750.00 ns, 321.2990 ns/op
+WorkloadPilot    4: 311248 op, 100080917.00 ns, 321.5472 ns/op
+WorkloadPilot    5: 311008 op, 99419375.00 ns, 319.6682 ns/op
+WorkloadPilot    6: 312832 op, 100612792.00 ns, 321.6192 ns/op
+
+OverheadWarmup   1: 312832 op, 418500.00 ns, 1.3378 ns/op
+OverheadWarmup   2: 312832 op, 422167.00 ns, 1.3495 ns/op
+OverheadWarmup   3: 312832 op, 425166.00 ns, 1.3591 ns/op
+OverheadWarmup   4: 312832 op, 405333.00 ns, 1.2957 ns/op
+OverheadWarmup   5: 312832 op, 421875.00 ns, 1.3486 ns/op
+OverheadWarmup   6: 312832 op, 396292.00 ns, 1.2668 ns/op
+
+OverheadActual   1: 312832 op, 386750.00 ns, 1.2363 ns/op
+OverheadActual   2: 312832 op, 382166.00 ns, 1.2216 ns/op
+OverheadActual   3: 312832 op, 434667.00 ns, 1.3895 ns/op
+OverheadActual   4: 312832 op, 411750.00 ns, 1.3162 ns/op
+OverheadActual   5: 312832 op, 412375.00 ns, 1.3182 ns/op
+OverheadActual   6: 312832 op, 423541.00 ns, 1.3539 ns/op
+OverheadActual   7: 312832 op, 430041.00 ns, 1.3747 ns/op
+OverheadActual   8: 312832 op, 390208.00 ns, 1.2473 ns/op
+OverheadActual   9: 312832 op, 392167.00 ns, 1.2536 ns/op
+OverheadActual  10: 312832 op, 417333.00 ns, 1.3340 ns/op
+OverheadActual  11: 312832 op, 407042.00 ns, 1.3012 ns/op
+OverheadActual  12: 312832 op, 402375.00 ns, 1.2862 ns/op
+OverheadActual  13: 312832 op, 392292.00 ns, 1.2540 ns/op
+OverheadActual  14: 312832 op, 418167.00 ns, 1.3367 ns/op
+OverheadActual  15: 312832 op, 424250.00 ns, 1.3562 ns/op
+
+WorkloadWarmup   1: 312832 op, 101743208.00 ns, 325.2327 ns/op
+
+WorkloadActual   1: 312832 op, 100981916.00 ns, 322.7992 ns/op
+WorkloadActual   2: 312832 op, 99963583.00 ns, 319.5440 ns/op
+WorkloadActual   3: 312832 op, 99331625.00 ns, 317.5239 ns/op
+
+WorkloadResult   1: 312832 op, 100570166.00 ns, 321.4830 ns/op
+WorkloadResult   2: 312832 op, 99551833.00 ns, 318.2278 ns/op
+WorkloadResult   3: 312832 op, 98919875.00 ns, 316.2077 ns/op
+// GC:  0 0 0 5328 312832
+// Threading:  0 0 312832
+
+// ! Failed to set up priority Normal for process System.Diagnostics.Process (dotnet). Make sure you have the right permissions. Message: Operation not permitted
+
+Mean = 318.639 ns, StdErr = 1.537 ns (0.48%), N = 3, StdDev = 2.662 ns
+Min = 316.208 ns, Q1 = 317.218 ns, Median = 318.228 ns, Q3 = 319.855 ns, Max = 321.483 ns
+IQR = 2.638 ns, LowerFence = 313.261 ns, UpperFence = 323.812 ns
+ConfidenceInterval = [270.081 ns; 367.198 ns] (CI 99.9%), Margin = 48.558 ns (15.24% of Mean)
+Skewness = 0.15, Kurtosis = 0.67, MValue = 2
+
+// ** Remained 7 (29.2%) benchmark(s) to run. Estimated finish 2026-10-10 17:41 (0h 0m from now) **
+// **************************
+// Benchmark: WriterScanBenchmarks.Runtime: InProcess(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1) [Corpus=multilingual]
+// *** Execute ***
+// Launch: 1 / 1
+// ! Failed to set up priority High for process System.Diagnostics.Process (dotnet). Make sure you have the right permissions. Message: Permission denied
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.8
+// Runtime=.NET 10.0.11 (10.0.11, 10.0.1126.37416), Arm64 RyuJIT armv8.0-a
+// GC=Concurrent Workstation
+// HardwareIntrinsics=ArmBase+AdvSimd,AES,CRC32,DP,RDM,SHA1,SHA256 VectorSize=128
+// Job: Job-RKTMLY(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1)
+
+OverheadJitting  1: 1 op, 87834.00 ns, 87.8340 us/op
+WorkloadJitting  1: 1 op, 52500.00 ns, 52.5000 us/op
+
+OverheadJitting  2: 16 op, 191917.00 ns, 11.9948 us/op
+WorkloadJitting  2: 16 op, 204333.00 ns, 12.7708 us/op
+
+WorkloadPilot    1: 16 op, 13250.00 ns, 828.1250 ns/op
+WorkloadPilot    2: 120768 op, 86505416.00 ns, 716.2942 ns/op
+WorkloadPilot    3: 139616 op, 99899833.00 ns, 715.5328 ns/op
+WorkloadPilot    4: 139760 op, 100602334.00 ns, 719.8221 ns/op
+WorkloadPilot    5: 138928 op, 99181875.00 ns, 713.9085 ns/op
+WorkloadPilot    6: 140080 op, 97161500.00 ns, 693.6144 ns/op
+WorkloadPilot    7: 144176 op, 100401250.00 ns, 696.3798 ns/op
+WorkloadPilot    8: 143600 op, 100192917.00 ns, 697.7223 ns/op
+
+OverheadWarmup   1: 143600 op, 172375.00 ns, 1.2004 ns/op
+OverheadWarmup   2: 143600 op, 190750.00 ns, 1.3283 ns/op
+OverheadWarmup   3: 143600 op, 174209.00 ns, 1.2132 ns/op
+OverheadWarmup   4: 143600 op, 173750.00 ns, 1.2100 ns/op
+OverheadWarmup   5: 143600 op, 173250.00 ns, 1.2065 ns/op
+OverheadWarmup   6: 143600 op, 172875.00 ns, 1.2039 ns/op
+OverheadWarmup   7: 143600 op, 177459.00 ns, 1.2358 ns/op
+OverheadWarmup   8: 143600 op, 173208.00 ns, 1.2062 ns/op
+
+OverheadActual   1: 143600 op, 173250.00 ns, 1.2065 ns/op
+OverheadActual   2: 143600 op, 185916.00 ns, 1.2947 ns/op
+OverheadActual   3: 143600 op, 175792.00 ns, 1.2242 ns/op
+OverheadActual   4: 143600 op, 175667.00 ns, 1.2233 ns/op
+OverheadActual   5: 143600 op, 175834.00 ns, 1.2245 ns/op
+OverheadActual   6: 143600 op, 180583.00 ns, 1.2575 ns/op
+OverheadActual   7: 143600 op, 186458.00 ns, 1.2985 ns/op
+OverheadActual   8: 143600 op, 185875.00 ns, 1.2944 ns/op
+OverheadActual   9: 143600 op, 170875.00 ns, 1.1899 ns/op
+OverheadActual  10: 143600 op, 175667.00 ns, 1.2233 ns/op
+OverheadActual  11: 143600 op, 175834.00 ns, 1.2245 ns/op
+OverheadActual  12: 143600 op, 172667.00 ns, 1.2024 ns/op
+OverheadActual  13: 143600 op, 184583.00 ns, 1.2854 ns/op
+OverheadActual  14: 143600 op, 175709.00 ns, 1.2236 ns/op
+OverheadActual  15: 143600 op, 177625.00 ns, 1.2369 ns/op
+
+WorkloadWarmup   1: 143600 op, 99085042.00 ns, 690.0073 ns/op
+
+WorkloadActual   1: 143600 op, 99603416.00 ns, 693.6171 ns/op
+WorkloadActual   2: 143600 op, 99833000.00 ns, 695.2159 ns/op
+WorkloadActual   3: 143600 op, 99572250.00 ns, 693.4001 ns/op
+
+WorkloadResult   1: 143600 op, 99427582.00 ns, 692.3926 ns/op
+WorkloadResult   2: 143600 op, 99657166.00 ns, 693.9914 ns/op
+WorkloadResult   3: 143600 op, 99396416.00 ns, 692.1756 ns/op
+// GC:  0 0 0 5328 143600
+// Threading:  0 0 143600
+
+// ! Failed to set up priority Normal for process System.Diagnostics.Process (dotnet). Make sure you have the right permissions. Message: Operation not permitted
+
+Mean = 692.853 ns, StdErr = 0.573 ns (0.08%), N = 3, StdDev = 0.992 ns
+Min = 692.176 ns, Q1 = 692.284 ns, Median = 692.393 ns, Q3 = 693.192 ns, Max = 693.991 ns
+IQR = 0.908 ns, LowerFence = 690.922 ns, UpperFence = 694.554 ns
+ConfidenceInterval = [674.762 ns; 710.945 ns] (CI 99.9%), Margin = 18.092 ns (2.61% of Mean)
+Skewness = 0.36, Kurtosis = 0.67, MValue = 2
+
+// ** Remained 6 (25.0%) benchmark(s) to run. Estimated finish 2026-10-10 17:41 (0h 0m from now) **
+// **************************
+// Benchmark: WriterScanBenchmarks.Scalar: InProcess(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1) [Corpus=short-hit]
+// *** Execute ***
+// Launch: 1 / 1
+// ! Failed to set up priority High for process System.Diagnostics.Process (dotnet). Make sure you have the right permissions. Message: Permission denied
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.8
+// Runtime=.NET 10.0.11 (10.0.11, 10.0.1126.37416), Arm64 RyuJIT armv8.0-a
+// GC=Concurrent Workstation
+// HardwareIntrinsics=ArmBase+AdvSimd,AES,CRC32,DP,RDM,SHA1,SHA256 VectorSize=128
+// Job: Job-RKTMLY(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1)
+
+OverheadJitting  1: 1 op, 97625.00 ns, 97.6250 us/op
+WorkloadJitting  1: 1 op, 61458.00 ns, 61.4580 us/op
+
+OverheadJitting  2: 16 op, 170917.00 ns, 10.6823 us/op
+WorkloadJitting  2: 16 op, 150042.00 ns, 9.3776 us/op
+
+WorkloadPilot    1: 16 op, 1084.00 ns, 67.7500 ns/op
+WorkloadPilot    2: 1476016 op, 3260042.00 ns, 2.2087 ns/op
+WorkloadPilot    3: 45275984 op, 101206000.00 ns, 2.2353 ns/op
+WorkloadPilot    4: 44736464 op, 100649625.00 ns, 2.2498 ns/op
+WorkloadPilot    5: 44447728 op, 99177833.00 ns, 2.2313 ns/op
+WorkloadPilot    6: 44816192 op, 101277292.00 ns, 2.2598 ns/op
+
+OverheadWarmup   1: 44816192 op, 57159167.00 ns, 1.2754 ns/op
+OverheadWarmup   2: 44816192 op, 57438084.00 ns, 1.2816 ns/op
+OverheadWarmup   3: 44816192 op, 56260500.00 ns, 1.2554 ns/op
+OverheadWarmup   4: 44816192 op, 57214750.00 ns, 1.2767 ns/op
+OverheadWarmup   5: 44816192 op, 56504709.00 ns, 1.2608 ns/op
+
+OverheadActual   1: 44816192 op, 56558250.00 ns, 1.2620 ns/op
+OverheadActual   2: 44816192 op, 56476625.00 ns, 1.2602 ns/op
+OverheadActual   3: 44816192 op, 57576750.00 ns, 1.2847 ns/op
+OverheadActual   4: 44816192 op, 57999916.00 ns, 1.2942 ns/op
+OverheadActual   5: 44816192 op, 57122708.00 ns, 1.2746 ns/op
+OverheadActual   6: 44816192 op, 57022625.00 ns, 1.2724 ns/op
+OverheadActual   7: 44816192 op, 56516916.00 ns, 1.2611 ns/op
+OverheadActual   8: 44816192 op, 57476667.00 ns, 1.2825 ns/op
+OverheadActual   9: 44816192 op, 56925291.00 ns, 1.2702 ns/op
+OverheadActual  10: 44816192 op, 56761791.00 ns, 1.2665 ns/op
+OverheadActual  11: 44816192 op, 56340667.00 ns, 1.2571 ns/op
+OverheadActual  12: 44816192 op, 58222042.00 ns, 1.2991 ns/op
+OverheadActual  13: 44816192 op, 56618417.00 ns, 1.2633 ns/op
+OverheadActual  14: 44816192 op, 56502375.00 ns, 1.2608 ns/op
+OverheadActual  15: 44816192 op, 57782541.00 ns, 1.2893 ns/op
+
+WorkloadWarmup   1: 44816192 op, 112760375.00 ns, 2.5161 ns/op
+
+WorkloadActual   1: 44816192 op, 100850958.00 ns, 2.2503 ns/op
+WorkloadActual   2: 44816192 op, 101181583.00 ns, 2.2577 ns/op
+WorkloadActual   3: 44816192 op, 100967500.00 ns, 2.2529 ns/op
+
+WorkloadResult   1: 44816192 op, 43925667.00 ns, 0.9801 ns/op
+WorkloadResult   2: 44816192 op, 44256292.00 ns, 0.9875 ns/op
+WorkloadResult   3: 44816192 op, 44042209.00 ns, 0.9827 ns/op
+// GC:  0 0 0 5328 44816192
+// Threading:  0 0 44816192
+
+// ! Failed to set up priority Normal for process System.Diagnostics.Process (dotnet). Make sure you have the right permissions. Message: Operation not permitted
+
+Mean = 0.983 ns, StdErr = 0.002 ns (0.22%), N = 3, StdDev = 0.004 ns
+Min = 0.980 ns, Q1 = 0.981 ns, Median = 0.983 ns, Q3 = 0.985 ns, Max = 0.988 ns
+IQR = 0.004 ns, LowerFence = 0.976 ns, UpperFence = 0.991 ns
+ConfidenceInterval = [0.915 ns; 1.052 ns] (CI 99.9%), Margin = 0.068 ns (6.94% of Mean)
+Skewness = 0.19, Kurtosis = 0.67, MValue = 2
+
+// ** Remained 5 (20.8%) benchmark(s) to run. Estimated finish 2026-10-10 17:41 (0h 0m from now) **
+// **************************
+// Benchmark: WriterScanBenchmarks.Cached: InProcess(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1) [Corpus=short-hit]
+// *** Execute ***
+// Launch: 1 / 1
+// ! Failed to set up priority High for process System.Diagnostics.Process (dotnet). Make sure you have the right permissions. Message: Permission denied
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.8
+// Runtime=.NET 10.0.11 (10.0.11, 10.0.1126.37416), Arm64 RyuJIT armv8.0-a
+// GC=Concurrent Workstation
+// HardwareIntrinsics=ArmBase+AdvSimd,AES,CRC32,DP,RDM,SHA1,SHA256 VectorSize=128
+// Job: Job-RKTMLY(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1)
+
+OverheadJitting  1: 1 op, 100833.00 ns, 100.8330 us/op
+WorkloadJitting  1: 1 op, 65458.00 ns, 65.4580 us/op
+
+OverheadJitting  2: 16 op, 185667.00 ns, 11.6042 us/op
+WorkloadJitting  2: 16 op, 149625.00 ns, 9.3516 us/op
+
+WorkloadPilot    1: 16 op, 416.00 ns, 26.0000 ns/op
+WorkloadPilot    2: 3846160 op, 12477584.00 ns, 3.2442 ns/op
+WorkloadPilot    3: 30824560 op, 87256583.00 ns, 2.8307 ns/op
+WorkloadPilot    4: 35326352 op, 96558084.00 ns, 2.7333 ns/op
+WorkloadPilot    5: 36585600 op, 101650125.00 ns, 2.7784 ns/op
+WorkloadPilot    6: 35991696 op, 100628041.00 ns, 2.7959 ns/op
+WorkloadPilot    7: 35767072 op, 115822042.00 ns, 3.2382 ns/op
+
+OverheadWarmup   1: 35767072 op, 44561541.00 ns, 1.2459 ns/op
+OverheadWarmup   2: 35767072 op, 45451417.00 ns, 1.2708 ns/op
+OverheadWarmup   3: 35767072 op, 45200709.00 ns, 1.2638 ns/op
+OverheadWarmup   4: 35767072 op, 46708250.00 ns, 1.3059 ns/op
+OverheadWarmup   5: 35767072 op, 46428708.00 ns, 1.2981 ns/op
+
+OverheadActual   1: 35767072 op, 45544875.00 ns, 1.2734 ns/op
+OverheadActual   2: 35767072 op, 45214834.00 ns, 1.2641 ns/op
+OverheadActual   3: 35767072 op, 46137209.00 ns, 1.2899 ns/op
+OverheadActual   4: 35767072 op, 45199917.00 ns, 1.2637 ns/op
+OverheadActual   5: 35767072 op, 45144542.00 ns, 1.2622 ns/op
+OverheadActual   6: 35767072 op, 45510583.00 ns, 1.2724 ns/op
+OverheadActual   7: 35767072 op, 45951042.00 ns, 1.2847 ns/op
+OverheadActual   8: 35767072 op, 45996584.00 ns, 1.2860 ns/op
+OverheadActual   9: 35767072 op, 44547083.00 ns, 1.2455 ns/op
+OverheadActual  10: 35767072 op, 45135583.00 ns, 1.2619 ns/op
+OverheadActual  11: 35767072 op, 44373917.00 ns, 1.2406 ns/op
+OverheadActual  12: 35767072 op, 45995417.00 ns, 1.2860 ns/op
+OverheadActual  13: 35767072 op, 46525042.00 ns, 1.3008 ns/op
+OverheadActual  14: 35767072 op, 45262167.00 ns, 1.2655 ns/op
+OverheadActual  15: 35767072 op, 45523750.00 ns, 1.2728 ns/op
+
+WorkloadWarmup   1: 35767072 op, 103052792.00 ns, 2.8812 ns/op
+
+WorkloadActual   1: 35767072 op, 102242500.00 ns, 2.8586 ns/op
+WorkloadActual   2: 35767072 op, 97672042.00 ns, 2.7308 ns/op
+WorkloadActual   3: 35767072 op, 112940584.00 ns, 3.1577 ns/op
+
+WorkloadResult   1: 35767072 op, 56731917.00 ns, 1.5861 ns/op
+WorkloadResult   2: 35767072 op, 52161459.00 ns, 1.4584 ns/op
+WorkloadResult   3: 35767072 op, 67430001.00 ns, 1.8853 ns/op
+// GC:  0 0 0 5328 35767072
+// Threading:  0 0 35767072
+
+// ! Failed to set up priority Normal for process System.Diagnostics.Process (dotnet). Make sure you have the right permissions. Message: Operation not permitted
+
+Mean = 1.643 ns, StdErr = 0.126 ns (7.70%), N = 3, StdDev = 0.219 ns
+Min = 1.458 ns, Q1 = 1.522 ns, Median = 1.586 ns, Q3 = 1.736 ns, Max = 1.885 ns
+IQR = 0.213 ns, LowerFence = 1.202 ns, UpperFence = 2.056 ns
+ConfidenceInterval = [-2.354 ns; 5.640 ns] (CI 99.9%), Margin = 3.997 ns (243.25% of Mean)
+Skewness = 0.24, Kurtosis = 0.67, MValue = 2
+
+// ** Remained 4 (16.7%) benchmark(s) to run. Estimated finish 2026-10-10 17:41 (0h 0m from now) **
+// **************************
+// Benchmark: WriterScanBenchmarks.Runtime: InProcess(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1) [Corpus=short-hit]
+// *** Execute ***
+// Launch: 1 / 1
+// ! Failed to set up priority High for process System.Diagnostics.Process (dotnet). Make sure you have the right permissions. Message: Permission denied
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.8
+// Runtime=.NET 10.0.11 (10.0.11, 10.0.1126.37416), Arm64 RyuJIT armv8.0-a
+// GC=Concurrent Workstation
+// HardwareIntrinsics=ArmBase+AdvSimd,AES,CRC32,DP,RDM,SHA1,SHA256 VectorSize=128
+// Job: Job-RKTMLY(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1)
+
+OverheadJitting  1: 1 op, 113250.00 ns, 113.2500 us/op
+WorkloadJitting  1: 1 op, 70750.00 ns, 70.7500 us/op
+
+OverheadJitting  2: 16 op, 192833.00 ns, 12.0521 us/op
+WorkloadJitting  2: 16 op, 154750.00 ns, 9.6719 us/op
+
+WorkloadPilot    1: 16 op, 667.00 ns, 41.6875 ns/op
+WorkloadPilot    2: 2398816 op, 5788250.00 ns, 2.4130 ns/op
+WorkloadPilot    3: 41442864 op, 102550666.00 ns, 2.4745 ns/op
+WorkloadPilot    4: 40412096 op, 99310625.00 ns, 2.4574 ns/op
+WorkloadPilot    5: 40692624 op, 101933708.00 ns, 2.5050 ns/op
+WorkloadPilot    6: 39920688 op, 98451167.00 ns, 2.4662 ns/op
+WorkloadPilot    7: 40548720 op, 100557125.00 ns, 2.4799 ns/op
+
+OverheadWarmup   1: 40548720 op, 52055667.00 ns, 1.2838 ns/op
+OverheadWarmup   2: 40548720 op, 52191000.00 ns, 1.2871 ns/op
+OverheadWarmup   3: 40548720 op, 52061667.00 ns, 1.2839 ns/op
+OverheadWarmup   4: 40548720 op, 52560125.00 ns, 1.2962 ns/op
+OverheadWarmup   5: 40548720 op, 53057875.00 ns, 1.3085 ns/op
+OverheadWarmup   6: 40548720 op, 52844291.00 ns, 1.3032 ns/op
+
+OverheadActual   1: 40548720 op, 53317167.00 ns, 1.3149 ns/op
+OverheadActual   2: 40548720 op, 52087458.00 ns, 1.2846 ns/op
+OverheadActual   3: 40548720 op, 51315333.00 ns, 1.2655 ns/op
+OverheadActual   4: 40548720 op, 52242833.00 ns, 1.2884 ns/op
+OverheadActual   5: 40548720 op, 51734084.00 ns, 1.2758 ns/op
+OverheadActual   6: 40548720 op, 51451875.00 ns, 1.2689 ns/op
+OverheadActual   7: 40548720 op, 52896167.00 ns, 1.3045 ns/op
+OverheadActual   8: 40548720 op, 52728167.00 ns, 1.3004 ns/op
+OverheadActual   9: 40548720 op, 52318416.00 ns, 1.2903 ns/op
+OverheadActual  10: 40548720 op, 52250917.00 ns, 1.2886 ns/op
+OverheadActual  11: 40548720 op, 53121125.00 ns, 1.3101 ns/op
+OverheadActual  12: 40548720 op, 51919459.00 ns, 1.2804 ns/op
+OverheadActual  13: 40548720 op, 52855875.00 ns, 1.3035 ns/op
+OverheadActual  14: 40548720 op, 52829542.00 ns, 1.3029 ns/op
+OverheadActual  15: 40548720 op, 51885041.00 ns, 1.2796 ns/op
+
+WorkloadWarmup   1: 40548720 op, 100670875.00 ns, 2.4827 ns/op
+
+WorkloadActual   1: 40548720 op, 100761125.00 ns, 2.4849 ns/op
+WorkloadActual   2: 40548720 op, 101693250.00 ns, 2.5079 ns/op
+WorkloadActual   3: 40548720 op, 100931292.00 ns, 2.4891 ns/op
+
+WorkloadResult   1: 40548720 op, 48510208.00 ns, 1.1963 ns/op
+WorkloadResult   2: 40548720 op, 49442333.00 ns, 1.2193 ns/op
+WorkloadResult   3: 40548720 op, 48680375.00 ns, 1.2005 ns/op
+// GC:  0 0 0 5328 40548720
+// Threading:  0 0 40548720
+
+// ! Failed to set up priority Normal for process System.Diagnostics.Process (dotnet). Make sure you have the right permissions. Message: Operation not permitted
+
+Mean = 1.205 ns, StdErr = 0.007 ns (0.59%), N = 3, StdDev = 0.012 ns
+Min = 1.196 ns, Q1 = 1.198 ns, Median = 1.201 ns, Q3 = 1.210 ns, Max = 1.219 ns
+IQR = 0.011 ns, LowerFence = 1.181 ns, UpperFence = 1.227 ns
+ConfidenceInterval = [0.982 ns; 1.429 ns] (CI 99.9%), Margin = 0.223 ns (18.53% of Mean)
+Skewness = 0.33, Kurtosis = 0.67, MValue = 2
+
+// ** Remained 3 (12.5%) benchmark(s) to run. Estimated finish 2026-10-10 17:41 (0h 0m from now) **
+// **************************
+// Benchmark: WriterScanBenchmarks.Scalar: InProcess(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1) [Corpus=short-miss]
+// *** Execute ***
+// Launch: 1 / 1
+// ! Failed to set up priority High for process System.Diagnostics.Process (dotnet). Make sure you have the right permissions. Message: Permission denied
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.8
+// Runtime=.NET 10.0.11 (10.0.11, 10.0.1126.37416), Arm64 RyuJIT armv8.0-a
+// GC=Concurrent Workstation
+// HardwareIntrinsics=ArmBase+AdvSimd,AES,CRC32,DP,RDM,SHA1,SHA256 VectorSize=128
+// Job: Job-RKTMLY(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1)
+
+OverheadJitting  1: 1 op, 91750.00 ns, 91.7500 us/op
+WorkloadJitting  1: 1 op, 82209.00 ns, 82.2090 us/op
+
+OverheadJitting  2: 16 op, 193000.00 ns, 12.0625 us/op
+WorkloadJitting  2: 16 op, 178250.00 ns, 11.1406 us/op
+
+WorkloadPilot    1: 16 op, 500.00 ns, 31.2500 ns/op
+WorkloadPilot    2: 3200000 op, 15987208.00 ns, 4.9960 ns/op
+WorkloadPilot    3: 20016016 op, 100717083.00 ns, 5.0318 ns/op
+WorkloadPilot    4: 19873520 op, 102414750.00 ns, 5.1533 ns/op
+WorkloadPilot    5: 19404944 op, 98341750.00 ns, 5.0679 ns/op
+WorkloadPilot    6: 19732160 op, 99328917.00 ns, 5.0339 ns/op
+WorkloadPilot    7: 19865488 op, 103540792.00 ns, 5.2121 ns/op
+
+OverheadWarmup   1: 19865488 op, 24980833.00 ns, 1.2575 ns/op
+OverheadWarmup   2: 19865488 op, 25449167.00 ns, 1.2811 ns/op
+OverheadWarmup   3: 19865488 op, 25241209.00 ns, 1.2706 ns/op
+OverheadWarmup   4: 19865488 op, 25203167.00 ns, 1.2687 ns/op
+OverheadWarmup   5: 19865488 op, 25668416.00 ns, 1.2921 ns/op
+OverheadWarmup   6: 19865488 op, 25780375.00 ns, 1.2977 ns/op
+OverheadWarmup   7: 19865488 op, 25840000.00 ns, 1.3007 ns/op
+OverheadWarmup   8: 19865488 op, 24793000.00 ns, 1.2480 ns/op
+
+OverheadActual   1: 19865488 op, 24960625.00 ns, 1.2565 ns/op
+OverheadActual   2: 19865488 op, 24681458.00 ns, 1.2424 ns/op
+OverheadActual   3: 19865488 op, 24921000.00 ns, 1.2545 ns/op
+OverheadActual   4: 19865488 op, 25273417.00 ns, 1.2722 ns/op
+OverheadActual   5: 19865488 op, 24581291.00 ns, 1.2374 ns/op
+OverheadActual   6: 19865488 op, 24478209.00 ns, 1.2322 ns/op
+OverheadActual   7: 19865488 op, 24863458.00 ns, 1.2516 ns/op
+OverheadActual   8: 19865488 op, 25410125.00 ns, 1.2791 ns/op
+OverheadActual   9: 19865488 op, 25016250.00 ns, 1.2593 ns/op
+OverheadActual  10: 19865488 op, 25495083.00 ns, 1.2834 ns/op
+OverheadActual  11: 19865488 op, 25483916.00 ns, 1.2828 ns/op
+OverheadActual  12: 19865488 op, 24632000.00 ns, 1.2399 ns/op
+OverheadActual  13: 19865488 op, 24619417.00 ns, 1.2393 ns/op
+OverheadActual  14: 19865488 op, 25241041.00 ns, 1.2706 ns/op
+OverheadActual  15: 19865488 op, 25589417.00 ns, 1.2881 ns/op
+
+WorkloadWarmup   1: 19865488 op, 100427500.00 ns, 5.0554 ns/op
+
+WorkloadActual   1: 19865488 op, 100096042.00 ns, 5.0387 ns/op
+WorkloadActual   2: 19865488 op, 102723667.00 ns, 5.1710 ns/op
+WorkloadActual   3: 19865488 op, 100444167.00 ns, 5.0562 ns/op
+
+WorkloadResult   1: 19865488 op, 75135417.00 ns, 3.7822 ns/op
+WorkloadResult   2: 19865488 op, 77763042.00 ns, 3.9145 ns/op
+WorkloadResult   3: 19865488 op, 75483542.00 ns, 3.7997 ns/op
+// GC:  0 0 0 1632 19865488
+// Threading:  0 0 19865488
+
+// ! Failed to set up priority Normal for process System.Diagnostics.Process (dotnet). Make sure you have the right permissions. Message: Operation not permitted
+
+Mean = 3.832 ns, StdErr = 0.041 ns (1.08%), N = 3, StdDev = 0.072 ns
+Min = 3.782 ns, Q1 = 3.791 ns, Median = 3.800 ns, Q3 = 3.857 ns, Max = 3.914 ns
+IQR = 0.066 ns, LowerFence = 3.692 ns, UpperFence = 3.956 ns
+ConfidenceInterval = [2.521 ns; 5.143 ns] (CI 99.9%), Margin = 1.311 ns (34.20% of Mean)
+Skewness = 0.36, Kurtosis = 0.67, MValue = 2
+
+// ** Remained 2 (8.3%) benchmark(s) to run. Estimated finish 2026-10-10 17:41 (0h 0m from now) **
+// **************************
+// Benchmark: WriterScanBenchmarks.Cached: InProcess(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1) [Corpus=short-miss]
+// *** Execute ***
+// Launch: 1 / 1
+// ! Failed to set up priority High for process System.Diagnostics.Process (dotnet). Make sure you have the right permissions. Message: Permission denied
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.8
+// Runtime=.NET 10.0.11 (10.0.11, 10.0.1126.37416), Arm64 RyuJIT armv8.0-a
+// GC=Concurrent Workstation
+// HardwareIntrinsics=ArmBase+AdvSimd,AES,CRC32,DP,RDM,SHA1,SHA256 VectorSize=128
+// Job: Job-RKTMLY(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1)
+
+OverheadJitting  1: 1 op, 104750.00 ns, 104.7500 us/op
+WorkloadJitting  1: 1 op, 68375.00 ns, 68.3750 us/op
+
+OverheadJitting  2: 16 op, 199250.00 ns, 12.4531 us/op
+WorkloadJitting  2: 16 op, 161292.00 ns, 10.0808 us/op
+
+WorkloadPilot    1: 16 op, 1000.00 ns, 62.5000 ns/op
+WorkloadPilot    2: 1600000 op, 7106292.00 ns, 4.4414 ns/op
+WorkloadPilot    3: 22515264 op, 97311875.00 ns, 4.3220 ns/op
+WorkloadPilot    4: 23137232 op, 103205250.00 ns, 4.4606 ns/op
+WorkloadPilot    5: 22418672 op, 92874792.00 ns, 4.1427 ns/op
+WorkloadPilot    6: 24138608 op, 107308458.00 ns, 4.4455 ns/op
+WorkloadPilot    7: 22494608 op, 97629916.00 ns, 4.3401 ns/op
+WorkloadPilot    8: 23040704 op, 97046167.00 ns, 4.2119 ns/op
+WorkloadPilot    9: 23742016 op, 103652792.00 ns, 4.3658 ns/op
+
+OverheadWarmup   1: 23742016 op, 29817208.00 ns, 1.2559 ns/op
+OverheadWarmup   2: 23742016 op, 29385667.00 ns, 1.2377 ns/op
+OverheadWarmup   3: 23742016 op, 29474084.00 ns, 1.2414 ns/op
+OverheadWarmup   4: 23742016 op, 30536292.00 ns, 1.2862 ns/op
+OverheadWarmup   5: 23742016 op, 30403416.00 ns, 1.2806 ns/op
+OverheadWarmup   6: 23742016 op, 29997291.00 ns, 1.2635 ns/op
+OverheadWarmup   7: 23742016 op, 30563041.00 ns, 1.2873 ns/op
+OverheadWarmup   8: 23742016 op, 30775208.00 ns, 1.2962 ns/op
+OverheadWarmup   9: 23742016 op, 30600875.00 ns, 1.2889 ns/op
+
+OverheadActual   1: 23742016 op, 30373833.00 ns, 1.2793 ns/op
+OverheadActual   2: 23742016 op, 30059583.00 ns, 1.2661 ns/op
+OverheadActual   3: 23742016 op, 30546042.00 ns, 1.2866 ns/op
+OverheadActual   4: 23742016 op, 30637250.00 ns, 1.2904 ns/op
+OverheadActual   5: 23742016 op, 29691084.00 ns, 1.2506 ns/op
+OverheadActual   6: 23742016 op, 30801166.00 ns, 1.2973 ns/op
+OverheadActual   7: 23742016 op, 31057750.00 ns, 1.3081 ns/op
+OverheadActual   8: 23742016 op, 30724833.00 ns, 1.2941 ns/op
+OverheadActual   9: 23742016 op, 29825750.00 ns, 1.2562 ns/op
+OverheadActual  10: 23742016 op, 30254458.00 ns, 1.2743 ns/op
+OverheadActual  11: 23742016 op, 29496416.00 ns, 1.2424 ns/op
+OverheadActual  12: 23742016 op, 29569833.00 ns, 1.2455 ns/op
+OverheadActual  13: 23742016 op, 30394458.00 ns, 1.2802 ns/op
+OverheadActual  14: 23742016 op, 30685750.00 ns, 1.2925 ns/op
+OverheadActual  15: 23742016 op, 30631125.00 ns, 1.2902 ns/op
+
+WorkloadWarmup   1: 23742016 op, 110816167.00 ns, 4.6675 ns/op
+
+WorkloadActual   1: 23742016 op, 101694750.00 ns, 4.2833 ns/op
+WorkloadActual   2: 23742016 op, 103626625.00 ns, 4.3647 ns/op
+WorkloadActual   3: 23742016 op, 102757000.00 ns, 4.3281 ns/op
+
+WorkloadResult   1: 23742016 op, 71300292.00 ns, 3.0031 ns/op
+WorkloadResult   2: 23742016 op, 73232167.00 ns, 3.0845 ns/op
+WorkloadResult   3: 23742016 op, 72362542.00 ns, 3.0479 ns/op
+// GC:  0 0 0 5328 23742016
+// Threading:  0 0 23742016
+
+// ! Failed to set up priority Normal for process System.Diagnostics.Process (dotnet). Make sure you have the right permissions. Message: Operation not permitted
+
+Mean = 3.045 ns, StdErr = 0.024 ns (0.77%), N = 3, StdDev = 0.041 ns
+Min = 3.003 ns, Q1 = 3.025 ns, Median = 3.048 ns, Q3 = 3.066 ns, Max = 3.084 ns
+IQR = 0.041 ns, LowerFence = 2.964 ns, UpperFence = 3.127 ns
+ConfidenceInterval = [2.302 ns; 3.789 ns] (CI 99.9%), Margin = 0.743 ns (24.41% of Mean)
+Skewness = -0.07, Kurtosis = 0.67, MValue = 2
+
+// ** Remained 1 (4.2%) benchmark(s) to run. Estimated finish 2026-10-10 17:41 (0h 0m from now) **
+// **************************
+// Benchmark: WriterScanBenchmarks.Runtime: InProcess(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1) [Corpus=short-miss]
+// *** Execute ***
+// Launch: 1 / 1
+// ! Failed to set up priority High for process System.Diagnostics.Process (dotnet). Make sure you have the right permissions. Message: Permission denied
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.8
+// Runtime=.NET 10.0.11 (10.0.11, 10.0.1126.37416), Arm64 RyuJIT armv8.0-a
+// GC=Concurrent Workstation
+// HardwareIntrinsics=ArmBase+AdvSimd,AES,CRC32,DP,RDM,SHA1,SHA256 VectorSize=128
+// Job: Job-RKTMLY(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1)
+
+OverheadJitting  1: 1 op, 110292.00 ns, 110.2920 us/op
+WorkloadJitting  1: 1 op, 68375.00 ns, 68.3750 us/op
+
+OverheadJitting  2: 16 op, 203458.00 ns, 12.7161 us/op
+WorkloadJitting  2: 16 op, 171208.00 ns, 10.7005 us/op
+
+WorkloadPilot    1: 16 op, 375.00 ns, 23.4375 ns/op
+WorkloadPilot    2: 4266672 op, 14498166.00 ns, 3.3980 ns/op
+WorkloadPilot    3: 29429056 op, 94728709.00 ns, 3.2189 ns/op
+WorkloadPilot    4: 31066672 op, 104386334.00 ns, 3.3601 ns/op
+WorkloadPilot    5: 29761248 op, 99950000.00 ns, 3.3584 ns/op
+WorkloadPilot    6: 29776144 op, 98524458.00 ns, 3.3088 ns/op
+WorkloadPilot    7: 30222096 op, 99921625.00 ns, 3.3062 ns/op
+WorkloadPilot    8: 30245808 op, 99283417.00 ns, 3.2826 ns/op
+WorkloadPilot    9: 30464112 op, 97932041.00 ns, 3.2147 ns/op
+WorkloadPilot   10: 31107408 op, 104913417.00 ns, 3.3726 ns/op
+WorkloadPilot   11: 29650560 op, 94502000.00 ns, 3.1872 ns/op
+WorkloadPilot   12: 31375600 op, 104490083.00 ns, 3.3303 ns/op
+
+OverheadWarmup   1: 31375600 op, 39738708.00 ns, 1.2665 ns/op
+OverheadWarmup   2: 31375600 op, 40304459.00 ns, 1.2846 ns/op
+OverheadWarmup   3: 31375600 op, 39435458.00 ns, 1.2569 ns/op
+OverheadWarmup   4: 31375600 op, 39661000.00 ns, 1.2641 ns/op
+OverheadWarmup   5: 31375600 op, 38786834.00 ns, 1.2362 ns/op
+
+OverheadActual   1: 31375600 op, 39610083.00 ns, 1.2624 ns/op
+OverheadActual   2: 31375600 op, 39834833.00 ns, 1.2696 ns/op
+OverheadActual   3: 31375600 op, 38865167.00 ns, 1.2387 ns/op
+OverheadActual   4: 31375600 op, 39560583.00 ns, 1.2609 ns/op
+OverheadActual   5: 31375600 op, 39124542.00 ns, 1.2470 ns/op
+OverheadActual   6: 31375600 op, 39768583.00 ns, 1.2675 ns/op
+OverheadActual   7: 31375600 op, 39431417.00 ns, 1.2568 ns/op
+OverheadActual   8: 31375600 op, 40554166.00 ns, 1.2925 ns/op
+OverheadActual   9: 31375600 op, 39581000.00 ns, 1.2615 ns/op
+OverheadActual  10: 31375600 op, 39951000.00 ns, 1.2733 ns/op
+OverheadActual  11: 31375600 op, 39325458.00 ns, 1.2534 ns/op
+OverheadActual  12: 31375600 op, 40133791.00 ns, 1.2791 ns/op
+OverheadActual  13: 31375600 op, 40446125.00 ns, 1.2891 ns/op
+OverheadActual  14: 31375600 op, 40228458.00 ns, 1.2822 ns/op
+OverheadActual  15: 31375600 op, 39892250.00 ns, 1.2714 ns/op
+
+WorkloadWarmup   1: 31375600 op, 105076834.00 ns, 3.3490 ns/op
+
+WorkloadActual   1: 31375600 op, 103606375.00 ns, 3.3021 ns/op
+WorkloadActual   2: 31375600 op, 107277000.00 ns, 3.4191 ns/op
+WorkloadActual   3: 31375600 op, 101840000.00 ns, 3.2458 ns/op
+
+WorkloadResult   1: 31375600 op, 63837792.00 ns, 2.0346 ns/op
+WorkloadResult   2: 31375600 op, 67508417.00 ns, 2.1516 ns/op
+WorkloadResult   3: 31375600 op, 62071417.00 ns, 1.9783 ns/op
+// GC:  0 0 0 5328 31375600
+// Threading:  0 0 31375600
+
+// ! Failed to set up priority Normal for process System.Diagnostics.Process (dotnet). Make sure you have the right permissions. Message: Operation not permitted
+
+Mean = 2.055 ns, StdErr = 0.051 ns (2.48%), N = 3, StdDev = 0.088 ns
+Min = 1.978 ns, Q1 = 2.006 ns, Median = 2.035 ns, Q3 = 2.093 ns, Max = 2.152 ns
+IQR = 0.087 ns, LowerFence = 1.877 ns, UpperFence = 2.223 ns
+ConfidenceInterval = [0.442 ns; 3.668 ns] (CI 99.9%), Margin = 1.613 ns (78.48% of Mean)
+Skewness = 0.22, Kurtosis = 0.67, MValue = 2
+
+// ** Remained 0 (0.0%) benchmark(s) to run. Estimated finish 2026-10-10 17:41 (0h 0m from now) **
+// ***** BenchmarkRunner: Finish  *****
+
+// * Export *
+  artifacts/M3-writer/bdn/results/Xemele.M3WriterMeasurements.WriterScanBenchmarks-report.csv
+  artifacts/M3-writer/bdn/results/Xemele.M3WriterMeasurements.WriterScanBenchmarks-report-github.md
+  artifacts/M3-writer/bdn/results/Xemele.M3WriterMeasurements.WriterScanBenchmarks-report.html
+
+// * Detailed results *
+WriterScanBenchmarks.Scalar: InProcess(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1) [Corpus=dense]
+Runtime = ; GC = 
+Mean = 0.000 ns, StdErr = 0.000 ns (NaN%), N = 3, StdDev = 0.000 ns
+Min = 0.000 ns, Q1 = 0.000 ns, Median = 0.000 ns, Q3 = 0.000 ns, Max = 0.000 ns
+IQR = 0.000 ns, LowerFence = 0.000 ns, UpperFence = 0.000 ns
+ConfidenceInterval = [0.000 ns; 0.000 ns] (CI 99.9%), Margin = 0.000 ns (NaN% of Mean)
+Skewness = NaN, Kurtosis = NaN, MValue = 2
+-------------------- Histogram --------------------
+[0.000 ns ; 0.500 ns) | @@@
+---------------------------------------------------
+
+WriterScanBenchmarks.Cached: InProcess(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1) [Corpus=dense]
+Runtime = ; GC = 
+Mean = 0.259 ns, StdErr = 0.007 ns (2.88%), N = 3, StdDev = 0.013 ns
+Min = 0.245 ns, Q1 = 0.254 ns, Median = 0.262 ns, Q3 = 0.266 ns, Max = 0.270 ns
+IQR = 0.013 ns, LowerFence = 0.235 ns, UpperFence = 0.285 ns
+ConfidenceInterval = [0.023 ns; 0.495 ns] (CI 99.9%), Margin = 0.236 ns (91.00% of Mean)
+Skewness = -0.23, Kurtosis = 0.67, MValue = 2
+-------------------- Histogram --------------------
+[0.233 ns ; 0.254 ns) | @
+[0.254 ns ; 0.282 ns) | @@
+---------------------------------------------------
+
+WriterScanBenchmarks.Runtime: InProcess(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1) [Corpus=dense]
+Runtime = ; GC = 
+Mean = 0.211 ns, StdErr = 0.003 ns (1.22%), N = 3, StdDev = 0.004 ns
+Min = 0.208 ns, Q1 = 0.208 ns, Median = 0.209 ns, Q3 = 0.213 ns, Max = 0.216 ns
+IQR = 0.004 ns, LowerFence = 0.202 ns, UpperFence = 0.219 ns
+ConfidenceInterval = [0.130 ns; 0.293 ns] (CI 99.9%), Margin = 0.082 ns (38.63% of Mean)
+Skewness = 0.35, Kurtosis = 0.67, MValue = 2
+-------------------- Histogram --------------------
+[0.204 ns ; 0.213 ns) | @@
+[0.213 ns ; 0.220 ns) | @
+---------------------------------------------------
+
+WriterScanBenchmarks.Scalar: InProcess(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1) [Corpus=long-hit]
+Runtime = ; GC = 
+Mean = 5.849 μs, StdErr = 0.016 μs (0.28%), N = 3, StdDev = 0.028 μs
+Min = 5.817 μs, Q1 = 5.841 μs, Median = 5.865 μs, Q3 = 5.866 μs, Max = 5.866 μs
+IQR = 0.025 μs, LowerFence = 5.804 μs, UpperFence = 5.902 μs
+ConfidenceInterval = [5.335 μs; 6.364 μs] (CI 99.9%), Margin = 0.514 μs (8.79% of Mean)
+Skewness = -0.38, Kurtosis = 0.67, MValue = 2
+-------------------- Histogram --------------------
+[5.816 μs ; 5.867 μs) | @@@
+---------------------------------------------------
+
+WriterScanBenchmarks.Cached: InProcess(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1) [Corpus=long-hit]
+Runtime = ; GC = 
+Mean = 315.743 ns, StdErr = 0.448 ns (0.14%), N = 3, StdDev = 0.776 ns
+Min = 315.284 ns, Q1 = 315.295 ns, Median = 315.305 ns, Q3 = 315.972 ns, Max = 316.638 ns
+IQR = 0.677 ns, LowerFence = 314.279 ns, UpperFence = 316.987 ns
+ConfidenceInterval = [301.589 ns; 329.896 ns] (CI 99.9%), Margin = 14.153 ns (4.48% of Mean)
+Skewness = 0.38, Kurtosis = 0.67, MValue = 2
+-------------------- Histogram --------------------
+[315.255 ns ; 316.667 ns) | @@@
+---------------------------------------------------
+
+WriterScanBenchmarks.Runtime: InProcess(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1) [Corpus=long-hit]
+Runtime = ; GC = 
+Mean = 690.961 ns, StdErr = 2.463 ns (0.36%), N = 3, StdDev = 4.267 ns
+Min = 686.982 ns, Q1 = 688.708 ns, Median = 690.434 ns, Q3 = 692.950 ns, Max = 695.467 ns
+IQR = 4.242 ns, LowerFence = 682.345 ns, UpperFence = 699.313 ns
+ConfidenceInterval = [613.123 ns; 768.799 ns] (CI 99.9%), Margin = 77.838 ns (11.27% of Mean)
+Skewness = 0.12, Kurtosis = 0.67, MValue = 2
+-------------------- Histogram --------------------
+[683.100 ns ; 695.595 ns) | @@@
+---------------------------------------------------
+
+WriterScanBenchmarks.Scalar: InProcess(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1) [Corpus=long-miss]
+Runtime = ; GC = 
+Mean = 5.906 μs, StdErr = 0.036 μs (0.61%), N = 3, StdDev = 0.062 μs
+Min = 5.844 μs, Q1 = 5.875 μs, Median = 5.907 μs, Q3 = 5.937 μs, Max = 5.968 μs
+IQR = 0.062 μs, LowerFence = 5.782 μs, UpperFence = 6.030 μs
+ConfidenceInterval = [4.775 μs; 7.037 μs] (CI 99.9%), Margin = 1.131 μs (19.15% of Mean)
+Skewness = -0.01, Kurtosis = 0.67, MValue = 2
+-------------------- Histogram --------------------
+[5.788 μs ; 5.997 μs) | @@@
+---------------------------------------------------
+
+WriterScanBenchmarks.Cached: InProcess(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1) [Corpus=long-miss]
+Runtime = ; GC = 
+Mean = 317.399 ns, StdErr = 1.578 ns (0.50%), N = 3, StdDev = 2.732 ns
+Min = 314.249 ns, Q1 = 316.536 ns, Median = 318.823 ns, Q3 = 318.974 ns, Max = 319.125 ns
+IQR = 2.438 ns, LowerFence = 312.879 ns, UpperFence = 322.631 ns
+ConfidenceInterval = [267.551 ns; 367.246 ns] (CI 99.9%), Margin = 49.848 ns (15.71% of Mean)
+Skewness = -0.38, Kurtosis = 0.67, MValue = 2
+-------------------- Histogram --------------------
+[314.200 ns ; 319.173 ns) | @@@
+---------------------------------------------------
+
+WriterScanBenchmarks.Runtime: InProcess(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1) [Corpus=long-miss]
+Runtime = ; GC = 
+Mean = 684.675 ns, StdErr = 1.080 ns (0.16%), N = 3, StdDev = 1.871 ns
+Min = 683.214 ns, Q1 = 683.621 ns, Median = 684.028 ns, Q3 = 685.406 ns, Max = 686.784 ns
+IQR = 1.785 ns, LowerFence = 680.944 ns, UpperFence = 688.083 ns
+ConfidenceInterval = [650.548 ns; 718.803 ns] (CI 99.9%), Margin = 34.128 ns (4.98% of Mean)
+Skewness = 0.3, Kurtosis = 0.67, MValue = 2
+-------------------- Histogram --------------------
+[681.512 ns ; 688.486 ns) | @@@
+---------------------------------------------------
+
+WriterScanBenchmarks.Scalar: InProcess(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1) [Corpus=multilingual]
+Runtime = ; GC = 
+Mean = 5.971 μs, StdErr = 0.028 μs (0.46%), N = 3, StdDev = 0.048 μs
+Min = 5.930 μs, Q1 = 5.944 μs, Median = 5.958 μs, Q3 = 5.991 μs, Max = 6.024 μs
+IQR = 0.047 μs, LowerFence = 5.874 μs, UpperFence = 6.061 μs
+ConfidenceInterval = [5.098 μs; 6.844 μs] (CI 99.9%), Margin = 0.873 μs (14.62% of Mean)
+Skewness = 0.25, Kurtosis = 0.67, MValue = 2
+-------------------- Histogram --------------------
+[5.887 μs ; 6.067 μs) | @@@
+---------------------------------------------------
+
+WriterScanBenchmarks.Cached: InProcess(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1) [Corpus=multilingual]
+Runtime = ; GC = 
+Mean = 318.639 ns, StdErr = 1.537 ns (0.48%), N = 3, StdDev = 2.662 ns
+Min = 316.208 ns, Q1 = 317.218 ns, Median = 318.228 ns, Q3 = 319.855 ns, Max = 321.483 ns
+IQR = 2.638 ns, LowerFence = 313.261 ns, UpperFence = 323.812 ns
+ConfidenceInterval = [270.081 ns; 367.198 ns] (CI 99.9%), Margin = 48.558 ns (15.24% of Mean)
+Skewness = 0.15, Kurtosis = 0.67, MValue = 2
+-------------------- Histogram --------------------
+[313.785 ns ; 323.905 ns) | @@@
+---------------------------------------------------
+
+WriterScanBenchmarks.Runtime: InProcess(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1) [Corpus=multilingual]
+Runtime = ; GC = 
+Mean = 692.853 ns, StdErr = 0.573 ns (0.08%), N = 3, StdDev = 0.992 ns
+Min = 692.176 ns, Q1 = 692.284 ns, Median = 692.393 ns, Q3 = 693.192 ns, Max = 693.991 ns
+IQR = 0.908 ns, LowerFence = 690.922 ns, UpperFence = 694.554 ns
+ConfidenceInterval = [674.762 ns; 710.945 ns] (CI 99.9%), Margin = 18.092 ns (2.61% of Mean)
+Skewness = 0.36, Kurtosis = 0.67, MValue = 2
+-------------------- Histogram --------------------
+[691.273 ns ; 694.894 ns) | @@@
+---------------------------------------------------
+
+WriterScanBenchmarks.Scalar: InProcess(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1) [Corpus=short-hit]
+Runtime = ; GC = 
+Mean = 0.983 ns, StdErr = 0.002 ns (0.22%), N = 3, StdDev = 0.004 ns
+Min = 0.980 ns, Q1 = 0.981 ns, Median = 0.983 ns, Q3 = 0.985 ns, Max = 0.988 ns
+IQR = 0.004 ns, LowerFence = 0.976 ns, UpperFence = 0.991 ns
+ConfidenceInterval = [0.915 ns; 1.052 ns] (CI 99.9%), Margin = 0.068 ns (6.94% of Mean)
+Skewness = 0.19, Kurtosis = 0.67, MValue = 2
+-------------------- Histogram --------------------
+[0.977 ns ; 0.991 ns) | @@@
+---------------------------------------------------
+
+WriterScanBenchmarks.Cached: InProcess(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1) [Corpus=short-hit]
+Runtime = ; GC = 
+Mean = 1.643 ns, StdErr = 0.126 ns (7.70%), N = 3, StdDev = 0.219 ns
+Min = 1.458 ns, Q1 = 1.522 ns, Median = 1.586 ns, Q3 = 1.736 ns, Max = 1.885 ns
+IQR = 0.213 ns, LowerFence = 1.202 ns, UpperFence = 2.056 ns
+ConfidenceInterval = [-2.354 ns; 5.640 ns] (CI 99.9%), Margin = 3.997 ns (243.25% of Mean)
+Skewness = 0.24, Kurtosis = 0.67, MValue = 2
+-------------------- Histogram --------------------
+[1.323 ns ; 1.722 ns) | @@
+[1.722 ns ; 2.085 ns) | @
+---------------------------------------------------
+
+WriterScanBenchmarks.Runtime: InProcess(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1) [Corpus=short-hit]
+Runtime = ; GC = 
+Mean = 1.205 ns, StdErr = 0.007 ns (0.59%), N = 3, StdDev = 0.012 ns
+Min = 1.196 ns, Q1 = 1.198 ns, Median = 1.201 ns, Q3 = 1.210 ns, Max = 1.219 ns
+IQR = 0.011 ns, LowerFence = 1.181 ns, UpperFence = 1.227 ns
+ConfidenceInterval = [0.982 ns; 1.429 ns] (CI 99.9%), Margin = 0.223 ns (18.53% of Mean)
+Skewness = 0.33, Kurtosis = 0.67, MValue = 2
+-------------------- Histogram --------------------
+[1.185 ns ; 1.231 ns) | @@@
+---------------------------------------------------
+
+WriterScanBenchmarks.Scalar: InProcess(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1) [Corpus=short-miss]
+Runtime = ; GC = 
+Mean = 3.832 ns, StdErr = 0.041 ns (1.08%), N = 3, StdDev = 0.072 ns
+Min = 3.782 ns, Q1 = 3.791 ns, Median = 3.800 ns, Q3 = 3.857 ns, Max = 3.914 ns
+IQR = 0.066 ns, LowerFence = 3.692 ns, UpperFence = 3.956 ns
+ConfidenceInterval = [2.521 ns; 5.143 ns] (CI 99.9%), Margin = 1.311 ns (34.20% of Mean)
+Skewness = 0.36, Kurtosis = 0.67, MValue = 2
+-------------------- Histogram --------------------
+[3.717 ns ; 3.856 ns) | @@
+[3.856 ns ; 3.980 ns) | @
+---------------------------------------------------
+
+WriterScanBenchmarks.Cached: InProcess(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1) [Corpus=short-miss]
+Runtime = ; GC = 
+Mean = 3.045 ns, StdErr = 0.024 ns (0.77%), N = 3, StdDev = 0.041 ns
+Min = 3.003 ns, Q1 = 3.025 ns, Median = 3.048 ns, Q3 = 3.066 ns, Max = 3.084 ns
+IQR = 0.041 ns, LowerFence = 2.964 ns, UpperFence = 3.127 ns
+ConfidenceInterval = [2.302 ns; 3.789 ns] (CI 99.9%), Margin = 0.743 ns (24.41% of Mean)
+Skewness = -0.07, Kurtosis = 0.67, MValue = 2
+-------------------- Histogram --------------------
+[2.966 ns ; 3.029 ns) | @
+[3.029 ns ; 3.103 ns) | @@
+---------------------------------------------------
+
+WriterScanBenchmarks.Runtime: InProcess(Toolchain=InProcessEmitToolchain, IterationCount=3, IterationTime=100ms, WarmupCount=1) [Corpus=short-miss]
+Runtime = ; GC = 
+Mean = 2.055 ns, StdErr = 0.051 ns (2.48%), N = 3, StdDev = 0.088 ns
+Min = 1.978 ns, Q1 = 2.006 ns, Median = 2.035 ns, Q3 = 2.093 ns, Max = 2.152 ns
+IQR = 0.087 ns, LowerFence = 1.877 ns, UpperFence = 2.223 ns
+ConfidenceInterval = [0.442 ns; 3.668 ns] (CI 99.9%), Margin = 1.613 ns (78.48% of Mean)
+Skewness = 0.22, Kurtosis = 0.67, MValue = 2
+-------------------- Histogram --------------------
+[1.926 ns ; 2.087 ns) | @@
+[2.087 ns ; 2.232 ns) | @
+---------------------------------------------------
+
+// * Summary *
+
+BenchmarkDotNet v0.15.8, macOS Sequoia 15.8.1 (24H32) [Darwin 24.6.0]
+Unknown processor
+.NET SDK 10.0.400
+  [Host] : .NET 10.0.11 (10.0.11, 10.0.1126.37416), Arm64 RyuJIT armv8.0-a
+
+Job=InProcess  Toolchain=InProcessEmitToolchain  IterationCount=3  
+IterationTime=100ms  WarmupCount=1  
+
+| Method  | Corpus       | Mean          | Error         | StdDev     | Ratio | RatioSD | Allocated | Alloc Ratio |
+|-------- |------------- |--------------:|--------------:|-----------:|------:|--------:|----------:|------------:|
+| Scalar  | dense        |     0.0000 ns |     0.0000 ns |  0.0000 ns |     ? |       ? |         - |           ? |
+| Cached  | dense        |     0.2591 ns |     0.2358 ns |  0.0129 ns |     ? |       ? |         - |           ? |
+| Runtime | dense        |     0.2110 ns |     0.0815 ns |  0.0045 ns |     ? |       ? |         - |           ? |
+|         |              |               |               |            |       |         |           |             |
+| Scalar  | long-hit     | 5,849.3225 ns |   514.2784 ns | 28.1893 ns |  1.00 |    0.01 |         - |          NA |
+| Cached  | long-hit     |   315.7425 ns |    14.1534 ns |  0.7758 ns |  0.05 |    0.00 |         - |          NA |
+| Runtime | long-hit     |   690.9610 ns |    77.8383 ns |  4.2666 ns |  0.12 |    0.00 |         - |          NA |
+|         |              |               |               |            |       |         |           |             |
+| Scalar  | long-miss    | 5,906.2068 ns | 1,131.0228 ns | 61.9952 ns |  1.00 |    0.01 |         - |          NA |
+| Cached  | long-miss    |   317.3988 ns |    49.8475 ns |  2.7323 ns |  0.05 |    0.00 |         - |          NA |
+| Runtime | long-miss    |   684.6754 ns |    34.1277 ns |  1.8707 ns |  0.12 |    0.00 |         - |          NA |
+|         |              |               |               |            |       |         |           |             |
+| Scalar  | multilingual | 5,970.6479 ns |   873.1167 ns | 47.8585 ns |  1.00 |    0.01 |         - |          NA |
+| Cached  | multilingual |   318.6395 ns |    48.5584 ns |  2.6617 ns |  0.05 |    0.00 |         - |          NA |
+| Runtime | multilingual |   692.8532 ns |    18.0916 ns |  0.9917 ns |  0.12 |    0.00 |         - |          NA |
+|         |              |               |               |            |       |         |           |             |
+| Scalar  | short-hit    |     0.9835 ns |     0.0683 ns |  0.0037 ns |  1.00 |    0.00 |         - |          NA |
+| Cached  | short-hit    |     1.6433 ns |     3.9972 ns |  0.2191 ns |  1.67 |    0.19 |         - |          NA |
+| Runtime | short-hit    |     1.2054 ns |     0.2233 ns |  0.0122 ns |  1.23 |    0.01 |         - |          NA |
+|         |              |               |               |            |       |         |           |             |
+| Scalar  | short-miss   |     3.8321 ns |     1.3107 ns |  0.0718 ns |  1.00 |    0.02 |         - |          NA |
+| Cached  | short-miss   |     3.0452 ns |     0.7435 ns |  0.0408 ns |  0.79 |    0.02 |         - |          NA |
+| Runtime | short-miss   |     2.0549 ns |     1.6127 ns |  0.0884 ns |  0.54 |    0.02 |         - |          NA |
+
+// * Warnings *
+ZeroMeasurement
+  WriterScanBenchmarks.Runtime: InProcess -> The method duration is indistinguishable from the empty method duration
+BaselineCustomAnalyzer
+  Summary -> A question mark '?' symbol indicates that it was not possible to compute the (Ratio, RatioSD, Alloc Ratio) column(s) because the baseline or benchmark could not be found, or the baseline value is too close to zero.
+MinIterationTime
+  WriterScanBenchmarks.Runtime: InProcess -> The minimum observed iteration time is 98.629ms which is very small. It's recommended to increase it to at least 100ms using more operations.
+  WriterScanBenchmarks.Scalar: InProcess  -> The minimum observed iteration time is 99.421ms which is very small. It's recommended to increase it to at least 100ms using more operations.
+  WriterScanBenchmarks.Runtime: InProcess -> The minimum observed iteration time is 98.493ms which is very small. It's recommended to increase it to at least 100ms using more operations.
+  WriterScanBenchmarks.Scalar: InProcess  -> The minimum observed iteration time is 99.514ms which is very small. It's recommended to increase it to at least 100ms using more operations.
+  WriterScanBenchmarks.Cached: InProcess  -> The minimum observed iteration time is 98.754ms which is very small. It's recommended to increase it to at least 100ms using more operations.
+  WriterScanBenchmarks.Runtime: InProcess -> The minimum observed iteration time is 99.828ms which is very small. It's recommended to increase it to at least 100ms using more operations.
+  WriterScanBenchmarks.Cached: InProcess  -> The minimum observed iteration time is 99.332ms which is very small. It's recommended to increase it to at least 100ms using more operations.
+  WriterScanBenchmarks.Runtime: InProcess -> The minimum observed iteration time is 99.572ms which is very small. It's recommended to increase it to at least 100ms using more operations.
+  WriterScanBenchmarks.Cached: InProcess  -> The minimum observed iteration time is 97.672ms which is very small. It's recommended to increase it to at least 100ms using more operations.
+
+// * Legends *
+  Corpus      : Value of the 'Corpus' parameter
+  Mean        : Arithmetic mean of all measurements
+  Error       : Half of 99.9% confidence interval
+  StdDev      : Standard deviation of all measurements
+  Ratio       : Mean of the ratio distribution ([Current]/[Baseline])
+  RatioSD     : Standard deviation of the ratio distribution ([Current]/[Baseline])
+  Allocated   : Allocated memory per single operation (managed only, inclusive, 1KB = 1024B)
+  Alloc Ratio : Allocated memory ratio distribution ([Current]/[Baseline])
+  1 ns        : 1 Nanosecond (0.000000001 sec)
+
+// * Diagnostic Output - MemoryDiagnoser *
+
+
+// ***** BenchmarkRunner: End *****
+Run time: 00:00:33 (33.45 sec), executed benchmarks: 18
+
+Global total time: 00:00:39 (39.29 sec), executed benchmarks: 24
+// * Artifacts cleanup *
+Artifacts cleanup is finished
