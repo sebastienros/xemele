@@ -28,6 +28,7 @@ if (args[0] == "--inputs")
     {
         scans = Kinds().Select(kind => new { kind, input = EscapeBenchmarks.Input(kind) }).ToArray(),
         names = new[] { "checked", "CHECKED", "noresize", "selectedx", "selecte", "unknown", "ſelected", "" },
+        invalidUnicodeUnits = InvalidInputs().Select(value => value.Select(c => (int)c).ToArray()).ToArray(),
         output = new[] { "small", "large", "multilingual" }.SelectMany(kind => new[] { HtmlSerializationMode.Html5, HtmlSerializationMode.Legacy }.Select(mode => new { kind, mode = mode.ToString(), serialized = HtmlSerializer.Serialize(OutputBenchmarks.Document(kind), new() { Mode = mode }) })).ToArray()
     };
     File.WriteAllText(args[1], JsonSerializer.Serialize(inputs)); Console.WriteLine("Actual prepared inputs written; no allocation/timing counters."); return;
@@ -60,6 +61,15 @@ foreach (string kind in Kinds()) foreach (bool legacy in new[] { false, true })
         if (allocation != 0) throw new Exception("Borrowed primitives allocated.");
     }
 }
+foreach (string input in InvalidInputs()) foreach (bool legacy in new[] { false, true }) foreach (bool attribute in new[] { false, true })
+{
+    for (int i = 0; i < 100; i++) { sink.Reset(); HtmlSerializer.Escape(sink, input, attribute, legacy, default); }
+    before = GC.GetAllocatedBytesForCurrentThread();
+    for (int i = 0; i < 1024; i++) { sink.Reset(); HtmlSerializer.Escape(sink, input, attribute, legacy, default); consumed += HtmlSerializer.Stop(input, attribute, legacy); }
+    allocation = GC.GetAllocatedBytesForCurrentThread() - before;
+    Print("warm-borrowed-invalid-UTF16-NUL-or-surrogate-boundary-length=" + input.Length + "-legacy=" + legacy + "-attribute=" + attribute, allocation, 1024);
+    if (allocation != 0) throw new Exception("Borrowed invalid/boundary primitive allocated.");
+}
 foreach (string kind in new[] { "small", "large", "multilingual" }) foreach (HtmlSerializationMode mode in new[] { HtmlSerializationMode.Html5, HtmlSerializationMode.Legacy })
 {
     var document = OutputBenchmarks.Document(kind); var options = new HtmlSaveOptions { Mode = mode };
@@ -72,6 +82,7 @@ var retained = new string[128]; for (int i = 0; i < retained.Length; i++) retain
 GC.Collect(); GC.WaitForPendingFinalizers(); GC.Collect(); long heapAfter = GC.GetTotalMemory(false);
 Console.WriteLine(JsonSerializer.Serialize(new { domain = "retained-inclusive-owned-results-array-and-runtime-roots", beforeBytes = heapBefore, afterBytes = heapAfter, inclusiveDeltaBytes = heapAfter - heapBefore, denominatorOperations = retained.Length })); GC.KeepAlive(retained); GC.KeepAlive(consumed);
 
+static string[] InvalidInputs() => ["\ud800&", "\udc00", "\0tail&", new string('x',1023)+"😀&"];
 static string[] Kinds() => ["short-hit", "short-miss", "long-late-hit", "long-miss", "dense", "multilingual"];
 static void Verify()
 {

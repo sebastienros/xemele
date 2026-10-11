@@ -86,7 +86,7 @@ public static class HtmlSerializer
                     output.Write('>');
                     if (!Void(current, legacy))
                     {
-                        first = (current.TemplateContent ?? current).FirstChild;
+                        first = legacy ? current.FirstChild ?? current.TemplateContent?.FirstChild : (current.TemplateContent ?? current).FirstChild;
                         if (first is null) End(output, current, legacy, cancellation);
                         else if (legacy && NativeHtml(current) && NativeRaw(current.LocalName)) raw = true;
                     }
@@ -117,6 +117,10 @@ public static class HtmlSerializer
                 if (current.NextSibling is { } sibling) { current = sibling; break; }
                 raw = false;
                 var parent = current.Parent!;
+                // Legacy templates are plain native elements. Preserve their
+                // ordinary children, then project the separate content graph.
+                if (legacy && parent.TemplateContent?.FirstChild is { } content)
+                { current = content; break; }
                 current = parent == root ? parent : parent.TemplateHost ?? parent;
                 if (current.Kind == HtmlNodeKind.Element) End(output, current, legacy, cancellation);
             }

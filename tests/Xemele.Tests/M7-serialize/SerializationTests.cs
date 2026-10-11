@@ -41,8 +41,26 @@ public sealed class SerializationTests
         nodes.Add(node);
         foreach (var a in n.GetProperty("attributes").EnumerateArray())
             node.SetAttribute(a.ValueKind == JsonValueKind.Array ? new(a[0].GetString()!, a[1].GetString()!) : new(a.GetProperty("name").GetString()!, a.GetProperty("value").GetString()!, a.GetProperty("uri").GetString()!, a.GetProperty("prefix").GetString()!));
+        if (n.TryGetProperty("ordinaryChildren", out var ordinary))
+            foreach (var c in ordinary.EnumerateArray()) node.AppendChild(Build(doc, c, nodes));
         foreach (var c in n.GetProperty("children").EnumerateArray()) (node.TemplateContent ?? node).AppendChild(Build(doc, c, nodes));
         return node;
+    }
+    [Fact] public void ActualLegacyParsedTemplateAndDualGraphsRetainTheirNativeContent()
+    {
+        using var json = JsonDocument.Parse(File.ReadAllText(Fixture("native-template-parser.json")));
+        var item = json.RootElement[0]; byte[] bytes = Convert.FromBase64String(item.GetProperty("input").GetProperty("bytes").GetString()!);
+        string expected = item.GetProperty("expected").GetString()!;
+        var options = new HtmlSaveOptions { Mode = HtmlSerializationMode.Legacy };
+        Assert.Equal(expected, HtmlSerializer.Serialize(HtmlParser.Parse(bytes), options));
+        Assert.Equal(expected, HtmlSerializer.Serialize(HtmlParser.Parse(item.GetProperty("input").GetProperty("text").GetString()!), options));
+        using var input = new MemoryStream(bytes); var doc = HtmlParser.Load(input, cancellationToken: TestContext.Current.CancellationToken);
+        using var output = new MemoryStream(); HtmlSerializer.Save(doc, output, options, TestContext.Current.CancellationToken); Assert.Equal(Encoding.UTF8.GetBytes(expected), output.ToArray());
+        using var native = JsonDocument.Parse(File.ReadAllText(Fixture("native.json"))); var dual = native.RootElement.EnumerateArray().Single(c => c.GetProperty("id").GetString() == "native-template-dual-graph");
+        var d = new HtmlDocument(); var nodes = new List<HtmlNode>(); var t = Build(d, dual.GetProperty("tree")[0], nodes);
+        Assert.Equal("<template><?p ?><b>&lt;&gt;&amp;</b></template>", HtmlSerializer.Serialize(t));
+        Assert.Equal(dual.GetProperty("output").GetProperty("nodes")[0].GetString(), HtmlSerializer.Serialize(t, options));
+        Assert.Equal("<?p ><b>&lt;&gt;&amp;</b>", HtmlSerializer.Serialize(t.TemplateContent!, options));
     }
     public static IEnumerable<object[]> Html5libCases()
     { using var json = JsonDocument.Parse(File.ReadAllText(Fixture("html5lib-dispositions.json"))); foreach (var c in json.RootElement.EnumerateArray()) yield return [c.Clone()]; }

@@ -18,10 +18,14 @@ OUTPUT and ISO8859X and disables ICONV/ICU/HTTP. No native linkage is in Xemele.
 The native oracle calls htmlNodeDumpFormatOutput with format0 and no output
 encoder/encoding argument, preserving UTF8 and never injecting a meta tag.
 The539 earlier exact native trees are retained, including original multi-root
-output beside the explicitly approved single-root envelope adaptation.100 further
+output beside the explicitly approved single-root envelope adaptation.101 further
 native factory cases test boolean attributes, all void/raw names, URI byte percent
 escaping, namespaces/case, PIs including empty/NUL data, malformed comments,
 doctypes with null/empty/both-quote identifiers, control characters and templates.
+Legacy templates emit ordinary Children followed by TemplateContent children in
+a deterministic native plain-element projection; Html5 emits TemplateContent only.
+Original native parse/serialize vector-028 and a separately generated dual-graph
+fixture retain and verify this distinction without model/API changes.
 Every graph's document and every node's output were produced by the actual pinned
 native engine. Model-to-native mapping and source/compiler/binary/output hashes
 are retained in native-provenance.json. Native strings are C NUL-terminated;
@@ -61,6 +65,8 @@ owned string result; cold/owned I/O/result costs are separate measurement domain
 
 Precheckpoint combined run1610/1610 passes with0errors/failures/skips/not-run;
 639 native fixtures plus230 original dispositions and normative/lifetime cases.
+After the template correction906 focused cases pass, including640 native fixtures
+and the original direct native parser/serializer vector-028.
 Earlier543 legacy and113 builder/tokenizer/model dependency tests, plus earlier
 XML serialization tests pass. Test/result filenames under ignored artifacts
 retain actual historical outcomes. Initial test build rejected missing XML API

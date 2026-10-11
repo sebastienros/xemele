@@ -20,7 +20,7 @@ def wire(tree):
    for a in n['attributes']:
     if isinstance(a,list):a=attr(*a)
     rows.append('\t'.join(['A',hex(a['name']),hex(a['value']),hex(a.get('uri','')),hex(a.get('prefix',''))]))
-   for c in n['children']:visit(c)
+   for c in n.get('ordinaryChildren',[])+n['children']:visit(c)
    rows.append('Z')
   elif k=='DocumentType':rows.append('\t'.join(['D',hex(n['name']),hex(n.get('public')),hex(n.get('system'))]))
   elif k=='ProcessingInstruction':rows.append('\t'.join(['P',hex(n['name']),hex(n['value'])]))
@@ -54,6 +54,8 @@ for name in ['BR','SCRIPT','sTyLe','IsInDeX','a']:
  cases.append(dict(id='native-no-namespace-case-'+name,tree=[el(name,[text('<>&')],[attr('HREF','é'),attr('CHECKED','no'),attr('ſrc','é')],'','p')]))
 cases.append(dict(id='native-raw-reset',tree=[el('script',[text('<>'),el('div',[text('<>&')]),text('<>&'),el('span',[text('<>&')])])]))
 cases.append(dict(id='native-template-content',tree=[el('template',[el('script',[text('<>&')]),el('template',[leaf('ProcessingInstruction','','p'),text('<>')])])]))
+dual=el('template',[leaf('ProcessingInstruction','','p'),el('b',[text('<>&')])]);dual['ordinaryChildren']=[el('script',[text('<>&')]),text('<ordinary>')]
+cases.append(dict(id='native-template-dual-graph',tree=[dual]))
 cases.append(dict(id='native-empty-document',tree=[]))
 for item in cases:
  with tempfile.NamedTemporaryFile(mode='w',suffix='.wire') as f:
@@ -69,7 +71,7 @@ for item in original:
 (fixtures/'native-template-parser.json').write_text(json.dumps(parsed_templates,ensure_ascii=False,indent=2)+'\n')
 (fixtures/'native.json').write_text(json.dumps(cases,ensure_ascii=False,indent=2)+'\n')
 def digest(p):return hashlib.sha256(p.read_bytes()).hexdigest()
-provenance={'commit':'96498992efa48d52b0e8b83058bd88dbdaf153c1','profile':'htmlNodeDumpFormatOutput UTF-8/no encoder/format=0; NODEFDTD|NOERROR|NOWARNING|NONET native-tree inputs','graphMapping':'managed HTML namespace maps to native null; other namespaces retain prefix/URI without invented nsDef; all attribute values including empty are explicit native text; template content is native child content; fragment concatenates child node dumps; permanent shared owner retains no extra native metadata','nativeCases':len(cases),'source':{p:digest(source/p) for p in ['HTMLtree.c','xmlIO.c','HTMLparser.c','codegen/escape.inc']},'oracle.c':digest(report/'oracle.c'),'nativeArchive':digest(build/'libxml2.a'),'oracleBinary':digest(oracle),'nativeTemplateParserGoldens':digest(fixtures/'native-template-parser.json'),'nativeGoldens':digest(fixtures/'native.json'),'upstreamParserGoldens':digest(root/'tests/fixtures/M7-legacy/oracle.json'),'compiler':subprocess.check_output(['clang','--version'],text=True),'cmake':subprocess.check_output(['/private/tmp/xemele-serialize-cmake-env/bin/cmake','--version'],text=True),'config':(build/'CMakeCache.txt').read_text(),'macroHeader':(build/'libxml/xmlversion.h').read_text()}
+provenance={'commit':'96498992efa48d52b0e8b83058bd88dbdaf153c1','profile':'htmlNodeDumpFormatOutput UTF-8/no encoder/format=0; NODEFDTD|NOERROR|NOWARNING|NONET native-tree inputs','graphMapping':'managed HTML namespace maps to native null; other namespaces retain prefix/URI without invented nsDef; all attribute values including empty are explicit native text; legacy template ordinary children followed by template content project to native plain child content; fragment concatenates child node dumps; permanent shared owner retains no extra native metadata','nativeCases':len(cases),'source':{p:digest(source/p) for p in ['HTMLtree.c','xmlIO.c','HTMLparser.c','codegen/escape.inc']},'oracle.c':digest(report/'oracle.c'),'nativeArchive':digest(build/'libxml2.a'),'oracleBinary':digest(oracle),'nativeTemplateParserGoldens':digest(fixtures/'native-template-parser.json'),'nativeGoldens':digest(fixtures/'native.json'),'upstreamParserGoldens':digest(root/'tests/fixtures/M7-legacy/oracle.json'),'compiler':subprocess.check_output(['clang','--version'],text=True),'cmake':subprocess.check_output(['/private/tmp/xemele-serialize-cmake-env/bin/cmake','--version'],text=True),'config':(build/'CMakeCache.txt').read_text(),'macroHeader':(build/'libxml/xmlversion.h').read_text()}
 provenance['actualPreprocessedFeatures']=[x for x in subprocess.check_output(['clang','-dM','-E','-x','c','-I'+str(build),'-I'+str(source/'include'),'-include','libxml/xmlversion.h','/dev/null'],text=True).splitlines() if x.startswith('#define LIBXML')]
 provenance['sourceArchiveSha256']=hashlib.sha256(subprocess.check_output(['git','--git-dir=/private/tmp/xemele-reference-cache/libxml2.git','archive',provenance['commit']])).hexdigest()
 (report/'native-provenance.json').write_text(json.dumps(provenance,indent=2)+'\n')

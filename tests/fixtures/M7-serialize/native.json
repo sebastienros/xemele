@@ -69749,6 +69749,83 @@
     }
   },
   {
+    "id": "native-template-dual-graph",
+    "tree": [
+      {
+        "kind": "Element",
+        "name": "template",
+        "value": "",
+        "uri": "http://www.w3.org/1999/xhtml",
+        "prefix": "",
+        "attributes": [],
+        "children": [
+          {
+            "kind": "ProcessingInstruction",
+            "name": "p",
+            "value": "",
+            "attributes": [],
+            "children": []
+          },
+          {
+            "kind": "Element",
+            "name": "b",
+            "value": "",
+            "uri": "http://www.w3.org/1999/xhtml",
+            "prefix": "",
+            "attributes": [],
+            "children": [
+              {
+                "kind": "Text",
+                "name": "",
+                "value": "<>&",
+                "attributes": [],
+                "children": []
+              }
+            ]
+          }
+        ],
+        "ordinaryChildren": [
+          {
+            "kind": "Element",
+            "name": "script",
+            "value": "",
+            "uri": "http://www.w3.org/1999/xhtml",
+            "prefix": "",
+            "attributes": [],
+            "children": [
+              {
+                "kind": "Text",
+                "name": "",
+                "value": "<>&",
+                "attributes": [],
+                "children": []
+              }
+            ]
+          },
+          {
+            "kind": "Text",
+            "name": "",
+            "value": "<ordinary>",
+            "attributes": [],
+            "children": []
+          }
+        ]
+      }
+    ],
+    "output": {
+      "document": "<template><script><>&</script>&lt;ordinary&gt;<?p ><b>&lt;&gt;&amp;</b></template>\n",
+      "nodes": [
+        "<template><script><>&</script>&lt;ordinary&gt;<?p ><b>&lt;&gt;&amp;</b></template>",
+        "<script><>&</script>",
+        "&lt;&gt;&amp;",
+        "&lt;ordinary&gt;",
+        "<?p >",
+        "<b>&lt;&gt;&amp;</b>",
+        "&lt;&gt;&amp;"
+      ]
+    }
+  },
+  {
     "id": "native-empty-document",
     "tree": [],
     "output": {
