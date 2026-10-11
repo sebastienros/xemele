@@ -4,7 +4,14 @@
   "coordination_branch": "main",
   "max_concurrent_workers": 3,
   "last_verified_checkpoint": "ed7c82190b2b6b55ec54f0fb49576905ee9834bd",
-  "active_assignments": [],
+  "active_assignments": [
+    {
+      "task_id": "M7-serialize",
+      "branch": "codex/m7-serialize",
+      "base_revision": "725b2cc7190dae7766c8dec17dd6f9958d2b4255",
+      "stage": "Claimed on main; pending isolated GPT-6.1 Sol/high chat creation"
+    }
+  ],
   "integration_queue": [],
   "blockers": [
     {
@@ -14,9 +21,8 @@
     }
   ],
   "next_actions": [
-    "Clean terminal builder worker/integration checkouts after inspected evidence.",
-    "Claim M7-serializer on main; isolated GPT-6.1 Sol/high implementation chat; preserve exact noscript escaping assertion.",
-    "Verify corpus/CLI and integrated M7-gate; terminal workers and durable sole-writer handoff to main orchestrator. No M8 creation."
+    "Create isolated M7-serialize GPT-6.1 Sol/high chat from claim; reuse HtmlCommon options; exact noscript escaping assertion deferred from builder.",
+    "Verify serializer, corpus/CLI and integrated M7-gate; terminalworkers/durablemainorchestratorhandoff; no successor creation."
   ],
   "last_verified_task": "M7-builder",
   "last_integrated_revision": "ed7c82190b2b6b55ec54f0fb49576905ee9834bd",
@@ -1057,6 +1063,17 @@
         "/private/tmp/m4-compile-integration.xml"
       ],
       "result": "removed after actual integrated outputs inspected and durable summaries committed"
+    },
+    {
+      "task_id": "M7-builder",
+      "status": "complete",
+      "preserved": "232ownedpaths/allreports/commits incl9abe/fdc/ed7; originalcache/M6package intact",
+      "removed": [
+        "/private/tmp/xemele-m7-builder",
+        "/private/tmp/xemele-m7-builder-integration",
+        "/Users/sebastienros/.codex/worktrees/464f/xemele"
+      ],
+      "managed_fallback": "Child list_artifacts empty; terminal clean managed checkout removed via gitworktree remove. No rawarchives."
     }
   ],
   "preserved_reference_sources": [
@@ -2586,7 +2603,7 @@
       "thinking": "high",
       "worktree_path": "/Users/sebastienros/.codex/worktrees/464f/xemele",
       "checkpoint": "8d2d3668d4ff360718c42e6ebc4ece53d6d71e53",
-      "status": "Verified integrated; worker terminal; cleanup pending",
+      "status": "Verified integrated; terminal; all clean checkouts removed",
       "task_id": "M7-builder",
       "branch": "codex/m7-builder-continuation",
       "integration_revision": "ed7c82190b2b6b55ec54f0fb49576905ee9834bd"
