@@ -62,3 +62,44 @@ source/IL corroboration, not substitute evidence for a steady-state zero counter
 Timing on this shared Apple Arm64 host is informational. Broader hardware/AOT/
 trimming/platform release gates remain M9 work. No runtime behavior changes or
 performance comparisons across different ownership domains are claimed.
+
+## Corrected exclusive sequence
+
+Prepared revision 5c1fad88269bb7e02d98ca504c39a8551e99e122 and manifest
+f5c23fa1a87b22cf6deb6f4ffa37674d0097fc9845d36972a18464003daaf1a1
+covered the 148/43/3852 source/binary/full-SDK-runtime-host closure. Exactly one
+bounded primitive-only process and one three-case BDN process ran. Both phase
+exits, wrapper exit and initial/final identity exits were zero; own-group no-child
+cleanup passed. The coordinator released durably before raw inspection. Product
+source/binary was unchanged from the original successful functional checks.
+
+| Corrected standalone scope | Inclusive bytes | Operations |
+| --- | ---: | ---: |
+| Cold fixture setup | 12664 | 1 |
+| Warm mutations | 0 | 16384 |
+| Measured mutations, including sampling/stores | 0 | 16384 |
+
+All 32 warm and all 32 measured batch counters were zero. Warm/steady consumption
+was 134291456/402726912, with final revision 32772. This establishes the scoped
+steady primitive gate under the disclosed settings; original 152 B remains
+unattributed. No ownership, positive or retained counter phases were repeated.
+
+| BDN operation | Mean ns/op | Displayed allocation | Actual inclusive GC bytes | Actual operations | Derived B/op |
+| --- | ---: | --- | ---: | ---: | ---: |
+| Borrowed value mutation | 4.876 | dash | 0 | 134217728 | 0 |
+| Owned unprefixed attribute item | 25.500 | 64 B | 2147553464 | 33554432 | 64.00208068 |
+| Owned namespace item | 27.087 | 64 B | 2147552120 | 33554432 | 64.00204062 |
+
+Actual runtime .NET 10.0.11 (10.0.1126.37416), Arm64 RyuJIT armv8.0-a,
+concurrent workstation GC. Explicit tiered compilation/PGO/ReadyToRun disabled.
+CPU/runtime/OS/full environment identity is frozen by the manifest. ShortRun
+confidence intervals are broad: mutation ±1.643 ns, attribute ±8.143 ns and
+namespace ±6.102 ns at 99.9%. Timing is informational. Inclusive GC byte numerators
+are retained even when the display is a dash; small owned-domain residuals are
+not subtracted. Prior 64 B and surrogate 56 B observations support the new Int64
+metadata footprint. Retained heap delta stays a separate GC-domain observation.
+
+Original failed preparation manifest SHA-256: feef635f2237f26b707a27a3b2285b3b9b3548a4e4cd93952d2cb516548bd66c.
+Corrected benchmark execution elapsed 30.08 seconds (three successful reports).
+Root independently inspected both failed and successful raw counters/logs, and
+ACKed their exact summary and authorized removal only after durable evidence.
