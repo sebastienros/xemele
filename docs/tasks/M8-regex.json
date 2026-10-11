@@ -4,11 +4,11 @@
   "milestone": "M8",
   "title": "XML Schema regular-expression engine",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M8 coordinator01a12c6c-b333-71d3-877f-0d186618e21d / assigned isolated worker",
   "branch": "codex/m8-regex",
   "base_revision": "e83c84546eceec056e4840c2d12ea2e04d886630",
-  "integration_revision": null,
+  "integration_revision": "f0e54a939d2eb143f872396b25e7f394fd8da193",
   "depends_on": [
     "M8-model"
   ],
@@ -36,7 +36,9 @@
       "description": "Implement XML Schema regex syntax/Unicode classes/subtraction and bounded matching.",
       "status": "passed",
       "evidence": [
-        "source-correctness"
+        "source-correctness",
+        "source-review",
+        "integrated-verification"
       ]
     },
     {
@@ -44,7 +46,9 @@
       "description": "Spec-based valid/invalid pattern tests and resource-budget cases pass; no assumed .NET regex substitution.",
       "status": "passed",
       "evidence": [
-        "source-correctness"
+        "source-correctness",
+        "source-review",
+        "integrated-verification"
       ]
     },
     {
@@ -55,7 +59,9 @@
         "source-correctness",
         "measurement-preparation",
         "allocation-probe-1",
-        "released-allocation-and-bdn"
+        "released-allocation-and-bdn",
+        "source-review",
+        "integrated-verification"
       ]
     }
   ],
@@ -114,6 +120,24 @@
       "result": "passed",
       "summary": "Two thin probes: eight routes x 64 samples each, 1,024 warmed observations all 0 B; 128 owned-run observations at 456 B/op. All eight BDN reports succeeded: seven 0 B/op, pooled 1 B/op over 4,096 operations, with attribution unestablished. Both cold setups 41,808 B; first pooled matches 10,256 B; positive controls 1,048 B. Inclusive retained deltas 153,008/161,224 B for 256 programs are informational. All 42 final identities passed; children were reaped, groups drained, logs closed and durable ACK preceded inspection. No rerun of the valid first probe; accepted runtime/harness unchanged.",
       "artifact": "docs/reports/M8-regex/allocations.md"
+    },
+    {
+      "id": "source-review",
+      "kind": "review",
+      "revision": "7f693470168f481bb63812516bde66d5be9f0822",
+      "command": "Read-only review by /root/review_m8_xpath, accepted bounded correction batch",
+      "result": "passed",
+      "summary": "Accepted category/block range endpoint rejection, full-scalar escape validation and trailing-dash subtraction; no remaining source blockers in reviewed batch.",
+      "artifact": "docs/reports/M8-regex/README.md"
+    },
+    {
+      "id": "integrated-verification",
+      "kind": "integration",
+      "revision": "f0e54a939d2eb143f872396b25e7f394fd8da193",
+      "command": "python3 docs/reports/M8-regex/checks.py at fe3078352bcaceca7762276fb01c4e76f2346299; exact test-output assertions and metadata-only path proof at final integration",
+      "result": "passed",
+      "summary": "159 actual Arm64 .NET 10.0.11 tests passed, zero errors/failures/skips/not-run; frozen316/public1393 matched; XML-only consumer and176-task validation passed. Final integrated runtime/test/build inputs identical to tested combination; raw measurement results independently inspected with pooled BDN1B discrepancy retained.",
+      "artifact": "docs/reports/M8-regex/integration.md"
     }
   ],
   "blockers": [],
@@ -127,8 +151,7 @@
       "tasks.py validate and git diff --check passed; integrated verification has not been performed."
     ],
     "remaining": [
-      "Coordinator integration checks and verified status; worker integration_revision remains null.",
-      "Gate-owned composition/cumulative corpus and x64 release confirmation; preserve the pooled BDN 1 B observation alongside actual 0 B thin-probe routes without an inferred cause."
+      "Gate-owned full composition/corpus and x64 release confirmation; preserve pooled BDN discrepancy."
     ],
     "requests": []
   }
