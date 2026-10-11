@@ -4,7 +4,7 @@
   "milestone": "M3",
   "title": "Async cancellation rebinding preserves asynchronous resource cleanup",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M3 coordinator 01a1284a-8826-7fc2-af44-74552db608f2",
   "branch": "codex/m3-async-token-binding",
   "base_revision": "d23c00c3628b628978f1e1febc6115660276fe28",
@@ -30,29 +30,91 @@
     {
       "id": "M3-async-token-binding-A1",
       "description": "Add async idle token rebinding with the same guards, independent budget cancellation and exact token propagation as sync binding; cancellation drains live handles via existing async cleanup and preserves primary cancellation exception.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "focused-and-resolver",
+        "build",
+        "allocation",
+        "planning"
+      ]
     },
     {
       "id": "M3-async-token-binding-A2",
       "description": "Focused async-only delayed disposal tests prove actual suspension, exactly-once drain, busy/reentrant/faulted/disposed guards, and unchanged counters/handles on successful rebinding.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "focused-and-resolver",
+        "build",
+        "allocation",
+        "planning"
+      ]
     },
     {
       "id": "M3-async-token-binding-A3",
       "description": "Preserve existing sync/async resolver behavior with affected tests, applicable allocation evidence and planning validation at a known implementation revision.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "focused-and-resolver",
+        "build",
+        "allocation",
+        "planning"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Resolution/Core/XmlResolutionSession.cs: BindCancellationTokenAsync uses existing async drain with preserved cancellation and guard lifetime",
+    "tests/Xemele.Tests/M3-async-token-binding/AsyncBindingTests.cs: delayed async-only cleanup, independent budget token, exact rebinding/counters, busy/disposed guards and warm success allocation controls"
+  ],
+  "evidence": [
+    {
+      "id": "focused-and-resolver",
+      "kind": "check",
+      "revision": "5ed2408c418ffad5915ef0f947e24aff092acbe2",
+      "command": "Pinned Xemele.Tests.dll -namespace Xemele.Tests.AsyncTokenBinding -namespace Xemele.Tests.Resolution -namespace Xemele.Tests.ResolverCancellation -parallelMode none -showLiveOutput",
+      "result": "passed",
+      "summary": "67tests passed0failed/skipped:6new tests incl two budget modes,61existing resolver/session. Async-only source rejects sync resolution/read/disposal; delayed failure cleanup preserves bound/budget primary token and exactly-once disposal.",
+      "artifact": "docs/reports/M3-async-token-binding/checks.json"
+    },
+    {
+      "id": "build",
+      "kind": "check",
+      "revision": "5ed2408c418ffad5915ef0f947e24aff092acbe2",
+      "command": "Pinned dotnet build tests/Xemele.Tests/Xemele.Tests.csproj -c Release --no-restore -p:BuildInParallel=false -p:UseSharedCompilation=false -m:1 --disable-build-servers",
+      "result": "passed",
+      "summary": "Release0warnings/errors; first dev build failed xUnit1051 absent runner token; corrected all call sites before implementation commit.",
+      "artifact": "docs/reports/M3-async-token-binding/checks.json"
+    },
+    {
+      "id": "allocation",
+      "kind": "check",
+      "revision": "5ed2408c418ffad5915ef0f947e24aff092acbe2",
+      "command": "AsyncBindingTests.WarmSuccessfulBindingCompletesSynchronouslyWithoutAllocations",
+      "result": "passed",
+      "summary": "Successful binder explicitly completes synchronously;1024ops after128warmups0B on owning thread,88Bpositive. No per-thread claim for suspended cleanup; delayed async correctness separately exercised. No timing algorithm/throughput change.",
+      "artifact": "docs/reports/M3-async-token-binding/checks.json"
+    },
+    {
+      "id": "planning",
+      "kind": "check",
+      "revision": "5ed2408c418ffad5915ef0f947e24aff092acbe2",
+      "command": "python3 tools/planning/tasks.py validate",
+      "result": "passed",
+      "summary": "142tasks validate at implementation revision; whitespace clean.",
+      "artifact": null
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Requested by async core worker: sync BindCancellationToken can fault/drain through synchronous stream disposal; optional async binder required before resource continuation consumption.",
-    "checks": [],
-    "remaining": [],
+    "summary": "Optional internal async idle cancellation rebinding uses actual asynchronous resource drain on cancellation, preserving prior sync API and independent budget token; no public API added.",
+    "checks": [
+      "PinnedRelease0warnings/errors",
+      "67tests0failed/skipped",
+      "warm1024ops0B/positive88B",
+      "142taskvalidation"
+    ],
+    "remaining": [
+      "Coordinator integrated verification pending"
+    ],
     "requests": []
   }
 }

@@ -44,6 +44,20 @@ internal sealed class XmlResolutionSession : IDisposable, IAsyncDisposable
         finally { busy = false; }
     }
 
+    // Async owners must not synchronously dispose their live resource stack
+    // when cancellation is observed while rebinding a paused operation.
+    internal async ValueTask BindCancellationTokenAsync(CancellationToken token)
+    {
+        Enter();
+        try
+        {
+            cancellation = token;
+            CheckCancellation();
+        }
+        catch { await FaultAndDrainAsync().ConfigureAwait(false); throw; }
+        finally { busy = false; }
+    }
+
     internal static ResourceRequestResult CreateRequest(string systemId, string? publicId, Uri? referrer,
         XmlResourceKind kind, XmlLocation location)
     {
