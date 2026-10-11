@@ -89,7 +89,7 @@ internal static class XmlCommands
     private static Stream OpenInput(string? path)
     {
         if (path is null) return Console.OpenStandardInput();
-        try { return File.OpenRead(path); }
+        try { return new GuardedFileInput(File.OpenRead(path), true); }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ArgumentException or NotSupportedException) { throw new InvocationException(ex.Message); }
     }
     private static string ReadText(string path)
@@ -109,7 +109,8 @@ internal static class XmlCommands
         }
         if (item.Kind == XPathItemKind.Comment) return "<!--" + item.StringValue + "-->";
         if (item.Kind == XPathItemKind.ProcessingInstruction) return "<?" + item.Name + (item.StringValue.Length == 0 ? "" : " " + item.StringValue) + "?>";
-        string escaped = item.StringValue.Replace("&", "&amp;", StringComparison.Ordinal).Replace("<", "&lt;", StringComparison.Ordinal).Replace("\"", "&quot;", StringComparison.Ordinal).Replace("\r", "&#xD;", StringComparison.Ordinal);
+        string escaped = item.StringValue.Replace("&", "&amp;", StringComparison.Ordinal).Replace("<", "&lt;", StringComparison.Ordinal).Replace(">", "&gt;", StringComparison.Ordinal).Replace("\"", "&quot;", StringComparison.Ordinal).Replace("\r", "&#xD;", StringComparison.Ordinal);
+        if (item.Kind is XPathItemKind.Attribute or XPathItemKind.Namespace) escaped = escaped.Replace("\t", "&#x9;", StringComparison.Ordinal).Replace("\n", "&#xA;", StringComparison.Ordinal);
         if (item.Kind == XPathItemKind.Attribute) return item.Name + "=\"" + escaped + "\"";
         if (item.Kind == XPathItemKind.Namespace) return "xmlns" + (item.LocalName.Length == 0 ? "" : ":" + item.LocalName) + "=\"" + escaped + "\"";
         return escaped;

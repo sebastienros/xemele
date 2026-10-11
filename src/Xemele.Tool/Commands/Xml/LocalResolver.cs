@@ -37,7 +37,7 @@ internal sealed class LocalResolver : XmlResourceResolver
             string path = RealPath(request.Uri.LocalPath);
             string relative = Path.GetRelativePath(root, path);
             if (Path.IsPathRooted(relative) || relative == ".." || relative.StartsWith(".." + Path.DirectorySeparatorChar, StringComparison.Ordinal)) return null;
-            return new XmlResolvedResource(File.OpenRead(path), new Uri(path));
+            return new XmlResolvedResource(new GuardedFileInput(File.OpenRead(path), false), new Uri(path));
         }
         catch (IOException) { return null; }
         catch (UnauthorizedAccessException) { return null; }

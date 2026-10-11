@@ -21,8 +21,38 @@ try
         File.WriteAllText(output, "preserve");
         if (XmlCommands.Run("parse", ["--input", input, "--output", output], canceled.Token) != 3 || File.ReadAllText(output) != "preserve") throw new InvalidOperationException("cancellation");
     }
+    foreach (bool invocation in new[] { true, false })
+    {
+        var guarded = new GuardedFileInput(new FailingInput(), invocation);
+        try { _ = guarded.Read(new byte[1]); throw new InvalidOperationException("read did not reject"); }
+        catch (InvocationException) when (invocation) { }
+        catch (RejectionException) when (!invocation) { }
+        try { guarded.Dispose(); throw new InvalidOperationException("dispose did not reject"); }
+        catch (InvocationException) when (invocation) { }
+        catch (RejectionException) when (!invocation) { }
+    }
+    var unexpected = new InvalidOperationException("unexpected resolver failure");
+    var unexpectedInput = new GuardedFileInput(new FailingInput(unexpected), false);
+    try { _ = unexpectedInput.Read(new byte[1]); throw new InvalidOperationException("unexpected failure lost"); }
+    catch (InvalidOperationException ex) when (ReferenceEquals(ex, unexpected)) { }
     Console.OpenStandardOutput().Write([]);
     if (!Console.OpenStandardInput().CanRead) throw new InvalidOperationException("stdin closed");
     Console.WriteLine("Seven command and cancellation sample passed; " + RuntimeInformation.FrameworkDescription);
 }
 finally { Directory.Delete(folder, true); }
+
+sealed class FailingInput(Exception? failure = null) : Stream
+{
+    public override bool CanRead => true;
+    public override bool CanSeek => false;
+    public override bool CanWrite => false;
+    public override long Length => throw new NotSupportedException();
+    public override long Position { get => throw new NotSupportedException(); set => throw new NotSupportedException(); }
+    public override int Read(byte[] buffer, int offset, int count) => throw failure ?? new IOException("owned test read");
+    public override int Read(Span<byte> buffer) => throw failure ?? new IOException("owned test read");
+    public override void Flush() => throw new NotSupportedException();
+    public override long Seek(long offset, SeekOrigin origin) => throw new NotSupportedException();
+    public override void SetLength(long value) => throw new NotSupportedException();
+    public override void Write(byte[] buffer, int offset, int count) => throw new NotSupportedException();
+    protected override void Dispose(bool disposing) { if (disposing) throw failure ?? new IOException("owned test dispose"); base.Dispose(disposing); }
+}

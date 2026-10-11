@@ -4,7 +4,7 @@ import json, os, pathlib, signal, subprocess, tempfile
 ROOT=pathlib.Path(__file__).resolve().parents[3]
 HOST='/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet'
 TOOL=ROOT/'src/Xemele.Tool/bin/Release/net10.0/Xemele.Tool.dll'
-PREFIX=[HOST,'--fx-version','10.0.11',str(TOOL)]
+PREFIX=[os.environ['XEMELE_CLI_NATIVE']] if os.environ.get('XEMELE_CLI_NATIVE') else [HOST,'--fx-version','10.0.11',str(TOOL)]
 CASES=[]
 def run(args, data=b'', code=0, contains=None, exact=None):
     process=subprocess.Popen(PREFIX+args,stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE,start_new_session=True)
@@ -32,6 +32,11 @@ with tempfile.TemporaryDirectory(prefix='xemele-cli-') as directory:
     run(['format'],b'<r><a/></r>',contains=b'\n  <a/>')
     run(['xpath','--expression','count(/r/a)','--input',str(input)],exact=b'2\n')
     run(['xpath','--expression','/r/a','--input',str(input)],exact=b'<a>1</a>\n<a>2</a>\n')
+    run(['xpath','--expression','/r/@v'],b'<r v="a&amp;b"/>',exact=b'v="a&amp;b"\n')
+    run(['xpath','--expression','/r/text()'],b'<r>a&amp;b</r>',exact=b'a&amp;b\n')
+    run(['xpath','--expression','/r/text()'],b'<r>]]&gt;</r>',exact=b']]&gt;\n')
+    run(['xpath','--expression','/r/@v'],b'<r v="a&#x9;b&#xA;c&#xD;d"/>',exact=b'v="a&#x9;b&#xA;c&#xD;d"\n')
+    run(['xpath','--expression','/r/a'],b'<r xmlns:p="urn:p"><a><p:b/></a></r>',contains=b'xmlns:p="urn:p"')
     run(['xpath','--expression','true()'],b'<r/>',exact=b'true\n')
     run(['canonicalize'],b'<r b="2" a="1"><!--x--></r>',exact=b'<r a="1" b="2"></r>')
     run(['canonicalize','--exclusive','--with-comments'],b'<r><!--x--></r>',exact=b'<r><!--x--></r>')
