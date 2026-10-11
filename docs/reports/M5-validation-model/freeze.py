@@ -27,8 +27,8 @@ def capture():
     runtime=pathlib.Path('/Users/sebastienros/Library/Application Support/dotnetup/dotnet')
     runtime_files=[runtime/'dotnet'] + [p for p in (runtime/'sdk/10.0.400').rglob('*') if p.is_file()] + [p for p in (runtime/'shared/Microsoft.NETCore.App/10.0.11').rglob('*') if p.is_file()] + [p for p in (runtime/'host/fxr').rglob('*') if p.is_file()]
     plan=json.loads((root/'docs/reports/M5-validation-model/measurement-plan.json').read_text())
-    environment=dict(os.environ);environment.update(plan['environment'])
-    for key in ['PWD','OLDPWD','SHLVL','_']:environment.pop(key,None)
+    environment={key:value for key,value in os.environ.items() if key in {'PATH','LANG','LC_ALL','LC_CTYPE','MallocNanoZone','LD_LIBRARY_PATH'} or key.startswith(('DOTNET_','COMPlus_','CORECLR_','DYLD_'))}
+    environment.update(plan['environment'])
     return {'environment':environment,'revision':subprocess.check_output(['git','rev-parse','HEAD'],cwd=root,text=True).strip(),'source':{str(p):digest(p) for p in sorted(set(sources))},'binary':binaries,'runtime':{str(p):digest(p) for p in runtime_files}}
 mode,path=sys.argv[1:];path=pathlib.Path(path);actual=capture()
 if mode=='capture':path.write_text(json.dumps(actual,indent=2,sort_keys=True)+'\n')
