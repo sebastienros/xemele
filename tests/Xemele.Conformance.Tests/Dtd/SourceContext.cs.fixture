@@ -1,0 +1,79 @@
+using Xemele;
+using Xemele.Parsing.Dom;
+using Xemele.Parsing.Input;
+using Xemele.Parsing.Syntax;
+namespace Xemele.Conformance.Tests.Dtd;
+
+// Adapted verbatim byte/declaration framing from verified M2 source-context driver.
+// The grammar is the existing product core, not an alternate corpus parser.
+internal static class SourceContext
+{
+    internal static XmlDocument Parse(byte[] bytes, Uri source, XmlResourceResolver resolver)
+    {
+        var options = new XmlParseOptions { DtdProcessing = XmlDtdProcessing.Parse, Resolver = resolver };
+        using var decoder = new XmlInputDecoder(options, source);
+        using var core = new XmlParserCore(options, source);
+        var sink = new DomSink(options, decoder);
+        char[] chars = new char[4096]; long[] offsets = new long[4096];
+        var prefix = new List<char>(); var prefixOffsets = new List<long>();
+        bool decided = false; XmlDiagnostic? diagnostic = null;
+        int position = 0;
+        while (diagnostic is null)
+        {
+            bool final = position == bytes.Length;
+            int take = Math.Min(bytes.Length - position, sink.DeclarationValidated ? 4096 : 1);
+            int capacity = sink.DeclarationValidated ? 4096 : 2;
+            var decoded = decoder.Decode(final ? [] : bytes.AsSpan(position, take), chars.AsSpan(0, capacity), offsets.AsSpan(0, capacity), final, default);
+            position += decoded.ConsumedBytes;
+            for (int i = 0; i < decoded.WrittenCharacters && diagnostic is null; i++)
+            {
+                if (!decided)
+                {
+                    prefix.Add(chars[i]); prefixOffsets.Add(offsets[i]);
+                    int n = prefix.Count;
+                    bool absent = n <= 5 ? chars[i] != "<?xml"[n-1] : chars[i] is not (' ' or '\t' or '\r' or '\n');
+                    if (!absent && n < 6) continue;
+                    decided = true;
+                    if (absent) sink.ValidateAbsentDeclaration(new(source, 1, 1, prefixOffsets[0]));
+                    diagnostic = sink.Diagnostic;
+                    if (diagnostic is null) diagnostic = Feed(prefix.ToArray(), prefixOffsets.ToArray());
+                }
+                else diagnostic = Feed(chars.AsSpan(i, 1), offsets.AsSpan(i, 1));
+            }
+            diagnostic ??= decoded.Diagnostic;
+            if (diagnostic is not null) break;
+            if (decoded.Step != DecodeStep.Completed) continue;
+            if (!decided)
+            {
+                sink.ValidateAbsentDeclaration(new(source, 1, 1, prefix.Count == 0 ? bytes.Length : prefixOffsets[0]));
+                diagnostic = sink.Diagnostic;
+                if (diagnostic is null && prefix.Count != 0) diagnostic = Feed(prefix.ToArray(), prefixOffsets.ToArray());
+            }
+            if (diagnostic is null)
+            {
+                core.CompleteByteSource(bytes.Length);
+                ScanResult result;
+                do { result = core.Append([], [], true, sink, default); } while (result.Step == ScanStep.Paused && sink.Diagnostic is null);
+                diagnostic = sink.Diagnostic ?? result.Diagnostic;
+                if (diagnostic is null && result.Step != ScanStep.Completed) throw new InvalidOperationException("Finalization did not complete.");
+            }
+            break;
+        }
+        if (diagnostic is not null) throw new XmlParseException([diagnostic]);
+        return sink.Document;
+        XmlDiagnostic? Feed(ReadOnlySpan<char> input, ReadOnlySpan<long> mappings)
+        {
+            int consumed = 0;
+            ScanResult result;
+            do
+            {
+                result = core.Append(input[consumed..], mappings[consumed..], false, sink, default);
+                if ((uint)result.Consumed > (uint)(input.Length - consumed)) throw new InvalidOperationException("Invalid consumption.");
+                consumed += result.Consumed;
+                if (result.Diagnostic is not null || sink.Diagnostic is not null) return sink.Diagnostic ?? result.Diagnostic;
+            } while (result.Step == ScanStep.Paused);
+            if (consumed != input.Length || result.Step != ScanStep.NeedInput) throw new InvalidOperationException("Incomplete nonfinal consumption.");
+            return null;
+        }
+    }
+}
