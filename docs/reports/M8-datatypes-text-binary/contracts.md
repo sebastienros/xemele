@@ -30,7 +30,9 @@ XML Char scalars, including supplementary values. Language uses the XSD lexical
 pattern; strings keep ordinal identity. Base64 enforces collapsed-space placement,
 quartets, final padding and zero unused bits. URI uses charged escape-projection
 atoms and bounded grammar scans including IPv6/embedded IPv4; no arbitrary input
-is passed to opaque runtime URI, conversion or regex routines. Query-only relative
+is passed to opaque runtime URI, conversion or regex routines. The first opaque atom follows the explicit uric_no_slash enumeration (literal
+brackets excluded); later uric atoms use RFC2732's amended reserved set.
+Query-only relative
 references follow RFC2396 §5.2/C.1's explicit examples.
 
 Every parse charges 1 canonical metadata lookup. Strings charge one per validating

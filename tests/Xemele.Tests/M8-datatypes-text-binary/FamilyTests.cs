@@ -166,6 +166,7 @@ public sealed class FamilyTests
     [InlineData("urn:example:test")][InlineData("mailto:a@example.org")][InlineData("http://[::1]:80/path")][InlineData("//user:pass@[::ffff:192.0.2.1]:/p")]
     [InlineData("http://[1:2:3:4:5:6:7:8]")][InlineData("//")][InlineData("a/b:c")][InlineData("./1:a")][InlineData("a?[]#[]")]
     [InlineData("a{}<>|\\^`\"")][InlineData("a%ff")][InlineData("unknown:opaque?[]")][InlineData("//reg_name:arbitrary-port")]
+    [InlineData("x:%5B")][InlineData("x:%5D")][InlineData("x:a[")][InlineData("x:a]")][InlineData("x:?[]")]
     public void UriGrammarAndLexicalLength(string input)
     {
         var value = Parse("anyURI", input); Assert.Equal((long)input.EnumerateRunes().Count(), DatatypeValues.ValueLength(value, Op()));
@@ -177,6 +178,7 @@ public sealed class FamilyTests
     [InlineData("a[b]")][InlineData("http://[::1")][InlineData("http://[1:2:3]")][InlineData("http://[1:2:3:4:5:6:7:8:9]")]
     [InlineData("http://[1::2::3]")][InlineData("http://[::ffff:256.0.0.1]")][InlineData("http://[::ffff:0000.0.0.1]")]
     [InlineData("http://[fe80::1%25zone]")][InlineData("http://[::1]:a")][InlineData("http://x[::1]")][InlineData("http://[::1]suffix")][InlineData("urn:")]
+    [InlineData("x:[")][InlineData("x:]")][InlineData("x:[]")][InlineData("x:[::1]")]
     public void InvalidUri(string input) => Invalid("anyURI", input);
     [Fact]
     public void UriValuesDoNotResolveFoldCaseOrDecodeEscapes()

@@ -45,10 +45,18 @@ internal static class TextBinaryUri
             if (position == text.Length || text[position] == '#') return TextBinaryDatatypeProvider.Invalid(out error);
             opaque = text[position] != '/';
         }
-        int state = opaque ? 1 : 0; bool firstSegment = !absolute && !authority;
+        int state = opaque ? 1 : 0; bool firstSegment = !absolute && !authority, firstOpaque = opaque;
         while (position < text.Length)
         {
             if (!Token(text, ref position, op, out int c, out error)) return false;
+            // RFC2396's explicit uric_no_slash first atom is narrower than
+            // RFC2732's amended reserved set: literal '[' and ']' are excluded.
+            if (firstOpaque)
+            {
+                if (!(Unreserved(c) || c == Escaped || c is ';' or '?' or ':' or '@' or '&' or '=' or '+' or '$' or ','))
+                    return TextBinaryDatatypeProvider.Invalid(out error);
+                firstOpaque = false;
+            }
             if (c == '#') { if (state == 2) return TextBinaryDatatypeProvider.Invalid(out error); state = 2; continue; }
             if (c == '?' && state == 0) { state = 1; continue; }
             if (state == 0)
