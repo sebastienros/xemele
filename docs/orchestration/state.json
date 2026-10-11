@@ -7,31 +7,19 @@
     "task_id": "M2-gate",
     "integration_revision": "276a0bdaf6433bbda8958b068955de85c3b75a3a"
   },
-  "active_assignments": [
-    {
-      "task_id": "M3-contracts",
-      "branch": "codex/m3-contracts",
-      "base_revision": "b0b5bcf3e83947117fe5b900e6c5ba3d68e8b6ab",
-      "stage": "executing contracts; setup confirmed",
-      "claim_revision": "b7d8bdf6b8b77ca1d01c274ff35b4395e11e08f7",
-      "client_thread_id": "client-new-thread:3cdd9b38-7e98-4b8a-b1b3-8d5bb3cc6ef9",
-      "host_id": "local",
-      "worktree_path": "/Users/sebastienros/.codex/worktrees/1164/xemele",
-      "chat_id": "01a1284b-246e-71f2-98fe-43b0a787a604",
-      "worker_cursor": "01604dce-3eaf-4e77-afe0-f81c1175c491:32"
-    }
-  ],
+  "active_assignments": [],
   "integration_queue": [],
   "blockers": [],
   "next_actions": [
-    "Dispatch M3-contracts; verify before dependent work.",
+    "Claim and dispatch M3-attribute-metadata and M3-writer.",
+    "Verify attribute metadata then dispatch callbacks and async resources.",
     "Complete M3 only, then transfer to exactly one M4 coordinator."
   ],
   "last_verified_task": {
-    "task_id": "M2-gate",
-    "integration_revision": "276a0bdaf6433bbda8958b068955de85c3b75a3a"
+    "task_id": "M3-contracts",
+    "integration_revision": "29c5004733cfb8fd96b760ee6695d3b0dcff3ae5"
   },
-  "last_integrated_revision": "276a0bdaf6433bbda8958b068955de85c3b75a3a",
+  "last_integrated_revision": "29c5004733cfb8fd96b760ee6695d3b0dcff3ae5",
   "completed_assignments": [
     {
       "task_id": "M2-dtd-composition",
@@ -435,6 +423,21 @@
         "raw_artifacts_archived": false,
         "record": "docs/orchestration/cleanup-M2-gate.json"
       }
+    },
+    {
+      "task_id": "M3-contracts",
+      "branch": "codex/m3-contracts",
+      "base_revision": "b0b5bcf3e83947117fe5b900e6c5ba3d68e8b6ab",
+      "stage": "verified; terminal; cleanup pending",
+      "claim_revision": "b7d8bdf6b8b77ca1d01c274ff35b4395e11e08f7",
+      "client_thread_id": "client-new-thread:3cdd9b38-7e98-4b8a-b1b3-8d5bb3cc6ef9",
+      "host_id": "local",
+      "worktree_path": "/Users/sebastienros/.codex/worktrees/1164/xemele",
+      "chat_id": "01a1284b-246e-71f2-98fe-43b0a787a604",
+      "worker_cursor": "01604dce-3eaf-4e77-afe0-f81c1175c491:32",
+      "handoff_revision": "b75c1d43d7a9a485d41dd98aa77754fa5a740b5d",
+      "implementation_revision": "626f1fc9da456ef838c643ec96511d5c58044d41",
+      "integration_revision": "29c5004733cfb8fd96b760ee6695d3b0dcff3ae5"
     }
   ],
   "benchmark_policy": "Successful previous measurements retained; future changed runtime measurements require complete preparation and exclusive grant.",
@@ -1316,11 +1319,9 @@
       "remaining_gate": null
     },
     "M3": {
-      "verified": 0,
+      "verified": 1,
       "total": 12,
-      "in_progress": [
-        "M3-contracts"
-      ],
+      "in_progress": [],
       "remaining_gate": "M3-gate"
     }
   },
