@@ -1,0 +1,322 @@
+{
+  "sourceRevision": "9dee538394f076df86ea12ea282126fbe39da8f2",
+  "preparationRevision": "74c5bf92eee366dd6a23be0f907163cfc641c13c",
+  "manifestSha256": "0efa1f6acf38bb562cdc6b0e747e8c5fef5cd593e3a6a070d9e2a4f2138fdae7",
+  "runtime": ".NET 10.0.11",
+  "architecture": "Arm64",
+  "os": "macOS 15.8.1",
+  "serverGc": false,
+  "identities": {
+    "assemblySha256": "C4F171821B665E9543DFC3A93ED2968BDCD932F3EF4605122E2648623714DB21",
+    "probeSha256": "B7451093C754C1F1CFFF79287E142369587D2C1B052594730B5BAC208CCF9344",
+    "inputSha256": "67DAD6E7B2E8A2AE564DABFECD181F90A5F157E1F27167E075E0FECD380EE59B"
+  },
+  "lifecycle": {
+    "status": 0,
+    "beforeIdentities": true,
+    "afterIdentities": true,
+    "sequence": [
+      {
+        "command": 0,
+        "pid": 11035,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true
+      },
+      {
+        "command": 1,
+        "pid": 11037,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true
+      }
+    ],
+    "rawResultsInspected": false,
+    "beforeMismatches": [],
+    "identityCount": 438,
+    "afterMismatches": [],
+    "elapsedSeconds": 71.7018669169629
+  },
+  "coldSetupBytes": 67040,
+  "positiveControlBytes": 1048,
+  "retainedProcessHeap": {
+    "retainedBefore": 214864,
+    "retainedAfter": 4479296,
+    "retainedCount": 256
+  },
+  "probe": [
+    {
+      "route": "decimal short comparison",
+      "samples": 64,
+      "minimumBytes": 0,
+      "maximumBytes": 0
+    },
+    {
+      "route": "decimal long comparison",
+      "samples": 64,
+      "minimumBytes": 0,
+      "maximumBytes": 0
+    },
+    {
+      "route": "decimal long hash",
+      "samples": 64,
+      "minimumBytes": 0,
+      "maximumBytes": 0
+    },
+    {
+      "route": "decimal short hash",
+      "samples": 64,
+      "minimumBytes": 0,
+      "maximumBytes": 0
+    },
+    {
+      "route": "float comparison",
+      "samples": 64,
+      "minimumBytes": 0,
+      "maximumBytes": 0
+    },
+    {
+      "route": "float hash",
+      "samples": 64,
+      "minimumBytes": 0,
+      "maximumBytes": 0
+    },
+    {
+      "route": "invalid lexical",
+      "samples": 64,
+      "minimumBytes": 0,
+      "maximumBytes": 0
+    },
+    {
+      "route": "digit measures",
+      "samples": 64,
+      "minimumBytes": 0,
+      "maximumBytes": 0
+    },
+    {
+      "route": "owned decimal short",
+      "samples": 64,
+      "minimumBytes": 112,
+      "maximumBytes": 112
+    },
+    {
+      "route": "owned decimal long",
+      "samples": 64,
+      "minimumBytes": 8280,
+      "maximumBytes": 8280
+    },
+    {
+      "route": "owned float",
+      "samples": 64,
+      "minimumBytes": 56,
+      "maximumBytes": 56
+    },
+    {
+      "route": "owned zero",
+      "samples": 64,
+      "minimumBytes": 64,
+      "maximumBytes": 64
+    },
+    {
+      "route": "operation setup",
+      "samples": 64,
+      "minimumBytes": 512,
+      "maximumBytes": 512
+    }
+  ],
+  "bdn": [
+    {
+      "method": "BaselineCompare",
+      "case": "long",
+      "mean": "6,446.96 ns",
+      "stddev": "34.196 ns",
+      "roundedAllocated": "0 B"
+    },
+    {
+      "method": "ProviderCompare",
+      "case": "long",
+      "mean": "6,902.25 ns",
+      "stddev": "8.144 ns",
+      "roundedAllocated": "0 B"
+    },
+    {
+      "method": "ProviderHash",
+      "case": "long",
+      "mean": "5,956.07 ns",
+      "stddev": "53.138 ns",
+      "roundedAllocated": "0 B"
+    },
+    {
+      "method": "OwnedParse",
+      "case": "long",
+      "mean": "13,360.36 ns",
+      "stddev": "21.812 ns",
+      "roundedAllocated": "8280 B"
+    },
+    {
+      "method": "InvalidSuffix",
+      "case": "long",
+      "mean": "6,065.11 ns",
+      "stddev": "35.333 ns",
+      "roundedAllocated": "0 B"
+    },
+    {
+      "method": "BaselineCompare",
+      "case": "short",
+      "mean": "18.88 ns",
+      "stddev": "0.019 ns",
+      "roundedAllocated": "0 B"
+    },
+    {
+      "method": "ProviderCompare",
+      "case": "short",
+      "mean": "31.30 ns",
+      "stddev": "0.036 ns",
+      "roundedAllocated": "0 B"
+    },
+    {
+      "method": "ProviderHash",
+      "case": "short",
+      "mean": "26.06 ns",
+      "stddev": "0.247 ns",
+      "roundedAllocated": "0 B"
+    },
+    {
+      "method": "OwnedParse",
+      "case": "short",
+      "mean": "67.48 ns",
+      "stddev": "0.141 ns",
+      "roundedAllocated": "104 B"
+    },
+    {
+      "method": "InvalidSuffix",
+      "case": "short",
+      "mean": "31.40 ns",
+      "stddev": "0.079 ns",
+      "roundedAllocated": "0 B"
+    }
+  ],
+  "bdnGcAggregates": [
+    {
+      "method": "BaselineCompare",
+      "case": "long",
+      "collections": [
+        0,
+        0,
+        0
+      ],
+      "aggregateBytes": 0,
+      "operations": 131072
+    },
+    {
+      "method": "ProviderCompare",
+      "case": "long",
+      "collections": [
+        0,
+        0,
+        0
+      ],
+      "aggregateBytes": 3224,
+      "operations": 131072
+    },
+    {
+      "method": "ProviderHash",
+      "case": "long",
+      "collections": [
+        0,
+        0,
+        0
+      ],
+      "aggregateBytes": 2976,
+      "operations": 131072
+    },
+    {
+      "method": "OwnedParse",
+      "case": "long",
+      "collections": [
+        64,
+        1,
+        0
+      ],
+      "aggregateBytes": 542661336,
+      "operations": 65536
+    },
+    {
+      "method": "InvalidSuffix",
+      "case": "long",
+      "collections": [
+        0,
+        0,
+        0
+      ],
+      "aggregateBytes": 2976,
+      "operations": 131072
+    },
+    {
+      "method": "BaselineCompare",
+      "case": "short",
+      "collections": [
+        0,
+        0,
+        0
+      ],
+      "aggregateBytes": 2976,
+      "operations": 33554432
+    },
+    {
+      "method": "ProviderCompare",
+      "case": "short",
+      "collections": [
+        0,
+        0,
+        0
+      ],
+      "aggregateBytes": 3224,
+      "operations": 16777216
+    },
+    {
+      "method": "ProviderHash",
+      "case": "short",
+      "collections": [
+        0,
+        0,
+        0
+      ],
+      "aggregateBytes": 2976,
+      "operations": 33554432
+    },
+    {
+      "method": "OwnedParse",
+      "case": "short",
+      "collections": [
+        104,
+        0,
+        0
+      ],
+      "aggregateBytes": 872450968,
+      "operations": 8388608
+    },
+    {
+      "method": "InvalidSuffix",
+      "case": "short",
+      "collections": [
+        0,
+        0,
+        0
+      ],
+      "aggregateBytes": 2976,
+      "operations": 16777216
+    }
+  ],
+  "limitations": [
+    "BDN displayed allocation values are rounded; raw borrowed residual aggregates are nonzero and unattributed.",
+    "High priority setup denied for all10cases; informational singleArm64ShortRun timing.",
+    "Retained GC.GetTotalMemory estimate covers process heap and retained array; no exact solepayload retention claim.",
+    "Composer end-to-end and x64 confirmation remain downstream; no pool or SearchValues optimization."
+  ],
+  "rawPolicy": "Raw artifacts remain ignored/transient and preserved after coordinator independent inspection; summary inspected only after durable RELEASEACK."
+}
