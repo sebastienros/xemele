@@ -4,7 +4,14 @@
   "coordination_branch": "main",
   "max_concurrent_workers": 3,
   "last_verified_checkpoint": "ed7c82190b2b6b55ec54f0fb49576905ee9834bd",
-  "active_assignments": [],
+  "active_assignments": [
+    {
+      "task_id": "M7-cli",
+      "status": "claimed; chat setup pending",
+      "branch": "codex/m7-cli",
+      "base_revision": "4af21789ba152d435564f68e3f4259b5527cb90c"
+    }
+  ],
   "integration_queue": [],
   "blockers": [
     {
@@ -23,7 +30,7 @@
     }
   ],
   "next_actions": [
-    "Create isolated M7-corpus worker after durable claim; review and verify before M7-cli then M7-gate; handoff M7 only to main."
+    "Dispatch isolated M7-cli; verify then cumulative M7-gate including controlled inherited allocation failure followup; M7-only handoff to main, no M8 creation."
   ],
   "last_verified_task": "M7-builder",
   "last_integrated_revision": "ed7c82190b2b6b55ec54f0fb49576905ee9834bd",
