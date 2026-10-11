@@ -101,6 +101,7 @@ public sealed class AttributeMetadataTests(ITestOutputHelper output)
         const string xml = "<!DOCTYPE r [<!ENTITY % p ''>%p;<!ATTLIST r a CDATA 'v' b CDATA '&x;'>]><r c='v'/>";
         long[] offsets = Enumerable.Range(0, xml.Length).Select(i => (long)i * 2).ToArray();
         using var core = new XmlParserCore(Options); var sink = new Sink(true);
+        core.CompleteByteSource(2L * xml.Length);
         Feed(core, xml, offsets, true, sink);
         Assert.Equal(3, sink.Attributes.Count);
         Assert.False(sink.Attributes[0].Defaulted); Assert.True(sink.Attributes[1].Defaulted); Assert.True(sink.Attributes[2].Defaulted);
