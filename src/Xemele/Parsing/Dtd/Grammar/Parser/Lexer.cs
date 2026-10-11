@@ -93,6 +93,8 @@ internal sealed partial class DtdParser
                 if (Space(c)) { separator = true; return; }
                 if (c == '>')
                 {
+                    if (Current.Id != lexicalSource)
+                        RetainNestingDiagnostic("DTD.ImproperDeclarationNesting", "Markup declaration crosses a parameter entity boundary.", at);
                     ParseDeclaration(cancellation); if (terminal) return;
                     tokens.Clear(); declaration = ""; declarationScalars = 0; lex = Lex.Between; separator = false; return;
                 }
@@ -164,15 +166,28 @@ internal sealed partial class DtdParser
                 if (Space(c)) { if (scratch.Length != 0) separator = true; return; }
                 if (c == '[')
                 {
-                    if (scratch.ToString() == "INCLUDE") { includes.Push(Current.Id); scratch.Clear(); lex = Lex.Between; return; }
-                    if (scratch.ToString() == "IGNORE") { scratch.Clear(); ignoreDepth = 1; ignoreRun = 0; lex = Lex.Ignore; return; }
+                    if (scratch.ToString() == "INCLUDE")
+                    {
+                        if (Current.Id != lexicalSource) RetainNestingDiagnostic("DTD.ImproperConditionalNesting", "Conditional section crosses a parameter entity boundary.", at);
+                        includes.Push(lexicalSource); scratch.Clear(); lex = Lex.Between; return;
+                    }
+                    if (scratch.ToString() == "IGNORE")
+                    {
+                        if (Current.Id != lexicalSource) RetainNestingDiagnostic("DTD.ImproperConditionalNesting", "Conditional section crosses a parameter entity boundary.", at);
+                        scratch.Clear(); ignoreDepth = 1; ignoreRun = 0; lex = Lex.Ignore; return;
+                    }
                     break;
                 }
                 if (separator && scratch.Length != 0 || c is not (>= 'A' and <= 'Z')) break;
                 AddScalar(scratch, c, at); return;
             case Lex.ConditionalEnd:
                 if (ignoreRun == 1 && c == ']') { ignoreRun = 2; return; }
-                if (ignoreRun == 2 && c == '>' && includes.Count > Current.IncludeFloor) { includes.Pop(); lex = Lex.Between; return; } break;
+                if (ignoreRun == 2 && c == '>' && includes.Count > Current.IncludeFloor)
+                {
+                    if (includes.Peek() != lexicalSource || lexicalSource != Current.Id)
+                        RetainNestingDiagnostic("DTD.ImproperConditionalNesting", "Conditional section crosses a parameter entity boundary.", at);
+                    includes.Pop(); lex = Lex.Between; return;
+                } break;
             case Lex.Ignore:
                 // A three-character recognizer skips arbitrarily long IGNORE bodies, including nested sections.
                 if (ignoreRun == 0) { ignoreRun = c == '<' ? 1 : c == ']' ? 3 : 0; return; }
@@ -181,12 +196,23 @@ internal sealed partial class DtdParser
                 { if (c == '[') { if (ignoreDepth == int.MaxValue) { Refuse(ValueBudget.Limit(at)); return; } ignoreDepth++; ignoreRun = 0; } else ignoreRun = c == '<' ? 1 : c == ']' ? 3 : 0; return; }
                 if (ignoreRun == 3) { ignoreRun = c == ']' ? 4 : c == '<' ? 1 : 0; return; }
                 if (c == '>')
-                { ignoreRun = 0; if (--ignoreDepth == 0) lex = Lex.Between; }
+                {
+                    ignoreRun = 0;
+                    if (--ignoreDepth == 0)
+                    {
+                        if (Current.Id != lexicalSource) RetainNestingDiagnostic("DTD.ImproperConditionalNesting", "Conditional section crosses a parameter entity boundary.", at);
+                        lex = Lex.Between;
+                    }
+                }
                 else ignoreRun = c == ']' ? 4 : c == '<' ? 1 : 0;
                 return;
         }
         Reject("Invalid DTD syntax.", at);
     }
+    // Invalidity is retained for validation, never a new nonvalidating rejection.
+    private void RetainNestingDiagnostic(string code, string message, XmlLocation at) =>
+        declarationValidityDiagnostic ??= new(code, XmlDiagnosticSeverity.Error, message, at);
+
     private void BeginParameter(Lex resume, XmlLocation at)
     { HasParameterReferences = true; parameterResume = resume; parameterAt = at; reference.Clear(); referenceScalars = 0; lex = Lex.Parameter; }
     private void ExpandParameter(string name, XmlLocation at, CancellationToken cancellation)

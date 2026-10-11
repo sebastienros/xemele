@@ -2,7 +2,7 @@
   "schema_version": 1,
   "milestone": "M5",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M5 isolated parameter nesting worker",
   "branch": "codex/m5-dtd-parameter-validity",
   "base_revision": "daf46fe51c6f91b04fe583f165bf4b2cd6d54a54",
@@ -14,14 +14,83 @@
     "docs/specs/common.md",
     "docs/specs/dtd-c14n.md"
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Parsing/Dtd/Grammar/Parser/Lexer.cs: first declaration and conditional boundary validity using original source IDs",
+    "src/Xemele/Parsing/Dtd/Grammar/Parser/Declarations.cs: mixed/children group source boundary validity",
+    "tests/Xemele.Tests/M5-dtd-parameter-validity/ParameterValidityTests.cs: 28 dedicated cases and eight pinned source shapes",
+    "benchmarks/Xemele.Benchmarks/M5-dtd-parameter-validity/: bounded standalone three-case NoEmit probe",
+    "docs/reports/M5-dtd-parameter-validity/README.md: behavior and exact functional/allocation/provenance summaries"
+  ],
+  "evidence": [
+    {
+      "id": "functional",
+      "kind": "check",
+      "revision": "3221a52d045976dd4fc8e318288440580b4ccda1",
+      "command": "pinned dotnet Release server-disabled offline build; dotnet --fx-version 10.0.11 Xemele.Tests.dll -class Xemele.Tests.DtdParameterValidity.*",
+      "result": "passed",
+      "summary": "28 focused pass zero failed/skipped; zero build warnings/errors; eight immutable invalid shapes all splits/syncasync/context/valid/WF/prior/cancel/quota.",
+      "artifact": "docs/reports/M5-dtd-parameter-validity/README.md"
+    },
+    {
+      "id": "preservation",
+      "kind": "check",
+      "revision": "3221a52d045976dd4fc8e318288440580b4ccda1",
+      "command": "dotnet --fx-version 10.0.11 tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -class Xemele.Tests.Dtd* -class Xemele.Tests.M5DtdModel.* -class Xemele.Tests.M5ValidationModel.* -class Xemele.Tests.ParameterValidity.*",
+      "result": "passed",
+      "summary": "2261 ordinary tests passed zero failed/skipped, includes focused28; selected sources have no allocation methods.",
+      "artifact": "docs/reports/M5-dtd-parameter-validity/README.md"
+    },
+    {
+      "id": "api",
+      "kind": "check",
+      "revision": "3221a52d045976dd4fc8e318288440580b4ccda1",
+      "command": "python3 docs/reports/M5-validation-model/check_api.py",
+      "result": "passed",
+      "summary": "948 compiled union members matched approved checker under pinned .NET10.0.11. Official inventory discovery unrun missing ignored E14.dtd; no corpus payload edits.",
+      "artifact": "docs/reports/M5-dtd-parameter-validity/README.md"
+    },
+    {
+      "id": "planning",
+      "kind": "check",
+      "revision": "3221a52d045976dd4fc8e318288440580b4ccda1",
+      "command": "python3 tools/planning/tasks.py validate; git diff --check",
+      "result": "passed",
+      "summary": "158 tasks validate and diffcheck pass.",
+      "artifact": "docs/reports/M5-dtd-parameter-validity/README.md"
+    },
+    {
+      "id": "measurement",
+      "kind": "check",
+      "revision": "2f6cffb3d1018a7dd83189c2a6a273de60befc7a",
+      "command": "python3 -B docs/reports/M5-dtd-parameter-validity/run_measurements.py --exclusive-grant",
+      "result": "passed",
+      "summary": "Exact once durablegrant/release; all phases0; full175/43/3852 identity f2f3d80bda6337726fc565277a5cbd0792d81e7caeb9831506c00bee7d137d0b matched initial/final; nochildtrue. Actual.NET10.0.11 Arm64. Warm0/131072 plus GC0/268435456; first72B; positive1048B. Ownedvalid1937216/100 invalid944424/100; all3 inclusiveGC rows in summary.",
+      "artifact": "docs/reports/M5-dtd-parameter-validity/README.md"
+    },
+    {
+      "id": "source-review",
+      "kind": "review",
+      "revision": "3221a52d045976dd4fc8e318288440580b4ccda1",
+      "command": "Coordinator independent source review and prepared identity check",
+      "result": "passed",
+      "summary": "Root approved source3221a52, reviewed firstdiagnostic/provenance/scoped group int checks; separately independently checked exact prepared identity. Review only, not an execution check.",
+      "artifact": "docs/reports/M5-dtd-parameter-validity/README.md"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "",
-    "checks": [],
-    "remaining": [],
-    "requests": []
+    "summary": "Retained proper declaration/group/conditional PE nesting validity with nonvalidating and WF preservation; task implemented on isolated branch only.",
+    "checks": [
+      "28 focused and2261 ordinary preservation passed",
+      "948 scoped API matched;158 planning validated",
+      "Exact once3case measurement completed allphases0/fullidentity/nochild"
+    ],
+    "remaining": [
+      "Root integration and cumulative corpus gate; verified status belongs coordinator"
+    ],
+    "requests": [
+      "Official corpus API inventory requires owning cumulative fixture setup; scopedcompiledAPI passed"
+    ]
   },
   "id": "M5-dtd-parameter-validity",
   "title": "Retain parameter-entity nesting validity",
@@ -43,20 +112,31 @@
     {
       "id": "M5-dtd-parameter-validity-A1",
       "description": "Retain first proper declaration/group/conditional-section PE nesting validity diagnostic through existing model provenance without changing nonvalidating behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "functional",
+        "source-review"
+      ]
     },
     {
       "id": "M5-dtd-parameter-validity-A2",
       "description": "Reject the eight independently pinned invalid source shapes in validation while preserving valid nesting, external source contexts, prior diagnostics, cancellation, quotas and ownership.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "functional",
+        "preservation"
+      ]
     },
     {
       "id": "M5-dtd-parameter-validity-A3",
       "description": "Verify relevant parser/compiler/facade preservation, API948/planning, and applicable measured allocation evidence on isolated exact revision.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "preservation",
+        "api",
+        "planning",
+        "measurement"
+      ]
     }
   ]
 }
