@@ -15,7 +15,7 @@ compiler verification. The coordinator owns integration and any M4 gate checks.
 | Owned Release probe build after one fixture correction | 0 warnings/errors |
 | Prebuilt probe `--control` with explicit `--fx-version 10.0.11` | All semantic controls passed, counters disabled; actual `.NET 10.0.11`, Arm64; checksum 2372765696 |
 | Prebuilt probe `--discover` with explicit host runtime | 25 cases, one ShortRun NoEmit job, 3 warmups/3 iterations/1 launch; no generated build |
-| Planning/ownership/whitespace | Final validation is recorded in task evidence after source candidate review and measurement |
+| Planning/ownership/whitespace | 149 tasks validate; all introduced paths vs verified7363691 owned; full introduced diff whitespace passes |
 
 The 131-case run completed during construction-overload adoption at merge HEAD
 7f24f56f36f9b3c3bf96d4ed1a4d5d396a2cfea2 with owned source/test edits then uncommitted.
@@ -68,3 +68,20 @@ absence/mismatch registrations, and an enumeration-only dictionary that throws
 if any hashing/indexer lookup is used. Registration enumeration cancellation is
 deterministic. Direct resolution-only long scan/comparison/registration loops
 check cancellation with the supplied token; no lexer runs in those controls.
+
+## Approved source and granted evidence
+
+Independent source-only review approved the grammar, quotas, explicit stacks,
+number conversion and construction-overload adoption, then requested the single
+resolution correction above. Focused re-review approved corrected source
+1943b1b87b7e8245139e20e6bd9f5b65ccd7ff98 with no further requests.
+
+The final prepared build/control/discovery at b30a81daeef5c3df7706200729ef1a36383c7353
+used explicit --fx-version10.0.11 with DOTNET_ROOT pinned and
+DOTNET_ROLL_FORWARD=Disable. Cleanup73eb77a only removed accidentally staged
+Python bytecode; executable source/config/generated/binary bytes were unchanged.
+The clean prepared73eb77a lease passed exact allocation gate, all25 timing cases,
+initial/final complete freeze and no-child checks. Release was recorded before
+raw inspection; root independently confirmed identities and results. Details,
+exact domains, timing/priority warnings and rounding differences are in
+performance.md. No unaffected correctness suite was rerun after this approval.
