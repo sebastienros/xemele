@@ -54,5 +54,6 @@ lifetime and results retain neither caller input nor scratch. Performance probes
 compare owned allocated-name lookup with the actual borrowed pool, cached
 SearchValues with a direct delimiter loop, and character/byte/chunk-stream DOM
 composition. Cold setup, warm primitives, owned DOM/new-name growth and retained
-whole-heap domains are separate. Measurements remain pending until the coordinator
-reviews the frozen source and grants an exclusive lease.
+whole-heap domains are separate. The exclusive measured run passed all 30 cases and warm primitive allocation
+checks; see measurements.md for the exact domains, cold/retained costs and
+one-host timing limitations.
