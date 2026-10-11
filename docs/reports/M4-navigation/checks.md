@@ -42,7 +42,12 @@ in that sequence. Raw counters/logs/results stay in ignored artifacts; only
 summary/analysis will be committed after actual granted runs.
 
 Independent source-only review: coordinator reported candidate 802a2a0 approved
-with no concrete blockers. Probe runtime configuration explicitly pins 10.0.11;
-DOTNET_ROLL_FORWARD=Disable prevents selecting another installed runtime.
+with no concrete blockers. Probe project property requests 10.0.11, but the effective frozen runtimeconfig
+was later found still requesting 10.0.0 after the no-restore build. RollForward
+Disable selected 10.0.0. This preparation error is retained in performance.md.
 
-Allocation and timing: not run, pending explicit prepared exclusive coordinator lease. No claimed passing allocation evidence yet.
+Allocation/timing: one authorized sequence ran; both direct phases succeeded,
+but actual 10.0.0 runtime fails the required 10.0.11 provenance. Wrapper cleanup
+exit1/PermissionError is separate; independent scoped process absence confirmed
+before raw inspection. See performance.md for exact totals and limitations.
+No second attempt authorized; target-runtime performance remains pending.
