@@ -1,0 +1,12 @@
+using BenchmarkDotNet.Running;
+using Xemele.Benchmarks.M8DatatypesCore;
+if (args is ["--control"])
+{
+    foreach (string name in new[] { "short", "long", "multilingual", "whitespace" })
+    {
+        var benchmark = new NormalizationBenchmarks { Case = name }; benchmark.Setup();
+        if (benchmark.ScalarLoop() != benchmark.RuneCore()) throw new InvalidOperationException("Baseline result changed.");
+    }
+    Console.WriteLine("PASS: four baseline/core fixtures consumed, no timing/counters/BDN.");
+}
+else BenchmarkSwitcher.FromTypes([typeof(NormalizationBenchmarks)]).Run(args);

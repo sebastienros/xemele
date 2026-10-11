@@ -1,0 +1,67 @@
+using System.Runtime.InteropServices;
+using System.Security.Cryptography;
+using System.Text;
+using System.Text.Json;
+using Xemele;
+using Xemele.Validation;
+if (args is not [var mode, var output] || mode is not ("--control" or "--measure")) throw new ArgumentException();
+if (RuntimeInformation.FrameworkDescription != ".NET 10.0.11") throw new InvalidOperationException();
+bool measure = mode == "--measure";
+long coldStart = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+var fixture = new Fixture();
+long coldSetupBytes = measure ? GC.GetAllocatedBytesForCurrentThread() - coldStart : 0;
+var rows = new List<object>();
+for (int route = 0; route < 10; route++)
+{
+    for (int warm = 0; warm < 32; warm++) fixture.Run(route);
+    long[] distribution = new long[64];
+    for (int i = 0; i < distribution.Length; i++)
+    {
+        long start = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+        fixture.Run(route);
+        distribution[i] = measure ? GC.GetAllocatedBytesForCurrentThread() - start : 0;
+    }
+    if (measure && (route < 4 ? distribution.Any(n => n != 0) : distribution.Any(n => n <= 0))) throw new InvalidOperationException("Allocation boundary failed: " + route);
+    rows.Add(new { route, name = Fixture.Names[route], operations = 64, distribution });
+}
+long positiveStart = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+var positive = new byte[1024]; GC.KeepAlive(positive);
+long positiveBytes = measure ? GC.GetAllocatedBytesForCurrentThread() - positiveStart : 0;
+if (measure && positiveBytes < 1024) throw new InvalidOperationException("Positive control failed.");
+long retainedBefore = measure ? GC.GetTotalMemory(true) : 0;
+string[] retained = new string[256];
+for (int i = 0; i < retained.Length; i++) retained[i] = DatatypeNormalization.Normalize(Fixture.Long, XmlWhitespaceRule.Collapse, fixture.Operation);
+long retainedAfter = measure ? GC.GetTotalMemory(true) : 0;
+GC.KeepAlive(retained); GC.KeepAlive(fixture);
+File.WriteAllText(output, JsonSerializer.Serialize(new { mode, runtime = RuntimeInformation.FrameworkDescription, architecture = RuntimeInformation.ProcessArchitecture.ToString(), os = RuntimeInformation.OSDescription,
+    serverGc = System.Runtime.GCSettings.IsServerGC, coldSetupBytes, positiveBytes, retainedBefore, retainedAfter, retainedCount = retained.Length,
+    sourceRevision = Environment.GetEnvironmentVariable("XEMELE_DATATYPE_CORE_REVISION"), assemblySha256 = Hash(typeof(SchemaCompileOptions).Assembly.Location), probeSha256 = Hash(typeof(Fixture).Assembly.Location), inputSha256 = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(Fixture.Input + Fixture.Long))), rows }, new JsonSerializerOptions { WriteIndented = true }));
+Console.WriteLine($"{mode}: 10 consumed routes, 32 warm/64 samples each; counters {(measure ? "enabled" : "disabled")}");
+static string Hash(string path) => Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(path)));
+sealed class Fixture
+{
+    internal const string Input = "\t根😀  value\r";
+    internal static readonly string Long = new('x', 1024);
+    internal static readonly string[] Names = ["borrowed metadata lookup", "borrowed scalar measure", "borrowed short normalization", "borrowed long normalization", "owned short string", "owned long string", "operation setup", "owned empty list", "owned union", "owned retype"];
+    internal readonly SchemaCompileOperation Operation = new(new() { MaxOperations = null, MaxComponents = null, Limits = new() { EvaluationWork = null } });
+    private readonly char[] output = new char[2048];
+    private readonly XmlDatatypeValue list;
+    internal Fixture() { list = DatatypeValues.CreateList(new("urn:probe", "list"), [], Operation); }
+    internal void Run(int route)
+    {
+        switch (route)
+        {
+            case 0: if (!DatatypeTypes.TryGet(DatatypeTypes.Name("decimal"), out var metadata) || metadata.Primitive != DatatypePrimitive.Decimal) throw new InvalidOperationException(); break;
+            case 1: if (!DatatypeNormalization.TryMeasure(Input, XmlWhitespaceRule.Collapse, Operation, out int length, out long scalars, out _) || length != 9 || scalars != 11) throw new InvalidOperationException(); break;
+            case 2: if (!DatatypeNormalization.TryNormalize(Input, XmlWhitespaceRule.Collapse, output, Operation, out int written, out _) || written != 9 || !output.AsSpan(0, written).SequenceEqual("根😀 value")) throw new InvalidOperationException(); break;
+            case 3: if (!DatatypeNormalization.TryNormalize(Long, XmlWhitespaceRule.Collapse, output, Operation, out int longWritten, out _) || longWritten != 1024) throw new InvalidOperationException(); break;
+            case 4: GC.KeepAlive(DatatypeNormalization.Normalize(Input, XmlWhitespaceRule.Collapse, Operation)); break;
+            case 5: GC.KeepAlive(DatatypeNormalization.Normalize(Long, XmlWhitespaceRule.Collapse, Operation)); break;
+            case 6: GC.KeepAlive(new SchemaCompileOperation()); break;
+            case 7: GC.KeepAlive(DatatypeValues.CreateList(new("urn:probe", "list"), [], Operation)); break;
+            case 8: GC.KeepAlive(DatatypeValues.CreateUnion(new("urn:probe", "union"), list, Operation)); break;
+            case 9: GC.KeepAlive(DatatypeValues.Retype(new("urn:probe", "derived"), list, Operation)); break;
+            default: throw new ArgumentOutOfRangeException(nameof(route));
+        }
+    }
+}
