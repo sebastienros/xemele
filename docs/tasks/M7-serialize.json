@@ -4,7 +4,7 @@
   "milestone": "M7",
   "title": "HTML serialization modes",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "blocked",
   "owner": "M7 isolated worker chat01a12bb3-07b3-7ce2-ab62-f43cd4a8104d",
   "branch": "codex/m7-serialize",
   "base_revision": "725b2cc7190dae7766c8dec17dd6f9958d2b4255",
@@ -35,20 +35,32 @@
     {
       "id": "M7-serialize-A1",
       "description": "Implement legacy and HTML5 output escaping, void/raw-text and fragment serialization behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "correctness-and-earlier"
+      ]
     },
     {
       "id": "M7-serialize-A2",
       "description": "Pinned serializer/golden cases pass with explicit mode selection and XML serializer unchanged.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "correctness-and-earlier",
+        "official-api"
+      ]
     },
     {
       "id": "M7-serialize-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
       "status": "pending",
-      "evidence": []
+      "evidence": [
+        "correctness-and-earlier",
+        "official-api",
+        "public-sample",
+        "prepared-probe-correctness",
+        "identity-controls",
+        "measurement-awaiting-grant"
+      ]
     }
   ],
   "implementation": [
@@ -58,19 +70,77 @@
     "benchmarks/Xemele.Benchmarks/M7-serialize/: correctness-only prepared94case NoEmit scanner/matcher/borrowed/owned/stream probes",
     "samples/M7-serialize/Program.cs and docs/api/M7-serialize.txt: executed public usage and18exact frozen declarations"
   ],
-  "evidence": [],
-  "blockers": [],
+  "evidence": [
+    {
+      "id": "correctness-and-earlier",
+      "kind": "check",
+      "revision": "52be6bd6f9558ed9385ba2cef842820c489347e0",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -namespace Xemele.Tests.HtmlSerialization -namespace Xemele.Tests.LegacyHtml -namespace Xemele.Tests.HtmlTreeConstruction -namespace Xemele.Tests.HtmlTokenization -namespace Xemele.Tests.HtmlModel -namespace Xemele.Tests.HtmlProcessingInstructions -namespace Xemele.Tests.HtmlParsedText -namespace Xemele.Tests.Serialization -noLogo -noColor -result-xml artifacts/M7-serialize/final-52be6bd-tests.xml",
+      "result": "passed",
+      "summary": "1612/1612Pass;0errors/failures/skips/not-run.906serializer cases:640actual native graphs+all230original per-case html5lib dispositions+normative/lifetime/template/PI/Unicode/cancellation witnesses. Earlier543legacy+113builder/tokenizer/model and XML serialization preserved.",
+      "artifact": "docs/reports/M7-serialize/preparation.md"
+    },
+    {
+      "id": "official-api",
+      "kind": "check",
+      "revision": "52be6bd6f9558ed9385ba2cef842820c489347e0",
+      "command": "python3 -B docs/reports/M7-serialize/check_api.py",
+      "result": "passed",
+      "summary": "1253compiled declarations match:1235unchanged predecessors+18exact frozen Engine additions.3388immutablefixtureSHA/bootstrapFalse; missing/added/changed negatives reject; final0cache copies.",
+      "artifact": "docs/api/M7-serialize.txt"
+    },
+    {
+      "id": "public-sample",
+      "kind": "check",
+      "revision": "52be6bd6f9558ed9385ba2cef842820c489347e0",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 samples/M7-serialize/bin/Release/net10.0/M7-serialize.dll",
+      "result": "passed",
+      "summary": "Actual .NET10.0.11 all3APIs/bothmodes/outer node/template/fragment/caller UTF8 stream and earlierXML pass; offlineRelease0warnings/errors.",
+      "artifact": "samples/M7-serialize/Program.cs"
+    },
+    {
+      "id": "prepared-probe-correctness",
+      "kind": "check",
+      "revision": "e021177b87a92ba8805d27db72b32a43c2274883",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 benchmarks/Xemele.Benchmarks/M7-serialize/bin/Release/net10.0/Xemele.Benchmarks.dll --verify && '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 benchmarks/Xemele.Benchmarks/M7-serialize/bin/Release/net10.0/Xemele.Benchmarks.dll --inputs artifacts/M7-serialize/inputs.json && '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 benchmarks/Xemele.Benchmarks/M7-serialize/bin/Release/net10.0/Xemele.Benchmarks.dll --discover artifacts/M7-serialize/discover",
+      "result": "passed",
+      "summary": "Correctness-only94case semantics/exact UTF8 hash/length/attribute-text scans/Unicode/name negatives and actualinputs.94ShortRunNoEmit3warmup3actual1launch discovered. No allocation/timing counters.",
+      "artifact": "benchmarks/Xemele.Benchmarks/M7-serialize/Probe.cs.fixture"
+    },
+    {
+      "id": "identity-controls",
+      "kind": "check",
+      "revision": "e021177b87a92ba8805d27db72b32a43c2274883",
+      "command": "python3 -B docs/reports/M7-serialize/prepare_identity.py",
+      "result": "passed",
+      "summary": "Exactwrapper0/unknownenv1/0; positiveinitial/final0/nochildtrue and unknowninitial/final1/nochildtrue/runs[]. Manifest8c3da026e8071cdefecf17cdfeb91c2c02f189ee6393aa5da5151926af148deb;3941source150binary3852runtime plus host/actualinputs/opaquecomplete childenv/SHLVL1/session. Evidence metadata changes require recapture before futuregrant.",
+      "artifact": "docs/reports/M7-serialize/preparation.md"
+    },
+    {
+      "id": "measurement-awaiting-grant",
+      "kind": "check",
+      "revision": "e021177b87a92ba8805d27db72b32a43c2274883",
+      "command": "Not executed: python3 -B docs/reports/M7-serialize/run_measurements.py --exclusive-grant",
+      "result": "skipped",
+      "summary": "Coordinator explicitly reports no measurementgrant and M7coordination blocked by app outgoing-message approval review. No workload/counter/BDN or raw inspection run. Required exclusivegrant/PARK then durableRELEASE remains outstanding, not passing or waived.",
+      "artifact": "docs/reports/M7-serialize/preparation.md"
+    }
+  ],
+  "blockers": [
+    "Required allocation/94-case BDN evidence awaits explicit durable coordinator PARK/exclusive GRANT. Coordinator reports M7coordination blocked after app rejected outgoing messages; no grant was issued. Source/checks/probe are preserved; no workload may run until focused authorized resumption."
+  ],
   "handoff": {
-    "summary": "In progress; source/probe checkpoint ef30030 followed by reviewed legacy template graph correction. Frozen API/common model retained; no measurements run.",
+    "summary": "Correctness-complete blocked branch work: exact18frozen serializer additions, fullWHATWG/native output profile and boundedUTF8Save; legacy ordinary/template graphs corrected. Runtime/test/sample/API source52be6bd, finalprobe e021177. Required measurements await actual coordinatorgrant; not implemented/verified.",
     "checks": [
-      "Precheckpoint pinned offline Release builds zero warnings/errors;1610combined tests pass.",
-      "Official1253declarations/1235unchanged predecessors/18frozen additions/3388fixtures and missing/added/changed controls pass.",
-      "Public sample and correctness-only94case probe/discovery pass; planning169/diffcheck pass."
+      "Pinned offlineRelease0warnings/errors;1612combined/906serializer tests pass;640native graphs+directvector028/all230originaldispositions/exactWPT assertion.",
+      "Official1253API/1235unchanged/18frozen additions/3388fixtureSHA/3negativecontrols and publicsample pass.",
+      "Correctness-only94case probe/discovery/actualinputs; exactwrapper0/unknownenv1/0/nochild; manifest8c3da026 source3941binary150runtime3852; no counters/BDN.",
+      "Planning169/diffcheck pass before handoff; final validation command recorded in own report."
     ],
     "remaining": [
-      "Rerun correctness/API/sample and prepared94case discovery at final committed template correction source; freeze complete identity and await coordinator exclusive grant.",
-      "Freeze source/binary/host/runtime/actualinputs/opaquecomplete child environment, exact-wrapper0/unknownenv1/0controls; coordinator source/probe review then exclusivegrant/release before allocation/BDN.",
-      "Record evidence at existing source revision; all criteria must pass before implemented."
+      "Coordinator review of finalcommitted source/probe and durablePARK/exclusiveGRANT; recaptureidentitycontrols after evidence-onlycommit.",
+      "Run only singleprepared wrapper undergrant, report lifecycle/nochild, await durableRELEASE before raw inspection.",
+      "Record actualallocation/94BDN/cold/owned/retained evidence; set implemented only when allrequiredchecks pass; coordinator integrates/verifies."
     ],
     "requests": []
   }
