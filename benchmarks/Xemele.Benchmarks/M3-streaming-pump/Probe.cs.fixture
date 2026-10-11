@@ -1,0 +1,105 @@
+using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Security.Cryptography;
+using System.Text;
+using System.Text.Json;
+using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Configs;
+using BenchmarkDotNet.Running;
+using Xemele;
+using Xemele.Streaming;
+
+if (args is ["--benchmark", var artifacts])
+{
+    BenchmarkRunner.Run<PumpBenchmarks>(ManualConfig.Create(DefaultConfig.Instance).WithArtifactsPath(artifacts)); return;
+}
+if (args is not [var mode, var path] || mode is not ("--control" or "--allocation")) throw new ArgumentException("Use --control|--allocation <report> or --benchmark <artifacts>.");
+bool measure = mode == "--allocation";
+long coldStart = measure ? GC.GetTotalAllocatedBytes(true) : 0;
+var byteFixture = new Fixture(false); var characterFixture = new Fixture(true);
+long coldOwnedSetup = measure ? GC.GetTotalAllocatedBytes(true) - coldStart : 0;
+for (int i = 0; i < 128; i++) { byteFixture.Borrowed(); characterFixture.Borrowed(); }
+long start = measure ? GC.GetTotalAllocatedBytes(true) : 0;
+for (int i = 0; i < 512; i++) byteFixture.Borrowed();
+long byteAllocations = measure ? GC.GetTotalAllocatedBytes(true) - start : 0;
+start = measure ? GC.GetTotalAllocatedBytes(true) : 0;
+for (int i = 0; i < 512; i++) characterFixture.Borrowed();
+long charAllocations = measure ? GC.GetTotalAllocatedBytes(true) - start : 0;
+start = measure ? GC.GetTotalAllocatedBytes(true) : 0;
+object positive = new byte[1024];
+long positiveAllocations = measure ? GC.GetTotalAllocatedBytes(true) - start : 0;
+GC.KeepAlive(positive);
+if (byteFixture.Sink.Characters != 640L * 4096 || characterFixture.Sink.Characters != 640L * 4096) throw new InvalidOperationException("Borrowed control failed.");
+if (measure && (byteAllocations != 0 || charAllocations != 0 || positiveAllocations <= 0)) throw new InvalidOperationException($"Allocation oracle failed {byteAllocations}/{charAllocations}/{positiveAllocations}.");
+var capacities = byteFixture.Capacities();
+var retainedBefore = measure ? GC.GetTotalMemory(true) : 0;
+for (int i = 0; i < 4096; i++) byteFixture.Borrowed();
+var retainedAfter = measure ? GC.GetTotalMemory(true) : 0;
+if (!capacities.SequenceEqual(byteFixture.Capacities())) throw new InvalidOperationException("Capacity grew with body length.");
+byteFixture.Dispose(); characterFixture.Dispose();
+var document = new DocumentFixture(); for (int i = 0; i < 16; i++) document.Parse();
+start = measure ? GC.GetTotalAllocatedBytes(true) : 0;
+for (int i = 0; i < 32; i++) document.Parse();
+long endToEnd = measure ? GC.GetTotalAllocatedBytes(true) - start : 0;
+var report = new { mode, revision = Environment.GetEnvironmentVariable("XEMELE_PUMP_REVISION"), runtime = RuntimeInformation.FrameworkDescription,
+    os = RuntimeInformation.OSDescription, architecture = RuntimeInformation.ProcessArchitecture.ToString(),
+    assemblySha256 = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(typeof(XmlParseOptions).Assembly.Location))),
+    warmups = 128, segments = 512, segmentBytes = 4096, byteAllocations, charAllocations, positiveAllocations, coldOwnedSetup,
+    capacities, retainedBefore, retainedAfter, retainedStressBytes = 4096L * 4096, endToEndOperations = 32, endToEndAllocatedBytes = endToEnd,
+    endToEndSha256 = Convert.ToHexString(SHA256.HashData(document.Bytes)) };
+File.WriteAllText(path, JsonSerializer.Serialize(report, new JsonSerializerOptions { WriteIndented = true }));
+Console.WriteLine(File.ReadAllText(path));
+
+[MemoryDiagnoser]
+[InProcess]
+[WarmupCount(3)]
+[IterationCount(3)]
+public class PumpBenchmarks
+{
+    private Fixture bytes = null!, chars = null!;
+    private DocumentFixture document = null!;
+    [GlobalSetup] public void Setup() { bytes = new(false); chars = new(true); document = new(); }
+    [Benchmark] public long BorrowedBytes() => bytes.Borrowed();
+    [Benchmark] public long BorrowedCharacters() => chars.Borrowed();
+    [Benchmark] public long EndToEndBytes() => document.Parse();
+    [GlobalCleanup] public void Cleanup() { bytes.Dispose(); chars.Dispose(); }
+}
+internal sealed class Fixture : IDisposable
+{
+    internal readonly CounterSink Sink = new();
+    private readonly XmlStreamingPump pump;
+    private readonly bool characterInput;
+    private readonly byte[] bytes = Enumerable.Repeat((byte)'x', 4096).ToArray();
+    private readonly string chars = new('x', 4096);
+    internal Fixture(bool characterInput)
+    {
+        this.characterInput = characterInput;
+        pump = new(new() { Limits = new() { DocumentCharacters = null, TokenCharacters = null } }, characterInput: characterInput);
+        if (characterInput) pump.SupplyCharacters("<r>".AsMemory(), false); else pump.Supply("<r>"u8.ToArray(), false);
+        if (pump.Advance(Sink, default) != StreamingStep.NeedInput) throw new InvalidOperationException("Setup failed.");
+    }
+    internal long Borrowed()
+    {
+        if (characterInput) pump.SupplyCharacters(chars.AsMemory(), false); else pump.Supply(bytes, false);
+        if (pump.Advance(Sink, default) != StreamingStep.NeedInput) throw new InvalidOperationException("Primitive failed.");
+        return Sink.Characters;
+    }
+    internal int[] Capacities() => new[] { "characters", "mappings", "prefix", "prefixMappings", "attributeRows", "namespaceRows" }
+        .Select(name => ((Array)typeof(XmlStreamingPump).GetField(name, BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(pump)!).Length).ToArray();
+    public void Dispose() => pump.Dispose();
+}
+internal sealed class DocumentFixture
+{
+    internal readonly byte[] Bytes = Encoding.UTF8.GetBytes("<?xml version='1.0'?><r xmlns='urn:r' a='value'><![CDATA[β😀]]><!--comment--><?pi data?>" + new string('x', 8192) + "</r>");
+    internal long Parse()
+    {
+        using var pump = new XmlStreamingPump(new()); var sink = new CounterSink(); pump.Supply(Bytes, true);
+        if (pump.Advance(sink, default) != StreamingStep.Completed || sink.Characters != 8195) throw new InvalidOperationException("Document oracle failed.");
+        return sink.Characters;
+    }
+}
+internal sealed class CounterSink : XmlStreamingSink
+{
+    internal long Characters;
+    public override bool Text(ReadOnlySpan<char> value, XmlLocation location) { Characters += value.Length; return true; }
+}
