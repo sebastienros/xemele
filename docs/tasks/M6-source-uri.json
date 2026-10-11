@@ -4,11 +4,11 @@
   "milestone": "M6",
   "title": "Expose additive source-aware XML and DTD entry points",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M6 coordinator worker source_uri",
   "branch": "codex/m6-source-uri",
   "base_revision": "40d41743c6af34c92cf8eea766beb6f39200ff25",
-  "integration_revision": null,
+  "integration_revision": "75355ca8104535940ebdbb5f76679951cac13016",
   "depends_on": [
     "M6-contracts",
     "M6-parser-budget",
@@ -39,7 +39,8 @@
       "description": "Freeze/implement exact additive all-required signatures XmlDocument.Load(Stream input, XmlParseOptions? options, Uri sourceUri, CancellationToken cancellationToken) and DtdSchema.Compile(string dtd, XmlResourceResolver? resolver, XmlResourceLimits? limits, Uri sourceUri, CancellationToken cancellationToken). Preserve every previous public row and null/default-literal overload call. Uri nonnull/absolute validation before transport/resolver work; no ambient grant.",
       "status": "passed",
       "evidence": [
-        "source-uri-focused"
+        "source-uri-focused",
+        "coordinator-integration"
       ]
     },
     {
@@ -47,7 +48,8 @@
       "description": "Delegate source identity through existing byte DOM adapter and DTD subset initial XmlLocation, retaining parse/DTD models, final redirected resource bases, quotas/cancellation/stream ownership/cleanup/exception identity. Focused public tests prove relative external subset/entity/PE resolution, final URI diagnostics, invalid source no IO, old defaults and source compatibility. No scanning/callback algorithm changes.",
       "status": "passed",
       "evidence": [
-        "source-uri-focused"
+        "source-uri-focused",
+        "coordinator-integration"
       ]
     },
     {
@@ -55,7 +57,8 @@
       "description": "Demonstrate both entry points using verified dependencies; fresh actual10.0.11 focused/earlier source and compiled API checks plus task validation/owned diff; integrated evidence before CLI consumes. Constructor/source propagation has no new steady-state algorithm; cumulative allocation regressions remain M6 gate.",
       "status": "passed",
       "evidence": [
-        "source-uri-focused"
+        "source-uri-focused",
+        "coordinator-integration"
       ]
     }
   ],
@@ -74,6 +77,15 @@
       "result": "passed",
       "summary": "18 tests and sample pass actual .NET 10.0.11; 1054 compiled API members match, preserving all prior1052 rows; 163 tasks valid; no task children. Earlier failed builds/test and zero-selection filter explicitly recorded; no measurements/full-suite/integration run.",
       "artifact": "docs/reports/M6-source-uri/evidence.md"
+    },
+    {
+      "id": "coordinator-integration",
+      "kind": "integration",
+      "revision": "75355ca8104535940ebdbb5f76679951cac13016",
+      "command": "Fresh isolated cached restore + forced Release builds; pinned host --fx-version 10.0.11 selected131 tests and sample; compiled API checker; tasks validate; diff and scoped process inspection",
+      "result": "passed",
+      "summary": "131 passed, zero failures/skips actual .NET10.0.11; sample caller stream open; API1054=1052+2; three builds zero warnings/errors;163tasks valid; no owned children. Root independently inspected worker18tests and raw outputs. Source-only review approved90058c9; runtime unchanged. Full allocation suite deferred M6 gate.",
+      "artifact": "docs/reports/M6-source-uri/evidence.md"
     }
   ],
   "blockers": [],
@@ -82,9 +94,7 @@
     "checks": [
       "Pinned forced Release builds; 7 new + 11 earlier tests, actual .NET 10.0.11 sample; 1054 compiled members; 163 valid tasks; clean diff/owned paths/no children. Raw retained for inspection; corrected initial test-only build failures/quota assertion and zero-selection earlier filter recorded."
     ],
-    "remaining": [
-      "Coordinator source review and fresh combined-tree integration verification; cumulative allocation regressions belong to M6 gate."
-    ],
+    "remaining": [],
     "requests": []
   }
 }
