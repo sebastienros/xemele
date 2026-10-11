@@ -123,3 +123,116 @@ M3's contract task may add a standalone forward XmlWriter and async transport
 with explicit ownership/state/flush behavior. Neither their declarations nor
 unfinished implementations appear in M1; the synchronous serializer is usable
 and testable without them.
+
+## Exact M3 forward writer and async additions
+
+M3-contracts owns this additive section. Exact nonpackaged declarations are
+[Writer.cs.fixture](../../tests/Contracts/Fixtures/M3/Writer.cs.fixture),
+[WriterAsync.cs.fixture](../../tests/Contracts/Fixtures/M3/WriterAsync.cs.fixture),
+and [DomAsync.cs.fixture](../../tests/Contracts/Fixtures/M3/DomAsync.cs.fixture).
+`Xemele.XmlWriter` is sealed partial, created with
+Create(Stream output, XmlSaveOptions? options=null,
+CancellationToken cancellationToken=default). It has no public constructor,
+string sink, raw markup, DTD output or arbitrary declaration version API.
+M1 serialization still does not require a writer or async implementation.
+
+The synchronous methods are WriteStartDocument, WriteStartElement(localName,
+namespaceUri="", prefix=""), WriteNamespace(prefix, namespaceUri),
+WriteAttribute(localName, value, namespaceUri="", prefix=""), WriteText(span),
+WriteCData(span), WriteComment(span), WriteProcessingInstruction(target, dataSpan),
+WriteEndElement, WriteEndDocument, Flush, Dispose. Names/attribute strings are
+owned by callers but snapshotted if retained by the writer; char spans expire
+on return. Async counterparts of every Write* method return ValueTask, accept
+an optional final CancellationToken, and use ReadOnlyMemory<char> for text,
+CDATA, comment and PI data. String parameters are unchanged. Caller memory must
+remain alive/unmodified until that operation completes; async state retains
+memory/owners/indices and forms spans only in synchronous segments. FlushAsync
+returns ValueTask and accepts a call token. DisposeAsync returns ValueTask.
+This is async transport, not async handlers; no Task.Run or blocking async bridge.
+
+Create validates null/writability/options and snapshots encoding/options/operation
+token before emitting any bytes. All operations use the M1 XML 1.0 scalar/name,
+namespace, escaping, encoding/declaration/BOM and stream-ownership rules above.
+An explicit WriteStartDocument is optional; the first structural/content write
+starts the document automatically. Explicit StartDocument is allowed only once,
+before any other write. OmitXmlDeclaration still suppresses its byte declaration.
+Declaration and BOM emission occur once when output starts, even if the first
+node is a comment/PI. Create and empty Flush do not emit them. No standalone
+metadata is synthesized. Complete output requires exactly one root.
+
+State is created/prolog → start-tag-open → element-content (nested start/end)
+→ epilog → completed, or faulted/disposed. Namespace/attribute writes are legal
+only on the current unsealed start tag. Text/CDATA requires an open element;
+comment/PI is legal in prolog, an element or epilog. NamespaceUri/Prefix empty
+defaults mean unqualified names, not inherited default namespace inference.
+EndElement on a pending empty tag emits `<name/>`; otherwise writes its closing
+tag. WriteEndDocument requires one closed root and no open elements; it never
+inventively closes elements. It validates completion and drains the writer's
+encoder/output scratch without explicitly flushing the caller stream. Repeated
+EndDocument/writes after completed and wrong-order writes throw
+InvalidOperationException. No mutation rollback is promised for earlier bytes.
+
+The writer buffers one pending start tag until content, a child, EndElement or
+Flush seals it. This permits a WriteNamespace after an attribute/name to establish
+its binding. Duplicate expanded attributes or duplicate declarations reject.
+Strict/Repair resolve a sealed tag using the M1 policies and deterministic
+explicit-then-generated namespace ordering followed by attribute insertion order.
+The writer retains checked scope/depth, one tag and bounded encoding scratch;
+it never retains the document or entire output. Existing representational
+Int32 capacities remain finite; no new parse-limit option is implied.
+
+Each WriteText call is escaped together with prior adjacent text state, so ]]
+followed by > in another call cannot emit ]]>. CR is &#xD;, attributes preserve
+TAB/LF/CR as references, and all comment/CDATA/PI illegal delimiter rules match M1.
+Each WriteCData call is a separate complete CDATA section; empty calls still
+produce its lexical boundaries. No automatic splitting of illegal ]]> is allowed.
+WriteText of empty text seals the current start tag and disables autoindent in
+that element, preserving the distinction from an untouched empty tag.
+
+Forward indentation cannot know future mixed content without buffering the
+whole element. Therefore it inserts structural LF/two-space indentation only
+when the caller has already committed to element-only content: the first direct
+child element/comment/PI in a parent commits that parent to element-only mode;
+subsequent direct WriteText/WriteCData there is rejected. A first Text/CData
+(even empty/whitespace) commits mixed mode, where no direct structural whitespace
+is inserted. Each descendant independently chooses its mode. Indent=false has
+no such content restriction. Prolog/epilog separators follow M1. This deliberate
+forward-writer restriction does not change M1 DOM serializer mixed-content
+lookahead or its accepted trees; async DOM serialization retains M1 behavior.
+
+Flush seals a pending tag, drains scratch, and explicitly calls output.Flush;
+FlushAsync seals/drains asynchronously and calls output.FlushAsync. They may
+be called in created, active or completed state. They do not complete an open
+document. Sealing means later attribute/namespace writes on that tag reject.
+Flush of an otherwise unused writer leaves output empty. Cancellation tokens
+combine the Create operation token with each async call token for that call;
+any cancellation permanently faults the writer. I/O/cancellation and failures
+while emitting a valid operation fault permanently and propagate unchanged;
+subsequent work throws InvalidOperationException. Argument and wrong-state
+validation before mutation/output leaves an idle writer usable. Invalid names,
+scalar sequences, null values or malformed lexical arguments use ArgumentException
+(or ArgumentNullException); binding conflicts/duplicate structure use
+InvalidOperationException. Illegal lexical data is checked before its operation
+emits delimiters. Operations are sequential; overlapping/reentrant write/flush/
+dispose rejects InvalidOperationException. Disposed operations use
+ObjectDisposedException. Different writers are independent.
+
+Dispose/DisposeAsync abort without emitting close tags, declaration or EndDocument,
+without an explicit caller Flush, and without closing the caller stream. They
+release pending scratch/owned resources exactly once and are idempotent. Call
+EndDocument before disposal for a complete drained result; partial bytes may
+remain after an aborted or faulted operation. Async I/O uses Stream.WriteAsync
+with bounded memory, and owned resources use async disposal where applicable.
+
+`XmlAsyncSerializer.SerializeAsync(XmlDocument, Stream, options?, token=default)`
+returns Task and has exactly M1 Serialize's output/validation/ownership semantics,
+including mixed-content indentation, no explicit caller Flush, and incremental
+bounded memory. It is a separate static class because the integrated M1
+XmlSerializer is not partial; no shared-file modifier edit is required.
+XmlDocument's additive partial wrappers are SaveAsync(Stream, options?, token)
+returning Task; static LoadAsync(Stream, parseOptions?, token) returning
+Task<XmlDocument>; and LoadWithDiagnosticsAsync(Stream, parseOptions?, token)
+returning Task<XmlParseResult<XmlDocument>>. Load uses strict semantics and rejects
+Recover=true; diagnostics load has M2 recovery semantics. Async DOM results are
+owned, never borrowed views. There are no asynchronous string/span inputs or
+filesystem overloads in this freeze. The existing synchronous API is unchanged.

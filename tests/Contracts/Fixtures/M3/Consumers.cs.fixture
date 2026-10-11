@@ -1,0 +1,58 @@
+using Xemele;
+using Xemele.Streaming;
+using ForwardWriter = Xemele.XmlWriter;
+internal static class Consumers
+{
+    // Compiled only: declaration fakes do not parse or serialize XML.
+    internal static void Sync(Stream stream)
+    {
+        IXmlSaxHandler handler = new XmlSaxCallbacks { OnStartElement = e => Console.Write(e.LocalName.ToString()), OnText = t => Console.Write(t.ToString()) };
+        XmlSaxParser.Parse("<r/>", handler);
+        XmlSaxParser.Parse("<r/>"u8, handler);
+        XmlSaxParser.Parse(stream, handler);
+        _ = XmlSaxParser.ParseWithDiagnostics("<r/>", handler);
+        _ = XmlSaxParser.ParseWithDiagnostics("<r/>"u8, handler);
+        _ = XmlSaxParser.ParseWithDiagnostics(stream, handler);
+        using var push = new XmlPushParser(handler);
+        push.Append("<r/>"u8); push.Complete();
+        using var reader = Xemele.Streaming.XmlReader.Create(stream);
+        while (reader.Read())
+        {
+            _ = reader.TokenKind; _ = reader.ValueSpan.Length; _ = reader.LocalName.Length;
+            _ = reader.Prefix.Length; _ = reader.NamespaceUri.Length; _ = reader.Target.Length;
+            _ = reader.Location; _ = reader.IsEmptyElement; _ = reader.Declaration.Version.Length;
+            _ = reader.DocumentType.Name.Length; _ = reader.DtdDeclaration.Kind;
+            _ = reader.SkippedEntity.Name.Length; _ = reader.IncompleteAttributeDefault; _ = reader.Diagnostic;
+            foreach (var attribute in reader.Attributes) _ = attribute.Value.Length;
+            foreach (var declaration in reader.NamespaceDeclarations) _ = declaration.NamespaceUri.Length;
+        }
+        using var writer = ForwardWriter.Create(stream);
+        writer.WriteStartDocument(); writer.WriteStartElement("r", "urn:r", "p");
+        writer.WriteNamespace("p", "urn:r"); writer.WriteAttribute("a", "v");
+        writer.WriteText("text"); writer.WriteCData("cdata"); writer.WriteComment("comment");
+        writer.WriteProcessingInstruction("target", "data"); writer.WriteEndElement();
+        writer.WriteEndDocument(); writer.Flush();
+    }
+#if ASYNC
+    internal static async Task Async(Stream stream, XmlDocument document)
+    {
+        var handler = new XmlSaxCallbacks { OnText = text => Console.Write(text.ToString()) };
+        await XmlSaxParser.ParseAsync(stream, handler);
+        _ = await XmlSaxParser.ParseWithDiagnosticsAsync(stream, handler);
+        await using var reader = Xemele.Streaming.XmlReader.Create(stream);
+        while (await reader.ReadAsync())
+        {
+            // The borrowed view is confined to this scope and never crosses the next await.
+            { var value = reader.ValueSpan; _ = value.Length; }
+        }
+        await using var writer = ForwardWriter.Create(stream);
+        await writer.WriteStartDocumentAsync(); await writer.WriteStartElementAsync("r");
+        await writer.WriteNamespaceAsync("p", "urn:p"); await writer.WriteAttributeAsync("a", "v");
+        await writer.WriteTextAsync("text".AsMemory()); await writer.WriteCDataAsync("data".AsMemory());
+        await writer.WriteCommentAsync("comment".AsMemory());
+        await writer.WriteProcessingInstructionAsync("target", "data".AsMemory());
+        await writer.WriteEndElementAsync(); await writer.WriteEndDocumentAsync(); await writer.FlushAsync();
+        await XmlAsyncSerializer.SerializeAsync(document, stream);
+    }
+#endif
+}

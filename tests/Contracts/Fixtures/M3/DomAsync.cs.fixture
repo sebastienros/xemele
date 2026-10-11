@@ -1,0 +1,7 @@
+namespace Xemele;
+public sealed partial class XmlDocument
+{
+    public static Task<XmlDocument> LoadAsync(Stream input, XmlParseOptions? options = null, CancellationToken cancellationToken = default) => throw new NotSupportedException("Declaration fixture only.");
+    public static Task<XmlParseResult<XmlDocument>> LoadWithDiagnosticsAsync(Stream input, XmlParseOptions? options = null, CancellationToken cancellationToken = default) => throw new NotSupportedException("Declaration fixture only.");
+    public Task SaveAsync(Stream output, XmlSaveOptions? options = null, CancellationToken cancellationToken = default) => Task.CompletedTask;
+}
