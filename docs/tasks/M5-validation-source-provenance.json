@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "id": "M5-validation-source-provenance",
+  "milestone": "M5",
+  "title": "Retain completed DOM source revision for standalone validation",
+  "kind": "feature",
+  "status": "in_progress",
+  "owner": "M5 isolated validation source provenance worker",
+  "branch": "codex/m5-validation-source-provenance",
+  "base_revision": "095db5550e5df6a2ad7764b6534352255c6c09b1",
+  "integration_revision": null,
+  "depends_on": [
+    "M5-validation-metadata",
+    "M5-canonical-provenance"
+  ],
+  "goals": [
+    "G07"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/dtd-c14n.md"
+  ],
+  "owns": [
+    "src/Xemele/Tree/ValidationMetadata/Document.SourceProvenance.cs",
+    "src/Xemele/Parsing/Dom/DomSink.cs",
+    "tests/Xemele.Tests/M5-validation-source-provenance/",
+    "docs/reports/M5-validation-source-provenance/"
+  ],
+  "api_or_output": "Internal nullable ValidationSourceContentRevision captured by MarkValidationSourceComplete at DomSink.EndDocument; no lexical sidecars",
+  "acceptance": [
+    {
+      "id": "M5-validation-source-provenance-A1",
+      "description": "Retain nullable completed source ContentRevision with no public API or lexical buffers; programmatic documents remain unknown; strict character/byte sync/async parse records completed revision.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M5-validation-source-provenance-A2",
+      "description": "Prove unchanged parsed standalone numeric-reference whitespace remains traceable, all current DOM mutations make revision differ, incomplete/recovered inputs cannot establish safe provenance, cancellation does not stamp completion.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M5-validation-source-provenance-A3",
+      "description": "Preserve parser/DOM/shared metadata/API and document logical storage and generated-code allocation applicability; actual focused checks and planning validation at known revision.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "Current-tree validator found direct character-reference whitespace origin discarded by M2 DOM; completed revision permits unchanged source trust, mutated ambiguous text becomes incomplete rather than false invalidity. Facade consumes only after verified repair.",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}
