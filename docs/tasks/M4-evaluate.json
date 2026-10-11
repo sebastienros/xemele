@@ -53,13 +53,83 @@
       "evidence": []
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/XPath/XPathExpression.cs: XPathExpression.Compile and both Evaluate overloads",
+    "src/Xemele/XPath/Evaluation/Evaluator.cs: iterative XPathEvaluator execution, predicates/operators, captured bindings and budgeted results",
+    "tests/Xemele.Tests/M4-evaluate/: 163 focused public-facade cases and pinned-reference controls",
+    "docs/api/M4-evaluate.txt: exact four facade declarations",
+    "samples/M4-evaluate/Program.cs: independent public consumer source"
+  ],
+  "evidence": [
+    {
+      "id": "focused-candidate",
+      "kind": "check",
+      "revision": "cdf30a976d8dcb039e9806c3f850cb7e86732085",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' build tests/Xemele.Tests -c Release --no-restore -m:1 -nr:false -p:UseSharedCompilation=false; '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -namespace Xemele.Tests.M4Evaluate -noLogo -noColor -parallelMode none -result-xml /tmp/m4-evaluate-adoption-tests.xml",
+      "result": "passed",
+      "summary": "Build zero warnings/errors; 163 focused passed, zero failed/skipped. Executed at merge HEAD with dirty runtime/tests byte-equivalent to subsequently committed candidate 83dac3a8813c6a482b0e46242334f68bf3c420c0. See checks.md for exact delta provenance.",
+      "artifact": "docs/reports/M4-evaluate/checks.md"
+    },
+    {
+      "id": "api-candidate",
+      "kind": "check",
+      "revision": "83dac3a8813c6a482b0e46242334f68bf3c420c0",
+      "command": "python3 docs/reports/M4-evaluate/check_api.py --dotnet '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet'",
+      "result": "passed",
+      "summary": "Actual API897 matches full frozen XPath177 plus unchanged legacy720. Four facade declarations; unchanged173 model declarations; omission and signature-drift controls reject.",
+      "artifact": "docs/api/M4-evaluate.txt"
+    },
+    {
+      "id": "public-consumer",
+      "kind": "check",
+      "revision": "83dac3a8813c6a482b0e46242334f68bf3c420c0",
+      "command": "python3 docs/reports/M4-evaluate/check_consumer.py --dotnet '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet'",
+      "result": "passed",
+      "summary": "Fresh independent public NuGet consumer with copied global.json/empty private cache builds and runs actual10.0.11: sum6, reverse-axis first two. No friend assembly access.",
+      "artifact": "samples/M4-evaluate/Program.cs"
+    },
+    {
+      "id": "source-sample",
+      "kind": "check",
+      "revision": "83dac3a8813c6a482b0e46242334f68bf3c420c0",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' build samples/M4-evaluate -c Release --no-restore -m:1 -nr:false -p:UseSharedCompilation=false; '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 samples/M4-evaluate/bin/Release/net10.0/M4-evaluate.dll",
+      "result": "passed",
+      "summary": "Release sample builds zero warnings/errors and produces sum6/reverse-axis first two on actual10.0.11.",
+      "artifact": "samples/M4-evaluate/Program.cs"
+    },
+    {
+      "id": "owned-source-review",
+      "kind": "review",
+      "revision": "85e735e4499ac50e7e032938074f0daefab2a823",
+      "command": "Coordinator independent semantic and ownership/budget focused source reviews",
+      "result": "passed",
+      "summary": "Coordinator confirms independent focused review approves node-set/Boolean and detached-context corrections. Outside-owned context defects were repaired and verified separately before adoption. Final span wiring narrow review remains pending.",
+      "artifact": "docs/reports/M4-evaluate/checks.md"
+    },
+    {
+      "id": "final-source-review",
+      "kind": "review",
+      "revision": "83dac3a8813c6a482b0e46242334f68bf3c420c0",
+      "command": "Coordinator independent narrow source-only review of final span wiring and public setup/enumeration controls",
+      "result": "passed",
+      "summary": "Independent narrow source reviewer and coordinator approve final candidate with no residual blocker; source-only, no independent executable run. Prior semantics/ownership reviews and verified repair adoption preserved.",
+      "artifact": "docs/reports/M4-evaluate/checks.md"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "",
-    "checks": [],
-    "remaining": [],
+    "summary": "Final source candidate83dac3a adopts verified model-context repair and passes163 focused/API897/source/fresh public consumer checks; awaiting final narrow review and frozen performance host grant.",
+    "checks": [
+      "163 focused pass at mergeHEAD with exact source-equivalent83dac3a; actual10.0.11",
+      "API897 and two drift controls pass at83dac3a",
+      "Source and fresh public NuGet consumer pass at83dac3a",
+      "Planning150 and owned diff whitespace pass"
+    ],
+    "remaining": [
+      "Fresh frozen probe/control/discovery/closure preparation",
+      "Explicit exclusive measurement grant and allocation/timing evidence",
+      "Coordinator integration and verification"
+    ],
     "requests": []
   }
 }
