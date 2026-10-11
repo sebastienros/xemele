@@ -4,7 +4,7 @@
   "milestone": "M4",
   "title": "Remove declaration-free internal XPath API fragments",
   "kind": "verification",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M4 coordinator 01a12903-1caa-7f32-b0e3-e66b49cea7a6",
   "branch": "codex/m4-api-fragments",
   "base_revision": "88a949f83208878162827103bae0df406e927d9d",
@@ -31,25 +31,43 @@
     {
       "id": "M4-api-fragments-A1",
       "description": "Remove only header-only internal lane API fragments, preserve all897 public declarations and official nonempty fragment validation without runtime/shared checker edits.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "official-integration"
+      ]
     },
     {
       "id": "M4-api-fragments-A2",
       "description": "Official discovery/extractor comparison against identical integrated runtime passes897 members; planning validation and owned whitespace pass; preserve successful cumulative evidence.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "official-integration"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "Removed three header-only docs/api/M4-{compile,functions,navigation}.txt files; no public declaration removed"
+  ],
+  "evidence": [
+    {
+      "id": "official-integration",
+      "kind": "integration",
+      "revision": "66aca1d2233c96a6c6cd4234457a55b73dca6af6",
+      "command": "Official tools/ApiBaseline/compare.py --root repair --assembly gate compiled runtime --checker approved M0 helper; runtime/config git diff ca92b71; tasks.py validate; git diff --check",
+      "result": "passed",
+      "summary": "897 compiled members matched,720legacy+177XPath; identical runtime/build inputs;151 planning/whitespace; summaries-only.",
+      "artifact": "docs/reports/M4-api-fragments/integration.md"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Gate API discovery rejected empty M4-compile fragment; functions/navigation have the same header-only artifact. Owning repair removes zero-declaration files without changing any public API.",
-    "checks": [],
-    "remaining": [
-      "Implement and verify narrow repair."
+    "summary": "Removed only zero-declaration internal lane artifacts; official897 discovery/extraction restored without shared checker/runtime/API changes.",
+    "checks": [
+      "Official897 matched at66aca1d using byte-identical gate runtime;planning151/whitespace"
     ],
-    "requests": []
+    "remaining": [],
+    "requests": [
+      "Resume preserved gate after this repair is verified; repeat failed API check only, then fresh package consumer."
+    ]
   }
 }
