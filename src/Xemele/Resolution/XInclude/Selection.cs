@@ -59,13 +59,13 @@ internal sealed partial class IncludeOperation
         bool scheme = value.StartsWith("element(", StringComparison.Ordinal);
         if (scheme)
         {
-            if (value.IndexOf(") ", StringComparison.Ordinal) >= 0) throw new Rejection("Unsupported");
+            if (value.IndexOf(')') != value.Length - 1) throw new Rejection("Unsupported");
             if (!value.EndsWith(")", StringComparison.Ordinal)) throw new Rejection("Syntax");
             value = value[8..^1];
         }
         else
         {
-            if (value.IndexOfAny('(', ')') >= 0 || value.Contains(' ')) throw new Rejection("Unsupported");
+            if (value.IndexOfAny('(', ')') >= 0 || value.Contains(' ') || value.Contains('@') || value.Contains("::", StringComparison.Ordinal)) throw new Rejection("Unsupported");
             if (!NcName(value)) throw new Rejection("Syntax");
             return new(expression, []);
         }

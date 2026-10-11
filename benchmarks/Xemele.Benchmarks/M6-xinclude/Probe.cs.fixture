@@ -8,8 +8,8 @@ if (RuntimeInformation.FrameworkDescription != ".NET 10.0.11") throw new Excepti
 if (args is not [var mode, var path] || mode is not ("--discover" or "--benchmark")) throw new ArgumentException();
 var config = ManualConfig.Create(DefaultConfig.Instance).WithArtifactsPath(path).AddJob(Job.Default.WithToolchain(InProcessNoEmitToolchain.Instance).AsMutator());
 var suite = BenchmarkConverter.TypeToBenchmarks(typeof(XIncludeBenchmarks), config);
-if (suite.BenchmarksCases.Length != 4 || suite.BenchmarksCases.Any(c => c.Job.Run.WarmupCount != 3 || c.Job.Run.IterationCount != 3 || c.Job.Run.LaunchCount != 1 || c.Job.Infrastructure.Toolchain != InProcessNoEmitToolchain.Instance)) throw new Exception("Expected four ShortRun NoEmit cases.");
-Console.WriteLine($"{RuntimeInformation.FrameworkDescription}; four ShortRun NoEmit cases; no builds/generation");
+if (suite.BenchmarksCases.Length != 6 || suite.BenchmarksCases.Any(c => c.Job.Run.WarmupCount != 3 || c.Job.Run.IterationCount != 3 || c.Job.Run.LaunchCount != 1 || c.Job.Infrastructure.Toolchain != InProcessNoEmitToolchain.Instance)) throw new Exception("Expected six ShortRun NoEmit cases.");
+Console.WriteLine($"{RuntimeInformation.FrameworkDescription}; six ShortRun NoEmit cases; no builds/generation");
 if (mode == "--discover") return;
 var summary = BenchmarkRunner.Run(suite);
-if (summary.Reports.Length != 4 || summary.Reports.Any(r => !r.Success || r.ResultStatistics is null)) throw new Exception("Failed benchmark");
+if (summary.Reports.Length != 6 || summary.Reports.Any(r => !r.Success || r.ResultStatistics is null)) throw new Exception("Failed benchmark");

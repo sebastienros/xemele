@@ -97,27 +97,34 @@ internal sealed partial class IncludeOperation
     }
     private async ValueTask Expand(XmlNode node, XmlNode parent, Source source, Uri? inheritedBase, string language, int inclusionDepth, int depth)
     {
-        token.ThrowIfCancellationRequested();
-        if (node.Kind == XmlNodeKind.Element)
+        var pending = new Stack<(XmlNode Node, XmlNode Parent, Uri? Base, string Language, int Depth)>();
+        pending.Push((node, parent, inheritedBase, language, depth));
+        while (pending.Count != 0)
         {
-            if (options.Limits.Depth is int max && depth >= max) throw new Rejection("Limit");
-            var baseUri = Base(node, inheritedBase);
-            string ownLanguage = node.GetAttribute("lang", Xml) ?? language;
-            if (node.NamespaceUri == Xi)
+            token.ThrowIfCancellationRequested();
+            var next = pending.Pop();
+            if (next.Node.Kind != XmlNodeKind.Element)
             {
-                if (node.LocalName == "fallback") throw new Rejection("Syntax");
-                if (node.LocalName == "include")
+                Append(next.Parent, CopyShallow(next.Node));
+                continue;
+            }
+            if (options.Limits.Depth is int max && next.Depth >= max) throw new Rejection("Limit");
+            var baseUri = Base(next.Node, next.Base);
+            string ownLanguage = next.Node.GetAttribute("lang", Xml) ?? next.Language;
+            if (next.Node.NamespaceUri == Xi)
+            {
+                if (next.Node.LocalName == "fallback") throw new Rejection("Syntax");
+                if (next.Node.LocalName == "include")
                 {
-                    await Include(node, parent, source, baseUri, ownLanguage, inclusionDepth, depth).ConfigureAwait(false);
-                    return;
+                    await Include(next.Node, next.Parent, source, baseUri, ownLanguage, inclusionDepth, next.Depth).ConfigureAwait(false);
+                    continue;
                 }
             }
-            var copy = CopyShallow(node);
-            Append(parent, copy);
-            foreach (var child in node.Children)
-                await Expand(child, copy, source, baseUri, ownLanguage, inclusionDepth, depth + 1).ConfigureAwait(false);
+            var copy = CopyShallow(next.Node);
+            Append(next.Parent, copy);
+            for (var child = next.Node.LastChild; !child.IsDefault; child = child.PreviousSibling)
+                pending.Push((child, copy, baseUri, ownLanguage, checked(next.Depth + 1)));
         }
-        else Append(parent, CopyShallow(node));
     }
     private XmlNode CopyShallow(XmlNode source)
     {

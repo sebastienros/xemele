@@ -20,9 +20,9 @@ The independent sample covers public XML inclusion and asynchronous usage.
 Its optional measurement reports cold construction, warmed sync and warmed true
 async allocations using process-wide counters, and a separate retained-one-result
 GC delta; a byte-array positive control checks the counter. The retained delta
-is a host observation, not a precise graph-size guarantee. BenchmarkDotNet's four
+is a host observation, not a precise graph-size guarantee. BenchmarkDotNet's six
 ShortRun MemoryDiagnoser cases cover short text, multilingual long text, nested
-XML, and denial/fallback. NoEmit runs in the already pinned process; discovery
+XML, selection, real async inclusion, and denial/fallback. NoEmit runs in the already pinned process; discovery
 checks effective ShortRun warmup/iteration/launch counts and toolchain. No CLI job
 flags or child builds are used.
 
