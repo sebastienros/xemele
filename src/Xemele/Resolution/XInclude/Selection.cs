@@ -1,3 +1,5 @@
+using System.Buffers;
+using System.Text;
 using Xemele.Parsing.Dtd;
 namespace Xemele.Resolution.XInclude;
 
@@ -58,25 +60,30 @@ internal sealed partial class IncludeOperation
             while (!a.IsDefault) { pending.Push((a, b)); a = a.NextSibling; b = b.NextSibling; }
         }
     }
-    private readonly record struct Pointer(string? Id, int[] Children);
-    private static Pointer ParsePointer(string expression)
+    internal readonly record struct Pointer(string? Id, int[] Children);
+    internal Pointer ParsePointer(string expression)
     {
+        PointerCheck();
         if (expression.Length == 0) throw new Rejection("Syntax");
         ReadOnlySpan<char> value = expression.AsSpan();
         bool scheme = value.StartsWith("element(", StringComparison.Ordinal);
         if (scheme)
         {
-            if (value.IndexOf(')') != value.Length - 1) throw new Rejection("Unsupported");
             if (!value.EndsWith(")", StringComparison.Ordinal)) throw new Rejection("Syntax");
+            if (PointerIndexOf(value, ')') != value.Length - 1) throw new Rejection("Unsupported");
             value = value[8..^1];
         }
         else
         {
-            if (value.IndexOfAny('(', ')') >= 0 || value.Contains(' ') || value.Contains('@') || value.Contains("::", StringComparison.Ordinal)) throw new Rejection("Unsupported");
+            for (int i = 0; i < value.Length; i++)
+            {
+                if ((i & 2047) == 0) PointerCheck();
+                if (value[i] is '(' or ')' or ' ' or '@' || (value[i] == ':' && i + 1 < value.Length && value[i + 1] == ':')) throw new Rejection("Unsupported");
+            }
             if (!NcName(value)) throw new Rejection("Syntax");
             return new(expression, []);
         }
-        int slash = value.IndexOf('/');
+        int slash = PointerIndexOf(value, '/');
         string? id = null;
         if (slash != 0)
         {
@@ -89,13 +96,16 @@ internal sealed partial class IncludeOperation
         var children = new List<int>();
         while (!value.IsEmpty)
         {
+            PointerCheck();
             if (value[0] != '/') throw new Rejection("Syntax");
-            value = value[1..]; int end = value.IndexOf('/');
+            value = value[1..]; int end = PointerIndexOf(value, '/');
             var index = end < 0 ? value : value[..end];
             if (index.IsEmpty) throw new Rejection("Syntax");
             int number = 0;
+            int digitIndex = 0;
             foreach (char c in index)
             {
+                if ((digitIndex++ & 2047) == 0) PointerCheck();
                 if (c is < '0' or > '9' || number > (int.MaxValue - (c - '0')) / 10) throw new Rejection("Syntax");
                 number = number * 10 + c - '0';
             }
@@ -106,10 +116,38 @@ internal sealed partial class IncludeOperation
         if (id is null && children.Count == 0) throw new Rejection("Syntax");
         return new(id, children.ToArray());
     }
-    private static bool NcName(ReadOnlySpan<char> value)
+    // Observer is internal deterministic correctness instrumentation. It is
+    // normally null and retains no borrowed input; tests cancel after work starts.
+    internal Action? PointerCheckpointObserver { get; set; }
+    private void PointerCheck()
     {
-        if (value.IsEmpty || value.Contains(':')) return false;
-        try { TreeValidation.Name(value.ToString()); return true; } catch (ArgumentException) { return false; }
+        PointerCheckpointObserver?.Invoke();
+        token.ThrowIfCancellationRequested();
+    }
+    private int PointerIndexOf(ReadOnlySpan<char> value, char marker)
+    {
+        for (int offset = 0; offset < value.Length;)
+        {
+            PointerCheck();
+            int length = Math.Min(2048, value.Length - offset);
+            int found = value.Slice(offset, length).IndexOf(marker);
+            if (found >= 0) return offset + found;
+            offset += length;
+        }
+        return -1;
+    }
+    private bool NcName(ReadOnlySpan<char> value)
+    {
+        if (value.IsEmpty) return false;
+        bool first = true; int untilCheck = 0;
+        while (!value.IsEmpty)
+        {
+            if (untilCheck <= 0) { PointerCheck(); untilCheck = 2048; }
+            if (Rune.DecodeFromUtf16(value, out var scalar, out int length) != OperationStatus.Done || scalar.Value == ':' ||
+                !(first ? ValueSyntax.IsNameStart(scalar.Value) : ValueSyntax.IsNameChar(scalar.Value))) return false;
+            value = value[length..]; untilCheck -= length; first = false;
+        }
+        return true;
     }
     private List<XmlNode> Select(Source source, Pointer? pointer)
     {
@@ -147,19 +185,23 @@ internal sealed partial class IncludeOperation
         }
         return [selected];
     }
-    private static string Path(XmlNode node)
+    internal string Path(XmlNode node)
     {
         if (node.Kind == XmlNodeKind.Document) return "/";
         var indexes = new List<int>();
         while (node.Kind != XmlNodeKind.Document)
         {
+            PointerCheck();
             int index = 1;
             for (var preceding = node.PreviousSibling; !preceding.IsDefault; preceding = preceding.PreviousSibling)
+            {
+                PointerCheck();
                 if (preceding.Kind == XmlNodeKind.Element) index++;
+            }
             indexes.Add(index); node = node.Parent;
         }
         var path = new System.Text.StringBuilder();
-        for (int i = indexes.Count - 1; i >= 0; i--) path.Append('/').Append(indexes[i]);
+        for (int i = indexes.Count - 1; i >= 0; i--) { PointerCheck(); path.Append('/').Append(indexes[i]); }
         return path.ToString();
     }
     private static bool ContainsPath(string ancestor, string child) => ancestor == "/" || ancestor == child ||
@@ -169,7 +211,10 @@ internal sealed partial class IncludeOperation
         string selectedPath = selection.Kind == XmlNodeKind.Element ? Path(selection) : "/";
         if (target.Identity == origin.Identity && ContainsPath(selectedPath, Path(include))) throw new Rejection("Cycle", uri: target.BaseUri);
         foreach (var entry in active)
+        {
+            token.ThrowIfCancellationRequested();
             if (entry.Identity == target.Identity && (ContainsPath(entry.Path, selectedPath) || ContainsPath(selectedPath, entry.Path)))
                 throw new Rejection("Cycle", uri: target.BaseUri);
+        }
     }
 }

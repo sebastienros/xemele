@@ -48,3 +48,22 @@ phases. Explicit SHLVL in the plan removes shell exec-optimization differences;
 all other effective child environment values remain covered by the complete
 hash. An unknown environment-variable negative control must reject. No child
 processes are retained after controls or measured phases.
+
+
+Review corrections use explicit owned continuation frames for ordinary nodes,
+selected-item entry, completion fixups and active-selection exit. Nested includes
+and fallback schedule frames rather than recursively invoking expansion; resource
+load/disposal boundaries are unchanged. Two 4,096-resource acyclic chains (sync
+and synchronously completing async) run with both inclusion-depth quotas null.
+Pointer scanning is chunked, NCNames reuse native Unicode name rules, and path
+construction checks cancellation during ancestor/sibling traversal. Internal
+checkpoint observers allow deterministic cancellation after work starts without
+wall-clock assertions or public API additions.
+
+A pre-measurement control at revision 20830a5 failed only full environment
+identity: capture used the sandbox executor, while the wrapper used elevated
+execution for scoped process inspection. Source, binaries, SDK/runtime and
+readable runtime-variable identities matched. No allocation/timing phase ran;
+both phase checks failed and cleanup reported no children. Fresh controls use
+the same intended elevated executor context for capture and wrapper launch,
+retaining the complete environment hash and explicit SHLVL pin.

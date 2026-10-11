@@ -10,7 +10,8 @@ import time
 root = pathlib.Path(__file__).resolve().parents[3]
 manifest = root / 'artifacts/M6-xinclude/prepared.json'
 plan = json.loads((root / 'docs/reports/M6-xinclude/measurement-plan.json').read_text())
-identity_only=sys.argv[1:]==['--identity-control']
+negative_control=sys.argv[1:]==['--identity-negative-control']
+identity_only=negative_control or sys.argv[1:]==['--identity-control']
 if not identity_only and sys.argv[1:] != ['--exclusive-grant']:
     raise SystemExit('Requires the coordinator prepared exclusive grant; this flag is not itself authorization.')
 deadline = time.monotonic() + plan['total_max_seconds']
@@ -25,6 +26,7 @@ def bounded(seconds, reserve=0):
     return min(seconds, remaining)
 try:
     identity_environment=dict(os.environ);identity_environment.update(plan['environment'])
+    if negative_control: identity_environment['XEMELE_UNKNOWN_ENVIRONMENT_NEGATIVE_CONTROL']='1'
     initial = subprocess.run(freeze, cwd=root, env=identity_environment, timeout=bounded(plan['initial_identity_max_seconds'], 50), check=False)
     status['initial_freeze'] = initial.returncode
     initial.check_returncode()

@@ -3,7 +3,7 @@ namespace Xemele.Resolution.XInclude;
 
 internal sealed partial class IncludeOperation
 {
-    private async ValueTask Include(XmlNode node, XmlNode parent, Source origin, Uri? baseUri, string language, int inclusionDepth, int depth)
+    private async ValueTask Include(XmlNode node, XmlNode parent, Source origin, Uri? baseUri, string language, int inclusionDepth, int depth, Stack<Work> pending)
     {
         if (options.Limits.InclusionDepth is int maximum && inclusionDepth >= maximum) throw new Rejection("Limit", uri: baseUri);
         string parse = node.GetAttribute("parse") ?? "xml";
@@ -18,6 +18,7 @@ internal sealed partial class IncludeOperation
         XmlNode fallback = default;
         foreach (var child in node.Children)
         {
+            token.ThrowIfCancellationRequested();
             if (child.Kind == XmlNodeKind.Element && child.NamespaceUri == Xi && child.LocalName == "fallback")
             {
                 if (!fallback.IsDefault) throw new Rejection("Syntax", uri: baseUri);
@@ -75,8 +76,11 @@ internal sealed partial class IncludeOperation
             AddDiagnostic("Fallback", XmlDiagnosticSeverity.Warning, error.Uri);
             var fallbackBase = Base(fallback, baseUri);
             string fallbackLanguage = fallback.GetAttribute("lang", Xml) ?? language;
-            foreach (var child in fallback.Children)
-                await ExpandInserted(child, parent, origin, fallbackBase, fallbackLanguage, inclusionDepth + 1, depth).ConfigureAwait(false);
+            for (var child = fallback.LastChild; !child.IsDefault; child = child.PreviousSibling)
+            {
+                token.ThrowIfCancellationRequested();
+                pending.Push(new(WorkKind.Insert, child, parent, origin, fallbackBase, fallbackLanguage, checked(inclusionDepth + 1), depth));
+            }
             return;
         }
         if (text is not null)
@@ -84,39 +88,36 @@ internal sealed partial class IncludeOperation
             CheckToken(Scalars(text)); Charge(Quota.ExpandedCharacters, Scalars(text));
             Append(parent, output.CreateText(text)); return;
         }
-        foreach (var item in selected!)
+        for (int index = selected!.Count - 1; index >= 0; index--)
         {
-            CheckCycle(target, item, origin, node);
-            active.Add((target.Identity, item.Kind == XmlNodeKind.Element ? Path(item) : "/"));
-            try
-            {
-                var context = Context(item, target.BaseUri);
-                await ExpandInserted(item, parent, target, context.Base, context.Language, inclusionDepth + 1, depth).ConfigureAwait(false);
-            }
-            finally { active.RemoveAt(active.Count - 1); }
+            token.ThrowIfCancellationRequested();
+            var item = selected[index];
+            var context = Context(item, target.BaseUri);
+            pending.Push(new(WorkKind.SelectedInsert, item, parent, target, context.Base, context.Language,
+                checked(inclusionDepth + 1), depth, origin, node));
         }
     }
-    private static (Uri? Base, string Language) Context(XmlNode node, Uri? initial)
+    private (Uri? Base, string Language) Context(XmlNode node, Uri? initial)
     {
         var ancestors = new List<XmlNode>();
-        for (var p = node.Parent; !p.IsDefault && p.Kind != XmlNodeKind.Document; p = p.Parent) ancestors.Add(p);
+        for (var p = node.Parent; !p.IsDefault && p.Kind != XmlNodeKind.Document; p = p.Parent) { token.ThrowIfCancellationRequested(); ancestors.Add(p); }
         string language = "";
         for (int i = ancestors.Count - 1; i >= 0; i--)
         {
+            token.ThrowIfCancellationRequested();
             initial = Base(ancestors[i], initial);
             language = ancestors[i].GetAttribute("lang", Xml) ?? language;
         }
         return (initial, language);
     }
-    private async ValueTask ExpandInserted(XmlNode item, XmlNode parent, Source target, Uri? baseUri, string language, int inclusionDepth, int depth)
+    private void FixupInserted(XmlNode item, XmlNode parent, XmlNode previous, Uri? baseUri, string language)
     {
-        var previous = parent.LastChild;
-        await Expand(item, parent, target, baseUri, language, inclusionDepth, depth).ConfigureAwait(false);
         // Includes may themselves emit several roots. Apply fixups to each new
         // element; their own recursive fixups take precedence over this boundary.
         var inserted = previous.IsDefault ? parent.FirstChild : previous.NextSibling;
         while (!inserted.IsDefault)
         {
+            token.ThrowIfCancellationRequested();
             if (inserted.Kind == XmlNodeKind.Element)
             {
                 if (item.Kind == XmlNodeKind.Element && !(item.NamespaceUri == Xi && item.LocalName == "include"))
