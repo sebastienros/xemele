@@ -4,11 +4,11 @@
   "milestone": "M5",
   "title": "Retain bounded source instance validity evidence",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M5 isolated source instance provenance worker",
   "branch": "codex/m5-dtd-instance-provenance",
   "base_revision": "ee9fbc263d2422c4db38cbef34d5eb5be7595c41",
-  "integration_revision": null,
+  "integration_revision": "4ee8d81d5373f30f5299e4220006d036b45a1c98",
   "depends_on": [
     "M5-dtd-attribute-validity",
     "M5-dtd-parameter-validity",
@@ -45,7 +45,8 @@
       "evidence": [
         "functional",
         "performance",
-        "review"
+        "review",
+        "root-integration"
       ]
     },
     {
@@ -54,7 +55,8 @@
       "status": "passed",
       "evidence": [
         "functional",
-        "review"
+        "review",
+        "root-integration"
       ]
     },
     {
@@ -66,7 +68,8 @@
         "preservation",
         "api-demo",
         "performance",
-        "planning"
+        "planning",
+        "root-integration"
       ]
     }
   ],
@@ -134,6 +137,15 @@
       "command": "python3 tools/planning/tasks.py validate; git diff --check",
       "result": "passed",
       "summary": "159taskrecordsvalidate;diffcheckpassed.",
+      "artifact": "docs/reports/M5-dtd-instance-provenance/README.md"
+    },
+    {
+      "id": "root-integration",
+      "kind": "integration",
+      "revision": "4ee8d81d5373f30f5299e4220006d036b45a1c98",
+      "command": "Pinned Release build; --fx-version10.0.11 Xemele.Tests selected Dtd*/M5 classes, focused M5 namespaces, SyntaxTests; compiled API helper; planning validate",
+      "result": "passed",
+      "summary": "Runtime/harness combined-tree checks at4e249739cf821687eb164a244592c9b51d620340:2330 DTD/compiler/validation,407 focused M5 and53SyntaxTests passed zero failures/skips; overlapping sets not additive. Release0warnings/errors,948public API unchanged. Final merge adds only inspected report and task evidence; executable source unchanged.159tasksvalidate. All raw allocation and16GC pairs independently inspected before acknowledged cleanup, including positive warm/owned/rounded-dash totals.",
       "artifact": "docs/reports/M5-dtd-instance-provenance/README.md"
     }
   ],

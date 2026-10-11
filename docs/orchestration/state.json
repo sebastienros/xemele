@@ -20,16 +20,6 @@
       "frozen_expectations_revision": "7dc2a3c9cd60f2a0ce373cde9b2724b414ee1051",
       "correction_revision": "266a3504fb213043d9e1027d4124d3660bc49128",
       "source_review": "21808e2/7d6160c sourceapproved;831 unequal labels explicitlydisclosed; no executedreviewcheck"
-    },
-    {
-      "task_id": "M5-dtd-instance-provenance",
-      "agent_id": "/root/validation_metadata",
-      "worktree": "/private/tmp/xemele-m5-dtd-instance-provenance",
-      "branch": "codex/m5-dtd-instance-provenance",
-      "base_revision": "ee9fbc263d2422c4db38cbef34d5eb5be7595c41",
-      "stage": "Source candidate under independent review; ordinary checks passed; no measurement grant",
-      "claim_revision": "1501fd0f40cdd06a331aefa1cdebb795b66357f8",
-      "candidate_revision": "d96ed87af7b73af3e82744310c71c100732d1635"
     }
   ],
   "integration_queue": [],
@@ -41,10 +31,10 @@
     }
   ],
   "next_actions": [
-    "Review and measure source-instance repair, integrate and verify; resume corpus only after all repairs verified; complete cumulative M5 gate then exactly one M6 setup and sole-writer transfer."
+    "Resume corpus from all three verified repairs and complete independent normative closure; verify corpus, claim/run cumulative M5 gate, then exactly one M6 setup and sole-writer transfer."
   ],
-  "last_verified_task": "M5-dtd-attribute-validity",
-  "last_integrated_revision": "2d20f75450a011a22259b5116450a92dba84bd99",
+  "last_verified_task": "M5-dtd-instance-provenance",
+  "last_integrated_revision": "4ee8d81d5373f30f5299e4220006d036b45a1c98",
   "completed_assignments": [
     {
       "task_id": "M2-dtd-composition",
@@ -780,6 +770,18 @@
       "stage": "Verified integrated; clean checkout removed",
       "integration_revision": "2d20f75450a011a22259b5116450a92dba84bd99",
       "handoff_revision": "e7156720023858f6cf405c92a315258f38581389"
+    },
+    {
+      "task_id": "M5-dtd-instance-provenance",
+      "agent_id": "/root/validation_metadata",
+      "worktree": "/private/tmp/xemele-m5-dtd-instance-provenance",
+      "branch": "codex/m5-dtd-instance-provenance",
+      "base_revision": "ee9fbc263d2422c4db38cbef34d5eb5be7595c41",
+      "stage": "Verified integrated; terminal clean checkout pending removal",
+      "claim_revision": "1501fd0f40cdd06a331aefa1cdebb795b66357f8",
+      "candidate_revision": "d96ed87af7b73af3e82744310c71c100732d1635",
+      "integration_revision": "4ee8d81d5373f30f5299e4220006d036b45a1c98",
+      "handoff_revision": "70e30caf5386393769ee37ff514b227253387523"
     }
   ],
   "benchmark_policy": "Successful previous measurements retained; future changed runtime measurements require complete preparation and exclusive grant.",
@@ -1958,7 +1960,7 @@
     "implementation_started": false,
     "dispatch_after": "M2-conformance verified"
   },
-  "milestone_progress": "M5: 12 of 15 tasks verified; corpus parked pending source instance provenance repair; gate pending.",
+  "milestone_progress": "M5:13 of15tasks verified; all three corpus repairs verified; corpus closure and gate pending.",
   "pause_request": {
     "requested_by": "user",
     "after_verified_task": "M2-gate",
