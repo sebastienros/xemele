@@ -75,9 +75,9 @@ public sealed class InventoryTests
             case JsonValueKind.True: case JsonValueKind.False: Assert.Equal(XPathValueKind.Boolean, actual.Kind); Assert.Equal(expected.GetBoolean(), actual.AsBoolean()); break;
             case JsonValueKind.String:
                 string text = expected.GetString()!;
-                if (text == "NaN") Assert.True(double.IsNaN(actual.AsNumber()));
-                else if (text == "Infinity") Assert.Equal(double.PositiveInfinity, actual.AsNumber());
-                else if (text == "-0") Assert.Equal(long.MinValue, BitConverter.DoubleToInt64Bits(actual.AsNumber()));
+                if (text == "NaN") { Assert.Equal(XPathValueKind.Number, actual.Kind); Assert.True(double.IsNaN(actual.AsNumber())); }
+                else if (text == "Infinity") { Assert.Equal(XPathValueKind.Number, actual.Kind); Assert.Equal(double.PositiveInfinity, actual.AsNumber()); }
+                else if (text == "-0") { Assert.Equal(XPathValueKind.Number, actual.Kind); Assert.Equal(long.MinValue, BitConverter.DoubleToInt64Bits(actual.AsNumber())); }
                 else { Assert.Equal(XPathValueKind.String, actual.Kind); Assert.Equal(text, actual.AsString()); }
                 break;
             default: throw new InvalidOperationException();
