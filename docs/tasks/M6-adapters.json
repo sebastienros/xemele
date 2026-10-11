@@ -36,7 +36,8 @@
       "status": "passed",
       "evidence": [
         "focused-correctness",
-        "sample-api"
+        "sample-api",
+        "review-corrections"
       ]
     },
     {
@@ -44,7 +45,8 @@
       "description": "Test required abstract members, positioning/attributes/namespaces, ownership and unsupported-capability behavior.",
       "status": "passed",
       "evidence": [
-        "focused-correctness"
+        "focused-correctness",
+        "review-corrections"
       ]
     },
     {
@@ -53,12 +55,13 @@
       "status": "pending",
       "evidence": [
         "sample-api",
-        "prepared-controls"
+        "prepared-controls",
+        "review-corrections"
       ]
     }
   ],
   "implementation": [
-    "src/Xemele/Interop/XemeleXmlReaderAdapter.cs: real streaming event adapter with owned names/values, full attribute cursor, source-aware namespaces/base, real async overlap/error/disposal behavior",
+    "src/Xemele/Interop/XemeleXmlReaderAdapter.cs: real streaming event adapter with owned names/values, full attribute cursor, source-aware namespaces/base, real async overlap/error/disposal behavior; logical text-run coalescing/classification independent of pump chunks, bounded to one run plus one lookahead event with CDATA/source boundaries",
     "src/Xemele/Interop/XemeleXPathNavigatorAdapter.cs: shared immutable M4-coalesced snapshot with BCL XPath navigation/evaluation and typed/xml:id lookup",
     "tests/Xemele.Tests/M6-adapters/AdapterTests.cs: 17 focused cases; samples/M6-adapters/Program.cs independent public consumer; docs/api/M6-adapters.txt actual 57 frozen member rows"
   ],
@@ -89,15 +92,25 @@
       "result": "passed",
       "summary": "Probe build0warnings; exactly16cases/oneShortRunNoEmit/3warmups3iterations1launch; all nonmeasuring BCL/owned controls passed. No allocation/timing executed; awaits exact exclusive lease.",
       "artifact": "docs/reports/M6-adapters/preparation.md"
+    },
+    {
+      "id": "review-corrections",
+      "kind": "check",
+      "revision": "3a0ba1e4e9fc99f96fadf816050a5ca102dc4d49",
+      "command": "Pinned SDK10.0.400 builds tests/Xemele.Tests, samples/M6-adapters, docs/reports/M6-adapters/Adapters.Probe with Release --no-restore --no-incremental RuntimeFrameworkVersion=10.0.11 -m:1 --disable-build-servers; direct --fx-version10.0.11 tests -namespace Xemele.Tests.M6Adapters/sample/probe --discover and --control; python3 docs/reports/M6-adapters/check_api.py; full-env capture/check with identical runner effective environment plus unknown-variable negative control.",
+      "result": "passed",
+      "summary": "Three builds0warnings;23focused tests passed0failed0skipped actual10.0.11. Six sync/async chunk1/2/4096 cases each execute seven independent BCL lexical event controls for mixed/leading/trailing/whitespace-only/xml:space/CDATA text. Sample/API1005/nonmeasuring16case controls passed; three runtimeconfigs10.0.11. Full effectivechildenvSHA captured and repeated checks pass; ADAPTER_UNLISTED_ENV_CONTROL mutation rejects, restored complete environment checks pass. Prior17case evidence preserved. No allocations/timing executed.",
+      "artifact": "docs/reports/M6-adapters/preparation.md"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Source and focused correctness/API/sample complete; prepared allocation/timing harness. in_progress pending authorized exclusive measurements and report. No integration revision.",
+    "summary": "Independent review corrections complete: logical text classification coalesces one run and full effective child environment SHA freezes actual runner inheritance. Revised23tests/sample/API/nonmeasuring controls pass. Reprepared PARK pending final source-only review and exact exclusive lease; remains in_progress/integration null.",
     "checks": [
       "17 focused tests passed actual10.0.11; sample passed; 57 frozen rows and 1005 full API matched; nonmeasuring16case harness controls passed.",
       "Initial sandbox default restore was delayed/failing; scoped ownPID57574 cleanup and bounded escalated cache-only restore succeeded. Initial namespace CLI flag rejected, corrected to -namespace. Initial entity-text assertion assumed unfragmented existing stream token and was corrected to aggregate event text; final17passed.",
-      "dotnet-inspect skill applied; pinned dnx attempt failed offline NuGet DNS; installed BCL compiler/reference+actual golden metadata validated full required shape."
+      "dotnet-inspect skill applied; pinned dnx attempt failed offline NuGet DNS; installed BCL compiler/reference+actual golden metadata validated full required shape.",
+      "At3a0ba1e revised23tests allpassed; sample/API1005/probe16controls passed. Unknown formerly unlisted childenv variable rejects fullfreeze; no secretvaluesprinted."
     ],
     "remaining": [
       "Fresh prepared PARK/full freeze, independent source review, exact coordinator allocation/benchmark lease, lifecycle/final identity/nochildren and durable release before raw inspection.",
