@@ -17,10 +17,10 @@
     }
   ],
   "next_actions": [
-    "Review/verify resource kinds then dispatch catalog/XInclude; adapters implement independently; no measurement lease active."
+    "Review bounded resource/adapter implementations and focused correctness; prepare serial exact measurement leases only after fresh PARK/fullidentity/source review."
   ],
-  "last_verified_task": "M6-contracts",
-  "last_integrated_revision": "6a8c67ecf1cf36afe6af355edf1995bfa3053f67",
+  "last_verified_task": "M6-resource-kinds",
+  "last_integrated_revision": "95bc7e9674df4ad3450bebed808df19ef790a8a1",
   "completed_assignments": [
     {
       "task_id": "M2-dtd-composition",
@@ -1985,7 +1985,7 @@
     "implementation_started": false,
     "dispatch_after": "M2-conformance verified"
   },
-  "milestone_progress": "M6 contracts verified; explicit resource-kind repair precedes catalog/XInclude.",
+  "milestone_progress": "M6 contracts+resource kinds verified; adapters/catalog/XInclude isolated implementation underway.",
   "pause_request": {
     "requested_by": "user",
     "after_verified_task": "M2-gate",
@@ -2294,20 +2294,28 @@
   ],
   "workers": [
     {
-      "task_id": "M6-resource-kinds",
-      "agent_id": "/root/resource_kinds",
-      "status": "running",
-      "worktree": "/private/tmp/xemele-m6-resource-kinds",
-      "branch": "codex/m6-resource-kinds",
-      "claim_revision": "fb19185edb63e2e81483ee3fd0f06a03917505dc"
-    },
-    {
       "task_id": "M6-adapters",
       "agent_id": "/root/adapters",
       "status": "running",
       "worktree": "/private/tmp/xemele-m6-adapters",
       "branch": "codex/m6-adapters",
       "claim_revision": "fb19185edb63e2e81483ee3fd0f06a03917505dc"
+    },
+    {
+      "task_id": "M6-catalog",
+      "agent_id": "/root/catalog",
+      "status": "running",
+      "worktree": "/private/tmp/xemele-m6-catalog",
+      "branch": "codex/m6-catalog",
+      "claim_revision": "8c50d2c2ea43d158d4b4a3d5cb7cf1240a9923eb"
+    },
+    {
+      "task_id": "M6-xinclude",
+      "agent_id": "/root/xinclude",
+      "status": "running",
+      "worktree": "/private/tmp/xemele-m6-xinclude",
+      "branch": "codex/m6-xinclude",
+      "claim_revision": "8c50d2c2ea43d158d4b4a3d5cb7cf1240a9923eb"
     }
   ]
 }
