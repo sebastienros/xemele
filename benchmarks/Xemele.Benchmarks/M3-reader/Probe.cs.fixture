@@ -39,7 +39,7 @@ long Measure(long body)
     Console.WriteLine($"generated-body={body}; transport={input.Position}; tokens={tokens}; setup={setup} B; baseline-live={baseline} B; peak-live={peak} B; delta={peak - baseline} B; elapsed={watch.Elapsed}");
     return peak - baseline;
 }
-long small = Measure(8L * 1024 * 1024), large = Measure(1024L * 1024 * 1024);
+long small = Measure(1024L * 1024), large = Measure(args.Length > 0 && args[0] == "gib" ? 1024L * 1024 * 1024 : 8L * 1024 * 1024);
 if (large > 16L * 1024 * 1024 || large > small + 8L * 1024 * 1024) throw new Exception("Retained memory grew with input.");
 sealed class GeneratedText(long body) : Stream
 {

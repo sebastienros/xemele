@@ -32,16 +32,18 @@ frozen Sync.cs.fixture using the approved unchanged M0 extractor, then checks
 all composed API fragments against the runtime assembly. Contract.csproj links
 the frozen fixture; it is a nonpackaged declaration assembly, never runtime.
 
-The owned benchmark project builds a prebuilt isolated executable. Its default
+The owned report Probe/Reader.Probe.csproj builds a prebuilt isolated executable. Its default
 command measures cold cursor setup, 100,000 warmed current copies, an owned-string
-positive allocation control, and full consumption of generated 8 MiB/1 GiB
+positive allocation control, and full consumption of generated 1 MiB/8 MiB
 character bodies. The generated stream keeps no corpus buffer. Full-GC live
 sampling every 16 MiB with the reader kept alive separates retained memory from
 transient allocation; required large-input thresholds are 16 MiB retained delta
 and no more than 8 MiB growth over the small workload. Document and text-token
 quotas are explicitly unlimited only in this bounded test; ordinary reader
-finite defaults are preserved. Generated memory work has a 15-minute external
-process deadline and progress at 128 MiB intervals.
+finite defaults are preserved. The default feature probe has a 60-second external process deadline. Optional
+`gib` measures a full 1 GiB with a 15-minute deadline and progress at 128 MiB
+intervals. The coordinator assigned full 1 GiB qualification to M3-corpus; it
+remains required there and is not claimed by this feature probe.
 
 `bdn --inProcess --filter '*ReaderBenchmarks*' --iterationCount 3
 --warmupCount 1 --launchCount 1 --invocationCount 1024 --unrollFactor 1` uses
