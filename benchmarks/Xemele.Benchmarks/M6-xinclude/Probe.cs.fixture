@@ -1,0 +1,15 @@
+using System.Runtime.InteropServices;
+using BenchmarkDotNet.Configs;
+using BenchmarkDotNet.Jobs;
+using BenchmarkDotNet.Running;
+using BenchmarkDotNet.Toolchains.InProcess.NoEmit;
+using Xemele.Benchmarks.M6XInclude;
+if (RuntimeInformation.FrameworkDescription != ".NET 10.0.11") throw new Exception("Actual .NET 10.0.11 required.");
+if (args is not [var mode, var path] || mode is not ("--discover" or "--benchmark")) throw new ArgumentException();
+var config = ManualConfig.Create(DefaultConfig.Instance).WithArtifactsPath(path).AddJob(Job.Default.WithToolchain(InProcessNoEmitToolchain.Instance).AsMutator());
+var suite = BenchmarkConverter.TypeToBenchmarks(typeof(XIncludeBenchmarks), config);
+if (suite.BenchmarksCases.Length != 4 || suite.BenchmarksCases.Any(c => c.Job.Run.WarmupCount != 3 || c.Job.Run.IterationCount != 3 || c.Job.Run.LaunchCount != 1 || c.Job.Infrastructure.Toolchain != InProcessNoEmitToolchain.Instance)) throw new Exception("Expected four ShortRun NoEmit cases.");
+Console.WriteLine($"{RuntimeInformation.FrameworkDescription}; four ShortRun NoEmit cases; no builds/generation");
+if (mode == "--discover") return;
+var summary = BenchmarkRunner.Run(suite);
+if (summary.Reports.Length != 4 || summary.Reports.Any(r => !r.Success || r.ResultStatistics is null)) throw new Exception("Failed benchmark");
