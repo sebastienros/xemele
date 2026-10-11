@@ -14,7 +14,7 @@
       "task_id": "M8-model",
       "branch": "codex/m8-model",
       "base_revision": "8ba83aaf00b76d30e36eb95445bc03611677ae89",
-      "stage": "Source/review accepted and combined correctness/API/XML-only verification passed; prepared allocation awaits main PARK messaging approval",
+      "stage": "Prepared allocation lease granted after main PARK; root remains parked until immediate lifecycle RELEASE",
       "acceptance_before_dispatch": {
         "mandatory": "Exact frozen common public/internal declarations; immutable collection/options/source snapshots and independent compile/run state; actual schema resource kind/ownership; aggregate limits/diagnostics and shared XPath accounting; no fake datatype/regex implementations.",
         "integration": "Focused model and affected M2/M4/M5 regressions; exact additive public and frozen internal API; relevant prepared allocation evidence if runtime adapter paths added; planning/whitespace. Comprehensive corpus at gate.",
@@ -58,7 +58,7 @@
       "worker_cursor": "0db3d487-4720-4d98-ae73-8b501f882a0b:29",
       "combined_verification": "209 tests with actual10.0.11 and zero errors/failures/skips/not-run; fullpublic1393/frozen316 API; integrated and XML-only consumers;175 task validation. No allocation test selected.",
       "measurement_request": {
-        "status": "prepared, not granted",
+        "status": "granted",
         "maximum_seconds": 30,
         "attempts": 1,
         "manifest_sha256": "ba37e3084aedb96bf4502ea82b1bc9ea318b3f372a9cc1e43689fe7797442c4b",
@@ -68,7 +68,7 @@
   ],
   "integration_queue": [],
   "next_actions": [
-    "Await messaging authorization; collect main PARK, durably grant bounded prepared model allocation, release immediately on lifecycle before inspection; then finish model integration.",
+    "Collect model allocation lifecycle, durably RELEASE before inspection, then complete source-unchanged model evidence/integration.",
     "After model verification prioritize regex, datatype-core and XSD compile; datatype families are disjoint children followed by original complete-library join.",
     "Complete ready M8 lanes with at most3 workers; prepare/park/grant/release bounded measurements.",
     "Verify cumulative M8 gate and terminal cleanup, then transfer sole writes back to main."
@@ -110,8 +110,23 @@
   },
   "benchmark_policy": "Successful previous measurements retained; future changed runtime measurements require complete preparation and exclusive grant.",
   "benchmark_class_attributes": "Human requirement: every benchmark class declares [MemoryDiagnoser, ShortRunJob]; no CLI job flags.",
-  "benchmark_owner": null,
-  "active_measurement_lease": null,
+  "benchmark_owner": "01a12ca2-03e0-7b10-b4c8-20c843ef504b",
+  "active_measurement_lease": {
+    "id": "M8-model-allocation-1",
+    "task_id": "M8-model",
+    "owner_chat": "01a12ca2-03e0-7b10-b4c8-20c843ef504b",
+    "source_revision": "2ac7e6034a82d371e76608d0ad11fe2e2d8c8ea0",
+    "preparation_revision": "9dd073bb779ad9fe718e7e5258d57625c877354f",
+    "manifest_sha256": "ba37e3084aedb96bf4502ea82b1bc9ea318b3f372a9cc1e43689fe7797442c4b",
+    "sole_command": "env DOTNET_TieredCompilation=0 DOTNET_gcServer=0 DOTNET_GCConcurrent=0 XEMELE_MODEL_REVISION=2ac7e6034a82d371e76608d0ad11fe2e2d8c8ea0 '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 benchmarks/Xemele.Benchmarks/M8-model/bin/Release/net10.0/Xemele.Benchmarks.dll --measure artifacts/M8-model/allocation.json",
+    "maximum_seconds": 30,
+    "attempts": 1,
+    "status": "granted",
+    "created_utc": "2026-10-11T21:18:40.137795+00:00",
+    "park": "Main explicitly acknowledged current PARK in turn01a12cd4-8c3b-7da1-96de-03ed845a13c9; no other active M8 implementation workers. Root builds/checks complete. No global host-idle or throughput claim.",
+    "supervision": "Worker uses process timeout30s; kill/reap process group on timeout/failure, drain output and report lifecycle only. No build/test/retry under lease. Verify eight prepared hashes before and after.",
+    "release": "Immediately durably RELEASE after child exit/drain/reap, before raw inspection; worker awaits release ACK."
+  },
   "verification_policy_update": "User convergence discipline: define acceptance/evidence/integration checks before dispatch; batch concrete blockers with criterion, evidence, smallest fix and proving check; preserve valid evidence; offline focused harness repair first; after two cycles coordinator chooses one bounded resolution; reuse infrastructure; build outside one bounded measurement lease with one park acknowledgement collection and prompt release; focused task integration and comprehensive milestone gates. No speculative hardening blocks integration.",
   "cleanup_policy": "Automatically archive completed chats and remove worktrees once merged verified durably summarized and no review/build need. Do not save generated test/benchmark artifacts or ignored-output archives; preserve required implementation/source and concise verification summaries.",
   "artifact_policy": {
@@ -191,13 +206,7 @@
   "current_milestone": "M8",
   "milestone_completion_scope": "Complete integrated verified M8-gate; terminal workers and cleanup; preserve earlier evidence/caches; transfer sole writes to main. Do not create M9.",
   "milestone_progress": "Contracts, schema kind and XPath accounting verified/cleaned; shared schema model claimed.",
-  "blockers": [
-    {
-      "scope": "M8 coordination messaging",
-      "reason": "Automatic approval review rejected root PARK message to main twice. Second rejection treated retrieved original human authorization from M4 as untrusted transcript evidence. No workaround attempted; explicit current-user approval requested asynchronously. No measurement grant/run occurred.",
-      "required_action": "Await current human authorization before retrying messaging; preserve completed verification."
-    }
-  ],
+  "blockers": [],
   "pending_decisions": [],
   "timing_queue": [],
   "completed_assignments": [
@@ -339,6 +348,22 @@
       "released_utc": "2026-10-11T20:14:17.525932+00:00",
       "lifecycle": "Worker reports sole command exit0, baseline/candidate0/0, no_children=true, initial/final identities passed,0.946231417s; raw output not inspected before RELEASE.",
       "host_inspection": "Escalated process-name inventory succeeded; dotnet processes exist but names alone do not establish unrelated workload state. No latency/throughput claim; synchronous per-thread allocation comparison only."
+    },
+    {
+      "id": "M8-model-allocation-1",
+      "task_id": "M8-model",
+      "owner_chat": "01a12ca2-03e0-7b10-b4c8-20c843ef504b",
+      "source_revision": "2ac7e6034a82d371e76608d0ad11fe2e2d8c8ea0",
+      "preparation_revision": "9dd073bb779ad9fe718e7e5258d57625c877354f",
+      "manifest_sha256": "ba37e3084aedb96bf4502ea82b1bc9ea318b3f372a9cc1e43689fe7797442c4b",
+      "sole_command": "env DOTNET_TieredCompilation=0 DOTNET_gcServer=0 DOTNET_GCConcurrent=0 XEMELE_MODEL_REVISION=2ac7e6034a82d371e76608d0ad11fe2e2d8c8ea0 '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 benchmarks/Xemele.Benchmarks/M8-model/bin/Release/net10.0/Xemele.Benchmarks.dll --measure artifacts/M8-model/allocation.json",
+      "maximum_seconds": 30,
+      "attempts": 1,
+      "status": "granted",
+      "created_utc": "2026-10-11T21:18:40.137795+00:00",
+      "park": "Main explicitly acknowledged current PARK in turn01a12cd4-8c3b-7da1-96de-03ed845a13c9; no other active M8 implementation workers. Root builds/checks complete. No global host-idle or throughput claim.",
+      "supervision": "Worker uses process timeout30s; kill/reap process group on timeout/failure, drain output and report lifecycle only. No build/test/retry under lease. Verify eight prepared hashes before and after.",
+      "release": "Immediately durably RELEASE after child exit/drain/reap, before raw inspection; worker awaits release ACK."
     }
   ],
   "workers": [],
@@ -358,5 +383,5 @@
     "chat_communication_authorization": "Human explicitly authorized on 2026-10-10 in M4 coordinator: All chats do not need to ask permission to communicate with other chats; permission is implicitly granted. Forward this permission to every new chat. Applies to bounded repository coordination and successor chain; no remote publication.",
     "benchmark_artifact_policy": "Human dad208f instruction: do not commit benchmark result logs and outputs, only summary tables and analysis."
   },
-  "chat_communication_authorization": "Direct human authorization: task-related coordination among main, milestone coordinators, workers and reviewers is allowed without further permission. Honor actual tool enforcement; collect own-chat/durable reports if rejection prevents delivery."
+  "chat_communication_authorization": "Human directly replied Yes, authorize all M8 coordination messages in M8 coordinator chat on2026-10-11; PARK messaging now succeeded."
 }
