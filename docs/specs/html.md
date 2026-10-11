@@ -31,7 +31,7 @@ Unsupported labels follow HTML fallback, never XML encoding rules. Streams remai
 open on success/fault/cancellation; no parser fetches external entities, DTDs,
 images or scripts. No asynchronous entry point is promised by M7.
 
-`ScriptingEnabled=false` by default; true controls noscript parsing only. No
+`ScriptingEnabled=false` by default, retained in HtmlDocument.ScriptingEnabled; true controls noscript parsing only. No
 JavaScript execution, document.write, browsing context, navigation, layout,
 networking, custom-element reactions or executable script callbacks. Tree-vector
 exclusions are limited to these browser-execution dependencies; scripting-flag
@@ -44,8 +44,9 @@ intermediate tree-builder work, with bounded diagnostics where emitted.
 
 ## Document, fragment and ownership
 
-Full parse returns a fresh document containing doctype, comments and the implied
-html/head/body structure. QuirksMode is determined by the complete WHATWG doctype
+Full parse returns a fresh document containing doctype, comments and the prescribed
+implied structure: normally html/head/body, but frameset insertion modes can produce
+html/head/frameset without body (for example <!doctype html><frameset><frame></frameset>). QuirksMode is determined by the complete WHATWG doctype
 rules (including public/system identifiers and force-quirks); all three modes are
 retained. Legacy defaults to Quirks unless its recognized HTML doctype selects
 NoQuirks. Token doctype absent identifiers differ from empty strings.
@@ -71,9 +72,11 @@ replaces in place or appends; snapshot records cannot mutate the tree. Duplicate
 HTML token attributes retain the first after ASCII folding; foreign adjustment
 occurs in the tree builder. HTML nodes preserve arbitrary HTML names, control
 characters allowed by HTML, comment '--'/trailing '-', namespace attributes,
-doctype identifiers and template contents without XML-name coercion. HTML input
-preprocessing replaces NUL and normalizes CRLF/CR per the algorithm; this is not
-an extra XML sanitization step. TemplateContent is a distinct owned fragment on
+doctype identifiers and template contents without XML-name coercion. HTML input preprocessing normalizes CRLF/CR per the algorithm. NUL handling is
+state-specific, not a preprocessing replacement: Data emits a NUL character token;
+in-body tree insertion ignores it, so <p>a\0b has text ab. RCDATA and comment
+states replace NUL with U+FFFD, so textarea a\0b yields a�b. Other tokenizer and
+insertion states follow their prescribed NUL rules; no XML sanitization occurs. TemplateContent is a distinct owned fragment on
 HTML template elements; it is not in Children and has no Parent; deep copy includes
 it. Traversal and selectors use actual Children, not template content implicitly.
 Name casing follows HTML ASCII folding and WHATWG foreign adjustments. TextContent
