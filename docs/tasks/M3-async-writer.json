@@ -2,7 +2,7 @@
   "schema_version": 1,
   "milestone": "M3",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M3 coordinator 01a1284a-8826-7fc2-af44-74552db608f2 / async writer worker",
   "branch": "codex/m3-async-writer",
   "base_revision": "827fde5f82dd202abb53c300d3a4a59b7cd3eda0",
@@ -54,14 +54,18 @@
     {
       "id": "M3-async-writer-A3",
       "description": "Compile and demonstrate without later adapters; record compiled API, real buffered primitive/allocation-positive and setup/continuation/retained scratch evidence, preserve verified sync writer/earlier serialization and validate known revisions.",
-      "status": "failed",
+      "status": "passed",
       "evidence": [
         "compiled-api",
         "earlier-serialization",
         "standalone-sample",
-        "measurement-preparation",
-        "allocation-initial-failure",
-        "allocation-second-failure"
+        "sync-writer-preserved",
+        "per-call-attribution",
+        "helper-il-review",
+        "tiering-differential-control",
+        "actual-default-primitive-review",
+        "bdn-six-cases",
+        "planning-validation"
       ]
     }
   ],
@@ -154,18 +158,105 @@
       "result": "failed",
       "summary": "Second coordinator <=40s allocation-only lease released immediately after probe exit1; gated sync19 NOT RUN and BDN/timing NOT AUTHORIZED. Warm200 identical16-group batches: batch0=344B, all other warm batches0, in current-thread and precise processwide counters. Steady1000 batches: only batch577=128B in BOTH counter scopes;999others0. Original exact current-thread zero gate remains failed128B/16000groups=0.008B/group; processwide buffered observation is diagnostic, not replacement. No-I/O assertion passed, positivecontrol280B/group, linkedtokens80B/call, scratch8192, suspended composition44245.6B/document using precise processwide counters. Runtime source unchanged8011920; rebuilt Git/assembly stamp metadata makes actual runtime hash b5443d5d119eed97527cf735f437d1f91c8acb45c44c1c5761c3c4e4e5f4bece. Two proving cycles exhausted; request coordinator attribution/resolution before further measurements, no speculative incremental retries.",
       "artifact": "docs/reports/M3-async-writer/allocation-second-failed.json"
+    },
+    {
+      "id": "per-call-attribution",
+      "kind": "check",
+      "revision": "824470cb8320b73c0cd134bc7a785fd2ff913531",
+      "command": "dotnet docs/reports/M3-async-writer/Probe/bin/Release/net10.0/AsyncWriter.Probe.dll --diagnose > docs/reports/M3-async-writer/allocation-attribution.json",
+      "result": "passed",
+      "summary": "Attribution-only diagnostic completed exit0 under coordinator <=20s lease; NOT an acceptance pass based on program exit. Actual default-runtime counts: all80000 steady calls, all empty counter controls, and all1000 whole steady batches zero in current-thread and precise processwide counters. Only per-call allocations were warm0/group0 Attribute288B (buffer18/steps17/depth2 ->18/19/2) and EndElement56B (18/19/2 ->28/22/1); warmbatch96 had152B outside call/control brackets. All storage and reflection-derived getters pre-acquired outside measured calls. Both original128B default helper-loop failures preserved; exact CLR site still unproven. Session4760 final poll actual exit_code0/no session_id/stdout childcomplete confirmed. A premature release report was immediately corrected while that earlier poll was stillrunning; coordinator had released peers/read metadata before final confirmation. Other processes cannot enter own-process/current-thread counts, no timing claims and no rerun solely this reporting error.",
+      "artifact": "docs/reports/M3-async-writer/allocation-attribution.json"
+    },
+    {
+      "id": "helper-il-review",
+      "kind": "review",
+      "revision": "824470cb8320b73c0cd134bc7a785fd2ff913531",
+      "command": "Cached native dotnet-inspect0.26.0 member Probe --library <local prebuilt probe DLL> --all -m Primitive|Complete|Diagnose -v:d -S IL; Diagnose -S Decompiled Source",
+      "result": "passed",
+      "summary": "Source-only compiled metadata review: Primitive has no box/newarr/newobj; Complete successful branch only ValueTask awaiter/GetResult, exception factory only on excluded failure branch. Direct switch has identical args/calls and no allocation/reflection/getter opcode within call brackets. Reflection/expression compilation/arrays precede loops; getter invocations outside call/control brackets; WriterState newobj creates unboxed value type. JSON/LINQ after loops. No explicit helper allocation difference found; IL alone does not identify original128B CLR runtime source.",
+      "artifact": "docs/reports/M3-async-writer/il-review.md"
+    },
+    {
+      "id": "tiering-differential-control",
+      "kind": "check",
+      "revision": "824470cb8320b73c0cd134bc7a785fd2ff913531",
+      "command": "DOTNET_TieredCompilation=0 dotnet docs/reports/M3-async-writer/Probe/bin/Release/net10.0/AsyncWriter.Probe.dll > docs/reports/M3-async-writer/allocation-tiering-control.json",
+      "result": "passed",
+      "summary": "Coordinator-selected attribution-only normal-mode differential under <=20s lease, NOT default-runtime acceptance. Actual exit_code0/no session_id, childcomplete stdout confirmed before release/inspection. Same unchanged824binary with process-local tiering disabled: warmbatch0=344B; all1000steadybatches0 current-thread/processwide,16000groups; positive280B/group, linkedtokens80B/call, scratch8192, noI/O assertion passed; suspended preciseprocess44285.6B/doc. Supports runtime/tiering initialization or OSR interaction in historical helper-loop failures but exact allocation site not established. Original default failures and gates remain intact.",
+      "artifact": "docs/reports/M3-async-writer/allocation-tiering-control.json"
+    },
+    {
+      "id": "actual-default-primitive-review",
+      "kind": "review",
+      "revision": "824470cb8320b73c0cd134bc7a785fd2ff913531",
+      "command": "Coordinator01a1284a-8826-7fc2-af44-74552db608f2 bounded evidence adjudication after per-call attribution, source-only IL review and named tiering differential",
+      "result": "passed",
+      "summary": "Mandatory actualdefault-runtime buffered writer primitive evidence accepted from raw all80000steady APIcalls AND entire1000steadybatches bothcurrentthread/processwide0/noIO, together with preserved positivecontrols/setup/linked/scratch and genuineasyncprocess totals. Diagnosticexit0 means completion only; reviewed actualwriter deltas establish zero observation. Originaldefaulthelpergroup128B checks remainfailed/historicalscope with exact CLRsiteunproven; tiering-disabled normalcontrol0 supports runtime/tiering-init inference only. No gate/runtime/criteria relaxed, no retroactivefailurepass and no moreprobe/harness correction retries. Own sync19 and BDN6 still required before A3 overall passed.",
+      "artifact": "docs/reports/M3-async-writer/allocation-attribution.json"
+    },
+    {
+      "id": "sync-writer-preserved",
+      "kind": "check",
+      "revision": "3a0e4070ac696655a624fbd8b32fb76a8fd42dc9",
+      "command": "dotnet tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -namespace Xemele.Tests.M3Writer -parallelMode none -showLiveOutput -noColor -result-xml docs/reports/M3-async-writer/sync-writer.xml",
+      "result": "passed",
+      "summary": "Authorized default-environment prebuilt sync writer check:19passed0failed/errors/skips, including existing exactzero allocation regression. TestDLL1eeb1f150d28c415b196cb3491a9fdfa551e17c5c14a9c0942a25799235355a0, localruntimeb5443d5d119eed97527cf735f437d1f91c8acb45c44c1c5761c3c4e4e5f4bece with unchanged runtime801 source closure. No repeat after passing.",
+      "artifact": "docs/reports/M3-async-writer/sync-writer.xml"
+    },
+    {
+      "id": "bdn-discovery-scope-failure",
+      "kind": "check",
+      "revision": "3a0e4070ac696655a624fbd8b32fb76a8fd42dc9",
+      "command": "dotnet benchmarks/Xemele.Benchmarks/bin/Release/net10.0/Xemele.Benchmarks.dll --filter '*AsyncWriterBenchmarks*' --job Dry --inProcess --iterationCount 3 --warmupCount 1 --launchCount 1 --invocationCount 1 --unrollFactor 1 --artifacts docs/reports/M3-async-writer/bdn",
+      "result": "failed",
+      "summary": "Initial discoveryFound12instead authorized6; immediately aborted before workload/measurement, processgroup killedchildexit-9/wrapperexit124/nosession/nochildren. Wrappershared stop() set timedoutTrue during intentionalinvalidscopekill; this was scope failure, NOT elapsedtimeout. Source-only cachedBDNIL confirms classInProcessAttribute constructor passesJob.InProcess toJobConfigBaseAttribute, whichAddsJob; combined with CLI DryInProcess yielded2jobs*3corpora*2methods. Preserve raw failure, no measuredcase/memory/timing pass claimed.",
+      "artifact": "docs/reports/M3-async-writer/bdn-scope-failed.txt"
+    },
+    {
+      "id": "bdn-single-job-preparation",
+      "kind": "check",
+      "revision": "7f99de9ab0683a1ce581e6f4f902a02353389de3",
+      "command": "DOTNET_CLI_DO_NOT_USE_MSBUILD_SERVER=1 dotnet build benchmarks/Xemele.Benchmarks/Xemele.Benchmarks.csproj -c Release --no-restore -p:UseSharedCompilation=false -p:BuildInParallel=false -p:BuildProjectReferences=false -m:1 --disable-build-servers; dotnet benchmarks/Xemele.Benchmarks/bin/Release/net10.0/Xemele.Benchmarks.dll --list flat --filter '*AsyncWriterBenchmarks*'",
+      "result": "passed",
+      "summary": "Coordinator one bounded benchmark-only config correction removed redundant InProcess job attribute, retained MemoryDiagnoser and unchanged methods/corpora. Build0warnings/errors without unnecessary runtime project rebuild; counters-disabled listing2methods, three frozenparams and soleCLI DryInProcess jobexpected6; harddiscovery6/toolchainguard retained. Frozen benchmarkSHA c035149aa2a5a1b9a4752504ec581f0770c19c1f01b9549b3874f8461cd4345f, existing824localruntimeca1c3a9c66f653b2ced0d4793ee8eda5f8cdf75927cfe0863736145c6b5fe810 source801. No passing correctness/allocation/API checks repeated.",
+      "artifact": null
+    },
+    {
+      "id": "bdn-six-cases",
+      "kind": "check",
+      "revision": "7f99de9ab0683a1ce581e6f4f902a02353389de3",
+      "command": "dotnet benchmarks/Xemele.Benchmarks/bin/Release/net10.0/Xemele.Benchmarks.dll --filter '*AsyncWriterBenchmarks*' --job Dry --inProcess --iterationCount 3 --warmupCount 1 --launchCount 1 --invocationCount 1 --unrollFactor 1 --artifacts docs/reports/M3-async-writer/bdn",
+      "result": "passed",
+      "summary": "Authorized <=110s BDN-only corrected-config lease: actualexit_code0/no session_id, scope6/timedoutFalse/invalidFalse, childcomplete/nochildren confirmed before release/inspection. Executed exactly6cases (two methods*threecorpora) singleDry InProcessEmitToolchain, invocation1/unroll1/warm1/iter3/launch1, defaultenv; no buildchildren/source/options/retry. FrozenBDN c035149aa2a5a1b9a4752504ec581f0770c19c1f01b9549b3874f8461cd4345f/localruntimeca1c3a9c66f653b2ced0d4793ee8eda5f8cdf75927cfe0863736145c6b5fe810 runtime source801. MemoryDiagnoser inclusiveDry operation allocations: synclong9.67KB/unicode11.27KB/short13.56KB, asynclong13.63KB/unicode13.35KB/short13.63KB; includes ownedwriter/setup/framework/runner initialization, not isolatedprimitive or steadywriter-only attribution. Latencies/ratios under unownedSilex host contention are INFORMATIONAL and UNUSABLE for speedup/regression/repeatability claims; raw results preserved, no optimizedscan claim. Dedicated M9 repeatablex64/Arm64 qualification remains. Valid88focused/API651/allocation observations not repeated.",
+      "artifact": "docs/reports/M3-async-writer/bdn/results/Xemele.M3AsyncWriterMeasurements.AsyncWriterBenchmarks-report.csv"
+    },
+    {
+      "id": "planning-validation",
+      "kind": "check",
+      "revision": "7f99de9ab0683a1ce581e6f4f902a02353389de3",
+      "command": "python3 tools/planning/tasks.py validate",
+      "result": "passed",
+      "summary": "Final branch work/source revision with implemented evidence metadata prepared: validated145tasks, schema/evidence/acyclic dependencies/additive milestones/ordered ownership. Final metadata is committed separately from tested runtime/harness revisions.",
+      "artifact": null
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Bounded async writer runtime and A1/A2 correctness/API pass; A3 exact-zero allocation remains failed after two exclusive probes (isolated128B in one steady batch). Coordinator attribution/resolution requested; no further incremental retries.",
+    "summary": "Implemented all12 frozen async writer members/IAsyncDisposable with bounded real async transport and retained-owner release. All19async+19sync+50earlier serialization source cases pass; composedAPI651/sample pass. Mandatory actualdefault primitivezero accepted from80kcall+1000wholebatch bothcounter deltas0/noIO; positive/setup/linked/scratch/genuinesuspended counters preserved. Six correctedDry InProcess MemoryDiagnoser cases complete; contended timing unqualified. Historical helper128B/scope12 failures preserved honestly; integrationnull.",
     "checks": [
-      "19 async writer passed; 50 earlier serialization passed; 651 compiled members match; standalone sample exact output passed; prebuilt counters-disabled probe/BDN preparation passed."
+      "Release runtime/tests/sample/probe/benchmark builds0warnings/errors on SDK10.0.400/runtime10.0.11Arm64.",
+      "19async writer +19verifiedsync writer (including allocation regression) +50earlier serialization=88focusedcases passed; no passingchecks repeated for harness/config corrections.",
+      "Approved directcomposedAPI651matched (639existing+12asyncmethods; grantedtypeIAsyncDisposable addition); standaloneall12member sample exactgoldenpassed.",
+      "Default-runtime attribution actual0 across80ksteady APIcalls+1000wholebatches bothcounter scopes/noIO; positive280B/group, linkedtokens80B/call, retainedscratch8192; genuineasync preciseprocess totals separately recorded.",
+      "SixDry InProcessEmitToolchain BDNcases completedexit0 with MemoryDiagnoser/rawreports, timings informational/unusable for comparisons underhostcontention.",
+      "python3 tools/planning/tasks.py validate:145tasks passed; source/task/API diffcheck clean."
     ],
     "remaining": [
-      "A3: attribute isolated128B current-thread/processwide allocation at steady batch577 despite matching200-batch initialization; original exactzero gate failed, no runtime/gate changes or retries without coordinator bounded resolution.",
-      "Own sync19/allocation regression and BDN6 not run because probe failed gating; earlier runtime-source19async/50serialization/API651 passed and coordinator reports combined69/API651 already passed independently.",
-      "Integration verification and private offline corpus provisioning belong to coordinator; integration_revision remains null."
+      "Coordinator integration/combined verification and integration_revision assignment; this task is implemented, not verified.",
+      "Historical defaulthelper-loop128B CLRsite unproven; failures remain failed. Defaultdirectcall+fullbatch actualzero accepted by boundedreview, IL no helperfactory and tiering-off differential supports runtimeinitialization inference only; no further probe retries required.",
+      "OfficialglobalAPI discovery requires private offlinecorpus fixture provisioning; approved directcomposedAPI passed as authorizedfallback, no manifests changed.",
+      "M9 dedicatedrepeatablex64/Arm64 and representativecomposition qualification; current contendedDry latencies cannot substantiate performance comparisons or regressions."
     ],
     "requests": [
       "Fulfilled: imported coordinator ownership grant a1b76e16aa4dfeaeada2c69f21123cb596e4d2d0; changed only existing T:Xemele.XmlWriter row in docs/api/M3-writer.txt to add frozen IAsyncDisposable, preserved all original IDs/member rows.",

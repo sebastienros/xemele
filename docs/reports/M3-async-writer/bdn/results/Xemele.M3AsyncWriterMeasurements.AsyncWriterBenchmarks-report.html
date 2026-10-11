@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta charset='utf-8' />
+<title>Xemele.M3AsyncWriterMeasurements.AsyncWriterBenchmarks-20261010-185306</title>
+
+<style type="text/css">
+	table { border-collapse: collapse; display: block; width: 100%; overflow: auto; }
+	td, th { padding: 6px 13px; border: 1px solid #ddd; text-align: right; }
+	tr { background-color: #fff; border-top: 1px solid #ccc; }
+	tr:nth-child(even) { background: #f8f8f8; }
+</style>
+</head>
+<body>
+<pre><code>
+BenchmarkDotNet v0.15.8, macOS Sequoia 15.8.1 (24H32) [Darwin 24.6.0]
+Unknown processor
+.NET SDK 10.0.400
+  [Host] : .NET 10.0.11 (10.0.11, 10.0.1126.37416), Arm64 RyuJIT armv8.0-a
+</code></pre>
+<pre><code>Job=Dry  Toolchain=InProcessEmitToolchain  InvocationCount=1  
+IterationCount=3  LaunchCount=1  RunStrategy=ColdStart  
+UnrollFactor=1  WarmupCount=1  
+</code></pre>
+
+<table>
+<thead><tr><th>Method  </th><th>Corpus</th><th>Mean  </th><th>Error</th><th>StdDev</th><th>Median</th><th>Ratio</th><th>RatioSD</th><th>Allocated</th><th>Alloc Ratio</th>
+</tr>
+</thead><tbody><tr><td>Synchronous</td><td>long-ascii</td><td>2,460.40 &mu;s</td><td>4,611.75 &mu;s</td><td>252.79 &mu;s</td><td>2,579.00 &mu;s</td><td>1.01</td><td>0.13</td><td>9.67 KB</td><td>1.00</td>
+</tr><tr><td>ImmediateAsync</td><td>long-ascii</td><td>3,666.25 &mu;s</td><td>4,991.53 &mu;s</td><td>273.60 &mu;s</td><td>3,816.08 &mu;s</td><td>1.50</td><td>0.17</td><td>13.63 KB</td><td>1.41</td>
+</tr><tr><td>Synchronous</td><td>multilingual</td><td>5,996.65 &mu;s</td><td>913.71 &mu;s</td><td>50.08 &mu;s</td><td>6,012.42 &mu;s</td><td>1.00</td><td>0.01</td><td>11.27 KB</td><td>1.00</td>
+</tr><tr><td>ImmediateAsync</td><td>multilingual</td><td>27,045.62 &mu;s</td><td>5,170.59 &mu;s</td><td>283.42 &mu;s</td><td>27,066.62 &mu;s</td><td>4.51</td><td>0.05</td><td>13.35 KB</td><td>1.19</td>
+</tr><tr><td>Synchronous</td><td>short</td><td>53.65 &mu;s</td><td>819.45 &mu;s</td><td>44.92 &mu;s</td><td>29.92 &mu;s</td><td>1.47</td><td>1.38</td><td>13.56 KB</td><td>1.00</td>
+</tr><tr><td>ImmediateAsync</td><td>short</td><td>177.13 &mu;s</td><td>3,856.72 &mu;s</td><td>211.40 &mu;s</td><td>61.29 &mu;s</td><td>4.84</td><td>6.03</td><td>13.63 KB</td><td>1.01</td>
+</tr></tbody></table>
+</body>
+</html>

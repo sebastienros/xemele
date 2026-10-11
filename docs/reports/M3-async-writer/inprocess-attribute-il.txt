@@ -1,0 +1,16 @@
+# BenchmarkDotNet.Attributes.InProcessAttribute..ctor
+
+Type: BenchmarkDotNet.Attributes.InProcessAttribute | Library: /Users/sebastienros/.nuget/packages/benchmarkdotnet/0.15.8/lib/net8.0/BenchmarkDotNet.dll | Source: Library
+
+## IL
+
+```il
+IL_0000: ldarg.0
+IL_0001: ldarg.1
+IL_0002: brtrue.s     IL_000B
+IL_0004: ldsfld       BenchmarkDotNet.Jobs.Job::InProcess
+IL_0009: br.s         IL_0010
+IL_000B: ldsfld       BenchmarkDotNet.Jobs.Job::InProcessDontLogOutput
+IL_0010: call         BenchmarkDotNet.Attributes.JobConfigBaseAttribute::.ctor(BenchmarkDotNet.Jobs.Job)
+IL_0015: ret
+```

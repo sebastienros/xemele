@@ -118,3 +118,147 @@ No additional allocation/timing reruns followed the two proving cycles.
 Coordinator root attribution/resolution is required; sync writer checks were
 not run by this worker due only-pass gating, and BDN was not authorized in the
 second lease. No timing success or API global-discovery success is claimed.
+
+## Bounded attribution (separate from normal acceptance)
+
+Attribution source/probe revision `824470cb8320b73c0cd134bc7a785fd2ff913531`:
+actual runtime SHA-256
+`ca1c3a9c66f653b2ced0d4793ee8eda5f8cdf75927cfe0863736145c6b5fe810`, probe
+`8f9622da96bff376671e22dd64082e2d956121f283c3cc66222d9fea12d32ac4`.
+Runtime source remains `8011920`; hashes include generated Git/assembly stamps.
+
+The coordinator authorized one default-runtime `--diagnose` process, bounded
+20 s, with preallocated records for 200 warm and 1000 steady batches, 16 groups
+of the same five writer calls. Every call has current-thread and precise process
+counter deltas plus an empty bracket with the same four reads. Pre-acquired
+reflection-derived compiled getters capture buffered/steps/depth outside both
+per-call and empty brackets; whole batch counts explicitly include diagnostic
+outside-bracket overhead. Sparse distribution defaults every omitted counter
+to zero, including when no steady nonzero call exists.
+
+`allocation-attribution.json`: all 80,000 steady calls, all empty controls, and
+all 1000 steady whole batches reported zero in both scopes. Warm batch0/group0
+Attribute allocated288B, buffer18/steps17/depth2 ->18/19/2; EndElement56B,
+18/19/2 ->28/22/1. Warmbatch0 total344B; warmbatch96 total152B occurred entirely
+outside the writer/control brackets. Program exit0 means diagnostic completion,
+not a global acceptance pass; historical normal helper-loop128B remains intact.
+
+Operational correction: a `write_stdin` yield still containing session4760 was
+mistakenly reported as completed/released. That report was immediately corrected
+before worker inspection/metadata. The coordinator had already released peers
+and read raw JSON in another process. The actual final poll then returned
+exit_code0 without session_id and explicit child-complete stdout; confirmed
+release preceded worker inspection. Other processes cannot alter own-process or
+current-thread allocation counters; no timing conclusion or reporting-error
+rerun was taken. No children remained after final confirmation.
+
+Source-only local IL inspection is documented in `il-review.md`: no explicit
+managed factory in successful Primitive/Complete, identical direct-switch
+arguments/calls, and getters/reflection setup outside per-call brackets.
+This alone cannot identify the historical CLR allocation source.
+
+The coordinator then authorized one unchanged normal-mode probe process with
+process-local `DOTNET_TieredCompilation=0`, bounded20s; no build/source/options
+other than this named attribution setting, no retry or timing. Actual exit0/no
+session_id and child-complete stdout were confirmed before release/inspection.
+`allocation-tiering-control.json`: warm0=344B, all1000steadybatch counters0 in
+both scopes; positive280B/group, linkedtokens80B/call, scratch8192, no-I/O passed;
+suspended precise process44285.6B/document. This supports runtime/tiering
+initialization or OSR interaction in the historical helper-loop observation but
+does not identify the exact allocation site. It is not substituted for default-
+runtime acceptance. Coordinator adjudication remains explicit.
+
+## Coordinator bounded adjudication
+
+The coordinator accepted the mandatory actual default-runtime primitive
+observation from the raw 80,000 steady writer calls **and** entire 1000 steady
+batches reporting zero in both scopes, with no I/O, together with independently
+preserved positive/setup/linked/scratch and genuine suspended-process counts.
+This evaluates actual writer deltas; diagnostic exit0 still denotes completion.
+The original helper-loop128B failures remain failed historical scopes, with the
+exact CLR allocation site unproven. The named tiering-disabled control supports
+an initialization/OSR inference, not a retroactive default-runtime pass. No gate,
+runtime, criterion, or failure was changed to manufacture zero; no further probe
+or harness correction retries were approved.
+
+Remaining prebuilt correctness/BDN checks reuse revision3a copies with runtime
+source801 unchanged. Actual SHA-256:
+
+* tests DLL: `1eeb1f150d28c415b196cb3491a9fdfa551e17c5c14a9c0942a25799235355a0`
+* benchmark DLL: `94fc34c1d72dbbe8378cf69bb7f2fc9ca8d5823f48c1633042696228e9a75725`
+* each test/benchmark local runtime DLL: `b5443d5d119eed97527cf735f437d1f91c8acb45c44c1c5761c3c4e4e5f4bece`
+
+These differ from the latest diagnostic runtime-directory824 Git-stamped hash;
+no unnecessary rebuild or repeats of passing69/API/sample checks are planned.
+The prior process-local tiering override was never persisted in the parent or
+applied to these default-environment checks. A3 overall remains pending until
+the 19 sync writer and six informational in-process benchmark cases complete.
+
+## Sync preservation and benchmark discovery correction
+
+Authorized default-environment prebuilt sync writer lane at3a passed all19,
+including its existing allocation regression. Earlier50serialization and19async
+remain passing at runtime source801, for88focused source cases in total. No
+passing tests/API/sample/allocation evidence was repeated for a benchmark fix.
+
+Initial BDN discovery reported12 cases instead of authorized6. The wrapper
+immediately killed the processgroup before measurement; childexit-9, wrapper124,
+no session/children remained. Its shared stop() incorrectly labeled the
+intentional scope kill as timedoutTrue; this was not an elapsed timeout.
+`bdn-scope-failed.txt` preserves that initial result with no measuredcase claim.
+Cached source-only BDN0.15.8 IL (`inprocess-attribute-il.txt`,
+`job-attribute-il.txt`) proves `[InProcess]` adds its own job via
+JobConfigBaseAttribute/ManualConfig.AddJob. The CLI's Dry InProcess job added a
+second: twojobs*threecorpora*twomethods=12.
+
+Coordinator authorized one benchmark-only correction, committed
+`7f99de9ab0683a1ce581e6f4f902a02353389de3`: remove the redundant job attribute,
+keep MemoryDiagnoser, methods/corpora and the sole explicit CLI Dry InProcess
+job. Build passed0warnings/errors with BuildProjectReferences=false to avoid
+unneeded runtime rebuilding; flatlisting showed the two methods. Actual frozen
+benchmarkSHA `c035149aa2a5a1b9a4752504ec581f0770c19c1f01b9549b3874f8461cd4345f`,
+local runtime copied from existing824 build:
+`ca1c3a9c66f653b2ced0d4793ee8eda5f8cdf75927cfe0863736145c6b5fe810`, source801.
+A six-case discovery/InProcess hardguard remains; corrected run is pending.
+
+The coordinator explicitly permits only informational contended timings while
+unowned host Silex.Jepsen work is active (observed CPU407). Raw latencies are
+**unusable for speedup, regression or repeatability claims**. Own-process
+MemoryDiagnoser and actual allocation observations remain distinct. No optimized
+scan claim is made; M9 dedicated repeatablex64/Arm64 qualification remains a
+release follow-up. External user processes were not touched.
+
+## Final six-case branch benchmark check
+
+Corrected source revision `7f99de9ab0683a1ce581e6f4f902a02353389de3`, exact
+prepared command with filter AsyncWriterBenchmarks, Dry + InProcess,
+iteration3/warm1/launch1/invocation1/unroll1. Coordinator lease bounded110s;
+actualexit_code0, no session_id, discovery6 twice, no timeout/invalidscope,
+child-complete stdout and nochildren confirmed before prompt release/inspection.
+No builds, generation, source/options edits or retries occurred during the lease.
+
+Exactly six cases ran in one `InProcessEmitToolchain` job. MemoryDiagnoser's
+inclusive Dry-operation allocations (full writer/setup/framework/runner scope):
+
+| Corpus | Synchronous | ImmediateAsync |
+| --- | ---: | ---: |
+| long-ascii | 9.67 KB | 13.63 KB |
+| multilingual | 11.27 KB | 13.35 KB |
+| short | 13.56 KB | 13.63 KB |
+
+These are not isolated primitive costs or a steady writer-only allocation
+attribution; use the separately scoped standalone evidence for those claims.
+Raw CSV/Markdown/HTML/log/console results are preserved. BDN emitted small-
+iteration warnings, and host contention makes **all latency ratios and speedup,
+regression or repeatability conclusions unusable**. No comparative claim or
+invented threshold is applied. The source-only scalar escaping baseline remains;
+no unmeasured SearchValues optimization was added.
+
+All task acceptance criteria are implemented on this branch:12frozenmembers,
+19async+19sync+50earlier source cases, API651, sample, actualdefault bufferedzero
+adjudicated from measured deltas, allocationpositive/setup/linked/continuation/
+scratch evidence, and six informational BDN cases. Historical failures and
+operational corrections remain visible above; none was retroactively passed.
+Task status is implemented with integration_revision=null. Coordinator combined
+verification, private offlinecorpus provisioning and M9 repeatablex64/Arm64
+release qualification remain the explicitly scoped follow-ups.
