@@ -4,7 +4,7 @@
   "milestone": "M5",
   "title": "Exclude nested contract checker tooling from parent compile",
   "kind": "infrastructure",
-  "status": "implemented",
+  "status": "in_progress",
   "owner": "M5 coordinator isolated build repair",
   "branch": "codex/m5-contracts-build",
   "base_revision": "996b1656129dd180436888c9a76fe00d93eb0534",
@@ -27,15 +27,15 @@
   "acceptance": [
     {
       "id": "M5-contracts-build-A1",
-      "description": "Exclude only nested M5 ApiCheck tool C# sources from parent Contracts project; preserve independent helper and Release solution builds, net10-only runtime/API and planning validity.",
-      "status": "passed",
+      "description": "Exclude nested M5 ApiCheck tool sources and nested fixture-project generated obj/bin C# sources from parent Contracts compilation; preserve independent helpers, Release solution, net10-only runtime/API and planning validity.",
+      "status": "pending",
       "evidence": [
         "isolated-build"
       ]
     }
   ],
   "implementation": [
-    "tests/Contracts/Contracts.csproj: Compile Remove Fixtures/M5/ApiCheck/**/*.cs only"
+    "tests/Contracts/Contracts.csproj: exclude nested checker source and nested fixture project generated obj/bin C# files"
   ],
   "evidence": [
     {
@@ -45,6 +45,15 @@
       "command": "Pinned offline restore Xemele.slnx and nested ApiCheck; Release --no-restore builds Xemele.slnx and tests/Contracts/Fixtures/M5/ApiCheck/ApiCheck.csproj with NuGetAudit=false/m1/shared compilation and servers disabled; git diff --check; planning validate; runtime source diff",
       "result": "passed",
       "summary": "Both Release builds0warnings/errors;160tasksvalid; runtime source untouched. Parent excludes only nestedM5checker C# tooling, independent Roslyn checker still builds. No runtime tests/allocation measurements required or run for this build-only exclusion. Gate originalCS0234 failure remains in its evidence. Initial newtask planning checks failed gatecoverage until coordinator parked/requeued its private reservedclaim with requireddependency; corrected graph validates.",
+      "artifact": null
+    },
+    {
+      "id": "first-combined-build",
+      "kind": "integration",
+      "revision": "1c2367ab92e6763e57a44c921003227cccd37356",
+      "command": "Pinned offline Release Xemele.slnx build with previously generated nested DtdConsumer obj outputs present",
+      "result": "failed",
+      "summary": "16 CS0579 duplicate assembly attribute errors: parent SDK glob also includes nested consumer generated obj sources. Initial isolated solution/helper builds passed without those outputs, so repair expanded to exclude nested generated obj/bin sources. Scoped API checker still found948members; planning160valid. No runtime changes.",
       "artifact": null
     }
   ],
