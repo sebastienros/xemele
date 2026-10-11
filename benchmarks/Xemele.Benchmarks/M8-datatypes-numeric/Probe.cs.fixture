@@ -1,0 +1,75 @@
+using System.Runtime.InteropServices;
+using System.Security.Cryptography;
+using System.Text;
+using System.Text.Json;
+using Xemele.Validation;
+if (args is not [var mode, var output] || mode is not ("--control" or "--measure")) throw new ArgumentException();
+if (RuntimeInformation.FrameworkDescription != ".NET 10.0.11") throw new InvalidOperationException();
+bool measure = mode == "--measure";
+long coldStart = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+var fixture = new Fixture();
+long coldSetupBytes = measure ? GC.GetAllocatedBytesForCurrentThread() - coldStart : 0;
+var rows = new List<object>();
+for (int route = 0; route < Fixture.Names.Length; route++)
+{
+    for (int warm = 0; warm < 32; warm++) fixture.Run(route);
+    long[] distribution = new long[64];
+    for (int i = 0; i < distribution.Length; i++)
+    {
+        long start = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+        fixture.Run(route);
+        distribution[i] = measure ? GC.GetAllocatedBytesForCurrentThread() - start : 0;
+    }
+    if (measure && (route < 8 ? distribution.Any(n => n != 0) : distribution.Any(n => n <= 0))) throw new InvalidOperationException("Allocation boundary failed: " + route);
+    rows.Add(new { route, name = Fixture.Names[route], operations = 64, distribution });
+}
+long positiveStart = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+var positive = new byte[1024]; GC.KeepAlive(positive);
+long positiveBytes = measure ? GC.GetAllocatedBytesForCurrentThread() - positiveStart : 0;
+if (measure && positiveBytes < 1024) throw new InvalidOperationException("Positive control failed.");
+long retainedBefore = measure ? GC.GetTotalMemory(true) : 0;
+var retained = new DatatypeAtomicValue[256];
+for (int i = 0; i < retained.Length; i++) retained[i] = fixture.Parse("decimal", Fixture.Long);
+long retainedAfter = measure ? GC.GetTotalMemory(true) : 0;
+GC.KeepAlive(retained); GC.KeepAlive(fixture);
+File.WriteAllText(output, JsonSerializer.Serialize(new { mode, runtime = RuntimeInformation.FrameworkDescription, architecture = RuntimeInformation.ProcessArchitecture.ToString(), os = RuntimeInformation.OSDescription,
+    serverGc = System.Runtime.GCSettings.IsServerGC, coldSetupBytes, positiveBytes, retainedBefore, retainedAfter, retainedCount = retained.Length,
+    sourceRevision = Environment.GetEnvironmentVariable("XEMELE_DATATYPE_NUMERIC_REVISION"), assemblySha256 = Hash(typeof(SchemaCompileOptions).Assembly.Location), probeSha256 = Hash(typeof(Fixture).Assembly.Location), inputSha256 = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(Fixture.Short + Fixture.Long + Fixture.Float + Fixture.Invalid))), rows }, new JsonSerializerOptions { WriteIndented = true }));
+Console.WriteLine($"{mode}: 13 consumed routes, 32 warm/64 samples each; counters {(measure ? "enabled" : "disabled")}");
+static string Hash(string path) => Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(path)));
+sealed class Fixture
+{
+    internal const string Short = "12345.6789", Float = "-1.23456789012345678e-200", Invalid = "123.456x";
+    internal static readonly string Long = new('1', 4096);
+    internal static readonly string[] Names = ["decimal short comparison", "decimal long comparison", "decimal long hash", "decimal short hash", "float comparison", "float hash", "invalid lexical", "digit measures", "owned decimal short", "owned decimal long", "owned float", "owned zero", "operation setup"];
+    private readonly NumericDatatypeProvider provider = new();
+    private readonly SchemaNamespaceContext context = new(new Dictionary<string, string>(), "", null);
+    internal readonly SchemaCompileOperation Operation = new(new() { MaxOperations = null, MaxComponents = null, Limits = new() { EvaluationWork = null } });
+    private readonly DatatypeAtomicValue shortValue, longValue, longOther, floatValue;
+    internal Fixture() { shortValue = Parse("decimal", Short); longValue = Parse("integer", Long); longOther = Parse("decimal", Long + ".00"); floatValue = Parse("double", Float); }
+    internal DatatypeAtomicValue Parse(string type, string input)
+    {
+        if (!provider.TryParse(DatatypeTypes.All[type], input, context, Operation, out var value, out var error) || value is null || error is not null) throw new InvalidOperationException();
+        return value;
+    }
+    internal void Run(int route)
+    {
+        switch (route)
+        {
+            case 0: if (!DatatypeValues.ValueEquals(shortValue, shortValue, Operation)) throw new InvalidOperationException(); break;
+            case 1: if (DatatypeValues.Compare(longValue, longOther, Operation) != XmlValueOrder.Equal) throw new InvalidOperationException(); break;
+            case 2: if (DatatypeValues.ValueHashCode(longValue, Operation) != DatatypeValues.ValueHashCode(longOther, Operation)) throw new InvalidOperationException(); break;
+            case 3: if (DatatypeValues.ValueHashCode(shortValue, Operation) == 0) throw new InvalidOperationException(); break;
+            case 4: if (!DatatypeValues.ValueEquals(floatValue, floatValue, Operation)) throw new InvalidOperationException(); break;
+            case 5: if (DatatypeValues.ValueHashCode(floatValue, Operation) == 0) throw new InvalidOperationException(); break;
+            case 6: if (provider.TryParse(DatatypeTypes.All["decimal"], Invalid, context, Operation, out var rejected, out var error) || rejected is not null || error != DatatypeErrors.InvalidLexical) throw new InvalidOperationException(); break;
+            case 7: if (DatatypeValues.TotalDigits(shortValue, Operation) != 9 || DatatypeValues.FractionDigits(shortValue, Operation) != 4 || DatatypeValues.ValueLength(shortValue, Operation) is not null) throw new InvalidOperationException(); break;
+            case 8: GC.KeepAlive(Parse("decimal", Short)); break;
+            case 9: GC.KeepAlive(Parse("decimal", Long)); break;
+            case 10: GC.KeepAlive(Parse("double", Float)); break;
+            case 11: GC.KeepAlive(Parse("decimal", "-0.000")); break;
+            case 12: GC.KeepAlive(new SchemaCompileOperation()); break;
+            default: throw new ArgumentOutOfRangeException(nameof(route));
+        }
+    }
+}
