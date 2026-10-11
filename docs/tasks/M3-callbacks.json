@@ -4,11 +4,11 @@
   "milestone": "M3",
   "title": "SAX data views and reusable handlers",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M3 coordinator 01a1284a-8826-7fc2-af44-74552db608f2 / M3-callbacks worker",
   "branch": "codex/m3-callbacks",
   "base_revision": "3926d127e772b0f085fca30fe86fc26c83c10ad4",
-  "integration_revision": null,
+  "integration_revision": "51edbb51f3ef06b651a43e9facebac086d35ae2e",
   "depends_on": [
     "M3-contracts",
     "M3-attribute-metadata"
@@ -40,7 +40,9 @@
         "callback-correctness",
         "compiled-api",
         "borrowed-lifetimes",
-        "borrowed-await"
+        "borrowed-await",
+        "integrated-checks",
+        "independent-review"
       ]
     },
     {
@@ -51,7 +53,9 @@
         "callback-correctness",
         "callback-allocations",
         "setup-ownership",
-        "serialized-bdn"
+        "serialized-bdn",
+        "integrated-checks",
+        "independent-review"
       ]
     },
     {
@@ -62,7 +66,9 @@
         "runtime-sample",
         "compiled-api",
         "earlier-regression",
-        "planning"
+        "planning",
+        "integrated-checks",
+        "independent-review"
       ]
     }
   ],
@@ -133,7 +139,7 @@
       "revision": "2380b0dc300f2732fbd4458b66b76d3b2640f786",
       "command": "dotnet samples/M3-callbacks/bin/Release/net10.0/Sample.dll",
       "result": "passed",
-      "summary": "Actual output: start; borrowed text Ω; end; subclass text. Null optional comment callback is a no-op; only verified runtime dependencies used.",
+      "summary": "Actual output: start; borrowed text \u03a9; end; subclass text. Null optional comment callback is a no-op; only verified runtime dependencies used.",
       "artifact": "docs/reports/M3-callbacks/verification.md"
     },
     {
@@ -160,7 +166,7 @@
       "revision": "7951a08bd16284871f0e6a885bf6bf920df9b893",
       "command": "dotnet benchmarks/Xemele.Benchmarks/bin/Release/net10.0/Xemele.Benchmarks.dll --filter '*Callbacks.CallbackBenchmarks*' --inProcess --job short --iterationCount 5 --warmupCount 5 --invocationCount 65536 --unrollFactor 1 --artifacts docs/reports/M3-callbacks/bdn --join",
       "result": "passed",
-      "summary": "Lease m3-callbacks-7951a08: prebuilt in-process run completed3/3 cases exit0 in0.82s, MemoryDiagnoser0 B for subclass/delegates/optional. Mean194.01/132.22/28.01ns per16-notification group, provisional only: delegate variance/tiering, min iteration warnings2–13ms, high-priority setup denied. No throughput advantage claim. AppleM4Pro Arm64/macOS15.8.1/.NET10.0.11 SDK10.0.400 concurrent workstation GC. Raw outputs retained.",
+      "summary": "Lease m3-callbacks-7951a08: prebuilt in-process run completed3/3 cases exit0 in0.82s, MemoryDiagnoser0 B for subclass/delegates/optional. Mean194.01/132.22/28.01ns per16-notification group, provisional only: delegate variance/tiering, min iteration warnings2\u201313ms, high-priority setup denied. No throughput advantage claim. AppleM4Pro Arm64/macOS15.8.1/.NET10.0.11 SDK10.0.400 concurrent workstation GC. Raw outputs retained.",
       "artifact": "docs/reports/M3-callbacks/bdn/Xemele.Benchmarks.Callbacks.CallbackBenchmarks-20261010-174515.log"
     },
     {
@@ -180,17 +186,34 @@
       "result": "passed",
       "summary": "Expected compiler rejection at2380b0d: collection across await CS4007; exit1 is the passing negative-test oracle.",
       "artifact": "docs/reports/M3-callbacks/verification.md"
+    },
+    {
+      "id": "integrated-checks",
+      "kind": "integration",
+      "revision": "51edbb51f3ef06b651a43e9facebac086d35ae2e",
+      "command": "Pinned Release test build --no-restore --disable-build-servers -m:1 -p:BuildInParallel=false -p:UseSharedCompilation=false; tests DLL -namespace Xemele.Tests.Callbacks -parallelMode none -showLiveOutput -noColor -result-xml /private/tmp/m3-callbacks-integrated.xml; approved ApiCheck compare runtime DLL /private/tmp/m3-combined-api.txt; python3 tools/planning/tasks.py validate",
+      "result": "passed",
+      "summary": "Combined tree Release build0 warnings/errors;6/6 callback tests pass0 failed/skipped, including all3 dispatch paths0B and positive88B. Canonical duplicate-checked API union matched639 members (writer14 plus callbacks248 and earlier377);142 tasks valid. ApiCheck initially absent in fresh integration checkout; built unchanged approved checker and comparison passed. Earlier full4916 worker suite and frozen BDN preserved; comprehensive combined suite deferred to M3 gate.",
+      "artifact": "docs/reports/M3-callbacks/integration-tests.xml"
+    },
+    {
+      "id": "independent-review",
+      "kind": "review",
+      "revision": "89afcccff316a049858038eb6b4ccaf93b6091fd",
+      "command": null,
+      "result": "passed",
+      "summary": "Read-only review_core_async_boundary: no blocking A1/A2/A3 findings.16 frozen delegate/interface/base/adapter families match, direct dispatch preserves exceptions, readonly ref models/concrete checked enumeration preserve metadata and0B wrappers. Actual callback lifetime invalidation and pump projection remain explicitly dependent shared pump obligations.",
+      "artifact": null
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Implemented frozen public callback models and16 direct handler families without public parser/pump stubs. Borrowed collection rows preserve complete/incomplete/default metadata and locations. Runtime commit2380b0d; owner probe7951a08. Awaiting integrated verification.",
+    "summary": "Implemented frozen public callback models and16 direct handler families without public parser/pump stubs. Borrowed collection rows preserve complete/incomplete/default metadata and locations. Runtime commit2380b0d; owner probe7951a08. Awaiting integrated verification. Verified combined integration at 51edbb51f3ef06b651a43e9facebac086d35ae2e.",
     "checks": [
       "Release build; focused6/6; full4916/4916; expectedCS8345/CS4007; actual sample; direct compiledAPI625/625; warm allocation0B x3 paths with positive88B; cold/retention probe; leased BDN3/3 MemoryDiagnoser0B; planning141 valid.",
       "Global discovery/API wrapper failed on existing missing corpus fixture; independent direct compiled comparison passed."
     ],
     "remaining": [
-      "Coordinator integrates and verifies; integration_revision remains null.",
       "M3-streaming-pump owns actual callback lifetime invalidation, tag/DTD projection and end-to-end allocation confirmation; x64 timing/allocation confirmation remains a release check."
     ],
     "requests": [
