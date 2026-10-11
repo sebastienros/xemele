@@ -102,3 +102,14 @@ so SearchValues/vocabulary alternatives are inapplicable. End-to-end validation
 allocation/latency confirmation is required in the DTD validation/composition lane.
 Cross-platform/hardware/AOT/trimming evidence remains a later release gate.
 Only this summary and measurement machinery are committed; raw results were transient.
+
+## Combined integration
+
+Verified combined revision `7c495266447fff73c76aee8cfce08b68db7addcb`:36focused shared-model+standalone-metadata tests pass on actual.NET10.0.11,921compiled members match,153tasks validate,Release0warnings/errors,whitespace clean. Source-only independent reviewer approved. Successful unchanged shared-model allocation evidence was reused; no remeasurement. Commands:
+
+```sh
+'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -class Xemele.Tests.M5ValidationModel.ValidationModelTests -class Xemele.Tests.ValidationMetadata.ValidationMetadataTests -noColor
+python3 docs/reports/M5-validation-model/check_api.py
+python3 tools/planning/tasks.py validate
+git diff --check
+```
