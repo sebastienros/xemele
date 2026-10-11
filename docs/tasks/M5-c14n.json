@@ -4,11 +4,11 @@
   "milestone": "M5",
   "title": "Canonical XML algorithms",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "verified",
   "owner": "M5 isolated canonicalization worker",
   "branch": "codex/m5-c14n",
   "base_revision": "7e3d4a5929023f7402fa4c0d8366bf20763344b4",
-  "integration_revision": null,
+  "integration_revision": "91f7efb0eb4eb85f1c0973eb9faccb2c4be5a5c5",
   "depends_on": [
     "M5-contracts",
     "M5-canonical-provenance"
@@ -34,31 +34,106 @@
     {
       "id": "M5-c14n-A1",
       "description": "Implement inclusive 1.0/1.1 and exclusive canonicalization for complete documents and selected XPath items.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "focused-preservation",
+        "api-sample",
+        "allocation-benchmark",
+        "source-review",
+        "integration-verification"
+      ]
     },
     {
       "id": "M5-c14n-A2",
       "description": "Byte-exact tests cover namespace inheritance, xml attributes, comments, prefix lists and invalid node sets.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "focused-preservation",
+        "api-sample",
+        "allocation-benchmark",
+        "source-review",
+        "integration-verification"
+      ]
     },
     {
       "id": "M5-c14n-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "focused-preservation",
+        "api-sample",
+        "allocation-benchmark",
+        "source-review",
+        "integration-verification"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Serialization/Canonicalization/XmlCanonicalizer.cs: complete/exact-selected Inclusive10, Inclusive11, Exclusive10 preflight, namespace/XML context, stream output and mutation guards",
+    "src/Xemele/Serialization/Canonicalization/BaseReferences.cs: modified RFC3986 C14N11 xml:base joins",
+    "src/Xemele/Serialization/Canonicalization/CanonicalEscapes.cs: borrowed UTF8 scalar encoding and canonical escapes",
+    "tests/Xemele.Tests/M5-c14n/CanonicalizationTests.cs:63 focused byte/preflight/resource/mutation cases plus six fixture vectors",
+    "docs/api/M5-c14n.txt and samples/M5-c14n/: frozen public API and exact all-mode sample",
+    "benchmarks/Xemele.Benchmarks/M5-c14n/Probe.cs.fixture: controlled separate allocation scopes and12 declared ShortRunNoEmit cases"
+  ],
+  "evidence": [
+    {
+      "id": "focused-preservation",
+      "kind": "check",
+      "revision": "8528b1b48756ac6cdb873b69f335b4326d3d8db1",
+      "command": "pinned dotnet --fx-version10.0.11 tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -noColor -noLogo -namespace Xemele.Tests.M5C14n -namespace Xemele.Tests.M5CanonicalProvenance -namespace Xemele.Tests.Tree -namespace Xemele.Tests.Recovery -namespace 'Xemele.Tests.M4*' -namespace Xemele.Tests.AsyncInput -namespace Xemele.Tests.M5ValidationModel -namespace Xemele.Tests.ValidationMetadata -method- Xemele.Tests.Tree.TreeTests.WarmTraversalAndRepeatedNameInternProbesAllocateNothing",
+      "result": "passed",
+      "summary": "Release build0warnings/errors;63focused plus582total selected preservation tests pass actual.NET10.0.11; Tree allocation regression explicitly excluded.",
+      "artifact": "docs/reports/M5-c14n/checks.md"
+    },
+    {
+      "id": "api-sample",
+      "kind": "check",
+      "revision": "8528b1b48756ac6cdb873b69f335b4326d3d8db1",
+      "command": "approved compiled API checker + pinned Release sample/direct --fx-version10.0.11 and expected output diff",
+      "result": "passed",
+      "summary": "944compiled members match fullAPI union; sampleRelease0warnings/errors and exactexpected diffpass.",
+      "artifact": "docs/reports/M5-c14n/checks.md"
+    },
+    {
+      "id": "allocation-benchmark",
+      "kind": "check",
+      "revision": "8528b1b48756ac6cdb873b69f335b4326d3d8db1",
+      "command": "python3 docs/reports/M5-c14n/run_measurements.py --exclusive-grant",
+      "result": "passed",
+      "summary": "Single exclusive grant passed allocation/12BDN cases; borrowed32warm/32steady\u00d7512groups\u00d73encodes0B each batch+whole; positiveinclusive BDN dash2640/2640/672 preserved; preflight/result/retained domains separatelyreported; initial/finalidentity0,nochildtrue.",
+      "artifact": "docs/reports/M5-c14n/performance.md"
+    },
+    {
+      "id": "source-review",
+      "kind": "review",
+      "revision": "86d201877172af32c0afee7a511bb82b281bf8dc",
+      "command": "Independent canonical source-only reviewer and coordinator diff review at86d201877172af32c0afee7a511bb82b281bf8dc",
+      "result": "passed",
+      "summary": "Both1.1section2.4base corrections and namespace consistency preflight reviewed; W3C3.8E11-01 explicitlypinned; no remaining concrete defects.",
+      "artifact": "docs/reports/M5-c14n/checks.md"
+    },
+    {
+      "id": "integration-verification",
+      "kind": "integration",
+      "revision": "91f7efb0eb4eb85f1c0973eb9faccb2c4be5a5c5",
+      "command": "Release server-disabled no-restore test build; explicit --fx-version10.0.11 xunit namespace selection M5C14n/M5DtdModel/DtdDeclarationProvenance/M5CanonicalProvenance/Tree/Recovery/M4*/AsyncInput/M5ValidationModel/ValidationMetadata excluding Tree allocation method; python3 docs/reports/M5-validation-model/check_api.py; python3 tools/planning/tasks.py validate",
+      "result": "passed",
+      "summary": "Clean build;668 tests pass no failures/skips/notrun;944API members match;155taskgraph validates. Source reviewer approved86d2018 resolving both C14N11section2.4 blockers, officialE11-01corrected3.8 and namespace consistency. Root independently inspected exact32warm+32steadyzero encoder batches, caller/owned inclusive bytes, all12GCnumerators/denominators, actual.NET10.0.11Arm64 and79.58s tables; noallocationmethodoutsidelease.",
+      "artifact": "docs/reports/M5-c14n/performance.md"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Reclaimed after verified canonical provenance integration; preserved independent WIP c8a3ae0 resumes only on verified inputs.",
-    "checks": [],
-    "remaining": [
-      "Complete canonical algorithms and owned focused tests/API/sample/allocation evidence."
+    "summary": "Implemented three exact canonical algorithms with complete-source/revision guards;63focused/582preservation tests,944API,exactsample and controlled allocation/12ShortRun cases pass.",
+    "checks": [
+      "Release builds0warnings/errors actual.NET10.0.11",
+      "63focused and582preservation tests; Tree allocation test excluded",
+      "944compiledAPI match; all-mode sample exactbytes",
+      "Exclusive allocation/12caseShortRun exit0; initial/finalclosure0,nochildren",
+      "tasks.py validate153records"
     ],
+    "remaining": [],
     "requests": []
   }
 }
