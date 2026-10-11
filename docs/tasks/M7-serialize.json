@@ -37,7 +37,9 @@
       "description": "Implement legacy and HTML5 output escaping, void/raw-text and fragment serialization behavior.",
       "status": "passed",
       "evidence": [
-        "correctness-and-earlier"
+        "correctness-and-earlier",
+        "hybrid-correctness-and-earlier",
+        "hybrid-api-and-sample"
       ]
     },
     {
@@ -46,7 +48,9 @@
       "status": "passed",
       "evidence": [
         "correctness-and-earlier",
-        "official-api"
+        "official-api",
+        "hybrid-correctness-and-earlier",
+        "hybrid-api-and-sample"
       ]
     },
     {
@@ -61,7 +65,10 @@
         "identity-controls",
         "measurement-awaiting-grant",
         "first-measured-allocation",
-        "first-measured-timing-timeout"
+        "first-measured-timing-timeout",
+        "hybrid-correctness-and-earlier",
+        "hybrid-api-and-sample",
+        "hybrid-prepared-selection"
       ]
     }
   ],
@@ -144,6 +151,33 @@
       "result": "failed",
       "summary": "Wrapper124/BDNTimeoutExpired750s.87completed/88started of94:60Escape+18OutputCSV+9Booleanraw; unfinishedLinear(selecte)warmup2,7Booleanmissing. Completedidentities/stats/GCnumdenom preservedsummary; no94assertion or finalsourceclaim. Coordinatorreview approves one16charprefix/textonlycached correction and49selectedfinalcases; no rerun/tuning authorized without freshgrant.",
       "artifact": "docs/reports/M7-serialize/first-measurement-summary.json"
+    },
+    {
+      "id": "hybrid-correctness-and-earlier",
+      "kind": "check",
+      "revision": "a7022f44247f51d7201bf930e45856fcf2acadb3",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -namespace Xemele.Tests.HtmlSerialization -namespace Xemele.Tests.LegacyHtml -namespace Xemele.Tests.HtmlTreeConstruction -namespace Xemele.Tests.HtmlTokenization -namespace Xemele.Tests.HtmlModel -namespace Xemele.Tests.HtmlProcessingInstructions -namespace Xemele.Tests.HtmlParsedText -namespace Xemele.Tests.Serialization -noLogo -noColor -result-xml artifacts/M7-serialize/final-a7022f4-tests.xml",
+      "result": "passed",
+      "summary": "1622/1622Pass;0errors/failures/skips/notrun;916serializer including10prefix/chunkstate theories; all earlier selectedidentities preserved; .NET10.0.11Arm64. Tests/probe/sample offlineReleasebuilds0warnings/errors.",
+      "artifact": "docs/reports/M7-serialize/measurements.md"
+    },
+    {
+      "id": "hybrid-api-and-sample",
+      "kind": "check",
+      "revision": "a7022f44247f51d7201bf930e45856fcf2acadb3",
+      "command": "python3 -B docs/reports/M7-serialize/check_api.py; '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 samples/M7-serialize/bin/Release/net10.0/M7-serialize.dll",
+      "result": "passed",
+      "summary": "Official1253compiled declarations/1235unchanged/18frozen,3388fixtureSHA/bootstrapFalse,missing-added-changednegativecontrols,0newcopies; actualpublicsample3APIs/bothmodes/outer/template/fragment/UTF8/XML pass.",
+      "artifact": "docs/api/M7-serialize.txt"
+    },
+    {
+      "id": "hybrid-prepared-selection",
+      "kind": "check",
+      "revision": "a7022f44247f51d7201bf930e45856fcf2acadb3",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 benchmarks/Xemele.Benchmarks/M7-serialize/bin/Release/net10.0/Xemele.Benchmarks.dll --verify; '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 benchmarks/Xemele.Benchmarks/M7-serialize/bin/Release/net10.0/Xemele.Benchmarks.dll --inputs artifacts/M7-serialize/inputs.json; '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 benchmarks/Xemele.Benchmarks/M7-serialize/bin/Release/net10.0/Xemele.Benchmarks.dll --discover-final artifacts/M7-serialize/final-discover",
+      "result": "passed",
+      "summary": "Correctness-only106available/49selected semantics incl scalarprefix/bulk offsets/state-specificstops/Unicode/UTF8 exacthash. Exactly49NoEmit3warmup3actual1launch:12Production+12BorrowedEscapedOutput+18Output+7missingBoolean identities. No counters/BDN.1550splan130sreserveincludesfinalidentity45+cleanup; phasecaps45+150+1200+130=1525 fit.",
+      "artifact": "benchmarks/Xemele.Benchmarks/M7-serialize/Probe.cs.fixture"
     }
   ],
   "blockers": [],
@@ -153,10 +187,12 @@
       "Pinned offlineRelease0warnings/errors;1612combined/906serializer tests pass;640native graphs+directvector028/all230originaldispositions/exactWPT assertion.",
       "Official1253API/1235unchanged/18frozen additions/3388fixtureSHA/3negativecontrols and publicsample pass.",
       "Correctness-only94case probe/discovery/actualinputs; exactwrapper0/unknownenv1/0/nochild; manifest8c3da026 source3941binary150runtime3852; no counters/BDN.",
-      "Planning169/diffcheck pass before handoff; final validation command recorded in own report."
+      "Planning169/diffcheck pass before handoff; final validation command recorded in own report.",
+      "Correctedruntimea7022f4:1622tests/916serializer/API1253/sample/exact49selected discovery pass;0warning/error builds.",
+      "Firstmeasuredallocation231rows/214zeros and87timings preserved;750sBDNtimeout explicitlyfailed; no finalmeasurements."
     ],
     "remaining": [
-      "Validate corrected runtime/API/sample/probe and exact49selected identities; return committedsource/plan forreview BEFOREcontrols.",
+      "Coordinator review committedsource/49selection/plan before exactidentitycontrols and freshgrant; no workloads yet.",
       "After review refresh completeexactwrapper0/unknownenv1/0 andclosure; freshPARK/inventory/durable1550sgrant required before singlefinalwrapper.",
       "Reportlifecycle then await durableRELEASE beforeinspection; recordactualfinalsourceallocation/49timings plus unchanged9earlierBooleancases; markimplemented onlywhen allrequiredchecks pass."
     ],

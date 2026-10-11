@@ -82,7 +82,8 @@ Final selection is49 cases:12 production text scans,12 changed borrowed escapes,
 an explicit reference; completed baseline/candidate and9 Boolean cases are
 preserved rather than rerun unchanged. Full allocation sequence must run again
 for changed product source. Plan maximum1550s:identity45/allocation150/BDN1200/
-identity45 with130s cleanup reserve fits the total. No final grant or result is
+identity45. The130s reserve includes final identity45 and owned cleanup;
+initial45+allocation150+BDN1200+reserve130=1525s fits1550s. No final grant or result is
 claimed by this preparation section.
 
 ## Preparatory process cleanup correction
@@ -96,3 +97,11 @@ verified those exact PID/PPID/commands and sent SIGTERM only to PGID26204;
 final scoped inventory was empty. Parent/shared services were untouched, no
 SIGKILL was used in this preparatory cleanup. Fresh PARK/inventory preceded
 the real grant. No source/binary/environment identity changed in that cleanup.
+
+Corrected source/probe/test revision `a7022f44247f51d7201bf930e45856fcf2acadb3`:
+all1622 focused combined tests pass (916serializer,0errors/failures/skips/notrun),
+including10 prefix/chunk-boundary state theories and all prior selected tests.
+Official1253API,3388fixtureSHA/negativecontrols and publicsample pass; all three
+offline Release builds0warnings/errors. Correctness-only probe and actualinputs
+pass; discovery exactly49 reviewed identities:24Escape/18Output/7Boolean. No
+final measurement, counters or identity controls have run at this checkpoint.
