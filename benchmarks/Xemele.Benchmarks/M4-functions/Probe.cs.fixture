@@ -1,0 +1,149 @@
+using System.Globalization;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using System.Security.Cryptography;
+using System.Text.Json;
+using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Configs;
+using BenchmarkDotNet.Jobs;
+using BenchmarkDotNet.Running;
+using BenchmarkDotNet.Toolchains.InProcess.NoEmit;
+using Xemele;
+using Xemele.XPath;
+using Xemele.XPath.Internal;
+
+if (args is [var benchmarkMode, var artifacts] && benchmarkMode is "--benchmark" or "--discover")
+{
+    var config = ManualConfig.Create(DefaultConfig.Instance).WithArtifactsPath(artifacts)
+        .AddJob(Job.Default.WithToolchain(InProcessNoEmitToolchain.Instance).AsMutator());
+    var suites = new[]{typeof(NumericBenchmarks),typeof(ScalarBenchmarks),typeof(OwnedBenchmarks)}
+        .Select(t=>BenchmarkConverter.TypeToBenchmarks(t,config)).ToArray();
+    var cases = suites.SelectMany(s=>s.BenchmarksCases).ToArray();
+    if (cases.Length != 13 || cases.Any(c=>c.Job.Run.WarmupCount!=3 || c.Job.Run.IterationCount!=3 || c.Job.Run.LaunchCount!=1 || c.Job.Infrastructure.Toolchain!=InProcessNoEmitToolchain.Instance)
+        || cases.Select(c=>c.Job.Id).Distinct().Count()!=1) throw new InvalidOperationException("Exactly thirteen cases in one declared ShortRun NoEmit job required.");
+    Console.WriteLine("Functions discovery: 13 cases; one ShortRun job; InProcessNoEmit; warmup=3/iterations=3/launch=1; no generation/build.");
+    if (benchmarkMode == "--discover") return;
+    var summaries = BenchmarkRunner.Run(suites);
+    if (summaries.Sum(s=>s.Reports.Length)!=13 || summaries.SelectMany(s=>s.Reports).Any(r=>!r.Success || r.ResultStatistics is null)) throw new InvalidOperationException("Thirteen successful reports required.");
+    return;
+}
+if (args is not [var mode,var output] || mode is not ("--control" or "--allocation")) throw new ArgumentException("Use --control|--allocation <output> or --discover|--benchmark <artifacts>.");
+bool measure = mode == "--allocation";
+long[] warmDistribution = new long[128], measuredDistribution = new long[128];
+long start = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+var fixture = new FunctionFixture();
+long coldSetupBytes = measure ? GC.GetAllocatedBytesForCurrentThread()-start : 0;
+fixture.Controls();
+start = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+double warmConsumed = 0;
+for (int i=0;i<128;i++) warmConsumed += Batch(fixture,measure,out warmDistribution[i]);
+long warmBytes = measure ? GC.GetAllocatedBytesForCurrentThread()-start : 0;
+start = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+double consumed = 0;
+for (int i=0;i<128;i++) consumed += Batch(fixture,measure,out measuredDistribution[i]);
+long primitiveBytes = measure ? GC.GetAllocatedBytesForCurrentThread()-start : 0;
+start = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+object positive = new byte[1024]; GC.KeepAlive(positive);
+long positiveBytes = measure ? GC.GetAllocatedBytesForCurrentThread()-start : 0;
+for(int i=0;i<16;i++){fixture.Format();fixture.Transform();fixture.Ids();}
+start = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+for(int i=0;i<256;i++) GC.KeepAlive(fixture.Format());
+long ownedStringBytes = measure ? GC.GetAllocatedBytesForCurrentThread()-start : 0;
+start = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+for(int i=0;i<256;i++) GC.KeepAlive(fixture.Transform());
+long transformBytes = measure ? GC.GetAllocatedBytesForCurrentThread()-start : 0;
+start = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+for(int i=0;i<256;i++) GC.KeepAlive(fixture.Ids());
+long ownedSetBytes = measure ? GC.GetAllocatedBytesForCurrentThread()-start : 0;
+fixture.Controls();
+File.WriteAllText(output,JsonSerializer.Serialize(new{mode,runtime=RuntimeInformation.FrameworkDescription,architecture=RuntimeInformation.ProcessArchitecture.ToString(),os=RuntimeInformation.OSDescription,
+    revision=Environment.GetEnvironmentVariable("XEMELE_FUNCTIONS_REVISION"),assemblySha256=Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(typeof(XPathValue).Assembly.Location))),
+    batches=128,groupsPerBatch=256,operations=32768,coldSetupBytes,warmBytes,warmDistribution,measuredDistribution,primitiveBytes,positiveBytes,ownedOperations=256,ownedStringBytes,transformBytes,ownedSetBytes,warmConsumed,consumed},new JsonSerializerOptions{WriteIndented=true}));
+if(consumed!=32768*1018.5 || warmConsumed!=consumed) throw new InvalidOperationException("Consumed result mismatch.");
+if(measure && (primitiveBytes!=0 || positiveBytes<=0 || ownedStringBytes<=0 || transformBytes<=0 || ownedSetBytes<=0)) throw new InvalidOperationException($"Allocation control failed: {primitiveBytes}/{positiveBytes}/{ownedStringBytes}/{transformBytes}/{ownedSetBytes}.");
+Console.WriteLine($"{mode} complete: consumed={consumed}; batches=128; groups=256; counters {(measure?"enabled":"disabled")}");
+[MethodImpl(MethodImplOptions.NoInlining)]
+static double Batch(FunctionFixture fixture,bool measure,out long bytes)
+{
+    long start = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+    double consumed = fixture.PrimitiveBatch();
+    bytes = measure ? GC.GetAllocatedBytesForCurrentThread()-start : 0; return consumed;
+}
+internal sealed class FunctionFixture : IXPathNavigator
+{
+    private readonly XPathCoreFunctions library = new();
+    private readonly XPathBudget budget = new(new(){MaxOperations=null},default,default);
+    private readonly XPathFocus focus;
+    private readonly XPathItem[] selected;
+    internal readonly string Short=" \t-12.5\n", Long=new string('9',400), Invalid="+1e3", Ascii="abca", Unicode=new string('根',1024)+"😀";
+    private readonly XPathValue[] shortArgs,longArgs,invalidArgs,unicodeArgs,containsArgs,booleanArgs,roundArgs,formatArgs,transformArgs,idArgs;
+    internal FunctionFixture()
+    {
+        var d=new XmlDocument();var r=d.CreateElement("r");d.DocumentNode.AppendChild(r);var item=XPathItem.FromNode(r);
+        Root=XPathItem.FromNode(d.DocumentNode);focus=new(item,1,1);selected=[item];
+        shortArgs=[XPathValue.FromString(Short)];longArgs=[XPathValue.FromString(Long)];invalidArgs=[XPathValue.FromString(Invalid)];unicodeArgs=[XPathValue.FromString(Unicode)];
+        containsArgs=[XPathValue.FromString("A😀B"),XPathValue.FromString("😀")];booleanArgs=[XPathValue.FromNumber(1)];roundArgs=[XPathValue.FromNumber(1.5)];
+        formatArgs=[XPathValue.FromNumber(double.Epsilon)];transformArgs=[XPathValue.FromString("😀a😀"),XPathValue.FromString("😀a😀"),XPathValue.FromString("🚀XQ")];idArgs=[XPathValue.FromString("one one missing")];
+    }
+    internal XPathValue Call(string name,XPathValue[] args)=>library.Invoke(XPathCoreSignatures.ByName[new("",name)],focus,args,this,budget);
+    internal double PrimitiveBatch()
+    {
+        double value=0;
+        for(int i=0;i<256;i++)
+        {
+            value+=Call("number",shortArgs).AsNumber();
+            value+=double.IsPositiveInfinity(Call("number",longArgs).AsNumber())?1:0;
+            value+=double.IsNaN(Call("number",invalidArgs).AsNumber())?1:0;
+            value+=Call("string-length",unicodeArgs).AsNumber();
+            value+=Call("contains",containsArgs).AsBoolean()?1:0;
+            value+=Call("boolean",booleanArgs).AsBoolean()?1:0;
+            value+=Call("round",roundArgs).AsNumber();
+        }
+        return value;
+    }
+    internal string Format()=>Call("string",formatArgs).AsString();
+    internal string Transform()=>Call("translate",transformArgs).AsString();
+    internal IReadOnlyList<XPathItem> Ids()=>Call("id",idArgs).AsNodeSet();
+    internal void Controls()
+    {
+        if(PrimitiveBatch()!=256*1018.5 || Transform()!="🚀X🚀" || Ids().Count!=1 || Format()!=XPathValue.FromNumber(double.Epsilon).AsString()) throw new InvalidOperationException("Semantic controls failed.");
+        foreach(string text in new[]{Short,Long,Invalid,"-.5"," 1","1.","",new string('0',2048)+"1"})
+        {
+            var args=new[]{XPathValue.FromString(text)};
+            if(BitConverter.DoubleToInt64Bits(Call("number",args).AsNumber())!=BitConverter.DoubleToInt64Bits(XPathConversions.ParseNumber(text))) throw new InvalidOperationException("Numeric oracle mismatch.");
+        }
+        try{Call("string-length",[XPathValue.FromString("\ud800")]);throw new InvalidOperationException("Invalid Unicode accepted.");}catch(XPathEvaluationException e) when(e.Diagnostic.Code=="XPATH-TYPE"){}
+    }
+    public XPathItem Root{get;}
+    public IReadOnlyList<XPathItem> SelectAxis(XPathItem item,XPathAxis axis,IXPathBudget budget)=>throw new NotSupportedException();
+    public int CompareDocumentOrder(XPathItem left,XPathItem right,IXPathBudget budget){budget.ChargeOperations(2);return 0;}
+    public IReadOnlyList<XPathItem> SelectId(string id,IXPathBudget budget){budget.ChargeOperations(1);return id=="one"?selected:Array.Empty<XPathItem>();}
+    public string? FindLanguage(XPathItem item,IXPathBudget budget)=>throw new NotSupportedException();
+}
+[MemoryDiagnoser, ShortRunJob]
+public class NumericBenchmarks
+{
+    private FunctionFixture fixture=null!;private XPathValue[] args=null!;private string text=null!;
+    [Params("Short","Long","Invalid")] public string Scenario{get;set;}="Short";
+    [GlobalSetup] public void Setup(){fixture=new();text=Scenario switch{"Short"=>fixture.Short,"Long"=>fixture.Long,_=>fixture.Invalid};args=[XPathValue.FromString(text)];fixture.Controls();}
+    [Benchmark(Baseline=true)] public double Borrowed()=>fixture.Call("number",args).AsNumber();
+    [Benchmark] public double OwnedCopy()=>fixture.Call("number",[XPathValue.FromString(new string(text.AsSpan()))]).AsNumber();
+}
+[MemoryDiagnoser, ShortRunJob]
+public class ScalarBenchmarks
+{
+    private FunctionFixture fixture=null!;private XPathValue[] args=null!;private string text=null!;
+    [Params("Ascii","Unicode")] public string Scenario{get;set;}="Ascii";
+    [GlobalSetup] public void Setup(){fixture=new();text=Scenario=="Ascii"?fixture.Ascii:fixture.Unicode;args=[XPathValue.FromString(text)];fixture.Controls();}
+    [Benchmark(Baseline=true)] public double Borrowed()=>fixture.Call("string-length",args).AsNumber();
+    [Benchmark] public double OwnedCopy()=>fixture.Call("string-length",[XPathValue.FromString(new string(text.AsSpan()))]).AsNumber();
+}
+[MemoryDiagnoser, ShortRunJob]
+public class OwnedBenchmarks
+{
+    private FunctionFixture fixture=null!;
+    [GlobalSetup] public void Setup(){fixture=new();fixture.Controls();}
+    [Benchmark] public string NumberString()=>fixture.Format();
+    [Benchmark] public string Translate()=>fixture.Transform();
+    [Benchmark] public object IdSet()=>fixture.Ids();
+}

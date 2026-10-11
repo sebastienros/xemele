@@ -98,8 +98,8 @@ internal sealed class XPathCoreFunctions : IXPathFunctionLibrary
                 result = core.Name.LocalName switch
                 {
                     "starts-with" or "contains" => XPathValue.FromBoolean(at >= 0),
-                    "substring-before" => XPathValue.FromString(at < 0 ? "" : Copy(text.AsSpan(0, at), budget)),
-                    "substring-after" => XPathValue.FromString(at < 0 ? "" : Copy(text.AsSpan(at + search.Length), budget)),
+                    "substring-before" => XPathValue.FromString(at < 0 ? "" : Copy(text, 0, at, budget)),
+                    "substring-after" => XPathValue.FromString(at < 0 ? "" : Copy(text, at + search.Length, text.Length - at - search.Length, budget)),
                     _ => throw new InvalidOperationException("Core signature inventory mismatch.")
                 };
                 break;
@@ -221,10 +221,33 @@ internal sealed class XPathCoreFunctions : IXPathFunctionLibrary
         if (!char.IsLowSurrogate(second)) throw TypeError();
         return char.ConvertToUtf32(first, second);
     }
+    private static string Copy(string text, int start, int length, IXPathBudget budget)
+    {
+        budget.CheckStringSize(length);
+        return string.Create(length, (text, start, budget), static (target, state) =>
+        {
+            for (int i = 0; i < target.Length; i++)
+            { state.budget.ChargeOperations(1); target[i] = state.text[state.start + i]; }
+        });
+    }
     private static string Copy(ReadOnlySpan<char> value, IXPathBudget budget)
     {
-        budget.CheckStringSize(value.Length); ChargeCharacters(value.Length, budget);
-        return value.ToString();
+        budget.CheckStringSize(value.Length);
+        // This overload only consumes fixed-size formatting scratch. The runtime
+        // copy is bounded to <=256 units; longer binary64 decimal expansions use
+        // an explicitly owned, polled intermediate and polled final fill.
+        if (value.Length <= 256)
+        {
+            ChargeCharacters(value.Length, budget); budget.ChargeOperations(0);
+            string result = value.ToString(); budget.ChargeOperations(0); return result;
+        }
+        var owned = new char[value.Length];
+        for (int i = 0; i < value.Length; i++) { budget.ChargeOperations(1); owned[i] = value[i]; }
+        return string.Create(owned.Length, (owned, budget), static (target, state) =>
+        {
+            for (int i = 0; i < target.Length; i++)
+            { state.budget.ChargeOperations(1); target[i] = state.owned[i]; }
+        });
     }
     private static string Format(double value, IXPathBudget budget)
     {
@@ -311,7 +334,7 @@ internal sealed class XPathCoreFunctions : IXPathFunctionLibrary
             int before = at; ReadScalar(text, ref at, budget);
             if (position >= first && position < end) { if (begin < 0) begin = before; finish = at; }
         }
-        return begin < 0 ? "" : Copy(text.AsSpan(begin, finish - begin), budget);
+        return begin < 0 ? "" : Copy(text, begin, finish - begin, budget);
     }
     private static string Normalize(string text, IXPathBudget budget)
     {
@@ -369,7 +392,7 @@ internal sealed class XPathCoreFunctions : IXPathFunctionLibrary
     }
     private static XPathValue Id(XPathValue argument, IXPathNavigator navigator, IXPathBudget budget)
     {
-        var result = new List<XPathItem>();
+        var result = new SnapshotItems();
         if (argument.Kind == XPathValueKind.NodeSet)
         {
             var nodes = Nodes(argument, budget);
@@ -378,7 +401,7 @@ internal sealed class XPathCoreFunctions : IXPathFunctionLibrary
         else AddIds(Text(argument, budget), result, navigator, budget);
         return XPathValue.FromSnapshotNodeSet(result, budget);
     }
-    private static void AddIds(string text, List<XPathItem> result, IXPathNavigator navigator, IXPathBudget budget)
+    private static void AddIds(string text, SnapshotItems result, IXPathNavigator navigator, IXPathBudget budget)
     {
         Scan(text, budget);
         for (int i = 0; i < text.Length;)
@@ -387,7 +410,7 @@ internal sealed class XPathCoreFunctions : IXPathFunctionLibrary
             if (XPathConversions.IsSpace(text[i])) { i++; continue; }
             int start = i++;
             while (i < text.Length) { budget.ChargeOperations(1); if (XPathConversions.IsSpace(text[i])) break; i++; }
-            string token = Copy(text.AsSpan(start, i - start), budget);
+            string token = Copy(text, start, i - start, budget);
             budget.ChargeOperations(1);
             var selected = navigator.SelectId(token, budget);
             budget.ChargeOperations(0); budget.CheckNodeSetSize(selected.Count);
@@ -405,11 +428,30 @@ internal sealed class XPathCoreFunctions : IXPathFunctionLibrary
                     if (order < 0) { insert = k; break; }
                 }
                 if (duplicate) continue;
-                if (result.Count == int.MaxValue) throw LimitError();
-                budget.CheckNodeSetSize(result.Count + 1);
-                ChargeCharacters(result.Count - insert + 1, budget); // shifted/copied entries
-                result.Insert(insert, item);
+                result.Insert(insert, item, budget);
             }
         }
+    }
+    // Exact-size scratch avoids List.Insert's opaque growth/shift copies. Every
+    // identity moves through a charged, polled write; no live topology is read.
+    private sealed class SnapshotItems : IReadOnlyList<XPathItem>
+    {
+        private XPathItem[] items = [];
+        public int Count => items.Length;
+        public XPathItem this[int index] => items[index];
+        internal void Insert(int index, XPathItem item, IXPathBudget budget)
+        {
+            if (items.Length == int.MaxValue) throw LimitError();
+            budget.CheckNodeSetSize(items.Length + 1);
+            var next = new XPathItem[items.Length + 1];
+            for (int i = 0; i < next.Length; i++)
+            {
+                budget.ChargeOperations(i == index ? 1 : 2); // inspected/copied entry
+                next[i] = i == index ? item : items[i < index ? i : i - 1];
+            }
+            budget.ChargeOperations(0); items = next;
+        }
+        public IEnumerator<XPathItem> GetEnumerator() => ((IEnumerable<XPathItem>)items).GetEnumerator();
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() => GetEnumerator();
     }
 }

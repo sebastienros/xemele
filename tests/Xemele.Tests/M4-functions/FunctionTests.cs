@@ -282,6 +282,52 @@ public sealed class FunctionTests
         }
     }
 
+    [Fact]
+    public void CancellationOccursInsideSubstringAndIdTokenFillAndIdGrowthCopies()
+    {
+        foreach(string name in new[]{"substring","substring-before","substring-after"})
+        {
+            using var source=new CancellationTokenSource();
+            var budget=new CancelInCopyBudget(source,stringSize:512);
+            XPathValue[] args=name switch
+            {
+                "substring"=>[S(new string('a',4096)),N(100),N(512)],
+                "substring-before"=>[S(new string('a',512)+"!"+new string('b',1024)),S("!")],
+                _=>[S(new string('a',1024)+"!"+new string('b',512)),S("!")]
+            };
+            Assert.Throws<OperationCanceledException>(()=>Invoke(name,args,budget));
+            Assert.True(budget.Armed);Assert.InRange(budget.CopyOperations,256,257);
+        }
+        using(var tokenSource=new CancellationTokenSource())
+        {
+            int callbacks=0;fixture.OnCallback=()=>callbacks++;
+            var budget=new CancelInCopyBudget(tokenSource,stringSize:2048);
+            Assert.Throws<OperationCanceledException>(()=>Invoke("id",[S(new string('a',2048)+" "+new string('b',2048))],budget));
+            Assert.Equal(0,callbacks);Assert.InRange(budget.CopyOperations,256,257);
+        }
+        var d=new XmlDocument();var r=d.CreateElement("r");d.DocumentNode.AppendChild(r);
+        var items=new XPathItem[1024];
+        for(int i=0;i<items.Length;i++){var node=d.CreateElement("x");r.AppendChild(node);items[i]=XPathItem.FromNode(node);}
+        // The navigator returns a frozen set; result growth reaches 512 entries
+        // before the deterministic budget cancels while copying its new storage.
+        fixture.All=items;fixture.IdOverride=items;fixture.OnCallback=null;
+        using var growthSource=new CancellationTokenSource();var growth=new CancelInCopyBudget(growthSource,nodeSize:512);
+        Assert.Throws<OperationCanceledException>(()=>Invoke("id",[S("one")],growth));
+        Assert.True(growth.Armed);Assert.InRange(growth.CopyOperations,256,258);
+    }
+    private sealed class CancelInCopyBudget(CancellationTokenSource source,int? stringSize=null,int? nodeSize=null) : IXPathBudget
+    {
+        internal bool Armed;internal long CopyOperations;
+        public CancellationToken CancellationToken=>source.Token;
+        public void ChargeOperations(long amount)
+        {
+            source.Token.ThrowIfCancellationRequested();
+            if(Armed){CopyOperations+=amount;if(CopyOperations>=256)source.Cancel();}
+        }
+        public void CheckStringSize(int count){source.Token.ThrowIfCancellationRequested();if(count==stringSize)Armed=true;}
+        public void CheckNodeSetSize(int count){source.Token.ThrowIfCancellationRequested();if(count==nodeSize)Armed=true;}
+    }
+
     internal sealed class Fixture : IXPathNavigator
     {
         internal XPathItem X1,X2,Y,A1,A2,IdText1,IdText2;
@@ -305,7 +351,13 @@ public sealed class FunctionTests
         internal void RemoveLiveNodes(){X1.Node!.Value.Remove();X2.Node!.Value.Remove();}
         public IReadOnlyList<XPathItem> SelectAxis(XPathItem item,XPathAxis axis,IXPathBudget budget)=>throw new NotSupportedException();
         public int CompareDocumentOrder(XPathItem left,XPathItem right,IXPathBudget budget)
-        {budget.ChargeOperations(2);return Array.IndexOf(All,left).CompareTo(Array.IndexOf(All,right));}
+        {
+            int leftAt=-1,rightAt=-1;
+            for(int i=0;i<All.Length && (leftAt<0 || rightAt<0);i++)
+            {budget.ChargeOperations(2);if(All[i]==left)leftAt=i;if(All[i]==right)rightAt=i;}
+            if(leftAt<0 || rightAt<0)throw new ArgumentException("Foreign snapshot item.");
+            return leftAt.CompareTo(rightAt);
+        }
         public IReadOnlyList<XPathItem> SelectId(string id,IXPathBudget budget)
         {budget.ChargeOperations(1);if(Failure is not null)throw Failure;OnCallback?.Invoke();return IdOverride??(id switch{"one"=>new[]{X1},"two"=>new[]{X2},_=>Array.Empty<XPathItem>()});}
         public string? FindLanguage(XPathItem item,IXPathBudget budget)
