@@ -4,11 +4,11 @@
   "milestone": "M5",
   "title": "Freeze validation and canonicalization contracts",
   "kind": "contract",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M5 coordinator isolated contracts worker",
   "branch": "codex/m5-contracts",
   "base_revision": "ed0104e2b80eddb8aa77f5768284aae4d8efd075",
-  "integration_revision": null,
+  "integration_revision": "e10170f4c913d7de607773e59eda66ffa9afc4ed",
   "depends_on": [
     "M4-gate"
   ],
@@ -33,7 +33,8 @@
       "description": "Specify shared validation results/options, DTD association and canonical node-set/algorithm semantics.",
       "status": "passed",
       "evidence": [
-        "contract-decisions"
+        "contract-decisions",
+        "integrated-consumers"
       ]
     },
     {
@@ -41,7 +42,8 @@
       "description": "Compile independent DTD/C14N consumers; no M6 or M8 type references.",
       "status": "passed",
       "evidence": [
-        "contract-consumers"
+        "contract-consumers",
+        "integrated-consumers"
       ]
     },
     {
@@ -51,7 +53,8 @@
       "evidence": [
         "contract-consumers",
         "planning",
-        "checker-integration-option"
+        "checker-integration-option",
+        "integrated-consumers"
       ]
     }
   ],
@@ -101,20 +104,36 @@
       "result": "passed",
       "summary": "Ownership-base argument is exposed; 151 records validate; argument-only follow-up does not alter compiled fixtures/runtime.",
       "artifact": "docs/reports/M5-contracts/README.md"
+    },
+    {
+      "id": "independent-source-review",
+      "kind": "review",
+      "revision": "f93d86c3755db9c82f23087523d9ea16a10427e1",
+      "command": "Source-only independent subagent /root/m5_contract_review plus coordinator review of final diff",
+      "result": "passed",
+      "summary": "No semantic contract defects; checker integration-base applicability correction inspected and exercised on combined integration. No reviewer tests claimed.",
+      "artifact": null
+    },
+    {
+      "id": "integrated-consumers",
+      "kind": "integration",
+      "revision": "e10170f4c913d7de607773e59eda66ffa9afc4ed",
+      "command": "python3 tests/Contracts/Fixtures/M5/check.py --dotnet '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --ownership-base 1acc9f6; python3 tools/planning/tasks.py validate; git diff --check",
+      "result": "passed",
+      "summary": "Combined integration: actual .NET10.0.11 independent consumers,28+23 compiled members and4 rejecting controls;152 tasks validate; whitespace clean. Runtime/prior source unchanged.",
+      "artifact": null
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Frozen M5 contracts; two independent nonpackaged consumers and exact 51-member API baselines. Awaiting coordinator review/integration.",
+    "summary": "Verified integrated M5 contract freeze; independent DTD/C14N consumers and exact51-member compiled fixture baselines.",
     "checks": [
       "python3 tests/Contracts/Fixtures/M5/check.py --dotnet '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet'",
       "python3 tools/planning/tasks.py validate: passed (151 isolated records)",
       "git diff --check: passed",
       "check.py --help: passed at checker follow-up"
     ],
-    "remaining": [
-      "Coordinator source review, integrated consumer checks and verified task metadata; downstream full DTD/C14N correctness and allocation evidence remain their implementing tasks/gate."
-    ],
+    "remaining": [],
     "requests": [
       "M5-validation-metadata (created on coordinator main): add internal nullable ValidationStandalone/ValidationDeclarationLocation and SetValidationDeclaration in src/Xemele/Tree/ValidationMetadata/Document.ValidationMetadata.cs; call it in src/Xemele/Parsing/Dom/DomSink.cs Declaration before decoder-null return. M5-dtd-validate must depend on this ordered repair."
     ]
