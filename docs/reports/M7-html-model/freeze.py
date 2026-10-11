@@ -24,7 +24,7 @@ def capture():
         sources.extend((root/project/'obj').glob('*.json'))
         sources.extend((root/project/'obj').glob('*.props'))
         sources.extend((root/project/'obj').glob('*.targets'))
-    for directory in ['tests/Xemele.Tests/M7-html-model','tests/fixtures/M7-html-model','samples/M7-html-model','docs/reports/M7-html-model/ApiCheck']:
+    for directory in ['tests/Xemele.Tests/M7-html-model','tests/fixtures/M7-html-model','samples/M7-html-model','docs/reports/M7-html-model/ApiCheck','tests/corpora/xml']:
         sources.extend(p for p in (root/directory).rglob('*') if p.is_file() and 'bin' not in p.parts)
     sources.append(root/'docs/api/M7-html-model.txt')
     for project in ['src/Xemele','benchmarks/Xemele.Benchmarks/M7-html-model']:
