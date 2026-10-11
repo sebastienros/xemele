@@ -44,5 +44,11 @@ sealed class Delayed(byte[] bytes) : MemoryStream(bytes, false)
     public override int Read(Span<byte> buffer) => throw new InvalidOperationException("Synchronous input.");
     public override int Read(byte[] buffer, int offset, int count) => throw new InvalidOperationException("Synchronous input.");
     public override async ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default)
-    { cancellationToken.ThrowIfCancellationRequested(); await Task.Yield(); return base.Read(buffer.Span); }
+    {
+        cancellationToken.ThrowIfCancellationRequested(); await Task.Yield();
+        int count = 0;
+        while (count < buffer.Length)
+        { int value = base.ReadByte(); if (value < 0) break; buffer.Span[count++] = (byte)value; }
+        return count;
+    }
 }

@@ -61,14 +61,21 @@ public sealed class DecoderTerminalTests
         public override int Read(Span<byte> buffer)
         {
             if (AsyncOnly) throw new InvalidOperationException("Synchronous input was used.");
-            return base.Read(buffer[..Math.Min(chunk, buffer.Length)]);
+            return Fill(buffer);
         }
         public override int Read(byte[] buffer, int offset, int count) => Read(buffer.AsSpan(offset, count));
         public override async ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
             await Task.Yield();
-            return base.Read(buffer.Span[..Math.Min(chunk, buffer.Length)]);
+            return Fill(buffer.Span);
+        }
+        private int Fill(Span<byte> buffer)
+        {
+            int count = 0;
+            while (count < Math.Min(chunk, buffer.Length))
+            { int value = base.ReadByte(); if (value < 0) break; buffer[count++] = (byte)value; }
+            return count;
         }
     }
 }
