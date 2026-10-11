@@ -4,7 +4,7 @@
   "milestone": "M6",
   "title": "XInclude processing",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M6 coordinator worker M6-xinclude",
   "branch": "codex/m6-xinclude",
   "base_revision": "a0267fba4ba8dce9e79717fef248c45b4b1355a9",
@@ -35,30 +35,105 @@
     {
       "id": "M6-xinclude-A1",
       "description": "Implement XML/text includes, fallback, base/language fixup and declared shorthand/element XPointer profile.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "focused-correctness",
+        "source-review"
+      ]
     },
     {
       "id": "M6-xinclude-A2",
       "description": "Test nested/cyclic includes, partial failure semantics, encodings, budgets and original-document preservation.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "focused-correctness",
+        "source-review"
+      ]
     },
     {
       "id": "M6-xinclude-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "focused-correctness",
+        "public-sample-api",
+        "allocation-benchmark",
+        "source-review"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Resolution/XInclude/: public processor/options/result; failure-atomic captured source and private output; iterative include/fallback continuations; strict text decoder and native shared parser ledger; identity-aware selection, fixups and owned transport cleanup.",
+    "tests/Xemele.Tests/M6-xinclude/: 97 focused correctness cases; tests/fixtures/M6-xinclude/; docs/api/M6-xinclude.txt (23 members).",
+    "samples/M6-xinclude/: independent public sync/true async sample and separate owned allocation observations.",
+    "benchmarks/Xemele.Benchmarks/M6-xinclude/: six MemoryDiagnoser ShortRun cases; docs/reports/M6-xinclude/results.md: actual evidence and limitations."
+  ],
+  "evidence": [
+    {
+      "id": "focused-correctness",
+      "kind": "check",
+      "revision": "d4396d91442e13ab378dd2140b4a1ca1a11d60dc",
+      "command": "python3 docs/reports/M6-xinclude/prepare.py",
+      "result": "passed",
+      "summary": "Fresh bounded preparation: all 13 phases exit 0, noChildren true; actual .NET 10.0.11 focused namespace run 97 total, 0 failed/errors/skipped/not-run. Offline-cache restores and forced nonincremental builds used RuntimeFrameworkVersion10.0.11.",
+      "artifact": "docs/reports/M6-xinclude/results.md"
+    },
+    {
+      "id": "public-sample-api",
+      "kind": "check",
+      "revision": "d4396d91442e13ab378dd2140b4a1ca1a11d60dc",
+      "command": "python3 docs/reports/M6-xinclude/prepare.py",
+      "result": "passed",
+      "summary": "Public sample passed sync and genuinely yielding async owned output on actual .NET 10.0.11. Scoped compiled API check matched 974 = 951 inherited +23 XInclude members; six effective ShortRun NoEmit cases discovered.",
+      "artifact": "docs/reports/M6-xinclude/results.md"
+    },
+    {
+      "id": "allocation-benchmark",
+      "kind": "check",
+      "revision": "d4396d91442e13ab378dd2140b4a1ca1a11d60dc",
+      "command": "python3 docs/reports/M6-xinclude/run_measurements.py --exclusive-grant",
+      "result": "passed",
+      "summary": "Exact one execution under m6-xinclude-d4396d9; initial/final full closure identity, allocation and six BDN cases exit0; no_child true. Actual .NET10.0.11; nonzero owned allocations/GC statistics, separate cold/warm/retained/process-wide async observations and limitations recorded; raw inspected only after durable RELEASE11a5178.",
+      "artifact": "docs/reports/M6-xinclude/results.md"
+    },
+    {
+      "id": "source-review",
+      "kind": "review",
+      "revision": "d4396d91442e13ab378dd2140b4a1ca1a11d60dc",
+      "command": "Coordinator independent source-only review of d4396d9",
+      "result": "passed",
+      "summary": "Explicit continuation frames and bounded Unicode pointer/path cancellation approved; native budget/transport/framing/exception cleanup approved. No executable reviewer checks claimed.",
+      "artifact": "docs/reports/M6-xinclude/results.md"
+    },
+    {
+      "id": "planning",
+      "kind": "check",
+      "revision": "d4396d91442e13ab378dd2140b4a1ca1a11d60dc",
+      "command": "python3 tools/planning/tasks.py validate",
+      "result": "passed",
+      "summary": "Fresh preparation planning phase validated162 tasks; evidence-only metadata is validated again before handoff.",
+      "artifact": "docs/reports/M6-xinclude/results.md"
+    },
+    {
+      "id": "failed-identity-control",
+      "kind": "check",
+      "revision": "20830a58522ddcee0aeed4045b7a9e80b8e6b307",
+      "command": "python3 docs/reports/M6-xinclude/run_measurements.py --identity-control",
+      "result": "failed",
+      "summary": "Earlier20830a5 control: full child environment hash differed between sandbox capture and elevated wrapper; no measured phase ran, cleanup no children. Corrected same-context positive control passed, unknown-variable negative control rejected as expected before the frozen lease.",
+      "artifact": "docs/reports/M6-xinclude/results.md"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Reclaimed same preserved candidate after verified exact shared parser budget repair; consume only integrated dependency.",
-    "checks": [],
+    "summary": "Implemented XInclude XML/text/nested/fallback, strict encoding/pointers, private failure-atomic output, fixups/identity cycles, aggregate native/transport quotas and true async cleanup. Source d4396d9; focused97, sample, compiledunion974 and six leased BDN cases passed. Evidence-only followup; not integrated/verified.",
+    "checks": [
+      "Fresh pinned .NET10.0.11 preparation all13 phases exit0/nochildren; focused97 pass, sample trueasync pass, compiled API974=951+23, planning162.",
+      "Exact same-context identity positive and unknown-variable negative controls; single exclusive measurement initial/final closure and two measured phases exit0/nochildren.",
+      "Raw measurement statistics inspected after durable release; summaries/limitations in docs/reports/M6-xinclude/results.md."
+    ],
     "remaining": [
-      "Replace interim counting with native shared OperationBudget and validate declared encoding/finalSource; fresh focused/API/sample/harness preparation required. No measurement lease active."
+      "Coordinator must integrate and run fresh combined-tree correctness/API/regressions before verified. Cross-architecture release validation remains milestone/release scope."
     ],
     "requests": []
   }
