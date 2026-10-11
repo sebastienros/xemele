@@ -71,6 +71,9 @@ public sealed class HtmlDocument
   return node;
  }
  public HtmlNode CreateText(string value) => CreateValue(HtmlNodeKind.Text,value);
+ // Parser-only: token/input/expansion quotas have already been charged before
+ // adjacent character tokens are merged. A persisted text node is not a token.
+ internal HtmlNode CreateParsedText(string value) { ArgumentNullException.ThrowIfNull(value); return new(this,HtmlNodeKind.Text,value:value); }
  public HtmlNode CreateComment(string value) => CreateValue(HtmlNodeKind.Comment,value);
  public HtmlNode CreateProcessingInstruction(string target,string data)
  {
@@ -90,15 +93,22 @@ public sealed class HtmlDocument
   ArgumentNullException.ThrowIfNull(node); if(node.Kind==HtmlNodeKind.Document) throw new ArgumentException("Cannot import a document.",nameof(node));
   return Copy(node,deep);
  }
- internal HtmlNode Copy(HtmlNode node,bool deep)
+ internal HtmlNode Copy(HtmlNode node,bool deep) => CopyCore(node,deep,false);
+ internal HtmlNode ImportParsed(HtmlNode node,bool deep=true)
  {
-  var copy=CopyShallow(node);
-  if(deep) { var work=new Stack<(HtmlNode Source,HtmlNode Target)>(); work.Push((node,copy)); while(work.TryPop(out var pair)) { foreach(var child in pair.Source.Children) {var c=CopyShallow(child); pair.Target.AppendChild(c); work.Push((child,c));} if(pair.Source.TemplateContent is { } template) work.Push((template,pair.Target.TemplateContent!)); } }
+  ArgumentNullException.ThrowIfNull(node);
+  if(node.Kind==HtmlNodeKind.Document) throw new ArgumentException("Cannot import a document.",nameof(node));
+  return CopyCore(node,deep,true);
+ }
+ private HtmlNode CopyCore(HtmlNode node,bool deep,bool parsedText)
+ {
+  var copy=CopyShallow(node,parsedText);
+  if(deep) { var work=new Stack<(HtmlNode Source,HtmlNode Target)>(); work.Push((node,copy)); while(work.TryPop(out var pair)) { foreach(var child in pair.Source.Children) {var c=CopyShallow(child,parsedText); pair.Target.AppendChild(c); work.Push((child,c));} if(pair.Source.TemplateContent is { } template) work.Push((template,pair.Target.TemplateContent!)); } }
   return copy;
  }
- private HtmlNode CopyShallow(HtmlNode node)
+ private HtmlNode CopyShallow(HtmlNode node,bool parsedText)
  {
-  HtmlNode result=node.Kind switch {HtmlNodeKind.Element=>CreateElement(node.LocalName,node.NamespaceUri,node.Prefix),HtmlNodeKind.Text=>CreateText(node.Value),HtmlNodeKind.Comment=>CreateComment(node.Value),HtmlNodeKind.ProcessingInstruction=>CreateProcessingInstruction(node.LocalName,node.Value),HtmlNodeKind.DocumentType=>CreateDocumentType(node.Doctype!),HtmlNodeKind.Fragment=>CreateFragment(),HtmlNodeKind.Document=>new HtmlNode(this,HtmlNodeKind.Document),_=>throw new ArgumentException("Unsupported node kind.")};
+  HtmlNode result=node.Kind switch {HtmlNodeKind.Element=>CreateElement(node.LocalName,node.NamespaceUri,node.Prefix),HtmlNodeKind.Text=>parsedText?CreateParsedText(node.Value):CreateText(node.Value),HtmlNodeKind.Comment=>CreateComment(node.Value),HtmlNodeKind.ProcessingInstruction=>CreateProcessingInstruction(node.LocalName,node.Value),HtmlNodeKind.DocumentType=>CreateDocumentType(node.Doctype!),HtmlNodeKind.Fragment=>CreateFragment(),HtmlNodeKind.Document=>new HtmlNode(this,HtmlNodeKind.Document),_=>throw new ArgumentException("Unsupported node kind.")};
   foreach(var a in node.Attributes) result.SetAttribute(a); return result;
  }
 }
@@ -115,6 +125,8 @@ public sealed class HtmlNode
  public string NamespaceUri {get;}
  public string Prefix {get;}
  public string Value {get=>value;set {ArgumentNullException.ThrowIfNull(value);if(Kind is not (HtmlNodeKind.Text or HtmlNodeKind.Comment or HtmlNodeKind.ProcessingInstruction)) throw new InvalidOperationException("Only text, comments and processing instructions have mutable values.");OwnerDocument.CheckToken(value);this.value=value;}}
+ // Only tree builders may persist merged, already-charged character tokens.
+ internal void SetParsedText(string value) { ArgumentNullException.ThrowIfNull(value); if(Kind!=HtmlNodeKind.Text) throw new InvalidOperationException("Parsed text requires a text node."); this.value=value; }
  internal HtmlNode? TemplateHost;
  internal HtmlNode? StructuralParent => Parent ?? TemplateHost;
  private HtmlNode? parent;
