@@ -64,6 +64,24 @@ not benchmark throughput or introduce speculative token matching optimizations.
 The `--control` path disables all allocation/retention counters and timers.
 Measurement requires the coordinator's explicit prepared-command lease.
 
-Final committed-revision checks, allocation identity/results and source-location
-join are pending; task remains in_progress. No corpus or release conformance
+Final runtime source is `d5e2a1c0f15b75cbfbb627ad5ea765e69e5b12bf`.
+The verified source-location repair is merged; graph locations copy actual local
+node or default/fixed/value attribute positions through guarded scope helpers.
+Character input retains scalar coordinates without byte offsets; external byte
+input retains final redirected URI and original offsets; stale source coordinates
+remain unknown. The initial location-test build mistakenly used ColumnNumber;
+its three compile errors were corrected to LinePosition before the passing build.
+
+At this source revision: Release builds have zero warnings/errors; 72 owned,
+20 affected model and 10 source-location cases pass (102 total); the prior safe
+resolver selection passes 42. The compiler family matches 257 frozen members,
+the additive public union matches 1393, and the XML-only real consumer passes.
+Planning validates 176 tasks and whitespace checks pass. The prepared seven-route
+control passes with counters disabled; elevated supervisor preflight verifies 24
+identities and process-inspection capability before any child measurement starts.
+`preparation.json` freezes the command/environment/input/binary/source identities;
+`measure.py` is adapted from the verified M8-source-locations bounded supervisor.
+The proposed lease is one allocation-only child, 30 seconds maximum, no retries
+or builds. Runtime measurement and final source-review ACK remain pending;
+task remains in_progress. No corpus or release conformance
 claim follows from these focused checks.
