@@ -1,0 +1,81 @@
+using System.Runtime.InteropServices;
+using System.Security.Cryptography;
+using System.Text.Json;
+using Xemele;
+using Xemele.XPath;
+#if !BASELINE
+using Xemele.XPath.Internal;
+#endif
+
+if (args is not [var mode, var output] || mode is not ("--control" or "--measure")) throw new ArgumentException("Use --control|--measure <output>.");
+bool measure = mode == "--measure";
+long coldStart = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+const string xml = "<r><a>1</a><a>2</a><a>根😀</a></r>";
+var document = XmlDocument.Parse(xml);
+var node = document.RootElement; var item = XPathItem.FromNode(node);
+string[] sources = ["1 + 2 * 3", "/r/a", "string-length(/r/a[3])"];
+double[] expected = [7, 3, 2];
+var expressions = sources.Select(source => XPathExpression.Compile(source)).ToArray();
+long coldSetupBytes = measure ? GC.GetAllocatedBytesForCurrentThread() - coldStart : 0;
+var rows = new List<object>();
+#if BASELINE
+const int routes = 2;
+#else
+const int routes = 4;
+#endif
+for (int expressionIndex = 0; expressionIndex < expressions.Length; expressionIndex++)
+{
+    var expression = expressions[expressionIndex];
+    for (int route = 0; route < routes; route++)
+    {
+        double sum = 0; long totalUsed = 0, expectedUsed = -1;
+        for (int warm = 0; warm < 16; warm++) Consume(Run(route, expression, node, item, out var used), expected[expressionIndex], used, route, ref expectedUsed);
+        var distribution = new long[64];
+        long start = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+        for (int operation = 0; operation < 64; operation++)
+        {
+            long before = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+            var value = Run(route, expression, node, item, out var used);
+            sum += Consume(value, expected[expressionIndex], used, route, ref expectedUsed); totalUsed += used;
+            distribution[operation] = measure ? GC.GetAllocatedBytesForCurrentThread() - before : 0;
+        }
+        long bytes = measure ? GC.GetAllocatedBytesForCurrentThread() - start : 0;
+        if (measure && (bytes <= 0 || distribution.Any(b => b <= 0))) throw new InvalidOperationException("Owned evaluation allocation control failed.");
+        if (sum != expected[expressionIndex] * 64) throw new InvalidOperationException("Consumed result mismatch.");
+        rows.Add(new { source = sources[expressionIndex], route, operations = 64, bytes, distribution, consumed = sum, totalUsed });
+    }
+}
+long controlStart = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+var positive = new byte[1024]; GC.KeepAlive(positive);
+long positiveBytes = measure ? GC.GetAllocatedBytesForCurrentThread() - controlStart : 0;
+if (measure && positiveBytes < 1024) throw new InvalidOperationException("Positive allocation control failed.");
+GC.KeepAlive(document); GC.KeepAlive(expressions);
+File.WriteAllText(output, JsonSerializer.Serialize(new { mode, routes, runtime = RuntimeInformation.FrameworkDescription,
+    architecture = RuntimeInformation.ProcessArchitecture.ToString(), os = RuntimeInformation.OSDescription,
+    assemblySha256 = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(typeof(XPathExpression).Assembly.Location))),
+    inputSha256 = Convert.ToHexString(SHA256.HashData(System.Text.Encoding.UTF8.GetBytes(xml))),
+    sourceRevision = Environment.GetEnvironmentVariable("XEMELE_ACCOUNTING_REVISION"), coldSetupBytes, positiveBytes, rows }, new JsonSerializerOptions { WriteIndented = true }));
+Console.WriteLine($"{mode}: {rows.Count} cases, 16 warm + 64 consumed evaluations per case; counters {(measure ? "enabled" : "disabled")}");
+
+static XPathValue Run(int route, XPathExpression expression, XmlNode node, XPathItem item, out long used)
+{
+    used = 0;
+    switch (route)
+    {
+        case 0: return expression.Evaluate(node);
+        case 1: return expression.Evaluate(item);
+#if !BASELINE
+        case 2: return XPathEvaluationAccounting.EvaluateWithAccounting(expression, node, null, out used);
+        case 3: return XPathEvaluationAccounting.EvaluateWithAccounting(expression, item, null, out used);
+#endif
+        default: throw new InvalidOperationException("Unknown route.");
+    }
+}
+static double Consume(XPathValue value, double expected, long used, int route, ref long expectedUsed)
+{
+    double actual = value.Kind == XPathValueKind.NodeSet ? value.AsNodeSet().Count : value.AsNumber();
+    if (actual != expected || (route >= 2 && used <= 0)) throw new InvalidOperationException("Evaluation oracle mismatch.");
+    if (expectedUsed != -1 && used != expectedUsed) throw new InvalidOperationException("Independent accounting changed.");
+    expectedUsed = used;
+    return actual;
+}

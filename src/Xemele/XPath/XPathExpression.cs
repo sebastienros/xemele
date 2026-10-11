@@ -13,22 +13,37 @@ public sealed class XPathExpression
         var context = XPathStaticContext.FromOptions(options, cancellationToken, new XPathSourceSpan(0, expression.Length));
         return new(new XPathCompiler().Compile(expression, context, cancellationToken), expression.Length);
     }
-    public XPathValue Evaluate(XmlNode context, XPathContext? options = null)
+    public XPathValue Evaluate(XmlNode context, XPathContext? options = null) => EvaluateWithAccounting(context, options, out _);
+    public XPathValue Evaluate(XPathItem context, XPathContext? options = null) => EvaluateWithAccounting(context, options, out _);
+    internal XPathValue EvaluateWithAccounting(XmlNode context, XPathContext? options, out long operations)
     {
+        operations = 0;
         options?.CancellationToken.ThrowIfCancellationRequested();
         if (context.IsDefault || context.Kind == XmlNodeKind.Fragment) throw new ArgumentException("Require connected context.", nameof(context));
-        var evaluator = Create(context.OwnerDocument, options, context);
-        return evaluator.Evaluate(ast, evaluator.BindNode(context));
-    }
-    public XPathValue Evaluate(XPathItem context, XPathContext? options = null)
-    {
-        if (context.IsDefault) throw new ArgumentException("Default context item.", nameof(context));
-        var evaluator = Create(context.Document, options);
-        return evaluator.Evaluate(ast, evaluator.Bind(context));
-    }
-    private XPathEvaluator Create(XmlDocument document, XPathContext? options, XmlNode? node = null)
-    {
+        var document = context.OwnerDocument;
         var budget = new XPathBudget(options?.Limits ?? new(), span, options?.CancellationToken ?? default);
+        try
+        {
+            var evaluator = Create(document, options, budget, context);
+            return evaluator.Evaluate(ast, evaluator.BindNode(context));
+        }
+        finally { operations = budget.Operations; }
+    }
+    internal XPathValue EvaluateWithAccounting(XPathItem context, XPathContext? options, out long operations)
+    {
+        operations = 0;
+        if (context.IsDefault) throw new ArgumentException("Default context item.", nameof(context));
+        var document = context.Document;
+        var budget = new XPathBudget(options?.Limits ?? new(), span, options?.CancellationToken ?? default);
+        try
+        {
+            var evaluator = Create(document, options, budget);
+            return evaluator.Evaluate(ast, evaluator.Bind(context));
+        }
+        finally { operations = budget.Operations; }
+    }
+    private XPathEvaluator Create(XmlDocument document, XPathContext? options, XPathBudget budget, XmlNode? node = null)
+    {
         if (node is XmlNode contextNode) XPathEvaluator.ValidateNode(contextNode, budget);
         var dynamicContext = new XPathDynamicContext(options, budget);
         var navigator = new XPathNavigator(document, budget, span);

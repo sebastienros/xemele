@@ -1,0 +1,62 @@
+{
+  "source_revision": "88ce17fc956cb26de15ee3823fe5c766c80f1ddb",
+  "baseline_revision": "3000efdc9d9c1768810ace6372ad52aa51be6bd2",
+  "checkout": "/Users/sebastienros/.codex/worktrees/956b/xemele",
+  "sdk": "10.0.400",
+  "runtime": "10.0.11",
+  "lease_required": "Exclusive coordinator grant after main and peer PARK; no automatic permission from this plan.",
+  "sole_command": [
+    "python3",
+    "docs/reports/M8-xpath-accounting/lease.py",
+    "--",
+    "--measure"
+  ],
+  "max_duration_seconds": 60,
+  "child_timeout_seconds": 15,
+  "sequence": [
+    "baseline allocation",
+    "candidate allocation",
+    "final identity check",
+    "reap child groups",
+    "report RELEASE before inspecting raw output"
+  ],
+  "argv_template": [
+    "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+    "--fx-version",
+    "10.0.11",
+    "artifacts/M8-xpath-accounting/prepared/{baseline,candidate}-probe/Xemele.Benchmarks.dll",
+    "--measure",
+    "artifacts/M8-xpath-accounting/raw/{baseline,candidate}.json"
+  ],
+  "controls": "Both --control executions passed at source revision, allocation counters disabled. Results consumed and exact scalar7/path3/Unicode2 oracles checked.",
+  "cases": {
+    "baseline": 6,
+    "candidate": 12,
+    "warm_evaluations_per_case": 16,
+    "measured_evaluations_per_case": 64
+  },
+  "input": "<r><a>1</a><a>2</a><a>根😀</a></r>",
+  "expressions": [
+    "1 + 2 * 3",
+    "/r/a",
+    "string-length(/r/a[3])"
+  ],
+  "routes": [
+    "public XmlNode",
+    "public XPathItem",
+    "internal XmlNode (candidate only)",
+    "internal XPathItem (candidate only)"
+  ],
+  "ownership": "Whole synchronous Evaluate, including owned context/document snapshots, evaluator frames, scratch and results. Fixture parse/compile excluded from warm samples; cold fixture setup counted separately. No zero-allocation or timing claim.",
+  "positive_control": "new byte[1024], consumed via GC.KeepAlive; must report at least1024 bytes.",
+  "identity_manifest": "artifacts/M8-xpath-accounting/prepared/identities.json",
+  "forbidden_during_lease": [
+    "build",
+    "restore",
+    "test",
+    "source edits",
+    "retry",
+    "raw output inspection"
+  ],
+  "cleanup": "Wrapper starts owned process groups, bounds waits, reaps/terminates own groups only; requires no_children=true. Raw logs/results retained only until reviewed; preparation caches retained."
+}
