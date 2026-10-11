@@ -124,5 +124,7 @@ separate controlled917,504-call steady counter regression observed zero bytes.
 This repair routes existing bounded scalar checks; it introduces no delimiter search,
 vocabulary matcher or retained lexical tokens requiring SearchValues alternatives.
 No throughput improvement, broader hardware or cross-platform release claim is made.
-Raw allocation JSON and BDN logs/results are transient and retained until coordinator
-independent inspection acknowledges summary completeness; only analysis is committed.
+Worker and coordinator independently inspected actual raw allocation JSON and all four
+inclusive BDN GC pairs/actual-host identities. After this durable analysis/evidence was
+committed and explicit cleanup ACK received, only this task's generated raw artifacts
+were removed. Only analysis is committed; no rerun was performed.
