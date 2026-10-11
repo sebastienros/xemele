@@ -64,7 +64,7 @@ public sealed class SharedParserBudgetTests
         var budget = new OperationBudget(new(), default);
         using var adapter = new ByteDomAdapter(budget.Options, default, budget, Source);
         foreach (byte b in Encoding.Latin1.GetBytes(xml)) adapter.Append([b]);
-        adapter.Complete(); Assert.Null(adapter.Diagnostic); Assert.Equal("é", adapter.Document.RootElement.TextContent);
+        adapter.Complete(); Assert.Null(adapter.Diagnostic); Assert.Equal("é", adapter.Document.RootElement.GetTextContent());
         Assert.Equal(xml.Length, budget.Count(Quota.DocumentCharacters));
         using var invalid = new ByteDomAdapter(budget.Options, default, budget, Source);
         invalid.Append("<r>"u8); invalid.Complete(); Assert.NotNull(invalid.Diagnostic);
@@ -79,7 +79,7 @@ public sealed class SharedParserBudgetTests
             var options = new XmlParseOptions { Limits = new() { DocumentCharacters = 4 } };
             using var core = new XmlParserCore(options);
             var sink = new DomSink(options);
-            Assert.Null(core.Append("<r/>".AsSpan(), [], true, sink, default).Diagnostic);
+            Assert.Null(core.Append("<r/>".AsSpan(), [], true, sink, TestContext.Current.CancellationToken).Diagnostic);
             using var adapter = new ByteDomAdapter(options, default);
             adapter.Append("<r/>"u8); adapter.Complete(); Assert.Null(adapter.Diagnostic);
         }
