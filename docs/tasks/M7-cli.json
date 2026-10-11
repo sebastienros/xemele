@@ -5,7 +5,7 @@
   "title": "HTML CLI additions",
   "kind": "feature",
   "status": "in_progress",
-  "owner": "M7 isolated implementation chat pending creation",
+  "owner": "M7 implementation chat 01a12c47-e352-7f83-80cb-ec7800b7f865",
   "branch": "codex/m7-cli",
   "base_revision": "4af21789ba152d435564f68e3f4259b5527cb90c",
   "integration_revision": null,
@@ -50,7 +50,13 @@
       "evidence": []
     }
   ],
-  "implementation": [],
+  "implementation": [
+    "src/Xemele.Tool/Commands/Html/Registration.cs: CommandRegistry.RegisterHtmlCommands; four statically registered commands",
+    "src/Xemele.Tool/Commands/Html/HtmlCommands.cs: HtmlCommands.Run; verified parser/CSS/serializer composition, real contexts, bounded UTF-8 fragment string and owned result staging",
+    "src/Xemele.Tool/Commands/Html/Invocation.cs and FileInput.cs: finite options, error/ownership boundaries",
+    "tests/Xemele.Tests/M7-cli/process_controls.py and api_controls.py; tests/fixtures/M7-cli/",
+    "samples/M7-cli/: compiled public usage/ownership sample and complete command/output inventory; no new public library API fragment"
+  ],
   "evidence": [],
   "blockers": [],
   "handoff": {
