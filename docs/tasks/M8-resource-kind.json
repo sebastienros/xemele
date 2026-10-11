@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "id": "M8-resource-kind",
+  "milestone": "M8",
+  "title": "Add an explicit schema resolver resource kind",
+  "kind": "feature",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "depends_on": [
+    "M8-contracts",
+    "M6-resource-kinds"
+  ],
+  "goals": [
+    "G09",
+    "G13",
+    "G14",
+    "G15"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/schemas.md"
+  ],
+  "owns": [
+    "src/Xemele/Resolution/Core/Resources.cs",
+    "tests/Xemele.Tests/M8-resource-kind/",
+    "docs/api/M8-resource-kind.txt",
+    "docs/reports/M8-resource-kind/"
+  ],
+  "api_or_output": "Add XmlResourceKind.Schema = 5 without changing existing values, requests, resolver or resource ownership",
+  "acceptance": [
+    {
+      "id": "M8-resource-kind-A1",
+      "description": "Implement the frozen additive Schema resource kind, preserving the exact existing enum values and resolver API/ownership semantics.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M8-resource-kind-A2",
+      "description": "Verify callers can discriminate schema requests from external entities and includes; check synchronous/asynchronous request forwarding and unchanged resource disposal behavior.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M8-resource-kind-A3",
+      "description": "Verify exact additive public API baseline and focused earlier resolver/resource-kind regressions against the integrated prerequisites; record actual revision, checks and ownership. No runtime matching or allocation optimization is introduced.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}
