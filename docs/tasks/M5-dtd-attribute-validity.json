@@ -2,7 +2,7 @@
   "schema_version": 1,
   "milestone": "M5",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M5 isolated attribute validity worker",
   "branch": "codex/m5-dtd-attribute-validity",
   "base_revision": "daf46fe51c6f91b04fe583f165bf4b2cd6d54a54",
@@ -14,13 +14,62 @@
     "docs/specs/common.md",
     "docs/specs/dtd-c14n.md"
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Validation/Dtd/Compilation/CompiledModel.cs: IsValueValid NCName flags and internal entity-membership mode",
+    "src/Xemele/Validation/Dtd/Compilation/DtdCompiler.cs: syntactic-only normalized default checks",
+    "tests/Xemele.Tests/M5-dtd-model/CompilationTests.cs: corrected normative expectations",
+    "tests/Xemele.Tests/M5-dtd-attribute-validity/AttributeValidityTests.cs",
+    "tests/fixtures/M5-dtd-attribute-validity/README.md: four unchanged pinned inputs"
+  ],
+  "evidence": [
+    {
+      "id": "focused",
+      "kind": "check",
+      "revision": "ba2a0c793907825ca36dfd3376d5812b70370b9a",
+      "command": "Pinned dotnet --fx-version 10.0.11 tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -class Xemele.Tests.M5DtdAttributeValidity.AttributeValidityTests -class Xemele.Tests.M5DtdModel.CompilationTests -class 'Xemele.Tests.DtdValidation.*' -noColor",
+      "result": "passed",
+      "summary": "186passed, nofailures/skips,28dedicated; four original corpusregressions fixed, syntax/default/materialized/missingmanualprofile, Name-typeNCName vsNmTokencolon, Unicode/surrogates/caps/cancel and priorfacadepreservation. No allocationmethods in selection.",
+      "artifact": "docs/reports/M5-dtd-attribute-validity/README.md"
+    },
+    {
+      "id": "build-api",
+      "kind": "check",
+      "revision": "ba2a0c793907825ca36dfd3376d5812b70370b9a",
+      "command": "Pinned SDK10.0.400 offlinecache Releasebuilds; python3 docs/reports/M5-validation-model/check_api.py",
+      "result": "passed",
+      "summary": "Final runtime/test/probe/APIchecker builds zero warnings/errors; approved extractor948publicmembers unchanged. Exactbuild/environment/check details in report.",
+      "artifact": "docs/reports/M5-dtd-attribute-validity/README.md"
+    },
+    {
+      "id": "exclusive-measurement",
+      "kind": "check",
+      "revision": "3f6dd74240514769665263baa2712f97ce0ad5a8",
+      "command": "python3 docs/reports/M5-dtd-attribute-validity/run_measurements.py --exclusive-grant",
+      "result": "passed",
+      "summary": "Exactonce durableleaseactual10.0.11Arm64;166source43binary3852runtime initial/finalidentities0;allocation0 benchmark0 owncleanupnochildren runner0;0/917504typedprimitives withall32warm+32steadybatcheszero;4ShortRunNoEmit successes. Case3actualBDNGC1968/2097152 despite dash explicitlyretained;ownedcold/compile/validation/retainedwholeheap separatelyrecorded withoutsubtraction.",
+      "artifact": "docs/reports/M5-dtd-attribute-validity/README.md"
+    },
+    {
+      "id": "planning",
+      "kind": "check",
+      "revision": "3f6dd74240514769665263baa2712f97ce0ad5a8",
+      "command": "python3 tools/planning/tasks.py validate",
+      "result": "passed",
+      "summary": "158taskrecordsvalid; final evidence updated/revalidated before handoff.",
+      "artifact": "docs/reports/M5-dtd-attribute-validity/README.md"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "",
-    "checks": [],
-    "remaining": [],
+    "summary": "Syntactic default checks separate from actual instance entitymembership; namespace NCName validity repaired. Evaluator unchanged to preserve frozen manualmissingdefault/noaugmentation profile.",
+    "checks": [
+      "186focusedtestsactual10.0.11passed;API948unchanged;planning158valid;Releaseclean.",
+      "Oneexclusivebounded4case+917504callmeasurementpassed;allinclusiveGC/anomaliesandownedretaineddomains preserved.",
+      "Coordinator independently inspected actual raw allocation and all inclusiveGCpairs; task-generated raw removed after durable summary/evidence and explicit cleanup ACK."
+    ],
+    "remaining": [
+      "Coordinator integratedverification and corpus/gate cumulative checks."
+    ],
     "requests": []
   },
   "id": "M5-dtd-attribute-validity",
@@ -44,20 +93,30 @@
     {
       "id": "M5-dtd-attribute-validity-A1",
       "description": "Check default values syntactically at compilation; require entity membership only when actual/defaulted instance values are used, without augmenting current DOM.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "focused"
+      ]
     },
     {
       "id": "M5-dtd-attribute-validity-A2",
       "description": "Apply namespace-aware NCName restrictions to Name-typed ID/IDREF(S)/ENTITY(IES)/NOTATION values/defaults while preserving colon-valid NMTOKEN(S)/enumeration and all scalar/quota/cancellation rules.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "focused",
+        "exclusive-measurement"
+      ]
     },
     {
       "id": "M5-dtd-attribute-validity-A3",
       "description": "Resolve original E9a/E06i/ns045/ns046 discrepancies and outdated focused expectations; preserve relevant compiler/facade checks, API948/planning and measured borrowed token allocation evidence.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "focused",
+        "build-api",
+        "exclusive-measurement",
+        "planning"
+      ]
     }
   ]
 }
