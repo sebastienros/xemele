@@ -15,3 +15,5 @@ Root inspected released first145allocation/72BDN rows and detected quadratic fos
 Integration copied3391ignored retained corpus/auxiliary files with per-file source/destinationSHA equality; official3388fixture inventory verified. Original cache and M6 package untouched. Root initially tried nonexistent handoff.md, then read actual final-handoff.md; this reporting-path miss was not treated as a product/check success.
 
 M7-serializer must run the exact retained noscript-template-querySelector innerHTML escaping assertion, which builder does not claim passing. No further builder work or measurements remain.
+
+Initial integration metadata validation rejected a missing summary/artifact evidence shape. Root corrected the record and reran validation; the actual integration checks above were already passing.
