@@ -1,5 +1,6 @@
 using Xemele.Parsing.Input;
 using Xemele.Parsing.Syntax;
+using Xemele.Internal.Operations;
 
 namespace Xemele.Parsing.Dom;
 
@@ -11,6 +12,7 @@ internal sealed partial class ByteDomAdapter : IDisposable
     private readonly XmlParserCore core;
     private readonly DomSink sink;
     private readonly CancellationToken cancellation;
+    private readonly Uri? sourceUri;
     private readonly char[] characters = new char[4096];
     private readonly long[] mappings = new long[4096];
     private readonly char[] prefix = new char[6];
@@ -21,12 +23,15 @@ internal sealed partial class ByteDomAdapter : IDisposable
     internal XmlDocument Document => sink.Document;
     internal XmlDiagnostic? Diagnostic { get; private set; }
 
-    internal ByteDomAdapter(XmlParseOptions options, CancellationToken cancellation)
+    internal ByteDomAdapter(XmlParseOptions options, CancellationToken cancellation,
+        OperationBudget? operationBudget = null, Uri? sourceUri = null)
     {
-        decoder = new(options);
-        core = new(options);
+        options = operationBudget?.Options ?? options;
+        decoder = new(options, sourceUri);
+        core = new(options, sourceUri, operationBudget: operationBudget);
         sink = new(options, decoder, cancellation);
         this.cancellation = cancellation;
+        this.sourceUri = sourceUri;
     }
     internal void Append(ReadOnlySpan<byte> input)
     {
@@ -60,7 +65,7 @@ internal sealed partial class ByteDomAdapter : IDisposable
                 : prefix[5] is not (' ' or '\t' or '\r' or '\n');
             if (!mismatch && prefixLength < 6) continue;
             prefixDecided = true;
-            if (mismatch) sink.ValidateAbsentDeclaration(new(null, 1, 1, prefixMappings[0]));
+            if (mismatch) sink.ValidateAbsentDeclaration(new(sourceUri, 1, 1, prefixMappings[0]));
             Diagnostic = sink.Diagnostic;
             if (Diagnostic is null) Feed(prefix.AsSpan(0, prefixLength), prefixMappings.AsSpan(0, prefixLength));
         }
@@ -90,7 +95,7 @@ internal sealed partial class ByteDomAdapter : IDisposable
         if (!prefixDecided)
         {
             prefixDecided = true;
-            sink.ValidateAbsentDeclaration(new(null, 1, 1, prefixLength == 0 ? byteLength : prefixMappings[0]));
+            sink.ValidateAbsentDeclaration(new(sourceUri, 1, 1, prefixLength == 0 ? byteLength : prefixMappings[0]));
             Diagnostic = sink.Diagnostic;
             if (Diagnostic is not null) return;
             if (prefixLength != 0) Feed(prefix.AsSpan(0, prefixLength), prefixMappings.AsSpan(0, prefixLength));
