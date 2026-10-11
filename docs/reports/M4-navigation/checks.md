@@ -64,3 +64,9 @@ input389/6123. Product/probe binaries remain unchanged; no builds, correctness,
 API, package, allocation or timing reruns in this preparation correction.
 Prior 10.0.0 observations and lifecycle failure remain in performance.md.
 A new bounded measurement grant is still required.
+
+Target-runtime follow-up completed after a separate explicit grant: actual10.0.11
+confirmed in allocation and all10BDN host records; wrapper/phases/identities0,
+no_child=true. Exact warm primitive bytes0; owned costs and honest retained
+heap limitations are recorded in performance.md. Earlier failures remain history.
+Branch implemented; coordinator retains integrated verification.

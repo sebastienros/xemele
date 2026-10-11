@@ -37,8 +37,10 @@ geometric capacity overhead; limits govern logical counts before growth. Repeate
 aggregate descendant text, scope resolution, sorting and full axis scans can be
 quadratic, explicitly bounded by the shared operation quota. No speculative
 index/cache optimization is introduced. Warm rebinding, order, metadata and lang
-reads reuse snapshot storage. Performance measurements remain pending a bounded
-exclusive coordinator lease; no allocation-free assertion is made before evidence.
+reads reuse snapshot storage. Actual10.0.11 performance is recorded in performance.md after a bounded exclusive
+coordinator lease; exact warmed borrowed primitive groups measured0B while cold
+and owned snapshot/result costs are separately positive. Earlier10.0.0 provenance
+failure and noisy retained-memory estimates are preserved with their limitations.
 
 The standalone sample builds as an explicit `Xemele.Tests` friend assembly because
 navigation is internal. The fresh package consumer repeats that seam proof in an

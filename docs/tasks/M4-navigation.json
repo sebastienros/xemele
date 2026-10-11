@@ -4,7 +4,7 @@
   "milestone": "M4",
   "title": "Axes and document ordering",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M4 coordinator / isolated M4-navigation worker",
   "branch": "codex/m4-navigation",
   "base_revision": "228d9eb1c0862861e70ca87601ee507a06228fd0",
@@ -49,8 +49,13 @@
     {
       "id": "M4-navigation-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "navigation-api-consumer",
+        "navigation-planning",
+        "navigation-target-runtime-performance",
+        "navigation-source-review"
+      ]
     }
   ],
   "implementation": [
@@ -103,23 +108,30 @@
       "result": "failed",
       "summary": "ONE authorized sequence: allocation0/benchmark0 and ten BDN cases successful; exact warmed primitive totals0B over65536 groups, owned totals positive. Initial/final nominal freeze0. Wrapper1/PermissionError on sandbox cleanup; independent escalated read-only process inventory confirmed0 scoped processes before raw inspection. Actual runtime10.0.0 due stale effective runtimeconfig despite property10.0.11, so required10.0.11 performance evidence is not satisfied. Retained heap estimate also not reliably attributable. No retries authorized or performed.",
       "artifact": "docs/reports/M4-navigation/performance.md"
+    },
+    {
+      "id": "navigation-target-runtime-performance",
+      "kind": "check",
+      "revision": "bee37f243c67cda55d6d6b17df66ee1c8e372d68",
+      "command": "python3 docs/reports/M4-navigation/run_measurements.py --exclusive-grant (authorized require_escalated; both plan arrays use explicit --fx-version 10.0.11)",
+      "result": "passed",
+      "summary": "ONE separately granted corrected sequence; actualFrameworkDescription/all10BDNcases.NET10.0.11 SDK10.0.400 Arm64; wrapper/allocation/benchmark/initialidentity/finalidentity0; no_child=true and release before raw inspection. 65536warm+65536measured primitivegroups each0B;128batchdistributions all0; consumed1703936 each; cold165224B,128owned snapshots16449040B,axis3670304B,normalize48128B,value89088B. Ten declaredShortRunNoEmit cases71.49sec. Prior10.0.0targetfailure retained. Process-heap retained estimate noisy/not a sizeclaim; benchmarkrounding/harness totals disclosed.",
+      "artifact": "docs/reports/M4-navigation/performance.md"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Runtime/navigation candidate source approved;55correctness/API893/sample/package checks pass. One genuine measurement sequence succeeded on actual10.0.0 but required10.0.11 runtime provenance failed. Wrapper cleanup denial retained honestly; no scoped processes confirmed. Target-runtime performance criterion remains pending.",
+    "summary": "Implements bounded immutable navigation entry snapshot and all13axes with namespace/attribute/logical-text identities, order/rebind/normalization, retained-DTD declaredIDs, empty-stop xml:lang and incomplete rejection. Independent source review approved. Actual10.0.11 target performance now passed in separate explicitly granted sequence; prior failed target/probe cleanup history preserved. Branch implemented; integrated verification remains coordinator-owned.",
     "checks": [
-      "55 focused navigation+model tests passed; API893 unchanged; sample/fresh package consumer passed; planning148 passed",
-      "One authorized measured sequence: direct allocation0/benchmark0;10cases; zero exact warmed bytes; actual runtime10.0.0 mismatch means required runtime evidence failed",
-      "Final nominal identity passed; wrapper1/PermissionError; independent read-only scoped process verification0 before raw inspection"
+      "Release build 0warnings/errors;55navigation+model tests passed;API893 preserved;standalone/freshpackage friendseam sample passed",
+      "Planning148 and allowned paths/whitespace checks passed",
+      "Target10.0.11 exact warm primitives0B, cold/owned storage positive/bounded;10BDNShortRun cases passed;all phase/identity exits0,nochildren;original10.0.0attempt retained as failed target evidence"
     ],
     "remaining": [
-      "Required10.0.11 prepared allocation/timing evidence needs an explicit new coordinator scope decision; no second attempt authorized",
-      "Exact retained-memory attribution is not established by noisy process-heap estimate; no retained-size claim",
-      "Integrated verification belongs to coordinator"
+      "Coordinator integration verification; comprehensive cumulative/M4gate checks",
+      "End-to-end evaluator and x64 release performance confirmation belong to future composition/gate work; no current claim",
+      "Exact retained size not established by noisy process-heap estimate; no retained-size claim"
     ],
-    "requests": [
-      "Coordinator decision on target-runtime evidence; stale effective probe runtimeconfig must be corrected through owned preparation/restore under a fresh explicit scope before any new granted measurements. No shared changes requested."
-    ]
+    "requests": []
   }
 }

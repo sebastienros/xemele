@@ -1,6 +1,9 @@
-# Navigation measurement summary — provisional runtime mismatch
+# Navigation measurement summaries — target-runtime evidence and preserved history
 
-Measured implementation/probe revision: d79ffea3ca933f38227a8cfc74b31d49454832b4.
+The corrected separately granted sequence at bee37f2 passed on actual10.0.11;
+its summary follows the preserved first-attempt history below.
+
+Initial informational implementation/probe revision: d79ffea3ca933f38227a8cfc74b31d49454832b4.
 One authorized exclusive sequence only. Allocation and timing each exited 0;
 ten timing cases completed in 71.36 seconds. No retries, builds, generation,
 restores, option changes, tests or source edits occurred during the sequence.
@@ -111,3 +114,76 @@ run or cleanup-only executable change occurred.
 
 Raw logs/counters/BDN result files remain ignored under artifacts/M4-navigation.
 Only these derived summaries and honest limitations are committed.
+
+## Authorized corrected target-runtime sequence
+
+Measured revision: bee37f243c67cda55d6d6b17df66ee1c8e372d68. After the prior
+sequence released, one bounded preparation correction added explicit
+`--fx-version 10.0.11` before the unchanged probe DLL in both plan arrays.
+The same counters-disabled control asserted its actual FrameworkDescription
+`.NET 10.0.11` before freeze. Runtimeconfig minimum 10.0.0 remains disclosed;
+explicit host selection overrides it. No product/probe DLL, runtime source or
+correctness/API/package evidence changed. A separate new exclusive grant
+then authorized exactly one target-runtime sequence; no retries.
+
+Fresh allocation FrameworkDescription and all ten BDN host records confirm
+**.NET 10.0.11**, build 10.0.1126.37416, Arm64 RyuJIT armv8.0-a; SDK 10.0.400,
+Apple M4 Pro (14 logical/physical cores), macOS 15.8.1, concurrent workstation GC.
+The actual intended source/binary/runtime closure (117/40/195 files) matched
+before and after; manifest SHA256
+375169cc6e34d01bc04a206457970d7aef7f8292fc3294b0d80866d6c770b9f2.
+Product and probe DLL hashes remain the same as recorded above.
+
+Both direct phases, initial identity, final identity and wrapper exited **0**;
+phase complete; no_child=true. Authorized escalated execution allowed the
+bounded process-group lifecycle checks. RELEASED was sent before raw inspection.
+No builds, generation, restores, edits, tests, option changes or retries occurred
+inside the measurement grant. Ten ShortRun cases completed in 71.49 seconds.
+The first attempt's wrapper1/PermissionError and target-runtime mismatch remain
+historical failed evidence, not erased or substituted by this successful attempt.
+
+| Target-runtime allocation boundary | Samples | Exact total B | Derived B/sample |
+| --- | ---: | ---: | ---: |
+| Warm primitive groups | 65,536 | 0 | 0 |
+| Measured primitive groups | 65,536 | 0 | 0 |
+| Positive array control | 1 | 1,048 | 1,048 |
+| Cold first snapshot | 1 | 165,224 | 165,224 |
+| Warmed owned snapshot | 128 | 16,449,040 | 128,508.125 |
+| Materialized descendant axis | 128 | 3,670,304 | 28,674.25 |
+| Normalization only | 128 | 48,128 | 376 |
+| Normalization plus XPathValue storage | 128 | 89,088 | 696 |
+
+Again min=max=sum=0 for each of the 128 warm and 128 measured batch arrays;
+consumed=1,703,936 for each phase; fixture input389/6123. These independently
+bounded counters establish the warmed borrowed primitive zero-allocation result
+on the intended runtime, distinct from cold initialization and owned outputs.
+
+| Target-runtime operation | Children | Mean ns | StdDev ns | BDN B/op |
+| --- | ---: | ---: | ---: | ---: |
+| Linear captured identity order | 4 | 30.60 | 0.061 | 0 |
+| Indexed captured identity order | 4 | 23.63 | 0.124 | 0 |
+| Linear captured identity order | 64 | 435.73 | 2.859 | 0 |
+| Indexed captured identity order | 64 | 24.92 | 0.136 | 0 |
+| Owned snapshot | 4 | 2,872.1 | 39.46 | 10,264 |
+| Materialized axis | 4 | 246.8 | 1.51 | 1,696 |
+| Normalized node-set with value storage | 4 | 178.2 | 0.09 | 696 |
+| Owned snapshot | 64 | 41,182.6 | 317.12 | 128,508 |
+| Materialized axis | 64 | 3,143.0 | 63.98 | 28,673 |
+| Normalized node-set with value storage | 64 | 177.3 | 1.67 | 696 |
+
+Raw order-case GC diagnostics were 0/2,640/2,640/2,304 total bytes over millions
+of operations; BDN summary rounding to zero does not erase those totals. Axis
+and snapshot summary-vs-exact-counter differences remain as shown above.
+Retained process-heap observation was 29,309,120 B for 128 snapshots
+(228,977.5 B/snapshot), again exceeding attributed thread allocations. It remains
+a noisy diagnostic rather than an exact retained-memory result or bounded-size
+claim. Logical input/node-set/string growth limits and operation ceilings are
+proven by focused checks/code preflight, not inferred from that heap estimate.
+
+This completes the branch's required provisional single-Arm64 navigation
+allocation/timing evidence. Cross-architecture release and end-to-end evaluator
+composition measurements remain future integration/gate work; exact retained
+size needs an appropriately isolated measurement if claimed. The original raw
+paths were reused by this explicitly authorized target-runtime sequence; the
+first attempt's derived observations/history are preserved above. No raw result
+files are committed.
