@@ -35,14 +35,20 @@
     {
       "id": "M8-sch-compile-A1",
       "description": "Compile selected ISO edition/XPath 1.0 binding: includes/abstract patterns/phases/lets/rules/assertions/reports.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "compiler-checks",
+        "source-review"
+      ]
     },
     {
       "id": "M8-sch-compile-A2",
       "description": "Test schema errors, unsupported binding rejection, namespaces and immutable compiled XPath contexts.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "compiler-checks",
+        "source-review"
+      ]
     },
     {
       "id": "M8-sch-compile-A3",
@@ -51,13 +57,64 @@
       "evidence": []
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Validation/Schematron/Compilation/SchematronCompiler.cs: SchematronCompiler/Run, include/fragment and abstract/extends expansion, scoped lets, match selectors, messages, quotas and cancellation",
+    "src/Xemele/Validation/Schematron/Compilation/Model.cs: exact frozen internal records/interface with collection snapshots",
+    "tests/Xemele.Tests/M8-sch-compile/: 93 compiler/resource/grammar/scope/immutability/accounting cases",
+    "docs/reports/M8-sch-compile/frozen.txt: 154 unchanged owned Schematron.golden.txt compiler members; docs/api/M8-sch-compile.txt adds no public API",
+    "samples/M8-sch-compile/ and docs/reports/M8-sch-compile/XmlOnly/: real source-linked XML-only compiler consumer",
+    "benchmarks/Xemele.Benchmarks/M8-sch-compile/: allocation-only owned setup probe; docs/reports/M8-sch-compile/lease.py: prebuilt single-child bounded lifecycle"
+  ],
+  "evidence": [
+    {
+      "id": "compiler-checks",
+      "kind": "check",
+      "revision": "193a6fe3ddcdf209bea0c623b154cbb6abd99b9c",
+      "command": "python3 docs/reports/M8-sch-compile/integration-checks.py",
+      "result": "passed",
+      "summary": "Release SDK10.0.400/runtime10.0.11, zero warnings/errors. Exactly277 tests:93 owned,11 verified resource-base,42 approved resolver correctness,131 model/source-location/M4/M5; zero failed/errors/skipped/not-run; positive counts asserted. Frozen154 and public1393 matched; genuine XML-only compiler consumer passed; planning177 and diff check passed. Resolver allocation regression not selected.",
+      "artifact": null
+    },
+    {
+      "id": "source-review",
+      "kind": "review",
+      "revision": "193a6fe3ddcdf209bea0c623b154cbb6abd99b9c",
+      "command": "Coordinator independent read-only review of73ef790 and minimal repaired-source adoption193a6fe",
+      "result": "passed",
+      "summary": "Bounded review accepted all compiler corrections, annotations, lexer-limit provenance, traversal/whitespace charges and outer-self-shadow interpretation; coordinator inspected/accepted one-line verified loader-overload adoption. Inspection only, no reviewer test execution claimed.",
+      "artifact": null
+    },
+    {
+      "id": "disabled-control",
+      "kind": "check",
+      "revision": "193a6fe3ddcdf209bea0c623b154cbb6abd99b9c",
+      "command": "XEMELE_SCH_REVISION=193a6fe3ddcdf209bea0c623b154cbb6abd99b9c DOTNET_TieredCompilation=0 DOTNET_gcServer=0 DOTNET_GCConcurrent=0 '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 benchmarks/Xemele.Benchmarks/M8-sch-compile/bin/Release/net10.0/Xemele.Benchmarks.dll --control artifacts/M8-sch-compile/control.json",
+      "result": "passed",
+      "summary": "Six routes including cold owned parse/compile and five64-call consumed warm controls passed with all allocation/retained/RSS counters disabled (null outputs). No measurement or timing campaign.",
+      "artifact": null
+    },
+    {
+      "id": "probe-preparation",
+      "kind": "check",
+      "revision": "837a001b0e7fb24f59220dfe43216d5fccabe781",
+      "command": "python3 docs/reports/M8-sch-compile/lease.py --prepare && python3 docs/reports/M8-sch-compile/lease.py --verify-only (elevated process-inspection permission)",
+      "result": "passed",
+      "summary": "212 runtime/source/configuration/binary/control identities stable; counters disabled; actual ps permission preflight passed. ManifestSHA256be99198a08d5f36b09bf507dae06cc07869c630832865fdc01ed881fde92c54b. Single prebuilt allocation-only child, maximum30s25work+5cleanup, absolute UTC start/expiry and no-output-overwrite guards. Awaiting explicit all-host grant; no measurement.",
+      "artifact": "docs/reports/M8-sch-compile/preparation.json"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "",
-    "checks": [],
-    "remaining": [],
+    "summary": "Internal ISO2016 direct XPath1 compiler complete on branch; all277 checks and compatibility/consumer pass after verified ordered resource-base repair. Prepared owned setup allocation probe awaiting explicit all-host lease; no public facade/evaluator.",
+    "checks": [
+      "277 asserted tests passed; frozen154/public1393/XML-only consumer passed; planning177/diff passed",
+      "Six counters-disabled routes and212 identity/elevated-ps preflight passed; no actual measurement",
+      "Historical draft failures/corrections retained honestly in docs/reports/M8-sch-compile/README.md"
+    ],
+    "remaining": [
+      "Await root explicit allocation-only grant and durable RELEASE, then inspect raw aggregate64-window allocations/retained estimate, record concise evidence and remove transient raw outputs after root inspection",
+      "Coordinator integrates and verifies; later evaluator must preserve exact phase/#ALL error timing, initializer-before-shadow replacement, singleton assertion/subject focus and accounting described in facade-join.md"
+    ],
     "requests": []
   }
 }
