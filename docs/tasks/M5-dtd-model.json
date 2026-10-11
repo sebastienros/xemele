@@ -4,11 +4,11 @@
   "milestone": "M5",
   "title": "Compile DTD content models",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M5 isolated DTD model worker",
   "branch": "codex/m5-dtd-model",
   "base_revision": "728e9aa278282c0f93db8ac4ed19b27385cfae6a",
-  "integration_revision": null,
+  "integration_revision": "6f99e9314010e1b3557ff7779cbc08b6c8b8b63a",
   "depends_on": [
     "M5-validation-model"
   ],
@@ -36,7 +36,8 @@
       "status": "passed",
       "evidence": [
         "functional",
-        "performance"
+        "performance",
+        "integration-verification"
       ]
     },
     {
@@ -44,7 +45,8 @@
       "description": "Test mixed/sequence/choice/occurrence models and invalid declaration constraints.",
       "status": "passed",
       "evidence": [
-        "functional"
+        "functional",
+        "integration-verification"
       ]
     },
     {
@@ -54,7 +56,8 @@
       "evidence": [
         "demo",
         "preservation",
-        "planning"
+        "planning",
+        "integration-verification"
       ]
     }
   ],
@@ -121,6 +124,15 @@
       "result": "passed",
       "summary": "153 task records validate; whitespace check passes.",
       "artifact": null
+    },
+    {
+      "id": "integration-verification",
+      "kind": "integration",
+      "revision": "6f99e9314010e1b3557ff7779cbc08b6c8b8b63a",
+      "command": "Release server-disabled no-restore test build; explicit --fx-version10.0.11 xunit six selected compiler/declaration/sharedmodel/metadata/composition/parser classes; python3 docs/reports/M5-validation-model/check_api.py; python3 tools/planning/tasks.py validate",
+      "result": "passed",
+      "summary": "Clean build;2013tests pass no failures/skips/notrun; full921API matched;154tasks validate. Source-only independent review sole empty-model cancellation finding resolved in3ccd3c2; root approved exact entryguard/test. Root independently inspected all10zero/100000 counters, positive1048, owned531200/100, retainedinclusive158752/100, all24GC numerator/denominators and actual10.0.11/Arm64; measuredrevisiond433555 predates entryguard, explicitly qualified without rerun.",
+      "artifact": "docs/reports/M5-dtd-model/README.md"
     }
   ],
   "blockers": [],
@@ -131,11 +143,7 @@
       "Sample build/control pass; planning153/diffchecks pass.",
       "Prepared exclusive measurement all phases/identities0/nochild; raw inspection acknowledged; report exact24GCsummary/no unexplained subtraction."
     ],
-    "remaining": [
-      "Coordinator reviewed integration and combined checks; task remains implemented only.",
-      "Future evaluator owns DOM text/REQUIRED/FIXED/document-wide ID/IDREF rules and full-tree composition.",
-      "Raw-source declaration uniqueness belongs to separately integrated coordinator repair main14b7510 and later facade, without unverified peer dependency."
-    ],
+    "remaining": [],
     "requests": []
   }
 }
