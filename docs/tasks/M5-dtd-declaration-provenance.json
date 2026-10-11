@@ -4,11 +4,11 @@
   "milestone": "M5",
   "title": "Retain duplicate DTD declaration validity evidence",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M5 isolated DTD declaration provenance worker",
   "branch": "codex/m5-dtd-declaration-provenance",
   "base_revision": "4e13c32ed3da5e90d28af028c4a1e70e27e9b97c",
-  "integration_revision": null,
+  "integration_revision": "f99a55d886e5ccaefcbe4c0d264da5b78b0db87f",
   "depends_on": [
     "M5-contracts"
   ],
@@ -35,7 +35,8 @@
       "status": "passed",
       "evidence": [
         "combined-tests",
-        "allocation-applicability"
+        "allocation-applicability",
+        "integration-verification"
       ]
     },
     {
@@ -43,7 +44,8 @@
       "description": "Preserve diagnostic across model seeding/internal-external composition; test within/cross-subset and parameter entity duplicates, source locations, async processing, repeated permitted attribute/entity firstbindings and bounded retention.",
       "status": "passed",
       "evidence": [
-        "combined-tests"
+        "combined-tests",
+        "integration-verification"
       ]
     },
     {
@@ -56,7 +58,8 @@
         "api-union",
         "allocation-applicability",
         "task-validation",
-        "coordinator-source-review"
+        "coordinator-source-review",
+        "integration-verification"
       ]
     }
   ],
@@ -121,6 +124,15 @@
       "result": "passed",
       "summary": "Coordinator root source-only review approved bounded reference field, lazy first-invalid diagnostic allocation, first bindings, transactional seed publication and tests; no correction requested.",
       "artifact": "docs/reports/M5-dtd-declaration-provenance/README.md"
+    },
+    {
+      "id": "integration-verification",
+      "kind": "integration",
+      "revision": "f99a55d886e5ccaefcbe4c0d264da5b78b0db87f",
+      "command": "Release no-restore server-disabled test build; explicit --fx-version 10.0.11 xunit selected nine DTD classes plus M5ValidationModel.ValidationModelTests, then ValidationMetadata.ValidationMetadataTests; python3 docs/reports/M5-validation-model/check_api.py; python3 tools/planning/tasks.py validate",
+      "result": "passed",
+      "summary": "Clean Release build; 2012+18 tests pass, no failures/skips/not-run; actual host asserted10.0.11; all921API members matched;154tasks validate. Initial mixed class/namespace filter selected0 and is not passing test evidence. Root source review approved bounded first-invalid diagnostic and transactional seeding.",
+      "artifact": "docs/reports/M5-dtd-declaration-provenance/README.md"
     }
   ],
   "blockers": [],
@@ -129,9 +141,9 @@
     "checks": [
       "Release build0warnings/errors;1994tests pass on actual.NET10.0.11;921compiledAPIunion unchanged;154tasks validation passes; getterIL and boundedidentity verified."
     ],
-    "remaining": [
-      "Coordinator integration verification; future facade must check DeclarationValidityDiagnostic before compiling effective DtdModel. Exact aligned object heap delta not measured or claimed."
-    ],
-    "requests": []
+    "remaining": [],
+    "requests": [
+      "M5-dtd-validate must check DeclarationValidityDiagnostic before compilation/FromDocument and throw XmlParseException retaining original diagnostic."
+    ]
   }
 }
