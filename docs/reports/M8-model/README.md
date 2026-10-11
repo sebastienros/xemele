@@ -80,7 +80,7 @@ Every executable below ran with `--fx-version 10.0.11`.
 
 No broad corpus/conformance run or cross-platform measurement is claimed.
 
-## Allocation lease request — not executed
+## Allocation lease request — completed
 
 Prepared identities are in preparation.json. Source/preparation code is committed
 at the implementation revision; the metadata-only handoff commit does not rebuild
@@ -103,10 +103,11 @@ new capped XPath join, external schema composition). Cold setup and retained
 namespace contexts are separate informational ownership observations.
 These are synchronous per-thread allocation checks, not async or throughput claims.
 
-Root must PARK main/peers and durably GRANT first. On completion/failure the worker
-will reap its child, report lifecycle RELEASE before opening raw allocation.json,
-and wait for release acknowledgement before interpreting results. A3 remains
-pending until this required evidence passes and is recorded.
+Root PARK/GRANT, supervised child completion/reaping, lifecycle RELEASE and durable
+RELEASE ACK all completed before raw interpretation. The sole attempt passed;
+actual distributions, ownership numerators and limitations are in allocations.md.
+A3 now passes at the tested source revision. Runtime source/check evidence is
+unchanged; no correctness rerun or new measurement was performed after release.
 
 ## Incidental prerequisite measurement (excluded from M8 evidence)
 

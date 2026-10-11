@@ -4,7 +4,7 @@
   "milestone": "M8",
   "title": "Shared schema models and contracts",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M8 coordinator 01a12c6c-b333-71d3-877f-0d186618e21d / assigned isolated worker",
   "branch": "codex/m8-model",
   "base_revision": "8ba83aaf00b76d30e36eb95445bc03611677ae89",
@@ -56,12 +56,13 @@
     {
       "id": "M8-model-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
+      "status": "passed",
       "evidence": [
         "xml-only-consumer",
         "public-api",
         "allocation-preparation",
-        "planning-whitespace"
+        "planning-whitespace",
+        "allocation-measurement"
       ]
     }
   ],
@@ -145,20 +146,30 @@
       "result": "passed",
       "summary": "171 tasks validated; whitespace passed.",
       "artifact": "docs/reports/M8-model/README.md"
+    },
+    {
+      "id": "allocation-measurement",
+      "kind": "check",
+      "revision": "2ac7e6034a82d371e76608d0ad11fe2e2d8c8ea0",
+      "command": "env DOTNET_TieredCompilation=0 DOTNET_gcServer=0 DOTNET_GCConcurrent=0 XEMELE_MODEL_REVISION=2ac7e6034a82d371e76608d0ad11fe2e2d8c8ea0 '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 benchmarks/Xemele.Benchmarks/M8-model/bin/Release/net10.0/Xemele.Benchmarks.dll --measure artifacts/M8-model/allocation.json",
+      "result": "passed",
+      "summary": "Granted M8-model-allocation-1; one supervised child exit0 in0.137156s; reaped/drained/no survivors, eight identities unchanged. RELEASE and durable ACK preceded raw interpretation. Six warm primitive routes 0B across64 samples each; compile setup512B/op, namespace/report1752B/op, direct M4 accounting5408B/op, capped join5528B/op (+120B), external composition59496B/op. All64 samples per case identical, 32 counters-disabled warm operations, positive control1048B. Single-host synchronous allocation evidence; no timing/async/cross-platform claims. Full counts/ownership/retention limits in owned report.",
+      "artifact": "docs/reports/M8-model/allocations.md"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Source and counters-disabled allocation preparation committed; A1/A2 pass. A3 requires coordinator allocation lease before final evidence/implemented status. Root accepted three draft fixes at identical source hashes.",
+    "summary": "Implemented exact shared schema declarations, snapshots/options/context, operation/M5 adapters, strict schema resource ownership/aggregate quotas and actual XPath join. All criteria pass on worker branch; integration verification remains coordinator-owned.",
     "checks": [
       "20 model tests and 189 affected prerequisite tests passed at source revision 2ac7e6034a82d371e76608d0ad11fe2e2d8c8ea0; old resolver allocation method explicitly excluded.",
       "316 frozen model declarations and 139 public declarations matched; XML-only compiled/executed consumer passed.",
       "Release builds and 11-case counters-disabled allocation control passed; planning/whitespace passed.",
-      "Incident: pre-commit class selection inadvertently ran old resolver allocation child without lease. Parent 73852 and children 73855/73856 exited/reaped; no remaining processes. Its allocations are excluded from M8 evidence; full lifecycle/argv in owned report."
+      "Incident: pre-commit class selection inadvertently ran old resolver allocation child without lease. Parent 73852 and children 73855/73856 exited/reaped; no remaining processes. Its allocations are excluded from M8 evidence; full lifecycle/argv in owned report.",
+      "Granted allocation attempt passed after durable release acknowledgement: six primitive routes0B; owned setup/report/query/resource allocations recorded with exact64-sample distributions and limits. No post-source code change or correctness rerun."
     ],
     "remaining": [
-      "Root must PARK peers/main and GRANT the exact one-attempt <=30s allocation command in docs/reports/M8-model/README.md; prepared binaries/input/runtime hashes in preparation.json.",
-      "After child completion: RELEASE lifecycle before raw inspection, wait for root acknowledgement, then record actual allocation evidence and finish A3."
+      "Coordinator must inspect retained ignored raw allocation/control/lifecycle files, integrate source and rerun required integrated checks before setting verified.",
+      "Remove generated measurement outputs only after coordinator inspection; no generated raw logs are committed."
     ],
     "requests": []
   }
