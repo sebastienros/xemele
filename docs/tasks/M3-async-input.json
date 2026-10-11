@@ -2,7 +2,7 @@
   "schema_version": 1,
   "milestone": "M3",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M3 coordinator 01a1284a-8826-7fc2-af44-74552db608f2 / async input worker",
   "branch": "codex/m3-async-input",
   "base_revision": "1d9665a5d9d9b2ad92c7eaa1268455706ffb14bb",
@@ -43,32 +43,101 @@
     {
       "id": "M3-async-input-A1",
       "description": "Add frozen real async SAX Parse/ParseWithDiagnostics, reader ReadAsync/IAsyncDisposable, and DOM Load/LoadWithDiagnostics through bounded transport/core pump; synchronous callbacks, call+operation tokens, true async external resolution and fault cleanup.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "correctness",
+        "api-sample"
+      ]
     },
     {
       "id": "M3-async-input-A2",
       "description": "Prove actually awaited short reads and async-only resolver streams, sync/async token/DOM/event equality, recovery/diagnostics, EOF/current view lifetime, cancellation/reentrancy/error identity and leave-open exactly-once async cleanup without Task.Run bridges.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "correctness",
+        "api-sample"
+      ]
     },
     {
       "id": "M3-async-input-A3",
       "description": "Demonstrate only verified dependencies; compiled APIs, real buffered primitive and async process-wide allocation/retained scratch evidence; preserve earlier sync input and validate known tested revision.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "correctness",
+        "api-sample",
+        "probe-control",
+        "allocation-retention-bdn",
+        "task-validation"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Streaming/Sax/XmlSaxParser.Async.cs: bounded async SAX transport/diagnostic completion",
+    "src/Xemele/Streaming/Reader/XmlReader.Async.cs: guarded ReadAsync/token linking and awaited disposal",
+    "src/Xemele/Streaming/Transport/AsyncDomInput.cs: exact decoder/core/DomSink async continuation",
+    "src/Xemele/Parsing/Dom/Document.Async.cs: strict/diagnostic async factories",
+    "tests/Xemele.Tests/M3-async-input/AsyncInputTests.cs: 31 async input cases",
+    "benchmarks/Xemele.Benchmarks/M3-async-input/Probe.cs.fixture: frozen standalone four-case probe"
+  ],
+  "evidence": [
+    {
+      "id": "correctness",
+      "kind": "check",
+      "revision": "3679687dcbd2ffbe84bcc13c9c74b0899c53baf7",
+      "command": "dotnet build tests/Xemele.Tests/Xemele.Tests.csproj -c Release --no-restore -m:1 /nodeReuse:false /p:UseSharedCompilation=false; dotnet tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -namespace Xemele.Tests.AsyncInput -namespace Xemele.Tests.Sax -namespace Xemele.Tests.ReaderRuntime -namespace Xemele.Tests.StreamingPump -namespace Xemele.Tests.AsyncResources -namespace Xemele.Tests.ResourceMode -namespace Xemele.Tests.Entities -namespace Xemele.Tests.Recovery -namespace Xemele.Tests.Dom -method- Xemele.Tests.Dom.DomTests.WarmBorrowedNameHitsAllocateZeroAndUseOwnedInternedStrings -method- Xemele.Tests.Entities.ContextTests.BorrowedLookupsHaveNoWarmAllocationAndCannotBeMutated -maxThreads 1 -noColor -result-xml docs/reports/M3-async-input/preservation.xml",
+      "result": "passed",
+      "summary": "Release build zero warnings/errors; 339 passed, zero failed/errors/skipped/notrun, including 31 own cases; two inherited allocation-only methods deferred to measurement lease.",
+      "artifact": "docs/reports/M3-async-input/preservation.xml"
+    },
+    {
+      "id": "api-sample",
+      "kind": "check",
+      "revision": "3679687dcbd2ffbe84bcc13c9c74b0899c53baf7",
+      "command": "python3 docs/reports/M3-async-input/check-api.py; dotnet build samples/M3-async-input/AsyncInput.Sample.csproj -c Release --no-restore -m:1 /nodeReuse:false /p:UseSharedCompilation=false; dotnet samples/M3-async-input/bin/Release/net10.0/AsyncInput.Sample.dll",
+      "result": "passed",
+      "summary": "712 compiled members exactly match duplicate-checked current fragment union; six frozen async methods, approved interface row only; sample compiles/runs all APIs with caller stream open.",
+      "artifact": "docs/reports/M3-async-input/report.md"
+    },
+    {
+      "id": "probe-control",
+      "kind": "check",
+      "revision": "9e9da61896bb185981825e28f306158745388f3a",
+      "command": "dotnet build docs/reports/M3-async-input/Probe/Probe.csproj -c Release --no-restore -m:1 /nodeReuse:false /p:UseSharedCompilation=false /p:BuildProjectReferences=false; XEMELE_TESTED_REVISION=9e9da61896bb185981825e28f306158745388f3a dotnet docs/reports/M3-async-input/Probe/bin/Release/net10.0/Xemele.Benchmarks.dll --control docs/reports/M3-async-input/control.json; dotnet docs/reports/M3-async-input/Probe/bin/Release/net10.0/Xemele.Benchmarks.dll --discover docs/reports/M3-async-input/benchmark-artifacts",
+      "result": "passed",
+      "summary": "Probe-only Release build zero warnings/errors, unchanged runtime3679687 hash; counters-disabled semantic controls valid=true with32 active samples, exact1024 suspended calls/bytes/suspensions and8MiB retention characters; discovery-only preexecution guard exact4cases/one fixed job. No observations.",
+      "artifact": "docs/reports/M3-async-input/control.json"
+    },
+    {
+      "id": "allocation-retention-bdn",
+      "kind": "check",
+      "revision": "9e9da61896bb185981825e28f306158745388f3a",
+      "command": "Under coordinator lease m3-async-input-9e9da61-measure: prebuilt dotnet docs/reports/M3-async-input/Probe/bin/Release/net10.0/Xemele.Benchmarks.dll --allocation docs/reports/M3-async-input/allocation.json (25s timeout), only exit0 then same DLL --benchmark docs/reports/M3-async-input/benchmark-artifacts (120s timeout), XEMELE_TESTED_REVISION=9e9da61896bb185981825e28f306158745388f3a; wrapper reaps and checks process groups before release.",
+      "result": "passed",
+      "summary": "Actual allocation exit0 1.278s and benchmark exit0 0.684s, no surviving groups/session/children, release before inspection. Raw valid=true: cold57336B,4096actual warmed buffered text calls0B total,noop0B,positive4120B,1024exact suspended chars/readbytes/suspensions327680B(320B/call),32active256KiB samples peak8576B through8MiB (bound131072B); exact runtime/probe hashes. Four BDN cases/one fixed job success/statistics/exits guards pass: sync341.539ns0B,async buffered598.565ns2B,async suspended2724.935ns320B,noop0.163ns0B. BDN2B discrepancy preserved versus direct warm0; short timing informational, no retry, no x64/full1GiB qualification claim.",
+      "artifact": "docs/reports/M3-async-input/report.md"
+    },
+    {
+      "id": "task-validation",
+      "kind": "check",
+      "revision": "9e9da61896bb185981825e28f306158745388f3a",
+      "command": "python3 tools/planning/tasks.py validate; git diff --check",
+      "result": "passed",
+      "summary": "147 task records validate after implemented criteria/evidence update; final diff whitespace check passed.",
+      "artifact": null
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Focused child of M3-async; parent retains original integrated acceptance.",
-    "checks": [],
-    "remaining": [],
-    "requests": [
-      "Coordinator grants existing XmlReader.cs only sync Read idle mode selection insertion after completed guard; future async partial uses verified M3-resource-mode setter. Preserve frozen sync behavior and prior source checks.",
-      "Coordinator grants docs/api/M3-reader.txt existing T:XmlReader only IAsyncDisposable type interface addition after reader verified; preserve existing IDs and members."
-    ]
+    "summary": "Frozen async SAX/reader/DOM input implemented at3679687, probe-only guards at9e9da61. Bounded ReadAsync/resource continuations, exact existing DOM semantics, linked reader tokens/gate/current lifetime and once-only async cleanup. Only granted existing sync mode insertion/interface row edited.",
+    "checks": [
+      "Own Release tests/probe/sample builds zero warnings/errors;339preservation cases including31own, zero failures/errors/skipped/notrun, two unchanged inherited allocation-only checks excluded with prior evidence preserved.",
+      "Own compiled712-member duplicate-checked fragment union and all-new-API sample passed; counters-disabled preparation and4case/onejob discovery guards passed.",
+      "Leased exact prebuilt allocation and4caseBDN commands exited0, reaped/no groups; direct warm primitive0B/4096calls, genuinely suspended320B/call,active retention32samples peak8576B through8MiB; BDN buffered2B discrepancy retained.",
+      "Task validator passed147 records after implementation/evidence update; final diff check passed."
+    ],
+    "remaining": [
+      "Coordinator records integrated verification/integration_revision; do not treat branch implemented as verified. Full1GiB corpus and x64 qualification belong to coordinator/milestone checks, not claimed here."
+    ],
+    "requests": []
   }
 }
