@@ -1467,7 +1467,12 @@
       "chat_id": "01a128b9-16c4-71a0-86df-d1d4b0cd7a79",
       "worktree_path": "/Users/sebastienros/.codex/worktrees/46dc/xemele",
       "handoff_revision": "60d50b605d94753ee2a27721dec2556811368bbd",
-      "integration_revision": "8e475a0bf35386b29289232b6581655042ab9b59"
+      "integration_revision": "8e475a0bf35386b29289232b6581655042ab9b59",
+      "cleanup": {
+        "worktree": "removed",
+        "chat_archived": true,
+        "branch_preserved": true
+      }
     }
   ],
   "benchmark_grant": {
@@ -1611,16 +1616,15 @@
     }
   },
   "measurement_lease": {
-    "id": "m3-push-adc750d-measure",
-    "status": "released",
-    "revision": "adc750dec4a48b91870f789396ba05741fd88495",
-    "runtime_revision": "5dae4fb3eeb06d882016cae111fe5c28c5c76e9e",
-    "duration_limit_seconds": 240,
-    "scope": "Exact prebuilt Push.Probe.dll --allocation <=120s generated1GiB/64active16MiB samples/warmzero+positive; only actualexit0 then sameDLL --benchmark <=110s exactly3singleInProcess cases,3iterations/1warmup/invocation64or256 and hardsuccessguard. No edits/builds/tests/generation/options/retries. Asyncinput frozen3679687 PARK nochildren; reviewer/root no workloads. Release after actualexit/no session/group/children before inspection.",
-    "probe_sha256": "fce9e08c2180eea4a3c5f8fe7399cc8fa1852e3184f11cb36027d184896c7786",
-    "runtime_sha256": "0560f4e1220f96c46a98e8c3fa5918d6220f662bb6c65a36986681c90cdf34c6",
-    "limitations": "Host user/IDE processes untouched; timing informational, no comparative optimization/regression claims. Actual warmed ownprocesszero/positive and active bounded memory mandatory.",
-    "result": "Both actual children+wrapper exit0, reaped/absent groups/no session. Full1GiB/64active samples peakdelta0, warm512x4096bytes allocated0B positive1048B, capacitiesfixed, terminalcounts correct;3BDNsuccess. Input probe-only raw-gating/active-sampling/bounded-discovery preparation correction required before next grant."
+    "id": "m3-async-input-9e9da61-measure",
+    "status": "granted",
+    "revision": "9e9da61896bb185981825e28f306158745388f3a",
+    "runtime_revision": "3679687dcbd2ffbe84bcc13c9c74b0899c53baf7",
+    "duration_limit_seconds": 150,
+    "scope": "Exact prebuilt standalone --allocation <=25s, raw gate warmbuffered/noopzero+positive, actual1024suspended reads/process-wide counts and generated1/8MiB active256KiB retention samples; only if actualexit0 sameDLL --benchmark <=120s singleexplicitInProcessNoEmit4cases/1024invocations/unroll1/launch1/3warm3iterations with before/after guard. Allotherworkersarchived; root/reviewer no workloads. No edits/builds/tests/generation/options/retries; release actualexit/no session/group/children before inspection.",
+    "probe_sha256": "2965D7EA61279F0B7F16F17F1EDBBE24C73E71563B63FBD29979DB627489FEC1",
+    "runtime_sha256": "BDFFEB6A42CE5AF508C55C620E108FA6E160E3A41A880F3F39DD014FE944F0EF",
+    "limitations": "Timing informational sharedhost, no comparative/regression claim. Bufferedprimitive actualzero/positive/process-wide real suspended costs/bounded live scratch mandatory. Full1GiB allsurface qualification remains corpus."
   },
   "offline_corpus_setup": {
     "checkout": "/private/tmp/xemele-m3-integration",
