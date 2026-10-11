@@ -133,3 +133,7 @@ only these summary tables/analysis are committed. Allocation JSON SHA256
 benchmark log SHA256
 `8642e72db1fd4eb3363a0fcf12b63492206ec7a634e1d09fab0f84e0ad983c15`.
 No raw deletion, new test or measurement repetition accompanied reporting.
+
+## Integrated verification
+
+Candidate `dd9850b0a78d9ecaea167d0f1dc92dcb1a24aba5` includes verified resource-kind/parser-budget repairs. Fresh cache restores and forced Release builds of tests, public sample and approved API extractor passed without warnings/errors. Actual .NET 10.0.11 XML shows136 selected tests passed, including23adapter/6shared-budget/107earlier syntax/entity/resolver cases; sample passed;1008API members matched (951inherited+57adapter). Planning162 and whitespace checks passed. Root independently inspected all16CSVcases, actualruntime/ShortRun headers,32zero warm GC batches and positive1048B control, owned/retainednumerators and lifecycle before verification. Initial namespace-plus-method filter selected0tests and is not passing coverage; corrected method-only selection produced136cases. No measurement repeated during integration.

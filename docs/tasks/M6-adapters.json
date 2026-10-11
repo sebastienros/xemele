@@ -4,11 +4,11 @@
   "milestone": "M6",
   "title": "BCL XML integration adapters",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M6 coordinator worker M6-adapters",
   "branch": "codex/m6-adapters",
   "base_revision": "c1561c06b783cb7a5f5790ef26cdae8a8c10ca49",
-  "integration_revision": null,
+  "integration_revision": "dd9850b0a78d9ecaea167d0f1dc92dcb1a24aba5",
   "depends_on": [
     "M6-contracts"
   ],
@@ -38,7 +38,8 @@
         "focused-correctness",
         "sample-api",
         "review-corrections",
-        "exclusive-measurements"
+        "exclusive-measurements",
+        "integrated-checks"
       ]
     },
     {
@@ -48,7 +49,8 @@
       "evidence": [
         "focused-correctness",
         "review-corrections",
-        "exclusive-measurements"
+        "exclusive-measurements",
+        "integrated-checks"
       ]
     },
     {
@@ -60,7 +62,8 @@
         "prepared-controls",
         "review-corrections",
         "exclusive-measurements",
-        "raw-results-inspection"
+        "raw-results-inspection",
+        "integrated-checks"
       ]
     }
   ],
@@ -141,6 +144,24 @@
       "result": "passed",
       "summary": "All16success reports mechanically checked; allocation/BDN raw inspected independently by worker and coordinator after release. Summary tables retain inclusive positive owned/setup/async/error costs despite cursor dash. Reader substantially slower/moreallocating than BCL; capture property caching trades construction/retention for warmed cursor costs; one wide CI and denied priority reported. Only summaryanalysis committed; ignored raw preserved for combined integration review/cleanup. Runtime/generated/binary source unchanged since23focused passing correctness.",
       "artifact": "docs/reports/M6-adapters/results.md"
+    },
+    {
+      "id": "integrated-checks",
+      "kind": "integration",
+      "revision": "dd9850b0a78d9ecaea167d0f1dc92dcb1a24aba5",
+      "command": "Fresh isolated restore/forced Release build tests, publicsample, ApiCheck RuntimeFrameworkVersion10.0.11; pinned --fx-version10.0.11 xUnit -method AdapterTests.* SharedParserBudgetTests.* SyntaxTests.* ContentTests.* ResolverTests.*; publicsample; scoped API union; planning validate; git diff --check",
+      "result": "passed",
+      "summary": "136 passed0failed/skipped, XML actual .NET10.0.11; sample actual10.0.11;1008compiledAPI=951inherited+57;162tasksvalidated; zero build warnings/errors; independent16case/GCrawinspection and approvedsource/harness retained.",
+      "artifact": "docs/reports/M6-adapters/results.md"
+    },
+    {
+      "id": "initial-integration-filter",
+      "kind": "check",
+      "revision": "dd9850b0a78d9ecaea167d0f1dc92dcb1a24aba5",
+      "command": "Initial combined xUnit -namespace plus -method selection",
+      "result": "skipped",
+      "summary": "Filter types intersected and selected0tests; not counted as passingtestcoverage. Corrected method-only selection ran136 cases successfully.",
+      "artifact": "docs/reports/M6-adapters/results.md"
     }
   ],
   "blockers": [],
@@ -151,11 +172,10 @@
       "Logical mixedtext BCL controls sync/async chunk1/2/4096, namespaces/attrs/ownership/error/disposal/overlap/redirectedentitybase, navigator clone/snapshot/coalescing/ID/scope/incomplete/unsupported covered.",
       "Source-only harness corrections preserve runtime/generated/binary hashes. Exact sole-command identitycontrols/unknownvariable negative pass; fullcompleteenv frozen with only provenSHLVL pin; agent CODEX_THREAD_ID remains frozen.",
       "Corrected lease at4b797dd executed once, allphase/initial/finalexit0, nochildren; durable release before rawinspection.16nonzero successful ShortRunNoEmitcases(actual10.0.11), warminclusive0B/8192groups, positive1048B, cold/owned/trueasync/retained positive evidence in results.md.",
-      "Failed first lease beforephases and inadvertent metadata-edit final-only identitycontrol failure preserved; no unrun checks passing or measurement retries."
+      "Failed first lease beforephases and inadvertent metadata-edit final-only identitycontrol failure preserved; no unrun checks passing or measurement retries.",
+      "Fresh combined integration136 actual10.0.11 tests,publicsample/API1008/planning162; independent raw16case/GCinspection/sourceapproval"
     ],
-    "remaining": [
-      "Coordinator reviewed integration checks and verified status; preserve ignored artifacts/M6-adapters raw until combined integration inspection/cleanup."
-    ],
+    "remaining": [],
     "requests": []
   }
 }
