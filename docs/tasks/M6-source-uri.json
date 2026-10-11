@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "id": "M6-source-uri",
+  "milestone": "M6",
+  "title": "Expose additive source-aware XML and DTD entry points",
+  "kind": "feature",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "depends_on": [
+    "M6-contracts",
+    "M6-parser-budget",
+    "M5-gate"
+  ],
+  "goals": [
+    "G09",
+    "G17"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/integration.md"
+  ],
+  "owns": [
+    "src/Xemele/Parsing/Dom/Factories.cs",
+    "src/Xemele/Validation/Dtd/DtdSchema.cs",
+    "src/Xemele/Validation/Dtd/Evaluation/DtdSubsetReader.cs",
+    "docs/api/M6-source-uri.txt",
+    "docs/decisions/M6/source-uri.md",
+    "tests/Xemele.Tests/M6-source-uri/",
+    "samples/M6-source-uri/",
+    "docs/reports/M6-source-uri/"
+  ],
+  "api_or_output": "Add two source-aware overloads with every parameter required; previous signatures preserved",
+  "acceptance": [
+    {
+      "id": "M6-source-uri-A1",
+      "description": "Freeze/implement exact additive all-required signatures XmlDocument.Load(Stream input, XmlParseOptions? options, Uri sourceUri, CancellationToken cancellationToken) and DtdSchema.Compile(string dtd, XmlResourceResolver? resolver, XmlResourceLimits? limits, Uri sourceUri, CancellationToken cancellationToken). Preserve every previous public row and null/default-literal overload call. Uri nonnull/absolute validation before transport/resolver work; no ambient grant.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M6-source-uri-A2",
+      "description": "Delegate source identity through existing byte DOM adapter and DTD subset initial XmlLocation, retaining parse/DTD models, final redirected resource bases, quotas/cancellation/stream ownership/cleanup/exception identity. Focused public tests prove relative external subset/entity/PE resolution, final URI diagnostics, invalid source no IO, old defaults and source compatibility. No scanning/callback algorithm changes.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M6-source-uri-A3",
+      "description": "Demonstrate both entry points using verified dependencies; fresh actual10.0.11 focused/earlier source and compiled API checks plus task validation/owned diff; integrated evidence before CLI consumes. Constructor/source propagation has no new steady-state algorithm; cumulative allocation regressions remain M6 gate.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "Owning additive repair requested by CLI: source-aware primary DOM and named DTD compilation must preserve relative declarations and model metadata.",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}
