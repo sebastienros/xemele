@@ -47,7 +47,7 @@ public sealed class TemplateAssertionTests
             configurations++;
         }
         Assert.Equal(15, supports.Count);
-        Assert.True(configurations >= 113); Assert.True(assertions >= 392);
+        Assert.Equal(336, configurations); Assert.Equal(899, assertions);
     }
 
     private static object? Evaluate(JsonElement expression, HtmlDocument doc, HtmlNode? created)
