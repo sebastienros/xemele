@@ -84,8 +84,8 @@ public sealed class SourceUriTests
         XmlDocument.Load(exact, new() { Limits = new() { DocumentCharacters = 4 } }, Primary, Ct);
         using var over = new ProbeStream("<r/>"u8.ToArray());
         Assert.Throws<XmlParseException>(() => XmlDocument.Load(over, new() { Limits = new() { DocumentCharacters = 3 } }, Primary, Ct));
-        DtdSchema.Compile("<!ELEMENT long EMPTY>", null, new() { TokenCharacters = 4 }, Primary, Ct);
-        Assert.Throws<XmlParseException>(() => DtdSchema.Compile("<!ELEMENT long EMPTY>", null, new() { TokenCharacters = 3 }, Primary, Ct));
+        DtdSchema.Compile("<!ELEMENT long EMPTY>", null, new() { TokenCharacters = "<!ELEMENT long EMPTY>".Length }, Primary, Ct);
+        Assert.Throws<XmlParseException>(() => DtdSchema.Compile("<!ELEMENT long EMPTY>", null, new() { TokenCharacters = "<!ELEMENT long EMPTY>".Length - 1 }, Primary, Ct));
         using var cancellation = new CancellationTokenSource(); cancellation.Cancel();
         using var input = new ProbeStream([]); var resolver = new Resolver();
         Assert.Equal(cancellation.Token, Assert.ThrowsAny<OperationCanceledException>(() => XmlDocument.Load(input, Options(resolver), Primary, cancellation.Token)).CancellationToken);
