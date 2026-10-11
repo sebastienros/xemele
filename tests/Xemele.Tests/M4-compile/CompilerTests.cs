@@ -163,6 +163,34 @@ public sealed class CompilerTests
         Compile("1",explicitXml); Reject("1","XPATH-COMPILE-LIMIT",explicitXml with {Limits=new(){MaxTokens=1}});
         var error = Reject("a[1]","XPATH-COMPILE-LIMIT",Limits(new(){MaxTokens=2})); Assert.Equal(new XPathSourceSpan(2,1),error.Diagnostic.Span);
     }
+    [Theory]
+    [InlineData(".",1,3,2)][InlineData("..",1,3,2)][InlineData("/",1,1,1)][InlineData("/a",2,3,2)]
+    [InlineData("//a",2,5,2)][InlineData("a//b",3,7,2)][InlineData("@a",2,3,2)][InlineData("$v",2,1,1)]
+    [InlineData("true()",3,1,1)][InlineData("concat('a','b')",6,3,2)][InlineData("(1)[2]",6,3,3)]
+    [InlineData("a[1]",4,4,4)][InlineData("a[b]",4,6,5)][InlineData("a[b[c]]",7,9,8)]
+    [InlineData("node()",3,3,2)][InlineData("processing-instruction('go')",4,3,2)]
+    [InlineData("1+2*3",5,5,1)][InlineData("--1",3,3,3)][InlineData("(a)[1]/b",8,8,3)]
+    public void EveryVariantCountsAtExactTokenAstAndDepthLimits(string source,int tokens,int nodes,int depth)
+    {
+        Compile(source,new(){Limits=new(){MaxTokens=tokens,MaxAstNodes=nodes,MaxDepth=depth}});
+        if(tokens>1) Reject(source,"XPATH-COMPILE-LIMIT",new(){Limits=new(){MaxTokens=tokens-1}});
+        if(nodes>1) Reject(source,"XPATH-COMPILE-LIMIT",new(){Limits=new(){MaxAstNodes=nodes-1}});
+        if(depth>1) Reject(source,"XPATH-COMPILE-LIMIT",new(){Limits=new(){MaxDepth=depth-1}});
+    }
+    [Fact]
+    public async Task SharedCompilerAndContextDoNotShareMutableOperationState()
+    {
+        IXPathCompiler compiler = new XPathCompiler();
+        var context=XPathStaticContext.FromOptions(null,TestContext.Current.CancellationToken);
+        var outputs=await Task.WhenAll(Enumerable.Range(0,16).Select(_=>Task.Run(()=>compiler.Compile("//book[@id='b1']/title",context,TestContext.Current.CancellationToken),TestContext.Current.CancellationToken)));
+        foreach(var output in outputs)
+        {
+            var path=Assert.IsType<XPathPath>(output); Assert.Equal(3,path.Steps.Count);
+            Assert.Throws<NotSupportedException>(()=>((IList<XPathStep>)path.Steps).Clear());
+            Assert.Single(path.Steps[1].Predicates);
+        }
+        for(int i=1;i<outputs.Length;i++) Assert.NotSame(outputs[0],outputs[i]);
+    }
     [Fact]
     public void ExplicitStacksHandleUnlimitedDeepAndWideExpressions()
     {
