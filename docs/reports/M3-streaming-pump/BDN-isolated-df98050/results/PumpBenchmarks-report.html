@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta charset='utf-8' />
+<title>PumpBenchmarks-20261010-181512</title>
+
+<style type="text/css">
+	table { border-collapse: collapse; display: block; width: 100%; overflow: auto; }
+	td, th { padding: 6px 13px; border: 1px solid #ddd; text-align: right; }
+	tr { background-color: #fff; border-top: 1px solid #ccc; }
+	tr:nth-child(even) { background: #f8f8f8; }
+</style>
+</head>
+<body>
+<pre><code>
+BenchmarkDotNet v0.15.8, macOS Sequoia 15.8.1 (24H32) [Darwin 24.6.0]
+Unknown processor
+.NET SDK 10.0.400
+  [Host] : .NET 10.0.11 (10.0.11, 10.0.1126.37416), Arm64 RyuJIT armv8.0-a
+</code></pre>
+<pre><code>Job=InProcess  Toolchain=InProcessEmitToolchain  IterationCount=3  
+WarmupCount=3  
+</code></pre>
+
+<table>
+<thead><tr><th>Method      </th><th>Mean</th><th>Error</th><th>StdDev</th><th>Gen0</th><th>Gen1</th><th>Allocated</th>
+</tr>
+</thead><tbody><tr><td>BorrowedBytes</td><td>185.7 &mu;s</td><td>74.28 &mu;s</td><td>4.07 &mu;s</td><td>-</td><td>-</td><td>-</td>
+</tr><tr><td>BorrowedCharacters</td><td>145.4 &mu;s</td><td>117.71 &mu;s</td><td>6.45 &mu;s</td><td>-</td><td>-</td><td>-</td>
+</tr><tr><td>EndToEndBytes</td><td>284.0 &mu;s</td><td>2.27 &mu;s</td><td>0.12 &mu;s</td><td>5.8594</td><td>0.4883</td><td>52673 B</td>
+</tr></tbody></table>
+</body>
+</html>

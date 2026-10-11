@@ -150,10 +150,47 @@ parser-owned. Decoder/core/tag setup, name/value persistence, comment/PI owners,
 DTD model projections and async continuation/I/O owners are distinct costs.
 No new scan/matcher optimization or throughput improvement is claimed.
 
-## Pending
+## Isolated benchmark completion
 
-Prepared three-case in-process BenchmarkDotNet MemoryDiagnoser run awaits a
-fresh verified host window. Interrupted timing is unusable and no completed
-BDN case is claimed. The allocation child should not be repeated. Integrated
-verification and broad/cross-architecture release evidence remain coordinator/
-release follow-ups; implementation is not marked verified by this worker.
+Fresh timing-only lease `m3-streaming-pump-df98050-timing`, unchanged pinned
+executable/prebuilt probe and source `df98050`: all three InProcessEmitToolchain
+cases completed, process exit 0, total 18.75 seconds within the 120-second bound.
+No allocation repeat, build, generation, source/options/configuration change or
+retry. RELEASED/nochildren was reported before inspecting output. The coordinator
+confirmed known unrelated benchmark/test processes absent and the peer worker
+parked for this window. Earlier revoked pilot output remains separate and invalid.
+
+BenchmarkDotNet 0.15.8, SDK 10.0.400/runtime 10.0.11 Arm64, concurrent workstation
+GC, three warmups and three measured iterations, caller input generation outside
+measurement. Fixtures and results are consumed by exact semantic counters.
+Raw iterations, distributions and environment metadata:
+`benchmark-isolated.stdout.txt`; CSV/Markdown/HTML exports and full log in
+`BDN-isolated-df98050/`. CPU model and process-priority adjustment were unavailable
+under sandbox permissions (sysctl/priority warnings); all cases still completed.
+No affinity/power-control claim is made. Timing is provisional single-host data,
+not a comparative optimization or cross-architecture release claim.
+
+| Scope | Payload per operation | Mean | MemoryDiagnoser |
+| --- | --- | ---: | ---: |
+| BorrowedBytes | 4096 bytes into established text context | 185.724 us | 0 B |
+| BorrowedCharacters | 4096 chars into established text context | 145.423 us | 0 B |
+| EndToEndBytes | 8 KiB body plus lexical/structural fixture | 284.024 us | 52,673 B |
+
+MemoryDiagnoser reports a dash for zero allocations; the independent process-wide
+probe proves exact 0 B with its positive control. The owned end-to-end BDN value
+is within one byte/op of the independent 52,672 B/op counter scope. Borrowed
+99.9% confidence intervals are wide (111.442–260.006 us for bytes and
+27.709–263.136 us for characters); no throughput improvement or regression is
+inferred from these three-iteration samples. BDN owned fixture excludes setup
+input generation and includes per-operation context, lexical/tag owner creation
+and disposal.
+
+## Handoff
+
+A1/A2/A3 pass on the implementation branch. Integrated verification remains the
+coordinator's responsibility; this worker leaves `integration_revision` null and
+sets `implemented`, not `verified`. Preserve existing same-source passing matrices
+and valid allocation/BDN evidence. Broader very-large-stream targets and x64/
+Arm64 release confirmation remain performance/release follow-ups. The official
+inventory wrapper needs environment-only pinned corpus provisioning; direct
+approved compiled API comparison already matches 639 members.

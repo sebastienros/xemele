@@ -4,11 +4,11 @@
   "milestone": "M3",
   "title": "Shared bounded decoding and public event aggregation pump",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "verified",
   "owner": "M3 coordinator 01a1284a-8826-7fc2-af44-74552db608f2 / M3-streaming-pump worker",
   "branch": "codex/m3-streaming-pump",
   "base_revision": "6008a11dd7ba6d88f9b4e6ba854ba0ea5d1a7487",
-  "integration_revision": null,
+  "integration_revision": "f0ded2081dd6d969941d430168568dd2451aaea1",
   "depends_on": [
     "M3-callbacks",
     "M3-async-resources"
@@ -36,7 +36,9 @@
       "evidence": [
         "affected-correctness",
         "review-corrections",
-        "source-review"
+        "source-review",
+        "combined-integration",
+        "independent-reviewed-resolution"
       ]
     },
     {
@@ -46,19 +48,24 @@
       "evidence": [
         "affected-correctness",
         "review-corrections",
-        "source-review"
+        "source-review",
+        "combined-integration",
+        "independent-reviewed-resolution"
       ]
     },
     {
       "id": "M3-streaming-pump-A3",
       "description": "Record real zero-allocation borrowed event and bounded scratch evidence, compile without later public adapters, preserve integrated M2 semantics and validate at a known tested revision.",
-      "status": "pending",
+      "status": "passed",
       "evidence": [
         "process-wide-allocations",
+        "isolated-bdn",
         "prepared-harness-control",
         "direct-api",
         "planning-validator",
-        "revoked-bdn"
+        "diff-check",
+        "combined-integration",
+        "independent-reviewed-resolution"
       ]
     }
   ],
@@ -161,22 +168,46 @@
       "result": "passed",
       "summary": "No whitespace errors.",
       "artifact": null
+    },
+    {
+      "id": "isolated-bdn",
+      "kind": "check",
+      "revision": "df98050f29526c38b36b7a1eb9c17b59416c0d79",
+      "command": "XEMELE_PUMP_REVISION=df98050f29526c38b36b7a1eb9c17b59416c0d79 pinned absolute dotnet/probe DLL --benchmark /Users/sebastienros/.codex/worktrees/97c4/xemele/docs/reports/M3-streaming-pump/BDN-isolated-df98050, subprocess timeout120s",
+      "result": "passed",
+      "summary": "Fresh timing-only lease m3-streaming-pump-df98050-timing; unchanged prepared source/binaries/options,3/3 InProcessEmitToolchain completed18.75s exit0. RELEASED/nochildren before report inspection. MemoryDiagnoser byte/char borrowed0B, owned52673B/op; means185.724us/145.423us4096unit primitives,284.024us8KiBowned; informational wide3iterationCIs, no comparative claim. macOS15.8.1Arm64 SDK10.0.400 runtime10.0.11; CPUmodel/priority permissionwarnings recorded. No allocationrepeat/build/generation/edit/retry. Earlier revoked pilot remains invalid.",
+      "artifact": "docs/reports/M3-streaming-pump/benchmark-isolated.stdout.txt"
+    },
+    {
+      "id": "combined-integration",
+      "kind": "integration",
+      "revision": "f0ded2081dd6d969941d430168568dd2451aaea1",
+      "command": "Pinned Release test build --no-restore --disable-build-servers -m:1 -p:BuildInParallel=false -p:UseSharedCompilation=false; tests DLL -namespace Xemele.Tests.StreamingPump -parallelMode none -showLiveOutput -noColor -result-xml /private/tmp/m3-streaming-pump-integrated.xml; official tools/ApiBaseline/compare.py; python3 tools/planning/tasks.py validate",
+      "result": "passed",
+      "summary": "Tested integrated writer/callbacks/core/resources+pump: Release0warnings/errors,33 focusedtests0failed/skipped, official639API matched with hashverifiedprivatecorpus setup;145taskrecordsvalid. Verificationbranch starts from exact testedf0 tree and merges later coordinator/workerreport metadata only; product/test/API closure unchanged. Preserved sourcecorrectness351 and changed4 checks; ownprocess byte/char0Bpositive1048, fixedscratch/16MiBretention, isolated3caseBDNpassed after separatetiminglease. Pending asyncwriter remains isolated elsewhere, not a prerequisite.",
+      "artifact": "docs/reports/M3-streaming-pump/integration-tests.xml"
+    },
+    {
+      "id": "independent-reviewed-resolution",
+      "kind": "review",
+      "revision": "df98050f29526c38b36b7a1eb9c17b59416c0d79",
+      "command": null,
+      "result": "passed",
+      "summary": "Read-only review_core_async_boundary batched2blockingfindings atb8: missingfatalrecoverydiagnostic snapshots and incomplete default item source location. Both resolved by2line runtimecorrection+focusedidentity/order/pause and item/ValuePartlocation assertions; reviewer confirms no remaining findings in focuseddiff. Bounded decode/tag/model/cursors, accepted-eventno-replay, ownedDTDclosinglocations and awaited asynccleanup otherwise coherent.",
+      "artifact": null
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Shared bounded pump implemented; A1/A2 checks/review pass. Real byte/character borrowed primitive allocation0B proven with positive control; prepared BDN pending safe host window after interrupted revoked lease.",
+    "summary": "Implemented frozen shared bounded byte/character decoding and sixteen-event aggregate projection pump with exact original locations, no replay, one-tag/model cursors and awaited async-only resource ownership. Reviewed corrections preserve terminal recovery diagnostics/default locations. Runtime df98050; all A1/A2/A3 pass on branch, awaiting integrated verification. Verified exact tested combinedf0 tree;33tests and official639APIpass.",
     "checks": [
-      "Release prepared runtime/tests/probe0warnings/errors; own30+affected351pass at b8e5035; scoped final4pass at df98050; direct639APIpass; validator142valid; diffclean.",
-      "Own process-wide allocation exit0 accepted; benchmark exit-15 invalid pilot timing."
+      "Prepared Release runtime/tests/probe0warnings/errors; own30 plus affected351pass at b8e5035; scoped final4pass at df98050; direct approved639APIpass; validator142valid; diffclean.",
+      "Process-wide byte/character borrowed512segments after128warmups0B, positive1048B; cold2fixture128256B and owned32endtoend1685504B separated;16MiBfixedcapacity/no retainedgrowth.",
+      "Fresh isolated BDN3/3 InProcess cases18.75s exit0; borrowed byte/character0B, owned52673B/op. Original revoked benchmark-15 pilot preserved invalid, not timing evidence."
     ],
     "remaining": [
-      "A3: unchanged prebuilt three-case BDN memory diagnostics/timing awaiting fresh isolated lease; do not repeat valid allocation child.",
-      "Coordinator integrated verification; no worker integration_revision."
+      "Provisional single-Arm64 timing; broader very-large/cross-architecture release confirmation remains performance work."
     ],
-    "requests": [
-      "Fresh host-free exclusive BDN-only lease \u2264120s for unchanged df98050 prebuilt probe; preserve interrupted output under distinct output paths.",
-      "Coordinator handles official full API inventory via environment-only corpus provisioning; worker direct approved compiled API639 matched."
-    ]
+    "requests": []
   }
 }
