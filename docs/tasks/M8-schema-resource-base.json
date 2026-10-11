@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "id": "M8-schema-resource-base",
+  "milestone": "M8",
+  "title": "Separate schema resolution base from referring resource identity",
+  "kind": "feature",
+  "status": "in_progress",
+  "owner": "M8 coordinator bounded shared repair",
+  "branch": "codex/m8-schema-resource-base",
+  "base_revision": "e3e922cc766b7d72dacac7a8d999c75fba0cf753",
+  "integration_revision": null,
+  "depends_on": [
+    "M8-source-locations",
+    "M8-rng-compile",
+    "M8-xsd-compile"
+  ],
+  "goals": [
+    "G13",
+    "G14",
+    "G15"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/schemas.md"
+  ],
+  "owns": [
+    "src/Xemele/Validation/SchemaCommon/ResourceLoader.cs",
+    "src/Xemele/Validation/RelaxNg/Compilation/Compiler.cs",
+    "src/Xemele/Validation/Xsd/Compilation/Compiler.cs",
+    "tests/Xemele.Tests/M8-schema-resource-base/",
+    "docs/reports/M8-schema-resource-base/"
+  ],
+  "api_or_output": "Internal concrete loader overload with explicit effective resolution base; unchanged frozen reference/interface and public API",
+  "acceptance": [
+    {
+      "id": "M8-schema-resource-base-A1",
+      "description": "Separate effective inherited xml:base resolution from final referring resource URI while preserving original lexical SystemId, frozen interface behavior, null/absolute base semantics, quotas and ownership. Update integrated RNG/XSD callsites without changing caches or cycles.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M8-schema-resource-base-A2",
+      "description": "Prove distinct source/base/location URIs, absolute and relative null-base handling, legacy interface fallback, redirected nested xml:base through RNG include/externalRef and XSD resource composition, schema kind/SystemId/PublicId and exactly-once disposal. Preserve relevant existing resource/correctness/API checks.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M8-schema-resource-base-A3",
+      "description": "Record read-only review and actual integrated checks; provide precise overload handoff to Schematron only after verification. Preserve prior milestone evidence and document unchanged allocation boundaries without inventing a new hot-path optimization.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "Root-owned bounded repair for confirmed resource referrer/base conflation; read-only assessment accepted explicit-base concrete overload preserving frozen contracts.",
+    "checks": [],
+    "remaining": [
+      "Implement and verify before Schematron consumes overload and public schema facades compose."
+    ],
+    "requests": []
+  }
+}
