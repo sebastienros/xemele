@@ -25,7 +25,8 @@
     "src/Xemele/XPath/Model/ContextMap.cs",
     "tests/Xemele.Tests/M4-model-context/",
     "benchmarks/Xemele.Benchmarks/M4-model-context/",
-    "docs/reports/M4-model-context/"
+    "docs/reports/M4-model-context/",
+    "tests/Xemele.Tests/M4-model/SnapshotCopyTests.cs"
   ],
   "api_or_output": "Internal bounded immutable context map; optional entry-span static-context factory overload; public897 unchanged",
   "acceptance": [
@@ -52,7 +53,7 @@
   "evidence": [],
   "blockers": [],
   "handoff": {
-    "summary": "Claimed after evaluator source review found existing context construction hashing and entry-span defects. Evaluator waits for verified repair before adopting; no worker edits dependency paths.",
+    "summary": "Claimed context repair; existing exact quota regression must account for newly charged actual duplicate-name comparisons (two keys previously4 units, now8). No weakening of limit boundary: exact8 succeeds,7 fails. Preserve all other model tests.",
     "checks": [],
     "remaining": [
       "Implement and verify narrow repair."
