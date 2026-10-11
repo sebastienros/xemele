@@ -55,10 +55,10 @@ public class StreamingProvenanceBenchmarks
 
 internal class CountSink : IXmlEventSink
 {
-    internal long Scalars;
+    internal long Scalars, Names;
     public bool StartDocument(XmlLocation location) => true;
     public bool Declaration(XmlDeclarationView declaration) => true;
-    public bool StartElement(XmlNameView name, bool isEmptyElement, XmlLocation location) => true;
+    public bool StartElement(XmlNameView name, bool isEmptyElement, XmlLocation location) { Names += name.LocalName.Length + name.Prefix.Length; return true; }
     public bool NamespaceDeclaration(XmlNamespaceView declaration) => true;
     public bool Attribute(XmlAttributeView attribute) => true;
     public bool StartElementContent() => true;

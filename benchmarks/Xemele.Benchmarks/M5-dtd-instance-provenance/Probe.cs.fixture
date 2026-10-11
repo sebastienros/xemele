@@ -64,11 +64,17 @@ foreach (bool optional in new[] { false, true })
     long firstBefore = GC.GetAllocatedBytesForCurrentThread();
     Check(core.Append("&#32;", [], false, sink, default), ScanStep.NeedInput);
     Print("first-reference-" + optional, GC.GetAllocatedBytesForCurrentThread() - firstBefore, 1);
+    long warmBefore = GC.GetAllocatedBytesForCurrentThread();
     for (int i = 0; i < 1000; i++) Check(core.Append("&#32;", [], false, sink, default), ScanStep.NeedInput);
-    long before = GC.GetAllocatedBytesForCurrentThread();
-    for (int i = 0; i < 100000; i++) Check(core.Append("&#32;", [], false, sink, default), ScanStep.NeedInput);
-    long bytes = GC.GetAllocatedBytesForCurrentThread() - before;
-    Print("warm-borrowed-reference-" + optional, bytes, 100000); if (bytes != 0) throw new Exception("Borrowed dispatch allocated.");
+    Print("warm-borrowed-reference-" + optional, GC.GetAllocatedBytesForCurrentThread() - warmBefore, 1000);
+    string domain = "steady-borrowed-reference-" + optional;
+    for (int batch = 0; batch < 32; batch++)
+    {
+        long before = GC.GetAllocatedBytesForCurrentThread();
+        for (int i = 0; i < 4096; i++) Check(core.Append("&#32;", [], false, sink, default), ScanStep.NeedInput);
+        long bytes = GC.GetAllocatedBytesForCurrentThread() - before;
+        Print(domain, bytes, 4096, batch); if (bytes != 0) throw new Exception("Borrowed dispatch allocated.");
+    }
     Check(core.Append("</r>", [], true, sink, default), ScanStep.Completed);
     if (optional && ((ProofSink)sink).Diagnostic is null) throw new Exception("First witness not delivered.");
     consumed += sink.Scalars;
@@ -78,12 +84,21 @@ foreach (var (opening, unit) in new[] { ("<r>", "<a/>"), ("<r xmlns:p='urn:p'>",
     using var core = new XmlParserCore(new() { Limits = new() { DocumentCharacters = null, EvaluationWork = 1 } });
     var sink = new ProofSink();
     Check(core.Append(opening, [], false, sink, default), ScanStep.NeedInput);
+    long firstBefore = GC.GetAllocatedBytesForCurrentThread();
+    Check(core.Append(unit, [], false, sink, default), ScanStep.NeedInput);
+    Print("first-owned-name-" + unit, GC.GetAllocatedBytesForCurrentThread() - firstBefore, 1);
+    long warmBefore = GC.GetAllocatedBytesForCurrentThread();
     for (int i = 0; i < 1000; i++) Check(core.Append(unit, [], false, sink, default), ScanStep.NeedInput);
-    long before = GC.GetAllocatedBytesForCurrentThread();
-    for (int i = 0; i < 100000; i++) Check(core.Append(unit, [], false, sink, default), ScanStep.NeedInput);
-    long bytes = GC.GetAllocatedBytesForCurrentThread() - before;
-    Print("warm-borrowed-name-" + unit, bytes, 100000); if (bytes != 0) throw new Exception("Borrowed name allocated.");
-    Check(core.Append("</r>", [], true, sink, default), ScanStep.Completed); consumed += sink.Scalars;
+    Print("warm-borrowed-name-" + unit, GC.GetAllocatedBytesForCurrentThread() - warmBefore, 1000);
+    string domain = "steady-borrowed-name-" + unit;
+    for (int batch = 0; batch < 32; batch++)
+    {
+        long before = GC.GetAllocatedBytesForCurrentThread();
+        for (int i = 0; i < 4096; i++) Check(core.Append(unit, [], false, sink, default), ScanStep.NeedInput);
+        long bytes = GC.GetAllocatedBytesForCurrentThread() - before;
+        Print(domain, bytes, 4096, batch); if (bytes != 0) throw new Exception("Borrowed name allocated.");
+    }
+    Check(core.Append("</r>", [], true, sink, default), ScanStep.Completed); consumed += sink.Scalars + sink.Names;
 }
 string[] scenarios = ["no-dtd", "literal", "charref", "entity-literal", "entity-reparsed", "empty", "missing"];
 object? escaped = null;
@@ -112,7 +127,7 @@ GC.Collect(); GC.WaitForPendingFinalizers(); GC.Collect(); long heapBefore = GC.
 var retained = new XmlDocument[100]; string retainedSource = InstanceProvenanceBenchmarks.Fixture("charref", 8);
 for (int i = 0; i < retained.Length; i++) retained[i] = XmlDocument.Parse(retainedSource, new() { DtdProcessing = XmlDtdProcessing.Parse });
 GC.Collect(); GC.WaitForPendingFinalizers(); GC.Collect(); long heapAfter = GC.GetTotalMemory(false);
-Console.WriteLine(JsonSerializer.Serialize(new { domain="retained-whole-heap-documents", beforeBytes=heapBefore, afterBytes=heapAfter, inclusiveDeltaBytes=heapAfter-heapBefore, denominatorDocuments=100 }));
+Console.WriteLine(JsonSerializer.Serialize(new { domain="retained-whole-heap-documents-inclusive-array-source-options-runtime-roots", beforeBytes=heapBefore, afterBytes=heapAfter, inclusiveDeltaBytes=heapAfter-heapBefore, denominatorDocuments=100 }));
 GC.KeepAlive(retained); GC.KeepAlive(escaped); GC.KeepAlive(consumed);
 static void Check(ScanResult result, ScanStep expected) { if (result.Step != expected) throw new Exception(result.Diagnostic?.Code ?? "Unexpected step."); }
-static void Print(string domain, long numeratorBytes, int denominatorOperations) => Console.WriteLine(JsonSerializer.Serialize(new { domain, numeratorBytes, denominatorOperations }));
+static void Print(string domain, long numeratorBytes, int denominatorOperations, int? batch = null) => Console.WriteLine(JsonSerializer.Serialize(new { domain, numeratorBytes, denominatorOperations, batch }));
