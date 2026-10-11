@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta charset='utf-8' />
+<title>Xemele.Benchmarks.Push.PushAppendBenchmarks-20261010-192750</title>
+
+<style type="text/css">
+	table { border-collapse: collapse; display: block; width: 100%; overflow: auto; }
+	td, th { padding: 6px 13px; border: 1px solid #ddd; text-align: right; }
+	tr { background-color: #fff; border-top: 1px solid #ccc; }
+	tr:nth-child(even) { background: #f8f8f8; }
+</style>
+</head>
+<body>
+<pre><code>
+BenchmarkDotNet v0.15.8, macOS Sequoia 15.8.1 (24H32) [Darwin 24.6.0]
+Unknown processor
+.NET SDK 10.0.400
+  [Host] : .NET 10.0.11 (10.0.11, 10.0.1126.37416), Arm64 RyuJIT armv8.0-a
+</code></pre>
+<pre><code>Job=InProcess  Toolchain=InProcessEmitToolchain  InvocationCount=256  
+IterationCount=3  UnrollFactor=1  WarmupCount=1  
+</code></pre>
+
+<table>
+<thead><tr><th>Method</th><th>ChunkSize</th><th>Mean</th><th>Error</th><th>StdDev</th><th>Median</th><th>Allocated</th>
+</tr>
+</thead><tbody><tr><td>AppendChunk</td><td>4096</td><td>285.5 &mu;s</td><td>3,486.7 &mu;s</td><td>191.12 &mu;s</td><td>209.0 &mu;s</td><td>-</td>
+</tr><tr><td>AppendChunk</td><td>65536</td><td>3,073.5 &mu;s</td><td>1,718.1 &mu;s</td><td>94.17 &mu;s</td><td>3,043.4 &mu;s</td><td>7 B</td>
+</tr></tbody></table>
+</body>
+</html>
