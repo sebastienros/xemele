@@ -13,7 +13,7 @@ required or measured.
 | Positive allocation control |1048|1|1024-byte array plus object overhead|
 | Existing PI Value mutation |0|16 batches ×4096|0 B per operation after1000 warmups|
 | Owned PI, existing target |1048576|4096|256 B/node; target/data strings reused|
-| Owned PI, new target |87768|256|342.84375 B/op inclusive dictionary growth; input strings prepared beforehand|
+| Owned PI, new target |87768|256|342.84375 B/op inclusive first dictionary backing storage and growth on a newly prepared owner; input strings prepared beforehand|
 | Owned PI graph |2020800|100|20208 B/graph; root/template and65 PIs included|
 | Retained whole heap |3934000 delta|100 retained documents|Inclusive heap delta; array/runtime roots included, not exact per-node retained memory|
 
