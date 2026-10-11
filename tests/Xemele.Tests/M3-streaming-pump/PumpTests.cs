@@ -58,6 +58,10 @@ public sealed class PumpTests
         Assert.Contains(sink.Events, x => x.Contains("b//=same/authored", StringComparison.Ordinal));
         Assert.Contains("skipped:missing:&missing;", sink.Events);
         Assert.Equal(" before |&unknown;| after ", sink.IncompleteParts);
+        int opening = xml.IndexOf("<r ", StringComparison.Ordinal);
+        Assert.Equal(new XmlLocation(Source, 1, opening + 1, opening), sink.IncompleteLocation);
+        int unknown = xml.IndexOf("&unknown;", StringComparison.Ordinal);
+        Assert.Equal(new XmlLocation(Source, 1, unknown + 1, unknown), sink.UnknownPartLocation);
         var defaulted = ParseCharacters("<!DOCTYPE r [<!ATTLIST r b CDATA 'same'>]><r/>", 0, true);
         Assert.Contains(defaulted.Events, x => x.Contains("b//=same/default", StringComparison.Ordinal));
     }
@@ -125,6 +129,27 @@ public sealed class PumpTests
         int first = sink.Events.IndexOf("cdata:start"); int end = sink.Events.IndexOf("cdata:end");
         Assert.Equal(new XmlLocation(Source, 2, 1, null), sink.Locations[first]);
         Assert.Equal(new XmlLocation(Source, 2, 13, null), sink.Locations[end]);
+    }
+    [Theory]
+    [InlineData(0)]
+    [InlineData(1)]
+    [InlineData(2)]
+    public void RecoveryFatalEncodingDiagnosticSnapshotMatchesNotificationIdentityAndOrder(int fixture)
+    {
+        byte[] input = fixture switch
+        {
+            0 => new byte[] { 0xff },
+            1 => Encoding.UTF8.GetBytes("<?xml version='1.0' encoding='unknown'?><r/>"),
+            _ => Encoding.UTF8.GetBytes("<r a='1' a='2'>ok").Concat(new byte[] { 0xff }).ToArray()
+        };
+        using var pump = new XmlStreamingPump(new() { Recover = true }); var sink = new RecordingSink { Pause = true };
+        pump.Supply(input, true);
+        Assert.Equal(StreamingStep.Rejected, Drain(pump, sink));
+        Assert.Equal(fixture == 2 ? 2 : 1, sink.DiagnosticValues.Count);
+        Assert.Equal(sink.DiagnosticValues.Count, pump.Diagnostics.Count);
+        for (int i = 0; i < pump.Diagnostics.Count; i++) Assert.Same(sink.DiagnosticValues[i], pump.Diagnostics[i]);
+        Assert.Same(pump.Diagnostic, pump.Diagnostics[^1]); Assert.DoesNotContain("done", sink.Events);
+        if (fixture == 2) Assert.Equal("XML.Recovery.DuplicateAttribute", pump.Diagnostics[0].Code);
     }
     [Fact]
     public void RecoverySuppressesSuccessfulEndAndDeliversDiagnosticsOnceAcrossPauses()
@@ -207,6 +232,8 @@ public sealed class PumpTests
         internal readonly List<string> Events = [];
         internal readonly List<XmlLocation> Locations = [];
         internal string IncompleteParts = "";
+        internal XmlLocation IncompleteLocation, UnknownPartLocation;
+        internal readonly List<XmlDiagnostic> DiagnosticValues = [];
         private bool Add(string value, XmlLocation location) { Events.Add(value); Locations.Add(location); return !Pause; }
         public override bool StartDocument(XmlLocation location) => Add("document", location);
         public override bool EndDocument(XmlLocation location) => Add("done", location);
@@ -217,6 +244,11 @@ public sealed class PumpTests
             foreach (var a in value.Attributes)
             {
                 attrs.Add($"{a.LocalName}/{a.Prefix}/{a.NamespaceUri}={(a.IsValueComplete ? a.Value.ToString() : "incomplete")}/{(a.IsDefaulted ? "default" : "authored")}");
+                if (!a.IsValueComplete)
+                {
+                    IncompleteLocation = a.Location;
+                    foreach (var part in a.ValueParts) if (part is XmlUnknownAttributeReference) UnknownPartLocation = part.Location;
+                }
                 if (!a.IsValueComplete) IncompleteParts = string.Join('|', a.ValueParts.ToArray().Select(p => p is XmlKnownAttributeText known ? known.Text : ((XmlUnknownAttributeReference)p).LexicalReference));
             }
             foreach (var n in value.NamespaceDeclarations) ns.Add(n.Prefix.ToString() + "=" + n.NamespaceUri.ToString());
@@ -233,6 +265,6 @@ public sealed class PumpTests
         public override bool DtdDeclaration(XmlDtdDeclaration value) => Add($"dtd:{value.Kind}:{value.Name}:{(value.Kind == XmlDtdDeclarationKind.Element ? value.ContentModel : value.AttributeType)}:{value.DefaultKind}:{value.Value}:{value.HasValue}:{value.IsExternal}", value.Location);
         public override bool SkippedEntity(XmlSkippedEntity value) => Add("skipped:" + value.Name.ToString() + ":" + value.LexicalReference.ToString(), value.Location);
         public override bool IncompleteAttributeDefault(XmlIncompleteAttributeDefault value) => Add("incomplete-default:" + value.AttributeName, value.DeclarationLocation);
-        public override bool Diagnostic(XmlDiagnostic value) => Add("diagnostic:" + value.Code, value.Location);
+        public override bool Diagnostic(XmlDiagnostic value) { DiagnosticValues.Add(value); return Add("diagnostic:" + value.Code, value.Location); }
     }
 }

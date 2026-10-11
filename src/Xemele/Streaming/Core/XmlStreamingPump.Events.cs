@@ -49,7 +49,7 @@ internal sealed partial class XmlStreamingPump : IXmlEventSink, IXmlDtdSink, IXm
     public bool IncompleteAttribute(XmlIncompleteAttributeView attribute)
     {
         AddAttribute(new(new(attribute.Name.LocalName), new(attribute.Name.Prefix), new(attribute.Name.NamespaceUri),
-            "", attribute.IsDefaulted, false, attribute.Parts.ToArray(), attribute.ValueLocation));
+            "", attribute.IsDefaulted, false, attribute.Parts.ToArray(), attribute.IsDefaulted ? elementLocation : attribute.ValueLocation));
         return true;
     }
     private void AddAttribute(AttributeRow row)

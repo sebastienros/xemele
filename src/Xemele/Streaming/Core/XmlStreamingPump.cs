@@ -103,6 +103,7 @@ internal sealed partial class XmlStreamingPump : IAsyncXmlStreamingPump
             {
                 token.ThrowIfCancellationRequested();
                 if (!DrainModel()) return StreamingStep.Paused;
+                recovery?.Reject(Diagnostic);
                 if (!DrainDiagnostics()) return StreamingStep.Paused;
                 if (Diagnostic is not null)
                 {
