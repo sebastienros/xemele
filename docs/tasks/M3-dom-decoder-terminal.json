@@ -4,11 +4,11 @@
   "milestone": "M3",
   "title": "Preserve structured DOM decoder rejection",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M3 coordinator 01a1284a-8826-7fc2-af44-74552db608f2",
   "branch": "codex/m3-dom-decoder-terminal",
   "base_revision": "4ae9eddfe88e014b91057625c994bfd38c3452e6",
-  "integration_revision": null,
+  "integration_revision": "9f118eb9977335ab25dc85c4cb6837af9498b4d6",
   "depends_on": [
     "M2-recovery",
     "M3-async-input"
@@ -38,7 +38,8 @@
         "bounded-source-review",
         "focused-regressions",
         "owned-allocations",
-        "compiled-api"
+        "compiled-api",
+        "integrated-repair"
       ]
     },
     {
@@ -49,7 +50,8 @@
         "bounded-source-review",
         "focused-regressions",
         "owned-allocations",
-        "compiled-api"
+        "compiled-api",
+        "integrated-repair"
       ]
     },
     {
@@ -60,7 +62,8 @@
         "bounded-source-review",
         "focused-regressions",
         "owned-allocations",
-        "compiled-api"
+        "compiled-api",
+        "integrated-repair"
       ]
     }
   ],
@@ -115,17 +118,24 @@
       "result": "passed",
       "summary": "Official discovery/compiled inventory matched720members; no API change.",
       "artifact": "docs/reports/M3-dom-decoder-terminal/api-summary.json"
+    },
+    {
+      "id": "integrated-repair",
+      "kind": "integration",
+      "revision": "9f118eb9977335ab25dc85c4cb6837af9498b4d6",
+      "command": "Focused166/API720/process-wide owned-probe results at a164900; git diff --quiet a164900 HEAD -- src tests/Xemele.Tests docs/api docs/reports/M3-dom-decoder-terminal/Probe; tasks.py validate",
+      "result": "passed",
+      "summary": "Main combination introduces only coordinator lease metadata since tested source; runtime/test/API/probe source closures identical,148task validator passed. No repeat justified for metadata-only integration. Independent source reviewer approved.",
+      "artifact": "docs/reports/M3-dom-decoder-terminal/README.md"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Implemented bounded synchronous/asynchronous DOM terminal decoder repair; no API or valid decoding changes.",
+    "summary": "Verified integrated DOM terminal decoder repair;166focused checks/API720/owned-allocation controls pass.",
     "checks": [
       "166focused pass; actual owned-allocation probe0exit with positivecontrol; official API720;148task validator."
     ],
-    "remaining": [
-      "Coordinator integrated checkpoint."
-    ],
+    "remaining": [],
     "requests": []
   }
 }
