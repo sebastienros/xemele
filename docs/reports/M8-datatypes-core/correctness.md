@@ -44,4 +44,6 @@ code generation/build is required inside a lease. Default sandbox denies ps;
 approved elevated `preflight.py` proved process-inspection permission, reaped the
 control child and asserted its owned process group absent. The measurement driver
 requires the same elevated execution permission and verifies it before counters.
-Measurement evidence remains pending a separate durable coordinator grant.
+At this preparation checkpoint, measurement evidence awaited a separate durable
+coordinator grant. The subsequently completed approved sequence is recorded in
+allocations.md and measurement-summary.json.
