@@ -122,4 +122,35 @@ public sealed class TokenizerBehaviorTests
         Assert.Equal("&ampx &amp= &=", tokens[0].Attributes[0].Value);
         Assert.Equal("¬it; � � � � € &unknown;", tokens[1].Data);
     }
+
+    [Fact]
+    public void SupplementaryAndReferenceBatchesKeepFirstSourceScalarLocations()
+    {
+        var tokens = Html5Tokenizer.Tokenize("😀x😀y", new() { Limits = new() { TokenCharacters = 2 } });
+        Assert.Equal(new[] { "😀", "x😀", "y" }, tokens.Where(t => t.Kind == HtmlTokenKind.Character).Select(t => t.Data));
+        Assert.Equal(new[] { 1, 2, 4 }, tokens.Where(t => t.Kind == HtmlTokenKind.Character).Select(t => t.Location.LinePosition));
+        tokens = Html5Tokenizer.Tokenize("a&NotEqualTilde;b", new() { Limits = new() { TokenCharacters = 1 } });
+        Assert.Equal(new[] { "a", "≂", "̸", "b" }, tokens.Where(t => t.Kind == HtmlTokenKind.Character).Select(t => t.Data));
+        Assert.Equal(new[] { 1, 2, 2, 17 }, tokens.Where(t => t.Kind == HtmlTokenKind.Character).Select(t => t.Location.LinePosition));
+        Assert.Equal("😀", Html5Tokenizer.Tokenize("&#x1F600;", new() { Limits = new() { TokenCharacters = 1 } })[0].Data);
+    }
+
+    [Fact]
+    public void InvalidSurrogatesArePreservedWithSeparateBoundedErrors()
+    {
+        var retained = new List<HtmlToken>(); var errors = new List<string>();
+        var tokenizer = new HtmlTokenizer(retained.Add, new() { Limits = new() { Diagnostics = 1 } });
+        tokenizer.ParseError = (code, _) => errors.Add(code);
+        tokenizer.Feed("\ud800"); tokenizer.Feed("x\udc00"); tokenizer.Complete();
+        Assert.Equal("\ud800x\udc00", retained[0].Data);
+        Assert.Equal(new[] { "surrogate-in-input-stream" }, errors);
+        for (int c = 0; c <= 0xFFFF; c++)
+        {
+            int expected = char.IsAsciiHexDigit((char)c) ? c <= '9' ? c - '0' : (c | 32) - 'a' + 10 : -1;
+            Assert.Equal(expected, HtmlTokenizer.Digit(c, 16));
+            Assert.Equal(c is >= '0' and <= '9' ? c - '0' : -1, HtmlTokenizer.Digit(c, 10));
+        }
+        Assert.Equal(-1, HtmlTokenizer.Digit(0x1F600, 16));
+        Assert.Equal(-1, HtmlTokenizer.Digit(-1, 10));
+    }
 }

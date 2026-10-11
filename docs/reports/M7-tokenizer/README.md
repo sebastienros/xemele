@@ -29,3 +29,36 @@ prepared durable lease, using the existing model freeze/wrapper lifecycle.
 Actual pinned ordinary builds: SDK10.0.400, RuntimeFrameworkVersion10.0.11.
 Actual test execution uses `dotnet --fx-version 10.0.11 ...Xemele.Tests.dll`.
 Initial full corpus run fails at pending PI states as expected; no exclusion.
+
+Independent checkpoint at `11f4d6f316f418a928c1ec2d0ce8136a211a1c24`:
+ordinary Release build succeeded with zero warnings/errors; tokenizer-only tests
+had 9 passing tests and 2 failing full-corpus checks due to pending PI behavior.
+Later preparation adds scalar-batch/reference locations, bounded input diagnostics
+and exhaustive numeric-digit oracle tests, plus full failure accounting. Current
+corpus is 6,823 original tests / 7,049 state vectors. No filtering of failed PI
+states is permitted. The separate code audit additionally exposed three
+lookahead warning-order defects; their explicit delayed-warning repair is owned
+here. Exact error-code order remains tested separately from lexical tokens.
+
+Preparation (not measurements): full API comparison matched 1,203 compiled public
+members with missing/added/changed negative controls rejected, tokenizer sample
+ran successfully, and benchmark discovery verified 24 ShortRun NoEmit cases.
+The immutable original XML cache was copied only to this worktree's 3,386 ignored
+manifest-listed resources after coordinator authorization, with source and
+copied SHA256 verification; no cache mutation/refetch/symlink. API inventory
+then passed with bootstrap disabled and all 3,388 inherited fixture identities.
+
+The probe separates zero-allocation borrowed numeric-digit/reference classification
+from owned tokenizer setup, owned strings/tokens/attribute snapshots, callback
+operation persistence, token-list persistence, and retained whole-heap snapshots.
+Primitive comparisons use char.IsAsciiHexDigit as the straightforward oracle;
+owned comparisons retain identical lexical results for contiguous versus
+single-UTF16-unit transport chunks. No SearchValues or custom hashing optimization
+is adopted in these state loops; scalar processing preserves every state's NUL,
+source position and quota behavior. Performance results remain provisional single
+osx-arm64 evidence until composition and cross-platform release verification.
+Existing corrected model freeze/wrapper infrastructure is copied mechanically
+with owned tokenizer paths and an explicit retained measurement session ID;
+SHLVL=1, complete effective-environment SHA/per-key SHA, source/generated/binary,
+SDK/runtime/host and all actual tokenizer/encoding/XML resources remain closed.
+Controls/measurements await final verified PI code and coordinator review.

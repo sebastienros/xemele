@@ -50,7 +50,7 @@ public sealed class TokenizerCorpusTests
                         string output = Actual(actual);
                         if (expected != output)
                         {
-                            if (failures.Count < 24) failures.Add($"{Path.GetFileName(file)}:{index} {state} split={split} {test.GetProperty("description").GetString()}\nExpected {expected}\nActual   {output}");
+                            failures.Add($"{Path.GetFileName(file)}:{index} {state} split={split} {test.GetProperty("description").GetString()}\nExpected {expected}\nActual   {output}");
                             break;
                         }
                     }
@@ -58,7 +58,7 @@ public sealed class TokenizerCorpusTests
                 index++;
             }
         }
-        Assert.True(failures.Count == 0, $"{vectors} state vectors / {executions} executions; failures:\n" + string.Join("\n", failures));
+        Assert.True(failures.Count == 0, $"{vectors} state vectors / {executions} executions; failures:\n" + string.Join("\n", failures.Take(80)) + "\nFailure count=" + failures.Count + "\n" + string.Join("\n", failures.GroupBy(f => f.Split(':')[0]).Select(g => g.Key + ": " + g.Count())));
         Assert.True(vectors > 6000);
     }
 
@@ -122,14 +122,14 @@ public sealed class TokenizerCorpusTests
                     tokenizer.ParseError = (code, _) => actual.Add(code);
                     tokenizer.Feed(input); tokenizer.Complete();
                     string[] expected = test.TryGetProperty("errors", out var errors) ? errors.EnumerateArray().Select(v => v.GetProperty("code").GetString()!).ToArray() : [];
-                    if (!expected.SequenceEqual(actual) && failures.Count < 24)
+                    if (!expected.SequenceEqual(actual))
                         failures.Add($"{Path.GetFileName(file)}:{index} {state} expected={string.Join(',', expected)} actual={string.Join(',', actual)}");
                 }
                 index++;
             }
         }
         Assert.Equal(7049, vectors);
-        Assert.True(failures.Count == 0, string.Join("\n", failures));
+        Assert.True(failures.Count == 0, string.Join("\n", failures.Take(80)) + "\nFailure count=" + failures.Count + "\n" + string.Join("\n", failures.GroupBy(f => f.Split(':')[0]).Select(g => g.Key + ": " + g.Count())));
     }
 
     private static string Unescape(string value) => Regex.Replace(value, @"\\u([0-9a-fA-F]{4})", m => ((char)Convert.ToInt32(m.Groups[1].Value, 16)).ToString());

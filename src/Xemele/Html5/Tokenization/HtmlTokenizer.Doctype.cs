@@ -27,13 +27,13 @@ internal sealed partial class HtmlTokenizer
                 if (Space(c)) return false;
                 if (c == '>') { EmitDoctype(); return false; }
                 if (c < 0) { Error("eof-in-doctype"); forceQuirks = true; EmitDoctype(); return true; }
-                Clear(temporary); state = State.DoctypeKeyword; return true;
+                Clear(temporary); lookaheadOpening = current; state = State.DoctypeKeyword; return true;
             case State.DoctypeKeyword:
                 if (c >= 0) AppendScalar(temporary, c);
                 if (BuilderEquals(temporary, "public", true)) { state = State.AfterPublicKeyword; return false; }
                 if (BuilderEquals(temporary, "system", true)) { state = State.AfterSystemKeyword; return false; }
                 if (c >= 0 && (BuilderPrefix(temporary, "public", true) || BuilderPrefix(temporary, "system", true))) return false;
-                Error("invalid-character-sequence-after-doctype-name"); forceQuirks = true; state = State.BogusDoctype;
+                Error("invalid-character-sequence-after-doctype-name", lookaheadOpening); forceQuirks = true; state = State.BogusDoctype;
                 return true;
             case State.AfterPublicKeyword:
             case State.AfterSystemKeyword:

@@ -85,7 +85,7 @@ internal sealed partial class HtmlTokenizer
             if (candidate.IsEmpty || candidate[^1] != ';') state = State.AmbiguousReference;
         }
     }
-    private static int Digit(int c, int radix)
+    internal static int Digit(int c, int radix)
     {
         if (c is >= '0' and <= '9') return c - '0';
         if (radix == 16 && c is >= 'a' and <= 'f') return c - 'a' + 10;

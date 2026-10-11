@@ -155,6 +155,7 @@ internal sealed partial class HtmlTokenizer
                     if (c < 0) { Error("eof-in-tag"); return; }
                     Error("unexpected-solidus-in-tag"); state = State.BeforeAttr; continue;
                 case State.Declaration:
+                    if (temporary.Length == 0) lookaheadOpening = current;
                     if (c >= 0) AppendScalar(temporary, c);
                     if (BuilderEquals(temporary, "--")) { Clear(data); state = State.CommentStart; return; }
                     if (BuilderEquals(temporary, "doctype", true)) { BeginDoctype(); state = State.Doctype; return; }
@@ -165,7 +166,7 @@ internal sealed partial class HtmlTokenizer
                         return;
                     }
                     if (c >= 0 && (BuilderPrefix(temporary, "--") || BuilderPrefix(temporary, "doctype", true) || BuilderPrefix(temporary, "[CDATA["))) return;
-                    Error("incorrectly-opened-comment"); Clear(data);
+                    Error("incorrectly-opened-comment", lookaheadOpening); Clear(data);
                     int previousLength = temporary.Length - (c < 0 ? 0 : c > 0xFFFF ? 2 : 1);
                     for (int i = 0; i < previousLength; i++) Append(data, ReplaceNull(temporary[i]));
                     state = State.BogusComment; continue;

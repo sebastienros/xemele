@@ -42,8 +42,8 @@ internal sealed partial class HtmlTokenizer
     private char highSurrogate;
     private long? highOffset;
     private long documentScalars, expandedScalars, attributeScalars;
-    private int line = 1, column = 1, cancellationTicks;
-    private XmlLocation current, opening, characterOpening, referenceOpening;
+    private int line = 1, column = 1, cancellationTicks, diagnosticCount;
+    private XmlLocation current, opening, characterOpening, referenceOpening, lookaheadOpening;
     internal bool AllowCdata { get; set; }
     internal Action<string, XmlLocation>? ParseError { get; set; }
     internal Uri? SourceUri { get; set; }
@@ -129,15 +129,24 @@ internal sealed partial class HtmlTokenizer
         previousCr = c == '\r';
         if (c == '\r') c = '\n';
         current = new(SourceUri, line, column, offset);
-        if (c is >= 0xD800 and <= 0xDFFF) Error("surrogate-in-input-stream");
-        else if (c is >= 0xFDD0 and <= 0xFDEF || (c & 0xFFFF) is 0xFFFE or 0xFFFF) Error("noncharacter-in-input-stream");
-        else if (c is >= 1 and <= 8 or 11 or >= 14 and <= 31 or >= 0x7F and <= 0x9F) Error("control-character-in-input-stream");
+        string? inputError = c is >= 0xD800 and <= 0xDFFF ? "surrogate-in-input-stream"
+            : c is >= 0xFDD0 and <= 0xFDEF || (c & 0xFFFF) is 0xFFFE or 0xFFFF ? "noncharacter-in-input-stream"
+            : c is >= 1 and <= 8 or 11 or >= 14 and <= 31 or >= 0x7F and <= 0x9F ? "control-character-in-input-stream" : null;
+        bool lookahead = state is State.Declaration or State.DoctypeKeyword;
+        if (!lookahead && inputError is not null) Error(inputError);
         Step(c);
+        if (lookahead && inputError is not null) Error(inputError);
         if (c == '\n') { line = checked(line + 1); column = 1; }
         else column = checked(column + 1);
     }
 
-    private void Error(string code) => ParseError?.Invoke(code, current);
+    private void Error(string code) => Error(code, current);
+    private void Error(string code, XmlLocation location)
+    {
+        if (ParseError is null || limits.Diagnostics is int cap && diagnosticCount >= cap) return;
+        diagnosticCount = checked(diagnosticCount + 1);
+        ParseError(code, location);
+    }
     private static void Limit(string quota) => throw new InvalidOperationException("HTML tokenizer quota exceeded: " + quota);
     private static bool Alpha(int c) => c is >= 'a' and <= 'z' or >= 'A' and <= 'Z';
     private static bool Alnum(int c) => Alpha(c) || c is >= '0' and <= '9';
