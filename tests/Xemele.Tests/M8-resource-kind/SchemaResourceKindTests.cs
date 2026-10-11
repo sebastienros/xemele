@@ -125,7 +125,7 @@ public sealed class SchemaResourceKindTests
               <public publicId="schema public" uri="https://entity.invalid/public"/>
               <uri name="https://fixture.invalid/schema.xsd" uri="https://mapped.invalid/schema.xsd"/>
             </catalog>
-            """);
+            """, cancellationToken: TestContext.Current.CancellationToken);
         var request = Request with { PublicId = "schema public" };
         Assert.Equal(mapped, catalog.Resolve(request, TestContext.Current.CancellationToken));
         Assert.Equal("https://entity.invalid/system", catalog.Resolve(request with { Kind = XmlResourceKind.ExternalEntity }, TestContext.Current.CancellationToken)!.AbsoluteUri);
