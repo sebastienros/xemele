@@ -4,11 +4,11 @@
   "milestone": "M4",
   "title": "Axes and document ordering",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M4 coordinator / isolated M4-navigation worker",
   "branch": "codex/m4-navigation",
   "base_revision": "228d9eb1c0862861e70ca87601ee507a06228fd0",
-  "integration_revision": null,
+  "integration_revision": "972fd472a7fd692ed9c658a3cff5d7e4252d7473",
   "depends_on": [
     "M4-model"
   ],
@@ -35,7 +35,8 @@
       "description": "Implement all axes with distinct namespace/attribute items, ordering/deduplication and context node rules.",
       "status": "passed",
       "evidence": [
-        "navigation-correctness"
+        "navigation-correctness",
+        "coordinator-integration"
       ]
     },
     {
@@ -43,7 +44,8 @@
       "description": "Test reverse-axis order, in-scope namespaces, attributes, detached trees and invalid/mixed-document inputs.",
       "status": "passed",
       "evidence": [
-        "navigation-correctness"
+        "navigation-correctness",
+        "coordinator-integration"
       ]
     },
     {
@@ -54,7 +56,8 @@
         "navigation-api-consumer",
         "navigation-planning",
         "navigation-target-runtime-performance",
-        "navigation-source-review"
+        "navigation-source-review",
+        "coordinator-integration"
       ]
     }
   ],
@@ -117,6 +120,15 @@
       "result": "passed",
       "summary": "ONE separately granted corrected sequence; actualFrameworkDescription/all10BDNcases.NET10.0.11 SDK10.0.400 Arm64; wrapper/allocation/benchmark/initialidentity/finalidentity0; no_child=true and release before raw inspection. 65536warm+65536measured primitivegroups each0B;128batchdistributions all0; consumed1703936 each; cold165224B,128owned snapshots16449040B,axis3670304B,normalize48128B,value89088B. Ten declaredShortRunNoEmit cases71.49sec. Prior10.0.0targetfailure retained. Process-heap retained estimate noisy/not a sizeclaim; benchmarkrounding/harness totals disclosed.",
       "artifact": "docs/reports/M4-navigation/performance.md"
+    },
+    {
+      "id": "coordinator-integration",
+      "kind": "integration",
+      "revision": "972fd472a7fd692ed9c658a3cff5d7e4252d7473",
+      "command": "Pinned SDK Release tests/sample builds; explicit --fx-version10.0.11 focused navigation/functions/model/construction tests; API checker; source and fresh package consumers; tasks.py validate; owned diff --check",
+      "result": "passed",
+      "summary": "97 tests passed (14 navigation,30 functions,41 model,12 construction), no failures/skips. Builds zero warnings/errors.893 public APIs preserved with two corruption controls; source and fresh isolated package sample passed;149 tasks validated. Actual target-runtime raw evidence and all117/40/195 manifest hashes independently inspected; no performance repeats.",
+      "artifact": "docs/reports/M4-navigation/integration.md"
     }
   ],
   "blockers": [],
@@ -127,11 +139,7 @@
       "Planning148 and allowned paths/whitespace checks passed",
       "Target10.0.11 exact warm primitives0B, cold/owned storage positive/bounded;10BDNShortRun cases passed;all phase/identity exits0,nochildren;original10.0.0attempt retained as failed target evidence"
     ],
-    "remaining": [
-      "Coordinator integration verification; comprehensive cumulative/M4gate checks",
-      "End-to-end evaluator and x64 release performance confirmation belong to future composition/gate work; no current claim",
-      "Exact retained size not established by noisy process-heap estimate; no retained-size claim"
-    ],
+    "remaining": [],
     "requests": []
   }
 }
