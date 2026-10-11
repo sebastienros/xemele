@@ -4,7 +4,7 @@
   "milestone": "M4",
   "title": "XPath core functions",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M4 coordinator / isolated M4-functions worker",
   "branch": "codex/m4-functions",
   "base_revision": "a3c2e7d52b8b162a8a92df951b9769eef055783e",
@@ -51,11 +51,14 @@
     {
       "id": "M4-functions-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
+      "status": "passed",
       "evidence": [
         "compiled-api",
         "consumer-package",
-        "prepared-build-controls"
+        "affected-model-correctness",
+        "prepared-build-controls",
+        "exact-allocation",
+        "bdn-microbenchmarks"
       ]
     }
   ],
@@ -65,7 +68,7 @@
     "tests/fixtures/M4-functions/core-vectors.json: exact frozen function inventory",
     "samples/M4-functions/Program.cs and docs/reports/M4-functions/check_consumer.py: standalone production internal-lane consumers",
     "docs/api/M4-functions.txt: header-only internal deliverable; compiled public inventory unchanged at 893",
-    "benchmarks/Xemele.Benchmarks/M4-functions/Probe.cs.fixture: prepared 13-case ShortRun probe; no measurements yet"
+    "benchmarks/Xemele.Benchmarks/M4-functions/Probe.cs.fixture and docs/reports/M4-functions/performance.md: 13 successful ShortRun cases and exact standalone zero-allocation borrowed primitive domain"
   ],
   "evidence": [
     {
@@ -121,19 +124,38 @@
       "result": "passed",
       "summary": "Release builds zero warnings/errors. Counters-disabled semantic controls consumed33374208, longnumeric/Unicode/invalid oracle controls passed; exactly13 cases in one declared ShortRunNoEmit job (3warmups/3iterations/1launch). Source108/binary40/runtime195 freeze capture/check passed. No allocation/timing run.",
       "artifact": "docs/reports/M4-functions/preparation.md"
+    },
+    {
+      "id": "exact-allocation",
+      "kind": "check",
+      "revision": "4f0e27859955b737539711dc091f79a2123852f2",
+      "command": "python3 docs/reports/M4-functions/run_measurements.py /private/tmp/m4-functions-4f0e278-frozen.json /private/tmp/m4-functions-4f0e278-measurements (--allocation phase)",
+      "result": "passed",
+      "summary": "Authorized once exclusive sequence; actual .NET10.0.11 Arm64. EXACT full measured loop0B/32768groups (229376borrowedinvocations), all128warm and128measured batchsamples0B; cold9176B/warm0; positive1048B; owned256format348160B/1360B-op, translate8192B/32B-op, sets79872B/312B-op. Both consumed33374208. Initial/final108source/40binary/195runtime maps unchanged; no retries/builds/source edits; actualnochildconfirmed after sandbox-denied initialscan corrected through readonlyescalation.",
+      "artifact": "docs/reports/M4-functions/performance.md"
+    },
+    {
+      "id": "bdn-microbenchmarks",
+      "kind": "check",
+      "revision": "4f0e27859955b737539711dc091f79a2123852f2",
+      "command": "python3 docs/reports/M4-functions/run_measurements.py /private/tmp/m4-functions-4f0e278-frozen.json /private/tmp/m4-functions-4f0e278-measurements (--benchmark phase)",
+      "result": "passed",
+      "summary": "13successful reports ONE declared ShortRun InProcessNoEmit (3warmups/3iterations/1launch); MemoryDiagnoser+ShortRunJob allclasses; noCLIjobflags/generation/build. Actual .NET10.0.11 SDK10.0.400 Arm64; global BDN94.29s. Borrowed roundeddisplaydash separate from exactstandalone0 gate; inclusive diagnostic totals/nonzero bytes preserved. Owned1360B/32B/312B; matchingsemantics materializedinput controls. UnknownCPU/prioritydenials retained; provisional until composition+M9hardware.",
+      "artifact": "docs/reports/M4-functions/performance.md"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Corrected 27-function library independently approved; correctness and standalone/API preservation checks pass. Fixed runtime sources held; in_progress until required allocation/performance evidence under explicit prepared exclusive grant.",
+    "summary": "Implemented exact27 internal core functions with immutable model signatures, Unicode scalar and XPath numeric conversions, budget-aware owned strings/ID snapshots, allarity/focus validation and callbackexception identity. One reviewed bulk-copy cancellation blocker corrected and independently approved. Ready for serialized integration; no compiler/navigator/facade/peer dependencies.",
     "checks": [
-      "Functions30/30 and affected model41/41 at b7d3a2e",
-      "Compiled publicAPI893, source sample and fresh standalone local package friend consumer passed again at approved b7d3a2e; earlier666c1720 proof preserved in report",
-      "Counters-disabled controls and exact13-case ShortRunNoEmit discovery atb7d3a2e; complete prepared closure captured/checked; no measurements run"
+      "Pinned Release builds zero warnings/errors; functions30/30, affected model41/41, compiledAPI893 and fresh source/localpackage friend consumer at approvedb7d3a2e",
+      "Authorized exclusive once measurement at4f0e278 actual.NET10.0.11; exact0B/32768groups/229376invocations plus128zero batchsamples in eachphase; positive1048B; cold9176B; ownedformat1360B/translate32B/IDset312B perop",
+      "13successful ShortRunNoEmitBDN cases;94.29s benchmarkelapsed, complete before/final identityunchanged; inclusive diagnostic allocations/roundeddisplay differences retained",
+      "Planning148 passed on implemented evidence working tree; full claim-relative16owned-path and whitespace checks passed; coordinator owns integration verification"
     ],
     "remaining": [
-      "Await explicit coordinator exclusive measurement grant for prepared bounded sequence; record actual allocation and BDN outcomes before implemented.",
-      "Coordinator owns integrated combination checks and verification; cumulative composition/M4 gate and M9 x64/Arm64 confirmation remain later owners."
+      "Coordinator integrates and verifies relevant combined model/functions/API/sample checks; integration_revision deliberately null.",
+      "Microbenchmarks are provisional; composed query confirmation and M9 x64/Arm64 release checks remain their owners."
     ],
     "requests": []
   }
