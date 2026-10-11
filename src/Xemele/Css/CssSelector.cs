@@ -16,6 +16,8 @@ public sealed class CssSelectorException(string message, int offset) : ArgumentE
 public sealed partial class CssSelector
 {
     private readonly Complex[] selectors;
+    /// <summary>Creates the universal selector, equivalent to Compile("*") with default options.</summary>
+    public CssSelector() => selectors = [new Complex([new Compound(new NameTest("*", null), [])], [])];
     private CssSelector(Complex[] selectors) => this.selectors = selectors;
 
     public static CssSelector Compile(string selector, CssSelectorOptions? options = null)

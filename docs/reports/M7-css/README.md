@@ -22,11 +22,11 @@ child environment receives an opaque SHA-256 and opaque per-key hashes, includin
 CODEX_THREAD_ID; SHLVL is fixed to 1. Source, generated files, binaries, local corpus,
 SDK/runtime and host are frozen. No raw result inspection occurs during a lease.
 
-The 21 discovered ShortRun/MemoryDiagnoser cases compare the actual production
+The 29 prepared ShortRun/MemoryDiagnoser cases compare the actual production
 class-token loop (bound once by a cached reflection delegate) to an allocating
 CSS-whitespace split oracle, cached SearchValues, and span IndexOfAny. Inputs cover
 short and long values, early and middle hits, misses, ASCII, multilingual names,
-CSS whitespace and non-CSS NBSP. The remaining cases execute current matches,
+CSS whitespace non-CSS NBSP, a short miss and dense delimiters. The remaining cases execute current matches,
 owned query/result snapshots on both graphs, and owned compilation. Allocation
 probes separate cold compile/static initialization, positive controls, warmed
 borrowed Matches and token scanning, owned compilation, XML/HTML query results,

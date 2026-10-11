@@ -11,7 +11,7 @@ public class TokenScanBenchmarks
     private static readonly char[] Separators = [' ', '\t', '\r', '\n', '\f'];
     private static readonly SearchValues<char> Stops = SearchValues.Create(" \t\r\n\f");
     public static readonly Func<string, string, bool> Production = typeof(CssSelector).GetMethod("ContainsToken", BindingFlags.Static | BindingFlags.NonPublic)!.CreateDelegate<Func<string, string, bool>>();
-    [Params(0, 1, 2, 3)] public int Scenario { get; set; }
+    [Params(0, 1, 2, 3, 4, 5)] public int Scenario { get; set; }
     private string value = "", token = "";
     [GlobalSetup] public void Setup()
     {
@@ -21,7 +21,8 @@ public class TokenScanBenchmarks
     }
     public static readonly (string Value, string Token)[] Inputs =
     [ ("one two", "two"), (new string('a', 256) + "\ttarget\n" + new string('b', 256), "target"),
-      ("é\u00a0x\t日本語\r😀\n" + new string('x', 128), "missing"), ("target\f" + new string('z', 1024), "target") ];
+      ("é\u00a0x\t日本語\r😀\n" + new string('x', 128), "missing"), ("target\f" + new string('z', 1024), "target"),
+      ("one two", "no"), (new string(' ', 256) + "\t\r\n\ftarget\t" + new string(' ', 256), "target") ];
     [Benchmark(Baseline = true)] public bool SplitBaseline()
     {
         if (token.Length == 0) return false;

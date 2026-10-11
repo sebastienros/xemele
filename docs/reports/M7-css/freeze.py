@@ -14,7 +14,7 @@ def capture():
     for path in (root/'src/Xemele').rglob('*.cs'):
         if 'bin' not in path.parts and 'obj' not in path.parts:sources.append(path)
     sources.extend(root/path for path in ['global.json','.editorconfig','Directory.Build.props','Directory.Packages.props','src/Xemele/Xemele.csproj','benchmarks/Xemele.Benchmarks/M7-css/Css.Probe.csproj','benchmarks/Xemele.Benchmarks/M7-css/Probe.cs.fixture','docs/reports/M7-css/freeze.py','docs/reports/M7-css/run_measurements.py','docs/reports/M7-css/measurement-plan.json','docs/reports/M7-css/prepare_identity.py','benchmarks/Xemele.Benchmarks/M7-css/CssBenchmarks.cs'])
-    sources.extend(root/path for path in ['docs/tasks/M7-css.json','docs/specs/html.md','docs/specs/common.md','docs/performance-coding.md','tests/Contracts/Fixtures/M7/Selector.cs.fixture','docs/decisions/M7/css-xml.md'])
+    sources.extend(root/path for path in ['docs/tasks/M7-css.json','docs/specs/html.md','docs/specs/common.md','docs/performance-coding.md','tests/Contracts/Fixtures/M7/Selector.cs.fixture','docs/decisions/M7/css-xml.md','docs/decisions/M7/css-default-constructor.md','docs/tasks/M7-css-default-contract.json'])
     sources.extend(p for p in [root/'NuGet.config',root/'NuGet.Config'] if p.is_file())
     for project in ['src/Xemele','benchmarks/Xemele.Benchmarks/M7-css']:
         generated=root/project/'obj/Release/net10.0'

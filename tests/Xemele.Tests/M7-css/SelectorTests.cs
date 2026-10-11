@@ -150,4 +150,23 @@ public sealed class SelectorTests
         Assert.Equal(3, Assert.Throws<CssSelectorException>(() => CssSelector.Compile("é, ::before")).Offset);
     }
 
+    [Fact] public void PublicConstructorIsUniversalOnBothGraphs()
+    {
+        var (x, h) = Trees(); var constructed = new CssSelector(); var compiled = CssSelector.Compile("*");
+        Assert.Equal(compiled.Select(x.DocumentNode), constructed.Select(x.DocumentNode));
+        Assert.Equal(compiled.Select(h.DocumentNode), constructed.Select(h.DocumentNode));
+        Assert.False(constructed.Matches(x.DocumentNode)); Assert.False(constructed.Matches(h.DocumentNode));
+        Assert.False(constructed.Matches(default(XmlNode)));
+        Assert.True(constructed.Matches(x.CreateElement("Item", "urn:foreign"))); Assert.True(constructed.Matches(h.CreateElement("Item", "urn:foreign")));
+        var xe = x.CreateElement("detached"); var he = h.CreateElement("detached");
+        xe.AppendChild(x.CreateElement("child")); he.AppendChild(h.CreateElement("child"));
+        Assert.Equal(compiled.Select(xe), constructed.Select(xe)); Assert.Equal(compiled.Select(he), constructed.Select(he));
+        Assert.Same(x, constructed.Select(xe)[0].OwnerDocument); Assert.Same(h, constructed.Select(he)[0].OwnerDocument);
+        Assert.Throws<ArgumentException>(() => constructed.Select(default(XmlNode)));
+        Assert.Throws<ArgumentNullException>(() => constructed.Matches((HtmlNode)null!)); Assert.Throws<ArgumentNullException>(() => constructed.Select((HtmlNode)null!));
+        var options = new CssSelectorOptions { Namespaces = new Dictionary<string, string> { [""] = "urn:no" } };
+        Assert.Empty(CssSelector.Compile("*", options).Select(x.DocumentNode));
+        Assert.Equal(5, constructed.Select(x.DocumentNode).Count);
+    }
+
 }

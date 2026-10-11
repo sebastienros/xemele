@@ -14,11 +14,11 @@ if (args[0] is "--discover" or "--benchmark")
     var tokenRun = BenchmarkConverter.TypeToBenchmarks(typeof(TokenScanBenchmarks), config);
     var compositionRun = BenchmarkConverter.TypeToBenchmarks(typeof(CompositionBenchmarks), config);
     var suite = tokenRun.BenchmarksCases.Concat(compositionRun.BenchmarksCases).ToArray();
-    if (suite.Length != 21 || suite.Any(c => c.Job.Run.WarmupCount != 3 || c.Job.Run.IterationCount != 3 || c.Job.Run.LaunchCount != 1 || c.Job.Infrastructure.Toolchain != InProcessNoEmitToolchain.Instance)) throw new Exception("21 ShortRun NoEmit cases required.");
-    Console.WriteLine("21 ShortRun NoEmit cases; no builds/generation.");
+    if (suite.Length != 29 || suite.Any(c => c.Job.Run.WarmupCount != 3 || c.Job.Run.IterationCount != 3 || c.Job.Run.LaunchCount != 1 || c.Job.Infrastructure.Toolchain != InProcessNoEmitToolchain.Instance)) throw new Exception("29 ShortRun NoEmit cases required.");
+    Console.WriteLine("29 ShortRun NoEmit cases; no builds/generation.");
     if (args[0] == "--discover") return;
     var summaries = BenchmarkRunner.Run(new[] { tokenRun, compositionRun });
-    if (summaries.Sum(s => s.Reports.Length) != 21 || summaries.Any(s => s.Reports.Any(r => !r.Success || r.ResultStatistics is null))) throw new Exception("Benchmark failure.");
+    if (summaries.Sum(s => s.Reports.Length) != 29 || summaries.Any(s => s.Reports.Any(r => !r.Success || r.ResultStatistics is null))) throw new Exception("Benchmark failure.");
     return;
 }
 if (args[0] != "--measure") throw new ArgumentException();
