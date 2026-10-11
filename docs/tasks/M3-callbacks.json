@@ -68,7 +68,8 @@
         "earlier-regression",
         "planning",
         "integrated-checks",
-        "independent-review"
+        "independent-review",
+        "global-api-provisioned"
       ]
     }
   ],
@@ -204,6 +205,15 @@
       "result": "passed",
       "summary": "Read-only review_core_async_boundary: no blocking A1/A2/A3 findings.16 frozen delegate/interface/base/adapter families match, direct dispatch preserves exceptions, readonly ref models/concrete checked enumeration preserve metadata and0B wrappers. Actual callback lifetime invalidation and pump projection remain explicitly dependent shared pump obligations.",
       "artifact": null
+    },
+    {
+      "id": "global-api-provisioned",
+      "kind": "integration",
+      "revision": "51edbb51f3ef06b651a43e9facebac086d35ae2e",
+      "command": "PATH=pinned SDK directory python3 tools/ApiBaseline/compare.py --report /private/tmp/m3-combined-global-api.json",
+      "result": "passed",
+      "summary": "Official inventory discovery and approved compiled API comparison now pass639 members. Temporary integration checkout provisioned3386 exact manifest SHA256-verified fixtures plus pinned source bundle from preserved private cache. No tracked source/manifests edited. Resolves reported checkout setup failure; historical failed worker command retained accurately.",
+      "artifact": null
     }
   ],
   "blockers": [],
@@ -216,8 +226,6 @@
     "remaining": [
       "M3-streaming-pump owns actual callback lifetime invalidation, tag/DTD projection and end-to-end allocation confirmation; x64 timing/allocation confirmation remains a release check."
     ],
-    "requests": [
-      "Global corpus provisioning owner must restore tests/corpora/xml/xmlconf/eduni/errata-2e/E14.dtd before full discovery/API wrapper can pass; no worker edits outside callback ownership."
-    ]
+    "requests": []
   }
 }
