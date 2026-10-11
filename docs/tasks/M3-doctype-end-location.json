@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "milestone": "M3",
+  "kind": "feature",
+  "id": "M3-doctype-end-location",
+  "title": "Preserve original closing DOCTYPE location for streaming projection",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "depends_on": [
+    "M3-async-resources"
+  ],
+  "goals": [
+    "G04"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/streaming.md"
+  ],
+  "owns": [
+    "src/Xemele/Parsing/Core/XmlParserCore.cs",
+    "src/Xemele/Parsing/Core/XmlParserCore.Doctype.cs",
+    "tests/Xemele.Tests/M3-doctype-end-location/",
+    "docs/reports/M3-doctype-end-location/"
+  ],
+  "api_or_output": "Internal LastDocumentTypeEndLocation without public API changes",
+  "acceptance": [
+    {
+      "id": "M3-doctype-end-location-A1",
+      "description": "Expose additive internal nullable closing DOCTYPE XmlLocation captured from original final > scalar before external async suspension; preserve opening location and old sink signature/behavior.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M3-doctype-end-location-A2",
+      "description": "Prove no-subset/internal-subset closing location, CRLF/Unicode and mapped original byte offsets at every primary split/pause; external async completion retains primary close location.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M3-doctype-end-location-A3",
+      "description": "Preserve existing DTD/core behavior and API, record actual focused checks/planning at known revisions; passive value copy adds no allocation or scanning algorithm.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "Concrete shared pump request for exact EndDtd location; core previously exposed opening only.",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}
