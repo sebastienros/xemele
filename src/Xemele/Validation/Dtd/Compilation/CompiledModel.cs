@@ -15,14 +15,15 @@ internal sealed class CompiledDtdModel
 
     internal CompiledDtdElement? FindElement(ReadOnlySpan<char> name, ValidationOperation operation)
     {
-        foreach (var element in Elements)
-        { if (!DtdLexical.Equal(name, element.Declaration.Name, operation)) { if (!operation.IsComplete) return null; continue; } return element; }
+        for (int i = 0; i < Elements.Count; i++)
+        { var element = Elements[i]; if (!DtdLexical.Equal(name, element.Declaration.Name, operation)) { if (!operation.IsComplete) return null; continue; } return element; }
         return null;
     }
     internal CompiledDtdAttribute? FindAttribute(ReadOnlySpan<char> elementName, ReadOnlySpan<char> name, ValidationOperation operation)
     {
-        foreach (var attribute in Attributes)
+        for (int i = 0; i < Attributes.Count; i++)
         {
+            var attribute = Attributes[i];
             if (DtdLexical.Equal(elementName, attribute.Declaration.ElementName, operation) && DtdLexical.Equal(name, attribute.Declaration.Name, operation)) return attribute;
             if (!operation.IsComplete) return null;
         }
@@ -30,14 +31,15 @@ internal sealed class CompiledDtdModel
     }
     internal bool HasNotation(ReadOnlySpan<char> name, ValidationOperation operation)
     {
-        foreach (var notation in Source.Notations)
-        { if (DtdLexical.Equal(name, notation.Name, operation)) return true; if (!operation.IsComplete) return false; }
+        for (int i = 0; i < Source.Notations.Count; i++)
+        { var notation = Source.Notations[i]; if (DtdLexical.Equal(name, notation.Name, operation)) return true; if (!operation.IsComplete) return false; }
         return false;
     }
     internal bool HasUnparsedEntity(ReadOnlySpan<char> name, ValidationOperation operation)
     {
-        foreach (var entity in Source.GeneralEntities)
+        for (int i = 0; i < Source.GeneralEntities.Count; i++)
         {
+            var entity = Source.GeneralEntities[i];
             if (DtdLexical.Equal(name, entity.Name, operation)) return entity.NotationName is not null && HasNotation(entity.NotationName, operation);
             if (!operation.IsComplete) return false;
         }
@@ -56,8 +58,8 @@ internal sealed record CompiledDtdAttribute(DtdAttributeDeclaration Declaration,
         {
             if (!DtdLexical.Name(value, type == DtdAttributeType.Enumeration, false, operation, location)) return false;
             bool found = false;
-            foreach (var token in Declaration.Tokens)
-            { if (DtdLexical.Equal(value, token, operation, location)) { found = true; break; } if (!operation.IsComplete) return false; }
+            for (int i = 0; i < Declaration.Tokens.Count; i++)
+            { var token = Declaration.Tokens[i]; if (DtdLexical.Equal(value, token, operation, location)) { found = true; break; } if (!operation.IsComplete) return false; }
             return found && (type != DtdAttributeType.Notation || model.HasNotation(value, operation));
         }
         bool multiple = type is DtdAttributeType.IdRefs or DtdAttributeType.Entities or DtdAttributeType.NmTokens;
