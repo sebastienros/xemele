@@ -230,7 +230,9 @@ public sealed class StreamingTests
         Assert.Equal(GenericParameterAttributes.ReferenceTypeConstraint, append.GetGenericArguments()[0].GenericParameterAttributes);
         Assert.Equal(new[] { typeof(IXmlEventSink) }, append.GetGenericArguments()[0].GetGenericParameterConstraints());
         Assert.False(typeof(XmlParserCore).IsPublic);
-        Assert.Equal(new[] { "NeedInput", "Paused", "Completed", "Rejected" }, Enum.GetNames<ScanStep>());
+        // Async resource suspension is additive; original scan state values stay stable.
+        Assert.Equal(new[] { "NeedInput", "Paused", "Completed", "Rejected", "NeedResource" }, Enum.GetNames<ScanStep>());
+        Assert.Equal(new[] { 0, 1, 2, 3, 4 }, Enum.GetValues<ScanStep>().Select(value => (int)value).ToArray());
     }
     [Fact]
     public void GeneratedSupportedXmlAgreesWithIndependentBclSemanticOracle()
