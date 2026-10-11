@@ -1,0 +1,42 @@
+{
+  "exclusive_required": true,
+  "total_max_seconds": 1200,
+  "environment": {
+    "DOTNET_ROOT": "/Users/sebastienros/Library/Application Support/dotnetup/dotnet",
+    "DOTNET_ROLL_FORWARD": "Disable"
+  },
+  "runs": [
+    {
+      "name": "allocation",
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "--fx-version",
+        "10.0.11",
+        "docs/reports/M4-compile/bin/Release/net10.0/Xemele.Benchmarks.dll",
+        "--allocation",
+        "artifacts/M4-compile/allocation.json"
+      ],
+      "max_seconds": 30,
+      "log": "artifacts/M4-compile/allocation.log"
+    },
+    {
+      "name": "benchmark",
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "--fx-version",
+        "10.0.11",
+        "docs/reports/M4-compile/bin/Release/net10.0/Xemele.Benchmarks.dll",
+        "--benchmark",
+        "artifacts/M4-compile/benchmark"
+      ],
+      "max_seconds": 1080,
+      "log": "artifacts/M4-compile/benchmark.log"
+    }
+  ],
+  "initial_identity_max_seconds": 30,
+  "final_identity_max_seconds": 30,
+  "explicit_framework_version": "10.0.11",
+  "runtimeconfig_minimum_version": "10.0.0",
+  "successful_benchmark_cases_required": 25,
+  "benchmark_job": "ShortRun: 3 warmups, 3 iterations, 1 launch; InProcessNoEmit toolchain only"
+}

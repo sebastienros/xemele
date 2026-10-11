@@ -36,8 +36,14 @@ SDK 10.0.400 / runtime 10.0.11 / host-fxr files. `freeze.py check` surrounds lea
 execution. Expected maximum lease duration: 1200 seconds; each command uses the
 actual prebuilt binary with explicit `--fx-version 10.0.11`; counters-disabled
 control confirms actual FrameworkDescription `.NET 10.0.11` (the default
-runtimeconfig framework version is 10.0.0). Exact command arrays and manifest digest will be sent
-when the final candidate is ready. No measurement has been performed here.
+runtimeconfig framework version is 10.0.0). The exact ordered argv/env and bounds are in measurement-plan.json: allocation
+30s then, only on success, benchmark 1080s. Total bound 1200s includes initial and
+final identity checks (30s each), own process-group cleanup/ps confirmation in
+finally, and a reserved finalization interval. The reused navigation lifecycle
+driver runs no control/discovery/build/restore commands during the lease. Freeze
+covers complete SDK10.0.400, runtime10.0.11, host-fxr, actual driver/product binary
+closures and all relevant generated build inputs. A prepared manifest digest
+will be sent with the clean READY/PARK packet. No measurements performed here.
 
 Measurements on the local Arm64 host remain informational for timing and require
 later x64 confirmation; microbenchmark search gains do not imply validating
