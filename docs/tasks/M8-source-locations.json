@@ -4,7 +4,7 @@
   "milestone": "M8",
   "title": "Retain original XML source locations for schema compilation",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M8 coordinator bounded shared repair",
   "branch": "codex/m8-source-locations",
   "base_revision": "1d3f2e09e3d604f4377ece942805435e07345e36",
@@ -36,29 +36,79 @@
     {
       "id": "M8-source-locations-A1",
       "description": "Retain copied original callback locations and document origin in a document-owned bounded-by-DOM sidecar without lexical buffers. Expose original node/attribute/namespace coordinates only for unchanged complete strict XML input; preserve known origin without XML declaration and guarded schema lookups. No fabricated coordinates for programmatic, cloned/imported, HTML, recovered or mutated input.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "source-review",
+        "focused-correctness"
+      ]
     },
     {
       "id": "M8-source-locations-A2",
       "description": "Test distinct local declaration/constraint positions, character scalar coordinates/null byte offsets, chunked byte input with supplementary scalars/newlines/byte offsets, redirected origins, mutation before/during traversal, foreign handles and untracked cases. Preserve prior XML/DTD/model behavior and public API.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "source-review",
+        "focused-correctness"
+      ]
     },
     {
       "id": "M8-source-locations-A3",
       "description": "Record focused checks, exact helper joins and source ownership plus applicable added metadata construction/retention and zero-allocation warm lookup evidence at pinned runtime. Integrate before schema compiler consumers use it.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "source-review",
+        "focused-correctness",
+        "allocation-pair"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Tree/SchemaSourceLocations/Document.SourceLocations.cs: copied location sidecar and revision qualification",
+    "src/Xemele/Parsing/Dom/DomSink.cs: original callback location persistence",
+    "src/Xemele/Validation/SchemaCommon/CompileContext.cs and ResourceLoader.cs: guarded local lookups and original URI fallback"
+  ],
+  "evidence": [
+    {
+      "id": "source-review",
+      "kind": "review",
+      "revision": "0315f407f6e15091932d90c498759d3e80612baf",
+      "command": "Read-only source review by /root/review_m8_model and coordinator",
+      "result": "passed",
+      "summary": "Accepted copied values, slot-bounded ownership, original URI retention and complete unchanged XML qualification; no public API change.",
+      "artifact": "docs/reports/M8-source-locations/README.md"
+    },
+    {
+      "id": "focused-correctness",
+      "kind": "check",
+      "revision": "0315f407f6e15091932d90c498759d3e80612baf",
+      "command": "Pinned Release build and exact ten-class xUnit selection preserved in integration-commands.py; public API union and frozen model compare",
+      "result": "passed",
+      "summary": "177 actual Arm64 .NET 10.0.11 cases; zero errors/failures/skips/not-run. Public API 1393; frozen model surface 316. Initial compilation and invalid incomplete-fixture attempts corrected and documented.",
+      "artifact": "docs/reports/M8-source-locations/README.md"
+    },
+    {
+      "id": "allocation-pair",
+      "kind": "check",
+      "revision": "1e1f4a1143367df620fe87e72ff8635c215c4b34",
+      "command": "python3 docs/reports/M8-source-locations/measure.py --measure (explicit grant, elevated process-inspection permission)",
+      "result": "passed",
+      "summary": "Baseline seven and candidate ten routes, each sixteen warmups plus sixty-four consumed samples; new lookups zero bytes, owned parse overhead measured, positive controls 1048 bytes, cold/retained costs reported; twenty identities stable and lifecycle closed before raw inspection.",
+      "artifact": "docs/reports/M8-source-locations/allocations.md"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Bounded shared repair confirmed by read-only review: DomSink discards ordinary callback locations; frozen XSD local particle/attribute-use provenance needs them.",
-    "checks": [],
-    "remaining": [],
-    "requests": []
+    "summary": "Copied original XML source positions and origin are available through three guarded SchemaDocumentScope.Location overloads without public API changes.",
+    "checks": [
+      "177 focused correctness cases passed; full public API 1393 and frozen model 316 unchanged",
+      "Prepared baseline/candidate allocation pair passed under lease; lookups zero bytes; metadata costs explicitly measured",
+      "Planning validates 176 tasks; whitespace check passed"
+    ],
+    "remaining": [
+      "Combined-tree verification and coordination integration"
+    ],
+    "requests": [
+      "XSD compiler must join only after this task is verified and use local scope lookup for declaration/particle/constraint positions."
+    ]
   }
 }
