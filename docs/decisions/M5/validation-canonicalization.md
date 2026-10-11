@@ -63,6 +63,29 @@ and ID/IDREF checks still apply. Defaults are not silently materialized. Checks 
 undeclared elements/attributes, all content models, permitted whitespace, ID uniqueness,
 IDREF(S) resolution, unparsed ENTITY(IES)/NOTATION and standalone dependencies. Unresolved
 entity/attribute sidecars cannot be treated as empty values; report incomplete input.
+A narrow source-invalid exception applies when every unresolved general-entity
+occurrence is proven undeclared against the fully read original associated DTD,
+complete nonrecovering input, and its nonnegative unchanged completion revision.
+FromDocument may compile this retained model and Validate returns complete invalid
+DTD.UndeclaredEntity at the original occurrence; symbolic sidecars remain intact,
+with no hypothetical empty replacement, resolution or augmentation. Missing proof,
+unread declarations, declared-but-unexpanded references, incomplete attributes,
+mutation or a different associated schema remain incomplete. This does not alter
+nonvalidating M2 well-formedness behavior for parameter-entity-dependent documents.
+
+Element Valid source witnesses erased by expansion retain only one first internal
+owned diagnostic and the applicable immutable declaration reference. A complete,
+nonrecovering unchanged source completion revision and an applicable original
+associated declaration profile are required. EMPTY references remain invalid even
+when expansion is empty; children-content character-reference whitespace remains
+invalid, including references reparsed from entity replacement text. Literal entity
+values whose declaration character references already became literal XML S remain
+legal. A changed declaration category on otherwise unchanged input cannot silently ignore
+the one first witness: later erased restrictions may still apply, so this case is
+incomplete. Mutations/restoration, clones and manual trees do not inherit these
+source constraints. Current-tree checks still apply; no raw
+lexical input or per-node provenance collection is retained.
+
 Mutations during validation fail with InvalidOperationException; immutable schemas
 are reusable across independent operations, without shared mutable budgets.
 

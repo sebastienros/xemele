@@ -14,13 +14,13 @@ public sealed class ProvenanceAndWorkTests
         new() { DtdProcessing = XmlDtdProcessing.Parse, Resolver = new Subset(dtd) }, Ct);
 
     [Fact]
-    public void OriginalNumericReferenceAndCdataWhitespaceTrustVerifiedSourceProfile()
+    public void OriginalNumericReferenceAndCdataWhitespaceViolateChildrenContent()
     {
         var document = Standalone("&#32;");
         var schema = DtdSchema.FromDocument(document);
-        Assert.True(schema.Validate(document).IsValid);
-        Assert.True(schema.Validate(Standalone("&#32;")).IsValid); // Separate equivalent effective model.
-        Assert.True(DtdSchema.Compile(External, cancellationToken: Ct).Validate(document).IsValid);
+        Assert.False(schema.Validate(document).IsValid);
+        Assert.False(schema.Validate(Standalone("&#32;")).IsValid); // Separate equivalent effective model.
+        Assert.False(DtdSchema.Compile(External, cancellationToken: Ct).Validate(document).IsValid);
         var cdata = schema.Validate(Standalone("<![CDATA[ \t]]>"));
         Assert.True(cdata.IsComplete); Assert.False(cdata.IsValid);
         Assert.All(cdata.Diagnostics, d => Assert.Equal("DTD.Content", d.Code));

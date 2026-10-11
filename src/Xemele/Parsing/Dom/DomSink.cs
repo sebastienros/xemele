@@ -7,7 +7,7 @@ namespace Xemele.Parsing.Dom;
 
 // Callback views never escape. Text scratch owns one logical token until its
 // final fragment; the final string and names then belong to the document arena.
-internal sealed partial class DomSink : IXmlEventSink
+internal sealed partial class DomSink : IXmlEventSink, IXmlValidationProvenanceSink
 {
     private readonly OperationBudget budget;
     private readonly XmlInputDecoder? decoder;
@@ -114,6 +114,11 @@ internal sealed partial class DomSink : IXmlEventSink
         builder.AppendSyntaxValidatedChild(parent, node, cancellation);
         text.Clear();
         return true;
+    }
+    public void ValidationProvenance(XmlDiagnostic diagnostic, Xemele.Parsing.Dtd.DtdElementDeclaration declaration)
+    {
+        cancellation.ThrowIfCancellationRequested();
+        Document.SetValidationInstanceProvenance(diagnostic, declaration);
     }
     public bool EndDocument(XmlLocation location)
     {
