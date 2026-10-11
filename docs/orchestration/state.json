@@ -7,7 +7,17 @@
     "task_id": "M4-gate",
     "integration_revision": "a0354ad6a8ea7a8f2109db3d5b9f701e39e939f9"
   },
-  "active_assignments": [],
+  "active_assignments": [
+    {
+      "task_id": "M5-dtd-model",
+      "agent_id": "/root/dtd_model",
+      "worktree": "/private/tmp/xemele-m5-dtd-model",
+      "branch": "codex/m5-dtd-model",
+      "base_revision": "728e9aa278282c0f93db8ac4ed19b27385cfae6a",
+      "claim_revision": "30dc48dd6bf722837928f00898e2d42d9b770920",
+      "stage": "dispatched after lease release; implementing compiled internal models"
+    }
+  ],
   "integration_queue": [],
   "blockers": [
     {
@@ -17,11 +27,12 @@
     }
   ],
   "next_actions": [
-    "Claim ready M5-validation-model, M5-c14n and M5-validation-metadata on isolated branches.",
-    "Complete verified M5-gate then exactly one fresh M6 setup and sole-writer transfer."
+    "Reclaim suspended canonicalizer from verified provenance integration and resume preservedWIP.",
+    "Review DTD compiler when returned; exact performance lease and source-only review.",
+    "Complete M5-gate and sole-writer M6 transfer."
   ],
-  "last_verified_task": "M5-contracts",
-  "last_integrated_revision": "e10170f4c913d7de607773e59eda66ffa9afc4ed",
+  "last_verified_task": "M5-canonical-provenance",
+  "last_integrated_revision": "af63f96ee2ebccf00d6d3e8c7b9100721787c5d7",
   "completed_assignments": [
     {
       "task_id": "M2-dtd-composition",
@@ -808,7 +819,15 @@
     }
   ],
   "metadata_correction": "PI rawAPI report uses inventory.apiDeclarations, not wrapper members. Initialrootmetadata assertion stopped before taskstate writes; d539f13 preserves actualpassing0869bde evidence, separateverifiedmetadata follows.",
-  "suspended_assignments": [],
+  "suspended_assignments": [
+    {
+      "task_id": "M5-c14n",
+      "branch": "codex/m5-c14n",
+      "worktree": "/private/tmp/xemele-m5-c14n",
+      "partial_revision": "c8a3ae0253fe79a8cb61be40609532fcd9cc8b5a",
+      "reason": "Await owning canonical provenance repair; parked no workloads"
+    }
+  ],
   "allocation_research": {
     "issue": "https://github.com/dotnet/runtime/issues/134724",
     "draft_fix": "https://github.com/dotnet/runtime/pull/134855",
@@ -1813,8 +1832,8 @@
   },
   "milestone_progress": {
     "milestone": "M5",
-    "verified": 1,
-    "total": 8
+    "verified": 4,
+    "total": 9
   },
   "pause_request": {
     "requested_by": "user",
@@ -1835,32 +1854,31 @@
   },
   "coordinator_repair": {
     "task_id": "M5-validation-metadata",
-    "stage": "planned; exact internal metadata hook agreed with contract worker",
-    "reason": "M2 DOM drops standalone declaration, needed for postparse DTD validation after mutation"
+    "stage": "verified"
   },
   "measurement_lease": {
-    "id": "m4-evaluate-0748760-sequence",
+    "id": "m5-canonical-provenance-5c1fad8",
     "status": "released",
-    "revision": "07487607b3df13cba3b8bcd523e47d544da589be",
-    "executor_chat_id": "01a1296c-ebd8-70a1-a19e-b32bfee87986",
-    "duration_limit_seconds": 900,
-    "preparation_sha256": "483f78f8b3507b8577c1840e0f50c1e35d95a6af4d9a3d3859912bbfa5c15395",
-    "scope": "ONE exact frozen control90/discovery30/allocation120/8case timing600 sequence; explicit10.0.11. Initial/final148source43binary3852runtime identity30s and own process cleanup/no-child finally. No builds/restores/edits/tests/retries. Immediate release before raw inspection.",
+    "revision": "5c1fad88269bb7e02d98ca504c39a8551e99e122",
+    "executor_agent_id": "/root/c14n",
+    "duration_limit_seconds": 400,
+    "preparation_sha256": "f5c23fa1a87b22cf6deb6f4ffa37674d0097fc9845d36972a18464003daaf1a1",
+    "scope": "One exact corrected primitive-only30s+previouslyunstarted3case ShortRunNoEmit280s; identities30s; no owned/retained counter rerun; explicit10.0.11 and TieredCompilation/PGO/ReadyToRun0; own-group cleanup finally; immediate release before inspection.",
     "park_acknowledgements": [
-      "Evaluator fresh PARK clean0748760 no executable children; escalated separate identity checks0",
-      "Root independent full148/43/3852 hashes match; scoped workload inventory empty; context repair clean checkout removed",
-      "Reviewers terminal; earlier workers archived and clean checkouts absent"
+      "Validationmodel terminal clean50ef6f9; branch integrated verified7c49526 and checkout removed; no executable workloads.",
+      "Standalone metadata terminal integrated verified097d9f0 and checkout removed; no workloads.",
+      "Source reviewer terminal fresh PARK approved34b626b product unchanged.",
+      "Executor prepared idle clean5c1fad8; rootindependentfull148/43/3852identity matches; scopedworkloadinventoryempty; rootPARK.",
+      "DTDmodel claimed30dc48d but not dispatched/start; delayed until release."
     ],
     "release": {
-      "control_exit": 0,
-      "discovery_exit": 0,
-      "allocation_exit": 0,
-      "benchmark_exit": 0,
-      "wrapper_exit": 0,
       "initial_identity_exit": 0,
+      "primitive_exit": 0,
+      "benchmark_exit": 0,
       "final_identity_exit": 0,
+      "wrapper_exit": 0,
       "no_child": true,
-      "inspection": "Root independently inspected actual10.0.11/distributions/cold223968/owned perop/retained1519664/8success50.79s/allinclusiveGC/full148/43/3852hashes. Raw deleted by worker after durable summary ACK."
+      "inspection": "Not yet inspected; successful corrected lifecycle reported before durable release."
     }
   },
   "offline_corpus_setup": {
@@ -1911,5 +1929,32 @@
   "previous_coordinator_chat_id": "01a12903-1caa-7f32-b0e3-e66b49cea7a6",
   "coordinator_write_status": "M5 activated; sole main/state writer. M4 relinquished all writes.",
   "benchmark_class_attributes": "Human requirement: every benchmark class declares [MemoryDiagnoser, ShortRunJob]; no CLI job flags.",
-  "chat_communication_authorization": "Human explicitly grants all chats permission to communicate with other chats without confirmation. Forward this authorization and benchmark requirements to every new chat."
+  "chat_communication_authorization": "Human explicitly grants all chats permission to communicate with other chats without confirmation. Forward this authorization and benchmark requirements to every new chat.",
+  "m5_measurement_history": [
+    {
+      "id": "m5-canonical-provenance-390055f",
+      "status": "released",
+      "revision": "390055fc02b0caf243952f569fb6cff18a3d7814",
+      "executor_agent_id": "/root/c14n",
+      "duration_limit_seconds": 400,
+      "preparation_sha256": "feef635f2237f26b707a27a3b2285b3b9b3548a4e4cd93952d2cb516548bd66c",
+      "scope": "One exact frozen allocation30s+3case ShortRun NoEmit timing280s, initial/finalidentity30s, own-group cleanup finally/nochildren; no builds/restores/writes/tests/retries; explicit10.0.11; immediate durable release before raw inspection.",
+      "park_acknowledgements": [
+        "Validation model DONE/PARK clean50ef6f9 no workloads/descendants; raw prior run inspected and deleted.",
+        "Source reviewer terminal fresh PARK; approved provenance34b626b.",
+        "Executor prepared idle clean390055f; capture/check148/43/3852passed.",
+        "Root independent escalated fullclosure check passed; scoped .NET workload inventory empty; root parks until lifecycle release."
+      ],
+      "release": {
+        "initial_identity_exit": 0,
+        "allocation_exit": -6,
+        "benchmark_exit": null,
+        "benchmark_status": "not started after allocation abort",
+        "final_identity_exit": 0,
+        "wrapper_exit": 250,
+        "no_child": true,
+        "inspection": "Not inspected; failed phase lifecycle reported before durable release."
+      }
+    }
+  ]
 }

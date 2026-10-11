@@ -4,11 +4,11 @@
   "milestone": "M5",
   "title": "Shared validation results and operation context",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "verified",
   "owner": "M5 isolated M5-validation-model worker",
   "branch": "codex/m5-validation-model",
   "base_revision": "110f84094e3df287133bf30e709ae96824428f76",
-  "integration_revision": null,
+  "integration_revision": "7c495266447fff73c76aee8cfce08b68db7addcb",
   "depends_on": [
     "M5-contracts"
   ],
@@ -33,28 +33,104 @@
     {
       "id": "M5-validation-model-A1",
       "description": "Implement immutable validation result/options and bounded per-run diagnostics/operation state.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "focused-tests",
+        "allocation-benchmark",
+        "combined-integration"
+      ]
     },
     {
       "id": "M5-validation-model-A2",
       "description": "Test valid/invalid/resource-failure distinction and concurrent per-run isolation.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "focused-tests",
+        "combined-integration"
+      ]
     },
     {
       "id": "M5-validation-model-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "build-api-sample",
+        "planning-validation",
+        "combined-integration"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Validation/Common/ValidationResult.cs: ValidationResult",
+    "src/Xemele/Validation/Common/ValidationOptions.cs: ValidationOptions",
+    "src/Xemele/Validation/Common/ValidationOperation.cs: ValidationOperation",
+    "tests/Xemele.Tests/M5-validation-model/ValidationModelTests.cs",
+    "docs/api/M5-validation-model.txt",
+    "samples/M5-validation-model/Program.cs"
+  ],
+  "evidence": [
+    {
+      "id": "focused-tests",
+      "kind": "check",
+      "revision": "0472c1e2afe07dba4a9c3c103c6bd9424036de84",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -class Xemele.Tests.M5ValidationModel.ValidationModelTests -noColor -result-xml artifacts/M5-validation-model/tests.xml",
+      "result": "passed",
+      "summary": "Actual .NET10.0.11; 18 passed, zero failed/skipped; immutable snapshots, valid/invalid/incomplete, exact/minimum/null caps, overflow, cancellation token and 32 concurrent isolated runs.",
+      "artifact": "docs/reports/M5-validation-model/README.md"
+    },
+    {
+      "id": "build-api-sample",
+      "kind": "check",
+      "revision": "0472c1e2afe07dba4a9c3c103c6bd9424036de84",
+      "command": "Release pinned SDK10.0.400 builds; python3 docs/reports/M5-validation-model/check_api.py; pinned dotnet --fx-version 10.0.11 samples/M5-validation-model/bin/Release/net10.0/ValidationModel.Sample.dll",
+      "result": "passed",
+      "summary": "Test/sample/probe/checker builds zero warnings/errors; approved compiled extractor matched all921 members (24 validation rows), public sample proves three outcomes on actual10.0.11. Exact commands and restore caveats in report.",
+      "artifact": "docs/reports/M5-validation-model/README.md"
+    },
+    {
+      "id": "allocation-benchmark",
+      "kind": "check",
+      "revision": "c564f5a2a48af0170b0b5b41a6afe814ca8dae2a",
+      "command": "python3 docs/reports/M5-validation-model/run_measurements.py --exclusive-grant",
+      "result": "passed",
+      "summary": "One exclusive bounded run actual10.0.11/Arm64: 0/131072 warm charge bytes, all32warm+32steady batches zero; setup216B/snapshot208B/refusal592B,4ShortRunNoEmit benchmark successes; full152source43binary3852runtime initial/finalidentities0, allocation0 benchmark0 cleanupnochildren runner0, immediate durable release before inspected raw. Exact inclusive GC counters and retained whole-heap303776B observation caveat preserved.",
+      "artifact": "docs/reports/M5-validation-model/README.md"
+    },
+    {
+      "id": "planning-validation",
+      "kind": "check",
+      "revision": "c564f5a2a48af0170b0b5b41a6afe814ca8dae2a",
+      "command": "python3 tools/planning/tasks.py validate",
+      "result": "passed",
+      "summary": "All152 task records valid before evidence update; rerun on final record before handoff.",
+      "artifact": "docs/reports/M5-validation-model/README.md"
+    },
+    {
+      "id": "source-review",
+      "kind": "review",
+      "revision": "0472c1e2afe07dba4a9c3c103c6bd9424036de84",
+      "command": "Independent source-only review /root/m5_contract_review and coordinator exact changed paths/code/API review",
+      "result": "passed",
+      "summary": "Immutable outcomes, work cap boundaries/overflow, terminal diagnostics cap1, cancellation and concurrent per-run isolation match frozen contracts; no concrete defects.",
+      "artifact": null
+    },
+    {
+      "id": "combined-integration",
+      "kind": "integration",
+      "revision": "7c495266447fff73c76aee8cfce08b68db7addcb",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -class Xemele.Tests.M5ValidationModel.ValidationModelTests -class Xemele.Tests.ValidationMetadata.ValidationMetadataTests -noColor; python3 docs/reports/M5-validation-model/check_api.py; python3 tools/planning/tasks.py validate; git diff --check",
+      "result": "passed",
+      "summary": "Combined Release build0warnings/errors;36focused tests allpass(actual10.0.11),921compiled API members matched,153taskvalidation,whitespace clean. Previously verified exact allocation/4case evidence reused unchanged shared model source.",
+      "artifact": "docs/reports/M5-validation-model/README.md"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "",
-    "checks": [],
+    "summary": "Verified integrated bounded shared validation outcomes/options/context;36combined tests/921API and inspected0Bwarm/216Bsetup/208Bsnapshot/592Brefusal evidence.",
+    "checks": [
+      "18/18 actual.NET10.0.11 focused tests; Release builds zero warnings/errors; compiled API921 matched; actual-host public sample; planning152 valid.",
+      "One exclusive allocation+4ShortRunNoEmit run all phases passed with exact closure identity and nochildren. Summary records raw GC counters and all allocation/retained domains."
+    ],
     "remaining": [],
     "requests": []
   }

@@ -1,0 +1,141 @@
+{
+  "schema_version": 1,
+  "id": "M5-canonical-provenance",
+  "milestone": "M5",
+  "title": "Retain complete-source and mutation provenance for canonical input",
+  "kind": "feature",
+  "status": "verified",
+  "owner": "M5 isolated canonical provenance worker",
+  "branch": "codex/m5-canonical-provenance",
+  "base_revision": "bc6b97db775170a15233aa7a584059dc4aa2f161",
+  "integration_revision": "af63f96ee2ebccf00d6d3e8c7b9100721787c5d7",
+  "depends_on": [
+    "M5-contracts"
+  ],
+  "goals": [
+    "G07",
+    "G08"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/dtd-c14n.md"
+  ],
+  "owns": [
+    "src/Xemele/Tree/Document.cs",
+    "src/Xemele/Tree/CanonicalMetadata/",
+    "src/Xemele/Parsing/Dom/Recovery.cs",
+    "src/Xemele/XPath/Model/Items.cs",
+    "tests/Xemele.Tests/M5-canonical-provenance/",
+    "benchmarks/Xemele.Benchmarks/M5-canonical-provenance/",
+    "docs/reports/M5-canonical-provenance/"
+  ],
+  "api_or_output": "Internal all-mutation ContentRevision, SourceInputComplete and captured XPath item revision; unchanged public snapshot API",
+  "acceptance": [
+    {
+      "id": "M5-canonical-provenance-A1",
+      "description": "Retain internal all-content mutation revision and recovered-source completeness, preserving structural MutationVersion and public recovery behavior.",
+      "status": "passed",
+      "evidence": [
+        "focused-checks",
+        "corrected-allocation-benchmark",
+        "combined-integration"
+      ]
+    },
+    {
+      "id": "M5-canonical-provenance-A2",
+      "description": "Capture internal XPath item content revision without altering snapshot getters/equality; test value/name/namespace/structure changes including A-to-B-to-A and incomplete recovery across sync/async input.",
+      "status": "passed",
+      "evidence": [
+        "focused-checks",
+        "corrected-allocation-benchmark",
+        "combined-integration"
+      ]
+    },
+    {
+      "id": "M5-canonical-provenance-A3",
+      "description": "Preserve earlier tree/recovery/XPath semantics, record focused actual checks and allocation/retention impact at known revision using integrated prerequisites only.",
+      "status": "passed",
+      "evidence": [
+        "focused-checks",
+        "corrected-allocation-benchmark",
+        "api-preservation",
+        "combined-integration"
+      ]
+    }
+  ],
+  "implementation": [
+    "src/Xemele/Tree/CanonicalMetadata/Document.CanonicalMetadata.cs: ContentRevision, SourceInputComplete, permanent negative exhaustion sentinel",
+    "src/Xemele/Tree/Document.cs: NotifyMutation and whole-document clone",
+    "src/Xemele/Parsing/Dom/Recovery.cs: RecoveryResult retains incomplete source",
+    "src/Xemele/XPath/Model/Items.cs: Metadata.ContentRevision and CapturedContentRevision without struct/public snapshot changes",
+    "tests/Xemele.Tests/M5-canonical-provenance/ProvenanceTests.cs: 10 exact regression cases"
+  ],
+  "evidence": [
+    {
+      "id": "focused-checks",
+      "kind": "check",
+      "revision": "34b626bf37f58d149fbcf83762aba1e719e168cf",
+      "command": "pinned dotnet Release offline restore/build; dotnet --fx-version 10.0.11 tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -noColor -noLogo -namespace Xemele.Tests.M5CanonicalProvenance -namespace Xemele.Tests.Tree -namespace Xemele.Tests.Recovery -namespace 'Xemele.Tests.M4*' -namespace Xemele.Tests.AsyncInput",
+      "result": "passed",
+      "summary": "Release tests/probe build zero warnings/errors; 484 actual tests pass including 10 new provenance cases. Actual runtime10.0.11. Harness-only later changes do not alter product/tests. Coordinator qualification: one included TreeTests.WarmTraversalAndRepeatedNameInternProbesAllocateNothing executed without exclusive lease; not accepted as allocation evidence. Dedicated controlled provenance probes provide required new allocation evidence.",
+      "artifact": "docs/reports/M5-canonical-provenance/checks.md"
+    },
+    {
+      "id": "original-allocation-failure",
+      "kind": "check",
+      "revision": "390055fc02b0caf243952f569fb6cff18a3d7814",
+      "command": "python3 docs/reports/M5-canonical-provenance/run_measurements.py --exclusive-grant",
+      "result": "failed",
+      "summary": "Actual primitive152bytes/65536 failed zero gate; phase-6/wrapper250; ownership64B baseline-shape56B retainedheap525368 observed. Initial/final identity0 nochildtrue; benchmark never started. Raw inspected after durable release.",
+      "artifact": "docs/reports/M5-canonical-provenance/performance.md"
+    },
+    {
+      "id": "corrected-allocation-benchmark",
+      "kind": "check",
+      "revision": "5c1fad88269bb7e02d98ca504c39a8551e99e122",
+      "command": "python3 docs/reports/M5-canonical-provenance/run_measurements.py --exclusive-grant",
+      "result": "passed",
+      "summary": "Corrected primitive warm/measured0bytes across32x512 each including whole loop; 3 actual declared ShortRunNoEmit BDN cases pass, inclusiveGC0/134217728,2147553464/33554432,2147552120/33554432. Disclosed explicit no-tier/PGO/ReadyToRun settings; initial/final0 nochildren. Owned prior evidence reused; no repeats.",
+      "artifact": "docs/reports/M5-canonical-provenance/performance.md"
+    },
+    {
+      "id": "api-preservation",
+      "kind": "check",
+      "revision": "5c1fad88269bb7e02d98ca504c39a8551e99e122",
+      "command": "python3 docs/reports/M5-canonical-provenance/check_api.py --checker /private/tmp/xemele-m5-integration/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll",
+      "result": "passed",
+      "summary": "Pinned explicit10.0.11 compiled approved extractor matched all897 checkout public baseline members; no public API changes.",
+      "artifact": "docs/reports/M5-canonical-provenance/checks.md"
+    },
+    {
+      "id": "source-review",
+      "kind": "review",
+      "revision": "34b626bf37f58d149fbcf83762aba1e719e168cf",
+      "command": "Independent source-only /root/m5_contract_review and coordinator final owned-diff review",
+      "result": "passed",
+      "summary": "All-mutation revision and unusable exhaustion sentinel, incomplete recovery/clone provenance and internal captured XPath revision preserve public snapshots/equality and structural enumerator behavior.",
+      "artifact": null
+    },
+    {
+      "id": "combined-integration",
+      "kind": "integration",
+      "revision": "af63f96ee2ebccf00d6d3e8c7b9100721787c5d7",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -noColor -noLogo -namespace Xemele.Tests.M5CanonicalProvenance -namespace Xemele.Tests.Tree -namespace Xemele.Tests.Recovery -namespace 'Xemele.Tests.M4*' -namespace Xemele.Tests.AsyncInput -namespace Xemele.Tests.M5ValidationModel -namespace Xemele.Tests.ValidationMetadata -method- Xemele.Tests.Tree.TreeTests.WarmTraversalAndRepeatedNameInternProbesAllocateNothing",
+      "result": "passed",
+      "summary": "519focused combined tests allpass(actualexplicit10.0.11); Release0warnings/errors;921API matched via compiledchecker;153taskvalidation. Allocationregression excluded; exact controlled primitive/3case evidence reused; earlier484run included1unleasedallocation method NOT accepted allocation evidence. Coordinator qualification: one included TreeTests.WarmTraversalAndRepeatedNameInternProbesAllocateNothing executed without exclusive lease; not accepted as allocation evidence. Dedicated controlled provenance probes provide required new allocation evidence.",
+      "artifact": "docs/reports/M5-canonical-provenance/checks.md"
+    }
+  ],
+  "blockers": [],
+  "handoff": {
+    "summary": "Verified integrated complete-source/all-mutation/XPath item provenance;519focused combined tests/921API; controlled0Bmutation/64Bmetadata evidence inspected.",
+    "checks": [
+      "484 focused preservation tests pass actual10.0.11; Release builds pass",
+      "Corrected0B steady mutation and3BDN cases; original152B failed gate retained in report",
+      "python3 tools/planning/tasks.py validate:153records pass after final evidence",
+      "Approved compiled API extractor matched897members on actual explicit10.0.11"
+    ],
+    "remaining": [],
+    "requests": []
+  }
+}

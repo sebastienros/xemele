@@ -1,0 +1,148 @@
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using System.Text.Json;
+using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Configs;
+using BenchmarkDotNet.Running;
+using BenchmarkDotNet.Jobs;
+using BenchmarkDotNet.Toolchains.InProcess.NoEmit;
+using Xemele;
+using Xemele.XPath;
+
+if (args is not [var mode, var output]) throw new ArgumentException("mode output required");
+if (RuntimeInformation.FrameworkDescription != ".NET 10.0.11") throw new InvalidOperationException("Actual .NET 10.0.11 required.");
+if (mode == "--il")
+{
+    var types = new[] { typeof(XmlDocument), typeof(XmlNode), typeof(XmlDocument).Assembly.GetType("Xemele.TreeValidation")! };
+    var methods = types.SelectMany(t => t.GetMethods(System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public))
+        .Where(m => m.Name is "AdvanceContentRevision" or "NotifyMutation" or "SetValue" or "set_Value" or "Text" or "Value");
+    File.WriteAllLines(output, methods.Select(InspectIl));
+    Console.WriteLine("Hot mutation IL inspected"); return;
+}
+if (mode is "--primitive" or "--primitive-control")
+{
+    bool counters = mode == "--primitive";
+    long[] warmDistribution = new long[32], measuredDistribution = new long[32];
+    long begin = counters ? GC.GetAllocatedBytesForCurrentThread() : 0;
+    var primitiveFixture = new Fixture();
+    long setup = counters ? GC.GetAllocatedBytesForCurrentThread() - begin : 0;
+    begin = counters ? GC.GetAllocatedBytesForCurrentThread() : 0;
+    long warmConsumed = 0;
+    for (int i = 0; i < warmDistribution.Length; i++) warmConsumed += SampleMutations(primitiveFixture, counters, out warmDistribution[i]);
+    long warmBytes = counters ? GC.GetAllocatedBytesForCurrentThread() - begin : 0;
+    begin = counters ? GC.GetAllocatedBytesForCurrentThread() : 0;
+    long consumedMutations = 0;
+    for (int i = 0; i < measuredDistribution.Length; i++) consumedMutations += SampleMutations(primitiveFixture, counters, out measuredDistribution[i]);
+    long measuredBytes = counters ? GC.GetAllocatedBytesForCurrentThread() - begin : 0;
+    File.WriteAllText(output, JsonSerializer.Serialize(new { mode, runtime = RuntimeInformation.FrameworkDescription, architecture = RuntimeInformation.ProcessArchitecture.ToString(), batches = 32, operationsPerBatch = 512, warmOperations = 16384, measuredOperations = 16384, setup, warmBytes, measuredBytes, warmDistribution, measuredDistribution, warmConsumed, consumedMutations, actualRevision = primitiveFixture.Document.ContentRevision }, new JsonSerializerOptions { WriteIndented = true }));
+    if (primitiveFixture.Document.ContentRevision != 32772 || counters && measuredBytes != 0) throw new InvalidOperationException("Primitive count/allocation control failed");
+    Console.WriteLine($"{mode} passed; actual {RuntimeInformation.FrameworkDescription}; measured16384; consumed={consumedMutations}"); return;
+}
+if (mode is "--discover" or "--benchmark")
+{
+    var config = ManualConfig.Create(DefaultConfig.Instance).WithArtifactsPath(output).AddJob(Job.Default.WithToolchain(InProcessNoEmitToolchain.Instance).AsMutator());
+    var suite = BenchmarkConverter.TypeToBenchmarks(typeof(ProvenanceBenchmarks), config);
+    if (suite.BenchmarksCases.Length != 3 || suite.BenchmarksCases.Any(c => c.Job.Run.WarmupCount != 3 || c.Job.Run.IterationCount != 3 || c.Job.Run.LaunchCount != 1 || c.Job.Infrastructure.Toolchain != InProcessNoEmitToolchain.Instance)) throw new InvalidOperationException("Three declared ShortRun NoEmit cases required.");
+    Console.WriteLine($"{RuntimeInformation.FrameworkDescription}; {RuntimeInformation.ProcessArchitecture}; 3 cases, ShortRun, NoEmit, warmup=3/iterations=3/launch=1");
+    if (mode == "--discover") return;
+    var summary = BenchmarkRunner.Run(suite);
+    if (summary.Reports.Length != 3 || summary.Reports.Any(r => !r.Success || r.ResultStatistics is null)) throw new InvalidOperationException("Three successful reports required.");
+    return;
+}
+if (mode is not ("--control" or "--allocation")) throw new ArgumentException("Unknown mode");
+bool measure = mode == "--allocation";
+long start = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+var fixture = new Fixture();
+long coldBytes = measure ? GC.GetAllocatedBytesForCurrentThread() - start : 0;
+for (int i = 0; i < 1024; i++) { fixture.Mutate(); GC.KeepAlive(fixture.Attribute()); GC.KeepAlive(fixture.Namespace()); }
+const int operations = 65536;
+start = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+for (int i = 0; i < operations; i++) fixture.Mutate();
+long primitiveBytes = measure ? GC.GetAllocatedBytesForCurrentThread() - start : 0;
+start = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+long consumed = 0;
+for (int i = 0; i < operations; i++) consumed += fixture.Attribute().CapturedContentRevision;
+long attributeBytes = measure ? GC.GetAllocatedBytesForCurrentThread() - start : 0;
+start = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+for (int i = 0; i < operations; i++) consumed += fixture.Namespace().CapturedContentRevision;
+long namespaceBytes = measure ? GC.GetAllocatedBytesForCurrentThread() - start : 0;
+// Surrogate reproduces the preceding five-reference metadata object's shape;
+// it is a layout/allocation control, not the previous product's full call.
+start = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+for (int i = 0; i < operations; i++) GC.KeepAlive(fixture.BaselineShape());
+long baselineShapeBytes = measure ? GC.GetAllocatedBytesForCurrentThread() - start : 0;
+start = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+object positive = new byte[1024]; GC.KeepAlive(positive);
+long positiveBytes = measure ? GC.GetAllocatedBytesForCurrentThread() - start : 0;
+// Retention includes the item array, metadata, fixture document and full GC noise.
+var retained = new XPathItem[4096];
+long beforeHeap = GC.GetTotalMemory(true);
+for (int i = 0; i < retained.Length; i++) retained[i] = fixture.Namespace();
+long afterHeap = GC.GetTotalMemory(true);
+long retainedRevision = retained[0].CapturedContentRevision;
+fixture.Mutate();
+if (retainedRevision == fixture.Document.ContentRevision || retained[0].StringValue != "urn:p") throw new InvalidOperationException("Provenance control failed");
+File.WriteAllText(output, JsonSerializer.Serialize(new { mode, runtime = RuntimeInformation.FrameworkDescription, architecture = RuntimeInformation.ProcessArchitecture.ToString(), operations, primitiveBytes, attributeBytes, namespaceBytes, baselineShapeBytes, positiveBytes, coldBytes, consumed, itemStructBytes = Unsafe.SizeOf<XPathItem>(), retainedCount = retained.Length, beforeHeap, afterHeap, retainedHeapDelta = afterHeap - beforeHeap, revision = fixture.Document.ContentRevision }, new JsonSerializerOptions { WriteIndented = true }));
+GC.KeepAlive(retained); GC.KeepAlive(fixture);
+if (measure && (primitiveBytes != 0 || attributeBytes <= 0 || namespaceBytes <= 0 || positiveBytes <= 0)) throw new InvalidOperationException("Allocation controls failed");
+Console.WriteLine($"{mode} passed; actual {RuntimeInformation.FrameworkDescription}; operations={operations}");
+
+[MethodImpl(MethodImplOptions.NoInlining)]
+static long SampleMutations(Fixture fixture, bool counters, out long bytes)
+{
+    long start = counters ? GC.GetAllocatedBytesForCurrentThread() : 0;
+    long consumed = 0;
+    for (int i = 0; i < 512; i++) { fixture.Mutate(); consumed += fixture.Document.ContentRevision; }
+    bytes = counters ? GC.GetAllocatedBytesForCurrentThread() - start : 0;
+    return consumed;
+}
+static string InspectIl(System.Reflection.MethodInfo method)
+{
+    var codes = typeof(System.Reflection.Emit.OpCodes).GetFields(System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public)
+        .Where(f => f.FieldType == typeof(System.Reflection.Emit.OpCode)).Select(f => (System.Reflection.Emit.OpCode)f.GetValue(null)!).ToDictionary(o => unchecked((ushort)o.Value));
+    byte[] il = method.GetMethodBody()!.GetILAsByteArray()!;
+    var decoded = new List<string>();
+    for (int i = 0; i < il.Length;)
+    {
+        int offset = i; ushort key = il[i++]; if (key == 0xfe) key = (ushort)(0xfe00 | il[i++]);
+        var op = codes[key]; string operand = "";
+        int size = op.OperandType switch
+        {
+            System.Reflection.Emit.OperandType.InlineNone => 0,
+            System.Reflection.Emit.OperandType.ShortInlineBrTarget or System.Reflection.Emit.OperandType.ShortInlineI or System.Reflection.Emit.OperandType.ShortInlineVar => 1,
+            System.Reflection.Emit.OperandType.InlineVar => 2,
+            System.Reflection.Emit.OperandType.InlineI8 or System.Reflection.Emit.OperandType.InlineR => 8,
+            System.Reflection.Emit.OperandType.InlineSwitch => 4 + 4 * BitConverter.ToInt32(il, i),
+            _ => 4
+        };
+        if (op.OperandType is System.Reflection.Emit.OperandType.InlineMethod or System.Reflection.Emit.OperandType.InlineField or System.Reflection.Emit.OperandType.InlineType)
+            operand = method.Module.ResolveMember(BitConverter.ToInt32(il, i))!.ToString()!;
+        decoded.Add($"{offset:x4} {op.Name} {operand}"); i += size;
+    }
+    return method.DeclaringType!.FullName + "." + method.Name + ": " + string.Join("; ", decoded);
+}
+internal sealed class Fixture
+{
+    internal readonly XmlDocument Document;
+    private readonly XmlNode root;
+    private XmlNode text;
+    private readonly XmlAttribute attribute;
+    internal Fixture()
+    {
+        Document = XmlDocument.Parse("<r xmlns:p='urn:p' a='A'>A</r>"); root = Document.RootElement; text = root.FirstChild; attribute = root.Attributes[0];
+    }
+    internal void Mutate() { text.Value = "A"; }
+    internal XPathItem Attribute() => XPathItem.FromAttribute(attribute);
+    internal XPathItem Namespace() => XPathItem.FromNamespace(root, "p");
+    internal object BaselineShape() => new PriorMetadataShape("urn:p", "p", "", "", "p");
+    private sealed record PriorMetadataShape(string Value, string Local, string Uri, string Prefix, string Name);
+}
+[MemoryDiagnoser, ShortRunJob]
+public class ProvenanceBenchmarks
+{
+    private Fixture fixture = null!;
+    [GlobalSetup] public void Setup() => fixture = new();
+    [Benchmark] public void BorrowedValueMutation() => fixture.Mutate();
+    [Benchmark] public XPathItem OwnedAttribute() => fixture.Attribute();
+    [Benchmark] public XPathItem OwnedNamespace() => fixture.Namespace();
+}

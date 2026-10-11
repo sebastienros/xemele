@@ -4,11 +4,11 @@
   "milestone": "M5",
   "title": "Retain standalone declaration provenance for DTD validation",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "verified",
   "owner": "M5 isolated M5-validation-metadata worker",
   "branch": "codex/m5-validation-metadata",
   "base_revision": "110f84094e3df287133bf30e709ae96824428f76",
-  "integration_revision": null,
+  "integration_revision": "097d9f06163b88e2fdadd9560a863fc982c736ad",
   "depends_on": [
     "M5-contracts"
   ],
@@ -30,28 +30,102 @@
     {
       "id": "M5-validation-metadata-A1",
       "description": "Retain nullable standalone and declaration location on XmlDocument via internal partial metadata; capture for character and byte DOM input before decoder-null return.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "focused-tests",
+        "integrated-metadata"
+      ]
     },
     {
       "id": "M5-validation-metadata-A2",
       "description": "Verify yes/no/absent declaration semantics, source locations, synchronous/asynchronous input and preserved decoding/standalone parsing behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "focused-tests",
+        "preservation-tests",
+        "integrated-metadata"
+      ]
     },
     {
       "id": "M5-validation-metadata-A3",
       "description": "Demonstrate integrated prerequisites only, record actual checks and allocation applicability, preserve earlier behavior without new public API.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "release-build",
+        "focused-tests",
+        "allocation-applicability",
+        "task-validation",
+        "integrated-metadata"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Tree/ValidationMetadata/Document.ValidationMetadata.cs: Internal nullable standalone/location fields and setter; no public API.",
+    "src/Xemele/Parsing/Dom/DomSink.cs: Declaration captures metadata before decoder-null return.",
+    "tests/Xemele.Tests/M5-validation-metadata/ValidationMetadataTests.cs: 18 metadata, decoding, location, async, runtime control and generated-code tests."
+  ],
+  "evidence": [
+    {
+      "id": "release-build",
+      "kind": "check",
+      "revision": "dfa303076cb8d8d2120b91a5a2ce05f38830dc1d",
+      "command": "DOTNET_CLI_USE_MSBUILD_SERVER=0 MSBUILDDISABLENODEREUSE=1 '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' build tests/Xemele.Tests/Xemele.Tests.csproj -c Release --no-restore -p:NuGetAudit=false --nologo -m:1",
+      "result": "passed",
+      "summary": "Release build passed with zero warnings/errors; local-cache restore and interrupted attempts documented in report.",
+      "artifact": "docs/reports/M5-validation-metadata/README.md"
+    },
+    {
+      "id": "focused-tests",
+      "kind": "check",
+      "revision": "dfa303076cb8d8d2120b91a5a2ce05f38830dc1d",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -class Xemele.Tests.ValidationMetadata.ValidationMetadataTests -result-xml artifacts/M5-validation-metadata/focused.xml -noColor",
+      "result": "passed",
+      "summary": "18 passed, zero failures/skips/not-run. Actual FrameworkDescription .NET 10.0.11 asserted. Includes complete Release setter IL field-store proof and 2B/32B struct payload assertions; no measurement performed.",
+      "artifact": "docs/reports/M5-validation-metadata/README.md"
+    },
+    {
+      "id": "preservation-tests",
+      "kind": "check",
+      "revision": "dfa303076cb8d8d2120b91a5a2ce05f38830dc1d",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -class Xemele.Tests.Dom.DomTests -class Xemele.Tests.DomDecoderTerminal.DecoderTerminalTests -class Xemele.Tests.AsyncInput.AsyncInputTests -class Xemele.Tests.EncodingCompatibility.EncodingTests -class Xemele.Tests.ConformanceGrammar.StandaloneTransportTests -class Xemele.Tests.ConformanceGrammar.StandaloneOriginTests -class Xemele.Tests.Entities.ProductionTests -class Xemele.Tests.Versions.VersionTests -method- Xemele.Tests.Dom.DomTests.WarmBorrowedNameHitsAllocateZeroAndUseOwnedInternedStrings -method- Xemele.Tests.EncodingCompatibility.EncodingTests.WarmLegacyConversionAndDeclarationMatchingAllocateZero -result-xml artifacts/M5-validation-metadata/preservation.xml -noColor",
+      "result": "passed",
+      "summary": "138 focused prior behavior tests passed, zero failures/skips/not-run. Two allocation measurement methods deliberately not remeasured without lease; exact filters disclosed.",
+      "artifact": "docs/reports/M5-validation-metadata/README.md"
+    },
+    {
+      "id": "allocation-applicability",
+      "kind": "review",
+      "revision": "dfa303076cb8d8d2120b91a5a2ce05f38830dc1d",
+      "command": null,
+      "result": "passed",
+      "summary": "Source plus passing actual Release IL proof: scalar/value assignments only; no allocation operations/calls in setter. Adds 34B logical document field payload (2B bool?,32B XmlLocation), actual aligned heap delta unmeasured; retains existing URI reference. No throughput or byte-total claim.",
+      "artifact": "docs/reports/M5-validation-metadata/README.md"
+    },
+    {
+      "id": "task-validation",
+      "kind": "check",
+      "revision": "dfa303076cb8d8d2120b91a5a2ce05f38830dc1d",
+      "command": "python3 tools/planning/tasks.py validate",
+      "result": "passed",
+      "summary": "152 tasks: schema, evidence, acyclic dependencies, additive milestones and ordered ownership.",
+      "artifact": "docs/reports/M5-validation-metadata/README.md"
+    },
+    {
+      "id": "integrated-metadata",
+      "kind": "integration",
+      "revision": "097d9f06163b88e2fdadd9560a863fc982c736ad",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -class Xemele.Tests.ValidationMetadata.ValidationMetadataTests -class Xemele.Tests.DomDecoderTerminal.DecoderTerminalTests -class Xemele.Tests.AsyncInput.AsyncInputTests -class Xemele.Tests.EncodingCompatibility.EncodingTests -class Xemele.Tests.ConformanceGrammar.StandaloneTransportTests -class Xemele.Tests.ConformanceGrammar.StandaloneOriginTests -class Xemele.Tests.Entities.ProductionTests -class Xemele.Tests.Versions.VersionTests -method- Xemele.Tests.EncodingCompatibility.EncodingTests.WarmLegacyConversionAndDeclarationMatchingAllocateZero -noColor",
+      "result": "passed",
+      "summary": "Clean combined Release build0warnings/errors;132focused metadata/decoder/async/encoding/standalone/entities/version tests pass(actual10.0.11), allocation method excluded without lease;153taskvalidation. Exact command appended durable report. Source reviewed scalar setter and pre-decoder hook; no public API.",
+      "artifact": "docs/reports/M5-validation-metadata/README.md"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Ordered owning repair identified by M5 contract review: DOM currently drops standalone metadata before postparse validation.",
-    "checks": [],
+    "summary": "Verified integrated standalone/location metadata repair;132focused combined tests pass.",
+    "checks": [
+      "Release build zero warnings/errors; actual .NET 10.0.11 host;18 new+138 earlier focused tests pass; Release setter IL inspected; tasks.py validate passes."
+    ],
     "remaining": [],
     "requests": []
   }
