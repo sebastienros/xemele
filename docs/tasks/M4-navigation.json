@@ -33,14 +33,18 @@
     {
       "id": "M4-navigation-A1",
       "description": "Implement all axes with distinct namespace/attribute items, ordering/deduplication and context node rules.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "navigation-correctness"
+      ]
     },
     {
       "id": "M4-navigation-A2",
       "description": "Test reverse-axis order, in-scope namespaces, attributes, detached trees and invalid/mixed-document inputs.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "navigation-correctness"
+      ]
     },
     {
       "id": "M4-navigation-A3",
@@ -49,13 +53,50 @@
       "evidence": []
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/XPath/Navigation/XPathNavigator.cs: XPathNavigator implements IXPathNavigator; bounded entry snapshot, thirteen axes, Rebind/Normalize, SelectId/FindLanguage",
+    "tests/Xemele.Tests/M4-navigation/NavigationTests.cs and DifferentialTests.cs: quota/mutation/order/ID/lang/incomplete/cancellation and pinned-reference cases",
+    "docs/api/M4-navigation.txt: zero public members; samples/M4-navigation/Program.cs: independently compiled friend seam"
+  ],
+  "evidence": [
+    {
+      "id": "navigation-correctness",
+      "kind": "check",
+      "revision": "802a2a0e746820cb73f388b6804e9740fafacdd5",
+      "command": "<pinned-dotnet> build tests/Xemele.Tests -c Release --no-restore -m:1 -nr:false -p:UseSharedCompilation=false; <pinned-dotnet> tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -namespace Xemele.Tests.M4Navigation -namespace Xemele.Tests.M4Model -noColor",
+      "result": "passed",
+      "summary": "Release 0 warnings/errors; 55 passed, 0 failed/skipped on .NET10.0.11; two all-context thirteen-axis differential vectors plus focused metadata/limits/mutation/cancellation. Earlier test preparation failures corrected and retained in report. Pinned SDK absolute path documented in measurement plan.",
+      "artifact": "docs/reports/M4-navigation/checks.md"
+    },
+    {
+      "id": "navigation-api-consumer",
+      "kind": "check",
+      "revision": "802a2a0e746820cb73f388b6804e9740fafacdd5",
+      "command": "python3 docs/reports/M4-model/check_api.py --dotnet <pinned-dotnet>; <pinned-dotnet> build samples/M4-navigation -c Release -m:1 -nr:false -p:UseSharedCompilation=false; <pinned-dotnet> samples/M4-navigation/bin/Release/net10.0/Xemele.Tests.dll; python3 docs/reports/M4-navigation/check_consumer.py --dotnet <pinned-dotnet>",
+      "result": "passed",
+      "summary": "Actual893 members unchanged (720 earlier+173model); two corruption controls rejected. Independent source sample and fresh isolated packed production friend-seam consumer printed logical text=12.5; retained attribute=v; language=en; axes=13. No public additions.",
+      "artifact": "docs/reports/M4-navigation/checks.md"
+    },
+    {
+      "id": "navigation-planning",
+      "kind": "check",
+      "revision": "802a2a0e746820cb73f388b6804e9740fafacdd5",
+      "command": "python3 tools/planning/tasks.py validate; git diff --cached --check",
+      "result": "passed",
+      "summary": "148 tasks validated; candidate staged whitespace check passed; all eight candidate paths are task-owned.",
+      "artifact": null
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "",
-    "checks": [],
-    "remaining": [],
+    "summary": "Candidate 802a2a0 implements navigation snapshot and axes; independent source review pending. Probe semantic/discovery preparation complete without measurements.",
+    "checks": [
+      "55 focused navigation+model tests passed; API893 unchanged; sample/fresh package consumer passed; planning148 passed",
+      "Counters-disabled semantic control and discovery passed; ten declared ShortRun NoEmit benchmark cases"
+    ],
+    "remaining": [
+      "Independent source review; bounded exclusive allocation/timing lease and performance evidence; integrated verification belongs to coordinator"
+    ],
     "requests": []
   }
 }

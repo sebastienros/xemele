@@ -1,0 +1,154 @@
+using System.Runtime.InteropServices;
+using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
+using System.Text.Json;
+using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Configs;
+using BenchmarkDotNet.Running;
+using BenchmarkDotNet.Jobs;
+using BenchmarkDotNet.Toolchains.InProcess.NoEmit;
+using Xemele;
+using Xemele.XPath;
+using Xemele.XPath.Internal;
+if (args is [var benchmarkMode, var artifacts] && benchmarkMode is "--benchmark" or "--discover")
+{
+    var config = ManualConfig.Create(DefaultConfig.Instance).WithArtifactsPath(artifacts)
+        .AddJob(Job.Default.WithToolchain(InProcessNoEmitToolchain.Instance).AsMutator());
+    var suites = new[] { typeof(OrderBenchmarks), typeof(StorageBenchmarks) }.Select(t => BenchmarkConverter.TypeToBenchmarks(t, config)).ToArray();
+    var cases = suites.SelectMany(s => s.BenchmarksCases).ToArray();
+    if (cases.Length != 10 || cases.Any(c => c.Job.Run.WarmupCount != 3 || c.Job.Run.IterationCount != 3 || c.Job.Run.LaunchCount != 1 || c.Job.Infrastructure.Toolchain != InProcessNoEmitToolchain.Instance) || cases.Select(c => c.Job.Id).Distinct().Count() != 1)
+        throw new InvalidOperationException("Exactly ten cases in one declared ShortRun NoEmit job required.");
+    Console.WriteLine("Navigation discovery: ten cases; one ShortRun job; InProcessNoEmit; warmup=3/iterations=3/launch=1; no generation/build.");
+    if (benchmarkMode == "--discover") return;
+    var summaries = BenchmarkRunner.Run(suites);
+    if (summaries.Sum(s => s.Reports.Length) != 10 || summaries.SelectMany(s => s.Reports).Any(r => !r.Success || r.ResultStatistics is null)) throw new InvalidOperationException("Ten successful reports required.");
+    return;
+}
+if (args is not [var mode, var output] || mode is not ("--control" or "--allocation")) throw new ArgumentException("Use --control|--allocation <output> or --benchmark <artifacts>.");
+bool measure = mode == "--allocation";
+var fixture = new NavigationFixture(64, capture: false);
+long[] warmDistribution = new long[128], measuredDistribution = new long[128];
+long start = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+fixture.Capture();
+long coldSnapshotBytes = measure ? GC.GetAllocatedBytesForCurrentThread() - start : 0;
+fixture.Controls();
+start = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+long warmConsumed = 0;
+for (int i = 0; i < 128; i++) warmConsumed += Batch(fixture, measure, out warmDistribution[i]);
+long warmBytes = measure ? GC.GetAllocatedBytesForCurrentThread() - start : 0;
+start = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+long consumed = 0;
+for (int i = 0; i < 128; i++) consumed += Batch(fixture, measure, out measuredDistribution[i]);
+long primitiveBytes = measure ? GC.GetAllocatedBytesForCurrentThread() - start : 0;
+start = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+object positive = new byte[1024]; GC.KeepAlive(positive);
+long positiveBytes = measure ? GC.GetAllocatedBytesForCurrentThread() - start : 0;
+for (int i = 0; i < 16; i++) { GC.KeepAlive(fixture.Snapshot()); GC.KeepAlive(fixture.Axis()); GC.KeepAlive(fixture.Normalize()); GC.KeepAlive(fixture.Value()); }
+const int ownedOperations = 128;
+start = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+for (int i = 0; i < ownedOperations; i++) GC.KeepAlive(fixture.Snapshot());
+long snapshotBytes = measure ? GC.GetAllocatedBytesForCurrentThread() - start : 0;
+start = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+for (int i = 0; i < ownedOperations; i++) GC.KeepAlive(fixture.Axis());
+long axisBytes = measure ? GC.GetAllocatedBytesForCurrentThread() - start : 0;
+start = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+for (int i = 0; i < ownedOperations; i++) GC.KeepAlive(fixture.Normalize());
+long normalizationBytes = measure ? GC.GetAllocatedBytesForCurrentThread() - start : 0;
+start = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+for (int i = 0; i < ownedOperations; i++) GC.KeepAlive(fixture.Value());
+long valueBytes = measure ? GC.GetAllocatedBytesForCurrentThread() - start : 0;
+long retainedDelta = 0;
+if (measure)
+{
+    var retained = new Xemele.XPath.Internal.XPathNavigator[128];
+    long before = GC.GetTotalMemory(true);
+    for (int i = 0; i < retained.Length; i++) retained[i] = fixture.Snapshot();
+    retainedDelta = GC.GetTotalMemory(true) - before;
+    GC.KeepAlive(retained);
+}
+File.WriteAllText(output, JsonSerializer.Serialize(new { mode, runtime = RuntimeInformation.FrameworkDescription, architecture = RuntimeInformation.ProcessArchitecture.ToString(), os = RuntimeInformation.OSDescription,
+    revision = Environment.GetEnvironmentVariable("XEMELE_NAVIGATION_REVISION"), assemblySha256 = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(typeof(XPathValue).Assembly.Location))),
+    batches = 128, groupsPerBatch = 512, operations = 65536, warmBytes, warmDistribution, measuredDistribution, primitiveBytes, positiveBytes, coldSnapshotBytes,
+    ownedOperations, snapshotBytes, axisBytes, normalizationBytes, valueBytes, retainedSnapshots = 128, retainedDelta, inputItems = fixture.Navigator.InputItems, inputCharacters = fixture.Navigator.InputCharacters,
+    warmConsumed, consumed }, new JsonSerializerOptions { WriteIndented = true }));
+if (consumed != warmConsumed || consumed != 65536L * fixture.Primitive()) throw new InvalidOperationException("Consumed primitive control mismatch.");
+if (measure && (primitiveBytes != 0 || positiveBytes <= 0 || snapshotBytes <= 0 || axisBytes <= 0 || normalizationBytes <= 0 || valueBytes <= 0))
+    throw new InvalidOperationException($"Allocation control failed: primitive={primitiveBytes}; positive={positiveBytes}; owned={snapshotBytes}/{axisBytes}/{normalizationBytes}/{valueBytes}.");
+Console.WriteLine($"{mode} complete: consumed={consumed}; batches=128; groups=512; inputItems={fixture.Navigator.InputItems}; chars={fixture.Navigator.InputCharacters}");
+[MethodImpl(MethodImplOptions.NoInlining)]
+static long Batch(NavigationFixture fixture, bool measure, out long bytes)
+{
+    long start = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+    long consumed = 0; for (int i = 0; i < 512; i++) consumed += fixture.Primitive();
+    bytes = measure ? GC.GetAllocatedBytesForCurrentThread() - start : 0; return consumed;
+}
+internal sealed class NavigationFixture
+{
+    private readonly XmlDocument document;
+    private readonly XPathBudget budget = new(new() { MaxOperations = null }, default, default);
+    private readonly XPathItem first, last, attribute, ns;
+    private readonly XPathItem[] normalize;
+    private XPathItem[] nodes = [];
+    internal Xemele.XPath.Internal.XPathNavigator Navigator { get; private set; } = null!;
+    internal NavigationFixture(int count, bool capture = true)
+    {
+        document = new XmlDocument(); var root = document.CreateElement("r"); document.DocumentNode.AppendChild(root);
+        root.SetNamespaceDeclaration("p", "urn:p"); root.SetAttribute("lang", "en-US", "http://www.w3.org/XML/1998/namespace", "xml");
+        for (int i = 0; i < count; i++)
+        {
+            var child = document.CreateElement(i % 2 == 0 ? "a" : "中"); root.AppendChild(child);
+            child.SetAttribute("k", "repeated"); child.SetAttribute("key", "v", "urn:p", "p");
+            child.AppendChild(document.CreateText(i % 2 == 0 ? "12.5" : "根😀")); child.AppendChild(document.CreateCData("尾"));
+        }
+        first = XPathItem.FromNode(root.FirstChild); last = XPathItem.FromNode(root.LastChild);
+        attribute = XPathItem.FromAttribute(root.FirstChild.Attributes[0]); ns = XPathItem.FromNamespace(root.FirstChild, "p");
+        normalize = [last, attribute, first, ns, last];
+        if (capture) Capture();
+    }
+    internal void Capture() { Navigator = Snapshot(); nodes = Navigator.SelectAxis(Navigator.Root, XPathAxis.Descendant, budget).ToArray(); }
+    internal Xemele.XPath.Internal.XPathNavigator Snapshot() => new(document, budget);
+    internal IReadOnlyList<XPathItem> Axis() => Navigator.SelectAxis(Navigator.Root, XPathAxis.Descendant, budget);
+    internal IReadOnlyList<XPathItem> Normalize() => Navigator.Normalize(normalize, budget);
+    internal XPathValue Value() => XPathValue.FromSnapshotNodeSet(Normalize(), budget);
+    internal long Primitive()
+    {
+        var a = Navigator.Rebind(first, budget); var n = Navigator.Rebind(ns, budget); var attr = Navigator.Rebind(attribute, budget);
+        return a.StringValue.Length + n.StringValue.Length + attr.StringValue.Length + Navigator.FindLanguage(attr, budget)!.Length +
+            (Navigator.CompareDocumentOrder(first, last, budget) < 0 ? 1 : 0) + (a == first ? 1 : 0) + (a.GetHashCode() == first.GetHashCode() ? 1 : 0);
+    }
+    internal int CapturedOrder() => Math.Sign(Navigator.CompareDocumentOrder(first, last, budget));
+    internal int LinearOrder()
+    {
+        int a = -1, b = -1;
+        for (int i = 0; i < nodes.Length; i++)
+        { budget.ChargeOperations(2); if (nodes[i] == first) a = i; if (nodes[i] == last) b = i; }
+        if (a < 0 || b < 0) throw new InvalidOperationException("Baseline identity absent.");
+        budget.ChargeOperations(1); return Math.Sign(a.CompareTo(b));
+    }
+    internal void Controls()
+    {
+        if (CapturedOrder() != LinearOrder() || Normalize().Count != 4 || Value().AsNodeSet().Count != 4 || Navigator.FindLanguage(attribute, budget) != "en-US") throw new InvalidOperationException("Navigation semantic control failed.");
+        var expected = Axis().Select(i => (i.Kind, i.Name, i.StringValue)).ToArray();
+        var repeated = Snapshot();
+        if (!expected.SequenceEqual(repeated.SelectAxis(repeated.Root, XPathAxis.Descendant, budget).Select(i => (i.Kind, i.Name, i.StringValue)))) throw new InvalidOperationException("Snapshot control mismatch.");
+    }
+}
+[MemoryDiagnoser, ShortRunJob]
+public class OrderBenchmarks
+{
+    [Params(4, 64)] public int Children { get; set; }
+    private NavigationFixture fixture = null!;
+    [GlobalSetup] public void Setup() { fixture = new(Children); fixture.Controls(); }
+    [Benchmark(Baseline = true)] public int LinearCapturedIdentityOrder() => fixture.LinearOrder();
+    [Benchmark] public int IndexedCapturedIdentityOrder() => fixture.CapturedOrder();
+}
+[MemoryDiagnoser, ShortRunJob]
+public class StorageBenchmarks
+{
+    [Params(4, 64)] public int Children { get; set; }
+    private NavigationFixture fixture = null!;
+    [GlobalSetup] public void Setup() { fixture = new(Children); fixture.Controls(); }
+    [Benchmark] public object OwnedSnapshot() => fixture.Snapshot();
+    [Benchmark] public object MaterializedAxis() => fixture.Axis();
+    [Benchmark] public object NormalizedNodeSet() => fixture.Value();
+}

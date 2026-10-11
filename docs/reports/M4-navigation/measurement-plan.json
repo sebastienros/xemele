@@ -1,0 +1,32 @@
+{
+  "exclusive_required": true,
+  "total_max_seconds": 930,
+  "environment": {
+    "DOTNET_ROOT": "/Users/sebastienros/Library/Application Support/dotnetup/dotnet",
+    "DOTNET_ROLL_FORWARD": "Disable"
+  },
+  "runs": [
+    {
+      "name": "allocation",
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "docs/reports/M4-navigation/bin/Release/net10.0/Xemele.Benchmarks.dll",
+        "--allocation",
+        "artifacts/M4-navigation/allocation.json"
+      ],
+      "max_seconds": 30,
+      "log": "artifacts/M4-navigation/allocation.log"
+    },
+    {
+      "name": "benchmark",
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "docs/reports/M4-navigation/bin/Release/net10.0/Xemele.Benchmarks.dll",
+        "--benchmark",
+        "artifacts/M4-navigation/benchmark"
+      ],
+      "max_seconds": 900,
+      "log": "artifacts/M4-navigation/benchmark.log"
+    }
+  ]
+}
