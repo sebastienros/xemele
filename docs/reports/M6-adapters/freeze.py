@@ -15,9 +15,10 @@ def capture():
  plan=json.loads((root/'docs/reports/M6-adapters/measurement-plan.json').read_text())
  effective=dict(os.environ);effective.update(plan['environment'])
  environment_sha256=hashlib.sha256(json.dumps(effective,sort_keys=True,separators=(',',':')).encode()).hexdigest()
+ environment_key_sha256={key:hashlib.sha256(value.encode()).hexdigest() for key,value in effective.items()}
  env={k:v for k,v in effective.items() if k in {'PATH','LANG','LC_ALL','LC_CTYPE','MallocNanoZone','LD_LIBRARY_PATH'} or k.startswith(('DOTNET_','COMPlus_','CORECLR_','DYLD_','XEMELE_'))};env.update(plan['environment'])
  host={'platform':platform.platform(),'machine':platform.machine(),'cpuCount':os.cpu_count(),'cpu':subprocess.check_output(['sysctl','-n','machdep.cpu.brand_string'],text=True).strip(),'memoryBytes':subprocess.check_output(['sysctl','-n','hw.memsize'],text=True).strip()}
- return {'host':host,'revision':subprocess.check_output(['git','rev-parse','HEAD'],cwd=root,text=True).strip(),'environment':env,'completeEffectiveChildEnvironmentSha256':environment_sha256,**{name:{str(p):digest(p) for p in sorted(set(paths))} for name,paths in [('source',sources),('binary',binaries),('runtime',runtime_files)]}}
+ return {'host':host,'revision':subprocess.check_output(['git','rev-parse','HEAD'],cwd=root,text=True).strip(),'environment':env,'completeEffectiveChildEnvironmentSha256':environment_sha256,'completeEffectiveChildEnvironmentKeySha256':environment_key_sha256,**{name:{str(p):digest(p) for p in sorted(set(paths))} for name,paths in [('source',sources),('binary',binaries),('runtime',runtime_files)]}}
 mode,path=sys.argv[1:];path=pathlib.Path(path);actual=capture()
 if mode=='capture':path.write_text(json.dumps(actual,indent=2,sort_keys=True)+'\n')
 elif mode=='check':assert json.loads(path.read_text())==actual,'Prepared closure changed'

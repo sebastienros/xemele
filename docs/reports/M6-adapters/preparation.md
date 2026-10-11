@@ -64,3 +64,21 @@ exits, kills only its own process groups, checks no children and final identity
 in finally. A coordinator lease is required; --exclusive-grant is not authority.
 Durable lease release must precede raw inspection. Commit summary tables/analysis
 only, and inspect raw before deletion. This preparation records no measurement run.
+
+
+The first granted lease at8c5cd74 ran once and stopped at initial identity:
+initial/finalfreeze1, wrapperexit1, runs[], nochildren=true. No measurement phase
+started. Durable release preceded diagnosis. Only complete environment SHA
+changed; source/binary/runtime/host/readableenv remained identical. Safe parent
+vs Python-child per-key hashes showed no startup changes. Substituting ONLY
+SHLVL restored the original prepared completehash exactly, proving sole-command
+shell exec optimization differed from earlier multi-command preparation.
+
+Only the proven shell-depth variable SHLVL is now explicitly pinned in the plan;
+all other inherited keys remain frozen. Safe per-key hashes allow diagnosis
+without persisting/printing non-readable environment values. Runner
+--identity-control uses the identical parent/environment→initial/final helper
+launch path as --exclusive-grant but starts no allocation/benchmark phase.
+Positive sole-command wrapper initial/final checks and unknown-variable negative
+control are required before the revised READY/PARK. No measurement retry is
+claimed or authorized by this control flag.

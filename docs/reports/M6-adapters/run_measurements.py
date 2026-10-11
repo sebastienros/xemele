@@ -10,8 +10,9 @@ import time
 root = pathlib.Path(__file__).resolve().parents[3]
 manifest = root / 'artifacts/M6-adapters/prepared.json'
 plan = json.loads((root / 'docs/reports/M6-adapters/measurement-plan.json').read_text())
-if sys.argv[1:] != ['--exclusive-grant']:
+if sys.argv[1:] not in (['--exclusive-grant'], ['--identity-control']):
     raise SystemExit('Requires the coordinator prepared exclusive grant; this flag is not itself authorization.')
+identity_only = sys.argv[1:] == ['--identity-control']
 deadline = time.monotonic() + plan['total_max_seconds']
 freeze = ['python3', str(root / 'docs/reports/M6-adapters/freeze.py'), 'check', str(manifest)]
 status = {'phase': 'initial-freeze', 'exit_code': 0, 'initial_freeze': None, 'final_freeze': None, 'no_child': True, 'runs': []}
@@ -28,7 +29,7 @@ try:
     initial = subprocess.run(freeze, cwd=root, env=environment, timeout=bounded(plan['initial_identity_max_seconds'], 50), check=False)
     status['initial_freeze'] = initial.returncode
     initial.check_returncode()
-    for run in plan['runs']:
+    for run in ([] if identity_only else plan['runs']):
         status['phase'] = run['name']
         result = {'phase': run['name'], 'exit_code': None}
         status['runs'].append(result)
@@ -42,7 +43,7 @@ try:
             raise subprocess.CalledProcessError(result['exit_code'], run['command'])
         process = None
         print(run['name'] + ' completed', flush=True)
-    status['phase'] = 'complete'
+    status['phase'] = 'identity-control' if identity_only else 'complete'
 except (subprocess.TimeoutExpired, TimeoutError) as error:
     status['exit_code'] = 124
     status['error'] = type(error).__name__
