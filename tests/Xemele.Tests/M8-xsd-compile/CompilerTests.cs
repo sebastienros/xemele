@@ -110,6 +110,12 @@ public sealed class CompilerTests
         var concrete=Compile("<xs:element name='head' block='substitution'/><xs:element name='member' substitutionGroup='head'/>"); Assert.Equal(new[]{0},XsdSubstitutionGroups.Members(concrete,0,new SchemaCompileOperation()));
     }
     [Fact]
+    public void CandidateTypeBlockDoesNotForbidItsOwnSubstitutionForAnAncestor()
+    {
+        var graph=Compile("<xs:complexType name='Base'/><xs:complexType name='Leaf' block='extension'><xs:complexContent><xs:extension base='Base'/></xs:complexContent></xs:complexType><xs:element name='head' type='Base'/><xs:element name='member' type='Leaf' substitutionGroup='head'/>");
+        Assert.Equal(new[]{0,1},XsdSubstitutionGroups.Members(graph,0,new SchemaCompileOperation()));
+    }
+    [Fact]
     public void IdentitySelectorAndEachFieldKeepConflictingLocalPrefixMeanings()
     {
         var graph=Compile("<xs:element name='root'><xs:key name='k'><xs:selector xmlns:p='urn:rows' xpath='p:row'/><xs:field xmlns:p='urn:a' xpath='@p:id'/><xs:field xmlns:p='urn:b' xpath='@p:id'/></xs:key></xs:element>");

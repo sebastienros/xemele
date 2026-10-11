@@ -89,8 +89,8 @@ internal sealed class XsdCompilation
         string declared = Collapse(root.GetAttribute("targetNamespace") ?? "");
         if (root.GetAttribute("targetNamespace") is not null && declared.Length == 0) Error("Empty targetNamespace is not allowed.", default);
         if (purpose is SchemaResourcePurpose.XsdInclude or SchemaResourcePurpose.XsdRedefine && declared.Length != 0 && declared != effective)
-            Error("Included schema has a different target namespace.", new(scope.SourceUri, 0, 0, null));
-        if (purpose == SchemaResourcePurpose.XsdImport && declared != effective) Error("Imported schema target namespace does not match import namespace.", new(scope.SourceUri, 0, 0, null));
+            Error("Included schema has a different target namespace.", scope.Location(root));
+        if (purpose == SchemaResourcePurpose.XsdImport && declared != effective) Error("Imported schema target namespace does not match import namespace.", scope.Location(root));
         string target = effective ?? declared;
         if (scope.SourceUri is { } uri && sources.TryGetValue((uri, target), out var existing))
         {
@@ -190,7 +190,16 @@ internal sealed class XsdCompilation
         { Components(At(source, node)); context = source.Scope.Context(node); source.Contexts.Add(node, context); }
         return context;
     }
-    private static XmlLocation At(Source source, XmlNode node) => new(source.Scope.SourceUri, 0, 0, null);
+    private static XmlLocation At(Source source, XmlNode node) => source.Scope.Location(node);
+    private static XmlLocation AttributeAt(Source source, XmlNode node, string name)
+    {
+        foreach (var attribute in node.Attributes)
+            if (attribute.NamespaceUri.Length == 0 && attribute.LocalName == name) return source.Scope.Location(attribute);
+        return At(source,node);
+    }
+    private static XmlLocation ConstraintAt(Source source, XmlNode node) =>
+        node.GetAttribute("default") is not null ? AttributeAt(source,node,"default") :
+        node.GetAttribute("fixed") is not null ? AttributeAt(source,node,"fixed") : At(source,node);
     private void Tick(XmlLocation at, long amount = 1) { if (!op.Charge(amount, at)) throw SchemaSnapshots.Failure(op); }
     private void Components(XmlLocation at) { if (!op.ChargeComponents(1, at)) throw SchemaSnapshots.Failure(op); }
     [DoesNotReturn] private void Error(string message, XmlLocation at)
@@ -475,7 +484,7 @@ internal sealed class XsdCompilation
         };
         if ((int)kind < 0) Error("Unknown facet.", At(owner.Source, node));
         Components(At(owner.Source, node));
-        return new(kind, Required(owner.Source, node, "value"), Boolean(owner.Source, node, "fixed"), Context(owner.Source, node), At(owner.Source, node));
+        return new(kind, Required(owner.Source, node, "value"), Boolean(owner.Source, node, "fixed"), Context(owner.Source, node), AttributeAt(owner.Source, node,"value"));
     }
     private void Complex(Declaration owner)
     {
@@ -630,7 +639,7 @@ internal sealed class XsdCompilation
         SchemaName? head = node.GetAttribute("substitutionGroup") is { } substitution ? QName(owner, node, substitution) : null;
         if (head is not null && !inline && node.GetAttribute("type") is null) inferElementType.Add(id);
         elements[id] = new(id, name, type, Boolean(s, node, "abstract"), Boolean(s, node, "nillable"), node.GetAttribute("default"), node.GetAttribute("fixed"), head,
-            ElementBlock(s, node), global ? Final(s, node, "restriction extension") : [], constraintIds, Context(s, node), At(s, node));
+            ElementBlock(s, node), global ? Final(s, node, "restriction extension") : [], constraintIds, Context(s, node), ConstraintAt(s, node));
         return id;
     }
     private int Attribute(Declaration owner, bool global)
@@ -661,7 +670,7 @@ internal sealed class XsdCompilation
         }
         if (node.GetAttribute("default") is not null && node.GetAttribute("fixed") is not null) Error("Attribute cannot have both default and fixed.", At(s, node));
         Components(At(s, node)); int id = attributes.Count;
-        attributes.Add(new(id, name, type, node.GetAttribute("default"), node.GetAttribute("fixed"), Context(s, node), At(s, node)));
+        attributes.Add(new(id, name, type, node.GetAttribute("default"), node.GetAttribute("fixed"), Context(s, node), ConstraintAt(s, node)));
         if (global) globalAttributes.Add(name, id); else localAttributes.Add(node, id);
         return id;
     }
@@ -674,7 +683,7 @@ internal sealed class XsdCompilation
         if (node.GetAttribute("default") is not null && (use != XsdAttributeUse.Optional || node.GetAttribute("fixed") is not null)) Error("Attribute default requires optional use and no fixed constraint.", At(s, node));
         int id = Attribute(owner with { Node = node }, false);
         Components(At(s, node));
-        return new(id, use, node.GetAttribute("default"), node.GetAttribute("fixed"), Context(s, node), At(s, node));
+        return new(id, use, node.GetAttribute("default"), node.GetAttribute("fixed"), Context(s, node), ConstraintAt(s, node));
     }
     private void AttributeBody(Declaration owner, XmlNode body, List<XsdAttributeBinding> bindings, out XsdWildcard? wildcard)
     {
@@ -1118,8 +1127,12 @@ internal static class XsdSubstitutionGroups
             { restriction |= definition.Derivation is XsdDerivation.Restriction or XsdDerivation.List or XsdDerivation.Union; extension |= definition.Derivation == XsdDerivation.Extension; }
             if (restriction && head.Block.Contains(XsdElementBlock.Restriction) || extension && head.Block.Contains(XsdElementBlock.Extension)) blocked = true;
             path.Add(headType);
-            foreach (var definition in path)
+            // Blocks prohibit descendants of a type from substituting that
+            // type. The candidate's own block has no bearing on its substitution
+            // for an ancestor; head and intermediate definitions contribute.
+            for (int blockIndex = 1; blockIndex < path.Count; blockIndex++)
             {
+                var definition = path[blockIndex];
                 if (!operation.Charge(1, element.Location)) throw SchemaSnapshots.Failure(operation);
                 if (restriction && definition.Block.Contains(XsdTypeBlock.Restriction) || extension && definition.Block.Contains(XsdTypeBlock.Extension)) blocked = true;
             }
