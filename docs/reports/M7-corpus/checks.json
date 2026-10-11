@@ -1,0 +1,316 @@
+{
+  "revision": "f1e912ad46fb84a533fef9a95f4c910445478a49",
+  "branch": "codex/m7-corpus",
+  "runtime": ".NET 10.0.11",
+  "sdk": "10.0.400",
+  "fuzz": {
+    "seed": 1295468628,
+    "iterations": 96,
+    "cultures": 3,
+    "profiles": 3,
+    "byteSeed": 1295467092,
+    "byteIterations": 64,
+    "byteDocuments": 192,
+    "byteStreams": 768,
+    "documents": 864,
+    "streams": 3456,
+    "fragments": 576,
+    "ownership": 2592,
+    "quotas": 12,
+    "cancellations": 1728,
+    "faults": 864,
+    "tokens": 288,
+    "runtime": ".NET 10.0.11"
+  },
+  "checks": [
+    {
+      "id": "sdk",
+      "revision": "f1e912ad46fb84a533fef9a95f4c910445478a49",
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "--version"
+      ],
+      "result": "passed",
+      "exit_code": 0,
+      "output": "10.0.400\n"
+    },
+    {
+      "id": "build-inherited",
+      "revision": "f1e912ad46fb84a533fef9a95f4c910445478a49",
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "build",
+        "tests/Xemele.Tests/Xemele.Tests.csproj",
+        "-c",
+        "Release",
+        "-p:RuntimeFrameworkVersion=10.0.11",
+        "-p:UseSharedCompilation=false",
+        "--disable-build-servers",
+        "--source",
+        "tests/Contracts/Fixtures/M7",
+        "-p:NuGetAudit=false"
+      ],
+      "result": "passed",
+      "exit_code": 0,
+      "output": "  Determining projects to restore...\n  All projects are up-to-date for restore.\n  Xemele -> /Users/sebastienros/.codex/worktrees/0dff/xemele/src/Xemele/bin/Release/net10.0/Xemele.dll\n  Xemele.TestUtilities -> /Users/sebastienros/.codex/worktrees/0dff/xemele/tests/Xemele.TestUtilities/bin/Release/net10.0/Xemele.TestUtilities.dll\n  Xemele.Tests -> /Users/sebastienros/.codex/worktrees/0dff/xemele/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll\n\nBuild succeeded.\n    0 Warning(s)\n    0 Error(s)\n\nTime Elapsed 00:00:04.84\n"
+    },
+    {
+      "id": "build-conformance",
+      "revision": "f1e912ad46fb84a533fef9a95f4c910445478a49",
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "build",
+        "tests/Xemele.Conformance.Tests/Xemele.Conformance.Tests.csproj",
+        "-c",
+        "Release",
+        "-p:RuntimeFrameworkVersion=10.0.11",
+        "-p:UseSharedCompilation=false",
+        "--disable-build-servers",
+        "--source",
+        "tests/Contracts/Fixtures/M7",
+        "-p:NuGetAudit=false"
+      ],
+      "result": "passed",
+      "exit_code": 0,
+      "output": "  Determining projects to restore...\n  All projects are up-to-date for restore.\n  Xemele -> /Users/sebastienros/.codex/worktrees/0dff/xemele/src/Xemele/bin/Release/net10.0/Xemele.dll\n  Xemele.TestUtilities -> /Users/sebastienros/.codex/worktrees/0dff/xemele/tests/Xemele.TestUtilities/bin/Release/net10.0/Xemele.TestUtilities.dll\n  Xemele.Conformance.Tests -> /Users/sebastienros/.codex/worktrees/0dff/xemele/tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll\n\nBuild succeeded.\n    0 Warning(s)\n    0 Error(s)\n\nTime Elapsed 00:00:01.56\n"
+    },
+    {
+      "id": "build-differential",
+      "revision": "f1e912ad46fb84a533fef9a95f4c910445478a49",
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "build",
+        "tests/Xemele.Differential.Tests/Xemele.Differential.Tests.csproj",
+        "-c",
+        "Release",
+        "-p:RuntimeFrameworkVersion=10.0.11",
+        "-p:UseSharedCompilation=false",
+        "--disable-build-servers",
+        "--source",
+        "tests/Contracts/Fixtures/M7",
+        "-p:NuGetAudit=false"
+      ],
+      "result": "passed",
+      "exit_code": 0,
+      "output": "  Determining projects to restore...\n  All projects are up-to-date for restore.\n  Xemele -> /Users/sebastienros/.codex/worktrees/0dff/xemele/src/Xemele/bin/Release/net10.0/Xemele.dll\n  Xemele.TestUtilities -> /Users/sebastienros/.codex/worktrees/0dff/xemele/tests/Xemele.TestUtilities/bin/Release/net10.0/Xemele.TestUtilities.dll\n  ReferenceProtocol -> /Users/sebastienros/.codex/worktrees/0dff/xemele/tools/ReferenceRunners/Protocol/bin/Release/net10.0/ReferenceProtocol.dll\n  BclReference -> /Users/sebastienros/.codex/worktrees/0dff/xemele/tools/ReferenceRunners/Bcl/bin/Release/net10.0/BclReference.dll\n  Xemele.Differential.Tests -> /Users/sebastienros/.codex/worktrees/0dff/xemele/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll\n\nBuild succeeded.\n    0 Warning(s)\n    0 Error(s)\n\nTime Elapsed 00:00:03.06\n"
+    },
+    {
+      "id": "build-fuzz",
+      "revision": "f1e912ad46fb84a533fef9a95f4c910445478a49",
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "build",
+        "tests/Xemele.Fuzz/Xemele.Fuzz.csproj",
+        "-c",
+        "Release",
+        "-p:RuntimeFrameworkVersion=10.0.11",
+        "-p:UseSharedCompilation=false",
+        "--disable-build-servers",
+        "--source",
+        "tests/Contracts/Fixtures/M7",
+        "-p:NuGetAudit=false"
+      ],
+      "result": "passed",
+      "exit_code": 0,
+      "output": "  Determining projects to restore...\n  All projects are up-to-date for restore.\n  Xemele -> /Users/sebastienros/.codex/worktrees/0dff/xemele/src/Xemele/bin/Release/net10.0/Xemele.dll\n  Xemele.Fuzz -> /Users/sebastienros/.codex/worktrees/0dff/xemele/tests/Xemele.Fuzz/bin/Release/net10.0/Xemele.Fuzz.dll\n\nBuild succeeded.\n    0 Warning(s)\n    0 Error(s)\n\nTime Elapsed 00:00:01.16\n"
+    },
+    {
+      "id": "build-driver",
+      "revision": "f1e912ad46fb84a533fef9a95f4c910445478a49",
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "build",
+        "docs/reports/M7-corpus/Fuzz.Driver.csproj",
+        "-c",
+        "Release",
+        "-p:RuntimeFrameworkVersion=10.0.11",
+        "-p:UseSharedCompilation=false",
+        "--disable-build-servers",
+        "--source",
+        "tests/Contracts/Fixtures/M7",
+        "-p:NuGetAudit=false"
+      ],
+      "result": "passed",
+      "exit_code": 0,
+      "output": "  Determining projects to restore...\n  All projects are up-to-date for restore.\n  Xemele -> /Users/sebastienros/.codex/worktrees/0dff/xemele/src/Xemele/bin/Release/net10.0/Xemele.dll\n  Fuzz.Driver -> /Users/sebastienros/.codex/worktrees/0dff/xemele/docs/reports/M7-corpus/bin/Release/net10.0/Fuzz.Driver.dll\n\nBuild succeeded.\n    0 Warning(s)\n    0 Error(s)\n\nTime Elapsed 00:00:01.21\n"
+    },
+    {
+      "id": "inherited-correctness",
+      "revision": "f1e912ad46fb84a533fef9a95f4c910445478a49",
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "--fx-version",
+        "10.0.11",
+        "tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll",
+        "-namespace",
+        "Xemele.Tests.HtmlSerialization",
+        "-namespace",
+        "Xemele.Tests.HtmlTreeConstruction",
+        "-namespace",
+        "Xemele.Tests.HtmlTokenization",
+        "-namespace",
+        "Xemele.Tests.LegacyHtml",
+        "-namespace",
+        "Xemele.Tests.HtmlModel",
+        "-namespace",
+        "Xemele.Tests.HtmlProcessingInstructions",
+        "-namespace",
+        "Xemele.Tests.HtmlParsedText",
+        "-namespace",
+        "Xemele.Tests.Css",
+        "-namespace",
+        "Xemele.Tests.HtmlCallbacks",
+        "-namespace",
+        "Xemele.Tests.Serialization",
+        "-namespace",
+        "Xemele.Tests.M3AsyncSerialization",
+        "-result-xml",
+        "artifacts/M7-corpus/final/inherited.xml"
+      ],
+      "result": "passed",
+      "exit_code": 0,
+      "output": "xUnit.net v3 In-Process Runner v4.0.1+8ed8aa354c (64-bit .NET 10.0.11)\n  Discovering: Xemele.Tests\n  Discovered:  Xemele.Tests\n  Starting:    Xemele.Tests\n  Finished:    Xemele.Tests (ID = '6280fd52eb65fa12fbc79f6b1896cb0685f3865f6fbfd7e92e430afb89a989fe')\n=== TEST EXECUTION SUMMARY ===\n   Xemele.Tests  Total: 1756, Errors: 0, Failed: 0, Skipped: 0, Not Run: 0, Time: 1.055s\n"
+    },
+    {
+      "id": "conformance",
+      "revision": "f1e912ad46fb84a533fef9a95f4c910445478a49",
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "--fx-version",
+        "10.0.11",
+        "tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll",
+        "-namespace",
+        "Xemele.Conformance.Tests.Html",
+        "-result-xml",
+        "artifacts/M7-corpus/final/conformance.xml"
+      ],
+      "result": "passed",
+      "exit_code": 0,
+      "output": "xUnit.net v3 In-Process Runner v4.0.1+8ed8aa354c (64-bit .NET 10.0.11)\n  Discovering: Xemele.Conformance.Tests\n  Discovered:  Xemele.Conformance.Tests\n  Starting:    Xemele.Conformance.Tests\n  Finished:    Xemele.Conformance.Tests (ID = 'fd1ee5209c51be32e67280a8bf082f966ef4fc598d8869924cd9987c770a1f70')\n=== TEST EXECUTION SUMMARY ===\n   Xemele.Conformance.Tests  Total: 21, Errors: 0, Failed: 0, Skipped: 0, Not Run: 0, Time: 0.205s\n"
+    },
+    {
+      "id": "differential",
+      "revision": "f1e912ad46fb84a533fef9a95f4c910445478a49",
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "--fx-version",
+        "10.0.11",
+        "tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll",
+        "-namespace",
+        "Xemele.Differential.Tests.HtmlCss",
+        "-result-xml",
+        "artifacts/M7-corpus/final/differential.xml"
+      ],
+      "result": "passed",
+      "exit_code": 0,
+      "output": "xUnit.net v3 In-Process Runner v4.0.1+8ed8aa354c (64-bit .NET 10.0.11)\n  Discovering: Xemele.Differential.Tests\n  Discovered:  Xemele.Differential.Tests\n  Starting:    Xemele.Differential.Tests\n  Finished:    Xemele.Differential.Tests (ID = 'bacb812cf14471cd8b8a9231b7fe0c8889bb5fee40ca00c8a27b7540cbc4b6e1')\n=== TEST EXECUTION SUMMARY ===\n   Xemele.Differential.Tests  Total: 39, Errors: 0, Failed: 0, Skipped: 0, Not Run: 0, Time: 0.643s\n"
+    },
+    {
+      "id": "fuzz",
+      "revision": "f1e912ad46fb84a533fef9a95f4c910445478a49",
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "--fx-version",
+        "10.0.11",
+        "docs/reports/M7-corpus/bin/Release/net10.0/Fuzz.Driver.dll"
+      ],
+      "result": "passed",
+      "exit_code": 0,
+      "output": "{\"seed\":1295468628,\"iterations\":96,\"cultures\":3,\"profiles\":3,\"byteSeed\":1295467092,\"byteIterations\":64,\"byteDocuments\":192,\"byteStreams\":768,\"documents\":864,\"streams\":3456,\"fragments\":576,\"ownership\":2592,\"quotas\":12,\"cancellations\":1728,\"faults\":864,\"tokens\":288,\"runtime\":\".NET 10.0.11\"}\n"
+    },
+    {
+      "id": "native-locked-build",
+      "revision": "f1e912ad46fb84a533fef9a95f4c910445478a49",
+      "command": [
+        "cargo",
+        "+1.95.0",
+        "build",
+        "--offline",
+        "--locked",
+        "--manifest-path",
+        "docs/reports/M7-corpus/NativeSelector/Cargo.toml"
+      ],
+      "result": "passed",
+      "exit_code": 0,
+      "output": "    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.11s\n"
+    },
+    {
+      "id": "native-selector",
+      "revision": "f1e912ad46fb84a533fef9a95f4c910445478a49",
+      "command": [
+        "artifacts/M7-corpus/native-target/debug/xemele-m7-selector-oracle"
+      ],
+      "result": "passed",
+      "exit_code": 0,
+      "output": "[\n  {\n    \"css\": \"*\",\n    \"ids\": [\n      \"i0\",\n      \"i1\",\n      \"i2\",\n      \"i3\"\n    ]\n  },\n  {\n    \"css\": \"item\",\n    \"ids\": [\n      \"i0\",\n      \"i1\",\n      \"i3\"\n    ]\n  },\n  {\n    \"css\": \"#i0\",\n    \"ids\": [\n      \"i0\"\n    ]\n  },\n  {\n    \"css\": \".a\",\n    \"ids\": [\n      \"i0\",\n      \"i2\"\n    ]\n  },\n  {\n    \"css\": \".a.b\",\n    \"ids\": [\n      \"i0\",\n      \"i2\"\n    ]\n  },\n  {\n    \"css\": \"[data]\",\n    \"ids\": [\n      \"i0\",\n      \"i1\",\n      \"i2\",\n      \"i3\"\n    ]\n  },\n  {\n    \"css\": \"[data=en-US]\",\n    \"ids\": [\n      \"i0\",\n      \"i1\",\n      \"i2\",\n      \"i3\"\n    ]\n  },\n  {\n    \"css\": \"[data|=en]\",\n    \"ids\": [\n      \"i0\",\n      \"i1\",\n      \"i2\",\n      \"i3\"\n    ]\n  },\n  {\n    \"css\": \"[data^=en]\",\n    \"ids\": [\n      \"i0\",\n      \"i1\",\n      \"i2\",\n      \"i3\"\n    ]\n  },\n  {\n    \"css\": \"[data$=US]\",\n    \"ids\": [\n      \"i0\",\n      \"i1\",\n      \"i2\",\n      \"i3\"\n    ]\n  },\n  {\n    \"css\": \"[data*=US]\",\n    \"ids\": [\n      \"i0\",\n      \"i1\",\n      \"i2\",\n      \"i3\"\n    ]\n  },\n  {\n    \"css\": \"[class~=b]\",\n    \"ids\": [\n      \"i0\",\n      \"i1\",\n      \"i2\",\n      \"i3\"\n    ]\n  },\n  {\n    \"css\": \"root item\",\n    \"ids\": [\n      \"i0\",\n      \"i1\",\n      \"i3\"\n    ]\n  },\n  {\n    \"css\": \"root > item\",\n    \"ids\": [\n      \"i0\",\n      \"i1\",\n      \"i3\"\n    ]\n  },\n  {\n    \"css\": \"item + item\",\n    \"ids\": [\n      \"i1\"\n    ]\n  },\n  {\n    \"css\": \"item ~ item\",\n    \"ids\": [\n      \"i1\",\n      \"i3\"\n    ]\n  },\n  {\n    \"css\": \"item, .a\",\n    \"ids\": [\n      \"i0\",\n      \"i1\",\n      \"i2\",\n      \"i3\"\n    ]\n  },\n  {\n    \"css\": \":scope\",\n    \"error\": \"CSS selector error at 6: unknown pseudo-class ':scope'\"\n  },\n  {\n    \"css\": \":empty\",\n    \"ids\": [\n      \"i0\",\n      \"i2\",\n      \"i3\"\n    ]\n  },\n  {\n    \"css\": \":first-child\",\n    \"ids\": [\n      \"i0\"\n    ]\n  },\n  {\n    \"css\": \":last-child\",\n    \"ids\": [\n      \"i3\"\n    ]\n  },\n  {\n    \"css\": \":only-child\",\n    \"ids\": []\n  },\n  {\n    \"css\": \"item:first-of-type\",\n    \"error\": \"CSS selector error at 18: unknown pseudo-class ':first-of-type'\"\n  },\n  {\n    \"css\": \"item:last-of-type\",\n    \"error\": \"CSS selector error at 17: unknown pseudo-class ':last-of-type'\"\n  },\n  {\n    \"css\": \"item:only-of-type\",\n    \"error\": \"CSS selector error at 17: unknown pseudo-class ':only-of-type'\"\n  },\n  {\n    \"css\": \"item:nth-child(odd)\",\n    \"ids\": [\n      \"i0\"\n    ]\n  },\n  {\n    \"css\": \"item:nth-child(even)\",\n    \"ids\": [\n      \"i1\",\n      \"i3\"\n    ]\n  },\n  {\n    \"css\": \"item:nth-child(-n+3)\",\n    \"ids\": [\n      \"i0\",\n      \"i1\"\n    ]\n  },\n  {\n    \"css\": \"item:nth-child(2n+1)\",\n    \"ids\": [\n      \"i0\"\n    ]\n  },\n  {\n    \"css\": \"item:nth-last-child(2)\",\n    \"ids\": []\n  },\n  {\n    \"css\": \"item:nth-of-type(2)\",\n    \"error\": \"CSS selector error at 16: unknown pseudo-class ':nth-of-type'\"\n  },\n  {\n    \"css\": \"item:nth-last-of-type(odd)\",\n    \"error\": \"CSS selector error at 21: unknown pseudo-class ':nth-last-of-type'\"\n  },\n  {\n    \"css\": \"item:not(.a)\",\n    \"ids\": [\n      \"i1\",\n      \"i3\"\n    ]\n  },\n  {\n    \"css\": \"item:not(.a,[data=en])\",\n    \"error\": \"CSS selector error at 11: expected ')', got ','\"\n  },\n  {\n    \"css\": \"\\\\69 tem\",\n    \"error\": \"CSS selector error at 0: expected selector\"\n  }\n]\n",
+      "summary": "All35 real native responses byte-identical:23 exact overlaps,4 scope-root differences,8 unsupported native grammar."
+    },
+    {
+      "id": "planning",
+      "revision": "f1e912ad46fb84a533fef9a95f4c910445478a49",
+      "command": [
+        "python3",
+        "tools/planning/tasks.py",
+        "validate"
+      ],
+      "result": "passed",
+      "exit_code": 0,
+      "output": "Validated 169 tasks: schema, evidence, acyclic dependencies, additive milestones, and ordered ownership.\n"
+    },
+    {
+      "id": "ownership",
+      "revision": "f1e912ad46fb84a533fef9a95f4c910445478a49",
+      "command": [
+        "python3",
+        "docs/reports/M7-corpus/audit.py"
+      ],
+      "result": "passed",
+      "exit_code": 0,
+      "output": "{\n  \"branch\": \"codex/m7-corpus\",\n  \"worktree\": \"/Users/sebastienros/.codex/worktrees/0dff/xemele\",\n  \"claim\": \"5e5f7572ed4ad3071d48f74cba9ec741ab5a78fc\",\n  \"revision\": \"f1e912ad46fb84a533fef9a95f4c910445478a49\",\n  \"owned_changes\": 24,\n  \"paths\": [\n    \"docs/reports/M7-corpus/Fuzz.Driver.csproj\",\n    \"docs/reports/M7-corpus/NativeSelector/Cargo.lock\",\n    \"docs/reports/M7-corpus/NativeSelector/Cargo.toml\",\n    \"docs/reports/M7-corpus/NativeSelector/src/main.rs\",\n    \"docs/reports/M7-corpus/Program.cs\",\n    \"docs/reports/M7-corpus/README.md\",\n    \"docs/reports/M7-corpus/audit.py\",\n    \"docs/reports/M7-corpus/native-selector-provenance.json\",\n    \"docs/tasks/M7-corpus.json\",\n    \"tests/Xemele.Conformance.Tests/Html/ByteOracleTests.cs\",\n    \"tests/Xemele.Conformance.Tests/Html/CompositionTests.cs\",\n    \"tests/Xemele.Conformance.Tests/Html/InventoryTests.cs\",\n    \"tests/Xemele.Differential.Tests/HtmlCss/NativeSelectorTests.cs\",\n    \"tests/Xemele.Differential.Tests/HtmlCss/SelectorReferenceTests.cs\",\n    \"tests/Xemele.Fuzz/Html/DeterministicCorpus.cs\",\n    \"tests/corpora/css/README.md\",\n    \"tests/corpora/css/XMLOXIDE-LICENSE.txt\",\n    \"tests/corpora/css/bcl-overlap.json\",\n    \"tests/corpora/css/native-dispositions.json\",\n    \"tests/corpora/css/native-input.json\",\n    \"tests/corpora/css/native-output.json\",\n    \"tests/corpora/html/NOTICE.md\",\n    \"tests/corpora/html/inventory.json\",\n    \"tests/corpora/html/regressions.json\"\n  ],\n  \"outside_ownership\": []\n}\n"
+    },
+    {
+      "id": "diff-check",
+      "revision": "f1e912ad46fb84a533fef9a95f4c910445478a49",
+      "command": [
+        "git",
+        "diff",
+        "--check",
+        "5e5f7572ed4ad3071d48f74cba9ec741ab5a78fc"
+      ],
+      "result": "passed",
+      "exit_code": 0,
+      "output": ""
+    }
+  ],
+  "historical_broad_run": {
+    "revision": "5e5f7572ed4ad3071d48f74cba9ec741ab5a78fc",
+    "command": [
+      "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+      "--fx-version",
+      "10.0.11",
+      "tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll",
+      "-result-xml",
+      "artifacts/M7-corpus/inherited-all.xml"
+    ],
+    "result": "failed",
+    "exit_code": 1,
+    "total": 7789,
+    "passed": 7788,
+    "failed": 1,
+    "errors": 0,
+    "skipped": 0,
+    "not_run": 0,
+    "seconds": 6.211,
+    "failure": "Xemele.Tests.AttributeMetadata.AttributeMetadataTests.WarmBorrowedCompleteAndIncompleteEventsAllocateZeroWithPositiveControl",
+    "expected_bytes": 0,
+    "actual_bytes": 7744,
+    "source": "tests/Xemele.Tests/M3-attribute-metadata/AttributeMetadataTests.cs:133",
+    "limitation": "Completed before interrupt boundary. Embedded allocation counter inadvertently included without lease/controlled tiering environment; no passing measurement claim or rerun. Runtime/inherited tests unchanged from claim; owning cumulative gate follow-up."
+  },
+  "measurement_environment_controls": {
+    "DOTNET_TieredCompilation": null,
+    "DOTNET_TieredPGO": null,
+    "COMPlus_TieredCompilation": null,
+    "COMPlus_TieredPGO": null
+  }
+}

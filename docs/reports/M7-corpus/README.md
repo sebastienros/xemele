@@ -97,7 +97,9 @@ input/license/source hashes are in `native-selector-provenance.json`.
 Historical failures remain explicit. The first driver build used singular
 `XmlParseException.Diagnostic`; corrected to the actual Diagnostics collection.
 Two restricted test restores stalled; both were canceled and their exact process
-groups terminated/reaped, then pinned offline elevated builds succeeded. The
+groups terminated/reaped. A later restricted cached final build also stalled and
+its exact group was terminated/reaped (exit143); pinned offline elevated builds
+succeeded. These stalls are not product-check passes. The
 first native two-graph harness run failed 15/39 because XML self-closing nonvoid
 markup has different HTML parsing semantics and BCL XElement.Parse discarded
 whitespace. Explicit nonvoid end tags and PreserveWhitespace corrected the
