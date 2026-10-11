@@ -12,12 +12,13 @@ from pathlib import Path
 import signal
 import subprocess
 import time
+from datetime import datetime, timezone
 
 ROOT = Path(__file__).resolve().parents[3]
 ARTIFACTS = ROOT / 'artifacts/M8-sch-compile'
 HOST = Path('/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet')
 BIN = ROOT / 'benchmarks/Xemele.Benchmarks/M8-sch-compile/bin/Release/net10.0'
-SOURCE = '65c7da313379285bea463fa992b870550caa4809'
+SOURCE = '193a6fe3ddcdf209bea0c623b154cbb6abd99b9c'
 MANIFEST = ROOT / 'docs/reports/M8-sch-compile/preparation.json'
 
 
@@ -51,7 +52,7 @@ def prepare():
         'preparationRevision': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
         'cwd': str(ROOT), 'runtime': '10.0.11', 'sdk': '10.0.400', 'maximumSeconds': 30,
         'lease': 'M8-sch-compile-allocation-1', 'workSeconds': 25, 'cleanupSeconds': 5,
-        'command': ['python3', 'docs/reports/M8-sch-compile/lease.py', '--granted', '<durably-approved-manifest-sha256>'],
+        'command': ['python3', 'docs/reports/M8-sch-compile/lease.py', '--granted', '<durably-approved-manifest-sha256>', '<latest-start-UTC-ISO>', '<absolute-expiry-UTC-ISO>'],
         'childCommand': [str(HOST), '--fx-version', '10.0.11', str(BIN / 'Xemele.Benchmarks.dll'), '--measure', str(ARTIFACTS / 'allocation.json')],
         'environment': {'DOTNET_TieredCompilation': '0', 'DOTNET_gcServer': '0', 'DOTNET_GCConcurrent': '0', 'XEMELE_SCH_REVISION': SOURCE},
         'controlRoutes': 6, 'processInspectionPreflight': {'passed': True, 'processCount': inspected},
@@ -138,11 +139,25 @@ def verify_only():
                       'processInspectionPreflight': True, 'countersDisabled': True, 'rawInspected': False}))
 
 
-def measure(approved_hash):
+def measure(approved_hash, latest_start_text, expiry_text):
+    # A late start cannot extend the root's absolute UTC bounds. Existing raw
+    # output is never overwritten, including a prior failed lifecycle.
+    now = datetime.now(timezone.utc)
+    latest_start = datetime.fromisoformat(latest_start_text.replace('Z', '+00:00'))
+    expiry = datetime.fromisoformat(expiry_text.replace('Z', '+00:00'))
+    if latest_start.tzinfo is None or expiry.tzinfo is None or now > latest_start or expiry <= now:
+        raise SystemExit('Lease start deadline/expiry refused; no child or measurement started.')
+    remaining = min(30, (expiry - now).total_seconds())
+    if remaining <= 5:
+        raise SystemExit('Lease cleanup reserve exhausted; no child started.')
+    if any((ARTIFACTS / name).exists() for name in ['allocation.json', 'allocation.log', 'lifecycle.json']):
+        raise SystemExit('Preserved raw/lifecycle output exists; no replacement or retry.')
     started = time.monotonic()
-    work_deadline, hard_deadline = started + 25, started + 30
+    hard_deadline = started + remaining
+    work_deadline = hard_deadline - 5
     lifecycle = {'lease': 'M8-sch-compile-allocation-1', 'status': 1, 'beforeIdentities': False, 'afterIdentities': False,
-                 'beforeManifestSha256': False, 'afterManifestSha256': False, 'sequence': [], 'rawInspected': False}
+                 'beforeManifestSha256': False, 'afterManifestSha256': False, 'sequence': [], 'rawInspected': False,
+                 'latestStart': latest_start_text, 'absoluteExpiry': expiry_text, 'maximumRemainingSeconds': remaining}
     manifest = None
     try:
         contents = MANIFEST.read_bytes()
@@ -185,7 +200,7 @@ def measure(approved_hash):
         if not lifecycle['afterIdentities'] or not lifecycle['afterManifestSha256']:
             lifecycle['status'] = 1
         lifecycle['elapsedSeconds'] = time.monotonic() - started
-        if lifecycle['elapsedSeconds'] > 30:
+        if lifecycle['elapsedSeconds'] > remaining:
             lifecycle['status'] = 1
             lifecycle['deadlineExceeded'] = True
         (ARTIFACTS / 'lifecycle.json').write_text(json.dumps(lifecycle, indent=2) + '\n')
@@ -196,7 +211,7 @@ def measure(approved_hash):
 parser = argparse.ArgumentParser()
 parser.add_argument('--prepare', action='store_true')
 parser.add_argument('--verify-only', action='store_true')
-parser.add_argument('--granted')
+parser.add_argument('--granted', nargs=3, metavar=('MANIFEST_SHA256', 'LATEST_START_UTC', 'ABSOLUTE_EXPIRY_UTC'))
 arguments = parser.parse_args()
 assert sum([arguments.prepare, arguments.verify_only, arguments.granted is not None]) == 1
 if arguments.prepare:
@@ -204,4 +219,4 @@ if arguments.prepare:
 elif arguments.verify_only:
     verify_only()
 else:
-    measure(arguments.granted)
+    measure(*arguments.granted)

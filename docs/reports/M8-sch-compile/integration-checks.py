@@ -13,6 +13,7 @@ out=Path('artifacts/M8-sch-compile/integration');out.mkdir(parents=True,exist_ok
 build('tests/Xemele.Tests/Xemele.Tests.csproj')
 prefix=[net,'--fx-version','10.0.11','tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll']
 run(*prefix,'-class','Xemele.Tests.M8SchCompile.CompilerTests','-class','Xemele.Tests.M8SchCompile.ResourceTests','-result-xml',str(out/'focused.xml'));verify(out/'focused.xml',93)
+run(*prefix,'-class','Xemele.Tests.M8SchemaResourceBase.ResourceBaseTests','-result-xml',str(out/'resource-base.xml'));verify(out/'resource-base.xml',11)
 a=json.load(open('docs/reports/M8-resource-kind/test-commands.json'))[1]['args'];a[-1]=str(out/'resolver.xml');run(*a);verify(out/'resolver.xml',42)
 a=[]
 for c in ['Xemele.Tests.M8Model.ModelTests','Xemele.Tests.M8Model.ResourceTests','Xemele.Tests.M8SourceLocations.SourceLocationTests','Xemele.Tests.M5ValidationModel.ValidationModelTests','Xemele.Tests.M4Evaluate.EvaluationTests']:a+=['-class',c]
