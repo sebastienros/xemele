@@ -24,6 +24,18 @@
       "client_thread_id": "client-new-thread:fea4f402-f5b1-4a06-912b-a1dff9a060ee",
       "chat_id": "01a12876-9d2f-7a80-a3e0-2de4fc1f3af0",
       "worktree_path": "/Users/sebastienros/.codex/worktrees/97c4/xemele"
+    },
+    {
+      "task_id": "M3-async-writer",
+      "branch": "codex/m3-async-writer",
+      "base_revision": "827fde5f82dd202abb53c300d3a4a59b7cd3eda0",
+      "host_id": "local",
+      "stage": "claimed; dispatch pending",
+      "acceptance_before_dispatch": {
+        "mandatory": "All frozen async methods/guard acrossawait, operation+call cancellation, actual async-only delayed output, exact lexical/state/scopes/UTF behavior, bounded scratch and honest allocation. No synchronous transport helper used for emission.",
+        "integration": "Focused async tests plus verified syncwriter/serialization; compiled API against all integrated fragments; comprehensive gate later.",
+        "measurements": "Prepare/build/control outside one bounded exact serial lease, no unleased standalone counters/timing; informational timings."
+      }
     }
   ],
   "integration_queue": [],
@@ -1424,7 +1436,8 @@
       "verified": 6,
       "total": 16,
       "in_progress": [
-        "M3-streaming-pump"
+        "M3-streaming-pump",
+        "M3-async-writer"
       ],
       "remaining_gate": "M3-gate"
     }
