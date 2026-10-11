@@ -132,6 +132,29 @@ public sealed class TokenizerCorpusTests
         Assert.True(failures.Count == 0, string.Join("\n", failures.Take(80)) + "\nFailure count=" + failures.Count + "\n" + string.Join("\n", failures.GroupBy(f => f.Split(':')[0]).Select(g => g.Key + ": " + g.Count())));
     }
 
+    [Fact]
+    public void IndependentCurrentPiWitnessesAtEveryBoundary()
+    {
+        using var json = JsonDocument.Parse(File.ReadAllText(Path.Combine(FixtureRoot(), "pi-witnesses.json")));
+        int cases = 0;
+        foreach (var test in json.RootElement.GetProperty("tests").EnumerateArray())
+        {
+            string input = test.GetProperty("input").GetString()!;
+            string expected = Expected(test.GetProperty("output"), false);
+            for (int split = -1; split <= input.Length; split++)
+            {
+                var tokens = new List<HtmlToken>(); var tokenizer = NewTokenizer("Data state", "", tokens.Add);
+                if (split < 0) { for (int i = 0; i < input.Length; i++) tokenizer.Feed(input.AsSpan(i, 1)); }
+                else { tokenizer.Feed(input.AsSpan(0, split)); tokenizer.Feed(input.AsSpan(split)); }
+                tokenizer.Complete();
+                Assert.True(expected == Actual(tokens), test.GetProperty("description").GetString());
+                Assert.Single(tokens, t => t.Kind == HtmlTokenKind.EndOfFile);
+            }
+            cases++;
+        }
+        Assert.Equal(18, cases);
+    }
+
     private static string Unescape(string value) => Regex.Replace(value, @"\\u([0-9a-fA-F]{4})", m => ((char)Convert.ToInt32(m.Groups[1].Value, 16)).ToString());
     private static string Expected(JsonElement output, bool escaped)
     {
