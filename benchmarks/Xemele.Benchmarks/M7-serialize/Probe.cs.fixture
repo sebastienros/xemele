@@ -40,6 +40,8 @@ var cold = OutputBenchmarks.Document("small"); string first = HtmlSerializer.Ser
 Print("cold-first-owned-document-and-result-inclusive-runtime-initialization", GC.GetAllocatedBytesForCurrentThread() - before, 1); GC.KeepAlive(first);
 before = GC.GetAllocatedBytesForCurrentThread(); var positive = new byte[1024]; long allocation = GC.GetAllocatedBytesForCurrentThread() - before;
 if (allocation == 0) throw new Exception("Positive allocation control."); Print("positive-control", allocation, 1); GC.KeepAlive(positive);
+before = GC.GetAllocatedBytesForCurrentThread(); var coldStream = new CountingStream(); HtmlSerializer.Save(cold, coldStream);
+Print("cold-first-UTF8-stream-object-fixed-transport-and-runtime-initialization", GC.GetAllocatedBytesForCurrentThread() - before, 1); GC.KeepAlive(coldStream);
 before = GC.GetAllocatedBytesForCurrentThread(); EscapeBenchmarks.CachedScan("&", false); BooleanBenchmarks.LinearMatch("checked");
 Print("cold-candidate-SearchValues-and-linear-name-table", GC.GetAllocatedBytesForCurrentThread() - before, 1);
 Verify();
