@@ -2455,17 +2455,59 @@
       "activation_revision": "209cee5b468e1fe49289390074366b2dcfcdd439"
     }
   ],
-  "workers": {
-    "M7-builder": {
+  "workers": [
+    {
+      "task_id": "M7-contracts",
+      "agent_id": "/root/contracts",
+      "status": "verified integrated; terminal; clean completed checkouts removed",
+      "branch": "codex/m7-contracts",
+      "worktree": "/private/tmp/xemele-m7-contracts",
+      "base_revision": "e1fcc99ebd921637fe2c10e3966864bd6840aab8",
+      "claim_revision": "9e530764937150f85998d5db7807fd6581d9d425",
+      "integration_revision": "d0792dc31ae93b1918fc9437e98b862db3dde191",
+      "cleanup": "Root inspected owned contract source/reports, independently reran exact API/XML probes/negative controls at integrated d0792dc; no allocation/raw benchmark artifacts; clean worker and integration checkouts removed, commits retained."
+    },
+    {
+      "task_id": "M7-html-model",
+      "agent_id": "/root/html_model",
+      "status": "Verified integrated; terminal; clean worker/integration checkouts removed",
+      "branch": "codex/m7-html-model",
+      "worktree": "/private/tmp/xemele-m7-html-model",
+      "base_revision": "36ed57e022e25f2ea333012600af048048d37f44",
+      "claim_revision": "5bd688d8d67982e1a3ef66d4eda09dd80dddfddd",
+      "review_agent_id": "/root/model_review",
+      "integration_revision": "d619732f09cd0980010265b11b738cb67bade06f",
+      "cleanup": "Root raw inspection and integrated9tests/API1200 preserved in durable reports; commits retained, temporary generated artifacts discarded. Original W3C cache and retained M6 package untouched."
+    },
+    {
+      "task_id": "M7-css-xml-contract",
+      "agent_id": "/root/css_xml_contract",
+      "status": "Verified integrated; terminal; clean worker/integration checkouts removed",
+      "branch": "codex/m7-css-xml-contract",
+      "integration_revision": "383c7eef263280dfcd3433f165260070e9094b61",
+      "handoff_revision": "6b1e1f81346777fa93c1f925125dc504d9911e1d",
+      "cleanup": "Independent integrated declarations, all3negative controls and actual model consumers passed; durable reports and commits retained."
+    },
+    {
+      "task_id": "M7-html-pi-contract",
+      "agent_id": "/root/pi_contract",
+      "status": "Verified integrated; terminal; clean worker/integration checkouts removed",
+      "branch": "codex/m7-html-pi-contract",
+      "integration_revision": "3153cda5abeaacb987d8519a591761635a447061",
+      "handoff_revision": "89e5da519a95995b397199e3d88f647efcf2d5a0",
+      "cleanup": "Root independently verified full contract checker,4pinned source hashes and24 complete native trees; docs-only followup preserves executable checks, durable reports/commits retained."
+    },
+    {
       "chat_id": "01a12b74-6d45-73e2-99c4-abb2963835d3",
       "host_id": "local",
       "model": "gpt-6.1-sol",
       "thinking": "high",
       "worktree_path": "/Users/sebastienros/.codex/worktrees/464f/xemele",
       "checkpoint": "8d2d3668d4ff360718c42e6ebc4ece53d6d71e53",
-      "status": "active"
+      "status": "active",
+      "task_id": "M7-builder"
     }
-  },
+  ],
   "adapter_prelease_review": {
     "source_revision": "3a0ba1e4e9fc99f96fadf816050a5ca102dc4d49",
     "prepared_revision": "4b797dda27080f48151cfa2c6bb896cc739934bb",
