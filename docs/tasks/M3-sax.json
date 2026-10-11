@@ -4,11 +4,11 @@
   "milestone": "M3",
   "title": "Synchronous SAX parser entry points",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M3 coordinator 01a1284a-8826-7fc2-af44-74552db608f2 / sax worker",
   "branch": "codex/m3-sax",
   "base_revision": "dd3a54bf12b9238f6174d38541a5783b29cc7e0f",
-  "integration_revision": null,
+  "integration_revision": "8c88c670d81f037e6f179f5f2e9c76c084580dcf",
   "depends_on": [
     "M3-callbacks",
     "M3-async-resources",
@@ -39,7 +39,9 @@
       "evidence": [
         "release-builds",
         "focused-tests",
-        "compiled-api"
+        "compiled-api",
+        "integrated-checks",
+        "independent-review"
       ]
     },
     {
@@ -47,7 +49,9 @@
       "description": "Test event order, early delivery, namespace/default attributes, lexical events, user exception propagation and stream ownership.",
       "status": "passed",
       "evidence": [
-        "focused-tests"
+        "focused-tests",
+        "integrated-checks",
+        "independent-review"
       ]
     },
     {
@@ -64,7 +68,9 @@
         "bounded-measurement-parked",
         "feature-control",
         "feature-allocation",
-        "feature-bdn"
+        "feature-bdn",
+        "integrated-checks",
+        "independent-review"
       ]
     }
   ],
@@ -191,6 +197,24 @@
       "result": "passed",
       "summary": "Exit0; exactly8 cases (4 methods x 2 lengths), one Dry/in-process job, MemoryDiagnoser allocation columns present; raw short/long ASCII+multilingual SAX/string/byte/stream and prior DOM composition results retained. Shared host contended; timings and generated ratios informational ONLY with no speed/comparison/regression/repeatability claim. Dry allocations are cold whole-operation results, separate from feature-allocation warmed zero primitive. Arm64 .NET10.0.11 workstationGC, x64 release check outstanding.",
       "artifact": "docs/reports/M3-sax/bdn/results/Xemele.Benchmarks.Sax.SaxBenchmarks-report.csv"
+    },
+    {
+      "id": "integrated-checks",
+      "kind": "integration",
+      "revision": "8c88c670d81f037e6f179f5f2e9c76c084580dcf",
+      "command": "Pinned SDK10 single-node Release build; Xemele.Tests.dll -namespace Xemele.Tests.Sax -namespace Xemele.Tests.StreamingPump -parallelMode none -result-xml /private/tmp/m3-sax-integrated.xml; PATH=pinnedSDK python3 -B tools/ApiBaseline/compare.py --report /private/tmp/m3-sax-api-integrated.json; python3 tools/planning/tasks.py validate",
+      "result": "passed",
+      "summary": "Release0warnings/errors;53actualtests(20SAX+33pump)0fail/skip. OfficialglobalAPI655 matched after3386 exacthash-verified fixtures pluspinnedbundle provisioned privately; no corpusclaims/source-manifestedits.147validatorpassed. Finalmerge onlysourceidenticalmetadata/reports; gitdiff8c..final src/tests/API quiet; preserve passingchecks.",
+      "artifact": "docs/reports/M3-sax/integration.xml"
+    },
+    {
+      "id": "independent-review",
+      "kind": "review",
+      "revision": "0f51da9a2715314c32ffbd898ccce1f3b7cee15c",
+      "command": "Read-only review_core_async_boundary source/API/lifetime/cleanup/tests against frozen Syncfixture/spec",
+      "result": "passed",
+      "summary": "No concrete A1/A2 source/API/lifetime blockers. All6overloads/flags/directcallbacks/4KiBboundedtransport/originalexceptionidentity/leaveopen validated; no executions.",
+      "artifact": null
     }
   ],
   "blockers": [],
@@ -202,7 +226,8 @@
       "Standalone sample passed; compiled frozen16/API655 rows passed",
       "Counters-disabled8MiB control exit0 <=20s; exact frozen hashes match",
       "Authorized allocation+BDN lease exit0: 0B warm borrowed primitive, 4120B positive control, bounded8MiB retention; exactly8BDN cases with MemoryDiagnoser completed",
-      "Planning validation passed; discovery wrapper historical missing unprovisioned E14.dtd failure retained honestly"
+      "Planning validation passed; discovery wrapper historical missing unprovisioned E14.dtd failure retained honestly",
+      "Coordinator53integratedtests/API655official/147validator, independentreview; full1GiB remainsM3-corpus."
     ],
     "remaining": [
       "Coordinator integration and relevant combined correctness/API/validator checks; only coordinator sets verified.",

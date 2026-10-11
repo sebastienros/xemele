@@ -25,17 +25,6 @@
       "worktree_path": "/Users/sebastienros/.codex/worktrees/705c/xemele"
     },
     {
-      "task_id": "M3-sax",
-      "branch": "codex/m3-sax",
-      "base_revision": "dd3a54bf12b9238f6174d38541a5783b29cc7e0f",
-      "claim_revision": "c288bc52ed51924977ffdf778a8bce7825947b91",
-      "chat_id": "01a12891-049b-7263-aa3d-c6242af7ee0a",
-      "host_id": "local",
-      "worktree_path": "/Users/sebastienros/.codex/worktrees/d45c/xemele",
-      "stage": "setup confirmed; executing",
-      "acceptance_before_dispatch": "Frozen synchronousadapter contracts A1/A2, standalone/API preservation A3, bounded ownedstate/realallocationpositivecontrols; focusedintegration; measurements park until serial lease"
-    },
-    {
       "task_id": "M3-reader",
       "branch": "codex/m3-reader",
       "base_revision": "dd3a54bf12b9238f6174d38541a5783b29cc7e0f",
@@ -47,14 +36,7 @@
       "acceptance_before_dispatch": "Frozen synchronousadapter contracts A1/A2, standalone/API preservation A3, bounded ownedstate/realallocationpositivecontrols; focusedintegration; measurements park until serial lease"
     }
   ],
-  "integration_queue": [
-    {
-      "task_id": "M3-sax",
-      "checkpoint": "8c88c670d81f037e6f179f5f2e9c76c084580dcf",
-      "worktree_path": "/private/tmp/xemele-m3-sax-verification",
-      "checks": "53SAX/pump0fail/skip, build0warnings/errors, official655API+147validator passed; finalmeasurementpending"
-    }
-  ],
+  "integration_queue": [],
   "blockers": [
     {
       "task_id": "M3-sax",
@@ -73,10 +55,10 @@
     "Verify asyncwriter and serializer, async join/corpus/M3gate; create exactlyone M4coordinator only afterverifiedM3gate."
   ],
   "last_verified_task": {
-    "task_id": "M3-scan-abi",
-    "integration_revision": "dbfb42ac39751f03065f42534f38332c27dcca27"
+    "task_id": "M3-sax",
+    "integration_revision": "8c88c670d81f037e6f179f5f2e9c76c084580dcf"
   },
-  "last_integrated_revision": "f0ded2081dd6d969941d430168568dd2451aaea1",
+  "last_integrated_revision": "8c88c670d81f037e6f179f5f2e9c76c084580dcf",
   "completed_assignments": [
     {
       "task_id": "M2-dtd-composition",
@@ -594,6 +576,20 @@
         "worker_worktree_removed": true,
         "pump_verification_worktree_removed": true
       }
+    },
+    {
+      "task_id": "M3-sax",
+      "branch": "codex/m3-sax",
+      "base_revision": "dd3a54bf12b9238f6174d38541a5783b29cc7e0f",
+      "claim_revision": "c288bc52ed51924977ffdf778a8bce7825947b91",
+      "chat_id": "01a12891-049b-7263-aa3d-c6242af7ee0a",
+      "host_id": "local",
+      "worktree_path": "/Users/sebastienros/.codex/worktrees/d45c/xemele",
+      "stage": "verified; cleanup pending",
+      "acceptance_before_dispatch": "Frozen synchronousadapter contracts A1/A2, standalone/API preservation A3, bounded ownedstate/realallocationpositivecontrols; focusedintegration; measurements park until serial lease",
+      "implementation_revision": "0f51da9a2715314c32ffbd898ccce1f3b7cee15c",
+      "handoff_revision": "a5aae378841151d643b9f4694c1b224b76595949",
+      "integration_revision": "8c88c670d81f037e6f179f5f2e9c76c084580dcf"
     }
   ],
   "benchmark_policy": "Successful previous measurements retained; future changed runtime measurements require complete preparation and exclusive grant.",
@@ -1492,11 +1488,10 @@
       "remaining_gate": null
     },
     "M3": {
-      "verified": 8,
+      "verified": 9,
       "total": 18,
       "in_progress": [
         "M3-async-writer",
-        "M3-sax",
         "M3-reader"
       ],
       "remaining_gate": "M3-gate"
