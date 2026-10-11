@@ -80,7 +80,8 @@ internal sealed class Fixtures
     {
         int result = 0;
         for (int i = 0; i < 1024; i++) foreach (var input in Inputs)
-            foreach (var attribute in Model.Attributes) if (attribute.IsValueValid(input, Model, Operation)) result++;
+            for (int attributeIndex = 0; attributeIndex < Model.Attributes.Count; attributeIndex++)
+                if (Model.Attributes[attributeIndex].IsValueValid(input, Model, Operation)) result++;
         return result;
     }
     internal void Controls()
