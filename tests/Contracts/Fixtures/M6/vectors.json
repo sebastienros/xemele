@@ -1,0 +1,203 @@
+{
+  "schema_version": 1,
+  "notice": "Future implementation acceptance vectors, not runtime conformance evidence.",
+  "cases": [
+    {
+      "id": "catalog-system-before-public",
+      "lane": "Catalog",
+      "input": {
+        "system": "s",
+        "public": "p",
+        "prefer": "public",
+        "entries": [
+          "system:s=a",
+          "public:p=b"
+        ]
+      },
+      "expected": "a"
+    },
+    {
+      "id": "catalog-public-only-system-preference",
+      "lane": "Catalog",
+      "input": {
+        "system": null,
+        "requestUri": "https://test/required",
+        "public": "p",
+        "prefer": "system",
+        "entries": [
+          "system:https://test/required=a",
+          "public:p=b"
+        ]
+      },
+      "expected": "b"
+    },
+    {
+      "id": "catalog-longest-rewrite",
+      "lane": "Catalog",
+      "input": {
+        "system": "abc/def",
+        "entries": [
+          "rewrite:abc/=a/",
+          "rewrite:abc/d=b/"
+        ]
+      },
+      "expected": "b/ef"
+    },
+    {
+      "id": "catalog-next-order",
+      "lane": "Catalog",
+      "input": {
+        "system": "s",
+        "next": [
+          "one",
+          "two"
+        ],
+        "one": "a",
+        "two": "b"
+      },
+      "expected": "a"
+    },
+    {
+      "id": "catalog-terminal-delegate-miss",
+      "lane": "Catalog",
+      "input": {
+        "system": "abc",
+        "delegatePrefix": "a",
+        "delegateResult": null,
+        "nextResult": "b"
+      },
+      "expected": null
+    },
+    {
+      "id": "catalog-redirect-cycle",
+      "lane": "Catalog",
+      "input": {
+        "finalSources": [
+          "https://test/a",
+          "https://test/b",
+          "https://test/a"
+        ]
+      },
+      "expected": "CATALOG.Cycle"
+    },
+    {
+      "id": "include-failure-atomic",
+      "lane": "XInclude",
+      "input": {
+        "xml": "<r xmlns:xi=\"http://www.w3.org/2001/XInclude\"><xi:include href=\"missing\"/></r>",
+        "resolver": "deny"
+      },
+      "expected": {
+        "success": false,
+        "document": null,
+        "originalUnchanged": true
+      }
+    },
+    {
+      "id": "include-fallback",
+      "lane": "XInclude",
+      "input": {
+        "resolver": "deny",
+        "fallback": "<ok/>"
+      },
+      "expected": {
+        "success": true,
+        "warning": "XINCLUDE.Fallback"
+      }
+    },
+    {
+      "id": "include-callback-no-fallback",
+      "lane": "XInclude",
+      "input": {
+        "resolver": "throws IOException",
+        "fallback": "<ok/>"
+      },
+      "expected": "propagate same IOException"
+    },
+    {
+      "id": "include-element-selection",
+      "lane": "XInclude",
+      "input": {
+        "xml": "<r><!--c--><a/><b><c/></b></r>",
+        "pointer": "element(/1/2/1)"
+      },
+      "expected": "c"
+    },
+    {
+      "id": "include-untyped-id",
+      "lane": "XInclude",
+      "input": {
+        "xml": "<r id=\"x\"/>",
+        "pointer": "x"
+      },
+      "expected": "XINCLUDE.Selection"
+    },
+    {
+      "id": "include-effective-quota",
+      "lane": "XInclude",
+      "input": {
+        "operationExternalBytes": 8,
+        "parseExternalBytes": null,
+        "totalEntityAndIncludeBytes": 9
+      },
+      "expected": "XINCLUDE.Limit"
+    },
+    {
+      "id": "include-effective-minimum",
+      "lane": "XInclude",
+      "input": {
+        "operationExternalBytes": 8,
+        "parseExternalBytes": 4,
+        "totalEntityAndIncludeBytes": 5
+      },
+      "expected": "XINCLUDE.Limit"
+    },
+    {
+      "id": "reader-attribute-position",
+      "lane": "Interop",
+      "input": {
+        "elementDepth": 0,
+        "action": [
+          "MoveToFirstAttribute",
+          "ReadAttributeValue",
+          "MoveToElement"
+        ]
+      },
+      "expected": {
+        "depths": [
+          1,
+          2,
+          0
+        ]
+      }
+    },
+    {
+      "id": "navigator-clone-position",
+      "lane": "Interop",
+      "input": {
+        "operation": "Clone then MoveToFirstChild"
+      },
+      "expected": {
+        "original": "Root",
+        "clone": "Element",
+        "canEdit": false
+      }
+    },
+    {
+      "id": "cli-codes",
+      "lane": "Cli",
+      "input": [
+        "valid",
+        "syntax rejection",
+        "unknown option",
+        "unexpected exception"
+      ],
+      "expected": [
+        0,
+        1,
+        2,
+        3
+      ]
+    }
+  ]
+}

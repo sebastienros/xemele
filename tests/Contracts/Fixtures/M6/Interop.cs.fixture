@@ -1,0 +1,62 @@
+namespace Xemele.Interop;
+public sealed class XemeleXmlReaderAdapter : System.Xml.XmlReader
+{
+    public extern XemeleXmlReaderAdapter(Xemele.Streaming.XmlReader reader, bool leaveOpen = true);
+    public override extern string LocalName { get; }
+    public override extern string NamespaceURI { get; }
+    public override extern string Prefix { get; }
+    public override extern string Value { get; }
+    public override extern string Name { get; }
+    public override extern string BaseURI { get; }
+    public override extern int Depth { get; }
+    public override extern int AttributeCount { get; }
+    public override extern bool EOF { get; }
+    public override extern bool IsEmptyElement { get; }
+    public override extern System.Xml.XmlNodeType NodeType { get; }
+    public override extern System.Xml.ReadState ReadState { get; }
+    public override extern System.Xml.XmlNameTable NameTable { get; }
+    public override extern bool HasValue { get; }
+    public override extern bool CanResolveEntity { get; }
+    public override extern string? GetAttribute(string name);
+    public override extern string? GetAttribute(string localName, string? namespaceURI);
+    public override extern string GetAttribute(int i);
+    public override extern bool MoveToAttribute(string name);
+    public override extern bool MoveToAttribute(string localName, string? ns);
+    public override extern void MoveToAttribute(int i);
+    public override extern bool MoveToFirstAttribute();
+    public override extern bool MoveToNextAttribute();
+    public override extern bool MoveToElement();
+    public override extern bool ReadAttributeValue();
+    public override extern bool Read();
+    public override extern Task<bool> ReadAsync();
+    public override extern string? LookupNamespace(string prefix);
+    public override extern void ResolveEntity();
+    public override extern void Close();
+}
+public sealed class XemeleXPathNavigatorAdapter : System.Xml.XPath.XPathNavigator
+{
+    public extern XemeleXPathNavigatorAdapter(XmlDocument document);
+    public override extern string BaseURI { get; }
+    public override extern bool IsEmptyElement { get; }
+    public override extern string LocalName { get; }
+    public override extern string Name { get; }
+    public override extern string NamespaceURI { get; }
+    public override extern System.Xml.XmlNameTable NameTable { get; }
+    public override extern System.Xml.XPath.XPathNodeType NodeType { get; }
+    public override extern string Prefix { get; }
+    public override extern string Value { get; }
+    public override extern bool CanEdit { get; }
+    public override extern System.Xml.XPath.XPathNavigator Clone();
+    public override extern bool IsSamePosition(System.Xml.XPath.XPathNavigator other);
+    public override extern bool MoveTo(System.Xml.XPath.XPathNavigator other);
+    public override extern bool MoveToFirstAttribute();
+    public override extern bool MoveToNextAttribute();
+    public override extern bool MoveToFirstChild();
+    public override extern bool MoveToNext();
+    public override extern bool MoveToPrevious();
+    public override extern bool MoveToParent();
+    public override extern bool MoveToId(string id);
+    public override extern bool MoveToFirstNamespace(System.Xml.XPath.XPathNamespaceScope namespaceScope);
+    public override extern bool MoveToNextNamespace(System.Xml.XPath.XPathNamespaceScope namespaceScope);
+    public override extern void MoveToRoot();
+}

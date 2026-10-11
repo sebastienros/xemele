@@ -1,0 +1,23 @@
+namespace Xemele;
+public sealed record XIncludeOptions
+{
+    public Uri? BaseUri { get; init; }
+    public XmlResourceResolver? Resolver { get; init; }
+    public XmlParseOptions ParseOptions { get; init; } = new();
+    public XmlResourceLimits Limits { get; init; } = new();
+    public bool FixupBaseUris { get; init; } = true;
+    public bool FixupLanguage { get; init; } = true;
+}
+public sealed class XIncludeResult
+{
+    private extern XIncludeResult();
+    public extern XmlDocument? Document { get; }
+    public extern bool Success { get; }
+    public extern IReadOnlyList<XmlDiagnostic> Diagnostics { get; }
+    public extern int IncludedResources { get; }
+}
+public static class XIncludeProcessor
+{
+    public static extern XIncludeResult Process(XmlDocument document, XIncludeOptions? options = null, CancellationToken cancellationToken = default);
+    public static extern Task<XIncludeResult> ProcessAsync(XmlDocument document, XIncludeOptions? options = null, CancellationToken cancellationToken = default);
+}

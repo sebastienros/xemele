@@ -32,28 +32,24 @@ are offline; DTD/external entities are usable with a caller resolver before
 catalogs exist. These contracts are independent model evidence, not implemented
 resource I/O or parser behavior.
 
-## M6 additive services
+## Exact M6 freeze
 
-```csharp
-public sealed class XmlCatalog
-{
-    public static XmlCatalog Parse(string xml);
-    public Uri? Resolve(XmlResourceRequest request);
-}
-public sealed class CatalogResolver : XmlResourceResolver
-{
-    public CatalogResolver(XmlCatalog catalog, XmlResourceResolver fallback);
-}
-public static class XIncludeProcessor
-{
-    public static XIncludeResult Process(Document document, XIncludeOptions options);
-}
-```
+[M6 resource and integration decisions](../decisions/M6/resources-integration.md)
+replace the earlier additive proposals. Exact independently compiled declaration
+fixtures live in `tests/Contracts/Fixtures/M6/`. Catalog/XInclude use Xemele's
+implemented XmlDocument and M2 resolver contracts. Four standalone projects link
+only their own lane declarations and integrated runtime; no runtime stubs or
+later-milestone dependencies are delivered by the contract task.
 
-M6 contracts fix catalog resolution precedence, delegation/rewrite/next-catalog support, cycle limits, inclusion options/result/async shapes and mutation/failure semantics. Proposal: process on an imported working tree and return a new document, preserving the original on failure; any in-place API must be explicitly named. Include XML/text, fallback, base/language fixup, relative resources, and shorthand/`element()` XPointer profiles. More schemes are reported unsupported, never silently ignored. Caller-supplied resolvers allow XInclude and catalog lanes to run independently.
+The decision freezes Catalogs 1.0 precedence/delegation/rewrite/next behavior,
+immutable eager graph loading, aggregate quotas and final-URI cycles; XInclude's
+failure-atomic new-document result, async ownership, XML/text/fallback/fixups and
+shorthand/element() subset; BCL reader positioning/disposal and read-only navigator
+snapshot semantics; seven XML CLI commands, explicit resource grants, exit codes
+and the existing static partial registry for AOT.
 
-BCL adapters are separate types in `Xemele.Interop`, consuming completed tree/reader APIs. `XemeleXmlReaderAdapter : System.Xml.XmlReader` supplies the required abstract members with documented differences; a navigator adapter is added only for the agreed XPath integration surface. These adapters do not replace the engines. Contract fixtures specify reader positioning, attributes, disposal, and unsupported capabilities.
-
-The CLI adds parse/format/XPath/DTD-validation/canonicalization/catalog/XInclude commands using existing modules. XML-only CLI functionality builds before HTML/schemas. Later commands live in separate task-owned command files discovered by the M0 registry convention, with no edits to one giant switch. Exit codes distinguish success, invalid input, invocation error, and internal failure. Inputs/outputs and resolver grants are explicit; tests use local fixtures.
-
-M6 parallel lanes: catalog, XInclude, BCL adapters, and XML CLI. A final samples/integration task composes them and runs package/AOT smoke checks. No lane requires later HTML or XSD APIs.
+Before runtime lanes start, an ordered owning repair must add Catalog=2,
+XIncludeXml=3 and XIncludeText=4 to XmlResourceKind while retaining earlier values.
+This task does not edit its outside-owned source or earlier fixture enums. Each
+lane owns its later public API baseline and executable behavior tests; actual
+AOT/package composition belongs to M6 samples/gate, not declaration compilation.

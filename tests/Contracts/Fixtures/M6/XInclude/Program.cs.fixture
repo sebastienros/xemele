@@ -1,0 +1,17 @@
+using Xemele;
+if (Environment.Version.ToString() != "10.0.11") throw new Exception("Wrong actual runtime: " + Environment.Version);
+var document = XmlDocument.Parse("<root><child id='x'>value</child></root>");
+if (document.RootElement.LocalName != "root") throw new Exception("Earlier DOM regression");
+var clone = new XmlDocument();
+clone.DocumentNode.AppendChild(clone.ImportNode(document.RootElement));
+if (clone.RootElement.Children.Count != 1) throw new Exception("Earlier import regression");
+Console.WriteLine("PASS: XInclude independently compiled; actual runtime " + Environment.Version + "; verified prior DOM/import APIs executed");
+static async Task CompileUsage(XmlDocument document, XmlResourceResolver resolver, CancellationToken token)
+{
+    var options = new XIncludeOptions { BaseUri = new Uri("https://example.test/main.xml"), Resolver = resolver };
+    XIncludeResult result = XIncludeProcessor.Process(document, options, token);
+    result = await XIncludeProcessor.ProcessAsync(document, options, token);
+    XmlDocument? output = result.Document;
+    IReadOnlyList<XmlDiagnostic> diagnostics = result.Diagnostics;
+    _ = result.Success; _ = result.IncludedResources;
+}
