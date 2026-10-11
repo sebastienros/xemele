@@ -14,7 +14,7 @@
       "task_id": "M8-xpath-accounting",
       "branch": "codex/m8-xpath-accounting",
       "base_revision": "3000efdc9d9c1768810ace6372ad52aa51be6bd2",
-      "stage": "Source accepted; prepared allocation lease granted",
+      "stage": "Allocation lifecycle released; result inspection and final handoff pending",
       "acceptance_before_dispatch": {
         "mandatory": "Exact frozen internal node/item accounting adapter; actual operations on success/failure; capped remaining allowance/exact-limit runs; exception/cancellation behavior and unchanged public API.",
         "integration": "Focused accounting and affected XPath regressions, public API unchanged, prepared owned-allocation parity under bounded lease; no fresh campaign for unchanged primitives.",
@@ -75,21 +75,8 @@
   },
   "benchmark_policy": "Successful previous measurements retained; future changed runtime measurements require complete preparation and exclusive grant.",
   "benchmark_class_attributes": "Human requirement: every benchmark class declares [MemoryDiagnoser, ShortRunJob]; no CLI job flags.",
-  "benchmark_owner": "01a12c8e-345b-71d3-9af1-81f50d540ac2",
-  "active_measurement_lease": {
-    "id": "M8-xpath-accounting-allocation-1",
-    "task_id": "M8-xpath-accounting",
-    "owner_chat": "01a12c8e-345b-71d3-9af1-81f50d540ac2",
-    "source_revision": "88ce17fc956cb26de15ee3823fe5c766c80f1ddb",
-    "preparation_revision": "d766bef0af08e1077c1f7f35ddd525227c6ec28a",
-    "manifest_sha256": "f7f48af6fda5ab89284fb8b365468e5627353ee335d06adcec984e790b0b45b0",
-    "sole_command": "python3 docs/reports/M8-xpath-accounting/lease.py -- --measure",
-    "maximum_seconds": 60,
-    "status": "granted",
-    "created_utc": "2026-10-11T20:13:45.952973+00:00",
-    "park": "Main explicitly acknowledged; no other active implementation workers; source reviewer completed without host workloads. Initial sandbox process inspection was denied; escalated read-only process inspection follows grant. No global idle claim is made from the denied call.",
-    "release": "Immediately on lifecycle completion/failure, before any raw result inspection; no retries/builds/tests under lease."
-  },
+  "benchmark_owner": null,
+  "active_measurement_lease": null,
   "verification_policy_update": "User convergence discipline: define acceptance/evidence/integration checks before dispatch; batch concrete blockers with criterion, evidence, smallest fix and proving check; preserve valid evidence; offline focused harness repair first; after two cycles coordinator chooses one bounded resolution; reuse infrastructure; build outside one bounded measurement lease with one park acknowledgement collection and prompt release; focused task integration and comprehensive milestone gates. No speculative hardening blocks integration.",
   "cleanup_policy": "Automatically archive completed chats and remove worktrees once merged verified durably summarized and no review/build need. Do not save generated test/benchmark artifacts or ignored-output archives; preserve required implementation/source and concise verification summaries.",
   "artifact_policy": {
@@ -257,7 +244,25 @@
       }
     }
   ],
-  "measurement_lease_history": [],
+  "measurement_lease_history": [
+    {
+      "id": "M8-xpath-accounting-allocation-1",
+      "task_id": "M8-xpath-accounting",
+      "owner_chat": "01a12c8e-345b-71d3-9af1-81f50d540ac2",
+      "source_revision": "88ce17fc956cb26de15ee3823fe5c766c80f1ddb",
+      "preparation_revision": "d766bef0af08e1077c1f7f35ddd525227c6ec28a",
+      "manifest_sha256": "f7f48af6fda5ab89284fb8b365468e5627353ee335d06adcec984e790b0b45b0",
+      "sole_command": "python3 docs/reports/M8-xpath-accounting/lease.py -- --measure",
+      "maximum_seconds": 60,
+      "status": "released",
+      "created_utc": "2026-10-11T20:13:45.952973+00:00",
+      "park": "Main explicitly acknowledged; no other active implementation workers; source reviewer completed without host workloads. Initial sandbox process inspection was denied; escalated read-only process inspection follows grant. No global idle claim is made from the denied call.",
+      "release": "Immediately on lifecycle completion/failure, before any raw result inspection; no retries/builds/tests under lease.",
+      "released_utc": "2026-10-11T20:14:17.525932+00:00",
+      "lifecycle": "Worker reports sole command exit0, baseline/candidate0/0, no_children=true, initial/final identities passed,0.946231417s; raw output not inspected before RELEASE.",
+      "host_inspection": "Escalated process-name inventory succeeded; dotnet processes exist but names alone do not establish unrelated workload state. No latency/throughput claim; synchronous per-thread allocation comparison only."
+    }
+  ],
   "workers": [],
   "historical_state": {
     "revision": "752f9219cd01337dcc70acc9748331fd8a5bf4f6",
