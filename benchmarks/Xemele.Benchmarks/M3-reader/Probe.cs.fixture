@@ -1,0 +1,63 @@
+using System.Diagnostics;
+using System.Runtime.InteropServices;
+using BenchmarkDotNet.Running;
+using Xemele;
+using Xemele.Streaming;
+using Xemele.Benchmarks.Reader;
+if (args.Length > 0 && args[0] == "bdn") { BenchmarkRunner.Run<ReaderBenchmarks>(args: args[1..]); return; }
+Console.WriteLine($"runtime={RuntimeInformation.FrameworkDescription}; os={RuntimeInformation.OSDescription}; arch={RuntimeInformation.ProcessArchitecture}; cpu={Environment.ProcessorCount}; serverGC={System.Runtime.GCSettings.IsServerGC}");
+string value = new string('Ω', 4094) + "😀";
+long coldBefore = GC.GetAllocatedBytesForCurrentThread();
+var current = new XmlReader.Cursor(); current.Text(value, default);
+long cold = GC.GetAllocatedBytesForCurrentThread() - coldBefore;
+Console.WriteLine($"cursor cold owner+first growth={cold} B");
+for (int i = 0; i < 1000; i++) { current.Clear(); current.Text(value, default); }
+long before = GC.GetAllocatedBytesForCurrentThread(); int checksum = 0;
+for (int i = 0; i < 100000; i++) { current.Clear(); current.Text(value, default); checksum += current.Get(0).Length; }
+long primitive = GC.GetAllocatedBytesForCurrentThread() - before;
+before = GC.GetAllocatedBytesForCurrentThread();
+for (int i = 0; i < 1000; i++) GC.KeepAlive(new string(value.AsSpan()));
+long positive = GC.GetAllocatedBytesForCurrentThread() - before;
+Console.WriteLine($"current-copy 100000 operations={primitive} B; checksum={checksum}; owned-string positive 1000={positive} B");
+if (primitive != 0 || positive <= 0) throw new Exception("Allocation attribution failed.");
+var watch = Stopwatch.StartNew();
+long Measure(long body)
+{
+    using var input = new GeneratedText(body);
+    before = GC.GetAllocatedBytesForCurrentThread();
+    using var reader = XmlReader.Create(input, new() { Limits = new() { DocumentCharacters = null, TokenCharacters = null } });
+    long setup = GC.GetAllocatedBytesForCurrentThread() - before;
+    long baseline = GC.GetTotalMemory(true), peak = baseline, text = 0, nextSample = 16L * 1024 * 1024; int tokens = 0;
+    while (reader.Read())
+    {
+        text += reader.ValueSpan.Length; tokens++;
+        if (text >= nextSample) { peak = Math.Max(peak, GC.GetTotalMemory(true)); nextSample += 16L * 1024 * 1024; if (text % (128L * 1024 * 1024) == 0) Console.WriteLine($"progress={text}; elapsed={watch.Elapsed}"); }
+    }
+    peak = Math.Max(peak, GC.GetTotalMemory(true));
+    if (text != body || reader.TokenKind != XmlTokenKind.None || !input.CanRead) throw new Exception("Large-input correctness failed.");
+    GC.KeepAlive(reader);
+    Console.WriteLine($"generated-body={body}; transport={input.Position}; tokens={tokens}; setup={setup} B; baseline-live={baseline} B; peak-live={peak} B; delta={peak - baseline} B; elapsed={watch.Elapsed}");
+    return peak - baseline;
+}
+long small = Measure(8L * 1024 * 1024), large = Measure(1024L * 1024 * 1024);
+if (large > 16L * 1024 * 1024 || large > small + 8L * 1024 * 1024) throw new Exception("Retained memory grew with input.");
+sealed class GeneratedText(long body) : Stream
+{
+    private long position;
+    public override int Read(Span<byte> buffer)
+    {
+        long total = body + 7; int count = (int)Math.Min(buffer.Length, total - position);
+        for (int i = 0; i < count; i++, position++) buffer[i] = position < 3 ? "<r>"u8[(int)position] : position < body + 3 ? (byte)'a' : "</r>"u8[(int)(position - body - 3)];
+        return count;
+    }
+    public override int Read(byte[] buffer, int offset, int count) => Read(buffer.AsSpan(offset, count));
+    public override bool CanRead => true;
+    public override bool CanSeek => false;
+    public override bool CanWrite => false;
+    public override long Length => body + 7;
+    public override long Position { get => position; set => throw new NotSupportedException(); }
+    public override void Flush() { }
+    public override long Seek(long offset, SeekOrigin origin) => throw new NotSupportedException();
+    public override void SetLength(long value) => throw new NotSupportedException();
+    public override void Write(byte[] buffer, int offset, int count) => throw new NotSupportedException();
+}
