@@ -4,11 +4,11 @@
   "milestone": "M4",
   "title": "Freeze XPath profile and contracts",
   "kind": "contract",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M4 coordinator / isolated contract worker",
   "branch": "codex/m4-contracts",
   "base_revision": "011833b2e69a3fd105735bb931d63f99e83c7158",
-  "integration_revision": null,
+  "integration_revision": "3db4bde576c4f9b2be824db7d28b6bce389ea62a",
   "depends_on": [
     "M3-gate"
   ],
@@ -32,7 +32,9 @@
       "description": "Specify AST/navigation/function contracts, all public result items, static/dynamic namespaces, budgets and exact XPath 1.0 inventory.",
       "status": "passed",
       "evidence": [
-        "contract-fixtures"
+        "contract-fixtures",
+        "integrated-contract-checks",
+        "integrated-preservation"
       ]
     },
     {
@@ -40,7 +42,9 @@
       "description": "Compile consumer and lane fixtures; map every core axis/operator/function to acceptance IDs.",
       "status": "passed",
       "evidence": [
-        "contract-fixtures"
+        "contract-fixtures",
+        "integrated-contract-checks",
+        "integrated-preservation"
       ]
     },
     {
@@ -49,7 +53,9 @@
       "status": "passed",
       "evidence": [
         "contract-preservation",
-        "planning-validation"
+        "planning-validation",
+        "integrated-contract-checks",
+        "integrated-preservation"
       ]
     }
   ],
@@ -89,6 +95,24 @@
       "result": "passed",
       "summary": "Validated 148 tasks: schema, evidence, acyclic dependencies, additive milestones and ordered ownership; git diff --check passed. M3 status confirmed 19/19 verified with 56 passed criteria.",
       "artifact": null
+    },
+    {
+      "id": "integrated-contract-checks",
+      "kind": "integration",
+      "revision": "dc3b4fc33e791330142000d5e4b514a722766191",
+      "command": "python3 /private/tmp/xemele-m4-contracts-integration-check.py (committed inventory functions plus unchanged fixture projects/API checker components); python3 tools/planning/tasks.py validate; git diff --check 4e274e6 HEAD",
+      "result": "passed",
+      "summary": "Isolated combined checkout: 105 vectors/7 inventory corruption controls; four independent Release probes; CS0117/CS1503 expected invalid consumers; four 177-member API matches; two API corruption rejections; 148-task validation and contract-owned diff preservation passed. Not runtime XPath conformance. No measurements. Independent source-only review c732d51 approved with no blockers.",
+      "artifact": "docs/reports/M4-contracts/integration.md"
+    },
+    {
+      "id": "integrated-preservation",
+      "kind": "integration",
+      "revision": "3db4bde576c4f9b2be824db7d28b6bce389ea62a",
+      "command": "git diff --name-only dc3b4fc HEAD; python3 tools/planning/tasks.py validate; git diff --check 4e274e6 HEAD -- docs/tasks/M4-contracts.json docs/specs/xpath.md docs/decisions/M4 docs/reports/M4-contracts tests/Contracts/Fixtures/M4",
+      "result": "passed",
+      "summary": "Reconciled main with human dad208f benchmark instruction update; only docs/performance-coding.md differs from executed dc3b4fc combination (two added instruction lines). All fixture/runtime/build/API inputs identical; valid executable evidence preserved. Planning148 and owned contract whitespace checks passed. Broad instruction-update whitespace check returned2 for inherited trailing whitespace in user-added line66; no owned contract/source defect, preserved update unchanged.",
+      "artifact": "docs/reports/M4-contracts/integration.md"
     }
   ],
   "blockers": [],
@@ -98,10 +122,10 @@
       "python3 tests/Contracts/Fixtures/M4/check.py --dotnet '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' \u2014 passed; 4 probes, 2 expected consumer failures, 4 x 177-member comparisons, 7 inventory + 2 API corruption controls",
       "python3 tools/planning/tasks.py validate \u2014 passed (148 tasks)",
       "git diff --check \u2014 passed",
-      "python3 tools/planning/tasks.py status --milestone M3 \u2014 19/19 verified, 56 acceptance criteria passed"
+      "python3 tools/planning/tasks.py status --milestone M3 \u2014 19/19 verified, 56 acceptance criteria passed",
+      "Integrated checks passed at dc3b4fc33e791330142000d5e4b514a722766191; instruction-only reconciliation 3db4bde576c4f9b2be824db7d28b6bce389ea62a preserves exact executable inputs."
     ],
     "remaining": [
-      "Coordinator must integrate and verify before unlocking M4-model.",
       "Model and dependent runtime lanes must implement all semantic vectors and production conformance/performance; declaration/fake checks do not establish runtime XPath behavior.",
       "Any eventual benchmark classes require exact [MemoryDiagnoser, ShortRunJob] attributes; no contract-only benchmarks or allocation/timing measurements needed."
     ],

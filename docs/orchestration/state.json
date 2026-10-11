@@ -7,26 +7,7 @@
     "task_id": "M3-gate",
     "integration_revision": "f740466f1f0929ae109870545a1ad09201cbca5b"
   },
-  "active_assignments": [
-    {
-      "task_id": "M4-contracts",
-      "branch": "codex/m4-contracts",
-      "base_revision": "011833b2e69a3fd105735bb931d63f99e83c7158",
-      "stage": "Committed contract candidate; final worker evidence and independent source review in progress",
-      "acceptance_before_dispatch": {
-        "mandatory": "A1 exact XPath1.0 profile/public results/static-dynamic namespace/variables/budgets/errors/internal seams; A2 independently compile nonpackaged declarations/consumer/lane fixtures and map all axes/operators/core functions; A3 known revision checks and earlier public/model preservation. No runtime stubs or implementation.",
-        "integration": "Review exact contract decisions, reproduce focused fixture/compiler/inventory controls, planning validate; preserve existing runtime evidence without reruns.",
-        "informational": "Contract-only; no runtime allocation/timing measurement required."
-      },
-      "claim_revision": "8426569c66102e1897c4916783453ed7544f1233",
-      "client_thread_id": "client-new-thread:a0b8a625-3bef-49ab-afa0-3d082b8aab11",
-      "host_id": "local",
-      "chat_id": "01a12905-0321-7952-9072-c07ba66228ba",
-      "worktree_path": "/Users/sebastienros/.codex/worktrees/f9ae/xemele",
-      "worker_cursor": "4df5074c-920e-4aa2-a0c8-a9eda5ab2b22:23",
-      "source_candidate": "c732d51d43db610b2acc37338d3c6d4881386be8"
-    }
-  ],
+  "active_assignments": [],
   "integration_queue": [],
   "blockers": [
     {
@@ -36,11 +17,11 @@
     }
   ],
   "next_actions": [
-    "Dispatch isolated M4-contracts worker after claim; integrate/verify before M4-model",
-    "Execute only M4 through verified gate, then exactly-one M5 handoff"
+    "Clean terminal integrated M4-contracts worker and temporary integration checkout",
+    "Claim ready M4-model; execute only M4 through verified gate"
   ],
-  "last_verified_task": "M3-gate",
-  "last_integrated_revision": "f740466f1f0929ae109870545a1ad09201cbca5b",
+  "last_verified_task": "M4-contracts",
+  "last_integrated_revision": "3db4bde576c4f9b2be824db7d28b6bce389ea62a",
   "completed_assignments": [
     {
       "task_id": "M2-dtd-composition",
@@ -593,7 +574,8 @@
     "task_authority": "User explicitly reinforced on 2026-10-09: chats have explicit permission to do what they need for their tasks. Original assigned scope/ownership and no remote publication remain.",
     "M3-doctype-end-location": "Unstarted owning hook withdrawn: pump can force internal DocumentType pause and derive exact closing scalar from owned original location cursor+accepted primary prefix; focused allsplit/encoding/async tests required by existing pump criterion. No shared edits.",
     "M3-async-writer-type-row": "Serialized owning async-writer grant after worker ownJSON HOLD: update existing T:Xemele.XmlWriter row with frozen IAsyncDisposable only. Ordered after verified M3-writer, preserve all sync rows/IDs.",
-    "chat_communication_authorization": "Human explicitly authorized on 2026-10-10 in M4 coordinator: All chats do not need to ask permission to communicate with other chats; permission is implicitly granted. Forward this permission to every new chat. Applies to bounded repository coordination and successor chain; no remote publication."
+    "chat_communication_authorization": "Human explicitly authorized on 2026-10-10 in M4 coordinator: All chats do not need to ask permission to communicate with other chats; permission is implicitly granted. Forward this permission to every new chat. Applies to bounded repository coordination and successor chain; no remote publication.",
+    "benchmark_artifact_policy": "Human dad208f instruction: do not commit benchmark result logs and outputs, only summary tables and analysis."
   },
   "conventions_pending_review": {
     "api": "tools/ApiBaseline/README.md on codex/m0-ci defines xemele-api-v1 canonical JSONL with id/member/declaration",
@@ -1503,6 +1485,27 @@
       "stage": "Verified; temporary checkout retained for subsequent qualification",
       "acceptance_before_dispatch": "Preserve originalA1A2A3 through integrated controlled short async-only transport roundtrip/equality/cancellation/error checks and standalone representative allsurface sample/API inventory. No runtime edits or repeated child measurements; inherited actual evidence referenced at fixed revisions.",
       "integration_revision": "b962203e823fa816da38909a426158a7dac90781"
+    },
+    {
+      "task_id": "M4-contracts",
+      "branch": "codex/m4-contracts",
+      "base_revision": "011833b2e69a3fd105735bb931d63f99e83c7158",
+      "stage": "verified; cleanup pending",
+      "acceptance_before_dispatch": {
+        "mandatory": "A1 exact XPath1.0 profile/public results/static-dynamic namespace/variables/budgets/errors/internal seams; A2 independently compile nonpackaged declarations/consumer/lane fixtures and map all axes/operators/core functions; A3 known revision checks and earlier public/model preservation. No runtime stubs or implementation.",
+        "integration": "Review exact contract decisions, reproduce focused fixture/compiler/inventory controls, planning validate; preserve existing runtime evidence without reruns.",
+        "informational": "Contract-only; no runtime allocation/timing measurement required."
+      },
+      "claim_revision": "8426569c66102e1897c4916783453ed7544f1233",
+      "client_thread_id": "client-new-thread:a0b8a625-3bef-49ab-afa0-3d082b8aab11",
+      "host_id": "local",
+      "chat_id": "01a12905-0321-7952-9072-c07ba66228ba",
+      "worktree_path": "/Users/sebastienros/.codex/worktrees/f9ae/xemele",
+      "worker_cursor": "4df5074c-920e-4aa2-a0c8-a9eda5ab2b22:23",
+      "source_candidate": "c732d51d43db610b2acc37338d3c6d4881386be8",
+      "integration_revision": "3db4bde576c4f9b2be824db7d28b6bce389ea62a",
+      "handoff_revision": "66d9a881cd7cd785688fbb7cade3a20e30db74a4",
+      "source_review": "Independent read-only review approved, no blocking findings"
     }
   ],
   "benchmark_grant": {
@@ -1609,6 +1612,12 @@
       "total": 19,
       "in_progress": [],
       "remaining_gate": null
+    },
+    "M4": {
+      "verified": 1,
+      "total": 8,
+      "in_progress": [],
+      "remaining_gate": "M4-gate"
     }
   },
   "pause_request": {
@@ -1623,7 +1632,8 @@
     "agent": "review_m4_contracts",
     "task": "M4-contracts",
     "revision": "c732d51d43db610b2acc37338d3c6d4881386be8",
-    "stage": "Independent source-only API/semantic review; no executable children"
+    "stage": "Approved; no blockers; terminal",
+    "optional_followup": "Runtime vector harness should distinguish expected kinds."
   },
   "coordinator_repair": {
     "task_id": "M3-scan-abi",
