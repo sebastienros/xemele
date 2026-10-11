@@ -122,7 +122,8 @@ internal static class DatatypeValues
         if (value is ListValue list)
         {
             hash = 17;
-            foreach (var item in list.Items) hash = unchecked(hash * 31 + ValueHashCode(item, operation));
+            for (int i = 0; i < list.Items.Count; i++)
+                hash = unchecked(hash * 31 + ValueHashCode(list.Items[i], operation));
         }
         else
         {

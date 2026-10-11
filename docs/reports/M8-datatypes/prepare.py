@@ -15,8 +15,10 @@ for relative in subprocess.check_output(['git','ls-files','src/Xemele'],cwd=root
 for folder in ['tests/Xemele.Tests/M8-datatypes','tests/fixtures/M8-datatypes','benchmarks/Xemele.Benchmarks/M8-datatypes','docs/reports/M8-datatypes']:
  if not (root/folder).exists():continue
  for p in (root/folder).iterdir():
-  if p.is_file() and p.name not in {'preparation.json','measurement-summary.json','allocations.md'}:paths.add(p)
+  if p.is_file() and p.name not in {'preparation.json','preparation-2.json','measurement-summary.json','allocations.md'}:paths.add(p)
 paths.add(root/'docs/reports/M8-datatypes/XmlOnly/XmlOnly.csproj')
+for p in (root/'docs/reports/M8-datatypes/IL').iterdir():
+ if p.is_file():paths.add(p)
 for p in (root/'samples/M8-datatypes').iterdir():
  if p.is_file():paths.add(p)
 for relative in ['global.json','Directory.Build.props','Directory.Packages.props','src/Xemele/Xemele.csproj','docs/reports/M8-datatypes-core/contracts.md']:
@@ -29,5 +31,5 @@ manifest={'sourceRevision':subprocess.check_output(['git','rev-parse','HEAD'],cw
  'identityScope':'Actual copied probe/BDN dependencies and configs, all tracked library build inputs, source/tests/fixtures/harness/consumers, host/fxr and complete NETCore.App10.0.11 runtime.',
  'commands':json.loads(subprocess.check_output(['python3',str(root/'docs/reports/M8-datatypes/measure.py'),'--commands'],text=True)),
  'identityCount':len(paths),'identities':{key(p):digest(p) for p in sorted(paths)}}
-p=root/'docs/reports/M8-datatypes/preparation.json';p.write_text(json.dumps(manifest,indent=2)+'\n')
+p=root/'docs/reports/M8-datatypes/preparation-2.json';p.write_text(json.dumps(manifest,indent=2)+'\n')
 print(f'Prepared {len(paths)} identities; manifest {digest(p)}; counters/timing disabled.')

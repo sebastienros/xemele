@@ -23,8 +23,17 @@ for (int route = 0; route < Fixture.Names.Length; route++)
         fixture.Run(route);
         distribution[i] = measure ? GC.GetAllocatedBytesForCurrentThread() - start : 0;
     }
-    if (measure && (route < 8 ? distribution.Any(n => n != 0) : distribution.Any(n => n <= 0))) throw new InvalidOperationException("Allocation boundary failed: " + route);
     rows.Add(new { route, name = Fixture.Names[route], firstRouteBytes, operations = 64, distribution });
+    if (measure && (route < 8 ? distribution.Any(n => n != 0) : distribution.Any(n => n <= 0)))
+    {
+        // Persist measured prefix/failure before asserting; zero targets remain exact.
+        File.WriteAllText(output, JsonSerializer.Serialize(new { status = "failed", failedRoute = route,
+            mode, runtime = RuntimeInformation.FrameworkDescription, architecture = RuntimeInformation.ProcessArchitecture.ToString(), coldSetupBytes,
+            sourceRevision = Environment.GetEnvironmentVariable("XEMELE_DATATYPE_COMPOSITION_REVISION"),
+            assemblySha256 = Hash(typeof(SchemaCompileOptions).Assembly.Location), probeSha256 = Hash(typeof(Fixture).Assembly.Location), inputSha256 = Fixture.InputHash, rows },
+            new JsonSerializerOptions { WriteIndented = true }));
+        throw new InvalidOperationException("Allocation boundary failed: " + route);
+    }
 }
 long positiveStart = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
 var positive = new byte[1024]; GC.KeepAlive(positive);

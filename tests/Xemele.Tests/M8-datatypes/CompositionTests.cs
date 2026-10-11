@@ -269,6 +269,17 @@ public sealed class CompositionTests
         Assert.Throws<OperationCanceledException>(() => new XmlDatatypeRegistry(array, cancelling));
         Assert.Equal(46 + 64, cancelling.Work);
     }
+    [Fact]
+    public void ListHashPreservesTheFrozenOrderedFoldAndExactWork()
+    {
+        var list = Parse("NMTOKENS", "a b");
+        var first = new Ledger(); int a = Library.ValueHashCode(list.Items![0], first);
+        var second = new Ledger(); int b = Library.ValueHashCode(list.Items[1], second);
+        int expected = unchecked((17 * 31 + a) * 31 + b);
+        long work = 1 + first.Work + second.Work;
+        var exact = Op(work); Assert.Equal(expected, Library.ValueHashCode(list, exact)); Assert.Equal(0, exact.RemainingWork);
+        var shortOp = Op(work - 1); Assert.Throws<SchemaCompileException>(() => Library.ValueHashCode(list, shortOp)); Assert.False(shortOp.IsComplete);
+    }
     private sealed class Ledger(CancellationTokenSource? cancellation = null, long cancelAt = long.MaxValue) : ISchemaOperation
     {
         internal long Work; internal int Components;

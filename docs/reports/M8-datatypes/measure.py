@@ -4,8 +4,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 root = Path(__file__).resolve().parents[3]
 net = '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet'
-out = root / 'artifacts/M8-datatypes/measurement'
-manifest_path = root / 'docs/reports/M8-datatypes/preparation.json'
+out = root / 'artifacts/M8-datatypes/measurement-2'
+manifest_path = root / 'docs/reports/M8-datatypes/preparation-2.json'
 commands = [
  [net, '--fx-version', '10.0.11', str(root / 'benchmarks/Xemele.Benchmarks/M8-datatypes/bin/probe/net10.0/Xemele.Benchmarks.dll'), '--measure', str(out / 'allocations.json')],
  [net, '--fx-version', '10.0.11', str(root / 'benchmarks/Xemele.Benchmarks/M8-datatypes/bin/Release/net10.0/Xemele.Benchmarks.dll'), '--benchmark', str(out / 'bdn')]
