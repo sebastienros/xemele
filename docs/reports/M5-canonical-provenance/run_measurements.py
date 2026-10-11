@@ -62,8 +62,11 @@ finally:
         if process is not None:
             process.wait(timeout=bounded(5, 35))
             status['runs'][-1]['exit_code'] = process.returncode
-        rows = subprocess.check_output(['ps', '-axo', 'pid=,ppid=,pgid='], text=True, timeout=bounded(5, 35))
-        status['no_child'] = not any(int(row.split()[2]) in process_groups for row in rows.splitlines())
+        status['no_child'] = True
+        for group in process_groups:
+            scoped = subprocess.run(['/bin/ps', '-g', str(group), '-o', 'pid='], text=True, capture_output=True, timeout=bounded(5, 35), check=False)
+            if scoped.returncode not in (0, 1) or scoped.stdout.strip():
+                status['no_child'] = False
     except BaseException as error:
         status['no_child'] = False
         status['cleanup_error'] = type(error).__name__
