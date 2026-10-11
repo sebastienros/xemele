@@ -49,12 +49,10 @@
   ],
   "integration_queue": [
     {
-      "task_id": "M3-async-writer",
-      "implementation_revision": "80119207072d0eb292f9cb6bf186bc8cf2bdb3fd",
-      "prepared_revision": "83edfe8c6b2701587b1ccaf3d680ad21da43f22a",
-      "tested_integration_revision": "d0aa1b14208f40fa6c51914b3a5521e3621efae8",
-      "checks": "Release0warnings/errors;69tests (19async+50earlier)0failed/skipped;official651API;145validator. Mechanical memoryclearingdiff reviewed; post-unwind weakref controlpasses with livewriter/nooperations.",
-      "stage": "awaiting bounded allocation/syncwriter/6caseBDN sequence then evidence before verification"
+      "task_id": "M3-sax",
+      "checkpoint": "8c88c670d81f037e6f179f5f2e9c76c084580dcf",
+      "worktree_path": "/private/tmp/xemele-m3-sax-verification",
+      "checks": "53SAX/pump0fail/skip, build0warnings/errors, official655API+147validator passed; finalmeasurementpending"
     }
   ],
   "blockers": [
@@ -1537,15 +1535,13 @@
     }
   },
   "measurement_lease": {
-    "id": "m3-async-writer-3a-sync-and-informational-bdn",
-    "status": "released",
-    "revision": "3a0e4070ac696655a624fbd8b32fb76a8fd42dc9",
-    "runtime_revision": "80119207072d0eb292f9cb6bf186bc8cf2bdb3fd",
-    "duration_limit_seconds": 130,
-    "scope": "Prebuilt19syncwriter<=20s thenonlypass sixBDNDryInProcesscases<=110s defaultenv. Ownimplementationhostlease: SAX/readerPARK nochildren, rootterminalnobuild/exe, read-onlyreviewerterminal. No builds/generation/retry/source/optionschange, releaseactualexitbeforeinspection.",
-    "host_contention": "Unrelated user Silex.Jepsen22822 CPU407; do not touch. Latencies retained explicitly contended informational only, cannot establish speedup/regression/repeatability. Actual sameprocess memory diagnostics + mandatorystandalone counters valid; M9 repeatablehardwarequalification remainsrequired.",
-    "convergence_decision": "Performance-coding rules permit noisy sharedhost timings as informational; baseline asynccomposition introduces no new scanoptimization claim. Do not wait indefinitely for unrelateduserwork or relabel timing as comparativepassinggate.",
-    "result": "19syncwriterpassed once; BDNreported12instead6jobs, deliberateprocessgroupkill beforecases; wrapperexit124mislabels timeout butactualscopeabort. No children. Benchmarkonlyredundantjobconfiguration repair, preservepassingchecks."
+    "id": "m3-sax-0f214e-measure",
+    "status": "granted",
+    "revision": "0f214e5f21ac144bd4e29bb2aefd96eb43ad3b1a",
+    "runtime_revision": "0f51da9a2715314c32ffbd898ccce1f3b7cee15c",
+    "duration_limit_seconds": 90,
+    "scope": "Exactprebuilt python3 -B docs/reports/M3-sax/measure.py; ownallocation/8MiB<=30s thenonlypass eightBDNDryInProcess <=remaining90. Writer+readerPARKnochildren, rootfinished53integratedtests/API655andnoexe, reviewerterminal. No builds/edits/retries/optionschange; promptreleaseactualexitnochildrenbeforeinspection.",
+    "host_contention": "UnownedSilex.Jepsen26771 CPU90; ownprocessallocationgates valid, timings contendedinformational no speedup/regression/repeatability claims. Full1GiBqualification remainsrequiredM3-corpus."
   },
   "offline_corpus_setup": {
     "checkout": "/private/tmp/xemele-m3-integration",
