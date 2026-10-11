@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "id": "M6-resource-kinds",
+  "milestone": "M6",
+  "title": "Add catalog and inclusion resource request kinds",
+  "kind": "feature",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "depends_on": [
+    "M6-contracts",
+    "M2-resolver"
+  ],
+  "goals": [
+    "G09"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/integration.md"
+  ],
+  "owns": [
+    "src/Xemele/Resolution/Core/Resources.cs",
+    "tests/Xemele.Tests/M6-resource-kinds/",
+    "docs/api/M6-resource-kinds.txt",
+    "docs/reports/M6-resource-kinds/"
+  ],
+  "api_or_output": "Additive Catalog=2, XIncludeXml=3, XIncludeText=4 enum fields",
+  "acceptance": [
+    {
+      "id": "M6-resource-kinds-A1",
+      "description": "Append frozen resource kinds without changing ExternalSubset=0/ExternalEntity=1 or resolver signatures; supply actual additive compiled API baseline.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M6-resource-kinds-A2",
+      "description": "Focused offline session tests accept new kinds with exact request forwarding, sync/async refusal/disposal and reject undefined kinds before resolver; earlier resolver behavior preserved. No scanning/measurement change.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M6-resource-kinds-A3",
+      "description": "Demonstrate using verified prerequisites; record actual checks at tested revision and preserve earlier API/source contracts.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}
