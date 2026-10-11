@@ -9,15 +9,6 @@
   },
   "active_assignments": [
     {
-      "task_id": "M5-validation-model",
-      "agent_id": "/root/validation_model",
-      "worktree": "/private/tmp/xemele-m5-validation-model",
-      "branch": "codex/m5-validation-model",
-      "base_revision": "110f84094e3df287133bf30e709ae96824428f76",
-      "claim_revision": "395b26f7aa04b3cbe7f52f16d733a3dff24bcd02",
-      "stage": "implementing; no measurement grant"
-    },
-    {
       "task_id": "M5-canonical-provenance",
       "agent_id": "/root/c14n",
       "worktree": "/private/tmp/xemele-m5-canonical-provenance",
@@ -28,7 +19,14 @@
       "stage": "implementing owning repair; canonicalizer suspended"
     }
   ],
-  "integration_queue": [],
+  "integration_queue": [
+    {
+      "task_id": "M5-validation-model",
+      "branch": "codex/m5-validation-model",
+      "evidence_revision": "50ef6f9af14cab749ca26a1a66ed04177aef18c3",
+      "stage": "review approved; integrate after current lease release"
+    }
+  ],
   "blockers": [
     {
       "task_id": "M3-sax",
@@ -1868,28 +1866,19 @@
     "stage": "verified"
   },
   "measurement_lease": {
-    "id": "m5-validation-model-c564f5a",
-    "status": "released",
-    "revision": "c564f5a2a48af0170b0b5b41a6afe814ca8dae2a",
-    "executor_agent_id": "/root/validation_model",
+    "id": "m5-canonical-provenance-390055f",
+    "status": "granted",
+    "revision": "390055fc02b0caf243952f569fb6cff18a3d7814",
+    "executor_agent_id": "/root/c14n",
     "duration_limit_seconds": 400,
-    "preparation_sha256": "a807e52426a509c75ee2f93895d795f16871c8573d1cee938b3531f206e560f1",
-    "scope": "One exact frozen allocation20s+4case ShortRun NoEmit timing300s, initial/finalidentity35s, own-group cleanup finally/nochildren; no builds/restores/writes/tests/retries; explicit10.0.11; immediate durable release before raw inspection.",
+    "preparation_sha256": "feef635f2237f26b707a27a3b2285b3b9b3548a4e4cd93952d2cb516548bd66c",
+    "scope": "One exact frozen allocation30s+3case ShortRun NoEmit timing280s, initial/finalidentity30s, own-group cleanup finally/nochildren; no builds/restores/writes/tests/retries; explicit10.0.11; immediate durable release before raw inspection.",
     "park_acknowledgements": [
-      "Provenance worker fresh PARK no own executable workloads, partial source preserved.",
-      "Source reviewer terminal fresh PARK no writes/builds/tests/workloads.",
-      "Executor prepared idle cleanc564f5a; escalated capture/check152/43/3852passed.",
+      "Validation model DONE/PARK clean50ef6f9 no workloads/descendants; raw prior run inspected and deleted.",
+      "Source reviewer terminal fresh PARK; approved provenance34b626b.",
+      "Executor prepared idle clean390055f; capture/check148/43/3852passed.",
       "Root independent escalated fullclosure check passed; scoped .NET workload inventory empty; root parks until lifecycle release."
-    ],
-    "release": {
-      "initial_identity_exit": 0,
-      "allocation_exit": 0,
-      "benchmark_exit": 0,
-      "final_identity_exit": 0,
-      "wrapper_exit": 0,
-      "no_child": true,
-      "inspection": "Not yet inspected; worker completion lifecycle reported before durable release."
-    }
+    ]
   },
   "offline_corpus_setup": {
     "checkout": "/private/tmp/xemele-m3-integration",
