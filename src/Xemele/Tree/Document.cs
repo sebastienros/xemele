@@ -33,7 +33,11 @@ public sealed partial class XmlDocument
     internal long MutationVersion { get; private set; }
     internal TreeCopyWork LastCopyWork { get; private set; }
     partial void OnMutationCommitted(in XmlTreeMutation mutation);
-    internal void NotifyMutation(in XmlTreeMutation mutation) => OnMutationCommitted(in mutation);
+    internal void NotifyMutation(in XmlTreeMutation mutation)
+    {
+        AdvanceContentRevision();
+        OnMutationCommitted(in mutation);
+    }
     public XmlDocument() : this(new XmlResourceLimits()) { }
     public XmlDocument(XmlResourceLimits limits)
     {
@@ -268,6 +272,7 @@ public sealed partial class XmlDocument
         source.OwnerDocument.RefuseUnresolvedReferences();
         if (source.Kind != XmlNodeKind.Document) return Copy(source, deep);
         var copy = new XmlDocument(limits);
+        if (!SourceInputComplete) copy.MarkSourceIncomplete();
         if (deep) foreach (var child in source.Children)
         {
             // A valid document source already has legal ordered children and at

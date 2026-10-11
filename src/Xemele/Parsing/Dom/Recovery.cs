@@ -54,6 +54,7 @@ namespace Xemele
         }
         private static XmlParseResult<XmlDocument> RecoveryResult(XmlDocument candidate, bool recover, bool complete, RecoveryDiagnostics diagnostics, XmlDiagnostic? fatal)
         {
+            if (!complete) candidate.MarkSourceIncomplete();
             diagnostics.Reject(fatal);
             XmlDocument? value = (complete || recover) && candidate.RootElement != default ? candidate : null;
             return new(value, complete, complete && value is not null && diagnostics.Items.Count == 0, diagnostics.Items);
