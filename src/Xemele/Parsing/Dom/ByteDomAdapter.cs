@@ -40,6 +40,10 @@ internal sealed partial class ByteDomAdapter : IDisposable
             var result = decoder.Decode(submitted, characters.AsSpan(0, capacity), mappings.AsSpan(0, capacity), false, cancellation);
             byteLength = checked(byteLength + result.ConsumedBytes);
             input = input[result.ConsumedBytes..];
+            // Detection can return a valid prefix together with terminal invalid
+            // bytes. A rejected decoder cannot validate that prefix's declaration.
+            if (result.Step == DecodeStep.InvalidInput && !sink.DeclarationValidated)
+            { Diagnostic = result.Diagnostic; return; }
             Forward(result.WrittenCharacters);
             if (Diagnostic is null && result.Step == DecodeStep.InvalidInput) Diagnostic = result.Diagnostic;
         }
@@ -76,6 +80,8 @@ internal sealed partial class ByteDomAdapter : IDisposable
         {
             int capacity = sink.DeclarationValidated ? 4096 : 2;
             var result = decoder.Decode([], characters.AsSpan(0, capacity), mappings.AsSpan(0, capacity), true, cancellation);
+            if (result.Step == DecodeStep.InvalidInput && !sink.DeclarationValidated)
+            { Diagnostic = result.Diagnostic; return; }
             Forward(result.WrittenCharacters);
             if (Diagnostic is null && result.Step == DecodeStep.InvalidInput) Diagnostic = result.Diagnostic;
             if (Diagnostic is not null) return;

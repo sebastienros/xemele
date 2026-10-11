@@ -41,6 +41,10 @@ internal sealed class AsyncDomInput : IAsyncDisposable
             var result = decoder.Decode(input.Span.Slice(offset, length), characters.AsSpan(0, capacity), mappings.AsSpan(0, capacity), false, cancellation);
             offset += result.ConsumedBytes;
             byteLength = checked(byteLength + result.ConsumedBytes);
+            // Keep terminal decoder rejection ahead of declaration validation,
+            // including a valid prefix returned by the same detection call.
+            if (result.Step == DecodeStep.InvalidInput && !sink.DeclarationValidated)
+            { Diagnostic = result.Diagnostic; return; }
             await ForwardAsync(result.WrittenCharacters).ConfigureAwait(false);
             if (Diagnostic is null && result.Step == DecodeStep.InvalidInput) Diagnostic = result.Diagnostic;
         }
@@ -89,6 +93,8 @@ internal sealed class AsyncDomInput : IAsyncDisposable
         {
             int capacity = sink.DeclarationValidated ? characters.Length : 2;
             var result = decoder.Decode([], characters.AsSpan(0, capacity), mappings.AsSpan(0, capacity), true, cancellation);
+            if (result.Step == DecodeStep.InvalidInput && !sink.DeclarationValidated)
+            { Diagnostic = result.Diagnostic; return; }
             await ForwardAsync(result.WrittenCharacters).ConfigureAwait(false);
             if (Diagnostic is null && result.Step == DecodeStep.InvalidInput) Diagnostic = result.Diagnostic;
             if (Diagnostic is not null) return;

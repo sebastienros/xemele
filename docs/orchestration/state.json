@@ -22,11 +22,11 @@
     }
   ],
   "next_actions": [
-    "Claim async integration join from all verified children",
-    "Verify mandatory corpus equivalence/fuzz/full1GiB qualification",
-    "Verify M3-gate, then exactly one M4 project coordinator handoff"
+    "Confirm corpus worker setup and dispatch bounded qualification",
+    "Verify M3-corpus then integrated M3-gate",
+    "Create exactly one M4 coordinator after verified M3-gate"
   ],
-  "last_verified_task": "M3-async",
+  "last_verified_task": "M3-dom-decoder-terminal",
   "last_integrated_revision": "b962203e823fa816da38909a426158a7dac90781",
   "completed_assignments": [
     {
@@ -1591,9 +1591,11 @@
       "remaining_gate": null
     },
     "M3": {
-      "verified": 16,
-      "total": 18,
-      "in_progress": [],
+      "verified": 17,
+      "total": 19,
+      "in_progress": [
+        "M3-corpus"
+      ],
       "remaining_gate": "M3-gate"
     }
   },
@@ -1630,16 +1632,15 @@
     }
   },
   "measurement_lease": {
-    "id": "m3-async-input-9e9da61-measure",
+    "id": "m3-corpus-b5db61f-remaining3-sized-deadlines",
     "status": "released",
-    "revision": "9e9da61896bb185981825e28f306158745388f3a",
-    "runtime_revision": "3679687dcbd2ffbe84bcc13c9c74b0899c53baf7",
-    "duration_limit_seconds": 150,
-    "scope": "Exact prebuilt standalone --allocation <=25s, raw gate warmbuffered/noopzero+positive, actual1024suspended reads/process-wide counts and generated1/8MiB active256KiB retention samples; only if actualexit0 sameDLL --benchmark <=120s singleexplicitInProcessNoEmit4cases/1024invocations/unroll1/launch1/3warm3iterations with before/after guard. Allotherworkersarchived; root/reviewer no workloads. No edits/builds/tests/generation/options/retries; release actualexit/no session/group/children before inspection.",
-    "probe_sha256": "2965D7EA61279F0B7F16F17F1EDBBE24C73E71563B63FBD29979DB627489FEC1",
-    "runtime_sha256": "BDFFEB6A42CE5AF508C55C620E108FA6E160E3A41A880F3F39DD014FE944F0EF",
-    "limitations": "Timing informational sharedhost, no comparative/regression claim. Bufferedprimitive actualzero/positive/process-wide real suspended costs/bounded live scratch mandatory. Full1GiB allsurface qualification remains corpus.",
-    "result": "Actual allocation exit0 elapsed1.278s, benchmarkexit0 elapsed0.684s; both reaped with absentprocessgroups and wrapperexit0/no session/children. No retries/source/options/build changes. Raw inspection and final evidence underway."
+    "revision": "b5db61f2ed6579e82b13faa8a575dcb0b32c4da5",
+    "duration_limit_seconds": 1110,
+    "scope": "Identical frozen remaining3 modes only: syncpull360s,asyncpull600s,push90s total1110s. Deadlines sized once using valid1MiBcontrols0.254/0.350/0.185s; previous75s pull timeout preservedfailed. No worker builds/edits/tests/retries/options changes. No other executable workloads; root may prepare isolated repair source files/read only (no builds/tests/measurement), immutable workerbinaries unchanged. Process-local managedheap qualification unaffected; all latency informational. Directdotnetactualexit/groupabsence before release.",
+    "probe_sha256": "1b0e702c215da392f69f63319943893f49712f99098442ad9f48051dc29d840f",
+    "runtime_sha256": "fd38344e0d3cda0f1c4fc01e47abb863363517b1603879379c97546db2fd607d",
+    "result": "Remaining3 directdotnetactual0/no timeout/groupabsent, wrapper0. All5 actual1GiB rawsemantic/early/liveheap pass; SAXoutertimeexit1 preserved, optionalRSSunavailable; initial75spulltimeout preservedfailed. No relevant workload changes/retries of successfulobservations.",
+    "offline_control": "Root verified command array shape, runner index3/modeindex4/outputindex6 and both SHA256 match; prior failed wrapper launched0children."
   },
   "offline_corpus_setup": {
     "checkout": "/private/tmp/xemele-m3-integration",
@@ -1647,5 +1648,22 @@
     "source": "/private/tmp/xemele-corpus-cache/w3c-xml-20130923/resources",
     "scope": "Temporary exact SHA256-verified environment provisioning, no tracked source/manifests changed; preserve private cache and remove transient checkout fixtures at cleanup.",
     "global_api": "Passed official discovery wrapper:639 compiled members matched after exact hash-verified3386 fixture provisioning."
+  },
+  "m3_corpus_assignment": {
+    "task": "M3-corpus",
+    "status": "waiting verified DOM repair",
+    "hostId": "local",
+    "branch": "codex/m3-corpus",
+    "base_revision": "7d0b248143fb63491043e3c5e6829b2ae6c30b42",
+    "claim_revision": "1e770d0958f830786ffa2fa92ea9214f40f05ebd",
+    "threadId": "01a128da-7c1f-77f3-80c6-5a73028f2504",
+    "worktree": "/Users/sebastienros/.codex/worktrees/2f9d/xemele"
+  },
+  "m3_chat_coordination_authorization": "Human explicitly renewed bounded worker and M4 successor messaging authorization after auto-review rejected recovered transcript; corpus dispatch succeeded.",
+  "m3_dom_decoder_repair": {
+    "branch": "codex/m3-dom-decoder-terminal",
+    "owner": "coordinator",
+    "status": "verified",
+    "integration_revision": "9f118eb9977335ab25dc85c4cb6837af9498b4d6"
   }
 }
