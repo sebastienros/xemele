@@ -33,10 +33,11 @@ No GC allocation counters are called in control mode. Discovery confirms exactly
 10 benchmark cases in one declared ShortRun InProcessNoEmit job, 3 warmups,
 3 iterations, 1 launch. Fixture and expected-value work is outside measurement.
 
-`measurement-plan.json` records exact command arrays and a maximum 930-second
-exclusive sequence (allocation 30, benchmark 900); `run_measurements.py` checks
+`measurement-plan.json` records exact command arrays and a maximum 960-second
+exclusive sequence (allocation 30, benchmark 900, bounded identity/cleanup overhead); `run_measurements.py` checks
 frozen source/generated inputs/binary closure and pinned runtime hashes before
-and after. No build, generation, CLI job flags or unrelated measurements occur
+and after, including failures/timeouts via finally. Identity checks each have a
+ten-second bound; process-group cleanup and no-child status precede raw inspection. No build, generation, CLI job flags or unrelated measurements occur
 in that sequence. Raw counters/logs/results stay in ignored artifacts; only
 summary/analysis will be committed after actual granted runs.
 
