@@ -66,6 +66,7 @@ internal sealed partial class DtdParser : IDisposable
     private DtdEntityRequest? request;
     private Source? pending;
     private XmlDiagnostic? diagnostic;
+    private XmlDiagnostic? declarationValidityDiagnostic;
     private DtdModel? model;
     private readonly record struct Token(string Text, bool Literal, bool Space, XmlLocation At, int Source,
         DtdLiteralInfo? LiteralInfo = null, XmlLocation PhysicalAt = default);
@@ -311,7 +312,7 @@ internal sealed partial class DtdParser : IDisposable
         if (undeclaredDefault is { } missing && !HasParameterReferences)
         { Reject("Entity must be declared before the attribute default.", missing, "DTD.UndeclaredEntity"); return; }
         if (!ValidateKnownDefaults(cancellation)) return;
-        model = new(elements, attributes, general, parameter, notations); terminal = true;
+        model = new(elements, attributes, general, parameter, notations, declarationValidityDiagnostic); terminal = true;
     }
     private bool Accept(XmlDiagnostic? refusal) { if (refusal is null) return true; Refuse(refusal); return false; }
     private void Refuse(XmlDiagnostic refusal) { diagnostic = refusal; terminal = true; }

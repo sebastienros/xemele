@@ -58,6 +58,7 @@ internal sealed partial class DtdParser
         else content = Content(cancellation);
         if (content is null || terminal || read != tokens.Count) return;
         if (!HasElement(name)) elements.Add(new(name, content, IsExternalDeclaration, declarationAt));
+        else declarationValidityDiagnostic ??= DuplicateElementDiagnostic(declarationAt);
     }
     private bool IsExternalDeclaration => declarationExternal;
     private DtdOccurrence Occurrence()
@@ -341,6 +342,15 @@ internal sealed partial class DtdParser
     {
         string? name = Name(space: true, ncname: true); if (name is null || !RequiredSpace()) return;
         if (!ExternalId(true, out string? system, out string? pub)) return;
-        if (read == tokens.Count && !HasNotation(name)) notations.Add(new(name, system, pub, declarationAt));
+        if (read != tokens.Count) return;
+        if (!HasNotation(name)) notations.Add(new(name, system, pub, declarationAt));
+        else declarationValidityDiagnostic ??= DuplicateNotationDiagnostic(declarationAt);
     }
+
+    // Validity-only evidence: nonvalidating parsing keeps its first bindings.
+    // Fixed messages avoid retaining ignored names; only the first error is owned.
+    private static XmlDiagnostic DuplicateElementDiagnostic(XmlLocation at) =>
+        new("DTD.DuplicateElement", XmlDiagnosticSeverity.Error, "An element type must not be declared more than once.", at);
+    private static XmlDiagnostic DuplicateNotationDiagnostic(XmlLocation at) =>
+        new("DTD.DuplicateNotation", XmlDiagnosticSeverity.Error, "A notation name must not be declared more than once.", at);
 }
