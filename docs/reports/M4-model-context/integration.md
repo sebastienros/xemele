@@ -1,0 +1,5 @@
+# Integrated context verification
+
+Combined source checkpoint bb04281f25cc2b2ce6b90ae5dbe2fc7bf429b5c2 contains the approved e8883d5 repair and the complete coordination metadata. Only reports/probe/coordination metadata differ from the earlier checked source candidate; actual runtime/test/config inputs are unchanged. On this combined checkpoint, explicit10.0.11 focused execution passed190 tests, zero errors/failures/skips, and model API893 with two negative controls passed. Planning150 passed. Existing compiled binaries correspond to identical source/config inputs; no unnecessary restore/rebuild or benchmark repetition occurred for metadata alone. The single frozen a9cac03 measurement is recorded separately with actual lifecycle and identity outcomes.
+
+Reviewer approved bounded maps/validation/accounting, entry-span propagation and unchanged exception identity. The evaluator owner must adopt this verified dependency and supply the full expression span. All existing public model signatures remain unchanged. Development failures are preserved in checks.md.
