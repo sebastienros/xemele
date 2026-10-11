@@ -1,6 +1,6 @@
 {
-  "objective": "Complete verified M7-gate and hand off to main orchestrator",
-  "coordinator_chat_id": "01a12add-f725-7663-b0f9-e6687671c769",
+  "objective": "M7verified/terminal; main orchestrator owns sole coordination and successor creation.",
+  "coordinator_chat_id": "01a12849-d2be-7292-8cd9-27c1c14b5a3d",
   "coordination_branch": "main",
   "max_concurrent_workers": 3,
   "last_verified_checkpoint": "M7-gate",
@@ -23,7 +23,7 @@
     }
   ],
   "next_actions": [
-    "Final durable sole-writer transfer to main orchestrator; M7chat relinquisheswrites. No M8creationhere."
+    "Main orchestrator acknowledges containing transfer revision and becomes sole main/state writer; onlymain creates nextmilestone coordinator under human scope."
   ],
   "last_verified_task": "M7-gate",
   "last_integrated_revision": "a1384320f3663732b7f933ad2457b1fce524a84c",
@@ -2206,7 +2206,7 @@
     "status": "superseded_by_explicit_M3_resume",
     "goal_status_to_apply": "paused"
   },
-  "current_milestone": "M7",
+  "current_milestone": "M7 verified; main orchestrator chooses successor",
   "read_only_review": {
     "agent_id": "/root/contract_review",
     "scope": "M6 adapter source/prepared measurement review",
@@ -2304,27 +2304,25 @@
     "cleanup": "Clean worktree removed; branch and all source/evidence integrated. Local preview nupkg preserved at artifacts/M3-gate/packages with verified SHA256 bee764f3cf5cbf3be1be5d94b5bdfdc146d93dd511bc8970a317f8d013014877. Canonical private corpus cache retained."
   },
   "milestone_handoff": {
-    "from_milestone": "M6",
-    "to_milestone": "M7",
-    "from_chat_id": "01a12a53-93ce-7843-a4a5-2f45320c91cf",
-    "thread_id": "01a12add-f725-7663-b0f9-e6687671c769",
+    "from_milestone": "M7",
+    "to_milestone": "main orchestration",
+    "from_chat_id": "01a12add-f725-7663-b0f9-e6687671c769",
+    "thread_id": "01a12849-d2be-7292-8cd9-27c1c14b5a3d",
     "host_id": "local",
-    "status": "Explicit ACTIVATE received and accepted; M7 acknowledges exclusive main/state claims, integration and measurement lease ownership.",
-    "verified_gate_revision": "f7412c6ef5c5552e7194781e4724253244cdb6bb",
-    "gate_verified_metadata_revision": "4b6cc00873047415a6122bf8dde11525df8bd763",
-    "setup_revision": "e76c92893a19d716661bb3d5683e129142849369",
-    "setup_cursor": "723facc5-ea1f-4c39-912d-670d031f6956:1",
-    "setup_ready": true,
-    "activation_sent": true,
-    "transfer_revision": "84532e74441ac25b89dcf846ad6da3616d6048dd",
-    "transfer_revision_note": "Successor records full containingtransfercommithash from explicitACTIVATE; avoidselfreferentialhash.",
-    "activation_revision": null,
-    "created_at_utc": "2026-10-11T12:10:53.514348+00:00",
-    "checkpoint": "11M6tasksverified;6985tests/6797M5identities/1054API/164planning;actual10.0.11SDK10.0.400/osxarm64;releasedlease;allrequiredrawinspected/cleaned;unpublishedpackage+manifestprimaryretained;originalcacheintact;no workers/workloads/pendingissues.",
-    "activation_acknowledgement": "Activation acknowledgement is committed in this record; containing commit reported through final ACK, avoiding a self-referential hash."
+    "status": "Durable transfer effective upon containing commit; M7relinquisheswrites. ACTIVATE with containinghash follows; mainrecordsACK.",
+    "verified_gate_revision": "a1384320f3663732b7f933ad2457b1fce524a84c",
+    "gate_verified_metadata_revision": "d9f0edde2a7fe171c3fc1c65e82aeffb52dece13",
+    "cleanup_revision": "b312273ac1e93adbf0d8ae0767928b4bd1d31a16",
+    "transfer_revision": null,
+    "transfer_revision_note": "Containingcommit hash sentexplicitly inACTIVATE; mainalone recordsACK/fullhash.",
+    "created_at_utc": "2026-10-11T19:23:24.424149+00:00",
+    "checkpoint": "16M7verified/48criteria/8717tests/6985earlieridentities/1253API/3388fixtures; leaseNone; allworkerterminal; onlyprimarycheckout; retainedM7/M6unpublishedcheckpoints/originalcaches intact; noM8created.",
+    "report": "docs/reports/M7-gate/handoff.md",
+    "activation_sent": false,
+    "setup_ready": true
   },
-  "previous_coordinator_chat_id": "01a12a53-93ce-7843-a4a5-2f45320c91cf",
-  "coordinator_write_status": "M7 explicitly activated after durable 84532e74441ac25b89dcf846ad6da3616d6048dd transfer; sole main/state writer. M6 relinquished all writes.",
+  "previous_coordinator_chat_id": "01a12add-f725-7663-b0f9-e6687671c769",
+  "coordinator_write_status": "M7verified/terminal; durable sole main/state writer transferred to main orchestrator01a12849-d2be-7292-8cd9-27c1c14b5a3d. M7relinquishes all repositorywrites; main alonecreates successors.",
   "benchmark_class_attributes": "Human requirement: every benchmark class declares [MemoryDiagnoser, ShortRunJob]; no CLI job flags.",
   "chat_communication_authorization": "Direct human in this chat answered Authorize M7 coordination messages. Main standing authorization also applies; persistent authorization.",
   "m5_measurement_history": [
@@ -2551,6 +2549,26 @@
       "setup_cursor": "204955a0-3a1c-44e4-bab1-e75b6885daba:6",
       "setup_revision": "d983663cbd3d2319cfb33407732148b3e634c82c",
       "activation_revision": "209cee5b468e1fe49289390074366b2dcfcdd439"
+    },
+    {
+      "from_milestone": "M6",
+      "to_milestone": "M7",
+      "from_chat_id": "01a12a53-93ce-7843-a4a5-2f45320c91cf",
+      "thread_id": "01a12add-f725-7663-b0f9-e6687671c769",
+      "host_id": "local",
+      "status": "Explicit ACTIVATE received and accepted; M7 acknowledges exclusive main/state claims, integration and measurement lease ownership.",
+      "verified_gate_revision": "f7412c6ef5c5552e7194781e4724253244cdb6bb",
+      "gate_verified_metadata_revision": "4b6cc00873047415a6122bf8dde11525df8bd763",
+      "setup_revision": "e76c92893a19d716661bb3d5683e129142849369",
+      "setup_cursor": "723facc5-ea1f-4c39-912d-670d031f6956:1",
+      "setup_ready": true,
+      "activation_sent": true,
+      "transfer_revision": "84532e74441ac25b89dcf846ad6da3616d6048dd",
+      "transfer_revision_note": "Successor records full containingtransfercommithash from explicitACTIVATE; avoidselfreferentialhash.",
+      "activation_revision": null,
+      "created_at_utc": "2026-10-11T12:10:53.514348+00:00",
+      "checkpoint": "11M6tasksverified;6985tests/6797M5identities/1054API/164planning;actual10.0.11SDK10.0.400/osxarm64;releasedlease;allrequiredrawinspected/cleaned;unpublishedpackage+manifestprimaryretained;originalcacheintact;no workers/workloads/pendingissues.",
+      "activation_acknowledgement": "Activation acknowledgement is committed in this record; containing commit reported through final ACK, avoiding a self-referential hash."
     }
   ],
   "workers": [
