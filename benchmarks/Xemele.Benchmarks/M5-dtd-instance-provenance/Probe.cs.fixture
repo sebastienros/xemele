@@ -1,0 +1,118 @@
+using System.Runtime.InteropServices;
+using System.Text.Json;
+using BenchmarkDotNet.Configs;
+using BenchmarkDotNet.Jobs;
+using BenchmarkDotNet.Running;
+using BenchmarkDotNet.Toolchains.InProcess.NoEmit;
+using Xemele;
+using Xemele.Parsing.Syntax;
+using Xemele.Validation;
+using Xemele.Benchmarks.M5DtdInstanceProvenance;
+
+Console.WriteLine($"FrameworkDescription={RuntimeInformation.FrameworkDescription}; Architecture={RuntimeInformation.ProcessArchitecture}");
+if (RuntimeInformation.FrameworkDescription != ".NET 10.0.11") throw new Exception("Actual runtime required.");
+if (args.Length < 1) throw new ArgumentException();
+string mode = args[0];
+if (mode is "--discover" or "--benchmark")
+{
+    if (args.Length != 2) throw new ArgumentException();
+    var config = ManualConfig.Create(DefaultConfig.Instance).WithArtifactsPath(args[1]).AddJob(Job.Default.WithToolchain(InProcessNoEmitToolchain.Instance).AsMutator());
+    Type[] types = [typeof(InstanceProvenanceBenchmarks), typeof(StreamingProvenanceBenchmarks)];
+    var suites = types.Select(t => BenchmarkConverter.TypeToBenchmarks(t, config)).ToArray();
+    var cases = suites.SelectMany(s => s.BenchmarksCases).ToArray();
+    if (cases.Length != 16 || cases.Any(c => c.Job.Run.WarmupCount != 3 || c.Job.Run.IterationCount != 3 || c.Job.Run.LaunchCount != 1 || c.Job.Infrastructure.Toolchain != InProcessNoEmitToolchain.Instance)) throw new Exception("16 exact ShortRun NoEmit cases required.");
+    Console.WriteLine("16 ShortRun NoEmit cases; no builds/generation.");
+    if (mode == "--discover") return;
+    foreach (var suite in suites)
+    {
+        var summary = BenchmarkRunner.Run(suite);
+        if (summary.Reports.Length != suite.BenchmarksCases.Length || summary.Reports.Any(r => !r.Success || r.ResultStatistics is null)) throw new Exception("Benchmark failed.");
+    }
+    return;
+}
+if (args.Length != 1 || mode is not ("--control" or "--measure")) throw new ArgumentException();
+bool measure = mode == "--measure";
+long fixtureBefore = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+foreach (string scenario in new[] { "literal", "charref", "entity-literal", "entity-reparsed", "empty", "missing" })
+{
+    var d = XmlDocument.Parse(InstanceProvenanceBenchmarks.Fixture(scenario, 8), new() { DtdProcessing = XmlDtdProcessing.Parse });
+    var result = DtdSchema.FromDocument(d).Validate(d);
+    if (!result.IsComplete || result.IsValid != (scenario is "literal" or "entity-literal")) throw new Exception("Control failed.");
+}
+Console.WriteLine("Controls=literal/entity-literal valid; direct/reparsed charref,EMPTY emptyref and proven missing entity invalid; sidecars retained.");
+using (var streaming = new XmlParserCore(new() { DtdProcessing = XmlDtdProcessing.Parse }))
+{
+    var observer = new ProofSink();
+    Check(streaming.Append("<!DOCTYPE r [<!ELEMENT r (r*)>]><r>", [], false, observer, default), ScanStep.NeedInput);
+    for (int i = 0; i < 10000; i++) Check(streaming.Append("&#32;", [], false, observer, default), ScanStep.NeedInput);
+    Check(streaming.Append("</r>", [], true, observer, default), ScanStep.Completed);
+    if (observer.Diagnostic is null || observer.Scalars != 10000) throw new Exception("Bounded stream control failed.");
+}
+if (!measure) return;
+Print("fixture-initialization", GC.GetAllocatedBytesForCurrentThread() - fixtureBefore, 1);
+long positiveBefore = GC.GetAllocatedBytesForCurrentThread(); var positive = new byte[1024];
+long positiveBytes = GC.GetAllocatedBytesForCurrentThread() - positiveBefore;
+Print("positive-control", positiveBytes, 1); if (positiveBytes <= 0) throw new Exception("Positive allocation control failed."); GC.KeepAlive(positive);
+long consumed = 0;
+foreach (bool optional in new[] { false, true })
+{
+    long setupBefore = GC.GetAllocatedBytesForCurrentThread();
+    using var core = new XmlParserCore(new() { DtdProcessing = XmlDtdProcessing.Parse, Limits = new() { DocumentCharacters = null, TokenCharacters = null, ExpandedCharacters = null, EvaluationWork = null } });
+    CountSink sink = optional ? new ProofSink() : new CountSink();
+    Check(core.Append("<!DOCTYPE r [<!ELEMENT r (r*)>]><r>", [], false, sink, default), ScanStep.NeedInput);
+    Print("stream-setup-" + optional, GC.GetAllocatedBytesForCurrentThread() - setupBefore, 1);
+    long firstBefore = GC.GetAllocatedBytesForCurrentThread();
+    Check(core.Append("&#32;", [], false, sink, default), ScanStep.NeedInput);
+    Print("first-reference-" + optional, GC.GetAllocatedBytesForCurrentThread() - firstBefore, 1);
+    for (int i = 0; i < 1000; i++) Check(core.Append("&#32;", [], false, sink, default), ScanStep.NeedInput);
+    long before = GC.GetAllocatedBytesForCurrentThread();
+    for (int i = 0; i < 100000; i++) Check(core.Append("&#32;", [], false, sink, default), ScanStep.NeedInput);
+    long bytes = GC.GetAllocatedBytesForCurrentThread() - before;
+    Print("warm-borrowed-reference-" + optional, bytes, 100000); if (bytes != 0) throw new Exception("Borrowed dispatch allocated.");
+    Check(core.Append("</r>", [], true, sink, default), ScanStep.Completed);
+    if (optional && ((ProofSink)sink).Diagnostic is null) throw new Exception("First witness not delivered.");
+    consumed += sink.Scalars;
+}
+foreach (var (opening, unit) in new[] { ("<r>", "<a/>"), ("<r xmlns:p='urn:p'>", "<p:a/>"), ("<r xmlns:p='urn:p'>", "<p:名/>") })
+{
+    using var core = new XmlParserCore(new() { Limits = new() { DocumentCharacters = null, EvaluationWork = 1 } });
+    var sink = new ProofSink();
+    Check(core.Append(opening, [], false, sink, default), ScanStep.NeedInput);
+    for (int i = 0; i < 1000; i++) Check(core.Append(unit, [], false, sink, default), ScanStep.NeedInput);
+    long before = GC.GetAllocatedBytesForCurrentThread();
+    for (int i = 0; i < 100000; i++) Check(core.Append(unit, [], false, sink, default), ScanStep.NeedInput);
+    long bytes = GC.GetAllocatedBytesForCurrentThread() - before;
+    Print("warm-borrowed-name-" + unit, bytes, 100000); if (bytes != 0) throw new Exception("Borrowed name allocated.");
+    Check(core.Append("</r>", [], true, sink, default), ScanStep.Completed); consumed += sink.Scalars;
+}
+string[] scenarios = ["no-dtd", "literal", "charref", "entity-literal", "entity-reparsed", "empty", "missing"];
+object? escaped = null;
+foreach (var scenario in scenarios)
+{
+    string source = InstanceProvenanceBenchmarks.Fixture(scenario, 8); var options = new XmlParseOptions { DtdProcessing = XmlDtdProcessing.Parse };
+    for (int i = 0; i < 100; i++) escaped = XmlDocument.Parse(source, options);
+    long before = GC.GetAllocatedBytesForCurrentThread();
+    for (int i = 0; i < 100; i++) escaped = XmlDocument.Parse(source, options);
+    Print("owned-dom-" + scenario, GC.GetAllocatedBytesForCurrentThread() - before, 100);
+}
+foreach (var scenario in new[] { "literal", "charref", "missing" })
+{
+    var d = XmlDocument.Parse(InstanceProvenanceBenchmarks.Fixture(scenario, 8), new() { DtdProcessing = XmlDtdProcessing.Parse });
+    var schema = DtdSchema.FromDocument(d);
+    for (int i = 0; i < 100; i++) escaped = schema.Validate(d);
+    long before = GC.GetAllocatedBytesForCurrentThread();
+    for (int i = 0; i < 100; i++) escaped = schema.Validate(d);
+    Print("owned-validate-" + scenario, GC.GetAllocatedBytesForCurrentThread() - before, 100);
+    for (int i = 0; i < 100; i++) escaped = DtdSchema.FromDocument(d);
+    before = GC.GetAllocatedBytesForCurrentThread();
+    for (int i = 0; i < 100; i++) escaped = DtdSchema.FromDocument(d);
+    Print("owned-from-document-" + scenario, GC.GetAllocatedBytesForCurrentThread() - before, 100);
+}
+GC.Collect(); GC.WaitForPendingFinalizers(); GC.Collect(); long heapBefore = GC.GetTotalMemory(false);
+var retained = new XmlDocument[100]; string retainedSource = InstanceProvenanceBenchmarks.Fixture("charref", 8);
+for (int i = 0; i < retained.Length; i++) retained[i] = XmlDocument.Parse(retainedSource, new() { DtdProcessing = XmlDtdProcessing.Parse });
+GC.Collect(); GC.WaitForPendingFinalizers(); GC.Collect(); long heapAfter = GC.GetTotalMemory(false);
+Console.WriteLine(JsonSerializer.Serialize(new { domain="retained-whole-heap-documents", beforeBytes=heapBefore, afterBytes=heapAfter, inclusiveDeltaBytes=heapAfter-heapBefore, denominatorDocuments=100 }));
+GC.KeepAlive(retained); GC.KeepAlive(escaped); GC.KeepAlive(consumed);
+static void Check(ScanResult result, ScanStep expected) { if (result.Step != expected) throw new Exception(result.Diagnostic?.Code ?? "Unexpected step."); }
+static void Print(string domain, long numeratorBytes, int denominatorOperations) => Console.WriteLine(JsonSerializer.Serialize(new { domain, numeratorBytes, denominatorOperations }));
