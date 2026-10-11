@@ -7,6 +7,7 @@ internal static class DtdCompiler
     internal static CompiledDtdModel Compile(DtdModel source, ValidationOperation operation)
     {
         ArgumentNullException.ThrowIfNull(source); ArgumentNullException.ThrowIfNull(operation);
+        operation.CancellationToken.ThrowIfCancellationRequested();
         var budget = new CompilationBudget(operation);
         var elements = new List<CompiledDtdElement>();
         var attributes = new List<CompiledDtdAttribute>();

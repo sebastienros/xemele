@@ -184,6 +184,16 @@ public sealed class CompilationTests
         Assert.Equal(cancellation.Token, Assert.Throws<OperationCanceledException>(() => DtdCompiler.Compile(source, run)).CancellationToken);
     }
     [Fact]
+    public void EmptyModelStillChecksCancellationAtCompilerEntry()
+    {
+        var source = new DeclarationModel([], [], [], [], []);
+        var empty = DtdCompiler.Compile(source, new()); Assert.Empty(empty.Elements); Assert.Empty(empty.Attributes);
+        using var cancellation = new CancellationTokenSource();
+        var operation = new ValidationOperation(new() { CancellationToken = cancellation.Token });
+        cancellation.Cancel();
+        Assert.Equal(cancellation.Token, Assert.Throws<OperationCanceledException>(() => DtdCompiler.Compile(source, operation)).CancellationToken);
+    }
+    [Fact]
     public void TransitionFailureStopsAtWorkBoundaryAndPreservesCursorOnQuota()
     {
         var content = Compile("<!ELEMENT r (a*)>").Elements[0].Content;
