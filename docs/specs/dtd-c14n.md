@@ -1,46 +1,28 @@
 # DTD validation and canonicalization — M5
 
-Decision owner: `M5-contracts`. These are independent implementation lanes after the contract. DTD validation consumes the M2 parsed model; canonicalization consumes the tree and M4 node-set model.
+Decision owner: M5-contracts. The [frozen decisions](../decisions/M5/validation-canonicalization.md)
+resolve association, outcome construction, finite budgets, cancellation, diagnostics,
+node-set membership, all three algorithms and error/lifetime semantics. Exact compiled
+API declarations and baselines live in `tests/Contracts/Fixtures/M5/`; these are isolated,
+nonpackaged contract models, not shipped stubs.
 
-```csharp
-namespace Xemele.Validation;
-public sealed class DtdSchema
-{
-    public static DtdSchema Compile(string dtd, XmlResourceResolver? resolver = null);
-    public ValidationResult Validate(Document document, ValidationOptions? options = null);
-}
-public sealed record ValidationResult
-{
-    public bool IsValid { get; }
-    public IReadOnlyList<XmlDiagnostic> Diagnostics { get; }
-}
-public sealed record ValidationOptions
-{
-    public CancellationToken CancellationToken { get; init; }
-    public long MaxOperations { get; init; }
-}
+Validation uses `Xemele.Validation.DtdSchema.Compile(string, resolver?, limits?, cancellationToken)`
+or `FromDocument(XmlDocument)`, and `Validate(XmlDocument, ValidationOptions?)`.
+Shared `ValidationResult` owns a diagnostic snapshot and distinguishes complete invalid
+from incomplete quota/provenance outcomes. Shared `ValidationOptions` has Limits,
+nullable positive MaxOperations (10M default), and CancellationToken. M5-validation-model
+owns their implementation; they contain no M8 schemas. DTD lanes consume the verified M2
+parsed model and current DOM, without silent augmentation or expansion.
 
-namespace Xemele.Serialization;
-public enum XmlCanonicalizationMode { Inclusive10, Inclusive11, Exclusive10 }
-public sealed record XmlCanonicalizationOptions
-{
-    public XmlCanonicalizationMode Mode { get; init; }
-    public bool IncludeComments { get; init; }
-    public IReadOnlyList<string> InclusivePrefixes { get; init; }
-}
-public static class XmlCanonicalizer
-{
-    public static void Canonicalize(Document document, Stream output,
-        XmlCanonicalizationOptions? options = null);
-    public static void Canonicalize(IReadOnlyList<Xemele.XPath.XPathItem> nodes, Stream output,
-        XmlCanonicalizationOptions? options = null);
-}
-```
+Canonicalization uses `Xemele.Serialization.XmlCanonicalizer.Canonicalize(XmlDocument, Stream, options?)`
+and the independent `IReadOnlyList<Xemele.XPath.XPathItem>` overload. Modes are Inclusive10,
+Inclusive11, Exclusive10. Options specify comments, exclusive inclusive-prefix list,
+finite shared Limits/output-byte cap and cancellation. Tree input and M4 identity/model
+are the only required feature dependencies. Selection is exact membership, not subtree
+closure. Streams remain caller-owned; byte output follows the frozen W3C algorithms.
 
-These sketches are in separate files/namespaces. Contract review fixes schema/document DTD association, multiple-source diagnostics, and result construction. `ValidationResult`/`ValidationOptions` are implemented by `M5-validation-model` and reused by M8; they contain no XSD/RELAX NG references.
-
-DTD validation checks declared elements/attributes, content models, required/fixed/default semantics, enumerations, ID uniqueness and IDREF resolution, entities/notations, and standalone constraints where applicable. Parsing/expansion remains in M2. Validation must not silently rewrite the DOM; default-attribute augmentation is an explicit separate operation if exposed.
-
-Canonicalization emits exact UTF-8 bytes without BOM/declaration according to each algorithm. Tests cover document and selected-node contexts, inherited namespace/XML attributes, comments outside root, inclusive-prefix lists, normalization/escaping, sorting, and C14N 1.1 differences. Invalid or mixed-document node sets are rejected. No normal pretty-printer reuse that changes canonical rules.
-
-Implement content-model compilation and DTD instance validation in ordered tasks. C14N has its own engine and corpus tasks, parallel with DTD after M5 contracts. Final gate runs both suites plus earlier milestones. Neither lane needs catalogs, XInclude, HTML, or M8 schemas.
+An explicit ordered repair is required for retained standalone/provenance metadata,
+as documented in the decisions and handoff. Contract fixtures do not claim that repair
+exists. No M6 catalogs/XInclude, M7 HTML or M8 schema types are needed. Implementing
+lanes prove their acceptance independently, then the M5 gate verifies combined behavior
+and preservation of all earlier milestones.

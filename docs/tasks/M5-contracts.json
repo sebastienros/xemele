@@ -4,7 +4,7 @@
   "milestone": "M5",
   "title": "Freeze validation and canonicalization contracts",
   "kind": "contract",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M5 coordinator isolated contracts worker",
   "branch": "codex/m5-contracts",
   "base_revision": "ed0104e2b80eddb8aa77f5768284aae4d8efd075",
@@ -31,29 +31,92 @@
     {
       "id": "M5-contracts-A1",
       "description": "Specify shared validation results/options, DTD association and canonical node-set/algorithm semantics.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "contract-decisions"
+      ]
     },
     {
       "id": "M5-contracts-A2",
       "description": "Compile independent DTD/C14N consumers; no M6 or M8 type references.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "contract-consumers"
+      ]
     },
     {
       "id": "M5-contracts-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "contract-consumers",
+        "planning",
+        "checker-integration-option"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "docs/specs/dtd-c14n.md",
+    "docs/decisions/M5/validation-canonicalization.md",
+    "tests/Contracts/Fixtures/M5/Validation.cs.fixture",
+    "tests/Contracts/Fixtures/M5/Dtd.cs.fixture",
+    "tests/Contracts/Fixtures/M5/Canonicalization.cs.fixture",
+    "tests/Contracts/Fixtures/M5/DtdConsumer.golden.txt",
+    "tests/Contracts/Fixtures/M5/C14NConsumer.golden.txt",
+    "tests/Contracts/Fixtures/M5/check.py"
+  ],
+  "evidence": [
+    {
+      "id": "contract-consumers",
+      "kind": "check",
+      "revision": "9cf03617d159f6fd811b0bf185a6581f398d22d8",
+      "command": "python3 tests/Contracts/Fixtures/M5/check.py --dotnet '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet'",
+      "result": "passed",
+      "summary": "Independent DTD/C14N fixture consumers on actual .NET 10.0.11; 28+23 compiled API members match; four missing/signature negative controls reject; owned changes only. Fixture methods do not execute future implementation.",
+      "artifact": "docs/reports/M5-contracts/README.md"
+    },
+    {
+      "id": "contract-decisions",
+      "kind": "review",
+      "revision": "9cf03617d159f6fd811b0bf185a6581f398d22d8",
+      "command": "Worker review of frozen decisions, fixtures, verified M2 DtdModel/XmlDocument association and M4 XPathItem shapes",
+      "result": "passed",
+      "summary": "Shared immutable outcomes/options, DTD association, full standalone semantics and explicit ordered metadata repair, exact node-set/algorithm semantics; no M6/M8 dependencies or public runtime stubs.",
+      "artifact": "docs/decisions/M5/validation-canonicalization.md"
+    },
+    {
+      "id": "planning",
+      "kind": "check",
+      "revision": "9cf03617d159f6fd811b0bf185a6581f398d22d8",
+      "command": "python3 tools/planning/tasks.py validate && git diff --check",
+      "result": "passed",
+      "summary": "151 isolated task records validate; no whitespace errors.",
+      "artifact": "docs/reports/M5-contracts/README.md"
+    },
+    {
+      "id": "checker-integration-option",
+      "kind": "check",
+      "revision": "f93d86c3755db9c82f23087523d9ea16a10427e1",
+      "command": "python3 tests/Contracts/Fixtures/M5/check.py --help && python3 tools/planning/tasks.py validate && git diff --check",
+      "result": "passed",
+      "summary": "Ownership-base argument is exposed; 151 records validate; argument-only follow-up does not alter compiled fixtures/runtime.",
+      "artifact": "docs/reports/M5-contracts/README.md"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "",
-    "checks": [],
-    "remaining": [],
-    "requests": []
+    "summary": "Frozen M5 contracts; two independent nonpackaged consumers and exact 51-member API baselines. Awaiting coordinator review/integration.",
+    "checks": [
+      "python3 tests/Contracts/Fixtures/M5/check.py --dotnet '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet'",
+      "python3 tools/planning/tasks.py validate: passed (151 isolated records)",
+      "git diff --check: passed",
+      "check.py --help: passed at checker follow-up"
+    ],
+    "remaining": [
+      "Coordinator source review, integrated consumer checks and verified task metadata; downstream full DTD/C14N correctness and allocation evidence remain their implementing tasks/gate."
+    ],
+    "requests": [
+      "M5-validation-metadata (created on coordinator main): add internal nullable ValidationStandalone/ValidationDeclarationLocation and SetValidationDeclaration in src/Xemele/Tree/ValidationMetadata/Document.ValidationMetadata.cs; call it in src/Xemele/Parsing/Dom/DomSink.cs Declaration before decoder-null return. M5-dtd-validate must depend on this ordered repair."
+    ]
   }
 }

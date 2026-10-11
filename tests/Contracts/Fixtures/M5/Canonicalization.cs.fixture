@@ -1,0 +1,21 @@
+using Xemele.XPath;
+namespace Xemele.Serialization;
+public enum XmlCanonicalizationMode { Inclusive10 = 0, Inclusive11 = 1, Exclusive10 = 2 }
+public sealed record XmlCanonicalizationOptions
+{
+    public XmlCanonicalizationMode Mode { get; init; } = XmlCanonicalizationMode.Inclusive10;
+    public bool IncludeComments { get; init; }
+    public IReadOnlyList<string> InclusivePrefixes { get; init; } = Array.Empty<string>();
+    public XmlResourceLimits Limits { get; init; } = new();
+    public long? MaxOutputBytes { get; init; } = 16_777_216;
+    public CancellationToken CancellationToken { get; init; }
+}
+public static class XmlCanonicalizer
+{
+    public static void Canonicalize(XmlDocument document, Stream output,
+        XmlCanonicalizationOptions? options = null) =>
+        throw new InvalidOperationException("Declaration contract only.");
+    public static void Canonicalize(IReadOnlyList<XPathItem> nodes, Stream output,
+        XmlCanonicalizationOptions? options = null) =>
+        throw new InvalidOperationException("Declaration contract only.");
+}
