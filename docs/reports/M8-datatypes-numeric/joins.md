@@ -42,8 +42,14 @@ Parse polls entry, charges metadata dispatch, each ASCII lexical inspection,
 range/sign work, each range-character comparison, and each retained digit copy.
 Decimal reserves one value plus one component per nine-digit storage block before
 array allocation. Floating literal probes charge each length/character test;
-ordinary floating conversion reserves a separate unit per input character before
-invariant span parsing. The CLR IEEE converter owns bounded transient scratch,
+ordinary floating conversion separately charges each digit update, canonical
+scratch write, exponent conversion and runtime input unit before conversion.
+Only a bounded scientific prefix reaches invariant CLR span parsing: 1100 significant
+digits plus a sticky digit, with an exponent saturated above every possible lexical
+displacement. All binary32/64 midpoints terminate within that precision, so the
+prefix preserves exact rounding, including subnormal ties. Long lexical scanning
+continues with per-character cancellation polls; the opaque CLR scan is bounded.
+The CLR IEEE converter owns bounded transient scratch,
 not retained arbitrary decimal precision; success reserves one value and polls
 completion before publication. Structured refusal returns null value/Stopped;
 argument, cancellation and caller exceptions propagate.

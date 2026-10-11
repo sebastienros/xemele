@@ -110,25 +110,89 @@ internal sealed class NumericDatatypeProvider : IDatatypeFamilyProvider
         else if (nan) number = double.NaN;
         else
         {
+            // Every binary32/binary64 rounding midpoint is a terminating
+            // decimal with fewer than 1100 significant digits (at worst a
+            // 54-bit coefficient times 5^1075). A prefix of 1100 digits plus
+            // one sticky digit therefore preserves its rounding interval.
+            // This bounds the uninterruptible CLR conversion independently
+            // of lexical length. No arbitrary precision is discarded for the
+            // Decimal primitive; this scratch is only for IEEE values.
+            const int precision = 1100;
+            Span<char> digits = stackalloc char[precision + 1];
+            Span<char> converted = stackalloc char[precision + 32];
             bool mantissaDigit = false, exponentDigit = false, point = false, exponent = false;
+            bool negative = false, exponentNegative = false, sticky = false;
+            int mantissaCount = 0, integerCount = 0, firstSignificant = -1, kept = 0;
+            long exponentMagnitude = 0;
             for (int i = 0; i < input.Length; i++)
             {
                 if (!op.Charge(1, default)) return Stop(out error);
                 char c = input[i];
-                if (c is '+' or '-' && (i == 0 || input[i - 1] is 'e' or 'E')) continue;
-                if (c is >= '0' and <= '9') { if (exponent) exponentDigit = true; else mantissaDigit = true; continue; }
+                if (c is '+' or '-' && (i == 0 || input[i - 1] is 'e' or 'E'))
+                { if (i == 0) negative = c == '-'; else exponentNegative = c == '-'; continue; }
+                if (c is >= '0' and <= '9')
+                {
+                    // Conversion work is separate from lexical validation.
+                    if (!op.Charge(1, default)) return Stop(out error);
+                    if (exponent)
+                    {
+                        exponentDigit = true;
+                        // Larger exponents dominate every possible Int32-sized
+                        // lexical displacement. Saturate only that proven range.
+                        exponentMagnitude = Math.Min(10_000_000_000L, exponentMagnitude * 10 + c - '0');
+                    }
+                    else
+                    {
+                        mantissaDigit = true;
+                        if (!point) integerCount++;
+                        if (firstSignificant < 0 && c != '0') firstSignificant = mantissaCount;
+                        if (firstSignificant >= 0)
+                        {
+                            if (kept < precision) digits[kept++] = c;
+                            else if (c != '0') sticky = true;
+                        }
+                        mantissaCount++;
+                    }
+                    continue;
+                }
                 if (c == '.' && !point && !exponent) { point = true; continue; }
                 if (c is 'e' or 'E' && !exponent && mantissaDigit) { exponent = true; continue; }
                 return false;
             }
             if (!mantissaDigit || exponent && !exponentDigit) return false;
-            // Separate conversion scan reservation, before the invariant runtime
-            // span parser. Its bounded IEEE conversion scratch is not retained.
-            if (!op.Charge(input.Length, default)) return Stop(out error);
-            const NumberStyles styles = NumberStyles.AllowLeadingSign | NumberStyles.AllowDecimalPoint | NumberStyles.AllowExponent;
-            if (type.Primitive == DatatypePrimitive.Float)
-            { if (!float.TryParse(input, styles, CultureInfo.InvariantCulture, out float single)) return false; number = single; }
-            else if (!double.TryParse(input, styles, CultureInfo.InvariantCulture, out number)) return false;
+            if (firstSignificant < 0) number = negative ? -0.0 : 0.0;
+            else
+            {
+                if (sticky) { if (!op.Charge(1, default)) return Stop(out error); digits[kept++] = '1'; }
+                long scientificExponent = (long)integerCount - firstSignificant - 1 + (exponentNegative ? -exponentMagnitude : exponentMagnitude);
+                int written = 0;
+                if (negative) { if (!op.Charge(1, default)) return Stop(out error); converted[written++] = '-'; }
+                for (int i = 0; i < kept; i++)
+                {
+                    if (!op.Charge(1, default)) return Stop(out error);
+                    converted[written++] = digits[i];
+                    if (i == 0) { if (!op.Charge(1, default)) return Stop(out error); converted[written++] = '.'; }
+                }
+                if (!op.Charge(1, default)) return Stop(out error);
+                converted[written++] = 'e';
+                // Int64 formatting is a bounded primitive (<=12 digits here).
+                int exponentUnits = scientificExponent < 0 ? 1 : 0;
+                for (long remaining = Math.Abs(scientificExponent); ; remaining /= 10)
+                {
+                    if (!op.Charge(1, default)) return Stop(out error);
+                    exponentUnits++; if (remaining < 10) break;
+                }
+                if (!op.Charge(exponentUnits, default)) return Stop(out error);
+                if (!scientificExponent.TryFormat(converted[written..], out int exponentWritten, provider: CultureInfo.InvariantCulture)) throw new InvalidOperationException("Bounded numeric scratch exhausted.");
+                written += exponentWritten;
+                // Separate bounded runtime scan/conversion reservation. The
+                // original span is never handed to an opaque unbounded parser.
+                if (!op.Charge(written, default)) return Stop(out error);
+                const NumberStyles styles = NumberStyles.AllowLeadingSign | NumberStyles.AllowDecimalPoint | NumberStyles.AllowExponent;
+                if (type.Primitive == DatatypePrimitive.Float)
+                { if (!float.TryParse(converted[..written], styles, CultureInfo.InvariantCulture, out float single)) return false; number = single; }
+                else if (!double.TryParse(converted[..written], styles, CultureInfo.InvariantCulture, out number)) return false;
+            }
         }
         if (!op.ChargeComponents(1, default) || !op.Charge(0, default)) return Stop(out error);
         value = new FloatingValue(DatatypeTypes.Name(type.LocalName), type.Primitive!.Value, this, number);

@@ -150,6 +150,41 @@ public sealed class NumericTests
         string above = "0." + aboveCoefficient.PadLeft(binaryScale, '0');
         Assert.Equal(XmlValueOrder.Greater, DatatypeValues.Compare(Parse(above, type), Parse("0", type), op));
     }
+    [Theory]
+    [InlineData("float", 24, 150, 103, 25)][InlineData("double", 53, 1075, 970, 54)]
+    public void BoundedConversionPreservesCarryOverflowAndDistantStickyTails(string type, int precision, int subnormalScale, int overflowScale, int overflowBits)
+    {
+        static string DecimalRational(BigInteger coefficient, int scale)
+        {
+            string digits = coefficient.ToString(CultureInfo.InvariantCulture).PadLeft(scale + 1, '0');
+            return digits.Insert(digits.Length - scale, ".");
+        }
+        double Number(string text) => ((NumericDatatypeProvider.FloatingValue)Parse(text, type)).Number;
+        double Oracle(string text) => type == "float" ? float.Parse(text, NumberStyles.Float, CultureInfo.InvariantCulture) : double.Parse(text, NumberStyles.Float, CultureInfo.InvariantCulture);
+        string carry = DecimalRational(((BigInteger.One << (precision + 1)) - 1) * BigInteger.Pow(5, precision), precision);
+        Assert.Equal(2, Number(carry));
+        string halfSubnormal = DecimalRational(BigInteger.Pow(5, subnormalScale), subnormalScale);
+        foreach (string midpoint in new[] { carry, halfSubnormal })
+        {
+            string above = midpoint + new string('0', 4096) + "1";
+            string exactWithZeros = midpoint + new string('0', 4096);
+            BigInteger coefficient = BigInteger.Parse(midpoint.Replace(".", ""), CultureInfo.InvariantCulture);
+            int scale = midpoint.Length - midpoint.IndexOf('.') - 1;
+            string below = DecimalRational(coefficient * BigInteger.Pow(10, 4097) - 1, scale + 4097);
+            foreach (string lexical in new[] { midpoint, above, exactWithZeros, below, "-" + above, "-" + below })
+                Assert.Equal(BitConverter.DoubleToInt64Bits(Oracle(lexical)), BitConverter.DoubleToInt64Bits(Number(lexical)));
+        }
+        BigInteger overflow = ((BigInteger.One << overflowBits) - 1) << overflowScale;
+        Assert.True(double.IsPositiveInfinity(Number(overflow.ToString(CultureInfo.InvariantCulture))));
+        Assert.False(double.IsInfinity(Number((overflow - 1).ToString(CultureInfo.InvariantCulture))));
+        var random = new Random(91);
+        for (int i = 0; i < 80; i++)
+        {
+            char[] digits = new char[1800]; for (int j = 0; j < digits.Length; j++) digits[j] = (char)('0' + random.Next(10));
+            string lexical = (i % 2 == 0 ? "-" : "+") + new string(digits).Insert(random.Next(0, digits.Length), ".") + "e" + random.Next(-2000, 500).ToString(CultureInfo.InvariantCulture);
+            Assert.Equal(BitConverter.DoubleToInt64Bits(Oracle(lexical)), BitConverter.DoubleToInt64Bits(Number(lexical)));
+        }
+    }
     [Fact]
     public void CultureMetadataProviderAndArgumentBoundaries()
     {

@@ -34,7 +34,7 @@ public class NumericBenchmarks
         for (int i = 0; i < input.Length; i++)
         {
             DatatypeValues.Charge(operation);
-            int comparison = input[i].CompareTo(larger[i]); if (comparison != 0) { DatatypeValues.Charge(operation, 0); return comparison; }
+            int comparison = input[i].CompareTo(larger[i]); if (comparison != 0) { DatatypeValues.Charge(operation, 0); return Math.Sign(comparison); }
         }
         DatatypeValues.Charge(operation, 0); return 0;
     }

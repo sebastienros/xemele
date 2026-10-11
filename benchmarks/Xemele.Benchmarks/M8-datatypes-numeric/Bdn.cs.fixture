@@ -11,6 +11,8 @@ if (args is ["--control"])
     {
         var benchmark = new NumericBenchmarks { Case = name }; benchmark.Setup();
         if (benchmark.BaselineCompare() != benchmark.ProviderCompare()) throw new InvalidOperationException("Baseline result changed.");
+        if (benchmark.InvalidSuffix()) throw new InvalidOperationException("Invalid suffix accepted.");
+        _ = benchmark.ProviderHash(); GC.KeepAlive(benchmark.OwnedParse());
     }
     Console.WriteLine("PASS: two baseline/provider fixtures consumed, no timing/counters/BDN.");
     return;
