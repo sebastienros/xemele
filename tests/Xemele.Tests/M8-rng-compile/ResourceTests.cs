@@ -94,6 +94,9 @@ public sealed class ResourceTests
         var caller = new XmlParseException([new("CALLER", XmlDiagnosticSeverity.Error, "caller", default)]);
         var throwing = new SchemaCompileOptions { Resolver = new Resolver((_, _) => throw caller) };
         Assert.Same(caller, Assert.Throws<XmlParseException>(() => CompilerTests.Compile(External("urn:r"), throwing)));
+        var callerArgument = new ArgumentException("Caller argument provenance");
+        throwing = new() { Resolver = new Resolver((_, _) => throw callerArgument) };
+        Assert.Same(callerArgument, Assert.Throws<ArgumentException>(() => CompilerTests.Compile(External("urn:r"), throwing)));
         using var cancellation = new CancellationTokenSource(); var returned = new CountStream("<empty xmlns='" + Ns + "'/>");
         var canceled = new SchemaCompileOptions { CancellationToken = cancellation.Token, Resolver = new Resolver((_, _) => { cancellation.Cancel(); return new(returned, new("urn:r")); }) };
         Assert.Throws<OperationCanceledException>(() => CompilerTests.Compile(External("urn:r"), canceled)); Assert.Equal(1, returned.Disposals);

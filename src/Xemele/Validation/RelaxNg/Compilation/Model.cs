@@ -26,6 +26,10 @@ internal interface IRelaxNgCompiler
     RngCompiledSchema Compile(XmlDocument schema, SchemaCompileOptions options, ISchemaOperation operation);
 }
 
+// Dedicated provenance distinguishes our finite graph guard from arbitrary
+// argument exceptions raised by a caller/resolver or by unrelated constructors.
+internal sealed class RngRepresentationLimitException : ArgumentException;
+
 internal static class RngGraph
 {
     internal static bool ValidatePattern(int id, RngPatternKind kind, IReadOnlyList<int> children, RngNameClass? name,
@@ -51,7 +55,7 @@ internal static class RngGraph
     }
     private static void ValidateName(RngNameClass name, int depth = 0)
     {
-        if (depth == 1024) throw new ArgumentException("Name class representation depth exceeded.");
+        if (depth == 1024) throw new RngRepresentationLimitException();
         switch (name)
         {
             case RngName n: ArgumentNullException.ThrowIfNull(n.Name.NamespaceUri); ArgumentNullException.ThrowIfNull(n.Name.LocalName); break;

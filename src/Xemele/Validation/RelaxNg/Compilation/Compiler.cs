@@ -622,7 +622,7 @@ internal sealed class RelaxNgCompiler : IRelaxNgCompiler
             {
                 var p = patterns[id]; var edges = new List<int>(p.Children.Count);
                 foreach (int child in p.Children) edges.Add(Edge(child));
-                output.Add(new(dense[id], p.Kind, edges, p.Name, p.Datatype, p.Parameters, p.Value, p.Context, p.At));
+                output.Add(Snapshot(p, dense[id], edges));
             }
             foreach (var (id, reference) in elementRefs)
             {
@@ -636,9 +636,18 @@ internal sealed class RelaxNgCompiler : IRelaxNgCompiler
             {
                 var p = patterns[id]; Work(1, p.At);
                 if (p.Kind is RngPatternKind.Data or RngPatternKind.Value && !dense.ContainsKey(id))
-                    output.Add(new(output.Count, p.Kind, [], null, p.Datatype, p.Parameters, p.Value, p.Context, p.At));
+                    output.Add(Snapshot(p, output.Count, []));
             }
             return new(Edge(start), output, new DefinitionsOnly());
+        }
+        private RngPattern Snapshot(Pattern p, int id, IReadOnlyList<int> edges)
+        {
+            try { return new(id, p.Kind, edges, p.Name, p.Datatype, p.Parameters, p.Value, p.Context, p.At); }
+            catch (RngRepresentationLimitException)
+            {
+                op.Refuse("SCHEMA.Limit", "Name-class representation depth exceeded.", p.At);
+                throw SchemaSnapshots.Failure(op);
+            }
         }
         private sealed class DefinitionsOnly : IXmlDatatypeRegistry
         {

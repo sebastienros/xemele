@@ -219,4 +219,21 @@ public sealed class CompilerTests
         var error = Assert.Throws<SchemaCompileException>(() => Compile(xml.ToString(), options));
         Assert.Equal("SCHEMA.Limit", error.Diagnostics[^1].Code);
     }
+    [Fact]
+    public void MixedDepthAndWidthRepresentationLimitHasSchemaProvenance()
+    {
+        var xml = new StringBuilder("<element xmlns='" + Ns + "'>");
+        for (int i = 0; i < 220; i++) xml.Append("<choice>");
+        xml.Append("<name>leaf</name>");
+        for (int i = 0; i < 220; i++)
+        {
+            for (int sibling = 0; sibling < 16; sibling++) xml.Append("<name>s").Append(i).Append('_').Append(sibling).Append("</name>");
+            xml.Append("</choice>");
+        }
+        xml.Append("<empty/></element>");
+        var error = Assert.Throws<SchemaCompileException>(() => Compile(xml.ToString(), new() { BaseUri = new("urn:mixed:source") }));
+        var diagnostic = Assert.Single(error.Diagnostics);
+        Assert.Equal("SCHEMA.Limit", diagnostic.Code); Assert.Equal(XmlDiagnosticSeverity.Fatal, diagnostic.Severity);
+        Assert.Equal(new XmlLocation(new("urn:mixed:source"), 1, 1, null), diagnostic.Location);
+    }
 }
