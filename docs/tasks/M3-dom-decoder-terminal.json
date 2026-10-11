@@ -4,7 +4,7 @@
   "milestone": "M3",
   "title": "Preserve structured DOM decoder rejection",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M3 coordinator 01a1284a-8826-7fc2-af44-74552db608f2",
   "branch": "codex/m3-dom-decoder-terminal",
   "base_revision": "4ae9eddfe88e014b91057625c994bfd38c3452e6",
@@ -33,29 +33,99 @@
     {
       "id": "M3-dom-decoder-terminal-A1",
       "description": "Preserve decoder terminal diagnostics in synchronous and asynchronous DOM transport when malformed UTF input returns decoded prefix and a rejection together, including final input.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "bounded-source-review",
+        "focused-regressions",
+        "owned-allocations",
+        "compiled-api"
+      ]
     },
     {
       "id": "M3-dom-decoder-terminal-A2",
       "description": "Verify five frozen fuzz reproducers and chunked strict/diagnostic/recovery DOM paths; preserve callback/I/O exception identity, valid encoding/declaration behavior, bounded scratch and documented owned allocation boundaries.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "bounded-source-review",
+        "focused-regressions",
+        "owned-allocations",
+        "compiled-api"
+      ]
     },
     {
       "id": "M3-dom-decoder-terminal-A3",
       "description": "Record actual source and API/check evidence against verified dependencies and integrate the bounded repair before the M3 gate.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "bounded-source-review",
+        "focused-regressions",
+        "owned-allocations",
+        "compiled-api"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Parsing/Dom/ByteDomAdapter.cs:terminal rejection guards before undecided prolog forwarding in Append/Complete",
+    "src/Xemele/Streaming/Transport/AsyncDomInput.cs:matching async guards",
+    "tests/Xemele.Tests/M3-dom-decoder-terminal/DecoderTerminalTests.cs:five frozen mutations and strict/diagnostic/sync/async short-read controls",
+    "docs/reports/M3-dom-decoder-terminal/Probe/:prepared process-wide owned-allocation controls"
+  ],
+  "evidence": [
+    {
+      "id": "bounded-source-review",
+      "kind": "review",
+      "revision": "4172287c100f14d80c20622aea6f66fc61c9d47c",
+      "command": "Independent read-only review of terminal decoder repair and frozen regression tests",
+      "result": "passed",
+      "summary": "No blocker: existing terminal diagnostic precedes forbidden validation, valid forwarding unchanged, invalid encoding unrecoverable, undecided prefix cannot discard completedroot. Reviewer ran no workloads.",
+      "artifact": "docs/reports/M3-dom-decoder-terminal/README.md"
+    },
+    {
+      "id": "helper-recursion-failed",
+      "kind": "check",
+      "revision": "4172287c100f14d80c20622aea6f66fc61c9d47c",
+      "command": "Pinned Release focused Xemele.Tests namespaces for repair/input/DOM/recovery/async input",
+      "result": "failed",
+      "summary": "New test helper virtual fallback recursion caused process134 before summary; fixed test/probe helper only, runtime unchanged.",
+      "artifact": "docs/reports/M3-dom-decoder-terminal/helper-recursion-failed.log.gz"
+    },
+    {
+      "id": "focused-regressions",
+      "kind": "check",
+      "revision": "a164900ffd0315d4824fad442700a37183232386",
+      "command": "Pinned Release build tests/Xemele.Tests; Xemele.Tests.dll -namespace Xemele.Tests.DomDecoderTerminal -namespace Xemele.Tests.Input -namespace Xemele.Tests.Dom -namespace Xemele.Tests.Recovery -namespace Xemele.Tests.AsyncInput -parallelMode none -result-xml docs/reports/M3-dom-decoder-terminal/regression.xml",
+      "result": "passed",
+      "summary": "Build0warnings/errors,166tests passed0errors/failures/skips; five frozen reproducers across all strict/diagnostic sync/async DOM and chunk controls, valid input preservation plus actual warm decoder0allocation.",
+      "artifact": "docs/reports/M3-dom-decoder-terminal/regression.xml"
+    },
+    {
+      "id": "owned-allocations",
+      "kind": "check",
+      "revision": "a164900ffd0315d4824fad442700a37183232386",
+      "command": "Pinned Release build and direct prebuilt Probe.dll",
+      "result": "passed",
+      "summary": "Actualexit0, process-wide precise counter, cold53208B and128-operation valid6804480B/invalid6757376B/asyncinvalid7372072B, positive527360B. Setup/DOM/diagnostics/true suspension explicitly owned, fixed scratch unchanged, no zeroowned/comparativetiming claim.",
+      "artifact": "docs/reports/M3-dom-decoder-terminal/allocations.json"
+    },
+    {
+      "id": "compiled-api",
+      "kind": "check",
+      "revision": "a164900ffd0315d4824fad442700a37183232386",
+      "command": "PYTHONDONTWRITEBYTECODE=1 PATH=<pinned dotnet> python3 tools/ApiBaseline/compare.py --report /private/tmp/m3-dom-repair-api.json",
+      "result": "passed",
+      "summary": "Official discovery/compiled inventory matched720members; no API change.",
+      "artifact": "docs/reports/M3-dom-decoder-terminal/api-summary.json"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Created for corpus fuzz failure PHKvPg==: decoder rejected before DomSink.ValidateAbsentDeclaration.",
-    "checks": [],
-    "remaining": [],
+    "summary": "Implemented bounded synchronous/asynchronous DOM terminal decoder repair; no API or valid decoding changes.",
+    "checks": [
+      "166focused pass; actual owned-allocation probe0exit with positivecontrol; official API720;148task validator."
+    ],
+    "remaining": [
+      "Coordinator integrated checkpoint."
+    ],
     "requests": []
   }
 }
