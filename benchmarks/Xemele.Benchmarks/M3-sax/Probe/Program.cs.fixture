@@ -1,0 +1,81 @@
+using System.Diagnostics;
+using System.Runtime.InteropServices;
+using System.Text;
+using Xemele;
+using Xemele.Streaming;
+
+if (args.Length is < 1 or > 2 || args[0] is not ("--control" or "--allocation")) throw new ArgumentException("Use --control|--allocation [generated text byte count].");
+bool measuring = args[0] == "--allocation";
+Console.WriteLine($"mode={args[0]}; runtime={RuntimeInformation.FrameworkDescription}; arch={RuntimeInformation.ProcessArchitecture}; os={RuntimeInformation.OSDescription}; cpu={Environment.ProcessorCount}; serverGC={System.Runtime.GCSettings.IsServerGC}");
+var handler = new Counter();
+var sink = new XmlSaxParser.HandlerSink(handler);
+byte[] scratch = new byte[4096];
+byte[] input = Encoding.UTF8.GetBytes("<r>" + new string('a', 16384) + "β😀</r>");
+string xml = Encoding.UTF8.GetString(input);
+// Owners, static initialization and warm-up deliberately precede the primitive scope.
+for (int i = 0; i < 10000; i++) { sink.Text("β😀", default); input.AsSpan(0, 4096).CopyTo(scratch); }
+long start = measuring ? GC.GetAllocatedBytesForCurrentThread() : 0;
+for (int i = 0; i < 100000; i++) { sink.Text("β😀", default); input.AsSpan(0, 4096).CopyTo(scratch); }
+long primitive = measuring ? GC.GetAllocatedBytesForCurrentThread() - start : 0;
+Console.WriteLine($"borrowed-dispatch+bounded-copy: operations=100000; bytes={primitive}; consumed={handler.Characters}; copy={scratch[1]}");
+start = measuring ? GC.GetAllocatedBytesForCurrentThread() : 0;
+object control = new byte[4096];
+long positive = measuring ? GC.GetAllocatedBytesForCurrentThread() - start : 0; GC.KeepAlive(control);
+Console.WriteLine($"allocation-positive-control={positive}");
+if (handler.Characters != 330000 || !scratch.AsSpan().SequenceEqual(input.AsSpan(0, scratch.Length))) return 3;
+if (measuring && (primitive != 0 || positive < 4096)) return 1;
+Measure("cold-string-operation", () => XmlSaxParser.Parse(xml, handler), 1, measuring);
+for (int i = 0; i < 32; i++) { XmlSaxParser.Parse(xml, handler); XmlSaxParser.Parse(input, handler); }
+Measure("warm-string-operation", () => XmlSaxParser.Parse(xml, handler), 100, measuring);
+Measure("warm-bytes-operation", () => XmlSaxParser.Parse(input, handler), 100, measuring);
+Measure("warm-stream-operation", () => { using var stream = new MemoryStream(input, false); XmlSaxParser.Parse(stream, handler); }, 100, measuring);
+Measure("owned-diagnostic-result", () => XmlSaxParser.ParseWithDiagnostics("<r/>", handler), 100, measuring);
+Measure("malformed-diagnostic-result", () => XmlSaxParser.ParseWithDiagnostics("<r>", handler), 100, measuring);
+// Generated stream has no input-sized owner; evaluate live managed memory in callbacks.
+long corpus = args.Length == 2 ? long.Parse(args[1], System.Globalization.CultureInfo.InvariantCulture) : 8388608L;
+if (measuring) { GC.Collect(); GC.WaitForPendingFinalizers(); GC.Collect(); }
+long before = measuring ? GC.GetTotalMemory(true) : 0;
+handler.Characters = 0; handler.MeasureRetention = measuring;
+using (var stream = new GeneratedStream(corpus))
+    XmlSaxParser.Parse(stream, handler, new() { Limits = new() { DocumentCharacters = null, TokenCharacters = null } });
+long after = measuring ? GC.GetTotalMemory(true) : 0;
+Console.WriteLine($"generated-stream: text-bytes={corpus}; callbacks-consumed={handler.Characters}; peak-live-delta={handler.Peak - before}; post-disposal-delta={after - before}");
+if (handler.Characters != corpus || measuring && (handler.Peak - before > 2 * 1024 * 1024 || after - before > 1024 * 1024)) return 2;
+return 0;
+
+static void Measure(string name, Action action, int iterations, bool measuring)
+{
+    long allocation = measuring ? GC.GetAllocatedBytesForCurrentThread() : 0; long ticks = measuring ? Stopwatch.GetTimestamp() : 0;
+    for (int i = 0; i < iterations; i++) action();
+    ticks = measuring ? Stopwatch.GetTimestamp() - ticks : 0; allocation = measuring ? GC.GetAllocatedBytesForCurrentThread() - allocation : 0;
+    Console.WriteLine($"{name}: operations={iterations}; bytes/op={allocation / (double)iterations}; ms/op={ticks * 1000.0 / Stopwatch.Frequency / iterations}");
+}
+sealed class Counter : XmlSaxHandler
+{
+    internal long Characters, Peak; internal bool MeasureRetention;
+    private long nextSample;
+    public override void Text(ReadOnlySpan<char> text)
+    {
+        Characters += text.Length;
+        if (MeasureRetention && Characters >= nextSample)
+        {
+            Peak = Math.Max(Peak, GC.GetTotalMemory(true)); nextSample = Characters + 1024 * 1024;
+        }
+    }
+}
+sealed class GeneratedStream(long remaining) : Stream
+{
+    private int state;
+    public override int Read(Span<byte> destination)
+    {
+        if (state == 0) { "<r>"u8.CopyTo(destination); state++; return 3; }
+        if (remaining != 0) { int count = (int)Math.Min(remaining, destination.Length); destination[..count].Fill((byte)'x'); remaining -= count; return count; }
+        if (state == 1) { "</r>"u8.CopyTo(destination); state++; return 4; }
+        return 0;
+    }
+    public override int Read(byte[] buffer, int offset, int count) => Read(buffer.AsSpan(offset, count));
+    public override bool CanRead => true; public override bool CanSeek => false; public override bool CanWrite => false;
+    public override long Length => throw new NotSupportedException(); public override long Position { get => throw new NotSupportedException(); set => throw new NotSupportedException(); }
+    public override void Flush() => throw new NotSupportedException(); public override long Seek(long offset, SeekOrigin origin) => throw new NotSupportedException();
+    public override void SetLength(long value) => throw new NotSupportedException(); public override void Write(byte[] buffer, int offset, int count) => throw new NotSupportedException();
+}
