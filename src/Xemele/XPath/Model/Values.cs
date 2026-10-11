@@ -10,6 +10,12 @@ public readonly record struct XPathExpandedName
     public string NamespaceUri { get => namespaceUri; init { ArgumentNullException.ThrowIfNull(value); namespaceUri = value; } }
     public string LocalName { get => localName; init { TreeValidation.Name(value); localName = value; } }
     public XPathExpandedName(string NamespaceUri, string LocalName) { namespaceUri = null!; localName = null!; this.NamespaceUri = NamespaceUri; this.LocalName = LocalName; }
+    internal XPathExpandedName(string NamespaceUri, string LocalName, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(NamespaceUri);
+        Internal.ContextScan.Name(LocalName, cancellationToken);
+        namespaceUri = NamespaceUri; localName = LocalName;
+    }
     private XPathExpandedName(string uri) { namespaceUri = uri; localName = ""; }
     internal static XPathExpandedName NamespaceWildcard(string uri)
     { ArgumentNullException.ThrowIfNull(uri); if (uri.Length == 0) throw new ArgumentException("Empty wildcard URI.", nameof(uri)); return new(uri); }

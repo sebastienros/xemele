@@ -86,12 +86,15 @@ internal static class ModelGuard
     internal static string Message(string value) { Nonempty(value); if (value.Length > 256) throw new ArgumentException("Diagnostic message exceeds 256 UTF-16 units.", nameof(value)); return value; }
     internal static T Enum<T>(T value) where T : struct, Enum { if (!System.Enum.IsDefined(value)) throw new ArgumentOutOfRangeException(nameof(value)); return value; }
     internal static XPathSourceSpan Span(XPathSourceSpan value) { if (value.Start < 0 || value.Length < 0 || value.Start > int.MaxValue - value.Length) throw new ArgumentOutOfRangeException(nameof(value)); return value; }
-    internal static XPathExpandedName Name(XPathExpandedName value) { ArgumentNullException.ThrowIfNull(value.NamespaceUri); TreeValidation.Name(value.LocalName); return value; }
+    internal static XPathExpandedName Name(XPathExpandedName value) => Name(value, default);
+    internal static XPathExpandedName Name(XPathExpandedName value, CancellationToken cancellationToken)
+    { ArgumentNullException.ThrowIfNull(value.NamespaceUri); ContextScan.Name(value.LocalName, cancellationToken); return value; }
     internal static int? Positive(int? value) { if (value <= 0) throw new ArgumentOutOfRangeException(nameof(value)); return value; }
     internal static long? Positive(long? value) { if (value <= 0) throw new ArgumentOutOfRangeException(nameof(value)); return value; }
     internal static int Arity(int min, int? max) { if (min < 0 || max < min) throw new ArgumentOutOfRangeException(nameof(min)); return min; }
-    internal static XPathFunctionSignature Signature(XPathFunctionSignature signature)
-    { ArgumentNullException.ThrowIfNull(signature); Name(signature.Name); Arity(signature.MinArguments, signature.MaxArguments); return signature; }
+    internal static XPathFunctionSignature Signature(XPathFunctionSignature signature) => Signature(signature, default);
+    internal static XPathFunctionSignature Signature(XPathFunctionSignature signature, CancellationToken cancellationToken)
+    { ArgumentNullException.ThrowIfNull(signature); Name(signature.Name, cancellationToken); Arity(signature.MinArguments, signature.MaxArguments); return signature; }
     internal static XPathDiagnostic Diagnostic(XPathDiagnostic diagnostic, bool compile)
     {
         ArgumentNullException.ThrowIfNull(diagnostic); Nonempty(diagnostic.Code); Message(diagnostic.Message); Span(diagnostic.Span); Enum(diagnostic.Category);
@@ -99,10 +102,18 @@ internal static class ModelGuard
             throw new ArgumentException("Diagnostic category does not match exception.", nameof(diagnostic));
         return diagnostic;
     }
-    internal static IReadOnlyList<T> Snapshot<T>(IReadOnlyList<T> values) where T : class
+    internal static IReadOnlyList<T> Snapshot<T>(IReadOnlyList<T> values) where T : class => Snapshot(values, default);
+    internal static IReadOnlyList<T> Snapshot<T>(IReadOnlyList<T> values, CancellationToken cancellationToken) where T : class
     {
-        ArgumentNullException.ThrowIfNull(values); var owned = new T[values.Count];
-        for (int i = 0; i < owned.Length; i++) { owned[i] = values[i]; ArgumentNullException.ThrowIfNull(owned[i]); }
+        ArgumentNullException.ThrowIfNull(values); cancellationToken.ThrowIfCancellationRequested();
+        int count = values.Count; cancellationToken.ThrowIfCancellationRequested();
+        var owned = new T[count];
+        for (int i = 0; i < owned.Length; i++)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            owned[i] = values[i]; ArgumentNullException.ThrowIfNull(owned[i]);
+        }
+        cancellationToken.ThrowIfCancellationRequested();
         return Array.AsReadOnly(owned);
     }
 }
