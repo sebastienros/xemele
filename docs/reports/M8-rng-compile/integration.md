@@ -1,0 +1,7 @@
+# Integrated RELAX NG compiler
+
+Actual combined runtime-tested revision: `6c407612b38343aa7b7cbba49304689a2e5ff34d`. The coordinator ran the commands preserved in `integration-checks.py`: 88 compiler/resource tests, 42 safe resolver cases and 131 model/source-location/M4/M5 cases all passed, with exact positive counts and zero failures, errors, skips or not-run cases. Release builds passed with zero compiler warnings/errors. The host emitted CSSM_ModuleLoad diagnostics, without command failure. The 119 frozen internal declarations and 1,393 public declarations matched, and the real XML-only consumer passed. Planning validated 176 tasks; whitespace checks passed.
+
+Final worker evidence `cd46dcf11f051e866f7f575777c46ed01845461d` was merged at `279afc05c6b8131a3efb51d3447900b5a448fbe1`. A Git diff proved all runtime, tests, build, benchmark, API and consumer inputs unchanged from the tested revision; only the task and report changed. Runtime tests were not repeated for metadata.
+
+Root independently inspected the sole allocation probe and lifecycle after durable RELEASE `49b063ec7390ad03fc711287c022a98de4620530`. The exact results, source/manifest identities, historical failures and limits are in README.md. No corpus, timing, cross-platform or public facade claim is made. The later facade must satisfy every obligation in facade-join.md, including disconnected datatype checkpoints and repeated pattern semantics. Raw outputs are transient and removed during terminal cleanup; durable summaries and identities remain.

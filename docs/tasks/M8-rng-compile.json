@@ -4,11 +4,11 @@
   "milestone": "M8",
   "title": "RELAX NG schema compilation",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M8 coordinator01a12c6c-b333-71d3-877f-0d186618e21d / assigned isolated worker",
   "branch": "codex/m8-rng-compile",
   "base_revision": "c00082233aff7ab4680cc3ea08b20f43d76251bc",
-  "integration_revision": null,
+  "integration_revision": "6c407612b38343aa7b7cbba49304689a2e5ff34d",
   "depends_on": [
     "M8-model",
     "M8-source-locations"
@@ -38,7 +38,8 @@
       "evidence": [
         "focused",
         "frozen-api",
-        "review"
+        "review",
+        "integrated"
       ]
     },
     {
@@ -48,7 +49,8 @@
       "evidence": [
         "focused",
         "frozen-api",
-        "review"
+        "review",
+        "integrated"
       ]
     },
     {
@@ -66,7 +68,8 @@
         "control",
         "measurement-preflight",
         "allocation",
-        "planning-final"
+        "planning-final",
+        "integrated"
       ]
     }
   ],
@@ -188,11 +191,20 @@
       "result": "passed",
       "summary": "Validated176 tasks including implemented M8-rng-compile evidence, schema, acyclic dependencies, additive milestones and ordered ownership; whitespace check passed. No code/tests/measurements rerun after metadata-only handoff.",
       "artifact": null
+    },
+    {
+      "id": "integrated",
+      "kind": "integration",
+      "revision": "6c407612b38343aa7b7cbba49304689a2e5ff34d",
+      "command": "python3 /private/tmp/xemele-M8-rng-checks.py (actual commands preserved in docs/reports/M8-rng-compile/integration-checks.py); evidence-only merge input diff; python3 tools/planning/tasks.py validate; git diff --check",
+      "result": "passed",
+      "summary": "Combined tree:88 owned+42 safe resolver+131 prerequisites=261 passed, zero failures/errors/skips/not-run;119 frozen internal and1393 public members matched; source-linked XML-only consumer passed;176 tasks valid. Runtime/build/test/API/consumer inputs unchanged after report/task-only handoff merge279afc05. Allocation raw independently inspected after RELEASE49b063e. No timing or corpus/platform claim.",
+      "artifact": "docs/reports/M8-rng-compile/integration.md"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Full internal RELAX NG2001 XML compiler implemented on isolated branch; immutable dense graph/name classes/scopes/combine/includes/externalRef/simplification and datatype-independent restrictions. Original value/param contexts and detached datatype checkpoints preserved for later facade. Final depth finding resolved; no public facade or fake datatype implementation.",
+    "summary": "Integrated and verified RELAX NG compiler;261 combined correctness cases,119 frozen internal and1393 public members, XML-only consumer and planning passed. Owned allocation evidence independently inspected; later facade finalization obligations remain explicit.",
     "checks": [
       "Pinned Release build zero warnings/errors;88 focused,42 resolver,131 verified prerequisite tests passed with exact positive counts.",
       "119 exact frozen compiler declarations and1393 complete public declarations matched; real source-linked XML-only consumer passed.",
@@ -200,7 +212,6 @@
       "Planning validate176 passed before final metadata; final rerun recorded by planning evidence. Historical stack-overflow regression and unrelated inventory-discovery limitation are documented honestly."
     ],
     "remaining": [
-      "Coordinator integration and integrated verification, then record integration_revision and mark verified.",
       "Later verified RNG validation facade must finalize all datatype checkpoints with real libraries/facets/regex, conjunctive repeated RNG pattern params, non-pattern duplicates/whitespace semantics; details in facade-join.md."
     ],
     "requests": []
