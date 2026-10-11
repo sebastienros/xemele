@@ -4,11 +4,11 @@
   "milestone": "M8",
   "title": "Schematron schema compilation",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M8 coordinator01a12c6c-b333-71d3-877f-0d186618e21d / assigned isolated worker",
   "branch": "codex/m8-sch-compile",
   "base_revision": "ddd69df2f2947ec1ae6797a228ce1d7f7366dacf",
-  "integration_revision": null,
+  "integration_revision": "aa66f68e1f0c2169e08d7b9f0c1347e22cea761e",
   "depends_on": [
     "M8-model",
     "M8-source-locations",
@@ -38,7 +38,8 @@
       "status": "passed",
       "evidence": [
         "compiler-checks",
-        "source-review"
+        "source-review",
+        "integrated-checks"
       ]
     },
     {
@@ -47,7 +48,8 @@
       "status": "passed",
       "evidence": [
         "compiler-checks",
-        "source-review"
+        "source-review",
+        "integrated-checks"
       ]
     },
     {
@@ -57,7 +59,8 @@
       "evidence": [
         "compiler-checks",
         "source-review",
-        "owned-allocation-probe"
+        "owned-allocation-probe",
+        "integrated-checks"
       ]
     }
   ],
@@ -114,11 +117,20 @@
       "result": "passed",
       "summary": "Root executed one prebuilt allocation-only SCH phase under GRANT5ac7a0815558aec519309e6fa2f6a663690c58f3; RELEASE6b35e04d057e7ec516a967fd52836a0aa46da1dd preceded raw inspection. Status0,PID47916exit0/reaped/groupabsent/logclosed,212 identities/manifest stable,0.320030958s within30s lifecycle bound. M4Pro14coreArm64/runtime10.0.11;32warmups then64 consumed per warm route. Cold43216B; window totals/means:positive9728/152,simple1287680/20120,complex6617896/103404.625,long1365504/21336,invalid995328/15552.16snapshot approximate retained181592B,RSS54870016B. Complex residual cause unknown; aggregate windows are not per-op distributions/constancy. Owned setup allocation evidence only; no BDN/timing/borrowed-zero/cross-architecture claim.",
       "artifact": "docs/reports/M8-sch-compile/allocations.md"
+    },
+    {
+      "id": "integrated-checks",
+      "kind": "integration",
+      "revision": "aa66f68e1f0c2169e08d7b9f0c1347e22cea761e",
+      "command": "python3 docs/reports/M8-sch-compile/integration-checks.py at aa66f68e (266 cases), then same built assembly -class Xemele.Tests.M8SchemaResourceBase.ResourceBaseTests (11 cases); exact counts asserted",
+      "result": "passed",
+      "summary": "277 actual combined tests all pass; frozen154/public1393 and genuine XML-only consumer pass; Release0warnings/errors;177tasks validate. Final b661b3d merges change only reports/metadata; critical runtime/test/build/API/consumer inputs proven unchanged. Independent source review accepted and sole SCH allocation phase passed.",
+      "artifact": "docs/reports/M8-sch-compile/integration.md"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Complete immutable internal ISO2016 direct XPath1 compiler: includes/fragments, token-aware abstract parameters, abstract rules/extends, phases/scoped dependency-ordered lets, root match selectors, tests/subjects, dynamic diagnostics/properties/messages and original provenance. Verified resource-base repair adopted; no public facade/evaluator/placeholder. All branch criteria and owned setup allocation evidence passed.",
+    "summary": "Verified integrated immutable ISO2016 direct XPath1 Schematron compiler with owned setup allocation evidence; no public evaluator/facade yet.",
     "checks": [
       "Accepted source193a6fe3ddcdf209bea0c623b154cbb6abd99b9c:277 asserted tests (93 owned,11 resource-base,42 safe resolver,131 prerequisites), zero fail/error/skip/not-run; frozen154/public1393/XML-only consumer/planning177/diff pass; zero-warning Release builds",
       "Supervisor837a001b0e7fb24f59220dfe43216d5fccabe781/preparation8c41188ff24d1ad9b34778ea0430916d45eaefad: six counters-disabled controls/212 identities/elevated ps pass",
@@ -126,9 +138,7 @@
       "Historical failures/corrections and pre-grant abort preserved honestly in README.md/allocations.md"
     ],
     "remaining": [
-      "Coordinator integrate final metadata, prove tested runtime/test/build/consumer identity unchanged, record integrated revision/evidence and mark verified",
-      "Later validator/evaluator must prove selected-phase/#ALL missing-binding error timing, initializer-before-shadow replacement, singleton assertion/message/subject focus, immutable result detachment and shared actual evaluation accounting described in facade-join.md",
-      "Composed validation performance, corpus conformance and cross-architecture release checks remain with their later owners"
+      "Later evaluator must follow facade-join.md phase/#ALL error timing, initializer-before-shadow replacement, singleton focus, subject and dynamic-message rules; M8 conformance/gate remain assigned."
     ],
     "requests": []
   }
