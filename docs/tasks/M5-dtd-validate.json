@@ -4,11 +4,11 @@
   "milestone": "M5",
   "title": "DTD instance validation",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M5 isolated DTD instance validation worker",
   "branch": "codex/m5-dtd-validate",
   "base_revision": "eccc8fa5254218d47ab688cbef28c4f154ae34cd",
-  "integration_revision": null,
+  "integration_revision": "094edd911ceb405fd88fadd4e08d34d64f8089da",
   "depends_on": [
     "M5-dtd-model",
     "M5-validation-metadata",
@@ -127,6 +127,15 @@
       "result": "passed",
       "summary": "Coordinator approved scalar metering, original-profile whitespace guards, CDATA structural rejection and indexed borrowed lookups; inspected all14 GC records/runtime/summaries and allocation domains. Cleanup acknowledged after durable summary commit; generated raw files deleted.",
       "artifact": "docs/reports/M5-dtd-validate/README.md"
+    },
+    {
+      "id": "integration",
+      "kind": "integration",
+      "revision": "094edd911ceb405fd88fadd4e08d34d64f8089da",
+      "command": "Pinned SDK10.0.400 server-disabled Release no-restore build tests/Xemele.Tests; explicit --fx-version10.0.11 combined scoped namespaces excluding allocation methods; python3 docs/reports/M5-validation-model/check_api.py; python3 tools/planning/tasks.py validate",
+      "result": "passed",
+      "summary": "Clean Release zero warnings/errors;826 combined tests zero failures/errors/skips/not-run;948 compiled API members matched;156 tasks validate. Root independently reviewed455000b and inspected14 actual10.0.11 Arm64 benchmark cases, all inclusiveGCrows, four warmQName zero counters, owned/retained totals; no successful measurements repeated.",
+      "artifact": "docs/reports/M5-dtd-validate/README.md"
     }
   ],
   "blockers": [],
@@ -134,11 +143,10 @@
     "summary": "Implemented frozen DtdSchema facade and bounded immutable-schema current DOM validation, without augmentation/fetch/normalization.89 focused and2091 preservation cases pass at455000b; exact prepared measurement evidence recorded.",
     "checks": [
       "Actual .NET10.0.11 Release builds/tests/API948/156planning pass.",
-      "Exclusive prepared allocation+14BDNcases successful with full matching identities and no children."
+      "Exclusive prepared allocation+14BDNcases successful with full matching identities and no children.",
+      "Coordinator integrated verification:826 ordinary combined tests,948 API,156 planning; owned raw inspected and cleaned."
     ],
-    "remaining": [
-      "Coordinator integration verification."
-    ],
+    "remaining": [],
     "requests": []
   }
 }
