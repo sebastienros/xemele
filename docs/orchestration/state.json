@@ -1602,15 +1602,16 @@
     }
   },
   "measurement_lease": {
-    "id": "m3-resource-mode-ede1233-measure",
-    "status": "released",
-    "revision": "ede12339ef78ca77d071a826ec48f2994dbfb422",
-    "duration_limit_seconds": 180,
-    "scope": "Exact prebuilt probe --allocation <=30s; only if passed same DLL --benchmark <=150s, hard exactly three cases and single in-process job. No source/build/options/retries during lease. Serializer PARK no children; reader and writer clean archived; reviewer source-only and root no executable workloads. Actual exits and no sessions/children required before release and inspection.",
-    "probe_sha256": "E10EF104BB7749A823D2E8588A763BB34CE80FAD6FBE065334DFA324C88BDBEF",
-    "runtime_sha256": "440B688112DF866CC1A0BCA5190E2142DE887FC1E916F316E88B4F80DCE29A16",
-    "limitations": "Unrelated user Silex processes remain untouched; timing informational and no optimization/regression claim. Actual own-process allocation gates with positive controls remain mandatory.",
-    "result": "Actual allocation and three-case BDN children exited 0 and reaped before release/inspection. Core, pump and no-op each 0 B across 1048576 calls; positive 4120 B, cold setup 61040 B; BDN3 completed, MemoryDiagnoser0B all, timings informational. Independent source review approved; final evidence pending."
+    "id": "m3-async-serialization-7cee8bb-measure",
+    "status": "granted",
+    "revision": "7cee8bb2f2f154ff74bf5aeadacd0964e1f13a8a",
+    "runtime_revision": "17478155d8996c39bbd0e9f4b166bfc829c436f7",
+    "duration_limit_seconds": 160,
+    "scope": "Exact prebuilt standalone allocation/memory probe <=45s; only if actual exit0 then six-case sole Dry InProcess BDN <=110s, explicit3iterations/1warmup/1launch/1invocation/unroll1 and hard case/toolchain guard. No builds/tests/generation/edits/options/retries. Push PARK after own stalled restores reaped; async input PARK nochildren; reviewer source-only/root noexecutables. Release on actual exits/no sessions/nochildren before inspecting.",
+    "probe_sha256": "0e3157676293afe83077b4df62ff6c639d7d56feaf0b0418a6e219e583007c7e",
+    "runtime_sha256": "c7a9d2cfef0295a5cdee7124d10f9bef5424cb6bf301a0c4c296958edd87d86b",
+    "benchmark_sha256": "55479378f8193ba78cdd8a63a4ae179a2fce07f1a0db0fd1fb964698c06ebd81",
+    "limitations": "Unrelated user Silex workload untouched; timing informational. Direct borrowed scalar primitivezero plus positive, process-wide actual async setup/continuations, bounded8192scratch and completed-owner retention controls mandatory."
   },
   "offline_corpus_setup": {
     "checkout": "/private/tmp/xemele-m3-integration",
