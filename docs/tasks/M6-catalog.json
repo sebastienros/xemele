@@ -4,7 +4,7 @@
   "milestone": "M6",
   "title": "XML catalogs and resolver composition",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M6 coordinator worker M6-catalog",
   "branch": "codex/m6-catalog",
   "base_revision": "a0267fba4ba8dce9e79717fef248c45b4b1355a9",
@@ -35,30 +35,127 @@
     {
       "id": "M6-catalog-A1",
       "description": "Implement catalog parsing and mapping/delegation/rewrite/next-catalog policy with bounded cycles.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "focused-functional-checks",
+        "iterative-graph-functional-checks"
+      ]
     },
     {
       "id": "M6-catalog-A2",
       "description": "Test precedence, public/system IDs, relative URIs, refusal and composed offline fallback.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "focused-functional-checks",
+        "iterative-graph-functional-checks"
+      ]
     },
     {
       "id": "M6-catalog-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "iterative-graph-functional-checks",
+        "exclusive-measurements",
+        "implemented-planning-validation"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Resolution/Catalogs/XmlCatalog.cs: XmlCatalogOptions, eager immutable XmlCatalog and transparent CatalogResolver",
+    "tests/Xemele.Tests/M6-catalog/CatalogTests.cs: 32 focused offline controls including native aggregate budgets, deep iterative graphs and cancellation",
+    "samples/M6-catalog/: public offline catalog/resolver/parser composition",
+    "docs/api/M6-catalog.txt: 21 actual compiled public declarations",
+    "benchmarks/Xemele.Benchmarks/M6-catalog/: prepared eight-case ShortRun NoEmit suite and boundary allocation probe",
+    "src/Xemele/Resolution/Catalogs/CatalogSort.cs: cancellation-aware stable merge; XmlCatalog explicit loading and lookup frames"
+  ],
+  "evidence": [
+    {
+      "id": "focused-functional-checks",
+      "kind": "check",
+      "revision": "b9852dceb5aea2d330af36475885f2bb83364fcc",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' build tests/Xemele.Tests/Xemele.Tests.csproj -c Release --no-restore --no-incremental -p:RuntimeFrameworkVersion=10.0.11 --disable-build-servers -m:1 ; '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' build benchmarks/Xemele.Benchmarks/M6-catalog/Catalog.Probe.csproj -c Release --no-restore --no-incremental -p:RuntimeFrameworkVersion=10.0.11 --disable-build-servers -m:1 ; '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' build samples/M6-catalog/Catalog.Sample.csproj -c Release --no-restore --no-incremental -p:RuntimeFrameworkVersion=10.0.11 --disable-build-servers -m:1 ; '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' build docs/reports/M6-catalog/ApiCheck/ApiCheck.csproj -c Release --no-restore --no-incremental -p:RuntimeFrameworkVersion=10.0.11 --disable-build-servers -m:1 ; '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -class Xemele.Tests.CatalogTests -noLogo",
+      "result": "passed",
+      "summary": "Four pinned Release forced builds passed with no warnings/errors; all 26 focused CatalogTests passed on actual xUnit .NET 10.0.11. No allocation, timing or inherited suite was run.",
+      "artifact": "docs/reports/M6-catalog/validation.md"
+    },
+    {
+      "id": "public-api-and-sample",
+      "kind": "check",
+      "revision": "b9852dceb5aea2d330af36475885f2bb83364fcc",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 samples/M6-catalog/bin/Release/net10.0/Catalog.Sample.dll ; '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 benchmarks/Xemele.Benchmarks/M6-catalog/bin/Release/net10.0/Xemele.Benchmarks.dll --discover artifacts/M6-catalog/bdn ; '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 docs/reports/M6-catalog/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare src/Xemele/bin/Release/net10.0/Xemele.dll artifacts/M6-catalog/full-api-union.txt",
+      "result": "passed",
+      "summary": "Public offline composed sample produced mapped URI and parsed XML; eight ShortRun NoEmit cases discovered on actual .NET 10.0.11 arm64; approved extractor directly matched all 972 compiled union members (951 inherited plus21 catalog). Corpus discovery wrapper was unavailable in this isolated checkout due missing corpus fixture; direct complete compiled union performed instead.",
+      "artifact": "docs/reports/M6-catalog/validation.md"
+    },
+    {
+      "id": "planning-validation",
+      "kind": "check",
+      "revision": "b9852dceb5aea2d330af36475885f2bb83364fcc",
+      "command": "python3 -B tools/planning/tasks.py validate",
+      "result": "passed",
+      "summary": "Validated 162 task records; schema, evidence, acyclic dependencies, additive milestones and ordered ownership passed.",
+      "artifact": null
+    },
+    {
+      "id": "iterative-graph-functional-checks",
+      "kind": "check",
+      "revision": "d5de67996156d18a61c8d65abbe8991886365a32",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' build tests/Xemele.Tests/Xemele.Tests.csproj -c Release --no-restore --no-incremental -p:RuntimeFrameworkVersion=10.0.11 --disable-build-servers -m:1 ; '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' build benchmarks/Xemele.Benchmarks/M6-catalog/Catalog.Probe.csproj -c Release --no-restore --no-incremental -p:RuntimeFrameworkVersion=10.0.11 --disable-build-servers -m:1 ; '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' build samples/M6-catalog/Catalog.Sample.csproj -c Release --no-restore --no-incremental -p:RuntimeFrameworkVersion=10.0.11 --disable-build-servers -m:1 ; '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' build docs/reports/M6-catalog/ApiCheck/ApiCheck.csproj -c Release --no-restore --no-incremental -p:RuntimeFrameworkVersion=10.0.11 --disable-build-servers -m:1 ; '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -class Xemele.Tests.CatalogTests -noLogo ; '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 samples/M6-catalog/bin/Release/net10.0/Catalog.Sample.dll ; '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 benchmarks/Xemele.Benchmarks/M6-catalog/bin/Release/net10.0/Xemele.Benchmarks.dll --discover artifacts/M6-catalog/bdn ; '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 docs/reports/M6-catalog/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare src/Xemele/bin/Release/net10.0/Xemele.dll artifacts/M6-catalog/full-api-union.txt",
+      "result": "passed",
+      "summary": "Four fresh forced Release builds passed; 32 focused controls pass actual .NET10.0.11 including four4000resource acyclic chains, exact/one-over depth, deferred lookup/noIO, stable equal-prefix precedence and cancellation during sort. Public offline sample, unchanged972memberAPIunion and8ShortRunNoEmit discovery passed. No allocation/timing/inherited suites run.",
+      "artifact": "docs/reports/M6-catalog/validation.md"
+    },
+    {
+      "id": "prepared-wrapper-controls",
+      "kind": "check",
+      "revision": "3afddf8aec7e4ce0260d0eefa60bda32eed77f3e",
+      "command": "python3 -B docs/reports/M6-catalog/freeze.py capture artifacts/M6-catalog/prepared.json ; python3 -B docs/reports/M6-catalog/run_measurements.py --identity-control ; XEMELE_CATALOG_IDENTITY_NEGATIVE=changed python3 -B docs/reports/M6-catalog/run_measurements.py --identity-control",
+      "result": "passed",
+      "summary": "Prior exactsolecommand wrapper positive exited0, initial/finalidentity0/nochildtrue/no measuredphases; unknownenvnegative exited1 with initial/finalidentity1/nochildtrue/no measuredphases, expectedrejection. Completeenvhash and explicitSHLVL stability proven; current revisedsource must refreeze.",
+      "artifact": "docs/reports/M6-catalog/validation.md"
+    },
+    {
+      "id": "corrected-elevated-wrapper-controls",
+      "kind": "check",
+      "revision": "954b0307b65eef9c966e775f45b65c504db3f572",
+      "command": "elevated: python3 -B docs/reports/M6-catalog/freeze.py capture artifacts/M6-catalog/prepared.json ; python3 -B docs/reports/M6-catalog/run_measurements.py --identity-control ; XEMELE_CATALOG_IDENTITY_NEGATIVE=changed python3 -B docs/reports/M6-catalog/run_measurements.py --identity-control",
+      "result": "passed",
+      "summary": "Corrected source fullclosure226source/43binary/3852runtime captured in intended elevatedcontext; exactsolecommand wrapper positive exit0 initial/final0 nochildtrue runs[]; unknownaddedenv negative exit1 initial/final1 nochildtrue runs[] expectedrejection. Completeenv digest stable underexplicitSHLVL. No allocation/timing phases run; stale3afddf8 manifest retained.",
+      "artifact": "docs/reports/M6-catalog/validation.md"
+    },
+    {
+      "id": "exclusive-measurements",
+      "kind": "check",
+      "revision": "c1c62b88a4b375a7d184934bc7691e24438d7f20",
+      "command": "python3 docs/reports/M6-catalog/run_measurements.py --exclusive-grant",
+      "result": "passed",
+      "summary": "Exact once coordinator lease m6-catalog-c1c62b8, granted main d2814b2/released9b0b905. Frozen source d5de679; manifest SHA256 c0e0ee9d8a0d3b6dcff92569b55a87ec431fb6fd7214e0d2096e27560fe6ea8d. Initial/final identity and allocation/eight-case ShortRun NoEmit exit0, no children. Actual .NET10.0.11 Arm64; five borrowed domains each16batches/65536operations allocated0B; positive control1048B. Owned/cold/retained domains separate. Raw inspected after release and coordinator independently confirmed. Timing informational and baseline narrow; retained measurement wholeheap inclusive.",
+      "artifact": "docs/reports/M6-catalog/measurements.md"
+    },
+    {
+      "id": "implemented-planning-validation",
+      "kind": "check",
+      "revision": "c1c62b88a4b375a7d184934bc7691e24438d7f20",
+      "command": "python3 -B tools/planning/tasks.py validate",
+      "result": "passed",
+      "summary": "Validated162taskrecords after owned implemented evidence update; schema,evidence,acyclicdependencies,additive milestones andorderedownership passed. Runtime source unchanged from d5de679.",
+      "artifact": "docs/reports/M6-catalog/measurements.md"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Reclaimed same preserved candidate after verified exact shared parser budget repair; consume only integrated dependency.",
-    "checks": [],
+    "summary": "Implemented immutable eager OASIS1.0 catalog graph, native aggregate budgets, iterative loading/lookup and transparent resolver composition. Final source d5de679 approved; prepared c1c62b8 exact leased measurements passed. Integration revision remains null.",
+    "checks": [
+      "Four fresh pinned forced Release builds;32 focused tests on actual.NET10.0.11.",
+      "Public offline sample;972memberAPIunion=951inherited+21catalog;8ShortRunNoEmit cases.",
+      "Complete closure exact wrapper positive and unknown-env negative controls passed.",
+      "Exclusive once allocation/8case timing completed with final identity unchanged and no children; five borrowed domains each65536operations/0B, positive1048B; raw inspected and preserved.",
+      "Planning validation:162 records passed."
+    ],
     "remaining": [
-      "Replace interim counting with native shared OperationBudget and validate declared encoding/finalSource; fresh focused/API/sample/harness preparation required. No measurement lease active."
+      "Coordinator integration and combined inherited checks; no integrated/verified claim.",
+      "Ignored raw artifacts preserved in artifacts/M6-catalog/ for coordinator review/cleanup."
     ],
     "requests": []
   }
