@@ -4,11 +4,11 @@
   "milestone": "M6",
   "title": "Verify XML beta checkpoint",
   "kind": "gate",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M6 coordinator worker gate",
   "branch": "codex/m6-gate",
   "base_revision": "ede07b133fc39cb5931f34441a95bb2db3280140",
-  "integration_revision": null,
+  "integration_revision": "f7412c6ef5c5552e7194781e4724253244cdb6bb",
   "depends_on": [
     "M6-integration",
     "M6-cli-api-fragment"
@@ -34,7 +34,8 @@
         "gate-review",
         "cumulative-lease",
         "ordinary-checkpoint",
-        "official-inventory"
+        "official-inventory",
+        "coordinator-checkpoint"
       ]
     },
     {
@@ -45,7 +46,8 @@
         "gate-review",
         "cumulative-lease",
         "ordinary-checkpoint",
-        "official-inventory"
+        "official-inventory",
+        "coordinator-checkpoint"
       ]
     },
     {
@@ -56,7 +58,8 @@
         "gate-review",
         "cumulative-lease",
         "ordinary-checkpoint",
-        "official-inventory"
+        "official-inventory",
+        "coordinator-checkpoint"
       ]
     }
   ],
@@ -101,6 +104,15 @@
       "result": "passed",
       "summary": "Official1054compiled API rows/bootstrapfalse/3386originalcopied resources; canonicalAPI/package/restored DLL sameSHA1f02408e... and leased DLL identical.164tasksvalid; no remaining owned workloads. LaterHEAD consumes verified APIzero-fragment repair only, no runtime/test/fixture changes or fullsuite rerun.",
       "artifact": "docs/reports/M6-gate/summary.json"
+    },
+    {
+      "id": "coordinator-checkpoint",
+      "kind": "integration",
+      "revision": "f7412c6ef5c5552e7194781e4724253244cdb6bb",
+      "command": "Independent leasedXML/nameSHA/all12allocationpairs/grammarfuzz/APIpackageCLIraw inspection; freshintegrated forcedRelease sample/tool/extractor +actual10.0.11 sample/sevenCLI/57managed/57native/official1054 +planning164/diff/scopedps",
+      "result": "passed",
+      "summary": "Mainintegration containsONLYgate reports/taskrecord; runtime/tests/fixtures unchangedsinceleasedd771. Rootverifiedall6985 tests+exact6797M5identities,12frozenallocationpairs,1394models/424witnesses/771resolutions exactM5SHA+2585cases/3386hashes andfuzz. PackageofficialAPI DLL1f02408e matchesleased+restored, net10only/publicexternalconsumer/localfeed/initialabsentcache/actual10.0.11SDK10.0.400Arm64 andfrozenoutputs; nativehash/filechecked. Freshroot sample+7CLI+57managed+57native+officialAPI1054/bootstrapfalse/164validate/3zero-warningbuilds pass, nochildren. No duplicatefullsuite/benchmark. Retainedlocalunpublishednupkg+preparedmanifest copiedprimaryartifacts.",
+      "artifact": "docs/reports/M6-gate/README.md"
     }
   ],
   "blockers": [],
@@ -112,9 +124,7 @@
       "Verified APIzero-fragment owningrepair consumed; official1054/bootstrapfalse and164planningchecks passed",
       "SevenCLIexamples/57managed57native controls; unpublished offlinepackage managed/trim/native consumeroutputs actual10.0.11Arm64 checked"
     ],
-    "remaining": [
-      "Coordinator independent finalraw package/CLI inspection and integrated metadata verification; raw/package/external consumers retained, cleanup requiresrootACK"
-    ],
+    "remaining": [],
     "requests": []
   }
 }
