@@ -1,0 +1,86 @@
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using System.Text;
+using System.Text.Json;
+using Xemele;
+namespace Xemele.M3AsyncSerializationMeasurements;
+
+internal static class Probe
+{
+    private static readonly XmlSaveOptions Options = new() { OmitXmlDeclaration = true };
+    private static XmlDocument Document(int length)
+    {
+        var document = new XmlDocument(); var root = document.CreateElement("r"); document.DocumentNode.AppendChild(root);
+        root.AppendChild(document.CreateText(new string('x', length))); return document;
+    }
+    public static async Task<int> Main(string[] args)
+    {
+        var shortDocument = Document(16); var longDocument = Document(65536);
+        var sink = new Sink(); var delayed = new Sink { Delayed = true };
+        if (args.Contains("--prepare"))
+        {
+            await shortDocument.SaveAsync(sink, Options); await longDocument.SaveAsync(delayed, Options);
+            if (sink.Count != 23 || delayed.Count != 65543 || delayed.Maximum > 8192 || delayed.Capacity != 8192) throw new InvalidOperationException();
+            Console.WriteLine("Prepared immediate/delayed async-only controls without allocation counters."); return 0;
+        }
+        long coldBefore = GC.GetTotalAllocatedBytes(true);
+        await shortDocument.SaveAsync(sink, Options);
+        long coldObserved = GC.GetTotalAllocatedBytes(true) - coldBefore;
+        for (int i = 0; i < 200; i++) { sink.Reset(); await shortDocument.SaveAsync(sink, Options); sink.Reset(); await longDocument.SaveAsync(sink, Options); }
+        const int count = 100;
+        long before = GC.GetTotalAllocatedBytes(true);
+        for (int i = 0; i < count; i++) { sink.Reset(); await shortDocument.SaveAsync(sink, Options); }
+        long shortBytes = GC.GetTotalAllocatedBytes(true) - before;
+        before = GC.GetTotalAllocatedBytes(true);
+        for (int i = 0; i < count; i++) { sink.Reset(); await longDocument.SaveAsync(sink, Options); }
+        long longBytes = GC.GetTotalAllocatedBytes(true) - before;
+        // Separate deliberately allocating whole-output control. Consume all results.
+        long ownedCount = 0; before = GC.GetTotalAllocatedBytes(true);
+        for (int i = 0; i < count; i++) ownedCount += Encoding.UTF8.GetBytes(longDocument.ToXmlString(Options)).Length;
+        long positiveBytes = GC.GetTotalAllocatedBytes(true) - before;
+        for (int i = 0; i < 4; i++) { delayed.Reset(); await longDocument.SaveAsync(delayed, Options); }
+        before = GC.GetTotalAllocatedBytes(true);
+        for (int i = 0; i < 20; i++) { delayed.Reset(); await longDocument.SaveAsync(delayed, Options); }
+        long suspendedBytes = GC.GetTotalAllocatedBytes(true) - before;
+        // Retained-memory observation excludes pre-owned DOM and fixture creation.
+        var hugeDocument = Document(8 * 1024 * 1024); await hugeDocument.SaveAsync(sink, Options);
+        long retainedBefore = GC.GetTotalMemory(true);
+        for (int i = 0; i < 8; i++) { sink.Reset(); await hugeDocument.SaveAsync(sink, Options); }
+        long retainedDelta = GC.GetTotalMemory(true) - retainedBefore;
+        var released = await CompletedOwner(); await Task.Yield();
+        GC.Collect(); GC.WaitForPendingFinalizers(); GC.Collect();
+        bool documentReleased = !released.Document.IsAlive;
+        GC.KeepAlive(released.Completion); GC.KeepAlive(hugeDocument);
+        bool passed = shortBytes > 0 && longBytes <= shortBytes + 65536 && positiveBytes > longBytes * 10 && documentReleased && sink.Capacity == 8192 && delayed.Capacity == 8192 && delayed.Maximum <= 8192 && Math.Abs(retainedDelta) < 1024 * 1024 && ownedCount == 65543L * count;
+        Console.WriteLine(JsonSerializer.Serialize(new { passed, runtime = RuntimeInformation.FrameworkDescription, architecture = RuntimeInformation.ProcessArchitecture.ToString(), coldObserved, count, shortBytes, longBytes, positiveBytes, suspendedDocuments = 20, suspendedBytes, scratchCapacity = sink.Capacity, maximumWrite = sink.Maximum, delayedMaximumWrite = delayed.Maximum, retainedDelta, documentReleased, notes = "Processwide precise counters; setup/scope/state included. Cold observation excludes fixture construction; pool/JIT initialization may precede it. No zero-allocation whole-serialization claim. Suspended bytes include transport/continuations. Timing not measured." }, new JsonSerializerOptions { WriteIndented = true }));
+        return passed ? 0 : 1;
+    }
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private static async Task<(WeakReference Document, Task Completion)> CompletedOwner()
+    {
+        var document = Document(65536); var weak = new WeakReference(document); var sink = new Sink { Delayed = true };
+        Task completion = document.SaveAsync(sink, Options); await completion;
+        return (weak, completion);
+    }
+    private sealed class Sink : Stream
+    {
+        internal long Count; internal int Maximum, Capacity; internal bool Delayed;
+        internal void Reset() => Count = 0;
+        public override async ValueTask WriteAsync(ReadOnlyMemory<byte> buffer, CancellationToken cancellationToken = default)
+        {
+            cancellationToken.ThrowIfCancellationRequested(); Maximum = Math.Max(Maximum, buffer.Length);
+            if (!MemoryMarshal.TryGetArray(buffer, out ArraySegment<byte> array)) throw new InvalidOperationException("Missing bounded owner");
+            Capacity = Math.Max(Capacity, array.Array!.Length);
+            if (Delayed) await Task.Yield();
+            Count += buffer.Length;
+        }
+        public override bool CanRead => false; public override bool CanSeek => false; public override bool CanWrite => true;
+        public override long Length => Count; public override long Position { get => Count; set => throw new NotSupportedException(); }
+        public override void Write(byte[] buffer, int offset, int count) => throw new InvalidOperationException("Sync write");
+        public override void Write(ReadOnlySpan<byte> buffer) => throw new InvalidOperationException("Sync write");
+        public override void Flush() => throw new InvalidOperationException("Implicit flush");
+        public override int Read(byte[] buffer, int offset, int count) => throw new NotSupportedException();
+        public override long Seek(long offset, SeekOrigin origin) => throw new NotSupportedException();
+        public override void SetLength(long value) => throw new NotSupportedException();
+    }
+}

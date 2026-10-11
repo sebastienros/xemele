@@ -1,0 +1,10 @@
+using System.Text;
+using Xemele;
+var document = new XmlDocument(); var root = document.CreateElement("r");
+document.DocumentNode.AppendChild(root); root.AppendChild(document.CreateElement("first")); root.AppendChild(document.CreateText("tail&"));
+using var stream = new MemoryStream(); var options = new XmlSaveOptions { Indent = true, OmitXmlDeclaration = true };
+await XmlAsyncSerializer.SerializeAsync(document, stream, options);
+if (Encoding.UTF8.GetString(stream.ToArray()) != "<r><first/>tail&amp;</r>") throw new InvalidOperationException("Output differs.");
+stream.SetLength(0); await document.SaveAsync(stream, options);
+if (Encoding.UTF8.GetString(stream.ToArray()) != "<r><first/>tail&amp;</r>") throw new InvalidOperationException("Wrapper differs.");
+Console.WriteLine("Both frozen APIs passed the mixed-content golden.");
