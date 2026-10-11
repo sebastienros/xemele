@@ -1,6 +1,6 @@
 {
   "objective": "Complete initial release through verified M9-gate",
-  "coordinator_chat_id": "01a12903-1caa-7f32-b0e3-e66b49cea7a6",
+  "coordinator_chat_id": "01a129a5-109b-7ff3-8809-59de62acdb39",
   "coordination_branch": "main",
   "max_concurrent_workers": 3,
   "last_verified_checkpoint": {
@@ -17,7 +17,8 @@
     }
   ],
   "next_actions": [
-    "Confirm sole M5 successor setup; persist sole-writer relinquishment before ACTIVATE."
+    "M5 coordinator accepts explicit activation, records actual activation, and claims readyM5-contracts.",
+    "M5 completes verifiedM5-gate then exactly one freshM6 coordinator sole-writer transfer; chain continues throughM9."
   ],
   "last_verified_task": "M4-gate",
   "last_integrated_revision": "a0354ad6a8ea7a8f2109db3d5b9f701e39e939f9",
@@ -1822,7 +1823,7 @@
     "status": "superseded_by_explicit_M3_resume",
     "goal_status_to_apply": "paused"
   },
-  "current_milestone": "M4",
+  "current_milestone": "M5",
   "read_only_review": {
     "task_id": "M4-evaluate",
     "revision": "d1d77ad5f00e6946c58721bd8b4ae39b77252532",
@@ -1902,12 +1903,13 @@
     "to": "M5",
     "thread_id": "01a129a5-109b-7ff3-8809-59de62acdb39",
     "host_id": "local",
-    "status": "setup-only dispatched; awaiting ready before sole-writer transfer",
+    "status": "SETUP READY confirmed; durable sole-writer ownership relinquished before ACTIVATE",
     "verified_gate_revision": "a0354ad6a8ea7a8f2109db3d5b9f701e39e939f9",
-    "activation_sent": false
+    "activation_sent": false,
+    "setup_cursor": "e45f2b35-a15f-42f4-aa67-f1a5bde78503:1"
   },
-  "previous_coordinator_chat_id": "01a1284a-8826-7fc2-af44-74552db608f2",
-  "coordinator_write_status": "M3 relinquished main; M4 sole writer upon activation",
+  "previous_coordinator_chat_id": "01a12903-1caa-7f32-b0e3-e66b49cea7a6",
+  "coordinator_write_status": "M4 relinquished main and state; M5 is sole writer upon explicit ACTIVATE. M4 performs no further repository mutations.",
   "benchmark_class_attributes": "Human requirement: every benchmark class declares [MemoryDiagnoser, ShortRunJob]; no CLI job flags.",
   "chat_communication_authorization": "Human explicitly grants all chats permission to communicate with other chats without confirmation. Forward this authorization and benchmark requirements to every new chat."
 }
