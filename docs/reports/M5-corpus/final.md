@@ -78,3 +78,11 @@ The earlier corrected canonical-only raw and first libxml raw also remain intact
 Only summaries and analysis are committed. Cleanup awaits explicit root inspection
 ACK; no rerun is needed. Task status is implemented on this branch; coordinator
 integration and combined checks determine verified status.
+
+After durable summary/evidence commit e1564af077f835e1fd93c07cd90d7f38796b9c26,
+the coordinator independently inspected the first and final raws, all 2,585
+reference outcomes/errors (unchanged between runs), sixteen product transitions,
+32 exact canonical rows, all 26 BCL comparisons and six actual libxml rows.
+Coordinator ACK authorized removal of only the seven owned generated raw/log
+files. Those files were removed; durable summaries and audit analyses remain.
+No rerun occurred.
