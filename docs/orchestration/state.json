@@ -13,8 +13,8 @@
       "agent_id": "/root/validation_model",
       "worktree": "/private/tmp/xemele-m5-gate",
       "branch": "codex/m5-gate",
-      "base_revision": "084c3a49659f4df8bf482b5459078db212ed572c",
-      "stage": "Claimed; gate preparation dispatch pending"
+      "base_revision": "d68d924f0a089ecf2c3effa64faf65856886b046",
+      "stage": "Reclaimed original gate checkout; final preparation before exclusive suite lease"
     }
   ],
   "integration_queue": [],
@@ -28,8 +28,8 @@
   "next_actions": [
     "Claim and complete cumulative M5-gate, then exactly one fresh M6 setup and durable sole-writer transfer."
   ],
-  "last_verified_task": "M5-corpus",
-  "last_integrated_revision": "4fab13fc9e2b8a1977646e007bd33b24f03cf0ea",
+  "last_verified_task": "M5-contracts-build",
+  "last_integrated_revision": "560045971276022ec90f7c3e33c7a88367ba7993",
   "completed_assignments": [
     {
       "task_id": "M2-dtd-composition",
@@ -792,6 +792,14 @@
       "source_review": "21808e2/7d6160c sourceapproved;831 unequal labels explicitlydisclosed; no executedreviewcheck",
       "integration_revision": "4fab13fc9e2b8a1977646e007bd33b24f03cf0ea",
       "handoff_revision": "6e4b45d600a457e754a76b3e8b1fc423013101d1"
+    },
+    {
+      "task_id": "M5-contracts-build",
+      "agent_id": "/root",
+      "worktree": "/private/tmp/xemele-m5-contracts-build",
+      "branch": "codex/m5-contracts-build",
+      "base_revision": "996b1656129dd180436888c9a76fe00d93eb0534",
+      "stage": "Claimed minimal project glob repair"
     }
   ],
   "benchmark_policy": "Successful previous measurements retained; future changed runtime measurements require complete preparation and exclusive grant.",
@@ -958,7 +966,6 @@
     }
   ],
   "metadata_correction": "PI rawAPI report uses inventory.apiDeclarations, not wrapper members. Initialrootmetadata assertion stopped before taskstate writes; d539f13 preserves actualpassing0869bde evidence, separateverifiedmetadata follows.",
-  "suspended_assignments": [],
   "allocation_research": {
     "issue": "https://github.com/dotnet/runtime/issues/134724",
     "draft_fix": "https://github.com/dotnet/runtime/pull/134855",
@@ -1970,7 +1977,7 @@
     "implementation_started": false,
     "dispatch_after": "M2-conformance verified"
   },
-  "milestone_progress": "M5:14of15tasks verified; cumulative gate ready.",
+  "milestone_progress": "M5:14of16tasks verified; gate reserved/parked pending narrow shared build repair.",
   "pause_request": {
     "requested_by": "user",
     "after_verified_task": "M2-gate",
