@@ -32,12 +32,12 @@ public sealed class CompositionTests
         var recorder = new Recorder(); var saxInput = new InputStream(expected);
         await XmlSaxParser.ParseAsync(saxInput, recorder, cancellationToken: Ct);
         Assert.Equal("rc", recorder.Starts.ToString()); Assert.Equal("cr", recorder.Ends.ToString());
-        Assert.Equal("tail界", recorder.TextValue.ToString()); Assert.Equal("β&😀", recorder.Attribute);
+        Assert.Equal((indent ? "\n" : "") + "tail界", recorder.TextValue.ToString()); Assert.Equal("β&😀", recorder.Attribute);
         Assert.Equal(1, recorder.Completed); Assert.Equal(1, recorder.CDataStarts); Assert.Equal(1, recorder.CDataEnds);
         var readerInput = new InputStream(expected); await using var reader = Reader.Create(readerInput, cancellationToken: Ct);
         var tokens = new List<string>(); var text = new StringBuilder();
         while (await reader.ReadAsync(Ct)) Capture(reader, tokens, text);
-        Assert.Equal("tail界", text.ToString()); Assert.Equal("StartDocument", tokens[0]); Assert.Equal("EndDocument", tokens[^1]);
+        Assert.Equal((indent ? "\n" : "") + "tail界", text.ToString()); Assert.Equal("StartDocument", tokens[0]); Assert.Equal("EndDocument", tokens[^1]);
         Assert.False(await reader.ReadAsync(Ct)); Assert.Equal(XmlTokenKind.None, reader.TokenKind);
         var reloadInput = new InputStream(expected); var reloaded = await XmlDocument.LoadAsync(reloadInput, cancellationToken: Ct);
         Assert.Equal(document.ToXmlString(new() { OmitXmlDeclaration = true }, Ct), reloaded.ToXmlString(new() { OmitXmlDeclaration = true }, Ct));
