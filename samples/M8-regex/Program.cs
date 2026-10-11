@@ -1,0 +1,11 @@
+using Xemele;
+using Xemele.Validation;
+IXmlSchemaRegexCompiler compiler = new XmlSchemaRegexEngine();
+IXmlSchemaRegexMatcher matcher = (IXmlSchemaRegexMatcher)compiler;
+var operation = new SchemaCompileOperation();
+var program = compiler.Compile("[a-z-[aeiou]]+", default, operation);
+if (!matcher.IsMatch(program, "bcdf".AsSpan(), new SchemaValidationOperation()) || matcher.IsMatch(program, "bad".AsSpan(), new SchemaValidationOperation())) throw new Exception("Regex consumer failed.");
+var doc = XmlDocument.Parse("<root>bcdf</root>");
+if (!DtdSchema.Compile("<!ELEMENT root (#PCDATA)>").Validate(doc).IsValid) throw new Exception("M5 changed.");
+if (typeof(XmlDocument).Assembly.GetTypes().Any(t => t.Namespace is string ns && (ns.Contains("Html", StringComparison.OrdinalIgnoreCase) || ns.StartsWith("Xemele.Css", StringComparison.Ordinal)))) throw new Exception("HTML dependency loaded.");
+Console.WriteLine("PASS regex concrete consumer, immutable model and M5; XML-only assembly; " + Environment.Version);

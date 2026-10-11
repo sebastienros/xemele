@@ -1,0 +1,59 @@
+using System.Runtime.InteropServices;
+using System.Security.Cryptography;
+using System.Text;
+using System.Text.Json;
+using Xemele.Validation;
+using Xemele.Benchmarks.M8Regex;
+using BenchmarkDotNet.Running;
+if (args.Length > 0 && args[0] == "--bdn")
+{ BenchmarkSwitcher.FromTypes([typeof(RegexBenchmarks)]).Run(args[1..]); return; }
+if (args is not [var mode, var output] || mode is not ("--control" or "--measure")) throw new ArgumentException("Use --control|--measure output, or --bdn filters.");
+if (RuntimeInformation.FrameworkDescription != ".NET 10.0.11") throw new InvalidOperationException("Pinned runtime required.");
+bool measure = mode == "--measure";
+long coldBefore = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+var engine = new XmlSchemaRegexEngine();
+string[] patterns = ["[a-z-[aeiou]]+", "[\\p{L}\\p{So}]+", "(a?)*b", "[a-z]{1,200}"];
+string[] inputs = ["bc", new string('b', 1024), "a" + new string('b', 1023), new string('b', 1023) + "a", "名😀Ω𐐀", new string('a', 128) + "b", new string('b', 100), new string((char)0xD800, 1)];
+int[] programs = [0, 0, 0, 0, 1, 2, 3, 0]; bool[] expected = [true, true, false, false, true, true, true, false];
+var compiled = patterns.Select(p => engine.Compile(p, default, new SchemaCompileOperation())).ToArray();
+long coldSetupBytes = measure ? GC.GetAllocatedBytesForCurrentThread() - coldBefore : 0;
+var operation = new SchemaValidationOperation(new() { MaxOperations = null, Limits = new() { EvaluationWork = null } });
+var rows = new List<object>();
+for (int route = 0; route < 8; route++)
+{
+    for (int i = 0; i < 32; i++) if (engine.IsMatch(compiled[programs[route]], inputs[route].AsSpan(), operation) != expected[route]) throw new Exception("Control semantics");
+    var distribution = new long[64];
+    for (int i = 0; i < distribution.Length; i++)
+    {
+        long before = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+        bool match = engine.IsMatch(compiled[programs[route]], inputs[route].AsSpan(), operation);
+        long allocated = measure ? GC.GetAllocatedBytesForCurrentThread() - before : 0;
+        if (match != expected[route] || measure && allocated != 0) throw new Exception("Warm primitive allocation regression");
+        distribution[i] = allocated;
+    }
+    rows.Add(new { route, name = inputs[route].Length, distribution });
+}
+var owned = new long[64];
+for (int i = 0; i < owned.Length; i++)
+{
+    long before = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+    bool result = engine.IsMatch(compiled[0], "bc".AsSpan(), new SchemaValidationOperation());
+    owned[i] = measure ? GC.GetAllocatedBytesForCurrentThread() - before : 0;
+    if (!result || measure && owned[i] <= 0) throw new Exception("Owned ledger control");
+}
+long positiveBefore = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+var positive = new byte[1024]; GC.KeepAlive(positive);
+long positiveBytes = measure ? GC.GetAllocatedBytesForCurrentThread() - positiveBefore : 0;
+if (measure && positiveBytes < 1024) throw new Exception("Positive control");
+long retainedBefore = measure ? GC.GetTotalMemory(true) : 0;
+var retained = new XmlSchemaRegexProgram[256];
+for (int i = 0; i < retained.Length; i++) retained[i] = engine.Compile(patterns[0], default, new SchemaCompileOperation());
+long retainedAfter = measure ? GC.GetTotalMemory(true) : 0;
+GC.KeepAlive(retained); GC.KeepAlive(compiled); GC.KeepAlive(operation);
+string inputIdentity = string.Join("\n", patterns) + "\n" + string.Join("\n", inputs.Take(7));
+File.WriteAllText(output, JsonSerializer.Serialize(new { mode, runtime = RuntimeInformation.FrameworkDescription, architecture = RuntimeInformation.ProcessArchitecture.ToString(), os = RuntimeInformation.OSDescription,
+ serverGc = System.Runtime.GCSettings.IsServerGC, sourceRevision = Environment.GetEnvironmentVariable("XEMELE_REGEX_REVISION"),
+ assemblySha256 = Hash(typeof(SchemaCompileOptions).Assembly.Location), probeSha256 = Hash(typeof(RegexBenchmarks).Assembly.Location),
+ inputSha256 = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(inputIdentity))), invalidScalar = 0xD800, coldSetupBytes, rows, owned, positiveBytes, retainedBefore, retainedAfter, retainedCount = retained.Length }, new JsonSerializerOptions { WriteIndented = true }));
+Console.WriteLine(mode + ": 8 consumed routes x 32 warm/64 samples; owned/positive/retained controls; counters " + (measure ? "enabled" : "disabled"));
+static string Hash(string path) => Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(path)));
