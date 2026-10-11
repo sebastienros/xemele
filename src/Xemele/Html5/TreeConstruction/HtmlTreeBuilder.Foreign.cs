@@ -32,7 +32,7 @@ internal sealed partial class HtmlTreeBuilder
                 if (token.Name is "br" or "p") { while (stack.Count > 1 && Current.NamespaceUri != HtmlDocument.HtmlNamespace && !MathText(Current) && !Integration(Current)) Pop(); return ProcessHtml(token); }
                 for (int i = stack.Count - 1; i >= 0; i--)
                 {
-                    var n = stack[i]; if (n.NamespaceUri == HtmlDocument.HtmlNamespace) return ProcessHtml(token); if (HtmlNames.Fold(n.LocalName) == token.Name) { while (stack.Count > i) Pop(); return false; }
+                    var n = stack[i]; if (n.NamespaceUri == HtmlDocument.HtmlNamespace) return ProcessHtml(token); if (HtmlAscii.Equals(n.LocalName, token.Name)) { while (stack.Count > i) Pop(); return false; }
                     if (n.NamespaceUri == HtmlDocument.HtmlNamespace) return ProcessHtml(token);
                 }
                 return false;

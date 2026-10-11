@@ -57,6 +57,43 @@ public sealed class BuilderBehaviorTests
         if (text == "new") { Assert.Single(body.Children); Assert.DoesNotContain(body.Children[0].Children, n => n.Kind == HtmlNodeKind.ProcessingInstruction); }
         else Assert.Equal("template", body.Children[1].LocalName);
     }
+    [Theory]
+    [InlineData("open", false)]
+    [InlineData("closed", false)]
+    [InlineData("OPEN", false)]
+    [InlineData("invalid", true)]
+    public void ShadowTemplateBranchPrecedesForPatching(string mode, bool patches)
+    {
+        var body = Html5Parser.Parse("<body><div><?marker name='x'?></div><template for=x shadowrootmode='" + mode + "'>new</template>").RootElement.Children[1];
+        Assert.Equal(patches ? "new" : "", body.Children[0].GetTextContent());
+        Assert.Equal(patches ? 1 : 2, body.Children.Count);
+        if (!patches) Assert.Equal(HtmlNodeKind.ProcessingInstruction, body.Children[0].FirstChild!.Kind);
+    }
+
+    [Fact]
+    public void ForeignClosingNamesUseBorrowedAsciiComparison()
+    {
+        var previous = System.Globalization.CultureInfo.CurrentCulture;
+        try
+        {
+            System.Globalization.CultureInfo.CurrentCulture = System.Globalization.CultureInfo.GetCultureInfo("tr-TR");
+            var svg = Html5Parser.Parse("<svg><linearGradient><foreignObject><p>x</p></foreignobject></lineargradient><circle/></svg>").RootElement.Children[1].FirstChild!;
+            Assert.Equal(new[] { "linearGradient", "circle" }, svg.Children.Select(n => n.LocalName));
+            Assert.Equal("foreignObject", svg.FirstChild!.FirstChild!.LocalName); Assert.Equal("x", svg.GetTextContent());
+            Assert.False(HtmlAscii.Equals("K", "k"));
+        }
+        finally { System.Globalization.CultureInfo.CurrentCulture = previous; }
+    }
+
+    [Fact]
+    public void RepeatedFosterAndAdoptionTextPreservesOneCoalescedNode()
+    {
+        string rows = string.Concat(Enumerable.Repeat("<tr><td>cell</td></tr>x", 2000));
+        var body = Html5Parser.Parse("<body>prefix<table>" + rows + "</table>suffix").RootElement.Children[1];
+        Assert.Equal("prefix" + new string('x', 2000), body.FirstChild!.Value); Assert.Equal(HtmlNodeKind.Text, body.FirstChild.Kind); Assert.Equal("table", body.Children[1].LocalName); Assert.Equal("suffix", body.Children[2].Value);
+        var formatting = Html5Parser.Parse("<p>" + string.Concat(Enumerable.Repeat("<b><i>x</b>y</i>", 2000))).RootElement.Children[1]; Assert.Equal(string.Concat(Enumerable.Repeat("xy", 2000)), formatting.GetTextContent());
+    }
+
     [Fact]
     public void IndependentCurrentTemplateFramesetRule()
     {

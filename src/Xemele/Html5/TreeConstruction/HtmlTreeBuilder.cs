@@ -65,7 +65,7 @@ internal sealed partial class HtmlTreeBuilder
         if (options.Limits.Depth is int max && stack.Count + 1 > max) throw new InvalidOperationException("HTML open-element depth quota exceeded.");
         stack.Add(node);
     }
-    private void Pop() { FlushText(); var node = Current; stack.RemoveAt(stack.Count - 1); PoppedFormControl(node); }
+    private void Pop() { var node = Current; stack.RemoveAt(stack.Count - 1); PoppedFormControl(node); }
     private void PopThrough(HtmlNode node) { int index = stack.LastIndexOf(node); if (index >= 0) while (stack.Count > index) Pop(); }
     private void PopThrough(string name) { for (int i = stack.Count - 1; i >= 0; i--) if (Html(stack[i], name)) { while (stack.Count > i) Pop(); return; } }
     private (HtmlNode Parent, HtmlNode? Before) Location(HtmlNode? target = null)
@@ -86,8 +86,8 @@ internal sealed partial class HtmlTreeBuilder
     }
     private void InsertNode(HtmlNode node, HtmlNode? target = null)
     {
-        FlushText();
         var location = Location(target);
+        if (textParent == location.Parent) FlushText();
         if (location.Before is { } before) location.Parent.InsertBefore(node, before); else location.Parent.AppendChild(node);
     }
     private HtmlNode Insert(HtmlToken token, string? ns = null)
@@ -121,10 +121,10 @@ internal sealed partial class HtmlTreeBuilder
     {
         if (textParent is null) return;
         string owned = pendingText.ToString(); pendingText.Clear();
-        if (textNode is not null) textNode.Value = owned;
+        if (textNode is not null) textNode.SetParsedText(owned);
         else
         {
-            var node = document.CreateText(owned);
+            var node = document.CreateParsedText(owned);
             if (textBefore is not null) textParent.InsertBefore(node, textBefore); else textParent.AppendChild(node);
         }
         textParent = textBefore = textNode = null;
@@ -155,7 +155,7 @@ internal sealed partial class HtmlTreeBuilder
         {
             if (reprocess > 128) throw new InvalidOperationException("Tree construction failed to advance.");
             bool again = stack.Count > 0 && Foreign(token) ? ProcessForeign(token) : ProcessHtml(token);
-            UpdateCdata(); if (!again) { if (token.Kind == HtmlTokenKind.EndOfFile) while (stack.Count > 0) Pop(); break; }
+            UpdateCdata(); if (!again) { if (token.Kind == HtmlTokenKind.EndOfFile) { while (stack.Count > 0) Pop(); FlushText(); } break; }
         }
     }
     private void UpdateCdata() => Tokenizer.AllowCdata = stack.Count > 0 && Adjusted.NamespaceUri != HtmlDocument.HtmlNamespace;

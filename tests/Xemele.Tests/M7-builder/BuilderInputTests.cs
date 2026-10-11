@@ -5,6 +5,31 @@ namespace Xemele.Tests.HtmlTreeConstruction;
 public sealed class BuilderInputTests
 {
     [Fact]
+    public void EveryWhatwgLabelAndGeneratedIndexRowMatchesOriginalSnapshot()
+    {
+        string root = Path.Combine(FindRoot(), "tests/fixtures/M7-builder/encoding"); int labels = 0, cells = 0;
+        using var encoding = System.Text.Json.JsonDocument.Parse(File.ReadAllText(Path.Combine(root, "encodings.json")));
+        foreach (var group in encoding.RootElement.EnumerateArray()) foreach (var item in group.GetProperty("encodings").EnumerateArray()) foreach (var label in item.GetProperty("labels").EnumerateArray())
+        {
+            string expected = item.GetProperty("name").GetString()!.ToLowerInvariant(); string actual = label.GetString()!;
+            Assert.Equal(expected, HtmlEncodingTables.Label(actual)); Assert.Equal(expected, HtmlEncodingTables.Label(" \t" + actual.ToUpperInvariant() + "\r\n")); labels++;
+        }
+        using var indexes = System.Text.Json.JsonDocument.Parse(File.ReadAllText(Path.Combine(root, "indexes.json")));
+        foreach (var item in indexes.RootElement.EnumerateObject())
+        {
+            var table = HtmlEncodingTables.Index(item.Name); int i = 0;
+            foreach (var cell in item.Value.EnumerateArray())
+            {
+                if (cell.ValueKind == System.Text.Json.JsonValueKind.Array) foreach (var value in cell.EnumerateArray()) Assert.Equal(value.GetInt32(), table[i++]);
+                else Assert.Equal(cell.ValueKind == System.Text.Json.JsonValueKind.Null ? -1 : cell.GetInt32(), table[i++]);
+            }
+            Assert.Equal(i, table.Length); cells += i;
+        }
+        Assert.Equal(228, labels); Assert.Equal(91711, cells);
+        Assert.Null(HtmlEncodingTables.Label("not-an-encoding")); Assert.Null(HtmlEncodingTables.Label("utf-8x")); Assert.Null(HtmlEncodingTables.Label("Koi8-r"));
+    }
+
+    [Fact]
     public void OriginalPinnedEncodingVectors()
     {
         string root = FindRoot(); int count = 0; var failures = new List<string>();
@@ -45,6 +70,34 @@ public sealed class BuilderInputTests
         Assert.Throws<OperationCanceledException>(() => Html5Parser.Load(cancelled, cancellationToken: cts.Token)); Assert.Equal(0, cancelled.ReadCalls); Assert.False(cancelled.WasDisposed);
         Assert.Equal("windows-1252", HtmlByteInput.Sniff(Encoding.ASCII.GetBytes(new string(' ', 1024) + "<meta charset=utf-8>").AsSpan(0, 1024)).Encoding);
     }
+    [Fact]
+    public void MergedParsedTextAndSelectedContentKeepPerTokenQuotas()
+    {
+        var settings = new Html5ParseOptions { Limits = new() { TokenCharacters = 32 } };
+        string text = new string('x', 100_000);
+        var doc = Html5Parser.Parse("<select><button><selectedcontent></button><option>" + text, settings);
+        var select = doc.RootElement.Children[1].FirstChild!;
+        Assert.Equal(text, select.FirstChild!.FirstChild!.GetTextContent()); Assert.Equal(text, select.Children[1].GetTextContent()); Assert.Single(select.Children[1].Children);
+        Assert.Throws<InvalidOperationException>(() => doc.CreateText(text));
+        Assert.Throws<InvalidOperationException>(() => select.Children[1].FirstChild!.Value = text);
+        using var stream = new ShortReadStream(Encoding.ASCII.GetBytes("<p>" + text), 17);
+        var loaded = Html5Parser.Load(stream, settings, TestContext.Current.CancellationToken); Assert.Equal(text, loaded.RootElement.GetTextContent()); Assert.Single(loaded.RootElement.Children[1].FirstChild!.Children);
+    }
+
+    [Fact]
+    public void EncodingDeclarationWindowBoundaryAndNoChardetOrExecutedMeta()
+    {
+        string declaration = "<meta charset=iso8859-2>";
+        byte[] atBoundary = [..Encoding.ASCII.GetBytes(new string(' ', 1024 - declaration.Length) + declaration + "<p>"), 0xA1];
+        Assert.Equal("iso-8859-2", HtmlByteInput.Sniff(atBoundary.AsSpan(0, 1024)).Encoding); Assert.Equal("Ą", Html5Parser.Parse(atBoundary).RootElement.GetTextContent());
+        byte[] outside = [..Encoding.ASCII.GetBytes(new string(' ', 1025 - declaration.Length) + declaration + "<p>"), 0xA1];
+        Assert.Equal("windows-1252", HtmlByteInput.Sniff(outside.AsSpan(0, 1024)).Encoding); Assert.Equal("¡", Html5Parser.Parse(outside).RootElement.GetTextContent());
+        var big5 = File.ReadAllBytes(Path.Combine(FindRoot(), "tests/fixtures/M7-tokenizer/encoding/chardet/test_big5.txt"));
+        Assert.Equal("windows-1252", HtmlByteInput.Sniff(big5.AsSpan(0, Math.Min(1024, big5.Length))).Encoding);
+        string scripted = Encoding.Latin1.GetString(File.ReadAllBytes(Path.Combine(FindRoot(), "tests/fixtures/M7-tokenizer/encoding/scripted/tests1.dat"))); int end = scripted.IndexOf("#encoding", StringComparison.Ordinal); byte[] raw = Encoding.Latin1.GetBytes(scripted[6..(end - 1)]);
+        Assert.Contains("document.write", scripted, StringComparison.Ordinal); Assert.Equal("windows-1252", HtmlByteInput.Sniff(raw).Encoding);
+    }
+
     [Theory]
     [InlineData("big5", new byte[] { 0x88, 0x62 }, "Ê̄")]
     [InlineData("shift_jis", new byte[] { 0x82, 0xA0 }, "あ")]

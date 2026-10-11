@@ -9,7 +9,7 @@ internal sealed partial class HtmlTreeBuilder
     {
         FlushText(); var location = Location(); var scope = location.Parent;
         if (Html(scope, "body")) scope = scope.Parent!;
-        var template = Insert(token); string? name = template.GetAttribute("for"); if (string.IsNullOrEmpty(name)) return;
+        var template = Insert(token); if (template.GetAttribute("shadowrootmode") is { } shadow && (HtmlAscii.Equals(shadow, "open") || HtmlAscii.Equals(shadow, "closed"))) return; string? name = template.GetAttribute("for"); if (string.IsNullOrEmpty(name)) return;
         HtmlNode? start = null, end = null;
         foreach (var node in Descendants(scope))
         {

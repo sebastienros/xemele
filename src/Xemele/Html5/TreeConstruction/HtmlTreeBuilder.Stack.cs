@@ -82,6 +82,7 @@ internal sealed partial class HtmlTreeBuilder
             }
             bool saved = foster; foster = true; InsertNode(last, common); foster = saved;
             var newFormatting = formattingElement.Clone(false);
+            if (textParent == furthest) FlushText();
             while (furthest.FirstChild is { } child) newFormatting.AppendChild(child);
             furthest.AppendChild(newFormatting);
             int old = formatting.IndexOf(formattingElement); formatting.RemoveAt(old); if (old < bookmark) bookmark--;

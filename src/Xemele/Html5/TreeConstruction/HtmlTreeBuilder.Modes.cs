@@ -100,7 +100,7 @@ internal sealed partial class HtmlTreeBuilder
                 if (t.Kind == HtmlTokenKind.EndOfFile) return false;
                 mode = Mode.InBody; return true;
             case Mode.InFrameset:
-                if (t.Kind == HtmlTokenKind.Character && !white) { foreach (char c in t.Data) if (c is '\t' or '\n' or '\f' or '\r' or ' ') Characters(c.ToString()); return false; }
+                if (t.Kind == HtmlTokenKind.Character && !white) { foreach (char c in t.Data) if (c is '\t' or '\n' or '\f' or '\r' or ' ') Characters(c switch { '\t' => "\t", '\n' => "\n", '\f' => "\f", '\r' => "\r", _ => " " }); return false; }
                 if (white) { Characters(t.Data); return false; }
                 if (misc) { Misc(t); return false; }
                 if (t.Kind == HtmlTokenKind.Doctype) return false;
@@ -111,7 +111,7 @@ internal sealed partial class HtmlTreeBuilder
                 if (start && n == "noframes") return InHead(t);
                 return false;
             case Mode.AfterFrameset:
-                if (t.Kind == HtmlTokenKind.Character && !white) { foreach (char c in t.Data) if (c is '\t' or '\n' or '\f' or '\r' or ' ') Characters(c.ToString()); return false; }
+                if (t.Kind == HtmlTokenKind.Character && !white) { foreach (char c in t.Data) if (c is '\t' or '\n' or '\f' or '\r' or ' ') Characters(c switch { '\t' => "\t", '\n' => "\n", '\f' => "\f", '\r' => "\r", _ => " " }); return false; }
                 if (white) { Characters(t.Data); return false; }
                 if (misc) { Misc(t); return false; }
                 if (start && n == "html") return InBody(t);
