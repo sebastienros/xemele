@@ -4,7 +4,7 @@
   "milestone": "M8",
   "title": "Freeze schema validator contracts and profiles",
   "kind": "contract",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M8 coordinator 01a12c6c-b333-71d3-877f-0d186618e21d / assigned isolated contract worker",
   "branch": "codex/m8-contracts",
   "base_revision": "2ac5a78d92e1ce0cafca317d3b193a475e8ab8bb",
@@ -32,30 +32,42 @@
     {
       "id": "M8-contracts-A1",
       "description": "Specify exact schema/datatype/regex/component interfaces, query binding/edition, report format and schema diagnostics.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "corrected-contract-check"
+      ]
     },
     {
       "id": "M8-contracts-A2",
       "description": "Compile lane fixtures and inventories against M2 resolver, M4 XPath and M5 validation model; no HTML dependency.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "corrected-contract-check"
+      ]
     },
     {
       "id": "M8-contracts-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "corrected-contract-check",
+        "corrected-planning",
+        "corrected-whitespace"
+      ]
     }
   ],
   "implementation": [
     "docs/specs/schemas.md: exact public facade/profile freeze and additive resolver boundary",
     "docs/decisions/M8/contracts.md: full semantics, limits/lifetimes/diagnostics, lane ownership and joins",
-    "docs/decisions/M8/inventory.json: 410 classified required/excluded entries",
+    "docs/decisions/M8/inventory.json: 427 classified required/excluded entries",
     "tests/Contracts/Fixtures/M8/Model.cs.fixture: shared public/internal schema/datatype/regex/facet/result contracts",
     "tests/Contracts/Fixtures/M8/RelaxNg.cs.fixture; Xsd.cs.fixture; Schematron.cs.fixture; Reporting.cs.fixture: immutable compiler/component/evaluation/report interfaces",
     "tests/Contracts/Fixtures/M8/*/*.csproj; *.golden.txt; check.py: eight independent nonpackaged consumers, XML-only prerequisite source, exact public/internal metadata comparisons",
-    "docs/reports/M8-contracts/README.md; ApiCheck/: durable checks and owned extractor"
+    "docs/reports/M8-contracts/README.md; ApiCheck/: durable checks and owned extractor",
+    "docs/decisions/M8/sources.json; tests/Contracts/Fixtures/M8/References/schematron.rnc: pinned supporting ISO2016 grammar and offline digest checks",
+    "tests/Contracts/Fixtures/M8/XPathAccounting.cs.fixture; AccountingJoin.cs.fixture: proposed ordered actual-work accounting join against real M4 types",
+    "tests/Contracts/Fixtures/M8/{Schematron,Xsd,Reporting}/ReviewCases.cs.fixture; Reporting/review-detached.svrl.xml: compiled phase/block/context/notation/subject/key consumers and declarative detached report expectation",
+    "docs/reports/M8-contracts/review-corrections.md: all seven source-review findings mapped to exact contract/probe corrections"
   ],
   "evidence": [
     {
@@ -84,23 +96,50 @@
       "result": "passed",
       "summary": "No whitespace errors; implementation tree clean at tested revision.",
       "artifact": null
+    },
+    {
+      "id": "corrected-contract-check",
+      "kind": "check",
+      "revision": "2a41475dd531f18391219ae6a679a844019ea165",
+      "command": "python3 tests/Contracts/Fixtures/M8/check.py --dotnet '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet'",
+      "result": "passed",
+      "summary": "SDK10.0.400 Release and explicit runtime10.0.11; compiler/build-server reuse disabled. Eight independent XML-only consumers/M2-M4-M5 probes passed. Exact public/internal inventories316/316/316/316/444/615/479/319 matched;48 missing-member/nullable/init-only/work-width/optional-pattern-ID/event-key controls rejected;427 scope entries validated. Pinned supporting grammar SHA/phase lets/optional IDs/subject passed; detached namespace-independent SVRL expectation checked. Seven review corrections compile with representative phase, event-key, block, binding-context, notation, subject and actual-accounting join shapes. Future runtime accounting/serializer declarations never executed; Schema=5 not claimed as named existing runtime field. Owned paths only.",
+      "artifact": "docs/reports/M8-contracts/README.md"
+    },
+    {
+      "id": "corrected-planning",
+      "kind": "check",
+      "revision": "2a41475dd531f18391219ae6a679a844019ea165",
+      "command": "python3 tools/planning/tasks.py validate",
+      "result": "passed",
+      "summary": "Validated169 tasks on clean final corrective implementation: schema/evidence/acyclic dependencies/additive milestones/ordered ownership.",
+      "artifact": null
+    },
+    {
+      "id": "corrected-whitespace",
+      "kind": "check",
+      "revision": "2a41475dd531f18391219ae6a679a844019ea165",
+      "command": "git diff --check",
+      "result": "passed",
+      "summary": "No whitespace errors; final corrective implementation tree clean before evidence update.",
+      "artifact": null
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Initial contract checks passed at4c471b3413f178445bcf512a9c45cdd37a37def6; coordinator source review requires seven bounded shape/semantics corrections before freeze. Corrections in progress.",
+    "summary": "Implemented full M8 schema declaration/profile freeze plus all seven coordinator review corrections. Eight independent XML-only consumers, exact public/internal APIs,427 scope entries,pinned supporting ISO2016 grammar and explicit future resolver/accounting joins. Ready for coordinator review/integration; never marked verified.",
     "checks": [
-      "Pinned Release contract check at 4c471b3413f178445bcf512a9c45cdd37a37def6: eight probes,305/305/305/305/433/576/449/308 exact API rows,32 rejecting controls,410 classified features;passed.",
-      "Planning169 tasks and git diff --check passed at implementation revision.",
-      "Exploratory first authoring run failed only at missing not-yet-authored inventory.json; corrected full runs passed. No benchmark/allocation/cumulative schema suite run; no runtime hot-path change."
+      "Final normal contract check at 2a41475dd531f18391219ae6a679a844019ea165:316/316/316/316/444/615/479/319 exact API rows,48 rejecting controls,427 features,pinned source/phase-ID-subject and detached expectation;all passed on SDK10.0.400/runtime10.0.11.",
+      "Planning169 tasks and whitespace passed at final source revision; initial4c471b3 passing results retained separately, not used as final criterion evidence.",
+      "Initial authoring missing-inventory failure and source-pin DNS/whitespace-check failures corrected; no failures represented as passes. No runtime schema/accounting/serializer corpus,allocation,benchmark or cumulative gate executed."
     ],
     "remaining": [
-      "Address coordinator review: phase lets; detached event keys/optional pattern IDs; substitution/complex-type block; attribute binding context; notation table; subject; concrete actual-work XPath accounting adapter.",
-      "Coordinator review/integration and integrated checks before verified.",
-      "Before M8-model implementation, establish ordered ownership for the Schema=5 additive resolver repair; fixtures intentionally compile against current values0-4."
+      "Coordinator source review/integration and integrated checks before verified.",
+      "Coordinator must verify ordered M8-resource-kind and M8-xpath-accounting before M8-model; contract consumers compile future additions but never claim their runtime implementation."
     ],
     "requests": [
-      "Required ordered repair/explicit model ownership: src/Xemele/Resolution/Core/Resources.cs add XmlResourceKind.Schema=5, preserve values0-4 and every existing member. Suggested additive fragment docs/api/M8-schema-resource-kind.txt and tests/Xemele.Tests/M8-schema-resource-kind/ for schema-kind authorization plus existing M2/M6 kinds and disposal; repair owns its task/report. Do not route schemas as ExternalEntity/XInclude or rewrite earlier API fragments."
+      "M8-resource-kind: authorized ordered source owner adds XmlResourceKind.Schema=5 in src/Xemele/Resolution/Core/Resources.cs, preserves existing0-4 values/members, owns additive docs/api/M8-resource-kind.txt and tests/Xemele.Tests/M8-resource-kind/ authorization/compatibility tests. No schema-as-entity workaround.",
+      "M8-xpath-accounting: own src/Xemele/XPath/XPathExpression.cs internal EvaluateWithAccounting(XmlNode|XPathItem,XPathContext?,out long operations) overloads plus new src/Xemele/XPath/Evaluation/Accounting.cs internal static XPathEvaluationAccounting forwarding adapter with expression first argument. Count actual XPathBudget.Operations in finally even on failure, zero before budget creation, cap per-expression to RemainingWork and charge actual use; preserve public M4 behavior. Own docs/api/M8-xpath-accounting.txt and tests/Xemele.Tests/M8-xpath-accounting/ success/failure/shared-cap/exact-limit/preservation checks. Exact frozen signatures and semantics in fixtures/contracts.md."
     ]
   }
 }
