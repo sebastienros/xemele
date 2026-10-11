@@ -4,7 +4,7 @@
   "milestone": "M8",
   "title": "Schematron schema compilation",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M8 coordinator01a12c6c-b333-71d3-877f-0d186618e21d / assigned isolated worker",
   "branch": "codex/m8-sch-compile",
   "base_revision": "ddd69df2f2947ec1ae6797a228ce1d7f7366dacf",
@@ -53,8 +53,12 @@
     {
       "id": "M8-sch-compile-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "compiler-checks",
+        "source-review",
+        "owned-allocation-probe"
+      ]
     }
   ],
   "implementation": [
@@ -101,19 +105,30 @@
       "result": "passed",
       "summary": "212 runtime/source/configuration/binary/control identities stable; counters disabled; actual ps permission preflight passed. ManifestSHA256be99198a08d5f36b09bf507dae06cc07869c630832865fdc01ed881fde92c54b. Single prebuilt allocation-only child, maximum30s25work+5cleanup, absolute UTC start/expiry and no-output-overwrite guards. Awaiting explicit all-host grant; no measurement.",
       "artifact": "docs/reports/M8-sch-compile/preparation.json"
+    },
+    {
+      "id": "owned-allocation-probe",
+      "kind": "check",
+      "revision": "193a6fe3ddcdf209bea0c623b154cbb6abd99b9c",
+      "command": "python3 docs/reports/M8-sch-compile/lease.py --granted be99198a08d5f36b09bf507dae06cc07869c630832865fdc01ed881fde92c54b 2026-10-11T23:48:00Z 2026-10-11T23:54:57.536590+00:00",
+      "result": "passed",
+      "summary": "Root executed one prebuilt allocation-only SCH phase under GRANT5ac7a0815558aec519309e6fa2f6a663690c58f3; RELEASE6b35e04d057e7ec516a967fd52836a0aa46da1dd preceded raw inspection. Status0,PID47916exit0/reaped/groupabsent/logclosed,212 identities/manifest stable,0.320030958s within30s lifecycle bound. M4Pro14coreArm64/runtime10.0.11;32warmups then64 consumed per warm route. Cold43216B; window totals/means:positive9728/152,simple1287680/20120,complex6617896/103404.625,long1365504/21336,invalid995328/15552.16snapshot approximate retained181592B,RSS54870016B. Complex residual cause unknown; aggregate windows are not per-op distributions/constancy. Owned setup allocation evidence only; no BDN/timing/borrowed-zero/cross-architecture claim.",
+      "artifact": "docs/reports/M8-sch-compile/allocations.md"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Internal ISO2016 direct XPath1 compiler complete on branch; all277 checks and compatibility/consumer pass after verified ordered resource-base repair. Prepared owned setup allocation probe awaiting explicit all-host lease; no public facade/evaluator.",
+    "summary": "Complete immutable internal ISO2016 direct XPath1 compiler: includes/fragments, token-aware abstract parameters, abstract rules/extends, phases/scoped dependency-ordered lets, root match selectors, tests/subjects, dynamic diagnostics/properties/messages and original provenance. Verified resource-base repair adopted; no public facade/evaluator/placeholder. All branch criteria and owned setup allocation evidence passed.",
     "checks": [
-      "277 asserted tests passed; frozen154/public1393/XML-only consumer passed; planning177/diff passed",
-      "Six counters-disabled routes and212 identity/elevated-ps preflight passed; no actual measurement",
-      "Historical draft failures/corrections retained honestly in docs/reports/M8-sch-compile/README.md"
+      "Accepted source193a6fe3ddcdf209bea0c623b154cbb6abd99b9c:277 asserted tests (93 owned,11 resource-base,42 safe resolver,131 prerequisites), zero fail/error/skip/not-run; frozen154/public1393/XML-only consumer/planning177/diff pass; zero-warning Release builds",
+      "Supervisor837a001b0e7fb24f59220dfe43216d5fccabe781/preparation8c41188ff24d1ad9b34778ea0430916d45eaefad: six counters-disabled controls/212 identities/elevated ps pass",
+      "One root-executed SCH allocation phase passed and durably released before inspection; exact aggregate setup figures and limitations in allocations.md; no rerun",
+      "Historical failures/corrections and pre-grant abort preserved honestly in README.md/allocations.md"
     ],
     "remaining": [
-      "Await root explicit allocation-only grant and durable RELEASE, then inspect raw aggregate64-window allocations/retained estimate, record concise evidence and remove transient raw outputs after root inspection",
-      "Coordinator integrates and verifies; later evaluator must preserve exact phase/#ALL error timing, initializer-before-shadow replacement, singleton assertion/subject focus and accounting described in facade-join.md"
+      "Coordinator integrate final metadata, prove tested runtime/test/build/consumer identity unchanged, record integrated revision/evidence and mark verified",
+      "Later validator/evaluator must prove selected-phase/#ALL missing-binding error timing, initializer-before-shadow replacement, singleton assertion/message/subject focus, immutable result detachment and shared actual evaluation accounting described in facade-join.md",
+      "Composed validation performance, corpus conformance and cross-architecture release checks remain with their later owners"
     ],
     "requests": []
   }

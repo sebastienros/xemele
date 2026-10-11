@@ -1,4 +1,4 @@
-# Schematron compiler evidence (in progress)
+# Schematron compiler evidence (implemented on branch)
 
 Owned source/test draft compiles on .NET SDK10.0.400/runtime10.0.11 with zero
 warnings/errors. The frozen 154 compiler record/interface members match the
@@ -55,3 +55,14 @@ message/long-multilingual graphs, invalid diagnostics,16 retained snapshots/RSS.
 Warm routes consume64-call aggregate windows; these are not individual-operation
 distributions. No actual allocation measurement has occurred at this checkpoint.
 Root supplies exact grant UTC bounds and durably releases before raw inspection.
+
+## Completed allocation evidence and handoff
+
+The sole actual SCH probe succeeded under durable GRANT5ac7a081 and
+RELEASE6b35e04d before inspection. Root independently accepted the same raw
+figures and lifecycle. See [allocations.md](allocations.md) for exact totals,
+means, cold/retained/RSS boundaries, identities and the unknown complex residual.
+This task is implemented on its branch; integration_revision remains unset.
+No runtime, test, build or consumer source changed after accepted193a6fe.
+Coordinator reported277 combined checks ataa66f68e1f0c2169e08d7b9f0c1347e22cea761e;
+final metadata still requires coordinator integration and verification.
