@@ -70,6 +70,8 @@ public static class XmlCanonicalizer
             internal readonly Frame? Parent = parent;
             internal readonly bool Included = included;
             internal readonly Dictionary<string, string> Scope = scope, Bindings = bindings, Rendered = rendered;
+            internal XmlNode TextFirst;
+            internal long TextScalars;
         }
         internal Operation(Stream output, XmlCanonicalizationOptions? options)
         {
@@ -107,7 +109,7 @@ public static class XmlCanonicalizer
             Charge();
             if (document.ContentRevision < 0 || document.ContentRevision != revision) throw new InvalidOperationException("Document mutated during canonicalization.");
         }
-        private void Inspect(string value, bool aggregate = false)
+        private long Inspect(string value, bool aggregate = false)
         {
             long count = 0;
             foreach (var rune in value.EnumerateRunes()) { Charge(); count++; }
@@ -118,6 +120,7 @@ public static class XmlCanonicalizer
                     throw new InvalidOperationException("Canonicalization character limit exceeded.");
                 characters += count;
             }
+            return count;
         }
         private int Compare(string a, string b)
         {
@@ -224,7 +227,7 @@ public static class XmlCanonicalizer
                     if (include)
                     {
                         if (options.Mode != XmlCanonicalizationMode.Exclusive10 && !parent.Included) Inherit(node, parent, attributes);
-                        attributes.Sort((a, b) => { int c = Compare(a.Uri, b.Uri); return c != 0 ? c : Compare(a.Local, b.Local); });
+                        Sort(attributes, (a, b) => { int c = Compare(a.Uri, b.Uri); return c != 0 ? c : Compare(a.Local, b.Local); });
                         var namespaces = new List<KeyValuePair<string, string>>();
                         bool exclusive = options.Mode == XmlCanonicalizationMode.Exclusive10;
                         var visible = new HashSet<string>(inclusive, StringComparer.Ordinal);
@@ -242,7 +245,7 @@ public static class XmlCanonicalizer
                         var priorBindings = exclusive ? rendered : nearest.Bindings;
                         if (!bindings.ContainsKey("") && (!exclusive || visible.Contains("")) && priorBindings.TryGetValue("", out string? priorDefault) && priorDefault.Length != 0)
                             namespaces.Add(new("", ""));
-                        namespaces.Sort((a, b) => Compare(a.Key, b.Key));
+                        Sort(namespaces, (a, b) => Compare(a.Key, b.Key));
                         rendered = new Dictionary<string, string>(rendered, StringComparer.Ordinal);
                         foreach (var ns in namespaces) rendered[ns.Key] = ns.Value;
                         plan.Add(new(kind, false, node.LocalName, node.Prefix, "", namespaces, attributes));
@@ -253,10 +256,12 @@ public static class XmlCanonicalizer
                 }
                 else if (XPathItem.IsText(node))
                 {
-                    Inspect(node.Value, true);
-                    var first = node;
-                    while (XPathItem.IsText(first.PreviousSibling)) { Charge(); first = first.PreviousSibling; }
-                    if (Has(XPathItemKind.Text, first)) plan.Add(new(XmlNodeKind.Text, false, "", "", node.Value));
+                    long scalars = Inspect(node.Value, true);
+                    if (!XPathItem.IsText(node.PreviousSibling)) { parent.TextFirst = node; parent.TextScalars = 0; }
+                    if (scalars > long.MaxValue - parent.TextScalars) throw new InvalidOperationException("Text capacity exceeded.");
+                    parent.TextScalars += scalars;
+                    if (limits.TokenCharacters is int tokenCap && parent.TextScalars > tokenCap) throw new InvalidOperationException("Canonicalization text token limit exceeded.");
+                    if (Has(XPathItemKind.Text, parent.TextFirst)) plan.Add(new(XmlNodeKind.Text, false, "", "", node.Value));
                 }
                 else
                 {
@@ -278,9 +283,39 @@ public static class XmlCanonicalizer
             foreach (var piece in plan) Render(piece);
             Drain(); Check();
         }
+        private void Sort<T>(List<T> values, Comparison<T> comparison)
+        {
+            // Direct bounded merge sorting keeps cancellation/limit exceptions
+            // intact; List.Sort wraps comparer exceptions as InvalidOperationException.
+            if (values.Count < 2) return;
+            var scratch = new T[values.Count];
+            for (long width = 1; width < values.Count; width *= 2)
+            {
+                for (long start = 0; start < values.Count; start += 2 * width)
+                {
+                    int left = (int)start, middle = (int)Math.Min(start + width, values.Count), right = middle;
+                    int end = (int)Math.Min(start + 2 * width, values.Count);
+                    for (int dest = (int)start; dest < end; dest++)
+                    {
+                        Charge();
+                        scratch[dest] = left < middle && (right >= end || comparison(values[left], values[right]) <= 0) ? values[left++] : values[right++];
+                    }
+                }
+                for (int i = 0; i < values.Count; i++) { Charge(); values[i] = scratch[i]; }
+            }
+        }
         private void RequireAbsolute(string uri)
         {
-            if (uri.Length != 0 && !Uri.TryCreate(uri, UriKind.Absolute, out _)) throw new ArgumentException("Relative namespace name.");
+            if (uri.Length == 0) return;
+            // Absolute namespace names require a scheme. Probe borrowed characters;
+            // do not allocate a platform Uri or normalize the retained namespace.
+            if (uri[0] is not (>= 'a' and <= 'z' or >= 'A' and <= 'Z')) throw new ArgumentException("Relative namespace name.");
+            for (int i = 1; i < uri.Length; i++)
+            {
+                Charge(); char c = uri[i]; if (c == ':') return;
+                if (c is not (>= 'a' and <= 'z' or >= 'A' and <= 'Z' or >= '0' and <= '9' or '+' or '-' or '.')) break;
+            }
+            throw new ArgumentException("Relative namespace name.");
         }
         private void Inherit(XmlNode node, Frame parent, List<Attribute> attributes)
         {
@@ -346,27 +381,15 @@ public static class XmlCanonicalizer
         { if (prefix.Length != 0) { Utf8(prefix); Literal(":"u8); } Utf8(local); }
         private void Escape(string text, int mode)
         {
-            // Simple scalar scan is the baseline: output and charge each scalar.
-            // No SearchValues setup or temporary escaped strings on this path.
-            foreach (var rune in text.EnumerateRunes())
+            ReadOnlySpan<char> remaining = text;
+            while (!remaining.IsEmpty)
             {
-                Charge(); int c = rune.Value;
-                if (c == 13) Literal("&#xD;"u8);
-                else if (mode != 2 && c == '&') Literal("&amp;"u8);
-                else if (mode != 2 && c == '<') Literal("&lt;"u8);
-                else if (mode == 0 && c == '>') Literal("&gt;"u8);
-                else if (mode == 1 && c == '"') Literal("&quot;"u8);
-                else if (mode == 1 && c == 9) Literal("&#x9;"u8);
-                else if (mode == 1 && c == 10) Literal("&#xA;"u8);
-                else Scalar(rune);
+                int count = CanonicalEscapes.Encode(remaining, buffer.AsSpan(used), mode, out int consumed, meter);
+                if (count == 0) { Drain(); continue; }
+                AddBytes(count); used += count; remaining = remaining[consumed..];
             }
         }
-        private void Utf8(string value) { foreach (var rune in value.EnumerateRunes()) { Charge(); Scalar(rune); } }
-        private void Scalar(Rune rune)
-        {
-            if (buffer.Length - used < 4) Drain();
-            int count = rune.EncodeToUtf8(buffer.AsSpan(used)); AddBytes(count); used += count;
-        }
+        private void Utf8(string value) => Escape(value, 3);
         private void AddBytes(int count)
         {
             if (count > long.MaxValue - bytes || options.MaxOutputBytes is long cap && count > cap - bytes)

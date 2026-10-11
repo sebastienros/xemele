@@ -1,0 +1,8 @@
+[
+  {"id":"inclusive10-unused-context","mode":0,"xml":"<r xmlns:p='urn:p'><x/></r>","expected":"<r xmlns:p=\"urn:p\"><x></x></r>"},
+  {"id":"inclusive11-unused-context","mode":1,"xml":"<r xmlns:p='urn:p'><x/></r>","expected":"<r xmlns:p=\"urn:p\"><x></x></r>"},
+  {"id":"exclusive10-unused-context","mode":2,"xml":"<r xmlns:p='urn:p'><x/></r>","expected":"<r><x></x></r>"},
+  {"id":"exclusive10-explicit-prefix","mode":2,"prefixes":["p"],"xml":"<r xmlns:p='urn:p'><x/></r>","expected":"<r xmlns:p=\"urn:p\"><x></x></r>"},
+  {"id":"comment-control","mode":0,"comments":true,"xml":"<!--a--><r/><!--b-->","expected":"<!--a-->\n<r></r>\n<!--b-->"},
+  {"id":"xml11-base-fixup","mode":1,"xml":"<r xml:base='../'><x xml:base='../'/></r>","expression":"(//node() | //@*)[ancestor-or-self::x]","expected":"<x xml:base=\"../../\"></x>"}
+]
