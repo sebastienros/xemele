@@ -50,13 +50,15 @@ internal sealed record CompiledDtdElement(DtdElementDeclaration Declaration, Dtd
 internal sealed record CompiledDtdAttribute(DtdAttributeDeclaration Declaration, string? NormalizedDefault)
 {
     // ID uniqueness and IDREF resolution are instance-wide evaluator responsibilities.
-    internal bool IsValueValid(ReadOnlySpan<char> value, CompiledDtdModel model, ValidationOperation operation, XmlLocation location = default)
+    // Name-typed validity uses NCName; NMTOKEN/enumeration retain colon.
+    // Compilation disables entity membership only for syntactically checked defaults.
+    internal bool IsValueValid(ReadOnlySpan<char> value, CompiledDtdModel model, ValidationOperation operation, XmlLocation location = default, bool requireEntityMembership = true)
     {
         var type = Declaration.Type;
         if (type == DtdAttributeType.CData) return DtdLexical.XmlText(value, operation, location);
         if (type is DtdAttributeType.Enumeration or DtdAttributeType.Notation)
         {
-            if (!DtdLexical.Name(value, type == DtdAttributeType.Enumeration, false, operation, location)) return false;
+            if (!DtdLexical.Name(value, type == DtdAttributeType.Enumeration, type == DtdAttributeType.Notation, operation, location)) return false;
             bool found = false;
             for (int i = 0; i < Declaration.Tokens.Count; i++)
             { var token = Declaration.Tokens[i]; if (DtdLexical.Equal(value, token, operation, location)) { found = true; break; } if (!operation.IsComplete) return false; }
@@ -78,8 +80,8 @@ internal sealed record CompiledDtdAttribute(DtdAttributeDeclaration Declaration,
         }
         return false;
 
-        bool Token(ReadOnlySpan<char> token) => DtdLexical.Name(token, type is DtdAttributeType.NmToken or DtdAttributeType.NmTokens, false, operation, location) &&
-            (type is not (DtdAttributeType.Entity or DtdAttributeType.Entities) || model.HasUnparsedEntity(token, operation));
+        bool Token(ReadOnlySpan<char> token) => DtdLexical.Name(token, type is DtdAttributeType.NmToken or DtdAttributeType.NmTokens, type is not (DtdAttributeType.NmToken or DtdAttributeType.NmTokens), operation, location) &&
+            (!requireEntityMembership || type is not (DtdAttributeType.Entity or DtdAttributeType.Entities) || model.HasUnparsedEntity(token, operation));
     }
 }
 internal static class DtdLexical

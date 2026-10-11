@@ -86,7 +86,8 @@ internal static class DtdCompiler
                 normalized = result.Value!; budget.Retain(normalized.Length, at);
             }
             var attribute = new CompiledDtdAttribute(declaration, normalized);
-            if (normalized is not null && !attribute.IsValueValid(normalized, model, operation, at))
+            // XML 3.3.2 requires default syntax, not unused entity membership.
+            if (normalized is not null && !attribute.IsValueValid(normalized, model, operation, at, requireEntityMembership: false))
             { budget.Check(); Error("DTD.InvalidDefault", "Attribute default does not satisfy its declared type.", at); }
             attributes.Add(attribute);
         }

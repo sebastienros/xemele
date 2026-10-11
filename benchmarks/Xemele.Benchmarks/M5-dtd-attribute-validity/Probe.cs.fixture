@@ -1,0 +1,117 @@
+using System.Buffers;
+using System.Runtime.InteropServices;
+using System.Text;
+using System.Text.Json;
+using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Configs;
+using BenchmarkDotNet.Jobs;
+using BenchmarkDotNet.Running;
+using BenchmarkDotNet.Toolchains.InProcess.NoEmit;
+using Xemele;
+using Xemele.Parsing.Dtd;
+using Xemele.Validation;
+
+if (RuntimeInformation.FrameworkDescription != ".NET 10.0.11") throw new Exception("Actual host must be .NET 10.0.11.");
+if (args is [var mode, var output] && mode is "--discover" or "--benchmark")
+{
+    var config = ManualConfig.Create(DefaultConfig.Instance).WithArtifactsPath(output)
+        .AddJob(Job.Default.WithToolchain(InProcessNoEmitToolchain.Instance).AsMutator());
+    var suite = BenchmarkConverter.TypeToBenchmarks(typeof(AttributeBenchmarks), config);
+    if (suite.BenchmarksCases.Length != 4 || suite.BenchmarksCases.Any(c => c.Job.Run.WarmupCount != 3 || c.Job.Run.IterationCount != 3 || c.Job.Run.LaunchCount != 1 || c.Job.Infrastructure.Toolchain != InProcessNoEmitToolchain.Instance)) throw new Exception("Expected four ShortRun NoEmit cases.");
+    Console.WriteLine($"{RuntimeInformation.FrameworkDescription}; four ShortRun NoEmit cases; no builds/generation.");
+    if (mode == "--discover") return;
+    var summary = BenchmarkRunner.Run(suite);
+    if (summary.Reports.Length != 4 || summary.Reports.Any(r => !r.Success || r.ResultStatistics is null)) throw new Exception("Benchmark failed.");
+    return;
+}
+if (args is not [var command, var path] || command is not ("--control" or "--allocation")) throw new Exception("Expected control/allocation/discover/benchmark and output path.");
+if (command == "--control")
+{
+    var controls = new Fixtures(); controls.Controls();
+    File.WriteAllText(path, JsonSerializer.Serialize(new { runtime = RuntimeInformation.FrameworkDescription, architecture = RuntimeInformation.ProcessArchitecture.ToString(), controls = "passed" })); return;
+}
+long start = GC.GetAllocatedBytesForCurrentThread();
+var fixture = new Fixtures();
+long cold = GC.GetAllocatedBytesForCurrentThread() - start;
+fixture.Controls();
+long[] warm = new long[32], steady = new long[32]; long consumed = 0;
+for (int batch = 0; batch < warm.Length; batch++)
+{
+    start = GC.GetAllocatedBytesForCurrentThread(); consumed += fixture.Batch(); warm[batch] = GC.GetAllocatedBytesForCurrentThread() - start;
+}
+start = GC.GetAllocatedBytesForCurrentThread();
+for (int batch = 0; batch < steady.Length; batch++)
+{
+    long inner = GC.GetAllocatedBytesForCurrentThread(); consumed += fixture.Batch(); steady[batch] = GC.GetAllocatedBytesForCurrentThread() - inner;
+}
+long primitive = GC.GetAllocatedBytesForCurrentThread() - start;
+start = GC.GetAllocatedBytesForCurrentThread();
+for (int i = 0; i < 32; i++) GC.KeepAlive(DtdSchema.Compile(Fixtures.Body));
+long ownedCompile = GC.GetAllocatedBytesForCurrentThread() - start;
+start = GC.GetAllocatedBytesForCurrentThread();
+for (int i = 0; i < 32; i++) GC.KeepAlive(fixture.Schema.Validate(fixture.Document));
+long ownedValidation = GC.GetAllocatedBytesForCurrentThread() - start;
+var retained = new DtdSchema[32]; long before = GC.GetTotalMemory(true);
+for (int i = 0; i < retained.Length; i++) retained[i] = DtdSchema.Compile(Fixtures.Body);
+long after = GC.GetTotalMemory(true); GC.KeepAlive(retained);
+File.WriteAllText(path, JsonSerializer.Serialize(new { runtime = RuntimeInformation.FrameworkDescription, architecture = RuntimeInformation.ProcessArchitecture.ToString(), coldSetupBytes = cold, warmDistribution = warm, steadyDistribution = steady, primitiveBytes = primitive, primitiveOperations = 32 * 1024 * 4 * fixture.Model.Attributes.Count, ownedCompileBytes = ownedCompile, ownedValidationBytes = ownedValidation, ownedOperations = 32, retainedBeforeBytes = before, retainedAfterBytes = after, retainedSchemas = 32, consumed }, new JsonSerializerOptions { WriteIndented = true }));
+if (primitive != 0 || steady.Any(b => b != 0) || ownedCompile <= 0 || ownedValidation <= 0) throw new Exception("Allocation gate failure.");
+GC.KeepAlive(fixture);
+
+internal sealed class Fixtures
+{
+    internal const string Body = "<!NOTATION n SYSTEM 'n'><!ENTITY e SYSTEM 'e' NDATA n><!ELEMENT r ANY><!ATTLIST r ref IDREF #IMPLIED id ID #IMPLIED ids IDREFS #IMPLIED ent ENTITY #IMPLIED entities ENTITIES #IMPLIED notation NOTATION (n) #IMPLIED><!ELEMENT unused ANY><!ATTLIST unused ent ENTITY 'undef'>";
+    internal readonly string[] Inputs = ["abc", "根😀" + new string('名', 126), "a:bc", new string('a', 127) + ":"];
+    internal readonly CompiledDtdModel Model;
+    internal readonly ValidationOperation Operation = new(new() { MaxOperations = null, Limits = new() { EvaluationWork = null } });
+    internal readonly DtdSchema Schema;
+    internal readonly XmlDocument Document;
+    internal Fixtures()
+    {
+        using var parser = new DtdParser(DtdSubsetKind.External, new());
+        if (parser.Append(Body, [], true, default).Step != DtdParseStep.Completed) throw new Exception("Fixture parse.");
+        Model = DtdCompiler.Compile(parser.Model, new());
+        Schema = DtdSchema.Compile(Body);
+        Document = new(); Document.DocumentNode.AppendChild(Document.CreateElement("r"));
+        Document.RootElement.SetAttribute("id", "根"); Document.RootElement.SetAttribute("ref", "根");
+    }
+    internal bool Check(string input) => Model.Attributes[0].IsValueValid(input, Model, Operation);
+    internal int Batch()
+    {
+        int result = 0;
+        for (int i = 0; i < 1024; i++) foreach (var input in Inputs)
+            foreach (var attribute in Model.Attributes) if (attribute.IsValueValid(input, Model, Operation)) result++;
+        return result;
+    }
+    internal void Controls()
+    {
+        foreach (string input in Inputs.Concat(new[] { "", "a", "1bad", ":", "a::b", "a\u0301", new string(['a', (char)0xD800]), "a b" }))
+            if (Check(input) != Oracle(input)) throw new Exception("NCName oracle mismatch.");
+        if (!Schema.Validate(Document).IsValid) throw new Exception("Composed current DOM control.");
+        Document.RootElement.SetAttribute("ref", "p:根");
+        if (Schema.Validate(Document).IsValid) throw new Exception("Composed colon control.");
+        Document.RootElement.SetAttribute("ref", "根");
+    }
+    // Independent straightforward Unicode-scalar oracle using XML's explicit ranges.
+    private static bool Oracle(ReadOnlySpan<char> value)
+    {
+        if (value.IsEmpty) return false; bool first = true;
+        while (!value.IsEmpty)
+        {
+            if (Rune.DecodeFromUtf16(value, out var rune, out int count) != OperationStatus.Done) return false;
+            int c = rune.Value;
+            bool start = c == '_' || c is >= 'A' and <= 'Z' or >= 'a' and <= 'z' or >= 0xC0 and <= 0xD6 or >= 0xD8 and <= 0xF6 or >= 0xF8 and <= 0x2FF or >= 0x370 and <= 0x37D or >= 0x37F and <= 0x1FFF or >= 0x200C and <= 0x200D or >= 0x2070 and <= 0x218F or >= 0x2C00 and <= 0x2FEF or >= 0x3001 and <= 0xD7FF or >= 0xF900 and <= 0xFDCF or >= 0xFDF0 and <= 0xFFFD or >= 0x10000 and <= 0xEFFFF;
+            if (!start && (first || !(c is '-' or '.' or >= '0' and <= '9' or 0xB7 or >= 0x300 and <= 0x36F or >= 0x203F and <= 0x2040))) return false;
+            first = false; value = value[count..];
+        }
+        return true;
+    }
+}
+[MemoryDiagnoser, ShortRunJob]
+public class AttributeBenchmarks
+{
+    [Params(0, 1, 2, 3)] public int Case { get; set; }
+    private Fixtures fixture = null!;
+    [GlobalSetup] public void Setup() => fixture = new();
+    [Benchmark] public bool BorrowedTypedNcName() => fixture.Check(fixture.Inputs[Case]);
+}
