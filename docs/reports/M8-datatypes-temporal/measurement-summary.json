@@ -1,0 +1,329 @@
+{
+  "acceptedSourceRevision": "8ed24fb19fc88feb45fa79c856e7ea3c9d216c09",
+  "preparedSourceRevision": "a11a484a5254a17f9d7c4885eed9ce083ff71dc5",
+  "preparationRevision": "be88b3351f9128127be0369907f18dd610864f01",
+  "manifestSha256": "3a43c3fb7d433f2d33d60c0f558e480bb230e5e73039ea07390c718dab2b153d",
+  "grant": "cbf9167bd7d5213f0b7bced6ad6e272c791f4433",
+  "release": "49b063ec7390ad03fc711287c022a98de4620530",
+  "environment": {
+    "runtime": ".NET 10.0.11",
+    "architecture": "Arm64",
+    "os": "macOS 15.8.1",
+    "serverGc": false
+  },
+  "cpu": "Apple M4 Pro,14 logical/physical cores",
+  "sdk": "10.0.400",
+  "lifecycle": {
+    "status": 0,
+    "beforeIdentities": true,
+    "afterIdentities": true,
+    "sequence": [
+      {
+        "command": 0,
+        "pid": 24490,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true
+      },
+      {
+        "command": 1,
+        "pid": 24493,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true
+      }
+    ],
+    "rawResultsInspected": false,
+    "beforeMismatches": [],
+    "identityCount": 445,
+    "afterMismatches": [],
+    "elapsedSeconds": 58.780023957951926
+  },
+  "allocationWarmup": 32,
+  "samplesPerRoute": 64,
+  "allocationDistributions": [
+    {
+      "route": 0,
+      "name": "warm calendar equality",
+      "bytesToCount": {
+        "0": 64
+      }
+    },
+    {
+      "route": 1,
+      "name": "warm long time comparison",
+      "bytesToCount": {
+        "0": 64
+      }
+    },
+    {
+      "route": 2,
+      "name": "warm duration partial order",
+      "bytesToCount": {
+        "0": 64
+      }
+    },
+    {
+      "route": 3,
+      "name": "warm duration equality",
+      "bytesToCount": {
+        "0": 64
+      }
+    },
+    {
+      "route": 4,
+      "name": "warm calendar hash",
+      "bytesToCount": {
+        "0": 64
+      }
+    },
+    {
+      "route": 5,
+      "name": "warm duration hash",
+      "bytesToCount": {
+        "0": 64
+      }
+    },
+    {
+      "route": 6,
+      "name": "owned zoned calendar",
+      "bytesToCount": {
+        "536": 64
+      }
+    },
+    {
+      "route": 7,
+      "name": "owned absent-zone bounds",
+      "bytesToCount": {
+        "976": 64
+      }
+    },
+    {
+      "route": 8,
+      "name": "owned arbitrary year/fraction",
+      "bytesToCount": {
+        "24008": 64
+      }
+    },
+    {
+      "route": 9,
+      "name": "owned arbitrary duration endpoints",
+      "bytesToCount": {
+        "67296": 63,
+        "67608": 1
+      }
+    },
+    {
+      "route": 10,
+      "name": "invalid long fractional time",
+      "bytesToCount": {
+        "624": 64
+      }
+    },
+    {
+      "route": 11,
+      "name": "operation/provider/context setup",
+      "bytesToCount": {
+        "920": 64
+      }
+    }
+  ],
+  "coldSetupBytes": 148144,
+  "positiveControlBytes": 1048,
+  "retained": {
+    "count": 128,
+    "before": 273824,
+    "after": 569784,
+    "delta": 295960,
+    "scope": "Inclusive full-GC retained array/value/runtime delta; not exactper-value retention"
+  },
+  "bdnWarmupResults": 24,
+  "bdnActualResults": 24,
+  "benchmarks": [
+    {
+      "Method": "ScalarFraction",
+      "Case": "longEqual",
+      "Mean": "238.173 ns",
+      "Error": "53.5753 ns",
+      "StdDev": "2.9366 ns",
+      "Ratio": "1.00",
+      "Allocated": "0 B",
+      "IterationCount": "3",
+      "WarmupCount": "3",
+      "LaunchCount": "1",
+      "Toolchain": "InProcessNoEmitToolchain",
+      "gc": {
+        "gen0": 0,
+        "gen1": 0,
+        "gen2": 0,
+        "totalBytes": 0,
+        "operations": 2097152,
+        "unroundedBytesPerOperation": 0.0
+      }
+    },
+    {
+      "Method": "ProviderCompare",
+      "Case": "longEqual",
+      "Mean": "518.600 ns",
+      "Error": "30.5618 ns",
+      "StdDev": "1.6752 ns",
+      "Ratio": "2.18",
+      "Allocated": "0 B",
+      "IterationCount": "3",
+      "WarmupCount": "3",
+      "LaunchCount": "1",
+      "Toolchain": "InProcessNoEmitToolchain",
+      "gc": {
+        "gen0": 0,
+        "gen1": 0,
+        "gen2": 0,
+        "totalBytes": 2888,
+        "operations": 1048576,
+        "unroundedBytesPerOperation": 0.00275421142578125
+      }
+    },
+    {
+      "Method": "ScalarFraction",
+      "Case": "longMiss",
+      "Mean": "238.414 ns",
+      "Error": "36.6516 ns",
+      "StdDev": "2.0090 ns",
+      "Ratio": "1.00",
+      "Allocated": "0 B",
+      "IterationCount": "3",
+      "WarmupCount": "3",
+      "LaunchCount": "1",
+      "Toolchain": "InProcessNoEmitToolchain",
+      "gc": {
+        "gen0": 0,
+        "gen1": 0,
+        "gen2": 0,
+        "totalBytes": 2304,
+        "operations": 4194304,
+        "unroundedBytesPerOperation": 0.00054931640625
+      }
+    },
+    {
+      "Method": "ProviderCompare",
+      "Case": "longMiss",
+      "Mean": "522.936 ns",
+      "Error": "16.0094 ns",
+      "StdDev": "0.8775 ns",
+      "Ratio": "2.19",
+      "Allocated": "0 B",
+      "IterationCount": "3",
+      "WarmupCount": "3",
+      "LaunchCount": "1",
+      "Toolchain": "InProcessNoEmitToolchain",
+      "gc": {
+        "gen0": 0,
+        "gen1": 0,
+        "gen2": 0,
+        "totalBytes": 1208,
+        "operations": 1048576,
+        "unroundedBytesPerOperation": 0.00115203857421875
+      }
+    },
+    {
+      "Method": "ScalarFraction",
+      "Case": "shortEqual",
+      "Mean": "2.666 ns",
+      "Error": "0.5363 ns",
+      "StdDev": "0.0294 ns",
+      "Ratio": "1.00",
+      "Allocated": "0 B",
+      "IterationCount": "3",
+      "WarmupCount": "3",
+      "LaunchCount": "1",
+      "Toolchain": "InProcessNoEmitToolchain",
+      "gc": {
+        "gen0": 0,
+        "gen1": 0,
+        "gen2": 0,
+        "totalBytes": 0,
+        "operations": 134217728,
+        "unroundedBytesPerOperation": 0.0
+      }
+    },
+    {
+      "Method": "ProviderCompare",
+      "Case": "shortEqual",
+      "Mean": "31.442 ns",
+      "Error": "0.3966 ns",
+      "StdDev": "0.0217 ns",
+      "Ratio": "11.79",
+      "Allocated": "0 B",
+      "IterationCount": "3",
+      "WarmupCount": "3",
+      "LaunchCount": "1",
+      "Toolchain": "InProcessNoEmitToolchain",
+      "gc": {
+        "gen0": 0,
+        "gen1": 0,
+        "gen2": 0,
+        "totalBytes": 2888,
+        "operations": 16777216,
+        "unroundedBytesPerOperation": 0.00017213821411132812
+      }
+    },
+    {
+      "Method": "ScalarFraction",
+      "Case": "shortMiss",
+      "Mean": "2.274 ns",
+      "Error": "0.5581 ns",
+      "StdDev": "0.0306 ns",
+      "Ratio": "1.00",
+      "Allocated": "0 B",
+      "IterationCount": "3",
+      "WarmupCount": "3",
+      "LaunchCount": "1",
+      "Toolchain": "InProcessNoEmitToolchain",
+      "gc": {
+        "gen0": 0,
+        "gen1": 0,
+        "gen2": 0,
+        "totalBytes": 0,
+        "operations": 268435456,
+        "unroundedBytesPerOperation": 0.0
+      }
+    },
+    {
+      "Method": "ProviderCompare",
+      "Case": "shortMiss",
+      "Mean": "31.396 ns",
+      "Error": "0.4783 ns",
+      "StdDev": "0.0262 ns",
+      "Ratio": "13.81",
+      "Allocated": "0 B",
+      "IterationCount": "3",
+      "WarmupCount": "3",
+      "LaunchCount": "1",
+      "Toolchain": "InProcessNoEmitToolchain",
+      "gc": {
+        "gen0": 0,
+        "gen1": 0,
+        "gen2": 0,
+        "totalBytes": 2600,
+        "operations": 16777216,
+        "unroundedBytesPerOperation": 0.00015497207641601562
+      }
+    }
+  ],
+  "discrepancies": [
+    "Huge duration parse has one additional312B sample out of64; unattributed and not discarded.",
+    "All BDN rows report rounded0B/op, but five diagnostic workload passes have nonzero total bytes. Exact warmed borrowed probe routes nevertheless measured0B in each of64samples.",
+    "Provider is slower than reduced canonical-fraction scalar oracle; no optimization/speedup claim."
+  ],
+  "remaining": "Composition/end-to-end and x64 release confirmation assigned downstream; focused Arm64 evidence only.",
+  "rawSha256": {
+    "artifacts/M8-datatypes-temporal/measurement/allocations.json": "cceb936ace2a9693bee987e480fedf8d45aa853a5c22ef7df5473218c269b3ed",
+    "artifacts/M8-datatypes-temporal/measurement/lifecycle.json": "0ec7c73c3eff5f883342e9ad6812a0d25a55a6f69880d91439a5ea6161a9ee35",
+    "artifacts/M8-datatypes-temporal/measurement/command-0.log": "0dfd5dbdbd81be9d14366a90db271cc0ff01e63b71cbd7577f6a45700c7abedb",
+    "artifacts/M8-datatypes-temporal/measurement/command-1.log": "3ae6eedd9ac6cb37f7d28ab0c5aedce8b453a7155f4528c515d4271624bb939c",
+    "artifacts/M8-datatypes-temporal/measurement/bdn/results/Xemele.Benchmarks.M8DatatypesTemporal.TemporalBenchmarks-report.csv": "79a3d642d81eef0a6088cd52afb580e0b3c9a2013aa4ae37846b4feb5ea84e5c"
+  }
+}

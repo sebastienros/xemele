@@ -1,0 +1,25 @@
+using Xemele.Validation;
+var provider = new TextBinaryDatatypeProvider();
+var operation = new SchemaCompileOperation(new() { MaxOperations = null, MaxComponents = null });
+var context = new SchemaNamespaceContext(new Dictionary<string, string> { ["p"] = "urn:root", ["q"] = "urn:root" }, "urn:root", null);
+DatatypeAtomicValue Parse(string name, string input)
+{
+    var type = DatatypeTypes.All[name];
+    string normalized = DatatypeNormalization.Normalize(input, type.Whitespace, operation);
+    if (!provider.TryParse(type, normalized, context, operation, out var result, out var error)) throw new InvalidOperationException(error?.Code);
+    return result!;
+}
+foreach (string name in new[] { "anySimpleType", "string", "normalizedString", "token", "language", "Name", "NCName", "NMTOKEN", "ID", "IDREF", "ENTITY", "anyURI" })
+{ var value = Parse(name, "root"); if (DatatypeValues.ValueLength(value, operation) != 4) throw new InvalidOperationException(); }
+var text = Parse("string", "根😀");
+if (DatatypeValues.ValueLength(text, operation) != 2 || !DatatypeValues.ValueEquals(text, Parse("token", " 根😀 "), operation)) throw new InvalidOperationException();
+var derived = DatatypeValues.Retype(new("urn:declared", "derived"), text, operation);
+if (!DatatypeValues.ValueEquals(text, derived, operation)) throw new InvalidOperationException();
+foreach (string name in new[] { "QName", "NOTATION" })
+{ var a = Parse(name, "p:root"); var b = Parse(name, "q:root"); if (!DatatypeValues.ValueEquals(a, b, operation) || DatatypeValues.ValueHashCode(a, operation) != DatatypeValues.ValueHashCode(b, operation) || DatatypeValues.ValueLength(a, operation) is not null) throw new InvalidOperationException(); }
+if (!DatatypeValues.ValueEquals(Parse("boolean", "true"), Parse("boolean", "1"), operation)) throw new InvalidOperationException();
+if (DatatypeValues.Compare(Parse("boolean", "false"), Parse("boolean", "true"), operation) != XmlValueOrder.Indeterminate) throw new InvalidOperationException();
+foreach (var pair in new[] { ("hexBinary", "0001ff", 3L), ("base64Binary", "A A H /", 3L) })
+{ var value = Parse(pair.Item1, pair.Item2); if (DatatypeValues.ValueLength(value, operation) != pair.Item3) throw new InvalidOperationException(); }
+if (provider.TryParse(DatatypeTypes.All["base64Binary"], "AB==", context, operation, out _, out var invalid) || invalid != DatatypeErrors.InvalidLexical) throw new InvalidOperationException();
+Console.WriteLine("PASS: genuine text/binary provider/core consumer, all17family names, scalar length, QName identity, binary, boolean, retype; " + (args.Length == 0 ? "normal assembly" : "XML-only verified prerequisites"));

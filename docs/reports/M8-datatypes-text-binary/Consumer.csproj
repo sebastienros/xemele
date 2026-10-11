@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><OutputType>Exe</OutputType><AssemblyName>Xemele.Benchmarks</AssemblyName><EnableDefaultCompileItems>false</EnableDefaultCompileItems></PropertyGroup>
+  <ItemGroup><Compile Include="Consumer.cs.fixture" />
+    <ProjectReference Include="../../../src/Xemele/Xemele.csproj" Condition="'$(TextBinaryXmlOnly)' != 'true'" />
+    <ProjectReference Include="XmlOnly/XmlOnly.csproj" Condition="'$(TextBinaryXmlOnly)' == 'true'" />
+  </ItemGroup>
+</Project>

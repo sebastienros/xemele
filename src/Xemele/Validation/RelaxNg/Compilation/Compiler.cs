@@ -473,7 +473,7 @@ internal sealed class RelaxNgCompiler : IRelaxNgCompiler
             else if (context.BaseUri is not null) Uri.TryCreate(context.BaseUri, href, out request);
             if (request is not null && active.Contains(request)) Cycle(at);
             if (!loaded.TryGetValue(env.Node, out var document))
-            { document = loader.Load(new(href, context.BaseUri, purpose, at), op); loaded.Add(env.Node, document); }
+            { document = loader.Load(new(href, env.Scope.SourceUri, purpose, at), context.BaseUri, op); loaded.Add(env.Node, document); }
             var scope = Open(document);
             Uri final = scope.SourceUri!;
             if (!active.Add(final)) Cycle(new(final, at.LineNumber, at.LinePosition, at.ByteOffset));

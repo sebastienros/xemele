@@ -4,11 +4,11 @@
   "milestone": "M8",
   "title": "XSD temporal and duration value family",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "verified",
   "owner": "M8 coordinator01a12c6c-b333-71d3-877f-0d186618e21d / assigned isolated worker",
   "branch": "codex/m8-datatypes-temporal",
   "base_revision": "5fa9e08be6b34281578645fe9ae62c8f549cabf3",
-  "integration_revision": null,
+  "integration_revision": "629440f6516ef13d4674fcecb5441f2ecd5a6dc7",
   "depends_on": [
     "M8-datatypes-core"
   ],
@@ -32,29 +32,106 @@
     {
       "id": "M8-datatypes-temporal-A1",
       "description": "Implement the complete XSD1.0 dateTime/time/date/gYearMonth/gYear/gMonthDay/gDay/gMonth/duration lexical and value spaces through the verified family contract, with arbitrary year/fraction precision, calendar validation, timezone absence/presence, prescribed partial ordering and consistent equality/hash.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "temporal-corrected-correctness",
+        "temporal-source-review",
+        "temporal-measurements",
+        "integrated"
+      ]
     },
     {
       "id": "M8-datatypes-temporal-A2",
       "description": "Test leap/calendar/year/24-hour/timezone boundaries, arbitrary magnitudes, fractions, missing-timezone indeterminacy, duration reference-point comparisons and valid/invalid lexical forms. Account work/growth, exact-limit/one-over and cancellation without inventing a total order.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "temporal-corrected-correctness",
+        "temporal-source-review",
+        "temporal-measurements",
+        "integrated"
+      ]
     },
     {
       "id": "M8-datatypes-temporal-A3",
       "description": "Compile against verified model/core only; record normative pinned-edition cases and applicable allocation/performance evidence. Keep family source/tests independent of unmerged numeric/text branches; final library composition belongs to M8-datatypes.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "temporal-corrected-correctness",
+        "temporal-source-review",
+        "temporal-measurements",
+        "integrated"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Validation/Datatypes/Values/Temporal/TemporalProvider.cs: TemporalDatatypeProvider, owned decimal keys, calendar normalization and duration reference-point comparisons",
+    "tests/Xemele.Tests/M8-datatypes-temporal/TemporalTests.cs:23 focused facts, leap/timezone/BCE corrections, independent limb units, exact budgets and cancellation",
+    "docs/reports/M8-datatypes-temporal/normative.md: pinned2004edition/source hash and applicable focused cases",
+    "docs/reports/M8-datatypes-temporal/accounting.md: explicit scratch/persistence/limb/scalar accounting",
+    "src/Xemele/Validation/Datatypes/Values/Temporal/IntegerArithmetic.cs: parse-only signedbase1e9 arithmetic with explicit limb polling/growth",
+    "docs/reports/M8-datatypes-temporal/allocations.md and measurement-summary.json: exact warmed/owned/cold/retained distributions, BDN unrounded counters and lifecycle identities"
+  ],
+  "evidence": [
+    {
+      "id": "temporal-correctness",
+      "kind": "check",
+      "revision": "0e83c980bec319ad8ad3cfe9927967bd044db655",
+      "command": "python3 docs/reports/M8-datatypes-temporal/checks.py",
+      "result": "passed",
+      "summary": "Actual Arm64.NET10.0.11 Release:20 temporal+18core+12model=50positive-count-asserted cases;zero errors/failures/skips/not-run. Cache-only build zero warnings/errors;1393public API matched;normal+XML-only genuine consumers passed;176task validation and whitespace passed.No allocation tests. Initiald4d9d7c build failedxUnit1051;0e83c98 test-only cancellation fix passed full script.",
+      "artifact": "docs/reports/M8-datatypes-temporal/correctness.md"
+    },
+    {
+      "id": "temporal-corrected-correctness",
+      "kind": "check",
+      "revision": "8ed24fb19fc88feb45fa79c856e7ea3c9d216c09",
+      "command": "python3 docs/reports/M8-datatypes-temporal/checks.py",
+      "result": "passed",
+      "summary": "All3rootreview batch issues corrected: leap60identity/AppendixEoffsetoverflow, direct signedyear/floorordinalduration endpoints, boundedpolledarithmetic/outputcopy. Exact53actual.NET10.0.11Arm64 cases=23temporal+18core+12model passed;zero errors/failures/skips/not-run.1393publicAPI,normal/XML-onlyconsumers,176taskvalidation/whitespace passed. Independent128limbwork/growth andinside-loopcancellation;noGCcounter/timing tests. Root finalsourceacceptance and allocationevidence pending.",
+      "artifact": "docs/reports/M8-datatypes-temporal/review-corrections.md"
+    },
+    {
+      "id": "temporal-source-review",
+      "kind": "review",
+      "revision": "8ed24fb19fc88feb45fa79c856e7ea3c9d216c09",
+      "command": "Coordinator-authorized independent read-only source recheck; acceptance received in temporal chat",
+      "result": "passed",
+      "summary": "Root accepted8ed24fb/clean0dbac1c after independent reviewer finalrecheck; noresidualblockers inleapnormalization, signedyear/floorordinaldurationendpoints orboundedbase1e9 arithmetic/outputcopy. Reviewer ran no tests. Threeacceptedsource SHA256 identities independentlymatchedbeforepreparation.",
+      "artifact": "docs/reports/M8-datatypes-temporal/review-corrections.md"
+    },
+    {
+      "id": "temporal-measurements",
+      "kind": "check",
+      "revision": "be88b3351f9128127be0369907f18dd610864f01",
+      "command": "Root executed: python3 /Users/sebastienros/.codex/worktrees/9925/xemele/docs/reports/M8-datatypes-temporal/measure.py --granted 3a43c3fb7d433f2d33d60c0f558e480bb230e5e73039ea07390c718dab2b153d (require_escalated, durable combined lease cbf9167, RELEASE49b063e before raw inspection)",
+      "result": "passed",
+      "summary": "12 routes32warm/64samples: six warmed compare/hash routes0B every sample; owned536/976/24008B, huge duration67296B\u00d763+67608\u00d71(unattributed312B residual), invalid624B, setup920B. Cold148144B; positive1048B;128retained inclusiveGC delta295960B(not exactpervalue).8NoEmitShortRun rows report rounded0B but exactGC totalbytes0/2888/2304/1208/0/2888/0/2600 allpreserved, noexactBDNzero claim. Provider2.18\u201313.81\u00d7slower than reducedoracle, no speedupclaim. All445identities unchanged,2children exit0/reaped/groups absent/logs closed,58.780023957951926s. Rootandworker independentlyinspectedafterdurableRELEASE; no rerun. RawsourceRevisiona11a484 is reviewmetadata with identical accepted8ed24fb runtime source.",
+      "artifact": "docs/reports/M8-datatypes-temporal/allocations.md"
+    },
+    {
+      "id": "integrated",
+      "kind": "integration",
+      "revision": "629440f6516ef13d4674fcecb5441f2ecd5a6dc7",
+      "command": "python3 docs/reports/M8-datatypes-temporal/checks.py",
+      "result": "passed",
+      "summary": "Actual combined main candidate:53 cases (23 temporal+18 core+12 model) passed with zero failures/errors/skips/not-run;1393 public members matched; normal and XML-only consumers passed;176 tasks validated, diff clean and all Release builds zero warnings/errors. Independent raw measurement inspection after RELEASE preserved exact distributions and nonzero rounded BDN residuals.",
+      "artifact": "docs/reports/M8-datatypes-temporal/integration.md"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Planned bounded child of M8-datatypes; original complete XSD1.0 acceptance and gate reachability preserved.",
-    "checks": [],
-    "remaining": [],
+    "summary": "Integrated and verified nine temporal primitives with53 combined tests,1393 API, real normal/XML-only consumers and planning checks. Pinned leap/zone and signed-year duration semantics, metered arbitrary precision and owned measurement results accepted.",
+    "checks": [
+      "checks.py at8ed24fb:23temporal+18core+12model=53actual.NET10.0.11cases;zero errors/failures/skips/not-run",
+      "1393publicAPI matched; normal/XML-only genuine provider/core consumers passed",
+      "Independent source review accepted8ed24fb; noresidualblockers, reviewer ran no tests",
+      "12allocation distributions/8BDN exact diagnostic counters recorded;6warmed primitive routes exactly0B;312B duration residual and roundedBDN discrepancies retained",
+      "445identities unchanged; children24490/24493 exit0,reaped,groups absent,logs closed; durableRELEASE before rawinspection",
+      "tasks.py validate and git diff --check passed"
+    ],
+    "remaining": [
+      "Composition into the complete datatype library and release architecture/end-to-end checks remain downstream tasks."
+    ],
     "requests": []
   }
 }
