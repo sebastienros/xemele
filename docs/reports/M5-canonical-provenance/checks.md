@@ -53,3 +53,5 @@ Combined revision `af63f96ee2ebccf00d6d3e8c7b9100721787c5d7`:519focused tests pa
 python3 docs/reports/M5-validation-model/check_api.py
 python3 tools/planning/tasks.py validate
 ```
+
+Coordinator and worker inspected the unleased child payloads before checkout cleanup: actualruntime10.0.11; real warm/measured0B over1000iterations each,positivewarm/measured64000B,consumed21000,identitytrue; both childexits0/exited/drained and stderr empty. These disclosed observations are not accepted allocation evidence and were not remeasured. Productassembly SHA256A83375C14B68D6F2C5C4AFDED4B2E1660A4241A8F4B44CD39BD31916DFF7846E; embeddedversion243860c from preparation build, not falsely relabeled as committed revision.
