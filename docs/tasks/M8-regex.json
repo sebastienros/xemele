@@ -4,7 +4,7 @@
   "milestone": "M8",
   "title": "XML Schema regular-expression engine",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M8 coordinator01a12c6c-b333-71d3-877f-0d186618e21d / assigned isolated worker",
   "branch": "codex/m8-regex",
   "base_revision": "e83c84546eceec056e4840c2d12ea2e04d886630",
@@ -50,16 +50,24 @@
     {
       "id": "M8-regex-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "source-correctness",
+        "measurement-preparation",
+        "allocation-probe-1",
+        "released-allocation-and-bdn"
+      ]
     }
   ],
   "implementation": [
-    "src/Xemele/Validation/Regex/Engine.cs: XmlSchemaRegexEngine, RegexAutomaton and per-run bounded epsilon closure",
+    "src/Xemele/Validation/Regex/Engine.cs: XmlSchemaRegexEngine, opaque immutable RegexAutomaton and per-run bounded epsilon closure",
     "src/Xemele/Validation/Regex/Parser.cs: complete Appendix F grammar and charged automaton construction",
-    "src/Xemele/Validation/Regex/Characters.cs: scalar categories, Unicode17 blocks/historical aliases and XML1.0 Second Edition name tables",
-    "tests/Xemele.Tests/M8-regex/RegexTests.cs:147 tests including full pinned block boundaries,29 categories and independent finite-language oracle",
-    "samples/M8-regex/Program.cs: real frozen-interface consumer compiled against XML-only verified prerequisites"
+    "src/Xemele/Validation/Regex/Characters.cs: scalar categories, Unicode 17 blocks/historical aliases and XML 1.0 Second Edition name tables",
+    "tests/Xemele.Tests/M8-regex/RegexTests.cs: 147 tests including all pinned block boundaries, 29 categories and an independent finite-language oracle",
+    "samples/M8-regex/Program.cs: real frozen-interface consumer compiled against XML-only verified prerequisites",
+    "docs/api/M8-regex.txt: no additive public runtime API; frozen internal interfaces remain model-owned",
+    "benchmarks/Xemele.Benchmarks/M8-regex/: prebuilt NoEmit ShortRun/MemoryDiagnoser and thin allocation probe with owned/cold/pool/retained controls",
+    "docs/reports/M8-regex/allocations.md and measurements.json: actual released measurements and the qualified pooled BDN discrepancy"
   ],
   "evidence": [
     {
@@ -68,7 +76,7 @@
       "revision": "7f693470168f481bb63812516bde66d5be9f0822",
       "command": "python3 docs/reports/M8-regex/checks.py",
       "result": "passed",
-      "summary": "Pinned Release SDK10.0.400/runtime10.0.11 Arm64:147 owned regex +12 affected model correctness tests; zero errors/failures/skips/not-run;316 exact frozen member declarations,1393 preserved public API union; real XML-only consumer;175 tasks validated; diffcheck. Allocation tests not selected.",
+      "summary": "Pinned Release SDK 10.0.400/runtime 10.0.11 Arm64: 147 owned regex + 12 affected model correctness tests; zero errors/failures/skips/not-run; 316 frozen member declarations and 1,393 preserved public API members; real XML-only consumer; 175 tasks validated; diff check. Allocation tests were not selected.",
       "artifact": "docs/reports/M8-regex/README.md"
     },
     {
@@ -77,7 +85,7 @@
       "revision": "0ecdc0cdbe4220b5bc81e1829e24e4042b9ea96f",
       "command": "python3 docs/reports/M8-regex/prepare.py",
       "result": "passed",
-      "summary": "Pinned Release harness rebuilt;8 counters-disabled semantic routes and owned/positive/retained controls passed. BDN counters-disabled discovery asserts exactly8 borrowed-match cases with1launch/3warmup/3measure using InProcessNoEmit. Complete prepared source/binary/runtime/input identity manifest refreshed; final identity verification in lifecycle supervisor. No runtime measurement executed.",
+      "summary": "Pinned Release harness rebuilt; eight counters-disabled semantic routes and owned/positive/retained controls passed. Discovery asserted exactly eight borrowed-match ShortRun cases with one launch, three warmup/three measurement iterations and InProcessNoEmit. Prepared source/binary/runtime/input identities were refreshed; no measurement ran during preparation.",
       "artifact": "docs/reports/M8-regex/preparation.json"
     },
     {
@@ -86,30 +94,41 @@
       "revision": "910a4c958f8bb67cf164fad7ea8c2afc19801277",
       "command": "python3 docs/reports/M8-regex/measure.py",
       "result": "failed",
-      "summary": "First allocation probe completed and passed; supervisor aborted on sandbox-denied ps. Second probe and BDN did not start. Durable RELEASE ACK a6181ba followed root process inventory verifying no residual processes.",
+      "summary": "First allocation probe completed and passed; supervisor aborted because the sandbox denied ps. Second probe and BDN did not start. Root verified no residual processes; durable RELEASE ACK a6181ba preceded inspection. The successful first probe was preserved.",
       "artifact": "docs/reports/M8-regex/partial-measurement.json"
     },
     {
       "id": "allocation-probe-1",
       "kind": "check",
       "revision": "0ecdc0cdbe4220b5bc81e1829e24e4042b9ea96f",
-      "command": "Pinned dotnet --fx-version 10.0.11 benchmarks/Xemele.Benchmarks/M8-regex/bin/Release/net10.0/Xemele.Benchmarks.dll --measure artifacts/M8-regex/allocation1.json (first approved subprocess)",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 benchmarks/Xemele.Benchmarks/M8-regex/bin/Release/net10.0/Xemele.Benchmarks.dll --measure artifacts/M8-regex/allocation1.json (first approved subprocess)",
       "result": "passed",
-      "summary": "8routes x64 warmed samples: all0B/op; owned run456B/op; coldsetup41808B; firstpoolmatch10256B; positive1048B;256retained programs153008B inclusive heapdelta. Source/binary/input identities matched; final42identities verified after durable RELEASEACK. SingleArm64 provisional evidence; secondprobe/BDN remain unrun.",
+      "summary": "Eight routes x 64 warmed samples: all 0 B/op; owned run 456 B/op; cold setup 41,808 B; first pooled match 10,256 B; positive control 1,048 B; 256 retained programs had an inclusive heap delta of 153,008 B. Source/binary/input identities matched; all 42 final identities passed after durable RELEASE ACK. Single Arm64 provisional evidence.",
       "artifact": "docs/reports/M8-regex/partial-measurement.json"
+    },
+    {
+      "id": "released-allocation-and-bdn",
+      "kind": "check",
+      "revision": "ea9974285b08d0e9154a8d4a7d71f4b4cf016dda",
+      "command": "python3 docs/reports/M8-regex/measure.py --remaining (require_escalated; second allocation probe then prebuilt eight-case NoEmit BDN); after durable ACK: python3 docs/reports/M8-regex/measurement-summary.py",
+      "result": "passed",
+      "summary": "Two thin probes: eight routes x 64 samples each, 1,024 warmed observations all 0 B; 128 owned-run observations at 456 B/op. All eight BDN reports succeeded: seven 0 B/op, pooled 1 B/op over 4,096 operations, with attribution unestablished. Both cold setups 41,808 B; first pooled matches 10,256 B; positive controls 1,048 B. Inclusive retained deltas 153,008/161,224 B for 256 programs are informational. All 42 final identities passed; children were reaped, groups drained, logs closed and durable ACK preceded inspection. No rerun of the valid first probe; accepted runtime/harness unchanged.",
+      "artifact": "docs/reports/M8-regex/allocations.md"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Complete bounded Appendix F runtime; accepted review batch1 fixes and147owned+12model correctness at7f69347 preserved. Harness-only NoEmit preparation fix0ecdc0c now passes build/control/discovery; source reviewed accepted.",
+    "summary": "Implemented the full XML Schema 1.0 Appendix F compiler and bounded matcher through frozen interfaces, immutable opaque programs and shared scalar/component/transition budgets. Unicode 17 blocks with required historical aliases; XML 1.0 Second Edition name escapes; subtraction, repeats and whole-language semantics; no .NET Regex. Review batch 1 fixes are regression-proven. Runtime source 7f69347; NoEmit harness 0ecdc0c; actual supervised measurements preserve all observations.",
     "checks": [
-      "147 owned regex and12 affected model correctness;316 frozen declarations and1393 preserved public members; XML-only concrete consumer; pinned Release build;175 task validation and diffcheck.",
-      "Counters-disabled preparation and eight-case ShortRun NoEmit discovery passed at0ecdc0c; no runtime measurement executed.",
-      "First allocation probe passed; complete prepared42identities verified after durable RELEASEACK. Supervisor overallattempt failed sandbox ps; root confirmed no residualprocesses. No retry."
+      "Pinned Release: 147 owned regex + 12 affected model tests, with zero errors/failures/skips/not-run; 316 frozen compiled declarations and 1,393 preserved public API members; real XML-only consumer passed.",
+      "Counters-disabled preparation/discovery asserted eight ShortRun NoEmit cases with one launch and three warmup/measurement iterations; all 42 identities verified.",
+      "Released measurements: 1,024 warmed thin-probe observations at 0 B; 128 owned-run observations at 456 B/op; eight successful BDN cases, seven at 0 B and pooled at 1 B/op. Both retained deltas are informational; attribution of the BDN discrepancy is unestablished.",
+      "First lease supervisor failed on sandbox-denied ps after a valid first probe; root cleanup and durable ACK recorded. Second remaining-only lease passed with escalated process inventory. The successful first probe was not rerun.",
+      "tasks.py validate and git diff --check passed; integrated verification has not been performed."
     ],
     "remaining": [
-      "Fresh grant for remaining-only sequence: secondallocationprobe+eight-caseNoEmitBDN; exact escalation permits ps preflight/cleanup. Preserve successfulfirstprobe.",
-      "Coordinator integrated verification and gate comprehensive corpus/x64 confirmation."
+      "Coordinator integration checks and verified status; worker integration_revision remains null.",
+      "Gate-owned composition/cumulative corpus and x64 release confirmation; preserve the pooled BDN 1 B observation alongside actual 0 B thin-probe routes without an inferred cause."
     ],
     "requests": []
   }

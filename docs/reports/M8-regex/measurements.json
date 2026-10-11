@@ -1,0 +1,154 @@
+{
+  "sourceRevision": "0ecdc0cdbe4220b5bc81e1829e24e4042b9ea96f",
+  "measurementSupervisorRevision": "ea9974285b08d0e9154a8d4a7d71f4b4cf016dda",
+  "host": {
+    "BenchmarkDotNetVersion": "0.15.8",
+    "OsVersion": "macOS Sequoia 15.8.1 (24H32) [Darwin 24.6.0]",
+    "ProcessorName": "Apple M4 Pro",
+    "RuntimeVersion": ".NET 10.0.11 (10.0.11, 10.0.1126.37416)",
+    "Architecture": "Arm64",
+    "Configuration": "RELEASE",
+    "DotNetCliVersion": "10.0.400"
+  },
+  "serverGc": false,
+  "preparedIdentityCount": 42,
+  "preparationManifestSha256": "a0867f987be44f6d231b7c9077e758d9c4b3b4e979d3d9c6d02dd59a4f698cb4",
+  "probes": [
+    {
+      "number": 1,
+      "rawSha256": "bdd5d4292ecbc500148608630b28fcce02356464efc50cb5b2971e251158ad13",
+      "warmRoutes": 8,
+      "warmSamplesPerRoute": 64,
+      "warmBytesPerSampleMin": 0,
+      "warmBytesPerSampleMax": 0,
+      "ownedSamples": 64,
+      "ownedRunBytesPerOperation": 456,
+      "coldSetupBytes": 41808,
+      "coldMatchBytesByRoute": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        10256,
+        0
+      ],
+      "positiveControlBytes": 1048,
+      "retainedPrograms": 256,
+      "retainedInclusiveDeltaBytes": 153008,
+      "sourceRevision": "0ecdc0cdbe4220b5bc81e1829e24e4042b9ea96f",
+      "assemblySha256": "E1B81126C2944D831AF5F90B049D84E71ADB430916FB2D591356FD93253C4088",
+      "probeSha256": "95DC0D7C3556B6C7D4CF1F307020E782060C25144D9CF2E0EBA91CE6E8C2931F",
+      "inputSha256": "890F49908271B3A7E905DA99700E54F84109CC87CE189848B02F91DC1337EFF2",
+      "invalidScalar": 55296
+    },
+    {
+      "number": 2,
+      "rawSha256": "66929056d104c53ee6a4c9eacd8c58cd3d760d76c6f196648550cf5c802633e7",
+      "warmRoutes": 8,
+      "warmSamplesPerRoute": 64,
+      "warmBytesPerSampleMin": 0,
+      "warmBytesPerSampleMax": 0,
+      "ownedSamples": 64,
+      "ownedRunBytesPerOperation": 456,
+      "coldSetupBytes": 41808,
+      "coldMatchBytesByRoute": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        10256,
+        0
+      ],
+      "positiveControlBytes": 1048,
+      "retainedPrograms": 256,
+      "retainedInclusiveDeltaBytes": 161224,
+      "sourceRevision": "0ecdc0cdbe4220b5bc81e1829e24e4042b9ea96f",
+      "assemblySha256": "E1B81126C2944D831AF5F90B049D84E71ADB430916FB2D591356FD93253C4088",
+      "probeSha256": "95DC0D7C3556B6C7D4CF1F307020E782060C25144D9CF2E0EBA91CE6E8C2931F",
+      "inputSha256": "890F49908271B3A7E905DA99700E54F84109CC87CE189848B02F91DC1337EFF2",
+      "invalidScalar": 55296
+    }
+  ],
+  "bdnRawSha256": "5d59679f927dd972bfb07b08547a71db13ac69d2969c3a1cc30b80500503517f",
+  "bdnToolchain": "InProcessNoEmitToolchain",
+  "bdnJob": "ShortRun,1launch,3warmup,3measure,MemoryDiagnoser",
+  "bdnCases": [
+    {
+      "case": "Case=EarlyMiss",
+      "meanNs": 4628.336799621582,
+      "standardDeviationNs": 3.8111474149468387,
+      "measuredIterations": 3,
+      "allocatedBytesPerOperation": 0,
+      "memoryDiagnosticOperations": 131072
+    },
+    {
+      "case": "Case=LateMiss",
+      "meanNs": 29561.66162109375,
+      "standardDeviationNs": 456.4271612357104,
+      "measuredIterations": 3,
+      "allocatedBytesPerOperation": 0,
+      "memoryDiagnosticOperations": 32768
+    },
+    {
+      "case": "Case=LongHit",
+      "meanNs": 29554.145802815754,
+      "standardDeviationNs": 186.44060162278976,
+      "measuredIterations": 3,
+      "allocatedBytesPerOperation": 0,
+      "memoryDiagnosticOperations": 32768
+    },
+    {
+      "case": "Case=Malformed",
+      "meanNs": 54.40047629674276,
+      "standardDeviationNs": 0.9262019328318338,
+      "measuredIterations": 3,
+      "allocatedBytesPerOperation": 0,
+      "memoryDiagnosticOperations": 16777216
+    },
+    {
+      "case": "Case=Nullable",
+      "meanNs": 3380.42836634318,
+      "standardDeviationNs": 15.787482248071889,
+      "measuredIterations": 3,
+      "allocatedBytesPerOperation": 0,
+      "memoryDiagnosticOperations": 262144
+    },
+    {
+      "case": "Case=Pooled",
+      "meanNs": 175496.68721516928,
+      "standardDeviationNs": 3062.2897250802043,
+      "measuredIterations": 3,
+      "allocatedBytesPerOperation": 1,
+      "memoryDiagnosticOperations": 4096
+    },
+    {
+      "case": "Case=ShortHit",
+      "meanNs": 117.95830408732097,
+      "standardDeviationNs": 0.9514532918542299,
+      "measuredIterations": 3,
+      "allocatedBytesPerOperation": 0,
+      "memoryDiagnosticOperations": 4194304
+    },
+    {
+      "case": "Case=Unicode",
+      "meanNs": 154.49602071444193,
+      "standardDeviationNs": 0.5603887944322348,
+      "measuredIterations": 3,
+      "allocatedBytesPerOperation": 0,
+      "memoryDiagnosticOperations": 4194304
+    }
+  ],
+  "lifecycle": [
+    "Lease1: firstprobe valid; supervisor ps denied; root cleanup inventory verified and durable ACK a6181ba preceded inspection. No rerun of successfulfirstprobe.",
+    "Lease2: remaining-only supervisor under require_escalated; secondprobe and8NoEmitBDN exited0, reaped/groups drained, logsclosed and42finalidentitiespassed; durableRELEASEACK preceded inspection."
+  ],
+  "limitations": [
+    "Pooled BDN case reports 1 B/op over 4,096 memory-diagnostic operations, while both directly warmed 64-sample probes report 0 B/op; attribution is unestablished and no unqualified pooled BDN zero allocation claim is made.",
+    "Inclusive retained heap deltas are 153,008 and 161,224 bytes for 256 programs, including retaining-array/runtime bookkeeping; they are not exact object-size or portable memory contracts.",
+    "Single Arm64 engine microbenchmarks are provisional. No throughput optimization/speedup or x64/cumulative release claim; facade composition and cross-architecture release confirmation belong to gate."
+  ]
+}
