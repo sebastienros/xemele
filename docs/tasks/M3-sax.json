@@ -35,29 +35,131 @@
     {
       "id": "M3-sax-A1",
       "description": "Expose string/bytes/Stream callback parsing over existing engine with no DOM and preserved parser options.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "release-builds",
+        "focused-tests",
+        "compiled-api"
+      ]
     },
     {
       "id": "M3-sax-A2",
       "description": "Test event order, early delivery, namespace/default attributes, lexical events, user exception propagation and stream ownership.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "focused-tests"
+      ]
     },
     {
       "id": "M3-sax-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
       "status": "pending",
-      "evidence": []
+      "evidence": [
+        "sample",
+        "compiled-api",
+        "preservation",
+        "planning",
+        "measurement-parked"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Streaming/Sax/XmlSaxParser.cs: six synchronous overloads, XmlSaxCompletion, SaxOperation and direct sixteen-event HandlerSink",
+    "tests/Xemele.Tests/M3-sax/SaxTests.cs: 20 focused runtime cases",
+    "docs/api/M3-sax.txt: 16 sorted approved-extractor rows; tests/fixtures/M3-sax/Sync.cs.fixture exact frozen audit copy",
+    "samples/M3-sax/: independently compiled consumer; benchmarks/Xemele.Benchmarks/M3-sax/: composition BDN and allocation/retention probe; docs/reports/M3-sax/: reproduction and outputs"
+  ],
+  "evidence": [
+    {
+      "id": "release-builds",
+      "kind": "check",
+      "revision": "0f51da9a2715314c32ffbd898ccce1f3b7cee15c",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' build tests/Xemele.Tests/Xemele.Tests.csproj -c Release --no-restore -m:1 -p:BuildInParallel=false -p:UseSharedCompilation=false --disable-build-servers\n'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' build samples/M3-sax/M3-sax.csproj -c Release --no-restore -m:1 -p:BuildInParallel=false -p:UseSharedCompilation=false --disable-build-servers\n'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' build docs/reports/M3-sax/Probe/Probe.csproj -c Release --no-restore -m:1 -p:BuildInParallel=false -p:UseSharedCompilation=false --disable-build-servers\n'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' build benchmarks/Xemele.Benchmarks/Xemele.Benchmarks.csproj -c Release --no-restore -m:1 -p:BuildInParallel=false -p:UseSharedCompilation=false --disable-build-servers\n'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' build docs/reports/M3-contracts/Sync/Sync.csproj -c Release --no-restore -m:1 -p:BuildInParallel=false -p:UseSharedCompilation=false -p:NoWarn=CS0436 --disable-build-servers",
+      "result": "passed",
+      "summary": "Five Release builds passed with zero warnings/errors on pinned .NET 10.0.11 Arm64. Frozen nonpackaged Sync requires CS0436 suppression for its intentional duplicates; no shared project changes.",
+      "artifact": null
+    },
+    {
+      "id": "focused-tests",
+      "kind": "check",
+      "revision": "0f51da9a2715314c32ffbd898ccce1f3b7cee15c",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -namespace Xemele.Tests.Sax -noLogo -noColor",
+      "result": "passed",
+      "summary": "20 passed, 0 failed/skipped. All three transports, event order, namespaces/defaults/incomplete values, lexical/DTD projection, exception identity, diagnostic snapshots/result flags, entry guards, cancellation, early delivery, bounded UTF8 chunk boundaries, external ownership and caller leave-open.",
+      "artifact": "docs/reports/M3-sax/tests.txt"
+    },
+    {
+      "id": "preservation",
+      "kind": "check",
+      "revision": "0f51da9a2715314c32ffbd898ccce1f3b7cee15c",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -namespace Xemele.Tests.Dom -namespace Xemele.Tests.Tree -namespace Xemele.Tests.Serialization -namespace Xemele.Tests.Recovery -namespace Xemele.Tests.Entities -namespace Xemele.Tests.EncodingCompatibility -namespace Xemele.Tests.StreamingPump -namespace Xemele.Tests.Callbacks -class- Xemele.Tests.Callbacks.AllocationTests -noLogo -noColor",
+      "result": "passed",
+      "summary": "309 passed, 0 failed/skipped. Callback allocation class explicitly excluded while measurement lease is pending; correctness namespaces cover earlier DOM/tree/serialization/recovery/entities/encoding and integrated M3 pump/callbacks.",
+      "artifact": "docs/reports/M3-sax/preservation.txt"
+    },
+    {
+      "id": "sample",
+      "kind": "check",
+      "revision": "0f51da9a2715314c32ffbd898ccce1f3b7cee15c",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' samples/M3-sax/bin/Release/net10.0/M3-sax.dll",
+      "result": "passed",
+      "summary": "Exit 0: independently built standalone string/bytes/Stream strict/diagnostic sample with leave-open and recovery result assertions.",
+      "artifact": "docs/reports/M3-sax/sample.txt"
+    },
+    {
+      "id": "compiled-api",
+      "kind": "check",
+      "revision": "0f51da9a2715314c32ffbd898ccce1f3b7cee15c",
+      "command": "python3 -B docs/reports/M3-sax/check-api.py",
+      "result": "passed",
+      "summary": "Passed exact equality of all 16 compiled SAX rows against frozen Sync and task baseline; approved unchanged extractor matched all 655 public runtime rows. Sorted canonical task fragment includes generated empty-record members.",
+      "artifact": "docs/reports/M3-sax/api.txt"
+    },
+    {
+      "id": "discovery-wrapper",
+      "kind": "check",
+      "revision": "0f51da9a2715314c32ffbd898ccce1f3b7cee15c",
+      "command": "python3 tools/ApiBaseline/compare.py --report /private/tmp/M3-sax-api-comparison.json",
+      "result": "failed",
+      "summary": "Discovery stops at unprovisioned corpus tests/corpora/xml/xmlconf/eduni/errata-2e/E14.dtd. No assembly comparison ran through this wrapper. Independent full compiled comparison passes via compiled-api. Outside task ownership.",
+      "artifact": null
+    },
+    {
+      "id": "planning",
+      "kind": "check",
+      "revision": "0f51da9a2715314c32ffbd898ccce1f3b7cee15c",
+      "command": "python3 tools/planning/tasks.py validate",
+      "result": "passed",
+      "summary": "Validated 145 tasks: schema/evidence/dependencies/additive milestones/ordered ownership.",
+      "artifact": null
+    },
+    {
+      "id": "measurement-parked",
+      "kind": "check",
+      "revision": "0f51da9a2715314c32ffbd898ccce1f3b7cee15c",
+      "command": "python3 -B docs/reports/M3-sax/measure.py",
+      "result": "skipped",
+      "summary": "Not run. Prebuilt exact sequence ready for exclusive <=180-second root lease: allocation controls/scopes plus generated 1GiB retained memory, then eight BDN Dry/in-process MemoryDiagnoser cases. No real allocation or timing claims yet.",
+      "artifact": null
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "",
-    "checks": [],
-    "remaining": [],
-    "requests": []
+    "summary": "Synchronous SAX implementation committed at 0f51da9a2715314c32ffbd898ccce1f3b7cee15c. A1/A2 pass; A3 measurement pending. No async methods/stubs or shared-path edits. Own-chat reporting fallback active after outbound auto-review rejection.",
+    "checks": [
+      "Release builds: five projects passed",
+      "SAX 20/20 and preservation 309/309 passed",
+      "Standalone sample passed; exact frozen/API equality 16/655 rows passed",
+      "Task validator passed; inventory wrapper failed missing unprovisioned E14.dtd",
+      "Allocation/BDN NOT RUN: prebuilt and parked pending explicit root lease"
+    ],
+    "remaining": [
+      "Grant exclusive <=180-second lease and run python3 -B docs/reports/M3-sax/measure.py at source revision 0f51da9a2715314c32ffbd898ccce1f3b7cee15c; inspect controls, retained-memory oracle and all eight BDN result rows.",
+      "Record real allocation/performance evidence, rerun validator and set implemented only if A3 passes.",
+      "Coordinator integrated verification; x64 hardware confirmation remains release scope."
+    ],
+    "requests": [
+      "Corpus provisioning owner/coordinator: make tests/corpora/xml/xmlconf/eduni/errata-2e/E14.dtd available before repository inventory wrapper; no source/API repair needed."
+    ]
   }
 }
