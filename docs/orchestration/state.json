@@ -16,6 +16,24 @@
       "base_revision": "9314ee6be13a9a1959623dfc17878db4f286cf97",
       "claim_revision": "3817b327d120f6ca212f2f6a28f4fd647084aaca",
       "stage": "Dispatched bounded conformance after verifiedfacade+canonicalizer"
+    },
+    {
+      "task_id": "M5-dtd-parameter-validity",
+      "agent_id": "/root/dtd_model",
+      "worktree": "/private/tmp/xemele-m5-dtd-parameter-validity",
+      "branch": "codex/m5-dtd-parameter-validity",
+      "base_revision": "daf46fe51c6f91b04fe583f165bf4b2cd6d54a54",
+      "claim_revision": "60190686306433a6b3e40a6644fe3389bd9c32e3",
+      "stage": "Dispatched owned corpus correctness repair"
+    },
+    {
+      "task_id": "M5-dtd-attribute-validity",
+      "agent_id": "/root/validation_model",
+      "worktree": "/private/tmp/xemele-m5-dtd-attribute-validity",
+      "branch": "codex/m5-dtd-attribute-validity",
+      "base_revision": "daf46fe51c6f91b04fe583f165bf4b2cd6d54a54",
+      "claim_revision": "60190686306433a6b3e40a6644fe3389bd9c32e3",
+      "stage": "Dispatched owned corpus correctness repair"
     }
   ],
   "integration_queue": [],
@@ -27,7 +45,7 @@
     }
   ],
   "next_actions": [
-    "Claim readyM5-corpus from verified facade+canonicalizer, then M5-gate cumulative checks and solewriterM6transfer."
+    "Retain firstcorpus24failure evidence; verify2ownedvalidityrepairs and assessboundedsourceinstanceprovenance for4remainingcases; onlythenretestaffectedcorpus andcumulativegate/M6transfer."
   ],
   "last_verified_task": "M5-dtd-validate",
   "last_integrated_revision": "094edd911ceb405fd88fadd4e08d34d64f8089da",
@@ -1122,6 +1140,15 @@
         "M2-version-declarations",
         "M2-dtd-nonvalidating"
       ]
+    },
+    {
+      "tasks": [
+        "M5-dtd-parameter-validity",
+        "M5-dtd-attribute-validity"
+      ],
+      "reason": "Frozenfirstcorpus2585/all3386 actual10.0.11Arm64 found16normativeDTDgaps;4profileclassification+4BCLpreparationcorrectedwithoutshrinkingcases/vectors.",
+      "claim": "60190686306433a6b3e40a6644fe3389bd9c32e3",
+      "coordination_failures": "InitialrepairJSONkind repair rejected; correctedfeature and158validatepassed. Two claim-script syntax failures+oneJSsyntaxfailure repaired beforedispatch; created idleworktrees advanced to actualcommittedclaim, no prematureimplementation."
     }
   ],
   "recent_completed_assignments": [
@@ -1916,7 +1943,7 @@
   "milestone_progress": {
     "milestone": "M5",
     "verified": 10,
-    "total": 12
+    "total": 14
   },
   "pause_request": {
     "requested_by": "user",
