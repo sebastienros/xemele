@@ -4,11 +4,11 @@
   "milestone": "M7",
   "title": "HTML serialization modes",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M7 implementation chat 01a12bb3-07b3-7ce2-ab62-f43cd4a8104d",
   "branch": "codex/m7-serialize",
   "base_revision": "725b2cc7190dae7766c8dec17dd6f9958d2b4255",
-  "integration_revision": null,
+  "integration_revision": "fa3bb3ab86bc445976d19ad720c125dd190e63ce",
   "depends_on": [
     "M7-legacy",
     "M7-builder"
@@ -39,7 +39,8 @@
       "evidence": [
         "correctness-and-earlier",
         "hybrid-correctness-and-earlier",
-        "hybrid-api-and-sample"
+        "hybrid-api-and-sample",
+        "integrated-serializer-verification"
       ]
     },
     {
@@ -50,7 +51,8 @@
         "correctness-and-earlier",
         "official-api",
         "hybrid-correctness-and-earlier",
-        "hybrid-api-and-sample"
+        "hybrid-api-and-sample",
+        "integrated-serializer-verification"
       ]
     },
     {
@@ -72,7 +74,8 @@
         "final-identity-controls",
         "final-measured-allocation",
         "final-measured-timing",
-        "coordinator-final-raw-review"
+        "coordinator-final-raw-review",
+        "integrated-serializer-verification"
       ]
     }
   ],
@@ -218,11 +221,20 @@
       "result": "passed",
       "summary": "CoordinatorACK:all231allocationrows/214zero warmrows/213760ops and49CSVidentities+49rawGCnumerator/denominators/408.33s agree. No furtherworkloads or baseline retune required; finishimplementedhandoff,cleanupwaitsintegration/durablefinalreview.",
       "artifact": "docs/reports/M7-serialize/measurements.md"
+    },
+    {
+      "id": "integrated-serializer-verification",
+      "kind": "integration",
+      "revision": "fa3bb3ab86bc445976d19ad720c125dd190e63ce",
+      "command": "Pinned offline Release builds; focused xUnit eight namespaces; python3 -B docs/reports/M7-serialize/check_api.py; public sample; measured-source equality; python3 tools/planning/tasks.py validate",
+      "result": "passed",
+      "summary": "Actual .NET10.0.11 Arm64:1622Pass/0Fail/0Skip/0Errors,1253compiledmembers/1235predecessors+18frozenadditions,3388immutablefixtureinventory/bootstrapFalse/3negativecontrols; sample all3APIs/bothmodes/UTF8/XML;0warning/errorbuilds;18ownedruntime/test/fixture/probe/sample/APItrackedfiles exact measuredsource;169planningtasks. Exclusive final231allocationrows/214zero borrowedrows213760ops/49NoEmitcases reviewed afterdurableRELEASE; no x64 claim. Strictmetadataownercheck mismatch was corrected and merge amended beforemainadvance.",
+      "artifact": "docs/reports/M7-serialize/integration.md"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Implemented on isolated codex/m7-serialize; testedruntime/probe a7022f4, successfulmeasured a80a097; sourceunchangedafterfreeze. ExactnativeLegacy/WHATWGHtml5/UTF8 APIs, reviewed16charscalar-prefix+cachedtextsets. Allrequiredbranchchecks pass; awaitscoordinatorintegration/verification, integration_revisionnull.",
+    "summary": "Integrated verified HTML legacy/Html5 serializer, bounded UTF8 Save and full pinned profile evidence. All criteria pass; dependency M7-corpus unlocked.",
     "checks": [
       "OfflineRelease .NET10.0.11 builds0warning/error;1622/1622Pass/916serializer,all1612prioridentitiespreserved;640nativegraphs/all230originaldispositions/exactWPT assertion.",
       "Official1253API/1235unchanged/18frozen/3388fixtureSHA/3negativecontrols/publicsample3APIs/bothmodes/UTF8/XML pass.",
@@ -231,10 +243,7 @@
       "First87historicaltimings/750sTimeout/stalePGIDcleanup/inventorypermissioncorrection preserved; no rawcleanup, no x64 or blankettimingclaim.",
       "Planning169/diffcheck/ownedpaths audit pass; finalhandoffmetadata doesnotchange testedsource."
     ],
-    "remaining": [
-      "Coordinator integrate branch and rerun applicablecombined correctness/API/sample checks; markverified onlyon integratedcode.",
-      "Retainignoredraw/artifacts/checkouts untilintegration and durablefinalreportreview; coordinatorowns cleanup/followups."
-    ],
+    "remaining": [],
     "requests": []
   }
 }
