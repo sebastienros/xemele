@@ -4,11 +4,11 @@
   "milestone": "M7",
   "title": "Freeze additive CSS XML-tree overloads",
   "kind": "contract",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M7 coordinator /root/css_xml_contract",
   "branch": "codex/m7-css-xml-contract",
   "base_revision": "f82719b45c20386f0ab6356b74b00eaeb6d0b7b9",
-  "integration_revision": null,
+  "integration_revision": "383c7eef263280dfcd3433f165260070e9094b61",
   "depends_on": [
     "M7-contracts",
     "M7-html-model"
@@ -103,6 +103,15 @@
       "result": "passed",
       "summary": "Validated 165 tasks: schema, evidence, acyclic dependencies, additive milestones and ordered ownership.",
       "artifact": "docs/reports/M7-css-xml-contract/verification.md"
+    },
+    {
+      "id": "root-integrated-contract",
+      "kind": "integration",
+      "revision": "383c7eef263280dfcd3433f165260070e9094b61",
+      "command": "NoWarn=CS0436 python3 tests/Contracts/Fixtures/M7/check.py --ownership-base 383c7eef263280dfcd3433f165260070e9094b61 --dotnet <pinned-host>; pinned restore/build ActualModels; pinned --fx-version 10.0.11 ActualModels.dll; strict worker claim-to-handoff owned-path audit; planning validate; git diff --check",
+      "result": "passed",
+      "summary": "Root independently verified integrated Engine173/Tokenizer116/Selector133 exact baselines and all3 missing-member controls; actual HTML/XML consumers compile without suppression zero warnings/errors and execute tree/stream/assembly-identity probes on10.0.11; full10path worker ownership audit; planning167. Only nonpackaged duplicate-model declaration lanes suppress CS0436. No runtime selector or performance claim.",
+      "artifact": "docs/reports/M7-css-xml-contract/integration.md"
     }
   ],
   "blockers": [],
@@ -114,10 +123,7 @@
       "python3 tools/planning/tasks.py validate \u2014 passed 165 tasks",
       "Initial unsuppressed frozen fixture compile failed 40 CS0436 duplicate-model errors; coordinator-approved explicit suppression in declaration lanes plus clean independent actual-model consumer resolves contract workflow."
     ],
-    "remaining": [
-      "Coordinator integrates and reruns declaration/actual-model checks and planning validation before verified.",
-      "M7-css owns runtime selector semantic, allocation and corpus verification; none asserted here."
-    ],
+    "remaining": [],
     "requests": []
   }
 }
