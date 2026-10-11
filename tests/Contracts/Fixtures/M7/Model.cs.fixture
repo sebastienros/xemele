@@ -1,0 +1,65 @@
+using Xemele;
+namespace Xemele.Html;
+public enum HtmlNodeKind { Document, Fragment, Element, Text, Comment, DocumentType }
+public enum HtmlQuirksMode { NoQuirks, LimitedQuirks, Quirks }
+public sealed record HtmlAttribute(string LocalName, string Value, string NamespaceUri = "", string Prefix = "");
+public sealed record HtmlDoctype(string Name, string? PublicIdentifier, string? SystemIdentifier, bool ForceQuirks);
+public sealed class HtmlDocument
+{
+ public HtmlDocument(XmlResourceLimits? limits = null) { }
+ public HtmlNode DocumentNode => throw new NotImplementedException();
+ public HtmlNode RootElement => throw new NotImplementedException();
+ public HtmlQuirksMode QuirksMode => throw new NotImplementedException();
+ public HtmlNode CreateElement(string localName, string namespaceUri = "http://www.w3.org/1999/xhtml", string prefix = "") => throw new NotImplementedException();
+ public HtmlNode CreateText(string value) => throw new NotImplementedException();
+ public HtmlNode CreateComment(string value) => throw new NotImplementedException();
+ public HtmlNode CreateDocumentType(HtmlDoctype doctype) => throw new NotImplementedException();
+ public HtmlNode CreateFragment() => throw new NotImplementedException();
+ public HtmlNode Import(HtmlNode node, bool deep = true) => throw new NotImplementedException();
+}
+public sealed class HtmlNode
+{
+ internal HtmlNode() { }
+ public HtmlDocument OwnerDocument => throw new NotImplementedException();
+ public HtmlNodeKind Kind => throw new NotImplementedException();
+ public string LocalName => throw new NotImplementedException();
+ public string NamespaceUri => throw new NotImplementedException();
+ public string Prefix => throw new NotImplementedException();
+ public string Value { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+ public HtmlNode? Parent => throw new NotImplementedException();
+ public HtmlNode? FirstChild => throw new NotImplementedException();
+ public HtmlNode? LastChild => throw new NotImplementedException();
+ public HtmlNode? PreviousSibling => throw new NotImplementedException();
+ public HtmlNode? NextSibling => throw new NotImplementedException();
+ public IReadOnlyList<HtmlNode> Children => throw new NotImplementedException();
+ public IReadOnlyList<HtmlAttribute> Attributes => throw new NotImplementedException();
+ public HtmlDoctype? Doctype => throw new NotImplementedException();
+ public HtmlNode? TemplateContent => throw new NotImplementedException();
+ public string GetTextContent() => throw new NotImplementedException();
+ public string? GetAttribute(string localName, string namespaceUri = "") => throw new NotImplementedException();
+ public void SetAttribute(HtmlAttribute attribute) => throw new NotImplementedException();
+ public bool RemoveAttribute(string localName, string namespaceUri = "") => throw new NotImplementedException();
+ public void AppendChild(HtmlNode node) => throw new NotImplementedException();
+ public void InsertBefore(HtmlNode node, HtmlNode reference) => throw new NotImplementedException();
+ public void Remove() => throw new NotImplementedException();
+ public HtmlNode Clone(bool deep = true) => throw new NotImplementedException();
+}
+public enum HtmlTokenKind { Doctype, StartTag, EndTag, Comment, Character, EndOfFile }
+public sealed class HtmlToken
+{
+ public HtmlToken(HtmlTokenKind kind, string name, string data, IReadOnlyList<HtmlAttribute> attributes, bool selfClosing, HtmlDoctype? doctype, XmlLocation location) => throw new NotImplementedException();
+ public HtmlTokenKind Kind => throw new NotImplementedException();
+ public string Name => throw new NotImplementedException();
+ public string Data => throw new NotImplementedException();
+ public IReadOnlyList<HtmlAttribute> Attributes => throw new NotImplementedException();
+ public bool SelfClosing => throw new NotImplementedException();
+ public HtmlDoctype? Doctype => throw new NotImplementedException();
+ public XmlLocation Location => throw new NotImplementedException();
+}
+public enum HtmlTokenizerState { Data, RcData, RawText, ScriptData, PlainText }
+public sealed record HtmlTokenizerOptions
+{
+ public XmlResourceLimits Limits { get; init; } = new();
+ public HtmlTokenizerState InitialState { get; init; } = HtmlTokenizerState.Data;
+ public string LastStartTagName { get; init; } = "";
+}

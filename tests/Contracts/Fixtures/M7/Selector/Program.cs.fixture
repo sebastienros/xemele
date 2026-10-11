@@ -1,0 +1,8 @@
+using Xemele.Html; using Xemele.Css;
+static void Contract() { var doc=new HtmlDocument(); var p=doc.CreateElement("p"); p.SetAttribute(new("class","a")); var css=CssSelector.Compile("p.a:not([hidden]):nth-child(2n+1)"); _=css.Matches(p); _=css.Select(doc.DocumentNode); }
+// Signature consumer is compiled but deliberately never invokes declaration stubs.
+Action contract = Contract; GC.KeepAlive(contract);
+var xml = new Xemele.XmlDocument(); var root = xml.CreateElement("root"); xml.DocumentNode.AppendChild(root); root.AppendChild(xml.CreateText("preserved"));
+if (root.GetTextContent() != "preserved") throw new Exception("XML tree changed");
+using var reader = Xemele.Streaming.XmlReader.Create(new MemoryStream(System.Text.Encoding.UTF8.GetBytes("<root>preserved</root>"))); int count=0; while(reader.Read()) count++; if(count<3) throw new Exception("XML streaming changed");
+Console.WriteLine("PASS: independent Selector signatures; actual XML tree and streaming preservation; runtime " + Environment.Version);
