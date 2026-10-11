@@ -4,7 +4,7 @@
   "milestone": "M7",
   "title": "HTML CLI additions",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M7 implementation chat 01a12c47-e352-7f83-80cb-ec7800b7f865",
   "branch": "codex/m7-cli",
   "base_revision": "4af21789ba152d435564f68e3f4259b5527cb90c",
@@ -34,29 +34,132 @@
     {
       "id": "M7-cli-A1",
       "description": "Add legacy/HTML5/fragment/selector commands without modifying the XML command implementation.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "release-builds",
+        "managed-cli-controls",
+        "usage-ownership-sample"
+      ]
     },
     {
       "id": "M7-cli-A2",
       "description": "End-to-end HTML and existing XML CLI tests pass; registration survives trimming/AOT.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "managed-cli-controls",
+        "native-aot",
+        "native-cli-controls"
+      ]
     },
     {
       "id": "M7-cli-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "usage-ownership-sample",
+        "full-api-inventory-negatives",
+        "managed-cli-controls",
+        "native-cli-controls",
+        "planning-ownership-cleanup"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele.Tool/Commands/Html/Registration.cs: CommandRegistry.RegisterHtmlCommands; four statically registered commands",
+    "src/Xemele.Tool/Commands/Html/HtmlCommands.cs: HtmlCommands.Run; verified parser/CSS/serializer composition, real contexts, bounded UTF-8 fragment string and owned result staging",
+    "src/Xemele.Tool/Commands/Html/Invocation.cs and FileInput.cs: finite options, error/ownership boundaries",
+    "tests/Xemele.Tests/M7-cli/process_controls.py and api_controls.py; tests/fixtures/M7-cli/",
+    "samples/M7-cli/: compiled public usage/ownership sample and complete command/output inventory; no new public library API fragment"
+  ],
+  "evidence": [
+    {
+      "id": "release-builds",
+      "kind": "check",
+      "revision": "a3dc9a68cfa46f1a88745b2b6f9afee0b461563b",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' build src/Xemele.Tool/Xemele.Tool.csproj -c Release -t:Rebuild -p:RuntimeFrameworkVersion=10.0.11 -p:UseSharedCompilation=false -p:NuGetAudit=false --source tests/Contracts/Fixtures/M7 --disable-build-servers -m:1; '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' build samples/M7-cli/M7.CliSample.csproj -c Release -t:Rebuild -p:RuntimeFrameworkVersion=10.0.11 -p:UseSharedCompilation=false -p:NuGetAudit=false --source tests/Contracts/Fixtures/M7 --disable-build-servers -m:1; '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' build docs/reports/M0-contracts/ApiCheck/ApiCheck.csproj -c Release -t:Rebuild -p:RuntimeFrameworkVersion=10.0.11 -p:UseSharedCompilation=false -p:NuGetAudit=false --source tests/Contracts/Fixtures/M7 --disable-build-servers -m:1",
+      "result": "passed",
+      "summary": "All three forced Release builds passed with zero warnings/errors; SDK10.0.400, macOS15.8/osx-arm64, explicit10.0.11; logs artifacts/M7-cli/build-*.log.",
+      "artifact": "docs/reports/M7-cli/README.md"
+    },
+    {
+      "id": "managed-cli-controls",
+      "kind": "check",
+      "revision": "a3dc9a68cfa46f1a88745b2b6f9afee0b461563b",
+      "command": "python3 -B tests/Xemele.Tests/M7-cli/process_controls.py; python3 -B tests/Xemele.Tests/M6-cli/process_controls.py",
+      "result": "passed",
+      "summary": "111 HTML and all57 existing XML real process controls passed under exact host --fx-version10.0.11; recovery, sniffing, real contexts/ancestry, CSS grammar/errors, quotas/staging/exitcodes; no XML implementation changes.",
+      "artifact": "docs/reports/M7-cli/README.md"
+    },
+    {
+      "id": "usage-ownership-sample",
+      "kind": "check",
+      "revision": "a3dc9a68cfa46f1a88745b2b6f9afee0b461563b",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 samples/M7-cli/bin/Release/net10.0/M7.CliSample.dll",
+      "result": "passed",
+      "summary": "28 compiled sample controls passed: four registered HTML commands/XML preservation; success/rejection/cancellation/input-output I/O and borrowed/standard stream lifetime. Sample asserts .NET10.0.11; actualArm64.",
+      "artifact": "docs/reports/M7-cli/README.md"
+    },
+    {
+      "id": "full-api-inventory-negatives",
+      "kind": "check",
+      "revision": "a3dc9a68cfa46f1a88745b2b6f9afee0b461563b",
+      "command": "python3 -B tests/Xemele.Tests/M7-cli/api_controls.py",
+      "result": "passed",
+      "summary": "Unchanged official compose(ROOT):34 API fragments,1253 members matched,3388 fixture hashes/bootstrapFalse;7 actual API checks including missing/changed/added compiled rejection, duplicate/conflicting inventory rejection and zero tool public members; no M7-cli API fragment required/created.",
+      "artifact": "docs/reports/M7-cli/README.md"
+    },
+    {
+      "id": "native-aot",
+      "kind": "check",
+      "revision": "a3dc9a68cfa46f1a88745b2b6f9afee0b461563b",
+      "command": "DOTNET_ROLL_FORWARD=LatestPatch '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' publish src/Xemele.Tool/Xemele.Tool.csproj -c Release -r osx-arm64 -p:PublishAot=true -p:RuntimeFrameworkVersion=10.0.11 -p:UseSharedCompilation=false -p:NuGetAudit=false --source /Users/sebastienros/.nuget/packages --disable-build-servers -m:1 -o artifacts/M7-cli/native",
+      "result": "passed",
+      "summary": "Scoped elevated correctness publish passed; genuine Mach-O64 arm64 executable; Microsoft.DotNet.ILCompiler/platformcompiler10.0.11; SHA256556a3abc9cbe8f1cbde44cb0d0509cc122746a487922d3ed3dfa5f19343d8fc6. Earlier sandbox preparation was stopped/reaped and is not passing evidence.",
+      "artifact": "docs/reports/M7-cli/README.md"
+    },
+    {
+      "id": "native-cli-controls",
+      "kind": "check",
+      "revision": "a3dc9a68cfa46f1a88745b2b6f9afee0b461563b",
+      "command": "XEMELE_CLI_NATIVE=\"$PWD/artifacts/M7-cli/native/Xemele.Tool\" python3 -B tests/Xemele.Tests/M7-cli/process_controls.py; XEMELE_CLI_NATIVE=\"$PWD/artifacts/M7-cli/native/Xemele.Tool\" python3 -B tests/Xemele.Tests/M6-cli/process_controls.py",
+      "result": "passed",
+      "summary": "111 HTML and57 XML process controls passed on actual osx-arm64 native executable; all11 commands/help survived static registration/trimming/AOT; no other platform claimed.",
+      "artifact": "docs/reports/M7-cli/README.md"
+    },
+    {
+      "id": "planning-ownership-cleanup",
+      "kind": "check",
+      "revision": "a3dc9a68cfa46f1a88745b2b6f9afee0b461563b",
+      "command": "python3 tools/planning/tasks.py validate; git diff --check; claim-relative owned-path validation; scoped owned process inspection",
+      "result": "passed",
+      "summary": "169 tasks validated; whitespace/owned-path checks pass against9581d977 claim; no shared/XML/runtime edits; all build/native/API/smoke execchildren reaped and none remain.",
+      "artifact": "docs/reports/M7-cli/README.md"
+    },
+    {
+      "id": "sandbox-native-preparation",
+      "kind": "check",
+      "revision": "a3dc9a68cfa46f1a88745b2b6f9afee0b461563b",
+      "command": "sandboxed NativeAOT publish with same explicit10.0.11 flags, then scoped owned SIGINT/SIGTERM/reap",
+      "result": "skipped",
+      "summary": "Preparation paused after managed build without nativeartifact/compilerchild; stopped/reaped; superseded by actual elevated native-aot/native-cli-controls. Preserved artifacts/M7-cli/publish-aot-sandbox-preparation.log; no native pass claimed for this attempt.",
+      "artifact": "docs/reports/M7-cli/README.md"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "",
-    "checks": [],
-    "remaining": [],
+    "summary": "Four internal statically registered HTML CLI commands, real fragment contexts, CSS selection, explicit profiles/scripting/serialization/finite options and structured failures; owned public usage/output inventory and executable sample. Implementation a3dc9a68; zero library public additions; no XML/shared/runtime edits. All criteria passed on isolated branch; integration remains coordinator work.",
+    "checks": [
+      "Forced CLI/sample/approved extractor builds: zero warnings/errors; SDK10.0.400/runtime10.0.11 on macOS15.8/osx-arm64.",
+      "Managed and actual NativeAOT:111 HTML +57 unchanged XML controls each; owned sample28 controls (.NET10.0.11 assertion).",
+      "Full official API inventory:34 fragments/1253 matched members/3388 hashedfixtures/bootstrapFalse;7 API/negative checks; zero tool public members.",
+      "Actual osx-arm64 Mach-O native SHA256556a3abc9cbe8f1cbde44cb0d0509cc122746a487922d3ed3dfa5f19343d8fc6; ILCompiler packages10.0.11.",
+      "Planning169, whitespace and claim-relative ownership passed; all owned execchildren reaped.",
+      "Earlier missing ignored corpus input prepared by coordinator; intermediate harness/preparation corrections documented honestly. No timing/allocation/full inheritedsuite campaign."
+    ],
+    "remaining": [
+      "Coordinator integration and integrated verification; cumulative runtime/allocation gates stay with coordinator.",
+      "Frozen string fragment/selection/stringserialization APIs have no mid-call cancellation; documented bounded read/entry-exit/inter-result cancellation and deliberate CLI result allocations."
+    ],
     "requests": []
   }
 }
