@@ -9,10 +9,12 @@
       "task_id": "M7-serialize",
       "branch": "codex/m7-serialize",
       "base_revision": "725b2cc7190dae7766c8dec17dd6f9958d2b4255",
-      "stage": "Isolated GPT-6.1 Sol/high serialization chat setup pending",
+      "stage": "Serialization chat active; awaiting actual branch/claim confirmation; original noscript projection routed.",
       "claim_revision": "5af29be6c7ec50c85ff8f8bdd2161ef6747bf9c9",
       "client_thread_id": "client-new-thread:341fd521-e644-4604-86ab-e42d2c95e64c",
-      "host_id": "local"
+      "host_id": "local",
+      "chat_id": "01a12bb3-07b3-7ce2-ab62-f43cd4a8104d",
+      "worktree_path": "/Users/sebastienros/.codex/worktrees/3041/xemele"
     }
   ],
   "integration_queue": [],
@@ -2610,6 +2612,16 @@
       "task_id": "M7-builder",
       "branch": "codex/m7-builder-continuation",
       "integration_revision": "ed7c82190b2b6b55ec54f0fb49576905ee9834bd"
+    },
+    {
+      "task_id": "M7-serialize",
+      "chat_id": "01a12bb3-07b3-7ce2-ab62-f43cd4a8104d",
+      "host_id": "local",
+      "model": "gpt-6.1-sol",
+      "thinking": "high",
+      "branch": "codex/m7-serialize",
+      "worktree_path": "/Users/sebastienros/.codex/worktrees/3041/xemele",
+      "status": "active; soleimplementationwriter"
     }
   ],
   "adapter_prelease_review": {
@@ -3014,7 +3026,8 @@
     {
       "source": "tests/fixtures/M7-builder/wpt-parsing/noscript-template-querySelector.html",
       "assertion": "noscriptNode.innerHTML == &lt;div&gt;&lt;/div&gt; within template content",
-      "status": "Pending serializer assignment exact original static assertion; builder tree/text coverage required; not passed."
+      "status": "Pending serializer assignment exact original static assertion; builder tree/text coverage required; not passed.",
+      "owner_task_id": "M7-serialize"
     }
   ]
 }
