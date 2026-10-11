@@ -31,7 +31,7 @@ public sealed class SelectorTests
     [InlineData("root item", 3)] [InlineData("root > item", 3)] [InlineData("item + item", 1)] [InlineData("item ~ item", 2)]
     [InlineData("item, .a, root", 5)] [InlineData(":root", 1)] [InlineData(":scope", 1)] [InlineData(":empty", 4)]
     [InlineData(":first-child", 2)] [InlineData("item:last-child", 1)] [InlineData("root:only-child", 1)]
-    [InlineData("item:nth-child(odd)", 1)] [InlineData("item:nth-child(even)", 2)] [InlineData("item:nth-child(2n+1)", 1)]
+    [InlineData("item:nth-child(odd)", 1)] [InlineData("item:nth-child(\\6e +1)", 3)] [InlineData("item:nth-child(2\\6e +1)", 1)] [InlineData("item:nth-child(\\6f dd)", 1)] [InlineData("item:nth-child(n-1)", 3)] [InlineData("item:nth-child(even)", 2)] [InlineData("item:nth-child(2n+1)", 1)]
     [InlineData("item:nth-child(-n+2)", 2)] [InlineData("item:nth-child(+2)", 1)] [InlineData("item:nth-child(999999999999999999999999999n-999999999999999999999999998)", 1)] [InlineData("item:nth-child(-999999999999999999999999999n+999999999999999999999999999)", 0)] [InlineData("item:nth-last-child(2n)", 1)]
     [InlineData("item:first-of-type", 1)] [InlineData("item:last-of-type", 1)] [InlineData("other:only-of-type", 1)]
     [InlineData("item:nth-of-type(2)", 1)] [InlineData("item:nth-last-of-type(2)", 1)]
@@ -51,7 +51,7 @@ public sealed class SelectorTests
     [InlineData(":lang(en)", 0)] [InlineData(":dir(ltr)", 0)] [InlineData(":hover", 0)] [InlineData(":link", 0)]
     [InlineData(":checked", 0)] [InlineData(":enabled", 0)] [InlineData(":visited", 0)] [InlineData(":target", 0)]
     [InlineData("item || item", 5)] [InlineData("[id=x i]", 6)] [InlineData("[id=x s]", 6)]
-    [InlineData(":not(item > x)", 10)] [InlineData(":not(:not(item))", 5)] [InlineData(":not()", 5)]
+    [InlineData(":not(item > x)", 10)] [InlineData(":not(:not(item))", 5)] [InlineData(":not()", 5)] [InlineData(":nth-child(+odd)", 12)]
     [InlineData(":nth-child(2n of item)", 14)] [InlineData(":nth-child(2 n)", 13)] [InlineData(":nth-child(n + 1 2)", 17)]
     [InlineData("missing|item", 0)] [InlineData("[missing|a]", 1)] [InlineData("item, :has(x)", 6)]
     [InlineData("[id='a\n']", 6)] [InlineData("item/*", 4)] [InlineData("#1", 1)] [InlineData("item\\", 4)]
@@ -144,6 +144,9 @@ public sealed class SelectorTests
         xe.SetAttribute("class", "a\u00a0b"); he.SetAttribute(new("class", "a\u00a0b"));
         Assert.False(CssSelector.Compile(".a").Matches(xe)); Assert.False(CssSelector.Compile(".a").Matches(he));
         Assert.False(CssSelector.Compile(".a\\ b").Matches(xe));
+        var replacementXml = x.CreateElement("�"); var replacementHtml = h.CreateElement("�");
+        foreach (var selector in new[] { "\0", "\uD800", "\\0", "\\d800", "\\110000" })
+        { var compiled = CssSelector.Compile(selector); Assert.True(compiled.Matches(replacementXml)); Assert.True(compiled.Matches(replacementHtml)); }
         Assert.Equal(3, Assert.Throws<CssSelectorException>(() => CssSelector.Compile("é, ::before")).Offset);
     }
 

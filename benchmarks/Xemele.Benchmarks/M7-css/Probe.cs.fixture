@@ -1,0 +1,79 @@
+using System.Runtime.InteropServices;
+using System.Text.Json;
+using BenchmarkDotNet.Configs;
+using BenchmarkDotNet.Jobs;
+using BenchmarkDotNet.Running;
+using BenchmarkDotNet.Toolchains.InProcess.NoEmit;
+using Xemele.Css;
+using Xemele.Benchmarks.Css;
+Console.WriteLine($"FrameworkDescription={RuntimeInformation.FrameworkDescription}; Architecture={RuntimeInformation.ProcessArchitecture}");
+if (RuntimeInformation.FrameworkDescription != ".NET 10.0.11") throw new Exception("Pinned runtime required.");
+if (args[0] is "--discover" or "--benchmark")
+{
+    var config = ManualConfig.Create(DefaultConfig.Instance).WithArtifactsPath(args[1]).AddJob(Job.Default.WithToolchain(InProcessNoEmitToolchain.Instance).AsMutator());
+    var tokenRun = BenchmarkConverter.TypeToBenchmarks(typeof(TokenScanBenchmarks), config);
+    var compositionRun = BenchmarkConverter.TypeToBenchmarks(typeof(CompositionBenchmarks), config);
+    var suite = tokenRun.BenchmarksCases.Concat(compositionRun.BenchmarksCases).ToArray();
+    if (suite.Length != 21 || suite.Any(c => c.Job.Run.WarmupCount != 3 || c.Job.Run.IterationCount != 3 || c.Job.Run.LaunchCount != 1 || c.Job.Infrastructure.Toolchain != InProcessNoEmitToolchain.Instance)) throw new Exception("21 ShortRun NoEmit cases required.");
+    Console.WriteLine("21 ShortRun NoEmit cases; no builds/generation.");
+    if (args[0] == "--discover") return;
+    var summaries = BenchmarkRunner.Run(new[] { tokenRun, compositionRun });
+    if (summaries.Sum(s => s.Reports.Length) != 21 || summaries.Any(s => s.Reports.Any(r => !r.Success || r.ResultStatistics is null))) throw new Exception("Benchmark failure.");
+    return;
+}
+if (args[0] != "--measure") throw new ArgumentException();
+long before = GC.GetAllocatedBytesForCurrentThread();
+var selector = CssSelector.Compile("root > item.selected:nth-child(2n+1):not([data=absent]), #hit");
+Print("cold-css-compile-and-initialization", GC.GetAllocatedBytesForCurrentThread() - before, 1);
+before = GC.GetAllocatedBytesForCurrentThread(); var control = new byte[1024];
+long allocated = GC.GetAllocatedBytesForCurrentThread() - before;
+if (allocated == 0) throw new Exception("Positive allocation control failed.");
+Print("positive-control", allocated, 1); GC.KeepAlive(control);
+var (xml, html) = CompositionBenchmarks.Graph();
+bool consumed = false;
+foreach (var expression in new[] { "*", ".selected", "root > item.selected:nth-child(2n+1):not([data=absent]), #hit", "item + item", "item ~ item", "[data|=en]", "[data*=US]", ":root", ":empty", "é", "missing" })
+{
+    var compiled = CssSelector.Compile(expression);
+    for (int i = 0; i < 1024; i++) { consumed ^= compiled.Matches(xml.RootElement.FirstChild); consumed ^= compiled.Matches(html.RootElement.FirstChild!); }
+    for (int batch = 0; batch < 16; batch++)
+    {
+        before = GC.GetAllocatedBytesForCurrentThread();
+        for (int i = 0; i < 4096; i++) consumed ^= compiled.Matches(xml.RootElement.FirstChild);
+        allocated = GC.GetAllocatedBytesForCurrentThread() - before;
+        Print("steady-xml-matches-" + expression, allocated, 4096);
+        if (allocated != 0) throw new Exception("XML Matches allocated.");
+        before = GC.GetAllocatedBytesForCurrentThread();
+        for (int i = 0; i < 4096; i++) consumed ^= compiled.Matches(html.RootElement.FirstChild!);
+        allocated = GC.GetAllocatedBytesForCurrentThread() - before;
+        Print("steady-html-matches-" + expression, allocated, 4096);
+        if (allocated != 0) throw new Exception("HTML Matches allocated.");
+    }
+}
+before = GC.GetAllocatedBytesForCurrentThread();
+var productionScan = TokenScanBenchmarks.Production;
+Print("cold-token-comparison-fixtures-searchvalues-and-reflection-binding", GC.GetAllocatedBytesForCurrentThread() - before, 1);
+GC.KeepAlive(productionScan);
+foreach (var input in TokenScanBenchmarks.Inputs)
+{
+    for (int i = 0; i < 1024; i++) consumed ^= TokenScanBenchmarks.Production(input.Value, input.Token);
+    before = GC.GetAllocatedBytesForCurrentThread();
+    for (int i = 0; i < 4096; i++) consumed ^= TokenScanBenchmarks.Production(input.Value, input.Token);
+    allocated = GC.GetAllocatedBytesForCurrentThread() - before; Print("steady-production-class-token", allocated, 4096);
+    if (allocated != 0) throw new Exception("Class scanner allocated.");
+}
+for (int i = 0; i < 16; i++) selector = CssSelector.Compile("root > item.selected:nth-child(2n+1):not([data=absent]), #hit");
+before = GC.GetAllocatedBytesForCurrentThread();
+for (int i = 0; i < 100; i++) selector = CssSelector.Compile("root > item.selected:nth-child(2n+1):not([data=absent]), #hit");
+Print("owned-steady-compile", GC.GetAllocatedBytesForCurrentThread() - before, 100);
+object? owned = null;
+before = GC.GetAllocatedBytesForCurrentThread(); for (int i = 0; i < 100; i++) owned = selector.Select(xml.DocumentNode);
+Print("owned-xml-query-and-result", GC.GetAllocatedBytesForCurrentThread() - before, 100);
+before = GC.GetAllocatedBytesForCurrentThread(); for (int i = 0; i < 100; i++) owned = selector.Select(html.DocumentNode);
+Print("owned-html-query-and-result", GC.GetAllocatedBytesForCurrentThread() - before, 100);
+GC.Collect(); GC.WaitForPendingFinalizers(); GC.Collect(); long heapBefore = GC.GetTotalMemory(false);
+var retained = new object[100];
+for (int i = 0; i < retained.Length; i++) { var (x, h) = CompositionBenchmarks.Graph(); retained[i] = (selector.Select(x.DocumentNode), selector.Select(h.DocumentNode)); }
+GC.Collect(); GC.WaitForPendingFinalizers(); GC.Collect(); long heapAfter = GC.GetTotalMemory(false);
+Console.WriteLine(JsonSerializer.Serialize(new { domain = "retained-result-snapshots-with-permanent-owners-and-retaining-array-inclusive", beforeBytes = heapBefore, afterBytes = heapAfter, inclusiveDeltaBytes = heapAfter - heapBefore, denominatorGraphPairs = 100 }));
+GC.KeepAlive(retained); GC.KeepAlive(selector); GC.KeepAlive(owned); GC.KeepAlive(consumed);
+static void Print(string domain, long numeratorBytes, int denominatorOperations) => Console.WriteLine(JsonSerializer.Serialize(new { domain, numeratorBytes, denominatorOperations }));

@@ -145,32 +145,57 @@ public sealed partial class CssSelector
         }
         private (BigInteger, BigInteger) Nth()
         {
-            // Preserve token boundaries: 2 n, o dd and n + 1 2 are never valid an+b.
             int start = position;
-            if (Current is 'o' or 'O' or 'e' or 'E')
-            {
-                string word = Identifier();
-                if (Equal(word, "odd", true)) return (2, 1);
-                if (Equal(word, "even", true)) return (2, 0);
-                throw Error(start);
-            }
             long sign = 1;
+            bool signed = Current is '+' or '-';
             if (Current is '+' or '-') { if (Current == '-') sign = -1; position++; }
             bool hasDigits = char.IsAsciiDigit(Current);
             BigInteger number = hasDigits ? Unsigned() : 1;
-            if (Current is 'n' or 'N')
+            if (!IdentifierStart(position))
             {
-                position++;
-                BigInteger a = sign * number;
-                Skip();
-                if (Current == ')') return (a, 0);
-                if (Current is not ('+' or '-')) throw Error();
-                long bsign = Current == '-' ? -1 : 1; position++; Skip();
-                if (!char.IsAsciiDigit(Current)) throw Error();
-                return (a, bsign * Unsigned());
+                if (!hasDigits) throw Error(start);
+                return (0, sign * number);
             }
-            if (!hasDigits) throw Error(start);
-            return (0, sign * number);
+            // A dimension unit or ident token carries decoded CSS escapes. Read it
+            // as one token so whitespace can never turn "2 n" into a dimension.
+            if (hasDigits && White(Current)) return (0, sign * number);
+            int unitStart = position;
+            string unit = Identifier();
+            if (!hasDigits && !signed)
+            {
+                if (Equal(unit, "odd", true)) return (2, 1);
+                if (Equal(unit, "even", true)) return (2, 0);
+            }
+            if (!hasDigits && !signed && unit.StartsWith("-n", StringComparison.OrdinalIgnoreCase))
+            {
+                sign = -1;
+                unit = unit[1..];
+            }
+            if (unit.Length == 0 || Lower(unit[0]) != 'n') throw Error(unitStart);
+            BigInteger a = sign * number;
+            if (unit.Length > 1)
+            {
+                if (unit[1] != '-') throw Error(unitStart + 1);
+                if (unit.Length > 2)
+                {
+                    BigInteger b = 0;
+                    for (int i = 2; i < unit.Length; i++)
+                    {
+                        if (!char.IsAsciiDigit(unit[i])) throw Error(unitStart + i);
+                        b = b * 10 + unit[i] - '0';
+                    }
+                    return (a, -b);
+                }
+                Skip();
+                if (!char.IsAsciiDigit(Current)) throw Error();
+                return (a, -Unsigned());
+            }
+            Skip();
+            if (Current == ')') return (a, 0);
+            if (Current is not ('+' or '-')) throw Error();
+            long bsign = Current == '-' ? -1 : 1; position++; Skip();
+            if (!char.IsAsciiDigit(Current)) throw Error();
+            return (a, bsign * Unsigned());
         }
         // Trees use Int32 slots/counts. Normalize arbitrary CSS integers at the owned
         // compile boundary to the same progression restricted to possible positions.
@@ -205,7 +230,7 @@ public sealed partial class CssSelector
             }
             return number;
         }
-        private static bool NameStart(char c) => c is >= 'a' and <= 'z' or >= 'A' and <= 'Z' or '_' || c >= 0x80;
+        private static bool NameStart(char c) => c == '\0' || c is >= 'a' and <= 'z' or >= 'A' and <= 'Z' or '_' || c >= 0x80;
         private static bool NameChar(char c) => NameStart(c) || c is >= '0' and <= '9' or '-';
         private bool EscapeStart(int index) => index + 1 < source.Length && source[index] == '\\' && source[index + 1] is not ('\r' or '\n' or '\f');
         private bool IdentifierStart(int index)
@@ -222,7 +247,16 @@ public sealed partial class CssSelector
             StringBuilder? decoded = null;
             while (position < source.Length)
             {
-                if (NameChar(Current)) { decoded?.Append(Current); position++; }
+                if (NameChar(Current))
+                {
+                    if (InvalidScalar())
+                    {
+                        decoded ??= new StringBuilder(source.AsSpan(start, position - start).ToString());
+                        decoded.Append('\uFFFD');
+                    }
+                    else decoded?.Append(Current);
+                    position++;
+                }
                 else if (Current == '\\')
                 {
                     if (!EscapeStart(position)) throw Error();
@@ -242,10 +276,13 @@ public sealed partial class CssSelector
                 if (Current == quote) { position++; return value.ToString(); }
                 if (Current is '\r' or '\n' or '\f') throw Error();
                 if (Current == '\\') Escape(value, true);
-                else { value.Append(Current == '\0' ? '\uFFFD' : Current); position++; }
+                else { value.Append(InvalidScalar() ? '\uFFFD' : Current); position++; }
             }
             throw Error();
         }
+        private bool InvalidScalar() => Current == '\0' ||
+            char.IsHighSurrogate(Current) && (position + 1 == source.Length || !char.IsLowSurrogate(source[position + 1])) ||
+            char.IsLowSurrogate(Current) && (position == 0 || !char.IsHighSurrogate(source[position - 1]));
         private void Escape(StringBuilder value, bool inString)
         {
             position++;
@@ -262,7 +299,7 @@ public sealed partial class CssSelector
             {
                 scalar = scalar * 16 + Hex(Current); position++; count++;
             }
-            if (count == 0) { value.Append(Current == '\0' ? '\uFFFD' : Current); position++; return; }
+            if (count == 0) { value.Append(InvalidScalar() ? '\uFFFD' : Current); position++; return; }
             if (White(Current)) { char first = Current; position++; if (first == '\r' && Current == '\n') position++; }
             if (scalar == 0 || scalar > 0x10FFFF || scalar is >= 0xD800 and <= 0xDFFF) scalar = 0xFFFD;
             value.Append(char.ConvertFromUtf32(scalar));

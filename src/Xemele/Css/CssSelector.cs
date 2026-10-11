@@ -173,23 +173,27 @@ public sealed partial class CssSelector
         {
             case "": return true;
             case "=": return value.AsSpan().SequenceEqual(target);
-            case "~=" :
-                if (target.IsEmpty) return false;
-                var span = value.AsSpan();
-                int i = 0;
-                while (i < span.Length)
-                {
-                    while (i < span.Length && White(span[i])) i++;
-                    int start = i;
-                    while (i < span.Length && !White(span[i])) i++;
-                    if (span[start..i].SequenceEqual(target)) return true;
-                }
-                return false;
+            case "~=" : return ContainsToken(value, test.Value);
             case "|=": return value.AsSpan().SequenceEqual(target) || value.Length > target.Length && value[target.Length] == '-' && value.AsSpan(0, target.Length).SequenceEqual(target);
             case "^=": return !target.IsEmpty && value.AsSpan().StartsWith(target, StringComparison.Ordinal);
             case "$=": return !target.IsEmpty && value.AsSpan().EndsWith(target, StringComparison.Ordinal);
             default: return !target.IsEmpty && value.AsSpan().Contains(target, StringComparison.Ordinal);
         }
+    }
+    private static bool ContainsToken(string value, string token)
+    {
+        var target = token.AsSpan();
+        if (target.IsEmpty) return false;
+        var span = value.AsSpan();
+        int i = 0;
+        while (i < span.Length)
+        {
+            while (i < span.Length && White(span[i])) i++;
+            int start = i;
+            while (i < span.Length && !White(span[i])) i++;
+            if (span[start..i].SequenceEqual(target)) return true;
+        }
+        return false;
     }
     private static bool Equal(string left, string right, bool fold)
     {
