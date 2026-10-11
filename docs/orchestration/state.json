@@ -31,6 +31,14 @@
       "client_thread_id": "client-new-thread:280dfbd1-b7fe-43a5-81b8-9a05a748df44",
       "chat_id": "01a128b5-7905-72d1-8484-420eaecaa820",
       "worktree_path": "/Users/sebastienros/.codex/worktrees/875c/xemele"
+    },
+    {
+      "task_id": "M3-push",
+      "branch": "codex/m3-push",
+      "base_revision": "dea97b9f2c20a89afae0f1136ec9f29dc8ca3305",
+      "host_id": "local",
+      "stage": "Claimed; worker creation pending",
+      "acceptance_before_dispatch": "Frozen Append/Complete/dispose lifecycle, immediate callbacks and all splits/fault/guard controls; bounded retention and real allocation/positive controls; focused integration and API preservation."
     }
   ],
   "integration_queue": [],
@@ -1421,7 +1429,12 @@
       "stage": "Verified; cleanup pending",
       "acceptance_before_dispatch": "Frozen synchronousadapter contracts A1/A2, standalone/API preservation A3, bounded ownedstate/realallocationpositivecontrols; focusedintegration; measurements park until serial lease",
       "handoff_revision": "b0079eb21eb2da5a0cab8794f95f6253247b06ef",
-      "integration_revision": "dfe9509d792ce51ef15ed15814115c6293428379"
+      "integration_revision": "dfe9509d792ce51ef15ed15814115c6293428379",
+      "cleanup": {
+        "worktree": "removed",
+        "chat_archived": true,
+        "branch_preserved": true
+      }
     }
   ],
   "benchmark_grant": {
@@ -1567,13 +1580,14 @@
   },
   "measurement_lease": {
     "id": "m3-resource-mode-ede1233-measure",
-    "status": "granted",
+    "status": "released",
     "revision": "ede12339ef78ca77d071a826ec48f2994dbfb422",
     "duration_limit_seconds": 180,
     "scope": "Exact prebuilt probe --allocation <=30s; only if passed same DLL --benchmark <=150s, hard exactly three cases and single in-process job. No source/build/options/retries during lease. Serializer PARK no children; reader and writer clean archived; reviewer source-only and root no executable workloads. Actual exits and no sessions/children required before release and inspection.",
     "probe_sha256": "E10EF104BB7749A823D2E8588A763BB34CE80FAD6FBE065334DFA324C88BDBEF",
     "runtime_sha256": "440B688112DF866CC1A0BCA5190E2142DE887FC1E916F316E88B4F80DCE29A16",
-    "limitations": "Unrelated user Silex processes remain untouched; timing informational and no optimization/regression claim. Actual own-process allocation gates with positive controls remain mandatory."
+    "limitations": "Unrelated user Silex processes remain untouched; timing informational and no optimization/regression claim. Actual own-process allocation gates with positive controls remain mandatory.",
+    "result": "Sequence exit 0, allocation and benchmark children both exited 0 and reaped; no sessions or children before inspection. Raw outcomes awaiting inspection."
   },
   "offline_corpus_setup": {
     "checkout": "/private/tmp/xemele-m3-integration",
