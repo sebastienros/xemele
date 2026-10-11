@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "milestone": "M7",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M7 coordinator /root/pi_contract",
   "branch": "codex/m7-html-pi-contract",
   "base_revision": "c0232888efc9448f31540212d9a0182a61c4ac34",
@@ -13,13 +13,47 @@
     "docs/specs/common.md",
     "docs/specs/html.md"
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "tests/Contracts/Fixtures/M7/Model.cs.fixture: additive ProcessingInstruction=6 fields and CreateProcessingInstruction",
+    "docs/decisions/M7/html-processing-instructions.md: exact PI ownership, mutation, quota, copy, context and serialization",
+    "docs/decisions/M7/legacy-root-recovery.md: legacy-root-envelope-v1 and pinned windows-1252 correction",
+    "docs/reports/M7-html-pi-contract/: declaration/preservation checker, exact vectors and source provenance"
+  ],
+  "evidence": [
+    {
+      "id": "pi-contract-check",
+      "kind": "check",
+      "revision": "86e6bdf1ecb1024e90e2a5f94a73c1d546ec9a61",
+      "command": "python3 docs/reports/M7-html-pi-contract/check.py --dotnet '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --ownership-base ebc68ea",
+      "result": "passed",
+      "summary": "176/119/136 exact APIs; three declaration consumers and XML probes; twelve rejecting API controls; normal actual HTML/XML lane; strict ownership/diff;167tasks. No runtime PI/allocation/cumulative claim.",
+      "artifact": "docs/reports/M7-html-pi-contract/verification.md"
+    },
+    {
+      "id": "pi-source-review",
+      "kind": "review",
+      "revision": "86e6bdf1ecb1024e90e2a5f94a73c1d546ec9a61",
+      "command": "Coordinator /root read-only source review",
+      "result": "passed",
+      "summary": "Additive semantics and exact named native adaptation approved; downstream task identifiers corrected in docs-only f999c3163c0afb7699d1bdcb16a35fe86b78226b.",
+      "artifact": "docs/decisions/M7/html-processing-instructions.md"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "",
-    "checks": [],
-    "remaining": [],
+    "summary": "Additive mandatory WHATWG PI freeze (two appended value6 kinds + factory), exact legacy-root-envelope-v1/native vectors, windows-1252 fallback correction; no runtime/shared build edits.",
+    "checks": [
+      "Three exact declaration baseline families176/119/136 and XML probes on .NET10.0.11",
+      "Three generic plus nine PI-specific API missing-member controls reject",
+      "ActualModels normal warnings-as-errors: actual HTML/XML identities/probes/signatures",
+      "Strict complete claim-to-current owned-path audit and diff; planning167tasks",
+      "Independent pinned WHATWG hash, exact PI corpus and native legacy evidence inspection"
+    ],
+    "remaining": [
+      "Coordinator integration verification required before dependent repair starts",
+      "Ordered PI model/tokenizer/builder/serializer runtime tests and appropriate allocation evidence",
+      "M7-legacy full native differential comparison against exact named adapted expectations plus repeated-envelope/attribute-conflict/document-comment/doctype tests"
+    ],
     "requests": []
   },
   "id": "M7-html-pi-contract",
@@ -45,26 +79,38 @@
     {
       "id": "M7-html-pi-contract-A1",
       "description": "Pin current authoritative WHATWG PI requirement and freeze additive PI kinds appended value6, target/data representation, factory/mutation/copy/quota/context/serialization semantics without changing existing enum values or XML behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "pi-contract-check",
+        "pi-source-review"
+      ]
     },
     {
       "id": "M7-html-pi-contract-A2",
       "description": "Compile all independent declaration families with exact updated baselines and missing-member negative controls; no shipped stubs or later dependency.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "pi-contract-check",
+        "pi-source-review"
+      ]
     },
     {
       "id": "M7-html-pi-contract-A3",
       "description": "Record actual checks/revisions/provenance. Pinned html5lib contains PI outputs: preserve exact cases, and require independent normative witnesses only for demonstrated expectation differences.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "pi-contract-check",
+        "pi-source-review"
+      ]
     },
     {
       "id": "M7-html-pi-contract-A4",
       "description": "Assess exact libxml2 duplicate-root vectors fuzz-047/fuzz-118 against frozen one-root model and freeze named lossless envelope recovery, attributes/order/doctype rules and exact native-to-managed expected adaptation; original oracle cases remain unchanged and fully tested.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "pi-contract-check",
+        "pi-source-review"
+      ]
     }
   ]
 }

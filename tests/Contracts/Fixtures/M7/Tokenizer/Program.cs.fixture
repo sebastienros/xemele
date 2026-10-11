@@ -1,6 +1,7 @@
 using Xemele.Html;
-static void Contract() { _=Html5Tokenizer.Tokenize("<br/>&amp;",new(){InitialState=HtmlTokenizerState.Data}); Html5Tokenizer.Tokenize("<p>x", token => { _=token.Location; _=token.SelfClosing; _=token.Attributes; }); }
+static void Contract() { var doc=new HtmlDocument(); var pi=doc.CreateProcessingInstruction("style", "color:blue"); pi.Value="color:red"; _=pi.LocalName; _=HtmlNodeKind.ProcessingInstruction; var owned=new HtmlToken(HtmlTokenKind.ProcessingInstruction,"style","color:blue",Array.Empty<HtmlAttribute>(),false,null,new Xemele.XmlLocation()); _=owned.Name; _=owned.Data; doc.DocumentNode.AppendChild(doc.Import(pi.Clone())); _=Html5Tokenizer.Tokenize("<br/>&amp;",new(){InitialState=HtmlTokenizerState.Data}); Html5Tokenizer.Tokenize("<p>x", token => { _=token.Location; _=token.SelfClosing; _=token.Attributes; }); }
 // Signature consumer is compiled but deliberately never invokes declaration stubs.
+if ((int)HtmlNodeKind.ProcessingInstruction != 6 || (int)HtmlTokenKind.ProcessingInstruction != 6 || (int)HtmlNodeKind.DocumentType != 5 || (int)HtmlTokenKind.EndOfFile != 5) throw new Exception("Enum compatibility changed");
 Action contract = Contract; GC.KeepAlive(contract);
 var xml = new Xemele.XmlDocument(); var root = xml.CreateElement("root"); xml.DocumentNode.AppendChild(root); root.AppendChild(xml.CreateText("preserved"));
 if (root.GetTextContent() != "preserved") throw new Exception("XML tree changed");
