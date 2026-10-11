@@ -24,7 +24,19 @@ attempt. The corrected two commands produced the209 passing cases above. Existin
 successful builds were retained; no allocation counters were enabled by these
 correctness checks.
 
-Allocation evidence remains pending. All eight prepared file hashes matched
+All eight prepared file hashes matched
 preparation.json (SHA256 ba37e3084aedb96bf4502ea82b1bc9ea318b3f372a9cc1e43689fe7797442c4b).
-No grant or model measurement has occurred. Raw correctness XML is transient and
-will be removed after final integration/inspection; only this summary is durable.
+The single bounded lease M8-model-allocation-1 was granted at main5a550ea after
+main PARK, then RELEASED at c54c929 before raw inspection. Child83029 exited0 in
+0.137156seconds, was reaped and output drained, with no remaining process group.
+All eight prepared identities matched before/after. Root independently inspected
+all11 distributions:64 observations each after32 warmups. Routes0–5 were exactly0B
+for every observation; owned setup512B/op, namespace/report snapshots1752B/op,
+direct M4 evaluation5408B/op, shared capped XPath5528B/op, and external composition
+59496B/op were constant across their64 observations. Each recorded numerator
+matched the sum of its distribution. The shared XPath join therefore adds120B/op
+in this fixture. Positive control1048B; cold setup130856B. Retained memory before/
+after159552/329896B for256contexts is an informational whole-heap observation,
+not a portable per-context cost. No throughput, latency or global host-idle claim.
+Raw correctness/allocation output is transient and will be removed after final
+integration/inspection; only concise summaries and identities are durable.
