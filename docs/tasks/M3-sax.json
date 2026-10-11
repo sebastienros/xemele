@@ -61,7 +61,8 @@
         "planning",
         "measurement-parked",
         "feature-probe-preparation",
-        "bounded-measurement-parked"
+        "bounded-measurement-parked",
+        "feature-control"
       ]
     }
   ],
@@ -161,6 +162,15 @@
       "result": "skipped",
       "summary": "NOT RUN pending explicit root lease. Prepared <=90s total sequence: prebuilt Probe --allocation 8388608 (<=30s), then prebuilt BDN Dry/inProcess eight MemoryDiagnoser cases within remaining budget. A separate prebuilt Probe --control 8388608 has <=20s timeout, same operations with counters/timers/retention GC disabled. Controls check copied bytes and callback count; measurement gates 0B primitive, >=4096B allocation positive control, exact 8MiB delivered and <=2MiB sampled live/<=1MiB post-disposal retention deltas. Full 1GiB remains M3-corpus; Dry timing informational only.",
       "artifact": null
+    },
+    {
+      "id": "feature-control",
+      "kind": "check",
+      "revision": "0f214e5f21ac144bd4e29bb2aefd96eb43ad3b1a",
+      "command": "Python subprocess.run(timeout=20): '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' /Users/sebastienros/.codex/worktrees/d45c/xemele/docs/reports/M3-sax/Probe/bin/Release/net10.0/Xemele.Benchmarks.dll --control 8388608",
+      "result": "passed",
+      "summary": "Exit 0 within 20-second timeout. Exactly 330000 UTF16 units across 10000 warmup + 100000 borrowed dispatch/copy iterations; copied 4096 bytes matched input; all operation scopes executed; generated stream delivered exactly 8388608 bytes. ALL allocation counters, Stopwatch timing and retained-memory collections disabled. Printed zero bytes/timings/retention are placeholders, NOT measurements or evidence of zero allocation. No executable children remain. Exact command plus probe/runtime/BDN SHA256 recorded in control.json.",
+      "artifact": "docs/reports/M3-sax/control.json"
     }
   ],
   "blockers": [],
@@ -171,10 +181,10 @@
       "SAX 20/20 and preservation 309/309 passed",
       "Standalone sample passed; exact frozen/API equality 16/655 rows passed",
       "Task validator passed; inventory wrapper failed missing unprovisioned E14.dtd",
-      "Allocation/BDN NOT RUN: prebuilt and parked pending explicit root lease"
+      "Allocation/BDN NOT RUN: prebuilt and parked pending explicit root lease",
+      "Counters/timers/retention-GC disabled control --control 8388608: exit 0 inside <=20s, count/copy/delivery gates passed; frozen binary SHA256 captured. No actual measurement executed."
     ],
     "remaining": [
-      "Root lease for prepared prebuilt Probe --control 8388608 with <=20-second timeout.",
       "Root lease for python3 -B docs/reports/M3-sax/measure.py at prepared source 0f214e5f21ac144bd4e29bb2aefd96eb43ad3b1a with <=90-second total timeout (allocation <=30s then BDN remaining); no builds inside lease.",
       "Record real allocation/performance evidence after inspecting controls, retention oracle and eight BDN results, then validate and set implemented if A3 passes.",
       "Full 1GiB streaming memory acceptance remains mandatory in M3-corpus; coordinator integration checks and x64 release confirmation remain outstanding."

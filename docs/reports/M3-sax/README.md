@@ -84,4 +84,6 @@ control; generated stream callback count exactly 8388608, sampled live retention
 delta <=2 MiB and post-disposal delta <=1 MiB. Whole-operation setup and owned
 results are reported separately without a zero-allocation claim. BDN must finish
 all eight cases with allocation columns; inspect its output, since process exit
-alone cannot prove benchmark success. No measurement or control has run yet.
+alone cannot prove benchmark success. Control has now run successfully: see control.json and control.txt. Its printed
+zero metrics are disabled placeholders. Allocation and BDN measurements remain
+parked pending explicit root lease.
