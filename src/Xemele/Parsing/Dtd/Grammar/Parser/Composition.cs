@@ -37,6 +37,7 @@ internal sealed partial class DtdParser
             var notationKeys = new HashSet<string>(StringComparer.Ordinal);
             var particles = new Stack<DtdParticle>();
             var newDeclarationValidityDiagnostic = model.DeclarationValidityDiagnostic;
+            var newUnreadParameterLocation = model.UnreadParameterLocation;
             foreach (var e in model.Elements)
             {
                 Remember(e.Name);
@@ -76,6 +77,7 @@ internal sealed partial class DtdParser
             elements = newElements; attributes = newAttributes; general = newGeneral;
             parameter = newParameter; notations = newNotations; names = newNames; seeded = true;
             declarationValidityDiagnostic = newDeclarationValidityDiagnostic;
+            priorUnreadParameterLocation = newUnreadParameterLocation;
 
             void Remember(string name)
             {
