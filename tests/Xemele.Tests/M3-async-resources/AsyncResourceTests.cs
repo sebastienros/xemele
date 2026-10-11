@@ -300,8 +300,8 @@ public sealed class AsyncResourceTests
         a.Cancel();
         Assert.Equal(ScanStep.NeedResource, core.Append([], [], false, sink, b.Token).Step);
         await core.AdvanceResourceAsync(b.Token);
-        Assert.Equal(b.Token, stream.ReadToken);
         Assert.Equal(ScanStep.Completed, (await Feed(core, "</r>", true, sink, b.Token)).Step);
+        Assert.Equal(b.Token, stream.ReadToken);
         Assert.Equal("abcdef", sink.Text.ToString()); Assert.Equal(1, stream.AsyncDisposals);
     }
 
