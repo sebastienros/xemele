@@ -6,7 +6,8 @@ using Xemele;
 using Xemele.Validation;
 using Xemele.Conformance.Tests.Dtd;
 
-if (args is not [var report]) throw new ArgumentException("report path required");
+bool canonicalOnly=args is ["--canonical-only",_];
+string report=args switch {[var path]=>path,["--canonical-only",var path]=>path,_=>throw new ArgumentException("[--canonical-only] report required")};
 if (RuntimeInformation.FrameworkDescription != ".NET 10.0.11") throw new InvalidOperationException("Runtime10.0.11 required");
 using var manifest = JsonDocument.Parse(File.ReadAllBytes("tests/corpora/dtd/applicability.json"));
 var files = manifest.RootElement.GetProperty("files").EnumerateArray().ToDictionary(f => f.GetProperty("path").GetString()!, f => f.GetProperty("sha256").GetString()!);
@@ -23,7 +24,7 @@ byte[] Read(string path)
 }
 foreach(var file in files.Keys) Read(file);
 var rows = new List<object>(); int failures=0;
-foreach (var c in manifest.RootElement.GetProperty("cases").EnumerateArray())
+foreach (var c in manifest.RootElement.GetProperty("cases").EnumerateArray().Where(_=>!canonicalOnly))
 {
     var id=c.GetProperty("id").GetString()!; var scope=c.GetProperty("scope").GetString(); var path=c.GetProperty("inputPath").GetString()!;
     var allowed = c.GetProperty("offlinePaths").EnumerateArray().Select(p=>p.GetString()!).ToHashSet();
@@ -41,7 +42,7 @@ foreach (var c in manifest.RootElement.GetProperty("cases").EnumerateArray())
         }
         else outcome="accepted";
     }
-    catch(XmlParseException error) { codes=error.Diagnostics.Select(d=>d.Code).ToArray();outcome=codes.Any(s=>s.Contains("Limit",StringComparison.Ordinal)||s.Contains("Incomplete",StringComparison.Ordinal))?"incomplete":"rejected"; }
+    catch(XmlParseException error) { codes=error.Diagnostics.Select(d=>d.Code).ToArray();outcome=OutcomeClassification.ParseException(codes); }
     catch(Exception error) {outcome="infrastructure";codes=[error.GetType().Name+":"+error.Message];}
     // Resolver/IO/programmer exceptions are infrastructure failures, never invalidity.
     if(resolver.Disposals!=resolver.Opens) throw new InvalidDataException("Resource lifetime:"+id);
@@ -57,12 +58,12 @@ foreach (var c in manifest.RootElement.GetProperty("cases").EnumerateArray())
     }
     catch(XmlException error) {reference="rejected";referenceCodes.Add(error.Message);}
     catch(Exception error) {reference="infrastructure";referenceCodes.Add(error.GetType().Name+":"+error.Message);}
-    var expected=c.GetProperty("expected").EnumerateArray().Select(e=>e.GetString()).ToArray();
-    bool pass=expected.Contains(outcome)||scope=="associated-dtd"&&expected.Contains("invalid")&&outcome=="rejected";
+    var expected=c.GetProperty("expected").EnumerateArray().Select(e=>e.GetString()!).ToArray();
+    bool pass=OutcomeClassification.Pass(scope,expected,outcome);
     if(!pass) failures++;
     rows.Add(new {id,scope,expected,outcome,codes,reference,referenceErrors=referenceCodes,pass,opens=resolver.Opens,disposals=resolver.Disposals});
 }
-var canonicalRows=new List<object>();
+var canonicalRows=new List<Xemele.Conformance.Tests.Canonicalization.CanonicalObservation>();
 using var vectors=JsonDocument.Parse(File.ReadAllBytes("tests/corpora/c14n/vectors.json"));
 foreach(var c in vectors.RootElement.EnumerateArray())
 {
@@ -70,15 +71,18 @@ foreach(var c in vectors.RootElement.EnumerateArray())
     bool comments=c.TryGetProperty("comments",out var cv)&&cv.GetBoolean();
     string? expression=c.TryGetProperty("expression",out var ev)?ev.GetString():null;
     string[] prefixes=c.TryGetProperty("prefixes",out var pv)?pv.EnumerateArray().Select(p=>p.GetString()!).ToArray():[];
-    var document=SourceContext.Parse(System.Text.Encoding.UTF8.GetBytes(xml),new Uri("https://corpus.invalid/input.xml"),new VectorResolver(c));
-    using var bytes=new MemoryStream();var options=new Xemele.Serialization.XmlCanonicalizationOptions {Mode=(Xemele.Serialization.XmlCanonicalizationMode)mode,IncludeComments=comments,InclusivePrefixes=prefixes};
-    if(expression is null) Xemele.Serialization.XmlCanonicalizer.Canonicalize(document,bytes,options);
-    else Xemele.Serialization.XmlCanonicalizer.Canonicalize(Xemele.XPath.XPathExpression.Compile(expression).Evaluate(document.DocumentNode).AsNodeSet(),bytes,options);
-    byte[] actual=bytes.ToArray();bool pass=actual.AsSpan().SequenceEqual(System.Text.Encoding.UTF8.GetBytes(c.GetProperty("expected").GetString()!));
-    bool? referencePass=null;
-    if(mode!=1) referencePass=actual.AsSpan().SequenceEqual(Xemele.Differential.Tests.DtdCanonical.ReferenceAlgorithm.Reference(xml,mode,comments,expression,prefixes));
-    if(!pass || referencePass==false)failures++;
-    canonicalRows.Add(new{id,mode,comments,pass,referencePass,actualBase64=Convert.ToBase64String(actual)});
+    var observation=Xemele.Conformance.Tests.Canonicalization.CaseRunner.Run(c,
+        ()=>SourceContext.Parse(System.Text.Encoding.UTF8.GetBytes(xml),new Uri("https://corpus.invalid/input.xml"),new VectorResolver(c)),
+        (document,selectedMode)=>
+        {
+            using var bytes=new MemoryStream();var options=new Xemele.Serialization.XmlCanonicalizationOptions {Mode=(Xemele.Serialization.XmlCanonicalizationMode)selectedMode,IncludeComments=comments,InclusivePrefixes=selectedMode==2?prefixes:[]};
+            if(expression is null)Xemele.Serialization.XmlCanonicalizer.Canonicalize(document,bytes,options);
+            else Xemele.Serialization.XmlCanonicalizer.Canonicalize(Xemele.XPath.XPathExpression.Compile(expression).Evaluate(document.DocumentNode).AsNodeSet(),bytes,options);
+            return bytes.ToArray();
+        },
+        selectedMode=>Xemele.Differential.Tests.DtdCanonical.ReferenceAlgorithm.Reference(xml,selectedMode,comments,expression,selectedMode==2?prefixes:[]));
+    if(!observation.Pass)failures++;
+    canonicalRows.Add(observation);
 }
 File.WriteAllText(report,JsonSerializer.Serialize(new {runtime=RuntimeInformation.FrameworkDescription,architecture=RuntimeInformation.ProcessArchitecture.ToString(),revision=typeof(Xemele.XmlDocument).Assembly.GetCustomAttributes(typeof(System.Reflection.AssemblyInformationalVersionAttribute),false).Cast<System.Reflection.AssemblyInformationalVersionAttribute>().Single().InformationalVersion,sourceFiles=files.Count,total=rows.Count,failures,rows,canonicalRows},new JsonSerializerOptions {WriteIndented=true}));
 Console.WriteLine($"Actual{RuntimeInformation.FrameworkDescription}/{RuntimeInformation.ProcessArchitecture};{rows.Count}cases;{failures}failures;{files.Count}hashverifiedresources");

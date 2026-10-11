@@ -9,7 +9,11 @@ internal static class ReferenceAlgorithm
         var assembly=Assembly.LoadFrom(package);var type=assembly.GetType(mode==0?"System.Security.Cryptography.Xml.XmlDsigC14NTransform":"System.Security.Cryptography.Xml.XmlDsigExcC14NTransform",true)!;
         var transform=Activator.CreateInstance(type,[comments])!;
         if(prefixes is {Length:>0}) type.GetProperty("InclusiveNamespacesPrefixList")!.SetValue(transform,string.Join(' ',prefixes));
-        var document=new System.Xml.XmlDocument{PreserveWhitespace=true,XmlResolver=null};document.LoadXml(xml);
+        var document=new System.Xml.XmlDocument{PreserveWhitespace=true,XmlResolver=null};// Canonical input requires tokenized attribute normalization. The examples
+        // need not be DTD-valid; validity diagnostics do not change their input model.
+        var settings=new XmlReaderSettings { DtdProcessing=DtdProcessing.Parse,ValidationType=ValidationType.DTD,XmlResolver=null };
+        settings.ValidationEventHandler+=(_,_)=>{};
+        using(var reader=XmlReader.Create(new StringReader(xml),settings))document.Load(reader);
         object input=expression is null?document:document.SelectNodes(expression)!;
         type.GetMethod("LoadInput")!.Invoke(transform,[input]);
         using var result=(Stream)type.GetMethod("GetOutput",Type.EmptyTypes)!.Invoke(transform,null)!;using var bytes=new MemoryStream();result.CopyTo(bytes);return bytes.ToArray();
