@@ -4,11 +4,11 @@
   "milestone": "M8",
   "title": "Separate schema resolution base from referring resource identity",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "verified",
   "owner": "M8 coordinator bounded shared repair",
   "branch": "codex/m8-schema-resource-base",
   "base_revision": "e3e922cc766b7d72dacac7a8d999c75fba0cf753",
-  "integration_revision": null,
+  "integration_revision": "0b862ae46cf928f6d43fd9ec72e7c21a50d1ba87",
   "depends_on": [
     "M8-source-locations",
     "M8-rng-compile",
@@ -35,31 +35,66 @@
     {
       "id": "M8-schema-resource-base-A1",
       "description": "Separate effective inherited xml:base resolution from final referring resource URI while preserving original lexical SystemId, frozen interface behavior, null/absolute base semantics, quotas and ownership. Update integrated RNG/XSD callsites without changing caches or cycles.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "bounded-review",
+        "integrated-checks"
+      ]
     },
     {
       "id": "M8-schema-resource-base-A2",
       "description": "Prove distinct source/base/location URIs, absolute and relative null-base handling, legacy interface fallback, redirected nested xml:base through RNG include/externalRef and XSD resource composition, schema kind/SystemId/PublicId and exactly-once disposal. Preserve relevant existing resource/correctness/API checks.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "bounded-review",
+        "integrated-checks"
+      ]
     },
     {
       "id": "M8-schema-resource-base-A3",
       "description": "Record read-only review and actual integrated checks; provide precise overload handoff to Schematron only after verification. Preserve prior milestone evidence and document unchanged allocation boundaries without inventing a new hot-path optimization.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "bounded-review",
+        "integrated-checks"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Validation/SchemaCommon/ResourceLoader.cs: explicit effective-base overload and legacy interface delegation",
+    "src/Xemele/Validation/RelaxNg/Compilation/Compiler.cs and src/Xemele/Validation/Xsd/Compilation/Compiler.cs: actual source referrer plus inherited resolution base",
+    "tests/Xemele.Tests/M8-schema-resource-base/ResourceBaseTests.cs:11 independent routing/provenance/disposal cases"
+  ],
+  "evidence": [
+    {
+      "id": "bounded-review",
+      "kind": "review",
+      "revision": "adb2b4ef82b5a56221306875255930c90f71320e",
+      "command": "Independent read-only /root/review_m8_model review",
+      "result": "passed",
+      "summary": "Accepted exact overload/callsites/tests; frozen interface, null semantics, ownership/counters/caches preserved. No execution by reviewer.",
+      "artifact": "docs/reports/M8-schema-resource-base/README.md"
+    },
+    {
+      "id": "integrated-checks",
+      "kind": "integration",
+      "revision": "0b862ae46cf928f6d43fd9ec72e7c21a50d1ba87",
+      "command": "python3 docs/reports/M8-schema-resource-base/integration-checks.py",
+      "result": "passed",
+      "summary": "243 actual tests, zero failures/errors/skips/not-run; RNG119/XSD257 frozen and public1393; real XML-only consumers; Release0warnings/errors;177tasks validate. No measurement.",
+      "artifact": "docs/reports/M8-schema-resource-base/README.md"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Root-owned bounded repair for confirmed resource referrer/base conflation; read-only assessment accepted explicit-base concrete overload preserving frozen contracts.",
-    "checks": [],
-    "remaining": [
-      "Implement and verify before Schematron consumes overload and public schema facades compose."
+    "summary": "Verified source/base separation for all integrated RNG/XSD resource composition; frozen interface preserved. Schematron should use concrete three-argument overload.",
+    "checks": [
+      "243 integrated tests; frozen119+257/public1393; both XML-only consumers;177task validation.",
+      "Read-only source review accepted; unchanged allocation boundaries documented without new measurement claim."
     ],
-    "requests": []
+    "remaining": [],
+    "requests": [
+      "Schematron passes actual final source URI as Referrer and context.BaseUri separately; root adds verified repair dependency before worker adopts."
+    ]
   }
 }
