@@ -15,7 +15,7 @@ public static class Html5Tokenizer
         ArgumentNullException.ThrowIfNull(html);
         ArgumentNullException.ThrowIfNull(callback);
         cancellationToken.ThrowIfCancellationRequested();
-        var tokenizer = new HtmlTokenizer(callback, HtmlOperationSnapshots.Snapshot(options), cancellationToken);
+        var tokenizer = new HtmlTokenizer(callback, options, cancellationToken);
         tokenizer.Feed(html.AsSpan());
         tokenizer.Complete();
     }

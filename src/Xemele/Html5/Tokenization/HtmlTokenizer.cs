@@ -48,7 +48,7 @@ internal sealed partial class HtmlTokenizer
     internal Action<string, XmlLocation>? ParseError { get; set; }
     internal Uri? SourceUri { get; set; }
 
-    internal HtmlTokenizer(Action<HtmlToken> callback, HtmlTokenizerOptions options, CancellationToken cancellationToken = default)
+    internal HtmlTokenizer(Action<HtmlToken> callback, HtmlTokenizerOptions? options, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(callback);
         options = HtmlOperationSnapshots.Snapshot(options);
@@ -132,7 +132,7 @@ internal sealed partial class HtmlTokenizer
         string? inputError = c is >= 0xD800 and <= 0xDFFF ? "surrogate-in-input-stream"
             : c is >= 0xFDD0 and <= 0xFDEF || (c & 0xFFFF) is 0xFFFE or 0xFFFF ? "noncharacter-in-input-stream"
             : c is >= 1 and <= 8 or 11 or >= 14 and <= 31 or >= 0x7F and <= 0x9F ? "control-character-in-input-stream" : null;
-        bool lookahead = state is State.Declaration or State.DoctypeKeyword;
+        bool lookahead = state == State.Declaration && temporary.Length > 0;
         if (!lookahead && inputError is not null) Error(inputError);
         Step(c);
         if (lookahead && inputError is not null) Error(inputError);
