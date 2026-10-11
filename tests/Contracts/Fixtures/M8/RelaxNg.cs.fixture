@@ -1,0 +1,29 @@
+namespace Xemele.Validation;
+internal enum RngPatternKind { NotAllowed, Empty, Text, Choice, Interleave, Group, OneOrMore, List, Data, Value, Attribute, Element, Ref }
+internal abstract record RngNameClass;
+internal sealed record RngName(SchemaName Name) : RngNameClass;
+internal sealed record RngAnyName(RngNameClass? Except) : RngNameClass;
+internal sealed record RngNsName(string NamespaceUri, RngNameClass? Except) : RngNameClass;
+internal sealed record RngNameChoice(RngNameClass Left, RngNameClass Right) : RngNameClass;
+internal sealed record RngPattern(int Id, RngPatternKind Kind, IReadOnlyList<int> Children, RngNameClass? NameClass,
+    SchemaName? Datatype, IReadOnlyList<XmlFacet> Parameters, string? Value,
+    SchemaNamespaceContext Context, XmlLocation Location);
+internal sealed record RngCompiledSchema(int Start, IReadOnlyList<RngPattern> Patterns, IXmlDatatypeRegistry Datatypes);
+internal interface IRelaxNgCompiler
+{
+    RngCompiledSchema Compile(XmlDocument schema, SchemaCompileOptions options, ISchemaOperation operation);
+}
+internal interface IRelaxNgEvaluator
+{
+    ValidationResult Validate(RngCompiledSchema schema, XmlDocument document, ValidationOptions options);
+}
+public sealed class RelaxNgSchema
+{
+    private RelaxNgSchema() { }
+    public static RelaxNgSchema Compile(XmlDocument schema, SchemaCompileOptions? options = null) => throw new InvalidOperationException("Declaration only");
+    public static RelaxNgSchema Compile(string schema, SchemaCompileOptions? options = null) => throw new InvalidOperationException("Declaration only");
+    public static RelaxNgSchema Compile(Stream schema, SchemaCompileOptions? options = null) => throw new InvalidOperationException("Declaration only");
+    public ValidationResult Validate(XmlDocument document, ValidationOptions? options = null) => throw new InvalidOperationException("Declaration only");
+    public ValidationResult Validate(string document, ValidationOptions? options = null) => throw new InvalidOperationException("Declaration only");
+    public ValidationResult Validate(Stream document, ValidationOptions? options = null) => throw new InvalidOperationException("Declaration only");
+}

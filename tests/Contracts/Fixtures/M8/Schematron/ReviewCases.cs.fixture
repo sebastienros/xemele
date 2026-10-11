@@ -1,0 +1,29 @@
+using Xemele;
+using Xemele.Validation;
+using Xemele.XPath;
+// Compiled scenario shapes; never execute M8 declaration methods.
+internal static class SchematronReviewConsumers
+{
+    internal static SchematronCompiledModel TwoPhaseLets()
+    {
+        var name = new XPathExpandedName("", "threshold");
+        var context = XPathExpression.Compile("/root");
+        var child = XPathExpression.Compile("child");
+        var check = new SchematronCompiledCheck(SchematronFindingKind.FailedAssert, null, null, null,
+            "$threshold = 1", XPathExpression.Compile("$threshold = 1"), null, null, [], [], [], default);
+        var rule = new SchematronCompiledRule(0, "/root", context, "child", child, [], [check], default);
+        var shared = new SchematronCompiledPattern(0, "shared", null, [], [rule]);
+        var first = new SchematronCompiledPhase("first", [new(name, XPathExpression.Compile("1"))], [0]);
+        var second = new SchematronCompiledPhase("second", [new(name, XPathExpression.Compile("2"))], [0]);
+        return new(null, "first", new Dictionary<string,string>(), [], [shared],
+            new Dictionary<string,SchematronCompiledPhase> { ["first"]=first, ["second"]=second },
+            new Dictionary<string,IReadOnlyList<SchematronTextPart>>(), new Dictionary<string,IReadOnlyList<SchematronTextPart>>());
+    }
+    internal static SchematronCompiledPattern SubjectOverride()
+    {
+        var check = new SchematronCompiledCheck(SchematronFindingKind.FailedAssert, null, null, null,
+            "false()", XPathExpression.Compile("false()"), "child/@code", XPathExpression.Compile("child/@code"), [], [], [], default);
+        return new(0, null, null, [], [new(0, "/root", XPathExpression.Compile("/root"),
+            "child", XPathExpression.Compile("child"), [], [check], default)]);
+    }
+}
