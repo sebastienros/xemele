@@ -1,3 +1,4 @@
+using Xemele.Internal.Operations;
 using Xemele.Parsing.Dom;
 using Xemele.Parsing.Input;
 using Xemele.Parsing.Syntax;
@@ -8,7 +9,6 @@ namespace Xemele.Resolution.XInclude;
 // The six-unit prefix distinguishes <?xml + whitespace from a PI target.
 internal sealed partial class IncludeByteInput : IDisposable
 {
-    private readonly Action<int> charactersRead;
     private readonly Uri sourceUri;
     private readonly XmlInputDecoder decoder;
     private readonly XmlParserCore core;
@@ -24,12 +24,11 @@ internal sealed partial class IncludeByteInput : IDisposable
     internal XmlDocument Document => sink.Document;
     internal XmlDiagnostic? Diagnostic { get; private set; }
 
-    internal IncludeByteInput(XmlParseOptions options, CancellationToken cancellation, Uri sourceUri, Action<int> charactersRead)
+    internal IncludeByteInput(XmlParseOptions options, CancellationToken cancellation, Uri sourceUri, OperationBudget operationBudget)
     {
         decoder = new(options, sourceUri);
         this.sourceUri = sourceUri;
-        this.charactersRead = charactersRead;
-        core = new(options, sourceUri);
+        core = new(options, sourceUri, operationBudget: operationBudget);
         sink = new(options, decoder, cancellation);
         this.cancellation = cancellation;
     }
@@ -55,7 +54,6 @@ internal sealed partial class IncludeByteInput : IDisposable
     }
     private void Forward(int count)
     {
-        charactersRead(count);
         int i = 0;
         while (!prefixDecided && i < count && Diagnostic is null)
         {

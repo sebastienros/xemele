@@ -1,3 +1,4 @@
+using Xemele.Internal.Operations;
 using Xemele.Parsing.Dom;
 using Xemele.Parsing.Input;
 using Xemele.Parsing.Recovery;
@@ -9,7 +10,6 @@ namespace Xemele.Resolution.XInclude;
 // model. Only fixed decoder scratch and cursor indices survive resource awaits.
 internal sealed class IncludeAsyncInput : IAsyncDisposable
 {
-    private readonly Action<int> charactersRead;
     private readonly Uri sourceUri;
     private readonly XmlInputDecoder decoder;
     private readonly XmlParserCore core;
@@ -23,12 +23,11 @@ internal sealed class IncludeAsyncInput : IAsyncDisposable
     internal XmlDocument Document => sink.Document;
     internal XmlDiagnostic? Diagnostic { get; private set; }
 
-    internal IncludeAsyncInput(XmlParseOptions options, CancellationToken cancellation, Uri sourceUri, Action<int> charactersRead)
+    internal IncludeAsyncInput(XmlParseOptions options, CancellationToken cancellation, Uri sourceUri, OperationBudget operationBudget)
     {
         decoder = new(options, sourceUri);
         this.sourceUri = sourceUri;
-        this.charactersRead = charactersRead;
-        core = new(options, sourceUri, asyncResources: true);
+        core = new(options, sourceUri, asyncResources: true, operationBudget: operationBudget);
         sink = new(options, decoder, cancellation);
         this.cancellation = cancellation;
     }
@@ -55,7 +54,6 @@ internal sealed class IncludeAsyncInput : IAsyncDisposable
 
     private async ValueTask ForwardAsync(int count)
     {
-        charactersRead(count);
         int i = 0;
         while (!prefixDecided && i < count && Diagnostic is null)
         {

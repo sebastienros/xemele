@@ -81,7 +81,7 @@ internal sealed partial class IncludeOperation
         }
         if (text is not null)
         {
-            CheckToken(text.Length); Charge(Quota.ExpandedCharacters, text.Length);
+            CheckToken(Scalars(text)); Charge(Quota.ExpandedCharacters, Scalars(text));
             Append(parent, output.CreateText(text)); return;
         }
         foreach (var item in selected!)
@@ -136,17 +136,24 @@ internal sealed partial class IncludeOperation
                     for (var p = item; !p.IsDefault && p.Kind != XmlNodeKind.Document; p = p.Parent)
                         foreach (var declaration in p.NamespaceDeclarations) bindings.TryAdd(declaration.Prefix, declaration.Value);
                     foreach (var declaration in bindings) SetFixNamespace(inserted, declaration.Key, declaration.Value);
-                    if (inserted.Prefix.Length == 0 && !bindings.ContainsKey("")) SetFixNamespace(inserted, "", inserted.NamespaceUri);
+                    if (inserted.Prefix.Length == 0 && !bindings.ContainsKey("") && DefaultNamespace(parent) != inserted.NamespaceUri) SetFixNamespace(inserted, "", inserted.NamespaceUri);
                 }
-                if (options.Limits.AttributesPerElement is int max && inserted.Attributes.Count > max) throw new Rejection("Limit");
+                if (options.Limits.AttributesPerElement is int max && (long)inserted.Attributes.Count + inserted.NamespaceDeclarations.Count > max) throw new Rejection("Limit");
             }
             inserted = inserted.NextSibling;
         }
     }
+    private static string DefaultNamespace(XmlNode node)
+    {
+        for (var p = node; !p.IsDefault && p.Kind != XmlNodeKind.Document; p = p.Parent)
+            foreach (var binding in p.NamespaceDeclarations)
+                if (binding.Prefix.Length == 0) return binding.Value;
+        return "";
+    }
     private void SetFixAttribute(XmlNode node, string name, string value)
     {
-        CheckToken(value.Length);
-        Charge(Quota.ExpandedCharacters, value.Length);
+        CheckToken(Scalars(value));
+        Charge(Quota.ExpandedCharacters, Scalars(value));
         try { node.SetAttribute(name, value, Xml, "xml"); }
         catch (InvalidOperationException) { throw new Rejection("Limit"); }
     }

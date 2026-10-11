@@ -6,11 +6,11 @@ internal sealed partial class IncludeOperation
 {
     private async ValueTask<XmlDocument> ReadXml(XmlResolvedResource resource)
     {
-        var parse = options.ParseOptions with { Resolver = new EntityResolver(this, options.ParseOptions.Resolver) };
+        var parse = parserBudget.Options;
         byte[] buffer = new byte[4096];
         if (asynchronous)
         {
-            var adapter = new IncludeAsyncInput(parse, token, resource.SourceUri, n => Charge(Quota.DocumentCharacters, n));
+            var adapter = new IncludeAsyncInput(parse, token, resource.SourceUri, parserBudget);
             bool failed = false;
             try
             {
@@ -34,7 +34,7 @@ internal sealed partial class IncludeOperation
         }
         else
         {
-            var adapter = new IncludeByteInput(parse, token, resource.SourceUri, n => Charge(Quota.DocumentCharacters, n));
+            var adapter = new IncludeByteInput(parse, token, resource.SourceUri, parserBudget);
             bool failed = false;
             try
             {
@@ -85,10 +85,10 @@ internal sealed partial class IncludeOperation
         string decoded;
         try { decoded = DecodeText(storage.GetBuffer().AsSpan(0, checked((int)storage.Length)), label); }
         catch (DecoderFallbackException) { throw new Rejection("ResourceError", true, resource.SourceUri); }
-        Charge(Quota.DocumentCharacters, decoded.Length);
+        Charge(Quota.DocumentCharacters, Scalars(decoded));
         try { TreeValidation.Text(decoded); }
         catch (ArgumentException) { throw new Rejection("ResourceError", true, resource.SourceUri); }
-        return decoded;
+        return NormalizeLines(decoded);
     }
     private static string DecodeText(ReadOnlySpan<byte> bytes, string? label)
     {
@@ -115,7 +115,7 @@ internal sealed partial class IncludeOperation
             if (encoding.CodePage != bom) throw new Rejection("ResourceError", true);
             bytes = bytes[(bom == 65001 ? 3 : 2)..];
         }
-        return NormalizeLines(encoding.GetString(bytes));
+        return encoding.GetString(bytes);
     }
     private static string Decode1252(ReadOnlySpan<byte> bytes)
     {
@@ -126,7 +126,7 @@ internal sealed partial class IncludeOperation
             if (bytes[i] is 0x81 or 0x8D or 0x8F or 0x90 or 0x9D) throw new Rejection("ResourceError", true);
             text[i] = bytes[i] is >= 128 and <= 159 ? special[bytes[i] - 128] : (char)bytes[i];
         }
-        return NormalizeLines(new string(text));
+        return new string(text);
     }
     private static string NormalizeLines(string text) => text.Contains('\r') ? text.Replace("\r\n", "\n", StringComparison.Ordinal).Replace('\r', '\n') : text;
 

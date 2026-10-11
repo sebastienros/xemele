@@ -20,12 +20,16 @@ internal sealed partial class IncludeOperation
         void Visit(XmlNode node)
         {
             token.ThrowIfCancellationRequested();
-            CheckToken(node.LocalName.Length); CheckToken(node.Value.Length);
-            if (options.Limits.AttributesPerElement is int maximum && node.Attributes.Count > maximum) throw new Rejection("Limit");
+            CheckToken(Scalars(node.LocalName)); CheckToken(Scalars(node.Value));
+            if (options.Limits.AttributesPerElement is int maximum && (long)node.Attributes.Count + node.NamespaceDeclarations.Count > maximum) throw new Rejection("Limit");
+            foreach (var declaration in node.NamespaceDeclarations)
+            {
+                token.ThrowIfCancellationRequested(); CheckToken(Scalars(declaration.Prefix)); CheckToken(Scalars(declaration.Value));
+            }
             foreach (var attribute in node.Attributes)
             {
                 token.ThrowIfCancellationRequested();
-                CheckToken(attribute.LocalName.Length); CheckToken(attribute.Value.Length);
+                CheckToken(Scalars(attribute.LocalName)); CheckToken(Scalars(attribute.Value));
                 bool id = attribute.LocalName == "id" && attribute.NamespaceUri == Xml;
                 if (!id && document.ValidationSourceContentRevision == document.ContentRevision && document.ContentRevision >= 0 && document.Dtd is { } model)
                     foreach (var declaration in model.Attributes)

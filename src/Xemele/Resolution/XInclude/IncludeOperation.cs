@@ -14,6 +14,7 @@ internal sealed partial class IncludeOperation
     private readonly CancellationToken token;
     private readonly bool asynchronous;
     private readonly OperationBudget budget;
+    private readonly OperationBudget parserBudget;
     private readonly List<XmlDiagnostic> diagnostics = [];
     private readonly List<(string Identity, string Path)> active = [];
     private readonly XmlDocument output;
@@ -40,6 +41,11 @@ internal sealed partial class IncludeOperation
         this.options = options with { Limits = limits, ParseOptions = options.ParseOptions with { Limits = limits } };
         this.input = input; this.token = token; this.asynchronous = asynchronous;
         budget = new(this.options.ParseOptions, token);
+        parserBudget = new(this.options.ParseOptions with
+        {
+            Limits = limits with { ExternalBytes = null, ExternalResources = null },
+            Resolver = new EntityResolver(this, this.options.ParseOptions.Resolver)
+        }, token);
         output = new(limits);
         // Transformation cannot attest the completeness/provenance of an original source.
         output.MarkSourceIncomplete();
@@ -100,7 +106,7 @@ internal sealed partial class IncludeOperation
     private void Charge(Quota quota, long count)
     {
         token.ThrowIfCancellationRequested();
-        if (!budget.TryCharge(quota, count)) throw new Rejection("Limit");
+        if (!(quota is Quota.DocumentCharacters or Quota.ExpandedCharacters ? parserBudget : budget).TryCharge(quota, count)) throw new Rejection("Limit");
     }
     private void AddDiagnostic(string code, XmlDiagnosticSeverity severity, Uri? uri)
     {
@@ -149,15 +155,26 @@ internal sealed partial class IncludeOperation
     {
         if (source.Kind == XmlNodeKind.Element)
         {
-            if (options.Limits.AttributesPerElement is int max && source.Attributes.Count > max) throw new Rejection("Limit");
-            CheckToken(source.LocalName.Length);
-            foreach (var attribute in source.Attributes) { CheckToken(attribute.Value.Length); Charge(Quota.ExpandedCharacters, attribute.Value.Length); }
+            if (options.Limits.AttributesPerElement is int max && (long)source.Attributes.Count + source.NamespaceDeclarations.Count > max) throw new Rejection("Limit");
+            CheckToken(Scalars(source.LocalName));
+            foreach (var attribute in source.Attributes) { CheckToken(Scalars(attribute.Value)); Charge(Quota.ExpandedCharacters, Scalars(attribute.Value)); }
         }
-        else { CheckToken(source.Value.Length); Charge(Quota.ExpandedCharacters, source.Value.Length); }
+        else { CheckToken(Scalars(source.Value)); Charge(Quota.ExpandedCharacters, Scalars(source.Value)); }
         try { return output.ImportNode(source, false); }
         catch (InvalidOperationException) { throw new Rejection("Limit"); }
     }
-    private void CheckToken(int count) { if (options.Limits.TokenCharacters is int max && count > max) throw new Rejection("Limit"); }
+    private long Scalars(string value)
+    {
+        long count = 0;
+        for (int i = 0; i < value.Length; i++)
+        {
+            if ((i & 4095) == 0) token.ThrowIfCancellationRequested();
+            if (char.IsHighSurrogate(value[i])) i++;
+            count++;
+        }
+        return count;
+    }
+    private void CheckToken(long count) { if (options.Limits.TokenCharacters is int max && count > max) throw new Rejection("Limit"); }
     private static void Append(XmlNode parent, XmlNode node)
     {
         try { parent.AppendChild(node); }

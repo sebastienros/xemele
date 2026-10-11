@@ -10,7 +10,8 @@ import time
 root = pathlib.Path(__file__).resolve().parents[3]
 manifest = root / 'artifacts/M6-xinclude/prepared.json'
 plan = json.loads((root / 'docs/reports/M6-xinclude/measurement-plan.json').read_text())
-if sys.argv[1:] != ['--exclusive-grant']:
+identity_only=sys.argv[1:]==['--identity-control']
+if not identity_only and sys.argv[1:] != ['--exclusive-grant']:
     raise SystemExit('Requires the coordinator prepared exclusive grant; this flag is not itself authorization.')
 deadline = time.monotonic() + plan['total_max_seconds']
 freeze = ['python3', str(root / 'docs/reports/M6-xinclude/freeze.py'), 'check', str(manifest)]
@@ -23,13 +24,14 @@ def bounded(seconds, reserve=0):
         raise TimeoutError('Total prepared sequence deadline exceeded.')
     return min(seconds, remaining)
 try:
-    initial = subprocess.run(freeze, cwd=root, timeout=bounded(plan['initial_identity_max_seconds'], 50), check=False)
+    identity_environment=dict(os.environ);identity_environment.update(plan['environment'])
+    initial = subprocess.run(freeze, cwd=root, env=identity_environment, timeout=bounded(plan['initial_identity_max_seconds'], 50), check=False)
     status['initial_freeze'] = initial.returncode
     initial.check_returncode()
     environment = dict(os.environ)
     environment.update(plan['environment'])
     # Stable effective environment is frozen by freeze.py.
-    for run in plan['runs']:
+    for run in ([] if identity_only else plan['runs']):
         status['phase'] = run['name']
         result = {'phase': run['name'], 'exit_code': None}
         status['runs'].append(result)
@@ -70,7 +72,7 @@ finally:
         status['no_child'] = False
         status['cleanup_error'] = type(error).__name__
     try:
-        final = subprocess.run(freeze, cwd=root, timeout=bounded(plan['final_identity_max_seconds']), check=False)
+        final = subprocess.run(freeze, cwd=root, env=identity_environment, timeout=bounded(plan['final_identity_max_seconds']), check=False)
         status['final_freeze'] = final.returncode
     except BaseException as error:
         status['final_freeze'] = type(error).__name__
