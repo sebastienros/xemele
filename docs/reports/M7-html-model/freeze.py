@@ -33,7 +33,7 @@ def capture():
     binaries={str(p):digest(p) for p in sorted(set(binary_files))}
     runtime=pathlib.Path('/Users/sebastienros/Library/Application Support/dotnetup/dotnet')
     runtime_files=[runtime/'dotnet'] + [p for p in (runtime/'sdk/10.0.400').rglob('*') if p.is_file()] + [p for p in (runtime/'shared/Microsoft.NETCore.App/10.0.11').rglob('*') if p.is_file()] + [p for p in (runtime/'host/fxr').rglob('*') if p.is_file()]
-    plan=json.loads((root/'docs/reports/M7-html-model/measurement-plan.json','docs/reports/M7-html-model/prepare_identity.py').read_text())
+    plan=json.loads((root/'docs/reports/M7-html-model/measurement-plan.json').read_text())
     environment={key:value for key,value in os.environ.items() if key in {'PATH','LANG','LC_ALL','LC_CTYPE','MallocNanoZone','LD_LIBRARY_PATH','SHLVL'} or key.startswith(('DOTNET_','COMPlus_','CORECLR_','DYLD_'))}
     environment.update(plan['environment'])
     effective_environment=dict(os.environ)
