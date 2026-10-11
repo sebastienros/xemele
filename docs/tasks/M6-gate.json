@@ -4,7 +4,7 @@
   "milestone": "M6",
   "title": "Verify XML beta checkpoint",
   "kind": "gate",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M6 coordinator worker gate",
   "branch": "codex/m6-gate",
   "base_revision": "ede07b133fc39cb5931f34441a95bb2db3280140",
@@ -29,29 +29,92 @@
     {
       "id": "M6-gate-A1",
       "description": "Verify usable XML beta independent of HTML/CSS/schema modules.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "gate-review",
+        "cumulative-lease",
+        "ordinary-checkpoint",
+        "official-inventory"
+      ]
     },
     {
       "id": "M6-gate-A2",
       "description": "Cumulative tests and CLI/package checks pass at integrated revision.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "gate-review",
+        "cumulative-lease",
+        "ordinary-checkpoint",
+        "official-inventory"
+      ]
     },
     {
       "id": "M6-gate-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "gate-review",
+        "cumulative-lease",
+        "ordinary-checkpoint",
+        "official-inventory"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "docs/reports/M6-gate/verify.py: reused ordinary preparation/oracle/API/package/CLI checks and actual consumer runtime assertions",
+    "docs/reports/M6-gate/run_tests.py and freeze.py: exact exclusive cumulative lease with complete closure/environment identity and finally cleanup",
+    "docs/reports/M6-gate/summary.json and allocation-regressions-summary.json: actual outputs, preservation identities and honest limits"
+  ],
+  "evidence": [
+    {
+      "id": "gate-review",
+      "kind": "review",
+      "revision": "d771e10343d81044b8e8f03e4d28b97bc24f88e5",
+      "command": "Independent source-only coordinator review of owned gate harness; later narrow package runtime assertion review approved before reclaim",
+      "result": "passed",
+      "summary": "No actionable findings; package runtime output assertions added and approved separately.",
+      "artifact": "docs/reports/M6-gate/README.md"
+    },
+    {
+      "id": "cumulative-lease",
+      "kind": "check",
+      "revision": "d771e10343d81044b8e8f03e4d28b97bc24f88e5",
+      "command": "python3 -B docs/reports/M6-gate/run_tests.py --exclusive-grant (exact root lease5eb186d, released25f978e before inspection); python3 -B docs/reports/M6-gate/verify.py inspect_tests",
+      "result": "passed",
+      "summary": "6985 passed6117unit/387conformance/481differential; exact6797M5name counts+SHA preserved; actual.NET10.0.11, no skipped/errors/failures; one exclusive run all exits0/full initialfinalidentity0/nochildren;12allocation requestreport pairs match leased provenance and real0/positivecontrols.",
+      "artifact": "docs/reports/M6-gate/summary.json"
+    },
+    {
+      "id": "ordinary-checkpoint",
+      "kind": "check",
+      "revision": "d771e10343d81044b8e8f03e4d28b97bc24f88e5",
+      "command": "python3 -B docs/reports/M6-gate/verify.py grammar; fuzz; cli; package (owned package-only LatestPatch correction); inspect_package",
+      "result": "passed",
+      "summary": "2585original cases/3386hashes exact earlier models+witnesses+resolutions; fixedseed fuzz; sevenCLIexamples57managed+57native controls; offline initially absent-cache publicpackage managed/trim/AOT consumers identicalexpectedoutputs with gateassertedactual.NET10.0.11/Arm64 andSDK10.0.400. Package retained unpublished. Initial API/trim/pack failures retained, repaired ordinarychecks, no measured retry.",
+      "artifact": "docs/reports/M6-gate/README.md"
+    },
+    {
+      "id": "official-inventory",
+      "kind": "check",
+      "revision": "2e48353455a0d06ef6b20bf04cf600554a9f24ce",
+      "command": "python3 -B docs/reports/M6-gate/verify.py api; python3 tools/planning/tasks.py validate; git diff --check; scoped owned-process inspection; packagezip DLL/hash comparison",
+      "result": "passed",
+      "summary": "Official1054compiled API rows/bootstrapfalse/3386originalcopied resources; canonicalAPI/package/restored DLL sameSHA1f02408e... and leased DLL identical.164tasksvalid; no remaining owned workloads. LaterHEAD consumes verified APIzero-fragment repair only, no runtime/test/fixture changes or fullsuite rerun.",
+      "artifact": "docs/reports/M6-gate/summary.json"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Reclaimed samecandidate after verified zero-member API-onlyrepair; priorleasedd771 runtime/tests unchanged, finishofficialinventory/finalreport.",
-    "checks": [],
-    "remaining": [],
+    "summary": "Usable independent XML beta gate passed6985cumulative tests preserving all6797M5identities, originalgrammar/fuzz, API1054,57managed/native CLI controls andpublicpackage/trim/AOT composition.",
+    "checks": [
+      "SDK10.0.400/actual.NET10.0.11; one exactleasedfullsuite atd771e10 all0 and12boundallocationpairs",
+      "Original2585grammarcases/3386resourcehashes and exactM5semanticmodels preserved; fixedseed fuzz passed",
+      "Verified APIzero-fragment owningrepair consumed; official1054/bootstrapfalse and164planningchecks passed",
+      "SevenCLIexamples/57managed57native controls; unpublished offlinepackage managed/trim/native consumeroutputs actual10.0.11Arm64 checked"
+    ],
+    "remaining": [
+      "Coordinator independent finalraw package/CLI inspection and integrated metadata verification; raw/package/external consumers retained, cleanup requiresrootACK"
+    ],
     "requests": []
   }
 }
