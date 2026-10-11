@@ -7,7 +7,22 @@
     "task_id": "M2-gate",
     "integration_revision": "276a0bdaf6433bbda8958b068955de85c3b75a3a"
   },
-  "active_assignments": [],
+  "active_assignments": [
+    {
+      "task_id": "M3-attribute-metadata",
+      "branch": "codex/m3-attribute-metadata",
+      "base_revision": "69be1b86418f64580e7c6561551f3996342a0dc8",
+      "host_id": "local",
+      "stage": "claimed; dispatch pending"
+    },
+    {
+      "task_id": "M3-writer",
+      "branch": "codex/m3-writer",
+      "base_revision": "69be1b86418f64580e7c6561551f3996342a0dc8",
+      "host_id": "local",
+      "stage": "claimed; dispatch pending"
+    }
+  ],
   "integration_queue": [],
   "blockers": [],
   "next_actions": [
@@ -1321,7 +1336,10 @@
     "M3": {
       "verified": 1,
       "total": 12,
-      "in_progress": [],
+      "in_progress": [
+        "M3-attribute-metadata",
+        "M3-writer"
+      ],
       "remaining_gate": "M3-gate"
     }
   },
