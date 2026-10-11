@@ -1,6 +1,13 @@
 namespace Xemele;
 
-public enum XmlResourceKind { ExternalSubset, ExternalEntity }
+public enum XmlResourceKind
+{
+    ExternalSubset = 0,
+    ExternalEntity = 1,
+    Catalog = 2,
+    XIncludeXml = 3,
+    XIncludeText = 4
+}
 
 public sealed record XmlResourceRequest(Uri Uri, Uri? Referrer, XmlResourceKind Kind)
 {
