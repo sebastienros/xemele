@@ -4,7 +4,7 @@
   "milestone": "M4",
   "title": "Verify XPath checkpoint",
   "kind": "gate",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M4 coordinator 01a12903-1caa-7f32-b0e3-e66b49cea7a6",
   "branch": "codex/m4-gate",
   "base_revision": "c4c789bd1cab03207e61ef36e25fe8df16e3b14d",
@@ -29,29 +29,86 @@
     {
       "id": "M4-gate-A1",
       "description": "Verify complete XPath module with earlier XML/streaming surfaces unaffected.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "cumulative-source",
+        "gate-source-review",
+        "gate-integration"
+      ]
     },
     {
       "id": "M4-gate-A2",
       "description": "Cumulative tests and independently compiled query consumer pass without later validators.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "cumulative-source",
+        "gate-source-review",
+        "gate-integration"
+      ]
     },
     {
       "id": "M4-gate-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "cumulative-source",
+        "gate-source-review",
+        "gate-integration"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "docs/reports/M4-gate/verify.py: cumulative/grammar/fuzz/API/net10-only package assertions; ignored raw outputs",
+    "docs/reports/M4-gate/Demo: public XPath plus preserved earlier XML/streaming standalone consumer",
+    "docs/reports/M4-gate/README.md: actual counts/provenance/performance ownership/preserved failures"
+  ],
+  "evidence": [
+    {
+      "id": "cumulative-source",
+      "kind": "check",
+      "revision": "ca92b718bc883696be792e0e9dc13bf51eeaa462",
+      "command": "python3 -B docs/reports/M4-gate/verify.py prepare/tests/grammar/fuzz (separate actual phase invocations)",
+      "result": "passed",
+      "summary": "Release0warnings/errors;6368 cumulative tests5525unit/374conformance/469differential,0fails/skips/errors;2585 originalgrammar/3386resources/1394allpause models;deterministic768/768/128/32/32/64;actual.NET10.0.11.",
+      "artifact": "docs/reports/M4-gate/README.md"
+    },
+    {
+      "id": "first-api-discovery",
+      "kind": "check",
+      "revision": "ca92b718bc883696be792e0e9dc13bf51eeaa462",
+      "command": "python3 -B docs/reports/M4-gate/verify.py api",
+      "result": "failed",
+      "summary": "Official discovery rejected empty M4-compile fragment; owning M4-api-fragments removes three zero-declaration artifacts; no checker/runtime/declaration weakening.",
+      "artifact": "docs/reports/M4-api-fragments/integration.md"
+    },
+    {
+      "id": "gate-source-review",
+      "kind": "review",
+      "revision": "ca92b718bc883696be792e0e9dc13bf51eeaa462",
+      "command": "Source-only gate harness/demo independent review",
+      "result": "passed",
+      "summary": "Approved runtime/count/package/API identity/public demo assertions; source-only, no independent execution.",
+      "artifact": "docs/reports/M4-gate/README.md"
+    },
+    {
+      "id": "gate-integration",
+      "kind": "integration",
+      "revision": "a0354ad6a8ea7a8f2109db3d5b9f701e39e939f9",
+      "command": "verify.py api/package; git diff --exit-code ca92b71 on complete runtime/test/config/driver inputs; tasks.py validate; git diff --check; inspected preserved cumulative/grammar/fuzz output",
+      "result": "passed",
+      "summary": "Official897 matched; net10-only package identical API assembly/fresh empty-cache public consumer/source output;runtime/test/config unchanged from6368+grammar/fuzz source checkpoint;planning151/whitespace.",
+      "artifact": "docs/reports/M4-gate/README.md"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Resume preserved gate ca92b71 evidence after verified M4-api-fragments; repeat failed API check and complete package consumer. No repeated6368 tests/2585 grammar/unchanged fuzz needed for baseline-only repair.",
-    "checks": [],
+    "summary": "Complete integrated XPath profile plus preserved earlier XML/streaming;6368 cumulative tests/API897/fresh public package/grammar/fuzz and actual owner performance evidence pass.",
+    "checks": [
+      "6368 cumulative allpass;2585 grammar/3386 resources;105 frozen XPath vectors+156differential; deterministic768/768/128/32/32/64;official897;source/fresh package exact output;Release0warnings/errors;planning151"
+    ],
     "remaining": [],
-    "requests": []
+    "requests": [
+      "Fresh M5 coordinator only after verified gate and sole-writer durable transfer; preserve user communication authorization, benchmark attributes, summaries-only and exclusive prepared measurement discipline."
+    ]
   }
 }
