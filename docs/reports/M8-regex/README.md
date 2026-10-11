@@ -45,8 +45,9 @@ consumer preserving M5. It asserts positive test counts; it never selects resolv
 allocation tests or runs measurement. Gate-level comprehensive corpus and x64
 release confirmation remain coordinator/gate responsibilities.
 
-Measurement preparation and results are recorded separately. Warm borrowed matches
-promise zero steady-state managed allocation; compiler/program construction,
+Measurement preparation and results are recorded separately. The measured thin-probe warm borrowed routes
+show zero managed allocations; the pooled BDN case reports1B/op, preserved in
+`allocations.md` without inferred attribution. compiler/program construction,
 operation/result ownership, static initialization and pool growth are distinct
 boundaries. No throughput optimization is claimed: straightforward span loops are
 used; no SearchValues, hashing or custom SIMD is introduced.
