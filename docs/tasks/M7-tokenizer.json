@@ -4,7 +4,7 @@
   "milestone": "M7",
   "title": "WHATWG HTML tokenizer",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M7 coordinator /root/tokenizer",
   "branch": "codex/m7-tokenizer",
   "base_revision": "854039d48c08eb108112d0e65fb01d066fab8867",
@@ -34,29 +34,94 @@
     {
       "id": "M7-tokenizer-A1",
       "description": "Implement all declared HTML5 tokenizer states, references and incremental input handling.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "tokenizer-correctness",
+        "source-review",
+        "frozen-allocation-and-bdn"
+      ]
     },
     {
       "id": "M7-tokenizer-A2",
       "description": "Applicable pinned tokenizer/encoding vectors pass including malformed tokens and chunk boundaries.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "tokenizer-correctness",
+        "source-review"
+      ]
     },
     {
       "id": "M7-tokenizer-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "api-and-sample",
+        "source-review",
+        "frozen-allocation-and-bdn"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Html5/Tokenization/Html5Tokenizer.cs: frozen public owned-token string/list and callback overloads",
+    "src/Xemele/Html5/Tokenization/HtmlTokenizer*.cs: incremental scalar WHATWG states, mandatory PI states, references, source maps, quotas/cancellation, synchronous builder state/CDATA cooperation",
+    "tests/Xemele.Tests/M7-tokenizer/: full corpus lexical/error-code and owned/scalar/callback correctness",
+    "tests/fixtures/M7-tokenizer/: immutable html5lib revision c777c408b61078ea2eb4acefc2535f54dbc8b28a,21 resources plus exact3case current-normative ledger and18 authored PI witnesses",
+    "docs/api/M7-tokenizer.txt; samples/M7-tokenizer/; benchmarks/Xemele.Benchmarks/M7-tokenizer/; docs/reports/M7-tokenizer/measurements.md"
+  ],
+  "evidence": [
+    {
+      "id": "tokenizer-correctness",
+      "kind": "check",
+      "revision": "c8b6a34568a786fb1d0fd86d097a947be5a77583",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' build tests/Xemele.Tests/Xemele.Tests.csproj -c Release -p:RuntimeFrameworkVersion=10.0.11 --no-restore; '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -namespace Xemele.Tests.HtmlTokenization -noColor -result-xml artifacts/M7-tokenizer/pi-focused.xml",
+      "result": "passed",
+      "summary": "Build: 0 warnings/errors; 15 focused tests pass. Commands ran on the exact runtime/test content subsequently committed as c8b6a345, with checkout HEAD cedf7ef3c526ce8cb3db424586ccd04552aa42c4 before that commit; no runtime/test changes followed. All 6,823 upstream lexical cases / 7,049 state vectors pass whole input, every split and single UTF16 units; 18 independent PI witnesses pass every boundary. All 7,046 remaining original error-code arrays match; exactly three immutable domjs.test arrays assert accepted mandatory PI-open differences. Error ordering is audited separately; source locations have focused tests. Four XML coercion records are separately classified. String Unicode/CRLF/surrogate/nullable-byte-map tests pass; retained byte encoding resources remain unexecuted downstream obligations.",
+      "artifact": "docs/reports/M7-tokenizer/README.md"
+    },
+    {
+      "id": "api-and-sample",
+      "kind": "check",
+      "revision": "c8b6a34568a786fb1d0fd86d097a947be5a77583",
+      "command": "python3 docs/reports/M7-tokenizer/check_api.py; python3 tools/ApiBaseline/discover.py --root .; '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' build samples/M7-tokenizer/Tokenizer.Sample.csproj -c Release -p:RuntimeFrameworkVersion=10.0.11 --no-restore; '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 samples/M7-tokenizer/bin/Release/net10.0/Tokenizer.Sample.dll",
+      "result": "passed",
+      "summary": "Checks ran on content subsequently committed at c8b6a345 (checkout HEAD cedf7ef3). Full 1,206 compiled public declarations match; missing/added/changed negative controls rejected. Official bootstrap-disabled discovery verifies 1,206 declarations and all 3,388 inherited fixtures. Sample build has 0 warnings/errors; actual runtime 10.0.11 prints five expected owned tokens. No cumulative execution or later-milestone dependency.",
+      "artifact": "docs/api/M7-tokenizer.txt"
+    },
+    {
+      "id": "source-review",
+      "kind": "review",
+      "revision": "c8b6a34568a786fb1d0fd86d097a947be5a77583",
+      "command": "Coordinator /root independent narrow source and exact PI ledger review",
+      "result": "passed",
+      "summary": "Root approved five mandatory PI states, target/data/case, bogus-comment reconsume, unfinished EOF, quotas/location/callback tests and exact original domjs indices 0\u20132 discrepancy ledger. Verified PI model 84dfa585 / metadata 3608900 was merged before implementation.",
+      "artifact": "tests/fixtures/M7-tokenizer/normative-discrepancies.json"
+    },
+    {
+      "id": "frozen-allocation-and-bdn",
+      "kind": "check",
+      "revision": "6f8945d5532f10d084ab1b972c39bbd73fdde20b",
+      "command": "python3 docs/reports/M7-tokenizer/prepare_identity.py; python3 docs/reports/M7-tokenizer/run_measurements.py --exclusive-grant",
+      "result": "passed",
+      "summary": "Exact-wrapper positive/unknown-env-negative/final-positive controls pass. Root durable grant 6699dcb, exclusive 1,150-second lease: exactly one execution on actual .NET 10.0.11 Arm64; allocation and all 24 ShortRun NoEmit BDN cases exit 0, initial/final freeze 0, no_child=true. All 3,670 source/input, 43 binary, and 3,852 SDK/runtime/host identities unchanged. Durable release adcdb15 preceded raw inspection. Cold initialization 35,744 B; positive control 1,048 B; 96 borrowed batches x 1,024 operations = 98,304 operations at 0 B. Eighteen owned 128-operation totals reported separately; inclusive retained delta 468,000 B for 128 lists. Range utility slower than framework baseline; no speedup claim. High priority denied, long-input confidence intervals noisy, one-host results provisional.",
+      "artifact": "docs/reports/M7-tokenizer/measurements.md"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "",
-    "checks": [],
-    "remaining": [],
-    "requests": []
+    "summary": "Full declared WHATWG scalar/incremental tokenizer including mandatory processing instructions and references. Frozen public owned-token APIs, bounded cancellation/quotas, callback lifetime/identical faults, scalar locations/null stringbyteoffset, builder state/endtag/foreignCDATA cooperation. Branch implemented with measured evidence; integrated verification remains coordinator-owned.",
+    "checks": [
+      "15 focused tokenizer tests; 6,823 cases / 7,049 state vectors at every split and single unit; 18 authored PI witnesses; 7,046 exact error arrays plus three precise normative discrepancies; 21 original resource identities.",
+      "Pinned SDK 10.0.400 / runtime 10.0.11 builds: 0 warnings/errors; 1,206 actual API declarations with negative controls; sample; official 1,206/3,388 inventory; planning 167 tasks and clean diff check.",
+      "Exclusive allocation and 24 BDN cases: all lifecycle/identity exits 0, no children. Raw logs ignored; summary committed."
+    ],
+    "remaining": [
+      "Coordinator integration and verification, earlier-milestone cumulative regression under its own lease.",
+      "M7-builder/M7-corpus must execute original HTML byte encoding/BOM/meta/label/chunk vectors: tests1.dat (59), tests2.dat (22), Yahoo byte vector (1), and Big5 resource. All 21 resource hashes remain retained in the manifest. The single scripted encoding-change case requires a separately recorded browser-script disposition outside declared scope. No unexecuted resource is marked passing.",
+      "Four retained xmlViolationTests remain classified as separate XML-infoset coercion profile.",
+      "Composition allocation/throughput confirmation and x64/Arm64 release verification. One-host ShortRun timings and denied high priority limit conclusions."
+    ],
+    "requests": [
+      "Root route retained encoding obligations to M7-builder/M7-corpus; preserve every original array and the narrowly accepted three-case PI error ledger. No shared extension request remains outstanding."
+    ]
   }
 }

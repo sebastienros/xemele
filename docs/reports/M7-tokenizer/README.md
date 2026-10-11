@@ -27,7 +27,7 @@ raw NUL/references, supplementary scalar quotas, source locations and identical
 callback exception propagation. Full compiled API comparison matches 1,206
 members and rejects missing/added/changed controls; official discovery verifies
 1,206 declarations and all 3,388 inherited fixture identities. Planning validates
-167 records. Allocation/timing evidence remains pending review and root lease.
+167 records. Allocation/timing evidence subsequently passed at frozen checkpoint6f8945d; see measurements.md.
 
 Pinned full fixture corpus and classification: tests/fixtures/M7-tokenizer/README.md.
 All 7,049 tokenizer state vectors run with every chunk split. Parse errors remain
@@ -35,10 +35,10 @@ separate from token comparison. Encoding sniffing/byte decoding is parser
 composition, not a string tokenizer API; its original resources remain pinned
 for that owner and the final gate.
 
-Performance status: no allocation or timing measurements have executed. Borrowed
-lexical classification/references and owned callback/result persistence will be
-measured separately only after independent review and the coordinator's exclusive
-prepared durable lease, using the existing model freeze/wrapper lifecycle.
+Performance evidence is complete at the reviewed frozen checkpoint6f8945d.
+See [measurements](measurements.md) for exact cold/borrowed/owned/retained domains,
+exclusive lifecycle, manifest and honest baseline comparison. No runtime/probe
+changes followed measurement; subsequent edits record evidence and task handoff.
 
 Actual pinned ordinary builds: SDK10.0.400, RuntimeFrameworkVersion10.0.11.
 Actual test execution uses `dotnet --fx-version 10.0.11 ...Xemele.Tests.dll`.
@@ -54,7 +54,7 @@ states is permitted. The separate code audit additionally exposed three
 lookahead warning-order defects; their explicit delayed-warning repair is owned
 here. Exact error-code order remains tested separately from lexical tokens.
 
-Preparation (not measurements): full API comparison matched 1,203 compiled public
+Earlier preparation checkpoint (before final measurements): full API comparison matched 1,203 compiled public
 members with missing/added/changed negative controls rejected, tokenizer sample
 ran successfully, and benchmark discovery verified 24 ShortRun NoEmit cases.
 The immutable original XML cache was copied only to this worktree's 3,386 ignored
@@ -75,4 +75,4 @@ Existing corrected model freeze/wrapper infrastructure is copied mechanically
 with owned tokenizer paths and an explicit retained measurement session ID;
 SHLVL=1, complete effective-environment SHA/per-key SHA, source/generated/binary,
 SDK/runtime/host and all actual tokenizer/encoding/XML resources remain closed.
-Controls/measurements await final verified PI code and coordinator review.
+Exact controls and the exclusive allocation/benchmark sequence passed; root durably released the lease before raw inspection.
