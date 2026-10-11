@@ -4,7 +4,7 @@
   "milestone": "M7",
   "title": "Compiled CSS selector profile",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M7 coordinator /root/css",
   "branch": "codex/m7-css",
   "base_revision": "3608900573aefb57e6963753cc96cbd954fb4c7e",
@@ -12,7 +12,8 @@
   "depends_on": [
     "M7-html-model",
     "M7-css-xml-contract",
-    "M7-html-pi-model"
+    "M7-html-pi-model",
+    "M7-css-default-contract"
   ],
   "goals": [
     "G12"
@@ -35,29 +36,109 @@
     {
       "id": "M7-css-A1",
       "description": "Implement declared selector grammar/matching/query, namespace/case rules and reusable compilation.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "focused-matrix",
+        "compiled-api",
+        "source-review",
+        "exclusive-measurements"
+      ]
     },
     {
       "id": "M7-css-A2",
       "description": "Per-selector matrix passes on constructed XML and HTML-shaped trees; unsupported syntax rejects explicitly.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "focused-matrix"
+      ]
     },
     {
       "id": "M7-css-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "actual-sample",
+        "compiled-api",
+        "prepared-controls",
+        "exclusive-measurements"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Css/CssSelector.cs: immutable graph-aware Matches and owner-retaining preorder snapshot Select; public universal constructor",
+    "src/Xemele/Css/Parser.cs: strict CSS grammar, decoded escapes, UTF-16 syntax offsets and compile-owned BigInteger normalization",
+    "tests/Xemele.Tests/M7-css/SelectorTests.cs: 89 actual XML/HTML matrix and rejection cases",
+    "docs/api/M7-css.txt: exact 20-member CSS fragment; full union 1230",
+    "benchmarks/Xemele.Benchmarks/M7-css/: borrowed scanners and actual two-graph composition",
+    "docs/reports/M7-css/measurements.md: frozen exclusive lifecycle, allocation boundaries and informational comparisons"
+  ],
+  "evidence": [
+    {
+      "id": "focused-matrix",
+      "kind": "check",
+      "revision": "92c8756b03fd1d666414b88cc415e1bcb1b0bac8",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' build tests/Xemele.Tests/Xemele.Tests.csproj --no-restore --disable-build-servers -p:RuntimeFrameworkVersion=10.0.11 -p:UseSharedCompilation=false; '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 tests/Xemele.Tests/bin/Debug/net10.0/Xemele.Tests.dll -class Xemele.Tests.Css.SelectorTests -noLogo",
+      "result": "passed",
+      "summary": "Warnings-as-errors build passed; 89 focused actual XML/HTML tests passed, 0 failed/skipped. Only CSS class executed; no cumulative suite.",
+      "artifact": "docs/reports/M7-css/README.md"
+    },
+    {
+      "id": "compiled-api",
+      "kind": "check",
+      "revision": "92c8756b03fd1d666414b88cc415e1bcb1b0bac8",
+      "command": "PATH='/Users/sebastienros/Library/Application Support/dotnetup/dotnet':\"$PATH\" python3 -B tools/ApiBaseline/compare.py --root /private/tmp/xemele-m7-css --report artifacts/M7-css/runtime-api.json; Python JSON-row comparison of docs/api/M7-css.txt to CSS rows in tests/Contracts/Fixtures/M7/Selector.golden.txt",
+      "result": "passed",
+      "summary": "Unchanged approved M0 checker matches 1230 compiled members: 1210 preserved integrated members plus 20 CSS; exact CSS declarations match frozen selector fixture. Earlier missing/changed full-union controls rejected 1. All 3386 local W3C manifest resources copied and SHA verified; original cache untouched.",
+      "artifact": "docs/api/M7-css.txt"
+    },
+    {
+      "id": "actual-sample",
+      "kind": "check",
+      "revision": "3e4edef3f847c210c0ba5348cd514898f32c6290",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' build samples/M7-css/Css.Sample.csproj -c Release --no-restore --disable-build-servers -p:RuntimeFrameworkVersion=10.0.11 -p:UseSharedCompilation=false; '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 samples/M7-css/bin/Release/net10.0/Css.Sample.dll",
+      "result": "passed",
+      "summary": "Actual XML and HTML composition: one selected item each. Sample does not consume the later-added constructor; no later parser/XPath/schema API needed.",
+      "artifact": "samples/M7-css/Program.cs"
+    },
+    {
+      "id": "source-review",
+      "kind": "review",
+      "revision": "92c8756b03fd1d666414b88cc415e1bcb1b0bac8",
+      "command": null,
+      "result": "passed",
+      "summary": "Root bounded review approves immutable program, graph-specific case/namespace rules, live mutation/snapshots, finite-position nth equivalence, verified default universal constructor and escape/scalar fixes.",
+      "artifact": null
+    },
+    {
+      "id": "prepared-controls",
+      "kind": "check",
+      "revision": "12f4cb51102e5551dc981b7ea41fc91ce717724c",
+      "command": "python3 docs/reports/M7-css/prepare_identity.py",
+      "result": "passed",
+      "summary": "Exact intended elevated wrapper positive/final-positive initial0 final0 exit0 nochild; unknown-environment control initial1 final1 exit1 nochild, no product runs. Frozen source 3681 / binary 43 / runtime 3852; full effective environment hashed, CODEX_THREAD_ID retained, SHLVL 1.",
+      "artifact": "docs/reports/M7-css/measurements.md"
+    },
+    {
+      "id": "exclusive-measurements",
+      "kind": "check",
+      "revision": "12f4cb51102e5551dc981b7ea41fc91ce717724c",
+      "command": "python3 docs/reports/M7-css/run_measurements.py --exclusive-grant",
+      "result": "passed",
+      "summary": "Exactly one 1100 s exclusive grant e15cc82/release821e429: initial/allocation/benchmark/final/wrapper0 and no_childtrue. 29 ShortRun NoEmit MemoryDiagnoser cases pass. 1,466,368 warmed borrowed operations across actual graph Matches and production token scanning allocate 0 B. Owned compile 2384 B / XML query 1408 B / HTML query 792 B; retained graph-pair inclusive delta 8952320 B per 100 pairs. Informational Arm64-only timings and priority-denied/noise limits documented.",
+      "artifact": "docs/reports/M7-css/measurements.md"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "",
-    "checks": [],
-    "remaining": [],
+    "summary": "Implemented complete frozen CSS profile on actual XML and HTML graphs, exact20-member API including verified universal constructor; immutable compiled program and owner-retaining snapshots.",
+    "checks": [
+      "89 focused actual-model tests passed; zero-warning pinned builds; full API 1230 and exact CSS 20 match; planning validation passed for 168 tasks.",
+      "29NoEmit cases and1,466,368 warmed borrowed operations pass under one frozen exclusive lifecycle; all exits0/nochild; controls reject unknown environment."
+    ],
+    "remaining": [
+      "Coordinator integration verification and cumulative earlier-milestone preservation checks remain; task remains implemented, not verified.",
+      "Arm64-only informational timing; high priority denied and ShortRun intervals noisy; x64 release validation not run."
+    ],
     "requests": []
   }
 }
