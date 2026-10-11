@@ -37,7 +37,8 @@
       "status": "passed",
       "evidence": [
         "frozen-profile-review",
-        "profile-regeneration"
+        "profile-regeneration",
+        "corpus-source-review"
       ]
     },
     {
@@ -48,7 +49,8 @@
         "first-full-corpus",
         "canonical-corrected",
         "libxml-inclusive11",
-        "ordinary-controls"
+        "ordinary-controls",
+        "libxml-infrastructure-controls"
       ]
     },
     {
@@ -68,7 +70,8 @@
     "docs/reports/M5-corpus/Corpus.Driver.csproj, source-context driver and bounded execution support",
     "tests/Xemele.Conformance.Tests/Dtd/ and Canonicalization/ controls",
     "tests/Xemele.Differential.Tests/DtdCanonical/ algorithm-specific reference support",
-    "docs/reports/M5-corpus/partial.md and first-reference-audit.json"
+    "docs/reports/M5-corpus/partial.md and first-reference-audit.json",
+    "docs/reports/M5-corpus/libxml_reference_control.py"
   ],
   "evidence": [
     {
@@ -141,6 +144,24 @@
       "command": "python3 -B tools/planning/tasks.py validate",
       "result": "passed",
       "summary": "156 task records valid.",
+      "artifact": "docs/reports/M5-corpus/partial.md"
+    },
+    {
+      "id": "corpus-source-review",
+      "kind": "review",
+      "revision": "7d6160c67728b7724e63bd2b2816ecbbc1efe1e4",
+      "command": "Coordinator independent source-only review of correction 21808e2 and partial evidence 7d6160c",
+      "result": "passed",
+      "summary": "Approved within disclosed limits: 831 unequal reference labels, 441 associated DTD, no reference consensus claim; 16 runtime witnesses remain pending. Reviewed classifier, driver, CaseRunner, ReferenceAlgorithm and four hash-bound overrides. This is source review, not an executed corpus check.",
+      "artifact": "docs/reports/M5-corpus/partial.md"
+    },
+    {
+      "id": "libxml-infrastructure-controls",
+      "kind": "check",
+      "revision": "266a3504fb213043d9e1027d4124d3660bc49128",
+      "command": "python3 -B docs/reports/M5-corpus/libxml_reference_control.py",
+      "result": "passed",
+      "summary": "Four Python-only injected timeout/OSError vector and version controls passed; six rows serialized in order and failure status nonzero. No xmllint, runtime, allocation counters or corpus rerun executed. Prior actual six libxml observations remain at 21808e2.",
       "artifact": "docs/reports/M5-corpus/partial.md"
     }
   ],

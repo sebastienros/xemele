@@ -112,3 +112,16 @@ artifacts/M5-corpus/corpus.json SHA256 aed98a4f25920a9981d24132d0e97e4e1cd10f125
 canonical-corrected.json SHA256 b9fdf9bfcaf488d2407ed3983a5a5cf369f56bb2cf1186da9806bc6a06487185;
 libxml.json SHA256 46f2df2474eb73377cceec7dba339550baac59d140d89f9b22816dc8dd4271c5.
 No raw cleanup before root ACK; no counter reruns.
+
+Adapter-only robustness checkpoint 266a3504fb213043d9e1027d4124d3660bc49128
+catches timeout/OSError per libxml vector, retains an explicit failed infrastructure
+row, continues all six rows and exits nonzero on any failure. Binary identity and
+version infrastructure errors also survive serialization and fail the run. Four
+Python-only injected vector/version timeout/OSError controls passed at that revision;
+no xmllint, runtime or corpus processes were launched. The earlier actual six
+libxml observations remain evidence at 21808e2, not a run of this new adapter.
+
+Coordinator independent source-only review approved 21808e2 and 7d6160c within
+the disclosed limits: all 831 unequal labels accounted, 441 associated DTD, no
+reference consensus claim, and sixteen runtime witnesses still pending. This
+review does not replace execution or claim repaired runtime behavior.
