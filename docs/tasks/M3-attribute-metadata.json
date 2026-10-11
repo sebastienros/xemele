@@ -4,11 +4,11 @@
   "milestone": "M3",
   "title": "Carry explicit defaulted attribute metadata through internal event views",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M3 coordinator 01a1284a-8826-7fc2-af44-74552db608f2 / M3-attribute-metadata worker",
   "branch": "codex/m3-attribute-metadata",
   "base_revision": "69be1b86418f64580e7c6561551f3996342a0dc8",
-  "integration_revision": null,
+  "integration_revision": "ceb18c565110c25fdf7d1c52c9060d3e4403eaf7",
   "depends_on": [
     "M3-contracts"
   ],
@@ -37,7 +37,8 @@
       "status": "passed",
       "evidence": [
         "release-build",
-        "focused-metadata"
+        "focused-metadata",
+        "integrated-metadata"
       ]
     },
     {
@@ -46,7 +47,8 @@
       "status": "passed",
       "evidence": [
         "focused-metadata",
-        "borrowed-allocation"
+        "borrowed-allocation",
+        "integrated-metadata"
       ]
     },
     {
@@ -57,7 +59,8 @@
         "release-build",
         "affected-regressions",
         "planning-validator",
-        "diff-check"
+        "diff-check",
+        "integrated-metadata"
       ]
     }
   ],
@@ -122,6 +125,15 @@
       "result": "passed",
       "summary": "No whitespace errors.",
       "artifact": "docs/reports/M3-attribute-metadata/checks.json"
+    },
+    {
+      "id": "integrated-metadata",
+      "kind": "integration",
+      "revision": "ceb18c565110c25fdf7d1c52c9060d3e4403eaf7",
+      "command": "Pinned Release test build single-node/no-build-server; Xemele.Tests.dll -namespace AttributeMetadata/Syntax/Entities/IncompleteAttributes/DtdNonvalidating/Recovery -parallelMode none -showLiveOutput; python3 tools/planning/tasks.py validate",
+      "result": "passed",
+      "summary": "Actual integrated Release build0warnings/errors;305tests0failed/skipped. Complete authored and incomplete default:1024ops/128warmups each0B; positive88B. Coordinator source review: writes confined to four owned runtime files, flag initialized false for authored/reused slots and set true only at default synthesis; locations/parts/order unchanged.",
+      "artifact": null
     }
   ],
   "blockers": [],
@@ -133,9 +145,7 @@
       "Warm complete authored/incomplete default event Append: 0 B each across 1024 operations after 128 warmups; positive control 88 B.",
       "Planning validator: 141 task records passed; git diff --check passed."
     ],
-    "remaining": [
-      "Coordinator integration and integrated verification; integration_revision remains null."
-    ],
+    "remaining": [],
     "requests": []
   }
 }
