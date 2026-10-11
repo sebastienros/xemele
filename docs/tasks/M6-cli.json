@@ -4,11 +4,11 @@
   "milestone": "M6",
   "title": "XML command-line operations",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M6 coordinator worker cli",
   "branch": "codex/m6-cli",
   "base_revision": "747404760141674718c49a353e4f0f6745787528",
-  "integration_revision": null,
+  "integration_revision": "d331ea7d667eeb15ff0a216f6b5d964db8032a52",
   "depends_on": [
     "M6-catalog",
     "M6-xinclude",
@@ -39,7 +39,8 @@
         "source-review",
         "build-controls",
         "api-planning",
-        "native-publish-smoke"
+        "native-publish-smoke",
+        "coordinator-integration"
       ]
     },
     {
@@ -50,7 +51,8 @@
         "source-review",
         "build-controls",
         "api-planning",
-        "native-publish-smoke"
+        "native-publish-smoke",
+        "coordinator-integration"
       ]
     },
     {
@@ -61,7 +63,8 @@
         "source-review",
         "build-controls",
         "api-planning",
-        "native-publish-smoke"
+        "native-publish-smoke",
+        "coordinator-integration"
       ]
     }
   ],
@@ -109,6 +112,15 @@
       "result": "passed",
       "summary": "Genuine arm64 Mach-O output with compiler packages10.0.11; all 57 native controls passed. Exact source/native SHA recorded, bounded120s ownedPG cleanup and final scoped nochildren inspection completed.",
       "artifact": "docs/reports/M6-cli/README.md"
+    },
+    {
+      "id": "coordinator-integration",
+      "kind": "integration",
+      "revision": "d331ea7d667eeb15ff0a216f6b5d964db8032a52",
+      "command": "Fresh isolated forced Release four builds; direct actual10.0.11 selected272 tests/sample;57managed controls;57native controls against hashcheckedfinalarm64binary;compiledAPI;tasksvalidate;diff/scopedps",
+      "result": "passed",
+      "summary": "272tests zero failures/skips actual.NET10.0.11;57managed+57native controls pass; sample cancellation/IO/stdstream controls pass;API1054 unchanged;4builds zero warnings/errors;163tasks valid. Root inspected exactnativepublish source50b2c2f and Mach-O SHA b5f229009e02870e8bc57976e04c132a5fd4fdfae40e3bbff112631f7e0d276a. Sourceonlyreviews approved6b3166f and50b2c2f. No allocationclaim; cumulativegate pending. No ownedchildren. Finaldoconlycorrection incorporated without redundant codecheck rerun.",
+      "artifact": "docs/reports/M6-cli/README.md"
     }
   ],
   "blockers": [],
@@ -120,10 +132,7 @@
       "1054 compiled API members matched; planning163 and diff-check passed; scoped worker children absent.",
       "Earlier draft compile errors, output-cleanup misclassification, sample CA2022, and canceled sandbox NativeAOT preparation recorded honestly in report; final reruns passed."
     ],
-    "remaining": [
-      "Coordinator integrated verification and cumulative M6 integration/gate checks.",
-      "No measured performance/allocation or inherited full-suite check run; no allocation-free claim."
-    ],
+    "remaining": [],
     "requests": []
   }
 }
