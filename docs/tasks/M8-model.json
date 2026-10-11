@@ -4,11 +4,11 @@
   "milestone": "M8",
   "title": "Shared schema models and contracts",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M8 coordinator 01a12c6c-b333-71d3-877f-0d186618e21d / assigned isolated worker",
   "branch": "codex/m8-model",
   "base_revision": "8ba83aaf00b76d30e36eb95445bc03611677ae89",
-  "integration_revision": null,
+  "integration_revision": "04a2d5f95ffdb8b9c43cf7602bef0f8c65d6e16f",
   "depends_on": [
     "M8-contracts",
     "M8-resource-kind",
@@ -41,7 +41,10 @@
       "evidence": [
         "source-build",
         "frozen-model-api",
-        "model-tests"
+        "model-tests",
+        "coordinator-review",
+        "combined-runtime-checks",
+        "final-integrated-evidence"
       ]
     },
     {
@@ -50,7 +53,10 @@
       "status": "passed",
       "evidence": [
         "model-tests",
-        "affected-tests"
+        "affected-tests",
+        "coordinator-review",
+        "combined-runtime-checks",
+        "final-integrated-evidence"
       ]
     },
     {
@@ -62,7 +68,10 @@
         "public-api",
         "allocation-preparation",
         "planning-whitespace",
-        "allocation-measurement"
+        "allocation-measurement",
+        "coordinator-review",
+        "combined-runtime-checks",
+        "final-integrated-evidence"
       ]
     }
   ],
@@ -155,22 +164,47 @@
       "result": "passed",
       "summary": "Granted M8-model-allocation-1; one supervised child exit0 in0.137156s; reaped/drained/no survivors, eight identities unchanged. RELEASE and durable ACK preceded raw interpretation. Six warm primitive routes 0B across64 samples each; compile setup512B/op, namespace/report1752B/op, direct M4 accounting5408B/op, capped join5528B/op (+120B), external composition59496B/op. All64 samples per case identical, 32 counters-disabled warm operations, positive control1048B. Single-host synchronous allocation evidence; no timing/async/cross-platform claims. Full counts/ownership/retention limits in owned report.",
       "artifact": "docs/reports/M8-model/allocations.md"
+    },
+    {
+      "id": "coordinator-review",
+      "kind": "review",
+      "revision": "2ac7e6034a82d371e76608d0ad11fe2e2d8c8ea0",
+      "command": "Read-only reviewer and coordinator source/ownership review; accepted draft hashes matched committed source",
+      "result": "passed",
+      "summary": "One batched correction cycle resolved report invariant joins, aggregate expansions and source-local byte-quota offsets; all21 worker paths owned. No unmerged prerequisite or runtime source changes after accepted commit.",
+      "artifact": "docs/reports/M8-model/integration.md"
+    },
+    {
+      "id": "combined-runtime-checks",
+      "kind": "integration",
+      "revision": "a5c1af1e3a41f9ce22665ca8247e14d33ef6a455",
+      "command": "Commands preserved in docs/reports/M8-model/integration-commands.py (builds, corrected split tests and XML-only consumer executed in sequence)",
+      "result": "passed",
+      "summary": "209 correctness tests, actual Arm64.NET10.0.11;0errors/failures/skips/not-run;1393publicAPI/316frozenmembers;integrated+XMLonly consumers;175tasks. Initial intersection produced0tests and was rejected; corrected42+167 results independently inspected. Allocation test excluded.",
+      "artifact": "docs/reports/M8-model/integration.md"
+    },
+    {
+      "id": "final-integrated-evidence",
+      "kind": "integration",
+      "revision": "04a2d5f95ffdb8b9c43cf7602bef0f8c65d6e16f",
+      "command": "python3 tools/planning/tasks.py validate; git diff --check; git diff --exit-code a5c1af1e3a41f9ce22665ca8247e14d33ef6a455 HEAD -- src tests benchmarks samples docs/api Directory.Build.props Directory.Packages.props global.json; root inspection of prepared allocation distributions",
+      "result": "passed",
+      "summary": "175tasks/whitespace passed at exact integrated revision. Runtime/tests/consumer/API/build inputs unchanged from tested combination, so valid209test/API/consumer results retained. Root inspected all11x64 allocation observations with exact sums, positive1048B control and unchanged8file identities under granted/released lease; sixprimitive routes0B, owned costs explicit.",
+      "artifact": "docs/reports/M8-model/integration.md"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Implemented exact shared schema declarations, snapshots/options/context, operation/M5 adapters, strict schema resource ownership/aggregate quotas and actual XPath join. All criteria pass on worker branch; integration verification remains coordinator-owned.",
+    "summary": "Integrated and verified common schema model, ownership/resource quotas and actual XPath/M5 joins; allcriteria passed with applicable bounded allocation evidence.",
     "checks": [
       "20 model tests and 189 affected prerequisite tests passed at source revision 2ac7e6034a82d371e76608d0ad11fe2e2d8c8ea0; old resolver allocation method explicitly excluded.",
       "316 frozen model declarations and 139 public declarations matched; XML-only compiled/executed consumer passed.",
       "Release builds and 11-case counters-disabled allocation control passed; planning/whitespace passed.",
       "Incident: pre-commit class selection inadvertently ran old resolver allocation child without lease. Parent 73852 and children 73855/73856 exited/reaped; no remaining processes. Its allocations are excluded from M8 evidence; full lifecycle/argv in owned report.",
-      "Granted allocation attempt passed after durable release acknowledgement: six primitive routes0B; owned setup/report/query/resource allocations recorded with exact64-sample distributions and limits. No post-source code change or correctness rerun."
+      "Granted allocation attempt passed after durable release acknowledgement: six primitive routes0B; owned setup/report/query/resource allocations recorded with exact64-sample distributions and limits. No post-source code change or correctness rerun.",
+      "Root combined209tests,1393public/316frozen declarations and XML-only/integrated consumers passed; actual runtime10.0.11. Root allocation raw inspection passed; no global idle/timing/cross-platform claim."
     ],
-    "remaining": [
-      "Coordinator must inspect retained ignored raw allocation/control/lifecycle files, integrate source and rerun required integrated checks before setting verified.",
-      "Remove generated measurement outputs only after coordinator inspection; no generated raw logs are committed."
-    ],
+    "remaining": [],
     "requests": []
   }
 }

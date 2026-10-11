@@ -40,3 +40,5 @@ after159552/329896B for256contexts is an informational whole-heap observation,
 not a portable per-context cost. No throughput, latency or global host-idle claim.
 Raw correctness/allocation output is transient and will be removed after final
 integration/inspection; only concise summaries and identities are durable.
+
+Final integrated source/evidence revision: `04a2d5f95ffdb8b9c43cf7602bef0f8c65d6e16f`. Metadata-only integration retained the checked runtime inputs and valid execution evidence; no runtime rerun was needed.
