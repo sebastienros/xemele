@@ -3,6 +3,8 @@ public sealed record CssSelectorOptions { public IReadOnlyDictionary<string,stri
 public sealed class CssSelectorException(string message, int offset) : ArgumentException(message) { public int Offset { get; } = offset; }
 public sealed class CssSelector
 {
+ // Explicitly preserves the previously implicit public constructor.
+ public CssSelector() { }
  public static CssSelector Compile(string selector, CssSelectorOptions? options = null) => throw new NotImplementedException();
  public bool Matches(Xemele.XmlNode element) => throw new NotImplementedException();
  public IReadOnlyList<Xemele.XmlNode> Select(Xemele.XmlNode root) => throw new NotImplementedException();
