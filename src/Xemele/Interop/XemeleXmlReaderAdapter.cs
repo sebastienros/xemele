@@ -1,4 +1,5 @@
 using System.Xml;
+using System.Text;
 using Xemele.Streaming;
 
 namespace Xemele.Interop;
@@ -16,7 +17,7 @@ public sealed class XemeleXmlReaderAdapter : System.Xml.XmlReader
     private readonly List<Frame> frames = [];
     private Attribute[] attributes = [];
     private int attribute = -1, depth, gate;
-    private bool attributeValue, empty, pop, cdata, cdataText, dtd;
+    private bool attributeValue, empty, pop, cdata, cdataText, dtd, pendingToken;
     private string local = "", prefix = "", uri = "", name = "", value = "", baseUri = "";
     private XmlNodeType kind;
     private ReadState state;
@@ -80,17 +81,51 @@ public sealed class XemeleXmlReaderAdapter : System.Xml.XmlReader
     public override bool Read()
     {
         Enter();
-        try { if (!Begin()) return false; try { while (reader.Read()) if (Capture()) return true; return Finish(); } catch { Fault(); throw; } }
+        try { if (!Begin()) return false; try { while (NextToken()) if (Capture()) { if (reader.TokenKind == XmlTokenKind.Text) CaptureTextRun(); return true; } return Finish(); } catch { Fault(); throw; } }
         finally { Exit(); }
     }
     public override async Task<bool> ReadAsync()
     {
         Enter();
-        try { if (!Begin()) return false; try { while (await reader.ReadAsync().ConfigureAwait(false)) if (Capture()) return true; return Finish(); } catch { Fault(); throw; } }
+        try { if (!Begin()) return false; try { while (await NextTokenAsync().ConfigureAwait(false)) if (Capture()) { if (reader.TokenKind == XmlTokenKind.Text) await CaptureTextRunAsync().ConfigureAwait(false); return true; } return Finish(); } catch { Fault(); throw; } }
         finally { Exit(); }
     }
+    private bool NextToken()
+    { if (!pendingToken) return reader.Read(); pendingToken = false; return true; }
+    private ValueTask<bool> NextTokenAsync()
+    { if (!pendingToken) return reader.ReadAsync(); pendingToken = false; return ValueTask.FromResult(true); }
+    // Retain only one logical run plus one underlying lookahead event, never a
+    // document. Classification must not depend on arbitrary pump chunk sizes.
+    // CDATA framing and external source changes remain explicit event boundaries.
+    private void CaptureTextRun()
+    {
+        string source = reader.Location.SourceUri?.AbsoluteUri ?? "";
+        StringBuilder? text = null;
+        while (reader.Read())
+        {
+            if (reader.TokenKind != XmlTokenKind.Text || (reader.Location.SourceUri?.AbsoluteUri ?? "") != source) { pendingToken = true; break; }
+            text ??= new(value); text.Append(reader.ValueSpan);
+        }
+        CompleteTextRun(text);
+    }
+    private async ValueTask CaptureTextRunAsync()
+    {
+        string source = reader.Location.SourceUri?.AbsoluteUri ?? "";
+        StringBuilder? text = null;
+        while (await reader.ReadAsync().ConfigureAwait(false))
+        {
+            if (reader.TokenKind != XmlTokenKind.Text || (reader.Location.SourceUri?.AbsoluteUri ?? "") != source) { pendingToken = true; break; }
+            text ??= new(value); text.Append(reader.ValueSpan);
+        }
+        CompleteTextRun(text);
+    }
+    private void CompleteTextRun(StringBuilder? text)
+    {
+        if (text is not null) value = text.ToString();
+        kind = cdata ? XmlNodeType.CDATA : IsWhitespace(value) ? frames.Count != 0 && frames[^1].PreserveSpace ? XmlNodeType.SignificantWhitespace : XmlNodeType.Whitespace : XmlNodeType.Text;
+    }
     private bool Finish() { ClearEvent(); frames.Clear(); state = ReadState.EndOfFile; return false; }
-    private void Fault() { ClearEvent(); frames.Clear(); state = ReadState.Error; }
+    private void Fault() { ClearEvent(); frames.Clear(); pendingToken = false; state = ReadState.Error; }
     private string Intern(ReadOnlySpan<char> text) => text.IsEmpty ? "" : names.Add(text.ToString());
     private Attribute Copy(ReadOnlySpan<char> local, ReadOnlySpan<char> prefix, ReadOnlySpan<char> uri, ReadOnlySpan<char> value)
     { string l = Intern(local), p = Intern(prefix); return new(l, p, Intern(uri), names.Add(p.Length == 0 ? l : string.Concat(p, ":", l)), value.ToString()); }
@@ -160,7 +195,7 @@ public sealed class XemeleXmlReaderAdapter : System.Xml.XmlReader
         try
         {
             if (state == ReadState.Closed) return;
-            ClearEvent(); frames.Clear(); state = ReadState.Closed;
+            ClearEvent(); frames.Clear(); pendingToken = false; state = ReadState.Closed;
             if (!leaveOpen) reader.Dispose();
         }
         finally { Exit(); }

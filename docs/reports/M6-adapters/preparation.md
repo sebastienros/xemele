@@ -5,6 +5,11 @@ Attribute values/names, namespace declarations, frames and NameTable storage are
 explicit persistence/setup costs. Reader event copying does not promise zero
 allocation. Existing primary stream ownership and strict parser behavior remain.
 Source identity separates effective ancestor xml:base from redirected entity bases.
+Normal text classification coalesces one contiguous owned run, independent of
+transport chunks. CDATA frames and source URI changes end the run. One borrowed
+lookahead event remains inside the underlying reader; no whole document is buffered.
+Six sync/async chunk1/2/4096 BCL controls cover mixed/leading/trailing text,
+whitespace-only, xml:space and CDATA transitions.
 
 Navigator construction reuses the integrated M4 owned XPath capture for logical
 text runs. It builds private navigation rows and drops the temporary M4 capture
@@ -44,7 +49,12 @@ extraction provide the independent override-shape checks; no online API claim.
 
 Frozen closure includes all committed files, all generated obj outputs, all bin
 outputs, entire pinnedSDK10.0.400/runtime10.0.11/hostfxr files, host details and
-effective runtime/runner environment. RuntimeFrameworkVersion10.0.11 applies to
+effective runtime/runner environment. The SHA256 covers the COMPLETE effective
+child environment, while only current readable runtime variables appear in the
+manifest. Secret/other variable values are neither recorded nor printed. The
+runner passes the identical captured environment to initial/final freeze helpers
+and each phase. An unknown-variable negative control must reject.
+RuntimeFrameworkVersion10.0.11 applies to
 forced restores and no-incremental builds. Runtimeconfigs are inspected before
 PARK; direct parents explicitly select --fx-version10.0.11 and assert actual
 FrameworkDescription. The harness is in-process NoEmit and creates no child

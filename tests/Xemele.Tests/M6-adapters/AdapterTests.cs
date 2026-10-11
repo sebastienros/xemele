@@ -163,6 +163,23 @@ public sealed class AdapterTests
         }
         Assert.Equal("α😀β", text.ToString()); Assert.Equal("根😀", cdata.ToString());
     }
+    [Theory]
+    [InlineData(1, false)] [InlineData(2, false)] [InlineData(4096, false)]
+    [InlineData(1, true)] [InlineData(2, true)] [InlineData(4096, true)]
+    public async Task LogicalTextClassificationMatchesBclAcrossChunks(int chunk, bool asynchronous)
+    {
+        string[] inputs = ["<r>a b</r>", "<r> a b </r>", "<r>   </r>", "<r xml:space='preserve'>   </r>", "<r xml:space='preserve'> a b </r>", "<r> a <![CDATA[ b ]]> c </r>", "<r> <s/> a </r>"];
+        foreach (string xml in inputs)
+        {
+            var expected = new List<(XmlNodeType Kind, string Value, int Depth)>();
+            using (var bcl = System.Xml.XmlReader.Create(new StringReader(xml)))
+                while (bcl.Read()) expected.Add((bcl.NodeType, bcl.Value, bcl.Depth));
+            using var stream = new ChunkStream(xml, chunk); using var reader = Reader.Create(stream, cancellationToken: TestContext.Current.CancellationToken); using var adapter = new XemeleXmlReaderAdapter(reader);
+            var actual = new List<(XmlNodeType Kind, string Value, int Depth)>();
+            while (asynchronous ? await adapter.ReadAsync() : adapter.Read()) actual.Add((adapter.NodeType, adapter.Value, adapter.Depth));
+            Assert.Equal(expected, actual);
+        }
+    }
     [Fact]
     public async Task ReaderCallerIoAndCancellationPropagateWithErrorState()
     {
@@ -174,7 +191,10 @@ public sealed class AdapterTests
         var error = Assert.Throws<OperationCanceledException>(() => cancelled.Read()); Assert.Equal(cancellation.Token, error.CancellationToken); Assert.Equal(ReadState.Error, cancelled.ReadState);
     }
     private sealed class ChunkStream(string xml, int chunk) : MemoryStream(Encoding.UTF8.GetBytes(xml))
-    { public override int Read(Span<byte> buffer) => base.Read(buffer[..Math.Min(chunk, buffer.Length)]); }
+    {
+        public override int Read(Span<byte> buffer) => base.Read(buffer[..Math.Min(chunk, buffer.Length)]);
+        public override ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default) { cancellationToken.ThrowIfCancellationRequested(); return ValueTask.FromResult(Read(buffer.Span)); }
+    }
     private sealed class FailingStream(IOException failure) : MemoryStream
     { public override ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default) => ValueTask.FromException<int>(failure); }
     private sealed class BlockedStream(string xml) : MemoryStream(Encoding.UTF8.GetBytes(xml))

@@ -22,12 +22,12 @@ def bounded(seconds, reserve=0):
     if remaining <= 0:
         raise TimeoutError('Total prepared sequence deadline exceeded.')
     return min(seconds, remaining)
+environment = dict(os.environ)
+environment.update(plan['environment'])
 try:
-    initial = subprocess.run(freeze, cwd=root, timeout=bounded(plan['initial_identity_max_seconds'], 50), check=False)
+    initial = subprocess.run(freeze, cwd=root, env=environment, timeout=bounded(plan['initial_identity_max_seconds'], 50), check=False)
     status['initial_freeze'] = initial.returncode
     initial.check_returncode()
-    environment = dict(os.environ)
-    environment.update(plan['environment'])
     for run in plan['runs']:
         status['phase'] = run['name']
         result = {'phase': run['name'], 'exit_code': None}
@@ -70,7 +70,7 @@ finally:
         status['no_child'] = False
         status['cleanup_error'] = type(error).__name__
     try:
-        final = subprocess.run(freeze, cwd=root, timeout=bounded(plan['final_identity_max_seconds']), check=False)
+        final = subprocess.run(freeze, cwd=root, env=environment, timeout=bounded(plan['final_identity_max_seconds']), check=False)
         status['final_freeze'] = final.returncode
     except BaseException as error:
         status['final_freeze'] = type(error).__name__
