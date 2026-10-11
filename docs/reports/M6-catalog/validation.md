@@ -74,3 +74,14 @@ were not printed. SHLVL is explicitly stabilized. The stale prior manifest
 is retained under artifacts/M6-catalog/prepared-3afddf8.json. This report adds
 no source or binary changes; the final manifest is recaptured after its commit.
 No allocation/timing phases or inherited suite ran during these controls.
+
+## Completed exclusive evidence
+
+Prepared revision `c1c62b88a4b375a7d184934bc7691e24438d7f20` completed the
+exclusive once run after exact identity controls. All lifecycle phases passed,
+final identity matched and no children remained. Source remains `d5de679`.
+[Measurement summary](measurements.md) records inspected allocation/timing tables
+and their limitations. Planning validation passed all 162 records after updating
+only catalog evidence/status to implemented. Coordinator integration and inherited
+checks remain pending; integration_revision is null. Earlier pending statements
+above describe their preparation checkpoints.

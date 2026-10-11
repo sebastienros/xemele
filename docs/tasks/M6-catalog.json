@@ -4,7 +4,7 @@
   "milestone": "M6",
   "title": "XML catalogs and resolver composition",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M6 coordinator worker M6-catalog",
   "branch": "codex/m6-catalog",
   "base_revision": "a0267fba4ba8dce9e79717fef248c45b4b1355a9",
@@ -53,13 +53,17 @@
     {
       "id": "M6-catalog-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "iterative-graph-functional-checks",
+        "exclusive-measurements",
+        "implemented-planning-validation"
+      ]
     }
   ],
   "implementation": [
     "src/Xemele/Resolution/Catalogs/XmlCatalog.cs: XmlCatalogOptions, eager immutable XmlCatalog and transparent CatalogResolver",
-    "tests/Xemele.Tests/M6-catalog/CatalogTests.cs: 26 focused offline controls including native aggregate budget composition",
+    "tests/Xemele.Tests/M6-catalog/CatalogTests.cs: 32 focused offline controls including native aggregate budgets, deep iterative graphs and cancellation",
     "samples/M6-catalog/: public offline catalog/resolver/parser composition",
     "docs/api/M6-catalog.txt: 21 actual compiled public declarations",
     "benchmarks/Xemele.Benchmarks/M6-catalog/: prepared eight-case ShortRun NoEmit suite and boundary allocation probe",
@@ -119,20 +123,39 @@
       "result": "passed",
       "summary": "Corrected source fullclosure226source/43binary/3852runtime captured in intended elevatedcontext; exactsolecommand wrapper positive exit0 initial/final0 nochildtrue runs[]; unknownaddedenv negative exit1 initial/final1 nochildtrue runs[] expectedrejection. Completeenv digest stable underexplicitSHLVL. No allocation/timing phases run; stale3afddf8 manifest retained.",
       "artifact": "docs/reports/M6-catalog/validation.md"
+    },
+    {
+      "id": "exclusive-measurements",
+      "kind": "check",
+      "revision": "c1c62b88a4b375a7d184934bc7691e24438d7f20",
+      "command": "python3 docs/reports/M6-catalog/run_measurements.py --exclusive-grant",
+      "result": "passed",
+      "summary": "Exact once coordinator lease m6-catalog-c1c62b8, granted main d2814b2/released9b0b905. Frozen source d5de679; manifest SHA256 c0e0ee9d8a0d3b6dcff92569b55a87ec431fb6fd7214e0d2096e27560fe6ea8d. Initial/final identity and allocation/eight-case ShortRun NoEmit exit0, no children. Actual .NET10.0.11 Arm64; five borrowed domains each16batches/65536operations allocated0B; positive control1048B. Owned/cold/retained domains separate. Raw inspected after release and coordinator independently confirmed. Timing informational and baseline narrow; retained measurement wholeheap inclusive.",
+      "artifact": "docs/reports/M6-catalog/measurements.md"
+    },
+    {
+      "id": "implemented-planning-validation",
+      "kind": "check",
+      "revision": "c1c62b88a4b375a7d184934bc7691e24438d7f20",
+      "command": "python3 -B tools/planning/tasks.py validate",
+      "result": "passed",
+      "summary": "Validated162taskrecords after owned implemented evidence update; schema,evidence,acyclicdependencies,additive milestones andorderedownership passed. Runtime source unchanged from d5de679.",
+      "artifact": "docs/reports/M6-catalog/measurements.md"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Corrected explicit-frame native-budget source and functional checks complete; intended elevatedcontext identity controls passed. Await exclusive allocation/timing lease; task remainsin_progress/A3pending.",
+    "summary": "Implemented immutable eager OASIS1.0 catalog graph, native aggregate budgets, iterative loading/lookup and transparent resolver composition. Final source d5de679 approved; prepared c1c62b8 exact leased measurements passed. Integration revision remains null.",
     "checks": [
-      "Four fresh pinned forced Release builds passed;32 focusedtests actual.NET10.0.11.",
-      "Public offline sample,972memberAPIunion and8caseShortRunNoEmit discovery passed.",
-      "Prior exactwrapperidentity positive/unknownenvnegative controls passed.",
-      "Corrected226source/43binary/3852runtime elevatedfullclosure and exactwrapper positive/unknownenvnegative controls passed; no measuredphases."
+      "Four fresh pinned forced Release builds;32 focused tests on actual.NET10.0.11.",
+      "Public offline sample;972memberAPIunion=951inherited+21catalog;8ShortRunNoEmit cases.",
+      "Complete closure exact wrapper positive and unknown-env negative controls passed.",
+      "Exclusive once allocation/8case timing completed with final identity unchanged and no children; five borrowed domains each65536operations/0B, positive1048B; raw inspected and preserved.",
+      "Planning validation:162 records passed."
     ],
     "remaining": [
-      "Exclusive allocation/timing lease and inherited milestone verification not run;A3pending.",
-      "Final manifest will be recaptured after this truthful evidencecommit without source/binarychanges."
+      "Coordinator integration and combined inherited checks; no integrated/verified claim.",
+      "Ignored raw artifacts preserved in artifacts/M6-catalog/ for coordinator review/cleanup."
     ],
     "requests": []
   }
