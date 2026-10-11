@@ -35,6 +35,7 @@ public sealed partial class XmlReader : IDisposable
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 if (completed) return false;
+                pump.SetAsyncResources(false);
                 while (true)
                 {
                     switch (pump.Advance(current, cancellationToken))
