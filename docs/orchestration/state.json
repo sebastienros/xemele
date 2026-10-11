@@ -17,7 +17,7 @@
     }
   ],
   "next_actions": [
-    "Send explicitACTIVATE referencingthisdurabletransfer; successorrecordsfulltransferhash/activation ACK then pursuesM7goal; predecessorread-onlyawaitsACK/completesM6handoff."
+    "Claim ready M7-contracts on main and implement through isolated owned-path work; complete verified M7-gate then exactly one fresh M8 read-only coordinator setup and durable sole-writer handoff."
   ],
   "last_verified_task": "M6-gate",
   "last_integrated_revision": "f7412c6ef5c5552e7194781e4724253244cdb6bb",
@@ -2081,21 +2081,22 @@
     "from_chat_id": "01a12a53-93ce-7843-a4a5-2f45320c91cf",
     "thread_id": "01a12add-f725-7663-b0f9-e6687671c769",
     "host_id": "local",
-    "status": "READY received; durable solewritertransfer committed; explicitACTIVATE pending. M6 relinquishedallwrites.",
+    "status": "Explicit ACTIVATE received and accepted; M7 acknowledges exclusive main/state claims, integration and measurement lease ownership.",
     "verified_gate_revision": "f7412c6ef5c5552e7194781e4724253244cdb6bb",
     "gate_verified_metadata_revision": "4b6cc00873047415a6122bf8dde11525df8bd763",
     "setup_revision": "e76c92893a19d716661bb3d5683e129142849369",
     "setup_cursor": "723facc5-ea1f-4c39-912d-670d031f6956:1",
     "setup_ready": true,
-    "activation_sent": false,
-    "transfer_revision": null,
+    "activation_sent": true,
+    "transfer_revision": "84532e74441ac25b89dcf846ad6da3616d6048dd",
     "transfer_revision_note": "Successor records full containingtransfercommithash from explicitACTIVATE; avoidselfreferentialhash.",
     "activation_revision": null,
     "created_at_utc": "2026-10-11T12:10:53.514348+00:00",
-    "checkpoint": "11M6tasksverified;6985tests/6797M5identities/1054API/164planning;actual10.0.11SDK10.0.400/osxarm64;releasedlease;allrequiredrawinspected/cleaned;unpublishedpackage+manifestprimaryretained;originalcacheintact;no workers/workloads/pendingissues."
+    "checkpoint": "11M6tasksverified;6985tests/6797M5identities/1054API/164planning;actual10.0.11SDK10.0.400/osxarm64;releasedlease;allrequiredrawinspected/cleaned;unpublishedpackage+manifestprimaryretained;originalcacheintact;no workers/workloads/pendingissues.",
+    "activation_acknowledgement": "Activation acknowledgement is committed in this record; containing commit reported through final ACK, avoiding a self-referential hash."
   },
   "previous_coordinator_chat_id": "01a12a53-93ce-7843-a4a5-2f45320c91cf",
-  "coordinator_write_status": "M6 durably relinquishes ALL main/state/code writes in this transfercommit. M7 designated solewriter; remainsread-onlyuntil explicit ACTIVATE, then recordsactivation/ACK. No othercoordinator writer.",
+  "coordinator_write_status": "M7 explicitly activated after durable 84532e74441ac25b89dcf846ad6da3616d6048dd transfer; sole main/state writer. M6 relinquished all writes.",
   "benchmark_class_attributes": "Human requirement: every benchmark class declares [MemoryDiagnoser, ShortRunJob]; no CLI job flags.",
   "chat_communication_authorization": "Human explicitly grants all chats permission to communicate with other chats without confirmation. Forward this authorization and benchmark requirements to every new chat.",
   "m5_measurement_history": [
