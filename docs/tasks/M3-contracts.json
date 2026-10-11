@@ -4,7 +4,7 @@
   "milestone": "M3",
   "title": "Freeze public streaming and writer contracts",
   "kind": "contract",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M3 coordinator 01a1284a-8826-7fc2-af44-74552db608f2 / contracts worker",
   "branch": "codex/m3-contracts",
   "base_revision": "b0b5bcf3e83947117fe5b900e6c5ba3d68e8b6ab",
@@ -33,20 +33,30 @@
     {
       "id": "M3-contracts-A1",
       "description": "Expand all callback views/delegates/interfaces, reader tokens, push transitions, async pump and writer shapes; settle all lexical/DTD notifications.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "m3-contract-fixtures",
+        "m3-planning"
+      ]
     },
     {
       "id": "M3-contracts-A2",
       "description": "Compile minimal lambda and subclass consumers plus adapter fakes; verify ref-struct/async lifetime feasibility.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "m3-contract-fixtures"
+      ]
     },
     {
       "id": "M3-contracts-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "m3-contract-fixtures",
+        "m3-product-build",
+        "m3-earlier-input-identity",
+        "m3-planning"
+      ]
     }
   ],
   "implementation": [
@@ -59,16 +69,71 @@
     "docs/decisions/M3/streaming-writer.md: decisions and exact owning repair boundaries",
     "docs/reports/M3-contracts/check.py: independent builds and required compiler-negative lifetime probes"
   ],
-  "evidence": [],
+  "evidence": [
+    {
+      "id": "m3-contract-fixtures",
+      "kind": "check",
+      "revision": "626f1fc9da456ef838c643ec96511d5c58044d41",
+      "command": "python3 docs/reports/M3-contracts/check.py",
+      "result": "passed",
+      "summary": "Independent Sync/Async consumers and actual-M2 DOM partial composition pass; sixteen callback signatures, lambda/subclass/tag/pause/EOF/exception identity and populated nullable notation/known entity provenance checks pass. Async owner/offset and suspended-resource fakes pass. Negative projects reject only with expected CS4007/CS8345; validator passes.",
+      "artifact": "docs/reports/M3-contracts/contract-check.txt"
+    },
+    {
+      "id": "m3-product-build",
+      "kind": "check",
+      "revision": "626f1fc9da456ef838c643ec96511d5c58044d41",
+      "command": "dotnet build src/Xemele/Xemele.csproj -c Release --no-restore",
+      "result": "passed",
+      "summary": "Actual product Release build passes with 0 warnings and 0 errors.",
+      "artifact": "docs/reports/M3-contracts/verification.md"
+    },
+    {
+      "id": "m3-earlier-input-identity",
+      "kind": "check",
+      "revision": "626f1fc9da456ef838c643ec96511d5c58044d41",
+      "command": "git diff --exit-code b0b5bcf3e83947117fe5b900e6c5ba3d68e8b6ab HEAD -- src Directory.Build.props Directory.Packages.props global.json tests/Xemele.Tests tests/Xemele.Conformance.Tests tests/Xemele.Differential.Tests tests/Xemele.TestUtilities tests/Contracts/Contracts.csproj",
+      "result": "passed",
+      "summary": "Exit 0/no diff: runtime/config/earlier test inputs unchanged from verified integrated base; verified M2-gate revision 276a0bdaf6433bbda8958b068955de85c3b75a3a remains ancestor. Historical gate passes retained, not newly executed.",
+      "artifact": "docs/reports/M3-contracts/verification.md"
+    },
+    {
+      "id": "m3-planning",
+      "kind": "check",
+      "revision": "626f1fc9da456ef838c643ec96511d5c58044d41",
+      "command": "python3 tools/planning/tasks.py validate",
+      "result": "passed",
+      "summary": "Validated 138 tasks: schema, evidence, acyclic dependencies, additive milestones and ordered ownership; git diff --check also clean.",
+      "artifact": "docs/reports/M3-contracts/verification.md"
+    },
+    {
+      "id": "m3-test-restore-interrupted",
+      "kind": "check",
+      "revision": "626f1fc9da456ef838c643ec96511d5c58044d41",
+      "command": "dotnet restore tests/Xemele.Tests/Xemele.Tests.csproj --source /private/tmp/m3-contracts-empty-feed -p:NuGetAudit=false --disable-parallel --verbosity normal",
+      "result": "skipped",
+      "summary": "Restore stalled during path collection; cancelled/terminated exact worker processes. No earlier-runtime tests executed or passing test claim. Coordinator accepted unchanged-input preservation plus actual product/contract builds. Earlier default/cache-source attempts also stalled.",
+      "artifact": "docs/reports/M3-contracts/verification.md"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "",
-    "checks": [],
-    "remaining": [],
+    "summary": "Frozen complete M3 SAX/views/delegates, reader/push/recovery, effective lexical/DTD projection, internal pause/resource pump and forward/async writer/DOM shapes. Independent compiled consumer and ref-struct lifetime proofs pass at 626f1fc. No runtime stubs or source/config changes; owning repairs/pump remain future implementation prerequisites.",
+    "checks": [
+      "python3 docs/reports/M3-contracts/check.py: passed Sync/Async fakes, DOM composition, populated notation/entity provenance, exact CS4007/CS8345 rejection and validator; retained output docs/reports/M3-contracts/contract-check.txt",
+      "dotnet build src/Xemele/Xemele.csproj -c Release --no-restore: passed 0 warnings/errors",
+      "git diff --exit-code integrated base -- runtime/config/earlier tests: passed; retained verified M2-gate ancestor/input evidence, no new gate run",
+      "python3 tools/planning/tasks.py validate: passed 138 records; git diff --check: passed",
+      "Earlier-runtime test restore: stalled, cancellation/termination recorded; no test run or pass claimed"
+    ],
+    "remaining": [
+      "Coordinator integration and integrated verification; integration_revision deliberately unset.",
+      "Runtime acceptance (chunk splits, actual quotas/async resource behavior/1 GiB/performance) belongs feature owners; fixture fake checks do not establish it."
+    ],
     "requests": [
       "M3-attribute-metadata: propagate explicit IsDefaulted through internal complete attribute views/core default insertion/delivery; exact paths and compatibility requirements in docs/decisions/M3/streaming-writer.md. Required before callbacks/reader runtime acceptance.",
       "M3-async-resources: optional async resource mode with NeedResource/AdvanceResourceAsync, retained source/DTD/entity cursors, real M2 OpenAsync/ReadAsync and async cleanup; exact paths and invariants in docs/decisions/M3/streaming-writer.md. Required before async external-resource acceptance.",
-      "Create explicit M3-streaming-pump task owning src/Xemele/Streaming/Core/, focused tests and reports after callbacks/metadata/async-resource repair; SAX/push/reader depend on its integrated common decoding, tag/DTD aggregation and one-token pause pump. Details in docs/decisions/M3/streaming-writer.md. No peer-core edits or duplicate parsers."
+      "M3-streaming-pump (now created by coordinator): integrate and verify one owner of src/Xemele/Streaming/Core/ and focused tests/reports after callbacks/metadata/async-resource repair; SAX/push/reader consume common decoding, tag/DTD aggregation and one-token pause pump. Details in docs/decisions/M3/streaming-writer.md. No peer-core edits or duplicate parsers."
     ]
   }
 }

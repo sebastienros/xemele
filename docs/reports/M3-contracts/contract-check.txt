@@ -1,0 +1,81 @@
+Tested implementation revision: 626f1fc9da456ef838c643ec96511d5c58044d41
+
+$ dotnet restore docs/reports/M3-contracts/Sync/Sync.csproj --ignore-failed-sources -p:NuGetAudit=false
+  Determining projects to restore...
+CSSM_ModuleLoad(): One or more parameters passed to a function were not valid.
+  All projects are up-to-date for restore.
+
+exit=0
+$ dotnet run --project docs/reports/M3-contracts/Sync/Sync.csproj -c Release --no-restore
+PASS: lambda/subclass, tag aggregation, views, exception identity, one-event pause/resume, EOF (fixture fakes only)
+
+exit=0
+$ dotnet restore docs/reports/M3-contracts/Async/Async.csproj --ignore-failed-sources -p:NuGetAudit=false
+  Determining projects to restore...
+CSSM_ModuleLoad(): One or more parameters passed to a function were not valid.
+  All projects are up-to-date for restore.
+
+exit=0
+$ dotnet run --project docs/reports/M3-contracts/Async/Async.csproj -c Release --no-restore
+PASS: lambda/subclass, tag aggregation, views, exception identity, one-event pause/resume, EOF (fixture fakes only)
+PASS: async memory/offset pump and resolver-suspension lifetime proof (fake only)
+
+exit=0
+$ dotnet restore docs/reports/M3-contracts/Dom/Dom.csproj --ignore-failed-sources -p:NuGetAudit=false
+  Determining projects to restore...
+CSSM_ModuleLoad(): One or more parameters passed to a function were not valid.
+  All projects are up-to-date for restore.
+
+exit=0
+$ dotnet build docs/reports/M3-contracts/Dom/Dom.csproj -c Release --no-restore
+  Dom -> /Users/sebastienros/.codex/worktrees/1164/xemele/docs/reports/M3-contracts/Dom/bin/Release/net10.0/M3DomShape.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:21.11
+
+exit=0
+$ dotnet restore docs/reports/M3-contracts/InvalidLifetime/InvalidLifetime.csproj --ignore-failed-sources -p:NuGetAudit=false
+  Determining projects to restore...
+CSSM_ModuleLoad(): One or more parameters passed to a function were not valid.
+  All projects are up-to-date for restore.
+
+exit=0
+$ dotnet build docs/reports/M3-contracts/InvalidLifetime/InvalidLifetime.csproj -c Release --no-restore
+  Xemele -> /Users/sebastienros/.codex/worktrees/1164/xemele/src/Xemele/bin/Release/net10.0/Xemele.dll
+/Users/sebastienros/.codex/worktrees/1164/xemele/tests/Contracts/Fixtures/M3/InvalidLifetime.cs.fixture(8,27): error CS4007: Instance of type 'System.ReadOnlySpan<char>' cannot be preserved across 'await' or 'yield' boundary. [/Users/sebastienros/.codex/worktrees/1164/xemele/docs/reports/M3-contracts/InvalidLifetime/InvalidLifetime.csproj]
+
+Build FAILED.
+
+/Users/sebastienros/.codex/worktrees/1164/xemele/tests/Contracts/Fixtures/M3/InvalidLifetime.cs.fixture(8,27): error CS4007: Instance of type 'System.ReadOnlySpan<char>' cannot be preserved across 'await' or 'yield' boundary. [/Users/sebastienros/.codex/worktrees/1164/xemele/docs/reports/M3-contracts/InvalidLifetime/InvalidLifetime.csproj]
+    0 Warning(s)
+    1 Error(s)
+
+Time Elapsed 00:00:20.95
+
+exit=1
+$ dotnet restore docs/reports/M3-contracts/InvalidStorage/InvalidStorage.csproj --ignore-failed-sources -p:NuGetAudit=false
+  Determining projects to restore...
+CSSM_ModuleLoad(): One or more parameters passed to a function were not valid.
+  All projects are up-to-date for restore.
+
+exit=0
+$ dotnet build docs/reports/M3-contracts/InvalidStorage/InvalidStorage.csproj -c Release --no-restore
+  Xemele -> /Users/sebastienros/.codex/worktrees/1164/xemele/src/Xemele/bin/Release/net10.0/Xemele.dll
+/Users/sebastienros/.codex/worktrees/1164/xemele/tests/Contracts/Fixtures/M3/InvalidStorage.cs.fixture(4,12): error CS8345: Field or auto-implemented property cannot be of type 'XmlStartElement' unless it is an instance member of a ref struct. [/Users/sebastienros/.codex/worktrees/1164/xemele/docs/reports/M3-contracts/InvalidStorage/InvalidStorage.csproj]
+
+Build FAILED.
+
+/Users/sebastienros/.codex/worktrees/1164/xemele/tests/Contracts/Fixtures/M3/InvalidStorage.cs.fixture(4,12): error CS8345: Field or auto-implemented property cannot be of type 'XmlStartElement' unless it is an instance member of a ref struct. [/Users/sebastienros/.codex/worktrees/1164/xemele/docs/reports/M3-contracts/InvalidStorage/InvalidStorage.csproj]
+    0 Warning(s)
+    1 Error(s)
+
+Time Elapsed 00:00:20.87
+
+exit=1
+$ python3 tools/planning/tasks.py validate
+Validated 138 tasks: schema, evidence, acyclic dependencies, additive milestones, and ordered ownership.
+
+exit=0
