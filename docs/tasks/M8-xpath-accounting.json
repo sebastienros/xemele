@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "id": "M8-xpath-accounting",
+  "milestone": "M8",
+  "title": "Expose internal XPath operation accounting for schema composition",
+  "kind": "feature",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "depends_on": [
+    "M8-contracts",
+    "M4-evaluate"
+  ],
+  "goals": [
+    "G06",
+    "G15",
+    "G16"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/schemas.md"
+  ],
+  "owns": [
+    "src/Xemele/XPath/XPathExpression.cs",
+    "src/Xemele/XPath/XPathEvaluationAccounting.cs",
+    "tests/Xemele.Tests/M8-xpath-accounting/",
+    "benchmarks/Xemele.Benchmarks/M8-xpath-accounting/",
+    "docs/reports/M8-xpath-accounting/"
+  ],
+  "api_or_output": "Frozen internal XmlNode/XPathItem XPathEvaluationAccounting overloads and minimal XPathExpression bridge; public XPath API unchanged",
+  "acceptance": [
+    {
+      "id": "M8-xpath-accounting-A1",
+      "description": "Implement the exact frozen internal accounting join using the existing XPath compiler/evaluator; preserve public API and behavior, and report actual charged operations on success and failure with no private reflection or duplicated evaluator.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M8-xpath-accounting-A2",
+      "description": "Test both context forms, actual accounting in finally, option/cancellation/error propagation, independent runs and exact shared-budget boundaries across several expressions using a capped remaining allowance. Earlier public XPath correctness must remain intact.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M8-xpath-accounting-A3",
+      "description": "Run focused accounting and affected XPath regressions, confirm unchanged public API, and record applicable owned-evaluation allocation parity/evidence under a prepared bounded lease. Reuse valid unchanged primitive evidence; no zero-allocation claim for owned query results or snapshot setup. Record checks at actual tested revisions.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}
