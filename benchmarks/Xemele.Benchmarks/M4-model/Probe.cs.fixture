@@ -1,0 +1,90 @@
+using System.Globalization;
+using System.Runtime.InteropServices;
+using System.Security.Cryptography;
+using System.Text.Json;
+using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Configs;
+using BenchmarkDotNet.Running;
+using Xemele;
+using Xemele.XPath;
+using Xemele.XPath.Internal;
+if (args is ["--benchmark", var artifacts])
+{
+    BenchmarkSwitcher.FromTypes([typeof(ConversionBenchmarks), typeof(IdentityBenchmarks), typeof(OwnedBenchmarks)])
+        .Run(["--filter", "*", "--artifacts", artifacts]); return;
+}
+if (args is not [var mode, var output] || mode is not ("--control" or "--allocation")) throw new ArgumentException("Use --control|--allocation <output> or --benchmark <artifacts>.");
+bool measure = mode == "--allocation";
+long coldStart = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+var fixture = new ModelFixture();
+long cold = measure ? GC.GetAllocatedBytesForCurrentThread() - coldStart : 0;
+for (int i=0;i<256;i++) fixture.Primitive();
+long start = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+double consumed = 0; for (int i=0;i<65536;i++) consumed += fixture.Primitive();
+long primitive = measure ? GC.GetAllocatedBytesForCurrentThread()-start : 0;
+start = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+object positive = new byte[1024]; GC.KeepAlive(positive);
+long positiveBytes = measure ? GC.GetAllocatedBytesForCurrentThread()-start : 0;
+for(int i=0;i<16;i++) { fixture.Construct(); fixture.Format(); }
+start = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+for(int i=0;i<256;i++) GC.KeepAlive(fixture.Construct());
+long ownedSets = measure ? GC.GetAllocatedBytesForCurrentThread()-start : 0;
+start = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+for(int i=0;i<256;i++) GC.KeepAlive(fixture.Format());
+long ownedStrings = measure ? GC.GetAllocatedBytesForCurrentThread()-start : 0;
+fixture.Controls();
+if (consumed != 65536 * 47.5) throw new InvalidOperationException("Consumed result mismatch.");
+if(measure && (primitive != 0 || positiveBytes <= 0 || ownedSets <= 0 || ownedStrings <= 0)) throw new InvalidOperationException($"Allocation control failed: {primitive}/{positiveBytes}/{ownedSets}/{ownedStrings}.");
+File.WriteAllText(output, JsonSerializer.Serialize(new { mode, runtime=RuntimeInformation.FrameworkDescription, architecture=RuntimeInformation.ProcessArchitecture.ToString(), os=RuntimeInformation.OSDescription,
+    revision=Environment.GetEnvironmentVariable("XEMELE_MODEL_REVISION"), assemblySha256=Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(typeof(XPathValue).Assembly.Location))),
+    warmups=256, operations=65536, primitiveBytes=primitive, positiveBytes, coldSetupBytes=cold, ownedOperations=256, ownedSetBytes=ownedSets, ownedStringBytes=ownedStrings, consumed },new JsonSerializerOptions{WriteIndented=true}));
+Console.WriteLine($"{mode} complete: consumed={consumed}");
+internal sealed class ModelFixture
+{
+    private readonly XmlNode root;
+    private readonly XPathItem item, same;
+    private readonly XPathValue number=XPathValue.FromString(" \t-12.5\n"), boolean=XPathValue.FromBoolean(true), unicode=XPathValue.FromString("根😀"), invalid=XPathValue.FromString("+1"), nan=XPathValue.FromNumber(double.NaN);
+    private readonly XPathBudget budget=new(new(){MaxOperations=null},default,default);
+    internal ModelFixture()
+    {
+        var d=new XmlDocument(); root=d.CreateElement("r"); d.DocumentNode.AppendChild(root); root.AppendChild(d.CreateText("42")); root.SetNamespaceDeclaration("p","urn:p"); root.SetAttribute("a","v");
+        item=XPathItem.FromNode(root); same=XPathItem.FromNode(root);
+    }
+    internal double Primitive()
+    {
+        budget.ChargeOperations(1);
+        return number.AsNumber()+boolean.AsNumber()+(unicode.AsBoolean()?1:0)+(double.IsNaN(invalid.AsNumber())?1:0)+(nan.AsBoolean()?0:1)+
+            (item.Equals(same)?1:0)+(item.GetHashCode()==same.GetHashCode()?1:0)+(item.StringValue.Length==2?1:0)+XPathConversions.ParseNumber("42")+11;
+    }
+    internal XPathValue Construct()=>XPathValue.FromNodeSet([XPathItem.FromNode(root),XPathItem.FromAttribute(root.Attributes[0]),XPathItem.FromNamespace(root,"p"),XPathItem.FromNode(root.FirstChild)]);
+    internal string Format()=>XPathValue.FromNumber(double.Epsilon).AsString();
+    internal void Controls()
+    {
+        foreach(string input in new[]{"42"," \t-12.5\n",".5","+1","1e3","根😀","1\u00a0"})
+        { double borrowed=XPathConversions.ParseNumber(input.AsSpan()), materialized=XPathConversions.ParseNumber(new string(input.AsSpan())); if (!(double.IsNaN(borrowed)&&double.IsNaN(materialized)) && borrowed!=materialized) throw new InvalidOperationException("Conversion baseline mismatch."); }
+        if(item != same || item.Node!.Value != same.Node!.Value || Construct().AsNodeSet().Count!=4 || Format().Contains('E')) throw new InvalidOperationException("Identity/ownership control failed.");
+    }
+}
+[MemoryDiagnoser, ShortRunJob]
+public class ConversionBenchmarks
+{
+    [Params("42", " \t-12.5\n", "+1根😀")] public string Input { get; set; } = "";
+    [Benchmark(Baseline=true)] public double Materialized()=>XPathConversions.ParseNumber(new string(Input.AsSpan()));
+    [Benchmark] public double Borrowed()=>XPathConversions.ParseNumber(Input.AsSpan());
+}
+[MemoryDiagnoser, ShortRunJob]
+public class IdentityBenchmarks
+{
+    private XPathItem item, same; private XmlNode node;
+    [GlobalSetup] public void Setup(){var d=new XmlDocument();node=d.CreateElement("r");d.DocumentNode.AppendChild(node);item=XPathItem.FromNode(node);same=XPathItem.FromNode(node);}
+    [Benchmark(Baseline=true)] public bool TreeHandle()=>node.Equals(same.Node!.Value);
+    [Benchmark] public bool LogicalItem()=>item.Equals(same);
+}
+[MemoryDiagnoser, ShortRunJob]
+public class OwnedBenchmarks
+{
+    private ModelFixture fixture=null!;
+    [GlobalSetup] public void Setup()=>fixture=new();
+    [Benchmark] public XPathValue NodeSet()=>fixture.Construct();
+    [Benchmark] public string NumberString()=>fixture.Format();
+}
