@@ -208,14 +208,49 @@ public sealed class NumericTests
         var shortComponents = Operation(components: counter.Components); shortComponents.ChargeComponents(1, default);
         Assert.False(Provider.TryParse(DatatypeTypes.All[type], lexical, Context, shortComponents, out value, out error)); Assert.Null(value); Assert.Same(DatatypeErrors.Stopped, error);
     }
+    [Theory]
+    [InlineData("123.40", "decimal", 13, 2)][InlineData("123", "integer", 8, 2)]
+    [InlineData("255", "unsignedByte", 11, 2)][InlineData("-0.000", "decimal", 8, 1)]
+    [InlineData("NaN", "float", 8, 1)][InlineData("1", "float", 15, 1)]
+    public void IndependentlySpecifiedLexicalConversionAndGrowthCosts(string lexical, string type, long work, int components)
+    {
+        var counter = new CountingOperation(); Parse(lexical, type, counter);
+        Assert.Equal(work, counter.Work); Assert.Equal(components, counter.Components);
+        var exact = Operation(work, components); Parse(lexical, type, exact); Assert.Equal(0, exact.RemainingWork);
+        var shortWork = Operation(work - 1, components);
+        Assert.False(Provider.TryParse(DatatypeTypes.All[type], lexical, Context, shortWork, out var value, out var error));
+        Assert.Null(value); Assert.Same(DatatypeErrors.Stopped, error);
+    }
+    [Theory]
+    [InlineData("float")][InlineData("double")]
+    public void ExponentDisplacementZeroAndCancellationDuringEveryConversionPhase(string type)
+    {
+        var op = Operation();
+        var one = Parse("1", type);
+        Assert.True(DatatypeValues.ValueEquals(one, Parse("0." + new string('0', 8192) + "1e8193", type), op));
+        Assert.True(DatatypeValues.ValueEquals(one, Parse("1" + new string('0', 8192) + "e-8192", type), op));
+        Assert.True(DatatypeValues.ValueEquals(one, Parse(new string('0', 8192) + "1.0", type), op));
+        Assert.Equal(long.MinValue, BitConverter.DoubleToInt64Bits(((NumericDatatypeProvider.FloatingValue)Parse("-0e" + new string('9', 8192), type)).Number));
+        // One digit of lexical + digit-conversion work per step, with explicit
+        // stops in exponent scanning and bounded scratch serialization.
+        foreach (var pair in new[] { ("1e" + new string('1', 8192), 100L), ("1." + new string('1', 2000), 4300L) })
+        {
+            using var cancellation = new CancellationTokenSource();
+            var stopping = new CountingOperation { Token = cancellation.Token, Callback = n => { if (n >= pair.Item2) cancellation.Cancel(); } };
+            Assert.Throws<OperationCanceledException>(() => Parse(pair.Item1, type, stopping));
+            var shortWork = Operation(pair.Item2);
+            Assert.False(Provider.TryParse(DatatypeTypes.All[type], pair.Item1, Context, shortWork, out var value, out var error));
+            Assert.Null(value); Assert.Same(DatatypeErrors.Stopped, error);
+        }
+    }
     [Fact]
     public void ComparisonHashBudgetCancellationAndCallerExceptions()
     {
         var a = Parse(new string('1', 500)); var b = Parse(new string('1', 499) + "2");
-        var counter = new CountingOperation(); Assert.Equal(XmlValueOrder.Less, DatatypeValues.Compare(a, b, counter));
+        var counter = new CountingOperation(); Assert.Equal(XmlValueOrder.Less, DatatypeValues.Compare(a, b, counter)); Assert.Equal(502, counter.Work);
         Assert.Equal(XmlValueOrder.Less, DatatypeValues.Compare(a, b, Operation(counter.Work)));
         Assert.Throws<SchemaCompileException>(() => DatatypeValues.Compare(a, b, Operation(counter.Work - 1)));
-        counter = new(); DatatypeValues.ValueHashCode(a, counter);
+        counter = new(); DatatypeValues.ValueHashCode(a, counter); Assert.Equal(502, counter.Work);
         DatatypeValues.ValueHashCode(a, Operation(counter.Work)); Assert.Throws<SchemaCompileException>(() => DatatypeValues.ValueHashCode(a, Operation(counter.Work - 1)));
         using var canceled = new CancellationTokenSource(); canceled.Cancel();
         Assert.Throws<OperationCanceledException>(() => Parse("", operation: OperationWithToken(canceled.Token)));
