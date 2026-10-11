@@ -38,6 +38,7 @@ internal sealed partial class DomSink : IXmlEventSink
     public bool StartDocument(XmlLocation location) => true;
     public bool Declaration(XmlDeclarationView declaration)
     {
+        Document.SetValidationDeclaration(declaration.Standalone, declaration.Location);
         if (decoder is null) return true;
         DeclarationValidated = true;
         Diagnostic = decoder.ValidateDeclaration(declaration.EncodingName, declaration.Location);
