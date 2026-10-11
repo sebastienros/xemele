@@ -4,11 +4,11 @@
   "milestone": "M3",
   "title": "Suspend core external resource work for genuine async I/O",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M3 coordinator 01a1284a-8826-7fc2-af44-74552db608f2 / M3-async-resources worker",
   "branch": "codex/m3-async-resources",
   "base_revision": "3926d127e772b0f085fca30fe86fc26c83c10ad4",
-  "integration_revision": null,
+  "integration_revision": "013796bf8f6e1d87db91bd758fe495448c74aa13",
   "depends_on": [
     "M3-attribute-metadata",
     "M3-async-token-binding"
@@ -41,7 +41,9 @@
       "status": "passed",
       "evidence": [
         "release-build",
-        "async-correctness"
+        "async-correctness",
+        "combined-integration",
+        "independent-core-review"
       ]
     },
     {
@@ -50,7 +52,9 @@
       "status": "passed",
       "evidence": [
         "async-correctness",
-        "probe-quota-control"
+        "probe-quota-control",
+        "combined-integration",
+        "independent-core-review"
       ]
     },
     {
@@ -63,7 +67,9 @@
         "process-wide-allocations",
         "resource-bdn",
         "planning-validator",
-        "diff-check"
+        "diff-check",
+        "combined-integration",
+        "independent-core-review"
       ]
     }
   ],
@@ -185,17 +191,34 @@
       "result": "passed",
       "summary": "No whitespace errors.",
       "artifact": null
+    },
+    {
+      "id": "combined-integration",
+      "kind": "integration",
+      "revision": "013796bf8f6e1d87db91bd758fe495448c74aa13",
+      "command": "Pinned Release test build --no-restore --disable-build-servers -m:1 -p:BuildInParallel=false -p:UseSharedCompilation=false; tests DLL -namespace Xemele.Tests.AsyncResources -namespace Xemele.Tests.Resolution -namespace Xemele.Tests.Entities -parallelMode none -showLiveOutput -noColor -result-xml /private/tmp/m3-async-resources-integrated.xml; official tools/ApiBaseline/compare.py; python3 tools/planning/tasks.py validate",
+      "result": "passed",
+      "summary": "Integrated with verified writer/callbacks/default metadata/async binder: build0 warnings/errors,169 selected tests pass0 failed/skipped; official inventory+compiled API639 matched;142 task records valid. Final worker handoff merge changes reports/task metadata only, product/test closure unchanged. Preserve worker29async/292affected/3141DTD-framing and valid exclusive allocation/6caseBDN evidence; no duplicate measurements.",
+      "artifact": "docs/reports/M3-async-resources/integration-tests.xml"
+    },
+    {
+      "id": "independent-core-review",
+      "kind": "review",
+      "revision": "27e7deda70b34dbcd08f4bf1daab118501cbc0f2",
+      "command": null,
+      "result": "passed",
+      "summary": "Read-only review_core_async_boundary found no concrete blocking A1/A2 source defects. NeedResource exact consumed/pending no-replay, retained DTD/PE/general owners, async-only framing/refill/EOF disposal, shared quota/cycle/session token rebinding/gate across awaits and cleanup assessed. A3 real process-wide evidence passed afterward. Future async pump must await DisposeAsync after Append exceptions preserving primary identity.",
+      "artifact": null
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Optional core async resource mode suspends before external open/frame/refill/EOF cleanup; preserves DTD/PE/general owner cursors and primary consumed counts, sync mode and callback pause semantics. Uses verified genuine async binding/session APIs; implementation/test27e7ded, final probe216e28d.",
+    "summary": "Optional core async resource mode suspends before external open/frame/refill/EOF cleanup; preserves DTD/PE/general owner cursors and primary consumed counts, sync mode and callback pause semantics. Uses verified genuine async binding/session APIs; implementation/test27e7ded, final probe216e28d. Verified combined integration at 013796bf8f6e1d87db91bd758fe495448c74aa13.",
     "checks": [
       "Release builds0warnings/errors; async29passed; affected sync292passed; DTD/framing3141passed; validator142tasks.",
       "Exclusive process-wide probe: buffered primitive0B/positive1048B; owned immediate/suspended allocations separate; BDN6cases exit0. Original quota harness failure retained with differential control proof."
     ],
     "remaining": [
-      "Coordinator integration/verification; integration_revision remains null.",
       "Future async pump must await core DisposeAsync after synchronous Append callback/cancellation exceptions before propagating; documented owner protocol.",
       "Performance results provisional Arm64 single host; broader/cross-architecture release confirmation remains later performance work."
     ],
