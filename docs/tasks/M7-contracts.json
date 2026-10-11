@@ -4,11 +4,11 @@
   "milestone": "M7",
   "title": "Freeze HTML and CSS contracts",
   "kind": "contract",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M7 coordinator /root/contracts",
   "branch": "codex/m7-contracts",
   "base_revision": "e1fcc99ebd921637fe2c10e3966864bd6840aab8",
-  "integration_revision": null,
+  "integration_revision": "d0792dc31ae93b1918fc9437e98b862db3dde191",
   "depends_on": [
     "M3-gate"
   ],
@@ -37,7 +37,8 @@
         "contract-review",
         "contract-checks",
         "validation",
-        "ownership-base-checks"
+        "ownership-base-checks",
+        "integrated-contract-checks"
       ]
     },
     {
@@ -48,7 +49,8 @@
         "contract-review",
         "contract-checks",
         "validation",
-        "ownership-base-checks"
+        "ownership-base-checks",
+        "integrated-contract-checks"
       ]
     },
     {
@@ -59,7 +61,8 @@
         "contract-review",
         "contract-checks",
         "validation",
-        "ownership-base-checks"
+        "ownership-base-checks",
+        "integrated-contract-checks"
       ]
     }
   ],
@@ -104,6 +107,15 @@
       "result": "passed",
       "summary": "Bounded harness repair: optional --ownership-base defaults to original claim; owned predicate unchanged. All three consumers/probes, 173/116/131 API baselines and three rejecting controls passed; 164 records valid and diff clean.",
       "artifact": "docs/reports/M7-contracts/README.md"
+    },
+    {
+      "id": "integrated-contract-checks",
+      "kind": "integration",
+      "revision": "d0792dc31ae93b1918fc9437e98b862db3dde191",
+      "command": "python3 tests/Contracts/Fixtures/M7/check.py --ownership-base 2d479984a23ff00a40177dda997d1b24db5f906a --dotnet '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet'; python3 tools/planning/tasks.py validate; git diff --check",
+      "result": "passed",
+      "summary": "Root isolated integrated check passed: three independent consumers and real XML preservation runtime10.0.11/SDK10.0.400;173/116/131 exact APIs, three rejecting controls, owned combined diff,164 valid tasks. Independent source review approved854f3cc; later repair only explicit ownership-base parameter. No allocation/cumulative test claim.",
+      "artifact": "docs/reports/M7-contracts/README.md"
     }
   ],
   "blockers": [],
@@ -112,10 +124,10 @@
     "checks": [
       "Independent compiled consumers and exact API controls passed at 854f3ccabe01b1076e44f89b7e19d69449444d81",
       "164 task records valid; diff check passed.",
-      "Harness repair checks passed at 10bbc38672a7ee92304d770a923a35de2cafb452"
+      "Harness repair checks passed at 10bbc38672a7ee92304d770a923a35de2cafb452",
+      "Root isolated integration d0792dc passed compiled contracts/XML probes/API negative controls/planning164/diff."
     ],
     "remaining": [
-      "Coordinator integrated rerun and verification.",
       "Implementation owners pin complete HTML/tokenizer corpora and xmloxide CSS overlap; declaration checks are not runtime HTML evidence."
     ],
     "requests": []
