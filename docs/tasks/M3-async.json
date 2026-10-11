@@ -4,11 +4,11 @@
   "milestone": "M3",
   "title": "Async input and output composition",
   "kind": "verification",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M3 coordinator 01a1284a-8826-7fc2-af44-74552db608f2",
   "branch": "codex/m3-async",
   "base_revision": "f0b9d6bda5183287a9eff262060f729fa2f268ff",
-  "integration_revision": null,
+  "integration_revision": "b962203e823fa816da38909a426158a7dac90781",
   "depends_on": [
     "M3-async-writer",
     "M3-async-serialization",
@@ -42,7 +42,8 @@
         "combined-correctness",
         "compiled-api",
         "standalone-sample",
-        "preserved-child-evidence"
+        "preserved-child-evidence",
+        "integrated-join"
       ]
     },
     {
@@ -53,7 +54,8 @@
         "combined-correctness",
         "compiled-api",
         "standalone-sample",
-        "preserved-child-evidence"
+        "preserved-child-evidence",
+        "integrated-join"
       ]
     },
     {
@@ -64,7 +66,8 @@
         "combined-correctness",
         "compiled-api",
         "standalone-sample",
-        "preserved-child-evidence"
+        "preserved-child-evidence",
+        "integrated-join"
       ]
     }
   ],
@@ -136,17 +139,24 @@
       "result": "passed",
       "summary": "All genuine async-only resource/transport, zero primitive+positive controls, process-wide suspended allocations, bounded scratch/retention and20frozen async method evidence preserved. No implementation changes warrant repeat. Raw BDN discrepancies and wrapper failure remain honest.",
       "artifact": "docs/reports/M3-async/summary.md"
+    },
+    {
+      "id": "integrated-join",
+      "kind": "integration",
+      "revision": "b962203e823fa816da38909a426158a7dac90781",
+      "command": "98combined test/API720/sample outcomes at recorded source revisions; git source-closure equality; tasks.py validate",
+      "result": "passed",
+      "summary": "Isolated join is based on current main with all children verified. Final evidence commit changes no runtime/tests/API after passing98/API720 checks at8cc0104; sample/source closure unchanged since10251a8.147tasks validate. No repeat justified for metadata-only changes. Independent reviewer findings corrected and actual14join cases pass.",
+      "artifact": "docs/reports/M3-async/integration.xml"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Implemented bounded async verification join over verified children, no runtime changes.",
+    "summary": "Verified integrated async input/output composition;98combined checks/API720/sample pass, child actual evidence retained.",
     "checks": [
       "98combined tests, official API720, sample pass; child actual measurements preserved."
     ],
-    "remaining": [
-      "Coordinator integrated checkpoint and validator."
-    ],
+    "remaining": [],
     "requests": []
   }
 }
