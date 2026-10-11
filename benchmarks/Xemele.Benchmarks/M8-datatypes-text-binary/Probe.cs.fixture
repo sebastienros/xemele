@@ -1,0 +1,80 @@
+using System.Runtime.InteropServices;
+using System.Security.Cryptography;
+using System.Text;
+using System.Text.Json;
+using Xemele.Validation;
+if (args is not [var mode, var output] || mode is not ("--control" or "--measure")) throw new ArgumentException();
+if (RuntimeInformation.FrameworkDescription != ".NET 10.0.11") throw new InvalidOperationException();
+bool measure = mode == "--measure";
+long coldStart = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+var fixture = new Fixture();
+long coldSetupBytes = measure ? GC.GetAllocatedBytesForCurrentThread() - coldStart : 0;
+var rows = new List<object>();
+for (int route = 0; route < Fixture.Names.Length; route++)
+{
+    for (int warm = 0; warm < 32; warm++) fixture.Run(route);
+    long[] distribution = new long[64];
+    for (int i = 0; i < distribution.Length; i++)
+    {
+        long start = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+        fixture.Run(route);
+        distribution[i] = measure ? GC.GetAllocatedBytesForCurrentThread() - start : 0;
+    }
+    if (measure && (route < 10 ? distribution.Any(n => n != 0) : distribution.Any(n => n <= 0))) throw new InvalidOperationException("Allocation boundary failed: " + route);
+    rows.Add(new { route, name = Fixture.Names[route], operations = 64, distribution });
+}
+long positiveStart = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+var positive = new byte[1024]; GC.KeepAlive(positive);
+long positiveBytes = measure ? GC.GetAllocatedBytesForCurrentThread() - positiveStart : 0;
+if (measure && positiveBytes < 1024) throw new InvalidOperationException("Positive control failed.");
+long retainedBefore = measure ? GC.GetTotalMemory(true) : 0;
+var retained = new DatatypeAtomicValue[256];
+for (int i = 0; i < retained.Length; i++) retained[i] = fixture.Parse("string", Fixture.Long);
+long retainedAfter = measure ? GC.GetTotalMemory(true) : 0;
+GC.KeepAlive(retained); GC.KeepAlive(fixture);
+File.WriteAllText(output, JsonSerializer.Serialize(new { mode, runtime = RuntimeInformation.FrameworkDescription, architecture = RuntimeInformation.ProcessArchitecture.ToString(), os = RuntimeInformation.OSDescription,
+    serverGc = System.Runtime.GCSettings.IsServerGC, coldSetupBytes, positiveBytes, retainedBefore, retainedAfter, retainedCount = retained.Length,
+    sourceRevision = Environment.GetEnvironmentVariable("XEMELE_DATATYPE_TEXT_BINARY_REVISION"), assemblySha256 = Hash(typeof(SchemaCompileOptions).Assembly.Location), probeSha256 = Hash(typeof(Fixture).Assembly.Location), inputSha256 = Fixture.InputHash, rows }, new JsonSerializerOptions { WriteIndented = true }));
+Console.WriteLine($"{mode}: 18 consumed routes, 32 warm/64 samples each; counters {(measure ? "enabled" : "disabled")}");
+static string Hash(string path) => Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(path)));
+sealed class Fixture
+{
+    static Fixture() { } // Keep fixture/static initialization inside the measured cold constructor boundary.
+    internal const string Short = "根😀 value", Hex = "000102FEFF", Base64 = "AAEC/v8=", QName = "p:根";
+    internal static readonly string Long = "根😀" + new string('a', 4096);
+    internal static readonly string[] Names = ["borrowed text equality", "borrowed text hash", "borrowed binary equality", "borrowed binary hash", "borrowed QName equality", "borrowed QName hash", "borrowed boolean equality", "borrowed boolean hash", "borrowed scalar length", "static invalid base64", "owned short text", "owned long text", "owned hex", "owned base64", "owned QName", "owned anyURI", "owned boolean", "operation setup"];
+    internal static readonly string InputHash = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(Short + Long + Hex + Base64 + QName + "urn:根😀" + "../根😀" + "true" + "AB==")));
+    private readonly TextBinaryDatatypeProvider provider = new();
+    private readonly SchemaNamespaceContext context = new(new Dictionary<string, string> { ["p"] = "urn:根😀", ["q"] = "urn:根😀" }, "urn:根😀", null);
+    private readonly SchemaCompileOperation operation = new(new() { MaxOperations = null, MaxComponents = null, Limits = new() { EvaluationWork = null } });
+    private readonly DatatypeAtomicValue text, otherText, binary, otherBinary, qname, otherQName, boolean, otherBoolean;
+    internal Fixture()
+    { text = Parse("string", Long); otherText = Parse("token", Long); binary = Parse("hexBinary", Hex); otherBinary = Parse("hexBinary", Hex.ToLowerInvariant()); qname = Parse("QName", QName); otherQName = Parse("QName", "q:根"); boolean = Parse("boolean", "true"); otherBoolean = Parse("boolean", "1"); }
+    internal DatatypeAtomicValue Parse(string type, string input)
+    { if (!provider.TryParse(DatatypeTypes.All[type], input, context, operation, out var value, out _) || value is null) throw new InvalidOperationException(); return value; }
+    internal void Run(int route)
+    {
+        switch (route)
+        {
+            case 0: if (!DatatypeValues.ValueEquals(text, otherText, operation)) throw new InvalidOperationException(); break;
+            case 1: if (DatatypeValues.ValueHashCode(text, operation) != DatatypeValues.ValueHashCode(otherText, operation)) throw new InvalidOperationException(); break;
+            case 2: if (!DatatypeValues.ValueEquals(binary, otherBinary, operation)) throw new InvalidOperationException(); break;
+            case 3: if (DatatypeValues.ValueHashCode(binary, operation) != DatatypeValues.ValueHashCode(otherBinary, operation)) throw new InvalidOperationException(); break;
+            case 4: if (!DatatypeValues.ValueEquals(qname, otherQName, operation)) throw new InvalidOperationException(); break;
+            case 5: if (DatatypeValues.ValueHashCode(qname, operation) != DatatypeValues.ValueHashCode(otherQName, operation)) throw new InvalidOperationException(); break;
+            case 6: if (!DatatypeValues.ValueEquals(boolean, otherBoolean, operation)) throw new InvalidOperationException(); break;
+            case 7: if (DatatypeValues.ValueHashCode(boolean, operation) != DatatypeValues.ValueHashCode(otherBoolean, operation)) throw new InvalidOperationException(); break;
+            case 8: if (DatatypeValues.ValueLength(text, operation) != 4098) throw new InvalidOperationException(); break;
+            case 9: if (provider.TryParse(DatatypeTypes.All["base64Binary"], "AB==", context, operation, out _, out var error) || error != DatatypeErrors.InvalidLexical) throw new InvalidOperationException(); break;
+            case 10: GC.KeepAlive(Parse("string", Short)); break;
+            case 11: GC.KeepAlive(Parse("string", Long)); break;
+            case 12: GC.KeepAlive(Parse("hexBinary", Hex)); break;
+            case 13: GC.KeepAlive(Parse("base64Binary", Base64)); break;
+            case 14: GC.KeepAlive(Parse("QName", QName)); break;
+            case 15: GC.KeepAlive(Parse("anyURI", "../根😀")); break;
+            case 16: GC.KeepAlive(Parse("boolean", "true")); break;
+            case 17: GC.KeepAlive(new SchemaCompileOperation()); break;
+            default: throw new ArgumentOutOfRangeException(nameof(route));
+        }
+    }
+}
