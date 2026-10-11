@@ -105,3 +105,82 @@ Official1253API,3388fixtureSHA/negativecontrols and publicsample pass; all three
 offline Release builds0warnings/errors. Correctness-only probe and actualinputs
 pass; discovery exactly49 reviewed identities:24Escape/18Output/7Boolean. No
 final measurement, counters or identity controls have run at this checkpoint.
+
+## Final measured source
+
+Frozen measured revision `a80a097dc529e3f63a0d71ea8c5085fadfd4a86c` contains
+exactly the passing corrected runtime/test/probe source at `a7022f4`.
+Manifest SHA256 `cb260f4313fa991ff3ba777131bfd9da1f30126602c95bc7f64b9ad984ea87e0`:
+3944 source/generated/input,150 binaries,3852 SDK/runtime files plus full host,
+actual inputs and opaque complete effective child environment/session. Default
+zsh login/escalated exact-wrapper controls0/unknown-environment1/0 all reported
+no_child=true/runs=[]; negative initial/final1, positives initial/final0.
+Initial default-sandbox process inventory was denied; a premature empty-inventory
+message was corrected immediately. Actual scoped escalated inventory then passed
+empty before fresh root/main/worker PARK and independent closure review.
+
+Grant `m7-serialize-a80a097`: sole wrapper session71694, no retries, total1550s
+maximum. Initial0/allocation0/49BDN0/final0/wrapper0/no_child=true, unchanged
+manifest. Root recorded durable RELEASE before final raw inspection. Benchmark
+elapsed408.33s:24 escape/scanner230.75s,18 output112.39s,7 Boolean64.28s.
+All49 selected report-success/statistics assertions passed. Final correctness,
+API and sample checks remain the actual a7022f4 results; source did not change.
+
+All231 allocation rows completed;214 warm borrowed rows again0B over213760
+operations with the same batch/domain denominators as the first run. Cold first
+DOM/result/runtime **including product cache initialization**6856B/1, versus
+earlier6696B/1. The160B aggregate difference is not an isolated cache-size
+measurement. Two process-lived immutable product sets are documented ownership,
+not operation allocations. Cold first UTF8 transport2360B/1, independent
+benchmark candidates/table288B/1 and positive1048B/1. All12 owned string/transport
+rows exactly match the table above. Retained inclusive before336840B,
+after575696B, delta238856B/128results, including array/runtime roots.
+
+| Production text scan | Html5 mean ns | Legacy mean ns |
+| --- | ---: | ---: |
+| Dense immediate stop |1.297|1.273|
+|1024-character late hit |46.740|49.048|
+|1024-character miss |48.701|49.067|
+| Multilingual late hit |32.367|34.091|
+| Short hit |2.382|1.997|
+| Short miss |3.575|3.427|
+
+These support the one reviewed long-text correction while tiny/immediate inputs
+remain scalar. Historical comparisons are across separate leases, not paired
+same-run ratios. No threshold sweep or universal speedup is claimed. End-to-end
+workloads mostly contain short text/attributes: large borrowed output means
+197219ns Legacy/140159ns Html5 with99.9%CI half-widths101181ns/77840ns; no
+composition improvement or regression conclusion is justified by those noisy
+three-iteration timings. See exact mean/StdDev/CI tables for all49 identities.
+
+Final primitive BDN rows round0B but raw numerator includes0..2976B over
+16777216..268435456 operations, no GC. Borrowed tree raw costs:large4656B/4096,
+multilingual4656B/65536,smallLegacy3984B/2097152,smallHtml54656B/4194304, no GC;
+the direct borrowed counter is0B for each128-operation composition. Final Boolean
+rows include4368B or4656B over67108864..268435456operations, no GC. Owned large
+BDN inclusive figures differ (669050B/638554B strings,5429B transport),
+while direct counters report668584B/638088B strings and5424B transport per op.
+Large owned-result raw GC counts are204/204/204 at1370214512B/2048ops Legacy
+and1307758704B/2048ops Html5; UTF8 raw5558832B/1024ops has no GC. The inclusive
+BDN/per-thread-counter difference is not attributed solely to product allocations.
+The summary preserves exact GC numerator/denominator for every case.
+
+The7 missing Boolean cases now complete; combined with9 unchanged first-phase
+cases they cover all16 identities without rerunning the completed methods. Length
+dispatch remains faster in measured means for these fixed-name controls; narrow
+or noisy intervals are reported rather than promoted to architecture guarantees.
+Actual pinned host/runtime/GC/settings match the first run, high-priority setup
+was still denied, hardware timer frequency still absent. x64 validation remains
+the later release/performance owner's responsibility; no x64 claim is made.
+
+`final-measurement-summary.json` holds concise domain/statistics tables and raw
+hashes. Every preserved first raw hash and first manifest still matches. Root independently acknowledged all231 rows,49 CSV identities and49 GC
+numerator/denominator rows. Raw allocation/BDN/CSV logs remain ignored and
+untouched; cleanup waits integration and durable final-report review.
+No runtime/test/probe source changed after this successful frozen measurement.
+
+Terminal evidence validation: `python3 tools/planning/tasks.py validate` validates
+169 tasks; `git diff --check` passes; all37 branch paths are task-owned relative
+to claim5af29be. Runtime/tests/fixtures/probe/sample/API are byte-identical to
+measured a80a097. Evidence-only handoff closure changes require no rerun. No
+owned exec remains active; successful wrapper final no_child=true is retained.

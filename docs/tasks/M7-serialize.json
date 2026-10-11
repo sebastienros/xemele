@@ -4,7 +4,7 @@
   "milestone": "M7",
   "title": "HTML serialization modes",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M7 isolated worker chat01a12bb3-07b3-7ce2-ab62-f43cd4a8104d",
   "branch": "codex/m7-serialize",
   "base_revision": "725b2cc7190dae7766c8dec17dd6f9958d2b4255",
@@ -56,7 +56,7 @@
     {
       "id": "M7-serialize-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
+      "status": "passed",
       "evidence": [
         "correctness-and-earlier",
         "official-api",
@@ -68,7 +68,11 @@
         "first-measured-timing-timeout",
         "hybrid-correctness-and-earlier",
         "hybrid-api-and-sample",
-        "hybrid-prepared-selection"
+        "hybrid-prepared-selection",
+        "final-identity-controls",
+        "final-measured-allocation",
+        "final-measured-timing",
+        "coordinator-final-raw-review"
       ]
     }
   ],
@@ -76,7 +80,7 @@
     "src/Xemele/HtmlSerialization/HtmlSerializer.cs: exact enum/options/three public APIs; iterative native/WHATWG serialization and bounded UTF8 caller stream",
     "tests/Xemele.Tests/M7-serialize/SerializationTests.cs: exact native outputs, per-case original serializer inventory, normative rules and stream/cancellation/XML witnesses",
     "tests/fixtures/M7-serialize/: pinned native goldens, all230original html5lib cases and exact WPT assertion",
-    "benchmarks/Xemele.Benchmarks/M7-serialize/: correctness-only prepared94case NoEmit scanner/matcher/borrowed/owned/stream probes",
+    "benchmarks/Xemele.Benchmarks/M7-serialize/: original94/final49selected NoEmit probes, explicitscalar/control comparisons, cold/warm/owned/retained allocation domains",
     "samples/M7-serialize/Program.cs and docs/api/M7-serialize.txt: executed public usage and18exact frozen declarations"
   ],
   "evidence": [
@@ -178,23 +182,58 @@
       "result": "passed",
       "summary": "Correctness-only106available/49selected semantics incl scalarprefix/bulk offsets/state-specificstops/Unicode/UTF8 exacthash. Exactly49NoEmit3warmup3actual1launch:12Production+12BorrowedEscapedOutput+18Output+7missingBoolean identities. No counters/BDN.1550splan130sreserveincludesfinalidentity45+cleanup; phasecaps45+150+1200+130=1525 fit.",
       "artifact": "benchmarks/Xemele.Benchmarks/M7-serialize/Probe.cs.fixture"
+    },
+    {
+      "id": "final-identity-controls",
+      "kind": "check",
+      "revision": "a80a097dc529e3f63a0d71ea8c5085fadfd4a86c",
+      "command": "python3 -B docs/reports/M7-serialize/prepare_identity.py",
+      "result": "passed",
+      "summary": "Actualexactwrapper0/unknownenv1/0,positiveinitial/final0,negativeinitial/final1,allnochildtrue/runs[]. Manifestcb260f4313fa991ff3ba777131bfd9da1f30126602c95bc7f64b9ad984ea87e0;3944source150binary3852runtime+host/inputs/completeopaquechildenv/SHLVL1/session. Scopedescalatedinventoryempty beforefreshPARK/grant.",
+      "artifact": "docs/reports/M7-serialize/measurements.md"
+    },
+    {
+      "id": "final-measured-allocation",
+      "kind": "check",
+      "revision": "a80a097dc529e3f63a0d71ea8c5085fadfd4a86c",
+      "command": "python3 -B docs/reports/M7-serialize/run_measurements.py --exclusive-grant",
+      "result": "passed",
+      "summary": "Full231rows/214warmborrowedzeros/213760ops; productcache firstcoldinclusive6856B/1,coldUTF82360B/1,candidates288B/1,positive1048B/1. Ownedstring/fixedUTF8 costs explicitlynonzero,12domainsunchanged; retainedinclusive238856B/128results+array/runtime roots. Actualexclusivegrant m7-serialize-a80a097,initial/allocation/BDN/final/wrapper0/nochildtrue/unchangedmanifest; durableRELEASE beforeinspection.",
+      "artifact": "docs/reports/M7-serialize/final-measurement-summary.json"
+    },
+    {
+      "id": "final-measured-timing",
+      "kind": "check",
+      "revision": "a80a097dc529e3f63a0d71ea8c5085fadfd4a86c",
+      "command": "python3 -B docs/reports/M7-serialize/run_measurements.py --exclusive-grant",
+      "result": "passed",
+      "summary": "49/49selectedNoEmitShortRunreports/statistics pass:12Productiontext+12changedescape+18changedoutput+7missingBoolean;408.33s.9unchangedBooleanfirstcases retained coverall16. Longspanhybridmeasured46-49ns; short/dense remain scalar; noisyN3CI/prioritydenied/rawGCnumerator-denominator recorded; no composition/x64/universalspeedclaim. First87historicaltimings+750sTimeout explicitly preserved.",
+      "artifact": "docs/reports/M7-serialize/final-measurement-summary.json"
+    },
+    {
+      "id": "coordinator-final-raw-review",
+      "kind": "review",
+      "revision": "a80a097dc529e3f63a0d71ea8c5085fadfd4a86c",
+      "command": "Coordinator independently inspected final allocation.log/BDN CSV/rawGC after durableRELEASE",
+      "result": "passed",
+      "summary": "CoordinatorACK:all231allocationrows/214zero warmrows/213760ops and49CSVidentities+49rawGCnumerator/denominators/408.33s agree. No furtherworkloads or baseline retune required; finishimplementedhandoff,cleanupwaitsintegration/durablefinalreview.",
+      "artifact": "docs/reports/M7-serialize/measurements.md"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Focused coordinator-reviewed text-only16characterprefix+cachedSearchValues correction after realfirst750sBDNtimeout; allfirstpassingmeasurements/timeout preserved. Final49case selection/newcorrectness prepared outsidelease; no finalgrant.",
+    "summary": "Implemented on isolated codex/m7-serialize; testedruntime/probe a7022f4, successfulmeasured a80a097; sourceunchangedafterfreeze. ExactnativeLegacy/WHATWGHtml5/UTF8 APIs, reviewed16charscalar-prefix+cachedtextsets. Allrequiredbranchchecks pass; awaitscoordinatorintegration/verification, integration_revisionnull.",
     "checks": [
-      "Pinned offlineRelease0warnings/errors;1612combined/906serializer tests pass;640native graphs+directvector028/all230originaldispositions/exactWPT assertion.",
-      "Official1253API/1235unchanged/18frozen additions/3388fixtureSHA/3negativecontrols and publicsample pass.",
-      "Correctness-only94case probe/discovery/actualinputs; exactwrapper0/unknownenv1/0/nochild; manifest8c3da026 source3941binary150runtime3852; no counters/BDN.",
-      "Planning169/diffcheck pass before handoff; final validation command recorded in own report.",
-      "Correctedruntimea7022f4:1622tests/916serializer/API1253/sample/exact49selected discovery pass;0warning/error builds.",
-      "Firstmeasuredallocation231rows/214zeros and87timings preserved;750sBDNtimeout explicitlyfailed; no finalmeasurements."
+      "OfflineRelease .NET10.0.11 builds0warning/error;1622/1622Pass/916serializer,all1612prioridentitiespreserved;640nativegraphs/all230originaldispositions/exactWPT assertion.",
+      "Official1253API/1235unchanged/18frozen/3388fixtureSHA/3negativecontrols/publicsample3APIs/bothmodes/UTF8/XML pass.",
+      "Finalexactcontrols0/unknownenv1/0/fullclosure; exclusivegrant wrapper0/initial0/allocation0/49BDN0/final0/nochildtrue/unchangedcb260f43; RELEASEbeforeinspection.",
+      "231allocationrows/214zeros/213760ops, coldcache/ownedstring/UTF8/retainedcosts;49timings408.33s+9unchangedBooleanfirstcases;rootindependentrawACK.",
+      "First87historicaltimings/750sTimeout/stalePGIDcleanup/inventorypermissioncorrection preserved; no rawcleanup, no x64 or blankettimingclaim.",
+      "Planning169/diffcheck/ownedpaths audit pass; finalhandoffmetadata doesnotchange testedsource."
     ],
     "remaining": [
-      "Coordinator review committedsource/49selection/plan before exactidentitycontrols and freshgrant; no workloads yet.",
-      "After review refresh completeexactwrapper0/unknownenv1/0 andclosure; freshPARK/inventory/durable1550sgrant required before singlefinalwrapper.",
-      "Reportlifecycle then await durableRELEASE beforeinspection; recordactualfinalsourceallocation/49timings plus unchanged9earlierBooleancases; markimplemented onlywhen allrequiredchecks pass."
+      "Coordinator integrate branch and rerun applicablecombined correctness/API/sample checks; markverified onlyon integratedcode.",
+      "Retainignoredraw/artifacts/checkouts untilintegration and durablefinalreportreview; coordinatorowns cleanup/followups."
     ],
     "requests": []
   }

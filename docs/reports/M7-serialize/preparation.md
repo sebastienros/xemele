@@ -1,5 +1,20 @@
 # Serializer source and measurement preparation
 
+Current completed branch evidence is in `measurements.md` and
+`final-measurement-summary.json`. Corrected source/test/probe revision
+`a7022f44247f51d7201bf930e45856fcf2acadb3` passes1622 tests/API1253/publicsample;
+measured revision `a80a097dc529e3f63a0d71ea8c5085fadfd4a86c` passes the full
+allocation sequence and49 selected timings under exclusive grant, final identity
+and cleanup0/nochild, durable RELEASE before inspection. First87 historical
+timings and explicit750s timeout remain preserved. No lease or workload remains;
+coordinator independently inspected all final raw artifacts; cleanup awaits integration
+and durable final-report review. These newer results
+supersede the ungranted/no-measurement statements in the historical section below.
+Evidence-only handoff files change the closure after measurement; the successful
+final freeze identifies the measured revision, not a subsequent metadata commit.
+
+## Historical ungranted checkpoint
+
 Runtime/test/sample/API implementation revision:
 `52be6bd6f9558ed9385ba2cef842820c489347e0`.
 Final prepared probe revision:
