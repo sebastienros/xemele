@@ -60,3 +60,17 @@ phases. An unknown environment variable correctly made both checks fail;
 no children remained. Full environment values were not printed. Current
 corrected source needs its own final manifest/control before measurement.
 No allocation/timing or inherited milestone suite has run.
+
+## Corrected source identity controls
+
+At preparation revision `954b0307b65eef9c966e775f45b65c504db3f572`, complete
+closure captured **226 source**, **43 binary**, and **3,852 runtime/SDK/host**
+files in the same elevated context intended for measurement. The exact
+sole-command wrapper positive control exited0 with initial/final identity0,
+no_child=true and runs=[]; the unknown-environment-variable negative control
+exited1 with initial/final identity1, no_child=true and runs=[], as expected.
+The digest includes every effective child environment variable; full values
+were not printed. SHLVL is explicitly stabilized. The stale prior manifest
+is retained under artifacts/M6-catalog/prepared-3afddf8.json. This report adds
+no source or binary changes; the final manifest is recaptured after its commit.
+No allocation/timing phases or inherited suite ran during these controls.

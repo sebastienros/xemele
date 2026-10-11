@@ -110,19 +110,29 @@
       "result": "passed",
       "summary": "Prior exactsolecommand wrapper positive exited0, initial/finalidentity0/nochildtrue/no measuredphases; unknownenvnegative exited1 with initial/finalidentity1/nochildtrue/no measuredphases, expectedrejection. Completeenvhash and explicitSHLVL stability proven; current revisedsource must refreeze.",
       "artifact": "docs/reports/M6-catalog/validation.md"
+    },
+    {
+      "id": "corrected-elevated-wrapper-controls",
+      "kind": "check",
+      "revision": "954b0307b65eef9c966e775f45b65c504db3f572",
+      "command": "elevated: python3 -B docs/reports/M6-catalog/freeze.py capture artifacts/M6-catalog/prepared.json ; python3 -B docs/reports/M6-catalog/run_measurements.py --identity-control ; XEMELE_CATALOG_IDENTITY_NEGATIVE=changed python3 -B docs/reports/M6-catalog/run_measurements.py --identity-control",
+      "result": "passed",
+      "summary": "Corrected source fullclosure226source/43binary/3852runtime captured in intended elevatedcontext; exactsolecommand wrapper positive exit0 initial/final0 nochildtrue runs[]; unknownaddedenv negative exit1 initial/final1 nochildtrue runs[] expectedrejection. Completeenv digest stable underexplicitSHLVL. No allocation/timing phases run; stale3afddf8 manifest retained.",
+      "artifact": "docs/reports/M6-catalog/validation.md"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Functional native-budget implementation committed and checked; prepared for coordinator measurement lease, not implemented/verified yet.",
+    "summary": "Corrected explicit-frame native-budget source and functional checks complete; intended elevatedcontext identity controls passed. Await exclusive allocation/timing lease; task remainsin_progress/A3pending.",
     "checks": [
       "Four fresh pinned forced Release builds passed;32 focusedtests actual.NET10.0.11.",
       "Public offline sample,972memberAPIunion and8caseShortRunNoEmit discovery passed.",
-      "Prior exactwrapperidentity positive/unknownenvnegative controls passed."
+      "Prior exactwrapperidentity positive/unknownenvnegative controls passed.",
+      "Corrected226source/43binary/3852runtime elevatedfullclosure and exactwrapper positive/unknownenvnegative controls passed; no measuredphases."
     ],
     "remaining": [
       "Exclusive allocation/timing lease and inherited milestone verification not run;A3pending.",
-      "Fresh corrected-source manifest/refreeze controls before coordinator lease."
+      "Final manifest will be recaptured after this truthful evidencecommit without source/binarychanges."
     ],
     "requests": []
   }
