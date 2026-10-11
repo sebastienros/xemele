@@ -2,11 +2,11 @@
   "schema_version": 1,
   "milestone": "M3",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M3 coordinator 01a1284a-8826-7fc2-af44-74552db608f2 / async writer worker",
   "branch": "codex/m3-async-writer",
   "base_revision": "827fde5f82dd202abb53c300d3a4a59b7cd3eda0",
-  "integration_revision": null,
+  "integration_revision": "080b518581f5e6439df81f2851de2a67d27d56a1",
   "id": "M3-async-writer",
   "title": "Genuine async forward writer transport",
   "depends_on": [
@@ -38,7 +38,8 @@
       "evidence": [
         "release-build",
         "async-focused",
-        "compiled-api"
+        "compiled-api",
+        "coordinator-integrated-checks"
       ]
     },
     {
@@ -48,7 +49,8 @@
       "evidence": [
         "release-build",
         "async-focused",
-        "compiled-api"
+        "compiled-api",
+        "coordinator-integrated-checks"
       ]
     },
     {
@@ -65,7 +67,8 @@
         "tiering-differential-control",
         "actual-default-primitive-review",
         "bdn-six-cases",
-        "planning-validation"
+        "planning-validation",
+        "coordinator-integrated-checks"
       ]
     }
   ],
@@ -239,11 +242,20 @@
       "result": "passed",
       "summary": "Final branch work/source revision with implemented evidence metadata prepared: validated145tasks, schema/evidence/acyclic dependencies/additive milestones/ordered ownership. Final metadata is committed separately from tested runtime/harness revisions.",
       "artifact": null
+    },
+    {
+      "id": "coordinator-integrated-checks",
+      "kind": "integration",
+      "revision": "080b518581f5e6439df81f2851de2a67d27d56a1",
+      "command": "Pinned Release test build; Xemele.Tests.dll -namespace Xemele.Tests.M3AsyncWriter -namespace Xemele.Tests.M3Writer -namespace Xemele.Tests.Serialization -parallelMode none; tools/ApiBaseline/compare.py; tools/planning/tasks.py validate",
+      "result": "passed",
+      "summary": "Combined verified SAX, pump, resources and ABI repair with final writer handoff: build 0 warnings/errors; 88 tests passed, 0 failures/errors/skips; official global discovery matched 667 compiled members using exact private offline corpus; 147 task validation passed. Metadata-only merge after checks changed no runtime/tests/API. Earlier allocation and six-case observations preserved without rerun.",
+      "artifact": "docs/reports/M3-async-writer/integration-tests.xml"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Implemented all12 frozen async writer members/IAsyncDisposable with bounded real async transport and retained-owner release. All19async+19sync+50earlier serialization source cases pass; composedAPI651/sample pass. Mandatory actualdefault primitivezero accepted from80kcall+1000wholebatch bothcounter deltas0/noIO; positive/setup/linked/scratch/genuinesuspended counters preserved. Six correctedDry InProcess MemoryDiagnoser cases complete; contended timing unqualified. Historical helper128B/scope12 failures preserved honestly; integrationnull.",
+    "summary": "Verified integrated async writer: all frozen members, bounded genuine async transport and owner release; 88 integrated checks and 667 official API members pass.",
     "checks": [
       "Release runtime/tests/sample/probe/benchmark builds0warnings/errors on SDK10.0.400/runtime10.0.11Arm64.",
       "19async writer +19verifiedsync writer (including allocation regression) +50earlier serialization=88focusedcases passed; no passingchecks repeated for harness/config corrections.",
@@ -252,12 +264,7 @@
       "SixDry InProcessEmitToolchain BDNcases completedexit0 with MemoryDiagnoser/rawreports, timings informational/unusable for comparisons underhostcontention.",
       "python3 tools/planning/tasks.py validate:145tasks passed; source/task/API diffcheck clean."
     ],
-    "remaining": [
-      "Coordinator integration/combined verification and integration_revision assignment; this task is implemented, not verified.",
-      "Historical defaulthelper-loop128B CLRsite unproven; failures remain failed. Defaultdirectcall+fullbatch actualzero accepted by boundedreview, IL no helperfactory and tiering-off differential supports runtimeinitialization inference only; no further probe retries required.",
-      "OfficialglobalAPI discovery requires private offlinecorpus fixture provisioning; approved directcomposedAPI passed as authorizedfallback, no manifests changed.",
-      "M9 dedicatedrepeatablex64/Arm64 and representativecomposition qualification; current contendedDry latencies cannot substantiate performance comparisons or regressions."
-    ],
+    "remaining": [],
     "requests": [
       "Fulfilled: imported coordinator ownership grant a1b76e16aa4dfeaeada2c69f21123cb596e4d2d0; changed only existing T:Xemele.XmlWriter row in docs/api/M3-writer.txt to add frozen IAsyncDisposable, preserved all original IDs/member rows.",
       "Private offline corpus fixture provisioning required for official global discovery; direct approved composed API check passed as coordinator-authorized fallback. No manifest changes."

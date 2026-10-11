@@ -9,22 +9,6 @@
   },
   "active_assignments": [
     {
-      "task_id": "M3-async-writer",
-      "branch": "codex/m3-async-writer",
-      "base_revision": "827fde5f82dd202abb53c300d3a4a59b7cd3eda0",
-      "host_id": "local",
-      "stage": "Final clean handoff f1b80fa; integrated combination verification underway",
-      "acceptance_before_dispatch": {
-        "mandatory": "All frozen async methods/guard acrossawait, operation+call cancellation, actual async-only delayed output, exact lexical/state/scopes/UTF behavior, bounded scratch and honest allocation. No synchronous transport helper used for emission.",
-        "integration": "Focused async tests plus verified syncwriter/serialization; compiled API against all integrated fragments; comprehensive gate later.",
-        "measurements": "Prepare/build/control outside one bounded exact serial lease, no unleased standalone counters/timing; informational timings."
-      },
-      "claim_revision": "755cd5cf5a87bb30d507d042fbabe8e03512f058",
-      "client_thread_id": "client-new-thread:65601a92-6e57-4926-9ebd-7926b0ae042c",
-      "chat_id": "01a12878-74d7-7181-9e06-d1635923f0b9",
-      "worktree_path": "/Users/sebastienros/.codex/worktrees/705c/xemele"
-    },
-    {
       "task_id": "M3-reader",
       "branch": "codex/m3-reader",
       "base_revision": "dd3a54bf12b9238f6174d38541a5783b29cc7e0f",
@@ -62,15 +46,12 @@
     }
   ],
   "next_actions": [
-    "Attribute isolated asyncwriter128B aftertwo failures with one bounded diagnostic; preserve verifiedsource checks.",
-    "Verify SAX/reader; dispatch push when slot free and asyncinput after adaptersverified.",
-    "Verify asyncwriter and serializer, async join/corpus/M3gate; create exactlyone M4coordinator only afterverifiedM3gate."
+    "Clean up accepted writer and dispatch async DOM serialization",
+    "Integrate completed reader and dispatch push",
+    "Finish guarded resource mode, then dispatch async input"
   ],
-  "last_verified_task": {
-    "task_id": "M3-sax",
-    "integration_revision": "8c88c670d81f037e6f179f5f2e9c76c084580dcf"
-  },
-  "last_integrated_revision": "8c88c670d81f037e6f179f5f2e9c76c084580dcf",
+  "last_verified_task": "M3-async-writer",
+  "last_integrated_revision": "080b518581f5e6439df81f2851de2a67d27d56a1",
   "completed_assignments": [
     {
       "task_id": "M2-dtd-composition",
@@ -1404,6 +1385,24 @@
       "created_thread_directive_pending": false,
       "cleanup_status": "Worker archived;bothworktreesdeleted",
       "cleanup_record": "docs/orchestration/cleanup-M2-conformance.json"
+    },
+    {
+      "task_id": "M3-async-writer",
+      "branch": "codex/m3-async-writer",
+      "base_revision": "827fde5f82dd202abb53c300d3a4a59b7cd3eda0",
+      "host_id": "local",
+      "stage": "Verified; cleanup pending",
+      "acceptance_before_dispatch": {
+        "mandatory": "All frozen async methods/guard acrossawait, operation+call cancellation, actual async-only delayed output, exact lexical/state/scopes/UTF behavior, bounded scratch and honest allocation. No synchronous transport helper used for emission.",
+        "integration": "Focused async tests plus verified syncwriter/serialization; compiled API against all integrated fragments; comprehensive gate later.",
+        "measurements": "Prepare/build/control outside one bounded exact serial lease, no unleased standalone counters/timing; informational timings."
+      },
+      "claim_revision": "755cd5cf5a87bb30d507d042fbabe8e03512f058",
+      "client_thread_id": "client-new-thread:65601a92-6e57-4926-9ebd-7926b0ae042c",
+      "chat_id": "01a12878-74d7-7181-9e06-d1635923f0b9",
+      "worktree_path": "/Users/sebastienros/.codex/worktrees/705c/xemele",
+      "handoff_revision": "f1b80fa96e36a4da12b8ff95d05c07b61d3afc44",
+      "integration_revision": "080b518581f5e6439df81f2851de2a67d27d56a1"
     }
   ],
   "benchmark_grant": {
@@ -1506,10 +1505,9 @@
       "remaining_gate": null
     },
     "M3": {
-      "verified": 9,
+      "verified": 10,
       "total": 18,
       "in_progress": [
-        "M3-async-writer",
         "M3-reader",
         "M3-resource-mode"
       ],
