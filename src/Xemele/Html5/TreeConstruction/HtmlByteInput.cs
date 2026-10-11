@@ -21,6 +21,8 @@ internal static class HtmlByteInput
     }
     internal static (string Encoding, int Bom) Sniff(ReadOnlySpan<byte> input)
     {
+        input = input[..Math.Min(1024, input.Length)];
+        Span<Range> seen = stackalloc Range[512];
         if (input.StartsWith((ReadOnlySpan<byte>)[0xEF, 0xBB, 0xBF])) return ("utf-8", 3);
         if (input.StartsWith((ReadOnlySpan<byte>)[0xFE, 0xFF])) return ("utf-16be", 2);
         if (input.StartsWith((ReadOnlySpan<byte>)[0xFF, 0xFE])) return ("utf-16le", 2);
@@ -32,13 +34,14 @@ internal static class HtmlByteInput
             if (Match(input[position..], "<meta"u8) && position + 5 < input.Length && SpaceOrSlash(input[position + 5]))
             {
                 position += 5; bool gotPragma = false, needPragma = false; string? charset = null;
-                var seen = new HashSet<string>(StringComparer.Ordinal); // bounded sniff-window attribute names only.
-                while (Attribute(input, ref position, out string name, out string value))
+                int seenCount = 0; // At most 512 nonempty attribute names fit in the borrowed 1024-byte window.
+                while (Attribute(input, ref position, out Range name, out Range value))
                 {
-                    if (!seen.Add(name)) continue;
-                    if (name == "http-equiv" && EqualsAscii(value.AsSpan(), "content-type")) gotPragma = true;
-                    if (name == "content" && charset is null) { charset = FromContent(value.AsSpan()); if (charset is not null) needPragma = true; }
-                    if (name == "charset") { charset = HtmlEncodingTables.Label(value.AsSpan()); needPragma = false; }
+                    bool duplicate = false; for (int i = 0; i < seenCount; i++) if (HtmlAscii.Equals(input[seen[i]], input[name])) { duplicate = true; break; }
+                    if (duplicate) continue; seen[seenCount++] = name;
+                    if (HtmlAscii.Equals(input[name], "http-equiv"u8) && HtmlAscii.Equals(input[value], "content-type"u8)) gotPragma = true;
+                    if (HtmlAscii.Equals(input[name], "content"u8) && charset is null) { charset = FromContent(input[value]); if (charset is not null) needPragma = true; }
+                    if (HtmlAscii.Equals(input[name], "charset"u8)) { charset = HtmlEncodingTables.Label(input[value]); needPragma = false; }
                 }
                 if (charset is null || needPragma && !gotPragma || charset == "replacement") continue;
                 if (charset is "utf-16be" or "utf-16le") charset = "utf-8";
@@ -56,39 +59,36 @@ internal static class HtmlByteInput
         }
         return ("windows-1252", 0);
     }
-    private static bool Attribute(ReadOnlySpan<byte> data, ref int p, out string name, out string value)
+    private static bool Attribute(ReadOnlySpan<byte> data, ref int p, out Range name, out Range value)
     {
-        name = value = "";
+        name = value = 0..0;
         while (p < data.Length && SpaceOrSlash(data[p])) p++;
         if (p == data.Length || data[p] == '>') { if (p < data.Length) p++; return false; }
         int start = p;
         while (p < data.Length && !SpaceOrSlash(data[p]) && data[p] is not ((byte)'=' or (byte)'>')) p++;
-        name = Ascii(data[start..p]); while (p < data.Length && Space(data[p])) p++;
+        name = start..p; while (p < data.Length && Space(data[p])) p++;
         if (p == data.Length) return false; if (data[p] != '=') return true;
         p++; while (p < data.Length && Space(data[p])) p++; if (p == data.Length) return false;
-        byte quote = data[p]; if (quote is (byte)'\'' or (byte)'"') { start = ++p; while (p < data.Length && data[p] != quote) p++; if (p == data.Length) return false; value = Ascii(data[start..p]); p++; }
-        else { start = p; while (p < data.Length && !Space(data[p]) && data[p] != '>') p++; if (p == data.Length) return false; value = Ascii(data[start..p]); }
+        byte quote = data[p]; if (quote is (byte)'\'' or (byte)'"') { start = ++p; while (p < data.Length && data[p] != quote) p++; if (p == data.Length) return false; value = start..p; p++; }
+        else { start = p; while (p < data.Length && !Space(data[p]) && data[p] != '>') p++; if (p == data.Length) return false; value = start..p; }
         return true;
     }
-    private static string? FromContent(ReadOnlySpan<char> content)
+    private static string? FromContent(ReadOnlySpan<byte> content)
     {
         while (true)
         {
-            int found = HtmlAscii.IndexOf(content, "charset"); if (found < 0) return null;
-            content = content[(found + 7)..].TrimStart(" \t\n\r\f".AsSpan());
+            int found = -1; for (int i = 0; i <= content.Length - 7; i++) if (HtmlAscii.Equals(content.Slice(i, 7), "charset"u8)) { found = i; break; }
+            if (found < 0) return null;
+            content = TrimStart(content[(found + 7)..]);
             if (content.IsEmpty) return null; if (content[0] != '=') continue;
-            content = content[1..].TrimStart(" \t\n\r\f".AsSpan()); if (content.IsEmpty) return null;
-            if (content[0] is '\'' or '"') { int end = content[1..].IndexOf(content[0]); if (end < 0) return null; return HtmlEncodingTables.Label(content.Slice(1, end)); }
-            int length = 0; while (length < content.Length && content[length] is not ('\t' or '\n' or '\r' or '\f' or ' ' or ';')) length++;
+            content = TrimStart(content[1..]); if (content.IsEmpty) return null;
+            if (content[0] is (byte)'\'' or (byte)'"') { int end = content[1..].IndexOf(content[0]); if (end < 0) return null; return HtmlEncodingTables.Label(content.Slice(1, end)); }
+            int length = 0; while (length < content.Length && !Space(content[length]) && content[length] != ';') length++;
             return HtmlEncodingTables.Label(content[..length]);
         }
     }
-    private static string Ascii(ReadOnlySpan<byte> bytes)
-    {
-        return string.Create(bytes.Length, bytes, static (output, input) => { for (int i = 0; i < input.Length; i++) output[i] = (char)(input[i] is >= 65 and <= 90 ? input[i] + 32 : input[i]); });
-    }
+    private static ReadOnlySpan<byte> TrimStart(ReadOnlySpan<byte> input) { int i = 0; while (i < input.Length && Space(input[i])) i++; return input[i..]; }
     private static bool Match(ReadOnlySpan<byte> input, ReadOnlySpan<byte> literal) { if (input.Length < literal.Length) return false; for (int i = 0; i < literal.Length; i++) { byte c = input[i]; if (c is >= 65 and <= 90) c += 32; if (c != literal[i]) return false; } return true; }
-    private static bool EqualsAscii(ReadOnlySpan<char> input, string literal) => HtmlAscii.Equals(input, literal);
     private static bool Space(byte c) => c is 9 or 10 or 12 or 13 or 32;
     private static bool SpaceOrSlash(byte c) => Space(c) || c == '/';
     private static bool Letter(byte c) => c is >= 65 and <= 90 or >= 97 and <= 122;

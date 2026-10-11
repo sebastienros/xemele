@@ -12,7 +12,7 @@ public sealed class BuilderInputTests
         foreach (var group in encoding.RootElement.EnumerateArray()) foreach (var item in group.GetProperty("encodings").EnumerateArray()) foreach (var label in item.GetProperty("labels").EnumerateArray())
         {
             string expected = item.GetProperty("name").GetString()!.ToLowerInvariant(); string actual = label.GetString()!;
-            Assert.Equal(expected, HtmlEncodingTables.Label(actual)); Assert.Equal(expected, HtmlEncodingTables.Label(" \t" + actual.ToUpperInvariant() + "\r\n")); labels++;
+            Assert.Equal(expected, HtmlEncodingTables.Label(Encoding.ASCII.GetBytes(actual))); Assert.Equal(expected, HtmlEncodingTables.Label(Encoding.ASCII.GetBytes(" \t" + actual.ToUpperInvariant() + "\r\n"))); Assert.Equal(expected, HtmlEncodingTables.Label(actual)); Assert.Equal(expected, HtmlEncodingTables.Label(" \t" + actual.ToUpperInvariant() + "\r\n")); labels++;
         }
         using var indexes = System.Text.Json.JsonDocument.Parse(File.ReadAllText(Path.Combine(root, "indexes.json")));
         foreach (var item in indexes.RootElement.EnumerateObject())
@@ -29,6 +29,24 @@ public sealed class BuilderInputTests
         Assert.Null(HtmlEncodingTables.Label("not-an-encoding")); Assert.Null(HtmlEncodingTables.Label("utf-8x")); Assert.Null(HtmlEncodingTables.Label("Koi8-r"));
     }
 
+    [Theory]
+    [InlineData("<meta CHARSET=windows-1251 charset=utf-8>", "windows-1251")]
+    [InlineData("<meta content='text/html; charset=koi8-r' charset=iso-8859-15>", "iso-8859-15")]
+    [InlineData("<meta charset=iso-8859-15 content='text/html; charset=koi8-r'>", "iso-8859-15")]
+    [InlineData("<meta content='text/html; charset=windows-1251'>", "windows-1252")]
+    [InlineData("<meta content='charset = \"UTF-8\"' http-equiv=CONTENT-TYPE>", "utf-8")]
+    [InlineData("<p charset=utf-8><meta charset=windows-1251>", "windows-1251")]
+    [InlineData("<meta charset=utf-8", "windows-1252")]
+    [InlineData("<meta charset='utf-8'", "utf-8")]
+    [InlineData("<meta charset='utf-8", "windows-1252")]
+    public void BorrowedPrescanDuplicatePragmaAndTruncatedAttributes(string input, string expected)
+        => Assert.Equal(expected, HtmlByteInput.Sniff(Encoding.UTF8.GetBytes(input)).Encoding);
+    [Fact]
+    public void BorrowedPrescanDenseIgnoredAndNonAsciiNames()
+    {
+        Assert.Equal("windows-1251", HtmlByteInput.Sniff(Encoding.UTF8.GetBytes("<meta " + string.Concat(Enumerable.Repeat("x ", 450)) + "charset=windows-1251>")).Encoding);
+        Assert.Equal("utf-8", HtmlByteInput.Sniff(Encoding.UTF8.GetBytes("<ignored 数据='utf-8' charset=koi8-r><meta 数据=x charset=utf-8>")).Encoding);
+    }
     [Fact]
     public void OriginalPinnedEncodingVectors()
     {

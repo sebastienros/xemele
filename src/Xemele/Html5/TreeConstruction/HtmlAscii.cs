@@ -1,6 +1,16 @@
 namespace Xemele.Html;
 internal static class HtmlAscii
 {
+    internal static bool Equals(ReadOnlySpan<byte> text, ReadOnlySpan<byte> expected)
+    {
+        if (text.Length != expected.Length) return false;
+        for (int i = 0; i < text.Length; i++)
+        {
+            byte a = text[i], b = expected[i]; if (a is >= 65 and <= 90) a += 32; if (b is >= 65 and <= 90) b += 32;
+            if (a != b) return false;
+        }
+        return true;
+    }
     internal static bool Equals(ReadOnlySpan<char> text, ReadOnlySpan<char> expected)
     {
         if (text.Length != expected.Length) return false;

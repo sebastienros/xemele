@@ -14,6 +14,11 @@ for group in labels:
     for enc in group['encodings']:
         for label in enc['labels']:
             code += '        if (HtmlAscii.Equals(label, ' + json.dumps(label) + ')) return ' + json.dumps(enc['name'].lower()) + ';\n'
+code += '        return null;\n    }\n    internal static string? Label(ReadOnlySpan<byte> label)\n    {\n        int start = 0, end = label.Length;\n        while (start < end && label[start] is 9 or 10 or 12 or 13 or 32) start++;\n        while (end > start && label[end - 1] is 9 or 10 or 12 or 13 or 32) end--;\n        label = label[start..end];\n'
+for group in labels:
+    for enc in group['encodings']:
+        for label in enc['labels']:
+            code += '        if (HtmlAscii.Equals(label, ' + json.dumps(label) + 'u8)) return ' + json.dumps(enc['name'].lower()) + ';\n'
 code += '        return null;\n    }\n'
 for key, values in indexes.items():
     name = key.replace('-', '_')
