@@ -59,7 +59,9 @@
         "compiled-api",
         "preservation",
         "planning",
-        "measurement-parked"
+        "measurement-parked",
+        "feature-probe-preparation",
+        "bounded-measurement-parked"
       ]
     }
   ],
@@ -141,11 +143,29 @@
       "result": "skipped",
       "summary": "Not run. Prebuilt exact sequence ready for exclusive <=180-second root lease: allocation controls/scopes plus generated 1GiB retained memory, then eight BDN Dry/in-process MemoryDiagnoser cases. No real allocation or timing claims yet.",
       "artifact": null
+    },
+    {
+      "id": "feature-probe-preparation",
+      "kind": "check",
+      "revision": "0f214e5f21ac144bd4e29bb2aefd96eb43ad3b1a",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' build docs/reports/M3-sax/Probe/Probe.csproj -c Release --no-restore -m:1 -p:BuildInParallel=false -p:UseSharedCompilation=false --disable-build-servers\n'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' build benchmarks/Xemele.Benchmarks/Xemele.Benchmarks.csproj -c Release --no-restore -m:1 -p:BuildInParallel=false -p:UseSharedCompilation=false --disable-build-servers",
+      "result": "passed",
+      "summary": "Both prebuilt Release executables built with zero warnings/errors at this frozen source revision. Counters/timers disabled control mode and 8MiB generated feature retention prepared. Full 1GiB acceptance remains required under M3-corpus. Neither control, allocation nor BDN executed.",
+      "artifact": "docs/reports/M3-sax/README.md"
+    },
+    {
+      "id": "bounded-measurement-parked",
+      "kind": "check",
+      "revision": "0f214e5f21ac144bd4e29bb2aefd96eb43ad3b1a",
+      "command": "python3 -B docs/reports/M3-sax/measure.py",
+      "result": "skipped",
+      "summary": "NOT RUN pending explicit root lease. Prepared <=90s total sequence: prebuilt Probe --allocation 8388608 (<=30s), then prebuilt BDN Dry/inProcess eight MemoryDiagnoser cases within remaining budget. A separate prebuilt Probe --control 8388608 has <=20s timeout, same operations with counters/timers/retention GC disabled. Controls check copied bytes and callback count; measurement gates 0B primitive, >=4096B allocation positive control, exact 8MiB delivered and <=2MiB sampled live/<=1MiB post-disposal retention deltas. Full 1GiB remains M3-corpus; Dry timing informational only.",
+      "artifact": null
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Synchronous SAX implementation committed at 0f51da9a2715314c32ffbd898ccce1f3b7cee15c. A1/A2 pass; A3 measurement pending. No async methods/stubs or shared-path edits. Own-chat reporting fallback active after outbound auto-review rejection.",
+    "summary": "Synchronous SAX runtime implementation at 0f51da9a2715314c32ffbd898ccce1f3b7cee15c; revised frozen feature probe at 0f214e5f21ac144bd4e29bb2aefd96eb43ad3b1a. A1/A2 passed and A3 measurements pending; no runtime changes in this preparation follow-up.",
     "checks": [
       "Release builds: five projects passed",
       "SAX 20/20 and preservation 309/309 passed",
@@ -154,9 +174,10 @@
       "Allocation/BDN NOT RUN: prebuilt and parked pending explicit root lease"
     ],
     "remaining": [
-      "Grant exclusive <=180-second lease and run python3 -B docs/reports/M3-sax/measure.py at source revision 0f51da9a2715314c32ffbd898ccce1f3b7cee15c; inspect controls, retained-memory oracle and all eight BDN result rows.",
-      "Record real allocation/performance evidence, rerun validator and set implemented only if A3 passes.",
-      "Coordinator integrated verification; x64 hardware confirmation remains release scope."
+      "Root lease for prepared prebuilt Probe --control 8388608 with <=20-second timeout.",
+      "Root lease for python3 -B docs/reports/M3-sax/measure.py at prepared source 0f214e5f21ac144bd4e29bb2aefd96eb43ad3b1a with <=90-second total timeout (allocation <=30s then BDN remaining); no builds inside lease.",
+      "Record real allocation/performance evidence after inspecting controls, retention oracle and eight BDN results, then validate and set implemented if A3 passes.",
+      "Full 1GiB streaming memory acceptance remains mandatory in M3-corpus; coordinator integration checks and x64 release confirmation remain outstanding."
     ],
     "requests": [
       "Corpus provisioning owner/coordinator: make tests/corpora/xml/xmlconf/eduni/errata-2e/E14.dtd available before repository inventory wrapper; no source/API repair needed."
