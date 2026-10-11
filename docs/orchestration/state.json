@@ -23,7 +23,8 @@
     }
   ],
   "next_actions": [
-    "Main orchestrator acknowledges containing transfer revision and becomes sole main/state writer; onlymain creates nextmilestone coordinator under human scope."
+    "Create M8-only milestone coordinator, persist chat identity and explicitly transfer sole writes; GPT-6.1 Sol/high isolated implementation chats, maximum three workers.",
+    "M8 coordinator returns verified terminal handoff to main; main alone starts M9."
   ],
   "last_verified_task": "M7-gate",
   "last_integrated_revision": "a1384320f3663732b7f933ad2457b1fce524a84c",
@@ -2309,20 +2310,20 @@
     "from_chat_id": "01a12add-f725-7663-b0f9-e6687671c769",
     "thread_id": "01a12849-d2be-7292-8cd9-27c1c14b5a3d",
     "host_id": "local",
-    "status": "Durable transfer effective upon containing commit; M7relinquisheswrites. ACTIVATE with containinghash follows; mainrecordsACK.",
+    "status": "Acknowledged by main orchestrator; sole primary/main/state ownership accepted",
     "verified_gate_revision": "a1384320f3663732b7f933ad2457b1fce524a84c",
     "gate_verified_metadata_revision": "d9f0edde2a7fe171c3fc1c65e82aeffb52dece13",
     "cleanup_revision": "b312273ac1e93adbf0d8ae0767928b4bd1d31a16",
-    "transfer_revision": null,
+    "transfer_revision": "4983f23bba47cbba7bbd05752768fbfc0dabe78b",
     "transfer_revision_note": "Containingcommit hash sentexplicitly inACTIVATE; mainalone recordsACK/fullhash.",
     "created_at_utc": "2026-10-11T19:23:24.424149+00:00",
     "checkpoint": "16M7verified/48criteria/8717tests/6985earlieridentities/1253API/3388fixtures; leaseNone; allworkerterminal; onlyprimarycheckout; retainedM7/M6unpublishedcheckpoints/originalcaches intact; noM8created.",
     "report": "docs/reports/M7-gate/handoff.md",
-    "activation_sent": false,
+    "activation_sent": true,
     "setup_ready": true
   },
   "previous_coordinator_chat_id": "01a12add-f725-7663-b0f9-e6687671c769",
-  "coordinator_write_status": "M7verified/terminal; durable sole main/state writer transferred to main orchestrator01a12849-d2be-7292-8cd9-27c1c14b5a3d. M7relinquishes all repositorywrites; main alonecreates successors.",
+  "coordinator_write_status": "Main orchestrator sole primary/main/state writer; M7 terminal; preparing M8 coordinator dispatch and explicit activation.",
   "benchmark_class_attributes": "Human requirement: every benchmark class declares [MemoryDiagnoser, ShortRunJob]; no CLI job flags.",
   "chat_communication_authorization": "Direct human in this chat answered Authorize M7 coordination messages. Main standing authorization also applies; persistent authorization.",
   "m5_measurement_history": [
@@ -3224,7 +3225,7 @@
     "reason": "Pinned current WHATWG and pinned html5lib PI arrays require additive PI token/tree/serialization support. Any demonstrated exact corpus differences require witnesses; no presumed stale exclusions."
   },
   "main_orchestrator_chat_id": "01a12849-d2be-7292-8cd9-27c1c14b5a3d",
-  "successor_creation_owner": "main orchestrator only; this M7 coordinator must not create M8 or later coordinators",
+  "successor_creation_owner": "Main orchestrator 01a12849-d2be-7292-8cd9-27c1c14b5a3d only",
   "handoff_destination_chat_id": "01a12849-d2be-7292-8cd9-27c1c14b5a3d",
   "implementation_chat_policy": {
     "model": "gpt-6.1-sol",
