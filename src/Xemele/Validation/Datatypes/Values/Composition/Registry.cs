@@ -1,11 +1,12 @@
-using System.Collections.Frozen;
 namespace Xemele.Validation;
 
 internal sealed class XmlDatatypeRegistry : IXmlDatatypeRegistry
 {
     private readonly XsdDatatypeLibrary xsd;
     private readonly RngDatatypeLibrary rng, empty;
-    private readonly FrozenDictionary<SchemaName, XmlDatatypeDefinition> types;
+    // Assigned once after ingestion; no reference to this mutable backing map
+    // escapes and no method ever mutates it after construction.
+    private readonly Dictionary<SchemaName, XmlDatatypeDefinition> types;
     internal XmlDatatypeRegistry() : this([], new SchemaCompileOperation()) { }
     internal XmlDatatypeRegistry(IEnumerable<XmlDatatypeDefinition> definitions, ISchemaOperation operation)
     {
@@ -42,13 +43,11 @@ internal sealed class XmlDatatypeRegistry : IXmlDatatypeRegistry
             // Definitions already own immutable member/facet/final snapshots (M8-model).
             // Own this name map, and preserve exact definition/context identity.
             if (definition.Name.NamespaceUri is DatatypeTypes.XsdNamespace or DatatypeTypes.RngNamespace ||
-                definition.Name.NamespaceUri == "" && definition.Name.LocalName is "string" or "token" ||
                 !snapshot.TryAdd(definition.Name, definition))
                 throw new ArgumentException("Duplicate or reserved datatype definition name.", nameof(definitions));
         }
         DatatypeValues.Charge(operation);
-        if (!operation.ChargeComponents(snapshot.Count + 1, default)) throw SchemaSnapshots.Failure(operation);
-        types = snapshot.ToFrozenDictionary(); DatatypeValues.Charge(operation, 0);
+        types = snapshot; DatatypeValues.Charge(operation, 0);
     }
     public IXmlDatatypeLibrary? Find(string namespaceUri)
     {
@@ -58,6 +57,7 @@ internal sealed class XmlDatatypeRegistry : IXmlDatatypeRegistry
     public XmlDatatypeDefinition? FindType(SchemaName name)
     {
         DatatypeValues.RequireName(name);
+        if (types.TryGetValue(name, out var exact)) return exact;
         if (name.NamespaceUri == DatatypeTypes.RngNamespace || name.NamespaceUri == "" && name.LocalName is "string" or "token")
             name = DatatypeTypes.Name(name.LocalName);
         return types.GetValueOrDefault(name);

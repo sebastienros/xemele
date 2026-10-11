@@ -223,6 +223,52 @@ public sealed class CompositionTests
         using var cancellation = new CancellationTokenSource();
         Assert.Throws<OperationCanceledException>(() => new XmlDatatypeRegistry([], new Ledger(cancellation, 5)));
     }
+    [Theory]
+    [InlineData("custom")][InlineData("string")][InlineData("token")]
+    public void NoTargetNamespaceDefinitionsTakePrecedenceWithoutChangingRngLibraries(string local)
+    {
+        var name = new SchemaName("", local);
+        var definition = new XmlDatatypeDefinition(name, XmlDatatypeVariety.Atomic, DatatypeTypes.Name("decimal"), null, [], [], [], false, default);
+        var registry = new XmlDatatypeRegistry([definition], Op());
+        Assert.Same(definition, registry.FindType(name));
+        var selected = registry.FindType(name)!.BaseType!.Value;
+        var xsd = registry.Find(selected.NamespaceUri)!;
+        Assert.True(xsd.TryParse(selected, "1.00", Context, Op(), out var parsed, out _));
+        var declared = xsd.Retype(name, parsed!, Op());
+        Assert.Equal(name, declared.TypeName); Assert.True(xsd.ValueEquals(parsed!, declared, Op()));
+        var empty = registry.Find("")!;
+        Assert.True(empty.IsDefined(new("", "string"))); Assert.True(empty.IsDefined(new("", "token")));
+        Assert.True(empty.TryParse(new("", "token"), " a\tb ", Context, Op(), out var token, out _));
+        // Compare in this registry's provider set, rather than the independent static set.
+        Assert.True(xsd.TryParse(DatatypeTypes.Name("string"), "a b", Context, Op(), out var text, out _));
+        Assert.True(xsd.ValueEquals(token!, text!, Op()));
+        Assert.True(empty.TryParse(new("", "string"), " a\tb ", Context, Op(), out var preserved, out _));
+        Assert.True(xsd.TryParse(DatatypeTypes.Name("string"), " a\tb ", Context, Op(), out var expected, out _));
+        Assert.True(xsd.ValueEquals(preserved!, expected!, Op()));
+        Assert.Same(registry.FindType(DatatypeTypes.Name("string")), registry.FindType(new(DatatypeTypes.RngNamespace, "string")));
+        if (local != "string") Assert.Same(registry.FindType(DatatypeTypes.Name("string")), registry.FindType(new("", "string")));
+        if (local != "token") Assert.Same(registry.FindType(DatatypeTypes.Name("token")), registry.FindType(new("", "token")));
+    }
+    [Fact]
+    public void ManyDefinitionIngestionHasIndependentSetupCostsAndBoundedCancellation()
+    {
+        var definitions = new List<XmlDatatypeDefinition>();
+        for (int i = 0; i < 128; i++) definitions.Add(new(new("urn:many", "t" + i), XmlDatatypeVariety.Atomic,
+            DatatypeTypes.Name("string"), null, [], [], [], false, default));
+        // Entry1 + builtin visits45 + caller visits128 + seal1. Setup6 and
+        // eight components per builtin, one retained map entry per caller type.
+        long work = 47 + definitions.Count; int components = 366 + definitions.Count;
+        var op = Op(work, components); var registry = new XmlDatatypeRegistry(definitions, op);
+        Assert.Equal(0, op.RemainingWork);
+        var last = definitions[^1]; definitions.Clear(); Assert.Same(last, registry.FindType(last.Name));
+        var array = Enumerable.Range(0, 128).Select(i => last with { Name = new("urn:many", "t" + i) }).ToArray();
+        Assert.Throws<SchemaCompileException>(() => new XmlDatatypeRegistry(array, Op(work - 1, null)));
+        Assert.Throws<SchemaCompileException>(() => new XmlDatatypeRegistry(array, Op(null, components - 1)));
+        using var cancellation = new CancellationTokenSource();
+        var cancelling = new Ledger(cancellation, 46 + 64);
+        Assert.Throws<OperationCanceledException>(() => new XmlDatatypeRegistry(array, cancelling));
+        Assert.Equal(46 + 64, cancelling.Work);
+    }
     private sealed class Ledger(CancellationTokenSource? cancellation = null, long cancelAt = long.MaxValue) : ISchemaOperation
     {
         internal long Work; internal int Components;
