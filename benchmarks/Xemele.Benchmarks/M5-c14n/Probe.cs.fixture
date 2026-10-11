@@ -1,0 +1,176 @@
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using System.Text;
+using System.Text.Json;
+using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Configs;
+using BenchmarkDotNet.Running;
+using BenchmarkDotNet.Jobs;
+using BenchmarkDotNet.Toolchains.InProcess.NoEmit;
+using Xemele;
+using Xemele.Serialization;
+using Xemele.XPath;
+
+if (args is not [var mode, var output]) throw new ArgumentException("mode output required");
+if (RuntimeInformation.FrameworkDescription != ".NET 10.0.11") throw new InvalidOperationException("Actual10.0.11 required");
+if (mode is "--discover" or "--benchmark")
+{
+    var config = ManualConfig.Create(DefaultConfig.Instance).WithArtifactsPath(output).AddJob(Job.Default.WithToolchain(InProcessNoEmitToolchain.Instance).AsMutator());
+    var suites = new[] { typeof(EncodingBenchmarks), typeof(CanonicalStreamBenchmarks) }.Select(t => BenchmarkConverter.TypeToBenchmarks(t, config)).ToArray();
+    var cases = suites.SelectMany(s => s.BenchmarksCases).ToArray();
+    if (cases.Length != 12 || cases.Any(c => c.Job.Run.WarmupCount != 3 || c.Job.Run.IterationCount != 3 || c.Job.Run.LaunchCount != 1 || c.Job.Infrastructure.Toolchain != InProcessNoEmitToolchain.Instance) || cases.Select(c => c.Job.Id).Distinct().Count() != 1) throw new InvalidOperationException("12 cases/oneShortRunNoEmit required");
+    Console.WriteLine($"Actual{RuntimeInformation.FrameworkDescription}/{RuntimeInformation.ProcessArchitecture};12cases;oneShortRunNoEmit;warmup3/iterations3/launch1");
+    if (mode == "--discover") return;
+    var summaries = BenchmarkRunner.Run(suites);
+    if (summaries.Sum(s => s.Reports.Length) != 12 || summaries.SelectMany(s => s.Reports).Any(r => !r.Success || r.ResultStatistics is null)) throw new InvalidOperationException("12successful reports required");
+    return;
+}
+if (mode is not ("--control" or "--allocation")) throw new ArgumentException("unknownmode");
+if (mode == "--control")
+{
+    new Fixture().Controls();
+    File.WriteAllText(output, JsonSerializer.Serialize(new { runtime = RuntimeInformation.FrameworkDescription, architecture = RuntimeInformation.ProcessArchitecture.ToString(), exactControlsPassed = true }));
+    Console.WriteLine("Nonmeasuring exact controls passed");
+    return;
+}
+bool measure = true;
+long[] warmDistribution = new long[32], measuredDistribution = new long[32], callerTotals = new long[6], ownedTotals = new long[6];
+long begin = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+var fixture = new Fixture();
+long cold = measure ? GC.GetAllocatedBytesForCurrentThread() - begin : 0;
+fixture.Controls();
+begin = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+long warmConsumed = 0;
+for (int i = 0; i < 32; i++) warmConsumed += Sample(fixture, measure, out warmDistribution[i]);
+long warmBytes = measure ? GC.GetAllocatedBytesForCurrentThread() - begin : 0;
+begin = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+long consumed = 0;
+for (int i = 0; i < 32; i++) consumed += Sample(fixture, measure, out measuredDistribution[i]);
+long primitiveBytes = measure ? GC.GetAllocatedBytesForCurrentThread() - begin : 0;
+for (int test = 0; test < 6; test++)
+{
+    for (int i = 0; i < 16; i++) { fixture.Caller(test / 2, (test & 1) != 0); GC.KeepAlive(fixture.Owned(test / 2, (test & 1) != 0)); }
+    begin = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+    for (int i = 0; i < 128; i++) consumed += fixture.Caller(test / 2, (test & 1) != 0);
+    callerTotals[test] = measure ? GC.GetAllocatedBytesForCurrentThread() - begin : 0;
+    begin = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+    for (int i = 0; i < 128; i++) GC.KeepAlive(fixture.Owned(test / 2, (test & 1) != 0));
+    ownedTotals[test] = measure ? GC.GetAllocatedBytesForCurrentThread() - begin : 0;
+}
+begin = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+object positive = new byte[1024]; GC.KeepAlive(positive);
+long positiveBytes = measure ? GC.GetAllocatedBytesForCurrentThread() - begin : 0;
+for (int i = 0; i < 16; i++) fixture.Invalid();
+begin = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+for (int i = 0; i < 128; i++) fixture.Invalid();
+long invalidBytes = measure ? GC.GetAllocatedBytesForCurrentThread() - begin : 0;
+byte[][] retained = new byte[64][];
+long beforeHeap = GC.GetTotalMemory(true);
+for (int i = 0; i < retained.Length; i++) retained[i] = fixture.Owned(0, false);
+long afterHeap = GC.GetTotalMemory(true);
+File.WriteAllText(output, JsonSerializer.Serialize(new { mode, runtime = RuntimeInformation.FrameworkDescription, architecture = RuntimeInformation.ProcessArchitecture.ToString(), coldSetupBytes = cold, batches = 32, groupsPerBatch = 512, warmGroups = 16384, measuredGroups = 16384, encodingCallsPerGroup = 3, warmBytes, primitiveBytes, warmDistribution, measuredDistribution, warmConsumed, consumed, callerOperationsPerCase = 128, callerTotals, ownedOutputOperationsPerCase = 128, ownedTotals, positiveBytes, invalidOperations = 128, invalidBytes, retainedCount = 64, retainedOutputBytes = retained.Sum(a => a.Length), beforeHeap, afterHeap, retainedHeapDelta = afterHeap - beforeHeap }, new JsonSerializerOptions { WriteIndented = true }));
+GC.KeepAlive(fixture); GC.KeepAlive(retained);
+if (measure && (primitiveBytes != 0 || positiveBytes <= 0 || callerTotals.Any(n => n <= 0) || ownedTotals.Any(n => n <= 0))) throw new InvalidOperationException("exact primitive/positive/owned allocation gate failed");
+Console.WriteLine($"{mode}passed;actual{RuntimeInformation.FrameworkDescription};16384groups×3encodingcalls");
+
+[MethodImpl(MethodImplOptions.NoInlining)]
+static long Sample(Fixture fixture, bool measure, out long bytes)
+{
+    long start = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+    long consumed = 0;
+    for (int i = 0; i < 512; i++) consumed += fixture.EncodeGroup();
+    bytes = measure ? GC.GetAllocatedBytesForCurrentThread() - start : 0;
+    return consumed;
+}
+internal sealed class Fixture
+{
+    internal static string Input(int index) => index switch { 0 => "x<&>\r", 1 => string.Concat(Enumerable.Repeat("ASCII <&>\r", 64)), _ => "根😀 café<&>\r" };
+    private readonly string[] inputs = [Input(0), Input(1), Input(2)];
+    private readonly byte[] buffer = new byte[32768];
+    private readonly XmlDocument document;
+    private readonly IReadOnlyList<XPathItem> selection;
+    private readonly XmlCanonicalizationOptions[] options = [new() { Mode = XmlCanonicalizationMode.Inclusive10 }, new() { Mode = XmlCanonicalizationMode.Inclusive11 }, new() { Mode = XmlCanonicalizationMode.Exclusive10 }];
+    private readonly CountingStream stream = new();
+    private readonly Action<long> meter;
+    private long scalarWork;
+    internal Fixture()
+    {
+        meter = n => scalarWork += n;
+        string xml = "<r xmlns:p='urn:p' xmlns:q='urn:unused' xml:lang='en'>" + string.Concat(Enumerable.Range(0, 64).Select(i => "<p:x a='" + i + "'>根😀 &amp;&lt;&gt;&#xD;</p:x>")) + "</r>";
+        document = XmlDocument.Parse(xml);
+        selection = XPathExpression.Compile("(//node() | //@* | //namespace::*)[ancestor-or-self::*[local-name()='x']]").Evaluate(document.DocumentNode, new() { Limits = new() { MaxOperations = 50_000_000 } }).AsNodeSet();
+    }
+    internal long EncodeGroup()
+    {
+        long result = 0;
+        foreach (string input in inputs)
+        {
+            int count = CanonicalEscapes.Encode(input, buffer, 0, out int consumed, meter);
+            if (consumed != input.Length) throw new InvalidOperationException("buffer capacity");
+            result += count + buffer[count - 1];
+        }
+        return result;
+    }
+    internal long Caller(int mode, bool selected)
+    {
+        stream.Reset();
+        if (selected) XmlCanonicalizer.Canonicalize(selection, stream, options[mode]); else XmlCanonicalizer.Canonicalize(document, stream, options[mode]);
+        return stream.Count + stream.Checksum;
+    }
+    internal byte[] Owned(int mode, bool selected)
+    {
+        using var target = new MemoryStream();
+        if (selected) XmlCanonicalizer.Canonicalize(selection, target, options[mode]); else XmlCanonicalizer.Canonicalize(document, target, options[mode]);
+        return target.ToArray();
+    }
+    internal void Invalid()
+    {
+        try { CanonicalEscapes.Encode("\uD800", buffer, 0, out _); throw new InvalidOperationException("accepted invalid"); }
+        catch (ArgumentException) { }
+    }
+    internal void Controls()
+    {
+        foreach (string input in inputs)
+        {
+            byte[] expected = EncodingBenchmarks.Materialize(input);
+            int count = CanonicalEscapes.Encode(input, buffer, 0, out int consumed);
+            if (consumed != input.Length || !buffer.AsSpan(0, count).SequenceEqual(expected)) throw new InvalidOperationException("encoding oracle mismatch");
+        }
+        for (int mode = 0; mode < 3; mode++) for (int selected = 0; selected < 2; selected++)
+        {
+            byte[] bytes = Owned(mode, selected != 0); Caller(mode, selected != 0);
+            if (stream.Count != bytes.Length || bytes.Length == 0) throw new InvalidOperationException("stream control mismatch");
+        }
+        Invalid();
+    }
+}
+internal sealed class CountingStream : Stream
+{
+    internal long Count, Checksum;
+    internal void Reset() { Count = Checksum = 0; }
+    public override bool CanRead => false; public override bool CanSeek => false; public override bool CanWrite => true;
+    public override long Length => Count; public override long Position { get => Count; set => throw new NotSupportedException(); }
+    public override void Write(ReadOnlySpan<byte> bytes) { Count += bytes.Length; if (!bytes.IsEmpty) Checksum += bytes[0] + bytes[^1]; }
+    public override void Write(byte[] bytes, int offset, int count) => Write(bytes.AsSpan(offset, count));
+    public override void Flush() { } public override int Read(byte[] bytes, int offset, int count) => throw new NotSupportedException();
+    public override long Seek(long offset, SeekOrigin origin) => throw new NotSupportedException(); public override void SetLength(long value) => throw new NotSupportedException();
+}
+[MemoryDiagnoser, ShortRunJob]
+public class EncodingBenchmarks
+{
+    [Params(0, 1, 2)] public int InputIndex { get; set; }
+    private string input = ""; private readonly byte[] buffer = new byte[32768];
+    [GlobalSetup] public void Setup() => input = Fixture.Input(InputIndex);
+    internal static byte[] Materialize(string value) => Encoding.UTF8.GetBytes(value.Replace("&", "&amp;", StringComparison.Ordinal).Replace("<", "&lt;", StringComparison.Ordinal).Replace(">", "&gt;", StringComparison.Ordinal).Replace("\r", "&#xD;", StringComparison.Ordinal));
+    [Benchmark(Baseline = true)] public byte[] OwnedMaterialized() => Materialize(input);
+    [Benchmark] public int BorrowedSpan() => CanonicalEscapes.Encode(input, buffer, 0, out _);
+}
+[MemoryDiagnoser, ShortRunJob]
+public class CanonicalStreamBenchmarks
+{
+    [Params(0, 1, 2)] public int Mode { get; set; }
+    [Params(false, true)] public bool Selected { get; set; }
+    private Fixture fixture = null!;
+    [GlobalSetup] public void Setup() => fixture = new();
+    [Benchmark] public long CallerStream() => fixture.Caller(Mode, Selected);
+}
