@@ -1,0 +1,370 @@
+Async input discovery: 4 cases, 1 InProcessNoEmit job, 1024 invocations, unroll=1, warmup=3, iterations=3.
+// Validating benchmarks:
+// ***** BenchmarkRunner: Start   *****
+// ***** Found 4 benchmark(s) in total *****
+// ***** Building 1 exe(s) in Parallel: Start   *****
+// ***** Done, took 00:00:00 (0.01 sec)   *****
+// Found 4 benchmarks:
+//   InputBenchmarks.SyncBufferedText: AsyncInputBounded(Toolchain=InProcessNoEmitToolchain, InvocationCount=1024, IterationCount=3, LaunchCount=1, UnrollFactor=1, WarmupCount=3)
+//   InputBenchmarks.AsyncBufferedText: AsyncInputBounded(Toolchain=InProcessNoEmitToolchain, InvocationCount=1024, IterationCount=3, LaunchCount=1, UnrollFactor=1, WarmupCount=3)
+//   InputBenchmarks.AsyncSuspendedText: AsyncInputBounded(Toolchain=InProcessNoEmitToolchain, InvocationCount=1024, IterationCount=3, LaunchCount=1, UnrollFactor=1, WarmupCount=3)
+//   InputBenchmarks.NoOp: AsyncInputBounded(Toolchain=InProcessNoEmitToolchain, InvocationCount=1024, IterationCount=3, LaunchCount=1, UnrollFactor=1, WarmupCount=3)
+
+// **************************
+// Benchmark: InputBenchmarks.SyncBufferedText: AsyncInputBounded(Toolchain=InProcessNoEmitToolchain, InvocationCount=1024, IterationCount=3, LaunchCount=1, UnrollFactor=1, WarmupCount=3)
+// *** Execute ***
+// Launch: 1 / 1
+// ! Failed to set up priority High for process System.Diagnostics.Process (dotnet). Make sure you have the right permissions. Message: Permission denied
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.8
+// Runtime=.NET 10.0.11 (10.0.11, 10.0.1126.37416), Arm64 RyuJIT armv8.0-a
+// GC=Concurrent Workstation
+// HardwareIntrinsics=ArmBase+AdvSimd,AES,CRC32,DP,RDM,SHA1,SHA256 VectorSize=128
+// Job: AsyncInputBounded(Toolchain=InProcessNoEmitToolchain, InvocationCount=1024, IterationCount=3, LaunchCount=1, UnrollFactor=1, WarmupCount=3)
+
+OverheadJitting  1: 1 op, 50750.00 ns, 50.7500 us/op
+WorkloadJitting  1: 1 op, 258375.00 ns, 258.3750 us/op
+
+OverheadWarmup   1: 1024 op, 1292.00 ns, 1.2617 ns/op
+OverheadWarmup   2: 1024 op, 1333.00 ns, 1.3018 ns/op
+OverheadWarmup   3: 1024 op, 1292.00 ns, 1.2617 ns/op
+OverheadWarmup   4: 1024 op, 1291.00 ns, 1.2607 ns/op
+OverheadWarmup   5: 1024 op, 1250.00 ns, 1.2207 ns/op
+OverheadWarmup   6: 1024 op, 1333.00 ns, 1.3018 ns/op
+OverheadWarmup   7: 1024 op, 1291.00 ns, 1.2607 ns/op
+
+OverheadActual   1: 1024 op, 1334.00 ns, 1.3027 ns/op
+OverheadActual   2: 1024 op, 1292.00 ns, 1.2617 ns/op
+OverheadActual   3: 1024 op, 1292.00 ns, 1.2617 ns/op
+OverheadActual   4: 1024 op, 1250.00 ns, 1.2207 ns/op
+OverheadActual   5: 1024 op, 1208.00 ns, 1.1797 ns/op
+OverheadActual   6: 1024 op, 1292.00 ns, 1.2617 ns/op
+OverheadActual   7: 1024 op, 1416.00 ns, 1.3828 ns/op
+OverheadActual   8: 1024 op, 1333.00 ns, 1.3018 ns/op
+OverheadActual   9: 1024 op, 1375.00 ns, 1.3428 ns/op
+OverheadActual  10: 1024 op, 1250.00 ns, 1.2207 ns/op
+OverheadActual  11: 1024 op, 1208.00 ns, 1.1797 ns/op
+OverheadActual  12: 1024 op, 1250.00 ns, 1.2207 ns/op
+OverheadActual  13: 1024 op, 1209.00 ns, 1.1807 ns/op
+OverheadActual  14: 1024 op, 1209.00 ns, 1.1807 ns/op
+OverheadActual  15: 1024 op, 1334.00 ns, 1.3027 ns/op
+OverheadActual  16: 1024 op, 1208.00 ns, 1.1797 ns/op
+OverheadActual  17: 1024 op, 1250.00 ns, 1.2207 ns/op
+
+WorkloadWarmup   1: 1024 op, 321417.00 ns, 313.8838 ns/op
+WorkloadWarmup   2: 1024 op, 335875.00 ns, 328.0029 ns/op
+WorkloadWarmup   3: 1024 op, 325250.00 ns, 317.6270 ns/op
+
+WorkloadActual   1: 1024 op, 430791.00 ns, 420.6943 ns/op
+WorkloadActual   2: 1024 op, 311542.00 ns, 304.2402 ns/op
+WorkloadActual   3: 1024 op, 310625.00 ns, 303.3447 ns/op
+
+WorkloadResult   1: 1024 op, 429541.00 ns, 419.4736 ns/op
+WorkloadResult   2: 1024 op, 310292.00 ns, 303.0195 ns/op
+WorkloadResult   3: 1024 op, 309375.00 ns, 302.1240 ns/op
+// GC:  0 0 0 0 1024
+// Threading:  0 0 1024
+
+// ! Failed to set up priority Normal for process System.Diagnostics.Process (dotnet). Make sure you have the right permissions. Message: Operation not permitted
+
+Mean = 341.539 ns, StdErr = 38.968 ns (11.41%), N = 3, StdDev = 67.495 ns
+Min = 302.124 ns, Q1 = 302.572 ns, Median = 303.020 ns, Q3 = 361.247 ns, Max = 419.474 ns
+IQR = 58.675 ns, LowerFence = 214.560 ns, UpperFence = 449.259 ns
+ConfidenceInterval = [-889.817 ns; 1,572.896 ns] (CI 99.9%), Margin = 1,231.356 ns (360.53% of Mean)
+Skewness = 0.38, Kurtosis = 0.67, MValue = 2
+
+// ** Remained 3 (75.0%) benchmark(s) to run. Estimated finish 2026-10-10 19:32 (0h 0m from now) **
+// **************************
+// Benchmark: InputBenchmarks.AsyncBufferedText: AsyncInputBounded(Toolchain=InProcessNoEmitToolchain, InvocationCount=1024, IterationCount=3, LaunchCount=1, UnrollFactor=1, WarmupCount=3)
+// *** Execute ***
+// Launch: 1 / 1
+// ! Failed to set up priority High for process System.Diagnostics.Process (dotnet). Make sure you have the right permissions. Message: Permission denied
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.8
+// Runtime=.NET 10.0.11 (10.0.11, 10.0.1126.37416), Arm64 RyuJIT armv8.0-a
+// GC=Concurrent Workstation
+// HardwareIntrinsics=ArmBase+AdvSimd,AES,CRC32,DP,RDM,SHA1,SHA256 VectorSize=128
+// Job: AsyncInputBounded(Toolchain=InProcessNoEmitToolchain, InvocationCount=1024, IterationCount=3, LaunchCount=1, UnrollFactor=1, WarmupCount=3)
+
+OverheadJitting  1: 1 op, 62667.00 ns, 62.6670 us/op
+WorkloadJitting  1: 1 op, 1148375.00 ns, 1.1484 ms/op
+
+OverheadWarmup   1: 1024 op, 1333.00 ns, 1.3018 ns/op
+OverheadWarmup   2: 1024 op, 1375.00 ns, 1.3428 ns/op
+OverheadWarmup   3: 1024 op, 1375.00 ns, 1.3428 ns/op
+OverheadWarmup   4: 1024 op, 1416.00 ns, 1.3828 ns/op
+OverheadWarmup   5: 1024 op, 1334.00 ns, 1.3027 ns/op
+
+OverheadActual   1: 1024 op, 1458.00 ns, 1.4238 ns/op
+OverheadActual   2: 1024 op, 1250.00 ns, 1.2207 ns/op
+OverheadActual   3: 1024 op, 1334.00 ns, 1.3027 ns/op
+OverheadActual   4: 1024 op, 1250.00 ns, 1.2207 ns/op
+OverheadActual   5: 1024 op, 1292.00 ns, 1.2617 ns/op
+OverheadActual   6: 1024 op, 1292.00 ns, 1.2617 ns/op
+OverheadActual   7: 1024 op, 1333.00 ns, 1.3018 ns/op
+OverheadActual   8: 1024 op, 1209.00 ns, 1.1807 ns/op
+OverheadActual   9: 1024 op, 1208.00 ns, 1.1797 ns/op
+OverheadActual  10: 1024 op, 1208.00 ns, 1.1797 ns/op
+OverheadActual  11: 1024 op, 1333.00 ns, 1.3018 ns/op
+OverheadActual  12: 1024 op, 1250.00 ns, 1.2207 ns/op
+OverheadActual  13: 1024 op, 1208.00 ns, 1.1797 ns/op
+OverheadActual  14: 1024 op, 1334.00 ns, 1.3027 ns/op
+OverheadActual  15: 1024 op, 1333.00 ns, 1.3018 ns/op
+OverheadActual  16: 1024 op, 1334.00 ns, 1.3027 ns/op
+OverheadActual  17: 1024 op, 1334.00 ns, 1.3027 ns/op
+OverheadActual  18: 1024 op, 1208.00 ns, 1.1797 ns/op
+
+WorkloadWarmup   1: 1024 op, 503000.00 ns, 491.2109 ns/op
+WorkloadWarmup   2: 1024 op, 519625.00 ns, 507.4463 ns/op
+WorkloadWarmup   3: 1024 op, 528917.00 ns, 516.5205 ns/op
+
+WorkloadActual   1: 1024 op, 788584.00 ns, 770.1016 ns/op
+WorkloadActual   2: 1024 op, 509708.00 ns, 497.7617 ns/op
+WorkloadActual   3: 1024 op, 544375.00 ns, 531.6162 ns/op
+
+WorkloadResult   1: 1024 op, 787292.00 ns, 768.8398 ns/op
+WorkloadResult   2: 1024 op, 508416.00 ns, 496.5000 ns/op
+WorkloadResult   3: 1024 op, 543083.00 ns, 530.3545 ns/op
+// GC:  0 0 0 1968 1024
+// Threading:  0 0 1024
+
+// ! Failed to set up priority Normal for process System.Diagnostics.Process (dotnet). Make sure you have the right permissions. Message: Operation not permitted
+
+Mean = 598.565 ns, StdErr = 85.697 ns (14.32%), N = 3, StdDev = 148.431 ns
+Min = 496.500 ns, Q1 = 513.427 ns, Median = 530.354 ns, Q3 = 649.597 ns, Max = 768.840 ns
+IQR = 136.170 ns, LowerFence = 309.172 ns, UpperFence = 853.852 ns
+ConfidenceInterval = [-2,109.367 ns; 3,306.497 ns] (CI 99.9%), Margin = 2,707.932 ns (452.40% of Mean)
+Skewness = 0.36, Kurtosis = 0.67, MValue = 2
+
+// ** Remained 2 (50.0%) benchmark(s) to run. Estimated finish 2026-10-10 19:32 (0h 0m from now) **
+// **************************
+// Benchmark: InputBenchmarks.AsyncSuspendedText: AsyncInputBounded(Toolchain=InProcessNoEmitToolchain, InvocationCount=1024, IterationCount=3, LaunchCount=1, UnrollFactor=1, WarmupCount=3)
+// *** Execute ***
+// Launch: 1 / 1
+// ! Failed to set up priority High for process System.Diagnostics.Process (dotnet). Make sure you have the right permissions. Message: Permission denied
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.8
+// Runtime=.NET 10.0.11 (10.0.11, 10.0.1126.37416), Arm64 RyuJIT armv8.0-a
+// GC=Concurrent Workstation
+// HardwareIntrinsics=ArmBase+AdvSimd,AES,CRC32,DP,RDM,SHA1,SHA256 VectorSize=128
+// Job: AsyncInputBounded(Toolchain=InProcessNoEmitToolchain, InvocationCount=1024, IterationCount=3, LaunchCount=1, UnrollFactor=1, WarmupCount=3)
+
+OverheadJitting  1: 1 op, 0.00 ns, 0.0000 ns/op
+WorkloadJitting  1: 1 op, 19417.00 ns, 19.4170 us/op
+
+OverheadWarmup   1: 1024 op, 1209.00 ns, 1.1807 ns/op
+OverheadWarmup   2: 1024 op, 1416.00 ns, 1.3828 ns/op
+OverheadWarmup   3: 1024 op, 1375.00 ns, 1.3428 ns/op
+OverheadWarmup   4: 1024 op, 1250.00 ns, 1.2207 ns/op
+OverheadWarmup   5: 1024 op, 1292.00 ns, 1.2617 ns/op
+OverheadWarmup   6: 1024 op, 1458.00 ns, 1.4238 ns/op
+OverheadWarmup   7: 1024 op, 1333.00 ns, 1.3018 ns/op
+
+OverheadActual   1: 1024 op, 1500.00 ns, 1.4648 ns/op
+OverheadActual   2: 1024 op, 1458.00 ns, 1.4238 ns/op
+OverheadActual   3: 1024 op, 1375.00 ns, 1.3428 ns/op
+OverheadActual   4: 1024 op, 1458.00 ns, 1.4238 ns/op
+OverheadActual   5: 1024 op, 1333.00 ns, 1.3018 ns/op
+OverheadActual   6: 1024 op, 1459.00 ns, 1.4248 ns/op
+OverheadActual   7: 1024 op, 1334.00 ns, 1.3027 ns/op
+OverheadActual   8: 1024 op, 1375.00 ns, 1.3428 ns/op
+OverheadActual   9: 1024 op, 1291.00 ns, 1.2607 ns/op
+OverheadActual  10: 1024 op, 1459.00 ns, 1.4248 ns/op
+OverheadActual  11: 1024 op, 1291.00 ns, 1.2607 ns/op
+OverheadActual  12: 1024 op, 1417.00 ns, 1.3838 ns/op
+OverheadActual  13: 1024 op, 1250.00 ns, 1.2207 ns/op
+OverheadActual  14: 1024 op, 1375.00 ns, 1.3428 ns/op
+OverheadActual  15: 1024 op, 1291.00 ns, 1.2607 ns/op
+OverheadActual  16: 1024 op, 1375.00 ns, 1.3428 ns/op
+OverheadActual  17: 1024 op, 1292.00 ns, 1.2617 ns/op
+OverheadActual  18: 1024 op, 1375.00 ns, 1.3428 ns/op
+OverheadActual  19: 1024 op, 1166.00 ns, 1.1387 ns/op
+OverheadActual  20: 1024 op, 1459.00 ns, 1.4248 ns/op
+
+WorkloadWarmup   1: 1024 op, 3787041.00 ns, 3.6983 us/op
+WorkloadWarmup   2: 1024 op, 2889458.00 ns, 2.8217 us/op
+WorkloadWarmup   3: 1024 op, 4376167.00 ns, 4.2736 us/op
+
+WorkloadActual   1: 1024 op, 2859250.00 ns, 2.7922 us/op
+WorkloadActual   2: 1024 op, 2764792.00 ns, 2.7000 us/op
+WorkloadActual   3: 1024 op, 2751083.00 ns, 2.6866 us/op
+
+WorkloadResult   1: 1024 op, 2857875.00 ns, 2.7909 us/op
+WorkloadResult   2: 1024 op, 2763417.00 ns, 2.6986 us/op
+WorkloadResult   3: 1024 op, 2749708.00 ns, 2.6853 us/op
+// GC:  0 0 0 327680 1024
+// Threading:  1028 0 1024
+
+// ! Failed to set up priority Normal for process System.Diagnostics.Process (dotnet). Make sure you have the right permissions. Message: Operation not permitted
+
+Mean = 2.725 us, StdErr = 0.033 us (1.22%), N = 3, StdDev = 0.058 us
+Min = 2.685 us, Q1 = 2.692 us, Median = 2.699 us, Q3 = 2.745 us, Max = 2.791 us
+IQR = 0.053 us, LowerFence = 2.613 us, UpperFence = 2.824 us
+ConfidenceInterval = [1.676 us; 3.774 us] (CI 99.9%), Margin = 1.049 us (38.51% of Mean)
+Skewness = 0.36, Kurtosis = 0.67, MValue = 2
+
+// ** Remained 1 (25.0%) benchmark(s) to run. Estimated finish 2026-10-10 19:32 (0h 0m from now) **
+// **************************
+// Benchmark: InputBenchmarks.NoOp: AsyncInputBounded(Toolchain=InProcessNoEmitToolchain, InvocationCount=1024, IterationCount=3, LaunchCount=1, UnrollFactor=1, WarmupCount=3)
+// *** Execute ***
+// Launch: 1 / 1
+// ! Failed to set up priority High for process System.Diagnostics.Process (dotnet). Make sure you have the right permissions. Message: Permission denied
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.8
+// Runtime=.NET 10.0.11 (10.0.11, 10.0.1126.37416), Arm64 RyuJIT armv8.0-a
+// GC=Concurrent Workstation
+// HardwareIntrinsics=ArmBase+AdvSimd,AES,CRC32,DP,RDM,SHA1,SHA256 VectorSize=128
+// Job: AsyncInputBounded(Toolchain=InProcessNoEmitToolchain, InvocationCount=1024, IterationCount=3, LaunchCount=1, UnrollFactor=1, WarmupCount=3)
+
+OverheadJitting  1: 1 op, 0.00 ns, 0.0000 ns/op
+WorkloadJitting  1: 1 op, 10458.00 ns, 10.4580 us/op
+
+OverheadWarmup   1: 1024 op, 1250.00 ns, 1.2207 ns/op
+OverheadWarmup   2: 1024 op, 1333.00 ns, 1.3018 ns/op
+OverheadWarmup   3: 1024 op, 1292.00 ns, 1.2617 ns/op
+OverheadWarmup   4: 1024 op, 1292.00 ns, 1.2617 ns/op
+OverheadWarmup   5: 1024 op, 1208.00 ns, 1.1797 ns/op
+
+OverheadActual   1: 1024 op, 1250.00 ns, 1.2207 ns/op
+OverheadActual   2: 1024 op, 1208.00 ns, 1.1797 ns/op
+OverheadActual   3: 1024 op, 1458.00 ns, 1.4238 ns/op
+OverheadActual   4: 1024 op, 1333.00 ns, 1.3018 ns/op
+OverheadActual   5: 1024 op, 1208.00 ns, 1.1797 ns/op
+OverheadActual   6: 1024 op, 1333.00 ns, 1.3018 ns/op
+OverheadActual   7: 1024 op, 1250.00 ns, 1.2207 ns/op
+OverheadActual   8: 1024 op, 1292.00 ns, 1.2617 ns/op
+OverheadActual   9: 1024 op, 1250.00 ns, 1.2207 ns/op
+OverheadActual  10: 1024 op, 1250.00 ns, 1.2207 ns/op
+OverheadActual  11: 1024 op, 1208.00 ns, 1.1797 ns/op
+OverheadActual  12: 1024 op, 1209.00 ns, 1.1807 ns/op
+OverheadActual  13: 1024 op, 1250.00 ns, 1.2207 ns/op
+OverheadActual  14: 1024 op, 1292.00 ns, 1.2617 ns/op
+OverheadActual  15: 1024 op, 1208.00 ns, 1.1797 ns/op
+
+WorkloadWarmup   1: 1024 op, 1458.00 ns, 1.4238 ns/op
+WorkloadWarmup   2: 1024 op, 1417.00 ns, 1.3838 ns/op
+WorkloadWarmup   3: 1024 op, 1417.00 ns, 1.3838 ns/op
+
+WorkloadActual   1: 1024 op, 1416.00 ns, 1.3828 ns/op
+WorkloadActual   2: 1024 op, 1417.00 ns, 1.3838 ns/op
+WorkloadActual   3: 1024 op, 1417.00 ns, 1.3838 ns/op
+
+WorkloadResult   1: 1024 op, 166.00 ns, 0.1621 ns/op
+WorkloadResult   2: 1024 op, 167.00 ns, 0.1631 ns/op
+WorkloadResult   3: 1024 op, 167.00 ns, 0.1631 ns/op
+// GC:  0 0 0 0 1024
+// Threading:  0 0 1024
+
+// ! Failed to set up priority Normal for process System.Diagnostics.Process (dotnet). Make sure you have the right permissions. Message: Operation not permitted
+
+Mean = 0.163 ns, StdErr = 0.000 ns (0.20%), N = 3, StdDev = 0.001 ns
+Min = 0.162 ns, Q1 = 0.163 ns, Median = 0.163 ns, Q3 = 0.163 ns, Max = 0.163 ns
+IQR = 0.000 ns, LowerFence = 0.162 ns, UpperFence = 0.164 ns
+ConfidenceInterval = [0.152 ns; 0.173 ns] (CI 99.9%), Margin = 0.010 ns (6.32% of Mean)
+Skewness = -0.38, Kurtosis = 0.67, MValue = 2
+
+// ** Remained 0 (0.0%) benchmark(s) to run. Estimated finish 2026-10-10 19:32 (0h 0m from now) **
+// ***** BenchmarkRunner: Finish  *****
+
+// * Export *
+  docs/reports/M3-async-input/benchmark-artifacts/results/InputBenchmarks-report.csv
+  docs/reports/M3-async-input/benchmark-artifacts/results/InputBenchmarks-report-github.md
+  docs/reports/M3-async-input/benchmark-artifacts/results/InputBenchmarks-report.html
+
+// * Detailed results *
+InputBenchmarks.SyncBufferedText: AsyncInputBounded(Toolchain=InProcessNoEmitToolchain, InvocationCount=1024, IterationCount=3, LaunchCount=1, UnrollFactor=1, WarmupCount=3)
+Runtime = ; GC = 
+Mean = 341.539 ns, StdErr = 38.968 ns (11.41%), N = 3, StdDev = 67.495 ns
+Min = 302.124 ns, Q1 = 302.572 ns, Median = 303.020 ns, Q3 = 361.247 ns, Max = 419.474 ns
+IQR = 58.675 ns, LowerFence = 214.560 ns, UpperFence = 449.259 ns
+ConfidenceInterval = [-889.817 ns; 1,572.896 ns] (CI 99.9%), Margin = 1,231.356 ns (360.53% of Mean)
+Skewness = 0.38, Kurtosis = 0.67, MValue = 2
+-------------------- Histogram --------------------
+[299.376 ns ; 422.222 ns) | @@@
+---------------------------------------------------
+
+InputBenchmarks.AsyncBufferedText: AsyncInputBounded(Toolchain=InProcessNoEmitToolchain, InvocationCount=1024, IterationCount=3, LaunchCount=1, UnrollFactor=1, WarmupCount=3)
+Runtime = ; GC = 
+Mean = 598.565 ns, StdErr = 85.697 ns (14.32%), N = 3, StdDev = 148.431 ns
+Min = 496.500 ns, Q1 = 513.427 ns, Median = 530.354 ns, Q3 = 649.597 ns, Max = 768.840 ns
+IQR = 136.170 ns, LowerFence = 309.172 ns, UpperFence = 853.852 ns
+ConfidenceInterval = [-2,109.367 ns; 3,306.497 ns] (CI 99.9%), Margin = 2,707.932 ns (452.40% of Mean)
+Skewness = 0.36, Kurtosis = 0.67, MValue = 2
+-------------------- Histogram --------------------
+[361.422 ns ; 648.505 ns) | @@
+[648.505 ns ; 903.918 ns) | @
+---------------------------------------------------
+
+InputBenchmarks.AsyncSuspendedText: AsyncInputBounded(Toolchain=InProcessNoEmitToolchain, InvocationCount=1024, IterationCount=3, LaunchCount=1, UnrollFactor=1, WarmupCount=3)
+Runtime = ; GC = 
+Mean = 2.725 us, StdErr = 0.033 us (1.22%), N = 3, StdDev = 0.058 us
+Min = 2.685 us, Q1 = 2.692 us, Median = 2.699 us, Q3 = 2.745 us, Max = 2.791 us
+IQR = 0.053 us, LowerFence = 2.613 us, UpperFence = 2.824 us
+ConfidenceInterval = [1.676 us; 3.774 us] (CI 99.9%), Margin = 1.049 us (38.51% of Mean)
+Skewness = 0.36, Kurtosis = 0.67, MValue = 2
+-------------------- Histogram --------------------
+[2.633 us ; 2.744 us) | @@
+[2.744 us ; 2.843 us) | @
+---------------------------------------------------
+
+InputBenchmarks.NoOp: AsyncInputBounded(Toolchain=InProcessNoEmitToolchain, InvocationCount=1024, IterationCount=3, LaunchCount=1, UnrollFactor=1, WarmupCount=3)
+Runtime = ; GC = 
+Mean = 0.163 ns, StdErr = 0.000 ns (0.20%), N = 3, StdDev = 0.001 ns
+Min = 0.162 ns, Q1 = 0.163 ns, Median = 0.163 ns, Q3 = 0.163 ns, Max = 0.163 ns
+IQR = 0.000 ns, LowerFence = 0.162 ns, UpperFence = 0.164 ns
+ConfidenceInterval = [0.152 ns; 0.173 ns] (CI 99.9%), Margin = 0.010 ns (6.32% of Mean)
+Skewness = -0.38, Kurtosis = 0.67, MValue = 2
+-------------------- Histogram --------------------
+[0.162 ns ; 0.163 ns) | @@@
+---------------------------------------------------
+
+// * Summary *
+
+BenchmarkDotNet v0.15.8, macOS Sequoia 15.8.1 (24H32) [Darwin 24.6.0]
+Unknown processor
+.NET SDK 10.0.400
+  [Host] : .NET 10.0.11 (10.0.11, 10.0.1126.37416), Arm64 RyuJIT armv8.0-a
+
+Job=AsyncInputBounded  Toolchain=InProcessNoEmitToolchain  InvocationCount=1024  
+IterationCount=3  LaunchCount=1  UnrollFactor=1  
+WarmupCount=3  
+
+| Method             | Mean          | Error         | StdDev      | Ratio | RatioSD | Allocated | Alloc Ratio |
+|------------------- |--------------:|--------------:|------------:|------:|--------:|----------:|------------:|
+| SyncBufferedText   |   341.5391 ns | 1,231.3565 ns |  67.4948 ns | 1.024 |    0.24 |         - |          NA |
+| AsyncBufferedText  |   598.5648 ns | 2,707.9320 ns | 148.4309 ns | 1.794 |    0.48 |       2 B |          NA |
+| AsyncSuspendedText | 2,724.9349 ns | 1,049.2466 ns |  57.5127 ns | 8.169 |    1.26 |     320 B |          NA |
+| NoOp               |     0.1628 ns |     0.0103 ns |   0.0006 ns | 0.000 |    0.00 |         - |          NA |
+
+// * Warnings *
+ZeroMeasurement
+  InputBenchmarks.NoOp: AsyncInputBounded -> The method duration is indistinguishable from the empty method duration
+MinIterationTime
+  InputBenchmarks.SyncBufferedText: AsyncInputBounded   -> The minimum observed iteration time is 310.625us which is very small. It's recommended to increase it to at least 100ms using more operations.
+  InputBenchmarks.AsyncBufferedText: AsyncInputBounded  -> The minimum observed iteration time is 509.708us which is very small. It's recommended to increase it to at least 100ms using more operations.
+  InputBenchmarks.AsyncSuspendedText: AsyncInputBounded -> The minimum observed iteration time is 2.751ms which is very small. It's recommended to increase it to at least 100ms using more operations.
+  InputBenchmarks.NoOp: AsyncInputBounded               -> The minimum observed iteration time is 1.416us which is very small. It's recommended to increase it to at least 100ms using more operations.
+
+// * Legends *
+  Mean        : Arithmetic mean of all measurements
+  Error       : Half of 99.9% confidence interval
+  StdDev      : Standard deviation of all measurements
+  Ratio       : Mean of the ratio distribution ([Current]/[Baseline])
+  RatioSD     : Standard deviation of the ratio distribution ([Current]/[Baseline])
+  Allocated   : Allocated memory per single operation (managed only, inclusive, 1KB = 1024B)
+  Alloc Ratio : Allocated memory ratio distribution ([Current]/[Baseline])
+  1 ns        : 1 Nanosecond (0.000000001 sec)
+
+// * Diagnostic Output - MemoryDiagnoser *
+
+
+// ***** BenchmarkRunner: End *****
+Run time: 00:00:00 (0.16 sec), executed benchmarks: 4
+
+Global total time: 00:00:00 (0.56 sec), executed benchmarks: 4
+// * Artifacts cleanup *
+Artifacts cleanup is finished
