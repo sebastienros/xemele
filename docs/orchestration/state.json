@@ -112,7 +112,39 @@
   "benchmark_policy": "Successful previous measurements retained; future changed runtime measurements require complete preparation and exclusive grant.",
   "benchmark_class_attributes": "Human requirement: every benchmark class declares [MemoryDiagnoser, ShortRunJob]; no CLI job flags.",
   "benchmark_owner": null,
-  "active_measurement_lease": null,
+  "active_measurement_lease": {
+    "id": "M8-rng-temporal-measurement-1",
+    "status": "granted",
+    "owner_chat": "01a12c6c-b333-71d3-877f-0d186618e21d",
+    "maximum_seconds": 650,
+    "start_by_utc": "2026-10-11T23:02:00Z",
+    "absolute_expiry_utc": "2026-10-11T23:12:50Z",
+    "sequence": [
+      {
+        "task": "M8-rng-compile",
+        "source": "d2066ee11a6c2616a5806ce67ae04385ab703316",
+        "preparation": "35842767b2791948b5bfab50c5cd32a48bfd09c5",
+        "manifest_sha256": "dad039ab3cd24e58cebb5bb0e7e5379c3155b60a837ef21a9f0695295f55ba93",
+        "command": "python3 /Users/sebastienros/.codex/worktrees/d8e0/xemele/docs/reports/M8-rng-compile/lease.py --granted dad039ab3cd24e58cebb5bb0e7e5379c3155b60a837ef21a9f0695295f55ba93",
+        "maximum_seconds": 30
+      },
+      {
+        "task": "M8-datatypes-temporal",
+        "source": "8ed24fb19fc88feb45fa79c856e7ea3c9d216c09",
+        "preparation": "be88b3351f9128127be0369907f18dd610864f01",
+        "manifest_sha256": "3a43c3fb7d433f2d33d60c0f558e480bb230e5e73039ea07390c718dab2b153d",
+        "command": "python3 /Users/sebastienros/.codex/worktrees/9925/xemele/docs/reports/M8-datatypes-temporal/measure.py --granted 3a43c3fb7d433f2d33d60c0f558e480bb230e5e73039ea07390c718dab2b153d",
+        "maximum_seconds": 600
+      }
+    ],
+    "identity_preflight": "Root independently verified198 and445 identities plus ps permission",
+    "pending": null,
+    "created_utc": "2026-10-11T22:57:27.199904+00:00",
+    "expiry_utc": "2026-10-11T23:08:17.199904+00:00",
+    "attempts": 1,
+    "park": "Fresh explicit ACKs from Xemele main, RNG, temporal, text/binary; GregsEx M1 coordinator ACK after all seven workers terminal, and independent GregsEx main ACK as sole active actor. Root owns no other workloads; reviewers read-only. No global host-idle claim.",
+    "release": "Immediately record durable RELEASE on lifecycle completion/failure before raw inspection; notify all actors. Root serial execution only, stop on first failure, no retries/builds/source writes."
+  },
   "verification_policy_update": "User convergence discipline: define acceptance/evidence/integration checks before dispatch; batch concrete blockers with criterion, evidence, smallest fix and proving check; preserve valid evidence; offline focused harness repair first; after two cycles coordinator chooses one bounded resolution; reuse infrastructure; build outside one bounded measurement lease with one park acknowledgement collection and prompt release; focused task integration and comprehensive milestone gates. No speculative hardening blocks integration.",
   "cleanup_policy": "Automatically archive completed chats and remove worktrees once merged verified durably summarized and no review/build need. Do not save generated test/benchmark artifacts or ignored-output archives; preserve required implementation/source and concise verification summaries.",
   "artifact_policy": {
@@ -195,36 +227,7 @@
   "milestone_progress": "9 of27 M8 tasks verified and cleaned; RELAX NG, temporal and text/binary workers active.",
   "blockers": [],
   "pending_decisions": [],
-  "timing_queue": [
-    {
-      "id": "M8-rng-temporal-measurement-1",
-      "status": "preparing park, not granted",
-      "owner_chat": "01a12c6c-b333-71d3-877f-0d186618e21d",
-      "maximum_seconds": 650,
-      "start_by_utc": "2026-10-11T23:02:00Z",
-      "absolute_expiry_utc": "2026-10-11T23:12:50Z",
-      "sequence": [
-        {
-          "task": "M8-rng-compile",
-          "source": "d2066ee11a6c2616a5806ce67ae04385ab703316",
-          "preparation": "35842767b2791948b5bfab50c5cd32a48bfd09c5",
-          "manifest_sha256": "dad039ab3cd24e58cebb5bb0e7e5379c3155b60a837ef21a9f0695295f55ba93",
-          "command": "python3 /Users/sebastienros/.codex/worktrees/d8e0/xemele/docs/reports/M8-rng-compile/lease.py --granted dad039ab3cd24e58cebb5bb0e7e5379c3155b60a837ef21a9f0695295f55ba93",
-          "maximum_seconds": 30
-        },
-        {
-          "task": "M8-datatypes-temporal",
-          "source": "8ed24fb19fc88feb45fa79c856e7ea3c9d216c09",
-          "preparation": "be88b3351f9128127be0369907f18dd610864f01",
-          "manifest_sha256": "3a43c3fb7d433f2d33d60c0f558e480bb230e5e73039ea07390c718dab2b153d",
-          "command": "python3 /Users/sebastienros/.codex/worktrees/9925/xemele/docs/reports/M8-datatypes-temporal/measure.py --granted 3a43c3fb7d433f2d33d60c0f558e480bb230e5e73039ea07390c718dab2b153d",
-          "maximum_seconds": 600
-        }
-      ],
-      "identity_preflight": "Root independently verified198 and445 identities plus ps permission",
-      "pending": "Fresh main, RNG, temporal and text/binary PARK ACKs received; awaiting fresh GregsEx aggregate consent after its handoff."
-    }
-  ],
+  "timing_queue": [],
   "completed_assignments": [
     {
       "task_id": "M8-contracts",
