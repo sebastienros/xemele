@@ -34,29 +34,137 @@
     {
       "id": "M5-corpus-A1",
       "description": "Adapt validating XML and canonical vectors with honest algorithm-specific coverage.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "frozen-profile-review",
+        "profile-regeneration"
+      ]
     },
     {
       "id": "M5-corpus-A2",
       "description": "Applicable DTD validation cases and all declared canonical vectors/differentials pass.",
       "status": "pending",
-      "evidence": []
+      "evidence": [
+        "first-full-corpus",
+        "canonical-corrected",
+        "libxml-inclusive11",
+        "ordinary-controls"
+      ]
     },
     {
       "id": "M5-corpus-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
       "status": "pending",
-      "evidence": []
+      "evidence": [
+        "ordinary-controls",
+        "api-union",
+        "task-validation"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
-  "blockers": [],
+  "implementation": [
+    "tests/corpora/dtd/applicability.json and effective10-validity-overrides.json",
+    "tests/corpora/c14n/vectors.json",
+    "docs/reports/M5-corpus/Corpus.Driver.csproj, source-context driver and bounded execution support",
+    "tests/Xemele.Conformance.Tests/Dtd/ and Canonicalization/ controls",
+    "tests/Xemele.Differential.Tests/DtdCanonical/ algorithm-specific reference support",
+    "docs/reports/M5-corpus/partial.md and first-reference-audit.json"
+  ],
+  "evidence": [
+    {
+      "id": "frozen-profile-review",
+      "kind": "review",
+      "revision": "7dc2a3c9cd60f2a0ce373cde9b2724b414ee1051",
+      "command": "Coordinator independent source-only review of frozen manifest and vectors",
+      "result": "passed",
+      "summary": "All 2585 IDs and 3386 unchanged resource hashes retained; expectations pinned before execution.",
+      "artifact": "docs/reports/M5-corpus/partial.md"
+    },
+    {
+      "id": "profile-regeneration",
+      "kind": "check",
+      "revision": "21808e2b71c6f3098ed2a1db8bc84e245f194052",
+      "command": "python3 -B docs/reports/M5-corpus/classify.py --check",
+      "result": "passed",
+      "summary": "976 associated DTD and 1609 prior grammar cases; four explicit effective-XML10 expectation corrections, no exclusions.",
+      "artifact": "docs/reports/M5-corpus/partial.md"
+    },
+    {
+      "id": "first-full-corpus",
+      "kind": "check",
+      "revision": "9d378975ffd7d84d7efdc0af45ba7053a2231ee3",
+      "command": "python3 -B docs/reports/M5-corpus/run_corpus.py",
+      "result": "failed",
+      "summary": "Actual .NET 10.0.11 Arm64; all 2585 cases and 3386 hashes processed. 24 first failures: 20 DTD expectations and 4 canonical reference preparation differences; 32 product canonical pins passed. Four DTD source-profile corrections leave 16 owning runtime witnesses pending.",
+      "artifact": "docs/reports/M5-corpus/partial.md"
+    },
+    {
+      "id": "canonical-corrected",
+      "kind": "check",
+      "revision": "21808e2b71c6f3098ed2a1db8bc84e245f194052",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 docs/reports/M5-corpus/bin/Release/net10.0/Xemele.Tests.dll --canonical-only artifacts/M5-corpus/canonical-corrected.json",
+      "result": "passed",
+      "summary": "32 exact vectors and all 26 declared matching algorithm reference comparisons passed; per-row exceptions preserve complete output.",
+      "artifact": "docs/reports/M5-corpus/partial.md"
+    },
+    {
+      "id": "libxml-inclusive11",
+      "kind": "check",
+      "revision": "21808e2b71c6f3098ed2a1db8bc84e245f194052",
+      "command": "python3 -B docs/reports/M5-corpus/libxml_reference.py",
+      "result": "passed",
+      "summary": "Six source-applicable full-document Inclusive 1.1 cases passed libxml 2.9.13 xmllint, explicit product mode 1 to libxml mode 2 mapping.",
+      "artifact": "docs/reports/M5-corpus/partial.md"
+    },
+    {
+      "id": "ordinary-controls",
+      "kind": "check",
+      "revision": "21808e2b71c6f3098ed2a1db8bc84e245f194052",
+      "command": "Pinned --fx-version 10.0.11 conformance executable, namespaces Xemele.Conformance.Tests.Dtd and Xemele.Conformance.Tests.Canonicalization; differential executable -namespace Xemele.Differential.Tests.DtdCanonical",
+      "result": "passed",
+      "summary": "10 conformance and 12 authored differential checks passed. Injection and refusal controls cover serialization continuation and rejected infrastructure validity classification. Release builds passed with zero warnings/errors.",
+      "artifact": "docs/reports/M5-corpus/partial.md"
+    },
+    {
+      "id": "api-union",
+      "kind": "check",
+      "revision": "21808e2b71c6f3098ed2a1db8bc84e245f194052",
+      "command": "python3 -B docs/reports/M5-c14n/check_api.py --checker /private/tmp/xemele-m5-integration/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll",
+      "result": "passed",
+      "summary": "948 compiled API members matched; no public API or runtime source changes.",
+      "artifact": "docs/reports/M5-corpus/partial.md"
+    },
+    {
+      "id": "task-validation",
+      "kind": "check",
+      "revision": "21808e2b71c6f3098ed2a1db8bc84e245f194052",
+      "command": "python3 -B tools/planning/tasks.py validate",
+      "result": "passed",
+      "summary": "156 task records valid.",
+      "artifact": "docs/reports/M5-corpus/partial.md"
+    }
+  ],
+  "blockers": [
+    "A2 pending 16 runtime witnesses outside corpus ownership: 8 PE declaration nesting, 2 unused ENTITY default semantics, 3 lexical ElementValid source witnesses, 2 namespace token NCName constraints, 1 fully-read undeclared entity source validity proof. Await verified owning repairs before full DTD rerun."
+  ],
   "handoff": {
-    "summary": "",
-    "checks": [],
-    "remaining": [],
-    "requests": []
+    "summary": "Partial corpus implementation and honest evidence committed; canonical coverage passes, A2 remains pending owning runtime repairs. Raw retained for coordinator inspection; worker parked.",
+    "checks": [
+      "All 2585 first-run cases serialized; 3386 immutable hashes verified.",
+      "Corrected canonical-only 32 exact / 26 BCL references and 6 Inclusive11 libxml references pass.",
+      "10 conformance controls, 12 authored differentials, API 948 and task validation 156 pass.",
+      "No allocations or benchmark workloads run."
+    ],
+    "remaining": [
+      "Integrate verified owning runtime repairs, then update dependencies via coordinator and rerun applicable DTD closure.",
+      "Independent review of all 831 reference-label classifications, including 441 associated DTD differences.",
+      "Final relevant preservation checks and A2/A3 acceptance."
+    ],
+    "requests": [
+      "DTD compilation/model owner: separate unused-default syntactic and semantic ENTITY checks; use NCName for Name-typed namespace tokens.",
+      "DTD parser/composition owner: retain Proper Declaration/PE Nesting validity evidence.",
+      "Ordered source-instance provenance owner: bounded lexical ElementValid witness and narrow fully-read undeclared-entity invalidity proof, tied to unchanged complete source profile.",
+      "Coordinator inspect retained raw before any cleanup; no full DTD repeat before verified repairs."
+    ]
   }
 }
