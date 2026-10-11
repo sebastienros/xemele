@@ -173,6 +173,7 @@ public sealed class TemporalTests
         Order("dateTime", "1998-12-31T23:59:60.5", "1998-12-31T23:59:60.5Z", XmlValueOrder.Indeterminate);
         Order("dateTime", "1998-12-31T23:59:60.9", "1999-01-01T00:00:00", XmlValueOrder.Less);
         Order("dateTime", "1998-12-31T09:59:60", "1998-12-31T23:59:60Z", XmlValueOrder.Indeterminate);
+        Order("dateTime", "1998-12-31T23:59:60.5Z", "1998-12-31T09:59:60", XmlValueOrder.Indeterminate);
         Order("dateTime", "1998-12-31T09:59:60", "1999-01-01T00:00:00Z", XmlValueOrder.Indeterminate);
         Order("dateTime", "1998-12-31T09:59:60", "1999-01-01T00:00:00.00001Z", XmlValueOrder.Less);
         Order("time", "23:59:59.999Z", "23:59:60Z", XmlValueOrder.Less);
@@ -256,6 +257,37 @@ public sealed class TemporalTests
         Assert.False(Provider.TryParse(DatatypeTypes.All["gYear"], "2000", Context, stop, out value, out error)); Assert.Null(value); Assert.Same(DatatypeErrors.Stopped, error);
         var fault = new Ledger { CallerFault = true };
         Assert.Throws<InvalidOperationException>(() => Parse("gYear", "2000", fault));
+    }
+    [Fact] public void ArbitraryArithmeticAndOutputHaveIndependentUnitsAndInsideLoopCancellation()
+    {
+        const int count = 128;
+        var integerType = typeof(TemporalDatatypeProvider).GetNestedType("Integer", System.Reflection.BindingFlags.NonPublic)!;
+        var constructor = integerType.GetConstructor(System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance,
+            null, [typeof(uint[]), typeof(int), typeof(int)], null)!;
+        // N base10^9 limbs, each1. Multiplicationby2 writesNdigits, a carry
+        // slot, and checks two leading slots:1+N+1+2 work,N+2 components.
+        var large = constructor.Invoke([Enumerable.Repeat(1u, count).ToArray(), count, 1]);
+        var multiply = typeof(TemporalDatatypeProvider).GetMethod("Multiply", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic)!;
+        var ledger = new Ledger(); var product = multiply.Invoke(null, [large, 2, ledger])!;
+        Assert.Equal(count + 4, ledger.Work); Assert.Equal(count + 2, ledger.Components);
+        var remainder = typeof(TemporalDatatypeProvider).GetMethod("Remainder", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic)!;
+        ledger = new(); var mod = remainder.Invoke(null, [product, 3, ledger])!;
+        Assert.Equal(count + 1, ledger.Work); Assert.Equal(0, ledger.Components);
+        // 10^9 ≡1(mod3): product is2N≡1. Inspect inline payload, not another
+        // implementation of the production traversal.
+        Assert.Equal(1u, integerType.GetField("small", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!.GetValue(mod));
+        ledger = new() { FailAt = 50 };
+        var canceled = Assert.Throws<System.Reflection.TargetInvocationException>(() => multiply.Invoke(null, [large, 2, ledger]));
+        Assert.IsType<OperationCanceledException>(canceled.InnerException); Assert.Equal(49, ledger.Work);
+        var makeKey = typeof(TemporalDatatypeProvider).GetMethod("MakeKey", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic)!;
+        ledger = new() { FailAt = 100 };
+        canceled = Assert.Throws<System.Reflection.TargetInvocationException>(() => makeKey.Invoke(null, [large, "", ledger, 0]));
+        Assert.IsType<OperationCanceledException>(canceled.InnerException); Assert.Equal(99, ledger.Work);
+        var smallConstructor = integerType.GetConstructor(System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance, null, [typeof(int)], null)!;
+        var small = smallConstructor.Invoke([123]); ledger = new(); var key = makeKey.Invoke(null, [small, "", ledger, 0])!;
+        Assert.Equal("123", key.GetType().GetProperty("Whole")!.GetValue(key));
+        // One size visit; three division(2)/digit-write(1) steps; three copies.
+        Assert.Equal(13, ledger.Work); Assert.Equal(4, ledger.Components);
     }
 
     private sealed class Ledger : ISchemaOperation

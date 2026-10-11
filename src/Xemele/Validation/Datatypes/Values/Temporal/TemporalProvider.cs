@@ -1,10 +1,8 @@
-using System.Numerics;
-
 namespace Xemele.Validation;
 
 // All arbitrary-precision arithmetic is confined to construction. Published
 // keys own decimal strings; comparing/hashing them needs no scratch allocation.
-internal sealed class TemporalDatatypeProvider : IDatatypeFamilyProvider
+internal sealed partial class TemporalDatatypeProvider : IDatatypeFamilyProvider
 {
     public DatatypeFamily Family => DatatypeFamily.Temporal;
     public bool TryParse(DatatypeMetadata type, ReadOnlySpan<char> normalized, SchemaNamespaceContext context,
@@ -32,7 +30,7 @@ internal sealed class TemporalDatatypeProvider : IDatatypeFamilyProvider
     private TemporalValue? ParseCalendar(DatatypeMetadata type, ref Reader r)
     {
         var p = type.Primitive!.Value;
-        BigInteger year = 2000;
+        Integer year = 2000;
         int month = 1, day = 1, hour = 0, minute = 0, second = 0;
         string fraction = "";
         if (p is DatatypePrimitive.DateTime or DatatypePrimitive.Date or DatatypePrimitive.GYearMonth or DatatypePrimitive.GYear)
@@ -89,7 +87,7 @@ internal sealed class TemporalDatatypeProvider : IDatatypeFamilyProvider
                 : CouldBeLeapBoundary(month, day, hour, minute, op);
             if (leap) phase = -1;
         }
-        BigInteger whole;
+        Integer whole;
         if (p == DatatypePrimitive.Time)
         {
             // Recurrent time discards the date after UTC normalization (§3.2.8).
@@ -119,14 +117,14 @@ internal sealed class TemporalDatatypeProvider : IDatatypeFamilyProvider
     {
         bool negative = r.Take('-');
         if (!r.Take('P')) return null;
-        BigInteger months = 0, seconds = 0;
+        Integer months = 0, seconds = 0;
         string fraction = "";
         bool time = false, any = false, timeItem = false;
         int previous = -1;
         while (!r.End)
         {
             if (!time && r.Take('T')) { time = true; previous = 2; if (r.End) return null; }
-            if (!r.Integer(out BigInteger number)) return null;
+            if (!r.Integer(out Integer number)) return null;
             bool fractional = r.Take('.');
             if (fractional && !r.Fraction(out fraction)) return null;
             char marker = r.Read();
@@ -146,11 +144,11 @@ internal sealed class TemporalDatatypeProvider : IDatatypeFamilyProvider
             if (fraction.Length != 0)
             {
                 seconds = Add(seconds, -1, op);
-                Components(op, Blocks(fraction.Length) + 1); Work(op, fraction.Length);
+                Components(op, Blocks(fraction.Length) + 1);
                 // Trimmed positive fraction has a nonzero final digit. Ten's
-                // complement is consequently trimmed too; no BigInteger scale.
-                fraction = string.Create(fraction.Length, fraction, static (destination, source) =>
-                { for (int i = 0; i < source.Length; i++) destination[i] = (char)('0' + (i == source.Length - 1 ? 10 : 9) - (source[i] - '0')); });
+                // complement is consequently trimmed too; no Integer scale.
+                fraction = string.Create(fraction.Length, (fraction, op), static (destination, state) =>
+                { for (int i = 0; i < state.fraction.Length; i++) { Work(state.op, 1); destination[i] = (char)('0' + (i == state.fraction.Length - 1 ? 10 : 9) - (state.fraction[i] - '0')); } });
             }
         }
         // Appendix E: all four starts have day=1/time=0. Month addition cannot
@@ -163,20 +161,20 @@ internal sealed class TemporalDatatypeProvider : IDatatypeFamilyProvider
         return new(DatatypeTypes.Name(type.LocalName), DatatypePrimitive.Duration, this, true, a, b, c, d);
     }
 
-    private static Key DurationPoint(int year, int month, BigInteger months, BigInteger seconds, string fraction, ISchemaOperation op)
+    private static Key DurationPoint(int year, int month, Integer months, Integer seconds, string fraction, ISchemaOperation op)
     {
         // Appendix E adds the signed year field directly, including arithmetic
         // year zero. That intermediate field is not a legal lexical calendar.
-        BigInteger index = Add(months, year * 12 + month - 1, op);
-        BigInteger quotient = FloorDivide(index, 12, op);
+        Integer index = Add(months, year * 12 + month - 1, op);
+        Integer quotient = FloorDivide(index, 12, op);
         int m = (int)Add(index, Negate(Multiply(quotient, 12, op), op), op) + 1;
         return MakeKey(Add(Multiply(DurationDayNumber(quotient, m, op), 86400, op), seconds, op), fraction, op);
     }
 
-    private static BigInteger DurationDayNumber(BigInteger year, int month, ISchemaOperation op)
+    private static Integer DurationDayNumber(Integer year, int month, ISchemaOperation op)
     {
-        BigInteger preceding = Add(year, -1, op);
-        BigInteger days = Add(Add(Multiply(preceding, 365, op), FloorDivide(preceding, 4, op), op),
+        Integer preceding = Add(year, -1, op);
+        Integer days = Add(Add(Multiply(preceding, 365, op), FloorDivide(preceding, 4, op), op),
             Add(Negate(FloorDivide(preceding, 100, op), op), FloorDivide(preceding, 400, op), op), op);
         for (int m = 1; m < month; m++) { Work(op, 1); days = Add(days, DaysInMonth(year, m, op), op); }
         return days;
@@ -201,17 +199,17 @@ internal sealed class TemporalDatatypeProvider : IDatatypeFamilyProvider
 
     // XSD1.0 uses signed nonzero Gregorian years, not XSD1.1 astronomical
     // lexical years. Appendix E's divisibility rule is applied to that year.
-    private static BigInteger DayNumber(BigInteger year, int month, int day, ISchemaOperation op)
+    private static Integer DayNumber(Integer year, int month, int day, ISchemaOperation op)
     {
         bool negative = year.Sign < 0;
-        BigInteger preceding = negative ? Negate(year, op) : Add(year, -1, op);
-        BigInteger days = Add(Add(Multiply(preceding, 365, op), Divide(preceding, 4, op), op),
+        Integer preceding = negative ? Negate(year, op) : Add(year, -1, op);
+        Integer days = Add(Add(Multiply(preceding, 365, op), Divide(preceding, 4, op), op),
             Add(Negate(Divide(preceding, 100, op), op), Divide(preceding, 400, op), op), op);
         if (negative) days = Negate(days, op);
         for (int m = 1; m < month; m++) { Work(op, 1); days = Add(days, DaysInMonth(year, m, op), op); }
         return Add(days, day - 1, op);
     }
-    private static int DaysInMonth(BigInteger year, int month, ISchemaOperation op)
+    private static int DaysInMonth(Integer year, int month, ISchemaOperation op)
     {
         Work(op, 1);
         if (month == 2)
@@ -307,21 +305,9 @@ internal sealed class TemporalDatatypeProvider : IDatatypeFamilyProvider
     private static void Work(ISchemaOperation op, long work) { if (!op.Charge(work, default)) throw new Stopped(); }
     private static void Components(ISchemaOperation op, int count) { if (!op.ChargeComponents(count, default)) throw new Stopped(); }
     private static int Blocks(int length) => length / 16 + (length % 16 == 0 ? 0 : 1);
-    // Reserve a node and each possible 32-bit result/scratch limb before CLR
-    // arithmetic. Small values can use inline BigInteger storage but still pay
-    // these stable units. Each small-operand operation visits at most N limbs.
-    private static int Limbs(BigInteger value, ISchemaOperation op)
-    { Work(op, 1); return (value.GetByteCount() - 1) / 4 + 1; }
-    private static void Arithmetic(ISchemaOperation op, BigInteger a, BigInteger b)
-    { int n = Math.Max(Limbs(a, op), Limbs(b, op)); Work(op, n); Components(op, checked(n + 2)); }
-    private static BigInteger Add(BigInteger a, BigInteger b, ISchemaOperation op) { Arithmetic(op, a, b); return a + b; }
-    private static BigInteger Multiply(BigInteger a, int b, ISchemaOperation op) { Arithmetic(op, a, b); return a * b; }
-    private static BigInteger Divide(BigInteger a, int b, ISchemaOperation op) { Arithmetic(op, a, b); return a / b; }
-    private static BigInteger Remainder(BigInteger a, int b, ISchemaOperation op) { Arithmetic(op, a, b); return a % b; }
-    private static BigInteger Negate(BigInteger a, ISchemaOperation op) { Arithmetic(op, a, 0); return -a; }
-    private static BigInteger FloorDivide(BigInteger a, int b, ISchemaOperation op)
-    { var q = Divide(a, b, op); return a.Sign < 0 && !Remainder(a, b, op).IsZero ? Add(q, -1, op) : q; }
-    private static Key MakeKey(BigInteger whole, string fraction, ISchemaOperation op, int phase = 0)
+    private static int Limbs(Integer value, ISchemaOperation op)
+    { Work(op, 1); return Math.Max(1, value.Count); }
+    private static Key MakeKey(Integer whole, string fraction, ISchemaOperation op, int phase = 0)
     {
         bool negative = whole.Sign < 0; if (negative) whole = Negate(whole, op);
         int limbs = Limbs(whole, op);
@@ -331,16 +317,21 @@ internal sealed class TemporalDatatypeProvider : IDatatypeFamilyProvider
         char[] buffer = new char[(int)capacity]; int position = buffer.Length;
         do
         {
-            Arithmetic(op, whole, 10);
-            whole = BigInteger.DivRem(whole, 10, out var remainder);
+            whole = DivideRemainder(whole, 10, op, out var remainder);
             Work(op, 1); buffer[--position] = (char)('0' + (int)remainder);
         } while (!whole.IsZero);
         if (negative) { Work(op, 1); buffer[--position] = '-'; }
         int length = buffer.Length - position;
-        Components(op, Blocks(length) + 1); Work(op, length);
-        string text = new(buffer, position, length); Poll(op);
+        Components(op, Blocks(length) + 1);
+        string text = Copy(buffer.AsSpan(position, length), op); Poll(op);
         return new(text, fraction, phase);
     }
+
+    private readonly ref struct CopyState(ReadOnlySpan<char> source, ISchemaOperation operation)
+    { internal readonly ReadOnlySpan<char> Source = source; internal readonly ISchemaOperation Operation = operation; }
+    private static string Copy(ReadOnlySpan<char> input, ISchemaOperation operation) =>
+        string.Create(input.Length, new CopyState(input, operation), static (destination, state) =>
+        { for (int i = 0; i < destination.Length; i++) { Work(state.Operation, 1); destination[i] = state.Source[i]; } });
 
     private ref struct Reader(ReadOnlySpan<char> source, ISchemaOperation operation)
     {
@@ -358,7 +349,7 @@ internal sealed class TemporalDatatypeProvider : IDatatypeFamilyProvider
             for (int i = 0; i < 2; i++) { char c = Read(); if (c is < '0' or > '9') return false; Work(Operation, 1); value = value * 10 + c - '0'; }
             return true;
         }
-        internal bool Integer(out BigInteger value)
+        internal bool Integer(out Integer value)
         {
             value = 0; int start = Position;
             while (Peek() is >= '0' and <= '9')
@@ -374,8 +365,8 @@ internal sealed class TemporalDatatypeProvider : IDatatypeFamilyProvider
             while (end > start && At(end - 1) == '0') end--;
             int length = end - start;
             if (length == 0) { fraction = ""; return true; }
-            Components(Operation, Blocks(length) + 1); Work(Operation, length);
-            fraction = new string(input.Slice(start, length)); return true;
+            Components(Operation, Blocks(length) + 1);
+            fraction = Copy(input.Slice(start, length), Operation); return true;
         }
     }
 }
