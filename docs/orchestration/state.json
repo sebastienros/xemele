@@ -12,7 +12,7 @@
       "task_id": "M7-builder",
       "branch": "codex/m7-builder-continuation",
       "base_revision": "b5a449e353526d791b4739b0b733d1896cbe44d1",
-      "stage": "Exclusive measurement lease GRANTED m7-builder-5d4de99; sole frozen wrapper; no other writes/workloads/rawinspection.",
+      "stage": "Measurement lease RELEASED successfully before raw inspection; root/worker raw analysis and final handoff pending.",
       "claim_revision": "713f91d",
       "source_review": {
         "reviewed_checkpoint": "21304465c5be45a3ba273a2f025028f2485cd962",
@@ -2167,7 +2167,7 @@
   },
   "measurement_lease": {
     "id": "m7-builder-5d4de99",
-    "status": "GRANTED",
+    "status": "RELEASED",
     "owner_chat_id": "01a12b74-6d45-73e2-99c4-abb2963835d3",
     "grant_coordinator": "01a12add-f725-7663-b0f9-e6687671c769",
     "prepared_revision": "5d4de9951572e1b79d5480b7d1af8c820d19d6e6",
@@ -2199,7 +2199,20 @@
     },
     "scoped_process_inventory": "empty relevant workloads;31persistent idle RoslynkMCP processes preserved",
     "granted_at_utc": "2026-10-11 15:18:28 UTC",
-    "release_rule": "Immediate root durable RELEASE after lifecycle completion or failure, before raw inspection/reports/retry. Worker waits for release; no other commands/source edits/builds/tests duringlease."
+    "release_rule": "Immediate root durable RELEASE after lifecycle completion or failure, before raw inspection/reports/retry. Worker waits for release; no other commands/source edits/builds/tests duringlease.",
+    "lifecycle": {
+      "wrapper_exit": 0,
+      "initial_freeze": 0,
+      "final_freeze": 0,
+      "allocation_exit": 0,
+      "BDN_exit": 0,
+      "no_child": true,
+      "phase": "complete",
+      "manifest_unchanged": true,
+      "executor_handle": "87287"
+    },
+    "raw_inspection": "Not begun; durable release precedes inspection",
+    "release_notice": "Worker immediate lifecycle-only completion received; all children reaped, no source writes/retries/inspection."
   },
   "offline_corpus_setup": {
     "checkout": "/private/tmp/xemele-m3-integration",
