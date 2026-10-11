@@ -1464,7 +1464,9 @@
       "verified": 7,
       "total": 16,
       "in_progress": [
-        "M3-async-writer"
+        "M3-async-writer",
+        "M3-sax",
+        "M3-reader"
       ],
       "remaining_gate": "M3-gate"
     }
@@ -1505,12 +1507,13 @@
   },
   "measurement_lease": {
     "id": "m3-async-writer-3a0e407-allocation",
-    "status": "granted",
+    "status": "released",
     "revision": "3a0e4070ac696655a624fbd8b32fb76a8fd42dc9",
     "runtime_revision": "80119207072d0eb292f9cb6bf186bc8cf2bdb3fd",
     "duration_limit_seconds": 40,
     "scope": "One corrected identicalwarmbatch ownprocessprobe<=20s then onlyifpassed prebuilt19syncwriter/allocationtests<=20s. No BDN/timing. Own implementation peers archived/nochildren, reviewerterminal/root noexecution. Unrelated Silex.Test97392active25CPU: doesnotenter ownprocess/currentthread allocation counts; timingdeferred until quiet. No build/restore/generation/source/retries/optionschange. Originalperthreadzero/positive/noIOgatesunchanged, preciseprocesswide genuineasyncscope preserved. Release immediately.",
-    "repeat_reason": "First128B CURRENT THREAD across16000bufferedgroups warmshape mismatch; harnessonly identical200warmbatches+perbatchallocationdistribution, coldinitseparate, no runtime/gatechange. One secondboundedallocationattempt, no incrementalfurtherretries."
+    "repeat_reason": "First128B CURRENT THREAD across16000bufferedgroups warmshape mismatch; harnessonly identical200warmbatches+perbatchallocationdistribution, coldinitseparate, no runtime/gatechange. One secondboundedallocationattempt, no incrementalfurtherretries.",
+    "result": "Second probe exit1: isolated steadybatch577128B both counters, other9990; sync19/BDN notrun. No children. Stop incremental retries; coordinator bounded allocation attribution next."
   },
   "offline_corpus_setup": {
     "checkout": "/private/tmp/xemele-m3-integration",
