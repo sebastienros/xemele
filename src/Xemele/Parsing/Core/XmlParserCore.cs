@@ -79,12 +79,15 @@ internal sealed partial class XmlParserCore : IDisposable, IAsyncDisposable
     private bool? standalone;
     private Name deliveredName;
 
-    public XmlParserCore(XmlParseOptions options, Uri? sourceUri = null, bool asyncResources = false)
+    public XmlParserCore(XmlParseOptions options, Uri? sourceUri = null, bool asyncResources = false,
+        OperationBudget? operationBudget = null)
     {
         ArgumentNullException.ThrowIfNull(options);
         if (sourceUri is { IsAbsoluteUri: false }) throw new ArgumentException("Source URI must be absolute.", nameof(sourceUri));
         this.asyncResources = asyncResources;
-        budget = new(options, default);
+        // Composition supplies one sequential budget; its immutable options are
+        // authoritative. Existing callers retain independent operation state.
+        budget = operationBudget ?? new(options, default);
         position = new(sourceUri);
     }
 

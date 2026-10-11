@@ -1,0 +1,128 @@
+{
+  "schema_version": 1,
+  "id": "M6-parser-budget",
+  "milestone": "M6",
+  "title": "Share exact parser budgets across composed resources",
+  "kind": "feature",
+  "status": "verified",
+  "owner": "M6 coordinator",
+  "branch": "codex/m6-parser-budget",
+  "base_revision": "aea7d0cc90357d79f6f29605aaa0463b2bc26f43",
+  "integration_revision": "e1d75eadf4f57bc8bd56b724d9f116935486caf9",
+  "depends_on": [
+    "M6-contracts",
+    "M6-resource-kinds",
+    "M5-gate"
+  ],
+  "goals": [
+    "G09"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/integration.md"
+  ],
+  "owns": [
+    "src/Xemele/Parsing/Core/XmlParserCore.cs",
+    "src/Xemele/Parsing/Dom/ByteDomAdapter.cs",
+    "tests/Xemele.Tests/M6-parser-budget/",
+    "docs/reports/M6-parser-budget/"
+  ],
+  "api_or_output": "Internal optional OperationBudget injection and byte-adapter final source identity; no public API change",
+  "acceptance": [
+    {
+      "id": "M6-parser-budget-A1",
+      "description": "Add optional internal shared OperationBudget to core constructor and byte DOM adapter, retaining unchanged default behavior. Supplied budget options authoritative; byte adapter source URI reaches decoder/core/diagnostics. No scanning or callback algorithm changes.",
+      "status": "passed",
+      "evidence": [
+        "branch-focused",
+        "earlier-api",
+        "source-review",
+        "integrated-checks"
+      ]
+    },
+    {
+      "id": "M6-parser-budget-A2",
+      "description": "Focused char/byte tests prove aggregate exact/one-over Unicode scalar and expansion counters across parses, depth release, default independent behavior, declared encoding and final source identity. Preserve earlier functionality/public API.",
+      "status": "passed",
+      "evidence": [
+        "branch-focused",
+        "earlier-api",
+        "source-review",
+        "integrated-checks"
+      ]
+    },
+    {
+      "id": "M6-parser-budget-A3",
+      "description": "Record tested implementation and integrated focused evidence using only verified dependencies. Constructor-only change has no new steady-state algorithm; cumulative allocation regressions remain milestone gate.",
+      "status": "passed",
+      "evidence": [
+        "branch-focused",
+        "earlier-api",
+        "source-review",
+        "integrated-checks"
+      ]
+    }
+  ],
+  "implementation": [
+    "XmlParserCore optional internal operationBudget constructor argument",
+    "ByteDomAdapter optional operationBudget/sourceUri arguments; six SharedParserBudgetTests"
+  ],
+  "evidence": [
+    {
+      "id": "branch-focused",
+      "kind": "check",
+      "revision": "d850d4fdd3a291db9acae25b3938417fb6040522",
+      "command": "Pinned dotnet --fx-version 10.0.11 Xemele.Tests.dll -method Xemele.Tests.ParserBudget.SharedParserBudgetTests.* -result-xml artifacts/M6-parser-budget/focused-entity.xml",
+      "result": "passed",
+      "summary": "6 passed, 0 failed/skipped; xUnit actual .NET 10.0.11.",
+      "artifact": "docs/reports/M6-parser-budget/validation.md"
+    },
+    {
+      "id": "earlier-api",
+      "kind": "check",
+      "revision": "d850d4fdd3a291db9acae25b3938417fb6040522",
+      "command": "Pinned actual 10.0.11 xUnit SyntaxTests.*, ContentTests.*, ResolverTests.*; python3 docs/reports/M5-validation-model/check_api.py; python3 tools/planning/tasks.py validate; git diff --check",
+      "result": "passed",
+      "summary": "107 earlier tests passed; 951 compiled API members matched; 162 tasks validated; whitespace clean; scoped process scan no repair workloads.",
+      "artifact": "docs/reports/M6-parser-budget/validation.md"
+    },
+    {
+      "id": "source-review",
+      "kind": "review",
+      "revision": "d850d4fdd3a291db9acae25b3938417fb6040522",
+      "command": "Independent read-only contract_review inspection of narrow runtime diff and six focused tests",
+      "result": "passed",
+      "summary": "Optional budget options authoritative across core/decoder/sink; default independent behavior and final URI preserved; no actionable findings. No executable checks by reviewer.",
+      "artifact": "docs/reports/M6-parser-budget/validation.md"
+    },
+    {
+      "id": "initial-build",
+      "kind": "check",
+      "revision": "971866f8c39935792d8a106272e4359a7e185448",
+      "command": "Pinned Release test build",
+      "result": "failed",
+      "summary": "Test helper used nonexistent TextContent and omitted xUnit cancellation token; corrected in d1781e6, later fresh builds pass without warnings.",
+      "artifact": "docs/reports/M6-parser-budget/validation.md"
+    },
+    {
+      "id": "integrated-checks",
+      "kind": "integration",
+      "revision": "e1d75eadf4f57bc8bd56b724d9f116935486caf9",
+      "command": "Fresh isolated integration cache restore/forced Release build actual RuntimeFrameworkVersion10.0.11; pinned --fx-version10.0.11 xUnit focused+Syntax+Content+Resolver; scoped API union; planning validate; diff check",
+      "result": "passed",
+      "summary": "113 passed 0 failed/skipped on actual .NET10.0.11; zero build warnings/errors; API951 unchanged; planning162; whitespace clean. Raw XML/logs inspected.",
+      "artifact": "docs/reports/M6-parser-budget/validation.md"
+    }
+  ],
+  "blockers": [],
+  "handoff": {
+    "summary": "Narrow internal budget composition enables exact native parser accounting for catalog/XInclude; no public API or scanning/callback algorithm changes.",
+    "checks": [
+      "6 focused and 107 earlier tests actual .NET 10.0.11; API951; planning162; independent source approval"
+    ],
+    "remaining": [
+      "Cumulative allocation regression remains M6 gate; no allocations/timing run in this constructor-only repair."
+    ],
+    "requests": []
+  }
+}

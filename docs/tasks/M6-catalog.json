@@ -7,11 +7,12 @@
   "status": "in_progress",
   "owner": "M6 coordinator worker M6-catalog",
   "branch": "codex/m6-catalog",
-  "base_revision": "9a7ac80b3aa62540601b376b0c97bdaeab5510e2",
+  "base_revision": "a0267fba4ba8dce9e79717fef248c45b4b1355a9",
   "integration_revision": null,
   "depends_on": [
     "M6-contracts",
-    "M6-resource-kinds"
+    "M6-resource-kinds",
+    "M6-parser-budget"
   ],
   "goals": [
     "G09"
@@ -54,9 +55,11 @@
   "evidence": [],
   "blockers": [],
   "handoff": {
-    "summary": "",
+    "summary": "Reclaimed same preserved candidate after verified exact shared parser budget repair; consume only integrated dependency.",
     "checks": [],
-    "remaining": [],
+    "remaining": [
+      "Replace interim counting with native shared OperationBudget and validate declared encoding/finalSource; fresh focused/API/sample/harness preparation required. No measurement lease active."
+    ],
     "requests": []
   }
 }
