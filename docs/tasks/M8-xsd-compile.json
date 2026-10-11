@@ -4,7 +4,7 @@
   "milestone": "M8",
   "title": "XSD schema composition and declarations",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M8 coordinator01a12c6c-b333-71d3-877f-0d186618e21d / assigned isolated worker",
   "branch": "codex/m8-xsd-compile",
   "base_revision": "e83c84546eceec056e4840c2d12ea2e04d886630",
@@ -34,29 +34,131 @@
     {
       "id": "M8-xsd-compile-A1",
       "description": "Implement XSD 1.0 component loading, include/import/redefine, namespace resolution, declaration and derivation graph.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "focused-correctness",
+        "bounded-source-review"
+      ]
     },
     {
       "id": "M8-xsd-compile-A2",
       "description": "Test schema validity, substitution groups, component collisions, cycles and source diagnostics.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "focused-correctness",
+        "bounded-source-review"
+      ]
     },
     {
       "id": "M8-xsd-compile-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "frozen-compiler-api",
+        "public-api",
+        "xml-only-consumer",
+        "resolver-preservation",
+        "allocation-preparation",
+        "leased-allocation"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Validation/Xsd/Compilation/Compiler.cs: XmlSchemaCompiler, XsdCompilation, definition-only registry and substitution graph consumer",
+    "src/Xemele/Validation/Xsd/Compilation/Declarations.cs: exact frozen compiler declarations with immutable collections",
+    "tests/Xemele.Tests/M8-xsd-compile/: 72 owned composition, grammar, graph, context and local-location cases",
+    "samples/M8-xsd-compile/: real XML-only internal graph consumer",
+    "docs/api/M8-xsd-compile.txt: empty additive public fragment; docs/reports/M8-xsd-compile/compiler.golden.txt: owning257-member frozen internal baseline",
+    "benchmarks/Xemele.Benchmarks/M8-xsd-compile/: allocation-only graph/lookup/parser/resource/diagnostic probe"
+  ],
+  "evidence": [
+    {
+      "id": "focused-correctness",
+      "kind": "check",
+      "revision": "d5e2a1c0f15b75cbfbb627ad5ea765e69e5b12bf",
+      "command": "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet --fx-version 10.0.11 tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -namespace Xemele.Tests.M8XsdCompile -namespace Xemele.Tests.M8Model -namespace Xemele.Tests.M8SourceLocations -parallelMode none -noLogo -noColor -result-xml artifacts/M8-xsd-compile/final-correctness.xml",
+      "result": "passed",
+      "summary": "102 actual Arm64 .NET10.0.11 cases:72owned,20model,10source-location;0errors/failures/skips/not-run. Includes all five review fixes, redirected original byte/scalar locations and independent QName value-constraint contexts. No allocation tests selected.",
+      "artifact": "docs/reports/M8-xsd-compile/README.md"
+    },
+    {
+      "id": "resolver-preservation",
+      "kind": "check",
+      "revision": "89508c595ab8e3180e7b74855c9233c2d5e1f3f1",
+      "command": "Pinned dotnet --fx-version10.0.11 with exact resolver method argv from docs/reports/M8-resource-kind/test-commands.json; output artifacts/M8-xsd-compile/resolver.xml",
+      "result": "passed",
+      "summary": "42actual resolver correctness cases,0errors/failures/skips/not-run. Positive method-only selection excludes WarmBorrowedReadsAllocateNothing and creates no allocation children.",
+      "artifact": "docs/reports/M8-xsd-compile/README.md"
+    },
+    {
+      "id": "frozen-compiler-api",
+      "kind": "check",
+      "revision": "d5e2a1c0f15b75cbfbb627ad5ea765e69e5b12bf",
+      "command": "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet --fx-version 10.0.11 docs/reports/M8-model/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare src/Xemele/bin/Release/net10.0/Xemele.dll docs/reports/M8-xsd-compile/compiler.golden.txt",
+      "result": "passed",
+      "summary": "257 exact public/internal frozen compiler-family members match; no public facade or later engine stub.",
+      "artifact": "docs/reports/M8-xsd-compile/compiler.golden.txt"
+    },
+    {
+      "id": "public-api",
+      "kind": "check",
+      "revision": "d5e2a1c0f15b75cbfbb627ad5ea765e69e5b12bf",
+      "command": "python3 docs/reports/M5-validation-model/check_api.py",
+      "result": "passed",
+      "summary": "1393 compiled public union members match; this task adds an empty public API fragment.",
+      "artifact": "docs/api/M8-xsd-compile.txt"
+    },
+    {
+      "id": "xml-only-consumer",
+      "kind": "check",
+      "revision": "d5e2a1c0f15b75cbfbb627ad5ea765e69e5b12bf",
+      "command": "Cache-only restore and pinned Release build samples/M8-xsd-compile/Xsd.Consumer.csproj -p:XsdXmlOnly=true; pinned dotnet --fx-version10.0.11 samples/M8-xsd-compile/bin/Release/net10.0/Xemele.Benchmarks.dll",
+      "result": "passed",
+      "summary": "Build0warnings/errors; real IXsdCompiler graph traversal verifies local IDs, names/types/attributes, unbounded occurrences, definition-only registry and graph independence after source mutation. XML-only assembly contains no HTML/CSS dependency.",
+      "artifact": "docs/reports/M8-xsd-compile/README.md"
+    },
+    {
+      "id": "bounded-source-review",
+      "kind": "review",
+      "revision": "d5e2a1c0f15b75cbfbb627ad5ea765e69e5b12bf",
+      "command": "Coordinator read-only review batch and final bounded recheck",
+      "result": "passed",
+      "summary": "Findings1-4 accepted at89508c; final d5e2a1c candidate-type-block residual and verified local-source join accepted with no remaining blockers. All-carrier zero-self-reference redefine restriction finalization documented for later verified joins.",
+      "artifact": "docs/reports/M8-xsd-compile/README.md"
+    },
+    {
+      "id": "allocation-preparation",
+      "kind": "check",
+      "revision": "d5e2a1c0f15b75cbfbb627ad5ea765e69e5b12bf",
+      "command": "Pinned Release Xsd.Probe build; env DOTNET_TieredCompilation=0 DOTNET_gcServer=0 DOTNET_GCConcurrent=0 DOTNET_ROLL_FORWARD=Disable XEMELE_XSD_REVISION=d5e2a1c0f15b75cbfbb627ad5ea765e69e5b12bf pinned dotnet --fx-version10.0.11 Xemele.Benchmarks.dll --control artifacts/M8-xsd-compile/control.json; python3 docs/reports/M8-xsd-compile/measure.py --preflight",
+      "result": "passed",
+      "summary": "Build0warnings/errors;7consumed routes,32warm+64iterations,countersdisabled;24identity manifest/process inspection preflight passes. No measurement started; source/binary/input/command/env identities frozen.",
+      "artifact": "docs/reports/M8-xsd-compile/preparation.json"
+    },
+    {
+      "id": "leased-allocation",
+      "kind": "check",
+      "revision": "d5e2a1c0f15b75cbfbb627ad5ea765e69e5b12bf",
+      "command": "python3 docs/reports/M8-xsd-compile/measure.py --measure under approved elevated execution; exact pinned child argv/env in preparation.json",
+      "result": "passed",
+      "summary": "Sole durable M8-xsd-compile-allocation-1 attempt passed:2warmed sealed lookups0B;owned parser29928B,graph90216B,combined119848B,external154528medianB,diagnostics63136B per operation;32warm+64distributions/route;positivecontrol1048B. Cold127960B,32graphs retained heap delta2529072B informational. Child2510exited0/reaped/logclosed/groupempty;all24identitiespassed;RELEASE anddurableACKbeforerawinspection. No timing/BDN/cross-platform claim.",
+      "artifact": "docs/reports/M8-xsd-compile/allocations.md"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "",
-    "checks": [],
-    "remaining": [],
+    "summary": "Implemented internal immutable XSD composition/declaration graph and exact frozen compiler API with accepted bounded source review, verified local source-location join, real XML-only consumer, focused correctness and approved allocation evidence. Definition-only registry and explicit pre-facade datatype/content/identity finalization obligations remain as frozen.",
+    "checks": [
+      "102owned/affected correctness passed;42safe resolver passed",
+      "257frozen compiler/1393public members matched;XML-only real consumer passed",
+      "Counters-disabled7route allocationcontrol and24identity/processpermission preflight passed",
+      "Initial local-location test build typo caused3errors;corrected before72owned pass;failure not presented as passing",
+      "Approved sole allocation run passed;2lookups0B,explicit owned costs summarized in allocations.md;24finalidentities/lifecycleRELEASE+ACKpassed."
+    ],
+    "remaining": [
+      "Coordinator integrates branch and reruns docs/reports/M8-xsd-compile/check.py,records integrated verification.",
+      "Later verified facade joins must finalize all datatype/facet/content/identity definitions and all zero-self-reference redefine carrier restrictions,including unreferenced groups. Comprehensive corpus remains gate-owned."
+    ],
     "requests": []
   }
 }
