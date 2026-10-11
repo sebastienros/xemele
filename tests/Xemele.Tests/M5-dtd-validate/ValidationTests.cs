@@ -24,6 +24,8 @@ public sealed class ValidationTests
     [InlineData("(a,b?)", "<a/>", true)] [InlineData("(a,b?)", "<a/><b/>", true)]
     [InlineData("(a,b?)", "<b/><a/>", false)] [InlineData("(a,b?)", "", false)]
     [InlineData("((a|b)+,c*)", "<b/><a/><c/><c/>", true)]
+    [InlineData("(a*)", "<![CDATA[ ]]>", false)] [InlineData("(a*)", "<![CDATA[]]>", false)]
+    [InlineData("(a*)", "<![CDATA[text]]>", false)]
     [InlineData("(a*)", " \r\n<a/>\t", true)] [InlineData("(a*)", "text", false)]
     public void ContentKindsAndOccurrenceMatchBclOracle(string content, string body, bool valid)
     {

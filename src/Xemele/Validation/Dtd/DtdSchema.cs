@@ -13,7 +13,7 @@ public sealed class DtdSchema
     {
         ArgumentNullException.ThrowIfNull(dtd);
         var operation = new ValidationOperation(new() { Limits = limits ?? new(), CancellationToken = cancellationToken });
-        var source = DtdSubsetReader.Parse(dtd, resolver, operation.Limits, cancellationToken);
+        var source = DtdSubsetReader.Parse(dtd, resolver, operation);
         return Create(source, null, operation);
     }
 

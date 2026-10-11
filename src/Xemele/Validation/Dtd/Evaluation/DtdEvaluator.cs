@@ -146,16 +146,33 @@ internal sealed class DtdEvaluator(CompiledDtdModel model, string? schemaRoot, X
                 bool white = WhiteText(child.Value);
                 if (element is null) continue;
                 if (element.Content.Kind == DtdParticleKind.Empty && child.Value.Length != 0 ||
-                    element.Content.Kind is DtdParticleKind.Sequence or DtdParticleKind.Choice or DtdParticleKind.Name && !white)
+                    element.Content.Kind is DtdParticleKind.Sequence or DtdParticleKind.Choice or DtdParticleKind.Name && (child.Kind == XmlNodeKind.CData || !white))
                     Error("DTD.Content", "Character data is not permitted by the content model.");
                 if (document.ValidationStandalone == true && element.Declaration.IsExternal &&
                     element.Content.Kind is DtdParticleKind.Sequence or DtdParticleKind.Choice or DtdParticleKind.Name &&
                     child.Kind == XmlNodeKind.Text && child.Value.Length != 0 && white)
-                    operation.Refuse("DTD.IncompleteInput", "Standalone whitespace source provenance is unknown.");
+                {
+                    if (!HasValidatedWhitespace(name))
+                        operation.Refuse("DTD.IncompleteInput", "Standalone whitespace source provenance is unknown.");
+                }
             }
             if (!operation.IsComplete) return;
         }
         if (element is not null && !element.Content.IsAccepting(state)) Error("DTD.Content", "Element content is incomplete.");
+    }
+    private bool HasValidatedWhitespace(ReadOnlySpan<char> name)
+    {
+        if (!document.SourceInputComplete || document.ValidationSourceContentRevision is not long stamp ||
+            stamp < 0 || stamp != revision || document.Dtd is not { } original) return false;
+        if (!Work()) return false;
+        if (ReferenceEquals(model.Source, original)) return true;
+        foreach (var declaration in original.Elements)
+        {
+            if (!Work()) return false;
+            if (!DtdLexical.Equal(name, declaration.Name, operation)) { if (!operation.IsComplete) return false; continue; }
+            return declaration.IsExternal && declaration.Content.Kind is DtdParticleKind.Sequence or DtdParticleKind.Choice or DtdParticleKind.Name;
+        }
+        return false;
     }
     private bool Member(ref int count)
     {
@@ -260,13 +277,13 @@ internal sealed class DtdEvaluator(CompiledDtdModel model, string? schemaRoot, X
                 }
             if (!operation.ChargeOperations(length + 1) || length > Array.MaxLength)
             { if (operation.IsComplete) operation.Refuse("VALIDATION.Limit", "QName capacity exceeded."); return []; }
+            if (prefix.Length == 0) return local.AsSpan();
             if (length > buffer.Length)
             {
                 var next = ArrayPool<char>.Shared.Rent((int)length);
                 if (rented is not null) ArrayPool<char>.Shared.Return(rented);
                 rented = next; buffer = next;
             }
-            if (prefix.Length == 0) return local.AsSpan();
             prefix.AsSpan().CopyTo(buffer); buffer[prefix.Length] = ':';
             local.AsSpan().CopyTo(buffer[(prefix.Length + 1)..]);
             return buffer[..(int)length];
