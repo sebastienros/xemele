@@ -1,0 +1,24 @@
+using Xemele;
+using Xemele.Validation;
+var provider = new TemporalDatatypeProvider();
+var context = new SchemaNamespaceContext(new Dictionary<string, string>(), "", null);
+var operation = new SchemaCompileOperation(new() { MaxOperations = null, MaxComponents = null, Limits = new() { EvaluationWork = null } });
+DatatypeAtomicValue Parse(string type, string lexical)
+{
+    if (!provider.TryParse(DatatypeTypes.All[type], lexical, context, operation, out var value, out var error) || error != null || value == null)
+        throw new InvalidOperationException("Consumer parse failed.");
+    return value;
+}
+var a = Parse("dateTime", "-0001-12-31T24:00:00.000Z");
+var b = Parse("dateTime", "0001-01-01T00:00:00+00:00");
+if (!DatatypeValues.ValueEquals(a, b, operation) || DatatypeValues.ValueHashCode(a, operation) != DatatypeValues.ValueHashCode(b, operation))
+    throw new InvalidOperationException("Calendar identity failed.");
+var union = DatatypeValues.CreateUnion(new("urn:consumer", "choice"), a, operation);
+var restriction = DatatypeValues.Retype(new("urn:consumer", "restriction"), union, operation);
+if (!ReferenceEquals(restriction.SelectedMember, a) || !DatatypeValues.ValueEquals(restriction, b, operation))
+    throw new InvalidOperationException("Core joins failed.");
+if (DatatypeValues.Compare(Parse("duration", "P1M"), Parse("duration", "P30D"), operation) != XmlValueOrder.Indeterminate)
+    throw new InvalidOperationException("Duration partial order failed.");
+if (args.Contains("--xml-only") && typeof(XmlDocument).Assembly.GetTypes().Any(t => t.Namespace is string ns && (ns.Contains("Html", StringComparison.OrdinalIgnoreCase) || ns.StartsWith("Xemele.Css", StringComparison.Ordinal))))
+    throw new InvalidOperationException("XML-only assembly includes HTML.");
+Console.WriteLine("PASS: temporal provider/core consumer, BCE normalization, hash identity, immutable union/retype, duration partial order.");
