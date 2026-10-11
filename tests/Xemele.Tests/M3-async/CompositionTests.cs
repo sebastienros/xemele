@@ -142,8 +142,8 @@ public sealed class CompositionTests
         public override void EndElement(XmlEndElement e) => Ends.Append(e.LocalName);
         public override void Text(ReadOnlySpan<char> text) => TextValue.Append(text);
         public override void EndDocument() => Completed++;
-        public override void StartCData(XmlLocation location) => CDataStarts++;
-        public override void EndCData(XmlLocation location) => CDataEnds++;
+        public override void StartCData() => CDataStarts++;
+        public override void EndCData() => CDataEnds++;
     }
     private sealed class InputStream(byte[] bytes) : Stream
     {

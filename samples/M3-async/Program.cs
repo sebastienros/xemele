@@ -8,7 +8,7 @@ var document = await XmlDocument.LoadAsync(input);
 using var output = new MemoryStream();
 await document.SaveAsync(output, new() { OmitXmlDeclaration = true });
 if (Encoding.UTF8.GetString(output.ToArray()) != "<r>hello</r>") throw new InvalidOperationException();
-output.Position = 0; await XmlSaxParser.ParseAsync(output, new XmlSaxHandler());
+output.Position = 0; await XmlSaxParser.ParseAsync(output, new XmlSaxCallbacks());
 output.Position = 0; await using var reader = Reader.Create(output);
 int tokens = 0; while (await reader.ReadAsync()) tokens++;
 using var forwarded = new MemoryStream(); await using var writer = Writer.Create(forwarded, new() { OmitXmlDeclaration = true });
