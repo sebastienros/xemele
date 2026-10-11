@@ -59,7 +59,7 @@ internal sealed class TemporalDatatypeProvider : IDatatypeFamilyProvider
             if (!r.Two(out hour) || !r.Take(':') || !r.Two(out minute) || !r.Take(':') || !r.Two(out second)) return null;
             if (r.Take('.') && !r.Fraction(out fraction)) return null;
             Work(r.Operation, 1);
-            if (hour > 24 || minute > 59 || second > 59 || (hour == 24 && (minute != 0 || second != 0 || fraction.Length != 0))) return null;
+            if (hour > 24 || minute > 59 || second > 60 || (hour == 24 && (minute != 0 || second != 0 || fraction.Length != 0))) return null;
         }
         Work(r.Operation, 1);
         if (month is < 1 or > 12 || day < 1 || day > DaysInMonth(year, month, r.Operation)) return null;
@@ -75,25 +75,45 @@ internal sealed class TemporalDatatypeProvider : IDatatypeFamilyProvider
         }
         if (!r.End) return null;
         var op = r.Operation;
+        int phase = 0;
+        if (second == 60)
+        {
+            Work(op, 1);
+            // D.1 admits leap-second fractions. Preserve a structurally possible
+            // leap instant before the following minute; inappropriate dates
+            // normalize as overflow. This does not consult a historical schedule.
+            bool leap = p == DatatypePrimitive.Time
+                ? !zoned || IsMidnight(hour, minute, zone, op)
+                : zoned ? IsLeapBoundary(month, day, hour, minute, zone, op)
+                : CouldBeLeapBoundary(month, day, hour, minute, op);
+            if (leap) phase = -1;
+        }
         BigInteger whole;
         if (p == DatatypePrimitive.Time)
         {
             // Recurrent time discards the date after UTC normalization (§3.2.8).
             Work(op, 1);
             whole = ((hour * 3600 + minute * 60 + second - zone) % 86400 + 86400) % 86400;
+            if (phase != 0 && whole.IsZero) whole = 86400;
         }
         else
         {
             whole = Add(Multiply(DayNumber(year, month, day, op), 86400, op), hour * 3600 + minute * 60 + second - zone, op);
         }
-        Key key = MakeKey(whole, fraction, op);
+        Key key = MakeKey(whole, fraction, op, phase);
         Key low = key, high = key;
         if (!zoned)
         {
             // Keep the uncertainty bounds unwrapped, including for recurrent
             // time. Equality at either endpoint remains indeterminate.
-            low = MakeKey(Add(whole, -50400, op), fraction, op);
-            high = MakeKey(Add(whole, 50400, op), fraction, op);
+            int lowPhase = 0, highPhase = 0;
+            if (second == 60)
+            {
+                if (p == DatatypePrimitive.Time ? IsMidnight(hour, minute, 50400, op) : IsLeapBoundary(month, day, hour, minute, 50400, op)) lowPhase = -1;
+                if (p == DatatypePrimitive.Time ? IsMidnight(hour, minute, -50400, op) : IsLeapBoundary(month, day, hour, minute, -50400, op)) highPhase = -1;
+            }
+            low = MakeKey(Add(whole, -50400, op), fraction, op, lowPhase);
+            high = MakeKey(Add(whole, 50400, op), fraction, op, highPhase);
         }
         Components(op, 1); Poll(op);
         return new(DatatypeTypes.Name(type.LocalName), p, this, zoned, key, low, high, default);
@@ -149,11 +169,38 @@ internal sealed class TemporalDatatypeProvider : IDatatypeFamilyProvider
 
     private static Key DurationPoint(int year, int month, BigInteger months, BigInteger seconds, string fraction, ISchemaOperation op)
     {
-        BigInteger index = Add(months, (year - 1) * 12 + month - 1, op);
+        // Appendix E adds the signed year field directly, including arithmetic
+        // year zero. That intermediate field is not a legal lexical calendar.
+        BigInteger index = Add(months, year * 12 + month - 1, op);
         BigInteger quotient = FloorDivide(index, 12, op);
         int m = (int)Add(index, Negate(Multiply(quotient, 12, op), op), op) + 1;
-        BigInteger y = quotient.Sign >= 0 ? Add(quotient, 1, op) : quotient;
-        return MakeKey(Add(Multiply(DayNumber(y, m, 1, op), 86400, op), seconds, op), fraction, op);
+        return MakeKey(Add(Multiply(DurationDayNumber(quotient, m, op), 86400, op), seconds, op), fraction, op);
+    }
+
+    private static BigInteger DurationDayNumber(BigInteger year, int month, ISchemaOperation op)
+    {
+        BigInteger preceding = Add(year, -1, op);
+        BigInteger days = Add(Add(Multiply(preceding, 365, op), FloorDivide(preceding, 4, op), op),
+            Add(Negate(FloorDivide(preceding, 100, op), op), FloorDivide(preceding, 400, op), op), op);
+        for (int m = 1; m < month; m++) { Work(op, 1); days = Add(days, DaysInMonth(year, m, op), op); }
+        return days;
+    }
+
+    private static bool IsMidnight(int hour, int minute, int zone, ISchemaOperation op)
+    { Work(op, 1); return (hour * 3600 + minute * 60 + 60 - zone) % 86400 == 0; }
+    private static bool QuarterEnd(int month, int day) => (month is 3 or 12 && day == 31) || (month is 6 or 9 && day == 30);
+    private static bool QuarterStart(int month, int day) => month is 1 or 4 or 7 or 10 && day == 1;
+    private static bool IsLeapBoundary(int month, int day, int hour, int minute, int zone, ISchemaOperation op)
+    {
+        Work(op, 1);
+        int following = hour * 3600 + minute * 60 + 60 - zone;
+        return following == 86400 && QuarterEnd(month, day) || following == 0 && QuarterStart(month, day);
+    }
+    private static bool CouldBeLeapBoundary(int month, int day, int hour, int minute, ISchemaOperation op)
+    {
+        Work(op, 1);
+        int following = hour * 3600 + minute * 60 + 60;
+        return QuarterEnd(month, day) && following >= 36000 || QuarterStart(month, day) && following <= 50400;
     }
 
     // XSD1.0 uses signed nonzero Gregorian years, not XSD1.1 astronomical
@@ -234,6 +281,8 @@ internal sealed class TemporalDatatypeProvider : IDatatypeFamilyProvider
             int c = a.Whole[i].CompareTo(b.Whole[i]);
             if (c != 0) return an ? -Math.Sign(c) : Math.Sign(c);
         }
+        DatatypeValues.Charge(op);
+        if (a.Phase != b.Phase) return a.Phase < b.Phase ? -1 : 1;
         int length = Math.Max(a.Fraction.Length, b.Fraction.Length);
         for (int i = 0; i < length; i++)
         {
@@ -249,10 +298,11 @@ internal sealed class TemporalDatatypeProvider : IDatatypeFamilyProvider
         foreach (char c in key.Whole) { DatatypeValues.Charge(op); hash = unchecked(hash * 31 + c); }
         DatatypeValues.Charge(op); hash = unchecked(hash * 31 + '.');
         foreach (char c in key.Fraction) { DatatypeValues.Charge(op); hash = unchecked(hash * 31 + c); }
+        DatatypeValues.Charge(op); hash = unchecked(hash * 31 + key.Phase);
         return hash;
     }
 
-    private readonly record struct Key(string Whole, string Fraction);
+    private readonly record struct Key(string Whole, string Fraction, int Phase);
     private sealed class TemporalValue(SchemaName type, DatatypePrimitive primitive, TemporalDatatypeProvider provider,
         bool zoned, Key a, Key b, Key c, Key d) : DatatypeAtomicValue(type, primitive, provider)
     { internal bool Zoned => zoned; internal Key A => a; internal Key B => b; internal Key C => c; internal Key D => d; }
@@ -275,7 +325,7 @@ internal sealed class TemporalDatatypeProvider : IDatatypeFamilyProvider
     private static BigInteger Negate(BigInteger a, ISchemaOperation op) { Arithmetic(op, a, 0); return -a; }
     private static BigInteger FloorDivide(BigInteger a, int b, ISchemaOperation op)
     { var q = Divide(a, b, op); return a.Sign < 0 && !Remainder(a, b, op).IsZero ? Add(q, -1, op) : q; }
-    private static Key MakeKey(BigInteger whole, string fraction, ISchemaOperation op)
+    private static Key MakeKey(BigInteger whole, string fraction, ISchemaOperation op, int phase = 0)
     {
         bool negative = whole.Sign < 0; if (negative) whole = Negate(whole, op);
         int limbs = Limbs(whole, op);
@@ -293,7 +343,7 @@ internal sealed class TemporalDatatypeProvider : IDatatypeFamilyProvider
         int length = buffer.Length - position;
         Components(op, Blocks(length) + 1); Work(op, length);
         string text = new(buffer, position, length); Poll(op);
-        return new(text, fraction);
+        return new(text, fraction, phase);
     }
 
     private ref struct Reader(ReadOnlySpan<char> source, ISchemaOperation operation)

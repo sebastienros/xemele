@@ -70,7 +70,7 @@ public sealed class TemporalTests
     {
         Order("dateTime", "1999-12-31T24:00:00.000Z", "2000-01-01T00:00:00Z", XmlValueOrder.Equal);
         Order("time", "24:00:00.000", "00:00:00", XmlValueOrder.Equal);
-        Invalid("time", "24:00:00.0001", "24:01:00", "24:00:01", "25:00:00", "00:60:00", "00:00:60", "00:00:00.");
+        Invalid("time", "24:00:00.0001", "24:01:00", "24:00:01", "25:00:00", "00:60:00", "00:00:61", "00:00:00.");
         Order("time", "12:00:00.123000", "12:00:00.123", XmlValueOrder.Equal);
         Order("time", "12:00:00.123000000000000000000000001", "12:00:00.123000000000000000000000002", XmlValueOrder.Less);
     }
@@ -156,6 +156,44 @@ public sealed class TemporalTests
         Order("duration", "-P100000000000000000000000000Y", "-P1200000000000000000000000000M", XmlValueOrder.Equal);
         Order("duration", "PT999999999999999999999999.0000000001S", "PT999999999999999999999999.0000000002S", XmlValueOrder.Less);
     }
+    [Fact] public void LeapSecondsPreserveFractionsNeighborsAndTimezoneIdentity()
+    {
+        Order("dateTime", "1998-12-31T23:59:59.999999999999Z", "1998-12-31T23:59:60Z", XmlValueOrder.Less);
+        Order("dateTime", "1998-12-31T23:59:60Z", "1998-12-31T23:59:60.0000000001Z", XmlValueOrder.Less);
+        Order("dateTime", "1998-12-31T23:59:60.9999999999Z", "1999-01-01T00:00:00Z", XmlValueOrder.Less);
+        Order("dateTime", "1999-01-01T00:59:60.123000+01:00", "1998-12-31T23:59:60.123Z", XmlValueOrder.Equal);
+        Order("dateTime", "1998-12-31T18:59:60.123-05:00", "1998-12-31T23:59:60.123Z", XmlValueOrder.Equal);
+        // D.1's structural quarter-end rule, not a historical IERS schedule.
+        foreach (string end in new[] { "2000-03-31", "2000-06-30", "2000-09-30", "2000-12-31" }) Parse("dateTime", end + "T23:59:60.5Z");
+        Order("dateTime", "1998-12-30T23:59:60.125Z", "1998-12-31T00:00:00.125Z", XmlValueOrder.Equal);
+        Order("dateTime", "1998-12-31T12:00:60.5Z", "1998-12-31T12:01:00.5Z", XmlValueOrder.Equal);
+        Order("dateTime", "1999-01-01T00:59:60.5+02:00", "1998-12-31T23:00:00.5Z", XmlValueOrder.Equal);
+        Order("dateTime", "1998-12-31T23:59:60.5", "1998-12-31T23:59:60.5Z", XmlValueOrder.Indeterminate);
+        Order("dateTime", "1998-12-31T23:59:60.9", "1999-01-01T00:00:00", XmlValueOrder.Less);
+        Order("time", "23:59:59.999Z", "23:59:60Z", XmlValueOrder.Less);
+        Order("time", "00:59:60.50+01:00", "23:59:60.5Z", XmlValueOrder.Equal);
+        Order("time", "12:00:60.5Z", "12:01:00.5Z", XmlValueOrder.Equal);
+        Invalid("dateTime", "1998-12-31T23:59:61Z", "1998-12-31T24:00:60Z");
+    }
+    [Fact] public void DurationAppendixESignedYearsIncludeInternalZeroAndFloorOrdinals()
+    {
+        Order("duration", "-P1698Y", "-P620183D", XmlValueOrder.Indeterminate);
+        // Independent hand-computed Appendix E endpoints: -0002-09-01,
+        // -0001-02-01,0205-03-01,0205-07-01. These use floor Gregorian
+        // ordinals, including internal year0, not lexical BCE timeline keys.
+        var value = Parse("duration", "-P1698Y");
+        string[] expected = ["-73699200", "-60480000", "6442675200", "6453216000"];
+        string[] fields = ["A", "B", "C", "D"];
+        for (int i = 0; i < fields.Length; i++)
+        {
+            var key = value.GetType().GetProperty(fields[i], System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!.GetValue(value)!;
+            Assert.Equal(expected[i], key.GetType().GetProperty("Whole")!.GetValue(key));
+        }
+        // Year/month grouping remains equivalent even across arithmetic year0.
+        Order("duration", "-P1696Y", "-P20352M", XmlValueOrder.Equal);
+        Order("duration", "-P1698Y", "-P20376M", XmlValueOrder.Equal);
+        Invalid("dateTime", "0000-09-01T00:00:00Z");
+    }
     [Fact] public void CoreWrappersAndProviderIdentityPreserveDisjointPrimitives()
     {
         var v = Parse("dateTime", "2000-01-01T00:00:00Z");
@@ -177,7 +215,8 @@ public sealed class TemporalTests
     }
     [Fact] public void ParseExactWorkAndGrowthCapsStopBeforePublication()
     {
-        foreach (var c in new[] { ("dateTime", "2000-02-29T24:00:00.000"), ("duration", "-P100000000000000000000Y2MT0.123S"), ("gYear", "12345678901234567890") })
+        foreach (var c in new[] { ("dateTime", "2000-02-29T24:00:00.000"), ("duration", "-P100000000000000000000Y2MT0.123S"), ("gYear", "12345678901234567890"),
+            ("dateTime", "1998-12-31T23:59:60.123Z"), ("dateTime", "1998-12-31T23:59:60.123"), ("time", "00:59:60.5+01:00"), ("duration", "-P1698Y") })
         {
             var ledger = new Ledger(); Parse(c.Item1, c.Item2, ledger);
             Assert.True(ledger.Work > 0); Assert.True(ledger.Components > 1);
