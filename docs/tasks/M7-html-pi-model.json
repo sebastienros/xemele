@@ -13,13 +13,52 @@
     "docs/specs/common.md",
     "docs/specs/html.md"
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/HtmlCommon/Model.cs: HtmlNodeKind/HtmlTokenKind.ProcessingInstruction, HtmlDocument.CreateProcessingInstruction, CopyShallow and HtmlNode.Value",
+    "tests/Xemele.Tests/M7-html-pi-model/ProcessingInstructionTests.cs",
+    "docs/api/M7-html-pi-model.txt",
+    "benchmarks/Xemele.Benchmarks/M7-html-pi-model/Pi.Probe.csproj"
+  ],
+  "evidence": [
+    {
+      "id": "pi-focused-correctness",
+      "kind": "check",
+      "revision": "c066d8d47bb2ff9912950b967f88e46eb3bd29e8",
+      "command": "Pinned dotnet --fx-version 10.0.11 Xemele.Tests.dll -namespace Xemele.Tests.HtmlProcessingInstructions; -namespace Xemele.Tests.HtmlModel; M7-html-pi-model.dll sample",
+      "result": "passed",
+      "summary": "16 PI + 9 earlier HTML model cases, zero errors/failures/skips/not-run; real HTML/XML preservation sample passed. Release builds pinned SDK10.0.400/runtime10.0.11; initial missing-assets and Line property failures corrected.",
+      "artifact": "docs/reports/M7-html-pi-model/validation.md"
+    },
+    {
+      "id": "pi-source-review",
+      "kind": "review",
+      "revision": "c066d8d47bb2ff9912950b967f88e46eb3bd29e8",
+      "command": "Coordinator source review of c066d8d runtime/tests",
+      "result": "passed",
+      "summary": "Root approved additive values/factory preflight/mutation/copy and meaningful ownership/quota/fragment/template refusal coverage; final harness review and measurements pending.",
+      "artifact": "docs/reports/M7-html-pi-model/validation.md"
+    },
+    {
+      "id": "pi-api",
+      "kind": "check",
+      "revision": "c066d8d47bb2ff9912950b967f88e46eb3bd29e8",
+      "command": "Official discover.py and compare.py with approved M0 checker; python3 tools/planning/tasks.py validate; git diff --check",
+      "result": "passed",
+      "summary": "Actual compiled API1203 preserves1200 predecessor rows plus3 additions;3388 original manifest fixtures; bootstrapFalse; planning167. API baseline committed in preparation9119e8f; runtime assembly from c066d8d.",
+      "artifact": "docs/reports/M7-html-pi-model/validation.md"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "",
-    "checks": [],
-    "remaining": [],
+    "summary": "Additive PI source approved; focused correctness and full API preservation pass. Frozen allocation preparation awaits coordinator review/grant.",
+    "checks": [
+      "16 PI and 9 prior model cases passed on actual .NET10.0.11",
+      "Owned HTML/XML sample passed; full compiledAPI1203 and3388fixtures checked",
+      "Planning167 and diff checks passed"
+    ],
+    "remaining": [
+      "A3 exclusive frozen allocation evidence; then implemented handoff and integrated verification"
+    ],
     "requests": []
   },
   "id": "M7-html-pi-model",
@@ -43,14 +82,20 @@
     {
       "id": "M7-html-pi-model-A1",
       "description": "Implement frozen additive PI token/node kinds/factory and preserve all existing numeric values, tokens, node ownership, quota preflight, mutation/clone/import and text-content semantics.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "pi-focused-correctness",
+        "pi-source-review"
+      ]
     },
     {
       "id": "M7-html-pi-model-A2",
       "description": "Focused tests/sample and official full compiled API checks demonstrate PI plus earlier model/XML behavior; preserve earlier evidence and no later dependency.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "pi-focused-correctness",
+        "pi-api"
+      ]
     },
     {
       "id": "M7-html-pi-model-A3",
