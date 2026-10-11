@@ -4,13 +4,15 @@
   "milestone": "M7",
   "title": "Legacy libxml2-compatible HTML parser",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "verified",
   "owner": "M7 coordinator /root/legacy",
   "branch": "codex/m7-legacy",
   "base_revision": "3ebc40ae0b39e8b4867f7819a8da313b2f3b7ecb",
-  "integration_revision": null,
+  "integration_revision": "8709b25b58103743c74dbe373b8eddf9c9e28c03",
   "depends_on": [
-    "M7-html-model"
+    "M7-html-model",
+    "M7-html-pi-contract",
+    "M7-html-pi-model"
   ],
   "goals": [
     "G10"
@@ -33,28 +35,122 @@
     {
       "id": "M7-legacy-A1",
       "description": "Implement pinned legacy HTML parsing/recovery profile using shared tree; keep XML behavior isolated.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "focused",
+        "profile-review",
+        "measurements",
+        "root-integration"
+      ]
     },
     {
       "id": "M7-legacy-A2",
       "description": "Differential fixtures verify auto-closing, void elements, malformed content and encoding decisions.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "focused",
+        "profile-review",
+        "root-integration"
+      ]
     },
     {
       "id": "M7-legacy-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "sample",
+        "api",
+        "focused",
+        "identity-controls",
+        "measurements",
+        "root-integration"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Html/Legacy/HtmlParser.cs: managed legacy recovery and incremental entry points",
+    "src/Xemele/Html/Legacy/LegacyInput.cs: bounded transport, scalar locations and pinned decoding",
+    "src/Xemele/Html/Legacy/LegacyRules.cs and LegacyCharsets.Generated.cs: pinned native recovery/charset tables",
+    "tests/fixtures/M7-legacy/oracle.json: all original 443 pinned-native trees retained",
+    "src/Xemele/Html/Legacy/LegacyNamePool.cs: bounded borrowed ordinal name probes",
+    "samples/M7-legacy/Program.cs and docs/api/M7-legacy.txt: executed sample and compiled API",
+    "benchmarks/Xemele.Benchmarks/M7-legacy/: allocation domains and 30 NoEmit ShortRun cases"
+  ],
+  "evidence": [
+    {
+      "id": "focused",
+      "kind": "check",
+      "revision": "918f52d3ac68e3c4632f776d0b0572f55586ffd8",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -namespace Xemele.Tests.LegacyHtml -noLogo -noColor -result-xml artifacts/M7-legacy/final-source-tests.xml",
+      "result": "passed",
+      "summary": "543/543; 539 complete pinned native vectors plus 4 quota/locations/incremental ownership/XML/raw-IO facts; zero skipped, not-run or excluded cases.",
+      "artifact": "docs/reports/M7-legacy/validation.md"
+    },
+    {
+      "id": "sample",
+      "kind": "check",
+      "revision": "918f52d3ac68e3c4632f776d0b0572f55586ffd8",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 samples/M7-legacy/bin/Release/net10.0/Legacy.Sample.dll",
+      "result": "passed",
+      "summary": "Actual .NET10.0.11 recovery, byte encoding, incremental caller stream and earlier XML passed; Release builds zero warnings/errors.",
+      "artifact": "docs/reports/M7-legacy/validation.md"
+    },
+    {
+      "id": "api",
+      "kind": "check",
+      "revision": "918f52d3ac68e3c4632f776d0b0572f55586ffd8",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 docs/reports/M7-legacy/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare src/Xemele/bin/Release/net10.0/Xemele.dll docs/api/M7-legacy.txt",
+      "result": "passed",
+      "summary": "4 actual compiled HtmlParser members match owned fragment and frozen Engine declarations; no later-task dependency.",
+      "artifact": "docs/api/M7-legacy.txt"
+    },
+    {
+      "id": "profile-review",
+      "kind": "review",
+      "revision": "918f52d3ac68e3c4632f776d0b0572f55586ffd8",
+      "command": "Coordinator narrow runtime/source/oracle review, messages in chat01a12add-f725-7663-b0f9-e6687671c769",
+      "result": "passed",
+      "summary": "Approved exact native decoder/name/buffer semantics and verified legacy-root-envelope-v1; final indexed root lookup approved. Original native trees retained separately from named adaptations.",
+      "artifact": "docs/reports/M7-legacy/oracle-provenance.json"
+    },
+    {
+      "id": "measurements",
+      "kind": "check",
+      "revision": "9661cf26b7be08a17a12d2de94a1745e112d80ad",
+      "command": "python3 -B docs/reports/M7-legacy/run_measurements.py --exclusive-grant",
+      "result": "passed",
+      "summary": "Exclusive grant 0813121/release 4816130; initial/allocation/benchmark/final 0 and no_child=true; 30 ShortRun NoEmit reports, 196608 warm borrowed operations 0 B; cold/owned/retained costs separate. One arm64 run, priority denied/noisy intervals; candidate scanner not adopted.",
+      "artifact": "docs/reports/M7-legacy/measurements.md"
+    },
+    {
+      "id": "identity-controls",
+      "kind": "check",
+      "revision": "9661cf26b7be08a17a12d2de94a1745e112d80ad",
+      "command": "python3 docs/reports/M7-legacy/prepare_identity.py",
+      "result": "passed",
+      "summary": "Exact positive/final-positive accepted, unknownenvnegative rejected, finalpositive accepted. Final manifest d83aa22d6130bfba338704a68b4c20e64db6e5de0baeb2d78b69c4c5d41dcc1a: 3651 source/43 binary/3852 runtime-host entries; full effective env hash/per-key hashes/SHLVL1/session.",
+      "artifact": "docs/reports/M7-legacy/measurements.md"
+    },
+    {
+      "id": "root-integration",
+      "kind": "integration",
+      "revision": "8709b25b58103743c74dbe373b8eddf9c9e28c03",
+      "command": "Pinned offline Release builds; explicit --fx-version10.0.11 legacy namespace543 tests and sample; official compose + unchanged M0 API checker; tasks.py validate; git diff --check",
+      "result": "passed",
+      "summary": "Fresh zero-warning builds;543 actual XML identities Pass, sample passed,1207 compiled API members/3388 immutable fixture identities/bootstrapFalse.31 changed paths owned; measured runtime/test/probe/sample source unchanged. Raw56allocation rows/30NoEmit cases independently inspected after durable release.",
+      "artifact": "docs/reports/M7-legacy/integration.md"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "",
-    "checks": [],
+    "summary": "Implemented only: pinned managed legacy recovery/encoding and bounded coalesced incremental stream with shared model. 539 full native vectors/543 focused tests pass; compiled 4-member API/sample and exclusive 30-case measurements pass. Original 443 native vectors retained unchanged; named verified envelope adaptations separate.",
+    "checks": [
+      "Release test/sample/probe builds: 0 warnings/errors; actualruntime10.0.11",
+      "Focused 543/543; no skipped/not-run/excluded cases",
+      "Compiled API 4 match and executed public sample including earlier XML",
+      "Exact identity controls; sole exclusive wrapper allphase0/nochild;196608 warmborrowed operations 0 B/30BDNreports",
+      "Planning 167 valid and diffcheck pass"
+    ],
     "remaining": [],
     "requests": []
   }

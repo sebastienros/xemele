@@ -123,6 +123,12 @@ cannot be reparsed as XML.
 
 ## Exact CSS matrix
 
+The existing public parameterless `CssSelector()` constructor creates an immutable
+universal selector equivalent to `CssSelector.Compile("*")` with default namespace
+options; Matches/Select retain the same two-graph, scope and snapshot rules. The
+[constructor decision](../decisions/M7/css-default-constructor.md) preserves its
+original frozen signature.
+
 Supported grammar: selector lists, universal/type, ID, class, attributes with
 presence, =, ~=, |=, ^=, $=, *=; whitespace descendant, > child, + adjacent and ~
 general sibling combinators. Identifiers/string escapes follow CSS syntax; grouping
