@@ -17,7 +17,7 @@
     }
   ],
   "next_actions": [
-    "Claim resource-kind repair and adapters; verify repair then dispatch catalog/XInclude."
+    "Review/verify resource kinds then dispatch catalog/XInclude; adapters implement independently; no measurement lease active."
   ],
   "last_verified_task": "M6-contracts",
   "last_integrated_revision": "6a8c67ecf1cf36afe6af355edf1995bfa3053f67",
@@ -2292,5 +2292,22 @@
       "activation_revision": "ed0104e2b80eddb8aa77f5768284aae4d8efd075"
     }
   ],
-  "workers": []
+  "workers": [
+    {
+      "task_id": "M6-resource-kinds",
+      "agent_id": "/root/resource_kinds",
+      "status": "running",
+      "worktree": "/private/tmp/xemele-m6-resource-kinds",
+      "branch": "codex/m6-resource-kinds",
+      "claim_revision": "fb19185edb63e2e81483ee3fd0f06a03917505dc"
+    },
+    {
+      "task_id": "M6-adapters",
+      "agent_id": "/root/adapters",
+      "status": "running",
+      "worktree": "/private/tmp/xemele-m6-adapters",
+      "branch": "codex/m6-adapters",
+      "claim_revision": "fb19185edb63e2e81483ee3fd0f06a03917505dc"
+    }
+  ]
 }
