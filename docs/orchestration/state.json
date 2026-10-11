@@ -201,8 +201,8 @@
       "status": "preparing park, not granted",
       "owner_chat": "01a12c6c-b333-71d3-877f-0d186618e21d",
       "maximum_seconds": 650,
-      "start_by_utc": "2026-10-11T22:57:00Z",
-      "absolute_expiry_utc": "2026-10-11T23:07:50Z",
+      "start_by_utc": "2026-10-11T23:02:00Z",
+      "absolute_expiry_utc": "2026-10-11T23:12:50Z",
       "sequence": [
         {
           "task": "M8-rng-compile",
@@ -222,7 +222,7 @@
         }
       ],
       "identity_preflight": "Root independently verified198 and445 identities plus ps permission",
-      "pending": "All Xemele and GregsEx explicit PARK acknowledgements"
+      "pending": "Fresh main, RNG, temporal and text/binary PARK ACKs received; awaiting fresh GregsEx aggregate consent after its handoff."
     }
   ],
   "completed_assignments": [
@@ -764,6 +764,11 @@
       "id": "M8-rng-compile-allocation-1",
       "recorded_utc": "2026-10-11T22:49:43.463186+00:00",
       "reason": "Start-by22:48:45 passed before grant write. Guard rejected at22:49:04; no grant commit. Erroneous durable wording was immediately corrected and all actors released. Worker explicitly prohibited from late start; no measurement claimed."
+    },
+    {
+      "id": "M8-rng-temporal-measurement-1",
+      "recorded_utc": "2026-10-11T22:56:53.809826+00:00",
+      "reason": "Earlier combined proposal was never granted: GregsEx final checks were active and explicit aggregate PARK was unavailable. Fresh replacement consent requested after GregsEx reported completion."
     }
   ]
 }
