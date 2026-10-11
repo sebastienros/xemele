@@ -4,7 +4,7 @@
   "milestone": "M7",
   "title": "Freeze HTML and CSS contracts",
   "kind": "contract",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M7 coordinator /root/contracts",
   "branch": "codex/m7-contracts",
   "base_revision": "e1fcc99ebd921637fe2c10e3966864bd6840aab8",
@@ -32,29 +32,92 @@
     {
       "id": "M7-contracts-A1",
       "description": "Specify legacy/HTML5 profiles, fragments/context/quirks, tokens, serializer modes, callbacks and exact CSS matrix.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "contract-review",
+        "contract-checks",
+        "validation",
+        "ownership-base-checks"
+      ]
     },
     {
       "id": "M7-contracts-A2",
       "description": "Compile independent engine/tokenizer/selector consumers against completed tree/streaming only.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "contract-review",
+        "contract-checks",
+        "validation",
+        "ownership-base-checks"
+      ]
     },
     {
       "id": "M7-contracts-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "contract-review",
+        "contract-checks",
+        "validation",
+        "ownership-base-checks"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "docs/specs/html.md: exact HTML/CSS profiles and ownership semantics",
+    "docs/decisions/M7/html-css.md: separate HTML representation decision",
+    "tests/Contracts/Fixtures/M7/: independent declarations, compiled consumers, golden baselines and check.py"
+  ],
+  "evidence": [
+    {
+      "id": "contract-checks",
+      "kind": "check",
+      "revision": "854f3ccabe01b1076e44f89b7e19d69449444d81",
+      "command": "python3 tests/Contracts/Fixtures/M7/check.py --dotnet '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet'",
+      "result": "passed",
+      "summary": "Three independent nonpackaged consumers; actual XML tree/streaming preservation on runtime 10.0.11/SDK 10.0.400; 173/116/131 compiled members match; three missing-member controls reject; owned changes only.",
+      "artifact": "docs/reports/M7-contracts/README.md"
+    },
+    {
+      "id": "contract-review",
+      "kind": "review",
+      "revision": "854f3ccabe01b1076e44f89b7e19d69449444d81",
+      "command": "Review html.md and resolved decisions against A1",
+      "result": "passed",
+      "summary": "Full WHATWG algorithm, legacy profile, context/quirks/ownership, tokens, serializer, callback and exact CSS support/rejection matrix resolved; dedicated HTML graph preserves XML invariants. Independent coordinator source-only reviewer approved this revision after state-specific NUL and frameset corrections.",
+      "artifact": "docs/decisions/M7/html-css.md"
+    },
+    {
+      "id": "validation",
+      "kind": "check",
+      "revision": "854f3ccabe01b1076e44f89b7e19d69449444d81",
+      "command": "python3 tools/planning/tasks.py validate; git diff --check",
+      "result": "passed",
+      "summary": "164 task records validated; diff whitespace check passed.",
+      "artifact": null
+    },
+    {
+      "id": "ownership-base-checks",
+      "kind": "check",
+      "revision": "10bbc38672a7ee92304d770a923a35de2cafb452",
+      "command": "python3 tests/Contracts/Fixtures/M7/check.py --dotnet '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet'; python3 tools/planning/tasks.py validate; git diff --check",
+      "result": "passed",
+      "summary": "Bounded harness repair: optional --ownership-base defaults to original claim; owned predicate unchanged. All three consumers/probes, 173/116/131 API baselines and three rejecting controls passed; 164 records valid and diff clean.",
+      "artifact": "docs/reports/M7-contracts/README.md"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "",
-    "checks": [],
-    "remaining": [],
+    "summary": "Frozen separate HTML graph and complete engine/tokenizer/selector contract; no public runtime stubs or XML source changes.",
+    "checks": [
+      "Independent compiled consumers and exact API controls passed at 854f3ccabe01b1076e44f89b7e19d69449444d81",
+      "164 task records valid; diff check passed.",
+      "Harness repair checks passed at 10bbc38672a7ee92304d770a923a35de2cafb452"
+    ],
+    "remaining": [
+      "Coordinator integrated rerun and verification.",
+      "Implementation owners pin complete HTML/tokenizer corpora and xmloxide CSS overlap; declaration checks are not runtime HTML evidence."
+    ],
     "requests": []
   }
 }

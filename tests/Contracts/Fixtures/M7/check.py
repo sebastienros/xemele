@@ -2,7 +2,7 @@
 """Compile contract declarations; execute only already implemented XML probes."""
 import argparse, subprocess
 from pathlib import Path
-p=argparse.ArgumentParser();p.add_argument('--dotnet',required=True);a=p.parse_args()
+p=argparse.ArgumentParser();p.add_argument('--dotnet',required=True);p.add_argument('--ownership-base',default='9e530764937150f85998d5db7807fd6581d9d425');a=p.parse_args()
 here=Path(__file__).resolve().parent;root=here.parents[3]
 def run(args, expected=0):
  result=subprocess.run(args,cwd=root,text=True,stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
@@ -19,7 +19,7 @@ for lane in ['Engine','Tokenizer','Selector']:
  assert 'runtime 10.0.11' in output
  print(output.strip(),flush=True)
 owned=lambda s: s in ['docs/specs/html.md','docs/tasks/M7-contracts.json'] or any(s.startswith(x) for x in ['tests/Contracts/Fixtures/M7/','docs/decisions/M7/','docs/reports/M7-contracts/'])
-for args in [['git','diff','--name-only','9e530764937150f85998d5db7807fd6581d9d425'],['git','ls-files','--others','--exclude-standard']]:
+for args in [['git','diff','--name-only',a.ownership_base],['git','ls-files','--others','--exclude-standard']]:
  assert all(owned(s) for s in run(args).splitlines())
 print('PASS: owned changes only; no shared runtime/build changes; three independent nonpackaged declaration consumers')
 
