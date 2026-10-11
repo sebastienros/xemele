@@ -116,6 +116,17 @@ public sealed class BuilderBehaviorTests
         var body = Html5Parser.Parse("<body>prefix<table>" + rows + "</table>suffix").RootElement.Children[1];
         Assert.Equal("prefix" + new string('x', 2000), body.FirstChild!.Value); Assert.Equal(HtmlNodeKind.Text, body.FirstChild.Kind); Assert.Equal("table", body.Children[1].LocalName); Assert.Equal("suffix", body.Children[2].Value);
         var formatting = Html5Parser.Parse("<p>" + string.Concat(Enumerable.Repeat("<b><i>x</b>y</i>", 2000))).RootElement.Children[1]; Assert.Equal(string.Concat(Enumerable.Repeat("xy", 2000)), formatting.GetTextContent());
+        // A resumed foster buffer must be visible before adoption moves its
+        // subtree, selectedcontent copies it, and a patch removes an old range.
+        const string pair = "<tr><td>cell</td></tr>x<tr><td>cell</td></tr>x";
+        var adopted = Html5Parser.Parse("<b>1<p>2<table>" + pair + "</table></b>3</p>").RootElement.Children[1];
+        Assert.Equal("1", adopted.FirstChild!.GetTextContent());
+        var paragraph = adopted.Children[1]; Assert.Equal("p", paragraph.LocalName); Assert.Equal("b", paragraph.FirstChild!.LocalName);
+        Assert.Equal("2xx", paragraph.FirstChild.FirstChild!.Value); Assert.Equal("2xxcellcell3", paragraph.GetTextContent());
+        var select = Html5Parser.Parse("<select><button><selectedcontent></button><option>A<table>" + pair + "</table>Z</option></select>").RootElement.Children[1].FirstChild!;
+        Assert.Equal("AxxcellcellZ", select.FirstChild!.FirstChild!.GetTextContent());
+        var patched = Html5Parser.Parse("<body><div><?start name='x'?>old<table>" + pair + "</table><?end?></div><template for=x><table>" + pair + "</table>new</template>").RootElement.Children[1].FirstChild!;
+        Assert.Equal("xxcellcellnew", patched.GetTextContent()); Assert.Equal("xx", patched.FirstChild!.Value);
     }
 
     [Fact]

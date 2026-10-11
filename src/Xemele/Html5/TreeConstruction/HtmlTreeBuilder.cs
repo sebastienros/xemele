@@ -17,6 +17,10 @@ internal sealed partial class HtmlTreeBuilder
     private bool framesetOk = true, foster, skipLf;
     private readonly System.Text.StringBuilder tableText = new();
     private readonly System.Text.StringBuilder pendingText = new();
+    // Resumed text nodes can alternate with unrelated table-cell text. Their
+    // operation-owned append buffers survive location switches; the DOM receives
+    // an owned string only when that subtree is observed/moved or at completion.
+    private Dictionary<HtmlNode, System.Text.StringBuilder>? resumedText;
     private HtmlNode? textParent, textBefore, textNode;
     internal HtmlTokenizer Tokenizer { get; }
     internal HtmlDocument Document => document;
@@ -86,6 +90,7 @@ internal sealed partial class HtmlTreeBuilder
     }
     private void InsertNode(HtmlNode node, HtmlNode? target = null)
     {
+        if (node.Parent is not null) FlushObservedText(node);
         var location = Location(target);
         if (textParent == location.Parent) FlushText();
         if (location.Before is { } before) location.Parent.InsertBefore(node, before); else location.Parent.AppendChild(node);
@@ -113,21 +118,46 @@ internal sealed partial class HtmlTreeBuilder
         {
             textParent = location.Parent; textBefore = location.Before;
             var previous = textBefore?.PreviousSibling ?? (textBefore is null ? textParent.LastChild : null);
-            if (previous is { Kind: HtmlNodeKind.Text }) { textNode = previous; pendingText.Append(previous.Value); }
+            if (previous is { Kind: HtmlNodeKind.Text }) textNode = previous;
         }
         pendingText.Append(data);
     }
     private void FlushText()
     {
         if (textParent is null) return;
-        string owned = pendingText.ToString(); pendingText.Clear();
-        if (textNode is not null) textNode.SetParsedText(owned);
+        if (textNode is not null)
+        {
+            resumedText ??= new();
+            if (!resumedText.TryGetValue(textNode, out var accumulated))
+            {
+                accumulated = new(textNode.Value); resumedText.Add(textNode, accumulated);
+            }
+            accumulated.Append(pendingText);
+        }
         else
         {
-            var node = document.CreateParsedText(owned);
+            var node = document.CreateParsedText(pendingText.ToString());
             if (textBefore is not null) textParent.InsertBefore(node, textBefore); else textParent.AppendChild(node);
         }
+        pendingText.Clear();
         textParent = textBefore = textNode = null;
+    }
+    private static bool Within(HtmlNode node, HtmlNode root)
+    {
+        for (var current = node; current is not null; current = current.StructuralParent) if (current == root) return true;
+        return false;
+    }
+    private void FlushObservedText(HtmlNode? root = null)
+    {
+        if (textParent is not null && (root is null || Within(textParent, root))) FlushText();
+        if (resumedText is null || resumedText.Count == 0) return;
+        // Dictionary removal during enumeration is supported by net10.0 and does
+        // not allocate a temporary key snapshot. No entries are added in this loop.
+        foreach (var entry in resumedText)
+            if (root is null || Within(entry.Key, root))
+            {
+                entry.Key.SetParsedText(entry.Value.ToString()); resumedText.Remove(entry.Key);
+            }
     }
     private void Misc(HtmlToken token, HtmlNode? target = null) => InsertNode(token.Kind == HtmlTokenKind.Comment ? document.CreateComment(token.Data) : document.CreateProcessingInstruction(token.Name, token.Data), target);
     private void Text(HtmlToken token, HtmlTokenizerState state)
@@ -155,7 +185,7 @@ internal sealed partial class HtmlTreeBuilder
         {
             if (reprocess > 128) throw new InvalidOperationException("Tree construction failed to advance.");
             bool again = stack.Count > 0 && Foreign(token) ? ProcessForeign(token) : ProcessHtml(token);
-            UpdateCdata(); if (!again) { if (token.Kind == HtmlTokenKind.EndOfFile) { while (stack.Count > 0) Pop(); FlushText(); } break; }
+            UpdateCdata(); if (!again) { if (token.Kind == HtmlTokenKind.EndOfFile) { while (stack.Count > 0) Pop(); FlushObservedText(); } break; }
         }
     }
     private void UpdateCdata() => Tokenizer.AllowCdata = stack.Count > 0 && Adjusted.NamespaceUri != HtmlDocument.HtmlNamespace;

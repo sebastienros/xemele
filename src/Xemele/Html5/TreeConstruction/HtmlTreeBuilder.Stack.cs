@@ -78,11 +78,11 @@ internal sealed partial class HtmlTreeBuilder
                 if (activeIndex < 0) { stack.RemoveAt(cursor); continue; }
                 var replacement = node.Clone(false); formatting[activeIndex] = replacement; stack[cursor] = replacement;
                 if (last == furthest) bookmark = activeIndex + 1;
-                replacement.AppendChild(last); last = replacement;
+                FlushObservedText(last); replacement.AppendChild(last); last = replacement;
             }
             bool saved = foster; foster = true; InsertNode(last, common); foster = saved;
             var newFormatting = formattingElement.Clone(false);
-            if (textParent == furthest) FlushText();
+            FlushObservedText(furthest);
             while (furthest.FirstChild is { } child) newFormatting.AppendChild(child);
             furthest.AppendChild(newFormatting);
             int old = formatting.IndexOf(formattingElement); formatting.RemoveAt(old); if (old < bookmark) bookmark--;

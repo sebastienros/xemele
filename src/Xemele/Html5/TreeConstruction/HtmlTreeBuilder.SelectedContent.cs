@@ -71,11 +71,12 @@ internal sealed partial class HtmlTreeBuilder
     {
         if (select.GetAttribute("multiple") is not null) return;
         HtmlNode? chosen = null; foreach (var option in SelectOptions(select)) if (Selected(option)) { chosen = option; break; }
-        if (chosen is not null) for (var parent = textParent; parent is not null; parent = parent.StructuralParent) if (parent == chosen) { FlushText(); break; }
+        if (chosen is not null) FlushObservedText(chosen);
         var contents = new List<HtmlNode>(); foreach (var node in Descendants(select)) if (Html(node, "selectedcontent") && SelectedContentSelect(node) == select) contents.Add(node);
         foreach (var content in contents)
         {
             var replacement = document.CreateFragment(); if (chosen is not null) foreach (var child in chosen.Children) replacement.AppendChild(document.ImportParsed(child, true));
+            FlushObservedText(content);
             while (content.FirstChild is { } child) child.Remove(); content.AppendChild(replacement);
         }
     }

@@ -10,15 +10,23 @@ using Xemele.Benchmarks.HtmlTreeConstruction;
 
 Console.WriteLine($"FrameworkDescription={RuntimeInformation.FrameworkDescription}; Architecture={RuntimeInformation.ProcessArchitecture}");
 if (RuntimeInformation.FrameworkDescription != ".NET 10.0.11") throw new Exception("Actual pinned runtime required.");
-if (args[0] is "--discover" or "--benchmark")
+if (args[0] is "--discover" or "--benchmark" or "--discover-owned" or "--benchmark-owned")
 {
     var config = ManualConfig.Create(DefaultConfig.Instance).WithArtifactsPath(args[1]).AddJob(Job.Default.WithToolchain(InProcessNoEmitToolchain.Instance).AsMutator());
     var suite = BenchmarkConverter.TypeToBenchmarks(typeof(BuilderBenchmarks), config);
+    bool ownedOnly = args[0] is "--discover-owned" or "--benchmark-owned";
     if (suite.BenchmarksCases.Length != 72 || suite.BenchmarksCases.Any(c => c.Job.Run.WarmupCount != 3 || c.Job.Run.IterationCount != 3 || c.Job.Run.LaunchCount != 1 || c.Job.Infrastructure.Toolchain != InProcessNoEmitToolchain.Instance)) throw new Exception("72 ShortRun NoEmit cases required.");
-    Console.WriteLine("72 ShortRun NoEmit cases; no builds/generation.");
-    if (args[0] == "--discover") return;
+    if (ownedOnly)
+    {
+        var ownedCases = suite.BenchmarksCases.Where(c => c.Descriptor.WorkloadMethod.Name is "CharacterDocument" or "ByteDocument" or "CallerStreamDocument" or "ContextualFragment").ToArray();
+        if (ownedCases.Length != 24) throw new Exception("Exactly24affected owned cases required.");
+        suite = new BenchmarkRunInfo(ownedCases, typeof(BuilderBenchmarks), suite.Config);
+    }
+    int expectedCases = ownedOnly ? 24 : 72;
+    Console.WriteLine($"{expectedCases} ShortRun NoEmit cases; no builds/generation.");
+    if (args[0] is "--discover" or "--discover-owned") return;
     var summary = BenchmarkRunner.Run(suite);
-    if (summary.Reports.Length != 72 || summary.Reports.Any(r => !r.Success || r.ResultStatistics is null)) throw new Exception("Benchmark failure.");
+    if (summary.Reports.Length != expectedCases || summary.Reports.Any(r => !r.Success || r.ResultStatistics is null)) throw new Exception("Benchmark failure.");
     return;
 }
 if (args[0] == "--verify")

@@ -28,7 +28,7 @@ internal sealed partial class HtmlTreeBuilder
         if (start is null) return;
         template.Remove(); patches.Add(template, new(start.Parent!, start, end));
         if (start == end) return;
-        for (var current = start.NextSibling; current is not null && current != end; ) { var next = current.NextSibling; current.Remove(); current = next; }
+        for (var current = start.NextSibling; current is not null && current != end; ) { var next = current.NextSibling; FlushObservedText(current); current.Remove(); current = next; }
     }
     private void ClosePatch(HtmlNode template)
     {

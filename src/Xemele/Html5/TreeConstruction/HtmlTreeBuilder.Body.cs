@@ -45,7 +45,7 @@ internal sealed partial class HtmlTreeBuilder
         if (n == "frameset")
         {
             if (stack.Count < 2 || !Html(stack[1], "body") || !framesetOk) return false;
-            stack[1].Remove(); stack.RemoveRange(1, stack.Count - 1); Insert(t); mode = Mode.InFrameset; return false;
+            FlushObservedText(stack[1]); stack[1].Remove(); stack.RemoveRange(1, stack.Count - 1); Insert(t); mode = Mode.InFrameset; return false;
         }
         if (OneOf(n, "address", "article", "aside", "blockquote", "center", "details", "dialog", "dir", "div", "dl", "fieldset", "figcaption", "figure", "footer", "header", "hgroup", "main", "menu", "nav", "ol", "p", "search", "section", "summary", "ul"))
         { if (InScope("p", Scope.Button)) CloseP(); Insert(t); return false; }

@@ -1,5 +1,5 @@
 {
-  "total_max_seconds": 2300,
+  "total_max_seconds": 1150,
   "initial_identity_max_seconds": 45,
   "final_identity_max_seconds": 45,
   "environment": {
@@ -25,16 +25,16 @@
       ]
     },
     {
-      "name": "bdn",
-      "max_seconds": 1950,
-      "log": "artifacts/M7-builder/bdn.log",
+      "name": "owned-bdn",
+      "max_seconds": 750,
+      "log": "artifacts/M7-builder/owned-bdn.log",
       "command": [
         "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
         "--fx-version",
         "10.0.11",
         "/Users/sebastienros/.codex/worktrees/464f/xemele/benchmarks/Xemele.Benchmarks/M7-builder/bin/Release/net10.0/Xemele.Benchmarks.dll",
-        "--benchmark",
-        "/Users/sebastienros/.codex/worktrees/464f/xemele/artifacts/M7-builder/bdn"
+        "--benchmark-owned",
+        "/Users/sebastienros/.codex/worktrees/464f/xemele/artifacts/M7-builder/bdn-owned"
       ]
     }
   ]
