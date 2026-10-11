@@ -23,7 +23,7 @@ var xml = XmlDocument.Parse("<x>&lt;&amp;</x>");
 if (XmlSerializer.Serialize(xml, options: new() { OmitXmlDeclaration = true }) != "<x>&lt;&amp;</x>") throw new Exception("Earlier XML.");
 Console.WriteLine(expected); Console.WriteLine("All three APIs, both modes, outer node/template/fragment, UTF8 caller stream and earlier XML passed.");
 
-var legacyDocument = LegacyHtmlParser.Parse("<p class=selected>first<p>second");
+var legacyDocument = HtmlParser.Parse("<p class=selected>first<p>second");
 var selected = CssSelector.Compile("p.selected:first-child");
 if (selected.Select(legacyDocument.DocumentNode).Count != 1) throw new Exception("Legacy CSS composition.");
 if (CssSelector.Compile("body > input[disabled]").Select(html.DocumentNode).Count != 1) throw new Exception("HTML5 CSS composition.");
