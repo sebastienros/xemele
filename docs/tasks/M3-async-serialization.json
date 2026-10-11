@@ -2,11 +2,11 @@
   "schema_version": 1,
   "milestone": "M3",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M3 coordinator 01a1284a-8826-7fc2-af44-74552db608f2 / async DOM serialization worker",
   "branch": "codex/m3-async-serialization",
   "base_revision": "ad8728b994bfb0089a2fbbb3f8e80c9e0bfad607",
-  "integration_revision": null,
+  "integration_revision": "097b91b9c655603dae6312132391ba870eac021a",
   "id": "M3-async-serialization",
   "title": "Async DOM serialization and Save wrapper",
   "depends_on": [
@@ -38,7 +38,8 @@
       "evidence": [
         "release-build",
         "correctness-102",
-        "compiled-api"
+        "compiled-api",
+        "coordinator-integration"
       ]
     },
     {
@@ -48,7 +49,8 @@
       "evidence": [
         "correctness-102",
         "cleanup-final",
-        "allocation-observations-review"
+        "allocation-observations-review",
+        "coordinator-integration"
       ]
     },
     {
@@ -61,7 +63,8 @@
         "sync-writer-preservation",
         "allocation-observations-review",
         "bdn-six-cases",
-        "planning-validation"
+        "planning-validation",
+        "coordinator-integration"
       ]
     }
   ],
@@ -198,11 +201,20 @@
       "result": "passed",
       "summary": "147task schema/evidence/acyclic dependencies/additive milestones/ordered ownership validated; final implemented metadata validation recorded after preparing evidence.",
       "artifact": null
+    },
+    {
+      "id": "coordinator-integration",
+      "kind": "integration",
+      "revision": "097b91b9c655603dae6312132391ba870eac021a",
+      "command": "Pinned Release build; Xemele.Tests.dll -namespace Xemele.Tests.M3AsyncSerialization -namespace Xemele.Tests.Serialization -namespace Xemele.Tests.M3AsyncWriter -namespace Xemele.Tests.M3Writer -parallelMode none; official API compare; tasks.py validate; source closure git diff --quiet",
+      "result": "passed",
+      "summary": "Combined current core/mode/reader/SAX and serializer: Release0warnings/errors, 122 tests passed with0fail/errors/skips; official inventory matched709 compiled members using exact offline corpus;147 task validation passed. Post-check merges changed only coordination/task/evidence; runtime/tests/API closure identical to tested7cee source integration. Independent review approved; actual allocation/retention and six-case observations preserved, historical cleanup wrapper failure remains failed and probe exit unprinted/inferred only.",
+      "artifact": "docs/reports/M3-async-serialization/integration.xml"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Implemented frozen async DOM serializer/SaveAsync using verified bounded async output and owned iterative M1-semantic traversal; all branch criteria passed, integration remains coordinator-owned.",
+    "summary": "Verified true async DOM serialization and Save wrapper with exact M1 semantics;122 integrated checks and API709 pass.",
     "checks": [
       "Release builds0warnings/errors;33initialasyncDOM+cleanup1+50M1serialization+19asyncwriter+19syncwriter =122unique passing cases; cleanup final1 independently passed at committed7cee.",
       "Approved direct compiledAPI670matched; samplebothmembersgoldenpassed; officialwrapperofflinefixture failure preserved.",
@@ -211,8 +223,6 @@
       "Planning147tasks validated; no remote pushes/publication or shared-path changes."
     ],
     "remaining": [],
-    "requests": [
-      "Coordinator provision exact offline corpus for official inventory and integrate/rerun relevant checks; do not repeat accepted allocation observations solely wrapper cleanup failure."
-    ]
+    "requests": []
   }
 }

@@ -9,18 +9,6 @@
   },
   "active_assignments": [
     {
-      "task_id": "M3-async-serialization",
-      "branch": "codex/m3-async-serialization",
-      "base_revision": "ad8728b994bfb0089a2fbbb3f8e80c9e0bfad607",
-      "host_id": "local",
-      "stage": "Setup confirmed; bounded implementation; awaiting PARK for resource-mode measurements",
-      "acceptance_before_dispatch": "Frozen async serializer and Save API, exact M1 DOM semantics including mixed-content lookahead, iterative bounded real async output; focused correctness/API checks and prepared serial allocation/memory observations.",
-      "claim_revision": "df540e28cacfb147d661829910b15225195c794a",
-      "client_thread_id": "client-new-thread:280dfbd1-b7fe-43a5-81b8-9a05a748df44",
-      "chat_id": "01a128b5-7905-72d1-8484-420eaecaa820",
-      "worktree_path": "/Users/sebastienros/.codex/worktrees/875c/xemele"
-    },
-    {
       "task_id": "M3-push",
       "branch": "codex/m3-push",
       "base_revision": "dea97b9f2c20a89afae0f1136ec9f29dc8ca3305",
@@ -63,8 +51,8 @@
     "Finish async serialization and push",
     "Verify async join, mandatory corpus qualification and M3-gate before exactly one M4 handoff"
   ],
-  "last_verified_task": "M3-resource-mode",
-  "last_integrated_revision": "75e7342a9468d3eb32cafb12262e8b8ac4301045",
+  "last_verified_task": "M3-async-serialization",
+  "last_integrated_revision": "097b91b9c655603dae6312132391ba870eac021a",
   "completed_assignments": [
     {
       "task_id": "M2-dtd-composition",
@@ -1458,6 +1446,20 @@
         "chat_archived": true,
         "branch_preserved": true
       }
+    },
+    {
+      "task_id": "M3-async-serialization",
+      "branch": "codex/m3-async-serialization",
+      "base_revision": "ad8728b994bfb0089a2fbbb3f8e80c9e0bfad607",
+      "host_id": "local",
+      "stage": "Verified; cleanup pending",
+      "acceptance_before_dispatch": "Frozen async serializer and Save API, exact M1 DOM semantics including mixed-content lookahead, iterative bounded real async output; focused correctness/API checks and prepared serial allocation/memory observations.",
+      "claim_revision": "df540e28cacfb147d661829910b15225195c794a",
+      "client_thread_id": "client-new-thread:280dfbd1-b7fe-43a5-81b8-9a05a748df44",
+      "chat_id": "01a128b5-7905-72d1-8484-420eaecaa820",
+      "worktree_path": "/Users/sebastienros/.codex/worktrees/875c/xemele",
+      "handoff_revision": "d6c67012790e4079abc1a12a2d62c1faa91b20f2",
+      "integration_revision": "097b91b9c655603dae6312132391ba870eac021a"
     }
   ],
   "benchmark_grant": {
@@ -1560,11 +1562,11 @@
       "remaining_gate": null
     },
     "M3": {
-      "verified": 12,
+      "verified": 13,
       "total": 18,
       "in_progress": [
         "M3-push",
-        "M3-async-serialization"
+        "M3-async-input"
       ],
       "remaining_gate": "M3-gate"
     }
