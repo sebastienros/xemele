@@ -13,7 +13,7 @@ def capture():
  runtime=pathlib.Path('/Users/sebastienros/Library/Application Support/dotnetup/dotnet')
  runtime_files=[runtime/'dotnet']+[p for folder in ['sdk/10.0.400','shared/Microsoft.NETCore.App/10.0.11','host/fxr'] for p in (runtime/folder).rglob('*') if p.is_file()]
  plan=json.loads((root/'docs/reports/M5-gate/test-plan.json').read_text())
- env={k:v for k,v in os.environ.items() if k in {'PATH','LANG','LC_ALL','LC_CTYPE','MallocNanoZone','LD_LIBRARY_PATH'} or k.startswith(('DOTNET_','COMPlus_','CORECLR_','DYLD_'))};env.update(plan['environment'])
+ env={k:v for k,v in os.environ.items() if k in {'PATH','LANG','LC_ALL','LC_CTYPE','MallocNanoZone','LD_LIBRARY_PATH'} or k.startswith(('DOTNET_','COMPlus_','CORECLR_','DYLD_','XEMELE_'))};env.update(plan['environment'])
  return {'revision':subprocess.check_output(['git','rev-parse','HEAD'],cwd=root,text=True).strip(),'environment':env,**{name:{str(p):digest(p) for p in sorted(set(paths))} for name,paths in [('source',sources),('binary',binaries),('runtime',runtime_files)]}}
 mode,path=sys.argv[1:];path=pathlib.Path(path);actual=capture()
 if mode=='capture':path.write_text(json.dumps(actual,indent=2,sort_keys=True)+'\n')
