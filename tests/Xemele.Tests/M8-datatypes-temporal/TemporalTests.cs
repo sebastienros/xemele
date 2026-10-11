@@ -8,8 +8,10 @@ public sealed class TemporalTests
 {
     private static readonly TemporalDatatypeProvider Provider = new();
     private static readonly SchemaNamespaceContext Context = new(new Dictionary<string, string>(), "", null);
-    private static SchemaCompileOperation Op(long? work = null, int? components = null, CancellationToken token = default) =>
-        new(new() { MaxOperations = work, MaxComponents = components, CancellationToken = token, Limits = new() { EvaluationWork = null } });
+    private static SchemaCompileOperation Op(long? work = null, int? components = null) =>
+        new(new() { MaxOperations = work, MaxComponents = components, CancellationToken = TestContext.Current.CancellationToken, Limits = new() { EvaluationWork = null } });
+    private static SchemaCompileOperation TokenOp(CancellationToken token) =>
+        new(new() { MaxOperations = null, MaxComponents = null, CancellationToken = token, Limits = new() { EvaluationWork = null } });
     private static DatatypeAtomicValue Parse(string type, ReadOnlySpan<char> input, ISchemaOperation? op = null, TemporalDatatypeProvider? provider = null)
     {
         Assert.True((provider ?? Provider).TryParse(DatatypeTypes.All[type], input, Context, op ?? Op(), out var value, out var error));
@@ -195,7 +197,7 @@ public sealed class TemporalTests
         ledger = new(); int hash = DatatypeValues.ValueHashCode(a, ledger); Assert.Equal(hash, DatatypeValues.ValueHashCode(a, Op(ledger.Work)));
         Assert.Throws<SchemaCompileException>(() => DatatypeValues.ValueHashCode(a, Op(ledger.Work - 1)));
         using var cts = new CancellationTokenSource(); cts.Cancel();
-        Assert.Throws<OperationCanceledException>(() => Parse("gYear", "2000", Op(token: cts.Token)));
+        Assert.Throws<OperationCanceledException>(() => Parse("gYear", "2000", TokenOp(cts.Token)));
         var middle = new Ledger { FailAt = 20 };
         Assert.Throws<OperationCanceledException>(() => Parse("duration", "P100000000000000000000Y", middle));
         Assert.Throws<OperationCanceledException>(() => DatatypeValues.Compare(a, b, new Ledger { FailAt = 4 }));
