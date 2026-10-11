@@ -26,9 +26,13 @@ public sealed class DtdSchema
         if (source.DeclarationValidityDiagnostic is { } diagnostic) throw new XmlParseException([diagnostic]);
         if (source.UnreadParameterLocation is { } unread)
             throw new XmlParseException([new("DTD.IncompleteInput", XmlDiagnosticSeverity.Fatal, "DTD input is incomplete.", unread)]);
-        if (!document.SourceInputComplete || document.HasIncompleteAttributes || document.UnresolvedReferences.Count != 0)
+        var operation = new ValidationOperation();
+        bool undeclared = document.UnresolvedReferences.Count != 0 && DtdEvaluator.ProvesUndeclaredReferences(document, operation);
+        if (!operation.IsComplete) throw new XmlParseException(operation.Complete().Diagnostics);
+        if (!document.SourceInputComplete || document.HasIncompleteAttributes ||
+            document.UnresolvedReferences.Count != 0 && !undeclared)
             throw new XmlParseException([new("DTD.IncompleteInput", XmlDiagnosticSeverity.Fatal, "Document input is incomplete.", default)]);
-        var schema = Create(source, document.DocumentType?.Name, new());
+        var schema = Create(source, document.DocumentType?.Name, operation);
         DtdEvaluator.CheckRevision(document, revision);
         return schema;
     }

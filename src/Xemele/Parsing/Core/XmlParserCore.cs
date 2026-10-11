@@ -29,7 +29,7 @@ internal sealed partial class XmlParserCore : IDisposable, IAsyncDisposable
         internal string? OwnedName, OwnedValue;
         internal AttributeInterpretation? Incomplete;
     }
-    private readonly record struct Frame(Name Name, int BindingsStart, bool StandaloneWhitespaceDependency);
+    private readonly record struct Frame(Name Name, int BindingsStart, bool StandaloneWhitespaceDependency, DtdElementDeclaration? ValidationDeclaration);
     private readonly record struct Binding(string Prefix, string Uri);
     private const string XmlUri = "http://www.w3.org/XML/1998/namespace";
     private const string XmlnsUri = "http://www.w3.org/2000/xmlns/";
@@ -394,6 +394,7 @@ internal sealed partial class XmlParserCore : IDisposable, IAsyncDisposable
                     if (!Charge(Quota.TokenCharacters, 1, location)) return;
                     var reference = token.AsSpan(0, tokenLength);
                     bool pushed = PushGeneralEntity(reference, referenceLocation);
+                    if (diagnostic is null && (pushed || ScalarReference(reference))) RetainValidationReference(false, referenceLocation);
                     if (!pushed && !ScalarReference(reference) && ValidName(reference, false) &&
                         AllowsUnresolvedContent)
                     {
@@ -411,6 +412,7 @@ internal sealed partial class XmlParserCore : IDisposable, IAsyncDisposable
                     state = State.Data; tokenLength = 0; brackets = 0;
                     if (diagnostic is null && !pushed)
                     {
+                        if (!reference.IsEmpty && reference[0] == '#' && White(scalar)) RetainValidationReference(true, referenceLocation);
                         if (!textActive) BeginText(XmlTextKind.Text, "", referenceLocation);
                         QueueFragment(scalar, referenceLocation);
                     }
@@ -600,7 +602,10 @@ internal sealed partial class XmlParserCore : IDisposable, IAsyncDisposable
                 case Delivery.Declaration:
                     delivery = Delivery.None; keepGoing = sink.Declaration(new(token.AsSpan(versionStart, versionLength), token.AsSpan(encodingStart, encodingLength), standalone, opening)); break;
                 default:
-                    delivery = Delivery.None; endDocumentDelivered = true; keepGoing = sink.EndDocument(opening); break;
+                    delivery = Delivery.None; endDocumentDelivered = true;
+                    if (!budget.Options.Recover && validationInstanceDiagnostic is { } witness && sink is IXmlValidationProvenanceSink provenance)
+                        provenance.ValidationProvenance(witness, validationInstanceDeclaration!);
+                    keepGoing = sink.EndDocument(opening); break;
             }
             if (!keepGoing) return false;
         }
@@ -781,7 +786,9 @@ internal sealed partial class XmlParserCore : IDisposable, IAsyncDisposable
             { Reject("XML.IncompleteAttributeSinkRequired", "Sink cannot represent incomplete attribute values.", FirstUnknown(incomplete.Parts)); return; }
         if (!FinishRecoveryTag()) return;
         if (!Charge(Quota.Depth, 1, opening)) return;
-        frames.Add(new(deliveredName, bindingStart, StandaloneElementWhitespace(token.AsSpan(0, nameLength)))); rootSeen = true; deliveryIndex = 0; delivery = Delivery.Tag;
+        var validationDeclaration = ValidationElementDeclaration(token.AsSpan(0, nameLength));
+        if (diagnostic is not null) return;
+        frames.Add(new(deliveredName, bindingStart, StandaloneElementWhitespace(token.AsSpan(0, nameLength)), validationDeclaration)); rootSeen = true; deliveryIndex = 0; delivery = Delivery.Tag;
     }
     private void ParseClose()
     {

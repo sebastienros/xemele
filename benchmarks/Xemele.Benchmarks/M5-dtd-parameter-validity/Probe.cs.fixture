@@ -1,0 +1,103 @@
+using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Text.Json;
+using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Configs;
+using BenchmarkDotNet.Jobs;
+using BenchmarkDotNet.Running;
+using BenchmarkDotNet.Toolchains.InProcess.NoEmit;
+using Xemele;
+using Xemele.Parsing.Dtd;
+using Xemele.Validation;
+
+if (RuntimeInformation.FrameworkDescription != ".NET 10.0.11") throw new Exception("Actual pinned .NET10.0.11 host required.");
+if (args is not [var mode, var output]) throw new ArgumentException();
+if (mode is "--discover" or "--benchmark")
+{
+    var config = ManualConfig.Create(DefaultConfig.Instance).WithArtifactsPath(output)
+        .AddJob(Job.Default.WithToolchain(InProcessNoEmitToolchain.Instance).AsMutator());
+    var suite = BenchmarkConverter.TypeToBenchmarks(typeof(ParameterValidityBenchmarks), config);
+    if (suite.BenchmarksCases.Length != 3 || suite.BenchmarksCases.Any(c => c.Job.Run.WarmupCount != 3 || c.Job.Run.IterationCount != 3 || c.Job.Run.LaunchCount != 1 || c.Job.Infrastructure.Toolchain != InProcessNoEmitToolchain.Instance)) throw new Exception("Three ShortRun NoEmit cases required.");
+    Console.WriteLine($"{RuntimeInformation.FrameworkDescription}; 3 ShortRun NoEmit cases; no build/generation.");
+    if (mode == "--discover") return;
+    var summary = BenchmarkRunner.Run(suite);
+    if (summary.Reports.Length != 3 || summary.Reports.Any(r => !r.Success || r.ResultStatistics is null)) throw new Exception("Benchmark failure.");
+    return;
+}
+if (mode == "--control")
+{
+    Fixtures.Controls();
+    File.WriteAllText(output, JsonSerializer.Serialize(new { runtime = RuntimeInformation.FrameworkDescription, architecture = RuntimeInformation.ProcessArchitecture.ToString(), controls = "passed" }));
+    return;
+}
+if (mode != "--allocation") throw new ArgumentException();
+long before = GC.GetAllocatedBytesForCurrentThread();
+GC.KeepAlive(Fixtures.Parser); GC.KeepAlive(Fixtures.Action);
+long fixtureBytes = GC.GetAllocatedBytesForCurrentThread() - before;
+Fixtures.Controls();
+Fixtures.Record(); // Initialize the one retained diagnostic outside the steady window.
+for (int i = 0; i < 10000; i++) Fixtures.Record();
+long[] distribution = new long[32];
+long outerBefore = GC.GetAllocatedBytesForCurrentThread();
+for (int batch = 0; batch < 32; batch++)
+{
+    before = GC.GetAllocatedBytesForCurrentThread();
+    for (int i = 0; i < 4096; i++) Fixtures.Record();
+    distribution[batch] = GC.GetAllocatedBytesForCurrentThread() - before;
+}
+long warmBytes = GC.GetAllocatedBytesForCurrentThread() - outerBefore;
+using var firstParser = new DtdParser(DtdSubsetKind.External, new());
+var first = Fixtures.Bind(firstParser);
+before = GC.GetAllocatedBytesForCurrentThread();
+first("DTD.ImproperDeclarationNesting", "Boundary", default);
+long firstDiagnosticBytes = GC.GetAllocatedBytesForCurrentThread() - before;
+before = GC.GetAllocatedBytesForCurrentThread(); var positive = new byte[1024];
+long positiveBytes = GC.GetAllocatedBytesForCurrentThread() - before;
+GC.KeepAlive(positive);
+const int OwnedCount = 100;
+object? sink = null;
+before = GC.GetAllocatedBytesForCurrentThread();
+for (int i = 0; i < OwnedCount; i++) sink = DtdSchema.Compile(Fixtures.Valid);
+long validBytes = GC.GetAllocatedBytesForCurrentThread() - before;
+before = GC.GetAllocatedBytesForCurrentThread();
+for (int i = 0; i < OwnedCount; i++) sink = Fixtures.InvalidCompile();
+long invalidBytes = GC.GetAllocatedBytesForCurrentThread() - before;
+var retained = new DtdSchema[100];
+long retainedBefore = GC.GetTotalMemory(true);
+for (int i = 0; i < retained.Length; i++) retained[i] = DtdSchema.Compile(Fixtures.Valid);
+long retainedAfter = GC.GetTotalMemory(true);
+File.WriteAllText(output, JsonSerializer.Serialize(new { runtime = RuntimeInformation.FrameworkDescription, architecture = RuntimeInformation.ProcessArchitecture.ToString(), fixtureInitializationBytes = fixtureBytes, positiveBytes, firstDiagnosticBytes, warmDistributionBytes = distribution, warmBytes, warmOperations = 131072, ownedValidCompileBytes = validBytes, ownedInvalidCompileBytes = invalidBytes, ownedOperations = OwnedCount, retainedBeforeBytes = retainedBefore, retainedAfterBytes = retainedAfter, retainedSchemas = retained.Length }, new JsonSerializerOptions { WriteIndented = true }));
+if (warmBytes != 0 || distribution.Any(b => b != 0) || positiveBytes <= 0 || firstDiagnosticBytes <= 0 || validBytes <= 0 || invalidBytes <= 0) throw new Exception("Allocation gates failed.");
+GC.KeepAlive(retained); GC.KeepAlive(sink);
+
+internal static class Fixtures
+{
+    static Fixtures() { }
+    internal const string Valid = "<!ENTITY % p '(a|b)'><!ELEMENT r (%p;,c?)><!ELEMENT a EMPTY><!ELEMENT b EMPTY><!ELEMENT c EMPTY>";
+    internal const string Invalid = "<!ENTITY % p '>'><!ELEMENT r EMPTY %p;";
+    internal static readonly DtdParser Parser = new(DtdSubsetKind.External, new());
+    internal static readonly Action<string, string, XmlLocation> Action = Bind(Parser);
+    internal static Action<string, string, XmlLocation> Bind(DtdParser parser) => typeof(DtdParser).GetMethod("RetainNestingDiagnostic", BindingFlags.Instance | BindingFlags.NonPublic)!.CreateDelegate<Action<string, string, XmlLocation>>(parser);
+    internal static void Record() => Action("DTD.ImproperDeclarationNesting", "Boundary", default);
+    internal static object InvalidCompile()
+    {
+        try { DtdSchema.Compile(Invalid); throw new Exception("Expected nesting invalidity."); }
+        catch (XmlParseException error) { if (error.Diagnostics[0].Code != "DTD.ImproperDeclarationNesting") throw; return error; }
+    }
+    internal static void Controls()
+    {
+        var schema = DtdSchema.Compile(Valid);
+        if (!schema.Validate(XmlDocument.Parse("<r><a/><c/></r>")).IsValid) throw new Exception("Valid composition failed.");
+        GC.KeepAlive(InvalidCompile());
+        using var parser = new DtdParser(DtdSubsetKind.External, new());
+        if (parser.Append(Invalid, [], true, default).Step != DtdParseStep.Completed || parser.Model.DeclarationValidityDiagnostic?.Code != "DTD.ImproperDeclarationNesting") throw new Exception("Nonvalidating preservation failed.");
+    }
+}
+[MemoryDiagnoser, ShortRunJob]
+public class ParameterValidityBenchmarks
+{
+    [GlobalSetup] public void Setup() { Fixtures.Controls(); Fixtures.Record(); }
+    [Benchmark] public void WarmRetainedBoundaryDiagnostic() => Fixtures.Record();
+    [Benchmark] public object OwnedValidCompile() => DtdSchema.Compile(Fixtures.Valid);
+    [Benchmark] public object OwnedInvalidCompile() => Fixtures.InvalidCompile();
+}

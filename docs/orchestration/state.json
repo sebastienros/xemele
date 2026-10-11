@@ -7,7 +7,21 @@
     "task_id": "M4-gate",
     "integration_revision": "a0354ad6a8ea7a8f2109db3d5b9f701e39e939f9"
   },
-  "active_assignments": [],
+  "active_assignments": [
+    {
+      "task_id": "M5-corpus",
+      "agent_id": "/root/c14n",
+      "worktree": "/private/tmp/xemele-m5-corpus",
+      "branch": "codex/m5-corpus",
+      "base_revision": "9314ee6be13a9a1959623dfc17878db4f286cf97",
+      "claim_revision": "3817b327d120f6ca212f2f6a28f4fd647084aaca",
+      "stage": "Authorized resume from all verified correctness repairs; full closure pending",
+      "partial_handoff_revision": "7d2f0a10b5fe134fd3c9889d9635d23584c1a99f",
+      "frozen_expectations_revision": "7dc2a3c9cd60f2a0ce373cde9b2724b414ee1051",
+      "correction_revision": "266a3504fb213043d9e1027d4124d3660bc49128",
+      "source_review": "21808e2/7d6160c sourceapproved;831 unequal labels explicitlydisclosed; no executedreviewcheck"
+    }
+  ],
   "integration_queue": [],
   "blockers": [
     {
@@ -17,10 +31,10 @@
     }
   ],
   "next_actions": [
-    "Claim readyM5-corpus from verified facade+canonicalizer, then M5-gate cumulative checks and solewriterM6transfer."
+    "Resume corpus from all three verified repairs and complete independent normative closure; verify corpus, claim/run cumulative M5 gate, then exactly one M6 setup and sole-writer transfer."
   ],
-  "last_verified_task": "M5-dtd-validate",
-  "last_integrated_revision": "094edd911ceb405fd88fadd4e08d34d64f8089da",
+  "last_verified_task": "M5-dtd-instance-provenance",
+  "last_integrated_revision": "4ee8d81d5373f30f5299e4220006d036b45a1c98",
   "completed_assignments": [
     {
       "task_id": "M2-dtd-composition",
@@ -730,9 +744,44 @@
       "branch": "codex/m5-dtd-validate",
       "base_revision": "eccc8fa5254218d47ab688cbef28c4f154ae34cd",
       "claim_revision": "cfb2d630ec27c36b0bd14af8c9c7b6f238a73657",
-      "stage": "Verified integrated; cleanup pending",
+      "stage": "Verified integrated; clean checkout removed",
       "integration_revision": "094edd911ceb405fd88fadd4e08d34d64f8089da",
-      "handoff_revision": "067431341c7c3527231bd87c27531713ec9a05ae"
+      "handoff_revision": "067431341c7c3527231bd87c27531713ec9a05ae",
+      "cleanup": "Ownedrawindependentlyinspected/deleted; cleanworktreeremoved"
+    },
+    {
+      "task_id": "M5-dtd-parameter-validity",
+      "agent_id": "/root/dtd_model",
+      "worktree": "/private/tmp/xemele-m5-dtd-parameter-validity",
+      "branch": "codex/m5-dtd-parameter-validity",
+      "base_revision": "daf46fe51c6f91b04fe583f165bf4b2cd6d54a54",
+      "claim_revision": "60190686306433a6b3e40a6644fe3389bd9c32e3",
+      "stage": "Verifiedintegrated; cleancheckoutremoved",
+      "integration_revision": "9320614cbba1181825e1ad949f873b516525d452",
+      "handoff_revision": "2e11913709bec75670a55f96ae9d6f27cd673726"
+    },
+    {
+      "task_id": "M5-dtd-attribute-validity",
+      "agent_id": "/root/validation_model",
+      "worktree": "/private/tmp/xemele-m5-dtd-attribute-validity",
+      "branch": "codex/m5-dtd-attribute-validity",
+      "base_revision": "daf46fe51c6f91b04fe583f165bf4b2cd6d54a54",
+      "claim_revision": "60190686306433a6b3e40a6644fe3389bd9c32e3",
+      "stage": "Verified integrated; clean checkout removed",
+      "integration_revision": "2d20f75450a011a22259b5116450a92dba84bd99",
+      "handoff_revision": "e7156720023858f6cf405c92a315258f38581389"
+    },
+    {
+      "task_id": "M5-dtd-instance-provenance",
+      "agent_id": "/root/validation_metadata",
+      "worktree": "/private/tmp/xemele-m5-dtd-instance-provenance",
+      "branch": "codex/m5-dtd-instance-provenance",
+      "base_revision": "ee9fbc263d2422c4db38cbef34d5eb5be7595c41",
+      "stage": "Verified integrated; clean checkout removed",
+      "claim_revision": "1501fd0f40cdd06a331aefa1cdebb795b66357f8",
+      "candidate_revision": "d96ed87af7b73af3e82744310c71c100732d1635",
+      "integration_revision": "4ee8d81d5373f30f5299e4220006d036b45a1c98",
+      "handoff_revision": "70e30caf5386393769ee37ff514b227253387523"
     }
   ],
   "benchmark_policy": "Successful previous measurements retained; future changed runtime measurements require complete preparation and exclusive grant.",
@@ -1111,6 +1160,15 @@
         "M2-version-declarations",
         "M2-dtd-nonvalidating"
       ]
+    },
+    {
+      "tasks": [
+        "M5-dtd-parameter-validity",
+        "M5-dtd-attribute-validity"
+      ],
+      "reason": "Frozenfirstcorpus2585/all3386 actual10.0.11Arm64 found16normativeDTDgaps;4profileclassification+4BCLpreparationcorrectedwithoutshrinkingcases/vectors.",
+      "claim": "60190686306433a6b3e40a6644fe3389bd9c32e3",
+      "coordination_failures": "InitialrepairJSONkind repair rejected; correctedfeature and158validatepassed. Two claim-script syntax failures+oneJSsyntaxfailure repaired beforedispatch; created idleworktrees advanced to actualcommittedclaim, no prematureimplementation."
     }
   ],
   "recent_completed_assignments": [
@@ -1902,11 +1960,7 @@
     "implementation_started": false,
     "dispatch_after": "M2-conformance verified"
   },
-  "milestone_progress": {
-    "milestone": "M5",
-    "verified": 9,
-    "total": 12
-  },
+  "milestone_progress": "M5:13 of15tasks verified; all three corpus repairs verified; corpus closure and gate pending.",
   "pause_request": {
     "requested_by": "user",
     "after_verified_task": "M2-gate",
@@ -1916,40 +1970,38 @@
   },
   "current_milestone": "M5",
   "read_only_review": {
-    "task_id": "M4-evaluate",
-    "revision": "d1d77ad5f00e6946c58721bd8b4ae39b77252532",
-    "reviewers": [
-      "review_m4_model: ownership/budget/cancellation/diagnostics",
-      "review_m4_contracts: semantics/API/focus/context"
-    ],
-    "scope": "Source only, no builds/tests/measurements; one batched correction request after both reports."
+    "agent_id": "/root/m5_contract_review",
+    "scope": "Parameter3221a52 andAttribute ba2a0c source-only pairedvalidity fixes/preparedharnesses",
+    "status": "dispatched after corpusPARK; no workloads"
   },
   "coordinator_repair": {
     "task_id": "M5-validation-metadata",
     "stage": "verified"
   },
   "measurement_lease": {
-    "id": "m5-dtd-validate-455000b",
+    "id": "m5-dtd-instance-provenance-c800f18",
     "status": "released",
-    "revision": "455000b57f583ea132488b7fcc240c54e37ed15f",
+    "revision": "c800f18472c1796847f99b7939cfbe26ab603672",
+    "runtime_revision": "d96ed87af7b73af3e82744310c71c100732d1635",
     "executor_agent_id": "/root/validation_metadata",
     "duration_limit_seconds": 1050,
-    "preparation_sha256": "612fc368b6962d6547f48add9d9d9655ec037318c50b00a5a00e529ba06f0a78",
-    "scope": "One exact allocation60s then only success14case ShortRunNoEmit900s; full190source50binary3852runtime initial/finalidentity35s each; explicit10.0.11 TieredCompilation/PGO/ReadyToRun0; own-groupcleanup finally; no builds/restores/control/generation/edits/tests/retries; immediate lifecycle before rawinspection.",
+    "preparation_sha256": "cacbb23e3a4d0066fd0e3714b84ef17515e4da7db9b4c0543c1841517d564f7e",
+    "scope": "Exactly one prepared allocation phase60s then successful16case NoEmit ShortRun900s; initial/final full170source43binary3852SDK-runtime-host/effectiveenv identities35s each; explicitfx10.0.11; scoped ownPG cleanup finally/nochildren. No builds/restores/generation/sourcewrites/tests/retries. Immediate lifecycle release before inspection.",
     "park_acknowledgements": [
-      "Executor fresh prepared clean455000b no workloads/children; source independently approved and89+2091actualtests passed.",
-      "All other implementation workers terminal verified checkouts removed, no workloads.",
-      "Independent reviewer terminal source-only fresh stopped/no workloads after455000bapproval.",
-      "Root independent190/50/3852closurematch/scopedhostinventoryempty; rootPARK."
+      "Executor clean c800f18 explicit PARK; runtime/source unchanged approved d96ed87; controls/discovery passed no measurements.",
+      "Corpus clean PARK7d2f0a1 no workloads/children/writes after Python-only adapter controls.",
+      "Independent reviewer terminal source-approved c800f18, no executables.",
+      "Gate assessor terminal read-only; completed nesting/attribute workers terminal clean checkouts removed.",
+      "Root independent escalated full freeze SHA matched170/43/3852; fresh scoped dotnet workload inventory empty; root PARK."
     ],
     "release": {
+      "wrapper_exit": 0,
       "initial_identity_exit": 0,
       "allocation_exit": 0,
       "benchmark_exit": 0,
       "final_identity_exit": 0,
-      "wrapper_exit": 0,
       "no_child": true,
-      "inspection": "Root independently inspected allocationJSON allfourzeroQName totals,owned/retained domains,all14inclusiveGCrows andtwoactual10.0.11Arm64BDNtables;durablesummariescommitted andownedrawcleanupACKcompleted."
+      "inspection": "Not yet inspected; successful exact once lifecycle received before inspection. Full170/43/3852 identity/SHA unchanged."
     }
   },
   "offline_corpus_setup": {
@@ -2099,6 +2151,80 @@
         "wrapper_exit": 0,
         "no_child": true,
         "inspection": "Root independently read fullallocationJSON,32+32zero distributions,all inclusive caller/owned/cold/retained totals,all12GC numerator/denominators,actual10.0.11Arm64 andbothBDNsummarytables79.58s; ACKrawcleanupafterdurablesummary."
+      }
+    },
+    {
+      "id": "m5-dtd-validate-455000b",
+      "status": "released",
+      "revision": "455000b57f583ea132488b7fcc240c54e37ed15f",
+      "executor_agent_id": "/root/validation_metadata",
+      "duration_limit_seconds": 1050,
+      "preparation_sha256": "612fc368b6962d6547f48add9d9d9655ec037318c50b00a5a00e529ba06f0a78",
+      "scope": "One exact allocation60s then only success14case ShortRunNoEmit900s; full190source50binary3852runtime initial/finalidentity35s each; explicit10.0.11 TieredCompilation/PGO/ReadyToRun0; own-groupcleanup finally; no builds/restores/control/generation/edits/tests/retries; immediate lifecycle before rawinspection.",
+      "park_acknowledgements": [
+        "Executor fresh prepared clean455000b no workloads/children; source independently approved and89+2091actualtests passed.",
+        "All other implementation workers terminal verified checkouts removed, no workloads.",
+        "Independent reviewer terminal source-only fresh stopped/no workloads after455000bapproval.",
+        "Root independent190/50/3852closurematch/scopedhostinventoryempty; rootPARK."
+      ],
+      "release": {
+        "initial_identity_exit": 0,
+        "allocation_exit": 0,
+        "benchmark_exit": 0,
+        "final_identity_exit": 0,
+        "wrapper_exit": 0,
+        "no_child": true,
+        "inspection": "Root independently inspected allocationJSON allfourzeroQName totals,owned/retained domains,all14inclusiveGCrows andtwoactual10.0.11Arm64BDNtables;durablesummariescommitted andownedrawcleanupACKcompleted."
+      }
+    },
+    {
+      "id": "m5-dtd-parameter-validity-2f6cffb",
+      "status": "released",
+      "revision": "2f6cffb3d1018a7dd83189c2a6a273de60befc7a",
+      "runtime_revision": "3221a52d045976dd4fc8e318288440580b4ccda1",
+      "executor_agent_id": "/root/dtd_model",
+      "duration_limit_seconds": 300,
+      "preparation_sha256": "f2f3d80bda6337726fc565277a5cbd0792d81e7caeb9831506c00bee7d137d0b",
+      "scope": "One exact allocation30s then onlysuccess3caseNoEmitShortRun180s initial/finalidentity35s;full175source43binary3852SDK-runtime-host/effectiveenvclosure;explicit10.0.11;ownPGcleanupfinally/nochildren. No builds/restores/generation/sourcewrites/tests/retries; immediate lifecycle release before resultinspection.",
+      "park_acknowledgements": [
+        "ExecutorfreshPARKprepared2f6cffb clean/noownworkloads; reviewedruntime3221a52.",
+        "AttributeexplicitfreshPARK3f6dd74clean no.NETworkloads/children/writes; correctedprobeunmeasured.",
+        "CorpuscleanPARK7d6160c allchildrencompleted nofurtherwrites.",
+        "Independentreviewerterminalsource-only approvedbothruntimefixes; rootfullidentitymatches175/43/3852SHAf2f3d80; scopedhostprocessinventoryempty; rootPARK."
+      ],
+      "release": {
+        "wrapper_exit": 0,
+        "initial_identity_exit": 0,
+        "allocation_exit": 0,
+        "benchmark_exit": 0,
+        "final_identity_exit": 0,
+        "no_child": true,
+        "inspection": "RootindependentfullallocationJSON32zeros/131072,first72/fixture5016/positive1048,owned1937216and944424/100,wholeheap176536to744960/100,all3actual10.0.11Arm64GCrows0/268435456,2535605936/131072,1237257872/131072 and27.38stabletable; durablesummaryACKrawcleanupdone."
+      }
+    },
+    {
+      "id": "m5-dtd-attribute-validity-3f6dd74",
+      "status": "released",
+      "revision": "3f6dd74240514769665263baa2712f97ce0ad5a8",
+      "runtime_revision": "ba2a0c793907825ca36dfd3376d5812b70370b9a",
+      "executor_agent_id": "/root/validation_model",
+      "duration_limit_seconds": 330,
+      "preparation_sha256": "45745f8f78b22056dab82b895283919fc3281dcf44a89dd725734b4e61e9df1f",
+      "scope": "One exact allocation20s then onlysuccess4caseNoEmitShortRun240s;initial/final35s full166source43binary3852SDK-runtime-host/effectiveenvclosure; explicit10.0.11; ownPGcleanupfinally/nochildren; no builds/restores/generation/sourcewrites/tests/retries. Immediate lifecycle releasebeforeinspection.",
+      "park_acknowledgements": [
+        "Executor explicitfreshPARKclean3f6dd74 noown.NETworkloads/children/writes; harnessforeachcorrectedbeforemeasurement.",
+        "Parameterworkerterminalclean2e11913 integratedverified9320614; rawinspected/deletedcheckoutremoved.",
+        "CorpuscleanPARK7d6160c nochildren/workloads/writes.",
+        "Independentreviewerterminalapprovedba2runtime/identifiedharnessfix; sourceassessorterminalreadonlynoexecutables; rootfullcorrected45745f8identitycheckpassed166/43/3852 andfreshscopedhostinventoryempty; rootPARK."
+      ],
+      "release": {
+        "wrapper_exit": 0,
+        "initial_identity_exit": 0,
+        "allocation_exit": 0,
+        "benchmark_exit": 0,
+        "final_identity_exit": 0,
+        "no_child": true,
+        "inspection": "Notyetinspected;successfulonce lifecycle beforeinspection."
       }
     }
   ]
