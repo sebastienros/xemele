@@ -4,11 +4,11 @@
   "milestone": "M8",
   "title": "XSD temporal and duration value family",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M8 coordinator01a12c6c-b333-71d3-877f-0d186618e21d / assigned isolated worker",
   "branch": "codex/m8-datatypes-temporal",
   "base_revision": "5fa9e08be6b34281578645fe9ae62c8f549cabf3",
-  "integration_revision": null,
+  "integration_revision": "629440f6516ef13d4674fcecb5441f2ecd5a6dc7",
   "depends_on": [
     "M8-datatypes-core"
   ],
@@ -36,7 +36,8 @@
       "evidence": [
         "temporal-corrected-correctness",
         "temporal-source-review",
-        "temporal-measurements"
+        "temporal-measurements",
+        "integrated"
       ]
     },
     {
@@ -46,7 +47,8 @@
       "evidence": [
         "temporal-corrected-correctness",
         "temporal-source-review",
-        "temporal-measurements"
+        "temporal-measurements",
+        "integrated"
       ]
     },
     {
@@ -56,7 +58,8 @@
       "evidence": [
         "temporal-corrected-correctness",
         "temporal-source-review",
-        "temporal-measurements"
+        "temporal-measurements",
+        "integrated"
       ]
     }
   ],
@@ -104,11 +107,20 @@
       "result": "passed",
       "summary": "12 routes32warm/64samples: six warmed compare/hash routes0B every sample; owned536/976/24008B, huge duration67296B\u00d763+67608\u00d71(unattributed312B residual), invalid624B, setup920B. Cold148144B; positive1048B;128retained inclusiveGC delta295960B(not exactpervalue).8NoEmitShortRun rows report rounded0B but exactGC totalbytes0/2888/2304/1208/0/2888/0/2600 allpreserved, noexactBDNzero claim. Provider2.18\u201313.81\u00d7slower than reducedoracle, no speedupclaim. All445identities unchanged,2children exit0/reaped/groups absent/logs closed,58.780023957951926s. Rootandworker independentlyinspectedafterdurableRELEASE; no rerun. RawsourceRevisiona11a484 is reviewmetadata with identical accepted8ed24fb runtime source.",
       "artifact": "docs/reports/M8-datatypes-temporal/allocations.md"
+    },
+    {
+      "id": "integrated",
+      "kind": "integration",
+      "revision": "629440f6516ef13d4674fcecb5441f2ecd5a6dc7",
+      "command": "python3 docs/reports/M8-datatypes-temporal/checks.py",
+      "result": "passed",
+      "summary": "Actual combined main candidate:53 cases (23 temporal+18 core+12 model) passed with zero failures/errors/skips/not-run;1393 public members matched; normal and XML-only consumers passed;176 tasks validated, diff clean and all Release builds zero warnings/errors. Independent raw measurement inspection after RELEASE preserved exact distributions and nonzero rounded BDN residuals.",
+      "artifact": "docs/reports/M8-datatypes-temporal/integration.md"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Implemented all9temporal primitives through verified core; accepted corrections preserve pinned leap/timezone identity, signed-duration reference endpoints and bounded polled arbitrary arithmetic.53focused correctness/API/core-only consumers passed; authorized allocations and8NoEmit microbenchmarks inspected honestly. Awaiting coordinator cumulative integration verification.",
+    "summary": "Integrated and verified nine temporal primitives with53 combined tests,1393 API, real normal/XML-only consumers and planning checks. Pinned leap/zone and signed-year duration semantics, metered arbitrary precision and owned measurement results accepted.",
     "checks": [
       "checks.py at8ed24fb:23temporal+18core+12model=53actual.NET10.0.11cases;zero errors/failures/skips/not-run",
       "1393publicAPI matched; normal/XML-only genuine provider/core consumers passed",
@@ -118,8 +130,7 @@
       "tasks.py validate and git diff --check passed"
     ],
     "remaining": [
-      "Coordinator cumulative integration and existing checks.py rerun; integration_revision remains null until coordinator verification",
-      "Complete library composition and end-to-end/x64 release confirmation remain assigned downstream; no external conformance-corpus completion claimed"
+      "Composition into the complete datatype library and release architecture/end-to-end checks remain downstream tasks."
     ],
     "requests": []
   }
