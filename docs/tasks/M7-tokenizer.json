@@ -4,11 +4,11 @@
   "milestone": "M7",
   "title": "WHATWG HTML tokenizer",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M7 coordinator /root/tokenizer",
   "branch": "codex/m7-tokenizer",
   "base_revision": "854039d48c08eb108112d0e65fb01d066fab8867",
-  "integration_revision": null,
+  "integration_revision": "f761eee79569b05d476ffda6cfe4f4e3c8ad1890",
   "depends_on": [
     "M7-html-model",
     "M7-html-pi-model"
@@ -38,7 +38,8 @@
       "evidence": [
         "tokenizer-correctness",
         "source-review",
-        "frozen-allocation-and-bdn"
+        "frozen-allocation-and-bdn",
+        "root-integration"
       ]
     },
     {
@@ -47,7 +48,8 @@
       "status": "passed",
       "evidence": [
         "tokenizer-correctness",
-        "source-review"
+        "source-review",
+        "root-integration"
       ]
     },
     {
@@ -57,7 +59,8 @@
       "evidence": [
         "api-and-sample",
         "source-review",
-        "frozen-allocation-and-bdn"
+        "frozen-allocation-and-bdn",
+        "root-integration"
       ]
     }
   ],
@@ -104,6 +107,15 @@
       "result": "passed",
       "summary": "Exact-wrapper positive/unknown-env-negative/final-positive controls pass. Root durable grant 6699dcb, exclusive 1,150-second lease: exactly one execution on actual .NET 10.0.11 Arm64; allocation and all 24 ShortRun NoEmit BDN cases exit 0, initial/final freeze 0, no_child=true. All 3,670 source/input, 43 binary, and 3,852 SDK/runtime/host identities unchanged. Durable release adcdb15 preceded raw inspection. Cold initialization 35,744 B; positive control 1,048 B; 96 borrowed batches x 1,024 operations = 98,304 operations at 0 B. Eighteen owned 128-operation totals reported separately; inclusive retained delta 468,000 B for 128 lists. Range utility slower than framework baseline; no speedup claim. High priority denied, long-input confidence intervals noisy, one-host results provisional.",
       "artifact": "docs/reports/M7-tokenizer/measurements.md"
+    },
+    {
+      "id": "root-integration",
+      "kind": "integration",
+      "revision": "f761eee79569b05d476ffda6cfe4f4e3c8ad1890",
+      "command": "Pinned offline Release builds; explicit fx10.0.11 tokenizer namespace15 tests including full corpus and sample; official compose + unchanged M0 checker; tasks.py validate; git diff --check",
+      "result": "passed",
+      "summary": "Fresh zero-warning builds;15 actual XML tests Pass including7049 lexical vectors across chunks and accepted exact3case normative error ledger. API1210/3388fixtures/bootstrapFalse.48 changed paths owned; measured source unchanged.117allocation rows and24BDN cases independently inspected after release.",
+      "artifact": "docs/reports/M7-tokenizer/integration.md"
     }
   ],
   "blockers": [],
