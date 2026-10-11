@@ -1,6 +1,6 @@
 {
   "objective": "M7verified/terminal; main orchestrator owns sole coordination and successor creation.",
-  "coordinator_chat_id": "01a12849-d2be-7292-8cd9-27c1c14b5a3d",
+  "coordinator_chat_id": "01a12c6c-b333-71d3-877f-0d186618e21d",
   "coordination_branch": "main",
   "max_concurrent_workers": 3,
   "last_verified_checkpoint": "M7-gate",
@@ -23,8 +23,8 @@
     }
   ],
   "next_actions": [
-    "Create M8-only milestone coordinator, persist chat identity and explicitly transfer sole writes; GPT-6.1 Sol/high isolated implementation chats, maximum three workers.",
-    "M8 coordinator returns verified terminal handoff to main; main alone starts M9."
+    "M8 accepts explicit ACTIVATE containing transfer revision, reconciles state and executes orchestrator.md through verified M8-gate.",
+    "M8 returns terminal sole-writer handoff to main; main alone creates M9."
   ],
   "last_verified_task": "M7-gate",
   "last_integrated_revision": "a1384320f3663732b7f933ad2457b1fce524a84c",
@@ -2305,25 +2305,20 @@
     "cleanup": "Clean worktree removed; branch and all source/evidence integrated. Local preview nupkg preserved at artifacts/M3-gate/packages with verified SHA256 bee764f3cf5cbf3be1be5d94b5bdfdc146d93dd511bc8970a317f8d013014877. Canonical private corpus cache retained."
   },
   "milestone_handoff": {
-    "from_milestone": "M7",
-    "to_milestone": "main orchestration",
-    "from_chat_id": "01a12add-f725-7663-b0f9-e6687671c769",
-    "thread_id": "01a12849-d2be-7292-8cd9-27c1c14b5a3d",
+    "from_milestone": "main orchestration",
+    "to_milestone": "M8",
+    "from_chat_id": "01a12849-d2be-7292-8cd9-27c1c14b5a3d",
+    "thread_id": "01a12c6c-b333-71d3-877f-0d186618e21d",
     "host_id": "local",
-    "status": "Acknowledged by main orchestrator; sole primary/main/state ownership accepted",
+    "status": "Sole writes transfer upon containing commit; explicit ACTIVATE follows; M8 records acceptance",
     "verified_gate_revision": "a1384320f3663732b7f933ad2457b1fce524a84c",
-    "gate_verified_metadata_revision": "d9f0edde2a7fe171c3fc1c65e82aeffb52dece13",
-    "cleanup_revision": "b312273ac1e93adbf0d8ae0767928b4bd1d31a16",
-    "transfer_revision": "4983f23bba47cbba7bbd05752768fbfc0dabe78b",
-    "transfer_revision_note": "Containingcommit hash sentexplicitly inACTIVATE; mainalone recordsACK/fullhash.",
-    "created_at_utc": "2026-10-11T19:23:24.424149+00:00",
-    "checkpoint": "16M7verified/48criteria/8717tests/6985earlieridentities/1253API/3388fixtures; leaseNone; allworkerterminal; onlyprimarycheckout; retainedM7/M6unpublishedcheckpoints/originalcaches intact; noM8created.",
-    "report": "docs/reports/M7-gate/handoff.md",
-    "activation_sent": true,
-    "setup_ready": true
+    "acknowledged_M7_transfer_revision": "4983f23bba47cbba7bbd05752768fbfc0dabe78b",
+    "main_ack_revision": "5ac591851c9c1fa5f4bf16d037b2fc8e5357bf44",
+    "setup_ready": true,
+    "activation_sent": false
   },
-  "previous_coordinator_chat_id": "01a12add-f725-7663-b0f9-e6687671c769",
-  "coordinator_write_status": "Main orchestrator sole primary/main/state writer; M7 terminal; preparing M8 coordinator dispatch and explicit activation.",
+  "previous_coordinator_chat_id": "01a12849-d2be-7292-8cd9-27c1c14b5a3d",
+  "coordinator_write_status": "Sole primary/main/state writer transferred to M8 coordinator upon this commit; main performs no repository writes until terminal M8 handoff.",
   "benchmark_class_attributes": "Human requirement: every benchmark class declares [MemoryDiagnoser, ShortRunJob]; no CLI job flags.",
   "chat_communication_authorization": "Direct human in this chat answered Authorize M7 coordination messages. Main standing authorization also applies; persistent authorization.",
   "m5_measurement_history": [
@@ -2570,6 +2565,24 @@
       "created_at_utc": "2026-10-11T12:10:53.514348+00:00",
       "checkpoint": "11M6tasksverified;6985tests/6797M5identities/1054API/164planning;actual10.0.11SDK10.0.400/osxarm64;releasedlease;allrequiredrawinspected/cleaned;unpublishedpackage+manifestprimaryretained;originalcacheintact;no workers/workloads/pendingissues.",
       "activation_acknowledgement": "Activation acknowledgement is committed in this record; containing commit reported through final ACK, avoiding a self-referential hash."
+    },
+    {
+      "from_milestone": "M7",
+      "to_milestone": "main orchestration",
+      "from_chat_id": "01a12add-f725-7663-b0f9-e6687671c769",
+      "thread_id": "01a12849-d2be-7292-8cd9-27c1c14b5a3d",
+      "host_id": "local",
+      "status": "Acknowledged by main orchestrator; sole primary/main/state ownership accepted",
+      "verified_gate_revision": "a1384320f3663732b7f933ad2457b1fce524a84c",
+      "gate_verified_metadata_revision": "d9f0edde2a7fe171c3fc1c65e82aeffb52dece13",
+      "cleanup_revision": "b312273ac1e93adbf0d8ae0767928b4bd1d31a16",
+      "transfer_revision": "4983f23bba47cbba7bbd05752768fbfc0dabe78b",
+      "transfer_revision_note": "Containingcommit hash sentexplicitly inACTIVATE; mainalone recordsACK/fullhash.",
+      "created_at_utc": "2026-10-11T19:23:24.424149+00:00",
+      "checkpoint": "16M7verified/48criteria/8717tests/6985earlieridentities/1253API/3388fixtures; leaseNone; allworkerterminal; onlyprimarycheckout; retainedM7/M6unpublishedcheckpoints/originalcaches intact; noM8created.",
+      "report": "docs/reports/M7-gate/handoff.md",
+      "activation_sent": true,
+      "setup_ready": true
     }
   ],
   "workers": [
@@ -3230,9 +3243,9 @@
   "implementation_chat_policy": {
     "model": "gpt-6.1-sol",
     "thinking": "high",
-    "isolation": "one isolated worktree and one claimed task per implementation chat",
-    "maximum_concurrent_workers": 3,
-    "existing_subagents": "preserve bounded checkpoint and stop writer before transfer; no competing writers"
+    "max_concurrent": 3,
+    "isolation": "One claimed task per isolated implementation chat/worktree",
+    "communication": "Direct human authorization; coordination messages always allowed and never block progress"
   },
   "milestone_completion_scope": "Complete integrated verified M7-gate; terminal workers; durable handoff to main orchestrator; relinquish coordination writes. No M8 creation.",
   "m7_serializer_followups": [
