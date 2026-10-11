@@ -4,11 +4,11 @@
   "milestone": "M5",
   "title": "Verify validating XML checkpoint",
   "kind": "gate",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M5 gate worker /root/validation_model",
   "branch": "codex/m5-gate",
   "base_revision": "d68d924f0a089ecf2c3effa64faf65856886b046",
-  "integration_revision": null,
+  "integration_revision": "a7654c83d95174a57105c13b2e70ba0425664e09",
   "depends_on": [
     "M5-corpus",
     "M5-validation-source-provenance",
@@ -40,7 +40,8 @@
         "fuzz",
         "api",
         "package",
-        "planning"
+        "planning",
+        "combined-integration"
       ]
     },
     {
@@ -53,7 +54,8 @@
         "fuzz",
         "api",
         "package",
-        "planning"
+        "planning",
+        "combined-integration"
       ]
     },
     {
@@ -66,7 +68,8 @@
         "fuzz",
         "api",
         "package",
-        "planning"
+        "planning",
+        "combined-integration"
       ]
     }
   ],
@@ -156,20 +159,27 @@
       "result": "passed",
       "summary": "Validated160 tasks after final implemented evidence update.",
       "artifact": "docs/reports/M5-gate/summary.json"
+    },
+    {
+      "id": "combined-integration",
+      "kind": "integration",
+      "revision": "a7654c83d95174a57105c13b2e70ba0425664e09",
+      "command": "Root isolated no-ff integration; worker-to-combined runtime/test/tool/benchmark/sample/build-input diff; pinned offline public Demo restore/build and explicitfx10.0.11 execution; scoped948-member API comparison; planning validate; independent raw report and package inspection",
+      "result": "passed",
+      "summary": "Combined runtime/test/config inputs identical to successful worker branch; no full-suite repeat needed for docs/state-only integration. Public Demo build0warnings/errors and actual10.0.11 earlier+M5 assertions passed; scoped948members matched;160task validation and whitespace clean. Root independently checked6797allpassed XML/runtime identities,12child counter/provenance/request hashes,originalgrammar model/witness/resolution hashes,fuzz,official948 inventory,package SHA/DLL SHA/output equality before cleanup. One mistyped preliminary environment-only shell command exited127 without starting a build; corrected actual build passed. Unpublished package copied to main ignoredartifacts with verifiedSHAe6b7fffa966dd5df2d92177721789a4c33a13166f9da15d2e96c6f224e3b00ba.",
+      "artifact": "docs/reports/M5-gate/summary.json"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Bounded cumulative M5 gate implemented on isolated branch with verified dependencies; no product changes. Original grammar and inherited narrow allocation regressions preserve earlier behavior; updated standalone public validation/canonicalization consumer and948API passed. Historical SourceCore streaming throughput timings remain historical.",
+    "summary": "Verified integrated cumulative M5 checkpoint; all16M5 tasks verified. Independent DTD validation and three canonical algorithms preserve earlier milestones; no later catalog/HTML/schema dependency.",
     "checks": [
       "6797allpassed actual.NET10.0.11",
       "Original2585grammar/3386resources/all1394callbackpause models",
       "M4fixedseedfuzz all expected counts",
       "Official948API and local empty-cache public package consumer passed"
     ],
-    "remaining": [
-      "Coordinator integrated verification; unpublished ignored package retained for coordinator copying before checkout removal."
-    ],
+    "remaining": [],
     "requests": []
   }
 }
