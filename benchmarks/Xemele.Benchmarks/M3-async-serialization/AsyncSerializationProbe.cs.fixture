@@ -18,14 +18,15 @@ internal static class Probe
     {
         var shortDocument = Document(16); var longDocument = Document(65536);
         var sink = new Sink(); var delayed = new Sink { Delayed = true };
+        var primitive = PreparePrimitive();
+        using var primitiveOutput = primitive.Output;
         if (args.Contains("--prepare"))
         {
+            if (primitive.Read("界😀".AsSpan(), out int width) != '界' || width != 1) throw new InvalidOperationException("Scalar delegate differs");
             await shortDocument.SaveAsync(sink, Options); await longDocument.SaveAsync(delayed, Options);
             if (sink.Count != 23 || delayed.Count != 65543 || delayed.Maximum > 8192 || delayed.Capacity != 8192) throw new InvalidOperationException();
             Console.WriteLine("Prepared immediate/delayed async-only controls without allocation counters."); return 0;
         }
-        var primitive = PreparePrimitive();
-        using var primitiveOutput = primitive.Output;
         long coldBefore = GC.GetTotalAllocatedBytes(true);
         await shortDocument.SaveAsync(sink, Options);
         long coldObserved = GC.GetTotalAllocatedBytes(true) - coldBefore;
