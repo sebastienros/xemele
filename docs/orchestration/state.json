@@ -17,8 +17,7 @@
     }
   ],
   "next_actions": [
-    "Preserve local M4 preview package, delete inspected gate raw and clean checkout.",
-    "Create exactly one fresh M5 coordinator in setup-only state, then durably relinquish main before authorized activation."
+    "Confirm sole M5 successor setup; persist sole-writer relinquishment before ACTIVATE."
   ],
   "last_verified_task": "M4-gate",
   "last_integrated_revision": "a0354ad6a8ea7a8f2109db3d5b9f701e39e939f9",
@@ -639,7 +638,7 @@
       "task_id": "M4-gate",
       "branch": "codex/m4-gate",
       "base_revision": "c4c789bd1cab03207e61ef36e25fe8df16e3b14d",
-      "stage": "verified; clean gate checkout cleanup pending",
+      "stage": "verified; clean gate checkout removed, inspected raw deleted; local preview package preserved",
       "worktree_path": "/private/tmp/xemele-m4-gate",
       "integration_revision": "a0354ad6a8ea7a8f2109db3d5b9f701e39e939f9"
     }
@@ -1899,15 +1898,13 @@
     "cleanup": "Clean worktree removed; branch and all source/evidence integrated. Local preview nupkg preserved at artifacts/M3-gate/packages with verified SHA256 bee764f3cf5cbf3be1be5d94b5bdfdc146d93dd511bc8970a317f8d013014877. Canonical private corpus cache retained."
   },
   "milestone_handoff": {
-    "from": "M3",
-    "to": "M4",
-    "thread_id": "01a12903-1caa-7f32-b0e3-e66b49cea7a6",
+    "from": "M4",
+    "to": "M5",
+    "thread_id": "01a129a5-109b-7ff3-8809-59de62acdb39",
     "host_id": "local",
-    "status": "Activated by explicit human-authorized message; M4 sole main writer",
-    "verified_gate_revision": "f740466f1f0929ae109870545a1ad09201cbca5b",
-    "activation_sent": true,
-    "setup_cursor": "198d27a1-a0d7-4c8f-b730-e214e075c448:4",
-    "activation_revision": "011833b2e69a3fd105735bb931d63f99e83c7158"
+    "status": "setup-only dispatched; awaiting ready before sole-writer transfer",
+    "verified_gate_revision": "a0354ad6a8ea7a8f2109db3d5b9f701e39e939f9",
+    "activation_sent": false
   },
   "previous_coordinator_chat_id": "01a1284a-8826-7fc2-af44-74552db608f2",
   "coordinator_write_status": "M3 relinquished main; M4 sole writer upon activation",
