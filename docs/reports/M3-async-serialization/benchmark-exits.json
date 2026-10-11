@@ -1,0 +1,43 @@
+{
+  "passed": true,
+  "hashes": {
+    "src/Xemele/bin/Release/net10.0/Xemele.dll": "c7a9d2cfef0295a5cdee7124d10f9bef5424cb6bf301a0c4c296958edd87d86b",
+    "docs/reports/M3-async-serialization/Probe/bin/Release/net10.0/AsyncSerialization.Probe.dll": "0e3157676293afe83077b4df62ff6c639d7d56feaf0b0418a6e219e583007c7e",
+    "benchmarks/Xemele.Benchmarks/bin/Release/net10.0/Xemele.Benchmarks.dll": "55479378f8193ba78cdd8a63a4ae179a2fce07f1a0db0fd1fb964698c06ebd81"
+  },
+  "steps": [
+    {
+      "command": [
+        "dotnet",
+        "benchmarks/Xemele.Benchmarks/bin/Release/net10.0/Xemele.Benchmarks.dll",
+        "--filter",
+        "*AsyncSerializationBenchmarks*",
+        "--job",
+        "Dry",
+        "--inProcess",
+        "--iterationCount",
+        "3",
+        "--warmupCount",
+        "1",
+        "--launchCount",
+        "1",
+        "--invocationCount",
+        "1",
+        "--unrollFactor",
+        "1",
+        "--artifacts",
+        "docs/reports/M3-async-serialization/bdn"
+      ],
+      "exit": 0,
+      "timedOut": false,
+      "invalidScope": false,
+      "scopes": [
+        6,
+        6
+      ],
+      "elapsedSeconds": 0.897,
+      "remainingChildren": [],
+      "output": "docs/reports/M3-async-serialization/bdn-run.txt"
+    }
+  ]
+}

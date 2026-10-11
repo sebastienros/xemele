@@ -2,7 +2,7 @@
   "schema_version": 1,
   "milestone": "M3",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M3 coordinator 01a1284a-8826-7fc2-af44-74552db608f2 / async DOM serialization worker",
   "branch": "codex/m3-async-serialization",
   "base_revision": "ad8728b994bfb0089a2fbbb3f8e80c9e0bfad607",
@@ -34,29 +34,185 @@
     {
       "id": "M3-async-serialization-A1",
       "description": "Implement separate frozen XmlAsyncSerializer.SerializeAsync and XmlDocument.SaveAsync partial with exactly M1 DOM output/validation/ownership semantics including full mixed-content indentation lookahead; iterative bounded incremental async output.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "release-build",
+        "correctness-102",
+        "compiled-api"
+      ]
     },
     {
       "id": "M3-async-serialization-A2",
       "description": "Test independent M1 goldens and sync/async equality, mixed content beyond forward-writer restriction, UTF/BOM/namespace policy, delayed async-only output, cancellation/errors/no flush/leave-open and deep/large trees without whole-output buffering.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "correctness-102",
+        "cleanup-final",
+        "allocation-observations-review"
+      ]
     },
     {
       "id": "M3-async-serialization-A3",
       "description": "Demonstrate only verified dependencies; actual compiled API, real allocation/bounded scratch and retained memory evidence, preserve M1 and forward writer checks and validate known revision.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "compiled-api",
+        "standalone-sample",
+        "sync-writer-preservation",
+        "allocation-observations-review",
+        "bdn-six-cases",
+        "planning-validation"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Serialization/Async/Dom/XmlAsyncSerializer.cs: separate frozen Task API; checked iterative traversal, full direct-child mixed-content lookahead, M1 scalar/lexical/namespace resolution, verified internal WriterOutput asynchronous bounded encoder; scratch disposed on all outcomes.",
+    "src/Xemele/Parsing/Dom/Document.Save.Async.cs: additive frozen SaveAsync wrapper.",
+    "tests/Xemele.Tests/M3-async-serialization/AsyncSerializerTests.cs: independent M1 byte vectors and lexical/namespace/encoding/BOM goldens, late mixed-content indentation, delayed async-only stream/cancellation/error identity, caller ownership/no flush, depth10000, DOCTYPE/standalone M1 behavior and EventSource exactly-once pool return.",
+    "docs/api/M3-async-serialization.txt and samples/M3-async-serialization/: exactly two frozen public methods plus separate class; compiled/run independent mixed-content sample.",
+    "benchmarks/Xemele.Benchmarks/M3-async-serialization/: sole-job sync/async composition and fixture-only standalone probe; probe project under owned reports avoids parent globs. Borrowed scalar primitive control, processwide composition allocations, positive controls, actual scratch/retention and task-owner release."
+  ],
+  "evidence": [
+    {
+      "id": "initial-test-build-failure",
+      "kind": "check",
+      "revision": "df540e28cacfb147d661829910b15225195c794a",
+      "command": "dotnet build tests/Xemele.Tests/Xemele.Tests.csproj -c Release -p:UseSharedCompilation=false -p:BuildInParallel=false -m:1 --disable-build-servers",
+      "result": "failed",
+      "summary": "Initial uncommitted source preparation: runtime compiled, tests rejected six synchronous xUnit Throws(Func<Task>) calls (12 compiler/analyzer errors). Corrected to awaited ThrowsAsync before implementation commit; subsequent builds passed.",
+      "artifact": null
+    },
+    {
+      "id": "release-build",
+      "kind": "check",
+      "revision": "7cee8bb2f2f154ff74bf5aeadacd0964e1f13a8a",
+      "command": "DOTNET_CLI_DO_NOT_USE_MSBUILD_SERVER=1 dotnet build tests/Xemele.Tests/Xemele.Tests.csproj -c Release --no-restore -p:UseSharedCompilation=false -p:BuildInParallel=false -m:1 --disable-build-servers",
+      "result": "passed",
+      "summary": "Final Release runtime/test build0warnings/errors, SDK10.0.400/runtime10.0.11 Arm64; runtime implementation source unchanged17478155. Probe/BDN/sample builds also0warnings/errors.",
+      "artifact": null
+    },
+    {
+      "id": "correctness-102",
+      "kind": "check",
+      "revision": "17478155d8996c39bbd0e9f4b166bfc829c436f7",
+      "command": "dotnet tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -namespace Xemele.Tests.M3AsyncSerialization -namespace Xemele.Tests.Serialization -namespace Xemele.Tests.M3AsyncWriter -parallelMode none -showLiveOutput -noColor -result-xml docs/reports/M3-async-serialization/correctness.xml",
+      "result": "passed",
+      "summary": "33 async DOM +50 earlier serialization +19 async writer =102passed0failed/errors/skipped/notrun; no broad rerun for probe/wrapper-only preparation.",
+      "artifact": "docs/reports/M3-async-serialization/correctness.xml"
+    },
+    {
+      "id": "sync-writer-preservation",
+      "kind": "check",
+      "revision": "17478155d8996c39bbd0e9f4b166bfc829c436f7",
+      "command": "dotnet tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -namespace Xemele.Tests.M3AsyncSerialization -namespace Xemele.Tests.M3Writer -parallelMode none -showLiveOutput -noColor -result-xml docs/reports/M3-async-serialization/lifecycle-preservation.xml",
+      "result": "passed",
+      "summary": "53passed0failed/errors/skipped/notrun including all19 verified sync writer cases/exactzero regression outside measurement lease. Runtime remained committed17478155; own34 test source then had uncommitted cleanup instrumentation later committed5ed8bbc. Final cleanup-only check at7cee independently records that addition.",
+      "artifact": "docs/reports/M3-async-serialization/lifecycle-preservation.xml"
+    },
+    {
+      "id": "cleanup-final",
+      "kind": "check",
+      "revision": "7cee8bb2f2f154ff74bf5aeadacd0964e1f13a8a",
+      "command": "dotnet tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -method Xemele.Tests.M3AsyncSerialization.AsyncSerializerTests.ScratchOwnerReturnedExactlyOnceOnSuccessIoAndCancellation -parallelMode none -showLiveOutput -noColor -result-xml docs/reports/M3-async-serialization/cleanup-final.xml",
+      "result": "passed",
+      "summary": "Final committed cleanup test1passed0failed/errors/skipped/notrun. ArrayPool EventSource identifies actual async transport byte owner and proves exactly one return for success/I/O/cancellation; no caller Dispose/Flush. Only this added test rerun at final committed fixture revision.",
+      "artifact": "docs/reports/M3-async-serialization/cleanup-final.xml"
+    },
+    {
+      "id": "standalone-sample",
+      "kind": "check",
+      "revision": "17478155d8996c39bbd0e9f4b166bfc829c436f7",
+      "command": "dotnet samples/M3-async-serialization/bin/Release/net10.0/AsyncSerialization.Sample.dll",
+      "result": "passed",
+      "summary": "Both frozen methods compiled and executed exact late-text mixed-content golden without later adapters.",
+      "artifact": null
+    },
+    {
+      "id": "official-api-environment-failure",
+      "kind": "check",
+      "revision": "17478155d8996c39bbd0e9f4b166bfc829c436f7",
+      "command": "python3 -B tools/ApiBaseline/compare.py --report docs/reports/M3-async-serialization/api.json",
+      "result": "failed",
+      "summary": "Official wrapper stopped before assembly comparison: missing offline tests/corpora/xml/xmlconf/eduni/errata-2e/E14.dtd. No manifest/baseline changes; coordinator provisions official inventory during integration.",
+      "artifact": null
+    },
+    {
+      "id": "compiled-api",
+      "kind": "check",
+      "revision": "17478155d8996c39bbd0e9f4b166bfc829c436f7",
+      "command": "dotnet /private/tmp/xemele-m3-integration/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare src/Xemele/bin/Release/net10.0/Xemele.dll /private/tmp/xemele-async-serialization-api.txt",
+      "result": "passed",
+      "summary": "Coordinator-approved unchanged extractor matched670compiledmembers using temporary duplicate-checked union of current task fragments (667existing+2methods+separateclass). No tracked shared index changes. Runtime source remains17478155.",
+      "artifact": null
+    },
+    {
+      "id": "bdn-restore-environment-failure",
+      "kind": "check",
+      "revision": "17478155d8996c39bbd0e9f4b166bfc829c436f7",
+      "command": "dotnet build benchmarks/Xemele.Benchmarks/Xemele.Benchmarks.csproj -c Release -p:UseSharedCompilation=false -p:BuildInParallel=false -p:BuildProjectReferences=false -m:1 --disable-build-servers",
+      "result": "failed",
+      "summary": "Restore NU1900 vulnerability feed unavailable under network restriction. Subsequent build with process-local -p:NuGetAudit=false passed0warnings/errors; no project/package edits.",
+      "artifact": null
+    },
+    {
+      "id": "measurement-preparation",
+      "kind": "check",
+      "revision": "7cee8bb2f2f154ff74bf5aeadacd0964e1f13a8a",
+      "command": "Release probe/benchmark builds --no-restore -p:UseSharedCompilation=false -p:BuildInParallel=false -p:BuildProjectReferences=false -m:1 --disable-build-servers; dotnet docs/reports/M3-async-serialization/Probe/bin/Release/net10.0/AsyncSerialization.Probe.dll --prepare; dotnet benchmarks/Xemele.Benchmarks/bin/Release/net10.0/Xemele.Benchmarks.dll --list flat --filter *AsyncSerializationBenchmarks*",
+      "result": "passed",
+      "summary": "Prebuilt source7cee: primitive closed span delegate and immediate/delayed async-only controls exit0 without counters; list2methods*3frozenparams, no job attribute, soleCLI DryInProcess expected6. Frozen runtime/probe/BDN/tests hashes in report; no measurements before coordinator grants.",
+      "artifact": null
+    },
+    {
+      "id": "allocation-wrapper-cleanup-failure",
+      "kind": "check",
+      "revision": "7cee8bb2f2f154ff74bf5aeadacd0964e1f13a8a",
+      "command": "python3 /private/tmp/xemele-async-serialization-run.py",
+      "result": "failed",
+      "summary": "Authorized <=160s initial lease: probe printed complete passedtrue observations and child.wait reaped it; external ps sandbox PermissionError before child exit was emitted caused wrapperactualexit1/no session. BDN not run. Elevated scoped ps found no measurement processes/children and lease released before inspection. Probe child0 only inferred from passedJSON/reviewed returnbranch, never claimed printed actualexit. No allocation repeat.",
+      "artifact": "docs/reports/M3-async-serialization/measurement-harness-failure.json"
+    },
+    {
+      "id": "allocation-observations-review",
+      "kind": "review",
+      "revision": "7cee8bb2f2f154ff74bf5aeadacd0964e1f13a8a",
+      "command": "Coordinator01a1284a-8826-7fc2-af44-74552db608f2 adjudication of complete allocation.json after released initial lease",
+      "result": "passed",
+      "summary": "Actual default-runtime borrowed scalar primitive48000calls0B currentthread AND preciseprocess, ownedcopypositive512000B. Warmshort16chars/long65536chars both138400B/100docs inclusive setup; wholeoutputpositive34322352B/100docs; delayed297776B/20docs. Actual byteowner8192/maxwrite2051; retaineddelta16808B after8*8MiB serializations; completedTaskalive document released. Coldobserved10480B after fixtures/reflection/primitive-owner init, not pristinecold. Raw valid measurements accepted by coordinator without rerun solely cleanup reporting failure; wrapper failure/unprinted inferred probeexit preserved.",
+      "artifact": "docs/reports/M3-async-serialization/allocation.json"
+    },
+    {
+      "id": "bdn-six-cases",
+      "kind": "check",
+      "revision": "7cee8bb2f2f154ff74bf5aeadacd0964e1f13a8a",
+      "command": "python3 /private/tmp/xemele-async-serialization-bdn.py; dotnet benchmarks/Xemele.Benchmarks/bin/Release/net10.0/Xemele.Benchmarks.dll --filter *AsyncSerializationBenchmarks* --job Dry --inProcess --iterationCount 3 --warmupCount 1 --launchCount 1 --invocationCount 1 --unrollFactor 1 --artifacts docs/reports/M3-async-serialization/bdn",
+      "result": "passed",
+      "summary": "Separate authorized<=110s BDN-only lease: actual childexit0/PID72018, wrapperexit0/no session, absentprocessgroup/nochildren, scopes[6,6], no timeout/invalidscope,0.897s. Exactly6cases singleDry InProcessEmitToolchain/defaultenv, no builds/probe repeat/options/retry. Inclusive MemoryDiagnoser sync long9.57KB/multilingual13.79KB/short13.79KB; async13.85KB allcorpora includes scope/setup/framework/runnerinit, not isolatedprimitive. Timing/ratios informational and unusable for comparative speed/regression claims under unrelated Silex hostworkload; x64/Arm64 repeatable M9 qualification remains.",
+      "artifact": "docs/reports/M3-async-serialization/bdn/results/Xemele.M3AsyncSerializationMeasurements.AsyncSerializationBenchmarks-report.csv"
+    },
+    {
+      "id": "planning-validation",
+      "kind": "check",
+      "revision": "7cee8bb2f2f154ff74bf5aeadacd0964e1f13a8a",
+      "command": "python3 tools/planning/tasks.py validate",
+      "result": "passed",
+      "summary": "147task schema/evidence/acyclic dependencies/additive milestones/ordered ownership validated; final implemented metadata validation recorded after preparing evidence.",
+      "artifact": null
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Focused child of M3-async; parent retains original integrated acceptance.",
-    "checks": [],
+    "summary": "Implemented frozen async DOM serializer/SaveAsync using verified bounded async output and owned iterative M1-semantic traversal; all branch criteria passed, integration remains coordinator-owned.",
+    "checks": [
+      "Release builds0warnings/errors;33initialasyncDOM+cleanup1+50M1serialization+19asyncwriter+19syncwriter =122unique passing cases; cleanup final1 independently passed at committed7cee.",
+      "Approved direct compiledAPI670matched; samplebothmembersgoldenpassed; officialwrapperofflinefixture failure preserved.",
+      "Primitive48000currentthread/processwide0 +positive512000B; wholeDOMwarm1384B/doc short/long; delayed14888.8B/doc; scratch8192; retaineddelta16808B; documentownerreleased.",
+      "SixsoleDryInProcess BDNcases actualexit0/nochildren; rawMemoryDiagnoser retained, sharedhosttimings informational only.",
+      "Planning147tasks validated; no remote pushes/publication or shared-path changes."
+    ],
     "remaining": [],
-    "requests": []
+    "requests": [
+      "Coordinator provision exact offline corpus for official inventory and integrate/rerun relevant checks; do not repeat accepted allocation observations solely wrapper cleanup failure."
+    ]
   }
 }
