@@ -17,7 +17,7 @@ namespace Xemele.Parsing.Syntax
     }
     internal readonly ref struct XmlIncompleteAttributeView(XmlNameView name, ReadOnlySpan<char> lexicalValue,
         bool isTokenized, Xemele.XmlLocation valueLocation, ReadOnlySpan<Xemele.XmlAttributeValuePart> parts,
-        int? defaultDeclarationSequence)
+        int? defaultDeclarationSequence, bool isDefaulted = false)
     {
         public XmlNameView Name { get; } = name;
         public ReadOnlySpan<char> LexicalValue { get; } = lexicalValue;
@@ -25,6 +25,7 @@ namespace Xemele.Parsing.Syntax
         public Xemele.XmlLocation ValueLocation { get; } = valueLocation;
         public ReadOnlySpan<Xemele.XmlAttributeValuePart> Parts { get; } = parts;
         public int? DefaultDeclarationSequence { get; } = defaultDeclarationSequence;
+        public bool IsDefaulted { get; } = isDefaulted;
     }
     internal interface IXmlIncompleteAttributeSink
     {

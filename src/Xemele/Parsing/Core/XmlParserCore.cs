@@ -22,7 +22,7 @@ internal sealed partial class XmlParserCore : IDisposable
     private struct AttributeToken
     {
         internal int NameStart, NameLength, ValueStart, ValueLength;
-        internal bool Namespace;
+        internal bool Namespace, IsDefaulted;
         internal Name Name;
         internal string Prefix, Uri;
         internal XmlLocation Location;
@@ -543,8 +543,8 @@ internal sealed partial class XmlParserCore : IDisposable
                         if (a.Namespace) continue;
                         keepGoing = a.Incomplete is { } incomplete
                             ? ((IXmlIncompleteAttributeSink)sink).IncompleteAttribute(new(a.Name.View, incomplete.LexicalValue,
-                                incomplete.IsTokenized, incomplete.ValueLocation, incomplete.Parts, incomplete.DefaultSequence))
-                            : sink.Attribute(new(a.Name.View, AttributeValue(a), a.Location));
+                                incomplete.IsTokenized, incomplete.ValueLocation, incomplete.Parts, incomplete.DefaultSequence, a.IsDefaulted))
+                            : sink.Attribute(new(a.Name.View, AttributeValue(a), a.Location, a.IsDefaulted));
                     }
                     else
                     {

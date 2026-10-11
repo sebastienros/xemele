@@ -1,0 +1,49 @@
+{
+  "revision": "78837c02a639ca5ae65ec178c82b30cae55f9efa",
+  "worktree": "/Users/sebastienros/.codex/worktrees/7aa6/xemele",
+  "branch": "codex/m3-attribute-metadata",
+  "sdk": "10.0.400",
+  "runtime": ".NET 10.0.11",
+  "architecture": "arm64",
+  "commands": {
+    "build": "DOTNET_CLI_DO_NOT_USE_MSBUILD_SERVER=1 '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' build tests/Xemele.Tests/Xemele.Tests.csproj -c Release --no-restore -p:BuildInParallel=false -p:UseSharedCompilation=false -m:1 --disable-build-servers --verbosity minimal",
+    "focused": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -namespace Xemele.Tests.AttributeMetadata -parallelMode none -showLiveOutput -noColor -result-xml docs/reports/M3-attribute-metadata/focused.xml",
+    "regressions": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -namespace Xemele.Tests.Syntax -namespace Xemele.Tests.Entities -namespace Xemele.Tests.IncompleteAttributes -namespace Xemele.Tests.DtdNonvalidating -namespace Xemele.Tests.Recovery -parallelMode none -noColor -result-xml docs/reports/M3-attribute-metadata/regressions.xml",
+    "validator": "python3 tools/planning/tasks.py validate",
+    "diff": "git diff --check"
+  },
+  "build": {
+    "exit": 0,
+    "warnings": 0,
+    "errors": 0
+  },
+  "focused": {
+    "exit": 0,
+    "total": 6,
+    "failed": 0,
+    "skipped": 0
+  },
+  "regressions": {
+    "exit": 0,
+    "total": 299,
+    "failed": 0,
+    "skipped": 0
+  },
+  "allocation": {
+    "counter": "GC.GetAllocatedBytesForCurrentThread",
+    "warmupOperations": 128,
+    "measuredOperations": 1024,
+    "completeAuthoredBytes": 0,
+    "incompleteDefaultBytes": 0,
+    "positiveControlBytes": 88,
+    "includes": "Actual core Append with borrowed event metadata/name/value/parts correctness checks and reused state.",
+    "excludes": "Cold core setup, unique name interning, persisted default interpretations/parts, owned sink copies, complete DTD normalization, and finalization.",
+    "timing": "No timing measurements or throughput claim; no timing lease used."
+  },
+  "validator": "Validated 141 tasks: schema, evidence, acyclic dependencies, additive milestones, and ordered ownership.",
+  "diffCheck": "passed",
+  "developmentCorrections": [
+    "Initial test compilation needed Entities namespace and qualified DtdModel.",
+    "Initial focused run: 5 passed, mapped-source setup failed; corrected CompleteByteSource before final input in 78837c0. Final committed build and both suites passed."
+  ]
+}

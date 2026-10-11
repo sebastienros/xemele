@@ -4,7 +4,7 @@
   "milestone": "M3",
   "title": "Carry explicit defaulted attribute metadata through internal event views",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M3 coordinator 01a1284a-8826-7fc2-af44-74552db608f2 / M3-attribute-metadata worker",
   "branch": "codex/m3-attribute-metadata",
   "base_revision": "69be1b86418f64580e7c6561551f3996342a0dc8",
@@ -34,29 +34,108 @@
     {
       "id": "M3-attribute-metadata-A1",
       "description": "Add explicit defaulted metadata to complete and incomplete internal attribute events, setting it only for synthesized DTD defaults and preserving explicit attributes and locations.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "release-build",
+        "focused-metadata"
+      ]
     },
     {
       "id": "M3-attribute-metadata-A2",
       "description": "Test defaulted/explicit override, namespaces, incomplete default parts and pause/no-replay; record applicable zero-allocation borrowed event evidence.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "focused-metadata",
+        "borrowed-allocation"
+      ]
     },
     {
       "id": "M3-attribute-metadata-A3",
       "description": "Preserve integrated M2 behavior and compile existing sinks; run focused regression checks and task validation at a known revision.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "release-build",
+        "affected-regressions",
+        "planning-validator",
+        "diff-check"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Parsing/Events/Views.cs: XmlAttributeView.IsDefaulted with optional constructor flag default false",
+    "src/Xemele/Parsing/Events/IncompleteAttributes.cs: XmlIncompleteAttributeView.IsDefaulted with optional constructor flag default false",
+    "src/Xemele/Parsing/Core/XmlParserCore.cs: AttributeToken.IsDefaulted forwarded during complete/incomplete delivery",
+    "src/Xemele/Parsing/Core/XmlParserCore.Attributes.cs: ApplyDefaultAttributes sets provenance only when synthesizing defaults",
+    "tests/Xemele.Tests/M3-attribute-metadata/AttributeMetadataTests.cs: six focused metadata, split/pause, location and allocation checks"
+  ],
+  "evidence": [
+    {
+      "id": "release-build",
+      "kind": "check",
+      "revision": "78837c02a639ca5ae65ec178c82b30cae55f9efa",
+      "command": "DOTNET_CLI_DO_NOT_USE_MSBUILD_SERVER=1 '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' build tests/Xemele.Tests/Xemele.Tests.csproj -c Release --no-restore -p:BuildInParallel=false -p:UseSharedCompilation=false -m:1 --disable-build-servers --verbosity minimal",
+      "result": "passed",
+      "summary": "Release build passed; 0 warnings/errors. Compiles all existing internal event sinks.",
+      "artifact": "docs/reports/M3-attribute-metadata/checks.json"
+    },
+    {
+      "id": "focused-metadata",
+      "kind": "check",
+      "revision": "78837c02a639ca5ae65ec178c82b30cae55f9efa",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -namespace Xemele.Tests.AttributeMetadata -parallelMode none -showLiveOutput -noColor -result-xml docs/reports/M3-attribute-metadata/focused.xml",
+      "result": "passed",
+      "summary": "6 tests passed; every character split with pause/no replay for complete and incomplete overrides/defaults; injected namespace expansion/order, unchanged locations/parts, mapped byte offsets, constructor compatibility and slot reuse.",
+      "artifact": "docs/reports/M3-attribute-metadata/focused.xml"
+    },
+    {
+      "id": "borrowed-allocation",
+      "kind": "check",
+      "revision": "78837c02a639ca5ae65ec178c82b30cae55f9efa",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -namespace Xemele.Tests.AttributeMetadata -parallelMode none -showLiveOutput -noColor -result-xml docs/reports/M3-attribute-metadata/focused.xml",
+      "result": "passed",
+      "summary": "After 128 warmups: 1024 actual Append operations each for complete authored and incomplete default events, 0 B total in both; positive byte[64] control measured 88 B. Cold/owned/default normalization excluded; no timing claim.",
+      "artifact": "docs/reports/M3-attribute-metadata/checks.json"
+    },
+    {
+      "id": "affected-regressions",
+      "kind": "check",
+      "revision": "78837c02a639ca5ae65ec178c82b30cae55f9efa",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -namespace Xemele.Tests.Syntax -namespace Xemele.Tests.Entities -namespace Xemele.Tests.IncompleteAttributes -namespace Xemele.Tests.DtdNonvalidating -namespace Xemele.Tests.Recovery -parallelMode none -noColor -result-xml docs/reports/M3-attribute-metadata/regressions.xml",
+      "result": "passed",
+      "summary": "299 passed, 0 failures/skips: M1 syntax and M2 entities, incomplete attributes, nonvalidating DTD and recovery.",
+      "artifact": "docs/reports/M3-attribute-metadata/regressions.xml"
+    },
+    {
+      "id": "planning-validator",
+      "kind": "check",
+      "revision": "78837c02a639ca5ae65ec178c82b30cae55f9efa",
+      "command": "python3 tools/planning/tasks.py validate",
+      "result": "passed",
+      "summary": "Validated 141 task records; ownership/evidence/dependency rules passed.",
+      "artifact": "docs/reports/M3-attribute-metadata/checks.json"
+    },
+    {
+      "id": "diff-check",
+      "kind": "check",
+      "revision": "78837c02a639ca5ae65ec178c82b30cae55f9efa",
+      "command": "git diff --check",
+      "result": "passed",
+      "summary": "No whitespace errors.",
+      "artifact": "docs/reports/M3-attribute-metadata/checks.json"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Required contract bridge; location inference cannot establish defaulted status.",
-    "checks": [],
-    "remaining": [],
+    "summary": "Explicit internal complete/incomplete attribute provenance retained from synthesized DTD application through delivery; authored overrides remain false. Prior normalization, locations, parts, namespace delivery and pause semantics preserved. Implementation revision 78837c02a639ca5ae65ec178c82b30cae55f9efa.",
+    "checks": [
+      "Pinned Release build passed (0 warnings/errors).",
+      "Focused metadata: 6 passed; affected regressions: 299 passed; no skips.",
+      "Warm complete authored/incomplete default event Append: 0 B each across 1024 operations after 128 warmups; positive control 88 B.",
+      "Planning validator: 141 task records passed; git diff --check passed."
+    ],
+    "remaining": [
+      "Coordinator integration and integrated verification; integration_revision remains null."
+    ],
     "requests": []
   }
 }
