@@ -4,7 +4,7 @@
   "milestone": "M5",
   "title": "DTD and canonical conformance",
   "kind": "verification",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M5 isolated validating XML/canonical conformance worker",
   "branch": "codex/m5-corpus",
   "base_revision": "9314ee6be13a9a1959623dfc17878db4f286cf97",
@@ -41,29 +41,34 @@
       "evidence": [
         "frozen-profile-review",
         "profile-regeneration",
-        "corpus-source-review"
+        "corpus-source-review",
+        "final-profile-regeneration"
       ]
     },
     {
       "id": "M5-corpus-A2",
       "description": "Applicable DTD validation cases and all declared canonical vectors/differentials pass.",
-      "status": "pending",
+      "status": "passed",
       "evidence": [
         "first-full-corpus",
         "canonical-corrected",
         "libxml-inclusive11",
         "ordinary-controls",
-        "libxml-infrastructure-controls"
+        "libxml-infrastructure-controls",
+        "final-full-corpus",
+        "final-libxml",
+        "final-ordinary-controls"
       ]
     },
     {
       "id": "M5-corpus-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
+      "status": "passed",
       "evidence": [
-        "ordinary-controls",
-        "api-union",
-        "task-validation"
+        "final-full-corpus",
+        "final-ordinary-controls",
+        "final-api",
+        "final-task-validation"
       ]
     }
   ],
@@ -74,7 +79,8 @@
     "tests/Xemele.Conformance.Tests/Dtd/ and Canonicalization/ controls",
     "tests/Xemele.Differential.Tests/DtdCanonical/ algorithm-specific reference support",
     "docs/reports/M5-corpus/partial.md and first-reference-audit.json",
-    "docs/reports/M5-corpus/libxml_reference_control.py"
+    "docs/reports/M5-corpus/libxml_reference_control.py",
+    "docs/reports/M5-corpus/final.md and final-reference-audit.json"
   ],
   "evidence": [
     {
@@ -166,29 +172,76 @@
       "result": "passed",
       "summary": "Four Python-only injected timeout/OSError vector and version controls passed; six rows serialized in order and failure status nonzero. No xmllint, runtime, allocation counters or corpus rerun executed. Prior actual six libxml observations remain at 21808e2.",
       "artifact": "docs/reports/M5-corpus/partial.md"
+    },
+    {
+      "id": "final-full-corpus",
+      "kind": "check",
+      "revision": "0f992893665ec5aa347c2d4f78e5693d9e8d8c8f",
+      "command": "python3 -B docs/reports/M5-corpus/run_corpus.py",
+      "result": "passed",
+      "summary": "Exactly one corrected full run: actual .NET10.0.11 Arm64, 2585 cases/3386 unchanged hashes, zero failures; associated788valid/103invalid/85rejected/0incomplete; prior453accepted/1156rejected; 32 exact canonical vectors/all26 BCL comparisons pass. Earlier failed raw retained. Final830 unequal labels/440associated explicitly classified, zero reference infrastructure errors; no consensus claim.",
+      "artifact": "docs/reports/M5-corpus/final.md"
+    },
+    {
+      "id": "final-libxml",
+      "kind": "check",
+      "revision": "0f992893665ec5aa347c2d4f78e5693d9e8d8c8f",
+      "command": "python3 -B docs/reports/M5-corpus/libxml_reference.py",
+      "result": "passed",
+      "summary": "Six source-applicable whole Inclusive11 actual libxml2.9.13 references pass corrected adapter; no subset/reference algorithm coverage expansion.",
+      "artifact": "docs/reports/M5-corpus/final.md"
+    },
+    {
+      "id": "final-ordinary-controls",
+      "kind": "check",
+      "revision": "0f992893665ec5aa347c2d4f78e5693d9e8d8c8f",
+      "command": "Pinned --fx-version10.0.11 conformance executable -namespace Xemele.Conformance.Tests.Dtd -namespace Xemele.Conformance.Tests.Canonicalization; differential executable -namespace Xemele.Differential.Tests.DtdCanonical",
+      "result": "passed",
+      "summary": "10 conformance controls and12 authored differential cases pass; Release driver/conformance/differential builds zero warnings/errors. No allocation workloads.",
+      "artifact": "docs/reports/M5-corpus/final.md"
+    },
+    {
+      "id": "final-profile-regeneration",
+      "kind": "check",
+      "revision": "0f992893665ec5aa347c2d4f78e5693d9e8d8c8f",
+      "command": "python3 -B docs/reports/M5-corpus/classify.py --check",
+      "result": "passed",
+      "summary": "Frozen applicability unchanged:976 associated /1609 prior; original2585 IDs/3386 hashes/32canonicalpins/four explicit hashboundoverrides preserved.",
+      "artifact": "docs/reports/M5-corpus/final.md"
+    },
+    {
+      "id": "final-api",
+      "kind": "check",
+      "revision": "0f992893665ec5aa347c2d4f78e5693d9e8d8c8f",
+      "command": "python3 -B docs/reports/M5-c14n/check_api.py --checker /private/tmp/xemele-m5-integration/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll",
+      "result": "passed",
+      "summary": "Matched948 compiled members using approved unchanged checker.",
+      "artifact": "docs/reports/M5-corpus/final.md"
+    },
+    {
+      "id": "final-task-validation",
+      "kind": "check",
+      "revision": "0f992893665ec5aa347c2d4f78e5693d9e8d8c8f",
+      "command": "python3 -B tools/planning/tasks.py validate",
+      "result": "passed",
+      "summary": "159 task records valid, including verified repair dependencies added by coordinator.",
+      "artifact": "docs/reports/M5-corpus/final.md"
     }
   ],
-  "blockers": [
-    "A2 pending 16 runtime witnesses outside corpus ownership: 8 PE declaration nesting, 2 unused ENTITY default semantics, 3 lexical ElementValid source witnesses, 2 namespace token NCName constraints, 1 fully-read undeclared entity source validity proof. Await verified owning repairs before full DTD rerun."
-  ],
+  "blockers": [],
   "handoff": {
-    "summary": "Partial corpus implementation and honest evidence committed; canonical coverage passes, A2 remains pending owning runtime repairs. Raw retained for coordinator inspection; worker parked.",
+    "summary": "Implemented corpus closure from verified repairs: all2585 normative cases and32exact canonicalvectors/26BCLcomparisons/sixlibxmlreferences pass. Historical failures and all reference profile disagreements remain disclosed.",
     "checks": [
-      "All 2585 first-run cases serialized; 3386 immutable hashes verified.",
-      "Corrected canonical-only 32 exact / 26 BCL references and 6 Inclusive11 libxml references pass.",
-      "10 conformance controls, 12 authored differentials, API 948 and task validation 156 pass.",
-      "No allocations or benchmark workloads run."
+      "Full corrected bounded run exactlyonce actual.NET10.0.11 Arm64:2585rows/3386hashes/failures0.",
+      "Associated976 =788valid/103invalid/85rejected/0incomplete; prior1609 unchanged453accepted/1156rejected.",
+      "10conformance/12authoreddifferentials, Releasebuilds0warnings, classifiercheck/API948/tasks159 pass.",
+      "Final830unequal reference labels/440associated, zero infrastructure errors; no consensus claim.",
+      "No runtime edits, allocations or benchmark workloads."
     ],
     "remaining": [
-      "Integrate verified owning runtime repairs, then update dependencies via coordinator and rerun applicable DTD closure.",
-      "Independent review of all 831 reference-label classifications, including 441 associated DTD differences.",
-      "Final relevant preservation checks and A2/A3 acceptance."
+      "Coordinator independent raw inspection, reviewed integration and combined verification.",
+      "Raw cleanup only after explicit root inspection ACK."
     ],
-    "requests": [
-      "DTD compilation/model owner: separate unused-default syntactic and semantic ENTITY checks; use NCName for Name-typed namespace tokens.",
-      "DTD parser/composition owner: retain Proper Declaration/PE Nesting validity evidence.",
-      "Ordered source-instance provenance owner: bounded lexical ElementValid witness and narrow fully-read undeclared-entity invalidity proof, tied to unchanged complete source profile.",
-      "Coordinator inspect retained raw before any cleanup; no full DTD repeat before verified repairs."
-    ]
+    "requests": []
   }
 }
