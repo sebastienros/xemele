@@ -48,13 +48,37 @@
       "evidence": []
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Validation/Datatypes/Values/Temporal/TemporalProvider.cs: TemporalDatatypeProvider, owned decimal keys, calendar normalization and duration reference-point comparisons",
+    "tests/Xemele.Tests/M8-datatypes-temporal/TemporalTests.cs:20 focused correctness facts, exact budget/cancellation/core consumers",
+    "docs/reports/M8-datatypes-temporal/normative.md: pinned2004edition/source hash and applicable focused cases",
+    "docs/reports/M8-datatypes-temporal/accounting.md: explicit scratch/persistence/limb/scalar accounting"
+  ],
+  "evidence": [
+    {
+      "id": "temporal-correctness",
+      "kind": "check",
+      "revision": "0e83c980bec319ad8ad3cfe9927967bd044db655",
+      "command": "python3 docs/reports/M8-datatypes-temporal/checks.py",
+      "result": "passed",
+      "summary": "Actual Arm64.NET10.0.11 Release:20 temporal+18core+12model=50positive-count-asserted cases;zero errors/failures/skips/not-run. Cache-only build zero warnings/errors;1393public API matched;normal+XML-only genuine consumers passed;176task validation and whitespace passed.No allocation tests. Initiald4d9d7c build failedxUnit1051;0e83c98 test-only cancellation fix passed full script.",
+      "artifact": "docs/reports/M8-datatypes-temporal/correctness.md"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Planned bounded child of M8-datatypes; original complete XSD1.0 acceptance and gate reachability preserved.",
-    "checks": [],
-    "remaining": [],
+    "summary": "Temporal provider/source and20focused facts implemented at branch revision;50case focused correctness and core-only consumers passed. Root source review pending, measurement preparation counters-disabled; no measurement grant/results claimed.",
+    "checks": [
+      "checks.py:50actual.NET10.0.11 cases passed,1393public API and2consumers passed",
+      "counter-disabled12route controls,4baseline/provider controls and8NoEmit discovery passed; elevatedps/direct-child cleanup preflight passed",
+      "Initial control fixture24:00:00.123 correctly rejected;fixture corrected before measurements;BDN internal enum return fixed toint.",
+      "tasks.py validate and git diff --check passed"
+    ],
+    "remaining": [
+      "Root mandatory read-only source acceptance",
+      "Final prepared identities, explicit root GRANT, bounded measurements and durable RELEASE ACK before raw inspection",
+      "Coordinator integration verification and downstream composition/x64 confirmation"
+    ],
     "requests": []
   }
 }
