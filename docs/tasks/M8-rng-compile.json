@@ -149,6 +149,15 @@
       "result": "passed",
       "summary": "11 consumed routes passed; warm32 + measured-loop64 iterations per steady case, counters disabled throughout. No GC allocation/retained/RSS measurement executed. Prepared for explicit coordinator lease only.",
       "artifact": null
+    },
+    {
+      "id": "measurement-preflight",
+      "kind": "check",
+      "revision": "a1df184d9a39e68b8b17e59bba2e1ab88df12522",
+      "command": "python3 docs/reports/M8-rng-compile/lease.py --prepare; python3 docs/reports/M8-rng-compile/lease.py --verify-only (elevated, counters disabled)",
+      "result": "passed",
+      "summary": "198 identities verified; bounded ps permission preflight passed. Exact grant binds manifestSHA256; supervisor reserves25seconds work+5seconds cleanup in30total, closes log, reaps child, confirms group absence, and records final identities/manifest/lifecycle in finally. All binaries and eleven-route control unchanged; only driver identity changed. No measurement occurred.",
+      "artifact": null
     }
   ],
   "blockers": [],
