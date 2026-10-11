@@ -63,7 +63,7 @@
       "id": "navigation-correctness",
       "kind": "check",
       "revision": "802a2a0e746820cb73f388b6804e9740fafacdd5",
-      "command": "<pinned-dotnet> build tests/Xemele.Tests -c Release --no-restore -m:1 -nr:false -p:UseSharedCompilation=false; <pinned-dotnet> tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -namespace Xemele.Tests.M4Navigation -namespace Xemele.Tests.M4Model -noColor",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' build tests/Xemele.Tests -c Release --no-restore -m:1 -nr:false -p:UseSharedCompilation=false; '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -namespace Xemele.Tests.M4Navigation -namespace Xemele.Tests.M4Model -noColor",
       "result": "passed",
       "summary": "Release 0 warnings/errors; 55 passed, 0 failed/skipped on .NET10.0.11; two all-context thirteen-axis differential vectors plus focused metadata/limits/mutation/cancellation. Earlier test preparation failures corrected and retained in report. Pinned SDK absolute path documented in measurement plan.",
       "artifact": "docs/reports/M4-navigation/checks.md"
@@ -72,7 +72,7 @@
       "id": "navigation-api-consumer",
       "kind": "check",
       "revision": "802a2a0e746820cb73f388b6804e9740fafacdd5",
-      "command": "python3 docs/reports/M4-model/check_api.py --dotnet <pinned-dotnet>; <pinned-dotnet> build samples/M4-navigation -c Release -m:1 -nr:false -p:UseSharedCompilation=false; <pinned-dotnet> samples/M4-navigation/bin/Release/net10.0/Xemele.Tests.dll; python3 docs/reports/M4-navigation/check_consumer.py --dotnet <pinned-dotnet>",
+      "command": "python3 docs/reports/M4-model/check_api.py --dotnet '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet'; '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' build samples/M4-navigation -c Release -m:1 -nr:false -p:UseSharedCompilation=false; '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' samples/M4-navigation/bin/Release/net10.0/Xemele.Tests.dll; python3 docs/reports/M4-navigation/check_consumer.py --dotnet '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet'",
       "result": "passed",
       "summary": "Actual893 members unchanged (720 earlier+173model); two corruption controls rejected. Independent source sample and fresh isolated packed production friend-seam consumer printed logical text=12.5; retained attribute=v; language=en; axes=13. No public additions.",
       "artifact": "docs/reports/M4-navigation/checks.md"
@@ -85,17 +85,26 @@
       "result": "passed",
       "summary": "148 tasks validated; candidate staged whitespace check passed; all eight candidate paths are task-owned.",
       "artifact": null
+    },
+    {
+      "id": "navigation-source-review",
+      "kind": "review",
+      "revision": "802a2a0e746820cb73f388b6804e9740fafacdd5",
+      "command": "Independent source-only review via coordinator 01a12903-1caa-7f32-b0e3-e66b49cea7a6/local",
+      "result": "passed",
+      "summary": "Coordinator reported independent source-only review approved candidate 802a2a0 with no concrete blockers; no measurements performed.",
+      "artifact": "docs/reports/M4-navigation/checks.md"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Candidate 802a2a0 implements navigation snapshot and axes; independent source review pending. Probe semantic/discovery preparation complete without measurements.",
+    "summary": "Candidate 802a2a0 independent source review approved with no concrete blockers. Ordinary probe semantic/discovery preparation complete; no measurements until exclusive coordinator grant.",
     "checks": [
       "55 focused navigation+model tests passed; API893 unchanged; sample/fresh package consumer passed; planning148 passed",
       "Counters-disabled semantic control and discovery passed; ten declared ShortRun NoEmit benchmark cases"
     ],
     "remaining": [
-      "Independent source review; bounded exclusive allocation/timing lease and performance evidence; integrated verification belongs to coordinator"
+      "Bounded exclusive allocation/timing lease and performance evidence; integrated verification belongs to coordinator"
     ],
     "requests": []
   }

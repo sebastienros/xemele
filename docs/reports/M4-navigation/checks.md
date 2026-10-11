@@ -40,5 +40,8 @@ and after. No build, generation, CLI job flags or unrelated measurements occur
 in that sequence. Raw counters/logs/results stay in ignored artifacts; only
 summary/analysis will be committed after actual granted runs.
 
-Allocation and timing: not run, pending independent review and explicit prepared
-exclusive coordinator lease. No claimed passing allocation evidence yet.
+Independent source-only review: coordinator reported candidate 802a2a0 approved
+with no concrete blockers. Probe runtime configuration explicitly pins 10.0.11;
+DOTNET_ROLL_FORWARD=Disable prevents selecting another installed runtime.
+
+Allocation and timing: not run, pending explicit prepared exclusive coordinator lease. No claimed passing allocation evidence yet.
