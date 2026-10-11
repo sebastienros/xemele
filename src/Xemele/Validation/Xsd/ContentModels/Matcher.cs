@@ -23,22 +23,27 @@ internal struct ContentCounter
     {
         if (!expanded)
         { if (bound.GetBitLength() > 64) return false; return small >= (ulong)bound; }
-        ContentWork.Integer(op, at, large); ContentWork.Integer(op, at, bound); return large >= bound;
+        ContentWork.Tick(op, at);
+        if (bound.GetBitLength() <= 64) return true;
+        return ContentIntegers.Compare(large, bound, op, at) >= 0;
     }
     internal void Increment(ISchemaOperation op, XmlLocation at)
     {
         ContentWork.Tick(op, at);
         if (!expanded && small != ulong.MaxValue) { small++; return; }
-        if (!expanded) { large = new BigInteger(small); expanded = true; }
-        ContentWork.Integer(op, at, large); large += BigInteger.One;
+        BigInteger value;
+        if (expanded) value = large;
+        else { ContentWork.Retain(op, at, sizeof(ulong)); value = new BigInteger(small); }
+        var incremented = ContentIntegers.Add(value, BigInteger.One, op, at);
+        large = incremented; expanded = true;
     }
-    internal void Set(BigInteger value) { expanded = value.GetBitLength() > 64; if (expanded) large = value; else small = (ulong)value; }
+    internal void Set(BigInteger value) { expanded = value.GetBitLength() > 64; if (expanded) large = value; else { small = (ulong)value; large = default; } }
     internal int Compare(ContentCounter other, ISchemaOperation op, XmlLocation at)
     {
         ContentWork.Tick(op, at);
         if (!expanded && !other.expanded) return small.CompareTo(other.small);
-        ContentWork.Integer(op, at, large); ContentWork.Integer(op, at, other.large);
-        return (expanded ? large : new BigInteger(small)).CompareTo(other.expanded ? other.large : new BigInteger(other.small));
+        if (!expanded || !other.expanded) return expanded ? 1 : -1;
+        return ContentIntegers.Compare(large, other.large, op, at);
     }
 }
 

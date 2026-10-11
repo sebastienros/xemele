@@ -35,6 +35,7 @@ internal sealed partial class ContentCompilation
         foreach (var type in schema.Types)
         {
             ContentWork.Tick(op, type.Location);
+            if (type.AnyAttribute is { } wildcard) ContentNamespaces.Validate(wildcard, op, type.Location);
             var program = Build(type);
             CheckDerivation(type);
             if (ReferenceEquals(type, requested)) result = program;
@@ -137,7 +138,8 @@ internal sealed partial class ContentCompilation
         else
         {
             if (p.Term is XsdElementTerm element) names = Members(element.DeclarationId);
-            else if (p.Term is not XsdWildcardTerm) throw new ArgumentException("Unknown content term.");
+            else if (p.Term is XsdWildcardTerm wildcard) ContentNamespaces.Validate(wildcard.Wildcard, op, p.Location);
+            else throw new ArgumentException("Unknown content term.");
             if (p.MaxOccurs != BigInteger.Zero) Add(first, id);
         }
         var tail = bodyTail;

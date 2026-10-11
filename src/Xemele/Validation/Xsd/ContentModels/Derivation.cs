@@ -12,34 +12,32 @@ internal sealed partial class ContentCompilation
         if (basis.Final.Contains(type.Derivation)) ContentWork.Error(op, type.Location, "Base final forbids this derivation.");
         if (type.Derivation == XsdDerivation.Extension)
         {
-            if (basis.ContentKind == XsdContentKind.Simple)
+            bool valid = basis.ContentKind switch
             {
-                if (type.ContentKind != XsdContentKind.Simple || type.SimpleType != basis.SimpleType)
-                    ContentWork.Error(op, type.Location, "Simple content extension must preserve its simple type.");
-            }
-            else if (basis.Particle is not null)
-            {
-                if (type.ContentKind != basis.ContentKind || !Extension(type.Particle, basis.Particle))
-                    ContentWork.Error(op, type.Location, "Complex content extension must append to its base particle and preserve mixedness.");
-            }
-            else if (type.ContentKind == XsdContentKind.Simple && basis.ContentKind != XsdContentKind.Simple)
-                ContentWork.Error(op, type.Location, "Empty content cannot be extended to simple content.");
+                XsdContentKind.Simple => type.ContentKind == XsdContentKind.Simple && type.SimpleType == basis.SimpleType,
+                XsdContentKind.Empty => type.ContentKind != XsdContentKind.Simple,
+                _ => type.ContentKind == basis.ContentKind && (basis.Particle is null ? true : type.Particle is not null && Extension(type.Particle, basis.Particle))
+            };
+            if (!valid) ContentWork.Error(op, type.Location, "Extension changes content kind or fails to preserve the base particle.");
             CheckExtensionHistory(type);
         }
-        else if (type.Derivation == XsdDerivation.Restriction && basis.Name != Any)
+        else if (type.Derivation == XsdDerivation.Restriction && basis.Name != Any && !RestrictionContent(type, basis))
+            ContentWork.Error(op, type.Location, "Content is not a valid restriction of its base type.");
+    }
+    private bool RestrictionContent(XsdTypeDefinition type, XsdTypeDefinition basis)
+    {
+        // Dispatch on content kind before treating a missing/pointless particle
+        // as empty: a mixed type still accepts character data with no particle.
+        return type.ContentKind switch
         {
-            bool valid;
-            if (type.ContentKind == XsdContentKind.Simple)
-                valid = basis.ContentKind == XsdContentKind.Simple
-                    ? type.SimpleType is { } d && basis.SimpleType is { } b && TypeDerives(d, b, false)
-                    : basis.ContentKind == XsdContentKind.Mixed && Nullable(basis.Particle);
-            else if (type.ContentKind == XsdContentKind.Empty || IsPointlessEmpty(type.Particle))
-                valid = basis.ContentKind != XsdContentKind.Simple && Nullable(basis.Particle);
-            else valid = basis.ContentKind != XsdContentKind.Simple &&
-                (type.ContentKind == XsdContentKind.ElementOnly || basis.ContentKind == XsdContentKind.Mixed) &&
-                Restricts(type.Particle, basis.Particle, false);
-            if (!valid) ContentWork.Error(op, type.Location, "Content is not a valid restriction of its base type.");
-        }
+            XsdContentKind.Simple => basis.ContentKind == XsdContentKind.Simple
+                ? type.SimpleType is { } d && basis.SimpleType is { } b && TypeDerives(d, b, false)
+                : basis.ContentKind == XsdContentKind.Mixed && Nullable(basis.Particle),
+            XsdContentKind.Empty => basis.ContentKind != XsdContentKind.Simple && Nullable(basis.Particle),
+            XsdContentKind.Mixed => basis.ContentKind == XsdContentKind.Mixed && Restricts(type.Particle, basis.Particle, false),
+            _ => basis.ContentKind != XsdContentKind.Simple &&
+                (IsPointlessEmpty(type.Particle) ? Nullable(basis.Particle) : Restricts(type.Particle, basis.Particle, false))
+        };
     }
     private void CheckAttributes(XsdTypeDefinition type, XsdTypeDefinition basis)
     {
@@ -129,7 +127,7 @@ internal sealed partial class ContentCompilation
             ContentWork.Integer(op, x.Location, x.MinOccurs); if (x.MaxOccurs is { } max) ContentWork.Integer(op, x.Location, max);
             if (x.Term is XsdElementTerm xe && y.Term is XsdElementTerm ye) { if (xe.DeclarationId != ye.DeclarationId) return false; }
             else if (x.Term is XsdWildcardTerm xw && y.Term is XsdWildcardTerm yw)
-            { if (xw.Wildcard.ProcessContents != yw.Wildcard.ProcessContents || !ContentNamespaces.Subset(xw.Wildcard, yw.Wildcard, op, x.Location) || !ContentNamespaces.Subset(yw.Wildcard, xw.Wildcard, op, x.Location)) return false; }
+            { if (xw.Wildcard.ProcessContents != yw.Wildcard.ProcessContents || !ContentNamespaces.SetSubset(xw.Wildcard, yw.Wildcard, op, x.Location) || !ContentNamespaces.SetSubset(yw.Wildcard, xw.Wildcard, op, x.Location)) return false; }
             else if (x.Term is XsdGroupTerm xg && y.Term is XsdGroupTerm yg)
             {
                 if (xg.Compositor != yg.Compositor || xg.Particles.Count != yg.Particles.Count) return false;
@@ -286,8 +284,8 @@ internal sealed partial class ContentCompilation
             {
                 var total = Total(derived);
                 if (!Range(total.Min, total.Max, basis.MinOccurs, basis.MaxOccurs, derived.Location)) return Constant(false);
-                var result = Constant(true); ContentWork.Retain(op, basis.Location); var unconstrained = basis with { MinOccurs = 0, MaxOccurs = null };
-                foreach (var child in dg.Particles) result = Combine(RuleKind.And, result, Relation(child, unconstrained, anyType));
+                var result = Constant(true);
+                foreach (var child in dg.Particles) result = Combine(RuleKind.And, result, Relation(child, basis, anyType));
                 return result;
             }
         }
@@ -443,11 +441,7 @@ internal sealed partial class ContentCompilation
             ContentKind = particle is null ? anchor.ContentKind : anchor.ContentKind == XsdContentKind.Mixed ? XsdContentKind.Mixed : XsdContentKind.ElementOnly };
         _ = Build(intermediate);
         ContentWork.Retain(op, type.Location); CheckAttributes(type with { Derivation = XsdDerivation.Restriction }, intermediate);
-        bool valid = type.ContentKind == XsdContentKind.Simple
-            ? intermediate.ContentKind == XsdContentKind.Simple && type.SimpleType is { } d && intermediate.SimpleType is { } b && TypeDerives(d, b, false)
-            : type.ContentKind == XsdContentKind.Empty || IsPointlessEmpty(type.Particle) ? Nullable(intermediate.Particle)
-            : intermediate.ContentKind != XsdContentKind.Simple && (type.ContentKind == XsdContentKind.ElementOnly || intermediate.ContentKind == XsdContentKind.Mixed)
-                && Restricts(type.Particle, intermediate.Particle, false);
+        bool valid = RestrictionContent(type, intermediate);
         if (!valid) ContentWork.Error(op, type.Location, "Extension history cannot be expressed as extension followed by restriction.");
     }
     private XsdWildcard UnionNamespaces(XsdWildcard a, XsdWildcard b, XmlLocation at)
@@ -471,6 +465,8 @@ internal sealed partial class ContentCompilation
                 if (!contains) { ContentWork.Retain(op, at); result.Add(ns); }
             }
         }
-        ContentWork.Retain(op, at, result.Count + 1); return new(a.Negated || b.Negated, result, b.ProcessContents);
+        ContentWork.Retain(op, at, result.Count + 1);
+        var union = new XsdWildcard(a.Negated || b.Negated, result, b.ProcessContents);
+        ContentNamespaces.Validate(union, op, at); return union;
     }
 }

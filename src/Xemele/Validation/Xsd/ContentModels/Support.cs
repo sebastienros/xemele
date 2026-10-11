@@ -34,7 +34,7 @@ internal static class ContentNamespaces
         { ContentWork.Tick(op, at); if (StringComparer.Ordinal.Equals(item, ns)) { found = true; break; } }
         return wildcard.Negated != found;
     }
-    internal static bool Subset(XsdWildcard a, XsdWildcard b, ISchemaOperation op, XmlLocation at)
+    internal static bool SetSubset(XsdWildcard a, XsdWildcard b, ISchemaOperation op, XmlLocation at)
     {
         ContentWork.Tick(op, at);
         if (!a.Negated)
@@ -45,6 +45,35 @@ internal static class ContentNamespaces
         if (!b.Negated) return false; // A cofinite set cannot fit a finite set.
         foreach (string ns in b.Namespaces) if (Allows(a, ns, op, at)) return false;
         return true;
+    }
+    // XSD 1.0 intensional subset is stricter than mathematical containment:
+    // two negations must carry the same namespace test, unless super is any.
+    internal static bool Subset(XsdWildcard a, XsdWildcard b, ISchemaOperation op, XmlLocation at)
+    {
+        Validate(a, op, at); Validate(b, op, at);
+        if (b.Negated && b.Namespaces.Count == 0) return true;
+        if (!a.Negated) return SetSubset(a, b, op, at);
+        if (!b.Negated || a.Namespaces.Count == 0) return false;
+        return StringComparer.Ordinal.Equals(NegatedValue(a, op, at), NegatedValue(b, op, at));
+    }
+    private static string NegatedValue(XsdWildcard wildcard, ISchemaOperation op, XmlLocation at)
+    {
+        foreach (string ns in wildcard.Namespaces) { ContentWork.Tick(op, at); if (ns.Length != 0) return ns; }
+        return "";
+    }
+    internal static void Validate(XsdWildcard wildcard, ISchemaOperation op, XmlLocation at)
+    {
+        ContentWork.Tick(op, at);
+        if (!wildcard.Negated || wildcard.Namespaces.Count == 0) return;
+        bool absent = false; string? value = null;
+        foreach (string ns in wildcard.Namespaces)
+        {
+            ContentWork.Tick(op, at);
+            if (ns.Length == 0) absent = true;
+            else if (value is null) value = ns;
+            else if (!StringComparer.Ordinal.Equals(value, ns)) ContentWork.Error(op, at, "Wildcard namespace constraint is not expressible in XSD 1.0.");
+        }
+        if (!absent) ContentWork.Error(op, at, "A negated XSD 1.0 namespace constraint must also exclude the absent namespace.");
     }
     internal static bool Overlaps(XsdWildcard a, XsdWildcard b, ISchemaOperation op, XmlLocation at)
     {
