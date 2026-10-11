@@ -28,3 +28,15 @@ allocation test, throughput measurement or cumulative suite was run.
 Independent coordinator source-only review approved the tested revision after
 state-specific NUL, frameset and ScriptingEnabled metadata corrections. This is
 review evidence, not an additional test run.
+
+## Ownership-base harness repair
+
+Tested repair revision: 10bbc38672a7ee92304d770a923a35de2cafb452.
+Optional --ownership-base selects the known preintegration revision for combined
+tree checking; the default remains original claim
+9e530764937150f85998d5db7807fd6581d9d425. The owned-path predicate is unchanged.
+Coordinator must separately inspect the complete worker diff against the claim.
+The same pinned check.py command, task validation and diff check reran successfully
+at this revision: three consumers/XML probes, 173/116/131 API members and three
+rejecting API controls; 164 task records valid. Earlier source review remains
+recorded against its actual reviewed contract revision, not this harness repair.

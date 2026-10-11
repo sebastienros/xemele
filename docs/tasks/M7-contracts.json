@@ -36,7 +36,8 @@
       "evidence": [
         "contract-review",
         "contract-checks",
-        "validation"
+        "validation",
+        "ownership-base-checks"
       ]
     },
     {
@@ -46,7 +47,8 @@
       "evidence": [
         "contract-review",
         "contract-checks",
-        "validation"
+        "validation",
+        "ownership-base-checks"
       ]
     },
     {
@@ -56,7 +58,8 @@
       "evidence": [
         "contract-review",
         "contract-checks",
-        "validation"
+        "validation",
+        "ownership-base-checks"
       ]
     }
   ],
@@ -92,6 +95,15 @@
       "result": "passed",
       "summary": "164 task records validated; diff whitespace check passed.",
       "artifact": null
+    },
+    {
+      "id": "ownership-base-checks",
+      "kind": "check",
+      "revision": "10bbc38672a7ee92304d770a923a35de2cafb452",
+      "command": "python3 tests/Contracts/Fixtures/M7/check.py --dotnet '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet'; python3 tools/planning/tasks.py validate; git diff --check",
+      "result": "passed",
+      "summary": "Bounded harness repair: optional --ownership-base defaults to original claim; owned predicate unchanged. All three consumers/probes, 173/116/131 API baselines and three rejecting controls passed; 164 records valid and diff clean.",
+      "artifact": "docs/reports/M7-contracts/README.md"
     }
   ],
   "blockers": [],
@@ -99,7 +111,8 @@
     "summary": "Frozen separate HTML graph and complete engine/tokenizer/selector contract; no public runtime stubs or XML source changes.",
     "checks": [
       "Independent compiled consumers and exact API controls passed at 854f3ccabe01b1076e44f89b7e19d69449444d81",
-      "164 task records valid; diff check passed."
+      "164 task records valid; diff check passed.",
+      "Harness repair checks passed at 10bbc38672a7ee92304d770a923a35de2cafb452"
     ],
     "remaining": [
       "Coordinator integrated rerun and verification.",
