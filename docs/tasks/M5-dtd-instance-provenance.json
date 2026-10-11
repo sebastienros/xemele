@@ -4,7 +4,7 @@
   "milestone": "M5",
   "title": "Retain bounded source instance validity evidence",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M5 isolated source instance provenance worker",
   "branch": "codex/m5-dtd-instance-provenance",
   "base_revision": "ee9fbc263d2422c4db38cbef34d5eb5be7595c41",
@@ -41,29 +41,114 @@
     {
       "id": "M5-dtd-instance-provenance-A1",
       "description": "Preserve bounded Element Valid source witnesses erased by expansion: EMPTY empty entity reference and children-content direct/replacement character-reference whitespace; distinguish legal literal whitespace/entity-literal scalar construction. Use only proven complete nonnegative matching source revision and applicable declaration profile; preserve current-tree mutation semantics and no raw lexical retention.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "functional",
+        "performance",
+        "review"
+      ]
     },
     {
       "id": "M5-dtd-instance-provenance-A2",
       "description": "Distinguish proved undeclared general entity against fully read associated DTD from genuinely unread/unknown symbolic input; resolve original E3e13 without treating unresolved values as empty, fetching or augmenting, and retain Fatal IncompleteInput for missing proof. Clarify narrow known-invalid source proof in frozen decision and correct old numeric-reference validity expectation.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "functional",
+        "review"
+      ]
     },
     {
       "id": "M5-dtd-instance-provenance-A3",
       "description": "Reject original E15a/g/h and E3e13 under validation; preserve parser nonvalidating behavior, sidecars, source provenance, standalone/current-DOM/clone/recovery/cancellation/quotas, public948API, bounded streaming and applicable exact-revision allocation/composition evidence.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "functional",
+        "preservation",
+        "api-demo",
+        "performance",
+        "planning"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Parsing/Core/XmlParserCore.ValidationProvenance.cs: one first witness and bounded borrowed declaration lookup",
+    "src/Xemele/Parsing/Events/ValidationProvenance.cs and Parsing/Dom/DomSink.cs: optional exactlyonce internal completion publication",
+    "src/Xemele/Tree/ValidationMetadata/Document.InstanceProvenance.cs: owned diagnostic and immutable declaration reference",
+    "src/Xemele/Validation/Dtd/{DtdSchema.cs,Evaluation/DtdEvaluator.cs}: guarded source witness and known-undeclared symbolic reference proof",
+    "tests/Xemele.Tests/M5-dtd-instance-provenance/:41 new focused cases including12 pinned original vectors",
+    "tests/Xemele.Tests/M5-dtd-validate/ProvenanceAndWorkTests.cs: numeric reference expectation corrected",
+    "benchmarks/Xemele.Benchmarks/M5-dtd-instance-provenance/: exact16-case NoEmit probe and batch counter domains",
+    "docs/decisions/M5/validation-canonicalization.md: narrow proven-invalid source exception and changed-profile uncertainty",
+    "docs/reports/M5-dtd-instance-provenance/README.md"
+  ],
+  "evidence": [
+    {
+      "id": "functional",
+      "kind": "check",
+      "revision": "d96ed87af7b73af3e82744310c71c100732d1635",
+      "command": "Pinned Release no-restore server-disabled test build; dotnet --fx-version10.0.11 Xemele.Tests.dll -class Xemele.Tests.DtdInstanceProvenance.* -class Xemele.Tests.DtdValidation.ProvenanceAndWorkTests",
+      "result": "passed",
+      "summary": "58focused(41new+17old)pass;12SHA-pinnedoriginal E15a/g/h/E13 transportvectors completeinvalid, positive/negative source-proof controls and ordering/quotas/cancellation pass.",
+      "artifact": "docs/reports/M5-dtd-instance-provenance/README.md"
+    },
+    {
+      "id": "preservation",
+      "kind": "check",
+      "revision": "d96ed87af7b73af3e82744310c71c100732d1635",
+      "command": "Pinned dotnet --fx-version10.0.11 Xemele.Tests.dll selected parser/budget/source/composition/grammar/nonvalidating/compiler/validation/source-provenance/syntax/intern/callback/parameter-validity/attribute-validity classes",
+      "result": "passed",
+      "summary": "2270ordinarycases passed, no allocation tests/fullsuite; overlap17oldfocusedcases disclosed.",
+      "artifact": "docs/reports/M5-dtd-instance-provenance/README.md"
+    },
+    {
+      "id": "api-demo",
+      "kind": "check",
+      "revision": "c800f18472c1796847f99b7939cfbe26ab603672",
+      "command": "Pinned probe Release build and --control/--discover; python3 docs/reports/M5-validation-model/check_api.py",
+      "result": "passed",
+      "summary": "0warnings/errors; public facade outcome controls and10000reference stream pass;16exact ShortRun NoEmit discovery;948compiledmembers match.",
+      "artifact": "docs/reports/M5-dtd-instance-provenance/README.md"
+    },
+    {
+      "id": "performance",
+      "kind": "check",
+      "revision": "c800f18472c1796847f99b7939cfbe26ab603672",
+      "command": "python3 docs/reports/M5-dtd-instance-provenance/run_measurements.py --exclusive-grant",
+      "result": "passed",
+      "summary": "Exactlyonepreparedsequence allphase/identityexits0/nochild;170source43binary3852runtime match;160steady0/4096; allpositivewarm/first/owned andapproxheap domains disclosed inclusively; all16 actualGC ratios including positive rounded-dash cases.",
+      "artifact": "docs/reports/M5-dtd-instance-provenance/README.md"
+    },
+    {
+      "id": "review",
+      "kind": "review",
+      "revision": "c800f18472c1796847f99b7939cfbe26ab603672",
+      "command": "Coordinator independent source/harness and raw-result review",
+      "result": "passed",
+      "summary": "Source d96ed87 andharnessc800f18 approved; coordinator inspected every160batch/all16GC rows/runtime/owned/retained totals; no subtraction orwarmzero/isolatedheapclaim.",
+      "artifact": "docs/reports/M5-dtd-instance-provenance/README.md"
+    },
+    {
+      "id": "planning",
+      "kind": "check",
+      "revision": "c800f18472c1796847f99b7939cfbe26ab603672",
+      "command": "python3 tools/planning/tasks.py validate; git diff --check",
+      "result": "passed",
+      "summary": "159taskrecordsvalidate;diffcheckpassed.",
+      "artifact": "docs/reports/M5-dtd-instance-provenance/README.md"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "",
-    "checks": [],
-    "remaining": [],
+    "summary": "Implemented first bounded source witness and guarded known-undeclared associated-DTD proof without nonvalidating parser/API/DOM changes; originals E15a/g/h/E13 completeinvalid. Source/harness reviewed; exactleaseall0with truthful inclusivebatch/owned/GCresults.",
+    "checks": [
+      "58focused and2270preservation pass actual.NET10.0.11;12pinnedoriginal vectors checked.",
+      "948publicAPI unchanged;159planningvalid;Releasebuilds0warnings/errors.",
+      "160steadybatches0/4096; positive warm/owned/retained domains and16 inclusiveGCrows preserved; nochild/fullidentitymatch.",
+      "Coordinator independently inspected all raw records; conditional cleanup completed only after durable summary commit57e0c7c."
+    ],
+    "remaining": [
+      "Coordinator integration verification."
+    ],
     "requests": []
   }
 }
