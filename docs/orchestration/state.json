@@ -1,6 +1,6 @@
 {
   "objective": "Complete initial release through verified M9-gate",
-  "coordinator_chat_id": "01a1284a-8826-7fc2-af44-74552db608f2",
+  "coordinator_chat_id": "01a12903-1caa-7f32-b0e3-e66b49cea7a6",
   "coordination_branch": "main",
   "max_concurrent_workers": 3,
   "last_verified_checkpoint": {
@@ -17,7 +17,8 @@
     }
   ],
   "next_actions": [
-    "Create exactly one read-only setup M4 coordinator, persist ID, then relinquish main before activation"
+    "M4 coordinator activate, claim only ready M4-contracts then execute M4 through verified M4-gate",
+    "After verified M4 and terminal integrated workers, exactly one fresh M5 coordinator with setup/ownership handoff; continue strictly sequential through M9"
   ],
   "last_verified_task": "M3-gate",
   "last_integrated_revision": "f740466f1f0929ae109870545a1ad09201cbca5b",
@@ -1597,7 +1598,7 @@
     "status": "superseded_by_explicit_M3_resume",
     "goal_status_to_apply": "paused"
   },
-  "current_milestone": "M3",
+  "current_milestone": "M4",
   "read_only_review": {
     "agent": "review_core_async_boundary",
     "task": "M3-streaming-pump",
@@ -1672,8 +1673,11 @@
     "to": "M4",
     "thread_id": "01a12903-1caa-7f32-b0e3-e66b49cea7a6",
     "host_id": "local",
-    "status": "created; read-only setup pending",
+    "status": "Setup confirmed; M3 relinquished main; activation ready",
     "verified_gate_revision": "f740466f1f0929ae109870545a1ad09201cbca5b",
-    "activation_sent": false
-  }
+    "activation_sent": false,
+    "setup_cursor": "198d27a1-a0d7-4c8f-b730-e214e075c448:4"
+  },
+  "previous_coordinator_chat_id": "01a1284a-8826-7fc2-af44-74552db608f2",
+  "coordinator_write_status": "M3 relinquished main; M4 sole writer upon activation"
 }
