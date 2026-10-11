@@ -1,0 +1,259 @@
+{
+  "xml": "<root id=\"r\"><item id=\"i0\" class=\"a b\" data=\"en-US\"><!--ignored--><?p ignored?></item><item id=\"i1\" class=\"b\" data=\"en-US\"> </item><other id=\"i2\" class=\"a b\" data=\"en-US\"></other><item id=\"i3\" class=\"b\" data=\"en-US\"></item></root>",
+  "vectors": [
+    {
+      "css": "*",
+      "expected": [
+        "r",
+        "i0",
+        "i1",
+        "i2",
+        "i3"
+      ]
+    },
+    {
+      "css": "item",
+      "expected": [
+        "i0",
+        "i1",
+        "i3"
+      ]
+    },
+    {
+      "css": "#i0",
+      "expected": [
+        "i0"
+      ]
+    },
+    {
+      "css": ".a",
+      "expected": [
+        "i0",
+        "i2"
+      ]
+    },
+    {
+      "css": ".a.b",
+      "expected": [
+        "i0",
+        "i2"
+      ]
+    },
+    {
+      "css": "[data]",
+      "expected": [
+        "i0",
+        "i1",
+        "i2",
+        "i3"
+      ]
+    },
+    {
+      "css": "[data=en-US]",
+      "expected": [
+        "i0",
+        "i1",
+        "i2",
+        "i3"
+      ]
+    },
+    {
+      "css": "[data|=en]",
+      "expected": [
+        "i0",
+        "i1",
+        "i2",
+        "i3"
+      ]
+    },
+    {
+      "css": "[data^=en]",
+      "expected": [
+        "i0",
+        "i1",
+        "i2",
+        "i3"
+      ]
+    },
+    {
+      "css": "[data$=US]",
+      "expected": [
+        "i0",
+        "i1",
+        "i2",
+        "i3"
+      ]
+    },
+    {
+      "css": "[data*=US]",
+      "expected": [
+        "i0",
+        "i1",
+        "i2",
+        "i3"
+      ]
+    },
+    {
+      "css": "[class~=b]",
+      "expected": [
+        "i0",
+        "i1",
+        "i2",
+        "i3"
+      ]
+    },
+    {
+      "css": "root item",
+      "expected": [
+        "i0",
+        "i1",
+        "i3"
+      ]
+    },
+    {
+      "css": "root > item",
+      "expected": [
+        "i0",
+        "i1",
+        "i3"
+      ]
+    },
+    {
+      "css": "item + item",
+      "expected": [
+        "i1"
+      ]
+    },
+    {
+      "css": "item ~ item",
+      "expected": [
+        "i1",
+        "i3"
+      ]
+    },
+    {
+      "css": "item, .a",
+      "expected": [
+        "i0",
+        "i1",
+        "i2",
+        "i3"
+      ]
+    },
+    {
+      "css": ":scope",
+      "expected": [
+        "r"
+      ]
+    },
+    {
+      "css": ":empty",
+      "expected": [
+        "i0",
+        "i2",
+        "i3"
+      ]
+    },
+    {
+      "css": ":first-child",
+      "expected": [
+        "r",
+        "i0"
+      ]
+    },
+    {
+      "css": ":last-child",
+      "expected": [
+        "r",
+        "i3"
+      ]
+    },
+    {
+      "css": ":only-child",
+      "expected": [
+        "r"
+      ]
+    },
+    {
+      "css": "item:first-of-type",
+      "expected": [
+        "i0"
+      ]
+    },
+    {
+      "css": "item:last-of-type",
+      "expected": [
+        "i3"
+      ]
+    },
+    {
+      "css": "item:only-of-type",
+      "expected": []
+    },
+    {
+      "css": "item:nth-child(odd)",
+      "expected": [
+        "i0"
+      ]
+    },
+    {
+      "css": "item:nth-child(even)",
+      "expected": [
+        "i1",
+        "i3"
+      ]
+    },
+    {
+      "css": "item:nth-child(-n+3)",
+      "expected": [
+        "i0",
+        "i1"
+      ]
+    },
+    {
+      "css": "item:nth-child(2n+1)",
+      "expected": [
+        "i0"
+      ]
+    },
+    {
+      "css": "item:nth-last-child(2)",
+      "expected": []
+    },
+    {
+      "css": "item:nth-of-type(2)",
+      "expected": [
+        "i1"
+      ]
+    },
+    {
+      "css": "item:nth-last-of-type(odd)",
+      "expected": [
+        "i0",
+        "i3"
+      ]
+    },
+    {
+      "css": "item:not(.a)",
+      "expected": [
+        "i1",
+        "i3"
+      ]
+    },
+    {
+      "css": "item:not(.a,[data=en])",
+      "expected": [
+        "i1",
+        "i3"
+      ]
+    },
+    {
+      "css": "\\69 tem",
+      "expected": [
+        "i0",
+        "i1",
+        "i3"
+      ]
+    }
+  ]
+}

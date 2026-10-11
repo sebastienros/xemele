@@ -1,0 +1,52 @@
+[
+  {
+    "id": "foster",
+    "input": "<body><table>x<tr><td>y</table>",
+    "expectedText": "xy"
+  },
+  {
+    "id": "adoption",
+    "input": "<p><b><i>x</b>y</i>",
+    "expectedText": "xy"
+  },
+  {
+    "id": "data-nul",
+    "input": "<p>a\u0000b",
+    "expectedText": "ab"
+  },
+  {
+    "id": "rcdata-nul",
+    "input": "<textarea>a\u0000b",
+    "expectedText": "a\ufffdb"
+  },
+  {
+    "id": "named-reference",
+    "input": "<p>&notin;&amp;&#x1F600;",
+    "expectedText": "\u2209&\ud83d\ude00"
+  },
+  {
+    "id": "pi-literal",
+    "input": "<p>A<?Pi &amp;\ud83d\ude00?>B",
+    "expectedText": "AB"
+  },
+  {
+    "id": "template-text-excluded",
+    "input": "<body>A<template>hidden</template>B",
+    "expectedText": "AB"
+  },
+  {
+    "id": "foreign-adjustment",
+    "input": "<svg><foreignObject><p>\u00e9\ud83d\ude00</p></foreignObject></svg>",
+    "expectedText": "\u00e9\ud83d\ude00"
+  },
+  {
+    "id": "frameset-no-body",
+    "input": "<!doctype html><frameset><frame></frameset>",
+    "expectedText": ""
+  },
+  {
+    "id": "crlf",
+    "input": "<p>A\r\nB\rC",
+    "expectedText": "A\nB\nC"
+  }
+]
