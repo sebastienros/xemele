@@ -69,7 +69,8 @@ internal ref struct LegacyParser
   string name=Name();while(stack.Count!=0&&LegacyRules.AutoClose(stack[^1].LocalName,name))Pop();Implied(name);
   bool discard=name=="html"&&stack.Count>0||name=="head"&&stack.Count!=1||name=="body"&&stack.Exists(static n=>n.LocalName=="body");
   if(discard)discardDepth++;
-  HtmlNode? element=null;if(!discard){Push(name);element=stack[^1];}
+  bool reusedRoot=!discard&&name=="html"&&stack.Count==0&&document.DocumentNode.Children.Any(static n=>n.Kind==HtmlNodeKind.Element);
+  HtmlNode? element=null;if(!discard){Push(name);element=stack[^1];}int originalAttributes=element?.Attributes.Count??0;
   long attributeCharacters=0;int accepted=0;var seen=discard||element?.Attributes.Count>0?new HashSet<string>(StringComparer.Ordinal):null;
   while(true)
   {
@@ -80,7 +81,7 @@ internal ref struct LegacyParser
    if(limits.AttributesPerElement is int amax&&++accepted>amax)Fail("attribute-limit","Attribute quota exceeded.");
    if(element!=null&&element.GetAttribute(attribute)==null)element.SetAttribute(new(attribute,value));
   }
-  if(input.Peek()<0){if(element!=null){element.Remove();Pop();}return;}
+  if(input.Peek()<0){if(element!=null){if(reusedRoot){while(element.Attributes.Count>originalAttributes)element.RemoveAttribute(element.Attributes[^1].LocalName,element.Attributes[^1].NamespaceUri);}else element.Remove();Pop();}return;}
   if(name=="meta"&&element!=null)Meta(element);
   bool selfClosing=input.Match("/>");if(selfClosing)input.Skip(2);else if(input.Peek()=='>')input.Take();
   if(!discard){if(selfClosing||LegacyRules.Void(name))Pop();else textMode=LegacyRules.TextMode(name);}
