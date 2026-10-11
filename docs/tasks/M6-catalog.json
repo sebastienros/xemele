@@ -35,14 +35,18 @@
     {
       "id": "M6-catalog-A1",
       "description": "Implement catalog parsing and mapping/delegation/rewrite/next-catalog policy with bounded cycles.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "focused-functional-checks"
+      ]
     },
     {
       "id": "M6-catalog-A2",
       "description": "Test precedence, public/system IDs, relative URIs, refusal and composed offline fallback.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "focused-functional-checks"
+      ]
     },
     {
       "id": "M6-catalog-A3",
@@ -51,14 +55,53 @@
       "evidence": []
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Resolution/Catalogs/XmlCatalog.cs: XmlCatalogOptions, eager immutable XmlCatalog and transparent CatalogResolver",
+    "tests/Xemele.Tests/M6-catalog/CatalogTests.cs: 26 focused offline controls including native aggregate budget composition",
+    "samples/M6-catalog/: public offline catalog/resolver/parser composition",
+    "docs/api/M6-catalog.txt: 21 actual compiled public declarations",
+    "benchmarks/Xemele.Benchmarks/M6-catalog/: prepared eight-case ShortRun NoEmit suite and boundary allocation probe"
+  ],
+  "evidence": [
+    {
+      "id": "focused-functional-checks",
+      "kind": "check",
+      "revision": "b9852dceb5aea2d330af36475885f2bb83364fcc",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' build tests/Xemele.Tests/Xemele.Tests.csproj -c Release --no-restore --no-incremental -p:RuntimeFrameworkVersion=10.0.11 --disable-build-servers -m:1 ; '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' build benchmarks/Xemele.Benchmarks/M6-catalog/Catalog.Probe.csproj -c Release --no-restore --no-incremental -p:RuntimeFrameworkVersion=10.0.11 --disable-build-servers -m:1 ; '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' build samples/M6-catalog/Catalog.Sample.csproj -c Release --no-restore --no-incremental -p:RuntimeFrameworkVersion=10.0.11 --disable-build-servers -m:1 ; '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' build docs/reports/M6-catalog/ApiCheck/ApiCheck.csproj -c Release --no-restore --no-incremental -p:RuntimeFrameworkVersion=10.0.11 --disable-build-servers -m:1 ; '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -class Xemele.Tests.CatalogTests -noLogo",
+      "result": "passed",
+      "summary": "Four pinned Release forced builds passed with no warnings/errors; all 26 focused CatalogTests passed on actual xUnit .NET 10.0.11. No allocation, timing or inherited suite was run.",
+      "artifact": "docs/reports/M6-catalog/validation.md"
+    },
+    {
+      "id": "public-api-and-sample",
+      "kind": "check",
+      "revision": "b9852dceb5aea2d330af36475885f2bb83364fcc",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 samples/M6-catalog/bin/Release/net10.0/Catalog.Sample.dll ; '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 benchmarks/Xemele.Benchmarks/M6-catalog/bin/Release/net10.0/Xemele.Benchmarks.dll --discover artifacts/M6-catalog/bdn ; '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 docs/reports/M6-catalog/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare src/Xemele/bin/Release/net10.0/Xemele.dll artifacts/M6-catalog/full-api-union.txt",
+      "result": "passed",
+      "summary": "Public offline composed sample produced mapped URI and parsed XML; eight ShortRun NoEmit cases discovered on actual .NET 10.0.11 arm64; approved extractor directly matched all 972 compiled union members (951 inherited plus21 catalog). Corpus discovery wrapper was unavailable in this isolated checkout due missing corpus fixture; direct complete compiled union performed instead.",
+      "artifact": "docs/reports/M6-catalog/validation.md"
+    },
+    {
+      "id": "planning-validation",
+      "kind": "check",
+      "revision": "b9852dceb5aea2d330af36475885f2bb83364fcc",
+      "command": "python3 -B tools/planning/tasks.py validate",
+      "result": "passed",
+      "summary": "Validated 162 task records; schema, evidence, acyclic dependencies, additive milestones and ordered ownership passed.",
+      "artifact": null
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Reclaimed same preserved candidate after verified exact shared parser budget repair; consume only integrated dependency.",
-    "checks": [],
+    "summary": "Functional native-budget implementation committed and checked; prepared for coordinator measurement lease, not implemented/verified yet.",
+    "checks": [
+      "Four pinned Release forced builds passed; 26 focused tests passed actual .NET10.0.11.",
+      "Public sample and direct972member compiled APIunion passed; NoEmit8case discovery passed.",
+      "Planning validate passed162 records."
+    ],
     "remaining": [
-      "Replace interim counting with native shared OperationBudget and validate declared encoding/finalSource; fresh focused/API/sample/harness preparation required. No measurement lease active."
+      "Exclusive allocation/timing lease and inherited milestone verification not run; A3 remains pending until relevant performance evidence.",
+      "Fresh wrapper identity positive/unknownenvironment negative controls and final prepared manifest still required."
     ],
     "requests": []
   }
