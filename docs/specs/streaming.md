@@ -1,106 +1,274 @@
 # SAX, push, pull, and async contracts — M3
 
-Decision owner: `M3-contracts`. Dependencies: completed M2 XML engine. SAX is a required product surface. The public data/handler lane finishes before independent adapters start.
+Decision owner: `M3-contracts`. Requires verified M2. The exact nonpackaged
+public declarations are [Views](../../tests/Contracts/Fixtures/M3/Views.cs.fixture),
+[callbacks](../../tests/Contracts/Fixtures/M3/Callbacks.cs.fixture),
+[synchronous entry points](../../tests/Contracts/Fixtures/M3/Sync.cs.fixture), and
+[async additions](../../tests/Contracts/Fixtures/M3/Async.cs.fixture).
+These are a compile baseline, not shipped APIs or parsing implementations.
+[Decisions and repair boundaries](../decisions/M3/streaming-writer.md) accompany
+this freeze. No M4/M5 assembly, validator, query API or unmerged implementation
+is needed. Earlier milestone declarations remain unchanged.
 
-## Callback shapes
+## Borrowed views and handlers
 
-```csharp
-namespace Xemele.Streaming;
-public delegate void XmlStartElementCallback(XmlStartElement element);
-public delegate void XmlEndElementCallback(XmlEndElement element);
-public delegate void XmlTextCallback(ReadOnlySpan<char> text);
+All public streaming types except the writer/DOM transports live in
+`Xemele.Streaming`. `IXmlSaxHandler` has exactly sixteen void notifications:
+StartDocument, EndDocument, StartElement, EndElement, Text, Comment,
+ProcessingInstruction, StartCData, EndCData, Declaration, StartDtd,
+DtdDeclaration, EndDtd, SkippedEntity, IncompleteAttributeDefault, Diagnostic.
+The fixture gives every parameter type. XmlSaxHandler has a public virtual
+no-op for each; a consumer may override only one. Sealed XmlSaxCallbacks has
+init-only nullable On* properties with sixteen named delegate types and forwards
+each override directly. Delegate properties never hide inherited method names.
+Text/Comment take ReadOnlySpan<char>; PI takes target/data spans. Notification
+exceptions propagate as the identical exception object, even XmlParseException;
+adapters must distinguish callback failures from structured parser rejection.
 
-public interface IXmlSaxHandler
-{
-    void StartDocument();
-    void EndDocument();
-    void StartElement(XmlStartElement element);
-    void EndElement(XmlEndElement element);
-    void Text(ReadOnlySpan<char> text);
-    void Comment(ReadOnlySpan<char> text);
-    void ProcessingInstruction(ReadOnlySpan<char> target, ReadOnlySpan<char> data);
-    void StartCData();
-    void EndCData();
-    void Diagnostic(XmlDiagnostic diagnostic);
-}
-public abstract class XmlSaxHandler : IXmlSaxHandler
-{
-    // One public virtual no-op implementation per interface method.
-}
-public sealed class XmlSaxCallbacks : XmlSaxHandler
-{
-    // Delegate properties cannot share the inherited method names.
-    public XmlStartElementCallback? OnStartElement { get; init; }
-    public XmlEndElementCallback? OnEndElement { get; init; }
-    public XmlTextCallback? OnText { get; init; }
-    // Matching optional On* delegates for all notifications.
-}
-public readonly ref struct XmlStartElement
-{
-    public ReadOnlySpan<char> LocalName { get; }
-    public ReadOnlySpan<char> Prefix { get; }
-    public ReadOnlySpan<char> NamespaceUri { get; }
-    public XmlAttributeView Attributes { get; }
-    public XmlNamespaceView NamespaceDeclarations { get; }
-    public XmlLocation Location { get; }
-}
-```
+XmlStartElement/XmlEndElement expose LocalName, Prefix, NamespaceUri and
+Location; start also exposes IsEmptyElement, Attributes, NamespaceDeclarations.
+Collections are readonly ref struct views, with Count, checked zero-based
+indexer, GetEnumerator and mutable concrete ref struct Enumerator
+(Current, MoveNext). No IEnumerable, boxing, interface enumerator or
+ReadOnlySpan<ref-struct-item> is required. Default collection is empty; bad
+indices throw ArgumentOutOfRangeException. Enumerator Current is valid only
+after successful MoveNext. Items and all other callback views are readonly ref
+structs with get-only properties and no public constructors or owned copies.
+Consumers persist strings/parts explicitly during the callback.
 
-`XmlEndElement` contains the corresponding name/location. Attribute/namespace collections are borrowed `readonly ref struct` views with concrete enumerators; indexers return borrowed item views. Do not use `ReadOnlySpan<T>` with a ref-struct item type. Attribute items include local name/prefix/URI/value and defaulted status. M3 contract fixtures enumerate every type/member, plus DTD/declaration callbacks and skipped entities, before the interface freezes. These event records can wrap the existing internal event data without exposing parser state.
+XmlAttributeItem has LocalName/Prefix/NamespaceUri/Value, IsDefaulted,
+IsValueComplete, ValueParts and Location. Complete Value is M2 normalized text;
+ValueParts is empty. For an unresolved attribute Value is empty,
+IsValueComplete=false and ValueParts contains the ordered existing M2
+XmlKnownAttributeText/XmlUnknownAttributeReference records. No lossy partial
+concatenation is published as a complete value. ValueParts is a borrowed span
+of immutable owned record references; copy its container to retain it.
+IsDefaulted distinguishes authored attributes from injected DTD defaults even
+when their normalized values coincide. Attributes exclude xmlns declarations;
+namespace items expose Prefix, NamespaceUri, Location and only this tag's
+local declarations (including injected declarations). Attribute order is authored
+order followed by applied defaults in the effective M2 model order. Namespace
+order follows their order in that combined list. Names are expanded before delivery.
 
-This refines the earlier design: `On*` delegate properties allow a single handler inheritance model without property/method name collisions. Example:
+StartElement is emitted only after the complete tag, all attributes and local
+namespace bindings are available. The internal adapter gathers individual
+StartElement/NamespaceDeclaration/Attribute/IncompleteAttribute calls until
+StartElementContent, then invokes the single public start callback. One tag's
+scratch is bounded by M2 quotas; no document-sized event list is allowed.
+Empty markup emits a start with IsEmptyElement=true and a corresponding end;
+there is no omission or combined empty-element token. End name is expanded
+against the element's scope before it is popped. Location for generated defaults
+is the containing element's opening location; unknown attribute parts keep M2
+physical locations and lexical reference spelling.
 
-```csharp
-XmlSaxParser.Parse(xml, new XmlSaxCallbacks
-{
-    OnStartElement = element => Console.WriteLine(element.LocalName.ToString()),
-    OnText = text => Console.WriteLine(text.ToString())
-});
-```
+Every callback span/view expires when that callback returns, including views
+into a paused parser. No view is retained by a handler, stored on a class, or
+used across await. Immutable XmlDiagnostic and XmlIncompleteAttributeDefault
+are owned existing M2 values and can be retained. Input chunks are borrowed
+only during Append; adapters retain copied scratch/owners, never caller spans.
 
-## Entry points and state machines
+## Lexical, DTD, and incomplete-input notifications
 
-```csharp
-public static partial class XmlSaxParser
-{
-    public static void Parse(string xml, IXmlSaxHandler handler,
-        XmlParseOptions? options = null, CancellationToken cancellationToken = default);
-    public static void Parse(ReadOnlySpan<byte> xml, IXmlSaxHandler handler,
-        XmlParseOptions? options = null, CancellationToken cancellationToken = default);
-    public static void Parse(Stream input, IXmlSaxHandler handler,
-        XmlParseOptions? options = null, CancellationToken cancellationToken = default);
-    public static Task ParseAsync(Stream input, IXmlSaxHandler handler,
-        XmlParseOptions? options = null, CancellationToken cancellationToken = default);
-}
-public sealed class XmlPushParser : IDisposable
-{
-    public XmlPushParser(IXmlSaxHandler handler, XmlParseOptions? options = null);
-    public void Append(ReadOnlySpan<byte> input);
-    public void Complete();
-}
-public sealed partial class XmlReader : IDisposable
-{
-    public static XmlReader Create(Stream input, XmlParseOptions? options = null);
-    public bool Read();
-    public ValueTask<bool> ReadAsync(CancellationToken cancellationToken = default);
-    public XmlTokenKind TokenKind { get; }
-    public ReadOnlySpan<char> ValueSpan { get; }
-    public XmlLocation Location { get; }
-}
-```
+StartDocument is first, emitted once on first parse/read/append/complete work;
+construction/Create alone does not invoke a callback or read input. Declaration
+is optional and follows StartDocument before other content. XmlDeclaration has
+Version, EncodingName (empty when absent), nullable Standalone and Location.
+It describes only the document declaration, not an external text declaration.
+M2 encoding/version checks still apply before successful declaration delivery.
 
-Reader name/attribute/namespace access and complete token kinds are fixed in the M3 contract fixture. Its current token is valid until the next read/disposal. Async reader/DOM methods are added by the transport task in separate partial files, using an internal pump contract approved before the reader implementation.
+Text is normalized, entity-expanded character data, split arbitrarily at scalar
+boundaries; an empty Text notification is permitted at a lexical boundary.
+CDATA emits StartCData, zero or more Text notifications, EndCData; CDATA is not
+collapsed into ordinary Text. CDATA boundaries remain paired on success, even
+empty CDATA. Comment and PI callbacks each deliver one complete lexical body,
+excluding delimiters; PI also supplies its complete target. They may buffer one
+bounded token, never a document. Comments/PIs in prolog/epilog are delivered.
+No ignorable-whitespace distinction is added by a nonvalidating parser.
+Expanded parsed entities contribute ordinary text/elements; no StartEntity or
+EndEntity callbacks and no raw input slice fidelity are promised.
 
-The shape shows the completed M3 surface. The synchronous reader task ships `Read` and `IDisposable`; the transport task adds `ReadAsync` and `IAsyncDisposable`. Earlier task branches must compile without their later partials.
+DtdProcessing=Prohibit rejects before any DTD notification. Parse enables only
+M2's nonvalidating processing; external access still requires the resolver.
+After the DOCTYPE and all required external processing succeed, emit StartDtd,
+then DtdDeclaration notifications for the **effective merged model**, then
+EndDtd, before document element events. StartDtd exposes Name, optional lexical
+PublicId/SystemId as spans with HasPublicId/HasSystemId, and Location. Absence
+is distinct from an explicitly empty identifier. Internal subset text is not
+copied into this public streaming view. Callbacks do not promise declaration
+source order, overridden duplicate declarations, parameter-entity expansion
+boundaries, or DTD comments/PIs; the integrated M2 sink does not expose them.
 
-Push states: created → accepting → completed, or faulted/disposed. Empty chunks are legal. Append parses immediately; Complete signals EOF once. Append after completion, duplicate Complete, and concurrent/reentrant operations throw `InvalidOperationException`. Callback exceptions fault the parser and propagate unchanged; no further content callbacks occur. A faulted push context cannot resume.
+Projection order is Elements, Attributes, GeneralEntities, ParameterEntities,
+Notations, preserving each effective M2 collection's order. XmlDtdDeclaration
+has Kind (Element=0, Attribute=1, Entity=2, Notation=3), Name, ElementName,
+ContentModel, AttributeType, DefaultKind, Value/HasValue, SystemId/HasSystemId,
+PublicId/HasPublicId, NotationName, IsParameter, nullable IsExternal, Location.
+Unused span fields are empty, Has* false, DefaultKind=None, IsParameter=false.
+Element uses Name/ContentModel; attribute uses Name/ElementName/AttributeType
+and default fields; entity uses Name, replacement Value when internal or
+identifier fields when external, plus NotationName for unparsed entities;
+notation uses Name and identifier fields. IsExternal means declaration provenance,
+not whether the entity has an external identifier; M2 knows it for element,
+attribute and entity declarations. Notation provenance is unavailable and is null,
+never fabricated from URI comparisons. Location is always the original M2
+model location; no synthetic lexical offset is invented.
 
-Callbacks are sequential, namespace-aware, and invoked before EOF as input permits. Empty elements produce both start/end. CDATA content goes through Text with lexical boundaries; text can split arbitrarily. EndDocument means successful completion only. Strict failure/cancellation cannot emit it. Recovery results must clearly communicate repaired or incomplete input; contract review specifies that result path without changing strict void entry points.
+ContentModel is a deterministic model projection: EMPTY/ANY, a name plus its
+occurrence suffix (?/*/+ or none), parenthesized comma-separated sequence or
+pipe-separated choice plus suffix; mixed content is (#PCDATA) or
+(#PCDATA|name|...)* in particle order. AttributeType is CDATA, ID, IDREF,
+IDREFS, ENTITY, ENTITIES, NMTOKEN, NMTOKENS, a parenthesized pipe-separated
+enumeration, or NOTATION followed by a space and that enumeration. DefaultKind
+is None=0 (nonattribute), Implied=1, Required=2, Fixed=3, Value=4. Value is the
+M2 model value, not original quote/whitespace spelling; Fixed/Value have
+HasValue=true, Implied/Required false. Model projection may build one bounded
+declaration value, but must traverse content particles iteratively.
 
-Async changes I/O, not callback signatures: callbacks remain synchronous with borrowed lifetimes; no `async void`. Cancellation uses `OperationCanceledException`; independent contexts can run concurrently. No fixed thread is promised. Reader callbacks/pull adapters must not accumulate a chunk's unbounded events. A sink's pause signal provides backpressure.
+SkippedEntity represents the integrated M2 unresolved **content** reference:
+Name, exact LexicalReference, IsParameter=false, Location. It occurs at that
+position between surrounding Text, never substitutes empty text for the unknown
+value. Unknown attribute references are represented only by ValueParts.
+IncompleteAttributeDefault delivers the existing owned M2 declaration snapshot,
+including Sequence, once before root start in M2's sequence order. Skipped
+parameter declarations/unread external subsets have no fabricated per-entity
+notification. Resolver denial, malformed entities and quota failures remain
+structured rejection, not successful SkippedEntity. Namespaces depending on
+unresolved values remain rejected. M2's permitted unresolved nonvalidating
+content can still be well formed; missing knowledge alone is not a recovery edit.
 
-## Task boundaries and acceptance
+## Entry points, recovery, faults and cancellation
 
-`M3-callbacks` owns borrowed view adapters, delegates, and handler classes. `M3-sax`, `M3-push`, `M3-reader`, and `M3-writer` run independently after their declared dependencies. `M3-async` follows SAX/reader and owns only async partials/transport. No worker modifies a peer's core file.
+Synchronous SAX Parse overloads accept string, ReadOnlySpan<byte>, Stream;
+all have handler, optional XmlParseOptions and CancellationToken. Strict APIs
+reject Recover=true at entry. ParseWithDiagnostics has the same three overloads
+and returns XmlParseResult<XmlSaxCompletion>; XmlSaxCompletion is a sealed empty
+owned record indicating successful/partial streaming work rather than a DOM.
+It accepts Recover exactly as M2 diagnostic DOM factories do. Async stream
+counterparts return Task and Task<XmlParseResult<XmlSaxCompletion>>.
+Result diagnostics are immutable snapshots of Diagnostic notifications in order;
+notifications occur before the result/structured exception is returned. All
+fatal parser/decoder/limit diagnostics are delivered once before strict
+XmlParseException; callback-thrown exceptions never generate new diagnostics.
 
-Required checks: delegate/subclass equivalence, minimal handler usability, lifetime/ordering, namespaces/defaults, exception propagation, cancellation, reentrancy, all chunk splits, early callbacks, sync/async equality, and the 1 GiB bounded-memory case from the performance plan. No M4 query or later validator is needed.
+EndDocument is emitted once only when EOF was consumed successfully and no
+recovery edit/terminal syntax failure occurred. A recovered but complete result
+has IsComplete=true, IsWellFormed=false and no EndDocument. An incomplete repaired
+result has IsComplete=false. Value is a completion marker iff input completed or
+Recover=true allowed a partial result, otherwise null; IsWellFormed implies
+complete and a nonnull marker. With no repair, permitted unresolved references
+retain M2 well-formedness. Cancellation/I/O/callback exceptions produce neither a
+result nor EndDocument and propagate unchanged. Recovery never attempts to repair
+an argument error, resource quota, denial, invalid encoding or callback failure.
+Callbacks from a prefix may already have happened; no rollback is promised.
+
+Push constructor takes handler/options/operation CancellationToken. It is
+strict-only; Recover=true is rejected. States: created → accepting → completed,
+or faulted; Dispose from any idle state moves to disposed. Empty chunks are legal,
+Append parses immediately, Complete signals EOF once and drains pending content.
+An empty input Complete still performs work and rejects missing root. Append
+owns no caller bytes after return. Append after completed, duplicate Complete,
+and operations on faulted instances throw InvalidOperationException. Disposed
+operations throw ObjectDisposedException. Dispose is idempotent and aborts,
+never silently completes. Concurrent/reentrant Append/Complete/Dispose reject
+with InvalidOperationException; callbacks cannot operate on their own context.
+A rejected competing call does not independently fault an active operation;
+if its exception escapes that callback, the outer operation faults. Syntax,
+callback, I/O and cancellation failures fault the operation permanently. Cleanup
+preserves the primary failure and releases owned resources exactly once.
+
+Snapshot/validate options and limits before input or notifications. Null handlers,
+string/stream arguments use ArgumentNullException, nonreadable streams/options
+use ArgumentException. Caller streams stay open on all outcomes; contexts own
+only scratch and resolver-transferred resources. Cancellation is checked at entry,
+before I/O/resolver work and at the existing bounded M2 work intervals. Callback
+execution is sequential/synchronous, never async void, may change thread after
+an await, and carries no synchronization-context/thread-affinity guarantee.
+Different contexts may run concurrently; a single context may not.
+
+## Reader token and lifetime table
+
+XmlReader.Create(Stream, options?, cancellationToken=default) snapshots the
+operation token without consuming input; reader is strict-only. Read returns
+true for one current token, false after successful exhaustion; repeated EOF
+reads return false. ReadAsync(token=default) combines operation and call tokens
+for that call, with cancellation of either permanently faulting the context.
+No Read/ReadAsync/dispose overlap is allowed. Sync task adds IDisposable;
+async task adds ReadAsync and IAsyncDisposable in its own partial file.
+Dispose/DisposeAsync abort and are idempotent, leave caller stream open, and
+invalidate all current views. No spans are carried through suspended I/O.
+
+The exact numbered XmlTokenKind list (None=0 through EndDocument=16) is in Sync.
+None is initial/EOF/disposed state. EndDocument is itself one true Read result;
+the following read yields false/None. Structural reader ordering is the same
+sixteen-notification SAX ordering. ValueSpan is Text or complete Comment/PI data;
+Target is the PI target. Text is split at scalar boundaries; comment/PI is a
+complete quota-bounded token. StartCData/EndCData surround Text tokens.
+
+| Current kind | Kind-specific accessors |
+| --- | --- |
+| StartElement | LocalName, Prefix, NamespaceUri, Attributes, NamespaceDeclarations, IsEmptyElement |
+| EndElement | LocalName, Prefix, NamespaceUri |
+| Declaration | Declaration |
+| StartDtd | DocumentType |
+| DtdDeclaration | DtdDeclaration |
+| SkippedEntity | SkippedEntity |
+| IncompleteAttributeDefault | IncompleteAttributeDefault |
+| Diagnostic | Diagnostic |
+| Text, Comment | ValueSpan |
+| ProcessingInstruction | Target, ValueSpan |
+
+Location is the current notification's original opening/fragment location for
+all kinds (boundary tokens use their lexical delimiter); unknown remains M2
+unknown. Nonapplicable spans/collections/views are empty/default, booleans false,
+owned nullable accessors null. Current data is valid until **invocation** of the
+next Read/ReadAsync or disposal, including when that call suspends/fails. No
+thread-safe concurrent accessor/read contract is offered. A fatal structured
+rejection throws from Read/ReadAsync immediately (not a delayed fatal token);
+views are invalidated, TokenKind=None. Diagnostic tokens represent any nonfatal
+Diagnostic notifications only. The exception retains owned terminal diagnostics.
+Repeated reads on a faulted context throw InvalidOperationException.
+
+## Internal pump boundary and task sequencing
+
+[Pump.cs.fixture](../../tests/Contracts/Fixtures/M3/Pump.cs.fixture) fixes an
+internal target interface, not a public runtime stub. Supply takes
+ReadOnlyMemory<byte> plus sticky EOF; Advance takes a synchronous sixteen-method
+bool sink and returns NeedInput, Paused, Completed, Rejected or NeedResource, with an owned
+terminal Diagnostic. Async extends with AdvanceResourceAsync, AdvanceAsync and async disposal.
+In async resource mode Advance returns NeedResource **before** invoking a resolver
+or reading a resource. Its consumed input is already reflected by the retained
+cursor; no resupply or replay is allowed. AdvanceResourceAsync performs exactly
+one pending open/frame/read continuation and resumes the same context.
+AdvanceAsync loops Advance/await AdvanceResourceAsync until a public pause,
+NeedInput or terminal state. Sync mode services the same continuation synchronously
+and never exposes NeedResource to a public synchronous reader/push/SAX caller.
+A false sink result accepts that event and pauses; it is never replayed.
+Supply may replace input only after NeedInput; the memory owner remains alive
+and unmodified until then/disposal. Pump retains owners/indices, not spans.
+Advance resumes queued *bounded* token state before consuming more source.
+EOF is sticky and may require many paused calls to drain. Rejected has a terminal
+diagnostic; exceptions fault rather than becoming that result. NeedInput means
+all supplied input consumed; Completed means successful EOF and terminal events
+accepted. Supply after EOF/terminal/fault is invalid. Sink identity is fixed
+for the context. Public push never exposes pause; reader sink pauses on one
+public token and resumes the unconsumed decoded/source tail on the next read.
+
+A composite tag or effective DTD model may contain multiple queued public
+notifications. Its adapter must retain owned scalar strings/model and integer
+cursor, never callback views, between pauses. Tag Attributes and Namespaces are
+one bounded retained tag; DTD declarations are projected one at a time. Source
+transport must not refill/reuse its buffer while pump still needs it. Async
+resolver work suspends before constructing a view, invokes M2 ResolveAsync and
+ReadAsync/DisposeAsync, and shares aggregate quotas with primary input. It must
+not use Task.Run, sync-over-async, or prefetch whole external resources.
+
+M3-callbacks owns public borrowed models/handlers; SAX/push/reader/writer then
+compile independently. Async public declarations appear only in the async lane.
+A single explicitly owned Streaming/Core pump task is required before SAX/push/
+reader adapters; exact ownership request is in the decision. Two core repair boundaries (default provenance and async
+external-resource suspension) are recorded in the decision and task handoff.
+Affected implementation workers must obtain owning changes before claiming
+runtime acceptance; declaration/fake feasibility is not proof of those repairs.
+Required runtime checks remain ordering/namespaces/defaults, all chunk splits,
+early notifications, identity of exceptions, cancellation/reentrancy, sync/async
+equality, and bounded 1 GiB memory from the performance plan.

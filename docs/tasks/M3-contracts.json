@@ -49,13 +49,26 @@
       "evidence": []
     }
   ],
-  "implementation": [],
+  "implementation": [
+    "tests/Contracts/Fixtures/M3/Views.cs.fixture: all borrowed callback/item/collection shapes and concrete enumerators",
+    "tests/Contracts/Fixtures/M3/Callbacks.cs.fixture: sixteen named delegate/interface/virtual/On* families",
+    "tests/Contracts/Fixtures/M3/Sync.cs.fixture and Async.cs.fixture: strict/diagnostics SAX, push, full reader tokens and async layer",
+    "tests/Contracts/Fixtures/M3/Writer.cs.fixture, WriterAsync.cs.fixture and DomAsync.cs.fixture: forward writer, true async writes, additive DOM transport and XmlAsyncSerializer",
+    "tests/Contracts/Fixtures/M3/Pump.cs.fixture, Consumers.cs.fixture, Checks.cs.fixture: tag aggregation and accepted-event backpressure, staged consumers and owner/offset async proof",
+    "docs/specs/streaming.md and docs/specs/serialization.md: complete lexical/DTD/recovery/token/state/lifetime/output semantics",
+    "docs/decisions/M3/streaming-writer.md: decisions and exact owning repair boundaries",
+    "docs/reports/M3-contracts/check.py: independent builds and required compiler-negative lifetime probes"
+  ],
   "evidence": [],
   "blockers": [],
   "handoff": {
     "summary": "",
     "checks": [],
     "remaining": [],
-    "requests": []
+    "requests": [
+      "M3-attribute-metadata: propagate explicit IsDefaulted through internal complete attribute views/core default insertion/delivery; exact paths and compatibility requirements in docs/decisions/M3/streaming-writer.md. Required before callbacks/reader runtime acceptance.",
+      "M3-async-resources: optional async resource mode with NeedResource/AdvanceResourceAsync, retained source/DTD/entity cursors, real M2 OpenAsync/ReadAsync and async cleanup; exact paths and invariants in docs/decisions/M3/streaming-writer.md. Required before async external-resource acceptance.",
+      "Create explicit M3-streaming-pump task owning src/Xemele/Streaming/Core/, focused tests and reports after callbacks/metadata/async-resource repair; SAX/push/reader depend on its integrated common decoding, tag/DTD aggregation and one-token pause pump. Details in docs/decisions/M3/streaming-writer.md. No peer-core edits or duplicate parsers."
+    ]
   }
 }

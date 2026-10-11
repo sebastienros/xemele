@@ -1,0 +1,13 @@
+namespace Xemele;
+internal static class DomConsumer
+{
+    internal static async Task Use(Stream stream, XmlDocument document)
+    {
+        await document.SaveAsync(stream);
+        _ = await XmlDocument.LoadAsync(stream);
+        _ = await XmlDocument.LoadWithDiagnosticsAsync(stream);
+        // Earlier synchronous APIs continue to compile in the same assembly.
+        _ = document.ToXmlString(); document.Save(stream);
+        _ = XmlDocument.Load(stream);
+    }
+}

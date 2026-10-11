@@ -1,0 +1,36 @@
+// Nonpackaged declaration fixture. Bodies are consumer-test fakes, never runtime APIs.
+using Xemele;
+namespace Xemele.Streaming;
+public static partial class XmlSaxParser
+{
+    public static Task ParseAsync(Stream input, IXmlSaxHandler handler, XmlParseOptions? options = null, CancellationToken cancellationToken = default) => Task.CompletedTask;
+    public static Task<XmlParseResult<XmlSaxCompletion>> ParseWithDiagnosticsAsync(Stream input, IXmlSaxHandler handler, XmlParseOptions? options = null, CancellationToken cancellationToken = default) => throw new NotSupportedException("Declaration fixture only.");
+}
+public sealed partial class XmlReader : IAsyncDisposable
+{
+    public ValueTask<bool> ReadAsync(CancellationToken cancellationToken = default) => ValueTask.FromResult(false);
+    public ValueTask DisposeAsync() => default;
+}
+// Fake asynchronous resolver suspension: callback views exist only after awaited work.
+internal sealed class FakeAsyncPump(Func<CancellationToken, ValueTask> resourceWork) : IAsyncXmlStreamingPump
+{
+    private readonly FakePump pump = new();
+    private bool resolved;
+    public XmlDiagnostic? Diagnostic => pump.Diagnostic;
+    public void Supply(ReadOnlyMemory<byte> input, bool isFinalBlock) => pump.Supply(input, isFinalBlock);
+    public StreamingStep Advance(IXmlStreamingSink sink, CancellationToken cancellationToken) => resolved ? pump.Advance(sink, cancellationToken) : StreamingStep.NeedResource;
+    public async ValueTask<StreamingStep> AdvanceAsync(IXmlStreamingSink sink, CancellationToken cancellationToken)
+    {
+        StreamingStep step;
+        while ((step = Advance(sink, cancellationToken)) == StreamingStep.NeedResource)
+            await AdvanceResourceAsync(cancellationToken);
+        return step;
+    }
+    public async ValueTask AdvanceResourceAsync(CancellationToken cancellationToken)
+    {
+        if (resolved) throw new InvalidOperationException("No pending resource.");
+        await resourceWork(cancellationToken); resolved = true;
+    }
+    public void Dispose() => pump.Dispose();
+    public ValueTask DisposeAsync() { Dispose(); return default; }
+}

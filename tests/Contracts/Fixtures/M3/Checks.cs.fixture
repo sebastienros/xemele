@@ -1,0 +1,135 @@
+using System.Text;
+using Xemele;
+using Xemele.Streaming;
+internal sealed class Subclass(List<string> trace) : XmlSaxHandler
+{
+    public override void StartElement(XmlStartElement element)
+    {
+        trace.Add(element.LocalName.ToString());
+        foreach (var a in element.Attributes) trace.Add($"{a.LocalName.ToString()}={a.Value.ToString()}:{a.IsDefaulted}");
+        foreach (var n in element.NamespaceDeclarations) trace.Add(n.NamespaceUri.ToString());
+    }
+    public override void Text(ReadOnlySpan<char> text) => trace.Add(text.ToString());
+}
+// Fake individual-event adapter: it buffers one tag, then exposes borrowed collections.
+internal sealed class TagAdapter(IXmlSaxHandler handler)
+{
+    private readonly List<AttributeRow> attributes = [];
+    private readonly List<NamespaceRow> namespaces = [];
+    internal void Attribute(string name, string value, bool isDefaulted) => attributes.Add(new(name, "", "", value, isDefaulted));
+    internal void Namespace(string prefix, string uri) => namespaces.Add(new(prefix, uri));
+    internal void Content()
+    {
+        var attrs = attributes.ToArray(); var decls = namespaces.ToArray();
+        handler.StartElement(new("r", "p", "urn:r", new(attrs), new(decls), true, default));
+        handler.EndElement(new("r", "p", "urn:r", default));
+        attributes.Clear(); namespaces.Clear();
+    }
+}
+internal sealed class FakePump : IXmlStreamingPump
+{
+    private ReadOnlyMemory<byte> input;
+    private int offset;
+    private bool final;
+    public XmlDiagnostic? Diagnostic => null;
+    public void Supply(ReadOnlyMemory<byte> input, bool isFinalBlock)
+    {
+        if (offset != this.input.Length) throw new InvalidOperationException();
+        this.input = input; offset = 0; final = isFinalBlock;
+    }
+    public StreamingStep Advance(IXmlStreamingSink sink, CancellationToken cancellationToken)
+    {
+        while (offset < input.Length)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            char[] chars = [(char)input.Span[offset++]];
+            if (!sink.Text(chars, default)) return StreamingStep.Paused;
+        }
+        return final ? StreamingStep.Completed : StreamingStep.NeedInput;
+    }
+    public void Dispose() { input = default; }
+}
+internal sealed class PullSink : XmlStreamingSink
+{
+    internal string Current = "";
+    public override bool StartElement(XmlStartElement element) => false;
+    public override bool Text(ReadOnlySpan<char> text, XmlLocation location) { Current = text.ToString(); return false; }
+}
+internal static class Checks
+{
+    internal static void Assert(bool test, string message) { if (!test) throw new InvalidOperationException(message); }
+    private static void Emit(IXmlSaxHandler handler)
+    {
+        var adapter = new TagAdapter(handler);
+        adapter.Attribute("a", "v", false); adapter.Attribute("d", "default", true);
+        adapter.Namespace("p", "urn:r"); adapter.Content(); handler.Text("text");
+    }
+    internal static void Run()
+    {
+        foreach (var method in typeof(IXmlSaxHandler).GetMethods())
+        {
+            var property = typeof(XmlSaxCallbacks).GetProperty("On" + method.Name)!;
+            var invoke = property.PropertyType.GetMethod("Invoke")!;
+            Assert(invoke.ReturnType == method.ReturnType && invoke.GetParameters().Select(p => p.ParameterType).SequenceEqual(method.GetParameters().Select(p => p.ParameterType)), "delegate signature: " + method.Name);
+            Assert(typeof(XmlSaxCallbacks).GetMethod(method.Name)!.DeclaringType == typeof(XmlSaxCallbacks), "concrete callback dispatch");
+        }
+        List<string> left = [], right = [];
+        Emit(new Subclass(left));
+        Emit(new XmlSaxCallbacks
+        {
+            OnStartElement = element =>
+            {
+                right.Add(element.LocalName.ToString());
+                foreach (var a in element.Attributes) right.Add($"{a.LocalName.ToString()}={a.Value.ToString()}:{a.IsDefaulted}");
+                foreach (var n in element.NamespaceDeclarations) right.Add(n.NamespaceUri.ToString());
+            }, OnText = text => right.Add(text.ToString())
+        });
+        Assert(left.SequenceEqual(right) && left.Count == 5, "lambda/subclass and borrowed enumerators");
+        Exception sentinel = new ApplicationException("sentinel");
+        try { Emit(new XmlSaxCallbacks { OnStartElement = _ => throw sentinel }); throw new InvalidOperationException("not thrown"); }
+        catch (ApplicationException actual) { Assert(ReferenceEquals(sentinel, actual), "callback identity"); }
+        using var pump = new FakePump(); var sink = new PullSink();
+        pump.Supply(Encoding.ASCII.GetBytes("abc"), true);
+        foreach (string expected in new[] { "a", "b", "c" })
+        {
+            Assert(pump.Advance(sink, default) == StreamingStep.Paused && sink.Current == expected, "pause accepts exactly one event without replay");
+        }
+        Assert(pump.Advance(sink, default) == StreamingStep.Completed, "EOF drains before completion");
+        Console.WriteLine("PASS: lambda/subclass, tag aggregation, views, exception identity, one-event pause/resume, EOF (fixture fakes only)");
+    }
+#if ASYNC
+    internal static async Task PumpAsync()
+    {
+        // Stream memory and offsets survive awaits; a span is introduced only inside Advance.
+        using var stream = new MemoryStream("abc"u8.ToArray());
+        byte[] buffer = new byte[2]; using var pump = new FakePump(); var sink = new PullSink();
+        StringBuilder seen = new();
+        while (true)
+        {
+            int count = await stream.ReadAsync(buffer.AsMemory());
+            pump.Supply(buffer.AsMemory(0, count), count == 0);
+            StreamingStep step;
+            while ((step = pump.Advance(sink, default)) == StreamingStep.Paused) seen.Append(sink.Current);
+            if (step == StreamingStep.Completed) break;
+        }
+        Assert(seen.ToString() == "abc", "memory survives I/O, views do not cross await");
+        await using var asyncPump = new FakeAsyncPump(async token => { await Task.Yield(); token.ThrowIfCancellationRequested(); });
+        asyncPump.Supply("x"u8.ToArray(), true);
+        Assert(await asyncPump.AdvanceAsync(sink, default) == StreamingStep.Paused && sink.Current == "x", "await resource before span callback");
+        Assert(await asyncPump.AdvanceAsync(sink, default) == StreamingStep.Completed, "async EOF");
+        Console.WriteLine("PASS: async memory/offset pump and resolver-suspension lifetime proof (fake only)");
+    }
+#endif
+}
+internal static class Program
+{
+    internal static async Task Main()
+    {
+        Checks.Run();
+#if ASYNC
+        await Checks.PumpAsync();
+#else
+        await Task.CompletedTask;
+#endif
+    }
+}

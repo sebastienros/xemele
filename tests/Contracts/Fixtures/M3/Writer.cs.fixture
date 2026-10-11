@@ -1,0 +1,19 @@
+// Nonpackaged declaration fixture, never a shipped writer.
+namespace Xemele;
+public sealed partial class XmlWriter : IDisposable
+{
+    private XmlWriter() { }
+    public static XmlWriter Create(Stream output, XmlSaveOptions? options = null, CancellationToken cancellationToken = default) => new();
+    public void WriteStartDocument() { }
+    public void WriteStartElement(string localName, string namespaceUri = "", string prefix = "") { }
+    public void WriteNamespace(string prefix, string namespaceUri) { }
+    public void WriteAttribute(string localName, string value, string namespaceUri = "", string prefix = "") { }
+    public void WriteText(ReadOnlySpan<char> text) { }
+    public void WriteCData(ReadOnlySpan<char> text) { }
+    public void WriteComment(ReadOnlySpan<char> text) { }
+    public void WriteProcessingInstruction(string target, ReadOnlySpan<char> data) { }
+    public void WriteEndElement() { }
+    public void WriteEndDocument() { }
+    public void Flush() { }
+    public void Dispose() { }
+}
