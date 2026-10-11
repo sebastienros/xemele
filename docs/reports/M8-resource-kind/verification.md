@@ -34,7 +34,7 @@ Resolver run: 42 passed. Both have zero errors/failures/skips/not-run. The
 resolver command selects all resolver correctness methods and does not select
 `WarmBorrowedReadsAllocateNothing`, which is a measurement. No performance or
 allocation experiment ran; none applies to the enum-only runtime change.
-Raw correctness logs/XML are preserved in ignored `artifacts/M8-resource-kind/`.
+Raw correctness logs/XML were inspected by the coordinator and are transient; checkout cleanup removes them. Durable outcomes are retained here and in the task record.
 
 ## Intentional cumulative test identity transition
 
@@ -70,3 +70,9 @@ running discovery/the cumulative corpus gate; this worker does not own corpora.
 `git diff --check` passed. Task is implemented on the branch, awaiting coordinator
 integration and verification. No pushes, publications, shared build/contract
 edits, orchestration-state edits or measurements occurred.
+
+## Integrated verification
+
+Coordinator integration revision: `980276a9cefd25087c8a30ad8b9ccb3dfb5d4d15`. Cache-only restores and both pinned Release builds passed with zero build warnings/errors. Both exact commands in `test-commands.json` passed on the combined tree: 64 focused and 42 resolver correctness cases, zero errors/failures/skips/not-run, actual ARM .NET 10.0.11. The coordinator parsed the raw XML, including the intentional value6 identity. The compiled API union matched 1,254 declarations; planning validated 171 tasks; whitespace check passed. No runtime source beyond the enum addition changed, so allocation/timing is inapplicable. Full corpus discovery remains a cumulative-gate provisioning requirement, not a claimed pass here.
+
+Worker outbound handoff delivery was rejected by automatic approval review because delegated authorization was not accepted. Coordinator collected the terminal result and committed files directly; this delivery issue is resolved and did not block verification.

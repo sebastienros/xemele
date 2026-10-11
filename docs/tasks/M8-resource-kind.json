@@ -4,11 +4,11 @@
   "milestone": "M8",
   "title": "Add an explicit schema resolver resource kind",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M8 coordinator 01a12c6c-b333-71d3-877f-0d186618e21d / assigned isolated worker",
   "branch": "codex/m8-resource-kind",
   "base_revision": "3000efdc9d9c1768810ace6372ad52aa51be6bd2",
-  "integration_revision": null,
+  "integration_revision": "980276a9cefd25087c8a30ad8b9ccb3dfb5d4d15",
   "depends_on": [
     "M8-contracts",
     "M6-resource-kinds"
@@ -38,7 +38,8 @@
       "status": "passed",
       "evidence": [
         "focused-tests",
-        "api-union"
+        "api-union",
+        "integrated-verification"
       ]
     },
     {
@@ -47,7 +48,8 @@
       "status": "passed",
       "evidence": [
         "focused-tests",
-        "resolver-tests"
+        "resolver-tests",
+        "integrated-verification"
       ]
     },
     {
@@ -61,7 +63,8 @@
         "focused-tests",
         "resolver-tests",
         "planning",
-        "diff"
+        "diff",
+        "integrated-verification"
       ]
     }
   ],
@@ -105,8 +108,8 @@
       "revision": "c90c274362e324a6f1eead44d211e8e76d0c785d",
       "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -class Xemele.Tests.SchemaResources.SchemaResourceKindTests -class Xemele.Tests.ResourceKinds.ResourceKindTests -class Xemele.Tests.CatalogTests -result-xml artifacts/M8-resource-kind/focused.xml",
       "result": "passed",
-      "summary": "64 passed: 12 new schema, 20 M6 resource kind, 32 M6 catalog; zero errors/failures/skips/not-run, actual .NET 10.0.11.",
-      "artifact": "artifacts/M8-resource-kind/focused.xml"
+      "summary": "64 passed: 12 new schema, 20 M6 resource kind, 32 M6 catalog; zero errors/failures/skips/not-run, actual .NET 10.0.11. Raw output inspected by coordinator; transient output removed at checkout cleanup.",
+      "artifact": null
     },
     {
       "id": "resolver-tests",
@@ -114,8 +117,8 @@
       "revision": "c90c274362e324a6f1eead44d211e8e76d0c785d",
       "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -method Xemele.Tests.Resolution.ResolverTests.PublicShapeAndOwnership -method Xemele.Tests.Resolution.ResolverTests.AsyncOwnershipIsExactlyOnceEvenWhenMixed -method Xemele.Tests.Resolution.ResolverTests.ConcurrentPublicDisposalClaimsOwnershipOnce -method Xemele.Tests.Resolution.ResolverTests.NullResolverNeverReadsAmbientSources -method Xemele.Tests.Resolution.ResolverTests.ExplicitRefusalDoesNotCountOrFetch -method Xemele.Tests.Resolution.ResolverTests.RelativeRequestUsesFinalDeclarationUriAndPreservesLexicalIds -method Xemele.Tests.Resolution.ResolverTests.RequestValidationHappensBeforeResolver -method Xemele.Tests.Resolution.ResolverTests.ExactBytesRequireOnlySingleByteEofProbe -method Xemele.Tests.Resolution.ResolverTests.OneOverBytesIsChargedWithoutExposingOrReadingMore -method Xemele.Tests.Resolution.ResolverTests.NestedHandlesShareByteAndCountLedger -method Xemele.Tests.Resolution.ResolverTests.ExhaustedCountDoesNotInvokeResolver -method Xemele.Tests.Resolution.ResolverTests.ActiveFinalUriAliasesAndFragmentsFormCyclesButInactiveRepeatsAreAllowed -method Xemele.Tests.Resolution.ResolverTests.SourceOwnershipRestoresParentWithoutGlobalCurrentUri -method Xemele.Tests.Resolution.ResolverTests.StreamsAreReadableOnAcquisitionAndInvalidReturnIsDisposed -method Xemele.Tests.Resolution.ResolverTests.ResolverExceptionsIncludingParseExceptionsPropagateByIdentity -method Xemele.Tests.Resolution.ResolverTests.CancellationAtEntryAndAfterUncooperativeSyncResolverDisposesReturn -method Xemele.Tests.Resolution.ResolverTests.CancellationBeforeReadAndEvery4096Bytes -method Xemele.Tests.Resolution.ResolverTests.NullLimitsDisableOnlyQuotasAndEmptyReadsDoNoIo -method Xemele.Tests.Resolution.ResolverTests.IoExceptionDisposesOwnedResourceAndDoesNotBecomeRejection -method Xemele.Tests.Resolution.ResolverTests.SessionDisposesAllHandlesEvenIfOneDisposalThrows -method Xemele.Tests.Resolution.ResolverTests.SecondaryCleanupFailurePreservesReadException -method Xemele.Tests.Resolution.ResolverTests.SecondaryAsyncCleanupFailurePreservesCancellation -method Xemele.Tests.Resolution.ResolverTests.SessionRejectsResolverReentrancyAndDisposedWork -method Xemele.Tests.Resolution.ResolverTests.DefaultAsyncFallbackChecksCancellationWithoutTaskRun -method Xemele.Tests.Resolution.ResolverTests.GenuineAsyncOverrideAndAsyncReadsAndDisposal -method Xemele.Tests.Resolution.ResolverTests.UncooperativeAsyncResolverReturnIsDisposedAfterCancellation -method Xemele.Tests.Resolution.ResolverTests.AsyncExceptionsAndCycleCleanupUseAsyncOwnership -method Xemele.Tests.Resolution.ResolverTests.UncooperativeAsyncReadIsChargedThenCancelledAndDisposed -method Xemele.Tests.Resolution.ResolverTests.PrimaryFailureDrainsAllActiveSourcesBeforeOuterUsingUnwinds -method Xemele.Tests.Resolution.ResolverTests.PrimaryAsyncFailureDrainsAllActiveSourcesBeforeOuterUsingUnwinds -method Xemele.Tests.Resolution.ResolverTests.RejectedWrapperCleanupExceptionFaultsAndDrainsParent -method Xemele.Tests.Resolution.ResolverTests.RejectedWrapperAsyncCleanupExceptionFaultsAndDrainsParent -method Xemele.Tests.Resolution.ResolverTests.ChildDisposeFailureDrainsParentsBeforeNestedUsingUnwinds -method Xemele.Tests.Resolution.ResolverTests.ChildDisposeAsyncFailureDrainsParentsBeforeNestedUsingUnwinds -method Xemele.Tests.Resolution.ResolverTests.IndividualDisposeFailureFaultsSessionWithoutRecursiveCleanup -result-xml artifacts/M8-resource-kind/resolver.xml",
       "result": "passed",
-      "summary": "42 M2 resolver correctness cases passed; allocation measurement not selected; zero errors/failures/skips/not-run, actual .NET 10.0.11.",
-      "artifact": "artifacts/M8-resource-kind/resolver.xml"
+      "summary": "42 M2 resolver correctness cases passed; allocation measurement not selected; zero errors/failures/skips/not-run, actual .NET 10.0.11. Raw output inspected by coordinator; transient output removed at checkout cleanup.",
+      "artifact": null
     },
     {
       "id": "api-union",
@@ -152,21 +155,29 @@
       "result": "passed",
       "summary": "Passed whitespace validation; branch source diff contains only owned paths.",
       "artifact": null
+    },
+    {
+      "id": "integrated-verification",
+      "kind": "integration",
+      "revision": "980276a9cefd25087c8a30ad8b9ccb3dfb5d4d15",
+      "command": "Cache-only restore and pinned Release builds for tests and M0 ApiCheck; execute both exact argv arrays in docs/reports/M8-resource-kind/test-commands.json; python3 docs/reports/M5-validation-model/check_api.py; python3 tools/planning/tasks.py validate; git diff --check",
+      "result": "passed",
+      "summary": "Combined tree: 64 focused + 42 resolver correctness tests passed; zero errors/failures/skips/not-run, actual ARM .NET10.0.11, SDK10.0.400. Builds zero warnings/errors. Compiled API union matched1254. Planning171 and whitespace passed. Root inspected actual XML and branch ownership. No allocation/timing run; no full corpus discovery pass claimed.",
+      "artifact": "docs/reports/M8-resource-kind/verification.md"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Added only Schema=5, exact additive API baseline and 12 schema discriminator/forwarding/ownership/catalog cases. M6 undefined-kind test identity intentionally changes value 5 to 6; other identities preserved. Branch implemented; integration_revision remains unset.",
+    "summary": "Integrated and verified additive Schema=5 with existing enum values, API and ownership behavior preserved. Twelve new schema cases pass. The inherited undefined-kind identity intentionally changes value5 to6.",
     "checks": [
       "Final Release test/API checker builds passed, zero warnings/errors; SDK10.0.400/runtime10.0.11.",
       "106 focused correctness cases passed: 12 schema + 20 M6 kinds + 32 catalog + 42 resolver; zero skips/failures.",
       "Exact compiled API union matched1254; all1253 earlier declarations unchanged plus Schema=5.",
       "Planning171 and diff checks passed. Broad discovery preflight failed due missing E14.dtd; scoped API comparison passed.",
-      "No allocation/timing evidence required or measurement run for enum-only runtime addition."
+      "No allocation/timing evidence required or measurement run for enum-only runtime addition.",
+      "Coordinator combined integration checks passed at 980276a9cefd25087c8a30ad8b9ccb3dfb5d4d15."
     ],
-    "remaining": [
-      "Coordinator review, integration and integrated checks; cumulative gate accounts for UndefinedKindsFailBeforeResolver(value:5) -> (value:6)."
-    ],
+    "remaining": [],
     "requests": [
       "Corpus provisioning outside ownership: ensure tests/corpora/xml/xmlconf/eduni/errata-2e/E14.dtd and retained corpus inputs are available before full discovery/cumulative corpus gate. No worker corpus edits requested to conceal the limitation."
     ]

@@ -7,26 +7,9 @@
   "coordination_branch": "main",
   "max_concurrent_workers": 3,
   "last_verified_checkpoint": "M7-gate",
-  "last_verified_task": "M8-contracts",
-  "last_integrated_revision": "75ffea4f1a249315da3fbd72fc3ad3f996c5c8c1",
+  "last_verified_task": "M8-resource-kind",
+  "last_integrated_revision": "980276a9cefd25087c8a30ad8b9ccb3dfb5d4d15",
   "active_assignments": [
-    {
-      "task_id": "M8-resource-kind",
-      "branch": "codex/m8-resource-kind",
-      "base_revision": "3000efdc9d9c1768810ace6372ad52aa51be6bd2",
-      "stage": "Activated with populated bounded worker brief",
-      "acceptance_before_dispatch": {
-        "mandatory": "Exact Schema=5; values0-4 unchanged; schema authorization/forwarding/disposal; inherited undefined-kind5->6 transition recorded; additive public field API.",
-        "integration": "Focused new and prior M2 resolver/M6 kind/catalog tests, actual pinned runtime, compiled public API union, planning/diff. No hot-path change or measurement required.",
-        "review": "One batched bounded correction; preserve passing source evidence; after two cycles coordinator chooses direct fix/owning repair/external blocker."
-      },
-      "claim_revision": "5b7730916dba401857e67f6c2705328e4ea7af1d",
-      "host_id": "local",
-      "client_thread_id": "client-new-thread:e4607dae-33af-4370-bf76-9df751a351d8",
-      "chat_id": "01a12c8e-29f7-7881-b484-aa99d487cbee",
-      "worktree_path": "/Users/sebastienros/.codex/worktrees/35b1/xemele",
-      "setup": "Root independently verified clean detached claim HEAD; worker creates assigned local branch; base/claim and verified prerequisites match."
-    },
     {
       "task_id": "M8-xpath-accounting",
       "branch": "codex/m8-xpath-accounting",
@@ -47,9 +30,9 @@
   ],
   "integration_queue": [],
   "next_actions": [
-    "Review/integrate resource-kind and XPath-accounting serially; no measurements until prepared lease/main+peer PARK.",
-    "Verify both prerequisites then M8-model; schedule at most three ready lanes.",
-    "Complete cumulative M8 gate, terminal cleanup and sole-writer transfer to main."
+    "Clean terminal resource-kind worker and integration checkouts.",
+    "Review/integrate XPath accounting; measurements require prepared bounded lease and main PARK.",
+    "Verify accounting then dispatch model; complete M8 gate and transfer sole writes back to main."
   ],
   "implementation_worker_policy": {
     "model": "gpt-6.1-sol",
@@ -167,7 +150,7 @@
   },
   "current_milestone": "M8",
   "milestone_completion_scope": "Complete integrated verified M8-gate; terminal workers and cleanup; preserve earlier evidence/caches; transfer sole writes to main. Do not create M9.",
-  "milestone_progress": "M8-contracts verified and terminal; resource-kind/accounting claimed for isolated implementation; model awaits both.",
+  "milestone_progress": "Contracts and schema resource kind verified; XPath accounting active; model awaits accounting.",
   "blockers": [],
   "pending_decisions": [],
   "timing_queue": [],
@@ -224,6 +207,30 @@
         "integration_worktree_removed": true,
         "record": "docs/orchestration/cleanup-M8-contracts.json"
       }
+    },
+    {
+      "task_id": "M8-resource-kind",
+      "branch": "codex/m8-resource-kind",
+      "base_revision": "3000efdc9d9c1768810ace6372ad52aa51be6bd2",
+      "stage": "Verified; terminal cleanup pending",
+      "acceptance_before_dispatch": {
+        "mandatory": "Exact Schema=5; values0-4 unchanged; schema authorization/forwarding/disposal; inherited undefined-kind5->6 transition recorded; additive public field API.",
+        "integration": "Focused new and prior M2 resolver/M6 kind/catalog tests, actual pinned runtime, compiled public API union, planning/diff. No hot-path change or measurement required.",
+        "review": "One batched bounded correction; preserve passing source evidence; after two cycles coordinator chooses direct fix/owning repair/external blocker."
+      },
+      "claim_revision": "5b7730916dba401857e67f6c2705328e4ea7af1d",
+      "host_id": "local",
+      "client_thread_id": "client-new-thread:e4607dae-33af-4370-bf76-9df751a351d8",
+      "chat_id": "01a12c8e-29f7-7881-b484-aa99d487cbee",
+      "worktree_path": "/Users/sebastienros/.codex/worktrees/35b1/xemele",
+      "setup": "Root independently verified clean detached claim HEAD; worker creates assigned local branch; base/claim and verified prerequisites match.",
+      "implementation_revision": "c90c274362e324a6f1eead44d211e8e76d0c785d",
+      "handoff_revision": "a1bbb175d9777f2d4149693d7798028c47cb237c",
+      "integration_revision": "980276a9cefd25087c8a30ad8b9ccb3dfb5d4d15",
+      "integration_worktree": "/private/tmp/xemele-integrate-m8-resource-kind",
+      "worker_cursor": "b0a61e98-a1e9-4516-8198-88943a8b5b8e:20",
+      "cleanup_status": "Pending ancestry/cleanliness check, worktree removal and chat archive",
+      "delivery": "Worker outbound tool approval rejected delegated authorization; authorized coordinator collection of terminal result and files resolved delivery."
     }
   ],
   "measurement_lease_history": [],
