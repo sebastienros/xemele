@@ -4,7 +4,7 @@
   "milestone": "M3",
   "title": "Suspend core external resource work for genuine async I/O",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M3 coordinator 01a1284a-8826-7fc2-af44-74552db608f2 / M3-async-resources worker",
   "branch": "codex/m3-async-resources",
   "base_revision": "3926d127e772b0f085fca30fe86fc26c83c10ad4",
@@ -38,29 +38,167 @@
     {
       "id": "M3-async-resources-A1",
       "description": "Provide optional internal async resource mode and explicit suspend/resume boundary for external subsets, nested parameter/general entities, framing/refill/EOF cleanup using existing resolution session async APIs; no Task.Run, sync-over-async, whole-resource buffering, or spans retained across awaits.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "release-build",
+        "async-correctness"
+      ]
     },
     {
       "id": "M3-async-resources-A2",
       "description": "Prove delayed async-only resolver/stream open/read/disposal, exact consumed input, sequential callback pause/no-replay, token rebinding/cancellation, aggregate quotas/cycles/locations, and exactly-once cleanup preserving primary exceptions.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "async-correctness",
+        "probe-quota-control"
+      ]
     },
     {
       "id": "M3-async-resources-A3",
       "description": "Preserve sync M2 behavior; demonstrate bounded scratch and real allocation evidence with focused correctness checks and task validation at a known revision.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "affected-sync-regressions",
+        "dtd-framing-regressions",
+        "process-wide-allocations",
+        "resource-bdn",
+        "planning-validator",
+        "diff-check"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Parsing/Core/XmlParserCore.cs: optional asyncResources constructor mode, exact ScanStep.NeedResource boundary, deferred async fault/rejection cleanup and shared operation gate",
+    "src/Xemele/Parsing/Core/XmlParserCore.AsyncResources.cs: AdvanceResourceAsync, retained DTD/model/source/request state, async EOF cleanup and DisposeAsync",
+    "src/Xemele/Parsing/Core/XmlParserCore.Doctype.cs: internal PE trigger tracking once and external subset completion continuation",
+    "src/Xemele/Parsing/Core/XmlParserCore.Entities.cs: reserve general frame/depth before await, buffered scalar processing and refill/EOF suspension",
+    "src/Xemele/Parsing/Entities/Runtime/ExternalXmlSource.cs: bounded FrameAsync/EnsureCharactersAsync/DisposeAsync, strict decoder/text declaration/byte mapping semantics",
+    "src/Xemele/Parsing/Events/Views.cs: additive internal ScanStep.NeedResource",
+    "resolved prerequisite: verified async token-binding checkpoint d299cbdcc00bade01158db8afd474c48c0cc2efd imported; no worker writes to resolver owner files",
+    "docs/reports/M3-async-resources/report.md: async owner protocol, actual check/probe results and scope limits"
+  ],
+  "evidence": [
+    {
+      "id": "release-build",
+      "kind": "check",
+      "revision": "27e7deda70b34dbcd08f4bf1daab118501cbc0f2",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' build tests/Xemele.Tests/Xemele.Tests.csproj -c Release --no-restore -p:BuildInParallel=false -p:UseSharedCompilation=false -m:1 --disable-build-servers",
+      "result": "passed",
+      "summary": "Release test build: 0 warnings/errors.",
+      "artifact": null
+    },
+    {
+      "id": "async-correctness",
+      "kind": "check",
+      "revision": "27e7deda70b34dbcd08f4bf1daab118501cbc0f2",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -noColor -namespace Xemele.Tests.AsyncResources -parallelMode none -result-xml docs/reports/M3-async-resources/async-tests.xml",
+      "result": "passed",
+      "summary": "29 passed, 0 failed/skipped; async-only suspension, nested sources, every primary split/pause, quotas/cycles/locations/encoding and cleanup/error/token/gate oracles.",
+      "artifact": "docs/reports/M3-async-resources/async-tests.xml"
+    },
+    {
+      "id": "affected-sync-regressions",
+      "kind": "check",
+      "revision": "43bbf5f633ecd5cd328588d0ecce998661e8994a",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -noColor -namespace Xemele.Tests.Entities -namespace Xemele.Tests.Resolution -namespace Xemele.Tests.EncodingCompatibility -namespace Xemele.Tests.AttributeMetadata -namespace Xemele.Tests.Recovery -namespace Xemele.Tests.ExternalDeclarationHook -namespace Xemele.Tests.ConformanceGrammar -namespace Xemele.Tests.ConformanceJoin -parallelMode none -result-xml docs/reports/M3-async-resources/affected-regressions.xml",
+      "result": "passed",
+      "summary": "292 passed, 0 failed/skipped. Production runtime source unchanged after this revision; later changes only correct/add focused tests and probe.",
+      "artifact": "docs/reports/M3-async-resources/affected-regressions.xml"
+    },
+    {
+      "id": "dtd-framing-regressions",
+      "kind": "check",
+      "revision": "27e7deda70b34dbcd08f4bf1daab118501cbc0f2",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -noColor -class Xemele.Tests.DtdParserTests -class Xemele.Tests.DtdParserSourceTests -class Xemele.Tests.DtdParserBudgetTests -class Xemele.Tests.FramingTests -parallelMode none -result-xml docs/reports/M3-async-resources/dtd-regressions.xml",
+      "result": "passed",
+      "summary": "3141 passed, 0 failed/skipped.",
+      "artifact": "docs/reports/M3-async-resources/dtd-regressions.xml"
+    },
+    {
+      "id": "initial-rebinding-oracle",
+      "kind": "check",
+      "revision": "43bbf5f633ecd5cd328588d0ecce998661e8994a",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -noColor -namespace Xemele.Tests.AsyncResources -parallelMode none",
+      "result": "failed",
+      "summary": "29 run, 1 failed: test observed old read token before decoder carry exhausted. Corrected oracle observes actual I/O after resumed parsing; final async-correctness passes.",
+      "artifact": null
+    },
+    {
+      "id": "probe-build",
+      "kind": "check",
+      "revision": "216e28daa249690bed3da2896948298f9dbdf5e5",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' build benchmarks/Xemele.Benchmarks/M3-async-resources/AsyncResources.Probe.csproj -c Release --no-restore -p:BuildInParallel=false -p:UseSharedCompilation=false -m:1 --disable-build-servers",
+      "result": "passed",
+      "summary": "Probe-only Release build 0 warnings/errors.",
+      "artifact": null
+    },
+    {
+      "id": "failed-probe-default-quota",
+      "kind": "check",
+      "revision": "27e7deda70b34dbcd08f4bf1daab118501cbc0f2",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' benchmarks/Xemele.Benchmarks/M3-async-resources/bin/Release/net10.0/Xemele.Benchmarks.dll --allocation docs/reports/M3-async-resources/allocations.json",
+      "result": "failed",
+      "summary": "Allocation child exited -6: generated long-token primitive exceeded default TokenCharacters. No BDN command ran. Retained failure, corrected explicit probe quota only, and passed one-limit control; runtime unchanged.",
+      "artifact": "docs/reports/M3-async-resources/failed-27e7ded/allocation.stderr.txt"
+    },
+    {
+      "id": "probe-quota-control",
+      "kind": "check",
+      "revision": "216e28daa249690bed3da2896948298f9dbdf5e5",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' benchmarks/Xemele.Benchmarks/M3-async-resources/bin/Release/net10.0/Xemele.Benchmarks.dll --control docs/reports/M3-async-resources/harness-control.json",
+      "result": "passed",
+      "summary": "1048577 generated bytes reject with default TokenCharacters1048576 and XML.ResourceLimit; changing only TokenCharacters=null completes with exact content counter.",
+      "artifact": "docs/reports/M3-async-resources/harness-control.json"
+    },
+    {
+      "id": "process-wide-allocations",
+      "kind": "check",
+      "revision": "216e28daa249690bed3da2896948298f9dbdf5e5",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' benchmarks/Xemele.Benchmarks/M3-async-resources/bin/Release/net10.0/Xemele.Benchmarks.dll --allocation /Users/sebastienros/.codex/worktrees/8f8c/xemele/docs/reports/M3-async-resources/allocations.json",
+      "result": "passed",
+      "summary": "Exclusive lease m3-async-resources-216e28d, child exit0. Process-wide buffered primitive512segments/128warm0B, positive1048B. 32x64KiB owned immediate2287360B, suspended2807248B;32x1MiB suspended8657232B. Fixed source scratch4096bytes/4096chars/4096mappings; generated body never allocated; setup/continuations reported separately, cold init excluded.",
+      "artifact": "docs/reports/M3-async-resources/allocations.json"
+    },
+    {
+      "id": "resource-bdn",
+      "kind": "check",
+      "revision": "216e28daa249690bed3da2896948298f9dbdf5e5",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' benchmarks/Xemele.Benchmarks/M3-async-resources/bin/Release/net10.0/Xemele.Benchmarks.dll --benchmark /Users/sebastienros/.codex/worktrees/8f8c/xemele/docs/reports/M3-async-resources/BenchmarkDotNet.Artifacts",
+      "result": "passed",
+      "summary": "Exclusive lease, prebuilt in-process BDN6/6cases completed36.5s exit0. Arm64/M4Pro SDK10.0.400 runtime10.0.11; actual suspended I/O.32B sync7.931us/immediate9.549us/suspended18.169us;64KiB2.679ms/2.723ms/2.917ms; allocations69.81KiB/69.81KiB/74.52KiB small,69.82KiB/69.81KiB/85.66KiB large. Provisional single-host data.",
+      "artifact": "docs/reports/M3-async-resources/benchmark.stdout.txt"
+    },
+    {
+      "id": "planning-validator",
+      "kind": "check",
+      "revision": "216e28daa249690bed3da2896948298f9dbdf5e5",
+      "command": "python3 tools/planning/tasks.py validate",
+      "result": "passed",
+      "summary": "Validated142tasks: schema/evidence/acyclic dependencies/additive milestones/ordered ownership.",
+      "artifact": null
+    },
+    {
+      "id": "diff-check",
+      "kind": "check",
+      "revision": "216e28daa249690bed3da2896948298f9dbdf5e5",
+      "command": "git diff --check",
+      "result": "passed",
+      "summary": "No whitespace errors.",
+      "artifact": null
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Read-only source review identifies synchronous external subset/PE/general entity and cleanup sites; repair core continuation rather than prebuffer resources.",
-    "checks": [],
-    "remaining": [],
+    "summary": "Optional core async resource mode suspends before external open/frame/refill/EOF cleanup; preserves DTD/PE/general owner cursors and primary consumed counts, sync mode and callback pause semantics. Uses verified genuine async binding/session APIs; implementation/test27e7ded, final probe216e28d.",
+    "checks": [
+      "Release builds0warnings/errors; async29passed; affected sync292passed; DTD/framing3141passed; validator142tasks.",
+      "Exclusive process-wide probe: buffered primitive0B/positive1048B; owned immediate/suspended allocations separate; BDN6cases exit0. Original quota harness failure retained with differential control proof."
+    ],
+    "remaining": [
+      "Coordinator integration/verification; integration_revision remains null.",
+      "Future async pump must await core DisposeAsync after synchronous Append callback/cancellation exceptions before propagating; documented owner protocol.",
+      "Performance results provisional Arm64 single host; broader/cross-architecture release confirmation remains later performance work."
+    ],
     "requests": []
   }
 }
