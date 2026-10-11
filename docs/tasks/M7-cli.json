@@ -4,11 +4,11 @@
   "milestone": "M7",
   "title": "HTML CLI additions",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M7 implementation chat 01a12c47-e352-7f83-80cb-ec7800b7f865",
   "branch": "codex/m7-cli",
   "base_revision": "4af21789ba152d435564f68e3f4259b5527cb90c",
-  "integration_revision": null,
+  "integration_revision": "8d5a9aaf2ad309c26d6dcea84c1c913e98621041",
   "depends_on": [
     "M7-corpus",
     "M6-cli"
@@ -38,7 +38,8 @@
       "evidence": [
         "release-builds",
         "managed-cli-controls",
-        "usage-ownership-sample"
+        "usage-ownership-sample",
+        "integrated-cli-verification"
       ]
     },
     {
@@ -48,7 +49,8 @@
       "evidence": [
         "managed-cli-controls",
         "native-aot",
-        "native-cli-controls"
+        "native-cli-controls",
+        "integrated-cli-verification"
       ]
     },
     {
@@ -60,7 +62,8 @@
         "full-api-inventory-negatives",
         "managed-cli-controls",
         "native-cli-controls",
-        "planning-ownership-cleanup"
+        "planning-ownership-cleanup",
+        "integrated-cli-verification"
       ]
     }
   ],
@@ -143,11 +146,20 @@
       "result": "skipped",
       "summary": "Preparation paused after managed build without nativeartifact/compilerchild; stopped/reaped; superseded by actual elevated native-aot/native-cli-controls. Preserved artifacts/M7-cli/publish-aot-sandbox-preparation.log; no native pass claimed for this attempt.",
       "artifact": "docs/reports/M7-cli/README.md"
+    },
+    {
+      "id": "integrated-cli-verification",
+      "kind": "integration",
+      "revision": "8d5a9aaf2ad309c26d6dcea84c1c913e98621041",
+      "command": "Pinned offlineCLI/sample/approvedcheckerbuilds; M7-cli process_controls.py; unchangedM6-cli process_controls.py; ownedM7.CliSample; M7-cli api_controls.py; nativeSHA/file/results/sourceequality; planningvalidate",
+      "result": "passed",
+      "summary": "Actual .NET10.0.11Arm64:111HTML+57XMLmanagedcontrols and28samplecontrolsPass;7APIcontrols/1253compiledmembers/zeroadditions/3388fixtureinventory/bootstrapFalse. ZeroWarning/Errorbuilds. Native111HTML+57XMLbranchresults inspected, exact4103128byteMachOarm64SHA556a3abc9cbe8f1cbde44cb0d0509cc122746a487922d3ed3dfa5f19343d8fc6 with10.0.11compilerpackages;13ownedpaths/12nonmetadatafilesmatchintegratedsource. Nativepassingcampaignpreserved, no redundantpublish/rerun. Planning169/diffpass; no x64 claim.",
+      "artifact": "docs/reports/M7-cli/integration.md"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Four internal statically registered HTML CLI commands, real fragment contexts, CSS selection, explicit profiles/scripting/serialization/finite options and structured failures; owned public usage/output inventory and executable sample. Implementation a3dc9a68; zero library public additions; no XML/shared/runtime edits. All criteria passed on isolated branch; integration remains coordinator work.",
+    "summary": "Integrated verified fourstaticallyregisteredHTMLcommands; managed/native HTML+allXML controls, APIzeroadditions, caller-lifetime sample pass. M7-gate unlocked.",
     "checks": [
       "Forced CLI/sample/approved extractor builds: zero warnings/errors; SDK10.0.400/runtime10.0.11 on macOS15.8/osx-arm64.",
       "Managed and actual NativeAOT:111 HTML +57 unchanged XML controls each; owned sample28 controls (.NET10.0.11 assertion).",
@@ -156,10 +168,7 @@
       "Planning169, whitespace and claim-relative ownership passed; all owned execchildren reaped.",
       "Earlier missing ignored corpus input prepared by coordinator; intermediate harness/preparation corrections documented honestly. No timing/allocation/full inheritedsuite campaign."
     ],
-    "remaining": [
-      "Coordinator integration and integrated verification; cumulative runtime/allocation gates stay with coordinator.",
-      "Frozen string fragment/selection/stringserialization APIs have no mid-call cancellation; documented bounded read/entry-exit/inter-result cancellation and deliberate CLI result allocations."
-    ],
+    "remaining": [],
     "requests": []
   }
 }
