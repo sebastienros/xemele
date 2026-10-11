@@ -1,0 +1,3 @@
+using Xemele;
+using Xemele.XPath;
+internal static class Program { public static void Main() { var doc = new XmlDocument(); var root = doc.CreateElement("r"); _ = XPathExpression.Compile(".").Evaluate(root.SetAttribute("a", "v")); } }

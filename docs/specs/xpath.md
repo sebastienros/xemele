@@ -1,44 +1,42 @@
 # XPath contract — M4
 
-Decision owner: `M4-contracts`. Depends on the tree and XML foundation, not schema validation or canonicalization.
+Frozen by M4-contracts. Production implementation starts with M4-model; this
+contract adds no runtime XPath code. Exact proposed declarations are
+`tests/Contracts/Fixtures/M4/Public.cs.fixture` and `Model.cs.fixture`.
+`Public.golden.txt` is the canonical xemele-api-v1 compiled 177-member proposed
+public baseline; it is not a shipped runtime API fragment.
+The [decision](../decisions/M4/xpath-profile.md) fixes semantics, lifetime,
+quotas, diagnostics and lane ownership. Those files supersede the earlier `Node`
+proposal: the verified tree exposes `XmlNode`, `XmlAttribute` and `XmlDocument`.
 
-```csharp
-namespace Xemele.XPath;
-public sealed class XPathExpression
-{
-    public static XPathExpression Compile(string expression, XPathCompileOptions? options = null);
-    public XPathValue Evaluate(Node context, XPathContext? options = null);
-}
-public sealed record XPathContext
-{
-    public IReadOnlyDictionary<string, string> Namespaces { get; init; }
-    public IReadOnlyDictionary<string, XPathValue> Variables { get; init; }
-    public CancellationToken CancellationToken { get; init; }
-    public long MaxOperations { get; init; }
-}
-public readonly struct XPathValue
-{
-    public XPathValueKind Kind { get; }
-    public double AsNumber();
-    public string AsString();
-    public bool AsBoolean();
-    public IReadOnlyList<XPathItem> AsNodeSet();
-}
-public readonly struct XPathItem
-{
-    public XPathItemKind Kind { get; }
-    public string StringValue { get; }
-    public Node? Node { get; }
-    public Node? OwnerElement { get; }
-}
-```
+The profile is XPath 1.0 expressions, with all 13 axes, 14 binary operators,
+unary minus and all 27 core functions. No XPath 2.0 sequences, types, `if`,
+`for`, comments, scientific numeric literals, or implicit extension library.
+The complete grammar and lexical decisions are in the decision. The pinned
+normative reference is the [16 November 1999 Recommendation](https://www.w3.org/TR/1999/REC-xpath-19991116/).
+`inventory.json` contains an explicit acceptance ID and concrete expected
+behavior for every axis/operator/function and grammar/edge case. These are
+future runtime acceptance vectors, not claimed runtime test passes.
 
-Contract task defines exact factories for scalar/node-set values, item name/namespace access, expanded variable/function names, compile options, and extension registration. Attribute/namespace items have distinct identities including owner and expanded name/prefix; they never masquerade as element nodes. Compiled syntax and static namespace bindings are immutable; runtime context/variables are per evaluation. Decide and document static versus dynamic bindings before API freeze.
+Prefix bindings are copied at Compile, including expanded variable and function
+names. Unprefixed names use the empty namespace. XPathContext contains expanded
+variable/function bindings, limits and cancellation; it has no dynamic namespace
+property. Compile copies extension signatures; Evaluate copies bindings and
+snapshots the input tree under quotas before dispatch. Compiled expressions are
+immutable, reentrant and reusable. Result membership, order, names and values are
+owned snapshots; exposed tree handles retain their existing live tree semantics.
 
-Internal seams: immutable AST records owned by `M4-model`; `XPathCompiler` produces AST; `XPathNavigator` exposes axes/order/identity; evaluator consumes AST/navigation and an `IXPathFunctionLibrary`. Both interfaces and built-in function metadata are frozen by the model task. Public `XPathExpression` facade is owned by composition, not compiler/evaluator lanes.
+M4-model owns immutable AST, static context, item/value representation, budgets,
+core function signature metadata and internal interfaces. Compiler, navigator
+and function lanes compile independently against that integrated model. The
+compiler produces AST, navigation implements the tree adapter, functions consume
+navigation/focus/budget; evaluator joins them. M4 composition alone supplies the
+public XPathExpression facade. No lane requires schema, canonicalization, or
+later milestones. No public declaration fixture is packaged or linked to runtime.
 
-Parallel lanes after model: grammar compilation, node/axis adapter, and core function library. Evaluation joins them, then conformance verifies the public facade. Implement XPath 1.0 conversions, all axes and operators, context size/position, predicates on reverse axes, document order/deduplication, numeric edge cases, namespace rules, variables, and core functions. Function implementation can use test navigation fakes but production dependencies must be integrated.
-
-Dynamic evaluation budgets/cancellation include extension dispatch, with documented limits for user code. Query result collections are snapshots of identities; mutation effects follow the tree contract. Compilation errors and evaluation errors have separate structured diagnostic categories. No implicit XPath 2.0 functions.
-
-Acceptance: exact semantic tests for each grammar/operator/axis/function, attribute/namespace identities, compiled-expression reuse, variables, error positions, and pinned differential cases. Performance measures compile and evaluate separately. Public API fragments and fixtures live under XPath-owned paths.
+Contract checks: run `python3 tests/Contracts/Fixtures/M4/check.py --dotnet <pinned-dotnet>`.
+It compiles public usage and runs all three independent seam probes, checks exact
+inventory and expected compile failures, then checks declaration markers and
+ownership. It does not evaluate XPath. Production conformance must execute the
+vectors and pinned differential cases; production performance must measure
+compilation and evaluation separately with the repository benchmark policy.

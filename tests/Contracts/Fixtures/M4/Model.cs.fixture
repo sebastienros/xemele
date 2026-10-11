@@ -1,0 +1,40 @@
+// Exact internal seam proposal for M4-model. Collection constructors must snapshot in production.
+using Xemele.XPath;
+namespace Xemele.XPath.Internal;
+internal enum XPathAxis { Child, Descendant, Parent, Ancestor, FollowingSibling, PrecedingSibling, Following, Preceding, Attribute, Namespace, Self, DescendantOrSelf, AncestorOrSelf }
+internal enum XPathBinaryOperator { Or, And, Equal, NotEqual, Less, LessOrEqual, Greater, GreaterOrEqual, Add, Subtract, Multiply, Divide, Modulo, Union }
+internal enum XPathNodeTestKind { Name, AnyPrincipal, NamespaceWildcard, Node, Text, Comment, ProcessingInstruction }
+internal sealed record XPathNodeTest(XPathNodeTestKind Kind, XPathExpandedName Name, string? ProcessingInstructionTarget);
+internal abstract record XPathAst(XPathSourceSpan Span);
+internal sealed record XPathLiteral(XPathValue Value, XPathSourceSpan Span) : XPathAst(Span);
+internal sealed record XPathVariable(XPathExpandedName Name, XPathSourceSpan Span) : XPathAst(Span);
+internal sealed record XPathUnaryMinus(XPathAst Operand, XPathSourceSpan Span) : XPathAst(Span);
+internal sealed record XPathBinary(XPathBinaryOperator Operator, XPathAst Left, XPathAst Right, XPathSourceSpan Span) : XPathAst(Span);
+internal sealed record XPathCall(XPathFunctionSignature Signature, IReadOnlyList<XPathAst> Arguments, XPathSourceSpan Span) : XPathAst(Span);
+internal sealed record XPathFilter(XPathAst Input, IReadOnlyList<XPathAst> Predicates, XPathSourceSpan Span) : XPathAst(Span);
+internal sealed record XPathStep(XPathAxis Axis, XPathNodeTest Test, IReadOnlyList<XPathAst> Predicates, XPathSourceSpan Span);
+internal sealed record XPathPath(bool Absolute, XPathAst? Input, IReadOnlyList<XPathStep> Steps, XPathSourceSpan Span) : XPathAst(Span);
+internal sealed record XPathStaticContext(IReadOnlyDictionary<string, string> Namespaces, IReadOnlyDictionary<XPathExpandedName, XPathFunctionSignature> Functions, XPathCompileLimits Limits);
+internal interface IXPathBudget
+{
+    CancellationToken CancellationToken { get; }
+    void ChargeOperations(long amount);
+    void CheckNodeSetSize(int count);
+    void CheckStringSize(int utf16Characters);
+}
+internal interface IXPathCompiler
+{ XPathAst Compile(string expression, XPathStaticContext context, CancellationToken cancellationToken); }
+internal readonly record struct XPathFocus(XPathItem Item, int Position, int Size);
+internal interface IXPathNavigator
+{
+    XPathItem Root { get; }
+    IReadOnlyList<XPathItem> SelectAxis(XPathItem item, XPathAxis axis, IXPathBudget budget);
+    int CompareDocumentOrder(XPathItem left, XPathItem right, IXPathBudget budget);
+    IReadOnlyList<XPathItem> SelectId(string id, IXPathBudget budget);
+    string? FindLanguage(XPathItem item, IXPathBudget budget);
+}
+internal interface IXPathFunctionLibrary
+{
+    IReadOnlyList<XPathFunctionSignature> Signatures { get; }
+    XPathValue Invoke(XPathFunctionSignature function, XPathFocus focus, IReadOnlyList<XPathValue> arguments, IXPathNavigator navigator, IXPathBudget budget);
+}

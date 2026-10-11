@@ -1,0 +1,22 @@
+using Xemele.XPath;
+using Xemele.XPath.Internal;
+internal sealed class CompilerProbe : IXPathCompiler
+{
+    public XPathAst Compile(string expression, XPathStaticContext context, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        return new XPathPath(true, null, [new(XPathAxis.Child, new(XPathNodeTestKind.Name, new("", "r"), null), [], new(1,1))], new(0, expression.Length));
+    }
+}
+internal static class Program
+{
+    public static void Main()
+    {
+        IXPathCompiler compiler = new CompilerProbe();
+        var ast = (XPathPath)compiler.Compile("/r", new(new Dictionary<string,string>(), new Dictionary<XPathExpandedName,XPathFunctionSignature>(), new()), default);
+        if (!ast.Absolute || ast.Steps.Count != 1 || ast.Steps[0].Test.Name.LocalName != "r" || ast.Span.Length != 2) throw new Exception("AST wiring");
+        using var cts = new CancellationTokenSource(); cts.Cancel();
+        try { compiler.Compile("/r", new(new Dictionary<string,string>(), new Dictionary<XPathExpandedName,XPathFunctionSignature>(), new()), cts.Token); throw new Exception("cancellation missing"); } catch (OperationCanceledException) { }
+        Console.WriteLine("PASS: independent compiler/AST seam and cancellation probe (fake compiler)");
+    }
+}
