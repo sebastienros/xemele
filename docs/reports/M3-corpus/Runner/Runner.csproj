@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><OutputType>Exe</OutputType></PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../../../src/Xemele/Xemele.csproj" />
+    <Compile Include="../../../../tests/Xemele.Fuzz/Streaming/*.cs" Link="Fuzz/%(Filename)%(Extension)" />
+  </ItemGroup>
+</Project>
