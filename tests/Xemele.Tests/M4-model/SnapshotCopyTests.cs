@@ -34,10 +34,11 @@ public sealed class SnapshotCopyTests
     public void DynamicCopiesChargeEntriesAndNamesAndStopBeforeOneOverGrowth()
     {
         var variables=new Dictionary<XPathExpandedName,XPathValue>{{new("","a"),XPathValue.FromString("x")},{new("","b"),default}};
-        var options=new XPathContext{Variables=variables,Limits=new(){MaxOperations=4}};
+        // Four key-validation units plus four actual ordinal insertion comparison units.
+        var options=new XPathContext{Variables=variables,Limits=new(){MaxOperations=8}};
         var budget=new XPathBudget(options.Limits,default,default);var snapshot=new XPathDynamicContext(options,budget);
-        Assert.Equal(2,snapshot.Variables.Count);Assert.Equal(4,budget.Operations);
-        var tooSmall=new XPathBudget(new(){MaxOperations=3},default,default);Assert.Throws<XPathEvaluationException>(()=>new XPathDynamicContext(options,tooSmall));Assert.Equal(3,tooSmall.Operations);
+        Assert.Equal(2,snapshot.Variables.Count);Assert.Equal(8,budget.Operations);
+        var tooSmall=new XPathBudget(new(){MaxOperations=7},default,default);Assert.Throws<XPathEvaluationException>(()=>new XPathDynamicContext(options,tooSmall));Assert.Equal(6,tooSmall.Operations); // Next actual comparison inspects two units atomically; denied before either read.
         Assert.Throws<XPathEvaluationException>(()=>new XPathDynamicContext(new(){Variables=new Dictionary<XPathExpandedName,XPathValue>{{new("","a"),XPathValue.FromString("xx")}},Limits=new(){MaxStringCharacters=1}}));
     }
     [Fact]

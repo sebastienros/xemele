@@ -1,0 +1,107 @@
+{
+  "schema_version": 1,
+  "id": "M4-model-context",
+  "milestone": "M4",
+  "title": "Bound XPath context copying and locate compile-context diagnostics",
+  "kind": "feature",
+  "status": "verified",
+  "owner": "M4 coordinator 01a12903-1caa-7f32-b0e3-e66b49cea7a6",
+  "branch": "codex/m4-model-context",
+  "base_revision": "78b0775bb2c426e00d176fbd51eb0bfc8104d3d1",
+  "integration_revision": "bb04281f25cc2b2ce6b90ae5dbe2fc7bf429b5c2",
+  "depends_on": [
+    "M4-model",
+    "M4-model-construction"
+  ],
+  "goals": [
+    "G06"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/xpath.md"
+  ],
+  "owns": [
+    "src/Xemele/XPath/Model/StaticContext.cs",
+    "src/Xemele/XPath/Model/ContextMap.cs",
+    "tests/Xemele.Tests/M4-model-context/",
+    "benchmarks/Xemele.Benchmarks/M4-model-context/",
+    "docs/reports/M4-model-context/",
+    "tests/Xemele.Tests/M4-model/SnapshotCopyTests.cs"
+  ],
+  "api_or_output": "Internal bounded immutable context map; optional entry-span static-context factory overload; current public893 unchanged",
+  "acceptance": [
+    {
+      "id": "M4-model-context-A1",
+      "description": "Eliminate unbounded generated name hashing/equality from static/dynamic context construction and registration validation with bounded ordinal comparisons/storage; charge actual dynamic inspected units, preserve validation/duplicates/immutability/callback exception identity and existing internal signatures.",
+      "status": "passed",
+      "evidence": [
+        "context-review",
+        "context-integration"
+      ]
+    },
+    {
+      "id": "M4-model-context-A2",
+      "description": "Locate engine-owned compile-context limit failures at supplied full expression span without catching user enumeration exceptions. Prove long name/URI/prefix cancellation and dynamic actual-comparison accounting, existing model/compiler/context checks and current public893 preservation (evaluator owner verifies its later897 facade combination).",
+      "status": "passed",
+      "evidence": [
+        "context-review",
+        "context-integration"
+      ]
+    },
+    {
+      "id": "M4-model-context-A3",
+      "description": "Record actual cold/owned context costs and borrowed comparison allocation evidence with [MemoryDiagnoser, ShortRunJob]; focused integrated checks and planning validation, summaries only.",
+      "status": "passed",
+      "evidence": [
+        "context-review",
+        "context-integration",
+        "context-performance"
+      ]
+    }
+  ],
+  "implementation": [
+    "ContextMap.cs: sealed insertion-ordered ownership; polled ordinal comparisons and actual dynamic unit charging",
+    "StaticContext.cs: bounded registration/copy validation and supplied compile entry diagnostic span",
+    "ContextTests.cs:11 controls; SnapshotCopyTests exact8/over7 boundary"
+  ],
+  "evidence": [
+    {
+      "id": "context-review",
+      "kind": "review",
+      "revision": "e8883d5a1c3a0dc2724b64e6b6474108c4322f0c",
+      "command": "Source-only ownership/budget/cancellation/diagnostic review",
+      "result": "passed",
+      "summary": "Reviewer approved context repair; no residual owned blocker.",
+      "artifact": "docs/reports/M4-model-context/design.md"
+    },
+    {
+      "id": "context-integration",
+      "kind": "integration",
+      "revision": "bb04281f25cc2b2ce6b90ae5dbe2fc7bf429b5c2",
+      "command": "dotnet --fx-version10.0.11 Xemele.Tests.dll -namespace Xemele.Tests.M4*; model check_api.py; tasks.py validate; git diff --check",
+      "result": "passed",
+      "summary": "190 focused tests;893 API and two negative controls;150 task validation; actual10.0.11; identical prepared source/config binaries.",
+      "artifact": "docs/reports/M4-model-context/integration.md"
+    },
+    {
+      "id": "context-performance",
+      "kind": "check",
+      "revision": "a9cac038bddbd26c7c235947187b068214b3d17c",
+      "command": "python3 docs/reports/M4-model-context/run_measurements.py --exclusive-grant",
+      "result": "passed",
+      "summary": "All64 warm/steady batches0B; cold6944B; positive1048B; owned1968/728Bop;8 successful BDN cases; lifecycle/identity0 and no child; raw actual inspected after release.",
+      "artifact": "docs/reports/M4-model-context/performance.md"
+    }
+  ],
+  "blockers": [],
+  "handoff": {
+    "summary": "Bounded immutable context ownership/comparison and supplied compile setup diagnostic span; exact newly charged quota boundary preserved.",
+    "checks": [
+      "190 focused actual10.0.11 tests; API893+two controls;150 planning; source review; one frozen8case allocation/timing sequence"
+    ],
+    "remaining": [],
+    "requests": [
+      "Evaluator owner adopts verified dependency, supplies full expression span, and verifies facade897 plus public setup-limit/caller exception controls."
+    ]
+  }
+}

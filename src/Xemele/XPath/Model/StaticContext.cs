@@ -1,4 +1,3 @@
-using System.Collections.ObjectModel;
 namespace Xemele.XPath.Internal;
 internal sealed record XPathStaticContext
 {
@@ -7,22 +6,24 @@ internal sealed record XPathStaticContext
     public XPathCompileLimits Limits { get; }
     internal int ContextTokens { get; private set; }
     internal int ContextCharacters { get; private set; }
+    private readonly XPathSourceSpan entrySpan;
     private void ChargeBinding(long characters)
     {
         if (ContextTokens == int.MaxValue || characters > int.MaxValue - ContextCharacters ||
             (Limits.MaxTokens is int tokens && ContextTokens >= tokens) ||
             (Limits.MaxExpressionCharacters is int maximum && characters > maximum - ContextCharacters))
-            throw new XPathCompileException(new("XPATH-COMPILE-LIMIT", XPathDiagnosticCategory.CompileLimit, "XPath static context limit exceeded.", default));
+            throw new XPathCompileException(new("XPATH-COMPILE-LIMIT", XPathDiagnosticCategory.CompileLimit, "XPath static context limit exceeded.", entrySpan));
         ContextTokens++; ContextCharacters += (int)characters;
     }
     internal XPathStaticContext(IReadOnlyDictionary<string, string> Namespaces, IReadOnlyDictionary<XPathExpandedName, XPathFunctionSignature> Functions, XPathCompileLimits Limits)
-        : this(Namespaces, Functions, Limits, default, false) { }
+        : this(Namespaces, Functions, Limits, default, false, default) { }
     private XPathStaticContext(IReadOnlyDictionary<string, string> namespacesInput, IEnumerable<KeyValuePair<XPathExpandedName, XPathFunctionSignature>> functionsInput,
-        XPathCompileLimits limits, CancellationToken cancellationToken, bool extensionsOnly)
+        XPathCompileLimits limits, CancellationToken cancellationToken, bool extensionsOnly, XPathSourceSpan span)
     {
         ArgumentNullException.ThrowIfNull(namespacesInput); ArgumentNullException.ThrowIfNull(functionsInput); ArgumentNullException.ThrowIfNull(limits);
-        cancellationToken.ThrowIfCancellationRequested(); Limits = limits with { };
-        var namespaces = new Dictionary<string, string>(StringComparer.Ordinal) { ["xml"] = TreeValidation.XmlUri };
+        cancellationToken.ThrowIfCancellationRequested(); Limits = limits with { }; entrySpan = span;
+        var namespaces = new ContextMap<string, string>((a, b) => ContextComparison.Equal(a, b, cancellationToken));
+        namespaces.Add("xml", TreeValidation.XmlUri);
         foreach (var binding in namespacesInput)
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -33,7 +34,7 @@ internal sealed record XPathStaticContext
             ContextScan.Text(binding.Value, cancellationToken);
             if (binding.Key != "xml") namespaces.Add(binding.Key, binding.Value);
         }
-        var functions = new Dictionary<XPathExpandedName, XPathFunctionSignature>();
+        var functions = new ContextMap<XPathExpandedName, XPathFunctionSignature>((a, b) => ContextComparison.EqualName(a, b, cancellationToken));
         if (extensionsOnly) foreach (var core in XPathCoreSignatures.All) { cancellationToken.ThrowIfCancellationRequested(); functions.Add(core.Name, core); }
         foreach (var function in functionsInput)
         {
@@ -43,22 +44,26 @@ internal sealed record XPathStaticContext
             ContextScan.Name(function.Key.LocalName, cancellationToken); ContextScan.Poll(function.Key.NamespaceUri, cancellationToken);
             // Registration payload is validated before growth and no intermediate
             // dictionary has copied extension entries before this quota check.
-            if (function.Key != function.Value.Name) throw new ArgumentException("Signature key mismatch.", nameof(functionsInput));
+            if (!ContextComparison.EqualName(function.Key, function.Value.Name, cancellationToken)) throw new ArgumentException("Signature key mismatch.", nameof(functionsInput));
             ModelGuard.Arity(function.Value.MinArguments, function.Value.MaxArguments);
             if (function.Key.NamespaceUri.Length == 0)
             {
-                if (extensionsOnly || !XPathCoreSignatures.ByName.TryGetValue(function.Key, out var core) || core != function.Value) throw new ArgumentException("Invalid core function registration.", nameof(functionsInput));
+                XPathFunctionSignature? core = null;
+                foreach (var candidate in XPathCoreSignatures.All)
+                { cancellationToken.ThrowIfCancellationRequested(); if (ContextComparison.EqualName(candidate.Name, function.Key, cancellationToken)) { core = candidate; break; } }
+                if (extensionsOnly || core is null || core.MinArguments != function.Value.MinArguments || core.MaxArguments != function.Value.MaxArguments) throw new ArgumentException("Invalid core function registration.", nameof(functionsInput));
             }
             functions.Add(function.Key, function.Value);
         }
         cancellationToken.ThrowIfCancellationRequested();
-        Namespaces = new ReadOnlyDictionary<string, string>(namespaces);
-        Functions = new ReadOnlyDictionary<XPathExpandedName, XPathFunctionSignature>(functions);
+        Namespaces = namespaces.Seal();
+        Functions = functions.Seal();
     }
-    internal static XPathStaticContext FromOptions(XPathCompileOptions? options, CancellationToken cancellationToken = default)
+    internal static XPathStaticContext FromOptions(XPathCompileOptions? options, CancellationToken cancellationToken = default) => FromOptions(options, cancellationToken, default);
+    internal static XPathStaticContext FromOptions(XPathCompileOptions? options, CancellationToken cancellationToken, XPathSourceSpan entrySpan)
     {
         options ??= new(); ArgumentNullException.ThrowIfNull(options.Functions);
-        return new(options.Namespaces, Registrations(options.Functions), options.Limits, cancellationToken, true);
+        return new(options.Namespaces, Registrations(options.Functions), options.Limits, cancellationToken, true, entrySpan);
         static IEnumerable<KeyValuePair<XPathExpandedName, XPathFunctionSignature>> Registrations(IReadOnlyList<XPathFunctionSignature> signatures)
         {
             // Enumerable adapters also support caller dictionaries/lists whose
@@ -81,7 +86,7 @@ internal sealed record XPathDynamicContext
         options ??= new(); ArgumentNullException.ThrowIfNull(budget); ArgumentNullException.ThrowIfNull(options.Variables); ArgumentNullException.ThrowIfNull(options.Functions); ArgumentNullException.ThrowIfNull(options.Limits);
         Limits = options.Limits with { }; CancellationToken = options.CancellationToken;
         CancellationToken.ThrowIfCancellationRequested(); budget.ChargeOperations(0);
-        var variables = new Dictionary<XPathExpandedName, XPathValue>();
+        var variables = new ContextMap<XPathExpandedName, XPathValue>((a, b) => ContextComparison.EqualName(a, b, CancellationToken, budget));
         foreach (var variable in options.Variables)
         {
             BeforeEntry(variable.Key);
@@ -89,7 +94,7 @@ internal sealed record XPathDynamicContext
             else if (variable.Value.Kind == XPathValueKind.NodeSet) budget.CheckNodeSetSize(variable.Value.AsNodeSet().Count);
             variables.Add(variable.Key, variable.Value);
         }
-        var functions = new Dictionary<XPathExpandedName, XPathExtensionFunction>();
+        var functions = new ContextMap<XPathExpandedName, XPathExtensionFunction>((a, b) => ContextComparison.EqualName(a, b, CancellationToken, budget));
         foreach (var function in options.Functions)
         {
             BeforeEntry(function.Key); ArgumentNullException.ThrowIfNull(function.Value);
@@ -97,8 +102,8 @@ internal sealed record XPathDynamicContext
             functions.Add(function.Key, function.Value);
         }
         CancellationToken.ThrowIfCancellationRequested(); budget.ChargeOperations(0);
-        Variables = new ReadOnlyDictionary<XPathExpandedName, XPathValue>(variables);
-        Functions = new ReadOnlyDictionary<XPathExpandedName, XPathExtensionFunction>(functions);
+        Variables = variables.Seal();
+        Functions = functions.Seal();
         void BeforeEntry(XPathExpandedName name)
         {
             CancellationToken.ThrowIfCancellationRequested(); budget.ChargeOperations(1);

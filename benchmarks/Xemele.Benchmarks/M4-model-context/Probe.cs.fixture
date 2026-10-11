@@ -1,0 +1,71 @@
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using System.Text.Json;
+using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Configs;
+using BenchmarkDotNet.Jobs;
+using BenchmarkDotNet.Running;
+using BenchmarkDotNet.Toolchains.InProcess.NoEmit;
+using Xemele.XPath;
+using Xemele.XPath.Internal;
+if(args is [var mode,var output] && mode is "--discover" or "--benchmark")
+{
+ var config=ManualConfig.Create(DefaultConfig.Instance).WithArtifactsPath(output).AddJob(Job.Default.WithToolchain(InProcessNoEmitToolchain.Instance).AsMutator());
+ var suites=new[]{typeof(ComparisonBenchmarks),typeof(OwnedBenchmarks)}.Select(t=>BenchmarkConverter.TypeToBenchmarks(t,config)).ToArray();
+ var cases=suites.SelectMany(s=>s.BenchmarksCases).ToArray();
+ if(cases.Length!=8||cases.Any(c=>c.Job.Run.WarmupCount!=3||c.Job.Run.IterationCount!=3||c.Job.Run.LaunchCount!=1||c.Job.Infrastructure.Toolchain!=InProcessNoEmitToolchain.Instance)||cases.Select(c=>c.Job.Id).Distinct().Count()!=1)throw new Exception("Expected8 ShortRunNoEmit cases3/3/1.");
+ Console.WriteLine("8 cases; declared ShortRun3/3/1; NoEmit toolchain only.");if(mode=="--discover")return;
+ var summaries=BenchmarkRunner.Run(suites);if(summaries.Sum(s=>s.Reports.Length)!=8||summaries.SelectMany(s=>s.Reports).Any(r=>!r.Success||r.ResultStatistics is null))throw new Exception("Missing benchmark success.");return;
+}
+if(args is not [var allocationMode,var path]||allocationMode is not ("--control" or "--allocation"))throw new Exception("Invalid driver arguments.");
+bool measure=allocationMode=="--allocation";long[] warm=new long[32],steady=new long[32];
+var staticOptions=Fixtures.Static;var dynamicOptions=Fixtures.Dynamic;long start=measure?GC.GetAllocatedBytesForCurrentThread():0;
+var cold=XPathStaticContext.FromOptions(staticOptions);var dynamicCold=new XPathDynamicContext(dynamicOptions);
+long coldBytes=measure?GC.GetAllocatedBytesForCurrentThread()-start:0;Fixtures.Controls();
+long consumed=0;for(int i=0;i<32;i++)consumed+=Batch(measure,out warm[i]);
+start=measure?GC.GetAllocatedBytesForCurrentThread():0;for(int i=0;i<32;i++)consumed+=Batch(measure,out steady[i]);long primitiveBytes=measure?GC.GetAllocatedBytesForCurrentThread()-start:0;
+start=measure?GC.GetAllocatedBytesForCurrentThread():0;GC.KeepAlive(new byte[1024]);long positiveBytes=measure?GC.GetAllocatedBytesForCurrentThread()-start:0;
+start=measure?GC.GetAllocatedBytesForCurrentThread():0;for(int i=0;i<128;i++)GC.KeepAlive(XPathStaticContext.FromOptions(Fixtures.Static));long staticBytes=measure?GC.GetAllocatedBytesForCurrentThread()-start:0;
+start=measure?GC.GetAllocatedBytesForCurrentThread():0;for(int i=0;i<128;i++)GC.KeepAlive(new XPathDynamicContext(Fixtures.Dynamic));long dynamicBytes=measure?GC.GetAllocatedBytesForCurrentThread()-start:0;
+File.WriteAllText(path,JsonSerializer.Serialize(new{mode=allocationMode,runtime=RuntimeInformation.FrameworkDescription,architecture=RuntimeInformation.ProcessArchitecture.ToString(),coldBytes,primitiveBytes,positiveBytes,staticBytes,dynamicBytes,ownedOperations=128,warm,steady,consumed,groupsPerPhase=8192},new JsonSerializerOptions{WriteIndented=true}));
+if(measure&&(primitiveBytes!=0||warm.Any(x=>x!=0)||steady.Any(x=>x!=0)||positiveBytes<=0||staticBytes<=0||dynamicBytes<=0))throw new Exception("Allocation gate failed.");GC.KeepAlive(cold);GC.KeepAlive(dynamicCold);Console.WriteLine($"{allocationMode} consumed={consumed}; actual={RuntimeInformation.FrameworkDescription}");
+[MethodImpl(MethodImplOptions.NoInlining)]static long Batch(bool measure,out long bytes)
+{
+ long start=measure?GC.GetAllocatedBytesForCurrentThread():0;long sum=0;
+ for(int i=0;i<256;i++){sum+=ContextComparison.Equal(Fixtures.Short,Fixtures.ShortCopy,default,Fixtures.Budget)?1:0;sum+=ContextComparison.Equal(Fixtures.Long,Fixtures.LongCopy,default,Fixtures.Budget)?1:0;sum+=ContextComparison.Equal(Fixtures.Long,Fixtures.Miss,default,Fixtures.Budget)?1:0;sum+=Fixtures.Map.TryGetValue(Fixtures.Key,out var v)?(long)v.AsNumber():0;}
+ bytes=measure?GC.GetAllocatedBytesForCurrentThread()-start:0;return sum;
+}
+internal sealed class CounterBudget:IXPathBudget
+{public CancellationToken CancellationToken=>default;public long Count;public void ChargeOperations(long amount)=>Count+=amount;public void CheckNodeSetSize(int count){}public void CheckStringSize(int count){}}
+internal static class Fixtures
+{
+ internal static readonly string Short="binding",ShortCopy=new(Short.ToCharArray()),Long=new('根',4096),LongCopy=new(Long.ToCharArray()),Miss=Long[..^1]+"x";
+ internal static readonly CounterBudget Budget=new();
+ internal static readonly XPathExpandedName Key=new("urn:context","value");
+ internal static readonly ContextMap<XPathExpandedName,XPathValue> Map=CreateMap();
+ internal static readonly XPathCompileOptions Static=new(){Namespaces=new Dictionary<string,string>{{"p","urn:context"}},Functions=[new(Key,0,0)]};
+ internal static readonly XPathContext Dynamic=new(){Variables=new Dictionary<XPathExpandedName,XPathValue>{{Key,XPathValue.FromNumber(7)},{new("urn:context","other"),XPathValue.FromString("x")}}};
+ private static ContextMap<XPathExpandedName,XPathValue> CreateMap(){var map=new ContextMap<XPathExpandedName,XPathValue>((a,b)=>ContextComparison.EqualName(a,b,default,Budget));map.Add(Key,XPathValue.FromNumber(7));return map.Seal();}
+ internal static void Controls()
+ {
+ foreach(var pair in new[]{(Short,ShortCopy),(Long,LongCopy),(Long,Miss),(Long,Long+"x"),("","")})if(ContextComparison.Equal(pair.Item1,pair.Item2,default)!=string.Equals(pair.Item1,pair.Item2,StringComparison.Ordinal))throw new Exception("Ordinal oracle mismatch.");
+ if(!Map.TryGetValue(new("urn:context","value"),out var found)||found.AsNumber()!=7)throw new Exception("Lookup mismatch.");
+ var stat=XPathStaticContext.FromOptions(Static);if(stat.Functions.Count!=28||stat.Namespaces["p"]!="urn:context")throw new Exception("Static context mismatch.");
+ var dyn=new XPathDynamicContext(Dynamic);if(dyn.Variables.Count!=2||dyn.Variables[Key].AsNumber()!=7)throw new Exception("Dynamic context mismatch.");
+ }
+}
+[MemoryDiagnoser,ShortRunJob]
+public class ComparisonBenchmarks
+{
+ [Params("shortHit","longHit","longMiss")]public string Case{get;set;}="";private string a="",b="";
+ [GlobalSetup]public void Setup(){Fixtures.Controls();a=Case=="shortHit"?Fixtures.Short:Fixtures.Long;b=Case=="shortHit"?Fixtures.ShortCopy:Case=="longHit"?Fixtures.LongCopy:Fixtures.Miss;}
+ [Benchmark(Baseline=true)]public bool Framework()=>string.Equals(a,b,StringComparison.Ordinal);
+ [Benchmark]public bool BoundedCharged()=>ContextComparison.Equal(a,b,default,Fixtures.Budget);
+}
+[MemoryDiagnoser,ShortRunJob]
+public class OwnedBenchmarks
+{
+ [GlobalSetup]public void Setup()=>Fixtures.Controls();
+ [Benchmark]public object StaticCopy()=>XPathStaticContext.FromOptions(Fixtures.Static);
+ [Benchmark]public object DynamicCopy()=>new XPathDynamicContext(Fixtures.Dynamic);
+}
