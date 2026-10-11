@@ -30,20 +30,22 @@ long allocated = GC.GetAllocatedBytesForCurrentThread() - before;
 if (allocated == 0) throw new Exception("Positive allocation control failed.");
 Print("positive-control", allocated, 1); GC.KeepAlive(control);
 var (xml, html) = CompositionBenchmarks.Graph();
+var xmlElement = xml.RootElement.FirstChild;
+var htmlElement = html.RootElement.FirstChild!;
 bool consumed = false;
 foreach (var expression in new[] { "*", ".selected", "root > item.selected:nth-child(2n+1):not([data=absent]), #hit", "item + item", "item ~ item", "[data|=en]", "[data*=US]", ":root", ":empty", "é", "missing" })
 {
     var compiled = CssSelector.Compile(expression);
-    for (int i = 0; i < 1024; i++) { consumed ^= compiled.Matches(xml.RootElement.FirstChild); consumed ^= compiled.Matches(html.RootElement.FirstChild!); }
+    for (int i = 0; i < 1024; i++) { consumed ^= compiled.Matches(xmlElement); consumed ^= compiled.Matches(htmlElement); }
     for (int batch = 0; batch < 16; batch++)
     {
         before = GC.GetAllocatedBytesForCurrentThread();
-        for (int i = 0; i < 4096; i++) consumed ^= compiled.Matches(xml.RootElement.FirstChild);
+        for (int i = 0; i < 4096; i++) consumed ^= compiled.Matches(xmlElement);
         allocated = GC.GetAllocatedBytesForCurrentThread() - before;
         Print("steady-xml-matches-" + expression, allocated, 4096);
         if (allocated != 0) throw new Exception("XML Matches allocated.");
         before = GC.GetAllocatedBytesForCurrentThread();
-        for (int i = 0; i < 4096; i++) consumed ^= compiled.Matches(html.RootElement.FirstChild!);
+        for (int i = 0; i < 4096; i++) consumed ^= compiled.Matches(htmlElement);
         allocated = GC.GetAllocatedBytesForCurrentThread() - before;
         Print("steady-html-matches-" + expression, allocated, 4096);
         if (allocated != 0) throw new Exception("HTML Matches allocated.");

@@ -53,9 +53,11 @@ public class CompositionBenchmarks
     private XmlDocument xml = null!;
     private HtmlDocument html = null!;
     private CssSelector selector = null!;
+    private XmlNode xmlElement;
+    private HtmlNode htmlElement = null!;
     [GlobalSetup] public void Setup()
     {
-        (xml, html) = Graph(); selector = CssSelector.Compile("root > item.selected:nth-child(2n+1):not([data=absent]), #hit");
+        (xml, html) = Graph(); xmlElement = xml.RootElement.FirstChild; htmlElement = html.RootElement.FirstChild!; selector = CssSelector.Compile("root > item.selected:nth-child(2n+1):not([data=absent]), #hit");
         if (selector.Select(xml.DocumentNode).Count != 17 || selector.Select(html.DocumentNode).Count != 17) throw new Exception("Composition oracle mismatch.");
     }
     public static (XmlDocument, HtmlDocument) Graph()
@@ -72,8 +74,8 @@ public class CompositionBenchmarks
         }
         return (x, h);
     }
-    [Benchmark] public bool XmlMatches() => selector.Matches(xml.RootElement.FirstChild);
-    [Benchmark] public bool HtmlMatches() => selector.Matches(html.RootElement.FirstChild!);
+    [Benchmark] public bool XmlMatches() => selector.Matches(xmlElement);
+    [Benchmark] public bool HtmlMatches() => selector.Matches(htmlElement);
     [Benchmark] public IReadOnlyList<XmlNode> XmlQuerySnapshot() => selector.Select(xml.DocumentNode);
     [Benchmark] public IReadOnlyList<HtmlNode> HtmlQuerySnapshot() => selector.Select(html.DocumentNode);
     [Benchmark] public CssSelector OwnedCompile() => CssSelector.Compile("root > item.selected:nth-child(2n+1):not([data=absent]), #hit");

@@ -30,7 +30,7 @@ CSS whitespace non-CSS NBSP, a short miss and dense delimiters. The remaining ca
 owned query/result snapshots on both graphs, and owned compilation. Allocation
 probes separate cold compile/static initialization, positive controls, warmed
 borrowed Matches and token scanning, owned compilation, XML/HTML query results,
-and inclusive retained result snapshots with owners. Discovery is not measurement.
+and inclusive retained result snapshots with owners. Supplied XML/HTML Match nodes are cached outside counters and BDN timing; owner-root accessors are fixture setup only. Discovery is not measurement.
 
 The W3C cache was read only. All 3386 manifest-listed resources were copied by
 regular file copy to ignored worktree corpus paths with the xmlconf prefix; each
