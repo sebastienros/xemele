@@ -1,0 +1,67 @@
+using System.Runtime.InteropServices;
+using System.Text.Json;
+using BenchmarkDotNet.Configs;
+using BenchmarkDotNet.Jobs;
+using BenchmarkDotNet.Running;
+using BenchmarkDotNet.Toolchains.InProcess.NoEmit;
+using Xemele;
+using Xemele.Benchmarks.M6Catalog;
+Console.WriteLine($"FrameworkDescription={RuntimeInformation.FrameworkDescription}; Architecture={RuntimeInformation.ProcessArchitecture}");
+if (RuntimeInformation.FrameworkDescription != ".NET 10.0.11") throw new Exception("Pinned actual runtime required.");
+if (args[0] is "--discover" or "--benchmark")
+{
+    var config = ManualConfig.Create(DefaultConfig.Instance).WithArtifactsPath(args[1]).AddJob(Job.Default.WithToolchain(InProcessNoEmitToolchain.Instance).AsMutator());
+    var suite = BenchmarkConverter.TypeToBenchmarks(typeof(CatalogBenchmarks), config);
+    if (suite.BenchmarksCases.Length != 8 || suite.BenchmarksCases.Any(c => c.Job.Run.WarmupCount != 3 || c.Job.Run.IterationCount != 3 || c.Job.Run.LaunchCount != 1 || c.Job.Infrastructure.Toolchain != InProcessNoEmitToolchain.Instance)) throw new Exception("8 ShortRun NoEmit cases required.");
+    Console.WriteLine("8 ShortRun NoEmit cases; no builds/generation.");
+    if (args[0] == "--discover") return;
+    var summary = BenchmarkRunner.Run(suite);
+    if (summary.Reports.Length != 8 || summary.Reports.Any(r => !r.Success || r.ResultStatistics is null)) throw new Exception("Benchmark failure.");
+    return;
+}
+if (args[0] != "--measure") throw new ArgumentException();
+long coldBefore = GC.GetAllocatedBytesForCurrentThread();
+string source = CatalogBenchmarks.Fixture(128); var catalog = XmlCatalog.Parse(source);
+Print("cold-fixture-and-first-graph", GC.GetAllocatedBytesForCurrentThread() - coldBefore, 1);
+var positive = new byte[1024]; long before = GC.GetAllocatedBytesForCurrentThread(); var control = new byte[1024]; long bytes = GC.GetAllocatedBytesForCurrentThread() - before; if (bytes <= 0) throw new Exception("Positive control"); Print("positive-control", bytes, 1); GC.KeepAlive(control);
+var exact = new XmlResourceRequest(new("https://request/"), null, XmlResourceKind.ExternalEntity) { SystemId = "key-127" };
+XmlResourceRequest[] requests = [exact, exact with { SystemId = "absent" }, exact with { SystemId = null, PublicId = "A B" }, exact with { Kind = XmlResourceKind.XIncludeXml, SystemId = null }];
+Uri? consumed = null;
+foreach (var request in requests)
+{
+    for (int i = 0; i < 1000; i++) consumed = catalog.Resolve(request);
+    for (int batch = 0; batch < 16; batch++)
+    {
+        before = GC.GetAllocatedBytesForCurrentThread();
+        for (int i = 0; i < 4096; i++) consumed = catalog.Resolve(request);
+        bytes = GC.GetAllocatedBytesForCurrentThread() - before;
+        Print("steady-borrowed-" + (request.SystemId ?? request.PublicId ?? "uri"), bytes, 4096);
+        if (bytes != 0) throw new Exception("Borrowed matching allocated.");
+    }
+}
+var rewrite = exact with { SystemId = "rewrite:long-尾巴" }; var normalized = exact with { SystemId = null, PublicId = " A\t B " };
+foreach (var request in new[] { rewrite, normalized })
+{
+    for (int i = 0; i < 100; i++) consumed = catalog.Resolve(request);
+    before = GC.GetAllocatedBytesForCurrentThread();
+    for (int i = 0; i < 100; i++) consumed = catalog.Resolve(request);
+    Print("owned-lookup-" + (request.SystemId ?? "normalized-public"), GC.GetAllocatedBytesForCurrentThread() - before, 100);
+}
+var composed = new CatalogResolver(catalog, new RefusingResolver());
+for (int i = 0; i < 100; i++) composed.Resolve(exact, default);
+before = GC.GetAllocatedBytesForCurrentThread();
+for (int i = 0; i < 100; i++) composed.Resolve(exact, default);
+Print("owned-mapped-request-composition", GC.GetAllocatedBytesForCurrentThread() - before, 100);
+XmlCatalog? owned = null; for (int i = 0; i < 10; i++) owned = XmlCatalog.Parse(source);
+before = GC.GetAllocatedBytesForCurrentThread(); for (int i = 0; i < 100; i++) owned = XmlCatalog.Parse(source); Print("owned-graph", GC.GetAllocatedBytesForCurrentThread() - before, 100);
+GC.Collect(); GC.WaitForPendingFinalizers(); GC.Collect(); long heapBefore = GC.GetTotalMemory(false);
+var retained = new XmlCatalog[100]; for (int i = 0; i < retained.Length; i++) retained[i] = XmlCatalog.Parse(source);
+GC.Collect(); GC.WaitForPendingFinalizers(); GC.Collect(); long heapAfter = GC.GetTotalMemory(false);
+Console.WriteLine(JsonSerializer.Serialize(new { domain = "retained-whole-heap-inclusive-graph-array-and-runtime-roots", beforeBytes = heapBefore, afterBytes = heapAfter, inclusiveDeltaBytes = heapAfter - heapBefore, denominatorGraphs = 100 }));
+GC.KeepAlive(retained); GC.KeepAlive(owned); GC.KeepAlive(consumed); GC.KeepAlive(positive);
+static void Print(string domain, long numeratorBytes, int denominatorOperations) => Console.WriteLine(JsonSerializer.Serialize(new { domain, numeratorBytes, denominatorOperations }));
+
+sealed class RefusingResolver : XmlResourceResolver
+{
+    public override XmlResolvedResource? Resolve(XmlResourceRequest request, CancellationToken token) => null;
+}
