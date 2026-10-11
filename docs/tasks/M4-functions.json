@@ -33,29 +33,108 @@
     {
       "id": "M4-functions-A1",
       "description": "Implement core function library, XPath string/number/boolean conversions and registration metadata.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "independent-source-review",
+        "function-correctness"
+      ]
     },
     {
       "id": "M4-functions-A2",
       "description": "Test every function with numeric edge cases, argument counts, Unicode and context dependencies using approved fakes.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "function-correctness",
+        "affected-model-correctness"
+      ]
     },
     {
       "id": "M4-functions-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
       "status": "pending",
-      "evidence": []
+      "evidence": [
+        "compiled-api",
+        "consumer-package",
+        "prepared-build-controls"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/XPath/Functions/CoreFunctions.cs: XPathCoreFunctions.Signatures/Invoke/Round and budget-aware conversion/string/ID helpers",
+    "tests/Xemele.Tests/M4-functions/FunctionTests.cs: all 27 frozen vectors and focused quota/cancellation/Unicode/numeric cases using owned snapshot fakes",
+    "tests/fixtures/M4-functions/core-vectors.json: exact frozen function inventory",
+    "samples/M4-functions/Program.cs and docs/reports/M4-functions/check_consumer.py: standalone production internal-lane consumers",
+    "docs/api/M4-functions.txt: header-only internal deliverable; compiled public inventory unchanged at 893",
+    "benchmarks/Xemele.Benchmarks/M4-functions/Probe.cs.fixture: prepared 13-case ShortRun probe; no measurements yet"
+  ],
+  "evidence": [
+    {
+      "id": "independent-source-review",
+      "kind": "review",
+      "revision": "b7d3a2ef368f78d5a766199dcbf619bc813915e7",
+      "command": "Independent source-only review of 666c1720 then focused correction re-review b7d3a2e",
+      "result": "passed",
+      "summary": "One batched blocker for unpolled actual bulk copies fixed with polled string fills/ID scratch growth and deterministic cancellation controls; re-review approved with no residual findings.",
+      "artifact": "docs/reports/M4-functions/checks.md"
+    },
+    {
+      "id": "function-correctness",
+      "kind": "check",
+      "revision": "b7d3a2ef368f78d5a766199dcbf619bc813915e7",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -namespace Xemele.Tests.M4Functions -noLogo -noColor -parallelMode none -result-xml /private/tmp/m4-functions-b7d3a2e-tests.xml",
+      "result": "passed",
+      "summary": "30/30 passed; zero failures/skips. All27 frozen vectors, every arity, focus/types, numericIEEE/ties/sticky-tail oracles, scalarUnicode/XMLS, optional/item/node-set conversions, snapshot mutation, exact/oneover shared operations/string/node-set caps, actual-copy and callback cancellation/identity.",
+      "artifact": "docs/reports/M4-functions/checks.md"
+    },
+    {
+      "id": "affected-model-correctness",
+      "kind": "check",
+      "revision": "b7d3a2ef368f78d5a766199dcbf619bc813915e7",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -namespace Xemele.Tests.M4Model -noLogo -noColor -parallelMode none -result-xml /private/tmp/m4-functions-b7d3a2e-model-tests.xml",
+      "result": "passed",
+      "summary": "Affected model41/41 passed, zero failures/skips; earlier broad suites/measurements not rerun.",
+      "artifact": "docs/reports/M4-functions/checks.md"
+    },
+    {
+      "id": "compiled-api",
+      "kind": "check",
+      "revision": "b7d3a2ef368f78d5a766199dcbf619bc813915e7",
+      "command": "python3 docs/reports/M4-model/check_api.py --dotnet '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet'",
+      "result": "passed",
+      "summary": "Approved helper emitted/matched893 public members (173 model+720 prior), two corruption controls reject. Internal function library adds no public API; b7d3a2e correction leaves model/public declarations unchanged. Final ordinary preparation reran this check against the approved b7d3a2e runtime; original candidate proof remains described in checks.md.",
+      "artifact": "docs/reports/M4-functions/checks.md"
+    },
+    {
+      "id": "consumer-package",
+      "kind": "check",
+      "revision": "b7d3a2ef368f78d5a766199dcbf619bc813915e7",
+      "command": "python3 docs/reports/M4-functions/check_consumer.py --dotnet '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet'",
+      "result": "passed",
+      "summary": "Fresh isolated net10.0 local package friend consumer with copied global.json/private cache built zero warnings/errors and passed:27 signatures, scalar length3, substring emoji, number-2.5, shared charging. Source sample also passed. Internal-only lane, no facade/shared visibility edits; model/public/sample APIs unchanged at corrected revision. Final ordinary preparation reran this check against the approved b7d3a2e runtime; original candidate proof remains described in checks.md.",
+      "artifact": "docs/reports/M4-functions/checks.md"
+    },
+    {
+      "id": "prepared-build-controls",
+      "kind": "check",
+      "revision": "b7d3a2ef368f78d5a766199dcbf619bc813915e7",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' build docs/reports/M4-functions/Functions.Probe.csproj -c Release --no-restore -m:1 -nr:false -p:UseSharedCompilation=false; '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' build samples/M4-functions -c Release --no-restore -m:1 -nr:false -p:UseSharedCompilation=false; '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' docs/reports/M4-functions/bin/Release/net10.0/Xemele.Benchmarks.dll --control /private/tmp/m4-functions-b7d3a2e-control.json; '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' docs/reports/M4-functions/bin/Release/net10.0/Xemele.Benchmarks.dll --discover /private/tmp/m4-functions-b7d3a2e-discovery",
+      "result": "passed",
+      "summary": "Release builds zero warnings/errors. Counters-disabled semantic controls consumed33374208, longnumeric/Unicode/invalid oracle controls passed; exactly13 cases in one declared ShortRunNoEmit job (3warmups/3iterations/1launch). Source108/binary40/runtime195 freeze capture/check passed. No allocation/timing run.",
+      "artifact": "docs/reports/M4-functions/preparation.md"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "",
-    "checks": [],
-    "remaining": [],
+    "summary": "Corrected 27-function library independently approved; correctness and standalone/API preservation checks pass. Fixed runtime sources held; in_progress until required allocation/performance evidence under explicit prepared exclusive grant.",
+    "checks": [
+      "Functions30/30 and affected model41/41 at b7d3a2e",
+      "Compiled publicAPI893, source sample and fresh standalone local package friend consumer passed again at approved b7d3a2e; earlier666c1720 proof preserved in report",
+      "Counters-disabled controls and exact13-case ShortRunNoEmit discovery atb7d3a2e; complete prepared closure captured/checked; no measurements run"
+    ],
+    "remaining": [
+      "Await explicit coordinator exclusive measurement grant for prepared bounded sequence; record actual allocation and BDN outcomes before implemented.",
+      "Coordinator owns integrated combination checks and verification; cumulative composition/M4 gate and M9 x64/Arm64 confirmation remain later owners."
+    ],
     "requests": []
   }
 }
