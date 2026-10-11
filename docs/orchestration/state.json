@@ -1566,16 +1566,14 @@
     }
   },
   "measurement_lease": {
-    "id": "m3-reader-0e81744-measure",
-    "status": "released",
-    "revision": "0e81744ffc718ef9e7b45f80992295d0e55208d7",
-    "runtime_revision": "cb2a561f658b2a99b95d2206e83186391c1a91ea",
-    "duration_limit_seconds": 240,
-    "scope": "Exact prepared probe default mode <=60s for cold/warm cursor copy, positive control and generated 1/8 MiB retention with active 256 KiB samples; only if passed same DLL bdn <=180s, fixed single InProcessNoEmit job and exactly six cases. Writer and resource-mode workers PARK with no children; root and reviewer run no workloads. No builds, generation, edits, retries or option changes. Release on actual exit and child cleanup before report inspection.",
-    "probe_sha256": "5437ab223c30645b634cb9def104974731f8117b90155889cc1e8b5a83b07930",
-    "runtime_sha256": "66c4b22fde1ae57e75879f2e0b7554151950a18f314180c04826650d25166ca5",
-    "limitations": "Unrelated host activity stays untouched; timing is informational and cannot establish comparative or regression claims. Per-process retained heap and synchronous primitive allocation gates remain mandatory; full 1 GiB qualification remains assigned to M3-corpus.",
-    "result": "Actual default and six-case BDN children exited 0 with no remaining sessions or children. Direct warmed cursor copy 100000 operations allocated 0 B, positive copies 8216000 B; active 1/8 MiB heap deltas 8984/8712 B. BDN inclusive borrowed case 2 B/op is preserved with attribution unproven; timing informational. No retry or source changes."
+    "id": "m3-resource-mode-ede1233-measure",
+    "status": "granted",
+    "revision": "ede12339ef78ca77d071a826ec48f2994dbfb422",
+    "duration_limit_seconds": 180,
+    "scope": "Exact prebuilt probe --allocation <=30s; only if passed same DLL --benchmark <=150s, hard exactly three cases and single in-process job. No source/build/options/retries during lease. Serializer PARK no children; reader and writer clean archived; reviewer source-only and root no executable workloads. Actual exits and no sessions/children required before release and inspection.",
+    "probe_sha256": "E10EF104BB7749A823D2E8588A763BB34CE80FAD6FBE065334DFA324C88BDBEF",
+    "runtime_sha256": "440B688112DF866CC1A0BCA5190E2142DE887FC1E916F316E88B4F80DCE29A16",
+    "limitations": "Unrelated user Silex processes remain untouched; timing informational and no optimization/regression claim. Actual own-process allocation gates with positive controls remain mandatory."
   },
   "offline_corpus_setup": {
     "checkout": "/private/tmp/xemele-m3-integration",
