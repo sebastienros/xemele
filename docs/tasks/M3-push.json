@@ -4,11 +4,11 @@
   "milestone": "M3",
   "title": "Incremental public push parser",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M3 coordinator 01a1284a-8826-7fc2-af44-74552db608f2 / push parser worker",
   "branch": "codex/m3-push",
   "base_revision": "dea97b9f2c20a89afae0f1136ec9f29dc8ca3305",
-  "integration_revision": null,
+  "integration_revision": "8e475a0bf35386b29289232b6581655042ab9b59",
   "depends_on": [
     "M3-callbacks",
     "M3-async-resources",
@@ -38,7 +38,8 @@
       "status": "passed",
       "evidence": [
         "push-correctness",
-        "release-builds"
+        "release-builds",
+        "coordinator-integration"
       ]
     },
     {
@@ -49,7 +50,8 @@
         "push-correctness",
         "probe-control",
         "allocation-retention",
-        "bdn-three-cases"
+        "bdn-three-cases",
+        "coordinator-integration"
       ]
     },
     {
@@ -60,7 +62,8 @@
         "preservation",
         "compiled-api",
         "sample",
-        "planning"
+        "planning",
+        "coordinator-integration"
       ]
     }
   ],
@@ -152,21 +155,27 @@
       "result": "passed",
       "summary": "Granted serial lease, actual exit0; hard guard verified exactly three InProcess cases and successful reports/statistics/execution exits. 4 KiB 0 B/op,64 KiB 7 B/op unexplained,owned end-to-end 55.6 KiB/op. Timing informational; no zero-allocation claim for 64 KiB, no retry, no cross-architecture/corpus/fuzz qualification.",
       "artifact": "docs/reports/M3-push/performance.md"
+    },
+    {
+      "id": "coordinator-integration",
+      "kind": "integration",
+      "revision": "8e475a0bf35386b29289232b6581655042ab9b59",
+      "command": "Pinned Release build; Xemele.Tests.dll -namespace Xemele.Tests.Push -namespace Xemele.Tests.StreamingPump -namespace Xemele.Tests.Sax -namespace Xemele.Tests.ReaderRuntime -namespace Xemele.Tests.Callbacks -parallelMode none; official API compare; task validate; source closure diff",
+      "result": "passed",
+      "summary": "Build0warnings/errors;87 integrated tests passed0fail/errors/skips, including real callback allocation regressions; official full discovery matched714 compiled members;147 task validation passed. Final merge evidence/task only, tested runtime/API unchanged. Independent source review approved. Actual warm4096byte append0B+positive1048, generated1GiB64active samples peakdelta0/capacitiesfixed retained without rerun. Raw BDN64KiB7B/op remains unexplained, no attribution subtraction or zero claim for that inclusive scope; timings informational.",
+      "artifact": "docs/reports/M3-push/integration.xml"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Strict XmlPushParser frozen API/lifecycle implemented on 5dae4fb; probe-only active-live-heap and benchmark guards on adc750d. All listed acceptance criteria passed locally; integration_revision remains null.",
+    "summary": "Verified integrated strict push parser, immediate notifications and bounded ownership;87 focused integrated checks and API714 pass.",
     "checks": [
       "17 push,58 pump/SAX/callback,11 reader,53 earlier strict-syntax tests passed; Release tests/probe/sample builds clean",
       "711 compiled public members matched; sample and planning 147 passed",
       "Granted serial allocation+1GiB active retention: warm4 KiB 0 B,positive 1048 B,maximum live delta 0 B,fixed capacities/exact counts",
       "Exactly three BDN cases completed;4 KiB 0 B,64 KiB 7 B unexplained,owned end-to-end 55.6 KiB; raw logs/exits/hashes preserved, lease released with no children"
     ],
-    "remaining": [
-      "Coordinator integration verification/full official corpus discovery remains required.",
-      "Unexplained BDN64 KiB 7 B/op remains a performance follow-up; do not claim 64 KiB zero allocations. Local timing is informational; cross-architecture and later corpus/fuzz qualification unrun."
-    ],
+    "remaining": [],
     "requests": []
   }
 }
