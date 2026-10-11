@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "id": "M4-model-construction",
+  "milestone": "M4",
+  "title": "Bound cancellation during XPath model construction",
+  "kind": "feature",
+  "status": "in_progress",
+  "owner": "M4 coordinator 01a12903-1caa-7f32-b0e3-e66b49cea7a6",
+  "branch": "codex/m4-model-construction",
+  "base_revision": "3cd997baa17a34776304a2cf7b3cac48edc146ff",
+  "integration_revision": null,
+  "depends_on": [
+    "M4-model"
+  ],
+  "goals": [
+    "G06"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/xpath.md"
+  ],
+  "owns": [
+    "src/Xemele/XPath/Model/Values.cs",
+    "src/Xemele/XPath/Model/Ast.cs",
+    "src/Xemele/XPath/Model/Contexts.cs",
+    "src/Xemele/XPath/Model/ContextScan.cs",
+    "tests/Xemele.Tests/M4-model-construction/",
+    "docs/reports/M4-model-construction/"
+  ],
+  "api_or_output": "Internal cancellation-aware validated construction overloads; public API unchanged",
+  "acceptance": [
+    {
+      "id": "M4-model-construction-A1",
+      "description": "Add internal cancellation-aware expanded-name, AST name/PI/signature validation and collection-copy construction entry points; preserve existing constructor signatures, invariants and public API.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M4-model-construction-A2",
+      "description": "Prove cancellation at entry and during controlled collection copying, valid/invalid Unicode and names/PI validation, prior model41 controls and compiled API893 preservation at integrated revision. Compiler consumes verified overloads and proves long-input cancellation in its own task.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "Compiler found constructor rescans and AST array copies without cancellation polling; no exemption for engine construction.",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}

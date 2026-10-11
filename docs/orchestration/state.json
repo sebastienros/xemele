@@ -1725,7 +1725,7 @@
     },
     "M4": {
       "verified": 2,
-      "total": 8,
+      "total": 9,
       "in_progress": [
         "M4-compile",
         "M4-navigation",
@@ -1744,29 +1744,18 @@
   "current_milestone": "M4",
   "read_only_review": {
     "agent": "review_m4_model",
-    "task": "M4-model",
-    "revision": "dbbf5cb68cab910eeb990d87a8684aa956633d1c",
-    "stage": "Focused re-review approved; both blockers resolved; terminal/source-only",
-    "correction_cycles": 1,
-    "findings": [
-      "No budgeted internal node-set snapshot construction; public normalization rereads live topology",
-      "Static/dynamic context copy lacks required pre-growth aggregate limits/operation charging/bounded cancellation"
-    ],
-    "nonblocking": "No actual frozen consumer requires AST Deconstruct; getter-only immutable shape approved.",
-    "resolution": "Budgeted captured node-set construction and pre-growth/polled context-copy operations now present with targeted controls."
+    "task": "M4-navigation",
+    "revision": "802a2a0e746820cb73f388b6804e9740fafacdd5",
+    "stage": "Source-only approved; no blockers; terminal"
   },
   "coordinator_repair": {
-    "task_id": "M3-scan-abi",
-    "branch": "codex/m3-scan-abi",
-    "base_revision": "a081aaff454260cbb0b634f15bbd7355f95c5059",
-    "stage": "verified; cleanup next",
-    "scope": "Obsolete ABI assertion only; no runtimechanges",
-    "integration_revision": "dbfb42ac39751f03065f42534f38332c27dcca27",
-    "worktree_path": "/private/tmp/xemele-m3-scan-abi",
-    "cleanup": {
-      "worktree": "removed",
-      "evidence_durably_integrated": true
-    }
+    "task_id": "M4-model-construction",
+    "branch": "codex/m4-model-construction",
+    "base_revision": "3cd997baa17a34776304a2cf7b3cac48edc146ff",
+    "stage": "claimed; isolated checkout pending",
+    "scope": "Internal cancellation-aware overloads only; public API and prior constructors retained",
+    "acceptance_before_dispatch": "Focused cancellation/validation and old model41/API893 controls; compiler long-input controls after verified repair",
+    "compiler_dependency_update": "Validator forbids adding unverified prerequisites to started tasks; repair directly gates planned M4-gate now, compiler dependency added after repair verification. Worker task-record hold acknowledged."
   },
   "measurement_lease": {
     "id": "m4-model-e919eac-sequence",
