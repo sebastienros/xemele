@@ -54,6 +54,26 @@ public readonly struct XPathValue
         owned.Sort((a, b) => order[a.Identity].CompareTo(order[b.Identity]));
         return new(XPathValueKind.NodeSet, items: Array.AsReadOnly(owned.ToArray()));
     }
+    // Input is already normalized against the navigator's entry snapshot. Never
+    // query live handles here: an extension may have removed/reordered that tree.
+    internal static XPathValue FromSnapshotNodeSet(IReadOnlyList<XPathItem> normalized, Internal.IXPathBudget budget)
+    {
+        ArgumentNullException.ThrowIfNull(normalized); ArgumentNullException.ThrowIfNull(budget);
+        budget.ChargeOperations(0); budget.CheckNodeSetSize(normalized.Count);
+        if (normalized.Count == 0) return default;
+        budget.ChargeOperations(normalized.Count); // reject before destination growth
+        var owned = new XPathItem[normalized.Count];
+        for (int i = 0; i < owned.Length; i++)
+        {
+            budget.ChargeOperations(0);
+            var item = normalized[i];
+            if (item.IsDefault) throw new ArgumentException("Default snapshot item.", nameof(normalized));
+            if (i != 0 && !ReferenceEquals(owned[0].Identity.Node.Document, item.Identity.Node.Document)) throw new ArgumentException("Mixed snapshot documents.", nameof(normalized));
+            owned[i] = item;
+        }
+        budget.ChargeOperations(0);
+        return new(XPathValueKind.NodeSet, items: Array.AsReadOnly(owned));
+    }
     public IReadOnlyList<XPathItem> AsNodeSet() => kind == XPathValueKind.NodeSet ? items ?? Array.Empty<XPathItem>() : throw new InvalidOperationException("Value is not a node-set.");
     public bool AsBoolean() => kind switch { XPathValueKind.NodeSet => items is { Count: > 0 }, XPathValueKind.Boolean => number != 0, XPathValueKind.Number => number != 0 && !double.IsNaN(number), _ => text!.Length != 0 };
     public double AsNumber() => kind switch { XPathValueKind.Number or XPathValueKind.Boolean => number, _ => XPathConversions.ParseNumber(AsString()) };

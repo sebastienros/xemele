@@ -5,13 +5,24 @@ using System.Text.Json;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Running;
+using BenchmarkDotNet.Jobs;
+using BenchmarkDotNet.Toolchains.InProcess.NoEmit;
 using Xemele;
 using Xemele.XPath;
 using Xemele.XPath.Internal;
-if (args is ["--benchmark", var artifacts])
+if (args is [var benchmarkMode, var artifacts] && benchmarkMode is "--benchmark" or "--discover")
 {
-    BenchmarkSwitcher.FromTypes([typeof(ConversionBenchmarks), typeof(IdentityBenchmarks), typeof(OwnedBenchmarks)])
-        .Run(["--filter", "*", "--artifacts", artifacts]); return;
+    var config=ManualConfig.Create(DefaultConfig.Instance).WithArtifactsPath(artifacts)
+        .AddJob(Job.Default.WithToolchain(InProcessNoEmitToolchain.Instance).AsMutator());
+    var suites=new[]{typeof(ConversionBenchmarks),typeof(IdentityBenchmarks),typeof(OwnedBenchmarks)}.Select(t=>BenchmarkConverter.TypeToBenchmarks(t,config)).ToArray();
+    var cases=suites.SelectMany(s=>s.BenchmarksCases).ToArray();
+    if(cases.Length!=10 || cases.Any(c=>c.Job.Run.WarmupCount!=3 || c.Job.Run.IterationCount!=3 || c.Job.Run.LaunchCount!=1 || c.Job.Infrastructure.Toolchain!=InProcessNoEmitToolchain.Instance) || cases.Select(c=>c.Job.Id).Distinct().Count()!=1)
+        throw new InvalidOperationException("Exactly ten cases in one declared ShortRun NoEmit job required.");
+    Console.WriteLine("Model discovery: ten cases; one ShortRun job; InProcessNoEmit; warmup=3/iterations=3/launch=1; no generation/build.");
+    if(benchmarkMode=="--discover") return;
+    var summaries=BenchmarkRunner.Run(suites);
+    if(summaries.Sum(s=>s.Reports.Length)!=10 || summaries.SelectMany(s=>s.Reports).Any(r=>!r.Success || r.ResultStatistics is null)) throw new InvalidOperationException("Ten successful reports required.");
+    return;
 }
 if (args is not [var mode, var output] || mode is not ("--control" or "--allocation")) throw new ArgumentException("Use --control|--allocation <output> or --benchmark <artifacts>.");
 bool measure = mode == "--allocation";
@@ -33,7 +44,7 @@ start = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
 for(int i=0;i<256;i++) GC.KeepAlive(fixture.Format());
 long ownedStrings = measure ? GC.GetAllocatedBytesForCurrentThread()-start : 0;
 fixture.Controls();
-if (consumed != 65536 * 47.5) throw new InvalidOperationException("Consumed result mismatch.");
+if (consumed != 65536 * 50.5) throw new InvalidOperationException("Consumed result mismatch.");
 if(measure && (primitive != 0 || positiveBytes <= 0 || ownedSets <= 0 || ownedStrings <= 0)) throw new InvalidOperationException($"Allocation control failed: {primitive}/{positiveBytes}/{ownedSets}/{ownedStrings}.");
 File.WriteAllText(output, JsonSerializer.Serialize(new { mode, runtime=RuntimeInformation.FrameworkDescription, architecture=RuntimeInformation.ProcessArchitecture.ToString(), os=RuntimeInformation.OSDescription,
     revision=Environment.GetEnvironmentVariable("XEMELE_MODEL_REVISION"), assemblySha256=Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(typeof(XPathValue).Assembly.Location))),
@@ -44,6 +55,7 @@ internal sealed class ModelFixture
     private readonly XmlNode root;
     private readonly XPathItem item, same;
     private readonly XPathValue number=XPathValue.FromString(" \t-12.5\n"), boolean=XPathValue.FromBoolean(true), unicode=XPathValue.FromString("根😀"), invalid=XPathValue.FromString("+1"), nan=XPathValue.FromNumber(double.NaN);
+    private readonly XPathValue longNumber=XPathValue.FromString(new string('9',400)), longSpaces=XPathValue.FromString(new string(' ',1024)+"-.5"), invalidUnicode=XPathValue.FromString("\uD800");
     private readonly XPathBudget budget=new(new(){MaxOperations=null},default,default);
     internal ModelFixture()
     {
@@ -54,13 +66,13 @@ internal sealed class ModelFixture
     {
         budget.ChargeOperations(1);
         return number.AsNumber()+boolean.AsNumber()+(unicode.AsBoolean()?1:0)+(double.IsNaN(invalid.AsNumber())?1:0)+(nan.AsBoolean()?0:1)+
-            (item.Equals(same)?1:0)+(item.GetHashCode()==same.GetHashCode()?1:0)+(item.StringValue.Length==2?1:0)+XPathConversions.ParseNumber("42")+11;
+            (item.Equals(same)?1:0)+(item.GetHashCode()==same.GetHashCode()?1:0)+(item.StringValue.Length==2?1:0)+XPathConversions.ParseNumber("42")+11+(double.IsPositiveInfinity(longNumber.AsNumber())?1:0)+(longSpaces.AsNumber()==-.5?1:0)+(double.IsNaN(invalidUnicode.AsNumber())?1:0);
     }
     internal XPathValue Construct()=>XPathValue.FromNodeSet([XPathItem.FromNode(root),XPathItem.FromAttribute(root.Attributes[0]),XPathItem.FromNamespace(root,"p"),XPathItem.FromNode(root.FirstChild)]);
     internal string Format()=>XPathValue.FromNumber(double.Epsilon).AsString();
     internal void Controls()
     {
-        foreach(string input in new[]{"42"," \t-12.5\n",".5","+1","1e3","根😀","1\u00a0"})
+        foreach(string input in new[]{"42"," \t-12.5\n",".5","+1","1e3","根😀","1\u00a0","\uD800", new string('9',400),new string(' ' ,1024)+"-.5"})
         { double borrowed=XPathConversions.ParseNumber(input.AsSpan()), materialized=XPathConversions.ParseNumber(new string(input.AsSpan())); if (!(double.IsNaN(borrowed)&&double.IsNaN(materialized)) && borrowed!=materialized) throw new InvalidOperationException("Conversion baseline mismatch."); }
         if(item != same || item.Node!.Value != same.Node!.Value || Construct().AsNodeSet().Count!=4 || Format().Contains('E')) throw new InvalidOperationException("Identity/ownership control failed.");
     }

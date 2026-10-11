@@ -169,13 +169,13 @@ public sealed class ModelTests
     {
         var name = new XPathExpandedName("urn:p","f"); var signature = new XPathFunctionSignature(name,0,1);
         var namespaces = new Dictionary<string,string>{{"p","urn:p"}}; var signatures = new List<XPathFunctionSignature>{signature};
-        var context = XPathStaticContext.FromOptions(new(){Namespaces=namespaces,Functions=signatures}); namespaces.Clear(); signatures.Clear();
+        var context = XPathStaticContext.FromOptions(new(){Namespaces=namespaces,Functions=signatures}, TestContext.Current.CancellationToken); namespaces.Clear(); signatures.Clear();
         Assert.Equal("urn:p",context.Namespaces["p"]); Assert.Equal(signature,context.Functions[name]); Assert.Equal(28,context.Functions.Count);
         Assert.Throws<NotSupportedException>(()=>((IDictionary<string,string>)context.Namespaces).Add("q","urn:q"));
         foreach(var binding in new[]{("","urn:p"),("xmlns","urn:p"),("xml","wrong"),("p","")})
-            Assert.Throws<ArgumentException>(()=>XPathStaticContext.FromOptions(new(){Namespaces=new Dictionary<string,string>{{binding.Item1,binding.Item2}}}));
-        Assert.Throws<ArgumentException>(()=>XPathStaticContext.FromOptions(new(){Functions=[signature,signature]}));
-        Assert.Throws<ArgumentException>(()=>XPathStaticContext.FromOptions(new(){Functions=[new(new("","string"),0,1)]}));
+            Assert.Throws<ArgumentException>(()=>XPathStaticContext.FromOptions(new(){Namespaces=new Dictionary<string,string>{{binding.Item1,binding.Item2}}}, TestContext.Current.CancellationToken));
+        Assert.Throws<ArgumentException>(()=>XPathStaticContext.FromOptions(new(){Functions=[signature,signature]}, TestContext.Current.CancellationToken));
+        Assert.Throws<ArgumentException>(()=>XPathStaticContext.FromOptions(new(){Functions=[new(new("","string"),0,1)]}, TestContext.Current.CancellationToken));
         var variables = new Dictionary<XPathExpandedName,XPathValue>{{new("","v"),XPathValue.FromString("old")}};
         XPathExtensionFunction fn=(_,_)=>default; var functions=new Dictionary<XPathExpandedName,XPathExtensionFunction>{{name,fn}};
         var dynamic = new XPathDynamicContext(new(){Variables=variables,Functions=functions}); variables.Clear(); functions.Clear();
@@ -215,9 +215,9 @@ public sealed class ModelTests
     public void StaticContextCopyChargesAreSeparateAndBounded()
     {
         var options=new XPathCompileOptions{Namespaces=new Dictionary<string,string>{{"p","urn:p"}},Functions=[new(new("urn:p","f"),0,0)],Limits=new(){MaxTokens=2,MaxExpressionCharacters=12}};
-        var context=XPathStaticContext.FromOptions(options); Assert.Equal(2,context.ContextTokens); Assert.Equal(12,context.ContextCharacters);
-        Assert.Throws<XPathCompileException>(()=>XPathStaticContext.FromOptions(options with {Limits=new(){MaxTokens=1}}));
-        Assert.Throws<XPathCompileException>(()=>XPathStaticContext.FromOptions(options with {Limits=new(){MaxExpressionCharacters=11}}));
+        var context=XPathStaticContext.FromOptions(options, TestContext.Current.CancellationToken); Assert.Equal(2,context.ContextTokens); Assert.Equal(12,context.ContextCharacters);
+        Assert.Throws<XPathCompileException>(()=>XPathStaticContext.FromOptions(options with {Limits=new(){MaxTokens=1}}, TestContext.Current.CancellationToken));
+        Assert.Throws<XPathCompileException>(()=>XPathStaticContext.FromOptions(options with {Limits=new(){MaxExpressionCharacters=11}}, TestContext.Current.CancellationToken));
     }
     [Fact]
     public void CoreSignatureMetadataMatchesAllFrozenArities()
