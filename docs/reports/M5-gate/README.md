@@ -93,10 +93,19 @@ output identical to the source demo. Package SHA
 `e6b7fffa966dd5df2d92177721789a4c33a13166f9da15d2e96c6f224e3b00ba`.
 No Friend/repository references, catalogs, HTML or later schemas were added.
 No benchmark or historical wholeoperation timing was rerun.
-Raw results remain ignored for coordinator inspection; only analysis and
-summaries will be committed. The local package is retained for coordinator
+The coordinator independently inspected all raw checks, including the 1394
+grammar models, 424 output witnesses and 771 reference resolutions, and
+acknowledged cleanup after this durable reporting correction. Newly generated
+ignored logs/XML/child reports may be removed; the unpublished package and
+prepared manifest remain. Only analysis and summaries are committed. The local package is retained for coordinator
 copying before checkout cleanup.
 
 Earlier M3 streaming timing evidence is historical after M5 SourceCore
 repairs. This gate proves cumulative bounded functionality and makes no
 updated throughput/allocation claim for those old streaming measurements.
+
+Failure revision clarification: the initial CS0234 belongs to original
+preparation candidate `514e1674c32e29f722b6b8d115846cdf50d72a7b`, before
+the build repair. Stale runtimeconfig controls occurred while preparing
+`c2eb65f820cdbfe1f6d52b76a36ec14e059c3c42` with uncommitted owned flags.
+The final `8a0c9d893eb000e2995d454b792d3d0130cc17ba` preparation passed.
