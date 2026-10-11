@@ -7,7 +7,60 @@
     "task_id": "M3-gate",
     "integration_revision": "f740466f1f0929ae109870545a1ad09201cbca5b"
   },
-  "active_assignments": [],
+  "active_assignments": [
+    {
+      "task_id": "M4-compile",
+      "branch": "codex/m4-compile",
+      "base_revision": "355cd2da435f3960cf67800087b5291fc3f7c546",
+      "claim_revision": "1a89d85bfbd6d8b2b0cc7ae26717c464e15992a9",
+      "stage": "provisional source9e95376; incorporate verified construction repair then final review",
+      "chat_id": "01a12939-91e4-7652-be28-3f87ee11e5a0",
+      "host_id": "local",
+      "worktree_path": "/Users/sebastienros/.codex/worktrees/5b86/xemele",
+      "acceptance_before_dispatch": {
+        "mandatory": "Task A1/A2/A3 exact frozenprofile implementation and owned meaningful controls/sample/API preservation; no peer/future dependencies",
+        "integration": "Focused task tests + affectedmodel/tree/API/sample checks; cumulative milestone atM4gate",
+        "performance": "Borrowed primitives0B with positive controls; owned/cold separated; prepared fullclosures before one bounded exclusivegrant; exact [MemoryDiagnoser, ShortRunJob]; summariesonly"
+      },
+      "task_record_hold": "release after verified repair metadata merge",
+      "additional_verified_prerequisite": "M4-model-construction"
+    },
+    {
+      "task_id": "M4-navigation",
+      "branch": "codex/m4-navigation",
+      "base_revision": "228d9eb1c0862861e70ca87601ee507a06228fd0",
+      "claim_revision": "46767a361dcd487bd2c4c37b9388e72ca1c225b3",
+      "stage": "source approved; prepared and parked; no lease",
+      "chat_id": "01a12939-b7f5-79f1-9d6d-6f81fdb5a2df",
+      "host_id": "local",
+      "worktree_path": "/Users/sebastienros/.codex/worktrees/a922/xemele",
+      "acceptance_before_dispatch": {
+        "mandatory": "Task A1/A2/A3 exact frozenprofile implementation and owned meaningful controls/sample/API preservation; no peer/future dependencies",
+        "integration": "Focused task tests + affectedmodel/tree/API/sample checks; cumulative milestone atM4gate",
+        "performance": "Borrowed primitives0B with positive controls; owned/cold separated; prepared fullclosures before one bounded exclusivegrant; exact [MemoryDiagnoser, ShortRunJob]; summariesonly"
+      },
+      "source_candidate": "802a2a0e746820cb73f388b6804e9740fafacdd5",
+      "prepared_revision": "833ad47785b72339fff0ef193ac00228384c077c",
+      "preparation_sha256": "1e927e36e20e752035216245d51e6b2987f51d8bef123cfebadb16560b375430"
+    },
+    {
+      "task_id": "M4-functions",
+      "branch": "codex/m4-functions",
+      "base_revision": "a3c2e7d52b8b162a8a92df951b9769eef055783e",
+      "claim_revision": "3ccb6d53a67ec589a8e1f29880dc868cefe4ce95",
+      "stage": "one batched correction: poll during actual string/ID result copying",
+      "chat_id": "01a12939-ddaf-70d1-b2f4-ff843ab752f2",
+      "host_id": "local",
+      "worktree_path": "/Users/sebastienros/.codex/worktrees/7378/xemele",
+      "acceptance_before_dispatch": {
+        "mandatory": "Task A1/A2/A3 exact frozenprofile implementation and owned meaningful controls/sample/API preservation; no peer/future dependencies",
+        "integration": "Focused task tests + affectedmodel/tree/API/sample checks; cumulative milestone atM4gate",
+        "performance": "Borrowed primitives0B with positive controls; owned/cold separated; prepared fullclosures before one bounded exclusivegrant; exact [MemoryDiagnoser, ShortRunJob]; summariesonly"
+      },
+      "source_candidate": "666c1720b663e7699744c9874d98c652a4071ad5",
+      "correction_cycles": 1
+    }
+  ],
   "integration_queue": [],
   "blockers": [
     {
@@ -17,11 +70,12 @@
     }
   ],
   "next_actions": [
-    "Dispatch claimed isolated M4-model; verify before three independent ready lanes",
-    "Only M4 through gate then exactly-one M5 handoff"
+    "Review completed compiler/navigation/function lanes independently before measurement",
+    "Serialize prepared exclusive measurements and focused integrations",
+    "Join evaluate, corpus and M4-gate; only then exactly-one M5 handoff"
   ],
-  "last_verified_task": "M4-model",
-  "last_integrated_revision": "9e748c8f3fbf66e197113c19e8fc5addc4734609",
+  "last_verified_task": "M4-model-construction",
+  "last_integrated_revision": "412bbd4a1f370b1d894f462c88667f39b7520c73",
   "completed_assignments": [
     {
       "task_id": "M2-dtd-composition",
@@ -564,7 +618,7 @@
       "task_id": "M4-model",
       "branch": "codex/m4-model",
       "base_revision": "32ce18d69428dd8eba8f6c2754b5b28497cc5d5b",
-      "stage": "verified; terminal worker cleanup pending",
+      "stage": "verified; cleaned",
       "acceptance_before_dispatch": {
         "mandatory": "A1 exact immutable AST/scalars/node-set/item identities and internal seam/options/diagnostics, no facade stubs; A2 conversion/default/invalid/lifetime/equality controls; A3 owned meaningful tests, actual API/standalone consumption and applicable allocation/timing evidence. Verified contracts/tree only.",
         "integration": "Focused new model correctness and compiled public API; relevant tree/identity regressions; comprehensive combined suite at M4-gate.",
@@ -594,7 +648,13 @@
         "correction_scope": "Harness-only same512group noninlined batch,128warm/measured batches; preallocated distributions; persist JSON before unchanged exact0 gate. Runtime held; counters-disabled preparation only."
       },
       "integration_revision": "9e748c8f3fbf66e197113c19e8fc5addc4734609",
-      "handoff_revision": "2045c4b42cb804665b58b9d3492fecbaee7c8908"
+      "handoff_revision": "2045c4b42cb804665b58b9d3492fecbaee7c8908",
+      "cleanup": {
+        "chat_archived": true,
+        "worker_worktree_removed": true,
+        "integration_worktree_removed": true,
+        "raw_prepared_removed": true
+      }
     }
   ],
   "benchmark_policy": "Successful previous measurements retained; future changed runtime measurements require complete preparation and exclusive grant.",
@@ -1636,12 +1696,7 @@
       "result": "Allocation process SIGABRT6 after0.84s; timing gated skip. Initial/final106source40binary195runtime identity checks passed. Worker reports no children; released before inspection. Diagnosis pending; no retries authorized."
     }
   ],
-  "temporary_integration_checkout": {
-    "path": "/private/tmp/xemele-m4-model-integration",
-    "revision": "9e748c8f3fbf66e197113c19e8fc5addc4734609",
-    "task": "M4-model",
-    "status": "focused checks passed; cleanup pending"
-  },
+  "temporary_integration_checkout": null,
   "attribute_capability_obligation": {
     "contract_task": "M2-undeclared-attribute-contract",
     "status": "Planned explicit existing contract obligation; four authored VC-only gaps, three WFC controls. Separate from nine original corpus gaps.",
@@ -1676,9 +1731,13 @@
       "remaining_gate": null
     },
     "M4": {
-      "verified": 2,
-      "total": 8,
-      "in_progress": [],
+      "verified": 3,
+      "total": 9,
+      "in_progress": [
+        "M4-compile",
+        "M4-navigation",
+        "M4-functions"
+      ],
       "remaining_gate": "M4-gate"
     }
   },
@@ -1692,29 +1751,21 @@
   "current_milestone": "M4",
   "read_only_review": {
     "agent": "review_m4_model",
-    "task": "M4-model",
-    "revision": "dbbf5cb68cab910eeb990d87a8684aa956633d1c",
-    "stage": "Focused re-review approved; both blockers resolved; terminal/source-only",
-    "correction_cycles": 1,
-    "findings": [
-      "No budgeted internal node-set snapshot construction; public normalization rereads live topology",
-      "Static/dynamic context copy lacks required pre-growth aggregate limits/operation charging/bounded cancellation"
-    ],
-    "nonblocking": "No actual frozen consumer requires AST Deconstruct; getter-only immutable shape approved.",
-    "resolution": "Budgeted captured node-set construction and pre-growth/polled context-copy operations now present with targeted controls."
+    "task": "M4-navigation",
+    "revision": "802a2a0e746820cb73f388b6804e9740fafacdd5",
+    "stage": "Source-only approved; no blockers; terminal"
   },
   "coordinator_repair": {
-    "task_id": "M3-scan-abi",
-    "branch": "codex/m3-scan-abi",
-    "base_revision": "a081aaff454260cbb0b634f15bbd7355f95c5059",
-    "stage": "verified; cleanup next",
-    "scope": "Obsolete ABI assertion only; no runtimechanges",
-    "integration_revision": "dbfb42ac39751f03065f42534f38332c27dcca27",
-    "worktree_path": "/private/tmp/xemele-m3-scan-abi",
-    "cleanup": {
-      "worktree": "removed",
-      "evidence_durably_integrated": true
-    }
+    "task_id": "M4-model-construction",
+    "branch": "codex/m4-model-construction",
+    "base_revision": "3cd997baa17a34776304a2cf7b3cac48edc146ff",
+    "stage": "verified; clean isolated checkout cleanup pending",
+    "scope": "Internal cancellation-aware overloads only; public API and prior constructors retained",
+    "acceptance_before_dispatch": "Focused cancellation/validation and old model41/API893 controls; compiler long-input controls after verified repair",
+    "compiler_dependency_update": "Validator forbids adding unverified prerequisites to started tasks; repair directly gates planned M4-gate now, compiler dependency added after repair verification. Worker task-record hold acknowledged.",
+    "worktree_path": "/private/tmp/xemele-m4-model-construction",
+    "integration_revision": "412bbd4a1f370b1d894f462c88667f39b7520c73",
+    "handoff_revision": "acaece4"
   },
   "measurement_lease": {
     "id": "m4-model-e919eac-sequence",

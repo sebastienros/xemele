@@ -22,6 +22,7 @@ internal static class ContextScan
     }
     internal static void Text(string value, CancellationToken token)
     {
+        ArgumentNullException.ThrowIfNull(value); token.ThrowIfCancellationRequested();
         ReadOnlySpan<char> remaining = value;
         while (!remaining.IsEmpty)
         {

@@ -9,15 +9,17 @@ internal sealed record XPathNodeTest
     internal XPathNodeTestKind Kind { get; }
     internal XPathExpandedName Name { get; }
     internal string? ProcessingInstructionTarget { get; }
-    internal XPathNodeTest(XPathNodeTestKind Kind, XPathExpandedName Name, string? ProcessingInstructionTarget)
+    internal XPathNodeTest(XPathNodeTestKind Kind, XPathExpandedName Name, string? ProcessingInstructionTarget) : this(Kind, Name, ProcessingInstructionTarget, default) { }
+    internal XPathNodeTest(XPathNodeTestKind Kind, XPathExpandedName Name, string? ProcessingInstructionTarget, CancellationToken cancellationToken)
     {
+        cancellationToken.ThrowIfCancellationRequested();
         ModelGuard.Enum(Kind);
-        if (Kind == XPathNodeTestKind.Name) ModelGuard.Name(Name);
+        if (Kind == XPathNodeTestKind.Name) ModelGuard.Name(Name, cancellationToken);
         else if (Kind == XPathNodeTestKind.NamespaceWildcard)
         { if (string.IsNullOrEmpty(Name.NamespaceUri) || !string.IsNullOrEmpty(Name.LocalName)) throw new ArgumentException("Invalid namespace wildcard.", nameof(Name)); }
         else if (Name != default) throw new ArgumentException("Unexpected name payload.", nameof(Name));
         if (Kind != XPathNodeTestKind.ProcessingInstruction && ProcessingInstructionTarget is not null) throw new ArgumentException("Unexpected PI payload.", nameof(ProcessingInstructionTarget));
-        if (ProcessingInstructionTarget is not null) TreeValidation.Text(ProcessingInstructionTarget);
+        if (ProcessingInstructionTarget is not null) ContextScan.Text(ProcessingInstructionTarget, cancellationToken);
         this.Kind = Kind; this.Name = Name; this.ProcessingInstructionTarget = ProcessingInstructionTarget;
     }
 }
@@ -41,9 +43,11 @@ internal sealed record XPathLiteral : XPathAst
 internal sealed record XPathVariable : XPathAst
 {
     public XPathExpandedName Name { get; }
-    internal XPathVariable(XPathExpandedName Name, XPathSourceSpan Span) : base(Span)
+    internal XPathVariable(XPathExpandedName Name, XPathSourceSpan Span) : this(Name, Span, default) { }
+    internal XPathVariable(XPathExpandedName Name, XPathSourceSpan Span, CancellationToken cancellationToken) : base(Span)
     {
-        this.Name = ModelGuard.Name(Name);
+        cancellationToken.ThrowIfCancellationRequested();
+        this.Name = ModelGuard.Name(Name, cancellationToken);
     }
 }
 internal sealed record XPathUnaryMinus : XPathAst
@@ -70,21 +74,25 @@ internal sealed record XPathCall : XPathAst
 {
     public XPathFunctionSignature Signature { get; }
     public IReadOnlyList<XPathAst> Arguments { get; }
-    internal XPathCall(XPathFunctionSignature Signature, IReadOnlyList<XPathAst> Arguments, XPathSourceSpan Span) : base(Span)
+    internal XPathCall(XPathFunctionSignature Signature, IReadOnlyList<XPathAst> Arguments, XPathSourceSpan Span) : this(Signature, Arguments, Span, default) { }
+    internal XPathCall(XPathFunctionSignature Signature, IReadOnlyList<XPathAst> Arguments, XPathSourceSpan Span, CancellationToken cancellationToken) : base(Span)
     {
-        this.Signature = ModelGuard.Signature(Signature);
-        this.Arguments = ModelGuard.Snapshot(Arguments);
-        if (Arguments.Count < Signature.MinArguments || (Signature.MaxArguments is int max && Arguments.Count > max)) throw new ArgumentException("Invalid call arity.", nameof(Arguments));
+        cancellationToken.ThrowIfCancellationRequested();
+        this.Signature = ModelGuard.Signature(Signature, cancellationToken);
+        this.Arguments = ModelGuard.Snapshot(Arguments, cancellationToken);
+        if (this.Arguments.Count < Signature.MinArguments || (Signature.MaxArguments is int max && this.Arguments.Count > max)) throw new ArgumentException("Invalid call arity.", nameof(Arguments));
     }
 }
 internal sealed record XPathFilter : XPathAst
 {
     public XPathAst Input { get; }
     public IReadOnlyList<XPathAst> Predicates { get; }
-    internal XPathFilter(XPathAst Input, IReadOnlyList<XPathAst> Predicates, XPathSourceSpan Span) : base(Span)
+    internal XPathFilter(XPathAst Input, IReadOnlyList<XPathAst> Predicates, XPathSourceSpan Span) : this(Input, Predicates, Span, default) { }
+    internal XPathFilter(XPathAst Input, IReadOnlyList<XPathAst> Predicates, XPathSourceSpan Span, CancellationToken cancellationToken) : base(Span)
     {
+        cancellationToken.ThrowIfCancellationRequested();
         this.Input = Input ?? throw new ArgumentNullException(nameof(Input));
-        this.Predicates = ModelGuard.Snapshot(Predicates);
+        this.Predicates = ModelGuard.Snapshot(Predicates, cancellationToken);
     }
 }
 internal sealed record XPathStep
@@ -93,11 +101,13 @@ internal sealed record XPathStep
     public XPathNodeTest Test { get; }
     public IReadOnlyList<XPathAst> Predicates { get; }
     public XPathSourceSpan Span { get; }
-    internal XPathStep(XPathAxis Axis, XPathNodeTest Test, IReadOnlyList<XPathAst> Predicates, XPathSourceSpan Span)
+    internal XPathStep(XPathAxis Axis, XPathNodeTest Test, IReadOnlyList<XPathAst> Predicates, XPathSourceSpan Span) : this(Axis, Test, Predicates, Span, default) { }
+    internal XPathStep(XPathAxis Axis, XPathNodeTest Test, IReadOnlyList<XPathAst> Predicates, XPathSourceSpan Span, CancellationToken cancellationToken)
     {
+        cancellationToken.ThrowIfCancellationRequested();
         this.Axis = ModelGuard.Enum(Axis);
         this.Test = Test ?? throw new ArgumentNullException(nameof(Test));
-        this.Predicates = ModelGuard.Snapshot(Predicates);
+        this.Predicates = ModelGuard.Snapshot(Predicates, cancellationToken);
         this.Span = ModelGuard.Span(Span);
     }
 }
@@ -106,11 +116,13 @@ internal sealed record XPathPath : XPathAst
     public bool Absolute { get; }
     public XPathAst? Input { get; }
     public IReadOnlyList<XPathStep> Steps { get; }
-    internal XPathPath(bool Absolute, XPathAst? Input, IReadOnlyList<XPathStep> Steps, XPathSourceSpan Span) : base(Span)
+    internal XPathPath(bool Absolute, XPathAst? Input, IReadOnlyList<XPathStep> Steps, XPathSourceSpan Span) : this(Absolute, Input, Steps, Span, default) { }
+    internal XPathPath(bool Absolute, XPathAst? Input, IReadOnlyList<XPathStep> Steps, XPathSourceSpan Span, CancellationToken cancellationToken) : base(Span)
     {
+        cancellationToken.ThrowIfCancellationRequested();
         this.Absolute = Absolute;
         this.Input = Input;
-        this.Steps = ModelGuard.Snapshot(Steps);
+        this.Steps = ModelGuard.Snapshot(Steps, cancellationToken);
         if (Absolute && Input is not null) throw new ArgumentException("Absolute path cannot have an input.", nameof(Input));
     }
 }
