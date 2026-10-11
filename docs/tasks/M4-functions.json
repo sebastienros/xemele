@@ -4,11 +4,11 @@
   "milestone": "M4",
   "title": "XPath core functions",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M4 coordinator / isolated M4-functions worker",
   "branch": "codex/m4-functions",
   "base_revision": "a3c2e7d52b8b162a8a92df951b9769eef055783e",
-  "integration_revision": null,
+  "integration_revision": "d2cb0f3d1101028c3669591e99f1c2a70f4d1e2f",
   "depends_on": [
     "M4-model"
   ],
@@ -36,7 +36,8 @@
       "status": "passed",
       "evidence": [
         "independent-source-review",
-        "function-correctness"
+        "function-correctness",
+        "coordinator-integration"
       ]
     },
     {
@@ -45,7 +46,8 @@
       "status": "passed",
       "evidence": [
         "function-correctness",
-        "affected-model-correctness"
+        "affected-model-correctness",
+        "coordinator-integration"
       ]
     },
     {
@@ -58,7 +60,8 @@
         "affected-model-correctness",
         "prepared-build-controls",
         "exact-allocation",
-        "bdn-microbenchmarks"
+        "bdn-microbenchmarks",
+        "coordinator-integration"
       ]
     }
   ],
@@ -142,6 +145,15 @@
       "result": "passed",
       "summary": "13successful reports ONE declared ShortRun InProcessNoEmit (3warmups/3iterations/1launch); MemoryDiagnoser+ShortRunJob allclasses; noCLIjobflags/generation/build. Actual .NET10.0.11 SDK10.0.400 Arm64; global BDN94.29s. Borrowed roundeddisplaydash separate from exactstandalone0 gate; inclusive diagnostic totals/nonzero bytes preserved. Owned1360B/32B/312B; matchingsemantics materializedinput controls. UnknownCPU/prioritydenials retained; provisional until composition+M9hardware.",
       "artifact": "docs/reports/M4-functions/performance.md"
+    },
+    {
+      "id": "coordinator-integration",
+      "kind": "integration",
+      "revision": "d2cb0f3d1101028c3669591e99f1c2a70f4d1e2f",
+      "command": "Pinned SDK Release tests/sample/API helper builds; --fx-version 10.0.11 focused M4Functions/M4Model/M4ModelConstruction tests; check_api.py; source sample; check_consumer.py; tasks.py validate; owned diff --check",
+      "result": "passed",
+      "summary": "83 tests passed (30 functions,41 model,12 construction), no failures/skips; builds 0 warnings/errors; API893 and two corruption controls; source and fresh isolated package consumer pass; 149 tasks valid. First API attempt lacked helper DLL, built helper then actual successful API check. No remeasurement: repair changed AST/name construction, not measured function primitive paths; existing actual10.0.11 evidence retained.",
+      "artifact": "docs/reports/M4-functions/integration.md"
     }
   ],
   "blockers": [],
@@ -153,10 +165,7 @@
       "13successful ShortRunNoEmitBDN cases;94.29s benchmarkelapsed, complete before/final identityunchanged; inclusive diagnostic allocations/roundeddisplay differences retained",
       "Planning148 passed on implemented evidence working tree; full claim-relative16owned-path and whitespace checks passed; coordinator owns integration verification"
     ],
-    "remaining": [
-      "Coordinator integrates and verifies relevant combined model/functions/API/sample checks; integration_revision deliberately null.",
-      "Microbenchmarks are provisional; composed query confirmation and M9 x64/Arm64 release checks remain their owners."
-    ],
+    "remaining": [],
     "requests": []
   }
 }
