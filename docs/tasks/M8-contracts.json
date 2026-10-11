@@ -34,7 +34,8 @@
       "description": "Specify exact schema/datatype/regex/component interfaces, query binding/edition, report format and schema diagnostics.",
       "status": "passed",
       "evidence": [
-        "corrected-contract-check"
+        "corrected-contract-check",
+        "corrected-source-review"
       ]
     },
     {
@@ -123,11 +124,20 @@
       "result": "passed",
       "summary": "No whitespace errors; final corrective implementation tree clean before evidence update.",
       "artifact": null
+    },
+    {
+      "id": "corrected-source-review",
+      "kind": "review",
+      "revision": "2a41475dd531f18391219ae6a679a844019ea165",
+      "command": "Coordinator01a12c6c-b333-71d3-877f-0d186618e21d bounded source-review acceptance message: independent reviewer accepted seven corrections at1d04aee; root inspected final four-line fixture/check alignment at2a41475",
+      "result": "passed",
+      "summary": "Independent bounded source-only review accepted all seven corrections; root accepted final namespace-path fixture alignment. Reviewer execution was neither performed nor claimed; runtime checks remain the separately recorded corrected-contract-check.",
+      "artifact": "docs/reports/M8-contracts/review-corrections.md"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Implemented full M8 schema declaration/profile freeze plus all seven coordinator review corrections. Eight independent XML-only consumers, exact public/internal APIs,427 scope entries,pinned supporting ISO2016 grammar and explicit future resolver/accounting joins. Ready for coordinator review/integration; never marked verified.",
+    "summary": "Implemented full M8 schema declaration/profile freeze plus all seven coordinator review corrections. Eight independent XML-only consumers, exact public/internal APIs,427 scope entries,pinned supporting ISO2016 grammar and explicit future resolver/accounting joins. Ready for coordinator review/integration; never marked verified. Coordinator source-only review accepted all seven corrections and final fixture alignment.",
     "checks": [
       "Final normal contract check at 2a41475dd531f18391219ae6a679a844019ea165:316/316/316/316/444/615/479/319 exact API rows,48 rejecting controls,427 features,pinned source/phase-ID-subject and detached expectation;all passed on SDK10.0.400/runtime10.0.11.",
       "Planning169 tasks and whitespace passed at final source revision; initial4c471b3 passing results retained separately, not used as final criterion evidence.",
