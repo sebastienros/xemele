@@ -4,7 +4,7 @@
   "milestone": "M7",
   "title": "Verify HTML/CSS checkpoint",
   "kind": "gate",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M7 coordinator 01a12add-f725-7663-b0f9-e6687671c769",
   "branch": "codex/m7-gate",
   "base_revision": "5d2a6d577b39c6758b6589fe6a2f9199a2ecec2a",
@@ -32,28 +32,86 @@
     {
       "id": "M7-gate-A1",
       "description": "Verify cumulative XML and HTML/CSS deliverables; no M8 validators needed.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "cumulative",
+        "correctness",
+        "package",
+        "inspection"
+      ]
     },
     {
       "id": "M7-gate-A2",
       "description": "Cumulative suites and CLI/package consumer checks pass.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "cumulative",
+        "correctness",
+        "package",
+        "inspection"
+      ]
     },
     {
       "id": "M7-gate-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "cumulative",
+        "correctness",
+        "package",
+        "inspection"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "docs/reports/M7-gate/: bounded test wrapper, complete closure controls, inspected cumulative/API/grammar/fuzz/CLI evidence, offline external package consumer and reports. No runtime/shared-contract/test edits."
+  ],
+  "evidence": [
+    {
+      "id": "cumulative",
+      "kind": "check",
+      "revision": "476805b70438b851559e3c4580eb43739a1cf716",
+      "command": "python3 -B docs/reports/M7-gate/run_tests.py --exclusive-grant",
+      "result": "passed",
+      "summary": "Exclusive released gate:8717passed/0failed/errors/skipped/not-run; all6985M6 identities exact; initial/final completeclosure unchanged and nochildren. Serial invariant actual.NET10.0.11. Unchanged M3 attribute allocation assertion passes; earlier uncontrolled failure preserved.",
+      "artifact": "docs/reports/M7-gate/summary.json"
+    },
+    {
+      "id": "correctness",
+      "kind": "check",
+      "revision": "b914fd0edd9b79f9788c5b8c1fdf9bbf75be7089",
+      "command": "python3 -B docs/reports/M7-gate/verify.py api|fuzz|html_fuzz|grammar|cli (each phase separately)",
+      "result": "passed",
+      "summary": "Actual preparation at b914 source checkpoint with new owned gate helpers (committed476805b):1253API/34fragments/3388fixtures/bootstrapfalse;7negative/API controls; completeXMLgrammar counts/model/witness/resolution hashes exactM6; deterministicXPath+HTML/bytefuzz;111HTML57XML managedcontrols/7XMLexamples/28usageownership sample/serializer sample passed. NativeCLI prior verified unchanged source evidence retained.",
+      "artifact": "docs/reports/M7-gate/summary.json"
+    },
+    {
+      "id": "package",
+      "kind": "check",
+      "revision": "9994fd32c8ff871e252c9080ac68e841f80d4e97",
+      "command": "python3 -B docs/reports/M7-gate/verify.py package",
+      "result": "passed",
+      "summary": "Corrected owned external consumer passed offline/initialemptyprivatecache/noProjectReference managed, trim and NativeAOT osx-arm64; actualSDK10.0.400/.NET10.0.11; identical independently expectedXMLHTML output; packageDLL==sourceAPI DLL; unpublished packageSHA0ec1ff7a07e9e46bc23172a15dce0888c5ece23b0049e931f226bcef34d416c2.",
+      "artifact": "docs/reports/M7-gate/summary.json"
+    },
+    {
+      "id": "inspection",
+      "kind": "check",
+      "revision": "3ae247fa71b76c2447d601261ed08b5aa0905af5",
+      "command": "python3 -B docs/reports/M7-gate/inspect_allocations.py; python3 -B docs/reports/M7-gate/summarize.py; python3 tools/planning/tasks.py validate",
+      "result": "passed",
+      "summary": "12actualallocation request/reportpairs andchildXML inspected againstfrozenbinary/runtime; allrealmeasuredlanes0/allpositivesdetected; unchangedproduct/test/fixture/helper sourceproof; actualoutputcounts/API/package3lanes inspected;169planningvalidated. Owned inspection-schema/newline corrections recorded; no probes or fullsuite rerun.",
+      "artifact": "docs/reports/M7-gate/summary.json"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "",
-    "checks": [],
+    "summary": "M7-only completebranch checkpoint:8717tests and6985earlieridentities;1253API/3388fixtures; grammar/XPath+HTMLfuzz/CLI/package consumers pass. Controlled unchangedM3 assertionpasses; earlierdefaultfailurehonestlypreserved. All15implementationworkersverified/terminal; noM8, publication or newtimingcampaign.",
+    "checks": [
+      "Frozenexclusive0/three0/final0/nochildren; DURABLERELEASE6faf7c9 beforeinspection.",
+      "Managed111HTML57XML/28sample, retainedverifiedNativeCLI111+57; package managed/trim/NativeAOT actualArm64/.NET10.0.11 outputs exact.",
+      "12allocationpairs/provenance inspected;169planningvalidated."
+    ],
     "remaining": [],
     "requests": []
   }
