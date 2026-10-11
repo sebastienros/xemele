@@ -21,7 +21,7 @@ for relative in ['global.json','Directory.Build.props','Directory.Packages.props
 def digest(p):
  with p.open('rb') as stream:return hashlib.file_digest(stream,'sha256').hexdigest()
 def key(p):return str(p.relative_to(root)) if p.is_relative_to(root) else str(p)
-manifest={'sourceRevision':subprocess.check_output(['git','rev-parse','HEAD'],cwd=root,text=True).strip(),'maximumSeconds':600,'workSeconds':590,'cleanupReserveSeconds':10,
+manifest={'sourceRevision':'f7a0a83e8de4e5739d95e089eeacce32ba6e7449','preparationRevision':subprocess.check_output(['git','rev-parse','HEAD'],cwd=root,text=True).strip(),'maximumSeconds':600,'workSeconds':590,'cleanupReserveSeconds':10,
  'probeRoutes':18,'zeroAllocationRoutes':10,'benchmarkCases':10,'warmSamples':32,'measuredSamples':64,
  'identityScope':'Actual copied probe/BDN dependencies and configs, all tracked library build inputs, source/tests/fixtures/harness/consumers, host/fxr and complete NETCore.App10.0.11 runtime.',
  'commands':json.loads(subprocess.check_output(['python3',str(root/'docs/reports/M8-datatypes-text-binary/measure.py'),'--commands'],text=True)),
