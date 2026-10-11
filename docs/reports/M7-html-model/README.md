@@ -18,7 +18,7 @@ or equals. Foreign matchers use the required length-dispatched span equality
 baseline, return null on unknown borrowed names, and return static canonical names
 on hits. A string wrapper preserves the caller-owned name on misses. No hashing,
 SearchValues or custom SIMD is introduced. Relevant allocation/BDN evidence is
-pending an exclusive coordinator lease; timings remain provisional microbenchmarks
+recorded in measurements.md after exclusive lease release; timings remain provisional microbenchmarks
 until HTML engine composition, and no x64 claim is made.
 
 Node, list, attribute, import and snapshot allocations persist as owned results.
