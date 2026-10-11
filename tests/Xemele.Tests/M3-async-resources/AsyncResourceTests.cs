@@ -288,6 +288,23 @@ public sealed class AsyncResourceTests
         Assert.Equal(1, stream.AsyncDisposals); Assert.Equal(0, stream.SyncDisposals);
     }
 
+    [Fact]
+    public async Task RebindingAfterOwnedSourceOpenDoesNotReuseCanceledPriorToken()
+    {
+        var stream = new StreamProbe("abcdef"); var resolver = new Resolver(_ => stream); var sink = new Sink();
+        using var a = new CancellationTokenSource(); using var b = new CancellationTokenSource();
+        await using var core = new XmlParserCore(Options(resolver), DocumentUri, asyncResources: true);
+        const string xml = "<!DOCTYPE r [<!ENTITY e SYSTEM 'e.ent'>]><r>&e;";
+        Assert.Equal(ScanStep.NeedResource, core.Append(xml, [], false, sink, a.Token).Step);
+        await core.AdvanceResourceAsync(a.Token);
+        a.Cancel();
+        Assert.Equal(ScanStep.NeedResource, core.Append([], [], false, sink, b.Token).Step);
+        await core.AdvanceResourceAsync(b.Token);
+        Assert.Equal(b.Token, stream.ReadToken);
+        Assert.Equal(ScanStep.Completed, (await Feed(core, "</r>", true, sink, b.Token)).Step);
+        Assert.Equal("abcdef", sink.Text.ToString()); Assert.Equal(1, stream.AsyncDisposals);
+    }
+
     private static Resolver NestedResolver() => new(request => new StreamProbe(request.Uri.AbsolutePath switch
     {
         "/d.dtd" => "<?xml encoding='UTF-8'?><!ENTITY % p SYSTEM 'p.dtd'>%p;<!ENTITY e SYSTEM 'outer.ent'>",

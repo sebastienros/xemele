@@ -38,8 +38,8 @@ internal sealed partial class XmlParserCore
             {
                 activeCancellation = cancellationToken;
                 cancellationToken.ThrowIfCancellationRequested();
-                // The async session binder is supplied by its ordered owning repair.
-                resolution?.BindCancellationToken(cancellationToken);
+                if (resolution is not null)
+                    await resolution.BindCancellationTokenAsync(cancellationToken).ConfigureAwait(false);
                 var work = resourceWork; resourceWork = ResourceWork.None;
                 switch (work)
                 {

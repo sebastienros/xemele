@@ -89,7 +89,6 @@ internal sealed class ExternalXmlSource : IDisposable, IAsyncDisposable
         return true;
     }
 
-
     internal async ValueTask<bool> FrameAsync(XmlResourceLimits limits, IDtdBudget budget, CancellationToken cancellation)
     {
         using var framer = new XmlTextDeclarationFramer(limits, budget, SourceUri);

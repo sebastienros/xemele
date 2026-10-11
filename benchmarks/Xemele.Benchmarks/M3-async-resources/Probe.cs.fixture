@@ -1,0 +1,184 @@
+using System.Runtime.InteropServices;
+using System.Security.Cryptography;
+using System.Text.Json;
+using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Configs;
+using BenchmarkDotNet.Running;
+using Xemele;
+using Xemele.Parsing.Syntax;
+
+if (args is ["--allocation", var path])
+{
+    await Allocation.Run(path);
+    return;
+}
+if (args is not ["--benchmark", var artifacts]) throw new ArgumentException("Use --allocation <report> or --benchmark <artifacts>.");
+BenchmarkRunner.Run<ResourceBenchmarks>(ManualConfig.Create(DefaultConfig.Instance).WithArtifactsPath(artifacts));
+
+[MemoryDiagnoser]
+[InProcess]
+[WarmupCount(3)]
+[IterationCount(3)]
+public class ResourceBenchmarks
+{
+    [Params(32, 65536)] public int Bytes { get; set; }
+    private Fixture fixture = null!;
+    [GlobalSetup] public void Setup() => fixture = new(Bytes);
+    [Benchmark(Baseline = true)] public long Sync() => fixture.ParseSync();
+    [Benchmark] public ValueTask<long> AsyncImmediate() => fixture.ParseAsync(false);
+    [Benchmark] public ValueTask<long> AsyncSuspended() => fixture.ParseAsync(true);
+}
+
+internal sealed class Fixture(int bytes)
+{
+    internal const string Prefix = "<!DOCTYPE r [<!ENTITY e SYSTEM 'https://example.test/e'>]><r>&e;";
+    internal const string Tail = "</r>";
+    internal XmlParseOptions Options(bool suspend) => new()
+    {
+        DtdProcessing = XmlDtdProcessing.Parse,
+        Resolver = new Resolver(bytes, suspend),
+        Limits = new() { ExternalBytes = null, ExpandedCharacters = null }
+    };
+    internal long ParseSync()
+    {
+        using var core = new XmlParserCore(Options(false)); var sink = new CounterSink();
+        var result = core.Append(Prefix + Tail, [], true, sink, default);
+        if (result.Step != ScanStep.Completed || sink.Count != bytes) throw new InvalidOperationException("Sync oracle failed.");
+        return sink.Count;
+    }
+    internal async ValueTask<long> ParseAsync(bool suspend)
+    {
+        await using var core = new XmlParserCore(Options(suspend), asyncResources: true); var sink = new CounterSink();
+        var result = core.Append(Prefix, [], false, sink, default);
+        if (result.Step != ScanStep.NeedResource || result.Consumed != Prefix.Length) throw new InvalidOperationException("Resource boundary oracle failed.");
+        await core.AdvanceResourceAsync();
+        while (true)
+        {
+            result = core.Append([], [], false, sink, default);
+            if (result.Step == ScanStep.NeedResource) { await core.AdvanceResourceAsync(); continue; }
+            if (result.Step != ScanStep.NeedInput) throw new InvalidOperationException("Entity oracle failed.");
+            break;
+        }
+        result = core.Append(Tail, [], true, sink, default);
+        if (result.Step != ScanStep.Completed || sink.Count != bytes) throw new InvalidOperationException("Async oracle failed.");
+        return sink.Count;
+    }
+    internal sealed class CounterSink : IXmlEventSink
+    {
+        internal long Count;
+        public bool StartDocument(XmlLocation l) => true;
+        public bool Declaration(XmlDeclarationView d) => true;
+        public bool StartElement(XmlNameView n, bool e, XmlLocation l) => true;
+        public bool NamespaceDeclaration(XmlNamespaceView n) => true;
+        public bool Attribute(XmlAttributeView a) => true;
+        public bool StartElementContent() => true;
+        public bool EndElement(XmlNameView n, XmlLocation l) => true;
+        public bool StartText(XmlTextKind k, ReadOnlySpan<char> t, XmlLocation l) => true;
+        public bool TextFragment(ReadOnlySpan<char> t, bool ended, XmlLocation l) { Count += t.Length; return true; }
+        public bool EndDocument(XmlLocation l) => true;
+    }
+    private sealed class Resolver(int count, bool suspend) : XmlResourceResolver
+    {
+        public override XmlResolvedResource Resolve(XmlResourceRequest r, CancellationToken token) => new(new Source(count, false), r.Uri);
+        public override async ValueTask<XmlResolvedResource?> ResolveAsync(XmlResourceRequest r, CancellationToken token)
+        {
+            if (suspend) await Task.Yield();
+            token.ThrowIfCancellationRequested(); return new(new Source(count, suspend), r.Uri);
+        }
+    }
+    // No full-resource fixture allocation: scratch is caller-owned. The body is
+    // generated directly into each requested buffer, before grammar consumes it.
+    private sealed class Source(int remaining, bool suspend) : Stream
+    {
+        public override bool CanRead => true;
+        public override bool CanSeek => false;
+        public override bool CanWrite => false;
+        public override long Length => throw new NotSupportedException();
+        public override long Position { get => throw new NotSupportedException(); set => throw new NotSupportedException(); }
+        public override int Read(byte[] b, int o, int c) => Read(b.AsSpan(o, c));
+        public override int Read(Span<byte> b)
+        {
+            if (suspend) throw new InvalidOperationException("Sync read forbidden.");
+            return Fill(b);
+        }
+        private int Fill(Span<byte> b)
+        { int n = Math.Min(remaining, b.Length); b[..n].Fill((byte)'x'); remaining -= n; return n; }
+        public override async ValueTask<int> ReadAsync(Memory<byte> b, CancellationToken token = default)
+        { if (suspend) await Task.Yield(); token.ThrowIfCancellationRequested(); return Fill(b.Span); }
+        public override async ValueTask DisposeAsync()
+        { if (suspend) await Task.Yield(); GC.SuppressFinalize(this); }
+        protected override void Dispose(bool disposing)
+        { if (disposing && suspend) throw new InvalidOperationException("Sync disposal forbidden."); base.Dispose(disposing); }
+        public override void Flush() => throw new NotSupportedException();
+        public override long Seek(long o, SeekOrigin origin) => throw new NotSupportedException();
+        public override void SetLength(long n) => throw new NotSupportedException();
+        public override void Write(byte[] b, int o, int c) => throw new NotSupportedException();
+    }
+}
+
+internal static class Allocation
+{
+    internal static async Task Run(string path)
+    {
+        // Warm runtime and suspended continuations before measuring. Process-wide
+        // counters include continuation allocations after a thread switch.
+        var small = new Fixture(65536); var large = new Fixture(1048576);
+        for (int i = 0; i < 16; i++) { await small.ParseAsync(true); await small.ParseAsync(false); }
+        var immediate = await Measure(small, false);
+        var suspended = await Measure(small, true);
+        var largeSuspended = await Measure(large, true);
+        long primitive = await Primitive();
+        long before = GC.GetTotalAllocatedBytes(true);
+        var positive = new byte[1024]; long control = GC.GetTotalAllocatedBytes(true) - before; GC.KeepAlive(positive);
+        if (primitive != 0 || control < 1024) throw new InvalidOperationException("Allocation meter oracle failed.");
+        var report = new
+        {
+            runtime = Environment.Version.ToString(), architecture = RuntimeInformation.ProcessArchitecture.ToString(),
+            process = Environment.ProcessId, assemblySha256 = Hash(typeof(Allocation).Assembly.Location),
+            productSha256 = Hash(typeof(XmlParserCore).Assembly.Location),
+            scope = "Separate owned setup/async continuation scopes; warmed buffered scalar Append is synchronous and zero allocation",
+            iterations = 32, bytesPerSource = 65536, largeBytesPerSource = 1048576,
+            immediate, suspended, largeSuspended, bufferedPrimitiveBytes = primitive, positiveControlBytes = control,
+            sourceScratch = new { bytes = 4096, characters = 4096, originalByteMappings = 4096 },
+            retained = "Fixed source arrays per active depth; generated source bodies are never allocated or retained"
+        };
+        File.WriteAllText(path, JsonSerializer.Serialize(report, new JsonSerializerOptions { WriteIndented = true }));
+        Console.WriteLine(File.ReadAllText(path));
+    }
+    private static string Hash(string path) => Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(path)));
+    private static async ValueTask<long> Measure(Fixture fixture, bool suspend)
+    {
+        long before = GC.GetTotalAllocatedBytes(true);
+        for (int i = 0; i < 32; i++) await fixture.ParseAsync(suspend);
+        return GC.GetTotalAllocatedBytes(true) - before;
+    }
+    private static async ValueTask<long> Primitive()
+    {
+        // Only the synchronously buffered grammar/borrowed dispatch is promised
+        // zero allocation. Awaited refill, resource framing and owned setup are
+        // observed separately by the process-wide end-to-end scopes above.
+        var fixture = new Fixture(1024 * 4096);
+        await using var core = new XmlParserCore(fixture.Options(false), asyncResources: true);
+        var sink = new Fixture.CounterSink();
+        var result = core.Append(Fixture.Prefix, [], false, sink, default);
+        if (result.Step != ScanStep.NeedResource) throw new InvalidOperationException("Primitive setup failed.");
+        await core.AdvanceResourceAsync();
+        for (int i = 0; i < 128; i++)
+        {
+            result = core.Append([], [], false, sink, default);
+            if (result.Step != ScanStep.NeedResource) throw new InvalidOperationException("Primitive warmup failed.");
+            await core.AdvanceResourceAsync();
+        }
+        long total = 0;
+        for (int i = 0; i < 512; i++)
+        {
+            long before = GC.GetTotalAllocatedBytes(true);
+            result = core.Append([], [], false, sink, default);
+            total += GC.GetTotalAllocatedBytes(true) - before;
+            if (result.Step != ScanStep.NeedResource) throw new InvalidOperationException("Primitive progress failed.");
+            await core.AdvanceResourceAsync();
+        }
+        if (sink.Count <= 512 * 4096) throw new InvalidOperationException("Primitive correctness failed.");
+        return total;
+    }
+}
