@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "id": "M7-html-parsed-text-model",
+  "milestone": "M7",
+  "title": "Preserve per-token quotas when storing merged parsed HTML text",
+  "kind": "feature",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "depends_on": [
+    "M7-html-pi-model",
+    "M7-tokenizer"
+  ],
+  "goals": [
+    "G11"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/html.md"
+  ],
+  "owns": [
+    "src/Xemele/HtmlCommon/Model.cs",
+    "tests/Xemele.Tests/M7-html-parsed-text-model/",
+    "docs/reports/M7-html-parsed-text-model/"
+  ],
+  "api_or_output": "Internal parser text persistence; public model API unchanged",
+  "acceptance": [
+    {
+      "id": "M7-html-parsed-text-model-A1",
+      "description": "Add internal text-only creation/replacement for data whose token and input quotas were already enforced, preserving public factory/setter checks and permanent owner/structural quotas.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M7-html-parsed-text-model-A2",
+      "description": "Prove merged scalar text beyond per-token cap, null/kind rejection, public quota atomicity and ownership/depth preservation; run focused inherited model checks and unchanged API.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}
