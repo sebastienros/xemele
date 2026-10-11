@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "milestone": "M5",
+  "kind": "feature",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "goals": [
+    "G07"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/dtd-c14n.md"
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  },
+  "id": "M5-dtd-parameter-validity",
+  "title": "Retain parameter-entity nesting validity",
+  "depends_on": [
+    "M5-dtd-declaration-provenance",
+    "M5-dtd-read-completeness",
+    "M5-dtd-validate"
+  ],
+  "owns": [
+    "src/Xemele/Parsing/Dtd/Grammar/Parser/Lexer.cs",
+    "src/Xemele/Parsing/Dtd/Grammar/Parser/Declarations.cs",
+    "tests/Xemele.Tests/M5-dtd-parameter-validity/",
+    "tests/fixtures/M5-dtd-parameter-validity/",
+    "benchmarks/Xemele.Benchmarks/M5-dtd-parameter-validity/",
+    "docs/reports/M5-dtd-parameter-validity/"
+  ],
+  "api_or_output": "Retain parameter-entity nesting validity",
+  "acceptance": [
+    {
+      "id": "M5-dtd-parameter-validity-A1",
+      "description": "Retain first proper declaration/group/conditional-section PE nesting validity diagnostic through existing model provenance without changing nonvalidating behavior.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M5-dtd-parameter-validity-A2",
+      "description": "Reject the eight independently pinned invalid source shapes in validation while preserving valid nesting, external source contexts, prior diagnostics, cancellation, quotas and ownership.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M5-dtd-parameter-validity-A3",
+      "description": "Verify relevant parser/compiler/facade preservation, API948/planning, and applicable measured allocation evidence on isolated exact revision.",
+      "status": "pending",
+      "evidence": []
+    }
+  ]
+}

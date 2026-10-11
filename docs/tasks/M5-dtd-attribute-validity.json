@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "milestone": "M5",
+  "kind": "feature",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "goals": [
+    "G07"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/dtd-c14n.md"
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  },
+  "id": "M5-dtd-attribute-validity",
+  "title": "Correct default syntax and namespace attribute validity",
+  "depends_on": [
+    "M5-dtd-model",
+    "M5-dtd-validate"
+  ],
+  "owns": [
+    "src/Xemele/Validation/Dtd/Compilation/DtdCompiler.cs",
+    "src/Xemele/Validation/Dtd/Compilation/CompiledModel.cs",
+    "src/Xemele/Validation/Dtd/Evaluation/DtdEvaluator.cs",
+    "tests/Xemele.Tests/M5-dtd-model/CompilationTests.cs",
+    "tests/Xemele.Tests/M5-dtd-attribute-validity/",
+    "tests/fixtures/M5-dtd-attribute-validity/",
+    "benchmarks/Xemele.Benchmarks/M5-dtd-attribute-validity/",
+    "docs/reports/M5-dtd-attribute-validity/"
+  ],
+  "api_or_output": "Correct default syntax and namespace attribute validity",
+  "acceptance": [
+    {
+      "id": "M5-dtd-attribute-validity-A1",
+      "description": "Check default values syntactically at compilation; require entity membership only when actual/defaulted instance values are used, without augmenting current DOM.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M5-dtd-attribute-validity-A2",
+      "description": "Apply namespace-aware NCName restrictions to Name-typed ID/IDREF(S)/ENTITY(IES)/NOTATION values/defaults while preserving colon-valid NMTOKEN(S)/enumeration and all scalar/quota/cancellation rules.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M5-dtd-attribute-validity-A3",
+      "description": "Resolve original E9a/E06i/ns045/ns046 discrepancies and outdated focused expectations; preserve relevant compiler/facade checks, API948/planning and measured borrowed token allocation evidence.",
+      "status": "pending",
+      "evidence": []
+    }
+  ]
+}
