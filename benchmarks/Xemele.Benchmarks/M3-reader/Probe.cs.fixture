@@ -1,10 +1,22 @@
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using BenchmarkDotNet.Running;
+using BenchmarkDotNet.Configs;
+using BenchmarkDotNet.Jobs;
+using BenchmarkDotNet.Toolchains.InProcess.NoEmit;
 using Xemele;
 using Xemele.Streaming;
 using Xemele.Benchmarks.Reader;
-if (args.Length > 0 && args[0] == "bdn") { BenchmarkRunner.Run<ReaderBenchmarks>(args: args[1..]); return; }
+if (args.Length > 0 && args[0] == "bdn")
+{
+    var config = ManualConfig.Create(DefaultConfig.Instance).WithArtifactsPath("artifacts/M3-reader/bdn")
+        .AddJob(Job.Default.WithToolchain(InProcessNoEmitToolchain.Instance).WithIterationCount(3)
+            .WithWarmupCount(1).WithLaunchCount(1).WithInvocationCount(1024).WithUnrollFactor(1));
+    var suite = BenchmarkConverter.TypeToBenchmarks(typeof(ReaderBenchmarks), config);
+    Console.WriteLine($"Reader bounded suite jobs={suite.BenchmarksCases.Length}; expected=6");
+    if (suite.BenchmarksCases.Length != 6) throw new Exception("Unexpected benchmark scope.");
+    BenchmarkRunner.Run(suite); return;
+}
 Console.WriteLine($"runtime={RuntimeInformation.FrameworkDescription}; os={RuntimeInformation.OSDescription}; arch={RuntimeInformation.ProcessArchitecture}; cpu={Environment.ProcessorCount}; serverGC={System.Runtime.GCSettings.IsServerGC}");
 string value = new string('Ω', 4094) + "😀";
 long coldBefore = GC.GetAllocatedBytesForCurrentThread();
@@ -27,11 +39,12 @@ long Measure(long body)
     before = GC.GetAllocatedBytesForCurrentThread();
     using var reader = XmlReader.Create(input, new() { Limits = new() { DocumentCharacters = null, TokenCharacters = null } });
     long setup = GC.GetAllocatedBytesForCurrentThread() - before;
-    long baseline = GC.GetTotalMemory(true), peak = baseline, text = 0, nextSample = 16L * 1024 * 1024; int tokens = 0;
+    long sampleInterval = body >= 1024L * 1024 * 1024 ? 16L * 1024 * 1024 : 256L * 1024;
+    long baseline = GC.GetTotalMemory(true), peak = baseline, text = 0, nextSample = sampleInterval; int tokens = 0;
     while (reader.Read())
     {
         text += reader.ValueSpan.Length; tokens++;
-        if (text >= nextSample) { peak = Math.Max(peak, GC.GetTotalMemory(true)); nextSample += 16L * 1024 * 1024; if (text % (128L * 1024 * 1024) == 0) Console.WriteLine($"progress={text}; elapsed={watch.Elapsed}"); }
+        if (text >= nextSample) { peak = Math.Max(peak, GC.GetTotalMemory(true)); nextSample += sampleInterval; if (text % (128L * 1024 * 1024) == 0) Console.WriteLine($"progress={text}; elapsed={watch.Elapsed}"); }
     }
     peak = Math.Max(peak, GC.GetTotalMemory(true));
     if (text != body || reader.TokenKind != XmlTokenKind.None || !input.CanRead) throw new Exception("Large-input correctness failed.");

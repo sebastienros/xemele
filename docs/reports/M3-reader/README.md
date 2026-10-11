@@ -36,7 +36,8 @@ The owned report Probe/Reader.Probe.csproj builds a prebuilt isolated executable
 command measures cold cursor setup, 100,000 warmed current copies, an owned-string
 positive allocation control, and full consumption of generated 1 MiB/8 MiB
 character bodies. The generated stream keeps no corpus buffer. Full-GC live
-sampling every 16 MiB with the reader kept alive separates retained memory from
+sampling every 256 KiB (16 MiB for the optional GiB run) while the reader is
+actively positioned, with the reader kept alive separates retained memory from
 transient allocation; required large-input thresholds are 16 MiB retained delta
 and no more than 8 MiB growth over the small workload. Document and text-token
 quotas are explicitly unlimited only in this bounded test; ordinary reader
@@ -45,8 +46,9 @@ finite defaults are preserved. The default feature probe has a 60-second externa
 intervals. The coordinator assigned full 1 GiB qualification to M3-corpus; it
 remains required there and is not claimed by this feature probe.
 
-`bdn --inProcess --filter '*ReaderBenchmarks*' --iterationCount 3
---warmupCount 1 --launchCount 1 --invocationCount 1024 --unrollFactor 1` uses
+`bdn` uses one explicitly configured InProcessNoEmit job with 3 measurement
+iterations, 1 warmup, 1 launch, 1024 invocations and unroll factor 1; a converted
+suite count guard rejects any scope other than exactly 6 cases before running. It uses
 MemoryDiagnoser for multilingual short/4096-char owned-copy baseline, reusable
 copy, and end-to-end parsing with setup and owned rows. Fixtures are outside
 measurement. No scanning/matching algorithm changed; straightforward span copies
