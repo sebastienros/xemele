@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "id": "M3-dom-decoder-terminal",
+  "milestone": "M3",
+  "title": "Preserve structured DOM decoder rejection",
+  "kind": "feature",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "depends_on": [
+    "M2-recovery",
+    "M3-async-input"
+  ],
+  "goals": [
+    "G04",
+    "G18"
+  ],
+  "specs": [
+    "docs/specs/parser.md",
+    "docs/specs/common.md",
+    "docs/specs/streaming.md"
+  ],
+  "owns": [
+    "src/Xemele/Parsing/Dom/ByteDomAdapter.cs",
+    "src/Xemele/Streaming/Transport/AsyncDomInput.cs",
+    "tests/Xemele.Tests/M3-dom-decoder-terminal/",
+    "docs/reports/M3-dom-decoder-terminal/"
+  ],
+  "api_or_output": "Structured existing INPUT diagnostic instead of internal declaration-validation exception; no new public API",
+  "acceptance": [
+    {
+      "id": "M3-dom-decoder-terminal-A1",
+      "description": "Preserve decoder terminal diagnostics in synchronous and asynchronous DOM transport when malformed UTF input returns decoded prefix and a rejection together, including final input.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M3-dom-decoder-terminal-A2",
+      "description": "Verify five frozen fuzz reproducers and chunked strict/diagnostic/recovery DOM paths; preserve callback/I/O exception identity, valid encoding/declaration behavior, bounded scratch and documented owned allocation boundaries.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M3-dom-decoder-terminal-A3",
+      "description": "Record actual source and API/check evidence against verified dependencies and integrate the bounded repair before the M3 gate.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "Created for corpus fuzz failure PHKvPg==: decoder rejected before DomSink.ValidateAbsentDeclaration.",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}
