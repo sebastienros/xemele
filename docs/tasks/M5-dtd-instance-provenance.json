@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "id": "M5-dtd-instance-provenance",
+  "milestone": "M5",
+  "title": "Retain bounded source instance validity evidence",
+  "kind": "feature",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "depends_on": [
+    "M5-dtd-attribute-validity",
+    "M5-dtd-parameter-validity",
+    "M5-validation-source-provenance",
+    "M5-dtd-validate"
+  ],
+  "goals": [
+    "G07"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/dtd-c14n.md"
+  ],
+  "owns": [
+    "src/Xemele/Parsing/Core/",
+    "src/Xemele/Parsing/Events/ValidationProvenance.cs",
+    "src/Xemele/Parsing/Dom/DomSink.cs",
+    "src/Xemele/Tree/ValidationMetadata/",
+    "src/Xemele/Validation/Dtd/Evaluation/DtdEvaluator.cs",
+    "src/Xemele/Validation/Dtd/DtdSchema.cs",
+    "tests/Xemele.Tests/M5-dtd-validate/ProvenanceAndWorkTests.cs",
+    "tests/Xemele.Tests/M5-dtd-instance-provenance/",
+    "tests/fixtures/M5-dtd-instance-provenance/",
+    "benchmarks/Xemele.Benchmarks/M5-dtd-instance-provenance/",
+    "docs/reports/M5-dtd-instance-provenance/",
+    "docs/decisions/M5/validation-canonicalization.md"
+  ],
+  "api_or_output": "Bounded internal source validity provenance; public API unchanged",
+  "acceptance": [
+    {
+      "id": "M5-dtd-instance-provenance-A1",
+      "description": "Preserve bounded Element Valid source witnesses erased by expansion: EMPTY empty entity reference and children-content direct/replacement character-reference whitespace; distinguish legal literal whitespace/entity-literal scalar construction. Use only proven complete nonnegative matching source revision and applicable declaration profile; preserve current-tree mutation semantics and no raw lexical retention.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M5-dtd-instance-provenance-A2",
+      "description": "Distinguish proved undeclared general entity against fully read associated DTD from genuinely unread/unknown symbolic input; resolve original E3e13 without treating unresolved values as empty, fetching or augmenting, and retain Fatal IncompleteInput for missing proof. Clarify narrow known-invalid source proof in frozen decision and correct old numeric-reference validity expectation.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M5-dtd-instance-provenance-A3",
+      "description": "Reject original E15a/g/h and E3e13 under validation; preserve parser nonvalidating behavior, sidecars, source provenance, standalone/current-DOM/clone/recovery/cancellation/quotas, public948API, bounded streaming and applicable exact-revision allocation/composition evidence.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}
