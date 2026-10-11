@@ -4,7 +4,7 @@
   "milestone": "M4",
   "title": "Freeze XPath profile and contracts",
   "kind": "contract",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M4 coordinator / isolated contract worker",
   "branch": "codex/m4-contracts",
   "base_revision": "011833b2e69a3fd105735bb931d63f99e83c7158",
@@ -30,20 +30,27 @@
     {
       "id": "M4-contracts-A1",
       "description": "Specify AST/navigation/function contracts, all public result items, static/dynamic namespaces, budgets and exact XPath 1.0 inventory.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "contract-fixtures"
+      ]
     },
     {
       "id": "M4-contracts-A2",
       "description": "Compile consumer and lane fixtures; map every core axis/operator/function to acceptance IDs.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "contract-fixtures"
+      ]
     },
     {
       "id": "M4-contracts-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "contract-preservation",
+        "planning-validation"
+      ]
     }
   ],
   "implementation": [
@@ -55,12 +62,49 @@
     "tests/Contracts/Fixtures/M4/check.py: independent lane/consumer builds, compile failures, API comparisons, inventory controls and ownership preservation",
     "docs/reports/M4-contracts/ApiCheck/: owned dependency-resolving copy of approved Roslyn extractor"
   ],
-  "evidence": [],
+  "evidence": [
+    {
+      "id": "contract-fixtures",
+      "kind": "check",
+      "revision": "c732d51d43db610b2acc37338d3c6d4881386be8",
+      "command": "python3 tests/Contracts/Fixtures/M4/check.py --dotnet '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet'",
+      "result": "passed",
+      "summary": "Pinned SDK 10.0.400/runtime 10.0.11; seven package-free local restores; four independently compiled/running consumer/compiler/navigator/function probes; 105 uniquely identified future semantic vectors (13 axes, 15 operators, 27 functions, 50 additional cases); seven inventory mutation controls reject; invalid namespace and attribute consumers reject CS0117/CS1503; four assemblies match canonical 177-member API proposal; two compiled API corruption controls reject. Probes are fakes/declarations, not runtime XPath conformance.",
+      "artifact": "docs/reports/M4-contracts/checks.txt"
+    },
+    {
+      "id": "contract-preservation",
+      "kind": "check",
+      "revision": "c732d51d43db610b2acc37338d3c6d4881386be8",
+      "command": "python3 tests/Contracts/Fixtures/M4/check.py --dotnet '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet'",
+      "result": "passed",
+      "summary": "Owned changed/untracked paths only against coordinated claim; earlier source/build/contract fragments byte-preserved; verified runtime builds as fixture dependency; six nonpackaged fixture projects; no production XPath stubs; no later milestone dependency. Contract-only allocation/timing not applicable; no prior measurements rerun.",
+      "artifact": "docs/reports/M4-contracts/checks.txt"
+    },
+    {
+      "id": "planning-validation",
+      "kind": "check",
+      "revision": "c732d51d43db610b2acc37338d3c6d4881386be8",
+      "command": "python3 tools/planning/tasks.py validate && git diff --check",
+      "result": "passed",
+      "summary": "Validated 148 tasks: schema, evidence, acyclic dependencies, additive milestones and ordered ownership; git diff --check passed. M3 status confirmed 19/19 verified with 56 passed criteria.",
+      "artifact": null
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "",
-    "checks": [],
-    "remaining": [],
+    "summary": "Frozen XPath 1.0 grammar/inventory, exact 177-member public proposal and AST/navigation/function seams; static prefixes, expanded dynamic variable/function bindings, stable item identities/coalesced text, reusable compile and bounded input snapshots/operations/results/cancellation/diagnostics. No production XPath implementation or shared-file edits.",
+    "checks": [
+      "python3 tests/Contracts/Fixtures/M4/check.py --dotnet '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' \u2014 passed; 4 probes, 2 expected consumer failures, 4 x 177-member comparisons, 7 inventory + 2 API corruption controls",
+      "python3 tools/planning/tasks.py validate \u2014 passed (148 tasks)",
+      "git diff --check \u2014 passed",
+      "python3 tools/planning/tasks.py status --milestone M3 \u2014 19/19 verified, 56 acceptance criteria passed"
+    ],
+    "remaining": [
+      "Coordinator must integrate and verify before unlocking M4-model.",
+      "Model and dependent runtime lanes must implement all semantic vectors and production conformance/performance; declaration/fake checks do not establish runtime XPath behavior.",
+      "Any eventual benchmark classes require exact [MemoryDiagnoser, ShortRunJob] attributes; no contract-only benchmarks or allocation/timing measurements needed."
+    ],
     "requests": []
   }
 }
