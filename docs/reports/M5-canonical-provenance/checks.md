@@ -41,3 +41,15 @@ Completeness is false only for incomplete recovery outcomes, not every recovered
 or diagnostic-bearing tree. Programmatic/strict complete trees default true.
 Whole-document clone preserves incomplete source provenance. Tests cover all five
 sync/async character/byte/stream transports and postparse mutation/clone behavior.
+
+## Integrated qualification and verification
+
+The earlier484-test command included TreeTests.WarmTraversalAndRepeatedNameInternProbesAllocateNothing outside an exclusive lease. Its actual execution outcome remains disclosed, but that one method is not accepted allocation evidence;483ordinary functional tests remain applicable. Dedicated prepared provenance leases, including the honest first failure and corrected actual successful probe, supply the accepted allocation evidence.
+
+Combined revision `af63f96ee2ebccf00d6d3e8c7b9100721787c5d7`:519focused tests pass including sharedmodel/standalone metadata, excluding that allocation method; actualhost10.0.11 asserted by metadata test. Release0warnings/errors, full921public members matched,153taskvalidation passed. Source-only independent review approved. Exact command:
+
+```sh
+'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -noColor -noLogo -namespace Xemele.Tests.M5CanonicalProvenance -namespace Xemele.Tests.Tree -namespace Xemele.Tests.Recovery -namespace 'Xemele.Tests.M4*' -namespace Xemele.Tests.AsyncInput -namespace Xemele.Tests.M5ValidationModel -namespace Xemele.Tests.ValidationMetadata -method- Xemele.Tests.Tree.TreeTests.WarmTraversalAndRepeatedNameInternProbesAllocateNothing
+python3 docs/reports/M5-validation-model/check_api.py
+python3 tools/planning/tasks.py validate
+```
