@@ -7,21 +7,7 @@
     "task_id": "M4-gate",
     "integration_revision": "a0354ad6a8ea7a8f2109db3d5b9f701e39e939f9"
   },
-  "active_assignments": [
-    {
-      "task_id": "M5-corpus",
-      "agent_id": "/root/c14n",
-      "worktree": "/private/tmp/xemele-m5-corpus",
-      "branch": "codex/m5-corpus",
-      "base_revision": "9314ee6be13a9a1959623dfc17878db4f286cf97",
-      "claim_revision": "3817b327d120f6ca212f2f6a28f4fd647084aaca",
-      "stage": "Authorized resume from all verified correctness repairs; full closure pending",
-      "partial_handoff_revision": "7d2f0a10b5fe134fd3c9889d9635d23584c1a99f",
-      "frozen_expectations_revision": "7dc2a3c9cd60f2a0ce373cde9b2724b414ee1051",
-      "correction_revision": "266a3504fb213043d9e1027d4124d3660bc49128",
-      "source_review": "21808e2/7d6160c sourceapproved;831 unequal labels explicitlydisclosed; no executedreviewcheck"
-    }
-  ],
+  "active_assignments": [],
   "integration_queue": [],
   "blockers": [
     {
@@ -31,10 +17,10 @@
     }
   ],
   "next_actions": [
-    "Resume corpus from all three verified repairs and complete independent normative closure; verify corpus, claim/run cumulative M5 gate, then exactly one M6 setup and sole-writer transfer."
+    "Claim and complete cumulative M5-gate, then exactly one fresh M6 setup and durable sole-writer transfer."
   ],
-  "last_verified_task": "M5-dtd-instance-provenance",
-  "last_integrated_revision": "4ee8d81d5373f30f5299e4220006d036b45a1c98",
+  "last_verified_task": "M5-corpus",
+  "last_integrated_revision": "4fab13fc9e2b8a1977646e007bd33b24f03cf0ea",
   "completed_assignments": [
     {
       "task_id": "M2-dtd-composition",
@@ -782,6 +768,21 @@
       "candidate_revision": "d96ed87af7b73af3e82744310c71c100732d1635",
       "integration_revision": "4ee8d81d5373f30f5299e4220006d036b45a1c98",
       "handoff_revision": "70e30caf5386393769ee37ff514b227253387523"
+    },
+    {
+      "task_id": "M5-corpus",
+      "agent_id": "/root/c14n",
+      "worktree": "/private/tmp/xemele-m5-corpus",
+      "branch": "codex/m5-corpus",
+      "base_revision": "9314ee6be13a9a1959623dfc17878db4f286cf97",
+      "claim_revision": "3817b327d120f6ca212f2f6a28f4fd647084aaca",
+      "stage": "Verified integrated; terminal clean checkout pending removal",
+      "partial_handoff_revision": "7d2f0a10b5fe134fd3c9889d9635d23584c1a99f",
+      "frozen_expectations_revision": "7dc2a3c9cd60f2a0ce373cde9b2724b414ee1051",
+      "correction_revision": "266a3504fb213043d9e1027d4124d3660bc49128",
+      "source_review": "21808e2/7d6160c sourceapproved;831 unequal labels explicitlydisclosed; no executedreviewcheck",
+      "integration_revision": "4fab13fc9e2b8a1977646e007bd33b24f03cf0ea",
+      "handoff_revision": "6e4b45d600a457e754a76b3e8b1fc423013101d1"
     }
   ],
   "benchmark_policy": "Successful previous measurements retained; future changed runtime measurements require complete preparation and exclusive grant.",
@@ -1960,7 +1961,7 @@
     "implementation_started": false,
     "dispatch_after": "M2-conformance verified"
   },
-  "milestone_progress": "M5:13 of15tasks verified; all three corpus repairs verified; corpus closure and gate pending.",
+  "milestone_progress": "M5:14of15tasks verified; cumulative gate ready.",
   "pause_request": {
     "requested_by": "user",
     "after_verified_task": "M2-gate",

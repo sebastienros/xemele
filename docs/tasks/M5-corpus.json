@@ -4,11 +4,11 @@
   "milestone": "M5",
   "title": "DTD and canonical conformance",
   "kind": "verification",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M5 isolated validating XML/canonical conformance worker",
   "branch": "codex/m5-corpus",
   "base_revision": "9314ee6be13a9a1959623dfc17878db4f286cf97",
-  "integration_revision": null,
+  "integration_revision": "4fab13fc9e2b8a1977646e007bd33b24f03cf0ea",
   "depends_on": [
     "M5-dtd-validate",
     "M5-c14n",
@@ -42,7 +42,8 @@
         "frozen-profile-review",
         "profile-regeneration",
         "corpus-source-review",
-        "final-profile-regeneration"
+        "final-profile-regeneration",
+        "root-integration"
       ]
     },
     {
@@ -57,7 +58,8 @@
         "libxml-infrastructure-controls",
         "final-full-corpus",
         "final-libxml",
-        "final-ordinary-controls"
+        "final-ordinary-controls",
+        "root-integration"
       ]
     },
     {
@@ -68,7 +70,8 @@
         "final-full-corpus",
         "final-ordinary-controls",
         "final-api",
-        "final-task-validation"
+        "final-task-validation",
+        "root-integration"
       ]
     }
   ],
@@ -234,6 +237,15 @@
       "command": "Coordinator independent first/final raw inspection and conditional cleanup ACK",
       "result": "passed",
       "summary": "Verified all2585 IDs/scopes/expectations,3386 resources, exact16 transitions, unchanged2585 reference outcomes/errors,32exact/26BCL/sixlibxml comparisons and preserved first24 failures. Authorized owned seven raw/log cleanup after durable evidence; completed without rerun.",
+      "artifact": "docs/reports/M5-corpus/final.md"
+    },
+    {
+      "id": "root-integration",
+      "kind": "integration",
+      "revision": "4fab13fc9e2b8a1977646e007bd33b24f03cf0ea",
+      "command": "Offline solution restore; Release conformance/differential builds; pinned --fx-version10.0.11 focused Dtd/Canonicalization and DtdCanonical checks; classifier --check; API948 helper; planning validate; git diff exact executed source/data closure against0f992893",
+      "result": "passed",
+      "summary": "Initial no-restore builds failed NETSDK1004 missing assets; offline restore corrected preparation, final builds0warnings/errors.10conformance+12differential checks passed zero failures/skips,948API unchanged,159tasksvalid. Combined runtime/adapters/pins exact-source-identical to independently inspected full2585/3386/32/26/6 passing worker run0f992893, preservedfirst24/final0/exact16transitions and830unequal reference labels. Fullpassing corpus not needlessly rerun; integratedcontrols/sourceclosure verified.",
       "artifact": "docs/reports/M5-corpus/final.md"
     }
   ],
