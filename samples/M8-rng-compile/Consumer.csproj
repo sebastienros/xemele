@@ -1,0 +1,5 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><OutputType>Exe</OutputType><AssemblyName>Xemele.Benchmarks</AssemblyName></PropertyGroup>
+  <ItemGroup><ProjectReference Include="../../src/Xemele/Xemele.csproj" Condition="'$(RngXmlOnly)' != 'true'" />
+    <ProjectReference Include="../../docs/reports/M8-rng-compile/XmlOnly/XmlOnly.csproj" Condition="'$(RngXmlOnly)' == 'true'" /></ItemGroup>
+</Project>

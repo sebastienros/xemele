@@ -173,15 +173,15 @@ public sealed class CompilerTests
     public void ShapeConstructorsRejectMalformedGraphsAndSnapshotCollections()
     {
         var context = new SchemaNamespaceContext(new Dictionary<string, string>(), "", null); var registry = new EmptyRegistry();
-        Assert.Throws<ArgumentException>(() => new RngPattern(0, (int)RngPatternKind.Choice, [0], null, null, [], null, context, default));
-        Assert.Throws<ArgumentException>(() => new RngPattern(0, (int)RngPatternKind.Text, [], new RngAnyName(null), null, [], null, context, default));
-        Assert.Throws<ArgumentException>(() => new RngPattern(0, (int)RngPatternKind.Data, [], null, null, [], null, context, default));
-        var leaf = new RngPattern(0, (int)RngPatternKind.Empty, [], null, null, [], null, context, default);
+        Assert.Throws<ArgumentException>(() => new RngPattern(0, RngPatternKind.Choice, [0], null, null, [], null, context, default));
+        Assert.Throws<ArgumentException>(() => new RngPattern(0, RngPatternKind.Text, [], new RngAnyName(null), null, [], null, context, default));
+        Assert.Throws<ArgumentException>(() => new RngPattern(0, RngPatternKind.Data, [], null, null, [], null, context, default));
+        var leaf = new RngPattern(0, RngPatternKind.Empty, [], null, null, [], null, context, default);
         Assert.Throws<ArgumentException>(() => new RngCompiledSchema(1, [leaf], registry));
         Assert.Throws<ArgumentException>(() => new RngCompiledSchema(0, [leaf with { Id = 2 }], registry));
         Assert.Throws<ArgumentException>(() => new RngCompiledSchema(0, [leaf with { Kind = RngPatternKind.Ref, Children = [1] }], registry));
         var list = new List<RngPattern> { leaf }; var graph = new RngCompiledSchema(0, list, registry); list.Clear(); Assert.Single(graph.Patterns);
-        var children = new List<int> { 0 }; var repeated = new RngPattern(1, (int)RngPatternKind.OneOrMore, children, null, null, [], null, context, default); children.Clear(); Assert.Single(repeated.Children);
+        var children = new List<int> { 0 }; var repeated = new RngPattern(1, RngPatternKind.OneOrMore, children, null, null, [], null, context, default); children.Clear(); Assert.Single(repeated.Children);
     }
     private sealed class EmptyRegistry : IXmlDatatypeRegistry
     { public IXmlDatatypeLibrary? Find(string ns) => null; public XmlDatatypeDefinition? FindType(SchemaName name) => null; }
