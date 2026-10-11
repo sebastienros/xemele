@@ -4,11 +4,11 @@
   "milestone": "M3",
   "title": "Verify core streaming preview",
   "kind": "gate",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M3 coordinator 01a1284a-8826-7fc2-af44-74552db608f2",
   "branch": "codex/m3-gate",
   "base_revision": "29040da0164ca04a7cc667cb07e122340ad3f421",
-  "integration_revision": null,
+  "integration_revision": "f740466f1f0929ae109870545a1ad09201cbca5b",
   "depends_on": [
     "M3-corpus",
     "M3-async-token-binding",
@@ -39,7 +39,8 @@
         "source-context-conformance",
         "compiled-api",
         "isolated-package-smoke",
-        "preserved-memory-allocation"
+        "preserved-memory-allocation",
+        "integrated-closure"
       ]
     },
     {
@@ -52,7 +53,8 @@
         "source-context-conformance",
         "compiled-api",
         "isolated-package-smoke",
-        "preserved-memory-allocation"
+        "preserved-memory-allocation",
+        "integrated-closure"
       ]
     },
     {
@@ -65,7 +67,8 @@
         "source-context-conformance",
         "compiled-api",
         "isolated-package-smoke",
-        "preserved-memory-allocation"
+        "preserved-memory-allocation",
+        "integrated-closure"
       ]
     }
   ],
@@ -128,17 +131,24 @@
       "result": "passed",
       "summary": "Five actual1GiB mode reports/65samples/early callbacks <=383776B absolute wholeliveheap <8MiB. Four direct0 exits; completedSAXobservations accepted with outerRSSexit1 and unknownunderlyingexit preserved; RSS unavailable. Selectedwarmprimitive0+positive/cold/owned/suspended evidence preserved; rawBDN2B/7B unproven and historicalfailures honest; timingsinformational,releasehardwarequalificationM9.97fuzz pass preserved; cumulativefixture/corepreservation confirms integration.",
       "artifact": "docs/reports/M3-gate/README.md"
+    },
+    {
+      "id": "integrated-closure",
+      "kind": "integration",
+      "revision": "f740466f1f0929ae109870545a1ad09201cbca5b",
+      "command": "git diff --quiet 75de168c4ebb80c140cdf5ecb7054ebf38e594d3 HEAD -- src tests samples Directory.Build.props Directory.Packages.props global.json NuGet.config docs/reports/M3-gate/Demo docs/reports/M3-gate/verify.py && python3 tools/planning/tasks.py validate",
+      "result": "passed",
+      "summary": "Exact integrated implementation and gate driver closure unchanged from actual passing cumulative source75de168; 148 tasks validate. All dependencies verified; only owned reports and evidence added.",
+      "artifact": "docs/reports/M3-gate/README.md"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Implemented complete cumulative M3 gate:5753tests,2585source-contextcases,API720,standalonepreview/localpackage smoke;5GiBsurface memory observations and ownerallocation evidence preserved.",
+    "summary": "Verified integrated M3 core preview: 5753 tests, 2585 source-context cases, API720, standalone preview and local package consumer; five actual1GiB memory observations and allocation limitations preserved.",
     "checks": [
       "All actual gate commands passed;148task validator; no source changes after known tested75de168."
     ],
-    "remaining": [
-      "Coordinator integrated metadata checkpoint and strictly sequenced M4 handoff."
-    ],
+    "remaining": [],
     "requests": []
   }
 }

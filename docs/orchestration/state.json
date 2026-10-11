@@ -4,8 +4,8 @@
   "coordination_branch": "main",
   "max_concurrent_workers": 3,
   "last_verified_checkpoint": {
-    "task_id": "M2-gate",
-    "integration_revision": "276a0bdaf6433bbda8958b068955de85c3b75a3a"
+    "task_id": "M3-gate",
+    "integration_revision": "f740466f1f0929ae109870545a1ad09201cbca5b"
   },
   "active_assignments": [],
   "integration_queue": [],
@@ -14,20 +14,14 @@
       "task_id": "M3-sax",
       "issue": "Worker outbound coordinator messaging rejected by auto-review; fallback read worker own-chat outputs, no outbound request required.",
       "status": "resolved via wait_threads/read-only collection"
-    },
-    {
-      "task_id": "M3-resource-mode",
-      "status": "planned owning repair, ready verified prerequisites; dispatch when implementation slot free",
-      "scope": "Defaultsyncreader must support asyncresource mode after ReadAsync; modeguard and synchronousabort afterasync isolatedwithout laterpublicAPI"
     }
   ],
   "next_actions": [
-    "Claim and verify cumulative M3-gate",
-    "Clean terminal corpus worktree after durable integration",
-    "Create exactly one M4 coordinator after verified M3-gate"
+    "Preserve local preview package and remove clean temporary integration worktree",
+    "Create exactly one fresh M4 coordinator, confirm read-only setup, then relinquish main and activate it"
   ],
-  "last_verified_task": "M3-corpus",
-  "last_integrated_revision": "b962203e823fa816da38909a426158a7dac90781",
+  "last_verified_task": "M3-gate",
+  "last_integrated_revision": "f740466f1f0929ae109870545a1ad09201cbca5b",
   "completed_assignments": [
     {
       "task_id": "M2-dtd-composition",
@@ -1591,12 +1585,10 @@
       "remaining_gate": null
     },
     "M3": {
-      "verified": 18,
+      "verified": 19,
       "total": 19,
-      "in_progress": [
-        "M3-gate"
-      ],
-      "remaining_gate": "M3-gate"
+      "in_progress": [],
+      "remaining_gate": null
     }
   },
   "pause_request": {
@@ -1670,8 +1662,9 @@
   "m3_gate_assignment": {
     "branch": "codex/m3-gate",
     "owner": "coordinator",
-    "status": "claimed",
+    "status": "verified",
     "base_revision": "29040da0164ca04a7cc667cb07e122340ad3f421",
-    "worktree": "/private/tmp/xemele-m3-integration"
+    "worktree": "/private/tmp/xemele-m3-integration",
+    "integration_revision": "f740466f1f0929ae109870545a1ad09201cbca5b"
   }
 }
