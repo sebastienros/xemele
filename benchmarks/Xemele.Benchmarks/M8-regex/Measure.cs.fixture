@@ -21,6 +21,10 @@ var operation = new SchemaValidationOperation(new() { MaxOperations = null, Limi
 var rows = new List<object>();
 for (int route = 0; route < 8; route++)
 {
+    long firstBefore = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+    bool firstResult = engine.IsMatch(compiled[programs[route]], inputs[route].AsSpan(), operation);
+    long coldMatchBytes = measure ? GC.GetAllocatedBytesForCurrentThread() - firstBefore : 0;
+    if (firstResult != expected[route]) throw new Exception("Cold semantics");
     for (int i = 0; i < 32; i++) if (engine.IsMatch(compiled[programs[route]], inputs[route].AsSpan(), operation) != expected[route]) throw new Exception("Control semantics");
     var distribution = new long[64];
     for (int i = 0; i < distribution.Length; i++)
@@ -31,7 +35,7 @@ for (int route = 0; route < 8; route++)
         if (match != expected[route] || measure && allocated != 0) throw new Exception("Warm primitive allocation regression");
         distribution[i] = allocated;
     }
-    rows.Add(new { route, name = inputs[route].Length, distribution });
+    rows.Add(new { route, name = inputs[route].Length, coldMatchBytes, distribution });
 }
 var owned = new long[64];
 for (int i = 0; i < owned.Length; i++)

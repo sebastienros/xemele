@@ -26,5 +26,14 @@ for i,args in enumerate(commands):
    # Reap any surviving benchmark/compiler descendants in the isolated process group.
    try:os.killpg(process.pid,signal.SIGTERM)
    except ProcessLookupError:pass
+   drainDeadline=time.monotonic()+5
+   while True:
+    members=[row for row in subprocess.check_output(['ps','-axo','pid=,pgid=,stat='],text=True).splitlines() if len(row.split())>=3 and row.split()[1]==str(process.pid) and not row.split()[2].startswith('Z')]
+    if not members:break
+    if time.monotonic()>=drainDeadline:
+     try:os.killpg(process.pid,signal.SIGKILL)
+     except ProcessLookupError:pass
+     raise RuntimeError('Descendant drain exceeded; group killed, coordinator must verify cleanup before ACK')
+    time.sleep(0.1)
 # All approved child commands are supervised in their own groups. No raw inspection here.
 print('Approved sequence processes exited/reaped; logs closed. RELEASE required before raw inspection.')
