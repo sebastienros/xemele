@@ -193,7 +193,7 @@ internal sealed class SchematronCompiler : ISchematronCompiler
             if (path.Length == 0 && fragment.Length != 0) scope = source;
             else
             {
-                var input = resources.Load(new(href, source.Context(include).BaseUri, SchemaResourcePurpose.SchematronInclude, location), operation);
+                var input = resources.Load(new(href, source.SourceUri, SchemaResourcePurpose.SchematronInclude, location), source.Context(include).BaseUri, operation);
                 scope = Open(input);
             }
             var key = (scope.SourceUri, fragment);

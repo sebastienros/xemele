@@ -60,8 +60,9 @@ XPathCompileLimits; this compiler does not claim measured internal M4 parser/AST
 operations. Evaluation must use the verified spent-work adapter in finally and
 one aggregate schema budget, with cancellation and incomplete-state checks.
 
-Pending owning-model repair: effective inherited xml:base and final referring
-resource URI must be separate inputs while lexical SystemId remains unchanged.
-The frozen original SchemaResourceReference cannot express both bases; current
-normative regression remains failing until a verified ordered model repair is
-adopted. No shared edit is made by this worker.
+Verified owning-model repair `M8-schema-resource-base` supplies the concrete
+Load(reference, effectiveBaseUri, operation) overload without changing the frozen
+interface. The compiler passes final actual source URI as reference.Referrer,
+effective inherited xml:base separately, and original href including fragment as
+SystemId. The normative redirect/xml:base regression covers this distinction.
+No shared edit is made by this worker.
