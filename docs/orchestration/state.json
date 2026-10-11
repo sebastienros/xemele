@@ -9,17 +9,6 @@
   },
   "active_assignments": [
     {
-      "task_id": "M3-writer",
-      "branch": "codex/m3-writer",
-      "base_revision": "69be1b86418f64580e7c6561551f3996342a0dc8",
-      "host_id": "local",
-      "stage": "executing; setup confirmed",
-      "claim_revision": "a6ac76c3f7bde2cd43aee00e1d015dc4f849c8e4",
-      "client_thread_id": "client-new-thread:e6c7ea79-314e-414c-8f62-d952f9258127",
-      "chat_id": "01a1285d-d3fc-7433-be0d-1b107e3911f3",
-      "worktree_path": "/Users/sebastienros/.codex/worktrees/1dcc/xemele"
-    },
-    {
       "task_id": "M3-callbacks",
       "branch": "codex/m3-callbacks",
       "base_revision": "3926d127e772b0f085fca30fe86fc26c83c10ad4",
@@ -45,15 +34,15 @@
   "integration_queue": [],
   "blockers": [],
   "next_actions": [
-    "Claim callbacks and async resources; writer remains active.",
-    "Verify shared pump before public adapters.",
-    "Complete M3 only, then exactly one M4 coordinator."
+    "Integrate completed callbacks; await async-resource frozen handoff/review.",
+    "Verify shared streaming pump before public adapters.",
+    "Complete M3-gate only, then exactly one M4 coordinator."
   ],
   "last_verified_task": {
-    "task_id": "M3-async-token-binding",
-    "integration_revision": "dbef7e57ecebec17617a9e8cc296f7ed1a7321a4"
+    "task_id": "M3-writer",
+    "integration_revision": "c08644c6ce1d91dda026cea181e0194e4f3cc469"
   },
-  "last_integrated_revision": "dbef7e57ecebec17617a9e8cc296f7ed1a7321a4",
+  "last_integrated_revision": "c08644c6ce1d91dda026cea181e0194e4f3cc469",
   "completed_assignments": [
     {
       "task_id": "M2-dtd-composition",
@@ -496,6 +485,19 @@
         "worktree": "removed",
         "implementation_durably_integrated": true
       }
+    },
+    {
+      "task_id": "M3-writer",
+      "branch": "codex/m3-writer",
+      "base_revision": "69be1b86418f64580e7c6561551f3996342a0dc8",
+      "host_id": "local",
+      "stage": "verified; cleanup pending",
+      "claim_revision": "a6ac76c3f7bde2cd43aee00e1d015dc4f849c8e4",
+      "client_thread_id": "client-new-thread:e6c7ea79-314e-414c-8f62-d952f9258127",
+      "chat_id": "01a1285d-d3fc-7433-be0d-1b107e3911f3",
+      "worktree_path": "/Users/sebastienros/.codex/worktrees/1dcc/xemele",
+      "integration_revision": "c08644c6ce1d91dda026cea181e0194e4f3cc469",
+      "handoff_revision": "5323badd35c0245dfbcc2e3272f0f06e71890c34"
     }
   ],
   "benchmark_policy": "Successful previous measurements retained; future changed runtime measurements require complete preparation and exclusive grant.",
@@ -1377,10 +1379,9 @@
       "remaining_gate": null
     },
     "M3": {
-      "verified": 3,
+      "verified": 4,
       "total": 13,
       "in_progress": [
-        "M3-writer",
         "M3-callbacks",
         "M3-async-resources"
       ],

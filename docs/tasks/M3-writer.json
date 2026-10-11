@@ -4,11 +4,11 @@
   "milestone": "M3",
   "title": "Forward XML writer",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M3 coordinator 01a1284a-8826-7fc2-af44-74552db608f2 / M3-writer worker",
   "branch": "codex/m3-writer",
   "base_revision": "69be1b86418f64580e7c6561551f3996342a0dc8",
-  "integration_revision": null,
+  "integration_revision": "c08644c6ce1d91dda026cea181e0194e4f3cc469",
   "depends_on": [
     "M3-contracts"
   ],
@@ -37,7 +37,9 @@
       "evidence": [
         "release-build",
         "writer-and-earlier-serialization",
-        "allocation-probe"
+        "allocation-probe",
+        "integrated-checks",
+        "independent-review"
       ]
     },
     {
@@ -45,7 +47,9 @@
       "description": "Test invalid method sequences, mixed content, escaping, encoding, flush, disposal and exact independent golden output.",
       "status": "passed",
       "evidence": [
-        "writer-and-earlier-serialization"
+        "writer-and-earlier-serialization",
+        "integrated-checks",
+        "independent-review"
       ]
     },
     {
@@ -57,7 +61,9 @@
         "standalone-sample",
         "planning",
         "allocation-probe",
-        "serialized-bdn"
+        "serialized-bdn",
+        "integrated-checks",
+        "independent-review"
       ]
     }
   ],
@@ -95,7 +101,7 @@
       "revision": "370b592443d224056cd5b58d7da0a131a0601787",
       "command": "dotnet samples/M3-writer/bin/Release/net10.0/WriterSample.dll",
       "result": "passed",
-      "summary": "Self-checked exact output <e:greeting xmlns:e=\"urn:example\" language=\"en\">Hello &amp; welcome, 世界 😀</e:greeting>; caller stream remains open.",
+      "summary": "Self-checked exact output <e:greeting xmlns:e=\"urn:example\" language=\"en\">Hello &amp; welcome, \u4e16\u754c \ud83d\ude00</e:greeting>; caller stream remains open.",
       "artifact": null
     },
     {
@@ -151,11 +157,29 @@
       "result": "passed",
       "summary": "Exclusive coordinator lease m3-writer-370b592: one prebuilt run, exit0,24/24 cases in39.29s. BDN0.15.8 SDK10.0.400 runtime10.0.11 Arm64, InProcess memory diagnostics. Forward short/long/multilingual means3.737/2001.356/3382.161us; inclusive allocations1.63/1.76/2.00KiB. Timings informational (priority denied, short iterations, wide longASCII CI). Setup verifies matching forward/DOM output byte counts, not content checksum; independent exact golden tests separately pass. Scan setup verifies equal delimiter indices; displayed no allocation, dense scalar0ns is harness-floor artifact. Raw log/CSVs preserved. No source/build/restore/retry during lease; normal in-memory harness emission0.02s only.",
       "artifact": "docs/reports/M3-writer/bdn/BenchmarkRun-20261010-174051.log"
+    },
+    {
+      "id": "integrated-checks",
+      "kind": "integration",
+      "revision": "c08644c6ce1d91dda026cea181e0194e4f3cc469",
+      "command": "Pinned dotnet Release build --no-restore --disable-build-servers -m:1 -p:BuildInParallel=false -p:UseSharedCompilation=false; tests DLL -namespace Xemele.Tests.Serialization -namespace Xemele.Tests.M3Writer -parallelMode none -showLiveOutput -noColor -result-xml /private/tmp/m3-writer-integrated.xml; sample DLL; python3 tools/planning/tasks.py validate",
+      "result": "passed",
+      "summary": "Combined verified contracts, metadata, token binder and writer: Release build zero warnings/errors;69 tests passed,0 failed/skipped; exact Unicode/namespace/escaping sample passed;142 task records valid. Later merge0e848b6 changes coordinator state only, product/test closure unchanged. Preserved worker compiled391-member API and24-case exclusive allocation/BDN evidence; no repeat of unchanged measurements.",
+      "artifact": "docs/reports/M3-writer/integration-tests.xml"
+    },
+    {
+      "id": "independent-review",
+      "kind": "review",
+      "revision": "c08644c6ce1d91dda026cea181e0194e4f3cc469",
+      "command": null,
+      "result": "passed",
+      "summary": "Read-only review_core_async_boundary reviewed frozen writer source/tests and A1/A2/A3: no blocking defects. Strict/repair scopes, split delimiter escaping, bounded encoder surrogate continuity, caller stream ownership, fault/guard semantics and once-only pool return verified by source review. Async extension must use retained owners and async transport; future obligation, no stub shipped.",
+      "artifact": null
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Implemented frozen synchronous sealed partial XmlWriter and bounded output pump at370b592443d224056cd5b58d7da0a131a0601787. A1/A2/A3 pass locally; integration_revision null. Exactly one24-case serialized prebuilt BDN run completed39.29s after exclusive lease; peers released before report/evidence review. No shared source edits, later dependencies or public async stubs.",
+    "summary": "Implemented frozen synchronous sealed partial XmlWriter and bounded output pump at370b592443d224056cd5b58d7da0a131a0601787. A1/A2/A3 pass locally; integration_revision null. Exactly one24-case serialized prebuilt BDN run completed39.29s after exclusive lease; peers released before report/evidence review. No shared source edits, later dependencies or public async stubs. Integrated and independently reviewed;69 combined tests pass at c08644c6ce1d91dda026cea181e0194e4f3cc469.",
     "checks": [
       "Pinned Release build zero warnings/errors;69 tests passed (19 writer plus50 earlier serializer). Independent golden output, namespace/encoding/state/flush/abort/fault/reentrancy/depth10000 passed.",
       "391 compiled API union members matched including14 writer rows; standalone consumer passed; planning141 records validated. Global inventory discovery stopped at pre-existing missing offline E14.dtd, direct compiled union passed.",
@@ -163,7 +187,6 @@
       "Serialized BDN24/24 exit0 under exclusive lease. Representative forward allocations1.63/1.76/2KiB; timings informational with raw warnings/CIs. Byte-count equality setup guard only, not content checksum; scans identical indices and no displayed allocations."
     ],
     "remaining": [
-      "Coordinator integrates implementation/evidence and reruns applicable checks before verified.",
       "Cross-architecture release evidence and repeatable performance thresholds remain milestone/release work; this singleArm64 shortInProcess run claims no release throughput target."
     ],
     "requests": []
