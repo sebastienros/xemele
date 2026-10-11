@@ -7,20 +7,7 @@
     "task_id": "M2-gate",
     "integration_revision": "276a0bdaf6433bbda8958b068955de85c3b75a3a"
   },
-  "active_assignments": [
-    {
-      "task_id": "M3-async-input",
-      "branch": "codex/m3-async-input",
-      "base_revision": "1d9665a5d9d9b2ad92c7eaa1268455706ffb14bb",
-      "host_id": "local",
-      "stage": "Source draft approved;333 preservation checks passed; added controls and final freeze preparation, no active lease",
-      "acceptance_before_dispatch": "Frozen true async SAX/reader/DOM APIs and resource-mode composition; operation/call tokens, synchronous callbacks, real short async-only input/resources, diagnostic equality and once cleanup; exact API/sample and prepared primitive/process-wide memory observations.",
-      "claim_revision": "68afd571b50a7b4ad8ed7e8cc4946861cc216f2c",
-      "client_thread_id": "client-new-thread:bf60853e-e64d-4afd-9992-0e671ec759f6",
-      "chat_id": "01a128bc-bb45-7be2-975d-b2e86f0d1db4",
-      "worktree_path": "/Users/sebastienros/.codex/worktrees/7136/xemele"
-    }
-  ],
+  "active_assignments": [],
   "integration_queue": [],
   "blockers": [
     {
@@ -35,13 +22,12 @@
     }
   ],
   "next_actions": [
-    "Finish and integrate push and async input with focused checks",
-    "Claim and verify async join after async input integrates",
-    "Claim mandatory corpus qualification, then M3-gate",
-    "Create exactly one M4 project coordinator only after integrated M3-gate verification"
+    "Claim async integration join from all verified children",
+    "Verify mandatory corpus equivalence/fuzz/full1GiB qualification",
+    "Verify M3-gate, then exactly one M4 project coordinator handoff"
   ],
-  "last_verified_task": "M3-push",
-  "last_integrated_revision": "8e475a0bf35386b29289232b6581655042ab9b59",
+  "last_verified_task": "M3-async-input",
+  "last_integrated_revision": "ae951587c593cf2303befdcf4615d7aa6c85c9de",
   "completed_assignments": [
     {
       "task_id": "M2-dtd-composition",
@@ -1473,6 +1459,20 @@
         "chat_archived": true,
         "branch_preserved": true
       }
+    },
+    {
+      "task_id": "M3-async-input",
+      "branch": "codex/m3-async-input",
+      "base_revision": "1d9665a5d9d9b2ad92c7eaa1268455706ffb14bb",
+      "host_id": "local",
+      "stage": "Verified; cleanup pending",
+      "acceptance_before_dispatch": "Frozen true async SAX/reader/DOM APIs and resource-mode composition; operation/call tokens, synchronous callbacks, real short async-only input/resources, diagnostic equality and once cleanup; exact API/sample and prepared primitive/process-wide memory observations.",
+      "claim_revision": "68afd571b50a7b4ad8ed7e8cc4946861cc216f2c",
+      "client_thread_id": "client-new-thread:bf60853e-e64d-4afd-9992-0e671ec759f6",
+      "chat_id": "01a128bc-bb45-7be2-975d-b2e86f0d1db4",
+      "worktree_path": "/Users/sebastienros/.codex/worktrees/7136/xemele",
+      "handoff_revision": "6176686decd92238f2921f57bc09c65bba99847c",
+      "integration_revision": "ae951587c593cf2303befdcf4615d7aa6c85c9de"
     }
   ],
   "benchmark_grant": {
@@ -1575,11 +1575,9 @@
       "remaining_gate": null
     },
     "M3": {
-      "verified": 14,
+      "verified": 15,
       "total": 18,
-      "in_progress": [
-        "M3-async-input"
-      ],
+      "in_progress": [],
       "remaining_gate": "M3-gate"
     }
   },

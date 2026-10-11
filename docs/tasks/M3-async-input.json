@@ -2,11 +2,11 @@
   "schema_version": 1,
   "milestone": "M3",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M3 coordinator 01a1284a-8826-7fc2-af44-74552db608f2 / async input worker",
   "branch": "codex/m3-async-input",
   "base_revision": "1d9665a5d9d9b2ad92c7eaa1268455706ffb14bb",
-  "integration_revision": null,
+  "integration_revision": "ae951587c593cf2303befdcf4615d7aa6c85c9de",
   "id": "M3-async-input",
   "title": "Async SAX reader and DOM input composition",
   "depends_on": [
@@ -46,7 +46,8 @@
       "status": "passed",
       "evidence": [
         "correctness",
-        "api-sample"
+        "api-sample",
+        "coordinator-integrated"
       ]
     },
     {
@@ -55,7 +56,8 @@
       "status": "passed",
       "evidence": [
         "correctness",
-        "api-sample"
+        "api-sample",
+        "coordinator-integrated"
       ]
     },
     {
@@ -67,7 +69,8 @@
         "api-sample",
         "probe-control",
         "allocation-retention-bdn",
-        "task-validation"
+        "task-validation",
+        "coordinator-integrated"
       ]
     }
   ],
@@ -124,20 +127,27 @@
       "result": "passed",
       "summary": "147 task records validate after implemented criteria/evidence update; final diff whitespace check passed.",
       "artifact": null
+    },
+    {
+      "id": "coordinator-integrated",
+      "kind": "integration",
+      "revision": "ae951587c593cf2303befdcf4615d7aa6c85c9de",
+      "command": "Pinned Release build; Xemele.Tests.dll -namespace Xemele.Tests.AsyncInput -namespace Xemele.Tests.ReaderRuntime -namespace Xemele.Tests.Sax -namespace Xemele.Tests.Dom -namespace Xemele.Tests.Recovery -namespace Xemele.Tests.StreamingPump -parallelMode none; official API compare; task validate; runtime/API closure diff",
+      "result": "passed",
+      "summary": "Latest combined M3: build0warnings/errors;215 focused tests passed0fail/errors/skips; official full inventory matched720 compiled members with exact offline fixtures;147taskvalidation passed. Independent review approved exact runtime3679687 including diagnostic-aware primary cleanup guards. Post-check merges only probe/reports/task/coordination metadata, runtime/tests/API unchanged. Actual ownprocessbuffered0/positive4120, real1024suspended320B/call and active8MiBpeak8576B preserved. BDN buffered2B remains raw inclusive observation with attribution unproven; no subtraction/zero claim or comparative timing claim.",
+      "artifact": "docs/reports/M3-async-input/integration.xml"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Frozen async SAX/reader/DOM input implemented at3679687, probe-only guards at9e9da61. Bounded ReadAsync/resource continuations, exact existing DOM semantics, linked reader tokens/gate/current lifetime and once-only async cleanup. Only granted existing sync mode insertion/interface row edited.",
+    "summary": "Verified integrated real async SAX/reader/DOM input with bounded transport, resources and exact diagnostics;215 integration tests and API720 pass.",
     "checks": [
       "Own Release tests/probe/sample builds zero warnings/errors;339preservation cases including31own, zero failures/errors/skipped/notrun, two unchanged inherited allocation-only checks excluded with prior evidence preserved.",
       "Own compiled712-member duplicate-checked fragment union and all-new-API sample passed; counters-disabled preparation and4case/onejob discovery guards passed.",
       "Leased exact prebuilt allocation and4caseBDN commands exited0, reaped/no groups; direct warm primitive0B/4096calls, genuinely suspended320B/call,active retention32samples peak8576B through8MiB; BDN buffered2B discrepancy retained.",
       "Task validator passed147 records after implementation/evidence update; final diff check passed."
     ],
-    "remaining": [
-      "Coordinator records integrated verification/integration_revision; do not treat branch implemented as verified. Full1GiB corpus and x64 qualification belong to coordinator/milestone checks, not claimed here."
-    ],
+    "remaining": [],
     "requests": []
   }
 }
