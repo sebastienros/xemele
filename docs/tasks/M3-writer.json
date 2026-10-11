@@ -4,7 +4,7 @@
   "milestone": "M3",
   "title": "Forward XML writer",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M3 coordinator 01a1284a-8826-7fc2-af44-74552db608f2 / M3-writer worker",
   "branch": "codex/m3-writer",
   "base_revision": "69be1b86418f64580e7c6561551f3996342a0dc8",
@@ -51,12 +51,13 @@
     {
       "id": "M3-writer-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
+      "status": "passed",
       "evidence": [
         "compiled-api-union",
         "standalone-sample",
         "planning",
-        "measurement-lease-pending"
+        "allocation-probe",
+        "serialized-bdn"
       ]
     }
   ],
@@ -139,20 +140,31 @@
       "revision": "370b592443d224056cd5b58d7da0a131a0601787",
       "command": null,
       "result": "skipped",
-      "summary": "No BDN run attempted: coordinator could not grant exclusive host lease due unrelated active Silex BDN process. Frozen prebuilt command and180-second lease request recorded in report/handoff. Allocation/retention correctness counters passed; representative timing remains unrun.",
+      "summary": "Historical preparatory state (partial evidence656f8b6): no BDN run was attempted before coordinator granted exclusive host lease because an unrelated Silex BDN process was active. Superseded by successful serialized-bdn evidence; original allocation/retention checks remain valid.",
       "artifact": null
+    },
+    {
+      "id": "serialized-bdn",
+      "kind": "check",
+      "revision": "370b592443d224056cd5b58d7da0a131a0601787",
+      "command": "PATH='/Users/sebastienros/Library/Application Support/dotnetup/dotnet':\"$PATH\" dotnet benchmarks/Xemele.Benchmarks/bin/Release/net10.0/Xemele.Benchmarks.dll --filter '*WriterBenchmarks*' '*WriterScanBenchmarks*' --warmupCount 1 --iterationCount 3 --iterationTime 100 --artifacts artifacts/M3-writer/bdn",
+      "result": "passed",
+      "summary": "Exclusive coordinator lease m3-writer-370b592: one prebuilt run, exit0,24/24 cases in39.29s. BDN0.15.8 SDK10.0.400 runtime10.0.11 Arm64, InProcess memory diagnostics. Forward short/long/multilingual means3.737/2001.356/3382.161us; inclusive allocations1.63/1.76/2.00KiB. Timings informational (priority denied, short iterations, wide longASCII CI). Setup verifies matching forward/DOM output byte counts, not content checksum; independent exact golden tests separately pass. Scan setup verifies equal delimiter indices; displayed no allocation, dense scalar0ns is harness-floor artifact. Raw log/CSVs preserved. No source/build/restore/retry during lease; normal in-memory harness emission0.02s only.",
+      "artifact": "docs/reports/M3-writer/bdn/BenchmarkRun-20261010-174051.log"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Frozen synchronous XmlWriter and bounded output pump implemented locally at370b592443d224056cd5b58d7da0a131a0601787. A1/A2 pass. A3 remains pending required representative timing under coordinator lease; no BDN attempted under contention. No later task/async stub/shared source dependency.",
+    "summary": "Implemented frozen synchronous sealed partial XmlWriter and bounded output pump at370b592443d224056cd5b58d7da0a131a0601787. A1/A2/A3 pass locally; integration_revision null. Exactly one24-case serialized prebuilt BDN run completed39.29s after exclusive lease; peers released before report/evidence review. No shared source edits, later dependencies or public async stubs.",
     "checks": [
-      "Release build zero warnings/errors;69 writer+earlier serialization tests passed;391 compiled API union members matched; standalone sample passed;11976B cold/1672B warmed setup document;0B warmed operations and1MiB input weak-reference retention passed;planning141 validated.",
-      "Global API inventory discovery unavailable due pre-existing missing offline E14.dtd; direct compiled API check passed."
+      "Pinned Release build zero warnings/errors;69 tests passed (19 writer plus50 earlier serializer). Independent golden output, namespace/encoding/state/flush/abort/fault/reentrancy/depth10000 passed.",
+      "391 compiled API union members matched including14 writer rows; standalone consumer passed; planning141 records validated. Global inventory discovery stopped at pre-existing missing offline E14.dtd, direct compiled union passed.",
+      "0B warmed borrowed text/repeated names/attributes; cold11976B, warm setup/output/dispose1672B/document; live writer does not retain1MiB sealed attribute/text inputs after full GC.",
+      "Serialized BDN24/24 exit0 under exclusive lease. Representative forward allocations1.63/1.76/2KiB; timings informational with raw warnings/CIs. Byte-count equality setup guard only, not content checksum; scans identical indices and no displayed allocations."
     ],
     "remaining": [
-      "Coordinator to grant a bounded180-second exclusive host measurement lease after unrelated Silex BDN run ends; worker then runs frozen prebuilt BDN command, records durable results, and finishes A3/status.",
-      "Coordinator integrates implementation and reruns applicable checks before verified."
+      "Coordinator integrates implementation/evidence and reruns applicable checks before verified.",
+      "Cross-architecture release evidence and repeatable performance thresholds remain milestone/release work; this singleArm64 shortInProcess run claims no release throughput target."
     ],
     "requests": []
   }

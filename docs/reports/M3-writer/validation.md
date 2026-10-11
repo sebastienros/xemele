@@ -82,30 +82,76 @@ allocation evidence, not a timing benchmark:
   depth, bindings and current-tag members, not total document output length.
   Dispose clears references and returns scratch without caller flush/close.
 
-BDN representative output and provisional scan comparison results are recorded
-separately after the coordinator's serialized lease. This single Arm64 host does
-not establish x64 results or release-grade throughput targets.
+BDN representative output and provisional scan results below ran afterward
+against the same frozen source, under the coordinator's exclusive lease. This
+single Arm64 host does not establish x64 results or release-grade throughput.
 
-## Pending exclusive timing window
+## Serialized measurement result
 
-No BDN measurement has run. Coordinator attempted to park both Xemele peer
-workers, then discovered an unrelated active Silex TransactionBuffer BDN run.
-It withheld the lease and released peers. Unrelated processes remain untouched.
-The source/binary is frozen at the implementation revision; only this report
-and task evidence are added afterward. The prepared command (180-second lease
-requested, no restore/build) is:
+Lease `m3-writer-370b592`, maximum 180 seconds, granted after both Xemele peers
+parked and the unrelated host benchmark ended. One frozen command executed;
+exit 0, all 24 cases completed in 39.29 seconds. No retries, source/config edits,
+restore, or SDK build ran during the lease. BDN's InProcessEmitToolchain emitted
+its normal in-memory harness (reported as 0.02 seconds building); no separate
+MSBuild/toolchain process was invoked. Exec session 23162 completed, and the
+coordinator was immediately notified of no remaining worker children before
+reviewing or copying reports, allowing peers to resume.
 
 ```sh
 PATH='/Users/sebastienros/Library/Application Support/dotnetup/dotnet':"$PATH" dotnet benchmarks/Xemele.Benchmarks/bin/Release/net10.0/Xemele.Benchmarks.dll --filter '*WriterBenchmarks*' '*WriterScanBenchmarks*' --warmupCount 1 --iterationCount 3 --iterationTime 100 --artifacts artifacts/M3-writer/bdn
 ```
 
-Six representative output cases compare identical 16-child documents against
-M1 DOM incremental stream output, checking equal output byte counts outside
-timing. Eighteen provisional delimiter scans compare scalar, cached SearchValues
-and runtime IndexOfAny across short/miss/hit, long/miss/hit, dense and multilingual
-inputs. They share first-delimiter recognition semantics and compare results in
-setup. Full escaping also tracks adjacent brackets and must validate XML scalars;
-these isolated scans do not by themselves authorize adopting a different full
-escaping algorithm. The writer currently retains the straightforward loop.
-Timing/allocation tables and any interpretation remain pending; no performance
-success is inferred from preparation or the separate focused allocation counters.
+Environment: BDN 0.15.8; macOS 15.8.1/Darwin 24.6.0; SDK 10.0.400;
+.NET 10.0.11 Arm64 RyuJIT armv8.0-a; concurrent workstation GC; 128-bit vectors.
+BDN reports unknown processor (host kernel architecture ARM64_T6041); hardware
+model/frequency were not independently captured. Priority elevation/restoration
+was denied by the sandbox. Short iteration durations and large confidence
+intervals make timing informational. No speedup/regression threshold is claimed.
+
+Representative output builds a root with 16 identical attributed text children.
+Setup prepares input and an equivalent M1 DOM, then verifies equal emitted byte
+counts for forward and DOM methods. BDN consumes the returned byte count. This
+is a byte-count semantic guard, **not** a content hash or independent byte-for-byte
+checksum; the separately passing exact golden-output tests provide lexical
+correctness evidence. Corpus text is `hello&<]]>`, 65,536 ASCII x characters, or
+4,096 repetitions of `界😀&<\r]]>` (actual CR). Both implementations write to an
+owned counting stream without retaining output. Setup and fixture generation
+are outside timed methods.
+
+| Corpus | Forward mean | DOM mean | Forward allocation | DOM allocation |
+|---|---:|---:|---:|---:|
+| short | 3.737 us | 4.468 us | 1.63 KiB | 1.55 KiB |
+| long ASCII | 2001.356 us | 1665.620 us | 1.76 KiB | 1.74 KiB |
+| multilingual | 3382.161 us | 3121.415 us | 2.00 KiB | 1.94 KiB |
+
+These inclusive BDN memory values include per-document setup plus in-process
+measurement overhead, particularly at low invocation counts; they do not replace
+the separate exact allocation counters above. They show bounded setup/output
+allocation across roughly kilobyte-to-megabyte output workloads, rather than
+allocation proportional to emitted output length. Raw CSV/Markdown/full log are
+preserved under `docs/reports/M3-writer/bdn/`, including all confidence intervals,
+GC counts, overhead calibration and warnings. Long-ASCII forward 99.9% error is
+3068.891 us (larger than its mean), so its apparent ratio is inconclusive.
+
+Provisional scan comparisons use identical first-delimiter recognition for
+`&`, `<`, CR, `]`, `>`, and validate all three methods' return values in setup:
+
+| Corpus | Scalar mean ns | Cached SearchValues mean ns | Runtime IndexOfAny mean ns |
+|---|---:|---:|---:|
+| long hit | 5849.323 | 315.743 | 690.961 |
+| long miss | 5906.207 | 317.399 | 684.675 |
+| multilingual | 5970.648 | 318.640 | 692.853 |
+| short hit | 0.984 | 1.643 | 1.205 |
+| short miss | 3.832 | 3.045 | 2.055 |
+
+All scans report no managed allocation at displayed precision after static/setup
+initialization. Dense first-position scan values are excluded from interpretation:
+scalar overhead subtraction produced 0 ns and BDN warns ZeroMeasurement;
+sub-nanosecond dense/short values are near the harness floor. These are not zero
+execution-time claims. SearchValues clearly favors long isolated delimiter scans
+on this host; full escaping additionally validates scalars, tracks bracket state,
+selects replacements and writes output, so scan-only ratios do not establish a
+repeatable benefit for replacing the full algorithm. Retain the straightforward
+correctness baseline in this frozen deliverable; evaluating a full bulk-escape
+implementation with identical semantics is a future optimization, not a missing
+public writer behavior. No SIMD/hash or unmeasured scanning optimization ships.
