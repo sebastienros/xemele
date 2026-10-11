@@ -9,13 +9,13 @@ namespace Xemele.Validation;
 // resolution ownership, aggregate limits and original source mappings unchanged.
 internal static class DtdSubsetReader
 {
-    internal static DtdModel Parse(string text, XmlResourceResolver? resolver, ValidationOperation operation)
+    internal static DtdModel Parse(string text, XmlResourceResolver? resolver, ValidationOperation operation, Uri? sourceUri = null)
     {
         var limits = operation.Limits; var cancellation = operation.CancellationToken;
         var budget = new OperationBudget(new() { Limits = limits, Resolver = resolver, DtdProcessing = XmlDtdProcessing.Parse }, cancellation);
         var entities = new MeteredBudget(new XmlEntityBudget(budget, new(StringComparer.Ordinal)), operation);
         using var session = new XmlResolutionSession(resolver, budget, cancellation);
-        using var parser = new DtdParser(DtdSubsetKind.External, limits, entities, new(null, 1, 1, null));
+        using var parser = new DtdParser(DtdSubsetKind.External, limits, entities, new(sourceUri, 1, 1, null));
         var sources = new List<ExternalXmlSource>();
         int offset = 0;
         try

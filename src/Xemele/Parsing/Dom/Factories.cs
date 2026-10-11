@@ -28,11 +28,21 @@ public sealed partial class XmlDocument
     }
 
     public static XmlDocument Load(Stream input, XmlParseOptions? options = null, CancellationToken cancellationToken = default)
+        => LoadCore(input, options, null, cancellationToken);
+
+    public static XmlDocument Load(Stream input, XmlParseOptions? options, Uri sourceUri, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(sourceUri);
+        if (!sourceUri.IsAbsoluteUri) throw new ArgumentException("Source URI must be absolute.", nameof(sourceUri));
+        return LoadCore(input, options, sourceUri, cancellationToken);
+    }
+
+    private static XmlDocument LoadCore(Stream input, XmlParseOptions? options, Uri? sourceUri, CancellationToken cancellationToken)
     {
         RejectStrictRecovery(options);
         ArgumentNullException.ThrowIfNull(input);
         var snapshot = new OperationBudget(options, cancellationToken).Options;
-        using var adapter = new ByteDomAdapter(snapshot, cancellationToken);
+        using var adapter = new ByteDomAdapter(snapshot, cancellationToken, sourceUri: sourceUri);
         byte[] buffer = new byte[4096];
         while (adapter.Diagnostic is null)
         {
