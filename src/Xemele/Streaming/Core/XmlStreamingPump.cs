@@ -12,7 +12,8 @@ internal sealed partial class XmlStreamingPump : IAsyncXmlStreamingPump
 {
     private readonly XmlParserCore core;
     private readonly XmlInputDecoder? decoder;
-    private readonly bool asyncResources, characterInput;
+    private bool asyncResources;
+    private readonly bool characterInput;
     private readonly Uri? sourceUri;
     private readonly ScalarLocation primaryPosition;
     private XmlLocation lastPrimaryLocation;
@@ -238,7 +239,6 @@ internal sealed partial class XmlStreamingPump : IAsyncXmlStreamingPump
         try
         {
             if (disposed) return;
-            if (asyncResources) throw new InvalidOperationException("Use DisposeAsync for async resource ownership.");
             disposed = true;
             try { core.Dispose(); } finally { decoder?.Dispose(); Release(); }
         }

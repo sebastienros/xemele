@@ -178,9 +178,8 @@ internal sealed partial class XmlParserCore : IDisposable, IAsyncDisposable
         try
         {
             if (disposed) return;
-            if (asyncResources) throw new InvalidOperationException("Use DisposeAsync for an async resource core.");
             disposed = true; ClearUnresolvedReference(); token = []; tokenLocations = []; physicalStarts = []; attributePhysicalLocations = []; attributePhysicalOrigins = []; attributePhysicalIdentities = []; attributePhysicalIdentity = null; attributePhysicalSpelling = null; physicalTag.Clear(); attributes = [];
-            try { DisposeEntities(); }
+            try { DisposeResourcesSynchronously(); }
             finally
             {
                 names.Clear(); names = null!;
