@@ -49,13 +49,22 @@
       "evidence": []
     }
   ],
-  "implementation": [],
+  "implementation": [
+    "src/Xemele/Html/Legacy/HtmlParser.cs: managed legacy recovery and incremental entry points",
+    "src/Xemele/Html/Legacy/LegacyInput.cs: bounded transport, scalar locations and pinned decoding",
+    "src/Xemele/Html/Legacy/LegacyRules.cs and LegacyCharsets.Generated.cs: pinned native recovery/charset tables",
+    "tests/fixtures/M7-legacy/oracle.json: all original 443 pinned-native trees retained"
+  ],
   "evidence": [],
   "blockers": [],
   "handoff": {
-    "summary": "",
+    "summary": "Draft source candidate; 444/446 focused cases pass, two duplicate-root native outputs awaiting ordered compatibility contract. No measurements run.",
     "checks": [],
-    "remaining": [],
+    "remaining": [
+      "Ordered duplicate-root contract disposition without replacing original oracle trees",
+      "Broader encoding/malformed/overlong-name vectors and source review",
+      "Public API/sample, exclusive allocation and BDN evidence, final focused checks"
+    ],
     "requests": []
   }
 }
