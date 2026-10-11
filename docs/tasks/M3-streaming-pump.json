@@ -32,29 +32,151 @@
     {
       "id": "M3-streaming-pump-A1",
       "description": "Implement approved internal supply/advance/resource-service pump over integrated decoder/core and callbacks, with bounded one-tag/effective-DTD cursors, exact byte/character source offsets and aggregate event projection.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "affected-correctness",
+        "review-corrections",
+        "source-review"
+      ]
     },
     {
       "id": "M3-streaming-pump-A2",
       "description": "Test every notification pause without replay, all input chunk splits, declaration/encoding framing, CDATA/comment/PI boundaries, defaults/unresolved values/DTD projections, fatal and callback exception/cancellation lifetime behavior, async resource suspension; no unbounded event queue or hidden DOM.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "affected-correctness",
+        "review-corrections",
+        "source-review"
+      ]
     },
     {
       "id": "M3-streaming-pump-A3",
       "description": "Record real zero-allocation borrowed event and bounded scratch evidence, compile without later public adapters, preserve integrated M2 semantics and validate at a known tested revision.",
       "status": "pending",
-      "evidence": []
+      "evidence": [
+        "process-wide-allocations",
+        "prepared-harness-control",
+        "direct-api",
+        "planning-validator",
+        "revoked-bdn"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Streaming/Core/Contracts.cs: frozen sixteen-event bool sink and supply/advance/resource-service interfaces",
+    "src/Xemele/Streaming/Core/XmlStreamingPump.cs: bounded byte/character transport, original primary scalar cursor, terminal/recovery snapshot and owner guards",
+    "src/Xemele/Streaming/Core/XmlStreamingPump.Events.cs: one-tag and lexical aggregation, iterative effective-DTD cursors, exact CDATA/DOCTYPE ends and M2 incomplete/default provenance",
+    "src/Xemele/Streaming/Core/XmlStreamingPump.Async.cs: genuine awaited resource servicing and primary-exception-preserving async fault cleanup",
+    "tests/Xemele.Tests/M3-streaming-pump/: every-split/pause/location/projection/fault and delayed async-only controls",
+    "benchmarks/Xemele.Benchmarks/M3-streaming-pump/: prebuilt reused infrastructure with control/process-wide allocations/in-process BDN",
+    "docs/reports/M3-streaming-pump/report.md: protocol, actual checks, allocation owner boundaries and revoked timing limitation"
+  ],
+  "evidence": [
+    {
+      "id": "affected-correctness",
+      "kind": "check",
+      "revision": "b8e5035cf1edfe8b8703a2111d79efdc739e52c7",
+      "command": "Pinned tests DLL -namespace Xemele.Tests.StreamingPump -namespace Xemele.Tests.AsyncResources -namespace Xemele.Tests.Resolution -namespace Xemele.Tests.Entities -namespace Xemele.Tests.EncodingCompatibility -namespace Xemele.Tests.AttributeMetadata -namespace Xemele.Tests.Recovery -namespace Xemele.Tests.ExternalDeclarationHook -namespace Xemele.Tests.ConformanceGrammar -namespace Xemele.Tests.ConformanceJoin -parallelMode none -showLiveOutput -noColor -result-xml docs/reports/M3-streaming-pump/affected-tests.xml",
+      "result": "passed",
+      "summary": "351 passed, 0 failed/skipped; own30 plus integrated affected groups. Preserve unchanged matrices after narrow corrections. Existing inherited resolver/metadata allocation output accidentally selected before lease is not fresh pump performance evidence.",
+      "artifact": "docs/reports/M3-streaming-pump/affected-tests.xml"
+    },
+    {
+      "id": "review-corrections",
+      "kind": "check",
+      "revision": "df98050f29526c38b36b7a1eb9c17b59416c0d79",
+      "command": "Pinned tests DLL -method Xemele.Tests.StreamingPump.PumpTests.RecoveryFatalEncodingDiagnosticSnapshotMatchesNotificationIdentityAndOrder -method Xemele.Tests.StreamingPump.PumpTests.DefaultsAndIncompletePartsRetainProvenanceAndSkippedReferencePosition -parallelMode none -showLiveOutput -noColor -result-xml docs/reports/M3-streaming-pump/postcommit-correction-tests.xml",
+      "result": "passed",
+      "summary": "4 passed, 0 failed/skipped: fatal decoder/declaration recovery snapshot identical identity/order through pauses, earlier repair + fatal; injected default uses element opening while unknown parts retain physical DTD source.",
+      "artifact": "docs/reports/M3-streaming-pump/postcommit-correction-tests.xml"
+    },
+    {
+      "id": "source-review",
+      "kind": "review",
+      "revision": "df98050f29526c38b36b7a1eb9c17b59416c0d79",
+      "command": null,
+      "result": "passed",
+      "summary": "Independent coordinator review of frozen b8e5035 found two blockers, both scoped corrections reviewed at df98050 with 4 proving checks passing. No other A1/A2 source blockers; bounded transport/tag/model/no-replay/async cleanup assessed.",
+      "artifact": null
+    },
+    {
+      "id": "direct-api",
+      "kind": "check",
+      "revision": "df98050f29526c38b36b7a1eb9c17b59416c0d79",
+      "command": "Pinned dotnet docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare src/Xemele/bin/Release/net10.0/Xemele.dll /private/tmp/m3-pump-api-union.txt",
+      "result": "passed",
+      "summary": "Matched639 compiled members against duplicate-checked canonical all-task-fragment union; final productSHA2566262BA63BEEADF26B711EBEF36A0736D31D9A78DAAD0E782CE2E8A9641AC5153.",
+      "artifact": "docs/reports/M3-streaming-pump/final-direct-api.json"
+    },
+    {
+      "id": "official-api-environment",
+      "kind": "check",
+      "revision": "b8e5035cf1edfe8b8703a2111d79efdc739e52c7",
+      "command": "PATH=pinned directory python3 tools/ApiBaseline/compare.py --report docs/reports/M3-streaming-pump/api.json",
+      "result": "failed",
+      "summary": "Isolated checkout missing pinned corpus fixture xmlconf/eduni/errata-2e/E14.dtd; no product difference or corpus/public edits. Coordinator authorized direct approved comparison and separately provisioned its integration environment.",
+      "artifact": null
+    },
+    {
+      "id": "prepared-harness-control",
+      "kind": "check",
+      "revision": "df98050f29526c38b36b7a1eb9c17b59416c0d79",
+      "command": "XEMELE_PUMP_REVISION=df98050... pinned dotnet benchmarks/Xemele.Benchmarks/M3-streaming-pump/bin/Release/net10.0/Xemele.Benchmarks.dll --control docs/reports/M3-streaming-pump/harness-control.json",
+      "result": "passed",
+      "summary": "Same-source semantic/capacity controls pass with all allocation counters disabled; those zero fields are not measurement evidence. Both prepared Release builds zero warnings/errors with pinned no-server single-node controls.",
+      "artifact": "docs/reports/M3-streaming-pump/harness-control.json"
+    },
+    {
+      "id": "process-wide-allocations",
+      "kind": "check",
+      "revision": "df98050f29526c38b36b7a1eb9c17b59416c0d79",
+      "command": "XEMELE_PUMP_REVISION=df98050... pinned absolute dotnet/probe DLL --allocation own allocations.json, subprocess timeout30s",
+      "result": "passed",
+      "summary": "Granted lease m3-streaming-pump-df98050 child exited0 before revocation; coordinator retained valid own-process allocation scope. 128warm512x4096 byte/char primitive0B each; positive1048B; cold2fixture128256B; owned32endtoend1685504B; fixed capacity and16MiB stress retained401184\u2192401184B. Exact product/revision/runtime/fixture hashes.",
+      "artifact": "docs/reports/M3-streaming-pump/allocations.json"
+    },
+    {
+      "id": "revoked-bdn",
+      "kind": "check",
+      "revision": "df98050f29526c38b36b7a1eb9c17b59416c0d79",
+      "command": "Prepared absolute pinned dotnet/probe DLL --benchmark own BenchmarkDotNet.Artifacts, subprocess timeout120s",
+      "result": "failed",
+      "summary": "Lease revoked after unrelated host benchmark discovered. Own benchmark PID84977 stopped with TERM, exit-15; partial initialpilot only, no completedcase or valid isolated timing. RELEASED/nochildren reported before reviewing reports; no retry.",
+      "artifact": "docs/reports/M3-streaming-pump/benchmark.stdout.txt"
+    },
+    {
+      "id": "planning-validator",
+      "kind": "check",
+      "revision": "df98050f29526c38b36b7a1eb9c17b59416c0d79",
+      "command": "python3 tools/planning/tasks.py validate",
+      "result": "passed",
+      "summary": "Validated142 tasks: schema/evidence/acyclic dependencies/additive milestones/ordered ownership.",
+      "artifact": null
+    },
+    {
+      "id": "diff-check",
+      "kind": "check",
+      "revision": "df98050f29526c38b36b7a1eb9c17b59416c0d79",
+      "command": "git diff --check",
+      "result": "passed",
+      "summary": "No whitespace errors.",
+      "artifact": null
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Single runtime owner for frozen pump; SAX/push/reader consume this integrated prerequisite independently.",
-    "checks": [],
-    "remaining": [],
-    "requests": []
+    "summary": "Shared bounded pump implemented; A1/A2 checks/review pass. Real byte/character borrowed primitive allocation0B proven with positive control; prepared BDN pending safe host window after interrupted revoked lease.",
+    "checks": [
+      "Release prepared runtime/tests/probe0warnings/errors; own30+affected351pass at b8e5035; scoped final4pass at df98050; direct639APIpass; validator142valid; diffclean.",
+      "Own process-wide allocation exit0 accepted; benchmark exit-15 invalid pilot timing."
+    ],
+    "remaining": [
+      "A3: unchanged prebuilt three-case BDN memory diagnostics/timing awaiting fresh isolated lease; do not repeat valid allocation child.",
+      "Coordinator integrated verification; no worker integration_revision."
+    ],
+    "requests": [
+      "Fresh host-free exclusive BDN-only lease \u2264120s for unchanged df98050 prebuilt probe; preserve interrupted output under distinct output paths.",
+      "Coordinator handles official full API inventory via environment-only corpus provisioning; worker direct approved compiled API639 matched."
+    ]
   }
 }
