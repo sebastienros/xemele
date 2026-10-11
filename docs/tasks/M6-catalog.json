@@ -4,11 +4,11 @@
   "milestone": "M6",
   "title": "XML catalogs and resolver composition",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M6 coordinator worker M6-catalog",
   "branch": "codex/m6-catalog",
   "base_revision": "a0267fba4ba8dce9e79717fef248c45b4b1355a9",
-  "integration_revision": null,
+  "integration_revision": "f41cab7fbbc964dd99fa18209ce6b54169b9c5e7",
   "depends_on": [
     "M6-contracts",
     "M6-resource-kinds",
@@ -38,7 +38,8 @@
       "status": "passed",
       "evidence": [
         "focused-functional-checks",
-        "iterative-graph-functional-checks"
+        "iterative-graph-functional-checks",
+        "integrated-checks"
       ]
     },
     {
@@ -47,7 +48,8 @@
       "status": "passed",
       "evidence": [
         "focused-functional-checks",
-        "iterative-graph-functional-checks"
+        "iterative-graph-functional-checks",
+        "integrated-checks"
       ]
     },
     {
@@ -57,7 +59,8 @@
       "evidence": [
         "iterative-graph-functional-checks",
         "exclusive-measurements",
-        "implemented-planning-validation"
+        "implemented-planning-validation",
+        "integrated-checks"
       ]
     }
   ],
@@ -141,6 +144,15 @@
       "result": "passed",
       "summary": "Validated162taskrecords after owned implemented evidence update; schema,evidence,acyclicdependencies,additive milestones andorderedownership passed. Runtime source unchanged from d5de679.",
       "artifact": "docs/reports/M6-catalog/measurements.md"
+    },
+    {
+      "id": "integrated-checks",
+      "kind": "integration",
+      "revision": "f41cab7fbbc964dd99fa18209ce6b54169b9c5e7",
+      "command": "Fresh isolated offlinecache restore/forced Release builds tests/publicsample/approvedApiCheck RuntimeFrameworkVersion10.0.11; pinned --fx-version10.0.11 method-only CatalogTests/M6XInclude classes/AdapterTests/SharedParserBudgetTests/SyntaxTests/ContentTests/ResolverTests; sample/scopedAPIunion/planningvalidate/diffcheck",
+      "result": "passed",
+      "summary": "265tests passed0failed/skipped XML actual .NET10.0.11;samplepassed;1052compiledAPI=1031inherited+21catalog;162tasksvalidate;zero build warnings/errors; independently eightBDNcases/fivewarmzeroGCdomains/runtime/lifecycle/sourceapproved.",
+      "artifact": "docs/reports/M6-catalog/measurements.md"
     }
   ],
   "blockers": [],
@@ -151,12 +163,10 @@
       "Public offline sample;972memberAPIunion=951inherited+21catalog;8ShortRunNoEmit cases.",
       "Complete closure exact wrapper positive and unknown-env negative controls passed.",
       "Exclusive once allocation/8case timing completed with final identity unchanged and no children; five borrowed domains each65536operations/0B, positive1048B; raw inspected and preserved.",
-      "Planning validation:162 records passed."
+      "Planning validation:162 records passed.",
+      "Freshcombined265actual10.0.11tests/sample/API1052/planning162; rootindependentrawGC/eightBDN/sourceapproval"
     ],
-    "remaining": [
-      "Coordinator integration and combined inherited checks; no integrated/verified claim.",
-      "Ignored raw artifacts preserved in artifacts/M6-catalog/ for coordinator review/cleanup."
-    ],
+    "remaining": [],
     "requests": []
   }
 }

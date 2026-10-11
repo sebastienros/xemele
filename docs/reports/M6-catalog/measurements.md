@@ -84,3 +84,7 @@ Functional evidence remains 32 focused passing controls, public offline sample,
 972 compiled API union members (951 inherited + 21 catalog), eight-case discovery
 and planning validation of 162 task records. Integration and the combined inherited
 suite belong to the coordinator; this branch is implemented, not verified.
+
+## Integrated verification
+
+Candidate `f41cab7fbbc964dd99fa18209ce6b54169b9c5e7` includes verified adapters/XInclude/nativeparser-budget/resource-kind repairs. Fresh offlinecache restores and forced Release builds tests/publicsample/approvedAPIextractor passed without warnings/errors. XML confirms265selected tests passed0failed/skipped actual .NET10.0.11:32catalog+97XInclude+23adapters+6sharedbudget+107earlier syntax/entity/resolver. Publicsamplepassed;1052compiledAPI members match1031inherited+21catalog. Planning162 and whitespacechecks pass. Root independently inspected eight nonemptyBDNCSVmeans/actualruntime/NoEmitShortRun headers, fiveborrowedGCdomains each16batches0B/65536operations, positive1048B and cold/deepowned/pool/retained inclusive costs. Lifecycle/sourcecorrectionapproval checked; no measurements repeated atintegration.
