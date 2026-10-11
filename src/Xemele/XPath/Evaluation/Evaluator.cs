@@ -24,14 +24,20 @@ internal sealed class XPathEvaluator(XPathNavigator navigator, XPathDynamicConte
         internal readonly Frame? Parent = parent;
     }
     internal XPathItem Bind(XPathItem item) => navigator.Rebind(item, shared, true);
-    internal XPathItem BindNode(XmlNode node)
+    internal static void ValidateNode(XmlNode node, IXPathBudget budget)
     {
-        // Validate topology with charged ancestry visits rather than the public
-        // metadata factory, which would scan live text outside the entry budget.
         if (node.IsDefault || node.Kind == XmlNodeKind.Fragment) throw new ArgumentException("Require connected context.", nameof(node));
         XmlNode top = node;
-        while (!top.Parent.IsDefault) { shared.ChargeOperations(1); top = top.Parent; }
+        while (true)
+        {
+            budget.ChargeOperations(1); var parent = top.Parent;
+            if (parent.IsDefault) break;
+            top = parent;
+        }
         if (top.Kind != XmlNodeKind.Document) throw new ArgumentException("Detached context.", nameof(node));
+    }
+    internal XPathItem BindNode(XmlNode node)
+    {
         var kind = node.Kind switch
         {
             XmlNodeKind.Document => XPathItemKind.Root, XmlNodeKind.Element => XPathItemKind.Element,
@@ -259,8 +265,12 @@ internal sealed class XPathEvaluator(XPathNavigator navigator, XPathDynamicConte
     {
         bool equality = op is XPathBinaryOperator.Equal or XPathBinaryOperator.NotEqual;
         bool leftSet = left.Kind == XPathValueKind.NodeSet, rightSet = right.Kind == XPathValueKind.NodeSet;
-        if (equality && (left.Kind == XPathValueKind.Boolean || right.Kind == XPathValueKind.Boolean))
-            return op == XPathBinaryOperator.Equal ? left.AsBoolean() == right.AsBoolean() : left.AsBoolean() != right.AsBoolean();
+        bool booleanPair = left.Kind == XPathValueKind.Boolean || right.Kind == XPathValueKind.Boolean;
+        if (booleanPair && (equality || leftSet || rightSet))
+        {
+            budget.ChargeOperations(2);
+            return Numeric(op, left.AsBoolean() ? 1 : 0, right.AsBoolean() ? 1 : 0);
+        }
         if (leftSet || rightSet)
         {
             int leftCount = leftSet ? left.AsNodeSet().Count : 1, rightCount = rightSet ? right.AsNodeSet().Count : 1;

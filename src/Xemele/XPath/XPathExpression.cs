@@ -17,7 +17,7 @@ public sealed class XPathExpression
     {
         options?.CancellationToken.ThrowIfCancellationRequested();
         if (context.IsDefault || context.Kind == XmlNodeKind.Fragment) throw new ArgumentException("Require connected context.", nameof(context));
-        var evaluator = Create(context.OwnerDocument, options);
+        var evaluator = Create(context.OwnerDocument, options, context);
         return evaluator.Evaluate(ast, evaluator.BindNode(context));
     }
     public XPathValue Evaluate(XPathItem context, XPathContext? options = null)
@@ -26,9 +26,10 @@ public sealed class XPathExpression
         var evaluator = Create(context.Document, options);
         return evaluator.Evaluate(ast, evaluator.Bind(context));
     }
-    private XPathEvaluator Create(XmlDocument document, XPathContext? options)
+    private XPathEvaluator Create(XmlDocument document, XPathContext? options, XmlNode? node = null)
     {
         var budget = new XPathBudget(options?.Limits ?? new(), span, options?.CancellationToken ?? default);
+        if (node is XmlNode contextNode) XPathEvaluator.ValidateNode(contextNode, budget);
         var dynamicContext = new XPathDynamicContext(options, budget);
         var navigator = new XPathNavigator(document, budget, span);
         return new(navigator, dynamicContext, budget, span);
