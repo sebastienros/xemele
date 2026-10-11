@@ -33,14 +33,18 @@
     {
       "id": "M8-xsd-content-A1",
       "description": "Compile occurrence/compositor/wildcard constraints and schema content-model restrictions.",
-      "status": "pending",
-      "evidence": []
+      "status": "failed",
+      "evidence": [
+        "review-batch-correctness"
+      ]
     },
     {
       "id": "M8-xsd-content-A2",
       "description": "Test sequence/choice/all, extension/restriction, wildcards, determinism and occurrence boundaries.",
-      "status": "pending",
-      "evidence": []
+      "status": "failed",
+      "evidence": [
+        "review-batch-correctness"
+      ]
     },
     {
       "id": "M8-xsd-content-A3",
@@ -49,13 +53,47 @@
       "evidence": []
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Validation/Xsd/ContentModels/: XsdContentCompiler, XsdContentMatcher, ContentCursor and immutable CompiledContent; charged/polled integer and namespace derivation helpers",
+    "tests/Xemele.Tests/M8-xsd-content/:102 focused cases and63-word independent nullable repetition oracle",
+    "docs/reports/M8-xsd-content/content.golden.txt:9 exact unchanged frozen content declarations",
+    "samples/M8-xsd-content/: genuine XML-only compiler/content consumer; no facade or executable datatype fallback"
+  ],
+  "evidence": [
+    {
+      "id": "initial-focused-checks",
+      "kind": "check",
+      "revision": "fe30b556e3222a3fe5607535a407acf39599493c",
+      "command": "python3 docs/reports/M8-xsd-content/check.py",
+      "result": "passed",
+      "summary": "186 owned/affected cases plus42 safe resolver cases (228); zero errors/failures/skips; Release builds zero warnings/errors;1393 public members and9 frozen content members match; real XML-only consumer and176-task planning/diff checks pass. Source review subsequently identified four mandatory corrections; this check is not final acceptance evidence.",
+      "artifact": "artifacts/M8-xsd-content/check.log"
+    },
+    {
+      "id": "review-batch-correctness",
+      "kind": "check",
+      "revision": "f098c72fd2f94bea18c46194de1795ea26439a4d",
+      "command": "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet --fx-version 10.0.11 tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -namespace Xemele.Tests.M8XsdContent -parallelMode none -noLogo -noColor -result-xml artifacts/M8-xsd-content/review-corrections.xml",
+      "result": "failed",
+      "summary": "102 owned cases:101passed,1failed,0skipped. Sole failing requirednegative NonExpressibleIntermediateMustBeRejectedBeforeCompilerDiscardsIt proves the owning declaration compiler erases a non-expressible intermediate wildcard. Other bounded four-finding regressions pass; no exclusion or measurement. Precise retainedgraph/repair request in review-corrections.md.",
+      "artifact": "artifacts/M8-xsd-content/review-corrections.xml"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "",
-    "checks": [],
-    "remaining": [],
-    "requests": []
+    "summary": "Sourcefe30b556 reviewed; bounded four-finding correction sourcef098c72fd2f94bea18c46194de1795ea26439a4d awaits immutable closure review. Required lost-intermediate wildcard negative remains failed pending ordered compiler-owner repair; other102case selection entries pass. No measurements.",
+    "checks": [
+      "Initial scoped check.py:228passed,1393public/9frozen,XML-only consumer,planning176/diff clean atfe30b556 (superseded for acceptance by source review).",
+      "Correction runtime/tests Release builds:zero warnings/errors.102owned cases atf098c72f:101pass/1requirednegative fail/0skips.",
+      "Warm allocation/timing not run; only one probe payload build completed before hostPARK."
+    ],
+    "remaining": [
+      "Closure source review; verified/integrated compiler-owner repair and refresh worker; rerun unchanged required negative and all focused/API/XML-only checks.",
+      "Finish counters-disabled probe/NoEmit controls and frozen identities/process supervision; explicit all-peerPARK/rootgrant required before allocation/timing.",
+      "Later facade/facet join MUST discharge typed element fixed/default value equality and declaration/binding lexical-value consistency using retained IDs/types/contexts/locations, including unused declarations. No datatype fallback supplied."
+    ],
+    "requests": [
+      "src/Xemele/Validation/Xsd/Compilation/Compiler.cs: owning ordered repair must validate every private Union/Intersection operand/result for XSD1.0 namespace-constraint expressibility BEFORE discarding intermediate operands; thread actual At(s,node/body) locations into private calls. Actual fixture and retained T.AnyAttribute={Negated:false,Namespaces:[urn:v]} proof: tests/Xemele.Tests/M8-xsd-content/ReviewRegressionTests.cs and docs/reports/M8-xsd-content/review-corrections.md. Keep compiler independently buildable; no public/frozen declaration change."
+    ]
   }
 }
