@@ -4,7 +4,7 @@
   "milestone": "M7",
   "title": "HTML/CSS conformance and fuzz integration",
   "kind": "verification",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M7 implementation chat 01a12c32-15bf-7492-9fbb-8540ffc6cdcf",
   "branch": "codex/m7-corpus",
   "base_revision": "09f43321521ee2a8d31cf3b88787b62cda6899fe",
@@ -36,29 +36,136 @@
     {
       "id": "M7-corpus-A1",
       "description": "Integrate pinned tokenizer/WPT/legacy/serializer/selector reports and parser/fragment fuzz regressions.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "html-conformance",
+        "selector-differential",
+        "bounded-fuzz",
+        "pinned-native-selector",
+        "inherited-correctness"
+      ]
     },
     {
       "id": "M7-corpus-A2",
       "description": "All advertised profile cases pass; explain every exclusion/differential mismatch.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "html-conformance",
+        "selector-differential",
+        "pinned-native-selector",
+        "inherited-correctness"
+      ]
     },
     {
       "id": "M7-corpus-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "release-builds",
+        "inherited-correctness",
+        "bounded-fuzz",
+        "planning-ownership"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "tests/corpora/html/inventory.json: immutable240-file original/derived fixture, license, SHA, disposition and integrated-report inventory; regressions.json:10 named authored witnesses.",
+    "tests/Xemele.Conformance.Tests/Html/: complete original count/disposition/SHA checks, exact WPT noscript-template composition,10 parser/serializer/import regressions and8 independent malformed UTF8 witnesses.",
+    "tests/corpora/css/:35 authored BCL CSS-XPath vectors plus exact pinned xmloxide raw input/output, MIT license and complete35-result mismatch ledger.",
+    "tests/Xemele.Differential.Tests/HtmlCss/:24 generated trees\u00d73 cultures, two graphs, mutation/snapshots and independent native/BCL overlap assertions.",
+    "tests/Xemele.Fuzz/Html/DeterministicCorpus.cs: bounded deterministic public string/span/shortread/context-fragment/byte fuzz and ownership/quota/cancellation/fault/token invariants; docs/reports/M7-corpus/Fuzz.Driver.csproj executes callable source.",
+    "docs/reports/M7-corpus/: original/native provenance, exact runnable commands, actual committed checks and claim-relative ownership audit. No runtime, API or shared build/runner edits."
+  ],
+  "evidence": [
+    {
+      "id": "release-builds",
+      "kind": "check",
+      "revision": "f1e912ad46fb84a533fef9a95f4c910445478a49",
+      "command": "\"/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet\" build tests/Xemele.Tests/Xemele.Tests.csproj -c Release -p:RuntimeFrameworkVersion=10.0.11 -p:UseSharedCompilation=false --disable-build-servers --source tests/Contracts/Fixtures/M7 -p:NuGetAudit=false\n\"/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet\" build tests/Xemele.Conformance.Tests/Xemele.Conformance.Tests.csproj -c Release -p:RuntimeFrameworkVersion=10.0.11 -p:UseSharedCompilation=false --disable-build-servers --source tests/Contracts/Fixtures/M7 -p:NuGetAudit=false\n\"/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet\" build tests/Xemele.Differential.Tests/Xemele.Differential.Tests.csproj -c Release -p:RuntimeFrameworkVersion=10.0.11 -p:UseSharedCompilation=false --disable-build-servers --source tests/Contracts/Fixtures/M7 -p:NuGetAudit=false\n\"/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet\" build tests/Xemele.Fuzz/Xemele.Fuzz.csproj -c Release -p:RuntimeFrameworkVersion=10.0.11 -p:UseSharedCompilation=false --disable-build-servers --source tests/Contracts/Fixtures/M7 -p:NuGetAudit=false\n\"/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet\" build docs/reports/M7-corpus/Fuzz.Driver.csproj -c Release -p:RuntimeFrameworkVersion=10.0.11 -p:UseSharedCompilation=false --disable-build-servers --source tests/Contracts/Fixtures/M7 -p:NuGetAudit=false",
+      "result": "passed",
+      "summary": "Pinned SDK 10.0.400 / runtime 10.0.11 offline Release builds all pass with zero warnings/errors. Existing source globs compile owned tests/fuzz; owned driver invokes actual callable lane.",
+      "artifact": "docs/reports/M7-corpus/checks.json"
+    },
+    {
+      "id": "html-conformance",
+      "kind": "check",
+      "revision": "f1e912ad46fb84a533fef9a95f4c910445478a49",
+      "command": "\"/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet\" --fx-version 10.0.11 tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll -namespace Xemele.Conformance.Tests.Html -result-xml artifacts/M7-corpus/final/conformance.xml",
+      "result": "passed",
+      "summary": "21 discovered tests pass, zero errors/failures/skips/not-run:240 exact file identities/licenses;6823/7,049 tokenizer count; 166 complete WPT resources; 230 original serializer cases (10/69/151 dispositions); 539 / 640 native counts ; exact original noscript-template assertion; 10 regressions and 8 UTF8 oracle witnesses.",
+      "artifact": "docs/reports/M7-corpus/checks.json"
+    },
+    {
+      "id": "selector-differential",
+      "kind": "check",
+      "revision": "f1e912ad46fb84a533fef9a95f4c910445478a49",
+      "command": "\"/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet\" --fx-version 10.0.11 tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll -namespace Xemele.Differential.Tests.HtmlCss -result-xml artifacts/M7-corpus/final/differential.xml",
+      "result": "passed",
+      "summary": "39 discovered tests pass, zero errors/failures/skips/not-run: 35 CSS-XPath pairs\u00d724 generated trees\u00d73 cultures with 10,080 two-graph initial/mutated result comparisons; 35 pinned native-case dispositions+provenance all required product results pass.",
+      "artifact": "docs/reports/M7-corpus/checks.json"
+    },
+    {
+      "id": "bounded-fuzz",
+      "kind": "check",
+      "revision": "f1e912ad46fb84a533fef9a95f4c910445478a49",
+      "command": "\"/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet\" --fx-version 10.0.11 docs/reports/M7-corpus/bin/Release/net10.0/Fuzz.Driver.dll",
+      "result": "passed",
+      "summary": "Seed 0x4D374854 / 96 inputs\u00d73 cultures\u00d73 profiles: 864 string documents, 3,456 shortread streams, 576 fragments, 2,592 ownership checks, 12 quotas, 1,728 cancellations, 864 I/O faults, 288 retained callback checks. Byte seed 0x4D374254 / 64 payloads: 192 documents / 768 streams. All invariants pass; no long campaign/performance claim.",
+      "artifact": "docs/reports/M7-corpus/checks.json"
+    },
+    {
+      "id": "pinned-native-selector",
+      "kind": "check",
+      "revision": "f1e912ad46fb84a533fef9a95f4c910445478a49",
+      "command": "cargo +1.95.0 build --offline --locked --manifest-path docs/reports/M7-corpus/NativeSelector/Cargo.toml\nartifacts/M7-corpus/native-target/debug/xemele-m7-selector-oracle",
+      "result": "passed",
+      "summary": "Actual xmloxide555055f1ea6bf9944488fd96415b6f03b5b43696/Rust1.95.0/defaultfeaturesfalse / 19 shared-lock-identical dependency records. Locked offline build succeeds; raw 35-response output byte-identical:23 exact overlaps, 4 descendant-only root differences, 8 native grammar rejections. All mismatches named, no product exclusion.",
+      "artifact": "docs/reports/M7-corpus/checks.json"
+    },
+    {
+      "id": "inherited-correctness",
+      "kind": "check",
+      "revision": "f1e912ad46fb84a533fef9a95f4c910445478a49",
+      "command": "\"/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet\" --fx-version 10.0.11 tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -namespace Xemele.Tests.HtmlSerialization -namespace Xemele.Tests.HtmlTreeConstruction -namespace Xemele.Tests.HtmlTokenization -namespace Xemele.Tests.LegacyHtml -namespace Xemele.Tests.HtmlModel -namespace Xemele.Tests.HtmlProcessingInstructions -namespace Xemele.Tests.HtmlParsedText -namespace Xemele.Tests.Css -namespace Xemele.Tests.HtmlCallbacks -namespace Xemele.Tests.Serialization -namespace Xemele.Tests.M3AsyncSerialization -result-xml artifacts/M7-corpus/final/inherited.xml",
+      "result": "passed",
+      "summary": "1756 M7/core and earlier XML serialization/async serialization tests pass; zero errors/failures/skips/not-run. Includes all 14,316 WPT lanes,7,049 tokenizer states/splits,539 legacy native fixtures,640 native serialization graphs/all 230 dispositions,89 CSS facts and11 callbacks.",
+      "artifact": "docs/reports/M7-corpus/checks.json"
+    },
+    {
+      "id": "planning-ownership",
+      "kind": "check",
+      "revision": "f1e912ad46fb84a533fef9a95f4c910445478a49",
+      "command": "python3 tools/planning/tasks.py validate\npython3 docs/reports/M7-corpus/audit.py\ngit diff --check 5e5f7572ed4ad3071d48f74cba9ec741ab5a78fc",
+      "result": "passed",
+      "summary": "Planning validates169 records. Correct assigned branch/worktree; claim/base ancestors verified. Claim-relative audit has no outside-owned writes and git diff --check passes.",
+      "artifact": "docs/reports/M7-corpus/checks.json"
+    },
+    {
+      "id": "historical-broad-inherited",
+      "kind": "check",
+      "revision": "5e5f7572ed4ad3071d48f74cba9ec741ab5a78fc",
+      "command": "\"/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet\" --fx-version 10.0.11 tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -result-xml artifacts/M7-corpus/inherited-all.xml",
+      "result": "failed",
+      "summary": "Completed exit1: 7,789 total / 7,788 pass / 1 failure (M3 AttributeMetadata warm allocation expected 0, actual 7,744 B), zero errors/skips/not-run, 6.211s. Runtime/inherited sources identical to claim. Embedded counter inadvertently run without lease/controlled tiering; no passing performance claim or rerun. Coordinator routes owning cumulative-gate follow-up; focused M7 correctness remains passing.",
+      "artifact": "docs/reports/M7-corpus/checks.json"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "",
-    "checks": [],
-    "remaining": [],
-    "requests": []
+    "summary": "Implemented M7 HTML/CSS corpus integration at f1e912ad46fb84a533fef9a95f4c910445478a49; complete immutable inventories/ledgers, original noscript-template composition, independent pinned selector overlap and bounded deterministic parser/fragment fuzz. All writes task-owned; dependencies verified base 09f4332; no runtime/shared changes.",
+    "checks": [
+      "Five pinned offline Release builds:0 warnings/errors.",
+      "1756 inherited correctness+21 conformance+39 differential tests:1,816 pass,0 errors/failures/skips/not-run.",
+      "Bounded fuzz:864 string + 192 byte documents,3,456 + 768 streams, 576 fragments; all ownership/quota/cancellation/I/O/token invariants pass.",
+      "Actual native 35 selector outputs locked-rebuilt byte-identical;23 overlap / 4 root differences / 8 native unsupported all individually classified.",
+      "Planning 169, exact claim/base ancestry, owned-path/diff audit pass.",
+      "Historical broad 7,789 run completed failed at one uncontrolled earlier M3 allocation check; not a passing performance claim. Restricted stalled builds terminated/reaped; all final owned correctness handles completed."
+    ],
+    "remaining": [
+      "Coordinator integration and verification; integration_revision intentionally null."
+    ],
+    "requests": [
+      "Owning cumulative gate: tests/Xemele.Tests/M3-attribute-metadata/AttributeMetadataTests.cs:133, WarmBorrowedCompleteAndIncompleteEventsAllocateZeroWithPositiveControl reported 7,744 B vs 0 in default-tiering broad run. Resolve under gate-controlled environment/isolation; no M7 runtime edit requested, no worker measurement rerun."
+    ]
   }
 }
