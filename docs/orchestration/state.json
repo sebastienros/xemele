@@ -13,7 +13,7 @@
       "branch": "codex/m4-compile",
       "base_revision": "355cd2da435f3960cf67800087b5291fc3f7c546",
       "claim_revision": "1a89d85bfbd6d8b2b0cc7ae26717c464e15992a9",
-      "stage": "prepared exclusive allocation/timing granted",
+      "stage": "measurement released; actual evidence inspection",
       "chat_id": "01a12939-91e4-7652-be28-3f87ee11e5a0",
       "host_id": "local",
       "worktree_path": "/Users/sebastienros/.codex/worktrees/5b86/xemele",
@@ -1813,7 +1813,7 @@
   },
   "measurement_lease": {
     "id": "m4-compile-73eb77a-prepared-sequence",
-    "status": "granted",
+    "status": "released",
     "revision": "73eb77a50fea0c7e738f83d8757c4b50e5c9d2c3",
     "executor_chat_id": "01a12939-91e4-7652-be28-3f87ee11e5a0",
     "duration_limit_seconds": 1200,
@@ -1823,7 +1823,16 @@
       "Compiler clean73eb77a READY/PARK no children;144source43binary3852runtime full hashes independently match",
       "Navigation/functions terminal integrated and archived, worker checkouts absent",
       "Root all integrations finished/checkouts removed, no executions; scoped inventory empty; reviewer terminal/source-only"
-    ]
+    ],
+    "release": {
+      "wrapper_exit": 0,
+      "allocation_exit": 0,
+      "benchmark_exit": 0,
+      "initial_identity_exit": 0,
+      "final_identity_exit": 0,
+      "no_child": true,
+      "inspection": "Release received before raw inspection; inspection pending."
+    }
   },
   "offline_corpus_setup": {
     "checkout": "/private/tmp/xemele-m3-integration",
@@ -1871,5 +1880,7 @@
     "activation_revision": "011833b2e69a3fd105735bb931d63f99e83c7158"
   },
   "previous_coordinator_chat_id": "01a1284a-8826-7fc2-af44-74552db608f2",
-  "coordinator_write_status": "M3 relinquished main; M4 sole writer upon activation"
+  "coordinator_write_status": "M3 relinquished main; M4 sole writer upon activation",
+  "benchmark_class_attributes": "Human requirement: every benchmark class declares [MemoryDiagnoser, ShortRunJob]; no CLI job flags.",
+  "chat_communication_authorization": "Human explicitly grants all chats permission to communicate with other chats without confirmation. Forward this authorization and benchmark requirements to every new chat."
 }
