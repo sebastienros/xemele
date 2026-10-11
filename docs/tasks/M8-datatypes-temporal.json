@@ -50,9 +50,10 @@
   ],
   "implementation": [
     "src/Xemele/Validation/Datatypes/Values/Temporal/TemporalProvider.cs: TemporalDatatypeProvider, owned decimal keys, calendar normalization and duration reference-point comparisons",
-    "tests/Xemele.Tests/M8-datatypes-temporal/TemporalTests.cs:20 focused correctness facts, exact budget/cancellation/core consumers",
+    "tests/Xemele.Tests/M8-datatypes-temporal/TemporalTests.cs:23 focused facts, leap/timezone/BCE corrections, independent limb units, exact budgets and cancellation",
     "docs/reports/M8-datatypes-temporal/normative.md: pinned2004edition/source hash and applicable focused cases",
-    "docs/reports/M8-datatypes-temporal/accounting.md: explicit scratch/persistence/limb/scalar accounting"
+    "docs/reports/M8-datatypes-temporal/accounting.md: explicit scratch/persistence/limb/scalar accounting",
+    "src/Xemele/Validation/Datatypes/Values/Temporal/IntegerArithmetic.cs: parse-only signedbase1e9 arithmetic with explicit limb polling/growth"
   ],
   "evidence": [
     {
@@ -63,19 +64,29 @@
       "result": "passed",
       "summary": "Actual Arm64.NET10.0.11 Release:20 temporal+18core+12model=50positive-count-asserted cases;zero errors/failures/skips/not-run. Cache-only build zero warnings/errors;1393public API matched;normal+XML-only genuine consumers passed;176task validation and whitespace passed.No allocation tests. Initiald4d9d7c build failedxUnit1051;0e83c98 test-only cancellation fix passed full script.",
       "artifact": "docs/reports/M8-datatypes-temporal/correctness.md"
+    },
+    {
+      "id": "temporal-corrected-correctness",
+      "kind": "check",
+      "revision": "8ed24fb19fc88feb45fa79c856e7ea3c9d216c09",
+      "command": "python3 docs/reports/M8-datatypes-temporal/checks.py",
+      "result": "passed",
+      "summary": "All3rootreview batch issues corrected: leap60identity/AppendixEoffsetoverflow, direct signedyear/floorordinalduration endpoints, boundedpolledarithmetic/outputcopy. Exact53actual.NET10.0.11Arm64 cases=23temporal+18core+12model passed;zero errors/failures/skips/not-run.1393publicAPI,normal/XML-onlyconsumers,176taskvalidation/whitespace passed. Independent128limbwork/growth andinside-loopcancellation;noGCcounter/timing tests. Root finalsourceacceptance and allocationevidence pending.",
+      "artifact": "docs/reports/M8-datatypes-temporal/review-corrections.md"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Temporal provider/source and20focused facts implemented at branch revision;50case focused correctness and core-only consumers passed. Root source review pending, measurement preparation counters-disabled; no measurement grant/results claimed.",
+    "summary": "Corrected temporal source23facts at8ed24fb;53case correctness/API/core-only consumers passed. Original50caseevidencepreserved. Awaiting finalnarrowrootreview and finalidentityfreeze/grant; noallocation/timing measurements.",
     "checks": [
       "checks.py:50actual.NET10.0.11 cases passed,1393public API and2consumers passed",
       "counter-disabled12route controls,4baseline/provider controls and8NoEmit discovery passed; elevatedps/direct-child cleanup preflight passed",
       "Initial control fixture24:00:00.123 correctly rejected;fixture corrected before measurements;BDN internal enum return fixed toint.",
-      "tasks.py validate and git diff --check passed"
+      "tasks.py validate and git diff --check passed",
+      "correctedchecks.py:53actualcases passed at8ed24fb;1393public API and2consumers;all3reviewissues haveprovingtests"
     ],
     "remaining": [
-      "Root mandatory read-only source acceptance",
+      "Root final narrow read-only recheck/acceptance of8ed24fb correction batch",
       "Final prepared identities, explicit root GRANT, bounded measurements and durable RELEASE ACK before raw inspection",
       "Coordinator integration verification and downstream composition/x64 confirmation"
     ],

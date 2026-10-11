@@ -5,28 +5,31 @@ borrowed input. It never retains a span, operation, context or mutable caller
 state. Owned values contain up to four immutable keys: signed decimal whole
 seconds plus a trimmed positive fraction. Calendar values carry zone presence;
 absent-zone bounds are constructed once. Duration keys contain all four normative
-endpoints. BigInteger exists only in synchronous parse scratch.
+endpoints. Owned base10^9 Integer arithmetic exists only in synchronous parse scratch; single-limb values are inline.
 
 Lexical readers charge before every inspected UTF-16 unit, every two-digit
 conversion, and every arbitrary digit multiply/add. Calendar/rank/bound checks
-charge before evaluation. Arithmetic uses stable limb units: each operand-size
-inspection costs one, each operation reserves and charges the maximum operand
-limb count, and reserves a node plus that count and one possible result limb.
-This is conservative for inline CLR integers and reserves scratch/result growth
-even when the CLR shares storage. Division is always by a small positive constant;
-there is no unmetered general multiplication or scale exponentiation. Formatting
-repeatedly divides by ten through the same accounting path, then charges the
-written digits. No opaque culture-dependent BigInteger parse/format is used.
+charge before evaluation. All size-dependent integer arithmetic uses owned loops:
+each add/subtract/multiply/divide/remainder limb and each magnitude/leading-zero
+inspection polls and charges before processing. Helpers charge one entry unit.
+Array growth reserves one node plus its actual limb capacity before allocation;
+inline single-limb arithmetic and sign-sharing allocate no arrays. Small constants
+keep each limb step bounded, with no BigInteger, general multiplication or scale
+exponentiation. Decimal output divides by ten through these loops and polls before
+each output digit. The 128-limb proving fixture independently expects N+4 work and
+N+2 components for multiplicationby2, N+1/0 for remainderby3, and verifies
+cancellation inside multiplication and the first output division. Formatting123
+costs13 work/4 components independently of parse accounting.
 
 String/character persistence reserves one node plus one component per sixteen
-UTF-16 units before allocating. Fraction copying/complementing charges every
-written unit. The final value reserves one component before construction. The
-char format buffer is parse scratch with explicit measured ownership; it is not
+UTF-16 units before allocating. Fraction and final string copying/complementing uses .NET10 ref-struct-capable
+string.Create callbacks, polling and charging before every written unit. The final value reserves one component before construction. The
+char format buffer is parse scratch with explicit ownership to be measured; it is not
 retained. Representational overflow refuses the shared operation.
 
 Comparison charges before sign/length handling and each actual examined whole or
 fraction digit; virtual fractional zero padding is charged too. Hashing charges
-each whole/fraction digit plus separator and zone fold. Neither operation converts
+each whole/fraction digit plus separator, leap phase and zone fold. Neither operation converts
 numbers, allocates scratch or constructs diagnostics on success/mismatch. All
 methods poll before publishing results. Refusal during parse is caught using a
 private provider-only exception, so caller and cancellation exceptions propagate.
