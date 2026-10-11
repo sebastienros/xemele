@@ -1,50 +1,75 @@
 # Schema validation contracts — M8
 
-Decision owner: `M8-contracts`. Prerequisites: M5 validation result model, M4 XPath for Schematron, and M2 resolver. HTML is not a dependency.
+Decision owner: `M8-contracts`. Exact declarations are the nonpackaged
+[fixtures](../../tests/Contracts/Fixtures/M8/); semantics and lane joins are frozen
+in [schema contracts](../decisions/M8/contracts.md), with the machine-readable
+[feature inventory](../decisions/M8/inventory.json). The per-consumer `.golden.txt`
+files freeze emitted public **and internal** member IDs, signatures, nullable,
+constant and init-only metadata. They are declaration baselines, not shipped APIs.
 
-```csharp
-namespace Xemele.Validation;
-public sealed class RelaxNgSchema
-{
-    public static RelaxNgSchema Compile(Document schema, SchemaCompileOptions? options = null);
-    public ValidationResult Validate(Document document, ValidationOptions? options = null);
-}
-public sealed class XmlSchema
-{
-    public static XmlSchema Compile(Document schema, SchemaCompileOptions? options = null);
-    public ValidationResult Validate(Document document, ValidationOptions? options = null);
-}
-public sealed class SchematronSchema
-{
-    public static SchematronSchema Compile(Document schema, SchematronCompileOptions? options = null);
-    public SchematronResult Validate(Document document, SchematronValidationOptions? options = null);
-}
-public sealed record SchemaCompileOptions
-{
-    public XmlResourceResolver? Resolver { get; init; }
-    public XmlResourceLimits Limits { get; init; }
-    public CancellationToken CancellationToken { get; init; }
-}
-```
+Prerequisites are verified M2 XML/resolver, M4 XPath 1.0 and M5 validation.
+No HTML, CSS, XSLT engine, CLR serialization or later milestone is required.
+The harness compiles an XML-only prerequisite assembly from those existing source
+paths, and never executes an M8 declaration method.
 
-Contract fixtures add string/stream conveniences, exact profile options, schema compilation diagnostics, phase selection, assertion/report records, and supported structured-report output. Compiled schemas are immutable; per-run traversal, identity tables, diagnostics, and resolution state are independent. Validation returns results, while malformed schema compilation throws a dedicated diagnostic exception. No CLR model serialization or future XSLT dependency.
+## Public surface
 
-## Shared datatype lane
+`Xemele.Validation.RelaxNgSchema`, `XmlSchema` and `SchematronSchema` have private
+constructors and three static `Compile` overloads: `XmlDocument`, `string`, and
+readable `Stream`. RELAX NG and XSD accept `SchemaCompileOptions? = null` and
+return `ValidationResult` from three `Validate` overloads with the same input
+forms and `ValidationOptions? = null`. Schematron accepts
+`SchematronCompileOptions? = null` and returns `SchematronResult` with
+`SchematronValidationOptions? = null`. No `Document` alias or runtime stub ships.
+Malformed or semantically invalid schemas throw `SchemaCompileException`, whose
+owned nonempty diagnostics distinguish language restrictions, syntax, resource
+refusal and quotas. Invalid instances return complete invalid results; a stopped
+validation returns an incomplete invalid result with a fatal diagnostic.
 
-An internal `IXmlDatatypeLibrary` defines lexical parsing, value equality/comparison, whitespace normalization, and facet checking with namespace context. `M8-datatypes` implements the XSD 1.0 datatype set and comparisons; `M8-regex` implements XML Schema regex syntax separately. Neither assumes .NET regex semantics. They run after `M8-model`; datatype facet integration depends on regex where required. These are shared prerequisites for RELAX NG's XSD datatype library and XSD validation.
+`SchemaCompileOptions` freezes Resolver=null, BaseUri=null, finite default
+`XmlResourceLimits`, MaxOperations=10,000,000, MaxComponents=100,000 and operation
+CancellationToken. Schematron wraps these options, fixes ISO/IEC 19757-3:2016 and
+XPath 1.0, and exposes independent finite M4 compile/evaluation limits. Phase
+selection is per validation. All resource/work limits aggregate across imports,
+includes, nested schemas and regex/datatype evaluation; exactly-at-limit succeeds.
 
-## RELAX NG lane
+The ordered shared repair adds **`XmlResourceKind.Schema = 5`** without changing
+values 0–4. Fixtures use a named internal constant `(XmlResourceKind)5` against
+current M2, and explicitly do not claim the runtime has this named enum member.
+Schema access must never be disguised as entity or XInclude access. The coordinator
+must assign the shared resolver source before model implementation starts.
 
-`M8-rng-compile` parses XML syntax, namespace/name classes, references/includes, and simplification into an immutable pattern graph. `M8-rng-validate` implements pattern matching with attributes/interleave/lists/datatype constraints and resolver budgets. Tests distinguish schema restrictions from invalid instances. XML syntax and declared datatype libraries are the release profile; compact syntax remains excluded. Own schema and instance suites plus pinned libxml2 differentials.
+## Complete release profiles and independent lanes
 
-## XSD lane
+RELAX NG uses the OASIS 3 December 2001 XML syntax, simplification and restrictions,
+including arbitrary name classes, recursion, interleave, lists, externalRef,
+include, grammar scope and built-in/XSD datatype libraries. Compact syntax is the
+only syntax exclusion. Compiler output is an immutable pattern graph; the
+validation facade completes datatype/regex-dependent schema checks before
+publishing a schema. Instance matching implements the whole declared XML profile.
 
-`M8-xsd-compile` handles component model, imports/includes/redefine, namespace resolution, element/attribute/type declarations, substitution and derivation constraints. `M8-xsd-content` compiles occurrence/compositor/wildcard models and checks relevant determinism restrictions. `M8-xsd-validate` applies types/facets, xsi:type/nil, defaults/fixed, and instance constraints. `M8-xsd-identity` adds key/unique/keyref and their restricted XPath rules. It owns a dedicated hook implementation; integration occurs in a later validation facade task rather than two workers editing one engine.
+XSD is W3C XML Schema 1.0 Second Edition Structures and Datatypes. Composition,
+redefine, substitution, derivation, all compositors, wildcards, xsi:type/nil,
+facets, defaults/fixed, ID/IDREF and key/unique/keyref are required. Content and
+identity engines implement separate immutable programs and per-run hooks.
+`M8-xsd-facade` composes them after verification; earlier compiler tasks expose
+internal output only. XSD 1.1, persistent augmentation/PSVI and CLR mapping are
+explicitly outside this profile. Validation applies effective defaults internally
+without mutating documents. Applicable 1.0 cases cannot be excluded to hide gaps.
 
-XSD 1.0 Second Edition is the contract. W3C suite metadata defines applicability; XSD 1.1 cases are excluded with reasons. Full schema claims are blocked by missing applicable cases. Validation does not silently mutate documents; augmentation/PSVI is separately inventoried and deferred unless explicitly included.
+Schematron uses ISO 2016, schema namespace
+`http://purl.oclc.org/dsdl/schematron`, the `xslt` query binding's XPath 1.0
+expressions/context patterns, and direct M4 evaluation without generated XSLT.
+Absent queryBinding means `xslt`; all other bindings are compile errors. Include,
+abstract patterns/parameters/rules/extends, phases, lets, assertions/reports,
+diagnostics, 2016 properties and dynamic message content are required.
+The structured output is frozen in `SchematronResult`; `SchematronReport` produces
+the documented SVRL XML profile as an owned string or UTF-8 stream output.
 
-## Schematron lane
-
-`M8-sch-compile` resolves includes/abstract patterns, phases, rule contexts, lets, assertions/reports and diagnostics for the chosen ISO edition/XPath 1.0 binding. `M8-sch-validate` evaluates with M4 expressions and emits structured results; reporting task adds the declared report serialization profile. Unsupported query bindings are compile errors. No XSLT-generated evaluator.
-
-RELAX NG, XSD, and Schematron compilation lanes are independent after the model. Validator tasks wait for their own compiler and shared datatypes as specified. A schema integration task composes CLI commands and cross-validator resolver/limit tests only after all individual conformance tasks pass. Resource failures and invalid instances must remain distinguishable.
+Datatypes, regex and facets are separate model-first lanes. Datatype parsing has
+namespace context, exact value equality/order/hash and whitespace normalization;
+facet composition handles restrictions/lists/unions and uses schema regex rather
+than .NET regular expressions. `contracts.md` assigns every interface/output and
+clarifies deferred checks at the facade joins. Conformance owners pin real source
+versions, hashes and applicability with honest missing-case counts. Contract
+compilation establishes compatibility, not runtime conformance or performance.

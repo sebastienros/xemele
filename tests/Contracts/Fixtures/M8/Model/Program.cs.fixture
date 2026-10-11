@@ -1,0 +1,26 @@
+using Xemele;
+using Xemele.Validation;
+using Xemele.XPath;
+// Signature consumers are compiled, but declaration-only members are never invoked.
+static void Contract(XmlDocument doc, Stream stream)
+{
+    var options = new SchemaCompileOptions { BaseUri = new Uri("urn:m8:schema"), Limits = new(), MaxOperations = 1000, MaxComponents = 100 };
+    var validation = new ValidationOptions { MaxOperations = 1000 };
+    _=options; _=validation; _=doc; _=stream;
+}
+static void Hooks(ISchemaOperation op, ISchemaResourceLoader loader, SchemaResourceReference resource) { _ = op.Charge(1, default); _ = op.ChargeComponents(1, default); _ = loader.Load(resource, op); }
+Action<ISchemaOperation,ISchemaResourceLoader,SchemaResourceReference> hook=Hooks; GC.KeepAlive(hook);
+Action<XmlDocument,Stream> usage=Contract; GC.KeepAlive(usage);
+var document=new XmlDocument(); var root=document.CreateElement("root"); document.DocumentNode.AppendChild(root); root.AppendChild(document.CreateText("preserved"));
+if (XPathExpression.Compile("string(/root)").Evaluate(document.DocumentNode).AsString() != "preserved") throw new Exception("M4 XPath changed");
+if (!DtdSchema.Compile("<!ELEMENT root (#PCDATA)>").Validate(document).IsValid) throw new Exception("M5 DTD validation changed");
+var diagnostics=new List<XmlDiagnostic>(); var result=new ValidationResult(true,diagnostics); diagnostics.Add(new("TEST.Error",XmlDiagnosticSeverity.Error,"error",default));
+if(!result.IsValid || result.Diagnostics.Count!=0) throw new Exception("M5 snapshots changed");
+try { _=new ValidationResult(false,[]); throw new Exception("Incomplete result accepted"); } catch(ArgumentException) { }
+var refused=new ValidationResult(false,[new("TEST.Fatal",XmlDiagnosticSeverity.Fatal,"stopped",default)]); if(refused.IsComplete || refused.IsValid) throw new Exception("M5 fatal invariant changed");
+var source=new Uri("urn:m8:resource"); var content=new CountingStream(); var resource=new XmlResolvedResource(content,source); resource.Dispose(); resource.Dispose(); if(content.Disposals!=1) throw new Exception("M2 ownership changed");
+if ((int)XmlResourceKind.ExternalSubset!=0 || (int)XmlResourceKind.ExternalEntity!=1 || (int)XmlResourceKind.Catalog!=2 || (int)XmlResourceKind.XIncludeXml!=3 || (int)XmlResourceKind.XIncludeText!=4 || (int)SchemaResourceKinds.Schema!=5) throw new Exception("Resolver kind contracts changed");
+var request=new XmlResourceRequest(source,null,SchemaResourceKinds.Schema) { SystemId="schema.xsd" }; if(request.SystemId!="schema.xsd" || request.Uri!=source) throw new Exception("M2 request changed");
+if(typeof(XmlDocument).Assembly.GetTypes().Any(t=>t.Namespace is string ns && (ns.Contains("Html",StringComparison.OrdinalIgnoreCase)||ns.StartsWith("Xemele.Css",StringComparison.Ordinal)))) throw new Exception("HTML dependency loaded");
+Console.WriteLine("PASS: Model declarations; M2 ownership/kinds, M4 XPath, M5 DTD/results; XML-only prerequisites; runtime " + Environment.Version);
+sealed class CountingStream : MemoryStream { public int Disposals {get;private set;} protected override void Dispose(bool disposing) { if(disposing) Disposals++; base.Dispose(disposing); } }
