@@ -4,7 +4,7 @@
   "milestone": "M8",
   "title": "Shared datatype values and family contracts",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M8 coordinator01a12c6c-b333-71d3-877f-0d186618e21d / assigned isolated worker",
   "branch": "codex/m8-datatypes-core",
   "base_revision": "e83c84546eceec056e4840c2d12ea2e04d886630",
@@ -32,29 +32,97 @@
     {
       "id": "M8-datatypes-core-A1",
       "description": "Implement owned immutable datatype support shared by the value families: exact type metadata/whitespace policy, bounded normalization, immutable list/union and retyping support, and a precise internal family-provider contract compatible with the frozen IXmlDatatypeLibrary/XmlDatatypeValue interfaces. Freeze all family dispatch, error, comparison/hash and budget joins in an owned report before family implementations start; do not provide fake successful parsers or a partial advertised library.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "core-correctness",
+        "core-review"
+      ]
     },
     {
       "id": "M8-datatypes-core-A2",
       "description": "Test XML-only whitespace, Unicode scalar handling, input snapshots/retained ownership, list/union selected-member identity, declared-type preservation, cancellation and exact operation/component boundaries. Compiled consumers must use only verified M8-model plus this task; later family behavior is not claimed.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "core-correctness",
+        "core-review"
+      ]
     },
     {
       "id": "M8-datatypes-core-A3",
       "description": "Record exact internal helper/family contracts and focused checks at the tested revision. Provide applicable normalization/setup allocation evidence with owned output separated from borrowed primitives; preserve public API and earlier checks.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "core-correctness",
+        "core-review",
+        "measurement-preparation",
+        "core-measurements"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Validation/Datatypes/Values/Core/Metadata.cs: DatatypeTypes,45 immutable XSD1.0 metadata entries",
+    "src/Xemele/Validation/Datatypes/Values/Core/Normalization.cs: Unicode-scalar XML-only whitespace borrowed/owned normalization",
+    "src/Xemele/Validation/Datatypes/Values/Core/Family.cs: IDatatypeFamilyProvider and immutable DatatypeAtomicValue joins",
+    "src/Xemele/Validation/Datatypes/Values/Core/Values.cs: immutable snapshots/list/union/retype,primitive equality/order/hash/measure dispatch",
+    "docs/reports/M8-datatypes-core/contracts.md: exact provider/composer/error/budget/facet contracts;no fake parser or partial library",
+    "tests/Xemele.Tests/M8-datatypes-core/CoreTests.cs:18 focused cases;docs/reports/M8-datatypes-core/Consumer.cs.fixture genuine normal/XML-only consumer"
+  ],
+  "evidence": [
+    {
+      "id": "core-correctness",
+      "kind": "check",
+      "revision": "ff628c8836f07f372c9c37ea3008e6bc62ef234c",
+      "command": "python3 docs/reports/M8-datatypes-core/checks.py",
+      "result": "passed",
+      "summary": "Pinned Release.NET10.0.11 Arm64:30 passing positive-count-asserted tests=18 owned+12 priorM8-model;zero errors/failures/skips/not-run.No allocation tests selected.Cache-only restores/builds zero warnings/errors;normal and XML-only genuine consumers passed;public union matched1393 members.Script per-class count corrected during preparation; runtime/test source unchanged from ff628c8.",
+      "artifact": "docs/reports/M8-datatypes-core/correctness.md"
+    },
+    {
+      "id": "core-review",
+      "kind": "review",
+      "revision": "ff628c8836f07f372c9c37ea3008e6bc62ef234c",
+      "command": "Coordinator read-only source/preparation review, coordination messages collected in task chat",
+      "result": "passed",
+      "summary": "Batch1 Boolean->TextBinary mapping and zero-cost Unwrap entry/return polling fixed and proven.Coordinator accepted ff628c8/c999c2c with no residual blocking review findings.Primitive disjoint equality accepted;QName/NOTATION facet handling and built-in list composition join frozen.",
+      "artifact": "docs/reports/M8-datatypes-core/contracts.md"
+    },
+    {
+      "id": "measurement-preparation",
+      "kind": "check",
+      "revision": "02d5f22728bd8256c02b18f66b35df2819aae2e9",
+      "command": "python3 docs/reports/M8-datatypes-core/preflight.py (require_escalated), plus prepared --control/--discover commands",
+      "result": "passed",
+      "summary": "Counters-disabled10route probe and four baseline/core fixture controls passed;exact8ShortRun MemoryDiagnoser in-process NoEmit cases asserted.No timing/allocation measurement.Default sandbox ps denied;approved elevated preflight passed,childreaped,ownedgroupabsent.Prepared binary/source/input manifest committed.",
+      "artifact": "docs/reports/M8-datatypes-core/preparation.json"
+    },
+    {
+      "id": "core-measurements",
+      "kind": "check",
+      "revision": "c999c2cf9d836990c0342445ed68bc844e14bd79",
+      "command": "python3 docs/reports/M8-datatypes-core/measure.py --granted 7a45ad5280f0f3b367fd70e67629b6a48733baa195bfeba754ff7bd879a77099 (approved elevated process inspection, durable exclusive lease)",
+      "result": "passed",
+      "summary": "10allocation routes32warm/64samples:4borrowed routes0B every sample;owned short/long string40/2072B,setup512B,emptylist88B,union/retype40B.Coldsetup42720B;positive1048B;retained256strings inclusive GC delta1076824B(not exactper-value).8ShortRunNoEmit BDN cases succeeded0B,core1.48-1.84x slower than minimal collapse-only baseline,no speedclaim.254identity checks before/after;2children exit0,reaped,groupsabsent,logsclosed;55.418s;durable releaseACK before rawinspection.",
+      "artifact": "docs/reports/M8-datatypes-core/allocations.md"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Planned bounded child of M8-datatypes; original complete XSD1.0 acceptance and gate reachability preserved.",
-    "checks": [],
-    "remaining": [],
-    "requests": []
+    "summary": "Implemented shared immutable datatype core and exact family joins;focused correctness/API/XML-only consumers and approved isolated measurements passed.Awaiting coordinator integrated verification.",
+    "checks": [
+      "30focused tests passed(18owned+12priorModel);no allocation tests",
+      "1393public API members matched",
+      "normal+XML-only genuine consumers passed",
+      "counter-disabled probe/baseline controls and8ShortRun NoEmit discovery passed",
+      "elevated ps permission/childreap/groupabsence preflight passed",
+      "tasks.py validate and git diff --check passed",
+      "Exclusive measurement sequence passed:4borrowed routes0B,owned allocations separated,8ShortRunNoEmit cases;all254identities stable and lifecyclereleased before inspection"
+    ],
+    "remaining": [
+      "Coordinator independently inspect transient raw results,integrate accepted source/evidence and rerun relevant combined correctness/API/consumer checks;integration_revision remains null"
+    ],
+    "requests": [
+      "Composer owns built-in NMTOKENS/IDREFS/ENTITIES parse/nonempty enforcement;coordinator accepted and routes ownership outside this task",
+      "Facet owner:QName/NOTATION null ValueLength must preserve XSD1.0 length/minLength/maxLength satisfied-for-any-value rule"
+    ]
   }
 }

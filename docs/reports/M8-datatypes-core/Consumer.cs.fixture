@@ -1,0 +1,17 @@
+using Xemele;
+using Xemele.Validation;
+var operation = new SchemaCompileOperation(new() { MaxOperations = 28, MaxComponents = 4 });
+char[] input = "\t根😀  value\r".ToCharArray();
+var snapshot = DatatypeNormalization.Normalize(input, XmlWhitespaceRule.Collapse, operation);
+Array.Fill(input, 'z');
+if (snapshot != "根😀 value") throw new InvalidOperationException("Owned normalization changed.");
+var list = DatatypeValues.CreateList(new("urn:consumer", "list"), [], operation);
+var union = DatatypeValues.CreateUnion(new("urn:consumer", "union"), list, operation);
+var retyped = DatatypeValues.Retype(new("urn:consumer", "derived"), union, operation);
+if (!ReferenceEquals(retyped.SelectedMember, list) || retyped.TypeName.LocalName != "derived" || DatatypeValues.ValueLength(retyped, operation) != 0)
+    throw new InvalidOperationException("Composite joins changed.");
+if (!DatatypeTypes.TryGet(DatatypeTypes.Name("decimal"), out var metadata) || metadata.Primitive != DatatypePrimitive.Decimal)
+    throw new InvalidOperationException("Metadata join changed.");
+if (args.Contains("--xml-only") && typeof(XmlDocument).Assembly.GetTypes().Any(t => t.Namespace is string ns && (ns.Contains("Html", StringComparison.OrdinalIgnoreCase) || ns.StartsWith("Xemele.Css", StringComparison.Ordinal))))
+    throw new InvalidOperationException("XML-only assembly includes HTML.");
+Console.WriteLine("PASS: verified-model normalization/empty-list/union/retype consumer; no family parser dependency.");
