@@ -1,6 +1,6 @@
 {
   "objective": "Complete initial release through verified M9-gate",
-  "coordinator_chat_id": "01a12a53-93ce-7843-a4a5-2f45320c91cf",
+  "coordinator_chat_id": "01a12add-f725-7663-b0f9-e6687671c769",
   "coordination_branch": "main",
   "max_concurrent_workers": 3,
   "last_verified_checkpoint": {
@@ -17,7 +17,7 @@
     }
   ],
   "next_actions": [
-    "Create exactlyonefreshM7coordinator read-onlysetup; awaitREADY then durablytransfer solemain/statewriter, activateandreceiveACK."
+    "Send explicitACTIVATE referencingthisdurabletransfer; successorrecordsfulltransferhash/activation ACK then pursuesM7goal; predecessorread-onlyawaitsACK/completesM6handoff."
   ],
   "last_verified_task": "M6-gate",
   "last_integrated_revision": "f7412c6ef5c5552e7194781e4724253244cdb6bb",
@@ -1999,7 +1999,7 @@
     "status": "superseded_by_explicit_M3_resume",
     "goal_status_to_apply": "paused"
   },
-  "current_milestone": "M6",
+  "current_milestone": "M7",
   "read_only_review": {
     "agent_id": "/root/contract_review",
     "scope": "M6 adapter source/prepared measurement review",
@@ -2076,19 +2076,26 @@
     "cleanup": "Clean worktree removed; branch and all source/evidence integrated. Local preview nupkg preserved at artifacts/M3-gate/packages with verified SHA256 bee764f3cf5cbf3be1be5d94b5bdfdc146d93dd511bc8970a317f8d013014877. Canonical private corpus cache retained."
   },
   "milestone_handoff": {
-    "from_milestone": "M5",
-    "to_milestone": "M6",
-    "thread_id": "01a12a53-93ce-7843-a4a5-2f45320c91cf",
+    "from_milestone": "M6",
+    "to_milestone": "M7",
+    "from_chat_id": "01a12a53-93ce-7843-a4a5-2f45320c91cf",
+    "thread_id": "01a12add-f725-7663-b0f9-e6687671c769",
     "host_id": "local",
-    "status": "Explicit ACTIVATE received and accepted at209cee5b468e1fe49289390074366b2dcfcdd439",
-    "verified_gate_revision": "a7654c83d95174a57105c13b2e70ba0425664e09",
-    "activation_sent": true,
-    "setup_cursor": "204955a0-3a1c-44e4-bab1-e75b6885daba:6",
-    "setup_revision": "d983663cbd3d2319cfb33407732148b3e634c82c",
-    "activation_revision": "209cee5b468e1fe49289390074366b2dcfcdd439"
+    "status": "READY received; durable solewritertransfer committed; explicitACTIVATE pending. M6 relinquishedallwrites.",
+    "verified_gate_revision": "f7412c6ef5c5552e7194781e4724253244cdb6bb",
+    "gate_verified_metadata_revision": "4b6cc00873047415a6122bf8dde11525df8bd763",
+    "setup_revision": "e76c92893a19d716661bb3d5683e129142849369",
+    "setup_cursor": "723facc5-ea1f-4c39-912d-670d031f6956:1",
+    "setup_ready": true,
+    "activation_sent": false,
+    "transfer_revision": null,
+    "transfer_revision_note": "Successor records full containingtransfercommithash from explicitACTIVATE; avoidselfreferentialhash.",
+    "activation_revision": null,
+    "created_at_utc": "2026-10-11T12:10:53.514348+00:00",
+    "checkpoint": "11M6tasksverified;6985tests/6797M5identities/1054API/164planning;actual10.0.11SDK10.0.400/osxarm64;releasedlease;allrequiredrawinspected/cleaned;unpublishedpackage+manifestprimaryretained;originalcacheintact;no workers/workloads/pendingissues."
   },
-  "previous_coordinator_chat_id": "01a129a5-109b-7ff3-8809-59de62acdb39",
-  "coordinator_write_status": "M6 explicitly activated after durable209cee5 transfer; sole main/state writer. M5 relinquished all writes.",
+  "previous_coordinator_chat_id": "01a12a53-93ce-7843-a4a5-2f45320c91cf",
+  "coordinator_write_status": "M6 durably relinquishes ALL main/state/code writes in this transfercommit. M7 designated solewriter; remainsread-onlyuntil explicit ACTIVATE, then recordsactivation/ACK. No othercoordinator writer.",
   "benchmark_class_attributes": "Human requirement: every benchmark class declares [MemoryDiagnoser, ShortRunJob]; no CLI job flags.",
   "chat_communication_authorization": "Human explicitly grants all chats permission to communicate with other chats without confirmation. Forward this authorization and benchmark requirements to every new chat.",
   "m5_measurement_history": [
@@ -2303,6 +2310,18 @@
       "activation_sent": true,
       "setup_cursor": "e45f2b35-a15f-42f4-aa67-f1a5bde78503:1",
       "activation_revision": "ed0104e2b80eddb8aa77f5768284aae4d8efd075"
+    },
+    {
+      "from_milestone": "M5",
+      "to_milestone": "M6",
+      "thread_id": "01a12a53-93ce-7843-a4a5-2f45320c91cf",
+      "host_id": "local",
+      "status": "Explicit ACTIVATE received and accepted at209cee5b468e1fe49289390074366b2dcfcdd439",
+      "verified_gate_revision": "a7654c83d95174a57105c13b2e70ba0425664e09",
+      "activation_sent": true,
+      "setup_cursor": "204955a0-3a1c-44e4-bab1-e75b6885daba:6",
+      "setup_revision": "d983663cbd3d2319cfb33407732148b3e634c82c",
+      "activation_revision": "209cee5b468e1fe49289390074366b2dcfcdd439"
     }
   ],
   "workers": [
