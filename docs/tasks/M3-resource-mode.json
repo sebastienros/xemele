@@ -4,7 +4,7 @@
   "milestone": "M3",
   "title": "Switch streaming resource mode at idle token boundaries",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M3 coordinator 01a1284a-8826-7fc2-af44-74552db608f2 / resource mode worker",
   "branch": "codex/m3-resource-mode",
   "base_revision": "2a061b60c922efdf4984ff23f46a6a50eb1b8034",
@@ -36,29 +36,144 @@
     {
       "id": "M3-resource-mode-A1",
       "description": "Add guarded idle core/pump resource mode selection retaining active general entity owners/cursors, quota/model/session state and asyncSubsetRead; reject pending resource work, active async DTD parser/request/source/disposal or deferred doctype continuation and unusable/concurrent contexts. Preserve existing manual NeedResource behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "focused-correctness",
+        "compiled-api",
+        "planning-validator",
+        "independent-source-review"
+      ]
     },
     {
       "id": "M3-resource-mode-A2",
       "description": "Permit synchronous Dispose after async advancement without blocking async bridges: synchronously attempt exactly-once disposal of all owned async/general resources, preserve first cleanup error, always release scratch/cursors, caller primary stream stays open; DisposeAsync remains genuine async cleanup.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "focused-correctness",
+        "compiled-api",
+        "planning-validator",
+        "independent-source-review"
+      ]
     },
     {
       "id": "M3-resource-mode-A3",
       "description": "Prove async-only resolver/read/disposal after default sync creation, alternating sync/async active nested general sources, pending-DTD/service rejection with intact state, token/cancellation and cleanup identity; preserve focused prior sync/async resource+pump checks, compiled APIs, zero idle selection allocations and validation at known integrated revision.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "focused-correctness",
+        "compiled-api",
+        "planning-validator",
+        "release-build",
+        "prepared-control",
+        "process-wide-allocations",
+        "resource-mode-bdn",
+        "diff-check",
+        "independent-source-review"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Parsing/Core/XmlParserCore.ResourceMode.cs: SetAsyncResources guarded idle selection; DisposeResourcesSynchronously detaches and drains async DTD ownership before existing entity/session cleanup, preserving first cleanup error and prior failure.",
+    "src/Xemele/Parsing/Core/XmlParserCore.cs and XmlParserCore.AsyncResources.cs: mutable internal mode and synchronous Dispose hook; existing async advancement/manual resource protocol unchanged.",
+    "src/Xemele/Streaming/Core/XmlStreamingPump.ResourceMode.cs and XmlStreamingPump.cs: own gate, core-first selection, mutable flag updated only on success; synchronous abort after async advancement.",
+    "tests/Xemele.Tests/M3-resource-mode/ResourceModeTests.cs: 18 actual cases for async-only delayed resources, nested alternation/state/quota/token preservation, pending/suspended continuation rejection, abort/disposal/failure identity and primary lifetime.",
+    "benchmarks/Xemele.Benchmarks/M3-resource-mode/Probe.cs.fixture and docs/reports/M3-resource-mode/Probe/Probe.csproj: separate counters-disabled control, process-wide cold/warm allocation oracle and fixed three-case MemoryDiagnoser benchmark.",
+    "docs/reports/M3-resource-mode/report.md: actual known-revision commands/results, lease boundaries, CPU/runtime scope and future composition check."
+  ],
+  "evidence": [
+    {
+      "id": "release-build",
+      "kind": "check",
+      "revision": "ede12339ef78ca77d071a826ec48f2994dbfb422",
+      "command": "Pinned dotnet build tests/Xemele.Tests/Xemele.Tests.csproj and docs/reports/M3-resource-mode/Probe/Probe.csproj -c Release --no-restore --disable-build-servers -p:BuildInParallel=false -p:UseSharedCompilation=false -m:1",
+      "result": "passed",
+      "summary": "Both known-revision Release builds completed with zero warnings/errors. Restore used --ignore-failed-sources, NuGetAudit=false and single-node/no-server controls.",
+      "artifact": null
+    },
+    {
+      "id": "focused-correctness",
+      "kind": "check",
+      "revision": "ede12339ef78ca77d071a826ec48f2994dbfb422",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -namespace Xemele.Tests.ResourceMode -namespace Xemele.Tests.AsyncResources -namespace Xemele.Tests.StreamingPump -namespace Xemele.Tests.Entities -namespace Xemele.Tests.Resolution -method- Xemele.Tests.Entities.ContextTests.BorrowedLookupsHaveNoWarmAllocationAndCannotBeMutated -method- Xemele.Tests.Resolution.ResolverTests.WarmBorrowedReadsAllocateNothing -parallelMode none -showLiveOutput -noColor -result-xml docs/reports/M3-resource-mode/focused-tests.xml",
+      "result": "passed",
+      "summary": "218 passed; 0 failed/errors/skipped/not-run: own18, prior29 asyncresources, prior33 pump, affected78 entities and60 resolution. Two inherited allocation-only methods omitted to avoid running counters outside a lease; they are unchanged and not claimed as fresh passing measurements. Tests prove delayed async-only open/read/disposal from default mode, nested alternating tokens/locations/state/all quotas, pending DTD and deferred completion/gates, call-token rebinding/cancellation and primary/cleanup identity.",
+      "artifact": "docs/reports/M3-resource-mode/focused-tests.xml"
+    },
+    {
+      "id": "compiled-api",
+      "kind": "check",
+      "revision": "ede12339ef78ca77d071a826ec48f2994dbfb422",
+      "command": "python3 inline: duplicate-check/sort docs/api/*.txt member rows; emit approved xemele-api-v1 canonical union; pinned dotnet /private/tmp/xemele-m3-integration/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare src/Xemele/bin/Release/net10.0/Xemele.dll temporary union",
+      "result": "passed",
+      "summary": "Approved extractor matched all655 frozen compiled members. Duplicate-checked12-fragment union hash37d4d89fb4fa6b415da8e6ffc08cb603f8aaf2033278c288aac0869005c9ff84; product440B688112DF866CC1A0BCA5190E2142DE887FC1E916F316E88B4F80DCE29A16. Uses integrated branch fragments without later reader/async writer branches or corpus manifest edits.",
+      "artifact": "docs/reports/M3-resource-mode/api.json"
+    },
+    {
+      "id": "prepared-control",
+      "kind": "check",
+      "revision": "ede12339ef78ca77d071a826ec48f2994dbfb422",
+      "command": "XEMELE_RESOURCE_MODE_REVISION=ede12339ef78ca77d071a826ec48f2994dbfb422 pinned dotnet docs/reports/M3-resource-mode/Probe/bin/Release/net10.0/Xemele.Benchmarks.dll --control docs/reports/M3-resource-mode/control.json",
+      "result": "passed",
+      "summary": "Same prepared source/probe semantic and cursor controls pass with allocation counters disabled. All zero counter fields in this control are expressly not measurement evidence.",
+      "artifact": "docs/reports/M3-resource-mode/control.json"
+    },
+    {
+      "id": "process-wide-allocations",
+      "kind": "check",
+      "revision": "ede12339ef78ca77d071a826ec48f2994dbfb422",
+      "command": "Granted m3-resource-mode-ede1233-measure: XEMELE_RESOURCE_MODE_REVISION=ede12339ef78ca77d071a826ec48f2994dbfb422 absolute pinned dotnet/prebuilt probe --allocation /Users/sebastienros/.codex/worktrees/4682/xemele/docs/reports/M3-resource-mode/allocations.json; subprocess.run timeout30s",
+      "result": "passed",
+      "summary": "Actual child exit0; warmed pump/core/no-op each0B for1,048,576calls after131,072warm calls each. Positive4096byte array4120B; separate cold owned fixture/scratch61040B. Product/probe hashes frozen and matched. Lease release reported only after allocation0/BDN0/sequence0 with no active children/session, before inspecting logs/metadata.",
+      "artifact": "docs/reports/M3-resource-mode/allocations.json"
+    },
+    {
+      "id": "resource-mode-bdn",
+      "kind": "check",
+      "revision": "ede12339ef78ca77d071a826ec48f2994dbfb422",
+      "command": "Same granted lease, only after allocation exit0: absolute pinned dotnet/prebuilt probe --benchmark /Users/sebastienros/.codex/worktrees/4682/xemele/docs/reports/M3-resource-mode/BDN; subprocess.run timeout150s",
+      "result": "passed",
+      "summary": "Hard suite3/single CLI InProcessEmit job; exactly3completed21.75s, child/sequence exit0. MemoryDiagnoser0B each. Informational NoOp0.5347ns/pump4.2956ns/core2.4159ns per operation;3warmup/3iterations, broad CIs/shared host Silex activity, no optimization/comparative/regression claim. macOS15.8.1Arm64 SDK10.0.400/runtime10.0.11/Concurrent Workstation GC; unknown CPU model and denied high-priority warnings preserved. Future M3-async-input owns composed mixed-reader measurement.",
+      "artifact": "docs/reports/M3-resource-mode/benchmark.stdout.txt"
+    },
+    {
+      "id": "planning-validator",
+      "kind": "check",
+      "revision": "ede12339ef78ca77d071a826ec48f2994dbfb422",
+      "command": "python3 tools/planning/tasks.py validate",
+      "result": "passed",
+      "summary": "Validated147 tasks: schema/evidence/acyclic dependencies/additive milestones/ordered ownership.",
+      "artifact": null
+    },
+    {
+      "id": "diff-check",
+      "kind": "check",
+      "revision": "ede12339ef78ca77d071a826ec48f2994dbfb422",
+      "command": "git diff --check",
+      "result": "passed",
+      "summary": "No whitespace errors.",
+      "artifact": null
+    },
+    {
+      "id": "independent-source-review",
+      "kind": "review",
+      "revision": "ede12339ef78ca77d071a826ec48f2994dbfb422",
+      "command": null,
+      "result": "passed",
+      "summary": "Coordinator reported independent source-only review approved exact ede12339 with no concrete A1/A2 blockers; no extra executions. Root independently inspected raw allocation0/positive4120/setup61040. Integrated combined writer/reader checks remain coordinator-owned.",
+      "artifact": null
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Concrete reader integration hook: sync Create fixes resource mode while later ReadAsync must use genuine async resolver I/O; separate disposal adjustment needed after async reads.",
-    "checks": [],
-    "remaining": [],
+    "summary": "Implemented narrow internal idle resource mode bridge and synchronous abort after async advancement; preserved constructors/manual NeedResource and frozen public API. All branch acceptance checks passed at ede12339; independent source-only review approved; awaiting integrated verification.",
+    "checks": [
+      "Release tests/probe0warnings/errors;218focused passed(18own+29asyncresources+33pump+78entities+60resolution); approved655compiled API matched;147-task validation/diff clean.",
+      "Granted serial lease:1,048,576 warmed pump/core/no-op selections0B, positive4120B; setup61040B separated. Three fixed BDN MemoryDiagnoser cases0B; timings informational. Allocation/BDN/sequence exited0 and all children/session reaped before RELEASED/report inspection."
+    ],
+    "remaining": [
+      "Coordinator integrated checks/verification against latest combined writer/reader source.",
+      "Future M3-async-input composition measurement; broader architecture/release performance qualification remains later performance work."
+    ],
     "requests": []
   }
 }
