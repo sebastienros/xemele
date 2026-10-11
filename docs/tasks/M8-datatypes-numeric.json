@@ -4,11 +4,11 @@
   "milestone": "M8",
   "title": "XSD numeric datatype value family",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M8 coordinator01a12c6c-b333-71d3-877f-0d186618e21d / assigned isolated worker",
   "branch": "codex/m8-datatypes-numeric",
   "base_revision": "7f1d2c64a0c1812e8e49d4ee6dd130e9e7955230",
-  "integration_revision": null,
+  "integration_revision": "49e98cf47976e6cd016a643a0ddb6e130bc0b9aa",
   "depends_on": [
     "M8-datatypes-core"
   ],
@@ -37,7 +37,8 @@
         "focused-correctness",
         "source-review",
         "allocation-performance",
-        "measurement-review"
+        "measurement-review",
+        "integrated-correctness"
       ]
     },
     {
@@ -48,7 +49,8 @@
         "focused-correctness",
         "source-review",
         "allocation-performance",
-        "measurement-review"
+        "measurement-review",
+        "integrated-correctness"
       ]
     },
     {
@@ -59,7 +61,8 @@
         "focused-correctness",
         "source-review",
         "allocation-performance",
-        "measurement-review"
+        "measurement-review",
+        "integrated-correctness"
       ]
     }
   ],
@@ -114,21 +117,30 @@
       "result": "passed",
       "summary": "Coordinator independently inspected lifecycle,13\u00d764distributions,all10BDNcases and nonzero raw GC residuals after durable release. No rerun; informational timing and retained-size limitations recorded.",
       "artifact": "docs/reports/M8-datatypes-numeric/measurement-summary.json"
+    },
+    {
+      "id": "integrated-correctness",
+      "kind": "integration",
+      "revision": "49e98cf47976e6cd016a643a0ddb6e130bc0b9aa",
+      "command": "python3 docs/reports/M8-datatypes-numeric/checks.py",
+      "result": "passed",
+      "summary": "Coordinator isolated combined-tree run exited0:106 tests (76 numeric,18 core,12 model),zero failures/errors/skips/not-run;1393 compiled public members;normal and XML-only genuine consumers;176-task validate and diff-check. Subsequent handoff merge changes only allocation reports and task metadata; exact runtime/test/build/consumer inputs proven unchanged. No measurement rerun.",
+      "artifact": "docs/reports/M8-datatypes-numeric/integration.md"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Implemented immutable exact XSD1.0 numeric family: arbitrary decimal/integer precision and built-in ranges; bounded IEEE conversion with correct ties/sticky/signs; value equality/order/hash/digits through verified core. Accepted source and known-revision correctness plus exclusive allocation/BDN evidence passed;awaiting coordinator integration.",
+    "summary": "Verified integrated numeric family with exact arbitrary decimal/integer values, bounded IEEE conversion and preserved core/API contracts.",
     "checks": [
       "python3 docs/reports/M8-datatypes-numeric/checks.py:106pass(76numeric+18core+12model),zero failures/errors/skips/not-run,1393API members matched,normal/XML-only genuine consumers passed",
       "Independent read-only source review accepted9dee538;reviewer executed no tests",
       "Counter-disabled13route/allmethod controls,exact10NoEmit discovery,elevated process/identity preflights passed",
       "Granted measurement once:71.7019s,438identities stable,8borrowed probe routes64zeros each,owned allocations separated,10ShortRunBDN cases completed;rawresiduals/priority/retainedlimitations preserved",
-      "python3 tools/planning/tasks.py validate and git diff --check passed"
+      "python3 tools/planning/tasks.py validate and git diff --check passed",
+      "Coordinator combined-tree106 tests/API1393/normal+XML-only consumers and176-task validation passed at 49e98cf47976e6cd016a643a0ddb6e130bc0b9aa"
     ],
     "remaining": [
-      "Coordinator integrate/rerun applicable correctness and record verified integration",
-      "Downstream M8-datatypes composition and M8-facets digit predicates; x64/end-to-end confirmation at release"
+      "Downstream complete-library/facet composition and release x64/end-to-end confirmation; no numeric implementation blocker."
     ],
     "requests": [
       "M8-facets: preserve formal totalDigits(.001)=3; reject under2,accept under3;1.00/zero pass1; totalDigits0 invalid. See numeric-owned joins.md;no shared change requested."

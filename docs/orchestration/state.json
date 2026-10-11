@@ -7,8 +7,8 @@
   "coordination_branch": "main",
   "max_concurrent_workers": 3,
   "last_verified_checkpoint": "M7-gate",
-  "last_verified_task": "M8-xsd-compile",
-  "last_integrated_revision": "d2e7450f2a1d881ea6631177eb4b3cf4785edfe2",
+  "last_verified_task": "M8-datatypes-numeric",
+  "last_integrated_revision": "49e98cf47976e6cd016a643a0ddb6e130bc0b9aa",
   "active_assignments": [
     {
       "task_id": "M8-rng-compile",
@@ -28,26 +28,6 @@
       "setup": "Full one-task brief delivered; frozen graph semantics, local source locations, safe test filters and prepare/grant/release measurement protocol explicit",
       "source_revision": "61c92d71e9285e144f06c260287019e0bd28581b",
       "reviewer": "/root/review_m8_xpath"
-    },
-    {
-      "task_id": "M8-datatypes-numeric",
-      "branch": "codex/m8-datatypes-numeric",
-      "base_revision": "7f1d2c64a0c1812e8e49d4ee6dd130e9e7955230",
-      "stage": "Measurement lifecycle passed and host immediately released; raw inspection/handoff pending",
-      "acceptance_before_dispatch": {
-        "mandatory": "Exact verified core provider contract for decimal/integer derivatives/float/double, arbitrary decimal/integer precision, lexical/range/INF/NaN/signed-zero semantics and same-primitive equality/hash/order, actual conversion/limb work and bounded owned payload. Boolean remains TextBinary.",
-        "integration": "Owned lexical/range/precision/value measures/equality/hash/order/work/cancel tests; compiled provider/core consumer, public API preserved; relevant parse ownership and zero warm comparison/hash measurements under prepared lease.",
-        "review": "Read-only numeric/value/ownership review, one batched concrete correction set; preserve successful evidence; no partial advertised library."
-      },
-      "claim_revision": "0952fe999a0e44a1d537826adf9e0afee16a440f",
-      "client_thread_id": "client-new-thread:018eb4f2-f8ac-4893-8171-91daf35b465d",
-      "chat_id": "01a12d09-2d42-78f0-a3de-4e3a35fd73bd",
-      "host_id": "local",
-      "worktree_path": "/Users/sebastienros/.codex/worktrees/5d48/xemele",
-      "setup": "Full provider/semantics/accounting/measurement brief delivered; no partial library or Boolean ownership",
-      "source_revision": "9dee538394f076df86ea12ea282126fbe39da8f2",
-      "reviewer": "/root/review_m8_contract",
-      "preparation_revision": "74c5bf92eee366dd6a23be0f907163cfc641c13c"
     },
     {
       "task_id": "M8-datatypes-temporal",
@@ -71,8 +51,8 @@
   ],
   "integration_queue": [],
   "next_actions": [
-    "Review coherent RELAX NG, numeric and temporal source; preserve focused correctness evidence and prepare before bounded measurement grants",
-    "At next available slot dispatch ready text/binary family to unblock complete datatype join",
+    "Clean up verified numeric worker and dispatch ready text/binary family",
+    "Finish final RELAX NG depth diagnostic and temporal leap/BCE/arithmetic corrections, then accepted measurements/integration",
     "Complete remaining M8 only, gate and terminal main handoff; no M9"
   ],
   "implementation_worker_policy": {
@@ -193,7 +173,7 @@
   },
   "current_milestone": "M8",
   "milestone_completion_scope": "Complete integrated verified M8-gate; terminal workers and cleanup; preserve earlier evidence/caches; transfer sole writes to main. Do not create M9.",
-  "milestone_progress": "8 of27 M8 tasks verified and cleaned; RELAX NG compiler, numeric and temporal family workers active.",
+  "milestone_progress": "9 of27 M8 tasks verified; numeric terminal cleanup pending; RELAX NG compiler and temporal family active.",
   "blockers": [],
   "pending_decisions": [],
   "timing_queue": [],
@@ -495,6 +475,31 @@
         "integration_worktree_removed": true,
         "record": "docs/orchestration/cleanup-M8-xsd-compile.json"
       }
+    },
+    {
+      "task_id": "M8-datatypes-numeric",
+      "branch": "codex/m8-datatypes-numeric",
+      "base_revision": "7f1d2c64a0c1812e8e49d4ee6dd130e9e7955230",
+      "stage": "Verified integrated; terminal cleanup pending",
+      "acceptance_before_dispatch": {
+        "mandatory": "Exact verified core provider contract for decimal/integer derivatives/float/double, arbitrary decimal/integer precision, lexical/range/INF/NaN/signed-zero semantics and same-primitive equality/hash/order, actual conversion/limb work and bounded owned payload. Boolean remains TextBinary.",
+        "integration": "Owned lexical/range/precision/value measures/equality/hash/order/work/cancel tests; compiled provider/core consumer, public API preserved; relevant parse ownership and zero warm comparison/hash measurements under prepared lease.",
+        "review": "Read-only numeric/value/ownership review, one batched concrete correction set; preserve successful evidence; no partial advertised library."
+      },
+      "claim_revision": "0952fe999a0e44a1d537826adf9e0afee16a440f",
+      "client_thread_id": "client-new-thread:018eb4f2-f8ac-4893-8171-91daf35b465d",
+      "chat_id": "01a12d09-2d42-78f0-a3de-4e3a35fd73bd",
+      "host_id": "local",
+      "worktree_path": "/Users/sebastienros/.codex/worktrees/5d48/xemele",
+      "setup": "Full provider/semantics/accounting/measurement brief delivered; no partial library or Boolean ownership",
+      "source_revision": "9dee538394f076df86ea12ea282126fbe39da8f2",
+      "reviewer": "/root/review_m8_contract",
+      "preparation_revision": "74c5bf92eee366dd6a23be0f907163cfc641c13c",
+      "implementation_revision": "9dee538394f076df86ea12ea282126fbe39da8f2",
+      "handoff_revision": "9b261c2735743339ea5ec966ae680e8848998295",
+      "integration_revision": "49e98cf47976e6cd016a643a0ddb6e130bc0b9aa",
+      "handoff_merge_revision": "13e9de4cae7be97b54c8fc22e1f56ec8ee826919",
+      "combined_verification": "106 tests;1393 API;normal/XML-only consumers;176 tasks;raw measurement independently inspected"
     }
   ],
   "measurement_lease_history": [
@@ -640,7 +645,7 @@
       "supervision": "One prebuilt thirteen-route allocation probe then ten-case InProcessNoEmit ShortRun BDN;590 work+10 cleanup; elevated process-inspection permission already independently checked;438 identities verified before grant and before/after sequence. No build/test/source edit/retry.",
       "release": "Immediately durable RELEASE on lifecycle completion/failure before raw inspection; notify all parked actors.",
       "released_utc": "2026-10-11T22:36:40.433972+00:00",
-      "lifecycle": "Worker supervisor exit0/status0;438 before/after identities unchanged, direct children reaped, owned groups absent and logs closed. Raw results unopened. Exact lifecycle details follow separately; no retries/builds/tests/source edits."
+      "lifecycle": "Status0,elapsed71.7018669169629s;probe11035 and BDN11037 exited0, reaped, groups absent, logs closed;438identities stable. Immediate durable release preceded raw inspection."
     }
   ],
   "workers": [],
