@@ -48,8 +48,9 @@ internal ref struct LegacyParser
  private void Blanks(){while(Space(input.Peek()))input.Take();}
  private string Name(bool attribute=false)
  {
-  Reset();while(input.Peek()>=0){int c=input.Peek();if(tokenScalars!=0&&(c is '/' or '>'||Space(c)||attribute&&c=='='))break;Append(Fold(input.Take()));}
-  var lookup=names.GetAlternateLookup<ReadOnlySpan<char>>();if(lookup.TryGetValue(buffer.Written,out string? existing))return existing;
+  input.NameMode(true);Reset();int sourceCount=0,utf8Bytes=0;while(input.Peek()>=0){int c=input.Peek();if(sourceCount!=0&&(c is '/' or '>'||Space(c)||attribute&&c=='='))break;c=Fold(input.Take());sourceCount++;if(limits.TokenCharacters is int limit&&sourceCount>limit)Fail("token-limit","Token name quota exceeded.");if(c==0)c=0xFFFD;int width=c<128?1:c<2048?2:c<65536?3:4;if(utf8Bytes+width<=100){Append(c);utf8Bytes+=width;}}
+
+  input.NameMode(false);var lookup=names.GetAlternateLookup<ReadOnlySpan<char>>();if(lookup.TryGetValue(buffer.Written,out string? existing))return existing;
   if(limits.InternedNames is int max&&names.Count>=max)Fail("name-limit","Interned-name quota exceeded.");string result=buffer.ToString();names.Add(result,result);return result;
  }
  private void Push(string name)
@@ -90,7 +91,7 @@ internal ref struct LegacyParser
   string? charset=element.GetAttribute("charset");if(charset!=null){input.DeclareEncoding(charset);return;}
   if(!string.Equals(element.GetAttribute("http-equiv"),"content-type",StringComparison.OrdinalIgnoreCase))return;
   string? content=element.GetAttribute("content");if(content==null)return;var span=content.AsSpan();
-  for(int i=0;i+8<=span.Length;i++)if(span.Slice(i,8).Equals("charset=",StringComparison.OrdinalIgnoreCase)){int begin=i+8,end=begin;while(end<span.Length&&span[end] is not (';' or ' ' or '\'' or '\"'))end++;input.DeclareEncoding(new string(span[begin..end]));return;}
+  for(int i=0;i+8<=span.Length;i++)if(span.Slice(i,8).Equals("charset=",StringComparison.OrdinalIgnoreCase)){int begin=i+8;while(begin<span.Length&&span[begin] is ' ' or '\'' or '\"')begin++;int end=begin;while(end<span.Length&&span[end] is not (';' or ' ' or '\'' or '\"'))end++;input.DeclareEncoding(span[begin..end]);return;}
  }
  private string AttributeValue()
  {
