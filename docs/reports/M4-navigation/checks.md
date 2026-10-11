@@ -51,3 +51,16 @@ but actual 10.0.0 runtime fails the required 10.0.11 provenance. Wrapper cleanup
 exit1/PermissionError is separate; independent scoped process absence confirmed
 before raw inspection. See performance.md for exact totals and limitations.
 No second attempt authorized; target-runtime performance remains pending.
+
+## Explicit-host preparation correction
+
+After the function lease released, the coordinator authorized one bounded
+preparation correction: both plan arrays now place `--fx-version 10.0.11` before
+the unchanged DLL, with RollForwardDisable retained. Runtimeconfig minimum 10.0.0
+is preserved and disclosed; the override selects the intended runtime explicitly.
+The same counters-disabled control with that exact prefix completed and its JSON
+FrameworkDescription was asserted `.NET 10.0.11`; consumed 1,703,936 twice,
+input389/6123. Product/probe binaries remain unchanged; no builds, correctness,
+API, package, allocation or timing reruns in this preparation correction.
+Prior 10.0.0 observations and lifecycle failure remain in performance.md.
+A new bounded measurement grant is still required.
