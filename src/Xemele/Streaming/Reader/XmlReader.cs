@@ -60,7 +60,7 @@ public sealed partial class XmlReader : IDisposable
     public void Dispose()
     {
         Enter();
-        try { if (disposed) return; disposed = true; current.Clear(); pump.Dispose(); current.Release(); }
+        try { if (disposed) return; disposed = true; current.Clear(); try { pump.Dispose(); } finally { current.Release(); } }
         finally { Exit(); }
     }
     private void Enter() { if (Interlocked.CompareExchange(ref gate, 1, 0) != 0) throw new InvalidOperationException("Reader operation already active."); }

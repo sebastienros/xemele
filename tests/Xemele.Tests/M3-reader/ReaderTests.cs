@@ -121,6 +121,33 @@ public sealed class ReaderTests
         Assert.True(reader.Read()); Assert.Equal(XmlTokenKind.Text, reader.TokenKind); Assert.Equal(0, reader.Attributes.Count); Assert.Equal("value", owned);
         reader.Dispose(); Assert.Equal(XmlTokenKind.None, reader.TokenKind); Assert.True(reader.ValueSpan.IsEmpty); Assert.True(input.Position < input.Length);
     }
+    [Fact]
+    public void ThrowingResourceCleanupReleasesCursorPreservesIdentityAndLeavesCallerOpen()
+    {
+        var cleanup = new IOException("resource cleanup"); var resource = new ThrowingResource(cleanup);
+        var resolver = new OwnedResolver(resource);
+        using var input = new CountingStream("<!DOCTYPE r [<!ENTITY e SYSTEM 'urn:e'>]><r>&e;</r>", 4096);
+        var reader = Reader.Create(input, new() { DtdProcessing = XmlDtdProcessing.Parse, Resolver = resolver }, TestContext.Current.CancellationToken);
+        while (reader.Read()) if (reader.TokenKind == XmlTokenKind.StartElement && reader.LocalName.SequenceEqual("x")) break;
+        Assert.Equal("x", reader.LocalName.ToString()); Assert.Equal("v", reader.Attributes[0].Value.ToString());
+        var cursor = Assert.IsType<Reader.Cursor>(typeof(Reader).GetField("current", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!.GetValue(reader));
+        Assert.Same(cleanup, Assert.Throws<IOException>(reader.Dispose));
+        Assert.Equal(1, resolver.Opens); Assert.Equal(1, resource.Disposals); Assert.True(input.CanRead);
+        Assert.Equal(XmlTokenKind.None, reader.TokenKind); Assert.True(reader.LocalName.IsEmpty); Assert.Empty(cursor.Attributes); Assert.Empty(cursor.Namespaces);
+        Assert.Empty(Assert.IsType<char[]>(typeof(Reader.Cursor).GetField("chars", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!.GetValue(cursor)));
+        reader.Dispose(); Assert.Equal(1, resource.Disposals); Assert.Throws<ObjectDisposedException>(() => reader.Read());
+    }
+    private sealed class OwnedResolver(ThrowingResource resource) : XmlResourceResolver
+    {
+        internal int Opens;
+        public override XmlResolvedResource Resolve(XmlResourceRequest request, CancellationToken cancellationToken)
+        { cancellationToken.ThrowIfCancellationRequested(); Opens++; return new(resource, new Uri("urn:e")); }
+    }
+    private sealed class ThrowingResource(Exception error) : MemoryStream(Encoding.UTF8.GetBytes("<x a='v'>" + new string('a', 10000) + "</x>"))
+    {
+        internal int Disposals;
+        protected override void Dispose(bool disposing) { if (disposing) { Disposals++; base.Dispose(disposing); throw error; } }
+    }
     private sealed class CountingStream(string xml, int chunk) : MemoryStream(Encoding.UTF8.GetBytes(xml))
     {
         internal int Reads;
