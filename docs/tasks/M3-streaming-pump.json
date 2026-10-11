@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "id": "M3-streaming-pump",
+  "milestone": "M3",
+  "title": "Shared bounded decoding and public event aggregation pump",
+  "kind": "feature",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "depends_on": [
+    "M3-callbacks",
+    "M3-async-resources"
+  ],
+  "goals": [
+    "G04",
+    "G16"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/streaming.md"
+  ],
+  "owns": [
+    "src/Xemele/Streaming/Core/",
+    "tests/Xemele.Tests/M3-streaming-pump/",
+    "benchmarks/Xemele.Benchmarks/M3-streaming-pump/",
+    "docs/reports/M3-streaming-pump/"
+  ],
+  "api_or_output": "Internal shared sync/async streaming pump and sixteen-event sink",
+  "acceptance": [
+    {
+      "id": "M3-streaming-pump-A1",
+      "description": "Implement approved internal supply/advance/resource-service pump over integrated decoder/core and callbacks, with bounded one-tag/effective-DTD cursors, exact byte/character source offsets and aggregate event projection.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M3-streaming-pump-A2",
+      "description": "Test every notification pause without replay, all input chunk splits, declaration/encoding framing, CDATA/comment/PI boundaries, defaults/unresolved values/DTD projections, fatal and callback exception/cancellation lifetime behavior, async resource suspension; no unbounded event queue or hidden DOM.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M3-streaming-pump-A3",
+      "description": "Record real zero-allocation borrowed event and bounded scratch evidence, compile without later public adapters, preserve integrated M2 semantics and validate at a known tested revision.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "Single runtime owner for frozen pump; SAX/push/reader consume this integrated prerequisite independently.",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}
