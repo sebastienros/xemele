@@ -82,6 +82,9 @@ identities and process-inspection capability before any child measurement starts
 `preparation.json` freezes the command/environment/input/binary/source identities;
 `measure.py` is adapted from the verified M8-source-locations bounded supervisor.
 The proposed lease is one allocation-only child, 30 seconds maximum, no retries
-or builds. Runtime measurement and final source-review ACK remain pending;
-task remains in_progress. No corpus or release conformance
+or builds. Final bounded source review accepted the final source. The sole granted allocation
+run passed; lifecycle RELEASE and durable ACK preceded raw inspection. Lookup
+primitives observed zero bytes; explicit owned allocations and retained-memory
+limits are summarized in allocations.md. Task is implemented on this branch;
+coordinator integrated verification remains. No corpus or release conformance
 claim follows from these focused checks.
