@@ -4,11 +4,11 @@
   "milestone": "M5",
   "title": "Exclude nested contract checker tooling from parent compile",
   "kind": "infrastructure",
-  "status": "in_progress",
+  "status": "verified",
   "owner": "M5 coordinator isolated build repair",
   "branch": "codex/m5-contracts-build",
   "base_revision": "996b1656129dd180436888c9a76fe00d93eb0534",
-  "integration_revision": null,
+  "integration_revision": "560045971276022ec90f7c3e33c7a88367ba7993",
   "depends_on": [
     "M0-build",
     "M5-contracts"
@@ -28,9 +28,9 @@
     {
       "id": "M5-contracts-build-A1",
       "description": "Exclude nested M5 ApiCheck tool sources and nested fixture-project generated obj/bin C# sources from parent Contracts compilation; preserve independent helpers, Release solution, net10-only runtime/API and planning validity.",
-      "status": "pending",
+      "status": "passed",
       "evidence": [
-        "isolated-build"
+        "combined-build"
       ]
     }
   ],
@@ -55,17 +55,24 @@
       "result": "failed",
       "summary": "16 CS0579 duplicate assembly attribute errors: parent SDK glob also includes nested consumer generated obj sources. Initial isolated solution/helper builds passed without those outputs, so repair expanded to exclude nested generated obj/bin sources. Scoped API checker still found948members; planning160valid. No runtime changes.",
       "artifact": null
+    },
+    {
+      "id": "combined-build",
+      "kind": "integration",
+      "revision": "560045971276022ec90f7c3e33c7a88367ba7993",
+      "command": "Pinned Release Xemele.slnx and independent M5 ApiCheck builds, explicit --fx-version10.0.11 scoped948-member comparison, planning validate and git diff --check",
+      "result": "passed",
+      "summary": "Combined solution and independent checker both0warnings/errors with existing nested DtdConsumer generated obj retained. Scoped948 compiled members match;160task graph valid. Runtime source unchanged; no runtime counters or tests run for build-only exclusions.",
+      "artifact": null
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Minimal nested M5 API checker compile exclusion; no runtime,API or package changes.",
+    "summary": "Verified parent project exclusions for nested checker and generated fixture-project sources; runtime/API unchanged.",
     "checks": [
-      "Release solution and independent nested checker builds pass;160tasksvalid; whitespace/runtime diff clean."
+      "Combined solution and helper Release builds0warnings/errors; scoped948-member API matches;160tasksvalid."
     ],
-    "remaining": [
-      "Coordinator integrated build verification."
-    ],
+    "remaining": [],
     "requests": []
   }
 }
