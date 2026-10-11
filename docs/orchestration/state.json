@@ -1858,29 +1858,20 @@
     "stage": "verified"
   },
   "measurement_lease": {
-    "id": "m5-canonical-provenance-390055f",
-    "status": "released",
-    "revision": "390055fc02b0caf243952f569fb6cff18a3d7814",
+    "id": "m5-canonical-provenance-5c1fad8",
+    "status": "granted",
+    "revision": "5c1fad88269bb7e02d98ca504c39a8551e99e122",
     "executor_agent_id": "/root/c14n",
     "duration_limit_seconds": 400,
-    "preparation_sha256": "feef635f2237f26b707a27a3b2285b3b9b3548a4e4cd93952d2cb516548bd66c",
-    "scope": "One exact frozen allocation30s+3case ShortRun NoEmit timing280s, initial/finalidentity30s, own-group cleanup finally/nochildren; no builds/restores/writes/tests/retries; explicit10.0.11; immediate durable release before raw inspection.",
+    "preparation_sha256": "f5c23fa1a87b22cf6deb6f4ffa37674d0097fc9845d36972a18464003daaf1a1",
+    "scope": "One exact corrected primitive-only30s+previouslyunstarted3case ShortRunNoEmit280s; identities30s; no owned/retained counter rerun; explicit10.0.11 and TieredCompilation/PGO/ReadyToRun0; own-group cleanup finally; immediate release before inspection.",
     "park_acknowledgements": [
-      "Validation model DONE/PARK clean50ef6f9 no workloads/descendants; raw prior run inspected and deleted.",
-      "Source reviewer terminal fresh PARK; approved provenance34b626b.",
-      "Executor prepared idle clean390055f; capture/check148/43/3852passed.",
-      "Root independent escalated fullclosure check passed; scoped .NET workload inventory empty; root parks until lifecycle release."
-    ],
-    "release": {
-      "initial_identity_exit": 0,
-      "allocation_exit": -6,
-      "benchmark_exit": null,
-      "benchmark_status": "not started after allocation abort",
-      "final_identity_exit": 0,
-      "wrapper_exit": 250,
-      "no_child": true,
-      "inspection": "Not inspected; failed phase lifecycle reported before durable release."
-    }
+      "Validationmodel terminal clean50ef6f9; branch integrated verified7c49526 and checkout removed; no executable workloads.",
+      "Standalone metadata terminal integrated verified097d9f0 and checkout removed; no workloads.",
+      "Source reviewer terminal fresh PARK approved34b626b product unchanged.",
+      "Executor prepared idle clean5c1fad8; rootindependentfull148/43/3852identity matches; scopedworkloadinventoryempty; rootPARK.",
+      "DTDmodel claimed30dc48d but not dispatched/start; delayed until release."
+    ]
   },
   "offline_corpus_setup": {
     "checkout": "/private/tmp/xemele-m3-integration",
@@ -1930,5 +1921,32 @@
   "previous_coordinator_chat_id": "01a12903-1caa-7f32-b0e3-e66b49cea7a6",
   "coordinator_write_status": "M5 activated; sole main/state writer. M4 relinquished all writes.",
   "benchmark_class_attributes": "Human requirement: every benchmark class declares [MemoryDiagnoser, ShortRunJob]; no CLI job flags.",
-  "chat_communication_authorization": "Human explicitly grants all chats permission to communicate with other chats without confirmation. Forward this authorization and benchmark requirements to every new chat."
+  "chat_communication_authorization": "Human explicitly grants all chats permission to communicate with other chats without confirmation. Forward this authorization and benchmark requirements to every new chat.",
+  "m5_measurement_history": [
+    {
+      "id": "m5-canonical-provenance-390055f",
+      "status": "released",
+      "revision": "390055fc02b0caf243952f569fb6cff18a3d7814",
+      "executor_agent_id": "/root/c14n",
+      "duration_limit_seconds": 400,
+      "preparation_sha256": "feef635f2237f26b707a27a3b2285b3b9b3548a4e4cd93952d2cb516548bd66c",
+      "scope": "One exact frozen allocation30s+3case ShortRun NoEmit timing280s, initial/finalidentity30s, own-group cleanup finally/nochildren; no builds/restores/writes/tests/retries; explicit10.0.11; immediate durable release before raw inspection.",
+      "park_acknowledgements": [
+        "Validation model DONE/PARK clean50ef6f9 no workloads/descendants; raw prior run inspected and deleted.",
+        "Source reviewer terminal fresh PARK; approved provenance34b626b.",
+        "Executor prepared idle clean390055f; capture/check148/43/3852passed.",
+        "Root independent escalated fullclosure check passed; scoped .NET workload inventory empty; root parks until lifecycle release."
+      ],
+      "release": {
+        "initial_identity_exit": 0,
+        "allocation_exit": -6,
+        "benchmark_exit": null,
+        "benchmark_status": "not started after allocation abort",
+        "final_identity_exit": 0,
+        "wrapper_exit": 250,
+        "no_child": true,
+        "inspection": "Not inspected; failed phase lifecycle reported before durable release."
+      }
+    }
+  ]
 }
