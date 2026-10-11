@@ -1,0 +1,59 @@
+{
+  "sourceRevision": "d65d34f2bee7a536332a7e22c989f20fe8b97342",
+  "files": {
+    "/Users/sebastienros/.codex/worktrees/efeb/xemele/benchmarks/Xemele.Benchmarks/M8-regex/bin/Release/net10.0/Xemele.Benchmarks.dll": "3513b679ee5478ba63629e2b94925f694737d296c84566d2bcb59f02f22a0b96",
+    "/Users/sebastienros/.codex/worktrees/efeb/xemele/benchmarks/Xemele.Benchmarks/M8-regex/bin/Release/net10.0/Xemele.dll": "deb6d26f6e6f4e44e3e5b70d8376b639401b9c8d52c81bb873d6429f887b4bba",
+    "/Users/sebastienros/.codex/worktrees/efeb/xemele/benchmarks/Xemele.Benchmarks/M8-regex/bin/Release/net10.0/Xemele.Benchmarks.runtimeconfig.json": "71d85789e62e55f3664c1b9e7b83665a3ea539d5ac5740bba0d05482f031684f",
+    "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet": "e86deb33d0dacad9cc1224466df6418149cb8e13cb8afd0dc6815ea6b7807975",
+    "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App/10.0.11/System.Private.CoreLib.dll": "9ed74c2e2efeee87f1f2d7ffe1736b7e9164ce248516ea39402a725eedc87af6",
+    "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App/10.0.11/libcoreclr.dylib": "10b24d0b11c7f6d838114744097bf10df9b08b906afc9016567631a1c009dfd0",
+    "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App/10.0.11/libclrgc.dylib": "2a53559ac20a2896a7d1afb427c73dcf781495349544e8b4b34e7d123ce39ffa",
+    "/Users/sebastienros/.codex/worktrees/efeb/xemele/src/Xemele/Validation/Regex/Characters.cs": "30990250989876c67ac5ff3693136366a9bea7d21b1b6daa23f2514f46d676f8",
+    "/Users/sebastienros/.codex/worktrees/efeb/xemele/src/Xemele/Validation/Regex/Parser.cs": "2b0ccf80bc6f56e09d98f98a091d2563b22f51a6e2477615cde0dcec7dba1c2a",
+    "/Users/sebastienros/.codex/worktrees/efeb/xemele/src/Xemele/Validation/Regex/Engine.cs": "40aeed7150f2201704d00956e775d4123d7dd39090432bd6f754e19de9d93353",
+    "/Users/sebastienros/.codex/worktrees/efeb/xemele/benchmarks/Xemele.Benchmarks/M8-regex/Measure.cs.fixture": "cd75f8907fc193085688be6049ec7545a7dcf695dca2af2112d53cfe4b1d15e7",
+    "/Users/sebastienros/.codex/worktrees/efeb/xemele/benchmarks/Xemele.Benchmarks/M8-regex/RegexBenchmarks.cs": "fa10c54a9930fdd6fca312a5d50bcef27897879230e05d94089739a16e41f51c",
+    "/Users/sebastienros/.codex/worktrees/efeb/xemele/tests/fixtures/M8-regex/sources.json": "daacee555d6fe0423bd8aa0295566247c02479599da138684472ea4b4a1f457c",
+    "/Users/sebastienros/.codex/worktrees/efeb/xemele/tests/fixtures/M8-regex/block-boundaries.tsv": "9ee30e0705749c217974c03fc14dd6b83c200bf6b9f96d7bc7a2d26ac5333b5b"
+  },
+  "control": {
+    "runtime": ".NET 10.0.11",
+    "architecture": "Arm64",
+    "os": "macOS 15.8.1",
+    "serverGc": false,
+    "inputSha256": "890F49908271B3A7E905DA99700E54F84109CC87CE189848B02F91DC1337EFF2",
+    "invalidScalar": 55296
+  },
+  "commands": [
+    [
+      "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+      "--fx-version",
+      "10.0.11",
+      "benchmarks/Xemele.Benchmarks/M8-regex/bin/Release/net10.0/Xemele.Benchmarks.dll",
+      "--measure",
+      "artifacts/M8-regex/allocation1.json"
+    ],
+    [
+      "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+      "--fx-version",
+      "10.0.11",
+      "benchmarks/Xemele.Benchmarks/M8-regex/bin/Release/net10.0/Xemele.Benchmarks.dll",
+      "--measure",
+      "artifacts/M8-regex/allocation2.json"
+    ],
+    [
+      "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+      "--fx-version",
+      "10.0.11",
+      "benchmarks/Xemele.Benchmarks/M8-regex/bin/Release/net10.0/Xemele.Benchmarks.dll",
+      "--bdn",
+      "--filter",
+      "*MatchBorrowed*",
+      "--artifacts",
+      "artifacts/M8-regex/bdn",
+      "--exporters",
+      "json"
+    ]
+  ],
+  "maximumSeconds": 600
+}

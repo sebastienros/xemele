@@ -34,14 +34,18 @@
     {
       "id": "M8-regex-A1",
       "description": "Implement XML Schema regex syntax/Unicode classes/subtraction and bounded matching.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "source-correctness"
+      ]
     },
     {
       "id": "M8-regex-A2",
       "description": "Spec-based valid/invalid pattern tests and resource-budget cases pass; no assumed .NET regex substitution.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "source-correctness"
+      ]
     },
     {
       "id": "M8-regex-A3",
@@ -50,13 +54,44 @@
       "evidence": []
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Validation/Regex/Engine.cs: XmlSchemaRegexEngine, RegexAutomaton and per-run bounded epsilon closure",
+    "src/Xemele/Validation/Regex/Parser.cs: complete Appendix F grammar and charged automaton construction",
+    "src/Xemele/Validation/Regex/Characters.cs: scalar categories, Unicode17 blocks/historical aliases and XML1.0 Second Edition name tables",
+    "tests/Xemele.Tests/M8-regex/RegexTests.cs:147 tests including full pinned block boundaries,29 categories and independent finite-language oracle",
+    "samples/M8-regex/Program.cs: real frozen-interface consumer compiled against XML-only verified prerequisites"
+  ],
+  "evidence": [
+    {
+      "id": "source-correctness",
+      "kind": "check",
+      "revision": "7f693470168f481bb63812516bde66d5be9f0822",
+      "command": "python3 docs/reports/M8-regex/checks.py",
+      "result": "passed",
+      "summary": "Pinned Release SDK10.0.400/runtime10.0.11 Arm64:147 owned regex +12 affected model correctness tests; zero errors/failures/skips/not-run;316 exact frozen member declarations,1393 preserved public API union; real XML-only consumer;175 tasks validated; diffcheck. Allocation tests not selected.",
+      "artifact": "docs/reports/M8-regex/README.md"
+    },
+    {
+      "id": "measurement-preparation",
+      "kind": "check",
+      "revision": "d65d34f2bee7a536332a7e22c989f20fe8b97342",
+      "command": "python3 docs/reports/M8-regex/prepare.py",
+      "result": "passed",
+      "summary": "Pinned Release probe/BDN binary built;8 counters-disabled semantic routes x33 initial/warm+64 samples, owned/positive/retained controls; source/binary/input/runtime identities prepared. No counters or benchmark measurement executed.",
+      "artifact": "docs/reports/M8-regex/preparation.json"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "",
-    "checks": [],
-    "remaining": [],
+    "summary": "Complete bounded Appendix F compiler/matcher, frozen interfaces, scalar Unicode and XML name classes, immutable programs and concurrent run state. Review batch1 defects corrected and regression-proven. Source7f69347; harness cold/pool/control supervision d65d34f.",
+    "checks": [
+      "147 owned regex and12 affected model correctness;316 frozen declarations and1393 preserved public members; XML-only concrete consumer; pinned Release build;175 task validation and diffcheck.",
+      "Counters-disabled preparation control passed; no runtime measurement executed."
+    ],
+    "remaining": [
+      "Await coordinator source review, peer/main PARK and durable exclusive measurement GRANT (maximum600s); then release/ACK, inspect summaries and record applicable allocation/BDN evidence.",
+      "Coordinator integrated verification and gate comprehensive corpus/x64 confirmation."
+    ],
     "requests": []
   }
 }
