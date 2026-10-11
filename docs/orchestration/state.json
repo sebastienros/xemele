@@ -62,6 +62,11 @@
       "task_id": "M3-sax",
       "issue": "Worker outbound coordinator messaging rejected by auto-review; fallback read worker own-chat outputs, no outbound request required.",
       "status": "resolved via wait_threads/read-only collection"
+    },
+    {
+      "task_id": "M3-resource-mode",
+      "status": "planned owning repair, ready verified prerequisites; dispatch when implementation slot free",
+      "scope": "Defaultsyncreader must support asyncresource mode after ReadAsync; modeguard and synchronousabort afterasync isolatedwithout laterpublicAPI"
     }
   ],
   "next_actions": [
@@ -1490,7 +1495,7 @@
     },
     "M3": {
       "verified": 8,
-      "total": 17,
+      "total": 18,
       "in_progress": [
         "M3-async-writer",
         "M3-sax",
@@ -1525,17 +1530,22 @@
     "stage": "verified; cleanup next",
     "scope": "Obsolete ABI assertion only; no runtimechanges",
     "integration_revision": "dbfb42ac39751f03065f42534f38332c27dcca27",
-    "worktree_path": "/private/tmp/xemele-m3-scan-abi"
+    "worktree_path": "/private/tmp/xemele-m3-scan-abi",
+    "cleanup": {
+      "worktree": "removed",
+      "evidence_durably_integrated": true
+    }
   },
   "measurement_lease": {
     "id": "m3-async-writer-3a-sync-and-informational-bdn",
-    "status": "granted",
+    "status": "released",
     "revision": "3a0e4070ac696655a624fbd8b32fb76a8fd42dc9",
     "runtime_revision": "80119207072d0eb292f9cb6bf186bc8cf2bdb3fd",
     "duration_limit_seconds": 130,
     "scope": "Prebuilt19syncwriter<=20s thenonlypass sixBDNDryInProcesscases<=110s defaultenv. Ownimplementationhostlease: SAX/readerPARK nochildren, rootterminalnobuild/exe, read-onlyreviewerterminal. No builds/generation/retry/source/optionschange, releaseactualexitbeforeinspection.",
     "host_contention": "Unrelated user Silex.Jepsen22822 CPU407; do not touch. Latencies retained explicitly contended informational only, cannot establish speedup/regression/repeatability. Actual sameprocess memory diagnostics + mandatorystandalone counters valid; M9 repeatablehardwarequalification remainsrequired.",
-    "convergence_decision": "Performance-coding rules permit noisy sharedhost timings as informational; baseline asynccomposition introduces no new scanoptimization claim. Do not wait indefinitely for unrelateduserwork or relabel timing as comparativepassinggate."
+    "convergence_decision": "Performance-coding rules permit noisy sharedhost timings as informational; baseline asynccomposition introduces no new scanoptimization claim. Do not wait indefinitely for unrelateduserwork or relabel timing as comparativepassinggate.",
+    "result": "19syncwriterpassed once; BDNreported12instead6jobs, deliberateprocessgroupkill beforecases; wrapperexit124mislabels timeout butactualscopeabort. No children. Benchmarkonlyredundantjobconfiguration repair, preservepassingchecks."
   },
   "offline_corpus_setup": {
     "checkout": "/private/tmp/xemele-m3-integration",
