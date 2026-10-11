@@ -2,7 +2,7 @@ using System.Collections.ObjectModel;
 using System.Text;
 using Xemele;
 namespace Xemele.Html;
-public enum HtmlNodeKind { Document, Fragment, Element, Text, Comment, DocumentType }
+public enum HtmlNodeKind { Document, Fragment, Element, Text, Comment, DocumentType, ProcessingInstruction = 6 }
 public enum HtmlQuirksMode { NoQuirks, LimitedQuirks, Quirks }
 public sealed record HtmlAttribute(string LocalName, string Value, string NamespaceUri = "", string Prefix = "");
 public sealed record HtmlDoctype(string Name, string? PublicIdentifier, string? SystemIdentifier, bool ForceQuirks);
@@ -16,7 +16,7 @@ public sealed record HtmlTokenizerOptions
  public HtmlTokenizerState InitialState { get; init; } = HtmlTokenizerState.Data;
  public string LastStartTagName { get; init; } = "";
 }
-public enum HtmlTokenKind { Doctype, StartTag, EndTag, Comment, Character, EndOfFile }
+public enum HtmlTokenKind { Doctype, StartTag, EndTag, Comment, Character, EndOfFile, ProcessingInstruction = 6 }
 public sealed class HtmlToken
 {
  public HtmlToken(HtmlTokenKind kind, string name, string data, IReadOnlyList<HtmlAttribute> attributes, bool selfClosing, HtmlDoctype? doctype, XmlLocation location)
@@ -72,6 +72,16 @@ public sealed class HtmlDocument
  }
  public HtmlNode CreateText(string value) => CreateValue(HtmlNodeKind.Text,value);
  public HtmlNode CreateComment(string value) => CreateValue(HtmlNodeKind.Comment,value);
+ public HtmlNode CreateProcessingInstruction(string target,string data)
+ {
+  ArgumentNullException.ThrowIfNull(target); ArgumentNullException.ThrowIfNull(data);
+  if(target.Length==0 || !IsTargetStart(target[0])) throw new ArgumentException("Invalid HTML processing-instruction target.",nameof(target));
+  for(int i=1;i<target.Length;i++) if(!IsTargetStart(target[i]) && target[i] is not (>= '0' and <= '9') && target[i]!='-') throw new ArgumentException("Invalid HTML processing-instruction target.",nameof(target));
+  if(target.AsSpan().Equals("xml",StringComparison.OrdinalIgnoreCase) || target.AsSpan().Equals("xml-stylesheet",StringComparison.OrdinalIgnoreCase)) throw new ArgumentException("Reserved HTML processing-instruction target.",nameof(target));
+  CheckToken(target); CheckToken(data); CheckNames(target);
+  return new(this,HtmlNodeKind.ProcessingInstruction,Intern(target),value:data);
+ }
+ private static bool IsTargetStart(char value) => value is >= 'A' and <= 'Z' or >= 'a' and <= 'z' or '_';
  private HtmlNode CreateValue(HtmlNodeKind kind,string value) { ArgumentNullException.ThrowIfNull(value); CheckToken(value); return new(this,kind,value:value); }
  public HtmlNode CreateDocumentType(HtmlDoctype doctype) { ArgumentNullException.ThrowIfNull(doctype); ValidateDoctype(doctype); CheckToken(doctype.Name); return new(this,HtmlNodeKind.DocumentType,doctype.Name,doctype:doctype); }
  public HtmlNode CreateFragment() => new(this,HtmlNodeKind.Fragment);
@@ -88,7 +98,7 @@ public sealed class HtmlDocument
  }
  private HtmlNode CopyShallow(HtmlNode node)
  {
-  HtmlNode result=node.Kind switch {HtmlNodeKind.Element=>CreateElement(node.LocalName,node.NamespaceUri,node.Prefix),HtmlNodeKind.Text=>CreateText(node.Value),HtmlNodeKind.Comment=>CreateComment(node.Value),HtmlNodeKind.DocumentType=>CreateDocumentType(node.Doctype!),HtmlNodeKind.Fragment=>CreateFragment(),HtmlNodeKind.Document=>new HtmlNode(this,HtmlNodeKind.Document),_=>throw new ArgumentException("Unsupported node kind.")};
+  HtmlNode result=node.Kind switch {HtmlNodeKind.Element=>CreateElement(node.LocalName,node.NamespaceUri,node.Prefix),HtmlNodeKind.Text=>CreateText(node.Value),HtmlNodeKind.Comment=>CreateComment(node.Value),HtmlNodeKind.ProcessingInstruction=>CreateProcessingInstruction(node.LocalName,node.Value),HtmlNodeKind.DocumentType=>CreateDocumentType(node.Doctype!),HtmlNodeKind.Fragment=>CreateFragment(),HtmlNodeKind.Document=>new HtmlNode(this,HtmlNodeKind.Document),_=>throw new ArgumentException("Unsupported node kind.")};
   foreach(var a in node.Attributes) result.SetAttribute(a); return result;
  }
 }
@@ -104,7 +114,7 @@ public sealed class HtmlNode
  public string LocalName {get;}
  public string NamespaceUri {get;}
  public string Prefix {get;}
- public string Value {get=>value;set {ArgumentNullException.ThrowIfNull(value);if(Kind is not (HtmlNodeKind.Text or HtmlNodeKind.Comment)) throw new InvalidOperationException("Only text and comments have mutable values.");OwnerDocument.CheckToken(value);this.value=value;}}
+ public string Value {get=>value;set {ArgumentNullException.ThrowIfNull(value);if(Kind is not (HtmlNodeKind.Text or HtmlNodeKind.Comment or HtmlNodeKind.ProcessingInstruction)) throw new InvalidOperationException("Only text, comments and processing instructions have mutable values.");OwnerDocument.CheckToken(value);this.value=value;}}
  internal HtmlNode? TemplateHost;
  internal HtmlNode? StructuralParent => Parent ?? TemplateHost;
  private HtmlNode? parent;
