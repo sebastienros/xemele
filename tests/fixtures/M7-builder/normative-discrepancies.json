@@ -1,0 +1,171 @@
+{
+  "standard_sha256": "34e193906e6898ae7faf576a8d4c0f8de619a86ec99d85a3baeb2713171f1dbf",
+  "wpt_revision": "ddb25fdfff7766af4cd75eac3fb3b6ac206140ce",
+  "tree": [
+    {
+      "file": "template.dat",
+      "case": 43,
+      "input": "<head><template></template></head><p><frameset>",
+      "original_expected": "| <html>\n|   <head>\n|     <template>\n|       content\n|   <frameset>",
+      "current_expected": "| <html>\n|   <head>\n|     <template>\n|       content\n|   <body>\n|     <p>",
+      "rule": "in-head template start sets frameset-ok to not ok; later frameset start is ignored",
+      "authority": "https://html.spec.whatwg.org/multipage/parsing.html#parsing-main-inhead",
+      "independent_witness": "<!doctype html><template>independent</template><p><frameset>"
+    },
+    {
+      "file": "template.dat",
+      "case": 44,
+      "input": "<template>x</template><p><frameset>",
+      "original_expected": "| <html>\n|   <head>\n|     <template>\n|       content\n|         \"x\"\n|   <frameset>",
+      "current_expected": "| <html>\n|   <head>\n|     <template>\n|       content\n|         \"x\"\n|   <body>\n|     <p>",
+      "rule": "in-head template start sets frameset-ok to not ok; later frameset start is ignored",
+      "authority": "https://html.spec.whatwg.org/multipage/parsing.html#parsing-main-inhead",
+      "independent_witness": "<!doctype html><template>independent</template><p><frameset>"
+    },
+    {
+      "file": "template.dat",
+      "case": 45,
+      "input": "<head></head><template></template><p><frameset>",
+      "original_expected": "| <html>\n|   <head>\n|     <template>\n|       content\n|   <frameset>",
+      "current_expected": "| <html>\n|   <head>\n|     <template>\n|       content\n|   <body>\n|     <p>",
+      "rule": "in-head template start sets frameset-ok to not ok; later frameset start is ignored",
+      "authority": "https://html.spec.whatwg.org/multipage/parsing.html#parsing-main-inhead",
+      "independent_witness": "<!doctype html><template>independent</template><p><frameset>"
+    }
+  ],
+  "browser_execution": [
+    {
+      "file": "scripted_adoption01.dat",
+      "case": 0,
+      "input": "<p><b id=\"A\"><script>document.getElementById(\"A\").id = \"B\"</script></p>TEXT</b>",
+      "original_expected": "| <html>\n|   <head>\n|   <body>\n|     <p>\n|       <b>\n|         id=\"B\"\n|         <script>\n|           \"document.getElementById(\"A\").id = \"B\"\"\n|     <b>\n|       id=\"A\"\n|       \"TEXT\"",
+      "sha256": "dd948e194e04de27c4b8ebe642d6a435f024a276b15e098c8be942b534c8d975",
+      "dependency": "executed script modifies DOM identity/attribute/tree or invokes document.write; prescribed tree cannot arise from lexical input alone",
+      "script": true
+    },
+    {
+      "file": "scripted_ark.dat",
+      "case": 0,
+      "input": "<p><font size=4><font size=4><font size=4><script>document.getElementsByTagName(\"font\")[2].setAttribute(\"size\", \"5\");</script><font size=4><p>X",
+      "original_expected": "| <html>\n|   <head>\n|   <body>\n|     <p>\n|       <font>\n|         size=\"4\"\n|         <font>\n|           size=\"4\"\n|           <font>\n|             size=\"5\"\n|             <script>\n|               \"document.getElementsByTagName(\"font\")[2].setAttribute(\"size\", \"5\");\"\n|             <font>\n|               size=\"4\"\n|     <p>\n|       <font>\n|         size=\"4\"\n|         <font>\n|           size=\"4\"\n|           <font>\n|             size=\"4\"\n|             \"X\"",
+      "sha256": "5948a7784ae728c9516430419e5f74470b388ccca687cb5ee334567a95bcc21f",
+      "dependency": "executed script modifies DOM identity/attribute/tree or invokes document.write; prescribed tree cannot arise from lexical input alone",
+      "script": true
+    },
+    {
+      "file": "scripted_foster01.dat",
+      "case": 0,
+      "input": "<table><tr><script>var t=document.querySelector('table');document.documentElement.remove();document.appendChild(t)</script><b>",
+      "original_expected": "| <table>\n|   <tbody>\n|     <tr>\n|       <script>\n|         \"var t=document.querySelector('table');document.documentElement.remove();document.appendChild(t)\"",
+      "sha256": "54dc2534ea3f06656628322d070d389ac7c93834db5eb91a204ba51986831d5d",
+      "dependency": "executed script modifies DOM identity/attribute/tree or invokes document.write; prescribed tree cannot arise from lexical input alone",
+      "script": true
+    },
+    {
+      "file": "scripted_foster01.dat",
+      "case": 1,
+      "input": "<table><tr><script>var t=document.querySelector('table');document.documentElement.remove();document.appendChild(t)</script>FOSTERTEXT",
+      "original_expected": "| <table>\n|   <tbody>\n|     <tr>\n|       <script>\n|         \"var t=document.querySelector('table');document.documentElement.remove();document.appendChild(t)\"",
+      "sha256": "36ac5cbcd9d60276e767e40264164e3ec13c5653ee5e425a38afa3670aa6d87a",
+      "dependency": "executed script modifies DOM identity/attribute/tree or invokes document.write; prescribed tree cannot arise from lexical input alone",
+      "script": true
+    },
+    {
+      "file": "scripted_webkit01.dat",
+      "case": 0,
+      "input": "1<script>document.write(\"2\")</script>3",
+      "original_expected": "| <html>\n|   <head>\n|   <body>\n|     \"1\"\n|     <script>\n|       \"document.write(\"2\")\"\n|     \"23\"",
+      "sha256": "c099c427eed5874e45134ecb097675e0a32164448ffe32865cbf5c0087dc8997",
+      "dependency": "executed script modifies DOM identity/attribute/tree or invokes document.write; prescribed tree cannot arise from lexical input alone",
+      "script": true
+    },
+    {
+      "file": "scripted_webkit01.dat",
+      "case": 1,
+      "input": "1<script>document.write(\"<script>document.write('2')</scr\"+ \"ipt><script>document.write('3')</scr\" + \"ipt>\")</script>4",
+      "original_expected": "| <html>\n|   <head>\n|   <body>\n|     \"1\"\n|     <script>\n|       \"document.write(\"<script>document.write('2')</scr\"+ \"ipt><script>document.write('3')</scr\" + \"ipt>\")\"\n|     <script>\n|       \"document.write('2')\"\n|     \"2\"\n|     <script>\n|       \"document.write('3')\"\n|     \"34\"",
+      "sha256": "3461b3d12a5ce32e1c2e195e6dddd95ab298517e2c2d736d5b6cc389f1d7e456",
+      "dependency": "executed script modifies DOM identity/attribute/tree or invokes document.write; prescribed tree cannot arise from lexical input alone",
+      "script": true
+    }
+  ],
+  "encoding": [
+    {
+      "file": "tests1.dat",
+      "case": 47,
+      "input_sha256": "a7dcadfbf35d78c549e1d775084f7f7d19d3848d32ad826a0e0357be5cb1cfee",
+      "original_expected": "iso-8859-2",
+      "current_expected": "windows-1252",
+      "declaration_byte_offset": 2020,
+      "rule": "M7 HTML byte contract chooses declaration only in first1024 original bytes; default windows-1252 applies without BOM or applicable declaration in that window",
+      "authority": "docs/specs/html.md#parsing-profiles",
+      "independent_witness": "1024spaces followed by meta charset=iso8859-2 and byte80 -> euro"
+    },
+    {
+      "file": "tests1.dat",
+      "case": 48,
+      "input_sha256": "8d5f276e1dfc85402fe5ea16125bd67d2d0faa5d09d0f9db823707000cfc8a93",
+      "original_expected": "iso-8859-2",
+      "current_expected": "windows-1252",
+      "declaration_byte_offset": 2021,
+      "rule": "M7 HTML byte contract chooses declaration only in first1024 original bytes; default windows-1252 applies without BOM or applicable declaration in that window",
+      "authority": "docs/specs/html.md#parsing-profiles",
+      "independent_witness": "1024spaces followed by meta charset=iso8859-2 and byte80 -> euro"
+    },
+    {
+      "file": "tests1.dat",
+      "case": 49,
+      "input_sha256": "ae724d8943dcbee2b80070748a6aa5425c3c3b4e92c2032fba38f7ddd72884cb",
+      "original_expected": "iso-8859-2",
+      "current_expected": "windows-1252",
+      "declaration_byte_offset": 4068,
+      "rule": "M7 HTML byte contract chooses declaration only in first1024 original bytes; default windows-1252 applies without BOM or applicable declaration in that window",
+      "authority": "docs/specs/html.md#parsing-profiles",
+      "independent_witness": "1024spaces followed by meta charset=iso8859-2 and byte80 -> euro"
+    },
+    {
+      "file": "tests1.dat",
+      "case": 50,
+      "input_sha256": "8620f06e001454a9b0f707d9269795148ac87b64c184683bc65e27d4f0965c3b",
+      "original_expected": "iso-8859-2",
+      "current_expected": "windows-1252",
+      "declaration_byte_offset": 4069,
+      "rule": "M7 HTML byte contract chooses declaration only in first1024 original bytes; default windows-1252 applies without BOM or applicable declaration in that window",
+      "authority": "docs/specs/html.md#parsing-profiles",
+      "independent_witness": "1024spaces followed by meta charset=iso8859-2 and byte80 -> euro"
+    },
+    {
+      "file": "tests1.dat",
+      "case": 51,
+      "input_sha256": "d8e3e0087609f55866c63a3d9403d3c90a2e5b637bb54b140683683a26351c10",
+      "original_expected": "iso-8859-2",
+      "current_expected": "windows-1252",
+      "declaration_byte_offset": 8164,
+      "rule": "M7 HTML byte contract chooses declaration only in first1024 original bytes; default windows-1252 applies without BOM or applicable declaration in that window",
+      "authority": "docs/specs/html.md#parsing-profiles",
+      "independent_witness": "1024spaces followed by meta charset=iso8859-2 and byte80 -> euro"
+    },
+    {
+      "file": "tests1.dat",
+      "case": 52,
+      "input_sha256": "2549c43f1c3f5f26d3e84b3357bd84398537011c110149e1e9138608253817e5",
+      "original_expected": "iso-8859-2",
+      "current_expected": "windows-1252",
+      "declaration_byte_offset": 8165,
+      "rule": "M7 HTML byte contract chooses declaration only in first1024 original bytes; default windows-1252 applies without BOM or applicable declaration in that window",
+      "authority": "docs/specs/html.md#parsing-profiles",
+      "independent_witness": "1024spaces followed by meta charset=iso8859-2 and byte80 -> euro"
+    },
+    {
+      "file": "tests1.dat",
+      "case": 53,
+      "input_sha256": "5dae9dbfb6aad975a81dfe136e8562a5afa94619b8208e70aac86e720947430a",
+      "original_expected": "iso-8859-2",
+      "current_expected": "windows-1252",
+      "declaration_byte_offset": 8317,
+      "rule": "M7 HTML byte contract chooses declaration only in first1024 original bytes; default windows-1252 applies without BOM or applicable declaration in that window",
+      "authority": "docs/specs/html.md#parsing-profiles",
+      "independent_witness": "1024spaces followed by meta charset=iso8859-2 and byte80 -> euro"
+    }
+  ]
+}

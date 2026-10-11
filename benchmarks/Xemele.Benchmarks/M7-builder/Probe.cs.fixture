@@ -1,0 +1,112 @@
+using System.Runtime.InteropServices;
+using System.Text;
+using System.Text.Json;
+using BenchmarkDotNet.Configs;
+using BenchmarkDotNet.Jobs;
+using BenchmarkDotNet.Running;
+using BenchmarkDotNet.Toolchains.InProcess.NoEmit;
+using Xemele.Html;
+using Xemele.Benchmarks.HtmlTreeConstruction;
+
+Console.WriteLine($"FrameworkDescription={RuntimeInformation.FrameworkDescription}; Architecture={RuntimeInformation.ProcessArchitecture}");
+if (RuntimeInformation.FrameworkDescription != ".NET 10.0.11") throw new Exception("Actual pinned runtime required.");
+if (args[0] is "--discover" or "--benchmark" or "--discover-owned" or "--benchmark-owned")
+{
+    var config = ManualConfig.Create(DefaultConfig.Instance).WithArtifactsPath(args[1]).AddJob(Job.Default.WithToolchain(InProcessNoEmitToolchain.Instance).AsMutator());
+    var suite = BenchmarkConverter.TypeToBenchmarks(typeof(BuilderBenchmarks), config);
+    bool ownedOnly = args[0] is "--discover-owned" or "--benchmark-owned";
+    if (suite.BenchmarksCases.Length != 72 || suite.BenchmarksCases.Any(c => c.Job.Run.WarmupCount != 3 || c.Job.Run.IterationCount != 3 || c.Job.Run.LaunchCount != 1 || c.Job.Infrastructure.Toolchain != InProcessNoEmitToolchain.Instance)) throw new Exception("72 ShortRun NoEmit cases required.");
+    if (ownedOnly)
+    {
+        var ownedCases = suite.BenchmarksCases.Where(c => c.Descriptor.WorkloadMethod.Name is "CharacterDocument" or "ByteDocument" or "CallerStreamDocument" or "ContextualFragment").ToArray();
+        if (ownedCases.Length != 24) throw new Exception("Exactly24affected owned cases required.");
+        suite = new BenchmarkRunInfo(ownedCases, typeof(BuilderBenchmarks), suite.Config);
+    }
+    int expectedCases = ownedOnly ? 24 : 72;
+    Console.WriteLine($"{expectedCases} ShortRun NoEmit cases; no builds/generation.");
+    if (args[0] is "--discover" or "--discover-owned") return;
+    var summary = BenchmarkRunner.Run(suite);
+    if (summary.Reports.Length != expectedCases || summary.Reports.Any(r => !r.Success || r.ResultStatistics is null)) throw new Exception("Benchmark failure.");
+    return;
+}
+if (args[0] == "--verify")
+{
+    BuilderBenchmarks.InitializeLabels();
+    foreach(string kind in Kinds()) Verify(kind);
+    using var json=JsonDocument.Parse(File.ReadAllText("tests/fixtures/M7-builder/encoding/encodings.json"));
+    int count=0;
+    foreach(var group in json.RootElement.EnumerateArray()) foreach(var encoding in group.GetProperty("encodings").EnumerateArray()) foreach(var label in encoding.GetProperty("labels").EnumerateArray())
+    {
+        string value=label.GetString()!; byte[] bytes=Encoding.ASCII.GetBytes(value);
+        if(BuilderBenchmarks.LinearLabel(value)!=HtmlEncodingTables.Label(value) || BuilderBenchmarks.LinearLabel(bytes)!=HtmlEncodingTables.Label(bytes)) throw new Exception("All-label oracle mismatch.");
+        count++;
+    }
+    if(count!=228) throw new Exception("Pinned228labels required.");
+    Console.WriteLine("Correctness-only:228 byte/char label comparisons and6 fixture prescan/scan oracles pass; no allocation/timing counters.");return;
+}
+if(args[0]!="--measure") throw new ArgumentException();
+long before=GC.GetAllocatedBytesForCurrentThread();
+var cold=Html5Parser.Parse(BuilderBenchmarks.Composition);
+Print("cold-first-owned-document-inclusive-static-initialization",GC.GetAllocatedBytesForCurrentThread()-before,1);GC.KeepAlive(cold);
+before=GC.GetAllocatedBytesForCurrentThread();var positive=new byte[1024];long allocation=GC.GetAllocatedBytesForCurrentThread()-before;
+if(allocation==0) throw new Exception("Positive allocation control failed.");Print("positive-control",allocation,1);GC.KeepAlive(positive);
+before=GC.GetAllocatedBytesForCurrentThread();
+int consumed=BuilderBenchmarks.SearchValuesScan("<"u8);
+Print("cold-benchmark-cached-SearchValues-and-fixture-class-initialization",GC.GetAllocatedBytesForCurrentThread()-before,1);
+before=GC.GetAllocatedBytesForCurrentThread();BuilderBenchmarks.InitializeLabels();
+Print("prepared-linear-label-oracle-fixture-JSON-and-owned-tables",GC.GetAllocatedBytesForCurrentThread()-before,1);
+foreach(string kind in Kinds())
+{
+    Verify(kind);
+    byte[] prescan=BuilderBenchmarks.PrescanInput(kind);string label=BuilderBenchmarks.LabelInput(kind);byte[] labelBytes=Encoding.UTF8.GetBytes(label);
+    for(int i=0;i<1000;i++) { HtmlByteInput.Sniff(prescan);HtmlEncodingTables.Label(label);HtmlEncodingTables.Label(labelBytes);BuilderBenchmarks.SearchValuesScan(prescan); }
+    for(int batch=0;batch<16;batch++)
+    {
+        before=GC.GetAllocatedBytesForCurrentThread();
+        for(int i=0;i<1024;i++) consumed+=HtmlByteInput.Sniff(prescan).Bom+(HtmlEncodingTables.Label(label)?.Length??0)+(HtmlEncodingTables.Label(labelBytes)?.Length??0)+BuilderBenchmarks.SearchValuesScan(prescan);
+        allocation=GC.GetAllocatedBytesForCurrentThread()-before;
+        Print("warm-borrowed-prescan-label-and-cached-scan-"+kind,allocation,1024);
+        if(allocation!=0) throw new Exception("Borrowed primitive allocated.");
+    }
+    Measure("allocating-prescan-baseline-"+kind,()=>consumed+=AllocatingPrescanBaseline.Sniff(prescan).Bom,128);
+    string owned=BuilderBenchmarks.OwnedInput(kind);byte[] bytes=Encoding.UTF8.GetBytes("<meta charset=utf-8>"+owned);
+    var context=new HtmlFragmentContext(new HtmlDocument().CreateElement("body"));
+    var copySource=Html5Parser.Parse(owned).RootElement;
+    Measure("owned-character-document-"+kind,()=>GC.KeepAlive(Html5Parser.Parse(owned)),128);
+    Measure("owned-byte-document-"+kind,()=>GC.KeepAlive(Html5Parser.Parse(bytes)),128);
+    Measure("owned-stream-object-transport-and-document-"+kind,()=>{using var stream=new MemoryStream(bytes,false);GC.KeepAlive(Html5Parser.Load(stream));if(!stream.CanRead)throw new Exception("Caller stream closed");},128);
+    Measure("owned-contextual-fragment-"+kind,()=>GC.KeepAlive(Html5Parser.ParseFragment(owned,context)),128);
+    Measure("owned-deep-clone-output-"+kind,()=>GC.KeepAlive(copySource.Clone()),128);
+}
+foreach(int n in new[]{256,512,1024,2048})
+{
+    string foster="<body>prefix<table>"+string.Concat(Enumerable.Repeat("<tr><td>cell</td></tr>x",n))+"</table>suffix";
+    string adoption="<p>"+string.Concat(Enumerable.Repeat("<b><i>x</b>y</i>",n));
+    var body=Html5Parser.Parse(foster).RootElement.Children[1];
+    if(body.FirstChild!.Value!="prefix"+new string('x',n) || body.Children.Count!=3) throw new Exception("Foster scaling correctness.");
+    if(Html5Parser.Parse(adoption).RootElement.GetTextContent()!=string.Concat(Enumerable.Repeat("xy",n))) throw new Exception("Adoption scaling correctness.");
+    Measure("buffered-foster-N="+n,()=>GC.KeepAlive(Html5Parser.Parse(foster)),8);
+    Measure("buffered-adoption-N="+n,()=>GC.KeepAlive(Html5Parser.Parse(adoption)),8);
+}
+GC.Collect();GC.WaitForPendingFinalizers();GC.Collect();long heapBefore=GC.GetTotalMemory(false);
+var retained=new HtmlDocument[128];for(int i=0;i<retained.Length;i++)retained[i]=Html5Parser.Parse(BuilderBenchmarks.Composition);
+GC.Collect();GC.WaitForPendingFinalizers();GC.Collect();long heapAfter=GC.GetTotalMemory(false);
+Console.WriteLine(JsonSerializer.Serialize(new{domain="retained-inclusive-documents-array-model-tokenizer-and-runtime-roots",beforeBytes=heapBefore,afterBytes=heapAfter,inclusiveDeltaBytes=heapAfter-heapBefore,denominatorOperations=retained.Length}));
+GC.KeepAlive(retained);GC.KeepAlive(consumed);
+
+static string[] Kinds()=>["short-hit","short-miss","long-late-hit","long-miss","dense","multilingual"];
+static void Verify(string kind)
+{
+    byte[] input=BuilderBenchmarks.PrescanInput(kind);string label=BuilderBenchmarks.LabelInput(kind);byte[] bytes=Encoding.UTF8.GetBytes(label);
+    if(HtmlByteInput.Sniff(input)!=AllocatingPrescanBaseline.Sniff(input))throw new Exception("Prescan oracle mismatch: "+kind);
+    if(BuilderBenchmarks.LinearLabel(label)!=HtmlEncodingTables.Label(label) || BuilderBenchmarks.LinearLabel(bytes)!=HtmlEncodingTables.Label(bytes))throw new Exception("Label oracle mismatch: "+kind);
+    int expected=BuilderBenchmarks.ScalarScan(input);
+    if(BuilderBenchmarks.IndexScan(input)!=expected || BuilderBenchmarks.SmallSetScan(input)!=expected || BuilderBenchmarks.SearchValuesScan(input)!=expected)throw new Exception("Scan oracle mismatch: "+kind);
+}
+static void Measure(string domain,Action operation,int operations)
+{
+    for(int i=0;i<32;i++)operation();
+    long before=GC.GetAllocatedBytesForCurrentThread();for(int i=0;i<operations;i++)operation();
+    Print(domain,GC.GetAllocatedBytesForCurrentThread()-before,operations);
+}
+static void Print(string domain,long numeratorBytes,int denominatorOperations)=>Console.WriteLine(JsonSerializer.Serialize(new{domain,numeratorBytes,denominatorOperations}));
