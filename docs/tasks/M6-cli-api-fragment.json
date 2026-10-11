@@ -4,7 +4,7 @@
   "milestone": "M6",
   "title": "Remove zero-member CLI API fragment from official inventory",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M6 coordinator root owning repair",
   "branch": "codex/m6-cli-api-fragment",
   "base_revision": "8b4206d5c3339df1439488c546d7e85a8e1c7d07",
@@ -27,23 +27,54 @@
     {
       "id": "M6-cli-api-fragment-A1",
       "description": "Remove header-only zero-member CLI fragment rather than adding dummy public members or weakening official inventory validation; preserve exact 1054 declaration union.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "official-api",
+        "source-review"
+      ]
     },
     {
       "id": "M6-cli-api-fragment-A2",
       "description": "Official inventory and compiled API comparison pass with original offline resources and all prior rows; no runtime/shared-tool edits. Record actual revision/checks and planning validation.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "official-api",
+        "source-review"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "Removed docs/api/M6-cli.txt containing only xemele-api-v1 header; no declarations removed; no source/tool changes."
+  ],
+  "evidence": [
+    {
+      "id": "official-api",
+      "kind": "check",
+      "revision": "472a1800a160143ba2f96e9c7efad6da90463f07",
+      "command": "Cached restore+forcedRelease RuntimeFrameworkVersion10.0.11 runtime/extractor; official tools/ApiBaseline/compare.py with explicitfx10.0.11 extractor bridge; tasksvalidate/diff",
+      "result": "passed",
+      "summary": "Official inventory/compiled comparison1054 matched; originalofflinehashverifiedresources;2builds zero warnings/errors;164tasks valid,owned2filediff. CLIheaderzero declarations; unionunchanged.",
+      "artifact": "docs/reports/M6-cli-api-fragment/README.md"
+    },
+    {
+      "id": "source-review",
+      "kind": "review",
+      "revision": "472a1800a160143ba2f96e9c7efad6da90463f07",
+      "command": "Independent contract_review source-only review",
+      "result": "passed",
+      "summary": "Approved owning headeronly deletion; removeszero declarations,preserves1054union,no discoveryweakening. No executable reviewer checks.",
+      "artifact": null
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Gate officialinventory rejects header-only docs/api/M6-cli.txt; CLI is internal and addszeroAPI. Owning deletion repair requested, no API/tool semanticschange.",
-    "checks": [],
-    "remaining": [],
+    "summary": "API-only zero-member deletion implemented; officialinventorypasses1054; awaitingfreshintegratedcheck.",
+    "checks": [
+      "OfficialcompiledAPI1054,164taskvalidate,diff,source-onlyapproval"
+    ],
+    "remaining": [
+      "Freshintegrationverification"
+    ],
     "requests": []
   }
 }
