@@ -93,7 +93,7 @@ internal sealed record XPathStep
     public XPathNodeTest Test { get; }
     public IReadOnlyList<XPathAst> Predicates { get; }
     public XPathSourceSpan Span { get; }
-    internal XPathStep(XPathAxis Axis, XPathNodeTest Test, IReadOnlyList<XPathAst> Predicates, XPathSourceSpan Span) 
+    internal XPathStep(XPathAxis Axis, XPathNodeTest Test, IReadOnlyList<XPathAst> Predicates, XPathSourceSpan Span)
     {
         this.Axis = ModelGuard.Enum(Axis);
         this.Test = Test ?? throw new ArgumentNullException(nameof(Test));
