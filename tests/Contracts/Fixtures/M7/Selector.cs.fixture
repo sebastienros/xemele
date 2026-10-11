@@ -1,0 +1,9 @@
+namespace Xemele.Css;
+public sealed record CssSelectorOptions { public IReadOnlyDictionary<string,string> Namespaces { get; init; } = new Dictionary<string,string>(); }
+public sealed class CssSelectorException(string message, int offset) : ArgumentException(message) { public int Offset { get; } = offset; }
+public sealed class CssSelector
+{
+ public static CssSelector Compile(string selector, CssSelectorOptions? options = null) => throw new NotImplementedException();
+ public bool Matches(Xemele.Html.HtmlNode element) => throw new NotImplementedException();
+ public IReadOnlyList<Xemele.Html.HtmlNode> Select(Xemele.Html.HtmlNode root) => throw new NotImplementedException();
+}

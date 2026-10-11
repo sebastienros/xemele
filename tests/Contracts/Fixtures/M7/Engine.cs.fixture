@@ -1,0 +1,26 @@
+using Xemele;
+namespace Xemele.Html;
+public sealed record HtmlParseOptions { public XmlResourceLimits Limits { get; init; } = new(); }
+public sealed record Html5ParseOptions { public XmlResourceLimits Limits { get; init; } = new(); public bool ScriptingEnabled { get; init; } }
+public sealed record HtmlFragmentContext(HtmlNode ContextElement, HtmlQuirksMode QuirksMode = HtmlQuirksMode.NoQuirks);
+public static class HtmlParser
+{
+ public static HtmlDocument Parse(string html, HtmlParseOptions? options = null) => throw new NotImplementedException();
+ public static HtmlDocument Parse(ReadOnlySpan<byte> html, HtmlParseOptions? options = null) => throw new NotImplementedException();
+ public static HtmlDocument Load(Stream stream, HtmlParseOptions? options = null, CancellationToken cancellationToken = default) => throw new NotImplementedException();
+}
+public static class Html5Parser
+{
+ public static HtmlDocument Parse(string html, Html5ParseOptions? options = null) => throw new NotImplementedException();
+ public static HtmlDocument Parse(ReadOnlySpan<byte> html, Html5ParseOptions? options = null) => throw new NotImplementedException();
+ public static HtmlDocument Load(Stream stream, Html5ParseOptions? options = null, CancellationToken cancellationToken = default) => throw new NotImplementedException();
+ public static HtmlNode ParseFragment(string html, HtmlFragmentContext context, Html5ParseOptions? options = null) => throw new NotImplementedException();
+}
+public enum HtmlSerializationMode { Legacy, Html5 }
+public sealed record HtmlSaveOptions { public HtmlSerializationMode Mode { get; init; } = HtmlSerializationMode.Html5; }
+public static class HtmlSerializer
+{
+ public static string Serialize(HtmlDocument document, HtmlSaveOptions? options = null) => throw new NotImplementedException();
+ public static string Serialize(HtmlNode node, HtmlSaveOptions? options = null) => throw new NotImplementedException();
+ public static void Save(HtmlDocument document, Stream stream, HtmlSaveOptions? options = null, CancellationToken cancellationToken = default) => throw new NotImplementedException();
+}
