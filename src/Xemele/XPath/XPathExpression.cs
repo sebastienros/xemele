@@ -10,7 +10,7 @@ public sealed class XPathExpression
     public static XPathExpression Compile(string expression, XPathCompileOptions? options = null, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(expression); cancellationToken.ThrowIfCancellationRequested();
-        var context = XPathStaticContext.FromOptions(options, cancellationToken);
+        var context = XPathStaticContext.FromOptions(options, cancellationToken, new XPathSourceSpan(0, expression.Length));
         return new(new XPathCompiler().Compile(expression, context, cancellationToken), expression.Length);
     }
     public XPathValue Evaluate(XmlNode context, XPathContext? options = null)
