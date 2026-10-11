@@ -28,7 +28,7 @@
     }
   ],
   "next_actions": [
-    "Review HTML model source/API/tests and frozen measurement preparation; grant exclusive bounded measurements only after source approval and parked workloads, release before raw inspection."
+    "Wait only for model measurement lifecycle, immediately release durable lease on completion/failure before raw inspection."
   ],
   "last_verified_task": "M7-contracts",
   "last_integrated_revision": "d0792dc31ae93b1918fc9437e98b862db3dde191",
@@ -2027,30 +2027,19 @@
     "cleanup": "Both clean integrated repair checkouts removed after independent raw inspection/durable verification; commits retained."
   },
   "measurement_lease": {
-    "id": "m6-gate-d771e10",
-    "status": "released",
-    "revision": "d771e10343d81044b8e8f03e4d28b97bc24f88e5",
-    "executor_agent_id": "/root/gate",
-    "duration_limit_seconds": 1000,
-    "preparation_sha256": "5f9d0c5806e14a2f274a0121f48e337e8b64ae86bc247a1a6308ebed915a322a",
-    "granted_at_utc": "2026-10-11T11:49:32.677390+00:00",
-    "scope": "Exactly once intended elevated solecommand python3 -B docs/reports/M6-gate/run_tests.py --exclusive-grant: initial40s/three serial invariant actual10.0.11 suites <=300s each/final40s,total1000s. Frozen8789source/335binary/3852SDK-runtime-host and completeeffectiveexecutorenv SHLVL1. OwnPGcleanup/finalidentity/nochildrenfinally onallfailures. No builds/restores/sourcewrites/tests/retries/rawinspection duringlease. Immediate lifecycle status;rootdurable release BEFORE rawinspection.",
+    "id": "m7-html-model-2ae7416",
+    "status": "granted",
+    "revision": "2ae7416e1d7eb96a453fbb5afdbefda3ffe02114",
+    "executor_agent_id": "/root/html_model",
+    "duration_limit_seconds": 1050,
+    "preparation_sha256": "f9ae44ac95240605a71fa98123fd2d6685b073db2712162efb6675192a8f74a9",
+    "granted_at_utc": "2026-10-11T12:40:32.843592+00:00",
+    "scope": "Exactly once sole-command elevated python3 -B docs/reports/M7-html-model/run_measurements.py --exclusive-grant in prepared isolated checkout: initial35s/allocation60s/12caseNoEmitShortRun900s/final35s,total1050s. Explicit fx10.0.11;3642source/43binary/3852SDK-runtime-host/actualcorpus/effectiveexecutorchildenv frozen SHLVL1/session identity retained. Own identity+product PG finally cleanup/reaping/finalidentity/nochildren on failure. No builds/restores/sourcewrites/tests/retries/raw inspection until immediate lifecycle report and durable root release.",
     "park_acknowledgements": [
-      "Executor clean d771e10 coherentSDK10.0.400 build/runtimeconfigs10.0.11/source demo complete; source-onlyreviewapproved; saved exactelevatedwrapperidentity-only positive initial0/final0/nochildren/runs[] andunknownenvnegative initial1/final1/nochildren/runs[] independentlyinspected.",
-      "Reviewer terminal freshPARK approvedd771e10,no executablework/writes. IntegrationterminalfreshPARK,verifiedraw/consumersinspected/removed;CLI andallpriorworkercheckoutsremoved, no activework.",
-      "Root independently matchedrevision/8789source/335binary/3852runtime-host/readableenv/manifestSHA5f9d0c58; completeenv safeperkey soleCODEX_THREAD_ID sessiondifference retained. Executorfullhashcontrolsexact. Rootfreshscopedworkloadinventoryclear (persistentMCPserversidle/unaffected);mainclean;rootPARK."
-    ],
-    "released_at_utc": "2026-10-11T11:51:51.909663+00:00",
-    "release": {
-      "wrapper_exit": 0,
-      "initial_identity_exit": 0,
-      "unit_exit": 0,
-      "conformance_exit": 0,
-      "differential_exit": 0,
-      "final_identity_exit": 0,
-      "no_child": true,
-      "inspection": "Rootindependentlyverifiedall6985actualXML+all6797M5names+12allocationrequestreportpairs/frozenhashes+exactgrammar/fuzz/API/package/nativecontrols; summariesdurable, leasefullyreleased."
-    }
+      "Executor clean prepared2ae7416 READY/PARK;focused9actual10.0.11tests/sample/API146/fullinventory3386/12NoEmit discovery;exact wrapper controls positives0/unknownnegative1/nochildren independently inspected;no measurements or pending writes.",
+      "Independent source reviewer approved2ae7416 corrected identity-PG wrapper/querywarmup/source;terminal PARK no workload/edit/livehandles.",
+      "Contracts/review terminal, completed checkouts removed;no other active assignment. Root independent closure3642/43/3852/revision/host/readableenv matched f9ae44ac;safe perkey proves CODEX_THREAD_ID sole sessiondifference; intended executor fullenv controls pass. Root fresh scoped workload inventory0;root PARK."
+    ]
   },
   "offline_corpus_setup": {
     "checkout": "/private/tmp/xemele-m3-integration",
@@ -2486,6 +2475,32 @@
         "no_child": true,
         "inspection": "Not yet inspected; successfullifecycle before durable release, rawinspection authorized aftercommit."
       }
+    },
+    {
+      "id": "m6-gate-d771e10",
+      "status": "released",
+      "revision": "d771e10343d81044b8e8f03e4d28b97bc24f88e5",
+      "executor_agent_id": "/root/gate",
+      "duration_limit_seconds": 1000,
+      "preparation_sha256": "5f9d0c5806e14a2f274a0121f48e337e8b64ae86bc247a1a6308ebed915a322a",
+      "granted_at_utc": "2026-10-11T11:49:32.677390+00:00",
+      "scope": "Exactly once intended elevated solecommand python3 -B docs/reports/M6-gate/run_tests.py --exclusive-grant: initial40s/three serial invariant actual10.0.11 suites <=300s each/final40s,total1000s. Frozen8789source/335binary/3852SDK-runtime-host and completeeffectiveexecutorenv SHLVL1. OwnPGcleanup/finalidentity/nochildrenfinally onallfailures. No builds/restores/sourcewrites/tests/retries/rawinspection duringlease. Immediate lifecycle status;rootdurable release BEFORE rawinspection.",
+      "park_acknowledgements": [
+        "Executor clean d771e10 coherentSDK10.0.400 build/runtimeconfigs10.0.11/source demo complete; source-onlyreviewapproved; saved exactelevatedwrapperidentity-only positive initial0/final0/nochildren/runs[] andunknownenvnegative initial1/final1/nochildren/runs[] independentlyinspected.",
+        "Reviewer terminal freshPARK approvedd771e10,no executablework/writes. IntegrationterminalfreshPARK,verifiedraw/consumersinspected/removed;CLI andallpriorworkercheckoutsremoved, no activework.",
+        "Root independently matchedrevision/8789source/335binary/3852runtime-host/readableenv/manifestSHA5f9d0c58; completeenv safeperkey soleCODEX_THREAD_ID sessiondifference retained. Executorfullhashcontrolsexact. Rootfreshscopedworkloadinventoryclear (persistentMCPserversidle/unaffected);mainclean;rootPARK."
+      ],
+      "released_at_utc": "2026-10-11T11:51:51.909663+00:00",
+      "release": {
+        "wrapper_exit": 0,
+        "initial_identity_exit": 0,
+        "unit_exit": 0,
+        "conformance_exit": 0,
+        "differential_exit": 0,
+        "final_identity_exit": 0,
+        "no_child": true,
+        "inspection": "Rootindependentlyverifiedall6985actualXML+all6797M5names+12allocationrequestreportpairs/frozenhashes+exactgrammar/fuzz/API/package/nativecontrols; summariesdurable, leasefullyreleased."
+      }
     }
   ],
   "m6_checkpoint": {
@@ -2506,7 +2521,7 @@
     "source_revision": "ca05274ce120afb5e5aadbd6221bdaca6a765fd1",
     "reviewed_refinement": "da15d81eba12bd7388218bc24d0107d09a28a124",
     "identity_control_revision": "05c8cb65cfebb71423ce5647554dfe46b536931e",
-    "status": "No measurements. Final process-group identity cleanup/query warmup refinement pending; earlier manifest superseded on repair.",
+    "status": "Source approved and exact controls/closure independently inspected;exclusive bounded lease granted, raw inspection forbidden until durable release.",
     "offline_xml_inputs": "Root copied/hash-verified all3386 existing manifest resources to isolated ignored tests/corpora/xml/xmlconf; original cache unchanged, no fetch/symlink. Official inventory will run before final freeze."
   }
 }
