@@ -11,6 +11,33 @@ using Xemele.XPath;
 
 if (args is not [var mode, var output]) throw new ArgumentException("mode output required");
 if (RuntimeInformation.FrameworkDescription != ".NET 10.0.11") throw new InvalidOperationException("Actual .NET 10.0.11 required.");
+if (mode == "--il")
+{
+    var types = new[] { typeof(XmlDocument), typeof(XmlNode), typeof(XmlDocument).Assembly.GetType("Xemele.TreeValidation")! };
+    var methods = types.SelectMany(t => t.GetMethods(System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public))
+        .Where(m => m.Name is "AdvanceContentRevision" or "NotifyMutation" or "SetValue" or "set_Value" or "Text" or "Value");
+    File.WriteAllLines(output, methods.Select(InspectIl));
+    Console.WriteLine("Hot mutation IL inspected"); return;
+}
+if (mode is "--primitive" or "--primitive-control")
+{
+    bool counters = mode == "--primitive";
+    long[] warmDistribution = new long[32], measuredDistribution = new long[32];
+    long begin = counters ? GC.GetAllocatedBytesForCurrentThread() : 0;
+    var primitiveFixture = new Fixture();
+    long setup = counters ? GC.GetAllocatedBytesForCurrentThread() - begin : 0;
+    begin = counters ? GC.GetAllocatedBytesForCurrentThread() : 0;
+    long warmConsumed = 0;
+    for (int i = 0; i < warmDistribution.Length; i++) warmConsumed += SampleMutations(primitiveFixture, counters, out warmDistribution[i]);
+    long warmBytes = counters ? GC.GetAllocatedBytesForCurrentThread() - begin : 0;
+    begin = counters ? GC.GetAllocatedBytesForCurrentThread() : 0;
+    long consumedMutations = 0;
+    for (int i = 0; i < measuredDistribution.Length; i++) consumedMutations += SampleMutations(primitiveFixture, counters, out measuredDistribution[i]);
+    long measuredBytes = counters ? GC.GetAllocatedBytesForCurrentThread() - begin : 0;
+    File.WriteAllText(output, JsonSerializer.Serialize(new { mode, runtime = RuntimeInformation.FrameworkDescription, architecture = RuntimeInformation.ProcessArchitecture.ToString(), batches = 32, operationsPerBatch = 512, warmOperations = 16384, measuredOperations = 16384, setup, warmBytes, measuredBytes, warmDistribution, measuredDistribution, warmConsumed, consumedMutations, actualRevision = primitiveFixture.Document.ContentRevision }, new JsonSerializerOptions { WriteIndented = true }));
+    if (primitiveFixture.Document.ContentRevision != 32772 || counters && measuredBytes != 0) throw new InvalidOperationException("Primitive count/allocation control failed");
+    Console.WriteLine($"{mode} passed; actual {RuntimeInformation.FrameworkDescription}; measured16384; consumed={consumedMutations}"); return;
+}
 if (mode is "--discover" or "--benchmark")
 {
     var config = ManualConfig.Create(DefaultConfig.Instance).WithArtifactsPath(output).AddJob(Job.Default.WithToolchain(InProcessNoEmitToolchain.Instance).AsMutator());
@@ -60,6 +87,40 @@ GC.KeepAlive(retained); GC.KeepAlive(fixture);
 if (measure && (primitiveBytes != 0 || attributeBytes <= 0 || namespaceBytes <= 0 || positiveBytes <= 0)) throw new InvalidOperationException("Allocation controls failed");
 Console.WriteLine($"{mode} passed; actual {RuntimeInformation.FrameworkDescription}; operations={operations}");
 
+[MethodImpl(MethodImplOptions.NoInlining)]
+static long SampleMutations(Fixture fixture, bool counters, out long bytes)
+{
+    long start = counters ? GC.GetAllocatedBytesForCurrentThread() : 0;
+    long consumed = 0;
+    for (int i = 0; i < 512; i++) { fixture.Mutate(); consumed += fixture.Document.ContentRevision; }
+    bytes = counters ? GC.GetAllocatedBytesForCurrentThread() - start : 0;
+    return consumed;
+}
+static string InspectIl(System.Reflection.MethodInfo method)
+{
+    var codes = typeof(System.Reflection.Emit.OpCodes).GetFields(System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public)
+        .Where(f => f.FieldType == typeof(System.Reflection.Emit.OpCode)).Select(f => (System.Reflection.Emit.OpCode)f.GetValue(null)!).ToDictionary(o => unchecked((ushort)o.Value));
+    byte[] il = method.GetMethodBody()!.GetILAsByteArray()!;
+    var decoded = new List<string>();
+    for (int i = 0; i < il.Length;)
+    {
+        int offset = i; ushort key = il[i++]; if (key == 0xfe) key = (ushort)(0xfe00 | il[i++]);
+        var op = codes[key]; string operand = "";
+        int size = op.OperandType switch
+        {
+            System.Reflection.Emit.OperandType.InlineNone => 0,
+            System.Reflection.Emit.OperandType.ShortInlineBrTarget or System.Reflection.Emit.OperandType.ShortInlineI or System.Reflection.Emit.OperandType.ShortInlineVar => 1,
+            System.Reflection.Emit.OperandType.InlineVar => 2,
+            System.Reflection.Emit.OperandType.InlineI8 or System.Reflection.Emit.OperandType.InlineR => 8,
+            System.Reflection.Emit.OperandType.InlineSwitch => 4 + 4 * BitConverter.ToInt32(il, i),
+            _ => 4
+        };
+        if (op.OperandType is System.Reflection.Emit.OperandType.InlineMethod or System.Reflection.Emit.OperandType.InlineField or System.Reflection.Emit.OperandType.InlineType)
+            operand = method.Module.ResolveMember(BitConverter.ToInt32(il, i))!.ToString()!;
+        decoded.Add($"{offset:x4} {op.Name} {operand}"); i += size;
+    }
+    return method.DeclaringType!.FullName + "." + method.Name + ": " + string.Join("; ", decoded);
+}
 internal sealed class Fixture
 {
     internal readonly XmlDocument Document;
