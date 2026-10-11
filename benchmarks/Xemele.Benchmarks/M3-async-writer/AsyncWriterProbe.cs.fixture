@@ -14,6 +14,16 @@ public static class Probe
         var immediate = new Sink(false);
         if (prepare)
         {
+            using (var buffered = XmlWriter.Create(immediate, Options))
+            {
+                Complete(buffered.WriteStartElementAsync("r")); Complete(buffered.WriteTextAsync(ReadOnlyMemory<char>.Empty));
+                for (int batch = 0; batch < 200; batch++)
+                {
+                    Complete(buffered.FlushAsync()); long writes = immediate.Writes;
+                    for (int i = 0; i < 16; i++) Primitive(buffered);
+                    if (immediate.Writes != writes) throw new InvalidOperationException("Prepared buffered batch performed I/O.");
+                }
+            }
             await Exercise(immediate, "α😀&<\r]]>", 32);
             await Exercise(new Sink(true), new string('x', 32768), 2);
             Console.WriteLine("Preparation passed: immediate and delayed async-only sinks, no counters enabled."); return 0;
@@ -22,14 +32,27 @@ public static class Probe
         var cold = XmlWriter.Create(immediate, Options); long coldSetup = GC.GetAllocatedBytesForCurrentThread() - coldBefore; cold.Dispose();
         using var writer = XmlWriter.Create(immediate, Options);
         Complete(writer.WriteStartElementAsync("r")); Complete(writer.WriteTextAsync(ReadOnlyMemory<char>.Empty));
-        for (int i = 0; i < 100; i++) { Primitive(writer); Complete(writer.FlushAsync()); }
+        // Warm exactly the measured batch shape, including buffer occupancy and
+        // encoder paths. Record initialization rather than hiding it in a retry.
+        long[] warmBatchBytes = new long[200]; long[] steadyBatchBytes = new long[1000];
+        long warmInitializationBytes = 0;
+        for (int batch = 0; batch < warmBatchBytes.Length; batch++)
+        {
+            Complete(writer.FlushAsync()); long writes = immediate.Writes;
+            long before = GC.GetAllocatedBytesForCurrentThread();
+            for (int i = 0; i < 16; i++) Primitive(writer);
+            long bytes = GC.GetAllocatedBytesForCurrentThread() - before;
+            warmBatchBytes[batch] = bytes; warmInitializationBytes += bytes;
+            if (immediate.Writes != writes) throw new InvalidOperationException("Warm buffered scope performed I/O.");
+        }
         long primitive = 0; int bufferedOperations = 0;
         for (int batch = 0; batch < 1000; batch++)
         {
             Complete(writer.FlushAsync()); long writes = immediate.Writes;
             long before = GC.GetAllocatedBytesForCurrentThread();
             for (int i = 0; i < 16; i++) Primitive(writer);
-            primitive += GC.GetAllocatedBytesForCurrentThread() - before;
+            long bytes = GC.GetAllocatedBytesForCurrentThread() - before;
+            steadyBatchBytes[batch] = bytes; primitive += bytes;
             if (immediate.Writes != writes) throw new InvalidOperationException("Buffered primitive scope performed I/O.");
             bufferedOperations += 16;
         }
@@ -60,6 +83,7 @@ public static class Probe
         long continuation = GC.GetTotalAllocatedBytes(precise: true) - asyncBefore;
         Console.WriteLine(JsonSerializer.Serialize(new { os = RuntimeInformation.OSDescription, architecture = RuntimeInformation.ProcessArchitecture.ToString(), runtime = RuntimeInformation.FrameworkDescription,
             coldSetupBytes = coldSetup, warmSetupBytesPerWriter = warmSetup / 1000.0,
+            warmBatchBytes, warmInitializationBytes, steadyBatchBytes,
             bufferedOperations, bufferedPrimitiveBytes = primitive, bufferedPrimitiveBytesPerOperation = primitive / (double)bufferedOperations,
             positiveControlBytes = positive, positiveControlBytesPerOperation = positive / (double)bufferedOperations,
             distinctLinkedTokenBytes = linkedBytes, distinctLinkedTokenBytesPerCall = linkedBytes / 16000.0,
