@@ -4,9 +4,9 @@
   "milestone": "M5",
   "title": "Verify validating XML checkpoint",
   "kind": "gate",
-  "status": "in_progress",
-  "owner": "M5 isolated cumulative gate worker",
-  "branch": "codex/m5-gate",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
   "base_revision": "084c3a49659f4df8bf482b5459078db212ed572c",
   "integration_revision": null,
   "depends_on": [
@@ -15,7 +15,8 @@
     "M5-dtd-read-completeness",
     "M5-dtd-parameter-validity",
     "M5-dtd-attribute-validity",
-    "M5-dtd-instance-provenance"
+    "M5-dtd-instance-provenance",
+    "M5-contracts-build"
   ],
   "goals": [
     "G07",
@@ -50,9 +51,11 @@
   ],
   "implementation": [],
   "evidence": [],
-  "blockers": [],
+  "blockers": [
+    "Prior isolated gate claim is parked/reserved while the newly required narrow build repair is verified; reclaim same checkout after dependency verification."
+  ],
   "handoff": {
-    "summary": "",
+    "summary": "Gate candidate514e167 source-approved; full solution exposes nested API checker parent-glob defect. Preserve private work, requeue claim solely for dependency workflow, no full suites run.",
     "checks": [],
     "remaining": [],
     "requests": []

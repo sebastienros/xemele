@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "id": "M5-contracts-build",
+  "milestone": "M5",
+  "title": "Exclude nested contract checker tooling from parent compile",
+  "kind": "infrastructure",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "depends_on": [
+    "M0-build",
+    "M5-contracts"
+  ],
+  "goals": [
+    "G16",
+    "G18"
+  ],
+  "specs": [
+    "docs/specs/foundation.md"
+  ],
+  "owns": [
+    "tests/Contracts/Contracts.csproj"
+  ],
+  "api_or_output": "Build-only nested tooling exclusion; runtime/API unchanged",
+  "acceptance": [
+    {
+      "id": "M5-contracts-build-A1",
+      "description": "Exclude only nested M5 ApiCheck tool C# sources from parent Contracts project; preserve independent helper and Release solution builds, net10-only runtime/API and planning validity.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}

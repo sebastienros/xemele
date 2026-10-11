@@ -7,18 +7,7 @@
     "task_id": "M4-gate",
     "integration_revision": "a0354ad6a8ea7a8f2109db3d5b9f701e39e939f9"
   },
-  "active_assignments": [
-    {
-      "task_id": "M5-gate",
-      "agent_id": "/root/validation_model",
-      "worktree": "/private/tmp/xemele-m5-gate",
-      "branch": "codex/m5-gate",
-      "base_revision": "084c3a49659f4df8bf482b5459078db212ed572c",
-      "stage": "Dispatched owned gate preparation; no fullsuite allocation grant",
-      "claim_revision": "8619a7882b5e22bd26e9789d76a612be1b6ef7fc",
-      "ignored_official_inventory_inputs": "Coordinator copied and independently SHA256-verified all3386originalfiles withincheckout tests/corpora/xml/xmlconf; immutablecache remainsoutside."
-    }
-  ],
+  "active_assignments": [],
   "integration_queue": [],
   "blockers": [
     {
@@ -960,7 +949,19 @@
     }
   ],
   "metadata_correction": "PI rawAPI report uses inventory.apiDeclarations, not wrapper members. Initialrootmetadata assertion stopped before taskstate writes; d539f13 preserves actualpassing0869bde evidence, separateverifiedmetadata follows.",
-  "suspended_assignments": [],
+  "suspended_assignments": [
+    {
+      "task_id": "M5-gate",
+      "agent_id": "/root/validation_model",
+      "worktree": "/private/tmp/xemele-m5-gate",
+      "branch": "codex/m5-gate",
+      "base_revision": "084c3a49659f4df8bf482b5459078db212ed572c",
+      "stage": "PARK clean reserved candidate; temporarily requeued claim for verified build-repair dependency",
+      "claim_revision": "8619a7882b5e22bd26e9789d76a612be1b6ef7fc",
+      "ignored_official_inventory_inputs": "Coordinator copied and independently SHA256-verified all3386originalfiles withincheckout tests/corpora/xml/xmlconf; immutablecache remainsoutside.",
+      "candidate_revision": "514e1674c32e29f722b6b8d115846cdf50d72a7b"
+    }
+  ],
   "allocation_research": {
     "issue": "https://github.com/dotnet/runtime/issues/134724",
     "draft_fix": "https://github.com/dotnet/runtime/pull/134855",
@@ -1972,7 +1973,7 @@
     "implementation_started": false,
     "dispatch_after": "M2-conformance verified"
   },
-  "milestone_progress": "M5:14of15tasks verified; cumulative gate ready.",
+  "milestone_progress": "M5:14of16tasks verified; gate reserved/parked pending narrow shared build repair.",
   "pause_request": {
     "requested_by": "user",
     "after_verified_task": "M2-gate",
