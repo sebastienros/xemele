@@ -24,6 +24,8 @@ public sealed class DtdSchema
         DtdEvaluator.CheckRevision(document, revision);
         var source = document.Dtd ?? throw new InvalidOperationException("Document has no retained DTD model.");
         if (source.DeclarationValidityDiagnostic is { } diagnostic) throw new XmlParseException([diagnostic]);
+        if (source.UnreadParameterLocation is { } unread)
+            throw new XmlParseException([new("DTD.IncompleteInput", XmlDiagnosticSeverity.Fatal, "DTD input is incomplete.", unread)]);
         if (!document.SourceInputComplete || document.HasIncompleteAttributes || document.UnresolvedReferences.Count != 0)
             throw new XmlParseException([new("DTD.IncompleteInput", XmlDiagnosticSeverity.Fatal, "Document input is incomplete.", default)]);
         var schema = Create(source, document.DocumentType?.Name, new());

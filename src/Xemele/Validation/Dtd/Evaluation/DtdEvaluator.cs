@@ -37,7 +37,7 @@ internal sealed class DtdEvaluator(CompiledDtdModel model, string? schemaRoot, X
         try
         {
             if (!Work()) return Finish();
-            if (!document.SourceInputComplete || document.HasIncompleteAttributes || document.UnresolvedReferences.Count != 0 ||
+            if (!document.SourceInputComplete || document.HasIncompleteAttributes || document.UnresolvedReferences.Count != 0 || document.Dtd?.UnreadParameterLocation is not null ||
                 document.ValidationStandalone == true && document.ValidationDeclarationLocation == default)
             { operation.Refuse("DTD.IncompleteInput", "Document input or standalone provenance is incomplete."); return Finish(); }
             var root = document.RootElement;
@@ -104,8 +104,9 @@ internal sealed class DtdEvaluator(CompiledDtdModel model, string? schemaRoot, X
             ValidateAttribute(name, memberNames.Make(declaration.Prefix.Length == 0 ? "" : "xmlns", declaration.Prefix.Length == 0 ? "xmlns" : declaration.Prefix), declaration.Value);
             if (!operation.IsComplete) return;
         }
-        foreach (var attribute in model.Attributes)
+        for (int attributeIndex = 0; attributeIndex < model.Attributes.Count; attributeIndex++)
         {
+            var attribute = model.Attributes[attributeIndex];
             if (!Work()) return;
             if (!DtdLexical.Equal(name, attribute.Declaration.ElementName, operation)) { if (!operation.IsComplete) return; continue; }
             bool found = false;
@@ -166,8 +167,9 @@ internal sealed class DtdEvaluator(CompiledDtdModel model, string? schemaRoot, X
             stamp < 0 || stamp != revision || document.Dtd is not { } original) return false;
         if (!Work()) return false;
         if (ReferenceEquals(model.Source, original)) return true;
-        foreach (var declaration in original.Elements)
+        for (int declarationIndex = 0; declarationIndex < original.Elements.Count; declarationIndex++)
         {
+            var declaration = original.Elements[declarationIndex];
             if (!Work()) return false;
             if (!DtdLexical.Equal(name, declaration.Name, operation)) { if (!operation.IsComplete) return false; continue; }
             return declaration.IsExternal && declaration.Content.Kind is DtdParticleKind.Sequence or DtdParticleKind.Choice or DtdParticleKind.Name;

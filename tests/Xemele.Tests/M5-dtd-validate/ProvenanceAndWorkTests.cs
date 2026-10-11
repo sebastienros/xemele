@@ -102,6 +102,24 @@ public sealed class ProvenanceAndWorkTests
         Assert.Equal("DTD.UndeclaredEntity", Assert.Single(exception.Diagnostics).Code);
     }
 
+    [Theory]
+    [InlineData(false)] [InlineData(true)]
+    public async Task RetainedUnreadParameterRefusesFromDocumentAndCurrentDomValidation(bool bytes)
+    {
+        const string xml = "<!DOCTYPE r SYSTEM 'urn:dtd'><r/>";
+        var resolver = new Subset("<!ELEMENT r EMPTY>\n%missing;<!ATTLIST r required CDATA #REQUIRED>");
+        var options = new XmlParseOptions { DtdProcessing = XmlDtdProcessing.Parse, Resolver = resolver };
+        var document = bytes ? await Document.LoadAsync(new MemoryStream(Encoding.UTF8.GetBytes(xml)), options, Ct) : Document.Parse(xml, options, Ct);
+        Assert.True(document.SourceInputComplete); Assert.NotNull(document.Dtd!.UnreadParameterLocation);
+        var error = Assert.Throws<XmlParseException>(() => DtdSchema.FromDocument(document));
+        var diagnostic = Assert.Single(error.Diagnostics);
+        Assert.Equal("DTD.IncompleteInput", diagnostic.Code); Assert.Equal(XmlDiagnosticSeverity.Fatal, diagnostic.Severity);
+        Assert.Equal(document.Dtd.UnreadParameterLocation, diagnostic.Location);
+        Assert.Equal(1, resolver.Opens); Assert.Equal(1, resolver.Disposals);
+        var result = DtdSchema.Compile("<!ELEMENT r EMPTY>", cancellationToken: Ct).Validate(document);
+        Assert.False(result.IsComplete); Assert.Equal("DTD.IncompleteInput", result.Diagnostics[^1].Code);
+    }
+
     private sealed class Subset(string text) : XmlResourceResolver
     {
         internal int Opens, Disposals;
