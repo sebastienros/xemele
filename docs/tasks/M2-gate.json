@@ -4,11 +4,11 @@
   "milestone": "M2",
   "title": "Verify complete XML profile",
   "kind": "gate",
-  "status": "implemented",
+  "status": "verified",
   "owner": "coordinator:M2-gate",
   "branch": "codex/m2-gate",
   "base_revision": "dc58c30e92600104ce69ea910fbdaa30b20856fe",
-  "integration_revision": null,
+  "integration_revision": "276a0bdaf6433bbda8958b068955de85c3b75a3a",
   "depends_on": [
     "M2-recovery"
   ],
@@ -33,7 +33,8 @@
       "status": "passed",
       "evidence": [
         "combined-gate",
-        "strict-full-corpus"
+        "strict-full-corpus",
+        "integrated-gate"
       ]
     },
     {
@@ -42,7 +43,8 @@
       "status": "passed",
       "evidence": [
         "combined-gate",
-        "strict-full-corpus"
+        "strict-full-corpus",
+        "integrated-gate"
       ]
     },
     {
@@ -52,7 +54,8 @@
       "evidence": [
         "demo-api-preservation",
         "combined-gate",
-        "planning-scope"
+        "planning-scope",
+        "integrated-gate"
       ]
     }
   ],
@@ -98,6 +101,15 @@
       "result": "passed",
       "summary": "14planningcontrols passed;138task graph/schema/evidence/ownership checks passed; whitespace clean. Gate uses only integratedM0-M2 dependencies; no later module needed.",
       "artifact": null
+    },
+    {
+      "id": "integrated-gate",
+      "kind": "integration",
+      "revision": "276a0bdaf6433bbda8958b068955de85c3b75a3a",
+      "command": "Integrate tested gate history; verify exact unchanged source/test/dependency/config/API/sample/workload bytes from tested10cf329; inspect cumulative5474/corpus2585/demoAPI377 and preserved package/performance; tasks.py validate; git diff --check",
+      "result": "passed",
+      "summary": "Integrated tested complete M0-M2 combination. All three gate criteria pass with actual comprehensive executions, independent original-byte semantic proof, resource/recovery/streaming/allocation controls, exactAPI/demo and preservation evidence. Only gate metadata/reports and coordinator state changed after tests. No later modules needed.",
+      "artifact": "docs/reports/M2-gate/integration-summary.json"
     }
   ],
   "blockers": [],
@@ -109,9 +121,7 @@
       "actualstrict/recoverydemo andAPI377",
       "14planningcontrols/138taskvalidation/whitespace"
     ],
-    "remaining": [
-      "Coordinator integration verification metadata and cleanup; pause after verifiedM2 per user."
-    ],
+    "remaining": [],
     "requests": []
   }
 }

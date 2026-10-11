@@ -4,40 +4,21 @@
   "coordination_branch": "main",
   "max_concurrent_workers": 3,
   "last_verified_checkpoint": {
-    "task_id": "M1-gate",
-    "integration_revision": "8c9bd349ed4156ea0295b5160d87d39434293bb2"
+    "task_id": "M2-gate",
+    "integration_revision": "276a0bdaf6433bbda8958b068955de85c3b75a3a"
   },
-  "active_assignments": [
-    {
-      "task_id": "M2-gate",
-      "owner": "coordinator",
-      "branch": "codex/m2-gate",
-      "base_revision": "dc58c30e92600104ce69ea910fbdaa30b20856fe",
-      "worktree_path": "/private/tmp/xemele-m2-gate",
-      "stage": "Cumulative test sequence passed and host released; full semantic corpus and evidence audit remain",
-      "acceptance_before_dispatch": {
-        "A1": "Complete strict original corpus plus documented separate recovery; actual malicious resource denial,cycles,quotas,cancel and disposal checks.",
-        "A2": "Comprehensive combined runtime/contract/conformance/differential checks and full original2585 semantic-oracle runner pass, no later modules required.",
-        "A3": "Current compiled actual strict and recovery demos/output; API377/source-freshpackage previous executions preserved only after exact input equality; planning/ownership and integration revision.",
-        "mandatory": "Actual test case results, all child exits0, original resource hashes, complete identities/cleanup. Missing or skipped mandatory evidence cannot pass.",
-        "informational": "Arm64 timing remains historical accepted95705dc; metadata-only gate does not justify rerun.",
-        "host": "Build and prepare outside isolated window; root-only execution with stopped archived workers/PARKED reviewers. Bound combined embedded allocation/test sequence; release before inspection/metadata.",
-        "integration": "Gate tested integrated combination, comprehensive combined checks required; no product changes planned."
-      },
-      "claim_revision": "10cf329"
-    }
-  ],
+  "active_assignments": [],
   "integration_queue": [],
   "blockers": [],
   "next_actions": [
-    "Claim and execute comprehensive M2-gate in isolation, preserving applicable passing measurements.",
-    "Pause the active goal after verified M2-gate and cleanup; do not start M3."
+    "Delete verified unused gate checkout and durably record cleanup.",
+    "Set goal paused as requested; do not claim or dispatch M3 or later tasks."
   ],
   "last_verified_task": {
-    "task_id": "M2-recovery",
-    "integration_revision": "a0112a899dd26757b2056aa166e4b828a95c6f86"
+    "task_id": "M2-gate",
+    "integration_revision": "276a0bdaf6433bbda8958b068955de85c3b75a3a"
   },
-  "last_integrated_revision": "a0112a899dd26757b2056aa166e4b828a95c6f86",
+  "last_integrated_revision": "276a0bdaf6433bbda8958b068955de85c3b75a3a",
   "completed_assignments": [
     {
       "task_id": "M2-dtd-composition",
@@ -416,6 +397,26 @@
         "raw_artifacts_archived": false,
         "record": "docs/orchestration/cleanup-M2-recovery.json"
       }
+    },
+    {
+      "task_id": "M2-gate",
+      "owner": "coordinator",
+      "branch": "codex/m2-gate",
+      "base_revision": "dc58c30e92600104ce69ea910fbdaa30b20856fe",
+      "worktree_path": "/private/tmp/xemele-m2-gate",
+      "stage": "Verified integrated; gate checkout cleanup pending",
+      "acceptance_before_dispatch": {
+        "A1": "Complete strict original corpus plus documented separate recovery; actual malicious resource denial,cycles,quotas,cancel and disposal checks.",
+        "A2": "Comprehensive combined runtime/contract/conformance/differential checks and full original2585 semantic-oracle runner pass, no later modules required.",
+        "A3": "Current compiled actual strict and recovery demos/output; API377/source-freshpackage previous executions preserved only after exact input equality; planning/ownership and integration revision.",
+        "mandatory": "Actual test case results, all child exits0, original resource hashes, complete identities/cleanup. Missing or skipped mandatory evidence cannot pass.",
+        "informational": "Arm64 timing remains historical accepted95705dc; metadata-only gate does not justify rerun.",
+        "host": "Build and prepare outside isolated window; root-only execution with stopped archived workers/PARKED reviewers. Bound combined embedded allocation/test sequence; release before inspection/metadata.",
+        "integration": "Gate tested integrated combination, comprehensive combined checks required; no product changes planned."
+      },
+      "claim_revision": "10cf329",
+      "integration_revision": "276a0bdaf6433bbda8958b068955de85c3b75a3a",
+      "handoff_revision": "da451cd"
     }
   ],
   "benchmark_policy": "Successful previous measurements retained; future changed runtime measurements require complete preparation and exclusive grant.",
@@ -1291,16 +1292,16 @@
   },
   "milestone_progress": {
     "M2": {
-      "verified": 35,
+      "verified": 36,
       "total": 36,
       "in_progress": [],
-      "remaining_gate": "M2-gate"
+      "remaining_gate": null
     }
   },
   "pause_request": {
     "requested_by": "user",
     "after_verified_task": "M2-gate",
     "action": "Finish integrated M2 verification and cleanup, then pause the active goal. Do not claim or dispatch M3 or later tasks until the user resumes.",
-    "status": "pending_m2_completion"
+    "status": "m2_verified_cleanup_pending"
   }
 }
