@@ -49,6 +49,14 @@
       "tested_integration_revision": "f0ded2081dd6d969941d430168568dd2451aaea1",
       "checks": "Release0warnings/errors,33focusedtests0failed/skipped,official639memberAPI,145taskvalidatorpassed; valid ownprocess allocation preserved.",
       "stage": "source reviewed/integrationpassed, awaiting isolated timing and final worker metadata before verification"
+    },
+    {
+      "task_id": "M3-async-writer",
+      "implementation_revision": "80119207072d0eb292f9cb6bf186bc8cf2bdb3fd",
+      "prepared_revision": "83edfe8c6b2701587b1ccaf3d680ad21da43f22a",
+      "tested_integration_revision": "d0aa1b14208f40fa6c51914b3a5521e3621efae8",
+      "checks": "Release0warnings/errors;69tests (19async+50earlier)0failed/skipped;official651API;145validator. Mechanical memoryclearingdiff reviewed; post-unwind weakref controlpasses with livewriter/nooperations.",
+      "stage": "awaiting bounded allocation/syncwriter/6caseBDN sequence then evidence before verification"
     }
   ],
   "blockers": [],
@@ -707,6 +715,11 @@
       "task_id": "M3-streaming-pump",
       "revision": "df98050f29526c38b36b7a1eb9c17b59416c0d79",
       "scope": "Timing-only unchangedprebuilt3cases<=120s; preserve completed allocation; await external benchmark finish."
+    },
+    {
+      "task_id": "M3-async-writer",
+      "revision": "83edfe8c6b2701587b1ccaf3d680ad21da43f22a",
+      "scope": "Afterpump timing, exactprebuilt processwideprobe+19syncwriterallocationregression+6case InProcessDryBDN<=150s; parked/nochildren."
     }
   ],
   "metadata_correction": "PI rawAPI report uses inventory.apiDeclarations, not wrapper members. Initialrootmetadata assertion stopped before taskstate writes; d539f13 preserves actualpassing0869bde evidence, separateverifiedmetadata follows.",
