@@ -26,7 +26,7 @@ def digest(path):
 
 
 def members(group):
-    listing = subprocess.check_output(['ps', '-axo', 'pid,pgid'], text=True)
+    listing = subprocess.check_output(['ps', '-axo', 'pid,pgid'], text=True, timeout=2)
     return [int(pid) for pid, pgid in (line.split() for line in listing.splitlines()[1:]) if int(pgid) == group]
 
 
@@ -38,7 +38,7 @@ def prepare():
     assert control['retainedApproximateBytes'] is None and control['processWorkingSet'] is None
     # Elevated process-inspection preflight; no command text or unrelated processes
     # are emitted. This must succeed before requesting the coordinator's lease.
-    inspected = len(subprocess.check_output(['ps', '-axo', 'pid,pgid'], text=True).splitlines()) - 1
+    inspected = len(subprocess.check_output(['ps', '-axo', 'pid,pgid'], text=True, timeout=2).splitlines()) - 1
     files = [HOST, HOST.parent / 'shared/Microsoft.NETCore.App/10.0.11/System.Private.CoreLib.dll']
     files += sorted(path for path in BIN.iterdir() if path.is_file())
     tracked = subprocess.check_output(['git', 'ls-files', 'src/Xemele', 'Directory.Build.props', 'Directory.Packages.props', 'global.json',
@@ -50,7 +50,8 @@ def prepare():
         'sourceRevision': SOURCE,
         'preparationRevision': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
         'cwd': str(ROOT), 'runtime': '10.0.11', 'sdk': '10.0.400', 'maximumSeconds': 30,
-        'command': ['python3', 'docs/reports/M8-rng-compile/lease.py', '--measure', '--lease', 'M8-rng-compile-allocation-1'],
+        'lease': 'M8-rng-compile-allocation-1', 'workSeconds': 25, 'cleanupSeconds': 5,
+        'command': ['python3', 'docs/reports/M8-rng-compile/lease.py', '--granted', '<durably-approved-manifest-sha256>'],
         'childCommand': [str(HOST), '--fx-version', '10.0.11', str(BIN / 'Xemele.Benchmarks.dll'), '--measure', str(ARTIFACTS / 'allocation.json')],
         'environment': {'DOTNET_TieredCompilation': '0', 'DOTNET_gcServer': '0', 'DOTNET_GCConcurrent': '0', 'XEMELE_RNG_REVISION': SOURCE},
         'controlRoutes': 11, 'processInspectionPreflight': {'passed': True, 'processCount': inspected},
@@ -61,50 +62,146 @@ def prepare():
     print(json.dumps({'prepared': True, 'source': SOURCE, 'identities': len(identities), 'manifestSha256': digest(MANIFEST)}))
 
 
-def measure(lease):
-    assert lease == 'M8-rng-compile-allocation-1', 'Exact coordinator lease required'
-    manifest = json.loads(MANIFEST.read_text())
+
+def identities(manifest):
+    mismatches = []
     for identity in manifest['identities']:
-        assert digest(Path(identity['path'])) == identity['sha256'], identity['path']
-    environment = os.environ.copy()
-    environment.update(manifest['environment'])
-    start = time.monotonic()
-    child = None
-    timed_out = False
-    log_path = ARTIFACTS / 'allocation.log'
-    with log_path.open('wb') as log:
         try:
-            child = subprocess.Popen(manifest['childCommand'], cwd=ROOT, env=environment, stdout=log, stderr=subprocess.STDOUT, start_new_session=True)
-            try:
-                child.wait(timeout=manifest['maximumSeconds'])
-            except subprocess.TimeoutExpired:
-                timed_out = True
-                os.killpg(child.pid, signal.SIGKILL)
-                child.wait()
+            if digest(Path(identity['path'])) != identity['sha256']:
+                mismatches.append(identity['path'])
+        except OSError:
+            mismatches.append(identity['path'])
+    return mismatches
+
+
+def kill_group(pid, sig):
+    try:
+        os.killpg(pid, sig)
+    except ProcessLookupError:
+        pass
+
+
+def supervise(argv, environment, work_deadline, hard_deadline, record):
+    child = None
+    log = None
+    try:
+        log = (ARTIFACTS / 'allocation.log').open('wb')
+        if time.monotonic() >= work_deadline:
+            raise TimeoutError('Work deadline reached')
+        child = subprocess.Popen(argv, cwd=ROOT, env=environment, stdout=log, stderr=subprocess.STDOUT, start_new_session=True)
+        record['pid'] = child.pid
+        record['exit'] = child.wait(timeout=max(.001, work_deadline - time.monotonic()))
+        record['reason'] = 'completed' if record['exit'] == 0 else 'failed'
+    except BaseException as error:
+        record['reason'] = type(error).__name__
+    finally:
+        try:
+            if child is not None:
+                kill_group(child.pid, signal.SIGTERM)
+                try:
+                    child.wait(timeout=max(.001, min(1, hard_deadline - time.monotonic())))
+                except subprocess.TimeoutExpired:
+                    kill_group(child.pid, signal.SIGKILL)
+                    child.wait(timeout=max(.001, min(1, hard_deadline - time.monotonic())))
+                kill_group(child.pid, signal.SIGKILL)
+                record['exit'] = child.returncode
+                record['directChildReaped'] = child.returncode is not None
+                while True:
+                    remaining = members(child.pid)
+                    record['groupMembers'] = remaining
+                    if not remaining:
+                        record['ownedGroupAbsent'] = True
+                        break
+                    if time.monotonic() >= hard_deadline - 2:
+                        raise TimeoutError('Owned group did not drain')
+                    kill_group(child.pid, signal.SIGKILL)
+                    time.sleep(.05)
+        except BaseException as error:
+            record['cleanupError'] = type(error).__name__
         finally:
-            if child is not None and child.poll() is None:
-                os.killpg(child.pid, signal.SIGKILL)
-                child.wait()
-            if child is not None and members(child.pid):
-                os.killpg(child.pid, signal.SIGKILL)
-    assert child is not None
-    remaining = members(child.pid)
-    result = {'lease': lease, 'pid': child.pid, 'exit': child.returncode, 'reaped': child.poll() is not None,
-              'timedOut': timed_out, 'elapsedSeconds': time.monotonic() - start, 'groupMembers': remaining,
-              'logClosed': True, 'rawInspected': False, 'identities': len(manifest['identities'])}
-    (ARTIFACTS / 'lifecycle.json').write_text(json.dumps(result, indent=2) + '\n')
-    print(json.dumps(result))
-    if child.returncode != 0 or timed_out or remaining:
-        raise SystemExit(1)
+            if log is not None:
+                log.close()
+                record['logClosed'] = log.closed
+            else:
+                record['logClosed'] = True
+            if child is None:
+                record['directChildReaped'] = True
+                record['ownedGroupAbsent'] = True
+
+
+def verify_only():
+    manifest = json.loads(MANIFEST.read_text())
+    mismatches = identities(manifest)
+    assert not mismatches, mismatches
+    assert os.getpid() in members(os.getpgid(os.getpid()))
+    print(json.dumps({'verified': True, 'identities': len(manifest['identities']), 'manifestSha256': digest(MANIFEST),
+                      'processInspectionPreflight': True, 'countersDisabled': True, 'rawInspected': False}))
+
+
+def measure(approved_hash):
+    started = time.monotonic()
+    work_deadline, hard_deadline = started + 25, started + 30
+    lifecycle = {'lease': 'M8-rng-compile-allocation-1', 'status': 1, 'beforeIdentities': False, 'afterIdentities': False,
+                 'beforeManifestSha256': False, 'afterManifestSha256': False, 'sequence': [], 'rawInspected': False}
+    manifest = None
+    try:
+        contents = MANIFEST.read_bytes()
+        actual_hash = hashlib.sha256(contents).hexdigest()
+        if actual_hash != approved_hash:
+            raise ValueError('Manifest differs from durable grant')
+        lifecycle['beforeManifestSha256'] = True
+        manifest = json.loads(contents)
+        command = [str(HOST), '--fx-version', '10.0.11', str(BIN / 'Xemele.Benchmarks.dll'), '--measure', str(ARTIFACTS / 'allocation.json')]
+        if manifest['lease'] != lifecycle['lease'] or manifest['childCommand'] != command or manifest['maximumSeconds'] != 30 or manifest['workSeconds'] != 25 or manifest['cleanupSeconds'] != 5:
+            raise ValueError('Command/lease/bounds mismatch')
+        lifecycle['beforeMismatches'] = identities(manifest)
+        if lifecycle['beforeMismatches']:
+            raise ValueError('Prepared identities changed before measurement')
+        lifecycle['beforeIdentities'] = True
+        lifecycle['identityCount'] = len(manifest['identities'])
+        if os.getpid() not in members(os.getpgid(os.getpid())):
+            raise ValueError('Process permission preflight failed')
+        environment = os.environ.copy()
+        environment.update(manifest['environment'])
+        record = {'pid': None, 'exit': None, 'reason': 'not-started', 'directChildReaped': False,
+                  'ownedGroupAbsent': False, 'logClosed': False, 'groupMembers': []}
+        lifecycle['sequence'].append(record)
+        supervise(command, environment, work_deadline, hard_deadline, record)
+        if record['exit'] == 0 and record['directChildReaped'] and record['ownedGroupAbsent'] and record['logClosed'] and record['reason'] == 'completed':
+            lifecycle['status'] = 0
+    except BaseException as error:
+        lifecycle['error'] = type(error).__name__
+    finally:
+        try:
+            # Verify the approved manifest and every identity again even on a
+            # preflight/launch/wait/cleanup failure. No raw result is opened.
+            lifecycle['afterManifestSha256'] = digest(MANIFEST) == approved_hash
+            if manifest is None:
+                manifest = json.loads(MANIFEST.read_text())
+            lifecycle['afterMismatches'] = identities(manifest)
+            lifecycle['afterIdentities'] = not lifecycle['afterMismatches']
+        except BaseException as error:
+            lifecycle['afterError'] = type(error).__name__
+        if not lifecycle['afterIdentities'] or not lifecycle['afterManifestSha256']:
+            lifecycle['status'] = 1
+        lifecycle['elapsedSeconds'] = time.monotonic() - started
+        if lifecycle['elapsedSeconds'] > 30:
+            lifecycle['status'] = 1
+            lifecycle['deadlineExceeded'] = True
+        (ARTIFACTS / 'lifecycle.json').write_text(json.dumps(lifecycle, indent=2) + '\n')
+        print(json.dumps(lifecycle), flush=True)
+    raise SystemExit(lifecycle['status'])
 
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--prepare', action='store_true')
-parser.add_argument('--measure', action='store_true')
-parser.add_argument('--lease')
+parser.add_argument('--verify-only', action='store_true')
+parser.add_argument('--granted')
 arguments = parser.parse_args()
-assert arguments.prepare != arguments.measure
+assert sum([arguments.prepare, arguments.verify_only, arguments.granted is not None]) == 1
 if arguments.prepare:
     prepare()
+elif arguments.verify_only:
+    verify_only()
 else:
-    measure(arguments.lease)
+    measure(arguments.granted)
