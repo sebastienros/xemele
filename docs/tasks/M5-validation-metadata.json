@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "id": "M5-validation-metadata",
+  "milestone": "M5",
+  "title": "Retain standalone declaration provenance for DTD validation",
+  "kind": "feature",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "depends_on": [
+    "M5-contracts"
+  ],
+  "goals": [
+    "G07"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/dtd-c14n.md"
+  ],
+  "owns": [
+    "src/Xemele/Parsing/Dom/DomSink.cs",
+    "src/Xemele/Tree/ValidationMetadata/",
+    "tests/Xemele.Tests/M5-validation-metadata/",
+    "docs/reports/M5-validation-metadata/"
+  ],
+  "api_or_output": "Internal XmlDocument validation standalone/source-location metadata and DOM declaration hook",
+  "acceptance": [
+    {
+      "id": "M5-validation-metadata-A1",
+      "description": "Retain nullable standalone and declaration location on XmlDocument via internal partial metadata; capture for character and byte DOM input before decoder-null return.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M5-validation-metadata-A2",
+      "description": "Verify yes/no/absent declaration semantics, source locations, synchronous/asynchronous input and preserved decoding/standalone parsing behavior.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M5-validation-metadata-A3",
+      "description": "Demonstrate integrated prerequisites only, record actual checks and allocation applicability, preserve earlier behavior without new public API.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "Ordered owning repair identified by M5 contract review: DOM currently drops standalone metadata before postparse validation.",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}
