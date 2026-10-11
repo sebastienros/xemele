@@ -78,6 +78,7 @@ these single-host ShortRun timings are informational. Provider joins add about
 12.42ns for short comparison and455.29ns for long. No bulk-scanning/token or
 SearchValues optimization is claimed; straightforward loops preserve exact work
 charging and cancellation. End-to-end composer confirmation and x64 evidence
-remain downstream. Raw logs/results are preserved under ignored
-`artifacts/M8-datatypes-numeric/measurement`; only summaries/analysis/identities
-are committed.
+remain downstream. Raw logs/results were preserved through coordinator independent inspection,
+then removed with other ignored numeric transient outputs after evidence
+acceptance. Concise summaries/analysis/identities remain committed; prepared
+source and binaries remain unchanged for coordinator worktree cleanup.
