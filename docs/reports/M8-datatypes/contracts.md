@@ -52,3 +52,9 @@ incompletion, propagate unchanged. All provider parsing and value/comparison/
 hash/measure/composite/retype behavior delegates the accepted family/core joins.
 No cross-primitive numeric promotion, provider mixing or total temporal order is
 introduced. Each provider's existing evidence/source is preserved.
+
+The later ordered composition owner corrected core's list hash foreach after an
+actual composition zero-allocation failure: indexed item traversal preserves the
+exact core fold/work semantics without obtaining an interface enumerator. The
+coordinator authorized this narrow change; child historical evidence is intact.
+New composition measurements, rather than old child evidence, cover this path.

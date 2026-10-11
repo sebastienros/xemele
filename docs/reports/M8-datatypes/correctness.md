@@ -31,3 +31,10 @@ These are authored focused tests and accepted child regressions, not an imported
 external conformance suite or cumulative release gate. Source review is recorded
 separately from execution. Measurement requires independent accepted source,
 prepared payload identities and the root's serialized lease.
+
+After the first granted measurement failure (separate measurement-failure-1.md),
+the coordinator-authorized indexed core list-hash correction and durable probe
+failure rows are committed at fb8fc3b5b4ef1d83da85679c296a48b5863dde32.
+The full immutable correctness command passed354 tests (77composition plus277
+children/model), public1393/frozen316, both consumers, planning176 and whitespace;
+all builds zero warnings/errors. No unleased allocation/timing retry occurred.
