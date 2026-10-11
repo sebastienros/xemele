@@ -18,15 +18,6 @@
       "stage": "implementing; no measurement grant"
     },
     {
-      "task_id": "M5-c14n",
-      "agent_id": "/root/c14n",
-      "worktree": "/private/tmp/xemele-m5-c14n",
-      "branch": "codex/m5-c14n",
-      "base_revision": "110f84094e3df287133bf30e709ae96824428f76",
-      "claim_revision": "395b26f7aa04b3cbe7f52f16d733a3dff24bcd02",
-      "stage": "implementing; no measurement grant"
-    },
-    {
       "task_id": "M5-validation-metadata",
       "agent_id": "/root/validation_metadata",
       "worktree": "/private/tmp/xemele-m5-validation-metadata",
@@ -837,7 +828,15 @@
     }
   ],
   "metadata_correction": "PI rawAPI report uses inventory.apiDeclarations, not wrapper members. Initialrootmetadata assertion stopped before taskstate writes; d539f13 preserves actualpassing0869bde evidence, separateverifiedmetadata follows.",
-  "suspended_assignments": [],
+  "suspended_assignments": [
+    {
+      "task_id": "M5-c14n",
+      "branch": "codex/m5-c14n",
+      "worktree": "/private/tmp/xemele-m5-c14n",
+      "partial_revision": "c8a3ae0253fe79a8cb61be40609532fcd9cc8b5a",
+      "reason": "Await owning canonical provenance repair; parked no workloads"
+    }
+  ],
   "allocation_research": {
     "issue": "https://github.com/dotnet/runtime/issues/134724",
     "draft_fix": "https://github.com/dotnet/runtime/pull/134855",
@@ -1843,7 +1842,7 @@
   "milestone_progress": {
     "milestone": "M5",
     "verified": 1,
-    "total": 8
+    "total": 9
   },
   "pause_request": {
     "requested_by": "user",

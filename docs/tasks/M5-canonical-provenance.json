@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "id": "M5-canonical-provenance",
+  "milestone": "M5",
+  "title": "Retain complete-source and mutation provenance for canonical input",
+  "kind": "feature",
+  "status": "in_progress",
+  "owner": "M5 isolated canonical provenance worker",
+  "branch": "codex/m5-canonical-provenance",
+  "base_revision": "bc6b97db775170a15233aa7a584059dc4aa2f161",
+  "integration_revision": null,
+  "depends_on": [
+    "M5-contracts"
+  ],
+  "goals": [
+    "G07",
+    "G08"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/dtd-c14n.md"
+  ],
+  "owns": [
+    "src/Xemele/Tree/Document.cs",
+    "src/Xemele/Tree/CanonicalMetadata/",
+    "src/Xemele/Parsing/Dom/Recovery.cs",
+    "src/Xemele/XPath/Model/Items.cs",
+    "tests/Xemele.Tests/M5-canonical-provenance/",
+    "benchmarks/Xemele.Benchmarks/M5-canonical-provenance/",
+    "docs/reports/M5-canonical-provenance/"
+  ],
+  "api_or_output": "Internal all-mutation ContentRevision, SourceInputComplete and captured XPath item revision; unchanged public snapshot API",
+  "acceptance": [
+    {
+      "id": "M5-canonical-provenance-A1",
+      "description": "Retain internal all-content mutation revision and recovered-source completeness, preserving structural MutationVersion and public recovery behavior.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M5-canonical-provenance-A2",
+      "description": "Capture internal XPath item content revision without altering snapshot getters/equality; test value/name/namespace/structure changes including A-to-B-to-A and incomplete recovery across sync/async input.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M5-canonical-provenance-A3",
+      "description": "Preserve earlier tree/recovery/XPath semantics, record focused actual checks and allocation/retention impact at known revision using integrated prerequisites only.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "Exact provenance gaps found during canonicalization input preflight; repair claimed before any prerequisite-dependent work.",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}
