@@ -1,6 +1,6 @@
 # HTML and CSS contracts — exact M7 freeze
 
-Decision owner: M7-contracts. [Resolved decisions](../decisions/M7/html-css.md)
+Decision owners: M7-contracts and the additive M7-css-xml-contract repair. [Resolved decisions](../decisions/M7/html-css.md)
 and `tests/Contracts/Fixtures/M7/{Model,Engine,Tokenizer,Selector}.cs.fixture`
 are the exact declarations. They are independent nonpackaged compilation models,
 never shipped stubs. Actual earlier types are `Xemele.XmlDocument`, `XmlNode` and
@@ -141,15 +141,22 @@ never partial matching or ignored syntax. Null arguments use ArgumentNullExcepti
 Namespaces support prefix|name, *|name and |name; options prefix mappings are
 snapshotted, unbound prefixes reject. Mapping key empty denotes default type
 namespace; without it unqualified types match any namespace. Unqualified
-attributes mean no namespace (default namespace never applies). HTML namespace
-type and attribute names use ASCII-insensitive matching; foreign names and all
-ID/class/attribute values are ordinal sensitive, even in quirks documents.
+attributes mean no namespace (default namespace never applies). The additive
+[XML selector decision](../decisions/M7/css-xml.md) freezes overloads accepting
+the actual `Xemele.XmlNode`, alongside the unchanged `HtmlNode` overloads.
+For XML trees, every type/attribute name and of-type expanded name is ordinal
+case-sensitive, including nodes in the XHTML namespace; namespace URIs are always
+ordinal sensitive. For HTML trees, HTML namespace type and attribute names use
+ASCII-insensitive matching; foreign names and all ID/class/attribute values are
+ordinal sensitive, even in quirks documents.
 Attributes compare actual DOM values; no fabricated default DTD attributes.
 :empty ignores comments but includes any text, including whitespace. Position
 pseudos count element siblings only; of-type uses expanded names with HTML casing.
 :root matches the document element; :scope means supplied Select root if it is an
 element, otherwise its document element; Matches scope is the element itself.
-Matches(non-element) is false. Select includes root when it is an element,
+Matches(non-element) is false, including default XmlNode handles. Select of a
+default XmlNode throws ArgumentException; null HtmlNode arguments throw
+ArgumentNullException. Select includes root when it is an element,
 returns unique elements in preorder document order, snapshots the result and
 retains owner via handles. Detached trees work. Mutating the DOM after compile is
 observed by subsequent calls; no stale global cache. No later XPath/schema module
@@ -164,4 +171,4 @@ results retain no input buffers. Callback-only tokenization permits bounded toke
 buffering and does not accumulate a document. Standalone Tokenize(list) intentionally
 owns all tokens. New HtmlDocument validates/snapshots limits. Children/Attributes
 expose read-only live views, with fail-fast mutation during enumeration; callers
-cannot mutate backing collections. Snapshot Select outputs are read-only arrays.
+cannot mutate backing collections. Snapshot Select outputs are read-only arrays of the input graph’s node type.
