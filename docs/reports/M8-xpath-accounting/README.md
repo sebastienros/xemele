@@ -152,3 +152,9 @@ committed. Raw results/check outputs are transient under ignored artifacts, left
 for coordinator cleanup after inspection; prepared caches and older retained
 artifacts remain. No outside-owned paths were edited. Integration verification
 and the later schema budget caller belong to the coordinator and owning tasks.
+
+## Coordinator integration
+
+Final integration `76911ffc84ff961a81e11c1428303fac68117887` contains the accepted source and handoff. Combined runtime checks passed at `0f5d9845e2def74e104aea798e293b978752f616`: the exact executed driver is retained in `integration-commands.py`. Cache-only restores and all three pinned Release builds passed with zero warnings/errors. All 368 XPath tests passed on actual ARM .NET 10.0.11, with zero errors/failures/skips/not-run. The compiled public union matches 1,254 declarations including the independently verified Schema enum member, and all five frozen internal accounting declarations match. Planning validates 171 tasks; whitespace passes.
+
+The final merge adds only worker report/task evidence to that tested combination; source, tests, inputs and configuration are unchanged. The coordinator verified this exact two-path difference and retained the successful checks. All 14 worker paths are owned relative to the coordinated claim; the earlier base-to-claim coordinator metadata is not worker work. Worker terminal status and clean merged ancestry were checked before cleanup. Generated raw/check/preparation outputs are transient and removed with the completed checkouts after inspection; original retained milestone checkpoints, manifests, caches and toolchains remain untouched.

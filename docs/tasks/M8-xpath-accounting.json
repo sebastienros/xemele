@@ -4,11 +4,11 @@
   "milestone": "M8",
   "title": "Expose internal XPath operation accounting for schema composition",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M8 coordinator 01a12c6c-b333-71d3-877f-0d186618e21d / assigned isolated worker",
   "branch": "codex/m8-xpath-accounting",
   "base_revision": "3000efdc9d9c1768810ace6372ad52aa51be6bd2",
-  "integration_revision": null,
+  "integration_revision": "76911ffc84ff961a81e11c1428303fac68117887",
   "depends_on": [
     "M8-contracts",
     "M4-evaluate"
@@ -38,7 +38,8 @@
       "evidence": [
         "xpath-accounting-regressions",
         "compiled-api-preservation",
-        "source-review"
+        "source-review",
+        "combined-integration"
       ]
     },
     {
@@ -46,7 +47,8 @@
       "description": "Test both context forms, actual accounting in finally, option/cancellation/error propagation, independent runs and exact shared-budget boundaries across several expressions using a capped remaining allowance. Earlier public XPath correctness must remain intact.",
       "status": "passed",
       "evidence": [
-        "xpath-accounting-regressions"
+        "xpath-accounting-regressions",
+        "combined-integration"
       ]
     },
     {
@@ -60,7 +62,8 @@
         "allocation-preparation-controls",
         "owned-allocation-evidence",
         "allocation-review",
-        "planning-whitespace"
+        "planning-whitespace",
+        "combined-integration"
       ]
     }
   ],
@@ -144,22 +147,30 @@
       "result": "passed",
       "summary": "171 task records validate and whitespace check passes at committed preparation revision. Final own-task evidence/ownership validation also recorded in handoff; no unrelated path edits.",
       "artifact": "docs/reports/M8-xpath-accounting/README.md"
+    },
+    {
+      "id": "combined-integration",
+      "kind": "integration",
+      "revision": "0f5d9845e2def74e104aea798e293b978752f616",
+      "command": "python3 /private/tmp/m8-xpath-integration.py (exact executed driver retained as docs/reports/M8-xpath-accounting/integration-commands.py)",
+      "result": "passed",
+      "summary": "Combined source with verified resource-kind: cache-only restores; three pinned Release builds,0 warnings/errors;368/368 actual ARM .NET10.0.11 XPath tests,0 errors/failures/skips/not-run; compiled public union1254 and exact5 internal declarations match;171 planning and whitespace pass. Final76911ff differs only by worker task/report metadata; validated that delta and planning without repeating valid runtime checks. Source reviewer accepted; allocation evidence independently inspected after durable RELEASE.",
+      "artifact": "docs/reports/M8-xpath-accounting/README.md"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Implemented the frozen actual-work XPath join on isolated branch88ce17f; source review accepted. Public API1253 unchanged,15 new and353 prior XPath tests pass. Bounded owned allocation evidence accepted with the single disclosed552-byte internal Unicode-node sample. Integration unset for coordinator verification.",
+    "summary": "Verified frozen XPath operation accounting on the integrated combination; public behavior/API preserved. Actual successful charges survive failure.368 focused tests and combined public1254/internal5 API checks pass. Bounded allocation evidence includes the disclosed unassigned552-byte sample.",
     "checks": [
       "SDK10.0.400 Release clean build at d766bef:0 warnings/errors; explicit runtime10.0.11 focused M4+accounting at88ce17f:368/368 passed,0 skipped/unrun.",
       "Actual compiled API at88ce17f:1253 public unchanged,5 frozen internal rows,4 drift/omission controls reject.",
       "Counters-disabled baseline6/candidate12 controls passed; one exclusive prepared lease ran, both children/wrapper0, identities passed/no_children=true, RELEASE before inspection acknowledged.",
       "Owned public6/6 exact allocation parity; internal5/6 exact plus Unicode-node12056B x63/12608B x1 (unassigned552B,index27). Cold32112B/positive1048B both; all result/work oracles consumed. No zero/timing/all-sample parity claim.",
       "Initial preliminary build errors corrected without suppressions; not passing evidence. Source/API/probe sources unchanged during lease; no retry.",
-      "Final own-record planning validation171 and whitespace passed at d766bef with only pending own report/task metadata; exact ownership check passes for14 changed/untracked paths. Ignored preparation caches and transient raw/check artifacts retained for coordinator cleanup."
+      "Final own-record planning validation171 and whitespace passed at d766bef with only pending own report/task metadata; exact ownership check passes for14 changed/untracked paths. Ignored preparation caches and transient raw/check artifacts retained for coordinator cleanup.",
+      "Coordinator combined checks at 0f5d9845e2def74e104aea798e293b978752f616; metadata-only final integration 76911ffc84ff961a81e11c1428303fac68117887; runtime checks retained, planning revalidated."
     ],
-    "remaining": [
-      "Coordinator integrates and verifies focused tests and additive combined public API (resource-kind adds its own separate member); then records integration_revision/status verified. No remaining worker criterion or implementation blocker."
-    ],
+    "remaining": [],
     "requests": []
   }
 }
