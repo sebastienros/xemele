@@ -7,7 +7,35 @@
     "task_id": "M6-gate",
     "integration_revision": "f7412c6ef5c5552e7194781e4724253244cdb6bb"
   },
-  "active_assignments": [],
+  "active_assignments": [
+    {
+      "task_id": "M7-legacy",
+      "agent_id": "/root/legacy",
+      "branch": "codex/m7-legacy",
+      "worktree_path": "/private/tmp/xemele-m7-legacy",
+      "base_revision": "3ebc40ae0b39e8b4867f7819a8da313b2f3b7ecb",
+      "claim_revision": "854039d48c08eb108112d0e65fb01d066fab8867",
+      "stage": "Isolated implementation; no allocation or timing lease granted"
+    },
+    {
+      "task_id": "M7-tokenizer",
+      "agent_id": "/root/tokenizer",
+      "branch": "codex/m7-tokenizer",
+      "worktree_path": "/private/tmp/xemele-m7-tokenizer",
+      "base_revision": "854039d48c08eb108112d0e65fb01d066fab8867",
+      "claim_revision": "2c729304004723416866d2aa5ac647d01485ef22",
+      "stage": "Isolated implementation; no allocation or timing lease granted"
+    },
+    {
+      "task_id": "M7-css-xml-contract",
+      "agent_id": "/root/css_xml_contract",
+      "branch": "codex/m7-css-xml-contract",
+      "worktree_path": "/private/tmp/xemele-m7-css-xml-contract",
+      "base_revision": "f82719b45c20386f0ab6356b74b00eaeb6d0b7b9",
+      "claim_revision": "67c9894f783898715e735359500ad89292b07c39",
+      "stage": "Isolated implementation; no allocation or timing lease granted"
+    }
+  ],
   "integration_queue": [],
   "blockers": [
     {
@@ -17,7 +45,9 @@
     }
   ],
   "next_actions": [
-    "Claim ready M7-legacy, M7-tokenizer and M7-css on main before isolated bounded dispatch, using only verified model contracts."
+    "Integrate and verify additive CSS XML contract, then prioritize mandatory current WHATWG PI contract and model repairs.",
+    "Tokenizer independent states continue; PI completion and implemented handoff require verified PI model integrated on main.",
+    "Review stable source and frozen preparations before exclusive allocation/timing grants; preserve previous milestone checks."
   ],
   "last_verified_task": "M7-html-model",
   "last_integrated_revision": "d619732f09cd0980010265b11b738cb67bade06f",
@@ -2524,5 +2554,9 @@
     "identity_control_revision": "05c8cb65cfebb71423ce5647554dfe46b536931e",
     "status": "Source approved and exact controls/closure independently inspected;exclusive bounded lease granted, raw inspection forbidden until durable release.",
     "offline_xml_inputs": "Root copied/hash-verified all3386 existing manifest resources to isolated ignored tests/corpora/xml/xmlconf; original cache unchanged, no fetch/symlink. Official inventory will run before final freeze."
+  },
+  "m7_pi_repair": {
+    "status": "Planned ordered additive contract/model repair; gate explicitly covers model; tokenizer completion held until verified repair. Adding an unverified dependency to an already-started task rejected by validator, so original valid task prerequisites preserved.",
+    "reason": "Current pinned WHATWG parsing requires PI token/tree/serialization support; stale html5lib expectations need exact discrepancy witnesses."
   }
 }
