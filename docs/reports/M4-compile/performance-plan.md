@@ -11,7 +11,7 @@ no job flags, dynamic source generation or build runs during the lease.
 | Lexical | 4 | Short/long Unicode borrowed vs explicit token materialization, identical consumed offsets/kinds |
 | Delimiter | 8 | Short/long Unicode loop, IndexOf, IndexOfAny, cached SearchValues; identical stop-index oracle |
 | Vocabulary | 4 | Known maximum-length axis/common-prefix miss; span dispatch vs sequential SequenceEqual |
-| Compile | 3 | Owned AST short/long Unicode; invalid Unicode diagnostic (separate allocation boundary) |
+| Compile | 3 | Owned AST + core-call static resolution short/long Unicode; invalid Unicode diagnostic (separate allocation boundary) |
 | Number | 4 | Short/long validated decimal Number, bounded cancellable conversion vs framework full-span conversion |
 | Context | 2 | Owned default/registered static context copying, separate from compile with reused context |
 
@@ -21,7 +21,7 @@ long vocabulary misses and materialization checksum equality. Setup generates
 fixtures outside timing. Discovery and --control keep allocation counters disabled.
 
 Leased --allocation warms 32 x 32 groups of two borrowed inputs before measuring
-32 x 32 groups (2048 borrowed scans) and matcher/delimiter work. It preserves each
+32 x 32 groups (2048 borrowed scans) and matcher/delimiter/colon/ordinal resolution primitive work. It preserves each
 batch allocation value and the exact total gate (target 0 B), with explicit
 materialized token positive controls, 32 owned compiler outputs and 32 registered
 context copies. Cold compiler/static context setup is separate from warm work.

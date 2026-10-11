@@ -259,7 +259,8 @@ internal sealed class XPathCompiler : IXPathCompiler
                     case Kind.Binary: d.Result = new XPathBinary(d.Operator, d.Left!.Result!, d.Right!.Result!, d.Span); break;
                     case Kind.Call:
                         var name = Name(d.Token, d.Span);
-                        if (!context.Functions.TryGetValue(name, out var signature)) throw Error("XPATH-FUNCTION", d.Span);
+                        var signature = XPathResolution.FindFunction(context.Functions, name, cancellation);
+                        if (signature is null) throw Error("XPATH-FUNCTION", d.Span);
                         if (d.Children.Count < signature.MinArguments || signature.MaxArguments is int max && d.Children.Count > max) throw Error("XPATH-ARITY", d.Span);
                         d.Result = new XPathCall(signature, Results(d.Children), d.Span, cancellation); break;
                     case Kind.Filter: d.Result = new XPathFilter(d.Left!.Result!, Results(d.Children), d.Span, cancellation); break;
@@ -282,25 +283,16 @@ internal sealed class XPathCompiler : IXPathCompiler
         { return Own(token.Start + (quoted ? 1 : 0), token.Length - (quoted ? 2 : 0)); }
         private string Own(int start, int length) => string.Create(length, (source, start, cancellation), static (destination, state) =>
         { for (int i = 0; i < destination.Length;) { state.cancellation.ThrowIfCancellationRequested(); int count = Math.Min(256, destination.Length - i); state.source.AsSpan(state.start + i, count).CopyTo(destination.Slice(i, count)); i += count; } state.cancellation.ThrowIfCancellationRequested(); });
-        private void Poll(XPathToken token)
-        { for (int i = 0; i < token.Length; i += Math.Min(256, token.Length - i)) cancellation.ThrowIfCancellationRequested(); }
         private XPathExpandedName Name(XPathToken token, XPathSourceSpan diagnosticSpan)
         {
-            Poll(token); var text = Text(token); int colon = text.IndexOf(':');
+            var text = Text(token); int colon = XPathResolution.FindColon(text, cancellation);
             if (colon < 0) return new("", Own(token.Start, token.Length), cancellation);
             var prefix = text[..colon]; string? uri = null;
             // Borrowed ordinal probe: avoid a transient prefix string per reference.
             foreach (var binding in context.Namespaces)
-            { cancellation.ThrowIfCancellationRequested(); if (Equal(prefix, binding.Key)) { uri = binding.Value; break; } }
+            { cancellation.ThrowIfCancellationRequested(); if (XPathResolution.Equal(prefix, binding.Key, cancellation)) { uri = binding.Value; break; } }
             if (uri is null) throw Error("XPATH-PREFIX", diagnosticSpan);
             return text[(colon + 1)..].SequenceEqual("*") ? XPathExpandedName.NamespaceWildcard(uri) : new(uri, Own(token.Start + colon + 1, token.Length - colon - 1), cancellation);
-        }
-        private bool Equal(ReadOnlySpan<char> prefix, string key)
-        {
-            if (prefix.Length != key.Length) return false;
-            for (int i = 0; i < prefix.Length;)
-            { cancellation.ThrowIfCancellationRequested(); int count = Math.Min(256, prefix.Length - i); if (!prefix.Slice(i, count).SequenceEqual(key.AsSpan(i, count))) return false; i += count; }
-            return true;
         }
     }
     internal static XPathNodeTestKind? NodeKind(ReadOnlySpan<char> text) => text switch { "node" => XPathNodeTestKind.Node, "text" => XPathNodeTestKind.Text, "comment" => XPathNodeTestKind.Comment, "processing-instruction" => XPathNodeTestKind.ProcessingInstruction, _ => null };

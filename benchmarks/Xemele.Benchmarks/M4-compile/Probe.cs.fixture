@@ -53,12 +53,12 @@ GC.KeepAlive(coldAst);Console.WriteLine($"{mode} complete; 2048 borrowed scans; 
 static long Batch(string[] inputs,bool measure,out long bytes)
 {
     long start=measure?GC.GetAllocatedBytesForCurrentThread():0, result=0;
-    for(int i=0;i<32;i++) foreach(string input in inputs) result+=Fixtures.Scan(input,false)+Fixtures.Vocabulary("ancestor-or-self",false)+Fixtures.Stops(input,0)+(long)XPathCompileNumber.Parse(Fixtures.NumberShort,default)+(long)XPathCompileNumber.Parse(Fixtures.NumberLong,default);
+    for(int i=0;i<32;i++) foreach(string input in inputs) result+=Fixtures.Scan(input,false)+Fixtures.Vocabulary("ancestor-or-self",false)+Fixtures.Stops(input,0)+XPathResolution.FindColon(input,default)+(XPathResolution.Equal(input,input,default)?1:0)+(long)XPathCompileNumber.Parse(Fixtures.NumberShort,default)+(long)XPathCompileNumber.Parse(Fixtures.NumberLong,default);
     bytes=measure?GC.GetAllocatedBytesForCurrentThread()-start:0;return result;
 }
 internal static class Fixtures
 {
-    internal static readonly string Short="//book[@id='b1']/title";
+    internal static readonly string Short="count(//book[@id='b1']/title)";
     internal static readonly string Long="//"+string.Join("/",Enumerable.Repeat("根😀[2]",256));
     internal static readonly string NumberShort="42.5";
     internal static readonly string NumberLong="1."+new string('0',8192)+"1";

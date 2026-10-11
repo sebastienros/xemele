@@ -32,7 +32,11 @@ entry/variant is created. Expression strings are checked before lexer setup.
 The final AST owns literal strings and expanded local names, snapshots child
 collections and retains no expression buffer/draft. All these are persistence
 allocations, distinct from the zero-allocation borrowed lexer and static matcher
-primitive target. Resolution probes namespace keys with borrowed ordinal spans.
+primitive target. Resolution probes namespace keys with borrowed ordinal spans. Colon discovery
+and registration URI/local-name comparisons poll during each at most 256-unit
+chunk. Function registrations are enumerated rather than hashed; enumeration
+bookkeeping is included in owned full-compile costs, not in the borrowed zero
+allocation primitive target.
 No evaluator, public facade, mutable AST cache or later milestone code is used.
 The simple literal scalar loop preserves Unicode validation/cancellation; the
 prepared delimiter suite evaluates loop, IndexOf, IndexOfAny and cached
@@ -53,6 +57,7 @@ Existing public constructors and signatures remain intact.
 
 - `src/Xemele/XPath/Compilation/Lexer.cs`: internal borrowed XPathLexer/token kinds.
 - `src/Xemele/XPath/Compilation/XPathCompiler.cs`: internal compiler + frame/draft implementation.
+- `src/Xemele/XPath/Compilation/Resolution.cs`: polled colon/name/prefix/function probes.
 - `src/Xemele/XPath/Compilation/Number.cs`: bounded decimal conversion + cancellation.
 - `docs/api/M4-compile.txt`: valid empty xemele-api-v1 public fragment; no public additions.
 - `samples/M4-compile/Program.cs`: compiled friend-assembly demonstration using
