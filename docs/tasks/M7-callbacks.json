@@ -4,7 +4,7 @@
   "milestone": "M7",
   "title": "HTML5 tokenizer callback adapter",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M7 coordinator /root/callbacks",
   "branch": "codex/m7-callbacks",
   "base_revision": "713f91d6dafdebca3fb8cf8db8c3f91811f4f9fc",
@@ -34,29 +34,128 @@
     {
       "id": "M7-callbacks-A1",
       "description": "Expose approved tokenizer callbacks with borrowed lifetimes and clearly documented difference from corrected DOM order.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "owned-contract-review",
+        "api-preservation",
+        "unchanged-allocation-review"
+      ]
     },
     {
       "id": "M7-callbacks-A2",
       "description": "Test token ordering, early delivery, bounded retention, callback faults and chunked input.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "focused-tests",
+        "owned-contract-review",
+        "unchanged-allocation-review"
+      ]
     },
     {
       "id": "M7-callbacks-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "focused-tests",
+        "release-builds",
+        "public-sample",
+        "api-preservation",
+        "planning-diff"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "Existing verified src/Xemele/Html5/Tokenization/Html5Tokenizer.cs callback overload is the exact approved adapter; no runtime or public declarations added.",
+    "tests/Xemele.Tests/M7-callbacks/CallbackIntegrationTests.cs: owned retention, synchronous lexical ordering, early delivery, discarded snapshots, faults/cancellation and all public states/internal chunk boundaries.",
+    "samples/M7-callbacks/{Callbacks.Sample.csproj,Program.cs}: selected retained PI plus counts without DOM/list accumulation.",
+    "docs/reports/M7-callbacks/README.md: exact owned-token freeze supersedes borrowed wording; lexical vs DOM/SAX and reused allocation evidence. No API fragment: inventory rejects empty fragments and M7-tokenizer owns existing declaration."
+  ],
+  "evidence": [
+    {
+      "id": "owned-contract-review",
+      "kind": "review",
+      "revision": "56ffa4cbc72ddeded3115fff06fabc59f37c1873",
+      "command": "Review exact docs/specs/html.md, tests/Contracts/Fixtures/M7/Tokenizer.cs.fixture and unchanged verified tokenizer source",
+      "result": "passed",
+      "summary": "All seven tokens are owned immutable retainable snapshots. Exact freeze supersedes older borrowed-lifetime A1 wording. Existing verified callback overload satisfies approved API; no new runtime/public members. Source bounds current token/attributes, 1024-character batching/fixed reference scratch and retains no DOM/output list.",
+      "artifact": null
+    },
+    {
+      "id": "focused-tests",
+      "kind": "check",
+      "revision": "56ffa4cbc72ddeded3115fff06fabc59f37c1873",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -namespace Xemele.Tests.HtmlCallbacks -namespace Xemele.Tests.HtmlTokenization -parallelMode none -noColor -result-xml artifacts/M7-callbacks/tests.xml",
+      "result": "passed",
+      "summary": "26 passed, zero failures/skips: 11 owned callback checks and 15 unchanged tokenizer checks including corpus vectors and PI witnesses. No cumulative suite or measurements.",
+      "artifact": "artifacts/M7-callbacks/tests.xml"
+    },
+    {
+      "id": "release-builds",
+      "kind": "check",
+      "revision": "56ffa4cbc72ddeded3115fff06fabc59f37c1873",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' build tests/Xemele.Tests/Xemele.Tests.csproj -c Release --no-restore -p:RuntimeFrameworkVersion=10.0.11 -p:UseSharedCompilation=false --disable-build-servers; same flags for samples/M7-callbacks/Callbacks.Sample.csproj and docs/reports/M0-contracts/ApiCheck/ApiCheck.csproj",
+      "result": "passed",
+      "summary": "All three Release builds passed zero warnings/errors on pinned SDK10.0.400/runtime10.0.11. Offline restores succeeded with --source tests/Contracts/Fixtures/M7 -p:NuGetAudit=false; test restore/build required sandbox escalation.",
+      "artifact": null
+    },
+    {
+      "id": "public-sample",
+      "kind": "check",
+      "revision": "56ffa4cbc72ddeded3115fff06fabc59f37c1873",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 samples/M7-callbacks/bin/Release/net10.0/Callbacks.Sample.dll",
+      "result": "passed",
+      "summary": "Passed: Lexical starts=3; EOF=1; retained PI=build:v1. Uses only verified dependency and owned sample.",
+      "artifact": null
+    },
+    {
+      "id": "api-preservation",
+      "kind": "check",
+      "revision": "56ffa4cbc72ddeded3115fff06fabc59f37c1873",
+      "command": "PATH='/Users/sebastienros/Library/Application Support/dotnetup/dotnet':\"$PATH\" python3 -B tools/ApiBaseline/compare.py --report artifacts/M7-callbacks/runtime-api.json",
+      "result": "passed",
+      "summary": "Official approved M0 checker matched 1210 compiled members, bootstrap false, 3388 fixtures. All 3386 original cached W3C resources copied and source/destination SHA256 verified; cache intact, no fetch. No fragment added.",
+      "artifact": "artifacts/M7-callbacks/runtime-api.json"
+    },
+    {
+      "id": "unchanged-allocation-review",
+      "kind": "review",
+      "revision": "56ffa4cbc72ddeded3115fff06fabc59f37c1873",
+      "command": "Review unchanged verified runtime source and docs/reports/M7-tokenizer/{measurements.md,integration.md}",
+      "result": "passed",
+      "summary": "Reuses verified 6f8945d runtime/probe measurement checkpoint: borrowed 98304 ops 0B, separate owned callback/list/chunk costs, inclusive retained468000B/128lists and24BDN Arm64 cases. No runtime edits, new allocation/timing measurements, zero-allocation tokenizer claim or x64 claim.",
+      "artifact": null
+    },
+    {
+      "id": "initial-check-failures",
+      "kind": "check",
+      "revision": "56ffa4cbc72ddeded3115fff06fabc59f37c1873",
+      "command": "Initial sandbox restore/build; first Release test build; first focused 26-test execution; first discovery",
+      "result": "failed",
+      "summary": "Sandbox restore/build stalled and were cancelled; escalated checks succeeded. Initial xUnit2030 analyzer error fixed. First execution25/26 passed: fixture unquoted slash incorrectly expected self-closing; whitespace fixed without runtime change. Discovery initially missing ignored W3C fixture; original cache copy resolved.",
+      "artifact": null
+    },
+    {
+      "id": "planning-diff",
+      "kind": "check",
+      "revision": "56ffa4cbc72ddeded3115fff06fabc59f37c1873",
+      "command": "python3 tools/planning/tasks.py validate; git diff --cached --check",
+      "result": "passed",
+      "summary": "Validated167tasks; whitespace check passed.",
+      "artifact": null
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "",
-    "checks": [],
-    "remaining": [],
+    "summary": "Owned callback consumer composition/regressions/docs/sample complete; exact owned freeze supersedes borrowed wording. Existing verified API/runtime reused unchanged; no public fragment because no added declarations. Branch implementation only.",
+    "checks": [
+      "Release test/sample/approved checker builds zero warnings/errors; sample passed.",
+      "26 callback+tokenizer tests passed, including corpus and retained weak-reference correctness.",
+      "Official API matched1210, bootstrapFalse,3388fixtures;167task validation/diff passed.",
+      "Initial analyzer/fixture/sandbox/discovery failures resolved and retained honestly in evidence. No measurement rerun."
+    ],
+    "remaining": [
+      "Coordinator integrate and rerun applicable checks before verified; later builder/corpus owns corrected DOM/byte decoding."
+    ],
     "requests": []
   }
 }
