@@ -76,8 +76,23 @@ def api():
  # transient host shim selects the same explicit runtime for that DLL only.
  shim=RAW/'host-bin';shim.mkdir(exist_ok=True);wrapper=shim/'dotnet';wrapper.write_text('#!/usr/bin/env python3\nimport os,sys\na=sys.argv[1:]\nif a and a[0].endswith(".dll"):a=["--fx-version","10.0.11",*a]\nos.execv('+repr(DOTNET)+',['+repr(DOTNET)+',*a])\n');wrapper.chmod(0o755)
  env=ENV|{'PATH':str(shim)+os.pathsep+ENV['PATH']};path=RAW/'api-full.json';run([sys.executable,'-B',ROOT/'tools/ApiBaseline/compare.py','--report',path],'api',120,env=env);d=json.loads(path.read_text());assert d['matched'] and d['checkerExit']==0 and d['inventory']['apiDeclarations']==1054;summary('api-summary',{k:d[k] for k in ['matched','checkerExit','checkerOutput','assemblySha256']})
+def inspect_package():
+ lanes=[]
+ expected=(ROOT/'tests/corpora/xinclude/expected.txt').read_bytes()+b'\n'
+ for lane in ['package-managed','trim','aot']:
+  stderr=(ROOT/('artifacts/M6-integration/'+lane+'.stderr')).read_text().strip()
+  assert stderr=='Framework=.NET 10.0.11; Architecture=Arm64',(lane,stderr)
+  stdout=(ROOT/('artifacts/M6-integration/'+lane+'.stdout')).read_bytes()
+  assert stdout==expected,(lane,stdout)
+  lanes.append({'lane':lane,'framework':'.NET 10.0.11','architecture':'Arm64','stderrSha256':hashlib.sha256(stderr.encode()).hexdigest(),'stdoutSha256':hashlib.sha256(stdout).hexdigest(),'independentExpectedOutputMatches':True})
+ assert (ROOT/'artifacts/M6-integration/external-sdk.log').read_text().strip()=='10.0.400'
+ summary('package-runtime-controls',{'sdk':'10.0.400','lanes':lanes})
+
 def package():
- run([sys.executable,'-B',ROOT/'tests/PackageSmoke/Xml/run.py'],'package',600)
+ # Cached compiler tooling requests a servicing prerelease; allow its stable
+ # patch selection. Gate inspection below asserts each actual product runtime.
+ run([sys.executable,'-B',ROOT/'tests/PackageSmoke/Xml/run.py'],'package',600,env=ENV|{'DOTNET_ROLL_FORWARD':'LatestPatch'})
+ inspect_package()
  identity=json.loads((ROOT/'artifacts/M6-integration/package-identity.json').read_text())
  assert identity['source_package_dll_equal'] and identity['sha256']==json.loads((RAW/'api-summary.json').read_text())['assemblySha256']
  local=RAW/'packages';local.mkdir(exist_ok=True)
@@ -93,6 +108,6 @@ def cli():
  run([sys.executable,'-B',ROOT/'tests/Xemele.Tests/M6-cli/process_controls.py'],'cli-native',240,env=ENV|{'XEMELE_CLI_NATIVE':str(binary)})
  summary('cli-summary',{'nativeSha256':hashlib.sha256(binary.read_bytes()).hexdigest(),'platform':'osx-arm64','managedAndNativeControls':57,'examples':7})
 if __name__=='__main__':
- phases=dict(prepare=prepare,inspect_tests=inspect_tests,fuzz=fuzz,grammar=grammar,api=api,package=package,cli=cli)
+ phases=dict(prepare=prepare,inspect_tests=inspect_tests,fuzz=fuzz,grammar=grammar,api=api,package=package,inspect_package=inspect_package,cli=cli)
  if len(sys.argv)!=2 or sys.argv[1] not in phases:raise SystemExit('prepare|inspect_tests|fuzz|grammar|api|package')
  phases[sys.argv[1]]()
