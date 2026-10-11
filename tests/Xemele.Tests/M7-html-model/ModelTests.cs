@@ -39,7 +39,7 @@ public sealed class ModelTests
  [Fact] public void TemplateEdgesArePrivateAndParticipateInCyclesAndCopies()
  {
   var d=new HtmlDocument();var t=d.CreateElement("template");var content=t.TemplateContent!;Assert.Null(content.Parent);Assert.Empty(t.Children);content.AppendChild(d.CreateText("hidden"));Assert.Equal("",t.GetTextContent());Assert.Throws<InvalidOperationException>(()=>content.AppendChild(t));var nested=d.CreateElement("template");content.AppendChild(nested);Assert.Throws<InvalidOperationException>(()=>nested.TemplateContent!.AppendChild(t));
-  var target=new HtmlDocument();var imported=target.Import(t);Assert.NotSame(t,imported);Assert.Same(target,imported.OwnerDocument);Assert.Equal("hidden",imported.TemplateContent!.GetTextContent());Assert.Null(imported.TemplateContent.Parent);Assert.Empty(t.Clone(false).TemplateContent!.Children);
+  var target=new HtmlDocument();var imported=target.Import(t);Assert.NotSame(t,imported);Assert.Same(target,imported.OwnerDocument);Assert.Equal("hidden",imported.TemplateContent!.GetTextContent());Assert.Null(imported.TemplateContent.Parent);Assert.Empty(t.Clone(false).TemplateContent!.Children);var receiver=d.CreateElement("div");receiver.AppendChild(content);Assert.Empty(content.Children);Assert.Equal("hidden",receiver.GetTextContent());Assert.Null(content.Parent);
  }
  [Fact] public void AttributesPreserveExpandedIdentityOrderSnapshotsAndHtmlData()
  {

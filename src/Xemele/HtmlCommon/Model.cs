@@ -107,11 +107,14 @@ public sealed class HtmlNode
  public string Value {get=>value;set {ArgumentNullException.ThrowIfNull(value);if(Kind is not (HtmlNodeKind.Text or HtmlNodeKind.Comment)) throw new InvalidOperationException("Only text and comments have mutable values.");OwnerDocument.CheckToken(value);this.value=value;}}
  internal HtmlNode? TemplateHost;
  internal HtmlNode? StructuralParent => Parent ?? TemplateHost;
- public HtmlNode? Parent {get;private set;}
+ private HtmlNode? parent;
+ public HtmlNode? Parent => parent;
  public HtmlNode? FirstChild => children.Count==0?null:children[0];
  public HtmlNode? LastChild => children.Count==0?null:children[^1];
- public HtmlNode? PreviousSibling {get;private set;}
- public HtmlNode? NextSibling {get;private set;}
+ private HtmlNode? previousSibling;
+ public HtmlNode? PreviousSibling => previousSibling;
+ private HtmlNode? nextSibling;
+ public HtmlNode? NextSibling => nextSibling;
  public IReadOnlyList<HtmlNode> Children {get;}
  public IReadOnlyList<HtmlAttribute> Attributes {get;}
  public HtmlDoctype? Doctype {get;}
@@ -119,7 +122,7 @@ public sealed class HtmlNode
  public HtmlNode? TemplateContent => templateContent;
  public string GetTextContent() {var b=new StringBuilder();var stack=new Stack<HtmlNode>();stack.Push(this);while(stack.TryPop(out var n)) {if(n.Kind==HtmlNodeKind.Text)b.Append(n.Value);for(int i=n.children.Count-1;i>=0;i--)stack.Push(n.children[i]);}return b.ToString();}
  private string AttributeName(string name,string uri) => NamespaceUri==HtmlDocument.HtmlNamespace && uri.Length==0?HtmlNames.Fold(name):name;
- public string? GetAttribute(string localName,string namespaceUri="") {ArgumentNullException.ThrowIfNull(localName);ArgumentNullException.ThrowIfNull(namespaceUri);localName=AttributeName(localName,namespaceUri);foreach(var a in attributes)if(a.LocalName==localName && a.NamespaceUri==namespaceUri)return a.Value;return null;}
+ public string? GetAttribute(string localName,string namespaceUri="") {ArgumentNullException.ThrowIfNull(localName);ArgumentNullException.ThrowIfNull(namespaceUri);foreach(var a in attributes)if(SameAttributeName(a.LocalName,localName,namespaceUri) && a.NamespaceUri==namespaceUri)return a.Value;return null;}
  public void SetAttribute(HtmlAttribute attribute)
  {
   HtmlDocument.ValidateAttribute(attribute);if(Kind!=HtmlNodeKind.Element)throw new InvalidOperationException("Attributes require an element.");
@@ -129,8 +132,14 @@ public sealed class HtmlNode
   var saved=attribute with {LocalName=OwnerDocument.Intern(name),NamespaceUri=OwnerDocument.Intern(attribute.NamespaceUri),Prefix=OwnerDocument.Intern(attribute.Prefix)};
   if(index<0)attributes.Add(saved);else attributes[index]=saved;
  }
- private int AttributeIndex(string name,string uri) {for(int i=0;i<attributes.Count;i++)if(attributes[i].LocalName==name&&attributes[i].NamespaceUri==uri)return i;return -1;}
- public bool RemoveAttribute(string localName,string namespaceUri="") {ArgumentNullException.ThrowIfNull(localName);ArgumentNullException.ThrowIfNull(namespaceUri);localName=AttributeName(localName,namespaceUri);int i=AttributeIndex(localName,namespaceUri);if(i<0)return false;attributes.RemoveAt(i);return true;}
+ private bool SameAttributeName(string stored,string candidate,string uri)
+ {
+  if(NamespaceUri!=HtmlDocument.HtmlNamespace || uri.Length!=0)return stored==candidate;
+  if(stored.Length!=candidate.Length)return false;
+  for(int i=0;i<stored.Length;i++){char c=candidate[i];if(c is >= 'A' and <= 'Z')c=(char)(c+32);if(stored[i]!=c)return false;}return true;
+ }
+ private int AttributeIndex(string name,string uri) {for(int i=0;i<attributes.Count;i++)if(SameAttributeName(attributes[i].LocalName,name,uri)&&attributes[i].NamespaceUri==uri)return i;return -1;}
+ public bool RemoveAttribute(string localName,string namespaceUri="") {ArgumentNullException.ThrowIfNull(localName);ArgumentNullException.ThrowIfNull(namespaceUri);int i=AttributeIndex(localName,namespaceUri);if(i<0)return false;attributes.RemoveAt(i);return true;}
  public void AppendChild(HtmlNode node) => Insert(node,null);
  public void InsertBefore(HtmlNode node,HtmlNode reference) {ArgumentNullException.ThrowIfNull(reference);if(reference.Parent!=this)throw new ArgumentException("Reference is not a child.",nameof(reference));Insert(node,reference);}
  private void Insert(HtmlNode node,HtmlNode? reference)
@@ -138,7 +147,6 @@ public sealed class HtmlNode
   ArgumentNullException.ThrowIfNull(node);if(Kind is not (HtmlNodeKind.Document or HtmlNodeKind.Fragment or HtmlNodeKind.Element))throw new InvalidOperationException("Invalid container.");
   if(node.OwnerDocument!=OwnerDocument)throw new ArgumentException("Import foreign nodes before attachment.",nameof(node));
   if(node==reference)return;
-  if(node.TemplateHost!=null)throw new InvalidOperationException("Template content cannot be attached.");
   for(HtmlNode? p=this;p!=null;p=p.StructuralParent)if(p==node)throw new InvalidOperationException("Cycle.");
   bool fragment=node.Kind==HtmlNodeKind.Fragment;
   if(fragment) {foreach(var n in node.children)PreflightChild(n);} else PreflightChild(node);
@@ -162,7 +170,7 @@ public sealed class HtmlNode
   if(Kind!=HtmlNodeKind.Document && n.Kind==HtmlNodeKind.DocumentType)throw new InvalidOperationException("Doctype requires document.");
   CheckDepth(n);
  }
- private void Attach(HtmlNode node,HtmlNode? reference) {node.Remove();int index=reference==null?children.Count:children.IndexOf(reference);children.Insert(index,node);node.Parent=this;Relink(index);}
+ private void Attach(HtmlNode node,HtmlNode? reference) {node.Remove();int index=reference==null?children.Count:children.IndexOf(reference);children.Insert(index,node);node.parent=this;Relink(index);}
  // Templates add a private ownership edge while their content's public Parent is null.
  internal static HtmlNode? NextStructural(HtmlNode current,HtmlNode root)
  {
@@ -177,8 +185,8 @@ public sealed class HtmlNode
   int parentDepth=0;for(var p=this;p!=null;p=p.StructuralParent)if(p.Kind==HtmlNodeKind.Element)parentDepth++;
   for(HtmlNode? n=node;n!=null;n=NextStructural(n,node)) {int depth=parentDepth;for(var p=n;p!=node.StructuralParent;p=p!.StructuralParent)if(p!.Kind==HtmlNodeKind.Element)depth++;if(depth>max)throw new InvalidOperationException("HTML depth quota exceeded.");}
  }
- private void Relink(int index) {var n=children[index];n.PreviousSibling=index==0?null:children[index-1];n.NextSibling=index+1==children.Count?null:children[index+1];if(n.PreviousSibling!=null)n.PreviousSibling.NextSibling=n;if(n.NextSibling!=null)n.NextSibling.PreviousSibling=n;}
- public void Remove() {if(Parent==null)return;var parent=Parent;int i=parent.children.IndexOf(this);parent.children.RemoveAt(i);if(PreviousSibling!=null)PreviousSibling.NextSibling=NextSibling;if(NextSibling!=null)NextSibling.PreviousSibling=PreviousSibling;Parent=null;PreviousSibling=null;NextSibling=null;}
+ private void Relink(int index) {var n=children[index];n.previousSibling=index==0?null:children[index-1];n.nextSibling=index+1==children.Count?null:children[index+1];if(n.PreviousSibling!=null)n.PreviousSibling.nextSibling=n;if(n.NextSibling!=null)n.NextSibling.previousSibling=n;}
+ public void Remove() {if(Parent==null)return;var oldParent=Parent;int i=oldParent.children.IndexOf(this);oldParent.children.RemoveAt(i);if(PreviousSibling!=null)PreviousSibling.nextSibling=NextSibling;if(NextSibling!=null)NextSibling.previousSibling=PreviousSibling;parent=null;previousSibling=null;nextSibling=null;}
  public HtmlNode Clone(bool deep=true) => OwnerDocument.Copy(this,deep);
 }
 internal static class HtmlNames
