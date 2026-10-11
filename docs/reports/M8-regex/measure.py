@@ -7,7 +7,7 @@ D='/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet'
 exe='benchmarks/Xemele.Benchmarks/M8-regex/bin/Release/net10.0/Xemele.Benchmarks.dll'
 env=dict(os.environ,XEMELE_REGEX_REVISION=manifest['sourceRevision'],DOTNET_ROLL_FORWARD='Disable',DOTNET_ROOT=str(Path(D).parent),RestoreSources='/Users/sebastienros/.nuget/packages',RuntimeFrameworkVersion='10.0.11',UseSharedCompilation='false',NuGetAudit='false')
 env['PATH']=str(Path(D).parent)+os.pathsep+env['PATH']
-commands=[[D,'--fx-version','10.0.11',exe,'--measure','artifacts/M8-regex/allocation1.json'],[D,'--fx-version','10.0.11',exe,'--measure','artifacts/M8-regex/allocation2.json'],[D,'--fx-version','10.0.11',exe,'--bdn','--filter','*MatchBorrowed*','--artifacts','artifacts/M8-regex/bdn','--exporters','json']]
+commands=[[D,'--fx-version','10.0.11',exe,'--measure','artifacts/M8-regex/allocation1.json'],[D,'--fx-version','10.0.11',exe,'--measure','artifacts/M8-regex/allocation2.json'],[D,'--fx-version','10.0.11',exe,'--bdn','artifacts/M8-regex/bdn']]
 deadline=time.monotonic()+590
 for i,args in enumerate(commands):
  with open(f'artifacts/M8-regex/measurement-{i}.log','wb') as log:
@@ -35,5 +35,6 @@ for i,args in enumerate(commands):
      except ProcessLookupError:pass
      raise RuntimeError('Descendant drain exceeded; group killed, coordinator must verify cleanup before ACK')
     time.sleep(0.1)
+for p,digest in manifest['files'].items():assert hashlib.sha256(Path(p).read_bytes()).hexdigest()==digest,('Final prepared identity changed',p)
 # All approved child commands are supervised in their own groups. No raw inspection here.
 print('Approved sequence processes exited/reaped; logs closed. RELEASE required before raw inspection.')

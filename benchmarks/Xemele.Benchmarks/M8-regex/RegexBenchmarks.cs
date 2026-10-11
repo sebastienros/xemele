@@ -20,5 +20,5 @@ public class RegexBenchmarks
         for (int i = 0; i < 32; i++) MatchBorrowed();
     }
     [Benchmark] public bool MatchBorrowed() => engine.IsMatch(program, input.AsSpan(), operation);
-    [Benchmark] public bool MatchOwnedRun() => engine.IsMatch(program, input.AsSpan(), new SchemaValidationOperation(new() { MaxOperations = null, Limits = new() { EvaluationWork = null } }));
+    public bool MatchOwnedRun() => engine.IsMatch(program, input.AsSpan(), new SchemaValidationOperation(new() { MaxOperations = null, Limits = new() { EvaluationWork = null } }));
 }

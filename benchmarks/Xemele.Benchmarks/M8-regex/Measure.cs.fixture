@@ -5,9 +5,28 @@ using System.Text.Json;
 using Xemele.Validation;
 using Xemele.Benchmarks.M8Regex;
 using BenchmarkDotNet.Running;
-if (args.Length > 0 && args[0] == "--bdn")
-{ BenchmarkSwitcher.FromTypes([typeof(RegexBenchmarks)]).Run(args[1..]); return; }
-if (args is not [var mode, var output] || mode is not ("--control" or "--measure")) throw new ArgumentException("Use --control|--measure output, or --bdn filters.");
+using BenchmarkDotNet.Configs;
+using BenchmarkDotNet.Jobs;
+using BenchmarkDotNet.Exporters.Json;
+using BenchmarkDotNet.Toolchains.InProcess.NoEmit;
+if (args is ["--discover" or "--bdn", var artifacts])
+{
+    if (RuntimeInformation.FrameworkDescription != ".NET 10.0.11") throw new InvalidOperationException("Pinned runtime required.");
+    var config = ManualConfig.Create(DefaultConfig.Instance).WithArtifactsPath(artifacts)
+        .AddJob(Job.Default.WithToolchain(InProcessNoEmitToolchain.Instance).AsMutator()).AddExporter(JsonExporter.Full);
+    var suite = BenchmarkConverter.TypeToBenchmarks(typeof(RegexBenchmarks), config);
+    var cases = suite.BenchmarksCases;
+    if (cases.Length != 8 || cases.Any(c => c.Descriptor.WorkloadMethod.Name != nameof(RegexBenchmarks.MatchBorrowed) ||
+        c.Job.Run.LaunchCount != 1 || c.Job.Run.WarmupCount != 3 || c.Job.Run.IterationCount != 3 ||
+        c.Job.Infrastructure.Toolchain != InProcessNoEmitToolchain.Instance)) throw new InvalidOperationException("Eight ShortRun NoEmit borrowed-match cases required.");
+    Console.WriteLine("8 ShortRun NoEmit cases; 1 launch/3 warmup/3 measurement; counters-disabled discovery, no generation/builds.");
+    if (args[0] == "--discover") return;
+    var summaries = BenchmarkRunner.Run(new[] { suite });
+    if (summaries.Sum(s => s.Reports.Length) != 8 || summaries.Any(s => s.Reports.Any(r => !r.Success || r.ResultStatistics is null)))
+        throw new InvalidOperationException("Benchmark success/count validation failed.");
+    Console.WriteLine("PASS: all 8 prepared ShortRun NoEmit benchmark cases."); return;
+}
+if (args is not [var mode, var output] || mode is not ("--control" or "--measure")) throw new ArgumentException("Use --control|--measure output, or --discover|--bdn artifacts.");
 if (RuntimeInformation.FrameworkDescription != ".NET 10.0.11") throw new InvalidOperationException("Pinned runtime required.");
 bool measure = mode == "--measure";
 long coldBefore = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;

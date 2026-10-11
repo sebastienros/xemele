@@ -50,3 +50,10 @@ promise zero steady-state managed allocation; compiler/program construction,
 operation/result ownership, static initialization and pool growth are distinct
 boundaries. No throughput optimization is claimed: straightforward span loops are
 used; no SearchValues, hashing or custom SIMD is introduced.
+
+The prepared BDN suite uses the integrated M7 in-process NoEmit toolchain mutator.
+Counters-disabled discovery asserts exactly eight borrowed-match cases, one
+launch, three warmup and three measured iterations; measurement validates all
+eight successful reports. Child generation, restore and builds happen entirely
+outside the lease. The supervisor checks all prepared source/binary/runtime/input
+identities again before lifecycle RELEASE.
