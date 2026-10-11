@@ -4,11 +4,11 @@
   "milestone": "M7",
   "title": "Verify HTML/CSS checkpoint",
   "kind": "gate",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M7 coordinator 01a12add-f725-7663-b0f9-e6687671c769",
   "branch": "codex/m7-gate",
   "base_revision": "5d2a6d577b39c6758b6589fe6a2f9199a2ecec2a",
-  "integration_revision": null,
+  "integration_revision": "a1384320f3663732b7f933ad2457b1fce524a84c",
   "depends_on": [
     "M6-gate",
     "M7-cli",
@@ -37,7 +37,8 @@
         "cumulative",
         "correctness",
         "package",
-        "inspection"
+        "inspection",
+        "integration"
       ]
     },
     {
@@ -48,7 +49,8 @@
         "cumulative",
         "correctness",
         "package",
-        "inspection"
+        "inspection",
+        "integration"
       ]
     },
     {
@@ -59,7 +61,8 @@
         "cumulative",
         "correctness",
         "package",
-        "inspection"
+        "inspection",
+        "integration"
       ]
     }
   ],
@@ -102,11 +105,20 @@
       "result": "passed",
       "summary": "12actualallocation request/reportpairs andchildXML inspected againstfrozenbinary/runtime; allrealmeasuredlanes0/allpositivesdetected; unchangedproduct/test/fixture/helper sourceproof; actualoutputcounts/API/package3lanes inspected;169planningvalidated. Owned inspection-schema/newline corrections recorded; no probes or fullsuite rerun.",
       "artifact": "docs/reports/M7-gate/summary.json"
+    },
+    {
+      "id": "integration",
+      "kind": "integration",
+      "revision": "a1384320f3663732b7f933ad2457b1fce524a84c",
+      "command": "Root inspect actual three XML suites, all gate-owned files and 1094 tracked runtime/test/fixture/helper hashes against released closure; compare package/manifest SHA and preserved M6 checkpoint; python3 tools/planning/tasks.py validate",
+      "result": "passed",
+      "summary": "Integrated main checkpoint exact8717pass/0fail/error/skip/not-run and all6985M6identities;1094trackedsourcehashes+allownedreport/helperfiles exact; API/grammar/fuzz/CLI/package output independentlyinspected; retained M7unpublishedpackage+preparedmanifest SHA; previous M6package/manifest unchanged;169planning passed. Only owned docs/task changes since measuredrevision, no fullsuite rerun required.",
+      "artifact": "docs/reports/M7-gate/summary.json"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "M7-only completebranch checkpoint:8717tests and6985earlieridentities;1253API/3388fixtures; grammar/XPath+HTMLfuzz/CLI/package consumers pass. Controlled unchangedM3 assertionpasses; earlierdefaultfailurehonestlypreserved. All15implementationworkersverified/terminal; noM8, publication or newtimingcampaign.",
+    "summary": "Verified integrated M7-only checkpoint on main:8717tests/6985earlieridentities/1253API/3388fixtures, XMLgrammar/XPath+HTMLfuzz, managedCLI and external package managed/trim/NativeAOT pass. Allimplementation workers terminal; lease released. Rootcleanup/sole-writer handoff to mainorchestrator next; noM8 or publication.",
     "checks": [
       "Frozenexclusive0/three0/final0/nochildren; DURABLERELEASE6faf7c9 beforeinspection.",
       "Managed111HTML57XML/28sample, retainedverifiedNativeCLI111+57; package managed/trim/NativeAOT actualArm64/.NET10.0.11 outputs exact.",
