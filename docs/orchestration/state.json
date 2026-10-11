@@ -1549,15 +1549,15 @@
     }
   },
   "measurement_lease": {
-    "id": "m3-async-writer-7f99de9-bdn-only",
+    "id": "m3-reader-0e81744-measure",
     "status": "granted",
-    "revision": "7f99de9ab0683a1ce581e6f4f902a02353389de3",
-    "runtime_revision": "80119207072d0eb292f9cb6bf186bc8cf2bdb3fd",
-    "duration_limit_seconds": 110,
-    "scope": "One prepared BDN-only command, six Dry InProcess cases, default environment; redundant InProcess attribute removed and job-constructor IL inspected. No sync19/69/API/probe repeats, builds, generation, edits, option changes or retries. Reader and resource-mode workers PARK with no children; root and reviewer run no workloads. Release after actual exit and child cleanup, before inspection.",
-    "benchmark_sha256": "c035149aa2a5a1b9a4752504ec581f0770c19c1f01b9549b3874f8461cd4345f",
-    "runtime_sha256": "ca1c3a9c66f653b2ced0d4793ee8eda5f8cdf75927cfe0863736145c6b5fe810",
-    "timing_limitations": "Unrelated user workloads remain untouched; contended latencies are informational and cannot establish speedup, regression or repeatability. Same-process memory diagnostics and preserved mandatory standalone allocation results remain valid."
+    "revision": "0e81744ffc718ef9e7b45f80992295d0e55208d7",
+    "runtime_revision": "cb2a561f658b2a99b95d2206e83186391c1a91ea",
+    "duration_limit_seconds": 240,
+    "scope": "Exact prepared probe default mode <=60s for cold/warm cursor copy, positive control and generated 1/8 MiB retention with active 256 KiB samples; only if passed same DLL bdn <=180s, fixed single InProcessNoEmit job and exactly six cases. Writer and resource-mode workers PARK with no children; root and reviewer run no workloads. No builds, generation, edits, retries or option changes. Release on actual exit and child cleanup before report inspection.",
+    "probe_sha256": "5437ab223c30645b634cb9def104974731f8117b90155889cc1e8b5a83b07930",
+    "runtime_sha256": "66c4b22fde1ae57e75879f2e0b7554151950a18f314180c04826650d25166ca5",
+    "limitations": "Unrelated host activity stays untouched; timing is informational and cannot establish comparative or regression claims. Per-process retained heap and synchronous primitive allocation gates remain mandatory; full 1 GiB qualification remains assigned to M3-corpus."
   },
   "offline_corpus_setup": {
     "checkout": "/private/tmp/xemele-m3-integration",
