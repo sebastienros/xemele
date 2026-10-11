@@ -4,7 +4,7 @@
   "milestone": "M5",
   "title": "Retain completed DOM source revision for standalone validation",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M5 isolated validation source provenance worker",
   "branch": "codex/m5-validation-source-provenance",
   "base_revision": "095db5550e5df6a2ad7764b6534352255c6c09b1",
@@ -31,29 +31,85 @@
     {
       "id": "M5-validation-source-provenance-A1",
       "description": "Retain nullable completed source ContentRevision with no public API or lexical buffers; programmatic documents remain unknown; strict character/byte sync/async parse records completed revision.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "focused-checks",
+        "build-api"
+      ]
     },
     {
       "id": "M5-validation-source-provenance-A2",
       "description": "Prove unchanged parsed standalone numeric-reference whitespace remains traceable, all current DOM mutations make revision differ, incomplete/recovered inputs cannot establish safe provenance, cancellation does not stamp completion.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "focused-checks"
+      ]
     },
     {
       "id": "M5-validation-source-provenance-A3",
       "description": "Preserve parser/DOM/shared metadata/API and document logical storage and generated-code allocation applicability; actual focused checks and planning validation at known revision.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "build-api",
+        "generated-storage",
+        "planning"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Tree/ValidationMetadata/Document.SourceProvenance.cs: ValidationSourceContentRevision and MarkValidationSourceComplete",
+    "src/Xemele/Parsing/Dom/DomSink.cs: EndDocument cancellation and strict-completion stamp",
+    "tests/Xemele.Tests/M5-validation-source-provenance/SourceProvenanceTests.cs"
+  ],
+  "evidence": [
+    {
+      "id": "focused-checks",
+      "kind": "check",
+      "revision": "465761d4257a895fa9bc5a9a1457a63fad5434ed",
+      "command": "Pinned dotnet --fx-version 10.0.11 tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll; eight focused class filters with -method- '*WarmBorrowedNameHitsAllocateZeroAndUseOwnedInternedStrings' -noColor (exact arguments in report)",
+      "result": "passed",
+      "summary": "191 passed, zero failures/skips,13dedicated tests; actual.NET10.0.11, strict char/byte/sync/async completion, standalone charrefs/CDATA, all mutation categories, recovery/cancel/negative sentinel; excluded allocation method.",
+      "artifact": "docs/reports/M5-validation-source-provenance/README.md"
+    },
+    {
+      "id": "build-api",
+      "kind": "check",
+      "revision": "465761d4257a895fa9bc5a9a1457a63fad5434ed",
+      "command": "Pinned SDK10.0.400 offlinecache Release test/APIchecker builds; python3 docs/reports/M5-validation-model/check_api.py",
+      "result": "passed",
+      "summary": "Final builds zero warnings/errors; approved compiled extractor matches all921 prior-baseline members using direct10.0.11 host; no public API added.",
+      "artifact": "docs/reports/M5-validation-source-provenance/README.md"
+    },
+    {
+      "id": "generated-storage",
+      "kind": "check",
+      "revision": "465761d4257a895fa9bc5a9a1457a63fad5434ed",
+      "command": "SourceProvenanceTests.ScalarPayloadAndGeneratedGetterSetterHaveNoHeapConstruction (included in focused run)",
+      "result": "passed",
+      "summary": "Actual getter7byte field load; scalar setter18byte getContentRevision/Nullable<long> value constructor/field store;16byte logical payload. No heap constructor, lexical retention or additional allocation hotwork; no counter/timing/performance claim.",
+      "artifact": "docs/reports/M5-validation-source-provenance/README.md"
+    },
+    {
+      "id": "planning",
+      "kind": "check",
+      "revision": "465761d4257a895fa9bc5a9a1457a63fad5434ed",
+      "command": "python3 tools/planning/tasks.py validate",
+      "result": "passed",
+      "summary": "All155task records validate; final updated record revalidated before handoff.",
+      "artifact": "docs/reports/M5-validation-source-provenance/README.md"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Current-tree validator found direct character-reference whitespace origin discarded by M2 DOM; completed revision permits unchanged source trust, mutated ambiguous text becomes incomplete rather than false invalidity. Facade consumes only after verified repair.",
-    "checks": [],
-    "remaining": [],
+    "summary": "Strict completed source revision retained with cancellation-first and conservative !Recover guard; no lexical storage/public changes. Root source review approved.",
+    "checks": [
+      "191 actual.NET10.0.11 focused checks passed; allocation method excluded.",
+      "Release builds clean; compiledAPI921unchanged; getter/setter IL and16Blogicalnullable payload checked; planning155valid."
+    ],
+    "remaining": [
+      "Coordinator integrate/verify repair before facade consumes; consumer requires complete source and nonnegative matching revision.",
+      "Combined M5 preservation remains milestone gate."
+    ],
     "requests": []
   }
 }
