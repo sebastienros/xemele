@@ -1,0 +1,54 @@
+{
+  "sourceRevision": "f3e60c5e6227ee8efda010283d4b16191a74810b",
+  "sdk": "10.0.400",
+  "runtime": "10.0.11",
+  "dotnet": "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+  "commands": [
+    [
+      "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+      "build",
+      "tests/Xemele.Conformance.Tests",
+      "-c",
+      "Release",
+      "--disable-build-servers",
+      "-m:1",
+      "-p:UseSharedCompilation=false"
+    ],
+    [
+      "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+      "build",
+      "tests/Xemele.Fuzz",
+      "-c",
+      "Release",
+      "--disable-build-servers",
+      "-m:1",
+      "-p:UseSharedCompilation=false"
+    ],
+    [
+      "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+      "build",
+      "docs/reports/M3-corpus/Runner",
+      "-c",
+      "Release",
+      "--disable-build-servers",
+      "-m:1",
+      "-p:UseSharedCompilation=false"
+    ],
+    [
+      "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+      "tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll",
+      "-namespace",
+      "Xemele.Conformance.Tests.Streaming",
+      "-result-xml",
+      "/Users/sebastienros/.codex/worktrees/2f9d/xemele/docs/reports/M3-corpus/repaired-focused.xml"
+    ],
+    [
+      "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+      "/Users/sebastienros/.codex/worktrees/2f9d/xemele/docs/reports/M3-corpus/Runner/bin/Release/net10.0/Runner.dll",
+      "fuzz-control"
+    ]
+  ],
+  "runnerSha256": "066a6a11aa6973d318dc9e79858a7ed998de207a4776cdfdbebe1f947751f91f",
+  "productSha256": "3e4d76646546e1f88e3bfb01cf32b5700f8546000e1a9d1e0358bbefe1db964c",
+  "conformanceSha256": "3c911b8e5f05ff9a7acd8c8c4b62f770f94532c93e3d6c61cc9a2c149e428bd5"
+}

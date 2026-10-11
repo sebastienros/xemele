@@ -4,7 +4,7 @@
   "milestone": "M3",
   "title": "Streaming equivalence and memory acceptance",
   "kind": "verification",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M3 coordinator / corpus worker",
   "branch": "codex/m3-corpus",
   "base_revision": "7d0b248143fb63491043e3c5e6829b2ae6c30b42",
@@ -32,10 +32,10 @@
     {
       "id": "M3-corpus-A1",
       "description": "Add normalized DOM/SAX/pull/push equivalence, random chunks and fuzz entry points plus large generated stream checks.",
-      "status": "failed",
+      "status": "passed",
       "evidence": [
-        "streaming-focused",
-        "fuzz-controls",
+        "repaired-streaming-focused",
+        "repaired-fuzz-controls",
         "bcl-differential"
       ]
     },
@@ -44,20 +44,24 @@
       "description": "All supported XML fixtures agree; 1 GiB streaming memory gate and early-callback assertions pass.",
       "status": "passed",
       "evidence": [
+        "repaired-streaming-focused",
         "small-memory-controls",
-        "streaming-focused",
         "memory-sax-observations",
         "memory-async-sax",
-        "memory-remaining-three"
+        "memory-remaining-three",
+        "streaming-memory-closure"
       ]
     },
     {
       "id": "M3-corpus-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
+      "status": "passed",
       "evidence": [
-        "preparation-builds",
-        "planning-validation"
+        "repaired-builds",
+        "repaired-streaming-focused",
+        "repaired-fuzz-controls",
+        "streaming-memory-closure",
+        "completed-planning-validation"
       ]
     }
   ],
@@ -68,7 +72,8 @@
     "tests/Xemele.Differential.Tests/Streaming/BclStreamingTests.cs: independent BCL model",
     "tests/Xemele.Fuzz/Streaming/StreamingFuzz.cs: standalone fuzz entrypoint",
     "tests/corpora/streaming/generated-profile.json: fixed generated workload",
-    "docs/reports/M3-corpus/Runner/Program.cs: bounded semantic/live-memory acceptance runner"
+    "docs/reports/M3-corpus/Runner/Program.cs: bounded semantic/live-memory acceptance runner",
+    "docs/reports/M3-corpus/streaming-closure-proof.json: exact streaming closure proof for frozen 1GiB evidence after DOM-only repair"
   ],
   "evidence": [
     {
@@ -178,31 +183,70 @@
       "result": "failed",
       "summary": "Wrapper exit 1 before any measurement child launch/hash verification. FileNotFoundError for sax filename. Narrow index correction approved before renewed lease.",
       "artifact": "docs/reports/M3-corpus/wrapper-prelaunch-failure.txt"
+    },
+    {
+      "id": "repaired-builds",
+      "kind": "check",
+      "revision": "f3e60c5e6227ee8efda010283d4b16191a74810b",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' build tests/Xemele.Conformance.Tests -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false\n'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' build tests/Xemele.Fuzz -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false\n'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' build docs/reports/M3-corpus/Runner -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false",
+      "result": "passed",
+      "summary": "Conformance, standalone fuzz and report runner controlled Release builds all exit 0 with zero warnings/errors. SDK 10.0.400/runtime 10.0.11; logs retained.",
+      "artifact": "docs/reports/M3-corpus/repaired-checks.json"
+    },
+    {
+      "id": "repaired-streaming-focused",
+      "kind": "check",
+      "revision": "f3e60c5e6227ee8efda010283d4b16191a74810b",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll -namespace Xemele.Conformance.Tests.Streaming -result-xml /Users/sebastienros/.codex/worktrees/2f9d/xemele/docs/reports/M3-corpus/repaired-focused.xml",
+      "result": "passed",
+      "summary": "9 tests executed; 9 passed, 0 failed/errors/skipped/not run. Frozen lane executes all 2,585 unchanged cases: 1,169 accepted/1,416 rejected; zero transport/content/metadata disagreements. Authored controls and invalid UTF-8 regression pass. 316 primary-base denials before resolver calls; 218 differences against separate source-context expectations.",
+      "artifact": "docs/reports/M3-corpus/repaired-focused.xml"
+    },
+    {
+      "id": "repaired-fuzz-controls",
+      "kind": "check",
+      "revision": "f3e60c5e6227ee8efda010283d4b16191a74810b",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' /Users/sebastienros/.codex/worktrees/2f9d/xemele/docs/reports/M3-corpus/Runner/bin/Release/net10.0/Runner.dll fuzz-control",
+      "result": "passed",
+      "summary": "97 operations from 5 seeds; zero unexpected failures, direct exit 0. All five previously failing mutations now produce structured rejection; no exclusions or swallowed failures.",
+      "artifact": "docs/reports/M3-corpus/repaired-fuzz-control.json"
+    },
+    {
+      "id": "streaming-memory-closure",
+      "kind": "check",
+      "revision": "f3e60c5e6227ee8efda010283d4b16191a74810b",
+      "command": "git ls-tree -r b5db61f2ed6579e82b13faa8a575dcb0b32c4da5 -- src global.json Directory.Build.props Directory.Build.targets Directory.Packages.props NuGet.Config nuget.config docs/reports/M3-corpus/Runner tests/Xemele.Fuzz/Streaming tests/corpora/streaming\ngit ls-tree -r f3e60c5e6227ee8efda010283d4b16191a74810b -- src global.json Directory.Build.props Directory.Build.targets Directory.Packages.props NuGet.Config nuget.config docs/reports/M3-corpus/Runner tests/Xemele.Fuzz/Streaming tests/corpora/streaming\nrg -n \"ByteDomAdapter|AsyncDomInput\" src/Xemele",
+      "result": "passed",
+      "summary": "Git blob comparison proves exactly two DOM-only changed files; 96 other closure files identical, including runner, fuzz helpers, generated profile and pinned build inputs. Construction references are only DOM factories/recovery. Measured streaming branches do not construct DOM adapters; original five 1 GiB observations remain valid. BCL SAX comparison unaffected and not rerun. Whole assembly binaries changed; original hashes remain attached solely to original measurements.",
+      "artifact": "docs/reports/M3-corpus/streaming-closure-proof.json"
+    },
+    {
+      "id": "completed-planning-validation",
+      "kind": "check",
+      "revision": "f3e60c5e6227ee8efda010283d4b16191a74810b",
+      "command": "python3 tools/planning/tasks.py validate",
+      "result": "passed",
+      "summary": "Validated 148 tasks: schema, evidence, acyclic dependencies, additive milestones and ordered ownership. Rechecked after implemented evidence update.",
+      "artifact": null
     }
   ],
-  "blockers": [
-    "Owning runtime repair required for malformed UTF-8 DOM declaration-validation exception."
-  ],
+  "blockers": [],
   "handoff": {
-    "summary": "Full public original-byte equivalence and five frozen 1GiB semantic/live observations recorded. All memory modes below 8MiB. Overall in_progress: malformed UTF-8 DOM owning repair pending; no runtime/shared writes.",
+    "summary": "Implemented original-byte DOM/SAX/push/pull/async equivalence, deterministic chunks, fuzz and generated 1 GiB semantic/live acceptance. Verified DOM repair merged at f3e60c5e6227ee8efda010283d4b16191a74810b; all corpus criteria pass on branch. Public no-base agreement is explicitly distinct from M2 source-context conformance. No worker runtime or shared-file edits.",
     "checks": [
-      "Four pinned controlled Release builds pass.",
-      "Conformance streaming: 8/9 pass; expected structured-rejection regression fails on unexpected InvalidOperationException. All 2585 frozen original cases agree, no exclusions.",
-      "BCL differential 2/2 pass.",
-      "Fuzz controls: 5 unexpected failures in 97 operations.",
-      "All five 1MiB modes and 9MiB-retention negative control pass.",
-      "tasks.py validate passes.",
-      "Five completed1GiB reports pass exact semantics/early callback and conservative managed live bound: 244912/276280/247440/278192/383776 bytes. SAX underlying runner exit unrecorded, optional outer time exited1; accepted raw observations via coordinator review. Other four direct exits0.",
-      "Historical prelaunch wrapper failure and 75s pull timeout preserved, no acceptance claimed for failed partial run. RSS unavailable."
+      "Three affected controlled Release builds exit 0 using SDK 10.0.400/runtime 10.0.11.",
+      "Streaming tests 9/9 pass; all 2,585 unchanged original fixtures execute: 1,169 accepted/1,416 rejected, zero mismatches. 316 no-base denials before resolver calls; 218 source-context differences.",
+      "Fuzz: 97 operations/5 seeds pass, zero failures; original five failures retained historically.",
+      "Independent BCL tests 2/2 pass at original source; unchanged SAX closure proves them unaffected, so not rerun.",
+      "Five 1 GiB live observations qualify unchanged streaming closure: 244912/276280/247440/278192/383776 bytes, all <=8 MiB, exact semantic counts and early callbacks. Four direct dotnet exits 0. SAX raw observations accepted by coordinator with outer timing exit 1/runner exit unknown. RSS unavailable.",
+      "Historical prelaunch wrapper failure and 75-second pull timeout remain failed evidence.",
+      "Source closure comparison: 96 files identical; only two DOM adapters changed. No actual 1 GiB reruns.",
+      "tasks.py validate passes for 148 tasks; integration_revision unset."
     ],
-    "remaining": [
-      "Integrate owning decoder/DOM repair and rerun affected malformed-input/public corpus checks against repaired closure.",
-      "Qualify exact unchanged streaming closure before reusing frozen memory evidence on repaired source.",
-      "Set implemented only when all criteria truly pass; coordinator owns verified/integration status."
-    ],
+    "remaining": [],
     "requests": [
-      "Owning repair: src/Xemele/Parsing/Input/XmlInputDecoder.cs and/or src/Xemele/Parsing/Dom/ByteDomAdapter.cs. Bytes 3c72af3e (PHKvPg==), no primary base; DtdProcessing=Parse, DocumentCharacters=1048576,Depth=64,TokenCharacters=65536. XmlDocument.Parse throws InvalidOperationException at ValidateDeclaration -> ValidateAbsentDeclaration -> Forward; require structured rejection. Full five cases/stacks in fuzz-control.json.",
-      "Integration gate must rerun existing M2 real-source-context conformance against the M3-modified core closure."
+      "Coordinator integrate corpus branch, rerun applicable combined checks and set verified with integration_revision.",
+      "Cumulative gate must rerun existing M2 source-context lane against integrated M3 core; public transport agreement does not claim that conformance acceptance."
     ]
   }
 }
