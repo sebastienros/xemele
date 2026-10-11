@@ -47,4 +47,19 @@ internal sealed class SchemaDocumentScope
         if (!ReferenceEquals(element.OwnerDocument, Document)) throw new ArgumentException("Node belongs to another source.", nameof(element));
         CheckUnchanged(); var context = SchemaSnapshots.Context(element, operation, SourceUri); CheckUnchanged(); return context;
     }
+    internal XmlLocation Location(XmlNode node)
+    {
+        CheckUnchanged(); var location = Document.OriginalLocation(node); CheckUnchanged();
+        return location with { SourceUri = location.SourceUri ?? SourceUri };
+    }
+    internal XmlLocation Location(XmlAttribute attribute)
+    {
+        CheckUnchanged(); var location = Document.OriginalLocation(attribute); CheckUnchanged();
+        return location with { SourceUri = location.SourceUri ?? SourceUri };
+    }
+    internal XmlLocation Location(XmlNamespaceDeclaration declaration)
+    {
+        CheckUnchanged(); var location = Document.OriginalLocation(declaration); CheckUnchanged();
+        return location with { SourceUri = location.SourceUri ?? SourceUri };
+    }
 }
