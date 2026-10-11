@@ -34,14 +34,22 @@
     {
       "id": "M8-rng-compile-A1",
       "description": "Implement XML syntax, simplification, name classes, references/includes and immutable pattern graph.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "focused",
+        "frozen-api",
+        "review"
+      ]
     },
     {
       "id": "M8-rng-compile-A2",
       "description": "Test schema restrictions and resolution cycles independently of instance validation.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "focused",
+        "frozen-api",
+        "review"
+      ]
     },
     {
       "id": "M8-rng-compile-A3",
@@ -50,13 +58,109 @@
       "evidence": []
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Validation/RelaxNg/Compilation/Compiler.cs: RelaxNgCompiler, per-operation source/resource ownership, full XML grammar/simplification/scopes and dense immutable publication",
+    "src/Xemele/Validation/RelaxNg/Compilation/Model.cs: frozen RngNameClass/RngPattern/RngCompiledSchema/IRelaxNgCompiler and shape/finite-depth invariants",
+    "src/Xemele/Validation/RelaxNg/Compilation/Restrictions.cs: datatype-independent contextual/string-sequence/attribute/interleave restrictions",
+    "src/Xemele/Validation/RelaxNg/Compilation/NameClasses.cs: borrowed membership and exact Boolean partition overlap, bounded balanced representation",
+    "tests/Xemele.Tests/M8-rng-compile/: 88 focused cases; resources/cycles/quotas/cancel/ownership/original coordinates and broad/deep graph regressions",
+    "docs/reports/M8-rng-compile/frozen.txt and ApiCheck/: 119 unchanged owned frozen declarations; samples/M8-rng-compile/: real XML-only consumer",
+    "docs/reports/M8-rng-compile/facade-join.md: all authored datatype checkpoints, exact contexts and required later real datatype/facet finalization",
+    "benchmarks/Xemele.Benchmarks/M8-rng-compile/: 11-route counters-disabled control and prepared allocation-only probe; docs/reports/M8-rng-compile/lease.py, preparation.json: bounded lifecycle and 198 identities"
+  ],
+  "evidence": [
+    {
+      "id": "focused",
+      "kind": "check",
+      "revision": "d2066ee11a6c2616a5806ce67ae04385ab703316",
+      "command": "Pinned dotnet build tests/Xemele.Tests/Xemele.Tests.csproj -c Release --no-restore --disable-build-servers -m:1 -p:RuntimeFrameworkVersion=10.0.11 -p:UseSharedCompilation=false -p:NuGetAudit=false; dotnet --fx-version 10.0.11 tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -class Xemele.Tests.M8RngCompile.CompilerTests -class Xemele.Tests.M8RngCompile.ResourceTests -result-xml artifacts/M8-rng-compile/focused-final.xml",
+      "result": "passed",
+      "summary": "Build zero warnings/errors; exactly 88 passed, zero failed/skipped/not-run; XML count asserted. Includes 8000-sibling choice/exclusion, null/large-depth2000 source, mixed220x17 graph-limit and caller ArgumentException identity.",
+      "artifact": null
+    },
+    {
+      "id": "frozen-api",
+      "kind": "check",
+      "revision": "d2066ee11a6c2616a5806ce67ae04385ab703316",
+      "command": "Pinned dotnet --fx-version 10.0.11 docs/reports/M8-rng-compile/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare src/Xemele/bin/Release/net10.0/Xemele.dll docs/reports/M8-rng-compile/frozen.txt",
+      "result": "passed",
+      "summary": "119 owned internal declarations matched the subset taken unchanged from RelaxNg.golden.txt. No facade/evaluator or public surface ships.",
+      "artifact": null
+    },
+    {
+      "id": "public-api",
+      "kind": "check",
+      "revision": "d2066ee11a6c2616a5806ce67ae04385ab703316",
+      "command": "python3 docs/reports/M5-validation-model/check_api.py",
+      "result": "passed",
+      "summary": "Unchanged scoped complete public union comparison matched all1393 emitted members. Independent full discovery failed on preexisting header-only M8-regex.txt; coordinator directed this established scoped check and no shared edits.",
+      "artifact": null
+    },
+    {
+      "id": "resolver42",
+      "kind": "check",
+      "revision": "d2066ee11a6c2616a5806ce67ae04385ab703316",
+      "command": "Execute resolver argv from docs/reports/M8-resource-kind/test-commands.json[1], with result path artifacts/M8-rng-compile/resolver.xml",
+      "result": "passed",
+      "summary": "Exactly42 resolver correctness cases passed, zero failed/skipped/not-run; XML count asserted. WarmBorrowedReadsAllocateNothing not selected.",
+      "artifact": null
+    },
+    {
+      "id": "prerequisites",
+      "kind": "check",
+      "revision": "d2066ee11a6c2616a5806ce67ae04385ab703316",
+      "command": "Pinned dotnet --fx-version10.0.11 Xemele.Tests.dll -class Xemele.Tests.M8Model.ModelTests -class Xemele.Tests.M8Model.ResourceTests -class Xemele.Tests.M8SourceLocations.SourceLocationTests -class Xemele.Tests.M5ValidationModel.ValidationModelTests -class Xemele.Tests.M4Evaluate.EvaluationTests -result-xml artifacts/M8-rng-compile/prerequisites.xml",
+      "result": "passed",
+      "summary": "Exactly131 verified model/source-location/M4/M5 correctness cases passed, zero failed/skipped/not-run; XML count asserted. No allocation tests selected.",
+      "artifact": null
+    },
+    {
+      "id": "xml-only",
+      "kind": "check",
+      "revision": "d2066ee11a6c2616a5806ce67ae04385ab703316",
+      "command": "Pinned Release build samples/M8-rng-compile/Consumer.csproj with -p:RngXmlOnly=true and pinned common flags; dotnet --fx-version10.0.11 samples/M8-rng-compile/bin/Release/net10.0/Xemele.Benchmarks.dll",
+      "result": "passed",
+      "summary": "Real source-linked compiler consumer passed immutable recursive graph, definition-only registry, M4 XPath/M5 DTD preservation and absence of HTML/CSS source families on runtime10.0.11. Build zero warnings/errors.",
+      "artifact": null
+    },
+    {
+      "id": "review",
+      "kind": "review",
+      "revision": "d2066ee11a6c2616a5806ce67ae04385ab703316",
+      "command": "Coordinator read-only review accepted exact d2066ee after independent2001/frozen-join review and bounded depth finding resolution",
+      "result": "passed",
+      "summary": "Coordinator accepted dedicated representation exception caught narrowly per-pattern with actual source location; broad/deep/mixed proofs passed. No remaining concrete compiler semantic blocker was reported.",
+      "artifact": null
+    },
+    {
+      "id": "unsafe-depth-regression",
+      "kind": "check",
+      "revision": "9d31c7033afc409c692bc0e5baa2fed5d06ead8b",
+      "command": "Pinned focused compiler classes at9d31c7 with added null/large-depth2000 proving cases",
+      "result": "failed",
+      "summary": "Test process exited134 with Stack overflow in recursive Syntax at1024 source guard. Corrected atbb85 and finald206; source cap256 and generated model guard translates only dedicated exception to SCHEMA.Limit. Final88 rerun passes.",
+      "artifact": null
+    },
+    {
+      "id": "control",
+      "kind": "check",
+      "revision": "d2066ee11a6c2616a5806ce67ae04385ab703316",
+      "command": "env DOTNET_TieredCompilation=0 DOTNET_gcServer=0 DOTNET_GCConcurrent=0 XEMELE_RNG_REVISION=d2066ee11a6c2616a5806ce67ae04385ab703316 pinned dotnet --fx-version10.0.11 benchmarks/Xemele.Benchmarks/M8-rng-compile/bin/Release/net10.0/Xemele.Benchmarks.dll --control artifacts/M8-rng-compile/control.json",
+      "result": "passed",
+      "summary": "11 consumed routes passed; warm32 + measured-loop64 iterations per steady case, counters disabled throughout. No GC allocation/retained/RSS measurement executed. Prepared for explicit coordinator lease only.",
+      "artifact": null
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "",
-    "checks": [],
-    "remaining": [],
+    "summary": "Compiler implemented and final correctness/API/XML-only checks pass; allocation-only probe prepared, awaiting explicit grant. Task remains in_progress until applicable allocation evidence is recorded.",
+    "checks": [
+      "88 focused,42 resolver,131 prerequisite correctness cases passed;119 internal frozen +1393 public declarations matched; real XML-only consumer and11-route counters-disabled control passed.",
+      "Planning validation previously passed176 tasks; final validator rerun follows metadata preparation."
+    ],
+    "remaining": [
+      "Explicit root grant, one bounded allocation-only probe, lifecycle RELEASE before raw inspection, concise allocation evidence, final planning validation; then mark implemented, integration_revision remains null."
+    ],
     "requests": []
   }
 }
