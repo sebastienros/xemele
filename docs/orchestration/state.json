@@ -7,7 +7,19 @@
     "task_id": "M3-gate",
     "integration_revision": "f740466f1f0929ae109870545a1ad09201cbca5b"
   },
-  "active_assignments": [],
+  "active_assignments": [
+    {
+      "task_id": "M4-model",
+      "branch": "codex/m4-model",
+      "base_revision": "32ce18d69428dd8eba8f6c2754b5b28497cc5d5b",
+      "stage": "Claimed; isolated worker creation pending",
+      "acceptance_before_dispatch": {
+        "mandatory": "A1 exact immutable AST/scalars/node-set/item identities and internal seam/options/diagnostics, no facade stubs; A2 conversion/default/invalid/lifetime/equality controls; A3 owned meaningful tests, actual API/standalone consumption and applicable allocation/timing evidence. Verified contracts/tree only.",
+        "integration": "Focused new model correctness and compiled public API; relevant tree/identity regressions; comprehensive combined suite at M4-gate.",
+        "performance": "Borrowed warm primitive0B with controls; owned factories/storage/cold separately; prepare outside one exclusive sequence; timing informational; [MemoryDiagnoser, ShortRunJob]; summaries only, no committed raw logs."
+      }
+    }
+  ],
   "integration_queue": [],
   "blockers": [
     {
@@ -17,8 +29,8 @@
     }
   ],
   "next_actions": [
-    "Clean terminal integrated M4-contracts worker and temporary integration checkout",
-    "Claim ready M4-model; execute only M4 through verified gate"
+    "Dispatch claimed isolated M4-model; verify before three independent ready lanes",
+    "Only M4 through gate then exactly-one M5 handoff"
   ],
   "last_verified_task": "M4-contracts",
   "last_integrated_revision": "3db4bde576c4f9b2be824db7d28b6bce389ea62a",
@@ -1505,7 +1517,13 @@
       "source_candidate": "c732d51d43db610b2acc37338d3c6d4881386be8",
       "integration_revision": "3db4bde576c4f9b2be824db7d28b6bce389ea62a",
       "handoff_revision": "66d9a881cd7cd785688fbb7cade3a20e30db74a4",
-      "source_review": "Independent read-only review approved, no blocking findings"
+      "source_review": "Independent read-only review approved, no blocking findings",
+      "cleanup": {
+        "chat_archived": true,
+        "worker_worktree_removed": true,
+        "integration_worktree_removed": true,
+        "generated_artifact_archive": false
+      }
     }
   ],
   "benchmark_grant": {
@@ -1616,7 +1634,9 @@
     "M4": {
       "verified": 1,
       "total": 8,
-      "in_progress": [],
+      "in_progress": [
+        "M4-model"
+      ],
       "remaining_gate": "M4-gate"
     }
   },
