@@ -1,0 +1,197 @@
+{
+  "revision": "c777c408b61078ea2eb4acefc2535f54dbc8b28a",
+  "discrepancies": [],
+  "exclusions": [],
+  "files": [
+    {
+      "file": "test2.test",
+      "sha256": "f0e2bf7d21de13a8e930d350d0a5ad364e2546ce9ca8e938ab8cb63a5bbe417d",
+      "cases": [
+        {
+          "zeroBasedIndex": 31,
+          "original": {
+            "description": "Processing instruction",
+            "input": "<?namespace>",
+            "output": [
+              [
+                "ProcessingInstruction",
+                "namespace",
+                ""
+              ]
+            ]
+          }
+        },
+        {
+          "zeroBasedIndex": 32,
+          "original": {
+            "description": "A processing instruction delimited by ?> doesn't contain the delimiting ?",
+            "input": "<?foo bar?>",
+            "output": [
+              [
+                "ProcessingInstruction",
+                "foo",
+                "bar"
+              ]
+            ]
+          }
+        },
+        {
+          "zeroBasedIndex": 33,
+          "original": {
+            "description": "A processing instruction's data delimited by ?> contains the correct amount of ?",
+            "input": "<?foo bar??>",
+            "output": [
+              [
+                "ProcessingInstruction",
+                "foo",
+                "bar?"
+              ]
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "file": "test3.test",
+      "sha256": "87817f985e6b137562b6f50c1b92b65db63514f800426b5e42b0d184ca59e846",
+      "cases": [
+        {
+          "zeroBasedIndex": 1158,
+          "original": {
+            "description": "<?",
+            "input": "<?",
+            "output": [],
+            "errors": [
+              {
+                "code": "eof-in-processing-instruction",
+                "line": 1,
+                "col": 3
+              }
+            ]
+          }
+        },
+        {
+          "zeroBasedIndex": 1159,
+          "original": {
+            "description": "<?a",
+            "input": "<?a",
+            "output": [],
+            "errors": [
+              {
+                "code": "eof-in-processing-instruction",
+                "line": 1,
+                "col": 4
+              }
+            ]
+          }
+        },
+        {
+          "zeroBasedIndex": 1160,
+          "original": {
+            "description": "<?b",
+            "input": "<?b",
+            "output": [],
+            "errors": [
+              {
+                "code": "eof-in-processing-instruction",
+                "line": 1,
+                "col": 4
+              }
+            ]
+          }
+        },
+        {
+          "zeroBasedIndex": 1161,
+          "original": {
+            "description": "<?y",
+            "input": "<?y",
+            "output": [],
+            "errors": [
+              {
+                "code": "eof-in-processing-instruction",
+                "line": 1,
+                "col": 4
+              }
+            ]
+          }
+        },
+        {
+          "zeroBasedIndex": 1162,
+          "original": {
+            "description": "<?z",
+            "input": "<?z",
+            "output": [],
+            "errors": [
+              {
+                "code": "eof-in-processing-instruction",
+                "line": 1,
+                "col": 4
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "independentWitnesses": [
+    {
+      "input": "<?style color:blue?>",
+      "tokens": [
+        [
+          "ProcessingInstruction",
+          "style",
+          "color:blue"
+        ],
+        [
+          "EndOfFile"
+        ]
+      ]
+    },
+    {
+      "input": "<?STYLE a??>",
+      "tokens": [
+        [
+          "ProcessingInstruction",
+          "STYLE",
+          "a?"
+        ],
+        [
+          "EndOfFile"
+        ]
+      ]
+    },
+    {
+      "input": "<?style",
+      "tokens": [
+        [
+          "EndOfFile"
+        ]
+      ]
+    },
+    {
+      "input": "<?xml x?>",
+      "tokens": [
+        [
+          "Comment",
+          "?xml x?"
+        ],
+        [
+          "EndOfFile"
+        ]
+      ]
+    },
+    {
+      "input": "<?style a\u0000b>",
+      "tokens": [
+        [
+          "ProcessingInstruction",
+          "style",
+          "a\u0000b"
+        ],
+        [
+          "EndOfFile"
+        ]
+      ]
+    }
+  ]
+}

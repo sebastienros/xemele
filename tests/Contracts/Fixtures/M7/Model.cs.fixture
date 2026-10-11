@@ -1,6 +1,6 @@
 using Xemele;
 namespace Xemele.Html;
-public enum HtmlNodeKind { Document, Fragment, Element, Text, Comment, DocumentType }
+public enum HtmlNodeKind { Document, Fragment, Element, Text, Comment, DocumentType, ProcessingInstruction = 6 }
 public enum HtmlQuirksMode { NoQuirks, LimitedQuirks, Quirks }
 public sealed record HtmlAttribute(string LocalName, string Value, string NamespaceUri = "", string Prefix = "");
 public sealed record HtmlDoctype(string Name, string? PublicIdentifier, string? SystemIdentifier, bool ForceQuirks);
@@ -13,6 +13,7 @@ public sealed class HtmlDocument
  public HtmlQuirksMode QuirksMode => throw new NotImplementedException();
  public HtmlNode CreateElement(string localName, string namespaceUri = "http://www.w3.org/1999/xhtml", string prefix = "") => throw new NotImplementedException();
  public HtmlNode CreateText(string value) => throw new NotImplementedException();
+ public HtmlNode CreateProcessingInstruction(string target, string data) => throw new NotImplementedException();
  public HtmlNode CreateComment(string value) => throw new NotImplementedException();
  public HtmlNode CreateDocumentType(HtmlDoctype doctype) => throw new NotImplementedException();
  public HtmlNode CreateFragment() => throw new NotImplementedException();
@@ -45,7 +46,7 @@ public sealed class HtmlNode
  public void Remove() => throw new NotImplementedException();
  public HtmlNode Clone(bool deep = true) => throw new NotImplementedException();
 }
-public enum HtmlTokenKind { Doctype, StartTag, EndTag, Comment, Character, EndOfFile }
+public enum HtmlTokenKind { Doctype, StartTag, EndTag, Comment, Character, EndOfFile, ProcessingInstruction = 6 }
 public sealed class HtmlToken
 {
  public HtmlToken(HtmlTokenKind kind, string name, string data, IReadOnlyList<HtmlAttribute> attributes, bool selfClosing, HtmlDoctype? doctype, XmlLocation location) => throw new NotImplementedException();

@@ -1,0 +1,442 @@
+{
+  "revision": "96498992efa48d52b0e8b83058bd88dbdaf153c1",
+  "profile": [
+    "HTML_PARSE_NODEFDTD",
+    "HTML_PARSE_NOERROR",
+    "HTML_PARSE_NOWARNING",
+    "HTML_PARSE_NONET"
+  ],
+  "vectors": [
+    {
+      "id": "vector-015",
+      "text": "a < 2 <?pi x?><!bogus><![CDATA[x]]>z",
+      "bytes": "YSA8IDIgPD9waSB4Pz48IWJvZ3VzPjwhW0NEQVRBW3hdXT56",
+      "tree": [
+        {
+          "kind": "Element",
+          "name": "html",
+          "value": "",
+          "attributes": [],
+          "children": [
+            {
+              "kind": "Element",
+              "name": "body",
+              "value": "",
+              "attributes": [],
+              "children": [
+                {
+                  "kind": "Text",
+                  "name": "",
+                  "value": "a < 2 ",
+                  "attributes": [],
+                  "children": []
+                },
+                {
+                  "kind": "Comment",
+                  "name": "",
+                  "value": "?pi x?",
+                  "attributes": [],
+                  "children": []
+                },
+                {
+                  "kind": "Comment",
+                  "name": "",
+                  "value": "bogus",
+                  "attributes": [],
+                  "children": []
+                },
+                {
+                  "kind": "Comment",
+                  "name": "",
+                  "value": "[CDATA[x]]",
+                  "attributes": [],
+                  "children": []
+                },
+                {
+                  "kind": "Text",
+                  "name": "",
+                  "value": "z",
+                  "attributes": [],
+                  "children": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "latin1",
+      "bytes": "PHA+6YA=",
+      "tree": [
+        {
+          "kind": "Element",
+          "name": "html",
+          "value": "",
+          "attributes": [],
+          "children": [
+            {
+              "kind": "Element",
+              "name": "body",
+              "value": "",
+              "attributes": [],
+              "children": [
+                {
+                  "kind": "Element",
+                  "name": "p",
+                  "value": "",
+                  "attributes": [],
+                  "children": [
+                    {
+                      "kind": "Text",
+                      "name": "",
+                      "value": "é€",
+                      "attributes": [],
+                      "children": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fuzz-047",
+      "text": "&amp;<b></html><span><unknown x=1/>&amp;<!--c-->xxx",
+      "bytes": "JmFtcDs8Yj48L2h0bWw+PHNwYW4+PHVua25vd24geD0xLz4mYW1wOzwhLS1jLS0+eHh4",
+      "tree": [
+        {
+          "kind": "Element",
+          "name": "html",
+          "value": "",
+          "attributes": [],
+          "children": [
+            {
+              "kind": "Element",
+              "name": "body",
+              "value": "",
+              "attributes": [],
+              "children": [
+                {
+                  "kind": "Text",
+                  "name": "",
+                  "value": "&",
+                  "attributes": [],
+                  "children": []
+                },
+                {
+                  "kind": "Element",
+                  "name": "b",
+                  "value": "",
+                  "attributes": [],
+                  "children": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "kind": "Element",
+          "name": "html",
+          "value": "",
+          "attributes": [],
+          "children": [
+            {
+              "kind": "Element",
+              "name": "span",
+              "value": "",
+              "attributes": [],
+              "children": [
+                {
+                  "kind": "Element",
+                  "name": "unknown",
+                  "value": "",
+                  "attributes": [
+                    [
+                      "x",
+                      "1/"
+                    ]
+                  ],
+                  "children": [
+                    {
+                      "kind": "Text",
+                      "name": "",
+                      "value": "&",
+                      "attributes": [],
+                      "children": []
+                    },
+                    {
+                      "kind": "Comment",
+                      "name": "",
+                      "value": "c",
+                      "attributes": [],
+                      "children": []
+                    },
+                    {
+                      "kind": "Text",
+                      "name": "",
+                      "value": "xxx",
+                      "attributes": [],
+                      "children": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "adaptation": "legacy-root-envelope-v1",
+      "managedTree": [
+        {
+          "kind": "Element",
+          "name": "html",
+          "value": "",
+          "attributes": [],
+          "children": [
+            {
+              "kind": "Element",
+              "name": "body",
+              "value": "",
+              "attributes": [],
+              "children": [
+                {
+                  "kind": "Text",
+                  "name": "",
+                  "value": "&",
+                  "attributes": [],
+                  "children": []
+                },
+                {
+                  "kind": "Element",
+                  "name": "b",
+                  "value": "",
+                  "attributes": [],
+                  "children": []
+                }
+              ]
+            },
+            {
+              "kind": "Element",
+              "name": "span",
+              "value": "",
+              "attributes": [],
+              "children": [
+                {
+                  "kind": "Element",
+                  "name": "unknown",
+                  "value": "",
+                  "attributes": [
+                    [
+                      "x",
+                      "1/"
+                    ]
+                  ],
+                  "children": [
+                    {
+                      "kind": "Text",
+                      "name": "",
+                      "value": "&",
+                      "attributes": [],
+                      "children": []
+                    },
+                    {
+                      "kind": "Comment",
+                      "name": "",
+                      "value": "c",
+                      "attributes": [],
+                      "children": []
+                    },
+                    {
+                      "kind": "Text",
+                      "name": "",
+                      "value": "xxx",
+                      "attributes": [],
+                      "children": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fuzz-118",
+      "text": "<p><form x=1/><tr>xx</html>&amp;x<p x=1/><unknown>",
+      "bytes": "PHA+PGZvcm0geD0xLz48dHI+eHg8L2h0bWw+JmFtcDt4PHAgeD0xLz48dW5rbm93bj4=",
+      "tree": [
+        {
+          "kind": "Element",
+          "name": "html",
+          "value": "",
+          "attributes": [],
+          "children": [
+            {
+              "kind": "Element",
+              "name": "body",
+              "value": "",
+              "attributes": [],
+              "children": [
+                {
+                  "kind": "Element",
+                  "name": "p",
+                  "value": "",
+                  "attributes": [],
+                  "children": []
+                },
+                {
+                  "kind": "Element",
+                  "name": "form",
+                  "value": "",
+                  "attributes": [
+                    [
+                      "x",
+                      "1/"
+                    ]
+                  ],
+                  "children": [
+                    {
+                      "kind": "Element",
+                      "name": "tr",
+                      "value": "",
+                      "attributes": [],
+                      "children": [
+                        {
+                          "kind": "Text",
+                          "name": "",
+                          "value": "xx",
+                          "attributes": [],
+                          "children": []
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "kind": "Element",
+          "name": "html",
+          "value": "",
+          "attributes": [],
+          "children": [
+            {
+              "kind": "Text",
+              "name": "",
+              "value": "&x",
+              "attributes": [],
+              "children": []
+            },
+            {
+              "kind": "Element",
+              "name": "p",
+              "value": "",
+              "attributes": [
+                [
+                  "x",
+                  "1/"
+                ]
+              ],
+              "children": [
+                {
+                  "kind": "Element",
+                  "name": "unknown",
+                  "value": "",
+                  "attributes": [],
+                  "children": []
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "adaptation": "legacy-root-envelope-v1",
+      "managedTree": [
+        {
+          "kind": "Element",
+          "name": "html",
+          "value": "",
+          "attributes": [],
+          "children": [
+            {
+              "kind": "Element",
+              "name": "body",
+              "value": "",
+              "attributes": [],
+              "children": [
+                {
+                  "kind": "Element",
+                  "name": "p",
+                  "value": "",
+                  "attributes": [],
+                  "children": []
+                },
+                {
+                  "kind": "Element",
+                  "name": "form",
+                  "value": "",
+                  "attributes": [
+                    [
+                      "x",
+                      "1/"
+                    ]
+                  ],
+                  "children": [
+                    {
+                      "kind": "Element",
+                      "name": "tr",
+                      "value": "",
+                      "attributes": [],
+                      "children": [
+                        {
+                          "kind": "Text",
+                          "name": "",
+                          "value": "xx",
+                          "attributes": [],
+                          "children": []
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "kind": "Text",
+              "name": "",
+              "value": "&x",
+              "attributes": [],
+              "children": []
+            },
+            {
+              "kind": "Element",
+              "name": "p",
+              "value": "",
+              "attributes": [
+                [
+                  "x",
+                  "1/"
+                ]
+              ],
+              "children": [
+                {
+                  "kind": "Element",
+                  "name": "unknown",
+                  "value": "",
+                  "attributes": [],
+                  "children": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
