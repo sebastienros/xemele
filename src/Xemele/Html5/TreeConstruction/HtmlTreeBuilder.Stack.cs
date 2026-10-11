@@ -118,9 +118,9 @@ internal sealed partial class HtmlTreeBuilder
     }
     private bool HasTemplate => stack.Exists(static node => Html(node, "template"));
     private bool ParsingTemplate => HasTemplate || context is not null && Html(context, "template");
-    private void CloseTemplate()
+    private void CloseTemplate(bool cleanupPatch = true)
     {
         if (!HasTemplate) return;
-        Implied(thorough: true); PopThrough("template"); ClearFormatting(); templates.RemoveAt(templates.Count - 1); ResetMode();
+        Implied(thorough: true); if (cleanupPatch) { for (int i = stack.Count - 1; i >= 0; i--) if (Html(stack[i], "template")) { ClosePatch(stack[i]); break; } } PopThrough("template"); ClearFormatting(); templates.RemoveAt(templates.Count - 1); ResetMode();
     }
 }

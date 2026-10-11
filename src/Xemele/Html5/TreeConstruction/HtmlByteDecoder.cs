@@ -23,7 +23,7 @@ internal sealed class HtmlByteDecoder
         if (encoding == "iso-2022-jp")
         {
             if (isoState == 4 || isoState == 5) Emit(0xFFFD, opening);
-            else if (isoState == 6) { Emit(0xFFFD, opening); int saved = lead; isoState = isoOutputState; Byte(saved, secondOffset); }
+            else if (isoState == 6) { Emit(0xFFFD, opening); int saved = lead; isoState = isoOutputState; Byte(saved, secondOffset); if (isoState == 4) { Emit(0xFFFD, secondOffset); isoState = 3; } }
         }
         else if (lead != 0 || needed != 0 || second != 0 || third != 0 || surrogate != 0) Emit(0xFFFD, surrogate != 0 ? surrogateOffset : opening);
         lead = needed = second = third = surrogate = 0; Flush();

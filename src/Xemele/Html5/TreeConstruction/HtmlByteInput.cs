@@ -64,17 +64,17 @@ internal static class HtmlByteInput
         int start = p;
         while (p < data.Length && !SpaceOrSlash(data[p]) && data[p] is not ((byte)'=' or (byte)'>')) p++;
         name = Ascii(data[start..p]); while (p < data.Length && Space(data[p])) p++;
-        if (p == data.Length || data[p] != '=') return true;
-        p++; while (p < data.Length && Space(data[p])) p++; if (p == data.Length) return true;
-        byte quote = data[p]; if (quote is (byte)'\'' or (byte)'"') { start = ++p; while (p < data.Length && data[p] != quote) p++; value = Ascii(data[start..p]); if (p < data.Length) p++; }
-        else { start = p; while (p < data.Length && !Space(data[p]) && data[p] != '>') p++; value = Ascii(data[start..p]); }
+        if (p == data.Length) return false; if (data[p] != '=') return true;
+        p++; while (p < data.Length && Space(data[p])) p++; if (p == data.Length) return false;
+        byte quote = data[p]; if (quote is (byte)'\'' or (byte)'"') { start = ++p; while (p < data.Length && data[p] != quote) p++; if (p == data.Length) return false; value = Ascii(data[start..p]); p++; }
+        else { start = p; while (p < data.Length && !Space(data[p]) && data[p] != '>') p++; if (p == data.Length) return false; value = Ascii(data[start..p]); }
         return true;
     }
     private static string? FromContent(ReadOnlySpan<char> content)
     {
         while (true)
         {
-            int found = content.IndexOf("charset", StringComparison.OrdinalIgnoreCase); if (found < 0) return null;
+            int found = HtmlAscii.IndexOf(content, "charset"); if (found < 0) return null;
             content = content[(found + 7)..].TrimStart(" \t\n\r\f".AsSpan());
             if (content.IsEmpty) return null; if (content[0] != '=') continue;
             content = content[1..].TrimStart(" \t\n\r\f".AsSpan()); if (content.IsEmpty) return null;
@@ -88,7 +88,7 @@ internal static class HtmlByteInput
         return string.Create(bytes.Length, bytes, static (output, input) => { for (int i = 0; i < input.Length; i++) output[i] = (char)(input[i] is >= 65 and <= 90 ? input[i] + 32 : input[i]); });
     }
     private static bool Match(ReadOnlySpan<byte> input, ReadOnlySpan<byte> literal) { if (input.Length < literal.Length) return false; for (int i = 0; i < literal.Length; i++) { byte c = input[i]; if (c is >= 65 and <= 90) c += 32; if (c != literal[i]) return false; } return true; }
-    private static bool EqualsAscii(ReadOnlySpan<char> input, string literal) => input.Equals(literal, StringComparison.OrdinalIgnoreCase);
+    private static bool EqualsAscii(ReadOnlySpan<char> input, string literal) => HtmlAscii.Equals(input, literal);
     private static bool Space(byte c) => c is 9 or 10 or 12 or 13 or 32;
     private static bool SpaceOrSlash(byte c) => Space(c) || c == '/';
     private static bool Letter(byte c) => c is >= 65 and <= 90 or >= 97 and <= 122;

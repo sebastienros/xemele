@@ -18,7 +18,7 @@ internal sealed partial class HtmlTreeBuilder
                 case "td": case "th": case "tr": InTable(Start("tbody")); return true;
                 case "table": if (!InScope("table", Scope.Table)) return false; PopThrough("table"); ResetMode(); return true;
                 case "style": case "script": case "template": return InHead(t);
-                case "input": foreach (var a in t.Attributes) if (a.LocalName == "type" && a.Value.Equals("hidden", StringComparison.OrdinalIgnoreCase)) { Insert(t); Pop(); return false; } break;
+                case "input": foreach (var a in t.Attributes) if (a.LocalName == "type" && HtmlAscii.Equals(a.Value, "hidden")) { Insert(t); Pop(); return false; } break;
                 case "form": if (InScope("template") || form is not null) return false; form = Insert(t); Pop(); return false;
             }
         }

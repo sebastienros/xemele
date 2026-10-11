@@ -89,7 +89,7 @@ internal sealed partial class HtmlTreeBuilder
                 if (t.Kind is HtmlTokenKind.Character or HtmlTokenKind.Comment or HtmlTokenKind.ProcessingInstruction or HtmlTokenKind.Doctype) return InBody(t);
                 if (start && OneOf(n, "base", "basefont", "bgsound", "link", "meta", "noframes", "script", "style", "template", "title") || end && n == "template") return InHead(t);
                 if (end) return false;
-                if (t.Kind == HtmlTokenKind.EndOfFile) { if (!HasTemplate) return false; CloseTemplate(); return true; }
+                if (t.Kind == HtmlTokenKind.EndOfFile) { if (!HasTemplate) return false; CloseTemplate(cleanupPatch: false); return true; }
                 mode = n switch { "caption" or "colgroup" or "tbody" or "tfoot" or "thead" => Mode.InTable, "col" => Mode.InColumnGroup, "tr" => Mode.InTableBody, "td" or "th" => Mode.InRow, _ => Mode.InBody }; templates[^1] = mode; return true;
             case Mode.AfterBody:
                 if (white) return InBody(t);
@@ -143,7 +143,7 @@ internal sealed partial class HtmlTreeBuilder
                 case "noframes": case "style": Text(t, HtmlTokenizerState.RawText); return false;
                 case "noscript": if (options.ScriptingEnabled) Text(t, HtmlTokenizerState.RawText); else { Insert(t); mode = Mode.InHeadNoscript; } return false;
                 case "script": Text(t, HtmlTokenizerState.ScriptData); return false;
-                case "template": Insert(t); formatting.Add(null); framesetOk = false; mode = Mode.InTemplate; templates.Add(mode); return false;
+                case "template": InsertTemplate(t); formatting.Add(null); framesetOk = false; mode = Mode.InTemplate; templates.Add(mode); return false;
                 case "head": return false;
             }
         }

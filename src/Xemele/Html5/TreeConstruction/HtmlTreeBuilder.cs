@@ -16,6 +16,8 @@ internal sealed partial class HtmlTreeBuilder
     private Mode mode, original;
     private bool framesetOk = true, foster, skipLf;
     private readonly System.Text.StringBuilder tableText = new();
+    private readonly System.Text.StringBuilder pendingText = new();
+    private HtmlNode? textParent, textBefore, textNode;
     internal HtmlTokenizer Tokenizer { get; }
     internal HtmlDocument Document => document;
     internal HtmlTreeBuilder(Html5ParseOptions options, HtmlFragmentSnapshot? fragment = null, CancellationToken cancellation = default)
@@ -63,9 +65,9 @@ internal sealed partial class HtmlTreeBuilder
         if (options.Limits.Depth is int max && stack.Count + 1 > max) throw new InvalidOperationException("HTML open-element depth quota exceeded.");
         stack.Add(node);
     }
-    private void Pop() => stack.RemoveAt(stack.Count - 1);
-    private void PopThrough(HtmlNode node) { int index = stack.LastIndexOf(node); if (index >= 0) stack.RemoveRange(index, stack.Count - index); }
-    private void PopThrough(string name) { for (int i = stack.Count - 1; i >= 0; i--) if (Html(stack[i], name)) { stack.RemoveRange(i, stack.Count - i); return; } }
+    private void Pop() { FlushText(); var node = Current; stack.RemoveAt(stack.Count - 1); PoppedFormControl(node); }
+    private void PopThrough(HtmlNode node) { int index = stack.LastIndexOf(node); if (index >= 0) while (stack.Count > index) Pop(); }
+    private void PopThrough(string name) { for (int i = stack.Count - 1; i >= 0; i--) if (Html(stack[i], name)) { while (stack.Count > i) Pop(); return; } }
     private (HtmlNode Parent, HtmlNode? Before) Location(HtmlNode? target = null)
     {
         target ??= stack.Count == 0 ? document.DocumentNode : Current;
@@ -74,16 +76,17 @@ internal sealed partial class HtmlTreeBuilder
         {
             int template = -1, table = -1;
             for (int i = stack.Count - 1; i >= 0; i--) { if (template < 0 && Html(stack[i], "template")) template = i; if (table < 0 && Html(stack[i], "table")) table = i; }
-            if (template >= 0 && (table < 0 || template > table)) target = stack[template].TemplateContent!;
+            if (template >= 0 && (table < 0 || template > table)) target = stack[template];
             else if (table < 0) target = stack[0];
             else if (stack[table].Parent is { } parent) { before = stack[table]; target = parent; }
             else target = stack[table - 1];
         }
-        if (target.TemplateContent is { } content) target = content;
+        if (target.TemplateContent is { } content) { if (patches.TryGetValue(target, out var patch)) { target = patch.Parent; before = patch.End?.Parent == target ? patch.End : null; } else { target = content; before = null; } }
         return (target, before);
     }
     private void InsertNode(HtmlNode node, HtmlNode? target = null)
     {
+        FlushText();
         var location = Location(target);
         if (location.Before is { } before) location.Parent.InsertBefore(node, before); else location.Parent.AppendChild(node);
     }
@@ -99,14 +102,32 @@ internal sealed partial class HtmlTreeBuilder
             if (ns != HtmlDocument.HtmlNamespace) adjusted = HtmlForeignNames.AdjustForeignAttribute(adjusted);
             node.SetAttribute(adjusted);
         }
-        InsertNode(node); Push(node); return node;
+        InsertNode(node); InsertedFormControl(node); Push(node); return node;
     }
     private void Characters(string data)
     {
         if (data.Length == 0) return;
-        var location = Location(); var previous = location.Before?.PreviousSibling ?? (location.Before is null ? location.Parent.LastChild : null);
-        if (previous is { Kind: HtmlNodeKind.Text }) previous.Value += data;
-        else { var node = document.CreateText(data); if (location.Before is { } before) location.Parent.InsertBefore(node, before); else location.Parent.AppendChild(node); }
+        var location = Location();
+        if (location.Parent != textParent || location.Before != textBefore) FlushText();
+        if (textParent is null)
+        {
+            textParent = location.Parent; textBefore = location.Before;
+            var previous = textBefore?.PreviousSibling ?? (textBefore is null ? textParent.LastChild : null);
+            if (previous is { Kind: HtmlNodeKind.Text }) { textNode = previous; pendingText.Append(previous.Value); }
+        }
+        pendingText.Append(data);
+    }
+    private void FlushText()
+    {
+        if (textParent is null) return;
+        string owned = pendingText.ToString(); pendingText.Clear();
+        if (textNode is not null) textNode.Value = owned;
+        else
+        {
+            var node = document.CreateText(owned);
+            if (textBefore is not null) textParent.InsertBefore(node, textBefore); else textParent.AppendChild(node);
+        }
+        textParent = textBefore = textNode = null;
     }
     private void Misc(HtmlToken token, HtmlNode? target = null) => InsertNode(token.Kind == HtmlTokenKind.Comment ? document.CreateComment(token.Data) : document.CreateProcessingInstruction(token.Name, token.Data), target);
     private void Text(HtmlToken token, HtmlTokenizerState state)
@@ -134,7 +155,7 @@ internal sealed partial class HtmlTreeBuilder
         {
             if (reprocess > 128) throw new InvalidOperationException("Tree construction failed to advance.");
             bool again = stack.Count > 0 && Foreign(token) ? ProcessForeign(token) : ProcessHtml(token);
-            UpdateCdata(); if (!again) break;
+            UpdateCdata(); if (!again) { if (token.Kind == HtmlTokenKind.EndOfFile) while (stack.Count > 0) Pop(); break; }
         }
     }
     private void UpdateCdata() => Tokenizer.AllowCdata = stack.Count > 0 && Adjusted.NamespaceUri != HtmlDocument.HtmlNamespace;

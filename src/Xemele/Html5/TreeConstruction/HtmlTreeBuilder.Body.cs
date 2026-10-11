@@ -28,7 +28,7 @@ internal sealed partial class HtmlTreeBuilder
                 if (n == "li") { if (!InScope(n, Scope.List)) return false; Implied(n); PopThrough(n); return false; }
                 if (n is "dd" or "dt") { if (!InScope(n)) return false; Implied(n); PopThrough(n); return false; }
                 if (OneOf(n, "h1", "h2", "h3", "h4", "h5", "h6"))
-                { bool found = false; foreach (string h in new[] { "h1", "h2", "h3", "h4", "h5", "h6" }) if (InScope(h)) found = true; if (!found) return false; Implied(); while (stack.Count > 0) { bool heading = Current.NamespaceUri == HtmlDocument.HtmlNamespace && OneOf(Current.LocalName, "h1", "h2", "h3", "h4", "h5", "h6"); Pop(); if (heading) break; } return false; }
+                { bool found = InScope("h1") || InScope("h2") || InScope("h3") || InScope("h4") || InScope("h5") || InScope("h6"); if (!found) return false; Implied(); while (stack.Count > 0) { bool heading = Current.NamespaceUri == HtmlDocument.HtmlNamespace && OneOf(Current.LocalName, "h1", "h2", "h3", "h4", "h5", "h6"); Pop(); if (heading) break; } return false; }
                 if (OneOf(n, "a", "b", "big", "code", "em", "font", "i", "nobr", "s", "small", "strike", "strong", "tt", "u")) { Adoption(n); return false; }
                 if (n is "applet" or "marquee" or "object") { if (!InScope(n)) return false; Implied(); PopThrough(n); ClearFormatting(); return false; }
                 if (n == "br") { Reconstruct(); Insert(Start("br")); Pop(); framesetOk = false; return false; }
@@ -75,7 +75,7 @@ internal sealed partial class HtmlTreeBuilder
         if (n is "applet" or "marquee" or "object") { Reconstruct(); Insert(t); formatting.Add(null); framesetOk = false; return false; }
         if (n == "table") { if (document.QuirksMode != HtmlQuirksMode.Quirks && InScope("p", Scope.Button)) CloseP(); Insert(t); framesetOk = false; mode = Mode.InTable; return false; }
         if (OneOf(n, "area", "br", "embed", "img", "keygen", "wbr")) { Reconstruct(); Insert(t); Pop(); framesetOk = false; return false; }
-        if (n == "input") { if (context is not null && Html(context, "select")) return false; if (InScope("select")) PopThrough("select"); Reconstruct(); Insert(t); Pop(); bool hidden = false; foreach (var a in t.Attributes) if (a.LocalName == "type" && a.Value.Equals("hidden", StringComparison.OrdinalIgnoreCase)) hidden = true; if (!hidden) framesetOk = false; return false; }
+        if (n == "input") { if (context is not null && Html(context, "select")) return false; if (InScope("select")) PopThrough("select"); Reconstruct(); Insert(t); Pop(); bool hidden = false; foreach (var a in t.Attributes) if (a.LocalName == "type" && HtmlAscii.Equals(a.Value, "hidden")) hidden = true; if (!hidden) framesetOk = false; return false; }
         if (n is "param" or "source" or "track") { Insert(t); Pop(); return false; }
         if (n == "hr") { if (InScope("p", Scope.Button)) CloseP(); if (InScope("select")) Implied(); Insert(t); Pop(); framesetOk = false; return false; }
         if (n == "image") return BodyStart(new(t.Kind, "img", t.Data, t.Attributes, t.SelfClosing, t.Doctype, t.Location));
