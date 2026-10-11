@@ -1,17 +1,25 @@
 {
   "objective": "Complete initial release through verified M9-gate",
-  "coordinator_chat_id": "01a1230c-1353-7e01-afbe-a53c9c018264",
+  "coordinator_chat_id": "01a1284a-8826-7fc2-af44-74552db608f2",
   "coordination_branch": "main",
   "max_concurrent_workers": 3,
   "last_verified_checkpoint": {
     "task_id": "M2-gate",
     "integration_revision": "276a0bdaf6433bbda8958b068955de85c3b75a3a"
   },
-  "active_assignments": [],
+  "active_assignments": [
+    {
+      "task_id": "M3-contracts",
+      "branch": "codex/m3-contracts",
+      "base_revision": "b0b5bcf3e83947117fe5b900e6c5ba3d68e8b6ab",
+      "stage": "claimed; dispatch pending"
+    }
+  ],
   "integration_queue": [],
   "blockers": [],
   "next_actions": [
-    "Wait for explicit user resume. Full M9 objective remains unfinished; M3-M9 must remain unstarted while paused."
+    "Dispatch M3-contracts; verify before dependent work.",
+    "Complete M3 only, then transfer to exactly one M4 coordinator."
   ],
   "last_verified_task": {
     "task_id": "M2-gate",
@@ -1306,7 +1314,8 @@
     "requested_by": "user",
     "after_verified_task": "M2-gate",
     "action": "Finish integrated M2 verification and cleanup, then pause the active goal. Do not claim or dispatch M3 or later tasks until the user resumes.",
-    "status": "verified_m2_boundary_reached",
+    "status": "superseded_by_explicit_M3_resume",
     "goal_status_to_apply": "paused"
-  }
+  },
+  "current_milestone": "M3"
 }
