@@ -10,16 +10,20 @@ using Xemele.Benchmarks.HtmlSerialization;
 
 Console.WriteLine($"FrameworkDescription={RuntimeInformation.FrameworkDescription}; Architecture={RuntimeInformation.ProcessArchitecture}");
 if (RuntimeInformation.FrameworkDescription != ".NET 10.0.11") throw new Exception("Pinned runtime required.");
-if (args[0] is "--discover" or "--benchmark")
+if (args[0] is "--discover-final" or "--benchmark-final")
 {
     var config = ManualConfig.Create(DefaultConfig.Instance).WithArtifactsPath(args[1]).AddJob(Job.Default.WithToolchain(InProcessNoEmitToolchain.Instance).AsMutator());
     var suites = new[] { typeof(EscapeBenchmarks), typeof(OutputBenchmarks), typeof(BooleanBenchmarks) }.Select(t => BenchmarkConverter.TypeToBenchmarks(t, config)).ToArray();
-    var cases = suites.SelectMany(s => s.BenchmarksCases).ToArray();
-    if (cases.Length != 94 || cases.Any(c => c.Job.Run.WarmupCount != 3 || c.Job.Run.IterationCount != 3 || c.Job.Run.LaunchCount != 1 || c.Job.Infrastructure.Toolchain != InProcessNoEmitToolchain.Instance)) throw new Exception("Exactly94ShortRunNoEmit cases required.");
-    Console.WriteLine("94 ShortRun NoEmit cases:60 scan/escape+18 composition+16 boolean; no builds/generation.");
-    if (args[0] == "--discover") return;
-    var summaries = BenchmarkRunner.Run(suites);
-    if (summaries.Sum(s => s.Reports.Length) != 94 || summaries.SelectMany(s => s.Reports).Any(r => !r.Success || r.ResultStatistics is null)) throw new Exception("Benchmark failure.");
+    var all = suites.SelectMany(s => s.BenchmarksCases).ToArray();
+    if (all.Length != 106 || all.Any(c => c.Job.Run.WarmupCount != 3 || c.Job.Run.IterationCount != 3 || c.Job.Run.LaunchCount != 1 || c.Job.Infrastructure.Toolchain != InProcessNoEmitToolchain.Instance)) throw new Exception("Exactly106availableShortRunNoEmit cases required.");
+    var selected = suites.Select(s => new BenchmarkRunInfo(s.BenchmarksCases.Where(FinalCase).ToArray(), s.Type, s.Config)).ToArray();
+    var cases = selected.SelectMany(s => s.BenchmarksCases).ToArray();
+    if (cases.Length != 49 || selected[0].BenchmarksCases.Length != 24 || selected[1].BenchmarksCases.Length != 18 || selected[2].BenchmarksCases.Length != 7) throw new Exception("Exactly49reviewed cases required.");
+    Console.WriteLine("49 ShortRun NoEmit cases:12production text scans+12changed borrowed escapes+18changed outputs+7missing boolean; no builds/generation.");
+    foreach (var c in cases) Console.WriteLine("Selected: " + c.DisplayInfo);
+    if (args[0] == "--discover-final") return;
+    var summaries = BenchmarkRunner.Run(selected);
+    if (summaries.Sum(s => s.Reports.Length) != 49 || summaries.SelectMany(s => s.Reports).Any(r => !r.Success || r.ResultStatistics is null)) throw new Exception("Benchmark failure.");
     return;
 }
 if (args[0] == "--inputs")
@@ -33,7 +37,7 @@ if (args[0] == "--inputs")
     };
     File.WriteAllText(args[1], JsonSerializer.Serialize(inputs)); Console.WriteLine("Actual prepared inputs written; no allocation/timing counters."); return;
 }
-if (args[0] == "--verify") { Verify(); Console.WriteLine("Correctness-only:all94case semantics, exact UTF8 hash/length, attribute/text scans, Unicode, fixed-name negative controls; no allocations/timing counters."); return; }
+if (args[0] == "--verify") { Verify(); Console.WriteLine("Correctness-only:all106available/49selected case semantics, exact UTF8 hash/length, attribute/text scans, Unicode, fixed-name negative controls; no allocations/timing counters."); return; }
 if (args[0] != "--measure") throw new ArgumentException();
 long before = GC.GetAllocatedBytesForCurrentThread();
 var cold = OutputBenchmarks.Document("small"); string first = HtmlSerializer.Serialize(cold);
@@ -86,17 +90,35 @@ Console.WriteLine(JsonSerializer.Serialize(new { domain = "retained-inclusive-ow
 
 static string[] InvalidInputs() => ["\ud800&", "\udc00", "\0tail&", new string('x',1023)+"😀&"];
 static string[] Kinds() => ["short-hit", "short-miss", "long-late-hit", "long-miss", "dense", "multilingual"];
+static bool FinalCase(BenchmarkCase c)
+{
+    if (c.Descriptor.Type == typeof(OutputBenchmarks)) return true;
+    string method = c.Descriptor.WorkloadMethod.Name;
+    if (c.Descriptor.Type == typeof(EscapeBenchmarks)) return method is "Production" or "BorrowedEscapedOutput";
+    string name = (string)c.Parameters["Name"];
+    return name is "selectedx" or "unknown" or "ſelected" || name == "selecte" && method == "Linear";
+}
 static void Verify()
 {
     foreach (string kind in Kinds()) foreach (bool legacy in new[] { false, true })
     {
-        string input = EscapeBenchmarks.Input(kind); int oracle = HtmlSerializer.Stop(input, false, legacy);
-        if (EscapeBenchmarks.IndexScan(input, legacy) != oracle || EscapeBenchmarks.SmallSetScan(input, legacy) != oracle || EscapeBenchmarks.CachedScan(input, legacy) != oracle) throw new Exception("Scan correctness.");
+        string input = EscapeBenchmarks.Input(kind); int oracle = EscapeBenchmarks.ScalarScan(input, legacy);
+        if (HtmlSerializer.Stop(input, false, legacy) != oracle || EscapeBenchmarks.IndexScan(input, legacy) != oracle || EscapeBenchmarks.SmallSetScan(input, legacy) != oracle || EscapeBenchmarks.CachedScan(input, legacy) != oracle) throw new Exception("Scan correctness.");
         foreach (bool attribute in new[] { false, true })
         {
             using var writer = new StringWriter(); HtmlSerializer.Escape(writer, input, attribute, legacy, default);
             if (writer.ToString() != ReferenceEscape(input, attribute, legacy)) throw new Exception("Escape oracle.");
         }
+    }
+    // First-hit offsets around the fixed scalar prefix and the bounded slice,
+    // plus each state-specific stop, ensure the bulk path preserves semantics.
+    foreach (int length in new[] { 0, 1, 15, 16, 17, 31, 32, 1023, 1024, 1025 })
+    foreach (char stop in "&<>\u00a0\0\"") foreach (bool legacy in new[] { false, true })
+    {
+        string input = new string('x', length) + stop + "tail";
+        if (HtmlSerializer.Stop(input, false, legacy) != EscapeBenchmarks.ScalarScan(input, legacy)) throw new Exception("Text prefix/bulk stop oracle.");
+        foreach (bool attribute in new[] { false, true })
+        { using var writer = new StringWriter(); HtmlSerializer.Escape(writer, input, attribute, legacy, default); if (writer.ToString() != ReferenceEscape(input, attribute, legacy)) throw new Exception("State-specific prefix/bulk escape oracle."); }
     }
     foreach (string input in new[] { "", "checked", "CHECKED", "CheckEd", "noresize", "selectedx", "selecte", "unknown", "ſelected", "é", "\0", "&x", "x&", "x<", "x>", "x\"", "x\u00a0", "😀&", "\ud800&", "\udc00", "\ufffe", new string('x',1023)+"😀&" })
     {

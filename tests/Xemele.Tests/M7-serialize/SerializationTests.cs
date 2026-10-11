@@ -176,6 +176,29 @@ public sealed class SerializationTests
         var t = d.CreateElement("p"); t.AppendChild(d.CreateText("\ud800&\udc00"));
         Assert.Equal("<p>\ud800&amp;\udc00</p>", HtmlSerializer.Serialize(t));
     }
+    [Theory]
+    [InlineData(0)][InlineData(1)][InlineData(15)][InlineData(16)][InlineData(17)]
+    [InlineData(31)][InlineData(32)][InlineData(1023)][InlineData(1024)][InlineData(1025)]
+    public void TextBulkSearchPreservesPrefixOffsetsAndAttributeStates(int prefixLength)
+    {
+        string prefix = new('x', prefixLength);
+        foreach (var item in new[]
+        {
+            (Value: "&", Html5Text: "&amp;", LegacyText: "&amp;", Html5Attribute: "&amp;", LegacyAttribute: "&amp;"),
+            (Value: "<", Html5Text: "&lt;", LegacyText: "&lt;", Html5Attribute: "<", LegacyAttribute: "&lt;"),
+            (Value: ">", Html5Text: "&gt;", LegacyText: "&gt;", Html5Attribute: ">", LegacyAttribute: "&gt;"),
+            (Value: "\u00a0", Html5Text: "&nbsp;", LegacyText: "\u00a0", Html5Attribute: "&nbsp;", LegacyAttribute: "\u00a0"),
+            (Value: "\"", Html5Text: "\"", LegacyText: "\"", Html5Attribute: "&quot;", LegacyAttribute: "&quot;"),
+            (Value: "\0", Html5Text: "\0", LegacyText: "", Html5Attribute: "\0", LegacyAttribute: "")
+        })
+        {
+            var d = new HtmlDocument(new() { TokenCharacters = null }); var e = d.CreateElement("p");
+            e.SetAttribute(new("a", prefix + item.Value + "tail")); e.AppendChild(d.CreateText(prefix + item.Value + "tail"));
+            Assert.Equal("<p a=\"" + prefix + item.Html5Attribute + "tail\">" + prefix + item.Html5Text + "tail</p>", HtmlSerializer.Serialize(e));
+            string tail = item.Value == "\0" ? "" : "tail";
+            Assert.Equal("<p a=\"" + prefix + item.LegacyAttribute + tail + "\">" + prefix + item.LegacyText + tail + "</p>", HtmlSerializer.Serialize(e, new() { Mode = HtmlSerializationMode.Legacy }));
+        }
+    }
     [Fact] public void InvalidArgumentsAndEarlierXmlSerializationStayUnchanged()
     {
         Assert.Throws<ArgumentNullException>(() => HtmlSerializer.Serialize((HtmlDocument)null!)); Assert.Throws<ArgumentNullException>(() => HtmlSerializer.Serialize((HtmlNode)null!));

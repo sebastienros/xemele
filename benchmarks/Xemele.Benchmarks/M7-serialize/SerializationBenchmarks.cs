@@ -22,12 +22,19 @@ public class EscapeBenchmarks
         "dense" => string.Concat(Enumerable.Repeat("<&>\"\u00a0", 120)),
         "multilingual" => string.Concat(Enumerable.Repeat("é尾😀", 120)) + "\u00a0&", _ => throw new ArgumentException()
     };
-    [Benchmark(Baseline = true)] public int Scalar() => HtmlSerializer.Stop(input, false, Legacy);
+    [Benchmark] public int Production() => HtmlSerializer.Stop(input, false, Legacy);
+    [Benchmark(Baseline = true)] public int Scalar() => ScalarScan(input, Legacy);
     [Benchmark] public int Index() => IndexScan(input, Legacy);
     [Benchmark] public int SmallSet() => SmallSetScan(input, Legacy);
     [Benchmark] public int Cached() => CachedScan(input, Legacy);
     [Benchmark] public long BorrowedEscapedOutput() { sink.Reset(); HtmlSerializer.Escape(sink, input, false, Legacy, default); return sink.Count; }
     internal static int CachedScan(ReadOnlySpan<char> input, bool legacy) => input.IndexOfAny(legacy ? LegacyStops : Html5Stops);
+    internal static int ScalarScan(ReadOnlySpan<char> input, bool legacy)
+    {
+        for (int i = 0; i < input.Length; i++)
+            if (input[i] is '&' or '<' or '>' || (legacy ? input[i] == '\0' : input[i] == '\u00a0')) return i;
+        return -1;
+    }
     internal static int SmallSetScan(ReadOnlySpan<char> input, bool legacy) => input.IndexOfAny(legacy ? "&<>\0" : "&<>\u00a0");
     internal static int IndexScan(ReadOnlySpan<char> input, bool legacy)
     {

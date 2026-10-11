@@ -1,3 +1,4 @@
+using System.Buffers;
 using System.Text;
 
 namespace Xemele.Html;
@@ -10,6 +11,10 @@ public sealed record HtmlSaveOptions
 
 public static class HtmlSerializer
 {
+    private static readonly SearchValues<char> Html5TextStops = SearchValues.Create("&<>\u00a0");
+    private static readonly SearchValues<char> LegacyTextStops = SearchValues.Create("&<>\0");
+    // Keep product cache initialization at first use, visible to the cold probe.
+    static HtmlSerializer() { }
     public static string Serialize(HtmlDocument document, HtmlSaveOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(document);
@@ -197,9 +202,14 @@ public static class HtmlSerializer
 
     internal static int Stop(ReadOnlySpan<char> value, bool attribute, bool legacy)
     {
-        for (int i = 0; i < value.Length; i++)
+        // Immediate delimiters and tiny values favor the scalar path. The
+        // measured long text spans favor cached, state-specific bulk search.
+        int scalarLength = attribute ? value.Length : Math.Min(value.Length, 16);
+        for (int i = 0; i < scalarLength; i++)
             if (value[i] == '&' || (!attribute || legacy) && value[i] is '<' or '>' || attribute && value[i] == '"' || (legacy ? value[i] == '\0' : value[i] == '\u00a0')) return i;
-        return -1;
+        if (scalarLength == value.Length) return -1;
+        int stop = value[scalarLength..].IndexOfAny(legacy ? LegacyTextStops : Html5TextStops);
+        return stop < 0 ? -1 : scalarLength + stop;
     }
     internal static void Escape(TextWriter output, ReadOnlySpan<char> value, bool attribute, bool legacy, CancellationToken cancellation)
     {

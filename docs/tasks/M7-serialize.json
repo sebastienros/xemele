@@ -59,7 +59,9 @@
         "public-sample",
         "prepared-probe-correctness",
         "identity-controls",
-        "measurement-awaiting-grant"
+        "measurement-awaiting-grant",
+        "first-measured-allocation",
+        "first-measured-timing-timeout"
       ]
     }
   ],
@@ -124,11 +126,29 @@
       "result": "skipped",
       "summary": "Coordinator explicitly reports no measurementgrant and M7coordination blocked by app outgoing-message approval review. No workload/counter/BDN or raw inspection run. Required exclusivegrant/PARK then durableRELEASE remains outstanding, not passing or waived.",
       "artifact": "docs/reports/M7-serialize/preparation.md"
+    },
+    {
+      "id": "first-measured-allocation",
+      "kind": "check",
+      "revision": "a3722a5cf2a0106f0ea26bfdc8105b5bced3bb9c",
+      "command": "python3 -B docs/reports/M7-serialize/run_measurements.py --exclusive-grant",
+      "result": "passed",
+      "summary": "Allocation phase0:231rows/214warmborrowedzero rows/213760operations. Cold6696/2360/candidate288B; positive1048B. Ownedstring/UTF8/retained costs separated. Exclusive grant m7-serialize-a3722a5; initial/finalidentity0/nochildtrue/unchangedmanifest76750d45; durableRELEASE beforeinspection. Historical source52be6bd, finalruntimecorrection requires newevidence.",
+      "artifact": "docs/reports/M7-serialize/measurements.md"
+    },
+    {
+      "id": "first-measured-timing-timeout",
+      "kind": "check",
+      "revision": "a3722a5cf2a0106f0ea26bfdc8105b5bced3bb9c",
+      "command": "python3 -B docs/reports/M7-serialize/run_measurements.py --exclusive-grant",
+      "result": "failed",
+      "summary": "Wrapper124/BDNTimeoutExpired750s.87completed/88started of94:60Escape+18OutputCSV+9Booleanraw; unfinishedLinear(selecte)warmup2,7Booleanmissing. Completedidentities/stats/GCnumdenom preservedsummary; no94assertion or finalsourceclaim. Coordinatorreview approves one16charprefix/textonlycached correction and49selectedfinalcases; no rerun/tuning authorized without freshgrant.",
+      "artifact": "docs/reports/M7-serialize/first-measurement-summary.json"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Focused resume of correctness-complete branch work after standing communication authorization. Runtime/test/sample/API52be6bd and finalprobe e021177 remain approved; required measurements await fresh identitycontrols and actual durable coordinatorPARK/exclusiveGRANT. No source tuning/rebuild or workload authorized by resume alone.",
+    "summary": "Focused coordinator-reviewed text-only16characterprefix+cachedSearchValues correction after realfirst750sBDNtimeout; allfirstpassingmeasurements/timeout preserved. Final49case selection/newcorrectness prepared outsidelease; no finalgrant.",
     "checks": [
       "Pinned offlineRelease0warnings/errors;1612combined/906serializer tests pass;640native graphs+directvector028/all230originaldispositions/exactWPT assertion.",
       "Official1253API/1235unchanged/18frozen additions/3388fixtureSHA/3negativecontrols and publicsample pass.",
@@ -136,9 +156,9 @@
       "Planning169/diffcheck pass before handoff; final validation command recorded in own report."
     ],
     "remaining": [
-      "Refresh exact identitycontrols after this metadata-onlycommit; report fullrevision/manifestSHA/0-1-0control lifecycle and fresh READY/PARK. Coordinator independent closure/PARK/inventory and actual durable1100s GRANT required before workloads.",
-      "Run only singleprepared wrapper undergrant, report lifecycle/nochild, await durableRELEASE before raw inspection.",
-      "Record actualallocation/94BDN/cold/owned/retained evidence; set implemented only when allrequiredchecks pass; coordinator integrates/verifies."
+      "Validate corrected runtime/API/sample/probe and exact49selected identities; return committedsource/plan forreview BEFOREcontrols.",
+      "After review refresh completeexactwrapper0/unknownenv1/0 andclosure; freshPARK/inventory/durable1550sgrant required before singlefinalwrapper.",
+      "Reportlifecycle then await durableRELEASE beforeinspection; recordactualfinalsourceallocation/49timings plus unchanged9earlierBooleancases; markimplemented onlywhen allrequiredchecks pass."
     ],
     "requests": []
   }
