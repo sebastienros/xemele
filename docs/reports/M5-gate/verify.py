@@ -5,7 +5,7 @@ ROOT=pathlib.Path(__file__).resolve().parents[3]
 OWN=ROOT/'docs/reports/M5-gate'; RAW=ROOT/'artifacts/M5-gate'; RAW.mkdir(parents=True,exist_ok=True)
 DOTNET='/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet'
 ENV=dict(os.environ,PATH=str(pathlib.Path(DOTNET).parent)+os.pathsep+os.environ['PATH'],XEMELE_DOTNET=DOTNET,DOTNET_ROLL_FORWARD='Disable',DOTNET_CLI_USE_MSBUILD_SERVER='0',MSBUILDDISABLENODEREUSE='1',NUGET_SCRATCH='/private/tmp/xemele-m5-gate-nuget',PYTHONDONTWRITEBYTECODE='1',DOTNET_CLI_DO_NOT_USE_MSBUILD_SERVER='1')
-FLAGS=['-c','Release','-m:1','-nr:false','-p:UseSharedCompilation=false','-p:NuGetAudit=false','-p:RestoreIgnoreFailedSources=true','--verbosity','minimal']
+FLAGS=['-p:RuntimeFrameworkVersion=10.0.11','-c','Release','-m:1','-nr:false','-p:UseSharedCompilation=false','-p:NuGetAudit=false','-p:RestoreIgnoreFailedSources=true','--verbosity','minimal']
 def run(args,name,timeout=240,cwd=ROOT,env=ENV):
  p=subprocess.Popen(list(map(str,args)),cwd=cwd,env=env,stdout=subprocess.PIPE,stderr=subprocess.PIPE,start_new_session=True)
  error=None
@@ -27,10 +27,18 @@ def run(args,name,timeout=240,cwd=ROOT,env=ENV):
 def exe(path,*args):return [DOTNET,'--fx-version','10.0.11',path,*args]
 def summary(name,data):(RAW/(name+'.json')).write_text(json.dumps(data,indent=2)+'\n')
 def prepare():
- for project,name in [('Xemele.slnx','solution-build'),('samples/M2-conformance-grammar/Probe.csproj','grammar-build'),('docs/reports/M5-gate/Demo/Demo.csproj','demo-build'),('docs/reports/M4-corpus/Fuzz.Driver.csproj','fuzz-build'),('docs/reports/M0-contracts/ApiCheck/ApiCheck.csproj','api-helper-build')]:
-  run([DOTNET,'restore',project,'--source','/Users/sebastienros/.nuget/packages','--ignore-failed-sources','-p:NuGetAudit=false','-m:1'],name+'-restore',400)
-  run([DOTNET,'build',project,*FLAGS,'--no-restore','--disable-build-servers'],name,400)
+ for project,name in [('Xemele.slnx','solution-build'),('tools/ReferenceRunners/Bcl/BclReference.csproj','bcl-build'),('samples/M2-conformance-grammar/Probe.csproj','grammar-build'),('docs/reports/M5-gate/Demo/Demo.csproj','demo-build'),('docs/reports/M4-corpus/Fuzz.Driver.csproj','fuzz-build'),('docs/reports/M0-contracts/ApiCheck/ApiCheck.csproj','api-helper-build')]:
+  run([DOTNET,'restore',project,'-p:RuntimeFrameworkVersion=10.0.11','--source','/Users/sebastienros/.nuget/packages','--ignore-failed-sources','-p:NuGetAudit=false','-m:1'],name+'-restore',400)
+  run([DOTNET,'build',project,'--no-incremental',*FLAGS,'--no-restore','--disable-build-servers'],name,400)
  run(exe(OWN/'Demo/bin/Release/net10.0/Demo.dll'),'source-demo',30)
+ runtimeconfig_controls()
+def runtimeconfig_controls():
+ rows=[]
+ paths=[ROOT/'tests'/g/'bin/Release/net10.0'/(g+'.runtimeconfig.json') for g in ['Xemele.Tests','Xemele.Conformance.Tests','Xemele.Differential.Tests']]+[ROOT/'tools/ReferenceRunners/Bcl/bin/Release/net10.0/BclReference.runtimeconfig.json']
+ for path in paths:
+  framework=json.loads(path.read_text())['runtimeOptions']['framework'];assert framework==dict(name='Microsoft.NETCore.App',version='10.0.11'),(path,framework)
+  rows.append(dict(path=str(path.relative_to(ROOT)),sha256=hashlib.sha256(path.read_bytes()).hexdigest(),framework=framework))
+ summary('runtimeconfig-controls',rows)
 def inspect_tests():
  rows=[]
  for group in ['Xemele.Tests','Xemele.Conformance.Tests','Xemele.Differential.Tests']:

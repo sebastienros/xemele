@@ -18,7 +18,7 @@ after durable release. No benchmark or historical throughput run is scheduled.
 `freeze.py` records all tracked files, ignored original corpus resources,
 generated project state, all checkout binary outputs, SDK 10.0.400, complete
 runtime 10.0.11 and installed host closure, and the stable effective runtime
-environment. Volatile task bookkeeping is excluded. Runs use direct
+environment. All tracked task JSON records are included; only volatile environment bookkeeping is excluded. Runs use direct
 `dotnet --fx-version 10.0.11`; tests additionally use invariant culture and
 no parallelism. XML results must prove actual .NET 10.0.11. The demo asserts
 `RuntimeInformation.FrameworkDescription` itself.
@@ -32,14 +32,29 @@ contain only net10.0 runtime assets with a DLL identical to the API-tested
 assembly. Its external consumer uses an initially absent package cache and
 only a local feed; its public source and output must match the source demo.
 
-Preparation currently passes the source demo and all auxiliary builds.
-The first solution restore passed, but the build failed CS0234 because the
-Contracts project includes `Fixtures/M5/ApiCheck/Program.cs` without that
-nested tool's Roslyn references. This is an outside-ownership repair request,
-not an ignored failure. No full tests, allocation regressions or timing
-measurements have run. Raw results remain ignored for coordinator inspection;
-only analysis and summaries will be committed. The local package is retained
-for coordinator copying before checkout cleanup.
+Final preparation includes the verified Contracts build repair. The initial
+solution build failure is preserved at `artifacts/M5-gate/initial-solution-build-failure.log`:
+nested M5 API tooling was included without Roslyn references. The owner's
+repair excludes that tooling and nested fixture build outputs. No failure is
+silently treated as passing.
+
+The coordinator authorized the owned build flag
+`-p:RuntimeFrameworkVersion=10.0.11` on restore and build, with
+`--no-incremental` to regenerate outputs. Initial property-only and
+restore-plus-property controls both found stale 10.0.0 runtimeconfigs:
+the SDK incremental configuration input cache omits that property. Forced
+regeneration passed the actual output assertions for all three test DLLs
+and BCL reference DLL. Earlier allocation child harnesses bind
+the actual host path/hash and launch `dotnet <test.dll>`; their generated,
+frozen runtimeconfigs explicitly request 10.0.11 and `DOTNET_ROLL_FORWARD=Disable`
+prevents a different runtime. Their own provenance checks compare child and
+parent runtime identities. Direct gate executions still include
+`--fx-version 10.0.11`. No shim bypasses allocation provenance.
+
+No full tests, allocation regressions or timing measurements have run.
+Raw results remain ignored for coordinator inspection; only analysis and
+summaries will be committed. The local package is retained for coordinator
+copying before checkout cleanup.
 
 Earlier M3 streaming timing evidence is historical after M5 SourceCore
 repairs. This gate proves cumulative bounded functionality and makes no
