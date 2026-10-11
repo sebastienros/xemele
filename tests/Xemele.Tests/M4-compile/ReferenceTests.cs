@@ -72,7 +72,7 @@ public sealed class ReferenceTests
             using var token = CancellationTokenSource.CreateLinkedTokenSource(TestContext.Current.CancellationToken);
             using var started = new ManualResetEventSlim();
             var work = Task.Run(()=> {started.Set(); return new XPathCompiler().Compile(expression,context,token.Token);},TestContext.Current.CancellationToken);
-            started.Wait(TestContext.Current.CancellationToken); token.Cancel();
+            started.Wait(TestContext.Current.CancellationToken); await Task.Delay(1,TestContext.Current.CancellationToken); token.Cancel();
             var error = await Assert.ThrowsAsync<OperationCanceledException>(async()=>await work.WaitAsync(TimeSpan.FromSeconds(10),TestContext.Current.CancellationToken));
             Assert.Equal(token.Token,error.CancellationToken);
         }

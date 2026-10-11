@@ -254,24 +254,24 @@ internal sealed class XPathCompiler : IXPathCompiler
                 {
                     case Kind.Literal:
                         d.Result = new XPathLiteral(d.Token.Kind == XPathTokenKind.Literal ? XPathValue.FromString(Own(d.Token, true)) : XPathValue.FromNumber(XPathCompileNumber.Parse(Text(d.Token), cancellation)), d.Span); break;
-                    case Kind.Variable: d.Result = new XPathVariable(Name(d.Token, d.Span), d.Span); break;
+                    case Kind.Variable: d.Result = new XPathVariable(Name(d.Token, d.Span), d.Span, cancellation); break;
                     case Kind.Unary: d.Result = new XPathUnaryMinus(d.Left!.Result!, d.Span); break;
                     case Kind.Binary: d.Result = new XPathBinary(d.Operator, d.Left!.Result!, d.Right!.Result!, d.Span); break;
                     case Kind.Call:
                         var name = Name(d.Token, d.Span);
                         if (!context.Functions.TryGetValue(name, out var signature)) throw Error("XPATH-FUNCTION", d.Span);
                         if (d.Children.Count < signature.MinArguments || signature.MaxArguments is int max && d.Children.Count > max) throw Error("XPATH-ARITY", d.Span);
-                        d.Result = new XPathCall(signature, Results(d.Children), d.Span); break;
-                    case Kind.Filter: d.Result = new XPathFilter(d.Left!.Result!, Results(d.Children), d.Span); break;
+                        d.Result = new XPathCall(signature, Results(d.Children), d.Span, cancellation); break;
+                    case Kind.Filter: d.Result = new XPathFilter(d.Left!.Result!, Results(d.Children), d.Span, cancellation); break;
                     case Kind.Path:
                         var steps = new XPathStep[d.Steps.Count];
                         for (int i = 0; i < steps.Length; i++)
                         {
                             cancellation.ThrowIfCancellationRequested(); var s = d.Steps[i];
-                            var test = new XPathNodeTest(s.Kind, s.Kind is XPathNodeTestKind.Name or XPathNodeTestKind.NamespaceWildcard ? Name(s.Token, s.Token.Span) : default, s.Target is XPathToken target ? Own(target, true) : null);
-                            steps[i] = new(s.Axis, test, Results(s.Predicates), s.Span);
+                            var test = new XPathNodeTest(s.Kind, s.Kind is XPathNodeTestKind.Name or XPathNodeTestKind.NamespaceWildcard ? Name(s.Token, s.Token.Span) : default, s.Target is XPathToken target ? Own(target, true) : null, cancellation);
+                            steps[i] = new(s.Axis, test, Results(s.Predicates), s.Span, cancellation);
                         }
-                        d.Result = new XPathPath(d.Absolute, d.Left?.Result, steps, d.Span); break;
+                        d.Result = new XPathPath(d.Absolute, d.Left?.Result, steps, d.Span, cancellation); break;
                 }
             }
             cancellation.ThrowIfCancellationRequested(); return root.Result!;
@@ -287,13 +287,13 @@ internal sealed class XPathCompiler : IXPathCompiler
         private XPathExpandedName Name(XPathToken token, XPathSourceSpan diagnosticSpan)
         {
             Poll(token); var text = Text(token); int colon = text.IndexOf(':');
-            if (colon < 0) return new("", Own(token.Start, token.Length));
+            if (colon < 0) return new("", Own(token.Start, token.Length), cancellation);
             var prefix = text[..colon]; string? uri = null;
             // Borrowed ordinal probe: avoid a transient prefix string per reference.
             foreach (var binding in context.Namespaces)
             { cancellation.ThrowIfCancellationRequested(); if (Equal(prefix, binding.Key)) { uri = binding.Value; break; } }
             if (uri is null) throw Error("XPATH-PREFIX", diagnosticSpan);
-            return text[(colon + 1)..].SequenceEqual("*") ? XPathExpandedName.NamespaceWildcard(uri) : new(uri, Own(token.Start + colon + 1, token.Length - colon - 1));
+            return text[(colon + 1)..].SequenceEqual("*") ? XPathExpandedName.NamespaceWildcard(uri) : new(uri, Own(token.Start + colon + 1, token.Length - colon - 1), cancellation);
         }
         private bool Equal(ReadOnlySpan<char> prefix, string key)
         {

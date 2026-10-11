@@ -39,16 +39,21 @@ prepared delimiter suite evaluates loop, IndexOf, IndexOfAny and cached
 SearchValues with an identical delimiter-search oracle. Its measurements cannot
 alone justify replacing the validating lexical loop.
 
-Pending integrated model construction repair: existing name/PI validators and
-AST snapshot constructors contain unpolled scans/copies. The coordinator owns
-the cancellation-aware internal overload repair; this lane will use those
-verified overloads before final evidence and measurement. Existing public
-constructors and public signatures remain intact.
+Verified model construction repair 73636914659607df5f7bc20ecfa8767b54a97a96 is
+adopted. Every name/PI validator and AST collection construction boundary now
+receives the operation cancellation token through its internal overload. Owned
+string copying and namespace comparisons operate in at most 256-unit chunks.
+Number conversion scans with bounded polling and feeds at most 1101 significant
+digits plus exponent to the framework converter, preserving rounding through a
+sticky tail digit. A fixed 1132-character stack buffer belongs to one nonrecursive
+number-helper call; it is not stackallocated repeatedly in the resolution loop.
+Existing public constructors and signatures remain intact.
 
 # Actual output/API inventory
 
 - `src/Xemele/XPath/Compilation/Lexer.cs`: internal borrowed XPathLexer/token kinds.
 - `src/Xemele/XPath/Compilation/XPathCompiler.cs`: internal compiler + frame/draft implementation.
+- `src/Xemele/XPath/Compilation/Number.cs`: bounded decimal conversion + cancellation.
 - `docs/api/M4-compile.txt`: valid empty xemele-api-v1 public fragment; no public additions.
 - `samples/M4-compile/Program.cs`: compiled friend-assembly demonstration using
   the existing Xemele.Benchmarks friend identity, not a new public entry point.
@@ -60,7 +65,7 @@ constructors and public signatures remain intact.
 - `tests/Xemele.Tests/M4-compile/`: focused AST, lexical, grammar, diagnostics,
   static resolution, quotas, deep-stack, cancellation, 105 inventory compile
   outcomes and 333 independent pinned framework scalar-parser comparisons.
-- `benchmarks/Xemele.Benchmarks/M4-compile/Probe.cs.fixture`: prepared 21-case
+- `benchmarks/Xemele.Benchmarks/M4-compile/Probe.cs.fixture`: prepared 25-case
   single ShortRun NoEmit suite, semantic-only controls and leased allocation gate.
 - `docs/reports/M4-compile/Compiler.Probe.csproj` and `freeze.py`: owned driver
   and source/generated/binary/runtime identity capture, adapted from model support.

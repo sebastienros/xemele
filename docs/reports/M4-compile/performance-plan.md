@@ -2,7 +2,7 @@
 
 Measurements require a coordinator-prepared bounded exclusive lease after
 independent source review and verified model construction repair adoption.
-The driver has 21 cases in exactly one [MemoryDiagnoser, ShortRunJob] job with
+The driver has 25 cases in exactly one [MemoryDiagnoser, ShortRunJob] job with
 3 warmups, 3 iterations, 1 launch. The only mutator is InProcessNoEmit toolchain;
 no job flags, dynamic source generation or build runs during the lease.
 
@@ -12,6 +12,7 @@ no job flags, dynamic source generation or build runs during the lease.
 | Delimiter | 8 | Short/long Unicode loop, IndexOf, IndexOfAny, cached SearchValues; identical stop-index oracle |
 | Vocabulary | 4 | Known maximum-length axis/common-prefix miss; span dispatch vs sequential SequenceEqual |
 | Compile | 3 | Owned AST short/long Unicode; invalid Unicode diagnostic (separate allocation boundary) |
+| Number | 4 | Short/long validated decimal Number, bounded cancellable conversion vs framework full-span conversion |
 | Context | 2 | Owned default/registered static context copying, separate from compile with reused context |
 
 Semantic controls include empty/missing/early/late delimiter hits, all 13 axes,
@@ -33,7 +34,9 @@ After repair, fresh build and clean candidate commit, `freeze.py capture` record
 all runtime source/build files, generated files, actual driver binary closure and
 SDK 10.0.400 / runtime 10.0.11 / host-fxr files. `freeze.py check` surrounds leased
 execution. Expected maximum lease duration: 1200 seconds; each command uses the
-actual prebuilt binary. Exact command arrays and manifest digest will be sent
+actual prebuilt binary with explicit `--fx-version 10.0.11`; counters-disabled
+control confirms actual FrameworkDescription `.NET 10.0.11` (the default
+runtimeconfig framework version is 10.0.0). Exact command arrays and manifest digest will be sent
 when the final candidate is ready. No measurement has been performed here.
 
 Measurements on the local Arm64 host remain informational for timing and require
