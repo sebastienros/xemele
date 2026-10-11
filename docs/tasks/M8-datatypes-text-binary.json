@@ -4,11 +4,11 @@
   "milestone": "M8",
   "title": "XSD text, names and binary value families",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M8 coordinator01a12c6c-b333-71d3-877f-0d186618e21d / assigned isolated worker",
   "branch": "codex/m8-datatypes-text-binary",
   "base_revision": "1a5c8c2e762cba594a58598215a8e9331a27fe63",
-  "integration_revision": null,
+  "integration_revision": "55cbf38f0d889497ec1ad69924a4a38f412f72d7",
   "depends_on": [
     "M8-datatypes-core"
   ],
@@ -35,7 +35,8 @@
       "status": "passed",
       "evidence": [
         "branch-correctness",
-        "independent-source-review"
+        "independent-source-review",
+        "integrated"
       ]
     },
     {
@@ -44,7 +45,8 @@
       "status": "passed",
       "evidence": [
         "branch-correctness",
-        "independent-source-review"
+        "independent-source-review",
+        "integrated"
       ]
     },
     {
@@ -54,7 +56,8 @@
       "evidence": [
         "branch-correctness",
         "prepared-performance",
-        "granted-performance"
+        "granted-performance",
+        "integrated"
       ]
     }
   ],
@@ -102,21 +105,27 @@
       "result": "passed",
       "summary": "Root-executed single durable600s grant from23:12:53.912416Z; sequence completed68.27719699998852s,2childrenexit0/reaped/groupsabsent/logsclosed,444identitiesunchanged; RELEASE82de8fe before rawinspection. Ten warm/static-invalid routes each64x0B; owned112/8288/88/88/152/104/56/setup512B; cold80472B,positive1048B;256retained inclusive221848->4490376(delta4268528). Ten BDNcases completed with nonzero exactGC residuals and10priority denials explicitly preserved/unattributed; timing provisional long equalityratio0.83/short1.66, no broad speedup claim.",
       "artifact": "docs/reports/M8-datatypes-text-binary/measurement-summary.json"
+    },
+    {
+      "id": "integrated",
+      "kind": "integration",
+      "revision": "55cbf38f0d889497ec1ad69924a4a38f412f72d7",
+      "command": "python3 docs/reports/M8-datatypes-text-binary/checks.py; git diff --exit-code of all runtime/test/build/API/consumer inputs after metadata merges; python3 tools/planning/tasks.py validate; git diff --check",
+      "result": "passed",
+      "summary": "Combined tree178 tests (148family+18core+12model),1393 publicAPI and genuine normal/XML-only17-family consumers passed, zero failures/errors/skips/not-run or compiler warnings/errors;176tasks/diff clean. Later preparation/release/final evidence merges through1d2759f8 changed no correctness inputs. Root inspected every raw probe distribution and exact BDN GC counter after durable RELEASE; no rerun or broad speedup/exact-zero BDN claim.",
+      "artifact": "docs/reports/M8-datatypes-text-binary/integration.md"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Implemented internal bounded text/names/boolean/URI/QName/NOTATION/hex/base64/anySimpleType family through verified core, private immutable owned payloads, strict pinned grammars and exact work/growth/cancellation. All3criteria passed on worker; awaiting coordinator integration verification; no public partial library/shared contract edits.",
+    "summary": "Integrated and verified17 text/binary family names through verified core;178 combined checks,1393API and genuine normal/XML-only consumers passed. URI correction independently accepted; prepared allocation/BDN evidence inspected after release with residuals and limits retained.",
     "checks": [
       "148family+18core+12model=178pass; genuine normal/XML-only17family consumers;1393compiled API unchanged; Release SDK10.0.400/runtime10.0.11 zero warnings/errors;176task validation/diff passed.",
       "Independent exactf7 source review accepted after URI first-atom correction; review no test claim.",
       "One prepared root-granted measurement completed/cleaned before durableRELEASE/rawinspection;444stableidentities;18probe routes/10BDN cases; all exact distributions and GC discrepancies in owned summaries."
     ],
     "remaining": [
-      "Coordinator integrate and rerun applicable combined checks, record integration evidence, mark verified; worker integration_revision remains null.",
-      "Composer owns built-in NMTOKENS/IDREFS/ENTITIES list parsing/nonempty and complete dispatch. XSD owns notation/ENTITY existence and ID/IDREF document checks.",
-      "Provisional singleArm64 microbenchmark: composition/end-to-end+x64/repeatability follow-up; BDN exactGC residuals unattributed,10priority denials; inclusive retained snapshot differs from allocation-product estimate, no attribution established.",
-      "Ignored raw outputs artifacts/M8-datatypes-text-binary/measurement preserved after root independent inspection; no logs/archives committed; coordinator may clean them when archiving worker."
+      "Complete library/built-in list composition remains M8-datatypes; XSD validation owns ENTITY/NOTATION existence and ID rules. Release composition/architecture measurements remain downstream."
     ],
     "requests": []
   }
