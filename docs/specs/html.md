@@ -26,7 +26,7 @@ Both accept string, borrowed encoded byte span, and caller-owned stream.
 Strings are decoded characters with no encoding sniff. HTML5 byte input uses WHATWG
 encoding label mapping: BOM wins, then the first applicable in-band declaration in
 the first 1024 bytes, then windows-1252 default; UTF-16 declarations without BOM
-map to UTF-8 per HTML sniffing. Legacy byte input uses BOM, then recognized in-band encoding declaration, then windows-1252 fallback as pinned libxml2 does; legacy label support is fixed by its differential corpus and must not inherit XML declaration rules. No HTTP transport or transport encoding hint API.
+map to UTF-8 per HTML sniffing. Legacy byte input uses BOM, then recognized in-band encoding declaration, then windows-1252 fallback as pinned libxml2 does; byte-span and Stream input use the same bounded public-memory/coalesced-IO native buffering and grow profile, with caller short reads coalesced until the requested read or true EOF; there is no unbounded full-span sniff; legacy label support, parser-only 100-UTF-8-byte lexical-name retention, bytewise malformed UTF-8 replacement and native converter-stop recovery are fixed by its differential corpus and the [legacy profile decision](../decisions/M7/legacy-root-recovery.md); they must not inherit XML declaration or HTML5 decoder rules. Programmatic shared-model names remain uncapped except by existing quotas. No HTTP transport or transport encoding hint API.
 Unsupported labels follow HTML fallback, never XML encoding rules. Streams remain
 open on success/fault/cancellation; no parser fetches external entities, DTDs,
 images or scripts. No asynchronous entry point is promised by M7.
