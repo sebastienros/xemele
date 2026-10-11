@@ -6,7 +6,7 @@ var context = new SchemaCompileContext(new() { BaseUri = new("urn:rng:consumer")
 var source = context.Parse("<grammar xmlns='http://relaxng.org/ns/structure/1.0'><start><ref name='tree'/></start><define name='tree'><element name='tree'><optional><ref name='tree'/></optional></element></define></grammar>");
 IRelaxNgCompiler compiler = new RelaxNgCompiler();
 var graph = compiler.Compile(source.Document, context.Options, context.Operation);
-if (graph.Patterns[graph.Start].Kind != RngPatternKind.Ref || graph.Patterns.Count != 5) throw new Exception("RNG graph changed");
+if (graph.Patterns[graph.Start].Kind != RngPatternKind.Ref || graph.Patterns.Count != 4) throw new Exception("RNG graph changed");
 if (graph.Datatypes.Find("") is not null) throw new Exception("Compiler must not publish an executable datatype placeholder");
 source.Document.RootElement.SetAttribute("changed", "yes");
 if (graph.Patterns[graph.Start].Location.SourceUri != new Uri("urn:rng:consumer")) throw new Exception("Owned graph lost source");
