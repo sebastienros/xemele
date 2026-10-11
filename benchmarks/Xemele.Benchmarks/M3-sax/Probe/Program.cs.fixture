@@ -1,0 +1,78 @@
+using System.Diagnostics;
+using System.Runtime.InteropServices;
+using System.Text;
+using Xemele;
+using Xemele.Streaming;
+
+Console.WriteLine($"runtime={RuntimeInformation.FrameworkDescription}; arch={RuntimeInformation.ProcessArchitecture}; os={RuntimeInformation.OSDescription}; cpu={Environment.ProcessorCount}; serverGC={System.Runtime.GCSettings.IsServerGC}");
+var handler = new Counter();
+var sink = new XmlSaxParser.HandlerSink(handler);
+byte[] scratch = new byte[4096];
+byte[] input = Encoding.UTF8.GetBytes("<r>" + new string('a', 16384) + "β😀</r>");
+string xml = Encoding.UTF8.GetString(input);
+// Owners, static initialization and warm-up deliberately precede the primitive scope.
+for (int i = 0; i < 10000; i++) { sink.Text("β😀", default); input.AsSpan(0, 4096).CopyTo(scratch); }
+long start = GC.GetAllocatedBytesForCurrentThread();
+for (int i = 0; i < 100000; i++) { sink.Text("β😀", default); input.AsSpan(0, 4096).CopyTo(scratch); }
+long primitive = GC.GetAllocatedBytesForCurrentThread() - start;
+Console.WriteLine($"borrowed-dispatch+bounded-copy: operations=100000; bytes={primitive}; consumed={handler.Characters}; copy={scratch[1]}");
+start = GC.GetAllocatedBytesForCurrentThread();
+object control = new byte[4096];
+long positive = GC.GetAllocatedBytesForCurrentThread() - start; GC.KeepAlive(control);
+Console.WriteLine($"allocation-positive-control={positive}");
+if (primitive != 0 || positive < 4096) return 1;
+Measure("cold-string-operation", () => XmlSaxParser.Parse(xml, handler), 1);
+for (int i = 0; i < 32; i++) { XmlSaxParser.Parse(xml, handler); XmlSaxParser.Parse(input, handler); }
+Measure("warm-string-operation", () => XmlSaxParser.Parse(xml, handler), 100);
+Measure("warm-bytes-operation", () => XmlSaxParser.Parse(input, handler), 100);
+Measure("warm-stream-operation", () => { using var stream = new MemoryStream(input, false); XmlSaxParser.Parse(stream, handler); }, 100);
+Measure("owned-diagnostic-result", () => XmlSaxParser.ParseWithDiagnostics("<r/>", handler), 100);
+Measure("malformed-diagnostic-result", () => XmlSaxParser.ParseWithDiagnostics("<r>", handler), 100);
+// Generated stream has no input-sized owner; evaluate live managed memory in callbacks.
+long corpus = args.Length == 1 ? long.Parse(args[0], System.Globalization.CultureInfo.InvariantCulture) : 1073741824L;
+GC.Collect(); GC.WaitForPendingFinalizers(); GC.Collect();
+long before = GC.GetTotalMemory(true);
+handler.Characters = 0; handler.MeasureRetention = true;
+using (var stream = new GeneratedStream(corpus))
+    XmlSaxParser.Parse(stream, handler, new() { Limits = new() { DocumentCharacters = null, TokenCharacters = null } });
+long after = GC.GetTotalMemory(true);
+Console.WriteLine($"generated-stream: text-bytes={corpus}; callbacks-consumed={handler.Characters}; peak-live-delta={handler.Peak - before}; post-disposal-delta={after - before}");
+if (handler.Characters != corpus || handler.Peak - before > 32 * 1024 * 1024 || after - before > 4 * 1024 * 1024) return 2;
+return 0;
+
+static void Measure(string name, Action action, int iterations)
+{
+    long allocation = GC.GetAllocatedBytesForCurrentThread(); long ticks = Stopwatch.GetTimestamp();
+    for (int i = 0; i < iterations; i++) action();
+    ticks = Stopwatch.GetTimestamp() - ticks; allocation = GC.GetAllocatedBytesForCurrentThread() - allocation;
+    Console.WriteLine($"{name}: operations={iterations}; bytes/op={allocation / (double)iterations}; ms/op={ticks * 1000.0 / Stopwatch.Frequency / iterations}");
+}
+sealed class Counter : XmlSaxHandler
+{
+    internal long Characters, Peak; internal bool MeasureRetention;
+    private long nextSample;
+    public override void Text(ReadOnlySpan<char> text)
+    {
+        Characters += text.Length;
+        if (MeasureRetention && Characters >= nextSample)
+        {
+            Peak = Math.Max(Peak, GC.GetTotalMemory(true)); nextSample = Characters + 16 * 1024 * 1024;
+        }
+    }
+}
+sealed class GeneratedStream(long remaining) : Stream
+{
+    private int state;
+    public override int Read(Span<byte> destination)
+    {
+        if (state == 0) { "<r>"u8.CopyTo(destination); state++; return 3; }
+        if (remaining != 0) { int count = (int)Math.Min(remaining, destination.Length); destination[..count].Fill((byte)'x'); remaining -= count; return count; }
+        if (state == 1) { "</r>"u8.CopyTo(destination); state++; return 4; }
+        return 0;
+    }
+    public override int Read(byte[] buffer, int offset, int count) => Read(buffer.AsSpan(offset, count));
+    public override bool CanRead => true; public override bool CanSeek => false; public override bool CanWrite => false;
+    public override long Length => throw new NotSupportedException(); public override long Position { get => throw new NotSupportedException(); set => throw new NotSupportedException(); }
+    public override void Flush() => throw new NotSupportedException(); public override long Seek(long offset, SeekOrigin origin) => throw new NotSupportedException();
+    public override void SetLength(long value) => throw new NotSupportedException(); public override void Write(byte[] buffer, int offset, int count) => throw new NotSupportedException();
+}
