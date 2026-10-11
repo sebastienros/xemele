@@ -4,7 +4,7 @@
   "milestone": "M3",
   "title": "Incremental public push parser",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M3 coordinator 01a1284a-8826-7fc2-af44-74552db608f2 / push parser worker",
   "branch": "codex/m3-push",
   "base_revision": "dea97b9f2c20a89afae0f1136ec9f29dc8ca3305",
@@ -35,29 +35,138 @@
     {
       "id": "M3-push-A1",
       "description": "Implement Append/Complete/dispose lifecycle and reentrancy/fault checks with immediate callback delivery.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "push-correctness",
+        "release-builds"
+      ]
     },
     {
       "id": "M3-push-A2",
       "description": "Test all small-document splits, empty chunks, double completion, callback faults and bounded retention.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "push-correctness",
+        "probe-control",
+        "allocation-retention",
+        "bdn-three-cases"
+      ]
     },
     {
       "id": "M3-push-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "preservation",
+        "compiled-api",
+        "sample",
+        "planning"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Streaming/Push/XmlPushParser.cs: strict push lifecycle, bounded owned byte scratch, synchronous sixteen-callback adapter, atomic gate and primary-failure-preserving cleanup",
+    "tests/Xemele.Tests/M3-push/PushTests.cs: all tiny partitions/byte splits, immediate and borrowed input, lifecycle/reentrancy/concurrency, callback/cancellation/resource identity and bounded scratch",
+    "docs/api/M3-push.txt: five compiled frozen public members",
+    "samples/M3-push/: compiled byte-chunk callback sample",
+    "benchmarks/Xemele.Benchmarks/M3-push/PushBenchmarks.cs and docs/reports/M3-push/Probe/: standalone controls, allocation/retention and three BDN cases"
+  ],
+  "evidence": [
+    {
+      "id": "release-builds",
+      "kind": "check",
+      "revision": "5dae4fb3eeb06d882016cae111fe5c28c5c76e9e",
+      "command": "DOTNET_CLI_DO_NOT_USE_MSBUILD_SERVER=1 dotnet build tests/Xemele.Tests/Xemele.Tests.csproj -c Release --no-restore --disable-build-servers -p:BuildInParallel=false -m:1 -p:UseSharedCompilation=false -p:NuGetAudit=false --nologo; corresponding probe and sample Release builds",
+      "result": "passed",
+      "summary": "Tests, standalone probe and sample Release builds passed with zero warnings/errors. Local SDK 10.0.400, runtime 10.0.11, macOS Arm64. Exact details and pre-freeze failures in checks.md.",
+      "artifact": "docs/reports/M3-push/checks.md"
+    },
+    {
+      "id": "push-correctness",
+      "kind": "check",
+      "revision": "5dae4fb3eeb06d882016cae111fe5c28c5c76e9e",
+      "command": "dotnet tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -namespace Xemele.Tests.Push -noColor -result-xml docs/reports/M3-push/focused.xml",
+      "result": "passed",
+      "summary": "17 passed, no failures/skips; all tiny partitions, all two-chunk splits/one-byte chunks for lexical/namespace/DTD documents; lifecycle, immediate delivery, caller-byte copy, competing/reentrant calls, fault/cancellation/resource ownership and fixed scratch.",
+      "artifact": "docs/reports/M3-push/focused.xml"
+    },
+    {
+      "id": "preservation",
+      "kind": "check",
+      "revision": "5dae4fb3eeb06d882016cae111fe5c28c5c76e9e",
+      "command": "dotnet tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -namespace Xemele.Tests.Sax -namespace Xemele.Tests.StreamingPump -namespace Xemele.Tests.Reader -namespace Xemele.Tests.Callbacks -class- *AllocationTests -noColor -result-xml docs/reports/M3-push/preservation.xml; separate -namespace Xemele.Tests.ReaderRuntime and -class Xemele.Tests.Syntax.SyntaxTests runs",
+      "result": "passed",
+      "summary": "58 pump/SAX/callback, 11 reader and 53 earlier strict-syntax tests passed; zero failures/skips. Allocation observations excluded pending lease. Nonempty separate runs and exact commands in checks.md.",
+      "artifact": "docs/reports/M3-push/checks.md"
+    },
+    {
+      "id": "compiled-api",
+      "kind": "check",
+      "revision": "5dae4fb3eeb06d882016cae111fe5c28c5c76e9e",
+      "command": "dotnet /private/tmp/xemele-m3-integration/docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare src/Xemele/bin/Release/net10.0/Xemele.dll /private/tmp/m3-push-api-union.txt",
+      "result": "passed",
+      "summary": "Matched all 711 compiled public member declarations against canonical union, including five frozen XmlPushParser members. Full official corpus discovery deferred to coordinator integration.",
+      "artifact": "docs/reports/M3-push/checks.md"
+    },
+    {
+      "id": "sample",
+      "kind": "check",
+      "revision": "5dae4fb3eeb06d882016cae111fe5c28c5c76e9e",
+      "command": "dotnet samples/M3-push/bin/Release/net10.0/PushSample.dll",
+      "result": "passed",
+      "summary": "Start root; five scalar Text notifications spelling hello; end root; complete.",
+      "artifact": "docs/reports/M3-push/checks.md"
+    },
+    {
+      "id": "probe-control",
+      "kind": "check",
+      "revision": "adc750dec4a48b91870f789396ba05741fd88495",
+      "command": "XEMELE_PUSH_REVISION=adc750dec4a48b91870f789396ba05741fd88495 dotnet docs/reports/M3-push/Probe/bin/Release/net10.0/Push.Probe.dll --control docs/reports/M3-push/control.json; same prebuilt DLL --benchmark-check docs/reports/M3-push/benchmark-results",
+      "result": "passed",
+      "summary": "Updated counters-disabled 16 MiB/owned end-to-end behavioral control passed; discovery guard confirmed exactly three bounded InProcess cases. Zero GC fields are disabled placeholders, not observations.",
+      "artifact": "docs/reports/M3-push/control.json"
+    },
+    {
+      "id": "planning",
+      "kind": "check",
+      "revision": "5dae4fb3eeb06d882016cae111fe5c28c5c76e9e",
+      "command": "python3 tools/planning/tasks.py validate",
+      "result": "passed",
+      "summary": "Validated all 147 task schemas, evidence, dependency ordering and ownership.",
+      "artifact": null
+    },
+    {
+      "id": "allocation-retention",
+      "kind": "check",
+      "revision": "adc750dec4a48b91870f789396ba05741fd88495",
+      "command": "XEMELE_PUSH_REVISION=adc750dec4a48b91870f789396ba05741fd88495 dotnet docs/reports/M3-push/Probe/bin/Release/net10.0/Push.Probe.dll --allocation docs/reports/M3-push/allocation.json",
+      "result": "passed",
+      "summary": "Granted serial lease, actual exit0. Warm 512 x 4 KiB after 128 warmups: 0 B total; positive array control1048B; cold setup 60224 B. Generated full 1 GiB,64 active 16 MiB heap samples with accepting parser alive: maximum live delta 0 B, fixed capacities, exact completion counts. Owned end-to-end 56896 B/op.",
+      "artifact": "docs/reports/M3-push/allocation.json"
+    },
+    {
+      "id": "bdn-three-cases",
+      "kind": "check",
+      "revision": "adc750dec4a48b91870f789396ba05741fd88495",
+      "command": "dotnet docs/reports/M3-push/Probe/bin/Release/net10.0/Push.Probe.dll --benchmark docs/reports/M3-push/benchmark-results",
+      "result": "passed",
+      "summary": "Granted serial lease, actual exit0; hard guard verified exactly three InProcess cases and successful reports/statistics/execution exits. 4 KiB 0 B/op,64 KiB 7 B/op unexplained,owned end-to-end 55.6 KiB/op. Timing informational; no zero-allocation claim for 64 KiB, no retry, no cross-architecture/corpus/fuzz qualification.",
+      "artifact": "docs/reports/M3-push/performance.md"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "",
-    "checks": [],
-    "remaining": [],
+    "summary": "Strict XmlPushParser frozen API/lifecycle implemented on 5dae4fb; probe-only active-live-heap and benchmark guards on adc750d. All listed acceptance criteria passed locally; integration_revision remains null.",
+    "checks": [
+      "17 push,58 pump/SAX/callback,11 reader,53 earlier strict-syntax tests passed; Release tests/probe/sample builds clean",
+      "711 compiled public members matched; sample and planning 147 passed",
+      "Granted serial allocation+1GiB active retention: warm4 KiB 0 B,positive 1048 B,maximum live delta 0 B,fixed capacities/exact counts",
+      "Exactly three BDN cases completed;4 KiB 0 B,64 KiB 7 B unexplained,owned end-to-end 55.6 KiB; raw logs/exits/hashes preserved, lease released with no children"
+    ],
+    "remaining": [
+      "Coordinator integration verification/full official corpus discovery remains required.",
+      "Unexplained BDN64 KiB 7 B/op remains a performance follow-up; do not claim 64 KiB zero allocations. Local timing is informational; cross-architecture and later corpus/fuzz qualification unrun."
+    ],
     "requests": []
   }
 }

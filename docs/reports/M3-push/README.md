@@ -44,7 +44,7 @@ representative end-to-end job using BenchmarkDotNet MemoryDiagnoser. Fixtures ar
 prepared outside timing; assertions consume callback counts. No scanning or
 matching algorithm changes are introduced by the adapter.
 
-All commands, observed outcomes, known tested revision and measurement limits
-will be recorded after execution. Allocation/BDN observations require the
-coordinator's bounded serial grant. Cross-architecture conclusions are not made
-from one local host.
+Executed commands, outcomes and tested revisions are in checks.md. The granted
+serial allocation/active-retention and three-case BDN results are in performance.md
+and their raw artifacts. The unexplained 64 KiB BDN 7 B/op result is preserved.
+Cross-architecture conclusions are not made from this local host.
