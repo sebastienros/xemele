@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "id": "M8-datatypes-numeric",
+  "milestone": "M8",
+  "title": "XSD numeric datatype value family",
+  "kind": "feature",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "depends_on": [
+    "M8-datatypes-core"
+  ],
+  "goals": [
+    "G13",
+    "G14"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/schemas.md"
+  ],
+  "owns": [
+    "src/Xemele/Validation/Datatypes/Values/Numeric/",
+    "tests/Xemele.Tests/M8-datatypes-numeric/",
+    "tests/fixtures/M8-datatypes-numeric/",
+    "benchmarks/Xemele.Benchmarks/M8-datatypes-numeric/",
+    "docs/reports/M8-datatypes-numeric/"
+  ],
+  "api_or_output": "Internal XSD datatype family implementation; no partial public validator",
+  "acceptance": [
+    {
+      "id": "M8-datatypes-numeric-A1",
+      "description": "Implement XSD1.0 decimal/integer/float/double and all built-in numeric derivations through the verified core family contract. Retain arbitrary decimal/integer precision, exact built-in ranges, INF/-INF/NaN/signed-zero behavior and prescribed equality/order/hash including compatible derived numeric values. No CLR decimal/double truncation for arbitrary decimal/integer values.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M8-datatypes-numeric-A2",
+      "description": "Test valid/invalid lexical grammar, insignificant zeros, large magnitudes/precision, range edges, NaN/infinities/zero signs, cross-numeric equality/hash/order and applicable digit measures. Charge actual lexical/conversion/comparison work and bounded growth, with exact-limit, one-over and cancellation cases.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M8-datatypes-numeric-A3",
+      "description": "Compile against only verified model/core dependencies; record focused regression and meaningful allocation/performance evidence at the tested source. Preserve public APIs and leave final library dispatch/composition to M8-datatypes.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "Planned bounded child of M8-datatypes; original complete XSD1.0 acceptance and gate reachability preserved.",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}

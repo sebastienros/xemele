@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "id": "M8-datatypes-core",
+  "milestone": "M8",
+  "title": "Shared datatype values and family contracts",
+  "kind": "feature",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "depends_on": [
+    "M8-model"
+  ],
+  "goals": [
+    "G13",
+    "G14"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/schemas.md"
+  ],
+  "owns": [
+    "src/Xemele/Validation/Datatypes/Values/Core/",
+    "tests/Xemele.Tests/M8-datatypes-core/",
+    "tests/fixtures/M8-datatypes-core/",
+    "benchmarks/Xemele.Benchmarks/M8-datatypes-core/",
+    "docs/reports/M8-datatypes-core/"
+  ],
+  "api_or_output": "Internal datatype family contract/support",
+  "acceptance": [
+    {
+      "id": "M8-datatypes-core-A1",
+      "description": "Implement owned immutable datatype support shared by the value families: exact type metadata/whitespace policy, bounded normalization, immutable list/union and retyping support, and a precise internal family-provider contract compatible with the frozen IXmlDatatypeLibrary/XmlDatatypeValue interfaces. Freeze all family dispatch, error, comparison/hash and budget joins in an owned report before family implementations start; do not provide fake successful parsers or a partial advertised library.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M8-datatypes-core-A2",
+      "description": "Test XML-only whitespace, Unicode scalar handling, input snapshots/retained ownership, list/union selected-member identity, declared-type preservation, cancellation and exact operation/component boundaries. Compiled consumers must use only verified M8-model plus this task; later family behavior is not claimed.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M8-datatypes-core-A3",
+      "description": "Record exact internal helper/family contracts and focused checks at the tested revision. Provide applicable normalization/setup allocation evidence with owned output separated from borrowed primitives; preserve public API and earlier checks.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "Planned bounded child of M8-datatypes; original complete XSD1.0 acceptance and gate reachability preserved.",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}

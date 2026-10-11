@@ -2,7 +2,7 @@
   "schema_version": 1,
   "id": "M8-datatypes",
   "milestone": "M8",
-  "title": "XML Schema datatype values",
+  "title": "Compose and verify the XSD datatype value library",
   "kind": "feature",
   "status": "planned",
   "owner": null,
@@ -10,7 +10,11 @@
   "base_revision": null,
   "integration_revision": null,
   "depends_on": [
-    "M8-model"
+    "M8-model",
+    "M8-datatypes-core",
+    "M8-datatypes-numeric",
+    "M8-datatypes-temporal",
+    "M8-datatypes-text-binary"
   ],
   "goals": [
     "G13",
@@ -48,13 +52,19 @@
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
       "status": "pending",
       "evidence": []
+    },
+    {
+      "id": "M8-datatypes-A4",
+      "description": "Compose all verified core/numeric/temporal/text-binary children into the complete frozen IXmlDatatypeLibrary, registry lookup/whitespace/type queries and list/union/retyping behavior. Run cross-family and built-in completeness checks, preserve all original acceptance and include RNG datatype-namespace mapping. No advertised datatype may remain a placeholder or exclusion.",
+      "status": "pending",
+      "evidence": []
     }
   ],
   "implementation": [],
   "evidence": [],
   "blockers": [],
   "handoff": {
-    "summary": "",
+    "summary": "Unclaimed work split into four focused children; this task owns final complete library composition and verification. Original A1-A3 remain unchanged.",
     "checks": [],
     "remaining": [],
     "requests": []

@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "id": "M8-datatypes-temporal",
+  "milestone": "M8",
+  "title": "XSD temporal and duration value family",
+  "kind": "feature",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "depends_on": [
+    "M8-datatypes-core"
+  ],
+  "goals": [
+    "G13",
+    "G14"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/schemas.md"
+  ],
+  "owns": [
+    "src/Xemele/Validation/Datatypes/Values/Temporal/",
+    "tests/Xemele.Tests/M8-datatypes-temporal/",
+    "tests/fixtures/M8-datatypes-temporal/",
+    "benchmarks/Xemele.Benchmarks/M8-datatypes-temporal/",
+    "docs/reports/M8-datatypes-temporal/"
+  ],
+  "api_or_output": "Internal XSD datatype family implementation; no partial public validator",
+  "acceptance": [
+    {
+      "id": "M8-datatypes-temporal-A1",
+      "description": "Implement the complete XSD1.0 dateTime/time/date/gYearMonth/gYear/gMonthDay/gDay/gMonth/duration lexical and value spaces through the verified family contract, with arbitrary year/fraction precision, calendar validation, timezone absence/presence, prescribed partial ordering and consistent equality/hash.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M8-datatypes-temporal-A2",
+      "description": "Test leap/calendar/year/24-hour/timezone boundaries, arbitrary magnitudes, fractions, missing-timezone indeterminacy, duration reference-point comparisons and valid/invalid lexical forms. Account work/growth, exact-limit/one-over and cancellation without inventing a total order.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M8-datatypes-temporal-A3",
+      "description": "Compile against verified model/core only; record normative pinned-edition cases and applicable allocation/performance evidence. Keep family source/tests independent of unmerged numeric/text branches; final library composition belongs to M8-datatypes.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "Planned bounded child of M8-datatypes; original complete XSD1.0 acceptance and gate reachability preserved.",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}

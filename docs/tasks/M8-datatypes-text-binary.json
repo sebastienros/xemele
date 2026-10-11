@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "id": "M8-datatypes-text-binary",
+  "milestone": "M8",
+  "title": "XSD text, names and binary value families",
+  "kind": "feature",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "depends_on": [
+    "M8-datatypes-core"
+  ],
+  "goals": [
+    "G13",
+    "G14"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/schemas.md"
+  ],
+  "owns": [
+    "src/Xemele/Validation/Datatypes/Values/TextBinary/",
+    "tests/Xemele.Tests/M8-datatypes-text-binary/",
+    "tests/fixtures/M8-datatypes-text-binary/",
+    "benchmarks/Xemele.Benchmarks/M8-datatypes-text-binary/",
+    "docs/reports/M8-datatypes-text-binary/"
+  ],
+  "api_or_output": "Internal XSD datatype family implementation; no partial public validator",
+  "acceptance": [
+    {
+      "id": "M8-datatypes-text-binary-A1",
+      "description": "Implement XSD1.0 string/normalizedString/token/language/name/ID/IDREF/ENTITY families and built-in list forms, boolean, anyURI, QName/NOTATION, hexBinary/base64Binary and anySimpleType behavior through verified core contracts. Preserve namespace-qualified value identity, exact binary octets and scalar lengths; schema notation/retained-DTD existence validation remains with XSD validation owner.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M8-datatypes-text-binary-A2",
+      "description": "Test XML whitespace/name grammar, multilingual/supplementary scalars, namespace/default-prefix contexts, boolean/URI semantics, strict hex/base64 syntax including padding, list ownership, equality/hash/order and invalid inputs. Charge scans/comparisons/growth and test exact budgets/cancellation.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M8-datatypes-text-binary-A3",
+      "description": "Compile against verified model/core only; record applicable owned-output and borrowed primitive allocation/performance evidence, focused earlier checks and exact internal interfaces. Leave final complete library dispatch/composition to M8-datatypes.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "Planned bounded child of M8-datatypes; original complete XSD1.0 acceptance and gate reachability preserved.",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}
