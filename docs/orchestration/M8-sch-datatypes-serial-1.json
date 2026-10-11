@@ -1,0 +1,45 @@
+{
+  "id": "M8-sch-datatypes-serial-1",
+  "status": "prepared-not-granted",
+  "maximum_seconds": 650,
+  "latest_start_utc": "2026-10-11T23:41:00Z",
+  "hard_stop_utc": "2026-10-11T23:52:00Z",
+  "scope": "Root executes these two prebuilt supervisors serially, only once; no build, restore, tests, retries or raw inspection before durable RELEASE. Actual grant expiry is grant time+650s at most and cannot exceed hard stop. Each supervisor enforces its own shorter bound. Stop sequence on failure; immediately release after cleanup.",
+  "sequence": [
+    {
+      "task": "M8-sch-compile",
+      "source_revision": "193a6fe3ddcdf209bea0c623b154cbb6abd99b9c",
+      "preparation_revision": "837a001b0e7fb24f59220dfe43216d5fccabe781",
+      "manifest": "/Users/sebastienros/.codex/worktrees/7e1d/xemele/docs/reports/M8-sch-compile/preparation.json",
+      "manifest_sha256": "be99198a08d5f36b09bf507dae06cc07869c630832865fdc01ed881fde92c54b",
+      "identities": 212,
+      "maximum_seconds": 30,
+      "command_template": [
+        "python3",
+        "/Users/sebastienros/.codex/worktrees/7e1d/xemele/docs/reports/M8-sch-compile/lease.py",
+        "--granted",
+        "be99198a08d5f36b09bf507dae06cc07869c630832865fdc01ed881fde92c54b",
+        "2026-10-11T23:41:00Z",
+        "<actual-grant-expiry-UTC>"
+      ]
+    },
+    {
+      "task": "M8-datatypes",
+      "source_revision": "ee8514ad7b641fa46e6c889b7f5661050e5fe8d1",
+      "preparation_revision": "e37a87e1040091f89106c033f17423acff91a064",
+      "manifest": "/Users/sebastienros/.codex/worktrees/6b33/xemele/docs/reports/M8-datatypes/preparation.json",
+      "manifest_sha256": "8301db41daddce4cee4ee5b528cb1d4147a3e16ddd9d65a7eb41d16132294ff9",
+      "identities": 453,
+      "maximum_seconds": 600,
+      "command_template": [
+        "python3",
+        "/Users/sebastienros/.codex/worktrees/6b33/xemele/docs/reports/M8-datatypes/measure.py",
+        "--granted",
+        "8301db41daddce4cee4ee5b528cb1d4147a3e16ddd9d65a7eb41d16132294ff9",
+        "2026-10-11T23:41:00Z",
+        "<actual-grant-expiry-UTC>"
+      ]
+    }
+  ],
+  "preflight": "Root elevated verify-only passed212+453 identities and ps permission; source reviews accepted, controls/discovery counters disabled. All explicit active-host actor ACKs required before grant."
+}
