@@ -5,6 +5,7 @@ using Xemele.Validation;
 
 Console.WriteLine($"FrameworkDescription={RuntimeInformation.FrameworkDescription}; Architecture={RuntimeInformation.ProcessArchitecture}");
 if (RuntimeInformation.FrameworkDescription != ".NET 10.0.11") throw new InvalidOperationException("Explicit pinned runtime required.");
+long fixtureBefore = args is ["--measure"] ? GC.GetAllocatedBytesForCurrentThread() : 0;
 using var parser = new DtdParser(DtdSubsetKind.External, new(), new Uri("urn:sample"));
 var parsed = parser.Append("<!NOTATION n SYSTEM 'n'><!ENTITY e SYSTEM 'e' NDATA n><!ELEMENT r (名*,last)><!ELEMENT 名 EMPTY><!ELEMENT last EMPTY><!ATTLIST r kind (one|two) 'one' refs IDREFS #IMPLIED>", [], true, default);
 if (parsed.Step != DtdParseStep.Completed) throw new InvalidOperationException();
@@ -12,12 +13,20 @@ var source = parser.Model;
 var compiled = DtdCompiler.Compile(source, new());
 var operation = new ValidationOperation(new() { MaxOperations = null, Limits = new() { EvaluationWork = null } });
 var content = compiled.Elements[0].Content;
+long fixtureBytes = args is ["--measure"] ? GC.GetAllocatedBytesForCurrentThread() - fixtureBefore : 0;
 int state = 0;
 if (!content.TryAdvance(ref state, "名", operation) || !content.TryAdvance(ref state, "last", operation) || !content.IsAccepting(state)) throw new InvalidOperationException();
 if (compiled.Attributes[0].NormalizedDefault != "one" || !compiled.HasUnparsedEntity("e", operation)) throw new InvalidOperationException();
 Console.WriteLine("Demonstration=accepted 名,last; normalized default=one; unparsed entity=e; immutable schema reuse");
 if (args is ["--control"]) return;
 if (args is not ["--measure"]) throw new ArgumentException("Use --control or --measure.");
+Console.WriteLine(JsonSerializer.Serialize(new { domain = "fixture-initialization", numeratorBytes = fixtureBytes, denominatorFixtures = 1 }));
+long positiveBefore = GC.GetAllocatedBytesForCurrentThread();
+var positive = new byte[1024];
+long positiveBytes = GC.GetAllocatedBytesForCurrentThread() - positiveBefore;
+Console.WriteLine(JsonSerializer.Serialize(new { domain = "positive-control", numeratorBytes = positiveBytes, denominatorOperations = 1 }));
+if (fixtureBytes <= 0 || positiveBytes <= 0) throw new InvalidOperationException("Allocation positive control failed.");
+GC.KeepAlive(positive);
 const int Count = 100_000;
 object? sink = null; bool answer = false;
 Action[] actions = [
@@ -47,6 +56,7 @@ long coldBefore = GC.GetAllocatedBytesForCurrentThread();
 for (int i = 0; i < ColdCount; i++) sink = DtdCompiler.Compile(source, new());
 long coldBytes = GC.GetAllocatedBytesForCurrentThread() - coldBefore;
 Console.WriteLine(JsonSerializer.Serialize(new { domain = "owned-compilation", numeratorBytes = coldBytes, denominatorOperations = ColdCount }));
+if (coldBytes <= 0) throw new InvalidOperationException("Owned allocation positive control failed.");
 // Whole heap retention is approximate, inclusive, and disclosed separately from allocation.
 GC.Collect(); GC.WaitForPendingFinalizers(); GC.Collect(); long heapBefore = GC.GetTotalMemory(false);
 var retained = new CompiledDtdModel[100];

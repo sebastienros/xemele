@@ -88,6 +88,13 @@ last-character miss, enumeration hit/miss, owned compilation and composed model 
 `--measure` separately reports ten inclusive warm allocation numerators/100,000
 operations, owned compilation/100, and inclusive whole-heap retention/100 schemas;
 it makes no overhead subtraction. Warm allocation nonzero is an actual failure.
+The task-owned NoEmit probe checks exactly 24 cases and the single ShortRun job
+(3 warmup/3 measurement iterations, one launch); it never builds or generates under
+the lease. The prepared plan bounds allocation at 60 s, benchmarks at 900 s, and
+whole lifecycle at 1050 s with checked direct phase exits, scoped group cleanup,
+initial/final identity and no-child proof. Freeze includes full runtime source,
+probe/sample source/config/generated files, actual binary closure, entire pinned
+SDK/runtime/host closure and stable effective environment.
 No timing/allocation measurements have yet run; measurement requires coordinator
 prepared/frozen lifecycle and exclusive lease. Composition with the future tree
 validator, broader hardware, AOT/trimming and release checks remain later owners.
