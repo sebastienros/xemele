@@ -33,4 +33,10 @@ not-run. All cache-only builds had zero warnings/errors, public API1393 matched,
 normal and XML-only genuine consumers executed,176-task validation and whitespace
 passed. This supersedes semantic completion claims for intermediate52-case
 revisions `1f70573` and `8b5be96`; both actual intermediate runs also passed.
-Allocation/retention/timing has not run. Root's final source acceptance is pending.
+Allocation/retention/timing has not run. Root accepted source8ed24fb and clean evidence0dbac1c after the independent final
+read-only recheck. No residual blockers remained in leap normalization, signed-year
+duration endpoints or bounded arithmetic. The reviewer ran no tests.
+Accepted SHA256 identities:
+TemporalProvider `0e1fc092106bebfb695fcc104be7c922f713558486fd1bd00bc48bd2c3026f11`;
+IntegerArithmetic `5129f2a2e12e9d686f7c893e19aa1b77493eccb79f7ed51ed1b779b77d8d400e`;
+TemporalTests `e2fa246cc5f9d9b7369888c460fbe1e609676b854083638d87829a41f2ad4e48`.
