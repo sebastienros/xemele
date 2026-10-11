@@ -4,11 +4,11 @@
   "milestone": "M7",
   "title": "Legacy libxml2-compatible HTML parser",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M7 coordinator /root/legacy",
   "branch": "codex/m7-legacy",
   "base_revision": "3ebc40ae0b39e8b4867f7819a8da313b2f3b7ecb",
-  "integration_revision": null,
+  "integration_revision": "8709b25b58103743c74dbe373b8eddf9c9e28c03",
   "depends_on": [
     "M7-html-model",
     "M7-html-pi-contract",
@@ -39,7 +39,8 @@
       "evidence": [
         "focused",
         "profile-review",
-        "measurements"
+        "measurements",
+        "root-integration"
       ]
     },
     {
@@ -48,7 +49,8 @@
       "status": "passed",
       "evidence": [
         "focused",
-        "profile-review"
+        "profile-review",
+        "root-integration"
       ]
     },
     {
@@ -60,7 +62,8 @@
         "api",
         "focused",
         "identity-controls",
-        "measurements"
+        "measurements",
+        "root-integration"
       ]
     }
   ],
@@ -127,6 +130,15 @@
       "result": "passed",
       "summary": "Exact positive/final-positive accepted, unknownenvnegative rejected, finalpositive accepted. Final manifest d83aa22d6130bfba338704a68b4c20e64db6e5de0baeb2d78b69c4c5d41dcc1a: 3651 source/43 binary/3852 runtime-host entries; full effective env hash/per-key hashes/SHLVL1/session.",
       "artifact": "docs/reports/M7-legacy/measurements.md"
+    },
+    {
+      "id": "root-integration",
+      "kind": "integration",
+      "revision": "8709b25b58103743c74dbe373b8eddf9c9e28c03",
+      "command": "Pinned offline Release builds; explicit --fx-version10.0.11 legacy namespace543 tests and sample; official compose + unchanged M0 API checker; tasks.py validate; git diff --check",
+      "result": "passed",
+      "summary": "Fresh zero-warning builds;543 actual XML identities Pass, sample passed,1207 compiled API members/3388 immutable fixture identities/bootstrapFalse.31 changed paths owned; measured runtime/test/probe/sample source unchanged. Raw56allocation rows/30NoEmit cases independently inspected after durable release.",
+      "artifact": "docs/reports/M7-legacy/integration.md"
     }
   ],
   "blockers": [],
@@ -139,9 +151,7 @@
       "Exact identity controls; sole exclusive wrapper allphase0/nochild;196608 warmborrowed operations 0 B/30BDNreports",
       "Planning 167 valid and diffcheck pass"
     ],
-    "remaining": [
-      "Coordinator combined-tree integration verification; no worker cumulative suite or x64/repeatability claim"
-    ],
+    "remaining": [],
     "requests": []
   }
 }
