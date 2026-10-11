@@ -4,7 +4,7 @@
   "milestone": "M8",
   "title": "RELAX NG schema compilation",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M8 coordinator01a12c6c-b333-71d3-877f-0d186618e21d / assigned isolated worker",
   "branch": "codex/m8-rng-compile",
   "base_revision": "c00082233aff7ab4680cc3ea08b20f43d76251bc",
@@ -54,8 +54,20 @@
     {
       "id": "M8-rng-compile-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "focused",
+        "frozen-api",
+        "public-api",
+        "resolver42",
+        "prerequisites",
+        "xml-only",
+        "review",
+        "control",
+        "measurement-preflight",
+        "allocation",
+        "planning-final"
+      ]
     }
   ],
   "implementation": [
@@ -158,17 +170,38 @@
       "result": "passed",
       "summary": "198 identities verified; bounded ps permission preflight passed. Exact grant binds manifestSHA256; supervisor reserves25seconds work+5seconds cleanup in30total, closes log, reaps child, confirms group absence, and records final identities/manifest/lifecycle in finally. All binaries and eleven-route control unchanged; only driver identity changed. No measurement occurred.",
       "artifact": null
+    },
+    {
+      "id": "allocation",
+      "kind": "check",
+      "revision": "d2066ee11a6c2616a5806ce67ae04385ab703316",
+      "command": "python3 docs/reports/M8-rng-compile/lease.py --granted dad039ab3cd24e58cebb5bb0e7e5379c3155b60a837ef21a9f0695295f55ba93 (root-executed once under durable combined lease M8-rng-temporal-measurement-1)",
+      "result": "passed",
+      "summary": "Arm64 .NET10.0.11; tiered/server/concurrent GC disabled. Five baseline/borrowed routes0B/op across64 consumed calls after32warm calls; positive152B/op; owned simple8056, recursive31448, name-overlap construction/scratch440, invalid diagnostics12976B/op. First owned parse/compile23624B; approximate retained16graph delta185608B; process working set51773440B. Allocation-only, no BDN/timing/cross-architecture claim. Root grantcbf9167 and RELEASE49b063e before raw inspection. PID24472 exit0/reaped/groupempty/logclosed;198 identities and manifest hash unchanged;0.281921666s within30s. See owned README for exact totals and limits; raw artifacts retained ignored.",
+      "artifact": null
+    },
+    {
+      "id": "planning-final",
+      "kind": "check",
+      "revision": "f36a5a5f0fa153a3508f1fb3d34d5343b053f32a",
+      "command": "python3 tools/planning/tasks.py validate; git diff --check",
+      "result": "passed",
+      "summary": "Validated176 tasks including implemented M8-rng-compile evidence, schema, acyclic dependencies, additive milestones and ordered ownership; whitespace check passed. No code/tests/measurements rerun after metadata-only handoff.",
+      "artifact": null
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Compiler implemented and final correctness/API/XML-only checks pass; allocation-only probe prepared, awaiting explicit grant. Task remains in_progress until applicable allocation evidence is recorded.",
+    "summary": "Full internal RELAX NG2001 XML compiler implemented on isolated branch; immutable dense graph/name classes/scopes/combine/includes/externalRef/simplification and datatype-independent restrictions. Original value/param contexts and detached datatype checkpoints preserved for later facade. Final depth finding resolved; no public facade or fake datatype implementation.",
     "checks": [
-      "88 focused,42 resolver,131 prerequisite correctness cases passed;119 internal frozen +1393 public declarations matched; real XML-only consumer and11-route counters-disabled control passed.",
-      "Planning validation previously passed176 tasks; final validator rerun follows metadata preparation."
+      "Pinned Release build zero warnings/errors;88 focused,42 resolver,131 verified prerequisite tests passed with exact positive counts.",
+      "119 exact frozen compiler declarations and1393 complete public declarations matched; real source-linked XML-only consumer passed.",
+      "11-route counters-disabled control/preflight passed; root-executed single allocation-only measurement passed: five zero borrowed/baseline routes, positive/owned/cold/retained costs documented in docs/reports/M8-rng-compile/README.md;198 identities unchanged and cleanup/release complete.",
+      "Planning validate176 passed before final metadata; final rerun recorded by planning evidence. Historical stack-overflow regression and unrelated inventory-discovery limitation are documented honestly."
     ],
     "remaining": [
-      "Explicit root grant, one bounded allocation-only probe, lifecycle RELEASE before raw inspection, concise allocation evidence, final planning validation; then mark implemented, integration_revision remains null."
+      "Coordinator integration and integrated verification, then record integration_revision and mark verified.",
+      "Later verified RNG validation facade must finalize all datatype checkpoints with real libraries/facets/regex, conjunctive repeated RNG pattern params, non-pattern duplicates/whitespace semantics; details in facade-join.md."
     ],
     "requests": []
   }
