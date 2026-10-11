@@ -4,7 +4,7 @@
   "milestone": "M6",
   "title": "XML toolkit samples and integration checks",
   "kind": "verification",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M6 coordinator worker integration",
   "branch": "codex/m6-integration",
   "base_revision": "d068f9bde24d76a10b88535a70bc5c597b99f59f",
@@ -35,29 +35,136 @@
     {
       "id": "M6-integration-A1",
       "description": "Compose toolkit examples and catalog/include corpora with package/trimming/AOT XML smoke coverage.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "focused-composition",
+        "offline-cli",
+        "external-package-deployment",
+        "compiled-api",
+        "source-review",
+        "planning-scope"
+      ]
     },
     {
       "id": "M6-integration-A2",
       "description": "Offline integration corpus, CLI samples and net10.0 package consumers pass.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "focused-composition",
+        "offline-cli",
+        "external-package-deployment",
+        "compiled-api",
+        "source-review",
+        "planning-scope"
+      ]
     },
     {
       "id": "M6-integration-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "focused-composition",
+        "offline-cli",
+        "external-package-deployment",
+        "compiled-api",
+        "source-review",
+        "planning-scope"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "samples/XmlToolkit/Program.cs; tests/Xemele.Conformance.Tests/Integration/ToolkitScenario.cs: public-only composed offline catalog/include/DTD/XPath/c14n/BCL pipeline",
+    "tests/corpora/catalogs/toolkit.xml; tests/corpora/xinclude/: final-URI nested fixtures and frozen output",
+    "tests/Xemele.Conformance.Tests/Integration/ToolkitTests.cs: 3 focused integration controls",
+    "tests/PackageSmoke/Xml/run.py; Consumer.csproj: fresh offline external package/trim/native consumers",
+    "samples/XmlToolkit/cli.py: seven offline CLI subprocess examples"
+  ],
+  "evidence": [
+    {
+      "id": "focused-composition",
+      "kind": "check",
+      "revision": "01574c80d23fe05a4af425dd5b8b16cb88642781",
+      "command": "Pinned host Release forced rebuild of XmlToolkit and Xemele.Conformance.Tests; actual --fx-version 10.0.11 sample and test runner -method Xemele.Conformance.Tests.Integration.ToolkitTests.* -result-xml artifacts/M6-integration/tests.xml",
+      "result": "passed",
+      "summary": "3/3 selected integration tests pass; public source sample matches frozen output; actual .NET 10.0.11 Arm64; no warnings/errors.",
+      "artifact": "docs/reports/M6-integration/results.md"
+    },
+    {
+      "id": "offline-cli",
+      "kind": "check",
+      "revision": "01574c80d23fe05a4af425dd5b8b16cb88642781",
+      "command": "python3 samples/XmlToolkit/cli.py",
+      "result": "passed",
+      "summary": "All seven real offline command processes pass; explicit local-root XInclude grant and independent expected outputs.",
+      "artifact": "docs/reports/M6-integration/results.md"
+    },
+    {
+      "id": "external-package-deployment",
+      "kind": "check",
+      "revision": "01574c80d23fe05a4af425dd5b8b16cb88642781",
+      "command": "python3 tests/PackageSmoke/Xml/run.py (approved elevated native toolchain execution)",
+      "result": "passed",
+      "summary": "Fresh outside-repo package cache/local-feed-only restore, external SDK 10.0.400 control, identical source/package DLL, managed/trimmed/genuine Mach-O arm64 NativeAOT outputs equal; all actual .NET 10.0.11 Arm64. Exact hashes and commands retained; no publication.",
+      "artifact": "docs/reports/M6-integration/results.md"
+    },
+    {
+      "id": "compiled-api",
+      "kind": "check",
+      "revision": "01574c80d23fe05a4af425dd5b8b16cb88642781",
+      "command": "Pinned Release ApiCheck build; python3 docs/reports/M5-validation-model/check_api.py",
+      "result": "passed",
+      "summary": "1054 compiled members matched; no runtime/API changes.",
+      "artifact": "docs/reports/M6-integration/results.md"
+    },
+    {
+      "id": "source-review",
+      "kind": "review",
+      "revision": "01574c80d23fe05a4af425dd5b8b16cb88642781",
+      "command": "Independent M6 coordinator source-only review of 1049a14 and narrow corrected 01574c8 harness review",
+      "result": "passed",
+      "summary": "Composition approved; external SDK pinning and exception-safe own-process-group cleanup corrections reviewed, no remaining findings. No review executable checks claimed.",
+      "artifact": "docs/reports/M6-integration/results.md"
+    },
+    {
+      "id": "planning-scope",
+      "kind": "check",
+      "revision": "01574c80d23fe05a4af425dd5b8b16cb88642781",
+      "command": "python3 tools/planning/tasks.py validate; git diff --check; scoped owned ps inspection",
+      "result": "passed",
+      "summary": "163 tasks valid; diff clean; only task-owned paths and record edited; no owned integration process remains.",
+      "artifact": "docs/reports/M6-integration/results.md"
+    },
+    {
+      "id": "initial-package-preparation",
+      "kind": "check",
+      "revision": "1049a14fd0a627da70069efc20b39c9e05e9b355",
+      "command": "python3 tests/PackageSmoke/Xml/run.py initial preparation",
+      "result": "failed",
+      "summary": "External consumer selected SDK 11 preview and trim publish rejected unsupported --no-incremental MSB1001; managed runtime10.0.11 passed, no passing trim/native claim. Corrected and full rerun at01574 passes; initial logs retained.",
+      "artifact": "docs/reports/M6-integration/results.md"
+    },
+    {
+      "id": "cumulative-gate-deferred",
+      "kind": "check",
+      "revision": "01574c80d23fe05a4af425dd5b8b16cb88642781",
+      "command": "Full inherited suite/allocation measurement/platform matrix",
+      "result": "skipped",
+      "summary": "Not run under this ordinary integration task; M6-gate owns cumulative checks and exclusive measurement lease.",
+      "artifact": "docs/reports/M6-integration/results.md"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "",
-    "checks": [],
-    "remaining": [],
+    "summary": "Public offline toolkit composition, frozen catalog/include corpus, seven CLI examples and external package/trim/native smokes implemented; awaiting coordinator integration verification.",
+    "checks": [
+      "3 focused tests, source sample and seven CLI processes pass on actual .NET10.0.11.",
+      "External initially absent package cache/local-only feed, SDK10.0.400, byte-identical DLL and managed/trim/native frozen output; nativeosx-arm64 actually run.",
+      "API1054, planning163, owned diff and no owned processes; independent source review approved."
+    ],
+    "remaining": [
+      "Coordinator independently inspect ignored raw/external artifacts, integrate, rerun applicable checks and mark verified.",
+      "M6-gate owns full cumulative suite/measurements/platform qualification."
+    ],
     "requests": []
   }
 }
