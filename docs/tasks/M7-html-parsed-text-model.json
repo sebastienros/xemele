@@ -4,7 +4,7 @@
   "milestone": "M7",
   "title": "Preserve per-token quotas when storing merged parsed HTML text",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M7 coordinator /root",
   "branch": "codex/m7-html-parsed-text-model",
   "base_revision": "3739c3cb8256c965ab80d36353dfc9161d4e9116",
@@ -31,23 +31,44 @@
     {
       "id": "M7-html-parsed-text-model-A1",
       "description": "Add internal text-only creation/replacement for data whose token and input quotas were already enforced, preserving public factory/setter checks and permanent owner/structural quotas.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "repair-checks"
+      ]
     },
     {
       "id": "M7-html-parsed-text-model-A2",
       "description": "Prove merged scalar text beyond per-token cap, null/kind rejection, public quota atomicity and ownership/depth preservation; run focused inherited model checks and unchanged API.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "repair-checks"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/HtmlCommon/Model.cs: internal CreateParsedText/SetParsedText/ImportParsed and CopyCore parsed-text flag",
+    "tests/Xemele.Tests/M7-html-parsed-text-model/ParsedTextTests.cs:4focused facts"
+  ],
+  "evidence": [
+    {
+      "id": "repair-checks",
+      "kind": "check",
+      "revision": "7d95ed6d896e631a238a41d12b394f751920bdd3",
+      "command": "Pinned offline Release builds; explicitfx10.0.11 Xemele.Tests.dll HtmlParsedText/HtmlProcessingInstructions/HtmlModel; official compose/API checker; prepared exclusive allocation wrapper; tasks.py validate; git diff --check",
+      "result": "passed",
+      "summary": "29facts,0warnings,API1230/3388fixtures/bootstrapFalse;32768prepared updates0B/public andparsedownedcreation256B each; lease released beforeinspection. Initialdepthfixture failure preserved in report.",
+      "artifact": "docs/reports/M7-html-parsed-text-model/verification.md"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "",
-    "checks": [],
-    "remaining": [],
+    "summary": "Internal parsed text persistence/copy exempts only merged-text token cap; public checks/API unchanged.",
+    "checks": [
+      "29focused/inherited tests,API1230,planning169,allocation lease passed; initial incorrect depth witness corrected honestly"
+    ],
+    "remaining": [
+      "Builder must use only after integrated verification; buffer contiguous text and measure full composition."
+    ],
     "requests": []
   }
 }
