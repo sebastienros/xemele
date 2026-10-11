@@ -4,7 +4,7 @@
   "milestone": "M6",
   "title": "BCL XML integration adapters",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M6 coordinator worker M6-adapters",
   "branch": "codex/m6-adapters",
   "base_revision": "c1561c06b783cb7a5f5790ef26cdae8a8c10ca49",
@@ -37,7 +37,8 @@
       "evidence": [
         "focused-correctness",
         "sample-api",
-        "review-corrections"
+        "review-corrections",
+        "exclusive-measurements"
       ]
     },
     {
@@ -46,17 +47,20 @@
       "status": "passed",
       "evidence": [
         "focused-correctness",
-        "review-corrections"
+        "review-corrections",
+        "exclusive-measurements"
       ]
     },
     {
       "id": "M6-adapters-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
+      "status": "passed",
       "evidence": [
         "sample-api",
         "prepared-controls",
-        "review-corrections"
+        "review-corrections",
+        "exclusive-measurements",
+        "raw-results-inspection"
       ]
     }
   ],
@@ -119,21 +123,38 @@
       "result": "passed",
       "summary": "Exact intended parent\u2192child path positive initial/finalfreeze0, wrapperexit0/runs[]/nochildren. Unknownvariable negative rejects initial/finalfreeze1, wrapperexit1/runs[]/nochildren. Only proven SHLVL pinned explicitly; completeenv SHA and safe perkeyhashes retain all other keys. Runtime source/generated/binary/SDK hashes unchanged since23passed correctness; no rebuild needed for owned Python/plan/docs-only correction. No allocations/timing executed. An additional repeated identity control was inadvertently overlapped with this taskmetadata edit: initial0/final1/nochildren/runs[], correctly rejecting changed source. A fresh postcommit sequential freeze/control remains to be reported; no passing repeat claimed here.",
       "artifact": "docs/reports/M6-adapters/preparation.md"
+    },
+    {
+      "id": "exclusive-measurements",
+      "kind": "check",
+      "revision": "4b797dda27080f48151cfa2c6bb896cc739934bb",
+      "command": "python3 docs/reports/M6-adapters/run_measurements.py --exclusive-grant (sole-command intended worker escalated context; durable lease m6-adapters-4b797dd granted main532e477, executed exactly once)",
+      "result": "passed",
+      "summary": "Initialidentity0/allocation0/16casebenchmark0/finalidentity0/wrapper0/nochildren=true; full frozen source5084/binary150/runtime3852/host/completeenv SHA db2f1ae5f6ea05b4c41ca8d02678618ada39ee01af07f5f38c0f8b07c6fcc6f5 unchanged. Durable release mainca11f7e before raw inspection. Actual.NET10.0.11/Arm64. Warm32\u00d7256groups inclusive0B/all32batches0, positive1048B. Cold297856B, reader owned positive60344/111032/127960B perop; snapshots positive, trueasync process-wide positive; invalid58800B/op; retained16captures delta1424896B. Exactly16successful nonzero ShortRunNoEmit3warmups3iterations1launch cases; total111.08s. No whole-reader/snapshot/async zero claim; informative timing and priority/CI limitations documented.",
+      "artifact": "docs/reports/M6-adapters/results.md"
+    },
+    {
+      "id": "raw-results-inspection",
+      "kind": "check",
+      "revision": "4b797dda27080f48151cfa2c6bb896cc739934bb",
+      "command": "Read allocation.json/log, four BDN CSV/Markdown reports and benchmark.log after durable release; Python csv.DictReader/assertions verify counts6reader+6cursor+3snapshot+1rejection, all16nonzero means/ShortRunNoEmit3warmup3iteration1launch,16actualRuntime10.0.11headers; derive inclusive numerators/128operation denominators and hash raw inputs.",
+      "result": "passed",
+      "summary": "All16success reports mechanically checked; allocation/BDN raw inspected independently by worker and coordinator after release. Summary tables retain inclusive positive owned/setup/async/error costs despite cursor dash. Reader substantially slower/moreallocating than BCL; capture property caching trades construction/retention for warmed cursor costs; one wide CI and denied priority reported. Only summaryanalysis committed; ignored raw preserved for combined integration review/cleanup. Runtime/generated/binary source unchanged since23focused passing correctness.",
+      "artifact": "docs/reports/M6-adapters/results.md"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Source reviewed and23tests/API/sample pass. First lease stopped before workloads due solely shell SHLVL mismatch. Explicit SHLVL pin plus completeenvhash/perkeyhash and exact nonmeasuring wrapper controls now pass; fresh PARK pending renewed exact lease. Remains in_progress/integration null.",
+    "summary": "Implemented real BCL reader adapter and shared immutable navigator snapshot.23focused tests/sample/privateAPI1005 pass actual10.0.11;16successful benchmarkcases and inclusive allocation controls pass under corrected exclusive lease. First identity-only failure/cause retained honestly; allcriteria passed on branch, integration_revision null.",
     "checks": [
-      "17 focused tests passed actual10.0.11; sample passed; 57 frozen rows and 1005 full API matched; nonmeasuring16case harness controls passed.",
-      "Initial sandbox default restore was delayed/failing; scoped ownPID57574 cleanup and bounded escalated cache-only restore succeeded. Initial namespace CLI flag rejected, corrected to -namespace. Initial entity-text assertion assumed unfragmented existing stream token and was corrected to aggregate event text; final17passed.",
-      "dotnet-inspect skill applied; pinned dnx attempt failed offline NuGet DNS; installed BCL compiler/reference+actual golden metadata validated full required shape.",
-      "At3a0ba1e revised23tests allpassed; sample/API1005/probe16controls passed. Unknown formerly unlisted childenv variable rejects fullfreeze; no secretvaluesprinted.",
-      "Failed first lease honestly retained; no measurements. Exact sole-command wrapper positive0/0/0/runs[]/nochildren, unknownvariable negative1/1/1/runs[]/nochildren. Extra identity control correctly rejected an inadvertent concurrent taskmetadata edit at finalfreeze (initial0/final1/nochildren/runs[]); fresh sequential postcommit check follows. No runtime source/binary changes or unneeded rebuilds."
+      "Pinned Release builds0warnings;23tests allpassed0failed0skipped at3a0ba1e; independent sample passed; actual57frozen adapter rows/fullprivate1005union matched.",
+      "Logical mixedtext BCL controls sync/async chunk1/2/4096, namespaces/attrs/ownership/error/disposal/overlap/redirectedentitybase, navigator clone/snapshot/coalescing/ID/scope/incomplete/unsupported covered.",
+      "Source-only harness corrections preserve runtime/generated/binary hashes. Exact sole-command identitycontrols/unknownvariable negative pass; fullcompleteenv frozen with only provenSHLVL pin; agent CODEX_THREAD_ID remains frozen.",
+      "Corrected lease at4b797dd executed once, allphase/initial/finalexit0, nochildren; durable release before rawinspection.16nonzero successful ShortRunNoEmitcases(actual10.0.11), warminclusive0B/8192groups, positive1048B, cold/owned/trueasync/retained positive evidence in results.md.",
+      "Failed first lease beforephases and inadvertent metadata-edit final-only identitycontrol failure preserved; no unrun checks passing or measurement retries."
     ],
     "remaining": [
-      "Fresh prepared PARK/full freeze, independent source review, exact coordinator allocation/benchmark lease, lifecycle/final identity/nochildren and durable release before raw inspection.",
-      "Inspect raw and commit only summary tables/analysis; set implemented only after measured controls pass."
+      "Coordinator reviewed integration checks and verified status; preserve ignored artifacts/M6-adapters raw until combined integration inspection/cleanup."
     ],
     "requests": []
   }
