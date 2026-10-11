@@ -81,10 +81,11 @@ internal sealed class TemporalDatatypeProvider : IDatatypeFamilyProvider
             Work(op, 1);
             // D.1 admits leap-second fractions. Preserve a structurally possible
             // leap instant before the following minute; inappropriate dates
-            // normalize as overflow. This does not consult a historical schedule.
+            // normalize as overflow. Nonzero timezone normalization invokes E
+            // (§3.2.7.4A), which also overflows60. No historical schedule is used.
             bool leap = p == DatatypePrimitive.Time
-                ? !zoned || IsMidnight(hour, minute, zone, op)
-                : zoned ? IsLeapBoundary(month, day, hour, minute, zone, op)
+                ? !zoned || zone == 0 && IsMidnight(hour, minute, 0, op)
+                : zoned ? zone == 0 && IsLeapBoundary(month, day, hour, minute, 0, op)
                 : CouldBeLeapBoundary(month, day, hour, minute, op);
             if (leap) phase = -1;
         }
@@ -106,14 +107,9 @@ internal sealed class TemporalDatatypeProvider : IDatatypeFamilyProvider
         {
             // Keep the uncertainty bounds unwrapped, including for recurrent
             // time. Equality at either endpoint remains indeterminate.
-            int lowPhase = 0, highPhase = 0;
-            if (second == 60)
-            {
-                if (p == DatatypePrimitive.Time ? IsMidnight(hour, minute, 50400, op) : IsLeapBoundary(month, day, hour, minute, 50400, op)) lowPhase = -1;
-                if (p == DatatypePrimitive.Time ? IsMidnight(hour, minute, -50400, op) : IsLeapBoundary(month, day, hour, minute, -50400, op)) highPhase = -1;
-            }
-            low = MakeKey(Add(whole, -50400, op), fraction, op, lowPhase);
-            high = MakeKey(Add(whole, 50400, op), fraction, op, highPhase);
+            // Synthetic ±14 timezones also pass through E: leap60 overflows.
+            low = MakeKey(Add(whole, -50400, op), fraction, op);
+            high = MakeKey(Add(whole, 50400, op), fraction, op);
         }
         Components(op, 1); Poll(op);
         return new(DatatypeTypes.Name(type.LocalName), p, this, zoned, key, low, high, default);

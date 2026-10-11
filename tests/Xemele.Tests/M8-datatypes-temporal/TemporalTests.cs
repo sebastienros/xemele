@@ -161,8 +161,10 @@ public sealed class TemporalTests
         Order("dateTime", "1998-12-31T23:59:59.999999999999Z", "1998-12-31T23:59:60Z", XmlValueOrder.Less);
         Order("dateTime", "1998-12-31T23:59:60Z", "1998-12-31T23:59:60.0000000001Z", XmlValueOrder.Less);
         Order("dateTime", "1998-12-31T23:59:60.9999999999Z", "1999-01-01T00:00:00Z", XmlValueOrder.Less);
-        Order("dateTime", "1999-01-01T00:59:60.123000+01:00", "1998-12-31T23:59:60.123Z", XmlValueOrder.Equal);
-        Order("dateTime", "1998-12-31T18:59:60.123-05:00", "1998-12-31T23:59:60.123Z", XmlValueOrder.Equal);
+        Order("dateTime", "1999-01-01T00:59:60.123000+01:00", "1999-01-01T00:00:00.123Z", XmlValueOrder.Equal);
+        Order("dateTime", "1998-12-31T18:59:60.123-05:00", "1999-01-01T00:00:00.123Z", XmlValueOrder.Equal);
+        Order("dateTime", "1998-12-31T23:59:60.123Z", "1998-12-31T18:59:60.123-05:00", XmlValueOrder.Less);
+        Order("dateTime", "1998-12-31T23:59:60.123-00:00", "1998-12-31T23:59:60.123Z", XmlValueOrder.Equal);
         // D.1's structural quarter-end rule, not a historical IERS schedule.
         foreach (string end in new[] { "2000-03-31", "2000-06-30", "2000-09-30", "2000-12-31" }) Parse("dateTime", end + "T23:59:60.5Z");
         Order("dateTime", "1998-12-30T23:59:60.125Z", "1998-12-31T00:00:00.125Z", XmlValueOrder.Equal);
@@ -170,8 +172,12 @@ public sealed class TemporalTests
         Order("dateTime", "1999-01-01T00:59:60.5+02:00", "1998-12-31T23:00:00.5Z", XmlValueOrder.Equal);
         Order("dateTime", "1998-12-31T23:59:60.5", "1998-12-31T23:59:60.5Z", XmlValueOrder.Indeterminate);
         Order("dateTime", "1998-12-31T23:59:60.9", "1999-01-01T00:00:00", XmlValueOrder.Less);
+        Order("dateTime", "1998-12-31T09:59:60", "1998-12-31T23:59:60Z", XmlValueOrder.Indeterminate);
+        Order("dateTime", "1998-12-31T09:59:60", "1999-01-01T00:00:00Z", XmlValueOrder.Indeterminate);
+        Order("dateTime", "1998-12-31T09:59:60", "1999-01-01T00:00:00.00001Z", XmlValueOrder.Less);
         Order("time", "23:59:59.999Z", "23:59:60Z", XmlValueOrder.Less);
-        Order("time", "00:59:60.50+01:00", "23:59:60.5Z", XmlValueOrder.Equal);
+        Order("time", "00:59:60.50+01:00", "00:00:00.5Z", XmlValueOrder.Equal);
+        Order("time", "23:59:60.5+00:00", "23:59:60.5Z", XmlValueOrder.Equal);
         Order("time", "12:00:60.5Z", "12:01:00.5Z", XmlValueOrder.Equal);
         Invalid("dateTime", "1998-12-31T23:59:61Z", "1998-12-31T24:00:60Z");
     }
