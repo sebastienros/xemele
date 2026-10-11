@@ -4,15 +4,14 @@
   "milestone": "M8",
   "title": "Schematron schema compilation",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "blocked",
   "owner": "M8 coordinator01a12c6c-b333-71d3-877f-0d186618e21d / assigned isolated worker",
   "branch": "codex/m8-sch-compile",
   "base_revision": "ddd69df2f2947ec1ae6797a228ce1d7f7366dacf",
   "integration_revision": null,
   "depends_on": [
     "M8-model",
-    "M8-source-locations",
-    "M8-schema-resource-base"
+    "M8-source-locations"
   ],
   "goals": [
     "G15"
@@ -53,7 +52,9 @@
   ],
   "implementation": [],
   "evidence": [],
-  "blockers": [],
+  "blockers": [
+    "Confirmed loader conflates inherited xml:base with final referring resource identity. M8-schema-resource-base must be integrated and verified before resource criteria pass; add that dependency then resume in_progress. Independent owned compiler work continues."
+  ],
   "handoff": {
     "summary": "",
     "checks": [],
