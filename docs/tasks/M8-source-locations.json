@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "id": "M8-source-locations",
+  "milestone": "M8",
+  "title": "Retain original XML source locations for schema compilation",
+  "kind": "feature",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "depends_on": [
+    "M8-model",
+    "M5-dtd-instance-provenance"
+  ],
+  "goals": [
+    "G13",
+    "G14",
+    "G15"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/schemas.md"
+  ],
+  "owns": [
+    "src/Xemele/Tree/SchemaSourceLocations/",
+    "src/Xemele/Parsing/Dom/DomSink.cs",
+    "src/Xemele/Validation/SchemaCommon/CompileContext.cs",
+    "src/Xemele/Validation/SchemaCommon/ResourceLoader.cs",
+    "tests/Xemele.Tests/M8-source-locations/",
+    "benchmarks/Xemele.Benchmarks/M8-source-locations/",
+    "docs/reports/M8-source-locations/"
+  ],
+  "api_or_output": "Internal revision-qualified source locations for ordinary parsed XML nodes/attributes/namespaces and guarded schema scope lookups; no public API change",
+  "acceptance": [
+    {
+      "id": "M8-source-locations-A1",
+      "description": "Retain copied original callback locations and document origin in a document-owned bounded-by-DOM sidecar without lexical buffers. Expose original node/attribute/namespace coordinates only for unchanged complete strict XML input; preserve known origin without XML declaration and guarded schema lookups. No fabricated coordinates for programmatic, cloned/imported, HTML, recovered or mutated input.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M8-source-locations-A2",
+      "description": "Test distinct local declaration/constraint positions, character scalar coordinates/null byte offsets, chunked byte input with supplementary scalars/newlines/byte offsets, redirected origins, mutation before/during traversal, foreign handles and untracked cases. Preserve prior XML/DTD/model behavior and public API.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M8-source-locations-A3",
+      "description": "Record focused checks, exact helper joins and source ownership plus applicable added metadata construction/retention and zero-allocation warm lookup evidence at pinned runtime. Integrate before schema compiler consumers use it.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "Bounded shared repair confirmed by read-only review: DomSink discards ordinary callback locations; frozen XSD local particle/attribute-use provenance needs them.",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}
