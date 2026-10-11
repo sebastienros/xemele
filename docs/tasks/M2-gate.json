@@ -4,7 +4,7 @@
   "milestone": "M2",
   "title": "Verify complete XML profile",
   "kind": "gate",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "coordinator:M2-gate",
   "branch": "codex/m2-gate",
   "base_revision": "dc58c30e92600104ce69ea910fbdaa30b20856fe",
@@ -30,29 +30,88 @@
     {
       "id": "M2-gate-A1",
       "description": "Verify complete strict profile and separately documented recovery, including malicious-input resource constraints.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "combined-gate",
+        "strict-full-corpus"
+      ]
     },
     {
       "id": "M2-gate-A2",
       "description": "Cumulative conformance/differential/resource tests pass without a later DTD validator or catalog implementation.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "combined-gate",
+        "strict-full-corpus"
+      ]
     },
     {
       "id": "M2-gate-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "demo-api-preservation",
+        "combined-gate",
+        "planning-scope"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "docs/reports/M2-gate/combined-checks.json: actual cumulative runtime/conformance/differential execution and embedded allocation controls",
+    "docs/reports/M2-gate/full-grammar.json: reused validated original-byte independent semantic oracle at integrated gate build",
+    "docs/reports/M2-gate/demo-api-summary.json: actual strict/recovery outputs and compiledAPI377",
+    "docs/reports/M2-gate/preservation-audit.json: exact input equality preserves passing package/measurement evidence"
+  ],
+  "evidence": [
+    {
+      "id": "combined-gate",
+      "kind": "check",
+      "revision": "10cf329e0f0c3e42322271fe8b37bd93ddf024a5",
+      "command": "Pinned Release builds, then dotnet tests/Xemele.Tests, Xemele.Conformance.Tests and Xemele.Differential.Tests assemblies -noColor -result-xml <temporary>; bounded root-only prepared execution window",
+      "result": "passed",
+      "summary": "4904 runtime +259conformance +311differential =5474 actual passed;0failed/0skipped. Includes separate recovery and malicious denial/cycle/quota/cancellation/resource cleanup, strict admission and bounded streaming, prior milestone checks and existing allocation-child controls. Full source/test closure unchanged, transient XML/corpus/child artifacts removed.",
+      "artifact": "docs/reports/M2-gate/combined-checks.json"
+    },
+    {
+      "id": "strict-full-corpus",
+      "kind": "check",
+      "revision": "10cf329e0f0c3e42322271fe8b37bd93ddf024a5",
+      "command": "python3 -B docs/reports/M2-conformance-grammar/full_grammar.py <absolute gate-owned report stem>",
+      "result": "passed",
+      "summary": "2585 originalbytes:1394accepted exactindependent models+allcallbackpause,1191 normative rejections;3386resources hashverified;771reference divergences resolved; all1394modelhashes/424outputwitnesses/771resolutions equal historical accepted proof. All childsuccess/finalsource-outputidentity/cleanup pass.",
+      "artifact": "docs/reports/M2-gate/full-grammar.json"
+    },
+    {
+      "id": "demo-api-preservation",
+      "kind": "check",
+      "revision": "10cf329e0f0c3e42322271fe8b37bd93ddf024a5",
+      "command": "Actual compiled strict/recovery samples; ApiCheck compare compiled Xemele.dll with canonical frozen fragment union; source/test/config/API/sample/workload byte equality audit",
+      "result": "passed",
+      "summary": "Strict and recovery demo outputs match authored approval; API377matches. Exact365tracked input equality preserves actual successful source/freshpackage atbeec5a4 and allocation/timing at95705dc; no metadata-only replay or unproved new byte-equality claim.",
+      "artifact": "docs/reports/M2-gate/preservation-audit.json"
+    },
+    {
+      "id": "planning-scope",
+      "kind": "check",
+      "revision": "10cf329e0f0c3e42322271fe8b37bd93ddf024a5",
+      "command": "python3 -B -m unittest discover -s tools/planning -p test_tasks.py; python3 tools/planning/tasks.py validate; git diff --check",
+      "result": "passed",
+      "summary": "14planningcontrols passed;138task graph/schema/evidence/ownership checks passed; whitespace clean. Gate uses only integratedM0-M2 dependencies; no later module needed.",
+      "artifact": null
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Gate assignment: comprehensive Release cumulative runtime, contract, conformance and differential tests; exact original2585 strict full-grammar with accepted-model oracles/allcallbackpause/3386resource hashes; separate recovery/resource denial-cycle-quota-cleanup tests; actual strict/recovery demos, API377 and fresh package evidence preserved only with unchanged actual source/config/workload proof. Build/preparation before bounded isolated execution of embedded allocation checks; no timing replay for metadata-only changes. No later validator/catalog dependency. Failures remain blockers; source-only or discovery evidence never counts as execution.",
-    "checks": [],
-    "remaining": [],
+    "summary": "Complete strict nonvalidating XML1.0FifthEdition/Namespaces1.0ThirdEdition and separate documented recovery verified on actual integrated Release gate build. Comprehensive cumulativechecks5474 and full original2585 strictsemantic cases pass. No product/source/config changes in gate; preserve valid historical package/performance with exact input proof.",
+    "checks": [
+      "5474actualtests0fail/0skip",
+      "2585originalcases/1394models/1191rejects/3386resources; all children/finalfreeze/cleanup pass",
+      "actualstrict/recoverydemo andAPI377",
+      "14planningcontrols/138taskvalidation/whitespace"
+    ],
+    "remaining": [
+      "Coordinator integration verification metadata and cleanup; pause after verifiedM2 per user."
+    ],
     "requests": []
   }
 }

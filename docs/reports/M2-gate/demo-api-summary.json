@@ -1,0 +1,64 @@
+{
+  "revision": "10cf329e0f0c3e42322271fe8b37bd93ddf024a5",
+  "result": "passed",
+  "reason": "Correct inspected demo assembly path; failed invocation performed no product work. Passing tests/corpus not repeated.",
+  "commands": [
+    {
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "samples/M2-conformance/bin/Release/net10.0/Sample.dll"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "samples/M2-recovery/bin/Release/net10.0/M2-recovery.dll"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "build",
+        "docs/reports/M0-contracts/ApiCheck/ApiCheck.csproj",
+        "-c",
+        "Release",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "docs/reports/M0-contracts/ApiCheck/bin/Release/net10.0/ApiCheck.dll",
+        "compare",
+        "src/Xemele/bin/Release/net10.0/Xemele.dll",
+        "/var/folders/qn/lq74424935j69rxktvp5tqwc0000gn/T/m2-gate-api-ygu8plnz/union.txt"
+      ],
+      "exitCode": 0
+    }
+  ],
+  "strictDemo": {
+    "profile": "XML 1.0 Fifth Edition / Namespaces 1.0 Third Edition; nonvalidating",
+    "root": "{urn:root}r",
+    "attribute": "{urn:part}id=7",
+    "tokenizedDefault": "alpha beta",
+    "entity": "{urn:part}item:A&B",
+    "resourceOpens": 2,
+    "resourceDisposals": 2,
+    "symbolicDefaults": 1,
+    "unresolvedContent": 1,
+    "lossRefusals": 3
+  },
+  "recoveryDemo": "complete=True; wellFormed=False; diagnostics=2\n<report id=\"first\"><item>ready</item></report>\nXML.Recovery.DuplicateAttribute at 1:20; byteOffset=absent\nXML.Recovery.AncestorClose at 1:43; byteOffset=absent\nedited=yes",
+  "compiledApi": {
+    "members": 377,
+    "canonicalSha256": "5e1dc1470c4ab2a1c501ece47453e4e86fe8a24922673694dcdf16cc781d4d5a",
+    "assemblySha256": "04b0b2f9895413d9164c9890420f15658ef7a875afd35c109413e3be50dbe5cd",
+    "matched": true
+  }
+}
