@@ -15,6 +15,7 @@ internal sealed partial class DomSink : IXmlEventSink, IXmlValidationProvenanceS
     private readonly CancellationToken cancellation;
     private XmlNode parent;
     private XmlTextKind textKind;
+    private XmlLocation textLocation;
     private string target = "";
     private readonly StringBuilder text = new();
     internal XmlDocument Document { get; }
@@ -35,7 +36,12 @@ internal sealed partial class DomSink : IXmlEventSink, IXmlValidationProvenanceS
         DeclarationValidated = true;
         Diagnostic = decoder!.ValidateDeclaration([], location);
     }
-    public bool StartDocument(XmlLocation location) => true;
+    public bool StartDocument(XmlLocation location)
+    {
+        cancellation.ThrowIfCancellationRequested();
+        Document.RecordSourceOrigin(location);
+        return true;
+    }
     public bool Declaration(XmlDeclarationView declaration)
     {
         Document.SetValidationDeclaration(declaration.Standalone, declaration.Location);
@@ -61,6 +67,7 @@ internal sealed partial class DomSink : IXmlEventSink, IXmlValidationProvenanceS
         if (!Names(name.LocalName, name.NamespaceUri, name.Prefix, location)) return false;
         var element = builder.CreateSyntaxValidatedNode(XmlNodeKind.Element, OwnName(name.LocalName), OwnName(name.NamespaceUri), OwnName(name.Prefix), "", cancellation);
         builder.AppendSyntaxValidatedChild(parent, element, cancellation);
+        Document.RecordSourceLocation(element, location);
         parent = element;
         return true;
     }
@@ -68,7 +75,8 @@ internal sealed partial class DomSink : IXmlEventSink, IXmlValidationProvenanceS
     {
         cancellation.ThrowIfCancellationRequested();
         if (!Names(declaration.Prefix, declaration.NamespaceUri, [], declaration.Location)) return false;
-        builder.AppendSyntaxValidatedNamespaceDeclaration(parent, OwnName(declaration.Prefix), OwnName(declaration.NamespaceUri), cancellation);
+        var stored = builder.AppendSyntaxValidatedNamespaceDeclaration(parent, OwnName(declaration.Prefix), OwnName(declaration.NamespaceUri), cancellation);
+        Document.RecordSourceLocation(stored, declaration.Location);
         return true;
     }
     public bool Attribute(XmlAttributeView attribute)
@@ -76,7 +84,8 @@ internal sealed partial class DomSink : IXmlEventSink, IXmlValidationProvenanceS
         cancellation.ThrowIfCancellationRequested();
         var name = attribute.Name;
         if (!Names(name.LocalName, name.NamespaceUri, name.Prefix, attribute.Location)) return false;
-        builder.AppendSyntaxValidatedAttribute(parent, OwnName(name.LocalName), attribute.Value.ToString(), OwnName(name.NamespaceUri), OwnName(name.Prefix), cancellation);
+        var stored = builder.AppendSyntaxValidatedAttribute(parent, OwnName(name.LocalName), attribute.Value.ToString(), OwnName(name.NamespaceUri), OwnName(name.Prefix), cancellation);
+        Document.RecordSourceLocation(stored, attribute.Location);
         return true;
     }
     public bool StartElementContent() => true;
@@ -85,6 +94,7 @@ internal sealed partial class DomSink : IXmlEventSink, IXmlValidationProvenanceS
     {
         cancellation.ThrowIfCancellationRequested();
         textKind = kind;
+        textLocation = location;
         text.Clear();
         if (!Names(piTarget, [], [], location)) return false;
         target = OwnName(piTarget);
@@ -112,6 +122,7 @@ internal sealed partial class DomSink : IXmlEventSink, IXmlValidationProvenanceS
         };
         var node = builder.CreateSyntaxValidatedNode(kind, kind == XmlNodeKind.ProcessingInstruction ? target : "", "", "", value, cancellation);
         builder.AppendSyntaxValidatedChild(parent, node, cancellation);
+        Document.RecordSourceLocation(node, textLocation);
         text.Clear();
         return true;
     }

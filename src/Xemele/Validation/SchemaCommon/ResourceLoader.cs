@@ -18,7 +18,7 @@ internal sealed class SchemaResourceLoader : ISchemaResourceLoader
         this.parsing = parsing ?? new(operation);
     }
 
-    internal Uri? SourceUri(XmlDocument document) => sources.TryGetValue(document, out var source) ? source : document.ValidationDeclarationLocation.SourceUri ?? options.BaseUri;
+    internal Uri? SourceUri(XmlDocument document) => sources.TryGetValue(document, out var source) ? source : document.ParsedSourceUri ?? document.ValidationDeclarationLocation.SourceUri ?? options.BaseUri;
 
     // Compiler traversal holds this scope through nested Load calls. Language-specific
     // cycle/cache handling (including legal XSD import cycles) belongs to the compiler.
