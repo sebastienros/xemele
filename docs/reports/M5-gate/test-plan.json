@@ -1,0 +1,69 @@
+{
+  "total_max_seconds": 1000,
+  "initial_identity_max_seconds": 40,
+  "final_identity_max_seconds": 40,
+  "environment": {
+    "DOTNET_ROLL_FORWARD": "Disable",
+    "DOTNET_TieredCompilation": "0",
+    "DOTNET_TieredPGO": "0",
+    "DOTNET_ReadyToRun": "0",
+    "DOTNET_CLI_USE_MSBUILD_SERVER": "0",
+    "MSBUILDDISABLENODEREUSE": "1"
+  },
+  "runs": [
+    {
+      "name": "Xemele.Tests",
+      "max_seconds": 300,
+      "log": "artifacts/M5-gate/Xemele.Tests.log",
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "--fx-version",
+        "10.0.11",
+        "/private/tmp/xemele-m5-gate/tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll",
+        "-parallelMode",
+        "none",
+        "-culture",
+        "invariant",
+        "-noColor",
+        "-result-xml",
+        "/private/tmp/xemele-m5-gate/artifacts/M5-gate/Xemele.Tests.xml"
+      ]
+    },
+    {
+      "name": "Xemele.Conformance.Tests",
+      "max_seconds": 300,
+      "log": "artifacts/M5-gate/Xemele.Conformance.Tests.log",
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "--fx-version",
+        "10.0.11",
+        "/private/tmp/xemele-m5-gate/tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll",
+        "-parallelMode",
+        "none",
+        "-culture",
+        "invariant",
+        "-noColor",
+        "-result-xml",
+        "/private/tmp/xemele-m5-gate/artifacts/M5-gate/Xemele.Conformance.Tests.xml"
+      ]
+    },
+    {
+      "name": "Xemele.Differential.Tests",
+      "max_seconds": 300,
+      "log": "artifacts/M5-gate/Xemele.Differential.Tests.log",
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "--fx-version",
+        "10.0.11",
+        "/private/tmp/xemele-m5-gate/tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll",
+        "-parallelMode",
+        "none",
+        "-culture",
+        "invariant",
+        "-noColor",
+        "-result-xml",
+        "/private/tmp/xemele-m5-gate/artifacts/M5-gate/Xemele.Differential.Tests.xml"
+      ]
+    }
+  ]
+}
