@@ -4,17 +4,7 @@
   "coordination_branch": "main",
   "max_concurrent_workers": 3,
   "last_verified_checkpoint": "M7-gate",
-  "active_assignments": [
-    {
-      "task_id": "M7-gate",
-      "status": "Verified integrated; only clean terminal gate checkout cleanup/handoff remains",
-      "branch": "codex/m7-gate",
-      "base_revision": "5d2a6d577b39c6758b6589fe6a2f9199a2ecec2a",
-      "owner_chat_id": "01a12add-f725-7663-b0f9-e6687671c769",
-      "worktree": "/private/tmp/xemele-m7-gate",
-      "claim_revision": "b914fd0edd9b79f9788c5b8c1fdf9bbf75be7089"
-    }
-  ],
+  "active_assignments": [],
   "integration_queue": [],
   "blockers": [
     {
@@ -25,16 +15,15 @@
     {
       "task_id": "M7-serialize",
       "issue": "Automatic approval review rejected required outbound coordination messages; recovered original direct human authorization was rejected as untrusted tool evidence. Specific M7 coordination permission request remains unanswered.",
-      "status": "resolved: normal send_message_to_thread accepted after main relayed new direct human standing authorization; source/toolsafety enforcement remains",
-      "next_action": "Human authorizes M7 coordination messages; resume fresh PARK acknowledgements/inventory and bounded measurement grant. Do not treat elapsed time, a peer message or existing preparation as approval.",
+      "status": "resolved: explicit direct user Authorize M7 coordination messages; required messages/grants/releases and integrationcompleted",
+      "next_action": "none; M7serializer andgateverified/terminal; activeleaseNone",
       "preserved_checkpoint": "e021177b87a92ba8805d27db72b32a43c2274883",
-      "measurement_grant": "none; no allocation/timing workloads run",
+      "measurement_grant": "Completedreleased serializer andcumulativegate grants recorded inmeasurement_lease_history; no pendinggrant.",
       "audit": "Three consecutive completed/continuing goal turns affected by same messaging approval condition. Safe independent ownership/source/test/API/identity review completed. Current worker remains ready awaiting grant; main has no ready M7 task; dependency claims cannot advance."
     }
   ],
   "next_actions": [
-    "Remove clean merged gate checkout and owned temporary external consumers after evidence inspection; retain M7/M6packages/manifests and original caches.",
-    "Durably transfer sole main/state writer back to main orchestrator01a12849-d2be-7292-8cd9-27c1c14b5a3d; M7relinquisheswrites; main alonecreatesM8successor."
+    "Final durable sole-writer transfer to main orchestrator; M7chat relinquisheswrites. No M8creationhere."
   ],
   "last_verified_task": "M7-gate",
   "last_integrated_revision": "a1384320f3663732b7f933ad2457b1fce524a84c",
@@ -1089,7 +1078,8 @@
     },
     "docs/orchestration/cleanup-M7-serialize.json",
     "docs/orchestration/cleanup-M7-corpus.json",
-    "docs/orchestration/cleanup-M7-cli.json"
+    "docs/orchestration/cleanup-M7-cli.json",
+    "docs/orchestration/cleanup-M7-gate.json"
   ],
   "preserved_reference_sources": [
     {
@@ -1114,13 +1104,7 @@
       "retrieval": "Pinned existing partial-clone git show; initial sandbox DNSfailure then successful escalation; original cache untouched."
     }
   ],
-  "timing_queue": [
-    {
-      "task_id": "M3-async-writer",
-      "revision": "83edfe8c6b2701587b1ccaf3d680ad21da43f22a",
-      "scope": "Afterpump timing, exactprebuilt processwideprobe+19syncwriterallocationregression+6case InProcessDryBDN<=150s; parked/nochildren."
-    }
-  ],
+  "timing_queue": [],
   "metadata_correction": "PI rawAPI report uses inventory.apiDeclarations, not wrapper members. Initialrootmetadata assertion stopped before taskstate writes; d539f13 preserves actualpassing0869bde evidence, separateverifiedmetadata follows.",
   "allocation_research": {
     "issue": "https://github.com/dotnet/runtime/issues/134724",
@@ -3289,6 +3273,20 @@
     "package_manifest_checkpoint": "artifacts/M7-gate/checkpoint-0ec1ff7a",
     "published": false,
     "active_lease": null,
-    "report": "docs/reports/M7-gate/summary.json"
-  }
+    "report": "docs/reports/M7-gate/summary.json",
+    "verified_metadata_revision": "d9f0edde2a7fe171c3fc1c65e82aeffb52dece13",
+    "cleanup_record": "docs/orchestration/cleanup-M7-gate.json"
+  },
+  "historical_timing_queues": [
+    {
+      "entries": [
+        {
+          "task_id": "M3-async-writer",
+          "revision": "83edfe8c6b2701587b1ccaf3d680ad21da43f22a",
+          "scope": "Afterpump timing, exactprebuilt processwideprobe+19syncwriterallocationregression+6case InProcessDryBDN<=150s; parked/nochildren."
+        }
+      ],
+      "note": "Historical earlier-milestone queue preserved without new completion claim; no pending M7 timing work."
+    }
+  ]
 }
