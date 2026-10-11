@@ -1,0 +1,12 @@
+namespace Xemele.Validation;
+public sealed class DtdSchema
+{
+    private DtdSchema() { }
+    public static DtdSchema Compile(string dtd, XmlResourceResolver? resolver = null,
+        XmlResourceLimits? limits = null, CancellationToken cancellationToken = default) =>
+        throw new InvalidOperationException("Declaration contract only.");
+    public static DtdSchema FromDocument(XmlDocument document) =>
+        throw new InvalidOperationException("Declaration contract only.");
+    public ValidationResult Validate(XmlDocument document, ValidationOptions? options = null) =>
+        throw new InvalidOperationException("Declaration contract only.");
+}

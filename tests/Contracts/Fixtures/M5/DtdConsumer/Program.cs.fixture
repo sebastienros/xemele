@@ -1,0 +1,28 @@
+using System.Runtime.InteropServices;
+using Xemele;
+using Xemele.Validation;
+if (RuntimeInformation.FrameworkDescription != ".NET 10.0.11") throw new Exception("Wrong runtime");
+Console.WriteLine(RuntimeInformation.FrameworkDescription);
+var error = new XmlDiagnostic("DTD.Invalid", XmlDiagnosticSeverity.Error, "Invalid", new(new Uri("urn:instance"), 2, 3, null));
+var warning = error with { Severity = XmlDiagnosticSeverity.Warning };
+var source = new List<XmlDiagnostic> { warning };
+var valid = new ValidationResult(true, source); source.Add(error);
+if (!valid.IsValid || !valid.IsComplete || valid.Diagnostics.Count != 1) throw new Exception("Snapshot");
+if (new ValidationResult(true, new[] { error }).IsValid) throw new Exception("Invalid outcome");
+var fatal = error with { Code = "VALIDATION.Limit", Severity = XmlDiagnosticSeverity.Fatal };
+if (new ValidationResult(false, new[] { fatal }).IsValid) throw new Exception("Incomplete outcome");
+try { _ = new ValidationResult(false, Array.Empty<XmlDiagnostic>()); throw new Exception("Accepted incomplete"); }
+catch (ArgumentException) { }
+try { _ = new ValidationResult(true, new XmlDiagnostic[] { null! }); throw new Exception("Accepted null"); }
+catch (ArgumentException) { }
+var options = new ValidationOptions();
+if (options.MaxOperations != 10_000_000 || options.Limits.Diagnostics != 128) throw new Exception("Defaults");
+// The usage compiles; schema declaration methods are deliberately never run.
+static ValidationResult Use(XmlDocument document, string dtd, XmlResourceResolver resolver, CancellationToken cancellation)
+{
+    var schema = DtdSchema.Compile(dtd, resolver, new XmlResourceLimits(), cancellation);
+    _ = DtdSchema.FromDocument(document);
+    return schema.Validate(document, new() { CancellationToken = cancellation, MaxOperations = null });
+}
+_ = (Func<XmlDocument,string,XmlResourceResolver,CancellationToken,ValidationResult>)Use;
+Console.WriteLine("PASS DTD independent usage; owned result snapshot and complete/valid/fatal invariants");

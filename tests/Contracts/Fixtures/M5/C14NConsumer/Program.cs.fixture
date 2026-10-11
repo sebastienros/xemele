@@ -1,0 +1,21 @@
+using System.Runtime.InteropServices;
+using Xemele;
+using Xemele.XPath;
+using Xemele.Serialization;
+if (RuntimeInformation.FrameworkDescription != ".NET 10.0.11") throw new Exception("Wrong runtime");
+Console.WriteLine(RuntimeInformation.FrameworkDescription);
+var document = XmlDocument.Parse("<r xmlns:p='urn:p' a='v'>text</r>");
+var selected = new[] { XPathItem.FromNode(document.RootElement), XPathItem.FromAttribute(document.RootElement.Attributes[0]), XPathItem.FromNamespace(document.RootElement, "p") };
+if (selected.Length != 3 || new XmlCanonicalizationOptions().MaxOutputBytes != 16_777_216) throw new Exception("Verified model/defaults");
+static void Use(XmlDocument document, IReadOnlyList<XPathItem> nodes, Stream stream, CancellationToken cancellation)
+{
+    foreach (var mode in Enum.GetValues<XmlCanonicalizationMode>())
+    {
+        var options = new XmlCanonicalizationOptions { Mode = mode, IncludeComments = true, CancellationToken = cancellation,
+            InclusivePrefixes = mode == XmlCanonicalizationMode.Exclusive10 ? new[] { "p", "#default" } : Array.Empty<string>() };
+        XmlCanonicalizer.Canonicalize(document, stream, options);
+        XmlCanonicalizer.Canonicalize(nodes, stream, options);
+    }
+}
+_ = (Action<XmlDocument,IReadOnlyList<XPathItem>,Stream,CancellationToken>)Use;
+Console.WriteLine("PASS C14N independent usage; all modes and verified M4 node/attribute/namespace identities");
