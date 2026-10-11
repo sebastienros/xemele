@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "id": "M3-async-token-binding",
+  "milestone": "M3",
+  "title": "Async cancellation rebinding preserves asynchronous resource cleanup",
+  "kind": "feature",
+  "status": "in_progress",
+  "owner": "M3 coordinator 01a1284a-8826-7fc2-af44-74552db608f2",
+  "branch": "codex/m3-async-token-binding",
+  "base_revision": "d23c00c3628b628978f1e1febc6115660276fe28",
+  "integration_revision": null,
+  "depends_on": [
+    "M3-contracts"
+  ],
+  "goals": [
+    "G04",
+    "G16"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/streaming.md"
+  ],
+  "owns": [
+    "src/Xemele/Resolution/Core/XmlResolutionSession.cs",
+    "tests/Xemele.Tests/M3-async-token-binding/",
+    "docs/reports/M3-async-token-binding/"
+  ],
+  "api_or_output": "Internal BindCancellationTokenAsync(CancellationToken)",
+  "acceptance": [
+    {
+      "id": "M3-async-token-binding-A1",
+      "description": "Add async idle token rebinding with the same guards, independent budget cancellation and exact token propagation as sync binding; cancellation drains live handles via existing async cleanup and preserves primary cancellation exception.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M3-async-token-binding-A2",
+      "description": "Focused async-only delayed disposal tests prove actual suspension, exactly-once drain, busy/reentrant/faulted/disposed guards, and unchanged counters/handles on successful rebinding.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M3-async-token-binding-A3",
+      "description": "Preserve existing sync/async resolver behavior with affected tests, applicable allocation evidence and planning validation at a known implementation revision.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "Requested by async core worker: sync BindCancellationToken can fault/drain through synchronous stream disposal; optional async binder required before resource continuation consumption.",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}
