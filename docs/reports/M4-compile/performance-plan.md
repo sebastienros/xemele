@@ -1,4 +1,6 @@
-# Prepared measurement plan (not measurement evidence)
+# Prepared measurement plan
+
+Executed once under the explicit prepared grant; actual evidence is in performance.md.
 
 Measurements require a coordinator-prepared bounded exclusive lease after
 independent source review and verified model construction repair adoption.
@@ -43,7 +45,7 @@ finally, and a reserved finalization interval. The reused navigation lifecycle
 driver runs no control/discovery/build/restore commands during the lease. Freeze
 covers complete SDK10.0.400, runtime10.0.11, host-fxr, actual driver/product binary
 closures and all relevant generated build inputs. A prepared manifest digest
-will be sent with the clean READY/PARK packet. No measurements performed here.
+will be sent with the clean READY/PARK packet. This plan records preparation; see performance.md for the granted results.
 
 Measurements on the local Arm64 host remain informational for timing and require
 later x64 confirmation; microbenchmark search gains do not imply validating

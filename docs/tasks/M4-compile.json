@@ -4,7 +4,7 @@
   "milestone": "M4",
   "title": "XPath expression compilation",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M4 coordinator / isolated M4-compile worker",
   "branch": "codex/m4-compile",
   "base_revision": "355cd2da435f3960cf67800087b5291fc3f7c546",
@@ -34,29 +34,132 @@
     {
       "id": "M4-compile-A1",
       "description": "Implement XPath 1.0 lexer/parser, static resolution and precise compile diagnostics to immutable AST.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "independent-source-review",
+        "compiler-correctness",
+        "leased-allocation-and-timing"
+      ]
     },
     {
       "id": "M4-compile-A2",
       "description": "Test precedence, literals, all grammar productions, syntax errors and stable source positions.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "compiler-correctness",
+        "affected-model-construction"
+      ]
     },
     {
       "id": "M4-compile-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "independent-source-review",
+        "compiled-api-preservation",
+        "standalone-deliverable",
+        "prepared-controls",
+        "leased-allocation-and-timing",
+        "final-metadata-checks"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/XPath/Compilation/Lexer.cs: borrowed UTF-16 lexer, XML scalar/NCName validation, precise token/EOF spans and lexical quotas",
+    "src/Xemele/XPath/Compilation/XPathCompiler.cs: stateless IXPathCompiler, explicit-stack full XPath 1.0 parser, abbreviation expansion, syntax-before-static resolution and immutable AST construction",
+    "src/Xemele/XPath/Compilation/Resolution.cs + Number.cs: bounded cancellation-aware name/registration comparisons and correctly rounded decimal conversion",
+    "tests/Xemele.Tests/M4-compile/: 82 focused cases, 105 frozen compile outcomes, 333 independent scalar expressions, 415 numeric inputs, exact/one-over limits and resolution cancellation controls",
+    "samples/M4-compile/ + docs/api/M4-compile.txt: actual internal seam sample, fresh package consumer and empty public API fragment",
+    "docs/reports/M4-compile/performance.md: exact zero-allocation primitive gate, distinct owned domains and 25 successful provisional ShortRun cases"
+  ],
+  "evidence": [
+    {
+      "id": "independent-source-review",
+      "kind": "review",
+      "revision": "1943b1b87b7e8245139e20e6bd9f5b65ccd7ff98",
+      "command": "Independent source-only review of ea8431e then focused re-review of corrected1943b1b",
+      "result": "passed",
+      "summary": "One batched blocker corrected unpolled colon search/function-name hashing with <=256-unit polled scans/ordinal comparisons; independent focused re-review approved all compiler source with no further requests.",
+      "artifact": "docs/reports/M4-compile/checks.md"
+    },
+    {
+      "id": "compiler-correctness",
+      "kind": "check",
+      "revision": "ea8431e0a0ac605958b0ba5c98600a33208f1a24",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' build tests/Xemele.Tests -c Release --no-restore -m:1 -nr:false -p:UseSharedCompilation=false; '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -namespace Xemele.Tests.M4Compile -noLogo -noColor",
+      "result": "passed",
+      "summary": "Release build zero warnings/errors;82/82 compiler cases pass, no skips. Actual execution HEAD ea8431e with corrected resolver/compiler/tests then uncommitted; those runtime/test source bytes are exactly the subsequently committed reviewed1943b1b and measured73eb77a source. Includes105 frozen compile outcomes,333 pinned framework scalar expressions,415 decimal inputs,19 quota productions, depth/width10000 and direct resolution-only long name/prefix/URI cancellation/hash-forbidden controls. No clean-HEAD test execution falsely claimed.",
+      "artifact": "docs/reports/M4-compile/checks.md"
+    },
+    {
+      "id": "affected-model-construction",
+      "kind": "check",
+      "revision": "7f24f56f36f9b3c3bf96d4ed1a4d5d396a2cfea2",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' build tests/Xemele.Tests -c Release --no-restore -m:1 -nr:false -p:UseSharedCompilation=false; '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -namespace Xemele.Tests.M4Compile -namespace Xemele.Tests.M4Model -namespace Xemele.Tests.M4ModelConstruction -noLogo -noColor",
+      "result": "passed",
+      "summary": "Actual execution at merge HEAD7f24f56 with owned construction-adoption source/test edits then uncommitted:131/131 pass =78 compiler+41 prior model+12 verified construction repair, no skips. Later correction changes only compiler resolution; affected compiler82 separately pass, the unchanged53 model/repair results are preserved without unrelated reruns.",
+      "artifact": "docs/reports/M4-compile/checks.md"
+    },
+    {
+      "id": "compiled-api-preservation",
+      "kind": "check",
+      "revision": "1a89d85bfbd6d8b2b0cc7ae26717c464e15992a9",
+      "command": "python3 docs/reports/M4-model/check_api.py --dotnet '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet'",
+      "result": "passed",
+      "summary": "Actual preimplementation-commit execution at claim HEAD1a89d85 with compiler source then uncommitted: extractor893 actual members=720 earlier+173 model, all preserved;2 corruption controls reject. Subsequent verified construction repair independently rechecked893 without public changes; reviewed final compiler/resolution additions are internal and empty own API fragment is retained. Preserved evidence is explicitly prior-phase rather than falsely labeled a final-HEAD extractor run.",
+      "artifact": "docs/reports/M4-compile/checks.md"
+    },
+    {
+      "id": "standalone-deliverable",
+      "kind": "check",
+      "revision": "1a89d85bfbd6d8b2b0cc7ae26717c464e15992a9",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' build samples/M4-compile -c Release --no-restore -m:1 -nr:false -p:UseSharedCompilation=false; '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' samples/M4-compile/bin/Release/net10.0/Xemele.Benchmarks.dll; python3 docs/reports/M4-compile/check_consumer.py --dotnet '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet'",
+      "result": "passed",
+      "summary": "Actual claim-HEAD workspace (owned compiler/sample then uncommitted): standalone internal seam compiled/ran expanded three-step path and XPATH-ARITY output. Fresh net10.0 local-package consumer with isolated global.json/cache built/executed packed internal compiler via reflection and public Unicode model. Later bounded-resolution/internal-construction deltas preserve the demonstrated AST/output and public893 surface; source review approves the final implementation. No evaluator/facade/peer dependency.",
+      "artifact": "docs/reports/M4-compile/checks.md"
+    },
+    {
+      "id": "prepared-controls",
+      "kind": "check",
+      "revision": "b30a81daeef5c3df7706200729ef1a36383c7353",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' build docs/reports/M4-compile/Compiler.Probe.csproj -c Release --no-restore -m:1 -nr:false -p:UseSharedCompilation=false; DOTNET_ROOT='/Users/sebastienros/Library/Application Support/dotnetup/dotnet' DOTNET_ROLL_FORWARD=Disable '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 docs/reports/M4-compile/bin/Release/net10.0/Xemele.Benchmarks.dll --control artifacts/M4-compile/control.json; DOTNET_ROOT='/Users/sebastienros/Library/Application Support/dotnetup/dotnet' DOTNET_ROLL_FORWARD=Disable '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 docs/reports/M4-compile/bin/Release/net10.0/Xemele.Benchmarks.dll --discover artifacts/M4-compile/discovery",
+      "result": "passed",
+      "summary": "Clean preparation Release build/control/discovery pass: actual .NET10.0.11 Arm64, counters disabled, checksum2373031936, exactly25 cases in one declared ShortRun3/3/1 with NoEmit toolchain only. Cleanup73eb77a merely removed accidentally staged Python bytecode; executable/config/binary bytes unchanged. Freeze complete144source/generated+43binary+3852SDK/runtime/host files matches prepared73eb77a manifest.",
+      "artifact": "docs/reports/M4-compile/checks.md"
+    },
+    {
+      "id": "leased-allocation-and-timing",
+      "kind": "check",
+      "revision": "73eb77a50fea0c7e738f83d8757c4b50e5c9d2c3",
+      "command": "python3 docs/reports/M4-compile/run_measurements.py --exclusive-grant",
+      "result": "passed",
+      "summary": "Explicit exclusive1200s grant at clean73eb77a, manifest4a52301a863a00f513e35af2f993e6a08d06f5a6ac50527e3ca30b0b9cccfe14. Actual .NET10.0.11;allocation0 then benchmark0/all25success in203.28s; wrapper0/initialidentity0/finalidentity0/no_child=true and root independent hash/result confirmation. Exact primitive total0B across2048 scans plus matching/number/resolution work; all32warm+32steady batches0. Positive32776B, cold12808B;ownedcompile113664/32=3552B,registeredcontexts101632/32=3176B. Summary preserves positive inclusive BDN GC totals despite rounded dashes, short-run uncertainty and25 denied priority warnings. No retry or source/options/build/test changes duringlease.",
+      "artifact": "docs/reports/M4-compile/performance.md"
+    },
+    {
+      "id": "final-metadata-checks",
+      "kind": "check",
+      "revision": "73eb77a50fea0c7e738f83d8757c4b50e5c9d2c3",
+      "command": "python3 tools/planning/tasks.py validate; git diff --check; full introduced owned-path/whitespace comparison against verified73636914659607df5f7bc20ecfa8767b54a97a96",
+      "result": "passed",
+      "summary": "Final implemented task metadata with these evidence edits validates149 tasks; all criterion evidence populated, integration_revision null. Workspace whitespace passes; introduced feature files are task-owned and no shared/other task files edited. Planning/ownership are metadata checks, not additional runtime tests or measurements.",
+      "artifact": "docs/reports/M4-compile/checks.md"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "",
-    "checks": [],
-    "remaining": [],
+    "summary": "Implemented full internal XPath1.0 lexer/parser and static resolution to immutable owned AST, explicit stacks, precise UTF16 diagnostics/abbreviation spans and checked aggregate context/token/character/AST/depth limits. Verified cancellation-aware construction prerequisite adopted, one source-review resolution correction approved; exact primitive allocation gate and all25 leased cases pass. No public additions or evaluator/facade/later-lane dependency.",
+    "checks": [
+      "Corrected compiler82/82, prior affected combined131/131 with unchanged53 model/repair checks preserved; tested checkout revisions/source-equivalence explicitly recorded, no unrun final-HEAD test claims",
+      "All105 frozen compile outcomes,333 independent pinned .NET scalar expressions,415 decimal rounding inputs,19 quota-production exact/one-over controls; deep/wide10000, Unicode/static errors/concurrency/resolution cancellation",
+      "Actual earlier-phase API893=720legacy+173model preserved+2negativecontrols; verified repair preserves893, compiler public fragment empty; standalone internal sample and fresh package consumer pass",
+      "Clean prepared build/control/discovery actual10.0.11; complete144/43/3852 freeze pass; exclusive allocation0/timing0/all25success203.28s; finalidentity0/no-child; summaries only, raw artifact cleanup after root acknowledgment",
+      "Final implemented metadata planning149, all introduced owned paths vsverified7363691 and full whitespace checks pass; no extra runtime reruns"
+    ],
+    "remaining": [
+      "Coordinator serial integration verification and combined M4 gate checks; integration_revision intentionally null",
+      "Whole-query/evaluator composition confirmation and later x64/Arm64 release validation of provisional timings; no retained-heap census claim"
+    ],
     "requests": []
   }
 }
