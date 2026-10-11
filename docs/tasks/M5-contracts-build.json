@@ -4,7 +4,7 @@
   "milestone": "M5",
   "title": "Exclude nested contract checker tooling from parent compile",
   "kind": "infrastructure",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M5 coordinator isolated build repair",
   "branch": "codex/m5-contracts-build",
   "base_revision": "996b1656129dd180436888c9a76fe00d93eb0534",
@@ -28,17 +28,35 @@
     {
       "id": "M5-contracts-build-A1",
       "description": "Exclude only nested M5 ApiCheck tool C# sources from parent Contracts project; preserve independent helper and Release solution builds, net10-only runtime/API and planning validity.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "isolated-build"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "tests/Contracts/Contracts.csproj: Compile Remove Fixtures/M5/ApiCheck/**/*.cs only"
+  ],
+  "evidence": [
+    {
+      "id": "isolated-build",
+      "kind": "check",
+      "revision": "207516886639da2315ff4d4e23b5ccb1101008a7",
+      "command": "Pinned offline restore Xemele.slnx and nested ApiCheck; Release --no-restore builds Xemele.slnx and tests/Contracts/Fixtures/M5/ApiCheck/ApiCheck.csproj with NuGetAudit=false/m1/shared compilation and servers disabled; git diff --check; planning validate; runtime source diff",
+      "result": "passed",
+      "summary": "Both Release builds0warnings/errors;160tasksvalid; runtime source untouched. Parent excludes only nestedM5checker C# tooling, independent Roslyn checker still builds. No runtime tests/allocation measurements required or run for this build-only exclusion. Gate originalCS0234 failure remains in its evidence. Initial newtask planning checks failed gatecoverage until coordinator parked/requeued its private reservedclaim with requireddependency; corrected graph validates.",
+      "artifact": null
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "",
-    "checks": [],
-    "remaining": [],
+    "summary": "Minimal nested M5 API checker compile exclusion; no runtime,API or package changes.",
+    "checks": [
+      "Release solution and independent nested checker builds pass;160tasksvalid; whitespace/runtime diff clean."
+    ],
+    "remaining": [
+      "Coordinator integrated build verification."
+    ],
     "requests": []
   }
 }
