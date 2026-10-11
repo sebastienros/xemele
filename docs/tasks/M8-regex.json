@@ -79,6 +79,24 @@
       "result": "passed",
       "summary": "Pinned Release harness rebuilt;8 counters-disabled semantic routes and owned/positive/retained controls passed. BDN counters-disabled discovery asserts exactly8 borrowed-match cases with1launch/3warmup/3measure using InProcessNoEmit. Complete prepared source/binary/runtime/input identity manifest refreshed; final identity verification in lifecycle supervisor. No runtime measurement executed.",
       "artifact": "docs/reports/M8-regex/preparation.json"
+    },
+    {
+      "id": "measurement-lease-1-lifecycle",
+      "kind": "check",
+      "revision": "910a4c958f8bb67cf164fad7ea8c2afc19801277",
+      "command": "python3 docs/reports/M8-regex/measure.py",
+      "result": "failed",
+      "summary": "First allocation probe completed and passed; supervisor aborted on sandbox-denied ps. Second probe and BDN did not start. Durable RELEASE ACK a6181ba followed root process inventory verifying no residual processes.",
+      "artifact": "docs/reports/M8-regex/partial-measurement.json"
+    },
+    {
+      "id": "allocation-probe-1",
+      "kind": "check",
+      "revision": "0ecdc0cdbe4220b5bc81e1829e24e4042b9ea96f",
+      "command": "Pinned dotnet --fx-version 10.0.11 benchmarks/Xemele.Benchmarks/M8-regex/bin/Release/net10.0/Xemele.Benchmarks.dll --measure artifacts/M8-regex/allocation1.json (first approved subprocess)",
+      "result": "passed",
+      "summary": "8routes x64 warmed samples: all0B/op; owned run456B/op; coldsetup41808B; firstpoolmatch10256B; positive1048B;256retained programs153008B inclusive heapdelta. Source/binary/input identities matched; final42identities verified after durable RELEASEACK. SingleArm64 provisional evidence; secondprobe/BDN remain unrun.",
+      "artifact": "docs/reports/M8-regex/partial-measurement.json"
     }
   ],
   "blockers": [],
@@ -86,10 +104,11 @@
     "summary": "Complete bounded Appendix F runtime; accepted review batch1 fixes and147owned+12model correctness at7f69347 preserved. Harness-only NoEmit preparation fix0ecdc0c now passes build/control/discovery; source reviewed accepted.",
     "checks": [
       "147 owned regex and12 affected model correctness;316 frozen declarations and1393 preserved public members; XML-only concrete consumer; pinned Release build;175 task validation and diffcheck.",
-      "Counters-disabled preparation and eight-case ShortRun NoEmit discovery passed at0ecdc0c; no runtime measurement executed."
+      "Counters-disabled preparation and eight-case ShortRun NoEmit discovery passed at0ecdc0c; no runtime measurement executed.",
+      "First allocation probe passed; complete prepared42identities verified after durable RELEASEACK. Supervisor overallattempt failed sandbox ps; root confirmed no residualprocesses. No retry."
     ],
     "remaining": [
-      "Await coordinator source review, peer/main PARK and durable exclusive measurement GRANT (maximum600s); then release/ACK, inspect summaries and record applicable allocation/BDN evidence.",
+      "Fresh grant for remaining-only sequence: secondallocationprobe+eight-caseNoEmitBDN; exact escalation permits ps preflight/cleanup. Preserve successfulfirstprobe.",
       "Coordinator integrated verification and gate comprehensive corpus/x64 confirmation."
     ],
     "requests": []

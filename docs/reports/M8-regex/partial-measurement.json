@@ -1,0 +1,54 @@
+{
+  "lease": "M8-regex-measurement-1",
+  "grantedHead": "910a4c958f8bb67cf164fad7ea8c2afc19801277",
+  "sourceRevision": "0ecdc0cdbe4220b5bc81e1829e24e4042b9ea96f",
+  "runtime": ".NET 10.0.11",
+  "architecture": "Arm64",
+  "os": "macOS 15.8.1",
+  "serverGc": false,
+  "outcome": "First allocation probe completed and passed; supervisor aborted on sandbox-denied ps. Second probe and BDN did not start. Durable RELEASE ACK a6181ba followed root process inventory verifying no residual processes.",
+  "warmRoutes": 8,
+  "samplesPerRoute": 64,
+  "warmBytesPerOperation": 0,
+  "ownedRunBytesMin": 456,
+  "ownedRunBytesMax": 456,
+  "coldSetupBytes": 41808,
+  "coldMatchBytesByRoute": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    10256,
+    0
+  ],
+  "positiveControlBytes": 1048,
+  "retainedPrograms": 256,
+  "retainedInclusiveDeltaBytes": 153008,
+  "finalIdentitiesVerified": 42,
+  "assemblySha256": "E1B81126C2944D831AF5F90B049D84E71ADB430916FB2D591356FD93253C4088",
+  "probeSha256": "95DC0D7C3556B6C7D4CF1F307020E782060C25144D9CF2E0EBA91CE6E8C2931F",
+  "inputSha256": "890F49908271B3A7E905DA99700E54F84109CC87CE189848B02F91DC1337EFF2",
+  "preservedProbeSha256": "bdd5d4292ecbc500148608630b28fcce02356464efc50cb5b2971e251158ad13",
+  "remainingCommands": [
+    [
+      "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+      "--fx-version",
+      "10.0.11",
+      "benchmarks/Xemele.Benchmarks/M8-regex/bin/Release/net10.0/Xemele.Benchmarks.dll",
+      "--measure",
+      "artifacts/M8-regex/allocation2.json"
+    ],
+    [
+      "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+      "--fx-version",
+      "10.0.11",
+      "benchmarks/Xemele.Benchmarks/M8-regex/bin/Release/net10.0/Xemele.Benchmarks.dll",
+      "--bdn",
+      "artifacts/M8-regex/bdn"
+    ]
+  ],
+  "maximumSeconds": 600,
+  "permissionPreflight": "Read-only ps inventory under require_escalated succeeded after durable RELEASE ACK; remaining supervisor requires exact execution escalation."
+}
