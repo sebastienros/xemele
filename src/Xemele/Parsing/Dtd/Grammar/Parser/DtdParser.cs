@@ -114,6 +114,8 @@ internal sealed partial class DtdParser : IDisposable
     { get { ObjectDisposedException.ThrowIf(disposed, this); if (model is null || faulted) throw new InvalidOperationException("The initial subset is not complete."); return model; } }
     internal bool HasParameterReferences { get; private set; }
     internal XmlLocation? FirstUnreadParameter { get; private set; }
+    // Retained prior-model evidence is separate from live declaration-reading controls.
+    private XmlLocation? priorUnreadParameterLocation;
     private bool nonvalidatingReadState, standaloneReadState, externalSubsetReadState;
     private XmlLocation? undeclaredDefault;
 
@@ -312,7 +314,8 @@ internal sealed partial class DtdParser : IDisposable
         if (undeclaredDefault is { } missing && !HasParameterReferences)
         { Reject("Entity must be declared before the attribute default.", missing, "DTD.UndeclaredEntity"); return; }
         if (!ValidateKnownDefaults(cancellation)) return;
-        model = new(elements, attributes, general, parameter, notations, declarationValidityDiagnostic); terminal = true;
+        model = new(elements, attributes, general, parameter, notations, declarationValidityDiagnostic,
+            priorUnreadParameterLocation ?? FirstUnreadParameter); terminal = true;
     }
     private bool Accept(XmlDiagnostic? refusal) { if (refusal is null) return true; Refuse(refusal); return false; }
     private void Refuse(XmlDiagnostic refusal) { diagnostic = refusal; terminal = true; }

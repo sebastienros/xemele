@@ -1,0 +1,137 @@
+{
+  "schema_version": 1,
+  "id": "M5-dtd-read-completeness",
+  "milestone": "M5",
+  "title": "Retain unread DTD parameter-entity completeness evidence",
+  "kind": "feature",
+  "status": "verified",
+  "owner": "M5 isolated DTD completeness worker",
+  "branch": "codex/m5-dtd-read-completeness",
+  "base_revision": "5810975bb426f8de2972e6bed3a2ecbd1dd57640",
+  "integration_revision": "c04da07c122988b03057d48f0fd8d6b5ebd60523",
+  "depends_on": [
+    "M5-dtd-declaration-provenance"
+  ],
+  "goals": [
+    "G07"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/dtd-c14n.md"
+  ],
+  "owns": [
+    "src/Xemele/Parsing/Dtd/Model/Declarations.cs",
+    "src/Xemele/Parsing/Dtd/Grammar/Parser/DtdParser.cs",
+    "src/Xemele/Parsing/Dtd/Grammar/Parser/Composition.cs",
+    "tests/Xemele.Tests/M5-dtd-read-completeness/",
+    "docs/reports/M5-dtd-read-completeness/"
+  ],
+  "api_or_output": "Internal immutable nullable DtdModel.UnreadParameterLocation; preserves successful nonvalidating parsing and prior model composition",
+  "acceptance": [
+    {
+      "id": "M5-dtd-read-completeness-A1",
+      "description": "Retain first unread parameter entity original location in immutable effective DTD model without changing parser declaration reading or adding public APIs/raw lexical storage.",
+      "status": "passed",
+      "evidence": [
+        "functional",
+        "integration-verification"
+      ]
+    },
+    {
+      "id": "M5-dtd-read-completeness-A2",
+      "description": "Preserve first incompleteness through transactional prior-model seeding/internal-external/PE composition; test original source URI and byte offsets, sync/async, cancellation and complete models.",
+      "status": "passed",
+      "evidence": [
+        "functional",
+        "preservation",
+        "integration-verification"
+      ]
+    },
+    {
+      "id": "M5-dtd-read-completeness-A3",
+      "description": "Preserve earlier nonvalidating parser/model/declaration diagnostics/API and record actual focused checks, scalar storage/generated-code allocation applicability and planning validation at known revision.",
+      "status": "passed",
+      "evidence": [
+        "functional",
+        "preservation",
+        "storage-il",
+        "planning",
+        "integration-verification"
+      ]
+    }
+  ],
+  "implementation": [
+    "src/Xemele/Parsing/Dtd/Model/Declarations.cs: internal get-only UnreadParameterLocation and optional final constructor value",
+    "src/Xemele/Parsing/Dtd/Grammar/Parser/DtdParser.cs: distinct retained prior metadata and FinishSource snapshot",
+    "src/Xemele/Parsing/Dtd/Grammar/Parser/Composition.cs: staged prior completeness metadata publication after cancellation",
+    "tests/Xemele.Tests/M5-dtd-read-completeness/ReadCompletenessTests.cs: 13 focused cases including actual getter/constructor IL",
+    "docs/reports/M5-dtd-read-completeness/README.md: behavior, checks and scalar-storage applicability"
+  ],
+  "evidence": [
+    {
+      "id": "functional",
+      "kind": "check",
+      "revision": "51f0fe950984a1cf981040fa057224f3f56662ba",
+      "command": "DOTNET_CLI_USE_MSBUILD_SERVER=0 MSBUILDDISABLENODEREUSE=1 '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' build tests/Xemele.Tests -c Release --no-restore -p:UseSharedCompilation=false --disable-build-servers -m:1; '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -class 'Xemele.Tests.DtdReadCompleteness.*' -noLogo",
+      "result": "passed",
+      "summary": "Release zero warnings/errors; 13 focused tests pass with no failures/skips under actual .NET10.0.11. Original locations/all chunk splits/syncasync/nestedPE/prior-first/control independence/pre+mid cancellation and failed staging complete-null/getter+ctorIL verified.",
+      "artifact": "docs/reports/M5-dtd-read-completeness/README.md"
+    },
+    {
+      "id": "preservation",
+      "kind": "check",
+      "revision": "51f0fe950984a1cf981040fa057224f3f56662ba",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -class 'Xemele.Tests.DtdCompositionTests' -class 'Xemele.Tests.DtdModel.*' -class 'Xemele.Tests.DtdDeclarationProvenance.*' -class 'Xemele.Tests.DtdGrammarJoinedTests' -noLogo",
+      "result": "passed",
+      "summary": "60 existing composition/model/declaration provenance/joined grammar tests pass, zero failed/skipped. Ordinary checks only; no allocation tests selected. Full milestone checks remain gate.",
+      "artifact": "docs/reports/M5-dtd-read-completeness/README.md"
+    },
+    {
+      "id": "storage-il",
+      "kind": "check",
+      "revision": "51f0fe950984a1cf981040fa057224f3f56662ba",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -class 'Xemele.Tests.DtdReadCompleteness.*' -noLogo",
+      "result": "passed",
+      "summary": "Within the 13-case actual run: getter7-byte ldarg0/ldfld/ret, ctor ldarg0/ldargs7/stfld, optional null constructor arg, actual nullable XmlLocation payload40B. No new allocations/strings/diagnostics/loops in repair source; no counters/timing run or whole-model0B claim.",
+      "artifact": "docs/reports/M5-dtd-read-completeness/README.md"
+    },
+    {
+      "id": "planning",
+      "kind": "check",
+      "revision": "51f0fe950984a1cf981040fa057224f3f56662ba",
+      "command": "python3 tools/planning/tasks.py validate; git diff --check",
+      "result": "passed",
+      "summary": "156 tasks validate and whitespace passes.",
+      "artifact": null
+    },
+    {
+      "id": "coordinator-source-review",
+      "kind": "review",
+      "revision": "51f0fe950984a1cf981040fa057224f3f56662ba",
+      "command": "Coordinator source-only review of exact implementation diff",
+      "result": "passed",
+      "summary": "Approved exact10added runtime lines: separate prior metadata/live controls, first-prior precedence, transactional publication after cancellation and optional constructor compatibility. Source-only approval, not execution. Historicald433555cold/owned measurements precede new40Bmodel field; not current-layout totals.",
+      "artifact": "docs/reports/M5-dtd-read-completeness/README.md"
+    },
+    {
+      "id": "integration-verification",
+      "kind": "integration",
+      "revision": "c04da07c122988b03057d48f0fd8d6b5ebd60523",
+      "command": "Release server-disabled no-restore test build; explicit --fx-version10.0.11 xunit selected DtdReadCompleteness/source/canonical/compiler/declaration/metadata/shared/Tree/Dom/Recovery/M4*/AsyncInput namespaces with both borrowed allocation methods excluded; python3 docs/reports/M5-validation-model/check_api.py; python3 tools/planning/tasks.py validate",
+      "result": "passed",
+      "summary": "Clean build;737tests pass no failures/skips/notrun;944API matched;156tasks validate. Root source-only approved51f0fe9 separateimmutablemetadata preservingliveparsercontrols andtransactionalfirstpriorretention.40Bnullablelocationlogicalpayload/inlinegetterstores sourceapplicability; no currentowned-heap or timing claims.",
+      "artifact": "docs/reports/M5-dtd-read-completeness/README.md"
+    }
+  ],
+  "blockers": [],
+  "handoff": {
+    "summary": "Retains immutable first unread PE location from current/prior effective DTD models transactionally. Prior retention is independent of live parser suppression controls; diagnostic identity and first bindings stay unchanged. Implemented on isolated branch only.",
+    "checks": [
+      "Release build zero warnings/errors;13 focused and60 existing DTD checks pass at51f0fe9 on actual .NET10.0.11.",
+      "Getter/constructor IL and40B nullablepayload verified; no new hotwork/counters/timing.",
+      "Planning156 records and git diffcheck pass."
+    ],
+    "remaining": [],
+    "requests": []
+  }
+}
