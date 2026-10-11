@@ -1,0 +1,15 @@
+using Xemele;
+if (Environment.Version.ToString() != "10.0.11") throw new Exception("Wrong actual runtime: " + Environment.Version);
+var document = XmlDocument.Parse("<root><child id='x'>value</child></root>");
+if (document.RootElement.LocalName != "root") throw new Exception("Earlier DOM regression");
+var clone = new XmlDocument();
+clone.DocumentNode.AppendChild(clone.ImportNode(document.RootElement));
+if (clone.RootElement.Children.Count != 1) throw new Exception("Earlier import regression");
+Console.WriteLine("PASS: Interop independently compiled; actual runtime " + Environment.Version + "; verified prior DOM/import APIs executed");
+static void CompileUsage(Xemele.Streaming.XmlReader reader, XmlDocument document)
+{
+    using System.Xml.XmlReader adapter = new Xemele.Interop.XemeleXmlReaderAdapter(reader, leaveOpen: true);
+    _ = adapter.MoveToFirstAttribute(); _ = adapter.GetAttribute("id"); _ = adapter.ReadAsync();
+    System.Xml.XPath.XPathNavigator navigator = new Xemele.Interop.XemeleXPathNavigatorAdapter(document);
+    _ = navigator.Clone(); _ = navigator.Select("/root/child"); _ = navigator.MoveToFirstNamespace(System.Xml.XPath.XPathNamespaceScope.All);
+}

@@ -1,0 +1,22 @@
+namespace Xemele;
+// Nonpackaged declarations only: extern bodies are never invoked.
+public sealed record XmlCatalogOptions
+{
+    public Uri? BaseUri { get; init; }
+    public XmlResourceResolver? Resolver { get; init; }
+    public XmlResourceLimits Limits { get; init; } = new();
+    public int MaxCatalogDepth { get; init; } = 32;
+    public int MaxCatalogDocuments { get; init; } = 128;
+}
+public sealed class XmlCatalog
+{
+    private extern XmlCatalog();
+    public static extern XmlCatalog Parse(string xml, XmlCatalogOptions? options = null, CancellationToken cancellationToken = default);
+    public extern Uri? Resolve(XmlResourceRequest request, CancellationToken cancellationToken = default);
+}
+public sealed class CatalogResolver : XmlResourceResolver
+{
+    public extern CatalogResolver(XmlCatalog catalog, XmlResourceResolver fallback);
+    public override extern XmlResolvedResource? Resolve(XmlResourceRequest request, CancellationToken cancellationToken);
+    public override extern ValueTask<XmlResolvedResource?> ResolveAsync(XmlResourceRequest request, CancellationToken cancellationToken);
+}

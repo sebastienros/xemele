@@ -1,0 +1,17 @@
+using Xemele;
+if (Environment.Version.ToString() != "10.0.11") throw new Exception("Wrong actual runtime: " + Environment.Version);
+var document = XmlDocument.Parse("<root><child id='x'>value</child></root>");
+if (document.RootElement.LocalName != "root") throw new Exception("Earlier DOM regression");
+var clone = new XmlDocument();
+clone.DocumentNode.AppendChild(clone.ImportNode(document.RootElement));
+if (clone.RootElement.Children.Count != 1) throw new Exception("Earlier import regression");
+Console.WriteLine("PASS: Cli independently compiled; actual runtime " + Environment.Version + "; verified prior DOM/import APIs executed");
+var registry = new Xemele.Tool.CommandRegistry();
+if (registry.Run(["contract-probe"]) != 0 || registry.Run(["unknown"]) != 2) throw new Exception("Registry codes");
+if ((int)Xemele.Tool.ExitCode.InvalidInput != 1 || (int)Xemele.Tool.ExitCode.InternalFailure != 3) throw new Exception("Frozen codes");
+Console.WriteLine("PASS: actual M0 partial registry linked unchanged, static handler dispatch and exit codes");
+static void CompileUsage(XmlResourceResolver resolver)
+{
+    _ = Xemele.XPath.XPathExpression.Compile("/root");
+    _ = new XmlParseOptions { Resolver = resolver, DtdProcessing = XmlDtdProcessing.Parse };
+}

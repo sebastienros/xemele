@@ -1,0 +1,10 @@
+namespace Xemele.Tool;
+internal enum ExitCode { Success = 0, InvalidInput = 1, InvocationError = 2, InternalFailure = 3 }
+// The real M0 registry is linked unchanged into this independent lane.
+internal sealed partial class CommandRegistry
+{
+    partial void RegisterXmlCommands()
+    {
+        Register("contract-probe", "compile-only M6 registry probe", static _ => (int)ExitCode.Success);
+    }
+}
