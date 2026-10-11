@@ -1,0 +1,13 @@
+using Xemele;
+using Xemele.XPath;
+using Xemele.XPath.Internal;
+var document = XmlDocument.Parse("<r xmlns:p='urn:p' xml:lang='en'><a k='v'>12<![CDATA[.5]]></a><b/></r>");
+var budget = new XPathBudget(new(), default, default);
+IXPathNavigator navigator = new Xemele.XPath.Internal.XPathNavigator(document, budget);
+var a = XPathItem.FromNode(document.RootElement.FirstChild);
+var before = navigator.SelectAxis(a, XPathAxis.Descendant, budget);
+var attribute = navigator.SelectAxis(a, XPathAxis.Attribute, budget)[0];
+var liveText = document.RootElement.FirstChild.FirstChild; liveText.Value = "changed";
+document.RootElement.FirstChild.Remove();
+if (before.Count != 1 || before[0].StringValue != "12.5" || navigator.FindLanguage(attribute, budget) != "en") throw new InvalidOperationException("Navigation snapshot failed.");
+Console.WriteLine($"logical text={before[0].StringValue}; retained attribute={attribute.StringValue}; language={navigator.FindLanguage(attribute, budget)}; axes=13");
