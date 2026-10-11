@@ -1,0 +1,19 @@
+using System.Runtime.InteropServices;
+using System.Text.Json;
+using Xemele.Html;
+if(RuntimeInformation.FrameworkDescription!=".NET 10.0.11")throw new Exception("Pinned runtime required");
+if(args.Length!=1||args[0]!="--measure")throw new ArgumentException();
+Console.WriteLine($"FrameworkDescription={RuntimeInformation.FrameworkDescription}; Architecture={RuntimeInformation.ProcessArchitecture}");
+long before=GC.GetAllocatedBytesForCurrentThread();var cold=new HtmlDocument().CreateProcessingInstruction("Cold","\0?>😀");Print("cold-document-first-owned-pi",GC.GetAllocatedBytesForCurrentThread()-before,1);GC.KeepAlive(cold);
+before=GC.GetAllocatedBytesForCurrentThread();var control=new byte[1024];long allocated=GC.GetAllocatedBytesForCurrentThread()-before;if(allocated<=0)throw new Exception("Allocation positive control");Print("positive-control",allocated,1);GC.KeepAlive(control);
+var owner=new HtmlDocument();var pi=owner.CreateProcessingInstruction("Case", "start");string data="\0?>😀";for(int i=0;i<1000;i++){pi.Value=data;owner.CreateProcessingInstruction("Case",data);}
+for(int batch=0;batch<16;batch++) {before=GC.GetAllocatedBytesForCurrentThread();for(int i=0;i<4096;i++)pi.Value=data;allocated=GC.GetAllocatedBytesForCurrentThread()-before;Print("steady-existing-pi-value",allocated,4096);if(allocated!=0)throw new Exception("Value mutation allocated");}
+before=GC.GetAllocatedBytesForCurrentThread();for(int i=0;i<4096;i++)pi=owner.CreateProcessingInstruction("Case",data);Print("warm-owned-pi-existing-target",GC.GetAllocatedBytesForCurrentThread()-before,4096);GC.KeepAlive(pi);
+// Unique target input strings are prepared before measuring persistence; factory
+// ownership is the node and document-local dictionary, not transient string creation.
+var names=new string[256];for(int i=0;i<names.Length;i++)names[i]="target"+i;
+var unique=new HtmlDocument();before=GC.GetAllocatedBytesForCurrentThread();for(int i=0;i<names.Length;i++)pi=unique.CreateProcessingInstruction(names[i],data);Print("warm-owned-pi-new-target-interning",GC.GetAllocatedBytesForCurrentThread()-before,names.Length);GC.KeepAlive(unique);GC.KeepAlive(pi);
+for(int i=0;i<10;i++)Graph();before=GC.GetAllocatedBytesForCurrentThread();HtmlDocument? last=null;for(int i=0;i<100;i++)last=Graph();Print("owned-pi-graph",GC.GetAllocatedBytesForCurrentThread()-before,100);GC.KeepAlive(last);
+GC.Collect();GC.WaitForPendingFinalizers();GC.Collect();long heapBefore=GC.GetTotalMemory(false);var retained=new HtmlDocument[100];for(int i=0;i<100;i++)retained[i]=Graph();GC.Collect();GC.WaitForPendingFinalizers();GC.Collect();long heapAfter=GC.GetTotalMemory(false);Console.WriteLine(JsonSerializer.Serialize(new{domain="retained-whole-heap-inclusive-doc-array-runtime-roots",beforeBytes=heapBefore,afterBytes=heapAfter,inclusiveDeltaBytes=heapAfter-heapBefore,denominatorDocuments=100}));GC.KeepAlive(retained);GC.KeepAlive(owner);GC.KeepAlive(names);
+static HtmlDocument Graph() {var d=new HtmlDocument();var root=d.CreateElement("html");d.DocumentNode.AppendChild(d.CreateProcessingInstruction("before","\0?>😀"));d.DocumentNode.AppendChild(root);var template=d.CreateElement("template");root.AppendChild(template);for(int i=0;i<32;i++){root.AppendChild(d.CreateProcessingInstruction("Case","retained"));template.TemplateContent!.AppendChild(d.CreateProcessingInstruction("_target-2","\0?>😀"));}return d;}
+static void Print(string domain,long numeratorBytes,int denominatorOperations)=>Console.WriteLine(JsonSerializer.Serialize(new{domain,numeratorBytes,denominatorOperations}));
