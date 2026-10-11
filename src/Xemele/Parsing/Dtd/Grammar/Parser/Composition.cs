@@ -36,10 +36,12 @@ internal sealed partial class DtdParser
             var parameterKeys = new HashSet<string>(StringComparer.Ordinal);
             var notationKeys = new HashSet<string>(StringComparer.Ordinal);
             var particles = new Stack<DtdParticle>();
+            var newDeclarationValidityDiagnostic = model.DeclarationValidityDiagnostic;
             foreach (var e in model.Elements)
             {
                 Remember(e.Name);
                 if (elementKeys.Add(e.Name)) newElements.Add(e);
+                else newDeclarationValidityDiagnostic ??= DuplicateElementDiagnostic(e.Location);
                 particles.Push(e.Content);
                 while (particles.Count != 0)
                 {
@@ -65,10 +67,15 @@ internal sealed partial class DtdParser
             foreach (var e in model.ParameterEntities)
             { Remember(e.Name); if (parameterKeys.Add(e.Name)) newParameter.Add(e); }
             foreach (var n in model.Notations)
-            { Remember(n.Name); if (notationKeys.Add(n.Name)) newNotations.Add(n); }
+            {
+                Remember(n.Name);
+                if (notationKeys.Add(n.Name)) newNotations.Add(n);
+                else newDeclarationValidityDiagnostic ??= DuplicateNotationDiagnostic(n.Location);
+            }
             cancellationToken.ThrowIfCancellationRequested();
             elements = newElements; attributes = newAttributes; general = newGeneral;
             parameter = newParameter; notations = newNotations; names = newNames; seeded = true;
+            declarationValidityDiagnostic = newDeclarationValidityDiagnostic;
 
             void Remember(string name)
             {

@@ -47,9 +47,10 @@ internal sealed class DtdModel
     public IReadOnlyList<DtdEntityDeclaration> GeneralEntities { get; }
     public IReadOnlyList<DtdEntityDeclaration> ParameterEntities { get; }
     public IReadOnlyList<DtdNotationDeclaration> Notations { get; }
+    internal XmlDiagnostic? DeclarationValidityDiagnostic { get; }
     public DtdModel(IEnumerable<DtdElementDeclaration> elements, IEnumerable<DtdAttributeDeclaration> attributes,
         IEnumerable<DtdEntityDeclaration> generalEntities, IEnumerable<DtdEntityDeclaration> parameterEntities,
-        IEnumerable<DtdNotationDeclaration> notations)
+        IEnumerable<DtdNotationDeclaration> notations, XmlDiagnostic? declarationValidityDiagnostic = null)
     {
         ArgumentNullException.ThrowIfNull(elements); ArgumentNullException.ThrowIfNull(attributes);
         ArgumentNullException.ThrowIfNull(generalEntities); ArgumentNullException.ThrowIfNull(parameterEntities);
@@ -57,5 +58,6 @@ internal sealed class DtdModel
         Elements = Array.AsReadOnly(elements.ToArray()); Attributes = Array.AsReadOnly(attributes.ToArray());
         GeneralEntities = Array.AsReadOnly(generalEntities.ToArray()); ParameterEntities = Array.AsReadOnly(parameterEntities.ToArray());
         Notations = Array.AsReadOnly(notations.ToArray());
+        DeclarationValidityDiagnostic = declarationValidityDiagnostic;
     }
 }
