@@ -1,0 +1,116 @@
+using System.Runtime.InteropServices;
+using System.Text;
+using System.Text.Json;
+using BenchmarkDotNet.Configs;
+using BenchmarkDotNet.Jobs;
+using BenchmarkDotNet.Running;
+using BenchmarkDotNet.Toolchains.InProcess.NoEmit;
+using Xemele.Html;
+using Xemele.Benchmarks.HtmlSerialization;
+
+Console.WriteLine($"FrameworkDescription={RuntimeInformation.FrameworkDescription}; Architecture={RuntimeInformation.ProcessArchitecture}");
+if (RuntimeInformation.FrameworkDescription != ".NET 10.0.11") throw new Exception("Pinned runtime required.");
+if (args[0] is "--discover" or "--benchmark")
+{
+    var config = ManualConfig.Create(DefaultConfig.Instance).WithArtifactsPath(args[1]).AddJob(Job.Default.WithToolchain(InProcessNoEmitToolchain.Instance).AsMutator());
+    var suites = new[] { typeof(EscapeBenchmarks), typeof(OutputBenchmarks), typeof(BooleanBenchmarks) }.Select(t => BenchmarkConverter.TypeToBenchmarks(t, config)).ToArray();
+    var cases = suites.SelectMany(s => s.BenchmarksCases).ToArray();
+    if (cases.Length != 94 || cases.Any(c => c.Job.Run.WarmupCount != 3 || c.Job.Run.IterationCount != 3 || c.Job.Run.LaunchCount != 1 || c.Job.Infrastructure.Toolchain != InProcessNoEmitToolchain.Instance)) throw new Exception("Exactly94ShortRunNoEmit cases required.");
+    Console.WriteLine("94 ShortRun NoEmit cases:60 scan/escape+18 composition+16 boolean; no builds/generation.");
+    if (args[0] == "--discover") return;
+    var summaries = BenchmarkRunner.Run(suites);
+    if (summaries.Sum(s => s.Reports.Length) != 94 || summaries.SelectMany(s => s.Reports).Any(r => !r.Success || r.ResultStatistics is null)) throw new Exception("Benchmark failure.");
+    return;
+}
+if (args[0] == "--inputs")
+{
+    var inputs = new
+    {
+        scans = Kinds().Select(kind => new { kind, input = EscapeBenchmarks.Input(kind) }).ToArray(),
+        names = new[] { "checked", "CHECKED", "noresize", "selectedx", "selecte", "unknown", "ſelected", "" },
+        output = new[] { "small", "large", "multilingual" }.SelectMany(kind => new[] { HtmlSerializationMode.Html5, HtmlSerializationMode.Legacy }.Select(mode => new { kind, mode = mode.ToString(), serialized = HtmlSerializer.Serialize(OutputBenchmarks.Document(kind), new() { Mode = mode }) })).ToArray()
+    };
+    File.WriteAllText(args[1], JsonSerializer.Serialize(inputs)); Console.WriteLine("Actual prepared inputs written; no allocation/timing counters."); return;
+}
+if (args[0] == "--verify") { Verify(); Console.WriteLine("Correctness-only:all94case semantics, exact UTF8 hash/length, attribute/text scans, Unicode, fixed-name negative controls; no allocations/timing counters."); return; }
+if (args[0] != "--measure") throw new ArgumentException();
+long before = GC.GetAllocatedBytesForCurrentThread();
+var cold = OutputBenchmarks.Document("small"); string first = HtmlSerializer.Serialize(cold);
+Print("cold-first-owned-document-and-result-inclusive-runtime-initialization", GC.GetAllocatedBytesForCurrentThread() - before, 1); GC.KeepAlive(first);
+before = GC.GetAllocatedBytesForCurrentThread(); var positive = new byte[1024]; long allocation = GC.GetAllocatedBytesForCurrentThread() - before;
+if (allocation == 0) throw new Exception("Positive allocation control."); Print("positive-control", allocation, 1); GC.KeepAlive(positive);
+before = GC.GetAllocatedBytesForCurrentThread(); EscapeBenchmarks.CachedScan("&", false); BooleanBenchmarks.LinearMatch("checked");
+Print("cold-candidate-SearchValues-and-linear-name-table", GC.GetAllocatedBytesForCurrentThread() - before, 1);
+Verify();
+int consumed = 0; var sink = new CountingWriter(); var stream = new CountingStream();
+foreach (string kind in Kinds()) foreach (bool legacy in new[] { false, true })
+{
+    string input = EscapeBenchmarks.Input(kind);
+    for (int i = 0; i < 1000; i++) { sink.Reset(); HtmlSerializer.Stop(input, false, legacy); EscapeBenchmarks.CachedScan(input, legacy); HtmlSerializer.Escape(sink, input, false, legacy, default); }
+    for (int batch = 0; batch < 16; batch++)
+    {
+        before = GC.GetAllocatedBytesForCurrentThread();
+        for (int i = 0; i < 1024; i++)
+        {
+            consumed += HtmlSerializer.Stop(input, false, legacy) + EscapeBenchmarks.CachedScan(input, legacy) + EscapeBenchmarks.SmallSetScan(input, legacy) + EscapeBenchmarks.IndexScan(input, legacy);
+            sink.Reset(); HtmlSerializer.Escape(sink, input, false, legacy, default); HtmlSerializer.Escape(sink, input, true, legacy, default);
+            consumed += HtmlSerializer.Boolean("CHECKED") ? 1 : 0; consumed += HtmlSerializer.Boolean("ſelected") ? 1 : 0;
+        }
+        allocation = GC.GetAllocatedBytesForCurrentThread() - before; Print("warm-borrowed-scans-escaping-and-fixed-name-" + kind + "-legacy=" + legacy, allocation, 1024);
+        if (allocation != 0) throw new Exception("Borrowed primitives allocated.");
+    }
+}
+foreach (string kind in new[] { "small", "large", "multilingual" }) foreach (HtmlSerializationMode mode in new[] { HtmlSerializationMode.Html5, HtmlSerializationMode.Legacy })
+{
+    var document = OutputBenchmarks.Document(kind); var options = new HtmlSaveOptions { Mode = mode };
+    Measure("warm-borrowed-tree-output-" + kind + "-" + mode, () => { sink.Reset(); HtmlSerializer.Write(document.DocumentNode, sink, mode, default); }, 128, true);
+    Measure("owned-string-result-" + kind + "-" + mode, () => GC.KeepAlive(HtmlSerializer.Serialize(document, options)), 128);
+    Measure("owned-fixed-UTF8-transport-" + kind + "-" + mode, () => { stream.Reset(); HtmlSerializer.Save(document, stream, options); }, 128);
+}
+GC.Collect(); GC.WaitForPendingFinalizers(); GC.Collect(); long heapBefore = GC.GetTotalMemory(false);
+var retained = new string[128]; for (int i = 0; i < retained.Length; i++) retained[i] = HtmlSerializer.Serialize(cold);
+GC.Collect(); GC.WaitForPendingFinalizers(); GC.Collect(); long heapAfter = GC.GetTotalMemory(false);
+Console.WriteLine(JsonSerializer.Serialize(new { domain = "retained-inclusive-owned-results-array-and-runtime-roots", beforeBytes = heapBefore, afterBytes = heapAfter, inclusiveDeltaBytes = heapAfter - heapBefore, denominatorOperations = retained.Length })); GC.KeepAlive(retained); GC.KeepAlive(consumed);
+
+static string[] Kinds() => ["short-hit", "short-miss", "long-late-hit", "long-miss", "dense", "multilingual"];
+static void Verify()
+{
+    foreach (string kind in Kinds()) foreach (bool legacy in new[] { false, true })
+    {
+        string input = EscapeBenchmarks.Input(kind); int oracle = HtmlSerializer.Stop(input, false, legacy);
+        if (EscapeBenchmarks.IndexScan(input, legacy) != oracle || EscapeBenchmarks.SmallSetScan(input, legacy) != oracle || EscapeBenchmarks.CachedScan(input, legacy) != oracle) throw new Exception("Scan correctness.");
+        foreach (bool attribute in new[] { false, true })
+        {
+            using var writer = new StringWriter(); HtmlSerializer.Escape(writer, input, attribute, legacy, default);
+            if (writer.ToString() != ReferenceEscape(input, attribute, legacy)) throw new Exception("Escape oracle.");
+        }
+    }
+    foreach (string input in new[] { "", "checked", "CHECKED", "CheckEd", "noresize", "selectedx", "selecte", "unknown", "ſelected", "é", "\0", "&x", "x&", "x<", "x>", "x\"", "x\u00a0", "😀&", "\ud800&", "\udc00", "\ufffe", new string('x',1023)+"😀&" })
+    {
+        if (HtmlSerializer.Boolean(input) != BooleanBenchmarks.LinearMatch(input)) throw new Exception("Fixed-name oracle.");
+        foreach (bool legacy in new[] { false, true }) foreach (bool attribute in new[] { false, true })
+        { using var writer = new StringWriter(); HtmlSerializer.Escape(writer, input, attribute, legacy, default); if (writer.ToString() != ReferenceEscape(input, attribute, legacy)) throw new Exception("Unicode/chunk escape oracle."); }
+    }
+    foreach (string kind in new[] { "small", "large", "multilingual" }) foreach (HtmlSerializationMode mode in new[] { HtmlSerializationMode.Html5, HtmlSerializationMode.Legacy })
+    {
+        var d = OutputBenchmarks.Document(kind); string output = HtmlSerializer.Serialize(d, new() { Mode = mode }); var sink = new CountingWriter(); HtmlSerializer.Write(d.DocumentNode, sink, mode, default);
+        if (sink.Count != output.Length) throw new Exception("Borrowed complete-output length.");
+        var stream = new CountingStream(); HtmlSerializer.Save(d, stream, new() { Mode = mode }); byte[] expected = Encoding.UTF8.GetBytes(output); var oracle = new CountingStream(); oracle.Write(expected);
+        if (stream.Count != oracle.Count || stream.Hash != oracle.Hash || !stream.CanWrite) throw new Exception("Exact UTF8 owned-output oracle.");
+    }
+}
+static string ReferenceEscape(string input, bool attribute, bool legacy)
+{
+    if (legacy && input.IndexOf('\0') is int index && index >= 0) input = input[..index];
+    string output = input.Replace("&", "&amp;");
+    if (!legacy) output = output.Replace("\u00a0", "&nbsp;");
+    if (attribute) output = output.Replace("\"", "&quot;");
+    if (!attribute || legacy) output = output.Replace("<", "&lt;").Replace(">", "&gt;");
+    return output;
+}
+static void Measure(string domain, Action operation, int operations, bool zero = false)
+{
+    for (int i = 0; i < 32; i++) operation(); long before = GC.GetAllocatedBytesForCurrentThread(); for (int i = 0; i < operations; i++) operation();
+    long bytes = GC.GetAllocatedBytesForCurrentThread() - before; Print(domain, bytes, operations); if (zero && bytes != 0) throw new Exception("Borrowed traversal allocated.");
+}
+static void Print(string domain, long numeratorBytes, int denominatorOperations) => Console.WriteLine(JsonSerializer.Serialize(new { domain, numeratorBytes, denominatorOperations }));

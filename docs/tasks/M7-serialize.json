@@ -5,7 +5,7 @@
   "title": "HTML serialization modes",
   "kind": "feature",
   "status": "in_progress",
-  "owner": "M7 coordinator / isolated implementation chat pending",
+  "owner": "M7 isolated worker chat01a12bb3-07b3-7ce2-ab62-f43cd4a8104d",
   "branch": "codex/m7-serialize",
   "base_revision": "725b2cc7190dae7766c8dec17dd6f9958d2b4255",
   "integration_revision": null,
@@ -51,13 +51,27 @@
       "evidence": []
     }
   ],
-  "implementation": [],
+  "implementation": [
+    "src/Xemele/HtmlSerialization/HtmlSerializer.cs: exact enum/options/three public APIs; iterative native/WHATWG serialization and bounded UTF8 caller stream",
+    "tests/Xemele.Tests/M7-serialize/SerializationTests.cs: exact native outputs, per-case original serializer inventory, normative rules and stream/cancellation/XML witnesses",
+    "tests/fixtures/M7-serialize/: pinned native goldens, all230original html5lib cases and exact WPT assertion",
+    "benchmarks/Xemele.Benchmarks/M7-serialize/: correctness-only prepared94case NoEmit scanner/matcher/borrowed/owned/stream probes",
+    "samples/M7-serialize/Program.cs and docs/api/M7-serialize.txt: executed public usage and18exact frozen declarations"
+  ],
   "evidence": [],
   "blockers": [],
   "handoff": {
-    "summary": "",
-    "checks": [],
-    "remaining": [],
+    "summary": "In progress; correctness/API/sample pass before source freeze; legacy ordinary/template graph correction awaiting exact profile clarification. No measurements run.",
+    "checks": [
+      "Precheckpoint pinned offline Release builds zero warnings/errors;1610combined tests pass.",
+      "Official1253declarations/1235unchanged predecessors/18frozen additions/3388fixtures and missing/added/changed controls pass.",
+      "Public sample and correctness-only94case probe/discovery pass; planning169/diffcheck pass."
+    ],
+    "remaining": [
+      "Finalize native legacy ordinary/template graph traversal and rerun relevant correctness at committed source.",
+      "Freeze source/binary/host/runtime/actualinputs/opaquecomplete child environment, exact-wrapper0/unknownenv1/0controls; coordinator source/probe review then exclusivegrant/release before allocation/BDN.",
+      "Record evidence at existing source revision; all criteria must pass before implemented."
+    ],
     "requests": []
   }
 }
