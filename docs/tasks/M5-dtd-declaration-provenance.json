@@ -4,7 +4,7 @@
   "milestone": "M5",
   "title": "Retain duplicate DTD declaration validity evidence",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M5 isolated DTD declaration provenance worker",
   "branch": "codex/m5-dtd-declaration-provenance",
   "base_revision": "4e13c32ed3da5e90d28af028c4a1e70e27e9b97c",
@@ -32,29 +32,106 @@
     {
       "id": "M5-dtd-declaration-provenance-A1",
       "description": "Retain one owned duplicate element/notation validity diagnostic and original location without changing successful nonvalidating parse or first-binding declarations; valid DTDs add no diagnostic allocation.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "combined-tests",
+        "allocation-applicability"
+      ]
     },
     {
       "id": "M5-dtd-declaration-provenance-A2",
       "description": "Preserve diagnostic across model seeding/internal-external composition; test within/cross-subset and parameter entity duplicates, source locations, async processing, repeated permitted attribute/entity firstbindings and bounded retention.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "combined-tests"
+      ]
     },
     {
       "id": "M5-dtd-declaration-provenance-A3",
       "description": "Preserve earlier DTD/parser/API semantics and record relevant actual checks and allocation applicability at known revision using verified dependencies only.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "build",
+        "combined-tests",
+        "api-union",
+        "allocation-applicability",
+        "task-validation",
+        "coordinator-source-review"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Parsing/Dtd/Model/Declarations.cs: get-only nullable DeclarationValidityDiagnostic and optional final constructor parameter.",
+    "src/Xemele/Parsing/Dtd/Grammar/Parser/Declarations.cs: retain first validity-only ignored duplicate element/notation diagnostic with original declarationAt.",
+    "src/Xemele/Parsing/Dtd/Grammar/Parser/DtdParser.cs: parser field and immutable model publication.",
+    "src/Xemele/Parsing/Dtd/Grammar/Parser/Composition.cs: staged prior evidence reuse and synthetic duplicate detection; publish only after cancellation checks.",
+    "tests/Xemele.Tests/M5-dtd-declaration-provenance/DeclarationProvenanceTests.cs: 15 focused cases including identity bound, original locations, async composition, transactional seed failure/retry and IL proof."
+  ],
+  "evidence": [
+    {
+      "id": "build",
+      "kind": "check",
+      "revision": "134ba62c1bd0eca93819ec5fd342fd35f9141ec5",
+      "command": "DOTNET_CLI_USE_MSBUILD_SERVER=0 MSBUILDDISABLENODEREUSE=1 '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' build tests/Xemele.Tests/Xemele.Tests.csproj -c Release --no-restore -p:NuGetAudit=false -p:UseSharedCompilation=false --disable-build-servers -m:1 --nologo",
+      "result": "passed",
+      "summary": "Release build zero warnings/errors. Offline cache restore passed. Initial test alias compile failure corrected; final sources match committed revision.",
+      "artifact": "docs/reports/M5-dtd-declaration-provenance/README.md"
+    },
+    {
+      "id": "combined-tests",
+      "kind": "check",
+      "revision": "134ba62c1bd0eca93819ec5fd342fd35f9141ec5",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -class Xemele.Tests.DtdDeclarationProvenance.DeclarationProvenanceTests -class Xemele.Tests.DtdParserTests -class Xemele.Tests.DtdParserBudgetTests -class Xemele.Tests.DtdParserSourceTests -class Xemele.Tests.DtdCompositionTests -class Xemele.Tests.DtdGrammarJoinedTests -class Xemele.Tests.DtdGrammarPinnedTests -class Xemele.Tests.DtdNonvalidating.BoundaryTests -class Xemele.Tests.DtdNonvalidating.OriginalTests -result-xml artifacts/M5-dtd-declaration-provenance/combined.xml -noColor",
+      "result": "passed",
+      "summary": "1994 passed (15 new+1979 earlier focused); zero failed/skipped/not-run. Actual .NET10.0.11 FrameworkDescription asserted. Initial zero-selection filter not counted; corrected selection documented.",
+      "artifact": "docs/reports/M5-dtd-declaration-provenance/README.md"
+    },
+    {
+      "id": "api-union",
+      "kind": "check",
+      "revision": "134ba62c1bd0eca93819ec5fd342fd35f9141ec5",
+      "command": "python3 docs/reports/M5-validation-model/check_api.py",
+      "result": "passed",
+      "summary": "Approved exact full union checker passed: Matched921compiledmembers unchanged. Approved ignored M0 ApiCheck binaries copied from integration checkout; script uses explicit --fx-version10.0.11. Independent earlier union comparison also passed.",
+      "artifact": "docs/reports/M5-dtd-declaration-provenance/README.md"
+    },
+    {
+      "id": "allocation-applicability",
+      "kind": "review",
+      "revision": "134ba62c1bd0eca93819ec5fd342fd35f9141ec5",
+      "command": null,
+      "result": "passed",
+      "summary": "Source and passing actual Release getter IL proof: single reference field load; valid normal path only null/reference storage. Parser/model each add8B logical field payload; exact heap delta unmeasured. First invalid ignored duplicate owns1 immutable diagnostic, later100 retain same identity; failed synthetic staging may allocate unpublished transient diagnostics. No allocation or throughput measurement.",
+      "artifact": "docs/reports/M5-dtd-declaration-provenance/README.md"
+    },
+    {
+      "id": "task-validation",
+      "kind": "check",
+      "revision": "134ba62c1bd0eca93819ec5fd342fd35f9141ec5",
+      "command": "python3 tools/planning/tasks.py validate",
+      "result": "passed",
+      "summary": "154 tasks validated: schema/evidence/dependencies/additive milestones/ordered ownership.",
+      "artifact": "docs/reports/M5-dtd-declaration-provenance/README.md"
+    },
+    {
+      "id": "coordinator-source-review",
+      "kind": "review",
+      "revision": "134ba62c1bd0eca93819ec5fd342fd35f9141ec5",
+      "command": null,
+      "result": "passed",
+      "summary": "Coordinator root source-only review approved bounded reference field, lazy first-invalid diagnostic allocation, first bindings, transactional seed publication and tests; no correction requested.",
+      "artifact": "docs/reports/M5-dtd-declaration-provenance/README.md"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Compiler review found M2 effective model loses XML validity-only declaration duplicates; upcoming facade will check retained diagnostic before internal compilation.",
-    "checks": [],
-    "remaining": [],
+    "summary": "Retains first immutable validity-only duplicate element/notation diagnostic without changing nonvalidating first bindings; seeding preserves prior identity transactionally.",
+    "checks": [
+      "Release build0warnings/errors;1994tests pass on actual.NET10.0.11;921compiledAPIunion unchanged;154tasks validation passes; getterIL and boundedidentity verified."
+    ],
+    "remaining": [
+      "Coordinator integration verification; future facade must check DeclarationValidityDiagnostic before compiling effective DtdModel. Exact aligned object heap delta not measured or claimed."
+    ],
     "requests": []
   }
 }
