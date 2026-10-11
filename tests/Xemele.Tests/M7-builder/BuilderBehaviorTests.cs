@@ -3,6 +3,30 @@ using Xunit;
 namespace Xemele.Tests.HtmlTreeConstruction;
 public sealed class BuilderBehaviorTests
 {
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void NoscriptFragmentHasNoLastStartTag(bool scripting)
+    {
+        // Fragment context is not a start-tag token. WHATWG fragment steps select
+        // RAWTEXT, but the appropriate-end-tag algorithm has no last start tag.
+        const string markup = "a</noscript><b>x";
+        var owner = new HtmlDocument(); var context = owner.CreateElement("noscript");
+        var fragment = Html5Parser.ParseFragment(markup, new(context), new() { ScriptingEnabled = scripting });
+        Assert.Empty(context.Children);
+        Assert.Equal(scripting, fragment.OwnerDocument.ScriptingEnabled);
+        if (scripting)
+        {
+            Assert.Single(fragment.Children); Assert.Equal(HtmlNodeKind.Text, fragment.FirstChild!.Kind);
+            Assert.Equal(markup, fragment.FirstChild.Value);
+        }
+        else
+        {
+            Assert.Equal(2, fragment.Children.Count); Assert.Equal("a", fragment.FirstChild!.Value);
+            Assert.Equal("b", fragment.Children[1].LocalName); Assert.Equal("x", fragment.Children[1].GetTextContent());
+        }
+    }
+
     [Fact]
     public void CorrectedTreeFormattingFosterTemplatesAndFramesets()
     {

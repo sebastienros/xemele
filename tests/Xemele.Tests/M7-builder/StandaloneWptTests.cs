@@ -4,6 +4,114 @@ namespace Xemele.Tests.HtmlTreeConstruction;
 public sealed class StandaloneWptTests
 {
     [Fact]
+    public void OriginalPrototypeNamesAndCustomElementBaselineGraph()
+    {
+        var owner = new HtmlDocument();
+        foreach (string name in new[] { "constructor", "hasOwnProperty", "__proto__", "toString" })
+        {
+            Assert.Equal(name.ToLowerInvariant(), owner.CreateElement(name).LocalName);
+            var foreign = owner.CreateElement(name, "https://example.com/");
+            Assert.Equal(name, foreign.LocalName); Assert.Equal("https://example.com/", foreign.NamespaceUri);
+        }
+        var fragment = Html5Parser.ParseFragment("<x-a><p>y</p></x-a>", new(owner.CreateElement("body")));
+        Assert.Equal("x-a", fragment.FirstChild!.LocalName); Assert.Equal("p", fragment.FirstChild.FirstChild!.LocalName);
+        Assert.Equal("y", fragment.FirstChild.GetTextContent());
+    }
+
+    [Fact]
+    public void OriginalForeignVisualTreePredicates()
+    {
+        string root = Path.Combine(BuilderInputTests.FindRoot(), "tests/fixtures/M7-builder/wpt-parsing");
+        foreach (var (file, parent, index) in new[] {
+            ("001", "object", 1), ("003", "button", 1), ("004", "caption", 1), ("005", "form", 1),
+            ("006", "body", 0), ("008", "body", 3), ("009", "rect", 1), ("010", "svg", 1),
+            ("011", "div", -1), ("013", "div", -1) })
+        {
+            var doc = Html5Parser.Parse(File.ReadAllText(Path.Combine(root, "foreign_content_" + file + ".html")));
+            var nodes = Descendants(doc.DocumentNode).ToArray();
+            var container = nodes.First(n => n.LocalName == parent && (index >= 0 || n.Attributes.Any(a => a.LocalName == "id" && a.Value == "d1")));
+            if (index >= 0) Assert.Equal(file is "009" ? "circle" : file is "010" ? "rect" : "svg", container.Children[index].LocalName);
+            else Assert.Equal("svg", container.Children.First(n => n.Kind == HtmlNodeKind.Element).LocalName);
+            Assert.Equal("http://www.w3.org/2000/svg", nodes.First(n => n.LocalName == "rect").NamespaceUri);
+            if (file == "010") Assert.Equal("circle", container.Children[3].LocalName);
+            if (file == "013") Assert.Equal("svg1", nodes.First(n => n.LocalName == "svg").Attributes.First(a => a.LocalName == "class").Value);
+        }
+    }
+
+    [Fact]
+    public void OriginalForeignAdjustedVocabularyAndFontNamespaces()
+    {
+        string root = Path.Combine(BuilderInputTests.FindRoot(), "tests/fixtures/M7-builder/wpt-parsing");
+        var doc = Html5Parser.Parse(File.ReadAllText(Path.Combine(root, "Document.getElementsByTagName-foreign-01.html")));
+        var svg = Descendants(doc.DocumentNode).First(n => n.LocalName == "svg");
+        string[] names = ["altGlyph", "altGlyphDef", "altGlyphItem", "animateColor", "animateMotion", "animateTransform", "clipPath", "feBlend", "feColorMatrix", "feComponentTransfer", "feComposite", "feConvolveMatrix", "feDiffuseLighting", "feDisplacementMap", "feDistantLight", "feFlood", "feFuncA", "feFuncB", "feFuncG", "feFuncR", "feGaussianBlur", "feImage", "feMerge", "feMergeNode", "feMorphology", "feOffset", "fePointLight", "feSpecularLighting", "feSpotLight", "feTile", "feTurbulence", "foreignObject", "glyphRef", "linearGradient", "radialGradient", "textPath"];
+        foreach (string name in names)
+        {
+            Assert.Equal(2, svg.Children.Count(n => n.LocalName == name && n.NamespaceUri == "http://www.w3.org/2000/svg"));
+            Assert.DoesNotContain(svg.Children, n => n.LocalName == name.ToUpperInvariant() || n.LocalName == name.ToLowerInvariant());
+        }
+        foreach (string file in new[] { "Document.getElementsByTagName-foreign-02.html", "Element.getElementsByTagName-foreign-01.html", "Element.getElementsByTagName-foreign-02.html" })
+        {
+            var fonts = Descendants(Html5Parser.Parse(File.ReadAllText(Path.Combine(root, file))).DocumentNode).Where(n => n.LocalName == "font").ToArray();
+            Assert.Equal(2, fonts.Length); Assert.Equal("http://www.w3.org/1999/xhtml", fonts[0].NamespaceUri); Assert.Equal("http://www.w3.org/2000/svg", fonts[1].NamespaceUri);
+        }
+    }
+
+    [Fact]
+    public void OriginalNamedReferencesInPublicFragmentLane()
+    {
+        // Expectations come from the unchanged WPT JavaScript data, never from
+        // the implementation reference table. Extract its codepoint literals.
+        string path = Path.Combine(BuilderInputTests.FindRoot(), "tests/fixtures/M7-builder/wpt-parsing/named-character-references-data.js");
+        var owner = new HtmlDocument(); var context = new HtmlFragmentContext(owner.CreateElement("p")); int count = 0;
+        foreach (System.Text.RegularExpressions.Match match in System.Text.RegularExpressions.Regex.Matches(File.ReadAllText(path), @"'(&[^']+)': \{ 'codepoints': \[([^\]]+)\]"))
+        {
+            string expected = string.Concat(match.Groups[2].Value.Split(',').Select(s => char.ConvertFromUtf32(Convert.ToInt32(s.Trim()[2..], 16))));
+            Assert.Equal(expected, Html5Parser.ParseFragment(match.Groups[1].Value, context).GetTextContent()); count++;
+        }
+        Assert.Equal(2231, count);
+    }
+
+    [Fact]
+    public void OriginalNulAndAmbiguousAmpersandCases()
+    {
+        var owner = new HtmlDocument(); var context = new HtmlFragmentContext(owner.CreateElement("div"));
+        Assert.Equal("-�", Html5Parser.ParseFragment("<!-\0>", context).FirstChild!.Value);
+        foreach (var (input, expected) in new[] { ("&\0auml;", "&auml;"), ("&a\0uml;", "&auml;"), ("&au\0ml;", "&auml;"), ("&aum\0l;", "&auml;"), ("&auml\0;", "ä;"), ("&notin\0;", "¬in;"), ("a\0b", "ab") })
+            Assert.Equal(expected, Html5Parser.ParseFragment(input, context).GetTextContent());
+        foreach (var (input, expected) in new[] { ("&\0auml;", "&�auml;"), ("&a\0uml;", "&a�uml;"), ("&au\0ml;", "&au�ml;"), ("&aum\0l;", "&aum�l;"), ("&auml\0;", "ä�;"), ("&notin\0;", "&notin�;") })
+            Assert.Equal(expected, Html5Parser.ParseFragment("<span title='" + input + "'>", context).FirstChild!.Attributes[0].Value);
+        const string refs = "?a=b&c=d&a0b=c&copy=1&noti=n&not=in&notin=&notin;&not;&;& &";
+        var div = Html5Parser.ParseFragment("<div><a href='" + refs + "'>Link</a><p>Text: " + refs + "</p></div>", context).FirstChild!;
+        Assert.Equal(2, div.Children.Count);
+        Assert.Equal("?a=b&c=d&a0b=c&copy=1&noti=n&not=in&notin=∉¬&;& &", div.FirstChild!.Attributes[0].Value);
+        Assert.Equal("Text: ?a=b&c=d&a0b=c©=1¬i=n¬=in¬in=∉¬&;& &", div.Children[1].GetTextContent());
+    }
+
+    [Fact]
+    public void OriginalStaticAdoptionBaselineAndFormPointerTrees()
+    {
+        var owner = new HtmlDocument(); var context = new HtmlFragmentContext(owner.CreateElement("body"));
+        var tree = Html5Parser.ParseFragment("<b>1<p>2</b>3</p>", context);
+        Assert.Equal(new[] { "b", "p" }, tree.Children.Select(n => n.LocalName)); Assert.Equal("1", tree.FirstChild!.GetTextContent());
+        Assert.Equal("b", tree.Children[1].FirstChild!.LocalName); Assert.Equal("2", tree.Children[1].FirstChild!.GetTextContent()); Assert.Equal("3", tree.Children[1].Children[1].Value);
+        foreach (string markup in new[] { "<div><form></div><input></form>", "<template><div><form></div><input></form></template>", "<form id=outer><template><div><form></div><input></form></template></form>" })
+        {
+            var doc = Html5Parser.Parse(markup); var template = Descendants(doc.DocumentNode).FirstOrDefault(n => n.LocalName == "template");
+            var root = template?.TemplateContent ?? doc.RootElement.Children[1];
+            Assert.Single(Descendants(root), n => n.LocalName == "form");
+            var input = Descendants(root).First(n => n.LocalName == "input"); Assert.Equal("div", root.FirstChild!.LocalName); Assert.Same(root, input.Parent);
+        }
+    }
+
+    [Fact]
+    public void OriginalMetaCharsetPrecedence()
+    {
+        Assert.Equal(("iso-8859-15", 0), HtmlByteInput.Sniff("<meta http-equiv='Content-Type' content='text/html; charset=koi8-r' charset='iso-8859-15'>"u8));
+        Assert.Equal(("windows-1250", 0), HtmlByteInput.Sniff("<meta http-equiv='Content-Type' content='charset=\"windows-1251'><meta charset=windows-1250>"u8));
+    }
+
+    [Fact]
     public void CdataInIntegrationPointFragment()
     {
         foreach (var (ns, names) in new[] { ("http://www.w3.org/1998/Math/MathML", new[] { "mi", "mo", "mn", "ms", "mtext", "annotation-xml" }), ("http://www.w3.org/2000/svg", new[] { "foreignObject", "desc", "title", "path" }) })

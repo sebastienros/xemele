@@ -1,0 +1,41 @@
+{
+  "total_max_seconds": 2200,
+  "initial_identity_max_seconds": 45,
+  "final_identity_max_seconds": 45,
+  "environment": {
+    "DOTNET_ROOT": "/Users/sebastienros/Library/Application Support/dotnetup/dotnet",
+    "DOTNET_ROLL_FORWARD": "Disable",
+    "DOTNET_TieredCompilation": "0",
+    "DOTNET_TieredPGO": "0",
+    "DOTNET_ReadyToRun": "0",
+    "SHLVL": "1",
+    "XEMELE_MEASUREMENT_SESSION": "01a12add-f725-7663-b0f9-e6687671c769-builder-continuation"
+  },
+  "runs": [
+    {
+      "name": "allocation",
+      "max_seconds": 150,
+      "log": "artifacts/M7-builder/allocation.log",
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "--fx-version",
+        "10.0.11",
+        "/Users/sebastienros/.codex/worktrees/464f/xemele/benchmarks/Xemele.Benchmarks/M7-builder/bin/Release/net10.0/Xemele.Benchmarks.dll",
+        "--measure"
+      ]
+    },
+    {
+      "name": "bdn",
+      "max_seconds": 1950,
+      "log": "artifacts/M7-builder/bdn.log",
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "--fx-version",
+        "10.0.11",
+        "/Users/sebastienros/.codex/worktrees/464f/xemele/benchmarks/Xemele.Benchmarks/M7-builder/bin/Release/net10.0/Xemele.Benchmarks.dll",
+        "--benchmark",
+        "/Users/sebastienros/.codex/worktrees/464f/xemele/artifacts/M7-builder/bdn"
+      ]
+    }
+  ]
+}

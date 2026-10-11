@@ -38,7 +38,7 @@ internal sealed partial class HtmlTreeBuilder
                 case "title": case "textarea": Tokenizer.SetState(HtmlTokenizerState.RcData); break;
                 case "style": case "xmp": case "iframe": case "noembed": case "noframes": Tokenizer.SetState(HtmlTokenizerState.RawText); break;
                 case "script": Tokenizer.SetState(HtmlTokenizerState.ScriptData); break;
-                case "noscript" when options.ScriptingEnabled: Tokenizer.SetState(HtmlTokenizerState.RawText, "noscript"); break;
+                case "noscript" when options.ScriptingEnabled: Tokenizer.SetState(HtmlTokenizerState.RawText); break;
                 case "plaintext": Tokenizer.SetState(HtmlTokenizerState.PlainText); break;
                 case "template": templates.Add(Mode.InTemplate); break;
             }
