@@ -63,4 +63,5 @@ namespace and local texts. Provider hash adds one shape and one per scalar/octet
 Provider measures add one unit and return stored length/null without rescanning.
 Success/mismatch paths construct no diagnostics. Warm borrowed compare/hash/length
 and invalid lexical rejection target zero allocations; parsing deliberately owns
-node/array allocations. Measurements are pending explicit coordinator GRANT.
+node/array allocations. Accepted single-run evidence and its explicit limits are recorded in allocations.md;
+warm-call probe distributions met the target and owned results allocated as expected.
