@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.Runtime.InteropServices;
+using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text.Json;
 using BenchmarkDotNet.Attributes;
@@ -26,12 +27,20 @@ if (args is [var benchmarkMode, var artifacts] && benchmarkMode is "--benchmark"
 }
 if (args is not [var mode, var output] || mode is not ("--control" or "--allocation")) throw new ArgumentException("Use --control|--allocation <output> or --benchmark <artifacts>.");
 bool measure = mode == "--allocation";
+// Harness distributions are allocated outside every product/cold/steady counter.
+long[] warmDistribution=new long[128], measuredDistribution=new long[128];
 long coldStart = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
 var fixture = new ModelFixture();
 long cold = measure ? GC.GetAllocatedBytesForCurrentThread() - coldStart : 0;
-for (int i=0;i<256;i++) fixture.Primitive();
 long start = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
-double consumed = 0; for (int i=0;i<65536;i++) consumed += fixture.Primitive();
+double warmConsumed=0;
+for(int i=0;i<128;i++) warmConsumed+=SampleBatch(fixture,measure,out warmDistribution[i]);
+long warmBytes=measure?GC.GetAllocatedBytesForCurrentThread()-start:0;
+start = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+double consumed=0;
+for(int i=0;i<128;i++) consumed+=SampleBatch(fixture,measure,out measuredDistribution[i]);
+// Exact total covers the whole measured loop, sampling and distribution stores;
+// per-batch attribution does not exclude any bytes from the zero gate.
 long primitive = measure ? GC.GetAllocatedBytesForCurrentThread()-start : 0;
 start = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
 object positive = new byte[1024]; GC.KeepAlive(positive);
@@ -44,12 +53,20 @@ start = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
 for(int i=0;i<256;i++) GC.KeepAlive(fixture.Format());
 long ownedStrings = measure ? GC.GetAllocatedBytesForCurrentThread()-start : 0;
 fixture.Controls();
-if (consumed != 65536 * 50.5) throw new InvalidOperationException("Consumed result mismatch.");
-if(measure && (primitive != 0 || positiveBytes <= 0 || ownedSets <= 0 || ownedStrings <= 0)) throw new InvalidOperationException($"Allocation control failed: {primitive}/{positiveBytes}/{ownedSets}/{ownedStrings}.");
 File.WriteAllText(output, JsonSerializer.Serialize(new { mode, runtime=RuntimeInformation.FrameworkDescription, architecture=RuntimeInformation.ProcessArchitecture.ToString(), os=RuntimeInformation.OSDescription,
     revision=Environment.GetEnvironmentVariable("XEMELE_MODEL_REVISION"), assemblySha256=Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(typeof(XPathValue).Assembly.Location))),
-    warmups=256, operations=65536, primitiveBytes=primitive, positiveBytes, coldSetupBytes=cold, ownedOperations=256, ownedSetBytes=ownedSets, ownedStringBytes=ownedStrings, consumed },new JsonSerializerOptions{WriteIndented=true}));
-Console.WriteLine($"{mode} complete: consumed={consumed}");
+    batches=128, groupsPerBatch=512, warmupOperations=65536, operations=65536, warmBytes, warmDistribution, measuredDistribution, primitiveBytes=primitive, positiveBytes, coldSetupBytes=cold, ownedOperations=256, ownedSetBytes=ownedSets, ownedStringBytes=ownedStrings, warmConsumed, consumed },new JsonSerializerOptions{WriteIndented=true}));
+if (consumed != 65536 * 50.5 || warmConsumed != consumed) throw new InvalidOperationException("Consumed batch result mismatch.");
+if(measure && (primitive != 0 || positiveBytes <= 0 || ownedSets <= 0 || ownedStrings <= 0)) throw new InvalidOperationException($"Allocation control failed: {primitive}/{positiveBytes}/{ownedSets}/{ownedStrings}.");
+Console.WriteLine($"{mode} complete: warm={warmConsumed}; consumed={consumed}; batches=128; groups=512");
+[MethodImpl(MethodImplOptions.NoInlining)]
+static double SampleBatch(ModelFixture fixture,bool measure,out long bytes)
+{
+    long start=measure?GC.GetAllocatedBytesForCurrentThread():0;
+    double consumed=fixture.PrimitiveBatch();
+    bytes=measure?GC.GetAllocatedBytesForCurrentThread()-start:0;
+    return consumed;
+}
 internal sealed class ModelFixture
 {
     private readonly XmlNode root;
@@ -68,6 +85,9 @@ internal sealed class ModelFixture
         return number.AsNumber()+boolean.AsNumber()+(unicode.AsBoolean()?1:0)+(double.IsNaN(invalid.AsNumber())?1:0)+(nan.AsBoolean()?0:1)+
             (item.Equals(same)?1:0)+(item.GetHashCode()==same.GetHashCode()?1:0)+(item.StringValue.Length==2?1:0)+XPathConversions.ParseNumber("42")+11+(double.IsPositiveInfinity(longNumber.AsNumber())?1:0)+(longSpaces.AsNumber()==-.5?1:0)+(double.IsNaN(invalidUnicode.AsNumber())?1:0);
     }
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    internal double PrimitiveBatch()
+    { double consumed=0;for(int i=0;i<512;i++)consumed+=Primitive();return consumed; }
     internal XPathValue Construct()=>XPathValue.FromNodeSet([XPathItem.FromNode(root),XPathItem.FromAttribute(root.Attributes[0]),XPathItem.FromNamespace(root,"p"),XPathItem.FromNode(root.FirstChild)]);
     internal string Format()=>XPathValue.FromNumber(double.Epsilon).AsString();
     internal void Controls()
