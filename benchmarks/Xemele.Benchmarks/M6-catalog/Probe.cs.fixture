@@ -39,6 +39,20 @@ foreach (var request in requests)
         if (bytes != 0) throw new Exception("Borrowed matching allocated.");
     }
 }
+before = GC.GetAllocatedBytesForCurrentThread();
+var graphResolver = new ChainResolver(48);
+var graph = XmlCatalog.Parse("<catalog xmlns='urn:oasis:names:tc:entity:xmlns:xml:catalog'><nextCatalog catalog='https://chain/0'/></catalog>", new() { Resolver = graphResolver, MaxCatalogDepth = 49, Limits = new() { ExternalResources = null } });
+Print("owned-deep-graph-setup", GC.GetAllocatedBytesForCurrentThread() - before, 1);
+before = GC.GetAllocatedBytesForCurrentThread(); consumed = graph.Resolve(exact); Print("cold-pooled-lookup-frame-storage", GC.GetAllocatedBytesForCurrentThread() - before, 1);
+for (int i = 0; i < 1000; i++) consumed = graph.Resolve(exact);
+for (int batch = 0; batch < 16; batch++)
+{
+    before = GC.GetAllocatedBytesForCurrentThread();
+    for (int i = 0; i < 4096; i++) consumed = graph.Resolve(exact);
+    bytes = GC.GetAllocatedBytesForCurrentThread() - before;
+    Print("steady-borrowed-deep-graph-pooled-frames", bytes, 4096);
+    if (bytes != 0) throw new Exception("Warmed graph traversal allocated.");
+}
 var rewrite = exact with { SystemId = "rewrite:long-尾巴" }; var normalized = exact with { SystemId = null, PublicId = " A\t B " };
 foreach (var request in new[] { rewrite, normalized })
 {
@@ -64,4 +78,15 @@ static void Print(string domain, long numeratorBytes, int denominatorOperations)
 sealed class RefusingResolver : XmlResourceResolver
 {
     public override XmlResolvedResource? Resolve(XmlResourceRequest request, CancellationToken token) => null;
+}
+
+sealed class ChainResolver(int count) : XmlResourceResolver
+{
+    public override XmlResolvedResource? Resolve(XmlResourceRequest request, CancellationToken token)
+    {
+        int index = int.Parse(request.Uri.AbsolutePath.AsSpan(1), System.Globalization.CultureInfo.InvariantCulture);
+        string body = index == count - 1 ? "<system systemId='key-127' uri='https://mapped/127'/>" : "<nextCatalog catalog='https://chain/" + (index + 1) + "'/>";
+        string xml = "<catalog xmlns='urn:oasis:names:tc:entity:xmlns:xml:catalog'>" + body + "</catalog>";
+        return new(new MemoryStream(System.Text.Encoding.UTF8.GetBytes(xml)), request.Uri);
+    }
 }

@@ -218,6 +218,53 @@ public sealed class CatalogTests
         Assert.NotNull(catalog.Resolve(Entity("x")));
         AssertCode("Limit", () => XmlCatalog.Parse(xml, new() { Limits = new() { Depth = depth } }));
     }
+    [Theory] [InlineData("nextCatalog")] [InlineData("delegateSystem")] [InlineData("delegateURI")] [InlineData("delegatePublic")]
+    public void DeepAcyclicGraphsLoadAndResolveWithoutRecursion(string route)
+    {
+        const int children = 4000;
+        string entry = ChainEntry(route, 0);
+        var resolver = new Resolver(request =>
+        {
+            int index = int.Parse(request.Uri.AbsolutePath.AsSpan(1), System.Globalization.CultureInfo.InvariantCulture);
+            string body = index == children - 1 ? "<system systemId='x' uri='https://mapped/deep'/><public publicId='P' uri='https://mapped/deep'/><uri name='https://request/entity' uri='https://mapped/deep'/>" : ChainEntry(route, index + 1);
+            return Resource(Catalog(body), request.Uri);
+        });
+        var limits = new XmlResourceLimits { DocumentCharacters = null, ExpandedCharacters = null, Depth = null, AttributesPerElement = null, TokenCharacters = null, InternedNames = null, EntityDepth = null, ExternalBytes = null, ExternalResources = null, InclusionDepth = null, Diagnostics = null, EvaluationWork = null };
+        var catalog = XmlCatalog.Parse(Catalog(entry), new() { Resolver = resolver, Limits = limits, MaxCatalogDepth = children + 1, MaxCatalogDocuments = children + 1 });
+        var request = route == "delegateURI" ? Entity() with { Kind = XmlResourceKind.XIncludeXml } : route == "delegatePublic" ? Entity(null, "P") : Entity("x");
+        Assert.Equal("https://mapped/deep", catalog.Resolve(request)!.AbsoluteUri);
+        Assert.Null(catalog.Resolve(request with { SystemId = "absent", PublicId = "absent", Uri = new("https://miss/") }));
+        Assert.Equal(children, resolver.Calls);
+        AssertCode("Limit", () => XmlCatalog.Parse(Catalog(entry), new() { Resolver = resolver, Limits = limits, MaxCatalogDepth = children, MaxCatalogDocuments = children + 1 }));
+    }
+    private static string ChainEntry(string route, int index) => route switch
+    {
+        "delegateSystem" => "<delegateSystem systemIdStartString='x' catalog='https://chain/" + index + "'/>",
+        "delegatePublic" => "<delegatePublic publicIdStartString='P' catalog='https://chain/" + index + "'/>",
+        "delegateURI" => "<delegateURI uriStartString='https://request/' catalog='https://chain/" + index + "'/>",
+        _ => "<nextCatalog catalog='https://chain/" + index + "'/>"
+    };
+    [Fact] public void GraphCancellationAfterLastAcquisitionAndLargeScopedSiblingControl()
+    {
+        using var cancel = new CancellationTokenSource();
+        var resolver = new Resolver(request => { cancel.Cancel(); return Resource(Catalog(""), request.Uri); });
+        Assert.Throws<OperationCanceledException>(() => XmlCatalog.Parse(Catalog("<delegateSystem systemIdStartString='a' catalog='https://child/'/>"), new() { Resolver = resolver }, cancel.Token));
+        Assert.Equal(1, resolver.Calls);
+        // Unequal and equal prefix lengths preserve first document-order ties after bounded merge sorting.
+        string entries = "<group xml:base='https://child/'>" + string.Concat(Enumerable.Range(0, 2048).Select(i => "<delegateSystem systemIdStartString='" + new string('x', i % 17 + 1) + "' catalog='" + i + "'/>")) + "</group>";
+        var ordered = new Resolver(request => Resource(Catalog("<system systemId='xxxxxxxxxxxxxxxxxtail' uri='https://mapped/" + request.Uri.AbsolutePath.AsSpan(1).ToString() + "'/>"), request.Uri));
+        var catalog = XmlCatalog.Parse(Catalog(entries), new() { Resolver = ordered, Limits = new() { ExternalResources = null, ExternalBytes = null, InternedNames = null }, MaxCatalogDocuments = 2049 });
+        Assert.Equal("https://mapped/16", catalog.Resolve(Entity("xxxxxxxxxxxxxxxxxtail"))!.AbsoluteUri);
+    }
+    [Fact] public void DelegateSortCancelsDuringComparisonAndPreservesTies()
+    {
+        var values = Enumerable.Range(0, 2048).Select(i => (Key: i % 17, Order: i)).ToArray();
+        var sorted = CatalogSort.StableSort(values, static (a, b) => b.Key.CompareTo(a.Key), default);
+        Assert.Equal(Enumerable.Range(0, 2048).Select(i => (Key: i % 17, Order: i)).OrderByDescending(x => x.Key), sorted);
+        using var cancel = new CancellationTokenSource(); int comparisons = 0;
+        var exception = Assert.Throws<OperationCanceledException>(() => CatalogSort.StableSort(values, (a, b) => { if (++comparisons == 100) cancel.Cancel(); return b.Key.CompareTo(a.Key); }, cancel.Token));
+        Assert.Equal(cancel.Token, exception.CancellationToken); Assert.Equal(100, comparisons);
+    }
     private sealed class TrackingStream(byte[] bytes) : MemoryStream(bytes)
     {
         internal int BytesRead, Disposals;

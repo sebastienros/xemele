@@ -55,3 +55,16 @@ cannot change the manifest. --identity-control executes the identical initial an
 final child identity launches without allocation or benchmark phases; an unknown
 environment variable must still cause rejection. Controls are performed before
 requesting an exclusive measurement lease.
+
+Graph loading and lookup also use explicit frames. Loading retains original
+reference acquisition order, active fragment-free final identities, scoped
+entry traversal and native budget accounting. It fully parses and disposes each
+child stream before acquiring its descendants; no stream is retained by graph
+frames. Immutable graph nodes reference children by integer index. Lookup uses
+32 stack-allocated value frames, with an operation-local pooled array for a deeper
+graph; the first pool miss is separately measured, and warmed traversal must be
+zero allocation. No recursive loader/delegate/next call remains. Cancellation
+checks cover each sibling enqueue and stable merge-sort comparison/copy; delegate
+ties retain document order. Four 4,000-resource acyclic chain cases exercise
+next/system/public/URI delegation with raised depth/document caps and explicitly
+null shared quotas, both successful exact depth and structured one-over rejection.
