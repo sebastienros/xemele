@@ -4,7 +4,7 @@
   "milestone": "M3",
   "title": "Verify core streaming preview",
   "kind": "gate",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M3 coordinator 01a1284a-8826-7fc2-af44-74552db608f2",
   "branch": "codex/m3-gate",
   "base_revision": "29040da0164ca04a7cc667cb07e122340ad3f421",
@@ -32,29 +32,113 @@
     {
       "id": "M3-gate-A1",
       "description": "Verify usable standalone core preview with callback examples and measured streaming allocation report.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "preview-build-demo",
+        "cumulative-tests",
+        "source-context-conformance",
+        "compiled-api",
+        "isolated-package-smoke",
+        "preserved-memory-allocation"
+      ]
     },
     {
       "id": "M3-gate-A2",
       "description": "Run cumulative strict/recovery/streaming/writer tests and package smoke test at integrated revision.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "preview-build-demo",
+        "cumulative-tests",
+        "source-context-conformance",
+        "compiled-api",
+        "isolated-package-smoke",
+        "preserved-memory-allocation"
+      ]
     },
     {
       "id": "M3-gate-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "preview-build-demo",
+        "cumulative-tests",
+        "source-context-conformance",
+        "compiled-api",
+        "isolated-package-smoke",
+        "preserved-memory-allocation"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "docs/reports/M3-gate/Demo/:standalone public core preview source and isolated package consumer",
+    "docs/reports/M3-gate/verify.py:reuses verified cumulative suites/full source-context grammar/API tooling and local-only package smoke",
+    "docs/reports/M3-gate/README.md:actual test/API/package/memory/allocation checkpoints and preserved limitations"
+  ],
+  "evidence": [
+    {
+      "id": "preview-build-demo",
+      "kind": "check",
+      "revision": "75de168c4ebb80c140cdf5ecb7054ebf38e594d3",
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 docs/reports/M3-gate/verify.py prepare",
+      "result": "passed",
+      "summary": "Controlled Release solution+grammar+demo builds0exit/0warnings/errors; independently checked source demo passes all public streaming/writer/async DOM, DTD and recovery examples.",
+      "artifact": "docs/reports/M3-gate/source-demo.log"
+    },
+    {
+      "id": "cumulative-tests",
+      "kind": "check",
+      "revision": "75de168c4ebb80c140cdf5ecb7054ebf38e594d3",
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 docs/reports/M3-gate/verify.py tests",
+      "result": "passed",
+      "summary": "5753total passed0errors/failures/skips:5172unit+268conformance+313differential; includes prior strict/recovery/DTD, all M3 streaming/writer/async and real borrowed allocation controls. All children actual0 exits.",
+      "artifact": "docs/reports/M3-gate/cumulative-tests.json"
+    },
+    {
+      "id": "source-context-conformance",
+      "kind": "check",
+      "revision": "75de168c4ebb80c140cdf5ecb7054ebf38e594d3",
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 docs/reports/M3-gate/verify.py grammar",
+      "result": "passed",
+      "summary": "All2585originals checked:1394accepted/1191rejected,3386resources verified,1394allcallbackpausemodels,409originaloutputs/15unchangednormativeoverrides,771reference differences independently resolved by frozen rules; actualchildexit/cleanup/source/output/runtimefreeze pass. Separate public no-base lane is not conflated.",
+      "artifact": "docs/reports/M3-gate/source-context-grammar.json"
+    },
+    {
+      "id": "compiled-api",
+      "kind": "check",
+      "revision": "75de168c4ebb80c140cdf5ecb7054ebf38e594d3",
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 docs/reports/M3-gate/verify.py api",
+      "result": "passed",
+      "summary": "Official global discovery/compiledAPI comparison matches720members; package assembly matches exacthash.",
+      "artifact": "docs/reports/M3-gate/api-summary.json"
+    },
+    {
+      "id": "isolated-package-smoke",
+      "kind": "check",
+      "revision": "75de168c4ebb80c140cdf5ecb7054ebf38e594d3",
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 docs/reports/M3-gate/verify.py package",
+      "result": "passed",
+      "summary": "Local net10.0-only1.0.0-m3-preview pack0exit, isolatedconsumer usesonlylocalfeed/noProjectReference builds0warnings/errors and runs0exit; source/package independent demo output identical. No publication.",
+      "artifact": "docs/reports/M3-gate/package-summary.json"
+    },
+    {
+      "id": "preserved-memory-allocation",
+      "kind": "review",
+      "revision": "75de168c4ebb80c140cdf5ecb7054ebf38e594d3",
+      "command": "Review verified owner allocation reports and M3-corpus96file streaming closure proof against unchanged integrated runtime since f3e60c5",
+      "result": "passed",
+      "summary": "Five actual1GiB mode reports/65samples/early callbacks <=383776B absolute wholeliveheap <8MiB. Four direct0 exits; completedSAXobservations accepted with outerRSSexit1 and unknownunderlyingexit preserved; RSS unavailable. Selectedwarmprimitive0+positive/cold/owned/suspended evidence preserved; rawBDN2B/7B unproven and historicalfailures honest; timingsinformational,releasehardwarequalificationM9.97fuzz pass preserved; cumulativefixture/corepreservation confirms integration.",
+      "artifact": "docs/reports/M3-gate/README.md"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "",
-    "checks": [],
-    "remaining": [],
+    "summary": "Implemented complete cumulative M3 gate:5753tests,2585source-contextcases,API720,standalonepreview/localpackage smoke;5GiBsurface memory observations and ownerallocation evidence preserved.",
+    "checks": [
+      "All actual gate commands passed;148task validator; no source changes after known tested75de168."
+    ],
+    "remaining": [
+      "Coordinator integrated metadata checkpoint and strictly sequenced M4 handoff."
+    ],
     "requests": []
   }
 }
