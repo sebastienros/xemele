@@ -4,11 +4,11 @@
   "milestone": "M7",
   "title": "HTML5 tokenizer callback adapter",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M7 coordinator /root/callbacks",
   "branch": "codex/m7-callbacks",
   "base_revision": "713f91d6dafdebca3fb8cf8db8c3f91811f4f9fc",
-  "integration_revision": null,
+  "integration_revision": "63d82100fdddf5a74fe59c2513fd2f9b35e30e82",
   "depends_on": [
     "M7-tokenizer"
   ],
@@ -38,7 +38,8 @@
       "evidence": [
         "owned-contract-review",
         "api-preservation",
-        "unchanged-allocation-review"
+        "unchanged-allocation-review",
+        "root-integration"
       ]
     },
     {
@@ -48,7 +49,8 @@
       "evidence": [
         "focused-tests",
         "owned-contract-review",
-        "unchanged-allocation-review"
+        "unchanged-allocation-review",
+        "root-integration"
       ]
     },
     {
@@ -60,7 +62,8 @@
         "release-builds",
         "public-sample",
         "api-preservation",
-        "planning-diff"
+        "planning-diff",
+        "root-integration"
       ]
     }
   ],
@@ -142,6 +145,15 @@
       "result": "passed",
       "summary": "Validated167tasks; whitespace check passed.",
       "artifact": null
+    },
+    {
+      "id": "root-integration",
+      "kind": "integration",
+      "revision": "63d82100fdddf5a74fe59c2513fd2f9b35e30e82",
+      "command": "Pinned offline Release builds; explicit fx10.0.11 callback namespace11 tests and sample; official compose + approved M0 checker; tasks.py validate; git diff --check",
+      "result": "passed",
+      "summary": "Fresh zero-warning builds;11 actual XML identities Pass, sample retained PI/lexical starts/EOF;unchangedAPI1210/3388fixtures/bootstrapFalse.5paths owned; no runtime/API additions. Verified unchanged tokenizer measurements reused without duplicate observations.",
+      "artifact": "docs/reports/M7-callbacks/integration.md"
     }
   ],
   "blockers": [],
