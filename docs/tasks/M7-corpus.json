@@ -4,11 +4,11 @@
   "milestone": "M7",
   "title": "HTML/CSS conformance and fuzz integration",
   "kind": "verification",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M7 implementation chat 01a12c32-15bf-7492-9fbb-8540ffc6cdcf",
   "branch": "codex/m7-corpus",
   "base_revision": "09f43321521ee2a8d31cf3b88787b62cda6899fe",
-  "integration_revision": null,
+  "integration_revision": "db10d7803cfdf212bfb62e401d4cdaada05d2918",
   "depends_on": [
     "M7-css",
     "M7-serialize",
@@ -42,7 +42,8 @@
         "selector-differential",
         "bounded-fuzz",
         "pinned-native-selector",
-        "inherited-correctness"
+        "inherited-correctness",
+        "integrated-corpus-verification"
       ]
     },
     {
@@ -53,7 +54,8 @@
         "html-conformance",
         "selector-differential",
         "pinned-native-selector",
-        "inherited-correctness"
+        "inherited-correctness",
+        "integrated-corpus-verification"
       ]
     },
     {
@@ -64,7 +66,8 @@
         "release-builds",
         "inherited-correctness",
         "bounded-fuzz",
-        "planning-ownership"
+        "planning-ownership",
+        "integrated-corpus-verification"
       ]
     }
   ],
@@ -148,11 +151,20 @@
       "result": "failed",
       "summary": "Completed exit1: 7,789 total / 7,788 pass / 1 failure (M3 AttributeMetadata warm allocation expected 0, actual 7,744 B), zero errors/skips/not-run, 6.211s. Runtime/inherited sources identical to claim. Embedded counter inadvertently run without lease/controlled tiering; no passing performance claim or rerun. Coordinator routes owning cumulative-gate follow-up; focused M7 correctness remains passing.",
       "artifact": "docs/reports/M7-corpus/checks.json"
+    },
+    {
+      "id": "integrated-corpus-verification",
+      "kind": "integration",
+      "revision": "db10d7803cfdf212bfb62e401d4cdaada05d2918",
+      "command": "Pinned offline builds; HTML conformance21 +HtmlCss differential39; ownedFuzz.Driver; independent native35replay/SHA/source+19lockedrecords; ownership/source equality; planningvalidate",
+      "result": "passed",
+      "summary": "Actual .NET10.0.11Arm64:21conformance+39differentialPass0error/fail/skip/notrun;0warning/errorbuilds; fuzz864+192documents/3456+768streams/576fragments/2592ownership/12quota/1728cancel/864IOfault/288tokens; exact35native replay23overlap4rootscope8unsupported, input/output/probe/license/lockSHA allmatch exactcached555055f1 +19sharedlockedrecords. All25workerpathsowned/24nonmetadatafilesexact; planning169. Earlier broad7788/7789defaultenvironmentfailure preserved and assigned controlled cumulativegate followup; not passing evidence.",
+      "artifact": "docs/reports/M7-corpus/integration.md"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Implemented M7 HTML/CSS corpus integration at f1e912ad46fb84a533fef9a95f4c910445478a49; complete immutable inventories/ledgers, original noscript-template composition, independent pinned selector overlap and bounded deterministic parser/fragment fuzz. All writes task-owned; dependencies verified base 09f4332; no runtime/shared changes.",
+    "summary": "Integrated verified complete pinned HTML/CSS inventory, classified native selector overlap, independent BCL two-graph comparisons and bounded deterministic fuzz. M7-cli unlocked; earlier uncontrolled M3 allocation failure retained for gate resolution.",
     "checks": [
       "Five pinned offline Release builds:0 warnings/errors.",
       "1756 inherited correctness+21 conformance+39 differential tests:1,816 pass,0 errors/failures/skips/not-run.",

@@ -1,0 +1,7 @@
+# Integrated HTML/CSS conformance verification
+
+Integration `db10d7803cfdf212bfb62e401d4cdaada05d2918`. Pinned SDK10.0.400/runtime10.0.11 Arm64. Offline Release conformance/differential/driver builds passed with zero warnings/errors. Actual integrated execution:21conformance and39differential tests, zero errors/failures/skips/not-run; deterministic fuzz outputs match checks.json exactly (864+192documents,3456+768streams,576fragments and all lifetime/quota/cancellation/fault/token checks).
+
+Root independently replayed the pinned native selector binary and reproduced all35 retained outputs byte-for-byte. Seven input/output/license/probe/lock hashes and four cached CSSsource hashes match; exact clean engine commit555055f1, only permitted .cargo-ok marker; all19dependency records match shared locked package identities. Every mismatch has a named reference classification and full Xemele expectation; no product case excluded.
+
+All25worker paths are owned and24nonmetadata files match worker finalsource. Source review confirms no runtime/API/shared build changes. The complete240file inherited inventory and original noscript-template assertion pass. Planning169/diff checks pass. Broad prior7789test invocation failure remains explicit in checks.json and coordinator state: one earlier uncontrolled M3 allocation assertion; owning cumulativegate must resolve under isolated controlled conditions. No full-suite or allocation rerun is claimed here.
