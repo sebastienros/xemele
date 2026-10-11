@@ -115,5 +115,10 @@ internal sealed partial class DomSink : IXmlEventSink
         text.Clear();
         return true;
     }
-    public bool EndDocument(XmlLocation location) => true;
+    public bool EndDocument(XmlLocation location)
+    {
+        cancellation.ThrowIfCancellationRequested();
+        if (!budget.Options.Recover) Document.MarkValidationSourceComplete();
+        return true;
+    }
 }
