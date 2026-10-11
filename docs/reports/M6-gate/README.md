@@ -10,7 +10,7 @@ Full tests include allocation assertions and run only after the coordinator's du
 
 Postlease verification checks the exact earlier M5 test-name digests and counts (5932 unit, 384 conformance, 481 differential), removing only exact new M6 class prefixes. Counts alone cannot establish preservation. Original grammar remains 2585 cases and 3386 resources with unchanged independent normative models, callback pauses, output witnesses and reference disagreement resolutions. API inventory must match 1054 members. Preparation and ordinary postlease checks are separate from leased allocation tests.
 
-Final executable evidence, closure hashes, actual counts and limitations will be recorded after the authorized run. No pending check is represented as passing.
+Executable evidence and limits below distinguish the leased test revision from later documentation-only integration.
 
 ## Executed checkpoint evidence
 
@@ -24,8 +24,8 @@ Seven public CLI examples and 57 managed plus 57 native process controls passed.
 
 ## Honest failures and limits
 
-Official API discovery initially stopped before extraction on the CLI's header-only zero-member fragment; scoped compiled extraction still matched all 1054 members. A coordinator-owned prerequisite repair is required before final official inventory verification. This gate did not weaken discovery or invent public API rows.
+Official API discovery initially stopped before extraction on the CLI's header-only zero-member fragment; scoped compiled extraction still matched all 1054 members. The verified coordinator-owned prerequisite repair removed only this zero-row file. This gate did not weaken discovery or invent public API rows.
 
 The first ordinary package trim attempt failed because the inherited `DOTNET_ROLL_FORWARD=Disable` prevented cached ILLink servicing tool configuration from selecting installed stable 10.0.11. The owned package-only environment now uses LatestPatch for compiler tools; direct managed execution remains explicitly `--fx-version 10.0.11`, and all managed/trim/native actual runtime outputs are asserted. The next attempt stopped before pack because the intervening CLI AOT Rebuild had cleaned the canonical library output. Ordinary cached restore and forced library build recreated exactly the leased DLL; the completed package run then passed. Both failed attempts and successful raw outputs remain available for independent inspection. No failed attempt is passing evidence, and no measured suite was retried.
 
-Only actual osx-arm64 deployment is claimed. Earlier lane allocation/timing reports retain their specific boundaries; this gate adds no whole-operation zero-allocation, cold/retained memory or throughput claim. HTML/CSS/schema tasks are still future dependencies and were not consumed. Final task metadata awaits the verified API-fragment repair and coordinator reclaim.
+Only actual osx-arm64 deployment is claimed. Earlier lane allocation/timing reports retain their specific boundaries; this gate adds no whole-operation zero-allocation, cold/retained memory or throughput claim. HTML/CSS/schema tasks are still future dependencies and were not consumed. After verified repair and reclaim, official inventory at `2e48353455a0d06ef6b20bf04cf600554a9f24ce` passed all 1054 declarations with bootstrap disabled and all 3386 original resource hashes. No runtime source, tests or fixtures changed since the leased revision, and no full-suite rerun is claimed at the later documentation-only HEAD. Planning validation passed all 164 tasks; owned diff checks and scoped process cleanup passed.
