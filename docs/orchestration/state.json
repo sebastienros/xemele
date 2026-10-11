@@ -19,15 +19,6 @@
       "partial_handoff_revision": "7d6160c67728b7724e63bd2b2816ecbbc1efe1e4",
       "frozen_expectations_revision": "7dc2a3c9cd60f2a0ce373cde9b2724b414ee1051",
       "correction_revision": "21808e2b71c6f3098ed2a1db8bc84e245f194052"
-    },
-    {
-      "task_id": "M5-dtd-attribute-validity",
-      "agent_id": "/root/validation_model",
-      "worktree": "/private/tmp/xemele-m5-dtd-attribute-validity",
-      "branch": "codex/m5-dtd-attribute-validity",
-      "base_revision": "daf46fe51c6f91b04fe583f165bf4b2cd6d54a54",
-      "claim_revision": "60190686306433a6b3e40a6644fe3389bd9c32e3",
-      "stage": "Dispatched owned corpus correctness repair"
     }
   ],
   "integration_queue": [],
@@ -41,8 +32,8 @@
   "next_actions": [
     "Review/measure/integrate nesting+attribute repairs, then claim orderedboundedsourceinstanceprovenance; source-provenance standalone oldnumericRef testmustcorrectElementValid; reruncorpusafterverifiedrepairs; cumulativegate/M6solewritertransfer."
   ],
-  "last_verified_task": "M5-dtd-parameter-validity",
-  "last_integrated_revision": "9320614cbba1181825e1ad949f873b516525d452",
+  "last_verified_task": "M5-dtd-attribute-validity",
+  "last_integrated_revision": "2d20f75450a011a22259b5116450a92dba84bd99",
   "completed_assignments": [
     {
       "task_id": "M2-dtd-composition",
@@ -767,6 +758,17 @@
       "stage": "Verifiedintegrated; cleancheckoutremoved",
       "integration_revision": "9320614cbba1181825e1ad949f873b516525d452",
       "handoff_revision": "2e11913709bec75670a55f96ae9d6f27cd673726"
+    },
+    {
+      "task_id": "M5-dtd-attribute-validity",
+      "agent_id": "/root/validation_model",
+      "worktree": "/private/tmp/xemele-m5-dtd-attribute-validity",
+      "branch": "codex/m5-dtd-attribute-validity",
+      "base_revision": "daf46fe51c6f91b04fe583f165bf4b2cd6d54a54",
+      "claim_revision": "60190686306433a6b3e40a6644fe3389bd9c32e3",
+      "stage": "Verified integrated; terminal clean checkout pending removal",
+      "integration_revision": "2d20f75450a011a22259b5116450a92dba84bd99",
+      "handoff_revision": "e7156720023858f6cf405c92a315258f38581389"
     }
   ],
   "benchmark_policy": "Successful previous measurements retained; future changed runtime measurements require complete preparation and exclusive grant.",
@@ -1945,11 +1947,7 @@
     "implementation_started": false,
     "dispatch_after": "M2-conformance verified"
   },
-  "milestone_progress": {
-    "milestone": "M5",
-    "verified": 11,
-    "total": 15
-  },
+  "milestone_progress": "M5: 12 of 15 tasks verified; corpus parked pending source instance provenance repair; gate pending.",
   "pause_request": {
     "requested_by": "user",
     "after_verified_task": "M2-gate",

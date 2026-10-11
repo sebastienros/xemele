@@ -2,11 +2,11 @@
   "schema_version": 1,
   "milestone": "M5",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M5 isolated attribute validity worker",
   "branch": "codex/m5-dtd-attribute-validity",
   "base_revision": "daf46fe51c6f91b04fe583f165bf4b2cd6d54a54",
-  "integration_revision": null,
+  "integration_revision": "2d20f75450a011a22259b5116450a92dba84bd99",
   "goals": [
     "G07"
   ],
@@ -57,6 +57,15 @@
       "result": "passed",
       "summary": "158taskrecordsvalid; final evidence updated/revalidated before handoff.",
       "artifact": "docs/reports/M5-dtd-attribute-validity/README.md"
+    },
+    {
+      "id": "root-integration",
+      "kind": "integration",
+      "revision": "2d20f75450a011a22259b5116450a92dba84bd99",
+      "command": "Pinned Release build; direct --fx-version 10.0.11 Xemele.Tests selected Dtd*/M5 classes and validation/canonical namespaces; python3 docs/reports/M5-validation-model/check_api.py; python3 tools/planning/tasks.py validate",
+      "result": "passed",
+      "summary": "Release zero warnings/errors; 2289 DTD/compiler/validation tests and 366 selected M5 tests passed without failures/skips (overlapping sets, not additive). Earlier narrower namespace run passed252; corrected explicit namespace selection broadened coverage. Public948 unchanged;159 tasks valid. Measurement raw independently inspected before cleanup; positive inclusive1968/2097152 retained.",
+      "artifact": null
     }
   ],
   "blockers": [],
@@ -95,7 +104,8 @@
       "description": "Check default values syntactically at compilation; require entity membership only when actual/defaulted instance values are used, without augmenting current DOM.",
       "status": "passed",
       "evidence": [
-        "focused"
+        "focused",
+        "root-integration"
       ]
     },
     {
@@ -104,7 +114,8 @@
       "status": "passed",
       "evidence": [
         "focused",
-        "exclusive-measurement"
+        "exclusive-measurement",
+        "root-integration"
       ]
     },
     {
@@ -115,7 +126,8 @@
         "focused",
         "build-api",
         "exclusive-measurement",
-        "planning"
+        "planning",
+        "root-integration"
       ]
     }
   ]
