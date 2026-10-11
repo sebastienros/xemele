@@ -12,7 +12,7 @@
       "task_id": "M7-builder",
       "branch": "codex/m7-builder-continuation",
       "base_revision": "b5a449e353526d791b4739b0b733d1896cbe44d1",
-      "stage": "Stable21304465 correctness/API/sample/full166ledger reviewed; prepared277d92 beforegrant superseded pending exact336/899 testcount assertion. No measurement.",
+      "stage": "Exclusive measurement lease GRANTED m7-builder-5d4de99; sole frozen wrapper; no other writes/workloads/rawinspection.",
       "claim_revision": "713f91d",
       "source_review": {
         "reviewed_checkpoint": "21304465c5be45a3ba273a2f025028f2485cd962",
@@ -2166,29 +2166,40 @@
     "cleanup": "Both clean integrated repair checkouts removed after independent raw inspection/durable verification; commits retained."
   },
   "measurement_lease": {
-    "id": "m7-parsed-text-7d95ed6",
-    "status": "released",
-    "revision": "7d95ed6",
-    "executor_agent_id": "/root",
-    "duration_limit_seconds": 220,
-    "preparation_sha256": "302d893e55ab9b4a8a590cf6e9543c8349ec541e93d563fdcc8facc61fbc5578",
-    "granted_at_utc": "2026-10-11T14:33:54.396211+00:00",
-    "scope": "Exactly once sole-command elevated python3 -B docs/reports/M7-html-parsed-text-model/run_measurements.py --exclusive-grant. Initial35/allocation60/final35/total220 includes90s cleanup slack. Explicitfx10.0.11. Frozen233source/generated/probe fixture,10binary,3852SDK/runtime/host,full effective child environment. Own identity/product PG cleanup/reap/finalidentity/nochildren on all paths. No builds/tests/writes/retries/raw inspection before durable root RELEASE.",
-    "park_acknowledgements": [
-      "Builder fresh PARK preserved9b78260+ownedchanges,all child sessions reaped,no workloads/children/pendingwrites.",
-      "Root29focusedpass/0warnings,sourceacd5ab4andfixed7d95ed6reviewed; exactwrapperpositive/finalpositive0 andunknownenvnegative1,nochildren/runs[]; direct intended sole-command identity0/0. Fullenvironmentfreeze accepted; relevant workloadinventoryonlyidle unrelatedRoslynk,no workloads. RootPARK."
-    ],
-    "released_at_utc": "2026-10-11T14:34:11.419769+00:00",
-    "release": {
-      "wrapper_exit": 0,
-      "initial_identity_exit": 0,
-      "allocation_exit": 0,
-      "final_identity_exit": 0,
-      "no_child": true,
-      "manifest_sha256_unchanged": "302d893e55ab9b4a8a590cf6e9543c8349ec541e93d563fdcc8facc61fbc5578",
-      "inspection": "Root inspected8zero batches32768assignments,positive1048,public/parsedownednode256B each,deepcopy376088/1000 inclusive stack setup. Source unchanged throughintegration; no new timing/retained/x64claim."
+    "id": "m7-builder-5d4de99",
+    "status": "GRANTED",
+    "owner_chat_id": "01a12b74-6d45-73e2-99c4-abb2963835d3",
+    "grant_coordinator": "01a12add-f725-7663-b0f9-e6687671c769",
+    "prepared_revision": "5d4de9951572e1b79d5480b7d1af8c820d19d6e6",
+    "prepared_manifest_sha256": "a0daa28b3784e8d844ddfeca832059d29b5015972cf1e832ca3088de153b0dd2",
+    "worktree": "/Users/sebastienros/.codex/worktrees/464f/xemele",
+    "sole_command": "python3 -B docs/reports/M7-builder/run_measurements.py --exclusive-grant",
+    "executor_shell": "default zsh login:true require_escalated, identical to preparation controls",
+    "maximum_seconds": 2300,
+    "sequence": "initial45,allocation150,BDN1950(72ShortRunNoEmit),final45;130reserve protects30+40cleanup/15slack",
+    "prepared_controls": {
+      "tool_output_id": "exec-98a5156e-3847-4c15-9f6c-fdac6229d915",
+      "positive": 0,
+      "unknown_environment_negative": 1,
+      "final_positive": 0,
+      "all_runs": [],
+      "all_no_child": true,
+      "full_output_root_inspected": true
     },
-    "next_pending": "M7-builder; no grant.277d92controls0/1/0 superseded beforeexecution pending exactcounts; updatedplan2300total/130finalcleanupreserve/72NoEmit."
+    "root_identity": {
+      "capture_sha256": "373f7b29b82c39843eb47dc89446f9f4ee7c4ef04993731672bf8f9ff0222ab2",
+      "source3904_binary145_runtime3852_host_revision": "all exact match",
+      "environment": "Independent cross-chat capture differs opaque session IDs and shell keys(PATH/FPATH/PAGER/ZPLUG_SUDO_PASSWORD); not claimed matching. Complete intended-executor childenv remains unmodified and exact0/1/0 controls verified; no environment exemption."
+    },
+    "park_acknowledgements": {
+      "builder": "fresh5d4de99 clean/all ownprocessesreaped/no counters or writes",
+      "prior_subagents": "all terminal, no other active claims",
+      "root": "identity captures complete/reaped; no builds/tests/writes/rawinspection until RELEASE",
+      "main_orchestrator": "fresh explicitPARK maximum2300s/no builds/tests/measurements/dispatch until release"
+    },
+    "scoped_process_inventory": "empty relevant workloads;31persistent idle RoslynkMCP processes preserved",
+    "granted_at_utc": "2026-10-11 15:18:28 UTC",
+    "release_rule": "Immediate root durable RELEASE after lifecycle completion or failure, before raw inspection/reports/retry. Worker waits for release; no other commands/source edits/builds/tests duringlease."
   },
   "offline_corpus_setup": {
     "checkout": "/private/tmp/xemele-m3-integration",
@@ -2814,6 +2825,31 @@
         "manifest_sha256_unchanged": "988486264e234199bad00b47253b7008761ca780ecb329b3d9cd842fca14d4e4",
         "inspection": "Root independently inspected365allocation rows/358zero borrowed rows1466368operations, separatecold/owned/inclusiveownerretention domains and29successful actual10.0.11Arm64NoEmitcases. Sourceunchanged through integration; no blanket speedup/x64 claim."
       }
+    },
+    {
+      "id": "m7-parsed-text-7d95ed6",
+      "status": "released",
+      "revision": "7d95ed6",
+      "executor_agent_id": "/root",
+      "duration_limit_seconds": 220,
+      "preparation_sha256": "302d893e55ab9b4a8a590cf6e9543c8349ec541e93d563fdcc8facc61fbc5578",
+      "granted_at_utc": "2026-10-11T14:33:54.396211+00:00",
+      "scope": "Exactly once sole-command elevated python3 -B docs/reports/M7-html-parsed-text-model/run_measurements.py --exclusive-grant. Initial35/allocation60/final35/total220 includes90s cleanup slack. Explicitfx10.0.11. Frozen233source/generated/probe fixture,10binary,3852SDK/runtime/host,full effective child environment. Own identity/product PG cleanup/reap/finalidentity/nochildren on all paths. No builds/tests/writes/retries/raw inspection before durable root RELEASE.",
+      "park_acknowledgements": [
+        "Builder fresh PARK preserved9b78260+ownedchanges,all child sessions reaped,no workloads/children/pendingwrites.",
+        "Root29focusedpass/0warnings,sourceacd5ab4andfixed7d95ed6reviewed; exactwrapperpositive/finalpositive0 andunknownenvnegative1,nochildren/runs[]; direct intended sole-command identity0/0. Fullenvironmentfreeze accepted; relevant workloadinventoryonlyidle unrelatedRoslynk,no workloads. RootPARK."
+      ],
+      "released_at_utc": "2026-10-11T14:34:11.419769+00:00",
+      "release": {
+        "wrapper_exit": 0,
+        "initial_identity_exit": 0,
+        "allocation_exit": 0,
+        "final_identity_exit": 0,
+        "no_child": true,
+        "manifest_sha256_unchanged": "302d893e55ab9b4a8a590cf6e9543c8349ec541e93d563fdcc8facc61fbc5578",
+        "inspection": "Root inspected8zero batches32768assignments,positive1048,public/parsedownednode256B each,deepcopy376088/1000 inclusive stack setup. Source unchanged throughintegration; no new timing/retained/x64claim."
+      },
+      "next_pending": "M7-builder; no grant.277d92controls0/1/0 superseded beforeexecution pending exactcounts; updatedplan2300total/130finalcleanupreserve/72NoEmit."
     }
   ],
   "m6_checkpoint": {
