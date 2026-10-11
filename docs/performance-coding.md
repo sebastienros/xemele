@@ -63,6 +63,8 @@ Use the task's owned benchmark path and record evidence in its task record:
 3. Report throughput/latency and allocation bytes/op using BenchmarkDotNet memory diagnostics. Measure cold initialization, warm steady state, and retained memory separately. For async work, per-thread allocation counters alone are insufficient.
 4. Include an end-to-end representative parser/query/output workload when it exists. Before it exists, label microbenchmark results provisional and schedule confirmation in the task owning composition. Record CPU/architecture, runtime settings, corpus, and raw results; validate hardware-sensitive claims on x64 and arm64 before release.
 5. Keep a correctness oracle and focused allocation regressions for paths promised allocation-free. Include invalid Unicode, collision/unknown tokens, truncated input, pool ownership, and culture independence as applicable. Inspect generated code when a compiler/JIT lowering is the reason for the claimed benefit.
+6. Benchmark classes should have the `[MemoryDiagnoser]` and `[ShortRunJob] attribute. 
+7. Don't commit benchmark result logs and outputs, only summary tables and analysis.
 
 A feature task touching these paths is not verified without its relevant allocation evidence. Noisy timing on shared CI is informational; use the performance plan's repeatability/regression rules. If an optimization does not produce a repeatable benefit, retain the simpler implementation and record the result. Apply these gates as each milestone is built, not only during M9.
 
