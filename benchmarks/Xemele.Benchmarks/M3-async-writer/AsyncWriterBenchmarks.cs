@@ -1,7 +1,8 @@
 using BenchmarkDotNet.Attributes;
 namespace Xemele.M3AsyncWriterMeasurements;
 
-[MemoryDiagnoser, InProcess]
+// The CLI selects the sole Dry InProcess job; a job attribute would add a second job.
+[MemoryDiagnoser]
 public class AsyncWriterBenchmarks
 {
     [Params("short", "long-ascii", "multilingual")] public string Corpus { get; set; } = "short";

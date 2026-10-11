@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Linq.Expressions;
 using System.Runtime.InteropServices;
 using System.Text.Json;
 namespace Xemele.M3AsyncWriterMeasurements;
@@ -11,9 +12,20 @@ public static class Probe
     public static async Task<int> Main(string[] args)
     {
         bool prepare = args.Contains("--prepare", StringComparer.Ordinal);
+        if (args.Contains("--diagnose", StringComparer.Ordinal)) return Diagnose(prepare);
         var immediate = new Sink(false);
         if (prepare)
         {
+            using (var buffered = XmlWriter.Create(immediate, Options))
+            {
+                Complete(buffered.WriteStartElementAsync("r")); Complete(buffered.WriteTextAsync(ReadOnlyMemory<char>.Empty));
+                for (int batch = 0; batch < 200; batch++)
+                {
+                    Complete(buffered.FlushAsync()); long writes = immediate.Writes;
+                    for (int i = 0; i < 16; i++) Primitive(buffered);
+                    if (immediate.Writes != writes) throw new InvalidOperationException("Prepared buffered batch performed I/O.");
+                }
+            }
             await Exercise(immediate, "α😀&<\r]]>", 32);
             await Exercise(new Sink(true), new string('x', 32768), 2);
             Console.WriteLine("Preparation passed: immediate and delayed async-only sinks, no counters enabled."); return 0;
@@ -22,14 +34,34 @@ public static class Probe
         var cold = XmlWriter.Create(immediate, Options); long coldSetup = GC.GetAllocatedBytesForCurrentThread() - coldBefore; cold.Dispose();
         using var writer = XmlWriter.Create(immediate, Options);
         Complete(writer.WriteStartElementAsync("r")); Complete(writer.WriteTextAsync(ReadOnlyMemory<char>.Empty));
-        for (int i = 0; i < 100; i++) { Primitive(writer); Complete(writer.FlushAsync()); }
-        long primitive = 0; int bufferedOperations = 0;
+        // Warm exactly the measured batch shape, including buffer occupancy and
+        // encoder paths. Record initialization rather than hiding it in a retry.
+        long[] warmBatchBytes = new long[200]; long[] steadyBatchBytes = new long[1000];
+        long[] warmProcessBatchBytes = new long[200]; long[] steadyProcessBatchBytes = new long[1000];
+        long warmInitializationBytes = 0; long warmProcessInitializationBytes = 0;
+        for (int batch = 0; batch < warmBatchBytes.Length; batch++)
+        {
+            Complete(writer.FlushAsync()); long writes = immediate.Writes;
+            long processBefore = GC.GetTotalAllocatedBytes(precise: true);
+            long before = GC.GetAllocatedBytesForCurrentThread();
+            for (int i = 0; i < 16; i++) Primitive(writer);
+            long bytes = GC.GetAllocatedBytesForCurrentThread() - before;
+            long processBytes = GC.GetTotalAllocatedBytes(precise: true) - processBefore;
+            warmBatchBytes[batch] = bytes; warmInitializationBytes += bytes;
+            warmProcessBatchBytes[batch] = processBytes; warmProcessInitializationBytes += processBytes;
+            if (immediate.Writes != writes) throw new InvalidOperationException("Warm buffered scope performed I/O.");
+        }
+        long primitive = 0; long processPrimitive = 0; int bufferedOperations = 0;
         for (int batch = 0; batch < 1000; batch++)
         {
             Complete(writer.FlushAsync()); long writes = immediate.Writes;
+            long processBefore = GC.GetTotalAllocatedBytes(precise: true);
             long before = GC.GetAllocatedBytesForCurrentThread();
             for (int i = 0; i < 16; i++) Primitive(writer);
-            primitive += GC.GetAllocatedBytesForCurrentThread() - before;
+            long bytes = GC.GetAllocatedBytesForCurrentThread() - before;
+            long processBytes = GC.GetTotalAllocatedBytes(precise: true) - processBefore;
+            steadyBatchBytes[batch] = bytes; primitive += bytes;
+            steadyProcessBatchBytes[batch] = processBytes; processPrimitive += processBytes;
             if (immediate.Writes != writes) throw new InvalidOperationException("Buffered primitive scope performed I/O.");
             bufferedOperations += 16;
         }
@@ -60,6 +92,8 @@ public static class Probe
         long continuation = GC.GetTotalAllocatedBytes(precise: true) - asyncBefore;
         Console.WriteLine(JsonSerializer.Serialize(new { os = RuntimeInformation.OSDescription, architecture = RuntimeInformation.ProcessArchitecture.ToString(), runtime = RuntimeInformation.FrameworkDescription,
             coldSetupBytes = coldSetup, warmSetupBytesPerWriter = warmSetup / 1000.0,
+            warmBatchBytes, warmInitializationBytes, warmProcessBatchBytes, warmProcessInitializationBytes, steadyBatchBytes, steadyProcessBatchBytes,
+            bufferedProcessBytes = processPrimitive,
             bufferedOperations, bufferedPrimitiveBytes = primitive, bufferedPrimitiveBytesPerOperation = primitive / (double)bufferedOperations,
             positiveControlBytes = positive, positiveControlBytesPerOperation = positive / (double)bufferedOperations,
             distinctLinkedTokenBytes = linkedBytes, distinctLinkedTokenBytesPerCall = linkedBytes / 16000.0,
@@ -69,6 +103,96 @@ public static class Probe
             continuationScope = "process-wide counters include writer setup and genuine suspended continuations; scheduling noise is informational" }));
         if (primitive != 0 || positive <= 0 || scratch.Length != 8192 || delayed.MaxWrite > 8192) return 1;
         return 0;
+    }
+    private readonly record struct WriterState(int Buffered, int Steps, int Depth);
+    private struct DiagnosticCall
+    {
+        public long ThreadBytes, ProcessBytes, EmptyThreadBytes, EmptyProcessBytes;
+        public WriterState Before, After;
+    }
+    private static int Diagnose(bool prepare)
+    {
+        const int warmBatches = 200, steadyBatches = 1000, groups = 16, operations = 5;
+        var stream = new Sink(false); using var writer = XmlWriter.Create(stream, Options);
+        Complete(writer.WriteStartElementAsync("r")); Complete(writer.WriteTextAsync(ReadOnlyMemory<char>.Empty));
+        // Reflection/compiled getter construction and all storage are setup. None
+        // of these getters is invoked inside a measured call or empty bracket.
+        object output = typeof(XmlWriter).GetField("output", BindingFlags.NonPublic | BindingFlags.Instance)!.GetValue(writer)!;
+        static Func<int> FieldGetter(object owner, FieldInfo field) =>
+            Expression.Lambda<Func<int>>(Expression.Field(Expression.Constant(owner), field)).Compile();
+        Func<int> buffered = FieldGetter(output, output.GetType().GetField("Buffered", BindingFlags.NonPublic | BindingFlags.Instance)!);
+        Func<int> steps = FieldGetter(writer, typeof(XmlWriter).GetField("steps", BindingFlags.NonPublic | BindingFlags.Instance)!);
+        var frames = Expression.Field(Expression.Constant(writer), typeof(XmlWriter).GetField("frames", BindingFlags.NonPublic | BindingFlags.Instance)!);
+        Func<int> depth = Expression.Lambda<Func<int>>(Expression.Property(frames, "Count")).Compile();
+        var calls = new DiagnosticCall[(warmBatches + steadyBatches) * groups * operations];
+        var batchThread = new long[warmBatches + steadyBatches]; var batchProcess = new long[batchThread.Length];
+        string[] names = ["WriteTextAsync(escaped)", "WriteTextAsync(adjacent greater-than)", "WriteStartElementAsync", "WriteAttributeAsync", "WriteEndElementAsync"];
+        // Touch the pre-acquired getters before any counter bracket.
+        _ = buffered(); _ = steps(); _ = depth();
+        for (int batch = 0; batch < batchThread.Length; batch++)
+        {
+            Complete(writer.FlushAsync()); long writes = stream.Writes;
+            long batchProcessBefore = prepare ? 0 : GC.GetTotalAllocatedBytes(precise: true);
+            long batchThreadBefore = prepare ? 0 : GC.GetAllocatedBytesForCurrentThread();
+            for (int group = 0; group < groups; group++)
+            {
+                for (int operation = 0; operation < operations; operation++)
+                {
+                    int index = (batch * groups + group) * operations + operation;
+                    calls[index].Before = new(buffered(), steps(), depth());
+                    if (!prepare)
+                    {
+                        // Exact same four-counter sequence as the writer bracket,
+                        // without a writer operation, delegate or reflection call.
+                        long processBefore = GC.GetTotalAllocatedBytes(precise: true);
+                        long threadBefore = GC.GetAllocatedBytesForCurrentThread();
+                        long threadAfter = GC.GetAllocatedBytesForCurrentThread();
+                        long processAfter = GC.GetTotalAllocatedBytes(precise: true);
+                        calls[index].EmptyThreadBytes = threadAfter - threadBefore;
+                        calls[index].EmptyProcessBytes = processAfter - processBefore;
+                    }
+                    long callProcessBefore = prepare ? 0 : GC.GetTotalAllocatedBytes(precise: true);
+                    long callThreadBefore = prepare ? 0 : GC.GetAllocatedBytesForCurrentThread();
+                    switch (operation)
+                    {
+                        case 0: Complete(writer.WriteTextAsync(Text.AsMemory())); break;
+                        case 1: Complete(writer.WriteTextAsync(">".AsMemory())); break;
+                        case 2: Complete(writer.WriteStartElementAsync("x")); break;
+                        case 3: Complete(writer.WriteAttributeAsync("a", "v")); break;
+                        case 4: Complete(writer.WriteEndElementAsync()); break;
+                    }
+                    long callThreadAfter = prepare ? 0 : GC.GetAllocatedBytesForCurrentThread();
+                    long callProcessAfter = prepare ? 0 : GC.GetTotalAllocatedBytes(precise: true);
+                    calls[index].ThreadBytes = callThreadAfter - callThreadBefore;
+                    calls[index].ProcessBytes = callProcessAfter - callProcessBefore;
+                    calls[index].After = new(buffered(), steps(), depth());
+                }
+            }
+            long batchThreadAfter = prepare ? 0 : GC.GetAllocatedBytesForCurrentThread();
+            long batchProcessAfter = prepare ? 0 : GC.GetTotalAllocatedBytes(precise: true);
+            batchThread[batch] = batchThreadAfter - batchThreadBefore;
+            batchProcess[batch] = batchProcessAfter - batchProcessBefore;
+            if (stream.Writes != writes) throw new InvalidOperationException("Diagnostic buffered batch performed I/O.");
+        }
+        if (prepare)
+        { Console.WriteLine("Diagnostic preparation passed: 200 warm + 1000 steady buffered batches, five completed calls per group, counters disabled."); return 0; }
+        // A sparse complete distribution: every omitted index has four zero
+        // counter deltas. Inspect/format only after all diagnostic brackets end.
+        var nonzero = calls.Select((call, index) => (call, index))
+            .Where(row => row.call.ThreadBytes != 0 || row.call.ProcessBytes != 0 || row.call.EmptyThreadBytes != 0 || row.call.EmptyProcessBytes != 0)
+            .Select(row => new {
+                index = row.index, phase = row.index < warmBatches * groups * operations ? "warm" : "steady",
+                batch = row.index / (groups * operations) - (row.index < warmBatches * groups * operations ? 0 : warmBatches),
+                group = row.index % (groups * operations) / operations, operation = row.index % operations,
+                name = names[row.index % operations], threadBytes = row.call.ThreadBytes, processBytes = row.call.ProcessBytes,
+                emptyThreadBytes = row.call.EmptyThreadBytes, emptyProcessBytes = row.call.EmptyProcessBytes,
+                before = row.call.Before, after = row.call.After }).ToArray();
+        Console.WriteLine(JsonSerializer.Serialize(new {
+            mode = "attribution-only", acceptanceResult = "not-an-acceptance-run", warmBatches, steadyBatches, groups, operations,
+            calls = calls.Length, defaultUnlistedCounterDeltas = 0, nonzeroCalls = nonzero, batchThread, batchProcess,
+            scope = "current-thread + precise processwide per-call and empty brackets; batch counters also include diagnostic getter/control overhead; reflection-derived getter invocations only outside per-call brackets",
+            runtime = RuntimeInformation.FrameworkDescription, architecture = RuntimeInformation.ProcessArchitecture.ToString() }));
+        return 0; // Diagnostic completion is never a zero-allocation acceptance pass.
     }
     private static void Primitive(XmlWriter w)
     {

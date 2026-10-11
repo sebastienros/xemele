@@ -1,0 +1,158 @@
+# Xemele.M3AsyncWriterMeasurements.Probe.Diagnose
+
+Type: Xemele.M3AsyncWriterMeasurements.Probe | Library: /Users/sebastienros/.codex/worktrees/705c/xemele/docs/reports/M3-async-writer/Probe/bin/Release/net10.0/AsyncWriter.Probe.dll | Source: Library
+
+## Decompiled Source
+
+```csharp
+private static int Diagnose(bool prepare)
+{
+    Func<int> buffered;
+    Func<int> steps;
+    Func<int> depth;
+    DiagnosticCall[] calls;
+    long[] batchThread;
+    long[] batchProcess;
+    ___f__AnonymousType1<int, string, int, int, int, string, long, long, long, long, WriterState, WriterState>[] nonzero;
+    Architecture architecture;
+    ReadOnlyMemory<char> S_257;
+    object S_258;
+    string[] S_259;
+    string[] S_260;
+    string[] S_261;
+    string[] S_262;
+    string[] S_263;
+    long S_0;
+    ReadOnlyMemory<char> S_264;
+    ReadOnlyMemory<char> S_265;
+    int S_270;
+    string S_271;
+
+    ___c__DisplayClass5_0 V_0 = new();
+    Sink stream = new(false);
+    XmlSaveOptions S_256 = Probe.Options;
+    CancellationToken cancellationToken = default;
+
+    using (XmlWriter writer = XmlWriter.Create(stream, S_256, cancellationToken))
+    {
+        cancellationToken = default;
+        Complete(writer.WriteStartElementAsync("r", "", "", cancellationToken));
+        S_257 = ReadOnlyMemory<char>.Empty;
+        cancellationToken = default;
+        Complete(writer.WriteTextAsync(S_257, cancellationToken));
+        S_258 = typeof(XmlWriter).GetField("output", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(writer);
+        buffered = FieldGetter(S_258, S_258.GetType().GetField("Buffered", BindingFlags.Instance | BindingFlags.NonPublic));
+        steps = FieldGetter(writer, typeof(XmlWriter).GetField("steps", BindingFlags.Instance | BindingFlags.NonPublic));
+        depth = Expression.Lambda<Func<int>>(Expression.Property(Expression.Field(Expression.Constant(writer), typeof(XmlWriter).GetField("frames", BindingFlags.Instance | BindingFlags.NonPublic)), "Count"), Array.Empty<ParameterExpression>()).Compile();
+        calls = new DiagnosticCall[96000];
+        batchThread = new long[1200];
+        batchProcess = new long[batchThread.Length];
+        S_259 = new string[5];
+        S_259[0] = "WriteTextAsync(escaped)";
+        S_260 = S_259;
+        S_260[1] = "WriteTextAsync(adjacent greater-than)";
+        S_261 = S_260;
+        S_261[2] = "WriteStartElementAsync";
+        S_262 = S_261;
+        S_262[3] = "WriteAttributeAsync";
+        S_263 = S_262;
+        S_263[4] = "WriteEndElementAsync";
+        V_0.names = S_263;
+        buffered.Invoke();
+        steps.Invoke();
+        depth.Invoke();
+
+        for (int batch = 0; batch < batchThread.Length; batch++)
+        {
+            cancellationToken = default;
+            Complete(writer.FlushAsync(cancellationToken));
+            long writes = stream.Writes;
+            S_0 = prepare ? 0L : GC.GetTotalAllocatedBytes(true);
+            long batchProcessBefore = S_0;
+            S_0 = prepare ? 0L : GC.GetAllocatedBytesForCurrentThread();
+            long batchThreadBefore = S_0;
+
+            for (int group = 0; group < 16; group++)
+            {
+                for (int operation = 0; operation < 5; operation++)
+                {
+                    int index = (batch * 16 + group) * 5 + operation;
+                    calls[index].Before = new(buffered.Invoke(), steps.Invoke(), depth.Invoke());
+
+                    if (!prepare)
+                    {
+                        long processBefore = GC.GetTotalAllocatedBytes(true);
+                        long threadBefore = GC.GetAllocatedBytesForCurrentThread();
+                        long threadAfter = GC.GetAllocatedBytesForCurrentThread();
+                        long processAfter = GC.GetTotalAllocatedBytes(true);
+                        calls[index].EmptyThreadBytes = threadAfter - threadBefore;
+                        calls[index].EmptyProcessBytes = processAfter - processBefore;
+                    }
+                    S_0 = prepare ? 0L : GC.GetTotalAllocatedBytes(true);
+                    long callProcessBefore = S_0;
+                    S_0 = prepare ? 0L : GC.GetAllocatedBytesForCurrentThread();
+                    long callThreadBefore = S_0;
+
+                    switch (operation)
+                    {
+                        case 0:
+                            S_264 = Probe.Text.AsMemory();
+                            cancellationToken = default;
+                            Complete(writer.WriteTextAsync(S_264, cancellationToken));
+                            break;
+                        case 1:
+                            S_265 = ">".AsMemory();
+                            cancellationToken = default;
+                            Complete(writer.WriteTextAsync(S_265, cancellationToken));
+                            break;
+                        case 2:
+                            cancellationToken = default;
+                            Complete(writer.WriteStartElementAsync("x", "", "", cancellationToken));
+                            break;
+                        case 3:
+                            cancellationToken = default;
+                            Complete(writer.WriteAttributeAsync("a", "v", "", "", cancellationToken));
+                            break;
+                        case 4:
+                            cancellationToken = default;
+                            Complete(writer.WriteEndElementAsync(cancellationToken));
+                            break;
+                    }
+                    S_0 = prepare ? 0L : GC.GetAllocatedBytesForCurrentThread();
+                    long callThreadAfter = S_0;
+                    S_0 = prepare ? 0L : GC.GetTotalAllocatedBytes(true);
+                    long callProcessAfter = S_0;
+                    calls[index].ThreadBytes = callThreadAfter - callThreadBefore;
+                    calls[index].ProcessBytes = callProcessAfter - callProcessBefore;
+                    calls[index].After = new(buffered.Invoke(), steps.Invoke(), depth.Invoke());
+                }
+            }
+            S_0 = prepare ? 0L : GC.GetAllocatedBytesForCurrentThread();
+            long batchThreadAfter = S_0;
+            S_0 = prepare ? 0L : GC.GetTotalAllocatedBytes(true);
+            long batchProcessAfter = S_0;
+            batchThread[batch] = batchThreadAfter - batchThreadBefore;
+            batchProcess[batch] = batchProcessAfter - batchProcessBefore;
+
+            if (stream.Writes != writes)
+            {
+                throw new InvalidOperationException("Diagnostic buffered batch performed I/O.");
+            }
+        }
+
+        if (prepare)
+        {
+            Console.WriteLine("Diagnostic preparation passed: 200 warm + 1000 steady buffered batches, five completed calls per group, counters disabled.");
+            return 0;
+        }
+
+        nonzero = calls.Select<DiagnosticCall, ValueTuple<DiagnosticCall, int>>((call, index) => (call, index)).Where<ValueTuple<DiagnosticCall, int>>(new Func<ValueTuple<DiagnosticCall, int>, bool>(___c.___9.__Diagnose_b__5_2)).Select<ValueTuple<DiagnosticCall, int>, ___f__AnonymousType1<int, string, int, int, int, string, long, long, long, long, WriterState, WriterState>>(new Func<ValueTuple<DiagnosticCall, int>, ___f__AnonymousType1<int, string, int, int, int, string, long, long, long, long, WriterState, WriterState>>(V_0.__Diagnose_b__3)).ToArray<___f__AnonymousType1<int, string, int, int, int, string, long, long, long, long, WriterState, WriterState>>();
+        S_270 = calls.Length;
+        S_271 = RuntimeInformation.FrameworkDescription;
+        architecture = RuntimeInformation.ProcessArchitecture;
+        Console.WriteLine(JsonSerializer.Serialize<___f__AnonymousType2<string, string, int, int, int, int, int, int, ___f__AnonymousType1<int, string, int, int, int, string, long, long, long, long, WriterState, WriterState>[], long[], long[], string, string, string>>(new { mode = "attribution-only", acceptanceResult = "not-an-acceptance-run", warmBatches = 200, steadyBatches = 1000, groups = 16, operations = 5, calls = S_270, defaultUnlistedCounterDeltas = 0, nonzeroCalls = nonzero, batchThread, batchProcess, scope = "current-thread + precise processwide per-call and empty brackets; batch counters also include diagnostic getter/control overhead; reflection-derived getter invocations only outside per-call brackets", runtime = S_271, architecture = architecture.ToString() }, null));
+        return 0;
+    }
+    static Func<int> FieldGetter(object owner, FieldInfo field) => Expression.Lambda<Func<int>>(Expression.Field(Expression.Constant(owner), field), Array.Empty<ParameterExpression>()).Compile();
+}
+```

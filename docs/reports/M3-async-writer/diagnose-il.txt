@@ -1,0 +1,424 @@
+# Xemele.M3AsyncWriterMeasurements.Probe.Diagnose
+
+Type: Xemele.M3AsyncWriterMeasurements.Probe | Library: /Users/sebastienros/.codex/worktrees/705c/xemele/docs/reports/M3-async-writer/Probe/bin/Release/net10.0/AsyncWriter.Probe.dll | Source: Library
+
+## IL
+
+```il
+IL_0000: newobj       Xemele.M3AsyncWriterMeasurements.Probe.<>c__DisplayClass5_0::.ctor()
+IL_0005: stloc.0
+IL_0006: ldc.i4.0
+IL_0007: newobj       Xemele.M3AsyncWriterMeasurements.Probe.Sink::.ctor(bool)
+IL_000C: stloc.1
+IL_000D: ldloc.1
+IL_000E: ldsfld       Xemele.M3AsyncWriterMeasurements.Probe::Options
+IL_0013: ldloca.s     10
+IL_0015: initobj      System.Threading.CancellationToken
+IL_001B: ldloc.s      10
+IL_001D: call         Xemele.XmlWriter::Create(System.IO.Stream, Xemele.XmlSaveOptions, System.Threading.CancellationToken)
+IL_0022: stloc.2
+IL_0023: ldloc.2
+IL_0024: ldstr        "r"
+IL_0029: ldstr        ""
+IL_002E: ldstr        ""
+IL_0033: ldloca.s     10
+IL_0035: initobj      System.Threading.CancellationToken
+IL_003B: ldloc.s      10
+IL_003D: callvirt     Xemele.XmlWriter::WriteStartElementAsync(string, string, string, System.Threading.CancellationToken)
+IL_0042: call         Xemele.M3AsyncWriterMeasurements.Probe::Complete(System.Threading.Tasks.ValueTask)
+IL_0047: ldloc.2
+IL_0048: call         System.ReadOnlyMemory<char>::get_Empty()
+IL_004D: ldloca.s     10
+IL_004F: initobj      System.Threading.CancellationToken
+IL_0055: ldloc.s      10
+IL_0057: callvirt     Xemele.XmlWriter::WriteTextAsync(System.ReadOnlyMemory<char>, System.Threading.CancellationToken)
+IL_005C: call         Xemele.M3AsyncWriterMeasurements.Probe::Complete(System.Threading.Tasks.ValueTask)
+IL_0061: ldtoken      Xemele.XmlWriter
+IL_0066: call         System.Type::GetTypeFromHandle(System.RuntimeTypeHandle)
+IL_006B: ldstr        "output"
+IL_0070: ldc.i4.s     36
+IL_0072: callvirt     System.Type::GetField(string, System.Reflection.BindingFlags)
+IL_0077: ldloc.2
+IL_0078: callvirt     System.Reflection.FieldInfo::GetValue(object)
+IL_007D: dup
+IL_007E: callvirt     System.Object::GetType()
+IL_0083: ldstr        "Buffered"
+IL_0088: ldc.i4.s     36
+IL_008A: callvirt     System.Type::GetField(string, System.Reflection.BindingFlags)
+IL_008F: call         Xemele.M3AsyncWriterMeasurements.Probe::<Diagnose>g__FieldGetter|5_0(object, System.Reflection.FieldInfo)
+IL_0094: stloc.3
+IL_0095: ldloc.2
+IL_0096: ldtoken      Xemele.XmlWriter
+IL_009B: call         System.Type::GetTypeFromHandle(System.RuntimeTypeHandle)
+IL_00A0: ldstr        "steps"
+IL_00A5: ldc.i4.s     36
+IL_00A7: callvirt     System.Type::GetField(string, System.Reflection.BindingFlags)
+IL_00AC: call         Xemele.M3AsyncWriterMeasurements.Probe::<Diagnose>g__FieldGetter|5_0(object, System.Reflection.FieldInfo)
+IL_00B1: stloc.s      4
+IL_00B3: ldloc.2
+IL_00B4: call         System.Linq.Expressions.Expression::Constant(object)
+IL_00B9: ldtoken      Xemele.XmlWriter
+IL_00BE: call         System.Type::GetTypeFromHandle(System.RuntimeTypeHandle)
+IL_00C3: ldstr        "frames"
+IL_00C8: ldc.i4.s     36
+IL_00CA: callvirt     System.Type::GetField(string, System.Reflection.BindingFlags)
+IL_00CF: call         System.Linq.Expressions.Expression::Field(System.Linq.Expressions.Expression, System.Reflection.FieldInfo)
+IL_00D4: ldstr        "Count"
+IL_00D9: call         System.Linq.Expressions.Expression::Property(System.Linq.Expressions.Expression, string)
+IL_00DE: call         System.Array::Empty()<System.Linq.Expressions.ParameterExpression>
+IL_00E3: call         System.Linq.Expressions.Expression::Lambda(System.Linq.Expressions.Expression, System.Linq.Expressions.ParameterExpression[])<System.Func<int>>
+IL_00E8: callvirt     System.Linq.Expressions.Expression<System.Func<int>>::Compile()
+IL_00ED: stloc.s      5
+IL_00EF: ldc.i4       96000
+IL_00F4: newarr       Xemele.M3AsyncWriterMeasurements.Probe.DiagnosticCall
+IL_00F9: stloc.s      6
+IL_00FB: ldc.i4       1200
+IL_0100: newarr       System.Int64
+IL_0105: stloc.s      7
+IL_0107: ldloc.s      7
+IL_0109: ldlen
+IL_010A: conv.i4
+IL_010B: newarr       System.Int64
+IL_0110: stloc.s      8
+IL_0112: ldloc.0
+IL_0113: ldc.i4.5
+IL_0114: newarr       System.String
+IL_0119: dup
+IL_011A: ldc.i4.0
+IL_011B: ldstr        "WriteTextAsync(escaped)"
+IL_0120: stelem.ref
+IL_0121: dup
+IL_0122: ldc.i4.1
+IL_0123: ldstr        "WriteTextAsync(adjacent greater-than)"
+IL_0128: stelem.ref
+IL_0129: dup
+IL_012A: ldc.i4.2
+IL_012B: ldstr        "WriteStartElementAsync"
+IL_0130: stelem.ref
+IL_0131: dup
+IL_0132: ldc.i4.3
+IL_0133: ldstr        "WriteAttributeAsync"
+IL_0138: stelem.ref
+IL_0139: dup
+IL_013A: ldc.i4.4
+IL_013B: ldstr        "WriteEndElementAsync"
+IL_0140: stelem.ref
+IL_0141: stfld        Xemele.M3AsyncWriterMeasurements.Probe.<>c__DisplayClass5_0::names
+IL_0146: ldloc.3
+IL_0147: callvirt     System.Func<int>::Invoke()
+IL_014C: pop
+IL_014D: ldloc.s      4
+IL_014F: callvirt     System.Func<int>::Invoke()
+IL_0154: pop
+IL_0155: ldloc.s      5
+IL_0157: callvirt     System.Func<int>::Invoke()
+IL_015C: pop
+IL_015D: ldc.i4.0
+IL_015E: stloc.s      11
+IL_0160: br           IL_03E7
+IL_0165: ldloc.2
+IL_0166: ldloca.s     10
+IL_0168: initobj      System.Threading.CancellationToken
+IL_016E: ldloc.s      10
+IL_0170: callvirt     Xemele.XmlWriter::FlushAsync(System.Threading.CancellationToken)
+IL_0175: call         Xemele.M3AsyncWriterMeasurements.Probe::Complete(System.Threading.Tasks.ValueTask)
+IL_017A: ldloc.1
+IL_017B: ldfld        Xemele.M3AsyncWriterMeasurements.Probe.Sink::Writes
+IL_0180: stloc.s      12
+IL_0182: ldarg.0
+IL_0183: brtrue.s     IL_018D
+IL_0185: ldc.i4.1
+IL_0186: call         System.GC::GetTotalAllocatedBytes(bool)
+IL_018B: br.s         IL_018F
+IL_018D: ldc.i4.0
+IL_018E: conv.i8
+IL_018F: stloc.s      13
+IL_0191: ldarg.0
+IL_0192: brtrue.s     IL_019B
+IL_0194: call         System.GC::GetAllocatedBytesForCurrentThread()
+IL_0199: br.s         IL_019D
+IL_019B: ldc.i4.0
+IL_019C: conv.i8
+IL_019D: stloc.s      14
+IL_019F: ldc.i4.0
+IL_01A0: stloc.s      17
+IL_01A2: br           IL_0392
+IL_01A7: ldc.i4.0
+IL_01A8: stloc.s      18
+IL_01AA: br           IL_0384
+IL_01AF: ldloc.s      11
+IL_01B1: ldc.i4.s     16
+IL_01B3: mul
+IL_01B4: ldloc.s      17
+IL_01B6: add
+IL_01B7: ldc.i4.5
+IL_01B8: mul
+IL_01B9: ldloc.s      18
+IL_01BB: add
+IL_01BC: stloc.s      19
+IL_01BE: ldloc.s      6
+IL_01C0: ldloc.s      19
+IL_01C2: ldelema      Xemele.M3AsyncWriterMeasurements.Probe.DiagnosticCall
+IL_01C7: ldloc.3
+IL_01C8: callvirt     System.Func<int>::Invoke()
+IL_01CD: ldloc.s      4
+IL_01CF: callvirt     System.Func<int>::Invoke()
+IL_01D4: ldloc.s      5
+IL_01D6: callvirt     System.Func<int>::Invoke()
+IL_01DB: newobj       Xemele.M3AsyncWriterMeasurements.Probe.WriterState::.ctor(int, int, int)
+IL_01E0: stfld        Xemele.M3AsyncWriterMeasurements.Probe.DiagnosticCall::Before
+IL_01E5: ldarg.0
+IL_01E6: brtrue.s     IL_022C
+IL_01E8: ldc.i4.1
+IL_01E9: call         System.GC::GetTotalAllocatedBytes(bool)
+IL_01EE: stloc.s      24
+IL_01F0: call         System.GC::GetAllocatedBytesForCurrentThread()
+IL_01F5: stloc.s      25
+IL_01F7: call         System.GC::GetAllocatedBytesForCurrentThread()
+IL_01FC: stloc.s      26
+IL_01FE: ldc.i4.1
+IL_01FF: call         System.GC::GetTotalAllocatedBytes(bool)
+IL_0204: stloc.s      27
+IL_0206: ldloc.s      6
+IL_0208: ldloc.s      19
+IL_020A: ldelema      Xemele.M3AsyncWriterMeasurements.Probe.DiagnosticCall
+IL_020F: ldloc.s      26
+IL_0211: ldloc.s      25
+IL_0213: sub
+IL_0214: stfld        Xemele.M3AsyncWriterMeasurements.Probe.DiagnosticCall::EmptyThreadBytes
+IL_0219: ldloc.s      6
+IL_021B: ldloc.s      19
+IL_021D: ldelema      Xemele.M3AsyncWriterMeasurements.Probe.DiagnosticCall
+IL_0222: ldloc.s      27
+IL_0224: ldloc.s      24
+IL_0226: sub
+IL_0227: stfld        Xemele.M3AsyncWriterMeasurements.Probe.DiagnosticCall::EmptyProcessBytes
+IL_022C: ldarg.0
+IL_022D: brtrue.s     IL_0237
+IL_022F: ldc.i4.1
+IL_0230: call         System.GC::GetTotalAllocatedBytes(bool)
+IL_0235: br.s         IL_0239
+IL_0237: ldc.i4.0
+IL_0238: conv.i8
+IL_0239: stloc.s      20
+IL_023B: ldarg.0
+IL_023C: brtrue.s     IL_0245
+IL_023E: call         System.GC::GetAllocatedBytesForCurrentThread()
+IL_0243: br.s         IL_0247
+IL_0245: ldc.i4.0
+IL_0246: conv.i8
+IL_0247: stloc.s      21
+IL_0249: ldloc.s      18
+IL_024B: switch       (IL_0269, IL_028D, IL_02AE, IL_02D4, IL_02FF)
+IL_0264: br           IL_0314
+IL_0269: ldloc.2
+IL_026A: ldsfld       Xemele.M3AsyncWriterMeasurements.Probe::Text
+IL_026F: call         System.MemoryExtensions::AsMemory(string)
+IL_0274: ldloca.s     10
+IL_0276: initobj      System.Threading.CancellationToken
+IL_027C: ldloc.s      10
+IL_027E: callvirt     Xemele.XmlWriter::WriteTextAsync(System.ReadOnlyMemory<char>, System.Threading.CancellationToken)
+IL_0283: call         Xemele.M3AsyncWriterMeasurements.Probe::Complete(System.Threading.Tasks.ValueTask)
+IL_0288: br           IL_0314
+IL_028D: ldloc.2
+IL_028E: ldstr        ">"
+IL_0293: call         System.MemoryExtensions::AsMemory(string)
+IL_0298: ldloca.s     10
+IL_029A: initobj      System.Threading.CancellationToken
+IL_02A0: ldloc.s      10
+IL_02A2: callvirt     Xemele.XmlWriter::WriteTextAsync(System.ReadOnlyMemory<char>, System.Threading.CancellationToken)
+IL_02A7: call         Xemele.M3AsyncWriterMeasurements.Probe::Complete(System.Threading.Tasks.ValueTask)
+IL_02AC: br.s         IL_0314
+IL_02AE: ldloc.2
+IL_02AF: ldstr        "x"
+IL_02B4: ldstr        ""
+IL_02B9: ldstr        ""
+IL_02BE: ldloca.s     10
+IL_02C0: initobj      System.Threading.CancellationToken
+IL_02C6: ldloc.s      10
+IL_02C8: callvirt     Xemele.XmlWriter::WriteStartElementAsync(string, string, string, System.Threading.CancellationToken)
+IL_02CD: call         Xemele.M3AsyncWriterMeasurements.Probe::Complete(System.Threading.Tasks.ValueTask)
+IL_02D2: br.s         IL_0314
+IL_02D4: ldloc.2
+IL_02D5: ldstr        "a"
+IL_02DA: ldstr        "v"
+IL_02DF: ldstr        ""
+IL_02E4: ldstr        ""
+IL_02E9: ldloca.s     10
+IL_02EB: initobj      System.Threading.CancellationToken
+IL_02F1: ldloc.s      10
+IL_02F3: callvirt     Xemele.XmlWriter::WriteAttributeAsync(string, string, string, string, System.Threading.CancellationToken)
+IL_02F8: call         Xemele.M3AsyncWriterMeasurements.Probe::Complete(System.Threading.Tasks.ValueTask)
+IL_02FD: br.s         IL_0314
+IL_02FF: ldloc.2
+IL_0300: ldloca.s     10
+IL_0302: initobj      System.Threading.CancellationToken
+IL_0308: ldloc.s      10
+IL_030A: callvirt     Xemele.XmlWriter::WriteEndElementAsync(System.Threading.CancellationToken)
+IL_030F: call         Xemele.M3AsyncWriterMeasurements.Probe::Complete(System.Threading.Tasks.ValueTask)
+IL_0314: ldarg.0
+IL_0315: brtrue.s     IL_031E
+IL_0317: call         System.GC::GetAllocatedBytesForCurrentThread()
+IL_031C: br.s         IL_0320
+IL_031E: ldc.i4.0
+IL_031F: conv.i8
+IL_0320: stloc.s      22
+IL_0322: ldarg.0
+IL_0323: brtrue.s     IL_032D
+IL_0325: ldc.i4.1
+IL_0326: call         System.GC::GetTotalAllocatedBytes(bool)
+IL_032B: br.s         IL_032F
+IL_032D: ldc.i4.0
+IL_032E: conv.i8
+IL_032F: stloc.s      23
+IL_0331: ldloc.s      6
+IL_0333: ldloc.s      19
+IL_0335: ldelema      Xemele.M3AsyncWriterMeasurements.Probe.DiagnosticCall
+IL_033A: ldloc.s      22
+IL_033C: ldloc.s      21
+IL_033E: sub
+IL_033F: stfld        Xemele.M3AsyncWriterMeasurements.Probe.DiagnosticCall::ThreadBytes
+IL_0344: ldloc.s      6
+IL_0346: ldloc.s      19
+IL_0348: ldelema      Xemele.M3AsyncWriterMeasurements.Probe.DiagnosticCall
+IL_034D: ldloc.s      23
+IL_034F: ldloc.s      20
+IL_0351: sub
+IL_0352: stfld        Xemele.M3AsyncWriterMeasurements.Probe.DiagnosticCall::ProcessBytes
+IL_0357: ldloc.s      6
+IL_0359: ldloc.s      19
+IL_035B: ldelema      Xemele.M3AsyncWriterMeasurements.Probe.DiagnosticCall
+IL_0360: ldloc.3
+IL_0361: callvirt     System.Func<int>::Invoke()
+IL_0366: ldloc.s      4
+IL_0368: callvirt     System.Func<int>::Invoke()
+IL_036D: ldloc.s      5
+IL_036F: callvirt     System.Func<int>::Invoke()
+IL_0374: newobj       Xemele.M3AsyncWriterMeasurements.Probe.WriterState::.ctor(int, int, int)
+IL_0379: stfld        Xemele.M3AsyncWriterMeasurements.Probe.DiagnosticCall::After
+IL_037E: ldloc.s      18
+IL_0380: ldc.i4.1
+IL_0381: add
+IL_0382: stloc.s      18
+IL_0384: ldloc.s      18
+IL_0386: ldc.i4.5
+IL_0387: blt          IL_01AF
+IL_038C: ldloc.s      17
+IL_038E: ldc.i4.1
+IL_038F: add
+IL_0390: stloc.s      17
+IL_0392: ldloc.s      17
+IL_0394: ldc.i4.s     16
+IL_0396: blt          IL_01A7
+IL_039B: ldarg.0
+IL_039C: brtrue.s     IL_03A5
+IL_039E: call         System.GC::GetAllocatedBytesForCurrentThread()
+IL_03A3: br.s         IL_03A7
+IL_03A5: ldc.i4.0
+IL_03A6: conv.i8
+IL_03A7: stloc.s      15
+IL_03A9: ldarg.0
+IL_03AA: brtrue.s     IL_03B4
+IL_03AC: ldc.i4.1
+IL_03AD: call         System.GC::GetTotalAllocatedBytes(bool)
+IL_03B2: br.s         IL_03B6
+IL_03B4: ldc.i4.0
+IL_03B5: conv.i8
+IL_03B6: stloc.s      16
+IL_03B8: ldloc.s      7
+IL_03BA: ldloc.s      11
+IL_03BC: ldloc.s      15
+IL_03BE: ldloc.s      14
+IL_03C0: sub
+IL_03C1: stelem.i8
+IL_03C2: ldloc.s      8
+IL_03C4: ldloc.s      11
+IL_03C6: ldloc.s      16
+IL_03C8: ldloc.s      13
+IL_03CA: sub
+IL_03CB: stelem.i8
+IL_03CC: ldloc.1
+IL_03CD: ldfld        Xemele.M3AsyncWriterMeasurements.Probe.Sink::Writes
+IL_03D2: ldloc.s      12
+IL_03D4: beq.s        IL_03E1
+IL_03D6: ldstr        "Diagnostic buffered batch performed I/O."
+IL_03DB: newobj       System.InvalidOperationException::.ctor(string)
+IL_03E0: throw
+IL_03E1: ldloc.s      11
+IL_03E3: ldc.i4.1
+IL_03E4: add
+IL_03E5: stloc.s      11
+IL_03E7: ldloc.s      11
+IL_03E9: ldloc.s      7
+IL_03EB: ldlen
+IL_03EC: conv.i4
+IL_03ED: blt          IL_0165
+IL_03F2: ldarg.0
+IL_03F3: brfalse.s    IL_0407
+IL_03F5: ldstr        "Diagnostic preparation passed: 200 warm + 1000 steady buffered batches, five completed calls per group, counters disabled."
+IL_03FA: call         System.Console::WriteLine(string)
+IL_03FF: ldc.i4.0
+IL_0400: stloc.s      28
+IL_0402: leave        IL_04C8
+IL_0407: ldloc.s      6
+IL_0409: ldsfld       Xemele.M3AsyncWriterMeasurements.Probe.<>c::<>9__5_1
+IL_040E: dup
+IL_040F: brtrue.s     IL_0428
+IL_0411: pop
+IL_0412: ldsfld       Xemele.M3AsyncWriterMeasurements.Probe.<>c::<>9
+IL_0417: ldftn        Xemele.M3AsyncWriterMeasurements.Probe.<>c::<Diagnose>b__5_1(Xemele.M3AsyncWriterMeasurements.Probe.DiagnosticCall, int)
+IL_041D: newobj       System.Func<Xemele.M3AsyncWriterMeasurements.Probe.DiagnosticCall, int, System.ValueTuple<Xemele.M3AsyncWriterMeasurements.Probe.DiagnosticCall, int>>::.ctor(object, nint)
+IL_0422: dup
+IL_0423: stsfld       Xemele.M3AsyncWriterMeasurements.Probe.<>c::<>9__5_1
+IL_0428: call         System.Linq.Enumerable::Select(System.Collections.Generic.IEnumerable<TM0>, System.Func<TM0, int, TM1>)<Xemele.M3AsyncWriterMeasurements.Probe.DiagnosticCall, System.ValueTuple<Xemele.M3AsyncWriterMeasurements.Probe.DiagnosticCall, int>>
+IL_042D: ldsfld       Xemele.M3AsyncWriterMeasurements.Probe.<>c::<>9__5_2
+IL_0432: dup
+IL_0433: brtrue.s     IL_044C
+IL_0435: pop
+IL_0436: ldsfld       Xemele.M3AsyncWriterMeasurements.Probe.<>c::<>9
+IL_043B: ldftn        Xemele.M3AsyncWriterMeasurements.Probe.<>c::<Diagnose>b__5_2(System.ValueTuple<Xemele.M3AsyncWriterMeasurements.Probe.DiagnosticCall, int>)
+IL_0441: newobj       System.Func<System.ValueTuple<Xemele.M3AsyncWriterMeasurements.Probe.DiagnosticCall, int>, bool>::.ctor(object, nint)
+IL_0446: dup
+IL_0447: stsfld       Xemele.M3AsyncWriterMeasurements.Probe.<>c::<>9__5_2
+IL_044C: call         System.Linq.Enumerable::Where(System.Collections.Generic.IEnumerable<TM0>, System.Func<TM0, bool>)<System.ValueTuple<Xemele.M3AsyncWriterMeasurements.Probe.DiagnosticCall, int>>
+IL_0451: ldloc.0
+IL_0452: ldftn        Xemele.M3AsyncWriterMeasurements.Probe.<>c__DisplayClass5_0::<Diagnose>b__3(System.ValueTuple<Xemele.M3AsyncWriterMeasurements.Probe.DiagnosticCall, int>)
+IL_0458: newobj       System.Func<System.ValueTuple<Xemele.M3AsyncWriterMeasurements.Probe.DiagnosticCall, int>, <>f__AnonymousType1<int, string, int, int, int, string, long, long, long, long, Xemele.M3AsyncWriterMeasurements.Probe.WriterState, Xemele.M3AsyncWriterMeasurements.Probe.WriterState>>::.ctor(object, nint)
+IL_045D: call         System.Linq.Enumerable::Select(System.Collections.Generic.IEnumerable<TM0>, System.Func<TM0, TM1>)<System.ValueTuple<Xemele.M3AsyncWriterMeasurements.Probe.DiagnosticCall, int>, <>f__AnonymousType1<int, string, int, int, int, string, long, long, long, long, Xemele.M3AsyncWriterMeasurements.Probe.WriterState, Xemele.M3AsyncWriterMeasurements.Probe.WriterState>>
+IL_0462: call         System.Linq.Enumerable::ToArray(System.Collections.Generic.IEnumerable<TM0>)<<>f__AnonymousType1<int, string, int, int, int, string, long, long, long, long, Xemele.M3AsyncWriterMeasurements.Probe.WriterState, Xemele.M3AsyncWriterMeasurements.Probe.WriterState>>
+IL_0467: stloc.s      9
+IL_0469: ldstr        "attribution-only"
+IL_046E: ldstr        "not-an-acceptance-run"
+IL_0473: ldc.i4       200
+IL_0478: ldc.i4       1000
+IL_047D: ldc.i4.s     16
+IL_047F: ldc.i4.5
+IL_0480: ldloc.s      6
+IL_0482: ldlen
+IL_0483: conv.i4
+IL_0484: ldc.i4.0
+IL_0485: ldloc.s      9
+IL_0487: ldloc.s      7
+IL_0489: ldloc.s      8
+IL_048B: ldstr        "current-thread + precise processwide per-call and empty brackets; batch counters also include diagnostic getter/control overhead; reflection-derived getter invocations only outside per-call brackets"
+IL_0490: call         System.Runtime.InteropServices.RuntimeInformation::get_FrameworkDescription()
+IL_0495: call         System.Runtime.InteropServices.RuntimeInformation::get_ProcessArchitecture()
+IL_049A: stloc.s      29
+IL_049C: ldloca.s     29
+IL_049E: constrained. System.Runtime.InteropServices.Architecture
+IL_04A4: callvirt     System.Object::ToString()
+IL_04A9: newobj       <>f__AnonymousType2<string, string, int, int, int, int, int, int, <>f__AnonymousType1<int, string, int, int, int, string, long, long, long, long, Xemele.M3AsyncWriterMeasurements.Probe.WriterState, Xemele.M3AsyncWriterMeasurements.Probe.WriterState>[], long[], long[], string, string, string>::.ctor(T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13)
+IL_04AE: ldnull
+IL_04AF: call         System.Text.Json.JsonSerializer::Serialize(TM0, System.Text.Json.JsonSerializerOptions)<<>f__AnonymousType2<string, string, int, int, int, int, int, int, <>f__AnonymousType1<int, string, int, int, int, string, long, long, long, long, Xemele.M3AsyncWriterMeasurements.Probe.WriterState, Xemele.M3AsyncWriterMeasurements.Probe.WriterState>[], long[], long[], string, string, string>>
+IL_04B4: call         System.Console::WriteLine(string)
+IL_04B9: ldc.i4.0
+IL_04BA: stloc.s      28
+IL_04BC: leave.s      IL_04C8
+IL_04BE: ldloc.2
+IL_04BF: brfalse.s    IL_04C7
+IL_04C1: ldloc.2
+IL_04C2: callvirt     System.IDisposable::Dispose()
+IL_04C7: endfinally
+IL_04C8: ldloc.s      28
+IL_04CA: ret
+```

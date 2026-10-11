@@ -1,0 +1,20 @@
+# Xemele.M3AsyncWriterMeasurements.Probe.Complete
+
+Type: Xemele.M3AsyncWriterMeasurements.Probe | Library: /Users/sebastienros/.codex/worktrees/705c/xemele/docs/reports/M3-async-writer/Probe/bin/Release/net10.0/AsyncWriter.Probe.dll | Source: Library
+
+## IL
+
+```il
+IL_0000: ldarga.s     0
+IL_0002: call         System.Threading.Tasks.ValueTask::get_IsCompletedSuccessfully()
+IL_0007: brtrue.s     IL_0014
+IL_0009: ldstr        "Expected a buffered synchronous completion."
+IL_000E: newobj       System.InvalidOperationException::.ctor(string)
+IL_0013: throw
+IL_0014: ldarga.s     0
+IL_0016: call         System.Threading.Tasks.ValueTask::GetAwaiter()
+IL_001B: stloc.0
+IL_001C: ldloca.s     0
+IL_001E: call         System.Runtime.CompilerServices.ValueTaskAwaiter::GetResult()
+IL_0023: ret
+```

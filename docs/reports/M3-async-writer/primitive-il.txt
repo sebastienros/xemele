@@ -1,0 +1,50 @@
+# Xemele.M3AsyncWriterMeasurements.Probe.Primitive
+
+Type: Xemele.M3AsyncWriterMeasurements.Probe | Library: /Users/sebastienros/.codex/worktrees/705c/xemele/docs/reports/M3-async-writer/Probe/bin/Release/net10.0/AsyncWriter.Probe.dll | Source: Library
+
+## IL
+
+```il
+IL_0000: ldarg.0
+IL_0001: ldsfld       Xemele.M3AsyncWriterMeasurements.Probe::Text
+IL_0006: call         System.MemoryExtensions::AsMemory(string)
+IL_000B: ldloca.s     0
+IL_000D: initobj      System.Threading.CancellationToken
+IL_0013: ldloc.0
+IL_0014: callvirt     Xemele.XmlWriter::WriteTextAsync(System.ReadOnlyMemory<char>, System.Threading.CancellationToken)
+IL_0019: call         Xemele.M3AsyncWriterMeasurements.Probe::Complete(System.Threading.Tasks.ValueTask)
+IL_001E: ldarg.0
+IL_001F: ldstr        ">"
+IL_0024: call         System.MemoryExtensions::AsMemory(string)
+IL_0029: ldloca.s     0
+IL_002B: initobj      System.Threading.CancellationToken
+IL_0031: ldloc.0
+IL_0032: callvirt     Xemele.XmlWriter::WriteTextAsync(System.ReadOnlyMemory<char>, System.Threading.CancellationToken)
+IL_0037: call         Xemele.M3AsyncWriterMeasurements.Probe::Complete(System.Threading.Tasks.ValueTask)
+IL_003C: ldarg.0
+IL_003D: ldstr        "x"
+IL_0042: ldstr        ""
+IL_0047: ldstr        ""
+IL_004C: ldloca.s     0
+IL_004E: initobj      System.Threading.CancellationToken
+IL_0054: ldloc.0
+IL_0055: callvirt     Xemele.XmlWriter::WriteStartElementAsync(string, string, string, System.Threading.CancellationToken)
+IL_005A: call         Xemele.M3AsyncWriterMeasurements.Probe::Complete(System.Threading.Tasks.ValueTask)
+IL_005F: ldarg.0
+IL_0060: ldstr        "a"
+IL_0065: ldstr        "v"
+IL_006A: ldstr        ""
+IL_006F: ldstr        ""
+IL_0074: ldloca.s     0
+IL_0076: initobj      System.Threading.CancellationToken
+IL_007C: ldloc.0
+IL_007D: callvirt     Xemele.XmlWriter::WriteAttributeAsync(string, string, string, string, System.Threading.CancellationToken)
+IL_0082: call         Xemele.M3AsyncWriterMeasurements.Probe::Complete(System.Threading.Tasks.ValueTask)
+IL_0087: ldarg.0
+IL_0088: ldloca.s     0
+IL_008A: initobj      System.Threading.CancellationToken
+IL_0090: ldloc.0
+IL_0091: callvirt     Xemele.XmlWriter::WriteEndElementAsync(System.Threading.CancellationToken)
+IL_0096: call         Xemele.M3AsyncWriterMeasurements.Probe::Complete(System.Threading.Tasks.ValueTask)
+IL_009B: ret
+```
