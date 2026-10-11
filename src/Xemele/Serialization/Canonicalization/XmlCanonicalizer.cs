@@ -36,6 +36,7 @@ public static class XmlCanonicalizer
             if (document is null) document = item.Document;
             if (!ReferenceEquals(document, item.Document)) throw new ArgumentException("Mixed XPath owners.", nameof(nodes));
             XPathItem.RequireConnected(item.Identity.Node);
+            operation.BindOwner(document);
             operation.ValidateItem(item);
             selected.Add(item.Identity);
         }
@@ -55,6 +56,7 @@ public static class XmlCanonicalizer
         private long work, characters, bytes;
         private XmlDocument document = null!;
         private long revision;
+        private readonly Action<long> meter;
         private readonly List<Piece> plan = [];
         private readonly byte[] buffer = new byte[4096];
         private int used;
@@ -73,6 +75,7 @@ public static class XmlCanonicalizer
         {
             ArgumentNullException.ThrowIfNull(output);
             this.output = output;
+            meter = Charge;
             this.options = options ?? new();
             this.options.CancellationToken.ThrowIfCancellationRequested();
             if (!output.CanWrite) throw new ArgumentException("Writable stream required.", nameof(output));
@@ -102,7 +105,7 @@ public static class XmlCanonicalizer
         private void Check()
         {
             Charge();
-            if (document.MutationVersion != revision) throw new InvalidOperationException("Document mutated during canonicalization.");
+            if (document.ContentRevision < 0 || document.ContentRevision != revision) throw new InvalidOperationException("Document mutated during canonicalization.");
         }
         private void Inspect(string value, bool aggregate = false)
         {
@@ -127,8 +130,19 @@ public static class XmlCanonicalizer
                 if (difference != 0) return difference;
             }
         }
+        internal void BindOwner(XmlDocument owner)
+        {
+            if (document is not null) { Check(); return; }
+            document = owner; revision = owner.ContentRevision;
+            Check();
+            if (!owner.SourceInputComplete) throw new InvalidOperationException("Incomplete source document.");
+            owner.RefuseUnresolvedReferences();
+        }
         internal void ValidateItem(XPathItem item)
         {
+            Check();
+            if (item.CapturedContentRevision < 0 || item.CapturedContentRevision != revision)
+                throw new ArgumentException("Stale XPath snapshot.");
             var node = item.Identity.Node;
             if (item.Kind == XPathItemKind.Attribute)
             {
@@ -159,7 +173,7 @@ public static class XmlCanonicalizer
         }
         internal void Run(XmlDocument owner, HashSet<ItemIdentity>? selected)
         {
-            document = owner; revision = owner.MutationVersion;
+            BindOwner(owner);
             Check(); document.RefuseUnresolvedReferences();
             if (document.RootElement.IsDefault) throw new InvalidOperationException("Complete document required.");
             var empty = new Dictionary<string, string>(StringComparer.Ordinal);
@@ -275,22 +289,29 @@ public static class XmlCanonicalizer
             bool v11 = options.Mode == XmlCanonicalizationMode.Inclusive11;
             var bases = new List<string>();
             if (v11 && node.GetAttribute("base", TreeValidation.XmlUri) is string ownBase) bases.Add(ownBase);
-            for (var f = parent; f.Parent is not null && !f.Included; f = f.Parent!)
+            bool omittedBase = false; bool baseBoundary = false;
+            for (var f = parent; f.Parent is not null; f = f.Parent!)
             {
                 Charge();
                 foreach (var a in f.Node.Attributes)
                 {
                     Charge(); if (a.NamespaceUri != TreeValidation.XmlUri) continue;
-                    if (v11 && a.LocalName == "base") { bases.Add(a.Value); continue; }
+                    if (v11 && a.LocalName == "base")
+                    {
+                        if (!baseBoundary && !f.Included) { bases.Add(a.Value); omittedBase = true; }
+                        if (f.Included) baseBoundary = true;
+                        continue;
+                    }
                     if (v11 && a.LocalName is not ("lang" or "space")) continue;
                     if (seen.Add(a.LocalName)) attributes.Add(new(a.LocalName, a.NamespaceUri, a.Prefix, a.Value));
                 }
             }
-            if (v11 && bases.Count > (seen.Contains("base") ? 1 : 0))
+            if (v11 && omittedBase)
             {
                 string combined = bases[0];
-                for (int i = 1; i < bases.Count; i++) { Inspect(bases[i]); Inspect(combined); combined = BaseReferences.Join(bases[i], combined); }
+                for (int i = 1; i < bases.Count; i++) { Inspect(bases[i]); Inspect(combined); combined = BaseReferences.Join(bases[i], combined, meter); }
                 attributes.RemoveAll(a => a.Uri == TreeValidation.XmlUri && a.Local == "base");
+                Inspect(combined);
                 if (combined.Length != 0) attributes.Add(new("base", TreeValidation.XmlUri, "xml", combined));
             }
         }
