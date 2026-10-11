@@ -105,4 +105,4 @@ Exact inclusive MemoryDiagnoser GC allocation numerators/denominators were inspe
 | Scenario=ascii | 2890228880 | 262144 | 11025.348205566 |
 | Scenario=unicode | 2890228544 | 262144 | 11025.346923828 |
 
-Only summary tables and analysis are committed. Ignored raw allocation/benchmark logs, BDN result files and full manifest are retained for coordinator independent inspection until cleanup acknowledgment. No later milestone or active peer implementation was consumed. No open runtime ownership requests remain; coordinator integration checks and raw cleanup remain.
+Only summary tables and analysis are committed. Coordinator independently inspected all four zero counters, owned allocation domains, all14 inclusive GC numerator/denominator rows, runtime banners and both summary tables. After durable summary commit69110f95bc581082b7f62193ce0daff143416516 and explicit cleanup acknowledgment, only generated raw measurement logs and BDN results were deleted; prepared metadata remains ignored. No later milestone or active peer implementation was consumed. No open runtime ownership requests remain; coordinator integration checks remain.
