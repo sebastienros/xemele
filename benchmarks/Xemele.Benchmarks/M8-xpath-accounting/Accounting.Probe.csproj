@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType><AssemblyName>Xemele.Benchmarks</AssemblyName>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <DefineConstants Condition="'$(AccountingBaseline)' == 'true'">$(DefineConstants);BASELINE</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Probe.cs.fixture" />
+    <Reference Include="Xemele" HintPath="$(AccountingRuntimeAssembly)" />
+  </ItemGroup>
+</Project>
