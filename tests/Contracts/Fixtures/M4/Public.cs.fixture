@@ -1,0 +1,92 @@
+// Exact proposed M4 declarations. Nonpackaged fixtures; never linked into runtime.
+using Xemele;
+namespace Xemele.XPath;
+public enum XPathValueKind { NodeSet = 0, Boolean = 1, Number = 2, String = 3 }
+public enum XPathItemKind { Root = 0, Element = 1, Text = 2, Comment = 3, ProcessingInstruction = 4, Attribute = 5, Namespace = 6 }
+public readonly record struct XPathExpandedName(string NamespaceUri, string LocalName);
+public readonly record struct XPathSourceSpan(int Start, int Length);
+public enum XPathDiagnosticCategory { Syntax, StaticContext, CompileLimit, Evaluation, EvaluationLimit }
+public sealed record XPathDiagnostic(string Code, XPathDiagnosticCategory Category, string Message, XPathSourceSpan Span);
+public sealed class XPathCompileException(XPathDiagnostic diagnostic) : Exception(diagnostic.Message)
+{ public XPathDiagnostic Diagnostic { get; } = diagnostic; }
+public sealed class XPathEvaluationException(XPathDiagnostic diagnostic) : Exception(diagnostic.Message)
+{ public XPathDiagnostic Diagnostic { get; } = diagnostic; }
+public sealed record XPathCompileLimits
+{
+    public int? MaxExpressionCharacters { get; init; } = 65536;
+    public int? MaxTokens { get; init; } = 16384;
+    public int? MaxAstNodes { get; init; } = 16384;
+    public int? MaxDepth { get; init; } = 256;
+}
+public sealed record XPathEvaluationLimits
+{
+    public long? MaxOperations { get; init; } = 1000000;
+    public int? MaxInputItems { get; init; } = 100000;
+    public long? MaxInputCharacters { get; init; } = 16000000;
+    public int? MaxNodeSetItems { get; init; } = 100000;
+    public int? MaxStringCharacters { get; init; } = 1000000;
+}
+public sealed record XPathFunctionSignature(XPathExpandedName Name, int MinArguments, int? MaxArguments);
+public sealed record XPathCompileOptions
+{
+    public IReadOnlyDictionary<string, string> Namespaces { get; init; } = new Dictionary<string, string>();
+    public IReadOnlyList<XPathFunctionSignature> Functions { get; init; } = Array.Empty<XPathFunctionSignature>();
+    public XPathCompileLimits Limits { get; init; } = new();
+}
+public sealed record XPathContext
+{
+    public IReadOnlyDictionary<XPathExpandedName, XPathValue> Variables { get; init; } = new Dictionary<XPathExpandedName, XPathValue>();
+    public IReadOnlyDictionary<XPathExpandedName, XPathExtensionFunction> Functions { get; init; } = new Dictionary<XPathExpandedName, XPathExtensionFunction>();
+    public XPathEvaluationLimits Limits { get; init; } = new();
+    public CancellationToken CancellationToken { get; init; }
+}
+public delegate XPathValue XPathExtensionFunction(XPathFunctionContext context, IReadOnlyList<XPathValue> arguments);
+public sealed class XPathFunctionContext
+{
+    internal XPathFunctionContext() { }
+    public XPathItem ContextItem => default;
+    public int Position => 1;
+    public int Size => 1;
+    public CancellationToken CancellationToken => default;
+    public void ChargeOperations(long operations) => throw new NotSupportedException("Declaration only");
+}
+public sealed class XPathExpression
+{
+    private XPathExpression() { }
+    public static XPathExpression Compile(string expression, XPathCompileOptions? options = null, CancellationToken cancellationToken = default) => throw new NotSupportedException("Declaration only");
+    public XPathValue Evaluate(XmlNode context, XPathContext? options = null) => throw new NotSupportedException("Declaration only");
+    public XPathValue Evaluate(XPathItem context, XPathContext? options = null) => throw new NotSupportedException("Declaration only");
+}
+public readonly struct XPathValue
+{
+    public XPathValueKind Kind => default;
+    public static XPathValue FromNumber(double value) => throw new NotSupportedException("Declaration only");
+    public static XPathValue FromString(string value) => throw new NotSupportedException("Declaration only");
+    public static XPathValue FromBoolean(bool value) => throw new NotSupportedException("Declaration only");
+    public static XPathValue FromNodeSet(IEnumerable<XPathItem> items) => throw new NotSupportedException("Declaration only");
+    public double AsNumber() => throw new NotSupportedException("Declaration only");
+    public string AsString() => throw new NotSupportedException("Declaration only");
+    public bool AsBoolean() => throw new NotSupportedException("Declaration only");
+    public IReadOnlyList<XPathItem> AsNodeSet() => throw new NotSupportedException("Declaration only");
+}
+public readonly struct XPathItem : IEquatable<XPathItem>
+{
+    public bool IsDefault => true;
+    public XPathItemKind Kind => default;
+    public string StringValue => throw new NotSupportedException("Declaration only");
+    public string LocalName => throw new NotSupportedException("Declaration only");
+    public string NamespaceUri => throw new NotSupportedException("Declaration only");
+    public string Prefix => throw new NotSupportedException("Declaration only");
+    public string Name => throw new NotSupportedException("Declaration only");
+    public XmlNode? Node => null;
+    public XmlAttribute? Attribute => null;
+    public XmlNode? OwnerElement => null;
+    public static XPathItem FromNode(XmlNode node) => throw new NotSupportedException("Declaration only");
+    public static XPathItem FromAttribute(XmlAttribute attribute) => throw new NotSupportedException("Declaration only");
+    public static XPathItem FromNamespace(XmlNode ownerElement, string prefix) => throw new NotSupportedException("Declaration only");
+    public bool Equals(XPathItem other) => throw new NotSupportedException("Declaration only");
+    public override bool Equals(object? other) => throw new NotSupportedException("Declaration only");
+    public override int GetHashCode() => throw new NotSupportedException("Declaration only");
+    public static bool operator ==(XPathItem left, XPathItem right) => left.Equals(right);
+    public static bool operator !=(XPathItem left, XPathItem right) => !left.Equals(right);
+}

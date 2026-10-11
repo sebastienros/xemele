@@ -1,0 +1,23 @@
+using Xemele;
+using Xemele.XPath;
+internal static class Program
+{
+    // Compile-only usage of proposed declarations against real, verified tree types.
+    private static void Consume()
+    {
+        var document = new XmlDocument(); var root = document.CreateElement("r");
+        document.DocumentNode.AppendChild(root);
+        var attribute = root.SetAttribute("a", "value"); root.SetNamespaceDeclaration("p", "urn:p");
+        XPathItem[] items = [XPathItem.FromNode(root), XPathItem.FromAttribute(attribute), XPathItem.FromNamespace(root, "p")];
+        var name = new XPathExpandedName("urn:extension", "echo");
+        XPathExtensionFunction extension = (focus, args) => { focus.ChargeOperations(1); focus.CancellationToken.ThrowIfCancellationRequested(); return args[0]; };
+        var compiled = XPathExpression.Compile("e:echo($v)", new() { Namespaces = new Dictionary<string,string> { ["e"]="urn:extension" }, Functions = [new(name, 1, 1)] });
+        var context = new XPathContext { Variables = new Dictionary<XPathExpandedName,XPathValue> { [new("", "v")] = XPathValue.FromString("ok") }, Functions = new Dictionary<XPathExpandedName,XPathExtensionFunction> { [name]=extension }, Limits = new() { MaxOperations = 100 } };
+        foreach (var item in items) { _ = item.Kind; _ = item.Node; _ = item.Attribute; _ = item.OwnerElement; _ = item.LocalName; _ = item.NamespaceUri; _ = item.Prefix; _ = item.Name; _ = item.StringValue; _ = item.Equals(item); }
+        _ = XPathValue.FromNodeSet(items).AsNodeSet(); _ = XPathValue.FromBoolean(true).AsBoolean(); _ = XPathValue.FromNumber(double.NaN).AsNumber();
+        _ = compiled.Evaluate(root, context).AsString(); _ = compiled.Evaluate(items[1], context);
+        _ = new XPathCompileException(new("XPATH-SYNTAX", XPathDiagnosticCategory.Syntax, "message", new(0, 1))).Diagnostic;
+        _ = new XPathEvaluationException(new("XPATH-TYPE", XPathDiagnosticCategory.Evaluation, "message", new(0, 1))).Diagnostic;
+    }
+    public static void Main() { _ = (Action)Consume; Console.WriteLine("PASS: public consumer signatures compile against integrated XmlNode/XmlAttribute; declaration bodies not invoked"); }
+}

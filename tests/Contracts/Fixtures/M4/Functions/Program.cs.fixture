@@ -1,0 +1,34 @@
+using Xemele.XPath;
+using Xemele.XPath.Internal;
+internal sealed class FunctionProbe : IXPathFunctionLibrary
+{
+    public IReadOnlyList<XPathFunctionSignature> Signatures { get; } = [new(new("", "last"), 0, 0)];
+    public XPathValue Invoke(XPathFunctionSignature function, XPathFocus focus, IReadOnlyList<XPathValue> arguments, IXPathNavigator navigator, IXPathBudget budget)
+    { budget.ChargeOperations(1); if (focus.Position < 1 || focus.Position > focus.Size || arguments.Count != 0) throw new Exception("focus/arity"); return default; }
+}
+internal sealed class Budget : IXPathBudget
+{
+    public int Calls;
+    public CancellationToken CancellationToken => default;
+    public void ChargeOperations(long amount) { Calls++; }
+    public void CheckNodeSetSize(int count) { }
+    public void CheckStringSize(int count) { }
+}
+internal sealed class EmptyNavigator : IXPathNavigator
+{
+    public XPathItem Root => default;
+    public IReadOnlyList<XPathItem> SelectAxis(XPathItem item, XPathAxis axis, IXPathBudget budget) => [];
+    public int CompareDocumentOrder(XPathItem left, XPathItem right, IXPathBudget budget) => 0;
+    public IReadOnlyList<XPathItem> SelectId(string id, IXPathBudget budget) => [];
+    public string? FindLanguage(XPathItem item, IXPathBudget budget) => null;
+}
+internal static class Program
+{
+    public static void Main()
+    {
+        IXPathFunctionLibrary library = new FunctionProbe(); var budget = new Budget();
+        _ = library.Invoke(library.Signatures[0], new(default, 2, 3), [], new EmptyNavigator(), budget);
+        if (budget.Calls != 1 || library.Signatures[0].Name.NamespaceUri != "") throw new Exception("library metadata/dispatch");
+        Console.WriteLine("PASS: independent function metadata/focus/navigation/budget seam (fake function library)");
+    }
+}
