@@ -4,7 +4,7 @@
   "milestone": "M6",
   "title": "XML command-line operations",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M6 coordinator worker cli",
   "branch": "codex/m6-cli",
   "base_revision": "747404760141674718c49a353e4f0f6745787528",
@@ -34,29 +34,96 @@
     {
       "id": "M6-cli-A1",
       "description": "Add parse/format/query/DTD/canonical/catalog/include commands through task-owned registry implementation.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "source-review",
+        "build-controls",
+        "api-planning",
+        "native-publish-smoke"
+      ]
     },
     {
       "id": "M6-cli-A2",
       "description": "Test exit codes, stdin/stdout/files, invalid arguments, explicit resolver grants and no implicit network access.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "source-review",
+        "build-controls",
+        "api-planning",
+        "native-publish-smoke"
+      ]
     },
     {
       "id": "M6-cli-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "source-review",
+        "build-controls",
+        "api-planning",
+        "native-publish-smoke"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele.Tool/Commands/Xml/Registration.cs: static partial registration for seven XML commands",
+    "src/Xemele.Tool/Commands/Xml/XmlCommands.cs: source-aware prior-module composition, staged output and atomic publication",
+    "src/Xemele.Tool/Commands/Xml/LocalResolver.cs and GuardedFileInput.cs: explicit realpath-confined file grants and I/O failure boundaries",
+    "tests/Xemele.Tests/M6-cli/process_controls.py: 57 managed/native bounded behavior controls",
+    "samples/M6-cli/Program.cs: seven command, relative entity, cancellation, I/O and standard-stream controls",
+    "docs/api/M6-cli.txt: empty additive library API fragment"
+  ],
+  "evidence": [
+    {
+      "id": "source-review",
+      "kind": "review",
+      "revision": "50b2c2f93f4478ce290f61cb270bbcbb2c430f7b",
+      "command": "Coordinator independent source review at 50b2c2f, including previously corrected lexical XPath and primary I/O boundaries",
+      "result": "passed",
+      "summary": "Approved with no actionable findings; source-aware wiring uses verified required-parameter overloads.",
+      "artifact": "docs/reports/M6-cli/README.md"
+    },
+    {
+      "id": "build-controls",
+      "kind": "check",
+      "revision": "50b2c2f93f4478ce290f61cb270bbcbb2c430f7b",
+      "command": "Pinned dotnet restore/build Tool and sample --no-incremental -c Release -p:RuntimeFrameworkVersion=10.0.11; python3 tests/Xemele.Tests/M6-cli/process_controls.py; pinned dotnet --fx-version 10.0.11 samples/M6-cli/bin/Release/net10.0/M6.CliSample.dll",
+      "result": "passed",
+      "summary": "Zero-warning builds; 57 managed process controls and actual .NET 10.0.11 sample passed, including all seven commands, relative GE/PE/grant separation, cancellation3, injected I/O classification and unchanged unexpected exception identity, standard streams open.",
+      "artifact": "docs/reports/M6-cli/README.md"
+    },
+    {
+      "id": "api-planning",
+      "kind": "check",
+      "revision": "50b2c2f93f4478ce290f61cb270bbcbb2c430f7b",
+      "command": "python3 docs/reports/M5-validation-model/check_api.py; python3 tools/planning/tasks.py validate; git diff --check",
+      "result": "passed",
+      "summary": "Compiled union matched 1054 members, zero CLI library additions; 163 tasks validated and whitespace check passed; no corpus extraction/fetch.",
+      "artifact": "docs/reports/M6-cli/README.md"
+    },
+    {
+      "id": "native-publish-smoke",
+      "kind": "check",
+      "revision": "50b2c2f93f4478ce290f61cb270bbcbb2c430f7b",
+      "command": "Pinned dotnet publish src/Xemele.Tool/Xemele.Tool.csproj -c Release -r osx-arm64 -p:PublishAot=true -p:RuntimeFrameworkVersion=10.0.11 -p:NuGetAudit=false --source /Users/sebastienros/.nuget/packages --disable-build-servers -m:1 -o artifacts/M6-cli/native-final; XEMELE_CLI_NATIVE=/private/tmp/xemele-m6-cli/artifacts/M6-cli/native-final/Xemele.Tool python3 tests/Xemele.Tests/M6-cli/process_controls.py",
+      "result": "passed",
+      "summary": "Genuine arm64 Mach-O output with compiler packages10.0.11; all 57 native controls passed. Exact source/native SHA recorded, bounded120s ownedPG cleanup and final scoped nochildren inspection completed.",
+      "artifact": "docs/reports/M6-cli/README.md"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Preserved reviewed candidate reclaimed after verified source URI repair; merge main then wire verified overloads and run final coherent checks/native publish.",
-    "checks": [],
-    "remaining": [],
+    "summary": "Seven static XML CLI operations implemented using verified dependencies; source identities preserve relative entities, explicit grants, BOMless invariant staged output and atomic replacement. Ready for integrated verification.",
+    "checks": [
+      "Forced Release Tool/sample/API extractor builds passed with zero warnings; SDK10.0.400 runtime10.0.11.",
+      "57 managed and57 actual native process controls passed; sample actual .NET10.0.11 passed.",
+      "1054 compiled API members matched; planning163 and diff-check passed; scoped worker children absent.",
+      "Earlier draft compile errors, output-cleanup misclassification, sample CA2022, and canceled sandbox NativeAOT preparation recorded honestly in report; final reruns passed."
+    ],
+    "remaining": [
+      "Coordinator integrated verification and cumulative M6 integration/gate checks.",
+      "No measured performance/allocation or inherited full-suite check run; no allocation-free claim."
+    ],
     "requests": []
   }
 }
