@@ -31,3 +31,6 @@ DOM creation/copy behavior; no new scanner, matcher or timing optimization.
 Builder end-to-end accumulation/composition benchmarks remain required in its task.
 No new timing, retained-heap or x64 claim; existing M7-model measured ownership
 boundaries remain applicable to unchanged constructor/storage.
+
+Integrated 2aece82ce6dd22c8193f1270c6e15fa32ed8b921: fresh29facts/zero warnings/API1230 and
+planning169 pass; measured source/probe unchanged;10changedpathsowned.
