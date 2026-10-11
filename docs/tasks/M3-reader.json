@@ -4,7 +4,7 @@
   "milestone": "M3",
   "title": "Pull reader and backpressure",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M3 coordinator 01a1284a-8826-7fc2-af44-74552db608f2 / reader worker",
   "branch": "codex/m3-reader",
   "base_revision": "dd3a54bf12b9238f6174d38541a5783b29cc7e0f",
@@ -36,29 +36,157 @@
     {
       "id": "M3-reader-A1",
       "description": "Implement synchronous reader token/name/attribute views using core pause/resume without a hidden DOM or event backlog.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "reader-focused",
+        "reader-api",
+        "reader-allocation-memory"
+      ]
     },
     {
       "id": "M3-reader-A2",
       "description": "Test positioning, borrowed values, EOF/error/disposal behavior, text splitting and large-input live memory.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "reader-focused",
+        "reader-allocation-memory"
+      ]
     },
     {
       "id": "M3-reader-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "reader-build",
+        "reader-api",
+        "reader-sample",
+        "reader-allocation-memory",
+        "reader-bdn",
+        "reader-abi-owner-review",
+        "reader-planning"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Streaming/Reader/XmlReader.cs: XmlReader.Create/Read/Dispose and bounded reusable Cursor",
+    "src/Xemele/Streaming/Reader/Tokens/XmlTokenKind.cs: exact None=0 through EndDocument=16",
+    "tests/Xemele.Tests/M3-reader/ReaderTests.cs: synchronous current/positioning/fault/cleanup/transport regressions",
+    "docs/api/M3-reader.txt: 39 approved compiled reader/token rows",
+    "samples/M3-reader/ReaderSample.csproj: independent working consumer",
+    "benchmarks/Xemele.Benchmarks/M3-reader/: bounded allocation/live-memory fixture and six BDN cases",
+    "docs/reports/M3-reader/: isolated probe/contract projects, API check and measured raw results"
+  ],
+  "evidence": [
+    {
+      "id": "reader-build",
+      "kind": "check",
+      "revision": "0e81744ffc718ef9e7b45f80992295d0e55208d7",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' build docs/reports/M3-reader/Probe/Reader.Probe.csproj -c Release --no-restore -m:1 -p:BuildInParallel=false -p:UseSharedCompilation=false --disable-build-servers\n'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' build benchmarks/Xemele.Benchmarks/Xemele.Benchmarks.csproj -c Release --no-restore -m:1 -p:BuildInParallel=false -p:UseSharedCompilation=false --disable-build-servers",
+      "result": "passed",
+      "summary": "Both isolated probe and actual parent benchmark Release builds pass with runtime dependency, 0 warnings/errors. Runtime/test/sample Release builds also passed; pinned SDK 10.0.400.",
+      "artifact": "docs/reports/M3-reader/results.md"
+    },
+    {
+      "id": "reader-focused",
+      "kind": "check",
+      "revision": "0e81744ffc718ef9e7b45f80992295d0e55208d7",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -namespace Xemele.Tests.ReaderRuntime -namespace Xemele.Tests.StreamingPump -noColor",
+      "result": "passed",
+      "summary": "44/44 reader/pump tests; every UTF-8 chunk size, scalar-safe text, lexical boundaries, current defaults, EOF, fatal owned errors, cancellation, reentrant guards, bounded read-ahead and resolver cleanup exception identity/actual cursor release/idempotence/caller leave-open.",
+      "artifact": "docs/reports/M3-reader/results.md"
+    },
+    {
+      "id": "reader-api",
+      "kind": "check",
+      "revision": "cb2a561f658b2a99b95d2206e83186391c1a91ea",
+      "command": "python3 docs/reports/M3-reader/check-api.py '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet'",
+      "result": "passed",
+      "summary": "Approved unchanged compiled extractor: exact 39 sorted frozen Sync reader/token rows match; all 678 runtime rows match composed task fragments. No async reader declarations. Corpus discovery is separately failed below.",
+      "artifact": "docs/reports/M3-reader/results.md"
+    },
+    {
+      "id": "reader-sample",
+      "kind": "check",
+      "revision": "cb2a561f658b2a99b95d2206e83186391c1a91ea",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' build samples/M3-reader/ReaderSample.csproj -c Release --no-restore -m:1 -p:BuildInParallel=false -p:UseSharedCompilation=false --disable-build-servers\n'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' samples/M3-reader/bin/Release/net10.0/ReaderSample.dll",
+      "result": "passed",
+      "summary": "Standalone consumer validates structural tokens, joined split text, current None at EOF and caller stream readability using only verified dependencies plus reader.",
+      "artifact": "docs/reports/M3-reader/results.md"
+    },
+    {
+      "id": "reader-allocation-memory",
+      "kind": "check",
+      "revision": "0e81744ffc718ef9e7b45f80992295d0e55208d7",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' docs/reports/M3-reader/Probe/bin/Release/net10.0/Xemele.Benchmarks.dll",
+      "result": "passed",
+      "summary": "Lease m3-reader-0e81744-measure; external timeout60s; actual child and wrapper exit0/no children before RELEASED. Cold cursor owner/growth9056B; warmed Clear/Text/Get 100000 operations 0B, checksum409600000; owned-string positive1000 operations8216000B. Generated1MiB/8MiB full consumption, active full-GC sampling256KiB with kept-alive reader: retained deltas8984/8712B, setup57064/57016B. Full1GiB not run here; remains M3-corpus requirement. macOS15.8.1 Arm64 .NET10.0.11 workstationGC,14logicalCPUs.",
+      "artifact": "docs/reports/M3-reader/allocation-memory.txt"
+    },
+    {
+      "id": "reader-bdn",
+      "kind": "check",
+      "revision": "0e81744ffc718ef9e7b45f80992295d0e55208d7",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' docs/reports/M3-reader/Probe/bin/Release/net10.0/Xemele.Benchmarks.dll bdn",
+      "result": "passed",
+      "summary": "Gated on successful default probe; external timeout180s; actual child/wrapper exit0/no children before RELEASED. Fixed InProcessNoEmit job, hard6case guard, exactly6executed,3iterations/1warmup/1launch/1024invocations/unroll1. Inclusive MemoryDiagnoser: owned40/8218B, current2/2B, end-to-end owned setup/rows57506/57464B at8/4096chars. BDN2B is preserved, not claimed zero or subtracted as proven overhead; independent warmed primitive counter supplies actual zero scope with positive control. Short-iteration/contended timing informational, no comparative or regression claim.",
+      "artifact": "docs/reports/M3-reader/benchmark.txt"
+    },
+    {
+      "id": "reader-preservation",
+      "kind": "check",
+      "revision": "0e81744ffc718ef9e7b45f80992295d0e55208d7",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -namespace Xemele.Tests.Common -namespace Xemele.Tests.Input -namespace Xemele.Tests.Syntax -namespace Xemele.Tests.Dom -namespace Xemele.Tests.Entities -noColor",
+      "result": "failed",
+      "summary": "211/212 pass. Sole old M1-syntax InternalAbiMatchesApprovedViewsAndCallbackShape expects four ScanStep names; verified async-resource dependency added NeedResource=4. Reader changes neither enum nor test. Owning repair review below resolves coordination branch; this local failed check is not reported passed.",
+      "artifact": "docs/reports/M3-reader/results.md"
+    },
+    {
+      "id": "reader-abi-owner-review",
+      "kind": "review",
+      "revision": "dbfb42ac39751f03065f42534f38332c27dcca27",
+      "command": "Coordinator report: M3-scan-abi integrated/verified dbfb42ac39751f03065f42534f38332c27dcca27",
+      "result": "passed",
+      "summary": "Coordinator explicitly reported owning repair verified with69syntax tests plus focused ABI check passing; original scan values0-3 preserved and NeedResource=4 accepted. No runtime change. Worker did not edit/import peer test; coordinator will repeat combined preservation at integration.",
+      "artifact": "docs/reports/M3-reader/results.md"
+    },
+    {
+      "id": "reader-api-discovery",
+      "kind": "check",
+      "revision": "0e81744ffc718ef9e7b45f80992295d0e55208d7",
+      "command": "python3 -B tools/ApiBaseline/compare.py --report artifacts/M3-reader/api.json",
+      "result": "failed",
+      "summary": "Full inventory/corpus discovery stops before assembly comparison on missing tests/corpora/xml/xmlconf/eduni/errata-2e/E14.dtd. Independent approved extractor all678 compiled rows comparison passed; no corpus file/exclusion edited.",
+      "artifact": "docs/reports/M3-reader/results.md"
+    },
+    {
+      "id": "reader-planning",
+      "kind": "check",
+      "revision": "0e81744ffc718ef9e7b45f80992295d0e55208d7",
+      "command": "python3 tools/planning/tasks.py validate",
+      "result": "passed",
+      "summary": "145 tasks validate; git diff --check passes. Implementation writes limited to reader owns and its task record.",
+      "artifact": "docs/reports/M3-reader/results.md"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "",
-    "checks": [],
-    "remaining": [],
-    "requests": []
+    "summary": "Synchronous partial XmlReader now validates/snapshots lazily, pauses the verified pump on one accepted current token and retains only bounded current scratch/owned rows. Exact17enum values, kind-specific defaults, original locations, paired empty/CData events, strict fatal errors, EOF, cancellation/guards and aborting leave-open cleanup implemented. Reviewed cleanup failure always releases cursor arrays. No async stub or DOM/backlog.",
+    "checks": [
+      "Pinned Release runtime/test/sample/probe/actual parent benchmark builds: passed,0warnings/errors.",
+      "44/44 focused reader/pump tests; exact39fixture/678composed compiled API rows; standalone sample;145task planning validation: passed.",
+      "Serial frozen lease:100000 warmed cursor copies0B, positive8216000B; actively sampled1/8MiB retention8984/8712B. Both prebuilt children actualexit0 and no children before RELEASED.",
+      "Exactly6 BDN cases completed; inclusive current2B/op explicitly retained versus direct primitive0B, ownedbaseline and end-to-end setup/rows accounted separately; timing informational.",
+      "Earlier preservation local211/212, sole preexisting ABI expectation failure; owning coordinator repair integrated/verified dbfb42ac39751f03065f42534f38332c27dcca27 reports69syntax+focusedABI passing.",
+      "Full API inventory/corpus discovery failed missing E14.dtd; independent approved compiled comparisons passed."
+    ],
+    "remaining": [
+      "Coordinator integrates and verifies combined reader tree including verified owning ABI repair; no integration_revision set here.",
+      "Full1GiB qualification remains mandatory M3-corpus per coordinator assignment; this feature measured1/8MiB.",
+      "BDN inclusive2B scope has not been independently attributed; raw results remain explicit, direct primitive0B positive-controlled gate passes."
+    ],
+    "requests": [
+      "Corpus owner/coordinator: provision missing tests/corpora/xml/xmlconf/eduni/errata-2e/E14.dtd for complete API inventory/corpus discovery; no exclusion requested.",
+      "Future async reader: consume verified owning pump/core resource-mode hook before additive partial uses async resolver/transport on this synchronous-created state; current sync reader does not depend on unmerged repair."
+    ]
   }
 }

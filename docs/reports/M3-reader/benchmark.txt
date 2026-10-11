@@ -1,0 +1,531 @@
+Reader bounded suite jobs=6; expected=6
+// Validating benchmarks:
+// ***** BenchmarkRunner: Start   *****
+// ***** Found 6 benchmark(s) in total *****
+// ***** Building 1 exe(s) in Parallel: Start   *****
+// ***** Done, took 00:00:00 (0.01 sec)   *****
+// Found 6 benchmarks:
+//   ReaderBenchmarks.OwnedCopyBaseline: Job-IULWUE(Toolchain=InProcessNoEmitToolchain, InvocationCount=1024, IterationCount=3, LaunchCount=1, UnrollFactor=1, WarmupCount=1) [Length=8]
+//   ReaderBenchmarks.BorrowedCurrentCopy: Job-IULWUE(Toolchain=InProcessNoEmitToolchain, InvocationCount=1024, IterationCount=3, LaunchCount=1, UnrollFactor=1, WarmupCount=1) [Length=8]
+//   ReaderBenchmarks.EndToEndOwnedSetupAndRows: Job-IULWUE(Toolchain=InProcessNoEmitToolchain, InvocationCount=1024, IterationCount=3, LaunchCount=1, UnrollFactor=1, WarmupCount=1) [Length=8]
+//   ReaderBenchmarks.OwnedCopyBaseline: Job-IULWUE(Toolchain=InProcessNoEmitToolchain, InvocationCount=1024, IterationCount=3, LaunchCount=1, UnrollFactor=1, WarmupCount=1) [Length=4096]
+//   ReaderBenchmarks.BorrowedCurrentCopy: Job-IULWUE(Toolchain=InProcessNoEmitToolchain, InvocationCount=1024, IterationCount=3, LaunchCount=1, UnrollFactor=1, WarmupCount=1) [Length=4096]
+//   ReaderBenchmarks.EndToEndOwnedSetupAndRows: Job-IULWUE(Toolchain=InProcessNoEmitToolchain, InvocationCount=1024, IterationCount=3, LaunchCount=1, UnrollFactor=1, WarmupCount=1) [Length=4096]
+
+// **************************
+// Benchmark: ReaderBenchmarks.OwnedCopyBaseline: Job-IULWUE(Toolchain=InProcessNoEmitToolchain, InvocationCount=1024, IterationCount=3, LaunchCount=1, UnrollFactor=1, WarmupCount=1) [Length=8]
+// *** Execute ***
+// Launch: 1 / 1
+// ! Failed to set up priority High for process System.Diagnostics.Process (dotnet). Make sure you have the right permissions. Message: Permission denied
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.8
+// Runtime=.NET 10.0.11 (10.0.11, 10.0.1126.37416), Arm64 RyuJIT armv8.0-a
+// GC=Concurrent Workstation
+// HardwareIntrinsics=ArmBase+AdvSimd,AES,CRC32,DP,RDM,SHA1,SHA256 VectorSize=128
+// Job: Job-IULWUE(Toolchain=InProcessNoEmitToolchain, InvocationCount=1024, IterationCount=3, LaunchCount=1, UnrollFactor=1, WarmupCount=1)
+
+OverheadJitting  1: 1 op, 68083.00 ns, 68.0830 us/op
+WorkloadJitting  1: 1 op, 16125.00 ns, 16.1250 us/op
+
+OverheadWarmup   1: 1024 op, 1917.00 ns, 1.8721 ns/op
+OverheadWarmup   2: 1024 op, 1958.00 ns, 1.9121 ns/op
+OverheadWarmup   3: 1024 op, 2333.00 ns, 2.2783 ns/op
+OverheadWarmup   4: 1024 op, 1959.00 ns, 1.9131 ns/op
+OverheadWarmup   5: 1024 op, 2042.00 ns, 1.9941 ns/op
+OverheadWarmup   6: 1024 op, 2041.00 ns, 1.9932 ns/op
+
+OverheadActual   1: 1024 op, 2042.00 ns, 1.9941 ns/op
+OverheadActual   2: 1024 op, 2084.00 ns, 2.0352 ns/op
+OverheadActual   3: 1024 op, 2166.00 ns, 2.1152 ns/op
+OverheadActual   4: 1024 op, 2083.00 ns, 2.0342 ns/op
+OverheadActual   5: 1024 op, 2167.00 ns, 2.1162 ns/op
+OverheadActual   6: 1024 op, 2084.00 ns, 2.0352 ns/op
+OverheadActual   7: 1024 op, 2250.00 ns, 2.1973 ns/op
+OverheadActual   8: 1024 op, 2250.00 ns, 2.1973 ns/op
+OverheadActual   9: 1024 op, 2166.00 ns, 2.1152 ns/op
+OverheadActual  10: 1024 op, 2542.00 ns, 2.4824 ns/op
+OverheadActual  11: 1024 op, 2667.00 ns, 2.6045 ns/op
+OverheadActual  12: 1024 op, 2542.00 ns, 2.4824 ns/op
+OverheadActual  13: 1024 op, 2625.00 ns, 2.5635 ns/op
+OverheadActual  14: 1024 op, 2583.00 ns, 2.5225 ns/op
+OverheadActual  15: 1024 op, 2750.00 ns, 2.6855 ns/op
+OverheadActual  16: 1024 op, 2750.00 ns, 2.6855 ns/op
+OverheadActual  17: 1024 op, 2792.00 ns, 2.7266 ns/op
+OverheadActual  18: 1024 op, 2708.00 ns, 2.6445 ns/op
+OverheadActual  19: 1024 op, 3125.00 ns, 3.0518 ns/op
+OverheadActual  20: 1024 op, 2709.00 ns, 2.6455 ns/op
+
+WorkloadWarmup   1: 1024 op, 14916.00 ns, 14.5664 ns/op
+
+WorkloadActual   1: 1024 op, 14083.00 ns, 13.7529 ns/op
+WorkloadActual   2: 1024 op, 13958.00 ns, 13.6309 ns/op
+WorkloadActual   3: 1024 op, 14000.00 ns, 13.6719 ns/op
+
+WorkloadResult   1: 1024 op, 11541.00 ns, 11.2705 ns/op
+WorkloadResult   2: 1024 op, 11416.00 ns, 11.1484 ns/op
+WorkloadResult   3: 1024 op, 11458.00 ns, 11.1895 ns/op
+// GC:  0 0 0 40960 1024
+// Threading:  0 0 1024
+
+// ! Failed to set up priority Normal for process System.Diagnostics.Process (dotnet). Make sure you have the right permissions. Message: Operation not permitted
+
+Mean = 11.203 ns, StdErr = 0.036 ns (0.32%), N = 3, StdDev = 0.062 ns
+Min = 11.148 ns, Q1 = 11.169 ns, Median = 11.189 ns, Q3 = 11.230 ns, Max = 11.271 ns
+IQR = 0.061 ns, LowerFence = 11.077 ns, UpperFence = 11.322 ns
+ConfidenceInterval = [10.070 ns; 12.336 ns] (CI 99.9%), Margin = 1.133 ns (10.12% of Mean)
+Skewness = 0.2, Kurtosis = 0.67, MValue = 2
+
+// ** Remained 5 (83.3%) benchmark(s) to run. Estimated finish 2026-10-10 18:59 (0h 0m from now) **
+// **************************
+// Benchmark: ReaderBenchmarks.BorrowedCurrentCopy: Job-IULWUE(Toolchain=InProcessNoEmitToolchain, InvocationCount=1024, IterationCount=3, LaunchCount=1, UnrollFactor=1, WarmupCount=1) [Length=8]
+// *** Execute ***
+// Launch: 1 / 1
+// ! Failed to set up priority High for process System.Diagnostics.Process (dotnet). Make sure you have the right permissions. Message: Permission denied
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.8
+// Runtime=.NET 10.0.11 (10.0.11, 10.0.1126.37416), Arm64 RyuJIT armv8.0-a
+// GC=Concurrent Workstation
+// HardwareIntrinsics=ArmBase+AdvSimd,AES,CRC32,DP,RDM,SHA1,SHA256 VectorSize=128
+// Job: Job-IULWUE(Toolchain=InProcessNoEmitToolchain, InvocationCount=1024, IterationCount=3, LaunchCount=1, UnrollFactor=1, WarmupCount=1)
+
+OverheadJitting  1: 1 op, 90208.00 ns, 90.2080 us/op
+WorkloadJitting  1: 1 op, 98166.00 ns, 98.1660 us/op
+
+OverheadWarmup   1: 1024 op, 1791.00 ns, 1.7490 ns/op
+OverheadWarmup   2: 1024 op, 1917.00 ns, 1.8721 ns/op
+OverheadWarmup   3: 1024 op, 1750.00 ns, 1.7090 ns/op
+OverheadWarmup   4: 1024 op, 2458.00 ns, 2.4004 ns/op
+OverheadWarmup   5: 1024 op, 1666.00 ns, 1.6270 ns/op
+
+OverheadActual   1: 1024 op, 2000.00 ns, 1.9531 ns/op
+OverheadActual   2: 1024 op, 2166.00 ns, 2.1152 ns/op
+OverheadActual   3: 1024 op, 2125.00 ns, 2.0752 ns/op
+OverheadActual   4: 1024 op, 2125.00 ns, 2.0752 ns/op
+OverheadActual   5: 1024 op, 2125.00 ns, 2.0752 ns/op
+OverheadActual   6: 1024 op, 2041.00 ns, 1.9932 ns/op
+OverheadActual   7: 1024 op, 1792.00 ns, 1.7500 ns/op
+OverheadActual   8: 1024 op, 2167.00 ns, 2.1162 ns/op
+OverheadActual   9: 1024 op, 2458.00 ns, 2.4004 ns/op
+OverheadActual  10: 1024 op, 2375.00 ns, 2.3193 ns/op
+OverheadActual  11: 1024 op, 2333.00 ns, 2.2783 ns/op
+OverheadActual  12: 1024 op, 2541.00 ns, 2.4814 ns/op
+OverheadActual  13: 1024 op, 2375.00 ns, 2.3193 ns/op
+OverheadActual  14: 1024 op, 2500.00 ns, 2.4414 ns/op
+OverheadActual  15: 1024 op, 2458.00 ns, 2.4004 ns/op
+OverheadActual  16: 1024 op, 2750.00 ns, 2.6855 ns/op
+OverheadActual  17: 1024 op, 2833.00 ns, 2.7666 ns/op
+OverheadActual  18: 1024 op, 2833.00 ns, 2.7666 ns/op
+OverheadActual  19: 1024 op, 2667.00 ns, 2.6045 ns/op
+OverheadActual  20: 1024 op, 2542.00 ns, 2.4824 ns/op
+
+WorkloadWarmup   1: 1024 op, 55166.00 ns, 53.8730 ns/op
+
+WorkloadActual   1: 1024 op, 53083.00 ns, 51.8389 ns/op
+WorkloadActual   2: 1024 op, 52833.00 ns, 51.5947 ns/op
+WorkloadActual   3: 1024 op, 53041.00 ns, 51.7979 ns/op
+
+WorkloadResult   1: 1024 op, 50708.00 ns, 49.5195 ns/op
+WorkloadResult   2: 1024 op, 50458.00 ns, 49.2754 ns/op
+WorkloadResult   3: 1024 op, 50666.00 ns, 49.4785 ns/op
+// GC:  0 0 0 1968 1024
+// Threading:  0 0 1024
+
+// ! Failed to set up priority Normal for process System.Diagnostics.Process (dotnet). Make sure you have the right permissions. Message: Operation not permitted
+
+Mean = 49.424 ns, StdErr = 0.075 ns (0.15%), N = 3, StdDev = 0.131 ns
+Min = 49.275 ns, Q1 = 49.377 ns, Median = 49.479 ns, Q3 = 49.499 ns, Max = 49.520 ns
+IQR = 0.122 ns, LowerFence = 49.194 ns, UpperFence = 49.682 ns
+ConfidenceInterval = [47.039 ns; 51.810 ns] (CI 99.9%), Margin = 2.385 ns (4.83% of Mean)
+Skewness = -0.34, Kurtosis = 0.67, MValue = 2
+
+// ** Remained 4 (66.7%) benchmark(s) to run. Estimated finish 2026-10-10 18:59 (0h 0m from now) **
+// **************************
+// Benchmark: ReaderBenchmarks.EndToEndOwnedSetupAndRows: Job-IULWUE(Toolchain=InProcessNoEmitToolchain, InvocationCount=1024, IterationCount=3, LaunchCount=1, UnrollFactor=1, WarmupCount=1) [Length=8]
+// *** Execute ***
+// Launch: 1 / 1
+// ! Failed to set up priority High for process System.Diagnostics.Process (dotnet). Make sure you have the right permissions. Message: Permission denied
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.8
+// Runtime=.NET 10.0.11 (10.0.11, 10.0.1126.37416), Arm64 RyuJIT armv8.0-a
+// GC=Concurrent Workstation
+// HardwareIntrinsics=ArmBase+AdvSimd,AES,CRC32,DP,RDM,SHA1,SHA256 VectorSize=128
+// Job: Job-IULWUE(Toolchain=InProcessNoEmitToolchain, InvocationCount=1024, IterationCount=3, LaunchCount=1, UnrollFactor=1, WarmupCount=1)
+
+OverheadJitting  1: 1 op, 83.00 ns, 83.0000 ns/op
+WorkloadJitting  1: 1 op, 27186834.00 ns, 27.1868 ms/op
+
+OverheadWarmup   1: 1024 op, 2042.00 ns, 1.9941 ns/op
+OverheadWarmup   2: 1024 op, 2334.00 ns, 2.2793 ns/op
+OverheadWarmup   3: 1024 op, 2084.00 ns, 2.0352 ns/op
+OverheadWarmup   4: 1024 op, 2083.00 ns, 2.0342 ns/op
+OverheadWarmup   5: 1024 op, 2167.00 ns, 2.1162 ns/op
+OverheadWarmup   6: 1024 op, 2042.00 ns, 1.9941 ns/op
+
+OverheadActual   1: 1024 op, 2125.00 ns, 2.0752 ns/op
+OverheadActual   2: 1024 op, 2459.00 ns, 2.4014 ns/op
+OverheadActual   3: 1024 op, 2666.00 ns, 2.6035 ns/op
+OverheadActual   4: 1024 op, 2375.00 ns, 2.3193 ns/op
+OverheadActual   5: 1024 op, 2125.00 ns, 2.0752 ns/op
+OverheadActual   6: 1024 op, 2500.00 ns, 2.4414 ns/op
+OverheadActual   7: 1024 op, 2541.00 ns, 2.4814 ns/op
+OverheadActual   8: 1024 op, 2334.00 ns, 2.2793 ns/op
+OverheadActual   9: 1024 op, 2417.00 ns, 2.3604 ns/op
+OverheadActual  10: 1024 op, 2125.00 ns, 2.0752 ns/op
+OverheadActual  11: 1024 op, 2833.00 ns, 2.7666 ns/op
+OverheadActual  12: 1024 op, 2833.00 ns, 2.7666 ns/op
+OverheadActual  13: 1024 op, 2709.00 ns, 2.6455 ns/op
+OverheadActual  14: 1024 op, 2667.00 ns, 2.6045 ns/op
+OverheadActual  15: 1024 op, 2459.00 ns, 2.4014 ns/op
+OverheadActual  16: 1024 op, 2375.00 ns, 2.3193 ns/op
+OverheadActual  17: 1024 op, 2458.00 ns, 2.4004 ns/op
+OverheadActual  18: 1024 op, 2333.00 ns, 2.2783 ns/op
+OverheadActual  19: 1024 op, 2500.00 ns, 2.4414 ns/op
+OverheadActual  20: 1024 op, 2625.00 ns, 2.5635 ns/op
+
+WorkloadWarmup   1: 1024 op, 27658291.00 ns, 27.0100 us/op
+
+WorkloadActual   1: 1024 op, 20583417.00 ns, 20.1010 us/op
+WorkloadActual   2: 1024 op, 17069542.00 ns, 16.6695 us/op
+WorkloadActual   3: 1024 op, 15639083.00 ns, 15.2725 us/op
+
+WorkloadResult   1: 1024 op, 20580958.00 ns, 20.0986 us/op
+WorkloadResult   2: 1024 op, 17067083.00 ns, 16.6671 us/op
+WorkloadResult   3: 1024 op, 15636624.00 ns, 15.2701 us/op
+// GC:  7 1 0 58886064 1024
+// Threading:  0 0 1024
+
+// ! Failed to set up priority Normal for process System.Diagnostics.Process (dotnet). Make sure you have the right permissions. Message: Operation not permitted
+
+Mean = 17.345 us, StdErr = 1.435 us (8.27%), N = 3, StdDev = 2.485 us
+Min = 15.270 us, Q1 = 15.969 us, Median = 16.667 us, Q3 = 18.383 us, Max = 20.099 us
+IQR = 2.414 us, LowerFence = 12.347 us, UpperFence = 22.004 us
+ConfidenceInterval = [-27.984 us; 62.674 us] (CI 99.9%), Margin = 45.329 us (261.33% of Mean)
+Skewness = 0.25, Kurtosis = 0.67, MValue = 2
+
+// ** Remained 3 (50.0%) benchmark(s) to run. Estimated finish 2026-10-10 18:59 (0h 0m from now) **
+// **************************
+// Benchmark: ReaderBenchmarks.OwnedCopyBaseline: Job-IULWUE(Toolchain=InProcessNoEmitToolchain, InvocationCount=1024, IterationCount=3, LaunchCount=1, UnrollFactor=1, WarmupCount=1) [Length=4096]
+// *** Execute ***
+// Launch: 1 / 1
+// ! Failed to set up priority High for process System.Diagnostics.Process (dotnet). Make sure you have the right permissions. Message: Permission denied
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.8
+// Runtime=.NET 10.0.11 (10.0.11, 10.0.1126.37416), Arm64 RyuJIT armv8.0-a
+// GC=Concurrent Workstation
+// HardwareIntrinsics=ArmBase+AdvSimd,AES,CRC32,DP,RDM,SHA1,SHA256 VectorSize=128
+// Job: Job-IULWUE(Toolchain=InProcessNoEmitToolchain, InvocationCount=1024, IterationCount=3, LaunchCount=1, UnrollFactor=1, WarmupCount=1)
+
+OverheadJitting  1: 1 op, 125.00 ns, 125.0000 ns/op
+WorkloadJitting  1: 1 op, 2416.00 ns, 2.4160 us/op
+
+OverheadWarmup   1: 1024 op, 2916.00 ns, 2.8477 ns/op
+OverheadWarmup   2: 1024 op, 2667.00 ns, 2.6045 ns/op
+OverheadWarmup   3: 1024 op, 2667.00 ns, 2.6045 ns/op
+OverheadWarmup   4: 1024 op, 2792.00 ns, 2.7266 ns/op
+OverheadWarmup   5: 1024 op, 2625.00 ns, 2.5635 ns/op
+OverheadWarmup   6: 1024 op, 2625.00 ns, 2.5635 ns/op
+
+OverheadActual   1: 1024 op, 2500.00 ns, 2.4414 ns/op
+OverheadActual   2: 1024 op, 2708.00 ns, 2.6445 ns/op
+OverheadActual   3: 1024 op, 2584.00 ns, 2.5234 ns/op
+OverheadActual   4: 1024 op, 3084.00 ns, 3.0117 ns/op
+OverheadActual   5: 1024 op, 3083.00 ns, 3.0107 ns/op
+OverheadActual   6: 1024 op, 3083.00 ns, 3.0107 ns/op
+OverheadActual   7: 1024 op, 3208.00 ns, 3.1328 ns/op
+OverheadActual   8: 1024 op, 3083.00 ns, 3.0107 ns/op
+OverheadActual   9: 1024 op, 2958.00 ns, 2.8887 ns/op
+OverheadActual  10: 1024 op, 2667.00 ns, 2.6045 ns/op
+OverheadActual  11: 1024 op, 2875.00 ns, 2.8076 ns/op
+OverheadActual  12: 1024 op, 2875.00 ns, 2.8076 ns/op
+OverheadActual  13: 1024 op, 3250.00 ns, 3.1738 ns/op
+OverheadActual  14: 1024 op, 3167.00 ns, 3.0928 ns/op
+OverheadActual  15: 1024 op, 2958.00 ns, 2.8887 ns/op
+OverheadActual  16: 1024 op, 3083.00 ns, 3.0107 ns/op
+OverheadActual  17: 1024 op, 3208.00 ns, 3.1328 ns/op
+OverheadActual  18: 1024 op, 2833.00 ns, 2.7666 ns/op
+OverheadActual  19: 1024 op, 2750.00 ns, 2.6855 ns/op
+OverheadActual  20: 1024 op, 2625.00 ns, 2.5635 ns/op
+
+WorkloadWarmup   1: 1024 op, 905084.00 ns, 883.8711 ns/op
+
+WorkloadActual   1: 1024 op, 658792.00 ns, 643.3516 ns/op
+WorkloadActual   2: 1024 op, 880875.00 ns, 860.2295 ns/op
+WorkloadActual   3: 1024 op, 881208.00 ns, 860.5547 ns/op
+
+WorkloadResult   1: 1024 op, 655834.00 ns, 640.4629 ns/op
+WorkloadResult   2: 1024 op, 877917.00 ns, 857.3408 ns/op
+WorkloadResult   3: 1024 op, 878250.00 ns, 857.6660 ns/op
+// GC:  1 0 0 8415152 1024
+// Threading:  0 0 1024
+
+// ! Failed to set up priority Normal for process System.Diagnostics.Process (dotnet). Make sure you have the right permissions. Message: Operation not permitted
+
+Mean = 785.157 ns, StdErr = 72.347 ns (9.21%), N = 3, StdDev = 125.309 ns
+Min = 640.463 ns, Q1 = 748.902 ns, Median = 857.341 ns, Q3 = 857.503 ns, Max = 857.666 ns
+IQR = 108.602 ns, LowerFence = 586.000 ns, UpperFence = 1,020.406 ns
+ConfidenceInterval = [-1,500.937 ns; 3,071.250 ns] (CI 99.9%), Margin = 2,286.094 ns (291.16% of Mean)
+Skewness = -0.38, Kurtosis = 0.67, MValue = 2
+
+// ** Remained 2 (33.3%) benchmark(s) to run. Estimated finish 2026-10-10 18:59 (0h 0m from now) **
+// **************************
+// Benchmark: ReaderBenchmarks.BorrowedCurrentCopy: Job-IULWUE(Toolchain=InProcessNoEmitToolchain, InvocationCount=1024, IterationCount=3, LaunchCount=1, UnrollFactor=1, WarmupCount=1) [Length=4096]
+// *** Execute ***
+// Launch: 1 / 1
+// ! Failed to set up priority High for process System.Diagnostics.Process (dotnet). Make sure you have the right permissions. Message: Permission denied
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.8
+// Runtime=.NET 10.0.11 (10.0.11, 10.0.1126.37416), Arm64 RyuJIT armv8.0-a
+// GC=Concurrent Workstation
+// HardwareIntrinsics=ArmBase+AdvSimd,AES,CRC32,DP,RDM,SHA1,SHA256 VectorSize=128
+// Job: Job-IULWUE(Toolchain=InProcessNoEmitToolchain, InvocationCount=1024, IterationCount=3, LaunchCount=1, UnrollFactor=1, WarmupCount=1)
+
+OverheadJitting  1: 1 op, 584.00 ns, 584.0000 ns/op
+WorkloadJitting  1: 1 op, 1541.00 ns, 1.5410 us/op
+
+OverheadWarmup   1: 1024 op, 5500.00 ns, 5.3711 ns/op
+OverheadWarmup   2: 1024 op, 4292.00 ns, 4.1914 ns/op
+OverheadWarmup   3: 1024 op, 3583.00 ns, 3.4990 ns/op
+OverheadWarmup   4: 1024 op, 4208.00 ns, 4.1094 ns/op
+OverheadWarmup   5: 1024 op, 4083.00 ns, 3.9873 ns/op
+OverheadWarmup   6: 1024 op, 4125.00 ns, 4.0283 ns/op
+OverheadWarmup   7: 1024 op, 4000.00 ns, 3.9063 ns/op
+
+OverheadActual   1: 1024 op, 4167.00 ns, 4.0693 ns/op
+OverheadActual   2: 1024 op, 4750.00 ns, 4.6387 ns/op
+OverheadActual   3: 1024 op, 4667.00 ns, 4.5576 ns/op
+OverheadActual   4: 1024 op, 4584.00 ns, 4.4766 ns/op
+OverheadActual   5: 1024 op, 4667.00 ns, 4.5576 ns/op
+OverheadActual   6: 1024 op, 4667.00 ns, 4.5576 ns/op
+OverheadActual   7: 1024 op, 2625.00 ns, 2.5635 ns/op
+OverheadActual   8: 1024 op, 2417.00 ns, 2.3604 ns/op
+OverheadActual   9: 1024 op, 2500.00 ns, 2.4414 ns/op
+OverheadActual  10: 1024 op, 2500.00 ns, 2.4414 ns/op
+OverheadActual  11: 1024 op, 2292.00 ns, 2.2383 ns/op
+OverheadActual  12: 1024 op, 2000.00 ns, 1.9531 ns/op
+OverheadActual  13: 1024 op, 2167.00 ns, 2.1162 ns/op
+OverheadActual  14: 1024 op, 1875.00 ns, 1.8311 ns/op
+OverheadActual  15: 1024 op, 1792.00 ns, 1.7500 ns/op
+OverheadActual  16: 1024 op, 1750.00 ns, 1.7090 ns/op
+OverheadActual  17: 1024 op, 1625.00 ns, 1.5869 ns/op
+OverheadActual  18: 1024 op, 1542.00 ns, 1.5059 ns/op
+OverheadActual  19: 1024 op, 1583.00 ns, 1.5459 ns/op
+OverheadActual  20: 1024 op, 1500.00 ns, 1.4648 ns/op
+
+WorkloadWarmup   1: 1024 op, 153959.00 ns, 150.3506 ns/op
+
+WorkloadActual   1: 1024 op, 145792.00 ns, 142.3750 ns/op
+WorkloadActual   2: 1024 op, 159375.00 ns, 155.6396 ns/op
+WorkloadActual   3: 1024 op, 149334.00 ns, 145.8340 ns/op
+
+WorkloadResult   1: 1024 op, 143437.50 ns, 140.0757 ns/op
+WorkloadResult   2: 1024 op, 157020.50 ns, 153.3403 ns/op
+WorkloadResult   3: 1024 op, 146979.50 ns, 143.5347 ns/op
+// GC:  0 0 0 1968 1024
+// Threading:  0 0 1024
+
+// ! Failed to set up priority Normal for process System.Diagnostics.Process (dotnet). Make sure you have the right permissions. Message: Operation not permitted
+
+Mean = 145.650 ns, StdErr = 3.973 ns (2.73%), N = 3, StdDev = 6.881 ns
+Min = 140.076 ns, Q1 = 141.805 ns, Median = 143.535 ns, Q3 = 148.438 ns, Max = 153.340 ns
+IQR = 6.632 ns, LowerFence = 131.857 ns, UpperFence = 158.386 ns
+ConfidenceInterval = [20.120 ns; 271.180 ns] (CI 99.9%), Margin = 125.530 ns (86.19% of Mean)
+Skewness = 0.28, Kurtosis = 0.67, MValue = 2
+
+// ** Remained 1 (16.7%) benchmark(s) to run. Estimated finish 2026-10-10 18:59 (0h 0m from now) **
+// **************************
+// Benchmark: ReaderBenchmarks.EndToEndOwnedSetupAndRows: Job-IULWUE(Toolchain=InProcessNoEmitToolchain, InvocationCount=1024, IterationCount=3, LaunchCount=1, UnrollFactor=1, WarmupCount=1) [Length=4096]
+// *** Execute ***
+// Launch: 1 / 1
+// ! Failed to set up priority High for process System.Diagnostics.Process (dotnet). Make sure you have the right permissions. Message: Permission denied
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.8
+// Runtime=.NET 10.0.11 (10.0.11, 10.0.1126.37416), Arm64 RyuJIT armv8.0-a
+// GC=Concurrent Workstation
+// HardwareIntrinsics=ArmBase+AdvSimd,AES,CRC32,DP,RDM,SHA1,SHA256 VectorSize=128
+// Job: Job-IULWUE(Toolchain=InProcessNoEmitToolchain, InvocationCount=1024, IterationCount=3, LaunchCount=1, UnrollFactor=1, WarmupCount=1)
+
+OverheadJitting  1: 1 op, 0.00 ns, 0.0000 ns/op
+WorkloadJitting  1: 1 op, 1052917.00 ns, 1.0529 ms/op
+
+OverheadWarmup   1: 1024 op, 1625.00 ns, 1.5869 ns/op
+OverheadWarmup   2: 1024 op, 1667.00 ns, 1.6279 ns/op
+OverheadWarmup   3: 1024 op, 1667.00 ns, 1.6279 ns/op
+OverheadWarmup   4: 1024 op, 1625.00 ns, 1.5869 ns/op
+OverheadWarmup   5: 1024 op, 1666.00 ns, 1.6270 ns/op
+
+OverheadActual   1: 1024 op, 1750.00 ns, 1.7090 ns/op
+OverheadActual   2: 1024 op, 1500.00 ns, 1.4648 ns/op
+OverheadActual   3: 1024 op, 2000.00 ns, 1.9531 ns/op
+OverheadActual   4: 1024 op, 2042.00 ns, 1.9941 ns/op
+OverheadActual   5: 1024 op, 1625.00 ns, 1.5869 ns/op
+OverheadActual   6: 1024 op, 1542.00 ns, 1.5059 ns/op
+OverheadActual   7: 1024 op, 1541.00 ns, 1.5049 ns/op
+OverheadActual   8: 1024 op, 2083.00 ns, 2.0342 ns/op
+OverheadActual   9: 1024 op, 1333.00 ns, 1.3018 ns/op
+OverheadActual  10: 1024 op, 1667.00 ns, 1.6279 ns/op
+OverheadActual  11: 1024 op, 1625.00 ns, 1.5869 ns/op
+OverheadActual  12: 1024 op, 1625.00 ns, 1.5869 ns/op
+OverheadActual  13: 1024 op, 1667.00 ns, 1.6279 ns/op
+OverheadActual  14: 1024 op, 1667.00 ns, 1.6279 ns/op
+OverheadActual  15: 1024 op, 1667.00 ns, 1.6279 ns/op
+OverheadActual  16: 1024 op, 1625.00 ns, 1.5869 ns/op
+OverheadActual  17: 1024 op, 1792.00 ns, 1.7500 ns/op
+OverheadActual  18: 1024 op, 1791.00 ns, 1.7490 ns/op
+OverheadActual  19: 1024 op, 1792.00 ns, 1.7500 ns/op
+OverheadActual  20: 1024 op, 1792.00 ns, 1.7500 ns/op
+
+WorkloadWarmup   1: 1024 op, 435675666.00 ns, 425.4645 us/op
+
+WorkloadActual   1: 1024 op, 344176291.00 ns, 336.1097 us/op
+WorkloadActual   2: 1024 op, 341009875.00 ns, 333.0175 us/op
+WorkloadActual   3: 1024 op, 346925208.00 ns, 338.7941 us/op
+
+WorkloadResult   1: 1024 op, 344174624.00 ns, 336.1080 us/op
+WorkloadResult   2: 1024 op, 341008208.00 ns, 333.0158 us/op
+WorkloadResult   3: 1024 op, 346923541.00 ns, 338.7925 us/op
+// GC:  7 1 0 58843520 1024
+// Threading:  0 0 1024
+
+// ! Failed to set up priority Normal for process System.Diagnostics.Process (dotnet). Make sure you have the right permissions. Message: Operation not permitted
+
+Mean = 335.972 us, StdErr = 1.669 us (0.50%), N = 3, StdDev = 2.891 us
+Min = 333.016 us, Q1 = 334.562 us, Median = 336.108 us, Q3 = 337.450 us, Max = 338.793 us
+IQR = 2.888 us, LowerFence = 330.229 us, UpperFence = 341.783 us
+ConfidenceInterval = [283.234 us; 388.710 us] (CI 99.9%), Margin = 52.738 us (15.70% of Mean)
+Skewness = -0.05, Kurtosis = 0.67, MValue = 2
+
+// ** Remained 0 (0.0%) benchmark(s) to run. Estimated finish 2026-10-10 18:59 (0h 0m from now) **
+// ***** BenchmarkRunner: Finish  *****
+
+// * Export *
+  artifacts/M3-reader/bdn/results/Xemele.Benchmarks.Reader.ReaderBenchmarks-report.csv
+sysctl: sysctl fmt -1 1024 1: Operation not permitted
+  artifacts/M3-reader/bdn/results/Xemele.Benchmarks.Reader.ReaderBenchmarks-report-github.md
+  artifacts/M3-reader/bdn/results/Xemele.Benchmarks.Reader.ReaderBenchmarks-report.html
+
+// * Detailed results *
+ReaderBenchmarks.OwnedCopyBaseline: Job-IULWUE(Toolchain=InProcessNoEmitToolchain, InvocationCount=1024, IterationCount=3, LaunchCount=1, UnrollFactor=1, WarmupCount=1) [Length=8]
+Runtime = ; GC = 
+Mean = 11.203 ns, StdErr = 0.036 ns (0.32%), N = 3, StdDev = 0.062 ns
+Min = 11.148 ns, Q1 = 11.169 ns, Median = 11.189 ns, Q3 = 11.230 ns, Max = 11.271 ns
+IQR = 0.061 ns, LowerFence = 11.077 ns, UpperFence = 11.322 ns
+ConfidenceInterval = [10.070 ns; 12.336 ns] (CI 99.9%), Margin = 1.133 ns (10.12% of Mean)
+Skewness = 0.2, Kurtosis = 0.67, MValue = 2
+-------------------- Histogram --------------------
+[11.092 ns ; 11.281 ns) | @@@
+---------------------------------------------------
+
+ReaderBenchmarks.BorrowedCurrentCopy: Job-IULWUE(Toolchain=InProcessNoEmitToolchain, InvocationCount=1024, IterationCount=3, LaunchCount=1, UnrollFactor=1, WarmupCount=1) [Length=8]
+Runtime = ; GC = 
+Mean = 49.424 ns, StdErr = 0.075 ns (0.15%), N = 3, StdDev = 0.131 ns
+Min = 49.275 ns, Q1 = 49.377 ns, Median = 49.479 ns, Q3 = 49.499 ns, Max = 49.520 ns
+IQR = 0.122 ns, LowerFence = 49.194 ns, UpperFence = 49.682 ns
+ConfidenceInterval = [47.039 ns; 51.810 ns] (CI 99.9%), Margin = 2.385 ns (4.83% of Mean)
+Skewness = -0.34, Kurtosis = 0.67, MValue = 2
+-------------------- Histogram --------------------
+[49.156 ns ; 49.639 ns) | @@@
+---------------------------------------------------
+
+ReaderBenchmarks.EndToEndOwnedSetupAndRows: Job-IULWUE(Toolchain=InProcessNoEmitToolchain, InvocationCount=1024, IterationCount=3, LaunchCount=1, UnrollFactor=1, WarmupCount=1) [Length=8]
+Runtime = ; GC = 
+Mean = 17.345 us, StdErr = 1.435 us (8.27%), N = 3, StdDev = 2.485 us
+Min = 15.270 us, Q1 = 15.969 us, Median = 16.667 us, Q3 = 18.383 us, Max = 20.099 us
+IQR = 2.414 us, LowerFence = 12.347 us, UpperFence = 22.004 us
+ConfidenceInterval = [-27.984 us; 62.674 us] (CI 99.9%), Margin = 45.329 us (261.33% of Mean)
+Skewness = 0.25, Kurtosis = 0.67, MValue = 2
+-------------------- Histogram --------------------
+[13.707 us ; 18.230 us) | @@
+[18.230 us ; 22.360 us) | @
+---------------------------------------------------
+
+ReaderBenchmarks.OwnedCopyBaseline: Job-IULWUE(Toolchain=InProcessNoEmitToolchain, InvocationCount=1024, IterationCount=3, LaunchCount=1, UnrollFactor=1, WarmupCount=1) [Length=4096]
+Runtime = ; GC = 
+Mean = 785.157 ns, StdErr = 72.347 ns (9.21%), N = 3, StdDev = 125.309 ns
+Min = 640.463 ns, Q1 = 748.902 ns, Median = 857.341 ns, Q3 = 857.503 ns, Max = 857.666 ns
+IQR = 108.602 ns, LowerFence = 586.000 ns, UpperFence = 1,020.406 ns
+ConfidenceInterval = [-1,500.937 ns; 3,071.250 ns] (CI 99.9%), Margin = 2,286.094 ns (291.16% of Mean)
+Skewness = -0.38, Kurtosis = 0.67, MValue = 2
+-------------------- Histogram --------------------
+[635.029 ns ; 863.100 ns) | @@@
+---------------------------------------------------
+
+ReaderBenchmarks.BorrowedCurrentCopy: Job-IULWUE(Toolchain=InProcessNoEmitToolchain, InvocationCount=1024, IterationCount=3, LaunchCount=1, UnrollFactor=1, WarmupCount=1) [Length=4096]
+Runtime = ; GC = 
+Mean = 145.650 ns, StdErr = 3.973 ns (2.73%), N = 3, StdDev = 6.881 ns
+Min = 140.076 ns, Q1 = 141.805 ns, Median = 143.535 ns, Q3 = 148.438 ns, Max = 153.340 ns
+IQR = 6.632 ns, LowerFence = 131.857 ns, UpperFence = 158.386 ns
+ConfidenceInterval = [20.120 ns; 271.180 ns] (CI 99.9%), Margin = 125.530 ns (86.19% of Mean)
+Skewness = 0.28, Kurtosis = 0.67, MValue = 2
+-------------------- Histogram --------------------
+[135.543 ns ; 148.067 ns) | @@
+[148.067 ns ; 159.602 ns) | @
+---------------------------------------------------
+
+ReaderBenchmarks.EndToEndOwnedSetupAndRows: Job-IULWUE(Toolchain=InProcessNoEmitToolchain, InvocationCount=1024, IterationCount=3, LaunchCount=1, UnrollFactor=1, WarmupCount=1) [Length=4096]
+Runtime = ; GC = 
+Mean = 335.972 us, StdErr = 1.669 us (0.50%), N = 3, StdDev = 2.891 us
+Min = 333.016 us, Q1 = 334.562 us, Median = 336.108 us, Q3 = 337.450 us, Max = 338.793 us
+IQR = 2.888 us, LowerFence = 330.229 us, UpperFence = 341.783 us
+ConfidenceInterval = [283.234 us; 388.710 us] (CI 99.9%), Margin = 52.738 us (15.70% of Mean)
+Skewness = -0.05, Kurtosis = 0.67, MValue = 2
+-------------------- Histogram --------------------
+[330.385 us ; 340.825 us) | @@@
+---------------------------------------------------
+
+// * Summary *
+
+BenchmarkDotNet v0.15.8, macOS Sequoia 15.8.1 (24H32) [Darwin 24.6.0]
+Unknown processor
+.NET SDK 10.0.400
+  [Host] : .NET 10.0.11 (10.0.11, 10.0.1126.37416), Arm64 RyuJIT armv8.0-a
+
+Toolchain=InProcessNoEmitToolchain  InvocationCount=1024  IterationCount=3  
+LaunchCount=1  UnrollFactor=1  WarmupCount=1  
+
+| Method                    | Length | Mean          | Error         | StdDev       | Ratio    | RatioSD | Gen0   | Gen1   | Allocated | Alloc Ratio |
+|-------------------------- |------- |--------------:|--------------:|-------------:|---------:|--------:|-------:|-------:|----------:|------------:|
+| OwnedCopyBaseline         | 8      |      11.20 ns |      1.133 ns |     0.062 ns |     1.00 |    0.01 |      - |      - |      40 B |        1.00 |
+| BorrowedCurrentCopy       | 8      |      49.42 ns |      2.385 ns |     0.131 ns |     4.41 |    0.02 |      - |      - |       2 B |        0.05 |
+| EndToEndOwnedSetupAndRows | 8      |  17,345.27 ns | 45,329.123 ns | 2,484.642 ns | 1,548.33 |  192.22 | 6.8359 | 0.9766 |   57506 B |    1,437.65 |
+|                           |        |               |               |              |          |         |        |        |           |             |
+| OwnedCopyBaseline         | 4096   |     785.16 ns |  2,286.094 ns |   125.309 ns |     1.02 |    0.21 | 0.9766 |      - |    8218 B |       1.000 |
+| BorrowedCurrentCopy       | 4096   |     145.65 ns |    125.530 ns |     6.881 ns |     0.19 |    0.03 |      - |      - |       2 B |       0.000 |
+| EndToEndOwnedSetupAndRows | 4096   | 335,972.13 ns | 52,737.917 ns | 2,890.743 ns |   436.06 |   66.47 | 6.8359 | 0.9766 |   57464 B |       6.992 |
+
+// * Warnings *
+MinIterationTime
+  ReaderBenchmarks.OwnedCopyBaseline: Toolchain=InProcessNoEmitToolchain, InvocationCount=1024, IterationCount=3, LaunchCount=1, UnrollFactor=1, WarmupCount=1         -> The minimum observed iteration time is 13.958us which is very small. It's recommended to increase it to at least 100ms using more operations.
+  ReaderBenchmarks.BorrowedCurrentCopy: Toolchain=InProcessNoEmitToolchain, InvocationCount=1024, IterationCount=3, LaunchCount=1, UnrollFactor=1, WarmupCount=1       -> The minimum observed iteration time is 52.833us which is very small. It's recommended to increase it to at least 100ms using more operations.
+  ReaderBenchmarks.EndToEndOwnedSetupAndRows: Toolchain=InProcessNoEmitToolchain, InvocationCount=1024, IterationCount=3, LaunchCount=1, UnrollFactor=1, WarmupCount=1 -> The minimum observed iteration time is 15.639ms which is very small. It's recommended to increase it to at least 100ms using more operations.
+  ReaderBenchmarks.OwnedCopyBaseline: Toolchain=InProcessNoEmitToolchain, InvocationCount=1024, IterationCount=3, LaunchCount=1, UnrollFactor=1, WarmupCount=1         -> The minimum observed iteration time is 658.792us which is very small. It's recommended to increase it to at least 100ms using more operations.
+  ReaderBenchmarks.BorrowedCurrentCopy: Toolchain=InProcessNoEmitToolchain, InvocationCount=1024, IterationCount=3, LaunchCount=1, UnrollFactor=1, WarmupCount=1       -> The minimum observed iteration time is 145.792us which is very small. It's recommended to increase it to at least 100ms using more operations.
+
+// * Legends *
+  Length      : Value of the 'Length' parameter
+  Mean        : Arithmetic mean of all measurements
+  Error       : Half of 99.9% confidence interval
+  StdDev      : Standard deviation of all measurements
+  Ratio       : Mean of the ratio distribution ([Current]/[Baseline])
+  RatioSD     : Standard deviation of the ratio distribution ([Current]/[Baseline])
+  Gen0        : GC Generation 0 collects per 1000 operations
+  Gen1        : GC Generation 1 collects per 1000 operations
+  Allocated   : Allocated memory per single operation (managed only, inclusive, 1KB = 1024B)
+  Alloc Ratio : Allocated memory ratio distribution ([Current]/[Baseline])
+  1 ns        : 1 Nanosecond (0.000000001 sec)
+
+// * Diagnostic Output - MemoryDiagnoser *
+
+
+// ***** BenchmarkRunner: End *****
+Run time: 00:00:02 (2.82 sec), executed benchmarks: 6
+
+Global total time: 00:00:03 (3.3 sec), executed benchmarks: 6
+// * Artifacts cleanup *
+Artifacts cleanup is finished
+actual_child_exit_code=0
