@@ -42,10 +42,13 @@
     {
       "id": "M3-corpus-A2",
       "description": "All supported XML fixtures agree; 1 GiB streaming memory gate and early-callback assertions pass.",
-      "status": "pending",
+      "status": "passed",
       "evidence": [
         "small-memory-controls",
-        "streaming-focused"
+        "streaming-focused",
+        "memory-sax-observations",
+        "memory-async-sax",
+        "memory-remaining-three"
       ]
     },
     {
@@ -121,30 +124,84 @@
       "result": "passed",
       "summary": "Validated 147 tasks: schema/evidence/dependencies/ownership. Rechecked after evidence edit.",
       "artifact": null
+    },
+    {
+      "id": "memory-sax-outer-time",
+      "kind": "check",
+      "revision": "b5db61f2ed6579e82b13faa8a575dcb0b32c4da5",
+      "command": "/usr/bin/time -l /Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet /Users/sebastienros/.codex/worktrees/2f9d/xemele/docs/reports/M3-corpus/Runner/bin/Release/net10.0/Runner.dll sax 1073741824 /Users/sebastienros/.codex/worktrees/2f9d/xemele/docs/reports/M3-corpus/memory-sax.json",
+      "result": "failed",
+      "summary": "Outer /usr/bin/time -l exited 1 after completed 1GiB semantic/live report; sysctl kern.clockrate permission failure. Underlying runner exit not independently recorded. RSS unavailable. No repeated SAX run.",
+      "artifact": "docs/reports/M3-corpus/memory-sax.time.log"
+    },
+    {
+      "id": "memory-sax-observations",
+      "kind": "review",
+      "revision": "b5db61f2ed6579e82b13faa8a575dcb0b32c4da5",
+      "command": "Coordinator adjudication of preserved memory-sax.json/stdout/time and measurement-exits-sax-outer-time.json",
+      "result": "passed",
+      "summary": "Coordinator accepted completed SAX raw observations: exactly 1GiB; 64 active samples plus completion; maximum whole managed heap 244912 bytes; exact semantics and early callback pass. This review does not relabel outer exit 1 or claim underlying exit 0.",
+      "artifact": "docs/reports/M3-corpus/memory-summary.md"
+    },
+    {
+      "id": "memory-async-sax",
+      "kind": "check",
+      "revision": "b5db61f2ed6579e82b13faa8a575dcb0b32c4da5",
+      "command": "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet /Users/sebastienros/.codex/worktrees/2f9d/xemele/docs/reports/M3-corpus/Runner/bin/Release/net10.0/Runner.dll sax-async 1073741824 /Users/sebastienros/.codex/worktrees/2f9d/xemele/docs/reports/M3-corpus/memory-sax-async.json",
+      "result": "passed",
+      "summary": "Direct dotnet exit 0; exactly 1GiB, 65 samples, max whole managed live heap 276280 bytes, exact semantic counts and early callback pass; process group absent. RSS unavailable.",
+      "artifact": "docs/reports/M3-corpus/memory-sax-async.json"
+    },
+    {
+      "id": "memory-pull-timeout75",
+      "kind": "check",
+      "revision": "b5db61f2ed6579e82b13faa8a575dcb0b32c4da5",
+      "command": "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet /Users/sebastienros/.codex/worktrees/2f9d/xemele/docs/reports/M3-corpus/Runner/bin/Release/net10.0/Runner.dll pull 1073741824 /Users/sebastienros/.codex/worktrees/2f9d/xemele/docs/reports/M3-corpus/memory-pull.json",
+      "result": "failed",
+      "summary": "Historical sync pull exceeded 75-second wrapper timeout, terminated with direct dotnet exit -15. No memory acceptance result claimed. Reaped/group absent. Approved unchanged-workload sized deadline followed.",
+      "artifact": "docs/reports/M3-corpus/measurement-exits-remaining4.json"
+    },
+    {
+      "id": "memory-remaining-three",
+      "kind": "check",
+      "revision": "b5db61f2ed6579e82b13faa8a575dcb0b32c4da5",
+      "command": "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet /Users/sebastienros/.codex/worktrees/2f9d/xemele/docs/reports/M3-corpus/Runner/bin/Release/net10.0/Runner.dll pull 1073741824 /Users/sebastienros/.codex/worktrees/2f9d/xemele/docs/reports/M3-corpus/memory-pull.json\n/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet /Users/sebastienros/.codex/worktrees/2f9d/xemele/docs/reports/M3-corpus/Runner/bin/Release/net10.0/Runner.dll pull-async 1073741824 /Users/sebastienros/.codex/worktrees/2f9d/xemele/docs/reports/M3-corpus/memory-pull-async.json\n/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet /Users/sebastienros/.codex/worktrees/2f9d/xemele/docs/reports/M3-corpus/Runner/bin/Release/net10.0/Runner.dll push 1073741824 /Users/sebastienros/.codex/worktrees/2f9d/xemele/docs/reports/M3-corpus/memory-push.json",
+      "result": "passed",
+      "summary": "Direct dotnet exits 0 for sync pull (360s deadline), async pull (600s), push (90s). Each exact1GiB/65 samples/exact semantics/early callback passes. Max whole live heap 247440/278192/383776 bytes respectively, all <=8MiB; reaped/groups absent. RSS unavailable; timing informational.",
+      "artifact": "docs/reports/M3-corpus/measurement-exits.json"
+    },
+    {
+      "id": "memory-wrapper-prelaunch",
+      "kind": "check",
+      "revision": "b5db61f2ed6579e82b13faa8a575dcb0b32c4da5",
+      "command": "Initial Python wrapper with runner=commands[0][4] (wrong index)",
+      "result": "failed",
+      "summary": "Wrapper exit 1 before any measurement child launch/hash verification. FileNotFoundError for sax filename. Narrow index correction approved before renewed lease.",
+      "artifact": "docs/reports/M3-corpus/wrapper-prelaunch-failure.txt"
     }
   ],
   "blockers": [
     "Owning runtime repair required for malformed UTF-8 DOM declaration-validation exception."
   ],
   "handoff": {
-    "summary": "Prepared full unchanged public original-byte equivalence, independent BCL controls, standalone fuzz entrypoints and five-mode 1GiB memory executable. Source-context M2 oracle remains distinct. No runtime/shared writes. Source b5db61f2ed6579e82b13faa8a575dcb0b32c4da5.",
+    "summary": "Full public original-byte equivalence and five frozen 1GiB semantic/live observations recorded. All memory modes below 8MiB. Overall in_progress: malformed UTF-8 DOM owning repair pending; no runtime/shared writes.",
     "checks": [
       "Four pinned controlled Release builds pass.",
       "Conformance streaming: 8/9 pass; expected structured-rejection regression fails on unexpected InvalidOperationException. All 2585 frozen original cases agree, no exclusions.",
       "BCL differential 2/2 pass.",
       "Fuzz controls: 5 unexpected failures in 97 operations.",
       "All five 1MiB modes and 9MiB-retention negative control pass.",
-      "1GiB runs unrun; exact commands/hash in prepared-runs.json; awaiting coordinator scheduling grant.",
-      "tasks.py validate passes."
+      "tasks.py validate passes.",
+      "Five completed1GiB reports pass exact semantics/early callback and conservative managed live bound: 244912/276280/247440/278192/383776 bytes. SAX underlying runner exit unrecorded, optional outer time exited1; accepted raw observations via coordinator review. Other four direct exits0.",
+      "Historical prelaunch wrapper failure and 75s pull timeout preserved, no acceptance claimed for failed partial run. RSS unavailable."
     ],
     "remaining": [
-      "Integrate owning decoder/DOM repair and rerun affected malformed-input controls.",
-      "Run each prebuilt 1GiB mode under granted scheduling lease, record live heap and separate RSS.",
-      "Requalify evidence at final implementation revision; retain in_progress until all criteria pass."
+      "Integrate owning decoder/DOM repair and rerun affected malformed-input/public corpus checks against repaired closure.",
+      "Qualify exact unchanged streaming closure before reusing frozen memory evidence on repaired source.",
+      "Set implemented only when all criteria truly pass; coordinator owns verified/integration status."
     ],
     "requests": [
       "Owning repair: src/Xemele/Parsing/Input/XmlInputDecoder.cs and/or src/Xemele/Parsing/Dom/ByteDomAdapter.cs. Bytes 3c72af3e (PHKvPg==), no primary base; DtdProcessing=Parse, DocumentCharacters=1048576,Depth=64,TokenCharacters=65536. XmlDocument.Parse throws InvalidOperationException at ValidateDeclaration -> ValidateAbsentDeclaration -> Forward; require structured rejection. Full five cases/stacks in fuzz-control.json.",
-      "Coordinator measurement lease for exact five prebuilt commands in docs/reports/M3-corpus/prepared-runs.json.",
       "Integration gate must rerun existing M2 real-source-context conformance against the M3-modified core closure."
     ]
   }
