@@ -1,0 +1,60 @@
+using System.Runtime.InteropServices;
+using System.Text.Json;
+using BenchmarkDotNet.Configs;
+using BenchmarkDotNet.Jobs;
+using BenchmarkDotNet.Running;
+using BenchmarkDotNet.Toolchains.InProcess.NoEmit;
+using Xemele.Html;
+using Xemele.Benchmarks.HtmlTokenization;
+Console.WriteLine($"FrameworkDescription={RuntimeInformation.FrameworkDescription}; Architecture={RuntimeInformation.ProcessArchitecture}");
+if (RuntimeInformation.FrameworkDescription != ".NET 10.0.11") throw new Exception("Actual pinned runtime required.");
+if (args[0] is "--discover" or "--benchmark")
+{
+    var config = ManualConfig.Create(DefaultConfig.Instance).WithArtifactsPath(args[1]).AddJob(Job.Default.WithToolchain(InProcessNoEmitToolchain.Instance).AsMutator());
+    var suite = BenchmarkConverter.TypeToBenchmarks(typeof(TokenizerBenchmarks), config);
+    if (suite.BenchmarksCases.Length != 24 || suite.BenchmarksCases.Any(c => c.Job.Run.WarmupCount != 3 || c.Job.Run.IterationCount != 3 || c.Job.Run.LaunchCount != 1 || c.Job.Infrastructure.Toolchain != InProcessNoEmitToolchain.Instance)) throw new Exception("24 ShortRun NoEmit cases required.");
+    Console.WriteLine("24 ShortRun NoEmit cases; no builds/generation.");
+    if (args[0] == "--discover") return;
+    var summary = BenchmarkRunner.Run(suite);
+    if (summary.Reports.Length != 24 || summary.Reports.Any(r => !r.Success || r.ResultStatistics is null)) throw new Exception("Benchmark failure.");
+    return;
+}
+if (args[0] != "--measure") throw new ArgumentException();
+long before = GC.GetAllocatedBytesForCurrentThread();
+HtmlNamedReferences.TryGet("amp;", out var named);
+Print("cold-reference-table-initialization", GC.GetAllocatedBytesForCurrentThread() - before, 1);
+before = GC.GetAllocatedBytesForCurrentThread(); var control = new byte[1024]; long allocated = GC.GetAllocatedBytesForCurrentThread() - before;
+if (allocated == 0) throw new Exception("Positive allocation control failed."); Print("positive-control", allocated, 1); GC.KeepAlive(control);
+int consumed = 0;
+foreach (string kind in new[] { "short-hit", "short-miss", "long-late-hit", "long-miss", "dense", "multilingual" })
+{
+    string input = TokenizerBenchmarks.PrimitiveInput(kind);
+    string referenceInput = TokenizerBenchmarks.ReferenceInput(kind);
+    if (TokenizerBenchmarks.Digits(input) != TokenizerBenchmarks.FrameworkDigits(input)) throw new Exception("Primitive oracle mismatch.");
+    for (int i = 0; i < 1000; i++) { consumed = TokenizerBenchmarks.Digits(input); HtmlNamedReferences.Match(referenceInput, true, out _, out named); }
+    for (int batch = 0; batch < 16; batch++)
+    {
+        before = GC.GetAllocatedBytesForCurrentThread();
+        for (int i = 0; i < 1024; i++) { consumed = TokenizerBenchmarks.Digits(input); HtmlNamedReferences.Match(referenceInput, true, out _, out named); }
+        allocated = GC.GetAllocatedBytesForCurrentThread() - before;
+        Print("steady-borrowed-digit-and-reference-" + kind, allocated, 1024);
+        if (allocated != 0) throw new Exception("Borrowed lexical primitive allocated.");
+    }
+    string owned = TokenizerBenchmarks.OwnedFixture(kind);
+    for (int i = 0; i < 32; i++) { consumed = TokenizerBenchmarks.OwnedCallback(owned); Html5Tokenizer.Tokenize(owned); TokenizerBenchmarks.ChunkedTokens(owned); }
+    before = GC.GetAllocatedBytesForCurrentThread();
+    for (int i = 0; i < 128; i++) consumed = TokenizerBenchmarks.OwnedCallback(owned);
+    Print("owned-callback-operation-setup-tokens-snapshots-" + kind, GC.GetAllocatedBytesForCurrentThread() - before, 128);
+    before = GC.GetAllocatedBytesForCurrentThread();
+    for (int i = 0; i < 128; i++) Html5Tokenizer.Tokenize(owned);
+    Print("owned-list-operation-setup-tokens-snapshots-" + kind, GC.GetAllocatedBytesForCurrentThread() - before, 128);
+    before = GC.GetAllocatedBytesForCurrentThread();
+    for (int i = 0; i < 128; i++) TokenizerBenchmarks.ChunkedTokens(owned);
+    Print("owned-single-unit-chunks-operation-setup-tokens-snapshots-" + kind, GC.GetAllocatedBytesForCurrentThread() - before, 128);
+}
+GC.Collect(); GC.WaitForPendingFinalizers(); GC.Collect(); long heapBefore = GC.GetTotalMemory(false);
+var retained = new IReadOnlyList<HtmlToken>[128]; for (int i = 0; i < retained.Length; i++) retained[i] = Html5Tokenizer.Tokenize(TokenizerBenchmarks.OwnedInput);
+GC.Collect(); GC.WaitForPendingFinalizers(); GC.Collect(); long heapAfter = GC.GetTotalMemory(false);
+Console.WriteLine(JsonSerializer.Serialize(new { domain = "retained-whole-heap-inclusive-token-lists-array-runtime-roots", beforeBytes = heapBefore, afterBytes = heapAfter, inclusiveDeltaBytes = heapAfter - heapBefore, denominatorOperations = retained.Length }));
+GC.KeepAlive(retained); GC.KeepAlive(consumed); GC.KeepAlive(named);
+static void Print(string domain, long numeratorBytes, int denominatorOperations) => Console.WriteLine(JsonSerializer.Serialize(new { domain, numeratorBytes, denominatorOperations }));
