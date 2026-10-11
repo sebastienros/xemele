@@ -4,11 +4,11 @@
   "milestone": "M8",
   "title": "XSD schema composition and declarations",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M8 coordinator01a12c6c-b333-71d3-877f-0d186618e21d / assigned isolated worker",
   "branch": "codex/m8-xsd-compile",
   "base_revision": "e83c84546eceec056e4840c2d12ea2e04d886630",
-  "integration_revision": null,
+  "integration_revision": "d2e7450f2a1d881ea6631177eb4b3cf4785edfe2",
   "depends_on": [
     "M8-model",
     "M8-source-locations"
@@ -37,7 +37,8 @@
       "status": "passed",
       "evidence": [
         "focused-correctness",
-        "bounded-source-review"
+        "bounded-source-review",
+        "integrated-verification"
       ]
     },
     {
@@ -46,7 +47,8 @@
       "status": "passed",
       "evidence": [
         "focused-correctness",
-        "bounded-source-review"
+        "bounded-source-review",
+        "integrated-verification"
       ]
     },
     {
@@ -59,7 +61,8 @@
         "xml-only-consumer",
         "resolver-preservation",
         "allocation-preparation",
-        "leased-allocation"
+        "leased-allocation",
+        "integrated-verification"
       ]
     }
   ],
@@ -143,6 +146,15 @@
       "result": "passed",
       "summary": "Sole durable M8-xsd-compile-allocation-1 attempt passed:2warmed sealed lookups0B;owned parser29928B,graph90216B,combined119848B,external154528medianB,diagnostics63136B per operation;32warm+64distributions/route;positivecontrol1048B. Cold127960B,32graphs retained heap delta2529072B informational. Child2510exited0/reaped/logclosed/groupempty;all24identitiespassed;RELEASE anddurableACKbeforerawinspection. No timing/BDN/cross-platform claim.",
       "artifact": "docs/reports/M8-xsd-compile/allocations.md"
+    },
+    {
+      "id": "integrated-verification",
+      "kind": "integration",
+      "revision": "d2e7450f2a1d881ea6631177eb4b3cf4785edfe2",
+      "command": "python3 docs/reports/M8-xsd-compile/check.py at 9c3c7c2a47d01d738afa39636924cd51fd437055; exact144-result assertions and metadata-only input proof at final integration",
+      "result": "passed",
+      "summary": "144 actual Arm64 .NET10.0.11 cases passed, zero errors/failures/skips/not-run; public1393 and frozen257 matched; XML-only consumer and176-task validate passed. Source-review accepted final bounded fixes; all seven allocation distributions independently inspected, actual variation retained. Final source/test/build inputs unchanged from tested combination.",
+      "artifact": "docs/reports/M8-xsd-compile/integration.md"
     }
   ],
   "blockers": [],
@@ -156,8 +168,7 @@
       "Approved sole allocation run passed;2lookups0B,explicit owned costs summarized in allocations.md;24finalidentities/lifecycleRELEASE+ACKpassed."
     ],
     "remaining": [
-      "Coordinator integrates branch and reruns docs/reports/M8-xsd-compile/check.py,records integrated verification.",
-      "Later verified facade joins must finalize all datatype/facet/content/identity definitions and all zero-self-reference redefine carrier restrictions,including unreferenced groups. Comprehensive corpus remains gate-owned."
+      "Downstream content/facets/facade must finalize every retained restriction carrier, including unreferenced redefined groups, before public schema publication; comprehensive gate corpus and x64 confirmation remain downstream."
     ],
     "requests": []
   }
