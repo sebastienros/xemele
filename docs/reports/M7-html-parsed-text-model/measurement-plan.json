@@ -1,0 +1,28 @@
+{
+  "total_max_seconds": 220,
+  "initial_identity_max_seconds": 35,
+  "final_identity_max_seconds": 35,
+  "environment": {
+    "DOTNET_ROOT": "/Users/sebastienros/Library/Application Support/dotnetup/dotnet",
+    "DOTNET_ROLL_FORWARD": "Disable",
+    "DOTNET_TieredCompilation": "0",
+    "DOTNET_TieredPGO": "0",
+    "DOTNET_ReadyToRun": "0",
+    "SHLVL": "1",
+    "XEMELE_MEASUREMENT_SESSION": "01a12add-f725-7663-b0f9-e6687671c769-parsed-text"
+  },
+  "runs": [
+    {
+      "name": "allocation",
+      "max_seconds": 60,
+      "log": "artifacts/M7-html-parsed-text-model/allocation.log",
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "--fx-version",
+        "10.0.11",
+        "/private/tmp/xemele-m7-html-parsed-text-model/benchmarks/Xemele.Benchmarks/M7-html-parsed-text-model/bin/Release/net10.0/Xemele.Benchmarks.dll",
+        "--measure"
+      ]
+    }
+  ]
+}

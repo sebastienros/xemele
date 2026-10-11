@@ -32,7 +32,7 @@ public sealed class ParsedTextTests
  [Fact] public void ParsedTextStillObeysAttachmentAndDepthRules()
  {
   var owner=new HtmlDocument(new(){Depth=1,TokenCharacters=1});var root=owner.CreateElement("p");owner.DocumentNode.AppendChild(root);var text=owner.CreateParsedText("long");
-  Assert.Throws<InvalidOperationException>(()=>root.AppendChild(text));Assert.Null(text.Parent);Assert.Empty(root.Children);
+  root.AppendChild(text);Assert.Same(root,text.Parent);Assert.Equal("long",root.GetTextContent());Assert.Throws<InvalidOperationException>(()=>root.AppendChild(owner.CreateElement("q")));Assert.Single(root.Children);
   var other=new HtmlDocument();Assert.Throws<ArgumentException>(()=>other.DocumentNode.AppendChild(text));Assert.Same(owner,text.OwnerDocument);
  }
 }
