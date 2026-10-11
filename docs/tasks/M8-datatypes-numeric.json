@@ -32,14 +32,18 @@
     {
       "id": "M8-datatypes-numeric-A1",
       "description": "Implement XSD1.0 decimal/integer/float/double and all built-in numeric derivations through the verified core family contract. Retain arbitrary decimal/integer precision, exact built-in ranges, INF/-INF/NaN/signed-zero behavior and prescribed equality/order/hash including compatible derived numeric values. No CLR decimal/double truncation for arbitrary decimal/integer values.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "focused-correctness"
+      ]
     },
     {
       "id": "M8-datatypes-numeric-A2",
       "description": "Test valid/invalid lexical grammar, insignificant zeros, large magnitudes/precision, range edges, NaN/infinities/zero signs, cross-numeric equality/hash/order and applicable digit measures. Charge actual lexical/conversion/comparison work and bounded growth, with exact-limit, one-over and cancellation cases.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "focused-correctness"
+      ]
     },
     {
       "id": "M8-datatypes-numeric-A3",
@@ -48,13 +52,53 @@
       "evidence": []
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Validation/Datatypes/Values/Numeric/NumericProvider.cs: NumericDatatypeProvider exact decimal/integer representation, built-in ranges and bounded IEEE conversion",
+    "tests/Xemele.Tests/M8-datatypes-numeric/NumericTests.cs: 76 numeric lexical/value/budget/cancellation cases",
+    "docs/reports/M8-datatypes-numeric/joins.md: normative digit measures and deferred composer/facet joins",
+    "docs/reports/M8-datatypes-numeric/Consumer.cs.fixture and XmlOnly/XmlOnly.csproj: genuine regular/XML-only provider consumers"
+  ],
+  "evidence": [
+    {
+      "id": "focused-correctness",
+      "kind": "check",
+      "revision": "9dee538394f076df86ea12ea282126fbe39da8f2",
+      "command": "python3 docs/reports/M8-datatypes-numeric/checks.py",
+      "result": "passed",
+      "summary": "Exact106 passed:76numeric+18verifiedCore+12verifiedModel;zero failures/errors/skips/not-run;1393compiled public API members matched;normal+XML-only genuine consumers passed;task validate and diff-check passed. No allocation tests selected.",
+      "artifact": "docs/reports/M8-datatypes-numeric/correctness.md"
+    },
+    {
+      "id": "controls-preflight",
+      "kind": "check",
+      "revision": "9dee538394f076df86ea12ea282126fbe39da8f2",
+      "command": "Pinned prebuilt Numeric.Probe --control; Numeric.Bdn --control and --discover; elevated python3 docs/reports/M8-datatypes-numeric/preflight.py",
+      "result": "passed",
+      "summary": "13 consumed probe routes with counters disabled;2baseline/provider fixtures including all methods consumed;exact10ShortRun InProcessNoEmit cases discovered;ps permission, direct child reaped and owned group absent. No measurements.",
+      "artifact": null
+    },
+    {
+      "id": "source-review",
+      "kind": "review",
+      "revision": "9dee538394f076df86ea12ea282126fbe39da8f2",
+      "command": null,
+      "result": "passed",
+      "summary": "Coordinator independent read-only reviewer accepted corrected source; arbitrary original-span IEEE conversion polling finding resolved, max opaque input1116chars, no remaining blockers. Reviewer performed no test execution. Accepted file hashes recorded in correctness.md.",
+      "artifact": "docs/reports/M8-datatypes-numeric/correctness.md"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Planned bounded child of M8-datatypes; original complete XSD1.0 acceptance and gate reachability preserved.",
-    "checks": [],
-    "remaining": [],
+    "summary": "Numeric source independently accepted;106focused checks passed;authorized allocation/BDN sequence remains before implemented.",
+    "checks": [
+      "106focused correctness cases passed,1393API members matched,normal/XML-only consumers passed",
+      "Counter-disabled13route probe and all BDNcontrols/exact10NoEmit discovery passed",
+      "Elevated process inspection/reap/group-absence preflight passed",
+      "tasks.py validate and git diff --check passed"
+    ],
+    "remaining": [
+      "Identity freeze/verification and root explicit GRANT, then bounded allocation/BDN evidence"
+    ],
     "requests": []
   }
 }

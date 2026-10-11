@@ -17,9 +17,15 @@ for folder in [net.parent / 'shared/Microsoft.NETCore.App/10.0.11', net.parent /
 for folder in ['src/Xemele/Validation/Datatypes/Values/Core', 'src/Xemele/Validation/Datatypes/Values/Numeric', 'tests/Xemele.Tests/M8-datatypes-numeric', 'benchmarks/Xemele.Benchmarks/M8-datatypes-numeric']:
  for path in (root / folder).iterdir():
   if path.is_file(): paths.add(path)
-for name in ['measure.py','prepare.py','preflight.py','Consumer.cs.fixture','Consumer.csproj']:
+for name in ['measure.py','prepare.py','preflight.py','Consumer.cs.fixture','Consumer.csproj','checks.py','correctness.md','joins.md']:
  paths.add(root / 'docs/reports/M8-datatypes-numeric' / name)
 paths.add(root / 'docs/reports/M8-datatypes-core/contracts.md')
+paths.add(root / 'docs/reports/M8-datatypes-numeric/XmlOnly/XmlOnly.csproj')
+# Hash all tracked library build inputs without loading them into chat context.
+for relative in subprocess.check_output(['git','ls-files','src/Xemele'],cwd=root,text=True).splitlines():
+ if relative.endswith(('.cs','.csproj')): paths.add(root / relative)
+for relative in ['global.json','Directory.Build.props','Directory.Packages.props','src/Xemele/Xemele.csproj']:
+ if (root / relative).is_file(): paths.add(root / relative)
 def key(path): return str(path.relative_to(root)) if path.is_relative_to(root) else str(path)
 def digest(path):
  with path.open('rb') as stream: return hashlib.file_digest(stream,'sha256').hexdigest()
