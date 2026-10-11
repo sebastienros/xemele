@@ -15,6 +15,14 @@ try
     string catalog = Path.Combine(folder, "catalog.xml");
     File.WriteAllText(catalog, "<catalog xmlns=\"urn:oasis:names:tc:entity:xmlns:xml:catalog\"><uri name=\"urn:sample\" uri=\"input.xml\"/></catalog>");
     if (registry.Run(["catalog", "--catalog", catalog, "--uri", "urn:sample", "--output", output]) != 0 || File.ReadAllText(output).Trim() != new Uri(input).AbsoluteUri) throw new InvalidOperationException("catalog");
-    Console.WriteLine("Seven command sample passed; " + RuntimeInformation.FrameworkDescription);
+    using (var canceled = new CancellationTokenSource())
+    {
+        canceled.Cancel();
+        File.WriteAllText(output, "preserve");
+        if (XmlCommands.Run("parse", ["--input", input, "--output", output], canceled.Token) != 3 || File.ReadAllText(output) != "preserve") throw new InvalidOperationException("cancellation");
+    }
+    Console.OpenStandardOutput().Write([]);
+    if (!Console.OpenStandardInput().CanRead) throw new InvalidOperationException("stdin closed");
+    Console.WriteLine("Seven command and cancellation sample passed; " + RuntimeInformation.FrameworkDescription);
 }
 finally { Directory.Delete(folder, true); }

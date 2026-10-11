@@ -5,7 +5,7 @@ using Xemele.XPath;
 namespace Xemele.Tool;
 internal static class XmlCommands
 {
-    internal static int Run(string command, string[] args)
+    internal static int Run(string command, string[] args, CancellationToken cancellationToken = default)
     {
         if (args.Length == 1 && args[0] is "--help" or "-h")
         {
@@ -13,8 +13,13 @@ internal static class XmlCommands
             Console.WriteLine(command switch { "xpath" => "Required: --expression EXPR", "validate-dtd" => "Required: --dtd PATH", "catalog" => "Required: --catalog PATH --uri URI; optional: --system-id ID --public-id ID", "canonicalize" => "Optional: --exclusive --with-comments --allow-dtd", _ => "Optional: --allow-dtd" });
             return 0;
         }
+        using var cancellation = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        ConsoleCancelEventHandler cancel = (_, eventArgs) => { eventArgs.Cancel = true; cancellation.Cancel(); };
+        Console.CancelKeyPress += cancel;
+        CancellationToken token = cancellation.Token;
         try
         {
+            token.ThrowIfCancellationRequested();
             var invocation = XmlInvocation.Parse(command, args);
             var local = new LocalResolver(invocation.Get("--allow-root"));
             Uri? source = invocation.Get("--base-uri") is { } baseText ? new Uri(baseText) : invocation.Get("--input") is { } inputPath ? InvocationUri(inputPath) : null;
@@ -23,7 +28,7 @@ internal static class XmlCommands
             if (invocation.Get("--catalog") is { } catalogPath)
             {
                 string text = ReadText(catalogPath);
-                catalog = XmlCatalog.Parse(text, new() { BaseUri = InvocationUri(catalogPath), Resolver = local });
+                catalog = XmlCatalog.Parse(text, new() { BaseUri = InvocationUri(catalogPath), Resolver = local }, token);
                 resolver = new CatalogResolver(catalog, local);
             }
             using var staged = new MemoryStream(); // Owned result: no rejected operation publishes partial output.
@@ -31,7 +36,7 @@ internal static class XmlCommands
             {
                 var request = new XmlResourceRequest(new Uri(invocation.Get("--uri")!), source, invocation.Get("--system-id") is not null || invocation.Get("--public-id") is not null ? XmlResourceKind.ExternalEntity : XmlResourceKind.XIncludeXml)
                 { SystemId = invocation.Get("--system-id"), PublicId = invocation.Get("--public-id") };
-                Uri mapped = catalog!.Resolve(request) ?? throw new RejectionException("No catalog mapping.");
+                Uri mapped = catalog!.Resolve(request, token) ?? throw new RejectionException("No catalog mapping.");
                 WriteText(staged, mapped.AbsoluteUri + "\n");
             }
             else
@@ -39,25 +44,25 @@ internal static class XmlCommands
                 var options = new XmlParseOptions { DtdProcessing = invocation.Has("--allow-dtd") ? XmlDtdProcessing.Parse : XmlDtdProcessing.Prohibit, Resolver = resolver };
                 XmlDocument document;
                 Stream input = OpenInput(invocation.Get("--input"));
-                try { document = XmlDocument.Load(input, options); }
+                try { document = XmlDocument.Load(input, options, token); }
                 finally { if (invocation.Get("--input") is not null) input.Dispose(); }
                 switch (command)
                 {
                     case "validate-dtd":
-                        var validation = DtdSchema.Compile(ReadText(invocation.Get("--dtd")!), resolver).Validate(document);
+                        var validation = DtdSchema.Compile(ReadText(invocation.Get("--dtd")!), resolver, cancellationToken: token).Validate(document, new() { CancellationToken = token });
                         if (!validation.IsValid || !validation.IsComplete) throw new RejectionException(string.Join("; ", validation.Diagnostics.Select(d => d.Message)));
                         break;
                     case "canonicalize":
-                        XmlCanonicalizer.Canonicalize(document, staged, new() { Mode = invocation.Has("--exclusive") ? XmlCanonicalizationMode.Exclusive10 : XmlCanonicalizationMode.Inclusive10, IncludeComments = invocation.Has("--with-comments") });
+                        XmlCanonicalizer.Canonicalize(document, staged, new() { Mode = invocation.Has("--exclusive") ? XmlCanonicalizationMode.Exclusive10 : XmlCanonicalizationMode.Inclusive10, IncludeComments = invocation.Has("--with-comments"), CancellationToken = token });
                         break;
                     case "xpath":
-                        var value = XPathExpression.Compile(invocation.Get("--expression")!).Evaluate(document.DocumentNode);
+                        var value = XPathExpression.Compile(invocation.Get("--expression")!, cancellationToken: token).Evaluate(document.DocumentNode, new() { CancellationToken = token });
                         if (value.Kind == XPathValueKind.NodeSet)
                             foreach (var item in value.AsNodeSet()) WriteText(staged, SerializeItem(item) + "\n");
                         else WriteText(staged, value.AsString() + "\n");
                         break;
                     case "xinclude":
-                        var result = XIncludeProcessor.Process(document, new() { BaseUri = source, Resolver = resolver, ParseOptions = options });
+                        var result = XIncludeProcessor.Process(document, new() { BaseUri = source, Resolver = resolver, ParseOptions = options }, token);
                         if (!result.Success) throw new RejectionException(string.Join("; ", result.Diagnostics.Select(d => d.Message)));
                         XmlSerializer.Serialize(result.Document!, staged, new() { OmitXmlDeclaration = true });
                         break;
@@ -74,6 +79,7 @@ internal static class XmlCommands
         catch (RejectionException ex) { Console.Error.WriteLine(ex.Message); return 1; }
         catch (OperationCanceledException) { Console.Error.WriteLine("Operation canceled."); return 3; }
         catch (Exception ex) { Console.Error.WriteLine("Internal failure: " + ex.Message); return 3; }
+        finally { Console.CancelKeyPress -= cancel; }
     }
     private static Uri InvocationUri(string path)
     {

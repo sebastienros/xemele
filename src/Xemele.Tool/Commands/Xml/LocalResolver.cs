@@ -13,6 +13,8 @@ internal sealed class LocalResolver : XmlResourceResolver
         }
         catch (IOException ex) { throw new InvocationException(ex.Message); }
         catch (UnauthorizedAccessException ex) { throw new InvocationException(ex.Message); }
+        catch (ArgumentException ex) { throw new InvocationException(ex.Message); }
+        catch (NotSupportedException ex) { throw new InvocationException(ex.Message); }
     }
     internal static string RealPath(string path)
     {
