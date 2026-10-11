@@ -77,6 +77,7 @@ internal sealed partial class XmlParserCore
         {
             if (declaration.SystemId is null)
             { Reject("XML.Syntax", "General entity has no replacement or external identifier.", reference); return true; }
+            if (asyncResources) { resourceWork = ResourceWork.OpenGeneral; return true; }
             sourceFrame.External = OpenExternalSource(declaration.SystemId, declaration.PublicId,
                 XmlResourceKind.ExternalEntity, declaration.Location);
             if (sourceFrame.External is not null)
@@ -99,7 +100,12 @@ internal sealed partial class XmlParserCore
         attributePhysicalSpelling = null; attributePhysicalLocation = at; attributePhysicalOrigin = false; attributePhysicalIdentity = source.PhysicalIdentity;
         if (source.External is { } external)
         {
-            if (!external.EnsureCharacters(activeCancellation))
+            if (asyncResources && !external.HasCharacters)
+            {
+                resourceWork = external.Completed ? ResourceWork.FinishGeneral : ResourceWork.RefillGeneral;
+                return true;
+            }
+            if (!asyncResources && !external.EnsureCharacters(activeCancellation))
             {
                 if (external.Diagnostic is not null) { diagnostic = external.Diagnostic; return true; }
                 return FinishEntitySource(source);
@@ -113,7 +119,8 @@ internal sealed partial class XmlParserCore
         }
         else
         {
-            string text = source.Declaration.ReplacementText!;
+            string text = source.Declaration.ReplacementText
+                ?? throw new InvalidOperationException("An external entity must be framed before scalar draining.");
             if (source.Index == text.Length) return FinishEntitySource(source);
             if (DtdLiteralInfo.Entities.TryGetValue(source.Declaration, out var literal))
             {
