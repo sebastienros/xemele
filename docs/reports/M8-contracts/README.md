@@ -42,3 +42,21 @@ The first authoring run compiled eight consumers, passed prerequisite probes and
 The next authoring run passed with the inventory. Subsequent declaration refinements
 add datatype composite/measure hooks and prepared identity programs; only checks
 at the final recorded implementation revision establish the completed task.
+
+## Initial committed implementation checks
+
+Tested implementation revision: **4c471b3413f178445bcf512a9c45cdd37a37def6**.
+The normal comparison command above passed on the clean committed tree:
+eight Release consumers and XML-only prerequisite probes on actual runtime
+10.0.11; exact public/internal API matches of 305/305/305/305/433/576/449/308
+members; all 32 independent metadata mutations rejected; 410 inventory entries
+classified; owned changes only. SDK was exactly 10.0.400; local-source restores
+used no package downloads; compiler/build-server reuse was disabled.
+
+At that same revision `python3 tools/planning/tasks.py validate` passed 169 task
+records and `git diff --check` passed. Task/evidence metadata is a separate commit.
+The required coordinator follow-up is the ordered Schema=5 resolver ownership
+repair described in contracts.md and the task handoff; it was not silently edited.
+No allocation, throughput, runtime-schema corpus or cumulative suite was run.
+
+Coordinator source review of this revision found seven bounded declaration/semantics gaps; these passing checks do not establish the final freeze. Corrections require new baselines and a new recorded test revision.

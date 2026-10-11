@@ -48,13 +48,59 @@
       "evidence": []
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "docs/specs/schemas.md: exact public facade/profile freeze and additive resolver boundary",
+    "docs/decisions/M8/contracts.md: full semantics, limits/lifetimes/diagnostics, lane ownership and joins",
+    "docs/decisions/M8/inventory.json: 410 classified required/excluded entries",
+    "tests/Contracts/Fixtures/M8/Model.cs.fixture: shared public/internal schema/datatype/regex/facet/result contracts",
+    "tests/Contracts/Fixtures/M8/RelaxNg.cs.fixture; Xsd.cs.fixture; Schematron.cs.fixture; Reporting.cs.fixture: immutable compiler/component/evaluation/report interfaces",
+    "tests/Contracts/Fixtures/M8/*/*.csproj; *.golden.txt; check.py: eight independent nonpackaged consumers, XML-only prerequisite source, exact public/internal metadata comparisons",
+    "docs/reports/M8-contracts/README.md; ApiCheck/: durable checks and owned extractor"
+  ],
+  "evidence": [
+    {
+      "id": "contract-check",
+      "kind": "check",
+      "revision": "4c471b3413f178445bcf512a9c45cdd37a37def6",
+      "command": "python3 tests/Contracts/Fixtures/M8/check.py --dotnet '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet'",
+      "result": "passed",
+      "summary": "SDK10.0.400 Release builds with compiler/build servers disabled and explicit runtime10.0.11. Eight independent nonpackaged consumers/XML-only prerequisite probes passed; exact public+internal inventories matched Model305/Regex305/Datatypes305/Facets305/RelaxNg433/Xsd576/Schematron449/Reporting308 members;32 missing-member/nullable/init-only/internal-work-width mutations rejected;410 scope entries classified;owned-only changes. M2 values0-4/request/disposal,M4 XPath,M5 DTD/result invariants preserved. Schema=5 is proposed via fixture constant, not claimed runtime member. No runtime schema conformance/performance claim.",
+      "artifact": "docs/reports/M8-contracts/README.md"
+    },
+    {
+      "id": "planning",
+      "kind": "check",
+      "revision": "4c471b3413f178445bcf512a9c45cdd37a37def6",
+      "command": "python3 tools/planning/tasks.py validate",
+      "result": "passed",
+      "summary": "Validated169 tasks: schema/evidence/acyclic dependencies/additive milestones/ordered ownership; clean implementation tree before evidence metadata.",
+      "artifact": null
+    },
+    {
+      "id": "whitespace",
+      "kind": "check",
+      "revision": "4c471b3413f178445bcf512a9c45cdd37a37def6",
+      "command": "git diff --check",
+      "result": "passed",
+      "summary": "No whitespace errors; implementation tree clean at tested revision.",
+      "artifact": null
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "",
-    "checks": [],
-    "remaining": [],
-    "requests": []
+    "summary": "Initial contract checks passed at4c471b3413f178445bcf512a9c45cdd37a37def6; coordinator source review requires seven bounded shape/semantics corrections before freeze. Corrections in progress.",
+    "checks": [
+      "Pinned Release contract check at 4c471b3413f178445bcf512a9c45cdd37a37def6: eight probes,305/305/305/305/433/576/449/308 exact API rows,32 rejecting controls,410 classified features;passed.",
+      "Planning169 tasks and git diff --check passed at implementation revision.",
+      "Exploratory first authoring run failed only at missing not-yet-authored inventory.json; corrected full runs passed. No benchmark/allocation/cumulative schema suite run; no runtime hot-path change."
+    ],
+    "remaining": [
+      "Address coordinator review: phase lets; detached event keys/optional pattern IDs; substitution/complex-type block; attribute binding context; notation table; subject; concrete actual-work XPath accounting adapter.",
+      "Coordinator review/integration and integrated checks before verified.",
+      "Before M8-model implementation, establish ordered ownership for the Schema=5 additive resolver repair; fixtures intentionally compile against current values0-4."
+    ],
+    "requests": [
+      "Required ordered repair/explicit model ownership: src/Xemele/Resolution/Core/Resources.cs add XmlResourceKind.Schema=5, preserve values0-4 and every existing member. Suggested additive fragment docs/api/M8-schema-resource-kind.txt and tests/Xemele.Tests/M8-schema-resource-kind/ for schema-kind authorization plus existing M2/M6 kinds and disposal; repair owns its task/report. Do not route schemas as ExternalEntity/XInclude or rewrite earlier API fragments."
+    ]
   }
 }
