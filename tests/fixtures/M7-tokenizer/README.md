@@ -28,3 +28,9 @@ sniffing/decoding and encoding-vector composition belong to the byte/stream HTML
 parser owner. Browser script execution is outside the declared M7 scope; the
 single scripted record remains separately classified. No XML decoder substitutes
 for HTML byte decoding.
+
+The current-spec error discrepancy ledger `normative-discrepancies.json` records
+only domjs.test indices 0–2: exact upstream inputs and original error arrays are
+retained. Mandatory PI-open rejects normalized LF at column 3 with
+invalid-first-character-of-processing-instruction-target. Their original comment
+token outputs pass unchanged; the other 7,046 state-vector error arrays match.

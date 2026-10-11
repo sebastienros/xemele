@@ -14,7 +14,7 @@ def capture():
     for path in (root/'src/Xemele').rglob('*.cs'):
         if 'bin' not in path.parts and 'obj' not in path.parts:sources.append(path)
     sources.extend(root/path for path in ['global.json','.editorconfig','Directory.Build.props','Directory.Packages.props','src/Xemele/Xemele.csproj','benchmarks/Xemele.Benchmarks/M7-tokenizer/Tokenizer.Probe.csproj','benchmarks/Xemele.Benchmarks/M7-tokenizer/Probe.cs.fixture','docs/reports/M7-tokenizer/freeze.py','docs/reports/M7-tokenizer/run_measurements.py','docs/reports/M7-tokenizer/measurement-plan.json','docs/reports/M7-tokenizer/prepare_identity.py','docs/reports/M7-tokenizer/check_api.py','benchmarks/Xemele.Benchmarks/M7-tokenizer/TokenizerBenchmarks.cs'])
-    sources.extend(root/path for path in ['docs/tasks/M7-tokenizer.json','docs/specs/html.md','docs/specs/common.md','docs/performance-coding.md','tests/Contracts/Fixtures/M7/Model.cs.fixture','tests/Contracts/Fixtures/M7/Engine.cs.fixture','tests/Contracts/Fixtures/M7/Tokenizer.cs.fixture'])
+    sources.extend(root/path for path in ['docs/tasks/M7-tokenizer.json','docs/specs/html.md','docs/decisions/M7/html-processing-instructions.md','docs/specs/common.md','docs/performance-coding.md','tests/Contracts/Fixtures/M7/Model.cs.fixture','tests/Contracts/Fixtures/M7/Engine.cs.fixture','tests/Contracts/Fixtures/M7/Tokenizer.cs.fixture'])
     sources.extend(p for p in [root/'NuGet.config',root/'NuGet.Config'] if p.is_file())
     for project in ['src/Xemele','benchmarks/Xemele.Benchmarks/M7-tokenizer']:
         generated=root/project/'obj/Release/net10.0'

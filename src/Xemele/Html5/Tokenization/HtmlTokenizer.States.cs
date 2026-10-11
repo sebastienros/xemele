@@ -30,9 +30,35 @@ internal sealed partial class HtmlTokenizer
                     if (c == '!') { Clear(temporary); state = State.Declaration; return; }
                     if (c == '/') { state = State.EndTagOpen; return; }
                     if (Alpha(c)) { BeginTag(false); state = State.TagName; continue; }
-                    if (c == '?') { Error("unexpected-question-mark-instead-of-tag-name"); Clear(data); state = State.BogusComment; continue; }
+                    if (c == '?') { Clear(name); Clear(data); state = State.PiOpen; return; }
                     Error(c < 0 ? "eof-before-tag-name" : "invalid-first-character-of-tag-name");
                     Character('<', opening); state = State.Data; continue;
+                case State.PiOpen:
+                    if (Alpha(c) || c == '_') { state = State.PiTarget; continue; }
+                    if (c < 0) { Error("eof-in-processing-instruction"); return; }
+                    Error("invalid-first-character-of-processing-instruction-target"); PiComment(); continue;
+                case State.PiTarget:
+                    if (Alnum(c) || c is '-' or '_') { Append(name, c, false); return; }
+                    if (c < 0) { Error("eof-in-processing-instruction"); return; }
+                    if (Space(c) || c is '?' or '>')
+                    {
+                        if (BuilderEquals(name, "xml", true) || BuilderEquals(name, "xml-stylesheet", true))
+                        { Error("disallowed-processing-instruction-target"); PiComment(); continue; }
+                        state = State.PiAfterTarget; continue;
+                    }
+                    Error("invalid-processing-instruction-target"); PiComment(); continue;
+                case State.PiAfterTarget:
+                    if (Space(c)) return;
+                    state = State.PiData; continue;
+                case State.PiData:
+                    if (c == '?') { state = State.PiQuestionable; return; }
+                    if (c == '>') { EmitPi(); return; }
+                    if (c < 0) { Error("eof-in-processing-instruction"); return; }
+                    Append(data, c, true); return;
+                case State.PiQuestionable:
+                    if (c == '>') { EmitPi(); return; }
+                    if (c < 0) { Error("eof-in-processing-instruction"); return; }
+                    Append(data, '?', true); state = State.PiData; continue;
                 case State.EndTagOpen:
                     if (Alpha(c)) { BeginTag(true); state = State.TagName; continue; }
                     if (c == '>') { Error("missing-end-tag-name"); state = State.Data; return; }

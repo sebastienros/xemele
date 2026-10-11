@@ -101,7 +101,8 @@ public sealed class TokenizerCorpusTests
     [Fact]
     public void AllDeclaredParseErrorCodesRemainSeparateFromTokens()
     {
-        int vectors = 0;
+        int vectors = 0, discrepancies = 0;
+        using var ledger = JsonDocument.Parse(File.ReadAllText(Path.Combine(FixtureRoot(), "normative-discrepancies.json")));
         var failures = new List<string>();
         foreach (string file in Directory.GetFiles(Path.Combine(FixtureRoot(), "tokenizer"), "*.test").Order(StringComparer.Ordinal))
         {
@@ -122,13 +123,22 @@ public sealed class TokenizerCorpusTests
                     tokenizer.ParseError = (code, _) => actual.Add(code);
                     tokenizer.Feed(input); tokenizer.Complete();
                     string[] expected = test.TryGetProperty("errors", out var errors) ? errors.EnumerateArray().Select(v => v.GetProperty("code").GetString()!).ToArray() : [];
-                    if (!expected.SequenceEqual(actual))
+                    if (Path.GetFileName(file) == "domjs.test" && index < 3 && state == "Data state")
+                    {
+                        var entry = ledger.RootElement.GetProperty("cases")[index];
+                        Assert.Equal(input, entry.GetProperty("input").GetString());
+                        Assert.Equal(expected, entry.GetProperty("originalErrors").EnumerateArray().Select(v => v.GetProperty("code").GetString()!).ToArray());
+                        Assert.Equal(entry.GetProperty("currentErrors").EnumerateArray().Select(v => v.GetProperty("code").GetString()!).ToArray(), actual);
+                        discrepancies++;
+                    }
+                    else if (!expected.SequenceEqual(actual))
                         failures.Add($"{Path.GetFileName(file)}:{index} {state} expected={string.Join(',', expected)} actual={string.Join(',', actual)}");
                 }
                 index++;
             }
         }
         Assert.Equal(7049, vectors);
+        Assert.Equal(3, discrepancies);
         Assert.True(failures.Count == 0, string.Join("\n", failures.Take(80)) + "\nFailure count=" + failures.Count + "\n" + string.Join("\n", failures.GroupBy(f => f.Split(':')[0]).Select(g => g.Key + ": " + g.Count())));
     }
 
@@ -194,6 +204,7 @@ public sealed class TokenizerCorpusTests
                 HtmlTokenKind.StartTag => new object?[] { "StartTag", token.Name, token.Attributes.OrderBy(a => a.LocalName, StringComparer.Ordinal).Select(a => new[] { a.LocalName, a.Value }).ToArray(), token.SelfClosing },
                 HtmlTokenKind.EndTag => new object?[] { "EndTag", token.Name },
                 HtmlTokenKind.Comment => new object?[] { "Comment", token.Data },
+                HtmlTokenKind.ProcessingInstruction => new object?[] { "ProcessingInstruction", token.Name, token.Data },
                 _ => throw new InvalidOperationException("Unexpected actual token"),
             });
         }

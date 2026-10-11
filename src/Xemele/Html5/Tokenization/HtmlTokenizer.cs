@@ -9,7 +9,7 @@ internal sealed partial class HtmlTokenizer
     private enum State
     {
         Data, RcData, RawText, ScriptData, PlainText,
-        TagOpen, EndTagOpen, TagName, TextLess, TextEndOpen, TextEndName,
+        TagOpen, PiOpen, PiTarget, PiAfterTarget, PiData, PiQuestionable, EndTagOpen, TagName, TextLess, TextEndOpen, TextEndName,
         ScriptLess, EscapeStart, EscapeStartDash, Escaped, EscapedDash, EscapedDashDash,
         EscapedLess, EscapedEndOpen, EscapedEndName, DoubleStart, DoubleEscaped,
         DoubleDash, DoubleDashDash, DoubleLess, DoubleEnd,
@@ -132,7 +132,7 @@ internal sealed partial class HtmlTokenizer
         string? inputError = c is >= 0xD800 and <= 0xDFFF ? "surrogate-in-input-stream"
             : c is >= 0xFDD0 and <= 0xFDEF || (c & 0xFFFF) is 0xFFFE or 0xFFFF ? "noncharacter-in-input-stream"
             : c is >= 1 and <= 8 or 11 or >= 14 and <= 31 or >= 0x7F and <= 0x9F ? "control-character-in-input-stream" : null;
-        bool lookahead = state == State.Declaration && temporary.Length > 0;
+        bool lookahead = state == State.PiOpen || state == State.Declaration && temporary.Length > 0;
         if (!lookahead && inputError is not null) Error(inputError);
         Step(c);
         if (lookahead && inputError is not null) Error(inputError);
@@ -248,6 +248,18 @@ internal sealed partial class HtmlTokenizer
     {
         string owned = data.ToString(); Clear(data); state = State.Data;
         FlushCharacters(); callback(new(HtmlTokenKind.Comment, "", owned, [], false, null, opening));
+    }
+    private void EmitPi()
+    {
+        string target = name.ToString(), owned = data.ToString();
+        Clear(name); Clear(data); state = State.Data;
+        FlushCharacters(); callback(new(HtmlTokenKind.ProcessingInstruction, target, owned, [], false, null, opening));
+    }
+    private void PiComment()
+    {
+        Clear(data); Append(data, '?', false);
+        for (int i = 0; i < name.Length; i++) Append(data, name[i], false);
+        Clear(name); state = State.BogusComment;
     }
     private void BeginDoctype()
     {

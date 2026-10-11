@@ -6,6 +6,28 @@ namespace Xemele.Tests.HtmlTokenization;
 public sealed class TokenizerBehaviorTests
 {
     [Fact]
+    public void ProcessingInstructionsOwnCaseDataLocationsAndScalarQuotas()
+    {
+        var tokens = Html5Tokenizer.Tokenize("😀\r\n<?FoO_1- \r\n&amp;\0😀??><b>");
+        var pi = tokens[1];
+        Assert.Equal(HtmlTokenKind.ProcessingInstruction, pi.Kind);
+        Assert.Equal("FoO_1-", pi.Name);
+        Assert.Equal("&amp;\0😀?", pi.Data);
+        Assert.Equal(new XmlLocation(null, 2, 1, null), pi.Location);
+        Assert.Empty(pi.Attributes); Assert.Null(pi.Doctype); Assert.False(pi.SelfClosing);
+        Assert.Equal(HtmlTokenKind.StartTag, tokens[2].Kind); // The PI snapshot survived subsequent delivery.
+        Assert.Equal("😀", Html5Tokenizer.Tokenize("<?x 😀?>", new() { Limits = new() { TokenCharacters = 1 } })[0].Data);
+        Assert.Throws<InvalidOperationException>(() => Html5Tokenizer.Tokenize("<?xx>", new() { Limits = new() { TokenCharacters = 1 } }));
+        Assert.Throws<InvalidOperationException>(() => Html5Tokenizer.Tokenize("<?x 😀x>", new() { Limits = new() { TokenCharacters = 1 } }));
+        var errors = new List<(string, XmlLocation)>();
+        var tokenizer = new HtmlTokenizer(_ => { }, new()) { ParseError = (code, location) => errors.Add((code, location)) };
+        tokenizer.Feed("<?\r\n"); tokenizer.Complete();
+        Assert.Equal(("invalid-first-character-of-processing-instruction-target", new XmlLocation(null, 1, 3, null)), Assert.Single(errors));
+        var failure = new XmlParseException([new("test", XmlDiagnosticSeverity.Error, "PI callback", default)]);
+        Assert.Same(failure, Assert.Throws<XmlParseException>(() => Html5Tokenizer.Tokenize("<?x><b>", _ => throw failure, cancellationToken: TestContext.Current.CancellationToken)));
+    }
+
+    [Fact]
     public void OwnedTokensDuplicatesDoctypesAndEof()
     {
         var retained = new List<HtmlToken>();
