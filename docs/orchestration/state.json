@@ -14,7 +14,7 @@
       "worktree": "/private/tmp/xemele-m5-gate",
       "branch": "codex/m5-gate",
       "base_revision": "d68d924f0a089ecf2c3effa64faf65856886b046",
-      "stage": "Reclaimed original gate checkout; final preparation before exclusive suite lease"
+      "stage": "Prepared exact fullsuite exclusive lease granted; no inspection until release"
     }
   ],
   "integration_queue": [],
@@ -1996,30 +1996,19 @@
     "stage": "verified"
   },
   "measurement_lease": {
-    "id": "m5-dtd-instance-provenance-c800f18",
-    "status": "released",
-    "revision": "c800f18472c1796847f99b7939cfbe26ab603672",
-    "runtime_revision": "d96ed87af7b73af3e82744310c71c100732d1635",
-    "executor_agent_id": "/root/validation_metadata",
-    "duration_limit_seconds": 1050,
-    "preparation_sha256": "cacbb23e3a4d0066fd0e3714b84ef17515e4da7db9b4c0543c1841517d564f7e",
-    "scope": "Exactly one prepared allocation phase60s then successful16case NoEmit ShortRun900s; initial/final full170source43binary3852SDK-runtime-host/effectiveenv identities35s each; explicitfx10.0.11; scoped ownPG cleanup finally/nochildren. No builds/restores/generation/sourcewrites/tests/retries. Immediate lifecycle release before inspection.",
+    "id": "m5-gate-8a0c9d8",
+    "status": "granted",
+    "revision": "8a0c9d893eb000e2995d454b792d3d0130cc17ba",
+    "executor_agent_id": "/root/validation_model",
+    "duration_limit_seconds": 1000,
+    "preparation_sha256": "633dee53146304a14d69ca7e4d19a6c3ae6f58dd884504dbc683499908245de7",
+    "scope": "Exactly once owned run_tests.py --exclusive-grant: initial40s, three full suites <=300s each, final40s, total1000s; explicit parentfx10.0.11, inherited child configs pinned10.0.11/provenance equality; ownPG cleanup finally/nochildren. No builds/restores/sourcewrites/retries/rawinspection during lease. Immediate lifecycle release before inspection.",
     "park_acknowledgements": [
-      "Executor clean c800f18 explicit PARK; runtime/source unchanged approved d96ed87; controls/discovery passed no measurements.",
-      "Corpus clean PARK7d2f0a1 no workloads/children/writes after Python-only adapter controls.",
-      "Independent reviewer terminal source-approved c800f18, no executables.",
-      "Gate assessor terminal read-only; completed nesting/attribute workers terminal clean checkouts removed.",
-      "Root independent escalated full freeze SHA matched170/43/3852; fresh scoped dotnet workload inventory empty; root PARK."
-    ],
-    "release": {
-      "wrapper_exit": 0,
-      "initial_identity_exit": 0,
-      "allocation_exit": 0,
-      "benchmark_exit": 0,
-      "final_identity_exit": 0,
-      "no_child": true,
-      "inspection": "Not yet inspected; successful exact once lifecycle received before inspection. Full170/43/3852 identity/SHA unchanged."
-    }
+      "Executor clean8a0c9d8 freshPARK no workloads/children/writes; actual configs and8666/335/3852 closure verified.",
+      "Corpus terminal freshPARK checkout removed/no workloads/children.",
+      "Independent reviewer terminal freshPARK; gate source approval514e167 preserved, minimal owned build repair source-approved5600459 no executables.",
+      "All other implementation workers terminal/checkouts removed; root independent escalated fullclosure matchingSHA633dee and three configs10.0.11, scopedhostinventoryempty; rootPARK."
+    ]
   },
   "offline_corpus_setup": {
     "checkout": "/private/tmp/xemele-m3-integration",
@@ -2242,6 +2231,32 @@
         "final_identity_exit": 0,
         "no_child": true,
         "inspection": "Notyetinspected;successfulonce lifecycle beforeinspection."
+      }
+    },
+    {
+      "id": "m5-dtd-instance-provenance-c800f18",
+      "status": "released",
+      "revision": "c800f18472c1796847f99b7939cfbe26ab603672",
+      "runtime_revision": "d96ed87af7b73af3e82744310c71c100732d1635",
+      "executor_agent_id": "/root/validation_metadata",
+      "duration_limit_seconds": 1050,
+      "preparation_sha256": "cacbb23e3a4d0066fd0e3714b84ef17515e4da7db9b4c0543c1841517d564f7e",
+      "scope": "Exactly one prepared allocation phase60s then successful16case NoEmit ShortRun900s; initial/final full170source43binary3852SDK-runtime-host/effectiveenv identities35s each; explicitfx10.0.11; scoped ownPG cleanup finally/nochildren. No builds/restores/generation/sourcewrites/tests/retries. Immediate lifecycle release before inspection.",
+      "park_acknowledgements": [
+        "Executor clean c800f18 explicit PARK; runtime/source unchanged approved d96ed87; controls/discovery passed no measurements.",
+        "Corpus clean PARK7d2f0a1 no workloads/children/writes after Python-only adapter controls.",
+        "Independent reviewer terminal source-approved c800f18, no executables.",
+        "Gate assessor terminal read-only; completed nesting/attribute workers terminal clean checkouts removed.",
+        "Root independent escalated full freeze SHA matched170/43/3852; fresh scoped dotnet workload inventory empty; root PARK."
+      ],
+      "release": {
+        "wrapper_exit": 0,
+        "initial_identity_exit": 0,
+        "allocation_exit": 0,
+        "benchmark_exit": 0,
+        "final_identity_exit": 0,
+        "no_child": true,
+        "inspection": "Not yet inspected; successful exact once lifecycle received before inspection. Full170/43/3852 identity/SHA unchanged."
       }
     }
   ]
