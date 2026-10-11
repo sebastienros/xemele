@@ -10,10 +10,22 @@ public sealed class DtdSchema
 
     public static DtdSchema Compile(string dtd, XmlResourceResolver? resolver = null,
         XmlResourceLimits? limits = null, CancellationToken cancellationToken = default)
+        => CompileCore(dtd, resolver, limits, null, cancellationToken);
+
+    public static DtdSchema Compile(string dtd, XmlResourceResolver? resolver,
+        XmlResourceLimits? limits, Uri sourceUri, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(sourceUri);
+        if (!sourceUri.IsAbsoluteUri) throw new ArgumentException("Source URI must be absolute.", nameof(sourceUri));
+        return CompileCore(dtd, resolver, limits, sourceUri, cancellationToken);
+    }
+
+    private static DtdSchema CompileCore(string dtd, XmlResourceResolver? resolver,
+        XmlResourceLimits? limits, Uri? sourceUri, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(dtd);
         var operation = new ValidationOperation(new() { Limits = limits ?? new(), CancellationToken = cancellationToken });
-        var source = DtdSubsetReader.Parse(dtd, resolver, operation);
+        var source = DtdSubsetReader.Parse(dtd, resolver, operation, sourceUri);
         return Create(source, null, operation);
     }
 
