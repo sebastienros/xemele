@@ -104,7 +104,7 @@ public sealed class ResourceKindTests
 
     [Theory]
     [InlineData(-1)]
-    [InlineData(5)]
+    [InlineData(6)]
     [InlineData(99)]
     [InlineData(int.MaxValue)]
     public async Task UndefinedKindsFailBeforeResolver(int value)
