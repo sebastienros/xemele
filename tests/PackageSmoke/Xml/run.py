@@ -10,19 +10,31 @@ work=Path(tempfile.mkdtemp(prefix='xemele-m6-package-',dir='/private/tmp'))
 feed=work/'feed';feed.mkdir();consumer=work/'consumer';consumer.mkdir();packages=work/'packages'
 assert not packages.exists()
 commands=[]
-def run(label,args,cwd=root,timeout=120):
+def run(label,args,cwd=root,timeout=120,separate=False):
     commands.append({'label':label,'args':[str(a) for a in args],'cwd':str(cwd)})
-    with (art/(label+'.log')).open('wb') as log:
-        p=subprocess.Popen([str(a) for a in args],cwd=cwd,stdout=log,stderr=subprocess.STDOUT,start_new_session=True)
-        try: code=p.wait(timeout=timeout)
-        except subprocess.TimeoutExpired:
-            os.killpg(p.pid,signal.SIGTERM)
-            try:p.wait(timeout=10)
-            except subprocess.TimeoutExpired:os.killpg(p.pid,signal.SIGKILL);p.wait()
-            raise
+    stdout_path=art/(label+('.stdout' if separate else '.log'))
+    with stdout_path.open('wb') as log, (art/(label+'.stderr')).open('wb') as error:
+        p=subprocess.Popen([str(a) for a in args],cwd=cwd,stdout=log,stderr=error if separate else subprocess.STDOUT,start_new_session=True)
+        try:
+            code=p.wait(timeout=timeout)
+        finally:
+            # This process owns exactly this new session/process group. Cleanup
+            # runs on timeout, interruption, any exception and ordinary exit.
+            try: os.killpg(p.pid,signal.SIGTERM)
+            except ProcessLookupError: pass
+            try: p.wait(timeout=10)
+            except subprocess.TimeoutExpired:
+                try: os.killpg(p.pid,signal.SIGKILL)
+                except ProcessLookupError: pass
+                p.wait(timeout=10)
+            try: os.killpg(p.pid,signal.SIGKILL)
+            except ProcessLookupError: pass
     assert code==0,(label,code)
-    return (art/(label+'.log')).read_bytes()
+    return stdout_path.read_bytes()
+
 try:
+    shutil.copy(root/'global.json',work/'global.json')
+    assert run('external-sdk',[host,'--version'],consumer).strip()==b'10.0.400'
     # Cached .nupkg files are explicit local-feed platform/compiler inputs.
     for nupkg in cache.rglob('*.nupkg'):
         target=feed/nupkg.name
@@ -43,14 +55,13 @@ try:
     run('package-build',[host,'build','Consumer.csproj',*build],consumer)
     expected=(root/'tests/corpora/xinclude/expected.txt').read_bytes()+b'\n'
     def execute(label,args):
-        p=subprocess.run([str(a) for a in args],cwd=consumer,capture_output=True,timeout=60)
-        (art/(label+'.stdout')).write_bytes(p.stdout);(art/(label+'.stderr')).write_bytes(p.stderr)
-        assert p.returncode==0 and p.stdout==expected,(label,p.returncode,p.stdout,p.stderr)
+        actual=run(label,args,consumer,60,True)
+        assert actual==expected,(label,actual)
     execute('package-managed',[host,'--fx-version','10.0.11',consumer/'bin/Release/net10.0/Consumer.dll',root/'tests/corpora'])
     for lane,prop in [('trim','PublishTrimmed'),('aot','PublishAot')]:
         run(lane+'-restore',[host,'restore','Consumer.csproj','-r','osx-arm64',f'-p:{prop}=true',*common],consumer)
         output=work/lane
-        run(lane+'-publish',[host,'publish','Consumer.csproj',*build,'-r','osx-arm64','--self-contained','true',f'-p:{prop}=true','-o',output],consumer,180)
+        run(lane+'-publish',[host,'publish','Consumer.csproj','-c','Release','--no-restore','--disable-build-servers','-m:1','-t:Rebuild,Publish','-r','osx-arm64','--self-contained','true',f'-p:{prop}=true','-o',output],consumer,180)
         execute(lane,[output/'Consumer',root/'tests/corpora'])
         if lane=='aot':
             info=subprocess.run(['file',str(output/'Consumer')],capture_output=True,text=True,check=True).stdout
