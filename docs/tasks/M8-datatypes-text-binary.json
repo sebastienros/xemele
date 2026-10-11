@@ -4,7 +4,7 @@
   "milestone": "M8",
   "title": "XSD text, names and binary value families",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M8 coordinator01a12c6c-b333-71d3-877f-0d186618e21d / assigned isolated worker",
   "branch": "codex/m8-datatypes-text-binary",
   "base_revision": "1a5c8c2e762cba594a58598215a8e9331a27fe63",
@@ -32,29 +32,92 @@
     {
       "id": "M8-datatypes-text-binary-A1",
       "description": "Implement XSD1.0 string/normalizedString/token/language/name/ID/IDREF/ENTITY atomic families, boolean, anyURI, QName/NOTATION, hexBinary/base64Binary and anySimpleType behavior through verified core contracts. Preserve namespace-qualified value identity, exact binary octets and scalar lengths; schema notation/retained-DTD existence validation remains with XSD validation owner. Built-in NMTOKENS/IDREFS/ENTITIES list parsing and nonempty enforcement are owned by the composing M8-datatypes task; this family supplies the bounded NMTOKEN/IDREF/ENTITY atomic parsers.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "branch-correctness",
+        "independent-source-review"
+      ]
     },
     {
       "id": "M8-datatypes-text-binary-A2",
       "description": "Test XML whitespace/name grammar, multilingual/supplementary scalars, namespace/default-prefix contexts, boolean/URI semantics, strict hex/base64 syntax including padding, equality/hash/order and invalid inputs. Charge scans/comparisons/growth and test exact budgets/cancellation.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "branch-correctness",
+        "independent-source-review"
+      ]
     },
     {
       "id": "M8-datatypes-text-binary-A3",
       "description": "Compile against verified model/core only; record applicable owned-output and borrowed primitive allocation/performance evidence, focused earlier checks and exact internal interfaces. Leave final complete library dispatch/composition to M8-datatypes.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "branch-correctness",
+        "prepared-performance",
+        "granted-performance"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Validation/Datatypes/Values/TextBinary/Provider.cs: TextBinaryDatatypeProvider, private immutable TextValue/BooleanValue/BinaryValue/QNameValue payloads; canonical17 family names; bounded parse/equality/hash/length joins.",
+    "src/Xemele/Validation/Datatypes/Values/TextBinary/Names.cs: pinned XML1.0 SecondEdition static name tables and charged binary probes, independent exhaustive BMP fixture oracle.",
+    "src/Xemele/Validation/Datatypes/Values/TextBinary/Uri.cs: charged RFC2396/RFC2732/XLink escape-projection grammar; explicit first opaque atom; no opaque runtime conversion.",
+    "tests/Xemele.Tests/M8-datatypes-text-binary/FamilyTests.cs:148 family cases with lexical/scalar/context/value identity, strict binary padding/unusedbits, independently expected quotas/growth and cancellation/refusal.",
+    "docs/reports/M8-datatypes-text-binary/contracts.md: exact internal joins and accounting; Consumer.cs.fixture/XmlOnly/XmlOnly.csproj: genuine regular/XML-only consumers.",
+    "benchmarks/Xemele.Benchmarks/M8-datatypes-text-binary/: prebuilt18-route allocation probe and10ShortRunNoEmit scalar baseline/provider cases; docs/reports/M8-datatypes-text-binary/allocations.md and measurement-summary.json: actual accepted evidence/limits."
+  ],
+  "evidence": [
+    {
+      "id": "branch-correctness",
+      "kind": "check",
+      "revision": "f7a0a83e8de4e5739d95e089eeacce32ba6e7449",
+      "command": "python3 docs/reports/M8-datatypes-text-binary/checks.py; committed-source focused xUnit invocation recorded in correctness.md",
+      "result": "passed",
+      "summary": "148 family+18 core+12 model=178 passed, zero errors/failures/skips/not-run; Release SDK10.0.400/runtime10.0.11 builds0warnings/errors; normal/XML-only consumers17family names passed; matched1393compiled API members; validation176tasks/diff passed. Initial168/171 run had3malformed InlineData serialization failures corrected by runtime UTF16 construction; independent URI review correction added9cases.",
+      "artifact": "docs/reports/M8-datatypes-text-binary/correctness.md"
+    },
+    {
+      "id": "independent-source-review",
+      "kind": "review",
+      "revision": "f7a0a83e8de4e5739d95e089eeacce32ba6e7449",
+      "command": "Read-only independent reviewer /root/review_m8_contract and coordinator bounded final-source review",
+      "result": "passed",
+      "summary": "Original first-opaque-URI-bracket A1/A2 blocker fixed in bounded commit and proving9cases; reviewer accepted exactf7a0a83, no residual blocker. Final Uri.cs SHAa2161c5b9ac656a9f6c43fd67cc1585e59265cd3c817222dd3ffb7b7b65ff1f7; testsSHA311a23f9df98496704581b608287fb45e15b646d675d678c43173f617d2aa0c5. Review is not a test run.",
+      "artifact": "docs/reports/M8-datatypes-text-binary/contracts.md"
+    },
+    {
+      "id": "prepared-performance",
+      "kind": "check",
+      "revision": "119453ee636ed3fd2d2f8cf9e9b510d4b281fbac",
+      "command": "Release probe/BDN builds; --control/--discover; python3 docs/reports/M8-datatypes-text-binary/preflight.py; prepare.py; measure.py --verify-only",
+      "result": "passed",
+      "summary": "Counter-disabled18routecontrols,2scalarbaseline/provider fixtures and exactly10ShortRunMemoryDiagnoserNoEmit cases; process permission/child reaping/group absence passed;444identities frozen/verified, manifestc7b3aee7896c7efb68d225b6a488dbfc71296074fb9b81d55f5f098b9c3627bf. No measurement before durablegrant.",
+      "artifact": "docs/reports/M8-datatypes-text-binary/preparation.json"
+    },
+    {
+      "id": "granted-performance",
+      "kind": "check",
+      "revision": "119453ee636ed3fd2d2f8cf9e9b510d4b281fbac",
+      "command": "python3 /Users/sebastienros/.codex/worktrees/3563/xemele/docs/reports/M8-datatypes-text-binary/measure.py --granted c7b3aee7896c7efb68d225b6a488dbfc71296074fb9b81d55f5f098b9c3627bf 2026-10-11T23:17:00Z 2026-10-11T23:22:53.912416+00:00",
+      "result": "passed",
+      "summary": "Root-executed single durable600s grant from23:12:53.912416Z; sequence completed68.27719699998852s,2childrenexit0/reaped/groupsabsent/logsclosed,444identitiesunchanged; RELEASE82de8fe before rawinspection. Ten warm/static-invalid routes each64x0B; owned112/8288/88/88/152/104/56/setup512B; cold80472B,positive1048B;256retained inclusive221848->4490376(delta4268528). Ten BDNcases completed with nonzero exactGC residuals and10priority denials explicitly preserved/unattributed; timing provisional long equalityratio0.83/short1.66, no broad speedup claim.",
+      "artifact": "docs/reports/M8-datatypes-text-binary/measurement-summary.json"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Planned bounded child of M8-datatypes; original complete XSD1.0 acceptance and gate reachability preserved. Core contract review keeps boolean here; built-in list parsing/nonempty/lexical/list-ownership tests explicitly transferred to composition, with no lost capability or case.",
-    "checks": [],
-    "remaining": [],
+    "summary": "Implemented internal bounded text/names/boolean/URI/QName/NOTATION/hex/base64/anySimpleType family through verified core, private immutable owned payloads, strict pinned grammars and exact work/growth/cancellation. All3criteria passed on worker; awaiting coordinator integration verification; no public partial library/shared contract edits.",
+    "checks": [
+      "148family+18core+12model=178pass; genuine normal/XML-only17family consumers;1393compiled API unchanged; Release SDK10.0.400/runtime10.0.11 zero warnings/errors;176task validation/diff passed.",
+      "Independent exactf7 source review accepted after URI first-atom correction; review no test claim.",
+      "One prepared root-granted measurement completed/cleaned before durableRELEASE/rawinspection;444stableidentities;18probe routes/10BDN cases; all exact distributions and GC discrepancies in owned summaries."
+    ],
+    "remaining": [
+      "Coordinator integrate and rerun applicable combined checks, record integration evidence, mark verified; worker integration_revision remains null.",
+      "Composer owns built-in NMTOKENS/IDREFS/ENTITIES list parsing/nonempty and complete dispatch. XSD owns notation/ENTITY existence and ID/IDREF document checks.",
+      "Provisional singleArm64 microbenchmark: composition/end-to-end+x64/repeatability follow-up; BDN exactGC residuals unattributed,10priority denials; inclusive retained snapshot differs from allocation-product estimate, no attribution established.",
+      "Ignored raw outputs artifacts/M8-datatypes-text-binary/measurement preserved after root independent inspection; no logs/archives committed; coordinator may clean them when archiving worker."
+    ],
     "requests": []
   }
 }

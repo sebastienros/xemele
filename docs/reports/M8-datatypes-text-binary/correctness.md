@@ -29,5 +29,7 @@ Preparation (no measurements): Release probe/BDN builds0warnings/errors, probe18
 routes consumed with32 warm/64 control samples and counters disabled, both scalar
 baseline/provider controls consumed, ten ShortRunJob/MemoryDiagnoser cases resolved
 with InProcessNoEmit (no generated builds). Process preflight passed ps permission,
-counters-disabled probe, child reaping and absent owned group. Allocation/timing,
-retained memory and BDN measurements remain pending a fresh explicit root GRANT.
+counters-disabled probe, child reaping and absent owned group. Root later granted exactly one prepared measurement sequence; it completed and
+was durably released before raw inspection. Actual allocations/timing/retained
+limits and exact raw GC discrepancies are recorded in allocations.md and the
+machine summary. No unchanged correctness rerun was needed for metadata additions.
