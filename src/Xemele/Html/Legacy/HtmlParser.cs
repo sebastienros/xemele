@@ -51,10 +51,14 @@ internal ref struct LegacyParser
 
   input.NameMode(false);return names.Get(buffer.Written);
  }
+ private HtmlNode? RootElement()
+ {
+  var children=document.DocumentNode.Children;for(int i=0;i<children.Count;i++)if(children[i].Kind==HtmlNodeKind.Element)return children[i];return null;
+ }
  private void Push(string name)
  {
   if(limits.Depth is int max&&stack.Count>=max)Fail("depth-limit","Open-element quota exceeded.");
-  HtmlNode? node=null;if(name=="html"&&stack.Count==0)foreach(var child in document.DocumentNode.Children)if(child.Kind==HtmlNodeKind.Element){node=child;break;}
+  HtmlNode? node=name=="html"&&stack.Count==0?RootElement():null;
   if(node==null){node=document.CreateElement(name);Parent.AppendChild(node);}stack.Add(node);if(name=="head")insertState=Math.Max(insertState,1);if(name=="body")insertState=2;
  }
  private void Pop(){if(stack.Count!=0)stack.RemoveAt(stack.Count-1);textMode=0;}
@@ -69,7 +73,7 @@ internal ref struct LegacyParser
   string name=Name();while(stack.Count!=0&&LegacyRules.AutoClose(stack[^1].LocalName,name))Pop();Implied(name);
   bool discard=name=="html"&&stack.Count>0||name=="head"&&stack.Count!=1||name=="body"&&stack.Exists(static n=>n.LocalName=="body");
   if(discard)discardDepth++;
-  bool reusedRoot=!discard&&name=="html"&&stack.Count==0&&document.DocumentNode.Children.Any(static n=>n.Kind==HtmlNodeKind.Element);
+  bool reusedRoot=!discard&&name=="html"&&stack.Count==0&&RootElement()!=null;
   HtmlNode? element=null;if(!discard){Push(name);element=stack[^1];}int originalAttributes=element?.Attributes.Count??0;
   long attributeCharacters=0;int accepted=0;var seen=discard||element?.Attributes.Count>0?new HashSet<string>(StringComparer.Ordinal):null;
   while(true)
