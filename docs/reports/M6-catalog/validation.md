@@ -37,3 +37,26 @@ allocation/timing evidence from that candidate exists.
 
 No allocation, timing or inherited milestone suite was run during this preparation.
 Exact executed commands and actual outcomes are recorded in the task evidence.
+
+## Explicit-frame correction
+
+Revision `d5de67996156d18a61c8d65abbe8991886365a32` passed four fresh forced Release builds, **32**
+focused controls, the same public sample/972-member API union, and eight-case
+ShortRun NoEmit discovery on actual .NET 10.0.11. Earlier 26-case checks remain
+honest evidence for their earlier implementation. The new cases load and resolve
+four acyclic 4,000-resource next/system/public/URI delegate chains with raised
+finite catalog caps and all shared quotas explicitly null. Exact catalog depth
+succeeds; one-over rejects with CATALOG.Limit. Loading preserves document-order
+acquisitions and owns/disposes fully parsed resources before nested acquisition.
+Lookup has no recursive call or resource acquisition; it uses value frames and
+separately accounted cold/warmed pooled scratch for deep paths. Cancellation
+checks cover enqueue, stable sorting and lookup; sort cancellation requested on
+comparison100 propagates the exact token immediately. Equal-length delegates
+retain document-order precedence.
+
+Prior preparation revision `3afddf8aec7e4ce0260d0eefa60bda32eed77f3e` passed
+the identical wrapper launch initial/final identity checks with no measured
+phases. An unknown environment variable correctly made both checks fail;
+no children remained. Full environment values were not printed. Current
+corrected source needs its own final manifest/control before measurement.
+No allocation/timing or inherited milestone suite has run.
