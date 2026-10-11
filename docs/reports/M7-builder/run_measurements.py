@@ -39,7 +39,7 @@ def cleanup():
         if result.returncode not in (0, 1): raise RuntimeError('Scoped process-group inspection failed')
         if any(int(row.split()[1]) == group for row in result.stdout.splitlines()): status['no_child'] = False
 try:
-    status['initial_freeze'] = identity(plan['initial_identity_max_seconds'], 50)
+    status['initial_freeze'] = identity(plan['initial_identity_max_seconds'], 130)
     if status['initial_freeze'] != 0: raise subprocess.CalledProcessError(status['initial_freeze'], freeze)
     environment = dict(os.environ)
     environment.update(plan['environment'])
@@ -54,7 +54,7 @@ try:
             process = subprocess.Popen(run['command'], cwd=root, env=environment, stdout=output, stderr=subprocess.STDOUT, start_new_session=True)
             process_groups.append(process.pid)
             process_handles.append(process)
-            result['exit_code'] = process.wait(timeout=bounded(run['max_seconds'], 50))
+            result['exit_code'] = process.wait(timeout=bounded(run['max_seconds'], 130))
         if result['exit_code'] != 0:
             raise subprocess.CalledProcessError(result['exit_code'], run['command'])
         process = None

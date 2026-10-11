@@ -62,8 +62,10 @@ identity closure extends verified tokenizer capture to complete relevant source,
 all owned preparation/generated files, runtime/test/sample/checker/probe binaries,
 actual retained fixtures/corpus, SDK/runtime/host and complete effective child
 environment opaque SHA per key (SHLVL1 and CODEX_THREAD_ID retained).
-Plan: initial45s; allocation150s;72caseBDN1950s; final45s; total2200s; exact process
+Plan: initial45s; allocation150s;72caseBDN1950s; final45s; total2300s; exact process
 handles/groups bounded and reaped on success/failure/timeout; final identity and
-no-child closure mandatory. Identity-only controls skip every measurement run.
+no-child closure mandatory. A130s per-run reserve protects45s final identity plus
+up to30s initial cleanup and40s final cleanup with15s slack. Total2300s preserves
+these bounds even after full workload timeouts. Identity-only controls skip every measurement run.
 Root review/PARK/durable exclusive grant precede counters; root release precedes
 raw-result inspection. Timing claims remain provisional one Arm64 host.
