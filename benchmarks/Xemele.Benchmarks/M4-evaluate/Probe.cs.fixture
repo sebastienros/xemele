@@ -1,0 +1,119 @@
+using System.Runtime.InteropServices;
+using System.Security.Cryptography;
+using System.Text.Json;
+using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Configs;
+using BenchmarkDotNet.Jobs;
+using BenchmarkDotNet.Running;
+using BenchmarkDotNet.Toolchains.InProcess.NoEmit;
+using Xemele;
+using Xemele.XPath;
+
+if (args is [var benchmarkMode, var artifacts] && benchmarkMode is "--benchmark" or "--discover")
+{
+    var config = ManualConfig.Create(DefaultConfig.Instance).WithArtifactsPath(artifacts)
+        .AddJob(Job.Default.WithToolchain(InProcessNoEmitToolchain.Instance).AsMutator());
+    var suite = BenchmarkConverter.TypeToBenchmarks(typeof(EvaluationBenchmarks),config);
+    var cases = suite.BenchmarksCases;
+    if(cases.Length!=8 || cases.Any(c=>c.Job.Run.WarmupCount!=3 || c.Job.Run.IterationCount!=3 || c.Job.Run.LaunchCount!=1 || c.Job.Infrastructure.Toolchain!=InProcessNoEmitToolchain.Instance) || cases.Select(c=>c.Job.Id).Distinct().Count()!=1)
+        throw new InvalidOperationException("Exactly eight cases in one declared ShortRun NoEmit job required.");
+    Console.WriteLine("Evaluate discovery: 8 cases; one ShortRun job; InProcessNoEmit; warmup=3/iterations=3/launch=1; no generation/build.");
+    if(benchmarkMode=="--discover")return;
+    var summary=BenchmarkRunner.Run(suite);
+    if(summary.Reports.Length!=8 || summary.Reports.Any(r=>!r.Success || r.ResultStatistics is null))throw new InvalidOperationException("Eight successful reports required.");
+    return;
+}
+if(args is not [var mode,var output] || mode is not ("--control" or "--allocation"))throw new ArgumentException("Use --control|--allocation <output> or --discover|--benchmark <artifacts>.");
+bool measure=mode=="--allocation";
+long start=measure?GC.GetAllocatedBytesForCurrentThread():0;
+var fixture=new EvaluationFixture();
+long coldSetupBytes=measure?GC.GetAllocatedBytesForCurrentThread()-start:0;
+fixture.Controls();
+for(int i=0;i<16;i++){fixture.CompileSmall();fixture.CompileLong();fixture.Scalar();fixture.Path();fixture.Predicate();fixture.Comparison();fixture.Extension();fixture.Unicode();}
+var rows=new List<object>();
+foreach(var operation in new[]{"compile-small","compile-long","scalar","path","predicate","comparison","extension","unicode"})
+{
+    var distribution=new long[64];double consumed=0;
+    start=measure?GC.GetAllocatedBytesForCurrentThread():0;
+    for(int i=0;i<64;i++)
+    {
+        long before=measure?GC.GetAllocatedBytesForCurrentThread():0;
+        switch(operation)
+        {
+            case "compile-small":GC.KeepAlive(fixture.CompileSmall());consumed+=1;break;
+            case "compile-long":GC.KeepAlive(fixture.CompileLong());consumed+=1;break;
+            case "scalar":consumed+=fixture.Scalar().AsNumber();break;
+            case "path":consumed+=fixture.Path().AsNodeSet().Count;break;
+            case "predicate":consumed+=fixture.Predicate().AsNodeSet().Count;break;
+            case "comparison":consumed+=fixture.Comparison().AsBoolean()?1:0;break;
+            case "extension":consumed+=fixture.Extension().AsNumber();break;
+            case "unicode":consumed+=fixture.Unicode().AsNumber();break;
+        }
+        distribution[i]=measure?GC.GetAllocatedBytesForCurrentThread()-before:0;
+    }
+    long bytes=measure?GC.GetAllocatedBytesForCurrentThread()-start:0;
+    if(measure && bytes<=0)throw new InvalidOperationException("Owned operation must allocate.");
+    rows.Add(new{operation,operations=64,bytes,distribution,consumed});
+}
+start=measure?GC.GetAllocatedBytesForCurrentThread():0;
+object positive=new byte[1024];GC.KeepAlive(positive);
+long positiveBytes=measure?GC.GetAllocatedBytesForCurrentThread()-start:0;
+long retainedBefore=measure?GC.GetTotalMemory(true):0;
+var retainedExpressions=new XPathExpression[16];var retainedResults=new XPathValue[16];
+for(int i=0;i<16;i++){retainedExpressions[i]=fixture.CompileLong();retainedResults[i]=fixture.Path();}
+long retainedAfter=measure?GC.GetTotalMemory(true):0;
+GC.KeepAlive(retainedExpressions);GC.KeepAlive(retainedResults);GC.KeepAlive(fixture);
+fixture.Controls();
+if(measure && positiveBytes<=0)throw new InvalidOperationException("Positive allocation control failed.");
+File.WriteAllText(output,JsonSerializer.Serialize(new{mode,runtime=RuntimeInformation.FrameworkDescription,architecture=RuntimeInformation.ProcessArchitecture.ToString(),os=RuntimeInformation.OSDescription,
+    revision=Environment.GetEnvironmentVariable("XEMELE_EVALUATE_REVISION"),assemblySha256=Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(typeof(XPathExpression).Assembly.Location))),
+    warmOperationsPerCase=16,coldSetupBytes,positiveBytes,rows,retainedExpressions=16,retainedResults=16,retainedBefore,retainedAfter,retainedDelta=retainedAfter-retainedBefore},new JsonSerializerOptions{WriteIndented=true}));
+Console.WriteLine($"{mode} complete: eight owned cases; 64 operations each; counters {(measure?"enabled":"disabled")}");
+
+public sealed class EvaluationFixture
+{
+    private readonly XmlDocument document;
+    private readonly XmlDocument unicodeDocument;
+    private readonly XPathExpression scalar=XPathExpression.Compile("1 + 2 * 3"), path=XPathExpression.Compile("/r/a"),
+        predicate=XPathExpression.Compile("/r/a[position() mod 2 = 0]"), comparison=XPathExpression.Compile("/r/a != /r/a"), unicode=XPathExpression.Compile("string-length(/r)");
+    private readonly XPathExpression extension;
+    private readonly XPathContext extensionContext;
+    private readonly string longExpression=string.Join("+",Enumerable.Repeat("1",128));
+    public EvaluationFixture()
+    {
+        var text=new System.Text.StringBuilder("<r>");
+        for(int i=0;i<128;i++)text.Append("<a>").Append(i%2==0?'x':'y',64).Append("</a>");
+        text.Append("</r>");document=XmlDocument.Parse(text.ToString());
+        unicodeDocument=XmlDocument.Parse("<r>"+new string('根',1024)+"😀</r>");
+        var name=new XPathExpandedName("urn:e","f");
+        extension=XPathExpression.Compile("e:f() + 1",new(){Namespaces=new Dictionary<string,string>{{"e","urn:e"}},Functions=[new(name,0,0)]});
+        extensionContext=new(){Functions=new Dictionary<XPathExpandedName,XPathExtensionFunction>{{name,(c,_)=>{c.ChargeOperations(1);return XPathValue.FromNumber(6);}}}};
+    }
+    public XPathExpression CompileSmall()=>XPathExpression.Compile("/r/a[1]");
+    public XPathExpression CompileLong()=>XPathExpression.Compile(longExpression);
+    public XPathValue Scalar()=>scalar.Evaluate(document.RootElement);
+    public XPathValue Path()=>path.Evaluate(document.RootElement);
+    public XPathValue Predicate()=>predicate.Evaluate(document.RootElement);
+    public XPathValue Comparison()=>comparison.Evaluate(document.RootElement);
+    public XPathValue Extension()=>extension.Evaluate(document.RootElement,extensionContext);
+    public XPathValue Unicode()=>unicode.Evaluate(unicodeDocument.RootElement);
+    public void Controls()
+    {
+        if(Scalar().AsNumber()!=7 || Path().AsNodeSet().Count!=128 || Predicate().AsNodeSet().Count!=64 || !Comparison().AsBoolean() || Extension().AsNumber()!=7 || Unicode().AsNumber()!=1025 || CompileSmall().Evaluate(document.RootElement).AsNodeSet().Count!=1 || CompileLong().Evaluate(document.RootElement).AsNumber()!=128)
+            throw new InvalidOperationException("Facade workload semantic control failed.");
+    }
+}
+[MemoryDiagnoser, ShortRunJob]
+public class EvaluationBenchmarks
+{
+    private EvaluationFixture fixture=null!;
+    [GlobalSetup]public void Setup(){fixture=new();fixture.Controls();}
+    [Benchmark]public XPathExpression CompileSmall()=>fixture.CompileSmall();
+    [Benchmark]public XPathExpression CompileLong()=>fixture.CompileLong();
+    [Benchmark]public XPathValue Scalar()=>fixture.Scalar();
+    [Benchmark]public XPathValue Path()=>fixture.Path();
+    [Benchmark]public XPathValue Predicate()=>fixture.Predicate();
+    [Benchmark]public XPathValue Comparison()=>fixture.Comparison();
+    [Benchmark]public XPathValue Extension()=>fixture.Extension();
+    [Benchmark]public XPathValue Unicode()=>fixture.Unicode();
+}
