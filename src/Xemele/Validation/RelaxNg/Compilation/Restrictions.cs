@@ -108,10 +108,12 @@ internal static class RngRestrictions
             }
             return types[root];
         }
-        bool Infinite(RngNameClass name)
+        bool Infinite(RngNameClass name, int depth = 0)
         {
             Work(patterns[start].Location);
-            return name switch { RngAnyName or RngNsName => true, RngNameChoice c => Infinite(c.Left) || Infinite(c.Right), _ => false };
+            if (depth == 1024)
+            { op.Refuse("SCHEMA.Limit", "Name-class representation depth exceeded.", patterns[start].Location); throw SchemaSnapshots.Failure(op); }
+            return name switch { RngAnyName or RngNsName => true, RngNameChoice c => Infinite(c.Left, depth + 1) || Infinite(c.Right, depth + 1), _ => false };
         }
     }
 }

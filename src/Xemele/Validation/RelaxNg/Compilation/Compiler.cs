@@ -27,6 +27,7 @@ internal sealed class RelaxNgCompiler : IRelaxNgCompiler
         private readonly HashSet<Uri> active = new();
         private readonly Dictionary<XmlNode, XmlDocument> loaded = new();
         private int depth;
+        private int MaximumDepth => Math.Min(op.Limits.Depth ?? 1024, 1024);
         internal Build(SchemaCompileOptions options, ISchemaOperation op)
         { this.options = options; this.op = op; loader = new(options, op); }
 
@@ -138,7 +139,7 @@ internal sealed class RelaxNgCompiler : IRelaxNgCompiler
         // externalRef/include expansion precedes the later simplifications.
         private void Syntax(Env source, string category)
         {
-            if (++depth > (op.Limits.Depth ?? 1024))
+            if (++depth > MaximumDepth)
             { op.Refuse("SCHEMA.Limit", "Schema syntax depth exceeded.", source.Scope.Location(source.Node)); throw SchemaSnapshots.Failure(op); }
             try
             {
@@ -242,7 +243,7 @@ internal sealed class RelaxNgCompiler : IRelaxNgCompiler
         {
             // Parser recursion is bounded by the same document nesting policy, and
             // a finite representation guard still applies to unlimited policies.
-            if (++depth > (op.Limits.Depth ?? 1024))
+            if (++depth > MaximumDepth)
             { op.Refuse("SCHEMA.Limit", "Schema pattern depth exceeded.", source.Scope.Location(source.Node)); throw SchemaSnapshots.Failure(op); }
             try { return ParseCore(source, grammar); } finally { depth--; }
         }
@@ -312,7 +313,7 @@ internal sealed class RelaxNgCompiler : IRelaxNgCompiler
 
         private RngNameClass Name(Env source, bool attribute, int except)
         {
-            if (++depth > (op.Limits.Depth ?? 1024))
+            if (++depth > MaximumDepth)
             { op.Refuse("SCHEMA.Limit", "Schema name class depth exceeded.", source.Scope.Location(source.Node)); throw SchemaSnapshots.Failure(op); }
             try
             {
@@ -326,8 +327,9 @@ internal sealed class RelaxNgCompiler : IRelaxNgCompiler
                         result = new RngName(QName(env.Node.GetTextContent(), env, env.Ns)); break;
                     case "choice":
                         if (children.Count == 0) Fail("Empty name-class choice.", at);
-                        result = Name(children[0], attribute, except);
-                        for (int i = 1; i < children.Count; i++) { if (i > 1) Component(at); result = new RngNameChoice(result, Name(children[i], attribute, except)); }
+                        var alternatives = new List<RngNameClass>(children.Count);
+                        foreach (var child in children) alternatives.Add(Name(child, attribute, except));
+                        result = Balance(alternatives, at, true);
                         break;
                     case "anyName": case "nsName":
                         if (tag == "anyName" && except != 0 || tag == "nsName" && except == 2) Fail("Illegal name-class exclusion.", at);
@@ -338,8 +340,9 @@ internal sealed class RelaxNgCompiler : IRelaxNgCompiler
                             var excluded = Read(children[0], []); var classes = Children(excluded);
                             if (classes.Count == 0) Fail("Empty name-class except.", at);
                             int nesting = tag == "nsName" ? 2 : Math.Max(except, 1);
-                            exclusion = Name(classes[0], attribute, nesting);
-                            for (int i = 1; i < classes.Count; i++) { Component(at); exclusion = new RngNameChoice(exclusion, Name(classes[i], attribute, nesting)); }
+                            var exclusions = new List<RngNameClass>(classes.Count);
+                            foreach (var child in classes) exclusions.Add(Name(child, attribute, nesting));
+                            exclusion = Balance(exclusions, at, false);
                         }
                         result = tag == "anyName" ? new RngAnyName(exclusion) : new RngNsName(env.Ns, exclusion); break;
                     default: Fail("Unknown name-class element.", at); return null!;
@@ -347,6 +350,27 @@ internal sealed class RelaxNgCompiler : IRelaxNgCompiler
                 CheckAttributeName(result, env, attribute); return result;
             }
             finally { depth--; }
+        }
+        private RngNameClass Balance(List<RngNameClass> nodes, XmlLocation at, bool charged)
+        {
+            // Pair adjacent branches by levels. Generated choices have logarithmic
+            // depth even when a shallow source has many thousands of siblings.
+            while (nodes.Count > 1)
+            {
+                int output = 0;
+                for (int input = 0; input < nodes.Count; input += 2)
+                {
+                    Work(1, at);
+                    if (input + 1 == nodes.Count) nodes[output++] = nodes[input];
+                    else
+                    {
+                        if (!charged) Component(at); charged = false;
+                        nodes[output++] = new RngNameChoice(nodes[input], nodes[input + 1]);
+                    }
+                }
+                nodes.RemoveRange(output, nodes.Count - output);
+            }
+            return nodes[0];
         }
         private void CheckAttributeName(RngNameClass name, Env env, bool attribute)
         {
@@ -397,7 +421,7 @@ internal sealed class RelaxNgCompiler : IRelaxNgCompiler
         }
         private List<Part> Parts(Env env, bool overrides)
         {
-            if (++depth > (op.Limits.Depth ?? 1024))
+            if (++depth > MaximumDepth)
             { op.Refuse("SCHEMA.Limit", "Schema component depth exceeded.", env.Scope.Location(env.Node)); throw SchemaSnapshots.Failure(op); }
             try { return PartsCore(env, overrides); } finally { depth--; }
         }

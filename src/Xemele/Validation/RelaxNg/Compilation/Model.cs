@@ -49,14 +49,15 @@ internal static class RngGraph
         if (name is not null) ValidateName(name);
         return true;
     }
-    private static void ValidateName(RngNameClass name)
+    private static void ValidateName(RngNameClass name, int depth = 0)
     {
+        if (depth == 1024) throw new ArgumentException("Name class representation depth exceeded.");
         switch (name)
         {
             case RngName n: ArgumentNullException.ThrowIfNull(n.Name.NamespaceUri); ArgumentNullException.ThrowIfNull(n.Name.LocalName); break;
-            case RngAnyName a: if (a.Except is not null) ValidateName(a.Except); break;
-            case RngNsName n: ArgumentNullException.ThrowIfNull(n.NamespaceUri); if (n.Except is not null) ValidateName(n.Except); break;
-            case RngNameChoice c: ArgumentNullException.ThrowIfNull(c.Left); ArgumentNullException.ThrowIfNull(c.Right); ValidateName(c.Left); ValidateName(c.Right); break;
+            case RngAnyName a: if (a.Except is not null) ValidateName(a.Except, depth + 1); break;
+            case RngNsName n: ArgumentNullException.ThrowIfNull(n.NamespaceUri); if (n.Except is not null) ValidateName(n.Except, depth + 1); break;
+            case RngNameChoice c: ArgumentNullException.ThrowIfNull(c.Left); ArgumentNullException.ThrowIfNull(c.Right); ValidateName(c.Left, depth + 1); ValidateName(c.Right, depth + 1); break;
             default: throw new ArgumentException("Unknown name class.");
         }
     }

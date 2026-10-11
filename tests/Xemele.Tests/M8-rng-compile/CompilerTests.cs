@@ -185,4 +185,38 @@ public sealed class CompilerTests
     }
     private sealed class EmptyRegistry : IXmlDatatypeRegistry
     { public IXmlDatatypeLibrary? Find(string ns) => null; public XmlDatatypeDefinition? FindType(SchemaName name) => null; }
+
+    [Theory]
+    [InlineData(false)] [InlineData(true)]
+    public void ThousandsOfShallowNameChoicesStayBalancedAndMatch(bool exclusion)
+    {
+        var xml = new StringBuilder("<element xmlns='" + Ns + "'>");
+        xml.Append(exclusion ? "<anyName><except>" : "<choice>");
+        for (int i = 0; i < 8000; i++) xml.Append("<name>n").Append(i).Append("</name>");
+        xml.Append(exclusion ? "</except></anyName>" : "</choice>"); xml.Append("<empty/></element>");
+        var graph = Compile(xml.ToString()); var name = Assert.Single(graph.Patterns, p => p.Kind == RngPatternKind.Element).NameClass!;
+        var op = new SchemaCompileOperation();
+        Assert.Equal(!exclusion, RngNameClasses.Contains(name, "", "n7999", op, default));
+        Assert.Equal(exclusion, RngNameClasses.Contains(name, "", "outside", op, default));
+        Assert.True(RngNameClasses.Overlaps(name, new RngName(new("", exclusion ? "outside" : "n0")), op, default));
+        int maximum = 0; var stack = new Stack<(RngNameClass, int)>(); stack.Push((name, 0));
+        while (stack.Count != 0)
+        {
+            var (node, depth) = stack.Pop(); maximum = Math.Max(maximum, depth);
+            if (node is RngNameChoice c) { stack.Push((c.Left, depth + 1)); stack.Push((c.Right, depth + 1)); }
+            else if (node is RngAnyName a && a.Except is not null) stack.Push((a.Except, depth + 1));
+        }
+        Assert.InRange(maximum, 12, 15);
+    }
+    [Theory]
+    [InlineData(true)] [InlineData(false)]
+    public void NullOrLargeSourceDepthCannotDisableRepresentationGuard(bool unlimited)
+    {
+        var xml = new StringBuilder("<element xmlns='" + Ns + "' name='e'>");
+        for (int i = 0; i < 2000; i++) xml.Append("<choice>");
+        xml.Append("<empty/>"); for (int i = 0; i < 2000; i++) xml.Append("</choice>"); xml.Append("</element>");
+        var options = new SchemaCompileOptions { Limits = new() { Depth = unlimited ? null : 100_000 } };
+        var error = Assert.Throws<SchemaCompileException>(() => Compile(xml.ToString(), options));
+        Assert.Equal("SCHEMA.Limit", error.Diagnostics[^1].Code);
+    }
 }
