@@ -4,6 +4,8 @@ public sealed class CssSelectorException(string message, int offset) : ArgumentE
 public sealed class CssSelector
 {
  public static CssSelector Compile(string selector, CssSelectorOptions? options = null) => throw new NotImplementedException();
+ public bool Matches(Xemele.XmlNode element) => throw new NotImplementedException();
+ public IReadOnlyList<Xemele.XmlNode> Select(Xemele.XmlNode root) => throw new NotImplementedException();
  public bool Matches(Xemele.Html.HtmlNode element) => throw new NotImplementedException();
  public IReadOnlyList<Xemele.Html.HtmlNode> Select(Xemele.Html.HtmlNode root) => throw new NotImplementedException();
 }
