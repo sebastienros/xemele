@@ -39,7 +39,8 @@
         "xpath-accounting-regressions",
         "compiled-api-preservation",
         "source-review",
-        "combined-integration"
+        "combined-integration",
+        "combined-runtime-checks"
       ]
     },
     {
@@ -48,7 +49,8 @@
       "status": "passed",
       "evidence": [
         "xpath-accounting-regressions",
-        "combined-integration"
+        "combined-integration",
+        "combined-runtime-checks"
       ]
     },
     {
@@ -63,7 +65,8 @@
         "owned-allocation-evidence",
         "allocation-review",
         "planning-whitespace",
-        "combined-integration"
+        "combined-integration",
+        "combined-runtime-checks"
       ]
     }
   ],
@@ -149,12 +152,21 @@
       "artifact": "docs/reports/M8-xpath-accounting/README.md"
     },
     {
-      "id": "combined-integration",
-      "kind": "integration",
+      "id": "combined-runtime-checks",
+      "kind": "check",
       "revision": "0f5d9845e2def74e104aea798e293b978752f616",
       "command": "python3 /private/tmp/m8-xpath-integration.py (exact executed driver retained as docs/reports/M8-xpath-accounting/integration-commands.py)",
       "result": "passed",
       "summary": "Combined source with verified resource-kind: cache-only restores; three pinned Release builds,0 warnings/errors;368/368 actual ARM .NET10.0.11 XPath tests,0 errors/failures/skips/not-run; compiled public union1254 and exact5 internal declarations match;171 planning and whitespace pass. Final76911ff differs only by worker task/report metadata; validated that delta and planning without repeating valid runtime checks. Source reviewer accepted; allocation evidence independently inspected after durable RELEASE.",
+      "artifact": "docs/reports/M8-xpath-accounting/README.md"
+    },
+    {
+      "id": "combined-integration",
+      "kind": "integration",
+      "revision": "76911ffc84ff961a81e11c1428303fac68117887",
+      "command": "git diff --name-only 0f5d9845e2def74e104aea798e293b978752f616 76911ffc84ff961a81e11c1428303fac68117887; python3 tools/planning/tasks.py validate; git diff --check",
+      "result": "passed",
+      "summary": "Final integration contains identical tested runtime/test/configuration/input source; exact two-file delta is worker task/report metadata. Planning171 and whitespace passed at76911ff before coordinator verification metadata. Runtime evidence remains at its actual tested combination0f5d984. Initial coordinator verified metadata failed tracker rule requiring integration evidence at the integration_revision; corrected evidence linkage before dependent dispatch, no runtime rerun necessary.",
       "artifact": "docs/reports/M8-xpath-accounting/README.md"
     }
   ],
