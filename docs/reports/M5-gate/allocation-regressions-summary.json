@@ -1,0 +1,232 @@
+{
+  "revision": "8a0c9d893eb000e2995d454b792d3d0130cc17ba",
+  "scope": "Inherited narrow primitive regressions only; real/positive owned child reports from the single exclusive suite run. Warm/setup allocations are not subtracted. No new full-operation throughput/cold/retention measurement.",
+  "rows": [
+    {
+      "probe": "M2-dtd-framing-allocation-probe",
+      "mode": "positive",
+      "runtime": "10.0.11",
+      "actualEqualsExpected": true,
+      "provenanceSha256": "cd43699b9e7b5ee0fff6e69eab47bdf69884ae409d858f11df503f2a64fd23ce",
+      "reportSha256": "ea4ba9d437a5941e90274d2e0499dbe6c558e9197c1086290ac4aad2876244b6",
+      "requestSha256": "bc27a4d47bc6be2a797f03b9b47dfe2e1ddd18c0d211b3712088f7607a2ec59b",
+      "WarmIterations": 1000,
+      "MeasuredIterations": 1000,
+      "WarmBytes": 0,
+      "AllocatedBytes": 64000,
+      "EscapedObjectLength": 37
+    },
+    {
+      "probe": "M2-dtd-framing-allocation-probe",
+      "mode": "real",
+      "runtime": "10.0.11",
+      "actualEqualsExpected": true,
+      "provenanceSha256": "cd43699b9e7b5ee0fff6e69eab47bdf69884ae409d858f11df503f2a64fd23ce",
+      "reportSha256": "6fc8050b777b36d052a61bb135afc8342d81f23b321b936494af78136c8836b2",
+      "requestSha256": "28690603a9b93ccacd2c01bfe178d971282f4ce84981efa3debfb4977c87afa1",
+      "WarmIterations": 1000,
+      "MeasuredIterations": 1000,
+      "WarmBytes": 0,
+      "AllocatedBytes": 0,
+      "EscapedObjectLength": 0
+    },
+    {
+      "probe": "M2-encoding-allocation-probe",
+      "mode": "positive",
+      "runtime": "10.0.11",
+      "actualEqualsExpected": true,
+      "provenanceSha256": "2c0e3f24a67d8411ec96bf84c51dc2d43852c6d8214d3a9aa3ef1f9556817fcc",
+      "reportSha256": "f27d87390fb338e726d50f78dc845275b0097eb96874a8a25926f37ce6925f89",
+      "requestSha256": "82a0d3c7b8cf61c81e9e8d33c70a9dac00920487325864bcf5936ff40adb9dbd",
+      "labels": [
+        {
+          "Label": "US-ASCII",
+          "WarmCalls": 10000,
+          "MeasuredCalls": 10000,
+          "WarmBytes": 0,
+          "AllocatedBytes": 640000,
+          "EscapedObjectLength": 37
+        },
+        {
+          "Label": "ISO-8859-1",
+          "WarmCalls": 10000,
+          "MeasuredCalls": 10000,
+          "WarmBytes": 0,
+          "AllocatedBytes": 640000,
+          "EscapedObjectLength": 37
+        },
+        {
+          "Label": "Windows-1252",
+          "WarmCalls": 10000,
+          "MeasuredCalls": 10000,
+          "WarmBytes": 0,
+          "AllocatedBytes": 640000,
+          "EscapedObjectLength": 37
+        }
+      ]
+    },
+    {
+      "probe": "M2-encoding-allocation-probe",
+      "mode": "real",
+      "runtime": "10.0.11",
+      "actualEqualsExpected": true,
+      "provenanceSha256": "2c0e3f24a67d8411ec96bf84c51dc2d43852c6d8214d3a9aa3ef1f9556817fcc",
+      "reportSha256": "6f8d0f3c8467fafb73f2c5b87e3e9310ae9f54c6c1976eea3b9c2eff822c0713",
+      "requestSha256": "515645b807cb580ca6e5c524614bf6f7b4f850a38a39c99402126e45d169944b",
+      "labels": [
+        {
+          "Label": "US-ASCII",
+          "WarmCalls": 10000,
+          "MeasuredCalls": 10000,
+          "WarmBytes": 0,
+          "AllocatedBytes": 0,
+          "EscapedObjectLength": 0
+        },
+        {
+          "Label": "ISO-8859-1",
+          "WarmCalls": 10000,
+          "MeasuredCalls": 10000,
+          "WarmBytes": 0,
+          "AllocatedBytes": 0,
+          "EscapedObjectLength": 0
+        },
+        {
+          "Label": "Windows-1252",
+          "WarmCalls": 10000,
+          "MeasuredCalls": 10000,
+          "WarmBytes": 0,
+          "AllocatedBytes": 0,
+          "EscapedObjectLength": 0
+        }
+      ]
+    },
+    {
+      "probe": "M2-pi-allocation-probe",
+      "mode": "positive",
+      "runtime": "10.0.11",
+      "actualEqualsExpected": true,
+      "provenanceSha256": "f3cf8801a4dcb1be16e492008dce33b17d16f0e07cc3c3deeb875700a14e82aa",
+      "reportSha256": "c1e3ebe1ed3ee968d629ea24eabcf080f0e7a4a4dfeded78ad31dbffd1f0c7d4",
+      "requestSha256": "05916cb9b6ffb25537b57602d597d5dd8fc3964eed54b1c7489bd672771d5908",
+      "WarmIterations": 100,
+      "MeasuredIterations": 10000,
+      "WarmBytes": 64368,
+      "AllocatedBytes": 6400000,
+      "WarmUnits": 400,
+      "WarmCalls": 1000,
+      "MeasuredUnits": 40000,
+      "MeasuredCalls": 100000,
+      "EscapedObjectLength": 37
+    },
+    {
+      "probe": "M2-pi-allocation-probe",
+      "mode": "real",
+      "runtime": "10.0.11",
+      "actualEqualsExpected": true,
+      "provenanceSha256": "f3cf8801a4dcb1be16e492008dce33b17d16f0e07cc3c3deeb875700a14e82aa",
+      "reportSha256": "a5cbc8926ac93faa82bc5c90c1b6b8b1f2a4aefbe844a1b7c4d1541625aa80c0",
+      "requestSha256": "8eef12a99f8a7222e34ca844d02e21be441782765fcff8d0f519da60badb7b50",
+      "WarmIterations": 100,
+      "MeasuredIterations": 10000,
+      "WarmBytes": 368,
+      "AllocatedBytes": 0,
+      "WarmUnits": 400,
+      "WarmCalls": 1000,
+      "MeasuredUnits": 40000,
+      "MeasuredCalls": 100000,
+      "EscapedObjectLength": 0
+    },
+    {
+      "probe": "M2-resolver-allocation-probe",
+      "mode": "positive",
+      "runtime": "10.0.11",
+      "actualEqualsExpected": true,
+      "provenanceSha256": "ae6d932c6d6b5fd6766c50e44e38e3cfbc19344b0090d4f4ddbb72d7d12fad75",
+      "reportSha256": "29d35b0c2d4526b4acd52b47a54dd2a58962b5d933137c8b3ba7b3afc540b54a",
+      "requestSha256": "847e7765bbd269c37f9e82395d794d8e724bca4e01233a104f0e2087f902d680",
+      "WarmIterations": 1000,
+      "MeasuredIterations": 10000,
+      "WarmBytes": 0,
+      "AllocatedBytes": 640000,
+      "EscapedObjectLength": 37
+    },
+    {
+      "probe": "M2-resolver-allocation-probe",
+      "mode": "real",
+      "runtime": "10.0.11",
+      "actualEqualsExpected": true,
+      "provenanceSha256": "ae6d932c6d6b5fd6766c50e44e38e3cfbc19344b0090d4f4ddbb72d7d12fad75",
+      "reportSha256": "30b571d2ea9dc529fbaba560feac935f628119f3f9b8c42c790be256271123c1",
+      "requestSha256": "c7434b6b67e686319e75be01b1e91162c0939d5cc2cbb2873a9685fe9bb30301",
+      "WarmIterations": 1000,
+      "MeasuredIterations": 10000,
+      "WarmBytes": 0,
+      "AllocatedBytes": 0,
+      "EscapedObjectLength": 0
+    },
+    {
+      "probe": "M2-streaming-allocation-probe",
+      "mode": "positive",
+      "runtime": "10.0.11",
+      "actualEqualsExpected": true,
+      "provenanceSha256": "40bd89d4f17175f2b20549ae9b6474cd58afb879890725a4f2e4006366624932",
+      "reportSha256": "80023f4c3cf53fb1168fb3b43a7d883d34161a643da1537c2c033351dd7b1cc6",
+      "requestSha256": "0f3b762398b73c0d94e376eb313ec709664548e1696e544c0fa55f59f44e1568",
+      "WarmIterations": 100,
+      "MeasuredIterations": 10000,
+      "WarmBytes": 77168,
+      "AllocatedBytes": 7680000,
+      "WarmUnits": 500,
+      "WarmCalls": 1199,
+      "MeasuredUnits": 50000,
+      "MeasuredCalls": 120000,
+      "EscapedObjectLength": 37
+    },
+    {
+      "probe": "M2-streaming-allocation-probe",
+      "mode": "real",
+      "runtime": "10.0.11",
+      "actualEqualsExpected": true,
+      "provenanceSha256": "40bd89d4f17175f2b20549ae9b6474cd58afb879890725a4f2e4006366624932",
+      "reportSha256": "94c0a4bc6a098be17554443d25676ad6def17fd77d1f0195d62c96b6e4723b04",
+      "requestSha256": "2b71f91e16e0a38e6a92d448364f2c555735eae69bfb2d155a1b5d1a75ffc2aa",
+      "WarmIterations": 100,
+      "MeasuredIterations": 10000,
+      "WarmBytes": 432,
+      "AllocatedBytes": 0,
+      "WarmUnits": 500,
+      "WarmCalls": 1199,
+      "MeasuredUnits": 50000,
+      "MeasuredCalls": 120000,
+      "EscapedObjectLength": 0
+    },
+    {
+      "probe": "M2-tree-allocation-probe",
+      "mode": "positive",
+      "runtime": "10.0.11",
+      "actualEqualsExpected": true,
+      "provenanceSha256": "d13b04c9db556946f49532e65ba462cb5141f14a699110631d1937218e44b3b2",
+      "reportSha256": "b5ce89bdc12a21329bdb3d93bd743c0ac88ae12a3c71e0aa87b2cc528760c2ca",
+      "requestSha256": "cebd4476569ad48c2161cbd9cafba579e68d3041455bee005b62b0b0619dea57",
+      "WarmIterations": 1000,
+      "MeasuredIterations": 1000,
+      "WarmBytes": 64000,
+      "AllocatedBytes": 64000,
+      "EscapedObjectLength": 37
+    },
+    {
+      "probe": "M2-tree-allocation-probe",
+      "mode": "real",
+      "runtime": "10.0.11",
+      "actualEqualsExpected": true,
+      "provenanceSha256": "d13b04c9db556946f49532e65ba462cb5141f14a699110631d1937218e44b3b2",
+      "reportSha256": "535c71061f18f21058aaf100d7247d4f36e92f3e20af672e0af111c6a41b3786",
+      "requestSha256": "ff9b81a94605d190a40db94b5eb18c133e8c08d6bb0f9daf4ca934c45ec8c2f7",
+      "WarmIterations": 1000,
+      "MeasuredIterations": 1000,
+      "WarmBytes": 0,
+      "AllocatedBytes": 0,
+      "EscapedObjectLength": 0
+    }
+  ]
+}
