@@ -32,29 +32,120 @@
     {
       "id": "M3-corpus-A1",
       "description": "Add normalized DOM/SAX/pull/push equivalence, random chunks and fuzz entry points plus large generated stream checks.",
-      "status": "pending",
-      "evidence": []
+      "status": "failed",
+      "evidence": [
+        "streaming-focused",
+        "fuzz-controls",
+        "bcl-differential"
+      ]
     },
     {
       "id": "M3-corpus-A2",
       "description": "All supported XML fixtures agree; 1 GiB streaming memory gate and early-callback assertions pass.",
       "status": "pending",
-      "evidence": []
+      "evidence": [
+        "small-memory-controls",
+        "streaming-focused"
+      ]
     },
     {
       "id": "M3-corpus-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
       "status": "pending",
-      "evidence": []
+      "evidence": [
+        "preparation-builds",
+        "planning-validation"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
-  "blockers": [],
+  "implementation": [
+    "tests/Xemele.Conformance.Tests/Streaming/NormalizedEvents.cs: owned semantic projections and DOM oracle",
+    "tests/Xemele.Conformance.Tests/Streaming/Equivalence.cs: original-byte six-surface equivalence and deterministic chunks",
+    "tests/Xemele.Conformance.Tests/Streaming/StreamingTests.cs: all 2585 frozen cases, authored controls and invalid UTF-8 regression",
+    "tests/Xemele.Differential.Tests/Streaming/BclStreamingTests.cs: independent BCL model",
+    "tests/Xemele.Fuzz/Streaming/StreamingFuzz.cs: standalone fuzz entrypoint",
+    "tests/corpora/streaming/generated-profile.json: fixed generated workload",
+    "docs/reports/M3-corpus/Runner/Program.cs: bounded semantic/live-memory acceptance runner"
+  ],
+  "evidence": [
+    {
+      "id": "preparation-builds",
+      "kind": "check",
+      "revision": "b5db61f2ed6579e82b13faa8a575dcb0b32c4da5",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' build tests/Xemele.Conformance.Tests -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false\n'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' build tests/Xemele.Differential.Tests -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false\n'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' build tests/Xemele.Fuzz -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false\n'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' build docs/reports/M3-corpus/Runner -c Release --disable-build-servers -m:1 -p:UseSharedCompilation=false",
+      "result": "passed",
+      "summary": "All four Release projects built without warnings/errors using SDK 10.0.400, runtime 10.0.11. Logs in ignored artifacts/M3-corpus.",
+      "artifact": null
+    },
+    {
+      "id": "streaming-focused",
+      "kind": "check",
+      "revision": "b5db61f2ed6579e82b13faa8a575dcb0b32c4da5",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll -namespace Xemele.Conformance.Tests.Streaming -result-xml docs/reports/M3-corpus/focused.xml",
+      "result": "failed",
+      "summary": "9 executed, 8 passed, 1 failed: unexpected DOM InvalidOperationException on invalid UTF-8 regression. Frozen lane separately passes all 2585 original cases: 1169 accepted/1416 rejected, zero surface mismatches; 316 no-primary-base denials before resolver calls; 218 differences from real-source-context oracle. No exclusions.",
+      "artifact": "docs/reports/M3-corpus/focused.xml"
+    },
+    {
+      "id": "bcl-differential",
+      "kind": "check",
+      "revision": "b5db61f2ed6579e82b13faa8a575dcb0b32c4da5",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll -namespace Xemele.Differential.Tests.Streaming -result-xml docs/reports/M3-corpus/differential.xml",
+      "result": "passed",
+      "summary": "2 executed/passed; independent BCL namespace, lexical, entity and DTD-default comparison.",
+      "artifact": "docs/reports/M3-corpus/differential.xml"
+    },
+    {
+      "id": "fuzz-controls",
+      "kind": "check",
+      "revision": "b5db61f2ed6579e82b13faa8a575dcb0b32c4da5",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' docs/reports/M3-corpus/Runner/bin/Release/net10.0/Runner.dll fuzz-control",
+      "result": "failed",
+      "summary": "97 operations from 5 seeds; 5 malformed mutations expose the same unexpected DOM declaration-validation InvalidOperationException; failure remains visible, exit 1.",
+      "artifact": "docs/reports/M3-corpus/fuzz-control.json"
+    },
+    {
+      "id": "small-memory-controls",
+      "kind": "check",
+      "revision": "b5db61f2ed6579e82b13faa8a575dcb0b32c4da5",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' docs/reports/M3-corpus/Runner/bin/Release/net10.0/Runner.dll sax 1048576 docs/reports/M3-corpus/control-sax.json\n'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' docs/reports/M3-corpus/Runner/bin/Release/net10.0/Runner.dll sax-async 1048576 docs/reports/M3-corpus/control-sax-async.json\n'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' docs/reports/M3-corpus/Runner/bin/Release/net10.0/Runner.dll pull 1048576 docs/reports/M3-corpus/control-pull.json\n'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' docs/reports/M3-corpus/Runner/bin/Release/net10.0/Runner.dll pull-async 1048576 docs/reports/M3-corpus/control-pull-async.json\n'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' docs/reports/M3-corpus/Runner/bin/Release/net10.0/Runner.dll push 1048576 docs/reports/M3-corpus/control-push.json\n'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' docs/reports/M3-corpus/Runner/bin/Release/net10.0/Runner.dll negative 1048576 docs/reports/M3-corpus/control-negative.json",
+      "result": "passed",
+      "summary": "All six controls exit 0. Five surfaces agree exact semantic counts and early callback; negative retains 9 MiB and trips identical live threshold. These 1 MiB controls are not the unrun 1 GiB gate.",
+      "artifact": "docs/reports/M3-corpus/prepared-runs.json"
+    },
+    {
+      "id": "planning-validation",
+      "kind": "check",
+      "revision": "b5db61f2ed6579e82b13faa8a575dcb0b32c4da5",
+      "command": "python3 tools/planning/tasks.py validate",
+      "result": "passed",
+      "summary": "Validated 147 tasks: schema/evidence/dependencies/ownership. Rechecked after evidence edit.",
+      "artifact": null
+    }
+  ],
+  "blockers": [
+    "Owning runtime repair required for malformed UTF-8 DOM declaration-validation exception."
+  ],
   "handoff": {
-    "summary": "",
-    "checks": [],
-    "remaining": [],
-    "requests": []
+    "summary": "Prepared full unchanged public original-byte equivalence, independent BCL controls, standalone fuzz entrypoints and five-mode 1GiB memory executable. Source-context M2 oracle remains distinct. No runtime/shared writes. Source b5db61f2ed6579e82b13faa8a575dcb0b32c4da5.",
+    "checks": [
+      "Four pinned controlled Release builds pass.",
+      "Conformance streaming: 8/9 pass; expected structured-rejection regression fails on unexpected InvalidOperationException. All 2585 frozen original cases agree, no exclusions.",
+      "BCL differential 2/2 pass.",
+      "Fuzz controls: 5 unexpected failures in 97 operations.",
+      "All five 1MiB modes and 9MiB-retention negative control pass.",
+      "1GiB runs unrun; exact commands/hash in prepared-runs.json; awaiting coordinator scheduling grant.",
+      "tasks.py validate passes."
+    ],
+    "remaining": [
+      "Integrate owning decoder/DOM repair and rerun affected malformed-input controls.",
+      "Run each prebuilt 1GiB mode under granted scheduling lease, record live heap and separate RSS.",
+      "Requalify evidence at final implementation revision; retain in_progress until all criteria pass."
+    ],
+    "requests": [
+      "Owning repair: src/Xemele/Parsing/Input/XmlInputDecoder.cs and/or src/Xemele/Parsing/Dom/ByteDomAdapter.cs. Bytes 3c72af3e (PHKvPg==), no primary base; DtdProcessing=Parse, DocumentCharacters=1048576,Depth=64,TokenCharacters=65536. XmlDocument.Parse throws InvalidOperationException at ValidateDeclaration -> ValidateAbsentDeclaration -> Forward; require structured rejection. Full five cases/stacks in fuzz-control.json.",
+      "Coordinator measurement lease for exact five prebuilt commands in docs/reports/M3-corpus/prepared-runs.json.",
+      "Integration gate must rerun existing M2 real-source-context conformance against the M3-modified core closure."
+    ]
   }
 }

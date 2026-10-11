@@ -1,0 +1,18 @@
+xUnit.net v3 In-Process Runner v4.0.1+8ed8aa354c (64-bit .NET 10.0.11)
+  Discovering: Xemele.Conformance.Tests
+  Discovered:  Xemele.Conformance.Tests
+  Starting:    Xemele.Conformance.Tests
+    Xemele.Conformance.Tests.Streaming.StreamingTests.InvalidUtf8NameIsStructuredRejectionAcrossTransports [FAIL]
+      System.InvalidOperationException : Declaration must be validated exactly once after detection.
+      Stack Trace:
+        /_/src/Xemele/Parsing/Input/XmlInputDecoder.cs(199,0): at Xemele.Parsing.Input.XmlInputDecoder.ValidateDeclaration(ReadOnlySpan`1 encodingName, XmlLocation location)
+        /_/src/Xemele/Parsing/Dom/ByteDomAdapter.cs(59,0): at Xemele.Parsing.Dom.ByteDomAdapter.Forward(Int32 count)
+        /_/src/Xemele/Parsing/Dom/ByteDomAdapter.cs(43,0): at Xemele.Parsing.Dom.ByteDomAdapter.Append(ReadOnlySpan`1 input)
+        /_/src/Xemele/Parsing/Dom/Factories.cs(70,0): at Xemele.XmlDocument.TryParse(ReadOnlySpan`1 input, XmlDocument& document, IReadOnlyList`1& diagnostics, XmlParseOptions options, CancellationToken cancellationToken)
+        /_/src/Xemele/Parsing/Dom/Factories.cs(26,0): at Xemele.XmlDocument.Parse(ReadOnlySpan`1 input, XmlParseOptions options, CancellationToken cancellationToken)
+        /_/tests/Xemele.Conformance.Tests/Streaming/Equivalence.cs(9,0): at Xemele.StreamingAcceptance.Equivalence.Verify(Byte[] bytes, XmlParseOptions options, Int32 seed, CancellationToken cancellationToken)
+        /_/tests/Xemele.Conformance.Tests/Streaming/StreamingTests.cs(24,0): at Xemele.Conformance.Tests.Streaming.StreamingTests.InvalidUtf8NameIsStructuredRejectionAcrossTransports()
+        --- End of stack trace from previous location ---
+  Finished:    Xemele.Conformance.Tests (ID = '1c3f3f97acc7ffa53d62651c1582d2b706ba844cc092742497ed5d53a879b3fa')
+=== TEST EXECUTION SUMMARY ===
+   Xemele.Conformance.Tests  Total: 9, Errors: 0, Failed: 1, Skipped: 0, Not Run: 0, Time: 1.490s
