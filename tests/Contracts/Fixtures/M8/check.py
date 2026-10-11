@@ -93,7 +93,7 @@ assert 'attribute subject { pathValue }?' in text
 svrl = ET.parse(here / 'Reporting/review-detached.svrl.xml').getroot()
 assert [element.tag.rsplit('}', 1)[-1] for element in svrl] == ['active-pattern', 'fired-rule', 'active-pattern', 'fired-rule', 'successful-report']
 assert all('id' not in element.attrib for element in svrl if element.tag.endswith('active-pattern'))
-assert svrl[-1].attrib['location'] == '/root/child' and svrl[1].attrib['context'] == '/root'
+assert svrl[-1].attrib['location'] == "/*[local-name()='root' and namespace-uri()=''][1]/*[local-name()='child' and namespace-uri()=''][1]" and svrl[1].attrib['context'] == '/root'
 print('PASS: pinned supporting ISO2016 grammar digest/phase lets/optional IDs/subject; detached SVRL scenario expectation (no runtime serializer claim)', flush=True)
 
 owned = lambda s: s in ['docs/specs/schemas.md', 'docs/tasks/M8-contracts.json'] or any(s.startswith(x) for x in ['tests/Contracts/Fixtures/M8/', 'docs/decisions/M8/', 'docs/reports/M8-contracts/'])
