@@ -27,7 +27,9 @@ internal sealed class RelaxNgCompiler : IRelaxNgCompiler
         private readonly HashSet<Uri> active = new();
         private readonly Dictionary<XmlNode, XmlDocument> loaded = new();
         private int depth;
-        private int MaximumDepth => Math.Min(op.Limits.Depth ?? 1024, 1024);
+        // Source parser frames contain several grammar views and environments.
+        // A conservative finite bound remains even for null/large XML quotas.
+        private int MaximumDepth => Math.Min(op.Limits.Depth ?? 256, 256);
         internal Build(SchemaCompileOptions options, ISchemaOperation op)
         { this.options = options; this.op = op; loader = new(options, op); }
 
