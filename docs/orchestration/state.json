@@ -42,7 +42,23 @@
       "worktree_path": "/Users/sebastienros/.codex/worktrees/705c/xemele"
     }
   ],
-  "integration_queue": [],
+  "integration_queue": [
+    {
+      "task_id": "M3-streaming-pump",
+      "implementation_revision": "df98050f29526c38b36b7a1eb9c17b59416c0d79",
+      "tested_integration_revision": "f0ded2081dd6d969941d430168568dd2451aaea1",
+      "checks": "Release0warnings/errors,33focusedtests0failed/skipped,official639memberAPI,145taskvalidatorpassed; valid ownprocess allocation preserved.",
+      "stage": "source reviewed/integrationpassed, awaiting isolated timing and final worker metadata before verification"
+    },
+    {
+      "task_id": "M3-async-writer",
+      "implementation_revision": "80119207072d0eb292f9cb6bf186bc8cf2bdb3fd",
+      "prepared_revision": "83edfe8c6b2701587b1ccaf3d680ad21da43f22a",
+      "tested_integration_revision": "d0aa1b14208f40fa6c51914b3a5521e3621efae8",
+      "checks": "Release0warnings/errors;69tests (19async+50earlier)0failed/skipped;official651API;145validator. Mechanical memoryclearingdiff reviewed; post-unwind weakref controlpasses with livewriter/nooperations.",
+      "stage": "awaiting bounded allocation/syncwriter/6caseBDN sequence then evidence before verification"
+    }
+  ],
   "blockers": [],
   "next_actions": [
     "Verify pump and independent async writer as completed.",
@@ -699,6 +715,11 @@
       "task_id": "M3-streaming-pump",
       "revision": "df98050f29526c38b36b7a1eb9c17b59416c0d79",
       "scope": "Timing-only unchangedprebuilt3cases<=120s; preserve completed allocation; await external benchmark finish."
+    },
+    {
+      "task_id": "M3-async-writer",
+      "revision": "83edfe8c6b2701587b1ccaf3d680ad21da43f22a",
+      "scope": "Afterpump timing, exactprebuilt processwideprobe+19syncwriterallocationregression+6case InProcessDryBDN<=150s; parked/nochildren."
     }
   ],
   "metadata_correction": "PI rawAPI report uses inventory.apiDeclarations, not wrapper members. Initialrootmetadata assertion stopped before taskstate writes; d539f13 preserves actualpassing0869bde evidence, separateverifiedmetadata follows.",
@@ -1489,13 +1510,13 @@
     }
   },
   "measurement_lease": {
-    "id": "m3-streaming-pump-df98050",
+    "id": "m3-async-writer-83edfe8",
     "status": "released",
-    "revision": "df98050f29526c38b36b7a1eb9c17b59416c0d79",
+    "revision": "83edfe8c6b2701587b1ccaf3d680ad21da43f22a",
+    "runtime_revision": "80119207072d0eb292f9cb6bf186bc8cf2bdb3fd",
     "duration_limit_seconds": 150,
-    "scope": "One exact prebuilt processwide allocation<=30s then onlyifpassed3case InProcess BDN<=120s, XEMELE_PUMP_REVISION=df98050. No source/build/generation/retries/optionschange. Workerfrozenready/nochildren; asyncwriter PARK at28b5a72/nochildren; reviewer sourceonly/root noexecution. Release immediately completion/failure before review.",
-    "preparation": "Root reviewed2line runtimefix+focusedprovingtests resolving batched review; changed4/4passed, prior30/351preserved; compiled639APIpass; rebuiltproductSHA6262BA63BEEADF26B711EBEF36A0736D31D9A78DAAD0E782CE2E8A9641AC5153.",
-    "result": "Completed valid ownprocess allocationexit0 preserved (byte/char0Bpositive1048B, fixedscratch16MiBstressretained401184unchanged). BDN started before revoke arrived, ownchild84977terminated=-15, nochildren; partialpilot/noisolatedtimingclaim. Asyncwriter released for ordinarychecks. Await unrelatedSilexbenchmark84066+85642finish before timingonlynewlease."
+    "scope": "Exactly prebuilt ownprocessprobe<=20s, onlypass then existing19syncwriter/allocationtests<=20s, onlypass then6case BDN<=110s explicitInProcess/Dry/3iterations/1warmup/1launch/1invocation/1unroll. No build/restore/source/generation/retries/configchanges. Stop if case/toolchain scope mismatch. Pumpreleased/sourceevidenceonly/nochildren; writerfreshPARK/nochildren83edfe8; reviewerterminal/sourceonly/root noexecution. Host latestps allknownSilex/Benchmark work gone, idleunrelatedservers only. Release immediately completion/failure beforeinspection.",
+    "result": "Allocationprobe step1exit1within20s/nochildren; conditional19syncwriter and6BDNnotrun. Originaloutputs retained for focused offline diagnosis; no source/build/restore/retry duringwindow. No A3pass claimed."
   },
   "offline_corpus_setup": {
     "checkout": "/private/tmp/xemele-m3-integration",
