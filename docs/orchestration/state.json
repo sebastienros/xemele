@@ -30,7 +30,7 @@
       "branch": "codex/m4-navigation",
       "base_revision": "228d9eb1c0862861e70ca87601ee507a06228fd0",
       "claim_revision": "46767a361dcd487bd2c4c37b9388e72ca1c225b3",
-      "stage": "prepared bounded sequence granted",
+      "stage": "wrong-runtime observation preserved; parked pending one explicit-host preparation correction after function release",
       "chat_id": "01a12939-b7f5-79f1-9d6d-6f81fdb5a2df",
       "host_id": "local",
       "worktree_path": "/Users/sebastienros/.codex/worktrees/a922/xemele",
@@ -48,7 +48,7 @@
       "branch": "codex/m4-functions",
       "base_revision": "a3c2e7d52b8b162a8a92df951b9769eef055783e",
       "claim_revision": "3ccb6d53a67ec589a8e1f29880dc868cefe4ce95",
-      "stage": "source correction approved; prepared and parked",
+      "stage": "prepared function sequence granted",
       "chat_id": "01a12939-ddaf-70d1-b2f4-ff843ab752f2",
       "host_id": "local",
       "worktree_path": "/Users/sebastienros/.codex/worktrees/7378/xemele",
@@ -59,7 +59,8 @@
       },
       "source_candidate": "b7d3a2ef368f78d5a766199dcbf619bc813915e7",
       "correction_cycles": 1,
-      "preparation_sha256": "2631c39641462c3a343253046e41214892244ece0456429eabf79810e0c4b501"
+      "preparation_sha256": "210b27c4d87e339dde145dfc9bcaa18f9450a7eb92290788c5443c67e034cc4f",
+      "prepared_revision": "4f0e27859955b737539711dc091f79a2123852f2"
     }
   ],
   "integration_queue": [],
@@ -1711,6 +1712,22 @@
         "Root all106source40binary195runtime hashes checked; no scoped executable workloads"
       ],
       "result": "Worker reports allocation0/timing0, ten successful cases; total97.17s, no children. Initial/final106source40binary195runtime identity equality. Released before detailed inspection; root review pending."
+    },
+    {
+      "id": "m4-navigation-d79ffea-sequence",
+      "status": "released",
+      "revision": "d79ffea3ca933f38227a8cfc74b31d49454832b4",
+      "executor_chat_id": "01a12939-b7f5-79f1-9d6d-6f81fdb5a2df",
+      "duration_limit_seconds": 960,
+      "preparation_sha256": "4b81cae69cfa04f18f2594673c65bd9d9e58c625e2e034b04672fd613164a2e3",
+      "scope": "One allocation30s then only success one10caseShortRunNoEmit timing900s; bounded initial/final117source40binary195runtime identity and process-group cleanup in finally. No build/generation/restore/edit/test/retry; immediate release before inspection. Exact MemoryDiagnoser/ShortRunJob attributes and summary-only output.",
+      "park_acknowledgements": [
+        "Navigation fresh clean d79ffea READY/no executables; complete maps independently match",
+        "Functions fresh clean b7d3a2e READY/no executables; reviewer source-only approved correction",
+        "Compiler fresh PARK7f24f56 no executables, pending fixture fix held",
+        "Root repair executions complete and clean checkout removed; reviewers terminal/source-only; no scoped processes. Unrelated SDK11 MSBuild servers observed, untouched."
+      ],
+      "result": "Allocation0/timing0; initial/final complete identity0; wrapper1 due PermissionError in cleanup verification, no_child false/unconfirmed. Released before raw inspection. Read-only scoped process verification required; successful measurements must not be replayed. Root and worker independent escalated ps scans confirm no scoped processes. Actual measured FrameworkDescription10.0.0 because stale runtimeconfig0+RollForwardDisable; frozen10.0.11 map not actual loaded closure. Results preserved informational, target-runtime gate pending one explicit-host correction."
     }
   ],
   "temporary_integration_checkout": null,
@@ -1789,20 +1806,19 @@
     }
   },
   "measurement_lease": {
-    "id": "m4-navigation-d79ffea-sequence",
-    "status": "released",
-    "revision": "d79ffea3ca933f38227a8cfc74b31d49454832b4",
-    "executor_chat_id": "01a12939-b7f5-79f1-9d6d-6f81fdb5a2df",
-    "duration_limit_seconds": 960,
-    "preparation_sha256": "4b81cae69cfa04f18f2594673c65bd9d9e58c625e2e034b04672fd613164a2e3",
-    "scope": "One allocation30s then only success one10caseShortRunNoEmit timing900s; bounded initial/final117source40binary195runtime identity and process-group cleanup in finally. No build/generation/restore/edit/test/retry; immediate release before inspection. Exact MemoryDiagnoser/ShortRunJob attributes and summary-only output.",
+    "id": "m4-functions-4f0e278-sequence",
+    "status": "granted",
+    "revision": "4f0e27859955b737539711dc091f79a2123852f2",
+    "executor_chat_id": "01a12939-ddaf-70d1-b2f4-ff843ab752f2",
+    "duration_limit_seconds": 900,
+    "preparation_sha256": "210b27c4d87e339dde145dfc9bcaa18f9450a7eb92290788c5443c67e034cc4f",
+    "scope": "One prepared control90s/discovery30s/allocation120s then only success13caseBDN600s, full initial/final108source40binary195runtime checks in finally. No generation/build/restore/edit/test/retry; immediate release before raw inspection. Exact MemoryDiagnoser/ShortRunJob attributes; summaries only.",
     "park_acknowledgements": [
-      "Navigation fresh clean d79ffea READY/no executables; complete maps independently match",
-      "Functions fresh clean b7d3a2e READY/no executables; reviewer source-only approved correction",
-      "Compiler fresh PARK7f24f56 no executables, pending fixture fix held",
-      "Root repair executions complete and clean checkout removed; reviewers terminal/source-only; no scoped processes. Unrelated SDK11 MSBuild servers observed, untouched."
-    ],
-    "result": "Allocation0/timing0; initial/final complete identity0; wrapper1 due PermissionError in cleanup verification, no_child false/unconfirmed. Released before raw inspection. Read-only scoped process verification required; successful measurements must not be replayed."
+      "Functions clean4f0e278 READY/PARK, all108/40/195 maps independently checked; existing counters-disabled control actual .NET10.0.11",
+      "Navigation released direct0/0 and independent no-child confirmed, parked during this lease",
+      "Compiler persistent PARK7f24f56 no children; pending fixture fix held",
+      "Root repair done/checkout removed, reviewers terminal source-only; no scoped process workloads"
+    ]
   },
   "offline_corpus_setup": {
     "checkout": "/private/tmp/xemele-m3-integration",
