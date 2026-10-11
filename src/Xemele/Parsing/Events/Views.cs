@@ -7,11 +7,12 @@ internal readonly ref struct XmlNameView(ReadOnlySpan<char> localName, ReadOnlyS
     public ReadOnlySpan<char> NamespaceUri { get; } = namespaceUri;
     public ReadOnlySpan<char> Prefix { get; } = prefix;
 }
-internal readonly ref struct XmlAttributeView(XmlNameView name, ReadOnlySpan<char> value, Xemele.XmlLocation location)
+internal readonly ref struct XmlAttributeView(XmlNameView name, ReadOnlySpan<char> value, Xemele.XmlLocation location, bool isDefaulted = false)
 {
     public XmlNameView Name { get; } = name;
     public ReadOnlySpan<char> Value { get; } = value;
     public Xemele.XmlLocation Location { get; } = location;
+    public bool IsDefaulted { get; } = isDefaulted;
 }
 internal readonly ref struct XmlNamespaceView(ReadOnlySpan<char> prefix, ReadOnlySpan<char> namespaceUri, Xemele.XmlLocation location)
 {

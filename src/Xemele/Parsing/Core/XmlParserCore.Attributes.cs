@@ -157,7 +157,7 @@ internal sealed partial class XmlParserCore
                 if (attributeCount == Array.MaxLength) { Reject("XML.ResourceLimit", "Attribute capacity exceeded.", opening); return false; }
                 Array.Resize(ref attributes, (int)Math.Min(Array.MaxLength, (long)attributes.Length * 2));
             }
-            attributes[attributeCount++] = new() { OwnedName = declaration.Name, OwnedValue = value, Location = opening, Incomplete = incomplete };
+            attributes[attributeCount++] = new() { OwnedName = declaration.Name, OwnedValue = value, Location = opening, Incomplete = incomplete, IsDefaulted = true };
         }
         return true;
     }
