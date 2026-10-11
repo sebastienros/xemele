@@ -200,8 +200,11 @@ public sealed class AsyncWriterTests
         var output = new AsyncOnlyStream(); await using var w = Writer.Create(output, Omit, TestContext.Current.CancellationToken);
         await w.WriteStartElementAsync("r", cancellationToken: TestContext.Current.CancellationToken);
         var owners = await SupplyTransient(w);
+        // Leave the completing continuation stack before assessing idle writer retention.
+        await Task.Yield();
         GC.Collect(); GC.WaitForPendingFinalizers(); GC.Collect();
-        Assert.False(owners.Text.IsAlive); Assert.False(owners.Attribute.IsAlive);
+        Assert.False(owners.Text.IsAlive);
+        Assert.False(owners.Attribute.IsAlive);
         await w.WriteEndElementAsync(TestContext.Current.CancellationToken); await w.WriteEndDocumentAsync(TestContext.Current.CancellationToken);
         GC.KeepAlive(w);
     }

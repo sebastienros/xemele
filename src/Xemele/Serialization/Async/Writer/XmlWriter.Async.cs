@@ -101,7 +101,7 @@ public sealed partial class XmlWriter : IAsyncDisposable
             Mutable(); Mix(); await SealAsync(false).ConfigureAwait(false); await EscapeAsync(text, false).ConfigureAwait(false);
         }
         catch (Exception error) { Fail(error); throw; }
-        finally { EndAsyncCall(); Exit(); }
+        finally { text = default; EndAsyncCall(); Exit(); }
     }
     public async ValueTask WriteCDataAsync(ReadOnlyMemory<char> text, CancellationToken cancellationToken = default)
     {
@@ -114,7 +114,7 @@ public sealed partial class XmlWriter : IAsyncDisposable
             await output.WriteAsync("<![CDATA[", asyncToken).ConfigureAwait(false); await output.WriteAsync(text, asyncToken).ConfigureAwait(false); await output.WriteAsync("]]>", asyncToken).ConfigureAwait(false);
         }
         catch (Exception error) { Fail(error); throw; }
-        finally { EndAsyncCall(); Exit(); }
+        finally { text = default; EndAsyncCall(); Exit(); }
     }
     public async ValueTask WriteCommentAsync(ReadOnlyMemory<char> text, CancellationToken cancellationToken = default)
     {
@@ -128,7 +128,7 @@ public sealed partial class XmlWriter : IAsyncDisposable
             await output.WriteAsync("<!--", asyncToken).ConfigureAwait(false); await output.WriteAsync(text, asyncToken).ConfigureAwait(false); await output.WriteAsync("-->", asyncToken).ConfigureAwait(false);
         }
         catch (Exception error) { Fail(error); throw; }
-        finally { EndAsyncCall(); Exit(); }
+        finally { text = default; EndAsyncCall(); Exit(); }
     }
     public async ValueTask WriteProcessingInstructionAsync(string target, ReadOnlyMemory<char> data, CancellationToken cancellationToken = default)
     {
@@ -143,7 +143,7 @@ public sealed partial class XmlWriter : IAsyncDisposable
             if (!data.IsEmpty) { await output.WriteAsync(" ", asyncToken).ConfigureAwait(false); await output.WriteAsync(data, asyncToken).ConfigureAwait(false); } await output.WriteAsync("?>", asyncToken).ConfigureAwait(false);
         }
         catch (Exception error) { Fail(error); throw; }
-        finally { EndAsyncCall(); Exit(); }
+        finally { data = default; EndAsyncCall(); Exit(); }
     }
     public async ValueTask WriteEndElementAsync(CancellationToken cancellationToken = default)
     {
@@ -238,6 +238,7 @@ public sealed partial class XmlWriter : IAsyncDisposable
         {
             AsyncTick(); var a = attributes[i]; await output.WriteAsync(" ", asyncToken).ConfigureAwait(false); await QNameAsync(attributePrefixes[i], a.Name).ConfigureAwait(false);
             await output.WriteAsync("=\"", asyncToken).ConfigureAwait(false); await EscapeAsync(a.Value.AsMemory(), true).ConfigureAwait(false); await output.WriteAsync("\"", asyncToken).ConfigureAwait(false);
+            a = default;
         }
         await output.WriteAsync(empty ? "/>" : ">", asyncToken).ConfigureAwait(false); f.Sealed = true; frames[^1] = f;
         // Release caller strings as soon as the pending start tag is sealed.
@@ -344,21 +345,25 @@ public sealed partial class XmlWriter : IAsyncDisposable
     }
     private async ValueTask EscapeAsync(ReadOnlyMemory<char> text, bool attribute)
     {
-        int run = 0;
-        for (int i = 0; i < text.Length; i++)
+        try
         {
-            AsyncTick(); char c = text.Span[i];
-            string? replacement = c switch
+            int run = 0;
+            for (int i = 0; i < text.Length; i++)
             {
-                '&' => "&amp;", '<' => "&lt;", '"' when attribute => "&quot;",
-                '\t' when attribute => "&#x9;", '\n' when attribute => "&#xA;", '\r' => "&#xD;",
-                '>' when !attribute && brackets >= 2 => "&gt;", _ => null
-            };
-            if (replacement is not null)
-            { await output.WriteAsync(text[run..i], asyncToken).ConfigureAwait(false); await output.WriteAsync(replacement, asyncToken).ConfigureAwait(false); run = i + 1; }
-            if (!attribute) brackets = c == ']' ? Math.Min(2, brackets + 1) : 0;
-            if (i - run >= 2048) { await output.WriteAsync(text[run..(i + 1)], asyncToken).ConfigureAwait(false); run = i + 1; }
+                AsyncTick(); char c = text.Span[i];
+                string? replacement = c switch
+                {
+                    '&' => "&amp;", '<' => "&lt;", '"' when attribute => "&quot;",
+                    '\t' when attribute => "&#x9;", '\n' when attribute => "&#xA;", '\r' => "&#xD;",
+                    '>' when !attribute && brackets >= 2 => "&gt;", _ => null
+                };
+                if (replacement is not null)
+                { await output.WriteAsync(text[run..i], asyncToken).ConfigureAwait(false); await output.WriteAsync(replacement, asyncToken).ConfigureAwait(false); run = i + 1; }
+                if (!attribute) brackets = c == ']' ? Math.Min(2, brackets + 1) : 0;
+                if (i - run >= 2048) { await output.WriteAsync(text[run..(i + 1)], asyncToken).ConfigureAwait(false); run = i + 1; }
+            }
+            await output.WriteAsync(text[run..], asyncToken).ConfigureAwait(false);
         }
-        await output.WriteAsync(text[run..], asyncToken).ConfigureAwait(false);
+        finally { text = default; }
     }
 }

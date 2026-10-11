@@ -6,15 +6,19 @@ internal sealed partial class WriterOutput
     internal ValueTask WriteAsync(string text, CancellationToken call) => WriteAsync(text.AsMemory(), call);
     internal async ValueTask WriteAsync(ReadOnlyMemory<char> text, CancellationToken call)
     {
-        int offset = 0;
-        while (offset < text.Length)
+        try
         {
-            call.ThrowIfCancellationRequested();
-            if (Capacity - Buffered < 6148) await DrainAsync(call).ConfigureAwait(false);
-            int used = Encode(text.Span.Slice(offset, Math.Min(text.Length - offset, 2048)));
-            offset += used;
-            if (used == 0) await DrainAsync(call).ConfigureAwait(false);
+            int offset = 0;
+            while (offset < text.Length)
+            {
+                call.ThrowIfCancellationRequested();
+                if (Capacity - Buffered < 6148) await DrainAsync(call).ConfigureAwait(false);
+                int used = Encode(text.Span.Slice(offset, Math.Min(text.Length - offset, 2048)));
+                offset += used;
+                if (used == 0) await DrainAsync(call).ConfigureAwait(false);
+            }
         }
+        finally { text = default; }
     }
     internal async ValueTask PreambleAsync(CancellationToken call)
     {
