@@ -9,7 +9,11 @@ internal static class BaseReferences
     private sealed record Parts(string? Scheme, string? Authority, string Path, string? Query);
     internal static string Join(string basis, string reference, Action<long> charge)
     {
-        var b = Parse(basis, charge); var r = Parse(reference, charge);
+        // Section 2.4 modifies the base before every RFC3986 reference branch,
+        // including empty and query-only references.
+        var b = Parse(basis, charge);
+        if (b.Path == ".." || b.Path.EndsWith("/..", StringComparison.Ordinal)) b = b with { Path = b.Path + "/" };
+        var r = Parse(reference, charge);
         string? scheme, authority, query; string path;
         if (r.Scheme is not null) { scheme = r.Scheme; authority = r.Authority; path = Normalize(r.Path, charge); query = r.Query; }
         else
@@ -26,7 +30,6 @@ internal static class BaseReferences
                     else
                     {
                         string basePath = b.Path;
-                        if (basePath == ".." || basePath.EndsWith("/..", StringComparison.Ordinal)) basePath += "/";
                         int slash = basePath.LastIndexOf('/'); charge(basePath.Length);
                         string prefix = slash < 0 ? (b.Authority is not null ? "/" : "") : basePath[..(slash + 1)];
                         path = Normalize(string.Concat(prefix, r.Path), charge);

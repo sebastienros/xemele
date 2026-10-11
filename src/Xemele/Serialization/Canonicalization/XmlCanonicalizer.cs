@@ -207,6 +207,7 @@ public static class XmlCanonicalizer
                     }
                     // Expanded names in manually built trees must agree with the retained namespace axis.
                     RequireAbsolute(node.NamespaceUri);
+                    RequireBinding(scope, node.Prefix, node.NamespaceUri, false);
                     bool include = Has(XPathItemKind.Element, node);
                     var bindings = new Dictionary<string, string>(StringComparer.Ordinal);
                     foreach (var ns in scope)
@@ -219,6 +220,7 @@ public static class XmlCanonicalizer
                         Charge(); attributeCount++;
                         if (limits.AttributesPerElement is int maxAttributes && attributeCount > maxAttributes) throw new InvalidOperationException("Canonicalization attribute limit exceeded.");
                         Inspect(a.LocalName, true); Inspect(a.NamespaceUri, true); Inspect(a.Prefix, true); Inspect(a.Value, true); RequireAbsolute(a.NamespaceUri);
+                        RequireBinding(scope, a.Prefix, a.NamespaceUri, true);
                         if (Has(XPathItemKind.Attribute, node, a)) attributes.Add(new(a.LocalName, a.NamespaceUri, a.Prefix, a.Value));
                     }
                     Frame nearest = parent;
@@ -317,6 +319,13 @@ public static class XmlCanonicalizer
             }
             throw new ArgumentException("Relative namespace name.");
         }
+        private static void RequireBinding(Dictionary<string, string> scope, string prefix, string uri, bool attribute)
+        {
+            string binding = prefix == "xml" ? TreeValidation.XmlUri :
+                attribute && prefix.Length == 0 ? "" : scope.GetValueOrDefault(prefix, "");
+            if (binding != uri || prefix.Length != 0 && binding.Length == 0)
+                throw new InvalidOperationException("Expanded name disagrees with its namespace binding.");
+        }
         private void Inherit(XmlNode node, Frame parent, List<Attribute> attributes)
         {
             var seen = new HashSet<string>(StringComparer.Ordinal);
@@ -328,13 +337,15 @@ public static class XmlCanonicalizer
             for (var f = parent; f.Parent is not null; f = f.Parent!)
             {
                 Charge();
+                // The omitted xml:base chain ends at any included ancestor,
+                // while xml:lang/xml:space still inspect the full ancestor chain.
+                if (f.Included) baseBoundary = true;
                 foreach (var a in f.Node.Attributes)
                 {
                     Charge(); if (a.NamespaceUri != TreeValidation.XmlUri) continue;
                     if (v11 && a.LocalName == "base")
                     {
                         if (!baseBoundary && !f.Included) { bases.Add(a.Value); omittedBase = true; }
-                        if (f.Included) baseBoundary = true;
                         continue;
                     }
                     if (v11 && a.LocalName is not ("lang" or "space")) continue;

@@ -81,13 +81,16 @@ public sealed class CanonicalizationTests
         Assert.Equal("<a><c xml:lang=\"en\"></c></a>", Canonical([XPathItem.FromNode(other.RootElement), XPathItem.FromNode(other.RootElement.FirstChild.FirstChild)], Options(mode)));
     }
     [Fact]
-    public void PublishedC14n11SubsetBaseVector()
+    public void PublishedC14n11SubsetBaseVectorWithE11_01Erratum()
     {
         var d = Parse("<doc xmlns='http://www.ietf.org' xmlns:w3c='http://www.w3.org' xml:base='something/else'><e1><e2 xmlns='' xml:space='preserve' xml:id='abc' xml:base='bar/'><e3 id='E3' xml:base='foo'/></e2></e1></doc>");
         var items = Select(d, "(//node() | //@* | //namespace::*)[local-name()='e1' or (parent::*[local-name()='e1'] and not(self::text() or local-name()='e2')) or ancestor-or-self::*[local-name()='e3']]");
-        Assert.Equal("<e1 xmlns=\"http://www.ietf.org\" xmlns:w3c=\"http://www.w3.org\" xml:base=\"something/else\"><e3 xmlns=\"\" id=\"E3\" xml:base=\"something/bar/foo\" xml:space=\"preserve\"></e3></e1>", Canonical(items, Options(1)));
+        Assert.Equal("<e1 xmlns=\"http://www.ietf.org\" xmlns:w3c=\"http://www.w3.org\" xml:base=\"something/else\"><e3 xmlns=\"\" id=\"E3\" xml:base=\"bar/foo\" xml:space=\"preserve\"></e3></e1>", Canonical(items, Options(1)));
     }
     [Theory]
+    [InlineData("..", "", "../")]
+    [InlineData("..", "?q", "../?q")]
+    [InlineData("a/..", "", "a/../")]
     [InlineData("abc/", "../", "")]
     [InlineData("../", "../", "../../")]
     [InlineData("..", "..", "../../")]
@@ -108,6 +111,33 @@ public sealed class CanonicalizationTests
         var leaf = d.RootElement.FirstChild.FirstChild.FirstChild;
         Assert.Equal("<a xml:base=\"foo/bar\"><d xml:base=\"../../x\"></d></a>", Canonical([XPathItem.FromNode(d.RootElement), XPathItem.FromAttribute(d.RootElement.Attributes[0]), XPathItem.FromNode(leaf), XPathItem.FromAttribute(leaf.Attributes[0])], Options(1)));
         Assert.Equal("<a><d xml:base=\"../../x\"></d></a>", Canonical([XPathItem.FromNode(d.RootElement), XPathItem.FromNode(leaf), XPathItem.FromAttribute(leaf.Attributes[0])], Options(1)));
+    }
+    [Fact]
+    public void IncludedAncestorWithoutPhysicalBaseStopsOmittedBaseChain()
+    {
+        var d = Parse("<a xml:base='top/' xml:lang='en'><b><c><d/></c></b></a>");
+        var b = d.RootElement.FirstChild; var leaf = b.FirstChild.FirstChild;
+        Assert.Equal("<b xml:base=\"top/\" xml:lang=\"en\"><d xml:lang=\"en\"></d></b>", Canonical([XPathItem.FromNode(b), XPathItem.FromNode(leaf)], Options(1)));
+    }
+    [Theory]
+    [InlineData(0)] [InlineData(1)] [InlineData(2)]
+    public void ProgrammaticNamespaceBindingsMustAgreeBeforeOutput(int mode)
+    {
+        var d = new XmlDocument(); var r = d.CreateElement("r", "urn:p", "p"); d.DocumentNode.AppendChild(r);
+        void Reject() { using var output = new MemoryStream(); Assert.Throws<InvalidOperationException>(() => XmlCanonicalizer.Canonicalize(d, output, Options(mode))); Assert.Equal(0, output.Length); }
+        Reject(); r.SetNamespaceDeclaration("p", "urn:other"); Reject();
+        r.SetNamespaceDeclaration("p", "urn:p");
+        Assert.Equal("<p:r xmlns:p=\"urn:p\"></p:r>", Canonical(d, Options(mode)));
+        r.SetAttribute("a", "v", "urn:attr", "q"); Reject();
+        r.SetNamespaceDeclaration("q", "urn:other"); Reject();
+        r.SetNamespaceDeclaration("q", "urn:attr");
+        Assert.Equal("<p:r xmlns:p=\"urn:p\" xmlns:q=\"urn:attr\" q:a=\"v\"></p:r>", Canonical(d, Options(mode)));
+        r.SetAttribute("unprefixed", "v", "urn:attr"); Reject();
+        var plain = new XmlDocument(); var root = plain.CreateElement("r"); plain.DocumentNode.AppendChild(root);
+        root.SetAttribute("lang", "en", "http://www.w3.org/XML/1998/namespace", "xml");
+        Assert.Equal("<r xml:lang=\"en\"></r>", Canonical(plain, Options(mode)));
+        root.SetNamespaceDeclaration("", "urn:default");
+        using var invalidDefault = new MemoryStream(); Assert.Throws<InvalidOperationException>(() => XmlCanonicalizer.Canonicalize(plain, invalidDefault, Options(mode))); Assert.Equal(0, invalidDefault.Length);
     }
     [Fact]
     public void ExclusivePrefixesAreExactSelectedNamespaceNodes()
