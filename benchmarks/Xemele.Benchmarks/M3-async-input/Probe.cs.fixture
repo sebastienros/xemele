@@ -1,0 +1,87 @@
+using System.Runtime.InteropServices;
+using System.Reflection;
+using System.Security.Cryptography;
+using System.Text.Json;
+using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Running;
+using Xemele;
+using Reader = Xemele.Streaming.XmlReader;
+
+if (args is ["--benchmark", var artifacts])
+{
+    var summaries = BenchmarkRunner.Run<InputBenchmarks>(args: ["--inProcess", "--warmupCount", "3", "--iterationCount", "3", "--artifacts", artifacts]);
+    if (summaries.Reports.Count() != 4 || summaries.Reports.Any(r => !r.Success) || summaries.Reports.Select(r => r.BenchmarkCase.Job.Id).Distinct().Count() != 1)
+        throw new InvalidOperationException("Exactly one successful four-case job required.");
+    return;
+}
+if (args is not [var mode, var path] || mode is not ("--control" or "--allocation")) throw new ArgumentException("--control|--allocation report or --benchmark artifacts");
+bool measure = mode == "--allocation";
+var options = InputBenchmarks.Options;
+long coldBefore = measure ? GC.GetTotalAllocatedBytes(true) : 0;
+using var stream = new RepeatingStream(); await using var reader = Reader.Create(stream, options);
+await reader.ReadAsync(); await reader.ReadAsync();
+long coldSetup = measure ? GC.GetTotalAllocatedBytes(true) - coldBefore : 0;
+for (int i = 0; i < 256; i++) if (!await reader.ReadAsync()) throw new InvalidOperationException();
+long before = measure ? GC.GetTotalAllocatedBytes(true) : 0;
+for (int i = 0; i < 4096; i++) if (!await reader.ReadAsync()) throw new InvalidOperationException();
+long bufferedBytes = measure ? GC.GetTotalAllocatedBytes(true) - before : 0;
+using var delayedStream = new RepeatingStream { Delayed = true, Chunk = 1 }; await using var delayed = Reader.Create(delayedStream, options);
+await delayed.ReadAsync(); await delayed.ReadAsync();
+for (int i = 0; i < 128; i++) await delayed.ReadAsync();
+before = measure ? GC.GetTotalAllocatedBytes(true) : 0;
+for (int i = 0; i < 1024; i++) if (!await delayed.ReadAsync()) throw new InvalidOperationException();
+long suspendedBytes = measure ? GC.GetTotalAllocatedBytes(true) - before : 0;
+before = measure ? GC.GetTotalAllocatedBytes(true) : 0;
+int noOpChecksum = 0;
+for (int i = 0; i < 4096; i++) noOpChecksum += i & 1;
+long noOpBytes = measure ? GC.GetTotalAllocatedBytes(true) - before : 0;
+before = measure ? GC.GetTotalAllocatedBytes(true) : 0;
+object positive = new byte[4096]; GC.KeepAlive(positive);
+long positiveBytes = measure ? GC.GetTotalAllocatedBytes(true) - before : 0;
+// No corpus-sized caller array. Increasing document length only advances the
+// generator; all retained parser/cursor buffers remain bounded.
+long retainedStart = measure ? GC.GetTotalMemory(true) : 0;
+for (int i = 0; i < 1_048_576; i++) await reader.ReadAsync();
+long retainedOneMiB = measure ? GC.GetTotalMemory(true) - retainedStart : 0;
+for (int i = 0; i < 7_340_032; i++) await reader.ReadAsync();
+long retainedEightMiB = measure ? GC.GetTotalMemory(true) - retainedStart : 0;
+GC.KeepAlive(reader);
+await File.WriteAllTextAsync(path, JsonSerializer.Serialize(new { mode, revision = Environment.GetEnvironmentVariable("XEMELE_TESTED_REVISION"), runtime = RuntimeInformation.FrameworkDescription, os = RuntimeInformation.OSDescription, architecture = RuntimeInformation.ProcessArchitecture.ToString(), assemblySha256 = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(typeof(Reader).Assembly.Location))), probeSha256 = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(Assembly.GetExecutingAssembly().Location))), coldSetup, warmup = 256, bufferedCalls = 4096, bufferedBytes, suspendedCalls = 1024, suspendedBytes, noOpChecksum, noOpBytes, positiveBytes, retainedOneMiB, retainedEightMiB, bytesRead = stream.BytesRead, scratch = "4096 input bytes; fixed core/decoder arrays and one reader token; no whole-document owner", corpus = "generated <r> plus repeated ASCII x; unlimited DocumentCharacters/TokenCharacters; abort without EOF" }, new JsonSerializerOptions { WriteIndented = true }));
+
+[MemoryDiagnoser]
+public class InputBenchmarks
+{
+    internal static XmlParseOptions Options => new() { Limits = new() { DocumentCharacters = null, TokenCharacters = null } };
+    private Reader sync = null!, buffered = null!, suspended = null!;
+    private RepeatingStream syncStream = null!, bufferedStream = null!, suspendedStream = null!;
+    [GlobalSetup]
+    public void Setup()
+    {
+    syncStream = new(); bufferedStream = new(); suspendedStream = new() { Delayed = true, Chunk = 1 };
+        sync = Reader.Create(syncStream, Options); buffered = Reader.Create(bufferedStream, Options); suspended = Reader.Create(suspendedStream, Options);
+        sync.Read(); sync.Read(); buffered.Read(); buffered.Read(); suspended.Read(); suspended.Read();
+    }
+    [Benchmark(Baseline = true)] public bool SyncBufferedText() => sync.Read();
+    [Benchmark] public ValueTask<bool> AsyncBufferedText() => buffered.ReadAsync();
+    [Benchmark] public ValueTask<bool> AsyncSuspendedText() => suspended.ReadAsync();
+    [Benchmark] public int NoOp() => 1;
+    [GlobalCleanup] public void Cleanup() { sync.Dispose(); buffered.Dispose(); suspended.Dispose(); syncStream.Dispose(); bufferedStream.Dispose(); suspendedStream.Dispose(); }
+}
+
+internal sealed class RepeatingStream : Stream
+{
+    private bool started;
+    internal bool Delayed; internal int Chunk = 4096; internal long BytesRead;
+    public override bool CanRead => true; public override bool CanWrite => false; public override bool CanSeek => false;
+    public override long Length => throw new NotSupportedException(); public override long Position { get => BytesRead; set => throw new NotSupportedException(); }
+    public override int Read(Span<byte> b)
+    {
+        int count = !started ? 3 : Math.Min(Chunk, b.Length);
+        b[..count].Fill((byte)'x');
+        if (!started) { "<r>"u8.CopyTo(b); started = true; }
+        BytesRead += count; return count;
+    }
+    public override int Read(byte[] b, int o, int c) => Read(b.AsSpan(o, c));
+    public override async ValueTask<int> ReadAsync(Memory<byte> b, CancellationToken ct = default) { if (Delayed) await Task.Yield(); ct.ThrowIfCancellationRequested(); return Read(b.Span); }
+    public override void Flush() => throw new NotSupportedException(); public override long Seek(long o, SeekOrigin s) => throw new NotSupportedException(); public override void SetLength(long n) => throw new NotSupportedException(); public override void Write(byte[] b, int o, int c) => throw new NotSupportedException();
+}
