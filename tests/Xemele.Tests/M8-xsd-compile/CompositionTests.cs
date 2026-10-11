@@ -48,6 +48,35 @@ public sealed class CompositionTests
         Assert.Equal(2,graph.Types.Single(t=>t.Name==new SchemaName("","Use")).Attributes.Count); Assert.Equal(1,streams[0].Disposals);
     }
     [Fact]
+    public void SuccessiveRedefinitionsBindEachBaseToItsImmediatelyPreviousVersion()
+    {
+        var files=new Dictionary<string,string>{
+            ["https://example.test/base.xsd"]=CompilerTests.Wrap("<xs:simpleType name='S'><xs:restriction base='xs:string'/></xs:simpleType>"),
+            ["https://example.test/mid.xsd"]=CompilerTests.Wrap("<xs:redefine schemaLocation='base.xsd'><xs:simpleType name='S'><xs:restriction base='S'><xs:maxLength value='10'/></xs:restriction></xs:simpleType></xs:redefine>")};
+        var graph=Compile("<xs:redefine schemaLocation='mid.xsd'><xs:simpleType name='S'><xs:restriction base='S'><xs:maxLength value='5'/></xs:restriction></xs:simpleType></xs:redefine>","",files,new(),out _);
+        var current=graph.Datatypes.FindType(new("","S"))!;var previous=graph.Datatypes.FindType(current.BaseType!.Value)!;var original=graph.Datatypes.FindType(previous.BaseType!.Value)!;
+        Assert.Equal("5",Assert.Single(current.Facets).LexicalValue);Assert.Equal("10",Assert.Single(previous.Facets).LexicalValue);Assert.Empty(original.Facets);Assert.Equal(new SchemaName(Xs,"string"),original.BaseType);
+    }
+    [Fact]
+    public void RedefineKeepsRecursiveReplacementReferencesAndDistinctSymbolSpaces()
+    {
+        var files=new Dictionary<string,string>{["https://example.test/base.xsd"]=CompilerTests.Wrap("<xs:complexType name='T'><xs:sequence><xs:element name='old' type='T' minOccurs='0'/></xs:sequence></xs:complexType><xs:element name='T' type='xs:string'/>")};
+        var graph=Compile("<xs:redefine schemaLocation='base.xsd'><xs:complexType name='T'><xs:complexContent><xs:extension base='T'><xs:sequence><xs:element name='child' type='T' minOccurs='0'/><xs:element ref='T'/></xs:sequence></xs:extension></xs:complexContent></xs:complexType></xs:redefine>","",files,new(),out _);
+        var type=graph.Types.Single(t=>t.Name==new SchemaName("","T"));Assert.StartsWith("#redefined",type.BaseType!.Value.LocalName);
+        Assert.Equal(new SchemaName("","T"),graph.Elements.Single(e=>e.Name.LocalName=="child").Type);
+        Assert.Equal(new SchemaName(Xs,"string"),graph.Elements[graph.GlobalElements[new("","T")]].Type);
+        Assert.Equal(new SchemaName("","T"),graph.Elements.Single(e=>e.Name.LocalName=="old").Type);
+    }
+    [Fact]
+    public void ZeroSelfReferenceRedefineRetainsOldAndNewRestrictionPrograms()
+    {
+        var files=new Dictionary<string,string>{["https://example.test/base.xsd"]=CompilerTests.Wrap("<xs:group name='g'><xs:choice><xs:element name='a'/><xs:element name='b'/></xs:choice></xs:group><xs:attributeGroup name='ag'><xs:attribute name='a'/><xs:attribute name='b'/></xs:attributeGroup>")};
+        var graph=Compile("<xs:redefine schemaLocation='base.xsd'><xs:group name='g'><xs:sequence><xs:element name='a'/></xs:sequence></xs:group><xs:attributeGroup name='ag'><xs:attribute name='a'/></xs:attributeGroup></xs:redefine><xs:complexType name='T'><xs:group ref='g'/><xs:attributeGroup ref='ag'/></xs:complexType>","",files,new(),out _);
+        var restrictions=graph.Types.Where(t=>t.Name.LocalName is "#model-group:g" or "#attribute-group:ag").ToArray(); Assert.Equal(2,restrictions.Length);
+        foreach(var restriction in restrictions){Assert.True(restriction.Anonymous);Assert.Equal(XsdDerivation.Restriction,restriction.Derivation);Assert.Contains(graph.Types,t=>t.Name==restriction.BaseType&&t.Anonymous);}
+        Assert.Equal(2,graph.Types.Single(t=>t.Name==restrictions.Single(t=>t.Name.LocalName=="#attribute-group:ag").BaseType).Attributes.Count);
+    }
+    [Fact]
     public void FinalRedirectUriControlsNestedCacheSourceAndXmlBase()
     {
         var requests=new List<XmlResourceRequest>(); var streams=new List<CountingStream>();

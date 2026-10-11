@@ -86,7 +86,7 @@ internal sealed class XsdCompilation
     {
         var root = scope.Document.RootElement;
         if (root.IsDefault || root.NamespaceUri != Namespace || root.LocalName != "schema") Error("Expected an XSD schema document.", default);
-        string declared = root.GetAttribute("targetNamespace") ?? "";
+        string declared = Collapse(root.GetAttribute("targetNamespace") ?? "");
         if (root.GetAttribute("targetNamespace") is not null && declared.Length == 0) Error("Empty targetNamespace is not allowed.", default);
         if (purpose is SchemaResourcePurpose.XsdInclude or SchemaResourcePurpose.XsdRedefine && declared.Length != 0 && declared != effective)
             Error("Included schema has a different target namespace.", new(scope.SourceUri, 0, 0, null));
@@ -119,13 +119,14 @@ internal sealed class XsdCompilation
             declarationsStarted = true;
             if (node.LocalName is not ("element" or "attribute" or "simpleType" or "complexType" or "group" or "attributeGroup" or "notation")) Error("Invalid global schema component.", At(source, node));
             var name = Named(source, node);
+            if (node.GetAttribute("ref") is not null) Error("Global components cannot use ref.", At(source, node));
             Add(new(source, node, name), Space(node.LocalName));
         }
         foreach (var node in Children(source, root))
         {
             if (node.LocalName is not ("include" or "import" or "redefine")) continue;
             var kind = node.LocalName == "import" ? SchemaResourcePurpose.XsdImport : node.LocalName == "redefine" ? SchemaResourcePurpose.XsdRedefine : SchemaResourcePurpose.XsdInclude;
-            string ns = kind == SchemaResourcePurpose.XsdImport ? node.GetAttribute("namespace") ?? "" : target;
+            string ns = kind == SchemaResourcePurpose.XsdImport ? Collapse(node.GetAttribute("namespace") ?? "") : target;
             if (kind == SchemaResourcePurpose.XsdImport)
             {
                 if (node.GetAttribute("namespace") == "" || ns == target) Error("Import must name a different namespace (or omit it for no namespace).", At(source, node));
@@ -246,7 +247,7 @@ internal sealed class XsdCompilation
         return text;
     }
     private SchemaName Named(Source source, XmlNode node) => new(source.Target, NCName(Required(source, node, "name"), source, node));
-    private SchemaName QName(Declaration owner, XmlNode node, string lexical, bool previous = false)
+    private SchemaName QName(Declaration owner, XmlNode node, string lexical, string? previousSpace = null)
     {
         var source = owner.Source; lexical = Collapse(lexical); Tick(At(source, node), lexical.Length);
         int colon = lexical.IndexOf(':'); string prefix = colon < 0 ? "" : lexical[..colon]; string local = colon < 0 ? lexical : lexical[(colon + 1)..];
@@ -257,8 +258,10 @@ internal sealed class XsdCompilation
         if (ns.Length == 0 && source.Chameleon) ns = source.Target;
         if (ns != source.Target && ns != Namespace && !Imported(source, ns, new())) Error("QName references a namespace without an import.", At(source, node));
         var result = new SchemaName(ns, local);
-        if (previous && owner.Previous is { } old && result == owner.Name) return old;
-        if (owner.Original is { } original && result == original) return owner.Name;
+        // Name is the internal version identity; Original preserves the authored
+        // name after renaming. Only the designated redefine self-reference in
+        // that component's own symbol space binds to the preceding version.
+        if (previousSpace == Space(owner.Node.LocalName) && owner.Previous is { } old && result == (owner.Original ?? owner.Name)) return old;
         return result;
     }
     private bool Imported(Source source, string ns, HashSet<Source> visited)
@@ -270,7 +273,7 @@ internal sealed class XsdCompilation
     }
     private SchemaName ResolveType(Declaration owner, XmlNode node, string value, bool previous = false)
     {
-        var name = QName(owner, node, value, previous);
+        var name = QName(owner, node, value, previous ? "type" : null);
         if (!types.ContainsKey(name) && !simple.ContainsKey(name) && !declarations.ContainsKey(("type", name))) Error("Unknown type definition.", At(owner.Source, node));
         return name;
     }
@@ -281,7 +284,7 @@ internal sealed class XsdCompilation
         name = new(owner.Source.Target, "#anonymous" + (++anonymousId).ToString(CultureInfo.InvariantCulture)); anonymous.Add(node, name);
         var declaration = new Declaration(owner.Source, node, name); Add(declaration, "type"); Type(name, declaration); return name;
     }
-    private static string Form(string? value, XmlNode node, Source source) => value ?? "unqualified";
+    private static string Form(string? value, XmlNode node, Source source) => value is null ? "unqualified" : Collapse(value);
     private bool Boolean(Source source, XmlNode node, string name)
     {
         string? value = node.GetAttribute(name); if (value is null) return false;
@@ -400,7 +403,7 @@ internal sealed class XsdCompilation
             }
             if (basis is null) Error("Simple restriction requires a base.", At(s, body));
             var baseType = Type(basis!.Value);
-            if (baseType.SimpleType is null || baseType.Name == AnyType) Error("Simple restriction base must be simple.", At(s, body));
+            if (!simple.ContainsKey(basis!.Value)) Error("Simple restriction base must be a simple type definition.", At(s, body));
             if (baseType.Final.Contains(XsdDerivation.Restriction)) Error("Base type forbids restriction.", At(s, body));
             if (owner.Previous is { } old && basis != old) Error("Redefined simple type must restrict its original.", At(s, body));
             var inherited = simple[basis.Value];
@@ -420,7 +423,7 @@ internal sealed class XsdCompilation
             }
             if (item is null) Error("List item type missing.", At(s, body));
             var type = Type(item!.Value);
-            if (type.SimpleType is null || simple[item.Value].Variety == XmlDatatypeVariety.List || HasListMember(item.Value, new())) Error("List item type cannot contain a list.", At(s, body));
+            if (!simple.ContainsKey(item.Value) || simple[item.Value].Variety == XmlDatatypeVariety.List || HasListMember(item.Value, new())) Error("List item type cannot contain a list.", At(s, body));
             if (type.Final.Contains(XsdDerivation.List)) Error("Item type forbids list derivation.", At(s, body));
         }
         else
@@ -439,7 +442,7 @@ internal sealed class XsdCompilation
             }
             if (members.Count == 0) Error("Union requires a member type.", At(s, body));
             foreach (var member in members)
-            { var type = Type(member); if (type.SimpleType is null || type.Final.Contains(XsdDerivation.Union)) Error("Invalid or final union member type.", At(s, body)); }
+            { var type = Type(member); if (!simple.ContainsKey(member) || type.Final.Contains(XsdDerivation.Union)) Error("Invalid or final union member type.", At(s, body)); }
         }
         AddSimple(new(owner.Name, body.LocalName == "list" ? XmlDatatypeVariety.List : XmlDatatypeVariety.Union, basis, item, members, facets,
             DatatypeFinal(s, node), IsAnonymous(owner.Name), At(s, node)), body.LocalName == "list" ? XsdDerivation.List : XsdDerivation.Union);
@@ -522,8 +525,11 @@ internal sealed class XsdCompilation
             }
         }
         else if (owner.Previous is not null) Error("Redefined complex type requires explicit derivation.", At(s, node));
+        bool attributeSection = false;
         foreach (var child in Children(s, body))
         {
+            if (child.LocalName is "attribute" or "attributeGroup" or "anyAttribute") attributeSection = true;
+            else if (attributeSection && child.LocalName != "annotation") Error("Content particles and facets precede attribute uses.", At(s, child));
             if (child.LocalName is "sequence" or "choice" or "all" or "group")
             { if (particle is not null || simpleType is not null) Error("Invalid duplicate particle.", At(s, child)); particle = Particle(owner, child, true); }
             else if (child.LocalName is not ("annotation" or "attribute" or "attributeGroup" or "anyAttribute" or "simpleType") && !IsFacet(child.LocalName)) Error("Invalid complex type body.", At(s, child));
@@ -600,7 +606,7 @@ internal sealed class XsdCompilation
             var referenced = QName(owner, node, reference); return Element(Find("element", referenced, owner), true);
         }
         string local = NCName(Required(s, node, "name"), s, node);
-        string form = node.GetAttribute("form") ?? s.ElementForm;
+        string form = node.GetAttribute("form") is { } localForm ? Collapse(localForm) : s.ElementForm;
         if (form is not ("qualified" or "unqualified")) Error("Invalid element form.", At(s, node));
         var name = global ? owner.Name : new SchemaName(form == "qualified" ? s.Target : "", local);
         if (global && (node.GetAttribute("minOccurs") is not null || node.GetAttribute("maxOccurs") is not null || node.GetAttribute("form") is not null)) Error("Global element has local-only attributes.", At(s, node));
@@ -641,7 +647,7 @@ internal sealed class XsdCompilation
         }
         string local = NCName(Required(s, node, "name"), s, node);
         if (local == "xmlns") Error("Attribute name xmlns is reserved.", At(s, node));
-        string form = node.GetAttribute("form") ?? s.AttributeForm;
+        string form = node.GetAttribute("form") is { } localForm ? Collapse(localForm) : s.AttributeForm;
         if (form is not ("qualified" or "unqualified")) Error("Invalid attribute form.", At(s, node));
         var name = global ? owner.Name : new SchemaName(form == "qualified" ? s.Target : "", local);
         if (name.NamespaceUri == "http://www.w3.org/2001/XMLSchema-instance") Error("Attribute declarations in the xsi namespace are forbidden.", At(s, node));
@@ -684,7 +690,9 @@ internal sealed class XsdCompilation
             if (node.LocalName == "attribute") added.Add(Binding(owner, node));
             else
             {
-                var name = QName(owner, node, Required(owner.Source, node, "ref"), true);
+                if (node.GetAttribute("name") is not null) Error("Attribute group reference cannot have name.", At(owner.Source, node));
+                foreach (var child in Children(owner.Source, node)) if (child.LocalName != "annotation") Error("Attribute group reference cannot have a body.", At(owner.Source, child));
+                var name = QName(owner, node, Required(owner.Source, node, "ref"), "attributeGroup");
                 AttributeGroup(Find("attributeGroup", name, owner), added, out var includedWildcard);
                 if (includedWildcard is not null) wildcard = wildcard is null ? includedWildcard : Intersection(wildcard, includedWildcard);
             }
@@ -704,8 +712,14 @@ internal sealed class XsdCompilation
         try
         {
             foreach (var child in Children(owner.Source, owner.Node)) if (child.LocalName is not ("annotation" or "attribute" or "attributeGroup" or "anyAttribute")) Error("Invalid attribute group child.", At(owner.Source, child));
-            if (owner.Previous is not null) CheckRedefinedGroup(owner, "attributeGroup");
+            int selfReferences = owner.Previous is null ? -1 : CheckRedefinedGroup(owner, "attributeGroup");
             AttributeBody(owner, owner.Node, bindings, out wildcard);
+            if (selfReferences == 0)
+            {
+                var original = Find("attributeGroup", owner.Previous!.Value, owner); var originalBindings = new List<XsdAttributeBinding>();
+                AttributeGroup(original, originalBindings, out var originalWildcard);
+                RetainGroupRestriction(owner, original, "attribute-group", null, null, bindings, originalBindings, wildcard, originalWildcard);
+            }
         }
         finally { expanding.Remove(key); }
     }
@@ -752,7 +766,7 @@ internal sealed class XsdCompilation
         else if (node.LocalName == "group")
         {
             if (node.GetAttribute("name") is not null) Error("Local group must use ref.", At(s, node));
-            var name = QName(owner, node, Required(s, node, "ref"), true);
+            var name = QName(owner, node, Required(s, node, "ref"), "group");
             foreach (var child in Children(s, node)) if (child.LocalName != "annotation") Error("Group ref cannot have a body.", At(s, child));
             term = Group(Find("group", name, owner), node);
         }
@@ -790,14 +804,22 @@ internal sealed class XsdCompilation
         using var scope = Descend(owner.Source, owner.Node);
         try
         {
-            if (owner.Previous is not null) CheckRedefinedGroup(owner, "group");
+            int selfReferences = owner.Previous is null ? -1 : CheckRedefinedGroup(owner, "group");
             var body = SingleBody(owner);
             if (body.LocalName is not ("sequence" or "choice" or "all") || body.GetAttribute("minOccurs") is not null || body.GetAttribute("maxOccurs") is not null) Error("Global group requires one compositor without occurrence attributes.", At(owner.Source, body));
-            return (XsdGroupTerm)Particle(owner, body, true).Term;
+            var particle = Particle(owner, body, true);
+            if (selfReferences == 0)
+            {
+                var original = Find("group", owner.Previous!.Value, owner);
+                var originalTerm = Group(original, site); Components(At(original.Source, original.Node));
+                var originalParticle = new XsdParticle(originalTerm, BigInteger.One, BigInteger.One, At(original.Source, original.Node));
+                RetainGroupRestriction(owner, original, "model-group", particle, originalParticle, [], [], null, null);
+            }
+            return (XsdGroupTerm)particle.Term;
         }
         finally { expanding.Remove(key); }
     }
-    private void CheckRedefinedGroup(Declaration owner, string kind)
+    private int CheckRedefinedGroup(Declaration owner, string kind)
     {
         int count = 0;
         void Visit(XmlNode node)
@@ -806,7 +828,7 @@ internal sealed class XsdCompilation
             foreach (var child in Children(owner.Source, node))
             {
                 if (child.LocalName == "annotation") continue;
-                if (child.LocalName == kind && child.GetAttribute("ref") is { } lexical && QName(owner, child, lexical, true) == owner.Previous)
+                if (child.LocalName == kind && child.GetAttribute("ref") is { } lexical && QName(owner, child, lexical, kind) == owner.Previous)
                 {
                     count++;
                     if (kind == "group" && (Occurs(owner.Source, child, "minOccurs") != 1 || Occurs(owner.Source, child, "maxOccurs") != 1 || child.GetAttribute("maxOccurs") == "unbounded")) Error("Redefinition self-reference requires occurrences of one.", At(owner.Source, child));
@@ -816,19 +838,74 @@ internal sealed class XsdCompilation
         }
         Visit(owner.Node);
         if (count > 1) Error("Multiple redefinition self-references.", At(owner.Source, owner.Node));
-        // Zero-reference restrictions retain the old definition in the graph;
-        // content derivation/attribute value restriction checks finalize at joins.
+        return count;
+    }
+    private void RetainGroupRestriction(Declaration owner, Declaration original, string kind,
+        XsdParticle? currentParticle, XsdParticle? originalParticle,
+        IReadOnlyList<XsdAttributeBinding> currentAttributes, IReadOnlyList<XsdAttributeBinding> originalAttributes,
+        XsdWildcard? currentWildcard, XsdWildcard? originalWildcard)
+    {
+        // Zero-self-reference redefine expresses a restriction. The frozen graph
+        // has no group table, so retain both as anonymous type programs linked by
+        // Restriction. Content/facet joins can then check the real old/new programs
+        // before publishing a facade; this obligation must not disappear at seal.
+        var oldName = new SchemaName(owner.Source.Target, "#" + kind + ":" + original.Name.LocalName);
+        var newName = new SchemaName(owner.Source.Target, "#" + kind + ":" + owner.Name.LocalName);
+        if (!types.ContainsKey(oldName))
+        {
+            Components(At(original.Source, original.Node));
+            types.Add(oldName, new(oldName, AnyType, XsdDerivation.Restriction, false, true, [], [],
+                originalParticle is null ? XsdContentKind.Empty : XsdContentKind.ElementOnly, null, originalParticle, originalAttributes, originalWildcard, At(original.Source, original.Node)));
+        }
+        if (!types.ContainsKey(newName))
+        {
+            Components(At(owner.Source, owner.Node));
+            types.Add(newName, new(newName, oldName, XsdDerivation.Restriction, false, true, [], [],
+                currentParticle is null ? XsdContentKind.Empty : XsdContentKind.ElementOnly, null, currentParticle, currentAttributes, currentWildcard, At(owner.Source, owner.Node)));
+        }
     }
     private int Identity(Declaration owner, XmlNode node)
     {
         var s = owner.Source; var name = Named(s, node);
         foreach (var identity in identities) if (identity.Name == name) Error("Duplicate identity constraint name.", At(s, node));
         string? selector = null; var fields = new List<string>();
+        var originalContext = Context(s, node);
+        var prefixes = new Dictionary<string,string>(originalContext.Prefixes, StringComparer.Ordinal);
+        var aliases = new Dictionary<(string,string),string>(); int aliasId = 0;
+        string Expression(XmlNode authored)
+        {
+            var lexical = Required(s, authored, "xpath"); var local = Context(s, authored); var rewritten = new StringBuilder();
+            for (int index = 0; index < lexical.Length;)
+            {
+                Tick(At(s, authored)); char current = lexical[index];
+                if (current is '\'' or '"')
+                {
+                    int end = index + 1; while (end < lexical.Length && lexical[end] != current) { Tick(At(s, authored)); end++; }
+                    if (end < lexical.Length) end++; rewritten.Append(lexical.AsSpan(index,end-index)); index = end; continue;
+                }
+                if (!(char.IsLetter(current) || current == '_' || current >= 0x80)) { rewritten.Append(current); index++; continue; }
+                int stop = index + 1;
+                while (stop < lexical.Length && XPathNameChar(lexical[stop])) { Tick(At(s, authored)); stop++; }
+                if (stop < lexical.Length && lexical[stop] == ':' && (stop + 1 == lexical.Length || lexical[stop+1] != ':'))
+                {
+                    string prefix = NCName(lexical[index..stop], s, authored);
+                    if (!local.Prefixes.TryGetValue(prefix,out var ns)) Error("Unbound identity XPath prefix.", At(s, authored));
+                    if (!aliases.TryGetValue((prefix,ns!),out var alias))
+                    {
+                        do { alias = "_xsd" + (++aliasId).ToString(CultureInfo.InvariantCulture); } while (prefixes.ContainsKey(alias));
+                        aliases.Add((prefix,ns!),alias); prefixes.Add(alias,ns!);
+                    }
+                    rewritten.Append(alias); rewritten.Append(':'); index = stop+1;
+                }
+                else { rewritten.Append(lexical.AsSpan(index,stop-index)); index = stop; }
+            }
+            return rewritten.ToString();
+        }
         foreach (var child in Children(s, node))
         {
             if (child.LocalName == "annotation") continue;
-            if (child.LocalName == "selector" && selector is null && fields.Count == 0) selector = Required(s, child, "xpath");
-            else if (child.LocalName == "field" && selector is not null) fields.Add(Required(s, child, "xpath"));
+            if (child.LocalName == "selector" && selector is null && fields.Count == 0) selector = Expression(child);
+            else if (child.LocalName == "field" && selector is not null) fields.Add(Expression(child));
             else Error("Invalid identity selector/field order.", At(s, child));
         }
         if (selector is null || fields.Count == 0) Error("Identity constraint requires a selector and fields.", At(s, node));
@@ -836,8 +913,9 @@ internal sealed class XsdCompilation
         SchemaName? refer = kind == XsdIdentityKind.KeyRef ? QName(owner, node, Required(s, node, "refer")) : null;
         if (kind != XsdIdentityKind.KeyRef && node.GetAttribute("refer") is not null) Error("Only keyref may have refer.", At(s, node));
         Components(At(s, node)); int id = identities.Count;
-        identities.Add(new(id, name, kind, selector!, fields, refer, Context(s, node), At(s, node))); return id;
+        identities.Add(new(id, name, kind, selector!, fields, refer, new(prefixes, originalContext.DefaultNamespace, originalContext.BaseUri), At(s, node))); return id;
     }
+    private static bool XPathNameChar(char value) => char.IsLetterOrDigit(value) || value is '_' or '-' or '.' || value >= 0x80;
     private void Notation(Declaration owner)
     {
         var s = owner.Source; var node = owner.Node;
@@ -879,7 +957,7 @@ internal sealed class XsdCompilation
             }
         }
         foreach (var attribute in attributes)
-        { Tick(attribute.Location); if (Type(attribute.Type).SimpleType is null) Error("Attribute requires a simple type.", attribute.Location); }
+        { Tick(attribute.Location); if (!simple.ContainsKey(Type(attribute.Type).Name)) Error("Attribute requires a simple type definition.", attribute.Location); }
         foreach (var identity in identities)
         {
             Tick(identity.Location); if (identity.Kind != XsdIdentityKind.KeyRef) continue;
@@ -910,7 +988,7 @@ internal sealed class XsdCompilation
         {
             Tick(at); if (!seen.Add(derived)) Error("Circular type derivation.", at);
             var type = Type(derived); if (type.BaseType is not { } parent) Error("Substitution type does not derive from the head type.", at);
-            path.Add(type.Derivation); derived = type.BaseType!.Value;
+            path.Add(type.Derivation is XsdDerivation.List or XsdDerivation.Union ? XsdDerivation.Restriction : type.Derivation); derived = type.BaseType!.Value;
         }
         return path;
     }
@@ -937,6 +1015,9 @@ internal sealed class XsdCompilation
                 "notation" => "id name public system", _ when IsFacet(node.LocalName) => "id value fixed", _ => "#invalid"
             };
             if (allowed == "#invalid") Error("Unknown XSD construct (XSD 1.0 required).", At(source, node));
+            bool globalType = !node.Parent.IsDefault && node.Parent.NamespaceUri == Namespace && node.Parent.LocalName is "schema" or "redefine";
+            if (!globalType && node.LocalName == "simpleType") allowed = "id";
+            if (!globalType && node.LocalName == "complexType") allowed = "id mixed";
             foreach (var attribute in node.Attributes)
             {
                 Tick(At(source, node));
@@ -1008,7 +1089,12 @@ internal static class XsdSubstitutionGroups
         ArgumentNullException.ThrowIfNull(schema); ArgumentNullException.ThrowIfNull(operation);
         if ((uint)headId >= (uint)schema.Elements.Count) throw new ArgumentOutOfRangeException(nameof(headId));
         var result = new List<int>(); var head = schema.Elements[headId];
-        if (head.Block.Contains(XsdElementBlock.Substitution)) return result.AsReadOnly();
+        var typeMap = new Dictionary<SchemaName, XsdTypeDefinition>();
+        foreach (var definition in schema.Types)
+        { if (!operation.Charge(1, definition.Location)) throw SchemaSnapshots.Failure(operation); typeMap.Add(definition.Name, definition); }
+        var headType = typeMap[head.Type];
+        if (head.Block.Contains(XsdElementBlock.Substitution))
+        { if (!head.Abstract) result.Add(headId); return result.AsReadOnly(); }
         foreach (var candidate in schema.GlobalElements.Values)
         {
             var element = schema.Elements[candidate]; if (element.Abstract) continue;
@@ -1020,14 +1106,22 @@ internal static class XsdSubstitutionGroups
             }
             if (!affiliated) continue;
             SchemaName type = element.Type; bool blocked = false;
-            var typeMap = new Dictionary<SchemaName, XsdTypeDefinition>(); foreach (var definition in schema.Types) typeMap.Add(definition.Name, definition);
-            var typeSeen = new HashSet<SchemaName>();
+            var typeSeen = new HashSet<SchemaName>(); var path = new List<XsdTypeDefinition>();
             while (type != head.Type)
             {
                 if (!operation.Charge(1, element.Location)) throw SchemaSnapshots.Failure(operation);
-                if (!typeSeen.Add(type) || !typeMap.TryGetValue(type, out var definition) || definition.BaseType is not { } basis) { blocked = true; break; }
-                if (definition.Derivation == XsdDerivation.Restriction && head.Block.Contains(XsdElementBlock.Restriction) || definition.Derivation == XsdDerivation.Extension && head.Block.Contains(XsdElementBlock.Extension)) { blocked = true; break; }
-                type = basis;
+                if (!typeSeen.Add(type) || !typeMap.TryGetValue(type,out var definition) || definition.BaseType is not { } basis) { blocked = true; break; }
+                path.Add(definition); type = basis;
+            }
+            bool restriction = false, extension = false;
+            foreach (var definition in path)
+            { restriction |= definition.Derivation is XsdDerivation.Restriction or XsdDerivation.List or XsdDerivation.Union; extension |= definition.Derivation == XsdDerivation.Extension; }
+            if (restriction && head.Block.Contains(XsdElementBlock.Restriction) || extension && head.Block.Contains(XsdElementBlock.Extension)) blocked = true;
+            path.Add(headType);
+            foreach (var definition in path)
+            {
+                if (!operation.Charge(1, element.Location)) throw SchemaSnapshots.Failure(operation);
+                if (restriction && definition.Block.Contains(XsdTypeBlock.Restriction) || extension && definition.Block.Contains(XsdTypeBlock.Extension)) blocked = true;
             }
             if (!blocked) result.Add(candidate);
         }

@@ -93,7 +93,47 @@ public sealed class CompilerTests
     {
         var graph=Compile("<xs:element name='a' type='xs:anyType' abstract='true'/><xs:element name='b' substitutionGroup='a' type='xs:string'/><xs:element name='c' substitutionGroup='b' type='xs:token'/>");
         Assert.Equal(new[]{1,2},XsdSubstitutionGroups.Members(graph,0,new SchemaCompileOperation()));
-        var blocked=Compile("<xs:element name='a' block='substitution'/><xs:element name='b' substitutionGroup='a'/>"); Assert.Empty(XsdSubstitutionGroups.Members(blocked,0,new SchemaCompileOperation()));
+        var blocked=Compile("<xs:element name='a' block='substitution'/><xs:element name='b' substitutionGroup='a'/>"); Assert.Equal(new[]{0},XsdSubstitutionGroups.Members(blocked,0,new SchemaCompileOperation()));
+    }
+    [Fact]
+    public void SubstitutionTypeInferenceAndTypeBlockAreApplied()
+    {
+        var inferred=Compile("<xs:element name='head' type='xs:string'/><xs:element name='member' substitutionGroup='head'/>"); Assert.Equal(inferred.Elements[0].Type,inferred.Elements[1].Type);
+        var blocked=Compile("<xs:complexType name='Base' block='extension'/><xs:complexType name='Derived'><xs:complexContent><xs:extension base='Base'/></xs:complexContent></xs:complexType><xs:element name='head' type='Base'/><xs:element name='member' type='Derived' substitutionGroup='head'/>"); Assert.Equal(new[]{0},XsdSubstitutionGroups.Members(blocked,0,new SchemaCompileOperation()));
+    }
+    [Fact]
+    public void IntermediateTypeBlockConstrainsSubstitutionAcrossTheWholeChain()
+    {
+        static string Body(string block)=>"<xs:complexType name='Base'/><xs:complexType name='Mid' "+block+"><xs:complexContent><xs:extension base='Base'/></xs:complexContent></xs:complexType><xs:complexType name='Leaf'><xs:complexContent><xs:extension base='Mid'/></xs:complexContent></xs:complexType><xs:element name='head' type='Base'/><xs:element name='member' type='Leaf' substitutionGroup='head'/>";
+        var blocked=Compile(Body("block='extension'")); Assert.Equal(new[]{0},XsdSubstitutionGroups.Members(blocked,0,new SchemaCompileOperation()));
+        var allowed=Compile(Body("")); Assert.Equal(new[]{0,1},XsdSubstitutionGroups.Members(allowed,0,new SchemaCompileOperation()));
+        var concrete=Compile("<xs:element name='head' block='substitution'/><xs:element name='member' substitutionGroup='head'/>"); Assert.Equal(new[]{0},XsdSubstitutionGroups.Members(concrete,0,new SchemaCompileOperation()));
+    }
+    [Fact]
+    public void IdentitySelectorAndEachFieldKeepConflictingLocalPrefixMeanings()
+    {
+        var graph=Compile("<xs:element name='root'><xs:key name='k'><xs:selector xmlns:p='urn:rows' xpath='p:row'/><xs:field xmlns:p='urn:a' xpath='@p:id'/><xs:field xmlns:p='urn:b' xpath='@p:id'/></xs:key></xs:element>");
+        var identity=Assert.Single(graph.Identities);
+        string Expanded(string xpath){string prefix=xpath.TrimStart('@').Split(':')[0];return identity.Context.Prefixes[prefix];}
+        Assert.Equal("urn:rows",Expanded(identity.Selector));Assert.Equal("urn:a",Expanded(identity.Fields[0]));Assert.Equal("urn:b",Expanded(identity.Fields[1]));
+        Assert.NotEqual(identity.Fields[0],identity.Fields[1]);
+    }
+    [Fact]
+    public void ReferenceOnlyAttributeGroupsAcceptAnnotationsAndOrderedEmptyGroups()
+    {
+        var graph=Compile("<xs:attributeGroup name='Empty'/><xs:attributeGroup name='A'><xs:attribute name='a'/></xs:attributeGroup><xs:complexType name='T'><xs:sequence/><xs:attributeGroup ref='Empty'/><xs:attributeGroup ref='A'><xs:annotation><xs:documentation>retained definition only</xs:documentation></xs:annotation></xs:attributeGroup></xs:complexType>");
+        Assert.Single(graph.Types.Single(t=>t.Name==Name("T")).Attributes);
+    }
+    [Fact]
+    public void ElementsMayUseComplexSimpleContentButSimpleGrammarMayNot()
+    {
+        var graph=Compile("<xs:complexType name='C'><xs:simpleContent><xs:extension base='xs:string'/></xs:simpleContent></xs:complexType><xs:element name='r' type='C'/>"); Assert.Equal(Name("C"),Assert.Single(graph.Elements).Type);
+    }
+    [Fact]
+    public void XmlWhitespaceIsCollapsedForTokenAttributesAndUnicodeNamesSurvive()
+    {
+        var graph=Compile("<xs:complexType name=' 名 '><xs:sequence><xs:element name=' child ' form=' qualified '/></xs:sequence></xs:complexType>","targetNamespace='urn:t' elementFormDefault=' qualified '");
+        Assert.Contains(graph.Types,t=>t.Name==Name("名","urn:t")); Assert.Equal(Name("child","urn:t"),graph.Elements[0].Name);
     }
     [Fact]
     public void ComplexExtensionCarriesBaseContentAttributesAndWildcard()
@@ -124,6 +164,7 @@ public sealed class CompilerTests
     [InlineData("<xs:complexType name='T'><xs:all><xs:element name='x' maxOccurs='2'/></xs:all></xs:complexType>")]
     [InlineData("<xs:complexType name='T'><xs:sequence><xs:all/></xs:sequence></xs:complexType>")]
     [InlineData("<xs:attribute name='a' type='xs:anyType'/>")]
+    [InlineData("<xs:complexType name='T'><xs:simpleContent><xs:restriction base='xs:string'/></xs:simpleContent></xs:complexType>")]
     [InlineData("<xs:element name='r' default='a' fixed='b'/>")]
     [InlineData("<xs:element name='r' final='substitution'/>")]
     [InlineData("<xs:complexType name='T' block='substitution'/>")]
@@ -135,6 +176,16 @@ public sealed class CompilerTests
     [InlineData("<xs:element name='r' nillable='yes'/>")]
     [InlineData("<xs:element name='r' nonsense='value'/>")]
     [InlineData("<xs:element name='r'><xs:keyref name='k' refer='missing'><xs:selector xpath='x'/><xs:field xpath='@id'/></xs:keyref></xs:element>")]
+    [InlineData("<xs:complexType name='T'><xs:attribute name='x'/><xs:sequence/></xs:complexType>")]
+    [InlineData("<xs:group name='g' ref='g'><xs:sequence/></xs:group>")]
+    [InlineData("<xs:attributeGroup name='g' ref='g'/>")]
+    [InlineData("<xs:element name='r'><xs:complexType name='T'/></xs:element>")]
+    [InlineData("<xs:element name='r'><xs:simpleType final='restriction'><xs:restriction base='xs:string'/></xs:simpleType></xs:element>")]
+    [InlineData("<xs:complexType name='C'><xs:simpleContent><xs:extension base='xs:string'/></xs:simpleContent></xs:complexType><xs:attribute name='a' type='C'/>")]
+    [InlineData("<xs:complexType name='C'><xs:simpleContent><xs:extension base='xs:string'/></xs:simpleContent></xs:complexType><xs:simpleType name='S'><xs:restriction base='C'/></xs:simpleType>")]
+    [InlineData("<xs:complexType name='C'><xs:simpleContent><xs:extension base='xs:string'/></xs:simpleContent></xs:complexType><xs:simpleType name='S'><xs:list itemType='C'/></xs:simpleType>")]
+    [InlineData("<xs:complexType name='C'><xs:simpleContent><xs:extension base='xs:string'/></xs:simpleContent></xs:complexType><xs:simpleType name='S'><xs:union memberTypes='C'/></xs:simpleType>")]
+    [InlineData("<xs:attributeGroup name='A'/><xs:complexType name='T'><xs:attributeGroup ref='A'><xs:attribute name='illegal'/></xs:attributeGroup></xs:complexType>")]
     public void InvalidSchemaRejectsWithOwnedRestrictionDiagnostics(string body)
     { var error=Assert.Throws<SchemaCompileException>(()=>Compile(body)); Assert.Contains(error.Diagnostics,d=>d.Code=="XSD.SchemaRestriction"&&d.Severity==XmlDiagnosticSeverity.Error); }
     [Fact]
