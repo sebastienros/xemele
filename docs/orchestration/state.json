@@ -16,6 +16,16 @@
       "base_revision": "728e9aa278282c0f93db8ac4ed19b27385cfae6a",
       "claim_revision": "30dc48dd6bf722837928f00898e2d42d9b770920",
       "stage": "dispatched after lease release; implementing compiled internal models"
+    },
+    {
+      "task_id": "M5-c14n",
+      "agent_id": "/root/c14n",
+      "worktree": "/private/tmp/xemele-m5-c14n",
+      "branch": "codex/m5-c14n",
+      "base_revision": "7e3d4a5929023f7402fa4c0d8366bf20763344b4",
+      "claim_revision": "193bcda0354ef962c01292f4c12cd9c4153e96b1",
+      "checkout_revision": "d619b132d48247c0c8da777a95b2bbf09cc01f2c",
+      "stage": "resumed from verified canonical provenance; implementing exact algorithms"
     }
   ],
   "integration_queue": [],
@@ -27,9 +37,9 @@
     }
   ],
   "next_actions": [
-    "Reclaim suspended canonicalizer from verified provenance integration and resume preservedWIP.",
-    "Review DTD compiler when returned; exact performance lease and source-only review.",
-    "Complete M5-gate and sole-writer M6 transfer."
+    "Review and measure completed DTD model/canonicalizer serially under exact leases.",
+    "Verify DTD model before facade/instance evaluator starts.",
+    "Complete conformance corpus and M5-gate then sole-writer M6 transfer."
   ],
   "last_verified_task": "M5-canonical-provenance",
   "last_integrated_revision": "af63f96ee2ebccf00d6d3e8c7b9100721787c5d7",
@@ -819,15 +829,7 @@
     }
   ],
   "metadata_correction": "PI rawAPI report uses inventory.apiDeclarations, not wrapper members. Initialrootmetadata assertion stopped before taskstate writes; d539f13 preserves actualpassing0869bde evidence, separateverifiedmetadata follows.",
-  "suspended_assignments": [
-    {
-      "task_id": "M5-c14n",
-      "branch": "codex/m5-c14n",
-      "worktree": "/private/tmp/xemele-m5-c14n",
-      "partial_revision": "c8a3ae0253fe79a8cb61be40609532fcd9cc8b5a",
-      "reason": "Await owning canonical provenance repair; parked no workloads"
-    }
-  ],
+  "suspended_assignments": [],
   "allocation_research": {
     "issue": "https://github.com/dotnet/runtime/issues/134724",
     "draft_fix": "https://github.com/dotnet/runtime/pull/134855",
