@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "id": "M6-cli-api-fragment",
+  "milestone": "M6",
+  "title": "Remove zero-member CLI API fragment from official inventory",
+  "kind": "feature",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "depends_on": [
+    "M6-cli"
+  ],
+  "goals": [
+    "G17"
+  ],
+  "specs": [
+    "docs/specs/integration.md"
+  ],
+  "owns": [
+    "docs/api/M6-cli.txt",
+    "docs/reports/M6-cli-api-fragment/"
+  ],
+  "api_or_output": "No CLI library API; existing 1054 member union unchanged",
+  "acceptance": [
+    {
+      "id": "M6-cli-api-fragment-A1",
+      "description": "Remove header-only zero-member CLI fragment rather than adding dummy public members or weakening official inventory validation; preserve exact 1054 declaration union.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M6-cli-api-fragment-A2",
+      "description": "Official inventory and compiled API comparison pass with original offline resources and all prior rows; no runtime/shared-tool edits. Record actual revision/checks and planning validation.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "Gate officialinventory rejects header-only docs/api/M6-cli.txt; CLI is internal and addszeroAPI. Owning deletion repair requested, no API/tool semanticschange.",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}
