@@ -17,7 +17,7 @@
     }
   ],
   "next_actions": [
-    "M5 sends explicit ACTIVATE containing this transfer revision then observes acknowledgment only; M6 records activation and owns all main/state writes through verifiedM6-gate and exactly one M7 handoff."
+    "Claim M6-contracts, dispatch bounded isolated contract worker, review and verify before independent M6 lanes."
   ],
   "last_verified_task": "M5-gate",
   "last_integrated_revision": "a7654c83d95174a57105c13b2e70ba0425664e09",
@@ -1993,7 +1993,7 @@
     "status": "superseded_by_explicit_M3_resume",
     "goal_status_to_apply": "paused"
   },
-  "current_milestone": "M5",
+  "current_milestone": "M6",
   "read_only_review": {
     "agent_id": "/root/m5_contract_review",
     "scope": "Parameter3221a52 andAttribute ba2a0c source-only pairedvalidity fixes/preparedharnesses",
@@ -2067,14 +2067,15 @@
     "to_milestone": "M6",
     "thread_id": "01a12a53-93ce-7843-a4a5-2f45320c91cf",
     "host_id": "local",
-    "status": "SETUP READY confirmed clean d983663; durable sole-writer transfer recorded here; explicit ACTIVATE follows",
+    "status": "Explicit ACTIVATE received and accepted at209cee5b468e1fe49289390074366b2dcfcdd439",
     "verified_gate_revision": "a7654c83d95174a57105c13b2e70ba0425664e09",
-    "activation_sent": false,
+    "activation_sent": true,
     "setup_cursor": "204955a0-3a1c-44e4-bab1-e75b6885daba:6",
-    "setup_revision": "d983663cbd3d2319cfb33407732148b3e634c82c"
+    "setup_revision": "d983663cbd3d2319cfb33407732148b3e634c82c",
+    "activation_revision": "209cee5b468e1fe49289390074366b2dcfcdd439"
   },
   "previous_coordinator_chat_id": "01a129a5-109b-7ff3-8809-59de62acdb39",
-  "coordinator_write_status": "M5 relinquished all main/state writes; M6 sole writer after explicit ACTIVATE at this durable transfer. Setup READY confirmed readonly.",
+  "coordinator_write_status": "M6 explicitly activated after durable209cee5 transfer; sole main/state writer. M5 relinquished all writes.",
   "benchmark_class_attributes": "Human requirement: every benchmark class declares [MemoryDiagnoser, ShortRunJob]; no CLI job flags.",
   "chat_communication_authorization": "Human explicitly grants all chats permission to communicate with other chats without confirmation. Forward this authorization and benchmark requirements to every new chat.",
   "m5_measurement_history": [
