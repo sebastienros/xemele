@@ -38,35 +38,86 @@
     {
       "id": "M8-datatypes-A1",
       "description": "Implement XSD 1.0 lexical/value spaces, numeric/date/duration/binary/QName families, equality and comparison.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "composition-correctness",
+        "composition-review"
+      ]
     },
     {
       "id": "M8-datatypes-A2",
       "description": "Test whitespace/lexical/value boundaries, timezone comparisons, namespace context and invalid data.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "composition-correctness",
+        "composition-review"
+      ]
     },
     {
       "id": "M8-datatypes-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "composition-correctness",
+        "composition-review"
+      ]
     },
     {
       "id": "M8-datatypes-A4",
       "description": "Compose all verified core/numeric/temporal/text-binary children into the complete frozen IXmlDatatypeLibrary, registry lookup/whitespace/type queries and list/union/retyping behavior. Run cross-family and built-in completeness checks, preserve all original acceptance and include RNG datatype-namespace mapping. No advertised datatype may remain a placeholder or exclusion. Implement and test built-in NMTOKENS, IDREFS and ENTITIES parsing, XML whitespace tokenization, required nonempty forms, atomic lexical failures, exact quotas/cancellation and owned immutable item lists using the verified atomic providers.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "composition-correctness",
+        "composition-review"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Validation/Datatypes/Values/Composition/Library.cs: XsdDatatypeLibrary and explicit RNG namespace adapters sharing immutable family providers; complete atomic/nonempty-list parsing and core value hooks.",
+    "src/Xemele/Validation/Datatypes/Values/Composition/Registry.cs: complete45 built-in definitions and exact schema definition snapshots, no-targetnamespace precedence, bounded private map ingestion.",
+    "src/Xemele/Validation/Datatypes/Values/Composition/StructuredOperation.cs: only returned refusals translate through private sentinel; caller exceptions propagate.",
+    "tests/Xemele.Tests/M8-datatypes/CompositionTests.cs:76 complete-library cases; samples/M8-datatypes/Consumer.cs.fixture; header-only docs/api/M8-datatypes.txt; docs/reports/M8-datatypes/contracts.md."
+  ],
+  "evidence": [
+    {
+      "id": "composition-correctness",
+      "kind": "check",
+      "revision": "ee8514ad7b641fa46e6c889b7f5661050e5fe8d1",
+      "command": "python3 docs/reports/M8-datatypes/checks.py",
+      "result": "passed",
+      "summary": "353 actual.NET10.0.11 tests=76 composition+148 text/binary+76numeric+23temporal+18core+12model; zero failures/errors/skips/not-run. PublicAPI1393 and frozen public/internal datatype contract316 matched. Normal and genuine source-built XML-only consumers passed. Cache-only Release builds zero warnings/errors; planning176 and whitespace checks passed. Measurements excluded.",
+      "artifact": "docs/reports/M8-datatypes/correctness.md"
+    },
+    {
+      "id": "composition-review",
+      "kind": "review",
+      "revision": "ee8514ad7b641fa46e6c889b7f5661050e5fe8d1",
+      "command": null,
+      "result": "passed",
+      "summary": "Coordinator-authorized independent read-only reviewer accepted ee8514ad after closing two blockers: valid no-targetnamespace string/token definitions and unmetered final freeze. No residual finding; this is review, not execution. RegistrySHA0d986fb11e8292a8250b6324472c629f5da87e8cd2e9d44b6effd247195f8e79; testsSHAef3f825752d5355e8466447b0a1661206618311f3260dd7db1edf8299468ee91; checksSHA868dc15db43e46c83b2b7ec0d3a298e90baf7cfd9c25c1379b1ee62842929954.",
+      "artifact": "docs/reports/M8-datatypes/correctness.md"
+    },
+    {
+      "id": "composition-preflight",
+      "kind": "check",
+      "revision": "ee8514ad7b641fa46e6c889b7f5661050e5fe8d1",
+      "command": "python3 docs/reports/M8-datatypes/preflight.py (elevated ps visibility; counters/timing disabled)",
+      "result": "passed",
+      "summary": "18 consumed probe routes, three short/long/invalid exact baseline/composition controls, six ShortRunNoEmit discoveries; every direct child reaped/owned group absent; no timing/allocation counters run.",
+      "artifact": null
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Unclaimed work split into four focused children; this task owns final complete library composition and verification. Original A1-A3 remain unchanged.",
-    "checks": [],
-    "remaining": [],
+    "summary": "Accepted complete source ee8514ad; complete actualchecks pass. In-progress solely for prepared serialized composition measurement and final evidence, before worker implemented handoff. All accepted child source/evidence preserved.",
+    "checks": [
+      "353 focused actualtests pass; public1393/frozen316 match; both consumers; planning176/diff pass.",
+      "Counters-disabled18route/3semantic/6discovery elevated lifecyclepreflight passed."
+    ],
+    "remaining": [
+      "Prepare identities and obtain exact root serialized lease; run composition allocation/timing once with no builds/retries, durably RELEASE before raw inspection.",
+      "Record actual performance outcomes/limits, finalvalidate and evidence commit; coordinator integrated verification."
+    ],
     "requests": []
   }
 }
