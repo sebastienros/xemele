@@ -4,11 +4,11 @@
   "milestone": "M8",
   "title": "Shared datatype values and family contracts",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M8 coordinator01a12c6c-b333-71d3-877f-0d186618e21d / assigned isolated worker",
   "branch": "codex/m8-datatypes-core",
   "base_revision": "e83c84546eceec056e4840c2d12ea2e04d886630",
-  "integration_revision": null,
+  "integration_revision": "2a15ee90f9ff5f57ff069d10c215b878673c33d5",
   "depends_on": [
     "M8-model"
   ],
@@ -35,7 +35,8 @@
       "status": "passed",
       "evidence": [
         "core-correctness",
-        "core-review"
+        "core-review",
+        "integrated-verification"
       ]
     },
     {
@@ -44,7 +45,8 @@
       "status": "passed",
       "evidence": [
         "core-correctness",
-        "core-review"
+        "core-review",
+        "integrated-verification"
       ]
     },
     {
@@ -55,7 +57,8 @@
         "core-correctness",
         "core-review",
         "measurement-preparation",
-        "core-measurements"
+        "core-measurements",
+        "integrated-verification"
       ]
     }
   ],
@@ -103,6 +106,15 @@
       "result": "passed",
       "summary": "10allocation routes32warm/64samples:4borrowed routes0B every sample;owned short/long string40/2072B,setup512B,emptylist88B,union/retype40B.Coldsetup42720B;positive1048B;retained256strings inclusive GC delta1076824B(not exactper-value).8ShortRunNoEmit BDN cases succeeded0B,core1.48-1.84x slower than minimal collapse-only baseline,no speedclaim.254identity checks before/after;2children exit0,reaped,groupsabsent,logsclosed;55.418s;durable releaseACK before rawinspection.",
       "artifact": "docs/reports/M8-datatypes-core/allocations.md"
+    },
+    {
+      "id": "integrated-verification",
+      "kind": "integration",
+      "revision": "2a15ee90f9ff5f57ff069d10c215b878673c33d5",
+      "command": "python3 docs/reports/M8-datatypes-core/checks.py at 4e734d99fbe0ef70af22b03991ab6e433c67b591; final report-only integration retains identical code/build inputs",
+      "result": "passed",
+      "summary": "30 exact actual Arm64 .NET10.0.11 cases passed, zero errors/failures/skips/not-run; public API1393, integrated and XML-only consumers,176-task validation and whitespace passed. Root independently inspected ten allocation distributions/eight BDN rows and all254 identities; no speedup claimed.",
+      "artifact": "docs/reports/M8-datatypes-core/integration.md"
     }
   ],
   "blockers": [],
@@ -118,7 +130,7 @@
       "Exclusive measurement sequence passed:4borrowed routes0B,owned allocations separated,8ShortRunNoEmit cases;all254identities stable and lifecyclereleased before inspection"
     ],
     "remaining": [
-      "Coordinator independently inspect transient raw results,integrate accepted source/evidence and rerun relevant combined correctness/API/consumer checks;integration_revision remains null"
+      "Composition/family parser evidence and gate corpus/x64 confirmation remain assigned downstream tasks."
     ],
     "requests": [
       "Composer owns built-in NMTOKENS/IDREFS/ENTITIES parse/nonempty enforcement;coordinator accepted and routes ownership outside this task",
