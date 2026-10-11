@@ -1,0 +1,19 @@
+using Xemele.Validation;
+var provider = new NumericDatatypeProvider();
+var context = new SchemaNamespaceContext(new Dictionary<string, string>(), "", null);
+var operation = new SchemaCompileOperation(new() { MaxOperations = null, MaxComponents = null, Limits = new() { EvaluationWork = null } });
+DatatypeAtomicValue Parse(string type, string input)
+{
+    if (!provider.TryParse(DatatypeTypes.All[type], input, context, operation, out var value, out var error) || value is null || error is not null) throw new InvalidOperationException();
+    return value;
+}
+var integer = Parse("unsignedLong", "18446744073709551615");
+var dec = Parse("decimal", "00018446744073709551615.000");
+if (!DatatypeValues.ValueEquals(integer, dec, operation) || DatatypeValues.Compare(integer, dec, operation) != XmlValueOrder.Equal || DatatypeValues.ValueHashCode(integer, operation) != DatatypeValues.ValueHashCode(dec, operation)) throw new InvalidOperationException();
+if (DatatypeValues.TotalDigits(integer, operation) != 20 || DatatypeValues.FractionDigits(dec, operation) != 0) throw new InvalidOperationException();
+var huge = Parse("integer", new string('9', 4096));
+if (DatatypeValues.TotalDigits(huge, operation) != 4096) throw new InvalidOperationException();
+var nan = Parse("float", "NaN");
+if (!DatatypeValues.ValueEquals(nan, nan, operation)) throw new InvalidOperationException();
+if (DatatypeValues.Compare(Parse("double", "1"), Parse("float", "1"), operation) != XmlValueOrder.Indeterminate) throw new InvalidOperationException();
+Console.WriteLine("PASS: genuine numeric/core consumer, arbitrary precision/ranges, derived identity, digits, NaN and disjoint primitive joins; " + (args.Length == 0 ? "normal" : "XML-only verified prerequisites"));
