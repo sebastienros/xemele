@@ -4,11 +4,11 @@
   "milestone": "M6",
   "title": "Freeze resources and integration contracts",
   "kind": "contract",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M6 coordinator contract worker",
   "branch": "codex/m6-contracts",
   "base_revision": "b585aa38819683e2026e6f833b63dd027716e653",
-  "integration_revision": null,
+  "integration_revision": "6a8c67ecf1cf36afe6af355edf1995bfa3053f67",
   "depends_on": [
     "M5-gate"
   ],
@@ -36,7 +36,8 @@
       "evidence": [
         "M6-contracts-compiled-usage",
         "M6-contracts-source-review",
-        "M6-contracts-planning"
+        "M6-contracts-planning",
+        "integrated-contracts"
       ]
     },
     {
@@ -46,7 +47,8 @@
       "evidence": [
         "M6-contracts-compiled-usage",
         "M6-contracts-source-review",
-        "M6-contracts-planning"
+        "M6-contracts-planning",
+        "integrated-contracts"
       ]
     },
     {
@@ -56,7 +58,8 @@
       "evidence": [
         "M6-contracts-compiled-usage",
         "M6-contracts-source-review",
-        "M6-contracts-planning"
+        "M6-contracts-planning",
+        "integrated-contracts"
       ]
     }
   ],
@@ -93,18 +96,27 @@
       "result": "passed",
       "summary": "Validated all160 records: schema, evidence, acyclic dependencies, additive milestones and ordered ownership. Earlier source/build/package/contract files unchanged against coordinated claim.",
       "artifact": null
+    },
+    {
+      "id": "integrated-contracts",
+      "kind": "integration",
+      "revision": "6a8c67ecf1cf36afe6af355edf1995bfa3053f67",
+      "command": "Fresh default M6 check.py via coordinator adapter excluding only docs/orchestration/state.json from ownership diff; python3 tools/planning/tasks.py validate; git diff --check",
+      "result": "passed",
+      "summary": "Combined isolated integration candidate: all5 fresh local restores/forced builds and four actual10.0.11 DOM/import demonstrations passed; compiled21/23/57 members match and three missing-member controls reject; actual unchanged M0 registry probe0/unknown2; sixteen future vectors only inventory evidence; all160 records validate, whitespace clean. Independent source review approved. No runtime M6 services or AOT/measurement claim. Coordinator state is sole worker-to-combined diff.",
+      "artifact": null
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "M6 independent contracts frozen with compiled representative usage and actual prior APIs; no runtime M6 implementation/stubs. All criteria passed on isolated branch; integrated verification remains coordinator-owned.",
+    "summary": "Verified integrated independent M6 contracts; runtime resource-kind repair required before catalog/XInclude lanes.",
     "checks": [
       "python3 tests/Contracts/Fixtures/M6/check.py --dotnet '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --verify-existing \u2014 passed at b7881d7bd335a8bf53909929d5ef156450494bb4; see report; existing local artifacts rechecked without rebuilding",
       "python3 tools/planning/tasks.py validate \u2014 all160 passed",
       "Initial local-source pinned restores/no-incremental builds for four lanes and owned ApiCheck \u2014 passed; final Catalog private-constructor change selectively rebuilt; initial exploratory extern-constructor warning/glob assertion failures corrected and preserved in README"
     ],
     "remaining": [
-      "Coordinator rerun fresh default full check on integrated repair/contracts before verified; runtime owners add actual behavior/API baselines and allocation evidence, M6 CLI/samples/gate actual AOT/package smoke."
+      "Runtime feature/allocation/package/AOT evidence belongs feature/integration/gate tasks; contract compiled and verified, no stubs shipped."
     ],
     "requests": [
       "Before catalog/XInclude runtime lanes, arrange an ordered owning repair of src/Xemele/Resolution/Core/Resources.cs: append Catalog=2, XIncludeXml=3, XIncludeText=4 preserving ExternalSubset=0/ExternalEntity=1; supply its additive compiled API baseline and undefined-kind regression checks. M2 XmlResolutionSession currently Enum.IsDefined rejects future kinds. Do not edit prior declaration fixture enums or imply current support from numeric casts."
