@@ -4,11 +4,11 @@
   "milestone": "M4",
   "title": "XPath expression compilation",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M4 coordinator / isolated M4-compile worker",
   "branch": "codex/m4-compile",
   "base_revision": "355cd2da435f3960cf67800087b5291fc3f7c546",
-  "integration_revision": null,
+  "integration_revision": "e16d72b74f06d17d21c428ed4ee1456fe91826e2",
   "depends_on": [
     "M4-model",
     "M4-model-construction"
@@ -38,7 +38,8 @@
       "evidence": [
         "independent-source-review",
         "compiler-correctness",
-        "leased-allocation-and-timing"
+        "leased-allocation-and-timing",
+        "coordinator-integration"
       ]
     },
     {
@@ -47,7 +48,8 @@
       "status": "passed",
       "evidence": [
         "compiler-correctness",
-        "affected-model-construction"
+        "affected-model-construction",
+        "coordinator-integration"
       ]
     },
     {
@@ -60,7 +62,8 @@
         "standalone-deliverable",
         "prepared-controls",
         "leased-allocation-and-timing",
-        "final-metadata-checks"
+        "final-metadata-checks",
+        "coordinator-integration"
       ]
     }
   ],
@@ -144,6 +147,15 @@
       "result": "passed",
       "summary": "Final implemented task metadata with these evidence edits validates149 tasks; all criterion evidence populated, integration_revision null. Workspace whitespace passes; introduced feature files are task-owned and no shared/other task files edited. Planning/ownership are metadata checks, not additional runtime tests or measurements.",
       "artifact": "docs/reports/M4-compile/checks.md"
+    },
+    {
+      "id": "coordinator-integration",
+      "kind": "integration",
+      "revision": "e16d72b74f06d17d21c428ed4ee1456fe91826e2",
+      "command": "SDK10.0.400 Release tests/sample/API helper builds; explicit --fx-version10.0.11 focused five M4 namespaces; check_api.py; source sample and check_consumer.py; tasks.py validate; owned diff --check",
+      "result": "passed",
+      "summary": "179 tests passed (82 compiler,14 navigation,30 functions,41 model,12 construction), no failures/skips. Builds zero warnings/errors.893 public APIs and two corruption controls; source and fresh isolated package sample passed;149 tasks validated. Final worker263d0ae merged after checks at7ded237: only four documentation/task-record files changed, executable source/config/input byte-identical to tested source integration, so runtime checks not repeated solely for metadata. Actual allocation/timing and full144/43/3852 identities inspected independently.",
+      "artifact": "docs/reports/M4-compile/integration.md"
     }
   ],
   "blockers": [],
@@ -157,8 +169,7 @@
       "Final implemented metadata planning149, all introduced owned paths vsverified7363691 and full whitespace checks pass; no extra runtime reruns"
     ],
     "remaining": [
-      "Coordinator serial integration verification and combined M4 gate checks; integration_revision intentionally null",
-      "Whole-query/evaluator composition confirmation and later x64/Arm64 release validation of provisional timings; no retained-heap census claim"
+      "Whole-query/evaluator composition and later x64/Arm64 release hardware gates remain their owning tasks; no retained-heap census claim."
     ],
     "requests": []
   }
