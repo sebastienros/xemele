@@ -4,7 +4,7 @@
   "milestone": "M8",
   "title": "Expose internal XPath operation accounting for schema composition",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M8 coordinator 01a12c6c-b333-71d3-877f-0d186618e21d / assigned isolated worker",
   "branch": "codex/m8-xpath-accounting",
   "base_revision": "3000efdc9d9c1768810ace6372ad52aa51be6bd2",
@@ -34,29 +34,132 @@
     {
       "id": "M8-xpath-accounting-A1",
       "description": "Implement the exact frozen internal accounting join using the existing XPath compiler/evaluator; preserve public API and behavior, and report actual charged operations on success and failure with no private reflection or duplicated evaluator.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "xpath-accounting-regressions",
+        "compiled-api-preservation",
+        "source-review"
+      ]
     },
     {
       "id": "M8-xpath-accounting-A2",
       "description": "Test both context forms, actual accounting in finally, option/cancellation/error propagation, independent runs and exact shared-budget boundaries across several expressions using a capped remaining allowance. Earlier public XPath correctness must remain intact.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "xpath-accounting-regressions"
+      ]
     },
     {
       "id": "M8-xpath-accounting-A3",
       "description": "Run focused accounting and affected XPath regressions, confirm unchanged public API, and record applicable owned-evaluation allocation parity/evidence under a prepared bounded lease. Reuse valid unchanged primitive evidence; no zero-allocation claim for owned query results or snapshot setup. Record checks at actual tested revisions.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "release-build",
+        "xpath-accounting-regressions",
+        "compiled-api-preservation",
+        "allocation-preparation-controls",
+        "owned-allocation-evidence",
+        "allocation-review",
+        "planning-whitespace"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/XPath/XPathExpression.cs: exact internal XmlNode/XPathItem EvaluateWithAccounting overloads; actual XPathBudget.Operations copied in finally; public Evaluate delegates preserving context-specific ordering",
+    "src/Xemele/XPath/Evaluation/Accounting.cs: thin static XPathEvaluationAccounting join, no exception translation/reflection/alternate evaluator",
+    "tests/Xemele.Tests/M8-xpath-accounting/AccountingTests.cs: 15 context/accounting/failure/cancellation/snapshot/shared-budget cases; bounded test-local enclosing budget, no M8-model dependency",
+    "docs/reports/M8-xpath-accounting/{ApiCheck/,check_api.py,internal.golden.txt}: whole compiled public metadata preservation and exact five internal rows with corruption controls",
+    "benchmarks/Xemele.Benchmarks/M8-xpath-accounting/: prepared baseline/candidate owned-evaluation probes and original-facade source-linked baseline library",
+    "docs/reports/M8-xpath-accounting/{measurement-plan.json,lease.py,README.md}: bounded lease identities/lifecycle and honest owned allocation numerators/distributions/outlier analysis"
+  ],
+  "evidence": [
+    {
+      "id": "release-build",
+      "kind": "check",
+      "revision": "d766bef0af08e1077c1f7f35ddd525227c6ec28a",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' build tests/Xemele.Tests -c Release --no-restore -m:1 -nr:false -p:UseSharedCompilation=false",
+      "result": "passed",
+      "summary": "Clean committed-tree SDK10.0.400 Release build passed with0 warnings/errors. Runtime/test source identical to implementation88ce17f; measurement plan alone added at d766bef. Initial preliminary dirty-test build failed with struct assignment/cancellation analyzer errors, corrected before implementation commit; see report.",
+      "artifact": "docs/reports/M8-xpath-accounting/README.md"
+    },
+    {
+      "id": "xpath-accounting-regressions",
+      "kind": "check",
+      "revision": "88ce17fc956cb26de15ee3823fe5c766c80f1ddb",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -namespace 'Xemele.Tests.M4*' -namespace Xemele.Tests.M8XPathAccounting -noLogo -noColor -parallelMode none -result-xml artifacts/M8-xpath-accounting/correctness.xml",
+      "result": "passed",
+      "summary": "Explicit .NET10.0.11:368/368 passed,0 failed/skipped/unrun, including15 new accounting cases and353 existing M4 cases. Both context forms, owned results/options/snapshots, guard ordering, real final counts on setup/engine/callback/cancellation failures, exception identity, independent runs, min-capped shared budget across3 expressions, exact/one-short and zero allowance are covered. Ignored raw test XML is transient; durable counts/argv in report.",
+      "artifact": "docs/reports/M8-xpath-accounting/README.md"
+    },
+    {
+      "id": "compiled-api-preservation",
+      "kind": "check",
+      "revision": "88ce17fc956cb26de15ee3823fe5c766c80f1ddb",
+      "command": "python3 docs/reports/M8-xpath-accounting/check_api.py --dotnet '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --baseline artifacts/M8-xpath-accounting/prepared/baseline-runtime/Xemele.dll",
+      "result": "passed",
+      "summary": "1253/1253 compiled public rows unchanged against original integrated facade linked with otherwise identical runtime source. Exact5 internal join rows match frozen signatures/access/static/nullable/out-long shapes;4 omission/signature-corruption controls reject. No public API fragment or shared source edits.",
+      "artifact": "docs/reports/M8-xpath-accounting/README.md"
+    },
+    {
+      "id": "allocation-preparation-controls",
+      "kind": "check",
+      "revision": "88ce17fc956cb26de15ee3823fe5c766c80f1ddb",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 artifacts/M8-xpath-accounting/prepared/baseline-probe/Xemele.Benchmarks.dll --control artifacts/M8-xpath-accounting/baseline-control.json && '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 artifacts/M8-xpath-accounting/prepared/candidate-probe/Xemele.Benchmarks.dll --control artifacts/M8-xpath-accounting/candidate-control.json",
+      "result": "passed",
+      "summary": "Baseline6/candidate12 cases passed all result/work-count oracles with allocation counters disabled;16 warm and64 consumed evaluations/case. Release probe/source-linked baseline builds passed with0 warnings/errors. Prepared identities freeze4131 files, SDK10.0.400/runtime10.0.11, source/input/binary/host/effective environment; manifest SHA in report.",
+      "artifact": "docs/reports/M8-xpath-accounting/README.md"
+    },
+    {
+      "id": "source-review",
+      "kind": "review",
+      "revision": "88ce17fc956cb26de15ee3823fe5c766c80f1ddb",
+      "command": null,
+      "result": "passed",
+      "summary": "Coordinator provided independent ACCEPT of implementation88ce17f and d766bef bounded plan, with no blockers; confirmed before exclusive grant. Runtime budget/evaluator paths reused and public guard/document lookup ordering preserved.",
+      "artifact": "docs/reports/M8-xpath-accounting/README.md"
+    },
+    {
+      "id": "owned-allocation-evidence",
+      "kind": "check",
+      "revision": "d766bef0af08e1077c1f7f35ddd525227c6ec28a",
+      "command": "python3 docs/reports/M8-xpath-accounting/lease.py -- --measure",
+      "result": "passed",
+      "summary": "Single exclusive M8-xpath-accounting-allocation-1 grant after main PARK/peer terminal. Explicit .NET10.0.11 Arm64; baseline/candidate children and wrapper exit0, pre/post4131 identity closure passed, owned groups reaped/no_children=true; RELEASE reported before analysis and durable release acknowledged. Public6/6 cases exact baseline parity; internal5/6 exact and Unicode-node63/64 at12056 B with one12608 B sample (+552,index27; interval772136/64=12064.625). All results/work oracles consumed; both cold fixture32112 B and positive control1048 B. Full numerators/frequencies in report. No JIT attribution, exact all-sample parity, zero-allocation, timing or global-idle claim; unchanged primitive gates reused, no borrowed primitive change.",
+      "artifact": "docs/reports/M8-xpath-accounting/README.md"
+    },
+    {
+      "id": "allocation-review",
+      "kind": "review",
+      "revision": "d766bef0af08e1077c1f7f35ddd525227c6ec28a",
+      "command": null,
+      "result": "passed",
+      "summary": "After durable RELEASE, coordinator independently inspected both raw JSONs/lifecycle and accepted actual identities/runtime/oracles/control values and the unassigned552-byte Unicode-node sample. No further measurement or corrective rerun requested. Raw outputs remain transient for coordinator cleanup; prepared caches retained.",
+      "artifact": "docs/reports/M8-xpath-accounting/README.md"
+    },
+    {
+      "id": "planning-whitespace",
+      "kind": "check",
+      "revision": "d766bef0af08e1077c1f7f35ddd525227c6ec28a",
+      "command": "python3 tools/planning/tasks.py validate && git diff --check",
+      "result": "passed",
+      "summary": "171 task records validate and whitespace check passes at committed preparation revision. Final own-task evidence/ownership validation also recorded in handoff; no unrelated path edits.",
+      "artifact": "docs/reports/M8-xpath-accounting/README.md"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "",
-    "checks": [],
-    "remaining": [],
+    "summary": "Implemented the frozen actual-work XPath join on isolated branch88ce17f; source review accepted. Public API1253 unchanged,15 new and353 prior XPath tests pass. Bounded owned allocation evidence accepted with the single disclosed552-byte internal Unicode-node sample. Integration unset for coordinator verification.",
+    "checks": [
+      "SDK10.0.400 Release clean build at d766bef:0 warnings/errors; explicit runtime10.0.11 focused M4+accounting at88ce17f:368/368 passed,0 skipped/unrun.",
+      "Actual compiled API at88ce17f:1253 public unchanged,5 frozen internal rows,4 drift/omission controls reject.",
+      "Counters-disabled baseline6/candidate12 controls passed; one exclusive prepared lease ran, both children/wrapper0, identities passed/no_children=true, RELEASE before inspection acknowledged.",
+      "Owned public6/6 exact allocation parity; internal5/6 exact plus Unicode-node12056B x63/12608B x1 (unassigned552B,index27). Cold32112B/positive1048B both; all result/work oracles consumed. No zero/timing/all-sample parity claim.",
+      "Initial preliminary build errors corrected without suppressions; not passing evidence. Source/API/probe sources unchanged during lease; no retry.",
+      "Final own-record planning validation171 and whitespace passed at d766bef with only pending own report/task metadata; exact ownership check passes for14 changed/untracked paths. Ignored preparation caches and transient raw/check artifacts retained for coordinator cleanup."
+    ],
+    "remaining": [
+      "Coordinator integrates and verifies focused tests and additive combined public API (resource-kind adds its own separate member); then records integration_revision/status verified. No remaining worker criterion or implementation blocker."
+    ],
     "requests": []
   }
 }
