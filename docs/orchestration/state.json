@@ -1602,17 +1602,17 @@
     }
   },
   "measurement_lease": {
-    "id": "m3-async-serialization-7cee8bb-measure",
-    "status": "released",
+    "id": "m3-async-serialization-7cee8bb-bdn-only",
+    "status": "granted",
     "revision": "7cee8bb2f2f154ff74bf5aeadacd0964e1f13a8a",
     "runtime_revision": "17478155d8996c39bbd0e9f4b166bfc829c436f7",
-    "duration_limit_seconds": 160,
-    "scope": "Exact prebuilt standalone allocation/memory probe <=45s; only if actual exit0 then six-case sole Dry InProcess BDN <=110s, explicit3iterations/1warmup/1launch/1invocation/unroll1 and hard case/toolchain guard. No builds/tests/generation/edits/options/retries. Push PARK after own stalled restores reaped; async input PARK nochildren; reviewer source-only/root noexecutables. Release on actual exits/no sessions/nochildren before inspecting.",
+    "duration_limit_seconds": 110,
+    "scope": "Only unchanged prebuilt six-case sole Dry InProcess BDN, <=110s; probe excluded because raw passing evidence preserved. Cleanup wrapper prints actual exit before process-group absence check, no external ps. Push and input PARK/nochildren; root/reviewer no workloads. No builds/tests/edits/options/retries; release actual exit/nochildren before inspection.",
     "probe_sha256": "0e3157676293afe83077b4df62ff6c639d7d56feaf0b0418a6e219e583007c7e",
     "runtime_sha256": "c7a9d2cfef0295a5cdee7124d10f9bef5424cb6bf301a0c4c296958edd87d86b",
     "benchmark_sha256": "55479378f8193ba78cdd8a63a4ae179a2fce07f1a0db0fd1fb964698c06ebd81",
     "limitations": "Unrelated user Silex workload untouched; timing informational. Direct borrowed scalar primitivezero plus positive, process-wide actual async setup/continuations, bounded8192scratch and completed-owner retention controls mandatory.",
-    "result": "Probe reaped, wrapper exit1 after sandbox denied ps cleanup inspection; elevated scoped ps confirmed no children. Complete allocation.json passes all actual counters/bounded/retention gates. BDN not run. Preserve valid observation; correct cleanup reporting and perform only remaining unchanged BDN sequence."
+    "result": null
   },
   "offline_corpus_setup": {
     "checkout": "/private/tmp/xemele-m3-integration",
