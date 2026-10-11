@@ -6,7 +6,8 @@ public enum XmlResourceKind
     ExternalEntity = 1,
     Catalog = 2,
     XIncludeXml = 3,
-    XIncludeText = 4
+    XIncludeText = 4,
+    Schema = 5
 }
 
 public sealed record XmlResourceRequest(Uri Uri, Uri? Referrer, XmlResourceKind Kind)
