@@ -7,6 +7,9 @@ static void HtmlContract()
     var doc = new HtmlDocument();
     var p = doc.CreateElement("p");
     p.SetAttribute(new("class", "a"));
+    var defaultCss = new CssSelector();
+    _ = defaultCss.Matches(p);
+    _ = defaultCss.Select(doc.DocumentNode);
     var css = CssSelector.Compile("p.a:not([hidden]):nth-child(2n+1)");
     bool matches = css.Matches(p);
     IReadOnlyList<HtmlNode> selected = css.Select(doc.DocumentNode);

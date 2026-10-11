@@ -1,0 +1,12 @@
+using Xemele;
+using Xemele.Css;
+using Xemele.Html;
+var xml = new XmlDocument();
+var xr = xml.CreateElement("catalog"); xml.DocumentNode.AppendChild(xr);
+var xi = xml.CreateElement("item"); xr.AppendChild(xi); xi.SetAttribute("class", "selected");
+var html = new HtmlDocument();
+var hr = html.CreateElement("catalog"); html.DocumentNode.AppendChild(hr);
+var hi = html.CreateElement("item"); hr.AppendChild(hi); hi.SetAttribute(new("class", "selected"));
+var selector = CssSelector.Compile("catalog > item.selected:first-child");
+if (!selector.Matches(xi) || !selector.Matches(hi) || selector.Select(xml.DocumentNode).Count != 1 || selector.Select(html.DocumentNode).Count != 1) throw new Exception("Selector mismatch.");
+Console.WriteLine("Actual XML and HTML composition: one selected item each.");

@@ -1,0 +1,84 @@
+{
+  "schema_version": 1,
+  "id": "M7-css-default-contract",
+  "milestone": "M7",
+  "title": "Freeze existing default CSS selector constructor behavior",
+  "kind": "contract",
+  "status": "verified",
+  "owner": "M7 coordinator /root",
+  "branch": "codex/m7-css-default-contract",
+  "base_revision": "595cd3bfeb8b83810b68f5e2c4a4fe925bdb9bf0",
+  "integration_revision": "162c6774e608feec08e1065ca46ad21a3b359991",
+  "depends_on": [
+    "M7-css-xml-contract",
+    "M7-html-pi-contract"
+  ],
+  "goals": [
+    "G12"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/html.md"
+  ],
+  "owns": [
+    "docs/specs/html.md",
+    "tests/Contracts/Fixtures/M7/Selector.cs.fixture",
+    "tests/Contracts/Fixtures/M7/Selector/Program.cs.fixture",
+    "docs/decisions/M7/css-default-constructor.md",
+    "docs/reports/M7-css-default-contract/"
+  ],
+  "api_or_output": "Preserve frozen public CssSelector() constructor and define universal-selector default semantics without changing baseline",
+  "acceptance": [
+    {
+      "id": "M7-css-default-contract-A1",
+      "description": "Resolve existing constructor as immutable universal selector equivalent to Compile(\"*\") with default namespaces, preserving all frozen APIs.",
+      "status": "passed",
+      "evidence": [
+        "constructor-freeze"
+      ]
+    },
+    {
+      "id": "M7-css-default-contract-A2",
+      "description": "Compile constructor consumer and unchanged exact Selector baseline; constructor-specific missing-member negative control rejects.",
+      "status": "passed",
+      "evidence": [
+        "constructor-freeze"
+      ]
+    },
+    {
+      "id": "M7-css-default-contract-A3",
+      "description": "Record owned source and checks without shipping runtime stubs or requiring later milestones.",
+      "status": "passed",
+      "evidence": [
+        "constructor-freeze"
+      ]
+    }
+  ],
+  "implementation": [
+    "docs/decisions/M7/css-default-constructor.md: existing constructor universal behavior",
+    "tests/Contracts/Fixtures/M7/Selector.cs.fixture: explicit identical constructor",
+    "tests/Contracts/Fixtures/M7/Selector/Program.cs.fixture: typed constructor consumer"
+  ],
+  "evidence": [
+    {
+      "id": "constructor-freeze",
+      "kind": "integration",
+      "revision": "162c6774e608feec08e1065ca46ad21a3b359991",
+      "command": "Pinned offline Selector declaration/checker Release builds; explicit fx10.0.11 consumer, unchanged136member comparison and constructor-specific negative control; tasks.py validate; git diff --check",
+      "result": "passed",
+      "summary": "Zero-warning declaration builds; typed constructor consumer compiles, actual XML/tree streaming preservation probe passes; unchanged136baseline matches and missing-constructor control rejects1. Only declaration lane explicitly suppresses CS0436 for intentional duplicate models. No runtime stubs or API changes.",
+      "artifact": "docs/reports/M7-css-default-contract/verification.md"
+    }
+  ],
+  "blockers": [],
+  "handoff": {
+    "summary": "Existing public default constructor preserved with immutable universal-selector semantics; baseline unchanged.",
+    "checks": [
+      "Pinned declaration+checker build/consumer/API136/constructornegative/planning168/diff passed"
+    ],
+    "remaining": [
+      "M7-css proves actual runtime constructor equivalence on both graphs"
+    ],
+    "requests": []
+  }
+}
