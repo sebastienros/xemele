@@ -4,11 +4,11 @@
   "milestone": "M7",
   "title": "Compiled CSS selector profile",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M7 coordinator /root/css",
   "branch": "codex/m7-css",
   "base_revision": "3608900573aefb57e6963753cc96cbd954fb4c7e",
-  "integration_revision": null,
+  "integration_revision": "b82b0ba3cf1117828074b7a6cb3a22af2aeaf6fe",
   "depends_on": [
     "M7-html-model",
     "M7-css-xml-contract",
@@ -41,7 +41,8 @@
         "focused-matrix",
         "compiled-api",
         "source-review",
-        "exclusive-measurements"
+        "exclusive-measurements",
+        "root-integration"
       ]
     },
     {
@@ -49,7 +50,8 @@
       "description": "Per-selector matrix passes on constructed XML and HTML-shaped trees; unsupported syntax rejects explicitly.",
       "status": "passed",
       "evidence": [
-        "focused-matrix"
+        "focused-matrix",
+        "root-integration"
       ]
     },
     {
@@ -60,7 +62,8 @@
         "actual-sample",
         "compiled-api",
         "prepared-controls",
-        "exclusive-measurements"
+        "exclusive-measurements",
+        "root-integration"
       ]
     }
   ],
@@ -126,6 +129,15 @@
       "result": "passed",
       "summary": "Exactly one 1100 s exclusive grant e15cc82/release821e429: initial/allocation/benchmark/final/wrapper0 and no_childtrue. 29 ShortRun NoEmit MemoryDiagnoser cases pass. 1,466,368 warmed borrowed operations across actual graph Matches and production token scanning allocate 0 B. Owned compile 2384 B / XML query 1408 B / HTML query 792 B; retained graph-pair inclusive delta 8952320 B per 100 pairs. Informational Arm64-only timings and priority-denied/noise limits documented.",
       "artifact": "docs/reports/M7-css/measurements.md"
+    },
+    {
+      "id": "root-integration",
+      "kind": "integration",
+      "revision": "b82b0ba3cf1117828074b7a6cb3a22af2aeaf6fe",
+      "command": "Pinned offline Release builds; explicit fx10.0.11 CSS namespace89 tests and two-graph sample; official compose + approved M0 checker; tasks.py validate; git diff --check",
+      "result": "passed",
+      "summary": "Fresh zero-warning builds;89 actual XML identities Pass;actualXML/HTMLsample pass;API1230/3388fixtures/bootstrapFalse.18owned imported paths; measuredruntime/tests/probe/sampleunchanged.365allocation rows/29NoEmitcases independently inspected after durable release.",
+      "artifact": "docs/reports/M7-css/integration.md"
     }
   ],
   "blockers": [],
@@ -135,10 +147,7 @@
       "89 focused actual-model tests passed; zero-warning pinned builds; full API 1230 and exact CSS 20 match; planning validation passed for 168 tasks.",
       "29NoEmit cases and1,466,368 warmed borrowed operations pass under one frozen exclusive lifecycle; all exits0/nochild; controls reject unknown environment."
     ],
-    "remaining": [
-      "Coordinator integration verification and cumulative earlier-milestone preservation checks remain; task remains implemented, not verified.",
-      "Arm64-only informational timing; high priority denied and ShortRun intervals noisy; x64 release validation not run."
-    ],
+    "remaining": [],
     "requests": []
   }
 }
