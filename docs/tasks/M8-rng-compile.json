@@ -65,7 +65,8 @@
         "review",
         "control",
         "measurement-preflight",
-        "allocation"
+        "allocation",
+        "planning-final"
       ]
     }
   ],
@@ -177,6 +178,15 @@
       "command": "python3 docs/reports/M8-rng-compile/lease.py --granted dad039ab3cd24e58cebb5bb0e7e5379c3155b60a837ef21a9f0695295f55ba93 (root-executed once under durable combined lease M8-rng-temporal-measurement-1)",
       "result": "passed",
       "summary": "Arm64 .NET10.0.11; tiered/server/concurrent GC disabled. Five baseline/borrowed routes0B/op across64 consumed calls after32warm calls; positive152B/op; owned simple8056, recursive31448, name-overlap construction/scratch440, invalid diagnostics12976B/op. First owned parse/compile23624B; approximate retained16graph delta185608B; process working set51773440B. Allocation-only, no BDN/timing/cross-architecture claim. Root grantcbf9167 and RELEASE49b063e before raw inspection. PID24472 exit0/reaped/groupempty/logclosed;198 identities and manifest hash unchanged;0.281921666s within30s. See owned README for exact totals and limits; raw artifacts retained ignored.",
+      "artifact": null
+    },
+    {
+      "id": "planning-final",
+      "kind": "check",
+      "revision": "f36a5a5f0fa153a3508f1fb3d34d5343b053f32a",
+      "command": "python3 tools/planning/tasks.py validate; git diff --check",
+      "result": "passed",
+      "summary": "Validated176 tasks including implemented M8-rng-compile evidence, schema, acyclic dependencies, additive milestones and ordered ownership; whitespace check passed. No code/tests/measurements rerun after metadata-only handoff.",
       "artifact": null
     }
   ],
