@@ -9,23 +9,6 @@
   },
   "active_assignments": [
     {
-      "task_id": "M3-streaming-pump",
-      "branch": "codex/m3-streaming-pump",
-      "base_revision": "6008a11dd7ba6d88f9b4e6ba854ba0ea5d1a7487",
-      "host_id": "local",
-      "stage": "executing; setup confirmed",
-      "acceptance_before_dispatch": {
-        "mandatory": "Frozen supply/advance/16event sink, exact consumed/pause no-replay, bounded one tag/model cursors, decoding/declaration/source offsets, async resource cleanup and borrowed lifetime; all chunk splits/event pauses; real allocation positive control and bounded ownership. No later adapters/hiddenDOM/unbounded eventlist.",
-        "integration": "Focused pump tests plus affected prior decoding/core/resources and approved639member API; comprehensive gate later.",
-        "measurement": "Prepare+build before one exact bounded serial lease; no unleased standalone measurements/timing. Timings informational; zero-allocation primitive claim requires real evidence.",
-        "review": "Batch criterion/concrete defect/smallest fix/provingcheck; preserve checks unchanged; aftertwo cycles coordinator bounded resolution."
-      },
-      "claim_revision": "29b41e01f2d5c25cc597dd273199836835285cce",
-      "client_thread_id": "client-new-thread:fea4f402-f5b1-4a06-912b-a1dff9a060ee",
-      "chat_id": "01a12876-9d2f-7a80-a3e0-2de4fc1f3af0",
-      "worktree_path": "/Users/sebastienros/.codex/worktrees/97c4/xemele"
-    },
-    {
       "task_id": "M3-async-writer",
       "branch": "codex/m3-async-writer",
       "base_revision": "827fde5f82dd202abb53c300d3a4a59b7cd3eda0",
@@ -44,13 +27,6 @@
   ],
   "integration_queue": [
     {
-      "task_id": "M3-streaming-pump",
-      "implementation_revision": "df98050f29526c38b36b7a1eb9c17b59416c0d79",
-      "tested_integration_revision": "f0ded2081dd6d969941d430168568dd2451aaea1",
-      "checks": "Release0warnings/errors,33focusedtests0failed/skipped,official639memberAPI,145taskvalidatorpassed; valid ownprocess allocation preserved.",
-      "stage": "source reviewed/integrationpassed, awaiting isolated timing and final worker metadata before verification"
-    },
-    {
       "task_id": "M3-async-writer",
       "implementation_revision": "80119207072d0eb292f9cb6bf186bc8cf2bdb3fd",
       "prepared_revision": "83edfe8c6b2701587b1ccaf3d680ad21da43f22a",
@@ -61,15 +37,15 @@
   ],
   "blockers": [],
   "next_actions": [
-    "Verify pump and independent async writer as completed.",
-    "Dispatch SAX/push/reader after pump, DOM serializer after async writer; async input after SAX/reader.",
-    "Verify async join, corpus and M3 gate; then exactly one M4 coordinator."
+    "Claim SAX and reader from verifiedpump, max3workers with activeasyncwriter.",
+    "Dispatch push when slotfree; DOMserializer after asyncwriter verified.",
+    "Asyncinput/join, corpus and M3gate; exactly oneM4 aftergate."
   ],
   "last_verified_task": {
-    "task_id": "M3-async-resources",
-    "integration_revision": "013796bf8f6e1d87db91bd758fe495448c74aa13"
+    "task_id": "M3-streaming-pump",
+    "integration_revision": "f0ded2081dd6d969941d430168568dd2451aaea1"
   },
-  "last_integrated_revision": "013796bf8f6e1d87db91bd758fe495448c74aa13",
+  "last_integrated_revision": "f0ded2081dd6d969941d430168568dd2451aaea1",
   "completed_assignments": [
     {
       "task_id": "M2-dtd-composition",
@@ -563,6 +539,25 @@
         "chat_archived": true,
         "worker_worktree_removed": true
       }
+    },
+    {
+      "task_id": "M3-streaming-pump",
+      "branch": "codex/m3-streaming-pump",
+      "base_revision": "6008a11dd7ba6d88f9b4e6ba854ba0ea5d1a7487",
+      "host_id": "local",
+      "stage": "verified; cleanup pending",
+      "acceptance_before_dispatch": {
+        "mandatory": "Frozen supply/advance/16event sink, exact consumed/pause no-replay, bounded one tag/model cursors, decoding/declaration/source offsets, async resource cleanup and borrowed lifetime; all chunk splits/event pauses; real allocation positive control and bounded ownership. No later adapters/hiddenDOM/unbounded eventlist.",
+        "integration": "Focused pump tests plus affected prior decoding/core/resources and approved639member API; comprehensive gate later.",
+        "measurement": "Prepare+build before one exact bounded serial lease; no unleased standalone measurements/timing. Timings informational; zero-allocation primitive claim requires real evidence.",
+        "review": "Batch criterion/concrete defect/smallest fix/provingcheck; preserve checks unchanged; aftertwo cycles coordinator bounded resolution."
+      },
+      "claim_revision": "29b41e01f2d5c25cc597dd273199836835285cce",
+      "client_thread_id": "client-new-thread:fea4f402-f5b1-4a06-912b-a1dff9a060ee",
+      "chat_id": "01a12876-9d2f-7a80-a3e0-2de4fc1f3af0",
+      "worktree_path": "/Users/sebastienros/.codex/worktrees/97c4/xemele",
+      "integration_revision": "f0ded2081dd6d969941d430168568dd2451aaea1",
+      "handoff_revision": "7cb6abc51ebee76f64333f83b1744110db10d322"
     }
   ],
   "benchmark_policy": "Successful previous measurements retained; future changed runtime measurements require complete preparation and exclusive grant.",
@@ -711,11 +706,6 @@
     }
   ],
   "timing_queue": [
-    {
-      "task_id": "M3-streaming-pump",
-      "revision": "df98050f29526c38b36b7a1eb9c17b59416c0d79",
-      "scope": "Timing-only unchangedprebuilt3cases<=120s; preserve completed allocation; await external benchmark finish."
-    },
     {
       "task_id": "M3-async-writer",
       "revision": "83edfe8c6b2701587b1ccaf3d680ad21da43f22a",
@@ -1466,10 +1456,9 @@
       "remaining_gate": null
     },
     "M3": {
-      "verified": 6,
+      "verified": 7,
       "total": 16,
       "in_progress": [
-        "M3-streaming-pump",
         "M3-async-writer"
       ],
       "remaining_gate": "M3-gate"
