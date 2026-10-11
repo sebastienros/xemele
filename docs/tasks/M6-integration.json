@@ -4,11 +4,11 @@
   "milestone": "M6",
   "title": "XML toolkit samples and integration checks",
   "kind": "verification",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M6 coordinator worker integration",
   "branch": "codex/m6-integration",
   "base_revision": "d068f9bde24d76a10b88535a70bc5c597b99f59f",
-  "integration_revision": null,
+  "integration_revision": "9968203ec8f627b8da86dc96649bf6309a60eebb",
   "depends_on": [
     "M6-cli",
     "M6-adapters"
@@ -42,7 +42,8 @@
         "external-package-deployment",
         "compiled-api",
         "source-review",
-        "planning-scope"
+        "planning-scope",
+        "coordinator-integration"
       ]
     },
     {
@@ -55,7 +56,8 @@
         "external-package-deployment",
         "compiled-api",
         "source-review",
-        "planning-scope"
+        "planning-scope",
+        "coordinator-integration"
       ]
     },
     {
@@ -68,7 +70,8 @@
         "external-package-deployment",
         "compiled-api",
         "source-review",
-        "planning-scope"
+        "planning-scope",
+        "coordinator-integration"
       ]
     }
   ],
@@ -151,6 +154,33 @@
       "result": "skipped",
       "summary": "Not run under this ordinary integration task; M6-gate owns cumulative checks and exclusive measurement lease.",
       "artifact": "docs/reports/M6-integration/results.md"
+    },
+    {
+      "id": "coordinator-missing-tool",
+      "kind": "integration",
+      "revision": "9968203ec8f627b8da86dc96649bf6309a60eebb",
+      "command": "python3 samples/XmlToolkit/cli.py before Tool build",
+      "result": "failed",
+      "summary": "Freshcheckout primaryCLI exited1 because coordinator omittedToolbuild; no passingclaim; correctedforcedToolbuild and sevenCLI pass.",
+      "artifact": "docs/reports/M6-integration/results.md"
+    },
+    {
+      "id": "coordinator-default-trim-timeout",
+      "kind": "integration",
+      "revision": "9968203ec8f627b8da86dc96649bf6309a60eebb",
+      "command": "python3 tests/PackageSmoke/Xml/run.py default sandboxcontext",
+      "result": "failed",
+      "summary": "Boundedtrim publisher timedout180s; ownPGcleanup/nochildren; retainedfailure and reran authorizedofflinehelper elevated. Notpassingtrim/nativeevidence.",
+      "artifact": "docs/reports/M6-integration/results.md"
+    },
+    {
+      "id": "coordinator-integration",
+      "kind": "integration",
+      "revision": "9968203ec8f627b8da86dc96649bf6309a60eebb",
+      "command": "Freshcached restore+forcedRelease tests/sample/tool/API builds;3focused actual10.0.11 tests/source sample/API1054;7CLI; elevatedoffline PackageSmokeXml;planning/diff/scopedps;independentrawinspection",
+      "result": "passed",
+      "summary": "3/3tests pass,7CLIexamples/source+externalpackage+trim+genuinearm64native outputsequal actual10.0.11,SDK10.0.400. CurrentAPItestedDLL=packaged=restoredSHA14531f1603de810549973c7722431312f008702aab0b2e4a866d0d1ef960304a; nupkgd3f1429f7c5c8a9bbdc792a8ce66920bd3bfe6e6239500a05452b723ad7b1485; native4839a093d8c7c0cc31485c7d5c646cbf779cb6936924bd6f6abd5c801e302ba8. net10onlyassets/noFriend/projectrefs/initialemptycache/localfeedonly;nativeMach-O/noDLL. API1054,163tasks,cleanowned diff/nochildren. Rootinspectedworker+integratedraw. Fullinheritedsuite/allocationgatepending.",
+      "artifact": "docs/reports/M6-integration/results.md"
     }
   ],
   "blockers": [],
@@ -161,10 +191,7 @@
       "External initially absent package cache/local-only feed, SDK10.0.400, byte-identical DLL and managed/trim/native frozen output; nativeosx-arm64 actually run.",
       "API1054, planning163, owned diff and no owned processes; independent source review approved."
     ],
-    "remaining": [
-      "Coordinator independently inspect ignored raw/external artifacts, integrate, rerun applicable checks and mark verified.",
-      "M6-gate owns full cumulative suite/measurements/platform qualification."
-    ],
+    "remaining": [],
     "requests": []
   }
 }
