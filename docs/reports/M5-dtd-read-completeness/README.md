@@ -71,10 +71,22 @@ No timing or allocation counters ran. No zero-byte whole-model allocation claim 
 made: existing parser/model snapshot allocations remain and each object has additional
 inline field payload. Dedicated benchmark measurement would not substantiate a new
 hot-loop claim because this repair introduces no hot-loop algorithm. Earlier verified
-performance evidence is not relabeled or rerun. No raw benchmark outputs were created.
+performance evidence is not relabeled or rerun. In particular, M5-dtd-model
+cold/owned measurements at `d43355552ebc1a685ce45afcf8434a5da0a7482c` precede
+this new 40-byte model field and are historical; their owned totals or object sizes
+must not be claimed for the current model layout. Borrowed loop implementations
+remain unchanged, but no new current-layout performance measurement is asserted.
+The facade lane will measure its current composed layout independently. No raw
+benchmark outputs were created.
 
 The later facade owns consuming this retained hook to reject incomplete declaration
 provenance; it must start from coordinator-verified integration. This task delivers
 only retention and preserves permitted nonvalidating parse success. Broader milestone
 checks remain the gate owner's responsibility. No unmerged peer dependency, shared
 build/API edits, main/state writes, remote push or publication occurred.
+
+
+Coordinator source-only review of implementation `51f0fe950984a1cf981040fa057224f3f56662ba`
+approved the exact 10 added runtime lines, separate live-control metadata,
+first-prior precedence, transaction publication after cancellation and optional
+constructor argument compatibility. This is review evidence, not a test execution.
