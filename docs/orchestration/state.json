@@ -15,8 +15,8 @@
       "worktree_path": "/private/tmp/xemele-m7-legacy",
       "base_revision": "3ebc40ae0b39e8b4867f7819a8da313b2f3b7ecb",
       "claim_revision": "854039d48c08eb108112d0e65fb01d066fab8867",
-      "stage": "Final runtime source approved; 543 native focused checks passed; prepared frozen allocation/30-case timing sequence awaiting exclusive grant",
-      "source_candidate": "9661cf26b7be08a17a12d2de94a1745e112d80ad"
+      "stage": "Implemented measured handoff accepted; independent integration pending after tokenizer lease",
+      "source_candidate": "9cec802d1e2d18d8681f8ebb477e43166ab2115d"
     },
     {
       "task_id": "M7-tokenizer",
@@ -25,8 +25,8 @@
       "worktree_path": "/private/tmp/xemele-m7-tokenizer",
       "base_revision": "854039d48c08eb108112d0e65fb01d066fab8867",
       "claim_revision": "2c729304004723416866d2aa5ac647d01485ef22",
-      "stage": "PI implementation passes 7049 lexical vectors and exact three-case error ledger; source review pending; PARK for legacy measurement",
-      "source_candidate": "52d6b4dda76dda218486e44dd5bccbd72af0a022"
+      "stage": "Runtime/PI ledger and prepared closure approved; exclusive allocation/timing lease granted",
+      "source_candidate": "6f8945d5532f10d084ab1b972c39bbd73fdde20b"
     },
     {
       "task_id": "M7-css",
@@ -34,7 +34,8 @@
       "branch": "codex/m7-css",
       "worktree_path": "/private/tmp/xemele-m7-css",
       "base_revision": "3608900573aefb57e6963753cc96cbd954fb4c7e",
-      "stage": "Claimed ready complete two-graph CSS profile; no measurements"
+      "stage": "83focused XML/HTML selector matrix passed; source review/API/preparation pending; PARK for tokenizer lease",
+      "source_candidate": "db1eb13"
     }
   ],
   "integration_queue": [],
@@ -2061,31 +2062,20 @@
     "cleanup": "Both clean integrated repair checkouts removed after independent raw inspection/durable verification; commits retained."
   },
   "measurement_lease": {
-    "id": "m7-legacy-9661cf2",
-    "status": "released",
-    "revision": "9661cf26b7be08a17a12d2de94a1745e112d80ad",
-    "executor_agent_id": "/root/legacy",
-    "duration_limit_seconds": 1400,
-    "preparation_sha256": "d83aa22d6130bfba338704a68b4c20e64db6e5de0baeb2d78b69c4c5d41dcc1a",
-    "granted_at_utc": "2026-10-11T13:40:00.893176+00:00",
-    "scope": "Exactly once intended elevated sole-command python3 -B docs/reports/M7-legacy/run_measurements.py --exclusive-grant: initial45s/allocation60s/30-case NoEmitShortRun1100s/final45s,total1400s includes conservative finally cleanup. Explicit .NET10.0.11. Frozen3651source/generated/actual corpus,43binary,3852SDK-runtime-host and complete effective executor child environment SHLVL1. Own identity+product PG cleanup/reaping/finalidentity/nochildren on all failures. No builds/restores/tests/sourcewrites/retries/raw inspection until immediate lifecycle report and durable root release.",
+    "id": "m7-tokenizer-6f8945d",
+    "status": "granted",
+    "revision": "6f8945d5532f10d084ab1b972c39bbd73fdde20b",
+    "executor_agent_id": "/root/tokenizer",
+    "duration_limit_seconds": 1150,
+    "preparation_sha256": "ed355598e0c2010e75995969c6cae913e29187c5ae2e0bdca9ef30fc88d766a6",
+    "granted_at_utc": "2026-10-11T13:49:35.757516+00:00",
+    "scope": "Exactly once intended elevated sole-command python3 docs/reports/M7-tokenizer/run_measurements.py --exclusive-grant: initial35s/allocation60s/24case NoEmitShortRun900s/final35s,total1150s includes conservative finally cleanup. Explicit fx10.0.11;3670source/generated/actual corpus,43binary,3852SDK-runtime-host and complete effective executor environment SHLVL1 frozen. Own identity/product PG cleanup/reaping/finalidentity/nochildren on failure. No builds/restores/tests/source writes/retries/raw inspection until immediate lifecycle report and durable root release.",
     "park_acknowledgements": [
-      "Legacy fresh READY/PARK clean9661cf2,543 focused native checks pass; exact identity-only positive and final positive initial0/final0/nochildren/runs[]; unknown env negative initial1/final1/nochildren/runs[]; no measurements or pending writes.",
-      "Tokenizer fresh PARK clean52d6b4d,all operations reaped/no workloads/children/pending writes; runtime review pending.",
-      "CSS fresh PARK preserves owned uncommitted runtime/tests/sample; exact restore/build PGIDs2304/2839/3385 terminated and reaped137, scoped groups empty; no workloads/children/pending writes. Runtime/sample passed; focused tests incomplete honestly held.",
-      "Root independent3651source/43binary/3852runtime/host/revision/readableenv match; opaque CODEX_THREAD_ID sole session difference. Exact intended executor fullenv controls accepted. Scoped inventory contains unrelated persistent idle Roslynk MCP servers only; no product/build/test/oracle workloads. Root PARK."
-    ],
-    "released_at_utc": "2026-10-11T13:45:36.472278+00:00",
-    "release": {
-      "wrapper_exit": 0,
-      "initial_identity_exit": 0,
-      "allocation_exit": 0,
-      "benchmark_exit": 0,
-      "final_identity_exit": 0,
-      "no_child": true,
-      "manifest_sha256_unchanged": "d83aa22d6130bfba338704a68b4c20e64db6e5de0baeb2d78b69c4c5d41dcc1a",
-      "inspection": "Not yet inspected; successful lifecycle and reaped children reported before durable release. Raw inspection permitted after this commit."
-    }
+      "Tokenizer fresh clean6f8945d READY/PARK,full7049lexical vectors+18PI witnesses and15focused tests/API1206 passed; exact positive/finalpositive0/unknownenv1,nochildren/runs[],no measurements/pending writes.",
+      "Legacy fresh PARK clean9cec802 implemented handoff,measurements root inspected and summaries durable; no workloads/children/pending writes.",
+      "CSS fresh PARK committed db1eb13,83focused graph tests/build/planning passed,no workloads/children/pending writes;API and preparation remain pending.",
+      "Root approvedPI source c8b6a345 and exact3case normative ledger/probe52d6b4d/reused wrapper; independent3670/43/3852/revision/host/readableenv matched,opaque CODEX_THREAD_ID sole session difference. Scoped product inventory empty,persistent idle MCP servers untouched. Root PARK."
+    ]
   },
   "offline_corpus_setup": {
     "checkout": "/private/tmp/xemele-m3-integration",
@@ -2618,6 +2608,33 @@
         "no_child": true,
         "manifest_sha256_unchanged": "ebac06408e7a59aebd55f31fb6213af6ff7df3e18601c6bdda6ebcc08f687f4a",
         "inspection": "Root independently inspected22rows,16zero mutation batches65536operations and explicit cold/owned/retained boundaries; runtime/probe inputs unchanged through integrated84dfa585. No timing/x64/precise retained per-node claim."
+      }
+    },
+    {
+      "id": "m7-legacy-9661cf2",
+      "status": "released",
+      "revision": "9661cf26b7be08a17a12d2de94a1745e112d80ad",
+      "executor_agent_id": "/root/legacy",
+      "duration_limit_seconds": 1400,
+      "preparation_sha256": "d83aa22d6130bfba338704a68b4c20e64db6e5de0baeb2d78b69c4c5d41dcc1a",
+      "granted_at_utc": "2026-10-11T13:40:00.893176+00:00",
+      "scope": "Exactly once intended elevated sole-command python3 -B docs/reports/M7-legacy/run_measurements.py --exclusive-grant: initial45s/allocation60s/30-case NoEmitShortRun1100s/final45s,total1400s includes conservative finally cleanup. Explicit .NET10.0.11. Frozen3651source/generated/actual corpus,43binary,3852SDK-runtime-host and complete effective executor child environment SHLVL1. Own identity+product PG cleanup/reaping/finalidentity/nochildren on all failures. No builds/restores/tests/sourcewrites/retries/raw inspection until immediate lifecycle report and durable root release.",
+      "park_acknowledgements": [
+        "Legacy fresh READY/PARK clean9661cf2,543 focused native checks pass; exact identity-only positive and final positive initial0/final0/nochildren/runs[]; unknown env negative initial1/final1/nochildren/runs[]; no measurements or pending writes.",
+        "Tokenizer fresh PARK clean52d6b4d,all operations reaped/no workloads/children/pending writes; runtime review pending.",
+        "CSS fresh PARK preserves owned uncommitted runtime/tests/sample; exact restore/build PGIDs2304/2839/3385 terminated and reaped137, scoped groups empty; no workloads/children/pending writes. Runtime/sample passed; focused tests incomplete honestly held.",
+        "Root independent3651source/43binary/3852runtime/host/revision/readableenv match; opaque CODEX_THREAD_ID sole session difference. Exact intended executor fullenv controls accepted. Scoped inventory contains unrelated persistent idle Roslynk MCP servers only; no product/build/test/oracle workloads. Root PARK."
+      ],
+      "released_at_utc": "2026-10-11T13:45:36.472278+00:00",
+      "release": {
+        "wrapper_exit": 0,
+        "initial_identity_exit": 0,
+        "allocation_exit": 0,
+        "benchmark_exit": 0,
+        "final_identity_exit": 0,
+        "no_child": true,
+        "manifest_sha256_unchanged": "d83aa22d6130bfba338704a68b4c20e64db6e5de0baeb2d78b69c4c5d41dcc1a",
+        "inspection": "Root independently inspected56allocation rows,48borrowed0B batches196608operations, explicit cold/owned/newname/inclusive retained domains and30successful Arm64 actual10.0.11 NoEmit cases. Manifest unchanged; priority denied/noisy dense-short intervals preserved. No scanner adoption or x64 claim."
       }
     }
   ],
