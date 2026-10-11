@@ -28,6 +28,51 @@ internal sealed class DtdEvaluator(CompiledDtdModel model, string? schemaRoot, X
         if (operation.IsComplete) operation.AddDiagnostic(new(code, XmlDiagnosticSeverity.Error, message, location));
     }
 
+    internal static bool HasOriginalSourceProof(XmlDocument document) =>
+        document.SourceInputComplete && document.ValidationSourceContentRevision is long stamp &&
+        stamp >= 0 && stamp == document.ContentRevision && document.Dtd is { UnreadParameterLocation: null };
+
+    // Symbolic values remain symbolic. All occurrences must be proven absent in
+    // the fully read original associated model; a declared reference stays unknown.
+    internal static bool ProvesUndeclaredReferences(XmlDocument document, ValidationOperation operation)
+    {
+        if (!HasOriginalSourceProof(document) || document.HasIncompleteAttributes) return false;
+        long captured = document.ContentRevision;
+        var occurrences = document.UnresolvedReferences;
+        var declarations = document.Dtd!.GeneralEntities;
+        for (int i = 0; i < occurrences.Count; i++)
+        {
+            CheckRevision(document, captured);
+            if (!operation.ChargeOperations()) return false;
+            string name = occurrences[i].Name;
+            for (int d = 0; d < declarations.Count; d++)
+            {
+                CheckRevision(document, captured);
+                if (!operation.ChargeOperations()) return false;
+                if (DtdLexical.Equal(name, declarations[d].Name, operation)) return false;
+                if (!operation.IsComplete) return false;
+            }
+        }
+        CheckRevision(document, captured);
+        return occurrences.Count != 0;
+    }
+
+    private void ApplyInstanceWitness()
+    {
+        if (!HasOriginalSourceProof(document) || document.ValidationInstanceDiagnostic is not { } diagnostic ||
+            document.ValidationInstanceDeclaration is not { } declaration || !Work()) return;
+        // The witness is applicable only to the same lexical declaration category.
+        // Different ANY/mixed profiles never inherit original content constraints.
+        var current = model.FindElement(declaration.Name, operation);
+        if (!operation.IsComplete) return;
+        if (current is null) { operation.Refuse("DTD.IncompleteInput", "Original source declaration profile changed."); return; }
+        bool empty = declaration.Content.Kind == DtdParticleKind.Empty;
+        bool applies = empty ? current.Content.Kind == DtdParticleKind.Empty :
+            current.Content.Kind is DtdParticleKind.Name or DtdParticleKind.Sequence or DtdParticleKind.Choice;
+        if (applies) operation.AddDiagnostic(diagnostic);
+        else operation.Refuse("DTD.IncompleteInput", "Original source declaration profile changed.");
+    }
+
     internal ValidationResult Run()
     {
         Span<char> elementScratch = stackalloc char[256];
@@ -37,9 +82,19 @@ internal sealed class DtdEvaluator(CompiledDtdModel model, string? schemaRoot, X
         try
         {
             if (!Work()) return Finish();
-            if (!document.SourceInputComplete || document.HasIncompleteAttributes || document.UnresolvedReferences.Count != 0 || document.Dtd?.UnreadParameterLocation is not null ||
+            if (!document.SourceInputComplete || document.HasIncompleteAttributes || document.Dtd?.UnreadParameterLocation is not null ||
                 document.ValidationStandalone == true && document.ValidationDeclarationLocation == default)
             { operation.Refuse("DTD.IncompleteInput", "Document input or standalone provenance is incomplete."); return Finish(); }
+            if (document.UnresolvedReferences.Count != 0)
+            {
+                if (ReferenceEquals(model.Source, document.Dtd) && ProvesUndeclaredReferences(document, operation))
+                    Error("DTD.UndeclaredEntity", "A general entity has no declaration in the complete associated DTD.", document.UnresolvedReferences[0].Location);
+                else if (operation.IsComplete) operation.Refuse("DTD.IncompleteInput", "Unresolved entity provenance is incomplete.");
+                // No hypothetical empty replacement is used for content validation.
+                return Finish();
+            }
+            ApplyInstanceWitness();
+            if (!operation.IsComplete) return Finish();
             var root = document.RootElement;
             if (root.IsDefault) { Error("DTD.Root", "A document element is required."); return Finish(); }
             string? expectedRoot = schemaRoot ?? document.DocumentType?.Name;
