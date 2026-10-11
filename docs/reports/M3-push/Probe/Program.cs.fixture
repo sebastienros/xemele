@@ -1,0 +1,60 @@
+using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Security.Cryptography;
+using System.Text.Json;
+using BenchmarkDotNet.Configs;
+using BenchmarkDotNet.Running;
+using Xemele;
+using Xemele.Streaming;
+using Xemele.Benchmarks.Push;
+
+if (args is ["--benchmark", var artifacts])
+{
+    BenchmarkRunner.Run([typeof(PushAppendBenchmarks), typeof(PushDocumentBenchmarks)], ManualConfig.Create(DefaultConfig.Instance).WithArtifactsPath(artifacts)); return;
+}
+if (args is not [var mode, var reportPath] || mode is not ("--control" or "--allocation")) throw new ArgumentException("Use --control|--allocation <report> or --benchmark <artifacts>.");
+bool measure = mode == "--allocation";
+long begin = measure ? GC.GetTotalAllocatedBytes(true) : 0;
+byte[] chunk = new byte[4096]; Array.Fill(chunk, (byte)'x');
+var h = new CountingHandler(); using var p = new XmlPushParser(h, new() { Limits = new() { DocumentCharacters = null, TokenCharacters = null } });
+p.Append("<r>"u8);
+long setupBytes = measure ? GC.GetTotalAllocatedBytes(true) - begin : 0;
+for (int i = 0; i < 128; i++) p.Append(chunk);
+begin = measure ? GC.GetTotalAllocatedBytes(true) : 0;
+for (int i = 0; i < 512; i++) p.Append(chunk);
+long warmBytes = measure ? GC.GetTotalAllocatedBytes(true) - begin : 0;
+begin = measure ? GC.GetTotalAllocatedBytes(true) : 0;
+object positive = new byte[1024];
+long positiveBytes = measure ? GC.GetTotalAllocatedBytes(true) - begin : 0; GC.KeepAlive(positive);
+if (h.Characters != 640L * chunk.Length || measure && (warmBytes != 0 || positiveBytes <= 0)) throw new InvalidOperationException($"Warm oracle {h.Characters}/{warmBytes}/{positiveBytes} failed.");
+int[] beforeCapacities = Capacities(p);
+long retainedBefore = measure ? GC.GetTotalMemory(true) : 0;
+long beforeText = h.Characters;
+int stressChunks = measure ? 262144 : 4096;
+for (int i = 0; i < stressChunks; i++) p.Append(chunk);
+long retainedAfter = measure ? GC.GetTotalMemory(true) : 0;
+int[] afterCapacities = Capacities(p);
+if (measure && retainedAfter - retainedBefore > 1024 * 1024) throw new InvalidOperationException("Retained memory grew by more than the 1 MiB noise allowance across 1 GiB input.");
+if (!beforeCapacities.SequenceEqual(afterCapacities) || h.Characters - beforeText != (long)stressChunks * chunk.Length) throw new InvalidOperationException("Retained control failed.");
+p.Append("</r>"u8); p.Complete();
+if (h.Completed != 1 || h.Starts != 1 || h.Ends != 1 || typeof(XmlPushParser).GetField("pump", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(p) is not null) throw new InvalidOperationException("Completion/release failed.");
+var document = new PushDocumentBenchmarks(); document.Setup();
+for (int i = 0; i < 16; i++) document.EndToEnd();
+begin = measure ? GC.GetTotalAllocatedBytes(true) : 0;
+for (int i = 0; i < 32; i++) document.EndToEnd();
+long documentBytes = measure ? GC.GetTotalAllocatedBytes(true) - begin : 0;
+var report = new { mode, revision = Environment.GetEnvironmentVariable("XEMELE_PUSH_REVISION"), runtime = RuntimeInformation.FrameworkDescription,
+    os = RuntimeInformation.OSDescription, architecture = RuntimeInformation.ProcessArchitecture.ToString(),
+    assemblySha256 = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(typeof(XmlPushParser).Assembly.Location))),
+    setupBytes, warmupChunks = 128, measuredChunks = 512, chunkBytes = chunk.Length, warmBytes, positiveBytes,
+    beforeCapacities, afterCapacities, retainedBefore, retainedAfter, retainedStressBytes = (long)stressChunks * chunk.Length,
+    documentOperations = 32, documentBytes };
+File.WriteAllText(reportPath, JsonSerializer.Serialize(report, new JsonSerializerOptions { WriteIndented = true }));
+Console.WriteLine(File.ReadAllText(reportPath));
+static int[] Capacities(XmlPushParser p)
+{
+    var fields = BindingFlags.Instance | BindingFlags.NonPublic;
+    var pump = typeof(XmlPushParser).GetField("pump", fields)!.GetValue(p)!;
+    return new[] { ((Array)typeof(XmlPushParser).GetField("scratch", fields)!.GetValue(p)!).Length }
+        .Concat(new[] { "characters", "mappings", "prefix", "prefixMappings", "attributeRows", "namespaceRows" }.Select(n => ((Array)pump.GetType().GetField(n, fields)!.GetValue(pump)!).Length)).ToArray();
+}
