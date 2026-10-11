@@ -1,0 +1,151 @@
+using System.Runtime.InteropServices;
+using System.Text;
+using System.Text.Json;
+using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Configs;
+using BenchmarkDotNet.Jobs;
+using BenchmarkDotNet.Running;
+using BenchmarkDotNet.Toolchains.InProcess.NoEmit;
+using Xemele;
+using Xemele.Interop;
+using BclNavigator = System.Xml.XPath.XPathNavigator;
+
+if (args is not [var mode, var output]) throw new ArgumentException("mode output required");
+if (RuntimeInformation.FrameworkDescription != ".NET 10.0.11") throw new InvalidOperationException("Actual framework10.0.11 required");
+if (mode is "--discover" or "--benchmark")
+{
+    var config = ManualConfig.Create(DefaultConfig.Instance).WithArtifactsPath(output).AddJob(Job.Default.WithToolchain(InProcessNoEmitToolchain.Instance).AsMutator());
+    var suites = new[] { typeof(ReaderBenchmarks), typeof(SnapshotBenchmarks), typeof(CursorBenchmarks), typeof(RejectedInputBenchmarks) }.Select(t => BenchmarkConverter.TypeToBenchmarks(t, config)).ToArray();
+    var cases = suites.SelectMany(s => s.BenchmarksCases).ToArray();
+    if (cases.Length != 16 || cases.Any(c => c.Job.Run.WarmupCount != 3 || c.Job.Run.IterationCount != 3 || c.Job.Run.LaunchCount != 1 || c.Job.Infrastructure.Toolchain != InProcessNoEmitToolchain.Instance) || cases.Select(c => c.Job.Id).Distinct().Count() != 1) throw new InvalidOperationException("16 cases/oneShortRunNoEmit required");
+    Console.WriteLine($"Actual{RuntimeInformation.FrameworkDescription}/{RuntimeInformation.ProcessArchitecture};16cases;oneShortRunNoEmit;warmup3/iterations3/launch1");
+    if (mode == "--discover") return;
+    var summaries = BenchmarkRunner.Run(suites);
+    if (summaries.Sum(s => s.Reports.Length) != 16 || summaries.SelectMany(s => s.Reports).Any(r => !r.Success || r.ResultStatistics is null)) throw new InvalidOperationException("16successful reports required");
+    return;
+}
+if (mode is not ("--control" or "--allocation")) throw new ArgumentException("unknown mode");
+if (mode == "--control")
+{
+    for (int i = 0; i < 3; i++) new Fixture(i).Control();
+    Console.WriteLine("Nonmeasuring exact BCL controls passed; actual " + Environment.Version);
+    return;
+}
+long start = GC.GetAllocatedBytesForCurrentThread();
+var fixtures = new[] { new Fixture(0), new Fixture(1), new Fixture(2) };
+long cold = GC.GetAllocatedBytesForCurrentThread() - start;
+foreach (var f in fixtures) f.Control();
+var nav = new XemeleXPathNavigatorAdapter(fixtures[1].Document);
+using var attributeReader = fixtures[1].CreateReader(); attributeReader.Read();
+long checksum = 0;
+for (int i = 0; i < 1024; i++) checksum += Fixture.Walk(nav) + AttributeProbe(attributeReader);
+long[] warm = new long[32];
+start = GC.GetAllocatedBytesForCurrentThread();
+for (int b = 0; b < warm.Length; b++)
+{
+    long begin = GC.GetAllocatedBytesForCurrentThread();
+    for (int i = 0; i < 256; i++) checksum += Fixture.Walk(nav) + AttributeProbe(attributeReader);
+    warm[b] = GC.GetAllocatedBytesForCurrentThread() - begin;
+}
+long inclusiveWarm = GC.GetAllocatedBytesForCurrentThread() - start;
+long[] readers = new long[3], snapshots = new long[3], asyncReaders = new long[3];
+for (int f = 0; f < fixtures.Length; f++)
+{
+    for (int i = 0; i < 16; i++) { fixtures[f].ReadAdapter(); GC.KeepAlive(new XemeleXPathNavigatorAdapter(fixtures[f].Document)); await fixtures[f].ReadAsync(); }
+    start = GC.GetAllocatedBytesForCurrentThread();
+    for (int i = 0; i < 128; i++) checksum += fixtures[f].ReadAdapter();
+    readers[f] = GC.GetAllocatedBytesForCurrentThread() - start;
+    start = GC.GetAllocatedBytesForCurrentThread();
+    for (int i = 0; i < 128; i++) GC.KeepAlive(new XemeleXPathNavigatorAdapter(fixtures[f].Document));
+    snapshots[f] = GC.GetAllocatedBytesForCurrentThread() - start;
+    start = GC.GetTotalAllocatedBytes(true);
+    for (int i = 0; i < 128; i++) checksum += await fixtures[f].ReadAsync();
+    asyncReaders[f] = GC.GetTotalAllocatedBytes(true) - start;
+}
+for (int i = 0; i < 16; i++) Fixture.Invalid();
+start = GC.GetAllocatedBytesForCurrentThread(); for (int i = 0; i < 128; i++) Fixture.Invalid(); long invalid = GC.GetAllocatedBytesForCurrentThread() - start;
+start = GC.GetAllocatedBytesForCurrentThread(); var positive = new byte[1024]; GC.KeepAlive(positive); long positiveBytes = GC.GetAllocatedBytesForCurrentThread() - start;
+var retained = new XemeleXPathNavigatorAdapter[16]; long before = GC.GetTotalMemory(true);
+for (int i = 0; i < retained.Length; i++) retained[i] = new(fixtures[1].Document);
+long after = GC.GetTotalMemory(true);
+File.WriteAllText(output, JsonSerializer.Serialize(new { runtime = RuntimeInformation.FrameworkDescription, architecture = RuntimeInformation.ProcessArchitecture.ToString(), coldSetupBytes = cold, warmBatches = 32, groupsPerBatch = 256, warm, inclusiveWarm, ownedOperationsPerCase = 128, readers, snapshots, asyncReadersProcessWide = asyncReaders, invalidOperations = 128, invalidBytes = invalid, positiveBytes, retainedCount = 16, retainedValueCharacters = retained.Sum(n => n.Value.Length), beforeHeap = before, afterHeap = after, retainedHeapDelta = after - before, checksum }, new JsonSerializerOptions { WriteIndented = true }));
+GC.KeepAlive(retained); GC.KeepAlive(fixtures);
+if (inclusiveWarm != 0 || warm.Any(n => n != 0) || positiveBytes <= 0 || readers.Any(n => n <= 0) || snapshots.Any(n => n <= 0) || asyncReaders.Any(n => n <= 0)) throw new InvalidOperationException("Warm primitive/owned/positive controls failed");
+Console.WriteLine("Allocation controls passed on actual " + Environment.Version);
+static long AttributeProbe(XemeleXmlReaderAdapter reader)
+{
+    reader.MoveToFirstAttribute(); reader.ReadAttributeValue(); long result = reader.Value.Length + reader.Depth;
+    reader.MoveToElement(); result += reader.GetAttribute("a")!.Length + reader.LookupNamespace("p")!.Length;
+    return result;
+}
+internal sealed class Fixture
+{
+    private static readonly byte[] InvalidBytes = "<r><x></r>"u8.ToArray();
+    internal readonly byte[] Bytes;
+    internal readonly string Xml;
+    internal readonly XmlDocument Document;
+    internal readonly BclNavigator Bcl;
+    internal Fixture(int scenario)
+    {
+        var xml = new StringBuilder("<r a='root' xmlns:p='urn:p'>");
+        int count = scenario == 0 ? 1 : 64;
+        for (int i = 0; i < count; i++)
+        {
+            string name = scenario == 2 ? "n" + i : "n";
+            xml.Append("<p:").Append(name).Append(" a='").Append(i).Append("'>").Append(scenario == 2 ? "根😀 café &amp; value" : "ASCII &amp; value").Append("</p:").Append(name).Append('>');
+        }
+        xml.Append("</r>"); Xml = xml.ToString(); Bytes = Encoding.UTF8.GetBytes(Xml); Document = XmlDocument.Parse(Xml);
+        Bcl = new System.Xml.XPath.XPathDocument(new StringReader(Xml)).CreateNavigator();
+    }
+    internal XemeleXmlReaderAdapter CreateReader() => new(Xemele.Streaming.XmlReader.Create(new MemoryStream(Bytes, writable: false)), leaveOpen: false);
+    internal long ReadAdapter() { using var r = CreateReader(); long checksum = 0; while (r.Read()) checksum += r.Value.Length + r.Name.Length + r.AttributeCount; return checksum; }
+    internal async Task<long> ReadAsync() { using var input = new YieldStream(Bytes); using var r = new XemeleXmlReaderAdapter(Xemele.Streaming.XmlReader.Create(input), false); long checksum = 0; while (await r.ReadAsync()) checksum += r.Value.Length + r.Name.Length + r.AttributeCount; return checksum; }
+    internal long ReadBcl() { using var input = new MemoryStream(Bytes, writable: false); using var r = System.Xml.XmlReader.Create(input); long checksum = 0; while (r.Read()) checksum += r.Value.Length + r.Name.Length + r.AttributeCount; return checksum; }
+    internal static long Walk(BclNavigator navigator)
+    { navigator.MoveToRoot(); navigator.MoveToFirstChild(); long checksum = navigator.Value.Length; if (navigator.MoveToFirstChild()) do { checksum += navigator.Value.Length + navigator.Name.Length; } while (navigator.MoveToNext()); return checksum; }
+    internal void Control()
+    {
+        if (ReadAdapter() != ReadBcl()) throw new InvalidOperationException("Reader BCL control");
+        var n = new XemeleXPathNavigatorAdapter(Document); if (Walk(n) != Walk(Bcl)) throw new InvalidOperationException("XPath traversal BCL control");
+        if ((string)n.Evaluate("string(/r)") != Document.RootElement.GetTextContent()) throw new InvalidOperationException("BCL XPath scalar");
+        Invalid();
+    }
+    internal static void Invalid()
+    { using var input = new MemoryStream(InvalidBytes, writable: false); using var r = new XemeleXmlReaderAdapter(Xemele.Streaming.XmlReader.Create(input), false); try { while (r.Read()) { } throw new InvalidOperationException("Accepted invalid input"); } catch (XmlParseException) { if (r.ReadState != System.Xml.ReadState.Error) throw new InvalidOperationException("Error positioning"); } }
+}
+internal sealed class YieldStream(byte[] bytes) : MemoryStream(bytes, writable: false)
+{
+    public override async ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default)
+    { cancellationToken.ThrowIfCancellationRequested(); await Task.Yield(); return base.Read(buffer.Span); }
+}
+[MemoryDiagnoser, ShortRunJob]
+public class ReaderBenchmarks
+{
+    [Params(0, 1, 2)] public int Scenario { get; set; }
+    private Fixture fixture = null!;
+    [GlobalSetup] public void Setup() => fixture = new(Scenario);
+    [Benchmark(Baseline = true)] public long BclReader() => fixture.ReadBcl();
+    [Benchmark] public long AdapterOwnedEvents() => fixture.ReadAdapter();
+}
+[MemoryDiagnoser, ShortRunJob]
+public class SnapshotBenchmarks
+{
+    [Params(0, 1, 2)] public int Scenario { get; set; }
+    private XmlDocument document = null!;
+    [GlobalSetup] public void Setup() => document = new Fixture(Scenario).Document;
+    [Benchmark] public XemeleXPathNavigatorAdapter OwnedSnapshot() => new(document);
+}
+[MemoryDiagnoser, ShortRunJob]
+public class CursorBenchmarks
+{
+    [Params(0, 1, 2)] public int Scenario { get; set; }
+    private BclNavigator bcl = null!, adapter = null!;
+    [GlobalSetup] public void Setup() { var f = new Fixture(Scenario); bcl = f.Bcl; adapter = new XemeleXPathNavigatorAdapter(f.Document); }
+    [Benchmark(Baseline = true)] public long BclCursor() => Fixture.Walk(bcl);
+    [Benchmark] public long CapturedCursor() => Fixture.Walk(adapter);
+}
+[MemoryDiagnoser, ShortRunJob]
+public class RejectedInputBenchmarks
+{
+    [Benchmark] public void OwnedFailure() => Fixture.Invalid();
+}

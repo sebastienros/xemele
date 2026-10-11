@@ -1,0 +1,44 @@
+{
+  "exclusive_required": true,
+  "total_max_seconds": 1250,
+  "initial_identity_max_seconds": 40,
+  "final_identity_max_seconds": 40,
+  "environment": {
+    "DOTNET_ROOT": "/Users/sebastienros/Library/Application Support/dotnetup/dotnet",
+    "DOTNET_ROLL_FORWARD": "Disable",
+    "DOTNET_TieredCompilation": "0",
+    "DOTNET_TieredPGO": "0",
+    "DOTNET_ReadyToRun": "0"
+  },
+  "explicit_framework_version": "10.0.11",
+  "successful_benchmark_cases_required": 16,
+  "benchmark_job": "[MemoryDiagnoser, ShortRunJob]:3 warmups/3 iterations/1 launch; InProcessNoEmit; no CLI job flags",
+  "runs": [
+    {
+      "name": "allocation",
+      "max_seconds": 90,
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "--fx-version",
+        "10.0.11",
+        "/private/tmp/xemele-m6-adapters/docs/reports/M6-adapters/bin/Release/net10.0/Xemele.Benchmarks.dll",
+        "--allocation",
+        "artifacts/M6-adapters/allocation.json"
+      ],
+      "log": "artifacts/M6-adapters/allocation.log"
+    },
+    {
+      "name": "benchmark",
+      "max_seconds": 1080,
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "--fx-version",
+        "10.0.11",
+        "/private/tmp/xemele-m6-adapters/docs/reports/M6-adapters/bin/Release/net10.0/Xemele.Benchmarks.dll",
+        "--benchmark",
+        "artifacts/M6-adapters/bdn"
+      ],
+      "log": "artifacts/M6-adapters/benchmark.log"
+    }
+  ]
+}
