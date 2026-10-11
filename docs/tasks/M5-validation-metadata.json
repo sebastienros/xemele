@@ -4,11 +4,11 @@
   "milestone": "M5",
   "title": "Retain standalone declaration provenance for DTD validation",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M5 isolated M5-validation-metadata worker",
   "branch": "codex/m5-validation-metadata",
   "base_revision": "110f84094e3df287133bf30e709ae96824428f76",
-  "integration_revision": null,
+  "integration_revision": "097d9f06163b88e2fdadd9560a863fc982c736ad",
   "depends_on": [
     "M5-contracts"
   ],
@@ -32,7 +32,8 @@
       "description": "Retain nullable standalone and declaration location on XmlDocument via internal partial metadata; capture for character and byte DOM input before decoder-null return.",
       "status": "passed",
       "evidence": [
-        "focused-tests"
+        "focused-tests",
+        "integrated-metadata"
       ]
     },
     {
@@ -41,7 +42,8 @@
       "status": "passed",
       "evidence": [
         "focused-tests",
-        "preservation-tests"
+        "preservation-tests",
+        "integrated-metadata"
       ]
     },
     {
@@ -52,7 +54,8 @@
         "release-build",
         "focused-tests",
         "allocation-applicability",
-        "task-validation"
+        "task-validation",
+        "integrated-metadata"
       ]
     }
   ],
@@ -106,17 +109,24 @@
       "result": "passed",
       "summary": "152 tasks: schema, evidence, acyclic dependencies, additive milestones and ordered ownership.",
       "artifact": "docs/reports/M5-validation-metadata/README.md"
+    },
+    {
+      "id": "integrated-metadata",
+      "kind": "integration",
+      "revision": "097d9f06163b88e2fdadd9560a863fc982c736ad",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -class Xemele.Tests.ValidationMetadata.ValidationMetadataTests -class Xemele.Tests.DomDecoderTerminal.DecoderTerminalTests -class Xemele.Tests.AsyncInput.AsyncInputTests -class Xemele.Tests.EncodingCompatibility.EncodingTests -class Xemele.Tests.ConformanceGrammar.StandaloneTransportTests -class Xemele.Tests.ConformanceGrammar.StandaloneOriginTests -class Xemele.Tests.Entities.ProductionTests -class Xemele.Tests.Versions.VersionTests -method- Xemele.Tests.EncodingCompatibility.EncodingTests.WarmLegacyConversionAndDeclarationMatchingAllocateZero -noColor",
+      "result": "passed",
+      "summary": "Clean combined Release build0warnings/errors;132focused metadata/decoder/async/encoding/standalone/entities/version tests pass(actual10.0.11), allocation method excluded without lease;153taskvalidation. Exact command appended durable report. Source reviewed scalar setter and pre-decoder hook; no public API.",
+      "artifact": "docs/reports/M5-validation-metadata/README.md"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Internal declaration provenance retained across all supported DOM transports before character-input early return; no public API or lexical sidecars.",
+    "summary": "Verified integrated standalone/location metadata repair;132focused combined tests pass.",
     "checks": [
       "Release build zero warnings/errors; actual .NET 10.0.11 host;18 new+138 earlier focused tests pass; Release setter IL inspected; tasks.py validate passes."
     ],
-    "remaining": [
-      "Coordinator integration and gate verification; exact per-document retained heap delta not measured or claimed."
-    ],
+    "remaining": [],
     "requests": []
   }
 }

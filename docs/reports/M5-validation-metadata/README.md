@@ -51,3 +51,11 @@ There are no calls, `newobj`, `newarr`, `box`, temporary strings, or buffers in 
 On the tested 64-bit host, `Unsafe.SizeOf<bool?>()` is 2 bytes and `Unsafe.SizeOf<XmlLocation>()` is 32 bytes, both asserted by the test. These fields add 34 bytes of logical document field payload. Actual object size can grow by a different amount because of alignment and field layout; exact retained heap size was not measured. The URI reference can retain the existing URI for the document lifetime. Document construction was already an owned allocation boundary; it now includes these fields. No claim of unchanged per-document allocated byte totals is made.
 
 The two earlier allocation measurement methods were explicitly excluded from the preservation command because no exclusive measurement lease was held. Their unchanged source-applicable prior evidence is preserved. No benchmark or allocation workload was run, no result was inferred from allocation dashes, and no raw benchmark outputs are committed. Broad milestone integration/API/preservation checks remain the coordinator's gate responsibility.
+
+## Integrated verification
+
+Combined revision `097d9f06163b88e2fdadd9560a863fc982c736ad`: Release build0warnings/errors,153taskvalidation and132tests passed on actual10.0.11 with no errors/failures/skips/not-run. Coordinator reviewed exact owned scalar setter/hook. Focused command (no allocation lease held):
+
+```sh
+'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -class Xemele.Tests.ValidationMetadata.ValidationMetadataTests -class Xemele.Tests.DomDecoderTerminal.DecoderTerminalTests -class Xemele.Tests.AsyncInput.AsyncInputTests -class Xemele.Tests.EncodingCompatibility.EncodingTests -class Xemele.Tests.ConformanceGrammar.StandaloneTransportTests -class Xemele.Tests.ConformanceGrammar.StandaloneOriginTests -class Xemele.Tests.Entities.ProductionTests -class Xemele.Tests.Versions.VersionTests -method- Xemele.Tests.EncodingCompatibility.EncodingTests.WarmLegacyConversionAndDeclarationMatchingAllocateZero -noColor
+```
