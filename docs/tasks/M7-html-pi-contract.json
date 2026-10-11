@@ -37,6 +37,15 @@
       "result": "passed",
       "summary": "Additive semantics and exact named native adaptation approved; downstream task identifiers corrected in docs-only f999c3163c0afb7699d1bdcb16a35fe86b78226b.",
       "artifact": "docs/decisions/M7/html-processing-instructions.md"
+    },
+    {
+      "id": "legacy-profile-source-inspection",
+      "kind": "check",
+      "revision": "5ca684775ec21a260b7fc9acc577ad15e21ae46e",
+      "command": "Independent pinned git-show/source equality and exact retained native-vector inspections; python3 tools/planning/tasks.py validate; git diff --check; direct git diff executable-input preservation and owned-path audit",
+      "result": "passed",
+      "summary": "Four pinned sources exact;19 native name/decoder vectors retained;all24memory/coalescedIO exact trees equal;23rawnativecontrols explicitly classified.167tasks/diff/ownership pass. Docs-only; no parser execution or rerun of prior passing declaration checks.",
+      "artifact": "docs/reports/M7-html-pi-contract/verification.md"
     }
   ],
   "blockers": [],
@@ -109,7 +118,8 @@
       "status": "passed",
       "evidence": [
         "pi-contract-check",
-        "pi-source-review"
+        "pi-source-review",
+        "legacy-profile-source-inspection"
       ]
     }
   ]
