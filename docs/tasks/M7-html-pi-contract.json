@@ -1,11 +1,11 @@
 {
   "schema_version": 1,
   "milestone": "M7",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M7 coordinator /root/pi_contract",
   "branch": "codex/m7-html-pi-contract",
   "base_revision": "c0232888efc9448f31540212d9a0182a61c4ac34",
-  "integration_revision": null,
+  "integration_revision": "3153cda5abeaacb987d8519a591761635a447061",
   "goals": [
     "G11"
   ],
@@ -46,6 +46,15 @@
       "result": "passed",
       "summary": "Four pinned sources exact;19 native name/decoder vectors retained;all24memory/coalescedIO exact trees equal;23rawnativecontrols explicitly classified.167tasks/diff/ownership pass. Docs-only; no parser execution or rerun of prior passing declaration checks.",
       "artifact": "docs/reports/M7-html-pi-contract/verification.md"
+    },
+    {
+      "id": "root-integrated-contract",
+      "kind": "integration",
+      "revision": "3153cda5abeaacb987d8519a591761635a447061",
+      "command": "python3 docs/reports/M7-html-pi-contract/check.py --ownership-base 9632210 --dotnet <pinned-host> at a72e013; docs-only diff inspection,4pinned Git sourceSHA checks,24complete native memory/coalescedIO tree comparisons, strict complete worker claim-to-final ownership audit, planning validate at3153cda",
+      "result": "passed",
+      "summary": "176/119/136 exact compiled declarations preserve all oldmetadata;3generic+9PInegativecontrols;actualHTML/XML preservation normalwarningsaserrors0warnings/runtime10.0.11. Final followup changes only docs/task/inspectionrecords, executable inputs unchanged. Root4sourcehashes and24fullnative trees match;20ownedworkerpaths;planning167. One initial native-tree inspection used incorrect JSON key io and stopped without executions; corrected to actual coalescedIo, no runtime/checks repeated. PI runtime remains next task.",
+      "artifact": "docs/reports/M7-html-pi-contract/integration.md"
     }
   ],
   "blockers": [],
@@ -58,11 +67,7 @@
       "Strict complete claim-to-current owned-path audit and diff; planning167tasks",
       "Independent pinned WHATWG hash, exact PI corpus and native legacy evidence inspection"
     ],
-    "remaining": [
-      "Coordinator integration verification required before dependent repair starts",
-      "Ordered PI model/tokenizer/builder/serializer runtime tests and appropriate allocation evidence",
-      "M7-legacy full native differential comparison against exact named adapted expectations plus repeated-envelope/attribute-conflict/document-comment/doctype tests; exact native lexical-name/malformed-decoder/coalesced short-read and24sniff-boundary cases"
-    ],
+    "remaining": [],
     "requests": []
   },
   "id": "M7-html-pi-contract",
