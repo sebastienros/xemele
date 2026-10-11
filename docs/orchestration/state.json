@@ -24,14 +24,22 @@
       "branch": "codex/m3-callbacks",
       "base_revision": "3926d127e772b0f085fca30fe86fc26c83c10ad4",
       "host_id": "local",
-      "stage": "claimed; dispatch pending"
+      "stage": "executing; setup confirmed",
+      "claim_revision": "01183f430d18eeec4076147a7918dbda63affb08",
+      "client_thread_id": "client-new-thread:9dbff14a-7f6c-4a9c-80ca-ed91f93606ed",
+      "chat_id": "01a12862-81b7-71c0-a955-b7ea34c4fefc",
+      "worktree_path": "/Users/sebastienros/.codex/worktrees/96df/xemele"
     },
     {
       "task_id": "M3-async-resources",
       "branch": "codex/m3-async-resources",
       "base_revision": "3926d127e772b0f085fca30fe86fc26c83c10ad4",
       "host_id": "local",
-      "stage": "claimed; dispatch pending"
+      "stage": "executing; setup confirmed",
+      "claim_revision": "01183f430d18eeec4076147a7918dbda63affb08",
+      "client_thread_id": "client-new-thread:3a8ee694-17ba-4952-9c03-9e74668b0168",
+      "chat_id": "01a12862-8dc7-70f1-9efc-5d58e32cded2",
+      "worktree_path": "/Users/sebastienros/.codex/worktrees/8f8c/xemele"
     }
   ],
   "integration_queue": [],
@@ -42,10 +50,10 @@
     "Complete M3 only, then exactly one M4 coordinator."
   ],
   "last_verified_task": {
-    "task_id": "M3-attribute-metadata",
-    "integration_revision": "ceb18c565110c25fdf7d1c52c9060d3e4403eaf7"
+    "task_id": "M3-async-token-binding",
+    "integration_revision": "dbef7e57ecebec17617a9e8cc296f7ed1a7321a4"
   },
-  "last_integrated_revision": "ceb18c565110c25fdf7d1c52c9060d3e4403eaf7",
+  "last_integrated_revision": "dbef7e57ecebec17617a9e8cc296f7ed1a7321a4",
   "completed_assignments": [
     {
       "task_id": "M2-dtd-composition",
@@ -482,7 +490,12 @@
       "worktree_path": "/Users/sebastienros/.codex/worktrees/7aa6/xemele",
       "handoff_revision": "2df7890cd4333c9dcd8ba28f107ac4f92ef7fac5",
       "implementation_revision": "78837c02a639ca5ae65ec178c82b30cae55f9efa",
-      "integration_revision": "ceb18c565110c25fdf7d1c52c9060d3e4403eaf7"
+      "integration_revision": "ceb18c565110c25fdf7d1c52c9060d3e4403eaf7",
+      "cleanup": {
+        "chat_archived": true,
+        "worktree": "removed",
+        "implementation_durably_integrated": true
+      }
     }
   ],
   "benchmark_policy": "Successful previous measurements retained; future changed runtime measurements require complete preparation and exclusive grant.",
@@ -1364,8 +1377,8 @@
       "remaining_gate": null
     },
     "M3": {
-      "verified": 2,
-      "total": 12,
+      "verified": 3,
+      "total": 13,
       "in_progress": [
         "M3-writer",
         "M3-callbacks",
@@ -1386,5 +1399,25 @@
     "agent": "review_core_async_boundary",
     "contracts_revision": "b7c0725",
     "findings": "A2 nullable notation fake constructor correction requested; no other blocking shapes. Async core boundary review complete."
+  },
+  "coordinator_repair": {
+    "task_id": "M3-async-token-binding",
+    "branch": "codex/m3-async-token-binding",
+    "base_revision": "d23c00c3628b628978f1e1febc6115660276fe28",
+    "stage": "verified; cleanup pending",
+    "consumer_dependency": "Add verified binder as prerequisite to M3-async-resources only after repair integration; worker continues independent code, cannot consume before verified.",
+    "integration_revision": "dbef7e57ecebec17617a9e8cc296f7ed1a7321a4",
+    "implementation_revision": "5ed2408c418ffad5915ef0f947e24aff092acbe2",
+    "handoff_revision": "3adefab",
+    "worktree_path": "/private/tmp/xemele-m3-async-token-binding"
+  },
+  "measurement_lease": {
+    "id": "m3-writer-370b592",
+    "status": "released",
+    "revision": "370b592443d224056cd5b58d7da0a131a0601787",
+    "metadata_head": "656f8b61606971026bcce0721d8e7b2ec8570f26",
+    "duration_limit_seconds": 180,
+    "scope": "One prebuilt BDN writer+scan sequence, no build/restore/retry/source edits. Peers park acknowledged at01183f4 nochildren; root no execution. Unrelated user benchmark ended; remaining unrelated idle language/MSBuild servers left untouched. Release promptly before review/metadata.",
+    "result": "Worker reports one frozen BDN24/24 cases exit0 in39.29s,nochildren; peers immediately released before evidence review."
   }
 }
