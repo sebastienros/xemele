@@ -11,3 +11,5 @@ Six focused tests passed: shared exact Unicode scalar and expansion counters, de
 Initial test build failed due nonexistent TextContent and xUnit missing cancellation token; corrected in d1781e6. Subsequent forced builds pass with zero warnings/errors. Ignored raw logs/XML are retained in artifacts/M6-parser-budget until integration inspection.
 
 Independent source-only contract review approved the narrow diff and tests; it performed no executable checks. No allocation or timing measurements ran; constructor injection adds no steady-state scanning algorithm, and cumulative allocation regressions remain the milestone gate.
+
+Fresh isolated integrated candidate `e1d75eadf4f57bc8bd56b724d9f116935486caf9` restored/built both tests and approved extractor without incremental reuse. All 113 combined focused/earlier cases passed, API951 matched, planning162 and whitespace checks passed. Raw XML/logs inspected before recording verified.
