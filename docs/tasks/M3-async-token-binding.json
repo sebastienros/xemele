@@ -4,11 +4,11 @@
   "milestone": "M3",
   "title": "Async cancellation rebinding preserves asynchronous resource cleanup",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M3 coordinator 01a1284a-8826-7fc2-af44-74552db608f2",
   "branch": "codex/m3-async-token-binding",
   "base_revision": "d23c00c3628b628978f1e1febc6115660276fe28",
-  "integration_revision": null,
+  "integration_revision": "dbef7e57ecebec17617a9e8cc296f7ed1a7321a4",
   "depends_on": [
     "M3-contracts"
   ],
@@ -35,7 +35,8 @@
         "focused-and-resolver",
         "build",
         "allocation",
-        "planning"
+        "planning",
+        "integrated-binder"
       ]
     },
     {
@@ -46,7 +47,8 @@
         "focused-and-resolver",
         "build",
         "allocation",
-        "planning"
+        "planning",
+        "integrated-binder"
       ]
     },
     {
@@ -57,7 +59,8 @@
         "focused-and-resolver",
         "build",
         "allocation",
-        "planning"
+        "planning",
+        "integrated-binder"
       ]
     }
   ],
@@ -70,7 +73,7 @@
       "id": "focused-and-resolver",
       "kind": "check",
       "revision": "5ed2408c418ffad5915ef0f947e24aff092acbe2",
-      "command": "Pinned Xemele.Tests.dll -namespace Xemele.Tests.AsyncTokenBinding -namespace Xemele.Tests.Resolution -namespace Xemele.Tests.ResolverCancellation -parallelMode none -showLiveOutput",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -namespace Xemele.Tests.AsyncTokenBinding -namespace Xemele.Tests.Resolution -namespace Xemele.Tests.ResolverCancellation -parallelMode none -showLiveOutput -noColor -result-xml /private/tmp/m3-token-binding-branch.xml",
       "result": "passed",
       "summary": "67tests passed0failed/skipped:6new tests incl two budget modes,61existing resolver/session. Async-only source rejects sync resolution/read/disposal; delayed failure cleanup preserves bound/budget primary token and exactly-once disposal.",
       "artifact": "docs/reports/M3-async-token-binding/checks.json"
@@ -79,7 +82,7 @@
       "id": "build",
       "kind": "check",
       "revision": "5ed2408c418ffad5915ef0f947e24aff092acbe2",
-      "command": "Pinned dotnet build tests/Xemele.Tests/Xemele.Tests.csproj -c Release --no-restore -p:BuildInParallel=false -p:UseSharedCompilation=false -m:1 --disable-build-servers",
+      "command": "DOTNET_CLI_DO_NOT_USE_MSBUILD_SERVER=1 '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' build tests/Xemele.Tests/Xemele.Tests.csproj -c Release --no-restore -p:BuildInParallel=false -p:UseSharedCompilation=false -m:1 --disable-build-servers --verbosity minimal",
       "result": "passed",
       "summary": "Release0warnings/errors; first dev build failed xUnit1051 absent runner token; corrected all call sites before implementation commit.",
       "artifact": "docs/reports/M3-async-token-binding/checks.json"
@@ -101,6 +104,15 @@
       "result": "passed",
       "summary": "142tasks validate at implementation revision; whitespace clean.",
       "artifact": null
+    },
+    {
+      "id": "integrated-binder",
+      "kind": "integration",
+      "revision": "dbef7e57ecebec17617a9e8cc296f7ed1a7321a4",
+      "command": "DOTNET_CLI_DO_NOT_USE_MSBUILD_SERVER=1 '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' build tests/Xemele.Tests/Xemele.Tests.csproj -c Release --no-restore -p:BuildInParallel=false -p:UseSharedCompilation=false -m:1 --disable-build-servers --verbosity minimal; '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -namespace Xemele.Tests.AsyncTokenBinding -namespace Xemele.Tests.Resolution -namespace Xemele.Tests.ResolverCancellation -parallelMode none -showLiveOutput -noColor -result-xml /private/tmp/m3-token-binding-integrated.xml; python3 tools/planning/tasks.py validate",
+      "result": "passed",
+      "summary": "Actual integratedRelease0warnings/errors;67new+existing resolver/session tests0failed/skipped; warm successful binder1024ops/128warmups0B positive88B. Additive14line method reuses existing Enter/CheckCancellation/FaultAndDrainAsync and preserves old sync method.",
+      "artifact": null
     }
   ],
   "blockers": [],
@@ -112,9 +124,7 @@
       "warm1024ops0B/positive88B",
       "142taskvalidation"
     ],
-    "remaining": [
-      "Coordinator integrated verification pending"
-    ],
+    "remaining": [],
     "requests": []
   }
 }

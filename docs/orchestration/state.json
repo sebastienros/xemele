@@ -50,10 +50,10 @@
     "Complete M3 only, then exactly one M4 coordinator."
   ],
   "last_verified_task": {
-    "task_id": "M3-attribute-metadata",
-    "integration_revision": "ceb18c565110c25fdf7d1c52c9060d3e4403eaf7"
+    "task_id": "M3-async-token-binding",
+    "integration_revision": "dbef7e57ecebec17617a9e8cc296f7ed1a7321a4"
   },
-  "last_integrated_revision": "ceb18c565110c25fdf7d1c52c9060d3e4403eaf7",
+  "last_integrated_revision": "dbef7e57ecebec17617a9e8cc296f7ed1a7321a4",
   "completed_assignments": [
     {
       "task_id": "M2-dtd-composition",
@@ -1377,7 +1377,7 @@
       "remaining_gate": null
     },
     "M3": {
-      "verified": 2,
+      "verified": 3,
       "total": 13,
       "in_progress": [
         "M3-writer",
@@ -1404,8 +1404,12 @@
     "task_id": "M3-async-token-binding",
     "branch": "codex/m3-async-token-binding",
     "base_revision": "d23c00c3628b628978f1e1febc6115660276fe28",
-    "stage": "claimed; implement after serial writer lease",
-    "consumer_dependency": "Add verified binder as prerequisite to M3-async-resources only after repair integration; worker continues independent code, cannot consume before verified."
+    "stage": "verified; cleanup pending",
+    "consumer_dependency": "Add verified binder as prerequisite to M3-async-resources only after repair integration; worker continues independent code, cannot consume before verified.",
+    "integration_revision": "dbef7e57ecebec17617a9e8cc296f7ed1a7321a4",
+    "implementation_revision": "5ed2408c418ffad5915ef0f947e24aff092acbe2",
+    "handoff_revision": "3adefab",
+    "worktree_path": "/private/tmp/xemele-m3-async-token-binding"
   },
   "measurement_lease": {
     "id": "m3-writer-370b592",
