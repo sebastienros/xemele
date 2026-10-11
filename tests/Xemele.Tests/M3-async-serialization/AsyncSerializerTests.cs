@@ -1,5 +1,8 @@
 using System.Text;
 using System.Text.Json;
+using System.Diagnostics.Tracing;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using Xunit;
 
 namespace Xemele.Tests.M3AsyncSerialization;
@@ -210,17 +213,48 @@ public sealed class AsyncSerializerTests
         gate.SetResult(); await operation;
         Assert.Equal(new byte[] { 0xfe, 0xff }.Concat(callerEncoding.GetBytes("<?xml version=\"1.0\" encoding=\"utf-16be\"?><r>🙂</r>")), stream.Bytes);
     }
+    [Fact]
+    public async Task ScratchOwnerReturnedExactlyOnceOnSuccessIoAndCancellation()
+    {
+        var document = Root(out var root); root.AppendChild(document.CreateText(new string('x', 100000)));
+        using var observer = new PoolReturns();
+        foreach (string outcome in new[] { "success", "io", "cancel" })
+        {
+            observer.Returns.Clear(); using var cancellation = new CancellationTokenSource();
+            var stream = new AsyncOnlyStream { Failure = outcome == "io" ? new IOException("owner") : null, Cancellation = outcome == "cancel" ? cancellation : null };
+            if (outcome == "success") await document.SaveAsync(stream, Omit, Token);
+            else if (outcome == "io") await Assert.ThrowsAsync<IOException>(() => document.SaveAsync(stream, Omit, Token));
+            else await Assert.ThrowsAsync<OperationCanceledException>(() => document.SaveAsync(stream, Omit, cancellation.Token));
+            Assert.NotEqual(0, stream.OwnerId);
+            lock (observer.Returns) Assert.Equal(1, observer.Returns.Count(id => id == stream.OwnerId));
+        }
+    }
+    private sealed class PoolReturns : EventListener
+    {
+        internal readonly List<int> Returns = [];
+        protected override void OnEventSourceCreated(EventSource source)
+        {
+            if (source.Name == "System.Buffers.ArrayPoolEventSource") EnableEvents(source, EventLevel.Verbose);
+        }
+        protected override void OnEventWritten(EventWrittenEventArgs data)
+        {
+            if (data.EventName == "BufferReturned" && data.Payload?[0] is int id)
+                lock (Returns) Returns.Add(id);
+        }
+    }
     internal sealed class AsyncOnlyStream : Stream
     {
         private readonly MemoryStream storage = new();
         internal byte[] Bytes => storage.ToArray();
-        internal int MaxWrite, Writes, Flushes, Disposals;
+        internal int MaxWrite, Writes, Flushes, Disposals, OwnerId;
         internal IOException? Failure; internal CancellationTokenSource? Cancellation; internal TaskCompletionSource? Gate;
         public override bool CanRead => false; public override bool CanSeek => false; public override bool CanWrite => true;
         public override long Length => storage.Length; public override long Position { get => storage.Position; set => throw new NotSupportedException(); }
         public override async ValueTask WriteAsync(ReadOnlyMemory<byte> buffer, CancellationToken cancellationToken = default)
         {
             Writes++; MaxWrite = Math.Max(MaxWrite, buffer.Length);
+            Assert.True(MemoryMarshal.TryGetArray(buffer, out ArraySegment<byte> owner));
+            OwnerId = RuntimeHelpers.GetHashCode(owner.Array!);
             if (Gate is not null) await Gate.Task.WaitAsync(cancellationToken);
             else await Task.Yield();
             cancellationToken.ThrowIfCancellationRequested();

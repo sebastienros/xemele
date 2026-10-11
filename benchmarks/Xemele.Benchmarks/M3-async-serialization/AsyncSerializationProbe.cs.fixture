@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Json;
@@ -23,10 +24,30 @@ internal static class Probe
             if (sink.Count != 23 || delayed.Count != 65543 || delayed.Maximum > 8192 || delayed.Capacity != 8192) throw new InvalidOperationException();
             Console.WriteLine("Prepared immediate/delayed async-only controls without allocation counters."); return 0;
         }
+        var primitive = PreparePrimitive();
+        using var primitiveOutput = primitive.Output;
         long coldBefore = GC.GetTotalAllocatedBytes(true);
         await shortDocument.SaveAsync(sink, Options);
         long coldObserved = GC.GetTotalAllocatedBytes(true) - coldBefore;
         for (int i = 0; i < 200; i++) { sink.Reset(); await shortDocument.SaveAsync(sink, Options); sink.Reset(); await longDocument.SaveAsync(sink, Options); }
+        // Closed span delegate and owners are prepared outside counters. These are
+        // actual borrowed scalar-validation calls, not whole serialization setup.
+        string scalarText = "a界😀"; long scalarSum = 0;
+        for (int batch = 0; batch < 1000; batch++)
+            for (int group = 0; group < 16; group++)
+                for (int offset = 0; offset < scalarText.Length;)
+                { scalarSum += primitive.Read(scalarText.AsSpan(offset), out int width); offset += width; }
+        long primitiveThreadBefore = GC.GetAllocatedBytesForCurrentThread();
+        long primitiveProcessBefore = GC.GetTotalAllocatedBytes(true);
+        for (int batch = 0; batch < 1000; batch++)
+            for (int group = 0; group < 16; group++)
+                for (int offset = 0; offset < scalarText.Length;)
+                { scalarSum += primitive.Read(scalarText.AsSpan(offset), out int width); offset += width; }
+        long primitiveProcessBytes = GC.GetTotalAllocatedBytes(true) - primitiveProcessBefore;
+        long primitiveThreadBytes = GC.GetAllocatedBytesForCurrentThread() - primitiveThreadBefore;
+        long primitivePositiveBefore = GC.GetTotalAllocatedBytes(true); long scalarOwnedLength = 0;
+        for (int i = 0; i < 16000; i++) scalarOwnedLength += new string(scalarText.AsSpan()).Length;
+        long primitivePositiveBytes = GC.GetTotalAllocatedBytes(true) - primitivePositiveBefore;
         const int count = 100;
         long before = GC.GetTotalAllocatedBytes(true);
         for (int i = 0; i < count; i++) { sink.Reset(); await shortDocument.SaveAsync(sink, Options); }
@@ -51,9 +72,19 @@ internal static class Probe
         GC.Collect(); GC.WaitForPendingFinalizers(); GC.Collect();
         bool documentReleased = !released.Document.IsAlive;
         GC.KeepAlive(released.Completion); GC.KeepAlive(hugeDocument);
-        bool passed = shortBytes > 0 && longBytes <= shortBytes + 65536 && positiveBytes > longBytes * 10 && documentReleased && sink.Capacity == 8192 && delayed.Capacity == 8192 && delayed.Maximum <= 8192 && Math.Abs(retainedDelta) < 1024 * 1024 && ownedCount == 65543L * count;
-        Console.WriteLine(JsonSerializer.Serialize(new { passed, runtime = RuntimeInformation.FrameworkDescription, architecture = RuntimeInformation.ProcessArchitecture.ToString(), coldObserved, count, shortBytes, longBytes, positiveBytes, suspendedDocuments = 20, suspendedBytes, scratchCapacity = sink.Capacity, maximumWrite = sink.Maximum, delayedMaximumWrite = delayed.Maximum, retainedDelta, documentReleased, notes = "Processwide precise counters; setup/scope/state included. Cold observation excludes fixture construction; pool/JIT initialization may precede it. No zero-allocation whole-serialization claim. Suspended bytes include transport/continuations. Timing not measured." }, new JsonSerializerOptions { WriteIndented = true }));
+        bool passed = primitiveThreadBytes == 0 && primitiveProcessBytes == 0 && primitivePositiveBytes > 0 && scalarOwnedLength == 64000 && scalarSum > 0 && shortBytes > 0 && longBytes <= shortBytes + 65536 && positiveBytes > longBytes * 10 && documentReleased && sink.Capacity == 8192 && delayed.Capacity == 8192 && delayed.Maximum <= 8192 && Math.Abs(retainedDelta) < 1024 * 1024 && ownedCount == 65543L * count;
+        Console.WriteLine(JsonSerializer.Serialize(new { passed, runtime = RuntimeInformation.FrameworkDescription, architecture = RuntimeInformation.ProcessArchitecture.ToString(), coldObserved, primitiveCalls = 48000, primitiveThreadBytes, primitiveProcessBytes, primitivePositiveBytes, count, shortBytes, longBytes, positiveBytes, suspendedDocuments = 20, suspendedBytes, scratchCapacity = sink.Capacity, maximumWrite = sink.Maximum, delayedMaximumWrite = delayed.Maximum, retainedDelta, documentReleased, notes = "Processwide precise counters; setup/scope/state included. Cold observation excludes fixture construction; pool/JIT initialization may precede it. No zero-allocation whole-serialization claim. Suspended bytes include transport/continuations. Timing not measured." }, new JsonSerializerOptions { WriteIndented = true }));
         return passed ? 0 : 1;
+    }
+    private delegate int ScalarRead(ReadOnlySpan<char> text, out int width);
+    private static (ScalarRead Read, IDisposable Output) PreparePrimitive()
+    {
+        var flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
+        var outputType = typeof(XmlAsyncSerializer).Assembly.GetType("Xemele.WriterOutput", true)!;
+        var output = (IDisposable)outputType.GetConstructors(flags).Single().Invoke([new Sink(), 65001, CancellationToken.None]);
+        var operationType = typeof(XmlAsyncSerializer).GetNestedType("SerializationOperation", BindingFlags.NonPublic)!;
+        var operation = operationType.GetConstructors(flags).Single().Invoke([Options, output, CancellationToken.None]);
+        return (operationType.GetMethod("ReadScalar", flags)!.CreateDelegate<ScalarRead>(operation), output);
     }
     [MethodImpl(MethodImplOptions.NoInlining)]
     private static async Task<(WeakReference Document, Task Completion)> CompletedOwner()
