@@ -4,7 +4,7 @@
   "milestone": "M4",
   "title": "XPath AST and value model",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M4 coordinator / isolated model worker",
   "branch": "codex/m4-model",
   "base_revision": "32ce18d69428dd8eba8f6c2754b5b28497cc5d5b",
@@ -33,29 +33,145 @@
     {
       "id": "M4-model-A1",
       "description": "Implement immutable AST, scalar/node-set values, item identities and internal navigation/function interfaces.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "independent-source-review",
+        "model-correctness",
+        "compiled-api"
+      ]
     },
     {
       "id": "M4-model-A2",
       "description": "Test conversion primitives, default/invalid values and equality for attributes/namespaces distinct from owners.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "model-correctness",
+        "allocation-corrected"
+      ]
     },
     {
       "id": "M4-model-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "model-correctness",
+        "earlier-tree-preservation",
+        "compiled-api",
+        "consumer-package",
+        "discovery-planning",
+        "allocation-corrected",
+        "bdn-microbenchmarks"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/XPath/Model/Values.cs: exact scalar conversions and public/snapshot-owned node sets",
+    "src/Xemele/XPath/Model/Items.cs: stable identities, logical text and captured immutable metadata",
+    "src/Xemele/XPath/Model/Ast.cs + CoreSignatures.cs: validated immutable AST, lane seams and 27 core signatures",
+    "src/Xemele/XPath/Model/Contexts.cs + StaticContext.cs + ContextScan.cs + Budget.cs: exact public models, bounded operation-aware snapshots/focus/quotas/cancellation",
+    "tests/Xemele.Tests/M4-model/: 41 meaningful runtime cases",
+    "docs/api/M4-model.txt: exact compiled 173-member additive frozen subset",
+    "samples/M4-model/: running source and fresh local package consumer",
+    "benchmarks/Xemele.Benchmarks/M4-model/Probe.cs.fixture + docs/reports/M4-model/: prepared probes, checks and summary-only performance analysis"
+  ],
+  "evidence": [
+    {
+      "id": "independent-source-review",
+      "kind": "review",
+      "revision": "dbbf5cb68cab910eeb990d87a8684aa956633d1c",
+      "command": "Independent source-only review of 6374aa1 followed by focused re-review dbbf5cb",
+      "result": "passed",
+      "summary": "One batched correction fixed normalized entry-snapshot result construction and bounded context-copy operations/cancellation; independent re-review approved with no residual findings. No executables in review; getter-only immutable AST and wildcard encoding approved.",
+      "artifact": "docs/reports/M4-model/checks.md"
+    },
+    {
+      "id": "model-correctness",
+      "kind": "check",
+      "revision": "73797d8ca8e0fa2082d6e74b6a2ab7ba7a38df58",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' build tests/Xemele.Tests -c Release --no-restore -m:1 -nr:false -p:UseSharedCompilation=false; '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -namespace Xemele.Tests.M4Model -noLogo -noColor -parallelMode none -result-xml /private/tmp/m4-model-73797d8-tests.xml",
+      "result": "passed",
+      "summary": "Release build zero warnings/errors; model41/41 passed, zero failures/skips. Covers scalar/culture/Unicode/defaults/invalids, immutable AST/contexts, logical identities/text/order, snapshot mutation and operation/input/string caps plus cancellation. No compiler/evaluation conformance claimed.",
+      "artifact": "docs/reports/M4-model/checks.md"
+    },
+    {
+      "id": "earlier-tree-preservation",
+      "kind": "check",
+      "revision": "224dea0c18cd742c29baf30757c3cbd562340009",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -class Xemele.Tests.Tree.TreeTests -method- '*WarmTraversalAndRepeatedNameInternProbesAllocateNothing' -noLogo -noColor -parallelMode none -result-xml /private/tmp/m4-model-224dea0-tree.xml",
+      "result": "passed",
+      "summary": "13 affected tree correctness cases passed, no failures/skips. Unchanged earlier allocation measurement not rerun. Subsequent runtime source delta only trailing space at Ast.cs96; e919eac runtime source/generated inputs/product DLL byte-identical to73797d8. No earlier runtime files edited.",
+      "artifact": "docs/reports/M4-model/checks.md"
+    },
+    {
+      "id": "compiled-api",
+      "kind": "check",
+      "revision": "73797d8ca8e0fa2082d6e74b6a2ab7ba7a38df58",
+      "command": "python3 docs/reports/M4-model/check_api.py --dotnet '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet'",
+      "result": "passed",
+      "summary": "Approved dependency-resolving Roslyn extraction: exact173 frozen model members, prior720 all preserved,893total; no public XPathExpression facade/stubs. Two comparison corruption controls reject.",
+      "artifact": "docs/reports/M4-model/checks.md"
+    },
+    {
+      "id": "consumer-package",
+      "kind": "check",
+      "revision": "73797d8ca8e0fa2082d6e74b6a2ab7ba7a38df58",
+      "command": "python3 docs/reports/M4-model/check_consumer.py --dotnet '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet'",
+      "result": "passed",
+      "summary": "Fresh isolated net10.0 consumer restored local packed production runtime under copied SDK10.0.400 global.json and empty private cache, built zero warnings/errors, ran snapshot/conversion sample successfully. Source sample built/ran at224dea0; unchanged semantic source preserved. Pack informational missing-readme notice retained.",
+      "artifact": "docs/reports/M4-model/checks.md"
+    },
+    {
+      "id": "allocation-initial-failed",
+      "kind": "check",
+      "revision": "73797d8ca8e0fa2082d6e74b6a2ab7ba7a38df58",
+      "command": "XEMELE_MODEL_REVISION=73797d8ca8e0fa2082d6e74b6a2ab7ba7a38df58 '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' docs/reports/M4-model/bin/Release/net10.0/Xemele.Benchmarks.dll --allocation /private/tmp/m4-model-73797d8-allocation.json",
+      "result": "failed",
+      "summary": "Exclusive first lease: exact0 gate failed128B/65536groups (0.001953125B/group); positive1048B;256ownedsets931840B/3640B-op;256formats370688B/1448B-op. SIGABRT from thrown assertion; JSON not persisted, cold data unavailable; timing gatedskip. Initial/finalfullidentity passed; lease released before inspection. Origin remains unattributed.",
+      "artifact": "docs/reports/M4-model/performance.md"
+    },
+    {
+      "id": "allocation-corrected",
+      "kind": "check",
+      "revision": "e919eac07f221d64a4a78fa549609f2d12f6d293",
+      "command": "XEMELE_MODEL_REVISION=e919eac07f221d64a4a78fa549609f2d12f6d293 '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' docs/reports/M4-model/bin/Release/net10.0/Xemele.Benchmarks.dll --allocation /private/tmp/m4-model-e919eac-allocation.json",
+      "result": "passed",
+      "summary": "Authorized harness-only uniform noninlined512group batch,128warm/128measured, no threshold/exclusion: EXACT entire measuredloop0B/65536groups, all128batches0. Cold10320B;warm1448B allbatch0;positive1048B;256boxedownedsets944128B/3688B-op;256formats370688B/1448B-op;bothconsumed3309568. Full106source/40binary/195runtime identity passes before/finally; runtime unchanged from73797d8. Phase separation supported; original128 origin not proven.",
+      "artifact": "docs/reports/M4-model/performance.md"
+    },
+    {
+      "id": "bdn-microbenchmarks",
+      "kind": "check",
+      "revision": "e919eac07f221d64a4a78fa549609f2d12f6d293",
+      "command": "XEMELE_MODEL_REVISION=e919eac07f221d64a4a78fa549609f2d12f6d293 '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' docs/reports/M4-model/bin/Release/net10.0/Xemele.Benchmarks.dll --benchmark /private/tmp/m4-model-e919eac-bdn",
+      "result": "passed",
+      "summary": "10successful reports, ONE declared ShortRun InProcessNoEmit job (3warmups/3iterations/1launch), MemoryDiagnoser+ShortRunJob classes, no jobCLI/generation/build. Provisional Arm64 SDK10.0.400/runtime10.0.11 model micro evidence; owned3.49KiB/1.41KiB, borrowed/equality rounded display0 with tiny diagnostic totals honestly retained. Standalone exact0 domain separate; no equality gate. Priority warnings and unknownCPU limit timing. Total authorized corrected sequence97.17s; no children after release.",
+      "artifact": "docs/reports/M4-model/performance.md"
+    },
+    {
+      "id": "discovery-planning",
+      "kind": "check",
+      "revision": "3b6fca8546a19d9baf69b2155705ca70a4ad43c6",
+      "command": "python3 tools/ApiBaseline/discover.py; python3 tools/planning/tasks.py validate; git diff --check 52e8d1f HEAD; owned-path comparison against docs/tasks/M4-model.json owns",
+      "result": "passed",
+      "summary": "API discovery893declarations/3388fixturehashes (inventory only), exact3386ignored approved-cache copies verified; manifests/originals/exclusions unchanged. Planning148 schema/dependencies/orderedownership valid; full committed owned diff whitespace passes. All changed paths within model owns plus own task JSON. No remote pushes/children/peer dependencies. Final implemented metadata/report checkpoint3b6fca8 validated148 and full22owned-path diff/whitespace; executable evidence remains pinned to its actual prior revisions.",
+      "artifact": "docs/reports/M4-model/checks.md"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "",
-    "checks": [],
-    "remaining": [],
+    "summary": "Implemented exact173-member XPath model subset: immutable validated AST, scalar conversions and normalized owned values, logical/stable item identities and metadata, budget-aware context/result snapshots, limits/diagnostics/focus/signature metadata and seams. Approved independent source review after one batched correction; ready for serialized integration verification. Public expression/compiler/navigator/function implementations remain later lanes.",
+    "checks": [
+      "Pinned Release runtime/tests/probe/sample builds passed zero warnings/errors",
+      "Model41/41, affected tree13/13; frozen compiled API173+prior720=893; fresh local net10.0 package sample passed",
+      "Firstallocation128B failed, timing skipped; authorized identical-batch correction exact0B/65536groups, positive1048B, cold10320B/warm1448B; standaloneownedsets3688B/op/formats1448B/op",
+      "Ten successful BDN ShortRunNoEmit cases; provisional timing, diagnostic rounding/domain differences and priority warnings retained",
+      "Planning148, API discovery893/3388hashes, full owned diff whitespace/path checks passed"
+    ],
+    "remaining": [
+      "Coordinator must integrate and rerun applicable combined correctness/API/planning checks before verified.",
+      "Compiler/evaluator use ContextTokens/ContextCharacters and operation-aware context/result entry points; navigator constructs captured items after its own budget checks.",
+      "Model micro evidence requires composed query confirmation and M9 x64/Arm64 release hardware validation."
+    ],
     "requests": []
   }
 }
