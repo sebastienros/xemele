@@ -47,13 +47,13 @@ public sealed class OperationTests
         var exception = new SchemaCompileException([new("CALLER.Test", XmlDiagnosticSeverity.Error, "caller", default)]);
         var hook = new EvaluatorTests.RecordingFactory { Callback = _ => throw exception };
         Assert.Same(exception, Assert.Throws<SchemaCompileException>(()=>prepared.Run("<root/>", factory:hook)));
-        var doc = XmlDocument.Parse("<root/>"); hook = new() { Callback = _ => doc.RootElement.SetAttribute("mutated", "yes") };
+        var doc = XmlDocument.Parse("<root/>", cancellationToken: TestContext.Current.CancellationToken); hook = new() { Callback = _ => doc.RootElement.SetAttribute("mutated", "yes") };
         Assert.Throws<InvalidOperationException>(()=>prepared.Run(doc, factory:hook));
     }
     [Fact]
     public void PreparedProgramsRequiredAndIdentityPairInvariant()
     {
-        var p = EvaluatorTests.Prepare("<xs:element name='root'/>"); var validator = new XmlSchemaValidator(); var doc = XmlDocument.Parse("<root/>");
+        var p = EvaluatorTests.Prepare("<xs:element name='root'/>"); var validator = new XmlSchemaValidator(); var doc = XmlDocument.Parse("<root/>", cancellationToken: TestContext.Current.CancellationToken);
         Assert.Throws<ArgumentException>(()=>validator.Validate(p.Schema,doc,new(),p.Programs,new XsdContentMatcher(),p.Facets,null,p.Identity));
         Assert.Throws<ArgumentException>(()=>validator.Validate(p.Schema,doc,new(),new Dictionary<SchemaName,XsdContentProgram>(),new XsdContentMatcher(),p.Facets,null,null));
         Assert.True(validator.Validate(p.Schema,doc,new(),p.Programs,new XsdContentMatcher(),p.Facets,null,null).IsValid);
@@ -71,7 +71,7 @@ public sealed class OperationTests
         var p = EvaluatorTests.Prepare("<xs:element name='root' type='xs:int'/>");
         var context = new SchemaCompileContext(new() { BaseUri=new("https://example.test/instance.xml") });
         var doc=context.Parse("<root>bad</root>").Document; var result=p.Run(doc);
-        var error = Assert.Single(result.Diagnostics); Assert.Equal(1,error.Location.Line); Assert.Equal(new Uri("https://example.test/instance.xml"),error.Location.SourceUri);
+        var error = Assert.Single(result.Diagnostics); Assert.Equal(1,error.Location.LineNumber); Assert.Equal(new Uri("https://example.test/instance.xml"),error.Location.SourceUri);
     }
     [Theory]
     [InlineData("xs:NOTATION", "n", false)] [InlineData("N", "n", true)] [InlineData("N", "missing", false)]
@@ -85,7 +85,7 @@ public sealed class OperationTests
     public void EntitiesRequireUnparsedDtdContext(string type,string text,bool expected)
     {
         var p=EvaluatorTests.Prepare("<xs:element name='root' type='xs:"+type+"'/>");
-        var doc=XmlDocument.Parse("<!DOCTYPE root [<!NOTATION n SYSTEM 'urn:n'><!ENTITY image SYSTEM 'urn:image' NDATA n><!ENTITY parsed 'value'>]><root>"+text+"</root>",new() { DtdProcessing=DtdProcessing.Parse });
+        var doc=XmlDocument.Parse("<!DOCTYPE root [<!NOTATION n SYSTEM 'urn:n'><!ENTITY image SYSTEM 'urn:image' NDATA n><!ENTITY parsed 'value'>]><root>"+text+"</root>",new() { DtdProcessing=XmlDtdProcessing.Parse }, TestContext.Current.CancellationToken);
         Assert.Equal(expected,p.Run(doc).IsValid); Assert.False(p.Run("<root>"+text+"</root>").IsValid);
     }
 }

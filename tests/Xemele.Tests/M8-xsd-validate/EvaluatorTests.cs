@@ -69,7 +69,7 @@ public sealed class EvaluatorTests
     public void EffectiveDefaultsAreTypedRunLocalAndReachHooks()
     {
         var prepared = Prepare("<xs:element name='root' type='xs:int' default='7'/>");
-        var document = XmlDocument.Parse("<root/>"); var recording = new RecordingFactory();
+        var document = XmlDocument.Parse("<root/>", cancellationToken: TestContext.Current.CancellationToken); var recording = new RecordingFactory();
         Assert.True(prepared.Run(document, factory: recording).IsValid); Assert.Equal("", document.RootElement.GetTextContent());
         var value = Assert.Single(recording.Values); Assert.True(value.IsValid); Assert.NotNull(value.Value); Assert.Equal(new SchemaName(Xs, "int"), value.Type);
         Assert.True(prepared.Run(document).IsValid);
@@ -80,7 +80,7 @@ public sealed class EvaluatorTests
         var prepared = Prepare("<xs:attribute name='a' type='xs:QName' fixed='p:v'/><xs:element name='root'><xs:complexType><xs:attribute ref='a' fixed='p:v' xmlns:p='urn:local'/></xs:complexType></xs:element>");
         Assert.True(prepared.Run("<root xmlns:z='urn:local' a='z:v'/>").IsValid);
         Assert.False(prepared.Run("<root xmlns:z='urn:p' a='z:v'/>").IsValid);
-        var document = XmlDocument.Parse("<root/>"); var hook = new RecordingFactory();
+        var document = XmlDocument.Parse("<root/>", cancellationToken: TestContext.Current.CancellationToken); var hook = new RecordingFactory();
         Assert.True(prepared.Run(document, factory: hook).IsValid); Assert.Equal(0, document.RootElement.Attributes.Count);
         var expected = new XmlDatatypeRegistry(); var op = new SchemaCompileOperation();
         Assert.True(expected.Find(Xs)!.TryParse(new(Xs, "QName"), "z:v", new(new Dictionary<string,string> { ["z"]="urn:local" }, "", null), op, out var value, out _));
