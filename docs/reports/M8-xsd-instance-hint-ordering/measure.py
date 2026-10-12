@@ -98,6 +98,7 @@ if sys.argv[1:] == ['--preflight']:
  out.mkdir(parents=True, exist_ok=False)
  ARTIFACTS = out
  env = os.environ.copy(); env.update(DOTNET_TieredCompilation='0', DOTNET_gcServer='0', DOTNET_GCConcurrent='0')
+ env['XEMELE_HINT_REVISION'] = manifest['sourceRevision']
  start = time.monotonic()
  argv = [net, '--fx-version', '10.0.11', str(root / 'benchmarks/Xemele.Benchmarks/M8-xsd-instance-hint-ordering/bin/probe/net10.0/Xemele.Benchmarks.dll'), '--control', str(out / 'control.json')]
  record = supervise_command(argv, 0, env, start + 20, start + 30)
