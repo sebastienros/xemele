@@ -1,0 +1,31 @@
+{
+  "task": "M8-xsd-type-relations",
+  "tested_candidate": "e3d0648440345a54c152db5474fc7bc663c06045",
+  "status": "Combined correctness passed; allocation pending, task not verified",
+  "checks": {
+    "correctness": 1622,
+    "resolver": 42,
+    "datatype-supplement": 225
+  },
+  "distinct_cases": 1889,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "builds": 8,
+  "build_warnings": 0,
+  "build_errors": 0,
+  "api": "1430 public members; all eight frozen lanes; additive fixture 46; emitted compiler/content/evaluation/model baselines",
+  "consumers": "Facade and type original observer, normal and true XML-only, all completed successfully",
+  "planning": "196 tasks validated; git diff --check passed",
+  "commands": [
+    "python3 docs/reports/M8-xsd-type-relations/check.py",
+    "dotnet --fx-version 10.0.11 tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -namespace Xemele.Tests.M8Datatypes -namespace Xemele.Tests.M8DatatypesTextBinary -method- *WarmBorrowed* -parallelMode none -noLogo -noColor -result-xml artifacts/M8-xsd-type-relations/datatype-supplement.xml"
+  ],
+  "sha256": {
+    "src/Xemele/Validation/Xsd/Compilation/Compiler.cs": "682d29421b6248d40038c32e567af7e90338b81082df3ebacff98ada20cf5897",
+    "src/Xemele/Validation/Xsd/ContentModels/Compiler.cs": "85e76989160d8ce1006ec64c40f71e78f5f96ee089d35b16c018249cdcae4ff4",
+    "tests/Xemele.Tests/M8-xsd-content/DerivationTests.cs": "3b6988d4697187d70f3c93e7a6dc3c88577ed137f7bea92008d05ac7c0d12d17"
+  },
+  "lifecycle": "Root session3154 and supplemental command terminal exit0; no remaining correctness jobs",
+  "limitations": "No allocation counters, full corpus, milestone gate, timing or NativeAOT claim"
+}
