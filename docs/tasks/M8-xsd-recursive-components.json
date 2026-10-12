@@ -62,7 +62,8 @@
     "tests/Xemele.Tests/M8-xsd-recursive-components/: 37 original, independent neighbor and boundary cases",
     "tests/fixtures/M8-xsd-recursive-components/manifest.json: pinned unchanged W3C originals/copyright/hashes",
     "samples/M8-xsd-recursive-components/: recursive normal and true XML-only consumer",
-    "docs/reports/M8-xsd-recursive-components/: counter-disabled bounded checks, independent inventory, historical failures and allocation applicability"
+    "docs/reports/M8-xsd-recursive-components/: counter-disabled bounded checks, independent inventory, historical failures and allocation applicability",
+    "benchmarks/Xemele.Benchmarks/M8-xsd-recursive-components/: 13owned allocation-route source, unbuilt pending independent design review"
   ],
   "evidence": [
     {
@@ -82,11 +83,20 @@
       "result": "passed",
       "summary": "1300=37owned+1263prior affected;42safe resolver,0failed/errors/skips/notrun. Original3schemas+instance pass. Exact work/components including imported parsing, deferred nullcap cancellation/source mutation, order/mutual recursion and negative BCL cycles pass. Public1430,all8frozenlanes/internal compiler/content/identity/evaluator/facade and normal/trueXML-only facade consumers pass.6Release builds0warnings/errors;planning196/diff. Source SDK10.0.400/runtime10.0.11 Arm64, no counters/heap/timing. Omittedowned-row control rejects.",
       "artifact": "docs/reports/M8-xsd-recursive-components/correctness-summary.json"
+    },
+    {
+      "id": "independent-runtime-source-review",
+      "kind": "review",
+      "revision": "9e376cd982159b27cbb05c1fa5cf2577bd21e7d2",
+      "command": "Coordinator accepted /root/review_m8_model SOURCE PASS; read main:docs/orchestration/review-M8-xsd-recursive-components.json",
+      "result": "passed",
+      "summary": "Source-only review: growing deferred-body queue drains before CheckGraphs/publication; identity registration, immutable boundary and forbidden group/attributeGroup/base-type guards preserved; component reserve/charged shared operation/polling/provenance/fixtures meaningful. CompilerSHA25686ec831d782eeea74d938e8bfbefededa7968678a9c55add35a3adf46f9eda24. No execution/allocation claims.",
+      "artifact": null
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Branch repair and correctness complete; waiting for independent source review before counter-disabled allocation preparation and separate root execution. Task stays in_progress; A3 actual allocations pending.",
+    "summary": "Runtime source independently accepted. Allocation SOURCE/design committed208350093 and sent for focused review before build/freezing; no counters/controls/measurements yet. A1/A2 passed/A3 pending; task remains in_progress.",
     "checks": [
       "Actual baseline4failed; original repaired4pass; stable9e376cd98 check1300+42pass,public1430/all8frozen and normal/XML-only consumers pass;6builds0warnings/errors,planning196/diff.",
       "Own recursive consumer normal+trueXML-only precommit snapshot now c5a9392e3 passed2builds0warnings/errors; string/DOM/stream finite recursion+invalid neighbors/open streams. Runtime/tests unchanged from9e376cd98.",
@@ -94,9 +104,9 @@
       "No allocation counters/heap/timing or measurement preparation run; no allocation-free compilation claim."
     ],
     "remaining": [
-      "Independent source review.",
-      "Counter-disabled allocation preparation and actual bounded root-owned execution with source/workload identity, controls and cleanup.",
-      "Final actual evidence commit and integrated coordinator verification."
+      "Focused allocation-source/design review before build/freezing.",
+      "Accepted offline probe build/control/manifest/preflight; root sole bounded allocation execution without isolation/PARK/ACK/exclusive grant.",
+      "Final actual allocation evidence commit and integrated coordinator verification."
     ],
     "requests": []
   }
