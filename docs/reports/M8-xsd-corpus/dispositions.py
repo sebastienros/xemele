@@ -41,7 +41,9 @@ def view(row):
  if row['id']==NAMECHAR.get('id'):result['profilePassed']=row['actual']=='instance-'+NAMECHAR['profile_expected']
  if row['id'] in XMLSUPPLYORIGINALS:
   result['profilePassed']=None;result['applicationInputUnassessed']=True;result['notExecutable']=row['actual']=='schema-unavailable'
- if row['id'] in LATEHINTS or row['id']==ADAPTER.get('namespace_guard',{}).get('id'):
+ if row['id'] in LATEHINTS and row.get('engine')=='product' and row.get('hintOrderingProfile') is True:
+  result['profilePassed']=row['actual']=='instance-invalid' and 'XSD.HintOrder' in row.get('codes',[])
+ elif row['id'] in LATEHINTS or row['id']==ADAPTER.get('namespace_guard',{}).get('id'):
   result['profilePassed']=None;result['adapterUnassessed']=True
  if row['id'] in FATALXML:
   fatal=row['actual'] in ['incomplete-refusal','instance-syntax-error']

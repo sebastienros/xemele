@@ -3,6 +3,45 @@ using System.Xml.Schema;
 namespace XsdCorpus;
 internal static class Controls
 {
+    internal static int HintProfile(string upstream)
+    {
+        string saved = Runner.Root; Runner.Root = upstream;
+        using var profile = System.Text.Json.JsonDocument.Parse(File.ReadAllText(Path.Combine(Path.GetDirectoryName(upstream)!, "verified-hint-ordering-profile.json")));
+        var originals = profile.RootElement.GetProperty("cases").EnumerateArray().ToArray();
+        var pairs = new List<(System.Text.Json.JsonElement Row, Runner.InstancePlan Plan)>();
+        System.Text.Json.JsonElement Case(string id, string path, string expected = "invalid")
+        {
+            using var document = System.Text.Json.JsonDocument.Parse(System.Text.Json.JsonSerializer.Serialize(new { id, documents = new[] { path }, expected })); return document.RootElement.Clone();
+        }
+        string temporary = Path.Combine(Path.GetTempPath(), "xsd-hint-profile-guards-" + Guid.NewGuid().ToString("N"));
+        try
+        {
+            foreach (var original in originals)
+            {
+                var row = Case(original.GetProperty("id").GetString()!, original.GetProperty("documents").EnumerateObject().Single().Name);
+                var plan = Runner.InstanceInputs(row, [], new()); pairs.Add((row, plan));
+                Require(Runner.VerifiedHintOrdering(row, plan), "exact original/first-schema hash guard " + row.GetProperty("id").GetString());
+            }
+            var first = pairs[0]; string id = first.Row.GetProperty("id").GetString()!, path = Runner.Documents(first.Row).Single();
+            Require(!Runner.VerifiedHintOrdering(Case("outside-approved-profile", path), first.Plan), "unlisted hint ID remains adapter-unassessed");
+            Require(!Runner.VerifiedHintOrdering(Case(id, path, "valid"), first.Plan), "guard preserves original INVALID oracle");
+            Require(!Runner.VerifiedHintOrdering(first.Row, first.Plan with { Inputs = [] }), "missing first-schema prerequisite cannot enable assessment");
+            Require(!Runner.VerifiedHintOrdering(first.Row, first.Plan with { Inputs = [first.Plan.Inputs[0] with { Namespace = "wrong" }] }), "wrong authored namespace cannot enable assessment");
+            Require(!Runner.VerifiedHintOrdering(first.Row, first.Plan with { Inputs = [first.Plan.Inputs[0] with { Location = Runner.Origin + "msData/additional/test93490_2.xsd" }] }), "later schema cannot replace first schema");
+            Require(!Runner.VerifiedHintOrdering(pairs[1].Row, pairs[1].Plan with { Inputs = pairs[1].Plan.Inputs.Reverse().ToArray() }), "first-schema input order is bound");
+            string tempUpstream = Path.Combine(temporary, "upstream"); Directory.CreateDirectory(Path.Combine(tempUpstream, "msData/additional"));
+            File.Copy(Path.Combine(Path.GetDirectoryName(upstream)!, "verified-hint-ordering-profile.json"), Path.Combine(temporary, "verified-hint-ordering-profile.json"));
+            File.WriteAllText(Path.Combine(temporary, "external-resources.json"), "[]");
+            string instance = Path.Combine(tempUpstream, path), schema = Path.Combine(tempUpstream, "msData/additional/test93490_1.xsd");
+            File.Copy(Path.Combine(upstream, path), instance); File.Copy(Path.Combine(upstream, "msData/additional/test93490_1.xsd"), schema); Runner.Root = tempUpstream;
+            Require(Runner.VerifiedHintOrdering(first.Row, first.Plan), "guard binds identical temporary copies");
+            File.AppendAllText(instance, " "); Require(!Runner.VerifiedHintOrdering(first.Row, first.Plan), "changed original instance hash cannot enable assessment");
+            File.Copy(Path.Combine(upstream, path), instance, true); File.AppendAllText(schema, " ");
+            Require(!Runner.VerifiedHintOrdering(first.Row, first.Plan), "changed first-schema hash cannot enable assessment");
+            return 0;
+        }
+        finally { Runner.Root = saved; if (Directory.Exists(temporary)) Directory.Delete(temporary, true); }
+    }
     private static void Require(bool condition, string label) { if (!condition) throw new InvalidOperationException(label); Console.WriteLine("PASS " + label); }
     private static string XmlFailure(string input, long maximum)
     {

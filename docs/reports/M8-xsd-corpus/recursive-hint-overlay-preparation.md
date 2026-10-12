@@ -1,0 +1,39 @@
+# Recursive and hint overlay preparation
+
+Verified main58f5e0d03f1a63b5e78ce7b7e7a6d8ed66c2cbf1 was joined without
+conflicts at d0c4be470669b7bf55dda3890df78749ce999196. Recursive and hint tasks
+are both verified at dda9ff6d837aa773193d6185e0f6b4c736aa5021. Root's combined
+1804-case checks are coordinator review evidence, not new worker executions.
+
+Only four recursive targets and seven hint targets were selected from the
+integrated original manifests. Ten groups emit exactly11 original IDs per engine;
+the Eb041 schema is itself one of the three recursive schema targets. Owned
+recursive-hint-overlay-inputs.json preserves source manifest hashes, untouched
+expectations/current/prior statuses, original source hashes and exact ordered
+first-schema prerequisites. verified-hint-ordering-profile.json is a byte-for-byte
+copy of the integrated hint provenance, including its explicit skip interpretation.
+
+The existing adapter already compiles the first authored schema for each
+namespace and retains later hints without fetching. Previously it forced every
+late-plan result into an unassessed limitation. The bounded update enables actual
+product assessment only for the seven exact hard-coded IDs, original INVALID
+expectations, original document path/SHA and complete ordered first-schema inputs:
+foo/test93490_1, bar/test93490_3 and no-namespace/test93490_5 where originally used.
+Every supplied first schema must match its pinned SHA. Missing, changed, reordered,
+wrong-namespace or later-schema inputs cannot enable the profile.
+
+Product rows explicitly record hintOrderingProfile plus original instance URI
+provenance and the unchanged planning journal. Their actual result remains valid,
+invalid or refused as returned by the public facade; no semantic result is forced.
+Reporting credits the supported profile only for complete instance-invalid with
+XSD.HintOrder. A refusal, missing prerequisite, different diagnostic or valid result
+cannot satisfy that rule. BCL never invokes the product guard and remains separately
+limitation/unassessed. Historical rows lack the flag and retain their old reporting.
+Other hints, namespace mismatch, standards exceptions and resolver null-denial are
+unchanged. Public stream transport, finite caps and cancellation remain the same;
+original URI is provenance because this transport has no instance BaseUri option.
+
+The global ordering interaction under skipped content remains an explicit project
+interpretation. This focused profile does not label that corner independently
+adjudicated upstream. No XML/schema/instance bytes or original oracle were changed.
+No new semantic original has executed: root source review precedes the exact subset.

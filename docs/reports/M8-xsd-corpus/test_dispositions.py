@@ -75,6 +75,18 @@ class Dispositions(unittest.TestCase):
   for id in m.FATALXML:
    self.assertIsNone(m.view({'id':id,'passed':False,'actual':'incomplete-refusal'})['profilePassed'])
    self.assertFalse(m.view({'id':id,'passed':True,'actual':'instance-invalid'})['profilePassed'])
+ def test_verified_product_hint_profile_requires_complete_ordering_invalidity(self):
+  for id in m.LATEHINTS:
+   row={'id':id,'engine':'product','hintOrderingProfile':True,'passed':True,'actual':'instance-invalid','codes':['XSD.HintOrder']}
+   x=m.view(row);self.assertTrue(x['originalPassed']);self.assertTrue(x['profilePassed']);self.assertFalse(x['adapterUnassessed']);self.assertFalse(x['approvedException'])
+   for outcome in ['incomplete-refusal','schema-unavailable','instance-valid','instance-hint-ordering-limitation']:
+    self.assertFalse(m.view({**row,'actual':outcome,'passed':False})['profilePassed'])
+   self.assertFalse(m.view({**row,'codes':['XSD.Content']})['profilePassed'])
+ def test_verified_hint_profile_does_not_promote_bcl_or_historical_rows(self):
+  for id in m.LATEHINTS:
+   row={'id':id,'engine':'bcl','hintOrderingProfile':True,'passed':False,'actual':'instance-hint-ordering-limitation','codes':[]}
+   self.assertIsNone(m.view(row)['profilePassed']);self.assertTrue(m.view(row)['adapterUnassessed'])
+   self.assertIsNone(m.view({**row,'engine':'product','hintOrderingProfile':False})['profilePassed'])
  def test_second_edition_namechar_requires_actual_complete_invalidity(self):
   x=m.view({'id':m.NAMECHAR['id'],'passed':False,'actual':'instance-invalid'});self.assertFalse(x['originalPassed']);self.assertTrue(x['profilePassed'])
   self.assertFalse(m.view({'id':m.NAMECHAR['id'],'passed':False,'actual':'incomplete-refusal'})['profilePassed'])
