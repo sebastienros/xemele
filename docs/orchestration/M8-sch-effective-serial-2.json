@@ -1,0 +1,39 @@
+{
+  "id": "M8-sch-effective-serial-2",
+  "status": "PROPOSED",
+  "maximumSeconds": 60,
+  "scope": "Two prebuilt allocation-only supervisors, SCH then effective-content, serial and once. Each is bounded to30s with20s work and10s cleanup. Overall actual UTC grant bounds also apply. Stop on first failure; no build/restore/discovery/tests/retry/extension; immediate durable RELEASE after lifecycle cleanup before raw inspection. Not a grant or PARK request.",
+  "sequence": [
+    {
+      "task": "M8-sch-validate",
+      "source": "43c6ab4cc789cc1e400dfdb2cea74e3851f681d7",
+      "prepared": "5ed14389fe4df0b5097152239787c7290331df3f",
+      "cwd": "/Users/sebastienros/.codex/worktrees/8502/xemele",
+      "manifest": "379c2d73c7333031792405f14403b11035806be6175b418ddebc862127bf75be",
+      "manifestPath": "docs/reports/M8-sch-validate/preparation.json",
+      "supervisor": "docs/reports/M8-sch-validate/lease.py",
+      "identities": 215,
+      "routes": 10
+    },
+    {
+      "task": "M8-xsd-effective-content",
+      "source": "ade942a4bbc6b7341bfd10f40c1a27068619257d",
+      "prepared": "04b90121e62aad6b586396b5626c02e4d49c39bb",
+      "cwd": "/private/tmp/xemele-M8-xsd-wildcard-integration",
+      "manifest": "e261323fcd7bb33c3fc3f9ab647d2611592fc7d688dd8a1e27bdbb87575d3580",
+      "manifestPath": "docs/reports/M8-xsd-effective-content/preparation.json",
+      "supervisor": "docs/reports/M8-xsd-effective-content/measure.py",
+      "identities": 410,
+      "routes": 5
+    }
+  ],
+  "preflight": "Both source reviews accepted; actual454 SCH and282 compiler tests; disabled controls and elevated process-cleanup verification passed; root independently verified both prepared identity sets before external GregsEx park. Actual combined8917aceb:454 SCH checks and282 compiler checks, public1400/consumers all pass. Serial-1 expired without grant or execution; no prior ACK reused.",
+  "acks": {
+    "root": "Actual combined checks complete at8917aceb; both frozen payloads freshly reverified; no jobs/sessions/cells."
+  },
+  "earliestStart": "2026-10-12T00:56:00Z",
+  "latestStart": "2026-10-12T01:03:00Z",
+  "absoluteCleanupCap": "2026-10-12T01:04:00Z",
+  "proposedUtc": "2026-10-12T00:56:04.375177+00:00",
+  "reviewers": "All three read-only review tasks completed with no jobs; root will not redispatch until release."
+}
