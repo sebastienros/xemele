@@ -649,11 +649,6 @@ internal sealed class XsdCompilation
                 particle!.Term is XsdGroupTerm { Particles.Count: 0 } &&
                 (authoredParticle.LocalName is "sequence" or "all" ||
                  authoredParticle.LocalName == "choice" && particle.MinOccurs == BigInteger.Zero);
-            if (baseType?.ContentKind == XsdContentKind.Simple && derivation == XsdDerivation.Extension)
-            {
-                if (!emptySyntax) Error("A simple-content base cannot be extended with element particles.", At(s, authoredParticle));
-                simpleType = baseType.SimpleType; particle = null; mixed = false;
-            }
             if (emptySyntax)
             {
                 if (!mixed) particle = null;
@@ -663,6 +658,15 @@ internal sealed class XsdCompilation
                     Components(at); Components(at);
                     particle = new(new XsdGroupTerm(XsdCompositor.Sequence, []), BigInteger.One, BigInteger.One, at);
                 }
+            }
+            // Map effective content first: mixed empty syntax synthesizes a
+            // 1..1 empty sequence. Only genuinely empty effective content can
+            // inherit a simple-content base (3.4.2 clause 3.2.1). Mixed or
+            // element content cannot extend a simple content type (3.4.6).
+            if (baseType?.ContentKind == XsdContentKind.Simple && derivation == XsdDerivation.Extension)
+            {
+                if (particle is not null) Error("A simple-content base cannot be extended with mixed or element content.", At(s, authoredParticle.IsDefault ? body : authoredParticle));
+                simpleType = baseType.SimpleType;
             }
         }
         AttributeBody(owner, body, bindings, out wildcard);

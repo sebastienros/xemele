@@ -107,6 +107,20 @@ public sealed class NeighborTests
         Assert.Equal(new("", "B"), d.BaseType); Assert.Equal(XsdDerivation.Extension, d.Derivation); Assert.Equal(XsdContentKind.Simple, d.ContentKind);
     }
     [Theory]
+    [InlineData("mixed='true'", "", "", false)]
+    [InlineData("", "mixed='true'", "", false)]
+    [InlineData("mixed='true'", "mixed='false'", "", true)]
+    [InlineData("", "mixed='true'", "<xs:sequence/>", false)]
+    [InlineData("mixed='true'", "mixed='false'", "<xs:sequence/>", true)]
+    [InlineData("", "mixed='false'", "<xs:sequence/>", true)]
+    public void EffectiveMixedContentPrecedesSimpleInheritance(string outer, string wrapper, string particle, bool valid)
+    {
+        string xml = Wrap("<xs:complexType name='B'><xs:simpleContent><xs:extension base='xs:int'/></xs:simpleContent></xs:complexType>" +
+            $"<xs:complexType name='D' {outer}><xs:complexContent {wrapper}><xs:extension base='B'>{particle}</xs:extension></xs:complexContent></xs:complexType><xs:element name='root' type='D'/>");
+        if (valid) { Oracle(xml, "<root>2</root>"); Result(XmlSchema.Compile(xml), "<root>2</root>", true); }
+        else { Assert.Throws<System.Xml.Schema.XmlSchemaException>(() => Oracle(xml)); Assert.Contains(Assert.Throws<SchemaCompileException>(() => XmlSchema.Compile(xml)).Diagnostics, d => d.Code == "XSD.SchemaRestriction"); }
+    }
+    [Theory]
     [InlineData("xs:int", "")]
     [InlineData("B", "<xs:sequence><xs:element name='e' minOccurs='0'/></xs:sequence>")]
     public void SimpleDefinitionOrElementExtensionRejects(string basis, string particle)

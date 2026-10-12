@@ -18,7 +18,17 @@ failures=[]
 def assert_tests(path, count=None, correctness=False):
  tests=list(ET.parse(path).getroot().iter('test'))
  assert tests and all(t.attrib['result']=='Pass' for t in tests)
- assert len({t.attrib['name'] for t in tests})==len(tests)
+ assert len({t.attrib['id'] for t in tests})==len(tests)
+ if correctness:
+  from collections import Counter
+  expected={'OriginalTests.OriginalHashesAndMetadataRemainFrozen':1,'OriginalTests.UnchangedOriginalMatchesMetadataAndIndependentOracle':38,
+   'AnySimpleTests.VacuousContentRestrictionRetainsDatatypeButNotComplexTypeIdentity':1,'AnySimpleTests.NonVacuousOrForbiddenRestrictionsStillReject':4,'AnySimpleTests.ExplicitSimpleDefinitionRestrictionOfUrTypeStillRejects':1,'AnySimpleTests.InlineSimpleTypeUsesOrdinaryFacetValidation':1,
+   'AttributeTests.UnmentionedUsesRetainRequiredDefaultFixedAndAuthoredQNameContext':2,'AttributeTests.DirectAndGroupProhibitionsHaveDifferentInheritanceMeaning':2,'AttributeTests.ProhibitedGroupDeclarationDoesNotCollideWithIncludedEffectiveUse':1,'AttributeTests.EffectiveGroupOverrideKeepsItsNarrowedDatatype':1,'AttributeTests.IncompatibleEffectiveOverridesReject':4,'AttributeTests.RestrictionDoesNotInheritBaseWildcard':1,
+   'NeighborTests.UnionSubstitutionIsCompiledAndMatched':5,'NeighborTests.Xsd10UnionMemberRuleDoesNotImportXsd11FacetGuard':1,'NeighborTests.IntermediateBlocksApplyToWholePathIncludingLaterMethods':3,'NeighborTests.HeadBlockPreservesAffiliationButRefusesInstance':2,'NeighborTests.UnrelatedAndFinalSubstitutionReject':2,'NeighborTests.NewlyAdmittedMemberParticipatesInUpa':1,'NeighborTests.EmptyComplexExtensionInheritsSimpleContentAndRequiredAttributes':2,'NeighborTests.EffectiveMixedContentPrecedesSimpleInheritance':6,'NeighborTests.SimpleDefinitionOrElementExtensionRejects':2,
+   'BoundaryTests.UnionGraphAndContentCompilationHaveExactAggregateBoundaries':1,'BoundaryTests.RelationChargesSharedWorkAndCancellationWithAuthoredLocation':1,'BoundaryTests.InvalidExtensionPreservesScalarAndByteLocation':2}
+  own=[t for t in tests if t.attrib['type'].startswith('Xemele.Tests.M8XsdTypeRelations.')]
+  assert Counter(t.attrib['type'].split('.')[-1]+'.'+t.attrib['method'] for t in own)==Counter(expected)
+  assert len(own)==85 and len(tests)==1622
  if count is not None: assert len(tests)==count
  print('PASS test rows',len(tests))
  return len(tests)
