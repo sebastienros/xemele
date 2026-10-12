@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "id": "M8-xsd-missing-components-contract-pending",
-  "status": "pending-coordinator-review-and-explicit-contract-decision",
-  "approved": false,
+  "status": "HUMAN APPROVED internal nullable-type migration; detailed contract and implementation checks still pending",
+  "approved": true,
   "sourceOnly": true,
   "implementationAuthorized": false,
   "purpose": "Proposed bounded XSD missing-component semantics, ownership and evidence requirements. This is not a task claim, runtime implementation, approved corpus disposition, or conformance result.",
@@ -21,17 +21,30 @@
   "primarySources": [
     {
       "url": "https://www.w3.org/TR/2004/REC-xmlschema-1-20041028/#noss",
-      "sections": ["3.1.2", "4.2.1", "5.3"],
+      "sections": [
+        "3.1.2",
+        "4.2.1",
+        "5.3"
+      ],
       "interpretation": "Unresolved component QNames can remain in a schema; required absence has consequences when assessment consumes it. References must be retained for possible resolution. Missing-component assessment cannot be represented as full PSVI assessment."
     },
     {
       "url": "https://www.w3.org/TR/2004/REC-xmlschema-1-20041028/#declare-element",
-      "sections": ["3.3.1", "3.3.2", "3.3.4", "3.3.5"],
+      "sections": [
+        "3.3.1",
+        "3.3.2",
+        "3.3.4",
+        "3.3.5"
+      ],
       "interpretation": "An authored explicit type, an inline type, an inferred substitution-head type, and the ordinary undeclared-type default are distinct. The absent-head interpretation for g1/i1 remains separately pending; its original VALID oracle is not changed."
     },
     {
       "url": "https://www.w3.org/TR/2004/REC-xmlschema-1-20041028/#coss-st",
-      "sections": ["3.14.6", "3.4.6", "5.1"],
+      "sections": [
+        "3.14.6",
+        "3.4.6",
+        "5.1"
+      ],
       "interpretation": "Preserve independently decidable schema-component errors and mandatory base-chain constraints. This proposal does not turn missing004/missing005, cycles, wrong-kind bases, or invalid derivations into acceptable schemas."
     }
   ],
@@ -86,7 +99,7 @@
     "noExpansionClaim": "This narrow task must not claim complete section5.3 support for every possible missing group, attribute-group, identity or datatype relation. Additional source ownership or unsupported joins discovered during the representation proof must be reported before implementation expands."
   },
   "representationDecision": {
-    "status": "requires-explicit-decision-before-implementation",
+    "status": "human-selected explicit internal type contract migration; owning task claim and detailed frozen controls required before implementation",
     "existingFrozenShape": "XsdElementDeclaration.Type is a nonnullable SchemaName in the frozen positional record. XsdCompiledSchema.Elements and GlobalElements use dense declaration IDs; XsdElementTerm carries one of those IDs. Existing complete-graph consumers assume Type resolves.",
     "alreadyRepresentableNames": "An explicit unresolved element Type and list ItemType can retain their authored expanded QNames in existing fields. That alone does not make eager compiler, facet, publication and evaluator consumers safe.",
     "hardCase": "A declaration whose type must be inferred from an unavailable substitution head has no actual type name to put in the existing nonnullable Type field. An additive availability flag does not make an anyType, default(SchemaName), borrowed head-name-as-type, or invented sentinel Type truthful. No such value is authorized by this proposal.",
@@ -116,7 +129,8 @@
       "No dropping a missing declaration so lax lookup silently succeeds, or returning a null record in a frozen nonnull declaration list.",
       "No declaration-level skip that suppresses independent syntax, facet, derivation, cycle or namespace errors."
     ],
-    "ordinaryDefault": "An element with no authored type, no inline type and no substitutionGroup follows the ordinary anyType mapping. This valid default is distinct from failed explicit resolution and pending inference from an authored unavailable head."
+    "ordinaryDefault": "An element with no authored type, no inline type and no substitutionGroup follows the ordinary anyType mapping. This valid default is distinct from failed explicit resolution and pending inference from an authored unavailable head.",
+    "selected": "explicit-internal-type-contract-migration"
   },
   "unresolvedHeadAdjudication": {
     "id": "saxonMeta/Missing.testSet#g1/i1:missing001.n1.xml",
@@ -130,7 +144,10 @@
   "proposedOwnership": {
     "prospectiveTaskId": "M8-xsd-missing-components",
     "claimStatus": "not-claimed",
-    "dependsOn": ["M8-xsd-import-visibility", "M8-xsd-instance-hint-ordering"],
+    "dependsOn": [
+      "M8-xsd-import-visibility",
+      "M8-xsd-instance-hint-ordering"
+    ],
     "dependencyGate": "Import visibility is currently claimed/in_progress. Start only after both prerequisites are verified on main and the representation/contract decision is frozen. The import task orders Compiler.cs after optional composition and the particle/facade chain; instance-hint-ordering orders the evaluator after content-failure assessment.",
     "corePathsToAssignExplicitly": [
       "src/Xemele/Validation/Xsd/Compilation/Compiler.cs",
@@ -227,11 +244,23 @@
       {
         "id": "saxonMeta/Missing.testSet#g0/i1:missing001.n1.xml",
         "schemaTestId": "saxonMeta/Missing.testSet#g0/s:missing001.xsd",
-        "schema": { "path": "saxonData/Missing/missing001.xsd", "sha256": "0afe906215fce330be2c1a3fb2f19f17584e26eb4b219ebe6fdda8d4075ad53c", "bytes": 278 },
+        "schema": {
+          "path": "saxonData/Missing/missing001.xsd",
+          "sha256": "0afe906215fce330be2c1a3fb2f19f17584e26eb4b219ebe6fdda8d4075ad53c",
+          "bytes": 278
+        },
         "originalExpected": "invalid",
         "originalClassification": "applicable",
         "inventoryRecordSha256": "92a29dcae4636b7fa01a39926ec393ec5c4f2258b5444e717a33f5ba1cc65c62",
-        "earlier": { "actual": "schema-unavailable", "codes": ["XSD.SchemaRestriction"], "passed": false, "lineNumber": 3, "rawLineSha256WithoutTerminator": "e54fa49a46335d42fb71f822ea22417d9393930b04f8a43651164e0481516bb6" },
+        "earlier": {
+          "actual": "schema-unavailable",
+          "codes": [
+            "XSD.SchemaRestriction"
+          ],
+          "passed": false,
+          "lineNumber": 3,
+          "rawLineSha256WithoutTerminator": "e54fa49a46335d42fb71f822ea22417d9393930b04f8a43651164e0481516bb6"
+        },
         "proposedLaterObservation": "missing-component-nonassessment",
         "laterExecution": "unrun",
         "laterDisposition": "pending-exact-record-and-authorization",
@@ -241,11 +270,23 @@
       {
         "id": "saxonMeta/Missing.testSet#g1/i1:missing001.n1.xml",
         "schemaTestId": "saxonMeta/Missing.testSet#g1/s:missing001.xsd",
-        "schema": { "path": "saxonData/Missing/missing002.xsd", "sha256": "1c976c777c1323785c09fae44535134672d3c4b048b6555e01b948e7f9a586c0", "bytes": 383 },
+        "schema": {
+          "path": "saxonData/Missing/missing002.xsd",
+          "sha256": "1c976c777c1323785c09fae44535134672d3c4b048b6555e01b948e7f9a586c0",
+          "bytes": 383
+        },
         "originalExpected": "valid",
         "originalClassification": "applicable",
         "inventoryRecordSha256": "9aff17b94e53d59fbb4a70a99fc25bd5c673bf45008b8463a3aa5bafb5f0506f",
-        "earlier": { "actual": "schema-unavailable", "codes": ["XSD.SchemaRestriction"], "passed": false, "lineNumber": 6, "rawLineSha256WithoutTerminator": "4a83ce9092b100496ed10e4f13e54b1e6b1e177a612c8d0e58fa9881e7b3a5a6" },
+        "earlier": {
+          "actual": "schema-unavailable",
+          "codes": [
+            "XSD.SchemaRestriction"
+          ],
+          "passed": false,
+          "lineNumber": 6,
+          "rawLineSha256WithoutTerminator": "4a83ce9092b100496ed10e4f13e54b1e6b1e177a612c8d0e58fa9881e7b3a5a6"
+        },
         "proposedLaterObservation": "missing-component-nonassessment-pending-head-mapping-adjudication",
         "laterExecution": "unrun",
         "laterDisposition": "pending-separate-standards-adjudication-and-authorization",
@@ -255,11 +296,23 @@
       {
         "id": "saxonMeta/Missing.testSet#g2/i1:missing003.n1.xml",
         "schemaTestId": "saxonMeta/Missing.testSet#g2/s:missing003.xsd",
-        "schema": { "path": "saxonData/Missing/missing003.xsd", "sha256": "c2030a2fdc07ef8b4faa06f33bab9d0e5b882d2b38bff7cfbc9e1a5120065fa2", "bytes": 334 },
+        "schema": {
+          "path": "saxonData/Missing/missing003.xsd",
+          "sha256": "c2030a2fdc07ef8b4faa06f33bab9d0e5b882d2b38bff7cfbc9e1a5120065fa2",
+          "bytes": 334
+        },
         "originalExpected": "invalid",
         "originalClassification": "applicable",
         "inventoryRecordSha256": "685ced0bffac0ccea2401b1bbfd3c507108ff9f74201564554825f82db1deda1",
-        "earlier": { "actual": "schema-unavailable", "codes": ["XSD.SchemaRestriction"], "passed": false, "lineNumber": 9, "rawLineSha256WithoutTerminator": "6584ba2c83b3d7cb3f6804acdc9686cd9f946c2eae3bce1cd769cf521be2174f" },
+        "earlier": {
+          "actual": "schema-unavailable",
+          "codes": [
+            "XSD.SchemaRestriction"
+          ],
+          "passed": false,
+          "lineNumber": 9,
+          "rawLineSha256WithoutTerminator": "6584ba2c83b3d7cb3f6804acdc9686cd9f946c2eae3bce1cd769cf521be2174f"
+        },
         "proposedLaterObservation": "missing-component-nonassessment",
         "laterExecution": "unrun",
         "laterDisposition": "pending-exact-record-and-authorization",
@@ -269,11 +322,23 @@
       {
         "id": "saxonMeta/Missing.testSet#g5/i1:missing006.n1.xml",
         "schemaTestId": "saxonMeta/Missing.testSet#g5/s:missing006.xsd",
-        "schema": { "path": "saxonData/Missing/missing006.xsd", "sha256": "6fa17799714f1d5bc2662e88c4d5b7b90299e73adae51c75c6f8d315376be1b3", "bytes": 360 },
+        "schema": {
+          "path": "saxonData/Missing/missing006.xsd",
+          "sha256": "6fa17799714f1d5bc2662e88c4d5b7b90299e73adae51c75c6f8d315376be1b3",
+          "bytes": 360
+        },
         "originalExpected": "invalid",
         "originalClassification": "applicable",
         "inventoryRecordSha256": "2d4d337f01f88bed92a99e20c07f2ef1f7f9c130d79e1161eeeabb478ca58cb0",
-        "earlier": { "actual": "schema-unavailable", "codes": ["XSD.SchemaRestriction"], "passed": false, "lineNumber": 14, "rawLineSha256WithoutTerminator": "a33712a819ba7bbb37d675bdf23b4f2e89459d2c5d472e4ee771b67b98642eae" },
+        "earlier": {
+          "actual": "schema-unavailable",
+          "codes": [
+            "XSD.SchemaRestriction"
+          ],
+          "passed": false,
+          "lineNumber": 14,
+          "rawLineSha256WithoutTerminator": "a33712a819ba7bbb37d675bdf23b4f2e89459d2c5d472e4ee771b67b98642eae"
+        },
         "proposedLaterObservation": "missing-component-nonassessment",
         "laterExecution": "unrun",
         "laterDisposition": "pending-exact-record-and-authorization",
@@ -287,5 +352,13 @@
     "src/Xemele/Validation/Xsd/Compilation/Declarations.cs": "475826166cb985645a9c42c248b7e2311c1aaaa624d85fad1d6b2e78241b4ac3",
     "src/Xemele/Validation/Xsd/XmlSchema.cs": "ed080c1cf7de23ce5584ae88d43c0bc8c5998c386863aa59d685b1d15fd89272",
     "src/Xemele/Validation/Xsd/Evaluation/Evaluator.cs": "18c026a2c0b70aacb237fd61902c0e029e57437fdeef1aa1dca2da9377ee6258"
+  },
+  "human_approval": {
+    "source": "Direct human reply in coordinator chat",
+    "question_call": "call_506dc1f8825e4bd09a41087a0e685ae8",
+    "question_index": 0,
+    "answer": "Allow the internal nullable-type migration",
+    "approved_prepared_record_sha256": "d31ce9d9fe1d38427fb61ed3c49bfc4073a614991d908c070c904335607ee8d5",
+    "scope": "Explicit internal Type nullable migration and affected baseline/consumers; public APIs and earlier milestones unchanged; not implementation or gate credit"
   }
 }
