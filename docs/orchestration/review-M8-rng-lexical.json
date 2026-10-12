@@ -1,0 +1,116 @@
+{
+  "task": "M8-rng-lexical",
+  "source_revision": "dc3c6e2a2bd8a5268b708015ed825471fe2e2307",
+  "integration_revision": "51550524f0c08647073da7657d4659e5affc78e7",
+  "root_checks": {
+    "tests": 405,
+    "namespace_counts": {
+      "M8RngCompile": 88,
+      "M8RngValidate": 89,
+      "M8RngLexical": 80,
+      "M8DatatypesTextBinary": 148
+    },
+    "failures_errors_skips_not_run": 0,
+    "build_warnings_errors": 0,
+    "public_api": 1410,
+    "frozen_rng": 444,
+    "normal_consumer_routes": 10,
+    "true_xml_only_consumer_routes": 10,
+    "planning_tasks": 182,
+    "commands": "Actual offline restore/Release build plus pinned10.0.11 test DLL, four namespace filters and parallelMode none; M0 ApiCheck/check_api.py; M8 ApiCheck/frozen.py; both owned consumers. New checks.py was added afterward, not falsely claimed executed.",
+    "xml_sha256": "1222aa6f80388009757fa0af7e44f0405be3ba39b4e8641e51aba16d26bb0196"
+  },
+  "source_review": {
+    "accepted_runtime_revision": "f3e50d9d1d0f8ed1306b899f4f3300a0284d22ba",
+    "test_only_final_revision": "dc3c6e2a2bd8a5268b708015ed825471fe2e2307",
+    "summary": "Independent normative and accounting acceptance; nine unchanged Jing witnesses, historical XML name grammar, bounded UTF8 percent projection charged before owned string allocation. Final test-only change creates invalid surrogate strings at runtime."
+  },
+  "allocation": {
+    "mode": "--measure",
+    "sourceRevision": "dc3c6e2a2bd8a5268b708015ed825471fe2e2307",
+    "runtime": "10.0.11",
+    "architecture": "Arm64",
+    "tiered": "0",
+    "serverGc": false,
+    "rows": [
+      {
+        "name": "cold-owned-parse-compile",
+        "bytes": 23952,
+        "consumed": 3
+      },
+      {
+        "name": "positive-control",
+        "iterations": 64,
+        "consumed": 64,
+        "bytes": 9728,
+        "bytesPerOperation": 152
+      },
+      {
+        "name": "owned-ascii-graph",
+        "iterations": 64,
+        "consumed": 64,
+        "bytes": 528896,
+        "bytesPerOperation": 8264
+      },
+      {
+        "name": "owned-historical-name-graph",
+        "iterations": 64,
+        "consumed": 64,
+        "bytes": 529408,
+        "bytesPerOperation": 8272
+      },
+      {
+        "name": "owned-projected-library-identity",
+        "iterations": 64,
+        "consumed": 64,
+        "bytes": 5632,
+        "bytesPerOperation": 88
+      },
+      {
+        "name": "owned-projected-library-graph",
+        "iterations": 64,
+        "consumed": 64,
+        "bytes": 540160,
+        "bytesPerOperation": 8440
+      },
+      {
+        "name": "owned-long-ascii-graph",
+        "iterations": 64,
+        "consumed": 64,
+        "bytes": 528896,
+        "bytesPerOperation": 8264
+      },
+      {
+        "name": "owned-long-unicode-graph",
+        "iterations": 64,
+        "consumed": 64,
+        "bytes": 9973536,
+        "bytesPerOperation": 155836.5
+      },
+      {
+        "name": "owned-malformed-percent-rejection",
+        "iterations": 64,
+        "consumed": 64,
+        "bytes": 202752,
+        "bytesPerOperation": 3168
+      },
+      {
+        "name": "owned-historical-start-rejection",
+        "iterations": 64,
+        "consumed": 64,
+        "bytes": 215552,
+        "bytesPerOperation": 3368
+      }
+    ],
+    "retainedGraphCount": 16,
+    "retainedApproximateBytes": 161016,
+    "processWorkingSet": 56590336,
+    "note": "Owned compiler graph/context/adapter/diagnostic/string allocations; prepared DOMs and closures outside warm counters. No primitive zero, timing, speedup or cross-architecture claim. Retained/RSS are process-local."
+  },
+  "allocation_sha256": "63a1f0957b0156c2c619de4c73ad4baee16a4e01ac54ee81ac9b49958f21897e",
+  "protocol": "Cold one parse/compile; nine warm routes each16warm then ONE aggregate64calls. Totals and arithmetic means only, no distributions/speed/zero/crossarch claims. Retained16graphs approximate and processRSS separate.",
+  "grant_revision": "419db89c96a16c6eca5d9bf98be8eaaf2814d1f1",
+  "release_revision": "df4ed5106d3058de348b85d4acc92ed41119ad4f",
+  "lifecycle": "Two children28133/28135 completed exit0/reaped/groups absent/logs closed;497identities unchanged;0.810758s. Durable RELEASE preceded this raw inspection.",
+  "postcheck_delta": "After tested515 integration, only docs/orchestration and report checks.py/lease.py/preparation.json added. Runtime/tests/fixtures/build/API/consumer inputs unchanged. No new correctness rerun claimed."
+}
