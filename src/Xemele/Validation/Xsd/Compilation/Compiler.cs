@@ -19,6 +19,12 @@ internal sealed class XmlSchemaCompiler : IXsdCompiler
         return new XsdCompilation(context.Options, context.Operation, context.Resources).Compile(schema);
     }
 
+    internal XsdCompiledSchema CompileAvailable(XmlDocument schema, SchemaCompileContext context, AvailabilityBuilder availability)
+    {
+        ArgumentNullException.ThrowIfNull(schema); ArgumentNullException.ThrowIfNull(context); ArgumentNullException.ThrowIfNull(availability);
+        return new XsdCompilation(context.Options, context.Operation, context.Resources, availability).Compile(schema);
+    }
+
     public XsdCompiledSchema Compile(XmlDocument schema, SchemaCompileOptions options, ISchemaOperation operation)
     {
         ArgumentNullException.ThrowIfNull(schema); ArgumentNullException.ThrowIfNull(options); ArgumentNullException.ThrowIfNull(operation);
@@ -33,6 +39,7 @@ internal sealed class XsdCompilation
     private readonly SchemaCompileOptions options;
     private readonly ISchemaOperation op;
     private readonly SchemaResourceLoader loader;
+    private readonly AvailabilityBuilder? availability;
     private readonly Dictionary<(Uri, string), Source> sources = new();
     private readonly List<Source> allSources = new();
     private readonly Dictionary<(string, SchemaName), Declaration> declarations = new();
@@ -64,7 +71,9 @@ internal sealed class XsdCompilation
     }
     private sealed record Declaration(Source Source, XmlNode Node, SchemaName Name, SchemaName? Previous = null, SchemaName? Original = null);
     internal XsdCompilation(SchemaCompileOptions options, ISchemaOperation operation, SchemaResourceLoader? resources = null)
-    { this.options = options; op = operation; loader = resources ?? new(options, operation); }
+        : this(options, operation, resources, null) { }
+    internal XsdCompilation(SchemaCompileOptions options, ISchemaOperation operation, SchemaResourceLoader? resources, AvailabilityBuilder? availability)
+    { this.options = options; op = operation; loader = resources ?? new(options, operation); this.availability = availability; }
 
     internal XsdCompiledSchema Compile(XmlDocument document)
     {
@@ -95,8 +104,20 @@ internal sealed class XsdCompilation
         foreach (var s in allSources) s.Scope.CheckUnchanged();
         Tick(default, 0);
         var definitions = new ReadOnlyCollection<XmlDatatypeDefinition>(new List<XmlDatatypeDefinition>(simple.Values));
-        return new(elements, attributes, new List<XsdTypeDefinition>(types.Values), definitions, identities, notations,
-            globalElements, globalAttributes, new XsdDefinitionRegistry(definitions));
+        var registry = XsdDefinitionRegistry.Create(definitions, op);
+        var compiled = new XsdCompiledSchema(elements, attributes, new List<XsdTypeDefinition>(types.Values), definitions, identities, notations,
+            globalElements, globalAttributes, registry);
+        var certified = registry.Certify(compiled, op);
+        if (!ReferenceEquals(certified, registry))
+        {
+            Components(default); // New record copy retaining the certified registry.
+            compiled = compiled with { Datatypes = certified };
+        }
+        Tick(default, 0);
+        // Registry/proof charges can invoke caller callbacks after the earlier
+        // source check; no changed source may cross this publication boundary.
+        foreach (var s in allSources) s.Scope.CheckUnchanged();
+        return compiled;
     }
 
     private Source Load(SchemaDocumentScope scope, string? effective, SchemaResourcePurpose? purpose)
@@ -377,12 +398,13 @@ internal sealed class XsdCompilation
         Tick(at);
         return source.Imports.Contains(ns);
     }
-    private SchemaName ResolveType(Declaration owner, XmlNode node, string value, bool previous = false)
+    private SchemaName ResolveType(Declaration owner, XmlNode node, string value, bool previous = false, bool optional = false)
     {
         var name = QName(owner, node, value, previous ? "type" : null);
-        if (!types.ContainsKey(name) && !simple.ContainsKey(name) && !declarations.ContainsKey(("type", name))) Error("Unknown type definition.", At(owner.Source, node));
+        if (!(optional && availability is not null) && !KnownType(name)) Error("Unknown type definition.", At(owner.Source, node));
         return name;
     }
+    private bool KnownType(SchemaName name) => types.ContainsKey(name) || simple.ContainsKey(name) || declarations.ContainsKey(("type", name));
     private SchemaName Anonymous(Declaration owner, XmlNode node, bool elementBoundary = false)
     {
         if (anonymous.TryGetValue(node, out var name)) return name;
@@ -528,16 +550,21 @@ internal sealed class XsdCompilation
         if (body.LocalName == "list")
         {
             basis = AnySimple;
-            if (body.GetAttribute("itemType") is { } lexical) item = ResolveType(owner, body, lexical);
+            if (body.GetAttribute("itemType") is { } lexical) item = ResolveType(owner, body, lexical, optional: true);
             foreach (var child in children)
             {
                 if (child.LocalName == "annotation") continue;
                 if (child.LocalName != "simpleType" || item is not null) Error("List requires exactly one item type.", At(s, child)); item = Anonymous(owner, child);
             }
             if (item is null) Error("List item type missing.", At(s, body));
-            var type = Type(item!.Value);
-            if (!simple.ContainsKey(item.Value) || simple[item.Value].Variety == XmlDatatypeVariety.List || HasListMember(item.Value, new())) Error("List item type cannot contain a list.", At(s, body));
-            if (type.Final.Contains(XsdDerivation.List)) Error("Item type forbids list derivation.", At(s, body));
+            availability?.Reference(ComponentAvailability.Simple(owner.Name), ReferenceKind.ListItemType, SymbolSpace.Type,
+                item!.Value, At(s, body), KnownType(item.Value), DependencyUse.TypeAssessment);
+            if (KnownType(item!.Value))
+            {
+                var type = Type(item.Value);
+                if (!simple.ContainsKey(item.Value) || simple[item.Value].Variety == XmlDatatypeVariety.List || HasListMember(item.Value, new())) Error("List item type cannot contain a list.", At(s, body));
+                if (type.Final.Contains(XsdDerivation.List)) Error("Item type forbids list derivation.", At(s, body));
+            }
         }
         else
         {
@@ -829,7 +856,7 @@ internal sealed class XsdCompilation
         if (!global && (node.GetAttribute("abstract") is not null || node.GetAttribute("substitutionGroup") is not null || node.GetAttribute("final") is not null)) Error("Local element has global-only attributes.", At(s, node));
         Components(At(s, node)); int id = elements.Count; elements.Add(null!);
         if (global) globalElements.Add(name, id); else localElements.Add(node, id);
-        SchemaName type = node.GetAttribute("type") is { } lexical ? ResolveType(owner, node, lexical) : AnyType;
+        SchemaName? type = node.GetAttribute("type") is { } lexical ? ResolveType(owner, node, lexical, optional: true) : AnyType;
         bool inline = false; var constraintIds = new List<int>();
         foreach (var child in Children(s, node))
         {
@@ -847,6 +874,9 @@ internal sealed class XsdCompilation
         if (head is not null && !inline && node.GetAttribute("type") is null) inferElementType.Add(id);
         elements[id] = new(id, name, type, Boolean(s, node, "abstract"), Boolean(s, node, "nillable"), node.GetAttribute("default"), node.GetAttribute("fixed"), head,
             ElementBlock(s, node), global ? Final(s, node, "restriction extension") : [], constraintIds, Context(s, node), ConstraintAt(s, node));
+        if (node.GetAttribute("type") is not null)
+            availability?.Reference(ComponentAvailability.Element(elements[id]), ReferenceKind.ExplicitElementType, SymbolSpace.Type,
+                type!.Value, At(s, node), KnownType(type.Value), DependencyUse.TypeAssessment);
         return id;
     }
     private int Attribute(Declaration owner, bool global)
@@ -1162,29 +1192,45 @@ internal sealed class XsdCompilation
 
     private void CheckGraphs()
     {
-        SchemaName Infer(int id, HashSet<int> seen)
+        SchemaName? Infer(int id, HashSet<int> seen)
         {
             Tick(elements[id].Location);
             if (!inferElementType.Contains(id)) return elements[id].Type;
             if (!seen.Add(id)) Error("Circular substitution affiliation.", elements[id].Location);
-            if (!globalElements.TryGetValue(elements[id].SubstitutionGroup!.Value, out int head)) Error("Undefined substitution head.", elements[id].Location);
-            var type = Infer(head, seen); elements[id] = elements[id] with { Type = type }; inferElementType.Remove(id); return type;
+            var element = elements[id]; var headName = element.SubstitutionGroup!.Value;
+            bool resolved = globalElements.TryGetValue(headName, out int head);
+            if (!resolved && availability is null) Error("Undefined substitution head.", element.Location);
+            availability?.Reference(ComponentAvailability.Element(element), ReferenceKind.InferredSubstitutionHeadType, SymbolSpace.Element,
+                headName, element.Location, resolved, DependencyUse.TypeAssessment);
+            if (resolved) availability?.Link(ComponentAvailability.Element(element), ComponentAvailability.Element(elements[head]));
+            var type = resolved ? Infer(head, seen) : null;
+            if (type is { } inferred && !KnownType(inferred)) type = null;
+            elements[id] = elements[id] with { Type = type }; inferElementType.Remove(id); return type;
         }
         foreach (int id in new List<int>(inferElementType)) Infer(id, new());
         foreach (var element in elements)
         {
-            Tick(element.Location); var type = Type(element.Type);
-            if ((element.DefaultValue is not null || element.FixedValue is not null) && type.SimpleType is null && !(type.ContentKind == XsdContentKind.Mixed && Emptiable(type.Particle))) Error("Element value constraint requires simple or emptiable mixed content.", element.Location);
+            Tick(element.Location);
+            XsdTypeDefinition? type = element.Type is { } typeName && KnownType(typeName) ? Type(typeName) : null;
+            if (type is null && availability is null) Error("Unknown element type.", element.Location);
+            if (type is not null && (element.DefaultValue is not null || element.FixedValue is not null) && type.SimpleType is null && !(type.ContentKind == XsdContentKind.Mixed && Emptiable(type.Particle))) Error("Element value constraint requires simple or emptiable mixed content.", element.Location);
             if (element.SubstitutionGroup is not null)
             {
                 var visited = new HashSet<int> { element.Id }; var member = element;
                 while (member.SubstitutionGroup is { } headName)
                 {
                     Tick(member.Location);
-                    if (!globalElements.TryGetValue(headName, out int headId)) Error("Undefined substitution group head.", member.Location);
+                    bool resolved = globalElements.TryGetValue(headName, out int headId);
+                    availability?.Reference(ComponentAvailability.Element(member), ReferenceKind.SubstitutionAffiliation, SymbolSpace.Element,
+                        headName, member.Location, resolved, DependencyUse.SubstitutionSelection);
+                    if (!resolved) { if (availability is null) Error("Undefined substitution group head.", member.Location); break; }
                     if (!visited.Add(headId)) Error("Circular substitution group affiliation.", member.Location);
-                    var head = elements[headId]; var derivations = DerivationPath(element.Type, head.Type, element.Location);
-                    foreach (var derivation in derivations) if (head.Final.Contains(derivation)) Error("Substitution member derivation is prohibited by head final.", element.Location);
+                    var head = elements[headId];
+                    if (element.Type is { } derived && head.Type is { } ancestor && KnownType(derived) && KnownType(ancestor))
+                    {
+                        var derivations = DerivationPath(derived, ancestor, element.Location);
+                        foreach (var derivation in derivations) if (head.Final.Contains(derivation)) Error("Substitution member derivation is prohibited by head final.", element.Location);
+                    }
                     member = head;
                 }
             }
@@ -1342,8 +1388,57 @@ internal sealed class XsdCompilation
 internal sealed class XsdDefinitionRegistry : IXmlDatatypeRegistry
 {
     private readonly IReadOnlyDictionary<SchemaName, XmlDatatypeDefinition> definitions;
+    // Only the checked publication path binds a certificate to the graph's
+    // post-snapshot list. The underlying dictionary owns immutable definitions;
+    // neither this proof nor its collection can change after publication.
+    private readonly IReadOnlyList<XmlDatatypeDefinition>? certifiedSimpleTypes;
     internal XsdDefinitionRegistry(IReadOnlyList<XmlDatatypeDefinition> types)
     { var owned = new Dictionary<SchemaName, XmlDatatypeDefinition>(); foreach (var type in types) owned.Add(type.Name, type); definitions = new ReadOnlyDictionary<SchemaName, XmlDatatypeDefinition>(owned); }
+    internal static XsdDefinitionRegistry Create(IReadOnlyList<XmlDatatypeDefinition> types, ISchemaOperation operation)
+    {
+        if (!operation.Charge(0, default)) throw SchemaSnapshots.Failure(operation);
+        // Dictionary, immutable wrapper and registry; every entry is separately
+        // charged before dictionary growth. The legacy constructor is unchanged.
+        if (!operation.ChargeComponents(3, default)) throw SchemaSnapshots.Failure(operation);
+        var owned = new Dictionary<SchemaName, XmlDatatypeDefinition>();
+        foreach (var type in types)
+        {
+            if (!operation.Charge(1, type.Location) || !operation.ChargeComponents(1, type.Location))
+                throw SchemaSnapshots.Failure(operation);
+            owned.Add(type.Name, type);
+        }
+        var registry = new XsdDefinitionRegistry(new ReadOnlyDictionary<SchemaName, XmlDatatypeDefinition>(owned), null);
+        if (!operation.Charge(0, default)) throw SchemaSnapshots.Failure(operation);
+        return registry;
+    }
+    private XsdDefinitionRegistry(IReadOnlyDictionary<SchemaName, XmlDatatypeDefinition> definitions,
+        IReadOnlyList<XmlDatatypeDefinition>? certifiedSimpleTypes)
+    { this.definitions = definitions; this.certifiedSimpleTypes = certifiedSimpleTypes; }
+    internal XsdDefinitionRegistry Certify(XsdCompiledSchema schema, ISchemaOperation operation)
+    {
+        if (!operation.Charge(0, default)) throw SchemaSnapshots.Failure(operation);
+        if (!ReferenceEquals(schema.Datatypes, this)) throw new ArgumentException("Registry must belong to the supplied graph.", nameof(schema));
+        bool complete = definitions.Count == schema.SimpleTypes.Count;
+        foreach (var definition in schema.SimpleTypes)
+        {
+            if (!operation.Charge(1, definition.Location)) throw SchemaSnapshots.Failure(operation);
+            // Identity binds the certificate to these actual frozen definitions,
+            // not merely to equal names in a different registry.
+            complete &= definitions.TryGetValue(definition.Name, out var actual) && ReferenceEquals(definition, actual);
+            if (definition.ItemType is { } item)
+            {
+                if (!operation.Charge(1, definition.Location)) throw SchemaSnapshots.Failure(operation);
+                complete &= definitions.ContainsKey(item);
+            }
+        }
+        if (!operation.Charge(0, default)) throw SchemaSnapshots.Failure(operation);
+        if (!complete) return this;
+        if (!operation.ChargeComponents(1, default)) throw SchemaSnapshots.Failure(operation);
+        var certified = new XsdDefinitionRegistry(definitions, schema.SimpleTypes);
+        if (!operation.Charge(0, default)) throw SchemaSnapshots.Failure(operation);
+        return certified;
+    }
+    internal bool Certifies(IReadOnlyList<XmlDatatypeDefinition> simpleTypes) => certifiedSimpleTypes is not null && ReferenceEquals(certifiedSimpleTypes, simpleTypes);
     public IXmlDatatypeLibrary? Find(string namespaceUri) { ArgumentNullException.ThrowIfNull(namespaceUri); return null; }
     public XmlDatatypeDefinition? FindType(SchemaName name) => definitions.TryGetValue(name, out var value) ? value : null;
 }
@@ -1373,7 +1468,8 @@ internal static class XsdSubstitutionGroups
                 if (!seen.Add(current)) break; affiliated = current == headId;
             }
             if (!affiliated) continue;
-            if (TypeRelation(typeMap, null, schema.Datatypes, element.Type, head.Type, operation, element.Location,
+            if (element.Type is not { } derived || head.Type is not { } ancestor) throw new ArgumentException("Complete substitution graph required.", nameof(schema));
+            if (TypeRelation(typeMap, null, schema.Datatypes, derived, ancestor, operation, element.Location,
                 true, head.Block.Contains(XsdElementBlock.Restriction), head.Block.Contains(XsdElementBlock.Extension), out _, out _))
                 result.Add(candidate);
         }

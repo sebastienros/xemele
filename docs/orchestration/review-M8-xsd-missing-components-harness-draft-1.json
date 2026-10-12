@@ -1,0 +1,75 @@
+{
+  "runtimeRevision": "a75bf6b098593c79450b35b3c416abad691c9ffb",
+  "harnessState": "Untracked preliminary draft; reviewed file hashes stable before/after; immutable final packet still required",
+  "result": "SOURCE CHANGES REQUIRED; no execution release",
+  "reviewers": [
+    "/root/review_m8_model",
+    "/root/review_m8_contract",
+    "M8 root coordinator"
+  ],
+  "issues": [
+    {
+      "id": "H01",
+      "priority": "P2",
+      "location": "terminal.py:34; bindings.py:232",
+      "problem": "Deletion selects directories/suffixes/known raw names while claiming only named concise receipts survive. Root-level raw.json/payload.bin/extensionless payload can survive a successful release.",
+      "required": "Exact retained concise-receipt allowlist and active-preparation inventory; delete everything else within exact owned roots; validate complete remaining membership before release.",
+      "proof": [
+        "Unknown JSON/binary/extensionless payloads root and nested disappear for normal/failure/discard/recovery",
+        "Unexpected survivor blocks release; activeprepared exactbinary inventory preserved only during accepted single-use preparation"
+      ]
+    },
+    {
+      "id": "H02",
+      "priority": "P2",
+      "location": "check.py:27",
+      "problem": "Any all-Pass14-row set of8original positives+4nonassessment+2missing-base negatives passes summary despite all new correction witnesses and other affected namespaces absent. Observed identity hash proves no expected membership.",
+      "required": "Bind independently expected selected method/case membership or equivalent exact coverage, finalized G03/G04 witnesses and explicit exclusions. All selected required affected checks must run; missing/skipped cases cannot complete summary.",
+      "proof": [
+        "Remove a new correction witness, one affectednamespace, one theorycase; each rejects",
+        "Skipped or duplicate row rejects; complete independent expectedselection passes"
+      ]
+    },
+    {
+      "id": "H03",
+      "priority": "P2",
+      "location": "nested_ownership.py:79,99",
+      "problem": "Initial birth inspection exception occurs before observed assigned; handler accesses unassigned variable and bypasses child.wait/cancellation. None similarly aborts cleanup. Supervisor never receives Popen child handle.",
+      "required": "Handle failure to obtain initial birth explicitly; beforeACK kill/reap exact owned Popen child without unverified group identity; retain unresolved registration failure until absence established and preserve original inspection error.",
+      "proof": [
+        "Injected initial parent-side birth exception after real wrapper spawn: no payload marker, explicit directchild reaped, registeredgroups absent, no success/no nextcommand",
+        "None result also reaches ownedchild cleanup safely"
+      ]
+    },
+    {
+      "id": "H04",
+      "priority": "P2",
+      "location": "controls.py:150-155",
+      "problem": "SIGKILL recovery control closes/drains runner and asserts allgroupsabsent before recovery, so cannot prove recovery itself drains live orphan work.",
+      "required": "Bounded ancestor fallback; after descendant ACK/readiness kill/reap owner, prove descendant stilllive immediately before recovery; recovery must prove absence before deletion. Wrong ownerSHA and wrongnonce refusals leave live descendant untouched; no originalphase success.",
+      "proof": [
+        "Matched exactownerSHA/nonce recovery drains the provenlive orphan and deletesraw afterabsence",
+        "WrongSHA/wrongnonce untouched; fallback independently cleans if recovery fails"
+      ]
+    }
+  ],
+  "reviewedSourceSha256": {
+    "bindings.py": "d4046c5e4f1370e7eaf507c1a704f1fd6b6f206b17de721c1ed45497f32db64d",
+    "launch.py": "cb1ca88a83bafdec03f478d650488df53b451e0eb1e4c3beff49d9e7a2467b7a",
+    "prepare.py": "faea6fbc6bd71b9acce847f708f421fbfbe13b3e11816973133732874a57683f",
+    "measure.py": "6d7b61057334b496617b71652aa70f9276e162b8b7beaa31cc0edb604e65fc03",
+    "terminal.py": "697f19f9240c8c6801d8f36148fb7a45cf2e6e7f7c0acecec58489ae2c7e0f39",
+    "diagnostics.py": "9325c55b678db1feb665f34e1cfb85c0f23c89f14ae40283c40e3f391b953e9d",
+    "check.py": "eea69fb0b181a1a1e285c7ad3d1952b2232f181022c2afb574189257676e504d",
+    "discard.py": "4210047a7c79687bb4ed8dceb1ada05c266f0175315f6c5e9b95611e330924dd",
+    "birth.py": "a3c826d6994f4487f9594f860c92eb4a92c1b2928fbc02431e6204e29038789e",
+    "family.py": "be6ea065f6442d999851ad30ea9b3c24b2bc58f59f5a818b8289c06fe86b8a86",
+    "nested_ownership.py": "64ef508de0f99896aa8c32e65854a7e4dd3d995ea69ecfee725658b86fb6aa73",
+    "supervision.py": "407b228d8b4741445eaf928a44aedd4de85aacaac894e6ad23b8ed8071395903",
+    "recovery.py": "2cf6fcbf1a0e16779733aaedbf582873a4dc7e006f6fd1b5e60924e16aa7e6a9",
+    "controls.py": "47ab18e1a90c351e87a492a0eb4d71330e96feea80bfcace9643a0f6a9694927"
+  },
+  "rootScope": "Source/phase/runtime/project/API/binary/prepared-single-use/positive-disabled receipt binding and launch/prepare/measure algorithms read; no additional concrete blocker identified in those files. Final generated source/toolchain/package/command manifest unreviewed.",
+  "release": "Exact H01-H04 harness SOURCE corrections, source provingcontrols and updatedfiniteplan/counts/manifests within existing owns; runtime G03a/G03b/G04u corrections continue under5ca658f01. No execution/import/build/restore/test/control/API/consumer/preparation/probe/counters. Return immutable current source+manifest packet/HOLD.",
+  "evidenceLimit": "All findings static deductions; actual failure/cleanup/control/correctness/allocation behavior UNRUN."
+}

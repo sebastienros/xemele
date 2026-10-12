@@ -37,7 +37,7 @@ internal sealed record XsdTypeDefinition(SchemaName Name, SchemaName? BaseType, 
     private IReadOnlyList<XsdAttributeBinding> attributes = SchemaSnapshots.List(Attributes);
     public IReadOnlyList<XsdAttributeBinding> Attributes { get => attributes; init => attributes = SchemaSnapshots.List(value); }
 }
-internal sealed record XsdElementDeclaration(int Id, SchemaName Name, SchemaName Type, bool Abstract, bool Nillable,
+internal sealed record XsdElementDeclaration(int Id, SchemaName Name, SchemaName? Type, bool Abstract, bool Nillable,
     string? DefaultValue, string? FixedValue, SchemaName? SubstitutionGroup, IReadOnlyList<XsdElementBlock> Block,
     IReadOnlyList<XsdDerivation> Final, IReadOnlyList<int> IdentityConstraints, SchemaNamespaceContext Context, XmlLocation Location)
 {

@@ -1,0 +1,38 @@
+{
+  "sourceRevision": "3f26d0a02301f45015d51691bb31ed51d4c448e8",
+  "result": "SOURCE CHANGES REQUIRED; execution held",
+  "reviewers": ["/root/review_m8_xpath", "/root/review_m8_contract", "/root/review_m8_model"],
+  "closedSourceGroups": ["G01", "G02", "G03b polynomial injective matching and complete fast path", "G05", "G06", "G07", "G08 nine additive joins", "G09"],
+  "issues": [
+    {
+      "id": "G03a-expanded-leaves",
+      "priority": "P1",
+      "location": "ContentModels/Derivation.cs:267-277,424-445",
+      "problem": "Expanded choice leaves rematch through substitution affiliations, reintroducing members excluded by the original base head.",
+      "witness": "Global h:int block=restriction; m:int substitutionGroup=h; s:short substitutionGroup=m. B ref h expands to {h,m}; D ref m expands to {m,s}. Current solver accepts D by rematching m to h and s to m although only D permits s.",
+      "required": "Preserve literal identities of known expanded leaves; retain genuine missing-operand uncertainty separately. Do not bypass complete substitution expansion.",
+      "proof": ["Blocked-head witness rejects", "Removing h restriction block succeeds and permits r/s=7", "Earlier complete/partial/completed/range witnesses remain intact"],
+      "spec": "https://www.w3.org/TR/2004/REC-xmlschema-1-20041028/#cos-particle-restrict"
+    },
+    {
+      "id": "G04u-union-whitespace",
+      "priority": "P2",
+      "location": "Facets/Definitions.cs:81,87-112",
+      "problem": "PotentialValue collapses partial-union lexical input before selecting a member, including enclosing union patterns, contrary to existing complete member-dependent normalization.",
+      "witness": "S=string restricted length4; R3=list(missing item) restricted length3; U=union(S,R3); default a[space][space]b. S accepts original length4, R3 rejects two tokens; current collapsed length3 rejects both.",
+      "required": "Preserve original union lexical input and evaluate enclosing union patterns using each candidate member's effective whitespace rule, following existing Parse/NormalizedCheck behavior. Raw input to members alone is insufficient.",
+      "proof": ["Element default and attribute fixed with two spaces defer unavailable assessment", "Enclosing union pattern with two spaces preserves member normalization", "One-token rejection, two/three-token neighbors, QName context, non-emitting branch rejection, and stop propagation preserved"],
+      "spec": "https://www.w3.org/TR/2004/REC-xmlschema-2-20041028/#rf-whiteSpace"
+    }
+  ],
+  "sourceHashes": {
+    "Derivation.cs": "7a17def665e4310402fc97cec3db7337ab66a76619f58404766812acc1ba06b1",
+    "Definitions.cs": "479e6296f102a52983969b4dcc561918dc052ef7a08bea2fe02f3178c2a4d3c4",
+    "Evaluator.cs": "e835148f931dae27696456ceaa4e6e1a96aef698ddb4b31065279bd8d6899e21",
+    "ReviewControls.cs": "6181920817205edfb1cb0649353dad163443c0068fa6352c6a2b7fbe502e825e",
+    "added-joins.golden.txt": "63bf22e9421c00cd1f3c12e0117286af778d961f366ec17029e717323078c3ed",
+    "source-manifest.json": "f952323a5e08431bafc88f1cf40a2fdc2224cd4a8b7f9943fd1497537cbdbb26"
+  },
+  "execution": "Immutable source review only. No builds, controls, tests, API extraction, consumers, preparation, probes, or counters run.",
+  "release": "Exact two corrections and owned proving controls authorized; finish H01-H04 harness corrections and final source/toolchain/package/command bindings. Return immutable SOURCE READY/HOLD; no execution, main/task state edits, peer dependencies, or fabricated passing results."
+}

@@ -40,14 +40,23 @@ public sealed class CompositionTests
         Assert.True(schema.Validate("<root>7</root>").IsValid); Assert.False(schema.Validate("<root>bad</root>").IsValid); Assert.Equal(2, calls); Assert.Equal(1, stream.Disposals);
     }
     [Theory]
-    [InlineData("<xs:include schemaLocation='missing'/><xs:element name='root' type='missing'/>")]
-    [InlineData("<xs:import namespace='urn:b' schemaLocation='missing'/><xs:element name='root' type='b:missing'/>")]
     [InlineData("<xs:include schemaLocation='missing'/><xs:element name='root'><xs:complexType><xs:group ref='g'/></xs:complexType></xs:element>")]
     [InlineData("<xs:include schemaLocation='missing'/><xs:complexType name='T'><xs:attributeGroup ref='g'/></xs:complexType>")]
     public void MissingRequiredReferencesStillFail(string body)
     {
         var resolver = Missing(); var error = Assert.Throws<SchemaCompileException>(() => XmlSchema.Compile(Wrap(body, "xmlns:b='urn:b'"), new() { BaseUri = Basis, Resolver = resolver }));
         Assert.Contains(error.Diagnostics, d => d.Code == "XSD.SchemaRestriction"); Assert.DoesNotContain(error.Diagnostics, d => d.Code == "SCHEMA.ResourceDenied"); Assert.Equal(1, resolver.Calls);
+    }
+    [Theory]
+    [InlineData("<xs:include schemaLocation='missing'/><xs:element name='root' type='missing'/>")]
+    [InlineData("<xs:import namespace='urn:b' schemaLocation='missing'/><xs:element name='root' type='b:missing'/>")]
+    public void MissingElementTypePublishesButRequiredConsumptionStops(string body)
+    {
+        var resolver = Missing();
+        var schema = XmlSchema.Compile(Wrap(body + "<xs:element name='good' type='xs:int'/>", "xmlns:b='urn:b'"), new() { BaseUri = Basis, Resolver = resolver });
+        Assert.True(schema.Validate("<good>7</good>").IsValid);
+        var result = schema.Validate("<root/>"); Assert.False(result.IsComplete); Assert.False(result.IsValid);
+        Assert.Equal("XSD.MissingComponent", Assert.Single(result.Diagnostics).Code); Assert.Equal(1, resolver.Calls);
     }
     private sealed class Legacy : XmlResourceResolver
     {

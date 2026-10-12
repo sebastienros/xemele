@@ -4,6 +4,225 @@ namespace Xemele.Validation;
 
 internal sealed partial class XmlFacetEvaluator
 {
+    private bool CheckAvailableGraph(XmlDatatypeDefinition type, IXmlDatatypeRegistry registry, ISchemaOperation op,
+        AvailabilityBuilder availability, HashSet<SchemaName> active, int depth)
+    {
+        op.Charge(1, type.Location);
+        if (depth >= 256) { op.Refuse("SCHEMA.Limit", "Datatype graph depth exceeded.", type.Location); return false; }
+        op.ChargeComponents(1, type.Location);
+        if (!active.Add(type.Name)) return FacetRules.Reject(op, type.Location, "Cyclic datatype definition.");
+        try
+        {
+            if (!availability.Unavailable(ComponentAvailability.Simple(type.Name))) return ValidateDefinition(type, registry, op);
+            if (!Enum.IsDefined(type.Variety)) return FacetRules.Reject(op, type.Location, "Invalid datatype variety.");
+            foreach (var final in type.Final)
+            { op.Charge(1, type.Location); if (!Enum.IsDefined(final)) return FacetRules.Reject(op, type.Location, "Invalid final derivation."); }
+            if (!CheckIndependentFacets(type, registry, op)) return false;
+            if (type.BaseType is { } baseName && registry.FindType(baseName) is { } basis && basis.Name != DatatypeTypes.Name("anySimpleType"))
+            {
+                if (basis.Variety != type.Variety) return FacetRules.Reject(op, type.Location, "Restriction changes datatype variety.");
+                if (!CheckAvailableGraph(basis, registry, op, availability, active, depth + 1)) return false;
+            }
+            if (type.Variety == XmlDatatypeVariety.Union)
+            {
+                if (type.ItemType is not null || type.MemberTypes.Count == 0) return FacetRules.Reject(op, type.Location, "Invalid union datatype graph.");
+                foreach (var name in type.MemberTypes)
+                {
+                    op.Charge(1, type.Location);
+                    var member = registry.FindType(name);
+                    if (member is null) return FacetRules.Reject(op, type.Location, "Unknown union member datatype.");
+                    // anySimpleType has no primitive value space. That fact is
+                    // decidable even when a different union member is missing.
+                    var atomic = member;
+                    for (int n = 0; atomic.Variety == XmlDatatypeVariety.Atomic; n++)
+                    {
+                        op.Charge(1, atomic.Location);
+                        if (n >= 256) { op.Refuse("SCHEMA.Limit", "Datatype graph depth exceeded.", atomic.Location); return false; }
+                        if (DatatypeTypes.TryGet(atomic.Name, out var metadata))
+                        { if (metadata.Primitive is null) return FacetRules.Reject(op, type.Location, "Invalid atomic union member datatype."); break; }
+                        if (atomic.BaseType is not { } parent || registry.FindType(parent) is not { } next)
+                            return FacetRules.Reject(op, type.Location, "Invalid atomic union member graph.");
+                        atomic = next;
+                    }
+                    foreach (var final in member.Final)
+                    { op.Charge(1, member.Location); if (final == XmlDatatypeDerivation.Union) return FacetRules.Reject(op, type.Location, "Final union member datatype."); }
+                    if (!CheckAvailableGraph(member, registry, op, availability, active, depth + 1)) return false;
+                }
+            }
+            else if (type.Variety == XmlDatatypeVariety.List && type.ItemType is { } item && registry.FindType(item) is { } definition)
+            {
+                if (!CheckAvailableGraph(definition, registry, op, availability, active, depth + 1)) return false;
+            }
+            return op.Charge(0, type.Location);
+        }
+        finally { active.Remove(type.Name); }
+    }
+    // A partial union is impossible only when every branch independently
+    // rejects. Branch failure emits no diagnostic; cancellation/refusal still
+    // propagates immediately. Complete members use their real executable plan.
+    private bool CheckIndependentConstraint(XmlDatatypeDefinition type, ReadOnlySpan<char> lexical, SchemaNamespaceContext context,
+        IXmlDatatypeRegistry registry, ISchemaOperation op, AvailabilityBuilder availability)
+    {
+        // A union selects its member's whitespace rule. Keep each possibility
+        // through enclosing patterns rather than collapsing before selection.
+        for (var rule = XmlWhitespaceRule.Preserve; rule <= XmlWhitespaceRule.Collapse; rule++)
+            if (PotentialValue(type, lexical, context, registry, op, availability, rule, 0)) return op.Charge(0, type.Location);
+        return FacetRules.Reject(op, type.Location, "Value constraint independently fails every available alternative.");
+    }
+    private bool PotentialValue(XmlDatatypeDefinition type, ReadOnlySpan<char> lexical, SchemaNamespaceContext context,
+        IXmlDatatypeRegistry registry, ISchemaOperation op, AvailabilityBuilder availability, XmlWhitespaceRule rule, int depth)
+    {
+        op.Charge(1, type.Location);
+        if (depth >= 256) { op.Refuse("SCHEMA.Limit", "Datatype graph depth exceeded.", type.Location); op.Charge(0, type.Location); return false; }
+        if (!availability.Unavailable(ComponentAvailability.Simple(type.Name)))
+        {
+            if (!prepared.TryGetValue(registry, out var cache) || !cache.TryGetValue(type, out var plan))
+            {
+                plan = Prepare(type, registry, op);
+                if (plan is not null) Publish(type, registry, plan, op);
+            }
+            bool valid = plan is not null && CompletePotential(plan, lexical, context, rule, op, out _);
+            op.Charge(0, type.Location); return valid;
+        }
+        if (type.Variety == XmlDatatypeVariety.List && rule != XmlWhitespaceRule.Collapse) return false;
+        var library = registry.Find(DatatypeTypes.XsdNamespace)!;
+        // Compilation owns this temporary normalized text for the candidate
+        // branch; no partial typed value or executable plan is manufactured.
+        var text = library.Normalize(lexical, rule, op);
+        int tokens = 0; bool inToken = false;
+        foreach (char c in text)
+        { op.Charge(1, type.Location); if (c == ' ') inToken = false; else if (!inToken) { tokens++; inToken = true; } }
+        var count = new FacetNumber((ulong)tokens);
+        int levels = 0;
+        for (XmlDatatypeDefinition? level = type; level is not null; level = level.BaseType is { } name ? registry.FindType(name) : null)
+        {
+            op.Charge(1, level.Location);
+            if (++levels > 256) { op.Refuse("SCHEMA.Limit", "Datatype graph depth exceeded.", level.Location); op.Charge(0, level.Location); return false; }
+            bool hasPattern = false, matched = false;
+            foreach (var facet in level.Facets)
+            {
+                op.Charge(1, facet.Location);
+                if (facet.Kind == XmlFacetKind.Pattern)
+                { hasPattern = true; var regex = compiler.Compile(facet.LexicalValue, facet.Location, op); matched |= matcher.IsMatch(regex, text.AsSpan(), op); }
+                else if (type.Variety == XmlDatatypeVariety.List && facet.Kind is XmlFacetKind.Length or XmlFacetKind.MinLength or XmlFacetKind.MaxLength)
+                {
+                    if (!ParseNumber(facet.LexicalValue, op, out var bound)) return false;
+                    var comparison = count.Compare(bound, op, facet.Location);
+                    if (comparison is null || (facet.Kind == XmlFacetKind.Length ? comparison != 0 : facet.Kind == XmlFacetKind.MinLength ? comparison < 0 : comparison > 0)) return false;
+                }
+            }
+            if (hasPattern && !matched) return false;
+        }
+        if (type.Variety == XmlDatatypeVariety.Union)
+        {
+            foreach (var name in type.MemberTypes)
+            {
+                op.Charge(1, type.Location);
+                var member = registry.FindType(name)!;
+                if (PotentialValue(member, lexical, context, registry, op, availability, rule, depth + 1)) return true;
+            }
+            return false;
+        }
+        // The list item remains unavailable. Decidable grammar/pattern/count
+        // checks passed; no fabricated item value or partial plan is produced.
+        return op.Charge(0, type.Location);
+    }
+    private bool CompletePotential(FacetPlan plan, ReadOnlySpan<char> lexical, SchemaNamespaceContext context,
+        XmlWhitespaceRule rule, ISchemaOperation op, out XmlDatatypeValue? value)
+    {
+        op.Charge(1, plan.Definition.Location); value = null;
+        if (plan.Variety != XmlDatatypeVariety.Union)
+            return plan.Whitespace == rule && Parse(plan, lexical, context, op, out value, out _);
+        foreach (var member in plan.Members)
+        {
+            op.Charge(1, plan.Definition.Location);
+            if (!CompletePotential(member, lexical, context, rule, op, out var selected)) continue;
+            if (!NormalizedCheck(plan, lexical, rule, selected!, op, out _)) continue;
+            value = plan.Library.CreateUnion(plan.Definition.Name, selected!, op);
+            return op.Charge(0, plan.Definition.Location);
+        }
+        return false;
+    }
+    private bool CheckIndependentFacets(XmlDatatypeDefinition type, IXmlDatatypeRegistry registry, ISchemaOperation op)
+    {
+        op.ChargeComponents(1, type.Location);
+        var counts = new List<(XmlFacet Facet, FacetNumber Number, int Level)>();
+        int level = 0;
+        for (XmlDatatypeDefinition? definition = type; definition is not null; definition = definition.BaseType is { } parent ? registry.FindType(parent) : null)
+        {
+            op.Charge(1, definition.Location);
+            // Intrinsic definitions have their own complete-plan validation;
+            // anySimpleType's nominal whitespace is not a list restriction.
+            if (DatatypeTypes.TryGet(definition.Name, out _) && ReferenceEquals(registry.FindType(definition.Name), definition)) break;
+            if (++level > 256) { op.Refuse("SCHEMA.Limit", "Datatype graph depth exceeded.", definition.Location); return false; }
+            int seen = 0;
+            foreach (var facet in definition.Facets)
+            {
+                op.Charge(1, facet.Location);
+                if (!Enum.IsDefined(facet.Kind) || (definition.Variety == XmlDatatypeVariety.List
+                    ? facet.Kind is not (XmlFacetKind.Length or XmlFacetKind.MinLength or XmlFacetKind.MaxLength or XmlFacetKind.Pattern or XmlFacetKind.Enumeration or XmlFacetKind.WhiteSpace)
+                    : facet.Kind is not (XmlFacetKind.Pattern or XmlFacetKind.Enumeration)))
+                    return FacetRules.Reject(op, facet.Location, "Facet is not applicable to this datatype.");
+                if (facet.Kind is XmlFacetKind.Pattern or XmlFacetKind.Enumeration)
+                {
+                    if (facet.Fixed) return FacetRules.Reject(op, facet.Location, "Pattern and enumeration do not have a fixed property.");
+                }
+                else
+                {
+                    int flag = 1 << (int)facet.Kind;
+                    if ((seen & flag) != 0) return FacetRules.Reject(op, facet.Location, "Duplicate scalar facet.");
+                    seen |= flag;
+                }
+                if (facet.Kind == XmlFacetKind.Pattern) { compiler.Compile(facet.LexicalValue, facet.Location, op); continue; }
+                if (facet.Kind == XmlFacetKind.WhiteSpace)
+                {
+                    if (NormalizeFacet(facet.LexicalValue, XmlWhitespaceRule.Collapse, op) != "collapse")
+                        return FacetRules.Reject(op, facet.Location, "List whitespace must remain collapse.");
+                }
+                else if (FacetRules.IsNumber(facet.Kind))
+                {
+                    if (!ParseNumber(facet.LexicalValue, op, out var number)) return FacetRules.Reject(op, facet.Location, "Invalid nonnegative integer facet value.");
+                    op.ChargeComponents(1, facet.Location); counts.Add((facet, number, level));
+                }
+                else if (NormalizeFacet(facet.LexicalValue, XmlWhitespaceRule.Collapse, op) is null)
+                    return FacetRules.Reject(op, facet.Location, "Invalid Unicode in facet value.");
+                // Enumeration's typed operand is unavailable. Its grammar,
+                // fixed flag and Unicode are still checked above.
+            }
+        }
+        foreach (var a in counts) foreach (var b in counts)
+        {
+            op.Charge(1, a.Facet.Location); var cmp = a.Number.Compare(b.Number, op, a.Facet.Location);
+            bool minA = a.Facet.Kind == XmlFacetKind.MinLength, maxA = a.Facet.Kind == XmlFacetKind.MaxLength;
+            bool minB = b.Facet.Kind == XmlFacetKind.MinLength, maxB = b.Facet.Kind == XmlFacetKind.MaxLength;
+            if ((!maxA && !minB && cmp > 0) || (!minA && !maxB && cmp < 0) ||
+                a.Level < b.Level && a.Facet.Kind == b.Facet.Kind && (b.Facet.Fixed && cmp != 0 || minA && cmp < 0 || maxA && cmp > 0))
+                return FacetRules.Reject(op, a.Facet.Location, "Conflicting or weakened length facets.");
+        }
+        foreach (var length in counts)
+        {
+            op.Charge(1, length.Facet.Location); if (length.Facet.Kind != XmlFacetKind.Length) continue;
+            foreach (var bound in counts)
+            {
+                op.Charge(1, bound.Facet.Location); if (bound.Facet.Kind is not (XmlFacetKind.MinLength or XmlFacetKind.MaxLength)) continue;
+                bool effective = true;
+                foreach (var earlier in counts)
+                { op.Charge(1, earlier.Facet.Location); if (earlier.Level < bound.Level && earlier.Facet.Kind == bound.Facet.Kind) effective = false; }
+                if (!effective) continue;
+                bool origin = false;
+                foreach (var previous in counts)
+                {
+                    op.Charge(1, previous.Facet.Location);
+                    if (previous.Level <= length.Level || previous.Facet.Kind != bound.Facet.Kind || previous.Number.Compare(bound.Number, op) != 0) continue;
+                    bool hasLength = false;
+                    foreach (var old in counts) { op.Charge(1, old.Facet.Location); hasLength |= old.Level >= previous.Level && old.Facet.Kind == XmlFacetKind.Length; }
+                    origin |= !hasLength;
+                }
+                if (!origin) return FacetRules.Reject(op, bound.Facet.Location, "Length bounds require an unchanged ancestor without length.");
+            }
+        }
+        return op.Charge(0, type.Location);
+    }
     private FacetPlan? Prepare(XmlDatatypeDefinition type, IXmlDatatypeRegistry registry, ISchemaOperation op)
     {
         op.ChargeComponents(3, type.Location);

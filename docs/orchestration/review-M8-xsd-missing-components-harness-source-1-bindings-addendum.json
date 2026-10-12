@@ -1,0 +1,34 @@
+{
+  "sourceRevision": "45df28879ea4a14ee13e8db107f48c9561a6ea52",
+  "snapshotSha256": "7a471e11971e3945045599012a2391a2c7dc8ab1454b4a3dabb997ff9b5a7410",
+  "harnessSourceSha256": "98da9734bd444e97ddeb542be502ada86453c361a9f410f815ea8249a7afbea7",
+  "reviewer": "/root/review_m8_model",
+  "result": "SOURCE CHANGES REQUIRED; execution held",
+  "issues": [
+    {
+      "id": "H16-restore-build-link",
+      "priority": "P2",
+      "location": "family.py:114-116; bindings.assert_prior_execution",
+      "problem": "Restore outputs are recorded but the next no-restore build accepts a fresh baseline. Assets/generated NuGet targets changed between phases are not compared against the preceding successful restore.",
+      "required": "Before each build launch, compare its complete restore-derived dictionary to the successful same-project/same-active-root restore receipt, including dependency-project files; preserve build pre/post checks and no-next-on-failure.",
+      "proof": "Unchanged pair succeeds; changed bytes, added files and removed files reject before build launch and block the next command."
+    },
+    {
+      "id": "H17-frozen-executable-roles",
+      "priority": "P2",
+      "location": "diagnostics.py:23; PATH-selected Git and process-inventory probes",
+      "problem": "Manifest pins particular Git and /bin/ps identities but invocations use unqualified names; capture records an alternate PATH resolution without rejecting it against the frozen role.",
+      "required": "Use frozen absolute executables for these roles or reject mismatched resolution before every launch, including inventory probes. Preserve finite supervision/cleanup semantics. Exact executable-choice adaptation of the owned copied supervision foundation is authorized if necessary, with changed hash and explicit attribution; shared predecessor/tool files remain untouched.",
+      "proof": "Owned scratch alternate executable demonstrates frozen absolute selection or prelaunch rejection; never modify shared tools."
+    }
+  ],
+  "acceptedSource": "Receipt chains, prepared-output inventories, exclusive single-use claim and declared deadline propagation have no additional concrete blocker in this reviewed scope; control09 correction remains separately released.",
+  "sourceHashes": {
+    "bindings.py": "6aa0a7ca068195153c3968faf7464dc1405ceea7a71d85c298d4e0d626a4ae7b",
+    "family.py": "162278a5ddfa8f1a037824be8a7afc242870ed127e9f499c380dd5e299cfa27a",
+    "controls.py": "f43eb088a82369cd9bda29756945a355ab37eccd17d9a00e64cb783976858623",
+    "diagnostics.py": "9325c55b678db1feb665f34e1cfb85c0f23c89f14ae40283c40e3f391b953e9d"
+  },
+  "execution": "Static immutable source audit only; all executable controls/checks/API/preparation/counters remain UNRUN.",
+  "release": "Exact two owned harness corrections and proving controls authorized; regenerate bindings/counts/recipes/attribution honestly and return immutable SOURCE READY/HOLD. Runtime correction rereview remains separate; no execution or main/task-state edits."
+}
