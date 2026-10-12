@@ -1,6 +1,6 @@
 {
   "id": "M8-sch-effective-serial-2",
-  "status": "PROPOSED",
+  "status": "GRANTED",
   "maximumSeconds": 60,
   "scope": "Two prebuilt allocation-only supervisors, SCH then effective-content, serial and once. Each is bounded to30s with20s work and10s cleanup. Overall actual UTC grant bounds also apply. Stop on first failure; no build/restore/discovery/tests/retry/extension; immediate durable RELEASE after lifecycle cleanup before raw inspection. Not a grant or PARK request.",
   "sequence": [
@@ -35,11 +35,21 @@
     "schematron": "Fresh exact serial-2 ACK retrieved final; no jobs/new actors",
     "parser": "Fresh exact serial-2 ACK; complete research, no jobs/workers/scheduled follow-up/new actors",
     "reviewers": "All three read-only review tasks completed; no host jobs or future dispatch until release. Root confirms ownership.",
-    "gregsexCoordinator": "Fresh exact serial-2 ACK; integrated checks completed, no jobs. Host worker verified and archived; four current actors:main/coordinator/parser/conformance; other three ACKs pending."
+    "gregsexCoordinator": "Fresh exact serial-2 ACK; integrated checks completed, no jobs. Host worker verified and archived; four current actors:main/coordinator/parser/conformance; other three ACKs pending.",
+    "facets": "Fresh exact serial-2 ACK after773 checks completed exit0; no jobs/PIDs/new actors; five review corrections remain source/docs only.",
+    "gregsex": "Fresh complete FOUR-actor aggregate:main01a12c93/coordinator01a12d32/parser01a12d77/conformance01a12d6b-cbc9. All zero jobs/PIDs/children/sessions/cells/new actors. Prior host worker verified205b5b6 and archived. No old ACK reused."
   },
   "earliestStart": "2026-10-12T00:56:00Z",
   "latestStart": "2026-10-12T01:03:00Z",
   "absoluteCleanupCap": "2026-10-12T01:04:00Z",
   "proposedUtc": "2026-10-12T00:56:04.375177+00:00",
-  "reviewers": "All three read-only review tasks completed with no jobs; root will not redispatch until release."
+  "reviewers": "All three read-only review tasks completed with no jobs; root will not redispatch until release.",
+  "grant": {
+    "startedUtc": "2026-10-12T00:58:52.596907+00:00",
+    "expiryUtc": "2026-10-12T00:59:52.596907+00:00",
+    "maximumSeconds": 60,
+    "owner_chat": "01a12c6c-b333-71d3-877f-0d186618e21d",
+    "attempts": 1,
+    "release": "Immediate durable release after both supervisors terminate with child/group/output cleanup, before raw inspection. Stop on firstfailure; no retry."
+  }
 }
