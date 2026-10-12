@@ -114,6 +114,7 @@ public sealed class LanguageTests
         Run(new(measured.Work, measured.Components), 1000);
         var refused = new OperationTests.Ledger(measured.Work - 1); Assert.Throws<SchemaCompileException>(() => Run(refused, 1000)); Assert.False(refused.IsComplete);
         var shorter = new OperationTests.Ledger(); Run(shorter, 100); Assert.True(measured.Work < shorter.Work * 11);
+        TestContext.Current.TestOutputHelper!.WriteLine($"100 children: work={shorter.Work}, components={shorter.Components}; 1000 children: work={measured.Work}, components={measured.Components}");
     }
     [Fact]
     public void DominanceCancellationFaultsCursorAndPreservesCallerException()
