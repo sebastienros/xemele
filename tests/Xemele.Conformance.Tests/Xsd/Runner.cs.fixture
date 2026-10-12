@@ -12,6 +12,10 @@ internal static class Runner
     internal static readonly XmlResourceLimits Limits = new() { DocumentCharacters = 67_108_864, Depth = 1024, AttributesPerElement = 4096, TokenCharacters = 16_777_216, InternedNames = 262144, ExternalBytes = 67_108_864, ExternalResources = 1024, InclusionDepth = 128, Diagnostics = 1024, EvaluationWork = 100_000_000 };
     internal static string PathFor(Uri uri)
     {
+        using (var map = JsonDocument.Parse(File.ReadAllText(Path.Combine(Path.GetDirectoryName(Root)!, "external-resources.json"))))
+            foreach (var resource in map.RootElement.EnumerateArray())
+                if (resource.GetProperty("urls").EnumerateArray().Any(u => u.GetString() == uri.AbsoluteUri))
+                    return Path.Combine(Path.GetDirectoryName(Root)!, resource.GetProperty("path").GetString()!);
         if (uri.Scheme != "https" || uri.Host != "w3c-xsd.test" || !uri.AbsolutePath.StartsWith("/source/", StringComparison.Ordinal)) throw new IOException("Unmapped resource URI: " + uri);
         string path = Path.GetFullPath(Path.Combine(Root, Uri.UnescapeDataString(uri.AbsolutePath[8..])));
         if (!path.StartsWith(Root + Path.DirectorySeparatorChar, StringComparison.Ordinal)) throw new IOException("Resource escapes root: " + uri);

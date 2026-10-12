@@ -66,6 +66,8 @@ def main():
    if not p.is_file():missing.append(f['path']);continue
    assert p.stat().st_size==f['bytes'] and digest(p)==f['sha256'],f['path']
   assert not missing,missing
+  for f in json.loads((HERE/'external-resources.json').read_text()):
+   p=HERE/f['path'];assert digest(p)==f['sha256'] and p.stat().st_size==f['bytes'],f['path']
   refs=[x for g in actual['groups'] for r in ([g['schema']] if g['schema'] else [])+g['instances'] for x in r['documents']]
   missing=actual['missingReferences'];assert all(m['classification']=='excluded' for m in missing),missing
   print(json.dumps(actual['counts'],sort_keys=True));print(f'PASS reproducible metadata, {len(files)} original file hashes, {len(refs)} ordered document references; missing original references={len(missing)} (all excluded), applicable missing=0');return
