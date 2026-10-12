@@ -1,0 +1,82 @@
+{
+  "scope": "GregsEx-M3-shared-prepared-alloc-1",
+  "status": "Complete8actorfreshPARK aggregate;ownergrantpending",
+  "owner_chat": "01a12e48-6175-77a2-b4b2-d5d5921b1a1d",
+  "proposal_path": "/Users/sebastienros/github/gregsex/docs/orchestration/M3/shared-measurement-1.md",
+  "proposal_sha256_at_review": "1d081aea84a2e7757ceea48b9b147768cc3aa58700662cb841e2cc65de337545",
+  "maximum_seconds": 600,
+  "cleanup_seconds": 10,
+  "latest_start_rule": "ownergrant+60s",
+  "absolute_expiry_rule": "ownergrant+600s",
+  "commands": [
+    {
+      "source_revision": "c8ef7cc6005148fc61c185bcd5dd6b4ac1c69085",
+      "log": "allocation-jit.log",
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "exec",
+        "--fx-version",
+        "10.0.11",
+        "/Users/sebastienros/.codex/worktrees/3358/gregsex/docs/reports/M3-shared/artifacts/jit/GregsEx.Tests.dll"
+      ],
+      "environment": {
+        "GREGSEX_XML_PHASE": "counters"
+      }
+    },
+    {
+      "source_revision": "c8ef7cc6005148fc61c185bcd5dd6b4ac1c69085",
+      "log": "allocation-native.log",
+      "command": [
+        "/usr/bin/time",
+        "-l",
+        "/Users/sebastienros/.codex/worktrees/3358/gregsex/docs/reports/M3-shared/artifacts/native/GregsEx.Tests"
+      ],
+      "environment": {
+        "GREGSEX_XML_PHASE": "counters"
+      }
+    },
+    {
+      "source_revision": "c8ef7cc6005148fc61c185bcd5dd6b4ac1c69085",
+      "log": "bdn.log",
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "exec",
+        "--fx-version",
+        "10.0.11",
+        "/Users/sebastienros/.codex/worktrees/3358/gregsex/docs/reports/M3-shared/artifacts/benchmark/GregsEx.Tests.dll"
+      ],
+      "environment": {
+        "GREGSEX_XML_PHASE": "bdn"
+      }
+    }
+  ],
+  "prepared_files": {
+    "prepared-sequence.json": {
+      "path": "/Users/sebastienros/.codex/worktrees/3358/gregsex/docs/reports/M3-shared/prepared-sequence.json",
+      "sha256": "5cc65c0783fe0ac5d5bc7cf5fae0472e9950c47f14920198da7ee6480d53b675"
+    },
+    "run-prepared-sequence.py": {
+      "path": "/Users/sebastienros/.codex/worktrees/3358/gregsex/docs/reports/M3-shared/run-prepared-sequence.py",
+      "sha256": "ddaabd9673d26485107f0e77dd0f5e18f83d50555fa520f121785e2cfe6e7148"
+    },
+    "preflight-receipt.json": {
+      "path": "/Users/sebastienros/.codex/worktrees/3358/gregsex/docs/reports/M3-shared/preflight-receipt.json",
+      "sha256": "4b291bf1f003525db021d650b68b9d77c65ff381301f91c7e1c2cc13a1e22c5a"
+    }
+  },
+  "root_review": "Read exactsource/commands/bounds; independentlyhashed3primarypreparedfiles; owner reported3381file/219directory/environment rehash and8negative+TERM/KILLcontrols. No root workload/test measurement executed.",
+  "root_ack": "Actual zeroowned activejobs/PIDs/sessions/cells;publication verified;fixedintegration heavychecksnotstarted;holdheavywork/newactorsuntilRELEASE or expirywithcleanupconfirmation",
+  "xemele_actors": [
+    "01a12c6c-b333-71d3-877f-0d186618e21d",
+    "01a12849-d2be-7292-8cd9-27c1c14b5a3d",
+    "01a12e6a-b6ff-73d2-932c-f96c2dd738f7",
+    "01a12e78-60a1-7bb2-ae11-45c809f2ac76",
+    "01a12e78-6bf4-7d70-98c2-eef5f84c992a",
+    "review_m8_contract",
+    "review_m8_model",
+    "review_m8_xpath"
+  ],
+  "pending_acks": [],
+  "constraints": "Owner solelauncher3prebuiltchildren;stopfirstfailure;no builds/tests/discovery/restore/retry/extension/newactors/frozenwrites/rawinspection until durablecleanupRELEASE. No priorACK reused.",
+  "ack_evidence": "docs/orchestration/M8-external-M3-shared-ack-evidence.json"
+}
