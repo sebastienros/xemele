@@ -1,0 +1,20 @@
+<testGroup name="anyURI_a004_1339">
+      <annotation>
+         <documentation>TEST :Facet Schemas for string : test that uri with ftp:// gofer:// mailto: news: telnet: are accepted in anyURI</documentation>
+      <documentation>Schema doc changed to guaranteed-to-fail URIs, but that does not make
+the schema (or instance) invalid -- see <a xmlns="" href="http://www.w3.org/TR/xmlschema-1/#src-include">http://www.w3.org/TR/xmlschema-1/#src-include</a></documentation></annotation>
+      <documentationReference xlink:href=""/>
+      <schemaTest name="anyURI_a004_1339">
+         <schemaDocument xlink:href="../msData/datatypes/Facets/anyURI/anyURI_a004.xsd"/>
+         <expected validity="valid"/>
+         <current bugzilla="http://www.w3.org/Bugs/Public/show_bug.cgi?id=4126" status="stable" date="2010-07-05"/>
+<prior bugzilla="http://www.w3.org/Bugs/Public/show_bug.cgi?id=4126" status="queried" date="2007-01-02"/>
+<prior status="accepted" date="2006-07-16"/>
+      </schemaTest>
+      <instanceTest name="anyURI_a004_1339.i">
+         <instanceDocument xlink:href="../msData/datatypes/Facets/anyURI/anyURI_a004.xml"/>
+         <expected validity="invalid"/>
+         <current bugzilla="http://www.w3.org/Bugs/Public/show_bug.cgi?id=4126" status="queried" date="2010-07-09"/>
+         <prior status="accepted" date="2006-07-16"/>
+      </instanceTest>
+   </testGroup>
