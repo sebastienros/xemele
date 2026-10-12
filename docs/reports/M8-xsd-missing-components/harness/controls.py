@@ -311,6 +311,27 @@ class Controls(unittest.TestCase):
         theory.attrib['result']=previous
         duplicate=ET.Element('test',**tests[0].attrib)
         with self.assertRaises(AssertionError):selection.validate(tests+[duplicate],expectation)
+        # H19: identical total/IDs/Pass outcomes with independent method drift.
+        # Preserve the actual frozen expectation object and its file bytes.
+        before=json.dumps(expectation,sort_keys=True);expected_bytes=selection.EXPECTED.read_bytes()
+        omitted,donor,recipient=sorted(name for name,row in expectation['methods'].items() if row['cases']==1)[:3]
+        changed=[ET.Element('test',**test.attrib) for test in tests]
+        unknown='Xemele.Tests.H19Synthetic.'+'LongIdentifier'*30
+        for test in changed:
+            name=test.attrib['type']+'.'+test.attrib['method']
+            replacement=unknown if name==omitted else recipient if name==donor else None
+            if replacement is not None:test.attrib['type'],test.attrib['method']=replacement.rsplit('.',1)
+        with self.assertRaises(AssertionError) as caught:selection.validate(changed,expectation)
+        message=str(caught.exception);self.assertLessEqual(len(message),700)
+        self.assertIn(f'methods expected={len(expectation["methods"])} observed={len(expectation["methods"])-1}',message)
+        self.assertIn(f'cases expected={expectation["totalCases"]} observed={len(tests)}',message)
+        self.assertIn('missing=2 unexpected=1 countDiff=1',message)
+        for kind in ['missing','unexpected','count']:self.assertIn(kind+' ',message)
+        self.assertIn('expected=1 observed=2',message);self.assertIn('truncated=1',message)
+        with self.assertRaises(AssertionError) as repeated:selection.validate(list(reversed(changed)),expectation)
+        self.assertEqual(str(repeated.exception),message)
+        self.assertEqual(json.dumps(expectation,sort_keys=True),before)
+        self.assertEqual(selection.EXPECTED.read_bytes(),expected_bytes)
         self.exercise_failure_diagnostics()
     def exercise_failure_diagnostics(self):
         expected_type='Xemele.Tests.M8XsdMissingComponents.Fixture';expected_method='RejectedSchema'

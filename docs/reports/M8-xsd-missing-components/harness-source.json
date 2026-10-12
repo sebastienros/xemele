@@ -307,7 +307,7 @@
     "docs/reports/M8-xsd-missing-components/harness/bindings.py": "e0fcf3118ec897a6389980579a634cbcaa172685a1dd0a9dcc10cbf645c14cc3",
     "docs/reports/M8-xsd-missing-components/harness/birth.py": "a3c826d6994f4487f9594f860c92eb4a92c1b2928fbc02431e6204e29038789e",
     "docs/reports/M8-xsd-missing-components/harness/check.py": "8641b92cff5c45b55b7ed477e831d394e02fd28dde70bfc1538dcb7812d9d02d",
-    "docs/reports/M8-xsd-missing-components/harness/controls.py": "87c646752deede92a0c82ac3b386e210c7523db6e07ad5a5ded6392f6e94edef",
+    "docs/reports/M8-xsd-missing-components/harness/controls.py": "87a983da4c0e3a2867d7ca15421cd8f9e635047daa60e4c526e90587f80944c0",
     "docs/reports/M8-xsd-missing-components/harness/diagnostics.py": "23854e4176f93e84d854af3aac2b90716d5aa0e0f9accb708086928b80bb4367",
     "docs/reports/M8-xsd-missing-components/harness/discard.py": "4210047a7c79687bb4ed8dceb1ada05c266f0175315f6c5e9b95611e330924dd",
     "docs/reports/M8-xsd-missing-components/harness/family.py": "3eef5113422497b8e0fe7aa85e447e4f2ba664f5000cfdf1dd58c279ad648e13",
@@ -317,7 +317,7 @@
     "docs/reports/M8-xsd-missing-components/harness/prepare.py": "04abe38e754942c09c14e9a40b9d5fbb073ecbf0e700e35e9f377e50271f53d3",
     "docs/reports/M8-xsd-missing-components/harness/recovery.py": "2cf6fcbf1a0e16779733aaedbf582873a4dc7e006f6fd1b5e60924e16aa7e6a9",
     "docs/reports/M8-xsd-missing-components/harness/runtime-followup.patch": "a10425e21729e2cf7d3053c566f031717ee534c23352bcfcaa53a6108c9c38e6",
-    "docs/reports/M8-xsd-missing-components/harness/selection.py": "a20c76fd7097ee80d768d1d55e4bd1eee143fce1538a9ff8370d55a12c182320",
+    "docs/reports/M8-xsd-missing-components/harness/selection.py": "3b445bf62731e92de895f5b790e4d90836d7852b287c853da2287c340539175f",
     "docs/reports/M8-xsd-missing-components/harness/supervision.py": "12b49aba060f09107a3e70931ab92f397106e031f191dbd2ce0f65c32d4d4d98",
     "docs/reports/M8-xsd-missing-components/harness/terminal.py": "235ff6a7f7791a11a6cd8233ff7e32087b88bb49b04508f8fab35f1874664d08",
     "docs/reports/M8-xsd-missing-components/harness/test-selection.json": "7453e073991ef04fe89499593dc8f5c6eb44486663e3b2041ff3eef8affc18eb",
@@ -7186,7 +7186,8 @@
     "H09": "Exact scratch membership/configuration and drift fixture",
     "H16": "Existing owned Python restore/build pair and drift prelaunch/no-next fixture; no SDK execution",
     "H17": "Existing frozen-role alternate PATH fixture; shared tools unchanged",
-    "H18": "Within control14: normal XML failure, missing-XML discovery exception/stack context, malformed XML, size/row/text truncation and unverified command; preserved bounded facts before XML/log deletion; no success credit; UNRUN"
+    "H18": "Within control14: normal XML failure, missing-XML discovery exception/stack context, malformed XML, size/row/text truncation and unverified command; preserved bounded facts before XML/log deletion; no success credit; UNRUN",
+    "H19": "Within existing control14: same case total/unique IDs/Pass outcomes but two missing methods, one unexpected clipped identifier and one wrong cardinality; deterministic bounded assertion <=700chars, expected/observed totals and category counts, reverse-order same message; frozen expectation object/file unchanged; UNRUN"
   },
   "probeExpectations": {
     "routes": 11,
@@ -7279,31 +7280,44 @@
         "terminal": "16 groups absent;429 raw deleted",
         "apiConsumersPreparationCounters": "UNRUN",
         "credit": "No promotion; all prior failures retained; no passing credit carried to corrected source"
+      },
+      {
+        "runtimeSourceCommit": "5ad72401059d20dbb1f4562e45aee989a697f800",
+        "sourcePacket": "24f3ed28e99e32c41e3e137698e2774e1ee699ce",
+        "failedController": "root-check018820a9a1be4302801ee71ad4a84114",
+        "restoreBuild": "14 commands PASS",
+        "selectedRunner": "exit0; preceding selection gates case count2206, unique IDs and allPass succeeded; observed method/cardinality mapping !=frozen694 expectation",
+        "failure": "selection.validate AssertionError Selected namespace/method/theory case omitted or added; exact mapping difference unavailable after raw deletion",
+        "expectedMethods": 694,
+        "expectedCases": 2206,
+        "observedCases": 2206,
+        "observedMethods": "unknown; bounded H19 witness needed",
+        "terminal": "all groups absent; raw XML/logs deleted, no archive",
+        "apiConsumersDisabledPreparationCounters": "UNRUN",
+        "credit": "Overall check FAILED; no gate credit/promotion; no expected-selection mutation or passing credit carried to refreshed harness"
       }
     ],
     "priorCoordinatorOutcome": {
-      "sourcePacket": "07ac7e749f1cb450d812175136cb33c5814c4025",
-      "runtimeSourceCommit": "6a1396da9983faf2d2e4161682146767cd7f0201",
-      "failedController": "root-check343d450b6a0e4bfeac8d4e018a4e5925",
+      "runtimeSourceCommit": "5ad72401059d20dbb1f4562e45aee989a697f800",
+      "sourcePacket": "24f3ed28e99e32c41e3e137698e2774e1ee699ce",
+      "failedController": "root-check018820a9a1be4302801ee71ad4a84114",
       "restoreBuild": "14 commands PASS",
-      "verifiedCompleteXml": {
-        "cases": 2206,
-        "passed": 2205,
-        "failed": 1,
-        "skipped": 0,
-        "sha256": "not provided to worker"
-      },
-      "onlyFailure": "Xemele.Tests.M8XsdParticleNormalization.BatchTests.SmallGraphQuotasAreDerivedIndependentlyAndEntriesChargeBeforeGrowth",
-      "ownedNewControls": "All new certificate/visibility controls passed actual; overall phase FAILED; no gate credit",
-      "terminal": "16 groups absent;429 raw deleted",
-      "apiConsumersPreparationCounters": "UNRUN",
-      "credit": "No promotion; all prior failures retained; no passing credit carried to corrected source"
+      "selectedRunner": "exit0; preceding selection gates case count2206, unique IDs and allPass succeeded; observed method/cardinality mapping !=frozen694 expectation",
+      "failure": "selection.validate AssertionError Selected namespace/method/theory case omitted or added; exact mapping difference unavailable after raw deletion",
+      "expectedMethods": 694,
+      "expectedCases": 2206,
+      "observedCases": 2206,
+      "observedMethods": "unknown; bounded H19 witness needed",
+      "terminal": "all groups absent; raw XML/logs deleted, no archive",
+      "apiConsumersDisabledPreparationCounters": "UNRUN",
+      "credit": "Overall check FAILED; no gate credit/promotion; no expected-selection mutation or passing credit carried to refreshed harness"
     },
     "selectionDelta": "Original687 method/cardinality/attribute entries unchanged;7 new methods/14 cases; scoped Visibility source hash plus new owned file;694/2206/90files",
     "apiDelta": "Authored13 added-join rows: original9 unchanged +4 registry certificate members;11 new availability types unchanged; actual emission UNRUN",
     "postH18SourceCorrection": "Certified immutable simple-definition fast path and final source-integrity check after new callbacks; exact scoped visibility migration; no Batch/Support/oracle/quota/probe changes; source HOLD",
     "twoLineCompileCorrection": "Only CS1955 property access and xUnit2031 Assert.Single overload; all694 method/cardinality entries unchanged;2206cases; no runtime/recipe/control/probe/architecture edits; current packet UNRUN",
-    "emptyEdcScratchCorrection": "Null-root zero cancellation/refusal poll returns before EDC scratch allocation; nonnull Retain4 moved before four allocations, traversal unchanged; static small ledger11/9; unchanged Batch exact/one-under quotas; current packet UNRUN"
+    "emptyEdcScratchCorrection": "Null-root zero cancellation/refusal poll returns before EDC scratch allocation; nonnull Retain4 moved before four allocations, traversal unchanged; static small ledger11/9; unchanged Batch exact/one-under quotas; current packet UNRUN",
+    "H19SelectionDiagnostic": "Only final mapping-assertion message changes, success/equality gates unchanged; up to one sorted witness per category, escaped/clipped identities, total message <=693 chars with truncation marker; root runtime5ad and source manifest unchanged; all current execution UNRUN"
   },
   "limitations": [
     "Declared source and observed executable/SDK/package/restore/output identities; not an exhaustive OS/build read trace",
