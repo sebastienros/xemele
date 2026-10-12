@@ -4,7 +4,7 @@
   "milestone": "M8",
   "title": "RELAX NG evaluation and facade",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M8 coordinator01a12c6c-b333-71d3-877f-0d186618e21d / assigned isolated worker",
   "branch": "codex/m8-rng-validate",
   "base_revision": "cdf7a0b148e837e016f874da32b054ab4f25a93e",
@@ -36,29 +36,145 @@
     {
       "id": "M8-rng-validate-A1",
       "description": "Implement matching for attributes/interleave/lists/choices/recursion and advertised datatype libraries.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "branch-correctness-2",
+        "coordinator-source-review-2"
+      ]
     },
     {
       "id": "M8-rng-validate-A2",
       "description": "Test valid/invalid instances, concurrent compiled schemas, diagnostics and bounded work.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "branch-correctness-2",
+        "coordinator-source-review-2",
+        "owned-output-allocations",
+        "allocation-review"
+      ]
     },
     {
       "id": "M8-rng-validate-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "branch-correctness-2",
+        "coordinator-source-review-2"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Validation/RelaxNg/RelaxNgSchema.cs: six public Compile/Validate overloads",
+    "src/Xemele/Validation/RelaxNg/Evaluation/Finalization.cs: every-checkpoint datatype join, immutable real registry and prepared occurrence values",
+    "src/Xemele/Validation/RelaxNg/Evaluation/Evaluator.cs: per-run residual derivatives, unordered attributes, interleave, recursion, lists, weak/coalesced text, shared bounded operation",
+    "tests/Xemele.Tests/M8-rng-validate/: 89 independent cases including retained-source URI/base regressions",
+    "docs/api/M8-rng-validate.txt: seven approved public declarations",
+    "samples/M8-rng-validate/Consumer.csproj and docs/reports/M8-rng-validate/XmlOnly/XmlOnly.csproj: normal and XML-only consumers"
+  ],
+  "evidence": [
+    {
+      "id": "branch-correctness",
+      "kind": "check",
+      "revision": "5d69a1361eb55f771a5da428fc67ee7272c47d6a",
+      "command": "python3 -B docs/reports/M8-rng-validate/checks.py",
+      "result": "passed",
+      "summary": "85 owned and 1191 predecessor cases passed (zero failed/errors/skipped/not-run), Release builds clean; 1410 complete public API members and 444 frozen RNG members match; normal and XML-only consumers pass; planning validates179tasks and diff-check passes. ARM .NET10.0.11.",
+      "artifact": "docs/reports/M8-rng-validate/readiness.md"
+    },
+    {
+      "id": "generic-api-inventory",
+      "kind": "check",
+      "revision": "5d69a1361eb55f771a5da428fc67ee7272c47d6a",
+      "command": "python3 -B tools/ApiBaseline/compare.py --report artifacts/M8-rng-validate/correctness/public-api-inventory-failure.json",
+      "result": "failed",
+      "summary": "Known infrastructure inventory failure: existing header-only internal docs/api/M8-datatypes.txt rejected as empty. Approved complete compiled checker passes1410members; coordinator confirms no product blocker/shared edit needed.",
+      "artifact": "docs/reports/M8-rng-validate/readiness.md"
+    },
+    {
+      "id": "measurement-preparation",
+      "kind": "check",
+      "revision": "5d69a1361eb55f771a5da428fc67ee7272c47d6a",
+      "command": "python3 -B docs/reports/M8-rng-validate/prepare.py; python3 -B docs/reports/M8-rng-validate/measure.py --verify-only; python3 -B docs/reports/M8-rng-validate/measure.py --cleanup-preflight",
+      "result": "passed",
+      "summary": "10 exact counter-disabled route controls passed;434frozen identities verified; actual supervisor child timed out, terminated/reaped, owned group absent and log closed. No allocation counters or benchmarks run.45sproposal/35work/10cleanup requires fresh bounded coordination grant.",
+      "artifact": "docs/reports/M8-rng-validate/readiness.md"
+    },
+    {
+      "id": "coordinator-source-review-1",
+      "kind": "review",
+      "revision": "5d69a1361eb55f771a5da428fc67ee7272c47d6a",
+      "command": "Bounded coordinator source review communicated to worker",
+      "result": "failed",
+      "summary": "One mandatory instance context fix: pass document.ParsedSourceUri into SchemaSnapshots.Context so relative xml:base works consistently with/without XML declaration and when inherited. Source fix and four regressions written during PARK; unbuilt/untested. Old434identity preparation is invalid for current runtime source. No other concrete blocker reported.",
+      "artifact": "docs/reports/M8-rng-validate/readiness.md"
+    },
+    {
+      "id": "coordinator-source-review-2",
+      "kind": "review",
+      "revision": "ec0699e10605c1d89eecfdbe192a7150b81fe1be",
+      "command": "Bounded coordinator acceptance of URI/base source delta",
+      "result": "passed",
+      "summary": "Single-finding delta accepted: retained ParsedSourceUri passed through existing context helper; four declaration/root/inherited/override regressions judged correct; existing accounting/mutation/cancellation preserved. Source acceptance only; actual regressions independently pass in branch-correctness-2.",
+      "artifact": "docs/reports/M8-rng-validate/readiness.md"
+    },
+    {
+      "id": "branch-correctness-2",
+      "kind": "check",
+      "revision": "ec0699e10605c1d89eecfdbe192a7150b81fe1be",
+      "command": "python3 -B docs/reports/M8-rng-validate/checks.py",
+      "result": "passed",
+      "summary": "89 owned and1191predecessor cases pass, zero failures/errors/skips/not-run; clean Release builds,1410complete public members and444frozen RNG members match; normal and XML-only consumers pass,179task planning validation and diff-check pass. URI/base regressions complete valid/no diagnostics with/without declaration and inherited/nested relative bases. ARM.NET10.0.11.",
+      "artifact": "docs/reports/M8-rng-validate/readiness.md"
+    },
+    {
+      "id": "measurement-preparation-2",
+      "kind": "check",
+      "revision": "ec0699e10605c1d89eecfdbe192a7150b81fe1be",
+      "command": "python3 -B docs/reports/M8-rng-validate/prepare.py; python3 -B docs/reports/M8-rng-validate/measure.py --verify-only; python3 -B docs/reports/M8-rng-validate/measure.py --cleanup-preflight",
+      "result": "passed",
+      "summary": "Rebuilt source-fix probe:10exact counter-disabled controls pass;434new identities verified; actual supervisor child terminated/reaped, group absent, log closed. New manifest SHA5b7d24badda22d79471f6f12ee62684e4e9fb1a159944d36e9186f5c31c1ce9a replaces invalid prior preparation. No allocation counters or BDN run; fresh45sgrant required.",
+      "artifact": "docs/reports/M8-rng-validate/readiness.md"
+    },
+    {
+      "id": "owned-output-allocations",
+      "kind": "check",
+      "revision": "ec0699e10605c1d89eecfdbe192a7150b81fe1be",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 /Users/sebastienros/.codex/worktrees/3538/xemele/benchmarks/Xemele.Benchmarks/M8-rng-validate/bin/Release/net10.0/Xemele.Benchmarks.dll --measure /Users/sebastienros/.codex/worktrees/3538/xemele/artifacts/M8-rng-validate/measurement-1/allocations.json",
+      "result": "passed",
+      "summary": "Root supervised exact prebuilt allocation-only child under grant973968a6 and released ae9cf41ea49a87752a8256acedc987ee9e66ae1a before inspection.10positive routes\u00d764samples\u00d716ops=10240ops; raw totals/frequencies verified, cold87208B,positive1048B; approximate16schema retained delta887160B/RSS61505536B separate.434identities stable before/after; child8860exit0/reaped/groupabsent/logclosed;0.559740833s. No full-validator zero/speed claim; rawSHAa5a62c9a69e0265d9c32194b29002dd8ef1cc23274c6e1d7d95c1f745ca0f914.",
+      "artifact": "docs/reports/M8-rng-validate/measurements.md"
+    },
+    {
+      "id": "allocation-review",
+      "kind": "review",
+      "revision": "ec0699e10605c1d89eecfdbe192a7150b81fe1be",
+      "command": "Coordinator independent inspection and acceptance of released allocation raw totals, sample frequencies and lifecycle",
+      "result": "passed",
+      "summary": "All10route sample boundaries/totals/denominators accepted; variable compile/coalesced/interleave frequencies retained without per-operation distribution or zero/speed claims. Raw artifacts preserved for coordinator cleanup.",
+      "artifact": "docs/reports/M8-rng-validate/measurements.md"
+    },
+    {
+      "id": "final-metadata-check",
+      "kind": "check",
+      "revision": "c1df5c9f5e16d968ae474981a95ee292e5f9e5b7",
+      "command": "python3 tools/planning/tasks.py validate && git diff --check && git status --short",
+      "result": "passed",
+      "summary": "Committed implemented task metadata validates179tasks; diff-check passes and tracked/untracked nonignored tree clean. Runtime source unchanged from reviewed/tested ec0699e1. All actual test/review/allocation evidence retained; no source edits after freeze.",
+      "artifact": "docs/reports/M8-rng-validate/handoff.md"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "",
-    "checks": [],
-    "remaining": [],
+    "summary": "TERMINAL: implemented; all criteria pass. Source ec0699e10605c1d89eecfdbe192a7150b81fe1be, accepted89owned/1191predecessor/API/consumer/review/allocation evidence. Worker relinquishes ALL owned writes including every owned subtree/file and docs/tasks/M8-rng-validate.json after this final metadata commit. Clean HEAD/zero active owned jobs/PIDs/children/cells confirmed at terminal handoff. Raw ignored artifacts preserved for root cleanup; only coordinator follow-up may resume worker.",
+    "checks": [
+      "python3 -B docs/reports/M8-rng-validate/checks.py:89owned/1191predecessor,1410public/444frozen RNG, normal/XML-only consumers,planning179/diffcheck PASS",
+      "10counter-disabled controls/434identities/actualcleanup preflight PASS",
+      "Grant973968a6/releaseae9cf41e: exact allocation child8860exit0/reaped/groupabsent/logclosed; all434identities stable; raw inspection only after release",
+      "Root independently accepted source delta and allocation evidence; reports README.md,readiness.md,measurements.md"
+    ],
+    "remaining": [
+      "Coordinator integrate branch and record verified/integration_revision only after integrated checks; worker performs no further writes without focused follow-up"
+    ],
     "requests": []
   }
 }
