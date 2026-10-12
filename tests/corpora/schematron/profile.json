@@ -1,0 +1,1124 @@
+{
+  "schemaVersion": 1,
+  "source": "Authored from frozen ISO2016/direct-M4/SVRL contracts; expected rows hand-specified before execution",
+  "cases": [
+    {
+      "id": "assert-report-metadata-escaping",
+      "schema": "<schema xmlns=\"http://purl.oclc.org/dsdl/schematron\"><title>A &amp; B</title><pattern id=\"p\"><title>P</title><rule context=\"item\"><assert test=\"@ok\" id=\"a\" role=\"error\" flag=\"\">need &lt;ok&gt;</assert><report test=\"true()\" id=\"r\">A &amp; B ]]&gt; 😀</report><assert test=\"true()\">hidden</assert><report test=\"false()\">hidden</report></rule></pattern></schema>",
+      "document": "<item/>",
+      "phase": null,
+      "resources": {},
+      "expected": {
+        "phase": "#ALL",
+        "title": "A & B",
+        "namespaces": {},
+        "activePatterns": [
+          {
+            "key": 0,
+            "id": "p",
+            "name": "P"
+          }
+        ],
+        "firedRules": [
+          {
+            "key": 0,
+            "patternKey": 0,
+            "ruleKey": 0,
+            "context": "item",
+            "location": "/*[local-name()='item' and namespace-uri()=''][1]"
+          }
+        ],
+        "findings": [
+          {
+            "kind": "FailedAssert",
+            "id": "a",
+            "role": "error",
+            "flag": "",
+            "patternKey": 0,
+            "firedRuleKey": 0,
+            "patternId": "p",
+            "context": "item",
+            "test": "@ok",
+            "location": "/*[local-name()='item' and namespace-uri()=''][1]",
+            "contextLocation": "/*[local-name()='item' and namespace-uri()=''][1]",
+            "text": "need <ok>",
+            "diagnostics": [],
+            "properties": []
+          },
+          {
+            "kind": "SuccessfulReport",
+            "id": "r",
+            "role": null,
+            "flag": null,
+            "patternKey": 0,
+            "firedRuleKey": 0,
+            "patternId": "p",
+            "context": "item",
+            "test": "true()",
+            "location": "/*[local-name()='item' and namespace-uri()=''][1]",
+            "contextLocation": "/*[local-name()='item' and namespace-uri()=''][1]",
+            "text": "A & B ]]> 😀",
+            "diagnostics": [],
+            "properties": []
+          }
+        ],
+        "isValid": false,
+        "isComplete": true
+      },
+      "expectedSvrl": "<svrl:schematron-output xmlns:svrl=\"http://purl.oclc.org/dsdl/svrl\" phase=\"#ALL\" title=\"A &amp; B\"><svrl:active-pattern id=\"p\" name=\"P\" /><svrl:fired-rule context=\"item\" /><svrl:failed-assert test=\"@ok\" location=\"/*[local-name()='item' and namespace-uri()=''][1]\" id=\"a\" role=\"error\" flag=\"\"><svrl:text>need &lt;ok&gt;</svrl:text></svrl:failed-assert><svrl:successful-report test=\"true()\" location=\"/*[local-name()='item' and namespace-uri()=''][1]\" id=\"r\"><svrl:text>A &amp; B ]]&gt; 😀</svrl:text></svrl:successful-report></svrl:schematron-output>"
+    },
+    {
+      "id": "first-rule-singleton-focus",
+      "schema": "<schema xmlns=\"http://purl.oclc.org/dsdl/schematron\"><pattern><rule context=\"item\"><report test=\"position()=1 and last()=1\"><value-of select=\"@n\"/></report></rule><rule context=\"item\"><assert test=\"false()\">wrong</assert></rule></pattern></schema>",
+      "document": "<root><item n=\"1\"/><item n=\"2\"/></root>",
+      "phase": null,
+      "resources": {},
+      "expected": {
+        "phase": "#ALL",
+        "title": null,
+        "namespaces": {},
+        "activePatterns": [
+          {
+            "key": 0,
+            "id": null,
+            "name": null
+          }
+        ],
+        "firedRules": [
+          {
+            "key": 0,
+            "patternKey": 0,
+            "ruleKey": 0,
+            "context": "item",
+            "location": "/*[local-name()='root' and namespace-uri()=''][1]/*[local-name()='item' and namespace-uri()=''][1]"
+          },
+          {
+            "key": 1,
+            "patternKey": 0,
+            "ruleKey": 0,
+            "context": "item",
+            "location": "/*[local-name()='root' and namespace-uri()=''][1]/*[local-name()='item' and namespace-uri()=''][2]"
+          }
+        ],
+        "findings": [
+          {
+            "kind": "SuccessfulReport",
+            "id": null,
+            "role": null,
+            "flag": null,
+            "patternKey": 0,
+            "firedRuleKey": 0,
+            "patternId": null,
+            "context": "item",
+            "test": "position()=1 and last()=1",
+            "location": "/*[local-name()='root' and namespace-uri()=''][1]/*[local-name()='item' and namespace-uri()=''][1]",
+            "contextLocation": "/*[local-name()='root' and namespace-uri()=''][1]/*[local-name()='item' and namespace-uri()=''][1]",
+            "text": "1",
+            "diagnostics": [],
+            "properties": []
+          },
+          {
+            "kind": "SuccessfulReport",
+            "id": null,
+            "role": null,
+            "flag": null,
+            "patternKey": 0,
+            "firedRuleKey": 1,
+            "patternId": null,
+            "context": "item",
+            "test": "position()=1 and last()=1",
+            "location": "/*[local-name()='root' and namespace-uri()=''][1]/*[local-name()='item' and namespace-uri()=''][2]",
+            "contextLocation": "/*[local-name()='root' and namespace-uri()=''][1]/*[local-name()='item' and namespace-uri()=''][2]",
+            "text": "2",
+            "diagnostics": [],
+            "properties": []
+          }
+        ],
+        "isValid": true,
+        "isComplete": true
+      },
+      "expectedSvrl": "<svrl:schematron-output xmlns:svrl=\"http://purl.oclc.org/dsdl/svrl\" phase=\"#ALL\"><svrl:active-pattern /><svrl:fired-rule context=\"item\" /><svrl:successful-report test=\"position()=1 and last()=1\" location=\"/*[local-name()='root' and namespace-uri()=''][1]/*[local-name()='item' and namespace-uri()=''][1]\"><svrl:text>1</svrl:text></svrl:successful-report><svrl:fired-rule context=\"item\" /><svrl:successful-report test=\"position()=1 and last()=1\" location=\"/*[local-name()='root' and namespace-uri()=''][1]/*[local-name()='item' and namespace-uri()=''][2]\"><svrl:text>2</svrl:text></svrl:successful-report></svrl:schematron-output>"
+    },
+    {
+      "id": "namespaces-subject-messages",
+      "schema": "<schema xmlns=\"http://purl.oclc.org/dsdl/schematron\"><ns prefix=\"z\" uri=\"urn:z\"/><ns prefix=\"a\" uri=\"urn:a\"/><pattern><rule context=\"z:item\" subject=\"@code\"><report test=\"true()\" subject=\"..\" diagnostics=\"d\" properties=\"p\"><emph>hello </emph><name/>:<value-of select=\"@code\"/><dir value=\"ltr\">!</dir><span class=\"c\"></span></report></rule></pattern><diagnostics><diagnostic id=\"d\">D:<value-of select=\"name(@code)\"/></diagnostic></diagnostics><properties><property id=\"p\">P:<value-of select=\"@code\"/></property></properties></schema>",
+      "document": "<root><z:item xmlns:z=\"urn:z\" code=\"42\"/></root>",
+      "phase": null,
+      "resources": {},
+      "expected": {
+        "phase": "#ALL",
+        "title": null,
+        "namespaces": {
+          "z": "urn:z",
+          "a": "urn:a"
+        },
+        "activePatterns": [
+          {
+            "key": 0,
+            "id": null,
+            "name": null
+          }
+        ],
+        "firedRules": [
+          {
+            "key": 0,
+            "patternKey": 0,
+            "ruleKey": 0,
+            "context": "z:item",
+            "location": "/*[local-name()='root' and namespace-uri()=''][1]/*[local-name()='item' and namespace-uri()='urn:z'][1]"
+          }
+        ],
+        "findings": [
+          {
+            "kind": "SuccessfulReport",
+            "id": null,
+            "role": null,
+            "flag": null,
+            "patternKey": 0,
+            "firedRuleKey": 0,
+            "patternId": null,
+            "context": "z:item",
+            "test": "true()",
+            "location": "/*[local-name()='root' and namespace-uri()=''][1]",
+            "contextLocation": "/*[local-name()='root' and namespace-uri()=''][1]/*[local-name()='item' and namespace-uri()='urn:z'][1]",
+            "text": "hello z:item:42!",
+            "diagnostics": [
+              {
+                "id": "d",
+                "text": "D:code"
+              }
+            ],
+            "properties": [
+              {
+                "id": "p",
+                "text": "P:42"
+              }
+            ]
+          }
+        ],
+        "isValid": true,
+        "isComplete": true
+      },
+      "expectedSvrl": "<svrl:schematron-output xmlns:svrl=\"http://purl.oclc.org/dsdl/svrl\" phase=\"#ALL\"><svrl:ns-prefix-in-attribute-values prefix=\"a\" uri=\"urn:a\" /><svrl:ns-prefix-in-attribute-values prefix=\"z\" uri=\"urn:z\" /><svrl:active-pattern /><svrl:fired-rule context=\"z:item\" /><svrl:successful-report test=\"true()\" location=\"/*[local-name()='root' and namespace-uri()=''][1]\"><svrl:text>hello z:item:42!</svrl:text><svrl:diagnostic-reference diagnostic=\"d\">D:code</svrl:diagnostic-reference><svrl:property-reference property=\"p\">P:42</svrl:property-reference></svrl:successful-report></svrl:schematron-output>"
+    },
+    {
+      "id": "rule-subject-empty-check-override",
+      "schema": "<schema xmlns=\"http://purl.oclc.org/dsdl/schematron\"><pattern><rule context=\"item\" subject=\"@code\"><report test=\"true()\">attribute</report><report test=\"true()\" subject=\"missing\">empty</report></rule></pattern></schema>",
+      "document": "<item code=\"x\"/>",
+      "phase": null,
+      "resources": {},
+      "expected": {
+        "phase": "#ALL",
+        "title": null,
+        "namespaces": {},
+        "activePatterns": [
+          {
+            "key": 0,
+            "id": null,
+            "name": null
+          }
+        ],
+        "firedRules": [
+          {
+            "key": 0,
+            "patternKey": 0,
+            "ruleKey": 0,
+            "context": "item",
+            "location": "/*[local-name()='item' and namespace-uri()=''][1]"
+          }
+        ],
+        "findings": [
+          {
+            "kind": "SuccessfulReport",
+            "id": null,
+            "role": null,
+            "flag": null,
+            "patternKey": 0,
+            "firedRuleKey": 0,
+            "patternId": null,
+            "context": "item",
+            "test": "true()",
+            "location": "/*[local-name()='item' and namespace-uri()=''][1]/@*[local-name()='code' and namespace-uri()='']",
+            "contextLocation": "/*[local-name()='item' and namespace-uri()=''][1]",
+            "text": "attribute",
+            "diagnostics": [],
+            "properties": []
+          },
+          {
+            "kind": "SuccessfulReport",
+            "id": null,
+            "role": null,
+            "flag": null,
+            "patternKey": 0,
+            "firedRuleKey": 0,
+            "patternId": null,
+            "context": "item",
+            "test": "true()",
+            "location": "",
+            "contextLocation": "/*[local-name()='item' and namespace-uri()=''][1]",
+            "text": "empty",
+            "diagnostics": [],
+            "properties": []
+          }
+        ],
+        "isValid": true,
+        "isComplete": true
+      },
+      "expectedSvrl": "<svrl:schematron-output xmlns:svrl=\"http://purl.oclc.org/dsdl/svrl\" phase=\"#ALL\"><svrl:active-pattern /><svrl:fired-rule context=\"item\" /><svrl:successful-report test=\"true()\" location=\"/*[local-name()='item' and namespace-uri()=''][1]/@*[local-name()='code' and namespace-uri()='']\"><svrl:text>attribute</svrl:text></svrl:successful-report><svrl:successful-report test=\"true()\" location=\"\"><svrl:text>empty</svrl:text></svrl:successful-report></svrl:schematron-output>"
+    },
+    {
+      "id": "document-attribute-context",
+      "schema": "<schema xmlns=\"http://purl.oclc.org/dsdl/schematron\"><pattern><rule context=\"/\"><report test=\"true()\">root:<name/></report></rule><rule context=\"@code\"><report test=\"true()\"><name/>:<value-of select=\".\"/></report></rule></pattern></schema>",
+      "document": "<item code=\"x\"/>",
+      "phase": null,
+      "resources": {},
+      "expected": {
+        "phase": "#ALL",
+        "title": null,
+        "namespaces": {},
+        "activePatterns": [
+          {
+            "key": 0,
+            "id": null,
+            "name": null
+          }
+        ],
+        "firedRules": [
+          {
+            "key": 0,
+            "patternKey": 0,
+            "ruleKey": 0,
+            "context": "/",
+            "location": "/"
+          },
+          {
+            "key": 1,
+            "patternKey": 0,
+            "ruleKey": 1,
+            "context": "@code",
+            "location": "/*[local-name()='item' and namespace-uri()=''][1]/@*[local-name()='code' and namespace-uri()='']"
+          }
+        ],
+        "findings": [
+          {
+            "kind": "SuccessfulReport",
+            "id": null,
+            "role": null,
+            "flag": null,
+            "patternKey": 0,
+            "firedRuleKey": 0,
+            "patternId": null,
+            "context": "/",
+            "test": "true()",
+            "location": "/",
+            "contextLocation": "/",
+            "text": "root:",
+            "diagnostics": [],
+            "properties": []
+          },
+          {
+            "kind": "SuccessfulReport",
+            "id": null,
+            "role": null,
+            "flag": null,
+            "patternKey": 0,
+            "firedRuleKey": 1,
+            "patternId": null,
+            "context": "@code",
+            "test": "true()",
+            "location": "/*[local-name()='item' and namespace-uri()=''][1]/@*[local-name()='code' and namespace-uri()='']",
+            "contextLocation": "/*[local-name()='item' and namespace-uri()=''][1]/@*[local-name()='code' and namespace-uri()='']",
+            "text": "code:x",
+            "diagnostics": [],
+            "properties": []
+          }
+        ],
+        "isValid": true,
+        "isComplete": true
+      },
+      "expectedSvrl": "<svrl:schematron-output xmlns:svrl=\"http://purl.oclc.org/dsdl/svrl\" phase=\"#ALL\"><svrl:active-pattern /><svrl:fired-rule context=\"/\" /><svrl:successful-report test=\"true()\" location=\"/\"><svrl:text>root:</svrl:text></svrl:successful-report><svrl:fired-rule context=\"@code\" /><svrl:successful-report test=\"true()\" location=\"/*[local-name()='item' and namespace-uri()=''][1]/@*[local-name()='code' and namespace-uri()='']\"><svrl:text>code:x</svrl:text></svrl:successful-report></svrl:schematron-output>"
+    },
+    {
+      "id": "let-dependencies-shadowing",
+      "schema": "<schema xmlns=\"http://purl.oclc.org/dsdl/schematron\"><let name=\"x\" value=\"1\"/><pattern><let name=\"y\" value=\"$x+1\"/><let name=\"x\" value=\"$x+1\"/><rule context=\"item\"><let name=\"x\" value=\"$x+1\"/><report test=\"$x=3 and $y=3\"><value-of select=\"$x\"/>:<value-of select=\"$y\"/></report></rule></pattern></schema>",
+      "document": "<item/>",
+      "phase": null,
+      "resources": {},
+      "expected": {
+        "phase": "#ALL",
+        "title": null,
+        "namespaces": {},
+        "activePatterns": [
+          {
+            "key": 0,
+            "id": null,
+            "name": null
+          }
+        ],
+        "firedRules": [
+          {
+            "key": 0,
+            "patternKey": 0,
+            "ruleKey": 0,
+            "context": "item",
+            "location": "/*[local-name()='item' and namespace-uri()=''][1]"
+          }
+        ],
+        "findings": [
+          {
+            "kind": "SuccessfulReport",
+            "id": null,
+            "role": null,
+            "flag": null,
+            "patternKey": 0,
+            "firedRuleKey": 0,
+            "patternId": null,
+            "context": "item",
+            "test": "$x=3 and $y=3",
+            "location": "/*[local-name()='item' and namespace-uri()=''][1]",
+            "contextLocation": "/*[local-name()='item' and namespace-uri()=''][1]",
+            "text": "3:3",
+            "diagnostics": [],
+            "properties": []
+          }
+        ],
+        "isValid": true,
+        "isComplete": true
+      },
+      "expectedSvrl": "<svrl:schematron-output xmlns:svrl=\"http://purl.oclc.org/dsdl/svrl\" phase=\"#ALL\"><svrl:active-pattern /><svrl:fired-rule context=\"item\" /><svrl:successful-report test=\"$x=3 and $y=3\" location=\"/*[local-name()='item' and namespace-uri()=''][1]\"><svrl:text>3:3</svrl:text></svrl:successful-report></svrl:schematron-output>"
+    },
+    {
+      "id": "abstract-parameters-token-boundaries",
+      "schema": "<schema xmlns=\"http://purl.oclc.org/dsdl/schematron\"><pattern abstract=\"true\" id=\"base\"><rule context=\"$context\"><report test=\"$v=2 and '$v'='$v'\"><value-of select=\"$v\"/></report></rule></pattern><pattern is-a=\"base\" id=\"p\"><param name=\"context\" value=\"item\"/><param name=\"v\" value=\"2\"/></pattern></schema>",
+      "document": "<item/>",
+      "phase": null,
+      "resources": {},
+      "expected": {
+        "phase": "#ALL",
+        "title": null,
+        "namespaces": {},
+        "activePatterns": [
+          {
+            "key": 0,
+            "id": "p",
+            "name": null
+          }
+        ],
+        "firedRules": [
+          {
+            "key": 0,
+            "patternKey": 0,
+            "ruleKey": 0,
+            "context": "item",
+            "location": "/*[local-name()='item' and namespace-uri()=''][1]"
+          }
+        ],
+        "findings": [
+          {
+            "kind": "SuccessfulReport",
+            "id": null,
+            "role": null,
+            "flag": null,
+            "patternKey": 0,
+            "firedRuleKey": 0,
+            "patternId": "p",
+            "context": "item",
+            "test": "2=2 and '$v'='$v'",
+            "location": "/*[local-name()='item' and namespace-uri()=''][1]",
+            "contextLocation": "/*[local-name()='item' and namespace-uri()=''][1]",
+            "text": "2",
+            "diagnostics": [],
+            "properties": []
+          }
+        ],
+        "isValid": true,
+        "isComplete": true
+      },
+      "expectedSvrl": "<svrl:schematron-output xmlns:svrl=\"http://purl.oclc.org/dsdl/svrl\" phase=\"#ALL\"><svrl:active-pattern id=\"p\" /><svrl:fired-rule context=\"item\" /><svrl:successful-report test=\"2=2 and '$v'='$v'\" location=\"/*[local-name()='item' and namespace-uri()=''][1]\"><svrl:text>2</svrl:text></svrl:successful-report></svrl:schematron-output>"
+    },
+    {
+      "id": "abstract-rule-recursive-extends",
+      "schema": "<schema xmlns=\"http://purl.oclc.org/dsdl/schematron\"><pattern><rule abstract=\"true\" id=\"a\"><report test=\"true()\">base</report></rule><rule abstract=\"true\" id=\"b\"><extends rule=\"a\"/></rule><rule context=\"item\"><extends rule=\"b\"/><report test=\"true()\">tail</report></rule></pattern></schema>",
+      "document": "<item/>",
+      "phase": null,
+      "resources": {},
+      "expected": {
+        "phase": "#ALL",
+        "title": null,
+        "namespaces": {},
+        "activePatterns": [
+          {
+            "key": 0,
+            "id": null,
+            "name": null
+          }
+        ],
+        "firedRules": [
+          {
+            "key": 0,
+            "patternKey": 0,
+            "ruleKey": 0,
+            "context": "item",
+            "location": "/*[local-name()='item' and namespace-uri()=''][1]"
+          }
+        ],
+        "findings": [
+          {
+            "kind": "SuccessfulReport",
+            "id": null,
+            "role": null,
+            "flag": null,
+            "patternKey": 0,
+            "firedRuleKey": 0,
+            "patternId": null,
+            "context": "item",
+            "test": "true()",
+            "location": "/*[local-name()='item' and namespace-uri()=''][1]",
+            "contextLocation": "/*[local-name()='item' and namespace-uri()=''][1]",
+            "text": "base",
+            "diagnostics": [],
+            "properties": []
+          },
+          {
+            "kind": "SuccessfulReport",
+            "id": null,
+            "role": null,
+            "flag": null,
+            "patternKey": 0,
+            "firedRuleKey": 0,
+            "patternId": null,
+            "context": "item",
+            "test": "true()",
+            "location": "/*[local-name()='item' and namespace-uri()=''][1]",
+            "contextLocation": "/*[local-name()='item' and namespace-uri()=''][1]",
+            "text": "tail",
+            "diagnostics": [],
+            "properties": []
+          }
+        ],
+        "isValid": true,
+        "isComplete": true
+      },
+      "expectedSvrl": "<svrl:schematron-output xmlns:svrl=\"http://purl.oclc.org/dsdl/svrl\" phase=\"#ALL\"><svrl:active-pattern /><svrl:fired-rule context=\"item\" /><svrl:successful-report test=\"true()\" location=\"/*[local-name()='item' and namespace-uri()=''][1]\"><svrl:text>base</svrl:text></svrl:successful-report><svrl:successful-report test=\"true()\" location=\"/*[local-name()='item' and namespace-uri()=''][1]\"><svrl:text>tail</svrl:text></svrl:successful-report></svrl:schematron-output>"
+    },
+    {
+      "id": "include-nested-base",
+      "schema": "<schema xmlns=\"http://purl.oclc.org/dsdl/schematron\"><include href=\"sub/pattern.sch\"/></schema>",
+      "document": "<item/>",
+      "phase": null,
+      "resources": {
+        "sub/pattern.sch": "<pattern xmlns=\"http://purl.oclc.org/dsdl/schematron\"><include href=\"rule.sch\"/></pattern>",
+        "sub/rule.sch": "<rule xmlns=\"http://purl.oclc.org/dsdl/schematron\" context=\"item\"><report test=\"true()\">included</report></rule>"
+      },
+      "expected": {
+        "phase": "#ALL",
+        "title": null,
+        "namespaces": {},
+        "activePatterns": [
+          {
+            "key": 0,
+            "id": null,
+            "name": null
+          }
+        ],
+        "firedRules": [
+          {
+            "key": 0,
+            "patternKey": 0,
+            "ruleKey": 0,
+            "context": "item",
+            "location": "/*[local-name()='item' and namespace-uri()=''][1]"
+          }
+        ],
+        "findings": [
+          {
+            "kind": "SuccessfulReport",
+            "id": null,
+            "role": null,
+            "flag": null,
+            "patternKey": 0,
+            "firedRuleKey": 0,
+            "patternId": null,
+            "context": "item",
+            "test": "true()",
+            "location": "/*[local-name()='item' and namespace-uri()=''][1]",
+            "contextLocation": "/*[local-name()='item' and namespace-uri()=''][1]",
+            "text": "included",
+            "diagnostics": [],
+            "properties": []
+          }
+        ],
+        "isValid": true,
+        "isComplete": true
+      },
+      "expectedSvrl": "<svrl:schematron-output xmlns:svrl=\"http://purl.oclc.org/dsdl/svrl\" phase=\"#ALL\"><svrl:active-pattern /><svrl:fired-rule context=\"item\" /><svrl:successful-report test=\"true()\" location=\"/*[local-name()='item' and namespace-uri()=''][1]\"><svrl:text>included</svrl:text></svrl:successful-report></svrl:schematron-output>"
+    },
+    {
+      "id": "foreign-annotations",
+      "schema": "<schema xmlns=\"http://purl.oclc.org/dsdl/schematron\"><note xmlns=\"urn:notes\"><text>ignored</text></note><pattern><rule context=\"item\"><report test=\"true()\">kept</report></rule></pattern></schema>",
+      "document": "<item/>",
+      "phase": null,
+      "resources": {},
+      "expected": {
+        "phase": "#ALL",
+        "title": null,
+        "namespaces": {},
+        "activePatterns": [
+          {
+            "key": 0,
+            "id": null,
+            "name": null
+          }
+        ],
+        "firedRules": [
+          {
+            "key": 0,
+            "patternKey": 0,
+            "ruleKey": 0,
+            "context": "item",
+            "location": "/*[local-name()='item' and namespace-uri()=''][1]"
+          }
+        ],
+        "findings": [
+          {
+            "kind": "SuccessfulReport",
+            "id": null,
+            "role": null,
+            "flag": null,
+            "patternKey": 0,
+            "firedRuleKey": 0,
+            "patternId": null,
+            "context": "item",
+            "test": "true()",
+            "location": "/*[local-name()='item' and namespace-uri()=''][1]",
+            "contextLocation": "/*[local-name()='item' and namespace-uri()=''][1]",
+            "text": "kept",
+            "diagnostics": [],
+            "properties": []
+          }
+        ],
+        "isValid": true,
+        "isComplete": true
+      },
+      "expectedSvrl": "<svrl:schematron-output xmlns:svrl=\"http://purl.oclc.org/dsdl/svrl\" phase=\"#ALL\"><svrl:active-pattern /><svrl:fired-rule context=\"item\" /><svrl:successful-report test=\"true()\" location=\"/*[local-name()='item' and namespace-uri()=''][1]\"><svrl:text>kept</svrl:text></svrl:successful-report></svrl:schematron-output>"
+    },
+    {
+      "id": "phase-named",
+      "schema": "<schema xmlns=\"http://purl.oclc.org/dsdl/schematron\" defaultPhase=\"chosen\"><phase id=\"chosen\"><let name=\"v\" value=\"7\"/><active pattern=\"p2\"/><active pattern=\"p1\"/></phase><pattern id=\"p1\"><rule context=\"item\"><report test=\"$v=7\">one</report></rule></pattern><pattern id=\"p2\"><rule context=\"item\"><report test=\"$v=7\">two</report></rule></pattern></schema>",
+      "document": "<item/>",
+      "phase": "chosen",
+      "resources": {},
+      "expected": {
+        "phase": "chosen",
+        "title": null,
+        "namespaces": {},
+        "activePatterns": [
+          {
+            "key": 0,
+            "id": "p1",
+            "name": null
+          },
+          {
+            "key": 1,
+            "id": "p2",
+            "name": null
+          }
+        ],
+        "firedRules": [
+          {
+            "key": 0,
+            "patternKey": 0,
+            "ruleKey": 0,
+            "context": "item",
+            "location": "/*[local-name()='item' and namespace-uri()=''][1]"
+          },
+          {
+            "key": 1,
+            "patternKey": 1,
+            "ruleKey": 1,
+            "context": "item",
+            "location": "/*[local-name()='item' and namespace-uri()=''][1]"
+          }
+        ],
+        "findings": [
+          {
+            "kind": "SuccessfulReport",
+            "id": null,
+            "role": null,
+            "flag": null,
+            "patternKey": 0,
+            "firedRuleKey": 0,
+            "patternId": "p1",
+            "context": "item",
+            "test": "$v=7",
+            "location": "/*[local-name()='item' and namespace-uri()=''][1]",
+            "contextLocation": "/*[local-name()='item' and namespace-uri()=''][1]",
+            "text": "one",
+            "diagnostics": [],
+            "properties": []
+          },
+          {
+            "kind": "SuccessfulReport",
+            "id": null,
+            "role": null,
+            "flag": null,
+            "patternKey": 1,
+            "firedRuleKey": 1,
+            "patternId": "p2",
+            "context": "item",
+            "test": "$v=7",
+            "location": "/*[local-name()='item' and namespace-uri()=''][1]",
+            "contextLocation": "/*[local-name()='item' and namespace-uri()=''][1]",
+            "text": "two",
+            "diagnostics": [],
+            "properties": []
+          }
+        ],
+        "isValid": true,
+        "isComplete": true
+      },
+      "expectedSvrl": "<svrl:schematron-output xmlns:svrl=\"http://purl.oclc.org/dsdl/svrl\" phase=\"chosen\"><svrl:active-pattern id=\"p1\" /><svrl:fired-rule context=\"item\" /><svrl:successful-report test=\"$v=7\" location=\"/*[local-name()='item' and namespace-uri()=''][1]\"><svrl:text>one</svrl:text></svrl:successful-report><svrl:active-pattern id=\"p2\" /><svrl:fired-rule context=\"item\" /><svrl:successful-report test=\"$v=7\" location=\"/*[local-name()='item' and namespace-uri()=''][1]\"><svrl:text>two</svrl:text></svrl:successful-report></svrl:schematron-output>"
+    },
+    {
+      "id": "phase-default",
+      "schema": "<schema xmlns=\"http://purl.oclc.org/dsdl/schematron\" defaultPhase=\"chosen\"><phase id=\"chosen\"><let name=\"v\" value=\"7\"/><active pattern=\"p2\"/><active pattern=\"p1\"/></phase><pattern id=\"p1\"><rule context=\"item\"><report test=\"$v=7\">one</report></rule></pattern><pattern id=\"p2\"><rule context=\"item\"><report test=\"$v=7\">two</report></rule></pattern></schema>",
+      "document": "<item/>",
+      "phase": null,
+      "resources": {},
+      "expected": {
+        "phase": "chosen",
+        "title": null,
+        "namespaces": {},
+        "activePatterns": [
+          {
+            "key": 0,
+            "id": "p1",
+            "name": null
+          },
+          {
+            "key": 1,
+            "id": "p2",
+            "name": null
+          }
+        ],
+        "firedRules": [
+          {
+            "key": 0,
+            "patternKey": 0,
+            "ruleKey": 0,
+            "context": "item",
+            "location": "/*[local-name()='item' and namespace-uri()=''][1]"
+          },
+          {
+            "key": 1,
+            "patternKey": 1,
+            "ruleKey": 1,
+            "context": "item",
+            "location": "/*[local-name()='item' and namespace-uri()=''][1]"
+          }
+        ],
+        "findings": [
+          {
+            "kind": "SuccessfulReport",
+            "id": null,
+            "role": null,
+            "flag": null,
+            "patternKey": 0,
+            "firedRuleKey": 0,
+            "patternId": "p1",
+            "context": "item",
+            "test": "$v=7",
+            "location": "/*[local-name()='item' and namespace-uri()=''][1]",
+            "contextLocation": "/*[local-name()='item' and namespace-uri()=''][1]",
+            "text": "one",
+            "diagnostics": [],
+            "properties": []
+          },
+          {
+            "kind": "SuccessfulReport",
+            "id": null,
+            "role": null,
+            "flag": null,
+            "patternKey": 1,
+            "firedRuleKey": 1,
+            "patternId": "p2",
+            "context": "item",
+            "test": "$v=7",
+            "location": "/*[local-name()='item' and namespace-uri()=''][1]",
+            "contextLocation": "/*[local-name()='item' and namespace-uri()=''][1]",
+            "text": "two",
+            "diagnostics": [],
+            "properties": []
+          }
+        ],
+        "isValid": true,
+        "isComplete": true
+      },
+      "expectedSvrl": "<svrl:schematron-output xmlns:svrl=\"http://purl.oclc.org/dsdl/svrl\" phase=\"chosen\"><svrl:active-pattern id=\"p1\" /><svrl:fired-rule context=\"item\" /><svrl:successful-report test=\"$v=7\" location=\"/*[local-name()='item' and namespace-uri()=''][1]\"><svrl:text>one</svrl:text></svrl:successful-report><svrl:active-pattern id=\"p2\" /><svrl:fired-rule context=\"item\" /><svrl:successful-report test=\"$v=7\" location=\"/*[local-name()='item' and namespace-uri()=''][1]\"><svrl:text>two</svrl:text></svrl:successful-report></svrl:schematron-output>"
+    },
+    {
+      "id": "phase-default-marker",
+      "schema": "<schema xmlns=\"http://purl.oclc.org/dsdl/schematron\" defaultPhase=\"chosen\"><phase id=\"chosen\"><let name=\"v\" value=\"7\"/><active pattern=\"p2\"/><active pattern=\"p1\"/></phase><pattern id=\"p1\"><rule context=\"item\"><report test=\"$v=7\">one</report></rule></pattern><pattern id=\"p2\"><rule context=\"item\"><report test=\"$v=7\">two</report></rule></pattern></schema>",
+      "document": "<item/>",
+      "phase": "#DEFAULT",
+      "resources": {},
+      "expected": {
+        "phase": "chosen",
+        "title": null,
+        "namespaces": {},
+        "activePatterns": [
+          {
+            "key": 0,
+            "id": "p1",
+            "name": null
+          },
+          {
+            "key": 1,
+            "id": "p2",
+            "name": null
+          }
+        ],
+        "firedRules": [
+          {
+            "key": 0,
+            "patternKey": 0,
+            "ruleKey": 0,
+            "context": "item",
+            "location": "/*[local-name()='item' and namespace-uri()=''][1]"
+          },
+          {
+            "key": 1,
+            "patternKey": 1,
+            "ruleKey": 1,
+            "context": "item",
+            "location": "/*[local-name()='item' and namespace-uri()=''][1]"
+          }
+        ],
+        "findings": [
+          {
+            "kind": "SuccessfulReport",
+            "id": null,
+            "role": null,
+            "flag": null,
+            "patternKey": 0,
+            "firedRuleKey": 0,
+            "patternId": "p1",
+            "context": "item",
+            "test": "$v=7",
+            "location": "/*[local-name()='item' and namespace-uri()=''][1]",
+            "contextLocation": "/*[local-name()='item' and namespace-uri()=''][1]",
+            "text": "one",
+            "diagnostics": [],
+            "properties": []
+          },
+          {
+            "kind": "SuccessfulReport",
+            "id": null,
+            "role": null,
+            "flag": null,
+            "patternKey": 1,
+            "firedRuleKey": 1,
+            "patternId": "p2",
+            "context": "item",
+            "test": "$v=7",
+            "location": "/*[local-name()='item' and namespace-uri()=''][1]",
+            "contextLocation": "/*[local-name()='item' and namespace-uri()=''][1]",
+            "text": "two",
+            "diagnostics": [],
+            "properties": []
+          }
+        ],
+        "isValid": true,
+        "isComplete": true
+      },
+      "expectedSvrl": "<svrl:schematron-output xmlns:svrl=\"http://purl.oclc.org/dsdl/svrl\" phase=\"chosen\"><svrl:active-pattern id=\"p1\" /><svrl:fired-rule context=\"item\" /><svrl:successful-report test=\"$v=7\" location=\"/*[local-name()='item' and namespace-uri()=''][1]\"><svrl:text>one</svrl:text></svrl:successful-report><svrl:active-pattern id=\"p2\" /><svrl:fired-rule context=\"item\" /><svrl:successful-report test=\"$v=7\" location=\"/*[local-name()='item' and namespace-uri()=''][1]\"><svrl:text>two</svrl:text></svrl:successful-report></svrl:schematron-output>"
+    },
+    {
+      "id": "phase-all-missing-variable",
+      "schema": "<schema xmlns=\"http://purl.oclc.org/dsdl/schematron\"><phase id=\"chosen\"><let name=\"v\" value=\"7\"/><active pattern=\"p2\"/><active pattern=\"p1\"/></phase><pattern id=\"p1\"><rule context=\"item\"><report test=\"$v=7\">one</report></rule></pattern><pattern id=\"p2\"><rule context=\"item\"><report test=\"$v=7\">two</report></rule></pattern></schema>",
+      "document": "<item/>",
+      "phase": "#ALL",
+      "resources": {},
+      "expected": {
+        "phase": "#ALL",
+        "title": null,
+        "namespaces": {},
+        "activePatterns": [
+          {
+            "key": 0,
+            "id": "p1",
+            "name": null
+          }
+        ],
+        "firedRules": [
+          {
+            "key": 0,
+            "patternKey": 0,
+            "ruleKey": 0,
+            "context": "item",
+            "location": "/*[local-name()='item' and namespace-uri()=''][1]"
+          }
+        ],
+        "findings": [],
+        "isValid": false,
+        "isComplete": false,
+        "fatalCode": "SCH.XPath"
+      },
+      "expectedSvrl": "<svrl:schematron-output xmlns:svrl=\"http://purl.oclc.org/dsdl/svrl\" phase=\"#ALL\"><svrl:active-pattern id=\"p1\" /><svrl:fired-rule context=\"item\" /></svrl:schematron-output>"
+    },
+    {
+      "id": "union-predicate-context",
+      "schema": "<schema xmlns=\"http://purl.oclc.org/dsdl/schematron\"><pattern><rule context=\"item[1]|other\"><report test=\"true()\"><name/></report></rule></pattern></schema>",
+      "document": "<root><item/><item/><other/></root>",
+      "phase": null,
+      "resources": {},
+      "expected": {
+        "phase": "#ALL",
+        "title": null,
+        "namespaces": {},
+        "activePatterns": [
+          {
+            "key": 0,
+            "id": null,
+            "name": null
+          }
+        ],
+        "firedRules": [
+          {
+            "key": 0,
+            "patternKey": 0,
+            "ruleKey": 0,
+            "context": "item[1]|other",
+            "location": "/*[local-name()='root' and namespace-uri()=''][1]/*[local-name()='item' and namespace-uri()=''][1]"
+          },
+          {
+            "key": 1,
+            "patternKey": 0,
+            "ruleKey": 0,
+            "context": "item[1]|other",
+            "location": "/*[local-name()='root' and namespace-uri()=''][1]/*[local-name()='other' and namespace-uri()=''][1]"
+          }
+        ],
+        "findings": [
+          {
+            "kind": "SuccessfulReport",
+            "id": null,
+            "role": null,
+            "flag": null,
+            "patternKey": 0,
+            "firedRuleKey": 0,
+            "patternId": null,
+            "context": "item[1]|other",
+            "test": "true()",
+            "location": "/*[local-name()='root' and namespace-uri()=''][1]/*[local-name()='item' and namespace-uri()=''][1]",
+            "contextLocation": "/*[local-name()='root' and namespace-uri()=''][1]/*[local-name()='item' and namespace-uri()=''][1]",
+            "text": "item",
+            "diagnostics": [],
+            "properties": []
+          },
+          {
+            "kind": "SuccessfulReport",
+            "id": null,
+            "role": null,
+            "flag": null,
+            "patternKey": 0,
+            "firedRuleKey": 1,
+            "patternId": null,
+            "context": "item[1]|other",
+            "test": "true()",
+            "location": "/*[local-name()='root' and namespace-uri()=''][1]/*[local-name()='other' and namespace-uri()=''][1]",
+            "contextLocation": "/*[local-name()='root' and namespace-uri()=''][1]/*[local-name()='other' and namespace-uri()=''][1]",
+            "text": "other",
+            "diagnostics": [],
+            "properties": []
+          }
+        ],
+        "isValid": true,
+        "isComplete": true
+      },
+      "expectedSvrl": "<svrl:schematron-output xmlns:svrl=\"http://purl.oclc.org/dsdl/svrl\" phase=\"#ALL\"><svrl:active-pattern /><svrl:fired-rule context=\"item[1]|other\" /><svrl:successful-report test=\"true()\" location=\"/*[local-name()='root' and namespace-uri()=''][1]/*[local-name()='item' and namespace-uri()=''][1]\"><svrl:text>item</svrl:text></svrl:successful-report><svrl:fired-rule context=\"item[1]|other\" /><svrl:successful-report test=\"true()\" location=\"/*[local-name()='root' and namespace-uri()=''][1]/*[local-name()='other' and namespace-uri()=''][1]\"><svrl:text>other</svrl:text></svrl:successful-report></svrl:schematron-output>"
+    },
+    {
+      "id": "duplicate-context-keyed-patterns",
+      "schema": "<schema xmlns=\"http://purl.oclc.org/dsdl/schematron\"><pattern id=\"p\"><rule context=\"item\"><report test=\"true()\">one</report></rule></pattern><pattern><rule context=\"item\"><report test=\"true()\">two</report></rule></pattern></schema>",
+      "document": "<item/>",
+      "phase": null,
+      "resources": {},
+      "expected": {
+        "phase": "#ALL",
+        "title": null,
+        "namespaces": {},
+        "activePatterns": [
+          {
+            "key": 0,
+            "id": "p",
+            "name": null
+          },
+          {
+            "key": 1,
+            "id": null,
+            "name": null
+          }
+        ],
+        "firedRules": [
+          {
+            "key": 0,
+            "patternKey": 0,
+            "ruleKey": 0,
+            "context": "item",
+            "location": "/*[local-name()='item' and namespace-uri()=''][1]"
+          },
+          {
+            "key": 1,
+            "patternKey": 1,
+            "ruleKey": 1,
+            "context": "item",
+            "location": "/*[local-name()='item' and namespace-uri()=''][1]"
+          }
+        ],
+        "findings": [
+          {
+            "kind": "SuccessfulReport",
+            "id": null,
+            "role": null,
+            "flag": null,
+            "patternKey": 0,
+            "firedRuleKey": 0,
+            "patternId": "p",
+            "context": "item",
+            "test": "true()",
+            "location": "/*[local-name()='item' and namespace-uri()=''][1]",
+            "contextLocation": "/*[local-name()='item' and namespace-uri()=''][1]",
+            "text": "one",
+            "diagnostics": [],
+            "properties": []
+          },
+          {
+            "kind": "SuccessfulReport",
+            "id": null,
+            "role": null,
+            "flag": null,
+            "patternKey": 1,
+            "firedRuleKey": 1,
+            "patternId": null,
+            "context": "item",
+            "test": "true()",
+            "location": "/*[local-name()='item' and namespace-uri()=''][1]",
+            "contextLocation": "/*[local-name()='item' and namespace-uri()=''][1]",
+            "text": "two",
+            "diagnostics": [],
+            "properties": []
+          }
+        ],
+        "isValid": true,
+        "isComplete": true
+      },
+      "expectedSvrl": "<svrl:schematron-output xmlns:svrl=\"http://purl.oclc.org/dsdl/svrl\" phase=\"#ALL\"><svrl:active-pattern id=\"p\" /><svrl:fired-rule context=\"item\" /><svrl:successful-report test=\"true()\" location=\"/*[local-name()='item' and namespace-uri()=''][1]\"><svrl:text>one</svrl:text></svrl:successful-report><svrl:active-pattern /><svrl:fired-rule context=\"item\" /><svrl:successful-report test=\"true()\" location=\"/*[local-name()='item' and namespace-uri()=''][1]\"><svrl:text>two</svrl:text></svrl:successful-report></svrl:schematron-output>"
+    },
+    {
+      "id": "zero-findings-trace",
+      "schema": "<schema xmlns=\"http://purl.oclc.org/dsdl/schematron\"><pattern><rule context=\"item\"><assert test=\"true()\">hidden</assert></rule></pattern></schema>",
+      "document": "<item/>",
+      "phase": null,
+      "resources": {},
+      "expected": {
+        "phase": "#ALL",
+        "title": null,
+        "namespaces": {},
+        "activePatterns": [
+          {
+            "key": 0,
+            "id": null,
+            "name": null
+          }
+        ],
+        "firedRules": [
+          {
+            "key": 0,
+            "patternKey": 0,
+            "ruleKey": 0,
+            "context": "item",
+            "location": "/*[local-name()='item' and namespace-uri()=''][1]"
+          }
+        ],
+        "findings": [],
+        "isValid": true,
+        "isComplete": true
+      },
+      "expectedSvrl": "<svrl:schematron-output xmlns:svrl=\"http://purl.oclc.org/dsdl/svrl\" phase=\"#ALL\"><svrl:active-pattern /><svrl:fired-rule context=\"item\" /></svrl:schematron-output>"
+    },
+    {
+      "id": "xslt-explicit-binding",
+      "schema": "<schema xmlns=\"http://purl.oclc.org/dsdl/schematron\" queryBinding=\"xslt\"><pattern><rule context=\"item\"><report test=\"true()\">yes</report></rule></pattern></schema>",
+      "document": "<item/>",
+      "phase": null,
+      "resources": {},
+      "expected": {
+        "phase": "#ALL",
+        "title": null,
+        "namespaces": {},
+        "activePatterns": [
+          {
+            "key": 0,
+            "id": null,
+            "name": null
+          }
+        ],
+        "firedRules": [
+          {
+            "key": 0,
+            "patternKey": 0,
+            "ruleKey": 0,
+            "context": "item",
+            "location": "/*[local-name()='item' and namespace-uri()=''][1]"
+          }
+        ],
+        "findings": [
+          {
+            "kind": "SuccessfulReport",
+            "id": null,
+            "role": null,
+            "flag": null,
+            "patternKey": 0,
+            "firedRuleKey": 0,
+            "patternId": null,
+            "context": "item",
+            "test": "true()",
+            "location": "/*[local-name()='item' and namespace-uri()=''][1]",
+            "contextLocation": "/*[local-name()='item' and namespace-uri()=''][1]",
+            "text": "yes",
+            "diagnostics": [],
+            "properties": []
+          }
+        ],
+        "isValid": true,
+        "isComplete": true
+      },
+      "expectedSvrl": "<svrl:schematron-output xmlns:svrl=\"http://purl.oclc.org/dsdl/svrl\" phase=\"#ALL\"><svrl:active-pattern /><svrl:fired-rule context=\"item\" /><svrl:successful-report test=\"true()\" location=\"/*[local-name()='item' and namespace-uri()=''][1]\"><svrl:text>yes</svrl:text></svrl:successful-report></svrl:schematron-output>"
+    },
+    {
+      "id": "no-implicit-xpath-namespace",
+      "schema": "<schema xmlns=\"http://purl.oclc.org/dsdl/schematron\"><pattern><rule context=\"item\"><assert test=\"false()\">hidden</assert></rule></pattern></schema>",
+      "document": "<item xmlns=\"urn:item\"/>",
+      "phase": null,
+      "resources": {},
+      "expected": {
+        "phase": "#ALL",
+        "title": null,
+        "namespaces": {},
+        "activePatterns": [
+          {
+            "key": 0,
+            "id": null,
+            "name": null
+          }
+        ],
+        "firedRules": [],
+        "findings": [],
+        "isValid": true,
+        "isComplete": true
+      },
+      "expectedSvrl": "<svrl:schematron-output xmlns:svrl=\"http://purl.oclc.org/dsdl/svrl\" phase=\"#ALL\"><svrl:active-pattern /></svrl:schematron-output>"
+    }
+  ]
+}
