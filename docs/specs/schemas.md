@@ -82,8 +82,7 @@ compilation establishes compatibility, not runtime conformance or performance.
 ## Additive explicit resource outcomes
 
 The ordered `M8-schema-resource-outcomes` repair freezes
-[resource outcomes](../decisions/M8/resource-outcomes.md) (for contracts,
-see `resource-outcomes.md` alongside this file). It adds readonly explicit
+[resource outcomes](../decisions/M8/resource-outcomes.md). It adds readonly explicit
 Denied/Unavailable/Resolved outcomes and virtual synchronous ResolveResult;
 legacy null remains Denied and existing Resolve/ResolveAsync stay unchanged.
 Only the concrete optional schema loader seam may return absence for explicit

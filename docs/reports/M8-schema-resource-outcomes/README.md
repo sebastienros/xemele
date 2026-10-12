@@ -26,13 +26,14 @@ both were fixed. First driver used a schema-only extractor for resolver types;
 changed it to the established public extractor. No production failure or shared
 test/API baseline weakening occurred.
 
-The initial working-tree checks passed 37 focused, 1,529 affected and 42
-legacy resolver cases, zero failed/errors/skipped/not-run. Public union matched
-1,430 rows (1,417 old plus 13 additive); exact representative surface matched
-46 rows; all eight frozen lanes retained all member metadata. Normal and true
-XML-only consumers passed. Planning validated 194 tasks; diff check passed.
-A further exact optional-five-unit/one-over witness has been added for the final
-revision check; evidence records its actual outcome separately.
+At implementation revision `37f8176aa7147135db106d0b817564aa8ac438b1`, the final checks passed
+38 focused, 1,530 affected and 42 legacy resolver cases, zero
+failed/errors/skipped/not-run. The public union matched 1,430 rows (1,417 old
+plus 13 additive); exact representative surface matched 46 rows; all eight
+frozen lanes retained all member metadata. Normal and true XML-only consumers
+passed. Planning validated 194 tasks; diff check passed. Both the isolated
+fixture usage and its compiled 46-row baseline passed again at this revision.
+The source-only allocation probe remains unbuilt and unexecuted.
 
 Allocation remains pending source review/preparation and fresh root grant.
 The source-only probe has five owned routes, three zero-byte primitive targets,
