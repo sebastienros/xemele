@@ -9,14 +9,16 @@ public sealed class BoundaryTests
     [InlineData(0)] [InlineData(1)] [InlineData(2)]
     public void PublicTransportsKeepCompleteInvalidityAndCallerOwnership(int transport)
     {
+        var token=TestContext.Current.CancellationToken;
+        var compileOptions=new SchemaCompileOptions { CancellationToken=token }; var validationOptions=new ValidationOptions { CancellationToken=token };
         using var schemaStream = new MemoryStream(Encoding.UTF8.GetBytes(Schema));
-        var schemaDoc = XmlDocument.Parse(Schema); string before = schemaDoc.ToXmlString();
-        var schema = transport switch { 0 => XmlSchema.Compile(Schema), 1 => XmlSchema.Compile(schemaDoc), _ => XmlSchema.Compile(schemaStream) };
+        var schemaDoc = XmlDocument.Parse(Schema,cancellationToken:token); string before = schemaDoc.ToXmlString(cancellationToken:token);
+        var schema = transport switch { 0 => XmlSchema.Compile(Schema,compileOptions), 1 => XmlSchema.Compile(schemaDoc,compileOptions), _ => XmlSchema.Compile(schemaStream,compileOptions) };
         using var instance = new MemoryStream(Encoding.UTF8.GetBytes("<r>bad</r>"));
-        var document = XmlDocument.Parse("<r>bad</r>"); string original = document.ToXmlString();
-        var result = transport switch { 0 => schema.Validate("<r>bad</r>"), 1 => schema.Validate(document), _ => schema.Validate(instance) };
+        var document = XmlDocument.Parse("<r>bad</r>",cancellationToken:token); string original = document.ToXmlString(cancellationToken:token);
+        var result = transport switch { 0 => schema.Validate("<r>bad</r>",validationOptions), 1 => schema.Validate(document,validationOptions), _ => schema.Validate(instance,validationOptions) };
         Assert.True(result.IsComplete); Assert.False(result.IsValid); Assert.NotEmpty(result.Diagnostics);
-        Assert.True(schemaStream.CanRead); Assert.True(instance.CanRead); Assert.Equal(before,schemaDoc.ToXmlString()); Assert.Equal(original,document.ToXmlString());
+        Assert.True(schemaStream.CanRead); Assert.True(instance.CanRead); Assert.Equal(before,schemaDoc.ToXmlString(cancellationToken:token)); Assert.Equal(original,document.ToXmlString(cancellationToken:token));
     }
     [Fact]
     public void WorkRefusalDoesNotMeanSemanticInvalidity()

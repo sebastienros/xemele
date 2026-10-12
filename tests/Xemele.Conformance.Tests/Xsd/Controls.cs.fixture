@@ -31,6 +31,12 @@ internal static class Controls
         Runner.OriginalPaths=files.Keys.Append("missing-second-child.xsd").ToHashSet(StringComparer.Ordinal);
         try
         {
+            const string compatible="<?xml version='1.1'?><xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema' targetNamespace='urn:compatible'><xs:element name='r'/></xs:schema>";
+            File.WriteAllText(Path.Combine(upstream,"compatible.xsd"),compatible);
+            string compatibleHash=Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(System.Text.Encoding.UTF8.GetBytes(compatible))).ToLowerInvariant();
+            File.WriteAllText(Path.Combine(root,"metadata-namespaces.json"),System.Text.Json.JsonSerializer.Serialize(new Dictionary<string,object> { ["compatible.xsd"]=new { @namespace="urn:compatible",sha256=compatibleHash } }));
+            Require(Runner.TargetNamespace(new Uri(Runner.Origin+"compatible.xsd"))=="urn:compatible"&&File.ReadAllText(Path.Combine(upstream,"compatible.xsd"))==compatible,"independent namespace fact preserves original compatible1.1 schema bytes");
+            var compatibleResult=Xemele.Validation.XmlSchema.Compile(compatible).Validate("<r xmlns='urn:compatible'/>");Require(compatibleResult.IsComplete&&compatibleResult.IsValid,"public engine consumes unchanged compatible1.1 declaration");
             var valid=Xemele.Validation.XmlSchema.Compile(first).Validate(files["mismatch.xml"]);Require(valid.IsComplete&&valid.IsValid,"namespace mismatch fixture is otherwise valid against explicit original schema");
             var journal=new List<object>();bool mismatch=false;try { Runner.InstanceInputs(Row("mismatch","mismatch.xml"),[],journal); } catch(Runner.HintNamespaceException) { mismatch=true; }
             Require(mismatch&&System.Text.Json.JsonSerializer.Serialize(journal).Contains("urn:wrong",StringComparison.Ordinal),"authored namespace mismatch refuses staging and retains original pair");
