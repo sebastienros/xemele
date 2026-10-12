@@ -1,0 +1,90 @@
+{
+  "sourceRevision": "dc3c6e2a2bd8a5268b708015ed825471fe2e2307",
+  "runtime": "10.0.11",
+  "architecture": "Arm64",
+  "tiered": "0",
+  "serverGc": false,
+  "retainedGraphCount": 16,
+  "retainedApproximateBytes": 161016,
+  "processWorkingSet": 56590336,
+  "sdk": "10.0.400",
+  "lease": "M8-rng-lexical-dc3c6e2a-alloc-only",
+  "grant_revision": "419db89c96a16c6eca5d9bf98be8eaaf2814d1f1",
+  "host_release_revision": "df4ed5106d3058de348b85d4acc92ed41119ad4f",
+  "manifest_sha256": "446da08c037f4c85c05fd794e6e918fd7999f1db1d28980db9ce17c5f97299d4",
+  "identity_count": 497,
+  "lifecycle_elapsed_seconds": 0.8107582910452038,
+  "control_rows": 10,
+  "rows": [
+    {
+      "name": "cold-owned-parse-compile",
+      "bytes": 23952,
+      "consumed": 3
+    },
+    {
+      "name": "positive-control",
+      "iterations": 64,
+      "consumed": 64,
+      "bytes": 9728,
+      "bytesPerOperation": 152
+    },
+    {
+      "name": "owned-ascii-graph",
+      "iterations": 64,
+      "consumed": 64,
+      "bytes": 528896,
+      "bytesPerOperation": 8264
+    },
+    {
+      "name": "owned-historical-name-graph",
+      "iterations": 64,
+      "consumed": 64,
+      "bytes": 529408,
+      "bytesPerOperation": 8272
+    },
+    {
+      "name": "owned-projected-library-identity",
+      "iterations": 64,
+      "consumed": 64,
+      "bytes": 5632,
+      "bytesPerOperation": 88
+    },
+    {
+      "name": "owned-projected-library-graph",
+      "iterations": 64,
+      "consumed": 64,
+      "bytes": 540160,
+      "bytesPerOperation": 8440
+    },
+    {
+      "name": "owned-long-ascii-graph",
+      "iterations": 64,
+      "consumed": 64,
+      "bytes": 528896,
+      "bytesPerOperation": 8264
+    },
+    {
+      "name": "owned-long-unicode-graph",
+      "iterations": 64,
+      "consumed": 64,
+      "bytes": 9973536,
+      "bytesPerOperation": 155836.5
+    },
+    {
+      "name": "owned-malformed-percent-rejection",
+      "iterations": 64,
+      "consumed": 64,
+      "bytes": 202752,
+      "bytesPerOperation": 3168
+    },
+    {
+      "name": "owned-historical-start-rejection",
+      "iterations": 64,
+      "consumed": 64,
+      "bytes": 215552,
+      "bytesPerOperation": 3368
+    }
+  ],
+  "scope": "Cold setup is one operation. Each other row has 16 warm calls followed by one synchronous per-thread counter interval around 64 consumed calls. Bytes/64 is an aggregate mean, not an individual sample or distribution. Prepared DOMs/delegates/fixture strings outside warm counters. Owned graph/context/adapter/diagnostic/output string allocations included. No timing, speed, primitive-zero or cross-architecture claim.",
+  "cpu": "Apple M4 Pro"
+}
