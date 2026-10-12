@@ -61,16 +61,26 @@
       "result": "passed",
       "summary": "779 correctness (84 owned and 695 affected), 42 safe resolver, 1403 public and 2 frozen evaluator API, normal/XML-only consumers, planning180/diff. Consolidated review subsequently identified semantic/accounting gaps; this historical pass is not corrected-source acceptance. Earlier failed attempts: 86506903 1 source compile error; 5e540f5c 7 test compile/analyzer errors; 50b0d8ac 762pass/1 provider-set test error; 650cba39 and c0814edd each 1 variable-scope compile error.",
       "artifact": null
+    },
+    {
+      "id": "cycle1-independent-correctness",
+      "kind": "check",
+      "revision": "8c4cabcdef573b1fe131fa9f1639ea396984c348",
+      "command": "python3 docs/reports/M8-xsd-validate/check.py",
+      "result": "failed",
+      "summary": "828 selected,827 passed/1 failed canonical-default helper regression,0errors/skips/not-run.133owned+695affected. All-in-one script stopped at failure; later script resolver/API/consumers not run. Separately API1403public/2frozen and normal/XML-only consumers passed same source. See review-cycle-1.md; allocation freeze/measurement held.",
+      "artifact": "docs/reports/M8-xsd-validate/review-cycle-1.md"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "First consolidated mandatory review correction cycle in progress; all criteria pending and allocation freeze/measurement held.",
+    "summary": "Independent consolidated cycle1 corrections implemented and tested; canonical dynamic-default join pending ordered M8-datatype-constraint-lexical helper.",
     "checks": [
-      "Read-only setup verified clean detached starting HEAD and claim/base ancestry; compile/content/facets records verified. git diff --check passed before task record update."
+      "8c4cabcd828tests827pass/1known canonical-default regression failure;0errors/skips/not-run. API1403public/2frozen and normal/XML-only consumers separately passed; planning180/diffpassed. No corrected-source measurements."
     ],
     "remaining": [
-      "All evaluator acceptance criteria pending; complete source/test implementation and revision-stamped checks, then approved allocation evidence."
+      "Merge only exact VERIFIED canonical-constraint helper integration when coordinator provides it, add verified prerequisite then implement canonical dynamic-default/fixed-empty joins and run corrected full checks. New declareddecimal1 -> selectedint canonical1.0 negative regression retained, not yet run.",
+      "Corrected-source review acceptance and fresh prepared/approved allocation evidence; no criterion passed yet."
     ],
     "requests": [
       "Canonical dynamic default join: existing frozen IXmlDatatypeLibrary and private family value payloads expose no canonical lexical formatting. Please assign an ordered datatype-owner repair providing an internal charged canonical lexical+namespace-context helper for XmlDatatypeValue atomic/list/union values (or an equivalent prepared-constraint validation API) usable from Evaluation without changing frozen interfaces. Required witness: declared xs:int default 01; selected Small restriction xs:int pattern [0-9]; empty xsi:type Small must assess canonical 1, not authored 01. Formatter must preserve numeric arbitrary precision, boolean/float/temporal/duration/binary canonical forms and QName/NOTATION value-space context; caller exception provenance/shared limits. Evaluation can fix declaration-typed fixed comparison independently and retain the dynamic-default regression pending this join."

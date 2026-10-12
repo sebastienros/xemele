@@ -50,6 +50,14 @@ public sealed class ReviewRegressionTests
         var p=EvaluatorTests.Prepare("<xs:simpleType name='Small'><xs:restriction base='xs:int'><xs:pattern value='[0-9]'/></xs:restriction></xs:simpleType><xs:element name='r' type='xs:int' default='01'/>");
         Assert.True(p.Run($"<r xmlns:xsi='{Xsi}' xsi:type='Small'/>").IsValid);
     }
+    [Fact]
+    public void CanonicalDecimalDefaultDoesNotBecomeIntegerLexical()
+    {
+        // Declared decimal's canonical lexical value is 1.0. Although its value
+        // equals integer one, that lexical form is invalid for selected xs:int.
+        var p=EvaluatorTests.Prepare("<xs:element name='r' type='xs:decimal' default='1'/>");
+        Assert.False(p.Run($"<r xmlns:xs='{EvaluatorTests.Xs}' xmlns:xsi='{Xsi}' xsi:type='xs:int'/>").IsValid);
+    }
     [Theory]
     [InlineData("default")] [InlineData("fixed")]
     public void EmptySelectedTypeRejectsValueConstraint(string constraint)
