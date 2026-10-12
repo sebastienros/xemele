@@ -54,6 +54,7 @@ Coordinator-reported bounded contract source-only review accepted the runtime
 and tests at `233aa3cf` with no concrete blocker; reviewer ran no checks.
 Allocation preparation at `d5f11742` passed: eight disabled-control routes,
 444 frozen identities, and real supervisor TERM/KILL/reap/group/log-close
-preflight. Measured allocation evidence remains pending an exact coordinator
-grant. No timing or zero-allocation claim is made. Raw correctness output lives only in ignored
+preflight. Root-granted allocation measurement passed after durable host RELEASE:
+eight owned routes, positive control and 16 retained graphs; see
+[allocation results](allocations.md). No timing or zero-allocation claim is made. Raw correctness output lives only in ignored
 `artifacts/M8-xsd-publication-checkpoints/checks/` and temporary logs.

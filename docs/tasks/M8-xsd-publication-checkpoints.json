@@ -4,7 +4,7 @@
   "milestone": "M8",
   "title": "Retain XSD publication checkpoints and shared parsing context",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M8 coordinator01a12c6c-b333-71d3-877f-0d186618e21d / assigned isolated worker",
   "branch": "codex/m8-xsd-publication-checkpoints",
   "base_revision": "c83751ab53eda7702b955ea103115c2159695080",
@@ -37,7 +37,8 @@
       "status": "passed",
       "evidence": [
         "branch-correctness",
-        "source-review"
+        "source-review",
+        "owned-allocation"
       ]
     },
     {
@@ -46,14 +47,20 @@
       "status": "passed",
       "evidence": [
         "branch-correctness",
-        "source-review"
+        "source-review",
+        "owned-allocation"
       ]
     },
     {
       "id": "M8-xsd-publication-checkpoints-A3",
       "description": "Prove unused fixed-use/ID-count/element-consistency checkpoints and legal neighbors, scalar exact-cap/one-over across principal and includes for string/stream/expansion cases with disposal/cancellation, affected compiler/core/API/XML-only preservation, and measured owned allocation evidence.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "branch-correctness",
+        "source-review",
+        "allocation-preparation",
+        "owned-allocation"
+      ]
     }
   ],
   "implementation": [
@@ -88,23 +95,32 @@
       "result": "passed",
       "summary": "8disabledcontrolroutes consumed;64calls after16warmups/route;16retainedgraphs;allcounter/heapfields0;444frozen identities matched;childexit0/reaped/groupabsent/logclosed/pspermission;manifest a9cb5fd88f5ad32780c22066c4993511950de73f23f1df8c45baffe91be8f88f;30sbound20swork10scleanup;no counters/BDN/timing run.",
       "artifact": null
+    },
+    {
+      "id": "owned-allocation",
+      "kind": "check",
+      "revision": "d5f1174213c74d2bf5815e3ad683b7527d28b760",
+      "command": "Root sole launcher: python3 docs/reports/M8-xsd-publication-checkpoints/measure.py --granted a9cb5fd88f5ad32780c22066c4993511950de73f23f1df8c45baffe91be8f88f 2026-10-12T05:19:27.107796+00:00 2026-10-12T05:20:27.107796+00:00",
+      "result": "passed",
+      "summary": "Grant9707173c/durable hostRELEASEd1ff39c3;control+allocation children53246/53248 exit0/reaped/groupsabsent/logsclosed;444beforeafter identitiesmatched;raw unopened before RELEASE. Arm64.NET10.0.11:8ownedroutes\u00d764calls after16warmups,allpositive76752..203268B/call;cold126952/1;positive1048;approxheapdelta1204656/16retainedgraphs;consumed28671. No BDN/timing/borrowedzero/async/crossarch claim. See owned allocations.md.",
+      "artifact": null
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Source-reviewed branch repair and970correctness checks complete;8route owned allocation driver/444identities and real disabled-control cleanup prepared. Await exact coordinator measurement grant.",
+    "summary": "Implemented source-reviewed compiler-only repair: ordinary/displaced immutable group checkpoints and additive shared-context resource/parser join;970correctness cases/API/consumers plus8route owned allocation evidence passed. Await coordinator integration verification.",
     "checks": [
-      "970 correctness cases passed;public1410/compiler257/model316;normal+trueXML-only;planning184/diff.",
-      "Initial two xUnit1051 omissions corrected. Initial normal execution of old XML-only sample rejected later types; own two-configuration consumer passed.",
-      "Source-only contract review PASS233aa3cf; runtime/test/sample/check source frozen.",
-      "Allocation preparation/preflight atd5f11742:8counter-disabled routes/444identities;childreaped/groupabsent/logclosed;no measurement."
+      "At233aa3cf:34owned+894affected+42safe resolver=970passed/0failed/errors/skips/not-run;public1410/compiler257/model316matched;normal+trueXML-only real consumers;planning184/diff;allbuilds0warnings/errors.",
+      "Coordinator-reported source-only contract review PASS233aa3cf;accepted runtime/tests/sample/checkinputs remain unchanged.",
+      "Preparedd5f11742:8disabledcontrolroutes/444identities and real elevated cleanup preflight;measurement root sole launcher under9707173c,hostRELEASEd1ff39c3 before rawinspection;2childrenexit0/reaped/groupsabsent/logsclosed;444beforeaftermatched.",
+      "Ownedallocations8routes\u00d764after16warmups allpositive;76752..203268B/call;cold126952/1;positive1048;approxheapdelta1204656/16retainedgraphs;nozero/timingclaim.",
+      "Historical initial build2xUnit1051 omissions corrected;old XML-only sample rejected normal assembly later types;own normal+trueXML-only consumer passed."
     ],
     "remaining": [
-      "Run exact frozen allocation-only sequence after root durable lease grant and report cleanup RELEASE before any raw inspection.",
-      "Assess owned allocation evidence after coordinator host release, then finalize implemented handoff."
+      "Coordinator integrates this branch and reruns applicable combined checks before setting verified;integration_revision remains unset."
     ],
     "requests": [
-      "Facade owner must use new internal Compile(document, context) join and finalize retained group bindings/ID counts after this repair is verified; no facade/peer dependency was used."
+      "Facade owner must consume internal XmlSchemaCompiler.Compile(document, context) and finalize every retained group binding for fixed/declaration consistency and ID-count checks after this repair is verified. No unmerged facade/peer source was used."
     ]
   }
 }
