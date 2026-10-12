@@ -88,7 +88,7 @@ public sealed class VisibilityTests
         availability.Join(graph); var snapshot = availability.Seal();
         var authored = new SchemaName("urn:b", "T");
         var root = graph.Elements.Single(e => e.Name.LocalName == "root"); Assert.Equal(authored, root.Type);
-        var reference = Assert.Single(snapshot.Entries.Where(e => e.Kind == ReferenceKind.ExplicitElementType && e.AuthoredName == authored));
+        var reference = Assert.Single(snapshot.Entries, e => e.Kind == ReferenceKind.ExplicitElementType && e.AuthoredName == authored);
         Assert.Equal(ComponentAvailability.Element(root), reference.Owner);
         Assert.Equal(SymbolSpace.Type, reference.Space); Assert.Equal(AvailabilityState.Unavailable, reference.State);
         Assert.DoesNotContain(graph.Types, t => t.Name == authored);

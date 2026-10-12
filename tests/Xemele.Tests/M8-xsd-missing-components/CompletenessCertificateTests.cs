@@ -114,7 +114,7 @@ public sealed class CompletenessCertificateTests
             operation.OnCharge = call => { if (stage == "fallback" ? operation.Work == 2 : call == 2) cancellation.Cancel(); };
             Assert.Throws<OperationCanceledException>(() => ComponentAvailability.RequireComplete(graph, operation));
         }
-        Assert.True(cancellation.IsCancellationRequested()); Assert.True(operation.IsComplete);
+        Assert.True(cancellation.IsCancellationRequested); Assert.True(operation.IsComplete);
     }
     [Fact]
     public void MutationDuringChargedRegistryConstructionCannotPublishASchema()
