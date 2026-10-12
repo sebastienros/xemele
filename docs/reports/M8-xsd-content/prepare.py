@@ -56,6 +56,6 @@ manifest={'sourceRevision':revision,'sdk':'10.0.400','runtime':'10.0.11','archit
  '5 prebuilt BDN semantic methods consumed without counters/timing/BDN','exactly5MemoryDiagnoserShortRun InProcessNoEmit cases discovered; no generated compilation',
  'warm primitive candidates separate from owned cursor/setup/bank-growth/program/diagnostic and retained costs; synchronous counter paths only'],
  'environment':{'DOTNET_ROLL_FORWARD':'Disable'},
- 'execution':'Root grant required. Same elevated ps permission is preflighted before any child. Fixed two commands, no builds/retries; absolute UTC grant expiry bounds600second supervisor; durable RELEASE precedes result inspection.'}
+ 'execution':'Root grant required: --granted SHA latest-start-UTC expiry-UTC. Explicit latest-start and expiry are validated before creating output or children; an existing measurement directory is refused. Same elevated ps permission is preflighted before any child. Fixed two commands, no builds/retries; absolute UTC grant expiry bounds600second supervisor; durable RELEASE precedes result inspection.'}
 p=root/'docs/reports/M8-xsd-content/preparation.json';p.write_text(json.dumps(manifest,indent=2)+'\n')
 print(json.dumps({'identities':len(identities),'manifestSha256':digest(p),'measurementStarted':False}))

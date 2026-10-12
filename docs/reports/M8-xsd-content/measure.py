@@ -67,17 +67,23 @@ if sys.argv[1:] == ['--verify-only']:
  assert any(int(row[0]) == os.getpid() for row in processes())
  print(f"PASS: {len(manifest['identities'])} prepared identities and ps permission; no child/counter/timing started; manifest {digest(manifest_path)}")
  sys.exit(0)
-if len(sys.argv) != 4 or sys.argv[1] != '--granted':
- raise SystemExit('Requires --granted <durably approved manifest SHA256> <absolute UTC expiry>.')
+if len(sys.argv) != 5 or sys.argv[1] != '--granted':
+ raise SystemExit('Requires --granted <durably approved manifest SHA256> <latest-start UTC> <absolute UTC expiry>.')
 from datetime import datetime, timezone
-expires = datetime.fromisoformat(sys.argv[3].replace('Z','+00:00'))
-if expires.utcoffset() is None: raise SystemExit('Timezone-aware expiry required.')
-remaining = (expires - datetime.now(timezone.utc)).total_seconds()
+latest_start = datetime.fromisoformat(sys.argv[3].replace('Z','+00:00'))
+expires = datetime.fromisoformat(sys.argv[4].replace('Z','+00:00'))
+if any(value.utcoffset() is None or value.utcoffset().total_seconds() != 0 for value in (latest_start, expires)):
+ raise SystemExit('Explicit UTC latest-start and expiry required.')
+now = datetime.now(timezone.utc)
+if now > latest_start: raise SystemExit('Latest start passed; no directory or child created.')
+if expires <= latest_start: raise SystemExit('Expiry must follow latest start; no directory or child created.')
+remaining = (expires - now).total_seconds()
 if remaining <= 10: raise SystemExit('Grant expired or no cleanup reserve remains; no child started.')
+if out.exists(): raise SystemExit('Measurement directory already exists; refusing to overwrite prior output.')
 started = time.monotonic(); hard_deadline = started + min(600, remaining); work_deadline = hard_deadline - 10
-out.mkdir(parents=True, exist_ok=True)
+out.mkdir(parents=True, exist_ok=False)
 lifecycle = {'status': 1, 'beforeIdentities': False, 'afterIdentities': False, 'sequence': [], 'rawResultsInspected': False,
- 'grantExpiryUtc': expires.astimezone(timezone.utc).isoformat(), 'maximumSeconds': min(600, remaining)}
+ 'latestStartUtc': latest_start.isoformat(), 'grantExpiryUtc': expires.isoformat(), 'maximumSeconds': min(600, remaining)}
 manifest = None
 try:
  if digest(manifest_path) != sys.argv[2]: raise ValueError('Manifest differs from durable grant.')
