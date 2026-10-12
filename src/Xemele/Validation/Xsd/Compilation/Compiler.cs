@@ -596,7 +596,7 @@ internal sealed class XsdCompilation
             if (owner.Previous is { } old && basis != old) Error("Redefined complex type must derive from original.", At(s, body));
             if (content.LocalName == "complexContent")
             {
-                if (baseType.SimpleType is not null) Error("Complex content requires a complex base.", At(s, body));
+                if (simple.ContainsKey(basis)) Error("Complex content requires a complex base.", At(s, body));
                 if (content.GetAttribute("mixed") is not null) mixed = Boolean(s, content, "mixed");
             }
             else
@@ -613,7 +613,11 @@ internal sealed class XsdCompilation
                 }
                 if (!inline.IsDefault) simpleType = Anonymous(owner, inline);
                 if (simpleType is null) Error("Mixed-base simple restriction requires an inline simple type.", At(s, body));
-                if (derivation == XsdDerivation.Restriction)
+                // Second Edition 3.4.2 case 1.2: an empty facet set keeps the
+                // inherited ur-datatype. Do not create an illegal user atomic
+                // restriction of anySimpleType, or apply the XSD 1.1 rule.
+                if (derivation == XsdDerivation.Restriction &&
+                    !(inline.IsDefault && facets.Count == 0 && simpleType == AnySimple))
                 {
                     Components(At(s, body)); var synthetic = new SchemaName(s.Target, "#anonymous" + (++anonymousId).ToString(CultureInfo.InvariantCulture));
                     var parent = simple[simpleType!.Value];
@@ -645,6 +649,11 @@ internal sealed class XsdCompilation
                 particle!.Term is XsdGroupTerm { Particles.Count: 0 } &&
                 (authoredParticle.LocalName is "sequence" or "all" ||
                  authoredParticle.LocalName == "choice" && particle.MinOccurs == BigInteger.Zero);
+            if (baseType?.ContentKind == XsdContentKind.Simple && derivation == XsdDerivation.Extension)
+            {
+                if (!emptySyntax) Error("A simple-content base cannot be extended with element particles.", At(s, authoredParticle));
+                simpleType = baseType.SimpleType; particle = null; mixed = false;
+            }
             if (emptySyntax)
             {
                 if (!mixed) particle = null;
@@ -686,6 +695,23 @@ internal sealed class XsdCompilation
                     if (!present) bindings.Add(inherited);
                 }
                 if (baseType.AnyAttribute is not null) wildcard = wildcard is null ? baseType.AnyAttribute : Union(baseType.AnyAttribute, wildcard, At(s, body));
+            }
+            else
+            {
+                // Preserve the complete inherited binding (including authored
+                // namespace context/location). Only effective local uses or
+                // direct prohibitions replace it; group prohibitions contribute
+                // no use. Restriction never inherits the base wildcard here.
+                foreach (var inherited in baseType.Attributes)
+                {
+                    Tick(inherited.Location); bool present = false;
+                    foreach (var local in bindings)
+                    {
+                        Tick(local.Location);
+                        if (attributes[local.DeclarationId].Name == attributes[inherited.DeclarationId].Name) { present = true; break; }
+                    }
+                    if (!present) bindings.Add(inherited);
+                }
             }
         }
         var block = new List<XsdTypeBlock>();
@@ -848,7 +874,7 @@ internal sealed class XsdCompilation
         Components(At(s, node));
         return new(id, use, node.GetAttribute("default"), node.GetAttribute("fixed"), Context(s, node), ConstraintAt(s, node));
     }
-    private void AttributeBody(Declaration owner, XmlNode body, List<XsdAttributeBinding> bindings, out XsdWildcard? wildcard)
+    private void AttributeBody(Declaration owner, XmlNode body, List<XsdAttributeBinding> bindings, out XsdWildcard? wildcard, bool group = false)
     {
         wildcard = null; bool explicitWildcard = false;
         var names = new HashSet<SchemaName>(); foreach (var binding in bindings) names.Add(attributes[binding.DeclarationId].Name);
@@ -870,6 +896,9 @@ internal sealed class XsdCompilation
             }
             foreach (var binding in added)
             {
+                // A group has no prohibited-use component (3.6.2), unlike a
+                // direct prohibition in a restricting complex type (3.4.2).
+                if (group && binding.Use == XsdAttributeUse.Prohibited) continue;
                 var name = attributes[binding.DeclarationId].Name;
                 if (!names.Add(name)) Error("Duplicate attribute use after group expansion.", binding.Location);
                 bindings.Add(binding);
@@ -885,7 +914,7 @@ internal sealed class XsdCompilation
         {
             foreach (var child in Children(owner.Source, owner.Node)) if (child.LocalName is not ("annotation" or "attribute" or "attributeGroup" or "anyAttribute")) Error("Invalid attribute group child.", At(owner.Source, child));
             int selfReferences = owner.Previous is null ? -1 : CheckRedefinedGroup(owner, "attributeGroup");
-            AttributeBody(owner, owner.Node, bindings, out wildcard);
+            AttributeBody(owner, owner.Node, bindings, out wildcard, group: true);
             if (selfReferences == 0)
             {
                 var original = Find("attributeGroup", owner.Previous!.Value, owner); var originalBindings = new List<XsdAttributeBinding>();
@@ -1167,13 +1196,12 @@ internal sealed class XsdCompilation
     }
     private List<XsdDerivation> DerivationPath(SchemaName derived, SchemaName ancestor, XmlLocation at)
     {
-        var path = new List<XsdDerivation>(); var seen = new HashSet<SchemaName>();
-        while (derived != ancestor)
-        {
-            Tick(at); if (!seen.Add(derived)) Error("Circular type derivation.", at);
-            var type = Type(derived); if (type.BaseType is not { } parent) Error("Substitution type does not derive from the head type.", at);
-            path.Add(type.Derivation is XsdDerivation.List or XsdDerivation.Union ? XsdDerivation.Restriction : type.Derivation); derived = type.BaseType!.Value;
-        }
+        if (!XsdSubstitutionGroups.TypeRelation(types, simple, null, derived, ancestor, op, at,
+            false, false, false, out bool restriction, out bool extension))
+            Error("Substitution type does not derive from the head type.", at);
+        var path = new List<XsdDerivation>();
+        if (restriction) path.Add(XsdDerivation.Restriction);
+        if (extension) path.Add(XsdDerivation.Extension);
         return path;
     }
 
@@ -1300,7 +1328,6 @@ internal static class XsdSubstitutionGroups
         var typeMap = new Dictionary<SchemaName, XsdTypeDefinition>();
         foreach (var definition in schema.Types)
         { if (!operation.Charge(1, definition.Location)) throw SchemaSnapshots.Failure(operation); typeMap.Add(definition.Name, definition); }
-        var headType = typeMap[head.Type];
         if (head.Block.Contains(XsdElementBlock.Substitution))
         { if (!head.Abstract) result.Add(headId); return result.AsReadOnly(); }
         foreach (var candidate in schema.GlobalElements.Values)
@@ -1313,30 +1340,46 @@ internal static class XsdSubstitutionGroups
                 if (!seen.Add(current)) break; affiliated = current == headId;
             }
             if (!affiliated) continue;
-            SchemaName type = element.Type; bool blocked = false;
-            var typeSeen = new HashSet<SchemaName>(); var path = new List<XsdTypeDefinition>();
-            while (type != head.Type)
-            {
-                if (!operation.Charge(1, element.Location)) throw SchemaSnapshots.Failure(operation);
-                if (!typeSeen.Add(type) || !typeMap.TryGetValue(type,out var definition) || definition.BaseType is not { } basis) { blocked = true; break; }
-                path.Add(definition); type = basis;
-            }
-            bool restriction = false, extension = false;
-            foreach (var definition in path)
-            { restriction |= definition.Derivation is XsdDerivation.Restriction or XsdDerivation.List or XsdDerivation.Union; extension |= definition.Derivation == XsdDerivation.Extension; }
-            if (restriction && head.Block.Contains(XsdElementBlock.Restriction) || extension && head.Block.Contains(XsdElementBlock.Extension)) blocked = true;
-            path.Add(headType);
-            // Blocks prohibit descendants of a type from substituting that
-            // type. The candidate's own block has no bearing on its substitution
-            // for an ancestor; head and intermediate definitions contribute.
-            for (int blockIndex = 1; blockIndex < path.Count; blockIndex++)
-            {
-                var definition = path[blockIndex];
-                if (!operation.Charge(1, element.Location)) throw SchemaSnapshots.Failure(operation);
-                if (restriction && definition.Block.Contains(XsdTypeBlock.Restriction) || extension && definition.Block.Contains(XsdTypeBlock.Extension)) blocked = true;
-            }
-            if (!blocked) result.Add(candidate);
+            if (TypeRelation(typeMap, null, schema.Datatypes, element.Type, head.Type, operation, element.Location,
+                true, head.Block.Contains(XsdElementBlock.Restriction), head.Block.Contains(XsdElementBlock.Extension), out _, out _))
+                result.Add(candidate);
         }
         return result.AsReadOnly();
     }
+    // Iterative Second Edition 3.14.6: reducing a union target to one
+    // member is restriction, including identity with that member. Retain both
+    // endpoints and derivation flags in the visited key so an unsuccessful
+    // branch cannot suppress a different legal derivation. No CLR recursion.
+    internal static bool TypeRelation(IReadOnlyDictionary<SchemaName, XsdTypeDefinition> types,
+        IReadOnlyDictionary<SchemaName, XmlDatatypeDefinition>? definitions, IXmlDatatypeRegistry? registry,
+        SchemaName derived, SchemaName ancestor, ISchemaOperation operation, XmlLocation at,
+        bool checkBlocks, bool forbidRestriction, bool forbidExtension,
+        out bool restriction, out bool extension)
+    {
+        var work = new Queue<(SchemaName D, SchemaName B, bool R, bool E)>();
+        var seen = new HashSet<(SchemaName D, SchemaName B, bool R, bool E)>();
+        void Add(SchemaName d, SchemaName b, bool r, bool e)
+        {
+            if (!operation.Charge(1, at)) throw SchemaSnapshots.Failure(operation);
+            if (seen.Add((d, b, r, e))) work.Enqueue((d, b, r, e));
+        }
+        Add(derived, ancestor, false, false);
+        while (work.TryDequeue(out var item))
+        {
+            if (!operation.Charge(1, at)) throw SchemaSnapshots.Failure(operation);
+            if (item.R && forbidRestriction || item.E && forbidExtension) continue;
+            if (item.D == item.B) { restriction = item.R; extension = item.E; return true; }
+            XmlDatatypeDefinition? Find(SchemaName name) => definitions is null ? registry!.FindType(name) : definitions.GetValueOrDefault(name);
+            if (Find(item.D) is not null && Find(item.B) is { Variety: XmlDatatypeVariety.Union } union)
+                foreach (var member in union.MemberTypes) Add(item.D, member, true, item.E);
+            if (!types.TryGetValue(item.D, out var type) || type.BaseType is not { } parent || !types.TryGetValue(parent, out var basis)) continue;
+            bool r = item.R || type.Derivation is XsdDerivation.Restriction or XsdDerivation.List or XsdDerivation.Union;
+            bool e = item.E || type.Derivation == XsdDerivation.Extension;
+            if (basis.Final.Contains(type.Derivation)) continue;
+            if (checkBlocks && (r && basis.Block.Contains(XsdTypeBlock.Restriction) || e && basis.Block.Contains(XsdTypeBlock.Extension))) continue;
+            Add(parent, item.B, r, e);
+        }
+        restriction = extension = false; return false;
+    }
+
 }
