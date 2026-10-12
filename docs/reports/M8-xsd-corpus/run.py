@@ -45,6 +45,7 @@ def module(name, path):
 
 supervision = module('corpus_supervision', HERE / 'supervision.py')
 nested = module('corpus_nested_ownership', HERE / 'nested_ownership.py')
+reference_exception = module('corpus_reference_exception', HERE / 'reference_exception.py')
 
 
 def digest(path):
@@ -97,6 +98,8 @@ def inspect_rows(spec):
         assert row['engine'] == spec['engine'], 'engine identity differs'
         assert not row['actual'].startswith('harness-'), 'harness observation cannot complete a set'
         assert row['passed'] is None or type(row['passed']) is bool, 'invalid original result'
+        if row['actual'] == 'reference-engine-exception':
+            reference_exception.validate_observation(row, expected)
         if row['passed'] is True:
             assert row['actual'] in ('schema-valid', 'schema-invalid', 'instance-valid', 'instance-invalid'), 'refusal cannot be a validity pass'
             if row['expected'] in ('valid', 'invalid'):

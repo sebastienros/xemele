@@ -90,4 +90,47 @@ class Dispositions(unittest.TestCase):
  def test_second_edition_namechar_requires_actual_complete_invalidity(self):
   x=m.view({'id':m.NAMECHAR['id'],'passed':False,'actual':'instance-invalid'});self.assertFalse(x['originalPassed']);self.assertTrue(x['profilePassed'])
   self.assertFalse(m.view({'id':m.NAMECHAR['id'],'passed':False,'actual':'incomplete-refusal'})['profilePassed'])
+class ReferenceExceptionReporting(unittest.TestCase):
+ def setUp(self):
+  import json
+  spec=importlib.util.spec_from_file_location('reference_exception',Path(__file__).with_name('reference_exception.py'));self.guard=importlib.util.module_from_spec(spec);spec.loader.exec_module(self.guard)
+  scope=self.guard.facts();case=scope['cases'][0];self.expected=case['row']
+  # Synthetic reporting data only. The native controls must independently observe real frames.
+  mvid='00000000-0000-0000-0000-000000000001'
+  def frame(type,method,module='System.Private.Xml.dll',parameters=None):return dict(Type=type,Method=method,Module=module,Mvid=mvid,Token=100663297,Parameters=parameters or [])
+  self.detail=dict(attribution='pinned-bcl-empty-id-preprocessor',purpose='schema-compilation',operation='Add',exceptionType='System.ArgumentException',parameter='name',runtime=scope['runtime'],scopeSha256=self.guard.SCOPE_SHA,moduleSha256=scope['bcl_module_sha256'],moduleMvid=mvid,documentSha256=case['document_sha256'],sourceUri=case['source_uri'],frames=[frame('System.Xml.XmlConvert','VerifyNCName'),frame('System.Xml.Schema.Preprocessor','ValidateIdAttribute'),frame('System.Xml.Schema.XmlSchemaSet','Add',parameters=['System.String','System.Xml.XmlReader']),frame('XsdCorpus.BclEngine','AddBoundary','XsdCorpus.dll',['System.Xml.Schema.XmlSchemaSet','System.Xml.XmlReader'])])
+  self.row=dict(id=self.expected['id'],engine='bcl',kind='schema',classification='applicable',expected='invalid',actual='reference-engine-exception',passed=False,codes=[],resources=[],hintOrderingProfile=False,detail=json.dumps(self.detail))
+ def check(self,row=None,detail=None,expected=None):
+  import json
+  value=dict(self.row if row is None else row);value['detail']=json.dumps(self.detail if detail is None else detail)
+  return self.guard.validate_observation(value,self.expected if expected is None else expected)
+ def test_exact_reporting_remains_original_nonpass(self):
+  self.check();value=m.view(self.row);self.assertFalse(value['originalPassed']);self.assertFalse(value['profilePassed']);self.assertFalse(value['approvedException'])
+ def test_wrong_engine_pass_callbacks_or_scope_cannot_complete(self):
+  for field,value in [('id','unknown'),('engine','product'),('passed',True),('codes',['XSD.Invalid']),('resources',[{'uri':'unknown'}]),('actual','schema-invalid'),('hintOrderingProfile',True)]:
+   with self.subTest(field=field),self.assertRaises(AssertionError):self.check(row={**self.row,field:value})
+ def test_changed_runtime_module_hash_principal_purpose_operation_rejected(self):
+  for field in ['runtime','moduleSha256','scopeSha256','documentSha256','sourceUri','purpose','operation','exceptionType','parameter']:
+   with self.subTest(field=field),self.assertRaises(AssertionError):self.check(detail={**self.detail,field:'changed'})
+ def test_changed_metadata_or_order_is_not_reference_scope(self):
+  import copy
+  for field in ['expected','currentStatus','priorStatus','documents','documentMetadata']:
+   changed=copy.deepcopy(self.expected);changed[field]=[]
+   # priorStatus is originally empty; give it an entry so this is an actual mutation.
+   if field=='priorStatus':changed[field]=[{'status':'changed'}]
+   with self.subTest(field=field),self.assertRaises(AssertionError):self.check(expected=changed)
+ def test_missing_inlined_caller_resolver_stream_frames_rejected(self):
+  import copy
+  for kind in ['missing','caller','resolver','stream','module','token','signature']:
+   detail=copy.deepcopy(self.detail)
+   if kind=='missing':detail['frames'].pop(0)
+   elif kind in ['caller','resolver','stream']:detail['frames'].insert(1,dict(Type='Unknown.'+kind,Method='Read',Module='XsdCorpus.dll',Mvid=self.detail['moduleMvid'],Token=100663297,Parameters=[]))
+   elif kind=='module':detail['frames'][1]['Mvid']='00000000-0000-0000-0000-000000000002'
+   elif kind=='token':detail['frames'][1]['Token']=0
+   else:detail['frames'][2]['Parameters']=['System.String','System.String']
+   with self.subTest(kind=kind),self.assertRaises(AssertionError):self.check(detail=detail)
+ def test_historical_harness_failure_is_preserved(self):
+  scope=self.guard.facts()
+  for case in scope['cases']:
+   self.assertEqual(case['historical_outcome'],'harness-exception');self.assertIs(case['historical_original_passed'],False);self.assertEqual(case['historical_callbacks'],0)
 if __name__=='__main__':unittest.main()

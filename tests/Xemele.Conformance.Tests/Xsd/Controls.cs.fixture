@@ -126,6 +126,8 @@ internal static class Controls
             var declaredMissing = new Xemele.XmlResourceRequest(Runner.UriFor("declared-but-missing.xsd"), Runner.UriFor("principal.xsd"), Xemele.XmlResourceKind.Schema) { SystemId = "declared-but-missing.xsd" };
             Runner.OriginalPaths = new(Runner.OriginalPaths!, StringComparer.Ordinal) { "declared-but-missing.xsd" };
             Require(ThrowsIo(() => new Runner.Resolver().ResolveResult(declaredMissing, default)), "declared missing file remains harness error, never Unavailable");
+            Runner.OriginalPaths = null;
+            BclEngine.ReferenceControls();
             return 0;
         }
         finally { Runner.Root = saved; Runner.OriginalPaths = savedPaths; }

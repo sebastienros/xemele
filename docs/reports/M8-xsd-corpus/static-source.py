@@ -67,4 +67,22 @@ for path, checksum in pins.items():
 for record in facts['missing_requests']:
     assert catalog[record['principal']] == record['principal_sha256']
 assert facts['derived_a004']['original_expected'] == 'invalid' and facts['derived_a004']['derived_expected'] == 'valid'
-print(f'PASS SOURCE only: {len(list(HERE.glob("*.py")))} Python ASTs;6 identical supervisor functions;4 verified ancestors;2 exact approved copies;43 original metadata records/{len(pins)} pinned files;no builds/tests/controls/corpus children')
+scope_path = CORPUS / 'bcl-reference-exception-scope.json'
+assert hashlib.sha256(scope_path.read_bytes()).hexdigest() == 'c5d23c50623b27486399fd46cabadc6d8ef525888a1368884147892ef1a9097c'
+scope = json.loads(scope_path.read_text())
+assert scope['upstream_revision'] == inventory['revision']
+assert hashlib.sha256((CORPUS / 'inventory.json').read_bytes()).hexdigest() == scope['inventory_sha256']
+assert hashlib.sha256((CORPUS / 'resources.json').read_bytes()).hexdigest() == scope['catalog_sha256']
+assert len(scope['cases']) == len({c['row']['id'] for c in scope['cases']}) == 21
+for case in scope['cases']:
+    row = case['row']
+    assert row == originals[row['id']]
+    assert (row['kind'], row['classification'], row['expected']) == ('schema', 'applicable', 'invalid')
+    assert len(row['documents']) == 1 and case['source_uri'] == 'https://w3c-xsd.test/source/' + row['documents'][0]
+    assert case['historical_outcome'] == 'harness-exception' and case['historical_original_passed'] is False and case['historical_callbacks'] == 0
+    for name, checksum in [(row['documents'][0], case['document_sha256']), (case['metadata'], case['metadata_sha256'])]:
+        assert catalog[name] == checksum == hashlib.sha256((CORPUS / 'upstream' / name).read_bytes()).hexdigest()
+    assert case['empty_id'] is True and b'id=""' in (CORPUS / 'upstream' / row['documents'][0]).read_bytes()
+runtime_module = Path('/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App/10.0.11/System.Private.Xml.dll')
+assert hashlib.sha256(runtime_module.read_bytes()).hexdigest() == scope['bcl_module_sha256']
+print(f'PASS SOURCE only: {len(list(HERE.glob("*.py")))} Python ASTs;6 identical supervisor functions;4 verified ancestors;2 exact approved copies;43 original metadata records/{len(pins)} pinned files;21 exact BCL scope rows/metadata/principal hashes/pinned module;no builds/tests/controls/corpus children')
