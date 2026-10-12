@@ -101,6 +101,24 @@
       "result": "passed",
       "summary": "Actual1146-row report accepted with independent33-case/9-method owned inventory and all14 affected namespaces present. Report omitting one owned case rejected despite adjusted summary. No runtime rerun or counters.",
       "artifact": null
+    },
+    {
+      "id": "supplemental-model-freeze",
+      "kind": "check",
+      "revision": "28e26b68231ca3981702b2e17d7fd445afe42c4c",
+      "command": "Pinned dotnet --fx-version 10.0.11 docs/reports/M8-model/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare src/Xemele/bin/Release/net10.0/Xemele.dll tests/Contracts/Fixtures/M8/Model.golden.txt (and docs/api/M8-model.txt)",
+      "result": "passed",
+      "summary": "Exact full internal/public frozen model316 and additive model139 matched. Owned checker now repeats both comparisons; runtime and tested unit inputs unchanged from444365439.",
+      "artifact": null
+    },
+    {
+      "id": "allocation-preparation",
+      "kind": "check",
+      "revision": "28e26b68231ca3981702b2e17d7fd445afe42c4c",
+      "command": "python3 docs/reports/M8-xsd-schema-syntax/prepare.py; elevated python3 docs/reports/M8-xsd-schema-syntax/measure.py --verify-only; elevated python3 docs/reports/M8-xsd-schema-syntax/measure.py --preflight",
+      "result": "passed",
+      "summary": "12 owned-output routes x16warmups/x64operations consumed with all GC/allocation counters disabled,16 retained outputs. 456 frozen identities verified elevated; actual supervised child78856 exit0/reaped/groupabsent/logclosed, pre/post identities unchanged. Manifest f613780fa3d57c7e0b1f82054c5ccb32f14c24c579f17c6839dfb220b56a1ce8; supervisor d95f10918f135bfe80a739dc0db85193a8ec73850da0ed9b8f312d883ea8e6eb. No measurement yet.",
+      "artifact": "docs/reports/M8-xsd-schema-syntax/allocation-preflight.json"
     }
   ],
   "blockers": [],
@@ -112,8 +130,7 @@
       "Planning185 tasks/diff check passed."
     ],
     "remaining": [
-      "Frozen controls/manifest, elevated verify-only/actual supervised cleanup preflight.",
-      "Coordinator-only fresh lease allocation measurement; final evidence."
+      "Coordinator-only fresh exact lease measurement, cleanup RELEASE, final allocation evidence."
     ],
     "requests": []
   }
