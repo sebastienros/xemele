@@ -36,8 +36,10 @@
     {
       "id": "M8-rng-validate-A1",
       "description": "Implement matching for attributes/interleave/lists/choices/recursion and advertised datatype libraries.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "branch-correctness"
+      ]
     },
     {
       "id": "M8-rng-validate-A2",
@@ -48,17 +50,63 @@
     {
       "id": "M8-rng-validate-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "branch-correctness"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Validation/RelaxNg/RelaxNgSchema.cs: six public Compile/Validate overloads",
+    "src/Xemele/Validation/RelaxNg/Evaluation/Finalization.cs: every-checkpoint datatype join, immutable real registry and prepared occurrence values",
+    "src/Xemele/Validation/RelaxNg/Evaluation/Evaluator.cs: per-run residual derivatives, unordered attributes, interleave, recursion, lists, weak/coalesced text, shared bounded operation",
+    "tests/Xemele.Tests/M8-rng-validate/: 85 independent cases",
+    "docs/api/M8-rng-validate.txt: seven approved public declarations",
+    "samples/M8-rng-validate/Consumer.csproj and docs/reports/M8-rng-validate/XmlOnly/XmlOnly.csproj: normal and XML-only consumers"
+  ],
+  "evidence": [
+    {
+      "id": "branch-correctness",
+      "kind": "check",
+      "revision": "5d69a1361eb55f771a5da428fc67ee7272c47d6a",
+      "command": "python3 -B docs/reports/M8-rng-validate/checks.py",
+      "result": "passed",
+      "summary": "85 owned and 1191 predecessor cases passed (zero failed/errors/skipped/not-run), Release builds clean; 1410 complete public API members and 444 frozen RNG members match; normal and XML-only consumers pass; planning validates179tasks and diff-check passes. ARM .NET10.0.11.",
+      "artifact": "docs/reports/M8-rng-validate/readiness.md"
+    },
+    {
+      "id": "generic-api-inventory",
+      "kind": "check",
+      "revision": "5d69a1361eb55f771a5da428fc67ee7272c47d6a",
+      "command": "python3 -B tools/ApiBaseline/compare.py --report artifacts/M8-rng-validate/correctness/public-api-inventory-failure.json",
+      "result": "failed",
+      "summary": "Known infrastructure inventory failure: existing header-only internal docs/api/M8-datatypes.txt rejected as empty. Approved complete compiled checker passes1410members; coordinator confirms no product blocker/shared edit needed.",
+      "artifact": "docs/reports/M8-rng-validate/readiness.md"
+    },
+    {
+      "id": "measurement-preparation",
+      "kind": "check",
+      "revision": "5d69a1361eb55f771a5da428fc67ee7272c47d6a",
+      "command": "python3 -B docs/reports/M8-rng-validate/prepare.py; python3 -B docs/reports/M8-rng-validate/measure.py --verify-only; python3 -B docs/reports/M8-rng-validate/measure.py --cleanup-preflight",
+      "result": "passed",
+      "summary": "10 exact counter-disabled route controls passed;434frozen identities verified; actual supervisor child timed out, terminated/reaped, owned group absent and log closed. No allocation counters or benchmarks run.45sproposal/35work/10cleanup requires fresh bounded coordination grant.",
+      "artifact": "docs/reports/M8-rng-validate/readiness.md"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "",
-    "checks": [],
-    "remaining": [],
+    "summary": "Source/build/correctness/API/consumer implementation ready for coordinator review at5d69a1361eb55f771a5da428fc67ee7272c47d6a; not implemented pending fresh allocation grant and review.",
+    "checks": [
+      "85 owned/1191 predecessor cases pass on ARM.NET10.0.11",
+      "1410 public/444 frozen RNG contract members match",
+      "Normal and true XML-only consumers pass; planning179/diffcheck pass",
+      "10 disabled controls/434identities/actual supervisor cleanup preflight pass"
+    ],
+    "remaining": [
+      "Coordinator source review and fresh bounded all-host allocation-only grant",
+      "Run sole prebuilt probe under supervisor; release before raw inspection, summarize compact allocation/retained evidence",
+      "Final checks/task metadata and explicit ownership relinquishment"
+    ],
     "requests": []
   }
 }
