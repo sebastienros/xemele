@@ -10,7 +10,8 @@
   "base_revision": "92015976e4d4b82a747c0c6fdd300f929e6227ee",
   "integration_revision": null,
   "depends_on": [
-    "M8-rng-validate"
+    "M8-rng-validate",
+    "M8-rng-lexical"
   ],
   "goals": [
     "G13",
@@ -30,29 +31,146 @@
     {
       "id": "M8-rng-corpus-A1",
       "description": "Import pinned profile suites and upstream regressions with schema/instance outcomes separated.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "fixture-oracle-integrity",
+        "independent-reference-rerun"
+      ]
     },
     {
       "id": "M8-rng-corpus-A2",
       "description": "All advertised RELAX NG XML syntax/profile cases pass with no unexplained reference mismatches.",
-      "status": "pending",
-      "evidence": []
+      "status": "failed",
+      "evidence": [
+        "upstream-original-run",
+        "readiness-full",
+        "independent-reference-rerun"
+      ]
     },
     {
       "id": "M8-rng-corpus-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
       "status": "pending",
-      "evidence": []
+      "evidence": [
+        "rng-facade-preservation",
+        "rng-compiler-preservation",
+        "compiled-public-api",
+        "frozen-rng-api",
+        "normal-and-xml-only-usage"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "tests/corpora/relaxng/: pinned Jing 385 schemas/580 instance predicates/31 resources, full numeric libxml2 historical family 7 schemas/18 predicates/1 resource, licenses/source hashes and independent stage outcomes; zero missing/excluded cases.",
+    "tests/corpora/relaxng/profile-inventory.json: 17 independent additional datatype/facade schema witnesses and 28 instances.",
+    "tests/Xemele.Conformance.Tests/RelaxNg/: 409 schema cases via 3x3 public string/DOM/short UTF-8 stream matrix; integrity and seven incomplete/source/immutability boundary checks.",
+    "tests/Xemele.Differential.Tests/RelaxNg/ReferenceTests.cs: actual pinned Jing/libxml2 processes, authoritative original schema/instance checks and independently checked product facade; documented limitations never count as agreement.",
+    "docs/reports/M8-rng-corpus/: source/oracle integrity regeneration, reference source/build/binary identity, coverage, scoped correctness commands and readiness handoff."
+  ],
+  "evidence": [
+    {
+      "id": "upstream-original-run",
+      "kind": "check",
+      "revision": "b18c2a5bd5cf8accfb62a3d4cba260ad6cbb78b9",
+      "command": "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet --fx-version 10.0.11 tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll -class Xemele.Conformance.Tests.RelaxNg.* -result-xml artifacts/M8-rng-corpus/conformance-b18c2a5b.xml",
+      "result": "failed",
+      "summary": "393 original upstream/metadata tests:384 passed,9 schema-stage failures jing-055/056/057/058/070/072/073/074/079;0 skipped/errors/not-run. Earlier original Jing-only development run had377pass/9fail out of386. No original predicate removed.",
+      "artifact": null
+    },
+    {
+      "id": "readiness-full",
+      "kind": "check",
+      "revision": "3493545e27fd32abddec24bb31f639d273827a46",
+      "command": "python3 docs/reports/M8-rng-corpus/checks.py",
+      "result": "failed",
+      "summary": "417 conformance tests:408pass/9 original schema failures;2 differential tests failed before reference execution due to duplicated supplemental inventory loading (corrected at d3d2a112). All other scoped checks ran and passed:89 facade,88 compiler,1410 compiled public API,444 frozen RNG,normal/XML-only consumer,integrity,planning,diff. No allocation/timing work.",
+      "artifact": null
+    },
+    {
+      "id": "independent-reference-rerun",
+      "kind": "check",
+      "revision": "d3d2a112048cdfb3d6a8fcb0617061c32ca98ee9",
+      "command": "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet --fx-version 10.0.11 tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll -class Xemele.Differential.Tests.RelaxNg.* -result-xml artifacts/M8-rng-corpus/differential-corrected.xml",
+      "result": "failed",
+      "summary": "After correcting duplicate inventory and building the affected project, both real-reference tests execute successfully through oracle comparison, then fail only original9 product schema predicates. 1035 total checks=1028 original/independently authored predicates+7 inferred libxml2 schema-compilation prerequisites. Jing1035/1035agreement;libxml2 1020agreement+15 exactspec/hash/version limitations (not agreements);0 unexplained reference mismatches. 409schema+626instance outcomes; no product-derived validity.",
+      "artifact": null
+    },
+    {
+      "id": "fixture-oracle-integrity",
+      "kind": "check",
+      "revision": "d3d2a112048cdfb3d6a8fcb0617061c32ca98ee9",
+      "command": "python3 docs/reports/M8-rng-corpus/verify.py",
+      "result": "passed",
+      "summary": "Offline integrity passes:392 upstream+17 authored schemas,598 upstream+28 authored instances,32 external resources,15 explicit reference limitations,0 missing/excluded cases. Full original Jing fixture bytes,namespace/entity/DTD extraction and independent authored expectations regenerated and equal.",
+      "artifact": null
+    },
+    {
+      "id": "rng-facade-preservation",
+      "kind": "check",
+      "revision": "3493545e27fd32abddec24bb31f639d273827a46",
+      "command": "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet --fx-version 10.0.11 tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -class Xemele.Tests.M8RngValidate.* -result-xml artifacts/M8-rng-corpus/checks/rng-owned.xml",
+      "result": "passed",
+      "summary": "89/89 existing owned RNG facade tests pass;0 failed/skipped/errors/not-run on .NET10.0.11. No banned allocation test selected.",
+      "artifact": null
+    },
+    {
+      "id": "rng-compiler-preservation",
+      "kind": "check",
+      "revision": "3493545e27fd32abddec24bb31f639d273827a46",
+      "command": "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet --fx-version 10.0.11 tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -class Xemele.Tests.M8RngCompile.* -result-xml artifacts/M8-rng-corpus/checks/rng-compile.xml",
+      "result": "passed",
+      "summary": "88/88 existing RNG compiler correctness tests pass;0 failed/skipped/errors/not-run on .NET10.0.11.",
+      "artifact": null
+    },
+    {
+      "id": "compiled-public-api",
+      "kind": "check",
+      "revision": "3493545e27fd32abddec24bb31f639d273827a46",
+      "command": "python3 docs/reports/M5-validation-model/check_api.py",
+      "result": "passed",
+      "summary": "Approved compiled extraction compares all1410 public members successfully against the actual facade assembly; generic header-only source discovery not used.",
+      "artifact": null
+    },
+    {
+      "id": "frozen-rng-api",
+      "kind": "check",
+      "revision": "3493545e27fd32abddec24bb31f639d273827a46",
+      "command": "python3 docs/reports/M8-rng-validate/frozen.py",
+      "result": "passed",
+      "summary": "444 frozen public/internal RNG contract members match actual assembly.",
+      "artifact": null
+    },
+    {
+      "id": "normal-and-xml-only-usage",
+      "kind": "check",
+      "revision": "3493545e27fd32abddec24bb31f639d273827a46",
+      "command": "python3 docs/reports/M8-rng-corpus/checks.py",
+      "result": "passed",
+      "summary": "Consumer subchecks within the otherwise failing full run passed: samples/M8-rng-validate/Consumer.csproj restored/built normally and with -p:RngXmlOnly=true,then executed each Consumer.dll with --fx-version10.0.11. Both immutable RNG schema/valid order/invalidpositiveInteger/unchangedinstance predicates pass; no later milestone required.",
+      "artifact": null
+    },
+    {
+      "id": "planning-and-whitespace",
+      "kind": "check",
+      "revision": "d3d2a112048cdfb3d6a8fcb0617061c32ca98ee9",
+      "command": "python3 tools/planning/tasks.py validate && git diff --check",
+      "result": "passed",
+      "summary": "180 tasks validate;git diff --check passes. Only owned task paths/record changed. Final task-record validation rerun before evidence commit.",
+      "artifact": null
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "",
-    "checks": [],
-    "remaining": [],
+    "summary": "Resumed after coordinator verified lexical repair at1073dd8a; main b22333d8 merged into isolated corpus branch. Original predicates and historical failed evidence remain unchanged; final correctness checks pending.",
+    "checks": [
+      "417 conformance:408pass/9original schema failures,0skipped/errors/not-run.",
+      "Corrected differential:2fail only same9 product schemas;1035total=1028authored predicates+7inferred schema prerequisites;Jing1035agreement,libxml2 1020agreement+15 explicit nonagreement limitations;0 unexplainedreference mismatch.",
+      "89 RNGfacade+88compiler;1410 compiledpublic+444 frozenRNG;normal/XML-only usage;offline corpus integrity;planning180;diffcheck pass.",
+      "Full readiness initially hit duplicated profile inventory;affected runner corrected and genuinely rerun. No failure concealed."
+    ],
+    "remaining": [
+      "Run unchanged417 corpus cases and full1035 reference checks against joined verified runtime; rerun applicable preservation/API/normal/XML-only/integrity/planning checks; retain historical failures."
+    ],
     "requests": []
   }
 }
