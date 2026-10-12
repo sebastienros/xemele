@@ -42,5 +42,5 @@ def assert_tests(path, count=None, correctness=False):
   actual=Counter(n[len(OWNED):].split("(",1)[0] for n in names)
   assert actual == Counter(EXPECTED) and sum(actual.values()) == 113, actual
   assert len(set(names)) == 113, "Duplicate owned case identity"
-  assert total == 1113 + 113, ("Affected1113 plus owned113 expected",total)
+  assert total == 1113 + 33 + 113, ("Verified syntax33 + affected1113 plus owned113 expected",total)
  return total

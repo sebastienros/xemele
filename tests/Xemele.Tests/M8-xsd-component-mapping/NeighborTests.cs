@@ -156,11 +156,12 @@ public sealed class NeighborTests
         Assert.Equal(Encoding.UTF8.GetByteCount(xml.AsSpan(0, xml.IndexOf("<xs:element", StringComparison.Ordinal))), at.ByteOffset);
     }
     [Theory]
-    [InlineData("A")] [InlineData("名_1")] [InlineData("xĳ")]
-    [InlineData("")] [InlineData("1a")] [InlineData("a:b")]
-    [InlineData("\ud800")] [InlineData("\udc00")] [InlineData("\ud800A")] [InlineData("𕀀")]
-    public void BorrowedScanMatchesIndependentBoundaryOracle(string name)
+    [InlineData("ascii", "A")] [InlineData("multilingual", "名_1")] [InlineData("edition-gap", "xĳ")]
+    [InlineData("empty", "")] [InlineData("digit-first", "1a")] [InlineData("colon", "a:b")]
+    [InlineData("unpaired-high", "\ud800")] [InlineData("unpaired-low", "\udc00")] [InlineData("bad-pair", "\ud800A")] [InlineData("supplementary", "𕀀")]
+    public void BorrowedScanMatchesIndependentBoundaryOracle(string caseId, string name)
     {
+        Assert.NotEmpty(caseId);
         bool expected = name is "A" or "名_1";
         Assert.Equal(expected, XsdCompilation.ComponentNCName(name, new SchemaCompileOperation()));
     }
