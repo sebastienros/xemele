@@ -59,4 +59,23 @@ class Dispositions(unittest.TestCase):
     x=m.view({'id':case['id'],'passed':False,'actual':'instance-'+case['profile_expected']});self.assertFalse(x['originalPassed']);self.assertTrue(x['profilePassed']);self.assertFalse(x['approvedException'])
     for refused in ['incomplete-refusal','schema-unavailable','timeout','instance-syntax-error']:
      self.assertFalse(m.view({'id':case['id'],'passed':False,'actual':refused})['profilePassed'])
+ def test_substitution_agreement_never_changes_original_failure(self):
+  x=m.view({'id':m.SUBSTITUTION['id'],'passed':False,'actual':'schema-valid'});self.assertFalse(x['originalPassed']);self.assertTrue(x['profilePassed']);self.assertFalse(x['approvedException'])
+  self.assertFalse(m.view({'id':m.SUBSTITUTION['id'],'passed':False,'actual':'incomplete-refusal'})['profilePassed'])
+ def test_xml_standalone_never_credits_explicit_supply_result(self):
+  self.assertEqual(len(m.XMLSUPPLYORIGINALS),4)
+  for id in m.XMLSUPPLYORIGINALS:
+   x=m.view({'id':id,'passed':False,'actual':'schema-invalid' if '/s:' in id else 'schema-unavailable'});self.assertFalse(x['originalPassed']);self.assertIsNone(x['profilePassed']);self.assertTrue(x['applicationInputUnassessed'])
+ def test_late_hints_and_namespace_guard_remain_adapter_unassessed(self):
+  self.assertEqual(len(m.LATEHINTS),7)
+  for id in m.LATEHINTS|{m.ADAPTER['namespace_guard']['id']}:
+   x=m.view({'id':id,'passed':False,'actual':'instance-hint-ordering-limitation'});self.assertFalse(x['originalPassed']);self.assertIsNone(x['profilePassed']);self.assertTrue(x['adapterUnassessed']);self.assertFalse(x['approvedException'])
+ def test_fatal_syntax_never_becomes_complete_invalid_profile_pass(self):
+  self.assertEqual(len(m.FATALXML),3)
+  for id in m.FATALXML:
+   self.assertIsNone(m.view({'id':id,'passed':False,'actual':'incomplete-refusal'})['profilePassed'])
+   self.assertFalse(m.view({'id':id,'passed':True,'actual':'instance-invalid'})['profilePassed'])
+ def test_second_edition_namechar_requires_actual_complete_invalidity(self):
+  x=m.view({'id':m.NAMECHAR['id'],'passed':False,'actual':'instance-invalid'});self.assertFalse(x['originalPassed']);self.assertTrue(x['profilePassed'])
+  self.assertFalse(m.view({'id':m.NAMECHAR['id'],'passed':False,'actual':'incomplete-refusal'})['profilePassed'])
 if __name__=='__main__':unittest.main()

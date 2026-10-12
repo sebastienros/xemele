@@ -52,6 +52,9 @@ internal static class Controls
             File.WriteAllText(Path.Combine(upstream,"supplied-first.xml"),"<r xmlns='urn:first' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xsi:schemaLocation='urn:first ignored-absent.xsd'/>");
             var suppliedFirst=Runner.InstanceInputs(Row("supplied-first","supplied-first.xml"),["first.xsd"],new());
             Require(suppliedFirst.Limitations.Length==0&&!suppliedFirst.Augmented,"hint on supplied namespace first-use element remains assessable without fetch");
+            var firstUseResult=Xemele.Validation.XmlSchema.Compile(first).Validate(File.ReadAllText(Path.Combine(upstream,"supplied-first.xml")));
+            Require(firstUseResult.IsComplete&&firstUseResult.IsValid,"actual product first-use supplied namespace remains complete valid without hint fetch");
+            Require(Assess(File.ReadAllText(Path.Combine(upstream,"supplied-first.xml")),first),"actual BCL first-use supplied namespace remains assessed without hint fetch");
             Runner.HintSchemaPreparationException? malformedFailure=null;var malformedJournal=new List<object>();
             try { Runner.InstanceInputs(Row("malformed","malformed.xml"),[],malformedJournal); } catch(Runner.HintSchemaPreparationException e) { malformedFailure=e; }
             Require(malformedFailure?.Input.Namespace==""&&malformedFailure.Input.Location==Runner.Origin+"malformed.xsd"&&System.Text.Json.JsonSerializer.Serialize(malformedJournal).Contains("hint-schema-preparation-error",StringComparison.Ordinal),"malformed hinted schema preserves authored input and staging failure without namespace inference");
