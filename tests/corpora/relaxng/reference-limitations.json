@@ -102,7 +102,7 @@
       "authoritativeExpected": "rejected",
       "referenceObserved": "accepted",
       "classification": "reference-limitation-not-agreement",
-      "reason": "libxml2 accepts an attribute name class containing nsName with empty ns. RNG 7.3 prohibits attribute patterns containing such nsName classes after simplification. Original incorrect-schema predicate retained.",
+      "reason": "libxml2 accepts an attribute pattern with an infinite name class (choice containing nsName) and no oneOrMore ancestor. RNG 7.3 prohibits an infinite attribute name class unless it has a oneOrMore ancestor. Empty-namespace nsName itself is permitted in the repeated class. Original incorrect-schema predicate and fixture/hash are retained.",
       "primarySpec": "https://relaxng.org/spec-20011203.html#attribute-restrictions"
     },
     {
