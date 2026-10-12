@@ -31,29 +31,195 @@
     {
       "id": "M8-xsd-corpus-A1",
       "description": "Import W3C XSD suite metadata and all applicable 1.0 schema/instance cases plus regressions.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "import-integrity",
+        "metadata-controls",
+        "supervisor-controls",
+        "runtime-controls",
+        "public-boundaries",
+        "harness-source-review"
+      ]
     },
     {
       "id": "M8-xsd-corpus-A2",
       "description": "All applicable declared XSD 1.0 cases pass except the exact human-approved standards-ambiguity exception msMeta/DataTypes_w3c.xml#g119/s:time_maxInclusive007_119, retained as an executed original failure and never counted as passing; original versus independently adjudicated profile outcomes, 1.1 exclusions and source revisions are explicit.",
-      "status": "pending",
-      "evidence": []
+      "status": "failed",
+      "evidence": [
+        "full-product-corpus",
+        "full-independent-bcl",
+        "selected-product-overlay",
+        "profile-report-controls",
+        "time-human-exception"
+      ]
     },
     {
       "id": "M8-xsd-corpus-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "earlier-preservation",
+        "verified-syntax-dependency",
+        "public-boundaries",
+        "runtime-controls"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "tests/corpora/xsd/import.py and inventory.json: original W3C revision7bc3365c, 93 sets/15433 groups/15378 schemas/26357 instances, all42270 upstream tracked files unchanged; ordered resource hashes/status/version applicability retained.",
+    "tests/Xemele.Conformance.Tests/Xsd/Corpus.Runner.csproj and Runner.cs.fixture: public compilation/validation runner, bounded per-set supervisor and separate semantic/refusal/unexecuted classification; generated outputs only ignored root artifacts.",
+    "tests/Xemele.Differential.Tests/Xsd/BclEngine.cs.fixture: independent pinned System.Xml10.0.11 adapter, exact original streams/ordered inputs and resolver journals.",
+    "tests/Xemele.Conformance.Tests/Xsd/BoundaryTests.cs and Controls.cs.fixture: public transport/ownership/cancellation/refusal and authored-hint preparation controls.",
+    "tests/corpora/xsd/{unicode-adjudication,xmlversions-adjudication,standards-dispositions,metadata-namespaces}.json: independent source facts; original oracles preserved; exact human-approved time exception remains an executed original failure.",
+    "docs/reports/M8-xsd-corpus/{README,schema-triage,instance-triage,schema-ambiguity-inputs}.md: durable concise diagnostic handoffs; no raw journals committed."
+  ],
+  "evidence": [
+    {
+      "id": "import-integrity",
+      "kind": "check",
+      "revision": "1a6d9df8c46e7cf800b280d83895385f2a244784",
+      "command": "python3 tests/corpora/xsd/import.py --check",
+      "result": "passed",
+      "summary": "Reproducible metadata;42270 original file SHA256/bytes,41843 ordered references, current/prior retention, external schemas/Unicode hashes and13 independent original namespace facts pass;5 missing direct references all excluded1.1, applicable missing0. Applicability14405schemas25079instances,973/1278excluded;one supplemental Unicode case.",
+      "artifact": "docs/reports/M8-xsd-corpus/README.md"
+    },
+    {
+      "id": "metadata-controls",
+      "kind": "check",
+      "revision": "1a6d9df8c46e7cf800b280d83895385f2a244784",
+      "command": "python3 tests/corpora/xsd/test_import.py",
+      "result": "passed",
+      "summary": "6 controls: enclosing AND/token ANY, expected token ALL/exactly-one, schema/instance sibling gates, status/history retention and unresolved unknown tokens.",
+      "artifact": "docs/reports/M8-xsd-corpus/README.md"
+    },
+    {
+      "id": "supervisor-controls",
+      "kind": "check",
+      "revision": "1a6d9df8c46e7cf800b280d83895385f2a244784",
+      "command": "python3 docs/reports/M8-xsd-corpus/test_supervisor.py",
+      "result": "passed",
+      "summary": "6 controls: exact ID coverage, duplicate/substituted observations, nonzero/timeout despite complete rows, unknown set refusal before launch.",
+      "artifact": "docs/reports/M8-xsd-corpus/README.md"
+    },
+    {
+      "id": "profile-report-controls",
+      "kind": "check",
+      "revision": "1a6d9df8c46e7cf800b280d83895385f2a244784",
+      "command": "python3 docs/reports/M8-xsd-corpus/test_dispositions.py",
+      "result": "passed",
+      "summary": "9 controls: approved time never a pass/refusal waiver, adjudicated errF001/original retained, unexecuted dependency,51 exact XMLVersion cases/39fixture+1metadata manifest hash, profile name mismatch/refusal/substrate distinctions.",
+      "artifact": "docs/reports/M8-xsd-corpus/README.md"
+    },
+    {
+      "id": "runtime-controls",
+      "kind": "check",
+      "revision": "1a6d9df8c46e7cf800b280d83895385f2a244784",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 artifacts/M8-xsd-corpus/runner-bin/Release/net10.0/XsdCorpus.dll --controls",
+      "result": "passed",
+      "summary": "29 controls pass: independent BCL boundaries, original bytes/hash-compatible1.1, hint namespace/base/ordering, isolated per-instance journals, malformed-hint actual schema probes both engines and no invalid-instance pass. Runner build0warnings0errors; root source acceptance1a6d9df8c.",
+      "artifact": "docs/reports/M8-xsd-corpus/README.md"
+    },
+    {
+      "id": "public-boundaries",
+      "kind": "check",
+      "revision": "09b0f5e54807f99efa94d92cda891f002e8dff4f",
+      "command": "dotnet --fx-version 10.0.11 tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll -namespace Xemele.Conformance.Tests.Xsd -parallelMode none -noLogo -noColor -result-xml artifacts/M8-xsd-corpus/boundaries.xml",
+      "result": "passed",
+      "summary": "Actual5passes0failed0errors0skipped0not-run; string/document/stream caller ownership, complete invalidity, work refusal and cancellation.",
+      "artifact": "docs/reports/M8-xsd-corpus/README.md"
+    },
+    {
+      "id": "full-product-corpus",
+      "kind": "check",
+      "revision": "80cd6bac0e740947cc3809fef4300068d8b4e51b",
+      "command": "python3 docs/reports/M8-xsd-corpus/run.py --engine product",
+      "result": "failed",
+      "summary": "93sets exact41736rows including1supplement;39233passed241failed11semantic indeterminate2251excluded. All93childrenexit0/reaped/logsclosed, process_failures0. Applicable failures prevent completion; no refused/unexecuted case credited invalid.",
+      "artifact": "docs/reports/M8-xsd-corpus/README.md"
+    },
+    {
+      "id": "full-independent-bcl",
+      "kind": "check",
+      "revision": "80cd6bac0e740947cc3809fef4300068d8b4e51b",
+      "command": "python3 docs/reports/M8-xsd-corpus/run.py --engine bcl",
+      "result": "failed",
+      "summary": "93sets exact41736rows;37685passed1784failed16indeterminate2251excluded. All93childrenexit0/reaped/logsclosed, process_failures0. Reference limitations/disagreement are diagnostic evidence, not oracle replacements.",
+      "artifact": "docs/reports/M8-xsd-corpus/README.md"
+    },
+    {
+      "id": "selected-product-overlay",
+      "kind": "check",
+      "revision": "09b0f5e54807f99efa94d92cda891f002e8dff4f",
+      "command": "python3 docs/reports/M8-xsd-corpus/run.py --engine product --set <each of Annotations_w3c.xml,Group_w3c.xml,IdentityConstraint_w3c.xml,saxonMeta/XmlVersions.testSet>",
+      "result": "failed",
+      "summary": "Actual saved exact-ID rows:76/4,342/2,1062/1(+9excluded),34/17 passes/failures. Six syntax witnesses now pass; Saxon staging errors0,44profile agreements1mismatch6unassessed. Mixed source80/source09b analysis39248pass226fail11indeterminate2251excluded is NOT a new full run. Supervisor exit-code stdout lost at context boundary; saved rows alone do not establish selected child exit codes.",
+      "artifact": "docs/reports/M8-xsd-corpus/README.md"
+    },
+    {
+      "id": "malformed-hint-originals",
+      "kind": "check",
+      "revision": "1a6d9df8c46e7cf800b280d83895385f2a244784",
+      "command": "Bounded30s-per-child product then BCL runner on transient inventory selecting exact original addB138.i/addB139.i IDs; unchanged original schema streams",
+      "result": "passed",
+      "summary": "Both original cases remain expectedinvalid/actualschema-unavailable/originalPassedfalse in BOTH engines; actual public schema compile rejects reserved namespace binding, instance assessment unexecuted. Both childrenexit0/reaped/logsclosed; raw subset/logs/journals ignored and transient. Initial selector assertion failed before any child launch, then exact instance-ID selection corrected preparation.",
+      "artifact": "docs/reports/M8-xsd-corpus/README.md"
+    },
+    {
+      "id": "earlier-preservation",
+      "kind": "check",
+      "revision": "422d85c43d2b560df7af084da7ba3da494658994",
+      "command": "python3 docs/reports/M8-xsd-facade/check.py",
+      "result": "passed",
+      "summary": "Actual1110 affected correctness+42 safe-resolver tests pass; compiled public API1417 and frozen2evaluation/7facade/257compiler/24identity/9content surfaces match; normal/trueXML-only consumers pass. No WarmBorrowed/benchmark work.",
+      "artifact": "docs/reports/M8-xsd-corpus/README.md"
+    },
+    {
+      "id": "verified-syntax-dependency",
+      "kind": "review",
+      "revision": "13389a3f284af3975fe3928c1d96aca4a15cd1e0",
+      "command": "Coordinator confirmed verified M8-xsd-schema-syntax integration745dc3d0 and authorized merge of verified main13389a3f",
+      "result": "passed",
+      "summary": "Root integration checks1188passes/publicAPI1417 passed; source13389 merged here at a958276b4f0ad002b78f13b5f491fe720d6dfd44. This is coordinator review evidence, not an additional worker test run. No peer/later dependency consumed.",
+      "artifact": "docs/reports/M8-xsd-corpus/README.md"
+    },
+    {
+      "id": "harness-source-review",
+      "kind": "review",
+      "revision": "1a6d9df8c46e7cf800b280d83895385f2a244784",
+      "command": "Coordinator source review of typed original-hint preparation at422d85, exact Version1.1 SHA-bound namespace fallback, and focused1a6d9df8c malformed-hint diff",
+      "result": "passed",
+      "summary": "Explicit source acceptance: ordered authored namespace/location/base provenance; no product hint auto-fetch assumption; first-use ordering limitations; isolated journals; unchanged engine bytes; actual schema rejection stays unexecuted instance. All original oracles/counts preserved.",
+      "artifact": "docs/reports/M8-xsd-corpus/README.md"
+    },
+    {
+      "id": "time-human-exception",
+      "kind": "review",
+      "revision": "80cd6bac0e740947cc3809fef4300068d8b4e51b",
+      "command": "Human Allow this documented exception response call_b88f280c431643d2b5b911ee5fb92e63; coordinator approved f965cc948 record",
+      "result": "passed",
+      "summary": "ONLY msMeta/DataTypes_w3c.xml#g119/s:time_maxInclusive007_119 approved as executed original failure; never counted as passing. errF001 and Saxon independently derived profiles are separately reported, not blanket exceptions. No additional exception approved.",
+      "artifact": "docs/reports/M8-xsd-corpus/README.md"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Claimed by M8 coordinator after public XSD facade verification; isolated worker dispatch follows. Original W3C metadata and applicability remain authoritative.",
-    "checks": [],
-    "remaining": [],
-    "requests": []
+    "summary": "Original pinned W3C corpus, public runner and independent BCL adapter implemented on isolated owned branch; current task remains in_progress because applicable semantic/refusal/unexecuted cases remain. No product source/shared/main edits or remote push.",
+    "checks": [
+      "Import42270hashes/41843refs and13 independent namespace facts pass;6metadata/6supervisor/9profile/29runtime controls pass.",
+      "Owned5boundary tests pass at09b; earlier facade1152/API/consumer checks pass at422; root verified syntax1188 integration reviewed.",
+      "Accepted full80 product39233pass241fail; BCL37685pass1784fail;186childrenexit0/reaped/logsclosed. Four-set09b saved rows analyzed with explicit unavailable exit-output limitation.",
+      "Exact malformed hinted originals1a6 compile-reject in both engines, instances unexecuted/nonpass; twochildrenexit0/reaped/logsclosed.",
+      "Initial duplicate build attributes/xUnit cancellation analyzer failures and incorrect manifest/subset selector assertions retained in README history; corrected checks are distinct."
+    ],
+    "remaining": [
+      "A2: concrete source-backed runtime repairs and standards/adaptation triage;39schema IDs/33fixtures in current schema handoff,136original instance failures in20diagnostic groups.",
+      "No repeated full run until coordinator integrates/verifies applicable repairs; final integrated conformance remains pending.",
+      "No-location XML namespace imports lack explicit original xml.xsd input; supplemental application-supplied profile proposal pending coordinator decision, no implicit network/builtins."
+    ],
+    "requests": [
+      "Coordinator owns runtime repair scopes and sole integration/verification. Read schema-triage.md and instance-triage.md for exact witnesses/source groups.",
+      "Independent standards review inputs in schema-ambiguity-inputs.md:12schema IDs/7unchanged schema hashes/9unexecuted dependents; no oracle/profile/gate changes requested by worker.",
+      "Keep original counts/failures, exact time exception, profile agreements and substrate/dependency/unexecuted distinctions separate. Raw artifacts remain ignored/transient."
+    ]
   }
 }

@@ -83,7 +83,7 @@ limitation; a precompiled supplemental engine result cannot establish conformanc
 for that case. Per-instance resolver/input journals survive success and exceptions
 and do not accumulate requests from earlier instances.
 
-Twenty-two runtime harness controls pass, including an otherwise-valid namespace
+Twenty-nine runtime harness controls pass, including an otherwise-valid namespace
 mismatch witness, nested xml:base descendant hint, early namespace use/late hint
 limitation, and two-instance success/failure journals for both actual engines.
 Six metadata controls and six supervisor controls pass. The bounded core source
@@ -137,5 +137,20 @@ These failures are retained as check history, not reported as passing attempts.
 Remaining applicable failures and original-resource limitations prevent task
 completion. The current schema diagnostic handoff is `schema-triage.md`.
 Two Additional instance hints reference original schemas with malformed namespace
-declarations; namespace preparation still raises a harness exception, and neither
-is counted as an expected-invalid pass. No product source was edited by this task.
+declarations. Their baseline staging exceptions remain in the immutable source80
+observations. Focused correction `1a6d9df8c46e7cf800b280d83895385f2a244784`
+passed coordinator source review and seven additional controls: a typed preparation
+failure retains the authored input and each engine compiles the unchanged original
+schema. Semantic schema rejection becomes `schema-unavailable`; accepted schema
+probes remain an explicit preparation limitation. No instance assessment executes,
+no inferred namespace is supplied and no invalid-instance pass is recorded.
+Actual original addB138/addB139 focused execution confirms both engines reject
+the original schemas and retain the two original failures as unexecuted instances;
+both children exit zero, are reaped and close their logs. A first subset-selector
+assertion failed before launching any child because it assumed a different group
+ID shape; exact original instance IDs corrected that preparation check.
+
+`instance-triage.md` groups all 136 original instance failures from the explicit
+source80/source09b overlay. `schema-ambiguity-inputs.md` records twelve original
+schema IDs, seven unchanged schema hashes and nine unexecuted dependent instances
+for focused independent standards review. No product source was edited by this task.
