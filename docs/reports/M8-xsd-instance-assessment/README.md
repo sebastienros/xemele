@@ -46,6 +46,11 @@ passed43 and exposed the independent BCL key/nillable difference above; that
 assumption was corrected explicitly. The next fresh44 run passed44 with
 0errors/failures/skips/not-run.
 
+The first broader check passed syntax1146/safe42/APIs/consumers and owned44,
+then the inventory checker rejected two display names truncated identically by
+xUnit (lax/skip wildcard strings). Stable policy labels now precede those strings;
+no expectation or runtime logic changed. Fixed45 was not run on that attempt.
+
 Correctness: `python3 docs/reports/M8-xsd-instance-assessment/check.py`.
 Owned inventory is exact and nonempty; separate syntax1146, fixed45, safe42,
 public1417 and frozen316+139/257/24/9/2/7, normal+true source-linked XML-only

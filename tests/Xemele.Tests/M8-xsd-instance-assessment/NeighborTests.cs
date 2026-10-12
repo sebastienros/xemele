@@ -18,13 +18,14 @@ public sealed class NeighborTests
         return result;
     }
     [Theory]
-    [InlineData("", false)]
-    [InlineData("<xs:anyAttribute namespace='urn:other' processContents='lax'/>", false)]
-    [InlineData("<xs:anyAttribute namespace='##local' processContents='lax'/>", true)]
-    [InlineData("<xs:anyAttribute namespace='##local' processContents='skip'/>", true)]
-    [InlineData("<xs:anyAttribute namespace='##local' processContents='strict'/>", false)]
-    public void ProhibitionRequiresMatchingWildcardAndStrictDeclaration(string wildcard, bool valid)
+    [InlineData("absent", "", false)]
+    [InlineData("namespace-mismatch", "<xs:anyAttribute namespace='urn:other' processContents='lax'/>", false)]
+    [InlineData("lax", "<xs:anyAttribute namespace='##local' processContents='lax'/>", true)]
+    [InlineData("skip", "<xs:anyAttribute namespace='##local' processContents='skip'/>", true)]
+    [InlineData("strict", "<xs:anyAttribute namespace='##local' processContents='strict'/>", false)]
+    public void ProhibitionRequiresMatchingWildcardAndStrictDeclaration(string policy, string wildcard, bool valid)
     {
+        Assert.NotEmpty(policy);
         var result = Oracle(Wrap($"<xs:element name='root'><xs:complexType><xs:attribute name='a' use='prohibited'/>{wildcard}</xs:complexType></xs:element>"), "<root a='123'/>", valid);
         if (!valid) Assert.Contains(result.Diagnostics, d => d.Code == "XSD.Attribute");
     }
