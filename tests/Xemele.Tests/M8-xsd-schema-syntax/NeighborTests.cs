@@ -16,7 +16,7 @@ public sealed class NeighborTests
     public void InvalidDocumentationLanguageIsSyntaxRejection(string language)
     {
         var error = Assert.Throws<SchemaCompileException>(() => XmlSchema.Compile(Wrap($"<xs:annotation><xs:documentation xml:lang='{language}'/></xs:annotation>")));
-        Assert.Contains(error.Diagnostics, d => d.Code == "XSD.Compile");
+        Assert.Contains(error.Diagnostics, d => d.Code == "XSD.SchemaRestriction");
         Assert.DoesNotContain(error.Diagnostics, d => d.Code.StartsWith("SCHEMA.", StringComparison.Ordinal));
     }
     [Fact]

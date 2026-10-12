@@ -17,8 +17,8 @@ public sealed class OriginalWitnessTests
     internal static Dictionary<Uri, byte[]> Imports() => new[] { "idIimp.xsd", "idIxpns.xsd", "idIxpns1.xsd" }
         .ToDictionary(n => new Uri(Base, n), n => File.ReadAllBytes(Fixture(n)));
     [Theory]
-    [InlineData("annotF001.xsd", "XSD.Compile")]
-    [InlineData("groupD001.xsd", "XSD.Compile")]
+    [InlineData("annotF001.xsd", "XSD.SchemaRestriction")]
+    [InlineData("groupD001.xsd", "XSD.SchemaRestriction")]
     [InlineData("idI150.xsd", "XSD.Identity")]
     public void OriginalOfficialInvalidSchemaRejectsThroughPublicFacade(string file, string code)
     {
