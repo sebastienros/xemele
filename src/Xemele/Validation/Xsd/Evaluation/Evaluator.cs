@@ -10,12 +10,18 @@ internal sealed class XmlSchemaValidator : IXsdEvaluator
         IReadOnlyDictionary<SchemaName, XsdContentProgram> contentPrograms, IXsdContentMatcher matcher,
         IXmlFacetEvaluator facets, IXsdIdentityFactory? identityFactory, XsdIdentityProgram? identityProgram)
     {
+        return Validate(schema, document, options, contentPrograms, matcher, facets, identityFactory, identityProgram, null);
+    }
+    internal ValidationResult Validate(XsdCompiledSchema schema, XmlDocument document, ValidationOptions options,
+        IReadOnlyDictionary<SchemaName, XsdContentProgram> contentPrograms, IXsdContentMatcher matcher,
+        IXmlFacetEvaluator facets, IXsdIdentityFactory? identityFactory, XsdIdentityProgram? identityProgram, ComponentAvailability? availability)
+    {
         ArgumentNullException.ThrowIfNull(schema); ArgumentNullException.ThrowIfNull(document);
         ArgumentNullException.ThrowIfNull(options); ArgumentNullException.ThrowIfNull(contentPrograms);
         ArgumentNullException.ThrowIfNull(matcher); ArgumentNullException.ThrowIfNull(facets);
         if ((identityFactory is null) != (identityProgram is null))
             throw new ArgumentException("Identity factory and prepared program must be supplied together.");
-        var run = new XsdValidationRun(schema, document, options, contentPrograms, matcher, facets);
+        var run = new XsdValidationRun(schema, document, options, contentPrograms, matcher, facets, availability);
         return run.Run(identityFactory, identityProgram);
     }
 }
@@ -31,6 +37,7 @@ internal sealed partial class XsdValidationRun : ISchemaOperation
     private readonly IReadOnlyDictionary<SchemaName, XsdContentProgram> programs;
     private readonly IXsdContentMatcher matcher;
     private readonly IXmlFacetEvaluator facets;
+    private readonly ComponentAvailability? availability;
     private readonly Dictionary<SchemaName, XsdTypeDefinition> types = new();
     private IXsdIdentitySession? identity;
     private XmlLocation current;
@@ -53,8 +60,11 @@ internal sealed partial class XsdValidationRun : ISchemaOperation
     }
     internal XsdValidationRun(XsdCompiledSchema schema, XmlDocument document, ValidationOptions options,
         IReadOnlyDictionary<SchemaName, XsdContentProgram> programs, IXsdContentMatcher matcher, IXmlFacetEvaluator facets)
+        : this(schema, document, options, programs, matcher, facets, null) { }
+    internal XsdValidationRun(XsdCompiledSchema schema, XmlDocument document, ValidationOptions options,
+        IReadOnlyDictionary<SchemaName, XsdContentProgram> programs, IXsdContentMatcher matcher, IXmlFacetEvaluator facets, ComponentAvailability? availability)
     {
-        this.schema = schema; this.document = document; this.programs = programs; this.matcher = matcher; this.facets = facets;
+        this.schema = schema; this.document = document; this.programs = programs; this.matcher = matcher; this.facets = facets; this.availability = availability;
         operation = new(options); revision = document.ContentRevision;
     }
     public XmlResourceLimits Limits => operation.Limits;
@@ -85,6 +95,16 @@ internal sealed partial class XsdValidationRun : ISchemaOperation
             if (!document.SourceInputComplete || document.HasIncompleteAttributes || document.UnresolvedReferences.Count != 0 || document.Dtd?.UnreadParameterLocation is not null)
             { Refuse("XSD.IncompleteInput", "Instance input contains unresolved or incomplete source content.", default); return Finish(); }
             foreach (var type in schema.Types) { Work(); Retain(); types.Add(type.Name, type); }
+            if (availability is null)
+            {
+                foreach (var element in schema.Elements)
+                { Work(); if (element.Type is not { } name || !types.ContainsKey(name)) throw new ArgumentException("Complete declaration graph required.", nameof(schema)); }
+                foreach (var definition in schema.SimpleTypes)
+                {
+                    Work();
+                    if (definition.ItemType is { } item && schema.Datatypes.FindType(item) is null) throw new ArgumentException("Complete datatype graph required.", nameof(schema));
+                }
+            }
             if (factory is not null) { identity = factory.Create(schema, program!, document) ?? throw new InvalidOperationException("Identity factory returned no session."); Poll(); }
             var root = document.RootElement;
             if (root.IsDefault) { Error("XSD.Root", "A document element is required."); return Finish(); }
@@ -180,8 +200,9 @@ internal sealed partial class XsdValidationRun : ISchemaOperation
             }
             else
             {
+                Require(ComponentAvailability.Element(declaration));
                 if (declaration.Abstract) valid = Error("XSD.Abstract", "An abstract element cannot be instantiated.");
-                if (!types.TryGetValue(declaration.Type, out type)) throw new ArgumentException("Declared type is missing from the sealed schema.");
+                if (declaration.Type is not { } declaredType || !types.TryGetValue(declaredType, out type)) throw new ArgumentException("Declared type is missing from the sealed schema.");
             }
             string? xsiType = Attribute(node, "type", Xsi);
             if (xsiType is not null)
@@ -189,11 +210,16 @@ internal sealed partial class XsdValidationRun : ISchemaOperation
                 Text(xsiType, true);
                 if (!QName(XsdEvaluationText.TrimXml(xsiType, this, current), context, out var name) || !types.TryGetValue(name, out var replacement) || replacement.Anonymous)
                     valid = Error("XSD.Type", "xsi:type does not name a global type.");
-                else if (!Derived(replacement.Name, type.Name, declaration?.Block ?? [], type.Block)) valid = Error("XSD.Type", "xsi:type derivation is prohibited.");
-                else { type = replacement; globalTypeResolved = true; }
+                else
+                {
+                    Require(ComponentAvailability.Type(replacement.Name));
+                    if (!Derived(replacement.Name, type.Name, declaration?.Block ?? [], type.Block)) valid = Error("XSD.Type", "xsi:type derivation is prohibited.");
+                    else { type = replacement; globalTypeResolved = true; }
+                }
             }
             if (requireAssessment && declaration is null && !globalTypeResolved)
                 valid = Error("XSD.UndeclaredElement", "Assessment requires an element declaration or globally resolved xsi:type.");
+            Require(ComponentAvailability.Type(type.Name));
             if (type.Abstract) valid = Error("XSD.Abstract", "An abstract type cannot be instantiated.");
             if (Attribute(node, "nil", Xsi) is string lexical)
             {
@@ -204,6 +230,7 @@ internal sealed partial class XsdValidationRun : ISchemaOperation
                 if (nil && declaration?.FixedValue is not null) valid = Error("XSD.Nil", "A fixed element cannot be nilled.");
             }
         }
+        if (!skip && type is not null) RequireAttributeTypes(node, type);
         IXsdContentCursor? cursor = null;
         if (type is not null)
         {
@@ -213,6 +240,45 @@ internal sealed partial class XsdValidationRun : ISchemaOperation
         Retain(); var frame = new Frame(node, declaration, type, context, skip, nil, valid, cursor);
         identity?.EnterElement(node, declaration, this); Poll();
         Attributes(frame); return frame;
+    }
+    private void Require(ComponentIdentity owner)
+    {
+        Poll();
+        var missing = availability?.Missing(owner, DependencyUse.TypeAssessment, this, current);
+        Poll();
+        if (missing is not null)
+            Refuse("XSD.MissingComponent", MissingMessage(missing), current);
+    }
+    private static string MissingMessage(AvailabilityEntry entry)
+    {
+        // Diagnostic ownership is the only formatting allocation on this path.
+        // Bound retained explanatory names/URI independently of input lengths.
+        static ReadOnlySpan<char> Bounded(string? text) => text.AsSpan(0, Math.Min(text?.Length ?? 0, 192));
+        var at = entry.ReferenceLocation;
+        return $"Required {entry.Kind} '{{{Bounded(entry.AuthoredName.NamespaceUri)}}}{Bounded(entry.AuthoredName.LocalName)}' is unavailable; schema source '{Bounded(at.SourceUri?.OriginalString)}', line {at.LineNumber}, column {at.LinePosition}, byte {at.ByteOffset}.";
+    }
+    private void RequireAttributeTypes(XmlNode node, XsdTypeDefinition type)
+    {
+        foreach (var binding in type.Attributes)
+        {
+            Work(); if (binding.Use == XsdAttributeUse.Prohibited) continue;
+            var declaration = schema.Attributes[binding.DeclarationId]; bool supplied = false;
+            foreach (var attribute in node.Attributes) { Work(); if (Name(attribute) == declaration.Name) { supplied = true; current = document.OriginalLocation(attribute); break; } }
+            if (supplied || binding.Use != XsdAttributeUse.Required && (binding.FixedValue ?? binding.DefaultValue ?? declaration.FixedValue ?? declaration.DefaultValue) is not null)
+                Require(ComponentAvailability.Simple(declaration.Type));
+            current = document.OriginalLocation(node);
+        }
+        if (type.AnyAttribute is not { ProcessContents: not XsdProcessContents.Skip } wildcard) return;
+        foreach (var attribute in node.Attributes)
+        {
+            Work(); var name = Name(attribute); if (name.NamespaceUri == Xsi || !Allows(wildcard, name.NamespaceUri)) continue;
+            bool bound = false;
+            foreach (var binding in type.Attributes)
+            { Work(); if (binding.Use != XsdAttributeUse.Prohibited && schema.Attributes[binding.DeclarationId].Name == name) { bound = true; break; } }
+            if (!bound && schema.GlobalAttributes.TryGetValue(name, out int id))
+            { current = document.OriginalLocation(attribute); Require(ComponentAvailability.Simple(schema.Attributes[id].Type)); }
+            current = document.OriginalLocation(node);
+        }
     }
     private SchemaNamespaceContext Context(XmlNode node, SchemaNamespaceContext parent)
     {
@@ -246,13 +312,13 @@ internal sealed partial class XsdValidationRun : ISchemaOperation
                 string? effective = frame.Declaration?.FixedValue ?? frame.Declaration?.DefaultValue;
                 if (!frame.HasCharacters && !frame.HasChild && effective is not null)
                 {
-                    var declaredSimple = types[frame.Declaration!.Type].SimpleType ?? new SchemaName(Xs, "anySimpleType");
+                    var declaredSimple = types[frame.Declaration!.Type!.Value].SimpleType ?? new SchemaName(Xs, "anySimpleType");
                     if (Constraint(declaredSimple, effective, frame.Declaration.Context, out var prepared))
                     { lexical = prepared!.Lexical; context = prepared.Context; }
                     else { frame.Valid = false; assessValue = false; }
                 }
                 if (assessValue && !Value(simple.Value, lexical, context, out value)) frame.Valid = false;
-                if (value is not null && frame.Declaration?.FixedValue is string fixedLexical && !Fixed(types[frame.Declaration.Type].SimpleType ?? new(Xs, "anySimpleType"), value, fixedLexical, frame.Declaration.Context)) frame.Valid = false;
+                if (value is not null && frame.Declaration?.FixedValue is string fixedLexical && !Fixed(types[frame.Declaration.Type!.Value].SimpleType ?? new(Xs, "anySimpleType"), value, fixedLexical, frame.Declaration.Context)) frame.Valid = false;
             }
             else if ((frame.Declaration?.FixedValue ?? frame.Declaration?.DefaultValue) is string constraint)
             {

@@ -20,7 +20,7 @@ internal sealed record XsdAttributeBinding(int DeclarationId, XsdAttributeUse Us
 internal sealed record XsdTypeDefinition(SchemaName Name, SchemaName? BaseType, XsdDerivation Derivation,
     bool Abstract, bool Anonymous, IReadOnlyList<XsdDerivation> Final, IReadOnlyList<XsdTypeBlock> Block, XsdContentKind ContentKind, SchemaName? SimpleType,
     XsdParticle? Particle, IReadOnlyList<XsdAttributeBinding> Attributes, XsdWildcard? AnyAttribute, XmlLocation Location);
-internal sealed record XsdElementDeclaration(int Id, SchemaName Name, SchemaName Type, bool Abstract, bool Nillable,
+internal sealed record XsdElementDeclaration(int Id, SchemaName Name, SchemaName? Type, bool Abstract, bool Nillable,
     string? DefaultValue, string? FixedValue, SchemaName? SubstitutionGroup, IReadOnlyList<XsdElementBlock> Block,
     IReadOnlyList<XsdDerivation> Final, IReadOnlyList<int> IdentityConstraints, SchemaNamespaceContext Context, XmlLocation Location);
 internal sealed record XsdIdentityConstraint(int Id, SchemaName Name, XsdIdentityKind Kind, string Selector,

@@ -4,6 +4,86 @@ namespace Xemele.Validation;
 
 internal sealed partial class XmlFacetEvaluator
 {
+    private bool CheckIndependentFacets(XmlDatatypeDefinition type, IXmlDatatypeRegistry registry, ISchemaOperation op)
+    {
+        op.ChargeComponents(1, type.Location);
+        var counts = new List<(XmlFacet Facet, FacetNumber Number, int Level)>();
+        int level = 0;
+        for (var definition = type; definition is not null; definition = definition.BaseType is { } parent ? registry.FindType(parent) : null)
+        {
+            op.Charge(1, definition.Location);
+            // Intrinsic definitions have their own complete-plan validation;
+            // anySimpleType's nominal whitespace is not a list restriction.
+            if (DatatypeTypes.TryGet(definition.Name, out _) && ReferenceEquals(registry.FindType(definition.Name), definition)) break;
+            if (++level > 256) { op.Refuse("SCHEMA.Limit", "Datatype graph depth exceeded.", definition.Location); return false; }
+            int seen = 0;
+            foreach (var facet in definition.Facets)
+            {
+                op.Charge(1, facet.Location);
+                if (!Enum.IsDefined(facet.Kind) || (definition.Variety == XmlDatatypeVariety.List
+                    ? facet.Kind is not (XmlFacetKind.Length or XmlFacetKind.MinLength or XmlFacetKind.MaxLength or XmlFacetKind.Pattern or XmlFacetKind.Enumeration or XmlFacetKind.WhiteSpace)
+                    : facet.Kind is not (XmlFacetKind.Pattern or XmlFacetKind.Enumeration)))
+                    return FacetRules.Reject(op, facet.Location, "Facet is not applicable to this datatype.");
+                if (facet.Kind is XmlFacetKind.Pattern or XmlFacetKind.Enumeration)
+                {
+                    if (facet.Fixed) return FacetRules.Reject(op, facet.Location, "Pattern and enumeration do not have a fixed property.");
+                }
+                else
+                {
+                    int flag = 1 << (int)facet.Kind;
+                    if ((seen & flag) != 0) return FacetRules.Reject(op, facet.Location, "Duplicate scalar facet.");
+                    seen |= flag;
+                }
+                if (facet.Kind == XmlFacetKind.Pattern) { compiler.Compile(facet.LexicalValue, facet.Location, op); continue; }
+                if (facet.Kind == XmlFacetKind.WhiteSpace)
+                {
+                    if (NormalizeFacet(facet.LexicalValue, XmlWhitespaceRule.Collapse, op) != "collapse")
+                        return FacetRules.Reject(op, facet.Location, "List whitespace must remain collapse.");
+                }
+                else if (FacetRules.IsNumber(facet.Kind))
+                {
+                    if (!ParseNumber(facet.LexicalValue, op, out var number)) return FacetRules.Reject(op, facet.Location, "Invalid nonnegative integer facet value.");
+                    op.ChargeComponents(1, facet.Location); counts.Add((facet, number, level));
+                }
+                else if (NormalizeFacet(facet.LexicalValue, XmlWhitespaceRule.Collapse, op) is null)
+                    return FacetRules.Reject(op, facet.Location, "Invalid Unicode in facet value.");
+                // Enumeration's typed operand is unavailable. Its grammar,
+                // fixed flag and Unicode are still checked above.
+            }
+        }
+        foreach (var a in counts) foreach (var b in counts)
+        {
+            op.Charge(1, a.Facet.Location); var cmp = a.Number.Compare(b.Number, op, a.Facet.Location);
+            bool minA = a.Facet.Kind == XmlFacetKind.MinLength, maxA = a.Facet.Kind == XmlFacetKind.MaxLength;
+            bool minB = b.Facet.Kind == XmlFacetKind.MinLength, maxB = b.Facet.Kind == XmlFacetKind.MaxLength;
+            if ((!maxA && !minB && cmp > 0) || (!minA && !maxB && cmp < 0) ||
+                a.Level < b.Level && a.Facet.Kind == b.Facet.Kind && (b.Facet.Fixed && cmp != 0 || minA && cmp < 0 || maxA && cmp > 0))
+                return FacetRules.Reject(op, a.Facet.Location, "Conflicting or weakened length facets.");
+        }
+        foreach (var length in counts)
+        {
+            op.Charge(1, length.Facet.Location); if (length.Facet.Kind != XmlFacetKind.Length) continue;
+            foreach (var bound in counts)
+            {
+                op.Charge(1, bound.Facet.Location); if (bound.Facet.Kind is not (XmlFacetKind.MinLength or XmlFacetKind.MaxLength)) continue;
+                bool effective = true;
+                foreach (var earlier in counts)
+                { op.Charge(1, earlier.Facet.Location); if (earlier.Level < bound.Level && earlier.Facet.Kind == bound.Facet.Kind) effective = false; }
+                if (!effective) continue;
+                bool origin = false;
+                foreach (var previous in counts)
+                {
+                    op.Charge(1, previous.Facet.Location);
+                    if (previous.Level <= length.Level || previous.Facet.Kind != bound.Facet.Kind || previous.Number.Compare(bound.Number, op) != 0) continue;
+                    bool hasLength = false;
+                    foreach (var old in counts) { op.Charge(1, old.Facet.Location); hasLength |= old.Level >= previous.Level && old.Facet.Kind == XmlFacetKind.Length; }
+                    origin |= !hasLength;
+                }
+                if (!origin) return FacetRules.Reject(op, bound.Facet.Location, "Length bounds require an unchanged ancestor without length.");
+            }
+        }
+        return op.Charge(0, type.Location);
+    }
     private FacetPlan? Prepare(XmlDatatypeDefinition type, IXmlDatatypeRegistry registry, ISchemaOperation op)
     {
         op.ChargeComponents(3, type.Location);

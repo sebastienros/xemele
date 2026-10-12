@@ -133,7 +133,7 @@ public sealed class BoundaryTests
     [InlineData(false)] [InlineData(true)]
     public void ByteAndCharacterProvenanceForResolvedComponentFailure(bool bytes)
     {
-        Uri final = new("https://redirect.test/final.xsd"); string child = Wrap("\n<xs:element name='root' type='missing'/>"); var stream = new OwnedStream(child);
+        Uri final = new("https://redirect.test/final.xsd"); string child = Wrap("\n<xs:element name='root' type='xs:int' default='bad'/>"); var stream = new OwnedStream(child);
         var resolver = new Explicit((_, _) => XmlResourceResolution.FromResource(new(stream, final))); string source = Wrap("<xs:include schemaLocation='child'/>");
         SchemaCompileException error;
         if (bytes) { using var input = new MemoryStream(Encoding.UTF8.GetBytes(source)); error = Assert.Throws<SchemaCompileException>(() => XmlSchema.Compile(input, new() { BaseUri = Basis, Resolver = resolver })); Assert.True(input.CanRead); }

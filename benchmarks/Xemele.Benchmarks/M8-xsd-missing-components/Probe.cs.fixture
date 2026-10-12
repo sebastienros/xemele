@@ -1,0 +1,56 @@
+// Source only. Root owns the finite family launcher, review/release and counters.
+using System.Runtime.InteropServices;
+using System.Security.Cryptography;
+using System.Text.Json;
+using Xemele.Validation;
+using Xemele.Benchmarks.M8XsdMissingComponents;
+if (args is not [var mode, var output] || mode is not ("--disabled" or "--measure")) throw new ArgumentException("--disabled|--measure output.json");
+bool measure = mode == "--measure";
+long threadCold = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+long globalCold = measure ? GC.GetTotalAllocatedBytes(true) : 0;
+var fixture = new MissingFixture();
+long coldThreadBytes = measure ? GC.GetAllocatedBytesForCurrentThread() - threadCold : 0;
+long coldGlobalBytes = measure ? GC.GetTotalAllocatedBytes(true) - globalCold : 0;
+var rows = new List<object>(); var retained = new object[MissingFixture.Routes.Length][];
+for (int route = 0; route < MissingFixture.Routes.Length; route++)
+{
+    long firstThread = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+    long firstGlobal = measure ? GC.GetTotalAllocatedBytes(true) : 0;
+    var first = fixture.Run(route);
+    long firstThreadBytes = measure ? GC.GetAllocatedBytesForCurrentThread() - firstThread : 0;
+    long firstGlobalBytes = measure ? GC.GetTotalAllocatedBytes(true) - firstGlobal : 0;
+    GC.KeepAlive(first);
+    for (int i = 0; i < 8; i++) GC.KeepAlive(fixture.Run(route));
+    var distribution = new long[32]; var values = new object[32];
+    long beforeThread = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+    long beforeGlobal = measure ? GC.GetTotalAllocatedBytes(true) : 0;
+    for (int i = 0; i < values.Length; i++)
+    {
+        long start = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+        values[i] = fixture.Run(route);
+        distribution[i] = measure ? GC.GetAllocatedBytesForCurrentThread() - start : 0;
+    }
+    long threadBytes = measure ? GC.GetAllocatedBytesForCurrentThread() - beforeThread : 0;
+    long globalBytes = measure ? GC.GetTotalAllocatedBytes(true) - beforeGlobal : 0;
+    if (measure && (route >= 8 ? threadBytes != 0 : threadBytes <= 0)) throw new InvalidOperationException("Allocation oracle failed.");
+    retained[route] = values;
+    rows.Add(new { route, name = MissingFixture.Routes[route], operations = 32, firstThreadBytes, firstGlobalBytes, threadBytes, globalBytes, distribution });
+}
+long positiveThread = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+long positiveGlobal = measure ? GC.GetTotalAllocatedBytes(true) : 0;
+var positive = new byte[4096];
+long positiveThreadBytes = measure ? GC.GetAllocatedBytesForCurrentThread() - positiveThread : 0;
+long positiveGlobalBytes = measure ? GC.GetTotalAllocatedBytes(true) - positiveGlobal : 0;
+if (measure && (positiveThreadBytes < positive.Length || positiveGlobalBytes < positive.Length)) throw new InvalidOperationException("Positive allocation control failed.");
+long heapBefore = measure ? GC.GetTotalMemory(true) : 0;
+var retainedSchemas = new object[8]; for (int i = 0; i < retainedSchemas.Length; i++) retainedSchemas[i] = fixture.Run(i % 5);
+long heapAfter = measure ? GC.GetTotalMemory(true) : 0;
+GC.KeepAlive(retainedSchemas); GC.KeepAlive(retained); GC.KeepAlive(positive); GC.KeepAlive(fixture);
+File.WriteAllText(output, JsonSerializer.Serialize(new { mode, countersEnabled = measure, status = "passed", runtime = RuntimeInformation.FrameworkDescription,
+    architecture = RuntimeInformation.ProcessArchitecture.ToString(), os = RuntimeInformation.OSDescription, serverGc = System.Runtime.GCSettings.IsServerGC,
+    sourceRevision = Environment.GetEnvironmentVariable("XEMELE_MISSING_SOURCE_REVISION"),
+    productSha256 = Hash(typeof(XmlSchema).Assembly.Location), probeSha256 = Hash(typeof(MissingFixture).Assembly.Location),
+    coldThreadBytes, coldGlobalBytes, positiveThreadBytes, positiveGlobalBytes, retainedResults = 320, retainedSchemas = 8,
+    heapBefore, heapAfter, heapDelta = heapAfter - heapBefore, consumed = fixture.Consumed, inspections = fixture.Inspections, rows }, new JsonSerializerOptions { WriteIndented = true }));
+Console.WriteLine($"{mode}: 10 routes consumed; 320 results and 8 schemas retained; counters {(measure ? "enabled" : "disabled")}");
+static string Hash(string path) => Convert.ToHexStringLower(SHA256.HashData(File.ReadAllBytes(path)));

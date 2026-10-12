@@ -1,0 +1,52 @@
+{
+  "state": "SOURCE ONLY; root review/release required; every executable check UNRUN",
+  "owner": "M8 coordinator 01a12c6c-b333-71d3-877f-0d186618e21d",
+  "worker": "01a131c3-0b96-7992-a1af-359d446c08f0 / worktree 4a93 / codex/m8-xsd-missing-components",
+  "runtime": { "sdk": "10.0.400", "runtime": "10.0.11", "restore": "offline pinned local cache; no version/oracle/quota increase" },
+  "phases": [
+    {
+      "name": "lifecycle-positive-and-negative-controls",
+      "hardSeconds": 120,
+      "workSeconds": 90,
+      "cleanupReserveSeconds": 30,
+      "required": ["launcher parent death", "nested reparenting", "TERM while publishing", "SIGKILL matched-coordinator recovery", "grandchild ignoring TERM", "source-plan hash mutation", "prelaunch binary replacement", "missing or malformed positive receipt", "expired deadline", "cleanup failure blocks successful publication"],
+      "counterEnabled": false
+    },
+    {
+      "name": "preparation-and-correctness",
+      "hardSeconds": 600,
+      "workSeconds": 540,
+      "cleanupReserveSeconds": 60,
+      "perChildSeconds": 180,
+      "commands": ["offline restore/build pinned product/tests/probe/normal consumer/XML-only consumer/API extractor with unique owned output roots", "focused M8XsdMissingComponents tests", "combined XSD/datatype/facet/regex/identity/resource/earlier milestone checks", "normal consumer", "true XML-only consumer", "exact frozen XSD615/compiler257 total projection comparisons: three migrated rows and unchanged remaining612/254 rows", "global public API union: all fragments, exactly1430 public rows", "emit separate new internal availability projection with InternalApi.Probe.cs.fixture", "probe --disabled; 10 routes/8 warmups/32 observations per route/320 retained results/8 retained schemas; counters all zero"],
+      "counterEnabled": false
+    },
+    {
+      "name": "allocation",
+      "hardSeconds": 120,
+      "workSeconds": 90,
+      "cleanupReserveSeconds": 30,
+      "perChildSeconds": 45,
+      "commands": ["fresh process probe --measure with independently bound source/runtime/assembly identities and the accepted disabled/positive lifecycle receipt"],
+      "routes": 10,
+      "warmups": 8,
+      "observationsPerRoute": 32,
+      "retainedResults": 320,
+      "retainedSchemas": 8,
+      "counterEnabled": true,
+      "counters": ["GC.GetAllocatedBytesForCurrentThread", "GC.GetTotalAllocatedBytes(true)", "GC.GetTotalMemory(true) retained heap"],
+      "requiredControls": ["4096-byte positive allocation retained and consumed", "disabled identical routes", "cold fixture initialization", "first invocation", "warm per-observation distributions", "consumed outputs and inspection counts", "retained compiled schema objects across full collection"],
+      "claims": ["warm availability lookup per-thread zero bytes is a checked target", "compile/diagnostic/result allocations are owned and reported separately", "global counter includes any concurrent runtime work and is reported independently", "retained heap is a bounded observation, not zero or a timing result"]
+    }
+  ],
+  "supervision": {
+    "rootOwnsLauncher": true,
+    "ancestorRegistration": "Before any restore/build/control/probe child starts, register worker/supervisor/launcher identities under root finite family and persist PID+birth identity and exact argv, cwd, environment and input hashes. Inherited private registration pipe reaches every nested launcher; reject detached/unregistered work.",
+    "deadlines": "One monotonic hard deadline from before phase setup, narrower work deadline, per-child ceiling and reserved TERM/KILL/reap/delete interval. No polling extending deadlines. Positive completion requires every owned descendant exited/reaped and cleanup terminal receipt.",
+    "beforeLaunch": "Recheck source manifest, exact expanded project compile membership, pinned SDK/runtime/config/package identities, phase review SHA, positive/disabled receipt SHA and complete active binary directory membership/hashes immediately before each child. Bind the review receipt to source commit and manifest digest. Reject late publication or replacement.",
+    "outputOwnership": "Only fresh coordinator-selected artifacts/M8-xsd-missing-components/<identity>/ subtrees with exact project-specific obj/bin/restore/log/results paths. No foreign-project coordination, shared output roots, peer runtime references, timing/isolation/PARK/lease work or raw archives.",
+    "terminal": "After verified family exit/reap, consume bounded structured summaries, write concise identities/counts/limitations, then delete all raw outputs, binaries, bin/obj directories and logs. Prove absence through a terminal file inventory. Failure, cancellation, parent death and SIGKILL recovery follow the same deletion boundary; no successful evidence before deletion succeeds. Root alone owns launch/recovery."
+  },
+  "corpus": { "positiveOriginals": 8, "nonassessmentControls": 4, "missingBaseNegatives": 2, "nonassessmentOriginalPassCredit": 0, "nonassessmentGateCredit": 0, "oraclesChanged": false, "dispositionsWaived": false },
+  "api": { "docsApiFragment": "header only; no public additions", "approvedExistingDelta": "exact constructor/property/Deconstruct Nullable<SchemaName> rows copied from verified candidate", "additiveInternalEmission": "UNRUN; emit only separately under owned report path; never include in global docs/api union" }
+}

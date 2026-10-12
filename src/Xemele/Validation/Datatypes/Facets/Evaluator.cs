@@ -25,6 +25,15 @@ internal sealed partial class XmlFacetEvaluator : IXmlFacetEvaluator
         }
         catch (FacetOperation.Stopped) { return false; }
     }
+    // Only concrete XSD publication can defer missing-item value checks. This
+    // route never constructs or caches an executable partial FacetPlan.
+    internal bool ValidateAvailableDefinition(XmlDatatypeDefinition type, IXmlDatatypeRegistry registry,
+        ISchemaOperation operation, AvailabilityBuilder availability)
+    {
+        if (!availability.Unavailable(ComponentAvailability.Simple(type.Name))) return ValidateDefinition(type, registry, operation);
+        try { return CheckIndependentFacets(type, registry, new FacetOperation(operation)); }
+        catch (FacetOperation.Stopped) { return false; }
+    }
     public bool TryValidate(XmlDatatypeDefinition type, ReadOnlySpan<char> lexical, SchemaNamespaceContext context,
         IXmlDatatypeRegistry registry, ISchemaOperation operation, out XmlDatatypeValue? value, out XmlDatatypeError? error)
     {

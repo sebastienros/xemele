@@ -52,7 +52,7 @@ public sealed class BoundaryTests
     public void FailureOutputsAreIgnoredAndOnlyFailedCursorIsBypassed(string output)
     {
         var p = P.Prepare(ContinuationTests.Root + "<xs:element name='n' type='xs:int'/>");
-        var matcher = new FailureMatcher(p.Programs[p.Schema.Elements[p.Schema.GlobalElements[new("", "r")]].Type], output, null);
+        var matcher = new FailureMatcher(p.Programs[p.Schema.Elements[p.Schema.GlobalElements[new("", "r")]].Type!.Value], output, null);
         var result = new XmlSchemaValidator().Validate(p.Schema, XmlDocument.Parse("<r><n>bad</n><u><n>bad</n></u></r>", cancellationToken: TestContext.Current.CancellationToken), new(), p.Programs, matcher, p.Facets, null, null);
         Assert.True(result.IsComplete); Assert.Equal(3, result.Diagnostics.Count); Assert.Equal(1, matcher.Accepts); Assert.Equal(0, matcher.Completions);
         Assert.Equal(2, result.Diagnostics.Count(d => d.Code.StartsWith("XSD.Datatype", StringComparison.Ordinal)));
@@ -62,7 +62,7 @@ public sealed class BoundaryTests
     public void PollAfterRejectedAcceptPrecedesSemanticRecovery()
     {
         var p = P.Prepare(ContinuationTests.Root); using var cancellation = new CancellationTokenSource();
-        var matcher = new FailureMatcher(p.Programs[p.Schema.Elements[p.Schema.GlobalElements[new("", "r")]].Type], "strict", cancellation);
+        var matcher = new FailureMatcher(p.Programs[p.Schema.Elements[p.Schema.GlobalElements[new("", "r")]].Type!.Value], "strict", cancellation);
         Assert.Throws<OperationCanceledException>(() => new XmlSchemaValidator().Validate(p.Schema, XmlDocument.Parse("<r><u/></r>", cancellationToken: TestContext.Current.CancellationToken), new() { Limits = Unlimited, MaxOperations = null, CancellationToken = cancellation.Token }, p.Programs, matcher, p.Facets, null, null));
         Assert.Equal(1, matcher.Accepts); Assert.Equal(0, matcher.Completions);
     }

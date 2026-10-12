@@ -273,7 +273,15 @@ internal sealed partial class ContentCompilation
             bool globalD = schema.GlobalElements.TryGetValue(d.Name, out int did) && did == d.Id;
             bool globalB = schema.GlobalElements.TryGetValue(b.Name, out int bid) && bid == b.Id;
             if (globalD && globalB) return Constant(true);
-            if (d.Nillable && !b.Nillable || b.FixedValue is not null && d.FixedValue is null || !TypeDerives(d.Type, b.Type, true)) return Constant(false);
+            if (d.Nillable && !b.Nillable || b.FixedValue is not null && d.FixedValue is null) return Constant(false);
+            if (d.Type is { } dt && b.Type is { } bt && types.ContainsKey(dt) && types.ContainsKey(bt))
+            { if (!TypeDerives(dt, bt, true)) return Constant(false); }
+            else
+            {
+                if (availability is null) throw new ArgumentException("Complete element type relation required.", nameof(schema));
+                availability.Link(consumer, ComponentAvailability.Element(d));
+                availability.Link(consumer, ComponentAvailability.Element(b));
+            }
             foreach (var block in b.Block) { ContentWork.Tick(op, derived.Location); if (!d.Block.Contains(block)) return Constant(false); }
             foreach (int identity in d.IdentityConstraints) { ContentWork.Tick(op, derived.Location); if (!b.IdentityConstraints.Contains(identity)) return Constant(false); }
             // An unequal pair fails this relation, allowing the solver's other
@@ -357,10 +365,18 @@ internal sealed partial class ContentCompilation
     }
     private bool FixedEquals(XsdElementDeclaration derived, XsdElementDeclaration basis)
     {
+        if (availability is not null && (availability.Unavailable(ComponentAvailability.Element(derived)) || availability.Unavailable(ComponentAvailability.Element(basis))))
+        {
+            availability.Link(consumer, ComponentAvailability.Element(derived)); availability.Link(consumer, ComponentAvailability.Element(basis)); return true;
+        }
         return FixedEquals(FixedValue(derived), FixedValue(basis), derived.Location);
     }
     private bool FixedEquals(XsdAttributeBinding derived, XsdAttributeBinding basis)
     {
+        var d = ComponentAvailability.Simple(schema.Attributes[derived.DeclarationId].Type);
+        var b = ComponentAvailability.Simple(schema.Attributes[basis.DeclarationId].Type);
+        if (availability is not null && (availability.Unavailable(d) || availability.Unavailable(b)))
+        { availability.Link(consumer, d); availability.Link(consumer, b); return true; }
         return FixedEquals(FixedValue(derived), FixedValue(basis), derived.Location);
     }
     private bool FixedEquals(XmlDatatypeValue left, XmlDatatypeValue right, XmlLocation location)
@@ -395,7 +411,7 @@ internal sealed partial class ContentCompilation
         ContentWork.Tick(op, declaration.Location);
         // Simple-content complex types use their effective simple type. A
         // constrained emptiable mixed type has the string value space.
-        var type = types[declaration.Type];
+        var type = types[declaration.Type!.Value];
         var name = type.SimpleType ?? new SchemaName(Xs, "string");
         var definition = schema.Datatypes.FindType(name)
             ?? throw new ArgumentException("Complete composition requires the declaration's executable datatype.");
