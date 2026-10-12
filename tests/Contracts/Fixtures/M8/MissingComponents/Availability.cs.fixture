@@ -1,0 +1,45 @@
+// Nonpackaged review model. No compiler, resolver, evaluator or fallback implementation.
+using Xemele;
+using Xemele.Validation;
+namespace Xemele.MissingComponentsContract;
+internal enum ReferenceKind { ExplicitElementType, InferredSubstitutionHeadType, SubstitutionAffiliation, ListItemType }
+internal enum SymbolSpace { Element, Type }
+internal enum AvailabilityState { Resolved, Unavailable }
+internal enum OwnerKind { ElementDeclaration, SimpleType, TypeDefinition }
+internal enum DependencyUse { TypeAssessment, SubstitutionSelection, SchemaValueConstraint, SchemaDerivation }
+internal readonly record struct ComponentIdentity(OwnerKind Kind, SchemaName Name, int? DeclarationId);
+internal readonly record struct DependencyEdge(ComponentIdentity Consumer, int ReferenceId, DependencyUse Use);
+internal sealed class AvailabilityEntry
+{
+    internal int ReferenceId { get; }
+    internal ComponentIdentity Owner { get; }
+    internal ReferenceKind Kind { get; }
+    internal SymbolSpace Space { get; }
+    internal SchemaName AuthoredName { get; }
+    internal XmlLocation ReferenceLocation { get; }
+    internal AvailabilityState State { get; }
+    internal AvailabilityEntry(int referenceId, ComponentIdentity owner, ReferenceKind kind, SymbolSpace space,
+        SchemaName authoredName, XmlLocation referenceLocation, AvailabilityState state)
+    {
+        ReferenceId = referenceId; Owner = owner; Kind = kind; Space = space;
+        AuthoredName = authoredName; ReferenceLocation = referenceLocation; State = state;
+    }
+}
+internal sealed class ComponentAvailability
+{
+    internal IReadOnlyList<AvailabilityEntry> Entries { get; }
+    internal IReadOnlyList<DependencyEdge> ClosureEdges { get; }
+    internal ComponentAvailability(IEnumerable<AvailabilityEntry> entries, IEnumerable<DependencyEdge> closureEdges)
+    {
+        // Contract snapshot only. Runtime must charge BEFORE copies/growth and validate IDs.
+        Entries = Array.AsReadOnly(entries.ToArray());
+        ClosureEdges = Array.AsReadOnly(closureEdges.ToArray());
+    }
+}
+internal sealed class CompilationEnvelope
+{
+    internal XsdCompiledSchema Components { get; }
+    internal ComponentAvailability Availability { get; }
+    internal CompilationEnvelope(XsdCompiledSchema components, ComponentAvailability availability)
+    { Components = components; Availability = availability; }
+}

@@ -1,0 +1,33 @@
+{
+  "task": "M8-xsd-corpus",
+  "phase": "preparation attempt1",
+  "source_revision": "b0119e7ed712779723dd2a5c29e9619de83fd328",
+  "root_cleanup_revision": "cdbfd7575",
+  "result": "failed; actual control assertion mismatch, no fullcampaign/no retry",
+  "frozen_identities": 42792,
+  "tested_inputs_sha256": "b317f33e2edfb21c1d058236ba06b3bf8c7fd8d3babe8c683c57e579ed24f242",
+  "commands_sha256": "106e903904f5a7e350aa39ad71f2cf22ea75ab75260d7ce0bf38c63f608cd7a7",
+  "binding_failure": null,
+  "deadline_exceeded": false,
+  "completed_commands": {
+    "fresh_Release_build": "0warnings/0errors",
+    "runtime_controls": 45,
+    "hint_profile_controls": 16,
+    "optional_profile_controls": 75,
+    "original_import_check": "42270originalhashes/41843orderedreferences; applicablemissing0",
+    "import_regressions": 6
+  },
+  "failed_command": {
+    "index": 6,
+    "command": "test_supervisor.py",
+    "tests": 25,
+    "passed": 24,
+    "failed": 1,
+    "test": "test_unresolved_prelaunch_intent_cannot_report_clean",
+    "expected_cleanup_error": "TimeoutError",
+    "actual_cleanup_error": "TimeoutExpired",
+    "required_failure_guards": "Actual unresolved intent remained pending/allOwnedGroupsAbsentfalse; bounded process query TimeoutExpired valid failure; no subsequent commands7..9 launched"
+  },
+  "cleanup": "All seven launched commands reaped/direct and nested groups absent/logsclosed; rootouterterminal1/all22registeredgroupsabsent; cleanup durable before rawinspection",
+  "followup": "Narrow expected-error assertion correction in owned SOURCE; reviewed immutable source then fresh preparation. Preserve earlier attempt as failed."
+}

@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "id": "M8-xsd-contract-api-scope",
+  "milestone": "M8",
+  "title": "Keep nullable internal candidate out of runtime API union",
+  "kind": "contract",
+  "status": "verified",
+  "owner": "M8 coordinator / isolated API-scope repair",
+  "branch": "codex/m8-contract-api-scope",
+  "base_revision": "644419ccdbad27d28d1a39ba1d0130ab7ca62ff6",
+  "integration_revision": "45cb330478e0f754d7141ed94390eb5fb8bc7dde",
+  "depends_on": [
+    "M8-xsd-missing-components-contract"
+  ],
+  "goals": [
+    "G14",
+    "G18"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/schemas.md"
+  ],
+  "owns": [
+    "docs/api/M8-xsd-missing-components-contract.txt",
+    "docs/reports/M8-xsd-missing-components-contract/source-manifest.json",
+    "docs/reports/M8-xsd-contract-api-scope/"
+  ],
+  "api_or_output": "Header-only runtime API fragment; exact three-member internal candidate remains in owned fixture golden",
+  "acceptance": [
+    {
+      "id": "M8-xsd-contract-api-scope-A1",
+      "description": "Global docs/api union contains only shipped runtime API rows; internal nullable candidate rows remain unchanged in contract fixture candidate golden and exact delta. Replace contract runtime fragment with canonical header-only internal-task pattern, without runtime/public API changes.",
+      "status": "passed",
+      "evidence": [
+        "branch-publication-proof",
+        "integrated-publication-proof"
+      ]
+    },
+    {
+      "id": "M8-xsd-contract-api-scope-A2",
+      "description": "Refresh only the changed fragment identity in contract source manifest. Prove complete API union membership/canonical rows/no duplicate members and no candidate internal declaration leakage, candidate golden and semantic fixtures unchanged, relevant planning and integrated checks pass.",
+      "status": "passed",
+      "evidence": [
+        "branch-publication-proof",
+        "integrated-publication-proof"
+      ]
+    }
+  ],
+  "implementation": [
+    "Header-only runtime API fragment; three nullable internal rows preserved in candidate.golden.txt",
+    "Refreshed exact fragment identity in contract source manifest",
+    "Owned static complete-union/candidate identity proof"
+  ],
+  "evidence": [
+    {
+      "id": "branch-publication-proof",
+      "kind": "check",
+      "revision": "9395c94d55603e18e7504a891662c0965e40111c",
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 docs/reports/M8-xsd-contract-api-scope/check.py; python3 tools/planning/tasks.py validate; git diff --check",
+      "result": "passed",
+      "summary": "54 runtime API fragments,1430 canonical unique public members, no internal candidate leakage; candidate/old projection hashes unchanged; all30 manifest hashes match;199tasks valid. No runtime/compiler launched.",
+      "artifact": null
+    },
+    {
+      "id": "integrated-publication-proof",
+      "kind": "integration",
+      "revision": "45cb330478e0f754d7141ed94390eb5fb8bc7dde",
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 docs/reports/M8-xsd-contract-api-scope/check.py; python3 tools/planning/tasks.py validate; git diff --check",
+      "result": "passed",
+      "summary": "Integrated54fragments/1430canonical unique public members; no internal candidate leakage; candidate/old hashes unchanged; all30contractmanifest identities matched;199tasks valid. No runtime or compiler launched.",
+      "artifact": null
+    }
+  ],
+  "blockers": [],
+  "handoff": {
+    "summary": "Integrated verified API publication scope repair; internal candidate compile proof remains unchanged and runtime/public union preserved.",
+    "checks": [
+      "Owned static proof passed; planning199 and whitespace passed"
+    ],
+    "remaining": [],
+    "requests": []
+  }
+}

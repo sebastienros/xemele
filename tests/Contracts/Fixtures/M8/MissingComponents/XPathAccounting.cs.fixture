@@ -1,0 +1,12 @@
+// Proposed ordered internal M4 adapter, never executed by contract fixtures.
+using Xemele.XPath;
+namespace Xemele.XPath.Internal;
+internal static class XPathEvaluationAccounting
+{
+    internal static XPathValue EvaluateWithAccounting(XPathExpression expression, XmlNode context,
+        XPathContext? options, out long operations)
+    { operations = 0; throw new InvalidOperationException("Declaration only"); }
+    internal static XPathValue EvaluateWithAccounting(XPathExpression expression, XPathItem context,
+        XPathContext? options, out long operations)
+    { operations = 0; throw new InvalidOperationException("Declaration only"); }
+}

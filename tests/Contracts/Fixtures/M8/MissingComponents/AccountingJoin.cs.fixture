@@ -1,0 +1,28 @@
+using Xemele;
+using Xemele.Validation;
+using Xemele.XPath;
+using Xemele.XPath.Internal;
+internal static class AccountingReviewConsumers
+{
+    internal static XPathValue Node(XPathExpression expression, XmlNode context, XPathContext options, ISchemaOperation operation)
+    {
+        var capped = Cap(options,operation); long used=0;
+        if(capped is null) return default;
+        try { return XPathEvaluationAccounting.EvaluateWithAccounting(expression,context,capped,out used); }
+        finally { _=operation.Charge(used,default); }
+    }
+    internal static XPathValue Item(XPathExpression expression, XPathItem context, XPathContext options, ISchemaOperation operation)
+    {
+        var capped = Cap(options,operation); long used=0;
+        if(capped is null) return default;
+        try { return XPathEvaluationAccounting.EvaluateWithAccounting(expression,context,capped,out used); }
+        finally { _=operation.Charge(used,default); }
+    }
+    private static XPathContext? Cap(XPathContext options, ISchemaOperation operation)
+    {
+        long? remaining=operation.RemainingWork, perExpression=options.Limits.MaxOperations;
+        long? cap=remaining is long r && perExpression is long p ? Math.Min(r,p) : remaining ?? perExpression;
+        if(cap is <=0) { operation.Refuse("VALIDATION.Limit","XPath work exhausted.",default); return null; }
+        return options with { Limits=options.Limits with { MaxOperations=cap }, CancellationToken=operation.CancellationToken };
+    }
+}

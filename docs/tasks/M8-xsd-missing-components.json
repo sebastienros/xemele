@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "id": "M8-xsd-missing-components",
+  "milestone": "M8",
+  "title": "Implement approved XSD missing-component availability semantics",
+  "kind": "feature",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "depends_on": [
+    "M8-xsd-import-visibility",
+    "M8-xsd-missing-components-contract",
+    "M8-xsd-contract-api-scope",
+    "M8-xsd-instance-hint-ordering",
+    "M8-facets"
+  ],
+  "goals": [
+    "G14",
+    "G18"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/schemas.md",
+    "docs/decisions/M8/missing-components.md",
+    "docs/performance-coding.md"
+  ],
+  "owns": [
+    "src/Xemele/Validation/Xsd/Compilation/Compiler.cs",
+    "src/Xemele/Validation/Xsd/Compilation/Declarations.cs",
+    "src/Xemele/Validation/Xsd/Compilation/Availability/",
+    "src/Xemele/Validation/Xsd/XmlSchema.cs",
+    "src/Xemele/Validation/Xsd/Evaluation/Evaluator.cs",
+    "src/Xemele/Validation/Xsd/ContentModels/Compiler.cs",
+    "src/Xemele/Validation/Xsd/ContentModels/Derivation.cs",
+    "tests/Contracts/Fixtures/M8/Xsd.cs.fixture",
+    "tests/Contracts/Fixtures/M8/Xsd.golden.txt",
+    "docs/reports/M8-xsd-compile/compiler.golden.txt",
+    "tests/Xemele.Tests/M8-xsd-optional-composition/CompositionTests.cs",
+    "tests/Xemele.Tests/M8-xsd-optional-composition/BoundaryTests.cs",
+    "tests/Xemele.Tests/M8-xsd-missing-components/",
+    "tests/fixtures/M8-xsd-missing-components/",
+    "benchmarks/Xemele.Benchmarks/M8-xsd-missing-components/",
+    "docs/api/M8-xsd-missing-components.txt",
+    "samples/M8-xsd-missing-components/",
+    "docs/reports/M8-xsd-missing-components/",
+    "src/Xemele/Validation/Datatypes/Facets/Definitions.cs",
+    "src/Xemele/Validation/Datatypes/Facets/Evaluator.cs"
+  ],
+  "api_or_output": "Concrete public schema publication/assessment with immutable availability; exact authorized internal nullable Type migration; public/frozen interfaces unchanged",
+  "acceptance": [
+    {
+      "id": "M8-xsd-missing-components-A1",
+      "description": "Implement immutable charged availability metadata and closure for concrete schema publication. Preserve explicit unresolved authored QName; nullable element Type only for unavailable inferred substitution-head type, genuine anyType default otherwise. Preserve dense declaration IDs without fabricated types or missing definitions. Strict frozen IXsdCompiler complete-graph lane remains unchanged.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M8-xsd-missing-components-A2",
+      "description": "Prove exact eight original schema/good-instance positives and four separate required-consumption nonassessment cases with original metadata/input/oracle hashes. Consuming unavailable required components yields IsComplete false/IsValid false/Fatal XSD.MissingComponent before xsi:type/nil/content/value/default/fixed/identity hooks; selected xsi:type-only complex-program availability checked before deferred content. Unrelated valid roots stay assessable; true skip unconsumed stays unchanged, present unavailable lax declaration is not absence. No new original pass promise or waiver for four nonassessment cases.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M8-xsd-missing-components-A3",
+      "description": "Preserve every independently decidable grammar/import/regex/facet/EDC/UPA/derivation/cycle/final/block/default/keyref failure, missing-base negatives and source/resource distinctions. Assign exact facet Definitions.cs/Evaluator.cs to separate missing-item availability from independent facet validation; never fabricate executable partial FacetPlan or blanket-skip missing definitions. Preserve complete-graph and RNG behavior, charging/quotas/cancel/disposal and immutable no-resolver validation.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M8-xsd-missing-components-A4",
+      "description": "Migrate exact approved three constructor/property/deconstruct internal baseline members and affected consumers; any genuinely additive concrete availability baseline separately emitted. Preserve public1430/frozen interfaces, earlier milestones, strict legacy compiler test/optional benchmark route14. Migrate only two optional-composition missing-type expectations and provenance sentinel deliberately, retaining independent controls.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M8-xsd-missing-components-A5",
+      "description": "Pass meaningful direct/local/strict/lax/skip/substitution/xsi/type/nil/facet/default/identity/partial controls, combined XSD/datatype/resource/earlier milestone checks, normal and true XML-only consumers, exact APIs and planning. Record actual bounded counter evidence for changed hot routes with disabled/positive/cold/first/warm/retained controls, finite owned-family cleanup and concise terminal summaries. No timing/isolation campaign, oracle/quota increases, later milestone dependency or unmerged peer implementation.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "Ordered runtime repair planned from integrated verified nullable candidate and exact facet join assessment; not ready or claimed until import repair verified.",
+    "checks": [],
+    "remaining": [
+      "All runtime, corpus, allocation and integration checks UNRUN"
+    ],
+    "requests": [
+      "No broad identity/Matcher/Contracts/Support/datatype registry/build ownership; request exact additional paths only with concrete need."
+    ]
+  }
+}

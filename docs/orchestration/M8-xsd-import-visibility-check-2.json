@@ -1,0 +1,38 @@
+{
+  "sourceRevision": "0a1b228d65301310d7fea787830001daced68fe7",
+  "directory": "/Users/sebastienros/.codex/worktrees/37b6/xemele/artifacts/M8-xsd-import-visibility/root-check-20e5ff74f5fe4b92a3059fee8be52fef",
+  "cleanupSha256": "3fbfa91c3bccc44ffb49b0a5e48eeae3a4c4365a042796028afd438219fda90b",
+  "cleanup": {
+    "completed": false,
+    "error": "CalledProcessError",
+    "allOwnedGroupsAbsent": true,
+    "pendingIntents": [],
+    "sequence": [
+      {
+        "exit": 1,
+        "reason": "failed",
+        "reaped": true,
+        "absent": true,
+        "logClosed": true,
+        "nestedAbsent": true
+      }
+    ]
+  },
+  "outcome": "FAILED: offline restore passed; Release tests build exit1 with two xUnit1051 analyzer errors at AnnotationTests.cs81 and BoundaryTests.cs124; later checks and counters UNRUN",
+  "counters": "UNRUN",
+  "diagnosticsSha256": "a2b64fe59a2ee7738a557190e061367d14445cfaf8db1195c2e606fb08b7854c",
+  "errors": [
+    {
+      "code": "xUnit1051",
+      "path": "tests/Xemele.Tests/M8-xsd-import-visibility/AnnotationTests.cs",
+      "line": 81
+    },
+    {
+      "code": "xUnit1051",
+      "path": "tests/Xemele.Tests/M8-xsd-import-visibility/BoundaryTests.cs",
+      "line": 124
+    }
+  ],
+  "remaining": "Exact diagnostic columns locate XmlDocument.Parse input preparation at AnnotationTests81/BoundaryTests124; compiler has no cancellation-token parameter. Minimal fix passes TestContext.Current.CancellationToken to these two parse calls; preserve operation cancellation assertions. Runtime/probe unchanged.",
+  "removedRawFiles": 66
+}

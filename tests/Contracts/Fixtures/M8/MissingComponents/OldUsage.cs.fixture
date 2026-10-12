@@ -1,0 +1,12 @@
+using Xemele.Validation;
+namespace Xemele.MissingComponentsUsage;
+internal static class OldUsage
+{
+    internal static SchemaName Type(XsdElementDeclaration declaration)
+    {
+        declaration.Deconstruct(out _, out _, out SchemaName type, out _, out _, out _, out _, out _,
+            out _, out _, out _, out _, out _);
+        SchemaName property = declaration.Type;
+        return type == property ? property : type;
+    }
+}

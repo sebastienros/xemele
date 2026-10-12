@@ -1,0 +1,364 @@
+{
+  "schemaVersion": 1,
+  "id": "M8-xsd-missing-components-contract-pending",
+  "status": "HUMAN APPROVED internal nullable-type migration; detailed contract and implementation checks still pending",
+  "approved": true,
+  "sourceOnly": true,
+  "implementationAuthorized": false,
+  "purpose": "Proposed bounded XSD missing-component semantics, ownership and evidence requirements. This is not a task claim, runtime implementation, approved corpus disposition, or conformance result.",
+  "delegation": "The parent explicitly delegated creation of this single new file. No other source, test, task, fixture, Git state or corpus record is changed by this draft.",
+  "assessmentSourceRevision": "53721eb5ba19589bbcc0089367cbb2842a75df1d",
+  "corpusSourceRevision": "b904bcaab95273a55399cbc5f6a684f400eae29f",
+  "upstreamRevision": "7bc3365c652a322f3d762021b3879eb92dae7e30",
+  "execution": {
+    "newImplementation": "none",
+    "newChecks": "unrun",
+    "newCorpusResults": "unrun",
+    "originalPassCredit": 0,
+    "gateCredit": 0,
+    "note": "The earlier observations below are copied with identities from the existing residual triage. They are not new executions by this review. Source/data reads and creation of this proposal do not establish runtime correctness."
+  },
+  "primarySources": [
+    {
+      "url": "https://www.w3.org/TR/2004/REC-xmlschema-1-20041028/#noss",
+      "sections": [
+        "3.1.2",
+        "4.2.1",
+        "5.3"
+      ],
+      "interpretation": "Unresolved component QNames can remain in a schema; required absence has consequences when assessment consumes it. References must be retained for possible resolution. Missing-component assessment cannot be represented as full PSVI assessment."
+    },
+    {
+      "url": "https://www.w3.org/TR/2004/REC-xmlschema-1-20041028/#declare-element",
+      "sections": [
+        "3.3.1",
+        "3.3.2",
+        "3.3.4",
+        "3.3.5"
+      ],
+      "interpretation": "An authored explicit type, an inline type, an inferred substitution-head type, and the ordinary undeclared-type default are distinct. The absent-head interpretation for g1/i1 remains separately pending; its original VALID oracle is not changed."
+    },
+    {
+      "url": "https://www.w3.org/TR/2004/REC-xmlschema-1-20041028/#coss-st",
+      "sections": [
+        "3.14.6",
+        "3.4.6",
+        "5.1"
+      ],
+      "interpretation": "Preserve independently decidable schema-component errors and mandatory base-chain constraints. This proposal does not turn missing004/missing005, cycles, wrong-kind bases, or invalid derivations into acceptable schemas."
+    }
+  ],
+  "proposedResultMapping": {
+    "status": "proposed-design-mapping-not-a-W3C-mandated-API-bit",
+    "requiredUnavailableDefinitionConsumed": {
+      "IsComplete": false,
+      "IsValid": false,
+      "diagnosticCode": "XSD.MissingComponent",
+      "severity": "Fatal",
+      "behavior": "Stop actual assessment through the existing bounded refusal path before using the unavailable definition for typing, content, defaults, fixed values or identity hooks. No permissive continuation through a substitute type."
+    },
+    "reason": "A successful computation of an inability to assess is different from actual validity assessment. The public result exposes no separate PSVI assessment-completeness dimension. This project mapping deliberately reports a stopped assessment, even though detecting the absence itself completed normally.",
+    "alternativeNotSelected": "Complete-invalid plus an Error could encode a completed missing-component decision only if an independent nonassessment category survives all consumers and corpus aggregation. IsValid=false alone would otherwise earn false INVALID conformance credit. This proposal chooses incomplete/Fatal instead; it does not claim section5.3 dictates the IsComplete bit.",
+    "location": "Use the original instance location at which the required definition is consumed. Retain the schema reference kind, expanded QName and original schema reference location in immutable availability metadata for bounded explanatory diagnostics. Do not invent line, column or byte coordinates or replace the instance failure location with an unrelated principal-schema location.",
+    "boundedBehavior": [
+      "Poll the current operation before availability lookup and before publishing a successful result; charge graph traversal and owned state before growth, including when work/component caps are null.",
+      "Use the existing refusal/diagnostic-cap machinery. A pre-existing quota refusal or cancellation takes precedence; never translate it to XSD.MissingComponent. Exactly-at-cap and one-over diagnostic behavior remain unchanged.",
+      "Stop without issuing a valid typed value, applying an invented default, continuing an identity success hook, or recompiling/fetching a schema during validation.",
+      "Cancellation, caller/resolver exceptions, I/O errors and mutation exceptions retain their existing propagation and primary-exception rules. The new code is not a catch-all translation layer.",
+      "An unavailable component is not a resolver Denied/Unavailable outcome. Existing acquisition policy, source identity, ownership and aggregate budgets remain unchanged."
+    ],
+    "corpusRule": "The four original bad-instance cases remain nonpassing/nonassessed under this mapping. A future adapter may add a precise missing-component-nonassessment classification while preserving raw IsComplete/IsValid/severity/code. It must never convert this outcome into instance-invalid, an original pass, or a gate allowance without a separately authorized exact record."
+  },
+  "acceptanceBoundary": {
+    "supportedPositiveCount": 8,
+    "supportedPositiveIds": [
+      "saxonMeta/Missing.testSet#g0/s:missing001.xsd",
+      "saxonMeta/Missing.testSet#g0/i0:missing001.v1.xml",
+      "saxonMeta/Missing.testSet#g1/s:missing001.xsd",
+      "saxonMeta/Missing.testSet#g1/i0:missing001.v1.xml",
+      "saxonMeta/Missing.testSet#g2/s:missing003.xsd",
+      "saxonMeta/Missing.testSet#g2/i0:missing003.v1.xml",
+      "saxonMeta/Missing.testSet#g5/s:missing006.xsd",
+      "saxonMeta/Missing.testSet#g5/i0:missing006.v1.xml"
+    ],
+    "positiveMeaning": "Compile the four unchanged schemas and completely validate their independent good element. These are future required checks, not passing evidence in this draft.",
+    "missingFamiliesUnderAssessment": [
+      "An element declaration with an authored but unresolved type QName.",
+      "An element declaration with an unresolved substitution-group QName, with explicit-type and inferred-type cases distinguished.",
+      "A direct list type whose authored itemType QName does not resolve, and an element that selects that list type."
+    ],
+    "preserveErrors": [
+      "Malformed schema XML or incomplete source provenance; invalid schema grammar, required authored attributes, QName/NCName syntax or unbound prefix.",
+      "Document-local import authorization errors, including the ordered import-visibility repair; unresolved existence is not permission to reference a namespace.",
+      "Missing base types and forbidden type/group/attributeGroup/substitution cycles; existing missing004/missing005 negative controls.",
+      "Wrong-kind resolved components, final/block violations, independently invalid facets/regex/value constraints, UPA/EDC and typed restriction errors.",
+      "Resolved malformed/wrong-namespace resources, mandatory substantive redefine failures, all legacy denials, quota refusals and primary exceptions."
+    ],
+    "publicationRule": "Complete every independent schema check before publication, including unused, anonymous and displaced redefine carriers. Defer only an identified check that genuinely requires the unavailable component; neither whole unused declarations nor all datatype validation may be skipped indiscriminately. A second independently invalid construct alongside a missing reference must still reject compilation.",
+    "resolutionRule": "Collect and resolve all permitted composition inputs before sealing availability. A later declaration or available include/import can discharge a retained reference within the same compilation. No mutation, external fetch or operation-dependent cache is introduced into a published schema.",
+    "noExpansionClaim": "This narrow task must not claim complete section5.3 support for every possible missing group, attribute-group, identity or datatype relation. Additional source ownership or unsupported joins discovered during the representation proof must be reported before implementation expands."
+  },
+  "representationDecision": {
+    "status": "human-selected explicit internal type contract migration; owning task claim and detailed frozen controls required before implementation",
+    "existingFrozenShape": "XsdElementDeclaration.Type is a nonnullable SchemaName in the frozen positional record. XsdCompiledSchema.Elements and GlobalElements use dense declaration IDs; XsdElementTerm carries one of those IDs. Existing complete-graph consumers assume Type resolves.",
+    "alreadyRepresentableNames": "An explicit unresolved element Type and list ItemType can retain their authored expanded QNames in existing fields. That alone does not make eager compiler, facet, publication and evaluator consumers safe.",
+    "hardCase": "A declaration whose type must be inferred from an unavailable substitution head has no actual type name to put in the existing nonnullable Type field. An additive availability flag does not make an anyType, default(SchemaName), borrowed head-name-as-type, or invented sentinel Type truthful. No such value is authorized by this proposal.",
+    "minimalCompanionProposal": {
+      "workingName": "XsdComponentAvailability",
+      "state": "Owned immutable entries distinguish resolved definitions from unavailable explicit types, unavailable list items and pending substitution-head type inference. Each entry retains component/declaration identity, reference symbol space/kind, authored expanded QName, original location, and dependency information required to determine when assessment needs it. Pending inferred type is explicitly nullable in the NEW metadata, not encoded in the old Type field.",
+      "storage": "No retained XmlDocument, XmlNode, mutable source namespace map, compile operation, resolver, per-run cache or executable stand-in. Copy/snapshot before publication and charge retained entries and dependency edges.",
+      "join": "The concrete facade/evaluator join receives the companion explicitly and checks it before existing complete-graph operations. The frozen IXsdCompiler/IXsdEvaluator signatures and positional constructors are not silently changed."
+    },
+    "optionsForCoordinatorAndHumanDecision": [
+      {
+        "id": "additive-partial-envelope",
+        "preservesExistingSignatures": true,
+        "proposal": "Keep unavailable inferred-type declarations as NEW unmaterialized declaration records in a concrete compilation envelope until resolution; do not construct an old XsdElementDeclaration for them. A new concrete compiler/facade/evaluator join carries those records and availability alongside the existing complete component graph. The existing frozen lane continues to consume only representable complete graph records.",
+        "requiredProofBeforeSelection": "Show how stable declaration identities, global lookup, direct/local references, substitution membership, content programs and identity hooks distinguish unmaterialized declarations without an absent dense-array slot, a fake record, reindexing an already-published ID, or falsely treating the name as undeclared/lax. The four original schemas are global-root examples; they do not prove these joins. This may require separately owned content/identity changes and is not yet claimed to be a small implementation."
+      },
+      {
+        "id": "explicit-internal-type-contract-migration",
+        "preservesExistingSignatures": false,
+        "proposal": "If the additive envelope is disproportionate, explicitly amend the frozen internal element declaration Type to a nullable/resolution-discriminated representation and migrate all consumers, while keeping the public XmlSchema surface unchanged.",
+        "requiredAuthorization": "Human/coordinator contract approval, exact fixture and emitted-baseline ownership, dependency reassessment and consumer migration are required before this alternative can be claimed. It is not an additive implementation disguised as unchanged frozen API."
+      }
+    ],
+    "forbiddenShortcuts": [
+      "No executable placeholder or anyType/anySimpleType fallback for an unavailable required definition.",
+      "No default SchemaName, synthetic absent-type QName, or reinterpretation of the missing head element QName as a type name.",
+      "No dropping a missing declaration so lax lookup silently succeeds, or returning a null record in a frozen nonnull declaration list.",
+      "No declaration-level skip that suppresses independent syntax, facet, derivation, cycle or namespace errors."
+    ],
+    "ordinaryDefault": "An element with no authored type, no inline type and no substitutionGroup follows the ordinary anyType mapping. This valid default is distinct from failed explicit resolution and pending inference from an authored unavailable head.",
+    "selected": "explicit-internal-type-contract-migration"
+  },
+  "unresolvedHeadAdjudication": {
+    "id": "saxonMeta/Missing.testSet#g1/i1:missing001.n1.xml",
+    "status": "pending-separate-standards-adjudication",
+    "originalExpected": "valid",
+    "schemaActuallySupplied": "saxonData/Missing/missing002.xsd",
+    "authoredDeclaration": "<xs:element name=\"bad\" substitutionGroup=\"rotten\"/>",
+    "question": "Section3.3.2's type mapping attempts the substitution-head type before the ur-type alternative; section3.3.1's explanatory wording says if it identifies one. Decide how an unresolved authored head is mapped under the pinned Second Edition. The copied schema-test name and misleading instance prose cannot decide this.",
+    "untilDecided": "Retain the original VALID expectation and its nonpassing history. Do not authorize anyType synthesis, an oracle rewrite, a full twelve-case pass claim, or a gate exception. Proposed consumption behavior is nonassessment pending resolution/adjudication."
+  },
+  "proposedOwnership": {
+    "prospectiveTaskId": "M8-xsd-missing-components",
+    "claimStatus": "not-claimed",
+    "dependsOn": [
+      "M8-xsd-import-visibility",
+      "M8-xsd-instance-hint-ordering"
+    ],
+    "dependencyGate": "Import visibility is currently claimed/in_progress. Start only after both prerequisites are verified on main and the representation/contract decision is frozen. The import task orders Compiler.cs after optional composition and the particle/facade chain; instance-hint-ordering orders the evaluator after content-failure assessment.",
+    "corePathsToAssignExplicitly": [
+      "src/Xemele/Validation/Xsd/Compilation/Compiler.cs",
+      "src/Xemele/Validation/Xsd/Compilation/Declarations.cs",
+      "src/Xemele/Validation/Xsd/Compilation/Availability/",
+      "src/Xemele/Validation/Xsd/XmlSchema.cs",
+      "src/Xemele/Validation/Xsd/Evaluation/Evaluator.cs"
+    ],
+    "newOwnedTaskPaths": [
+      "docs/tasks/M8-xsd-missing-components.json",
+      "docs/decisions/M8/missing-components.md",
+      "tests/Xemele.Tests/M8-xsd-missing-components/",
+      "tests/fixtures/M8-xsd-missing-components/",
+      "benchmarks/Xemele.Benchmarks/M8-xsd-missing-components/",
+      "docs/api/M8-xsd-missing-components.txt",
+      "samples/M8-xsd-missing-components/",
+      "docs/reports/M8-xsd-missing-components/"
+    ],
+    "conditionalPathsNotYetAuthorized": [
+      "src/Xemele/Validation/Xsd/ContentModels/Compiler.cs",
+      "src/Xemele/Validation/Xsd/ContentModels/Derivation.cs",
+      "src/Xemele/Validation/Xsd/Identity/",
+      "tests/Contracts/Fixtures/M8/Xsd.cs.fixture",
+      "docs/reports/M8-xsd-compile/compiler.golden.txt"
+    ],
+    "conditionalRule": "Determine the exact content/identity paths from the selected representation before claiming, rather than granting a broad subtree by implication. A nullable-Type migration requires frozen contract/baseline owner authorization. Datatype registry/facet implementations, shared resource loader and common result types are not automatically in scope.",
+    "corpusOwner": "Any new observation classification or later exact gate record belongs to M8-xsd-corpus and separate coordinator-owned adjudication. This source proposal does not modify either."
+  },
+  "legacyExpectationsToReassessExplicitly": [
+    {
+      "path": "tests/Xemele.Tests/M8-xsd-compile/CompilerTests.cs",
+      "anchor": "line163: <xs:element name='r' type='missing'/>",
+      "current": "Requires an eager compiler SchemaCompileException.",
+      "proposal": "Transfer this exact test-file ownership only after deciding whether the frozen compiler lane stays strict or emits the new envelope. Preserve the old tested outcome in evidence; prove retained QName and actual consumption behavior in new controls. Do not remove other invalid-schema rows."
+    },
+    {
+      "path": "tests/Xemele.Tests/M8-xsd-optional-composition/CompositionTests.cs",
+      "anchor": "MissingRequiredReferencesStillFail: first two rows, missing element type after optional include/import",
+      "current": "Public Compile must throw XSD.SchemaRestriction.",
+      "proposal": "Explicitly transfer ownership of this file. Separate these two deferred-reference cases from the existing group/attributeGroup rows, which remain outside this narrow change. Require one resolver attempt, honest stored absence, an unaffected valid root and incomplete/Fatal consumption. Preserve all denial/redefine controls."
+    },
+    {
+      "path": "tests/Xemele.Tests/M8-xsd-optional-composition/BoundaryTests.cs",
+      "anchor": "ByteAndCharacterProvenanceForResolvedComponentFailure",
+      "current": "Uses an undefined element type as the compile-time error in a redirected child.",
+      "proposal": "Explicitly transfer ownership of this file. Retain the old failure as prior evidence; use a genuinely independent illegal schema construct for the existing compile-provenance test and retain all URI/line/byte/disposal assertions. Add separate stored-reference and instance-consumption provenance tests."
+    },
+    {
+      "path": "benchmarks/Xemele.Benchmarks/M8-xsd-optional-composition/Fixture.cs",
+      "anchor": "route14: optional-missing-required-reference; expected XSD.SchemaRestriction",
+      "current": "Calls the frozen three-argument XmlSchemaCompiler lane and consumes its exception.",
+      "proposal": "Reassess this ONE route explicitly. If the frozen complete-graph lane remains strict, keep its expectation and add new public availability routes under the new task. If its semantics change, transfer this exact file, preserve the historical measurement unchanged, update the route oracle and obtain fresh correctness/control/allocation evidence. No claim that historical counters measure the new behavior."
+    }
+  ],
+  "requiredControls": [
+    "Run unchanged pinned schema/i0 pairs for g0/g1/g2/g5 through public string, stream and document lanes where applicable. Eight supported originals must genuinely complete successfully; no synthetic replacement schema or quota increase.",
+    "Run each original i1 separately. Preserve its original expected status and earlier schema-unavailable observation. Assert the new incomplete/false/Fatal XSD.MissingComponent design outcome where still unavailable, and assert zero original/gate pass credit. g1/i1 remains separately adjudicated.",
+    "Distinguish no type authored (ordinary anyType), unresolved explicit type, unresolved head inference, explicit type plus missing head, and a list with missing item. Prove declaration-order permutations and a later allowed component resolving the same QName before publication.",
+    "Before choosing the representation, prove direct/global, local/ref, strict/lax/skip and substitution uses cannot silently lose an unavailable declaration, enter a fake type, emit a valid value to identity hooks, or fail with ArgumentException/KeyNotFoundException. Assign any needed extra ownership first. Do not infer those properties from four global-root originals.",
+    "Prove unresolved required types are not rescued by xsi:type, xsi:nil, defaults/fixed processing or permissive wildcard fallback without an independently frozen normative rule. No per-validation resolver calls or schema recompilation.",
+    "Keep missing004/missing005, illegal namespace authorization, wrong-kind resolved type, cycles and all independently invalid unused facets/defaults/restrictions negative. Place an independent invalidity beside an unresolved reference to prove it is not suppressed.",
+    "Prove exact work/component boundary and one-under stop using independent counted inspections/edges, not copied implementation constants; cancellation during a long availability walk with null caps; growth is charged before allocation and no success follows a stopped operation.",
+    "Prove finite diagnostic behavior and one fatal missing-component outcome at consumption, preserving earlier quota/cancellation precedence. Keep resource-denied, explicit optional absence, malformed resource, caller exception and missing-component categories separate.",
+    "Prove source mutation guards, copied QName/context/location data after source mutation/disposal, no retained operation, immutable concurrent schema reuse and isolated validation results. Keep input streams caller-owned and external streams exactly-once disposed.",
+    "Run a real normal and true XML-only consumer covering resolved and missing-state paths; verify public and every affected frozen/additive/emitted API surface. An explicitly approved contract migration must be tested against its newly approved exact baseline, never called unchanged compatibility.",
+    "Run relevant combined compiler/content/facet/facade/evaluator/identity/resource tests and task-planning validation after implementation. All checks in this proposal are currently unrun.",
+    "Obtain source-reviewed bounded allocation evidence for new owned compile/availability/diagnostic/result paths, cold initialization, disabled and positive controls, consumed results and retained objects. No speculative borrowed-zero or timing claim, no isolation/PARK workflow."
+  ],
+  "originalEvidence": {
+    "triagePath": "docs/orchestration/M8-xsd-residual-80-triage.json",
+    "metadata": {
+      "path": "saxonMeta/Missing.testSet",
+      "sha256": "b24ea35cdc51bc567aa242a63e923409391ed08137bf66d9df53286ff1032660",
+      "bytes": 7727,
+      "scope": "testSet and each selected group explicitly version1.0; accepted2015-06-01"
+    },
+    "sharedGoodInput": {
+      "path": "saxonData/Missing/missing001.v1.xml",
+      "sha256": "830ae3fcf87068d86955d5a2ca2bc3912bc4c2c039ceb8871216dbf118c156ab",
+      "bytes": 14
+    },
+    "sharedBadInput": {
+      "path": "saxonData/Missing/missing001.n1.xml",
+      "sha256": "7f85cc2feb9189e0f6d1c87bc6d87188a0381b98caced2210ecf27c492e69729",
+      "bytes": 12
+    },
+    "earlierJournal": {
+      "worktree": "/Users/sebastienros/.codex/worktrees/a996/xemele",
+      "path": "artifacts/M8-xsd-corpus/b904bcaab95273a55399cbc5f6a684f400eae29f-full-03547a3df63c4a18a78e305521a94bf3/product-saxonMeta_Missing.testSet.jsonl",
+      "sha256": "0b4025686b734901eac45e5a927e41cf8dd4aa08c16f16e20b3f4a515548469d",
+      "bytes": 4652
+    },
+    "badCases": [
+      {
+        "id": "saxonMeta/Missing.testSet#g0/i1:missing001.n1.xml",
+        "schemaTestId": "saxonMeta/Missing.testSet#g0/s:missing001.xsd",
+        "schema": {
+          "path": "saxonData/Missing/missing001.xsd",
+          "sha256": "0afe906215fce330be2c1a3fb2f19f17584e26eb4b219ebe6fdda8d4075ad53c",
+          "bytes": 278
+        },
+        "originalExpected": "invalid",
+        "originalClassification": "applicable",
+        "inventoryRecordSha256": "92a29dcae4636b7fa01a39926ec393ec5c4f2258b5444e717a33f5ba1cc65c62",
+        "earlier": {
+          "actual": "schema-unavailable",
+          "codes": [
+            "XSD.SchemaRestriction"
+          ],
+          "passed": false,
+          "lineNumber": 3,
+          "rawLineSha256WithoutTerminator": "e54fa49a46335d42fb71f822ea22417d9393930b04f8a43651164e0481516bb6"
+        },
+        "proposedLaterObservation": "missing-component-nonassessment",
+        "laterExecution": "unrun",
+        "laterDisposition": "pending-exact-record-and-authorization",
+        "originalPassCredit": false,
+        "gateCredit": false
+      },
+      {
+        "id": "saxonMeta/Missing.testSet#g1/i1:missing001.n1.xml",
+        "schemaTestId": "saxonMeta/Missing.testSet#g1/s:missing001.xsd",
+        "schema": {
+          "path": "saxonData/Missing/missing002.xsd",
+          "sha256": "1c976c777c1323785c09fae44535134672d3c4b048b6555e01b948e7f9a586c0",
+          "bytes": 383
+        },
+        "originalExpected": "valid",
+        "originalClassification": "applicable",
+        "inventoryRecordSha256": "9aff17b94e53d59fbb4a70a99fc25bd5c673bf45008b8463a3aa5bafb5f0506f",
+        "earlier": {
+          "actual": "schema-unavailable",
+          "codes": [
+            "XSD.SchemaRestriction"
+          ],
+          "passed": false,
+          "lineNumber": 6,
+          "rawLineSha256WithoutTerminator": "4a83ce9092b100496ed10e4f13e54b1e6b1e177a612c8d0e58fa9881e7b3a5a6"
+        },
+        "proposedLaterObservation": "missing-component-nonassessment-pending-head-mapping-adjudication",
+        "laterExecution": "unrun",
+        "laterDisposition": "pending-separate-standards-adjudication-and-authorization",
+        "originalPassCredit": false,
+        "gateCredit": false
+      },
+      {
+        "id": "saxonMeta/Missing.testSet#g2/i1:missing003.n1.xml",
+        "schemaTestId": "saxonMeta/Missing.testSet#g2/s:missing003.xsd",
+        "schema": {
+          "path": "saxonData/Missing/missing003.xsd",
+          "sha256": "c2030a2fdc07ef8b4faa06f33bab9d0e5b882d2b38bff7cfbc9e1a5120065fa2",
+          "bytes": 334
+        },
+        "originalExpected": "invalid",
+        "originalClassification": "applicable",
+        "inventoryRecordSha256": "685ced0bffac0ccea2401b1bbfd3c507108ff9f74201564554825f82db1deda1",
+        "earlier": {
+          "actual": "schema-unavailable",
+          "codes": [
+            "XSD.SchemaRestriction"
+          ],
+          "passed": false,
+          "lineNumber": 9,
+          "rawLineSha256WithoutTerminator": "6584ba2c83b3d7cb3f6804acdc9686cd9f946c2eae3bce1cd769cf521be2174f"
+        },
+        "proposedLaterObservation": "missing-component-nonassessment",
+        "laterExecution": "unrun",
+        "laterDisposition": "pending-exact-record-and-authorization",
+        "originalPassCredit": false,
+        "gateCredit": false
+      },
+      {
+        "id": "saxonMeta/Missing.testSet#g5/i1:missing006.n1.xml",
+        "schemaTestId": "saxonMeta/Missing.testSet#g5/s:missing006.xsd",
+        "schema": {
+          "path": "saxonData/Missing/missing006.xsd",
+          "sha256": "6fa17799714f1d5bc2662e88c4d5b7b90299e73adae51c75c6f8d315376be1b3",
+          "bytes": 360
+        },
+        "originalExpected": "invalid",
+        "originalClassification": "applicable",
+        "inventoryRecordSha256": "2d4d337f01f88bed92a99e20c07f2ef1f7f9c130d79e1161eeeabb478ca58cb0",
+        "earlier": {
+          "actual": "schema-unavailable",
+          "codes": [
+            "XSD.SchemaRestriction"
+          ],
+          "passed": false,
+          "lineNumber": 14,
+          "rawLineSha256WithoutTerminator": "a33712a819ba7bbb37d675bdf23b4f2e89459d2c5d472e4ee771b67b98642eae"
+        },
+        "proposedLaterObservation": "missing-component-nonassessment",
+        "laterExecution": "unrun",
+        "laterDisposition": "pending-exact-record-and-authorization",
+        "originalPassCredit": false,
+        "gateCredit": false
+      }
+    ]
+  },
+  "reviewedSourceSha256": {
+    "src/Xemele/Validation/Xsd/Compilation/Compiler.cs": "88bb317cc79e0646726acc1ae38aee6b9e19ddfe7a9fea833fe006e8dec65357",
+    "src/Xemele/Validation/Xsd/Compilation/Declarations.cs": "475826166cb985645a9c42c248b7e2311c1aaaa624d85fad1d6b2e78241b4ac3",
+    "src/Xemele/Validation/Xsd/XmlSchema.cs": "ed080c1cf7de23ce5584ae88d43c0bc8c5998c386863aa59d685b1d15fd89272",
+    "src/Xemele/Validation/Xsd/Evaluation/Evaluator.cs": "18c026a2c0b70aacb237fd61902c0e029e57437fdeef1aa1dca2da9377ee6258"
+  },
+  "human_approval": {
+    "source": "Direct human reply in coordinator chat",
+    "question_call": "call_506dc1f8825e4bd09a41087a0e685ae8",
+    "question_index": 0,
+    "answer": "Allow the internal nullable-type migration",
+    "approved_prepared_record_sha256": "d31ce9d9fe1d38427fb61ed3c49bfc4073a614991d908c070c904335607ee8d5",
+    "scope": "Explicit internal Type nullable migration and affected baseline/consumers; public APIs and earlier milestones unchanged; not implementation or gate credit"
+  }
+}
