@@ -1,6 +1,6 @@
-# Pending XSD 1.0 time-policy decision
+# Approved XSD 1.0 time-policy exception
 
-The original W3C case `msMeta/DataTypes_w3c.xml#g119/s:time_maxInclusive007_119` expects an invalid schema. Xemele accepts it; .NET 10.0.11 System.Xml rejects it. Preserve this original failure. No repair or exception has been authorized by this note.
+The original W3C case `msMeta/DataTypes_w3c.xml#g119/s:time_maxInclusive007_119` expects an invalid schema. Xemele accepts it; .NET 10.0.11 System.Xml rejects it. Preserve this original failure. The human approved this exact documented exception in reply to `call_b88f280c431643d2b5b911ee5fb92e63`: “Allow this documented exception (Recommended)”.
 
 The base time bound is `12:00:00-10:00`; the derived bound is `12:00:00-14:00`.
 
@@ -13,6 +13,6 @@ The base time bound is `12:00:00-10:00`; the derived bound is `12:00:00-14:00`.
 
 Independent source/standards review by `/root/review_m8_model` found no uniquely resolved provider defect. Removing modulo normalization would break verified equality and canonical round trips: a legal UTC time lexical cannot encode a retained previous/next-day key. Existing behavior is deliberate in TemporalProvider.cs, TemporalTests.RecurringTimesWrapUtcMidnightAndKeepZonePresence and canonical ConstraintTests.
 
-Proposed disposition for user decision: retain the existing internally consistent recurring-time policy, execute and report this exact unchanged original case as a standards-ambiguity exception, preserve expected=invalid and actual=schema-valid, and never count it as a passing upstream case. The M8 corpus/gate would explicitly report the exception instead of making an unqualified all-original-cases-pass claim. All concrete implementation defects remain required repairs. This changes the strict gate acceptance for this one identified case and therefore remains pending the user's decision.
+Approved disposition: retain the existing internally consistent recurring-time policy, execute and report this exact unchanged original case as a standards-ambiguity exception, preserve expected=invalid and actual=schema-valid, and never count it as a passing upstream case. The M8 corpus/gate must explicitly report the exception instead of making an unqualified all-original-cases-pass claim. All concrete implementation defects remain required repairs. This changes strict gate acceptance only for this one identified case.
 
-Alternative: keep this exact case as a gate blocker while the time-policy and canonical contract receive further design resolution. Other corpus and implementation work continues independently.
+The filename is retained for existing links and provenance; the prior pending decision remains in Git history at `ef13fb703a8f7e1253c619b0c4b808a07467e4cf`. This approval does not authorize runtime changes, additional exceptions, or counting an unexecuted dependent instance as passing.
