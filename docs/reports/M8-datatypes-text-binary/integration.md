@@ -1,0 +1,9 @@
+# Integrated text and binary values
+
+Actual combined runtime-tested revision: `55cbf38f0d889497ec1ad69924a4a38f412f72d7`. Root ran `python3 docs/reports/M8-datatypes-text-binary/checks.py`: 148 family + 18 core + 12 model = 178 tests, zero failures/errors/skips/not-run; 1,393 public API members matched; normal and genuine XML-only consumers each exercised all 17 family names and passed. Release builds reported zero compiler warnings/errors. Host CSSM_ModuleLoad diagnostics did not fail the commands. Planning validated 176 tasks; whitespace checks passed.
+
+Final handoff `bbbefd4943247247b35beb8890ed54d514aa04cf` merged at `1d2759f8bc677ba3d3eb4f120771d933a0cbb193`. Git compared every runtime/test/build/benchmark/API/consumer input against the tested revision and found no changes; only preparation/reports/task/coordination metadata followed. Correctness checks were not repeated for metadata.
+
+Independent review accepted source `f7a0a83e8de4e5739d95e089eeacce32ba6e7449` after one bounded RFC2396 opaque-first-atom correction and nine proving cases. Root independently inspected the measurement lifecycle, all 18 probe distributions and all ten exact BDN GC lines after durable RELEASE `82de8fe36ed8bd073825e80c786544c01eddbed6`. Ten borrowed/static-error routes each measured 64 exact zeros. Owned costs, cold/retained inclusive snapshots, rounded-table discrepancies and ten priority denials are preserved in allocations.md/measurement-summary.json, with no unexplained-byte attribution or broad speed claim.
+
+Raw artifacts are transient and removed after inspection during terminal cleanup. Built-in list parsing and the complete library remain the composition task; XSD owns ENTITY/NOTATION existence and ID rules. No public facade, corpus or cross-architecture conformance is claimed by these focused checks.

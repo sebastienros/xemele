@@ -1,0 +1,130 @@
+{
+  "schema_version": 1,
+  "id": "M8-xsd-effective-content",
+  "milestone": "M8",
+  "title": "Map XSD effective empty content before extension composition",
+  "kind": "feature",
+  "status": "verified",
+  "owner": "M8 coordinator bounded shared repair",
+  "branch": "codex/m8-xsd-effective-content",
+  "base_revision": "f519d8338f42b37193c5664d27540359bd259aec",
+  "integration_revision": "8917aceb24b132e0124405279fe9abd6359bca86",
+  "depends_on": [
+    "M8-xsd-wildcard-composition"
+  ],
+  "goals": [
+    "G14"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/schemas.md"
+  ],
+  "owns": [
+    "src/Xemele/Validation/Xsd/Compilation/Compiler.cs",
+    "tests/Xemele.Tests/M8-xsd-effective-content/",
+    "docs/reports/M8-xsd-effective-content/"
+  ],
+  "api_or_output": "Correct private complex content XML-to-component mapping with unchanged public/frozen models",
+  "acceptance": [
+    {
+      "id": "M8-xsd-effective-content-A1",
+      "description": "Apply XSD1.0 Second Edition section3.4.2 effective mixed/content mapping before restriction/extension combination. Effective-empty extension inherits entire base content type; mixed empty syntax synthesizes required1..1empty sequence; preserve valid particle/source/occurrence/duplicate-body distinctions.",
+      "status": "passed",
+      "evidence": [
+        "bounded-review",
+        "branch-checks",
+        "disabled-preflight",
+        "combined-checks",
+        "owned-allocation"
+      ]
+    },
+    {
+      "id": "M8-xsd-effective-content-A2",
+      "description": "Prove no-body, annotation-only sequence/all, optional empty-choice, explicit/absent/overridden mixed, nonempty/nullable/group-reference controls,0..0 and invalid occurrence cases, duplicate particles, locations and shared quotas/cancellation. Preserve compiler and API/XML-only behavior.",
+      "status": "passed",
+      "evidence": [
+        "bounded-review",
+        "branch-checks",
+        "disabled-preflight",
+        "combined-checks",
+        "owned-allocation"
+      ]
+    },
+    {
+      "id": "M8-xsd-effective-content-A3",
+      "description": "Independently review, record applicable owned allocation evidence and actual combined checks; unblock content worker only after integrated verification, preserving historical negative-test correction evidence.",
+      "status": "passed",
+      "evidence": [
+        "bounded-review",
+        "branch-checks",
+        "disabled-preflight",
+        "combined-checks",
+        "owned-allocation"
+      ]
+    }
+  ],
+  "implementation": [
+    "Compiler.Complex: authored particle tracking, exact effective empty syntax, charged synthetic empty sequence, entire base inheritance, top-level0..0 absence",
+    "MappingTests.cs:28 authored cases for empty/nonempty/nullable/groups/mixed precedence/occurrence/locations/exact limits and cancellation"
+  ],
+  "evidence": [
+    {
+      "id": "bounded-review",
+      "kind": "review",
+      "revision": "ade942a4bbc6b7341bfd10f40c1a27068619257d",
+      "command": "Independent read-only /root/review_m8_model source review",
+      "result": "passed",
+      "summary": "Accepted exact2.1syntactic mapping, preservationofduplicate/occurrencevalidation, inheritedkind/particle and owned source positions; no tests executed. Nonempty0..0 absence\u2192effectiveempty is documented cross-section inference from pinnedXSD1.0\u00a73.4.2/3.7.2/3.8.2, not XSD1.1 synthesis. CompilerSHA1165101edcff81044f1c744d906b6f3c98759e7a2f60879774f4ab78e7520ba4; testsSHA18f4ab7d196ca76922c53b4c0be3f4b21c41cf4ea5110d18f682ca1cec89cbfe.",
+      "artifact": "docs/reports/M8-xsd-effective-content/README.md"
+    },
+    {
+      "id": "branch-checks",
+      "kind": "check",
+      "revision": "2d92341aec10b07357b073d645d48ae34509f768",
+      "command": "python3 docs/reports/M8-xsd-effective-content/checks.py",
+      "result": "passed",
+      "summary": "282 actual tests:28 mapping+11 wildcard+11 resource-base+88 RNG+72 XSD+30 model/location+42 safe resolver; zero failures/errors/skips/not-run. Frozen119+257/public1393; both real XML-only consumers; Release0warnings/errors;179tasks and diff check.",
+      "artifact": "docs/reports/M8-xsd-effective-content/README.md"
+    },
+    {
+      "id": "disabled-preflight",
+      "kind": "check",
+      "revision": "2d92341aec10b07357b073d645d48ae34509f768",
+      "command": "Build Probe.csproj Release and python3 docs/reports/M8-xsd-effective-content/preflight.py (elevated ps)",
+      "result": "passed",
+      "summary": "0warnings/errors;5 consumed real compiler routes with counters/timing disabled, process permission confirmed, every child reaped/group absent. No measurement yet.",
+      "artifact": null
+    },
+    {
+      "id": "combined-checks",
+      "kind": "integration",
+      "revision": "8917aceb24b132e0124405279fe9abd6359bca86",
+      "command": "python3 docs/reports/M8-sch-validate/checks.py && python3 docs/reports/M8-xsd-effective-content/checks.py",
+      "result": "passed",
+      "summary": "Actual combined tree includes accepted SCH43c6ab4 and compilerade942a4 plus current main. SCH454 checks and compiler282 checks all pass (suite counts, with overlapping predecessors); zero failures/errors/skips/not-run. Frozen9/154/119/257 and public1400, both SCH consumers and both compiler XML-only consumers pass; zero build warnings/errors;179tasks/diff clean. Await owned allocation evidence before verification.",
+      "artifact": "docs/reports/M8-xsd-effective-content/README.md"
+    },
+    {
+      "id": "owned-allocation",
+      "kind": "check",
+      "revision": "ade942a4bbc6b7341bfd10f40c1a27068619257d",
+      "command": "python3 docs/reports/M8-xsd-effective-content/measure.py --granted e261323fcd7bb33c3fc3f9ab647d2611592fc7d688dd8a1e27bdbb87575d3580 2026-10-12T01:03:00Z 2026-10-12T00:59:38.771032+00:00",
+      "result": "passed",
+      "summary": "Five real owned compiler routes,64 samples each:76744/76928/80968/79880/49504 bytes. Cold fixture88320,positive1048,approximate retained64 graphs delta4570648.410 identities unchanged; child exit0/reaped/group absent/log closed; durable076a64c0 release before inspection. No zero/timing/speed claim.",
+      "artifact": "docs/reports/M8-xsd-effective-content/allocations.md"
+    }
+  ],
+  "blockers": [],
+  "handoff": {
+    "summary": "Verified effective-content compiler mapping at combined8917aceb,282 compiler checks plus454 SCH checks, API/consumer compatibility and owned allocation evidence. Content dependency is now consumable.",
+    "checks": [
+      "282 compiler checks and454 Schematron checks on combined8917aceb; overlapping predecessor suites",
+      "Frozen119/257/9/154 and public1400; real consumers;179 planning;0warnings/errors",
+      "5 owned allocation routes under fresh all-host grant,410 identities stable, release before inspection"
+    ],
+    "remaining": [],
+    "requests": [
+      "Return content task JSON and add this dependency only after verified on main. Preserve corrected earlier content tests and historical failures."
+    ]
+  }
+}

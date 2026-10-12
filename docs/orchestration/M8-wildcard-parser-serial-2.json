@@ -1,0 +1,92 @@
+{
+  "id": "M8-wildcard-parser-serial-2",
+  "status": "RELEASED",
+  "createdUtc": "2026-10-12T00:21:23.494253+00:00",
+  "earliestStart": "2026-10-12T00:25:00Z",
+  "latestStart": "2026-10-12T00:29:00Z",
+  "absoluteExpiry": "2026-10-12T00:43:10Z",
+  "rootPhase": {
+    "task": "M8-xsd-wildcard-composition",
+    "source": "42a93288b8a3b4c2def3be7c5a1183738f9137c6",
+    "manifest": "20a0bf3164bcde3632e0a634310981d6d2067a3e08196e569f0ce78d08042f5e",
+    "seconds": 30,
+    "workSeconds": 20,
+    "cleanupSeconds": 10,
+    "command": "python3 docs/reports/M8-xsd-wildcard-composition/measure.py --granted <manifest> 2026-10-12T00:29:00Z <phase-expiry>",
+    "cwd": "/private/tmp/xemele-M8-xsd-wildcard-composition"
+  },
+  "parserPhase": {
+    "chat": "01a12d64-81ae-79e3-8ba2-b88110af6fdb",
+    "maximumWorkSeconds": 840,
+    "cleanupSeconds": 10,
+    "manifest": "6b60fa459e59759c7bb2db24336e5bb24796e0b31f311ce5faf0b4f8c3fa7c6f",
+    "manifestPath": "/Users/sebastienros/github/parsers/results/2026-10-11-arm64/run-01/manifest.json",
+    "harnessManifest": "2790515aa26a56356ed961e3a3545cd61a74a227a16bda0e2ef4674dded09d89",
+    "harnessPath": "/Users/sebastienros/github/parsers/results/2026-10-11-arm64/run-01/prepared-harness.json",
+    "command": "dotnet /Users/sebastienros/github/parsers/benchmarks/ParserLab.Benchmarks/bin/Release/net10.0/ParserLab.Benchmarks.dll --filter '*' --artifacts /Users/sebastienros/github/parsers/results/2026-10-11-arm64/run-01/bdn --quick",
+    "supervisorPid": 60333,
+    "driverPid": 60338,
+    "caseCount": 120,
+    "gate": "closed; explicit parser-phase grant required",
+    "expiryRule": "min actual gate open+14min,00:43UTC;cleanup10s;absolute00:43:10UTC"
+  },
+  "rules": "Fresh all-known actor ACKs required; root phase first; explicit phase grants; no overlap/build/discovery/retry; immediate durable phase release before inspection; final RELEASE all actors after final child/group cleanup. Expiry does not authorize unreported leftovers.",
+  "acks": {
+    "xemeleMain": "Fresh exactserial2 ACK, idle/nojobs, mainread-only",
+    "content": "Fresh exactserial2 ACK at c903d01, nojobs",
+    "schematronEvaluator": "Fresh exactserial2 ACK retrievedfinal; safeboundary00:23:43Z, source43c6ab4/tip32b675a, nojobs",
+    "facets": "Fresh exactserial2 ACK afterbuild97992exit0 and179tests boundary;nojobs",
+    "root": "Combined254checks exit0/session67737finished;noownjob;all410frozeninputs verified before proposal",
+    "parser": "Fresh exactserial2 ACK, gateclosed,120cases/110harnessidentitiesreverified;onlyidle60333/60338",
+    "gregsex": "Freshaggregateall5: main01a12c93,coord01a12d32,conformance01a12d6b-cbc9,host01a12d6b-d1fa,parser01a12d77; allnojobs/PIDs/children, exactscope/times, nooldACKreuse"
+  },
+  "acksRecordedUtc": "2026-10-12T00:24:47.464474+00:00",
+  "rootGrant": {
+    "id": "M8-wildcard-parser-serial-2",
+    "phase": "root",
+    "createdUtc": "2026-10-12T00:25:13.559649+00:00",
+    "absoluteExpiry": "2026-10-12T00:25:43.559649+00:00",
+    "manifest": "20a0bf3164bcde3632e0a634310981d6d2067a3e08196e569f0ce78d08042f5e",
+    "sourceRevision": "42a93288b8a3b4c2def3be7c5a1183738f9137c6",
+    "status": "GRANTED"
+  },
+  "rootRelease": {
+    "recordedUtc": "2026-10-12T00:25:14.135443+00:00",
+    "supervisorExit": 0,
+    "rawInspected": false,
+    "grantRevision": "2173e5c8f815c6b54d2dc7c2b7266a569d26efff"
+  },
+  "parserGrant": {
+    "createdUtc": "2026-10-12T00:25:40.123941+00:00",
+    "rootReleaseRevision": "e8c237f61542d9b1ca9a77286ff1ac570827a724",
+    "maximumWorkSeconds": 840,
+    "cleanupSeconds": 10,
+    "startBy": "2026-10-12T00:29:00Z",
+    "absoluteExpiry": "2026-10-12T00:43:10Z",
+    "expiryRule": "min(actualgateopen+14min,00:43UTC), cleanup10s",
+    "scope": "Exact frozen120case payload/command/manifests in parserPhase; no builds/discovery/retry; owner confirmscleanup+releasebeforeinspection"
+  },
+  "parserActual": {
+    "gateOpen": "2026-10-12T00:25:55.044774Z",
+    "measurementExpiry": "2026-10-12T00:39:55.044774Z",
+    "cleanupDeadline": "2026-10-12T00:40:05.044774Z"
+  },
+  "parserRelease": {
+    "recordedUtc": "2026-10-12T00:37:36.062045+00:00",
+    "completedUtc": "2026-10-12T00:32:13.402544Z",
+    "supervisorExit": 0,
+    "timeout": false,
+    "lifecycle": "Owner confirmed driver reaped, console closed, group cleanup complete, all before/after identities match. Follow-up OS listing found neither supervisor60333 nor group60338; no workload remains. Owner sent RELEASE before raw inspection; root has not inspected parser raw results.",
+    "ownerChat": "01a12d64-81ae-79e3-8ba2-b88110af6fdb",
+    "ownerReleasedBeforeRawInspection": true
+  },
+  "finalRelease": {
+    "recordedUtc": "2026-10-12T00:37:36.062045+00:00",
+    "completedUtc": "2026-10-12T00:32:13.402544Z",
+    "supervisorExit": 0,
+    "timeout": false,
+    "lifecycle": "Owner confirmed driver reaped, console closed, group cleanup complete, all before/after identities match. Follow-up OS listing found neither supervisor60333 nor group60338; no workload remains. Owner sent RELEASE before raw inspection; root has not inspected parser raw results.",
+    "ownerChat": "01a12d64-81ae-79e3-8ba2-b88110af6fdb",
+    "ownerReleasedBeforeRawInspection": true
+  }
+}

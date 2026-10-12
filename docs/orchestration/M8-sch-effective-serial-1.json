@@ -1,0 +1,49 @@
+{
+  "id": "M8-sch-effective-serial-1",
+  "status": "ABORTED_BEFORE_GRANT",
+  "maximumSeconds": 60,
+  "scope": "Two prebuilt allocation-only supervisors, SCH then effective-content, serial and once. Each is bounded to30s with20s work and10s cleanup. Overall actual UTC grant bounds also apply. Stop on first failure; no build/restore/discovery/tests/retry/extension; immediate durable RELEASE after lifecycle cleanup before raw inspection. Not a grant or PARK request.",
+  "sequence": [
+    {
+      "task": "M8-sch-validate",
+      "source": "43c6ab4cc789cc1e400dfdb2cea74e3851f681d7",
+      "prepared": "5ed14389fe4df0b5097152239787c7290331df3f",
+      "cwd": "/Users/sebastienros/.codex/worktrees/8502/xemele",
+      "manifest": "379c2d73c7333031792405f14403b11035806be6175b418ddebc862127bf75be",
+      "manifestPath": "docs/reports/M8-sch-validate/preparation.json",
+      "supervisor": "docs/reports/M8-sch-validate/lease.py",
+      "identities": 215,
+      "routes": 10
+    },
+    {
+      "task": "M8-xsd-effective-content",
+      "source": "ade942a4bbc6b7341bfd10f40c1a27068619257d",
+      "prepared": "04b90121",
+      "cwd": "/private/tmp/xemele-M8-xsd-wildcard-integration",
+      "manifest": "e261323fcd7bb33c3fc3f9ab647d2611592fc7d688dd8a1e27bdbb87575d3580",
+      "manifestPath": "docs/reports/M8-xsd-effective-content/preparation.json",
+      "supervisor": "docs/reports/M8-xsd-effective-content/measure.py",
+      "identities": 410,
+      "routes": 5
+    }
+  ],
+  "preflight": "Both source reviews accepted; actual454 SCH and282 compiler tests; disabled controls and elevated process-cleanup verification passed; root independently verified both prepared identity sets before external GregsEx park.",
+  "acks": {
+    "root": "Fresh postrelease verification passed215+410 identities and ps; no jobs remaining. Root parked source/docs only.",
+    "main": "Fresh exact scope ACK; no jobs/new actors; read-only",
+    "content": "Fresh exact scope ACK; no jobs/new actors",
+    "schematron": "Fresh exact scope ACK retrieved final; no jobs/new actors; preserved manifest",
+    "facets": "Fresh exact scope ACK after772 checks and failed preparation exit1; no jobs/new actors; controls not started",
+    "parser": "Fresh exact scope ACK; completed research, no jobs/workers/new actors",
+    "reviewers": "Contract reviewer explicitly ACKed source/document reads and text reasoning only, no execution/delegation; other two reviews completed with no jobs/future dispatch"
+  },
+  "earliestStart": "2026-10-12T00:48:00Z",
+  "latestStart": "2026-10-12T00:53:00Z",
+  "absoluteCleanupCap": "2026-10-12T00:54:00Z",
+  "proposedUtc": "2026-10-12T00:47:36.160884+00:00",
+  "reviewers": "Contract reviewer active read-only facets review and explicitly asked for no-execution ACK; model/xpath reviews completed with no jobs or future dispatch until release.",
+  "abort": {
+    "recordedUtc": "2026-10-12T00:53:27.659495+00:00",
+    "reason": "Latest start expired without complete fresh GregsEx aggregate. No grant, supervisor, child or raw measurement output was created. All proposal parks released; new scope requires fresh ACKs."
+  }
+}

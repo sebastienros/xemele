@@ -10,7 +10,9 @@
   "base_revision": "55a1f72c319b792acc216ca847818aba5ac7cd13",
   "integration_revision": null,
   "depends_on": [
-    "M8-xsd-compile"
+    "M8-xsd-compile",
+    "M8-xsd-wildcard-composition",
+    "M8-xsd-effective-content"
   ],
   "goals": [
     "G14"
@@ -77,23 +79,30 @@
       "result": "failed",
       "summary": "102 owned cases:101passed,1failed,0skipped. Sole failing requirednegative NonExpressibleIntermediateMustBeRejectedBeforeCompilerDiscardsIt proves the owning declaration compiler erases a non-expressible intermediate wildcard. Other bounded four-finding regressions pass; no exclusion or measurement. Precise retainedgraph/repair request in review-corrections.md.",
       "artifact": "artifacts/M8-xsd-content/review-corrections.xml"
+    },
+    {
+      "id": "corrected-empty-expectations",
+      "kind": "check",
+      "revision": "05a08eaac946552cd1885a779d18d13d8b04021c",
+      "command": "Owned102case selection reported by worker; see review-corrections.md",
+      "result": "failed",
+      "summary": "Actual99passed/3failed/0errors/skips/not-run. Two effective-empty extension positive cases fail at retained compiler ContentKind (Empty/ElementOnly expectedMixed), plus unchanged invalidwildcardintermediate. Prior101/1 run preserved; two incorrect negative expectations corrected after normative review, nonempty element-only extension negative unchanged.",
+      "artifact": null
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Sourcefe30b556 reviewed; bounded four-finding correction sourcef098c72fd2f94bea18c46194de1795ea26439a4d awaits immutable closure review. Required lost-intermediate wildcard negative remains failed pending ordered compiler-owner repair; other102case selection entries pass. No measurements.",
+    "summary": "Both compiler owner repairs verified on main at combined8917aceb. Root returns taskJSON ownership to worker for verified-main refresh, required102-case rerun and fresh measurement preparation; prior failures/evidence preserved.",
     "checks": [
       "Initial scoped check.py:228passed,1393public/9frozen,XML-only consumer,planning176/diff clean atfe30b556 (superseded for acceptance by source review).",
       "Correction runtime/tests Release builds:zero warnings/errors.102owned cases atf098c72f:101pass/1requirednegative fail/0skips.",
       "Warm allocation/timing not run; only one probe payload build completed before hostPARK."
     ],
     "remaining": [
-      "Closure source review; verified/integrated compiler-owner repair and refresh worker; rerun unchanged required negative and all focused/API/XML-only checks.",
+      "Consume verified main with wildcard/effective-content repairs; rerun all102 owned cases including original lost-wildcard negative, corrected positive empty extensions and unchanged nonempty extension negative, then all applicable checks.",
       "Finish counters-disabled probe/NoEmit controls and frozen identities/process supervision; explicit all-peerPARK/rootgrant required before allocation/timing.",
       "Later facade/facet join MUST discharge typed element fixed/default value equality and declaration/binding lexical-value consistency using retained IDs/types/contexts/locations, including unused declarations. No datatype fallback supplied."
     ],
-    "requests": [
-      "src/Xemele/Validation/Xsd/Compilation/Compiler.cs: owning ordered repair must validate every private Union/Intersection operand/result for XSD1.0 namespace-constraint expressibility BEFORE discarding intermediate operands; thread actual At(s,node/body) locations into private calls. Actual fixture and retained T.AnyAttribute={Negated:false,Namespaces:[urn:v]} proof: tests/Xemele.Tests/M8-xsd-content/ReviewRegressionTests.cs and docs/reports/M8-xsd-content/review-corrections.md. Keep compiler independently buildable; no public/frozen declaration change."
-    ]
+    "requests": []
   }
 }

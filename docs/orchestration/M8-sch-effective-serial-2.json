@@ -1,0 +1,123 @@
+{
+  "id": "M8-sch-effective-serial-2",
+  "status": "RELEASED",
+  "maximumSeconds": 60,
+  "scope": "Two prebuilt allocation-only supervisors, SCH then effective-content, serial and once. Each is bounded to30s with20s work and10s cleanup. Overall actual UTC grant bounds also apply. Stop on first failure; no build/restore/discovery/tests/retry/extension; immediate durable RELEASE after lifecycle cleanup before raw inspection. Not a grant or PARK request.",
+  "sequence": [
+    {
+      "task": "M8-sch-validate",
+      "source": "43c6ab4cc789cc1e400dfdb2cea74e3851f681d7",
+      "prepared": "5ed14389fe4df0b5097152239787c7290331df3f",
+      "cwd": "/Users/sebastienros/.codex/worktrees/8502/xemele",
+      "manifest": "379c2d73c7333031792405f14403b11035806be6175b418ddebc862127bf75be",
+      "manifestPath": "docs/reports/M8-sch-validate/preparation.json",
+      "supervisor": "docs/reports/M8-sch-validate/lease.py",
+      "identities": 215,
+      "routes": 10
+    },
+    {
+      "task": "M8-xsd-effective-content",
+      "source": "ade942a4bbc6b7341bfd10f40c1a27068619257d",
+      "prepared": "04b90121e62aad6b586396b5626c02e4d49c39bb",
+      "cwd": "/private/tmp/xemele-M8-xsd-wildcard-integration",
+      "manifest": "e261323fcd7bb33c3fc3f9ab647d2611592fc7d688dd8a1e27bdbb87575d3580",
+      "manifestPath": "docs/reports/M8-xsd-effective-content/preparation.json",
+      "supervisor": "docs/reports/M8-xsd-effective-content/measure.py",
+      "identities": 410,
+      "routes": 5
+    }
+  ],
+  "preflight": "Both source reviews accepted; actual454 SCH and282 compiler tests; disabled controls and elevated process-cleanup verification passed; root independently verified both prepared identity sets before external GregsEx park. Actual combined8917aceb:454 SCH checks and282 compiler checks, public1400/consumers all pass. Serial-1 expired without grant or execution; no prior ACK reused.",
+  "acks": {
+    "root": "Actual combined checks complete at8917aceb; both frozen payloads freshly reverified; no jobs/sessions/cells.",
+    "main": "Fresh exact serial-2 ACK; no jobs/new actors, read-only",
+    "content": "Fresh exact serial-2 ACK; no jobs/new actors",
+    "schematron": "Fresh exact serial-2 ACK retrieved final; no jobs/new actors",
+    "parser": "Fresh exact serial-2 ACK; complete research, no jobs/workers/scheduled follow-up/new actors",
+    "reviewers": "All three read-only review tasks completed; no host jobs or future dispatch until release. Root confirms ownership.",
+    "gregsexCoordinator": "Fresh exact serial-2 ACK; integrated checks completed, no jobs. Host worker verified and archived; four current actors:main/coordinator/parser/conformance; other three ACKs pending.",
+    "facets": "Fresh exact serial-2 ACK after773 checks completed exit0; no jobs/PIDs/new actors; five review corrections remain source/docs only.",
+    "gregsex": "Fresh complete FOUR-actor aggregate:main01a12c93/coordinator01a12d32/parser01a12d77/conformance01a12d6b-cbc9. All zero jobs/PIDs/children/sessions/cells/new actors. Prior host worker verified205b5b6 and archived. No old ACK reused."
+  },
+  "earliestStart": "2026-10-12T00:56:00Z",
+  "latestStart": "2026-10-12T01:03:00Z",
+  "absoluteCleanupCap": "2026-10-12T01:04:00Z",
+  "proposedUtc": "2026-10-12T00:56:04.375177+00:00",
+  "reviewers": "All three read-only review tasks completed with no jobs; root will not redispatch until release.",
+  "grant": {
+    "startedUtc": "2026-10-12T00:58:52.596907+00:00",
+    "expiryUtc": "2026-10-12T00:59:52.596907+00:00",
+    "maximumSeconds": 60,
+    "owner_chat": "01a12c6c-b333-71d3-877f-0d186618e21d",
+    "attempts": 1,
+    "release": "Immediate durable release after both supervisors terminate with child/group/output cleanup, before raw inspection. Stop on firstfailure; no retry."
+  },
+  "release": {
+    "recordedUtc": "2026-10-12T00:59:09.181735+00:00",
+    "results": [
+      {
+        "task": "M8-sch-validate",
+        "exit": 0,
+        "phaseExpiry": "2026-10-12T00:59:38.348819+00:00",
+        "lifecycle": {
+          "lease": "M8-sch-validate-allocation-1",
+          "status": 0,
+          "beforeIdentities": true,
+          "afterIdentities": true,
+          "beforeManifestSha256": true,
+          "afterManifestSha256": true,
+          "sequence": [
+            {
+              "pid": 75617,
+              "exit": 0,
+              "reason": "completed",
+              "directChildReaped": true,
+              "ownedGroupAbsent": true,
+              "logClosed": true,
+              "groupMembers": []
+            }
+          ],
+          "rawInspected": false,
+          "latestStart": "2026-10-12T01:03:00Z",
+          "absoluteExpiry": "2026-10-12T00:59:38.348819+00:00",
+          "maximumRemainingSeconds": 29.951663,
+          "beforeMismatches": [],
+          "identityCount": 215,
+          "afterMismatches": [],
+          "elapsedSeconds": 0.3677942920476198
+        },
+        "cleanupConfirmed": true
+      },
+      {
+        "task": "M8-xsd-effective-content",
+        "exit": 0,
+        "phaseExpiry": "2026-10-12T00:59:38.771032+00:00",
+        "lifecycle": {
+          "status": 0,
+          "beforeIdentities": true,
+          "afterIdentities": true,
+          "sequence": [
+            {
+              "command": 0,
+              "pid": 75623,
+              "exit": 0,
+              "reason": "completed",
+              "directChildReaped": true,
+              "ownedGroupAbsent": true,
+              "logClosed": true
+            }
+          ],
+          "rawResultsInspected": false,
+          "latestStart": "2026-10-12T01:03:00Z",
+          "absoluteExpiry": "2026-10-12T00:59:38.771032+00:00",
+          "beforeMismatches": [],
+          "identityCount": 410,
+          "afterMismatches": [],
+          "elapsedSeconds": 0.3769295420497656
+        },
+        "cleanupConfirmed": true
+      }
+    ],
+    "rawInspected": false
+  }
+}

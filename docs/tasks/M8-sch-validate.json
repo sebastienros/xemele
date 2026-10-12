@@ -4,11 +4,11 @@
   "milestone": "M8",
   "title": "Schematron evaluation and results",
   "kind": "feature",
-  "status": "planned",
-  "owner": null,
-  "branch": null,
-  "base_revision": null,
-  "integration_revision": null,
+  "status": "verified",
+  "owner": "M8 coordinator01a12c6c-b333-71d3-877f-0d186618e21d / assigned isolated worker",
+  "branch": "codex/m8-sch-validate",
+  "base_revision": "d6d21c40a7dc89c11fc00039a07383f61cfcd48d",
+  "integration_revision": "8917aceb24b132e0124405279fe9abd6359bca86",
   "depends_on": [
     "M8-sch-compile"
   ],
@@ -34,29 +34,121 @@
     {
       "id": "M8-sch-validate-A1",
       "description": "Evaluate selected phases/rules and produce structured assertions/reports/diagnostics with source locations.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "source-checks",
+        "closure-review",
+        "coordinator-combined-integration"
+      ]
     },
     {
       "id": "M8-sch-validate-A2",
       "description": "Test phase selection, contexts/variables, assertions versus reports, concurrency and work budgets.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "source-checks",
+        "coordinator-combined-integration"
+      ]
     },
     {
       "id": "M8-sch-validate-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "source-checks",
+        "owned-allocation",
+        "allocation-review",
+        "coordinator-combined-integration"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Validation/Schematron/SchematronSchema.cs: frozen six public Compile/Validate overloads and immutable model publication",
+    "src/Xemele/Validation/Schematron/Evaluation/SchematronEvaluator.cs: phase/scoped typed lets, first-rule document ordering, accounted M4, detached keyed traces/findings and logical XPath locations",
+    "src/Xemele/Validation/Schematron/Evaluation/Input.cs: strict structured string/byte input, shared scalar/work accounting, caller stream/exception lifetime",
+    "tests/Xemele.Tests/M8-sch-validate/: 35 independent behavior/boundary/work-budget/location/composition cases",
+    "docs/api/M8-sch-validate.txt: seven exact additive public members; docs/reports/M8-sch-validate/frozen.txt: nine-member public/internal seam",
+    "samples/M8-sch-validate/: normal and genuine XML-only six-overload consumers",
+    "benchmarks/Xemele.Benchmarks/M8-sch-validate/: prebuilt allocation-only ten-route control; measurement not run"
+  ],
+  "evidence": [
+    {
+      "id": "source-checks",
+      "kind": "check",
+      "revision": "43c6ab4cc789cc1e400dfdb2cea74e3851f681d7",
+      "command": "python3 docs/reports/M8-sch-validate/checks.py",
+      "result": "passed",
+      "summary": "454 actual tests passed (35 owned,419 verified prerequisites), zero errors/failures/skips/not-run; frozen9/compiler154 metadata and additive public1400 (1393+7) matched; normal/XML-only consumer passed; Release SDK10.0.400/.NET10.0.11 builds zero warnings/errors; planning177 and whitespace passed. See owned README for exact case counts and earlier corrected failures.",
+      "artifact": "docs/reports/M8-sch-validate/README.md"
+    },
+    {
+      "id": "allocation-control",
+      "kind": "check",
+      "revision": "43c6ab4cc789cc1e400dfdb2cea74e3851f681d7",
+      "command": "XEMELE_SCH_VALIDATE_REVISION=43c6ab4cc789cc1e400dfdb2cea74e3851f681d7 DOTNET_TieredCompilation=0 DOTNET_gcServer=0 DOTNET_GCConcurrent=0 dotnet --fx-version 10.0.11 benchmarks/Xemele.Benchmarks/M8-sch-validate/bin/Release/net10.0/Xemele.Benchmarks.dll --control artifacts/M8-sch-validate/control.json",
+      "result": "passed",
+      "summary": "Ten consumed routes passed with allocation/retained/RSS counters disabled; rebuilt prebuilt payload after accepted focused logical-text location fix. This is control correctness, not measurement.",
+      "artifact": "docs/reports/M8-sch-validate/preparation.json"
+    },
+    {
+      "id": "allocation-preparation",
+      "kind": "check",
+      "revision": "43c6ab4cc789cc1e400dfdb2cea74e3851f681d7",
+      "command": "python3 docs/reports/M8-sch-validate/lease.py --prepare && python3 docs/reports/M8-sch-validate/lease.py --verify-only",
+      "result": "passed",
+      "summary": "Elevated preparation and verification passed215 identities, actual process-inspection permissions, countersDisabled=true/rawInspected=false. SHA256379c2d73c7333031792405f14403b11035806be6175b418ddebc862127bf75be; maximum30s (20work+10cleanup). No active measurement grant.",
+      "artifact": "docs/reports/M8-sch-validate/preparation.json"
+    },
+    {
+      "id": "closure-review",
+      "kind": "review",
+      "revision": "43c6ab4cc789cc1e400dfdb2cea74e3851f681d7",
+      "command": "Coordinator-relayed bounded closure review; no test command executed",
+      "result": "passed",
+      "summary": "Coordinator accepted the exact logical-text location fix with no remaining finding; both context/subject M4 round-trips and per-node charges accepted. Local read-only SHA256 confirmation matches relayed evaluator01532f6938c72704c0476f858b7420397d98545723dbb3c9b3dd886f9696ef2d and location-tests c40aa56f8cee484955d1d96f82ef108282a8a74f8c5e0da76636ac3f7cc94315. Review evidence, not a fresh test run.",
+      "artifact": "docs/reports/M8-sch-validate/README.md"
+    },
+    {
+      "id": "owned-allocation",
+      "kind": "check",
+      "revision": "43c6ab4cc789cc1e400dfdb2cea74e3851f681d7",
+      "command": "python3 docs/reports/M8-sch-validate/lease.py --granted 379c2d73c7333031792405f14403b11035806be6175b418ddebc862127bf75be 2026-10-12T01:03:00Z 2026-10-12T00:59:38.348819+00:00",
+      "result": "passed",
+      "summary": "Root executed one prebuilt synchronous allocation-only child under fresh M8-sch-effective-serial-2. Status0; all215 source/runtime/binary/control/supervisor identities and manifest stable before/after; child75617 exit0/reaped/group absent/log closed. Durable RELEASE076a64c0807942316e0802c815876b39ddf77ea5 preceded raw inspection. Apple M4 Pro/Arm64 .NET10.0.11: cold precompiled-document validation35976B; nine consumed32-call warm windows: positive152B/call, M4 selector11272, valid32360, assert33520, scoped102584.75, long message66352, strict parse+validate45704, syntax13192, budget1984. Retained16 scoped results approximate101552B; process RSS55115776B. Aggregate means only; scoped causal residual unknown; no timing/BDN/borrowed-zero/x64/conformance claim.",
+      "artifact": "docs/reports/M8-sch-validate/allocations.md"
+    },
+    {
+      "id": "allocation-review",
+      "kind": "review",
+      "revision": "43c6ab4cc789cc1e400dfdb2cea74e3851f681d7",
+      "command": "Coordinator independent post-RELEASE raw review; local SHA256 match (no new measurement/test)",
+      "result": "passed",
+      "summary": "Root independently accepted all exact owned positive allocation rows, fractional scoped mean102584.75, retained/RSS limits and cleanup. Raw SHA2567bb12f4769e30defcd98d0a943e1ab99d79d96f5ce1992c01362a1a09e5d9d62 independently matched locally. Root separately reported combined8917aceb24b132e0124405279fe9abd6359bca86 passed454 SCH checks plus282 compiler checks with overlapping predecessors, API seams/public1400/consumers, zero warnings/errors and planning179; coordinator owns integrated verification.",
+      "artifact": "docs/reports/M8-sch-validate/allocations.md"
+    },
+    {
+      "id": "coordinator-combined-integration",
+      "kind": "integration",
+      "revision": "8917aceb24b132e0124405279fe9abd6359bca86",
+      "command": "python3 docs/reports/M8-sch-validate/checks.py && python3 docs/reports/M8-xsd-effective-content/checks.py",
+      "result": "passed",
+      "summary": "Actual combined accepted evaluator43c6ab4 and compilerade942a4 with main:454 SCH checks plus282 compiler checks, each suite zero failures/errors/skips/not-run (overlapping predecessor counts). Frozen9/154/119/257 and public1400; normal/trueXML-only consumers;0warnings/errors;179tasks. Subsequent merges change only task/orchestration/report metadata; source/tests/benchmarks/samples/API/shared-build diff with tested revision is empty. No repeated execution claimed.",
+      "artifact": "docs/reports/M8-sch-validate/integration.md"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "",
-    "checks": [],
-    "remaining": [],
+    "summary": "Verified combined Schematron evaluator and public facade; accepted logical text-location correction,454 combined checks, frozen/public1400 and owned allocation evidence. Terminal worker handback received; cleanup pending.",
+    "checks": [
+      "python3 docs/reports/M8-sch-validate/checks.py:454 actual tests (35 owned,419 prerequisites), frozen9/compiler154/public1400, both consumers, planning177 and whitespace passed at43c6ab4",
+      "Accepted closure review:exact evaluator/location test hashes and both M4 logical-text round-trips accepted",
+      "Counter-disabled10-route control and elevated215 identity/process-inspection verification passed",
+      "One root-granted prebuilt allocation-only run:status0,215 identities stable, child reaped/group absent/output closed; exact totals/aggregate means and limitations in docs/reports/M8-sch-validate/allocations.md"
+    ],
+    "remaining": [
+      "Coordinator integrates source/evidence, reruns applicable combined checks and records integration revision before verified",
+      "One Arm64 allocation-only run does not establish x64/cross-architecture release or full conformance corpus; no borrowed-zero or speed claim"
+    ],
     "requests": []
   }
 }

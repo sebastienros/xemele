@@ -145,7 +145,7 @@ internal sealed class XsdCompilation
             }
             else
             {
-                var loaded = loader.Load(new(href!, context.BaseUri, kind, At(source, node)), op);
+                var loaded = loader.Load(new(href!, source.Scope.SourceUri, kind, At(source, node)), context.BaseUri, op);
                 using var traversal = loader.EnterComposition(At(source, node));
                 imported = Load(new(loaded, op, loader.SourceUri(loaded)), ns, kind);
             }
@@ -534,30 +534,54 @@ internal sealed class XsdCompilation
             }
         }
         else if (owner.Previous is not null) Error("Redefined complex type requires explicit derivation.", At(s, node));
-        bool attributeSection = false;
+        bool attributeSection = false; XmlNode authoredParticle = default;
         foreach (var child in Children(s, body))
         {
             if (child.LocalName is "attribute" or "attributeGroup" or "anyAttribute") attributeSection = true;
             else if (attributeSection && child.LocalName != "annotation") Error("Content particles and facets precede attribute uses.", At(s, child));
             if (child.LocalName is "sequence" or "choice" or "all" or "group")
-            { if (particle is not null || simpleType is not null) Error("Invalid duplicate particle.", At(s, child)); particle = Particle(owner, child, true); }
+            { if (!authoredParticle.IsDefault || simpleType is not null) Error("Invalid duplicate particle.", At(s, child)); authoredParticle = child; particle = Particle(owner, child, true); }
             else if (child.LocalName is not ("annotation" or "attribute" or "attributeGroup" or "anyAttribute" or "simpleType") && !IsFacet(child.LocalName)) Error("Invalid complex type body.", At(s, child));
             else if ((child.LocalName == "simpleType" || IsFacet(child.LocalName)) && (content.IsDefault || content.LocalName != "simpleContent")) Error("Simple facets outside simple content.", At(s, child));
+        }
+        if (simpleType is null)
+        {
+            Tick(At(s, body));
+            // Structures 3.4.2 clause 2.1 is syntactic, not general nullability.
+            bool emptySyntax = authoredParticle.IsDefault ||
+                particle!.Term is XsdGroupTerm { Particles.Count: 0 } &&
+                (authoredParticle.LocalName is "sequence" or "all" ||
+                 authoredParticle.LocalName == "choice" && particle.MinOccurs == BigInteger.Zero);
+            if (emptySyntax)
+            {
+                if (!mixed) particle = null;
+                else if (particle is not { Term: XsdGroupTerm { Compositor: XsdCompositor.Sequence }, MinOccurs: { IsOne: true }, MaxOccurs: { IsOne: true } })
+                {
+                    var at = At(s, authoredParticle.IsDefault ? body : authoredParticle);
+                    Components(at); Components(at);
+                    particle = new(new XsdGroupTerm(XsdCompositor.Sequence, []), BigInteger.One, BigInteger.One, at);
+                }
+            }
+            else if (particle!.MaxOccurs == BigInteger.Zero)
+                particle = null; // A validated 0..0 top-level particle maps to no component.
         }
         AttributeBody(owner, body, bindings, out wildcard);
         if (baseType is not null)
         {
             if (derivation == XsdDerivation.Extension)
             {
-                if (baseType.Particle is not null)
+                if (particle is null)
                 {
-                    if (particle is not null)
-                    {
-                        if (IsAll(baseType.Particle) || IsAll(particle)) Error("All content cannot be extended with another particle.", At(s, body));
-                        Components(At(s, body)); Components(At(s, body));
-                        particle = new(new XsdGroupTerm(XsdCompositor.Sequence, [baseType.Particle, particle]), BigInteger.One, BigInteger.One, At(s, body));
-                    }
-                    else { particle = baseType.Particle; if (content.LocalName == "complexContent" && node.GetAttribute("mixed") is null && content.GetAttribute("mixed") is null) mixed = baseType.ContentKind == XsdContentKind.Mixed; }
+                    // Clause 3.2.1 inherits the entire base content type, regardless
+                    // of authored mixed attributes, when effective content is empty.
+                    particle = baseType.Particle;
+                    mixed = baseType.ContentKind == XsdContentKind.Mixed;
+                }
+                else if (baseType.Particle is not null)
+                {
+                    if (IsAll(baseType.Particle) || IsAll(particle)) Error("All content cannot be extended with another particle.", At(s, body));
+                    Components(At(s, body)); Components(At(s, body));
+                    particle = new(new XsdGroupTerm(XsdCompositor.Sequence, [baseType.Particle, particle]), BigInteger.One, BigInteger.One, At(s, body));
                 }
                 foreach (var inherited in baseType.Attributes)
                 {
@@ -570,7 +594,7 @@ internal sealed class XsdCompilation
                     }
                     if (!present) bindings.Add(inherited);
                 }
-                if (baseType.AnyAttribute is not null) wildcard = wildcard is null ? baseType.AnyAttribute : Union(baseType.AnyAttribute, wildcard);
+                if (baseType.AnyAttribute is not null) wildcard = wildcard is null ? baseType.AnyAttribute : Union(baseType.AnyAttribute, wildcard, At(s, body));
             }
         }
         var block = new List<XsdTypeBlock>();
@@ -578,7 +602,7 @@ internal sealed class XsdCompilation
             if (token != "substitution") block.Add(token == "extension" ? XsdTypeBlock.Extension : XsdTypeBlock.Restriction);
         Components(At(s, node));
         types.Add(owner.Name, new(owner.Name, basis, derivation, Boolean(s, node, "abstract"), IsAnonymous(owner.Name), Final(s, node, "restriction extension"), block,
-            simpleType is not null ? XsdContentKind.Simple : mixed ? XsdContentKind.Mixed : particle is null ? XsdContentKind.Empty : XsdContentKind.ElementOnly,
+            simpleType is not null ? XsdContentKind.Simple : particle is null ? XsdContentKind.Empty : mixed ? XsdContentKind.Mixed : XsdContentKind.ElementOnly,
             simpleType, particle, bindings, wildcard, At(s, node)));
     }
     private static bool IsFacet(string name) => name is "length" or "minLength" or "maxLength" or "pattern" or "enumeration" or "whiteSpace" or "maxInclusive" or "maxExclusive" or "minInclusive" or "minExclusive" or "totalDigits" or "fractionDigits";
@@ -590,15 +614,63 @@ internal sealed class XsdCompilation
         if (group.Compositor == XsdCompositor.Choice) { foreach (var child in group.Particles) if (Emptiable(child)) return true; return false; }
         foreach (var child in group.Particles) if (!Emptiable(child)) return false; return true;
     }
-    private XsdWildcard Union(XsdWildcard first, XsdWildcard second)
+    private XsdWildcard Union(XsdWildcard first, XsdWildcard second, XmlLocation at) =>
+        ComposeWildcard(first, second, true, second.ProcessContents, at);
+
+    private XsdWildcard ComposeWildcard(XsdWildcard first, XsdWildcard second, bool union, XsdProcessContents process, XmlLocation at)
     {
-        var set = new HashSet<string>(first.Namespaces, StringComparer.Ordinal);
-        if (!first.Negated && !second.Negated) set.UnionWith(second.Namespaces);
-        else if (first.Negated && second.Negated) set.IntersectWith(second.Namespaces);
-        else if (first.Negated) set.ExceptWith(second.Namespaces);
-        else { set = new(second.Namespaces, StringComparer.Ordinal); set.ExceptWith(first.Namespaces); }
-        Components(default);
-        return new(first.Negated || second.Negated, new List<string>(set), second.ProcessContents);
+        Tick(at);
+        Components(at); // Owned result and its namespace snapshot; entries reserve below.
+        var names = new List<string>();
+        bool negated = union ? first.Negated || second.Negated : first.Negated && second.Negated;
+        if (first.Negated == second.Negated)
+        {
+            bool combine = union != first.Negated;
+            for (int i = 0; i < first.Namespaces.Count; i++)
+            {
+                Tick(at); string name = first.Namespaces[i];
+                if (combine || ContainsNamespace(second.Namespaces, name, at)) Add(name);
+            }
+            if (combine)
+                for (int i = 0; i < second.Namespaces.Count; i++)
+                {
+                    Tick(at); string name = second.Namespaces[i];
+                    if (!ContainsNamespace(first.Namespaces, name, at)) Add(name);
+                }
+        }
+        else
+        {
+            // Union subtracts the positive set from the excluded set; intersection
+            // subtracts the excluded set from the positive set.
+            var source = first.Negated == union ? first.Namespaces : second.Namespaces;
+            var remove = first.Negated == union ? second.Namespaces : first.Namespaces;
+            for (int i = 0; i < source.Count; i++)
+            {
+                Tick(at); string name = source[i];
+                if (!ContainsNamespace(remove, name, at)) Add(name);
+            }
+        }
+        // XSD 1.0 represents any, not(absent), or not(one namespace and absent).
+        // Reject NOW: a subsequent finite intersection could erase the evidence.
+        if (negated && names.Count != 0 && (names.Count > 2 || !ContainsNamespace(names, "", at)))
+            Error("Wildcard namespace composition is not expressible in XSD 1.0.", at);
+        Tick(at, names.Count); // Bounded owned snapshot copy in XsdWildcard.
+        return new(negated, names, process);
+
+        void Add(string name) { Components(at); names.Add(name); }
+    }
+
+    private bool ContainsNamespace(IReadOnlyList<string> names, string value, XmlLocation at)
+    {
+        for (int i = 0; i < names.Count; i++)
+        {
+            Tick(at); string candidate = names[i];
+            if (candidate.Length != value.Length) continue;
+            int j = 0;
+            for (; j < value.Length; j++) { Tick(at); if (candidate[j] != value[j]) break; }
+            if (j == value.Length) return true;
+        }
+        return false;
     }
 
     private int Element(Declaration owner, bool global)
@@ -694,7 +766,7 @@ internal sealed class XsdCompilation
             if (node.LocalName is not ("attribute" or "attributeGroup" or "anyAttribute")) continue;
             if (explicitWildcard) Error("anyAttribute must be last.", At(owner.Source, node));
             if (node.LocalName == "anyAttribute")
-            { var authored = Wildcard(owner, node); wildcard = wildcard is null ? authored : Intersection(wildcard, authored); explicitWildcard = true; continue; }
+            { var authored = Wildcard(owner, node); wildcard = wildcard is null ? authored : Intersection(authored, wildcard, At(owner.Source, node)); explicitWildcard = true; continue; }
             var added = new List<XsdAttributeBinding>();
             if (node.LocalName == "attribute") added.Add(Binding(owner, node));
             else
@@ -703,7 +775,7 @@ internal sealed class XsdCompilation
                 foreach (var child in Children(owner.Source, node)) if (child.LocalName != "annotation") Error("Attribute group reference cannot have a body.", At(owner.Source, child));
                 var name = QName(owner, node, Required(owner.Source, node, "ref"), "attributeGroup");
                 AttributeGroup(Find("attributeGroup", name, owner), added, out var includedWildcard);
-                if (includedWildcard is not null) wildcard = wildcard is null ? includedWildcard : Intersection(wildcard, includedWildcard);
+                if (includedWildcard is not null) wildcard = wildcard is null ? includedWildcard : Intersection(wildcard, includedWildcard, At(owner.Source, node));
             }
             foreach (var binding in added)
             {
@@ -732,16 +804,8 @@ internal sealed class XsdCompilation
         }
         finally { expanding.Remove(key); }
     }
-    private XsdWildcard Intersection(XsdWildcard first, XsdWildcard second)
-    {
-        var set = new HashSet<string>(first.Namespaces, StringComparer.Ordinal);
-        if (first.Negated && second.Negated) set.UnionWith(second.Namespaces);
-        else if (!first.Negated && !second.Negated) set.IntersectWith(second.Namespaces);
-        else if (!first.Negated) set.ExceptWith(second.Namespaces);
-        else { set = new(second.Namespaces, StringComparer.Ordinal); set.ExceptWith(first.Namespaces); }
-        Components(default);
-        return new(first.Negated && second.Negated, new List<string>(set), first.ProcessContents);
-    }
+    private XsdWildcard Intersection(XsdWildcard first, XsdWildcard second, XmlLocation at) =>
+        ComposeWildcard(first, second, false, first.ProcessContents, at);
     private XsdWildcard Wildcard(Declaration owner, XmlNode node)
     {
         var s = owner.Source; string lexical = Collapse(node.GetAttribute("namespace") ?? "##any");

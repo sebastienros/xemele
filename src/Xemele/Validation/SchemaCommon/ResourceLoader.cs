@@ -37,13 +37,21 @@ internal sealed class SchemaResourceLoader : ISchemaResourceLoader
 
     public XmlDocument Load(SchemaResourceReference reference, ISchemaOperation operation)
     {
+        ArgumentNullException.ThrowIfNull(reference);
+        return Load(reference, reference.Referrer ?? options.BaseUri, operation);
+    }
+
+    // Effective xml:base controls resolution; Referrer identifies the actual source
+    // resource. Explicit null means no resolution base, even when options has one.
+    internal XmlDocument Load(SchemaResourceReference reference, Uri? effectiveBaseUri, ISchemaOperation operation)
+    {
         ArgumentNullException.ThrowIfNull(reference); ArgumentNullException.ThrowIfNull(operation);
         if (!ReferenceEquals(owner, operation)) throw new ArgumentException("Loader belongs to a different operation.", nameof(operation));
         ArgumentNullException.ThrowIfNull(reference.Href);
         if (!Enum.IsDefined(reference.Purpose) || reference.Referrer is { IsAbsoluteUri: false }) throw new ArgumentException("Invalid schema reference.", nameof(reference));
+        if (effectiveBaseUri is { IsAbsoluteUri: false }) throw new ArgumentException("Schema resolution base must be absolute.", nameof(effectiveBaseUri));
         if (!operation.Charge(0, reference.Location)) throw SchemaSnapshots.Failure(operation);
-        Uri? basis = reference.Referrer ?? options.BaseUri;
-        if (!Uri.TryCreate(reference.Href, UriKind.Absolute, out var uri) && (basis is null || !Uri.TryCreate(basis, reference.Href, out uri)))
+        if (!Uri.TryCreate(reference.Href, UriKind.Absolute, out var uri) && (effectiveBaseUri is null || !Uri.TryCreate(effectiveBaseUri, reference.Href, out uri)))
             Fail("SCHEMA.ResourceDenied", "Schema reference has no absolute base URI.", reference.Location);
         if (options.Resolver is null) Fail("SCHEMA.ResourceDenied", "No schema resolver was supplied.", reference.Location);
         if (resources == (operation.Limits.ExternalResources ?? int.MaxValue)) Fail("SCHEMA.Limit", "Schema resource count exceeded.", reference.Location);

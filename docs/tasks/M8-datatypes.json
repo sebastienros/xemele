@@ -4,11 +4,11 @@
   "milestone": "M8",
   "title": "Compose and verify the XSD datatype value library",
   "kind": "feature",
-  "status": "planned",
-  "owner": null,
-  "branch": null,
-  "base_revision": null,
-  "integration_revision": null,
+  "status": "verified",
+  "owner": "M8 coordinator01a12c6c-b333-71d3-877f-0d186618e21d / assigned isolated worker",
+  "branch": "codex/m8-datatypes",
+  "base_revision": "878fd5572c565eb104c73c74bb1c8d4e2a04e317",
+  "integration_revision": "c6da4a5425cbdcd7104330d351f62b59c72fdf2b",
   "depends_on": [
     "M8-model",
     "M8-datatypes-core",
@@ -38,34 +38,160 @@
     {
       "id": "M8-datatypes-A1",
       "description": "Implement XSD 1.0 lexical/value spaces, numeric/date/duration/binary/QName families, equality and comparison.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "composition-correctness-2",
+        "composition-review-2",
+        "composition-measurement-2",
+        "composition-measurement-review",
+        "integrated-checks"
+      ]
     },
     {
       "id": "M8-datatypes-A2",
       "description": "Test whitespace/lexical/value boundaries, timezone comparisons, namespace context and invalid data.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "composition-correctness-2",
+        "composition-review-2",
+        "composition-measurement-2",
+        "composition-measurement-review",
+        "integrated-checks"
+      ]
     },
     {
       "id": "M8-datatypes-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "composition-correctness-2",
+        "composition-review-2",
+        "composition-measurement-2",
+        "composition-measurement-review",
+        "integrated-checks"
+      ]
     },
     {
       "id": "M8-datatypes-A4",
       "description": "Compose all verified core/numeric/temporal/text-binary children into the complete frozen IXmlDatatypeLibrary, registry lookup/whitespace/type queries and list/union/retyping behavior. Run cross-family and built-in completeness checks, preserve all original acceptance and include RNG datatype-namespace mapping. No advertised datatype may remain a placeholder or exclusion. Implement and test built-in NMTOKENS, IDREFS and ENTITIES parsing, XML whitespace tokenization, required nonempty forms, atomic lexical failures, exact quotas/cancellation and owned immutable item lists using the verified atomic providers.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "composition-correctness-2",
+        "composition-review-2",
+        "composition-measurement-2",
+        "composition-measurement-review",
+        "integrated-checks"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Validation/Datatypes/Values/Composition/Library.cs: XsdDatatypeLibrary and explicit RNG namespace adapters sharing immutable family providers; complete atomic/nonempty-list parsing and core value hooks.",
+    "src/Xemele/Validation/Datatypes/Values/Composition/Registry.cs: complete45 built-in definitions and exact schema definition snapshots, no-targetnamespace precedence, bounded private map ingestion.",
+    "src/Xemele/Validation/Datatypes/Values/Composition/StructuredOperation.cs: only returned refusals translate through private sentinel; caller exceptions propagate.",
+    "tests/Xemele.Tests/M8-datatypes/CompositionTests.cs:76 complete-library cases; samples/M8-datatypes/Consumer.cs.fixture; header-only docs/api/M8-datatypes.txt; docs/reports/M8-datatypes/contracts.md.",
+    "src/Xemele/Validation/Datatypes/Values/Core/Values.cs: explicitly authorized later ordered-owner indexed list-hash loop, preserving hash/work semantics and all child historical records/evidence."
+  ],
+  "evidence": [
+    {
+      "id": "composition-correctness",
+      "kind": "check",
+      "revision": "ee8514ad7b641fa46e6c889b7f5661050e5fe8d1",
+      "command": "python3 docs/reports/M8-datatypes/checks.py",
+      "result": "passed",
+      "summary": "353 actual.NET10.0.11 tests=76 composition+148 text/binary+76numeric+23temporal+18core+12model; zero failures/errors/skips/not-run. PublicAPI1393 and frozen public/internal datatype contract316 matched. Normal and genuine source-built XML-only consumers passed. Cache-only Release builds zero warnings/errors; planning176 and whitespace checks passed. Measurements excluded.",
+      "artifact": "docs/reports/M8-datatypes/correctness.md"
+    },
+    {
+      "id": "composition-review",
+      "kind": "review",
+      "revision": "ee8514ad7b641fa46e6c889b7f5661050e5fe8d1",
+      "command": null,
+      "result": "passed",
+      "summary": "Coordinator-authorized independent read-only reviewer accepted ee8514ad after closing two blockers: valid no-targetnamespace string/token definitions and unmetered final freeze. No residual finding; this is review, not execution. RegistrySHA0d986fb11e8292a8250b6324472c629f5da87e8cd2e9d44b6effd247195f8e79; testsSHAef3f825752d5355e8466447b0a1661206618311f3260dd7db1edf8299468ee91; checksSHA868dc15db43e46c83b2b7ec0d3a298e90baf7cfd9c25c1379b1ee62842929954.",
+      "artifact": "docs/reports/M8-datatypes/correctness.md"
+    },
+    {
+      "id": "composition-preflight",
+      "kind": "check",
+      "revision": "ee8514ad7b641fa46e6c889b7f5661050e5fe8d1",
+      "command": "python3 docs/reports/M8-datatypes/preflight.py (elevated ps visibility; counters/timing disabled)",
+      "result": "passed",
+      "summary": "18 consumed probe routes, three short/long/invalid exact baseline/composition controls, six ShortRunNoEmit discoveries; every direct child reaped/owned group absent; no timing/allocation counters run.",
+      "artifact": null
+    },
+    {
+      "id": "composition-measurement-1-failed",
+      "kind": "check",
+      "revision": "ee8514ad7b641fa46e6c889b7f5661050e5fe8d1",
+      "command": "python3 docs/reports/M8-datatypes/measure.py --granted 8301db41daddce4cee4ee5b528cb1d4147a3e16ddd9d65a7eb41d16132294ff9 2026-10-11T23:48:00Z 2026-10-11T23:54:57.536590+00:00 (root execution under M8-sch-datatypes-serial-2)",
+      "result": "failed",
+      "summary": "Probe route4 library list hash exceeded exact0B target; distribution not persisted by original harness, so no byte count claimed. BDN never started.453 identities stable before/after, child47920 exit-6/reaped/group absent/log closed,0.37743375s. Root durable RELEASE6b35e04d preceded raw inspection. Observed interface enumerator allocation path corrected only with explicit ordered-owner authorization; original failure remains preserved.",
+      "artifact": "docs/reports/M8-datatypes/measurement-failure-1.md"
+    },
+    {
+      "id": "composition-correctness-2",
+      "kind": "check",
+      "revision": "fb8fc3b5b4ef1d83da85679c296a48b5863dde32",
+      "command": "python3 docs/reports/M8-datatypes/checks.py",
+      "result": "passed",
+      "summary": "354 actual.NET10.0.11 tests=77composition+277 accepted child/model regressions, zero failures/errors/skips/not-run. Public1393/frozen316 match, normal and genuine XML-only consumers, cache-only Release zero warnings/errors, planning176 and diff checks passed. Allocation/timing excluded.",
+      "artifact": "docs/reports/M8-datatypes/correctness.md"
+    },
+    {
+      "id": "composition-review-2",
+      "kind": "review",
+      "revision": "fb8fc3b5b4ef1d83da85679c296a48b5863dde32",
+      "command": null,
+      "result": "passed",
+      "summary": "Independent coordinator-authorized bounded review accepted fb8fc3b5. Indexed hash preserves order/fold/actual work/polls, independent exact-work test and durable failure rows/exact thresholds accepted. Review only. CoreSHA1eb3ea412e876ada8ab84d2c54d049749c8d58948f8388675540bf0eaa295d0d; testSHA67aefad5912e0a111ce8a0aebcc110c0571aa3f4bb717565a552e9f46202441b; probeSHAcd498a59bce5dc11e838b3a21a0b0a9610a8d06929906c731f666a749f116644.",
+      "artifact": "docs/reports/M8-datatypes/measurement-failure-1.md"
+    },
+    {
+      "id": "composition-preflight-2",
+      "kind": "check",
+      "revision": "fb8fc3b5b4ef1d83da85679c296a48b5863dde32",
+      "command": "python3 docs/reports/M8-datatypes/preflight.py (elevated ps); dotnet --fx-version 10.0.11 docs/reports/M8-datatypes/IL/bin/Release/net10.0/Inspect.dll --assert-indexed",
+      "result": "passed",
+      "summary": "Actual rebuilt fb8fc3b5 library/probe/BDN/IL inputs:18 consumed probe routes,3 exact semantic controls,6 ShortRunNoEmit discoveries; all direct children reaped/groups absent. IL hash has no GetEnumerator. All counters/timing disabled. Hardware identity read only: Apple M4 Pro/Mac16,8/14cores/arm64.",
+      "artifact": null
+    },
+    {
+      "id": "composition-measurement-2",
+      "kind": "check",
+      "revision": "fb8fc3b5b4ef1d83da85679c296a48b5863dde32",
+      "command": "python3 docs/reports/M8-datatypes/measure.py --granted 4cd80164c24e5551468139806ef42282f1ff9fb3325c4152555e9b39419cd959 2026-10-12T00:00:00Z 2026-10-12T00:06:28.951952+00:00 (root-only execution under M8-datatypes-measurement-2 grant20b411ee)",
+      "result": "passed",
+      "summary": "After correction,512 warm observations across8borrowed routes exactly0B, including list hash;10owned/setup routes explicitly positive constant allocations.6prebuilt ShortRunNoEmit BDN cases succeeded; all rawGCbytes/operations and nonzero residuals vs rounded columns recorded. Coldfixture72568B; firstmiss88B vswarm0; firstlonglist4792 vswarm1496B; positivecontrol1048B; whole-process approximate retention256lists230984->993640B.456identities stable before/after, children52529/52531 exit0/reaped/groups absent/logsclosed,38.26007733s. Durable RELEASE2fb89c1d precedes owner/root raw review. Timing informational with6prioritydenials and overlapping CI; no repeatable speedup, x64 or full-validator claim. Firstfailedcheck retained honestly.",
+      "artifact": "docs/reports/M8-datatypes/allocations.md"
+    },
+    {
+      "id": "composition-measurement-review",
+      "kind": "review",
+      "revision": "fb8fc3b5b4ef1d83da85679c296a48b5863dde32",
+      "command": null,
+      "result": "passed",
+      "summary": "Root independently inspected successful released18route distributions/all6GCrows/lifecycle and confirmed512warmzeros, owned/cold/retained samples, exact residuals and completecleanup; no further measurement authorized. Raw cleanup authorized after concise evidence is committed.",
+      "artifact": "docs/reports/M8-datatypes/measurement-summary.json"
+    },
+    {
+      "id": "integrated-checks",
+      "kind": "integration",
+      "revision": "c6da4a5425cbdcd7104330d351f62b59c72fdf2b",
+      "command": "python3 docs/reports/M8-datatypes/checks.py",
+      "result": "passed",
+      "summary": "354 actual integrated tests=77 composition+277 verified child/model checks, zero failures/errors/skips/not-run; public1393/frozen316; normal and true XML-only consumers; Release0warnings/errors;177task validation. Final worker evidence merge changed only two reports and own task JSON; src/tests/benchmarks/samples/build/API inputs equal tested revision. Measurement source fb8fc3b5 accepted separately; no rerun claimed.",
+      "artifact": "docs/reports/M8-datatypes/integration.md"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Unclaimed work split into four focused children; this task owns final complete library composition and verification. Original A1-A3 remain unchanged.",
-    "checks": [],
+    "summary": "Verified complete45-built-in datatype composition with accepted indexed list-hash correction, actual354 integration checks and eight warm allocation targets. Facets may start from verified main.",
+    "checks": [
+      "python3 docs/reports/M8-datatypes/checks.py atfb8fc3b5:354passed=77composition+277families/model,0fail/errors/skips/notrun; public1393/frozen316; normal+genuineXML-only consumer; cache-only Release0warnings/errors; planning176/diff passed.",
+      "Actual IL --assert-indexed and elevated counters-disabled18route/3semantic/6ShortRunNoEmit preflight passed.",
+      "Root-only granted measurement-2 passed456identities before/after,18probe routes/6BDNcases, completecleanup; RELEASE before rawinspection; exact allocations/GCresiduals/cold/approxretention/limitations recorded.",
+      "Root independently reviewed corrected source and successful raw results; no remaining source/measurement blocker."
+    ],
     "remaining": [],
     "requests": []
   }
