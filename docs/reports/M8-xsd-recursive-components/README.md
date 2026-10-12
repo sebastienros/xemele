@@ -69,3 +69,13 @@ allocation-preflight.json and preparation.json for exact source/probe/runtime/
 supervisor hashes. No actual counters have been executed by this worker.
 Root alone launches the accepted payload without an isolation/PARK/ACK/lease
 or exclusive-use gate.
+
+Supervisor-only amendment e458a2d4b: workload success now requires
+reason=completed in addition to exit0 and clean cleanup. The finite regression
+child52913 timed out, handled SIGTERM by exiting0, and cleaned fully; it remained
+a failed workload and the next child never launched. Normal child52915 passed.
+The refreshed457identity manifest is fe4c11dbee5934ae51cfbbe3b0c4a9dd5cc90985d289372231c6409605fbcad2,
+supervisor b49f0beefb943c0e531f88235d12d269f671584da0563834a3d41159b1e100e5.
+Actual verify-only/ps permission passed. The prior455identity control/preflight
+is preserved; runtime/probe/control were neither rebuilt nor rerun. No counters
+were launched. See lifecycle-check.json and allocation-preflight.json refresh.

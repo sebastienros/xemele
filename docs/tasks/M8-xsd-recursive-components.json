@@ -110,20 +110,30 @@
       "result": "passed",
       "summary": "SDK10.0.400/runtime10.0.11 offline build0warnings/errors;13routes1085calls/26095consumed, all allocation/GC/timing disabled.32retainedobjects/4categories, all counterfields0; owned-only workload, no new primitive0B claim.455identities manifest23968c4c3212300aa6b92f3570f0df00bcd3be077cd71d960910de3cb4ed54c6 match; actual processpermission preflightPID52566exit0/reaped/groupabsent/logclosed, before/after455identities match. No worker measurements or isolation/PARK/exclusive-use gate.",
       "artifact": "docs/reports/M8-xsd-recursive-components/allocation-preflight.json"
+    },
+    {
+      "id": "supervisor-timeout-amendment",
+      "kind": "check",
+      "revision": "e458a2d4b8088fec8e678cd24d242fa2e1316b8d",
+      "command": "Actual elevated python3 docs/reports/M8-xsd-recursive-components/lifecycle-check.py; refreshed measure.py --verify-only",
+      "result": "passed",
+      "summary": "Workload/preflight success now requires reasoncompleted plus exit0/reaping/groupabsent/logclosed. Finite Python timeoutchild52913handlesSIGTERMexit0:reasonTimeoutExpired,cleanupalltrue,workloadfalse,nextchildnotlaunched. Normalchild52915completedexit0/cleanup passes. No counters or benchmark timing. Original455prep/control preserved, no unchanged runtime/probe rebuild/controlrerun. Supervisor-only refreshed457identities+actualpspermission match manifestfe4c11dbee5934ae51cfbbe3b0c4a9dd5cc90985d289372231c6409605fbcad2; supervisorSHAb49f0beefb943c0e531f88235d12d269f671584da0563834a3d41159b1e100e5.",
+      "artifact": "docs/reports/M8-xsd-recursive-components/lifecycle-check.json"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Runtime+allocation source independently accepted; offline build/counter-disabled control/frozen455identities/lifecycle preflight passed. Root sole actual allocation execution pending; A1/A2passed/A3pending, in_progress.",
+    "summary": "Corrected supervisor-only timeout success predicate after independent review amendment; actual finite timeoutexit0 control fails workload/stops nextchild with clean cleanup, normalchild passes. Refreshed457identities verified. Runtime/probe/control unchanged accepted; root actual counters pending.",
     "checks": [
       "Actual baseline4failed; original repaired4pass; stable9e376cd98 check1300+42pass,public1430/all8frozen and normal/XML-only consumers pass;6builds0warnings/errors,planning196/diff.",
       "Own recursive consumer normal+trueXML-only precommit snapshot now c5a9392e3 passed2builds0warnings/errors; string/DOM/stream finite recursion+invalid neighbors/open streams. Runtime/tests unchanged from9e376cd98.",
       "Historical expanded build1test compileerror and firstowned35cases32pass/3wrong provenance expectations retained in README/summary, corrected without runtime location changes.",
       "No allocation counters/heap/timing or measurement preparation run; no allocation-free compilation claim.",
-      "Allocation prep at822e5a756:13ownedroutes1085calls/26095consumed,32retainedobjects, all counterfields0;build0warnings/errors;455identities;PID52566cleanpreflight. Actual counters still unrun."
+      "Allocation prep at822e5a756:13ownedroutes1085calls/26095consumed,32retainedobjects, all counterfields0;build0warnings/errors;455identities;PID52566cleanpreflight. Actual counters still unrun.",
+      "Supervisor timeout-exit0 regression actual52913cleanbutfailed/no nextchild;normal52915pass;refreshed457identities/ps match, no runtime/probe rebuild or counters."
     ],
     "remaining": [
-      "Root-only nonisolated bounded measure.py --run 23968c4c3212300aa6b92f3570f0df00bcd3be077cd71d960910de3cb4ed54c6; exact frozen control then measurement once,120total110work10cleanup.",
+      "Root-only nonisolated bounded measure.py --run fe4c11dbee5934ae51cfbbe3b0c4a9dd5cc90985d289372231c6409605fbcad2 after supervisor amendment acceptance; exact frozen control then measurement once,120total110work10cleanup.",
       "Inspect actual raw results after durable lifecycle cleanup; record actual allocation evidence/final handoff.",
       "Integrated coordinator verification."
     ],
