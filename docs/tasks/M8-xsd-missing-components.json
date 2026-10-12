@@ -4,11 +4,11 @@
   "milestone": "M8",
   "title": "Implement approved XSD missing-component availability semantics",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M8 coordinator / assigned isolated missing-components worker",
   "branch": "codex/m8-xsd-missing-components",
   "base_revision": "ae6128ec38e9e6dad1e90d69f50eabd02322dc1d",
-  "integration_revision": null,
+  "integration_revision": "62598efcebea6090865e1b6be1a702ed351a86f6",
   "depends_on": [
     "M8-xsd-import-visibility",
     "M8-xsd-missing-components-contract",
@@ -57,7 +57,9 @@
       "description": "Implement immutable charged availability metadata and closure for concrete schema publication. Preserve explicit unresolved authored QName; nullable element Type only for unavailable inferred substitution-head type, genuine anyType default otherwise. Preserve dense declaration IDs without fabricated types or missing definitions. Strict frozen IXsdCompiler complete-graph lane remains unchanged.",
       "status": "passed",
       "evidence": [
-        "branch-checks-H19"
+        "branch-checks-H19",
+        "integrated-controls-H19",
+        "integrated-checks-H19"
       ]
     },
     {
@@ -65,7 +67,9 @@
       "description": "Prove exact eight original schema/good-instance positives and four separate required-consumption nonassessment cases with original metadata/input/oracle hashes. Consuming unavailable required components yields IsComplete false/IsValid false/Fatal XSD.MissingComponent before xsi:type/nil/content/value/default/fixed/identity hooks; selected xsi:type-only complex-program availability checked before deferred content. Unrelated valid roots stay assessable; true skip unconsumed stays unchanged, present unavailable lax declaration is not absence. No new original pass promise or waiver for four nonassessment cases.",
       "status": "passed",
       "evidence": [
-        "branch-checks-H19"
+        "branch-checks-H19",
+        "integrated-controls-H19",
+        "integrated-checks-H19"
       ]
     },
     {
@@ -73,7 +77,9 @@
       "description": "Preserve every independently decidable grammar/import/regex/facet/EDC/UPA/derivation/cycle/final/block/default/keyref failure, missing-base negatives and source/resource distinctions. Assign exact facet Definitions.cs/Evaluator.cs to separate missing-item availability from independent facet validation; never fabricate executable partial FacetPlan or blanket-skip missing definitions. Preserve complete-graph and RNG behavior, charging/quotas/cancel/disposal and immutable no-resolver validation.",
       "status": "passed",
       "evidence": [
-        "branch-checks-H19"
+        "branch-checks-H19",
+        "integrated-controls-H19",
+        "integrated-checks-H19"
       ]
     },
     {
@@ -82,7 +88,9 @@
       "status": "passed",
       "evidence": [
         "branch-checks-H19",
-        "branch-api-actual-review"
+        "branch-api-actual-review",
+        "integrated-controls-H19",
+        "integrated-checks-H19"
       ]
     },
     {
@@ -92,7 +100,9 @@
       "evidence": [
         "branch-checks-H19",
         "branch-controls-H19",
-        "branch-actual-allocations"
+        "branch-actual-allocations",
+        "integrated-controls-H19",
+        "integrated-checks-H19"
       ]
     }
   ],
@@ -141,21 +151,39 @@
       "result": "passed",
       "summary": "Fresh disabled11routes/consumed3001/inspections13632; actual cold/first/32warm observations and retained352results+8schemas; positive4120B, three lookup routes zero first/warm thread/global allocations. Compile/validate ownership allocations and retained heap documented, no timing/x64/global-static claim; prepared/raw outputs removed and whole families absent.",
       "artifact": "docs/orchestration/M8-xsd-missing-components-allocation-H19.json"
+    },
+    {
+      "id": "integrated-controls-H19",
+      "kind": "integration",
+      "revision": "82ded28c85df6accccee4c798c5b49ff850aa797",
+      "command": "harness/launch.py --released d88795d0... controls with required process permissions",
+      "result": "passed",
+      "summary": "Fresh15controls passed; whole registered family absent,341raw deleted. Prior failed sandbox control and cleanup-only recovery retain zero credit.",
+      "artifact": "docs/orchestration/M8-xsd-missing-components-integrated-controls.json"
+    },
+    {
+      "id": "integrated-checks-H19",
+      "kind": "integration",
+      "revision": "82ded28c85df6accccee4c798c5b49ff850aa797",
+      "command": "harness/launch.py --released d88795d0... check on integrated main",
+      "result": "passed",
+      "summary": "All24commands/694methods2206cases passed;114owned/8originalpositive/4nonassessmentzerooriginal+gatecredit/2missingbase; public1430/frozen615+257/actual93rows13joins equal independently reviewed projection; both consumers/disabled11/planning200/authored whitespace passed.442raw deleted after whole-family absence. Actual allocations reused only for identical runtime inputs.",
+      "artifact": "docs/orchestration/M8-xsd-missing-components-integration-checks.json"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Branch implementation and root actual correctness/API/consumer/allocation checks accepted. Await integrated fresh checks on main; no corpus completion or four-case gate waiver.",
+    "summary": "Integrated runtime verified with fresh15 controls and24 checks. Nullable internal migration and charged immutable availability accepted; public/frozen contracts preserved.",
     "checks": [
-      "24 commands and 2206 selected cases passed on exact runtime5ad724/source7dfd3e31",
-      "15 controls passed; canonical93 API rows independently reviewed",
-      "11 actual allocation routes with disabled/positive/retained controls; terminal cleanup verified",
-      "Prior failed attempts1\u20136 retained unchanged"
+      "694methods2206cases passed;8originalpositives/4nonassessmentzero-original+gatecredit/2missingbase",
+      "Public1430/frozen615+257/actual93added rows13joins/normal+XML-only/disabled11 passed",
+      "Actual root cold/first/warm/retained allocations reused for exact unchanged runtime inputs",
+      "All prior failures retained honestly; terminal cleanup verified"
     ],
     "remaining": [
-      "Integrate exact owned branch paths while retaining root task scope and metadata",
-      "Run fresh integrated controls and applicable correctness/API/consumer checks; verify source identity before reusing allocation evidence",
-      "Corpus retains four unwaived original nonassessment outcomes; later gate disposition requires concrete actual evidence"
+      "Resume corpus from verified integrated dependency and current55API/actual93internal rows",
+      "Four original missing-component nonassessments remain unwaived; no corpus/gate completion claim",
+      "Complete worker terminal ownership relinquishment and cleanup before final M8 transfer"
     ],
     "requests": []
   }
