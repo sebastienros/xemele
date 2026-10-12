@@ -101,3 +101,24 @@ current-source passing credit. Coordinator-owned harness-review.json remains
 untouched; its old source stamp is revoked by source mismatch. Selection remains
 687/2192 with unchanged cardinality/source-selection bytes. Fresh root review
 and controls/check are required. Worker performed static/planning checks only.
+
+H18 source-only failure diagnostics: before terminal raw deletion, exact
+verified -result-xml command output within its owned command family is parsed
+with4MiB/4096row/32768node/128depth bounds,24 failed excerpts and bounded
+type/method/name/exception fields. Complete counts come only from a full supported
+parse; missing/malformed/truncated/changed/unverified XML has unknown counts and
+no success credit. Closed console hashes are verified before/after bounded
+64KiB scan; recognized exception, failing-test identity and Xemele.Tests stack
+frame type/method/path/line context survive without an arbitrary transcript.
+Missing XML discovery/data-provider context remains explicitly distinct from a
+known failing test. Existing control14 includes owned normal-failure, missing-XML
+discovery, malformed, size/row/text truncation and unverified-command fixtures
+through terminal cleanup, with retained factual context and raw deletion. Count
+remains15; no new controls executed, no runtime edits or guessed schema fix.
+
+Prior coordinator bebaf705 actual outcome: refreshed15 controls PASS,14 restore/
+build commands PASS, selected-test command exit1 with SchemaCompileException.
+Failure identity/counts unknown; may be startup/discovery/data-provider failure.
+Failed root-check-bd5508149786420fb8f3b38a448525a1 terminal:16groups absent,
+429raw deleted; no active preparation/release, APIs/consumers/counters UNRUN.
+That failure remains evidence, with no refreshed-packet passing credit.

@@ -311,6 +311,49 @@ class Controls(unittest.TestCase):
         theory.attrib['result']=previous
         duplicate=ET.Element('test',**tests[0].attrib)
         with self.assertRaises(AssertionError):selection.validate(tests+[duplicate],expectation)
+        self.exercise_failure_diagnostics()
+    def exercise_failure_diagnostics(self):
+        expected_type='Xemele.Tests.M8XsdMissingComponents.Fixture';expected_method='RejectedSchema'
+        for variant in ['normal','missing-discovery','malformed','size-limit','row-limit','text-limit','unverified']:
+            directory=self.root/('diagnostics-'+variant);directory.mkdir();xml=directory/'result.xml'
+            root=ET.Element('assemblies');assembly=ET.SubElement(root,'assembly')
+            ET.SubElement(assembly,'test',id='pass',type=expected_type,method='Neighbor',name='Neighbor',result='Pass')
+            name=expected_type+'.'+expected_method if variant!='text-limit' else 'N'*(diagnostics.MAX_TEXT+20)
+            fail=ET.SubElement(assembly,'test',id='fail',type=expected_type,method=expected_method,name=name,result='Fail')
+            failure=ET.SubElement(fail,'failure',{'exception-type':'Xemele.Validation.SchemaCompileException'})
+            ET.SubElement(failure,'message').text='Schema compilation failed.' if variant!='text-limit' else 'E'*(diagnostics.MAX_TEXT+20)
+            if variant=='malformed':xml.write_text('<assemblies>')
+            elif variant=='size-limit':xml.write_bytes(b' '*(diagnostics.MAX_XML_BYTES+1))
+            elif variant!='missing-discovery':ET.ElementTree(root).write(xml,encoding='utf-8',xml_declaration=True)
+            log=directory/'command-0.log'
+            log.write_text('Xemele.Validation.SchemaCompileException: Schema compilation failed.\n at Xemele.Tests.M8XsdMissingComponents.Fixture.Cases() in /fixture/Provider.cs:line 12\n')
+            argv=['owned-fixture-no-test-execution','-result-xml',str(xml)];input_path=directory/'command-inputs-000.json'
+            nested.durable(input_path,dict(argv=argv,cwd=str(b.ROOT),observedInputIdentitiesSha256=b.identity_sha({}),
+                reviewedSourceManifestSha256=b.digest(b.SOURCE),scope='Synthetic owned failure fixture; no SDK/test execution'))
+            row=dict(argv=argv,exit=1,reason='ExpectedSyntheticFixtureFailure',pid=None,directChildReaped=True,ownedGroupAbsent=True,logClosed=True,
+                     nestedOwnership={'allOwnedGroupsAbsent':True},inputReceiptSha256='0'*64 if variant=='unverified' else b.digest(input_path),fixture=True)
+            nested.durable(directory/'lifecycle-000.json',row)
+            fake=SimpleNamespace(directory=directory,closed=True,stopped=True,sequence=[row],hard=time.monotonic()+20,
+                                 receipt=dict(completed=False,ownership={'allOwnedGroupsAbsent':True}))
+            if variant=='row-limit':
+                with patch.object(diagnostics,'MAX_TEST_ROWS',1):terminal.cleanup(fake,'check',error='ExpectedFixtureFailure')
+            else:terminal.cleanup(fake,'check',error='ExpectedFixtureFailure')
+            preserved=json.loads((directory/'failure-diagnostics.json').read_text());self.assertFalse(preserved['outcomeCompleted'])
+            self.assertFalse(xml.exists());self.assertFalse(log.exists())
+            observation=preserved['observations'][0];facts=observation['failedTests'];self.assertFalse(facts['successCredit'])
+            self.assertTrue(observation['logHashVerified'])
+            stack=next(e for e in observation['diagnosticSummary']['diagnostics'] if e['kind']=='test-stack-context')
+            self.assertEqual(stack['method'],'Cases');self.assertEqual(stack['sourceLine'],12);self.assertFalse(stack['successCredit'])
+            if variant in ['normal','text-limit']:
+                self.assertEqual(facts['status'],'parsed');self.assertTrue(facts['sourceHashVerified']);self.assertEqual(facts['actualCounts'],{'Pass':1,'Fail':1,'Skip':0})
+                actual=facts['failedTests'][0];self.assertEqual(actual['type'],expected_type);self.assertEqual(actual['method'],expected_method)
+                self.assertEqual(actual['exceptionType'],'Xemele.Validation.SchemaCompileException')
+                if variant=='text-limit':
+                    self.assertTrue(actual['identityTruncated']);self.assertTrue(actual['exceptionTruncated']);self.assertEqual(len(actual['name']),diagnostics.MAX_TEXT)
+                else:self.assertEqual(actual['name'],name)
+            else:
+                self.assertIsNone(facts.get('actualCounts'))
+                self.assertEqual(facts['status'],{'missing-discovery':'unavailable','malformed':'malformed','size-limit':'size-limit','row-limit':'row-limit','unverified':'unverified-command'}[variant])
     def test_15_initial_birth_exception_and_none_cleanup_exact_spawned_handle(self):
         real=nested.birth_identity
         for mode in ['exception','none']:

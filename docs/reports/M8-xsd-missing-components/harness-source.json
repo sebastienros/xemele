@@ -307,8 +307,8 @@
     "docs/reports/M8-xsd-missing-components/harness/bindings.py": "e0fcf3118ec897a6389980579a634cbcaa172685a1dd0a9dcc10cbf645c14cc3",
     "docs/reports/M8-xsd-missing-components/harness/birth.py": "a3c826d6994f4487f9594f860c92eb4a92c1b2928fbc02431e6204e29038789e",
     "docs/reports/M8-xsd-missing-components/harness/check.py": "5e5507cfadfcab20efc7e3417557036d16104323b57bce14ca53137966408d68",
-    "docs/reports/M8-xsd-missing-components/harness/controls.py": "7e6f8b101d337329ff769a0f7e73542a7884a2295922edbd48678df3ed2fd890",
-    "docs/reports/M8-xsd-missing-components/harness/diagnostics.py": "cee1904dd3bb400219c1bf1eea87e09fedcc0a3ebc76a6492ce39c5012f0c114",
+    "docs/reports/M8-xsd-missing-components/harness/controls.py": "87c646752deede92a0c82ac3b386e210c7523db6e07ad5a5ded6392f6e94edef",
+    "docs/reports/M8-xsd-missing-components/harness/diagnostics.py": "23854e4176f93e84d854af3aac2b90716d5aa0e0f9accb708086928b80bb4367",
     "docs/reports/M8-xsd-missing-components/harness/discard.py": "4210047a7c79687bb4ed8dceb1ada05c266f0175315f6c5e9b95611e330924dd",
     "docs/reports/M8-xsd-missing-components/harness/family.py": "3eef5113422497b8e0fe7aa85e447e4f2ba664f5000cfdf1dd58c279ad648e13",
     "docs/reports/M8-xsd-missing-components/harness/launch.py": "cb1ca88a83bafdec03f478d650488df53b451e0eb1e4c3beff49d9e7a2467b7a",
@@ -321,7 +321,7 @@
     "docs/reports/M8-xsd-missing-components/harness/supervision.py": "12b49aba060f09107a3e70931ab92f397106e031f191dbd2ce0f65c32d4d4d98",
     "docs/reports/M8-xsd-missing-components/harness/terminal.py": "235ff6a7f7791a11a6cd8233ff7e32087b88bb49b04508f8fab35f1874664d08",
     "docs/reports/M8-xsd-missing-components/harness/test-selection.json": "b4fe1712c34daa95acbc766c2cb010240e7ac47c4a60a08266cd9f32aa895d67",
-    "docs/reports/M8-xsd-missing-components/harness-handoff.md": "5caecf81eb10ecbf1c36fd157930addcb8763b13544b92a12e994e58ee519112",
+    "docs/reports/M8-xsd-missing-components/harness-handoff.md": "18b0b17dff3fe26c36383af56c210dda5099b1dcc56b2e90d3314b16b8aae787",
     "docs/reports/M8-xsd-missing-components/review-plan.json": "3b39085684dc646a6538c0f02ad30c447c1bd119857e45f059a08ba83e9c3e88",
     "docs/reports/M8-xsd-missing-components/source-handoff.md": "045e1d0ce8496a839e615915c58ab719f1ed013557448110a1585bf6e885b6dd",
     "docs/reports/M8-xsd-missing-components/source-manifest.json": "aa2d90bf0f16ec8a6b10ad22624d9fc8a016c1a08af9c77c47e633496a5eccc9",
@@ -7177,9 +7177,10 @@
     "H02": "Omitted witness/namespace/theory-case/skip/duplicate refuse",
     "H03": "Initial inspection exception/None exact Popen kill/reap, marker absent, no next command",
     "H04": "SIGKILL live orphan immediately before matched recovery; wrong ownerSHA/nonce untouched; independent fallback",
-    "H09": "Exact scratch membership/config fixture and drift refusal",
-    "H16": "Within control10: owned Python fixture restore/build unchanged and byte/file/dependency drift prelaunch/no-next checks; no .NET execution",
-    "H17": "Within control09: alternate PATH executable refusal and absolute frozen Git/ps selection; no shared tools changed"
+    "H09": "Exact scratch membership/configuration and drift fixture",
+    "H16": "Existing owned Python restore/build pair and drift prelaunch/no-next fixture; no SDK execution",
+    "H17": "Existing frozen-role alternate PATH fixture; shared tools unchanged",
+    "H18": "Within control14: normal XML failure, missing-XML discovery exception/stack context, malformed XML, size/row/text truncation and unverified command; preserved bounded facts before XML/log deletion; no success credit; UNRUN"
   },
   "probeExpectations": {
     "routes": 11,
@@ -7210,18 +7211,19 @@
   "checks": {
     "pythonAst": "15 modules parsed statically without import",
     "planning": "passed 200 tasks; planning only",
-    "authoredWhitespace": "passed: final staged git diff --cached --check; no worker executable checks",
+    "authoredWhitespace": "passed: final staged git diff --cached --check; no current-packet imports/controls/runtime execution",
     "runtimeManifest": "45 owned source/811 review input identities checked statically",
     "execution": "UNRUN",
     "priorCoordinatorOutcome": {
-      "sourcePacket": "700500e3dbf01d2f38ad0c9c7c9071d3ac56f5b1",
-      "controls": "PASS15; counters off; family absent;313raw deleted",
-      "correctness": "first restore passed; tests build FAILED CS0534 Support.cs; tests/API/counters UNRUN",
-      "failedController": "root-check-e3fcc73c8a2c4ab2b2e99b897bd8ab3f",
-      "terminal": "3 owned groups absent;66raw deleted",
-      "currentPacket": "UNRUN; prior results carry no refreshed-source passing credit"
-    },
-    "currentCompileCorrection": "One owned Support.Resolver.Resolve override delegates once to ResolveResult.Resource; no worker executable checks"
+      "sourcePacket": "bebaf705a9ef4798651997fc51ccf3ce3d12e37c",
+      "controls": "PASS15;313raw deleted",
+      "restoreBuild": "14commands PASS",
+      "selectedTest": "FAILED exit1 SchemaCompileException; exact test identity/counts unknown, possibly discovery/startup/data-provider",
+      "failedController": "root-check-bd5508149786420fb8f3b38a448525a1",
+      "terminal": "16groups absent;429raw deleted;no active preparation/release",
+      "apiConsumersCounters": "UNRUN",
+      "currentPacket": "UNRUN; no passing credit carried forward"
+    }
   },
   "limitations": [
     "Declared source and observed executable/SDK/package/restore/output identities; not an exhaustive OS/build read trace",
@@ -7229,5 +7231,17 @@
     "Cold/first/warm/retained expectations only; no timing/static-initialization/performance claim",
     "Root alone creates harness-review.json and selects allowedActions; no worker-created release"
   ],
-  "manifestSelf": "Excluded from self identities; coordinator review binds exact harnessSourceSha256; source packet commit/digest supplied in handoff"
+  "manifestSelf": "Excluded from self identities; coordinator review binds exact harnessSourceSha256; source packet commit/digest supplied in handoff",
+  "failureDiagnostics": {
+    "xmlMaximumBytes": 4194304,
+    "xmlMaximumRows": 4096,
+    "xmlMaximumNodes": 32768,
+    "xmlMaximumDepth": 128,
+    "maximumXmlFailedExcerpts": 24,
+    "maximumConsoleExcerpts": 24,
+    "maximumConsoleScanBytes": 65536,
+    "maximumTextCharacters": 768,
+    "actualCounts": "Only complete independently parsed supported XML; otherwise unknown",
+    "scope": "Exact verified command-owned XML and closed console hashes; structured exception/test/stack facts, no raw archive or success credit"
+  }
 }

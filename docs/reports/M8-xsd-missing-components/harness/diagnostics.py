@@ -1,7 +1,10 @@
 """Bounded failure summaries and input hashes; no runtime work or raw archive."""
 import json
+import hashlib
+import io
 import re
 import shutil
+import xml.etree.ElementTree as ET
 from pathlib import Path
 import bindings as b
 
@@ -9,6 +12,12 @@ MAX_COMMANDS = 12
 MAX_READ_BYTES = 65536
 MAX_DIAGNOSTICS = 24
 MAX_TEXT = 768
+MAX_XML_BYTES = 4 * 1024 * 1024
+MAX_TEST_ROWS = 4096
+MAX_XML_NODES = 32768
+MAX_XML_DEPTH = 128
+TEST_IDENTITY = re.compile(r'(?P<identity>Xemele\.Tests\.[\w.+]+\.\w+)(?P<arguments>\([^\r\n]*\))?')
+TEST_STACK = re.compile(r'^at (?P<identity>Xemele\.Tests\.[^\s(]+)\([^\r\n]*\)(?: in (?P<path>[^\r\n]+):line (?P<line>[0-9]{1,10}))?$')
 COMPILER = re.compile(r'\b(error|warning)\s+([A-Za-z]+\d+)\s*:\s*(.*)', re.IGNORECASE)
 EXCEPTION = re.compile(r'^(?:Unhandled exception\.\s*)?([\w.]*(?:Error|Exception))\s*:\s*(.*)')
 
@@ -83,7 +92,21 @@ def log_summary(path, limit=MAX_DIAGNOSTICS):
             if not text or text.startswith(('{', '[{', '"')): continue
             compiler = COMPILER.search(text)
             exception = EXCEPTION.match(text)
-            if compiler:
+            test_identity=TEST_IDENTITY.search(text) if '[FAIL]' in text or text.startswith('Failed ') else None
+            stack=TEST_STACK.match(text)
+            if stack:
+                type_name,method=stack['identity'].rsplit('.',1)
+                source=stack['path']
+                entry={'kind':'test-stack-context','type':type_name[:256],'method':method[:192],
+                       'sourcePath':None if source is None else source[:512],'sourceLine':None if stack['line'] is None else int(stack['line']),
+                       'textTruncated':len(type_name)>256 or len(method)>192 or source is not None and len(source)>512,
+                       'scope':'Exception stack context; failing test identity and counts unknown','successCredit':False}
+            elif test_identity:
+                type_name,method=test_identity['identity'].rsplit('.',1)
+                name=test_identity[0]
+                entry={'kind':'failed-test-identity','type':type_name[:256],'method':method[:192],'name':name[:MAX_TEXT],
+                       'identityTruncated':len(type_name)>256 or len(method)>192 or len(name)>MAX_TEXT,'successCredit':False}
+            elif compiler:
                 entry = {'kind': 'compiler', 'severity': compiler[1].lower(), 'code': compiler[2], 'text': text[:MAX_TEXT], 'textTruncated':len(text)>MAX_TEXT}
             elif exception:
                 entry = {'kind': 'exception', 'type': exception[1][:96], 'text': exception[2][:MAX_TEXT], 'textTruncated':len(exception[2])>MAX_TEXT}
@@ -99,6 +122,74 @@ def log_summary(path, limit=MAX_DIAGNOSTICS):
             'fallback': None if matched else 'No recognized diagnostic in bounded scan; cause remains unknown'}
 
 
+def test_xml_summary(path,limit=MAX_DIAGNOSTICS):
+    """Closed owned XML: bounded independently parsed facts, never pass credit."""
+    row=dict(source=b.key(path),status='unavailable',failedTests=[],actualCounts=None,successCredit=False,
+             maximumBytes=MAX_XML_BYTES,maximumRows=MAX_TEST_ROWS,maximumNodes=MAX_XML_NODES,maximumDepth=MAX_XML_DEPTH,
+             maximumExcerpts=limit,maximumTextCharacters=MAX_TEXT)
+    if not path.is_file():row['fallback']='Exact result XML missing';return row
+    if path.is_symlink():row['fallback']='Symlinked result XML refused';return row
+    size=path.stat().st_size;row['sizeBytes']=size
+    if size>MAX_XML_BYTES:
+        row.update(status='size-limit',bytesRead=0,fullSourceSha256=None,fallback='XML exceeds byte bound; no XML identity/count inferred; consult bounded console excerpts')
+        return row
+    with path.open('rb') as stream:data=stream.read(MAX_XML_BYTES+1)
+    if len(data)!=size or len(data)>MAX_XML_BYTES:
+        row.update(status='source-changed',fallback='XML size changed while reading');return row
+    sha=hashlib.sha256(data).hexdigest();row.update(bytesRead=len(data),fullSourceSha256=sha)
+    # Xunit output is UTF-8 without DTDs. Reject declarations/other encodings
+    # before parser expansion, rather than retaining arbitrary XML content.
+    if b'\x00' in data or b'<!DOCTYPE' in data or b'<!ENTITY' in data:
+        row.update(status='unsupported-xml',fallback='DTD/entity/non-UTF8 result XML refused');return row
+    try:data.decode('utf-8-sig')
+    except UnicodeDecodeError:
+        row.update(status='unsupported-xml',fallback='Non-UTF8 result XML refused');return row
+    counts={'Pass':0,'Fail':0,'Skip':0};observed=0;failures=0;identities_valid=True;truncated=False
+    nodes=0;depth=0;document=None;structure_limit=False
+    try:
+        for event,test in ET.iterparse(io.BytesIO(data),events=['start','end']):
+            if event=='start':
+                nodes+=1;depth+=1
+                if document is None:document=test.tag
+                if nodes>MAX_XML_NODES or depth>MAX_XML_DEPTH:structure_limit=True;break
+                continue
+            depth-=1
+            if test.tag!='test':continue
+            observed+=1
+            if observed>MAX_TEST_ROWS:truncated=True;break
+            result=test.get('result')
+            if result not in counts:identities_valid=False
+            else:counts[result]+=1
+            if result=='Fail':
+                failures+=1
+                identity={name:test.get(name) for name in ['type','method','name']}
+                if not all(identity.values()):identities_valid=False
+                if len(row['failedTests'])<limit:
+                    limits={'type':256,'method':192,'name':MAX_TEXT}
+                    entry={name:None if value is None else value[:limits[name]] for name,value in identity.items()}
+                    entry['identityComplete']=all(identity.values())
+                    entry['identityTruncated']=any(value is not None and len(value)>limits[name] for name,value in identity.items())
+                    failure=test.find('failure');message=None if failure is None else failure.find('message')
+                    text=None if message is None else message.text
+                    exception=None if failure is None else failure.get('exception-type')
+                    entry.update(exceptionType=None if exception is None else exception[:192],exceptionMessage=None if text is None else text[:MAX_TEXT],
+                                 exceptionTruncated=(exception is not None and len(exception)>192) or (text is not None and len(text)>MAX_TEXT))
+                    row['failedTests'].append(entry)
+            test.clear()
+        complete=not truncated and not structure_limit and identities_valid and document=='assemblies' and observed>0
+        row.update(status='structure-limit' if structure_limit else 'row-limit' if truncated else 'no-test-rows' if observed==0 else 'parsed' if complete else 'incomplete-fields',
+                   rowsTruncated=truncated,structureTruncated=structure_limit,failuresTruncated=failures>limit,actualCounts=counts if complete else None)
+        if not complete:row['fallback']='Bounded XML facts only; failing test identity/complete counts may be unavailable'
+    except (ET.ParseError,ValueError) as error:
+        row.update(status='malformed',actualCounts=None,exceptionType=type(error).__name__,fallback=str(error)[:MAX_TEXT])
+    try:stable=path.stat().st_size==size and b.digest(path)==sha
+    except OSError:stable=False
+    row['sourceHashVerified']=stable
+    if not stable:
+        row.update(status='source-changed',failedTests=[],actualCounts=None,fallback='XML hash changed after parsing; extracted facts invalidated')
+    return row
+
+
 def preserve_failure(runner, outer_error=None, outer_detail=None, abort=False, extra_directories=()):
     """Caller must prove whole-family absence before any raw output is consumed."""
     from family import nested
@@ -106,7 +197,7 @@ def preserve_failure(runner, outer_error=None, outer_detail=None, abort=False, e
     assert all(row['directChildReaped'] and row['ownedGroupAbsent'] and row['logClosed']
                and row['nestedOwnership']['allOwnedGroupsAbsent'] for row in runner.sequence)
     directory = runner.directory
-    observations = []; failed_count = 0; remaining_diagnostics = MAX_DIAGNOSTICS
+    observations = []; failed_count = 0; remaining_diagnostics = MAX_DIAGNOSTICS;remaining_tests=MAX_DIAGNOSTICS
     roots={directory.resolve(),*(Path(p).resolve() for p in extra_directories)}
     assert all(b.OUT.resolve() in root.parents for root in roots)
     receipts=sorted({p for root in roots for p in root.rglob('lifecycle-*.json')})
@@ -120,10 +211,11 @@ def preserve_failure(runner, outer_error=None, outer_detail=None, abort=False, e
         inputs = receipt.parent / f'command-inputs-{index:03d}.json'
         observation = {'argv': row['argv'], 'exit': row['exit'], 'reason': row['reason'],
                        'lifecycleReceipt': b.key(receipt), 'lifecycleSha256': b.digest(receipt)}
+        verified=False
         if inputs.is_file():
             data = json.loads(inputs.read_text())
             actual_sha=b.digest(inputs)
-            verified=data['argv']==row['argv'] and row.get('inputReceiptSha256')==actual_sha
+            verified=data['argv']==row['argv'] and data.get('cwd')==str(b.ROOT) and row.get('inputReceiptSha256')==actual_sha
             observation.update(inputReceipt=b.key(inputs),inputReceiptSha256=row.get('inputReceiptSha256'),
                                observedInputReceiptSha256=actual_sha,inputReceiptVerified=verified)
             if verified:
@@ -131,9 +223,23 @@ def preserve_failure(runner, outer_error=None, outer_detail=None, abort=False, e
                                    sourceManifestSha256=data['reviewedSourceManifestSha256'])
             else:observation['inputFallback']='Input receipt lacks matching pre-launch lifecycle binding; identities untrusted'
         else: observation['inputReceipt'] = 'Unavailable; do not infer input identities'
+        if '-result-xml' in row['argv']:
+            argv=row['argv'];positions=[i for i,arg in enumerate(argv) if arg=='-result-xml']
+            if not verified or len(positions)!=1 or positions[0]+1>=len(argv):
+                observation['failedTests']={'status':'unverified-command','successCredit':False,'fallback':'No exact verified result-xml command binding'}
+            else:
+                result=Path(argv[positions[0]+1])
+                if not result.is_absolute() or not result.resolve().is_relative_to(receipt.parent.resolve()) or result.is_symlink():
+                    observation['failedTests']={'status':'unowned-output','successCredit':False,'fallback':'Result XML outside exact command family or symlinked'}
+                else:
+                    observation['failedTests']=test_xml_summary(result,remaining_tests)
+                    remaining_tests-=len(observation['failedTests']['failedTests'])
         if log.is_file():
             observation['logSha256'] = b.digest(log)
             observation['diagnosticSummary'] = log_summary(log,remaining_diagnostics)
+            observation['logHashVerified']=b.digest(log)==observation['logSha256']
+            if not observation['logHashVerified']:
+                observation['diagnosticSummary']={'diagnostics':[],'fallback':'Closed console hash changed; extracted context invalidated'}
             remaining_diagnostics-=len(observation['diagnosticSummary']['diagnostics'])
         else: observation['diagnosticSummary'] = {'fallback': 'Raw log unavailable; cause remains unknown'}
         observations.append(observation)
@@ -143,6 +249,7 @@ def preserve_failure(runner, outer_error=None, outer_detail=None, abort=False, e
               'outerError': outer_error, 'outerDetail': None if outer_detail is None else outer_detail[:MAX_TEXT],
               'failedCommandsObserved': failed_count, 'commandsTruncated': failed_count > MAX_COMMANDS,
               'observations': observations, 'maximumDiagnosticExcerpts':MAX_DIAGNOSTICS,'maximumTextCharacters':MAX_TEXT,
+              'maximumFailedTestExcerpts':MAX_DIAGNOSTICS,'maximumResultXmlBytes':MAX_XML_BYTES,'maximumResultXmlRows':MAX_TEST_ROWS,
               'counterEnabledByDiagnostics': False,
               'scope': 'Actual bounded diagnostic excerpts after family absence; raw logs deleted separately; no success claim'}
     nested.durable(path, record)
