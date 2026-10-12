@@ -63,7 +63,7 @@ public sealed class DefinitionTests
     public void CombinedBoundsAndLengthsPermitTheirExactSharedEndpoint()
     {
         Valid(Restrict("range", "decimal", F(XmlFacetKind.MinInclusive, "2"), F(XmlFacetKind.MaxInclusive, "2")), "2.0");
-        Valid(Restrict("length", "string", F(XmlFacetKind.Length, "2"), F(XmlFacetKind.MinLength, "1"), F(XmlFacetKind.MaxLength, "3")), "ab");
+        Bad(Restrict("length", "string", F(XmlFacetKind.Length, "2"), F(XmlFacetKind.MinLength, "1"), F(XmlFacetKind.MaxLength, "3")));
     }
     [Theory]
     [InlineData(XmlFacetKind.MinExclusive)][InlineData(XmlFacetKind.MaxExclusive)]

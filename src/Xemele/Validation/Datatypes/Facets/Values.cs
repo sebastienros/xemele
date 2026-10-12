@@ -116,11 +116,11 @@ internal sealed partial class XmlFacetEvaluator
                 { if (!op.Charge(1, level.Definition.Location)) return false; if (level.Library.ValueEquals(value, level.Enumeration[i], op)) { matched = true; break; } }
                 if (!matched) return false;
             }
-            for (int i = 0; i < level.Facets.Length; i++)
-            {
-                if (!op.Charge(1, level.Facets[i].Source.Location)) return false;
-                if (!CheckScalar(level, level.Facets[i], value, op)) return false;
-            }
+        }
+        for (int i = 0; i < plan.EffectiveScalars.Length; i++)
+        {
+            if (!op.Charge(1, plan.EffectiveScalars[i].Source.Location)) return false;
+            if (!CheckScalar(plan, plan.EffectiveScalars[i], value, op)) return false;
         }
         return op.Charge(0, plan.Definition.Location);
     }
@@ -142,12 +142,13 @@ internal sealed partial class XmlFacetEvaluator
         if (kind is XmlFacetKind.TotalDigits or XmlFacetKind.FractionDigits)
         {
             int? measure = kind == XmlFacetKind.TotalDigits ? plan.Library.TotalDigits(value, op) : plan.Library.FractionDigits(value, op);
-            return measure is not null && measure <= facet.Number;
+            return measure is not null && new FacetNumber((ulong)measure.Value).Compare(facet.Number, op, facet.Source.Location) is <= 0;
         }
         if (plan.Primitive is DatatypePrimitive.QName or DatatypePrimitive.Notation) return true;
         long? length = plan.Library.ValueLength(value, op);
         if (length is null) return false;
-        return kind switch { XmlFacetKind.Length => length == facet.Number, XmlFacetKind.MinLength => length >= facet.Number,
-            XmlFacetKind.MaxLength => length <= facet.Number, _ => false };
+        int? countOrder = new FacetNumber((ulong)length.Value).Compare(facet.Number, op, facet.Source.Location);
+        return kind switch { XmlFacetKind.Length => countOrder is 0, XmlFacetKind.MinLength => countOrder is >= 0,
+            XmlFacetKind.MaxLength => countOrder is <= 0, _ => false };
     }
 }

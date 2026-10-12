@@ -1,4 +1,3 @@
-using System.Numerics;
 namespace Xemele.Validation;
 
 // Retained only after a successful definition check. Arrays are private and never
@@ -13,12 +12,13 @@ internal sealed class FacetPlan
     internal bool WhitespaceFixed, Builtin;
     internal DatatypePrimitive? Primitive;
     internal PreparedFacet[] Facets = [];
+    internal PreparedFacet[] EffectiveScalars = [];
     internal XmlSchemaRegexProgram[] Patterns = [];
     internal XmlDatatypeValue[] Enumeration = [];
     internal bool ConjunctivePatterns;
     internal XmlDatatypeVariety Variety => Definition.Variety;
 }
-internal readonly record struct PreparedFacet(XmlFacet Source, BigInteger Number = default, XmlDatatypeValue? Value = null);
+internal readonly record struct PreparedFacet(XmlFacet Source, FacetNumber Number = default, XmlDatatypeValue? Value = null);
 
 internal static class FacetRules
 {

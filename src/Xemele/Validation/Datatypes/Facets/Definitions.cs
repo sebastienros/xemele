@@ -1,4 +1,3 @@
-using System.Numerics;
 using System.Buffers;
 using System.Text;
 namespace Xemele.Validation;
@@ -47,7 +46,7 @@ internal sealed partial class XmlFacetEvaluator
                 : type.Variety == XmlDatatypeVariety.List ? XmlDatatypeDerivation.List : XmlDatatypeDerivation.Union;
             if (!builtin && plan.Base is not null && HasFinal(plan.Base, derivation, op))
             { FacetRules.Reject(op, type.Location, "Base datatype prohibits this derivation."); return null; }
-            if (restriction && (plan.Base!.Variety != type.Variety || type.ItemType is not null || type.MemberTypes.Count != 0))
+            if (restriction && (plan.Base!.Variety != type.Variety || !PreservesMembers(type, plan.Base, op)))
             { FacetRules.Reject(op, type.Location, "A restriction must preserve the base variety and members."); return null; }
             if (type.Variety == XmlDatatypeVariety.Atomic)
             {
@@ -143,7 +142,7 @@ internal sealed partial class XmlFacetEvaluator
         {
             var f = definition.Facets[i]; op.Charge(1, f.Location);
             if (f.Kind == XmlFacetKind.Pattern) { patterns.Add(compiler.Compile(f.LexicalValue, f.Location, op)); continue; }
-            if (f.Kind == XmlFacetKind.WhiteSpace) { scalar.Add(new(f, (int)plan.Whitespace)); continue; }
+            if (f.Kind == XmlFacetKind.WhiteSpace) { scalar.Add(new(f, new FacetNumber((ulong)plan.Whitespace))); continue; }
             if (FacetRules.IsNumber(f.Kind))
             {
                 if (!ParseNumber(f.LexicalValue, op, out var number) || f.Kind == XmlFacetKind.TotalDigits && number.IsZero)
@@ -164,25 +163,34 @@ internal sealed partial class XmlFacetEvaluator
             else scalar.Add(new(f, Value: value));
         }
         plan.Facets = scalar.ToArray(); plan.Patterns = patterns.ToArray(); plan.Enumeration = enumeration.ToArray();
+        SelectEffectiveScalars(plan, op);
         if (!Consistent(plan, op)) return false;
         return true;
     }
-    private static bool ParseNumber(string lexical, ISchemaOperation op, out BigInteger number)
+    private static bool ParseNumber(string lexical, ISchemaOperation op, out FacetNumber number)
     {
-        string? s = NormalizeFacet(lexical, XmlWhitespaceRule.Collapse, op); number = BigInteger.Zero;
-        if (s is null) return false;
-        int start = 0; bool negative = false;
-        if (s.Length != 0 && s[0] is '+' or '-') { negative = s[0] == '-'; start = 1; }
-        if (start == s.Length) return false;
-        for (int i = start; i < s.Length; i++)
+        string? text = NormalizeFacet(lexical, XmlWhitespaceRule.Collapse, op); number = default;
+        return text is not null && FacetNumber.TryParse(text, op, out number);
+    }
+    private static bool PreservesMembers(XmlDatatypeDefinition type, FacetPlan parent, ISchemaOperation op)
+    {
+        if (type.ItemType is SchemaName item && (parent.Item is null || !SameName(item, parent.Item.Definition.Name, op, type.Location))) return false;
+        if (type.MemberTypes.Count == 0) return true;
+        if (type.MemberTypes.Count != parent.Members.Length) return false;
+        for (int i = 0; i < type.MemberTypes.Count; i++)
         {
-            // Decimal accumulation grows with the already scanned prefix. Charge
-            // before arbitrary precision arithmetic and its owned temporary limbs.
-            op.Charge(1 + (i - start) / 9, default); op.ChargeComponents(1, default);
-            if (s[i] is < '0' or > '9') return false;
-            number = number * 10 + s[i] - '0';
+            op.Charge(1, type.Location);
+            if (!SameName(type.MemberTypes[i], parent.Members[i].Definition.Name, op, type.Location)) return false;
         }
-        return !negative || number.IsZero;
+        return true;
+    }
+    private static bool SameName(SchemaName a, SchemaName b, ISchemaOperation op, XmlLocation at) =>
+        SameText(a.NamespaceUri, b.NamespaceUri, op, at) && SameText(a.LocalName, b.LocalName, op, at);
+    private static bool SameText(string a, string b, ISchemaOperation op, XmlLocation at)
+    {
+        op.Charge(1, at); if (a.Length != b.Length) return false;
+        for (int i = 0; i < a.Length; i++) { op.Charge(1, at); if (a[i] != b[i]) return false; }
+        return true;
     }
     private static string? NormalizeFacet(string lexical, XmlWhitespaceRule rule, ISchemaOperation op)
     {

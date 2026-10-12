@@ -150,8 +150,8 @@ public sealed class PrimitiveTests
     {
         var type=Restrict("length","string",F(XmlFacetKind.Length,"2"));var(e,r)=Ready(type);
         Assert.True(e.TryValidate(type,"根😀",Context,r,Op(),out var value,out _));
-        // Lookup1 + three level visits3 + three facet visits3 + length dispatch1
-        // + one derived-value unwrap1 + precomputed text-family measure1 = 10.
+        // Lookup1 + three level visits3 + two effective facet visits2 + length dispatch1
+        // + one derived-value unwrap1 + precomputed text-family measure1 + native count comparison1 = 10.
         var exact=Op(10);Assert.True(e.CheckPreparedValue(type,"根😀",value!,r,exact));Assert.Equal(0,exact.RemainingWork);
         var shortOp=Op(9);Assert.False(e.CheckPreparedValue(type,"根😀",value!,r,shortOp));Assert.False(shortOp.IsComplete);
         Assert.Throws<ArgumentException>(()=>new XmlFacetEvaluator().CheckPreparedValue(type,"根😀",value!,r,Op()));

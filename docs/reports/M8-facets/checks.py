@@ -9,8 +9,8 @@ def build(project,*extra):
  run(net,'restore',project,'--source','/Users/sebastienros/.nuget/packages',*flags,*extra)
  run(net,'build',project,'-c','Release','--no-restore',*flags,*extra)
 build('tests/Xemele.Tests/Xemele.Tests.csproj')
-classes=['M8Facets.FacetTests','M8Facets.DefinitionTests','M8Facets.CompositeTests','M8Facets.OperationTests','M8Facets.PrimitiveTests','M8Facets.ApplicabilityTests','M8Facets.CallerEngineTests','M8Datatypes.CompositionTests','M8DatatypesTextBinary.FamilyTests','M8DatatypesNumeric.NumericTests','M8DatatypesTemporal.TemporalTests','M8DatatypesCore.CoreTests','M8Model.ModelTests','M8Regex.RegexTests']
-counts=[56,48,61,15,7,83,2,77,148,76,23,18,12,147] # exact owned counts refreshed only after actual results
+classes=['M8Facets.FacetTests','M8Facets.DefinitionTests','M8Facets.CompositeTests','M8Facets.OperationTests','M8Facets.PrimitiveTests','M8Facets.ApplicabilityTests','M8Facets.CallerEngineTests','M8Facets.ReviewWitnessTests','M8Facets.FacetNumberTests','M8Datatypes.CompositionTests','M8DatatypesTextBinary.FamilyTests','M8DatatypesNumeric.NumericTests','M8DatatypesTemporal.TemporalTests','M8DatatypesCore.CoreTests','M8Model.ModelTests','M8Regex.RegexTests']
+counts=[56,48,61,15,7,83,2,6,25,77,148,76,23,18,12,147] # exact owned counts refreshed only after actual results
 out=root/'artifacts/M8-facets/correctness/focused.xml';out.parent.mkdir(parents=True,exist_ok=True)
 arguments=[]
 for name in classes:arguments+=['-class','Xemele.Tests.'+name]

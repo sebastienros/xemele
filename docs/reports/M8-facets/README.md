@@ -6,7 +6,8 @@ through the frozen IXmlFacetEvaluator interface, with no new public facade.
 
 ValidateDefinition walks the complete restriction/item/member graph, rejects
 cycles, unsupported shapes and final derivations, and compiles immutable per-level
-facet plans. The depth cap is 256; refusal is a fatal incomplete operation, not a
+facet plans. Restrictions accept retained item/member fields only when they
+match the inherited graph, including member order. The depth cap is 256; refusal is a fatal incomplete operation, not a
 schema mismatch. Every successful preparation is charged against its caller's
 compile operation even when another plan was previously prepared. Weak-key tables
 separate both registry identity and definition identity; complete plans are
@@ -16,7 +17,8 @@ state in those plans. No definitions-only or placeholder library is executable.
 TryValidate obtains an accepted plan or performs real preparation with the same
 operation. It normalizes borrowed lexical spans in bounded stack storage (up to
 256 UTF-16 units) or finally-returned pool storage, parses through verified value
-providers, then checks inherited levels and produces an owned result. Union
+providers, then checks inherited pattern/enumeration levels and the effective scalar set,
+and produces an owned result. Union
 members are tried in order using each member's own whitespace rule; selection
 retains the member value and its declared type. Lists collapse XML whitespace,
 validate each token against the item plan, and publish an immutable item snapshot.
@@ -34,12 +36,19 @@ Length uses scalar characters, binary octets or list items. QName/NOTATION lengt
 facets are schema-valid but impose no value check, preserving the providers'
 inapplicable null measure. Decimal totalDigits/fractionDigits use the verified
 canonical measures: .001=(3,3), 1.00=(1,0), 0=(1,0), 1000.00=(4,0). Facet integer
-values are arbitrary precision. Bounds preserve partial temporal/duration order;
+values use a native word through nineteen canonical digits and an owned
+canonical decimal string thereafter. Scanning, native conversion, string copying
+and digit comparisons charge each visited digit; one string component is reserved
+before canonical growth. Long leading zero sequences do not allocate count storage. Bounds preserve partial temporal/duration order;
 incomparable values cannot satisfy an ordered facet. Enumeration uses typed
 provider equality, including QName facet namespace snapshots, decimal equivalence
 and XSD NaN equality. Fixed constraints and tightened bounds/lengths/digits are
 checked through every inherited level. Whitespace cannot weaken or change a fixed
-policy. A repeated exclusive endpoint follows the XSD exception.
+policy. A repeated exclusive endpoint follows the XSD exception. Equal exclusive minimum
+and maximum endpoints prepare an empty value space; mixed equal endpoints reject.
+Cross-facet checks replace obsolete same-kind scalar facets while historical fixed
+and derivation checks remain. Effective length/minLength/maxLength combinations
+require the matching min/max values in an ancestor whose effective set has no length.
 
 The run adapter translates only a returned work/component/diagnostic refusal
 into an internal sentinel. Cancellation and caller exceptions propagate unchanged,
@@ -61,23 +70,29 @@ this repository's joins and parameter representation.
 
 ## Checks so far
 
-Before the source commit: 270 owned facet tests plus 501 verified datatype,
-model and regex regressions passed with zero failures/errors/skips/not-run on
-.NET 10.0.11. All 316 frozen facet contract members and 1,393 preserved public
-members matched. The regular and source-linked XML-only consumers passed,
-planning validated 178 tasks, and the whitespace check passed. A subsequently
-added fixed-flag alias guard and harness output isolation correction await their
-focused rerun after the current park releases.
+Historical 773 checks passed but the bounded review found five missing rules. All
+five newly written review witnesses then failed against the pre-correction code;
+see review-1.md. The corrected targeted suite passed 86 tests (6 review witnesses,
+25 independently calculated number tests, 48 definition tests, 7 primitive tests),
+zero failures/errors/skips/not-run on .NET10.0.11. The full corrected suite then passed804 tests (303 owned plus501 verified
+predecessors), zero failures/errors/skips/not-run, frozen316/public1393, both
+normal and true XML-only consumers, planning178 tasks and whitespace validation.
+
+The first witness build omitted the xUnit cancellation argument, corrected before
+execution. The first correction build exposed a local-name collision; corrected.
+The first numeric test run had three setup failures because a zero MaxOperations
+option is invalid; one-short tests now consume one unit from a valid positive
+budget before entry. These do not count as passing runs.
 
 Earlier test builds failed on theory accessibility and a lambda discard; the
-first focused run had six test-setup failures (provider-set identity, reserved
-RNG registry name, pre-cancelled operation construction), corrected without
-changing provider semantics. The first broad check stopped on a noncanonical
-owned API fragment, corrected to the required empty xemele-api-v1 public fragment.
-The first counters-disabled preparation build failed when project output flags
-reached the runtime reference and selected duplicate generated attributes; the
-owned probe project now removes those global flags at its project reference.
-Controls/discovery have not run, and no allocation/timing measurement has run.
+first focused run had six setup failures (provider-set identity, reserved RNG
+registry name, pre-cancelled operation construction). The first API check rejected
+a noncanonical fragment, corrected to the empty xemele-api-v1 fragment. The first
+counters-disabled preparation build forwarded output flags into the referenced
+runtime, corrected in the owned project. Its later output path omitted net10.0,
+corrected before any control execution. Controls/discovery and allocation/timing
+measurements have not run. Measurement remains withheld pending corrected-source
+review and fresh preparation/grant.
 
 ## Required XSD publication join
 

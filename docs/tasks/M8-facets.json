@@ -35,14 +35,20 @@
     {
       "id": "M8-facets-A1",
       "description": "Implement facet restrictions and compose datatype library with schema regex and whitespace policies.",
-      "status": "pending",
-      "evidence": []
+      "status": "failed",
+      "evidence": [
+        "source-correctness",
+        "source-review-1"
+      ]
     },
     {
       "id": "M8-facets-A2",
       "description": "Test conflicting/inherited facets, bounds, lengths/enumeration/pattern and RELAX NG datatype usage.",
-      "status": "pending",
-      "evidence": []
+      "status": "failed",
+      "evidence": [
+        "source-correctness",
+        "source-review-1"
+      ]
     },
     {
       "id": "M8-facets-A3",
@@ -51,13 +57,53 @@
       "evidence": []
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Validation/Datatypes/Facets/Evaluator.cs: XmlFacetEvaluator through the exact IXmlFacetEvaluator join and weak immutable prepared plans",
+    "src/Xemele/Validation/Datatypes/Facets/Definitions.cs and Consistency.cs: complete graph/lexical/applicability/fixed/final/inherited restrictions",
+    "src/Xemele/Validation/Datatypes/Facets/Values.cs: borrowed normalization and owned atomic/list/union results with per-level regex/value facets",
+    "src/Xemele/Validation/Datatypes/Facets/RngAdapter.cs: approved explicit known-alias/base/variety parameter protocol; empty library boundary",
+    "tests/Xemele.Tests/M8-facets/: independent facet/definition/composite/budget/cancellation/concurrent/alias tests",
+    "samples/M8-facets/Consumer.cs.fixture and docs/reports/M8-facets/XmlOnly/: genuine XML-only source-linked consumer",
+    "docs/api/M8-facets.txt: canonical empty additive public API fragment",
+    "benchmarks/Xemele.Benchmarks/M8-facets/: owned/cold/borrowed/invalid/pooled/retained controls and ShortRun/MemoryDiagnoser NoEmit harness; not measured yet",
+    "docs/reports/M8-facets/facade-join.md: approved internal RNG protocol and required downstream finalization"
+  ],
+  "evidence": [
+    {
+      "id": "source-correctness",
+      "kind": "check",
+      "revision": "5cdc839f597c6f51d0e460688f441057162926c2",
+      "command": "python3 docs/reports/M8-facets/checks.py",
+      "result": "passed",
+      "summary": "Pinned Release .NET10.0.11 Arm64:271 owned facets +501 verified datatype/model/regex regressions=772 passed; zero errors/failures/skips/not-run.316 frozen public/internal facet declarations and1393 preserved public members matched. Regular and real source-linked XML-only consumers passed,178 tasks validated,diff check passed. Allocation assertions/counters/timing not selected. Subsequent preparation-driver output suffix and extra NOTATION test are untested pending park release.",
+      "artifact": "docs/reports/M8-facets/README.md"
+    },
+    {
+      "id": "source-review-1",
+      "kind": "review",
+      "revision": "5cdc839f597c6f51d0e460688f441057162926c2",
+      "command": "Coordinator bounded read-only review of source5ea01779 plus RngAdapter delta5cdc839f; no execution",
+      "result": "failed",
+      "summary": "Five blockers: retained list/union compiler fields; length/min/max inherited-origin rule; equal exclusive empty range; effective digit facets replacing obsolete scalars; opaque arbitrary facet-number arithmetic/comparison lacking actual bounded work/growth. Prior passing test results preserved; corrections and new witnesses required.",
+      "artifact": "docs/reports/M8-facets/review-1.md"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "",
-    "checks": [],
-    "remaining": [],
-    "requests": []
+    "summary": "Source checkpoint exists, but failed bounded review reopened A1/A2. Correcting five concrete witnesses/accounting gaps in owned paths; no implemented/integration claim and no measurements requested.",
+    "checks": [
+      "Source5cdc839f:772 positive correctness tests,316 frozen/1393 public members,XML-only consumers and178-task planning passed.",
+      "Counters-disabled preparation first failed on propagated output/intermediate flags; owned reference isolation fixed. Next probe/BDN builds passed but control executable output lacked target-framework suffix; owned driver corrected. No control/discovery/allocation/timing run yet."
+    ],
+    "remaining": [
+      "Close five failed source-review witnesses and independent facet-number accounting oracles before accepted measurement preparation.",
+      "Run added RNG/NOTATION test after park release, refresh final correctness evidence.",
+      "Build final payload, run counters-disabled controls/discovery,freeze source/binary/runtime manifests and process permission preflight.",
+      "Only after fresh all-host PARK/root GRANT: run bounded allocation/BDN measurements; release before raw inspection and preserve all observations.",
+      "Coordinator integration verification remains separate."
+    ],
+    "requests": [
+      "Downstream XSD prepublication must reject direct NOTATION use and restrictions lacking effective enumeration,resolve authored/inherited enumeration QNames against compiled notation declarations with captured contexts,and traverse relevant base/item/member references. Generic/RNG NOTATION behavior remains supported."
+    ]
   }
 }
