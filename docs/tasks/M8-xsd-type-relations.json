@@ -4,7 +4,7 @@
   "milestone": "M8",
   "title": "Correct inherited XSD attributes and type relations",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M8 coordinator / assigned isolated M8-xsd-type-relations worker",
   "branch": "codex/m8-xsd-type-relations",
   "base_revision": "e59e96489f48d4ffb3e1a56a8a916db8e475aaf2",
@@ -74,8 +74,15 @@
     {
       "id": "M8-xsd-type-relations-A4",
       "description": "Preserve original baselines and independent standards oracles; pass focused owned/affected checks, public/frozen APIs, normal/XML-only consumers, bounded actual allocation evidence and planning validation. No XSD1.1 union-facet rule imported; disputed stZ073b remains separate.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "original-baseline",
+        "branch-correctness",
+        "source-review",
+        "allocation-source-review",
+        "allocation-disabled-preparation",
+        "actual-allocation"
+      ]
     }
   ],
   "implementation": [
@@ -138,22 +145,30 @@
       "result": "passed",
       "summary": "Offline10.0.400/10.0.11 Release build0warnings/0errors. Regression child60200 timeout/TERMexit0 correctlyfailed/stoppedsequence;60202 normalcompletedexit0. Preparation60224 andpreflight60240 completedexit0,allchildrenreaped/groupsabsent/logsclosed. Two25routecontrols consumed25196/48retained;allallocation/heapfieldsdisabledzero. Frozen505identities verifiedmanifestSHA ae8a7853fe4cb3a8b7f3bd7e43744c1810f1750aabd27788ce5e282995f28da0. No actualcounters;zeroownedjobs.",
       "artifact": "docs/reports/M8-xsd-type-relations/preparation-outcomes.json"
+    },
+    {
+      "id": "actual-allocation",
+      "kind": "check",
+      "revision": "e3a4b91bbe56148c01a2085fc3a19b2a1b0c0d7c",
+      "command": "python3 docs/reports/M8-xsd-type-relations/measure.py --run ae8a7853fe4cb3a8b7f3bd7e43744c1810f1750aabd27788ce5e282995f28da0",
+      "result": "passed",
+      "summary": "Root session81416 ran accepted prebuilt control then measure once. Children60436/60438 completed with exit0, reaped/groups absent/logs closed;505 identities matched before/after; cleanup 1932d68760dc57431fd43b5f7874c7f717cd3ad3 durable before raw inspection.25 routes/1600 positive warm samples, all first calls positive, aggregates equal sample sums; cold setup4,187,016 B and positive control1048 B. Control/measure consumption25196 and48 retained objects match. Coarse negative validation heap delta\u221211512 B preserved; no zero-allocation or timing claim. Worker recorded compact root summary only; no rerun.",
+      "artifact": "docs/reports/M8-xsd-type-relations/measurement-summary.json"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Runtime/test source2e accepted; allocation sourcee3a4 accepted; offline build/lifecycle/disabled controls/frozen505identities passed. Actualallocationevidencependingroot-onlylaunch.",
+    "summary": "Implemented A1/A2/A3/A5 at2e1619b35 with accepted source reviews, original baseline preservation and branch checks. A4 completed with accepted e3a4 probe, frozen2f8 preparation and actual root-run allocation evidence. Runtime/tests/probe source unchanged after acceptance. Integration verification belongs to coordinator.",
     "checks": [
-      "Passed python3 docs/reports/M8-xsd-type-relations/check.py:1622 affected/85 owned+42 resolver,1430 public/all8 frozen API lanes,normal/XML-only consumers,planning and whitespace.",
-      "Preserved baseline38 outcomes and earlier failed1612/owned71/75/79 runs;1616 tests allpassed but display-name result-harness false failure corrected.",
-      "No allocation probe source/preparation/build/control/counter jobs started.",
-      "Passed accepted lifecycle regression:timeout60200+TERMexit0isfailure,stopsnextchild;normal60202completed.",
-      "PassedofflineprobeReleasebuild10.0.400/10.0.11anddisabledpreparation60224/preflight60240;allgroupsabsent/logsclosed;505identitiesverified.",
-      "ManifestSHA ae8a7853fe4cb3a8b7f3bd7e43744c1810f1750aabd27788ce5e282995f28da0;no actualallocationcountersrun;zeroownedjobs."
+      "Passed1622 affected tests including85 owned, plus42 resolver;1430 public members, all8 frozen M8 lanes, normal and true XML-only consumers; planning and whitespace checks.",
+      "Preserved38 original baseline outcomes, unchanged source hashes/copyright, independent standards/BCL observations and every earlier failed test/harness run.",
+      "Accepted25-route probe; offline Release SDK10.0.400/runtime10.0.11 build; finite timeout/completion lifecycle regression, two disabled controls,505 frozen identities and preflight.",
+      "Root actual run:25 routes,1600 positive warm samples,48 retained objects, cold setup4,187,016 B, positive control1048 B; children60436/60438 completed and cleaned, identities unchanged. No throughput or zero-allocation claim; negative coarse retained delta preserved.",
+      "No rebuild/rerun/counter execution by worker after root run; transient raw outputs retained pending explicit cleanup direction; zero owned jobs."
     ],
     "remaining": [
-      "A4: root reviews frozenmanifest and alone launches actualcounterexecution; worker then records durable measured allocation summary and truthful branchcompletion.",
-      "Coordinatorintegrationverificationremainsseparate."
+      "Coordinator integrates and performs integration verification; integration_revision remains unset.",
+      "Await coordinator direction before removing generated transient measurement/preparation outputs."
     ],
     "requests": []
   }
