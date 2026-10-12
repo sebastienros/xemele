@@ -7,3 +7,7 @@ Actual baseline46400ede:10 cases,7 cross-pattern acceptance failures and3 valid 
 Prepared96e2bc46 reuses the validated allocation-only compiler probe and latest bounded report supervisor. Six routes consume cold compile, positive allocation, simple/abstract-phase/long multilingual owned graphs and cross-pattern error. Sixteen retained graphs and RSS are separate approximate process observations. All controls ran with counters disabled;425 identities and real child cleanup preflight pass. No measurement, zero allocation, timing, speed or x64 claim yet.
 
 Raw logs/XML/probe output are transient until coordinator inspection and verified cleanup. Only concise results, identities and analysis are committed. The corpus keeps its original failing oracle and awaits verified integration before consuming this repair.
+
+## Integrated verification
+
+Main integrationa722bc2f7951acc5b7e0707a90fa56d5391919c9 contains the actual tested combined source50f688e8 based on integratedclaim08ac500d. Full changed-path comparison shows unchanged runtime/tests/API/consumers/executedcheck inputs; differences are coordinator/task/report metadata and the separately built/controlled/measured allocation probe. No test rerun is claimed for metadata-only updates. Allocation evidence now passed after durable release; see allocations.md. Root marks verified only after reviewing these actual observations.

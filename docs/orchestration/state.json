@@ -7,8 +7,8 @@
   "coordination_branch": "main",
   "max_concurrent_workers": 3,
   "last_verified_checkpoint": "M7-gate",
-  "last_verified_task": "M8-xsd-content",
-  "last_integrated_revision": "223d094fb93e2a454557822818c06baa296e8702",
+  "last_verified_task": "M8-sch-rule-scope",
+  "last_integrated_revision": "50f688e82711f5e3ba25dd2bbbbdbd51f8995280",
   "active_assignments": [
     {
       "task_id": "M8-sch-corpus",
@@ -199,7 +199,7 @@
   },
   "current_milestone": "M8",
   "milestone_completion_scope": "Complete integrated verified M8-gate; terminal workers and cleanup; preserve earlier evidence/caches; transfer sole writes to main. Do not create M9.",
-  "milestone_progress": "21 of31 M8 tasks verified; three workers active and bounded root Schematron reference-scope repair.",
+  "milestone_progress": "22 of31 M8 tasks verified; corpus final corrected checks next, RNG and XSD identity active.",
   "blockers": [],
   "pending_decisions": [],
   "timing_queue": [],
@@ -803,6 +803,21 @@
       "final_worker_revision": "92e876023c32990398dcecbd0ba1a91e7b915545",
       "integration_revision": "223d094fb93e2a454557822818c06baa296e8702",
       "cleanup_record": "docs/orchestration/cleanup-M8-xsd-content.json"
+    },
+    {
+      "task_id": "M8-sch-rule-scope",
+      "branch": "codex/m8-sch-rule-scope",
+      "base_revision": "1bd3ca8345f35c3c0e51f9f3010151bf977c3cc4",
+      "stage": "Verified; terminal cleanup pending",
+      "worktree_path": "/private/tmp/xemele-M8-sch-rule-scope",
+      "cause": "ISO2016 same-pattern extends requirement; upstream rule-abstract-02 is applicable product failure.",
+      "acceptance_before_dispatch": "Bounded authored-reference scope check with no frozen API change; independent negatives/positive abstract instances/include/locations/accounting; compiler/evaluator/report/API/XML-only checks and scoped allocation evidence.",
+      "source_revision": "50f688e82711f5e3ba25dd2bbbbdbd51f8995280",
+      "prepared_revision": "690e8aa04c8533bab64eb5eda02083c60012896f",
+      "manifest_sha256": "986d4b5ae1ea0a3c1c225713324a8ad58641e1758b33daba63b59a03c6777131",
+      "measurement_record": "docs/orchestration/M8-sch-rule-scope-allocation-1.json",
+      "integration_revision": "50f688e82711f5e3ba25dd2bbbbdbd51f8995280",
+      "final_worker_revision": "690e8aa04c8533bab64eb5eda02083c60012896f"
     }
   ],
   "measurement_lease_history": [
@@ -1416,19 +1431,7 @@
     "benchmark_artifact_policy": "Human dad208f instruction: do not commit benchmark result logs and outputs, only summary tables and analysis."
   },
   "chat_communication_authorization": "Human directly authorized all M8 coordination, remaining M8 worker chats gpt-6.1-sol/high, parser-chat coordination, and GregsEx coordinator/workers host coordination.",
-  "coordinator_repair": {
-    "task_id": "M8-sch-rule-scope",
-    "branch": "codex/m8-sch-rule-scope",
-    "base_revision": "1bd3ca8345f35c3c0e51f9f3010151bf977c3cc4",
-    "stage": "Allocation supervisor finished and durable release recorded before raw inspection; interpretation pending",
-    "worktree_path": "/private/tmp/xemele-M8-sch-rule-scope",
-    "cause": "ISO2016 same-pattern extends requirement; upstream rule-abstract-02 is applicable product failure.",
-    "acceptance_before_dispatch": "Bounded authored-reference scope check with no frozen API change; independent negatives/positive abstract instances/include/locations/accounting; compiler/evaluator/report/API/XML-only checks and scoped allocation evidence.",
-    "source_revision": "50f688e82711f5e3ba25dd2bbbbdbd51f8995280",
-    "prepared_revision": "690e8aa04c8533bab64eb5eda02083c60012896f",
-    "manifest_sha256": "986d4b5ae1ea0a3c1c225713324a8ad58641e1758b33daba63b59a03c6777131",
-    "measurement_record": "docs/orchestration/M8-sch-rule-scope-allocation-1.json"
-  },
+  "coordinator_repair": null,
   "external_measurement_park": null,
   "measurement_park_aborts": [
     {

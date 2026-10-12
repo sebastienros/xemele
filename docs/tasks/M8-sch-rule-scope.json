@@ -4,11 +4,11 @@
   "milestone": "M8",
   "title": "Restrict Schematron abstract rule extension to its pattern",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "verified",
   "owner": "M8 coordinator bounded shared repair",
   "branch": "codex/m8-sch-rule-scope",
   "base_revision": "1bd3ca8345f35c3c0e51f9f3010151bf977c3cc4",
-  "integration_revision": null,
+  "integration_revision": "50f688e82711f5e3ba25dd2bbbbdbd51f8995280",
   "depends_on": [
     "M8-sch-compile"
   ],
@@ -33,7 +33,9 @@
       "status": "passed",
       "evidence": [
         "corrected-checks",
-        "bounded-review"
+        "bounded-review",
+        "owned-allocation",
+        "integrated-verification"
       ]
     },
     {
@@ -42,14 +44,19 @@
       "status": "passed",
       "evidence": [
         "corrected-checks",
-        "bounded-review"
+        "bounded-review",
+        "owned-allocation",
+        "integrated-verification"
       ]
     },
     {
       "id": "M8-sch-rule-scope-A3",
       "description": "Record bounded independent review, actual integrated checks and relevant allocation evidence without changing frozen interfaces or earlier evidence. Unblock corpus only after verified repair.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "owned-allocation",
+        "integrated-verification"
+      ]
     }
   ],
   "implementation": [
@@ -92,17 +99,35 @@
       "result": "passed",
       "summary": "Six consumed routes with all allocation/retained/RSS counters disabled;425 source/runtime/hostfxr/binary/control/supervisor identities match. Actual prebuilt child cleanup preflight exited0/reaped/groupabsent/logclosed. ManifestSHA986d4b5ae1ea0a3c1c225713324a8ad58641e1758b33daba63b59a03c6777131; no measurement yet.",
       "artifact": "docs/reports/M8-sch-rule-scope/preparation.json"
+    },
+    {
+      "id": "owned-allocation",
+      "kind": "check",
+      "revision": "96e2bc46456dd164f4fa10d0334a74fea9fa2c49",
+      "command": "python3 docs/reports/M8-sch-rule-scope/lease.py --granted 986d4b5ae1ea0a3c1c225713324a8ad58641e1758b33daba63b59a03c6777131 2026-10-12T02:32:00Z 2026-10-12T02:28:58.484968+00:00",
+      "result": "passed",
+      "summary": "Fresh8actor ACKs and boundedgrant6be06558; solechild99778exit0/reaped/groupabsent/logclosed,425stableidentities,0.451273s. DurableRELEASEf7ca004b before raw inspection. Six consumedroutes: cold43216B,64-call aggregates positive9728/simple1287680/abstract6617896/long1365504/crosspattern878592B; respective means152/20120/103404.625/21336/13728B. Approx retained16graphs181592B and RSS54804480 separately. No individual distributions, zero/timing/speed/x64claim.",
+      "artifact": "docs/reports/M8-sch-rule-scope/allocations.md"
+    },
+    {
+      "id": "integrated-verification",
+      "kind": "integration",
+      "revision": "50f688e82711f5e3ba25dd2bbbbdbd51f8995280",
+      "command": "Pinned Release build and11 RuleScopeTests; python3 docs/reports/M8-sch-report/checks.py; source/check input comparison after main integration",
+      "result": "passed",
+      "summary": "Actual combined repair11+preserved546 tests allpass/0failures/errors/skips/notrun/warnings; public1403/frozen3/9/154 and normal/trueXMLonly consumers pass. Source50f688e8 based on integratedclaim08ac500d mergedmaina722bc2f. Main differences are metadata and separately built/controlled/measured probe; runtime/tests/API/consumer/executedcheck inputs unchanged. No unchanged test rerun claimed. Prepared probe build/control/measurement accepted;180taskgraph validated.",
+      "artifact": "docs/reports/M8-sch-rule-scope/README.md"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Reviewed scope repair;557 actual focused/preserved checks pass, six-route disabled preparation stable. Allocation lease and final integration pending.",
+    "summary": "Verified integrated same-pattern abstract rule extension check; original seven failing witnesses preserved,11corrected+546affected checks and released owned-allocation evidence accepted.",
     "checks": [
-      "Baseline10:7failed/3passed; corrected11+preserved546 passed/public1403/frozen3/9/154/normal and trueXML-only/180planning.",
-      "Independent source review accepted;425-identity disabled preparation and cleanup preflight passed."
+      "Compiler/evaluator/report preservation, public1403/frozen3/9/154, normal/trueXMLonly,180taskgraph and bounded independent source review passed.",
+      "Six-route owned allocation evidence:425stableidentities,cleanup confirmed,durable release before raw inspection; no speed or x64 claim."
     ],
     "remaining": [
-      "Implement, verify and integrate repair before corpus final verification."
+      "Corpus owner must merge verified main checkpoint, add repair dependency and rerun strict original plus corrected independent oracles; terminal root repair cleanup."
     ],
     "requests": []
   }
