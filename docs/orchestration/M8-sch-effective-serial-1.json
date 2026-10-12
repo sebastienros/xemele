@@ -1,6 +1,6 @@
 {
   "id": "M8-sch-effective-serial-1",
-  "status": "PREPARED_NOT_PROPOSED",
+  "status": "PROPOSED",
   "maximumSeconds": 60,
   "scope": "Two prebuilt allocation-only supervisors, SCH then effective-content, serial and once. Each is bounded to30s with20s work and10s cleanup. Overall actual UTC grant bounds also apply. Stop on first failure; no build/restore/discovery/tests/retry/extension; immediate durable RELEASE after lifecycle cleanup before raw inspection. Not a grant or PARK request.",
   "sequence": [
@@ -28,5 +28,12 @@
     }
   ],
   "preflight": "Both source reviews accepted; actual454 SCH and282 compiler tests; disabled controls and elevated process-cleanup verification passed; root independently verified both prepared identity sets before external GregsEx park.",
-  "acks": {}
+  "acks": {
+    "root": "Fresh postrelease verification passed215+410 identities and ps; no jobs remaining. Root parked source/docs only."
+  },
+  "earliestStart": "2026-10-12T00:48:00Z",
+  "latestStart": "2026-10-12T00:53:00Z",
+  "absoluteCleanupCap": "2026-10-12T00:54:00Z",
+  "proposedUtc": "2026-10-12T00:47:36.160884+00:00",
+  "reviewers": "Contract reviewer active read-only facets review and explicitly asked for no-execution ACK; model/xpath reviews completed with no jobs or future dispatch until release."
 }
