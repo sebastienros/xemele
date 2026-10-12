@@ -37,26 +37,20 @@
     {
       "id": "M8-xsd-facade-A1",
       "description": "Compose schema compiler/core/identity constraints into immutable public compiled schemas.",
-      "status": "passed",
-      "evidence": [
-        "source-checks"
-      ]
+      "status": "pending",
+      "evidence": []
     },
     {
       "id": "M8-xsd-facade-A2",
       "description": "Test all components through public API, concurrent validations, malformed schemas and resolver failures.",
-      "status": "passed",
-      "evidence": [
-        "source-checks"
-      ]
+      "status": "pending",
+      "evidence": []
     },
     {
       "id": "M8-xsd-facade-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "passed",
-      "evidence": [
-        "source-checks"
-      ]
+      "status": "pending",
+      "evidence": []
     }
   ],
   "implementation": [
@@ -75,21 +69,37 @@
       "result": "passed",
       "summary": "Pinned .NET10.0.11 Release:1018affected correctness including70public facade+42safe resolver;0errors/failed/skipped/not-run;counter tests excluded. PublicAPI1417, facade7, frozen evaluator/compiler/identity/content2/257/24/9 matched. Normal and true XML-only consumers built0warnings/errors and passed;planning182 and git diff--check passed. No measurements.",
       "artifact": null
+    },
+    {
+      "id": "correction1-public",
+      "kind": "check",
+      "revision": "cfba0a33e24a970075b4035f3b57defcdc7972af",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -namespace Xemele.Tests.M8XsdFacade -parallelMode none -noLogo -noColor -result-xml artifacts/M8-xsd-facade/correction-1.xml",
+      "result": "failed",
+      "summary": "93public cases:84pass/9fail,0errors/skipped/not-run. All12owned correction controls+70previous public cases pass;2valid typed-fixed controls pass. Nine shared compiler/content join failures remain executable:3unused group obligations,4aggregate principal/external quota string/stream witnesses,2unequal typed particle fixed values. No counters/measurements.",
+      "artifact": null
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Public facade source composed and sent for bounded review; correctness/API/consumers pass. Source acceptance and required allocation evidence pending.",
+    "summary": "Consolidated review batch1 owned canonical/polled-scan/publication fixes committed cfba0a33. New public repair witnesses expose nine shared compiler/content join failures; waiting root verified repairs/exact integration checkpoint. Task remains in_progress.",
     "checks": [
       "Initial build failed four xUnit1051 cancellation-token analyzer checks; corrected.",
       "First 65 public run failed incorrect group wildcard union oracle; corrected to intersection.",
       "Expanded union oracle incorrectly rejected boolean lexical 1; corrected invalid witness to 2.",
-      "Pinned committed c27273d4 scoped driver passed 1018affected +42safe resolver, public1417, facade7, frozen2/257/24/9; normal/XML-only consumers and planning182; no measurement."
+      "Pinned committed c27273d4 scoped driver passed 1018affected +42safe resolver, public1417, facade7, frozen2/257/24/9; normal/XML-only consumers and planning182; no measurement.",
+      "Correction1 pinned public93:84pass/9shared failures;all12owned fixes pass. Full affected1041:1032pass/9same failures;independent resolver/API/normal+XML-only/planning checks pass. No skip/exclusion or allocation preparation."
     ],
     "remaining": [
-      "Coordinator bounded source review acceptance",
-      "After source acceptance, owned allocation preparation and counters-disabled controls; then exact fresh measurement grant and measured evidence."
+      "Root bounded review acceptance of owned correction1",
+      "Verified owning compiler repair for retained group checkpoints and existing-context/resource-loader aggregate parsing join",
+      "Verified owning content repair for actual restriction-rule typed element fixed equality",
+      "Root exact verified checkpoint/integration/join; then all public/affected tests must pass",
+      "After source acceptance only: allocation preparation/disabled controls then fresh exact measurement grant and evidence."
     ],
-    "requests": []
+    "requests": [
+      "src/Xemele/Validation/Xsd/Compilation/Compiler.cs (owning repair): retain unused ordinary group/attributeGroup checkpoints and add existing SchemaCompileContext/Resources join preserving IXsdCompiler; root assigned, wait verified snapshot.",
+      "src/Xemele/Validation/Xsd/ContentModels/Derivation.cs (owning repair): typed element fixed comparison in actual matched base/derived restriction rules with declaration contexts and retained redefine; root assigned, wait verified snapshot."
+    ]
   }
 }

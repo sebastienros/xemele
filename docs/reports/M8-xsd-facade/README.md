@@ -61,6 +61,46 @@ Original failures are preserved honestly:
   overlooking its valid boolean member alternative. Corrected the invalid witness
   to `2`; 1,018/1,018 affected checks then passed.
 
+## Consolidated source correction batch 1
+
+Root's two independent source reviews identified three owned and three shared
+publication/composition gaps. Owned corrections are committed at
+`cfba0a33e24a970075b4035f3b57defcdc7972af`:
+
+- Canonical prepared constraint text is revalidated through the declared type
+  with the captured context and same registry/operation, before publication.
+  The authored `DeclaredValue` remains available for typed comparisons.
+- NOTATION token scans charge only actual inspected UTF-16 units, with cancellation
+  polling at every unit. Prefix/local/namespace matching uses borrowed slices and
+  existing owned schema names; no token lookup strings are materialized. A private
+  `a b c` scan examines five units for three tokens. Long-token and long prefix/local
+  controls cancel inside their scans/comparisons. This is a straightforward loop,
+  with no speedup claim; primitive and end-to-end allocation evidence remain gated.
+- The finished private program dictionary is wrapped read-only without copying,
+  and final cancellation/source-revision checks occur after constructing that
+  wrapper/schema. Existing concurrent/source-detachment witnesses pass.
+
+Actual public run at that source commit: 93 cases, 84 pass, nine fail, zero
+errors/skips/not-run. All 12 owned correction cases and earlier 70 cases pass;
+valid numeric/QName particle fixed-value controls also pass. Expected shared
+failures remain active in `PendingJoinTests`:
+
+- Three unused group obligations: local referenced fixed QName mismatch, two ID
+  attribute uses, and inconsistent same-name local element types.
+- Four principal/external aggregate quota witnesses: DocumentCharacters and
+  ExpandedCharacters, each through string and caller-stream public compilation.
+- Two mismatched typed particle fixed values: numeric 1/2 and QName v/other.
+
+The full affected run reports 1,041 cases, 1,032 pass and the same nine failures.
+The check driver continues independent checks while retaining its failed exit:
+resolver42, public1417/facade7/frozen2/257/24/9, both normal/XML-only consumers,
+planning182 and whitespace checks all pass with zero build warnings/errors.
+No expected outcome was relaxed and no failing case was excluded. Root is assigning
+owning compiler and content repairs; this worker made no outside-owned source edit
+and added no unverified repair dependency. Integration/join awaits root's exact
+verified checkpoint. Earlier passing source evidence above is historical and is
+not claimed to establish the new public obligations.
+
 Source review acceptance and allocation evidence remain pending. No counters,
 BenchmarkDotNet or timing measurements have been run by this worker. Build/test
 runner elapsed output is not performance evidence. Full W3C corpus and cumulative
