@@ -1,4 +1,6 @@
 """Independent case counts fixed from authored acceptance coverage, not observed output."""
+import sys
+sys.dont_write_bytecode = True
 from collections import Counter
 from pathlib import Path
 import importlib.util

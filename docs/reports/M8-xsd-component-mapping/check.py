@@ -1,4 +1,6 @@
 """Focused correctness only; no allocation counters, timers, broad discovery or measurements."""
+import sys
+sys.dont_write_bytecode = True
 from pathlib import Path
 import json
 import subprocess
