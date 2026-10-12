@@ -52,6 +52,14 @@ for xmlonly in [False,True]:
  import os
  env=dict(os.environ,FACADE_XML_ONLY='1' if xmlonly else '0')
  subprocess.run([D,'--fx-version','10.0.11','samples/M8-xsd-facade/bin/Release/net10.0/Xemele.Benchmarks.dll'],check=True,env=env)
+project='samples/M8-xsd-recursive-components/Recursive.Consumer.csproj'
+for xmlonly in [False,True]:
+ xmlflags=[*flags,*(['-p:RecursiveXmlOnly=true'] if xmlonly else [])]
+ subprocess.run([D,'restore',project,'--source','/Users/sebastienros/.nuget/packages',*xmlflags],check=True)
+ subprocess.run([D,'build',project,'-c','Release','--no-restore',*xmlflags],check=True)
+ import os
+ env=dict(os.environ,RECURSIVE_XML_ONLY='1' if xmlonly else '0')
+ subprocess.run([D,'--fx-version','10.0.11','samples/M8-xsd-recursive-components/bin/Release/net10.0/Xemele.Benchmarks.dll'],check=True,env=env)
 subprocess.run(['python3','tools/planning/tasks.py','validate'],check=True)
 subprocess.run(['git','diff','--check'],check=True)
 if failures:
