@@ -1,6 +1,6 @@
 {
   "scope": "M8-canonical-a58aed48-alloc-only",
-  "status": "GRANTED; exactly two serial prepared children",
+  "status": "RELEASED after explicit completed cleanup; raw not inspected",
   "worker_chat": "01a12e34-6685-79d1-9298-588b9215bd6c",
   "worker_path": "/Users/sebastienros/.codex/worktrees/357f/xemele",
   "accepted_runtime_revision": "a58aed481ea2c6831111b73d037f92d1da21a2c1",
@@ -91,9 +91,74 @@
     }
   },
   "pending_acks": [],
-  "grant_revision": null,
+  "grant_revision": "780bd70f49f97745febda2fc166819ec86ec3d98",
   "release_revision": null,
   "granted_at": "2026-10-12T04:13:58.631096+00:00",
   "latest_start": "2026-10-12T04:14:58.631096+00:00",
-  "absolute_expiry": "2026-10-12T04:15:58.631096+00:00"
+  "absolute_expiry": "2026-10-12T04:15:58.631096+00:00",
+  "released_at": "2026-10-12T04:14:33.858052+00:00",
+  "lifecycle": {
+    "status": 0,
+    "beforeIdentities": true,
+    "afterIdentities": true,
+    "sequence": [
+      {
+        "command": 0,
+        "pid": 32885,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      {
+        "command": 1,
+        "pid": 32887,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      }
+    ],
+    "rawResultsInspected": false,
+    "latestStart": "2026-10-12T04:14:58.631096+00:00",
+    "absoluteExpiry": "2026-10-12T04:15:58.631096+00:00",
+    "beforeMismatches": [],
+    "identityCount": 447,
+    "afterMismatches": [],
+    "elapsedSeconds": 0.6649513749871403
+  },
+  "local_release": {
+    "status": 0,
+    "releasedAt": "2026-10-12T04:14:33.852746+00:00",
+    "rawResultsInspected": false,
+    "sequence": [
+      {
+        "command": 0,
+        "pid": 32885,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      {
+        "command": 1,
+        "pid": 32887,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      }
+    ],
+    "beforeIdentities": true,
+    "afterIdentities": true
+  },
+  "supervisor_exit": 0
 }
