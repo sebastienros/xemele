@@ -1,0 +1,29 @@
+{
+  "upstream_revision": "7bc3365c652a322f3d762021b3879eb92dae7e30",
+  "original_observation_revision": "80cd6bac0e740947cc3809fef4300068d8b4e51b",
+  "policy": "Preserve original metadata, bytes and observations; derived profile results are separate and never turn an original failure or unassessed instance into an original pass.",
+  "status": "Coordinator and independent contract reviewer source adjudication; focused original execution and independent neighbors required",
+  "case": {
+    "id": "msMeta/Element_w3c.xml#g341/s:elemZ027_c",
+    "original_expected": "invalid",
+    "original_status": {
+      "status": "queried",
+      "date": "2007-06-21",
+      "bugzilla": "http://www.w3.org/Bugs/Public/show_bug.cgi?id=4680"
+    },
+    "path": "msData/element/elemZ027c.xsd",
+    "sha256": "7ab348e204dc32c340b0fbedded2a3a6f1668711d0468798eda2c342c6b660e2",
+    "original_outcome": "schema-valid",
+    "original_passed": false,
+    "derived_expected": "valid"
+  },
+  "reason": "Second Edition Substitution Group OK (Transitive) evaluates the selected head's disallowed substitutions, not intermediate element blocks. The a->b->c->d affiliation has identical anyType types and only b blocks substitution; a remains substitutable for unblocked d, so the restriction is valid. W3C4680 explicitly supports changing this oracle but remains NEW; no adopted erratum is claimed.",
+  "sources": [
+    "https://www.w3.org/TR/2004/REC-xmlschema-1-20041028/#cos-equiv-derived-ok-rec",
+    "https://www.w3.org/Bugs/Public/show_bug.cgi?id=4680"
+  ],
+  "required_checks": [
+    "Original unchanged schema remains valid and originalPassed=false.",
+    "Independent a-for-d allowed, a-for-b blocked, and a-for-d blocked when d itself blocks substitution."
+  ]
+}
