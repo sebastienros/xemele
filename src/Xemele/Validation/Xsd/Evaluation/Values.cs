@@ -200,11 +200,11 @@ internal sealed partial class XsdValidationRun
             if (derivation == XsdDerivation.Extension && (elementBlock.Contains(XsdElementBlock.Extension) || typeBlock.Contains(XsdTypeBlock.Extension)) ||
                 derivation == XsdDerivation.Restriction && (elementBlock.Contains(XsdElementBlock.Restriction) || typeBlock.Contains(XsdTypeBlock.Restriction))) return false;
             if (types.TryGetValue(parent, out var baseType) && baseType.Final.Contains(derivation)) return false;
-            if (schema.Datatypes.FindType(parent) is { } simpleBase)
-            {
-                var simpleDerivation = derivation switch { XsdDerivation.List => XmlDatatypeDerivation.List, XsdDerivation.Union => XmlDatatypeDerivation.Union, _ => XmlDatatypeDerivation.Restriction };
-                if (simpleBase.Final.Contains(simpleDerivation)) return false;
-            }
+            // Complex extension retains its actual derivation method when its
+            // base is simple: final=restriction does not prohibit extension.
+            // The remaining simple relation may use a union-member route.
+            if (schema.Datatypes.FindType(parent) is not null && schema.Datatypes.FindType(declared) is not null)
+                return SimpleDerived(parent, declared, elementBlock.Contains(XsdElementBlock.Restriction) || typeBlock.Contains(XsdTypeBlock.Restriction));
             actual = parent;
         }
         return true;

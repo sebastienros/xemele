@@ -126,7 +126,7 @@ internal sealed partial class XsdValidationRun : ISchemaOperation
                     }
                     continue;
                 }
-                frame.HasChild = true; XsdElementDeclaration? matched = null; bool skip = frame.Skip;
+                frame.HasChild = true; XsdElementDeclaration? matched = null; bool skip = frame.Skip, requireAssessment = false;
                 if (!skip)
                 {
                     if (frame.Nil) frame.Valid = Error("XSD.Nil", "A nilled element cannot have element content.");
@@ -137,12 +137,12 @@ internal sealed partial class XsdValidationRun : ISchemaOperation
                         if (id is int known) matched = schema.Elements[known];
                         else if (policy == XsdProcessContents.Skip) skip = true;
                         else if (schema.GlobalElements.TryGetValue(Name(child), out int global)) matched = schema.Elements[global];
-                        else if (policy == XsdProcessContents.Strict) frame.Valid = Error("XSD.UndeclaredElement", "Strict wildcard requires an element declaration.");
+                        else if (policy == XsdProcessContents.Strict) requireAssessment = true;
                     }
                     else frame.Valid = Error("XSD.Content", "Element children are not permitted here.");
                 }
                 // Lax undeclared nodes use open assessment; actual skip remains subtree skip.
-                stack.Add(Enter(child, matched, frame.Context, skip, stack.Count + 1));
+                stack.Add(Enter(child, matched, frame.Context, skip, stack.Count + 1, requireAssessment));
             }
             if (references is not null) foreach (var reference in references)
             { Work(reference.Key.Length + 1L); if (ids?.Contains(reference.Key) != true) Error("XSD.IdRef", "IDREF has no matching ID.", reference.Value); }
@@ -154,18 +154,17 @@ internal sealed partial class XsdValidationRun : ISchemaOperation
     private ValidationResult Finish() { Revision(); return operation.Complete(); }
     private static SchemaName Name(XmlNode node) => new(node.NamespaceUri, node.LocalName);
     private static SchemaName Name(XmlAttribute attribute) => new(attribute.NamespaceUri, attribute.LocalName);
-    private Frame Enter(XmlNode node, XsdElementDeclaration? declaration, SchemaNamespaceContext parent, bool skip, int depth, bool requireDeclaration = false)
+    private Frame Enter(XmlNode node, XsdElementDeclaration? declaration, SchemaNamespaceContext parent, bool skip, int depth, bool requireAssessment = false)
     {
         current = document.OriginalLocation(node); Work();
         if (Limits.Depth is int cap && depth > cap) Limit("Element depth limit exceeded.");
         Text(node.LocalName, true); Text(node.NamespaceUri, true); Text(node.Prefix, true);
-        var context = Context(node, parent); bool valid = true, nil = false;
+        var context = Context(node, parent); bool valid = true, nil = false, globalTypeResolved = false;
         XsdTypeDefinition? type = null;
         if (!skip)
         {
             if (declaration is null)
             {
-                if (requireDeclaration) valid = Error("XSD.UndeclaredElement", "Element has no declaration.");
                 type = types[new(Xs, "anyType")];
             }
             else
@@ -180,14 +179,16 @@ internal sealed partial class XsdValidationRun : ISchemaOperation
                 if (!QName(XsdEvaluationText.TrimXml(xsiType, this, current), context, out var name) || !types.TryGetValue(name, out var replacement) || replacement.Anonymous)
                     valid = Error("XSD.Type", "xsi:type does not name a global type.");
                 else if (!Derived(replacement.Name, type.Name, declaration?.Block ?? [], type.Block)) valid = Error("XSD.Type", "xsi:type derivation is prohibited.");
-                else type = replacement;
+                else { type = replacement; globalTypeResolved = true; }
             }
+            if (requireAssessment && declaration is null && !globalTypeResolved)
+                valid = Error("XSD.UndeclaredElement", "Assessment requires an element declaration or globally resolved xsi:type.");
             if (type.Abstract) valid = Error("XSD.Abstract", "An abstract type cannot be instantiated.");
             if (Attribute(node, "nil", Xsi) is string lexical)
             {
                 Text(lexical, true); var collapsed = XsdEvaluationText.TrimXml(lexical, this, current);
                 if (declaration is { Nillable: false }) valid = Error("XSD.Nil", "xsi:nil is prohibited on a non-nillable element.");
-                if (collapsed.SequenceEqual("true") || collapsed.SequenceEqual("1")) nil = true;
+                if (collapsed.SequenceEqual("true") || collapsed.SequenceEqual("1")) nil = declaration is { Nillable: true };
                 else if (!collapsed.SequenceEqual("false") && !collapsed.SequenceEqual("0")) valid = Error("XSD.Nil", "xsi:nil must be an XML Schema boolean.");
                 if (nil && declaration?.FixedValue is not null) valid = Error("XSD.Nil", "A fixed element cannot be nilled.");
             }
