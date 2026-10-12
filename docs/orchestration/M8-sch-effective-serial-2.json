@@ -1,6 +1,6 @@
 {
   "id": "M8-sch-effective-serial-2",
-  "status": "GRANTED",
+  "status": "RELEASED",
   "maximumSeconds": 60,
   "scope": "Two prebuilt allocation-only supervisors, SCH then effective-content, serial and once. Each is bounded to30s with20s work and10s cleanup. Overall actual UTC grant bounds also apply. Stop on first failure; no build/restore/discovery/tests/retry/extension; immediate durable RELEASE after lifecycle cleanup before raw inspection. Not a grant or PARK request.",
   "sequence": [
@@ -51,5 +51,73 @@
     "owner_chat": "01a12c6c-b333-71d3-877f-0d186618e21d",
     "attempts": 1,
     "release": "Immediate durable release after both supervisors terminate with child/group/output cleanup, before raw inspection. Stop on firstfailure; no retry."
+  },
+  "release": {
+    "recordedUtc": "2026-10-12T00:59:09.181735+00:00",
+    "results": [
+      {
+        "task": "M8-sch-validate",
+        "exit": 0,
+        "phaseExpiry": "2026-10-12T00:59:38.348819+00:00",
+        "lifecycle": {
+          "lease": "M8-sch-validate-allocation-1",
+          "status": 0,
+          "beforeIdentities": true,
+          "afterIdentities": true,
+          "beforeManifestSha256": true,
+          "afterManifestSha256": true,
+          "sequence": [
+            {
+              "pid": 75617,
+              "exit": 0,
+              "reason": "completed",
+              "directChildReaped": true,
+              "ownedGroupAbsent": true,
+              "logClosed": true,
+              "groupMembers": []
+            }
+          ],
+          "rawInspected": false,
+          "latestStart": "2026-10-12T01:03:00Z",
+          "absoluteExpiry": "2026-10-12T00:59:38.348819+00:00",
+          "maximumRemainingSeconds": 29.951663,
+          "beforeMismatches": [],
+          "identityCount": 215,
+          "afterMismatches": [],
+          "elapsedSeconds": 0.3677942920476198
+        },
+        "cleanupConfirmed": true
+      },
+      {
+        "task": "M8-xsd-effective-content",
+        "exit": 0,
+        "phaseExpiry": "2026-10-12T00:59:38.771032+00:00",
+        "lifecycle": {
+          "status": 0,
+          "beforeIdentities": true,
+          "afterIdentities": true,
+          "sequence": [
+            {
+              "command": 0,
+              "pid": 75623,
+              "exit": 0,
+              "reason": "completed",
+              "directChildReaped": true,
+              "ownedGroupAbsent": true,
+              "logClosed": true
+            }
+          ],
+          "rawResultsInspected": false,
+          "latestStart": "2026-10-12T01:03:00Z",
+          "absoluteExpiry": "2026-10-12T00:59:38.771032+00:00",
+          "beforeMismatches": [],
+          "identityCount": 410,
+          "afterMismatches": [],
+          "elapsedSeconds": 0.3769295420497656
+        },
+        "cleanupConfirmed": true
+      }
+    ],
+    "rawInspected": false
   }
 }

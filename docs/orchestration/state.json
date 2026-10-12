@@ -115,15 +115,7 @@
   "benchmark_policy": "Successful previous measurements retained; future changed runtime measurements require complete preparation and exclusive grant.",
   "benchmark_class_attributes": "Human requirement: every benchmark class declares [MemoryDiagnoser, ShortRunJob]; no CLI job flags.",
   "benchmark_owner": null,
-  "active_measurement_lease": {
-    "id": "M8-sch-effective-serial-2",
-    "startedUtc": "2026-10-12T00:58:52.596907+00:00",
-    "expiryUtc": "2026-10-12T00:59:52.596907+00:00",
-    "maximumSeconds": 60,
-    "owner_chat": "01a12c6c-b333-71d3-877f-0d186618e21d",
-    "attempts": 1,
-    "release": "Immediate durable release after both supervisors terminate with child/group/output cleanup, before raw inspection. Stop on firstfailure; no retry."
-  },
+  "active_measurement_lease": null,
   "verification_policy_update": "User convergence discipline: define acceptance/evidence/integration checks before dispatch; batch concrete blockers with criterion, evidence, smallest fix and proving check; preserve valid evidence; offline focused harness repair first; after two cycles coordinator chooses one bounded resolution; reuse infrastructure; build outside one bounded measurement lease with one park acknowledgement collection and prompt release; focused task integration and comprehensive milestone gates. No speculative hardening blocks integration.",
   "cleanup_policy": "Automatically archive completed chats and remove worktrees once merged verified durably summarized and no review/build need. Do not save generated test/benchmark artifacts or ignored-output archives; preserve required implementation/source and concise verification summaries.",
   "artifact_policy": {
@@ -1033,6 +1025,79 @@
         "recordedUtc": "2026-10-12T00:46:52.304231+00:00"
       },
       "record": "docs/orchestration/M8-external-M2-host-strict-9200e66.json"
+    },
+    {
+      "id": "M8-sch-effective-serial-2",
+      "status": "released",
+      "release": {
+        "recordedUtc": "2026-10-12T00:59:09.181735+00:00",
+        "results": [
+          {
+            "task": "M8-sch-validate",
+            "exit": 0,
+            "phaseExpiry": "2026-10-12T00:59:38.348819+00:00",
+            "lifecycle": {
+              "lease": "M8-sch-validate-allocation-1",
+              "status": 0,
+              "beforeIdentities": true,
+              "afterIdentities": true,
+              "beforeManifestSha256": true,
+              "afterManifestSha256": true,
+              "sequence": [
+                {
+                  "pid": 75617,
+                  "exit": 0,
+                  "reason": "completed",
+                  "directChildReaped": true,
+                  "ownedGroupAbsent": true,
+                  "logClosed": true,
+                  "groupMembers": []
+                }
+              ],
+              "rawInspected": false,
+              "latestStart": "2026-10-12T01:03:00Z",
+              "absoluteExpiry": "2026-10-12T00:59:38.348819+00:00",
+              "maximumRemainingSeconds": 29.951663,
+              "beforeMismatches": [],
+              "identityCount": 215,
+              "afterMismatches": [],
+              "elapsedSeconds": 0.3677942920476198
+            },
+            "cleanupConfirmed": true
+          },
+          {
+            "task": "M8-xsd-effective-content",
+            "exit": 0,
+            "phaseExpiry": "2026-10-12T00:59:38.771032+00:00",
+            "lifecycle": {
+              "status": 0,
+              "beforeIdentities": true,
+              "afterIdentities": true,
+              "sequence": [
+                {
+                  "command": 0,
+                  "pid": 75623,
+                  "exit": 0,
+                  "reason": "completed",
+                  "directChildReaped": true,
+                  "ownedGroupAbsent": true,
+                  "logClosed": true
+                }
+              ],
+              "rawResultsInspected": false,
+              "latestStart": "2026-10-12T01:03:00Z",
+              "absoluteExpiry": "2026-10-12T00:59:38.771032+00:00",
+              "beforeMismatches": [],
+              "identityCount": 410,
+              "afterMismatches": [],
+              "elapsedSeconds": 0.3769295420497656
+            },
+            "cleanupConfirmed": true
+          }
+        ],
+        "rawInspected": false
+      },
+      "record": "docs/orchestration/M8-sch-effective-serial-2.json"
     }
   ],
   "workers": [],
