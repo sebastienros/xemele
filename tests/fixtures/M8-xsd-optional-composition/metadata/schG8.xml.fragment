@@ -1,0 +1,17 @@
+<testGroup name="schG8">
+      <annotation>
+         <documentation>TEST :schema collection and schema location : A import B and C, B is bogus URL, C is valid XSD, test that there is no error and C is imported.</documentation>
+      </annotation>
+      <documentationReference
+         xlink:href="http://www.w3.org/TR/2004/REC-xmlschema-1-20041028/#Schemas"/>
+      <schemaTest name="schG8">
+         <schemaDocument xlink:href="../msData/schema/schG8_a.xsd"/>
+         <expected validity="valid"/>
+         <current date="2006-07-16" status="accepted"/>
+      </schemaTest>
+      <instanceTest name="schG8.v">
+         <instanceDocument xlink:href="../msData/schema/schG8.xml"/>
+         <expected validity="valid"/>
+         <current date="2006-07-16" status="accepted"/>
+      </instanceTest>
+   </testGroup>
