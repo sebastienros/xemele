@@ -31,7 +31,7 @@ def main():
     directory=b.OUT/('root-'+action+'-'+uuid.uuid4().hex)
     env=os.environ.copy();env.update(XEMELE_IMPORT_REVIEW_SHA256=reviewed,XEMELE_IMPORT_RUN_DIRECTORY=str(directory))
     runner=Runner(directory,seconds,env,require_ancestor=False,counter_launcher=action=='measure',started=started)
-    error=None;payload=None
+    error=None;error_detail=None;payload=None
     try:
         with runner:
             b.review(reviewed)
@@ -61,7 +61,7 @@ def main():
             publish_finite(Path(prepared['directory'])/'allocation-summary.json',summary,runner.hard)
         else:payload=directory/'discard-summary.json'
     except BaseException as caught:
-        error=type(caught).__name__
+        error=type(caught).__name__;error_detail=str(caught)[:768]
     finally:
         # A child may fail after claiming its prepared binaries. Only this
         # controller's exclusive claim authorizes deleting those active outputs.
@@ -73,12 +73,12 @@ def main():
                 assert prepared is not None,'No verified initial preparation snapshot'
             else:prepared=None
         try:
-            b.terminal_cleanup(runner,action,prepared,preserve_preparation=error is None,outer_error=error)
+            b.terminal_cleanup(runner,action,prepared,preserve_preparation=error is None,outer_error=error,outer_detail=error_detail)
         except BaseException as cleanup_error:
-            if action=='prepare':b.abort_preparation(runner,type(cleanup_error).__name__)
+            if action=='prepare':b.abort_preparation(runner,type(cleanup_error).__name__,str(cleanup_error))
             raise
     if error is not None:
-        nested.durable(directory/'terminal-outcome.json',{'completed':False,'error':error,'counterLauncher':action=='measure'})
+        nested.durable(directory/'terminal-outcome.json',{'completed':False,'error':error,'detail':error_detail,'counterLauncher':action=='measure'})
         return 1
     try:
         assert payload is not None
@@ -89,8 +89,8 @@ def main():
         b.publish_controller(runner,action,payloads,reviewed)
     except BaseException as publication_error:
         if action=='prepare' and not (directory/'preparation-abort.json').exists():
-            b.abort_preparation(runner,type(publication_error).__name__)
-        nested.durable(directory/'terminal-outcome.json',{'completed':False,'error':type(publication_error).__name__,'counterLauncher':action=='measure'})
+            b.abort_preparation(runner,type(publication_error).__name__,str(publication_error))
+        nested.durable(directory/'terminal-outcome.json',{'completed':False,'error':type(publication_error).__name__,'detail':str(publication_error)[:768],'counterLauncher':action=='measure'})
         return 1
     return 0
 

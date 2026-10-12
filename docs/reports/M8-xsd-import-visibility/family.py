@@ -76,8 +76,11 @@ class Runner:
             env.update(environment)
             # Child-specific values cannot discard ancestor ownership.
             env[nested.REGISTRIES] = self.environment[nested.REGISTRIES]
+        from diagnostics import capture_inputs
+        inputs=capture_inputs(self.directory,len(self.sequence),list(argv),env)
         record = nested.supervise_family_command(supervision, list(argv), len(self.sequence), env, child_work, child_hard)
         record['argv'] = list(argv)
+        record['inputReceipt']=inputs['path'];record['inputReceiptSha256']=inputs['sha256']
         record['childHardSeconds'] = child_seconds
         record['lateSuccess'] = time.monotonic() >= child_hard - 2
         self.sequence.append(record)

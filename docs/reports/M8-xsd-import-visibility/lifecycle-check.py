@@ -309,6 +309,53 @@ class Controls(unittest.TestCase):
         with self.assertRaises(AssertionError):b.publish_success(self.out/'unclean-success.json',failed_family,{'diff':'passed'})
         self.assertFalse((self.out/'unclean-success.json').exists())
 
+        # Owned scratch diagnostic seam: actual file excerpts, no compiler job.
+        import diagnostics as diagnostic
+        root=self.out/'failure-diagnostic';root.mkdir()
+        project=root/'Scratch.csproj';project.write_text('<Project/>')
+        argv=[str(b.DOTNET),'build',str(project),'--no-restore']
+        inputs=diagnostic.capture_inputs(root,0,argv,os.environ)
+        row=dict(argv=argv,reason='failed',exit=1,directChildReaped=True,ownedGroupAbsent=True,
+                 logClosed=True,nestedOwnership={'allOwnedGroupsAbsent':True})
+        row['inputReceipt']=inputs['path'];row['inputReceiptSha256']=inputs['sha256']
+        nested.durable(root/'lifecycle-000.json',row)
+        log=root/'command-0.log'
+        log.write_text('{"opaque":"raw payload must not survive"}\n'+
+                       'Scratch.cs(8,5): error CS1503: Argument cannot convert [Scratch.csproj]\n'+
+                       'CSC : warning CS8618: Non-nullable field [Scratch.csproj]\n'+
+                       'ordinary output must not survive\n'*10000+
+                       'Unhandled exception. System.InvalidOperationException: owned fixture detail\n')
+        fake=SimpleNamespace(directory=root,closed=True,sequence=[row],receipt={'completed':False,'ownership':{'allOwnedGroupsAbsent':True}})
+        summary=b.terminal_cleanup(fake,'check',outer_error='CalledProcessError',outer_detail='nonzero build exit')
+        self.assertFalse(log.exists());self.assertFalse(summary['familyOutcome'])
+        record=json.loads(Path(summary['failureDiagnostics']['path']).read_text())
+        self.assertFalse(record['outcomeCompleted']);observation=record['observations'][0]
+        self.assertEqual(observation['argv'],argv);self.assertEqual(observation['exit'],1)
+        self.assertTrue(observation['inputReceiptVerified'])
+        self.assertEqual(observation['inputReceiptSha256'],b.digest(root/'command-inputs-000.json'))
+        entries=observation['diagnosticSummary']['diagnostics']
+        self.assertTrue(observation['diagnosticSummary']['scanTruncated'])
+        self.assertLessEqual(observation['diagnosticSummary']['bytesScanned'],diagnostic.MAX_READ_BYTES)
+        self.assertIn('CS1503',[entry.get('code') for entry in entries]);self.assertIn('CS8618',[entry.get('code') for entry in entries])
+        self.assertTrue(any(entry.get('type')=='System.InvalidOperationException' for entry in entries))
+        self.assertNotIn('raw payload must not survive',json.dumps(record));self.assertNotIn('ordinary output must not survive',json.dumps(record))
+        self.assertLessEqual(len(entries),diagnostic.MAX_DIAGNOSTICS)
+        self.assertTrue(all(len(entry['text'])<=diagnostic.MAX_TEXT for entry in entries))
+        blocked=self.out/'unsafe-diagnostic';blocked.mkdir();raw=blocked/'command-0.log';raw.write_text('error CS9999: unread until absence')
+        fake.directory=blocked;fake.receipt['ownership']['allOwnedGroupsAbsent']=False
+        with self.assertRaises(AssertionError):b.terminal_cleanup(fake,'check',outer_error='failed')
+        self.assertTrue(raw.exists());self.assertFalse((blocked/'failure-diagnostics.json').exists())
+
+        capture_failed=self.out/'capture-failed';capture_failed.mkdir();raw=capture_failed/'command-0.log';raw.write_text('transient log')
+        fake.directory=capture_failed;fake.receipt['ownership']['allOwnedGroupsAbsent']=True;fake.stopped=False
+        with patch.object(diagnostic,'preserve_failure',side_effect=ValueError('bounded fixture capture error')):
+            summary=b.terminal_cleanup(fake,'check',outer_error='failed')
+        self.assertFalse(raw.exists());self.assertTrue(fake.stopped)
+        fallback=json.loads(Path(summary['failureDiagnostics']['path']).read_text())
+        self.assertFalse(fallback['outcomeCompleted']);self.assertEqual(fallback['error'],'ValueError')
+
+
+
 
 if __name__ == '__main__':
     assert sys.argv[1:] == ['--released']

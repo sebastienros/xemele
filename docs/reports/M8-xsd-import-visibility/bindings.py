@@ -284,7 +284,7 @@ def publish_controller(runner, action, payloads, review_sha):
              'familyReceipt':str(family),'familySha256':digest(family),
              'terminalReceipt':str(terminal),'terminalSha256':digest(terminal)},runner.hard-10 if action=='prepare' else runner.hard)
     except BaseException as error:
-        if action=='prepare':abort_preparation(runner,type(error).__name__)
+        if action=='prepare':abort_preparation(runner,type(error).__name__,str(error))
         raise
 
 
@@ -346,10 +346,13 @@ def read_terminal(controller):
     receipt=json.loads(path.read_text())
     assert receipt['completed'] and receipt['state']=='terminal-summary; deleted bytes cannot be rechecked or reused'
     assert all(not resolve(name).exists() for name in receipt['removedIdentities'])
+    if receipt.get('failureDiagnostics') is not None:
+        diagnostic=receipt['failureDiagnostics'];path=Path(diagnostic['path']).resolve()
+        assert OUT.resolve() in path.parents and digest(path)==diagnostic['sha256']
     return receipt
 
 
-def terminal_cleanup(runner, action, prepared=None, preserve_preparation=True, receipt_name="terminal-cleanup.json", outer_error=None):
+def terminal_cleanup(runner, action, prepared=None, preserve_preparation=True, receipt_name="terminal-cleanup.json", outer_error=None, outer_detail=None):
     """Only owned transient paths; no source, corpus, cache or installed runtime copies."""
     import shutil
     from family import nested
@@ -359,7 +362,19 @@ def terminal_cleanup(runner, action, prepared=None, preserve_preparation=True, r
     directory=runner.directory.resolve()
     assert OUT.resolve() in directory.parents
     assert receipt_name in ['terminal-cleanup.json','preparation-abort.json']
-    retain_preparation=action=='prepare' and preserve_preparation and outer_error is None and runner.receipt['completed']
+    from diagnostics import preserve_failure
+    extra=[] if prepared is None else [Path(prepared['directory']),Path(prepared['preparationReceipt']).parent]
+    try:
+        failure_diagnostics=preserve_failure(runner,outer_error,outer_detail,abort=receipt_name=='preparation-abort.json',extra_directories=extra)
+    except BaseException as diagnostic_error:
+        # Diagnostic parsing failure must not strand raw/generated outputs,
+        # nor permit a passing controller after evidence capture failed.
+        runner.stopped=True
+        failed=directory/('diagnostic-capture-abort.json' if receipt_name=='preparation-abort.json' else 'diagnostic-capture-failed.json')
+        nested.durable(failed,{'outcomeCompleted':False,'error':type(diagnostic_error).__name__,
+                              'detail':str(diagnostic_error)[:768],'scope':'Diagnostic capture failed; actual cause remains unknown'})
+        failure_diagnostics={'path':str(failed),'sha256':digest(failed)}
+    retain_preparation=action=='prepare' and preserve_preparation and outer_error is None and runner.receipt['completed'] and not getattr(runner,'stopped',False)
     delete_roots=[];delete_files=[]
     if action=='check':
         delete_roots.append(directory/'checks/active')
@@ -406,7 +421,7 @@ def terminal_cleanup(runner, action, prepared=None, preserve_preparation=True, r
     assert all(not resolve(name).exists() for name in removed)
     receipt={'completed':True,'state':'terminal-summary; deleted bytes cannot be rechecked or reused',
              'action':action,'removedIdentities':removed,'removedFiles':len(removed),
-             'familyOutcome':runner.receipt['completed'],'outerError':outer_error,'activePreparedOutputs':retain_preparation}
+             'familyOutcome':runner.receipt['completed'],'failureDiagnostics':failure_diagnostics,'outerError':outer_error,'activePreparedOutputs':retain_preparation}
     prior=directory/'terminal-cleanup.json'
     if receipt_name=='preparation-abort.json' and prior.is_file():receipt['supersedesTerminalSha256']=digest(prior)
     nested.durable(directory/receipt_name,receipt)
@@ -447,6 +462,6 @@ def verify_allocation_success(path, expected, review_sha):
     return data  # terminal evidence only; never permits prepared-byte reuse
 
 
-def abort_preparation(runner, error):
+def abort_preparation(runner, error, detail=None):
     return terminal_cleanup(runner,'prepare',preserve_preparation=False,
-                            receipt_name='preparation-abort.json',outer_error=error)
+                            receipt_name='preparation-abort.json',outer_error=error,outer_detail=detail)

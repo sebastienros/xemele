@@ -1,4 +1,4 @@
-# Harness correction — SOURCE ONLY; all execution UNRUN
+# Harness correction — SOURCE ONLY; current correction execution UNRUN
 
 Runtime/compiler, tests, original fixtures, BenchmarkDotNet and the 24-route probe
 remain exactly at 8cb31895a01fccf945dc2b2ff5a58ef39fd14fab. Compiler SHA256 remains
@@ -111,3 +111,51 @@ assert no active binaries, preparation candidate or accepted controller survives
 the late scenario also checks that the hard-deadline rollback reserve remains.
 These controls, and every other executable check, remain UNRUN. Only static AST,
 identity/source-diff and planning validation are permitted for this correction.
+
+
+## Failure diagnostics correction — SOURCE ONLY
+
+The coordinator reports the preceding 66d1e4a/b656d780 source passed eleven actual
+finite controls (main fc1321e26). Its fresh check then restored tests successfully,
+but the Release --no-restore build exited1. Main231609bf2 records verified cleanup;
+this worker inspected the existing argv/exit lifecycle receipt only. No tests or
+counters launched. Raw logs were already deleted, so the actual compiler cause
+remains unknown. Historical control PASS is preserved; this new packet and its
+new proving seam are UNRUN and require renewed review before any root retry.
+
+Runner now records exact argv, reviewed source-manifest/source-set hashes and
+observed executable/entry/selected SDK/restore-derived input identities BEFORE
+launch. The resulting receipt hash is fixed in the child lifecycle record. These
+are declared/observed identities, not an exhaustive trace of MSBuild file reads.
+After confirmed whole-family absence and closed logs, terminal cleanup consumes
+at most64KiB (head/tail) per failed command log, at most12 failed-command summaries,
+and at most24 diagnostic excerpts across the attempt, each at most768characters.
+Only structured compiler errors/warnings, test-failure headings and exception
+messages survive; JSON payloads/arbitrary console output do not become archives.
+Truncation and unrecognized/unavailable diagnostics are explicit. Exact failed
+argv, exit/reason, lifecycle/input receipt hashes and bounded outer-exception
+detail are retained; an input receipt lacking its pre-launch hash binding is
+labelled untrusted. Diagnostic summaries are hash-bound by cleanup receipts.
+Raw logs and generated outputs are still deleted. A diagnostic-capture error
+records a bounded failure, blocks passing acceptance and continues terminal deletion. Measurement/preparation failure
+folders participate after the same whole-root cleanup proof. No failure becomes
+a passing check or readiness claim. A new owned-scratch seam proves retention,
+head/tail limits, raw deletion, failed-capture cleanup and refusal to read before ownership is absent;
+no compiler, test, probe or counter is launched by that seam's fixture construction.
+
+Static SDK relocation review used the installed SDK10.0.400 Sdk.props,
+UseArtifactsOutputPath.props, DefaultArtifactsPath.props, DefaultOutputPaths.targets
+and DefaultItems props/targets. Early global artifacts properties enable the
+project-specific intermediate root; explicit ArtifactsPath avoids the project-folder
+fallback error. The targets honor an existing global OutputPath and explicitly
+exclude old bin/obj folders from source globs. The current flat bin folder is
+shared by one build graph; the referenced test/library assembly names differ,
+and normal/XML-only graphs retain distinct active roots. The flags remain unchanged:
+this inspection does not establish actual evaluated properties or the build's
+failure cause. See [SDK artifacts layout](https://learn.microsoft.com/en-us/dotnet/core/sdk/artifacts-output).
+
+Only owned reports changed; task/runtime/test/fixture/probe files remain untouched.
+Current packet: eleven Python sources parse statically; all source identities and
+API membership hashes are refreshed; new diagnostics/control behavior is unrun.
+Coordinator-owned harness-review.json is preserved and must be renewed by root
+for the new manifest. Hold immutable for review; no execution is authorized here.
