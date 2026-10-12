@@ -4,11 +4,11 @@
   "milestone": "M8",
   "title": "Compare inherited fixed attribute constraints as typed values",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M8 coordinator / assigned isolated attribute fixed-value worker",
   "branch": "codex/m8-xsd-attribute-fixed",
   "base_revision": "f965cc948bbfcdb01f5b4bb8a40e36efb8853408",
-  "integration_revision": null,
+  "integration_revision": "72969a5a40794b35975d8b46a07c8252b9da67cb",
   "depends_on": [
     "M8-xsd-facade"
   ],
@@ -38,7 +38,8 @@
       "evidence": [
         "original-baseline",
         "source-review",
-        "owned-correctness"
+        "owned-correctness",
+        "integrated-correctness"
       ]
     },
     {
@@ -47,7 +48,8 @@
       "status": "passed",
       "evidence": [
         "source-review",
-        "owned-correctness"
+        "owned-correctness",
+        "integrated-correctness"
       ]
     },
     {
@@ -58,7 +60,8 @@
         "affected-correctness",
         "owned-correctness",
         "bounded-allocations",
-        "final-planning"
+        "final-planning",
+        "integrated-correctness"
       ]
     }
   ],
@@ -142,20 +145,28 @@
       "result": "passed",
       "summary": "Actual final report revision validates186tasks; diffcheck clean. Runtime/check inputs unchanged from exact recorded passing correctness/allocation revisions.",
       "artifact": null
+    },
+    {
+      "id": "integrated-correctness",
+      "kind": "integration",
+      "revision": "72969a5a40794b35975d8b46a07c8252b9da67cb",
+      "command": "python3 docs/reports/M8-xsd-schema-syntax/check.py; pinned .NET10.0.11 xUnit namespace runs M8XsdAttributeFixed and M8Datatypes with -method- *WarmBorrowed*; exact XML inventory assertions",
+      "result": "passed",
+      "summary": "1310 actual passing rows =1146syntax/affected+42resolver+45owned+77datatype; zero errors/failures/skips/not-run. Public1417/frozen model316+139, compiler257/identity24/content9/evaluation2/facade7 matched. Normal and true XML-only consumers passed. Five builds zero warnings/errors; planning188/diff passed. Actual allocation source139b9cf98 unchanged; separate grant/release evidence retained.",
+      "artifact": null
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Complete-composition inherited fixed attributes now use actual datatype equality with authored declaration/local-use contexts. Unchanged original accepted addB183 compiles; structural-only legacy lexical comparison and all public APIs preserved. Branch work implemented; integration verification belongs to coordinator.",
+    "summary": "Integrated verified typed inherited fixed attribute equality; original addB183 passes unchanged. Shared operation/facet provenance and structural legacy behavior preserved; no API change.",
     "checks": [
       "Reviewed runtime78c44c372; owned45/datatype77 pass at 5dfc443663069e7b25fc1817363da50a07bd1d21",
       "Affected1110/resolver42/public1417/frozen APIs/normal+trueXML-only consumers passed at a024304fc82de5bf9cabd4da4252f797c8a0da05; unchanged runtime reused; initial owned witness failures recorded",
       "Planning186/diff pass",
-      "Root bounded allocation:12routes x64operations/16warm,454identities/clean lifecycle, positive/cold/retained reported; durableRELEASE776fe337b; no workermeasurement."
+      "Root bounded allocation:12routes x64operations/16warm,454identities/clean lifecycle, positive/cold/retained reported; durableRELEASE776fe337b; no workermeasurement.",
+      "Combined integration72969a5a:1310passing rows, public/frozen APIs, normal/XML-only consumers, planning188."
     ],
-    "remaining": [
-      "Coordinator integrate and rerun relevant combined focused verification; set verified only after integration checks."
-    ],
+    "remaining": [],
     "requests": []
   }
 }

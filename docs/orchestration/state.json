@@ -7,8 +7,8 @@
   "coordination_branch": "main",
   "max_concurrent_workers": 3,
   "last_verified_checkpoint": "M7-gate",
-  "last_verified_task": "M8-xsd-schema-syntax",
-  "last_integrated_revision": "13389a3f284af3975fe3928c1d96aca4a15cd1e0",
+  "last_verified_task": "M8-xsd-attribute-fixed",
+  "last_integrated_revision": "72969a5a40794b35975d8b46a07c8252b9da67cb",
   "active_assignments": [
     {
       "task_id": "M8-xsd-corpus",
@@ -20,19 +20,6 @@
       "base_revision": "d63a37316b4a6f8c780df10c6a6911509775a92c",
       "claim_revision": "eff2ace80ff301eb5b74a111b0475966d823b671",
       "stage": "Accepted full80cd6bac baseline and four09b selected overlays; original39248pass226fail11indeterminate2251excluded (mixed revisions).5boundary/22runtime/9profilecontrols pass; concrete repairs active; no full rerun yet.",
-      "model": "gpt-6.1-sol",
-      "thinking": "high"
-    },
-    {
-      "task_id": "M8-xsd-attribute-fixed",
-      "thread_id": "01a12ed1-f994-76e2-800c-1b33ba1e787b",
-      "host_id": "local",
-      "title": "Repair M8 fixed attribute constraints",
-      "path": "/Users/sebastienros/.codex/worktrees/b04b/xemele",
-      "branch": "codex/m8-xsd-attribute-fixed",
-      "base_revision": "f965cc948bbfcdb01f5b4bb8a40e36efb8853408",
-      "claim_revision": "4f01ce0ccd10b040e1188a48429b6b47b5d0c7ad",
-      "stage": "Correctness and source review passed; actual allocation passed454identities/12routes; durable release776fe337b; worker final evidence pending before focused integration.",
       "model": "gpt-6.1-sol",
       "thinking": "high"
     },
@@ -50,9 +37,7 @@
       "thinking": "high"
     }
   ],
-  "integration_queue": [
-    "M8-xsd-attribute-fixed: final evidence/handoff pending"
-  ],
+  "integration_queue": [],
   "next_actions": [
     "Run official XSD corpus through verified public facade with original metadata/oracles.",
     "Batch concrete runtime gaps into ordered repairs; do not hide incomplete checks as invalidity.",
@@ -186,7 +171,7 @@
   },
   "current_milestone": "M8",
   "milestone_completion_scope": "Complete integrated verified M8-gate; terminal workers and cleanup; preserve earlier evidence/caches; transfer sole writes to main. Do not create M9.",
-  "milestone_progress": "33 of 38 M8 tasks verified; corpus and two repairs active/setup; CLI/gate pending.",
+  "milestone_progress": "34 of39 M8 tasks verified; corpus and component mapping active, instance assessment planned, CLI/gate pending.",
   "blockers": [],
   "pending_decisions": [],
   "timing_queue": [],
@@ -832,6 +817,22 @@
       "integration_revision": "9b2816007f9e5aa39cdb85752f8c416524dbfa40",
       "integration_worktree": "/private/tmp/xemele-M8-xsd-facade-integration",
       "cleanup_record": "docs/orchestration/cleanup-M8-xsd-facade.json"
+    },
+    {
+      "task_id": "M8-xsd-attribute-fixed",
+      "thread_id": "01a12ed1-f994-76e2-800c-1b33ba1e787b",
+      "host_id": "local",
+      "title": "Repair M8 fixed attribute constraints",
+      "path": "/Users/sebastienros/.codex/worktrees/b04b/xemele",
+      "branch": "codex/m8-xsd-attribute-fixed",
+      "base_revision": "f965cc948bbfcdb01f5b4bb8a40e36efb8853408",
+      "claim_revision": "4f01ce0ccd10b040e1188a48429b6b47b5d0c7ad",
+      "stage": "Integrated verified; terminal worker writes relinquished; cleanup pending",
+      "model": "gpt-6.1-sol",
+      "thinking": "high",
+      "implementation_revision": "78c44c3728170331c824e1de999ceb46a6dbc5f2",
+      "handoff_revision": "9774676260d1b1c6e020e8737efbb5dfd09a8fcd",
+      "integration_revision": "72969a5a40794b35975d8b46a07c8252b9da67cb"
     }
   ],
   "measurement_lease_history": [
