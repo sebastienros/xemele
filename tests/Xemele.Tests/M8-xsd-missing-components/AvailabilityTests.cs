@@ -68,7 +68,7 @@ public sealed class AvailabilityTests
     {
         var stream = new OwnedStream(Wrap("<xs:simpleType name='T'><xs:restriction base='xs:int'/></xs:simpleType>"));
         var resolver = new Resolver(r => XmlResourceResolution.FromResource(new(stream, r.Uri)));
-        var schema = XmlSchema.Compile(Wrap("<xs:element name='r' type='T'/><xs:include schemaLocation='child'/>"), new() { BaseUri = Basis, Resolver = resolver });
+        var schema = XmlSchema.Compile(Wrap("<xs:include schemaLocation='child'/><xs:element name='r' type='T'/>"), new() { BaseUri = Basis, Resolver = resolver });
         Assert.Equal(1, stream.Disposals); Assert.True(schema.Validate("<r>7</r>").IsValid); Assert.False(schema.Validate("<r>bad</r>").IsValid); Assert.Equal(1, resolver.Calls);
     }
     [Fact]

@@ -26,13 +26,43 @@ public sealed class BoundaryTests
         Assert.Same(entry, snapshot.Missing(Owner, DependencyUse.TypeAssessment, op, default));
         Assert.Throws<NotSupportedException>(() => ((IList<AvailabilityEntry>)snapshot.Entries)[0] = entries[0]);
     }
-    [Fact]
-    public void ConstructionAndClosureExactlyAtMeasuredCapsPassOneUnderStops()
+    private static ComponentIdentity Node(int i) => ComponentAvailability.Simple(new("", "N" + i));
+    private static AvailabilityBuilder ReverseDiamond(Counted operation, int length)
     {
-        var observed = new Counted(); var graph = Graph(observed); Assert.Equal(64, graph.Entries.Count);
-        var exact = new Counted { WorkCap = observed.Work, ComponentCap = observed.Components }; Graph(exact); Assert.True(exact.IsComplete);
-        var workShort = new Counted { WorkCap = observed.Work - 1 }; Assert.Throws<SchemaCompileException>(() => Graph(workShort)); Assert.False(workShort.IsComplete);
-        var retainedShort = new Counted { ComponentCap = observed.Components - 1 }; Assert.Throws<SchemaCompileException>(() => Graph(retainedShort)); Assert.False(retainedShort.IsComplete);
+        var builder = new AvailabilityBuilder(operation);
+        builder.Reference(Node(length), ReferenceKind.ListItemType, SymbolSpace.Type, new("", "item"), default, false, DependencyUse.TypeAssessment);
+        builder.Reference(Node(length), ReferenceKind.SubstitutionAffiliation, SymbolSpace.Element, new("", "head"), default, false, DependencyUse.SubstitutionSelection);
+        // Consumer-first order forces transitive fixpoint propagation across rounds.
+        for (int i = 0; i < length; i++) builder.Link(Node(i), Node(i + 1));
+        builder.Link(Node(0), Node(2)); builder.Link(Node(0), Node(2)); // diamond plus duplicate path
+        builder.Link(Node(0), Node(length), DependencyUse.SchemaDerivation, DependencyUse.SubstitutionSelection);
+        return builder;
+    }
+    [Fact]
+    public void ReverseChainDiamondClosureDeduplicatesAndSeparatesUsesAtExactCaps()
+    {
+        var observed = new Counted(); var graph = ReverseDiamond(observed, 8).Seal();
+        var expected = Enumerable.Range(0, 9).Select(i => new DependencyEdge(Node(i), 0, DependencyUse.TypeAssessment)).ToHashSet();
+        expected.Add(new(Node(8), 1, DependencyUse.SubstitutionSelection));
+        expected.Add(new(Node(0), 1, DependencyUse.SchemaDerivation));
+        Assert.Equal(2, graph.Entries.Count); Assert.Equal(11, graph.ClosureEdges.Count);
+        Assert.True(expected.SetEquals(graph.ClosureEdges));
+        Assert.Equal(0, graph.Missing(Node(0), DependencyUse.TypeAssessment, new Counted(), default)!.ReferenceId);
+        Assert.Equal(1, graph.Missing(Node(0), DependencyUse.SchemaDerivation, new Counted(), default)!.ReferenceId);
+        Assert.Null(graph.Missing(Node(0), DependencyUse.SubstitutionSelection, new Counted(), default));
+        var exact = new Counted { WorkCap = observed.Work, ComponentCap = observed.Components };
+        Assert.True(expected.SetEquals(ReverseDiamond(exact, 8).Seal().ClosureEdges)); Assert.True(exact.IsComplete);
+        var workShort = new Counted { WorkCap = observed.Work - 1 }; Assert.Throws<SchemaCompileException>(() => ReverseDiamond(workShort, 8).Seal()); Assert.False(workShort.IsComplete);
+        var retainedShort = new Counted { ComponentCap = observed.Components - 1 }; Assert.Throws<SchemaCompileException>(() => ReverseDiamond(retainedShort, 8).Seal()); Assert.False(retainedShort.IsComplete);
+    }
+    [Fact]
+    public void UnlimitedReversePropagationPollsCancellationWithoutPublishingSnapshot()
+    {
+        var operation = new Counted(); var builder = ReverseDiamond(operation, 128);
+        operation.CancelAt = operation.Work + 1024; // after setup, within the propagation walk
+        ComponentAvailability? published = null;
+        Assert.Throws<OperationCanceledException>(() => published = builder.Seal());
+        Assert.Null(published); Assert.True(operation.Cancellation.IsCancellationRequested);
     }
     [Fact]
     public void LookupChargesEveryEdgeAndRequiredReferenceWithUnlimitedCaps()

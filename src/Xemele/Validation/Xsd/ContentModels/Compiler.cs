@@ -47,6 +47,7 @@ internal sealed partial class ContentCompilation
     internal ContentCompilation(XsdCompiledSchema schema, ISchemaOperation op, IXmlFacetEvaluator? facets, AvailabilityBuilder? availability)
     {
         this.schema = schema; this.op = op; this.facets = facets; this.availability = availability;
+        if (availability is null) ComponentAvailability.RequireComplete(schema, op);
         foreach (var type in schema.Types)
         { ContentWork.Retain(op, type.Location); types.Add(type.Name, type); }
     }
@@ -272,8 +273,11 @@ internal sealed partial class ContentCompilation
     }
     private void CheckConsistency(ContentNode? root)
     {
-        var declarations = new Dictionary<SchemaName, SchemaName?>();
+        var known = new Dictionary<SchemaName, SchemaName>();
+        var operands = new Dictionary<SchemaName, List<XsdElementDeclaration>>();
+        var visited = new HashSet<int>();
         var pending = new Stack<ContentNode>();
+        ContentWork.Retain(op, default, 4);
         if (root is not null) { ContentWork.Retain(op, root.Particle.Location); pending.Push(root); }
         while (pending.TryPop(out var node))
         {
@@ -284,19 +288,27 @@ internal sealed partial class ContentCompilation
             void Check(XsdElementDeclaration declaration)
             {
                 ContentWork.Tick(op, node.Particle.Location);
-                if (declarations.TryGetValue(declaration.Name, out var type))
+                if (visited.Contains(declaration.Id)) return;
+                ContentWork.Retain(op, node.Particle.Location); visited.Add(declaration.Id);
+                // An unavailable first operand must never become the representative
+                // for later independently unequal known declaration types.
+                if (declaration.Type is { } name)
                 {
-                    if (type is null || declaration.Type is null)
-                    {
-                        if (availability is null) throw new ArgumentException("Complete declaration types required.", nameof(schema));
-                        availability.Link(consumer, ComponentAvailability.Element(declaration));
-                        // Retain every same-name operand; null equality is not EDC proof.
-                        foreach (var other in schema.Elements)
-                        { ContentWork.Tick(op, other.Location); if (other.Name == declaration.Name) availability.Link(consumer, ComponentAvailability.Element(other)); }
-                    }
-                    else if (type != declaration.Type) ContentWork.Error(op, node.Particle.Location, "Element declarations with one name must have identical types.");
+                    if (known.TryGetValue(declaration.Name, out var previous) && name != previous)
+                        ContentWork.Error(op, node.Particle.Location, "Element declarations with one name must have identical types.");
+                    if (!known.ContainsKey(declaration.Name)) { ContentWork.Retain(op, node.Particle.Location); known.Add(declaration.Name, name); }
                 }
-                else { ContentWork.Retain(op, node.Particle.Location); declarations.Add(declaration.Name, declaration.Type); }
+                if (!operands.TryGetValue(declaration.Name, out var sameName))
+                { ContentWork.Retain(op, node.Particle.Location, 2); operands.Add(declaration.Name, sameName = new()); }
+                foreach (var other in sameName)
+                {
+                    ContentWork.Tick(op, node.Particle.Location);
+                    if (other.Type is not null && declaration.Type is not null) continue;
+                    if (availability is null) throw new ArgumentException("Complete declaration types required.", nameof(schema));
+                    availability.Link(consumer, ComponentAvailability.Element(declaration));
+                    availability.Link(consumer, ComponentAvailability.Element(other));
+                }
+                ContentWork.Retain(op, node.Particle.Location); sameName.Add(declaration);
             }
             Check(schema.Elements[element.DeclarationId]);
             foreach (var member in Members(element.DeclarationId)) Check(schema.Elements[member.Item2]);

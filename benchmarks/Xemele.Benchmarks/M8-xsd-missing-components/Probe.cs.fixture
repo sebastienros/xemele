@@ -50,7 +50,7 @@ File.WriteAllText(output, JsonSerializer.Serialize(new { mode, countersEnabled =
     architecture = RuntimeInformation.ProcessArchitecture.ToString(), os = RuntimeInformation.OSDescription, serverGc = System.Runtime.GCSettings.IsServerGC,
     sourceRevision = Environment.GetEnvironmentVariable("XEMELE_MISSING_SOURCE_REVISION"),
     productSha256 = Hash(typeof(XmlSchema).Assembly.Location), probeSha256 = Hash(typeof(MissingFixture).Assembly.Location),
-    coldThreadBytes, coldGlobalBytes, positiveThreadBytes, positiveGlobalBytes, retainedResults = 320, retainedSchemas = 8,
+    coldThreadBytes, coldGlobalBytes, positiveThreadBytes, positiveGlobalBytes, retainedResults = 352, retainedSchemas = 8,
     heapBefore, heapAfter, heapDelta = heapAfter - heapBefore, consumed = fixture.Consumed, inspections = fixture.Inspections, rows }, new JsonSerializerOptions { WriteIndented = true }));
-Console.WriteLine($"{mode}: 10 routes consumed; 320 results and 8 schemas retained; counters {(measure ? "enabled" : "disabled")}");
+Console.WriteLine($"{mode}: 11 routes consumed; 352 results and 8 schemas retained; counters {(measure ? "enabled" : "disabled")}");
 static string Hash(string path) => Convert.ToHexStringLower(SHA256.HashData(File.ReadAllBytes(path)));

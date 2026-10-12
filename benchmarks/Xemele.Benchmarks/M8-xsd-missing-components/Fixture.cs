@@ -3,12 +3,12 @@ namespace Xemele.Benchmarks.M8XsdMissingComponents;
 
 internal sealed class MissingFixture
 {
-    internal static readonly string[] Routes = ["compile-complete", "compile-explicit", "compile-inferred", "compile-list", "compile-deferred-program", "validate-unrelated", "validate-required", "validate-xsi-program", "availability-present", "availability-absent"];
+    internal static readonly string[] Routes = ["compile-complete", "compile-explicit", "compile-inferred", "compile-list", "compile-deferred-program", "validate-unrelated", "validate-required", "validate-xsi-program", "availability-resolved", "availability-missing-final", "availability-owner-absent"];
     private const string Xs = "http://www.w3.org/2001/XMLSchema";
     private readonly string[] sources;
     private readonly XmlSchema schema, programSchema;
     private readonly XmlDocument good, bad, selected;
-    private readonly ComponentAvailability availability;
+    private readonly ComponentAvailability availability, resolvedAvailability;
     private readonly ComponentIdentity owner;
     private readonly CounterOperation operation = new();
     private long consumed;
@@ -25,6 +25,10 @@ internal sealed class MissingFixture
         owner = ComponentAvailability.Simple(new("", "L")); var builder = new AvailabilityBuilder(operation);
         for (int i = 0; i < 64; i++) builder.Reference(owner, ReferenceKind.ListItemType, SymbolSpace.Type, new("", "item" + i), default, i < 63, DependencyUse.TypeAssessment);
         availability = builder.Seal();
+        var resolved = new AvailabilityBuilder(operation);
+        for (int i = 0; i < 64; i++) resolved.Reference(owner, ReferenceKind.ListItemType, SymbolSpace.Type,
+            new("", "item" + i), default, true, DependencyUse.TypeAssessment);
+        resolvedAvailability = resolved.Seal();
     }
     private static string Wrap(string body) => $"<xs:schema xmlns:xs='{Xs}'>{body}</xs:schema>";
     internal object Run(int route)
@@ -33,10 +37,14 @@ internal sealed class MissingFixture
         if (route < 5) { var compiled = XmlSchema.Compile(sources[route]); consumed++; return compiled; }
         if (route >= 8)
         {
-            var required = route == 8 ? new ComponentIdentity(OwnerKind.SimpleType, new("", "unrelated"), null) : owner;
-            var missing = availability.Missing(required, DependencyUse.TypeAssessment, operation, default);
-            if ((missing is null) != (route == 8)) throw new InvalidOperationException("Availability oracle failed.");
-            consumed += missing?.ReferenceId ?? 1; return (object?)missing ?? availability;
+            var required = route == 10 ? new ComponentIdentity(OwnerKind.SimpleType, new("", "unrelated"), null) : owner;
+            var snapshot = route == 8 ? resolvedAvailability : availability;
+            long before = operation.Work;
+            var missing = snapshot.Missing(required, DependencyUse.TypeAssessment, operation, default);
+            if ((missing is null) != (route != 9) || operation.Work - before != (route == 10 ? 64 : 128)
+                || missing is not null && (missing.ReferenceId != 63 || missing.Owner != owner || missing.AuthoredName != new SchemaName("", "item63")))
+                throw new InvalidOperationException("Availability oracle failed.");
+            consumed += missing?.ReferenceId ?? 1; return (object?)missing ?? snapshot;
         }
         var result = route switch { 5 => schema.Validate(good), 6 => schema.Validate(bad), _ => programSchema.Validate(selected) };
         if (route == 5 ? !result.IsComplete || !result.IsValid : result.IsComplete || result.IsValid || result.Diagnostics.Count != 1 || result.Diagnostics[0].Code != "XSD.MissingComponent")

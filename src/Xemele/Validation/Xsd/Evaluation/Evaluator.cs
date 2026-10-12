@@ -95,16 +95,7 @@ internal sealed partial class XsdValidationRun : ISchemaOperation
             if (!document.SourceInputComplete || document.HasIncompleteAttributes || document.UnresolvedReferences.Count != 0 || document.Dtd?.UnreadParameterLocation is not null)
             { Refuse("XSD.IncompleteInput", "Instance input contains unresolved or incomplete source content.", default); return Finish(); }
             foreach (var type in schema.Types) { Work(); Retain(); types.Add(type.Name, type); }
-            if (availability is null)
-            {
-                foreach (var element in schema.Elements)
-                { Work(); if (element.Type is not { } name || !types.ContainsKey(name)) throw new ArgumentException("Complete declaration graph required.", nameof(schema)); }
-                foreach (var definition in schema.SimpleTypes)
-                {
-                    Work();
-                    if (definition.ItemType is { } item && schema.Datatypes.FindType(item) is null) throw new ArgumentException("Complete datatype graph required.", nameof(schema));
-                }
-            }
+            if (availability is null) ComponentAvailability.RequireComplete(schema, this);
             if (factory is not null) { identity = factory.Create(schema, program!, document) ?? throw new InvalidOperationException("Identity factory returned no session."); Poll(); }
             var root = document.RootElement;
             if (root.IsDefault) { Error("XSD.Root", "A document element is required."); return Finish(); }

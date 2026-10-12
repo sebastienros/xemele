@@ -31,7 +31,17 @@ internal sealed partial class XmlFacetEvaluator : IXmlFacetEvaluator
         ISchemaOperation operation, AvailabilityBuilder availability)
     {
         if (!availability.Unavailable(ComponentAvailability.Simple(type.Name))) return ValidateDefinition(type, registry, operation);
-        try { return CheckIndependentFacets(type, registry, new FacetOperation(operation)); }
+        try
+        {
+            var op = new FacetOperation(operation); op.ChargeComponents(1, type.Location);
+            return CheckAvailableGraph(type, registry, op, availability, new HashSet<SchemaName>(), 0);
+        }
+        catch (FacetOperation.Stopped) { return false; }
+    }
+    internal bool CheckAvailableConstraint(XmlDatatypeDefinition type, ReadOnlySpan<char> lexical,
+        IXmlDatatypeRegistry registry, ISchemaOperation operation)
+    {
+        try { return CheckIndependentConstraint(type, lexical, registry, new FacetOperation(operation)); }
         catch (FacetOperation.Stopped) { return false; }
     }
     public bool TryValidate(XmlDatatypeDefinition type, ReadOnlySpan<char> lexical, SchemaNamespaceContext context,

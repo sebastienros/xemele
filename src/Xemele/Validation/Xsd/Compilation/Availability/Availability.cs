@@ -65,6 +65,28 @@ internal sealed class ComponentAvailability
         if (!op.Charge(0, at)) throw SchemaSnapshots.Failure(op);
         return missing;
     }
+    // Frozen graph-only lanes cannot consume the concrete partial graph without
+    // its availability envelope. Charge every reference inspection.
+    internal static void RequireComplete(XsdCompiledSchema schema, ISchemaOperation op)
+    {
+        foreach (var element in schema.Elements)
+        {
+            if (!op.Charge(1, element.Location)) throw SchemaSnapshots.Failure(op);
+            if (element.Type is not { } name) throw new ArgumentException("Complete declaration graph required.", nameof(schema));
+            bool found = false;
+            foreach (var type in schema.Types)
+            { if (!op.Charge(1, element.Location)) throw SchemaSnapshots.Failure(op); found |= type.Name == name; }
+            if (!found || element.SubstitutionGroup is { } head && !schema.GlobalElements.ContainsKey(head))
+                throw new ArgumentException("Complete declaration graph required.", nameof(schema));
+        }
+        foreach (var definition in schema.SimpleTypes)
+        {
+            if (!op.Charge(1, definition.Location)) throw SchemaSnapshots.Failure(op);
+            if (definition.ItemType is { } item && schema.Datatypes.FindType(item) is null)
+                throw new ArgumentException("Complete datatype graph required.", nameof(schema));
+        }
+        if (!op.Charge(0, default)) throw SchemaSnapshots.Failure(op);
+    }
     internal static ComponentIdentity Element(XsdElementDeclaration element) => new(OwnerKind.ElementDeclaration, element.Name, element.Id);
     internal static ComponentIdentity Simple(SchemaName name) => new(OwnerKind.SimpleType, name, null);
     internal static ComponentIdentity Type(SchemaName name) => new(OwnerKind.TypeDefinition, name, null);

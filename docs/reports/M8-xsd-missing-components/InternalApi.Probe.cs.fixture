@@ -1,4 +1,4 @@
-// Attributed copy of verified missing-components-contract Roslyn extractor; only type projection changed.
+// Attributed copy of verified contract extractor; new types plus exact concrete joins only.
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using System.Text.Json;
@@ -65,15 +65,20 @@ try
         if (!rows.TryAdd(id, declaration)) throw new InvalidDataException("Duplicate member: " + id);
     }
     static bool Visible(ISymbol symbol) => symbol.DeclaredAccessibility is Accessibility.Public or Accessibility.Internal or Accessibility.Protected or Accessibility.ProtectedOrInternal or Accessibility.ProtectedAndInternal;
+    static bool NewType(INamedTypeSymbol type) => type.Name is "ReferenceKind" or "SymbolSpace" or "AvailabilityState" or "OwnerKind" or "DependencyUse" or "ComponentIdentity" or "DependencyEdge" or "AvailabilityEntry" or "ComponentAvailability" or "AvailabilityBuilder" or "CompilationEnvelope";
+    static bool AddedJoin(ISymbol symbol) => symbol is IMethodSymbol method &&
+        (method.Name is "CompileAvailable" or "ValidateAvailableDefinition" or "CheckAvailableConstraint" ||
+         method.Parameters.Any(p => p.Type.Name is "AvailabilityBuilder" or "ComponentAvailability" or "CompilationEnvelope"));
     void Type(INamedTypeSymbol type)
     {
-        if (!Visible(type) || type.IsImplicitlyDeclared || type.ContainingNamespace.ToDisplayString() != "Xemele.Validation" ||
-            type.Name is not ("ReferenceKind" or "SymbolSpace" or "AvailabilityState" or "OwnerKind" or "DependencyUse" or "ComponentIdentity" or "DependencyEdge" or "AvailabilityEntry" or "ComponentAvailability" or "AvailabilityBuilder" or "CompilationEnvelope")) return;
-        Add(type);
+        if (!Visible(type) || type.IsImplicitlyDeclared || type.ContainingNamespace.ToDisplayString() != "Xemele.Validation") return;
+        bool addedType = NewType(type);
+        if (addedType) Add(type);
         foreach (var member in type.GetMembers())
         {
-            if (member is INamedTypeSymbol nested) { Type(nested); continue; }
-            if (!Visible(member)) continue;
+            if (member is INamedTypeSymbol nested) { if (addedType) Type(nested); continue; }
+            if (!addedType && !AddedJoin(member)) continue;
+            if (!Visible(member) && !(member is IMethodSymbol { MethodKind: MethodKind.Constructor } && AddedJoin(member))) continue;
             if (member is IMethodSymbol method && method.MethodKind is MethodKind.PropertyGet or MethodKind.PropertySet or MethodKind.EventAdd or MethodKind.EventRemove or MethodKind.StaticConstructor) continue;
             Add(member);
         }

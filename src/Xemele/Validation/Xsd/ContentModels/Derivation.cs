@@ -216,22 +216,24 @@ internal sealed partial class ContentCompilation
         return p with { Term = new XsdGroupTerm(XsdCompositor.Choice, particles) };
     }
     private enum RuleKind { Relation, Constant, And, Or }
-    private sealed class Rule(RuleKind kind, bool value, XsdParticle? derived, XsdParticle? basis, bool anyType, bool synthesized, Rule? left, Rule? right)
+    private enum RelationState { False, Indeterminate, True }
+    private sealed class Rule(RuleKind kind, RelationState value, XsdParticle? derived, XsdParticle? basis, bool anyType, bool synthesized, Rule? left, Rule? right)
     {
         internal readonly RuleKind Kind = kind;
-        internal readonly bool Value = value, AnyType = anyType, Synthesized = synthesized;
+        internal readonly RelationState Value = value;
+        internal readonly bool AnyType = anyType, Synthesized = synthesized;
         internal readonly XsdParticle? Derived = derived, Basis = basis;
         internal readonly Rule? Left = left, Right = right;
         internal Rule? Expanded;
     }
-    private Rule Constant(bool value) { ContentWork.Retain(op, default); return new(RuleKind.Constant, value, null, null, false, false, null, null); }
+    private Rule Constant(bool value) { ContentWork.Retain(op, default); return new(RuleKind.Constant, value ? RelationState.True : RelationState.False, null, null, false, false, null, null); }
     private Rule Relation(XsdParticle? d, XsdParticle? b, bool anyType, bool synthesized = false)
-    { ContentWork.Retain(op, d?.Location ?? default); return new(RuleKind.Relation, false, d, b, anyType, synthesized, null, null); }
+    { ContentWork.Retain(op, d?.Location ?? default); return new(RuleKind.Relation, RelationState.False, d, b, anyType, synthesized, null, null); }
     private Rule Combine(RuleKind kind, Rule a, Rule b)
-    { ContentWork.Retain(op, default, 3); return new(kind, false, null, null, false, false, a, b); }
+    { ContentWork.Retain(op, default, 3); return new(kind, RelationState.False, null, null, false, false, a, b); }
     private bool Restricts(XsdParticle? derived, XsdParticle? basis, bool anyType)
     {
-        var root = Relation(derived, basis, anyType); var results = new Dictionary<Rule, bool>();
+        var root = Relation(derived, basis, anyType); var results = new Dictionary<Rule, RelationState>();
         var stack = new Stack<(Rule Rule, bool Ready)>(); ContentWork.Retain(op, derived?.Location ?? default); stack.Push((root, false));
         while (stack.TryPop(out var frame))
         {
@@ -247,11 +249,12 @@ internal sealed partial class ContentCompilation
                 { ContentWork.Retain(op, default, 2); stack.Push((rule.Right!, false)); stack.Push((rule.Left!, false)); }
                 continue;
             }
-            bool result = rule.Kind == RuleKind.Relation ? results[rule.Expanded!] : rule.Kind == RuleKind.And
-                ? results[rule.Left!] && results[rule.Right!] : results[rule.Left!] || results[rule.Right!];
+            var result = rule.Kind == RuleKind.Relation ? results[rule.Expanded!] : rule.Kind == RuleKind.And
+                ? (RelationState)Math.Min((int)results[rule.Left!], (int)results[rule.Right!])
+                : (RelationState)Math.Max((int)results[rule.Left!], (int)results[rule.Right!]);
             ContentWork.Retain(op, default); results.Add(rule, result);
         }
-        return results[root];
+        return results[root] != RelationState.False;
     }
     private Rule ExpandRule(Rule rule)
     {
@@ -259,6 +262,11 @@ internal sealed partial class ContentCompilation
         if (derived is null) return Constant(Nullable(basis)); if (basis is null) return Constant(IsPointlessEmpty(derived));
         ContentWork.Tick(op, derived.Location);
         if (SameParticle(derived, basis)) return Constant(true);
+        // Decide element mappings against the actual affiliation graph before
+        // expanding known projections. A missing operand yields indeterminate;
+        // independent occurrence/name/type/constraint failures still yield false.
+        if (derived.Term is XsdElementTerm directD && basis.Term is XsdElementTerm directB)
+            return ElementRestriction(derived, basis, directD.DeclarationId, directB.DeclarationId);
         derived = ExpandSubstitution(derived); basis = ExpandSubstitution(basis);
         // Expansion can introduce a pointless singleton choice. Normalize it
         // before selecting the relation case, preserving non-unit wrappers and
@@ -266,28 +274,6 @@ internal sealed partial class ContentCompilation
         if (!rule.Synthesized) derived = Normalize(derived);
         basis = Normalize(basis);
         if (derived is null) return Constant(Nullable(basis)); if (basis is null) return Constant(IsPointlessEmpty(derived));
-        if (derived.Term is XsdElementTerm de && basis.Term is XsdElementTerm be)
-        {
-            var d = schema.Elements[de.DeclarationId]; var b = schema.Elements[be.DeclarationId];
-            if (d.Name != b.Name || !Range(derived.MinOccurs, derived.MaxOccurs, basis.MinOccurs, basis.MaxOccurs, derived.Location)) return Constant(false);
-            bool globalD = schema.GlobalElements.TryGetValue(d.Name, out int did) && did == d.Id;
-            bool globalB = schema.GlobalElements.TryGetValue(b.Name, out int bid) && bid == b.Id;
-            if (globalD && globalB) return Constant(true);
-            if (d.Nillable && !b.Nillable || b.FixedValue is not null && d.FixedValue is null) return Constant(false);
-            if (d.Type is { } dt && b.Type is { } bt && types.ContainsKey(dt) && types.ContainsKey(bt))
-            { if (!TypeDerives(dt, bt, true)) return Constant(false); }
-            else
-            {
-                if (availability is null) throw new ArgumentException("Complete element type relation required.", nameof(schema));
-                availability.Link(consumer, ComponentAvailability.Element(d));
-                availability.Link(consumer, ComponentAvailability.Element(b));
-            }
-            foreach (var block in b.Block) { ContentWork.Tick(op, derived.Location); if (!d.Block.Contains(block)) return Constant(false); }
-            foreach (int identity in d.IdentityConstraints) { ContentWork.Tick(op, derived.Location); if (!b.IdentityConstraints.Contains(identity)) return Constant(false); }
-            // An unequal pair fails this relation, allowing the solver's other
-            // mappings to succeed. Compare only declarations actually matched.
-            return Constant(b.FixedValue is null || facets is null || FixedEquals(d, b));
-        }
         if (basis.Term is XsdWildcardTerm bw)
         {
             if (derived.Term is XsdElementTerm elt)
@@ -362,6 +348,55 @@ internal sealed partial class ContentCompilation
             (previous, next) = (next, previous);
         }
         return previous[bs.Count];
+    }
+    private Rule Indeterminate(XsdElementDeclaration operand, DependencyUse operandUse = DependencyUse.TypeAssessment)
+    {
+        if (availability is null) throw new ArgumentException("Complete restriction operands required.", nameof(schema));
+        availability.Link(consumer, ComponentAvailability.Element(operand), DependencyUse.TypeAssessment, operandUse);
+        ContentWork.Retain(op, operand.Location);
+        return new(RuleKind.Constant, RelationState.Indeterminate, null, null, false, false, null, null);
+    }
+    private Rule ElementRestriction(XsdParticle derived, XsdParticle basis, int derivedId, int basisId)
+    {
+        var d = schema.Elements[derivedId]; var b = schema.Elements[basisId];
+        if (!Range(derived.MinOccurs, derived.MaxOccurs, basis.MinOccurs, basis.MaxOccurs, derived.Location)) return Constant(false);
+        bool globalD = schema.GlobalElements.TryGetValue(d.Name, out int did) && did == d.Id;
+        bool globalB = schema.GlobalElements.TryGetValue(b.Name, out int bid) && bid == b.Id;
+        Rule nameRelation = Constant(true), typeRelation = Constant(true);
+        if (d.Name != b.Name)
+        {
+            if (!globalD || !globalB || b.Block.Contains(XsdElementBlock.Substitution)) return Constant(false);
+            int current = d.Id; bool reaches = false;
+            for (int steps = 0; steps < schema.Elements.Count; steps++)
+            {
+                var step = schema.Elements[current]; ContentWork.Tick(op, step.Location);
+                if (step.SubstitutionGroup is not { } head) return Constant(false);
+                if (!schema.GlobalElements.TryGetValue(head, out int next))
+                { nameRelation = Indeterminate(step, DependencyUse.SubstitutionSelection); reaches = true; break; }
+                current = next; if (current == b.Id) { reaches = true; break; }
+            }
+            if (!reaches) return Constant(false);
+            if (d.Type is { } dt && b.Type is { } bt && types.ContainsKey(dt) && types.ContainsKey(bt))
+            { if (!SubstitutionType(dt, b)) return Constant(false); }
+            else
+            {
+                if (d.Type is not { } dname || !types.ContainsKey(dname)) typeRelation = Combine(RuleKind.And, typeRelation, Indeterminate(d));
+                if (b.Type is not { } bname || !types.ContainsKey(bname)) typeRelation = Combine(RuleKind.And, typeRelation, Indeterminate(b));
+            }
+        }
+        if (globalD && globalB) return Combine(RuleKind.And, nameRelation, typeRelation);
+        if (d.Nillable && !b.Nillable || b.FixedValue is not null && d.FixedValue is null) return Constant(false);
+        if (d.Type is { } knownD && b.Type is { } knownB && types.ContainsKey(knownD) && types.ContainsKey(knownB))
+        { if (!TypeDerives(knownD, knownB, true)) return Constant(false); }
+        else
+        {
+            if (d.Type is not { } dname || !types.ContainsKey(dname)) typeRelation = Combine(RuleKind.And, typeRelation, Indeterminate(d));
+            if (b.Type is not { } bname || !types.ContainsKey(bname)) typeRelation = Combine(RuleKind.And, typeRelation, Indeterminate(b));
+        }
+        foreach (var block in b.Block) { ContentWork.Tick(op, derived.Location); if (!d.Block.Contains(block)) return Constant(false); }
+        foreach (int identity in d.IdentityConstraints) { ContentWork.Tick(op, derived.Location); if (!b.IdentityConstraints.Contains(identity)) return Constant(false); }
+        if (b.FixedValue is not null && facets is not null && !FixedEquals(d, b)) return Constant(false);
+        return Combine(RuleKind.And, nameRelation, typeRelation);
     }
     private bool FixedEquals(XsdElementDeclaration derived, XsdElementDeclaration basis)
     {

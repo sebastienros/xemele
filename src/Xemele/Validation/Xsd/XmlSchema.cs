@@ -119,7 +119,12 @@ public sealed class XmlSchema
     {
         if (lexical is null) return null;
         Tick(op, at);
-        if (availability.Unavailable(ComponentAvailability.Simple(type))) return null;
+        if (availability.Unavailable(ComponentAvailability.Simple(type)))
+        {
+            if (!facets.CheckAvailableConstraint(schema.Datatypes.FindType(type)!, lexical, schema.Datatypes, op))
+                throw SchemaSnapshots.Failure(op);
+            return null;
+        }
         if (Derived(schema, type, "ID", op)) Reject(op, at, "ID declarations cannot have default or fixed value constraints.");
         if (!DatatypeConstraintRepresentation.TryCreate(schema.Datatypes.FindType(type)!, lexical, context,
             schema.Datatypes, facets, op, out var prepared, out var error))
