@@ -33,14 +33,18 @@
     {
       "id": "M8-sch-report-A1",
       "description": "Serialize the declared structured report profile with rule/pattern/diagnostic references and locations.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "source-checks"
+      ]
     },
     {
       "id": "M8-sch-report-A2",
       "description": "Golden report cases and escaping/namespace/output-encoding tests pass.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "source-checks"
+      ]
     },
     {
       "id": "M8-sch-report-A3",
@@ -49,13 +53,52 @@
       "evidence": []
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Validation/Schematron/Reporting/SchematronReport.cs: frozen SerializeSvrl/SaveSvrl; detached key-only ordering; scalar escaping; ordinal namespaces; character/UTF8 sinks",
+    "tests/Xemele.Tests/M8-sch-report/ReportTests.cs and tests/fixtures/M8-sch-report/detached.svrl.xml:42 independent profile/boundary/lifetime/concurrency cases",
+    "docs/api/M8-sch-report.txt:3 exact additive declarations; samples/M8-sch-report/:normal and genuine XML-only consumer",
+    "benchmarks/Xemele.Benchmarks/M8-sch-report/:13-route prebuilt allocation-only driver; counters-disabled controls passed; measurements not run"
+  ],
+  "evidence": [
+    {
+      "id": "source-checks",
+      "kind": "check",
+      "revision": "f6db4e76dca6c57ef97f11149348edc3a6a4272c",
+      "command": "python3 docs/reports/M8-sch-report/checks.py",
+      "result": "passed",
+      "summary": "42 owned+504 relevant prerequisite/M1 serialization cases; zero failures/errors/skips/not-run. Reporting3/evaluator9/compiler154 compiled metadata and all public1403 matched. Normal and genuine source-linked XML-only consumers passed; Release SDK10.0.400/.NET10.0.11 builds zero warnings/errors; planning179 and whitespace passed. Corrected early failures recorded in README. Allocation controls/counters not yet run.",
+      "artifact": "docs/reports/M8-sch-report/README.md"
+    },
+    {
+      "id": "allocation-control",
+      "kind": "check",
+      "revision": "f6db4e76dca6c57ef97f11149348edc3a6a4272c",
+      "command": "XEMELE_SCH_REPORT_REVISION=f6db4e76dca6c57ef97f11149348edc3a6a4272c DOTNET_TieredCompilation=0 DOTNET_gcServer=0 DOTNET_GCConcurrent=0 dotnet --fx-version 10.0.11 benchmarks/Xemele.Benchmarks/M8-sch-report/bin/Release/net10.0/Xemele.Benchmarks.dll --control artifacts/M8-sch-report/control.json",
+      "result": "passed",
+      "summary": "13 consumed routes with allocation/retained/RSS counters disabled; string/UTF8 parity via precomputed exact strings and output byte digests. Release SDK10.0.400/.NET10.0.11 probe build0warnings/errors. Control correctness only, not measurement.",
+      "artifact": "docs/reports/M8-sch-report/preparation.json"
+    },
+    {
+      "id": "allocation-preparation",
+      "kind": "check",
+      "revision": "f6db4e76dca6c57ef97f11149348edc3a6a4272c",
+      "command": "python3 docs/reports/M8-sch-report/lease.py --prepare && python3 docs/reports/M8-sch-report/lease.py --verify-only",
+      "result": "passed",
+      "summary": "Elevated counter-disabled prebuilt child cleanup preflight and418 exact identities verified:child exit0,reaped,owned group absent,log closed. Includes all runtime10.0.11/hostfxr payload files, source,binaries,controls and supervisor. Manifest SHA256c365cfe33ed4a766dd6018b997c0d77b44e3795290a21704dbf5b19aec8a8d56; max30s incl20work+10cleanup. Counters disabled; rawInspected=false; no measurement grant/run.",
+      "artifact": "docs/reports/M8-sch-report/preparation.json"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "",
-    "checks": [],
-    "remaining": [],
+    "summary": "Frozen detached SVRL source and42 owned cases; applicable allocation measurement and independent coordinator review remain. Prebuilt counter-disabled13-route controls and elevated418-identity/cleanup preflight passed; no active grant/counters.",
+    "checks": [
+      "Committed source checks:42+504 passed; compiled3/9/154 and public1403; both consumers; planning179/whitespace;0warnings/errors",
+      "Counter-disabled13-route controls and elevated418 source/runtime/payload/supervisor identities +actual child reaping/group absence/log closure passed"
+    ],
+    "remaining": [
+      "Fresh all-host coordinator GRANT required before any allocation counters; RELEASE before raw inspection",
+      "Coordinator independent review and combined integration verification"
+    ],
     "requests": []
   }
 }
