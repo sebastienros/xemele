@@ -14,7 +14,7 @@
       "task_id": "M8-xsd-validate",
       "branch": "codex/m8-xsd-validate",
       "base_revision": "06f75fd94392431fb28b8aeac7103c799eb67a51",
-      "stage": "Active on real verified identity contracts; owns source/tests/taskJSON after root dependency metadata ACK",
+      "stage": "Candidate50b0d8ac under three bounded independent source reviews; first revision checks running after honestly recorded build corrections",
       "model": "gpt-6.1-sol",
       "thinking": "high",
       "acceptance_before_dispatch": {
@@ -29,13 +29,19 @@
       "worktree_path": "/Users/sebastienros/.codex/worktrees/4195/xemele",
       "setup_revision": "e663cc9de83bc2f2e429e603249dbf4453f8eff0",
       "dependency_update_revision": "12bcb8b24223696966986754264b3ae32aca6a30",
-      "verified_identity_main_revision": "6009cb7b9730d14daf06a59c748edf458943dde2"
+      "verified_identity_main_revision": "6009cb7b9730d14daf06a59c748edf458943dde2",
+      "source_revision": "50b0d8acef71fd97457cf80ce835cc013de27c43",
+      "reviewers": [
+        "review_m8_model",
+        "review_m8_contract",
+        "review_m8_xpath"
+      ]
     },
     {
       "task_id": "M8-rng-corpus",
       "branch": "codex/m8-rng-corpus",
       "base_revision": "92015976e4d4b82a747c0c6fdd300f929e6227ee",
-      "stage": "Setup verified clean assigned branch; full activation delivered",
+      "stage": "Active: pinned Jing specification suite and preserved libxml2 regressions/reference preparation",
       "model": "gpt-6.1-sol",
       "thinking": "high",
       "acceptance_before_dispatch": {
@@ -48,7 +54,10 @@
       "host_id": "local",
       "chat_id": "01a12e14-cf02-7593-b338-df68e86a1a73",
       "worktree_path": "/Users/sebastienros/.codex/worktrees/541a/xemele",
-      "setup_revision": "e8ce373b281cf25f869dfcdf3948118914ac3d7a"
+      "setup_revision": "e8ce373b281cf25f869dfcdf3948118914ac3d7a",
+      "primary_suite_revision": "a6bc0041035988325dfbfe7823ef2c098fc56597",
+      "primary_suite_cache": "/private/tmp/xemele-rng-jing",
+      "reference_cache_revision": "96498992efa48d52b0e8b83058bd88dbdaf153c1"
     }
   ],
   "integration_queue": [],
@@ -184,7 +193,7 @@
   },
   "current_milestone": "M8",
   "milestone_completion_scope": "Complete integrated verified M8-gate; terminal workers and cleanup; preserve earlier evidence/caches; transfer sole writes to main. Do not create M9.",
-  "milestone_progress": "25 of31 M8 tasks verified; core dependency update/implementation active; RNG corpus newly ready.",
+  "milestone_progress": "25 of31 M8 tasks verified; core validator review/checks and RELAX NG corpus/reference preparation active.",
   "blockers": [],
   "pending_decisions": [],
   "timing_queue": [],
@@ -979,5 +988,20 @@
     "revision": "abc798230fb83a201036443f970f563d480398e2",
     "path": "docs/orchestration/state.json",
     "note": "Full prior completed assignment acceptance/reviews/checks and detailed released measurement lifecycle records remain in this Git revision and task/report/cleanup files. Current state keeps compact scalar identities and live assignments. No source, task evidence, cache or artifact deleted."
+  },
+  "current_host_actors": {
+    "xemele": [
+      "01a12c6c-b333-71d3-877f-0d186618e21d",
+      "01a12849-d2be-7292-8cd9-27c1c14b5a3d",
+      "01a12d64-81ae-79e3-8ba2-b88110af6fdb",
+      "01a12e03-4ee6-78e2-a6ec-02164a9b3b3b",
+      "01a12e14-cf02-7593-b338-df68e86a1a73"
+    ],
+    "gregsex": [
+      "01a12c93-ccf1-70f2-907e-73c12eccedcf",
+      "01a12d32-4b4c-7632-8cae-ac5f5780cc3e"
+    ],
+    "reviewers": "Three existing source-only reviewers; no host-heavy jobs/new actors.",
+    "lease": null
   }
 }
