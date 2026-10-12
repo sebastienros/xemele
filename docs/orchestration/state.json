@@ -7,14 +7,14 @@
   "coordination_branch": "main",
   "max_concurrent_workers": 3,
   "last_verified_checkpoint": "M7-gate",
-  "last_verified_task": "M8-xsd-wildcard-composition",
-  "last_integrated_revision": "a01f1ca06b38b0ac3cfcc76d098ddf0d8944dcba",
+  "last_verified_task": "M8-sch-validate",
+  "last_integrated_revision": "8917aceb24b132e0124405279fe9abd6359bca86",
   "active_assignments": [
     {
       "task_id": "M8-xsd-content",
       "branch": "codex/m8-xsd-content",
       "base_revision": "55a1f72c319b792acc216ca847818aba5ac7cd13",
-      "stage": "Content source f098 accepted, test correction05a08 accepted; actual99/102 pass pending verified effective-content repair. Wildcard repair verified; root retains only taskJSON.",
+      "stage": "Both compiler repairs verified; task JSON returned to worker for verified-main refresh and required regression/measurement preparation.",
       "acceptance_before_dispatch": {
         "mandatory": "Complete frozen XSD1.0 content compiler/matcher/cursor: particles/compositors/occurrences/wildcards/UPA/element consistency/derivation/substitution; isolated cursor state; no facade.",
         "integration": "Owned independent sequence/choice/all/extension/restriction/wildcard/determinism/boundary tests, true consumers/frozen/public API, exact accounting/cancel and prepared allocation evidence.",
@@ -29,32 +29,10 @@
       "source_revision": "f098c72fd2f94bea18c46194de1795ea26439a4d"
     },
     {
-      "task_id": "M8-sch-validate",
-      "branch": "codex/m8-sch-validate",
-      "base_revision": "d6d21c40a7dc89c11fc00039a07383f61cfcd48d",
-      "stage": "Corrected source43c6ab4 accepted;454 actual checks passed;215 prepared identities verified; await fresh allocation grant",
-      "acceptance_before_dispatch": {
-        "mandatory": "Frozen public Schematron facade, phase/let/rule evaluation and detached structured results; no SVRL report task overlap.",
-        "integration": "Named/#ALL/#DEFAULT phases, scoped typed lets/outer shadow, document/attribute context order/first rule, singleton focus, subject/messages, detached snapshots, concurrency, quotas/cancel, public/frozen/XML-only consumers and owned allocation evidence.",
-        "review": "Independent read-only evaluator/accounting/ownership review; exact accepted compiler join mandatory; prepare before all-host measurement lease."
-      },
-      "claim_revision": "cd94d05ce7c2efab75be16f19990943b9481d326",
-      "chat_id": "01a12d67-e5ca-7930-b1ef-78157e84bff4",
-      "host_id": "local",
-      "worktree_path": "/Users/sebastienros/.codex/worktrees/8502/xemele",
-      "client_thread_id": "client-new-thread:93558371-4f20-4bb8-9e6a-77f83235602b",
-      "model": "gpt-6.1-sol",
-      "thinking": "high",
-      "setup": "Full frozen evaluator/phase/scopes/focus/accounting/results/checks/measurement activation brief delivered",
-      "source_revision": "43c6ab4cc789cc1e400dfdb2cea74e3851f681d7",
-      "prepared_revision": "5ed14389fe4df0b5097152239787c7290331df3f",
-      "manifest_sha256": "379c2d73c7333031792405f14403b11035806be6175b418ddebc862127bf75be"
-    },
-    {
       "task_id": "M8-facets",
       "branch": "codex/m8-facets",
       "base_revision": "adf80b989e0389cac3972a3eba974fc8bf911700",
-      "stage": "Implementation and checks ongoing; explicit RNG alias adapter protocol approved. Generic NOTATION enumeration requirement remains downstream XSD prepublication obligation.",
+      "stage": "773 historical checks pass, but five concrete review blockers require source corrections and renewed verification before measurement.",
       "acceptance_before_dispatch": {
         "mandatory": "Frozen facet compiler/validator and complete composition over verified datatypes+regex; inherited/fixed facets, all45builtins, RNG parameters",
         "integration": "Independent valid/invalid inheritance, bound/length/digits/enum/pattern/whitespace/QName/list/union cases; exact budgets/cancel/concurrency; child/API/XML-only checks and prepared allocation evidence",
@@ -72,10 +50,10 @@
   ],
   "integration_queue": [],
   "next_actions": [
-    "Honor GregsEx M2-host next measurement priority with fresh exact-scope ACKs.",
-    "Run prepared SCH30s and effective-content30s under later fresh all-host grant; integrate/check both before verification.",
-    "Return content JSON only after effective-content repair is verified; continue facets review/checks.",
-    "Complete M8 gate and terminal writer transfer only."
+    "Finish SCH/effective-content terminal cleanup, then claim next ready M8 task within three-worker cap.",
+    "Content worker consumes verified main and reruns required checks/measurement preparation.",
+    "Facets correct five bounded review findings; re-review/check before any measurement.",
+    "Complete M8 gate and terminal writer transfer only; no M9."
   ],
   "implementation_worker_policy": {
     "model": "gpt-6.1-sol",
@@ -204,7 +182,7 @@
   },
   "current_milestone": "M8",
   "milestone_completion_scope": "Complete integrated verified M8-gate; terminal workers and cleanup; preserve earlier evidence/caches; transfer sole writes to main. Do not create M9.",
-  "milestone_progress": "16 of30 M8 tasks verified. Wildcard repair original checkout cleaned; reused integration checkout now owns effective-content repair. Three active worker chats.",
+  "milestone_progress": "18 of30 M8 tasks verified; SCH/effective-content cleanup pending; content unblocked, facets correcting five review findings.",
   "blockers": [
     "M8-xsd-content two mandatory corrected-positive mapping failures pending M8-xsd-effective-content; originalwildcardfailure nowrepaired andverified"
   ],
@@ -678,7 +656,7 @@
     },
     {
       "task_id": "M8-xsd-wildcard-composition",
-      "stage": "Verified; terminal cleanup deferred until external parser phase releases",
+      "stage": "Verified; original checkout cleaned; reused integration checkout now awaits effective-content terminal cleanup",
       "branch": "codex/m8-xsd-wildcard-composition",
       "base_revision": "adf80b989e0389cac3972a3eba974fc8bf911700",
       "scope": "Only Compiler.cs private wildcard composition plus own proving tests/report; no model/API change",
@@ -690,7 +668,45 @@
       "next_ordered_repair": "M8-xsd-effective-content",
       "source_revision": "42a93288b8a3b4c2def3be7c5a1183738f9137c6",
       "verified_revision": "f519d8338f42b37193c5664d27540359bd259aec",
-      "cleanup": "Deferred during external measurement; originalrepaircheckout retained, integrationcheckout reused for nextorderedrepair"
+      "cleanup": "Original clean checkout removed; receipt docs/orchestration/cleanup-M8-xsd-wildcard-composition.json"
+    },
+    {
+      "task_id": "M8-sch-validate",
+      "branch": "codex/m8-sch-validate",
+      "base_revision": "d6d21c40a7dc89c11fc00039a07383f61cfcd48d",
+      "stage": "Verified; terminal worker writes handed back; cleanup pending",
+      "acceptance_before_dispatch": {
+        "mandatory": "Frozen public Schematron facade, phase/let/rule evaluation and detached structured results; no SVRL report task overlap.",
+        "integration": "Named/#ALL/#DEFAULT phases, scoped typed lets/outer shadow, document/attribute context order/first rule, singleton focus, subject/messages, detached snapshots, concurrency, quotas/cancel, public/frozen/XML-only consumers and owned allocation evidence.",
+        "review": "Independent read-only evaluator/accounting/ownership review; exact accepted compiler join mandatory; prepare before all-host measurement lease."
+      },
+      "claim_revision": "cd94d05ce7c2efab75be16f19990943b9481d326",
+      "chat_id": "01a12d67-e5ca-7930-b1ef-78157e84bff4",
+      "host_id": "local",
+      "worktree_path": "/Users/sebastienros/.codex/worktrees/8502/xemele",
+      "client_thread_id": "client-new-thread:93558371-4f20-4bb8-9e6a-77f83235602b",
+      "model": "gpt-6.1-sol",
+      "thinking": "high",
+      "setup": "Full frozen evaluator/phase/scopes/focus/accounting/results/checks/measurement activation brief delivered",
+      "source_revision": "43c6ab4cc789cc1e400dfdb2cea74e3851f681d7",
+      "prepared_revision": "5ed14389fe4df0b5097152239787c7290331df3f",
+      "manifest_sha256": "379c2d73c7333031792405f14403b11035806be6175b418ddebc862127bf75be",
+      "worker_revision": "663c6b1a082a39156a5c9ed66d8dd3f76a8d8c5a",
+      "integration_revision": "8917aceb24b132e0124405279fe9abd6359bca86"
+    },
+    {
+      "task_id": "M8-xsd-effective-content",
+      "stage": "Verified; terminal cleanup pending",
+      "branch": "codex/m8-xsd-effective-content",
+      "base_revision": "f519d8338f42b37193c5664d27540359bd259aec",
+      "worktree_path": "/private/tmp/xemele-M8-xsd-wildcard-integration",
+      "scope": "Only Compiler.Complex effective content mapping and owned tests/reports; no public API changes.",
+      "reviewer": "/root/review_m8_model",
+      "source_revision": "ade942a4bbc6b7341bfd10f40c1a27068619257d",
+      "prepared_revision": "04b90121",
+      "manifest_sha256": "e261323fcd7bb33c3fc3f9ab647d2611592fc7d688dd8a1e27bdbb87575d3580",
+      "integration_revision": "8917aceb24b132e0124405279fe9abd6359bca86",
+      "worker_revision": "ca3ce0e8"
     }
   ],
   "measurement_lease_history": [
@@ -1118,18 +1134,7 @@
     "benchmark_artifact_policy": "Human dad208f instruction: do not commit benchmark result logs and outputs, only summary tables and analysis."
   },
   "chat_communication_authorization": "Human directly authorized all M8 coordination, remaining M8 worker chats gpt-6.1-sol/high, parser-chat coordination, and GregsEx coordinator/workers host coordination.",
-  "coordinator_repair": {
-    "task_id": "M8-xsd-effective-content",
-    "stage": "Source independently accepted;282 actual checks and5 disabled controls passed;410 identities frozen; awaiting fresh allocation grant",
-    "branch": "codex/m8-xsd-effective-content",
-    "base_revision": "f519d8338f42b37193c5664d27540359bd259aec",
-    "worktree_path": "/private/tmp/xemele-M8-xsd-wildcard-integration",
-    "scope": "Only Compiler.Complex effective content mapping and owned tests/reports; no public API changes.",
-    "reviewer": "/root/review_m8_model",
-    "source_revision": "ade942a4bbc6b7341bfd10f40c1a27068619257d",
-    "prepared_revision": "04b90121",
-    "manifest_sha256": "e261323fcd7bb33c3fc3f9ab647d2611592fc7d688dd8a1e27bdbb87575d3580"
-  },
+  "coordinator_repair": null,
   "external_measurement_park": null,
   "measurement_park_aborts": [
     {

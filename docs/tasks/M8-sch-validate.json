@@ -4,11 +4,11 @@
   "milestone": "M8",
   "title": "Schematron evaluation and results",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M8 coordinator01a12c6c-b333-71d3-877f-0d186618e21d / assigned isolated worker",
   "branch": "codex/m8-sch-validate",
   "base_revision": "d6d21c40a7dc89c11fc00039a07383f61cfcd48d",
-  "integration_revision": null,
+  "integration_revision": "8917aceb24b132e0124405279fe9abd6359bca86",
   "depends_on": [
     "M8-sch-compile"
   ],
@@ -37,7 +37,8 @@
       "status": "passed",
       "evidence": [
         "source-checks",
-        "closure-review"
+        "closure-review",
+        "coordinator-combined-integration"
       ]
     },
     {
@@ -45,7 +46,8 @@
       "description": "Test phase selection, contexts/variables, assertions versus reports, concurrency and work budgets.",
       "status": "passed",
       "evidence": [
-        "source-checks"
+        "source-checks",
+        "coordinator-combined-integration"
       ]
     },
     {
@@ -55,7 +57,8 @@
       "evidence": [
         "source-checks",
         "owned-allocation",
-        "allocation-review"
+        "allocation-review",
+        "coordinator-combined-integration"
       ]
     }
   ],
@@ -122,11 +125,20 @@
       "result": "passed",
       "summary": "Root independently accepted all exact owned positive allocation rows, fractional scoped mean102584.75, retained/RSS limits and cleanup. Raw SHA2567bb12f4769e30defcd98d0a943e1ab99d79d96f5ce1992c01362a1a09e5d9d62 independently matched locally. Root separately reported combined8917aceb24b132e0124405279fe9abd6359bca86 passed454 SCH checks plus282 compiler checks with overlapping predecessors, API seams/public1400/consumers, zero warnings/errors and planning179; coordinator owns integrated verification.",
       "artifact": "docs/reports/M8-sch-validate/allocations.md"
+    },
+    {
+      "id": "coordinator-combined-integration",
+      "kind": "integration",
+      "revision": "8917aceb24b132e0124405279fe9abd6359bca86",
+      "command": "python3 docs/reports/M8-sch-validate/checks.py && python3 docs/reports/M8-xsd-effective-content/checks.py",
+      "result": "passed",
+      "summary": "Actual combined accepted evaluator43c6ab4 and compilerade942a4 with main:454 SCH checks plus282 compiler checks, each suite zero failures/errors/skips/not-run (overlapping predecessor counts). Frozen9/154/119/257 and public1400; normal/trueXML-only consumers;0warnings/errors;179tasks. Subsequent merges change only task/orchestration/report metadata; source/tests/benchmarks/samples/API/shared-build diff with tested revision is empty. No repeated execution claimed.",
+      "artifact": "docs/reports/M8-sch-validate/integration.md"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Implemented frozen six-overload immutable Schematron facade and structured evaluation, with accepted closure review and logical-text location correction.454 checks/API seams/consumers passed; single granted owned-allocation probe completed with stable215 identities and confirmed cleanup, durable RELEASE before inspection. All task-owned writes handed back to coordinator; integration_revision remains unset.",
+    "summary": "Verified combined Schematron evaluator and public facade; accepted logical text-location correction,454 combined checks, frozen/public1400 and owned allocation evidence. Terminal worker handback received; cleanup pending.",
     "checks": [
       "python3 docs/reports/M8-sch-validate/checks.py:454 actual tests (35 owned,419 prerequisites), frozen9/compiler154/public1400, both consumers, planning177 and whitespace passed at43c6ab4",
       "Accepted closure review:exact evaluator/location test hashes and both M4 logical-text round-trips accepted",
