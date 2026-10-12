@@ -33,7 +33,7 @@ def record(test,nodes,p,kind,index,base):
  for e in test.findall(NS+('schemaDocument' if kind=='schema' else 'instanceDocument')):
   u=urljoin(urljoin(base,test.get(BASE,'')),e.get(BASE,''));u=urljoin(u,e.get(HREF,''));pu=urlparse(u)
   refs.append(unquote(pu.path).removeprefix('/source/') if pu.scheme=='https' and pu.netloc=='w3c-xsd.test' else u)
- return {'id':f'{p}#{index}:{test.get("name","")}', 'name':test.get('name',''),'kind':kind,'classification':cl,'reason':reason,'scopes':scopes(nodes+[test]),'expected':selected[0]['validity'] if len(selected)==1 else None,'originalExpected':ex,'documents':refs,'documentMetadata':[dict(e.attrib) for e in test.findall(NS+('schemaDocument' if kind=='schema' else 'instanceDocument'))],'attributes':dict(test.attrib),'currentStatus':[dict(e.attrib) for e in test.findall(NS+'currentStatus')],'priorStatus':[dict(e.attrib) for e in test.findall(NS+'priorStatus')]}
+ return {'id':f'{p}#{index}:{test.get("name","")}', 'name':test.get('name',''),'kind':kind,'classification':cl,'reason':reason,'scopes':scopes(nodes+[test]),'expected':selected[0]['validity'] if len(selected)==1 else None,'originalExpected':ex,'documents':refs,'documentMetadata':[dict(e.attrib) for e in test.findall(NS+('schemaDocument' if kind=='schema' else 'instanceDocument'))],'attributes':dict(test.attrib),'currentStatus':[dict(e.attrib) for e in test.findall(NS+'current')],'priorStatus':[dict(e.attrib) for e in test.findall(NS+'prior')]}
 def generate(root):
  suite=ET.parse(root/'suite.xml').getroot();groups=[];stats=collections.Counter();tokens=collections.Counter();sets=[]
  for ref in suite.findall(NS+'testSetRef'):
@@ -57,6 +57,9 @@ def main():
  a=argparse.ArgumentParser();a.add_argument('--source',type=Path);a.add_argument('--check',action='store_true');args=a.parse_args()
  if args.check:
   root=HERE/'upstream';actual=generate(root);old=json.loads((HERE/'inventory.json').read_text());assert actual==old,'inventory drift'
+  status_count=sum(len(r['currentStatus']) for g in actual['groups'] for r in ([g['schema']] if g['schema'] else [])+g['instances'])
+  original_count=sum(len(ET.parse(root/p).getroot().findall('.//'+NS+'current')) for p in actual['testSets'])
+  assert status_count==original_count and status_count>0,('status retention',status_count,original_count)
   files=json.loads((HERE/'resources.json').read_text());missing=[]
   for f in files:
    p=root/f['path']
