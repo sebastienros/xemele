@@ -13,7 +13,7 @@ python3 docs/reports/M8-sch-corpus/checks.py
 
 The script uses the installed SDK10.0.400/runtime10.0.11 and the existing offline
 NuGet cache. It builds the real product/conformance/differential projects, executes
-89 conformance and96 differential test cases, then reuses the verified reporting
+90 conformance and96 differential test cases, then reuses the verified reporting
 check script for42 owned reporting tests and504 affected predecessor tests (these
 suite counts overlap), frozen reporting3/evaluator9/compiler154 members, public1403
 members, and regular/genuine XML-only consumers. It validates planning and Git
@@ -79,3 +79,8 @@ nested formatting/name-in-diagnostic authored fixture violated the frozen RNC an
 was corrected to legal text/value-of syntax. The provisional upstream pass before
 independent review is superseded by the strict original rule-scope oracle. Initial
 95/96 BCL agreement and the exact supplementary-length mismatch remain visible.
+
+The final upstream validity/kind oracle is independently specified from original
+outcomes and the nine applicable report-only fixture IDs. A swapped failed-assert
+witness must be rejected for every one of those IDs. The earlier result-derived
+validity check was removed following independent review.

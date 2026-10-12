@@ -58,7 +58,7 @@ public sealed class UpstreamTests
             Assert.True(result.Validation.IsComplete, id);
             bool hasFindings = (string?)root.Attribute("expect") == "invalid";
             Assert.Equal(hasFindings, result.Findings.Count != 0);
-            Assert.Equal(!result.Findings.Any(f => f.Kind == SchematronFindingKind.FailedAssert), result.Validation.IsValid);
+            AssertOriginalOutcome(id, hasFindings, result);
             string svrl = SchematronReport.SerializeSvrl(result, TestContext.Current.CancellationToken);
             using var output = new MemoryStream();
             SchematronReport.SaveSvrl(result, output, TestContext.Current.CancellationToken);
@@ -74,6 +74,21 @@ public sealed class UpstreamTests
             if (id == "svrl-name-path-01") Assert.Equal("attribute", Assert.Single(result.Findings).Text.Trim());
             if (id == "svrl-diagnostic-02") Assert.Equal("Context:", Assert.Single(Assert.Single(result.Findings).Diagnostics).Text.Trim());
         }
+    }
+    private static readonly string[] ReportOnlyCases = ["extends-recursive", "include-recursive", "rule-abstract-01", "svrl-diagnostic-01", "svrl-diagnostic-02", "svrl-name-nopath-01", "svrl-name-path-01", "svrl-property-01", "svrl-value-of-01"];
+    private static void AssertOriginalOutcome(string id, bool hasFindings, SchematronResult result)
+    {
+        bool reportOnly = ReportOnlyCases.Contains(id, StringComparer.Ordinal);
+        Assert.Equal(!hasFindings || reportOnly, result.Validation.IsValid);
+        if (hasFindings) Assert.All(result.Findings, f => Assert.Equal(reportOnly ? SchematronFindingKind.SuccessfulReport : SchematronFindingKind.FailedAssert, f.Kind));
+    }
+    [Fact]
+    public void IndependentReportOracleRejectsSwappedFailedAssertWitness()
+    {
+        var swapped = SchematronSchema.Compile("<schema xmlns='http://purl.oclc.org/dsdl/schematron'><pattern><rule context='/'><assert test='false()'/></rule></pattern></schema>").Validate("<element/>");
+        Assert.False(swapped.Validation.IsValid); Assert.Equal(SchematronFindingKind.FailedAssert, Assert.Single(swapped.Findings).Kind);
+        Assert.Equal(9, ReportOnlyCases.Length);
+        foreach (string id in ReportOnlyCases) Assert.NotNull(Record.Exception(() => AssertOriginalOutcome(id, true, swapped)));
     }
     [Fact]
     public void CompletePinnedDiscoveryHasNoMissingOriginalCasesOrVariants()

@@ -16,7 +16,7 @@ def tests(project,namespace,count,name):
  a=E.parse(path).getroot().find('assembly');assert int(a.attrib['passed'])==count and all(int(a.attrib[k])==0 for k in ['failed','errors','skipped','not-run']),a.attrib
  print('ASSERTED',name,count,flush=True)
 run('python3','docs/reports/M8-sch-corpus/verify.py')
-tests('Xemele.Conformance.Tests','Xemele.Conformance.Tests.Schematron',89,'conformance')
+tests('Xemele.Conformance.Tests','Xemele.Conformance.Tests.Schematron',90,'conformance')
 tests('Xemele.Differential.Tests','Xemele.Differential.Tests.Schematron',96,'differential')
 # Verified dependency script covers42 reporting+504 affected checks, frozen3/9/154,
 # public1403 and regular/genuine XML-only consumers. Counts overlap predecessors.
