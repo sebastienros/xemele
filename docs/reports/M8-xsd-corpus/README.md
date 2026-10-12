@@ -41,3 +41,20 @@ Focused boundaries verify public string/document/stream transports, caller strea
 and document ownership, complete invalid instances, work refusal and cancellation.
 The existing facade check.py supplies prior behavior/API/consumer preservation.
 Actual tested revisions and results will be recorded after running committed source.
+
+Harness revisions: the first source865cf046 baseline had 39,130 passed,
+335 failed, 12 indeterminate observations, 2,250 exclusions and eight unresolved
+Unicode instances. Corrected source25f40a58 (explicit hint staging, Unicode
+adjudication, nullable authored nonresolution) produced 39,211 passes, 266 failed,
+eight indeterminate observations and 2,251 exclusions, including the supplemental
+Unicode16 instance. Every child exited0; no process failures. These are partial
+conformance results; applicable failures prevent implementation completion.
+
+Subsequent bounded staging correction: instance hints augment only namespaces not
+already supplied by the metadata's ordered schema documents. This avoids treating
+stale instance hints for an already-explicit namespace as mandatory input. In
+particular, MS introspection metadata points to absent AnnotatedTSSchema.xsd while
+the explicitly compiled xsts.xsd already supplies that namespace. The NIST
+introspection instance requires a separate finite 1,000,000,000 work-unit budget
+and 60-second cooperative deadline; the ordinary 100,000,000-unit refusal remains
+recorded as an actual failed baseline observation, not a semantic invalidity.

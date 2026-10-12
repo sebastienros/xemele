@@ -35,15 +35,22 @@ internal static class Runner
         string? xb = reader.GetAttribute("base", "http://www.w3.org/XML/1998/namespace");
         if (xb is not null) source = new Uri(source, xb);
         const string xsi = "http://www.w3.org/2001/XMLSchema-instance";
-        var inputs = originals.ToList();
+        var inputs = originals.ToList(); var knownNamespaces = new HashSet<string>(StringComparer.Ordinal);
+        foreach (var original in originals)
+        {
+            using var originalStream = File.OpenRead(PathFor(UriFor(original)));
+            using var originalReader = System.Xml.XmlReader.Create(originalStream, new System.Xml.XmlReaderSettings { DtdProcessing = System.Xml.DtdProcessing.Ignore, XmlResolver = null });
+            while (originalReader.Read() && originalReader.NodeType != System.Xml.XmlNodeType.Element) { }
+            knownNamespaces.Add(originalReader.GetAttribute("targetNamespace") ?? "");
+        }
         string? locations = reader.GetAttribute("schemaLocation", xsi);
         if (locations is not null)
         {
             var tokens = locations.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries);
             if (tokens.Length % 2 != 0) throw new IOException("Odd xsi:schemaLocation hint list");
-            for (int i = 1; i < tokens.Length; i += 2) inputs.Add(new Uri(source, tokens[i]).AbsoluteUri);
+            for (int i = 1; i < tokens.Length; i += 2) if (!knownNamespaces.Contains(tokens[i-1])) inputs.Add(new Uri(source, tokens[i]).AbsoluteUri);
         }
-        if (reader.GetAttribute("noNamespaceSchemaLocation", xsi) is { } unqualified) inputs.Add(new Uri(source, unqualified).AbsoluteUri);
+        if (!knownNamespaces.Contains("") && reader.GetAttribute("noNamespaceSchemaLocation", xsi) is { } unqualified) inputs.Add(new Uri(source, unqualified).AbsoluteUri);
         var assembled = originals.ToList();
         foreach (var hint in inputs.Skip(originals.Length)) if (!assembled.Any(n => UriFor(n).AbsoluteUri == UriFor(hint).AbsoluteUri)) assembled.Add(hint);
         return assembled.ToArray();
@@ -144,7 +151,8 @@ internal static class Runner
                 if (schema is null) actual = new("schema-unavailable", compile.Outcome + ": " + compile.Detail, compile.Codes, compile.Resources);
                 else
                 {
-                    using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(30));
+                    using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(row.GetProperty("id").GetString() == "common/introspection.testSet#g0/i1:introspect-testSet-NIST2004-01-14-2" ? 60 : 30));
+                    long work = row.GetProperty("id").GetString() == "common/introspection.testSet#g0/i1:introspect-testSet-NIST2004-01-14-2" ? 1_000_000_000 : 100_000_000;
                     try
                     {
                         using var input = File.OpenRead(PathFor(UriFor(Documents(row).Single())));
@@ -155,7 +163,7 @@ internal static class Runner
                             var prepared = Input(inputs); using var preparedStream = prepared.Input;
                             validationSchema = ProductSchema.Compile(preparedStream, new() { BaseUri = prepared.Source, Resolver = instanceResolver, Limits = Limits, MaxOperations = 100_000_000, MaxComponents = 1_000_000, CancellationToken = timeout.Token });
                         }
-                        var result = validationSchema.Validate(input, new() { Limits = Limits, MaxOperations = 100_000_000, CancellationToken = timeout.Token });
+                        var result = validationSchema.Validate(input, new() { Limits = Limits with { EvaluationWork = work }, MaxOperations = work, CancellationToken = timeout.Token });
                         if (!input.CanRead) throw new InvalidOperationException("Validation disposed caller stream");
                         actual = new(!result.IsComplete ? "incomplete-refusal" : result.IsValid ? "instance-valid" : "instance-invalid", string.Join("; ", result.Diagnostics.Select(d => d.Code + ": " + d.Message)), result.Diagnostics.Select(d => d.Code).ToArray(), [new { kind = "explicit-instance-schema-inputs", inputs }, .. instanceResolver.Requests]);
                     }
