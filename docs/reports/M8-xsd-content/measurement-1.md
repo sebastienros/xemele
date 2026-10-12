@@ -55,3 +55,11 @@ Supervisor: 7,428 bytes, SHA256
 `b77dee00b003416eb10999c2dbe8788619a2dfff6b9c69adeb54d5d4115ca552`.
 All 213 identities and elevated process-list permission pass. Bounded source
 closure and a fresh all-host root grant are still required.
+
+The coordinator subsequently relayed independent read-only correction review
+acceptance at `127d15b2`: exact accounting/order and failure persistence are
+preserved, with no allocation claim. Accepted SHA256 identities: Support
+`fe2eae4e2ace2d86b08ed73a3241cdf49c9fe334e1d5a06c2bb725d01756b1d0`,
+probe `f68f8e3b650ddcecc3e291f5bdbb6e3a7e7baaff00590632a2df3d06b9366523`,
+supervisor `b77dee00b003416eb10999c2dbe8788619a2dfff6b9c69adeb54d5d4115ca552`.
+Only a fresh all-host grant and actual measurement evidence remain.
