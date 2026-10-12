@@ -86,3 +86,24 @@ separate. No throughput/latency or BDN allocation-dash claim is made; there is n
 optimization or BDN class. Running --measure needs a fresh bounded coordinator
 lease and reviewed fixed identities. Review and allocation evidence remain
 pending; this branch is not implemented/verified yet.
+
+At tested source36b7f1379988da6b9c1e5915b513ccc33b48a3a4 the revised
+737-case check passed:149owned+546affected+42safe resolver, zero failures/errors/
+skips/not-run,24frozen/1403public, both real consumers, planning179 and whitespace;
+all builds had zero warnings/errors. The corrected-source probe rebuilt and all
+nine controls passed with counters disabled. The bounded reviewer accepted
+scope/equality/descendant-self behavior but required axis lookahead and scalar
+validator polling; both fixes and18explicit regression cases are in that tested
+source. Final delta review acceptance remains a coordinator action.
+
+An initial sandbox cleanup preflight child3760 exited0 and was reaped, but the
+cleanup inspection raised PermissionError. The elevated counter-disabled
+preflight child3864 exited0, reaped, group absent and log closed. These are setup
+lifecycle controls; no allocation counters or measurement children were run.
+`prepare.py` distinguishes tested source from preparation metadata revision and
+refuses any change in compiled source/tests/consumer/probe inputs since the
+recorded tested revision. `measure.py` requires exact manifest SHA, UTC latest
+start/expiry and the one prebuilt child; maximum30seconds includes10seconds
+reserved for cleanup. It refuses existing measurement output, verifies every
+identity before/after, drains/reaps/kills owned groups and reports lifecycle only.
+Raw result interpretation must await the coordinator's durable RELEASE ACK.
