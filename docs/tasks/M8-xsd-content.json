@@ -10,7 +10,8 @@
   "base_revision": "55a1f72c319b792acc216ca847818aba5ac7cd13",
   "integration_revision": null,
   "depends_on": [
-    "M8-xsd-compile"
+    "M8-xsd-compile",
+    "M8-xsd-wildcard-composition"
   ],
   "goals": [
     "G14"
@@ -89,11 +90,10 @@
     }
   ],
   "blockers": [
-    "Compiler discards non-expressible wildcard intermediate; await verified M8-xsd-wildcard-composition. Root owns only this task JSON until dependency handback.",
     "Two corrected positive effective-empty extension cases fail at compiler ContentKind; await verified M8-xsd-effective-content. Runtime content source remains f098; original nonempty extension negative remains required."
   ],
   "handoff": {
-    "summary": "Sourcefe30b556 reviewed; bounded four-finding correction sourcef098c72fd2f94bea18c46194de1795ea26439a4d awaits immutable closure review. Required lost-intermediate wildcard negative remains failed pending ordered compiler-owner repair; other102case selection entries pass. No measurements.",
+    "summary": "Wildcard repair verifiedf519d833; remaining two effective-empty mapping failures await ordered M8-xsd-effective-content. Only JSON writes root-owned; worker c903d01 source/tests/evidence preserved.",
     "checks": [
       "Initial scoped check.py:228passed,1393public/9frozen,XML-only consumer,planning176/diff clean atfe30b556 (superseded for acceptance by source review).",
       "Correction runtime/tests Release builds:zero warnings/errors.102owned cases atf098c72f:101pass/1requirednegative fail/0skips.",

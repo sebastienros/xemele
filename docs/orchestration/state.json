@@ -69,10 +69,10 @@
   ],
   "integration_queue": [],
   "next_actions": [
-    "Terminal datatype cleanup and dispatch facets from verified main",
-    "Claim bounded compiler wildcard composition repair; preserve active content mandatory failure until verified",
-    "Continue Schematron evaluator; all future measurements require fresh host PARK including parser project",
-    "Complete M8 gate and terminal writer transfer only; no M9"
+    "Implement/review effectivecontent mapping in reusedisolatedcheckout; builds after finalparserrelease",
+    "Schematron correction43c6ab4 accepted; preparefreshmeasurement after externalwindow",
+    "Continuefacet tests; noheavyworkuntilfinalparserrelease",
+    "Complete M8gate and terminalwritertransfer only"
   ],
   "implementation_worker_policy": {
     "model": "gpt-6.1-sol",
@@ -220,7 +220,7 @@
   "milestone_completion_scope": "Complete integrated verified M8-gate; terminal workers and cleanup; preserve earlier evidence/caches; transfer sole writes to main. Do not create M9.",
   "milestone_progress": "16 of30 M8tasks verified; wildcardcleanup pendinghostrelease; effectivecontentrepair ready;3workers parked",
   "blockers": [
-    "M8-xsd-content mandatory negative blocked on M8-xsd-wildcard-composition; no dependency added until repair verified"
+    "M8-xsd-content two mandatory corrected-positive mapping failures pending M8-xsd-effective-content; originalwildcardfailure nowrepaired andverified"
   ],
   "pending_decisions": [],
   "timing_queue": [],
@@ -689,6 +689,22 @@
       "source_revision": "fb8fc3b5b4ef1d83da85679c296a48b5863dde32",
       "worker_revision": "172581919607789cca470da1b0004d584a8e8702",
       "integration_revision": "c6da4a5425cbdcd7104330d351f62b59c72fdf2b"
+    },
+    {
+      "task_id": "M8-xsd-wildcard-composition",
+      "stage": "Verified; terminal cleanup deferred until external parser phase releases",
+      "branch": "codex/m8-xsd-wildcard-composition",
+      "base_revision": "adf80b989e0389cac3972a3eba974fc8bf911700",
+      "scope": "Only Compiler.cs private wildcard composition plus own proving tests/report; no model/API change",
+      "reviewer": "/root/review_m8_model",
+      "task_record_handback": "Content task JSON explicitly root-owned; other worker paths untouched",
+      "claim_revision": "24f0e34fc696acad3ad3cd0dac41c7948592a036",
+      "worktree_path": "/private/tmp/xemele-M8-xsd-wildcard-composition",
+      "integration_revision": "a01f1ca06b38b0ac3cfcc76d098ddf0d8944dcba",
+      "next_ordered_repair": "M8-xsd-effective-content",
+      "source_revision": "42a93288b8a3b4c2def3be7c5a1183738f9137c6",
+      "verified_revision": "f519d8338f42b37193c5664d27540359bd259aec",
+      "cleanup": "Deferred during external measurement; originalrepaircheckout retained, integrationcheckout reused for nextorderedrepair"
     }
   ],
   "measurement_lease_history": [
@@ -1007,18 +1023,13 @@
   },
   "chat_communication_authorization": "Human directly authorized all M8 coordination, remaining M8 worker chats gpt-6.1-sol/high, parser-chat coordination, and GregsEx coordinator/workers host coordination.",
   "coordinator_repair": {
-    "task_id": "M8-xsd-wildcard-composition",
-    "stage": "Verified; terminal cleanup deferred until external parser phase releases",
-    "branch": "codex/m8-xsd-wildcard-composition",
-    "base_revision": "adf80b989e0389cac3972a3eba974fc8bf911700",
-    "scope": "Only Compiler.cs private wildcard composition plus own proving tests/report; no model/API change",
-    "reviewer": "/root/review_m8_model",
-    "task_record_handback": "Content task JSON explicitly root-owned; other worker paths untouched",
-    "claim_revision": "24f0e34fc696acad3ad3cd0dac41c7948592a036",
-    "worktree_path": "/private/tmp/xemele-M8-xsd-wildcard-composition",
-    "integration_revision": "a01f1ca06b38b0ac3cfcc76d098ddf0d8944dcba",
-    "next_ordered_repair": "M8-xsd-effective-content",
-    "source_revision": "42a93288b8a3b4c2def3be7c5a1183738f9137c6"
+    "task_id": "M8-xsd-effective-content",
+    "stage": "Claimed after verifiedwildcard; source-only work during externalparsermeasurement",
+    "branch": "codex/m8-xsd-effective-content",
+    "base_revision": "f519d8338f42b37193c5664d27540359bd259aec",
+    "worktree_path": "/private/tmp/xemele-M8-xsd-wildcard-integration",
+    "scope": "Only Compiler.Complex effective content mapping plus owned tests/reports; no runtime builds during hostlease",
+    "reviewer": "/root/review_m8_model"
   },
   "external_measurement_park": {
     "id": "M8-wildcard-parser-serial-2",
