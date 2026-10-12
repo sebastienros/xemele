@@ -34,7 +34,7 @@ public sealed class ReferenceTests
     [InlineData("libxml2")]
     public async Task RealPinnedReferencesKeepIndependentSchemaAndInstanceOracles(string engine)
     {
-        var inventories = new[] { "jing-inventory.json", "libxml2-inventory.json", "profile-inventory.json", "profile-inventory.json" }.Select(name => JsonDocument.Parse(File.ReadAllText(Path.Combine(Corpus, name)))).ToArray();
+        var inventories = new[] { "jing-inventory.json", "libxml2-inventory.json", "profile-inventory.json" }.Select(name => JsonDocument.Parse(File.ReadAllText(Path.Combine(Corpus, name)))).ToArray();
         string directory = Path.Combine(Root, "artifacts/M8-rng-corpus/reference-" + engine); Directory.CreateDirectory(directory);
         try
         {
