@@ -73,15 +73,27 @@ revision `05a08eaac946552cd1885a779d18d13d8b04021c`; the actual latest run passe
 to the retained lost-intermediate wildcard negative. See
 [review-corrections.md](review-corrections.md) for both distinct ordered owner
 requests. Content runtime source is unchanged. Source closure review and
-verified compiler repairs remain pending. Task-record writes were transferred
-to the coordinator; source/tests/reports remain worker-owned.
+verified compiler repairs remained pending at that boundary. Task-record writes
+were transferred to the coordinator while it owned those repairs.
+
+Both repairs are now verified on main `6de242de053c9933ba1a0f3506f360a42dbfd1ba`
+and merged on this branch at `ccb384811d47099f931854c7b2a79c962d4ba2d1`.
+The content runtime at `f098c72f` and corrected owned tests at `05a08eaa` are
+unchanged. All 102 owned cases pass, including the lost-intermediate negative,
+both effective-empty positives and the original nonempty extension rejection.
+The complete focused run passes 243 cases plus 42 safe resolver cases (285),
+zero errors/failures/skips/not-run, .NET 10.0.11 Arm64. Public API comparison
+matches 1,400 members; all nine frozen content members and the actual XML-only
+consumer pass. Release builds have zero warnings/errors; planning validates
+179 tasks and the diff check passes. Task-record ownership has returned to the
+worker. Immutable content-source closure review and measurements remain pending.
 
 The probe payload and BDN payload build successfully on SDK 10.0.400/runtime
 10.0.11. Counter-disabled control consumed ten routes with 32 warm/64 samples;
 five BDN semantic methods passed without timing/counters, and discovery asserted
 exactly five MemoryDiagnoser ShortRun InProcessNoEmit cases. No allocation or
 timing run occurred. `prepare.py` requires the mandatory negative, both corrected
-effective-empty positives and all 204
+effective-empty positives and all 243
 combined focused cases to pass before freezing; `measure.py` checks exact
 identities/process permissions and absolute grant expiry, reaps every process
 group, closes logs and emits lifecycle RELEASE before any result inspection.

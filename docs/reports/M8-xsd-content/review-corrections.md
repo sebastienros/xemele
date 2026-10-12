@@ -86,3 +86,29 @@ private wildcard repair is still under independent review and was not consumed.
 Content runtime source remains unchanged at `f098c72f`; task-record writes
 remain root-owned. Preparation now requires both corrected positives and the
 lost-intermediate negative to pass in the complete focused selection.
+
+## Verified owner-repair consumption
+
+The coordinator verified both declaration-compiler repairs on main
+`6de242de053c9933ba1a0f3506f360a42dbfd1ba` and returned task-record ownership.
+Worker merge `ccb384811d47099f931854c7b2a79c962d4ba2d1` consumes those verified
+dependencies. Content runtime `f098c72f` and corrected tests `05a08eaa` remain
+byte-for-byte unchanged. All 102 owned cases now pass, including all three
+previous failures and the original nonempty extension negative.
+
+Actual broadened `check.py` run: 243 focused cases (including 11 wildcard-owner
+and 28 effective-content-owner regressions), plus 42 approved safe resolver
+cases, 285 passed with zero errors/failures/skips/not-run on .NET 10.0.11 Arm64.
+Public comparison matches 1,400 members and frozen comparison matches nine;
+the actual XML-only compiler/content consumer passes. Release builds report
+zero warnings/errors; planning validates 179 tasks and the diff check passes.
+Artifacts are `artifacts/M8-xsd-content/correctness.xml`, `resolver.xml` and
+`verified-check.log`. Historical failing artifacts above are preserved.
+
+Both benchmark payloads rebuild successfully. The refreshed counter/timer-free
+controls consume all ten probe routes and five BDN semantic methods; discovery
+confirms exactly five MemoryDiagnoser ShortRun InProcessNoEmit cases. No actual
+allocation or timing run occurred. Preparation requires all 243 focused cases,
+both corrected positives and the retained negative to pass before freezing.
+Immutable content-source closure review and a fresh root/all-peer grant are
+still required before measurement acceptance.
