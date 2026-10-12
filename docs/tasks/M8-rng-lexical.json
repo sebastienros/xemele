@@ -4,11 +4,11 @@
   "milestone": "M8",
   "title": "Enforce RELAX NG 2001 URI and name lexical rules",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M8 coordinator01a12c6c-b333-71d3-877f-0d186618e21d / assigned isolated worker",
   "branch": "codex/m8-rng-lexical",
   "base_revision": "7e2ce7af9b70aa9216304ce0eb16493805369bf5",
-  "integration_revision": null,
+  "integration_revision": "51550524f0c08647073da7657d4659e5affc78e7",
   "depends_on": [
     "M8-rng-validate",
     "M8-datatypes-text-binary"
@@ -37,7 +37,8 @@
         "affected-correctness",
         "independent-source-review",
         "normal-consumer",
-        "xml-only-consumer"
+        "xml-only-consumer",
+        "root-integrated-verification"
       ]
     },
     {
@@ -46,7 +47,8 @@
       "status": "passed",
       "evidence": [
         "affected-correctness",
-        "independent-source-review"
+        "independent-source-review",
+        "root-integrated-verification"
       ]
     },
     {
@@ -60,7 +62,8 @@
         "frozen-rng-api",
         "normal-consumer",
         "xml-only-consumer",
-        "combined-check-review"
+        "combined-check-review",
+        "root-integrated-verification"
       ]
     },
     {
@@ -70,7 +73,8 @@
       "evidence": [
         "independent-source-review",
         "controlled-allocations",
-        "combined-check-review"
+        "combined-check-review",
+        "root-integrated-verification"
       ]
     }
   ],
@@ -171,11 +175,20 @@
       "result": "passed",
       "summary": "Coordinator independently executed combined source checks:405tests,1410public,444frozen,normal/XML-only10routes each,182planning anddiffpass. Durable actual review9301cacc99ba37fb01b5e38d737f7b6de59f9bb7. New reusable checks.py arrived after manual equivalent commands and is not claimed executed. Main integration/verified metadata remain coordinator responsibility before corpus consumes repair.",
       "artifact": "docs/reports/M8-rng-lexical/handoff.md"
+    },
+    {
+      "id": "root-integrated-verification",
+      "kind": "integration",
+      "revision": "51550524f0c08647073da7657d4659e5affc78e7",
+      "command": "Pinned10.0.11 Release build and four selected namespaces (parallelMode none); approved M0/M8 API checkers; normal/XML-only owned consumers; prepared allocation sequence under grant419db89c and release df4ed510; python3 tools/planning/tasks.py validate; git diff --check",
+      "result": "passed",
+      "summary": "Actual root combined405 tests (80 repair,88 compiler,89 validator,148 textbinary) passed/zero errors failures skipped not-run; build0warnings/errors,public1410/frozen444,normal/XMLonly10routes each. Root accepted measured cold+9warm aggregate allocations with497unchangedidentities/2cleanchildren. Final d3a3143f integration and7338caf4 handoff add only reports/task/coordination/preparation; runtime/tests/fixtures/build/API/consumers/checker inputs proven identical to actual515. No tests falsely rerun. All182planning records validate.",
+      "artifact": "docs/orchestration/review-M8-rng-lexical.json"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Branch implementation complete: normative RELAX NG2001 absolute/nonfragment XLink-projected URI checks, historical XML NCName/QName rules, fully metered reserved output and all nine unchanged Jing witnesses. Frozen public/internal APIs preserved; only owned paths changed.",
+    "summary": "Integrated and verified RELAX NG lexical repair; all nine original Jing predicates preserved. Corpus may consume after explicit resume with this verified checkpoint.",
     "checks": [
       "Release405affected tests passed (80repair/88compiler/89validator/148textbinary),0failed/errors/skipped/notrun.",
       "PublicAPI1410/frozenRNG444 and normal/XML-only10routes each passed.",
@@ -184,10 +197,8 @@
       "Updated own task metadata and ownership/planning validation run before handoff commit; no correctness or allocation reruns."
     ],
     "remaining": [
-      "Coordinator records actual main integration/verified evidence before corpus consumes repair. Single Arm64 allocation-only observations; cross-architecture release checks remain outside this repair."
+      "Allocation evidence is one Arm64 run with aggregate means; no speed, primitive-zero or cross-architecture claim."
     ],
-    "requests": [
-      "Integrate final owned metadata/reports, verify on coordination branch per workflow, then resume corpus only after M8-rng-lexical is verified. No shared-contract/source change request."
-    ]
+    "requests": []
   }
 }
