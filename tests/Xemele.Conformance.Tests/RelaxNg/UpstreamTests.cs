@@ -21,7 +21,7 @@ public sealed class UpstreamTests
     public static IEnumerable<object[]> Cases()
     {
         var rows = new List<object[]>();
-        foreach (string name in new[] { "jing-inventory.json", "libxml2-inventory.json" })
+        foreach (string name in new[] { "jing-inventory.json", "libxml2-inventory.json", "profile-inventory.json" })
         { using var inventory = JsonDocument.Parse(File.ReadAllText(Path.Combine(Corpus, name))); rows.AddRange(inventory.RootElement.GetProperty("cases").EnumerateArray().Select(c => new object[] { c.GetProperty("id").GetString()!, c.GetRawText() })); }
         return rows;
     }
@@ -32,7 +32,7 @@ public sealed class UpstreamTests
         internal Resolver()
         {
             resources = [];
-            foreach (string name in new[] { "jing-inventory.json", "libxml2-inventory.json" })
+            foreach (string name in new[] { "jing-inventory.json", "libxml2-inventory.json", "profile-inventory.json" })
             { using var inventory = JsonDocument.Parse(File.ReadAllText(Path.Combine(Corpus, name))); foreach (var f in inventory.RootElement.GetProperty("resources").EnumerateArray()) resources.Add(new Uri(Path.Combine(Corpus, f.GetProperty("path").GetString()!)), Bytes(f)); }
         }
         public override XmlResolvedResource? Resolve(XmlResourceRequest request, CancellationToken cancellationToken)

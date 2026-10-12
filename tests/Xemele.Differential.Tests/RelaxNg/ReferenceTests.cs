@@ -34,7 +34,7 @@ public sealed class ReferenceTests
     [InlineData("libxml2")]
     public async Task RealPinnedReferencesKeepIndependentSchemaAndInstanceOracles(string engine)
     {
-        var inventories = new[] { "jing-inventory.json", "libxml2-inventory.json" }.Select(name => JsonDocument.Parse(File.ReadAllText(Path.Combine(Corpus, name)))).ToArray();
+        var inventories = new[] { "jing-inventory.json", "libxml2-inventory.json", "profile-inventory.json", "profile-inventory.json" }.Select(name => JsonDocument.Parse(File.ReadAllText(Path.Combine(Corpus, name)))).ToArray();
         string directory = Path.Combine(Root, "artifacts/M8-rng-corpus/reference-" + engine); Directory.CreateDirectory(directory);
         try
         {
@@ -59,7 +59,7 @@ public sealed class ReferenceTests
             if (engine == "jing")
             {
                 string jar = identity.GetProperty("jarPath").GetString()!; Assert.Equal(identity.GetProperty("jarSha256").GetString(), Hash(File.ReadAllBytes(jar)));
-                string classes = identity.GetProperty("classPath").GetString()!; Assert.Equal(identity.GetProperty("classSha256").GetString(), Hash(File.ReadAllBytes(Path.Combine(classes, "RngReference.class"))));
+                string classes = identity.GetProperty("classPath").GetString()!; foreach (var file in identity.GetProperty("runnerClassHashes").EnumerateObject()) Assert.Equal(file.Value.GetString(), Hash(File.ReadAllBytes(Path.Combine(classes, file.Name))));
                 start.FileName = "/Library/Java/JavaVirtualMachines/temurin-25.jdk/Contents/Home/bin/java";
                 start.ArgumentList.Add("-cp"); start.ArgumentList.Add(classes + Path.PathSeparator + jar); start.ArgumentList.Add("RngReference");
             }
@@ -91,7 +91,7 @@ public sealed class ReferenceTests
                 else if (actual != expected) failures.Add($"{engine} unexplained {key}: expected {expected}, observed {actual}");
                 else agreements++;
             }
-            Assert.Equal(engine == "jing" ? 0 : 12, limits.Count); Assert.Equal(expectations.Count - limits.Count, agreements);
+            Assert.Equal(engine == "jing" ? 0 : 15, limits.Count); if (agreements != expectations.Count - limits.Count) failures.Add($"Reference accounting: {agreements} agreements, {limits.Count} limitations, {expectations.Count} expected outcomes");
             // Product is always checked against the independent upstream expectation,
             // including fixtures where libxml2 has a documented limitation.
             foreach (var c in cases)
