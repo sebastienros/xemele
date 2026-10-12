@@ -1,7 +1,8 @@
 # Harness correction — SOURCE ONLY; current correction execution UNRUN
 
-Runtime/compiler, tests, original fixtures, BenchmarkDotNet and the 24-route probe
-remain exactly at 8cb31895a01fccf945dc2b2ff5a58ef39fd14fab. Compiler SHA256 remains
+Runtime/compiler, original fixtures, BenchmarkDotNet and the 24-route probe
+remain exactly at 8cb31895a01fccf945dc2b2ff5a58ef39fd14fab. Tests retain the original
+acceptance assertions with the two explicit cancellation-token corrections below. Compiler SHA256 remains
 843e59a35be16bd838f31c9b5859223e3043f179a865baf72bbe7d70d566bed3. Historical
 source-identities and source handoff are immutable. The current owned harness is
 separately pinned in harness-source.json; only the coordinator can create an actual
@@ -159,3 +160,32 @@ Current packet: eleven Python sources parse statically; all source identities an
 API membership hashes are refreshed; new diagnostics/control behavior is unrun.
 Coordinator-owned harness-review.json is preserved and must be renewed by root
 for the new manifest. Hold immutable for review; no execution is authorized here.
+
+
+## Test cancellation-token correction — SOURCE ONLY
+
+The coordinator reports actual diagnostics-correction controls PASS11, followed by
+a separate fresh check failure: xUnit1051 at81:24 and124:24 in
+AnnotationTests.CancellationDuringSourceLexicalWorkUsesOperationToken and
+BoundaryTests.SourceMutationDuringAcquisitionStillRefusesCompilation. These
+captured diagnostics supersede the earlier attempt's unknown cause; historical
+attempts remain separate. The root confirmed all groups absent/reaped/logs closed
+and deleted66rawfiles. No tests or counters launched in that failed attempt.
+
+Only the two flagged tests change. Static source-location inspection places both
+diagnostics on XmlDocument.Parse, which prepares each compiler input; the internal
+XmlSchemaCompiler.Compile overload has no CancellationToken parameter. Both parse
+calls now pass cancellationToken: TestContext.Current.CancellationToken. The
+annotation test retains the deliberate CancelAtSource operation/cancellation.Token
+and exact SourceWork64 assertion. The mutation test retains its Compile options,
+SchemaCompileOperation construction, expected InvalidOperationException and source
+mutation. All compiler calls/operation tokens remain unchanged. No analyzer suppression, quota,
+oracle, runtime/compiler/probe or harness behavior change. The harness manifest
+refreshes only these two test identities and this handoff. Runtime/control commit
+8cb31895 remains the original runtime/probe identity; the two test corrections are
+explicit exceptions to the earlier all-tests-frozen source packet. API membership
+remains this worker's53fragments; main's54-fragment integration binding is root-owned.
+
+Only static diff/hash inspection and planning validation for this correction;
+worker builds/tests/controls/counters remain UNRUN. Freeze for bounded source
+review; the coordinator owns any fresh actual retry and eventual integration.

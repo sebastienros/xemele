@@ -121,7 +121,7 @@ public sealed class BoundaryTests
     [Fact]
     public void SourceMutationDuringAcquisitionStillRefusesCompilation()
     {
-        var document = XmlDocument.Parse(Principal());
+        var document = XmlDocument.Parse(Principal(), cancellationToken: TestContext.Current.CancellationToken);
         var resolver = new Resolver((_, _) => { document.RootElement.SetAttribute("id", "mutated"); return XmlResourceResolution.Unavailable; });
         Assert.Throws<InvalidOperationException>(() => new XmlSchemaCompiler().Compile(document, new() { BaseUri = Basis, Resolver = resolver }, new SchemaCompileOperation()));
     }

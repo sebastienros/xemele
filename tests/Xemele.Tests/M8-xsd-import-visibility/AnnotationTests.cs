@@ -78,7 +78,7 @@ public sealed class AnnotationTests
         using var cancellation = new CancellationTokenSource();
         string text = Annotation(wrapper, "http://example.test/" + new string('a', 1024));
         var operation = new CancelAtSource(cancellation, text.IndexOf("source=", StringComparison.Ordinal) - text.IndexOf('\n'));
-        var document = XmlDocument.Parse(text);
+        var document = XmlDocument.Parse(text, cancellationToken: TestContext.Current.CancellationToken);
         var error = Assert.Throws<OperationCanceledException>(() => new XmlSchemaCompiler().Compile(document, new(), operation));
         Assert.Equal(cancellation.Token, error.CancellationToken); Assert.Equal(64, operation.SourceWork);
     }

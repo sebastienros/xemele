@@ -1,7 +1,7 @@
 {
   "runtimeControlCommit": "8cb31895a01fccf945dc2b2ff5a58ef39fd14fab",
   "runtimeCompilerSha256": "843e59a35be16bd838f31c9b5859223e3043f179a865baf72bbe7d70d566bed3",
-  "execution": "Current diagnostics correction UNRUN; historical root controls11 PASS preserved; build failed1 after restore0; no actual compiler cause recoverable from deleted logs; source-only bounded diagnostic retention/input identities",
+  "execution": "Current two-parse-call test token correction UNRUN; prior diagnostic controls11 PASS preserved; latest root build failed xUnit1051 at81:24/124:24; no worker builds/tests/counters",
   "originalCheckSha256": "3833f1609ae7764e25a13d877eb4f8d55418de8e520099b793d70e19920a04a5",
   "supervisionTemplateSha256": "407b228d8b4741445eaf928a44aedd4de85aacaac894e6ad23b8ed8071395903",
   "nestedTemplateSha256": "fe1db7d70cc4b10a04aaa5ac8107cd69a95f7a16e21a0888892ef70c5f05a128",
@@ -34,7 +34,7 @@
     "docs/reports/M8-xsd-import-visibility/check.py": "2e6bebb2c023826ecf05ca210e236e627f296cdd835296f6d182d422fc55b343",
     "docs/reports/M8-xsd-import-visibility/checks-unrun.json": "4555c83008c916670a579d967bed88c7deb61d9978f5ef6598c582794fcf658f",
     "docs/reports/M8-xsd-import-visibility/family.py": "b3733a6dd4a448f59283a391a4f933d3bd799e5ebb23d69da5c7099197f78d1d",
-    "docs/reports/M8-xsd-import-visibility/harness-handoff.md": "10cf0736b29d7780ef634174599b984304090d2d2037f796ee658cbeaa349ae4",
+    "docs/reports/M8-xsd-import-visibility/harness-handoff.md": "5398aac529353c1c1aced0d4f28aedec4540c22b059c46ff0619acb6627fe434",
     "docs/reports/M8-xsd-import-visibility/launch.py": "c46650fa1689d448746f97bf9ccb93e06e66a6fd42017e17fc7ed1a6de74bf86",
     "docs/reports/M8-xsd-import-visibility/lifecycle-check.py": "cd01b366a978bf2f7805ac053d93a442d216cdc2ab1ddddf6be2fbbfd2afed40",
     "docs/reports/M8-xsd-import-visibility/measure.py": "18ab70b70d97b51912a05b2143b249ab307779c2388531a17ae933d4ef1cc082",
@@ -500,8 +500,8 @@
     "tests/Xemele.Tests/M8-xsd-identity/ParserBudgetTests.cs": "1fc928926a2586a66061f9c96cf9b73412a99d934c444a6856a7a94d1895bf1a",
     "tests/Xemele.Tests/M8-xsd-identity/ScopeTests.cs": "5f2fc1e2704f8e3b6e4bb2fcfcfae4509dacd0ccc31d963e2b2e2876ac88083e",
     "tests/Xemele.Tests/M8-xsd-identity/XPathTests.cs": "f3b6a360083aff969430d154ded8097dc901f8ba0e4b4e06510381ee31679803",
-    "tests/Xemele.Tests/M8-xsd-import-visibility/AnnotationTests.cs": "4fce99d2f90d3aaa0f9ba8d23901b4b2888664242e37ab65c1e55e3a8c21463b",
-    "tests/Xemele.Tests/M8-xsd-import-visibility/BoundaryTests.cs": "df2bcb3fc05d4285264dfe19af79d79a06e53b8ee3909b47940090297d426b93",
+    "tests/Xemele.Tests/M8-xsd-import-visibility/AnnotationTests.cs": "b279b0f2964db4dff4c64f353a4ed9e7e97c75894fdbb56932032073fe45daf9",
+    "tests/Xemele.Tests/M8-xsd-import-visibility/BoundaryTests.cs": "11f00e4ddfe1d7f205b255b4f9ed9a3561f8e390b98c984ea23e36171070d5d5",
     "tests/Xemele.Tests/M8-xsd-import-visibility/OriginalTests.cs": "5fc1c6457af9f34d8f7851b8edc87f3b146a62cbac48812a48a248d97657e2c9",
     "tests/Xemele.Tests/M8-xsd-import-visibility/Support.cs": "d5a4186c6bd4d474d489201d459dfd12db422c1b5100e6ede4ba93b5dc02bb6f",
     "tests/Xemele.Tests/M8-xsd-import-visibility/VisibilityTests.cs": "58c1b4b665a9e0d8843cad59a33c470e88a8d987dec4a197236cfb76dddeebbf",
@@ -665,5 +665,9 @@
     "docs/api/M8-xsd-particle-normalization.txt": "9edc91c276d5893119a1d9bb14cb677927baeb21364d978ba93295d7f0ae88b3",
     "docs/api/M8-xsd-recursive-components.txt": "9edc91c276d5893119a1d9bb14cb677927baeb21364d978ba93295d7f0ae88b3",
     "docs/api/M8-xsd-validate.txt": "9edc91c276d5893119a1d9bb14cb677927baeb21364d978ba93295d7f0ae88b3"
-  }
+  },
+  "testSourceCorrections": [
+    "AnnotationTests.CancellationDuringSourceLexicalWorkUsesOperationToken: XmlDocument.Parse passes TestContext.Current.CancellationToken; deliberate operation token/work64 unchanged",
+    "BoundaryTests.SourceMutationDuringAcquisitionStillRefusesCompilation: XmlDocument.Parse passes TestContext.Current.CancellationToken; compiler/options/operation/assertions unchanged"
+  ]
 }
