@@ -4,11 +4,11 @@
   "milestone": "M8",
   "title": "Correct wildcard and nil identity instance assessment",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M8 coordinator / assigned isolated instance assessment worker",
   "branch": "codex/m8-xsd-instance-assessment",
   "base_revision": "bc950104a4f5acce37e3b2b7f71a60f8765e33c6",
-  "integration_revision": null,
+  "integration_revision": "423da4defd7ec85873f13193dec15cbb4134ae00",
   "depends_on": [
     "M8-xsd-schema-syntax"
   ],
@@ -37,7 +37,8 @@
       "description": "Reproduce unchanged original attZ002.v, addB034.v and addB136.v: prohibited attribute bindings contribute no positive instance use; permit assessment through a matching wildcard. Preserve rejection without matching wildcard, strict missing-declaration behavior, matching global datatype/fixed checks, local-use precedence and missing default behavior.",
       "status": "passed",
       "evidence": [
-        "branch-correctness"
+        "branch-correctness",
+        "root-integrated-verification"
       ]
     },
     {
@@ -45,7 +46,8 @@
       "description": "Reproduce unchanged original idF018.i: a valid nilled identity field must still have a simple effective type or complex type with simple content. Reject anyType/element-only fields before tuple qualification; preserve unique nil exemption, key/nillable rejection, effective xsi:type and shared charged cancellation/budget behavior.",
       "status": "passed",
       "evidence": [
-        "branch-correctness"
+        "branch-correctness",
+        "root-integrated-verification"
       ]
     },
     {
@@ -57,7 +59,8 @@
         "branch-correctness",
         "runtime-source-review",
         "branch-preparation",
-        "actual-allocations"
+        "actual-allocations",
+        "root-integrated-verification"
       ]
     }
   ],
@@ -111,11 +114,20 @@
       "result": "passed",
       "summary": "After fresh Xemele-only PARK and durable grant, separate control/measure passed16ownedpositive routes/1312calls/1968consumed;control fields0. Warm9,720\u201342,728B/op; coldsetup29,438,480B;positive1,048B;16retained coarseheapdelta240,472B.462own identities unchanged;PID35316/35318exit0/reaped/groupsabsent/logsclosed within30s;root62384terminal, durable RELEASE f42e1a5e8 before inspection. No globalhostidle/throughput/x64/AOT/zero-public-allocation claim.",
       "artifact": "docs/reports/M8-xsd-instance-assessment/allocations.md"
+    },
+    {
+      "id": "root-integrated-verification",
+      "kind": "integration",
+      "revision": "423da4defd7ec85873f13193dec15cbb4134ae00",
+      "command": "Combined checks on ff6e042; corrected API-only70b63ddd; git diff --exit-code ff6e042 -- src/Xemele tests/Xemele.Tests samples; python3 tools/planning/tasks.py validate; git diff --check",
+      "result": "passed",
+      "summary": "Integrated reviewed runtime and final branch evidence onto main.2075 distinct actual correctness cases pass,0fail/error/skips/notrun;8Releasebuilds0warnings/errors;1430public=1417preserved+13additive/46resolverfixture/all8frozenlanes/resource+facade normal andtrueXML-only consumers pass. Exact runtime/tests/samples unchanged from testedff6e042 to this integratedrevision; no repeated passing tests. Separate actual source-pinned allocation checks and cleanup passed under fresh Xemele-only windows; task ownership/limits preserved. Full official corpus/gate stillpending.",
+      "artifact": "docs/orchestration/M8-four-repair-integration-precheck.json"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Implemented unchanged-original wildcard/nil identity repair with independent source review, all correctness/API/consumer checks and actual bounded root allocation evidence. No API changes; integration_revision remains unset for coordinator verification.",
+    "summary": "Integrated and verified on main; Implemented unchanged-original wildcard/nil identity repair with independent source review, all correctness/API/consumer checks and actual bounded root allocation evidence. No API changes; integration_revision remains unset for coordinator verification.",
     "checks": [
       "Owned44+syntax1146+fixed45+safe42 passed; public/frozen APIs and normal+trueXML-only consumers passed; planning188/diff passed.",
       "Historical initial test-code build errors, stale-baseline retry, BCL key/nillable assumption and display-name truncation checker failure retained in README.",

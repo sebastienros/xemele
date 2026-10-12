@@ -4,11 +4,11 @@
   "milestone": "M8",
   "title": "Correct XSD effective content and component-name mapping",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M8 coordinator / assigned isolated component mapping worker",
   "branch": "codex/m8-xsd-component-mapping",
   "base_revision": "41dc2fc60962d7e3afc6a7a494146b63c1919161",
-  "integration_revision": null,
+  "integration_revision": "423da4defd7ec85873f13193dec15cbb4134ae00",
   "depends_on": [
     "M8-xsd-schema-syntax"
   ],
@@ -39,7 +39,8 @@
       "description": "Reproduce original groupN007 failure, then accept unchanged original mixed=true zero-occurrence instance and reject forbidden child occurrence. Resolve documented R-204 mapping gap consistently with accepted corpus by charged empty-sequence synthesis for effective mixed=true after validated top-level0..0; retain mixed=false empty content, extension inheritance, duplicate/invalid occurrence validation, locations and limits. Explicitly correct exactly the earlier three mixed=true MappingTests expectations, old probe route3 and README inference while preserving history.",
       "status": "passed",
       "evidence": [
-        "branch-correctness"
+        "branch-correctness",
+        "root-integrated-verification"
       ]
     },
     {
@@ -47,7 +48,8 @@
       "description": "Reject original xv001/xv004 schemas under the independently adjudicated XSD Second Edition NCName profile, while preserving XML Fifth Edition parser behavior. Compiler-local borrowed scalar scanning reuses verified TextBinaryNames tables; cover legal names, declaration/schema IDs/QName prefix-local components, multilingual and supplementary invalid names, source locations, charged budgets and cancellation.",
       "status": "passed",
       "evidence": [
-        "branch-correctness"
+        "branch-correctness",
+        "root-integrated-verification"
       ]
     },
     {
@@ -60,7 +62,8 @@
         "original-wildcard-baseline",
         "branch-correctness",
         "allocation-preparation",
-        "actual-allocations"
+        "actual-allocations",
+        "root-integrated-verification"
       ]
     },
     {
@@ -68,7 +71,8 @@
       "description": "Accept unchanged original wildK001/wildC030/wildZ010 schemas including original import; map explicit empty or XML-whitespace-only wildcard namespace lists to positive empty sets for any/anyAttribute, preserving omitted ##any, ##local/targetNamespace/other, required unsatisfiable versus optional no-child validation, invalid tokens/processContents, locations, shared charged budgets/cancellation, and bounded allocation route. Coordinator amendment docs/orchestration/M8-xsd-component-mapping-amendment.md authorizes this existing-owned-path correction.",
       "status": "passed",
       "evidence": [
-        "branch-correctness"
+        "branch-correctness",
+        "root-integrated-verification"
       ]
     }
   ],
@@ -159,11 +163,20 @@
       "result": "passed",
       "summary": "Actual coordinator elevated alloc-2 after fresh Xemele-only scope ACKs; worker inspected raw once after durable releasee8389790a. Separate control/measure19routes/36643consumed;13ownedpositive and6borrowedfirst/warm0B. Coldfixture7758800B,positive1048B;16retained liveheapdelta1133576B. Children28920/28922exit0,reaped,groupsabsent,logsclosed;464identitiesunchanged. Synchronous managed allocations only; no globally-idle-host/throughput/optimization-timing/x64/AOT claim. Raw artifacts preserved.",
       "artifact": "docs/reports/M8-xsd-component-mapping/measurement-summary.json"
+    },
+    {
+      "id": "root-integrated-verification",
+      "kind": "integration",
+      "revision": "423da4defd7ec85873f13193dec15cbb4134ae00",
+      "command": "Combined checks on ff6e042; corrected API-only70b63ddd; git diff --exit-code ff6e042 -- src/Xemele tests/Xemele.Tests samples; python3 tools/planning/tasks.py validate; git diff --check",
+      "result": "passed",
+      "summary": "Integrated reviewed runtime and final branch evidence onto main.2075 distinct actual correctness cases pass,0fail/error/skips/notrun;8Releasebuilds0warnings/errors;1430public=1417preserved+13additive/46resolverfixture/all8frozenlanes/resource+facade normal andtrueXML-only consumers pass. Exact runtime/tests/samples unchanged from testedff6e042 to this integratedrevision; no repeated passing tests. Separate actual source-pinned allocation checks and cleanup passed under fresh Xemele-only windows; task ownership/limits preserved. Full official corpus/gate stillpending.",
+      "artifact": "docs/orchestration/M8-four-repair-integration-precheck.json"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Implemented mixed0..0 effective-content synthesis, Second Edition component NCNames with charged actual normalization, and empty wildcard namespace sets; unchanged original/profile oracles and historical corrections preserved. All A1-A4 pass on branch; coordinator integrates/verifies.",
+    "summary": "Integrated and verified on main; Implemented mixed0..0 effective-content synthesis, Second Edition component NCNames with charged actual normalization, and empty wildcard namespace sets; unchanged original/profile oracles and historical corrections preserved. All A1-A4 pass on branch; coordinator integrates/verifies.",
     "checks": [
       "1263focused(117owned+33syntax+1113affected)+42safe pass;public1417/frozen316+139/257/24/9/2/7 and normal+trueXML-only consumers pass;5builds0warnings/errors;planning187/diff pass.",
       "Actual root alloc-2:19routes,6borrowedfirst/warm0B,13ownedpositive;cold/positive/16retained separate;464frozenidentities and cleanup pass. No new runtime checks or measurements during metadata follow-up."
