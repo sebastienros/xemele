@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "id": "M8-datatype-constraint-lexical",
+  "milestone": "M8",
+  "title": "Prepare canonical XSD datatype value-constraint lexical forms",
+  "kind": "feature",
+  "status": "in_progress",
+  "owner": "M8 coordinator01a12c6c-b333-71d3-877f-0d186618e21d / assigned isolated worker",
+  "branch": "codex/m8-datatype-constraint-lexical",
+  "base_revision": "9e5f4148f655c79faf1ea2fb665577b272c9e0c2",
+  "integration_revision": null,
+  "depends_on": [
+    "M8-facets"
+  ],
+  "goals": [
+    "G13"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/schemas.md"
+  ],
+  "owns": [
+    "src/Xemele/Validation/Datatypes/Values/Canonical/",
+    "src/Xemele/Validation/Datatypes/Values/Numeric/NumericProvider.cs",
+    "src/Xemele/Validation/Datatypes/Values/TextBinary/Provider.cs",
+    "tests/Xemele.Tests/M8-datatype-constraint-lexical/",
+    "tests/fixtures/M8-datatype-constraint-lexical/",
+    "benchmarks/Xemele.Benchmarks/M8-datatype-constraint-lexical/",
+    "docs/reports/M8-datatype-constraint-lexical/",
+    "samples/M8-datatype-constraint-lexical/"
+  ],
+  "api_or_output": "Internal charged constraint-lexical helper, retaining declared typed value, valid authored lexical and captured schema namespace context; unchanged public/frozen contracts",
+  "acceptance": [
+    {
+      "id": "M8-datatype-constraint-lexical-A1",
+      "description": "Add a narrowly scoped internal helper that first validates declared authored lexical text through the supplied facet engine and registry, then prepares canonical assessment lexical forms. Keep value/lexical consistency internal; retain the declared typed value, owned assessment lexical string and immutable captured declaration namespace context. Do not add lexical storage to every parsed value or mutate published values. Existing actual-type TryValidate must assess the prepared lexical form, not only typed facets.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M8-datatype-constraint-lexical-A2",
+      "description": "Implement the pinned XSD 1.0 Second Edition canonical mappings wherever specified, including primitive/derived numeric distinctions, booleans, binary, supported date/time forms, and composed list/selected-union values. For types without a prescribed 1.0 canonical mapping, retain a valid whitespace-normalized authored representative and captured context; do not invent QName prefixes or silently import XSD1.1 rules. Handle arbitrary precision and calendar boundaries without narrowing existing supported values.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M8-datatype-constraint-lexical-A3",
+      "description": "Prove declared xs:int default01 becomes1 and satisfies a derived one-digit pattern; declared xs:decimal default1 becomes1.0 and fails actual xs:int lexical grammar. Include exact known outputs, cross-family equality preservation, list/union selected identity, QName declaration-vs-instance context, temporal timezone/year/leap boundaries and cultures; test checked capacities, component reservations, exact work boundaries and cancellation during long operations with null caps.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M8-datatype-constraint-lexical-A4",
+      "description": "Keep helper scans/copies/formatting bounded under one supplied operation, explicit owned-result lifetimes and borrowed transient spans; add relevant controlled allocation evidence, independent source review and actual integrated correctness/API/normal/XML-only checks before consumers add dependency. No unmerged core implementation dependency, public/frozen interface changes, exclusions or rewritten historical evidence.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}
