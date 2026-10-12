@@ -7,7 +7,7 @@
   "coordination_branch": "main",
   "max_concurrent_workers": 3,
   "last_verified_checkpoint": "M7-gate",
-  "last_verified_task": "M8-sch-report",
+  "last_verified_task": "M8-facets",
   "last_integrated_revision": "223d094fb93e2a454557822818c06baa296e8702",
   "active_assignments": [
     {
@@ -31,28 +31,6 @@
       "prepared_revision": "4637ebe8ae4f23cacf826cfd248c61cb96bee264",
       "integration_candidate": "bf3629d88eb7756f0401dafd16548b27f6441f07",
       "manifest_sha256": "806a9dc5ad3e673a85ee9093f7da154059bfe172077ffbe6a557e419f2b6aa90"
-    },
-    {
-      "task_id": "M8-facets",
-      "branch": "codex/m8-facets",
-      "base_revision": "adf80b989e0389cac3972a3eba974fc8bf911700",
-      "stage": "Accepted source,804 actual combined checks/API1400/frozen316/XML-only passed;462 identities independently verified; measurement pending",
-      "acceptance_before_dispatch": {
-        "mandatory": "Frozen facet compiler/validator and complete composition over verified datatypes+regex; inherited/fixed facets, all45builtins, RNG parameters",
-        "integration": "Independent valid/invalid inheritance, bound/length/digits/enum/pattern/whitespace/QName/list/union cases; exact budgets/cancel/concurrency; child/API/XML-only checks and prepared allocation evidence",
-        "review": "Read-only facet semantics/ownership review"
-      },
-      "claim_revision": "24f0e34fc696acad3ad3cd0dac41c7948592a036",
-      "chat_id": "01a12d70-3cba-7e80-b76b-e9326faa323c",
-      "host_id": "local",
-      "worktree_path": "/Users/sebastienros/.codex/worktrees/36d6/xemele",
-      "client_thread_id": "client-new-thread:98418ea8-5d1d-47ea-96ee-77d244cf9cf4",
-      "model": "gpt-6.1-sol",
-      "thinking": "high",
-      "setup": "Full frozen facet/composition/independent tests/accounting/measurement brief delivered",
-      "source_revision": "b1bd26fe9a0978b0301ed45383c45f43da4592e3",
-      "integration_candidate": "00f0ab8790c8ba64397133928f8b1409a7d7ac31",
-      "manifest_sha256": "d6dc9a15b9a1656deb8f96de8ca1f0475934e28cdfcc36e0f641d1e651754be7"
     },
     {
       "task_id": "M8-sch-corpus",
@@ -207,7 +185,7 @@
   },
   "current_milestone": "M8",
   "milestone_completion_scope": "Complete integrated verified M8-gate; terminal workers and cleanup; preserve earlier evidence/caches; transfer sole writes to main. Do not create M9.",
-  "milestone_progress": "19 of30 M8 tasks verified; content and facets source/checks/measurements passed, final metadata handbacks pending.",
+  "milestone_progress": "20 of30 M8 tasks verified; content final metadata integration next; Schematron corpus active.",
   "blockers": [],
   "pending_decisions": [],
   "timing_queue": [],
@@ -761,6 +739,30 @@
         "chat_archived": true,
         "record": "docs/orchestration/cleanup-M8-sch-report.json"
       }
+    },
+    {
+      "task_id": "M8-facets",
+      "branch": "codex/m8-facets",
+      "base_revision": "adf80b989e0389cac3972a3eba974fc8bf911700",
+      "stage": "Verified; terminal cleanup pending",
+      "acceptance_before_dispatch": {
+        "mandatory": "Frozen facet compiler/validator and complete composition over verified datatypes+regex; inherited/fixed facets, all45builtins, RNG parameters",
+        "integration": "Independent valid/invalid inheritance, bound/length/digits/enum/pattern/whitespace/QName/list/union cases; exact budgets/cancel/concurrency; child/API/XML-only checks and prepared allocation evidence",
+        "review": "Read-only facet semantics/ownership review"
+      },
+      "claim_revision": "24f0e34fc696acad3ad3cd0dac41c7948592a036",
+      "chat_id": "01a12d70-3cba-7e80-b76b-e9326faa323c",
+      "host_id": "local",
+      "worktree_path": "/Users/sebastienros/.codex/worktrees/36d6/xemele",
+      "client_thread_id": "client-new-thread:98418ea8-5d1d-47ea-96ee-77d244cf9cf4",
+      "model": "gpt-6.1-sol",
+      "thinking": "high",
+      "setup": "Full frozen facet/composition/independent tests/accounting/measurement brief delivered",
+      "source_revision": "b1bd26fe9a0978b0301ed45383c45f43da4592e3",
+      "integration_candidate": "00f0ab8790c8ba64397133928f8b1409a7d7ac31",
+      "manifest_sha256": "d6dc9a15b9a1656deb8f96de8ca1f0475934e28cdfcc36e0f641d1e651754be7",
+      "final_worker_revision": "768360258cf893758c29bf7c69770500788712af",
+      "integration_revision": "223d094fb93e2a454557822818c06baa296e8702"
     }
   ],
   "measurement_lease_history": [

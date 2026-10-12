@@ -4,11 +4,11 @@
   "milestone": "M8",
   "title": "Datatype facets and library composition",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M8 coordinator01a12c6c-b333-71d3-877f-0d186618e21d / assigned isolated worker",
   "branch": "codex/m8-facets",
   "base_revision": "adf80b989e0389cac3972a3eba974fc8bf911700",
-  "integration_revision": null,
+  "integration_revision": "223d094fb93e2a454557822818c06baa296e8702",
   "depends_on": [
     "M8-datatypes",
     "M8-regex"
@@ -40,7 +40,8 @@
         "source-correctness",
         "source-review-1",
         "corrected-source-correctness",
-        "corrected-source-review"
+        "corrected-source-review",
+        "coordinator-final-integration"
       ]
     },
     {
@@ -51,7 +52,8 @@
         "source-correctness",
         "source-review-1",
         "corrected-source-correctness",
-        "corrected-source-review"
+        "corrected-source-review",
+        "coordinator-final-integration"
       ]
     },
     {
@@ -62,7 +64,8 @@
         "corrected-source-correctness",
         "corrected-source-review",
         "disabled-preparation",
-        "prepared-exclusive-measurement"
+        "prepared-exclusive-measurement",
+        "coordinator-final-integration"
       ]
     }
   ],
@@ -132,11 +135,20 @@
       "result": "passed",
       "summary": "Root grant b9e9f7e9 and durable cleanup RELEASE cf39961a before raw inspection. Two children0/reaped/groups absent/logs closed;462 identities stable;65.256s within600. All1088 observations preserved as exact distribution summaries:704borrowed samples0bytes,384owned/prep/stopped samples168/1176/360/160/2864/832bytes; first stopped856. Cold226600;positive1048;retained32 delta3218008 approximation. Six ShortRun NoEmit MemoryDiagnoser cases completed; per-case BDN mean/error/stddev and exact GC total/op denominator/residual retained; raw arrays/iterations/logs remain transient for root cleanup. BDN formatted dash hides residual totals0/2304/2304/2304/336/1680 over exact operation denominators; no BDN absolute-zero claim. Specialized ASCII baseline faster; no whole-validator zero or repeatable timing/improvement claim.",
       "artifact": "docs/reports/M8-facets/measurements.json"
+    },
+    {
+      "id": "coordinator-final-integration",
+      "kind": "integration",
+      "revision": "223d094fb93e2a454557822818c06baa296e8702",
+      "command": "python3 docs/reports/M8-sch-report/checks.py; python3 docs/reports/M8-xsd-content/check.py; python3 docs/reports/M8-facets/checks.py (serial execution with failure stops)",
+      "result": "passed",
+      "summary": "Actual report546/content285/facets804 suites passed; overlapping prerequisites are not summed as unique tests. Zero failures/errors/skips/not-run/build warnings/errors. Public1403; frozen reporting3/evaluator9/compiler154/content9/facet316; normal and true XML-only consumers;179-task planning. Final main differs only in orchestration, task/report metadata and report-only summarize.py, with runtime/tests/benchmarks/build/API/consumer/check inputs unchanged. Released17-route/6-case measurements independently inspected; no repeatable speed or x64 claim.",
+      "artifact": "docs/reports/M8-facets/integration.md"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Implemented on isolated branch: complete facet/graph/list/union/explicit RNG composition; five review findings corrected and accepted,804 correctness/API/consumer checks passed, frozen462-identity exclusive measurements passed after durable release. Primary integration/verified status remains coordinator-owned; no source/payload changes since accepted correction.",
+    "summary": "Verified integrated facet compiler/validator and datatype composition; accepted corrected source, combined checks and released measurements. All owned writes and task record handed back to coordinator.",
     "checks": [
       "Source5cdc839f:772 positive correctness tests,316 frozen/1393 public members,XML-only consumers and178-task planning passed.",
       "Counters-disabled preparation first failed on propagated output/intermediate flags; owned reference isolation fixed. Next probe/BDN builds passed but control executable output lacked target-framework suffix; owned driver corrected. No control/discovery/allocation/timing run yet.",
@@ -144,7 +156,7 @@
       "Exclusive root serial grant b9e9f7e9, release cf39961a before raw inspection:17allocation routes1088samples and6BDN cases passed;462stable identities/65.256s/clean lifecycle; exact distribution/statistic summaries retained, raw outputs kept transient, no repeatable timing claim."
     ],
     "remaining": [
-      "Coordinator final integration review/verification and verified task status, then terminal cleanup."
+      "Terminal cleanup; downstream XSD and RNG facade obligations remain explicitly assigned in facade-join.md and handoff requests."
     ],
     "requests": [
       "Downstream XSD prepublication must reject direct NOTATION use and restrictions lacking effective enumeration,resolve authored/inherited enumeration QNames against compiled notation declarations with captured contexts,and traverse relevant base/item/member references. Generic/RNG NOTATION behavior remains supported.",
