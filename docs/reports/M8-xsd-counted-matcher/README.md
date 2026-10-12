@@ -15,3 +15,11 @@ After coordinator supplied historical `80cd6bac0e740947cc3809fef4300068d8b4e51b`
 Outside ownership request: owning follow-up for `src/Xemele/Validation/Xsd/Evaluation/Evaluator.cs`, child assessment after cursor failure, to bound redundant cascading diagnostics while preserving complete invalid assessment and precise quota semantics. A1 cannot pass in this matcher-only branch while those three original cases remain incomplete.
 
 Allocation source is prepared for review only: reuse the existing content fixture's five borrowed zero obligations and five owned routes, add a warmed finite counted cursor plus owned first initialization/1,000-child routes. Probe separates cold setup, positive control, per-operation allocation distributions and retained programs/cursors. The accepted existing supervisor enforces fresh root grant, manifest identity, finite deadlines and cleanup before raw inspection. No allocation counter, GC-retention measurement, BDN or throughput run has executed. A4 remains pending actual granted evidence.
+
+## Verified dependency continuation
+
+Joined verified current main `b5544af4913420f9e13ba058d6ab65d830d53e0c` at `1fd1b477e6490a4ba4993fc772e33e65e8d681a7`, retaining owned matcher source. The conflict was only the task record: preserve coordinator's verified content-failure dependency and the branch's honest previous evidence. No private peer merge or outside-owned source edit.
+
+All **ten unchanged originals now complete and match metadata**, with full historical finite options including Diagnostics1024 and 30-second cancellation/supervision. `original-completed.json` records actual results and all10exit0/reaped/groupsabsent/logsclosed. Original Z034_a2/a3/b complete INVALID; Z036_b1/b2 remain VALID. Both preceding failure reports remain historical evidence. All fixture hashes match pinned originals.
+
+Joined checks: 1,146 affected +42 safe resolver +135 exact owned/fixed/datatype +238 exact integration rows (117 mapping/44 instance/39 content-failure/38 resource outcomes), no errors/failures/skips/not-run. Public union now1,430 (historical1,417 plus approved13 additive resource members), frozen baselines and normal/trueXML-only consumers pass; planning196/diff pass, pinned Release10.0.11 builds0warnings/errors. A1-A3 pass; A4 still awaits actual granted allocation.
