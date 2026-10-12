@@ -112,7 +112,21 @@
   "benchmark_policy": "Successful previous measurements retained; future changed runtime measurements require complete preparation and exclusive grant.",
   "benchmark_class_attributes": "Human requirement: every benchmark class declares [MemoryDiagnoser, ShortRunJob]; no CLI job flags.",
   "benchmark_owner": null,
-  "active_measurement_lease": null,
+  "active_measurement_lease": {
+    "id": "M8-wildcard-parser-serial-2",
+    "phase": "parser",
+    "grant": {
+      "createdUtc": "2026-10-12T00:25:40.123941+00:00",
+      "rootReleaseRevision": "e8c237f61542d9b1ca9a77286ff1ac570827a724",
+      "maximumWorkSeconds": 840,
+      "cleanupSeconds": 10,
+      "startBy": "2026-10-12T00:29:00Z",
+      "absoluteExpiry": "2026-10-12T00:43:10Z",
+      "expiryRule": "min(actualgateopen+14min,00:43UTC), cleanup10s",
+      "scope": "Exact frozen120case payload/command/manifests in parserPhase; no builds/discovery/retry; owner confirmscleanup+releasebeforeinspection"
+    },
+    "chat_id": "01a12d64-81ae-79e3-8ba2-b88110af6fdb"
+  },
   "verification_policy_update": "User convergence discipline: define acceptance/evidence/integration checks before dispatch; batch concrete blockers with criterion, evidence, smallest fix and proving check; preserve valid evidence; offline focused harness repair first; after two cycles coordinator chooses one bounded resolution; reuse infrastructure; build outside one bounded measurement lease with one park acknowledgement collection and prompt release; focused task integration and comprehensive milestone gates. No speculative hardening blocks integration.",
   "cleanup_policy": "Automatically archive completed chats and remove worktrees once merged verified durably summarized and no review/build need. Do not save generated test/benchmark artifacts or ignored-output archives; preserve required implementation/source and concise verification summaries.",
   "artifact_policy": {
@@ -1004,7 +1018,7 @@
   },
   "external_measurement_park": {
     "id": "M8-wildcard-parser-serial-2",
-    "status": "PARK_REQUESTED_NOT_GRANTED",
+    "status": "PARSER_PHASE_GRANTED",
     "createdUtc": "2026-10-12T00:21:23.494253+00:00",
     "earliestStart": "2026-10-12T00:25:00Z",
     "latestStart": "2026-10-12T00:29:00Z",
@@ -1034,7 +1048,42 @@
       "gate": "closed; explicit parser-phase grant required",
       "expiryRule": "min actual gate open+14min,00:43UTC;cleanup10s;absolute00:43:10UTC"
     },
-    "rules": "Fresh all-known actor ACKs required; root phase first; explicit phase grants; no overlap/build/discovery/retry; immediate durable phase release before inspection; final RELEASE all actors after final child/group cleanup. Expiry does not authorize unreported leftovers."
+    "rules": "Fresh all-known actor ACKs required; root phase first; explicit phase grants; no overlap/build/discovery/retry; immediate durable phase release before inspection; final RELEASE all actors after final child/group cleanup. Expiry does not authorize unreported leftovers.",
+    "acks": {
+      "xemeleMain": "Fresh exactserial2 ACK, idle/nojobs, mainread-only",
+      "content": "Fresh exactserial2 ACK at c903d01, nojobs",
+      "schematronEvaluator": "Fresh exactserial2 ACK retrievedfinal; safeboundary00:23:43Z, source43c6ab4/tip32b675a, nojobs",
+      "facets": "Fresh exactserial2 ACK afterbuild97992exit0 and179tests boundary;nojobs",
+      "root": "Combined254checks exit0/session67737finished;noownjob;all410frozeninputs verified before proposal",
+      "parser": "Fresh exactserial2 ACK, gateclosed,120cases/110harnessidentitiesreverified;onlyidle60333/60338",
+      "gregsex": "Freshaggregateall5: main01a12c93,coord01a12d32,conformance01a12d6b-cbc9,host01a12d6b-d1fa,parser01a12d77; allnojobs/PIDs/children, exactscope/times, nooldACKreuse"
+    },
+    "acksRecordedUtc": "2026-10-12T00:24:47.464474+00:00",
+    "rootGrant": {
+      "id": "M8-wildcard-parser-serial-2",
+      "phase": "root",
+      "createdUtc": "2026-10-12T00:25:13.559649+00:00",
+      "absoluteExpiry": "2026-10-12T00:25:43.559649+00:00",
+      "manifest": "20a0bf3164bcde3632e0a634310981d6d2067a3e08196e569f0ce78d08042f5e",
+      "sourceRevision": "42a93288b8a3b4c2def3be7c5a1183738f9137c6",
+      "status": "GRANTED"
+    },
+    "rootRelease": {
+      "recordedUtc": "2026-10-12T00:25:14.135443+00:00",
+      "supervisorExit": 0,
+      "rawInspected": false,
+      "grantRevision": "2173e5c8f815c6b54d2dc7c2b7266a569d26efff"
+    },
+    "parserGrant": {
+      "createdUtc": "2026-10-12T00:25:40.123941+00:00",
+      "rootReleaseRevision": "e8c237f61542d9b1ca9a77286ff1ac570827a724",
+      "maximumWorkSeconds": 840,
+      "cleanupSeconds": 10,
+      "startBy": "2026-10-12T00:29:00Z",
+      "absoluteExpiry": "2026-10-12T00:43:10Z",
+      "expiryRule": "min(actualgateopen+14min,00:43UTC), cleanup10s",
+      "scope": "Exact frozen120case payload/command/manifests in parserPhase; no builds/discovery/retry; owner confirmscleanup+releasebeforeinspection"
+    }
   },
   "measurement_park_aborts": [
     {
