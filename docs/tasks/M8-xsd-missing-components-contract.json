@@ -57,13 +57,49 @@
       "evidence": []
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "docs/decisions/M8/missing-components.md: approved nullable internal Type candidate and narrow consumption/deferred-check semantics",
+    "tests/Contracts/Fixtures/M8/MissingComponents/: old/new nonpackaged fixture, representative nullable usage, immutable availability snapshot, negative old consumer",
+    "docs/reports/M8-xsd-missing-components-contract/: authored exact three-member projection delta, provenance, finite reviewed-SHA offline runner and lifecycle control sources",
+    "docs/reports/M8-xsd-missing-components-contract/runtime-migration.json: exact ordered later ownership and legacy transition requests"
+  ],
+  "evidence": [
+    {
+      "id": "source-planning",
+      "kind": "check",
+      "revision": "d12be860e118b8ce97d383a0511ff1167f8c4bab",
+      "command": "python3 tools/planning/tasks.py validate",
+      "result": "passed",
+      "summary": "Executed on source-only working tree based on this claimed revision: Validated 198 tasks: schema, evidence, acyclic dependencies, additive milestones, and ordered ownership. Does not establish compilation or runtime correctness.",
+      "artifact": null
+    },
+    {
+      "id": "source-whitespace",
+      "kind": "check",
+      "revision": "d12be860e118b8ce97d383a0511ff1167f8c4bab",
+      "command": "git diff --cached --check",
+      "result": "passed",
+      "summary": "Staged task-owned source review packet and task record have no whitespace errors. No contract compilation/lifecycle/runtime tests executed.",
+      "artifact": null
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Claimed after ready/planning198, human-selected nullable internal Type migration; isolated SOURCE-only nonpackaged contract fixture/decision/baseline proof precedes actual contract compilation and later runtime task.",
-    "checks": [],
-    "remaining": [],
-    "requests": []
+    "summary": "SOURCE-only candidate prepared for coordinator review. Shared fixture, goldens, runtime, corpus and historical counters unchanged; task remains in_progress with all criteria pending.",
+    "checks": [
+      "ready executed: no ready tasks (assigned task already claimed)",
+      "Contract restore/build/metadata/lifecycle controls/runtime/corpus/allocation checks UNRUN pending coordinator SOURCE release",
+      "Planning validate passed: 198 tasks; staged task-owned source packet git diff --cached --check passed; source review/compilation/lifecycle/runtime remain UNRUN"
+    ],
+    "remaining": [
+      "Coordinator SOURCE review and finite lifecycle-control release/evidence",
+      "Offline old/candidate/reject usage compilation and exact emitted three-member projection proof",
+      "Ordered runtime task after verified import/annotation repair + this contract + instance-hint ordering; no runtime implementation here"
+    ],
+    "requests": [
+      "Assign exact later runtime/shared fixture/two golden paths and optional-composition two legacy test files from runtime-migration.json; preserve strict frozen compiler test/benchmark lane",
+      "Resolve exact facet Definitions.cs/Evaluator.cs ownership through ordered repair or prove a new owned independent-check extension; avoid blanket ValidateDefinition skip",
+      "Separate g1/i1 original VALID unresolved-head adjudication remains pending; zero original/gate pass credit"
+    ]
   }
 }

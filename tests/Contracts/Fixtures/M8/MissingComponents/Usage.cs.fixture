@@ -1,0 +1,52 @@
+using Xemele;
+using Xemele.Validation;
+using Xemele.MissingComponentsContract;
+namespace Xemele.MissingComponentsUsage;
+// This method is compiled only. Never invoke it, any fixture method, or a product validator.
+internal static class RepresentativeUsage
+{
+    internal static void Shapes(XsdCompiledSchema graph, IXsdCompiler compiler, IXsdEvaluator evaluator,
+        XmlDocument doc, IXmlFacetEvaluator facets, IXsdContentMatcher matcher, ISchemaOperation op)
+    {
+        var context = new SchemaNamespaceContext(new Dictionary<string,string>(), "", new Uri("urn:schema"));
+        var location = new XmlLocation(new Uri("urn:schema"), 2, 3, null);
+        var name = new SchemaName("urn:test", "bad"); var missing = new SchemaName("urn:test", "absent");
+        var inferred = new XsdElementDeclaration(0, name, null, false, false, null, null, missing,
+            [], [], [], context, location);
+        var explicitType = inferred with { Id = 1, Type = missing, SubstitutionGroup = null };
+        var ordinaryDefault = inferred with { Type = new SchemaName("http://www.w3.org/2001/XMLSchema", "anyType"), SubstitutionGroup = null };
+        SchemaName? type = inferred.Type;
+        inferred.Deconstruct(out int id, out SchemaName elementName, out SchemaName? deconstructedType,
+            out bool isAbstract, out bool nillable, out string? defaultValue, out string? fixedValue,
+            out SchemaName? head, out IReadOnlyList<XsdElementBlock> block, out IReadOnlyList<XsdDerivation> final,
+            out IReadOnlyList<int> identityIds, out SchemaNamespaceContext ns, out XmlLocation at);
+        if (type is { } actualName) _ = graph.Types.FirstOrDefault(t => t.Name == actualName);
+        // Guarded use demonstrates no implicit Nullable->SchemaName conversion.
+        var listName = new SchemaName("urn:test", "list");
+        var list = new XmlDatatypeDefinition(listName, XmlDatatypeVariety.List,
+            new SchemaName("http://www.w3.org/2001/XMLSchema", "anySimpleType"), missing, [], [], [], false, location);
+        var owner = new ComponentIdentity(OwnerKind.ElementDeclaration, name, inferred.Id);
+        var explicitOwner = new ComponentIdentity(OwnerKind.ElementDeclaration, name, explicitType.Id);
+        var listOwner = new ComponentIdentity(OwnerKind.SimpleType, listName, null);
+        var entries = new[] {
+            new AvailabilityEntry(0, owner, ReferenceKind.InferredSubstitutionHeadType,
+                SymbolSpace.Element, missing, location, AvailabilityState.Unavailable),
+            new AvailabilityEntry(1, listOwner, ReferenceKind.ListItemType,
+                SymbolSpace.Type, missing, location, AvailabilityState.Unavailable),
+            new AvailabilityEntry(2, explicitOwner, ReferenceKind.ExplicitElementType,
+                SymbolSpace.Type, missing, location, AvailabilityState.Unavailable) };
+        // Materialized transitive closure: a list definition and its element consumer
+        // both depend on the same authored absent item, without a fabricated type.
+        var edges = new[] { new DependencyEdge(owner, 0, DependencyUse.TypeAssessment),
+            new DependencyEdge(listOwner, 1, DependencyUse.TypeAssessment),
+            new DependencyEdge(owner, 1, DependencyUse.TypeAssessment),
+            new DependencyEdge(explicitOwner, 2, DependencyUse.TypeAssessment) };
+        var availability = new ComponentAvailability(entries, edges);
+        var envelope = new CompilationEnvelope(graph, availability);
+        _ = envelope.Components.Elements[inferred.Id]; _ = envelope.Availability.Entries[0].ReferenceLocation;
+        // Frozen interfaces retain their signatures. Later concrete seams carry the envelope explicitly.
+        _ = compiler.Compile(doc, new(), op);
+        _ = evaluator.Validate(graph, doc, new(), new Dictionary<SchemaName,XsdContentProgram>(), matcher, facets, null, null);
+        _ = explicitType.Type; _ = ordinaryDefault.Type; _ = list.ItemType; _ = deconstructedType;
+    }
+}
