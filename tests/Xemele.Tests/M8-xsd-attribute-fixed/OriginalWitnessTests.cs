@@ -11,7 +11,9 @@ public sealed class OriginalWitnessTests
         var root = new DirectoryInfo(AppContext.BaseDirectory);
         while (root is not null && !File.Exists(Path.Combine(root.FullName, "docs/tasks/M8-xsd-attribute-fixed.json"))) root = root.Parent;
         Assert.NotNull(root);
-        return File.ReadAllBytes(Path.Combine(root.FullName, "tests/fixtures/M8-xsd-attribute-fixed/test113911.xsd"));
+        byte[] bytes = File.ReadAllBytes(Path.Combine(root.FullName, "tests/fixtures/M8-xsd-attribute-fixed/test113911.xsd"));
+        Assert.Equal("ba5b1343bc8f015b7f5bcf951ffb64610a21fcd4741ffa3892408bb0d2a28bb6", Convert.ToHexStringLower(SHA256.HashData(bytes)));
+        return bytes;
     }
     [Fact]
     public void IndependentBclAcceptsUnchangedOriginal()
@@ -26,6 +28,9 @@ public sealed class OriginalWitnessTests
     public void PublicFacadeAcceptsUnchangedOriginal()
     {
         using var stream = new MemoryStream(Original());
-        Assert.NotNull(ProductSchema.Compile(stream)); Assert.True(stream.CanRead);
+        try { Assert.NotNull(ProductSchema.Compile(stream)); }
+        catch (Xemele.Validation.SchemaCompileException error)
+        { Assert.Fail(string.Join("; ", error.Diagnostics.Select(d => $"{d.Code}: {d.Message}"))); }
+        Assert.True(stream.CanRead);
     }
 }
