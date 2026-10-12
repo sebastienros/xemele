@@ -4,7 +4,7 @@
   "milestone": "M8",
   "title": "Compose XSD public API",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M8 coordinator01a12c6c-b333-71d3-877f-0d186618e21d / assigned isolated worker",
   "branch": "codex/m8-xsd-facade",
   "base_revision": "d27ef2ddf4e9b1c2ade0c62cef3b5c38311a05de",
@@ -42,7 +42,9 @@
       "status": "passed",
       "evidence": [
         "joined-correctness",
-        "bounded-owned-correction-review"
+        "bounded-owned-correction-review",
+        "final-seam-review",
+        "owned-allocation"
       ]
     },
     {
@@ -51,7 +53,9 @@
       "status": "passed",
       "evidence": [
         "joined-correctness",
-        "bounded-owned-correction-review"
+        "bounded-owned-correction-review",
+        "final-seam-review",
+        "owned-allocation"
       ]
     },
     {
@@ -60,17 +64,19 @@
       "status": "passed",
       "evidence": [
         "joined-correctness",
-        "bounded-owned-correction-review"
+        "bounded-owned-correction-review",
+        "final-seam-review",
+        "owned-allocation"
       ]
     }
   ],
   "implementation": [
     "src/Xemele/Validation/Xsd/XmlSchema.cs: public Compile/Validate, immutable composition and prepublication finalization",
-    "tests/Xemele.Tests/M8-xsd-facade/: 70 independent public witnesses",
+    "tests/Xemele.Tests/M8-xsd-facade/: 93 independent public/correction/verified-join witnesses",
     "docs/api/M8-xsd-facade.txt: seven approved public API rows",
     "samples/M8-xsd-facade/: normal and XML-only public consumer",
     "docs/reports/M8-xsd-facade/check.py: pinned scoped correctness/API/consumer checks",
-    "benchmarks/Xemele.Benchmarks/M8-xsd-facade/ and docs/reports/M8-xsd-facade/{prepare,preflight,measure}.py: 20owned+2borrowed routes and reused lifecycle source; not yet built/executed/frozen"
+    "benchmarks/Xemele.Benchmarks/M8-xsd-facade/ and docs/reports/M8-xsd-facade/{prepare,preflight,measure}.py: 20owned+2borrowed routes, disabled controls,453identities and actual granted measurement with clean lifecycle"
   ],
   "evidence": [
     {
@@ -108,23 +114,49 @@
       "result": "passed",
       "summary": "Verified repair main6eb332dd joined via existing context/shared facet overloads. Pinned .NET10.0.11 Release:1110affected including93facade/69repair+42safe resolver,0fail/errors/skipped/not-run;all9original failing public oracles pass unchanged. Public1417/facade7/frozen2/257/24/9 matched;normal+trueXML-only consumers/builds0warnings/errors;planning184/diff pass;counter tests excluded. No measurement.",
       "artifact": null
+    },
+    {
+      "id": "final-seam-review",
+      "kind": "review",
+      "revision": "a75d851db90277e41a631e1e79eb1b4326c7b6af",
+      "command": "Coordinator-reported bounded contract and model final seam source-only reviews",
+      "result": "passed",
+      "summary": "Both reviewers PASS: existing-context principal/loader join and all retained carriers prepublication;all types share op/facets/sealed executable registry through complete content join;original unused/quota/typedfixed public witness oracles unchanged. No reviewer execution.",
+      "artifact": null
+    },
+    {
+      "id": "allocation-preparation",
+      "kind": "check",
+      "revision": "1836e724f9bd4c1c5bf3cc1fb5538ed2f6040304",
+      "command": "python3 docs/reports/M8-xsd-facade/prepare.py; python3 docs/reports/M8-xsd-facade/measure.py --verify-only; python3 docs/reports/M8-xsd-facade/preflight.py",
+      "result": "passed",
+      "summary": "Pinned offline Release0warnings/errors;disabled20owned/2borrowed controls consumed64/1024calls after16warmups,8retainedschemas/16results;counter/heap fields disabled. 453identities matched. Initial sandboxps denied with no child; elevatedverify-only/controlpreflight passed child58226exit0/reaped/groupabsent/logclosed. Manifesta780f386c8adb85fdf2723c69fcbd617561b6a80677aa56f8c3e6e7793a1af85;supervisorc3d70cf60809809cd58faaaf5e17c8583ad8f6708ae8b5a33cf003e11e694774;120smax110work10cleanup;no measurement/BDN/timing.",
+      "artifact": "docs/reports/M8-xsd-facade/allocation-preflight.json"
+    },
+    {
+      "id": "owned-allocation",
+      "kind": "check",
+      "revision": "1836e724f9bd4c1c5bf3cc1fb5538ed2f6040304",
+      "command": "Root sole launcher: python3 docs/reports/M8-xsd-facade/measure.py --granted a780f386c8adb85fdf2723c69fcbd617561b6a80677aa56f8c3e6e7793a1af85 2026-10-12T05:39:30.759022+00:00 2026-10-12T05:40:30.759022+00:00",
+      "result": "passed",
+      "summary": "Grant ead683a0/release5b7b54e8 before rawinspection. Supervisor+children59459/59461exit0/reaped/groupsabsent/logsclosed;453identities before/after match. AppleM4Pro Arm64.NET10.0.11 counters-only:20ownedroutes64calls after16warmups(allpositive1144..1771949.75B/call);DOMvalid1676288/64,stringcompile109426832/64;2borrowed delimiter routes each0/1024bytes;not fullNOTATIONzero. Cold3434824/onefixture;positive1048/one1024bytearray;wholeheap889656to2841720,delta1952064while8schemas16results retained,illustrative not perobject/leakbound. No BDN/timing/x64/async/fullcorpus claim.",
+      "artifact": "docs/reports/M8-xsd-facade/allocations.md"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Verified compiler/context and complete typed content/facet joins pass all1110affected+42resolver/93public cases. Final bounded seam review then allocation preparation and fresh grant remain; task in_progress.",
+    "summary": "Implemented immutable public XSD Compile/Validate using only verified compiler/content/identity/datatype dependencies and both verified repairs. All source criteria pass;93public/1110affected+42resolver/API/normal+trueXML-only pass;bounded reviews and actual granted allocation evidence accepted. Clean final worker handback with zero owned jobs and explicit all-write relinquishment;root alone records integrated verification/cleanup.",
     "checks": [
       "Initial build failed four xUnit1051 cancellation-token analyzer checks; corrected.",
       "First 65 public run failed incorrect group wildcard union oracle; corrected to intersection.",
       "Expanded union oracle incorrectly rejected boolean lexical 1; corrected invalid witness to 2.",
       "Pinned committed c27273d4 scoped driver passed 1018affected +42safe resolver, public1417, facade7, frozen2/257/24/9; normal/XML-only consumers and planning182; no measurement.",
       "Correction1 pinned public93:84pass/9shared failures;all12owned fixes pass. Full affected1041:1032pass/9same failures;independent resolver/API/normal+XML-only/planning checks pass. No skip/exclusion or allocation preparation.",
-      "Joined a75d851d:1110affected+42resolver allpass,including93public and69repair;9original failureoracles unchanged/pass;API/frozen/consumers/planning184 pass;0warnings/errors;no counters/timing."
+      "Joined a75d851d:1110affected+42resolver allpass,including93public and69repair;9original failureoracles unchanged/pass;API/frozen/consumers/planning184 pass;0warnings/errors;no counters/timing.",
+      "Both final bounded source-only reviewers PASSa75d851d;no reviewer execution. Actual final probe build0warnings/errors;disabled20owned/2borrowed controls and453identity supervisorpreflight pass.",
+      "Grant ead683a0/durable RELEASE5b7b54e8:2children59459/59461exit0/reaped/groupsabsent/logsclosed;453beforeafteridentitymatch;actual20owned/2borrowed numerators recorded allocations.md;rawonlyignoredartifacts;no BDN/timing."
     ],
-    "remaining": [
-      "Bounded final seam review acceptance",
-      "Then final allocation build/control/freeze and fresh exact measurement grant/evidence."
-    ],
+    "remaining": [],
     "requests": []
   }
 }

@@ -1,6 +1,6 @@
 # Allocation infrastructure preparation
 
-Prepared source only; no probe build/control/freeze or measurement has run.
+Initial infrastructure was source-only. Final readiness below records actual build/control/freeze; measurement remains unrun.
 Coordinator accepted the bounded facade correction review at
 `cfba0a33e24a970075b4035f3b57defcdc7972af`; this is source review, not reviewer
 execution or acceptance of the still-failing shared joins. Final binary preparation
@@ -58,3 +58,27 @@ after an explicit fresh host grant, with architecture/runtime/environment and
 ownership limits. No rounding to infer zero; no throughput, x64, full corpus or
 cross-architecture release claim. Raw outputs remain transient ignored artifacts;
 only concise summaries/analysis are committed.
+
+## Final prepared readiness
+
+Accepted runtime revision: `a75d851db90277e41a631e1e79eb1b4326c7b6af`.
+Prepared source HEAD: `1836e724f9bd4c1c5bf3cc1fb5538ed2f6040304`.
+Both coordinator-reported independent final seam reviews passed; reviewers did
+not execute checks. Actual joined driver passed1110affected+42resolver, including
+all93public witnesses. Runtime/tests/API/sample/check inputs remain frozen.
+
+Pinned offline Release probe restore/build passed with zero warnings/errors.
+The actual disabled control consumed all20owned and2borrowed routes with no
+counter/heap readings enabled. Control fields are zero placeholders, not measured
+allocation evidence. The elevated supervisor preflight passed: child58226 exit0,
+reaped/groupabsent/logclosed,453identities matched before/after. Initial sandbox
+verify-only could not invoke ps and launched no probe; elevated verify-only and
+actual control preflight passed. Compact receipt: allocation-preflight.json.
+Zero owned active jobs remain.
+
+ManifestSHA: `a780f386c8adb85fdf2723c69fcbd617561b6a80677aa56f8c3e6e7793a1af85`.
+SupervisorSHA: `c3d70cf60809809cd58faaaf5e17c8583ad8f6708ae8b5a33cf003e11e694774`.
+The exact frozen commands, identities and120/110/10bounds are in preparation.json.
+Fresh durable grant must bind this manifest, latest-start and absolute-expiry.
+No counters, heap measurement, BDN or benchmark timing have run. Metadata/report
+readiness updates do not change the frozen source/binary/control/supervisor inputs.
