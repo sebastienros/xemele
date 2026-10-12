@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "id": "M8-xsd-import-visibility",
+  "milestone": "M8",
+  "title": "Enforce document-local XSD import authorization",
+  "kind": "feature",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "depends_on": [
+    "M8-xsd-optional-composition"
+  ],
+  "goals": [
+    "G14",
+    "G18"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/schemas.md"
+  ],
+  "owns": [
+    "src/Xemele/Validation/Xsd/Compilation/Compiler.cs",
+    "tests/Xemele.Tests/M8-xsd-import-visibility/",
+    "tests/fixtures/M8-xsd-import-visibility/",
+    "benchmarks/Xemele.Benchmarks/M8-xsd-import-visibility/",
+    "docs/api/M8-xsd-import-visibility.txt",
+    "samples/M8-xsd-import-visibility/",
+    "docs/reports/M8-xsd-import-visibility/"
+  ],
+  "api_or_output": "Correct document-local XSD 1.0 import permission without public or frozen API change",
+  "acceptance": [
+    {
+      "id": "M8-xsd-import-visibility-A1",
+      "description": "Reject unchanged original elemZ007 and schZ005 principal references whose import exists only in an included chameleon document. Bind original metadata/input hashes and preserve original earlier compile-valid failures separately. Namespace authorization is local to the declaration source document under Second Edition import rules and W3C4057/5779.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M8-xsd-import-visibility-A2",
+      "description": "Prove adding an import to the principal authorizes its reference, while an included document retains its own import authorization. Cover absent import, namespace-only import, available/missing optional location, chameleon adoption, nested includes, mutual imports and declaration-order permutations; preserve redefine resolution, source identity, resource denial/cycles, shared charging, quotas, cancellation and disposal.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M8-xsd-import-visibility-A3",
+      "description": "Pass relevant combined XSD compilation/content/facade/resource suites, normal and true XML-only consumers, all frozen/additive/emitted APIs and planning validation. Record bounded actual allocation evidence for changed compile/reference routes, cold initialization, owned results, warm operation and retained memory with positive controls. No later milestone, quota increase or oracle change.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "Planned ordered repair from completed b904 product corpus triage; no implementation or execution evidence yet.",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}
