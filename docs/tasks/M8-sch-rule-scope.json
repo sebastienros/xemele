@@ -30,14 +30,20 @@
     {
       "id": "M8-sch-rule-scope-A1",
       "description": "Reject rule extensions to abstract rules outside the containing pattern, including inactive and uninstantiated authored patterns, with SCH.SchemaRestriction at the extends source. Preserve valid same-pattern chains, abstract-pattern instantiation and external include/body provenance.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "corrected-checks",
+        "bounded-review"
+      ]
     },
     {
       "id": "M8-sch-rule-scope-A2",
       "description": "Reproduce upstream rule-abstract-02 and independent scope witnesses; pass corrected positive/negative/source-location and exact work/cancellation cases plus affected compiler/evaluator/report/API/consumer checks.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "corrected-checks",
+        "bounded-review"
+      ]
     },
     {
       "id": "M8-sch-rule-scope-A3",
@@ -46,12 +52,55 @@
       "evidence": []
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Validation/Schematron/Compilation/SchematronCompiler.cs:CheckAuthoredReferences carries effective containing pattern and charges indexed target-membership checks before template copying.",
+    "tests/Xemele.Tests/M8-sch-rule-scope/RuleScopeTests.cs:11 independent scope, inactive/unused, template, include, provenance, exact budget/cancel cases."
+  ],
+  "evidence": [
+    {
+      "id": "pre-fix-witnesses",
+      "kind": "check",
+      "revision": "46400ede632d169c719a7a18e338a86cc1c8a6b3",
+      "command": "Pinned Release build, then Xemele.Tests.dll -class Xemele.Tests.M8SchRuleScope.RuleScopeTests -result-xml /private/tmp/M8-rule-scope-before.xml",
+      "result": "failed",
+      "summary": "Actual10 cases:7 failures because cross-pattern extensions threw no exception,3 valid cases passed;0errors/skips/not-run. Initial precommit test-only Assertions property typo caused one compiler error, corrected to actual Findings before this witness revision.",
+      "artifact": "docs/reports/M8-sch-rule-scope/README.md"
+    },
+    {
+      "id": "corrected-checks",
+      "kind": "check",
+      "revision": "50f688e82711f5e3ba25dd2bbbbdbd51f8995280",
+      "command": "Pinned Release build and11 RuleScopeTests; python3 docs/reports/M8-sch-report/checks.py",
+      "result": "passed",
+      "summary": "Actual11 repair and546 preserved tests pass,0failures/errors/skips/not-run/buildwarnings/errors. Exact public1403/frozen3/9/154 match, normal and true XML-only consumers pass;180-task planning/diff pass. Owned checker added later reuses these exact commands; no later rerun claimed.",
+      "artifact": "docs/reports/M8-sch-rule-scope/README.md"
+    },
+    {
+      "id": "bounded-review",
+      "kind": "review",
+      "revision": "50f688e82711f5e3ba25dd2bbbbdbd51f8995280",
+      "command": "Independent read-only review_m8_xpath source/test review; no executions",
+      "result": "passed",
+      "summary": "Accepted charged effective-pattern membership validation before template copying; covers inactive/uninstantiated and included/external body references; preserves separate instantiations. CompilerSHA332b47d5264d60bf03c89eaec88b77bef936f8240df4c7d2fb6bb1be76a508f1;testsSHAe4986de48ba981ff8ee54c12ae0d740f1bf14b1406ce74b84c45e8a236f6133a.",
+      "artifact": "docs/reports/M8-sch-rule-scope/README.md"
+    },
+    {
+      "id": "disabled-preparation",
+      "kind": "check",
+      "revision": "96e2bc46456dd164f4fa10d0334a74fea9fa2c49",
+      "command": "Pinned probe restore/build; --control; python3 docs/reports/M8-sch-rule-scope/lease.py --prepare; --verify-only",
+      "result": "passed",
+      "summary": "Six consumed routes with all allocation/retained/RSS counters disabled;425 source/runtime/hostfxr/binary/control/supervisor identities match. Actual prebuilt child cleanup preflight exited0/reaped/groupabsent/logclosed. ManifestSHA986d4b5ae1ea0a3c1c225713324a8ad58641e1758b33daba63b59a03c6777131; no measurement yet.",
+      "artifact": "docs/reports/M8-sch-rule-scope/preparation.json"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Claimed narrow owning repair after pinned upstream rule-abstract-02 and independent ISO2016 section5.4.12 review confirmed cross-pattern compiler acceptance defect.",
-    "checks": [],
+    "summary": "Reviewed scope repair;557 actual focused/preserved checks pass, six-route disabled preparation stable. Allocation lease and final integration pending.",
+    "checks": [
+      "Baseline10:7failed/3passed; corrected11+preserved546 passed/public1403/frozen3/9/154/normal and trueXML-only/180planning.",
+      "Independent source review accepted;425-identity disabled preparation and cleanup preflight passed."
+    ],
     "remaining": [
       "Implement, verify and integrate repair before corpus final verification."
     ],
