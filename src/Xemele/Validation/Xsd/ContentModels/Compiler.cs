@@ -18,6 +18,15 @@ internal sealed class XsdContentCompiler : IXsdContentCompiler
         ArgumentNullException.ThrowIfNull(operation); ArgumentNullException.ThrowIfNull(facets);
         return new ContentCompilation(schema, operation, facets).Compile(type);
     }
+
+    // The facade consumes every program. Share one invocation-local traversal,
+    // retaining both existing overloads' whole-graph/requested-type contract.
+    internal Dictionary<SchemaName, XsdContentProgram> CompileAll(XsdCompiledSchema schema,
+        ISchemaOperation operation, IXmlFacetEvaluator facets)
+    {
+        ArgumentNullException.ThrowIfNull(schema); ArgumentNullException.ThrowIfNull(operation); ArgumentNullException.ThrowIfNull(facets);
+        return new ContentCompilation(schema, operation, facets).CompileAll();
+    }
 }
 
 internal sealed partial class ContentCompilation
@@ -52,6 +61,22 @@ internal sealed partial class ContentCompilation
             if (ReferenceEquals(type, requested)) result = program;
         }
         return result!;
+    }
+    internal Dictionary<SchemaName, XsdContentProgram> CompileAll()
+    {
+        ContentWork.Retain(op, default);
+        var programs = new Dictionary<SchemaName, XsdContentProgram>();
+        foreach (var type in schema.Types)
+        {
+            ContentWork.Tick(op, type.Location);
+            if (type.AnyAttribute is { } wildcard) ContentNamespaces.Validate(wildcard, op, type.Location);
+            var program = Build(type);
+            CheckDerivation(type);
+            ContentWork.Retain(op, type.Location);
+            programs.Add(type.Name, program);
+        }
+        ContentWork.Tick(op, default, 0);
+        return programs;
     }
     private sealed class Frame(XsdParticle particle, ContentNode[] children)
     {

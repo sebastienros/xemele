@@ -43,6 +43,18 @@ public sealed class OriginalTests
         }
     }
     [Theory]
+    [InlineData(false)] [InlineData(true)]
+    public void DerivedControlUsingOriginalAmbiguousGroupRejectsActualContent(bool anonymous)
+    {
+        string source = File.ReadAllText(Path.Combine(Root(), "msData/additional/addB194.xsd"));
+        string reference = "<xs:group ref='THDMVV'/>";
+        string content = anonymous ? $"<xs:element name='GroupRoot'><xs:complexType>{reference}</xs:complexType></xs:element>" : $"<xs:complexType name='GroupUser'>{reference}</xs:complexType>";
+        source = source.Replace("</xs:schema>", content + "</xs:schema>", StringComparison.Ordinal);
+        var error = Assert.Throws<SchemaCompileException>(() => XmlSchema.Compile(source));
+        Assert.Contains(error.Diagnostics, d => d.Code == "XSD.SchemaRestriction" && d.Message.Contains("unique particle attribution", StringComparison.Ordinal));
+        Assert.DoesNotContain(error.Diagnostics, d => d.Code == "SCHEMA.Limit");
+    }
+    [Theory]
     [InlineData("msData/element/elemZ027e.xsd")]
     [InlineData("msData/element/elemZ027f.xsd")]
     [InlineData("msData/particles/particlesZ008.xsd")]
