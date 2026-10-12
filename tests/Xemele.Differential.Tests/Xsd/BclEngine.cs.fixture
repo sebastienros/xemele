@@ -14,7 +14,7 @@ internal static class BclEngine
     }
     internal static string ExceptionOutcome(Exception e, bool schema)
     {
-        if (e is XmlException && (e.Message.Contains("MaxCharacters", StringComparison.Ordinal) || e.Message.Contains("DTD is prohibited", StringComparison.Ordinal))) return "reference-policy-refusal";
+        if (e is XmlException && (e.Message.Contains("MaxCharacters", StringComparison.Ordinal) || e.Message.Contains("DTD is prohibited", StringComparison.Ordinal) || e.Message.Contains("Version number '1.1' is invalid", StringComparison.Ordinal))) return "reference-policy-refusal";
         return e is XmlSchemaException ? (schema ? "schema-invalid" : "instance-invalid") : e is XmlException ? (schema ? "schema-invalid" : "instance-syntax-error") : "harness-exception";
     }
     internal static bool ReadAssessment(XmlReader reader)
@@ -51,7 +51,7 @@ internal static class BclEngine
                 {
                     string path = Runner.PathFor(Runner.UriFor(Runner.Documents(instance).Single()));
                     var originals = row.ValueKind == JsonValueKind.Null ? Array.Empty<string>() : Runner.Documents(row);
-                    var inputs = Runner.InstanceInputs(instance, originals); var validationSchemas = schemas;
+                    var preparation = new List<object>(); var inputs = Runner.TryInstanceInputs(instance, originals, preparation); var validationSchemas = schemas;
                     if (inputs.Length != originals.Length)
                     {
                         validationSchemas = new XmlSchemaSet { XmlResolver = resolver };
@@ -67,7 +67,7 @@ internal static class BclEngine
                     settings.ValidationEventHandler += (_, e) => { if (e.Severity == XmlSeverityType.Error) errors.Add(e.Message); else warnings.Add(e.Message); };
                     using var stream = File.OpenRead(path); using var reader = XmlReader.Create(stream, settings, Runner.UriFor(Runner.Documents(instance).Single()).AbsoluteUri);
                     bool assessed = ReadAssessment(reader);
-                    actual = new(errors.Count > 0 ? "instance-invalid" : !assessed ? "instance-unassessed" : "instance-valid", string.Join("; ", errors.Concat(warnings.Select(w => "warning: " + w))), [], [new { kind = "explicit-instance-schema-inputs", inputs }, .. resolver.Requests]);
+                    actual = new(errors.Count > 0 ? "instance-invalid" : !assessed ? "instance-unassessed" : "instance-valid", string.Join("; ", errors.Concat(warnings.Select(w => "warning: " + w))), [], [new { kind = "explicit-instance-schema-inputs", inputs }, .. preparation, .. resolver.Requests]);
                 }
                 catch (Exception e) { actual = new(ExceptionOutcome(e, schema: false), e.GetType().Name + ": " + e.Message, [], []); }
             }

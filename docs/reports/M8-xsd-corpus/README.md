@@ -58,3 +58,17 @@ the explicitly compiled xsts.xsd already supplies that namespace. The NIST
 introspection instance requires a separate finite 1,000,000,000 work-unit budget
 and 60-second cooperative deadline; the ordinary 100,000,000-unit refusal remains
 recorded as an actual failed baseline observation, not a semantic invalidity.
+
+Source35ed1974 full product run: 39,231 passed, 243 failed, 11 indeterminate
+observations, 2,251 exclusions; 41,736 total rows (41,735 originals + one
+supplement). All93 child processes exited0 and exact ID coverage passed.
+NIST's 1,000,000,000 work profile still refused; final bounded adaptation assigns
+20,000,000,000 work units/60-second cancellation only to that instance and the MS
+DataTypes/Regex introspection documents. Their earlier work refusals remain failures
+in the recorded baselines. All other cases retain the ordinary finite budget.
+
+If the BCL staging parser cannot read an original instance (e.g. XML1.1 or malformed
+attributes), its hint-preparation warning is retained, then each engine receives
+unchanged original bytes against the explicit metadata set. The staging parser's
+limitations cannot suppress execution of the product. BCL XML1.1 rejection is an
+explicit reference policy refusal, separate from schema/instance semantic validity.

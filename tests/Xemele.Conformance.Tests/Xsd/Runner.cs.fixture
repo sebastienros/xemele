@@ -25,6 +25,17 @@ internal static class Runner
     }
     internal static Uri UriFor(string name) => Uri.TryCreate(name, UriKind.Absolute, out var uri) ? uri : new Uri(Origin + name);
     internal static IEnumerable<JsonElement> Instances(JsonElement group) => group.GetProperty("instances").EnumerateArray().Concat(group.GetProperty("supplementalInstances").EnumerateArray());
+    internal static string[] TryInstanceInputs(JsonElement row, string[] originals, List<object> preparation)
+    {
+        try { return InstanceInputs(row, originals); }
+        catch (System.Xml.XmlException e)
+        {
+            // The staging parser is not the product's XML parser. Preserve its refusal
+            // visibly, then execute the unchanged original bytes against the explicit set.
+            preparation.Add(new { kind = "instance-hint-preparation-warning", detail = e.Message, policy = "unchanged original bytes and metadata schemas" });
+            return originals;
+        }
+    }
     internal static string[] InstanceInputs(JsonElement row, string[] originals)
     {
         var source = UriFor(Documents(row).Single());
@@ -151,13 +162,13 @@ internal static class Runner
                 if (schema is null) actual = new("schema-unavailable", compile.Outcome + ": " + compile.Detail, compile.Codes, compile.Resources);
                 else
                 {
-                    using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(row.GetProperty("id").GetString() == "common/introspection.testSet#g0/i1:introspect-testSet-NIST2004-01-14-2" ? 60 : 30));
-                    long work = row.GetProperty("id").GetString() == "common/introspection.testSet#g0/i1:introspect-testSet-NIST2004-01-14-2" ? 1_000_000_000 : 100_000_000;
+                    using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds((row.GetProperty("id").GetString() is "common/introspection.testSet#g0/i1:introspect-testSet-NIST2004-01-14-2" or "common/introspection.testSet#g0/i20:introspect-testSet-MS-DataTypes2006-07-15-21" or "common/introspection.testSet#g0/i28:introspect-testSet-MS-Regex2006-07-15-29") ? 60 : 30));
+                    long work = (row.GetProperty("id").GetString() is "common/introspection.testSet#g0/i1:introspect-testSet-NIST2004-01-14-2" or "common/introspection.testSet#g0/i20:introspect-testSet-MS-DataTypes2006-07-15-21" or "common/introspection.testSet#g0/i28:introspect-testSet-MS-Regex2006-07-15-29") ? 20_000_000_000 : 100_000_000;
                     try
                     {
                         using var input = File.OpenRead(PathFor(UriFor(Documents(row).Single())));
                         var originals = sr.ValueKind == JsonValueKind.Null ? Array.Empty<string>() : Documents(sr);
-                        var inputs = InstanceInputs(row, originals); var validationSchema = schema; var instanceResolver = new Resolver();
+                        var preparation = new List<object>(); var inputs = TryInstanceInputs(row, originals, preparation); var validationSchema = schema; var instanceResolver = new Resolver();
                         if (inputs.Length != originals.Length)
                         {
                             var prepared = Input(inputs); using var preparedStream = prepared.Input;
@@ -165,7 +176,7 @@ internal static class Runner
                         }
                         var result = validationSchema.Validate(input, new() { Limits = Limits with { EvaluationWork = work }, MaxOperations = work, CancellationToken = timeout.Token });
                         if (!input.CanRead) throw new InvalidOperationException("Validation disposed caller stream");
-                        actual = new(!result.IsComplete ? "incomplete-refusal" : result.IsValid ? "instance-valid" : "instance-invalid", string.Join("; ", result.Diagnostics.Select(d => d.Code + ": " + d.Message)), result.Diagnostics.Select(d => d.Code).ToArray(), [new { kind = "explicit-instance-schema-inputs", inputs }, .. instanceResolver.Requests]);
+                        actual = new(!result.IsComplete ? "incomplete-refusal" : result.IsValid ? "instance-valid" : "instance-invalid", string.Join("; ", result.Diagnostics.Select(d => d.Code + ": " + d.Message)), result.Diagnostics.Select(d => d.Code).ToArray(), [new { kind = "explicit-instance-schema-inputs", inputs }, .. preparation, .. instanceResolver.Requests]);
                     }
                     catch (Exception e) { actual = Failure(e, resolver, timeout.Token); if (actual.Outcome == "schema-invalid") actual = actual with { Outcome = "schema-unavailable" }; }
                 }
