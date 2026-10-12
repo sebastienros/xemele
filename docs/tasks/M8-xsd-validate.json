@@ -79,17 +79,64 @@
       "result": "passed",
       "summary": "Independent review accepted consolidated corrections8-10: metered trim/separator scans, scalar token accumulation, borrowed first fragment, charged owned copies/materialization, independently derived6/4097/12work boundaries, cancellation and component refusal. Text.cs/focused accounting tests unchanged at8c4cabcd. This is source-review evidence only; canonical join and remaining source acceptance/allocation pending.",
       "artifact": "docs/reports/M8-xsd-validate/review-cycle-1.md"
+    },
+    {
+      "id": "root-derivation-baseline",
+      "kind": "check",
+      "revision": "26732aefc3d03c51c0d15d596ba9756518fe5e8c",
+      "command": "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet --fx-version 10.0.11 tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -class Xemele.Tests.M8XsdValidate.AssessmentRouteTests -parallelMode none -noLogo -noColor -result-xml /private/tmp/M8-core-direct-before.xml",
+      "result": "failed",
+      "summary": "Root pinned Release build0warnings/errors; actual class-selected22tests20passed/2failed list/union restriction-block witnesses,0errors/skips/not-run. Worker confirmed transient XML; earlier zero-test bare-method filter discarded, not passing evidence.",
+      "artifact": "docs/reports/M8-xsd-validate/root-derivation-fix.md"
+    },
+    {
+      "id": "root-derivation-fixed",
+      "kind": "check",
+      "revision": "33bead34c657c7c92ec01732062a80b56a31773c",
+      "command": "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet --fx-version 10.0.11 tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -class Xemele.Tests.M8XsdValidate.AssessmentRouteTests -parallelMode none -noLogo -noColor -result-xml /private/tmp/M8-core-direct-after.xml",
+      "result": "passed",
+      "summary": "Root pinned Release build0warnings/errors; actual22AssessmentRouteTests allpassed,0errors/skips/not-run,Arm64.NET10.0.11. Worker confirmed exact transient XML and supplied source hashes after explicit path-write return. Broader checks/canonical closure remain pending.",
+      "artifact": "docs/reports/M8-xsd-validate/root-derivation-fix.md"
+    },
+    {
+      "id": "root-derivation-source-review",
+      "kind": "review",
+      "revision": "33bead34c657c7c92ec01732062a80b56a31773c",
+      "command": "Coordinator-relayed independent contract source review of residual complex/simple-to-anyType restriction closure; no reviewer execution",
+      "result": "passed",
+      "summary": "Same-blocker closure accepted source-only at33bead34; Values.cs SHA4260f592334420faa28dc9232d04b9f709e3726161adc873b3c1a357dbee5397 and testSHAf441e4e09e381146e9c17d5cf3e46b506dc441ab4fbff7df0c15e19f01703d74 independently confirmed.",
+      "artifact": "docs/reports/M8-xsd-validate/root-derivation-fix.md"
+    },
+    {
+      "id": "post-root-full-correctness",
+      "kind": "check",
+      "revision": "33bead34c657c7c92ec01732062a80b56a31773c",
+      "command": "python3 docs/reports/M8-xsd-validate/check.py",
+      "result": "failed",
+      "summary": "851selected(156owned+695affected),849passed/2failed canonical-default owner-join witnesses only;0errors/skips/not-run,all22assessmentroutespassed. Build0warnings/errors. Scriptstoppedattwofailures,noexclusions/skips.",
+      "artifact": "docs/reports/M8-xsd-validate/root-derivation-fix.md"
+    },
+    {
+      "id": "post-root-composition",
+      "kind": "check",
+      "revision": "33bead34c657c7c92ec01732062a80b56a31773c",
+      "command": "Exact safe resolver argv from docs/reports/M8-resource-kind/test-commands.json; python3 docs/reports/M5-validation-model/check_api.py; pinned M8-model ApiCheck compare evaluation.golden.txt; pinned offline restore/build and --fx-version10.0.11 normal/XML-only Evaluation.Consumer; python3 tools/planning/tasks.py validate; git diff --check",
+      "result": "passed",
+      "summary": "Independent42safe resolverpassed/0fail/errors/skips/not-run;1403public/2frozenmatched;normal+trueXML-onlyconsumerspassed;Release0warnings/errors;planning180/diffpass at33bead34. Noallocation/timingtests,unverifiedhelper orfrozenAPImodification.",
+      "artifact": "docs/reports/M8-xsd-validate/root-derivation-fix.md"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Second consolidated source correction batch implemented while PARK: declaration-free global xsi:type assessment, declaration-gated effective nil, complex-to-simple union-member relation and extension/final handling. These changes and new exact witnesses are unbuilt/unrun under PARK. Canonical helper closure pending.",
+    "summary": "Root direct residual derivation fix confirmed at33bead34; full851selected849pass/2canonicalhelper failures only; all22assessmentroutespass. Independent42safe resolver/API/normal/XML-onlyconsumers passed. Allownwritesreturned,canonicalhelperwait/nohostPARK/nomeasurementgrant.",
     "checks": [
-      "8c4cabcd828tests827pass/1known canonical-default regression failure;0errors/skips/not-run. API1403public/2frozen and normal/XML-only consumers separately passed; planning180/diffpassed. No corrected-source measurements."
+      "33bead34:851selected(156owned+695affected),849passed/2canonicaldefaultfailures,0errors/skips/not-run;root22assessmentroutesallpass.",
+      "Independent42safe resolver/1403public+2frozen API/normal+XML-onlyconsumer/180planning/diffpassed;Release0warnings/errors.",
+      "Rootbaseline26732aef20pass2fail andfixed33bead3422pass source-reviewclosureaccepted; actualbefore/afterXMLandsourcehashesconfirmed. No corrected-source allocations yet."
     ],
     "remaining": [
-      "After explicit PARK release, compile and run all second-cycle regressions with prior cases preserved, including the two unskipped canonical-default owner-join witnesses.",
-      "Merge only exact VERIFIED canonical-constraint helper integration from coordinator; add verified prerequisite, implement canonical constraint join, then full corrected-source review/checks and separately approved allocation evidence."
+      "Merge only coordinator-supplied exact VERIFIED M8-datatype-constraint-lexical integration, add verified prerequisite and implement canonical constraint join; retain both canonical witness tests and run corrected full checks.",
+      "Corrected-source review acceptance and fresh prepared/approved allocation evidence; all criteria pending."
     ],
     "requests": [
       "Canonical dynamic default join: existing frozen IXmlDatatypeLibrary and private family value payloads expose no canonical lexical formatting. Please assign an ordered datatype-owner repair providing an internal charged canonical lexical+namespace-context helper for XmlDatatypeValue atomic/list/union values (or an equivalent prepared-constraint validation API) usable from Evaluation without changing frozen interfaces. Required witness: declared xs:int default 01; selected Small restriction xs:int pattern [0-9]; empty xsi:type Small must assess canonical 1, not authored 01. Formatter must preserve numeric arbitrary precision, boolean/float/temporal/duration/binary canonical forms and QName/NOTATION value-space context; caller exception provenance/shared limits. Evaluation can fix declaration-typed fixed comparison independently and retain the dynamic-default regression pending this join."
