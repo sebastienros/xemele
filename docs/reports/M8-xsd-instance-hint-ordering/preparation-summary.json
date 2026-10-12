@@ -137,5 +137,42 @@
     "supersededReason": "Added frozen source revision to disabled preflight environment; no code/binary change or measurement.",
     "sandboxVerifyOnly": "ps denied before any workload launch; elevated verify-only and disabled preflight passed."
   },
-  "actualMeasurements": "none; root launch pending; no isolation/PARK/exclusive-use gate"
+  "actualMeasurements": "none; root launch pending; no isolation/PARK/exclusive-use gate",
+  "lifecycleCorrection": {
+    "reviewIssue": "Independent allocation-source P2: preflight/measurement success ignored reason while cleanup overwrote exit; timeout/interrupt then exit0 could count as success. Source review finding, no pre-correction control execution claimed.",
+    "priorManifestSha256": "bc0afa40a9dd4b1f60cd75a0cdeb95911f66aa3740602157c4b2a6fdb237b75e",
+    "priorSupervisorSha256": "26076be06d48674072c651be8d928e76d4bce30661df084f564969346101a4c0",
+    "correctedSourceRevision": "417b46aec229ba40142a4d129c16d3eb3426e3bc",
+    "correctedManifestSha256": "ed1a79edf6755f7067a7b081cb9d8633940ada223c676c23ac4d2d56db7ab6d5",
+    "correctedSupervisorSha256": "71309a3b94440b34213f8f6ffbf0d0e03792ce6c5e774ec7ef58fd1118492d28",
+    "changedIdentities": [
+      "docs/reports/M8-xsd-instance-hint-ordering/measure.py"
+    ],
+    "identityCount": 466,
+    "binaryRefresh": "none; all465remaining identities match; runtime/probe source and binaries unchanged; no rebuild/correctness/disabled13route repeat",
+    "controlCommand": "python3 docs/reports/M8-xsd-instance-hint-ordering/measure.py --lifecycle-control",
+    "actualControl": {
+      "status": 1,
+      "cleanupPassed": true,
+      "sequence": [
+        {
+          "command": 0,
+          "pid": 52932,
+          "exit": 0,
+          "reason": "TimeoutExpired",
+          "directChildReaped": true,
+          "ownedGroupAbsent": true,
+          "logClosed": true,
+          "groupMembers": []
+        }
+      ],
+      "ready": true,
+      "subsequentLaunched": false,
+      "countersEnabled": false,
+      "maximumSeconds": 6,
+      "workSeconds": 1,
+      "cleanupSeconds": 5
+    },
+    "result": "passed; workloadstatus1/TimeoutExpired/SIGTERMexit0; childreaped/groupabsent/logclosed; no subsequent command launched; no counters"
+  }
 }

@@ -89,8 +89,39 @@ def supervise_command(argv, index, environment, work_deadline, hard_deadline):
  supervise(argv, environment, work_deadline, hard_deadline, record, f'command-{index}.log')
  return record
 
+def completed(record):
+ return record['reason'] == 'completed' and record['exit'] == 0 and record['directChildReaped'] and record['ownedGroupAbsent'] and record['logClosed']
+
+def supervise_sequence(argvs, environment, work_deadline, hard_deadline, sequence, latest_start=None):
+ for index, argv in enumerate(argvs):
+  if latest_start is not None and datetime.now(timezone.utc) > latest_start:
+   raise TimeoutError('Latest start elapsed; no child started.')
+  record = supervise_command(argv, index, environment, work_deadline, hard_deadline)
+  sequence.append(record)
+  if not completed(record): return False
+ return True
+
 if sys.argv[1:] == ['--commands']:
  print(json.dumps(commands, indent=2)); sys.exit(0)
+if sys.argv[1:] == ['--lifecycle-control']:
+ # Actual timeout -> successful SIGTERM exit. Cleanup succeeds, but work did
+ # not finish before its deadline, and the shared sequence must stop here.
+ out = root / 'artifacts/M8-xsd-instance-hint-ordering/lifecycle-control-p2'
+ out.mkdir(parents=True, exist_ok=False)
+ ARTIFACTS = out
+ ready = out / 'child-ready'; sentinel = out / 'subsequent-launched'
+ child_source = 'import signal,sys; from pathlib import Path; signal.signal(signal.SIGTERM, lambda *_: sys.exit(0)); Path(sys.argv[1]).write_text("ready"); signal.pause()'
+ next_source = 'import sys; from pathlib import Path; Path(sys.argv[1]).write_text("unexpected")'
+ sequence = []; start = time.monotonic()
+ status = 0 if supervise_sequence([[sys.executable, '-c', child_source, str(ready)], [sys.executable, '-c', next_source, str(sentinel)]], os.environ.copy(), start + 1, start + 6, sequence) else 1
+ clean = all(row['directChildReaped'] and row['ownedGroupAbsent'] and row['logClosed'] for row in sequence)
+ result = {'status': status, 'cleanupPassed': clean, 'sequence': sequence, 'ready': ready.exists(), 'subsequentLaunched': sentinel.exists(), 'countersEnabled': False, 'maximumSeconds': 6, 'workSeconds': 1, 'cleanupSeconds': 5}
+ (out / 'lifecycle.json').write_text(json.dumps(result, indent=2) + '\n')
+ assert status == 1 and clean and ready.exists() and not sentinel.exists() and len(sequence) == 1, result
+ assert sequence[0]['reason'] == 'TimeoutExpired' and sequence[0]['exit'] == 0, result
+ assert time.monotonic() - start < 6, 'Lifecycle control exceeded bound.'
+ print(f'LIFECYCLE CONTROL PASS: workload status1, timeout reason preserved, SIGTERM exit0, cleanup passed, no subsequent launch; {sequence}; counters disabled.')
+ sys.exit(0)
 if sys.argv[1:] == ['--preflight']:
  manifest = json.loads(manifest_path.read_text())
  assert not identities(manifest), 'Frozen identity mismatch before preflight.'
@@ -104,9 +135,9 @@ if sys.argv[1:] == ['--preflight']:
  record = supervise_command(argv, 0, env, start + 20, start + 30)
  assert not identities(manifest), 'Frozen identity mismatch after preflight.'
  (out / 'lifecycle.json').write_text(json.dumps(record, indent=2))
- clean = record['exit'] == 0 and record['directChildReaped'] and record['ownedGroupAbsent'] and record['logClosed']
+ success = completed(record)
  print(f"PREFLIGHT: {record}; frozen identities {len(manifest['identities'])} matched; counters and benchmark timing disabled.")
- sys.exit(0 if clean else 1)
+ sys.exit(0 if success else 1)
 if sys.argv[1:] == ['--verify-only']:
  manifest = json.loads(manifest_path.read_text()); mismatches = identities(manifest)
  assert not mismatches, mismatches
@@ -141,11 +172,7 @@ try:
  env['XEMELE_HINT_REVISION'] = manifest['sourceRevision']
  env['DOTNET_TieredCompilation'] = '0'; env['DOTNET_gcServer'] = '0'; env['DOTNET_GCConcurrent'] = '0'
  env['NuGetAudit'] = 'false'; env['RuntimeFrameworkVersion'] = '10.0.11'; env['UseSharedCompilation'] = 'false'
- for index, argv in enumerate(commands):
-  if datetime.now(timezone.utc) > latest_start: raise TimeoutError('Latest start elapsed; no child started.')
-  record = supervise_command(argv, index, env, work_deadline, hard_deadline); lifecycle['sequence'].append(record)
-  if record['exit'] != 0 or not record['directChildReaped'] or not record['ownedGroupAbsent'] or not record['logClosed']: break
- else: lifecycle['status'] = 0
+ if supervise_sequence(commands, env, work_deadline, hard_deadline, lifecycle['sequence'], latest_start): lifecycle['status'] = 0
 except BaseException as error:
  lifecycle['error'] = type(error).__name__
 finally:
