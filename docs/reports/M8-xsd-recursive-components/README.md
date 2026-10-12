@@ -55,3 +55,40 @@ separate authorized execution. Compilation is an owned-result boundary: pending
 queue storage, component registration, immutable programs and final graph
 snapshots are expected positive allocations; this repair introduces no borrowed
 scan primitive or allocation-free compile claim.
+
+## Reviewed allocation preparation
+
+Runtime source review passed9e376cd98; independent allocation source review
+passed clean822e5a756. Accepted offline prepare.py build/control and elevated
+measure.py --verify-only/--preflight passed. SDK10.0.400/runtime10.0.11 on
+macOS15.8.1 Arm64: zero warnings/errors;13routes,1085calls,26095consumed;
+all allocation/heap fields zero in disabled mode,32retainedobjects.455frozen
+identities match. Disabled preflight child52566 exited0, was reaped, its group
+was absent and its log closed; before/after identities match. See
+allocation-preflight.json and preparation.json for exact source/probe/runtime/
+supervisor hashes. No actual counters have been executed by this worker.
+Root alone launches the accepted payload without an isolation/PARK/ACK/lease
+or exclusive-use gate.
+
+Supervisor-only amendment e458a2d4b: workload success now requires
+reason=completed in addition to exit0 and clean cleanup. The finite regression
+child52913 timed out, handled SIGTERM by exiting0, and cleaned fully; it remained
+a failed workload and the next child never launched. Normal child52915 passed.
+The refreshed457identity manifest is fe4c11dbee5934ae51cfbbe3b0c4a9dd5cc90985d289372231c6409605fbcad2,
+supervisor b49f0beefb943c0e531f88235d12d269f671584da0563834a3d41159b1e100e5.
+Actual verify-only/ps permission passed. The prior455identity control/preflight
+is preserved; runtime/probe/control were neither rebuilt nor rerun. No counters
+were launched. See lifecycle-check.json and allocation-preflight.json refresh.
+
+## Final actual allocation evidence
+
+Root nonisolated allocation run passed after supervisor amendment acceptance.
+Durable cleanupcc2f59ce6 preceded raw inspection; control53183/measure53185
+completedexit0 and cleaned fully,457identities matched. All832owned samples
+positive, aggregates equal distributions; semantic consumption26095 identical.
+Cold3452776B/positive1048B;32retainedobjects in4categories. Negative whole-heap
+diagnostic/result deltas are GC/lifetime noise, never negative/zero ownership.
+See allocations.md and measurement-summary.json for summaries and limitations.
+No source/probe/binary change, build, runtime test or measurement repeated during
+this final metadata update. All branch criteria pass; state implemented awaits
+coordinator integration verification.

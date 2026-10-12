@@ -89,6 +89,18 @@ def supervise_command(argv, index, environment, work_deadline, hard_deadline):
  supervise(argv, environment, work_deadline, hard_deadline, record, f'command-{index}.log')
  return record
 
+def workload_succeeded(record):
+ return (record['reason'] == 'completed' and record['exit'] == 0 and
+         record['directChildReaped'] and record['ownedGroupAbsent'] and record['logClosed'])
+
+def run_commands(argvs, environment, work_deadline, hard_deadline):
+ sequence = []
+ for index, argv in enumerate(argvs):
+  record = supervise_command(argv, index, environment, work_deadline, hard_deadline)
+  sequence.append(record)
+  if not workload_succeeded(record): break
+ return sequence
+
 if sys.argv[1:] == ['--commands']:
  print(json.dumps(commands, indent=2)); sys.exit(0)
 if sys.argv[1:] == ['--preflight']:
@@ -103,7 +115,7 @@ if sys.argv[1:] == ['--preflight']:
  record = supervise_command(argv, 0, env, start + 30, start + 40)
  assert not identities(manifest), 'Frozen identity mismatch after preflight.'
  (out / 'lifecycle.json').write_text(json.dumps(record, indent=2))
- clean = record['exit'] == 0 and record['directChildReaped'] and record['ownedGroupAbsent'] and record['logClosed']
+ clean = workload_succeeded(record)
  print(f"PREFLIGHT: {record}; frozen identities {len(manifest['identities'])} matched; counters and benchmark timing disabled.")
  sys.exit(0 if clean else 1)
 if sys.argv[1:] == ['--verify-only']:
@@ -133,10 +145,8 @@ try:
  env['XEMELE_RECURSIVE_REVISION'] = manifest['sourceRevision']
  env['DOTNET_TieredCompilation'] = '0'; env['DOTNET_gcServer'] = '0'; env['DOTNET_GCConcurrent'] = '0'
  env['NuGetAudit'] = 'false'; env['RuntimeFrameworkVersion'] = '10.0.11'; env['UseSharedCompilation'] = 'false'
- for index, argv in enumerate(commands):
-  record = supervise_command(argv, index, env, work_deadline, hard_deadline); lifecycle['sequence'].append(record)
-  if record['exit'] != 0 or not record['directChildReaped'] or not record['ownedGroupAbsent'] or not record['logClosed']: break
- else: lifecycle['status'] = 0
+ lifecycle['sequence'] = run_commands(commands, env, work_deadline, hard_deadline)
+ if len(lifecycle['sequence']) == len(commands) and all(workload_succeeded(row) for row in lifecycle['sequence']): lifecycle['status'] = 0
 except BaseException as error:
  lifecycle['error'] = type(error).__name__
 finally:
