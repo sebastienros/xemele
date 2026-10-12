@@ -58,6 +58,13 @@ public sealed class ReviewRegressionTests
         Assert.True(p.Run("<r/>").IsValid);Assert.False(p.Run($"<r xmlns:xsi='{Xsi}' xsi:type='Empty'/>").IsValid);
     }
     [Theory]
+    [InlineData("default","<c/>",true)] [InlineData("default","",false)] [InlineData("fixed","<c/>",false)]
+    public void UnusedDefaultDoesNotRejectElementOnlyContent(string constraint,string content,bool expected)
+    {
+        var p=EvaluatorTests.Prepare($"<xs:complexType name='E'><xs:sequence><xs:element name='c'/></xs:sequence></xs:complexType><xs:element name='r' {constraint}='abc'/>");
+        Assert.Equal(expected,p.Run($"<r xmlns:xsi='{Xsi}' xsi:type='E'>{content}</r>").IsValid);
+    }
+    [Theory]
     [InlineData("strict",false)] [InlineData("lax",false)] [InlineData("skip",true)]
     public void TwoAssessedWildcardIdsAreInvalid(string policy,bool expected)
     { Assert.Equal(expected,WildcardId(policy,false).Run("<r a='one' b='two'/>").IsValid); }

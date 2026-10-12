@@ -45,7 +45,7 @@ internal sealed partial class XsdValidationRun : ISchemaOperation
         internal readonly XsdTypeDefinition? Type = type;
         internal readonly SchemaNamespaceContext Context = context;
         internal readonly bool Skip = skip, Nil = nil;
-        internal bool Valid = valid, HasChild;
+        internal bool Valid = valid, HasChild, HasCharacters;
         internal readonly IXsdContentCursor? Cursor = cursor;
         internal XmlNode Next = node.FirstChild;
         internal readonly XsdTextBuffer Text = new();
@@ -112,6 +112,7 @@ internal sealed partial class XsdValidationRun : ISchemaOperation
                     int scalars = Text(child.Value, false);
                     if (child.Kind is XmlNodeKind.Text or XmlNodeKind.CData)
                     {
+                        frame.HasCharacters |= child.Value.Length != 0;
                         if (!frame.Skip && frame.Type is { } t && (frame.Nil && child.Value.Length != 0 ||
                             t.ContentKind == XsdContentKind.Empty && child.Value.Length != 0 || t.ContentKind == XsdContentKind.ElementOnly && !White(child.Value)))
                             frame.Valid = Error("XSD.Content", "Character content is not permitted here.");
@@ -230,15 +231,16 @@ internal sealed partial class XsdValidationRun : ISchemaOperation
                 if (frame.HasChild) frame.Valid = Error("XSD.Content", "Simple content cannot have element children.");
                 var context = frame.Context;
                 string? effective = frame.Declaration?.FixedValue ?? frame.Declaration?.DefaultValue;
-                if (lexical.Length == 0 && !frame.HasChild && effective is not null) { lexical = effective; context = frame.Declaration!.Context; }
+                if (!frame.HasCharacters && !frame.HasChild && effective is not null) { lexical = effective; context = frame.Declaration!.Context; }
                 if (!Value(simple.Value, lexical, context, out value)) frame.Valid = false;
                 if (value is not null && frame.Declaration?.FixedValue is string fixedLexical && !Fixed(types[frame.Declaration.Type].SimpleType ?? new(Xs, "anySimpleType"), value, fixedLexical, frame.Declaration.Context)) frame.Valid = false;
             }
             else if ((frame.Declaration?.FixedValue ?? frame.Declaration?.DefaultValue) is string constraint)
             {
-                if (type.ContentKind is XsdContentKind.Empty or XsdContentKind.ElementOnly) frame.Valid = Error("XSD.Default", "Selected type cannot accept a value constraint.");
+                bool constraintUsed = frame.Declaration!.FixedValue is not null || !frame.HasChild && !frame.HasCharacters;
+                if (constraintUsed && type.ContentKind is XsdContentKind.Empty or XsdContentKind.ElementOnly) frame.Valid = Error("XSD.Default", "Selected type cannot accept a value constraint.");
                 else if (frame.HasChild && frame.Declaration!.FixedValue is not null) frame.Valid = Error("XSD.Fixed", "A mixed-content fixed constraint cannot have element children.");
-                else if (!frame.HasChild)
+                else if (!frame.HasChild && type.ContentKind == XsdContentKind.Mixed)
                 {
                     var stringType = new SchemaName(Xs, "anySimpleType");
                     if (!Value(stringType, lexical.Length == 0 ? constraint : lexical, frame.Declaration!.Context, out value)) frame.Valid = false;
