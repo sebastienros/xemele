@@ -4,14 +4,15 @@
   "milestone": "M8",
   "title": "XSD core instance validation",
   "kind": "feature",
-  "status": "blocked",
+  "status": "in_progress",
   "owner": "M8 coordinator01a12c6c-b333-71d3-877f-0d186618e21d / assigned isolated worker",
   "branch": "codex/m8-xsd-validate",
   "base_revision": "06f75fd94392431fb28b8aeac7103c799eb67a51",
   "integration_revision": null,
   "depends_on": [
     "M8-xsd-content",
-    "M8-facets"
+    "M8-facets",
+    "M8-xsd-identity"
   ],
   "goals": [
     "G14"
@@ -52,19 +53,15 @@
   ],
   "implementation": [],
   "evidence": [],
-  "blockers": [
-    "Frozen identity hook declarations are owned by M8-xsd-identity and not integrated. Coordinator requires verified identity integration before dependent implementation/builds; await exact verified revision and activation, then add that verified prerequisite and merge integrated main."
-  ],
+  "blockers": [],
   "handoff": {
-    "summary": "Assigned branch created at e663cc9de83bc2f2e429e603249dbf4453f8eff0; initial uncompiled evaluator draft in Evaluation/Evaluator.cs retained. No hook declarations copied and no runtime/build/test/probe execution. Dependent implementation held after coordinator contract-placement decision.",
+    "summary": "Verified identity prerequisite integrated from coordinator main6009cb7b9730d14daf06a59c748edf458943dde2; evaluator draft retained and source implementation resumed. No evaluator checks yet.",
     "checks": [
       "Read-only setup verified clean detached starting HEAD and claim/base ancestry; compile/content/facets records verified. git diff --check passed before task record update."
     ],
     "remaining": [
-      "All acceptance criteria pending; evaluator draft has not been compiled or tested. Await verified identity join and coordinator activation."
+      "All evaluator acceptance criteria pending; complete source/test implementation and revision-stamped checks, then approved allocation evidence."
     ],
-    "requests": [
-      "Coordinator: send exact integrated verified M8-xsd-identity revision and activation. Identity owner supplies XsdValidatedValue and IXsdIdentitySession/Compiler/Factory/XsdIdentityProgram; evaluator owns only IXsdEvaluator declaration."
-    ]
+    "requests": []
   }
 }
