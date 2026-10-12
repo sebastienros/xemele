@@ -64,13 +64,13 @@ internal sealed partial class XsdValidationRun : ISchemaOperation
     private void Revision()
     { if (revision < 0 || document.ContentRevision != revision) throw new InvalidOperationException("Document changed during XSD validation."); }
     public bool Charge(long work, XmlLocation location)
-    { Revision(); return operation.Charge(work, location == default ? current : location); }
+    { Revision(); if (!operation.Charge(work, location == default ? current : location)) throw new Stopped(); return true; }
     public bool ChargeComponents(int count, XmlLocation location)
-    { Revision(); return operation.ChargeComponents(count, location == default ? current : location); }
+    { Revision(); if (!operation.ChargeComponents(count, location == default ? current : location)) throw new Stopped(); return true; }
     public bool AddDiagnostic(XmlDiagnostic diagnostic)
-    { Revision(); return operation.AddDiagnostic(diagnostic); }
+    { Revision(); if (!operation.AddDiagnostic(diagnostic)) throw new Stopped(); return true; }
     public void Refuse(string code, string message, XmlLocation location)
-    { Revision(); operation.Refuse(code, message, location == default ? current : location); }
+    { Revision(); operation.Refuse(code, message, location == default ? current : location); throw new Stopped(); }
     private void Work(long amount = 1) { if (!Charge(amount, current)) throw new Stopped(); }
     private void Retain(int count = 1) { if (!ChargeComponents(count, current)) throw new Stopped(); }
     private void Poll() => Work(0);
@@ -170,7 +170,7 @@ internal sealed partial class XsdValidationRun : ISchemaOperation
                 if (xsiType is not null)
                 {
                     Text(xsiType, true);
-                    if (!QName(xsiType.AsSpan().Trim(), context, out var name) || !types.TryGetValue(name, out var replacement) || replacement.Anonymous)
+                    if (!QName(TrimXml(xsiType), context, out var name) || !types.TryGetValue(name, out var replacement) || replacement.Anonymous)
                         valid = Error("XSD.Type", "xsi:type does not name a global type.");
                     else if (!Derived(replacement.Name, type.Name, declaration.Block, type.Block)) valid = Error("XSD.Type", "xsi:type derivation is prohibited.");
                     else type = replacement;
@@ -178,7 +178,7 @@ internal sealed partial class XsdValidationRun : ISchemaOperation
                 if (type.Abstract) valid = Error("XSD.Abstract", "An abstract type cannot be instantiated.");
                 if (node.GetAttribute("nil", Xsi) is string lexical)
                 {
-                    Text(lexical, true); var collapsed = lexical.AsSpan().Trim();
+                    Text(lexical, true); var collapsed = TrimXml(lexical);
                     if (collapsed.SequenceEqual("true") || collapsed.SequenceEqual("1")) nil = true;
                     else if (!collapsed.SequenceEqual("false") && !collapsed.SequenceEqual("0")) valid = Error("XSD.Nil", "xsi:nil must be an XML Schema boolean.");
                     if (nil && (!declaration.Nillable || declaration.FixedValue is not null)) valid = Error("XSD.Nil", "Element cannot be nilled with this declaration.");
@@ -233,19 +233,27 @@ internal sealed partial class XsdValidationRun : ISchemaOperation
                 if (frame.HasChild || lexical != fixedText && lexical.Length != 0) frame.Valid = Error("XSD.Fixed", "Element content differs from its fixed value.");
             }
         }
-        identity?.LeaveElement(frame.Node, new(frame.Valid, typeName, value), this); Poll();
+        identity?.LeaveElement(frame.Node, new(frame.Valid, ActualType(value, typeName), value), this); Poll();
     }
     private static bool White(ReadOnlySpan<char> text)
     { foreach (char c in text) if (c is not (' ' or '\t' or '\r' or '\n')) return false; return true; }
+    private static ReadOnlySpan<char> TrimXml(ReadOnlySpan<char> text)
+    {
+        while (!text.IsEmpty && text[0] is ' ' or '\t' or '\r' or '\n') text = text[1..];
+        while (!text.IsEmpty && text[^1] is ' ' or '\t' or '\r' or '\n') text = text[..^1];
+        return text;
+    }
     private void Text(ReadOnlySpan<char> text, bool token)
     {
         int scalars = 0;
-        foreach (var rune in text.EnumerateRunes())
+        while (!text.IsEmpty)
         {
             Work(); if (characters == long.MaxValue || Limits.DocumentCharacters is long cap && characters >= cap || token && Limits.TokenCharacters is int tokenCap && scalars >= tokenCap)
                 Limit("Character/token limit exceeded.");
             characters++; scalars++;
-            if (!ValueSyntax.IsXmlScalar(rune.Value)) Error("XSD.Character", "Invalid XML character in instance.");
+            var status = Rune.DecodeFromUtf16(text, out var rune, out int consumed);
+            if (status != System.Buffers.OperationStatus.Done || !ValueSyntax.IsXmlScalar(rune.Value)) Error("XSD.Character", "Invalid XML character in instance.");
+            text = text[Math.Max(1, consumed)..];
         }
     }
 }
