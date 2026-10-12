@@ -256,13 +256,40 @@ internal sealed class XsdCompilation
             else { if (pending) builder.Append(' '); builder.Append(c); pending = false; }
         return builder.ToString();
     }
+    // These component mapping inputs own a normalized value only when necessary.
+    // Charge/poll in each actual canonical-check and normalization loop; a prior
+    // scan cannot account for later unchecked normalization or arbitrary padding.
+    private string ComponentCollapse(string text, XmlLocation at)
+    {
+        Tick(at, 0);
+        bool canonical = true, first = true, previousSpace = false;
+        foreach (var scalar in text.AsSpan().EnumerateRunes())
+        {
+            Tick(at); int c = scalar.Value;
+            if (c is '\t' or '\r' or '\n' || c == ' ' && (first || previousSpace)) canonical = false;
+            previousSpace = c == ' '; first = false;
+        }
+        if (previousSpace) canonical = false;
+        if (canonical) return text;
+        var builder = new StringBuilder(); bool pending = false; int position = 0;
+        foreach (var scalar in text.AsSpan().EnumerateRunes())
+        {
+            Tick(at); int c = scalar.Value;
+            if (c is ' ' or '\t' or '\r' or '\n') pending = builder.Length != 0;
+            else
+            {
+                if (pending) builder.Append(' ');
+                builder.Append(text.AsSpan(position, scalar.Utf16SequenceLength)); pending = false;
+            }
+            position += scalar.Utf16SequenceLength;
+        }
+        Tick(at, 0); return builder.ToString();
+    }
     private string Required(Source source, XmlNode node, string attribute)
     { var value = node.GetAttribute(attribute); if (value is null) Error("Required schema attribute is missing.", At(source, node)); return value!; }
     private string NCName(string text, Source source, XmlNode node)
     {
-        var at = At(source, node);
-        foreach (var scalar in text.AsSpan().EnumerateRunes()) Tick(at);
-        text = Collapse(text);
+        var at = At(source, node); text = ComponentCollapse(text, at);
         if (nameOperation is null) { Components(at); nameOperation = new(op); }
         nameOperation.Location = at;
         bool valid = ComponentNCName(text.AsSpan(), nameOperation);
@@ -306,7 +333,7 @@ internal sealed class XsdCompilation
     private SchemaName Named(Source source, XmlNode node) => new(source.Target, NCName(Required(source, node, "name"), source, node));
     private SchemaName QName(Declaration owner, XmlNode node, string lexical, string? previousSpace = null)
     {
-        var source = owner.Source; lexical = Collapse(lexical); Tick(At(source, node), lexical.Length);
+        var source = owner.Source; lexical = ComponentCollapse(lexical, At(source, node));
         int colon = lexical.IndexOf(':'); string prefix = colon < 0 ? "" : lexical[..colon]; string local = colon < 0 ? lexical : lexical[(colon + 1)..];
         NCName(local, source, node); if (colon >= 0) NCName(prefix, source, node);
         var context = Context(source, node);
@@ -859,9 +886,7 @@ internal sealed class XsdCompilation
     private XsdWildcard Wildcard(Declaration owner, XmlNode node)
     {
         var s = owner.Source; var at = At(s, node);
-        string authored = node.GetAttribute("namespace") ?? "##any";
-        foreach (var scalar in authored.AsSpan().EnumerateRunes()) Tick(at);
-        string lexical = Collapse(authored);
+        string lexical = ComponentCollapse(node.GetAttribute("namespace") ?? "##any", at);
         var namespaces = new List<string>(); bool negated = false;
         if (lexical == "##any") negated = true;
         else if (lexical == "##other") { negated = true; namespaces.Add(s.Target); if (s.Target.Length != 0) namespaces.Add(""); }

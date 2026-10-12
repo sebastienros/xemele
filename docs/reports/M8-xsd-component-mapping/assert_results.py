@@ -6,6 +6,7 @@ spec = importlib.util.spec_from_file_location("syntax_assert", Path(__file__).re
 syntax = importlib.util.module_from_spec(spec); spec.loader.exec_module(syntax)
 OWNED = "Xemele.Tests.M8XsdComponentMapping."
 EXPECTED = {
+ "NormalizationTests.WhitespaceIsChargedDuringActualNormalizationWithNullCapCancellation": 4,
  "OriginalWitnessTests.OriginalGroupN007AcceptsMixedCharacters": 1,
  "OriginalWitnessTests.OriginalGroupN008RejectsForbiddenChildren": 1,
  "OriginalWitnessTests.OriginalGroupH007RejectsMixedRestrictionOfElementOnlyBase": 1,
@@ -40,7 +41,7 @@ def assert_tests(path, count=None, correctness=False):
  if correctness:
   names=[t.attrib["name"] for t in ET.parse(path).getroot().iter("test") if t.attrib["name"].startswith(OWNED)]
   actual=Counter(n[len(OWNED):].split("(",1)[0] for n in names)
-  assert actual == Counter(EXPECTED) and sum(actual.values()) == 113, actual
-  assert len(set(names)) == 113, "Duplicate owned case identity"
-  assert total == 1113 + 33 + 113, ("Verified syntax33 + affected1113 plus owned113 expected",total)
+  assert actual == Counter(EXPECTED) and sum(actual.values()) == 117, actual
+  assert len(set(names)) == 117, "Duplicate owned case identity"
+  assert total == 1113 + 33 + 117, ("Verified syntax33 + affected1113 plus owned117 expected",total)
  return total
