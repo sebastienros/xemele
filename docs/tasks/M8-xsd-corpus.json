@@ -39,7 +39,10 @@
         "supervisor-controls",
         "runtime-controls",
         "public-boundaries",
-        "harness-source-review"
+        "harness-source-review",
+        "adapter-source-review",
+        "adapter-preparation-controls",
+        "adapter-source-facts"
       ]
     },
     {
@@ -56,7 +59,9 @@
         "explicit-profile-originals",
         "instance-profile-source-review",
         "instance-profile-originals",
-        "instance-profile-reproduction"
+        "instance-profile-reproduction",
+        "adapter-focused-originals",
+        "resource-prerequisite-source-facts"
       ]
     },
     {
@@ -69,7 +74,9 @@
         "public-boundaries",
         "runtime-controls",
         "verified-attribute-dependency",
-        "post-join-profile-controls"
+        "post-join-profile-controls",
+        "adapter-preparation-controls",
+        "adapter-focused-originals"
       ]
     }
   ],
@@ -81,7 +88,9 @@
     "tests/corpora/xsd/{unicode-adjudication,xmlversions-adjudication,standards-dispositions,metadata-namespaces}.json: independent source facts; original oracles preserved; exact human-approved time exception remains an executed original failure.",
     "docs/reports/M8-xsd-corpus/{README,schema-triage,instance-triage,schema-ambiguity-inputs}.md: durable concise diagnostic handoffs; no raw journals committed.",
     "tests/corpora/xsd/explicit-profile-adjudication.json and report views: coordinator frozen Second Edition surrogate-block/NOTATION adjudication, originals unchanged; four semantic schema rejects and four invalid-schema dependents separately reported.",
-    "tests/corpora/xsd/{supplementary-category,lexical-oracle}-adjudication.json and check-instance-profiles.py: coordinator exact22 source dispositions; independent original hashes/statuses/patterns and57 Unicode16 scalar classifications; original expectations unchanged."
+    "tests/corpora/xsd/{supplementary-category,lexical-oracle}-adjudication.json and check-instance-profiles.py: coordinator exact22 source dispositions; independent original hashes/statuses/patterns and57 Unicode16 scalar classifications; original expectations unchanged.",
+    "Corpus.Profiles.csproj/ProfileChecks.cs.fixture: separate public explicitXML application supplementation and independent substitution/NameChar neighbors; original inputs untouched.",
+    "Owned substitution-oracle-adjudication/xml-namespace-profile/adapter-boundaries/resource-prerequisite-triage source records and adapter-preparation/resource-prerequisites reports; raw journals/lifecycle/subsets stay ignored."
   ],
   "evidence": [
     {
@@ -272,6 +281,60 @@
       "result": "passed",
       "summary": "Exact18queried supplemental-category cases deriveVALID using pinned Unicode16; exact4lexical outcomes independently reviewed: time016VALID(absent-timezone leap inference),gMonth002/004INVALID(6901),attP031INVALID(no wildcard). Original oracles/statuses/results/BCLdifferences retained; no blanket Unicode policy or extension of sole time-ordering exception.",
       "artifact": "tests/corpora/xsd/supplementary-category-adjudication.json"
+    },
+    {
+      "id": "adapter-initial-control-failure",
+      "kind": "check",
+      "revision": "63e055b011959f48207000f5fb6da617a2f81f6c",
+      "command": "Pinned XsdProfiles.dll <repo-root> controls <ignored-json>",
+      "result": "failed",
+      "summary": "Build succeeded, synthetic missing-resource control exited134 after incorrectly expecting incomplete-refusal. Actual DirectoryNotFoundException is harness-resource-error. No original executed. Later corrected controls are separate evidence.",
+      "artifact": "docs/reports/M8-xsd-corpus/adapter-preparation.md"
+    },
+    {
+      "id": "adapter-source-review",
+      "kind": "review",
+      "revision": "12d6e5d6b020848b0f5a0ffbea8b89fb9bc8a0eb",
+      "command": "Coordinator and independent XPath SOURCE ACCEPTED12d6e5d6; main review-M8-xsd-corpus-adapter-preparation.json",
+      "result": "passed",
+      "summary": "Accepted prior namespace use before supplied return/no ignored fetch; pinned explicit XML composition/separate supplements; substitution and NameChar profiles; distinct denied/missing/fatal/unassessed outcomes. Reviewer source-only, no tests. No product/shared change/new exception.",
+      "artifact": "docs/reports/M8-xsd-corpus/adapter-preparation.md"
+    },
+    {
+      "id": "adapter-preparation-controls",
+      "kind": "check",
+      "revision": "12d6e5d6b020848b0f5a0ffbea8b89fb9bc8a0eb",
+      "command": "Pinned dotnet Release no-restore build Corpus.Runner.csproj and Corpus.Profiles.csproj; XsdCorpus.dll --controls; XsdProfiles.dll <repo-root> controls <ignored-json>",
+      "result": "passed",
+      "summary": "Both builds0warnings0errors;45runtime/15native controls pass. First-use/late supplied hints, substitution/NameChar neighbors, pinned XML/two-URI composition, denied/missing/unlisted controls. RunnerDLL708f31ff4b354576c78bd8b6960a027c1a0b20f1e74441bf6cb7e1c16df80604; profilesDLL8ed0e9e552fec027000aaf0ab6eba15fdc6cf3c189107b26e445ede1100cd144.",
+      "artifact": "docs/reports/M8-xsd-corpus/adapter-preparation.md"
+    },
+    {
+      "id": "adapter-focused-originals",
+      "kind": "check",
+      "revision": "12d6e5d6b020848b0f5a0ffbea8b89fb9bc8a0eb",
+      "command": "Pinned dotnet --fx-version10.0.11 XsdProfiles.dll <repo-root> originals <ignored-json>; XsdCorpus.dll <original-upstream> <exact8instance-subset> <Additional or Regex> <product or bcl> <ignored-journal>; five sequential supervised children",
+      "result": "passed",
+      "summary": "Exact18runner rows: both engines seven late hints originalINVALID/nonpass, ordering limitation/supplementalVALID/noignoredfetch; reZ006i schemaVALID/pass and originalVALID instance completeINVALID/nonpass/profileagrees. Native19: five original nonpasses (elemZ027_cVALID/profileagrees,XML two schemaINVALID/two unexecuted), four separate XML supplement agreements/originalPassednull, six neighbors/four denial-missing controls. All13distinct original mismatches retained. PIDs6831/6832/6833/6834/6842exit0/reaped/groupsabsent/logsclosed; native120s/runner60s,TERM10s/KILL fallback unused. Existing100mwork/1mcomponents/finiteLimits/30s cancellation unchanged. Exact IDs/request/provenance/profile assertions pass; source/DLL hashes verified prelaunch. No fullrun, namespaceguard/fatal rerun or oracle expansion.",
+      "artifact": "docs/reports/M8-xsd-corpus/adapter-preparation.md"
+    },
+    {
+      "id": "adapter-source-facts",
+      "kind": "check",
+      "revision": "4d505b81ec2c9ed47c6d8f48da138ac98a9ae0f7",
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 docs/reports/M8-xsd-corpus/check-adapter-profiles.py; PYTHONDONTWRITEBYTECODE=1 python3 docs/reports/M8-xsd-corpus/test_dispositions.py",
+      "result": "passed",
+      "summary": "Exact original statuses/hashes, pinnedXML/catalog absence,12adapter facts,3fatal full XML parse failures, authoredns-b/actualfoo hash guard and originalNameChar0346 at34734 pass;17reportcontrols pass. No engineoracle derives source facts.",
+      "artifact": "docs/reports/M8-xsd-corpus/adapter-preparation.md"
+    },
+    {
+      "id": "resource-prerequisite-source-facts",
+      "kind": "check",
+      "revision": "4d505b81ec2c9ed47c6d8f48da138ac98a9ae0f7",
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 docs/reports/M8-xsd-corpus/check-resource-prerequisites.py",
+      "result": "passed",
+      "summary": "16exact original metadata/status/hash records verified:3indeterminate schemas/3unassessed dependencies retainResourceCycle;2whole hinted XML parse failures addB063junk18:0/addB124mismatch236:6 retain unassessed instances;8optionalnonresolution rows remainResourceDenied/actionablegaps. No new runtime/profilepass/exclusion; legacy resolvernull unchanged until verified owning repair. anyURIa004 derivedVALID only after repair+execution.",
+      "artifact": "docs/reports/M8-xsd-corpus/resource-prerequisites.md"
     }
   ],
   "blockers": [],
@@ -285,12 +348,14 @@
       "Initial duplicate build attributes/xUnit cancellation analyzer failures and incorrect manifest/subset selector assertions retained in README history; corrected checks are distinct.",
       "Verifiedattribute main48f394cc joined; committedb9d source rebuilt0warnings0errors,41runtime+11profilecontrols pass; exact4schema rejects/fourunexecuteddeps run in twochildrenexit0/reaped/logclosed; original failures retained.",
       "python3 tools/planning/tasks.py validate passes188tasks and git diff --check passes after own evidence/dependency updates.",
-      "Sourcee25: exact22supplementary/lexical instances agree separate profiles; all22original failures retained,22schema predicates valid,44observations/threechildrenexit0/reaped/logsclosed. Independent43hashes/57scalars/12reportcontrols PASS; planning188/diffcheck PASS."
+      "Sourcee25: exact22supplementary/lexical instances agree separate profiles; all22original failures retained,22schema predicates valid,44observations/threechildrenexit0/reaped/logsclosed. Independent43hashes/57scalars/12reportcontrols PASS; planning188/diffcheck PASS.",
+      "Accepted12d:45runtime/15native/17report controls;5childrenexit0/reaped/groupsabsent/logsclosed,18exactrunner+19native observations.7latehints unassessed/noignoredfetch, substitution/NameChar profiles and4explicitXMLsupplements preserve13original mismatches.4d505:16resource prerequisite/12adapter source records pass; planning188/diffcheck pass."
     ],
     "remaining": [
       "A2: concrete source-backed runtime repairs and standards/adaptation triage;39schema IDs/33fixtures in current schema handoff,136original instance failures in20diagnostic groups. Four surrogate/NOTATION original schema mismatches now separately agree coordinator-derived profile; dependent instance failures remain unassessed. Exact22supplementary/lexical original instance mismatches also separately agree approved profiles; original136failure report remains intact.",
       "No repeated full run until coordinator integrates/verifies applicable repairs; final integrated conformance remains pending.",
-      "No-location XML namespace imports lack explicit original xml.xsd input; supplemental application-supplied profile proposal pending coordinator decision, no implicit network/builtins."
+      "ExplicitXML supplied application profile executed:4separate completeVALID schema/instance rows;4standalone original failures/unassessed preserved.7latehints adapter-unassessed. Namespaceguard/fatal immutable source80 outcomes retained without new original rerun.",
+      "Optional nonresolution anyURIa002/a004,schD7/G8 remains8ResourceDenied gaps until owning explicitUnavailable repair verified; corpusresolver legacy null unchanged.3indeterminate cycle schemas/3unassessed instances+2malformed hint prerequisites retain nonpasses. No fullrun before coordinator verified repair join."
     ],
     "requests": [
       "Coordinator owns runtime repair scopes and sole integration/verification. Read schema-triage.md and instance-triage.md for exact witnesses/source groups.",
