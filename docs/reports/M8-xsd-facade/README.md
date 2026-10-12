@@ -129,3 +129,17 @@ XML-only consumers passed; all builds had zero warnings/errors; planning184 and
 whitespace checks passed. All nine previously active shared-join failures now pass.
 Final bounded seam review and allocation build/control/freeze remain pending;
 no counters or timing measurements are claimed.
+
+## Final worker handback
+
+Both coordinator-reported bounded final seam reviewers accepted sourcea75d851d.
+Final allocation build/control/freeze and actual root-granted execution passed;
+see allocation-plan.md, allocation-preflight.json and allocations.md for exact
+identities, lifecycle, numerators/denominators and ownership limitations.
+Task is `implemented`; `integration_revision` remains null for the coordinator.
+Root independently reports1152combined checks at9b2816007f9e5aa39cdb85752f8c416524dbfa40.
+Accepted runtime/tests/API/sample/check/probe/supervisor inputs remain unchanged.
+All raw outputs stay transient/ignored. No worker criteria or outside-source
+requests remain. This worker has zero owned active jobs and relinquishes all
+assignment/task/source/test/report/benchmark/sample/API/branch writes after its
+final handoff commit. Coordinator alone integrates/verifies and cleans up.
