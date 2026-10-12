@@ -2,17 +2,9 @@ namespace Xemele.Validation;
 
 // Restricted XSD 1.0 paths, not an M4 expression. Compilation owns names once;
 // event matching uses borrowed node handles and immutable tests without scratch.
-internal sealed class IdentityXPath(IdentityPath[] paths)
+internal sealed class IdentityXPath(IdentityPath[] paths, bool selectsNonElements)
 {
-    internal bool SelectsNonElements
-    {
-        get
-        {
-            foreach (var path in paths)
-                if (path.Descendants && path.Steps.Length == 0 && path.Attribute is null) return true;
-            return false;
-        }
-    }
+    internal bool SelectsNonElements { get; } = selectsNonElements;
     internal bool Matches(XmlNode context, XmlNode node, SchemaName? attribute, ISchemaOperation op, XmlLocation at)
     {
         foreach (var path in paths)
@@ -51,6 +43,7 @@ internal sealed class IdentityXPath(IdentityPath[] paths)
         {
             IdentityWork.Retain(op, at);
             var paths = new List<IdentityPath>();
+            bool nonElements = false;
             do
             {
                 bool descendant = false;
@@ -77,11 +70,12 @@ internal sealed class IdentityXPath(IdentityPath[] paths)
                 }
                 if (Peek() != '|' && Peek() != '\0') Bad();
                 IdentityWork.Retain(op, at, checked(1 + steps.Count));
+                nonElements |= descendant && steps.Count == 0 && attribute is null;
                 paths.Add(new(descendant, steps.ToArray(), attribute));
             } while (Take('|'));
             if (position != source.Length || paths.Count == 0) Bad();
             IdentityWork.Tick(op, at, 0);
-            return new(paths.ToArray());
+            return new(paths.ToArray(), nonElements);
         }
         private void ParseStep(List<IdentityNameTest> steps, ref IdentityNameTest? attribute)
         {
