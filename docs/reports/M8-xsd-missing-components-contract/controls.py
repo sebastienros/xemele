@@ -35,7 +35,7 @@ def rejects(action, message=None):
     raise AssertionError('required rejecting control was accepted')
 
 
-def real_case(case, folder, base, deadline, environment):
+def verify_real_case(case, folder, base, deadline, environment):
     folder.mkdir()
     # Only harness inputs are executed in these Python controls. SDK compilation is gated later.
     inputs = {name:identity for name,identity in base['inputs'].items() if str(c.HERE) in name or str(c.FIXTURE) in name}
@@ -89,6 +89,20 @@ def real_case(case, folder, base, deadline, environment):
     return {'expectedOutcomeVerified':True,'groups':sorted(groups),'lifecycle':record,'receiptSha256':guard_identity}
 
 
+
+def real_case(case,folder,base,deadline,environment):
+    consumed={'state':'failed'}
+    try:
+        record=verify_real_case(case,folder,base,deadline,environment)
+        consumed={'state':'passed','sourceSha':base['sourceSha'],'outcomes':{case:True},'commands':[record['lifecycle']]}
+        return record
+    except BaseException as error:
+        consumed['reason']=str(error)
+        raise
+    finally:
+        if folder.exists():
+            c.terminal.finish(folder,'control-'+case,consumed,deadline)
+
 def cleanup_fault(case, folder, deadline, environment):
     folder.mkdir(); registry=folder/'owned'; registry.mkdir()
     env=environment.copy()
@@ -118,6 +132,8 @@ def cleanup_fault(case, folder, deadline, environment):
 
 def invariant_case(case, folder, base, expected_plan_sha, deadline, environment):
     folder.mkdir()
+    if case.startswith('terminal-'):
+        return terminal_case(case,folder,deadline,environment)
     if case in ('inventory-failure','expired-cleanup'):
         # Called with an already unique folder by main, use separate fault subfolder.
         return cleanup_fault(case,folder/'fault',deadline,environment)
@@ -151,7 +167,8 @@ def invariant_case(case, folder, base, expected_plan_sha, deadline, environment)
     elif case=='changed-command':
         plan=folder.parent.parent/('changed-command-'+uuid.uuid4().hex+'.json'); value=dict(base); value['commands']=list(base['commands'])
         value['commands'][0]={'argv':[sys.executable,'-c','pass']}; c.durable(plan,value)
-        rejects(lambda:c.verify_inputs(plan,c.bindings.digest(plan),deadline,None), 'changed required compile command')
+        try: rejects(lambda:c.verify_inputs(plan,c.bindings.digest(plan),deadline,None), 'changed required compile command')
+        finally: plan.unlink()
     elif case in ('changed-project','changed-source','changed-binary'):
         file=folder/({'changed-project':'Candidate.csproj','changed-source':'Usage.cs.fixture','changed-binary':'dependency.dll'}[case])
         file.write_bytes(b'bound'); plan=folder/'plan.json'
@@ -160,7 +177,7 @@ def invariant_case(case, folder, base, expected_plan_sha, deadline, environment)
     elif case=='missing-controls':
         rejects(lambda:c.require_controls(None,None,expected_plan_sha,base['sourceSha']), 'successful matching controls receipt required')
     elif case in ('mismatched-controls','wrong-control-outcome'):
-        value={'state':'passed','planSha256':expected_plan_sha,'sourceSha':base['sourceSha'],
+        value={'state':'passed','receiptRole':'active-controls-gate','pendingPhase':'compile','stage':str(folder.parent.parent),'planSha256':expected_plan_sha,'sourceSha':base['sourceSha'],
             'cases':list(c.ALL_CASES),'outcomes':dict.fromkeys(c.ALL_CASES,True),'independentAbsence':True,'noNextAfterFailure':True}
         if case=='mismatched-controls': value['planSha256']='0'*64
         else: value['outcomes']['normal']=False
@@ -170,9 +187,54 @@ def invariant_case(case, folder, base, expected_plan_sha, deadline, environment)
     return {'expectedOutcomeVerified':True}
 
 
-def main():
-    p=argparse.ArgumentParser(); p.add_argument('--plan',type=Path,required=True); p.add_argument('--expected-plan-sha',required=True)
-    a=p.parse_args(); start=time.monotonic(); work_end=start+100; hard_end=start+115
+
+def terminal_case(case,folder,deadline,environment):
+    stage=folder/'attempt'; stage.mkdir()
+    canonical=folder/'canonical.fixture'; canonical.write_bytes(b'preserve canonical input')
+    cache=folder/'cache-sentinel'; cache.write_bytes(b'preserve cache')
+    project=stage/'Candidate.csproj'; project.write_bytes(b'owned staged project')
+    plan=stage/'plan.json'; c.durable(plan,{'inputs':{str(project):c.bindings.digest(project),str(canonical):c.bindings.digest(canonical)}})
+    expected=c.bindings.digest(plan); captured={}
+    def action():
+        c.bindings.verify(plan,expected,deadline)
+        payload="from pathlib import Path; p=Path("+repr(str(stage))+" ); (p/'bin').mkdir(); (p/'obj').mkdir(); (p/'bin/fake.dll').write_bytes(b'control output'); (p/'obj/scratch').write_text('scratch'); (p/'candidate.actual.txt').write_text('control projection'); (p/'drop-member.txt').write_text('control negative')"
+        code=0 if case in ('terminal-successful-compile','terminal-interrupted') else 7
+        payload+='; raise SystemExit('+str(code)+')'
+        c.supervision.ARTIFACTS=stage
+        record=c.nested.supervise_family_command(c.supervision,[sys.executable,'-c',payload],701,environment,min(time.monotonic()+2,deadline-4),deadline)
+        assert record['directChildReaped'] and record['ownedGroupAbsent'] and record['nestedOwnership']['allOwnedGroupsAbsent']
+        c.bindings.verify(plan,expected,deadline)
+        outputs=c.output_identities(stage)
+        assert stage.exists() and (stage/'bin/fake.dll').exists() and outputs
+        captured.update(state='passed' if code==0 else 'failed',inputs=json.loads(plan.read_text())['inputs'],outputs=outputs,commands=[record])
+        if code: raise RuntimeError('finite seam failed phase')
+        return captured
+    if case=='terminal-interrupted':
+        # Real absent family plus a one-shot interruption during physical recursive deletion.
+        remove=c.terminal.remove_tree; calls=[0]
+        def interrupt_once(path,end):
+            calls[0]+=1
+            if calls[0]==1: raise KeyboardInterrupt('finite cleanup interruption seam')
+            return remove(path,end)
+        with patch.object(c.terminal,'remove_tree',side_effect=interrupt_once):
+            try: c.terminal.attempt(stage,case,action,deadline,lambda:captured)
+            except KeyboardInterrupt as error: assert 'terminal cleanup completed' in str(error)
+            else: raise AssertionError('cleanup interruption lost')
+        assert calls[0]>=2 and captured['state']=='failed'
+    elif case=='terminal-successful-compile':
+        assert c.terminal.attempt(stage,case,action,deadline,lambda:captured)['state']=='passed'
+    else:
+        rejects(lambda:c.terminal.attempt(stage,case,action,deadline,lambda:captured),'finite seam failed phase')
+    assert not stage.exists(), 'terminal phase retained generated output archive'
+    assert canonical.read_bytes()==b'preserve canonical input' and cache.read_bytes()==b'preserve cache'
+    # Deleted files must not be reused or presented as fresh matching controls.
+    rejects(lambda:c.bindings.verify(plan,expected,deadline))
+    return {'expectedOutcomeVerified':True,'scratchDeleted':True,'canonicalAndCachePreserved':True}
+
+def verify_campaign(plan_path,expected_plan_sha):
+    a=argparse.Namespace(plan=plan_path,expected_plan_sha=expected_plan_sha)
+    # CLI validation/phase ownership is outside this active campaign boundary.
+    start=time.monotonic(); work_end=start+100; hard_end=start+115
     def stop_hard(sig,frame): raise TimeoutError('controls absolute hard deadline')
     signal.signal(signal.SIGALRM,stop_hard); signal.setitimer(signal.ITIMER_REAL,115)
     base=c.bindings.verify(a.plan,a.expected_plan_sha,work_end-10)
@@ -200,9 +262,33 @@ def main():
         result['independentAbsence']=cleanup['allOwnedGroupsAbsent']
         if result['independentAbsence']: independent_absence([folder],work_end)
         else: result['state']='failed'
-        c.publish(folder/'controls-receipt.json',result,work_end)
+        c.terminal.finish(folder,'controls-scratch',result,work_end)
         signal.setitimer(signal.ITIMER_REAL,0)
-    print(json.dumps({'receipt':str(folder/'controls-receipt.json'),'sha256':c.bindings.digest(folder/'controls-receipt.json'),'state':result['state']}))
-    return 0 if result['state']=='passed' else 1
+    if result['state']=='passed':
+        # Gate is concise and ACTIVE only while its staged compile inputs remain.
+        gate={key:result[key] for key in ('state','sourceSha','planSha256','cases','outcomes','independentAbsence','noNextAfterFailure')}
+        gate.update(receiptRole='active-controls-gate',stage=str(a.plan.parent),pendingPhase='compile',
+                    consumedDetailsSha256=c.terminal.identity(result))
+        c.publish(a.plan.parent/'controls-receipt.json',gate,work_end)
+    return result
+
+
+def main():
+    p=argparse.ArgumentParser(); p.add_argument('--plan',type=Path,required=True); p.add_argument('--expected-plan-sha',required=True)
+    a=p.parse_args(); stage=c.terminal.owned(a.plan.parent)
+    c.durable(stage/'controls-started.json',{'planSha256':a.expected_plan_sha})
+    result={'state':'failed','planSha256':a.expected_plan_sha}
+    terminal_hard_end=time.monotonic()+115
+    try:
+        with c.nested.interruptions():
+            result=verify_campaign(a.plan,a.expected_plan_sha)
+            if result['state']!='passed': raise RuntimeError('controls campaign failed')
+    except BaseException as error:
+        result['state']='failed'; result['reason']=str(error)
+        c.terminal.finish(stage,'controls-failed',result,min(terminal_hard_end,time.monotonic()+12))
+        raise
+    receipt=stage/'controls-receipt.json'
+    print(json.dumps({'receipt':str(receipt),'sha256':c.bindings.digest(receipt),'state':'passed','receiptRole':'active-controls-gate','pendingPhase':'compile'}))
+    return 0
 
 if __name__=='__main__': sys.exit(main())

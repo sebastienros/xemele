@@ -21,3 +21,12 @@ try:
     sys.exit(0 if check.supervision.workload_succeeded(record) else 1)
 finally:
     done.set()
+    # The verifier must reap this registered caller before proving whole-family
+    # absence. Raw case inputs remain active only until that verifier consumes
+    # readiness/outcome/identities and calls terminal.finish; this caller cannot
+    # assert its own group absent while still alive. Interruption follows the
+    # same outer terminal boundary, including a SIGKILLed caller with no finally.
+    if os.getppid()==parent:
+        check.durable(plan.parent/'active-verifier-handoff.json',
+            {'receiptRole':'active-control-awaiting-verifier','parentPid':parent,
+             'planSha256':expected,'terminalOwner':'controls.py real_case finally'})

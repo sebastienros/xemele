@@ -14,6 +14,7 @@ import xml.etree.ElementTree as ET
 import bindings
 import supervision
 import nested_ownership as nested
+import terminal
 
 ROOT = Path(__file__).resolve().parents[3]
 HERE = Path(__file__).resolve().parent
@@ -24,7 +25,8 @@ WORK_SECONDS, CLEANUP_SECONDS, HARD_SECONDS = 180, 12, 195
 CASES = ('normal', 'descendant', 'timeout', 'late', 'invariant', 'parent-death')
 EXTRA_CASES = ('inventory-failure', 'expired-cleanup', 'delayed-prelaunch', 'delayed-absence',
                'delayed-publication', 'changed-command', 'changed-project', 'changed-source',
-               'changed-binary', 'missing-controls', 'mismatched-controls', 'wrong-control-outcome')
+               'changed-binary', 'missing-controls', 'mismatched-controls', 'wrong-control-outcome',
+               'terminal-successful-compile', 'terminal-failed-compile', 'terminal-failed-control', 'terminal-interrupted')
 ALL_CASES = CASES + EXTRA_CASES
 
 
@@ -77,7 +79,12 @@ def load_receipt(path, expected_sha):
 
 def require_controls(path, identity, plan_sha, source_sha):
     assert path and identity, 'successful matching controls receipt required before compile'
+    assert bindings.digest(path)==identity, 'frozen controls/receipt hash differs'
+    assert json.loads(Path(path).read_text()).get('receiptRole')!='terminal-summary', 'terminal summary is not an active controls gate'
     receipt = load_receipt(path, identity)
+    assert receipt.get('receiptRole') == 'active-controls-gate', 'terminal summary is not an active controls gate'
+    assert receipt.get('pendingPhase')=='compile', 'controls receipt has no pending compile phase'
+    assert Path(receipt['stage']).is_dir(), 'controls stage no longer active'
     assert receipt['state'] == 'passed' and receipt['planSha256'] == plan_sha and receipt['sourceSha'] == source_sha, 'controls receipt mismatch'
     assert receipt['cases'] == list(ALL_CASES) and all(receipt['outcomes'].values()), 'missing/wrong control outcomes'
     assert receipt['independentAbsence'] and receipt['noNextAfterFailure'], 'controls lifecycle invariants missing'
@@ -170,7 +177,7 @@ def guard(plan_path, expected_sha, caller_pid, controls_path=None, controls_sha=
                     assert receipt['actualRuntime'] == '10.0.11'
                 receipt['outputs'].update(output_identities(plan_path.parent))
             before_launch()
-            if not control: verify_projection(plan_path.parent)
+            if not control: receipt['projectionComparison']=verify_projection(plan_path.parent)
             checkpoint(launch_end, caller_pid)
             receipt['state'] = 'passed'
     except BaseException as error:
@@ -193,6 +200,7 @@ def verify_projection(folder):
         assert expected[change['old']['id']] == change['old']
         del expected[change['old']['id']]; expected[change['candidate']['id']] = change['candidate']
     assert new == expected, 'projection differs beyond exactly three approved members'
+    return {'changedMembers':3,'unchangedMembers':len(old)-3,'publicAndFrozenInterfacesUnchanged':True}
 
 
 def compile_commands(dotnet, folder):
@@ -251,6 +259,15 @@ def prepare(dotnet, sha):
         raise RuntimeError('Source release requires clean checkout')
     artifact = ROOT / 'artifacts/M8-xsd-missing-components-contract' / (sha + '-' + uuid.uuid4().hex)
     artifact.mkdir(parents=True)
+    try:
+        with nested.interruptions():
+            return prepare_stage(dotnet,sha,artifact,prepare_deadline)
+    except BaseException as error:
+        terminal.finish(artifact,'preparation-failed',{'state':'failed','sourceSha':sha,'reason':str(error)},time.monotonic()+12)
+        raise
+
+
+def prepare_stage(dotnet,sha,artifact,prepare_deadline):
     sources = {}
     def source(path):
         sources[str(path.relative_to(ROOT))] = bindings.digest(path)
@@ -312,6 +329,7 @@ def prepare(dotnet, sha):
         inputs[str(file)] = bindings.digest(file)
     plan=artifact/'plan.json'; durable(plan, {'sourceSha':sha,'inputs':inputs,'dotnet':dotnet,'commands':compile_commands(dotnet,artifact)})
     checkpoint(prepare_deadline)
+    durable(artifact/'active-prepared.json',{'receiptRole':'active-prepared-inputs','planSha256':bindings.digest(plan),'pendingPhase':'controls then compile'})
     return plan
 
 
@@ -333,9 +351,25 @@ def main():
         assert a.caller_pid
         return guard(a.guard.resolve(),a.expected_plan_sha,a.caller_pid,a.controls_receipt,a.expected_controls_sha,a.control_case)
     assert a.plan and not a.control_case, 'control cases launch only through finite verifier'
-    verify_inputs(a.plan,a.expected_plan_sha,time.monotonic()+5,None,a.controls_receipt,a.expected_controls_sha)
-    record = run_owned_guard(a.plan,a.expected_plan_sha,a.controls_receipt,a.expected_controls_sha)
-    return 0 if supervision.workload_succeeded(record) else 1
+    stage=terminal.owned(a.plan.parent)
+    # Exclusive claim prevents a stale second compiler from deleting another active attempt.
+    durable(stage/'compile-started.json',{'planSha256':a.expected_plan_sha,'controlsSha256':a.expected_controls_sha})
+    deadline=time.monotonic()+240
+    def compile_action():
+        verify_inputs(a.plan,a.expected_plan_sha,time.monotonic()+5,None,a.controls_receipt,a.expected_controls_sha)
+        record=run_owned_guard(a.plan,a.expected_plan_sha,a.controls_receipt,a.expected_controls_sha)
+        receipt=stage/'receipt.json'
+        consumed=load_receipt(receipt,bindings.digest(receipt)) if receipt.exists() else {'state':'failed','reason':'guard did not publish'}
+        assert supervision.workload_succeeded(record), 'compile family/outcome failed'
+        assert consumed['state']=='passed', 'guard assessment failed'
+        # Identities/projection were verified while active. Terminal summary never reuses deleted files.
+        return consumed
+    def capture():
+        receipt=stage/'receipt.json'
+        if receipt.exists(): return load_receipt(receipt,bindings.digest(receipt))
+        return {'state':'failed','planSha256':a.expected_plan_sha,'reason':'no committed guard receipt'}
+    consumed=terminal.attempt(stage,'compile',compile_action,deadline,capture)
+    return 0 if consumed['state']=='passed' else 1
 
 if __name__ == '__main__':
     sys.exit(main())
