@@ -11,6 +11,14 @@ namespace Xemele.Validation;
 // datatype library or public validation facade is installed here.
 internal sealed class XmlSchemaCompiler : IXsdCompiler
 {
+    // Public composition supplies the context that parsed the principal input,
+    // so includes/imports debit the same scalar and expansion ledgers.
+    internal XsdCompiledSchema Compile(XmlDocument schema, SchemaCompileContext context)
+    {
+        ArgumentNullException.ThrowIfNull(schema); ArgumentNullException.ThrowIfNull(context);
+        return new XsdCompilation(context.Options, context.Operation, context.Resources).Compile(schema);
+    }
+
     public XsdCompiledSchema Compile(XmlDocument schema, SchemaCompileOptions options, ISchemaOperation operation)
     {
         ArgumentNullException.ThrowIfNull(schema); ArgumentNullException.ThrowIfNull(options); ArgumentNullException.ThrowIfNull(operation);
@@ -53,8 +61,8 @@ internal sealed class XsdCompilation
         internal string ElementForm = "unqualified", AttributeForm = "unqualified", Block = "", Final = "";
     }
     private sealed record Declaration(Source Source, XmlNode Node, SchemaName Name, SchemaName? Previous = null, SchemaName? Original = null);
-    internal XsdCompilation(SchemaCompileOptions options, ISchemaOperation operation)
-    { this.options = options; op = operation; loader = new(options, operation); }
+    internal XsdCompilation(SchemaCompileOptions options, ISchemaOperation operation, SchemaResourceLoader? resources = null)
+    { this.options = options; op = operation; loader = resources ?? new(options, operation); }
 
     internal XsdCompiledSchema Compile(XmlDocument document)
     {
@@ -801,6 +809,7 @@ internal sealed class XsdCompilation
                 AttributeGroup(original, originalBindings, out var originalWildcard);
                 RetainGroupRestriction(owner, original, "attribute-group", null, null, bindings, originalBindings, wildcard, originalWildcard);
             }
+            RetainGroupCheckpoint(owner, "attribute-group", null, bindings, wildcard);
         }
         finally { expanding.Remove(key); }
     }
@@ -888,6 +897,7 @@ internal sealed class XsdCompilation
                 var originalParticle = new XsdParticle(originalTerm, BigInteger.One, BigInteger.One, At(original.Source, original.Node));
                 RetainGroupRestriction(owner, original, "model-group", particle, originalParticle, [], [], null, null);
             }
+            RetainGroupCheckpoint(owner, "model-group", particle, [], null);
             return (XsdGroupTerm)particle.Term;
         }
         finally { expanding.Remove(key); }
@@ -913,6 +923,21 @@ internal sealed class XsdCompilation
         if (count > 1) Error("Multiple redefinition self-references.", At(owner.Source, owner.Node));
         return count;
     }
+    private void RetainGroupCheckpoint(Declaration owner, string kind, XsdParticle? particle,
+        IReadOnlyList<XsdAttributeBinding> bindings, XsdWildcard? wildcard)
+    {
+        // A group can be unused or displaced by redefine. Its immutable program
+        // still needs content consistency and declaration/facet finalization.
+        // Share the existing redefine carrier identity: repeated expansion does
+        // not publish duplicate checkpoints or overwrite a restriction relation.
+        var name = new SchemaName(owner.Source.Target, "#" + kind + ":" + owner.Name.LocalName);
+        if (types.ContainsKey(name)) return;
+        Components(At(owner.Source, owner.Node));
+        types.Add(name, new(name, AnyType, XsdDerivation.Restriction, false, true, [], [],
+            particle is null ? XsdContentKind.Empty : XsdContentKind.ElementOnly, null,
+            particle, bindings, wildcard, At(owner.Source, owner.Node)));
+    }
+
     private void RetainGroupRestriction(Declaration owner, Declaration original, string kind,
         XsdParticle? currentParticle, XsdParticle? originalParticle,
         IReadOnlyList<XsdAttributeBinding> currentAttributes, IReadOnlyList<XsdAttributeBinding> originalAttributes,

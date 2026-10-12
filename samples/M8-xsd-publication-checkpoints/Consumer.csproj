@@ -1,0 +1,8 @@
+<Project Sdk="Microsoft.NET.Sdk">
+<PropertyGroup><OutputType>Exe</OutputType><AssemblyName>Xemele.Benchmarks</AssemblyName></PropertyGroup>
+<PropertyGroup Condition="'$(XsdXmlOnly)' == 'true'"><DefineConstants>$(DefineConstants);XML_ONLY</DefineConstants></PropertyGroup>
+<ItemGroup>
+<ProjectReference Include="../../src/Xemele/Xemele.csproj" Condition="'$(XsdXmlOnly)' != 'true'" />
+<ProjectReference Include="../../docs/reports/M8-xsd-compile/XmlOnly/XmlOnly.csproj" Condition="'$(XsdXmlOnly)' == 'true'" />
+</ItemGroup>
+</Project>
