@@ -15,3 +15,5 @@ Intentional prior test identity transitions (no matching-engine change):
 Correctness command: `python3 docs/reports/M8-xsd-schema-syntax/check.py`. Allocation preparation/measurement is separate and requires the coordinator host lease; correctness never samples allocation counters.
 
 Post-repair at444365439998500d6fac163af1a1c2259ec31168:1146/1146 tests=33owned+1113affected;safe42;public1417/evaluation2/facade7/compiler257/identity24/content9;normal+true source-linked XML-only consumers. Supplemental full model316+additive139 matched with identical runtime. Omitted-owned-row control rejected. Exact case inventory/checker updated without rerunning unchanged runtime tests. Allocation proposal/preflight are separate; task A3 stays pending actual allocation grant/run.
+
+Granted allocation run passed after fresh11actor ACKs; coordinator durable cleanup RELEASE preceded raw inspection. See allocations.md for actual owned-cost/cold/positive/retained numbers. A3 now passed; branch task implemented, integration_revision remains unset. No reruns were required after evidence-only edits.

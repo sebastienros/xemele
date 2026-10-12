@@ -4,7 +4,7 @@
   "milestone": "M8",
   "title": "Enforce XSD schema syntax and restricted identity paths",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M8 coordinator / assigned isolated schema syntax worker",
   "branch": "codex/m8-xsd-schema-syntax",
   "base_revision": "ea505cff902482ecabfa04266c353ee455981c78",
@@ -55,8 +55,15 @@
     {
       "id": "M8-xsd-schema-syntax-A3",
       "description": "Reproduce original failures before repair, prove unchanged independent corpus witnesses and focused valid/invalid/budget controls after repair, preserve affected earlier tests/public1417/frozen internal APIs and normal/true XML-only consumers, and record actual allocation evidence for changed parser/compiler routes.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "original-baseline",
+        "branch-correctness",
+        "checker-omission-control",
+        "supplemental-model-freeze",
+        "allocation-preparation",
+        "granted-allocation"
+      ]
     }
   ],
   "implementation": [
@@ -119,18 +126,28 @@
       "result": "passed",
       "summary": "12 owned-output routes x16warmups/x64operations consumed with all GC/allocation counters disabled,16 retained outputs. 456 frozen identities verified elevated; actual supervised child78856 exit0/reaped/groupabsent/logclosed, pre/post identities unchanged. Manifest f613780fa3d57c7e0b1f82054c5ccb32f14c24c579f17c6839dfb220b56a1ce8; supervisor d95f10918f135bfe80a739dc0db85193a8ec73850da0ed9b8f312d883ea8e6eb. No measurement yet.",
       "artifact": "docs/reports/M8-xsd-schema-syntax/allocation-preflight.json"
+    },
+    {
+      "id": "granted-allocation",
+      "kind": "check",
+      "revision": "28e26b68231ca3981702b2e17d7fd445afe42c4c",
+      "command": "Coordinator sole launch: python3 docs/reports/M8-xsd-schema-syntax/measure.py --granted f613780fa3d57c7e0b1f82054c5ccb32f14c24c579f17c6839dfb220b56a1ce8 2026-10-12T06:43:03.899271+00:00 2026-10-12T06:43:33.899271+00:00",
+      "result": "passed",
+      "summary": "Actual granted allocation-only12 routes x16warm/x64ops, both disabled control and measured children exited0/reaped/groupsabsent/logclosed.456identities matchbefore/after. Root durable RELEASEc3b9438f625dcd941087c83a841bb369fb373884 before rawinspection; grant aed90f7b61b688697d689af9178bae1f774d7d22. Cold2482032B,positive1048B,16ownedretained delta634208B. Compiler short/long/multilingual74608B/op,group78784,invalid4536\u20134560;path dot832/long992/multilingual1016/invalid1928;publiccomposition1393496.25. No BDN/throughput or zero-owned-output allocation claim; rawoutputs ignored.",
+      "artifact": "docs/reports/M8-xsd-schema-syntax/allocations.md"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Accepted runtime unchanged; owned/affected correctness passed. Allocation controls preparing; task in_progress until actual granted measurement.",
+    "summary": "Three unchanged original W3C invalid schemas now reject through public facade; global group syntax and borrowed charged documentation language validation fixed; explicit self/descendant axes reject while legal dot/child/attribute paths preserved. All scope/tests transitions documented. Branch implemented; coordinator integration verification remains.",
     "checks": [
-      "1146 correctness tests passed (33 owned+1113 affected); resolver42 passed; exact APIs and normal/XML-only consumers passed.",
-      "Pure checker omitted-owned-case control rejected; all6 original schema bytes match pinned hashes.",
-      "Planning185 tasks/diff check passed."
+      "1146/1146 owned+affected (33owned,1113affected) and42safe resolver passed; baseline three no-exception failures preserved.",
+      "Exact public1417/model316+139/compiler257/identity24/evaluation2/content9/facade7 matched; normal+true source-linked XML-only consumers passed.",
+      "All6 original fixture hashes verified; omitted-owned-row checker control rejected; planning185tasks/diffcheck passed.",
+      "Granted allocation12routes consumed;456identities before/after;bothchildrenexit0/reaped/groupsabsent/logsclosed; durable RELEASE beforeinspection."
     ],
     "remaining": [
-      "Coordinator-only fresh exact lease measurement, cleanup RELEASE, final allocation evidence."
+      "Coordinator integration and verification only."
     ],
     "requests": []
   }
