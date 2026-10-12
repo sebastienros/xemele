@@ -1,0 +1,40 @@
+{
+  "task": "M8-datatype-constraint-lexical",
+  "reviewed_revision": "a58aed481ea2c6831111b73d037f92d1da21a2c1",
+  "source_sha256": {
+    "Constraint.cs": "51c5d8ec5f85ad0124ded39a42a40fe1864ace12cae7e0f0b6b32887f8453aac",
+    "Numeric.cs": "6038b1b161def79f555478cdd8fef4553305460797abd9664889428c8f057fc7",
+    "Temporal.cs": "c6b1eefee310f02852111151040ac7d7653d04077203af8bd504cd63fa772910",
+    "TextBinary.cs": "1379f07f2f1b22fcd12eade624f325ee412455d49e336cef541cdd4c49bb97b1",
+    "Writer.cs": "11a90b5bc49e9d3e7ffcbe45045081119e921bce50e17555d43d24f296cebf4a"
+  },
+  "reviewers": [
+    {
+      "agent": "/root/review_m8_contract",
+      "scope": "Normative XSD1.0 canonical mappings, selected list/union identity, QName/context fallback and actual-type lexical validation",
+      "result": "accepted; no concrete blocker",
+      "notes": "Known-output boundary tests independent; random round trips supplementary. Source review only. Four added facts were later actually included in worker731."
+    },
+    {
+      "agent": "/root/review_m8_model",
+      "scope": "Accounting/ownership/checked capacity/reservations/cancellation/caller exceptions and agreed architecture",
+      "result": "accepted; no concrete blocker",
+      "notes": "Both measure/write passes charged; transient spans synchronous; private valid value/lexical pairing; bounded float scratch; temporal limbs charged. Ledger totals establish boundaries, not independent proof of all accounting."
+    }
+  ],
+  "worker_evidence": {
+    "actual_revision": "a58aed481ea2c6831111b73d037f92d1da21a2c1",
+    "tests_passed": 731,
+    "own": 86,
+    "affected": 645,
+    "errors_failures_skips_not_run": 0,
+    "build_warnings_errors": 0,
+    "api_public": 1410,
+    "frozen_datatypes": 316,
+    "frozen_facets": 316,
+    "normal_and_true_xml_only_consumers": "passed",
+    "count_assertion_correction": "Initial runner wrongly expected greater than800; preserved actual731 output reparsed without test rerun.",
+    "allocation": "not yet measured; source accepted for counter-disabled preparation only"
+  },
+  "integration": "pending root actual checks"
+}
