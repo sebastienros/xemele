@@ -4,7 +4,7 @@
   "milestone": "M8",
   "title": "RELAX NG conformance",
   "kind": "verification",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M8 coordinator01a12c6c-b333-71d3-877f-0d186618e21d / assigned isolated worker",
   "branch": "codex/m8-rng-corpus",
   "base_revision": "92015976e4d4b82a747c0c6fdd300f929e6227ee",
@@ -34,29 +34,36 @@
       "status": "passed",
       "evidence": [
         "fixture-oracle-integrity",
-        "independent-reference-rerun"
+        "independent-reference-rerun",
+        "integrity-and-planning-final",
+        "differential-final"
       ]
     },
     {
       "id": "M8-rng-corpus-A2",
       "description": "All advertised RELAX NG XML syntax/profile cases pass with no unexplained reference mismatches.",
-      "status": "failed",
+      "status": "passed",
       "evidence": [
         "upstream-original-run",
         "readiness-full",
-        "independent-reference-rerun"
+        "independent-reference-rerun",
+        "conformance-final",
+        "differential-final",
+        "joined-final-checks"
       ]
     },
     {
       "id": "M8-rng-corpus-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
+      "status": "passed",
       "evidence": [
         "rng-facade-preservation",
         "rng-compiler-preservation",
         "compiled-public-api",
         "frozen-rng-api",
-        "normal-and-xml-only-usage"
+        "normal-and-xml-only-usage",
+        "preservation-and-usage-final",
+        "joined-final-checks"
       ]
     }
   ],
@@ -157,19 +164,66 @@
       "result": "passed",
       "summary": "180 tasks validate;git diff --check passes. Only owned task paths/record changed. Final task-record validation rerun before evidence commit.",
       "artifact": null
+    },
+    {
+      "id": "joined-final-checks",
+      "kind": "check",
+      "revision": "a0cb11cd96672fe03efd1e93d2de8ea98e3dfc7d",
+      "command": "python3 docs/reports/M8-rng-corpus/checks.py",
+      "result": "passed",
+      "summary": "Exit0 at joined verified lexical runtime:417conformance+2real differential+89RNGfacade+88compiler+80lexical correctness allpassed,zero failures/errors/skips/notrun;1410compiledpublic+444frozen,normal/XML-only consumer,offlineintegrity/planning182/diffpassed. No counters/measurement/timing selected.",
+      "artifact": "docs/reports/M8-rng-corpus/handoff.md"
+    },
+    {
+      "id": "conformance-final",
+      "kind": "check",
+      "revision": "a0cb11cd96672fe03efd1e93d2de8ea98e3dfc7d",
+      "command": "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet --fx-version 10.0.11 tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll -class Xemele.Conformance.Tests.RelaxNg.* -result-xml artifacts/M8-rng-corpus/checks/conformance.xml",
+      "result": "passed",
+      "summary": "417/417passed;0failed/errors/skips/notrun. Unchanged409schema/626instance expectations via3x3public string/DOM/shortUTF8stream matrix,integrity+7boundary checks. Alloriginal9schema failures resolved by verified lexicalrepair,without fixture/hash/oracle changes; full frozenXML profile applicable.",
+      "artifact": "docs/reports/M8-rng-corpus/handoff.md"
+    },
+    {
+      "id": "differential-final",
+      "kind": "check",
+      "revision": "a0cb11cd96672fe03efd1e93d2de8ea98e3dfc7d",
+      "command": "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet --fx-version 10.0.11 tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll -class Xemele.Differential.Tests.RelaxNg.* -result-xml artifacts/M8-rng-corpus/checks/differential.xml",
+      "result": "passed",
+      "summary": "Both2real-reference tests passed.1035total checks=1028authored/original predicates+7inferredlibxml schema prerequisites. PinnedJing1035agreements;libxml1020agreements+15exact version/hash/spec limitations (notagreements);0unexplained mismatches. Product independently meets all original/profile expected outcomes,including every reference-limitation fixture.",
+      "artifact": "docs/reports/M8-rng-corpus/handoff.md"
+    },
+    {
+      "id": "preservation-and-usage-final",
+      "kind": "check",
+      "revision": "a0cb11cd96672fe03efd1e93d2de8ea98e3dfc7d",
+      "command": "python3 docs/reports/M8-rng-corpus/checks.py",
+      "result": "passed",
+      "summary": "Actual existing89facade/88compiler and80verifiedlexical correctness pass;1410compiledpublic/444frozen match. Existing normal consumer and-p:RngXmlOnly=true build/execution each pass immutable schema/validorder/invalidpositiveInteger/unchangedinstance semantics using only verified XML prerequisites;no latermilestone dependency.",
+      "artifact": "docs/reports/M8-rng-corpus/handoff.md"
+    },
+    {
+      "id": "integrity-and-planning-final",
+      "kind": "check",
+      "revision": "a0cb11cd96672fe03efd1e93d2de8ea98e3dfc7d",
+      "command": "python3 docs/reports/M8-rng-corpus/verify.py; python3 tools/planning/tasks.py validate; git diff --check",
+      "result": "passed",
+      "summary": "Full originalJing source/oracle/byte regeneration and all hashes pass;392upstream+17authored schemas,598upstream+28authored instances,32external resources,0missing/excluded cases/resources. Final task evidence/implemented metadata validated182records and whitespacechecked before handoff commit.",
+      "artifact": "docs/reports/M8-rng-corpus/handoff.md"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Resumed after coordinator verified lexical repair at1073dd8a; main b22333d8 merged into isolated corpus branch. Original predicates and historical failed evidence remain unchanged; final correctness checks pending.",
+    "summary": "Implemented at actual tested fullsourcea0cb11cd96672fe03efd1e93d2de8ea98e3dfc7d after explicit merge of verifiedmainb22333d8/verifiedlexicalrepair. Original9predicates and all historical failures preserved. Task remains branchimplemented,integration_revision null; root owns integrationverification.",
     "checks": [
-      "417 conformance:408pass/9original schema failures,0skipped/errors/not-run.",
-      "Corrected differential:2fail only same9 product schemas;1035total=1028authored predicates+7inferred schema prerequisites;Jing1035agreement,libxml2 1020agreement+15 explicit nonagreement limitations;0 unexplainedreference mismatch.",
-      "89 RNGfacade+88compiler;1410 compiledpublic+444 frozenRNG;normal/XML-only usage;offline corpus integrity;planning180;diffcheck pass.",
-      "Full readiness initially hit duplicated profile inventory;affected runner corrected and genuinely rerun. No failure concealed."
+      "417conformance+2realdifferential+89RNGfacade+88compiler+80verifiedlexical correctness allpass;zero failed/errors/skipped/notrun.",
+      "1035referencechecks=1028authored+7inferredschema prerequisites;Jing1035agreements/libxml1020agreements+15declaredlimitations;0unexplainedmismatches,0missing cases/resources.",
+      "PublicAPI1410/frozenRNG444;normal/XML-only usage;offline source/hash/oracle regeneration;planning182/diffpass.",
+      "All corpus fixtures/oracles unchanged by runtime repair;bounded independent source/oracle review accepted.",
+      "No runtime/shared/project/build authorship,no push/newactor/latermilestone/no allocationcounter/BDN/timing work;zero ownedjobs/PIDs/sessions/cells."
     ],
     "remaining": [
-      "Run unchanged417 corpus cases and full1035 reference checks against joined verified runtime; rerun applicable preservation/API/normal/XML-only/integrity/planning checks; retain historical failures."
+      "Coordinator integrates,reruns applicable combinedchecks,records verification and setsverified.",
+      "Transient ignored raw outputs/preparedreference inputs retained for rootreview/rerun;remove generatedoutputs after coordinatorverification."
     ],
     "requests": []
   }

@@ -1,4 +1,6 @@
-# Readiness checkpoint — lexical repair pending
+# Historical readiness checkpoint — lexical repair pending
+
+This historical blocked checkpoint was resolved after verified lexical repair. Final actual source `a0cb11cd96672fe03efd1e93d2de8ea98e3dfc7d` passes all required checks; see `handoff.md`. The failed evidence below is preserved.
 
 Implementation/source HEAD: `d3d2a112048cdfb3d6a8fcb0617061c32ca98ee9`. Immutable upstream/oracle handoff: `b18c2a5bd5cf8accfb62a3d4cba260ad6cbb78b9`. Full supplemental harness source: `3493545e27fd32abddec24bb31f639d273827a46`. The last source change fixes duplicate supplemental inventory loading in the differential runner; all other check inputs are unchanged from the full readiness run.
 
