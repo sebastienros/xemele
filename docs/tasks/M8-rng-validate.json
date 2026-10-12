@@ -152,11 +152,20 @@
       "result": "passed",
       "summary": "All10route sample boundaries/totals/denominators accepted; variable compile/coalesced/interleave frequencies retained without per-operation distribution or zero/speed claims. Raw artifacts preserved for coordinator cleanup.",
       "artifact": "docs/reports/M8-rng-validate/measurements.md"
+    },
+    {
+      "id": "final-metadata-check",
+      "kind": "check",
+      "revision": "c1df5c9f5e16d968ae474981a95ee292e5f9e5b7",
+      "command": "python3 tools/planning/tasks.py validate && git diff --check && git status --short",
+      "result": "passed",
+      "summary": "Committed implemented task metadata validates179tasks; diff-check passes and tracked/untracked nonignored tree clean. Runtime source unchanged from reviewed/tested ec0699e1. All actual test/review/allocation evidence retained; no source edits after freeze.",
+      "artifact": "docs/reports/M8-rng-validate/handoff.md"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Implemented on isolated branch at source ec0699e10605c1d89eecfdbe192a7150b81fe1be.89owned/1191predecessor cases, public/frozen contracts, normal/XML-only consumers, source review and released allocation evidence pass. Preparing final metadata validation and terminal all-write relinquishment; integrated verification remains coordinator-owned.",
+    "summary": "TERMINAL: implemented; all criteria pass. Source ec0699e10605c1d89eecfdbe192a7150b81fe1be, accepted89owned/1191predecessor/API/consumer/review/allocation evidence. Worker relinquishes ALL owned writes including every owned subtree/file and docs/tasks/M8-rng-validate.json after this final metadata commit. Clean HEAD/zero active owned jobs/PIDs/children/cells confirmed at terminal handoff. Raw ignored artifacts preserved for root cleanup; only coordinator follow-up may resume worker.",
     "checks": [
       "python3 -B docs/reports/M8-rng-validate/checks.py:89owned/1191predecessor,1410public/444frozen RNG, normal/XML-only consumers,planning179/diffcheck PASS",
       "10counter-disabled controls/434identities/actualcleanup preflight PASS",
@@ -164,8 +173,7 @@
       "Root independently accepted source delta and allocation evidence; reports README.md,readiness.md,measurements.md"
     ],
     "remaining": [
-      "Final committed metadata planning validation/diffcheck, then terminal ownership relinquishment",
-      "Coordinator integrate branch and record verified/integration_revision only after integrated checks"
+      "Coordinator integrate branch and record verified/integration_revision only after integrated checks; worker performs no further writes without focused follow-up"
     ],
     "requests": []
   }
