@@ -4,7 +4,7 @@
   "milestone": "M8",
   "title": "XSD identity constraints",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M8 coordinator01a12c6c-b333-71d3-877f-0d186618e21d / assigned isolated worker",
   "branch": "codex/m8-xsd-identity",
   "base_revision": "465b9e5544f83e320593218404d29a26dfad8985",
@@ -34,29 +34,116 @@
     {
       "id": "M8-xsd-identity-A1",
       "description": "Implement unique/key/keyref scope, restricted XPath selection and typed-value equality using the approved hook.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "identity-reviewed-correctness",
+        "identity-independent-review"
+      ]
     },
     {
       "id": "M8-xsd-identity-A2",
       "description": "Test duplicates, absent/multiple fields, references, scope, namespaces and memory/work budgets.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "identity-reviewed-correctness",
+        "identity-independent-review",
+        "identity-allocations"
+      ]
     },
     {
       "id": "M8-xsd-identity-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "identity-reviewed-correctness",
+        "identity-independent-review",
+        "identity-reviewed-control",
+        "identity-allocations"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Validation/Xsd/Identity/Contracts.cs: exact frozen hooks and shared accounting",
+    "src/Xemele/Validation/Xsd/Identity/Compiler.cs: XsdIdentityCompiler and prepared program",
+    "src/Xemele/Validation/Xsd/Identity/XPath.cs: restricted XPath compilation and event matching",
+    "src/Xemele/Validation/Xsd/Identity/Session.cs: fresh scope/tuple/table sessions and typed equality",
+    "tests/Xemele.Tests/M8-xsd-identity/: 149 independent owned cases",
+    "samples/M8-xsd-identity/Program.cs: real compiler/facet/hook consumer",
+    "docs/api/M8-xsd-identity.txt: empty additive public fragment",
+    "docs/reports/M8-xsd-identity/README.md: design, historical setup failures and boundaries"
+  ],
+  "evidence": [
+    {
+      "id": "identity-correctness",
+      "kind": "check",
+      "revision": "c3b29efa6066f9a80bbf01dc6bce489b89780d73",
+      "command": "python3 docs/reports/M8-xsd-identity/check.py",
+      "result": "passed",
+      "summary": "Pinned Release .NET10.0.11, zero build warnings/errors;124 owned+546 affected=670 cases and42 safe resolver cases passed, zero errors/failures/skips/not-run. Exact24 frozen internal and1403 public members matched. Real normal+source-linked XML-only consumers passed; planning179 and whitespace passed. No WarmBorrowedReadsAllocateNothing or allocation counters ran.",
+      "artifact": "docs/reports/M8-xsd-identity/README.md"
+    },
+    {
+      "id": "identity-control",
+      "kind": "check",
+      "revision": "c3b29efa6066f9a80bbf01dc6bce489b89780d73",
+      "command": "dotnet --fx-version 10.0.11 benchmarks/Xemele.Benchmarks/M8-xsd-identity/bin/probe/net10.0/Xemele.Benchmarks.dll --control artifacts/M8-xsd-identity/control.json",
+      "result": "passed",
+      "summary": "Nine consumed short/long/multilingual match,typed equality,prepared,valid/invalidhook/session routes;32warm+64operations each with allocation/retention/timing counters completely disabled. No measurement or throughput claim.",
+      "artifact": "docs/reports/M8-xsd-identity/README.md"
+    },
+    {
+      "id": "identity-reviewed-correctness",
+      "kind": "check",
+      "revision": "36b7f1379988da6b9c1e5915b513ccc33b48a3a4",
+      "command": "python3 docs/reports/M8-xsd-identity/check.py",
+      "result": "passed",
+      "summary": "Release .NET10.0.11 zero build warnings/errors;149 owned+546 affected=695 cases plus42 safe resolver cases all passed, zero errors/failures/skips/not-run. Exact24 frozen internal/1403 public declarations matched; normal and genuinely source-linked XML-only real consumers passed; planning179/diffcheck passed. Revised source includes independently reviewed descendant-self correction and mandatory polled axis/scalar fixes; no allocation run.",
+      "artifact": "docs/reports/M8-xsd-identity/README.md"
+    },
+    {
+      "id": "identity-reviewed-control",
+      "kind": "check",
+      "revision": "36b7f1379988da6b9c1e5915b513ccc33b48a3a4",
+      "command": "dotnet --fx-version 10.0.11 benchmarks/Xemele.Benchmarks/M8-xsd-identity/bin/probe/net10.0/Xemele.Benchmarks.dll --control artifacts/M8-xsd-identity/review-control.json",
+      "result": "passed",
+      "summary": "Rebuilt corrected-source probe with zero warnings/errors; nine consumed32warm+64operation routes passed with all allocation/retention/timing counters disabled. No measurement.",
+      "artifact": "docs/reports/M8-xsd-identity/README.md"
+    },
+    {
+      "id": "identity-independent-review",
+      "kind": "review",
+      "revision": "36b7f1379988da6b9c1e5915b513ccc33b48a3a4",
+      "command": "Independent bounded source review relayed by M8 coordinator01a12c6c-b333-71d3-877f-0d186618e21d",
+      "result": "passed",
+      "summary": "Final source36b7f137 accepted with no remaining scoped blockers. Reviewer accepted scope/typed equality/upward conflict/descendant-self behavior; mandatory axis-lookahead and scalar-validator polling fixes accepted. Four relayed compiler/session/XPath/parser-budget SHA256 identities independently match this checkout.",
+      "artifact": "docs/reports/M8-xsd-identity/review.md"
+    },
+    {
+      "id": "identity-allocations",
+      "kind": "check",
+      "revision": "36b7f1379988da6b9c1e5915b513ccc33b48a3a4",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 /Users/sebastienros/.codex/worktrees/26b6/xemele/benchmarks/Xemele.Benchmarks/M8-xsd-identity/bin/probe/net10.0/Xemele.Benchmarks.dll --measure /Users/sebastienros/.codex/worktrees/26b6/xemele/artifacts/M8-xsd-identity/measurement-1/allocations.json",
+      "result": "passed",
+      "summary": "One exact root-executed prebuilt child under973968a68a3b6d37c8a24866a3b2c739ad316652; durable RELEASEae9cf41ea49a87752a8256acedc987ee9e66ae1a before raw inspection.199identities stable, child8867 exit0/reaped/group absent/log closed.576observations:320borrowed0B,256ownedpositive; prep3216,validhook3944,invalid3632,session952Bop constant64each. Cold304208/positive1048, approximate wholeheap retained32programs+147376/32sessions+61136 distinct. Worker and root independently inspected/accepted rawSHA5e5cfd83fdc2dd9ae222307ca0ff6262d5f2ea2d61af26d46f02080080cc9b05. No speed/BDN/whole-validator0/x64claim.",
+      "artifact": "docs/reports/M8-xsd-identity/allocations.md"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "",
-    "checks": [],
-    "remaining": [],
+    "summary": "Full frozen internal XSD1.0 identity compiler/program/factory/session implemented; final source36b7f137 independently accepted,737branch checks/APIs/both consumers passed, sole released root-run allocation evidence independently accepted. Terminal worker returns ALL owned writes and taskJSON to coordinator; no further source/measurement/task authorized.",
+    "checks": [
+      "At36b7f1379988da6b9c1e5915b513ccc33b48a3a4:149owned+546affected+42safeResolver=737pass;zero errors/failures/skips/not-run/buildwarnings;24frozen/1403public exact,both real normal/XMLonly consumers,planning179/diffcheck.",
+      "Independent bounded source review accepted final36b7f137 with exact four reviewer hashes checked; mandatory axis/scalar polling gaps corrected with18passing regressions.",
+      "Nine rebuilt controls passed with all allocation/retention/timing counters disabled;199prepared identities/fresh child7897 cleanup preflight passed. Initial sandbox cleanup PermissionError retained as historical setup failure.",
+      "One root-granted allocation child8867 completed0/reaped/groupabsent/logclosed; before/after199identities stable and durable RELEASE before inspection;320borrowed-zero/256owned-positive exact observations, explicit cold/retention boundaries. Root independent inspection accepted.",
+      "Root reports combined737checks/APIs/both consumers passed at8ba5a6ca3bfef2e2c6a29bf1dc3151a010f7b224; coordinator evidence, not worker rerun or verified task status."
+    ],
+    "remaining": [
+      "Coordinator final branch integration/verified task record and core dependency unlock.",
+      "Coordinator transient raw cleanup after inspection; raw arrays/logs/control outputs remain untouched.",
+      "Facade/evaluator must use the real prepared program even for zero constraints, visit every element/wildcard scope, deliver every effective typed attribute and final element value once, and preserve one operation/provider graph and fatal/incomplete stop provenance.",
+      "Single Arm64 fixture evidence only; later full XSD/corpus/composition and cross-architecture release verification remain their owning tasks."
+    ],
     "requests": []
   }
 }
