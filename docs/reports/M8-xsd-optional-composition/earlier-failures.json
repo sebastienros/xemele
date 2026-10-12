@@ -1,0 +1,14 @@
+{
+  "failures": [
+    {
+      "phase": "baseline build",
+      "outcome": "failed CS0649 on unassigned test helper fields",
+      "fix": "Use init-only properties for later fault injection; no runtime changes or criteria changes."
+    },
+    {
+      "phase": "first focused run",
+      "outcome": "66/67 passed; depth positive exhausted one ExternalResources slot before nested absence, exercising existing resource guard",
+      "fix": "Depth control independently supplies two resource slots; exact depth2 versus one-short1 unchanged. No runtime fix or cap relaxation."
+    }
+  ]
+}

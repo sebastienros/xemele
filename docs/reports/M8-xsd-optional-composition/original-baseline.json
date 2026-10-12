@@ -1,0 +1,82 @@
+{
+  "revision": "6df0921b2fd40f6d7236441e03e3d20549506dd6",
+  "compiler_sha256": "6d7f6a673f964c819339058d2e320b2b4fc18fe61daf27673745711f495cb929",
+  "commands": [
+    {
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "restore",
+        "tests/Xemele.Tests/Xemele.Tests.csproj",
+        "--source",
+        "/Users/sebastienros/.nuget/packages",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:RuntimeFrameworkVersion=10.0.11",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "build",
+        "tests/Xemele.Tests/Xemele.Tests.csproj",
+        "-c",
+        "Release",
+        "--no-restore",
+        "--disable-build-servers",
+        "-m:1",
+        "-p:RuntimeFrameworkVersion=10.0.11",
+        "-p:UseSharedCompilation=false",
+        "-p:NuGetAudit=false"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "--fx-version",
+        "10.0.11",
+        "tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll",
+        "-class",
+        "Xemele.Tests.M8XsdOptionalComposition.OriginalTests",
+        "-parallelMode",
+        "none",
+        "-noLogo",
+        "-noColor",
+        "-result-xml",
+        "artifacts/M8-xsd-optional-composition/baseline.xml"
+      ],
+      "exit": 0
+    }
+  ],
+  "observations": [
+    {
+      "identity": "Xemele.Tests.M8XsdOptionalComposition.OriginalTests.OriginalAcquisitionAndInstanceObservation(group: \\\"anyURI_a002_1337\\\", schemaPath: \\\"msData/datatypes/Facets/anyURI/anyURI_a002.xsd\\\", instancePath: \\\"msData/datatypes/Facets/anyURI/anyURI_a002.xml\\\", calls: 3)",
+      "result": "Pass",
+      "output": "anyURI_a002_1337: schema incomplete-refusal SCHEMA.ResourceDenied; instance schema-unavailable; original expectation preserved\n"
+    },
+    {
+      "identity": "Xemele.Tests.M8XsdOptionalComposition.OriginalTests.OriginalAcquisitionAndInstanceObservation(group: \\\"anyURI_a004_1339\\\", schemaPath: \\\"msData/datatypes/Facets/anyURI/anyURI_a004.xsd\\\", instancePath: \\\"msData/datatypes/Facets/anyURI/anyURI_a004.xml\\\", calls: 3)",
+      "result": "Pass",
+      "output": "anyURI_a004_1339: schema incomplete-refusal SCHEMA.ResourceDenied; instance schema-unavailable; original expectation preserved\n"
+    },
+    {
+      "identity": "Xemele.Tests.M8XsdOptionalComposition.OriginalTests.OriginalAcquisitionAndInstanceObservation(group: \\\"schD7\\\", schemaPath: \\\"msData/schema/schD7_a.xsd\\\", instancePath: \\\"msData/schema/schD7.xml\\\", calls: 2)",
+      "result": "Pass",
+      "output": "schD7: schema incomplete-refusal SCHEMA.ResourceDenied; instance schema-unavailable; original expectation preserved\n"
+    },
+    {
+      "identity": "Xemele.Tests.M8XsdOptionalComposition.OriginalTests.OriginalAcquisitionAndInstanceObservation(group: \\\"schG8\\\", schemaPath: \\\"msData/schema/schG8_a.xsd\\\", instancePath: \\\"msData/schema/schG8.xml\\\", calls: 2)",
+      "result": "Pass",
+      "output": "schG8: schema incomplete-refusal SCHEMA.ResourceDenied; instance schema-unavailable; original expectation preserved\n"
+    },
+    {
+      "identity": "Xemele.Tests.M8XsdOptionalComposition.OriginalTests.OriginalBytesMetadataAndCopyrightRemainFrozen",
+      "result": "Pass",
+      "output": null
+    }
+  ],
+  "meaning": "Four original schemas refuse SCHEMA.ResourceDenied; instances unassessed, never passing validity. Fifth row pins unchanged bytes/metadata/copyright."
+}
