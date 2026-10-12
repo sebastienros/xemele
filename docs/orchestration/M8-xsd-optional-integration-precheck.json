@@ -1,0 +1,56 @@
+{
+  "task": "M8-xsd-optional-composition",
+  "tested_candidate": "075b033958f321f0046b5b0996de0cfed8a161b0",
+  "source_revision": "5160cfadb64de8555d58e392df5c949fd465a4a6",
+  "status": "Combined commands completed clean; raw correctness results unopened; allocations pending",
+  "root_session": 57682,
+  "root_exit": 0,
+  "lifecycle": {
+    "sequence": [
+      {
+        "command": 0,
+        "pid": 81686,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      {
+        "command": 1,
+        "pid": 81878,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      }
+    ],
+    "commands": [
+      [
+        "python3",
+        "docs/reports/M8-xsd-optional-composition/check.py"
+      ],
+      [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "--fx-version",
+        "10.0.11",
+        "tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll",
+        "-namespace",
+        "Xemele.Tests.M8DatatypesTextBinary",
+        "-method-",
+        "*WarmBorrowed*",
+        "-parallelMode",
+        "none",
+        "-noLogo",
+        "-noColor",
+        "-result-xml",
+        "artifacts/M8-xsd-optional-composition/datatype-supplement.xml"
+      ]
+    ],
+    "maximumSeconds": 900
+  },
+  "raw_results_inspected": false
+}
