@@ -534,30 +534,54 @@ internal sealed class XsdCompilation
             }
         }
         else if (owner.Previous is not null) Error("Redefined complex type requires explicit derivation.", At(s, node));
-        bool attributeSection = false;
+        bool attributeSection = false; XmlNode authoredParticle = default;
         foreach (var child in Children(s, body))
         {
             if (child.LocalName is "attribute" or "attributeGroup" or "anyAttribute") attributeSection = true;
             else if (attributeSection && child.LocalName != "annotation") Error("Content particles and facets precede attribute uses.", At(s, child));
             if (child.LocalName is "sequence" or "choice" or "all" or "group")
-            { if (particle is not null || simpleType is not null) Error("Invalid duplicate particle.", At(s, child)); particle = Particle(owner, child, true); }
+            { if (!authoredParticle.IsDefault || simpleType is not null) Error("Invalid duplicate particle.", At(s, child)); authoredParticle = child; particle = Particle(owner, child, true); }
             else if (child.LocalName is not ("annotation" or "attribute" or "attributeGroup" or "anyAttribute" or "simpleType") && !IsFacet(child.LocalName)) Error("Invalid complex type body.", At(s, child));
             else if ((child.LocalName == "simpleType" || IsFacet(child.LocalName)) && (content.IsDefault || content.LocalName != "simpleContent")) Error("Simple facets outside simple content.", At(s, child));
+        }
+        if (simpleType is null)
+        {
+            Tick(At(s, body));
+            // Structures 3.4.2 clause 2.1 is syntactic, not general nullability.
+            bool emptySyntax = authoredParticle.IsDefault ||
+                particle!.Term is XsdGroupTerm { Particles.Count: 0 } &&
+                (authoredParticle.LocalName is "sequence" or "all" ||
+                 authoredParticle.LocalName == "choice" && particle.MinOccurs == BigInteger.Zero);
+            if (emptySyntax)
+            {
+                if (!mixed) particle = null;
+                else if (particle is not { Term: XsdGroupTerm { Compositor: XsdCompositor.Sequence }, MinOccurs: { IsOne: true }, MaxOccurs: { IsOne: true } })
+                {
+                    var at = At(s, authoredParticle.IsDefault ? body : authoredParticle);
+                    Components(at); Components(at);
+                    particle = new(new XsdGroupTerm(XsdCompositor.Sequence, []), BigInteger.One, BigInteger.One, at);
+                }
+            }
+            else if (particle!.MaxOccurs == BigInteger.Zero)
+                particle = null; // A validated 0..0 top-level particle maps to no component.
         }
         AttributeBody(owner, body, bindings, out wildcard);
         if (baseType is not null)
         {
             if (derivation == XsdDerivation.Extension)
             {
-                if (baseType.Particle is not null)
+                if (particle is null)
                 {
-                    if (particle is not null)
-                    {
-                        if (IsAll(baseType.Particle) || IsAll(particle)) Error("All content cannot be extended with another particle.", At(s, body));
-                        Components(At(s, body)); Components(At(s, body));
-                        particle = new(new XsdGroupTerm(XsdCompositor.Sequence, [baseType.Particle, particle]), BigInteger.One, BigInteger.One, At(s, body));
-                    }
-                    else { particle = baseType.Particle; if (content.LocalName == "complexContent" && node.GetAttribute("mixed") is null && content.GetAttribute("mixed") is null) mixed = baseType.ContentKind == XsdContentKind.Mixed; }
+                    // Clause 3.2.1 inherits the entire base content type, regardless
+                    // of authored mixed attributes, when effective content is empty.
+                    particle = baseType.Particle;
+                    mixed = baseType.ContentKind == XsdContentKind.Mixed;
+                }
+                else if (baseType.Particle is not null)
+                {
+                    if (IsAll(baseType.Particle) || IsAll(particle)) Error("All content cannot be extended with another particle.", At(s, body));
+                    Components(At(s, body)); Components(At(s, body));
+                    particle = new(new XsdGroupTerm(XsdCompositor.Sequence, [baseType.Particle, particle]), BigInteger.One, BigInteger.One, At(s, body));
                 }
                 foreach (var inherited in baseType.Attributes)
                 {
@@ -578,7 +602,7 @@ internal sealed class XsdCompilation
             if (token != "substitution") block.Add(token == "extension" ? XsdTypeBlock.Extension : XsdTypeBlock.Restriction);
         Components(At(s, node));
         types.Add(owner.Name, new(owner.Name, basis, derivation, Boolean(s, node, "abstract"), IsAnonymous(owner.Name), Final(s, node, "restriction extension"), block,
-            simpleType is not null ? XsdContentKind.Simple : mixed ? XsdContentKind.Mixed : particle is null ? XsdContentKind.Empty : XsdContentKind.ElementOnly,
+            simpleType is not null ? XsdContentKind.Simple : particle is null ? XsdContentKind.Empty : mixed ? XsdContentKind.Mixed : XsdContentKind.ElementOnly,
             simpleType, particle, bindings, wildcard, At(s, node)));
     }
     private static bool IsFacet(string name) => name is "length" or "minLength" or "maxLength" or "pattern" or "enumeration" or "whiteSpace" or "maxInclusive" or "maxExclusive" or "minInclusive" or "minExclusive" or "totalDigits" or "fractionDigits";
