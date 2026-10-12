@@ -1,6 +1,6 @@
 """Owned finite command families. No CLI, runtime work or counters on import.
-Accepted supervisor functions are copied unchanged. Nested functions change only
-owned output/environment constants; every cooperative new-session launcher has
+Accepted supervisor cleanup/deadline bodies are preserved; the owned copy pins
+the process-inventory executable. Every cooperative new-session launcher has
 intent/publication/ACK in every ancestor, including root, before exec.
 """
 import json
@@ -88,11 +88,14 @@ class Runner:
         import bindings as b
         try:
             b.review(self.environment['XEMELE_MISSING_REVIEW_SHA256'])
+            b.verify_executable(argv,env)
             b.assert_prior_execution(self.directory)
             restore_before=b.restore_inputs(argv)
+            restore_binding=b.preceding_restore(self.directory,argv,restore_before)
+            restore_scope=b.restore_scope(argv)
             before, folders = b.execution_inputs(argv)
             from diagnostics import capture_inputs
-            inputs=capture_inputs(self.directory,len(self.sequence),list(argv),env)
+            inputs=capture_inputs(self.directory,len(self.sequence),list(argv),env,restore_binding=restore_binding)
         except BaseException:
             self.stopped=True
             raise
@@ -102,6 +105,8 @@ class Runner:
         record['environmentSha256'] = b.identity_sha(env)
         record['beforeBinaryInputs'] = before
         record['beforeRestoreInputs']=restore_before
+        record['restoreScope']=restore_scope
+        record['precedingRestore']=restore_binding
         record['binaryFolders'] = folders
         record['inputReceipt']=inputs['path'];record['inputReceiptSha256']=inputs['sha256']
         record['childHardSeconds'] = child_seconds
@@ -113,6 +118,7 @@ class Runner:
             after, after_folders = b.execution_inputs(argv) if before else ({}, [])
             restore_after=b.restore_inputs(argv)
             record['afterRestoreInputs']=restore_after
+            if restore_scope is not None:assert any(name.endswith('/project.assets.json') for name in restore_after),'Successful restore/build requires complete asset inventory'
             if argv[1:2]==['build']:assert restore_before==restore_after,'Restore-derived inputs changed during no-restore build'
             if before != after or folders != after_folders:
                 record['reason'] = 'InputIdentityChanged'; self.stopped = True

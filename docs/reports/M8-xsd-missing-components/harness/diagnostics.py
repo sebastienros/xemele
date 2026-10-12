@@ -13,12 +13,13 @@ COMPILER = re.compile(r'\b(error|warning)\s+([A-Za-z]+\d+)\s*:\s*(.*)', re.IGNOR
 EXCEPTION = re.compile(r'^(?:Unhandled exception\.\s*)?([\w.]*(?:Error|Exception))\s*:\s*(.*)')
 
 
-def capture_inputs(directory, index, argv, environment):
+def capture_inputs(directory, index, argv, environment, restore_binding=None):
     """Before launch: exact command, reviewed source and selected toolchain identities.
     These describe observed declared inputs, not an exhaustive MSBuild read trace.
     """
     from family import nested
     identities = {}
+    b.verify_executable(argv,environment)
     executable = shutil.which(argv[0], path=environment.get('PATH'))
     assert executable, 'Executable identity unavailable before launch'
     identities[b.key(executable)] = b.digest(executable)
@@ -53,6 +54,7 @@ def capture_inputs(directory, index, argv, environment):
     record = {'argv': list(argv), 'cwd':str(b.ROOT), 'environmentSha256':b.identity_sha(environment), 'capturePhase': 'before-launch',
               'reviewedSourceManifestSha256': b.digest(b.SOURCE),
               'reviewedSourceIdentitiesSha256': b.identity_sha(source['identities']),
+              'precedingRestore':restore_binding,
               'observedInputIdentities': identities, 'observedInputIdentitiesSha256': b.identity_sha(identities),
               'scope': 'reviewed declared source plus observed executable/entry/selected SDK/restore-derived inputs; not exhaustive build reads'}
     path=Path(directory)/f'command-inputs-{index:03d}.json'

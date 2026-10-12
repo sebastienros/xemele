@@ -77,7 +77,7 @@ def main():
         runner.run(b.probe_commands(out,probe)[0],45,environment=b.environment(source['runtimeSourceCommit']))
         disabled=b.verify_probe(out/'disabled.json',probe,False,source['runtimeSourceCommit'])
         runner.run([sys.executable,'tools/planning/tasks.py','validate'],90)
-        runner.run(['git','diff','--check',source['runtimeBaseCommit'],source['runtimeSourceCommit'],'--',*source['authoredPaths']],45)
+        runner.run([str(b.GIT),'diff','--check',source['runtimeBaseCommit'],source['runtimeSourceCommit'],'--',*source['authoredPaths']],45)
         b.assert_prior_execution(runner.directory);b.review(review_sha)
         # Bind full output membership before terminal deletion; retain only the
         # canonical separate API rows, no original raw logs/results/assemblies.

@@ -1,4 +1,4 @@
-"""Caller ownership for nested sessions; accepted supervisor bodies remain unchanged.
+"""Caller ownership for nested sessions; accepted cleanup/deadline bodies remain.
 
 Every nested session publishes a durable group identity before executing workload.
 Pre-launch intents make a missing publication a cleanup failure, never a clean claim.
@@ -153,7 +153,8 @@ def launch_workload(token, argv):
 def group_members_snapshot(groups, timeout):
     """One bounded process-table read for every historical group in this sweep."""
     assert timeout > 0
-    listing = subprocess.check_output(['ps', '-axo', 'pid,pgid'], text=True, timeout=timeout)
+    from bindings import verify_role
+    listing = subprocess.check_output([str(verify_role('ps')), '-axo', 'pid,pgid'], text=True, timeout=timeout)
     live = {}
     for line in listing.splitlines()[1:]:
         pid, group = map(int, line.split())

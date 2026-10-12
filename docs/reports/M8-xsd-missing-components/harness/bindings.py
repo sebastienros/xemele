@@ -2,6 +2,7 @@
 import hashlib
 import json
 import os
+import shutil
 import sys
 import time
 from pathlib import Path
@@ -15,6 +16,8 @@ REVIEW = REPORT / 'harness-review.json'  # Coordinator-owned; never synthesized.
 DOTNET = Path('/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet')
 FLAGS = ['--disable-build-servers','-m:1','-p:RuntimeFrameworkVersion=10.0.11','-p:UseSharedCompilation=false','-p:NuGetAudit=false']
 NUGET = Path('/Users/sebastienros/.nuget/packages')
+GIT = Path('/usr/bin/git')
+PS = Path('/bin/ps')
 
 
 def digest(path):
@@ -33,6 +36,20 @@ def resolve(name):
 
 def identity_sha(value):
     return hashlib.sha256(json.dumps(value,sort_keys=True,separators=(',',':')).encode()).hexdigest()
+
+
+def verify_role(role):
+    expected=json.loads(SOURCE.read_text())['executableRoles'][role]
+    fixed={'git':GIT,'ps':PS}[role].resolve()
+    assert resolve(expected['path']).resolve()==fixed and digest(fixed)==expected['sha256'],'Frozen executable role changed'
+    return fixed
+
+
+def verify_executable(argv,environment):
+    for role,fixed in [('git',GIT),('ps',PS)]:
+        if Path(argv[0]).name==fixed.name:
+            expected=verify_role(role);selected=shutil.which(argv[0],path=environment.get('PATH'))
+            assert selected and Path(selected).resolve()==expected,'PATH selected a different frozen executable'
 
 
 def identities(paths):
@@ -132,6 +149,27 @@ def restore_inputs(argv):
         elif path.name.endswith(('.nuget.g.props','.nuget.g.targets')):paths.append(path)
     if argv[1]=='build':assert any(p.name=='project.assets.json' for p in paths),'Build requires bound restore assets'
     return identities(paths)
+
+
+def restore_scope(argv):
+    if argv[0]!=str(DOTNET) or argv[1:2] not in [['restore'],['build']]:return None
+    active=next(owned(a.split('=',1)[1]) for a in argv if a.startswith('-p:ArtifactsPath='))
+    return dict(project=key(resolve(argv[2])),activeRoot=key(active))
+
+
+def preceding_restore(directory,argv,current):
+    if argv[0]!=str(DOTNET) or argv[1:2]!=['build']:return None
+    assert '--no-restore' in argv,'Only the reviewed no-restore build recipe is allowed'
+    scope=restore_scope(argv);candidate=None
+    from family import clean
+    for path in sorted(Path(directory).glob('lifecycle-*.json')):
+        row=json.loads(path.read_text())
+        if row['argv'][0:2]==[str(DOTNET),'restore'] and row.get('restoreScope')==scope:candidate=(path,row)
+    assert candidate is not None,'No preceding same-project/same-active-root restore'
+    path,row=candidate
+    assert clean(row),'Preceding restore did not complete successfully'
+    assert current==row['afterRestoreInputs'],'Restore outputs changed before no-restore build'
+    return dict(path=key(path),sha256=digest(path),scope=scope,restoreInputsSha256=identity_sha(current))
 
 
 def execution_inputs(argv):

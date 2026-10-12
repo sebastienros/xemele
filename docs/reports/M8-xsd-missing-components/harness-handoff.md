@@ -4,8 +4,8 @@ SOURCE READY / HOLD. This packet authorizes no execution. Every harness import,
 control, restore, build, test, API emission, consumer, preparation, probe and
 allocation counter remains UNRUN. Root owns review/release and task state.
 
-Runtime binding: `02de8b717da487f68dd0f3951682f28f1c69bcb6`, source manifest
-`80b583ce58b73eb3b21c87b4dfb9e5b3d47b9a4020a7885406cc86870bede9ba`.
+Runtime binding: `013f8c3d81f6a62f203f6a95d34d764b221b9db8`, source manifest
+`6e2467ec205aa56cfe5271eb55b0fe223bece43b7d7955080174823e2ed4af12`.
 The runtime includes exact G03a literal substitution leaves, G04u member
 whitespace/enclosing patterns, and G03c provisional dependency proof corrections.
 Runtime bytes remain held for concurrent review.
@@ -16,7 +16,7 @@ of unknown JSON/binary/extensionless payloads, existing/absent root inventories,
 and refusal on any survivor/recreated absent root. Its real command-family
 prepared-discard control deletes retained fixture outputs with an uncreated
 measurement directory, publishes the receipt, then rejects that root's recreation.
-H02 independently binds 686 source-selected methods / 2191 cases in 30 affected
+H02 independently binds 687 source-selected methods / 2192 cases in 30 affected
 namespaces; removed witnesses/namespaces/theory cases, skips and duplicates reject.
 H03 preserves initial birth-inspection exceptions, kills/reaps the exact pre-ACK
 Popen handle without an unverified group signal, and keeps unresolved intents
@@ -29,7 +29,8 @@ fragments, SDK 10.0.400, runtime 10.0.11, reference/apphost packs, host/fxr,
 Python/dotnet/ps/git entry identities, and the statically resolved offline package
 candidate directories. Every actual command records argv/cwd/environment hashes
 and observed inputs before launch. Restore assets must resolve only reviewed
-package coordinates; no-restore builds preserve the generated asset hashes.
+package coordinates; no-restore builds match the preceding successful same-project/same-active-root
+restore receipt, then preserve that complete generated asset/NuGet dictionary.
 Each executed DLL's complete directory, runtime/host and entry identities are
 captured before and after execution and rechecked before later commands.
 These are declared and observed input bindings, not an exhaustive OS/build read
@@ -54,7 +55,9 @@ seconds. Recovery is bounded to 40 seconds and gives no original-phase success.
 Source recipes retain 11 routes, 352 results, 8 schemas, 3001 consumed and 13632
 inspections; these are expectations, with no measured result or performance claim.
 
-Accepted import-visibility supervision is copied byte-for-byte; adapted ownership,
+Accepted import-visibility cleanup/deadline function bodies stay unchanged;
+the owned supervisor inventory call alone selects source-bound absolute /bin/ps.
+Adapted ownership,
 diagnostics and phase scaffolding are attributed with predecessor hashes in the
 source manifest. The frozen `runtime-followup.patch` is an unapplied historical
 draft (SHA `a10425e21729e2cf7d3053c566f031717ee534c23352bcfcaa53a6108c9c38e6`).
@@ -73,3 +76,16 @@ and existing complete blocked-head negatives stay bound. Control09 now supplies
 its own exact scratch harness membership and configuration-presence expectations;
 initial success plus independent membership/configuration/source/plan drift
 refusals are authored. Controls count stays15; execution remains UNRUN.
+
+H16/H17 source addendum: same-project/active-root restore-to-build receipt link
+includes dependency-project assets/props/targets. An owned Python fixture protocol
+uses real registered children to prove unchanged success and changed bytes, added
+files, removed dependency assets refusal before build/no-next; it executes no
+.NET restore/build. Pinned Git and both process inventory calls use absolute
+source-bound roles; owned scratch alternate PATH tools are rejected before launch
+and cannot replace real inventory calls. These assertions extend existing
+controls09/10; count remains15 and all control execution remains UNRUN.
+
+Runtime013f source-5 correction binds actual Choice-to-Choice omitted proof
+transitions, including synthesized and expanded derived choices. Updated fixed
+selection is687 methods/2192 cases; all execution remains UNRUN.

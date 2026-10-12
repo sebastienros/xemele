@@ -14,6 +14,7 @@ from unittest.mock import patch
 import bindings as b
 import family as f
 import recovery
+import diagnostics
 import terminal
 import selection
 import xml.etree.ElementTree as ET
@@ -120,6 +121,7 @@ class Controls(unittest.TestCase):
             with self.assertRaises(AssertionError):b.review(sha)
             input.write_text('reviewed source');manifest['commandRecipes'][0]=['changed','plan'];source.write_text(json.dumps(manifest))
             with self.assertRaises(AssertionError):b.review(sha)
+        self.exercise_frozen_executable_roles()
     def test_10_prelaunch_binary_replacement_and_membership_refuse_next(self):
         binary=self.root/'bin';binary.mkdir();dll=binary/'Test.dll';dep=binary/'Xemele.dll';dll.write_bytes(b'test');dep.write_bytes(b'product')
         values=b.directory_inputs([binary]);values.update(b.identities([b.DOTNET,sys.executable]));b.record_execution(self.root,0,['Test.dll'],values,values,[b.key(binary)])
@@ -134,6 +136,64 @@ class Controls(unittest.TestCase):
                 with self.assertRaises(AssertionError):runner.run([sys.executable,'-c','pass'],15)
             with self.assertRaises(AssertionError):runner.run([sys.executable,'-c','pass'],15)
         finally:runner.close('ExpectedPrelaunchBindingFailure')
+        self.exercise_restore_pairs()
+    def exercise_frozen_executable_roles(self):
+        scratch=self.root/'alternate-path';scratch.mkdir();git_marker=self.root/'alternate-git-ran';ps_marker=self.root/'alternate-ps-ran'
+        for role,marker in [('git',git_marker),('ps',ps_marker)]:
+            path=scratch/role
+            path.write_text('#!'+sys.executable+'\nfrom pathlib import Path\nPath('+repr(str(marker))+').touch()\n')
+            path.chmod(0o700)
+        environment=dict(os.environ,PATH=str(scratch))
+        for role in ['git','ps']:
+            with self.assertRaises(AssertionError):b.verify_executable([role],environment)
+        b.verify_executable([str(b.GIT)],environment);b.verify_executable([str(b.PS)],environment)
+        rejected=self.runner('alternate-git')
+        try:
+            with patch.object(supervision.subprocess,'Popen') as launch:
+                with self.assertRaises(AssertionError):rejected.run(['git','--version'],15,environment=environment)
+                self.assertFalse(launch.called)
+            with self.assertRaises(AssertionError):rejected.run([sys.executable,'-c','pass'],15)
+        finally:rejected.close('ExpectedAlternateExecutable')
+        # Real command ownership requires both inventory paths to run. A hostile
+        # parent/child PATH cannot select the scratch ps implementation.
+        with patch.dict(os.environ,{'PATH':str(scratch)}):
+            with self.runner('absolute-inventory') as runner:runner.run([sys.executable,'-c','pass'],15,environment=environment)
+        self.clean(runner);self.assertTrue(runner.receipt['completed'])
+        self.assertFalse(git_marker.exists());self.assertFalse(ps_marker.exists())
+    def exercise_restore_pairs(self):
+        tool=self.root/'owned-restore-build-fixture';project=self.root/'Fixture.csproj';project.write_text('<Project/>')
+        code='#!'+sys.executable+'\nimport json,sys\nfrom pathlib import Path\nactive=Path(next(a.split("=",1)[1] for a in sys.argv if a.startswith("-p:ArtifactsPath=")))\nif sys.argv[1]=="restore":\n for name in ["fixture","dependency"]:\n  obj=active/"obj"/name;obj.mkdir(parents=True)\n  (obj/"project.assets.json").write_text(json.dumps({"packageFolders":{'+repr(str(b.NUGET))+':{}},"libraries":{}}))\n  (obj/(name+".nuget.g.props")).write_text("<Project/>")\n  (obj/(name+".nuget.g.targets")).write_text("<Project/>")\nelse:(active/"build-ran").touch()\n'
+        tool.write_text(code);tool.chmod(0o700)
+        def fixture_inputs(directory,index,argv,environment,restore_binding=None):
+            # This actual owned Python tool implements a fixture protocol; no
+            # SDK/.NET restore/build is executed or credited by this control.
+            values=b.identities([tool,project,sys.executable]);path=Path(directory)/f'command-inputs-{index:03d}.json'
+            nested.durable(path,dict(argv=list(argv),cwd=str(b.ROOT),environmentSha256=b.identity_sha(environment),
+                reviewedSourceManifestSha256=b.digest(b.SOURCE),observedInputIdentities=values,observedInputIdentitiesSha256=b.identity_sha(values),
+                precedingRestore=restore_binding,scope='Actual owned Python restore/build fixture; no SDK/.NET execution'))
+            return dict(path=str(path),sha256=b.digest(path))
+        with patch.object(b,'DOTNET',tool),patch.object(diagnostics,'capture_inputs',side_effect=fixture_inputs):
+            for variant in ['unchanged','changed-bytes','added-file','removed-dependency-file']:
+                runner=self.runner('restore-'+variant);active=runner.directory/'active'
+                restore=[str(tool),'restore',str(project),'-p:ArtifactsPath='+str(active)]
+                build=[str(tool),'build',str(project),'--no-restore','-p:ArtifactsPath='+str(active)]
+                try:
+                    runner.run(restore,15);expected=runner.sequence[-1]['afterRestoreInputs'];self.assertEqual(len(expected),6)
+                    if variant=='unchanged':
+                        runner.run(build,15);self.assertTrue((active/'build-ran').exists())
+                        link=runner.sequence[-1]['precedingRestore'];self.assertEqual(link['restoreInputsSha256'],b.identity_sha(expected))
+                        self.assertEqual(b.digest(b.resolve(link['path'])),link['sha256'])
+                    else:
+                        if variant=='changed-bytes':(active/'obj/fixture/fixture.nuget.g.targets').write_text('<Project changed="true"/>')
+                        elif variant=='added-file':(active/'obj/fixture/added.nuget.g.props').write_text('<Project/>')
+                        else:(active/'obj/dependency/project.assets.json').unlink()
+                        with patch.object(supervision.subprocess,'Popen') as launch:
+                            with self.assertRaises(AssertionError):runner.run(build,15)
+                            self.assertFalse(launch.called)
+                        self.assertFalse((active/'build-ran').exists())
+                        with self.assertRaises(AssertionError):runner.run([sys.executable,'-c','pass'],15)
+                finally:runner.close(None if variant=='unchanged' else 'ExpectedRestoreDrift')
+                self.clean(runner);self.assertEqual(runner.receipt['completed'],variant=='unchanged')
     def test_11_missing_and_malformed_positive_receipts_fail(self):
         path=self.root/'positive.json'
         with self.assertRaises(OSError):b.positive_controls(path,'missing','review')
