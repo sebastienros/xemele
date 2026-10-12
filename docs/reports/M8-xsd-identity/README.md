@@ -84,8 +84,10 @@ then records64 synchronous per-thread observations; cold fixture setup, positive
 control and whole-heap retention for32 programs/32 initialized sessions are
 separate. No throughput/latency or BDN allocation-dash claim is made; there is no
 optimization or BDN class. Running --measure needs a fresh bounded coordinator
-lease and reviewed fixed identities. Review is accepted; allocation evidence remains
-pending and this branch is not implemented/verified yet.
+lease and reviewed fixed identities. Review and the single granted allocation run are accepted; exact boundaries
+and aggregate histograms are in allocations.md and measurement-summary.json.
+The worker marks implemented only after final evidence/validation; the coordinator
+alone performs integrated verification.
 
 At tested source36b7f1379988da6b9c1e5915b513ccc33b48a3a4 the revised
 737-case check passed:149owned+546affected+42safe resolver, zero failures/errors/
@@ -108,3 +110,8 @@ start/expiry and the one prebuilt child; maximum30seconds includes10seconds
 reserved for cleanup. It refuses existing measurement output, verifies every
 identity before/after, drains/reaps/kills owned groups and reports lifecycle only.
 Raw result interpretation must await the coordinator's durable RELEASE ACK.
+
+The sole root-executed allocation child passed after full host PARK. All199
+identities were stable, child8867 exited0/reaped/group absent/log closed, and
+durable RELEASEae9cf41 preceded raw inspection. See allocations.md for actual
+320borrowed-zero/256owned-positive observations and cold/retention limits.
