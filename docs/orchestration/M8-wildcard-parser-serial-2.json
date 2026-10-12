@@ -1,0 +1,34 @@
+{
+  "id": "M8-wildcard-parser-serial-2",
+  "status": "PARK_REQUESTED_NOT_GRANTED",
+  "createdUtc": "2026-10-12T00:21:23.494253+00:00",
+  "earliestStart": "2026-10-12T00:25:00Z",
+  "latestStart": "2026-10-12T00:29:00Z",
+  "absoluteExpiry": "2026-10-12T00:43:10Z",
+  "rootPhase": {
+    "task": "M8-xsd-wildcard-composition",
+    "source": "42a93288b8a3b4c2def3be7c5a1183738f9137c6",
+    "manifest": "20a0bf3164bcde3632e0a634310981d6d2067a3e08196e569f0ce78d08042f5e",
+    "seconds": 30,
+    "workSeconds": 20,
+    "cleanupSeconds": 10,
+    "command": "python3 docs/reports/M8-xsd-wildcard-composition/measure.py --granted <manifest> 2026-10-12T00:29:00Z <phase-expiry>",
+    "cwd": "/private/tmp/xemele-M8-xsd-wildcard-composition"
+  },
+  "parserPhase": {
+    "chat": "01a12d64-81ae-79e3-8ba2-b88110af6fdb",
+    "maximumWorkSeconds": 840,
+    "cleanupSeconds": 10,
+    "manifest": "6b60fa459e59759c7bb2db24336e5bb24796e0b31f311ce5faf0b4f8c3fa7c6f",
+    "manifestPath": "/Users/sebastienros/github/parsers/results/2026-10-11-arm64/run-01/manifest.json",
+    "harnessManifest": "2790515aa26a56356ed961e3a3545cd61a74a227a16bda0e2ef4674dded09d89",
+    "harnessPath": "/Users/sebastienros/github/parsers/results/2026-10-11-arm64/run-01/prepared-harness.json",
+    "command": "dotnet /Users/sebastienros/github/parsers/benchmarks/ParserLab.Benchmarks/bin/Release/net10.0/ParserLab.Benchmarks.dll --filter '*' --artifacts /Users/sebastienros/github/parsers/results/2026-10-11-arm64/run-01/bdn --quick",
+    "supervisorPid": 60333,
+    "driverPid": 60338,
+    "caseCount": 120,
+    "gate": "closed; explicit parser-phase grant required",
+    "expiryRule": "min actual gate open+14min,00:43UTC;cleanup10s;absolute00:43:10UTC"
+  },
+  "rules": "Fresh all-known actor ACKs required; root phase first; explicit phase grants; no overlap/build/discovery/retry; immediate durable phase release before inspection; final RELEASE all actors after final child/group cleanup. Expiry does not authorize unreported leftovers."
+}
