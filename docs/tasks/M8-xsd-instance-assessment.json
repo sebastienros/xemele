@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "id": "M8-xsd-instance-assessment",
+  "milestone": "M8",
+  "title": "Correct wildcard and nil identity instance assessment",
+  "kind": "feature",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "depends_on": [
+    "M8-xsd-schema-syntax"
+  ],
+  "goals": [
+    "G14",
+    "G18"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/schemas.md"
+  ],
+  "owns": [
+    "src/Xemele/Validation/Xsd/Evaluation/Values.cs",
+    "src/Xemele/Validation/Xsd/Identity/Session.cs",
+    "tests/Xemele.Tests/M8-xsd-instance-assessment/",
+    "tests/fixtures/M8-xsd-instance-assessment/",
+    "benchmarks/Xemele.Benchmarks/M8-xsd-instance-assessment/",
+    "docs/api/M8-xsd-instance-assessment.txt",
+    "samples/M8-xsd-instance-assessment/",
+    "docs/reports/M8-xsd-instance-assessment/"
+  ],
+  "api_or_output": "Correct effective attribute and nilled identity field assessment through existing frozen hooks",
+  "acceptance": [
+    {
+      "id": "M8-xsd-instance-assessment-A1",
+      "description": "Reproduce unchanged original attZ002.v: prohibited attribute bindings contribute no positive instance use; permit assessment through a matching wildcard. Preserve rejection without matching wildcard, strict missing-declaration behavior, matching global datatype/fixed checks, local-use precedence and missing default behavior.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M8-xsd-instance-assessment-A2",
+      "description": "Reproduce unchanged original idF018.i: a valid nilled identity field must still have a simple effective type or complex type with simple content. Reject anyType/element-only fields before tuple qualification; preserve unique nil exemption, key/nillable rejection, effective xsi:type and shared charged cancellation/budget behavior.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M8-xsd-instance-assessment-A3",
+      "description": "Pass exact original baselines and repaired outcomes plus independently specified neighbors, affected evaluator/identity/facade checks, public1417 and frozen APIs, normal/true XML-only consumers, planning validation and bounded actual allocation evidence; no API change or later milestone dependency.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "Read-only source/Second Edition review confirms both original corpus defects. Claim after a worker slot is released; no competing source owner.",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}

@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "id": "M8-xsd-component-mapping",
+  "milestone": "M8",
+  "title": "Correct XSD effective content and component-name mapping",
+  "kind": "feature",
+  "status": "in_progress",
+  "owner": "M8 coordinator / assigned isolated component mapping worker",
+  "branch": "codex/m8-xsd-component-mapping",
+  "base_revision": "41dc2fc60962d7e3afc6a7a494146b63c1919161",
+  "integration_revision": null,
+  "depends_on": [
+    "M8-xsd-schema-syntax"
+  ],
+  "goals": [
+    "G14",
+    "G18"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/schemas.md"
+  ],
+  "owns": [
+    "src/Xemele/Validation/Xsd/Compilation/Compiler.cs",
+    "tests/Xemele.Tests/M8-xsd-effective-content/MappingTests.cs",
+    "docs/reports/M8-xsd-effective-content/Probe/Program.cs",
+    "docs/reports/M8-xsd-effective-content/README.md",
+    "tests/Xemele.Tests/M8-xsd-component-mapping/",
+    "tests/fixtures/M8-xsd-component-mapping/",
+    "benchmarks/Xemele.Benchmarks/M8-xsd-component-mapping/",
+    "docs/api/M8-xsd-component-mapping.txt",
+    "samples/M8-xsd-component-mapping/",
+    "docs/reports/M8-xsd-component-mapping/"
+  ],
+  "api_or_output": "Correct compiler-local effective mixed-content and XSD Second Edition component NCName mapping; no public or frozen API change",
+  "acceptance": [
+    {
+      "id": "M8-xsd-component-mapping-A1",
+      "description": "Reproduce original groupN007 failure, then accept unchanged original mixed=true zero-occurrence instance and reject forbidden child occurrence. Resolve documented R-204 mapping gap consistently with accepted corpus by charged empty-sequence synthesis for effective mixed=true after validated top-level0..0; retain mixed=false empty content, extension inheritance, duplicate/invalid occurrence validation, locations and limits. Explicitly correct exactly the earlier three mixed=true MappingTests expectations, old probe route3 and README inference while preserving history.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M8-xsd-component-mapping-A2",
+      "description": "Reject original xv001/xv004 schemas under the independently adjudicated XSD Second Edition NCName profile, while preserving XML Fifth Edition parser behavior. Compiler-local borrowed scalar scanning reuses verified TextBinaryNames tables; cover legal names, declaration/schema IDs/QName prefix-local components, multilingual and supplementary invalid names, source locations, charged budgets and cancellation.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M8-xsd-component-mapping-A3",
+      "description": "Actual unchanged-original baseline failures and repaired outcomes, independent original/profile oracles, affected facade/compiler/effective-content tests, public1417 and frozen APIs, normal/trueXML-only consumers, planning validation and bounded actual allocation evidence. Preserve original upstream validity disagreements separately from profile adjudication.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "Ordered compiler repair after verified schema syntax; bounded source/standards triage confirms groupN007 R-204 mapping conflict and concrete NCName edition defect. No dependency on active corpus or attribute-fixed peer.",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}
