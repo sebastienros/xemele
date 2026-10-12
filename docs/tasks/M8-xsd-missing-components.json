@@ -4,7 +4,7 @@
   "milestone": "M8",
   "title": "Implement approved XSD missing-component availability semantics",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M8 coordinator / assigned isolated missing-components worker",
   "branch": "codex/m8-xsd-missing-components",
   "base_revision": "ae6128ec38e9e6dad1e90d69f50eabd02322dc1d",
@@ -55,47 +55,108 @@
     {
       "id": "M8-xsd-missing-components-A1",
       "description": "Implement immutable charged availability metadata and closure for concrete schema publication. Preserve explicit unresolved authored QName; nullable element Type only for unavailable inferred substitution-head type, genuine anyType default otherwise. Preserve dense declaration IDs without fabricated types or missing definitions. Strict frozen IXsdCompiler complete-graph lane remains unchanged.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "branch-checks-H19"
+      ]
     },
     {
       "id": "M8-xsd-missing-components-A2",
       "description": "Prove exact eight original schema/good-instance positives and four separate required-consumption nonassessment cases with original metadata/input/oracle hashes. Consuming unavailable required components yields IsComplete false/IsValid false/Fatal XSD.MissingComponent before xsi:type/nil/content/value/default/fixed/identity hooks; selected xsi:type-only complex-program availability checked before deferred content. Unrelated valid roots stay assessable; true skip unconsumed stays unchanged, present unavailable lax declaration is not absence. No new original pass promise or waiver for four nonassessment cases.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "branch-checks-H19"
+      ]
     },
     {
       "id": "M8-xsd-missing-components-A3",
       "description": "Preserve every independently decidable grammar/import/regex/facet/EDC/UPA/derivation/cycle/final/block/default/keyref failure, missing-base negatives and source/resource distinctions. Assign exact facet Definitions.cs/Evaluator.cs to separate missing-item availability from independent facet validation; never fabricate executable partial FacetPlan or blanket-skip missing definitions. Preserve complete-graph and RNG behavior, charging/quotas/cancel/disposal and immutable no-resolver validation.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "branch-checks-H19"
+      ]
     },
     {
       "id": "M8-xsd-missing-components-A4",
       "description": "Migrate exact approved three constructor/property/deconstruct internal baseline members and affected consumers; any genuinely additive concrete availability baseline separately emitted. Preserve public1430/frozen interfaces, earlier milestones, strict legacy compiler test/optional benchmark route14. Migrate only two optional-composition missing-type expectations and provenance sentinel deliberately, retaining independent controls. Also migrate only NamespaceOnlyPermissionDoesNotInventMissingComponents to approved concrete partial publication, retaining strict-lane rejection, denied import permission, no fabricated definitions, no acquisition and independent unrelated-root validity controls; retain method/case identity.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "branch-checks-H19",
+        "branch-api-actual-review"
+      ]
     },
     {
       "id": "M8-xsd-missing-components-A5",
       "description": "Pass meaningful direct/local/strict/lax/skip/substitution/xsi/type/nil/facet/default/identity/partial controls, combined XSD/datatype/resource/earlier milestone checks, normal and true XML-only consumers, exact APIs and planning. Record actual bounded counter evidence for changed hot routes with disabled/positive/cold/first/warm/retained controls, finite owned-family cleanup and concise terminal summaries. No timing/isolation campaign, oracle/quota increases, later milestone dependency or unmerged peer implementation.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "branch-checks-H19",
+        "branch-controls-H19",
+        "branch-actual-allocations"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Validation/Xsd/Compilation/Availability/Availability.cs: immutable charged availability and completeness certificate",
+    "src/Xemele/Validation/Xsd/Compilation/Compiler.cs and Declarations.cs: concrete partial publication and independently decidable checks",
+    "src/Xemele/Validation/Xsd/ContentModels/Compiler.cs and Derivation.cs: exact deferred operands and complete proof preservation",
+    "src/Xemele/Validation/Xsd/Evaluation/Evaluator.cs and XmlSchema.cs: required-consumption refusal before assessment hooks",
+    "src/Xemele/Validation/Datatypes/Facets/Definitions.cs and Evaluator.cs: independent facet checks without fabricated plans",
+    "tests/Xemele.Tests/M8-xsd-missing-components/: original/control/closure/quota/cancellation/mutation witnesses",
+    "docs/reports/M8-xsd-missing-components/harness/: reviewed finite controls/check/preparation/prebuilt allocation protocol"
+  ],
+  "evidence": [
+    {
+      "id": "branch-controls-H19",
+      "kind": "check",
+      "revision": "7dfd3e31b2bd5f42f8e0a3692cf633070082e923",
+      "command": "harness/launch.py --released a58dee4f... controls (root coordinator)",
+      "result": "passed",
+      "summary": "15 actual controls passed; H18 diagnostics and H19 fixed-selection identity controls; counters disabled, registered whole family absent, 341 raw files deleted.",
+      "artifact": "docs/orchestration/M8-xsd-missing-components-controls-H19.json"
+    },
+    {
+      "id": "branch-checks-H19",
+      "kind": "check",
+      "revision": "5ad72401059d20dbb1f4562e45aee989a697f800",
+      "command": "harness/launch.py --released a58dee4f... check (root coordinator; source packet 7dfd3e31)",
+      "result": "passed",
+      "summary": "All 24 commands passed: 694 independently selected methods/2206 cases, 114 owned cases, eight original positives, four nonassessment controls with zero original/gate credit, two missing-base negatives; public1430/frozen615+257/additive93 rows13joins; normal and true XML-only consumers; disabled11routes; planning200. All six prior failures preserved. 442 raw files deleted after whole-family absence.",
+      "artifact": "docs/orchestration/M8-xsd-missing-components-check-attempt-7.json"
+    },
+    {
+      "id": "branch-api-actual-review",
+      "kind": "review",
+      "revision": "5ad72401059d20dbb1f4562e45aee989a697f800",
+      "command": "Independent read-only source-to-actual canonical API review by /root/review_m8_contract",
+      "result": "passed",
+      "summary": "93 actual rows: 80 rows in 11 internal types plus exact13 authored joins; no unexpected signature/access/default/nullability; actual projection SHA33a4823a verified against retained output identity.",
+      "artifact": "docs/orchestration/M8-xsd-missing-components-check-attempt-7.json"
+    },
+    {
+      "id": "branch-actual-allocations",
+      "kind": "check",
+      "revision": "5ad72401059d20dbb1f4562e45aee989a697f800",
+      "command": "harness/launch.py --released a58dee4f... prepare then measure (root coordinator, prebuilt single-use)",
+      "result": "passed",
+      "summary": "Fresh disabled11routes/consumed3001/inspections13632; actual cold/first/32warm observations and retained352results+8schemas; positive4120B, three lookup routes zero first/warm thread/global allocations. Compile/validate ownership allocations and retained heap documented, no timing/x64/global-static claim; prepared/raw outputs removed and whole families absent.",
+      "artifact": "docs/orchestration/M8-xsd-missing-components-allocation-H19.json"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Claimed on main after verified import repair; dispatch source-only isolated worker, no executable checks or counters until coordinator review and release.",
-    "checks": [],
-    "remaining": [
-      "All runtime, corpus, allocation and integration checks UNRUN"
+    "summary": "Branch implementation and root actual correctness/API/consumer/allocation checks accepted. Await integrated fresh checks on main; no corpus completion or four-case gate waiver.",
+    "checks": [
+      "24 commands and 2206 selected cases passed on exact runtime5ad724/source7dfd3e31",
+      "15 controls passed; canonical93 API rows independently reviewed",
+      "11 actual allocation routes with disabled/positive/retained controls; terminal cleanup verified",
+      "Prior failed attempts1\u20136 retained unchanged"
     ],
-    "requests": [
-      "No broad identity/Matcher/Contracts/Support/datatype registry/build ownership; request exact additional paths only with concrete need.",
-      "Coordinator assigned exact BoundaryTests.cs consumer migration: only two known-complete Elements[].Type dictionary keys gain !.Value; existing assertions/hook semantics unchanged. Publication CheckpointTests attribute declarations retain nonnullable Type and need no migration.",
-      "Coordinator assigned VisibilityTests.cs solely for NamespaceOnlyPermissionDoesNotInventMissingComponents approved contract migration; Support.cs and all other methods unchanged. BatchTests.cs remains unowned and unchanged, including independently derived 11-work/9-component exact and one-under quotas. See docs/orchestration/M8-xsd-missing-components-visibility-migration-scope.json."
-    ]
+    "remaining": [
+      "Integrate exact owned branch paths while retaining root task scope and metadata",
+      "Run fresh integrated controls and applicable correctness/API/consumer checks; verify source identity before reusing allocation evidence",
+      "Corpus retains four unwaived original nonassessment outcomes; later gate disposition requires concrete actual evidence"
+    ],
+    "requests": []
   }
 }
