@@ -18,7 +18,7 @@ bounded reviewed interpretation for each testcase. It distinguishes 38 ordinary
 applicable cases, three let oracle disagreements, one name oracle disagreement,
 one frozen SVRL representation difference and seven unsupported execution cases
 (eight variants). The cross-pattern abstract-rule case remains applicable with
-its original schema-error oracle and requires the coordinator's owning repair.
+its original schema-error oracle; the coordinator's owning repair is now verified.
 
 The frozen profile is ISO2016 with absent/exact `xslt`, XPath1 evaluated directly
 by M4. Unsupported `documents`, content-valued lets and executable XSLT are

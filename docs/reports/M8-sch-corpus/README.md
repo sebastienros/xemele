@@ -70,8 +70,9 @@ execution produce `SCH.QueryBinding`, not silent skips.
 The original cross-pattern abstract-rule fixture revealed a real compiler defect,
 not an oracle disagreement: ISO2016 section5.4.12 restricts extends targets to the
 same pattern. At source checkpoint9cd1dd86 the strict run was88/89, with only
-`rule-abstract-02` failing because compilation accepted it. Root owns the narrow
-repair and integrated verification. No corpus worker runtime edit is permitted.
+`rule-abstract-02` failing because compilation accepted it. Root verified the narrow repair in integrated checkpoint `d4731c53`; this branch
+merges that exact verified checkpoint and adds the explicit task dependency. No
+corpus worker runtime edit was made.
 
 Early harness issues are not passing evidence: an incorrect `Context` property
 name and missing explicit test cancellation tokens caused a build failure; a
