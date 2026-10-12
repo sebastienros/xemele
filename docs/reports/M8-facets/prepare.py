@@ -5,7 +5,7 @@ root=Path(__file__).resolve().parents[3]
 net=Path('/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet')
 flags=['--disable-build-servers','-m:1','-p:RuntimeFrameworkVersion=10.0.11','-p:UseSharedCompilation=false','-p:NuGetAudit=false']
 def run(*args):subprocess.run(args,cwd=root,check=True)
-for name,extra in [('Facets.Probe.csproj',['-p:BaseIntermediateOutputPath=obj/probe/','-p:OutputPath=bin/probe/']),('Facets.Bdn.csproj',[])]:
+for name,extra in [('Facets.Probe.csproj',['-p:BaseIntermediateOutputPath=obj/probe/','-p:OutputPath=bin/probe/net10.0/']),('Facets.Bdn.csproj',[])]:
  project='benchmarks/Xemele.Benchmarks/M8-facets/'+name
  run(str(net),'restore',project,'--source','/Users/sebastienros/.nuget/packages',*flags,*extra)
  run(str(net),'build',project,'-c','Release','--no-restore',*flags,*extra)

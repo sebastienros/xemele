@@ -110,6 +110,14 @@ public sealed class ApplicabilityTests
         Assert.False(adapter.ValidateParameters(new("urn:external","string"),[],default,registry,Op(),out _));
         Assert.False(adapter.ValidateParameters(definition.Name,[F(XmlFacetKind.Length,"1",true)],default,registry,Op(),out _));
     }
+    [Fact]
+    public void RngNotationParametersPreserveQNameSemanticsWithoutXsdDeclarationChecks()
+    {
+        var definition=Restrict("NOTATION","NOTATION",F(XmlFacetKind.Pattern,"p:.*"),F(XmlFacetKind.Length,"999")) with {Name=new(DatatypeTypes.RngNamespace,"NOTATION")};
+        Valid(definition,"p:a");Invalid(definition,"q:a");
+        var inherited=Restrict("notation","NOTATION",F(XmlFacetKind.Enumeration,"p:a"));
+        Valid(Restrict("derived","NOTATION") with {BaseType=inherited.Name},"q:a",null,inherited);
+    }
     private sealed class DefinitionsOnly(XmlDatatypeDefinition definition):IXmlDatatypeRegistry
     {public IXmlDatatypeLibrary? Find(string ns)=>null;public XmlDatatypeDefinition? FindType(SchemaName name)=>name==definition.Name ? definition:null;}
 }
