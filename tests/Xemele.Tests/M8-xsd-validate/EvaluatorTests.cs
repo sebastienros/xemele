@@ -170,6 +170,13 @@ public sealed class EvaluatorTests
         var hook=new RecordingFactory(); Assert.True(p.Run("<root xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xsi:schemaLocation='urn:a https://ungranted.invalid/a'/>",factory:hook).IsValid);
         Assert.NotNull(Assert.Single(hook.Values).Value); Assert.Equal(XmlDatatypeVariety.List,Assert.Single(hook.Attributes).Value!.Variety);
     }
+    [Theory]
+    [InlineData("default", true)] [InlineData("fixed", false)]
+    public void MixedDefaultDoesNotReplaceElementContent(string constraint,bool expected)
+    {
+        var p=Prepare($"<xs:element name='root' {constraint}='text'><xs:complexType mixed='true'><xs:sequence><xs:element name='a' minOccurs='0'/></xs:sequence></xs:complexType></xs:element>");
+        Assert.Equal(expected,p.Run("<root><a/></root>").IsValid);
+    }
     internal sealed class RecordingFactory : IXsdIdentityFactory, IXsdIdentitySession
     {
         internal readonly List<string> Events = []; internal readonly List<XsdValidatedValue> Values = [], Attributes = [];

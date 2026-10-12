@@ -237,8 +237,8 @@ internal sealed partial class XsdValidationRun : ISchemaOperation
             }
             else if ((frame.Declaration?.FixedValue ?? frame.Declaration?.DefaultValue) is string constraint)
             {
-                if (frame.HasChild) frame.Valid = Error("XSD.Fixed", "A mixed-content value constraint cannot have element children.");
-                else
+                if (frame.HasChild && frame.Declaration!.FixedValue is not null) frame.Valid = Error("XSD.Fixed", "A mixed-content fixed constraint cannot have element children.");
+                else if (!frame.HasChild)
                 {
                     var stringType = new SchemaName(Xs, "anySimpleType");
                     if (!Value(stringType, lexical.Length == 0 ? constraint : lexical, frame.Declaration!.Context, out value)) frame.Valid = false;
