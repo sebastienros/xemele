@@ -4,11 +4,11 @@
   "milestone": "M8",
   "title": "Freeze authorized nullable XSD missing-component contract",
   "kind": "contract",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M8 coordinator / assigned isolated missing-component contract worker",
   "branch": "codex/m8-xsd-missing-components-contract",
   "base_revision": "ad976b74e704a0ba7f3885b013ac21a06b42e393",
-  "integration_revision": null,
+  "integration_revision": "5b3391ad948d6e4895ac8de164d598c1e0753afc",
   "depends_on": [
     "M8-contracts",
     "M8-xsd-optional-composition",
@@ -38,7 +38,8 @@
       "status": "passed",
       "evidence": [
         "semantic-source-review",
-        "root-contract-compile"
+        "root-contract-compile",
+        "integrated-contract-verification"
       ]
     },
     {
@@ -46,7 +47,8 @@
       "description": "Freeze narrow Second Edition missing-component semantics for8original schema/good-instance positives and4separate required-component nonassessment cases: consuming required absence stops assessment with IsCompletefalse/IsValidfalse/Fatal XSD.MissingComponent through bounded existing refusal/diagnostic machinery. Preserve independent schema errors, missingbase negatives, namespace permission, resource/outcome distinctions, charging/cancel/source/disposal and no validation-time resolver or mutation. Unresolved-head originalVALID remains separately adjudicated, not an originalpass promise or gate exception.",
       "status": "passed",
       "evidence": [
-        "semantic-source-review"
+        "semantic-source-review",
+        "integrated-contract-verification"
       ]
     },
     {
@@ -57,7 +59,8 @@
         "bounded-source-review",
         "root-preparation",
         "root-controls",
-        "root-contract-compile"
+        "root-contract-compile",
+        "integrated-contract-verification"
       ]
     },
     {
@@ -66,7 +69,8 @@
       "status": "passed",
       "evidence": [
         "semantic-source-review",
-        "implemented-metadata-planning"
+        "implemented-metadata-planning",
+        "integrated-contract-verification"
       ]
     }
   ],
@@ -179,11 +183,20 @@
       "result": "passed",
       "summary": "198 tasks validated; metadata-only working tree based on tested62063bc7 passes whitespace checks. Does not substitute for integrated verification; no worker harness/.NET jobs launched.",
       "artifact": null
+    },
+    {
+      "id": "integrated-contract-verification",
+      "kind": "integration",
+      "revision": "5b3391ad948d6e4895ac8de164d598c1e0753afc",
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 docs/reports/M8-xsd-missing-components-contract/check.py --prepare --dotnet <pinned launcher> --release-sha 5b3391ad948d6e4895ac8de164d598c1e0753afc; controls.py --plan <fresh integrated plan> --expected-plan-sha e44fc8b779bd68a49db272f884fb88c752b6f498bc19b14c16c4fa6bb86c1339; check.py --plan <same plan> --expected-plan-sha e44fc8b779bd68a49db272f884fb88c752b6f498bc19b14c16c4fa6bb86c1339 --controls-receipt <fresh receipt> --expected-controls-sha 8711e836e510f851ce7989f57af6bb24e34dfae2484c373ee03bf7fca85dac13; python3 tools/planning/tasks.py validate; git diff --check",
+      "result": "passed",
+      "summary": "Fresh integrated preparation,26controls and18 compile/projection commands passed. Actual runtime10.0.11; exactly3nullable internal members changed/612unchanged; public/frozen interfaces unchanged. 19owned groups confirmed absent, entire staged tree deleted. Methods never executed. Runtime/corpus/allocation implementation remains future/unrun. Exact active phase paths/hashes and terminal outcomes in integration report; no deleted byte revalidation.",
+      "artifact": "docs/orchestration/M8-xsd-missing-components-contract-integration-1.json"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Branch implemented: approved nonpackaged nullable-Type/immutable availability contract and ordered migration plan; coordinator SOURCE accepted62063bc7 and actual preparation/26controls/18compile-projection commands passed there. Exactly3changed/612unchanged/public and frozen unchanged;19groups absent and raw scratch deleted. Shared runtime/goldens unchanged. Await integration verification; no runtime/corpus/allocation credit.",
+    "summary": "Integrated verified candidate contract at 5b3391ad948d6e4895ac8de164d598c1e0753afc; fresh preparation/26controls/18compile-projection commands passed with exact3/612delta and unchanged public/frozen interfaces. All19ownedgroups absent and staged outputs deleted. Runtime/sharedgoldens unchanged; later ordered runtime task awaits verified import repair.",
     "checks": [
       "Coordinator actual preparation/control/compile commands and full frozen plan/receipt hashes are recorded in root-preparation/root-controls/root-contract-compile evidence at62063bc7; main durable actual outcome commit686421e2c.",
       "26controls alltrue, independentAbsence/noNextAfterFailure;18commands matched expected15exit0+3exit1; actual runtime10.0.11; exact3/612 projection proof and public/frozen unchanged.",
@@ -191,7 +204,6 @@
       "Worker metadata planning validate:198tasks; git diff --check passed. Worker launched no harness/.NET jobs. Runtime implementation/corpus/allocations UNRUN."
     ],
     "remaining": [
-      "Coordinator integrate reviewed branch/task metadata, run applicable current integrated checks, record integration_revision/evidence and only then mark verified; metadata-only changes need not replay valid isolated executions.",
       "Claim ordered later runtime task only after integrated verified import/annotation repair, this contract and hint ordering; resolve exact facet Definitions.cs/Evaluator.cs ownership or prove independent owned extension.",
       "Later runtime/corpus/trueXMLonly/API/allocation checks listed in runtime-migration.json remain UNRUN; original unresolved-head g1/i1 VALID adjudication remains separate and earns zero original/gate pass credit."
     ],
