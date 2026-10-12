@@ -12,7 +12,12 @@
   "depends_on": [
     "M8-xsd-facade",
     "M8-xsd-schema-syntax",
-    "M8-xsd-attribute-fixed"
+    "M8-xsd-attribute-fixed",
+    "M8-xsd-component-mapping",
+    "M8-xsd-instance-assessment",
+    "M8-schema-resource-outcomes",
+    "M8-xsd-content-failure-assessment",
+    "M8-xsd-counted-matcher"
   ],
   "goals": [
     "G14",
@@ -42,7 +47,8 @@
         "harness-source-review",
         "adapter-source-review",
         "adapter-preparation-controls",
-        "adapter-source-facts"
+        "adapter-source-facts",
+        "verified-repair-input-facts"
       ]
     },
     {
@@ -61,7 +67,9 @@
         "instance-profile-originals",
         "instance-profile-reproduction",
         "adapter-focused-originals",
-        "resource-prerequisite-source-facts"
+        "resource-prerequisite-source-facts",
+        "verified-repair-focused-product",
+        "verified-repair-focused-bcl"
       ]
     },
     {
@@ -76,7 +84,10 @@
         "verified-attribute-dependency",
         "post-join-profile-controls",
         "adapter-preparation-controls",
-        "adapter-focused-originals"
+        "adapter-focused-originals",
+        "verified-five-repair-join",
+        "verified-repair-runner-build",
+        "verified-repair-focused-product"
       ]
     }
   ],
@@ -90,7 +101,8 @@
     "tests/corpora/xsd/explicit-profile-adjudication.json and report views: coordinator frozen Second Edition surrogate-block/NOTATION adjudication, originals unchanged; four semantic schema rejects and four invalid-schema dependents separately reported.",
     "tests/corpora/xsd/{supplementary-category,lexical-oracle}-adjudication.json and check-instance-profiles.py: coordinator exact22 source dispositions; independent original hashes/statuses/patterns and57 Unicode16 scalar classifications; original expectations unchanged.",
     "Corpus.Profiles.csproj/ProfileChecks.cs.fixture: separate public explicitXML application supplementation and independent substitution/NameChar neighbors; original inputs untouched.",
-    "Owned substitution-oracle-adjudication/xml-namespace-profile/adapter-boundaries/resource-prerequisite-triage source records and adapter-preparation/resource-prerequisites reports; raw journals/lifecycle/subsets stay ignored."
+    "Owned substitution-oracle-adjudication/xml-namespace-profile/adapter-boundaries/resource-prerequisite-triage source records and adapter-preparation/resource-prerequisites reports; raw journals/lifecycle/subsets stay ignored.",
+    "tests/corpora/xsd/verified-repair-overlay-inputs.json and owned verified-repair-overlays.md/check-repair-overlay-inputs.py: exact integrated source facts and38-row per-engine overlays, immutable prior observations preserved; raw artifacts ignored."
   ],
   "evidence": [
     {
@@ -335,6 +347,51 @@
       "result": "passed",
       "summary": "16exact original metadata/status/hash records verified:3indeterminate schemas/3unassessed dependencies retainResourceCycle;2whole hinted XML parse failures addB063junk18:0/addB124mismatch236:6 retain unassessed instances;8optionalnonresolution rows remainResourceDenied/actionablegaps. No new runtime/profilepass/exclusion; legacy resolvernull unchanged until verified owning repair. anyURIa004 derivedVALID only after repair+execution.",
       "artifact": "docs/reports/M8-xsd-corpus/resource-prerequisites.md"
+    },
+    {
+      "id": "verified-five-repair-join",
+      "kind": "review",
+      "revision": "b3ed1c6439706d7faa001cb31ae2ccf2e00d08e3",
+      "command": "Coordinator ACTIVATE authorized current verified main; git merge --no-ff b3ed1c6439706d7faa001cb31ae2ccf2e00d08e3",
+      "result": "passed",
+      "summary": "Joined without conflicts at28d1b5e1. Mapping/instance/evaluator verified423da4def, resource outcomes55647de5, matcher590d642da. Five integrated tasks verified before consumption; no private peer joins. Optional compiler consumer remains unfinished, so legacy corpus null-denial is unchanged. Root compatibility/correctness evidence is review, not worker test counts.",
+      "artifact": "docs/reports/M8-xsd-corpus/verified-repair-overlays.md"
+    },
+    {
+      "id": "verified-repair-runner-build",
+      "kind": "check",
+      "revision": "28d1b5e1ac907db4dda650098fc6b867bafed06f",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' build tests/Xemele.Conformance.Tests/Xsd/Corpus.Runner.csproj -c Release --no-restore --disable-build-servers -m:1 -p:RuntimeFrameworkVersion=10.0.11 -p:UseSharedCompilation=false -p:NuGetAudit=false",
+      "result": "passed",
+      "summary": "Actual Release build0warnings0errors on verified joined runtime. Runner source8fe73b947412c965b82afabeb458b061825a3b89921a6251b5bf41119ca2d81f unchanged; runnerDLL3202223fe71837c9a8c69ea542ba4481f6c0b3856dc717576f71173858aec6c9/productDLL77b3f93c4a8c4d98ed78cc3a7c766da339dbe330a0e4db52dc64ecf019744640 match pre/post executions.",
+      "artifact": "docs/reports/M8-xsd-corpus/verified-repair-overlays.md"
+    },
+    {
+      "id": "verified-repair-focused-product",
+      "kind": "check",
+      "revision": "28d1b5e1ac907db4dda650098fc6b867bafed06f",
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 artifacts/M8-xsd-corpus/28d1b5e1-focused-repairs/execute.py; exact-ID/profile/count/request-independent post-run assertions",
+      "result": "passed",
+      "summary": "22exact original targets from integrated8mapping/4instance/10matcher manifests plus16schema predicates:38product observations,36originalpasses2nonpasses,38separateprofileagreements.19schemasVALID/3semanticINVALID,9instancescompleteVALID/7completeINVALID. Allfourinstance/tenmatcher original expectations match, including threeZ034completeINVALID with oneXSD.Content each. xv001/xv004 originalVALID versus actualschema-invalid retained; alreadyapprovedSecondEditionprofile agrees.44totalproduct+BCL childrenexit0/reaped/groupsabsent/logsclosed, session24766exit0;30souter/publicdeadline,TERM10s/KILL unused, full historical finite limits unchanged. Source80/09b and intervening matcher diagnostic-limit refusals retained; no new fullrun/count replacement/standards waiver.",
+      "artifact": "docs/reports/M8-xsd-corpus/verified-repair-overlays.md"
+    },
+    {
+      "id": "verified-repair-focused-bcl",
+      "kind": "check",
+      "revision": "28d1b5e1ac907db4dda650098fc6b867bafed06f",
+      "command": "Same exact focused supervisor command; independent pinned BCL observations on the same38originalIDs",
+      "result": "failed",
+      "summary": "Independent BCL34originalpasses4nonpasses: Z036_b1/b2 completeINVALID disagree originalVALID, xv001/xv004 XML1.1 prologue policy refusals are not semantic name evidence. These reference differences remain distinct; no product expectation replacement. All22BCLchildrenexit0/reaped/groupsabsent/logsclosed; exactsameIDs/limits/deadlines/finite cleanup; product output reported separately.",
+      "artifact": "docs/reports/M8-xsd-corpus/verified-repair-overlays.md"
+    },
+    {
+      "id": "verified-repair-input-facts",
+      "kind": "check",
+      "revision": "4eb3aea4038b5b7219912cab27c8be6f533702e5",
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 docs/reports/M8-xsd-corpus/check-repair-overlay-inputs.py",
+      "result": "passed",
+      "summary": "Three integrated manifest hashes,22targetIDs/16schema predicates,35unique unchanged original files, copied repair-fixture hashes, original/current/prior statuses and separate profiles independently checked against pinned corpus resources. No engine output derives source validity.",
+      "artifact": "docs/reports/M8-xsd-corpus/verified-repair-overlays.md"
     }
   ],
   "blockers": [],
@@ -349,13 +406,15 @@
       "Verifiedattribute main48f394cc joined; committedb9d source rebuilt0warnings0errors,41runtime+11profilecontrols pass; exact4schema rejects/fourunexecuteddeps run in twochildrenexit0/reaped/logclosed; original failures retained.",
       "python3 tools/planning/tasks.py validate passes188tasks and git diff --check passes after own evidence/dependency updates.",
       "Sourcee25: exact22supplementary/lexical instances agree separate profiles; all22original failures retained,22schema predicates valid,44observations/threechildrenexit0/reaped/logsclosed. Independent43hashes/57scalars/12reportcontrols PASS; planning188/diffcheck PASS.",
-      "Accepted12d:45runtime/15native/17report controls;5childrenexit0/reaped/groupsabsent/logsclosed,18exactrunner+19native observations.7latehints unassessed/noignoredfetch, substitution/NameChar profiles and4explicitXMLsupplements preserve13original mismatches.4d505:16resource prerequisite/12adapter source records pass; planning188/diffcheck pass."
+      "Accepted12d:45runtime/15native/17report controls;5childrenexit0/reaped/groupsabsent/logsclosed,18exactrunner+19native observations.7latehints unassessed/noignoredfetch, substitution/NameChar profiles and4explicitXMLsupplements preserve13original mismatches.4d505:16resource prerequisite/12adapter source records pass; planning188/diffcheck pass.",
+      "Verified mainb3ed joined at28d without conflicts; public runner build0warnings/errors. Exact22targets+16schema predicates/product38rows36originalpasses2nonpasses/38profileagreements; BCL38rows34passes4nonpasses independent.44childrenexit0/reaped/groupsabsent/logsclosed under unchanged finite policy and30sdeadlines. Source4eb checker verifies3manifests/35originalfiles/statuses. Planning196/diffcheck passed."
     ],
     "remaining": [
       "A2: concrete source-backed runtime repairs and standards/adaptation triage;39schema IDs/33fixtures in current schema handoff,136original instance failures in20diagnostic groups. Four surrogate/NOTATION original schema mismatches now separately agree coordinator-derived profile; dependent instance failures remain unassessed. Exact22supplementary/lexical original instance mismatches also separately agree approved profiles; original136failure report remains intact.",
       "No repeated full run until coordinator integrates/verifies applicable repairs; final integrated conformance remains pending.",
       "ExplicitXML supplied application profile executed:4separate completeVALID schema/instance rows;4standalone original failures/unassessed preserved.7latehints adapter-unassessed. Namespaceguard/fatal immutable source80 outcomes retained without new original rerun.",
-      "Optional nonresolution anyURIa002/a004,schD7/G8 remains8ResourceDenied gaps until owning explicitUnavailable repair verified; corpusresolver legacy null unchanged.3indeterminate cycle schemas/3unassessed instances+2malformed hint prerequisites retain nonpasses. No fullrun before coordinator verified repair join."
+      "Optional nonresolution anyURIa002/a004,schD7/G8 remains8ResourceDenied gaps until owning explicitUnavailable repair verified; corpusresolver legacy null unchanged.3indeterminate cycle schemas/3unassessed instances+2malformed hint prerequisites retain nonpasses. No fullrun before coordinator verified repair join.",
+      "A2 remains failed/in_progress: latest28d exactoverlay only, not fullsuite. Recursive/hint/type/particle/optionalcomposition and exact standards/input gate policy unfinished. Do not rerun known-open hint/resource/boundary originals without coordinator followup. Preserve source80fullcounts and previous mixed-overlay analysis as history; latest22targets do not establish unexecuted outcomes."
     ],
     "requests": [
       "Coordinator owns runtime repair scopes and sole integration/verification. Read schema-triage.md and instance-triage.md for exact witnesses/source groups.",
