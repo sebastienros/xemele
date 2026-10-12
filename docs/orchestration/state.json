@@ -7,7 +7,7 @@
   "coordination_branch": "main",
   "max_concurrent_workers": 3,
   "last_verified_checkpoint": "M7-gate",
-  "last_verified_task": "M8-sch-corpus",
+  "last_verified_task": "M8-xsd-identity",
   "last_integrated_revision": "483c8f6485fd4b305763e5732aa1d4d57e6b811b",
   "active_assignments": [
     {
@@ -32,30 +32,6 @@
       "review_request": "A1/A2 Evaluator.Context must pass document.ParsedSourceUri independent of XML declaration; known-source relative/inherited xml:base proving cases.",
       "integration_worktree": "/private/tmp/xemele-M8-rng-validate-integration",
       "tested_combination": "b4930ea7c0e30dc0036a290c8726300c6cbf92d5"
-    },
-    {
-      "task_id": "M8-xsd-identity",
-      "branch": "codex/m8-xsd-identity",
-      "base_revision": "465b9e5544f83e320593218404d29a26dfad8985",
-      "stage": "Accepted corrected source; combined737 checks passed at8ba5a6ca; frozen199identities ready; awaiting exact serial grant.",
-      "model": "gpt-6.1-sol",
-      "thinking": "high",
-      "acceptance_before_dispatch": {
-        "mandatory": "Complete frozen XSD unique/key/keyref immutable compiler and per-run identity session through approved hook; restricted XPath scope and typed equality.",
-        "integration": "Independent namespaces/scopes/default typed values/absent and multiple fields/duplicates/references/error and exact work-memory-cancel tests; frozen/public API and XML-only hook consumer; prepared allocation evidence.",
-        "review": "Independent restricted XPath/typed tuple/scoped keyref ownership review; no unmerged evaluator/facade dependency or alternate hook."
-      },
-      "claim_revision": "14d177ab6bbe320f4d1f0fdcf7233f34e01039c6",
-      "host_id": "local",
-      "client_thread_id": "client-new-thread:95ec28ed-fa54-4b07-bd6d-7987404c6066",
-      "chat_id": "01a12de1-4dd2-7361-b83f-c7d7b1b0a945",
-      "worktree_path": "/Users/sebastienros/.codex/worktrees/26b6/xemele",
-      "source_revision": "36b7f1379988da6b9c1e5915b513ccc33b48a3a4",
-      "review_request": "A2 charge/poll axis whitespace lookahead including failed lookahead without duplicate charging; owned polled scalar NCName validation and exact boundary/cancellation regressions.",
-      "integration_worktree": "/private/tmp/xemele-M8-xsd-identity-integration",
-      "tested_combination": "8ba5a6ca3bfef2e2c6a29bf1dc3151a010f7b224",
-      "prepared_revision": "975d34a72494dc0bdb7b9b939c1b11f243b562cd",
-      "manifest_sha256": "76c69a37314346fb53d98041e0e33113067d9069416d4d8d91afeca1d7b698d3"
     },
     {
       "task_id": "M8-xsd-validate",
@@ -211,7 +187,7 @@
   },
   "current_milestone": "M8",
   "milestone_completion_scope": "Complete integrated verified M8-gate; terminal workers and cleanup; preserve earlier evidence/caches; transfer sole writes to main. Do not create M9.",
-  "milestone_progress": "23 of31 M8 tasks verified; RNG and identity corrections active; XSD core claimed pending external RELEASE before dispatch.",
+  "milestone_progress": "24 of31 M8 tasks verified; core can consume verified identity after dependency update; RNG final integration next.",
   "blockers": [],
   "pending_decisions": [],
   "timing_queue": [],
@@ -598,6 +574,34 @@
       "final_worker_revision": "ea7eeace5819b5bb292422a69b293fd6f0a9d7b4",
       "integration_revision": "483c8f6485fd4b305763e5732aa1d4d57e6b811b",
       "cleanup_record": "docs/orchestration/cleanup-M8-sch-corpus.json"
+    },
+    {
+      "task_id": "M8-xsd-identity",
+      "branch": "codex/m8-xsd-identity",
+      "base_revision": "465b9e5544f83e320593218404d29a26dfad8985",
+      "stage": "Verified; terminal all-write handback; cleanup pending",
+      "model": "gpt-6.1-sol",
+      "thinking": "high",
+      "acceptance_before_dispatch": {
+        "mandatory": "Complete frozen XSD unique/key/keyref immutable compiler and per-run identity session through approved hook; restricted XPath scope and typed equality.",
+        "integration": "Independent namespaces/scopes/default typed values/absent and multiple fields/duplicates/references/error and exact work-memory-cancel tests; frozen/public API and XML-only hook consumer; prepared allocation evidence.",
+        "review": "Independent restricted XPath/typed tuple/scoped keyref ownership review; no unmerged evaluator/facade dependency or alternate hook."
+      },
+      "claim_revision": "14d177ab6bbe320f4d1f0fdcf7233f34e01039c6",
+      "host_id": "local",
+      "client_thread_id": "client-new-thread:95ec28ed-fa54-4b07-bd6d-7987404c6066",
+      "chat_id": "01a12de1-4dd2-7361-b83f-c7d7b1b0a945",
+      "worktree_path": "/Users/sebastienros/.codex/worktrees/26b6/xemele",
+      "source_revision": "36b7f1379988da6b9c1e5915b513ccc33b48a3a4",
+      "review_request": "A2 charge/poll axis whitespace lookahead including failed lookahead without duplicate charging; owned polled scalar NCName validation and exact boundary/cancellation regressions.",
+      "integration_worktree": "/private/tmp/xemele-M8-xsd-identity-integration",
+      "tested_combination": "8ba5a6ca3bfef2e2c6a29bf1dc3151a010f7b224",
+      "prepared_revision": "975d34a72494dc0bdb7b9b939c1b11f243b562cd",
+      "manifest_sha256": "76c69a37314346fb53d98041e0e33113067d9069416d4d8d91afeca1d7b698d3",
+      "implementation_revision": "36b7f1379988da6b9c1e5915b513ccc33b48a3a4",
+      "handoff_revision": "0d580252a41ad900e5de72b7312554f243d416eb",
+      "integration_revision": "8ba5a6ca3bfef2e2c6a29bf1dc3151a010f7b224",
+      "combined_verification": "Actual combined737pass (149owned+546affected+42safe resolver),0errors/failures/skips/not-run/buildwarnings;1403public/24frozen,normal+trueXMLonly consumers,180planning/diff. Terminal metadata-only source/test/build/API/consumer/check identity confirmed; accepted released allocation and independent source review."
     }
   ],
   "measurement_lease_history": [

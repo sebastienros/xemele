@@ -4,11 +4,11 @@
   "milestone": "M8",
   "title": "XSD identity constraints",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M8 coordinator01a12c6c-b333-71d3-877f-0d186618e21d / assigned isolated worker",
   "branch": "codex/m8-xsd-identity",
   "base_revision": "465b9e5544f83e320593218404d29a26dfad8985",
-  "integration_revision": null,
+  "integration_revision": "8ba5a6ca3bfef2e2c6a29bf1dc3151a010f7b224",
   "depends_on": [
     "M8-xsd-compile",
     "M8-facets"
@@ -37,7 +37,8 @@
       "status": "passed",
       "evidence": [
         "identity-reviewed-correctness",
-        "identity-independent-review"
+        "identity-independent-review",
+        "coordinator-integrated-verification"
       ]
     },
     {
@@ -47,7 +48,8 @@
       "evidence": [
         "identity-reviewed-correctness",
         "identity-independent-review",
-        "identity-allocations"
+        "identity-allocations",
+        "coordinator-integrated-verification"
       ]
     },
     {
@@ -58,7 +60,8 @@
         "identity-reviewed-correctness",
         "identity-independent-review",
         "identity-reviewed-control",
-        "identity-allocations"
+        "identity-allocations",
+        "coordinator-integrated-verification"
       ]
     }
   ],
@@ -126,6 +129,15 @@
       "result": "passed",
       "summary": "One exact root-executed prebuilt child under973968a68a3b6d37c8a24866a3b2c739ad316652; durable RELEASEae9cf41ea49a87752a8256acedc987ee9e66ae1a before raw inspection.199identities stable, child8867 exit0/reaped/group absent/log closed.576observations:320borrowed0B,256ownedpositive; prep3216,validhook3944,invalid3632,session952Bop constant64each. Cold304208/positive1048, approximate wholeheap retained32programs+147376/32sessions+61136 distinct. Worker and root independently inspected/accepted rawSHA5e5cfd83fdc2dd9ae222307ca0ff6262d5f2ea2d61af26d46f02080080cc9b05. No speed/BDN/whole-validator0/x64claim.",
       "artifact": "docs/reports/M8-xsd-identity/allocations.md"
+    },
+    {
+      "id": "coordinator-integrated-verification",
+      "kind": "integration",
+      "revision": "8ba5a6ca3bfef2e2c6a29bf1dc3151a010f7b224",
+      "command": "python3 -B docs/reports/M8-xsd-identity/check.py",
+      "result": "passed",
+      "summary": "Actual combined737pass (149owned+546affected+42safe resolver),0errors/failures/skips/not-run/buildwarnings;1403public/24frozen,normal+trueXMLonly consumers,180planning/diff. Terminal metadata-only source/test/build/API/consumer/check identity confirmed; accepted released allocation and independent source review.",
+      "artifact": "docs/reports/M8-xsd-identity/integration.md"
     }
   ],
   "blockers": [],
@@ -138,12 +150,7 @@
       "One root-granted allocation child8867 completed0/reaped/groupabsent/logclosed; before/after199identities stable and durable RELEASE before inspection;320borrowed-zero/256owned-positive exact observations, explicit cold/retention boundaries. Root independent inspection accepted.",
       "Root reports combined737checks/APIs/both consumers passed at8ba5a6ca3bfef2e2c6a29bf1dc3151a010f7b224; coordinator evidence, not worker rerun or verified task status."
     ],
-    "remaining": [
-      "Coordinator final branch integration/verified task record and core dependency unlock.",
-      "Coordinator transient raw cleanup after inspection; raw arrays/logs/control outputs remain untouched.",
-      "Facade/evaluator must use the real prepared program even for zero constraints, visit every element/wildcard scope, deliver every effective typed attribute and final element value once, and preserve one operation/provider graph and fatal/incomplete stop provenance.",
-      "Single Arm64 fixture evidence only; later full XSD/corpus/composition and cross-architecture release verification remain their owning tasks."
-    ],
+    "remaining": [],
     "requests": []
   }
 }
