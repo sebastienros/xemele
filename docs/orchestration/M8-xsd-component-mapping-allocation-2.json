@@ -1,0 +1,83 @@
+{
+  "scope": "M8-xsd-component-mapping-fe72a347-alloc-2",
+  "status": "RELEASED before raw inspection",
+  "owner_chat": "01a12c6c-b333-71d3-877f-0d186618e21d",
+  "source_revision": "fe72a34773e28a776c223d628fcccbd91f4b9bec",
+  "proposal_revision": "5fad82a4fd0e73f794ca75249ac422fe02c98eb4",
+  "cwd": "/Users/sebastienros/.codex/worktrees/c384/xemele",
+  "manifest": "/Users/sebastienros/.codex/worktrees/c384/xemele/docs/reports/M8-xsd-component-mapping/preparation.json",
+  "manifest_sha256": "25b4d9c5ed5b31ca6f4235bc10f5ef13f82d6adf99ea94a6255f350d9f47dd60",
+  "supervisor": "/Users/sebastienros/.codex/worktrees/c384/xemele/docs/reports/M8-xsd-component-mapping/measure.py",
+  "supervisor_sha256": "aeea1c017c5a879c65f364989e50006796783db807b799c838f63c26b67faf7f",
+  "maximum_seconds": 30,
+  "work_seconds": 20,
+  "cleanup_seconds": 10,
+  "latest_start_rule": "grant+60s",
+  "absolute_expiry_rule": "grant+90s",
+  "commands": [
+    [
+      "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+      "--fx-version",
+      "10.0.11",
+      "/Users/sebastienros/.codex/worktrees/c384/xemele/benchmarks/Xemele.Benchmarks/M8-xsd-component-mapping/bin/probe/net10.0/Xemele.Benchmarks.dll",
+      "--control",
+      "/Users/sebastienros/.codex/worktrees/c384/xemele/artifacts/M8-xsd-component-mapping/measurement-1/control.json"
+    ],
+    [
+      "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+      "--fx-version",
+      "10.0.11",
+      "/Users/sebastienros/.codex/worktrees/c384/xemele/benchmarks/Xemele.Benchmarks/M8-xsd-component-mapping/bin/probe/net10.0/Xemele.Benchmarks.dll",
+      "--measure",
+      "/Users/sebastienros/.codex/worktrees/c384/xemele/artifacts/M8-xsd-component-mapping/measurement-1/allocations.json"
+    ]
+  ],
+  "identity_count": 464,
+  "root_preflight": "Actual elevated verify-only464identities+ps passed. Worker actual elevated disabled supervised preflight96986exit0/reaped/groupabsent/logclosed. Cleanup core reused from accepted syntax supervisor.",
+  "ack_evidence": "docs/orchestration/M8-xsd-component-mapping-allocation-2-acks.json",
+  "roster": "Eleven Xemele actors ONLY: root/main/six workers/three reviewers. No cross-project synchronization.",
+  "constraints": "Root solelauncher2prebuiltcontrol+measure; no retry/extension/build/restore/discovery/newactors/frozenwrites/rawinspection before durablecleanupRELEASE.19routes13ownedpositive6borrowedzero,first+16warm+64aggregate;16retained.",
+  "review": "Independent model reviewer SOURCE PASS atfe72a347, proposal5fad82a4f;19routes1555calls,6borrowedzero targets and13ownedpositive boundaries accepted.",
+  "root_ack": "Fresh root ACK: no owned workload, child, active execution session, open process log or lease. Root will hold all heavy work and frozen writes until durable cleanup RELEASE; only coordination, identity verification and lease metadata permitted.",
+  "human_authorization": "Verified newer human instruction Never communicate or synchronize work with other projects, main turn01a1304d-e146-71d0-94f0-a60d8f0a4311. Removes foreign ACK requirement only; exact commands/manifest/limits/cleanup unchanged. Existing fresh Xemele alloc-2 ACKs still apply.",
+  "isolation_limit": "Only Xemele-owned workloads coordinated; no evidence or claim of globally idle host or cross-project exclusion.",
+  "granted_utc": "2026-10-12T13:32:35.851125+00:00",
+  "latest_start": "2026-10-12T13:33:35.851125+00:00",
+  "absolute_expiry": "2026-10-12T13:34:05.851125+00:00",
+  "released_utc": "2026-10-12T13:33:07.734820+00:00",
+  "lifecycle": {
+    "status": 0,
+    "beforeIdentities": true,
+    "afterIdentities": true,
+    "sequence": [
+      {
+        "command": 0,
+        "pid": 28920,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      {
+        "command": 1,
+        "pid": 28922,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      }
+    ],
+    "rawResultsInspected": false,
+    "latestStart": "2026-10-12T13:33:35.851125+00:00",
+    "absoluteExpiry": "2026-10-12T13:34:05.851125+00:00",
+    "beforeMismatches": [],
+    "identityCount": 464,
+    "afterMismatches": [],
+    "elapsedSeconds": 1.2019852499943227
+  },
+  "supervisor_session": "47582 terminal exit0"
+}
