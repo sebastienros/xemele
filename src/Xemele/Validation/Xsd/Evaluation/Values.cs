@@ -19,8 +19,15 @@ internal sealed partial class XsdValidationRun
                 else if (attribute.LocalName == "schemaLocation")
                 {
                     var library = schema.Datatypes.Find(Xs)!; var normalized = library.Normalize(attribute.Value, XmlWhitespaceRule.Collapse, this); Poll();
-                    int tokens = 0; var remaining = normalized.AsSpan();
-                    while (!remaining.IsEmpty) { Work(); int end = remaining.IndexOf(' '); if (end < 0) end = remaining.Length; tokens++; remaining = end == remaining.Length ? [] : remaining[(end + 1)..]; }
+                    int tokens = 0; var remaining = normalized.AsSpan(); var items = new List<XmlDatatypeValue>(); Retain();
+                    while (!remaining.IsEmpty)
+                    {
+                        Work(); int end = remaining.IndexOf(' '); if (end < 0) end = remaining.Length; tokens++;
+                        bool parsed = library.TryParse(type, remaining[..end], frame.Context, this, out var item, out var error); Poll();
+                        if (!parsed) valid = Error(error!.Code, error.Message); else { Retain(); items.Add(item!); }
+                        remaining = end == remaining.Length ? [] : remaining[(end + 1)..];
+                    }
+                    type = new(Xs, "anySimpleType"); value = library.CreateList(type, items, this); Poll();
                     if (tokens % 2 != 0) valid = Error("XSD.Attribute", "xsi:schemaLocation requires namespace/location pairs.");
                 }
                 else valid = Error("XSD.Attribute", "Unknown schema-instance attribute.");

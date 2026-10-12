@@ -163,6 +163,13 @@ public sealed class EvaluatorTests
         Assert.True(p.Run("<root xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xsi:schemaLocation='urn:unknown https://ungranted.invalid/schema' xsi:noNamespaceSchemaLocation='https://ungranted.invalid/other'/>").IsValid);
         Assert.False(p.Run("<root xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xsi:schemaLocation='single'/>").IsValid);
     }
+    [Fact]
+    public void MixedDefaultAndXsiLocationListsHaveEffectiveTypedValues()
+    {
+        var p=Prepare("<xs:element name='root' default='text'><xs:complexType mixed='true'/></xs:element>");
+        var hook=new RecordingFactory(); Assert.True(p.Run("<root xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xsi:schemaLocation='urn:a https://ungranted.invalid/a'/>",factory:hook).IsValid);
+        Assert.NotNull(Assert.Single(hook.Values).Value); Assert.Equal(XmlDatatypeVariety.List,Assert.Single(hook.Attributes).Value!.Variety);
+    }
     internal sealed class RecordingFactory : IXsdIdentityFactory, IXsdIdentitySession
     {
         internal readonly List<string> Events = []; internal readonly List<XsdValidatedValue> Values = [], Attributes = [];

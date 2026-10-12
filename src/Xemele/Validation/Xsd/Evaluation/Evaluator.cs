@@ -235,9 +235,15 @@ internal sealed partial class XsdValidationRun : ISchemaOperation
                 if (!Value(simple.Value, lexical, context, out value)) frame.Valid = false;
                 if (value is not null && frame.Declaration?.FixedValue is string fixedLexical && !Fixed(simple.Value, value, fixedLexical, frame.Declaration.Context)) frame.Valid = false;
             }
-            else if (frame.Declaration?.FixedValue is string fixedText)
+            else if ((frame.Declaration?.FixedValue ?? frame.Declaration?.DefaultValue) is string constraint)
             {
-                if (frame.HasChild || lexical != fixedText && lexical.Length != 0) frame.Valid = Error("XSD.Fixed", "Element content differs from its fixed value.");
+                if (frame.HasChild) frame.Valid = Error("XSD.Fixed", "A mixed-content value constraint cannot have element children.");
+                else
+                {
+                    var stringType = new SchemaName(Xs, "anySimpleType");
+                    if (!Value(stringType, lexical.Length == 0 ? constraint : lexical, frame.Declaration!.Context, out value)) frame.Valid = false;
+                    if (value is not null && frame.Declaration!.FixedValue is string fixedLexical && !Fixed(stringType, value, fixedLexical, frame.Declaration.Context)) frame.Valid = false;
+                }
             }
         }
         identity?.LeaveElement(frame.Node, new(frame.Valid, ActualType(value, typeName), value), this); Poll();
