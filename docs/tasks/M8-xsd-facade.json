@@ -4,11 +4,11 @@
   "milestone": "M8",
   "title": "Compose XSD public API",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M8 coordinator01a12c6c-b333-71d3-877f-0d186618e21d / assigned isolated worker",
   "branch": "codex/m8-xsd-facade",
   "base_revision": "d27ef2ddf4e9b1c2ade0c62cef3b5c38311a05de",
-  "integration_revision": null,
+  "integration_revision": "9b2816007f9e5aa39cdb85752f8c416524dbfa40",
   "depends_on": [
     "M8-xsd-validate",
     "M8-xsd-identity",
@@ -44,7 +44,8 @@
         "joined-correctness",
         "bounded-owned-correction-review",
         "final-seam-review",
-        "owned-allocation"
+        "owned-allocation",
+        "root-integration"
       ]
     },
     {
@@ -55,7 +56,8 @@
         "joined-correctness",
         "bounded-owned-correction-review",
         "final-seam-review",
-        "owned-allocation"
+        "owned-allocation",
+        "root-integration"
       ]
     },
     {
@@ -66,7 +68,8 @@
         "joined-correctness",
         "bounded-owned-correction-review",
         "final-seam-review",
-        "owned-allocation"
+        "owned-allocation",
+        "root-integration"
       ]
     }
   ],
@@ -141,11 +144,20 @@
       "result": "passed",
       "summary": "Grant ead683a0/release5b7b54e8 before rawinspection. Supervisor+children59459/59461exit0/reaped/groupsabsent/logsclosed;453identities before/after match. AppleM4Pro Arm64.NET10.0.11 counters-only:20ownedroutes64calls after16warmups(allpositive1144..1771949.75B/call);DOMvalid1676288/64,stringcompile109426832/64;2borrowed delimiter routes each0/1024bytes;not fullNOTATIONzero. Cold3434824/onefixture;positive1048/one1024bytearray;wholeheap889656to2841720,delta1952064while8schemas16results retained,illustrative not perobject/leakbound. No BDN/timing/x64/async/fullcorpus claim.",
       "artifact": "docs/reports/M8-xsd-facade/allocations.md"
+    },
+    {
+      "id": "root-integration",
+      "kind": "integration",
+      "revision": "9b2816007f9e5aa39cdb85752f8c416524dbfa40",
+      "command": "python3 docs/reports/M8-xsd-facade/check.py",
+      "result": "passed",
+      "summary": "Actual rootcombined1110affected+42safe resolver=1152passed,including93public/9unchangedfailurewitnessesand69owningrepaircases;0fail/errors/skips/notrun. Compiledpublic1417/facade7/frozen2/257/24/9;normal+trueXML-onlyconsumers;5builds0warnings/errors;planning184/diff. Final8e806ecfd8bf29819c0fe034dd9717f4dda26d49 retains identicalruntime/tests/API/samples/allproject/build/check inputs,gitdiffempty;no rerunclaimed. Actualallocationseparateead683a0grant/5b7b54e8release20ownedroutes+2borrowed0B/1024aggregates.",
+      "artifact": "docs/orchestration/review-M8-xsd-facade.json"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Implemented immutable public XSD Compile/Validate using only verified compiler/content/identity/datatype dependencies and both verified repairs. All source criteria pass;93public/1110affected+42resolver/API/normal+trueXML-only pass;bounded reviews and actual granted allocation evidence accepted. Clean final worker handback with zero owned jobs and explicit all-write relinquishment;root alone records integrated verification/cleanup.",
+    "summary": "Integrated verified completepublicXSDfacade;1152combinedchecks andactualallocationevidence passed;officialW3Ccorpus task nowready.",
     "checks": [
       "Initial build failed four xUnit1051 cancellation-token analyzer checks; corrected.",
       "First 65 public run failed incorrect group wildcard union oracle; corrected to intersection.",
