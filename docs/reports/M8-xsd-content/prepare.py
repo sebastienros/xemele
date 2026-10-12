@@ -11,7 +11,7 @@ revision=sys.argv[1]
 subprocess.run(['git','merge-base','--is-ancestor',revision,'HEAD'],cwd=root,check=True)
 tests=ET.parse(root/'artifacts/M8-xsd-content/correctness.xml').getroot()
 assembly=tests.find('assembly')
-assert int(assembly.attrib['passed'])==204 and all(int(assembly.attrib[k])==0 for k in ['failed','errors','skipped','not-run'])
+assert int(assembly.attrib['passed'])==243 and all(int(assembly.attrib[k])==0 for k in ['failed','errors','skipped','not-run'])
 required=[t for t in tests.iter('test') if 'NonExpressibleIntermediateMustBeRejectedBeforeCompilerDiscardsIt' in t.attrib['name']]
 assert len(required)==1 and required[0].attrib['result']=='Pass', 'Verified compiler repair regression must pass before preparation.'
 effective_empty=[t for t in tests.iter('test') if 'EffectiveEmptyExtensionInheritsMixedBaseContent' in t.attrib['name']]
