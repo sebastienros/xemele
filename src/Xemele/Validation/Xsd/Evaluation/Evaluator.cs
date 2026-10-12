@@ -170,7 +170,7 @@ internal sealed partial class XsdValidationRun : ISchemaOperation
         current = document.OriginalLocation(node); Work();
         if (Limits.Depth is int cap && depth > cap) Limit("Element depth limit exceeded.");
         Text(node.LocalName, true); Text(node.NamespaceUri, true); Text(node.Prefix, true);
-        var context = Context(node, parent); bool valid = true, nil = false, globalTypeResolved = false;
+        var context = Context(node, parent); bool valid = SchemaHints(node), nil = false, globalTypeResolved = false;
         XsdTypeDefinition? type = null;
         if (!skip)
         {
