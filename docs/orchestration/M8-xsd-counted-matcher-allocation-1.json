@@ -1,0 +1,40 @@
+{
+  "scope": "M8-xsd-counted-matcher-186e7d9d-allocation-1",
+  "status": "PROPOSED; not granted",
+  "owner_chat": "01a12c6c-b333-71d3-877f-0d186618e21d",
+  "cwd": "/Users/sebastienros/.codex/worktrees/452a/xemele",
+  "manifest": "/Users/sebastienros/.codex/worktrees/452a/xemele/docs/reports/M8-xsd-counted-matcher/preparation.json",
+  "manifest_sha256": "20bc977cba9ac42632200914acb713dbb241e294ddc02f99f9f7ef8cbc4d418d",
+  "supervisor": "/Users/sebastienros/.codex/worktrees/452a/xemele/docs/reports/M8-xsd-counted-matcher/measure.py",
+  "supervisor_sha256": "753954e05f1940edc8515ea3a5683cecdac42bf38feba0bd0d91e8c709cbdaaa",
+  "commands": [
+    [
+      "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+      "--fx-version",
+      "10.0.11",
+      "/Users/sebastienros/.codex/worktrees/452a/xemele/benchmarks/Xemele.Benchmarks/M8-xsd-counted-matcher/bin/probe/net10.0/Xemele.Benchmarks.dll",
+      "--control",
+      "/Users/sebastienros/.codex/worktrees/452a/xemele/artifacts/M8-xsd-counted-matcher/measurement-1/control.json"
+    ],
+    [
+      "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+      "--fx-version",
+      "10.0.11",
+      "/Users/sebastienros/.codex/worktrees/452a/xemele/benchmarks/Xemele.Benchmarks/M8-xsd-counted-matcher/bin/probe/net10.0/Xemele.Benchmarks.dll",
+      "--measure",
+      "/Users/sebastienros/.codex/worktrees/452a/xemele/artifacts/M8-xsd-counted-matcher/measurement-1/allocations.json"
+    ]
+  ],
+  "source_revision": "186e7d9d997546c15583a244e98565fd1f1fa965",
+  "identities": 467,
+  "maximum_seconds": 120,
+  "work_seconds": 110,
+  "cleanup_seconds": 10,
+  "latest_start_rule": "grant+60s every child",
+  "absolute_expiry_rule": "grant+180s; supervisor actual duration min120/remaining, noextension",
+  "routes": "13 total,6 borrowed warmed zero targets/7owned positive costs;32warmups/64 per-route sample distributions,32retainedprograms+32retainedcursors",
+  "roster": "Nine Xemele actors: root/main/corpus/matcher/recursive/hint plus three reviewers. All fresh exactscope ACKs; no foreign communication or synchronization/globalhostidleclaim.",
+  "constraints": "Root solelauncher exact prebuilt control then measure; no retries/builds/restore/discovery/frozenwrites/newactors/rawinspection before durablecleanupRELEASE. Stopfirstfailure; expiry alone not release.",
+  "review": "SourcePASS unchanged8560237 probe/supervisor, source hashes matched. Root verify-only467/ps actualPASS. Disabled preflight43158 clean.",
+  "root_ack": "No owned workloads/jobs/PIDs/groups/active sessions/cells/children/openlogs; all prior root sessions terminal. Hold heavywork/frozenwrites/newactors/rawinspection until cleanupRELEASE."
+}
