@@ -1,0 +1,17 @@
+{
+  "task": "M8-xsd-particle-normalization",
+  "reviewer": "/root/review_m8_xpath",
+  "result": "Scope PASS; remains planned, dependencies not bypassed",
+  "findings": [
+    "Three owned source files suffice without model/frozen API change.",
+    "A1 distinguish synthesized substitution choice from authored choice; preserve authored order. Global reordering/unordered choice exceeds scope.",
+    "A2 normalize newly expanded singleton before dispatch preserving occurrence bounds, implicitMembers and wrapper guards.",
+    "A3 existing #model-group: compiler carriers distinguish checkpoints; suppress only their UPA, retain consistency/declaration/derivation. Actual anonymous complex types using group still require UPA; Anonymous alone insufficient."
+  ],
+  "sha256": {
+    "Compilation/Compiler.cs": "86ec831d782eeea74d938e8bfbefededa7968678a9c55add35a3adf46f9eda24",
+    "ContentModels/Compiler.cs": "0c878f5d753d913dc6f998cec9843435db46783bac1a7f9e0ddf5ea046f4eafa",
+    "ContentModels/Derivation.cs": "d7445ff8efb48832c47866d4235e20109090febbedaa31b6b3849d7066bb2926"
+  },
+  "execution": "Read-only scope assessment; no implementation/checks or private worker input."
+}
