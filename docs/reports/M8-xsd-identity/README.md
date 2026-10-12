@@ -11,8 +11,10 @@ inject the real registry using only non-reserved authored definitions.
 Restricted selector/field syntax implements XSD1.0 unions, child/self steps,
 optional leading descendant-or-self, QName/wildcard namespace tests and terminal
 attribute fields. Equivalent explicit child, self::node(), attribute and leading
-descendant-or-self::node() forms are supported. XML Unicode names use established
-scalar validation. Namespace tests use definition bindings (the compiler's
+descendant-or-self::node() forms are supported. XML Unicode names use an owned per-scalar polled validator with the established
+ValueSyntax classifications; malformed UTF-16 and colons reject. Axis lookahead
+charges/polls every whitespace unit on successful and unsuccessful paths without
+recharging that lookahead in cursor advancement. Namespace tests use definition bindings (the compiler's
 collision-free canonical aliases), never instance prefixes/default namespaces.
 Union alternatives selecting the same node contribute a single field event.
 Descendant-self paths with no name step also select text/comment/PI/CDATA nodes;
@@ -60,7 +62,7 @@ claim. The facade must always supply a real prepared identity program, including
 zero-constraint schemas, and deliver all effective attributes/typed element
 values and wildcard scopes through one operation/provider graph.
 
-`check.py` builds/runs131 owned plus546 relevant predecessor tests, separately
+`check.py` builds/runs149 owned plus546 relevant predecessor tests, separately
 42 safe resolver cases, exact24 frozen declarations, unchanged1403 public member
 union, and a real normal plus genuinely source-linked XML-only consumer. Planning
 and whitespace are checked. The XML-only project omits HTML/CSS/XSLT/facade/

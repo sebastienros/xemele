@@ -1,3 +1,6 @@
+using System.Buffers;
+using System.Text;
+using Xemele.Parsing.Dtd;
 namespace Xemele.Validation;
 
 // Restricted XSD 1.0 paths, not an M4 expression. Compilation owns names once;
@@ -110,13 +113,15 @@ internal sealed class IdentityXPath(IdentityPath[] paths, bool selectsNonElement
         }
         private void Name(ReadOnlySpan<char> name)
         {
-            IdentityWork.Tick(op, at, name.Length);
-            // XML name validation shares the established Unicode scalar rules.
-            IdentityWork.Retain(op, at);
-            string owned = name.ToString();
-            bool valid = true;
-            try { TreeValidation.Name(owned); } catch (ArgumentException) { valid = false; }
-            if (!valid) Bad();
+            if (name.IsEmpty) Bad();
+            bool first = true;
+            while (!name.IsEmpty)
+            {
+                IdentityWork.Tick(op, at);
+                if (Rune.DecodeFromUtf16(name, out var scalar, out int width) != OperationStatus.Done ||
+                    scalar.Value == ':' || (first ? !ValueSyntax.IsNameStart(scalar.Value) : !ValueSyntax.IsNameChar(scalar.Value))) Bad();
+                first = false; name = name[width..];
+            }
         }
         private char Peek() { Skip(); return position < source.Length ? source[position] : '\0'; }
         private bool Take(char c)
@@ -127,11 +132,14 @@ internal sealed class IdentityXPath(IdentityPath[] paths, bool selectsNonElement
         private bool Axis(string name)
         {
             Skip(); var remaining = source.AsSpan(position);
+            IdentityWork.Tick(op, at, name.Length);
             if (!remaining.StartsWith(name, StringComparison.Ordinal)) return false;
             int stop = name.Length;
-            while (stop < remaining.Length && remaining[stop] is ' ' or '\t' or '\r' or '\n') stop++;
+            while (stop < remaining.Length && remaining[stop] is ' ' or '\t' or '\r' or '\n')
+            { IdentityWork.Tick(op, at); stop++; }
+            IdentityWork.Tick(op, at, 2);
             if (!remaining[stop..].StartsWith("::", StringComparison.Ordinal)) return false;
-            Consume(stop + 2); return true;
+            position += stop + 2; return true;
         }
         private void NodeTest()
         {
