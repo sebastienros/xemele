@@ -43,3 +43,11 @@ identity checks are recorded separately from actual execution. Exact copied upst
 whitespace remains:33 findings in7 originals, with no byte normalization. Source
 manifest excludes itself; its digest and immutable commit are supplied to root.
 No task-state writes, peer runtime dependency, push or publication are included.
+
+Third source review exact corrections G03a/G04u: expanded element terms retain
+literal identity through wrapper normalization; blocked h/int -> m/int -> s/short
+restriction rejects, unblocked r/s=7 succeeds. Partial unions carry preserve,
+replace, and collapse candidates through enclosing patterns and real complete
+member plans; string-length4 a[space][space]b element-default/attribute-fixed
+neighbors, enclosing-pattern negatives, and completed-list neighbors authored.
+All execution remains UNRUN. Static selected coverage is685 methods/2188 cases.

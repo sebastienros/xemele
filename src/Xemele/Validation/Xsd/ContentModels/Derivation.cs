@@ -204,15 +204,15 @@ internal sealed partial class ContentCompilation
         if (rmax is { } r) ContentWork.Integer(op, at, r); if (bmax is { } b) ContentWork.Integer(op, at, b);
         return ContentIntegers.Compare(rmin, bmin, op, at) >= 0 && (bmax is null || rmax is { } limit && ContentIntegers.Compare(limit, bmax.Value, op, at) <= 0);
     }
-    private readonly HashSet<XsdParticle> implicitMembers = new(ReferenceEqualityComparer.Instance);
+    private readonly HashSet<XsdElementTerm> implicitMembers = new(ReferenceEqualityComparer.Instance);
     private XsdParticle ExpandSubstitution(XsdParticle p)
     {
-        if (p.Term is not XsdElementTerm e || implicitMembers.Contains(p)) return p;
+        if (p.Term is not XsdElementTerm e || implicitMembers.Contains(e)) return p;
         var members = Members(e.DeclarationId);
         if (members.Length <= 1 && (members.Length == 0 || members[0].Item2 == e.DeclarationId)) return p;
         ContentWork.Retain(op, p.Location, checked(members.Length * 2 + 2));
         var particles = new XsdParticle[members.Length];
-        for (int i = 0; i < members.Length; i++) { ContentWork.Tick(op, p.Location); particles[i] = new(new XsdElementTerm(members[i].Item2), 1, 1, p.Location); ContentWork.Retain(op, p.Location); implicitMembers.Add(particles[i]); }
+        for (int i = 0; i < members.Length; i++) { ContentWork.Tick(op, p.Location); particles[i] = new(new XsdElementTerm(members[i].Item2), 1, 1, p.Location); ContentWork.Retain(op, p.Location); implicitMembers.Add((XsdElementTerm)particles[i].Term); }
         return p with { Term = new XsdGroupTerm(XsdCompositor.Choice, particles) };
     }
     private enum RuleKind { Relation, Constant, And, Or }
@@ -423,6 +423,9 @@ internal sealed partial class ContentCompilation
         Rule nameRelation = Constant(true), typeRelation = Constant(true);
         if (d.Name != b.Name)
         {
+            // An expanded leaf denotes one literal accepted name. Affiliation
+            // must not rematch it to another leaf and broaden the expanded set.
+            if (implicitMembers.Contains((XsdElementTerm)derived.Term) || implicitMembers.Contains((XsdElementTerm)basis.Term)) return Constant(false);
             if (!globalD || !globalB || b.Block.Contains(XsdElementBlock.Substitution)) return Constant(false);
             int current = d.Id; bool reaches = false;
             for (int steps = 0; steps < schema.Elements.Count; steps++)

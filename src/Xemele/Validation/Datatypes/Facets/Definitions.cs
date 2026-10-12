@@ -63,22 +63,32 @@ internal sealed partial class XmlFacetEvaluator
     private bool CheckIndependentConstraint(XmlDatatypeDefinition type, ReadOnlySpan<char> lexical, SchemaNamespaceContext context,
         IXmlDatatypeRegistry registry, ISchemaOperation op, AvailabilityBuilder availability)
     {
-        if (!PotentialValue(type, lexical, context, registry, op, availability, 0))
-            return FacetRules.Reject(op, type.Location, "Value constraint independently fails every available alternative.");
-        return op.Charge(0, type.Location);
+        // A union selects its member's whitespace rule. Keep each possibility
+        // through enclosing patterns rather than collapsing before selection.
+        for (var rule = XmlWhitespaceRule.Preserve; rule <= XmlWhitespaceRule.Collapse; rule++)
+            if (PotentialValue(type, lexical, context, registry, op, availability, rule, 0)) return op.Charge(0, type.Location);
+        return FacetRules.Reject(op, type.Location, "Value constraint independently fails every available alternative.");
     }
     private bool PotentialValue(XmlDatatypeDefinition type, ReadOnlySpan<char> lexical, SchemaNamespaceContext context,
-        IXmlDatatypeRegistry registry, ISchemaOperation op, AvailabilityBuilder availability, int depth)
+        IXmlDatatypeRegistry registry, ISchemaOperation op, AvailabilityBuilder availability, XmlWhitespaceRule rule, int depth)
     {
         op.Charge(1, type.Location);
         if (depth >= 256) { op.Refuse("SCHEMA.Limit", "Datatype graph depth exceeded.", type.Location); op.Charge(0, type.Location); return false; }
         if (!availability.Unavailable(ComponentAvailability.Simple(type.Name)))
         {
-            bool valid = TryValidate(type, lexical, context, registry, op, out _, out _);
+            if (!prepared.TryGetValue(registry, out var cache) || !cache.TryGetValue(type, out var plan))
+            {
+                plan = Prepare(type, registry, op);
+                if (plan is not null) Publish(type, registry, plan, op);
+            }
+            bool valid = plan is not null && CompletePotential(plan, lexical, context, rule, op, out _);
             op.Charge(0, type.Location); return valid;
         }
+        if (type.Variety == XmlDatatypeVariety.List && rule != XmlWhitespaceRule.Collapse) return false;
         var library = registry.Find(DatatypeTypes.XsdNamespace)!;
-        var text = library.Normalize(lexical, XmlWhitespaceRule.Collapse, op);
+        // Compilation owns this temporary normalized text for the candidate
+        // branch; no partial typed value or executable plan is manufactured.
+        var text = library.Normalize(lexical, rule, op);
         int tokens = 0; bool inToken = false;
         foreach (char c in text)
         { op.Charge(1, type.Location); if (c == ' ') inToken = false; else if (!inToken) { tokens++; inToken = true; } }
@@ -109,13 +119,29 @@ internal sealed partial class XmlFacetEvaluator
             {
                 op.Charge(1, type.Location);
                 var member = registry.FindType(name)!;
-                if (PotentialValue(member, text.AsSpan(), context, registry, op, availability, depth + 1)) return true;
+                if (PotentialValue(member, lexical, context, registry, op, availability, rule, depth + 1)) return true;
             }
             return false;
         }
         // The list item remains unavailable. Decidable grammar/pattern/count
         // checks passed; no fabricated item value or partial plan is produced.
         return op.Charge(0, type.Location);
+    }
+    private bool CompletePotential(FacetPlan plan, ReadOnlySpan<char> lexical, SchemaNamespaceContext context,
+        XmlWhitespaceRule rule, ISchemaOperation op, out XmlDatatypeValue? value)
+    {
+        op.Charge(1, plan.Definition.Location); value = null;
+        if (plan.Variety != XmlDatatypeVariety.Union)
+            return plan.Whitespace == rule && Parse(plan, lexical, context, op, out value, out _);
+        foreach (var member in plan.Members)
+        {
+            op.Charge(1, plan.Definition.Location);
+            if (!CompletePotential(member, lexical, context, rule, op, out var selected)) continue;
+            if (!NormalizedCheck(plan, lexical, rule, selected!, op, out _)) continue;
+            value = plan.Library.CreateUnion(plan.Definition.Name, selected!, op);
+            return op.Charge(0, plan.Definition.Location);
+        }
+        return false;
     }
     private bool CheckIndependentFacets(XmlDatatypeDefinition type, IXmlDatatypeRegistry registry, ISchemaOperation op)
     {

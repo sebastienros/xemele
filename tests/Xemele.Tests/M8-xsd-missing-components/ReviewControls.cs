@@ -5,6 +5,32 @@ namespace Xemele.Tests.M8XsdMissingComponents;
 
 public sealed class ReviewControls
 {
+    [Fact]
+    public void ExpandedSubstitutionLeavesCannotRematchThroughBlockedAffiliation()
+    {
+        const string heads = "<xs:element name='h' type='xs:int' block='restriction'/><xs:element name='m' type='xs:int' substitutionGroup='h'/><xs:element name='s' type='xs:short' substitutionGroup='m'/>";
+        const string types = "<xs:complexType name='B'><xs:sequence><xs:element ref='h'/></xs:sequence></xs:complexType><xs:complexType name='D'><xs:complexContent><xs:restriction base='B'><xs:sequence><xs:element ref='m'/></xs:sequence></xs:restriction></xs:complexContent></xs:complexType><xs:element name='r' type='D'/>";
+        Assert.Throws<SchemaCompileException>(() => XmlSchema.Compile(Wrap(heads + types)));
+        var allowed = XmlSchema.Compile(Wrap(heads.Replace(" block='restriction'", "", StringComparison.Ordinal) + types));
+        Assert.True(allowed.Validate("<r><s>7</s></r>").IsValid);
+        Assert.True(allowed.Validate("<r><m>7</m></r>").IsValid);
+    }
+    [Theory]
+    [InlineData(false, false)] [InlineData(true, false)]
+    [InlineData(false, true)] [InlineData(true, true)]
+    public void PartialUnionKeepsMemberWhitespaceThroughEnclosingPatterns(bool attribute, bool pattern)
+    {
+        const string types = "<xs:simpleType name='S'><xs:restriction base='xs:string'><xs:length value='4'/></xs:restriction></xs:simpleType><xs:simpleType name='L'><xs:list itemType='absent'/></xs:simpleType><xs:simpleType name='R3'><xs:restriction base='L'><xs:length value='3'/></xs:restriction></xs:simpleType><xs:simpleType name='U'><xs:union memberTypes='S R3'/></xs:simpleType>";
+        string Declaration(string lexical) => attribute ? "<xs:element name='r'><xs:complexType><xs:attribute name='a' type='V' fixed='" + lexical + "'/></xs:complexType></xs:element>" : "<xs:element name='r' type='V' default='" + lexical + "'/>";
+        string Restriction(string regex) => "<xs:simpleType name='V'><xs:restriction base='U'>" + (pattern ? "<xs:pattern value='" + regex + "'/>" : "") + "</xs:restriction></xs:simpleType>";
+        string body = types + Restriction("a  b") + Declaration("a  b") + "<xs:element name='good' type='xs:int'/>";
+        var partial = XmlSchema.Compile(Wrap(body), new() { Limits = new() { Diagnostics = 1 } });
+        var good = partial.Validate("<good>7</good>"); Assert.True(good.IsComplete); Assert.True(good.IsValid); Assert.Empty(good.Diagnostics);
+        Missing(partial.Validate(attribute ? "<r a='a  b'/>" : "<r/>"));
+        Assert.True(XmlSchema.Compile(Wrap(body.Replace("itemType='absent'", "itemType='xs:string'", StringComparison.Ordinal))).Validate(attribute ? "<r a='a  b'/>" : "<r/>").IsValid);
+        Assert.Throws<SchemaCompileException>(() => XmlSchema.Compile(Wrap(types + Restriction("a  b") + Declaration("a b"))));
+        if (pattern) Assert.Throws<SchemaCompileException>(() => XmlSchema.Compile(Wrap(types + Restriction("a b") + Declaration("a  b"))));
+    }
     [Theory]
     [InlineData(0)] [InlineData(1)] [InlineData(2)] [InlineData(3)] [InlineData(4)] [InlineData(5)]
     public void UnavailableEdcOperandCannotHideKnownConflictInAnyOrder(int order)
