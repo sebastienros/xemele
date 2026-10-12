@@ -76,6 +76,15 @@
       "result": "passed",
       "summary": "0warnings/errors;5 consumed real compiler routes with counters/timing disabled, process permission confirmed, every child reaped/group absent. No measurement yet.",
       "artifact": null
+    },
+    {
+      "id": "combined-checks",
+      "kind": "integration",
+      "revision": "8917aceb24b132e0124405279fe9abd6359bca86",
+      "command": "python3 docs/reports/M8-sch-validate/checks.py && python3 docs/reports/M8-xsd-effective-content/checks.py",
+      "result": "passed",
+      "summary": "Actual combined tree includes accepted SCH43c6ab4 and compilerade942a4 plus current main. SCH454 checks and compiler282 checks all pass (suite counts, with overlapping predecessors); zero failures/errors/skips/not-run. Frozen9/154/119/257 and public1400, both SCH consumers and both compiler XML-only consumers pass; zero build warnings/errors;179tasks/diff clean. Await owned allocation evidence before verification.",
+      "artifact": "docs/reports/M8-xsd-effective-content/README.md"
     }
   ],
   "blockers": [],

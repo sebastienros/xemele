@@ -29,3 +29,11 @@ Independent source review accepted ade942a4. The nonempty0..0 absence mapped
 to effective-empty is an explicit cross-section inference from pinned XSD1.0
 §3.4.2/§3.7.2/§3.8.2; do not import the later XSD1.1 expanded synthesis.
 No applicable Second Edition erratum was found.
+
+Combined verification at8917aceb24b132e0124405279fe9abd6359bca86 includes
+current main, this repair and accepted Schematron evaluator43c6ab4. Both
+actual suites passed:282 compiler checks and454 Schematron checks (these
+suite totals include overlapping predecessors). Frozen119/257/9/154 and
+public1400 members match; both compiler XML-only consumers and both
+Schematron consumers pass. All builds have zero warnings/errors;179-task
+validation and whitespace checks pass. Allocation evidence remains pending.
