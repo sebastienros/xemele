@@ -53,13 +53,34 @@
       "evidence": []
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Validation/Xsd/Compilation/Compiler.cs: XsdCompilation.Syntax validates documentation wrapper xs:language with a borrowed charged span; global group contextual attributes",
+    "src/Xemele/Validation/Xsd/Identity/XPath.cs: Parser retains literal dot/.// and child/attribute axes, rejects explicit self/descendant-or-self lexical forms",
+    "tests/Xemele.Tests/M8-xsd-schema-syntax/: unchanged original W3C schemas, independent BCL oracles, public facade and legal/illegal/budget neighbors",
+    "docs/reports/M8-xsd-schema-syntax/README.md: exact authorized previous test identity transitions and standards rationale"
+  ],
+  "evidence": [
+    {
+      "id": "original-baseline",
+      "kind": "check",
+      "revision": "63b153d050d3246fb0c8de04238985c964c45c57",
+      "command": "Offline restore/build tests/Xemele.Tests/Xemele.Tests.csproj Release with --disable-build-servers -m:1 -p:RuntimeFrameworkVersion=10.0.11 -p:UseSharedCompilation=false -p:NuGetAudit=false; pinned dotnet --fx-version 10.0.11 tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -namespace Xemele.Tests.M8XsdSchemaSyntax -parallelMode none -noLogo -noColor -result-xml artifacts/M8-xsd-schema-syntax/baseline.xml",
+      "result": "failed",
+      "summary": "Expected pre-repair reproduction: all 3 original-invalid schemas were independently rejected by BCL, then all 3 public facade rejection assertions failed because no exception was thrown. 3 total, 3 failed, 0 errors/skipped/not-run. Build succeeded SDK10.0.400/runtime10.0.11. Raw XML/build log transient ignored.",
+      "artifact": null
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Coordinator-created ordered repair from completed official corpus baseline and primary-standards adjudication; corpus task remains active and is not a prerequisite.",
-    "checks": [],
-    "remaining": [],
+    "summary": "Scoped source and controls committed; awaiting coordinator source acceptance/check release. Task remains in_progress; no post-repair checks or allocation claimed.",
+    "checks": [
+      "Baseline: 3 expected no-exception failures after 3 BCL original-schema rejections.",
+      "Planning validate:185 tasks; git diff --check clean."
+    ],
+    "remaining": [
+      "Source acceptance then owned/affected correctness, safe42resolver, exact APIs and normal/XML-only consumers.",
+      "Prepare/freeze disabled controls, elevated verify-only/supervised cleanup preflight; coordinator-only granted measurement; final evidence."
+    ],
     "requests": []
   }
 }
