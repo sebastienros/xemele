@@ -21,15 +21,29 @@ REGISTRIES = 'XEMELE_CORPUS_OWNED_REGISTRIES'
 
 
 def durable(path, value):
-    with path.open('x') as stream:
-        json.dump(value, stream, sort_keys=True)
-        stream.flush()
-        os.fsync(stream.fileno())
-    fd = os.open(path.parent, os.O_RDONLY)
+    """Publish complete fsynced JSON atomically; link is exclusive and cannot overwrite."""
+    temporary = path.with_name('.publish-' + uuid.uuid4().hex + '.tmp')
     try:
-        os.fsync(fd)
+        with temporary.open('x') as stream:
+            json.dump(value, stream, sort_keys=True)
+            stream.flush()
+            os.fsync(stream.fileno())
+        os.link(temporary, path)  # Same-directory atomic publication; existing destination fails.
+        temporary.unlink()
+        fd = os.open(path.parent, os.O_RDONLY)
+        try:
+            os.fsync(fd)
+        finally:
+            os.close(fd)
     finally:
-        os.close(fd)
+        temporary.unlink(missing_ok=True)
+
+
+def complete_record(path, expected):
+    try:
+        return json.loads(path.read_text()) == expected
+    except (OSError, json.JSONDecodeError):
+        return False
 
 
 def registries(environment):
@@ -57,7 +71,8 @@ def track_launches(supervisor, environment, work_deadline=None):
         try:
             child = original(wrapper, *args, **kwargs)
             deadline = launch_deadline
-            while not all((owner / ('group-' + token + '.json')).exists() for owner in owners):
+            while not all(complete_record(owner / ('group-' + token + '.json'),
+                    {'token': token, 'pid': child.pid, 'pgid': child.pid}) for owner in owners):
                 if child.poll() is not None or time.monotonic() >= deadline or any((owner / 'closed.json').exists() for owner in owners):
                     os.killpg(child.pid, signal.SIGKILL)
                     child.wait(timeout=.5)
@@ -92,64 +107,96 @@ def launch_workload(token, argv):
     for owner in owners:
         durable(owner / ('group-' + token + '.json'), {'token': token, 'pid': os.getpid(), 'pgid': os.getpgrp()})
     intent = json.loads((owners[-1] / ('intent-' + token + '.json')).read_text())
-    while not all((owner / ('ack-' + token + '.json')).exists() for owner in owners):
+    while not all(complete_record(owner / ('ack-' + token + '.json'),
+            {'token': token, 'pid': os.getpid()}) for owner in owners):
         if (time.monotonic() >= intent['launchDeadline'] or os.getppid() != intent['parentPid'] or
                 any((owner / 'closed.json').exists() for owner in owners)):
             return 125
         time.sleep(.01)
     if time.monotonic() >= intent['launchDeadline'] or os.getppid() != intent['parentPid'] or any((owner / 'closed.json').exists() for owner in owners):
         return 125
-    for owner in owners:
-        ack = json.loads((owner / ('ack-' + token + '.json')).read_text())
-        assert ack['token'] == token and ack['pid'] == os.getpid()
+    assert all(complete_record(owner / ('ack-' + token + '.json'),
+        {'token': token, 'pid': os.getpid()}) for owner in owners), 'complete ACK required before exec'
     os.execvpe(argv[0], argv, os.environ.copy())
     return 125
+
+
+def group_members_snapshot(groups, timeout):
+    """One bounded process-table read for every historical group in this sweep."""
+    assert timeout > 0
+    listing = subprocess.check_output(['ps', '-axo', 'pid,pgid'], text=True, timeout=timeout)
+    live = {}
+    for line in listing.splitlines()[1:]:
+        pid, group = map(int, line.split())
+        if group in groups:
+            live.setdefault(str(group), []).append(pid)
+    return live
 
 
 def drain(supervisor, registry, hard_deadline):
     groups = set()
     termed = set()
     record = {'registry': str(registry), 'groups': [], 'pendingIntents': [], 'allOwnedGroupsAbsent': False}
+    scan_deadline = hard_deadline - 2  # Receipt publication retains its existing reserve.
+    def remaining():
+        value = scan_deadline - time.monotonic()
+        if value <= 0:
+            raise TimeoutError('Nested cleanup deadline reached')
+        return value
     try:
         durable(registry / 'closed.json', {'controller': os.getpid()})
     except BaseException as error:
         record['closingError'] = type(error).__name__
     try:
         while True:
+            remaining()
             intents = {p.stem.removeprefix('intent-') for p in registry.glob('intent-*.json')}
             cancelled = {p.stem.removeprefix('not-launched-') for p in registry.glob('not-launched-*.json')}
             published = set()
             for file in registry.glob('group-*.json'):
+                remaining()
                 try:
                     identity = json.loads(file.read_text())
                 except (json.JSONDecodeError, OSError):
-                    continue  # Keep its intent pending; still kill every other published group.
+                    continue
                 assert identity['pid'] == identity['pgid'] and identity['pgid'] > 1
                 assert identity['pgid'] != os.getpgrp(), 'cannot signal controller group'
                 groups.add(identity['pgid'])
                 published.add(identity['token'])
             pending = sorted(intents - published - cancelled)
-            live = {}
+            record.update(groups=sorted(groups), pendingIntents=pending)
             for group in sorted(groups):
+                remaining()
                 if group not in termed:
                     supervisor.kill_group(group, signal.SIGTERM)
                     termed.add(group)
                 supervisor.kill_group(group, signal.SIGKILL)
-            for group in sorted(groups):
-                remaining = supervisor.members(group)
-                if remaining:
-                    live[str(group)] = remaining
-            record.update(groups=sorted(groups), pendingIntents=pending, remainingGroups=live)
+            timeout = min(2, remaining())
+            live = group_members_snapshot(groups, timeout)
+            record['remainingGroups'] = live
+            remaining()  # Even an all-absent result cannot pass after a slow snapshot.
             if not pending and not live:
                 record['allOwnedGroupsAbsent'] = 'closingError' not in record
                 break
-            if time.monotonic() >= hard_deadline - 2:
-                raise TimeoutError('Nested ownership did not drain')
-            time.sleep(.05)
+            time.sleep(min(.05, remaining()))
     except BaseException as error:
         record['cleanupError'] = type(error).__name__
+        # Best-effort signals still reach published groups on an expired deadline;
+        # no additional process scans or clean claim are made on this failure path.
+        for file in registry.glob('group-*.json'):
+            try:
+                identity = json.loads(file.read_text())
+                group = identity['pgid']
+                if identity['pid'] == group and group > 1 and group != os.getpgrp():
+                    supervisor.kill_group(group, signal.SIGKILL)
+            except (OSError, ValueError, KeyError, TypeError):
+                pass
     finally:
         durable(registry / 'cleanup.json', record)
+        if time.monotonic() >= hard_deadline:
+            record['allOwnedGroupsAbsent'] = False
+            record['cleanupError'] = 'TimeoutError'
+            durable(registry / 'deadline-failure.json', record)
     return record
 
 

@@ -248,6 +248,99 @@ class Supervisor(unittest.TestCase):
         self.assertEqual(record['pendingIntents'], ['unpublished'])
         self.assertEqual(record['cleanupError'], 'TimeoutError')
 
+    def test_ACK_publication_paused_after_creation_bootstrap_waits_then_executes_once(self):
+        registry = self.out / 'atomic-ack'; registry.mkdir()
+        owners = m.nested.registries(os.environ) + [registry]
+        token = 'atomic-publication-control'
+        output = self.out / 'executions.txt'
+        argv = [sys.executable, '-c', f"from pathlib import Path;Path({str(output)!r}).open('a').write('once\\n')"]
+        for owner in owners:
+            m.nested.durable(owner / ('intent-' + token + '.json'), dict(token=token, argv=argv,
+                parentPid=os.getpid(), launchDeadline=time.monotonic()+5))
+        environment = os.environ.copy()
+        environment[m.nested.REGISTRIES] = json.dumps([str(owner) for owner in owners])
+        stream = (self.out / 'ack-bootstrap.log').open('xb')
+        child = None; writer = None
+        entered = threading.Event(); release = threading.Event(); errors = []
+        try:
+            child = m.supervision.subprocess.Popen([sys.executable, m.nested.__file__, '--launch', token] + argv,
+                env=environment, stdout=stream, stderr=m.supervision.subprocess.STDOUT, start_new_session=True)
+            expected_group = dict(token=token, pid=child.pid, pgid=child.pid)
+            deadline = time.monotonic()+2
+            while not all(m.nested.complete_record(owner / ('group-'+token+'.json'), expected_group) for owner in owners):
+                if time.monotonic() >= deadline: raise TimeoutError('registered bootstrap not observed')
+                time.sleep(.01)
+            ack = dict(token=token, pid=child.pid)
+            for owner in owners[:-1]: m.nested.durable(owner / ('ack-'+token+'.json'), ack)
+            real_dump = m.nested.json.dump
+            def pause_before_JSON_write(value, target, **kwargs):
+                if value == ack:
+                    entered.set()  # Temporary file has been exclusively created; it is still empty.
+                    if not release.wait(timeout=2): raise TimeoutError('publication pause not released')
+                return real_dump(value, target, **kwargs)
+            def publish():
+                try: m.nested.durable(registry / ('ack-'+token+'.json'), ack)
+                except BaseException as error: errors.append(repr(error))
+            with patch.object(m.nested.json, 'dump', side_effect=pause_before_JSON_write):
+                writer = threading.Thread(target=publish); writer.start()
+                self.assertTrue(entered.wait(timeout=2))
+                temporaries = list(registry.glob('.publish-*.tmp'))
+                self.assertEqual(len(temporaries), 1)
+                self.assertEqual(temporaries[0].stat().st_size, 0)
+                self.assertFalse((registry / ('ack-'+token+'.json')).exists())
+                self.assertFalse(m.nested.complete_record(registry / ('ack-'+token+'.json'), ack))
+                time.sleep(.1)
+                self.assertIsNone(child.poll())
+                self.assertFalse(output.exists(), 'bootstrap must wait for the complete ACK publication')
+                release.set(); writer.join(timeout=1)
+            self.assertFalse(writer.is_alive())
+            self.assertEqual(errors, [])
+            self.assertEqual(child.wait(timeout=2), 0)
+            self.assertEqual(output.read_text(), 'once\n')
+            self.assertTrue(m.nested.complete_record(registry / ('ack-'+token+'.json'), ack))
+            with self.assertRaises(FileExistsError): m.nested.durable(registry / ('ack-'+token+'.json'), {'replaced':True})
+            self.assertTrue(m.nested.complete_record(registry / ('ack-'+token+'.json'), ack))
+        finally:
+            release.set()
+            if writer is not None: writer.join(timeout=1)
+            if child is not None:
+                if child.poll() is None: m.supervision.kill_group(child.pid, signal.SIGKILL)
+                child.wait(timeout=.5)
+            stream.close()
+
+    def test_expired_nested_deadline_fails_without_process_table_scan(self):
+        registry = self.out / 'expired'; registry.mkdir()
+        with patch.object(m.nested.time, 'monotonic', return_value=10), \
+             patch.object(m.nested, 'group_members_snapshot', return_value={}) as snapshot:
+            record = m.nested.drain(m.supervision, registry, 9)
+        snapshot.assert_not_called()
+        self.assertFalse(record['allOwnedGroupsAbsent'])
+        self.assertEqual(record['cleanupError'], 'TimeoutError')
+
+    def test_one_all_absent_snapshot_crossing_deadline_cannot_report_clean(self):
+        registry = self.out / 'slow-sweep'; registry.mkdir()
+        groups = list(range(900000,900040))
+        for group in groups:
+            token = str(group)
+            m.nested.durable(registry / ('intent-'+token+'.json'), dict(token=token))
+            m.nested.durable(registry / ('group-'+token+'.json'), dict(token=token,pid=group,pgid=group))
+        clock = [10.0]
+        def absent_after_deadline(actual_groups, timeout):
+            self.assertEqual(actual_groups, set(groups))
+            self.assertGreater(timeout, 0)
+            self.assertLessEqual(timeout, 2)
+            clock[0] = 13.1  # scan deadline = hard15 - receipt reserve2; all queried groups are absent.
+            return {}
+        with patch.object(m.nested.time, 'monotonic', side_effect=lambda:clock[0]), \
+             patch.object(m.supervision, 'kill_group'), \
+             patch.object(m.supervision, 'members', side_effect=AssertionError('per-group ps scan forbidden')), \
+             patch.object(m.nested, 'group_members_snapshot', side_effect=absent_after_deadline) as snapshot:
+            record = m.nested.drain(m.supervision, registry, 15)
+        self.assertEqual(snapshot.call_count, 1)
+        self.assertEqual(record['remainingGroups'], {})
+        self.assertFalse(record['allOwnedGroupsAbsent'])
+        self.assertEqual(record['cleanupError'], 'TimeoutError')
+
     def preparation_binding_fixture(self):
         runner = self.out / 'runner.dll'; product = self.out / 'Xemele.dll'
         runner.write_bytes(b'unchanged runner'); product.write_bytes(b'tested product dependency')
