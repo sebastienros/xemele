@@ -1,6 +1,6 @@
 {
   "id": "M8-wildcard-parser-serial-2",
-  "status": "PARK_REQUESTED_NOT_GRANTED",
+  "status": "ALL_ACTORS_ACKNOWLEDGED_NOT_GRANTED",
   "createdUtc": "2026-10-12T00:21:23.494253+00:00",
   "earliestStart": "2026-10-12T00:25:00Z",
   "latestStart": "2026-10-12T00:29:00Z",
@@ -30,5 +30,15 @@
     "gate": "closed; explicit parser-phase grant required",
     "expiryRule": "min actual gate open+14min,00:43UTC;cleanup10s;absolute00:43:10UTC"
   },
-  "rules": "Fresh all-known actor ACKs required; root phase first; explicit phase grants; no overlap/build/discovery/retry; immediate durable phase release before inspection; final RELEASE all actors after final child/group cleanup. Expiry does not authorize unreported leftovers."
+  "rules": "Fresh all-known actor ACKs required; root phase first; explicit phase grants; no overlap/build/discovery/retry; immediate durable phase release before inspection; final RELEASE all actors after final child/group cleanup. Expiry does not authorize unreported leftovers.",
+  "acks": {
+    "xemeleMain": "Fresh exactserial2 ACK, idle/nojobs, mainread-only",
+    "content": "Fresh exactserial2 ACK at c903d01, nojobs",
+    "schematronEvaluator": "Fresh exactserial2 ACK retrievedfinal; safeboundary00:23:43Z, source43c6ab4/tip32b675a, nojobs",
+    "facets": "Fresh exactserial2 ACK afterbuild97992exit0 and179tests boundary;nojobs",
+    "root": "Combined254checks exit0/session67737finished;noownjob;all410frozeninputs verified before proposal",
+    "parser": "Fresh exactserial2 ACK, gateclosed,120cases/110harnessidentitiesreverified;onlyidle60333/60338",
+    "gregsex": "Freshaggregateall5: main01a12c93,coord01a12d32,conformance01a12d6b-cbc9,host01a12d6b-d1fa,parser01a12d77; allnojobs/PIDs/children, exactscope/times, nooldACKreuse"
+  },
+  "acksRecordedUtc": "2026-10-12T00:24:47.464474+00:00"
 }
