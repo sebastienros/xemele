@@ -4,7 +4,7 @@
   "milestone": "M8",
   "title": "Freeze authorized nullable XSD missing-component contract",
   "kind": "contract",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M8 coordinator / assigned isolated missing-component contract worker",
   "branch": "codex/m8-xsd-missing-components-contract",
   "base_revision": "ad976b74e704a0ba7f3885b013ac21a06b42e393",
@@ -35,26 +35,39 @@
     {
       "id": "M8-xsd-missing-components-contract-A1",
       "description": "Freeze exact human-approved internal XsdElementDeclaration.Type migration from SchemaName to SchemaName?, with explicit unresolved-head meaning and immutable availability metadata retaining reference kind/expanded QName/source location. Null only represents unavailable inferred type, not ordinary no-type default; explicit unresolved types retain authored QName. No fabricated type, executable stand-in or public API change.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "semantic-source-review",
+        "root-contract-compile"
+      ]
     },
     {
       "id": "M8-xsd-missing-components-contract-A2",
       "description": "Freeze narrow Second Edition missing-component semantics for8original schema/good-instance positives and4separate required-component nonassessment cases: consuming required absence stops assessment with IsCompletefalse/IsValidfalse/Fatal XSD.MissingComponent through bounded existing refusal/diagnostic machinery. Preserve independent schema errors, missingbase negatives, namespace permission, resource/outcome distinctions, charging/cancel/source/disposal and no validation-time resolver or mutation. Unresolved-head originalVALID remains separately adjudicated, not an originalpass promise or gate exception.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "semantic-source-review"
+      ]
     },
     {
       "id": "M8-xsd-missing-components-contract-A3",
       "description": "Compile nonpackaged representative fixtures/usages with genuine nullable-Type semantics and emit exact candidate baseline changes for every affected constructor/property/deconstruct/consumer. Preserve current shared Xsd.cs.fixture/goldens/runtime until later implementation ownership; freeze approved transition at owned paths and prove old/new fixture member projection/public interfaces. No fixture execution or product runtime stub. Record actual offline compilation outcomes only after source-reviewed bounded lifecycle release.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "bounded-source-review",
+        "root-preparation",
+        "root-controls",
+        "root-contract-compile"
+      ]
     },
     {
       "id": "M8-xsd-missing-components-contract-A4",
       "description": "Identify exact later runtime/test/benchmark/shared-fixture/golden owned paths, ordered dependencies after verified import/annotation repair and this contract, and old expectations requiring deliberate transition. Specify meaningful direct/local/strict/lax/skip/substitution/xsi/type/nil/facet/default/identity/partial checks, normal+trueXMLonly consumers, frozen/public/additive API transition proof and bounded actual allocation gates. All later implementation checks remain UNRUN; planning validates and earliermilestones preserved.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "semantic-source-review",
+        "implemented-metadata-planning"
+      ]
     }
   ],
   "implementation": [
@@ -63,9 +76,9 @@
     "docs/reports/M8-xsd-missing-components-contract/: authored exact three-member projection delta, provenance, finite reviewed-SHA offline runner and lifecycle control sources",
     "docs/reports/M8-xsd-missing-components-contract/runtime-migration.json: exact ordered later ownership and legacy transition requests",
     "docs/reports/M8-xsd-missing-components-contract/source-manifest.json: immutable source SHA/path/hash inventory; source-only execution boundary",
-    "docs/reports/M8-xsd-missing-components-contract/{supervision.py,nested_ownership.py,bindings.py,controls.py}: attributed registered family supervision, immutable plan/input/control receipt binding, finite outer verifier (UNRUN)",
-    "docs/reports/M8-xsd-missing-components-contract/terminal.py: source-only absence/consume/delete terminal boundary and four finite Python retention controls; no .NET execution",
-    "docs/reports/M8-xsd-missing-components-contract/check.py compile_attempt/recover_compile, retention-caller.py and controls.py: gate-before-cleanup claim, explicit matched coordinator recovery for SIGKILLed caller, observed exit/reason/log assertions and final-publication TERM reconciliation; SOURCE only"
+    "docs/reports/M8-xsd-missing-components-contract/{supervision.py,nested_ownership.py,bindings.py,controls.py}: attributed registered family supervision, immutable plan/input/control receipt binding, finite outer verifier (26 controls passed by coordinator at62063bc7)",
+    "docs/reports/M8-xsd-missing-components-contract/terminal.py: absence/consume/delete terminal boundary; coordinator controls and compile terminal cleanup passed at62063bc7",
+    "docs/reports/M8-xsd-missing-components-contract/check.py compile_attempt/recover_compile, retention-caller.py and controls.py: gate-before-cleanup claim, explicit matched coordinator recovery for SIGKILLed caller, observed exit/reason/log assertions and final-publication TERM reconciliation; SOURCE accepted and exercised by coordinator at62063bc7"
   ],
   "evidence": [
     {
@@ -112,24 +125,75 @@
       "result": "passed",
       "summary": "198 tasks validated and whitespace check passed on four bounded SOURCE fixes based on 62bb3144. Metadata/whitespace only; all prepare/control/.NET/metadata/runtime/corpus/allocation checks remain UNRUN and unreleased.",
       "artifact": null
+    },
+    {
+      "id": "semantic-source-review",
+      "kind": "review",
+      "revision": "8f3cc548d07844211ff60516892d6b8f2cda4471",
+      "command": null,
+      "result": "passed",
+      "summary": "Coordinator durable review: reviewer /root/review_m8_contract accepted TypeDefinition/xsi:type-only complex-program dependency, immutable availability/consumption semantics, eight future positives/four zero-credit nonassessment controls, exact three nullable members and precise ordered runtime migration. SOURCE acceptance only; no runtime/corpus execution.",
+      "artifact": "docs/orchestration/review-M8-xsd-missing-components-contract-source.json"
+    },
+    {
+      "id": "bounded-source-review",
+      "kind": "review",
+      "revision": "62063bc7d2e5c6a57f6ed2c5bbc7e5ad750e7896",
+      "command": null,
+      "result": "passed",
+      "summary": "Coordinator durable review: reviewer /root/review_m8_xpath SOURCE PASS; all four bounded P2 findings closed. Manifest SHA256 5dff51ad5ebb3ff48e63323cdc4085dc18036c58dc830e70084850543d48551e; root retains active plan/claim hashes for explicit matched recovery after caller reap. Semantic candidate unchanged.",
+      "artifact": "docs/orchestration/review-M8-xsd-missing-components-contract-source.json"
+    },
+    {
+      "id": "root-preparation",
+      "kind": "check",
+      "revision": "62063bc7d2e5c6a57f6ed2c5bbc7e5ad750e7896",
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 docs/reports/M8-xsd-missing-components-contract/check.py --prepare --dotnet '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --release-sha 62063bc7d2e5c6a57f6ed2c5bbc7e5ad750e7896",
+      "result": "passed",
+      "summary": "Executed by coordinator on clean worker source revision; preparation passed and launched no .NET workload. Original plan SHA256 e131fd5fbaca52157fa809fe943d73645e177e08f04f16b72fa717c0ef2a2510. Active staged inputs subsequently consumed and deleted by successful compile; not rechecked after deletion.",
+      "artifact": "docs/orchestration/M8-xsd-missing-components-contract-preparation-1.json"
+    },
+    {
+      "id": "root-controls",
+      "kind": "check",
+      "revision": "62063bc7d2e5c6a57f6ed2c5bbc7e5ad750e7896",
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 docs/reports/M8-xsd-missing-components-contract/controls.py --plan /Users/sebastienros/.codex/worktrees/45c6/xemele/artifacts/M8-xsd-missing-components-contract/62063bc7d2e5c6a57f6ed2c5bbc7e5ad750e7896-63e014443ec24b8cafab72a60de159ac/plan.json --expected-plan-sha e131fd5fbaca52157fa809fe943d73645e177e08f04f16b72fa717c0ef2a2510",
+      "result": "passed",
+      "summary": "Executed by coordinator: all 26 required observed control outcomes passed; independentAbsence and noNextAfterFailure true. Controls receipt SHA256 6f43cf3ad20c189d05ae0467bca2acdb630677e22c3a8dba8f9f3e7a20b1d202. Per-case/campaign scratch deleted; original staged inputs retained only for pending compile, then deleted. No fixture or product runtime tests.",
+      "artifact": "docs/orchestration/M8-xsd-missing-components-contract-preparation-1.json"
+    },
+    {
+      "id": "root-contract-compile",
+      "kind": "check",
+      "revision": "62063bc7d2e5c6a57f6ed2c5bbc7e5ad750e7896",
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 docs/reports/M8-xsd-missing-components-contract/check.py --plan /Users/sebastienros/.codex/worktrees/45c6/xemele/artifacts/M8-xsd-missing-components-contract/62063bc7d2e5c6a57f6ed2c5bbc7e5ad750e7896-63e014443ec24b8cafab72a60de159ac/plan.json --expected-plan-sha e131fd5fbaca52157fa809fe943d73645e177e08f04f16b72fa717c0ef2a2510 --controls-receipt /Users/sebastienros/.codex/worktrees/45c6/xemele/artifacts/M8-xsd-missing-components-contract/62063bc7d2e5c6a57f6ed2c5bbc7e5ad750e7896-63e014443ec24b8cafab72a60de159ac/controls-receipt.json --expected-controls-sha 6f43cf3ad20c189d05ae0467bca2acdb630677e22c3a8dba8f9f3e7a20b1d202",
+      "result": "passed",
+      "summary": "Executed by coordinator: caller exit0; all18 command outcomes match expected exits (15exit0,3deliberateexit1), logs closed/direct children reaped/owned groups absent; actual .NET runtime10.0.11. Exact emitted projection:3 internal nullable member changes,612unchanged, public/frozen interfaces unchanged; candidate SHA2564044ddc141402419452b9a9da0665e8d215fb51d9a9c0f2e0a2f0e51b726c181; old SHA25611556ee679bd7a0f8b0c7eab182291e8d40a98d065c5bf4ff6f56196c6cfb181. Terminal summary SHA256aacc2ea4e056c660df0cd32f39ff184baee37f81a986ccc1e14a4396638555f8:19groups independently absent, scratchDeleted=true, terminalCleanup=passed. Fixture methods never executed. Runtime implementation/corpus/allocation checks remain UNRUN.",
+      "artifact": "docs/orchestration/M8-xsd-missing-components-contract-compile-1.json"
+    },
+    {
+      "id": "implemented-metadata-planning",
+      "kind": "check",
+      "revision": "62063bc7d2e5c6a57f6ed2c5bbc7e5ad750e7896",
+      "command": "python3 tools/planning/tasks.py validate; git diff --check",
+      "result": "passed",
+      "summary": "198 tasks validated; metadata-only working tree based on tested62063bc7 passes whitespace checks. Does not substitute for integrated verification; no worker harness/.NET jobs launched.",
+      "artifact": null
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Four bounded SOURCE fixes after 62bb terminal review: controls gate precedes compile cleanup claim; explicit matched finite coordinator recovery after actual caller kill; retention outcomes use observed child record; final-publication interruptions withdraw stored phase success. Semantic/runtime/shared baselines unchanged; task in_progress/all criteria pending, all behavioral checks UNRUN.",
+    "summary": "Branch implemented: approved nonpackaged nullable-Type/immutable availability contract and ordered migration plan; coordinator SOURCE accepted62063bc7 and actual preparation/26controls/18compile-projection commands passed there. Exactly3changed/612unchanged/public and frozen unchanged;19groups absent and raw scratch deleted. Shared runtime/goldens unchanged. Await integration verification; no runtime/corpus/allocation credit.",
     "checks": [
-      "ready executed: no ready tasks (assigned task already claimed)",
-      "Contract restore/build/metadata/lifecycle controls/runtime/corpus/allocation checks UNRUN pending coordinator SOURCE release",
-      "Planning validate passed: 198 tasks; staged task-owned source packet git diff --cached --check passed; source review/compilation/lifecycle/runtime remain UNRUN",
-      "Renewed SOURCE correction has no actual restore/build/contract/lifecycle/runtime/corpus/allocation executions; prior planning/whitespace evidence is not behavioral acceptance",
-      "Renewed SOURCE working-tree planning validation passed: 198 tasks; git diff --check passed. Behavioral execution release remains NONE.",
-      "Terminal-retention SOURCE planning validation passed: 198 tasks; git diff --check passed; zero phase/control/.NET jobs launched",
-      "Four bounded SOURCE fixes: planning validation passed (198 tasks) and git diff --check passed; zero owned phase/control/.NET jobs launched"
+      "Coordinator actual preparation/control/compile commands and full frozen plan/receipt hashes are recorded in root-preparation/root-controls/root-contract-compile evidence at62063bc7; main durable actual outcome commit686421e2c.",
+      "26controls alltrue, independentAbsence/noNextAfterFailure;18commands matched expected15exit0+3exit1; actual runtime10.0.11; exact3/612 projection proof and public/frozen unchanged.",
+      "Terminal summary aacc2ea4e056c660df0cd32f39ff184baee37f81a986ccc1e14a4396638555f8:19groups independently absent, raw stage physically deleted. Facts consumed while active; no deleted output revalidation or reusable gate claim.",
+      "Worker metadata planning validate:198tasks; git diff --check passed. Worker launched no harness/.NET jobs. Runtime implementation/corpus/allocations UNRUN."
     ],
     "remaining": [
-      "Independent review of four bounded SOURCE fixes and explicit recovery custody; no preparation/control/.NET execution release",
-      "Offline old/candidate/reject usage compilation and exact emitted three-member projection proof only after passing matching finite controls receipt",
-      "Ordered runtime task and original head adjudication remain later work"
+      "Coordinator integrate reviewed branch/task metadata, run applicable current integrated checks, record integration_revision/evidence and only then mark verified; metadata-only changes need not replay valid isolated executions.",
+      "Claim ordered later runtime task only after integrated verified import/annotation repair, this contract and hint ordering; resolve exact facet Definitions.cs/Evaluator.cs ownership or prove independent owned extension.",
+      "Later runtime/corpus/trueXMLonly/API/allocation checks listed in runtime-migration.json remain UNRUN; original unresolved-head g1/i1 VALID adjudication remains separate and earns zero original/gate pass credit."
     ],
     "requests": [
       "Assign exact later runtime/shared fixture/two golden paths and optional-composition two legacy test files from runtime-migration.json; preserve strict frozen compiler test/benchmark lane",
