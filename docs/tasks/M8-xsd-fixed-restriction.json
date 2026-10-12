@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "id": "M8-xsd-fixed-restriction",
+  "milestone": "M8",
+  "title": "Complete typed fixed-value checks in XSD particle restriction",
+  "kind": "feature",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "depends_on": [
+    "M8-xsd-validate"
+  ],
+  "goals": [
+    "G14"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/schemas.md"
+  ],
+  "owns": [
+    "src/Xemele/Validation/Xsd/ContentModels/Compiler.cs",
+    "src/Xemele/Validation/Xsd/ContentModels/Derivation.cs",
+    "tests/Xemele.Tests/M8-xsd-fixed-restriction/",
+    "tests/fixtures/M8-xsd-fixed-restriction/",
+    "benchmarks/Xemele.Benchmarks/M8-xsd-fixed-restriction/",
+    "docs/api/M8-xsd-fixed-restriction.txt",
+    "samples/M8-xsd-fixed-restriction/",
+    "docs/reports/M8-xsd-fixed-restriction/"
+  ],
+  "api_or_output": "Explicit internal public-composition seam; existing frozen/public contracts preserved",
+  "acceptance": [
+    {
+      "id": "M8-xsd-fixed-restriction-A1",
+      "description": "Provide an explicit additive complete-composition join that compares matched element fixed values under actual XSD datatype equality within the existing particle-restriction relation solver, including retained redefine carriers, without blanket same-name comparisons.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M8-xsd-fixed-restriction-A2",
+      "description": "Preserve both authored declaration contexts, typed value identity and the supplied shared operation/facet library; preserve original frozen internal interfaces and all structural branch behavior for earlier callers.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M8-xsd-fixed-restriction-A3",
+      "description": "Prove decimal unequal/equivalent lexical fixed values, context-sensitive QName pairs, unions/lists and alternative particle mappings, unused/redefined constraints, limits/cancellation, affected content/core/API/XML-only preservation, and measured owned allocation evidence.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "Ordered repair from facade review; consume only verified predecessors, no active facade dependency.",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}

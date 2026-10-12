@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "id": "M8-xsd-publication-checkpoints",
+  "milestone": "M8",
+  "title": "Retain XSD publication checkpoints and shared parsing context",
+  "kind": "feature",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "depends_on": [
+    "M8-xsd-validate",
+    "M8-xsd-effective-content"
+  ],
+  "goals": [
+    "G14"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/schemas.md"
+  ],
+  "owns": [
+    "src/Xemele/Validation/Xsd/Compilation/Compiler.cs",
+    "tests/Xemele.Tests/M8-xsd-publication-checkpoints/",
+    "tests/fixtures/M8-xsd-publication-checkpoints/",
+    "benchmarks/Xemele.Benchmarks/M8-xsd-publication-checkpoints/",
+    "docs/api/M8-xsd-publication-checkpoints.txt",
+    "samples/M8-xsd-publication-checkpoints/",
+    "docs/reports/M8-xsd-publication-checkpoints/"
+  ],
+  "api_or_output": "Explicit internal public-composition seam; existing frozen/public contracts preserved",
+  "acceptance": [
+    {
+      "id": "M8-xsd-publication-checkpoints-A1",
+      "description": "Retain ordinary unused and displaced model/attribute-group checkpoints through existing immutable carriers so downstream content/facet/declaration finalization sees every component; preserve actual source contexts and locations.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M8-xsd-publication-checkpoints-A2",
+      "description": "Provide an explicit additive internal compiler join using the principal SchemaCompileContext resource loader/parser, preserving aggregate DocumentCharacters/ExpandedCharacters/work across principal and external resources; frozen IXsdCompiler and public APIs unchanged.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M8-xsd-publication-checkpoints-A3",
+      "description": "Prove unused fixed-use/ID-count/element-consistency checkpoints and legal neighbors, scalar exact-cap/one-over across principal and includes for string/stream/expansion cases with disposal/cancellation, affected compiler/core/API/XML-only preservation, and measured owned allocation evidence.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "Ordered repair from facade review; consume only verified predecessors, no active facade dependency.",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}
