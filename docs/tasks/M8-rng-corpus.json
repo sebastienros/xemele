@@ -4,11 +4,11 @@
   "milestone": "M8",
   "title": "RELAX NG conformance",
   "kind": "verification",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M8 coordinator01a12c6c-b333-71d3-877f-0d186618e21d / assigned isolated worker",
   "branch": "codex/m8-rng-corpus",
   "base_revision": "92015976e4d4b82a747c0c6fdd300f929e6227ee",
-  "integration_revision": null,
+  "integration_revision": "0f527e08777ac9827bdfeed7668245fceea7257e",
   "depends_on": [
     "M8-rng-validate",
     "M8-rng-lexical"
@@ -36,7 +36,8 @@
         "fixture-oracle-integrity",
         "independent-reference-rerun",
         "integrity-and-planning-final",
-        "differential-final"
+        "differential-final",
+        "root-final-integrated-verification"
       ]
     },
     {
@@ -49,7 +50,8 @@
         "independent-reference-rerun",
         "conformance-final",
         "differential-final",
-        "joined-final-checks"
+        "joined-final-checks",
+        "root-final-integrated-verification"
       ]
     },
     {
@@ -63,7 +65,8 @@
         "frozen-rng-api",
         "normal-and-xml-only-usage",
         "preservation-and-usage-final",
-        "joined-final-checks"
+        "joined-final-checks",
+        "root-final-integrated-verification"
       ]
     }
   ],
@@ -209,11 +212,20 @@
       "result": "passed",
       "summary": "Full originalJing source/oracle/byte regeneration and all hashes pass;392upstream+17authored schemas,598upstream+28authored instances,32external resources,0missing/excluded cases/resources. Final task evidence/implemented metadata validated182records and whitespacechecked before handoff commit.",
       "artifact": "docs/reports/M8-rng-corpus/handoff.md"
+    },
+    {
+      "id": "root-final-integrated-verification",
+      "kind": "integration",
+      "revision": "0f527e08777ac9827bdfeed7668245fceea7257e",
+      "command": "python3 docs/reports/M8-rng-corpus/checks.py; checked-input identity diff; python3 tools/planning/tasks.py validate; git diff --check",
+      "result": "passed",
+      "summary": "Actual isolated combined676tests passed:417conformance,2realreference,89facade,88compiler,80lexical; zeroerrorsfailureskipsnotrun/buildwarnings/errors. Each reference has1035checks=1028authored+7inferredprerequisites: Jing1035agreements,libxml1020agreements+15exact documentedlimitations,zero unexplained mismatches. Product preserves all original predicates including9previousfailures. Public1410/frozen444/normaltrueXMLonly/integrity/182planning passed. Final9339e4fd candidate includes canonical helper verified2f58db04; final48857710 evidence and all later changes leave actualroot0f527 runtime/tests/corpora/build/consumer/API/reference/checker inputs identical. No test/reference rerun falsely claimed.",
+      "artifact": "docs/orchestration/review-M8-rng-corpus.json"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Implemented at actual tested fullsourcea0cb11cd96672fe03efd1e93d2de8ea98e3dfc7d after explicit merge of verifiedmainb22333d8/verifiedlexicalrepair. Original9predicates and all historical failures preserved. Task remains branchimplemented,integration_revision null; root owns integrationverification.",
+    "summary": "Integrated and verified complete pinned RELAX NG corpus/profile conformance and real-reference checks; original oracles and all historic failed evidence preserved.",
     "checks": [
       "417conformance+2realdifferential+89RNGfacade+88compiler+80verifiedlexical correctness allpass;zero failed/errors/skipped/notrun.",
       "1035referencechecks=1028authored+7inferredschema prerequisites;Jing1035agreements/libxml1020agreements+15declaredlimitations;0unexplainedmismatches,0missing cases/resources.",
@@ -222,8 +234,7 @@
       "No runtime/shared/project/build authorship,no push/newactor/latermilestone/no allocationcounter/BDN/timing work;zero ownedjobs/PIDs/sessions/cells."
     ],
     "remaining": [
-      "Coordinator integrates,reruns applicable combinedchecks,records verification and setsverified.",
-      "Transient ignored raw outputs/preparedreference inputs retained for rootreview/rerun;remove generatedoutputs after coordinatorverification."
+      "Fifteen exact libxml2 reference limitations remain documented as non-agreements; product passes original expectations. Shared pinned reference caches/binaries retained for the M8 gate."
     ],
     "requests": []
   }
