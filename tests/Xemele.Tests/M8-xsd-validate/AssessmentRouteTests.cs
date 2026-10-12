@@ -31,6 +31,17 @@ public sealed class AssessmentRouteTests
         Assert.False(p.Run($"<r xmlns:xsi='{Xsi}' xsi:type='C'>bad</r>").IsValid);
     }
     [Theory]
+    [InlineData(false,"",true)] [InlineData(false,"restriction",false)] [InlineData(false,"extension",false)]
+    [InlineData(true,"",true)] [InlineData(true,"restriction",false)] [InlineData(true,"extension",false)]
+    public void ComplexExtensionOfListOrUnionCannotBypassAnyTypeRestrictionBlock(bool union,string block,bool expected)
+    {
+        string body=union?"<xs:union memberTypes='xs:int xs:boolean'/>":"<xs:list itemType='xs:int'/>";
+        var p=EvaluatorTests.Prepare($"<xs:simpleType name='S'>{body}</xs:simpleType><xs:complexType name='C'><xs:simpleContent><xs:extension base='S'/></xs:simpleContent></xs:complexType><xs:element name='r' block='{block}'/>");
+        var result=p.Run($"<r xmlns:xsi='{Xsi}' xsi:type='C'>{(union?"1":"1 2")}</r>");
+        Assert.Equal(expected,result.IsValid);Assert.True(result.IsComplete);
+        if(!expected)Assert.Contains(result.Diagnostics,d=>d.Code=="XSD.Type");
+    }
+    [Theory]
     [InlineData("",true)] [InlineData("restriction",true)] [InlineData("extension",false)]
     public void ComplexExtensionIsNotSimpleRestrictionForFinal(string block,bool expected)
     {
