@@ -77,12 +77,33 @@ internal static class Runner
         journal.Add(new { kind = "explicit-instance-schema-inputs", inputs = plan.Inputs, limitations = plan.Limitations });
         foreach (var hint in plan.Inputs.Where(i => i.Hint))
         {
-            string actual = TargetNamespace(UriFor(hint.Location));
+            string actual;
+            try { actual = TargetNamespace(UriFor(hint.Location)); }
+            catch (System.Xml.XmlException e)
+            {
+                journal.Add(new { kind = "hint-schema-preparation-error", input = hint, detail = e.Message, policy = "probe unchanged original schema through selected engine; instance remains unassessed" });
+                throw new HintSchemaPreparationException(hint, e);
+            }
             if (actual != hint.Namespace) throw new HintNamespaceException("Authored hint namespace '" + hint.Namespace + "' disagrees with original schema targetNamespace '" + actual + "' at " + hint.Location + " (" + hint.Element + ").");
         }
         return plan;
     }
     internal sealed class HintNamespaceException(string message) : Exception(message);
+    internal sealed class HintSchemaPreparationException(SchemaInput input, Exception cause) : Exception(cause.Message, cause)
+    { internal SchemaInput Input { get; } = input; }
+    internal static Observation ProbeHintSchema(HintSchemaPreparationException failure, Resolver resolver, CancellationToken token)
+    {
+        Observation probe;
+        try
+        {
+            var source = UriFor(failure.Input.Location); using var stream = File.OpenRead(PathFor(source));
+            ProductSchema.Compile(stream, new() { BaseUri = source, Resolver = resolver, Limits = Limits, MaxOperations = 100_000_000, MaxComponents = 1_000_000, CancellationToken = token });
+            probe = new("schema-valid", "", [], resolver.Requests.ToArray());
+        }
+        catch (Exception e) { probe = Failure(e, resolver, token); }
+        return probe with { Outcome = probe.Outcome == "schema-invalid" ? "schema-unavailable" : probe.Outcome == "schema-valid" ? "instance-hint-preparation-limitation" : probe.Outcome,
+            Detail = "Hint namespace preparation failed: " + failure.Message + "; unchanged original schema probe: " + probe.Outcome + ": " + probe.Detail + "; instance assessment not executed" };
+    }
     internal static string TargetNamespace(Uri source)
     {
         string path = PathFor(source);
@@ -234,7 +255,7 @@ internal static class Runner
                         actual = new(!result.IsComplete ? "incomplete-refusal" : result.IsValid ? "instance-valid" : "instance-invalid", string.Join("; ", result.Diagnostics.Select(d => d.Code + ": " + d.Message)), result.Diagnostics.Select(d => d.Code).ToArray(), [.. preparation, .. instanceResolver.Requests]);
                         if (plan.Limitations.Length > 0) actual = actual with { Outcome = "instance-hint-ordering-limitation", Detail = string.Join("; ", plan.Limitations) + "; supplemental engine result: " + actual.Outcome + ": " + actual.Detail };
                     }
-                    catch (Exception e) { actual = Failure(e, instanceResolver, timeout.Token); if (actual.Outcome == "schema-invalid") actual = actual with { Outcome = "schema-unavailable" }; actual = actual with { Resources = [.. preparation, .. actual.Resources] }; }
+                    catch (Exception e) { actual = e is HintSchemaPreparationException hintFailure ? ProbeHintSchema(hintFailure, instanceResolver, timeout.Token) : Failure(e, instanceResolver, timeout.Token); if (actual.Outcome == "schema-invalid") actual = actual with { Outcome = "schema-unavailable" }; actual = actual with { Resources = [.. preparation, .. actual.Resources] }; }
                 }
                 Emit(row, actual, engine, output);
             }

@@ -25,6 +25,22 @@ internal static class BclEngine
                 assessed |= reader.SchemaInfo?.SchemaElement is not null || reader.SchemaInfo?.SchemaType is not null;
         return assessed;
     }
+    internal static Observation ProbeHintSchema(Runner.HintSchemaPreparationException failure, Resolver resolver)
+    {
+        var errors = new List<string>(); var warnings = new List<string>(); Observation probe;
+        try
+        {
+            var source = Runner.UriFor(failure.Input.Location); using var stream = File.OpenRead(Runner.PathFor(source));
+            var schemas = new XmlSchemaSet { XmlResolver = resolver };
+            schemas.ValidationEventHandler += (_, e) => { if (e.Severity == XmlSeverityType.Error) errors.Add(e.Message); else warnings.Add(e.Message); };
+            using var reader = XmlReader.Create(stream, new XmlReaderSettings { DtdProcessing = DtdProcessing.Prohibit, XmlResolver = resolver, MaxCharactersInDocument = 67_108_864 }, source.AbsoluteUri);
+            schemas.Add(null, reader); schemas.Compile();
+            probe = new(errors.Count > 0 ? "schema-invalid" : "schema-valid", string.Join("; ", errors.Concat(warnings.Select(w => "warning: " + w))), [], resolver.Requests.ToArray());
+        }
+        catch (Exception e) { probe = new(ExceptionOutcome(e, schema: true), e.GetType().Name + ": " + e.Message, [], resolver.Requests.ToArray()); }
+        return probe with { Outcome = probe.Outcome == "schema-invalid" ? "schema-unavailable" : probe.Outcome == "schema-valid" ? "instance-hint-preparation-limitation" : probe.Outcome,
+            Detail = "Hint namespace preparation failed: " + failure.Message + "; unchanged original schema probe: " + probe.Outcome + ": " + probe.Detail + "; instance assessment not executed" };
+    }
     internal static void Run(JsonElement group, StreamWriter output)
     {
         var row = group.GetProperty("schema"); var resolver = new Resolver(); var schemas = new XmlSchemaSet { XmlResolver = resolver };
@@ -73,7 +89,7 @@ internal static class BclEngine
                     actual = new(instanceErrors.Count > 0 ? "instance-invalid" : !assessed ? "instance-unassessed" : "instance-valid", string.Join("; ", instanceErrors.Concat(instanceWarnings.Select(w => "warning: " + w))), [], [.. preparation, .. instanceResolver.Requests]);
                     if (plan.Limitations.Length > 0) actual = actual with { Outcome = "instance-hint-ordering-limitation", Detail = string.Join("; ", plan.Limitations) + "; supplemental engine result: " + actual.Outcome + ": " + actual.Detail };
                 }
-                catch (Exception e) { actual = new(e is Runner.HintNamespaceException ? "instance-hint-namespace-mismatch" : e is XmlSchemaException and not XmlSchemaValidationException ? "schema-unavailable" : ExceptionOutcome(e, schema: false), e.GetType().Name + ": " + e.Message, [], [.. preparation, .. instanceResolver.Requests]); }
+                catch (Exception e) { actual = e is Runner.HintSchemaPreparationException hintFailure ? ProbeHintSchema(hintFailure, instanceResolver) : new(e is Runner.HintNamespaceException ? "instance-hint-namespace-mismatch" : e is XmlSchemaException and not XmlSchemaValidationException ? "schema-unavailable" : ExceptionOutcome(e, schema: false), e.GetType().Name + ": " + e.Message, [], instanceResolver.Requests.ToArray()); actual = actual with { Resources = [.. preparation, .. actual.Resources] }; }
             }
             Runner.Emit(instance, actual, "bcl", output);
         }

@@ -28,7 +28,11 @@ internal static class Controls
         string second="<xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema' xmlns:n='urn:second' targetNamespace='urn:second'><xs:include schemaLocation='missing-second-child.xsd'/><xs:element name='r' type='n:MissingType'/></xs:schema>";
         var files=new Dictionary<string,string> { ["first.xsd"]=first,["second.xsd"]=second,["first.xml"]="<r xmlns='urn:first' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xsi:schemaLocation='urn:first first.xsd'/>",["second.xml"]="<r xmlns='urn:second' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xsi:schemaLocation='urn:second second.xsd'/>",["mismatch.xml"]="<r xmlns='urn:first' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xsi:schemaLocation='urn:wrong first.xsd'/>",["nested.xml"]="<r xml:base='base/' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'><s xml:base='child/' xmlns='urn:second' xsi:schemaLocation='urn:second deep.xsd'/></r>",["base/child/deep.xsd"]="<xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema' targetNamespace='urn:second'><xs:element name='s'/></xs:schema>",["late.xml"]="<r xmlns:q='urn:first' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xsi:type='q:T'><r xmlns='urn:first' xsi:schemaLocation='urn:first first.xsd'/></r>" };
         foreach(var file in files)File.WriteAllText(Path.Combine(upstream,file.Key),file.Value);
+        const string malformed="<xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema' xmlns:bad=''><xs:element name='r'/></xs:schema>";
+        File.WriteAllText(Path.Combine(upstream,"malformed.xsd"),malformed);
+        File.WriteAllText(Path.Combine(upstream,"malformed.xml"),"<r xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xsi:noNamespaceSchemaLocation='malformed.xsd'/>");
         Runner.OriginalPaths=files.Keys.Append("missing-second-child.xsd").ToHashSet(StringComparer.Ordinal);
+        Runner.OriginalPaths.UnionWith(["malformed.xsd","malformed.xml"]);
         try
         {
             const string compatible="<?xml version='1.1'?><xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema' targetNamespace='urn:compatible'><xs:element name='r'/></xs:schema>";
@@ -42,6 +46,12 @@ internal static class Controls
             Require(mismatch&&System.Text.Json.JsonSerializer.Serialize(journal).Contains("urn:wrong",StringComparison.Ordinal),"authored namespace mismatch refuses staging and retains original pair");
             var descendant=Runner.InstanceInputs(Row("nested","nested.xml"),[],new());Require(descendant.Augmented&&descendant.Inputs.Single().Location==Runner.Origin+"base/child/deep.xsd"&&descendant.Inputs.Single().Element.Contains("element[1]",StringComparison.Ordinal),"descendant hint retains inherited xml:base and element provenance");
             var late=Runner.InstanceInputs(Row("late","late.xml"),[],new());Require(late.Limitations.Length==1,"namespace use before descendant hint remains explicit ordering limitation");
+            Runner.HintSchemaPreparationException? malformedFailure=null;var malformedJournal=new List<object>();
+            try { Runner.InstanceInputs(Row("malformed","malformed.xml"),[],malformedJournal); } catch(Runner.HintSchemaPreparationException e) { malformedFailure=e; }
+            Require(malformedFailure?.Input.Namespace==""&&malformedFailure.Input.Location==Runner.Origin+"malformed.xsd"&&System.Text.Json.JsonSerializer.Serialize(malformedJournal).Contains("hint-schema-preparation-error",StringComparison.Ordinal),"malformed hinted schema preserves authored input and staging failure without namespace inference");
+            var acceptedProbe=new Runner.HintSchemaPreparationException(new("first.xsd","urn:first",true,"control",Runner.Origin+"first.xml"),new XmlException("synthetic preparation failure"));
+            Require(Runner.ProbeHintSchema(acceptedProbe,new(),default).Outcome=="instance-hint-preparation-limitation","accepted product schema probe leaves instance unassessed");
+            Require(BclEngine.ProbeHintSchema(acceptedProbe,new()).Outcome=="instance-hint-preparation-limitation","accepted BCL schema probe leaves instance unassessed");
             var group=new { id="controls",metadata="controls",schema=(object?)null,instances=new[] {Row("first","first.xml"),Row("second","second.xml")},supplementalInstances=Array.Empty<object>() };
             string inventory=Path.Combine(root,"inventory.json");File.WriteAllText(inventory,System.Text.Json.JsonSerializer.Serialize(new { groups=new[] {group} }));
             foreach(string engine in new[] {"product","bcl"})
@@ -51,6 +61,11 @@ internal static class Controls
                 using var one=System.Text.Json.JsonDocument.Parse(rows[0]);using var two=System.Text.Json.JsonDocument.Parse(rows[1]);
                 string resources=two.RootElement.GetProperty("resources").ToString();
                 Require(one.RootElement.GetProperty("actual").GetString()=="instance-valid"&&two.RootElement.GetProperty("passed").ValueKind==System.Text.Json.JsonValueKind.False&&resources.Contains("second.xsd",StringComparison.Ordinal)&&resources.Contains("missing-second-child.xsd",StringComparison.Ordinal)&&!resources.Contains("first.xsd",StringComparison.Ordinal),engine+" failed second staging retains its own requests without first-instance leakage");
+                var malformedGroup=new { id="malformed",metadata="malformed",schema=(object?)null,instances=new[] {Row("malformed","malformed.xml")},supplementalInstances=Array.Empty<object>() };
+                string malformedInventory=Path.Combine(root,"malformed-inventory.json");File.WriteAllText(malformedInventory,System.Text.Json.JsonSerializer.Serialize(new { groups=new[] {malformedGroup} }));
+                string malformedOutput=Path.Combine(root,engine+"-malformed.jsonl");Require(Runner.Main([upstream,malformedInventory,"malformed",engine,malformedOutput])==0,engine+" malformed hint control child completed");
+                var malformedRows=File.ReadAllLines(malformedOutput);using var rejected=System.Text.Json.JsonDocument.Parse(malformedRows.Single());
+                Require(rejected.RootElement.GetProperty("actual").GetString()=="schema-unavailable"&&rejected.RootElement.GetProperty("passed").ValueKind==System.Text.Json.JsonValueKind.False&&rejected.RootElement.GetProperty("detail").GetString()!.Contains("unchanged original schema probe: schema-invalid",StringComparison.Ordinal)&&File.ReadAllText(Path.Combine(upstream,"malformed.xsd"))==malformed,engine+" actual unchanged hinted schema rejection is not an invalid-instance pass");
             }
         }
         finally {Directory.Delete(root,true);Runner.OriginalPaths=null;}
