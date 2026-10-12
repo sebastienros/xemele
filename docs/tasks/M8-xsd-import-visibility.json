@@ -4,7 +4,7 @@
   "milestone": "M8",
   "title": "Correct XSD document-local imports and annotation URI syntax",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M8 coordinator / assigned isolated import-visibility worker",
   "branch": "codex/m8-xsd-import-visibility",
   "base_revision": "94af9ac36b550e763d92b9d2ab9b19195f8346a2",
@@ -34,35 +34,178 @@
     {
       "id": "M8-xsd-import-visibility-A1",
       "description": "Reject unchanged original elemZ007 and schZ005 principal references whose import exists only in an included chameleon document. Bind original metadata/input hashes and preserve original earlier compile-valid failures separately. Namespace authorization is local to the declaration source document under Second Edition import rules and W3C4057/5779.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "root-check-3",
+        "root-allocation-1"
+      ]
     },
     {
       "id": "M8-xsd-import-visibility-A2",
       "description": "Prove adding an import to the principal authorizes its reference, while an included document retains its own import authorization. Cover absent import, namespace-only import, available/missing optional location, chameleon adoption, nested includes, mutual imports and declaration-order permutations; preserve redefine resolution, source identity, resource denial/cycles, shared charging, quotas, cancellation and disposal.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "root-check-3",
+        "root-allocation-1"
+      ]
     },
     {
       "id": "M8-xsd-import-visibility-A3",
       "description": "Pass relevant combined XSD compilation/content/facade/resource suites, normal and true XML-only consumers, all frozen/additive/emitted APIs and planning validation. Record bounded actual allocation evidence for changed compile/reference routes, cold initialization, owned results, warm operation and retained memory with positive controls. No later milestone, quota increase or oracle change.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "root-controls-3",
+        "root-check-3",
+        "root-preparation-1",
+        "root-allocation-1"
+      ]
     },
     {
       "id": "M8-xsd-import-visibility-A4",
       "description": "Validate appinfo/documentation source attributes as Second Edition anyURI with the existing charged datatype URI validator and whitespace/provenance rules, keeping annotation payload opaque. Original anyURI_a001_1336 (SHA25651e844db424ef6692fd2779f08d58e34b52f4a068f9c39288c57c2bab20afd60) must reject as XSD.SchemaRestriction, preserving its earlier ResourceDenied observation separately. Prove each invalid digit-leading colon form on both wrappers, valid numeric-relative/absolute/relative references, whitespace, opaque payload, exact work/quota/cancellation and source location. No schemaLocation retrieval expansion or oracle change.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "root-check-3",
+        "root-allocation-1"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Validation/Xsd/Compilation/Compiler.cs: charged document-local QName import authorization, chameleon source provenance, charged appinfo/documentation source anyURI validation; compiler source SHA256843e59a35be16bd838f31c9b5859223e3043f179a865baf72bbe7d70d566bed3 unchanged since8cb31895",
+    "tests/Xemele.Tests/M8-xsd-import-visibility/:91 owned correctness rows pass at8192f72b; exact originals, author-local permissions, resource/work/quota/cancellation/source/disposal and annotation lexical checks; two Parse inputs use xUnit test cancellation token without changing deliberate operation token/work64",
+    "tests/fixtures/M8-xsd-import-visibility/manifest.json: original principal/transitive schemas, metadata/copyright hashes, three original1.0 INVALID expectations and separate earlier compile-valid/ResourceDenied observations preserved",
+    "benchmarks/Xemele.Benchmarks/M8-xsd-import-visibility/: unchanged8cb runtime/probe source; root actual24-route disabled and allocation counter runs passed; owned cold/first/warm/retained evidence recorded, BDN/timing remains unrun",
+    "docs/reports/M8-xsd-import-visibility/{family,supervision,nested_ownership,launch,bindings,lifecycle-check,diagnostics,check,prepare,measure,discard}.py: reviewed finite ancestor ownership, exact source/binary/result identity binding, bounded failure diagnostics, terminal raw/generated deletion and single-use preparation; root11 controls passed",
+    "docs/reports/M8-xsd-import-visibility/harness-source.json:600 source identities/53 worker API fragments at8192f72b, manifest SHA2561ae4f2a7057f1648cdefe948a6a541b5915a69d23725fd1f84b2b7addccf10fd; root will bind integrated54-fragment membership without1430-member runtime API expansion",
+    "docs/reports/M8-xsd-import-visibility/{standards,allocation-design,harness-handoff}.md and historical source-only records: source/review evolution and constraints; current actual outcomes are recorded separately in this task and root orchestration receipts"
+  ],
+  "evidence": [
+    {
+      "id": "source-only-execution-hold",
+      "kind": "check",
+      "revision": "8cb31895a01fccf945dc2b2ff5a58ef39fd14fab",
+      "command": "python3 docs/reports/M8-xsd-import-visibility/check.py --released",
+      "result": "skipped",
+      "summary": "UNRUN: coordinator source review/release required. No build, restore, test, consumer, API, probe or counter execution. Source commit 8cb31895a01fccf945dc2b2ff5a58ef39fd14fab; Compiler.cs SHA256 843e59a35be16bd838f31c9b5859223e3043f179a865baf72bbe7d70d566bed3.",
+      "artifact": "docs/reports/M8-xsd-import-visibility/checks-unrun.json"
+    },
+    {
+      "id": "source-planning",
+      "kind": "check",
+      "revision": "8cb31895a01fccf945dc2b2ff5a58ef39fd14fab",
+      "command": "python3 tools/planning/tasks.py validate",
+      "result": "passed",
+      "summary": "Validated 197 tasks: schema, evidence, acyclic dependencies, additive milestones, ordered ownership. Source/task metadata only; runtime checks remain UNRUN.",
+      "artifact": null
+    },
+    {
+      "id": "harness-source-only-hold",
+      "kind": "check",
+      "revision": "a643ddc80d9ce166eb0fd92f9a0f1fdd49594b90",
+      "command": "python3 docs/reports/M8-xsd-import-visibility/launch.py --released REVIEW_SHA controls",
+      "result": "skipped",
+      "summary": "UNRUN: no execution release. Harness separately corrects family cleanup/reserves/ancestor registration; removes resume reuse; only publishes passing checks after final diff/family cleanup. Nine Python sources parsed statically, supervisor exact copy and nested helper constants-only compared. Frozen runtime/test/probe payload unchanged at 8cb31895a01fccf945dc2b2ff5a58ef39fd14fab. Harness manifest SHA256 57f9f75186f19dc5681a180e9318b847b93f17564e24070ad64958c3c381ac46.",
+      "artifact": "docs/reports/M8-xsd-import-visibility/harness-handoff.md"
+    },
+    {
+      "id": "renewed-harness-source-only-hold",
+      "kind": "check",
+      "revision": "d9aec24ed426a8c90552fc1f0f07d6d05e84416d",
+      "command": "python3 docs/reports/M8-xsd-import-visibility/launch.py --released REVIEW_SHA controls",
+      "result": "skipped",
+      "summary": "UNRUN. Source-only fixes for two P2 findings: passing late candidates removed/quarantined at all publication sites; positive/prepared/correctness/measurement acceptance requires clean finite enclosing controller. Full 53 API membership/hash inputs and actual fresh test/runtime/dependency binary/archive/child lifecycle/result hashes bound. 11 proposed controls including real late publisher, missing late controller, API/binary/result mutations. 598 input identities; manifest SHA256 1268028daa27742024c459935afb3bc3b1c14fe134f937759fc12d9665b6412d. Only static Python syntax/source comparison, planning197 and diff hygiene; no imports, executable control, builds/tests/probes/counters. Runtime/test/probe remain 8cb31895a01fccf945dc2b2ff5a58ef39fd14fab.",
+      "artifact": "docs/reports/M8-xsd-import-visibility/harness-handoff.md"
+    },
+    {
+      "id": "artifact-policy-source-only-hold",
+      "kind": "check",
+      "revision": "10002b7babe20ab6272e5acbe9b74f13ce2b807f",
+      "command": "python3 docs/reports/M8-xsd-import-visibility/launch.py --released REVIEW_SHA controls",
+      "result": "skipped",
+      "summary": "UNRUN. Source-only human artifact-policy correction: no content-addressed binary byte archives; active normal/XML-only builds separated and actual execution hash/membership receipts reject overlap; raw results/logs/bin/obj/control scratch deleted only after verified whole-root cleanup; concise terminal identities/outcomes and allocation aggregates retained. Preparation actual bytes single-use until measure/discard. Ten Python files parse statically; 11 proposed controls include finite success/failure/interruption cleanup seams and restored-file refusal. Manifest ab4e94a4c560d924c9438652d453882003b95d9d625593d318fa2052b96492ec; 599 identities and all53API hashes verified statically. Frozen runtime/tests/fixtures/probe unchanged at8cb31895a01fccf945dc2b2ff5a58ef39fd14fab. No executable harness imports/controls/builds/restores/tests/consumer/API/preparation/counters/measurements.",
+      "artifact": "docs/reports/M8-xsd-import-visibility/harness-handoff.md"
+    },
+    {
+      "id": "outer-preparation-failure-source-only-hold",
+      "kind": "check",
+      "revision": "66d1e4a26936e925c5c53771c729fcea257de4f6",
+      "command": "python3 docs/reports/M8-xsd-import-visibility/launch.py --released REVIEW_SHA controls",
+      "result": "skipped",
+      "summary": "UNRUN. ResidualP2 source-only correction: preparation retention requires successful outer outcome; clean child plus failed outer postcondition now purges active output/candidate. Every finalization/publication failure revokes acceptance and purges after confirmed absence, records concise abort summary linked to prior terminal summary; preparation publication uses hard-10 rollback reserve. Two owned-scratch proposed scenarios assert clean-child/failed-outer and clean-child/late-final leave no binaries or accepted preparation. Ten ASTs parse,599 hashes/53APIs verified,11 proposed test methods, supervisor unchanged, frozen runtime/test/fixture/probe diff empty; planning197/diff hygiene pass. No executable harness import/control/build/restore/test/API/consumer/preparation/counter jobs. Manifest SHA256 810e0c5f17eba1928c198765a51ebb115099abd52baba028ebed244fbcb1e554.",
+      "artifact": "docs/reports/M8-xsd-import-visibility/harness-handoff.md"
+    },
+    {
+      "id": "root-check-1",
+      "kind": "check",
+      "revision": "66d1e4a26936e925c5c53771c729fcea257de4f6",
+      "command": "/opt/homebrew/opt/python@3.14/bin/python3.14 /Users/sebastienros/.codex/worktrees/37b6/xemele/docs/reports/M8-xsd-import-visibility/check.py --released",
+      "result": "failed",
+      "summary": "Historical root attempt: offline test restore exited0; Release --no-restore build exited1; later tests/API/consumers/probe/counters were not launched. All owned groups absent/reaped/logs closed;66 raw files removed. Compiler diagnostic was deleted before summary preservation; actual cause for this attempt remains unknown. This failure is retained separately from later attempts.",
+      "artifact": "docs/orchestration/M8-xsd-import-visibility-check-1.json"
+    },
+    {
+      "id": "root-check-2",
+      "kind": "check",
+      "revision": "0a1b228d65301310d7fea787830001daced68fe7",
+      "command": "/opt/homebrew/opt/python@3.14/bin/python3.14 /Users/sebastienros/.codex/worktrees/37b6/xemele/docs/reports/M8-xsd-import-visibility/check.py --released",
+      "result": "failed",
+      "summary": "Historical root retry: offline restore exited0; Release test build exited1 with xUnit1051 at AnnotationTests.cs81:24 and BoundaryTests.cs124:24 (XmlDocument.Parse preparing compiler inputs). Later checks/counters not launched; groups absent/reaped/logs closed;66 raw files removed. Diagnostic summary SHA256 a2b64fe59a2ee7738a557190e061367d14445cfaf8db1195c2e606fb08b7854c. Corrected by the two TestContext.Current.CancellationToken parse arguments at8192f72b; deliberate operation token/work64 and mutation assertions preserved.",
+      "artifact": "docs/orchestration/M8-xsd-import-visibility-check-2.json"
+    },
+    {
+      "id": "root-controls-3",
+      "kind": "check",
+      "revision": "8192f72bfa5d3cb35fd7620a22d9d8f287a856be",
+      "command": "/opt/homebrew/opt/python@3.14/bin/python3.14 /Users/sebastienros/.codex/worktrees/37b6/xemele/docs/reports/M8-xsd-import-visibility/lifecycle-check.py --released",
+      "result": "passed",
+      "summary": "Root-dispatched actual finite controls PASS11 on immutable8192f72b, counters disabled; source review SHA256 4d95863b672ad36673ca67ca2f77612952095ed8774529b9520833a74a52c22d. All owned groups absent/no pending intents/direct child reaped/log closed. Cleanup SHA256 55f06433e92f7233e5d71938b5311f6d8ac4d7ae76112583fd2cbd31c7a0ca3f; positive release SHA256 9fa2b7233422eb663c1eb321da8a9ef03cd4f428d26bb5e8af8ec2ce249d2f31;239 transient files removed. Exact root-owned child argv appears in command; it ran under enclosing launch.py controls and ancestor ownership, not standalone.",
+      "artifact": "docs/orchestration/M8-xsd-import-visibility-controls-3.json"
+    },
+    {
+      "id": "root-check-3",
+      "kind": "check",
+      "revision": "8192f72bfa5d3cb35fd7620a22d9d8f287a856be",
+      "command": "/opt/homebrew/opt/python@3.14/bin/python3.14 /Users/sebastienros/.codex/worktrees/37b6/xemele/docs/reports/M8-xsd-import-visibility/check.py --released",
+      "result": "passed",
+      "summary": "Root-dispatched actual fresh correctness PASS:1868 affected test rows including91 owned,42 safe resolver and77 datatype rows;8 frozen lanes/public1430/additive46 API checks; normal and true XML-only facade/relations consumers;24-route disabled semantic probe; planning/diff. All38 inner commands exited0. Exact child argv appears in command; all38 exact inner argv/lifecycle/input receipt identities are bound through the child family receipt; actual DLL binary snapshots are additionally bound in checks-completed.json, semantic SHA256 c6e18dd6b921f3b5d7a43f4de1d29212cc5da886119add4451193ecf276146cf. Owned/affected test identity-set SHA256 0791329ae2d110a200a1e1201166d3d4ad33f621eb6d0058aa8d1dfeeebe9030; all three original1.0 INVALID expectations preserved, prior compile-valid/ResourceDenied observations remain separate. Cleanup SHA256 f90673a821b0b84912ad07a6a2b872b0635c7716597fd191636d01e2c40a9a55; terminal SHA256 99719b35c8d832850150f68e608770ddd805b29954f7deb9b2dbea76aee750e5;574 raw/bin/obj files removed after groups absent/reaped/logs closed. Worker53 API fragments; integrated current54 binding/check still required.",
+      "artifact": "docs/orchestration/M8-xsd-import-visibility-check-3.json"
+    },
+    {
+      "id": "root-preparation-1",
+      "kind": "check",
+      "revision": "8192f72bfa5d3cb35fd7620a22d9d8f287a856be",
+      "command": "/opt/homebrew/opt/python@3.14/bin/python3.14 /Users/sebastienros/.codex/worktrees/37b6/xemele/docs/reports/M8-xsd-import-visibility/prepare.py --released /Users/sebastienros/.codex/worktrees/37b6/xemele/artifacts/M8-xsd-import-visibility/root-controls-c498d35eb1844ce3964a54c2a83dc509/positive-controls-release.json 9fa2b7233422eb663c1eb321da8a9ef03cd4f428d26bb5e8af8ec2ce249d2f31",
+      "result": "passed",
+      "summary": "Root actual preparation passed: offline single-node probe restore/build and disabled semantic control24routes/1012consumed/28retained, counters disabled. Positive controls receipt SHA256 9fa2b7233422eb663c1eb321da8a9ef03cd4f428d26bb5e8af8ec2ce249d2f31; prepared manifest SHA256 f98479741ff04300221d33f4d43b5e14322ecf7ca05fae3e04e0e4255b1cf46f,203 observed binary inputs/812 total identities. Cleanup SHA256 09c4b5e1a34f07432bc8e7558a72c5c015fa181daa729e3a5044ea882eecc293;5 raw files deleted at preparation. Prepared outputs subsequently consumed exactly once by root allocation1 and removed; consumed marker remains, so this manifest cannot authorize reuse. Exact root-owned child dispatch argv appears in command; required restore/build argv hashes are bound by the prepared manifest.",
+      "artifact": "docs/orchestration/M8-xsd-import-visibility-preparation-1.json"
+    },
+    {
+      "id": "root-allocation-1",
+      "kind": "check",
+      "revision": "8192f72bfa5d3cb35fd7620a22d9d8f287a856be",
+      "command": "/opt/homebrew/opt/python@3.14/bin/python3.14 /Users/sebastienros/.codex/worktrees/37b6/xemele/docs/reports/M8-xsd-import-visibility/measure.py --root /Users/sebastienros/.codex/worktrees/37b6/xemele/artifacts/M8-xsd-import-visibility/root-prepare-7c9176be3d4f4dec97871cb4782c16c5/preparation/prepared.json f98479741ff04300221d33f4d43b5e14322ecf7ca05fae3e04e0e4255b1cf46f",
+      "result": "passed",
+      "summary": "Root-dispatched bounded actual allocations PASS at8192f72b with runtime/probe source frozen8cb31895: .NET10.0.11 Arm64;24 routes x32=768 warm operations,1012 consumed,28 retained results across7 categories. Cold fixture initialization598880B; positive allocation control1048B. Owned compile/result/diagnostic first-run and warm allocations recorded; aggregate warm total114754928B, route mean range4488..442233.75B/operation. Seven retained-heap category deltas recorded, including -8632B; these are GC observations, no zero-allocation, leak bound, timing or isolation guarantee. Inner120s total/100s work/20s cleanup reserve, enclosing150s. Summary SHA256 b4d465bb417559e236a99fb6533011e672cf7939baa5948dc31213c54fc1c1e9; raw result hash b34dab75ff9e57790e893f005930a8246f18402295fc5b721281771148405c50; raw data deleted. Actual disabled command: '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 /Users/sebastienros/.codex/worktrees/37b6/xemele/artifacts/M8-xsd-import-visibility/root-prepare-7c9176be3d4f4dec97871cb4782c16c5/preparation/active/bin/Xemele.Benchmarks.dll --control /Users/sebastienros/.codex/worktrees/37b6/xemele/artifacts/M8-xsd-import-visibility/measurement-aeeb82b0a0194561a91ef666efa69893/control.json. Actual counter command: '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 /Users/sebastienros/.codex/worktrees/37b6/xemele/artifacts/M8-xsd-import-visibility/root-prepare-7c9176be3d4f4dec97871cb4782c16c5/preparation/active/bin/Xemele.Benchmarks.dll --measure /Users/sebastienros/.codex/worktrees/37b6/xemele/artifacts/M8-xsd-import-visibility/measurement-aeeb82b0a0194561a91ef666efa69893/allocations.json. Whole root cleanup SHA256 1a9f7dee50b8192dddfe68ee2a8138810699c4cbdfdf1901016dfa40dea869ca; terminal SHA256 09f05e267d05f0c92dc300f98137bae8081c40d78f528d302741cee0900f3f0d;52 raw/binary files removed, all owned groups absent/reaped/logs closed, preparation consumed once. Exact root-owned measure child argv appears in command. BDN/timing execution remains unrun.",
+      "artifact": "docs/orchestration/M8-xsd-import-visibility-allocation-1.json"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Claimed ordered compiler correction; source assessment added concrete annotation anyURI gap under same exclusive compiler ownership before execution. Source and proving controls require review; no builds or measurements yet.",
-    "checks": [],
-    "remaining": [],
+    "summary": "Implemented A1-A4 on isolated codex/m8-xsd-import-visibility at tested source8192f72bfa5d3cb35fd7620a22d9d8f287a856be; criteria passed branch checks. Root actual controls11, fresh combined correctness1868/owned91, resolver42/datatype77, frozen/public1430/additive46, normal/true XML-only consumers and24-route disabled/actual allocations pass. Runtime/compiler/probe source remains8cb31895. No worker execution. Integration revision remains null; coordinator integration/current54 API binding and combined verification required before verified.",
+    "checks": [
+      "Root controls3 PASS11 on exact reviewed8192f72b;239 raw scratch/log files deleted after allgroups absent/reaped/logclosed.",
+      "Root check3 PASS1868 affected/91 owned +42resolver +77datatypes;38 inner exits0;8 frozen/public1430/additive46 APIs, normal/trueXML-only consumers,24-route disabled control, planning/diff;574 transient files removed.",
+      "Historical check1 failed build without preserved cause; check2 failed xUnit1051. Both restored successfully, stopped before tests/counters, verified family absence and deleted66rawfiles each. They remain separate failed evidence, not relabelled as passes.",
+      "Root preparation1 fresh offline restore/build/disabled control passed;203 binaries/812 identities; consumed once by root allocation1; active output removed and manifest not reusable.",
+      "Root allocation1 PASS24routes/768warmoperations/1012consumed/28retained/seven categories, positive1048B/cold598880B; summarySHA256 b4d465bb417559e236a99fb6533011e672cf7939baa5948dc31213c54fc1c1e9;52 raw/binary files deleted after verified cleanup. Actual allocation observations only; no timing/isolation/zero-allocation claim.",
+      "Worker metadata-only update: planning validation197 and git diff --check passed. No runtime/harness/manifest/test/probe changes and no worker builds/tests/counters or allocation rerun."
+    ],
+    "remaining": [
+      "Coordinator integrates reviewed branch and records full integration revision, binds current main54 API-fragment membership preserving1430runtime members, independently reviews this metadata-only binding, and runs relevant current combined correctness/API/consumer checks before setting verified.",
+      "Preserve root allocation1 evidence without rerunning valid counters if runtime/probe bytes remain unchanged; reassess relevance if executable runtime/probe payload changes. Generated binaries/raw results are deleted; terminal summaries document earlier observations and cannot authorize new measurement.",
+      "Preserve original INVALID expectations and earlier compile-valid/ResourceDenied observations. BDN/timing remain unrun and no timing, isolation, zero-allocation or exact retained-memory bound is claimed.",
+      "Root alone controls execution and integration. Worker holds all source/task/manifest/harness/runtime/probe writes and execution after this metadata commit."
+    ],
     "requests": []
   }
 }

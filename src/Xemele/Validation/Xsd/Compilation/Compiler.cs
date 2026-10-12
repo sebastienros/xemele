@@ -360,7 +360,7 @@ internal sealed class XsdCompilation
         string ns = prefix.Length == 0 ? context.DefaultNamespace : context.Prefixes.TryGetValue(prefix, out var uri) ? uri : "#unbound";
         if (ns == "#unbound") Error("Unbound QName prefix.", At(source, node));
         if (ns.Length == 0 && source.Chameleon) ns = source.Target;
-        if (ns != source.Target && ns != Namespace && !Imported(source, ns, new())) Error("QName references a namespace without an import.", At(source, node));
+        if (ns != source.Target && ns != Namespace && !Imported(source, ns, At(source, node))) Error("QName references a namespace without an import.", At(source, node));
         var result = new SchemaName(ns, local);
         // Name is the internal version identity; Original preserves the authored
         // name after renaming. Only the designated redefine self-reference in
@@ -368,12 +368,14 @@ internal sealed class XsdCompilation
         if (previousSpace == Space(owner.Node.LocalName) && owner.Previous is { } old && result == (owner.Original ?? owner.Name)) return old;
         return result;
     }
-    private bool Imported(Source source, string ns, HashSet<Source> visited)
+    private bool Imported(Source source, string ns, XmlLocation at)
     {
-        Tick(default); if (!visited.Add(source)) return false;
-        if (source.Imports.Contains(ns)) return true;
-        foreach (var include in source.Includes) if (Imported(include, ns, visited)) return true;
-        return false;
+        // Import permission belongs to the document authoring this QName, not
+        // to the component graph collected through include/redefine. Declaration
+        // retains that source (and its effective chameleon namespace). Includes
+        // remain available for redefine containment, but cannot lend imports.
+        Tick(at);
+        return source.Imports.Contains(ns);
     }
     private SchemaName ResolveType(Declaration owner, XmlNode node, string value, bool previous = false)
     {
@@ -1278,6 +1280,19 @@ internal sealed class XsdCompilation
                 bool found = false;
                 foreach (var range in allowed.AsSpan().Split(' ')) if (attribute.LocalName.AsSpan().SequenceEqual(allowed.AsSpan()[range])) { found = true; break; }
                 if (!found) Error("Unknown or misplaced schema attribute.", At(source, node));
+                if (attribute.LocalName == "source" && node.LocalName is ("appinfo" or "documentation"))
+                {
+                    var at = source.Scope.Location(attribute);
+                    // Canonical values stay borrowed. Noncanonical whitespace
+                    // owns a temporary collapsed string for this lexical check;
+                    // annotation text is never retained as a URI or retrieved.
+                    string lexical = ComponentCollapse(attribute.Value, at);
+                    if (nameOperation is null) { Components(at); nameOperation = new(op); }
+                    nameOperation.Location = at;
+                    bool valid = TextBinaryUri.Validate(lexical.AsSpan(), nameOperation, out _);
+                    if (!op.IsComplete) throw SchemaSnapshots.Failure(op);
+                    if (!valid) Error("Invalid annotation source anyURI.", at);
+                }
                 if (attribute.LocalName == "id" && !ids.Add(NCName(attribute.Value, source, node))) Error("Duplicate schema ID.", At(source, node));
                 if (attribute.LocalName is "form" or "elementFormDefault" or "attributeFormDefault" && Collapse(attribute.Value) is not ("qualified" or "unqualified")) Error("Invalid form value.", At(source, node));
             }
