@@ -74,3 +74,13 @@ expanded derived choices. An omitted proof preserves the known prefix position;
 False AND/True OR still discard irrelevant links. Existing known-k variants and
 new expanded m/t choice controls retain completed neighbors, no-affiliation,
 range and blocked-head negatives. Static selection687 methods/2192 cases; UNRUN.
+
+Coordinator actual verification of prior700500 packet:15 controls passed with
+counters off, whole family absent and313 raw files deleted. First restore passed;
+tests build then failed CS0534 at Support.Resolver, before tests/API/counters.
+Failed root-check-e3fcc73c8a2c4ab2b2e99b897bd8ab3f was terminal:3 groups absent,
+66 raw files deleted. Exact compile correction adds Resolve delegating once to
+existing ResolveResult.Resource; cancellation/callback count/ownership stay on
+the existing structured path. Owned related resolver implementations inspected
+with no additional missing override found. Refreshed packet execution UNRUN;
+worker ran only static checks and planning, no builds/tests/control/API/probes.

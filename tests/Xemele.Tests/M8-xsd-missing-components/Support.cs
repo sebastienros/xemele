@@ -24,6 +24,7 @@ internal static class Support
     internal sealed class Resolver(Func<XmlResourceRequest, XmlResourceResolution> callback) : XmlResourceResolver
     {
         internal int Calls;
+        public override XmlResolvedResource? Resolve(XmlResourceRequest request, CancellationToken token) => ResolveResult(request, token).Resource;
         public override XmlResourceResolution ResolveResult(XmlResourceRequest request, CancellationToken token)
         { token.ThrowIfCancellationRequested(); Calls++; return callback(request); }
     }
