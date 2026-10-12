@@ -4,7 +4,7 @@
   "milestone": "M8",
   "title": "Enforce XSD schema syntax and restricted identity paths",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M8 coordinator / assigned isolated schema syntax worker",
   "branch": "codex/m8-xsd-schema-syntax",
   "base_revision": "ea505cff902482ecabfa04266c353ee455981c78",
@@ -37,29 +37,118 @@
     {
       "id": "M8-xsd-schema-syntax-A1",
       "description": "Reject the original accepted W3C invalid schemas annotF001 (empty documentation xml:lang) and groupD001 (global group minOccurs), enforcing contextual schema representation rules and legal neighboring forms without resource or quota false positives.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "branch-correctness",
+        "source-review"
+      ]
     },
     {
       "id": "M8-xsd-schema-syntax-A2",
       "description": "Reject original idI150 selector self::node() and disallowed explicit self/descendant-or-self spellings while preserving literal dot, leading dot-double-slash, explicit child and field attribute axes, namespace behavior and charged parsing. Correct only the previously mistaken positive axis expectations with documented identity transitions and preserved semantic/cancellation coverage.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "branch-correctness",
+        "source-review"
+      ]
     },
     {
       "id": "M8-xsd-schema-syntax-A3",
       "description": "Reproduce original failures before repair, prove unchanged independent corpus witnesses and focused valid/invalid/budget controls after repair, preserve affected earlier tests/public1417/frozen internal APIs and normal/true XML-only consumers, and record actual allocation evidence for changed parser/compiler routes.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "original-baseline",
+        "branch-correctness",
+        "checker-omission-control",
+        "supplemental-model-freeze",
+        "allocation-preparation",
+        "granted-allocation"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Validation/Xsd/Compilation/Compiler.cs: XsdCompilation.Syntax validates documentation wrapper xs:language with a borrowed charged span; global group contextual attributes",
+    "src/Xemele/Validation/Xsd/Identity/XPath.cs: Parser retains literal dot/.// and child/attribute axes, rejects explicit self/descendant-or-self lexical forms",
+    "tests/Xemele.Tests/M8-xsd-schema-syntax/: unchanged original W3C schemas, independent BCL oracles, public facade and legal/illegal/budget neighbors",
+    "docs/reports/M8-xsd-schema-syntax/README.md: exact authorized previous test identity transitions and standards rationale"
+  ],
+  "evidence": [
+    {
+      "id": "original-baseline",
+      "kind": "check",
+      "revision": "63b153d050d3246fb0c8de04238985c964c45c57",
+      "command": "Offline restore/build tests/Xemele.Tests/Xemele.Tests.csproj Release with --disable-build-servers -m:1 -p:RuntimeFrameworkVersion=10.0.11 -p:UseSharedCompilation=false -p:NuGetAudit=false; pinned dotnet --fx-version 10.0.11 tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -namespace Xemele.Tests.M8XsdSchemaSyntax -parallelMode none -noLogo -noColor -result-xml artifacts/M8-xsd-schema-syntax/baseline.xml",
+      "result": "failed",
+      "summary": "Expected pre-repair reproduction: all 3 original-invalid schemas were independently rejected by BCL, then all 3 public facade rejection assertions failed because no exception was thrown. 3 total, 3 failed, 0 errors/skipped/not-run. Build succeeded SDK10.0.400/runtime10.0.11. Raw XML/build log transient ignored.",
+      "artifact": null
+    },
+    {
+      "id": "source-review",
+      "kind": "review",
+      "revision": "54468a6a4daff58c4578b5a46fe48116ccd22e18",
+      "command": null,
+      "result": "passed",
+      "summary": "Coordinator reported independent bounded contract/compiler and XPath/parser/exact prior test-transition reviews passed with no P1/P2; accepted compiler SHA256d923d3652da9dc3f1a6922bd287bf00684b031a00bd7c4a7fa19f4b80e874430 and XPath SHA256a49afdeef1912ec8df06b8cac029f707f1903ad664a8f77ca58fe8ff8e735590. Model review accepted six original hashes/provenance, twelve allocation routes/disabled controls and byte-identical cleanup core; bounded checker omission issue corrected at444365439.",
+      "artifact": null
+    },
+    {
+      "id": "branch-correctness",
+      "kind": "check",
+      "revision": "444365439998500d6fac163af1a1c2259ec31168",
+      "command": "python3 docs/reports/M8-xsd-schema-syntax/check.py",
+      "result": "passed",
+      "summary": "Release SDK10.0.400/runtime10.0.11. 1146/1146 affected+owned passed,0 errors/failed/skipped/not-run:33 owned (3 unchanged original BCL/public rejection witnesses+30 neighbors),1113 affected (baseline1110+3 additive self grammar cases). safe resolver42/42. Frozen/public APIs and normal+true source-linked XML-only facade consumers passed. Planning185 tasks and diff check passed. All6 fixture SHA256 hashes match pinned original cache. Initial same-source attempt failed xUnit1051 in new parse call before tests; fixed test cancellation token at tested revision.",
+      "artifact": null
+    },
+    {
+      "id": "checker-omission-control",
+      "kind": "check",
+      "revision": "444365439998500d6fac163af1a1c2259ec31168",
+      "command": "Pure assert_results.assert_tests on actual correctness.xml, then on copied XML with one owned row removed and aggregate passed/total decremented",
+      "result": "passed",
+      "summary": "Actual1146-row report accepted with independent33-case/9-method owned inventory and all14 affected namespaces present. Report omitting one owned case rejected despite adjusted summary. No runtime rerun or counters.",
+      "artifact": null
+    },
+    {
+      "id": "supplemental-model-freeze",
+      "kind": "check",
+      "revision": "28e26b68231ca3981702b2e17d7fd445afe42c4c",
+      "command": "Pinned dotnet --fx-version 10.0.11 docs/reports/M8-model/ApiCheck/bin/Release/net10.0/ApiCheck.dll compare src/Xemele/bin/Release/net10.0/Xemele.dll tests/Contracts/Fixtures/M8/Model.golden.txt (and docs/api/M8-model.txt)",
+      "result": "passed",
+      "summary": "Exact full internal/public frozen model316 and additive model139 matched. Owned checker now repeats both comparisons; runtime and tested unit inputs unchanged from444365439.",
+      "artifact": null
+    },
+    {
+      "id": "allocation-preparation",
+      "kind": "check",
+      "revision": "28e26b68231ca3981702b2e17d7fd445afe42c4c",
+      "command": "python3 docs/reports/M8-xsd-schema-syntax/prepare.py; elevated python3 docs/reports/M8-xsd-schema-syntax/measure.py --verify-only; elevated python3 docs/reports/M8-xsd-schema-syntax/measure.py --preflight",
+      "result": "passed",
+      "summary": "12 owned-output routes x16warmups/x64operations consumed with all GC/allocation counters disabled,16 retained outputs. 456 frozen identities verified elevated; actual supervised child78856 exit0/reaped/groupabsent/logclosed, pre/post identities unchanged. Manifest f613780fa3d57c7e0b1f82054c5ccb32f14c24c579f17c6839dfb220b56a1ce8; supervisor d95f10918f135bfe80a739dc0db85193a8ec73850da0ed9b8f312d883ea8e6eb. No measurement yet.",
+      "artifact": "docs/reports/M8-xsd-schema-syntax/allocation-preflight.json"
+    },
+    {
+      "id": "granted-allocation",
+      "kind": "check",
+      "revision": "28e26b68231ca3981702b2e17d7fd445afe42c4c",
+      "command": "Coordinator sole launch: python3 docs/reports/M8-xsd-schema-syntax/measure.py --granted f613780fa3d57c7e0b1f82054c5ccb32f14c24c579f17c6839dfb220b56a1ce8 2026-10-12T06:43:03.899271+00:00 2026-10-12T06:43:33.899271+00:00",
+      "result": "passed",
+      "summary": "Actual granted allocation-only12 routes x16warm/x64ops, both disabled control and measured children exited0/reaped/groupsabsent/logclosed.456identities matchbefore/after. Root durable RELEASEc3b9438f625dcd941087c83a841bb369fb373884 before rawinspection; grant aed90f7b61b688697d689af9178bae1f774d7d22. Cold2482032B,positive1048B,16ownedretained delta634208B. Compiler short/long/multilingual74608B/op,group78784,invalid4536\u20134560;path dot832/long992/multilingual1016/invalid1928;publiccomposition1393496.25. No BDN/throughput or zero-owned-output allocation claim; rawoutputs ignored.",
+      "artifact": "docs/reports/M8-xsd-schema-syntax/allocations.md"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Coordinator-created ordered repair from completed official corpus baseline and primary-standards adjudication; corpus task remains active and is not a prerequisite.",
-    "checks": [],
-    "remaining": [],
+    "summary": "Three unchanged original W3C invalid schemas now reject through public facade; global group syntax and borrowed charged documentation language validation fixed; explicit self/descendant axes reject while legal dot/child/attribute paths preserved. All scope/tests transitions documented. Branch implemented; coordinator integration verification remains.",
+    "checks": [
+      "1146/1146 owned+affected (33owned,1113affected) and42safe resolver passed; baseline three no-exception failures preserved.",
+      "Exact public1417/model316+139/compiler257/identity24/evaluation2/content9/facade7 matched; normal+true source-linked XML-only consumers passed.",
+      "All6 original fixture hashes verified; omitted-owned-row checker control rejected; planning185tasks/diffcheck passed.",
+      "Granted allocation12routes consumed;456identities before/after;bothchildrenexit0/reaped/groupsabsent/logsclosed; durable RELEASE beforeinspection."
+    ],
+    "remaining": [
+      "Coordinator integration and verification only."
+    ],
     "requests": []
   }
 }
