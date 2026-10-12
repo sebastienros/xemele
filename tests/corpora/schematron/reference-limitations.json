@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "reference": "System.Xml.XPath.XPathDocument / XPathNavigator, Microsoft.NETCore.App 10.0.11",
+  "cases": [
+    {
+      "id": "bcl-xpath-16-1",
+      "expression": "string-length(.)",
+      "input": "<item code='-3'>𐀀Ω A</item>",
+      "referenceValue": "5",
+      "normativeValue": "4",
+      "reason": "BCL counts UTF16 code units. XPath1 section3.6 counts UCS characters; surrogate pair counts once. Both exact values are asserted; case remains executed.",
+      "source": "https://www.w3.org/TR/1999/REC-xpath-19991116/#strings",
+      "inputSha256": "b1d08a4798a3f56fb33a685bda11cf18e75b52d28624c2a2d5cf5c4fd7c9eb2b"
+    }
+  ]
+}
