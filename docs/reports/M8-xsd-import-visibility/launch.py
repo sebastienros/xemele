@@ -72,16 +72,26 @@ def main():
             if marker.is_file() and json.loads(marker.read_text())['controller']==str(directory):
                 assert prepared is not None,'No verified initial preparation snapshot'
             else:prepared=None
-        b.terminal_cleanup(runner,action,prepared)
+        try:
+            b.terminal_cleanup(runner,action,prepared,preserve_preparation=error is None,outer_error=error)
+        except BaseException as cleanup_error:
+            if action=='prepare':b.abort_preparation(runner,type(cleanup_error).__name__)
+            raise
     if error is not None:
         nested.durable(directory/'terminal-outcome.json',{'completed':False,'error':error,'counterLauncher':action=='measure'})
         return 1
-    assert payload is not None
-    if action=='discard':publish_finite(payload,{'completed':True,'preparationSha256':sys.argv[5],'state':'discarded; never reusable'},runner.hard)
-    payloads={b.key(payload):b.digest(payload)}
-    if action=='measure':
-        summary=Path(prepared['directory'])/'allocation-summary.json';payloads[b.key(summary)]=b.digest(summary)
-    b.publish_controller(runner,action,payloads,reviewed)
+    try:
+        assert payload is not None
+        if action=='discard':publish_finite(payload,{'completed':True,'preparationSha256':sys.argv[5],'state':'discarded; never reusable'},runner.hard)
+        payloads={b.key(payload):b.digest(payload)}
+        if action=='measure':
+            summary=Path(prepared['directory'])/'allocation-summary.json';payloads[b.key(summary)]=b.digest(summary)
+        b.publish_controller(runner,action,payloads,reviewed)
+    except BaseException as publication_error:
+        if action=='prepare' and not (directory/'preparation-abort.json').exists():
+            b.abort_preparation(runner,type(publication_error).__name__)
+        nested.durable(directory/'terminal-outcome.json',{'completed':False,'error':type(publication_error).__name__,'counterLauncher':action=='measure'})
+        return 1
     return 0
 
 

@@ -146,6 +146,7 @@ def verify_controller(payload, expected, action, review_sha):
     else:
         controller=payload.parent if action in ['controls','discard'] else payload.parents[1 if action=='prepare' else 2]
         release_path=controller/'controller-release.json'
+    assert not (controller/'preparation-abort.json').exists(),'Aborted preparation cannot be accepted'
     release = json.loads(release_path.read_text())
     assert release['completed'] and release['action'] == action and release['coordinatorReviewSha256'] == review_sha
     assert release['harnessSourceSha256'] == digest(SOURCE) and release['payloads'].get(key(payload)) == expected
@@ -266,19 +267,25 @@ def verify_checks_success(path, expected, review_sha):
 
 
 def publish_controller(runner, action, payloads, review_sha):
-    from family import publish_finite
-    assert runner.closed and runner.receipt and runner.receipt['completed'] and not runner.stopped
-    assert all(__import__('family').clean(row) for row in runner.sequence)
-    assert not mismatches(payloads), 'Child candidate changed before enclosing acceptance'
-    family = runner.directory / 'family-cleanup.json'
-    assert json.loads(family.read_text())['completed']
-    terminal=runner.directory/'terminal-cleanup.json'
-    assert json.loads(terminal.read_text())['completed']
-    publish_finite(runner.directory / 'controller-release.json',
-        {'completed':True,'action':action,'coordinatorReviewSha256':review_sha,
-         'harnessSourceSha256':digest(SOURCE),'payloads':payloads,
-         'familyReceipt':str(family),'familySha256':digest(family),
-         'terminalReceipt':str(terminal),'terminalSha256':digest(terminal)},runner.hard)
+    # Preparation acceptance leaves ten seconds inside the total hard bound
+    # for revocation/purge if publication fails or crosses its earlier bound.
+    try:
+        from family import publish_finite
+        assert runner.closed and runner.receipt and runner.receipt['completed'] and not runner.stopped
+        assert all(__import__('family').clean(row) for row in runner.sequence)
+        assert not mismatches(payloads), 'Child candidate changed before enclosing acceptance'
+        family = runner.directory / 'family-cleanup.json'
+        assert json.loads(family.read_text())['completed']
+        terminal=runner.directory/'terminal-cleanup.json'
+        assert json.loads(terminal.read_text())['completed']
+        publish_finite(runner.directory / 'controller-release.json',
+            {'completed':True,'action':action,'coordinatorReviewSha256':review_sha,
+             'harnessSourceSha256':digest(SOURCE),'payloads':payloads,
+             'familyReceipt':str(family),'familySha256':digest(family),
+             'terminalReceipt':str(terminal),'terminalSha256':digest(terminal)},runner.hard-10 if action=='prepare' else runner.hard)
+    except BaseException as error:
+        if action=='prepare':abort_preparation(runner,type(error).__name__)
+        raise
 
 
 def resolve(name):
@@ -342,7 +349,7 @@ def read_terminal(controller):
     return receipt
 
 
-def terminal_cleanup(runner, action, prepared=None):
+def terminal_cleanup(runner, action, prepared=None, preserve_preparation=True, receipt_name="terminal-cleanup.json", outer_error=None):
     """Only owned transient paths; no source, corpus, cache or installed runtime copies."""
     import shutil
     from family import nested
@@ -351,6 +358,8 @@ def terminal_cleanup(runner, action, prepared=None):
                and row['nestedOwnership']['allOwnedGroupsAbsent'] for row in runner.sequence)
     directory=runner.directory.resolve()
     assert OUT.resolve() in directory.parents
+    assert receipt_name in ['terminal-cleanup.json','preparation-abort.json']
+    retain_preparation=action=='prepare' and preserve_preparation and outer_error is None and runner.receipt['completed']
     delete_roots=[];delete_files=[]
     if action=='check':
         delete_roots.append(directory/'checks/active')
@@ -359,7 +368,9 @@ def terminal_cleanup(runner, action, prepared=None):
     if action=='controls':delete_roots.append(directory/'controls')
     if action=='prepare':
         delete_files.append(directory/'preparation/control.json')
-        if not runner.receipt['completed']:delete_roots.append(directory/'preparation/active')
+        if not retain_preparation:
+            delete_roots.append(directory/'preparation/active')
+            delete_files.extend([directory/'preparation/prepared.json',directory/'controller-release.json'])
     if prepared is not None:
         preparation=Path(prepared['preparationReceipt']).resolve().parent
         marker=preparation/'consumed.json'
@@ -385,14 +396,20 @@ def terminal_cleanup(runner, action, prepared=None):
         if path.is_file():removed[key(path)]=digest(path)
     # Hash all transient bytes before removing anything. Summaries never imply
     # that the deleted bytes can be checked again on a later attempt.
+    # Revoke acceptance paths before deleting the active payload.
+    if action=='prepare' and not retain_preparation:
+        for path in [directory/'controller-release.json',directory/'preparation/prepared.json']:
+            path.unlink(missing_ok=True)
     for root in delete_roots:
         if root.exists():shutil.rmtree(root)
     for path in delete_files:path.unlink(missing_ok=True)
     assert all(not resolve(name).exists() for name in removed)
     receipt={'completed':True,'state':'terminal-summary; deleted bytes cannot be rechecked or reused',
              'action':action,'removedIdentities':removed,'removedFiles':len(removed),
-             'familyOutcome':runner.receipt['completed'],'activePreparedOutputs':action=='prepare' and runner.receipt['completed']}
-    nested.durable(directory/'terminal-cleanup.json',receipt)
+             'familyOutcome':runner.receipt['completed'],'outerError':outer_error,'activePreparedOutputs':retain_preparation}
+    prior=directory/'terminal-cleanup.json'
+    if receipt_name=='preparation-abort.json' and prior.is_file():receipt['supersedesTerminalSha256']=digest(prior)
+    nested.durable(directory/receipt_name,receipt)
     return receipt
 
 
@@ -428,3 +445,8 @@ def verify_allocation_success(path, expected, review_sha):
     assert controller['payloads'].get(key(summary))==digest(summary)
     data=json.loads(summary.read_text());assert data['completed']
     return data  # terminal evidence only; never permits prepared-byte reuse
+
+
+def abort_preparation(runner, error):
+    return terminal_cleanup(runner,'prepare',preserve_preparation=False,
+                            receipt_name='preparation-abort.json',outer_error=error)

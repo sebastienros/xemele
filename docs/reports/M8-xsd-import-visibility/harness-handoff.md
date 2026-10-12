@@ -90,3 +90,24 @@ No harness imports, executable controls, builds, restores, tests, consumers,
 extractors, preparation jobs, counters or measurements have run. Runtime and all
 acceptance criteria remain pending integrated verification. Freeze this source
 packet for review; no readiness or control pass is implied by syntax/hash checks.
+
+## Outer preparation failure correction — SOURCE ONLY
+
+Preparation retention now requires a successful outer outcome as well as a clean
+child family. launch.py passes any outer postcondition error to terminal_cleanup;
+that path removes preparation/active and prepared.json, even when familyOutcome
+is true. Final controller publication for preparation uses hard-deadline minus
+10 seconds, preserving a rollback reserve inside the existing total bound.
+Every publication exception revokes the preparation/controller acceptance paths
+and purges the active files after verified family absence. A distinct concise
+preparation-abort.json records the outer error, removed hashes and the prior
+terminal summary hash; aborted controllers cannot authorize readiness even if a
+candidate is restored. Payload-hash/finalization failures use the same abort path.
+
+Two additional owned-scratch scenarios inside the existing eleven proposed
+controls cover a clean child with a failed outer postcondition, and a clean child
+whose actual final publication crosses the earlier acceptance deadline. Both
+assert no active binaries, preparation candidate or accepted controller survives;
+the late scenario also checks that the hard-deadline rollback reserve remains.
+These controls, and every other executable check, remain UNRUN. Only static AST,
+identity/source-diff and planning validation are permitted for this correction.

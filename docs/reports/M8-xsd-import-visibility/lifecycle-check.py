@@ -197,6 +197,42 @@ class Controls(unittest.TestCase):
             with self.assertRaises(TimeoutError):b.publish_controller(runner,'controls',{b.key(candidate):b.digest(candidate)},'review')
         self.assertTrue(candidate.exists());self.assertFalse((controller/'controller-release.json').exists())
         with self.assertRaises((OSError,AssertionError)):b.verify_positive_controls(candidate,b.digest(candidate),'review')
+        # Owned scratch, clean child/root family, failed outer postcondition.
+        # This uses the same terminal-cleanup outer-error argument as launch.py.
+        cleanrow=dict(reason='completed',exit=0,directChildReaped=True,ownedGroupAbsent=True,
+                      logClosed=True,nestedOwnership={'allOwnedGroupsAbsent':True})
+        for scenario in ['outer-postcondition','late-final-publication']:
+            root=self.out/scenario;binary=root/'preparation/active/bin/Probe.dll'
+            binary.parent.mkdir(parents=True);binary.write_bytes(b'owned scratch prepared bytes')
+            prepared=root/'preparation/prepared.json';nested.durable(prepared,{'completed':True,'scratchOnly':True})
+            family=root/'family-cleanup.json'
+            nested.durable(family,dict(completed=True,ownership={'allOwnedGroupsAbsent':True},sequence=[cleanrow]))
+            fake=SimpleNamespace(closed=True,stopped=False,receipt={'completed':True,'ownership':{'allOwnedGroupsAbsent':True}},
+                                 sequence=[cleanrow],directory=root,hard=100.0)
+            if scenario=='outer-postcondition':
+                outer_error=None
+                try:
+                    raise AssertionError('clean child does not satisfy outer postcondition')
+                except AssertionError as error:outer_error=type(error).__name__
+                finally:summary=b.terminal_cleanup(fake,'prepare',preserve_preparation=outer_error is None,outer_error=outer_error)
+                self.assertEqual(summary['outerError'],'AssertionError')
+            else:
+                initial=b.terminal_cleanup(fake,'prepare');self.assertTrue(initial['activePreparedOutputs']);self.assertTrue(binary.exists())
+                clock=[10.0];real=nested.durable
+                def late_final(path,value):
+                    real(path,value)
+                    if Path(path).name=='controller-release.json':clock[0]=91.0
+                with patch.object(f.time,'monotonic',side_effect=lambda:clock[0]),patch.object(nested,'durable',side_effect=late_final):
+                    with self.assertRaises(TimeoutError):b.publish_controller(fake,'prepare',{b.key(prepared):b.digest(prepared)},'review')
+                self.assertLess(clock[0],fake.hard)  # final publication cannot spend rollback reserve
+                summary=json.loads((root/'preparation-abort.json').read_text())
+                self.assertEqual(summary['outerError'],'TimeoutError')
+                self.assertEqual(summary['supersedesTerminalSha256'],b.digest(root/'terminal-cleanup.json'))
+            self.assertTrue(summary['completed'] and summary['familyOutcome'])
+            self.assertFalse(summary['activePreparedOutputs']);self.assertFalse(binary.exists())
+            self.assertFalse((root/'preparation/active').exists());self.assertFalse(prepared.exists())
+            self.assertFalse((root/'controller-release.json').exists())
+            with self.assertRaises((OSError,AssertionError)):b.verify_prepared(prepared,'unaccepted','review')
 
     def test_api_set_test_dependency_and_result_mutations_reject_fresh_receipt(self):
         api=self.out/'api';api.mkdir();first=api/'a.txt';first.write_bytes(b'API a');second=api/'b.txt';second.write_bytes(b'API b')
