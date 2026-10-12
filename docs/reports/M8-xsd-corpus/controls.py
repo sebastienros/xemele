@@ -1,59 +1,75 @@
 #!/usr/bin/env python3
 """Proposed bounded preparation controls; SOURCE only until explicitly accepted."""
 import os
-import sys
 import subprocess
 import time
 import uuid
-from pathlib import Path
 import run
 
 
 def main():
+    hard = time.monotonic() + 1800
+    work = hard - run.CLEANUP_SECONDS
     run.verified_dependencies()
     assert not subprocess.check_output(['git', 'status', '--porcelain'], cwd=run.ROOT, text=True, timeout=5).strip(), 'accepted source must be clean'
     source = run.revision()
+    before = run.input_identities(include_binaries=False)
+    assert not run.mismatches(before)
     directory = run.OUT / (source + '-controls-' + uuid.uuid4().hex)
     directory.mkdir(parents=True, exist_ok=False)
     environment = os.environ.copy()
     environment['PYTHONDONTWRITEBYTECODE'] = '1'
-    build = [run.D, 'build', 'tests/Xemele.Conformance.Tests/Xsd/Corpus.Runner.csproj', '-c', 'Release',
-             '--no-restore', '--disable-build-servers', '-m:1', '-p:RuntimeFrameworkVersion=10.0.11',
-             '-p:UseSharedCompilation=false', '-p:NuGetAudit=false']
-    commands = [build,
-                [run.D, '--fx-version', run.RUNTIME, str(run.DLL), '--controls'],
-                [run.D, '--fx-version', run.RUNTIME, str(run.DLL), '--hint-profile-controls', str(run.CORPUS / 'upstream')],
-                [run.D, '--fx-version', run.RUNTIME, str(run.DLL), '--optional-profile-controls', str(run.CORPUS / 'upstream')]]
-    for script in ['tests/corpora/xsd/import.py', 'tests/corpora/xsd/test_import.py',
-                   'docs/reports/M8-xsd-corpus/test_supervisor.py', 'docs/reports/M8-xsd-corpus/test_dispositions.py',
-                   'docs/reports/M8-xsd-corpus/test_approved_dispositions.py',
-                   'docs/reports/M8-xsd-corpus/check-optional-inputs.py']:
-        commands.append([sys.executable, script] + (['--check'] if script.endswith('/import.py') else []))
-    # Freeze the exact preparation commands and source before launching; no counters or original full campaign here.
-    run.durable(directory / 'commands.json', {'sourceRevision': source, 'commands': commands,
-                                             'campaignSeconds': 1800, 'childWorkSeconds': 300, 'cleanupSeconds': 10})
-    hard = time.monotonic() + 1800
-    work = hard - run.CLEANUP_SECONDS
+    commands = run.preparation_commands()
+    commands_file = directory / 'commands.json'
+    tested_file = directory / 'tested-inputs.json'
+    run.durable(commands_file, {'sourceRevision': source, 'commands': commands,
+                               'campaignSeconds': 1800, 'childWorkSeconds': 300, 'cleanupSeconds': 10})
+    commands_sha = run.digest(commands_file)
     run.supervision.ARTIFACTS = directory
     sequence = []
+    binding_failure = None
+    tested_sha = None
     try:
         for index, command in enumerate(commands):
+            assert run.digest(commands_file) == commands_sha
+            if index:
+                run.verify_preparation_bindings(commands_file, tested_file, tested_sha)
             now = time.monotonic()
             child_hard = min(now + 310, hard)
-            record = run.supervision.supervise_command(command, index, environment, min(now + 300, work, child_hard - 10), child_hard)
+            record = run.nested.supervise_family_command(run.supervision, command, index, environment,
+                min(now + 300, work, child_hard - 10), child_hard)
+            record['argv'] = command
             sequence.append(record)
             run.durable(directory / f'lifecycle-{index:03d}.json', record)
-            if not run.supervision.workload_succeeded(record):
+            if not run.supervision.workload_succeeded(record) or not record['nestedOwnership']['allOwnedGroupsAbsent']:
                 break
+            if index == 0:
+                # Build may change binaries, never the source/runtime that was presented for compilation.
+                assert run.input_identities(include_binaries=False) == before and not run.mismatches(before)
+                identities = run.input_identities()
+                assert not run.mismatches(identities)
+                run.durable(tested_file, {'sourceRevision': source, 'commandsSha256': commands_sha, 'identities': identities})
+                tested_sha = run.digest(tested_file)
+                run.verify_preparation_bindings(commands_file, tested_file, tested_sha)
+    except BaseException as error:
+        binding_failure = type(error).__name__ + ': ' + str(error)
     finally:
+        try:
+            assert run.digest(commands_file) == commands_sha
+            run.verify_preparation_bindings(commands_file, tested_file, tested_sha)
+        except BaseException as error:
+            binding_failure = type(error).__name__ + ': ' + str(error)
         summary = dict(sourceRevision=source, currentRevision=run.revision(), sequence=sequence,
-                       completed=len(sequence) == len(commands) and all(run.supervision.workload_succeeded(r) for r in sequence),
-                       deadlineExceeded=time.monotonic() > hard,
-                       runnerSha256=run.digest(run.DLL) if run.DLL.is_file() else None)
+                       completed=binding_failure is None and len(sequence) == len(commands) and all(
+                           run.supervision.workload_succeeded(r) and r['nestedOwnership']['allOwnedGroupsAbsent'] for r in sequence),
+                       bindingFailure=binding_failure, deadlineExceeded=time.monotonic() > hard,
+                       commandsSha256=commands_sha,
+                       testedInputsSha256=tested_sha)
         run.durable(directory / 'controls-cleanup.json', summary)
     print('CONTROLS ARTIFACTS', directory, flush=True)
     return 0 if summary['completed'] and not summary['deadlineExceeded'] and summary['sourceRevision'] == summary['currentRevision'] else 1
 
 
 if __name__ == '__main__':
-    raise SystemExit(main())
+    with run.nested.interruptions():
+        raise SystemExit(main())

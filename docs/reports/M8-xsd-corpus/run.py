@@ -7,6 +7,7 @@ import importlib.util
 import json
 import os
 import subprocess
+import sys
 import time
 import uuid
 from pathlib import Path
@@ -43,6 +44,7 @@ def module(name, path):
 
 
 supervision = module('corpus_supervision', HERE / 'supervision.py')
+nested = module('corpus_nested_ownership', HERE / 'nested_ownership.py')
 
 
 def digest(path):
@@ -113,7 +115,8 @@ def execute_cases(cases, outdir, environment, work_deadline, hard_deadline):
             now = time.monotonic()
             child_hard = min(now + spec.get('workSeconds', SET_WORK_SECONDS) + CLEANUP_SECONDS, hard_deadline)
             child_work = min(now + spec.get('workSeconds', SET_WORK_SECONDS), work_deadline, child_hard - CLEANUP_SECONDS)
-            receipt = supervision.supervise_command(spec['argv'], index, environment, child_work, child_hard)
+            with nested.track_launches(supervision, environment, child_work):
+                receipt = supervision.supervise_command(spec['argv'], index, environment, child_work, child_hard)
             receipt.update(engine=spec['engine'], testSet=spec['testSet'], journal=str(spec['journal']))
             result['sequence'].append(receipt)
             durable(outdir / f'lifecycle-{index:03d}.json', receipt)
@@ -161,50 +164,104 @@ def revision():
     return subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True, timeout=5).strip()
 
 
-def prepare(path, controls_receipt):
-    """Freeze only after future verified optional join, fresh build and accepted actual controls."""
+def preparation_commands():
+    build = [D, 'build', 'tests/Xemele.Conformance.Tests/Xsd/Corpus.Runner.csproj', '-c', 'Release',
+             '--no-restore', '--disable-build-servers', '-m:1', '-p:RuntimeFrameworkVersion=10.0.11',
+             '-p:UseSharedCompilation=false', '-p:NuGetAudit=false']
+    commands = [build, [D, '--fx-version', RUNTIME, str(DLL), '--controls'],
+                [D, '--fx-version', RUNTIME, str(DLL), '--hint-profile-controls', str(CORPUS / 'upstream')],
+                [D, '--fx-version', RUNTIME, str(DLL), '--optional-profile-controls', str(CORPUS / 'upstream')]]
+    for script in ['tests/corpora/xsd/import.py', 'tests/corpora/xsd/test_import.py',
+                   'docs/reports/M8-xsd-corpus/test_supervisor.py', 'docs/reports/M8-xsd-corpus/test_dispositions.py',
+                   'docs/reports/M8-xsd-corpus/test_approved_dispositions.py',
+                   'docs/reports/M8-xsd-corpus/check-optional-inputs.py']:
+        commands.append([sys.executable, script] + (['--check'] if script.endswith('/import.py') else []))
+    return commands
+
+
+def input_identities(include_binaries=True):
+    """Declared complete source/input identities; runtime payload added only after fresh build."""
     dependencies = verified_dependencies()
-    assert controls_receipt.name == 'controls-cleanup.json' and OUT.resolve() in controls_receipt.resolve().parents, 'owned actual preparation receipt required'
-    controls = json.loads(controls_receipt.read_text())
-    assert controls['completed'] is True and controls['deadlineExceeded'] is False
-    assert controls['sourceRevision'] == controls['currentRevision'] == revision(), 'controls must test this exact source'
-    assert controls['runnerSha256'] == digest(DLL), 'runner must match actual successful fresh-build controls'
-    commands_file = controls_receipt.with_name('commands.json')
-    commands = json.loads(commands_file.read_text())
-    assert commands['sourceRevision'] == revision() and len(controls['sequence']) == len(commands['commands']) == 10
-    for index, record in enumerate(controls['sequence']):
-        assert record['command'] == index and supervision.workload_succeeded(record), 'actual control child failed or unclean'
-    assert commands['commands'][0][1:3] == ['build', 'tests/Xemele.Conformance.Tests/Xsd/Corpus.Runner.csproj']
-    assert not subprocess.check_output(['git', 'status', '--porcelain'], cwd=ROOT, text=True, timeout=5).strip(), 'source must be clean'
-    inventory = json.loads((CORPUS / 'inventory.json').read_text())
-    assert inventory['revision'] == PIN and len(inventory['testSets']) == 93
-    assert sum(len(expected_rows(inventory, s)) for s in inventory['testSets']) == 41736
-    module('corpus_dispositions', HERE / 'dispositions.py').approved_sources()
     identities = {'tests/corpora/xsd/upstream/' + r['path']: r['sha256']
                   for r in json.loads((CORPUS / 'resources.json').read_text())}
     for folder in [CORPUS, HERE, ROOT / 'tests/Xemele.Conformance.Tests/Xsd', ROOT / 'tests/Xemele.Differential.Tests/Xsd']:
         for file in folder.iterdir():
             if file.is_file():
                 identities[str(file.relative_to(ROOT))] = digest(file)
+    for file in (ROOT / 'src').rglob('*'):
+        if file.is_file() and file.suffix in ('.cs', '.csproj', '.props', '.targets') and not {'bin', 'obj'}.intersection(file.relative_to(ROOT).parts):
+            identities[str(file.relative_to(ROOT))] = digest(file)
+    for pattern in ('Directory.Build.*', 'global.json', 'NuGet.Config'):
+        for file in ROOT.glob(pattern):
+            if file.is_file():
+                identities[str(file.relative_to(ROOT))] = digest(file)
     for name in list(dependencies) + ['M8-xsd-corpus']:
         file = ROOT / f'docs/tasks/{name}.json'
         identities[str(file.relative_to(ROOT))] = digest(file)
-    for folder in [OUT / 'runner-bin/Release/net10.0', ROOT / 'src/Xemele/bin/Release/net10.0']:
-        assert folder.is_dir(), f'missing fresh build folder: {folder}'
-        for file in folder.rglob('*'):
-            if file.is_file():
-                identities[str(file.relative_to(ROOT))] = digest(file)
-    host = Path(D)
-    identities[str(host)] = digest(host)
-    runtime = host.parent / 'shared/Microsoft.NETCore.App' / RUNTIME
+    if include_binaries:
+        for folder in [OUT / 'runner-bin/Release/net10.0', ROOT / 'src/Xemele/bin/Release/net10.0']:
+            assert folder.is_dir(), f'missing fresh build folder: {folder}'
+            for file in folder.rglob('*'):
+                if file.is_file():
+                    identities[str(file.relative_to(ROOT))] = digest(file)
+        assert str(DLL.relative_to(ROOT)) in identities
+        assert str((DLL.parent / 'Xemele.dll').relative_to(ROOT)) in identities, 'tested product dependency absent'
+    for file in (Path(D), Path(sys.executable)):
+        identities[str(file)] = digest(file)
+    runtime = Path(D).parent / 'shared/Microsoft.NETCore.App' / RUNTIME
     assert runtime.is_dir()
     for file in runtime.rglob('*'):
         if file.is_file():
             identities[str(file)] = digest(file)
-    for receipt in [controls_receipt, commands_file] + [controls_receipt.with_name(f'lifecycle-{index:03d}.json') for index in range(10)]:
+    return identities
+
+
+def verify_preparation_bindings(commands_file, tested_file, tested_sha):
+    commands = json.loads(commands_file.read_text())
+    assert commands['commands'] == preparation_commands(), 'exact required preparation commands changed'
+    assert commands['sourceRevision'] == revision(), 'preparation source differs'
+    assert (commands['campaignSeconds'], commands['childWorkSeconds'], commands['cleanupSeconds']) == (1800, 300, 10)
+    assert tested_sha is not None and digest(tested_file) == tested_sha, 'frozen tested manifest changed'
+    tested = json.loads(tested_file.read_text())
+    assert tested['sourceRevision'] == revision() and tested['commandsSha256'] == digest(commands_file)
+    current = input_identities()
+    assert set(current) == set(tested['identities']), 'tested input membership changed'
+    assert not mismatches(tested['identities']), 'tested dependency/runtime/source identity changed'
+    return tested['identities']
+
+
+def prepare(path, controls_receipt):
+    """Use precisely the payload tested after fresh build; never freeze replacement dependencies."""
+    dependencies = verified_dependencies()
+    assert controls_receipt.name == 'controls-cleanup.json' and OUT.resolve() in controls_receipt.resolve().parents, 'owned actual preparation receipt required'
+    controls = json.loads(controls_receipt.read_text())
+    assert controls['completed'] is True and controls['deadlineExceeded'] is False
+    assert controls['bindingFailure'] is None
+    assert controls['sourceRevision'] == controls['currentRevision'] == revision()
+    commands_file = controls_receipt.with_name('commands.json')
+    tested_file = controls_receipt.with_name('tested-inputs.json')
+    assert controls['testedInputsSha256'] == digest(tested_file), 'tested manifest replaced'
+    assert controls['commandsSha256'] == digest(commands_file), 'required commands replaced'
+    identities = dict(verify_preparation_bindings(commands_file, tested_file, controls['testedInputsSha256']))
+    required = preparation_commands()
+    assert len(controls['sequence']) == len(required)
+    for index, record in enumerate(controls['sequence']):
+        assert record['command'] == index and record['argv'] == required[index]
+        assert supervision.workload_succeeded(record) and record['nestedOwnership']['allOwnedGroupsAbsent']
+        lifecycle = controls_receipt.with_name(f'lifecycle-{index:03d}.json')
+        assert json.loads(lifecycle.read_text()) == record, 'durable child receipt differs'
+    assert not subprocess.check_output(['git', 'status', '--porcelain'], cwd=ROOT, text=True, timeout=5).strip(), 'source must be clean'
+    inventory = json.loads((CORPUS / 'inventory.json').read_text())
+    assert inventory['revision'] == PIN and len(inventory['testSets']) == 93
+    assert sum(len(expected_rows(inventory, s)) for s in inventory['testSets']) == 41736
+    module('corpus_dispositions', HERE / 'dispositions.py').approved_sources()
+    receipts = [controls_receipt, commands_file, tested_file]
+    receipts += [controls_receipt.with_name(f'lifecycle-{index:03d}.json') for index in range(len(required))]
+    for registry in controls_receipt.parent.glob('nested-*'):
+        receipts.extend(file for file in registry.iterdir() if file.is_file())
+    for receipt in receipts:
         identities[str(receipt.relative_to(ROOT))] = digest(receipt)
-    assert str(DLL.relative_to(ROOT)) in identities, 'runner absent'
-    assert not mismatches(identities), 'input identity changed before freeze'
+    assert not mismatches(identities)
     manifest = dict(sourceRevision=revision(), upstreamRevision=PIN, runtime=RUNTIME,
                     engines=['product', 'bcl'], testSets=inventory['testSets'],
                     campaignSeconds=CAMPAIGN_SECONDS, setWorkSeconds=SET_WORK_SECONDS,

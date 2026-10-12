@@ -3,6 +3,8 @@ import importlib.util
 import json
 import os
 import sys
+import signal
+import threading
 import tempfile
 import time
 import unittest
@@ -177,6 +179,115 @@ class Supervisor(unittest.TestCase):
         self.assertIsNone(result['sequence'][0]['pid'])
         self.assertFalse(case['journal'].exists())
         self.assert_clean(result)
+
+    def test_forced_intermediate_parent_kill_after_nested_ACK_drains_all_groups_and_no_next(self):
+        ready = self.out / 'inner-ready.json'
+        parent_out = self.out / 'intermediate'; parent_out.mkdir()
+        never = self.out / 'next-marker'
+        payload = ("import json,os,time\nfrom pathlib import Path\n" +
+                   f"p=Path({(str(ready)+'.pending')!r});p.write_text(json.dumps({{'parent':os.getppid(),'group':os.getpgrp()}}));p.rename(Path({str(ready)!r}))\n" +
+                   "while True: time.sleep(.05)\n")
+        first = self.case('inner'); first['argv'] = [sys.executable, '-c', payload]
+        first['journal'] = str(first['journal']); first['workSeconds'] = 100
+        parent_code = ("import importlib.util,os,time\nfrom pathlib import Path\n" +
+            f"s=importlib.util.spec_from_file_location('runner',{str(Path(m.__file__))!r});r=importlib.util.module_from_spec(s);s.loader.exec_module(r)\n" +
+            f"r.execute_cases([{first!r}],Path({str(parent_out)!r}),os.environ.copy(),time.monotonic()+100,time.monotonic()+110)\n")
+        errors = []
+        def force_parent_death():
+            try:
+                deadline = time.monotonic() + 4
+                while not ready.exists():
+                    if time.monotonic() >= deadline: raise TimeoutError('inner ready after ACK not observed')
+                    time.sleep(.01)
+                identity = json.loads(ready.read_text())
+                registry = self.out / 'nested-000'
+                published = [json.loads(file.read_text()) for file in registry.glob('group-*.json')]
+                self.assertIn(identity['parent'], [entry['pgid'] for entry in published])
+                inner = next(entry for entry in published if entry['pgid'] == identity['group'])
+                self.assertTrue((registry / ('ack-' + inner['token'] + '.json')).exists())
+                os.kill(identity['parent'], signal.SIGKILL)  # inner parent's finally cannot run
+            except BaseException as error:
+                errors.append(repr(error))
+        killer = threading.Thread(target=force_parent_death)
+        killer.start()
+        m.supervision.ARTIFACTS = self.out
+        sequence = []
+        try:
+            commands = [[sys.executable, '-c', parent_code],
+                        [sys.executable, '-c', f"from pathlib import Path;Path({str(never)!r}).touch()"]]
+            with m.nested.interruptions():
+                for index, command in enumerate(commands):
+                    now = time.monotonic()
+                    record = m.nested.supervise_family_command(m.supervision, command, index, os.environ.copy(), now+5, now+15)
+                    sequence.append(record)
+                    m.durable(self.out / f'outer-lifecycle-{index}.json', record)
+                    if not m.supervision.workload_succeeded(record): break
+        finally:
+            killer.join(timeout=1)
+        self.assertFalse(killer.is_alive())
+        self.assertEqual(errors, [])
+        self.assertTrue(ready.exists())
+        self.assertEqual(len(sequence), 1)
+        self.assertEqual(sequence[0]['reason'], 'failed')
+        self.assertEqual(sequence[0]['exit'], -signal.SIGKILL)
+        self.assertTrue(sequence[0]['directChildReaped'])
+        self.assertTrue(sequence[0]['ownedGroupAbsent'])
+        self.assertTrue(sequence[0]['logClosed'])
+        ownership = sequence[0]['nestedOwnership']
+        self.assertTrue(ownership['allOwnedGroupsAbsent'])
+        self.assertGreaterEqual(len(ownership['groups']), 2)
+        self.assertEqual(ownership['pendingIntents'], [])
+        for group in ownership['groups']: self.assertEqual(m.supervision.members(group), [])
+        self.assertFalse(never.exists())
+
+    def test_unresolved_prelaunch_intent_cannot_report_clean(self):
+        registry = self.out / 'pending'; registry.mkdir()
+        m.nested.durable(registry / 'intent-unpublished.json', {'token': 'unpublished'})
+        record = m.nested.drain(m.supervision, registry, time.monotonic()+2.1)
+        self.assertFalse(record['allOwnedGroupsAbsent'])
+        self.assertEqual(record['pendingIntents'], ['unpublished'])
+        self.assertEqual(record['cleanupError'], 'TimeoutError')
+
+    def preparation_binding_fixture(self):
+        runner = self.out / 'runner.dll'; product = self.out / 'Xemele.dll'
+        runner.write_bytes(b'unchanged runner'); product.write_bytes(b'tested product dependency')
+        commands_file = self.out / 'commands.json'; tested_file = self.out / 'tested-inputs.json'
+        m.durable(commands_file, dict(sourceRevision=m.revision(), commands=m.preparation_commands(),
+                                     campaignSeconds=1800, childWorkSeconds=300, cleanupSeconds=10))
+        identities = {str(file):m.digest(file) for file in (runner,product)}
+        m.durable(tested_file, dict(sourceRevision=m.revision(), commandsSha256=m.digest(commands_file), identities=identities))
+        return runner, product, commands_file, tested_file, identities
+
+    def test_changed_dependency_with_unchanged_runner_refuses_preparation(self):
+        runner, product, commands_file, tested_file, identities = self.preparation_binding_fixture()
+        with patch.object(m, 'input_identities', return_value=identities):
+            self.assertEqual(m.verify_preparation_bindings(commands_file, tested_file, m.digest(tested_file)), identities)
+            product.write_bytes(b'replacement untested product dependency')
+            self.assertEqual(m.digest(runner), identities[str(runner)])
+            with self.assertRaisesRegex(AssertionError, 'tested dependency/runtime/source identity changed'):
+                m.verify_preparation_bindings(commands_file, tested_file, m.digest(tested_file))
+
+    def test_replaced_tested_identity_manifest_refuses_original_frozen_hash(self):
+        runner, product, commands_file, tested_file, identities = self.preparation_binding_fixture()
+        frozen_sha = m.digest(tested_file)
+        product.write_bytes(b'untested replacement')
+        tested = json.loads(tested_file.read_text())
+        tested['identities'][str(product)] = m.digest(product)
+        tested_file.write_text(json.dumps(tested))
+        with patch.object(m, 'input_identities', return_value=tested['identities']):
+            with self.assertRaisesRegex(AssertionError, 'frozen tested manifest changed'):
+                m.verify_preparation_bindings(commands_file, tested_file, frozen_sha)
+
+    def test_replaced_required_command_refuses_even_updated_snapshot_hash(self):
+        runner, product, commands_file, tested_file, identities = self.preparation_binding_fixture()
+        commands = json.loads(commands_file.read_text())
+        commands['commands'][2] = [sys.executable, '-c', 'pass']
+        commands_file.write_text(json.dumps(commands))
+        tested = json.loads(tested_file.read_text()); tested['commandsSha256'] = m.digest(commands_file)
+        tested_file.write_text(json.dumps(tested))
+        with patch.object(m, 'input_identities', return_value=identities):
+            with self.assertRaisesRegex(AssertionError, 'exact required preparation commands changed'):
+                m.verify_preparation_bindings(commands_file, tested_file, m.digest(tested_file))
 
     def test_receipts_never_replace_prior_attempt(self):
         path = self.out / 'receipt.json'
