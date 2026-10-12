@@ -1,0 +1,71 @@
+{
+  "runs": [
+    {
+      "name": "owned-1",
+      "sourceRevision": "35a04b06b187cc59341f6909a1b825d4accf4077",
+      "total": 64,
+      "passed": 58,
+      "failed": 6,
+      "failures": [
+        {
+          "name": "Xemele.Tests.M8XsdParticleNormalization.OriginalTests.UnchangedOriginalMatchesExplicitMetadata(index: 4, identity: \\\"addB194/addB194\\\")",
+          "failure": "SCHEMA.Limit: Schema component limit exceeded."
+        },
+        {
+          "name": "Xemele.Tests.M8XsdParticleNormalization.BoundaryTests.ActualGroupUpaKeepsCharacterAndByteSourceLocation(bytes: False)",
+          "failure": "Assert.Equal() Failure: Values differ\nExpected: 3\nActual:   7"
+        },
+        {
+          "name": "Xemele.Tests.M8XsdParticleNormalization.BoundaryTests.ActualGroupUpaKeepsCharacterAndByteSourceLocation(bytes: True)",
+          "failure": "Assert.Equal() Failure: Values differ\nExpected: 3\nActual:   7"
+        },
+        {
+          "name": "Xemele.Tests.M8XsdParticleNormalization.NeighborTests.UnusedElementDeclarationConsistencyStillRejects(compositor: \\\"choice\\\")",
+          "failure": "Assert.Equal() Failure: Values differ\nExpected: False\nActual:   True"
+        },
+        {
+          "name": "Xemele.Tests.M8XsdParticleNormalization.NeighborTests.UnusedElementDeclarationConsistencyStillRejects(compositor: \\\"sequence\\\")",
+          "failure": "Assert.Equal() Failure: Values differ\nExpected: False\nActual:   True"
+        },
+        {
+          "name": "Xemele.Tests.M8XsdParticleNormalization.NeighborTests.UnusedUndefinedDeclarationStillRejects",
+          "failure": "Assert.Equal() Failure: Values differ\nExpected: False\nActual:   True"
+        }
+      ],
+      "resolution": "Corrected BCL deferred-unused-group oracle assertions and location expectation; unchanged addB194 capfailure remained."
+    },
+    {
+      "name": "owned-2",
+      "sourceRevision": "35a04b06b187cc59341f6909a1b825d4accf4077",
+      "total": 65,
+      "passed": 64,
+      "failed": 1,
+      "failure": "Unchanged addB194 defaultcomponentcap; addressed by authorized batch composition, no capincrease."
+    },
+    {
+      "name": "batch-owned-1",
+      "total": 84,
+      "passed": 82,
+      "failed": 2,
+      "failures": [
+        {
+          "name": "Xemele.Tests.M8XsdParticleNormalization.BatchTests.TypedFixedQNameAndUnusedEdcChecksSurviveEveryJoin(kind: \\\"element-qname\\\", valid: False)",
+          "failure": "Assert.Throws() Failure: No exception was thrown\nExpected: typeof(Xemele.Validation.SchemaCompileException)"
+        },
+        {
+          "name": "Xemele.Tests.M8XsdParticleNormalization.BatchTests.TypedFixedQNameAndUnusedEdcChecksSurviveEveryJoin(kind: \\\"attribute-qname\\\", valid: False)",
+          "failure": "Assert.Throws() Failure: No exception was thrown\nExpected: typeof(Xemele.Validation.SchemaCompileException)"
+        }
+      ],
+      "resolution": "Test expectations incorrectly treated frozen structural lexical QName equality as typed namespace-aware equality. Both complete joins/public typed checks had passed; corrected only structural assertions to preserve existing semantics. Original addB194 default caps passed."
+    },
+    {
+      "name": "batch-affected-1",
+      "affected": 1622,
+      "resolver": 42,
+      "result": "failed-after-passing-test-lanes",
+      "failure": "Owned docs/api/M8-xsd-particle-normalization.txt contained prose instead of xemele-api-v1 canonical header; public API scanner rejected it.",
+      "resolution": "Corrected own fragment to header-only (zero public additions); resumed only unfinished APIs/consumers plus newly added owned wildcard control/datatypechecks; no affected/resolver rerun."
+    }
+  ]
+}

@@ -1,0 +1,109 @@
+{
+  "sourceRevision": "15d975eba7c669e69d1934fa8df129a0814e6424",
+  "sdk": "10.0.400",
+  "runtime": "10.0.11",
+  "architecture": "osx-arm64",
+  "sourceIdentities": "source-identities.json",
+  "runs": [
+    {
+      "name": "correctness",
+      "total": 1622,
+      "passed": 1622,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "not-run": 0,
+      "uniqueIds": 1622,
+      "identitiesSha256": "bf9113486390fa4da63c9c44813640fae8c1e3eb66037336b1cfc93f5482d075"
+    },
+    {
+      "name": "resolver",
+      "total": 42,
+      "passed": 42,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "not-run": 0,
+      "uniqueIds": 42,
+      "identitiesSha256": "8d32466a1a9c5756c605309c20c9acb50437d93b02ac022faeded65f37bc249b"
+    },
+    {
+      "name": "datatypes",
+      "total": 77,
+      "passed": 77,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "not-run": 0,
+      "uniqueIds": 77,
+      "identitiesSha256": "ed39efeccf8ea752ab2145fd7ec263fff773ffd47132bab2f1c1f0bdd664914f"
+    },
+    {
+      "name": "owned-final",
+      "total": 87,
+      "passed": 87,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "not-run": 0,
+      "uniqueIds": 87,
+      "identitiesSha256": "d0bd5aec40b224adfe8d3b0f73af03707ac99ec7a9981f3af84cb8f8dd272d02"
+    }
+  ],
+  "compatibility": {
+    "publicMembers": 1430,
+    "emittedAllVisibleMembers": 1982,
+    "frozenLanes": [
+      "Model",
+      "Regex",
+      "Datatypes",
+      "Facets",
+      "RelaxNg",
+      "Xsd",
+      "Schematron",
+      "Reporting"
+    ],
+    "additiveResourceOutcomes": 46,
+    "newConcreteInternalHelpers": "batch-internal-additions.txt",
+    "consumers": [
+      "Facade normal",
+      "Facade XML-only",
+      "TypeRelations normal",
+      "TypeRelations XML-only"
+    ]
+  },
+  "allocation": "not started; SOURCE gate first",
+  "remaining": [
+    "Fresh batch SOURCE acceptance",
+    "Allocation SOURCE/preparation/root actual bounded counters",
+    "Integrated verification by coordinator"
+  ],
+  "ownedInventory": {
+    "OriginalTests": 12,
+    "NeighborTests": 47,
+    "BoundaryTests": 8,
+    "BatchTests": 20
+  },
+  "commands": [
+    {
+      "command": "python3 docs/reports/M8-xsd-particle-normalization/check.py",
+      "outcome": "Affected1622/resolver42 passed; stopped at incorrect task API fragment format, preserved as failure."
+    },
+    {
+      "command": "python3 docs/reports/M8-xsd-particle-normalization/check.py --resume-api",
+      "outcome": "After API fix and added wildcard test: owned85/datatype77, public1430/emitted1982/all8frozen/additive46/internal baselines and4consumer modes passed. Runtime unchanged from passing affected/resolver. The later resume identity guard had not yet been added; it is syntaxchecked only."
+    },
+    {
+      "command": "dotnet build tests/Xemele.Tests/Xemele.Tests.csproj -c Release --no-restore --disable-build-servers -m:1 -p:RuntimeFrameworkVersion=10.0.11 -p:UseSharedCompilation=false -p:NuGetAudit=false",
+      "outcome": "Passed; pinned offline SDK10.0.400, after adding2original derived controls; runtime code unchanged."
+    },
+    {
+      "command": "dotnet --fx-version 10.0.11 tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -namespace Xemele.Tests.M8XsdParticleNormalization -parallelMode none -noLogo -noColor -result-xml artifacts/M8-xsd-particle-normalization/owned-final.xml",
+      "outcome": "87/87passed; zero errors/failures/skips/notrun."
+    },
+    {
+      "command": "python3 tools/planning/tasks.py validate; git diff --check",
+      "outcome": "Planning196/whitespace passed."
+    }
+  ]
+}

@@ -1,0 +1,207 @@
+{
+  "task": "M8-xsd-particle-normalization",
+  "source_revision": "be7afddb6a0787e43cedd7768d7e2eadf677f5c0",
+  "preparation_revision": "78c140bdec1fff43c4f19ec7111818f010525843",
+  "manifest_sha256": "38d3e41c885f9876d528c9b4a3de8908ef530819177306fbc569d4578704ab56",
+  "identity_count": 465,
+  "source_hashes_match": true,
+  "root_verify": "465 identities, accepted review hashes and unchanged15d runtime/tests/fixtures independently verified; ps permission PASS",
+  "preparation": {
+    "sourceRevision": "d1a2a452dc1ae7bf561d04c030e6b9918548406f",
+    "acceptedRuntimeRevision": "15d975eba7c669e69d1934fa8df129a0814e6424",
+    "acceptedAllocationSourceRevision": "be7afddb6a0787e43cedd7768d7e2eadf677f5c0",
+    "manifestPath": "docs/reports/M8-xsd-particle-normalization/preparation.json",
+    "manifestSha256": "38d3e41c885f9876d528c9b4a3de8908ef530819177306fbc569d4578704ab56",
+    "identityCount": 465,
+    "build": {
+      "result": "passed",
+      "offline": true,
+      "warnings": 0,
+      "errors": 0,
+      "sdk": "10.0.400",
+      "runtime": ".NET 10.0.11",
+      "architecture": "Arm64",
+      "serverGc": false
+    },
+    "firstLifecycleAttempt": {
+      "result": "failed",
+      "pid": 74840,
+      "exit": 0,
+      "reason": "TimeoutExpired",
+      "directChildReaped": true,
+      "ownedGroupAbsent": false,
+      "logClosed": true,
+      "cleanupError": "PermissionError",
+      "recovery": "Permitted process inspection confirmed owned group 74840 absent; unchanged script rerun with process-inspection permission."
+    },
+    "lifecycleRegression": {
+      "status": "passed",
+      "counterEnabled": false,
+      "timeoutSequence": [
+        {
+          "command": 0,
+          "pid": 74955,
+          "exit": 0,
+          "reason": "TimeoutExpired",
+          "directChildReaped": true,
+          "ownedGroupAbsent": true,
+          "logClosed": true,
+          "groupMembers": []
+        }
+      ],
+      "nextChildStarted": false,
+      "normal": {
+        "command": 2,
+        "pid": 74957,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      }
+    },
+    "phases": {
+      "preparation": {
+        "command": "python3 docs/reports/M8-xsd-particle-normalization/prepare.py",
+        "result": "passed",
+        "lifecycle": {
+          "command": 0,
+          "pid": 75079,
+          "exit": 0,
+          "reason": "completed",
+          "directChildReaped": true,
+          "ownedGroupAbsent": true,
+          "logClosed": true,
+          "groupMembers": []
+        },
+        "counterEnabled": false,
+        "timingEnabled": false,
+        "routes": 24,
+        "operationsPerRoute": 64,
+        "disabledSamples": 1536,
+        "retainedControlCount": 40,
+        "allCounterFieldsZero": true,
+        "controlSha256": "ef6604a4254ab77750a263dfeadc98b8db28189d11376f30a42f51b978dee278"
+      },
+      "preflight": {
+        "command": "python3 docs/reports/M8-xsd-particle-normalization/measure.py --preflight",
+        "result": "passed",
+        "lifecycle": {
+          "command": 0,
+          "pid": 75849,
+          "exit": 0,
+          "reason": "completed",
+          "directChildReaped": true,
+          "ownedGroupAbsent": true,
+          "logClosed": true,
+          "groupMembers": []
+        },
+        "counterEnabled": false,
+        "timingEnabled": false,
+        "routes": 24,
+        "operationsPerRoute": 64,
+        "disabledSamples": 1536,
+        "retainedControlCount": 40,
+        "allCounterFieldsZero": true,
+        "controlSha256": "3839dde0b5a6385200937f0bb1ec7cb74cdefccbbe4761cd2f949a5e1fa6cfb7"
+      }
+    },
+    "verifyOnly": {
+      "command": "python3 docs/reports/M8-xsd-particle-normalization/measure.py --verify-only",
+      "result": "passed",
+      "identityCount": 465,
+      "processInspectionPermission": true,
+      "counterEnabled": false
+    },
+    "finalIdentityCheck": {
+      "result": "passed",
+      "identityCount": 465
+    },
+    "ownedJobs": 0,
+    "processGroupsAbsent": [
+      74840,
+      74955,
+      74957,
+      75079,
+      75849
+    ],
+    "limitations": [
+      "Disabled zeros are controls, not allocation evidence.",
+      "No --measure or --run was launched by the worker; root alone runs the bounded actual counters.",
+      "A4 remains pending and integration_revision remains null.",
+      "Raw control/lifecycle/log files stay transient under ignored artifacts; no source or frozen identity was edited after preparation."
+    ]
+  },
+  "policy": "Allocation only; no isolation/PARK/ACK/lease or foreign coordination",
+  "status": "Actual run completed and released; raw results unopened",
+  "run_bounds": {
+    "total_seconds": 120,
+    "work_seconds": 110,
+    "cleanup_seconds": 10
+  },
+  "raw_results_inspected": false,
+  "root_session": 90344,
+  "root_exit": 0,
+  "lifecycle": {
+    "status": 0,
+    "beforeIdentities": true,
+    "afterIdentities": true,
+    "sequence": [
+      {
+        "command": 0,
+        "pid": 77071,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      {
+        "command": 1,
+        "pid": 77073,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      }
+    ],
+    "rawResultsInspected": false,
+    "beforeMismatches": [],
+    "identityCount": 465,
+    "afterMismatches": [],
+    "elapsedSeconds": 2.2449299580184743
+  },
+  "release": {
+    "status": 0,
+    "releasedAt": "2026-10-12T16:04:31.446219+00:00",
+    "rawResultsInspected": false,
+    "sequence": [
+      {
+        "command": 0,
+        "pid": 77071,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      {
+        "command": 1,
+        "pid": 77073,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      }
+    ],
+    "beforeIdentities": true,
+    "afterIdentities": true
+  }
+}

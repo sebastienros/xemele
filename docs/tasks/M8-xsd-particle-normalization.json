@@ -4,14 +4,15 @@
   "milestone": "M8",
   "title": "Correct substitution particle normalization and named-group UPA",
   "kind": "feature",
-  "status": "planned",
-  "owner": null,
-  "branch": null,
-  "base_revision": null,
-  "integration_revision": null,
+  "status": "verified",
+  "owner": "M8 coordinator / assigned isolated M8-xsd-particle-normalization worker",
+  "branch": "codex/m8-xsd-particle-normalization",
+  "base_revision": "6f5700a94d3fb2f1b0a86e5484a7a00884226ebf",
+  "integration_revision": "b2395ffa3f7cf17da2a9d39d35f1486b536cab6b",
   "depends_on": [
     "M8-xsd-type-relations",
-    "M8-xsd-attribute-fixed"
+    "M8-xsd-attribute-fixed",
+    "M8-xsd-facade"
   ],
   "goals": [
     "G14",
@@ -30,41 +31,188 @@
     "benchmarks/Xemele.Benchmarks/M8-xsd-particle-normalization/",
     "docs/api/M8-xsd-particle-normalization.txt",
     "samples/M8-xsd-particle-normalization/",
-    "docs/reports/M8-xsd-particle-normalization/"
+    "docs/reports/M8-xsd-particle-normalization/",
+    "src/Xemele/Validation/Xsd/XmlSchema.cs"
   ],
   "api_or_output": "Correct existing XSD1.0 component behavior without public or frozen API changes",
   "acceptance": [
     {
       "id": "M8-xsd-particle-normalization-A1",
       "description": "Accept unchanged original elemZ027_e/f by preserving implicit substitution-choice semantics without imposing incompatible head-first ordering. Preserve authored choice order and prove declaration-order permutations and authored-choice negative.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "batch-owned",
+        "batch-compatibility",
+        "integrated-particle-verification"
+      ]
     },
     {
       "id": "M8-xsd-particle-normalization-A2",
       "description": "Accept original particlesZ008 by consistently normalizing newly expanded singleton substitution choices before choosing particle relation cases; preserve occurrence bounds and already-expanded guards with non-unit and incompatible neighbors.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "batch-owned",
+        "batch-compatibility",
+        "integrated-particle-verification"
+      ]
     },
     {
       "id": "M8-xsd-particle-normalization-A3",
-      "description": "Accept unused ambiguous named group in original addB194 while retaining declaration/EDC/redefine checks. Distinguish compiler group checkpoints and enforce UPA when particles enter actual complex-type content; same group referenced by a complex type must reject. Preserve unused EDC/redefine negatives and frozen APIs.",
-      "status": "pending",
-      "evidence": []
+      "description": "Accept unused ambiguous named group in original addB194 while retaining declaration/EDC/redefine checks. Distinguish compiler group checkpoints and enforce UPA when particles enter actual complex-type content; same group referenced by a complex type must reject. Preserve unused EDC/redefine negatives and frozen APIs. For unchanged addB194 default-limit publication, add an invocation-local concrete internal CompileAll batch and replace only the facade content-program construction loop. Preserve both existing overloads all-type checks/requested identity; all schema types retain wildcard/EDC/derivation/facet checks, charged retained map/program entries, complete polling and immutable publication. No cross-operation cache or quota increase.",
+      "status": "passed",
+      "evidence": [
+        "batch-owned",
+        "batch-compatibility",
+        "integrated-particle-verification"
+      ]
     },
     {
       "id": "M8-xsd-particle-normalization-A4",
-      "description": "Pass actual original baselines/repaired outcomes, independently specified neighbors, relevant prior suites/APIs/consumers, work/cancellation/source-location boundaries and bounded actual allocation evidence; do not change wildcard cardinality or intensional-subset interpretation under this task.",
-      "status": "pending",
-      "evidence": []
+      "description": "Pass actual original baselines/repaired outcomes, independently specified neighbors, relevant prior suites/APIs/consumers, work/cancellation/source-location boundaries and bounded actual allocation evidence; do not change wildcard cardinality or intensional-subset interpretation under this task. Prove batch exact keys/program instances, old/new unused redefine and fixed-value negatives through existing overloads and public batch, independently derived exact/one-short work/component quotas and later-type cancellation/refusal. Record additive concrete internal member without changing frozen interfaces/baselines.",
+      "status": "passed",
+      "evidence": [
+        "batch-owned",
+        "batch-compatibility",
+        "allocation-source-review",
+        "allocation-preparation",
+        "actual-root-allocations",
+        "integrated-particle-verification"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Validation/Xsd/ContentModels/Compiler.cs: ContentCompilation.Build/Finish/Members",
+    "src/Xemele/Validation/Xsd/ContentModels/Derivation.cs: ContentCompilation.ExpandRule",
+    "tests/Xemele.Tests/M8-xsd-particle-normalization/: OriginalTests/NeighborTests/BoundaryTests",
+    "tests/fixtures/M8-xsd-particle-normalization/manifest.json: pinned unchanged originals/copyright/metadata",
+    "docs/reports/M8-xsd-particle-normalization/source-handoff.md: partial SOURCE scope and default-cap failure",
+    "src/Xemele/Validation/Xsd/ContentModels/Compiler.cs: XsdContentCompiler.CompileAll / ContentCompilation.CompileAll invocation-local batch",
+    "src/Xemele/Validation/Xsd/XmlSchema.cs: content-program construction loop only",
+    "tests/Xemele.Tests/M8-xsd-particle-normalization/BatchTests.cs: preserved old joins, exact keys/programs, typed negatives, independent quota/cancellation controls",
+    "benchmarks/Xemele.Benchmarks/M8-xsd-particle-normalization/: accepted24-route allocation probe; offline preparation built",
+    "docs/reports/M8-xsd-particle-normalization/allocation-design.md / allocation-source.json: explicit ownership, controls, bounds and source identities",
+    "docs/reports/M8-xsd-particle-normalization/prepare.py / measure.py / lifecycle-check.py: accepted supervisor reuse; offline build, disabled controls and frozen identity/lifecycle gates passed",
+    "docs/reports/M8-xsd-particle-normalization/preparation.json / preparation-summary.json: 465 frozen identities and disabled-control lifecycle outcomes",
+    "docs/reports/M8-xsd-particle-normalization/allocation-summary.json / allocation-analysis.md: root actual24-route counters, ownership and limitations"
+  ],
+  "evidence": [
+    {
+      "id": "original-baseline",
+      "kind": "check",
+      "revision": "382c2ac559d46242d0af287506a7e2b9856bc5a6",
+      "command": "dotnet --fx-version 10.0.11 tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -namespace Xemele.Tests.M8XsdParticleNormalization -parallelMode none -result-xml artifacts/M8-xsd-particle-normalization/baseline.xml",
+      "result": "failed",
+      "summary": "Unchanged original metadata targets: product all5 failures; BCL all4 schemas accepted, original SHA256/copyright/metadata check passed. Frozen runtime at claim; test source preserved in SOURCE35a04b06b.",
+      "artifact": "docs/reports/M8-xsd-particle-normalization/original-baseline.json"
+    },
+    {
+      "id": "partial-owned",
+      "kind": "check",
+      "revision": "35a04b06b187cc59341f6909a1b825d4accf4077",
+      "command": "dotnet --fx-version 10.0.11 tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -namespace Xemele.Tests.M8XsdParticleNormalization -parallelMode none -noLogo -noColor -result-xml artifacts/M8-xsd-particle-normalization/owned-2.xml",
+      "result": "failed",
+      "summary": "Identical SOURCE bytes: owned65 rows64passed1failed, zeroerrors/skips/notrun. Sole failure unchanged addB194 SCHEMA.Limit at default100000componentcap. Earlier58/64 run retained. A1/A2 behavior passes; acceptance remains pending SOURCE review and complete original/default-cap repair.",
+      "artifact": "docs/reports/M8-xsd-particle-normalization/correctness-summary.json"
+    },
+    {
+      "id": "affected-compatibility",
+      "kind": "check",
+      "revision": "35a04b06b187cc59341f6909a1b825d4accf4077",
+      "command": "python3 docs/reports/M8-xsd-particle-normalization/check.py",
+      "result": "passed",
+      "summary": "Identical SOURCE bytes: affected1622/datatype77/resolver42 pass, zeroerrors/failures/skips/notrun and unique IDs; public1430/emitted1980/all8 frozen lanes/additive46/internal baselines, facade and type-relations normal+trueXML-only consumers, planning196/diff passed. No actual allocation counters.",
+      "artifact": "docs/reports/M8-xsd-particle-normalization/correctness-summary.json"
+    },
+    {
+      "id": "batch-owned",
+      "kind": "check",
+      "revision": "15d975eba7c669e69d1934fa8df129a0814e6424",
+      "command": "dotnet --fx-version 10.0.11 tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -namespace Xemele.Tests.M8XsdParticleNormalization -parallelMode none -noLogo -noColor -result-xml artifacts/M8-xsd-particle-normalization/owned-final.xml",
+      "result": "passed",
+      "summary": "Identical SOURCE runtime/test bytes:87/87pass inclunchanged5original outcomes atdefaultcaps,2actualoriginalgroupUPA negatives,24permutations, old3/4argwholegraph identity/semanticchecks, batchkeys/programs/wildcard/EDC/fixedQName/redefine, independentlyderived11work9components/one-short, later-type nullcap cancellation/refusal andfinalpoll. No allocation counters.",
+      "artifact": "docs/reports/M8-xsd-particle-normalization/batch-summary.json"
+    },
+    {
+      "id": "batch-compatibility",
+      "kind": "check",
+      "revision": "15d975eba7c669e69d1934fa8df129a0814e6424",
+      "command": "python3 docs/reports/M8-xsd-particle-normalization/check.py --resume-api; owned final focused build/run",
+      "result": "passed",
+      "summary": "Affected1622/resolver42 passing runtime preserved from firstbatchcheck; resumedunfinishedAPI/consumers owned85/datatype77 pass, finalowned87 after2testadditions. Public1430/emitted1982/all8frozen/additive46/internalbaselines/facade+type-relations normal+XML-only/planning196/diff pass. Resume assembly guard addedlater onlysyntaxchecked; not claimed exercised.",
+      "artifact": "docs/reports/M8-xsd-particle-normalization/batch-summary.json"
+    },
+    {
+      "id": "runtime-source-review",
+      "kind": "review",
+      "revision": "15d975eba7c669e69d1934fa8df129a0814e6424",
+      "command": "Independent coordinator SOURCE review; no executions",
+      "result": "passed",
+      "summary": "Contractreviewer accepts bounded all-type batch and oldoverload/identity/EDC/redefine/facet/cancellation/quota/actualgroup controls. XPathacceptedpartial A1/A2/carrier source remainsunchanged. Review isnot allocation/integration evidence.",
+      "artifact": "docs/reports/M8-xsd-particle-normalization/runtime-source-review.json"
+    },
+    {
+      "id": "allocation-source-static",
+      "kind": "check",
+      "revision": "be7afddb6a0787e43cedd7768d7e2eadf677f5c0",
+      "command": "Python ast.parse of prepare.py/measure.py/lifecycle-check.py; byte comparison of supervisor definitions; git diff --exit-code 15d975eba -- src/Xemele tests/Xemele.Tests/M8-xsd-particle-normalization tests/fixtures/M8-xsd-particle-normalization; python3 tools/planning/tasks.py validate; git diff --check",
+      "result": "passed",
+      "summary": "Source-only proposal24routes/16warmups/64samples/40retained; Python syntax and copied supervisor equality passed; runtime/tests/fixtures unchanged; planning196/whitespace passed. C# uncompiled; no build/disabledcontrol/lifecycle/counterrun. Await independent allocationSOURCE review.",
+      "artifact": "docs/reports/M8-xsd-particle-normalization/allocation-source.json"
+    },
+    {
+      "id": "allocation-source-review",
+      "kind": "review",
+      "revision": "be7afddb6a0787e43cedd7768d7e2eadf677f5c0",
+      "command": "Independent coordinator allocation SOURCE review; no executions",
+      "result": "passed",
+      "summary": "Exact be7 SOURCE PASS from /root/review_m8_model, all14 reviewed source identities matched. Runtime/test/fixture sources remain identical to accepted15d. Review permits offline preparation and disabled controls; actual counters reserved to root.",
+      "artifact": "docs/reports/M8-xsd-particle-normalization/allocation-source-review.json"
+    },
+    {
+      "id": "preparation-lifecycle-first",
+      "kind": "check",
+      "revision": "d1a2a452dc1ae7bf561d04c030e6b9918548406f",
+      "command": "python3 docs/reports/M8-xsd-particle-normalization/lifecycle-check.py (sandboxed)",
+      "result": "failed",
+      "summary": "Timeout child74840 exited0 and was reaped/logclosed, but process inspection PermissionError prevented owned-group absence confirmation. Later permitted inspection found group absent; failure preserved and unchanged script rerun.",
+      "artifact": "docs/reports/M8-xsd-particle-normalization/preparation-summary.json"
+    },
+    {
+      "id": "allocation-preparation",
+      "kind": "check",
+      "revision": "d1a2a452dc1ae7bf561d04c030e6b9918548406f",
+      "command": "python3 docs/reports/M8-xsd-particle-normalization/lifecycle-check.py (process-inspection permitted); python3 docs/reports/M8-xsd-particle-normalization/prepare.py; python3 docs/reports/M8-xsd-particle-normalization/measure.py --verify-only; python3 docs/reports/M8-xsd-particle-normalization/measure.py --preflight",
+      "result": "passed",
+      "summary": "Offline SDK10.0.400 Release build0warnings0errors; .NET10.0.11 Arm64 workstationGC. Lifecycle74955 timedout/exited0 remained failure and prevented next child; normal74957 completed. Preparation75079/preflight75849 each passed24routes/1536disabledsamples/40retainedcontrols; all counters/timing disabled, child reaped/groupabsent/logclosed. Manifest38d3e41c885f9876d528c9b4a3de8908ef530819177306fbc569d4578704ab56 freezes465 identities; verify/preflight/final hash check passed. Zero owned jobs; no actual counters.",
+      "artifact": "docs/reports/M8-xsd-particle-normalization/preparation-summary.json"
+    },
+    {
+      "id": "actual-root-allocations",
+      "kind": "check",
+      "revision": "78c140bdec1fff43c4f19ec7111818f010525843",
+      "command": "Root: python3 docs/reports/M8-xsd-particle-normalization/measure.py --run 38d3e41c885f9876d528c9b4a3de8908ef530819177306fbc569d4578704ab56",
+      "result": "passed",
+      "summary": "Root session90344 terminal0; children77071/77073 completed0/reaped/groupsabsent/logsclosed. 465frozenidentities before/after; single120s bound110work/10cleanup. Cleanup durable cdd93503c748b98b3d44e88e7769802e00021635 before raw inspection; independently checked compact summary3ff6062b4833a0dc046c9821734d61715c837f8b. 24firstcalls/1536warm samples positive, aggregates equal sums; disabledcontrol zeros, consumed45455 match. Cold8830840B/positive1048B/40retained. Negative coarseGCdeltas preserved, no objectsize/negativecost/zero/timing claim. Worker copied compact evidence only; no counters/build/test reruns.",
+      "artifact": "docs/reports/M8-xsd-particle-normalization/allocation-summary.json"
+    },
+    {
+      "id": "integrated-particle-verification",
+      "kind": "integration",
+      "revision": "b2395ffa3f7cf17da2a9d39d35f1486b536cab6b",
+      "command": "Root check.py and datatype supplemental on candidate2a8b97d32; final candidate/main git diff --exit-code 2a8b97d32 -- src tests samples; python3 tools/planning/tasks.py validate; git diff --check; root actual measure.py --run 38d3e41c885f9876d528c9b4a3de8908ef530819177306fbc569d4578704ab56",
+      "result": "passed",
+      "summary": "1976 distinct cases passed with no failures/errors/skips;8 Release builds0warnings/errors, public1430/all8frozen/additive46/emittedAPI, normal/XML-only consumers. Finalc764b262 and integratedmain runtime/tests/samples byte-identical to tested2a8. Actual24routes1536positivewarm samples and controls passed;465identities before/after, children77071/77073 completed0/clean, cleanup cdd93503c beforeinspection. No redundant passing rerun.",
+      "artifact": "docs/orchestration/M8-xsd-particle-integration.json"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Ordered repair planned from unchanged original corpus witnesses and independent source/Second Edition review. Not claimed or implemented; no unverified peer dependency consumption.",
-    "checks": [],
+    "summary": "Integrated and verified particle normalization and bounded all-type batching; no public/frozen API change. Original default-limit outcomes and actual owned allocation evidence pass.",
+    "checks": [
+      "Prior87owned/1622affected/77datatype/42resolver/API/consumer passes and SOURCE reviews preserved; no test/build/counter rerun by worker.",
+      "Root24routes/24positive firstcalls/1536positivewarm samples, aggregate sums and disabled control match; cleanup cdd93503c748b98b3d44e88e7769802e00021635 precedes inspection, compact summary3ff6062b4833a0dc046c9821734d61715c837f8b copied bytewise.",
+      "Final static465identity/hash check, runtime/test/fixture gitdiff unchanged and compact arithmetic pass. All7 owned process groups absent, zero owned background jobs."
+    ],
     "remaining": [],
     "requests": []
   }
