@@ -67,3 +67,10 @@ unknown type/chain. Provisional final-proof publication and bounded polling stay
 in place. Both original partial variants now also cover known k:int affiliated h,
 unrelated complete validation, required MissingComponent, completed type/chain,
 and unchanged no-affiliation/range negatives. Static selection686/2191; UNRUN.
+
+Fifth exact runtime release: incomplete projection alternatives now participate
+in the actual Choice-to-Choice DP, including synthesized one-element choices and
+expanded derived choices. An omitted proof preserves the known prefix position;
+False AND/True OR still discard irrelevant links. Existing known-k variants and
+new expanded m/t choice controls retain completed neighbors, no-affiliation,
+range and blocked-head negatives. Static selection687 methods/2192 cases; UNRUN.

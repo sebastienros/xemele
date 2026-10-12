@@ -98,6 +98,23 @@ public sealed class ReviewControls
         Assert.True(XmlSchema.Compile(Wrap(head + body)).Validate("<r><h>7</h></r>").IsValid);
     }
     [Fact]
+    public void ExpandedDerivedChoiceKeepsSpecificOmittedMembershipProofs()
+    {
+        const string heads = "<xs:element name='h' type='xs:int'/><xs:element name='m' type='xs:int' substitutionGroup='absent'/><xs:element name='k' type='xs:int' substitutionGroup='h'/><xs:element name='t' type='xs:short' substitutionGroup='m'/>";
+        const string types = "<xs:complexType name='B'><xs:sequence><xs:element ref='h'/></xs:sequence></xs:complexType><xs:complexType name='D'><xs:complexContent><xs:restriction base='B'><xs:sequence><xs:element ref='m'/></xs:sequence></xs:restriction></xs:complexContent></xs:complexType><xs:element name='r' type='D'/><xs:element name='good' type='xs:int'/>";
+        var partial = XmlSchema.Compile(Wrap(heads + types));
+        var good = partial.Validate("<good>7</good>"); Assert.True(good.IsComplete); Assert.True(good.IsValid); Assert.Empty(good.Diagnostics);
+        var complete = XmlSchema.Compile(Wrap(heads + "<xs:element name='absent' type='xs:int' substitutionGroup='h'/>" + types));
+        foreach (string name in new[] { "m", "t" })
+        {
+            string instance = "<r><" + name + ">7</" + name + "></r>";
+            Missing(partial.Validate(instance)); Assert.True(complete.Validate(instance).IsValid);
+        }
+        Assert.Throws<SchemaCompileException>(() => XmlSchema.Compile(Wrap(heads.Replace(" substitutionGroup='absent'", "", StringComparison.Ordinal) + types)));
+        Assert.Throws<SchemaCompileException>(() => XmlSchema.Compile(Wrap(heads + types.Replace("<xs:element ref='m'/>", "<xs:element ref='m' minOccurs='2' maxOccurs='2'/>", StringComparison.Ordinal))));
+        Assert.Throws<SchemaCompileException>(() => XmlSchema.Compile(Wrap(heads.Replace("name='h' type='xs:int'", "name='h' type='xs:int' block='restriction'", StringComparison.Ordinal) + types)));
+    }
+    [Fact]
     public void UnorderedRestrictionRetainsIndeterminateMembershipAndKnownRangeFailures()
     {
         const string heads = "<xs:element name='h' type='xs:int'/><xs:element name='m' type='xs:int' substitutionGroup='absent'/><xs:element name='n' type='xs:int'/>";

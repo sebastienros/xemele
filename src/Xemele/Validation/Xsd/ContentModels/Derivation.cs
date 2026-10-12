@@ -406,10 +406,18 @@ internal sealed partial class ContentCompilation
         for (int j = 1; j <= bs.Count; j++) previous[j] = Combine(RuleKind.And, previous[j - 1], Constant(lax || Nullable(bs[j - 1])));
         foreach (var r in rs)
         {
-            next[0] = Constant(false);
+            Rule? omitted = lax && substitutionProjections.TryGetValue(bg, out var projection) && projection.Incomplete
+                ? OmittedMembership(r, projection.Head) : null;
+            // The omitted alternative occupies no known projection position.
+            // Retain the previous prefix so known alternatives keep their
+            // original order; a false prefix still discards this proof.
+            next[0] = omitted is null ? Constant(false) : Combine(RuleKind.And, previous[0], omitted);
             for (int j = 1; j <= bs.Count; j++)
+            {
                 next[j] = Combine(RuleKind.Or, Combine(RuleKind.And, previous[j - 1], Relation(r, bs[j - 1], anyType)),
                     Combine(RuleKind.And, next[j - 1], Constant(lax || Nullable(bs[j - 1]))));
+                if (omitted is not null) next[j] = Combine(RuleKind.Or, next[j], Combine(RuleKind.And, previous[j], omitted));
+            }
             (previous, next) = (next, previous);
         }
         return previous[bs.Count];
