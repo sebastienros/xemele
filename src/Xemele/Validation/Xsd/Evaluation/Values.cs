@@ -191,11 +191,15 @@ internal sealed partial class XsdValidationRun
     {
         if (schema.Datatypes.FindType(actual) is not null && schema.Datatypes.FindType(declared) is not null)
             return SimpleDerived(actual, declared, elementBlock.Contains(XsdElementBlock.Restriction) || typeBlock.Contains(XsdTypeBlock.Restriction));
-        if (schema.Datatypes.FindType(actual) is not null && declared == new SchemaName(Xs, "anyType") && elementBlock.Contains(XsdElementBlock.Restriction)) return false;
         var visited = new HashSet<SchemaName>(); Retain();
         while (actual != declared)
         {
-            Work(); Retain(); if (!visited.Add(actual) || !types.TryGetValue(actual, out var type) || type.BaseType is not { } parent) return false;
+            Work();
+            // A complex extension can reach a list/union simple base after
+            // entry. Its remaining relation to anyType still uses restriction.
+            if (declared == new SchemaName(Xs, "anyType") && schema.Datatypes.FindType(actual) is not null &&
+                (elementBlock.Contains(XsdElementBlock.Restriction) || typeBlock.Contains(XsdTypeBlock.Restriction))) return false;
+            Retain(); if (!visited.Add(actual) || !types.TryGetValue(actual, out var type) || type.BaseType is not { } parent) return false;
             var derivation = type.Derivation;
             if (derivation == XsdDerivation.Extension && (elementBlock.Contains(XsdElementBlock.Extension) || typeBlock.Contains(XsdTypeBlock.Extension)) ||
                 derivation == XsdDerivation.Restriction && (elementBlock.Contains(XsdElementBlock.Restriction) || typeBlock.Contains(XsdTypeBlock.Restriction))) return false;
