@@ -17,9 +17,9 @@ def assert_tests(path,count=None):
  assert len(list(r.iter('test')))==count and all(t.attrib['result']=='Pass' for t in r.iter('test'))
  assert all('WarmBorrowed' not in t.attrib['name'] for t in r.iter('test'))
 args=[D,'--fx-version','10.0.11','tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll']
-for ns in ['Xemele.Tests.M8XsdValidate','Xemele.Tests.M8XsdContent','Xemele.Tests.M8XsdCompile','Xemele.Tests.M8XsdIdentity','Xemele.Tests.M8Facets','Xemele.Tests.M8Model','Xemele.Tests.M8SourceLocations','Xemele.Tests.M8XsdWildcardComposition','Xemele.Tests.M8XsdEffectiveContent']:args+=['-namespace',ns]
-args+=['-parallelMode','none','-noLogo','-noColor','-result-xml',str(out/'correctness.xml')]
-subprocess.run(args,check=True);assert_tests(out/'correctness.xml')
+for ns in ['Xemele.Tests.M8XsdValidate','Xemele.Tests.M8ConstraintLexical','Xemele.Tests.M8XsdContent','Xemele.Tests.M8XsdCompile','Xemele.Tests.M8XsdIdentity','Xemele.Tests.M8Facets','Xemele.Tests.M8Model','Xemele.Tests.M8SourceLocations','Xemele.Tests.M8XsdWildcardComposition','Xemele.Tests.M8XsdEffectiveContent']:args+=['-namespace',ns]
+args+=['-method-','*WarmBorrowed*','-parallelMode','none','-noLogo','-noColor','-result-xml',str(out/'correctness.xml')]
+subprocess.run(args,check=True);assert_tests(out/'correctness.xml',937)
 resolver=next(r['args'] for r in json.loads(Path('docs/reports/M8-resource-kind/test-commands.json').read_text()) if r['label']=='resolver')
 resolver=resolver[:resolver.index('-result-xml')]+['-result-xml',str(out/'resolver.xml')]
 assert not any('WarmBorrowed' in item for item in resolver)

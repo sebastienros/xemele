@@ -231,9 +231,16 @@ internal sealed partial class XsdValidationRun : ISchemaOperation
             {
                 if (frame.HasChild) frame.Valid = Error("XSD.Content", "Simple content cannot have element children.");
                 var context = frame.Context;
+                bool assessValue = true;
                 string? effective = frame.Declaration?.FixedValue ?? frame.Declaration?.DefaultValue;
-                if (!frame.HasCharacters && !frame.HasChild && effective is not null) { lexical = effective; context = frame.Declaration!.Context; }
-                if (!Value(simple.Value, lexical, context, out value)) frame.Valid = false;
+                if (!frame.HasCharacters && !frame.HasChild && effective is not null)
+                {
+                    var declaredSimple = types[frame.Declaration!.Type].SimpleType ?? new SchemaName(Xs, "anySimpleType");
+                    if (Constraint(declaredSimple, effective, frame.Declaration.Context, out var prepared))
+                    { lexical = prepared!.Lexical; context = prepared.Context; }
+                    else { frame.Valid = false; assessValue = false; }
+                }
+                if (assessValue && !Value(simple.Value, lexical, context, out value)) frame.Valid = false;
                 if (value is not null && frame.Declaration?.FixedValue is string fixedLexical && !Fixed(types[frame.Declaration.Type].SimpleType ?? new(Xs, "anySimpleType"), value, fixedLexical, frame.Declaration.Context)) frame.Valid = false;
             }
             else if ((frame.Declaration?.FixedValue ?? frame.Declaration?.DefaultValue) is string constraint)

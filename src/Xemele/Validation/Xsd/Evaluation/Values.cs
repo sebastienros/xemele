@@ -104,10 +104,17 @@ internal sealed partial class XsdValidationRun
     }
     private bool Fixed(SchemaName type, XmlDatatypeValue value, string lexical, SchemaNamespaceContext context)
     {
-        if (!Value(type, lexical, context, out var fixedValue, false)) return false;
+        if (!Constraint(type, lexical, context, out var prepared)) return false;
         var library = schema.Datatypes.Find(Xs) ?? throw new ArgumentException("Executable XSD datatype library is missing.");
-        bool equal = library.ValueEquals(value, fixedValue!, this); Poll();
+        bool equal = library.ValueEquals(value, prepared!.DeclaredValue, this); Poll();
         return equal || Error("XSD.Fixed", "Value differs from its typed fixed constraint.");
+    }
+    private bool Constraint(SchemaName declaredType, string lexical, SchemaNamespaceContext context, out DatatypeConstraintRepresentation? prepared)
+    {
+        Work(); var definition = schema.Datatypes.FindType(declaredType)
+            ?? throw new ArgumentException("Declared constraint type is missing from the sealed executable registry.");
+        bool valid = DatatypeConstraintRepresentation.TryCreate(definition, lexical, context, schema.Datatypes, facets, this, out prepared, out var error); Poll();
+        return valid || Error(error?.Code ?? "XSD.Datatype", error?.Message ?? "Constraint does not satisfy its declaration type.");
     }
     private bool ContextValue(XmlDatatypeValue value, string lexical, SchemaNamespaceContext context)
     {
