@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "id": "M8-sch-rule-scope",
+  "milestone": "M8",
+  "title": "Restrict Schematron abstract rule extension to its pattern",
+  "kind": "feature",
+  "status": "in_progress",
+  "owner": "M8 coordinator bounded shared repair",
+  "branch": "codex/m8-sch-rule-scope",
+  "base_revision": "1bd3ca8345f35c3c0e51f9f3010151bf977c3cc4",
+  "integration_revision": null,
+  "depends_on": [
+    "M8-sch-compile"
+  ],
+  "goals": [
+    "G15"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/schemas.md"
+  ],
+  "owns": [
+    "src/Xemele/Validation/Schematron/Compilation/SchematronCompiler.cs",
+    "tests/Xemele.Tests/M8-sch-rule-scope/",
+    "benchmarks/Xemele.Benchmarks/M8-sch-rule-scope/",
+    "docs/reports/M8-sch-rule-scope/"
+  ],
+  "api_or_output": "Unchanged public/frozen API; same-pattern abstract-rule reference checking before schema publication",
+  "acceptance": [
+    {
+      "id": "M8-sch-rule-scope-A1",
+      "description": "Reject rule extensions to abstract rules outside the containing pattern, including inactive and uninstantiated authored patterns, with SCH.SchemaRestriction at the extends source. Preserve valid same-pattern chains, abstract-pattern instantiation and external include/body provenance.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M8-sch-rule-scope-A2",
+      "description": "Reproduce upstream rule-abstract-02 and independent scope witnesses; pass corrected positive/negative/source-location and exact work/cancellation cases plus affected compiler/evaluator/report/API/consumer checks.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M8-sch-rule-scope-A3",
+      "description": "Record bounded independent review, actual integrated checks and relevant allocation evidence without changing frozen interfaces or earlier evidence. Unblock corpus only after verified repair.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "Claimed narrow owning repair after pinned upstream rule-abstract-02 and independent ISO2016 section5.4.12 review confirmed cross-pattern compiler acceptance defect.",
+    "checks": [],
+    "remaining": [
+      "Implement, verify and integrate repair before corpus final verification."
+    ],
+    "requests": []
+  }
+}
