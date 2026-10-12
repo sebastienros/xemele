@@ -120,7 +120,13 @@ internal sealed partial class XsdValidationRun : ISchemaOperation
                         {
                             Work(child.Value.Length);
                             if (frame.Text is null) frame.Text = child.Value;
-                            else { if (frame.Joined is null) { Retain(); frame.Joined = new(frame.Text); } frame.Joined.Append(child.Value); }
+                            else
+                            {
+                                int length = frame.Joined?.Length ?? frame.Text.Length;
+                                if (child.Value.Length > Array.MaxLength - length) Limit("Simple content buffer capacity exceeded.");
+                                if (frame.Joined is null) { Retain(); frame.Joined = new(frame.Text); }
+                                frame.Joined.Append(child.Value);
+                            }
                         }
                     }
                     continue;
@@ -167,7 +173,7 @@ internal sealed partial class XsdValidationRun : ISchemaOperation
             {
                 if (declaration.Abstract) valid = Error("XSD.Abstract", "An abstract element cannot be instantiated.");
                 if (!types.TryGetValue(declaration.Type, out type)) throw new ArgumentException("Declared type is missing from the sealed schema.");
-                string? xsiType = node.GetAttribute("type", Xsi);
+                string? xsiType = Attribute(node, "type", Xsi);
                 if (xsiType is not null)
                 {
                     Text(xsiType, true);
@@ -177,7 +183,7 @@ internal sealed partial class XsdValidationRun : ISchemaOperation
                     else type = replacement;
                 }
                 if (type.Abstract) valid = Error("XSD.Abstract", "An abstract type cannot be instantiated.");
-                if (node.GetAttribute("nil", Xsi) is string lexical)
+                if (Attribute(node, "nil", Xsi) is string lexical)
                 {
                     Text(lexical, true); var collapsed = TrimXml(lexical);
                     if (collapsed.SequenceEqual("true") || collapsed.SequenceEqual("1")) nil = true;
@@ -204,7 +210,7 @@ internal sealed partial class XsdValidationRun : ISchemaOperation
         if (Limits.AttributesPerElement is int cap && (long)count + node.NamespaceDeclarations.Count > cap) Limit("Attribute count limit exceeded.");
         foreach (var ns in node.NamespaceDeclarations) { Work(); Text(ns.Prefix, true); Text(ns.Value, true); Retain(); prefixes[ns.Prefix] = ns.Value; }
         Uri? baseUri = parent.BaseUri;
-        if (node.GetAttribute("base", "http://www.w3.org/XML/1998/namespace") is string lexical)
+        if (Attribute(node, "base", "http://www.w3.org/XML/1998/namespace") is string lexical)
         {
             Work(lexical.Length + 1L);
             if (Uri.TryCreate(lexical, UriKind.Absolute, out var absolute) || baseUri is not null && Uri.TryCreate(baseUri, lexical, out absolute)) baseUri = absolute;
@@ -236,6 +242,8 @@ internal sealed partial class XsdValidationRun : ISchemaOperation
         }
         identity?.LeaveElement(frame.Node, new(frame.Valid, ActualType(value, typeName), value), this); Poll();
     }
+    private string? Attribute(XmlNode node, string local, string uri)
+    { foreach (var attribute in node.Attributes) { Work(); if (attribute.LocalName == local && attribute.NamespaceUri == uri) return attribute.Value; } return null; }
     private bool White(ReadOnlySpan<char> text)
     { foreach (char c in text) { Work(); if (c is not (' ' or '\t' or '\r' or '\n')) return false; } return true; }
     private static ReadOnlySpan<char> TrimXml(ReadOnlySpan<char> text)
