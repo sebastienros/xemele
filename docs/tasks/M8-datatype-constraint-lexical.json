@@ -4,7 +4,7 @@
   "milestone": "M8",
   "title": "Prepare canonical XSD datatype value-constraint lexical forms",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M8 coordinator01a12c6c-b333-71d3-877f-0d186618e21d / assigned isolated worker",
   "branch": "codex/m8-datatype-constraint-lexical",
   "base_revision": "9e5f4148f655c79faf1ea2fb665577b272c9e0c2",
@@ -58,8 +58,13 @@
     {
       "id": "M8-datatype-constraint-lexical-A4",
       "description": "Keep helper scans/copies/formatting bounded under one supplied operation, explicit owned-result lifetimes and borrowed transient spans; add relevant controlled allocation evidence, independent source review and actual integrated correctness/API/normal/XML-only checks before consumers add dependency. No unmerged core implementation dependency, public/frozen interface changes, exclusions or rewritten historical evidence.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "candidate-correctness",
+        "independent-source-review",
+        "coordinator-combined-correctness",
+        "owned-result-allocation"
+      ]
     }
   ],
   "implementation": [
@@ -94,18 +99,29 @@
       "result": "passed",
       "summary": "Root actually executed isolated combined candidate:731=86own+645affected allpassed,0errors/failures/skips/notrun,0buildwarnings/errors, public1410/frozen316each, normal+trueXMLonlyconsumers,182planning/diffcheck. Record65458699 read byworker; sourceaccepted a58 unchanged. No counters.",
       "artifact": "docs/reports/M8-datatype-constraint-lexical/integration.md"
+    },
+    {
+      "id": "owned-result-allocation",
+      "kind": "check",
+      "revision": "e009c3643258342804d42ddb3c432a0d57c6b209",
+      "command": "python3 docs/reports/M8-datatype-constraint-lexical/measure.py --granted 85b8b3d23e21d0d40e1f146275d333e5de94d63b95f1cd4ee7ac98820c44aa1e 2026-10-12T04:14:58.631096Z 2026-10-12T04:15:58.631096Z",
+      "result": "passed",
+      "summary": "Root sole launch under durable grant780bd70f; host RELEASEb22333d8 before raw inspection. Two prebuilt children32885/32887 exit0/reaped/groupsabsent/logsclosed;447identities unchanged. Actual Arm64.NET10.0.11 workstationGC:9 ownedwarmroutes each16warmups+one64callaggregate; exactmeans216/208/4312/216/3008/25952/288/632/368B; cold100056B/1,positive1048B,retainedwholeheap282416\u2192429680B for16results. No zero, distribution, timing, speed, x64 orasync claim. Worker independently validated hashes/control/denominators/lifecycle afterrelease.",
+      "artifact": "docs/reports/M8-datatype-constraint-lexical/allocations.md"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "A1\u2013A3 implemented/tested; two independent source reviewers accept; root combined correctness/API/consumers pass. Owned-result allocation prepared/preflighted (447 frozen identities) awaiting fresh bounded grant. Task/A4 in_progress.",
+    "summary": "All A1\u2013A4 implemented: internally validated declared lexical/value/context pair and canonical actual-assessment forms, bounded/cancellable provider formatting; independent source acceptance, worker and root actual731 checks/API/consumers, controlled owned allocations completed once. Public/frozen contracts unchanged. Final clean evidence handoff; relinquish all own writes after commit.",
     "checks": [
-      "731 correctness tests (86 own) actual10.0.11; publicAPI1410; frozenDatatype/Facet316 each; both consumers;182planning/diffcheck passed.",
-      "Allocation/BDN/timing checks not run; no fresh grant."
+      "Worker/root combined each731passing (86own/645affected),0failures/errors/skips/notrun,0buildwarnings/errors; public1410/frozen316each; normal+trueXMLonly;182planning/diffcheck.",
+      "Two independent source reviewers accepted a58 runtime unchanged; all five hashes matched.",
+      "Root bounded allocation-only grant780bd70f completed two children32885/32887 clean,447identities; durable RELEASEb22333d8 before raw inspection. Nine exact64call owned aggregates plus separate cold/positive/retained summaries. No runtime/test/counter rerun.",
+      "Root independently accepted exact allocation/control/positive/retained results at aff6a0a3; candidateb91b9d99 bench/report/prep inputs proven unchanged vs actuale66 correctness checks."
     ],
     "remaining": [
-      "Fresh bounded allocation-only grant, lifecycle/durable RELEASE before raw inspection and controlled allocation evidence.",
-      "Coordinator final integration metadata/task verification before consumer dependency."
+      "Coordinator final integration revision/verified metadata before core consumers add dependency.",
+      "Coordinator retains/inspects ignored raw allocation/control/lifecycle artifacts and owns cleanup. Single-Arm64 allocation observations; cross-architecture release checks remain release responsibility."
     ],
     "requests": []
   }
