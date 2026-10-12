@@ -1,0 +1,89 @@
+{
+  "id": "M8-rng-identity-serial-1",
+  "status": "PARK_REQUESTED",
+  "earliestStartUtc": "2026-10-12T02:56:00Z",
+  "latestStartUtc": "2026-10-12T03:06:00Z",
+  "hardStopUtc": "2026-10-12T03:08:00Z",
+  "maximumSeconds": 100,
+  "coordinatorCleanupSeconds": 10,
+  "sequence": [
+    {
+      "task": "M8-rng-validate",
+      "cwd": "/Users/sebastienros/.codex/worktrees/3538/xemele",
+      "sourceRevision": "ec0699e10605c1d89eecfdbe192a7150b81fe1be",
+      "preparedRevision": "7fbf029260ccae5235b83f0b7080b099f18ed7b3",
+      "manifestPath": "artifacts/M8-rng-validate/preparation/preparation.json",
+      "manifestSha256": "5b7d24badda22d79471f6f12ee62684e4e9fb1a159944d36e9186f5c31c1ce9a",
+      "supervisorPath": "docs/reports/M8-rng-validate/measure.py",
+      "supervisorSha256": "bdb51e0d4183cf06eb71f8df1607869021571f52de992146ee492fe3aed724fd",
+      "identityCount": 434,
+      "maximumSeconds": 45,
+      "cleanupSeconds": 10,
+      "commands": [
+        [
+          "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+          "--fx-version",
+          "10.0.11",
+          "/Users/sebastienros/.codex/worktrees/3538/xemele/benchmarks/Xemele.Benchmarks/M8-rng-validate/bin/Release/net10.0/Xemele.Benchmarks.dll",
+          "--measure",
+          "/Users/sebastienros/.codex/worktrees/3538/xemele/artifacts/M8-rng-validate/measurement-1/allocations.json"
+        ]
+      ],
+      "lifecyclePath": "artifacts/M8-rng-validate/measurement-1/lifecycle.json"
+    },
+    {
+      "task": "M8-xsd-identity",
+      "cwd": "/Users/sebastienros/.codex/worktrees/26b6/xemele",
+      "sourceRevision": "36b7f1379988da6b9c1e5915b513ccc33b48a3a4",
+      "preparedRevision": "975d34a72494dc0bdb7b9b939c1b11f243b562cd",
+      "manifestPath": "docs/reports/M8-xsd-identity/preparation.json",
+      "manifestSha256": "76c69a37314346fb53d98041e0e33113067d9069416d4d8d91afeca1d7b698d3",
+      "supervisorPath": "docs/reports/M8-xsd-identity/measure.py",
+      "supervisorSha256": "2daa0e7fa85db46cbc125e0df20421a092f30f0c6d03f14d8f68b5f8678bd821",
+      "identityCount": 199,
+      "maximumSeconds": 30,
+      "cleanupSeconds": 10,
+      "commands": [
+        [
+          "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+          "--fx-version",
+          "10.0.11",
+          "/Users/sebastienros/.codex/worktrees/26b6/xemele/benchmarks/Xemele.Benchmarks/M8-xsd-identity/bin/probe/net10.0/Xemele.Benchmarks.dll",
+          "--measure",
+          "/Users/sebastienros/.codex/worktrees/26b6/xemele/artifacts/M8-xsd-identity/measurement-1/allocations.json"
+        ]
+      ],
+      "lifecyclePath": "artifacts/M8-xsd-identity/measurement-1/lifecycle.json"
+    }
+  ],
+  "coordinatorPath": "/private/tmp/M8-rng-identity-serial.py",
+  "coordinatorSha256": "fbb4399f5955db66abf2c03b21f4b0d6ab351de610964291a5764a036fc12839",
+  "requiredActorIds": [
+    "01a12c6c-b333-71d3-877f-0d186618e21d",
+    "01a12849-d2be-7292-8cd9-27c1c14b5a3d",
+    "01a12d64-81ae-79e3-8ba2-b88110af6fdb",
+    "01a12de0-fb87-7b93-9937-b32be47a82b1",
+    "01a12de1-4dd2-7361-b83f-c7d7b1b0a945",
+    "01a12e03-4ee6-78e2-a6ec-02164a9b3b3b",
+    "01a12c93-ccf1-70f2-907e-73c12eccedcf",
+    "01a12d32-4b4c-7632-8cae-ac5f5780cc3e",
+    "01a12ddb-242d-78d1-9fdf-ad0efe3fe5a3"
+  ],
+  "acks": {
+    "01a12c6c-b333-71d3-877f-0d186618e21d": "Fresh ACK: root integration sessions46801/57636 completed0/reaped; zeroactivejobs, reviewscomplete/idle; heavywork/newdispatchPARK until durable release."
+  },
+  "pendingAcks": [
+    "01a12849-d2be-7292-8cd9-27c1c14b5a3d",
+    "01a12d64-81ae-79e3-8ba2-b88110af6fdb",
+    "01a12de0-fb87-7b93-9937-b32be47a82b1",
+    "01a12de1-4dd2-7361-b83f-c7d7b1b0a945",
+    "01a12e03-4ee6-78e2-a6ec-02164a9b3b3b",
+    "01a12c93-ccf1-70f2-907e-73c12eccedcf",
+    "01a12d32-4b4c-7632-8cae-ac5f5780cc3e",
+    "01a12ddb-242d-78d1-9fdf-ad0efe3fe5a3"
+  ],
+  "reviewers": "All three existing read-only reviewers completed, zero jobs; no further source work assigned until release.",
+  "preflight": "Root independently verified434+199 identities and ps permission; both actual sleeping-child cleanup preflights passed;9+10disabled route controls passed. Actual combined identity737 and RNG1280 checks/APIs/consumers at8ba5a6ca/b4930ea7 passed. Coordinator cleanup predicate controls passed without launching counters.",
+  "scope": "Root executes exact two prebuilt allocation-only supervisors serially RNG45total35work10cleanup then identity30total20work10cleanup;100overall includes phase cleanups/launch gaps and10coordinator cleanup. Stop first failure, preserve completed phases; no retry/build/test/restore/discovery/BDN/newactor or rawinspection before immediate durable cleanup RELEASE.",
+  "rawInspected": false
+}
