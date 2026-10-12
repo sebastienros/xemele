@@ -35,29 +35,67 @@
     {
       "id": "M8-xsd-optional-composition-A1",
       "description": "Using only verified resource outcomes, tolerate explicit Unavailable for include/import/empty or annotation-only redefine under Second Edition4.2. Substantive redefine still requires resolution; normal required component references and resolved malformed/wrong-namespace schema checks still fail. Preserve cycles, schema kinds, source identity and all legacy denials.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "original-baseline",
+        "runtime-correctness"
+      ]
     },
     {
       "id": "M8-xsd-optional-composition-A2",
       "description": "Execute unchanged original anyURI_a002_1337, anyURI_a004_1339, schD7 and schG8 schemas/instances with an exact explicit missing-resource resolver. Preserve original prior refusals and all expectations, including a004 instance INVALID; separately prove the source-derived VALID a004 outcome using W3C4126. No fabricated empty schema or network access.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "original-baseline",
+        "runtime-correctness"
+      ]
     },
     {
       "id": "M8-xsd-optional-composition-A3",
       "description": "Prove missing then available dependencies, mandatory redefine and reference failures, legacy/null/explicit denial, caller/parser exceptions, aggregate quotas/work/cancellation/disposal and original-byte provenance. Pass relevant prior suites, additive public and frozen APIs, normal/true XML-only consumers, planning and actual bounded allocation evidence. No other compiler contract or oracle change.",
       "status": "pending",
-      "evidence": []
+      "evidence": [
+        "runtime-correctness"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Validation/Xsd/Compilation/Compiler.cs: XsdCompilation.Load uses verified optional seam; charged redefine classification retains mandatory replacement loads.",
+    "tests/Xemele.Tests/M8-xsd-optional-composition/: 68 original/neighbor/boundary observations; exact original resolver and distinct W3C4126 derived control."
+  ],
+  "evidence": [
+    {
+      "id": "original-baseline",
+      "kind": "check",
+      "revision": "6df0921b2fd40f6d7236441e03e3d20549506dd6",
+      "command": "python3 docs/reports/M8-xsd-optional-composition/baseline.py",
+      "result": "passed",
+      "summary": "Baseline compiler hash6d7f6a67 at claim6df0921: five observation rows. All four original schemas refuse SCHEMA.ResourceDenied; instances unassessed. Original expectations never credited as validity passes.",
+      "artifact": "docs/reports/M8-xsd-optional-composition/original-baseline.json"
+    },
+    {
+      "id": "runtime-correctness",
+      "kind": "check",
+      "revision": "5160cfadb64de8555d58e392df5c949fd465a4a6",
+      "command": "python3 docs/reports/M8-xsd-optional-composition/check.py",
+      "result": "passed",
+      "summary": "1777 affected (68 own+87 particle)+42 resolver+77 datatype = 1896 disjoint rows; public1430, eight frozen lanes/additive46/emitted compiler/evaluator/model API, normal/trueXMLonly facade/relations consumers, planning196 and diff passed. No source changed during check; source hashes pin implementation5160cfad.",
+      "artifact": "docs/reports/M8-xsd-optional-composition/correctness-summary.json"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Claimed after verified resource outcomes and particle integration; refreshed SOURCE scope PASS at2a8b97d32. Isolated setup before ACTIVATE; exact optional resource semantics only.",
-    "checks": [],
-    "remaining": [],
+    "summary": "Immutable runtime SOURCE handoff. Optional composition implemented with no shared/API/oracle change; all original bytes/metadata retained, a004 original INVALID vs observedVALID disagreement remains separate from W3C4126 derivedVALID.",
+    "checks": [
+      "Original baseline5 observation rows passed; four schema refusals and unavailable instances retained.",
+      "First build CS0649 test helper failure and first focused66/67 depth-fixture failure preserved; corrected controls only.",
+      "1777affected+42resolver+77datatype disjoint rows passed; public1430/eightfrozenlanes/additive46/emittedAPIs/normal+trueXMLonly consumers/planning196/diff passed."
+    ],
+    "remaining": [
+      "Root independent runtime SOURCE review required before allocation proposal/source/build/control/preparation.",
+      "A3 actual bounded allocation evidence remains; no allocation source, builds, controls, probes or counters prepared/run.",
+      "Root integration and integrated verification after all criteria."
+    ],
     "requests": []
   }
 }
