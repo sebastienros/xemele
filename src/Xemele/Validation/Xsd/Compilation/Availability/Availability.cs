@@ -69,6 +69,7 @@ internal sealed class ComponentAvailability
     // its availability envelope. Charge every reference inspection.
     internal static void RequireComplete(XsdCompiledSchema schema, ISchemaOperation op)
     {
+        if (!op.Charge(0, default)) throw SchemaSnapshots.Failure(op);
         foreach (var element in schema.Elements)
         {
             if (!op.Charge(1, element.Location)) throw SchemaSnapshots.Failure(op);
@@ -79,11 +80,16 @@ internal sealed class ComponentAvailability
             if (!found || element.SubstitutionGroup is { } head && !schema.GlobalElements.ContainsKey(head))
                 throw new ArgumentException("Complete declaration graph required.", nameof(schema));
         }
-        foreach (var definition in schema.SimpleTypes)
+        // The compiler already charged the proof against this exact frozen list
+        // and its immutable registry. Copies that replace either use the walk.
+        if (schema.Datatypes is not XsdDefinitionRegistry registry || !registry.Certifies(schema.SimpleTypes))
         {
-            if (!op.Charge(1, definition.Location)) throw SchemaSnapshots.Failure(op);
-            if (definition.ItemType is { } item && schema.Datatypes.FindType(item) is null)
-                throw new ArgumentException("Complete datatype graph required.", nameof(schema));
+            foreach (var definition in schema.SimpleTypes)
+            {
+                if (!op.Charge(1, definition.Location)) throw SchemaSnapshots.Failure(op);
+                if (definition.ItemType is { } item && schema.Datatypes.FindType(item) is null)
+                    throw new ArgumentException("Complete datatype graph required.", nameof(schema));
+            }
         }
         if (!op.Charge(0, default)) throw SchemaSnapshots.Failure(op);
     }

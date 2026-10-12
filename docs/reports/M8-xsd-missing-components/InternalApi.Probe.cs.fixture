@@ -68,7 +68,11 @@ try
     static bool NewType(INamedTypeSymbol type) => type.Name is "ReferenceKind" or "SymbolSpace" or "AvailabilityState" or "OwnerKind" or "DependencyUse" or "ComponentIdentity" or "DependencyEdge" or "AvailabilityEntry" or "ComponentAvailability" or "AvailabilityBuilder" or "CompilationEnvelope";
     static bool AddedJoin(ISymbol symbol) => symbol is IMethodSymbol method &&
         (method.Name is "CompileAvailable" or "ValidateAvailableDefinition" or "CheckAvailableConstraint" ||
-         method.Parameters.Any(p => p.Type.Name is "AvailabilityBuilder" or "ComponentAvailability" or "CompilationEnvelope"));
+         method.Parameters.Any(p => p.Type.Name is "AvailabilityBuilder" or "ComponentAvailability" or "CompilationEnvelope") ||
+         method.ContainingType.Name == "XsdDefinitionRegistry" &&
+             (method.Name is "Create" or "Certify" or "Certifies" ||
+              method.MethodKind == MethodKind.Constructor && method.Parameters.Length == 2 &&
+              method.Parameters[0].Type.Name == "IReadOnlyDictionary"));
     void Type(INamedTypeSymbol type)
     {
         if (!Visible(type) || type.IsImplicitlyDeclared || type.ContainingNamespace.ToDisplayString() != "Xemele.Validation") return;

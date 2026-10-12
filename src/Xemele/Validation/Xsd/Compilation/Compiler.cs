@@ -104,8 +104,15 @@ internal sealed class XsdCompilation
         foreach (var s in allSources) s.Scope.CheckUnchanged();
         Tick(default, 0);
         var definitions = new ReadOnlyCollection<XmlDatatypeDefinition>(new List<XmlDatatypeDefinition>(simple.Values));
-        return new(elements, attributes, new List<XsdTypeDefinition>(types.Values), definitions, identities, notations,
-            globalElements, globalAttributes, new XsdDefinitionRegistry(definitions));
+        var registry = XsdDefinitionRegistry.Create(definitions, op);
+        var compiled = new XsdCompiledSchema(elements, attributes, new List<XsdTypeDefinition>(types.Values), definitions, identities, notations,
+            globalElements, globalAttributes, registry);
+        var certified = registry.Certify(compiled, op);
+        if (ReferenceEquals(certified, registry)) return compiled;
+        Components(default); // New record copy retaining the certified registry.
+        var published = compiled with { Datatypes = certified };
+        Tick(default, 0);
+        return published;
     }
 
     private Source Load(SchemaDocumentScope scope, string? effective, SchemaResourcePurpose? purpose)
@@ -1376,8 +1383,57 @@ internal sealed class XsdCompilation
 internal sealed class XsdDefinitionRegistry : IXmlDatatypeRegistry
 {
     private readonly IReadOnlyDictionary<SchemaName, XmlDatatypeDefinition> definitions;
+    // Only the checked publication path binds a certificate to the graph's
+    // post-snapshot list. The underlying dictionary owns immutable definitions;
+    // neither this proof nor its collection can change after publication.
+    private readonly IReadOnlyList<XmlDatatypeDefinition>? certifiedSimpleTypes;
     internal XsdDefinitionRegistry(IReadOnlyList<XmlDatatypeDefinition> types)
     { var owned = new Dictionary<SchemaName, XmlDatatypeDefinition>(); foreach (var type in types) owned.Add(type.Name, type); definitions = new ReadOnlyDictionary<SchemaName, XmlDatatypeDefinition>(owned); }
+    internal static XsdDefinitionRegistry Create(IReadOnlyList<XmlDatatypeDefinition> types, ISchemaOperation operation)
+    {
+        if (!operation.Charge(0, default)) throw SchemaSnapshots.Failure(operation);
+        // Dictionary, immutable wrapper and registry; every entry is separately
+        // charged before dictionary growth. The legacy constructor is unchanged.
+        if (!operation.ChargeComponents(3, default)) throw SchemaSnapshots.Failure(operation);
+        var owned = new Dictionary<SchemaName, XmlDatatypeDefinition>();
+        foreach (var type in types)
+        {
+            if (!operation.Charge(1, type.Location) || !operation.ChargeComponents(1, type.Location))
+                throw SchemaSnapshots.Failure(operation);
+            owned.Add(type.Name, type);
+        }
+        var registry = new XsdDefinitionRegistry(new ReadOnlyDictionary<SchemaName, XmlDatatypeDefinition>(owned), null);
+        if (!operation.Charge(0, default)) throw SchemaSnapshots.Failure(operation);
+        return registry;
+    }
+    private XsdDefinitionRegistry(IReadOnlyDictionary<SchemaName, XmlDatatypeDefinition> definitions,
+        IReadOnlyList<XmlDatatypeDefinition>? certifiedSimpleTypes)
+    { this.definitions = definitions; this.certifiedSimpleTypes = certifiedSimpleTypes; }
+    internal XsdDefinitionRegistry Certify(XsdCompiledSchema schema, ISchemaOperation operation)
+    {
+        if (!operation.Charge(0, default)) throw SchemaSnapshots.Failure(operation);
+        if (!ReferenceEquals(schema.Datatypes, this)) throw new ArgumentException("Registry must belong to the supplied graph.", nameof(schema));
+        bool complete = definitions.Count == schema.SimpleTypes.Count;
+        foreach (var definition in schema.SimpleTypes)
+        {
+            if (!operation.Charge(1, definition.Location)) throw SchemaSnapshots.Failure(operation);
+            // Identity binds the certificate to these actual frozen definitions,
+            // not merely to equal names in a different registry.
+            complete &= definitions.TryGetValue(definition.Name, out var actual) && ReferenceEquals(definition, actual);
+            if (definition.ItemType is { } item)
+            {
+                if (!operation.Charge(1, definition.Location)) throw SchemaSnapshots.Failure(operation);
+                complete &= definitions.ContainsKey(item);
+            }
+        }
+        if (!operation.Charge(0, default)) throw SchemaSnapshots.Failure(operation);
+        if (!complete) return this;
+        if (!operation.ChargeComponents(1, default)) throw SchemaSnapshots.Failure(operation);
+        var certified = new XsdDefinitionRegistry(definitions, schema.SimpleTypes);
+        if (!operation.Charge(0, default)) throw SchemaSnapshots.Failure(operation);
+        return certified;
+    }
+    internal bool Certifies(IReadOnlyList<XmlDatatypeDefinition> simpleTypes) => certifiedSimpleTypes is not null && ReferenceEquals(certifiedSimpleTypes, simpleTypes);
     public IXmlDatatypeLibrary? Find(string namespaceUri) { ArgumentNullException.ThrowIfNull(namespaceUri); return null; }
     public XmlDatatypeDefinition? FindType(SchemaName name) => definitions.TryGetValue(name, out var value) ? value : null;
 }

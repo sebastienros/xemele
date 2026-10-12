@@ -49,7 +49,7 @@
         "global public API union: all fragments, exactly1430 public rows",
         "emit separate new internal availability projection with InternalApi.Probe.cs.fixture",
         "probe --disabled; 11 routes/8 warmups/32 observations per route/352 retained results/8 retained schemas; counters all zero",
-        "compare authored9 added-join rows independently of new-type emission; both actual checks UNRUN",
+        "compare authored13 added-join rows independently of new-type emission; both actual checks UNRUN",
         "exact independently reviewed selected source method/case coverage, including final G03a/G03b/G04u and explicit WarmBorrowed exclusion; omitted/skipped/duplicated rows reject"
       ],
       "counterEnabled": false,
@@ -119,7 +119,7 @@
   "api": {
     "docsApiFragment": "header only; no public additions",
     "approvedExistingDelta": "exact constructor/property/Deconstruct Nullable<SchemaName> rows copied from verified candidate",
-    "additiveInternalEmission": "UNRUN; separately emit only11 new types and9 concrete added joins; authored added-joins.golden.txt must compare exactly; public1430/header-only docs API unchanged"
+    "additiveInternalEmission": "UNRUN; separately emit unchanged11 new availability types and13 concrete added joins (original9 unchanged +4 registry certificate members); authored added-joins.golden.txt exact comparison; public1430/header-only docs API unchanged"
   },
   "sourceCorrection3": {
     "receipt": "48a9bfdc7e75412b5535c8eca5adf9cc209aac21 docs/orchestration/review-M8-xsd-missing-components-source-3.json",
@@ -157,5 +157,51 @@
     "selectionMethods": 687,
     "selectionCases": 2192,
     "currentPacketExecution": "UNRUN; old coordinator stamp revoked by source mismatch; no worker execution"
+  },
+  "postH18SourceCorrection": {
+    "scopeReceipt": "main284239e321718e2bb298deaa2639579bba40e1e8 docs/orchestration/M8-xsd-missing-components-visibility-migration-scope.json",
+    "visibility": "Only NamespaceOnlyPermissionDoesNotInventMissingComponents: concrete partial publication, independent good valid/invalid, exactly1 Fatal MissingComponent, authored QName/owner/space/unavailable/no definitions; no import and strict compiler negatives; no requests/streams",
+    "certificate": "Private immutable registry certificate binds exact post-snapshot SimpleTypes identity and actual immutable definitions. Construction storage/entries and proof inspections charged; uncertified/replaced list/registry use unchanged full charged fallback. Element/type/affiliation checks and before/after zero polls preserved; no global cache/frozen graph change. New certificate wrapper and graph copy charged before allocation. Legacy registry constructor unchanged.",
+    "independentCosts": {
+      "registryStorageWork": 45,
+      "registryStorageComponents": 48,
+      "certificateProofWork": 48,
+      "certificateWrapperComponents": 1,
+      "publishedGraphCopyComponents": 1,
+      "smallContentPassWork": 11,
+      "smallContentPassComponents": 9
+    },
+    "ownedControls": "Orphan absent list with no elements/all wrappers removed; replaced list/registry/caller copy; altered null/absent element type, absent affiliation and removed Types; exact proof/storage quotas and one-under; null-cap construction/proof/fallback/certified-final-poll cancellation",
+    "selectedMethods": 693,
+    "selectedCases": 2205,
+    "selectedSourceFiles": 90,
+    "original687MethodEntries": "unchanged identities/attributes/cardinalities; only scoped Visibility source hash changes",
+    "unchangedProbe": {
+      "routes": 11,
+      "retainedResults": 352,
+      "retainedSchemas": 8,
+      "consumed": 3001,
+      "inspections": 13632
+    },
+    "execution": "UNRUN; SOURCE HOLD; root sole execution/state writer",
+    "priorCoordinatorOutcome": {
+      "sourcePacket": "776fb6b499e6ae49e096dd4fe6afc6b39e372bc8",
+      "runtimeSource": "9a19d681f8c7e226fa3e674f22ce3da03c588ba0",
+      "controls": "PASS15;7 H18 diagnostic variants;341 raw deleted",
+      "restoreBuild": "14 commands PASS",
+      "selectedCases": 2192,
+      "passed": 2190,
+      "failed": 2,
+      "skipped": 0,
+      "completeXmlSha256": "cce42654a75035e8ce192aec1b47b4ac13b48d8b3a09c0fcc4583f309eb7e8ff",
+      "failures": [
+        "Xemele.Tests.M8XsdImportVisibility.VisibilityTests.NamespaceOnlyPermissionDoesNotInventMissingComponents: expected SchemaCompileException, no exception",
+        "Xemele.Tests.M8XsdParticleNormalization.BatchTests.SmallGraphQuotasAreDerivedIndependentlyAndEntriesChargeBeforeGrowth: SchemaCompileException"
+      ],
+      "failedController": "root-check-fa33e681e565452297760aa1ff24240d",
+      "terminal": "16 groups absent;429 raw deleted; no preparation/release",
+      "apiConsumersCounters": "UNRUN",
+      "credit": "zero gate credit; no passing credit carried to corrected source"
+    }
   }
 }

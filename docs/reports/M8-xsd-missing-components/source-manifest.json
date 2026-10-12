@@ -5,7 +5,14 @@
     "mainCommit": "4537c5276614e9b2e433b3f04b23ef5c8923e800",
     "taskSha256": "558ef201282c3d13caab6cd7ac5f4cdde9c0824101018f687817057740f57e45",
     "additionalFile": "tests/Xemele.Tests/M8-xsd-content-failure-assessment/BoundaryTests.cs",
-    "restriction": "Current serialized owning task plus consolidated exactG01-G09 source-only fixes; only two previously assigned nullable keys outside primary subtree; root sole state writer"
+    "restriction": "Current serialized owning task plus consolidated exactG01-G09 source-only fixes; only two previously assigned nullable keys outside primary subtree; root sole state writer",
+    "visibilityMigration": {
+      "mainCommit": "284239e321718e2bb298deaa2639579bba40e1e8",
+      "taskSha256": "e9b5f74f72024e5e354e7569136cd9622926a9e23cadc9478bf3a3aa875d796e",
+      "scopePath": "docs/orchestration/M8-xsd-missing-components-visibility-migration-scope.json",
+      "scopeSha256": "4329a77ab06a255b4c6e2e3f897937561be3e10163cba005529a83449e43999c",
+      "restriction": "Only exact visibility method plus owned graph-local simple certificate; Batch/Support unchanged; source only; root task writer"
+    }
   },
   "ownedSourceSha256": {
     "benchmarks/Xemele.Benchmarks/M8-xsd-missing-components/Benchmarks.cs": "f6c8465807863d76bdb8e8d72141e61d081bafcce9f3de4cb7bb29b07acdea95",
@@ -14,17 +21,17 @@
     "benchmarks/Xemele.Benchmarks/M8-xsd-missing-components/Probe.cs.fixture": "1e0d6f9a1c9f008c99a2b2d0b1c20fd1310819f6f400ba3f3068ba774742803a",
     "docs/api/M8-xsd-missing-components.txt": "9edc91c276d5893119a1d9bb14cb677927baeb21364d978ba93295d7f0ae88b3",
     "docs/reports/M8-xsd-compile/compiler.golden.txt": "5784eff06822297c5d9b8698ad0fa7b0a2d2ef12eed2a36aea9f85f7a7c58077",
-    "docs/reports/M8-xsd-missing-components/InternalApi.Probe.cs.fixture": "460a3b2c7638ca7cfbcce4023328d8067209d059a1e5e85e4a911e955e14dca0",
-    "docs/reports/M8-xsd-missing-components/added-joins.golden.txt": "63bf22e9421c00cd1f3c12e0117286af778d961f366ec17029e717323078c3ed",
-    "docs/reports/M8-xsd-missing-components/review-plan.json": "3b39085684dc646a6538c0f02ad30c447c1bd119857e45f059a08ba83e9c3e88",
-    "docs/reports/M8-xsd-missing-components/source-handoff.md": "045e1d0ce8496a839e615915c58ab719f1ed013557448110a1585bf6e885b6dd",
+    "docs/reports/M8-xsd-missing-components/InternalApi.Probe.cs.fixture": "a39ebc6042a382ac08f9ae555d81ecd7ee9541dc56631bb1124517cdad469fbc",
+    "docs/reports/M8-xsd-missing-components/added-joins.golden.txt": "da914b13b8513b92df4aa15ff90539cdb599504e163076f3f39d9d7fb87bad69",
+    "docs/reports/M8-xsd-missing-components/review-plan.json": "09314c9792c6aa8d8223cacdd93d5f40ae3e8cfaa5819ce5e2980b6d7da6e458",
+    "docs/reports/M8-xsd-missing-components/source-handoff.md": "2f799ee173b9fcc4b1bb2641cabbfb1a67247f2421467bccb7368ddefa7f1bda",
     "samples/M8-xsd-missing-components/Consumer.cs.fixture": "061103304e014e8fd518f9d14a6e5fb6f86e5d47ef4776f9d033a64e2a1536df",
     "samples/M8-xsd-missing-components/Consumer.csproj": "79e13290cade584f4ac372008779807445c05393c40b9d37b56c52a822fc180a",
     "samples/M8-xsd-missing-components/XmlOnly.csproj": "7ae056ca59586435b8d7579a8d4f202b528e55fd189373e2bc7adc5723237c78",
     "src/Xemele/Validation/Datatypes/Facets/Definitions.cs": "54649c37702bd65eae278cc57728c3accadc78d0398b84dc94522f502b7d8846",
     "src/Xemele/Validation/Datatypes/Facets/Evaluator.cs": "e835148f931dae27696456ceaa4e6e1a96aef698ddb4b31065279bd8d6899e21",
-    "src/Xemele/Validation/Xsd/Compilation/Availability/Availability.cs": "241ee3a54852797e34061d77d68273c6331277b9b346aaee35e60bcf76c9a558",
-    "src/Xemele/Validation/Xsd/Compilation/Compiler.cs": "12c0aef31fa909dea695f84c9902895f30288e6b3856342f4bb841c3bbfc2843",
+    "src/Xemele/Validation/Xsd/Compilation/Availability/Availability.cs": "9f43303f2a934130694c558ad089e9c64b0d6eb9cd2f0bb83b4132cd3291c603",
+    "src/Xemele/Validation/Xsd/Compilation/Compiler.cs": "313502267c192f63db1ecc937e156feceb9255c2fdfc14b1d2a6077f986d29c5",
     "src/Xemele/Validation/Xsd/Compilation/Declarations.cs": "29f84d170a1df717de6fd9094fe3f59737d11bb6bf91592c647e20635d19b255",
     "src/Xemele/Validation/Xsd/ContentModels/Compiler.cs": "3758a36f321a7f54755312f4070200202d2cc7c57c02f95a79bf601fc15916c8",
     "src/Xemele/Validation/Xsd/ContentModels/Derivation.cs": "04f127a9463fb6614ff579ec00b8eb02f2881f4ab1b878a2276a0e163858ecc1",
@@ -33,8 +40,10 @@
     "tests/Contracts/Fixtures/M8/Xsd.cs.fixture": "b3612edc49668cd2e4e7b0c7783d59c2bff41b9edba32fc3e35613fa14e6fb72",
     "tests/Contracts/Fixtures/M8/Xsd.golden.txt": "4044ddc141402419452b9a9da0665e8d215fb51d9a9c0f2e0a2f0e51b726c181",
     "tests/Xemele.Tests/M8-xsd-content-failure-assessment/BoundaryTests.cs": "3f6011126a831101b9ae26df77086482138b72afbea62278850f3450dc5dc041",
+    "tests/Xemele.Tests/M8-xsd-import-visibility/VisibilityTests.cs": "4a4160b4d3a38377f71f0228855b869c447bb53a16daea465f1fdc8dd7e356d9",
     "tests/Xemele.Tests/M8-xsd-missing-components/AvailabilityTests.cs": "c584da1731c8da67d442277e3be4bcf1c742412d3a5dc4be2f88d43fe7a13ec1",
     "tests/Xemele.Tests/M8-xsd-missing-components/BoundaryTests.cs": "299c7c49fc32382afb7d55b31ffe372513cbfd1ffb8025144f35e367865e5e68",
+    "tests/Xemele.Tests/M8-xsd-missing-components/CompletenessCertificateTests.cs": "aa60ac72df24f8efb2ba593872bb1d31be24c5a9a1c7d0b816fb6f415b140915",
     "tests/Xemele.Tests/M8-xsd-missing-components/HookTests.cs": "de3dcdd9f2a978f9895d47a911f5d33663b4c1885c677fa7c8879a0f7a23254b",
     "tests/Xemele.Tests/M8-xsd-missing-components/IndependentTests.cs": "77a6f331c6c395242e26b1e8655323d2497b0b757e576653a1440afa215a4bdd",
     "tests/Xemele.Tests/M8-xsd-missing-components/OriginalTests.cs": "e93e9ae7be732cff579b304950c488ac77061c69da2b0b2bfbe8a00dca7bb001",
@@ -347,10 +356,10 @@
     "docs/api/M8-xsd-validate.txt": "9edc91c276d5893119a1d9bb14cb677927baeb21364d978ba93295d7f0ae88b3",
     "docs/reports/M8-xsd-compile/compiler.golden.txt": "5784eff06822297c5d9b8698ad0fa7b0a2d2ef12eed2a36aea9f85f7a7c58077",
     "docs/reports/M8-xsd-missing-components-contract/ApiCheck.cs.fixture": "2244c39927737e0f3fae51dba5fadfad6455351fff65446f200ac85a85074a77",
-    "docs/reports/M8-xsd-missing-components/InternalApi.Probe.cs.fixture": "460a3b2c7638ca7cfbcce4023328d8067209d059a1e5e85e4a911e955e14dca0",
-    "docs/reports/M8-xsd-missing-components/added-joins.golden.txt": "63bf22e9421c00cd1f3c12e0117286af778d961f366ec17029e717323078c3ed",
-    "docs/reports/M8-xsd-missing-components/review-plan.json": "3b39085684dc646a6538c0f02ad30c447c1bd119857e45f059a08ba83e9c3e88",
-    "docs/reports/M8-xsd-missing-components/source-handoff.md": "045e1d0ce8496a839e615915c58ab719f1ed013557448110a1585bf6e885b6dd",
+    "docs/reports/M8-xsd-missing-components/InternalApi.Probe.cs.fixture": "a39ebc6042a382ac08f9ae555d81ecd7ee9541dc56631bb1124517cdad469fbc",
+    "docs/reports/M8-xsd-missing-components/added-joins.golden.txt": "da914b13b8513b92df4aa15ff90539cdb599504e163076f3f39d9d7fb87bad69",
+    "docs/reports/M8-xsd-missing-components/review-plan.json": "09314c9792c6aa8d8223cacdd93d5f40ae3e8cfaa5819ce5e2980b6d7da6e458",
+    "docs/reports/M8-xsd-missing-components/source-handoff.md": "2f799ee173b9fcc4b1bb2641cabbfb1a67247f2421467bccb7368ddefa7f1bda",
     "docs/tasks/M8-xsd-missing-components.json": "bfc1cac68ba57f3b3f0a73359dc12ad6563d825af78f0c7f99aeec20aae9c033",
     "global.json": "bc7dd883ec68b6a92d96f76531d5b6efe2cfd8456b53a38634dc305c7e114509",
     "samples/M8-xsd-missing-components/Consumer.cs.fixture": "061103304e014e8fd518f9d14a6e5fb6f86e5d47ef4776f9d033a64e2a1536df",
@@ -556,8 +565,8 @@
     "src/Xemele/Validation/Schematron/Evaluation/SchematronEvaluator.cs": "01532f6938c72704c0476f858b7420397d98545723dbb3c9b3dd886f9696ef2d",
     "src/Xemele/Validation/Schematron/Reporting/SchematronReport.cs": "b23f2cec32af3735e5198379a4e72dacf18295eb01bd9d57041e313ee2e1fdb6",
     "src/Xemele/Validation/Schematron/SchematronSchema.cs": "41c399cf7cfeebad9449817445171aaa57658a63d908b7c556041bba2745b583",
-    "src/Xemele/Validation/Xsd/Compilation/Availability/Availability.cs": "241ee3a54852797e34061d77d68273c6331277b9b346aaee35e60bcf76c9a558",
-    "src/Xemele/Validation/Xsd/Compilation/Compiler.cs": "12c0aef31fa909dea695f84c9902895f30288e6b3856342f4bb841c3bbfc2843",
+    "src/Xemele/Validation/Xsd/Compilation/Availability/Availability.cs": "9f43303f2a934130694c558ad089e9c64b0d6eb9cd2f0bb83b4132cd3291c603",
+    "src/Xemele/Validation/Xsd/Compilation/Compiler.cs": "313502267c192f63db1ecc937e156feceb9255c2fdfc14b1d2a6077f986d29c5",
     "src/Xemele/Validation/Xsd/Compilation/Declarations.cs": "29f84d170a1df717de6fd9094fe3f59737d11bb6bf91592c647e20635d19b255",
     "src/Xemele/Validation/Xsd/ContentModels/Compiler.cs": "3758a36f321a7f54755312f4070200202d2cc7c57c02f95a79bf601fc15916c8",
     "src/Xemele/Validation/Xsd/ContentModels/Contracts.cs": "a4a5838891f25ce10d16c51bfd9449d1c96250b72474c1ed9767718ddbc41ede",
@@ -807,7 +816,7 @@
     "tests/Xemele.Tests/M8-xsd-import-visibility/BoundaryTests.cs": "11f00e4ddfe1d7f205b255b4f9ed9a3561f8e390b98c984ea23e36171070d5d5",
     "tests/Xemele.Tests/M8-xsd-import-visibility/OriginalTests.cs": "5fc1c6457af9f34d8f7851b8edc87f3b146a62cbac48812a48a248d97657e2c9",
     "tests/Xemele.Tests/M8-xsd-import-visibility/Support.cs": "d5a4186c6bd4d474d489201d459dfd12db422c1b5100e6ede4ba93b5dc02bb6f",
-    "tests/Xemele.Tests/M8-xsd-import-visibility/VisibilityTests.cs": "58c1b4b665a9e0d8843cad59a33c470e88a8d987dec4a197236cfb76dddeebbf",
+    "tests/Xemele.Tests/M8-xsd-import-visibility/VisibilityTests.cs": "4a4160b4d3a38377f71f0228855b869c447bb53a16daea465f1fdc8dd7e356d9",
     "tests/Xemele.Tests/M8-xsd-instance-assessment/NeighborTests.cs": "ada891bfdd1fb8a143838a6b2bc2dde97d6ac634479ca5f8480ed31f7eb3d747",
     "tests/Xemele.Tests/M8-xsd-instance-assessment/OriginalWitnessTests.cs": "83702f9476b97f84da672cdc1efbc177da7512807b5dd6149c0d2c380755edd2",
     "tests/Xemele.Tests/M8-xsd-instance-hint-ordering/BoundaryTests.cs": "59c0b2dc6eed95a75d5b85150c0f10f9c2ea4d2c89f45743bd472c8ba927d52b",
@@ -815,6 +824,7 @@
     "tests/Xemele.Tests/M8-xsd-instance-hint-ordering/OriginalTests.cs": "621063a152f7c819c09bd68e4c2077612e5cb60a10c4ce9aa4da64ba62cc2620",
     "tests/Xemele.Tests/M8-xsd-missing-components/AvailabilityTests.cs": "c584da1731c8da67d442277e3be4bcf1c742412d3a5dc4be2f88d43fe7a13ec1",
     "tests/Xemele.Tests/M8-xsd-missing-components/BoundaryTests.cs": "299c7c49fc32382afb7d55b31ffe372513cbfd1ffb8025144f35e367865e5e68",
+    "tests/Xemele.Tests/M8-xsd-missing-components/CompletenessCertificateTests.cs": "aa60ac72df24f8efb2ba593872bb1d31be24c5a9a1c7d0b816fb6f415b140915",
     "tests/Xemele.Tests/M8-xsd-missing-components/HookTests.cs": "de3dcdd9f2a978f9895d47a911f5d33663b4c1885c677fa7c8879a0f7a23254b",
     "tests/Xemele.Tests/M8-xsd-missing-components/IndependentTests.cs": "77a6f331c6c395242e26b1e8655323d2497b0b757e576653a1440afa215a4bdd",
     "tests/Xemele.Tests/M8-xsd-missing-components/OriginalTests.cs": "e93e9ae7be732cff579b304950c488ac77061c69da2b0b2bfbe8a00dca7bb001",
@@ -1323,7 +1333,7 @@
     ]
   },
   "attribution": {
-    "internalExtractor": "Verified contract extractor;11 new types and9 concrete joins; authored9-join baseline includes context/availability constraint join; emission/comparison UNRUN",
+    "internalExtractor": "Verified contract extractor; unchanged11 new types, original9 added joins plus4 exact registry certificate members; authored13-row compare; emission/comparison UNRUN",
     "originalData": "Copied exact bytes and canonical records from coordinator canonical data; no peer source or runtime dependency"
   },
   "checks": {
@@ -1342,7 +1352,7 @@
         "tests/fixtures/M8-xsd-missing-components/saxonMeta/Missing.testSet"
       ]
     },
-    "sourceOwnership": "passed against coordinator main task owns, including exact scoped additional file",
+    "sourceOwnership": "passed statically against serialized root task284239 scope; exact visibility method only, unchanged Batch/Support; root-only task state",
     "baselineDelta": "static: exactly three changed rows per existing projection; 615/257 totals and612/254 unchanged rows; runtime emission UNRUN",
     "originalBindings": "static: byte hashes and canonical record hashes; runtime UNRUN",
     "runtime": "UNRUN",
@@ -1357,7 +1367,37 @@
       "failedController": "root-check-e3fcc73c8a2c4ab2b2e99b897bd8ab3f",
       "terminal": "3 owned groups absent;66raw deleted",
       "currentPacket": "UNRUN; prior results carry no refreshed-source passing credit"
-    }
+    },
+    "priorCoordinatorOutcomes": [
+      {
+        "sourcePacket": "700500e3dbf01d2f38ad0c9c7c9071d3ac56f5b1",
+        "controls": "PASS15; counters off; family absent;313raw deleted",
+        "correctness": "first restore passed; tests build FAILED CS0534 Support.cs; tests/API/counters UNRUN",
+        "failedController": "root-check-e3fcc73c8a2c4ab2b2e99b897bd8ab3f",
+        "terminal": "3 owned groups absent;66raw deleted",
+        "currentPacket": "UNRUN; prior results carry no refreshed-source passing credit"
+      },
+      {
+        "sourcePacket": "776fb6b499e6ae49e096dd4fe6afc6b39e372bc8",
+        "runtimeSource": "9a19d681f8c7e226fa3e674f22ce3da03c588ba0",
+        "controls": "PASS15;7 H18 diagnostic variants;341 raw deleted",
+        "restoreBuild": "14 commands PASS",
+        "selectedCases": 2192,
+        "passed": 2190,
+        "failed": 2,
+        "skipped": 0,
+        "completeXmlSha256": "cce42654a75035e8ce192aec1b47b4ac13b48d8b3a09c0fcc4583f309eb7e8ff",
+        "failures": [
+          "Xemele.Tests.M8XsdImportVisibility.VisibilityTests.NamespaceOnlyPermissionDoesNotInventMissingComponents: expected SchemaCompileException, no exception",
+          "Xemele.Tests.M8XsdParticleNormalization.BatchTests.SmallGraphQuotasAreDerivedIndependentlyAndEntriesChargeBeforeGrowth: SchemaCompileException"
+        ],
+        "failedController": "root-check-fa33e681e565452297760aa1ff24240d",
+        "terminal": "16 groups absent;429 raw deleted; no preparation/release",
+        "apiConsumersCounters": "UNRUN",
+        "credit": "zero gate credit; no passing credit carried to corrected source"
+      }
+    ],
+    "staticSelection": "693methods/2205cases/90files; original687 method entries unchanged;6new methods/13cases; execution UNRUN"
   },
   "manifestSelf": "Excluded from own hashes; runtime source commit and file digest supplied in handoff; harness separately binds this manifest and runtime commit",
   "reviewCorrection": {
@@ -1386,7 +1426,7 @@
         64
       ]
     },
-    "addedJoinRows": 9,
+    "addedJoinRows": 13,
     "renewedSource": "main docs/orchestration/review-M8-xsd-missing-components-source-2.json; exact G03a/G03b/G04u source controls; all execution UNRUN",
     "additionalControls": [
       "complete substitution choices preserved",
@@ -1398,6 +1438,52 @@
     "dependencyAddendum": "Exact G03c source addendum: provisional relation operand dependencies; final indeterminate proof only; False AND/True OR discard links; independent Build/UPA/EDC unchanged; all execution UNRUN",
     "fourthSource": "docs/orchestration/review-M8-xsd-missing-components-source-4.json; exact G03 incomplete expanded membership original-head proof and known sibling controls; all execution UNRUN",
     "fifthSource": "docs/orchestration/review-M8-xsd-missing-components-source-5.json; specific omitted proof in actual Choice-to-Choice transitions incl synthetic element and expanded derived choice; all execution UNRUN",
-    "compileCorrection": "Coordinator actual prior700500 build CS0534; exact owned Support.Resolver.Resolve compatibility delegation to structured ResolveResult.Resource; no worker execution"
+    "compileCorrection": "Coordinator actual prior700500 build CS0534; exact owned Support.Resolver.Resolve compatibility delegation to structured ResolveResult.Resource; no worker execution",
+    "postH18SourceCorrection": {
+      "scopeReceipt": "main284239e321718e2bb298deaa2639579bba40e1e8 docs/orchestration/M8-xsd-missing-components-visibility-migration-scope.json",
+      "visibility": "Only NamespaceOnlyPermissionDoesNotInventMissingComponents: concrete partial publication, independent good valid/invalid, exactly1 Fatal MissingComponent, authored QName/owner/space/unavailable/no definitions; no import and strict compiler negatives; no requests/streams",
+      "certificate": "Private immutable registry certificate binds exact post-snapshot SimpleTypes identity and actual immutable definitions. Construction storage/entries and proof inspections charged; uncertified/replaced list/registry use unchanged full charged fallback. Element/type/affiliation checks and before/after zero polls preserved; no global cache/frozen graph change. New certificate wrapper and graph copy charged before allocation. Legacy registry constructor unchanged.",
+      "independentCosts": {
+        "registryStorageWork": 45,
+        "registryStorageComponents": 48,
+        "certificateProofWork": 48,
+        "certificateWrapperComponents": 1,
+        "publishedGraphCopyComponents": 1,
+        "smallContentPassWork": 11,
+        "smallContentPassComponents": 9
+      },
+      "ownedControls": "Orphan absent list with no elements/all wrappers removed; replaced list/registry/caller copy; altered null/absent element type, absent affiliation and removed Types; exact proof/storage quotas and one-under; null-cap construction/proof/fallback/certified-final-poll cancellation",
+      "selectedMethods": 693,
+      "selectedCases": 2205,
+      "selectedSourceFiles": 90,
+      "original687MethodEntries": "unchanged identities/attributes/cardinalities; only scoped Visibility source hash changes",
+      "unchangedProbe": {
+        "routes": 11,
+        "retainedResults": 352,
+        "retainedSchemas": 8,
+        "consumed": 3001,
+        "inspections": 13632
+      },
+      "execution": "UNRUN; SOURCE HOLD; root sole execution/state writer",
+      "priorCoordinatorOutcome": {
+        "sourcePacket": "776fb6b499e6ae49e096dd4fe6afc6b39e372bc8",
+        "runtimeSource": "9a19d681f8c7e226fa3e674f22ce3da03c588ba0",
+        "controls": "PASS15;7 H18 diagnostic variants;341 raw deleted",
+        "restoreBuild": "14 commands PASS",
+        "selectedCases": 2192,
+        "passed": 2190,
+        "failed": 2,
+        "skipped": 0,
+        "completeXmlSha256": "cce42654a75035e8ce192aec1b47b4ac13b48d8b3a09c0fcc4583f309eb7e8ff",
+        "failures": [
+          "Xemele.Tests.M8XsdImportVisibility.VisibilityTests.NamespaceOnlyPermissionDoesNotInventMissingComponents: expected SchemaCompileException, no exception",
+          "Xemele.Tests.M8XsdParticleNormalization.BatchTests.SmallGraphQuotasAreDerivedIndependentlyAndEntriesChargeBeforeGrowth: SchemaCompileException"
+        ],
+        "failedController": "root-check-fa33e681e565452297760aa1ff24240d",
+        "terminal": "16 groups absent;429 raw deleted; no preparation/release",
+        "apiConsumersCounters": "UNRUN",
+        "credit": "zero gate credit; no passing credit carried to corrected source"
+      }
+    }
   }
 }

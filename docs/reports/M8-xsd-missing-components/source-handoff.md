@@ -84,3 +84,43 @@ existing ResolveResult.Resource; cancellation/callback count/ownership stay on
 the existing structured path. Owned related resolver implementations inspected
 with no additional missing override found. Refreshed packet execution UNRUN;
 worker ran only static checks and planning, no builds/tests/control/API/probes.
+
+Post-H18 exact scope correction (root main284239e321718e2bb298deaa2639579bba40e1e8):
+only the assigned visibility method migrates to concrete partial publication,
+independent good7/goodbad, exactly one Fatal missing root, authored QName/owner/
+space/unavailable/no invented definition, denied import and strict compiler
+negatives, empty resolver requests/streams. Import Support and every other
+visibility method remain byte-identical. BatchTests stays byte-identical at
+11work/9components,10/9,11/8.
+
+The owned registry now proves simple-definition completeness during charged
+construction against the exact post-snapshot SimpleTypes list and its immutable
+owned dictionary. A private readonly list reference is the certificate; no global
+cache, operation success, new graph field or frozen/public signature change.
+Registry creation charges45 work/48 components for45 builtins; certification
+charges48 work (45 definitions +3 item lookups), one immutable wrapper and one
+published graph copy. Missing items obtain no certificate. RequireComplete skips
+only this exact certified simple walk, retaining all element/type/affiliation
+checks, fallback inspection charges and zero-work polls before/after lookup.
+Types-only record copies preserve the simple proof safely. List/registry
+replacement, caller graph copies, orphan missing lists and removed wrappers
+fall back. Six owned methods/13 cases independently cover those boundaries,
+proof/storage exact and one-under caps, and null-cap cancellation during
+construction/proof/fallback and the certified final poll. All new controls UNRUN.
+
+Static selection693 methods/2205 cases/90 files: all original687 entries retain
+identity/attribute syntax/cardinality. Original9 added joins remain byte-exact;
+four registry members join the authored13-row additive projection; original11
+new types/public1430/frozen615/257 projections remain unchanged. Probe routes11,
+results352,schemas8,consumed3001,inspections13632 remain source-bound unchanged.
+Registry/certificate/copy allocation changes belong to cold/compile observations;
+borrowed lookup code and its zero-allocation target stay unchanged.
+
+Coordinator H18 outcome is durable:15 controls passed,7 diagnostic variants,
+341 raw deleted;14 restore/build commands passed;2190/2192 selected cases passed,
+2 failed,0 skipped. Complete XML SHA
+cce42654a75035e8ce192aec1b47b4ac13b48d8b3a09c0fcc4583f309eb7e8ff.
+Failed root-check-fa33e681e565452297760aa1ff24240d terminal:16 groups absent,
+429 raw deleted. API/consumers/preparation/counters UNRUN; zero gate credit and
+no refreshed-source passing credit. Source correction remains HOLD; worker ran
+only planning/static ownership/selection/hash/whitespace checks.

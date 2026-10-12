@@ -72,8 +72,35 @@ public sealed class VisibilityTests
     public void NamespaceOnlyPermissionDoesNotInventMissingComponents()
     {
         var resolver = Map(new());
-        var error = Reject(Wrap("<xs:import namespace='urn:b'/><xs:element name='root' type='b:T'/>", "xmlns:b='urn:b'"), resolver);
-        Assert.DoesNotContain(error.Diagnostics, d => d.Message.Contains("without an import", StringComparison.Ordinal)); Assert.Empty(resolver.Requests);
+        const string body = "<xs:element name='root' type='b:T'/><xs:element name='good' type='xs:int'/>";
+        string source = Wrap("<xs:import namespace='urn:b'/>" + body, "xmlns:b='urn:b'");
+        var options = new SchemaCompileOptions { BaseUri = Basis, Resolver = resolver };
+        var schema = XmlSchema.Compile(source, options);
+        var good = schema.Validate("<good>7</good>"); Assert.True(good.IsComplete); Assert.True(good.IsValid);
+        var bad = schema.Validate("<good>bad</good>"); Assert.True(bad.IsComplete); Assert.False(bad.IsValid);
+        var missing = schema.Validate("<root>7</root>"); Assert.False(missing.IsComplete); Assert.False(missing.IsValid);
+        var diagnostic = Assert.Single(missing.Diagnostics);
+        Assert.Equal("XSD.MissingComponent", diagnostic.Code); Assert.Equal(XmlDiagnosticSeverity.Fatal, diagnostic.Severity);
+        Assert.DoesNotContain(missing.Diagnostics, d => d.Message.Contains("without an import", StringComparison.Ordinal));
+
+        var context = new SchemaCompileContext(options); var availability = new AvailabilityBuilder(context.Operation);
+        var graph = new XmlSchemaCompiler().CompileAvailable(context.Parse(source).Document, context, availability);
+        availability.Join(graph); var snapshot = availability.Seal();
+        var authored = new SchemaName("urn:b", "T");
+        var root = graph.Elements.Single(e => e.Name.LocalName == "root"); Assert.Equal(authored, root.Type);
+        var reference = Assert.Single(snapshot.Entries.Where(e => e.Kind == ReferenceKind.ExplicitElementType && e.AuthoredName == authored));
+        Assert.Equal(ComponentAvailability.Element(root), reference.Owner);
+        Assert.Equal(SymbolSpace.Type, reference.Space); Assert.Equal(AvailabilityState.Unavailable, reference.State);
+        Assert.DoesNotContain(graph.Types, t => t.Name == authored);
+        Assert.DoesNotContain(graph.SimpleTypes, t => t.Name == authored); Assert.Null(graph.Datatypes.FindType(authored));
+
+        var denied = Reject(Wrap(body, "xmlns:b='urn:b'"), resolver);
+        Assert.Contains(denied.Diagnostics, d => d.Message.Contains("without an import", StringComparison.Ordinal));
+        var strictContext = new SchemaCompileContext(options);
+        IXsdCompiler compiler = new XmlSchemaCompiler();
+        var error = Assert.Throws<SchemaCompileException>(() => compiler.Compile(strictContext.Parse(source).Document, options, strictContext.Operation));
+        Assert.Contains(error.Diagnostics, d => d.Code == "XSD.SchemaRestriction");
+        Assert.Empty(resolver.Requests); Assert.Empty(resolver.Streams);
     }
     [Fact]
     public void ImportWithNoNamespaceAuthorizesOnlyItsOwnDocument()
