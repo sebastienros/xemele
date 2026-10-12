@@ -171,7 +171,7 @@
   },
   "current_milestone": "M8",
   "milestone_completion_scope": "Complete integrated verified M8-gate; terminal workers and cleanup; preserve earlier evidence/caches; transfer sole writes to main. Do not create M9.",
-  "milestone_progress": "33 of 37 M8 tasks verified; corpus and fixed-attribute repair active; CLI/gate pending.",
+  "milestone_progress": "33 of 38 M8 tasks verified; corpus and two repairs active/setup; CLI/gate pending.",
   "blockers": [],
   "pending_decisions": [],
   "timing_queue": [],
@@ -1176,7 +1176,8 @@
     "gregsex": [
       "01a12c93-ccf1-70f2-907e-73c12eccedcf",
       "01a12e48-6175-77a2-b4b2-d5d5921b1a1d",
-      "01a12e70-dc8a-7cc2-b267-0b8d7774a263"
+      "01a12e70-dc8a-7cc2-b267-0b8d7774a263",
+      "01a12ede-f40f-7bc3-8f38-ab0d7972bd8a"
     ],
     "reviewers": "Three existing source-only reviewers; no host-heavy jobs/new actors.",
     "lease": {
@@ -1185,7 +1186,7 @@
       "record": "docs/orchestration/M8-xsd-schema-syntax-allocation-1.json",
       "released_at": "2026-10-12T06:42:46.282798Z"
     },
-    "gregsex_note": "Three current Gregs actors; managed-only diagnostic scope4 completed and released; no active PARK/lease.",
+    "gregsex_note": "Four Gregs actors including allocation-policy repair01a12ede at5a16; no activePARK/grant. BDN-only policy applies Gregs only.",
     "roster_note": "Seven Xemele actors: root/main/corpus/attribute-fixed and three existing reviewers. Syntax worker archived and both checkouts removed after verified integration; no active PARK."
   },
   "suspended_assignments": [],
@@ -1193,5 +1194,12 @@
   "m8_xsd_standards_dispositions": {
     "time_exception": "Human-approved call_b88f280c431643d2b5b911ee5fb92e63; exact original failure retained, never pass. docs/orchestration/M8-xsd-time-policy-pending.md",
     "errF001": "Independent SecondEdition oracle adjudication; original queried VALID disagreement preserved, dependent instance unexecuted. docs/orchestration/M8-xsd-errF001-adjudication.md"
+  },
+  "pending_worker_setup": {
+    "task_id": "M8-xsd-component-mapping",
+    "client_thread_id": "client-new-thread:d6ee4cd9-b9a8-4907-a0fd-b0ac6f8459d3",
+    "claim_revision": "860c378cf992cb688e842603e8a854e98c5ec54a",
+    "base_revision": "41dc2fc60962d7e3afc6a7a494146b63c1919161",
+    "branch": "codex/m8-xsd-component-mapping"
   }
 }
