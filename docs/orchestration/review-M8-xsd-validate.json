@@ -1,0 +1,62 @@
+{
+  "task": "M8-xsd-validate",
+  "source_revision": "75d037bcddf3f1515a3ecf48ac524f4a2c6ae74c",
+  "integration_revision": "7c862528d88fb725e322eb53c278efe268b9fac8",
+  "review": {
+    "final_join": "/root/review_m8_contract and /root/review_m8_model accepted narrow canonical/default/fixed join at75d037bc; no blocker. Source review only, no reviewer executions.",
+    "prior_closures": "Earlier independent findings including traversal/xsi/type/ID/hints/accounting/text closed; root direct33bead34 derivation repair independently accepted. Only final canonical#4 remained, now closed without reopening accepted behavior.",
+    "sha256": {
+      "Evaluator.cs": "ca7c7f31f93dc841ee081daa99139ae25eb2e7b36f56c66b8ec8a3fa547f6af8",
+      "Values.cs": "02f23a19d01f9c8438386a9b3ee1abdf4e0cef1bcab16441435bbad97677c49a",
+      "ReviewRegressionTests.cs": "69d0e5048a8a7edfcebf3567e637ece5698fd584454ab5e2411efae9836fc3e5"
+    }
+  },
+  "checks": {
+    "command": "python3 docs/reports/M8-xsd-validate/check.py",
+    "result": "passed",
+    "counts": {
+      "correctness": {
+        "total": 937,
+        "passed": 937,
+        "failed": 0,
+        "errors": 0,
+        "skipped": 0,
+        "not-run": 0
+      },
+      "resolver": {
+        "total": 42,
+        "passed": 42,
+        "failed": 0,
+        "errors": 0,
+        "skipped": 0,
+        "not-run": 0
+      }
+    },
+    "namespace_counts": {
+      "M8XsdValidate": 156,
+      "M8XsdContent": 102,
+      "M8ConstraintLexical": 86,
+      "M8Facets": 303,
+      "M8XsdIdentity": 149,
+      "M8Model": 20,
+      "M8SourceLocations": 10,
+      "M8XsdCompile": 72,
+      "M8XsdWildcardComposition": 11,
+      "M8XsdEffectiveContent": 28
+    },
+    "total_passed": 979,
+    "public_api": 1410,
+    "frozen_core": 2,
+    "normal_and_true_xml_only_consumers": "passed",
+    "planning": 182,
+    "diff_check": "passed",
+    "build_warnings_errors": 0,
+    "test_sha256": {
+      "correctness": "b08e7a3e3121ac25dbc283834bcda721e051415e119b5ef7b571ff50fa55531f",
+      "resolver": "3b92aa91dc4b3d0a5c6a701db13bca8529ea908e958e5a90b0917ff7643ae1b2"
+    },
+    "log_sha256": "2da1cedd70af0ce326686afac9664ef58576d6a10f6c31a85d4bb8cc2463ab84",
+    "limits": "Internal pre-facade composition; no public XSD schema publication claim. WarmBorrowed methods explicitly excluded; no allocation counters."
+  },
+  "allocation": "pending controlled evidence after accepted-source preparation"
+}
