@@ -119,3 +119,19 @@ All 213 identities and elevated process-list permission pass; only the two owned
 supervisor/preparer files changed from the previous frozen inputs. Late/non-UTC
 refusal checks create no directory/child. Runtime/probe rebuilds and functional
 reruns were unnecessary. No measurement grant or workload started.
+
+## First measurement and bounded correction
+
+The first granted probe failed on the warm wildcard route and stopped before
+BDN; durable cleanup release preceded inspection. Its original probe did not
+persist observations before the assertion, so no byte counts are available.
+See [measurement-1.md](measurement-1.md) for the preserved failure and exact
+cause/fix. Correction `127d15b2fedd1675572bad17b4822c80ee94d241` replaces only
+the warm namespace-list interface enumeration with indexed borrowed reads,
+preserving matching/charging semantics. New IL has index/count calls and no
+enumerator calls; all 285 correctness/API/XML-only checks and disabled controls
+pass. The probe now persists every completed distribution before a failure,
+with null fields for unrun stages, and the wrapper uses fresh `measurement-2`
+paths. The new 213-identity manifest SHA256 is
+`8bcc6182e3e89db9f8a3e627cc1f58e3c635b6d89f3a072a352eb7f0d1fb52a9`.
+Source closure and a new grant remain pending; no new allocation claim exists.

@@ -38,7 +38,8 @@
       "status": "passed",
       "evidence": [
         "verified-repair-focused-checks",
-        "immutable-review-closure"
+        "immutable-review-closure",
+        "indexed-wildcard-correctness"
       ]
     },
     {
@@ -47,7 +48,8 @@
       "status": "passed",
       "evidence": [
         "verified-repair-focused-checks",
-        "immutable-review-closure"
+        "immutable-review-closure",
+        "indexed-wildcard-correctness"
       ]
     },
     {
@@ -146,18 +148,37 @@
       "result": "failed",
       "summary": "Root grantc7c7ca49/durable cleanupRELEASEf2e5dae0 before inspection. Supervisorstatus1/0.31723220797721297s; first child85004exit-6 with Allocation ownership control failed: warm wildcard cursor;213identities stable before/after, childreaped/groupabsent/logclosed. allocations.json absent: no byte count/distribution available; BDN never started; no retry. Post-release source/IL shows interface GetEnumerator on ReadOnlyCollection over List. Preserved original log/lifecycle; bounded owned correction prepared, new source checks/review/grant pending.",
       "artifact": "docs/reports/M8-xsd-content/measurement-1.md"
+    },
+    {
+      "id": "indexed-wildcard-correctness",
+      "kind": "check",
+      "revision": "127d15b2fedd1675572bad17b4822c80ee94d241",
+      "command": "python3 docs/reports/M8-xsd-content/check.py > artifacts/M8-xsd-content/attempt-2-check.log 2>&1; pinned InspectIl.dll on built runtime",
+      "result": "passed",
+      "summary": "285actual .NET10.0.11 Arm64 cases pass (102owned included),zero errors/failures/skips/not-run;1400public/9frozen match; genuineXML-only consumer passes; Release builds0warnings/errors/planning179/diffclean. Before IL had GetEnumerator/Current/MoveNext/Dispose over frozen ReadOnlyCollection<List>; corrected Allows IL uses get_Item/get_Count with original Tick/ordinal semantics, no enumerator calls. Owned test subtree unchanged efe2a8c3f65d8bb75aaded5f5e033fd059e38ec7; corrected runtime subtree5331aa4bd823d48b55beb53b7bd2f1ec9960e570. No allocation claim from IL.",
+      "artifact": "artifacts/M8-xsd-content/attempt-2-check.log"
+    },
+    {
+      "id": "attempt-2-disabled-preparation",
+      "kind": "check",
+      "revision": "127d15b2fedd1675572bad17b4822c80ee94d241",
+      "command": "Pinned Release Content.Probe/Content.Bdn build; prebuilt probe --control, BDN --control/--discover; prepare.py127d15b2; elevated measure.py --verify-only",
+      "result": "passed",
+      "summary": "Both payloads0warnings/errors;10probe32warm/64sample routes consumed with every allocation/retention counter and timer disabled, statuspassed/unrunfailurefields null;5BDNsemantic controls/5exact MemoryDiagnoser ShortRun InProcessNoEmit discovery pass.213identities and elevated process-list permission pass. Newmanifest40775B/SHA8bcc6182e3e89db9f8a3e627cc1f58e3c635b6d89f3a072a352eb7f0d1fb52a9; supervisor7428B/SHAb77dee00b003416eb10999c2dbe8788619a2dfff6b9c69adeb54d5d4115ca552. Fresh measurement-2 paths preserve originalraw. No actualmeasurement/BDN run; sourceclosure/rootfreshgrant pending.",
+      "artifact": "docs/reports/M8-xsd-content/preparation.json"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "First root allocation probe failed warm wildcard cursor, BDN unrun; raw failure retained, no byte counts invented. Owned indexed traversal/probe persistence/fresh measurement-2 correction prepared; new source correctness/review/preparation/grant pending.",
+    "summary": "Bounded wildcard indexing and failing-distribution persistence committed at127d15b2;285checks/API/XML-only/IL and disabled controls/discovery pass. New213identity attempt2manifest verified; sourceclosure and fresh root/all-host grant pending. First measurement failure preserved without byte counts; A3remainsfailed until actualaccepted evidence.",
     "checks": [
       "285 actual .NET10.0.11 cases pass;1400public/9frozen match; actualXML-only consumer; planning179/diff clean; Release builds0warnings/errors.",
       "10 counter/timer-disabled probe routes and5 semantic BDN controls pass; exactly5 ShortRun MemoryDiagnoser NoEmit cases discovered. No allocation/timing run.",
-      "Prior101/1 and corrected99/3 failures preserved as historical evidence before verified compiler repairs."
+      "Prior101/1 and corrected99/3 failures preserved as historical evidence before verified compiler repairs.",
+      "Correction127d15b2:285passed/API1400/frozen9/XML-only/IL noenumerator;10disabledprobe/5BDNcontrols/5NoEmitdiscovery;213preparedidentities verified, no new measurements."
     ],
     "remaining": [
-      "Build bounded correction; confirm indexed/no-enumerator IL,285checks/API/XML-only and disabled controls/discovery; freeze new identities, obtain changed-source closure and fresh all-host root grant. No automatic measurement retry.",
+      "Obtain bounded changed-source closure and fresh root/all-hostPARK grant for newmanifest8bcc6182; execute no retry under oldgrant. Inspect observations only after durable cleanupRELEASE and record honest costs/limitations before implemented status.",
       "Later facade/facet join MUST discharge typed element fixed/default equality, declaration/binding lexical-value consistency and simple-type/facet validity including unused declarations from retained IDs/types/contexts/locations. No datatype fallback."
     ],
     "requests": []

@@ -37,3 +37,21 @@ confirm indexed calls and absence of enumeration in IL, rerun relevant 285-case
 correctness/API/XML-only checks, refresh disabled controls and five-case NoEmit
 discovery, commit and freeze new identities, obtain changed-source closure and
 a fresh all-host root grant. No new allocation/timing claim exists yet.
+
+Correction source `127d15b2fedd1675572bad17b4822c80ee94d241` now passes the
+actual 285-case correctness/API/XML-only check (zero test failures/errors/skips,
+1,400 public/nine frozen members, Release builds zero warnings/errors, planning
+179). The IL now calls `get_Item` and `get_Count` with no enumeration calls;
+before/after IL is retained in `artifacts/M8-xsd-content/wildcard-*-il.txt`.
+The unchanged test subtree is `efe2a8c3f65d8bb75aaded5f5e033fd059e38ec7`;
+corrected ContentModels subtree is `5331aa4bd823d48b55beb53b7bd2f1ec9960e570`.
+Ten disabled probe routes, five BDN semantic controls and exact five-case
+MemoryDiagnoser ShortRun InProcessNoEmit discovery pass. Both payloads rebuild
+with zero warnings/errors. No actual allocation/timing measurement ran again.
+
+Fresh attempt-2 manifest: 40,775 bytes, SHA256
+`8bcc6182e3e89db9f8a3e627cc1f58e3c635b6d89f3a072a352eb7f0d1fb52a9`.
+Supervisor: 7,428 bytes, SHA256
+`b77dee00b003416eb10999c2dbe8788619a2dfff6b9c69adeb54d5d4115ca552`.
+All 213 identities and elevated process-list permission pass. Bounded source
+closure and a fresh all-host root grant are still required.
