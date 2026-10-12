@@ -7,8 +7,8 @@
   "coordination_branch": "main",
   "max_concurrent_workers": 3,
   "last_verified_checkpoint": "M7-gate",
-  "last_verified_task": "M8-sch-validate",
-  "last_integrated_revision": "8917aceb24b132e0124405279fe9abd6359bca86",
+  "last_verified_task": "M8-sch-report",
+  "last_integrated_revision": "223d094fb93e2a454557822818c06baa296e8702",
   "active_assignments": [
     {
       "task_id": "M8-xsd-content",
@@ -53,27 +53,6 @@
       "source_revision": "b1bd26fe9a0978b0301ed45383c45f43da4592e3",
       "integration_candidate": "00f0ab8790c8ba64397133928f8b1409a7d7ac31",
       "manifest_sha256": "d6dc9a15b9a1656deb8f96de8ca1f0475934e28cdfcc36e0f641d1e651754be7"
-    },
-    {
-      "task_id": "M8-sch-report",
-      "branch": "codex/m8-sch-report",
-      "base_revision": "c61f803e18becdf49fe068e8ee91f74628ed0d83",
-      "stage": "Source review accepted;546 branch checks/API1403/frozen3+9+154/trueXML-only passed;418-identity allocation preparation ready; combined checks pending",
-      "acceptance_before_dispatch": {
-        "mandatory": "Exact frozen SchematronReport SerializeSvrl/SaveSvrl and detached keyed SVRL XML profile; no live document/schema requirement.",
-        "integration": "Golden independent output, explicit key joins with collisions and zero findings, sorted namespaces/null-vs-empty optional metadata, XML escaping/Unicode/UTF8 without BOM/declaration, stream ownership/failure/cancellation, APIs/XML-only and applicable owned output allocation evidence.",
-        "review": "Independent read-only serializer/order/ownership/encoding/cancellation review; actual combined checks after branch handback."
-      },
-      "model": "gpt-6.1-sol",
-      "thinking": "high",
-      "claim_revision": "0d120fa97559ac185694bfc172f926ab35dac72b",
-      "chat_id": "01a12da6-bf66-7a50-a246-77282703c6a9",
-      "client_thread_id": "client-new-thread:db8b78d0-6265-43e9-8e43-0bbdc267e6bd",
-      "host_id": "local",
-      "worktree_path": "/Users/sebastienros/.codex/worktrees/939a/xemele",
-      "setup": "Independent clean branch/HEAD/claim ancestry confirmed; frozen detached SVRL profile/checks/measurement brief delivered next",
-      "source_revision": "f6db4e76dca6c57ef97f11149348edc3a6a4272c",
-      "prepared_revision": "c44e14e0d7b567524e7d115ab2abe32f3fb97c36"
     }
   ],
   "integration_queue": [],
@@ -210,7 +189,7 @@
   },
   "current_milestone": "M8",
   "milestone_completion_scope": "Complete integrated verified M8-gate; terminal workers and cleanup; preserve earlier evidence/caches; transfer sole writes to main. Do not create M9.",
-  "milestone_progress": "18 of30 M8 tasks verified; content285 combined checks passed, facets804 branch checks and preparation passed, Schematron report546 branch checks passed.",
+  "milestone_progress": "19 of30 M8 tasks verified; content and facets source/checks/measurements passed, final metadata handbacks pending.",
   "blockers": [],
   "pending_decisions": [],
   "timing_queue": [],
@@ -735,6 +714,29 @@
       "integration_revision": "8917aceb24b132e0124405279fe9abd6359bca86",
       "worker_revision": "ca3ce0e8",
       "cleanup": "docs/orchestration/cleanup-M8-xsd-effective-content.json"
+    },
+    {
+      "task_id": "M8-sch-report",
+      "branch": "codex/m8-sch-report",
+      "base_revision": "c61f803e18becdf49fe068e8ee91f74628ed0d83",
+      "stage": "Verified on actual combined tree; terminal cleanup pending",
+      "acceptance_before_dispatch": {
+        "mandatory": "Exact frozen SchematronReport SerializeSvrl/SaveSvrl and detached keyed SVRL XML profile; no live document/schema requirement.",
+        "integration": "Golden independent output, explicit key joins with collisions and zero findings, sorted namespaces/null-vs-empty optional metadata, XML escaping/Unicode/UTF8 without BOM/declaration, stream ownership/failure/cancellation, APIs/XML-only and applicable owned output allocation evidence.",
+        "review": "Independent read-only serializer/order/ownership/encoding/cancellation review; actual combined checks after branch handback."
+      },
+      "model": "gpt-6.1-sol",
+      "thinking": "high",
+      "claim_revision": "0d120fa97559ac185694bfc172f926ab35dac72b",
+      "chat_id": "01a12da6-bf66-7a50-a246-77282703c6a9",
+      "client_thread_id": "client-new-thread:db8b78d0-6265-43e9-8e43-0bbdc267e6bd",
+      "host_id": "local",
+      "worktree_path": "/Users/sebastienros/.codex/worktrees/939a/xemele",
+      "setup": "Independent clean branch/HEAD/claim ancestry confirmed; frozen detached SVRL profile/checks/measurement brief delivered next",
+      "source_revision": "f6db4e76dca6c57ef97f11149348edc3a6a4272c",
+      "prepared_revision": "c44e14e0d7b567524e7d115ab2abe32f3fb97c36",
+      "handoff_revision": "59b81b304aa204eb31722c83df66874f34dfa787",
+      "integration_revision": "223d094fb93e2a454557822818c06baa296e8702"
     }
   ],
   "measurement_lease_history": [

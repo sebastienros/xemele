@@ -4,11 +4,11 @@
   "milestone": "M8",
   "title": "Schematron report serialization",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M8 coordinator01a12c6c-b333-71d3-877f-0d186618e21d / assigned isolated worker",
   "branch": "codex/m8-sch-report",
   "base_revision": "c61f803e18becdf49fe068e8ee91f74628ed0d83",
-  "integration_revision": null,
+  "integration_revision": "223d094fb93e2a454557822818c06baa296e8702",
   "depends_on": [
     "M8-sch-validate"
   ],
@@ -36,7 +36,8 @@
       "status": "passed",
       "evidence": [
         "source-checks",
-        "source-review"
+        "source-review",
+        "coordinator-final-integration"
       ]
     },
     {
@@ -45,7 +46,8 @@
       "status": "passed",
       "evidence": [
         "source-checks",
-        "source-review"
+        "source-review",
+        "coordinator-final-integration"
       ]
     },
     {
@@ -57,7 +59,8 @@
         "source-review",
         "allocation-control",
         "allocation-preparation",
-        "owned-allocation"
+        "owned-allocation",
+        "coordinator-final-integration"
       ]
     }
   ],
@@ -112,11 +115,20 @@
       "result": "passed",
       "summary": "Root executed sole prebuilt allocation-only child under fresh serial scope; status0/418 source-runtime-payload-control-supervisor identities+manifest stable before/after; child89187 exit0/reaped/group absent/log closed,localfsyncedRELEASE and hostcf39961a preceded raw inspection. AppleM4Pro/Arm64/.NET10.0.11 cold string5024B/stream10872B;32-call warm means positive152,short string5024/stream1384,longmultilingual38736/1384,denseescaping62936/1384,128events218376/34800,invalidscalar3016/1776. All13 routes consumed. Retained16long strings approximate566168B;processRSS52166656B, separate estimates. Reused digest sink excludes destination storage. No distributions/causal residual/zero/timing/BDN/speed/crossarch claim.",
       "artifact": "docs/reports/M8-sch-report/allocations.md"
+    },
+    {
+      "id": "coordinator-final-integration",
+      "kind": "integration",
+      "revision": "223d094fb93e2a454557822818c06baa296e8702",
+      "command": "python3 docs/reports/M8-sch-report/checks.py; python3 docs/reports/M8-xsd-content/check.py; python3 docs/reports/M8-facets/checks.py (executed serially with failure stops)",
+      "result": "passed",
+      "summary": "Actual report546/content285/facets804 suites pass (overlapping prerequisites), zero failures/errors/skips/not-run/build warnings/errors; public1403/frozen3+9+154+9+316, normal/trueXML-only consumers and179-task planning pass. Main merge has identical runtime/test/build/API/consumer/check inputs; metadata-only differences. Independent raw allocation review accepted; source and lifecycle evidence preserved.",
+      "artifact": "docs/reports/M8-sch-report/integration.md"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "All frozen SVRL branch criteria implemented; accepted source review;42 owned+504 regressions,public1403/consumers and applicable owned allocation evidence passed. Root reported actual joint546report+804facet integrated checks. Coordinator retains verified decision. ALL owned paths and task JSON handed back to coordinator; no further worker writes/jobs/children. Raw artifacts preserved.",
+    "summary": "Verified integrated frozen detached SVRL reporting; worker all-owned-write handback accepted and allocation interpretation independently checked.",
     "checks": [
       "python3 docs/reports/M8-sch-report/checks.py atf6db4e76:42+504 actual cases,zero failures/errors/skips/not-run;frozen3/9/154/public1403;normal+trueXML-only consumers;SDK10.0.400/runtime10.0.11;0warnings/errors;planning179/whitespace",
       "Independent coordinator source review accepted exactfour hashes with no blockers;review only",
@@ -124,8 +136,7 @@
       "Root-granted serial measurement:13 consumed positive allocation rows; exact totals/32means, approximate retained/RSS separately;418 stable identities;child reaped/group absent/log closed;durable RELEASE before raw inspection"
     ],
     "remaining": [
-      "Coordinator independently reviews allocation interpretation, integrates final evidence and records actual combined verification/status; branch implemented, not verified",
-      "One Arm64 allocation-only run does not establish cross-architecture release, full corpus conformance, timing or allocation-free primitive claims"
+      "Terminal verified cleanup removes transient raw/build outputs; broader Schematron corpus/gate remains in its owning tasks."
     ],
     "requests": []
   }
