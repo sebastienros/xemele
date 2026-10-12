@@ -14,7 +14,7 @@
       "task_id": "M8-rng-validate",
       "branch": "codex/m8-rng-validate",
       "base_revision": "cdf7a0b148e837e016f874da32b054ab4f25a93e",
-      "stage": "Review-ready85owned+1191prior and1410public passed;434identityallocation preparation frozen; externalPARK proposal pending",
+      "stage": "Bounded review requires known instance source URI in context helper; worker correcting during source-only external PARK. Prior checks preserved; recheck/refreeze required.",
       "model": "gpt-6.1-sol",
       "thinking": "high",
       "acceptance_before_dispatch": {
@@ -28,13 +28,14 @@
       "chat_id": "01a12de0-fb87-7b93-9937-b32be47a82b1",
       "worktree_path": "/Users/sebastienros/.codex/worktrees/3538/xemele",
       "source_revision": "5d69a1361eb55f771a5da428fc67ee7272c47d6a",
-      "manifest_sha256": "6c38cf4809edd1286d2ec42889b1aef4099fe48340d2e6c9d669cd3678efae1f"
+      "manifest_sha256": "6c38cf4809edd1286d2ec42889b1aef4099fe48340d2e6c9d669cd3678efae1f",
+      "review_request": "A1/A2 Evaluator.Context must pass document.ParsedSourceUri independent of XML declaration; known-source relative/inherited xml:base proving cases."
     },
     {
       "task_id": "M8-xsd-identity",
       "branch": "codex/m8-xsd-identity",
       "base_revision": "465b9e5544f83e320593218404d29a26dfad8985",
-      "stage": "Review-ready124owned+546prior+42safeResolver passed; allocationpreparation ongoing; externalPARK proposal pending",
+      "stage": "Bounded review accepted descendant-self semantics; worker correcting unpolled axis lookahead and NCName scalar validation. Revised checks/refreeze pending external RELEASE.",
       "model": "gpt-6.1-sol",
       "thinking": "high",
       "acceptance_before_dispatch": {
@@ -47,7 +48,8 @@
       "client_thread_id": "client-new-thread:95ec28ed-fa54-4b07-bd6d-7987404c6066",
       "chat_id": "01a12de1-4dd2-7361-b83f-c7d7b1b0a945",
       "worktree_path": "/Users/sebastienros/.codex/worktrees/26b6/xemele",
-      "source_revision": "c3b29efa6066f9a80bbf01dc6bce489b89780d73"
+      "source_revision": "c3b29efa6066f9a80bbf01dc6bce489b89780d73",
+      "review_request": "A2 charge/poll axis whitespace lookahead including failed lookahead without duplicate charging; owned polled scalar NCName validation and exact boundary/cancellation regressions."
     },
     {
       "task_id": "M8-xsd-validate",
@@ -60,14 +62,15 @@
         "mandatory": "Complete frozen internal IXsdEvaluator traversal/types/facets/xsi:type/nil/attributes/defaults/fixed/wildcards and shared operation via supplied content and identity hooks; no public facade.",
         "integration": "Independent valid/invalid XML, typed effective defaults and context-sensitive fixed equality, ID/IDREF/ENTITY/NOTATION, limits/cancel/noDOMmutation/concurrent runs; real normal/XML-only hook consumer, frozen/public APIs and affected predecessors; prepared scoped allocation evidence.",
         "review": "Independent validation semantics and accounting/lifetime review; no unmerged identity/facade dependency; request shared compiler repairs instead of fallback."
-      }
+      },
+      "claim_revision": "362edfc1660beefa45f935b9721b280aa80b71db"
     }
   ],
   "integration_queue": [],
   "next_actions": [
-    "Clean verified corpus worker and candidate, then claim ready XSD core evaluator.",
-    "Review and integrate RNG/identity workers with bounded measurement preparation.",
-    "Complete remaining M8 facade/corpora/CLI/gate, terminal cleanup and sole-writer transfer; no M9."
+    "Receive and durably record external M2-integrate-strict-5e62e0a RELEASE; then create claimed XSD core worker in isolated worktree.",
+    "Recheck corrected RNG and identity sources, prepare bounded allocation-only sequence outside park, collect fresh all-host ACKs and run with prompt durable release.",
+    "Integrate remaining M8 facade/corpora/CLI/gate, clean terminal workers and transfer sole writes; no M9."
   ],
   "implementation_worker_policy": {
     "model": "gpt-6.1-sol",
@@ -196,7 +199,7 @@
   },
   "current_milestone": "M8",
   "milestone_completion_scope": "Complete integrated verified M8-gate; terminal workers and cleanup; preserve earlier evidence/caches; transfer sole writes to main. Do not create M9.",
-  "milestone_progress": "23 of31 M8 tasks verified; RNG and XSD identity active; XSD core validator ready next.",
+  "milestone_progress": "23 of31 M8 tasks verified; RNG and identity corrections active; XSD core claimed pending external RELEASE before dispatch.",
   "blockers": [],
   "pending_decisions": [],
   "timing_queue": [],
@@ -878,8 +881,12 @@
   "coordinator_repair": null,
   "external_measurement_park": {
     "id": "M2-integrate-strict-5e62e0a",
-    "status": "proposed collectingfreshACKs",
-    "record": "docs/orchestration/M8-external-M2-integrate-strict-5e62e0a.json"
+    "status": "all-xemele-actors-parked-awaiting-owner-grant",
+    "record": "docs/orchestration/M8-external-M2-integrate-strict-5e62e0a.json",
+    "aggregate_ack_revision": "63733e99aabecf2d0452f8238048c795aee9bbe6",
+    "latest_start_utc": "2026-10-12T02:50:00Z",
+    "hard_stop_utc": "2026-10-12T03:00:00Z",
+    "owner_chat_id": "01a12d32-4b4c-7632-8cae-ac5f5780cc3e"
   },
   "measurement_park_aborts": [
     {
