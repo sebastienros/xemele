@@ -56,7 +56,9 @@
       "status": "pending",
       "evidence": [
         "runtime-correctness",
-        "runtime-source-review"
+        "runtime-source-review",
+        "allocation-source-review",
+        "allocation-preparation"
       ]
     }
   ],
@@ -91,21 +93,42 @@
       "result": "passed",
       "summary": "Runtime SOURCE PASS: exact optional seam, mandatory substantive redefine, syntax/classification/absence ordering, legacy/accounting/source/disposal invariants and independent original/control scope. Reviewer executed no checks.",
       "artifact": "docs/reports/M8-xsd-optional-composition/runtime-source-review.json"
+    },
+    {
+      "id": "allocation-source-review",
+      "kind": "review",
+      "revision": "72bd4e876e174b4941f1a0e29b2d2fdd5d2431a0",
+      "command": "Independent allocation SOURCE review by /root/review_m8_model",
+      "result": "passed",
+      "summary": "24 bounded semantic routes and ownership/control/lifecycle/preparation gates accepted SOURCE PASS; exact14 source hashes independently matched. Source review only, reviewer executed no commands.",
+      "artifact": "docs/reports/M8-xsd-optional-composition/allocation-source-review.json"
+    },
+    {
+      "id": "allocation-preparation",
+      "kind": "check",
+      "revision": "72bd4e876e174b4941f1a0e29b2d2fdd5d2431a0",
+      "command": "python3 docs/reports/M8-xsd-optional-composition/prepare.py; python3 docs/reports/M8-xsd-optional-composition/lifecycle-check.py; python3 docs/reports/M8-xsd-optional-composition/measure.py --verify-only; python3 docs/reports/M8-xsd-optional-composition/measure.py --preflight",
+      "result": "passed",
+      "summary": "First attempt offline probe restore/build zero warnings/errors;24counter-disabled semantic routes/40retained;471 frozen identities unchanged; finite timeout-SIGTERM-exit0 stayed failure/no-next; normal/preparation/preflight exit0 completed, all children reaped/groups absent/logs closed; realps permission. Manifest389a172594c545289cff9c51b4894434a9c5600aee520b2a099ee678e4405f5c. No actual counters.",
+      "artifact": "docs/reports/M8-xsd-optional-composition/preparation-summary.json"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Runtime SOURCE PASS accepted; allocation SOURCE/design only ready with24 bounded routes and byte-identical accepted finite supervisor. Runtime/tests/fixtures immutable5160; no shared/API/oracle changes.",
+    "summary": "Immutable allocation preparation ready after independent runtime and allocation SOURCE PASS.24disabled routes/build/lifecycle/verify/preflight pass;471 frozen identities unchanged. No actual counters; A3 pending root run.",
     "checks": [
       "Original baseline5 observation rows passed; four schema refusals and unavailable instances retained.",
       "First build CS0649 test helper failure and first focused66/67 depth-fixture failure preserved; corrected controls only.",
       "1777affected+42resolver+77datatype disjoint rows passed; public1430/eightfrozenlanes/additive46/emittedAPIs/normal+trueXMLonly consumers/planning196/diff passed.",
-      "Allocation Python AST parse and supervisor byte equality/source hash verification only; no script execution/C# build/controls/lifecycle/freezing/probes/counters."
+      "Allocation Python AST parse and supervisor byte equality/source hash verification only; no script execution/C# build/controls/lifecycle/freezing/probes/counters.",
+      "Offline pinned probe restore/build first attempt passed0warnings/errors;24disabled routes/40retained counters alloff, not allocation evidence.",
+      "Lifecycle timeout-to-TERM-exit0 remains failure/no-next; normal/preparation/preflight completed exit0; all4ownedchildren reaped/groups absent/logsclosed; verify471identities/realps permission pass.",
+      "Root reports separate combined075b033958 correctness2044unique/eightbuilds0warn-errors/APIs/normal+trueXMLonly consumers pass; not rerun or represented as worker execution."
     ],
     "remaining": [
-      "Independent allocation SOURCE acceptance required before any probe build/control/lifecycle/preparation.",
-      "Actual bounded allocation evidence remains; root only launches actual counters after immutable preparation.",
-      "Root combined correctness and integration verification handled separately."
+      "Root reviews immutable471identity manifest389a172594c545289cff9c51b4894434a9c5600aee520b2a099ee678e4405f5c, then root-only actual120s/work110/cleanup10 control+measurement with no retry.",
+      "Root lifecycle/release before rawinspection; compact actual allocation/retained/ownership summary required for A3.",
+      "Root integration and integrated verification; integration_revision remains null."
     ],
     "requests": []
   }
