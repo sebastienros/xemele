@@ -53,16 +53,16 @@ allocation/retained/RSS counters disabled. Frozen manifest preparation verifies
 20work+10cleanup, with absolute UTC start/expiry, no-overwrite guards, owned
 process-group cleanup, before/after hashes and no raw inspection during lease.
 `preparation.json` contains the proposed command and payload identities.
-No measurement has run; no borrowed-zero, speedup, BDN, throughput, cross-
-architecture or full conformance-corpus claim is made. Runs deliberately allocate
+At preparation no measurement had run. No borrowed-zero, speedup, BDN, throughput,
+cross-architecture or full conformance-corpus claim is made. Runs deliberately allocate
 owned XPath snapshots, scope/match/traversal state, locations/messages/events/
 findings/diagnostics/results; retained results are immutable snapshots.
 Fresh host-wide coordinator PARK/GRANT and RELEASE are required before any
 measurement or subsequent raw inspection. Earlier wildcard/parser proposals
 are unrelated and cannot authorize this task's probe.
 
-Task state remains in_progress pending accepted allocation evidence and coordinator
-integration. This is a branch deliverable, not integrated verification.
+The preparation checkpoint remained in_progress pending allocation evidence.
+This is a branch deliverable, not integrated verification.
 
 Coordinator relayed closure review acceptance of43c6ab4 with no remaining finding
 while this worker stayed parked during M8-wildcard-parser-serial-2. Read-only
@@ -72,3 +72,11 @@ location tests c40aa56f8cee484955d1d96f82ef108282a8a74f8c5e0da76636ac3f7cc94315.
 Both context/subject M4 round-trips and per-node charges were accepted. This is
 review evidence, not a new test run. Runtime/probe identities remain unchanged;
 no build/test/discovery/measurement was performed while parked.
+
+The one fresh host-wide serial-2 measurement completed with stable215 identities
+and confirmed child/group/output cleanup. Durable root RELEASE076a64c0 preceded
+raw inspection. Exact owned costs, controls, hardware and limitations are in
+[allocations.md](allocations.md). The task is now implemented on its branch with
+integration_revision unset. All owned writes are handed back; coordinator must
+integrate and rerun combined checks before setting verified. No runtime/test/
+probe/manifest payload changed after accepted source43c6ab4.
