@@ -4,7 +4,7 @@ import argparse, collections, hashlib, json, os, signal, subprocess
 from pathlib import Path
 HERE=Path(__file__).resolve().parent;ROOT=HERE.parents[2]
 D='/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet'
-DLL=ROOT/'tests/Xemele.Conformance.Tests/Xsd/bin/Release/net10.0/XsdCorpus.dll'
+DLL=ROOT/'artifacts/M8-xsd-corpus/runner-bin/Release/net10.0/XsdCorpus.dll'
 CORPUS=ROOT/'tests/corpora/xsd';OUT=ROOT/'artifacts/M8-xsd-corpus'
 def verify(rows,expected,code):
  assert {r['id'] for r in rows}=={r['id'] for r in expected},'case ID coverage differs'

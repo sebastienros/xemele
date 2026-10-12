@@ -1,4 +1,9 @@
-<Project Sdk="Microsoft.NET.Sdk">
+<Project>
+  <PropertyGroup>
+    <BaseIntermediateOutputPath>../../../artifacts/M8-xsd-corpus/runner-obj/</BaseIntermediateOutputPath>
+    <BaseOutputPath>../../../artifacts/M8-xsd-corpus/runner-bin/</BaseOutputPath>
+  </PropertyGroup>
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
   <PropertyGroup><OutputType>Exe</OutputType><EnableDefaultCompileItems>false</EnableDefaultCompileItems><AssemblyName>XsdCorpus</AssemblyName></PropertyGroup>
   <ItemGroup>
     <Compile Include="Runner.cs.fixture" />
@@ -6,4 +11,5 @@
     <Compile Include="../../Xemele.Differential.Tests/Xsd/BclEngine.cs.fixture" />
     <ProjectReference Include="../../../src/Xemele/Xemele.csproj" />
   </ItemGroup>
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
 </Project>
