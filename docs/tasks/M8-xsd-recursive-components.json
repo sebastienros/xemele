@@ -4,7 +4,7 @@
   "milestone": "M8",
   "title": "Separate recursive components from forbidden schema cycles",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M8 coordinator / assigned isolated M8-xsd-recursive-components worker",
   "branch": "codex/m8-xsd-recursive-components",
   "base_revision": "69691f493fd2b0d5ce382b2f2cbcfb154dd8d202",
@@ -51,9 +51,15 @@
     {
       "id": "M8-xsd-recursive-components-A3",
       "description": "Pass actual original baseline and repaired public outcomes, independently specified recursive/negative neighbors, affected compiler/content/facade checks, public/frozen APIs and normal/XML-only consumers, actual relevant allocation evidence and planning validation.",
-      "status": "pending",
+      "status": "passed",
       "evidence": [
-        "branch-correctness"
+        "original-baseline",
+        "branch-correctness",
+        "independent-runtime-source-review",
+        "independent-allocation-source-review",
+        "allocation-preparation",
+        "supervisor-timeout-amendment",
+        "actual-allocations"
       ]
     }
   ],
@@ -119,23 +125,28 @@
       "result": "passed",
       "summary": "Workload/preflight success now requires reasoncompleted plus exit0/reaping/groupabsent/logclosed. Finite Python timeoutchild52913handlesSIGTERMexit0:reasonTimeoutExpired,cleanupalltrue,workloadfalse,nextchildnotlaunched. Normalchild52915completedexit0/cleanup passes. No counters or benchmark timing. Original455prep/control preserved, no unchanged runtime/probe rebuild/controlrerun. Supervisor-only refreshed457identities+actualpspermission match manifestfe4c11dbee5934ae51cfbbe3b0c4a9dd5cc90985d289372231c6409605fbcad2; supervisorSHAb49f0beefb943c0e531f88235d12d269f671584da0563834a3d41159b1e100e5.",
       "artifact": "docs/reports/M8-xsd-recursive-components/lifecycle-check.json"
+    },
+    {
+      "id": "actual-allocations",
+      "kind": "check",
+      "revision": "822e5a756f9d82c5becd14c2ded7c3a9b132ff99",
+      "command": "Root elevated python3 docs/reports/M8-xsd-recursive-components/measure.py --run fe4c11dbee5934ae51cfbbe3b0c4a9dd5cc90985d289372231c6409605fbcad2; worker reads preserved raw after durable cleanupcc2f59ce6",
+      "result": "passed",
+      "summary": "Actual nonisolated rootrun terminal0:control53183/measure53185completedexit0,reaped/groupsabsent/logsclosed;before/after457identitiesmatch.13ownedroutes832samplesstrictlypositive,aggregate=sum64samples;control=measure1085calls/26095consumed andbinaryhashesmatch.Cold3452776B,positive1048B;4retainedcategories8each. Heapgraph581672/public2039824B coarse;diagnostic-39688/result-4944B GC/lifetime noise, never negative/zeroownership. First/warm/setup/diagnostic/traversal/retained boundaries separate. Synchronous managedallocationsonly, no zero primitive/throughput/globalidle/x64/AOTclaim. Supervisorfixe458a2d4b included. No workermeasurement/rebuild/repeatedtests during finalmetadata.",
+      "artifact": "docs/reports/M8-xsd-recursive-components/measurement-summary.json"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Corrected supervisor-only timeout success predicate after independent review amendment; actual finite timeoutexit0 control fails workload/stops nextchild with clean cleanup, normalchild passes. Refreshed457identities verified. Runtime/probe/control unchanged accepted; root actual counters pending.",
+    "summary": "All A1-A3 implemented on branch: unchanged originals accepted through deferred element-inline complex-body completion, forbidden group/base cycles preserved, complete correctness/API/consumer and actual nonisolated owned-allocation evidence. Await coordinator integration verification; integration_revision remains unset.",
     "checks": [
-      "Actual baseline4failed; original repaired4pass; stable9e376cd98 check1300+42pass,public1430/all8frozen and normal/XML-only consumers pass;6builds0warnings/errors,planning196/diff.",
-      "Own recursive consumer normal+trueXML-only precommit snapshot now c5a9392e3 passed2builds0warnings/errors; string/DOM/stream finite recursion+invalid neighbors/open streams. Runtime/tests unchanged from9e376cd98.",
-      "Historical expanded build1test compileerror and firstowned35cases32pass/3wrong provenance expectations retained in README/summary, corrected without runtime location changes.",
-      "No allocation counters/heap/timing or measurement preparation run; no allocation-free compilation claim.",
-      "Allocation prep at822e5a756:13ownedroutes1085calls/26095consumed,32retainedobjects, all counterfields0;build0warnings/errors;455identities;PID52566cleanpreflight. Actual counters still unrun.",
-      "Supervisor timeout-exit0 regression actual52913cleanbutfailed/no nextchild;normal52915pass;refreshed457identities/ps match, no runtime/probe rebuild or counters."
+      "Original4baseline failures preserved; repairedoriginals pass;37owned+1263affected=1300pass and42resolverpass,0errors/failures/skips/notrun. Public1430/all8frozen/internal surfaces and normal/trueXML-only consumers pass; ownrecursiveconsumer passes2builds;planning/diff pass.",
+      "Independent runtime/probe sourcePASS;offline build/disabled control/preflight andtimeoutexit0regression pass;no primitivezeroallocationclaim.",
+      "Actualrootallocation13ownedroutes832samplespositive,cold3452776/positive1048B,32retainedcoarseillustrations;457identities,children53183/53185completedandclean,durablecleanupbefore rawinspection.",
+      "Root reports combinedcandidate3735a8e passed1804distinctchecks/7builds/publicall8/facade+recursive normaltrueXML-only; coordinator owns integrated verification. This final update reruns no runtime tests or counters."
     ],
     "remaining": [
-      "Root-only nonisolated bounded measure.py --run fe4c11dbee5934ae51cfbbe3b0c4a9dd5cc90985d289372231c6409605fbcad2 after supervisor amendment acceptance; exact frozen control then measurement once,120total110work10cleanup.",
-      "Inspect actual raw results after durable lifecycle cleanup; record actual allocation evidence/final handoff.",
-      "Integrated coordinator verification."
+      "Coordinator integrates branch and verifies integrated revision."
     ],
     "requests": []
   }

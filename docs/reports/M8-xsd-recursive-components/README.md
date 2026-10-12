@@ -79,3 +79,16 @@ supervisor b49f0beefb943c0e531f88235d12d269f671584da0563834a3d41159b1e100e5.
 Actual verify-only/ps permission passed. The prior455identity control/preflight
 is preserved; runtime/probe/control were neither rebuilt nor rerun. No counters
 were launched. See lifecycle-check.json and allocation-preflight.json refresh.
+
+## Final actual allocation evidence
+
+Root nonisolated allocation run passed after supervisor amendment acceptance.
+Durable cleanupcc2f59ce6 preceded raw inspection; control53183/measure53185
+completedexit0 and cleaned fully,457identities matched. All832owned samples
+positive, aggregates equal distributions; semantic consumption26095 identical.
+Cold3452776B/positive1048B;32retainedobjects in4categories. Negative whole-heap
+diagnostic/result deltas are GC/lifetime noise, never negative/zero ownership.
+See allocations.md and measurement-summary.json for summaries and limitations.
+No source/probe/binary change, build, runtime test or measurement repeated during
+this final metadata update. All branch criteria pass; state implemented awaits
+coordinator integration verification.
