@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "id": "M8-xsd-optional-composition",
+  "milestone": "M8",
+  "title": "Apply explicit optional acquisition to XSD composition",
+  "kind": "feature",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "depends_on": [
+    "M8-schema-resource-outcomes",
+    "M8-xsd-particle-normalization"
+  ],
+  "goals": [
+    "G09",
+    "G14"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/schemas.md"
+  ],
+  "owns": [
+    "src/Xemele/Validation/Xsd/Compilation/Compiler.cs",
+    "tests/Xemele.Tests/M8-xsd-optional-composition/",
+    "tests/fixtures/M8-xsd-optional-composition/",
+    "benchmarks/Xemele.Benchmarks/M8-xsd-optional-composition/",
+    "docs/api/M8-xsd-optional-composition.txt",
+    "samples/M8-xsd-optional-composition/",
+    "docs/reports/M8-xsd-optional-composition/"
+  ],
+  "api_or_output": "Apply explicit optional acquisition to XSD composition",
+  "acceptance": [
+    {
+      "id": "M8-xsd-optional-composition-A1",
+      "description": "Using only verified resource outcomes, tolerate explicit Unavailable for include/import/empty or annotation-only redefine under Second Edition4.2. Substantive redefine still requires resolution; normal required component references and resolved malformed/wrong-namespace schema checks still fail. Preserve cycles, schema kinds, source identity and all legacy denials.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M8-xsd-optional-composition-A2",
+      "description": "Execute unchanged original anyURI_a002_1337, anyURI_a004_1339, schD7 and schG8 schemas/instances with an exact explicit missing-resource resolver. Preserve original prior refusals and all expectations, including a004 instance INVALID; separately prove the source-derived VALID a004 outcome using W3C4126. No fabricated empty schema or network access.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M8-xsd-optional-composition-A3",
+      "description": "Prove missing then available dependencies, mandatory redefine and reference failures, legacy/null/explicit denial, caller/parser exceptions, aggregate quotas/work/cancellation/disposal and original-byte provenance. Pass relevant prior suites, additive public and frozen APIs, normal/true XML-only consumers, planning and actual bounded allocation evidence. No other compiler contract or oracle change.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "Planned compatible owning repair after independent source and main scope review; no implementation yet. Exact design: docs/orchestration/brief-M8-schema-resource-outcomes.md.",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}
