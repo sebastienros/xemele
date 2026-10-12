@@ -39,20 +39,29 @@
     {
       "id": "M8-xsd-facade-A1",
       "description": "Compose schema compiler/core/identity constraints into immutable public compiled schemas.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "joined-correctness",
+        "bounded-owned-correction-review"
+      ]
     },
     {
       "id": "M8-xsd-facade-A2",
       "description": "Test all components through public API, concurrent validations, malformed schemas and resolver failures.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "joined-correctness",
+        "bounded-owned-correction-review"
+      ]
     },
     {
       "id": "M8-xsd-facade-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "joined-correctness",
+        "bounded-owned-correction-review"
+      ]
     }
   ],
   "implementation": [
@@ -90,20 +99,29 @@
       "result": "passed",
       "summary": "Coordinator reports two independent source reviewers accepted canonical revalidation controls, actual inspected-unit/polled NOTATION scans, and no-copy readonly publication/final checks. Source review only; no reviewer execution. Nine active shared compiler/content witnesses still require verified repairs.",
       "artifact": null
+    },
+    {
+      "id": "joined-correctness",
+      "kind": "check",
+      "revision": "a75d851db90277e41a631e1e79eb1b4326c7b6af",
+      "command": "python3 docs/reports/M8-xsd-facade/check.py",
+      "result": "passed",
+      "summary": "Verified repair main6eb332dd joined via existing context/shared facet overloads. Pinned .NET10.0.11 Release:1110affected including93facade/69repair+42safe resolver,0fail/errors/skipped/not-run;all9original failing public oracles pass unchanged. Public1417/facade7/frozen2/257/24/9 matched;normal+trueXML-only consumers/builds0warnings/errors;planning184/diff pass;counter tests excluded. No measurement.",
+      "artifact": null
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Merged verified main6eb332dd and connected shared compiler context/content facet joins. Original nine witness oracles preserved; joined correctness pending. Allocation infrastructure remains source-only/no measurements.",
+    "summary": "Verified compiler/context and complete typed content/facet joins pass all1110affected+42resolver/93public cases. Final bounded seam review then allocation preparation and fresh grant remain; task in_progress.",
     "checks": [
       "Initial build failed four xUnit1051 cancellation-token analyzer checks; corrected.",
       "First 65 public run failed incorrect group wildcard union oracle; corrected to intersection.",
       "Expanded union oracle incorrectly rejected boolean lexical 1; corrected invalid witness to 2.",
       "Pinned committed c27273d4 scoped driver passed 1018affected +42safe resolver, public1417, facade7, frozen2/257/24/9; normal/XML-only consumers and planning182; no measurement.",
-      "Correction1 pinned public93:84pass/9shared failures;all12owned fixes pass. Full affected1041:1032pass/9same failures;independent resolver/API/normal+XML-only/planning checks pass. No skip/exclusion or allocation preparation."
+      "Correction1 pinned public93:84pass/9shared failures;all12owned fixes pass. Full affected1041:1032pass/9same failures;independent resolver/API/normal+XML-only/planning checks pass. No skip/exclusion or allocation preparation.",
+      "Joined a75d851d:1110affected+42resolver allpass,including93public and69repair;9original failureoracles unchanged/pass;API/frozen/consumers/planning184 pass;0warnings/errors;no counters/timing."
     ],
     "remaining": [
-      "All public/affected/resolver/API/normal+XML-only correctness on joined source",
       "Bounded final seam review acceptance",
       "Then final allocation build/control/freeze and fresh exact measurement grant/evidence."
     ],

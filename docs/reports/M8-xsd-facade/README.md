@@ -106,3 +106,26 @@ BenchmarkDotNet or timing measurements have been run by this worker. Build/test
 runner elapsed output is not performance evidence. Full W3C corpus and cumulative
 milestone verification remain with their owning tasks; this report does not claim
 release conformance, x64 execution or performance.
+
+## Verified repair join
+
+Coordinator-authorized verified `main` checkpoint
+`6eb332dd944472229c376ed942af76a32b2e83a2` was merged into the isolated branch.
+Both repair records are `verified` and have been added to this task's dependencies.
+Minimal facade source join commit:
+`a75d851db90277e41a631e1e79eb1b4326c7b6af`.
+The compiler now consumes `Compile(source, context)`, retaining the principal
+parser's loader/ledgers, and content compilation uses its complete
+`Compile(compiled, type, context.Operation, facets)` overload with the sealed
+executable registry and shared facet evaluator. Existing all-retained-type and
+binding traversal finalizes the new unused/displaced group carriers as well.
+No original public witness oracle changed and no shared source was manually edited.
+
+Actual `python3 docs/reports/M8-xsd-facade/check.py` at that source commit passed
+1,110 affected cases, including all 93 public facade cases and 69 repair cases,
+plus safe resolver42. Zero failures/errors/skips/not-run; public1417/facade7 and
+frozen evaluator/compiler/identity/content2/257/24/9 matched; normal and true
+XML-only consumers passed; all builds had zero warnings/errors; planning184 and
+whitespace checks passed. All nine previously active shared-join failures now pass.
+Final bounded seam review and allocation build/control/freeze remain pending;
+no counters or timing measurements are claimed.
