@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "id": "M8-xsd-attribute-fixed",
+  "milestone": "M8",
+  "title": "Compare inherited fixed attribute constraints as typed values",
+  "kind": "feature",
+  "status": "in_progress",
+  "owner": "M8 coordinator / assigned isolated attribute fixed-value worker",
+  "branch": "codex/m8-xsd-attribute-fixed",
+  "base_revision": "f965cc948bbfcdb01f5b4bb8a40e36efb8853408",
+  "integration_revision": null,
+  "depends_on": [
+    "M8-xsd-facade"
+  ],
+  "goals": [
+    "G14",
+    "G18"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/schemas.md"
+  ],
+  "owns": [
+    "src/Xemele/Validation/Xsd/ContentModels/Derivation.cs",
+    "tests/Xemele.Tests/M8-xsd-attribute-fixed/",
+    "tests/fixtures/M8-xsd-attribute-fixed/",
+    "benchmarks/Xemele.Benchmarks/M8-xsd-attribute-fixed/",
+    "docs/api/M8-xsd-attribute-fixed.txt",
+    "samples/M8-xsd-attribute-fixed/",
+    "docs/reports/M8-xsd-attribute-fixed/"
+  ],
+  "api_or_output": "Typed attribute-use fixed constraints in existing complete-composition content compiler; no public API change",
+  "acceptance": [
+    {
+      "id": "M8-xsd-attribute-fixed-A1",
+      "description": "Reproduce original accepted W3C addB183/test113911.xsd failure before repair, then compile the unchanged original schema through public XmlSchema; compare inherited fixed attribute constraints under actual datatype value equality in the existing complete-composition lane.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M8-xsd-attribute-fixed-A2",
+      "description": "Preserve declaration versus local-use lexical/context provenance and shared operation/facet library. Cover equivalent and unequal list/token/numeric/QName/union values, restriction/extension and fixed/default/absent behavior, budgets/cancellation, and unchanged structural-only legacy behavior.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M8-xsd-attribute-fixed-A3",
+      "description": "Pass owned independent witnesses and affected prior facade/content/fixed-restriction/datatype tests, public1417/frozen APIs, normal and true XML-only consumers, actual bounded allocation evidence, and planning validation. Preserve original failures and exact checked revisions.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "Ordered repair from original accepted corpus witness addB183 and independent BCL agreement. No dependency on active corpus or schema-syntax peers.",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}
