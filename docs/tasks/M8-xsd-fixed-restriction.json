@@ -34,29 +34,78 @@
     {
       "id": "M8-xsd-fixed-restriction-A1",
       "description": "Provide an explicit additive complete-composition join that compares matched element fixed values under actual XSD datatype equality within the existing particle-restriction relation solver, including retained redefine carriers, without blanket same-name comparisons.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "source-review",
+        "correctness"
+      ]
     },
     {
       "id": "M8-xsd-fixed-restriction-A2",
       "description": "Preserve both authored declaration contexts, typed value identity and the supplied shared operation/facet library; preserve original frozen internal interfaces and all structural branch behavior for earlier callers.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "source-review",
+        "correctness"
+      ]
     },
     {
       "id": "M8-xsd-fixed-restriction-A3",
       "description": "Prove decimal unequal/equivalent lexical fixed values, context-sensitive QName pairs, unions/lists and alternative particle mappings, unused/redefined constraints, limits/cancellation, affected content/core/API/XML-only preservation, and measured owned allocation evidence.",
       "status": "pending",
-      "evidence": []
+      "evidence": [
+        "correctness",
+        "prepared-control"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Validation/Xsd/ContentModels/Compiler.cs: explicit internal Compile(schema,type,operation,facets) overload preserves frozen structural interface",
+    "src/Xemele/Validation/Xsd/ContentModels/Derivation.cs: FixedEquals/FixedValue in matched relation leaves; authored contexts, shared typed library/op, false OR alternatives",
+    "tests/Xemele.Tests/M8-xsd-fixed-restriction/: 35 independent complete-composition witnesses and operation checks",
+    "samples/M8-xsd-fixed-restriction/: normal and true XML-only complete join; docs/reports/M8-xsd-fixed-restriction/README.md: exact facade call"
+  ],
+  "evidence": [
+    {
+      "id": "source-review",
+      "kind": "review",
+      "revision": "0c54888ba0a4c2c010996eaabfda63c7f6ce8a50",
+      "command": "Bounded source-only model review, coordinator report",
+      "result": "passed",
+      "summary": "Coordinator reported reviewer PASS, no concrete blocker: relation-local typed equality/false alternatives, both contexts, shared facets/registry/operation, no retained operation. Reviewer ran no checks.",
+      "artifact": null
+    },
+    {
+      "id": "correctness",
+      "kind": "check",
+      "revision": "a68d7330fef65d4c72353cd189f5673d375944ff",
+      "command": "python3 docs/reports/M8-xsd-fixed-restriction/check.py",
+      "result": "passed",
+      "summary": "Release .NET SDK10.0.400/runtime10.0.11 Arm64;1314 own/affected pass(35owned)+42safe resolver, zero errors/failures/skips/not-run;public1410;frozen content9/model316/compiler257/identity24/evaluation2 plus316 datatype rows;normal+true XML-only join and earlier declaration-model-only structural consumer pass;planning184;diff clean;builds zero warnings/errors. WarmBorrowed/counter tests excluded.",
+      "artifact": null
+    },
+    {
+      "id": "prepared-control",
+      "kind": "check",
+      "revision": "a68d7330fef65d4c72353cd189f5673d375944ff",
+      "command": "python3 docs/reports/M8-xsd-fixed-restriction/prepare.py; python3 docs/reports/M8-xsd-fixed-restriction/measure.py --verify-only; python3 docs/reports/M8-xsd-fixed-restriction/measure.py --preflight",
+      "result": "passed",
+      "summary": "Counters-disabled control passes6 owned routes(first/16warm/3x64),16retained controls;442 prepared identities match;supervised control exit0, child reaped/process group absent/log closed. ps initially sandbox-denied; escalated read-only/process-group preflight passed. No counters, BDN or benchmark timing executed.",
+      "artifact": null
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Ordered repair from facade review; consume only verified predecessors, no active facade dependency.",
-    "checks": [],
-    "remaining": [],
-    "requests": []
+    "summary": "Explicit complete typed fixed-value relation join implemented; source accepted and focused/preservation checks pass. Runtime/tests frozen pending exact allocation grant.",
+    "checks": [
+      "1314 own/affected +42safe resolver; public1410/frozen9/316/257/24/2; normal+true XML-only complete and structural consumers; planning184; diff clean",
+      "Prepared442 identities and counters-disabled control/preflight pass, no active child/jobs"
+    ],
+    "remaining": [
+      "A3 measured owned allocation evidence requires exact coordinator manifest/deadline grant."
+    ],
+    "requests": [
+      "Facade owner must use XsdContentCompiler.Compile(schema,type,sharedOperation,sharedFacets) with schema.Datatypes replaced by shared executable registry; see owned README. No facade/source outside ownership edited."
+    ]
   }
 }
