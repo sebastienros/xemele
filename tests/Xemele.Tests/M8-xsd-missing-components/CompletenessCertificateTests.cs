@@ -116,4 +116,31 @@ public sealed class CompletenessCertificateTests
         }
         Assert.True(cancellation.IsCancellationRequested()); Assert.True(operation.IsComplete);
     }
+    [Fact]
+    public void MutationDuringChargedRegistryConstructionCannotPublishASchema()
+    {
+        var context = new SchemaCompileContext(new() { BaseUri = Basis }); var document = context.Parse(Wrap("")).Document;
+        var operation = new RegistryMutation(context.Operation, () => document.RootElement.SetAttribute("version", "changed"));
+        Assert.Throws<InvalidOperationException>(() => ((IXsdCompiler)new XmlSchemaCompiler()).Compile(document, context.Options, operation));
+        Assert.True(operation.Changed);
+    }
+    private sealed class RegistryMutation(ISchemaOperation inner, Action mutate) : ISchemaOperation
+    {
+        internal bool Changed;
+        public XmlResourceLimits Limits => inner.Limits;
+        public CancellationToken CancellationToken => inner.CancellationToken;
+        public bool IsComplete => inner.IsComplete;
+        public long? RemainingWork => inner.RemainingWork;
+        public bool Charge(long work, XmlLocation at) => inner.Charge(work, at);
+        public bool ChargeComponents(int count, XmlLocation at)
+        {
+            bool accepted = inner.ChargeComponents(count, at);
+            // Compiler registry factory charges its dictionary/wrapper/object
+            // together, after the preceding source-integrity check.
+            if (accepted && count == 3 && !Changed) { Changed = true; mutate(); }
+            return accepted;
+        }
+        public bool AddDiagnostic(XmlDiagnostic diagnostic) => inner.AddDiagnostic(diagnostic);
+        public void Refuse(string code, string message, XmlLocation at) => inner.Refuse(code, message, at);
+    }
 }

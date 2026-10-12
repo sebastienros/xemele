@@ -104,11 +104,11 @@ only this exact certified simple walk, retaining all element/type/affiliation
 checks, fallback inspection charges and zero-work polls before/after lookup.
 Types-only record copies preserve the simple proof safely. List/registry
 replacement, caller graph copies, orphan missing lists and removed wrappers
-fall back. Six owned methods/13 cases independently cover those boundaries,
+fall back. Seven owned methods/14 cases independently cover those boundaries,
 proof/storage exact and one-under caps, and null-cap cancellation during
 construction/proof/fallback and the certified final poll. All new controls UNRUN.
 
-Static selection693 methods/2205 cases/90 files: all original687 entries retain
+Static selection694 methods/2206 cases/90 files: all original687 entries retain
 identity/attribute syntax/cardinality. Original9 added joins remain byte-exact;
 four registry members join the authored13-row additive projection; original11
 new types/public1430/frozen615/257 projections remain unchanged. Probe routes11,
@@ -124,3 +124,10 @@ Failed root-check-fa33e681e565452297760aa1ff24240d terminal:16 groups absent,
 429 raw deleted. API/consumers/preparation/counters UNRUN; zero gate credit and
 no refreshed-source passing credit. Source correction remains HOLD; worker ran
 only planning/static ownership/selection/hash/whitespace checks.
+
+Publication integrity addendum: new registry/proof charge callbacks occur after
+the earlier source check. The final zero poll and source-integrity check now
+follow certificate/copy construction before either complete or partial graph
+publication. A seventh owned test mutates source at the registry factory's
+three-object storage charge and requires InvalidOperationException. This test
+is UNRUN; final static selection694/2206/90files, original687 entries unchanged.

@@ -108,11 +108,16 @@ internal sealed class XsdCompilation
         var compiled = new XsdCompiledSchema(elements, attributes, new List<XsdTypeDefinition>(types.Values), definitions, identities, notations,
             globalElements, globalAttributes, registry);
         var certified = registry.Certify(compiled, op);
-        if (ReferenceEquals(certified, registry)) return compiled;
-        Components(default); // New record copy retaining the certified registry.
-        var published = compiled with { Datatypes = certified };
+        if (!ReferenceEquals(certified, registry))
+        {
+            Components(default); // New record copy retaining the certified registry.
+            compiled = compiled with { Datatypes = certified };
+        }
         Tick(default, 0);
-        return published;
+        // Registry/proof charges can invoke caller callbacks after the earlier
+        // source check; no changed source may cross this publication boundary.
+        foreach (var s in allSources) s.Scope.CheckUnchanged();
+        return compiled;
     }
 
     private Source Load(SchemaDocumentScope scope, string? effective, SchemaResourcePurpose? purpose)
