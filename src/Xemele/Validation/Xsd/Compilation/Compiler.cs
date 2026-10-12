@@ -1356,28 +1356,31 @@ internal static class XsdSubstitutionGroups
         bool checkBlocks, bool forbidRestriction, bool forbidExtension,
         out bool restriction, out bool extension)
     {
-        var work = new Queue<(SchemaName D, SchemaName B, bool R, bool E)>();
-        var seen = new HashSet<(SchemaName D, SchemaName B, bool R, bool E)>();
-        void Add(SchemaName d, SchemaName b, bool r, bool e)
+        var work = new Queue<(SchemaName D, SchemaName B, bool R, bool E, bool BR, bool BE)>();
+        var seen = new HashSet<(SchemaName D, SchemaName B, bool R, bool E, bool BR, bool BE)>();
+        void Add(SchemaName d, SchemaName b, bool r, bool e, bool br, bool be)
         {
             if (!operation.Charge(1, at)) throw SchemaSnapshots.Failure(operation);
-            if (seen.Add((d, b, r, e))) work.Enqueue((d, b, r, e));
+            if (seen.Add((d, b, r, e, br, be))) work.Enqueue((d, b, r, e, br, be));
         }
-        Add(derived, ancestor, false, false);
+        Add(derived, ancestor, false, false, forbidRestriction, forbidExtension);
         while (work.TryDequeue(out var item))
         {
             if (!operation.Charge(1, at)) throw SchemaSnapshots.Failure(operation);
-            if (item.R && forbidRestriction || item.E && forbidExtension) continue;
+            if (item.R && item.BR || item.E && item.BE) continue;
             if (item.D == item.B) { restriction = item.R; extension = item.E; return true; }
             XmlDatatypeDefinition? Find(SchemaName name) => definitions is null ? registry!.FindType(name) : definitions.GetValueOrDefault(name);
             if (Find(item.D) is not null && Find(item.B) is { Variety: XmlDatatypeVariety.Union } union)
-                foreach (var member in union.MemberTypes) Add(item.D, member, true, item.E);
+                foreach (var member in union.MemberTypes) Add(item.D, member, true, item.E, item.BR, item.BE);
             if (!types.TryGetValue(item.D, out var type) || type.BaseType is not { } parent || !types.TryGetValue(parent, out var basis)) continue;
             bool r = item.R || type.Derivation is XsdDerivation.Restriction or XsdDerivation.List or XsdDerivation.Union;
             bool e = item.E || type.Derivation == XsdDerivation.Extension;
             if (basis.Final.Contains(type.Derivation)) continue;
-            if (checkBlocks && (r && basis.Block.Contains(XsdTypeBlock.Restriction) || e && basis.Block.Contains(XsdTypeBlock.Extension))) continue;
-            Add(parent, item.B, r, e);
+            // An intermediate block constrains the entire derivation path,
+            // including methods encountered above that intermediate type.
+            Add(parent, item.B, r, e,
+                item.BR || checkBlocks && basis.Block.Contains(XsdTypeBlock.Restriction),
+                item.BE || checkBlocks && basis.Block.Contains(XsdTypeBlock.Extension));
         }
         restriction = extension = false; return false;
     }

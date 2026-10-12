@@ -44,6 +44,28 @@ public sealed class NeighborTests
         Assert.Contains(graph.GlobalElements[new("", "m")], XsdSubstitutionGroups.Members(graph, graph.GlobalElements[new("", "h")], new SchemaCompileOperation()));
         var compiled = XmlSchema.Compile(xml); Result(compiled, "<root><m>2</m></root>", true); Result(compiled, "<root><m>no</m></root>", false);
     }
+    [Fact]
+    public void Xsd10UnionMemberRuleDoesNotImportXsd11FacetGuard()
+    {
+        string xml = Substitution(head: "R", definitions: Union + "<xs:simpleType name='R'><xs:restriction base='U'><xs:enumeration value='1'/></xs:restriction></xs:simpleType>");
+        // System.Xml rejects a facet-bearing union target. Second Edition
+        // 3.14.6 clause 2.2.4 has no XSD 1.1 empty-facet guard. This synthetic
+        // witness does not alter or reclassify the disputed original stZ073b.
+        Assert.Throws<System.Xml.Schema.XmlSchemaException>(() => Oracle(xml));
+        Result(XmlSchema.Compile(xml), "<root><m>2</m></root>", true);
+    }
+    [Theory]
+    [InlineData("", true)]
+    [InlineData("block='extension'", false)]
+    [InlineData("block='restriction'", false)]
+    public void IntermediateBlocksApplyToWholePathIncludingLaterMethods(string block, bool valid)
+    {
+        string xml = Wrap("<xs:complexType name='B'/><xs:complexType name='M' " + block + "><xs:complexContent><xs:extension base='B'/></xs:complexContent></xs:complexType><xs:complexType name='D'><xs:complexContent><xs:restriction base='M'/></xs:complexContent></xs:complexType><xs:element name='h' type='B' abstract='true'/><xs:element name='m' type='D' substitutionGroup='h'/><xs:element name='root'><xs:complexType><xs:sequence><xs:element ref='h'/></xs:sequence></xs:complexType></xs:element>");
+        // System.Xml accepts all three; 3.3.6 clause 2.3 independently requires
+        // the union of every intermediate prohibited-substitution set.
+        Oracle(xml, "<root><m/></root>"); Result(XmlSchema.Compile(xml), "<root><m/></root>", valid);
+        var graph = Graph(xml); Assert.Equal(valid, XsdSubstitutionGroups.Members(graph, graph.GlobalElements[new("", "h")], new SchemaCompileOperation()).Contains(graph.GlobalElements[new("", "m")]));
+    }
     [Theory]
     [InlineData("block='restriction'")]
     [InlineData("block='substitution'")]
@@ -66,7 +88,10 @@ public sealed class NeighborTests
     public void NewlyAdmittedMemberParticipatesInUpa()
     {
         string xml = Substitution(particle: "<xs:choice><xs:element ref='h'/><xs:element ref='m'/></xs:choice>");
-        Assert.Throws<System.Xml.Schema.XmlSchemaException>(() => Oracle(xml));
+        // System.Xml 10.0.11 accepts this ambiguous union-substitution model.
+        // Keep the independent oracle discrepancy explicit: Second Edition
+        // 3.8.6 requires attribution to include substitution members.
+        Oracle(xml);
         Assert.Contains(Assert.Throws<SchemaCompileException>(() => XmlSchema.Compile(xml)).Diagnostics, d => d.Code == "XSD.SchemaRestriction" && d.Message.Contains("attribution", StringComparison.OrdinalIgnoreCase));
     }
     [Theory]
