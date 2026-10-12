@@ -37,29 +37,59 @@
     {
       "id": "M8-xsd-facade-A1",
       "description": "Compose schema compiler/core/identity constraints into immutable public compiled schemas.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "source-checks"
+      ]
     },
     {
       "id": "M8-xsd-facade-A2",
       "description": "Test all components through public API, concurrent validations, malformed schemas and resolver failures.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "source-checks"
+      ]
     },
     {
       "id": "M8-xsd-facade-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "source-checks"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Validation/Xsd/XmlSchema.cs: public Compile/Validate, immutable composition and prepublication finalization",
+    "tests/Xemele.Tests/M8-xsd-facade/: 70 independent public witnesses",
+    "docs/api/M8-xsd-facade.txt: seven approved public API rows",
+    "samples/M8-xsd-facade/: normal and XML-only public consumer",
+    "docs/reports/M8-xsd-facade/check.py: pinned scoped correctness/API/consumer checks"
+  ],
+  "evidence": [
+    {
+      "id": "source-checks",
+      "kind": "check",
+      "revision": "c27273d4adc5a1c05a5793873015dd598b141cde",
+      "command": "python3 docs/reports/M8-xsd-facade/check.py",
+      "result": "passed",
+      "summary": "Pinned .NET10.0.11 Release:1018affected correctness including70public facade+42safe resolver;0errors/failed/skipped/not-run;counter tests excluded. PublicAPI1417, facade7, frozen evaluator/compiler/identity/content2/257/24/9 matched. Normal and true XML-only consumers built0warnings/errors and passed;planning182 and git diff--check passed. No measurements.",
+      "artifact": null
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "",
-    "checks": [],
-    "remaining": [],
+    "summary": "Public facade source composed and sent for bounded review; correctness/API/consumers pass. Source acceptance and required allocation evidence pending.",
+    "checks": [
+      "Initial build failed four xUnit1051 cancellation-token analyzer checks; corrected.",
+      "First 65 public run failed incorrect group wildcard union oracle; corrected to intersection.",
+      "Expanded union oracle incorrectly rejected boolean lexical 1; corrected invalid witness to 2.",
+      "Pinned committed c27273d4 scoped driver passed 1018affected +42safe resolver, public1417, facade7, frozen2/257/24/9; normal/XML-only consumers and planning182; no measurement."
+    ],
+    "remaining": [
+      "Coordinator bounded source review acceptance",
+      "After source acceptance, owned allocation preparation and counters-disabled controls; then exact fresh measurement grant and measured evidence."
+    ],
     "requests": []
   }
 }
