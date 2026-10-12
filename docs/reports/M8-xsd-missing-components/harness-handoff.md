@@ -122,3 +122,31 @@ Failure identity/counts unknown; may be startup/discovery/data-provider failure.
 Failed root-check-bd5508149786420fb8f3b38a448525a1 terminal:16groups absent,
 429raw deleted; no active preparation/release, APIs/consumers/counters UNRUN.
 That failure remains evidence, with no refreshed-packet passing credit.
+
+Post-H18 runtime source correction is frozen at
+cc01af29cefd886e4f054c4448aa6c8c65653999. Exact scoped visibility migration and
+private immutable simple-definition certificate replace neither quota nor oracle.
+Batch/Support bytes unchanged; new owned tests keep original687 method entries
+fixed and add7 methods/14 cases: selection694/2206/90files. API original9 joins
+unchanged plus4 registry members, authored13-row exact comparison; new11 types,
+public1430/frozen615/257 and all11 probe routes/results352/schemas8/consumed3001/
+inspections13632 unchanged. Runtime manifest47 owned/812 review identities.
+Only check's additive-row summary/comment changes; no diagnostics/lifecycle/
+control/preparation/measurement logic changes.15 controls remain; current
+controls/check/API/consumers/preparation/counters UNRUN; root review/release needed.
+
+Coordinator actual H18 result is retained:15 controls PASS,7 diagnostic variants,
+341raw deleted;14restore/build commands PASS;2190/2192 cases PASS,2FAIL,0SKIP.
+Complete XML SHA
+cce42654a75035e8ce192aec1b47b4ac13b48d8b3a09c0fcc4583f309eb7e8ff.
+Failed root-check-fa33e681e565452297760aa1ff24240d terminal16groups absent,
+429raw deleted, no preparation/release/API/consumers/counters. Zero gate credit;
+no earlier passing credit carried to the corrected source. Coordinator-owned
+harness-review.json untouched; prior stamp no longer binds this packet.
+
+Final publication-integrity addendum: charged registry/proof callbacks are
+followed by the final zero poll and source-integrity check. Mutation during
+registry factory storage cannot publish a graph; its owned test is UNRUN.
+Final runtime cc01af29 includes the d208 certificate/visibility correction;
+selection694/2206 with original687 entries unchanged. Root reviewers must bind
+this final runtime identity before any new controls/check.

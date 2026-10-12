@@ -69,7 +69,7 @@ def main():
         assert observed_joins==expected_joins,'Added join deletion/signature/nullability drift'
         for name in NEW_TYPES:assert 'T:Xemele.Validation.'+name in added_rows
         # Compare the same executable projection to the first emitted canonical
-        # bytes. The source-approved9 joins additionally have authored goldens.
+        # bytes. The source-approved13 joins additionally have authored goldens.
         api('added','compare',added)
         for label,dll in [('normal','Consumer.dll'),('xml-only','XmlOnly.dll')]:
             runner.run([str(b.DOTNET),'--fx-version','10.0.11',str(roots[label]/'bin'/dll)],90)
@@ -83,7 +83,7 @@ def main():
         # canonical separate API rows, no original raw logs/results/assemblies.
         evidence=b.identities(p for p in out.rglob('*') if p.is_file())
         summary=dict(completed=True,controller=str(controller),sourceSha256=b.digest(b.SOURCE),tests=tests,
-            publicRows=1430,xsdRows=615,compilerRows=257,addedJoinRows=9,addedInternalRows=len(added_rows),
+            publicRows=1430,xsdRows=615,compilerRows=257,addedJoinRows=len(expected_joins),addedInternalRows=len(added_rows),
             addedInternalProjection=added_rows,outputIdentities=evidence,outputMembershipSha256=b.identity_sha(evidence),
             normalConsumer='passed',xmlOnlyConsumer='passed',disabledRoutes=11,disabledConsumed=disabled['consumed'],countersEnabled=False,
             limitation='Affected frozen milestones only; original bad instances have zero original/gate pass credit')
