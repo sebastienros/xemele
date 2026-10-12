@@ -73,4 +73,22 @@ public sealed class XPathTests
         var schema=IdentityTests.Simple(IdentityTests.Constraint(selector:"根😀",field:"@é"));
         Assert.False(IdentityTests.Run(schema,"<root><根😀 é='x'/><根😀 é='x'/></root>").Complete().IsValid);
     }
+    [Theory]
+    [InlineData("text")][InlineData("<!--comment-->")][InlineData("<?pi x?>")][InlineData("<![CDATA[text]]>")]
+    public void DescendantSelfSelectorsCannotSilentlyIgnoreNonElements(string content)
+    {
+        var registry=new XmlDatatypeRegistry();var value=IdentityTests.Valid(IdentityTests.Typed(registry,"string","x"));
+        var schema=IdentityTests.Simple(IdentityTests.Constraint("unique",".//.","@id"));
+        var result=IdentityTests.Run(schema,$"<root>{content}<row id='x'/></root>",(_,_)=>value).Complete();
+        Assert.False(result.IsValid);Assert.Contains(result.Diagnostics,d=>d.Message.Contains("non-element",StringComparison.Ordinal));
+    }
+    [Theory]
+    [InlineData(".//.")][InlineData("descendant-or-self::node()/self::node()")][InlineData(".//./.")]
+    public void DescendantSelfFieldsRequireEverySelectedNodeToHaveASimpleType(string field)
+    {
+        var registry=new XmlDatatypeRegistry();var value=IdentityTests.Valid(IdentityTests.Typed(registry,"string","x"));
+        var schema=IdentityTests.Simple(IdentityTests.Constraint("unique",field:field));
+        var result=IdentityTests.Run(schema,"<root><row>text</row></root>",(_,_)=>value).Complete();
+        Assert.False(result.IsValid);Assert.Contains(result.Diagnostics,d=>d.Message.Contains("without a simple type",StringComparison.Ordinal));
+    }
 }

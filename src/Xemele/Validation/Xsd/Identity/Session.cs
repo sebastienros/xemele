@@ -85,7 +85,10 @@ internal sealed class XsdIdentitySession(IdentityProgram program, XmlDocument do
             foreach (int id in declaration.IdentityConstraints)
             {
                 IdentityWork.Retain(op, at, 3);
-                frame.Runs.Add(new(program.Constraints[id]));
+                var run = new Run(program.Constraints[id]);
+                if (run.Constraint.Selector.SelectsNonElements && NonElementDescendant(node, op, at) is { IsDefault: false } unsupported)
+                { run.Valid = false; IdentityWork.Error(op, At(unsupported), "Identity selector selects a non-element node."); }
+                frame.Runs.Add(run);
             }
         }
         foreach (var scope in stack)
@@ -96,7 +99,14 @@ internal sealed class XsdIdentitySession(IdentityProgram program, XmlDocument do
                 IdentityWork.Tick(op, at);
                 if (!run.Constraint.Selector.Matches(scope.Node, node, null, op, at)) continue;
                 IdentityWork.Retain(op, at, checked(run.Constraint.Fields.Length + 2));
-                run.Pending.Add(new(node, new Cell[run.Constraint.Fields.Length]));
+                var row = new Row(node, new Cell[run.Constraint.Fields.Length]);
+                for (int i = 0; i < row.Cells.Length; i++)
+                {
+                    IdentityWork.Tick(op, at);
+                    if (run.Constraint.Fields[i].SelectsNonElements && NonElementDescendant(node, op, at) is { IsDefault: false } unsupported)
+                        Bad(run, row, op, At(unsupported), "Identity field selects a node without a simple type.");
+                }
+                run.Pending.Add(row);
             }
         }
     }
@@ -106,6 +116,23 @@ internal sealed class XsdIdentitySession(IdentityProgram program, XmlDocument do
         {
             IdentityWork.Tick(op, at);
             if (cursor.Kind == XmlNodeKind.Element) return cursor;
+            cursor = cursor.NextSibling;
+        }
+        return default;
+    }
+    private static XmlNode NonElementDescendant(XmlNode context, ISchemaOperation op, XmlLocation at)
+    {
+        var cursor = context.FirstChild;
+        while (!cursor.IsDefault)
+        {
+            IdentityWork.Tick(op, at);
+            if (cursor.Kind != XmlNodeKind.Element) return cursor;
+            if (!cursor.FirstChild.IsDefault) { cursor = cursor.FirstChild; continue; }
+            while (cursor.NextSibling.IsDefault)
+            {
+                IdentityWork.Tick(op, at); cursor = cursor.Parent;
+                if (cursor == context) return default;
+            }
             cursor = cursor.NextSibling;
         }
         return default;

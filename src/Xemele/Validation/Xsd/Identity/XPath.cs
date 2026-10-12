@@ -4,6 +4,15 @@ namespace Xemele.Validation;
 // event matching uses borrowed node handles and immutable tests without scratch.
 internal sealed class IdentityXPath(IdentityPath[] paths)
 {
+    internal bool SelectsNonElements
+    {
+        get
+        {
+            foreach (var path in paths)
+                if (path.Descendants && path.Steps.Length == 0 && path.Attribute is null) return true;
+            return false;
+        }
+    }
     internal bool Matches(XmlNode context, XmlNode node, SchemaName? attribute, ISchemaOperation op, XmlLocation at)
     {
         foreach (var path in paths)

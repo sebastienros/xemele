@@ -15,6 +15,9 @@ descendant-or-self::node() forms are supported. XML Unicode names use establishe
 scalar validation. Namespace tests use definition bindings (the compiler's
 collision-free canonical aliases), never instance prefixes/default namespaces.
 Union alternatives selecting the same node contribute a single field event.
+Descendant-self paths with no name step also select text/comment/PI/CDATA nodes;
+bounded DOM scans reject those non-element selector/non-simple field targets
+instead of losing them at the element-only hook boundary.
 
 Each document-order hook run stores only currently open scopes, pending selected
 rows and per-scope typed tuples/tables. Effective attributes, including defaults,
@@ -57,7 +60,7 @@ claim. The facade must always supply a real prepared identity program, including
 zero-constraint schemas, and deliver all effective attributes/typed element
 values and wildcard scopes through one operation/provider graph.
 
-`check.py` builds/runs124 owned plus546 relevant predecessor tests, separately
+`check.py` builds/runs131 owned plus546 relevant predecessor tests, separately
 42 safe resolver cases, exact24 frozen declarations, unchanged1403 public member
 union, and a real normal plus genuinely source-linked XML-only consumer. Planning
 and whitespace are checked. The XML-only project omits HTML/CSS/XSLT/facade/
