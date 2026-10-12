@@ -34,35 +34,122 @@
     {
       "id": "M8-xsd-counted-matcher-A1",
       "description": "Reproduce and preserve the ten original corpus VALIDATION.Limit observations listed in docs/orchestration/M8-xsd-counted-matcher-triage.json. Complete their unchanged instances under the existing finite 100,000,000 shared-work/30-second corpus policy, matching original metadata including VALID Z036_b1/b2 despite their .i suffixes and BCL rejection.",
-      "status": "pending",
-      "evidence": []
+      "status": "failed",
+      "evidence": [
+        "initial-baseline",
+        "original-exact-policy"
+      ]
     },
     {
       "id": "M8-xsd-counted-matcher-A2",
       "description": "Bound equivalent counted-NFA partition state growth in Matcher.cs without changing accepted languages. Extend existing same-PC/same-flags componentwise dominance only where proven safe; smaller non-nullable counters may dominate larger counters after both satisfy the particle minimum. Keep below-minimum distinctions, actual finite counters/maxima, nullable behavior and charged/polled arbitrary-precision comparisons. No compiler or frozen API changes.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "focused-content",
+        "branch-correctness"
+      ]
     },
     {
       "id": "M8-xsd-counted-matcher-A3",
       "description": "Verify an independent finite-language enumeration for nested finite repeats with minima greater than one, alternatives, sequence/all and nullable neighbors; preserve the existing 63-word nullable oracle and arbitrary-precision tests. Include (a{2,3}){2,3} minimum/maximum boundaries, (a+){1,N} state/work growth, exact-work/refusal and cancellation checks. Never treat a refusal as semantic invalidity.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "focused-content",
+        "branch-correctness"
+      ]
     },
     {
       "id": "M8-xsd-counted-matcher-A4",
       "description": "Pass relevant content/evaluator/facade checks, public1417 and frozen APIs, normal and true XML-only consumers, planning validation, and bounded actual allocation evidence prepared outside a fresh host lease. Preserve historical results and no throughput claim from correctness deadlines.",
       "status": "pending",
-      "evidence": []
+      "evidence": [
+        "affected-correctness",
+        "branch-correctness",
+        "allocation-source-only"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
-  "blockers": [],
+  "implementation": [
+    "src/Xemele/Validation/Xsd/ContentModels/Matcher.cs: ContentCursor.Add componentwise post-minimum dominance",
+    "tests/Xemele.Tests/M8-xsd-counted-matcher/LanguageTests.cs: independent finite denotational oracle, boundaries, work growth/exact refusal and cancellation",
+    "samples/M8-xsd-counted-matcher/Program.cs: unchanged original witnesses under complete historical finite policy",
+    "benchmarks/Xemele.Benchmarks/M8-xsd-counted-matcher/: allocation source only, existing probe/fixture/supervision reuse"
+  ],
+  "evidence": [
+    {
+      "id": "initial-baseline",
+      "kind": "check",
+      "revision": "ce3957b93ee50355bae17468a20d696bd82593ec",
+      "command": "python3 docs/reports/M8-xsd-counted-matcher/corpus.py baseline",
+      "result": "passed",
+      "summary": "Actual initial ten VALIDATION.Limit refusals, shared work100M/30s, all exit0/reaped/groups absent/logs closed. Initial worker brief omitted other corpus options: Diagnostics128/default compilation limits, explicitly not complete historical policy. Immutable files match pinned triage hashes. Historical exact policy baseline remains coordinator80cd6bac0 evidence.",
+      "artifact": "docs/reports/M8-xsd-counted-matcher/baseline.json"
+    },
+    {
+      "id": "focused-content",
+      "kind": "check",
+      "revision": "4a3a93ee255aec5be689445031e8cd91b590724c",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -namespace Xemele.Tests.M8XsdCountedMatcher -namespace Xemele.Tests.M8XsdContent -method- '*WarmBorrowed*' -parallelMode none -noLogo -noColor -result-xml artifacts/M8-xsd-counted-matcher/focused.xml",
+      "result": "passed",
+      "summary": "115 cases (13 owned+102 content),0errors/failures/skips/not-run. 8738 independently enumerated words and nested2..3 boundaries; existing nullable63word, arbitrary precision, exact quota/source/concurrency checks preserved. Build0warnings/errors.",
+      "artifact": null
+    },
+    {
+      "id": "affected-correctness",
+      "kind": "check",
+      "revision": "4a3a93ee255aec5be689445031e8cd91b590724c",
+      "command": "python3 docs/reports/M8-xsd-schema-syntax/check.py",
+      "result": "passed",
+      "summary": "1146 affected+42 safe resolver passed; public1417 and frozen316+139/257/24/9/2/7; normal and true XML-only consumers; planning192 and git diff --check. All WarmBorrowed assertions excluded; no allocation/throughput counters.",
+      "artifact": null
+    },
+    {
+      "id": "branch-correctness",
+      "kind": "check",
+      "revision": "905ab9022c4dd61f2443ecc80226ce2435511359",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -namespace Xemele.Tests.M8XsdCountedMatcher -namespace Xemele.Tests.M8XsdAttributeFixed -namespace Xemele.Tests.M8Datatypes -method- '*WarmBorrowed*' -parallelMode none -noLogo -noColor -result-xml artifacts/M8-xsd-counted-matcher/owned-additional.xml; python3 docs/reports/M8-xsd-counted-matcher/assert_results.py artifacts/M8-xsd-counted-matcher/owned-additional.xml",
+      "result": "passed",
+      "summary": "135 unique cases: exact owned13, attribute-fixed45, datatype77; allpass0errors/failures/skips/not-run. Matcher unchanged from focused/affected checked4a3a93ee2. Work100=48129/1000=478329, retained-component units439 both. Build0warnings/errors.",
+      "artifact": null
+    },
+    {
+      "id": "original-exact-policy",
+      "kind": "check",
+      "revision": "905ab9022c4dd61f2443ecc80226ce2435511359",
+      "command": "python3 docs/reports/M8-xsd-counted-matcher/corpus.py repaired repaired-exact-policy",
+      "result": "failed",
+      "summary": "All ten original children supervised under complete original80cd6bac0 policy (including diagnostic1024/compile100M+1M/validation100M/cancel30s). Seven complete matching metadata, especially Z036_b1/b2 VALID. Z034_a2/a3/b semantically rejected but cascading facade diagnostics stop at1024, incomplete VALIDATION.Limit. Allchildren reaped/groups absent/logs closed; three assertions exit-6 preserved. Earlier repaired/default128 attempt faileda2 retained, no exclusions/capraise.",
+      "artifact": "docs/reports/M8-xsd-counted-matcher/original-outcomes.json"
+    },
+    {
+      "id": "allocation-source-only",
+      "kind": "check",
+      "revision": "8560237e2031ad41ffa886a38d6df30e8574f5a8",
+      "command": "not run: prepare.py/preflight.py/measure.py; no fresh coordinator host grant",
+      "result": "skipped",
+      "summary": "Source reuses accepted content fixture/probe and facade supervisor; five historicalzero plus new finitecounted warm route, seven owned routes, cold/retained/positive controls. No build/control/preflight/allocation/BDN executed; requires coordinator source acceptance then preparation and fresh lease.",
+      "artifact": null
+    }
+  ],
+  "blockers": [
+    "A1: Z034_a2/a3/b require owning evaluator follow-up to bound redundant diagnostic cascades under unchanged diagnostic1024 policy."
+  ],
   "handoff": {
-    "summary": "Claimed independently ready matcher repair. Corpus executes; component and instance workers preserve frozen payloads in execution standby. No unverified peer branch may be consumed.",
-    "checks": [],
-    "remaining": [],
-    "requests": []
+    "summary": "Minimal counted post-minimum dominance implemented; A2/A3 passing. Exact originals7complete/3diagnosticrefusals; source-only allocation prepared for review. Remains in_progress, no integration revision.",
+    "checks": [
+      "115 focused content/owned passed; independent8738word oracle plus existingnullable63word/expandedcounter checks.",
+      "1146affected+42resolver/API1417/frozen/normal+XMLonly/planning192/diff passed.",
+      "135additional unique13owned/45fixedattribute/77datatype passed.",
+      "Initialten100Mrefusals actual, remaininglimitsdefault128; first repaired/default128 failure retained.",
+      "Exact historicalpolicy ten:7complete matching,3incomplete diagnostic1024; everychild cleaned.",
+      "Allocation source only; build/control/counters/BDN not run."
+    ],
+    "remaining": [
+      "A1: integrate verified owning evaluator repair, recheck unchanged ten originals with exact finite policy.",
+      "A4: coordinator source acceptance, probe build/control/freeze/preflight, fresh host grant and actual allocation evidence; rerun only affected checks after joined changes."
+    ],
+    "requests": [
+      "src/Xemele/Validation/Xsd/Evaluation/Evaluator.cs: bound repeated Content/UndeclaredElement cascades after a parent content cursor faults, preserving complete invalid assessment, source behavior and exact quota semantics. Root must assign owning follow-up; worker may not edit it."
+    ]
   }
 }
