@@ -78,3 +78,17 @@ than .NET regular expressions. `contracts.md` assigns every interface/output and
 clarifies deferred checks at the facade joins. Conformance owners pin real source
 versions, hashes and applicability with honest missing-case counts. Contract
 compilation establishes compatibility, not runtime conformance or performance.
+
+## Additive explicit resource outcomes
+
+The ordered `M8-schema-resource-outcomes` repair freezes
+[resource outcomes](../decisions/M8/resource-outcomes.md) (for contracts,
+see `resource-outcomes.md` alongside this file). It adds readonly explicit
+Denied/Unavailable/Resolved outcomes and virtual synchronous ResolveResult;
+legacy null remains Denied and existing Resolve/ResolveAsync stay unchanged.
+Only the concrete optional schema loader seam may return absence for explicit
+Unavailable. Mandatory loads remain strict; attempts share the work ledger,
+absence creates no document/cache entry/resource allowance, and ownership,
+parsing, redirected bases, quotas and cancellation remain common. Frozen lane
+interfaces and non-schema consumers are unchanged. XSD directive semantics are
+owned by the later ordered compiler repair.
