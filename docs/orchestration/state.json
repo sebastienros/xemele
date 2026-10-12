@@ -7,8 +7,8 @@
   "coordination_branch": "main",
   "max_concurrent_workers": 3,
   "last_verified_checkpoint": "M7-gate",
-  "last_verified_task": "M8-schema-resource-outcomes",
-  "last_integrated_revision": "55647de5bb866b78abddb0cffd1d10ed9aff95f7",
+  "last_verified_task": "M8-xsd-counted-matcher",
+  "last_integrated_revision": "590d642da81125cb451a884014532467a73162fb",
   "active_assignments": [
     {
       "task_id": "M8-xsd-recursive-components",
@@ -35,6 +35,20 @@
       "host_id": "local",
       "path": "/Users/sebastienros/.codex/worktrees/a053/xemele",
       "claim_revision": "b5544af4913420f9e13ba058d6ab65d830d53e0c"
+    },
+    {
+      "task_id": "M8-xsd-corpus",
+      "thread_id": "01a12ea8-7b90-7eb3-b475-b4eccf0b527f",
+      "host_id": "local",
+      "title": "Verify M8 XSD corpus",
+      "path": "/Users/sebastienros/.codex/worktrees/a996/xemele",
+      "branch": "codex/m8-xsd-corpus",
+      "base_revision": "d63a37316b4a6f8c780df10c6a6911509775a92c",
+      "claim_revision": "eff2ace80ff301eb5b74a111b0475966d823b671",
+      "stage": "Focused join of verified five repairs and exact repaired-original overlays; no fullcorpus until remainingrepairsverified.",
+      "model": "gpt-6.1-sol",
+      "thinking": "high",
+      "execution_status": "Activated bounded correctness/reporting only; no measurements or privatepeers"
     }
   ],
   "integration_queue": [],
@@ -171,7 +185,7 @@
   },
   "current_milestone": "M8",
   "milestone_completion_scope": "Complete integrated verified M8-gate; terminal workers and cleanup; preserve earlier evidence/caches; transfer sole writes to main. Do not create M9.",
-  "milestone_progress": "38 of47 M8 tasks verified. All four reviewed runtime repairs integrated with2075 actual combined checks and separate actual allocation/ownership evidence. Recursive-components/hint-ordering ready; countedmatcher next consumes verified content-failure after explicit dependency amendment. Full official corpus/CLI/gate remain pending.",
+  "milestone_progress": "39 of47 M8 tasks verified. Five runtime repairs integrated with actual combined correctness/API/consumers and allocations. Recursive/hint workers active; corpus may join verifiedmain for bounded fixed-original checks. Compiler type/particle/optionalcomposition, CLI/fullcorpus/gate remain pending.",
   "blockers": [
     {
       "id": "gate-accounting-decisions",
@@ -937,6 +951,22 @@
       },
       "integration_revision": "55647de5bb866b78abddb0cffd1d10ed9aff95f7",
       "cleanup_record": "docs/orchestration/cleanup-M8-four-repairs.json"
+    },
+    {
+      "task_id": "M8-xsd-counted-matcher",
+      "thread_id": "01a12f22-e443-7d21-8f53-922235ad6855",
+      "branch": "codex/m8-xsd-counted-matcher",
+      "base_revision": "3aff7cf56226b1b6e7adf6823d5be383bd86e001",
+      "stage": "Integrated verified and terminal; clean checkout/rawoutputs retained pendingcleanup.",
+      "model": "gpt-6.1-sol",
+      "thinking": "high",
+      "claim_revision": "ce3957b93ee50355bae17468a20d696bd82593ec",
+      "client_thread_id": "client-new-thread:c8bbcd4d-cb18-4318-995c-115856ccbcc8",
+      "host_id": "local",
+      "title": "Repair M8 counted matcher",
+      "path": "/Users/sebastienros/.codex/worktrees/452a/xemele",
+      "execution_status": "Standby zerojobs until focused followup",
+      "integration_revision": "590d642da81125cb451a884014532467a73162fb"
     }
   ],
   "measurement_lease_history": [
@@ -1716,37 +1746,7 @@
     "errF001": "Independent SecondEdition oracle adjudication; original queried VALID disagreement preserved, dependent instance unexecuted. docs/orchestration/M8-xsd-errF001-adjudication.md"
   },
   "gregsex_host_status": "Historical host coordination retired by newer human instruction at925defd10. No foreign project actors, messages, ACK requirements or synchronization in future Xemele work; no globalhostidle claim.",
-  "standby_assignments": [
-    {
-      "task_id": "M8-xsd-corpus",
-      "thread_id": "01a12ea8-7b90-7eb3-b475-b4eccf0b527f",
-      "host_id": "local",
-      "title": "Verify M8 XSD corpus",
-      "path": "/Users/sebastienros/.codex/worktrees/a996/xemele",
-      "branch": "codex/m8-xsd-corpus",
-      "base_revision": "d63a37316b4a6f8c780df10c6a6911509775a92c",
-      "claim_revision": "eff2ace80ff301eb5b74a111b0475966d823b671",
-      "stage": "Bounded source/execution handoff e7a4972: fivechildren clean,18runner+19native observations with13 original mismatches preserved; source/reportcontrols passed; A2 failed pending repairs and exact gate decisions.",
-      "model": "gpt-6.1-sol",
-      "thinking": "high",
-      "execution_status": "Standby: zero jobs; no writes/build/test until focused verified repair join or reporting request; remains host ACK actor."
-    },
-    {
-      "task_id": "M8-xsd-counted-matcher",
-      "thread_id": "01a12f22-e443-7d21-8f53-922235ad6855",
-      "branch": "codex/m8-xsd-counted-matcher",
-      "base_revision": "3aff7cf56226b1b6e7adf6823d5be383bd86e001",
-      "stage": "All ten original outcomes complete; accepted source unchanged and frozen467identity preparation ready at ea480aa83. Actual allocation pending fresh Xemele lease.",
-      "model": "gpt-6.1-sol",
-      "thinking": "high",
-      "claim_revision": "ce3957b93ee50355bae17468a20d696bd82593ec",
-      "client_thread_id": "client-new-thread:c8bbcd4d-cb18-4318-995c-115856ccbcc8",
-      "host_id": "local",
-      "title": "Repair M8 counted matcher",
-      "path": "/Users/sebastienros/.codex/worktrees/452a/xemele",
-      "execution_status": "Standby zerojobs until focused followup"
-    }
-  ],
+  "standby_assignments": [],
   "live_host_roster_note": "Xemele actors only: root/main/all executing and standby Xemele workers/three reviewers. No foreign actors or synchronization; report host-isolation limits honestly.",
   "contract_repair_reviews": [
     {

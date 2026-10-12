@@ -4,11 +4,11 @@
   "milestone": "M8",
   "title": "Bound equivalent XSD counted matcher states",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M8 coordinator01a12c6c-b333-71d3-877f-0d186618e21d / assigned isolated worker",
   "branch": "codex/m8-xsd-counted-matcher",
   "base_revision": "3aff7cf56226b1b6e7adf6823d5be383bd86e001",
-  "integration_revision": null,
+  "integration_revision": "590d642da81125cb451a884014532467a73162fb",
   "depends_on": [
     "M8-xsd-facade",
     "M8-xsd-content-failure-assessment"
@@ -39,7 +39,8 @@
       "evidence": [
         "initial-baseline",
         "original-exact-policy",
-        "verified-join-originals"
+        "verified-join-originals",
+        "root-integrated-verification"
       ]
     },
     {
@@ -48,7 +49,8 @@
       "status": "passed",
       "evidence": [
         "focused-content",
-        "branch-correctness"
+        "branch-correctness",
+        "root-integrated-verification"
       ]
     },
     {
@@ -57,7 +59,8 @@
       "status": "passed",
       "evidence": [
         "focused-content",
-        "branch-correctness"
+        "branch-correctness",
+        "root-integrated-verification"
       ]
     },
     {
@@ -70,7 +73,8 @@
         "allocation-source-only",
         "verified-join-originals",
         "allocation-preparation",
-        "actual-allocation"
+        "actual-allocation",
+        "root-integrated-verification"
       ]
     }
   ],
@@ -179,11 +183,20 @@
       "result": "passed",
       "summary": "Actual six borrowed routes each64samples0B; sevenowned routes each64samplespositive:104/4760/31064/176816/27368/4760/11872B per call. Cold475664/positive1048, same128consumed/control disabled. Exact wholeheap550776->472184(32programs)->764808(32cursors): negativeprogramdelta-78592 is illustrative GC/lifetime noise, not negative/zero ownershipcost; cursordelta292624 likewise not precise objectsize. Children47069/47071exit0/reaped/groupsabsent/logsclosed;467identitiesstable, lifecyclef4fe62c6d recorded before inspection. No PARK/ACK/exclusivegate/grant, retries, timing/throughput/BDN/x64/AOT/async/globalhostidleclaim; legacytoken onlyidentity+finitebounds.",
       "artifact": "docs/reports/M8-xsd-counted-matcher/allocations.md"
+    },
+    {
+      "id": "root-integrated-verification",
+      "kind": "integration",
+      "revision": "590d642da81125cb451a884014532467a73162fb",
+      "command": "python3 docs/reports/M8-xsd-counted-matcher/check.py; root238affected repair cases/all8frozen extraction/46resolverfixture; sourceequivalence; planning/diff",
+      "result": "passed",
+      "summary": "Root1561 distinct actual cases0fail/error/skips/notrun; sixReleasebuilds0warnings/errors;public1430/all8frozen/46fixture/normaltrueXML-only consumers passed. Runtime/tests/samples unchanged from testedcandidateeef92c after finalhandoff/mainmerge. Actual source-pinned non-isolated allocation evidence passed with cleanup. Fullcorpus/gate remain pending.",
+      "artifact": "docs/orchestration/M8-xsd-counted-matcher-integration.json"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Implemented counted post-minimum dominance; A1-A4pass on isolated branch after verified-main evaluator join, alltenunchangedoriginals complete/correct, independent8738word oracle and actual sixborrowedzero/sevenownedpositive allocation. Historical baseline/default128/exact1024 failures retained. Worker relinquishes writes for root integration; integration_revision unset.",
+    "summary": "Integrated verified on main; Implemented counted post-minimum dominance; A1-A4pass on isolated branch after verified-main evaluator join, alltenunchangedoriginals complete/correct, independent8738word oracle and actual sixborrowedzero/sevenownedpositive allocation. Historical baseline/default128/exact1024 failures retained. Worker relinquishes writes for root integration; integration_revision unset.",
     "checks": [
       "Runtime/test4a3a93ee2:115focused/independent8738word+existing63nullable/expandedcounter/exactwork/cancel pass; prior1146+42safe/135additional/API/frozen/consumers preserved.",
       "Joined1fd1b477e:tenexactoriginalsallcomplete/correct,1146affected+42resolver+135owned/fixed/datatype+238mapping/instance/failure/resource uniquechecks pass;public1430(historical1417+approved13),frozen/normal+trueXMLonly/planning196/diff;0errors/fails/skips/notrun/buildwarnings.",
