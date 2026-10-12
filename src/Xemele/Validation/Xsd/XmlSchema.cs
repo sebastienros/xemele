@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using Xemele.Internal.Operations;
 using Xemele.Parsing.Dom;
 using Xemele.Parsing.Syntax;
@@ -57,9 +58,13 @@ public sealed class XmlSchema
         }
         FinalizeDeclarations(compiled, programs, facets, context.Operation);
         var identity = new XsdIdentityCompiler().Compile(compiled, context.Operation);
+        // The completed backing dictionary is private to this invocation and
+        // never mutated again. A wrapper seals it without another traversal/copy.
+        if (!context.Operation.ChargeComponents(2, default)) throw SchemaSnapshots.Failure(context.Operation);
+        var published = new XmlSchema(compiled, new ReadOnlyDictionary<SchemaName, XsdContentProgram>(programs), facets, identity);
         Tick(context.Operation, default, 0);
         if (revision < 0 || source.ContentRevision != revision) throw new InvalidOperationException("Schema source changed during compilation.");
-        return new(compiled, XsdSnapshots.Map(programs), facets, identity);
+        return published;
     }
     private static void Tick(ISchemaOperation op, XmlLocation at, long work = 1)
     { if (!op.Charge(work, at)) throw SchemaSnapshots.Failure(op); }
@@ -99,19 +104,16 @@ public sealed class XmlSchema
             var normalized = schema.Datatypes.Find(Xs)!.Normalize(lexical, XmlWhitespaceRule.Collapse, op).AsSpan();
             foreach (var item in items)
             {
-                Tick(op, at, normalized.Length);
-                int end = normalized.IndexOf(' '); if (end < 0) end = normalized.Length;
+                int end = XsdFacadeText.IndexOf(normalized, ' ', op, at); if (end < 0) end = normalized.Length;
                 NotationValue(schema, item, normalized[..end], context, op, at);
                 normalized = end == normalized.Length ? [] : normalized[(end + 1)..];
             }
             return;
         }
         if (!Derived(schema, value.TypeName, "NOTATION", op)) return;
-        var text = schema.Datatypes.Find(Xs)!.Normalize(lexical, XmlWhitespaceRule.Collapse, op);
-        Tick(op, at, text.Length);
-        int colon = text.IndexOf(':'); string local = colon < 0 ? text : text[(colon + 1)..];
-        string? uri = colon < 0 ? context.DefaultNamespace : context.Prefixes.GetValueOrDefault(text[..colon]);
-        if (uri is null || !schema.Notations.ContainsKey(new(uri, local))) Reject(op, at, "NOTATION value must name a declared schema notation.");
+        var text = schema.Datatypes.Find(Xs)!.Normalize(lexical, XmlWhitespaceRule.Collapse, op).AsSpan();
+        if (!XsdFacadeText.IsDeclaredNotation(text, context, schema.Notations, op, at))
+            Reject(op, at, "NOTATION value must name a declared schema notation.");
     }
     private static DatatypeConstraintRepresentation? Constraint(XsdCompiledSchema schema, XmlFacetEvaluator facets,
         SchemaName type, string? lexical, SchemaNamespaceContext context, XmlLocation at, ISchemaOperation op)
@@ -126,7 +128,16 @@ public sealed class XmlSchema
                 error?.Message ?? "Invalid value constraint.", at));
             throw SchemaSnapshots.Failure(op);
         }
-        NotationValue(schema, prepared!.DeclaredValue, lexical, context, op, at);
+        // Publication must not defer canonical lexical rejection until an
+        // instance first consumes the constraint. Keep the authored typed value
+        // for equality, and assess the canonical text through the same type/context.
+        if (!facets.TryValidate(schema.Datatypes.FindType(type)!, prepared!.Lexical, context, schema.Datatypes, op, out _, out error))
+        {
+            if (op.IsComplete) op.AddDiagnostic(new(error?.Code ?? "XSD.SchemaConstraint", XmlDiagnosticSeverity.Error,
+                error?.Message ?? "Canonical value constraint is invalid for its declared datatype.", at));
+            throw SchemaSnapshots.Failure(op);
+        }
+        NotationValue(schema, prepared.DeclaredValue, lexical, context, op, at);
         return prepared;
     }
     private static void FinalizeDeclarations(XsdCompiledSchema schema, IReadOnlyDictionary<SchemaName, XsdContentProgram> programs,
@@ -296,5 +307,51 @@ internal static class XsdFacadeInput
         if (diagnostic is null) return document;
         operation.Refuse(diagnostic.Code.Contains("Limit", StringComparison.OrdinalIgnoreCase) ? "VALIDATION.Limit" : "SCHEMA.Syntax", diagnostic.Message, diagnostic.Location);
         return null;
+    }
+}
+
+// Straightforward borrowed scans charge each inspected UTF-16 unit and poll at
+// every unit. No token strings or whole-remainder precharges are necessary.
+internal static class XsdFacadeText
+{
+    internal static int IndexOf(ReadOnlySpan<char> text, char delimiter, ISchemaOperation op, XmlLocation at)
+    {
+        for (int i = 0; i < text.Length; i++)
+        {
+            if (!op.Charge(1, at)) throw SchemaSnapshots.Failure(op);
+            if (text[i] == delimiter) return i;
+        }
+        return -1;
+    }
+    private static bool Equal(ReadOnlySpan<char> left, ReadOnlySpan<char> right, ISchemaOperation op, XmlLocation at)
+    {
+        if (!op.Charge(0, at)) throw SchemaSnapshots.Failure(op);
+        if (left.Length != right.Length) return false;
+        for (int i = 0; i < left.Length; i++)
+        {
+            if (!op.Charge(1, at)) throw SchemaSnapshots.Failure(op);
+            if (left[i] != right[i]) return false;
+        }
+        return true;
+    }
+    internal static bool IsDeclaredNotation(ReadOnlySpan<char> text, SchemaNamespaceContext context,
+        IReadOnlyDictionary<SchemaName, XsdNotationDeclaration> notations, ISchemaOperation op, XmlLocation at)
+    {
+        int colon = IndexOf(text, ':', op, at);
+        ReadOnlySpan<char> local = colon < 0 ? text : text[(colon + 1)..];
+        string? uri = colon < 0 ? context.DefaultNamespace : null;
+        if (colon >= 0)
+            foreach (var prefix in context.Prefixes)
+            {
+                if (!op.Charge(1, at)) throw SchemaSnapshots.Failure(op);
+                if (Equal(text[..colon], prefix.Key, op, at)) { uri = prefix.Value; break; }
+            }
+        if (uri is null) return false;
+        foreach (var notation in notations)
+        {
+            if (!op.Charge(1, at)) throw SchemaSnapshots.Failure(op);
+            if (Equal(uri, notation.Key.NamespaceUri, op, at) && Equal(local, notation.Key.LocalName, op, at)) return true;
+        }
+        return false;
     }
 }
