@@ -4,11 +4,11 @@
   "milestone": "M8",
   "title": "Enforce XSD schema syntax and restricted identity paths",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M8 coordinator / assigned isolated schema syntax worker",
   "branch": "codex/m8-xsd-schema-syntax",
   "base_revision": "ea505cff902482ecabfa04266c353ee455981c78",
-  "integration_revision": null,
+  "integration_revision": "745dc3d0b0d3370ab75acd3993273f460dde4217",
   "depends_on": [
     "M8-xsd-facade"
   ],
@@ -40,7 +40,8 @@
       "status": "passed",
       "evidence": [
         "branch-correctness",
-        "source-review"
+        "source-review",
+        "root-integration"
       ]
     },
     {
@@ -49,7 +50,8 @@
       "status": "passed",
       "evidence": [
         "branch-correctness",
-        "source-review"
+        "source-review",
+        "root-integration"
       ]
     },
     {
@@ -62,7 +64,8 @@
         "checker-omission-control",
         "supplemental-model-freeze",
         "allocation-preparation",
-        "granted-allocation"
+        "granted-allocation",
+        "root-integration"
       ]
     }
   ],
@@ -135,20 +138,28 @@
       "result": "passed",
       "summary": "Actual granted allocation-only12 routes x16warm/x64ops, both disabled control and measured children exited0/reaped/groupsabsent/logclosed.456identities matchbefore/after. Root durable RELEASEc3b9438f625dcd941087c83a841bb369fb373884 before rawinspection; grant aed90f7b61b688697d689af9178bae1f774d7d22. Cold2482032B,positive1048B,16ownedretained delta634208B. Compiler short/long/multilingual74608B/op,group78784,invalid4536\u20134560;path dot832/long992/multilingual1016/invalid1928;publiccomposition1393496.25. No BDN/throughput or zero-owned-output allocation claim; rawoutputs ignored.",
       "artifact": "docs/reports/M8-xsd-schema-syntax/allocations.md"
+    },
+    {
+      "id": "root-integration",
+      "kind": "integration",
+      "revision": "745dc3d0b0d3370ab75acd3993273f460dde4217",
+      "command": "python3 docs/reports/M8-xsd-schema-syntax/check.py",
+      "result": "passed",
+      "summary": "Actual current-main combination:1146/1146 correctness=33owned+1113affected plus42safe resolver, total1188;0failed/errors/skips/not-run. Public1417;frozen model316/additive139/compiler257/identity24/content9/evaluation2/facade7 matched. Normal and source-linked trueXML-only facade consumers passed;5builds0warnings/errors;planning186/diffpassed. Root checked all29worker paths owned, independent owned case inventory, actual12allocationroute64ops/coldpositive16retained summary and durable prior cleanup release. Allocation source28e26b68 and tested runtime inputs unchanged; no measurement rerun or throughput claim.",
+      "artifact": "docs/reports/M8-xsd-schema-syntax/README.md"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Three unchanged original W3C invalid schemas now reject through public facade; global group syntax and borrowed charged documentation language validation fixed; explicit self/descendant axes reject while legal dot/child/attribute paths preserved. All scope/tests transitions documented. Branch implemented; coordinator integration verification remains.",
+    "summary": "Integrated and verified on current main combination; all original witnesses now reject, legal grammar and earlier contracts preserved. Worker terminal and writes relinquished.",
     "checks": [
       "1146/1146 owned+affected (33owned,1113affected) and42safe resolver passed; baseline three no-exception failures preserved.",
       "Exact public1417/model316+139/compiler257/identity24/evaluation2/content9/facade7 matched; normal+true source-linked XML-only consumers passed.",
       "All6 original fixture hashes verified; omitted-owned-row checker control rejected; planning185tasks/diffcheck passed.",
-      "Granted allocation12routes consumed;456identities before/after;bothchildrenexit0/reaped/groupsabsent/logsclosed; durable RELEASE beforeinspection."
+      "Granted allocation12routes consumed;456identities before/after;bothchildrenexit0/reaped/groupsabsent/logsclosed; durable RELEASE beforeinspection.",
+      "Root integration745dc3d0:1188checks/API/normal+XML-only/planning186passed."
     ],
-    "remaining": [
-      "Coordinator integration and verification only."
-    ],
+    "remaining": [],
     "requests": []
   }
 }
