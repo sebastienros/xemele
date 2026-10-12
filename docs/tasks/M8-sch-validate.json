@@ -34,29 +34,78 @@
     {
       "id": "M8-sch-validate-A1",
       "description": "Evaluate selected phases/rules and produce structured assertions/reports/diagnostics with source locations.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "source-checks"
+      ]
     },
     {
       "id": "M8-sch-validate-A2",
       "description": "Test phase selection, contexts/variables, assertions versus reports, concurrency and work budgets.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "source-checks"
+      ]
     },
     {
       "id": "M8-sch-validate-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "source-checks"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Validation/Schematron/SchematronSchema.cs: frozen six public Compile/Validate overloads and immutable model publication",
+    "src/Xemele/Validation/Schematron/Evaluation/SchematronEvaluator.cs: phase/scoped typed lets, first-rule document ordering, accounted M4, detached keyed traces/findings and logical XPath locations",
+    "src/Xemele/Validation/Schematron/Evaluation/Input.cs: strict structured string/byte input, shared scalar/work accounting, caller stream/exception lifetime",
+    "tests/Xemele.Tests/M8-sch-validate/: 35 independent behavior/boundary/work-budget/location/composition cases",
+    "docs/api/M8-sch-validate.txt: seven exact additive public members; docs/reports/M8-sch-validate/frozen.txt: nine-member public/internal seam",
+    "samples/M8-sch-validate/: normal and genuine XML-only six-overload consumers",
+    "benchmarks/Xemele.Benchmarks/M8-sch-validate/: prebuilt allocation-only ten-route control; measurement not run"
+  ],
+  "evidence": [
+    {
+      "id": "source-checks",
+      "kind": "check",
+      "revision": "43c6ab4cc789cc1e400dfdb2cea74e3851f681d7",
+      "command": "python3 docs/reports/M8-sch-validate/checks.py",
+      "result": "passed",
+      "summary": "454 actual tests passed (35 owned,419 verified prerequisites), zero errors/failures/skips/not-run; frozen9/compiler154 metadata and additive public1400 (1393+7) matched; normal/XML-only consumer passed; Release SDK10.0.400/.NET10.0.11 builds zero warnings/errors; planning177 and whitespace passed. See owned README for exact case counts and earlier corrected failures.",
+      "artifact": "docs/reports/M8-sch-validate/README.md"
+    },
+    {
+      "id": "allocation-control",
+      "kind": "check",
+      "revision": "43c6ab4cc789cc1e400dfdb2cea74e3851f681d7",
+      "command": "XEMELE_SCH_VALIDATE_REVISION=43c6ab4cc789cc1e400dfdb2cea74e3851f681d7 DOTNET_TieredCompilation=0 DOTNET_gcServer=0 DOTNET_GCConcurrent=0 dotnet --fx-version 10.0.11 benchmarks/Xemele.Benchmarks/M8-sch-validate/bin/Release/net10.0/Xemele.Benchmarks.dll --control artifacts/M8-sch-validate/control.json",
+      "result": "passed",
+      "summary": "Ten consumed routes passed with allocation/retained/RSS counters disabled; rebuilt prebuilt payload after accepted focused logical-text location fix. This is control correctness, not measurement.",
+      "artifact": "docs/reports/M8-sch-validate/preparation.json"
+    },
+    {
+      "id": "allocation-preparation",
+      "kind": "check",
+      "revision": "43c6ab4cc789cc1e400dfdb2cea74e3851f681d7",
+      "command": "python3 docs/reports/M8-sch-validate/lease.py --prepare && python3 docs/reports/M8-sch-validate/lease.py --verify-only",
+      "result": "passed",
+      "summary": "Elevated preparation and verification passed215 identities, actual process-inspection permissions, countersDisabled=true/rawInspected=false. SHA256379c2d73c7333031792405f14403b11035806be6175b418ddebc862127bf75be; maximum30s (20work+10cleanup). No active measurement grant.",
+      "artifact": "docs/reports/M8-sch-validate/preparation.json"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Claimed after verified compiler; worker dispatch after imminent prepared datatype-only measurement window.",
-    "checks": [],
-    "remaining": [],
+    "summary": "Runtime and exact API delivered with focused reviewer-requested logical-text location correction.454 tests and both consumers pass; allocation probe prepared/counter-disabled, no measurement. State stays in_progress until allocation evidence and coordinator acceptance.",
+    "checks": [
+      "python3 docs/reports/M8-sch-validate/checks.py:454 tests, frozen9/compiler154/public1400, both consumers, planning177 and whitespace passed at43c6ab4c",
+      "Prebuilt probe control:10 routes passed with counters disabled;215 manifest identities verified"
+    ],
+    "remaining": [
+      "Fresh host-wide PARK/GRANT to execute the prebuilt allocation-only supervisor, then durable RELEASE before raw inspection",
+      "Record actual allocation evidence; set implemented only after required evidence is accepted",
+      "Coordinator integration and rerun of applicable checks before verified"
+    ],
     "requests": []
   }
 }
