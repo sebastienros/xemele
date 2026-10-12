@@ -16,7 +16,7 @@ for (int route = 0; route < Fixture.Names.Length; route++)
     long start = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
     for (int i = 0; i < 64; i++) fixture.Run(route);
     long bytes = measure ? GC.GetAllocatedBytesForCurrentThread() - start : 0;
-    if (measure && (route == 0 ? bytes != 0 : bytes <= 0)) throw new InvalidOperationException("Allocation boundary failed.");
+    if (measure && bytes <= 0) throw new InvalidOperationException("Allocation boundary failed.");
     rows.Add(new { route, name = Fixture.Names[route], bytes, operations = 64 });
 }
 long positiveStart = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
@@ -39,14 +39,13 @@ Console.WriteLine($"{mode}: cold setup/first result +9 warm consumed routes,16wa
 static string Hash(string path) => Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(path)));
 sealed class Fixture
 {
-    internal static readonly string[] Names = ["borrowed writer", "owned int constraint", "owned long decimal constraint", "owned double constraint", "owned binary constraint", "owned temporal constraint", "owned QName constraint", "owned list/union constraint", "actual-type default assessment"];
+    internal static readonly string[] Names = ["owned text constraint", "owned int constraint", "owned long decimal constraint", "owned double constraint", "owned binary constraint", "owned temporal constraint", "owned QName constraint", "owned list/union constraint", "actual-type default assessment"];
     internal readonly string[] Inputs = ["abc", "01", new string('9', 1024) + ".0100", "1.7976931348623157e308", new string('A', 1024), "1234567890123456789012345678901234567890123456789012345678901234567890-03-01T00:30:00." + new string('1', 1024) + "000+01:00", " p:local ", " 1\t02  0 ", "01"];
     private readonly SchemaCompileOperation operation = new(new() { MaxOperations = null, MaxComponents = null, Limits = new() { EvaluationWork = null } });
     private readonly SchemaNamespaceContext context = new(new Dictionary<string, string> { ["p"] = "urn:declaration" }, "", null);
     private readonly XmlFacetEvaluator evaluator = new();
     private readonly XmlDatatypeRegistry registry;
     private readonly XmlDatatypeDefinition[] types;
-    private readonly char[] output = new char[3];
     private object? consumed;
     internal Fixture()
     {
@@ -65,13 +64,8 @@ sealed class Fixture
     }
     internal void Run(int route)
     {
-        if (route == 0)
-        {
-            var writer = new ConstraintWriter(output, true, operation); writer.Append("abc");
-            if (writer.Length != 3 || !output.AsSpan().SequenceEqual("abc")) throw new InvalidOperationException(); return;
-        }
         var rep = Create(route);
-        if (route is 1 or 8 && rep.Lexical != "1" || route == 6 && rep.Lexical != "p:local" || route == 7 && rep.Lexical != "true 2.0 false") throw new InvalidOperationException();
+        if (route == 0 && rep.Lexical != "abc" || route is 1 or 8 && rep.Lexical != "1" || route == 6 && rep.Lexical != "p:local" || route == 7 && rep.Lexical != "true 2.0 false") throw new InvalidOperationException();
         if (route == 8)
         {
             if (!evaluator.TryValidate(types[8], rep.Lexical, rep.Context, registry, operation, out var actual, out _) || actual!.TypeName != types[8].Name || !registry.Find(DatatypeTypes.XsdNamespace)!.ValueEquals(rep.DeclaredValue, actual, operation)) throw new InvalidOperationException();

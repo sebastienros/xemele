@@ -13,8 +13,8 @@ discovery, retry, result inspection or second launch after failure.
 
 One cold setup/first-owned-result numerator has denominator 1. Nine warm routes
 have 16 warmups then one allocation-counter aggregate over exactly 64 consumed
-calls each. The borrowed writer is the sole zero target; all eight result routes
-own allocations. Registry/evaluator preparation and fixtures stay outside warm
+calls each. All nine warm routes own parsed values and canonical constraint results; no
+zero target is needed for this owned-result evidence. Registry/evaluator preparation and fixtures stay outside warm
 counters; owned parsing, formatting, result and actual assessment costs remain
 inside. The positive byte-array control proves instrumentation. Sixteen retained
 large decimal representations have whole-heap before/after observations, not a

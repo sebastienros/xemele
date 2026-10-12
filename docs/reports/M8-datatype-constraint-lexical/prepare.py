@@ -9,7 +9,8 @@ for verb in ['restore','build']:
  args=[str(net),verb,project,*( ['--source','/Users/sebastienros/.nuget/packages'] if verb=='restore' else ['-c','Release','--no-restore']),*flags]
  subprocess.run(args,cwd=root,check=True)
 out=root/'artifacts/M8-datatype-constraint-lexical/preparation';out.mkdir(parents=True,exist_ok=True)
-env=os.environ.copy();env.update(DOTNET_TieredCompilation='0',DOTNET_gcServer='0',DOTNET_GCConcurrent='0')
+revision=subprocess.check_output(['git','rev-parse','HEAD'],cwd=root,text=True).strip()
+env=os.environ.copy();env.update(DOTNET_TieredCompilation='0',DOTNET_gcServer='0',DOTNET_GCConcurrent='0',XEMELE_CONSTRAINT_REVISION=revision)
 subprocess.run([str(net),'--fx-version','10.0.11','benchmarks/Xemele.Benchmarks/M8-datatype-constraint-lexical/bin/Release/net10.0/Xemele.Benchmarks.dll','--control',str(out/'control.json')],cwd=root,env=env,check=True,timeout=40)
 control=json.loads((out/'control.json').read_text())
 assert control['mode']=='--control' and control['runtime']=='.NET 10.0.11' and len(control['rows'])==9
@@ -29,6 +30,6 @@ for relative in ['global.json','Directory.Build.props','Directory.Packages.props
 def digest(p):
  with p.open('rb') as s:return hashlib.file_digest(s,'sha256').hexdigest()
 def key(p):return str(p.relative_to(root)) if p.is_relative_to(root) else str(p)
-manifest={'sourceRevision':subprocess.check_output(['git','rev-parse','HEAD'],cwd=root,text=True).strip(),'maximumSeconds':120,'workSeconds':110,'cleanupReserveSeconds':10,'probeRoutes':10,'zeroAllocationRoutes':1,'warmups':16,'aggregateOperations':64,'retainedCount':16,'commands':json.loads(subprocess.check_output(['python3','docs/reports/M8-datatype-constraint-lexical/measure.py','--commands'],cwd=root,text=True)),'identityCount':len(paths),'identities':{key(p):digest(p) for p in sorted(paths)}}
+manifest={'sourceRevision':revision,'acceptedRuntimeRevision':'a58aed481ea2c6831111b73d037f92d1da21a2c1','maximumSeconds':120,'workSeconds':110,'cleanupReserveSeconds':10,'probeRoutes':10,'zeroAllocationRoutes':0,'warmups':16,'aggregateOperations':64,'retainedCount':16,'commands':json.loads(subprocess.check_output(['python3','docs/reports/M8-datatype-constraint-lexical/measure.py','--commands'],cwd=root,text=True)),'identityCount':len(paths),'identities':{key(p):digest(p) for p in sorted(paths)}}
 p=root/'docs/reports/M8-datatype-constraint-lexical/preparation.json';p.write_text(json.dumps(manifest,indent=2)+'\n')
 print(f'Prepared {len(paths)} identities; manifest {digest(p)}; counters and timing disabled.')

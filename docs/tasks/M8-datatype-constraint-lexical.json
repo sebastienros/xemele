@@ -76,6 +76,15 @@
       "result": "passed",
       "summary": "Actual Arm64 .NET10.0.11: 731 selected tests passed (86 own/645 affected), zero failures/errors/skips/not-run; first count assertion corrected from invented >800 to exact731 without rerunning passing tests. PublicAPI1410 and frozenDatatypes316/Facets316 unchanged; normal/trueXMLonly consumers passed;182 planning and whitespace checks pass. No allocation counters.",
       "artifact": "docs/reports/M8-datatype-constraint-lexical/correctness.md"
+    },
+    {
+      "id": "independent-source-review",
+      "kind": "review",
+      "revision": "a58aed481ea2c6831111b73d037f92d1da21a2c1",
+      "command": null,
+      "result": "passed",
+      "summary": "Coordinator conveyed final source acceptance by existing /root/review_m8_contract and /root/review_m8_model; semantic/normative and accounting/ownership scopes, no blockers. Worker independently matched all five canonical file hashes. This is source review, not test execution.",
+      "artifact": "docs/reports/M8-datatype-constraint-lexical/source-review.md"
     }
   ],
   "blockers": [],
@@ -86,8 +95,8 @@
       "Allocation/BDN/timing checks not run; no fresh grant."
     ],
     "remaining": [
-      "Independent source acceptance before allocation preparation/freeze/preflight and a fresh bounded coordinator lease.",
-      "Controlled allocation evidence and coordinator integration checks before A4/task implementation completion."
+      "Controlled owned-result allocation preparation/preflight/fresh bounded grant and evidence.",
+      "Coordinator integrated correctness/API/normal/XML-only verification before consumers add a dependency."
     ],
     "requests": []
   }
