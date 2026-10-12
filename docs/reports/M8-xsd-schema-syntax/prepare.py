@@ -29,7 +29,7 @@ for relative in subprocess.check_output(['git','ls-files','src/Xemele'],cwd=root
 for folder in ['tests/Xemele.Tests/M8-xsd-schema-syntax','benchmarks/Xemele.Benchmarks/M8-xsd-schema-syntax','tests/fixtures/M8-xsd-schema-syntax']:
  for p in (root/folder).iterdir():
   if p.is_file():paths.add(p)
-for relative in ['global.json','Directory.Build.props','Directory.Packages.props','docs/reports/M8-xsd-schema-syntax/prepare.py','docs/reports/M8-xsd-schema-syntax/measure.py','docs/reports/M8-xsd-schema-syntax/check.py','tests/Xemele.Tests/M8-xsd-identity/XPathTests.cs','tests/Xemele.Tests/M8-xsd-identity/ParserBudgetTests.cs']:
+for relative in ['global.json','Directory.Build.props','Directory.Packages.props','docs/reports/M8-xsd-schema-syntax/prepare.py','docs/reports/M8-xsd-schema-syntax/measure.py','docs/reports/M8-xsd-schema-syntax/check.py','docs/reports/M8-xsd-schema-syntax/assert_results.py','tests/Xemele.Tests/M8-xsd-identity/XPathTests.cs','tests/Xemele.Tests/M8-xsd-identity/ParserBudgetTests.cs']:
  paths.add(root/relative)
 def digest(p):
  with p.open('rb') as s:return hashlib.file_digest(s,'sha256').hexdigest()

@@ -10,18 +10,12 @@ for project in ['tests/Xemele.Tests/Xemele.Tests.csproj','docs/reports/M0-contra
  subprocess.run([D,'build',project,'-c','Release','--no-restore',*flags],check=True)
 out=Path('artifacts/M8-xsd-schema-syntax');out.mkdir(parents=True,exist_ok=True)
 failures=[]
-def assert_tests(path,count=None):
- r=ET.parse(path).getroot();a=r.find('assembly')
- count=int(a.attrib['passed']) if count is None else count
- assert int(a.attrib['passed'])==count and all(int(a.attrib[k])==0 for k in ['errors','failed','skipped','not-run']),a.attrib
- assert '10.0.11' in a.attrib['environment']
- assert len(list(r.iter('test')))==count and all(t.attrib['result']=='Pass' for t in r.iter('test'))
- assert all('WarmBorrowed' not in t.attrib['name'] for t in r.iter('test'))
+from assert_results import assert_tests
 args=[D,'--fx-version','10.0.11','tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll']
 for ns in ['Xemele.Tests.M8XsdSchemaSyntax','Xemele.Tests.M8XsdFacade','Xemele.Tests.M8XsdPublicationCheckpoints','Xemele.Tests.M8XsdFixedRestriction','Xemele.Tests.M8SchemaResourceBase','Xemele.Tests.M8XsdValidate','Xemele.Tests.M8ConstraintLexical','Xemele.Tests.M8XsdContent','Xemele.Tests.M8XsdCompile','Xemele.Tests.M8XsdIdentity','Xemele.Tests.M8Facets','Xemele.Tests.M8Model','Xemele.Tests.M8SourceLocations','Xemele.Tests.M8XsdWildcardComposition','Xemele.Tests.M8XsdEffectiveContent']:args+=['-namespace',ns]
 args+=['-method-','*WarmBorrowed*','-parallelMode','none','-noLogo','-noColor','-result-xml',str(out/'correctness.xml')]
 correctness=subprocess.run(args)
-try: assert_tests(out/'correctness.xml')
+try: assert_tests(out/'correctness.xml',correctness=True)
 except AssertionError: failures.append('affected correctness')
 if correctness.returncode and 'affected correctness' not in failures: failures.append('affected correctness')
 resolver=next(r['args'] for r in json.loads(Path('docs/reports/M8-resource-kind/test-commands.json').read_text()) if r['label']=='resolver')

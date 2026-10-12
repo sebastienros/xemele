@@ -45,7 +45,7 @@ public sealed class NeighborTests
     public void LanguageWhitespaceScanHasExactWorkAndCancellation(bool trailing)
     {
         string language = trailing ? "en" + new string(' ',8192) : new string(' ',8192) + "en";
-        var doc = XmlDocument.Parse(Wrap($"<xs:annotation><xs:documentation xml:lang='{language}'/></xs:annotation>"));
+        var doc = XmlDocument.Parse(Wrap($"<xs:annotation><xs:documentation xml:lang='{language}'/></xs:annotation>"), cancellationToken:TestContext.Current.CancellationToken);
         var compiler = new XmlSchemaCompiler(); var observed = new Ledger();
         Assert.NotNull(compiler.Compile(doc,new(),observed)); Assert.True(observed.Work >= 8192);
         Assert.NotNull(compiler.Compile(doc,new(),new Ledger(observed.Work,observed.Components)));
