@@ -1,0 +1,3 @@
+# Verified content-failure dependency
+
+The coordinator adds M8-xsd-content-failure-assessment to the counted-matcher task after integrated verification at423da4defd7ec85873f13193dec15cbb4134ae00, metadata3b7b50339. This permits joining main and completing three original Z034 cases without weakening the frozen Diagnostics1024 policy. The seven prior complete outcomes and original three refusals remain historical evidence; all ten unchanged originals must execute on the joined revision. No private peer dependency or source ownership expansion is authorized. Actual allocations remain pending. Xemele-only coordination applies.

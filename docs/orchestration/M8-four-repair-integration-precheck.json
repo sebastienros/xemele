@@ -1,0 +1,84 @@
+{
+  "status": "Combined correctness/API/consumers passed; all four tasks still require actual allocation before verification. Main runtime unchanged.",
+  "tested_runtime_revision": "ff6e04296f470bd21e82deb8f9212f623102f92e",
+  "corrected_candidate_revision": "70b63ddd929b6e7db76b663823bab26c1e20c1ae",
+  "runtime_tests_samples_unchanged": "git diff --exit-code ff6e04296f470bd21e82deb8f9212f623102f92e -- src/Xemele tests/Xemele.Tests samples passed after metadata/API-header correction.",
+  "path": "/Users/sebastienros/.codex/worktrees/m8-component-integration/xemele",
+  "branch": "codex/m8-component-integration",
+  "checks": {
+    "revision": "ff6e04296f470bd21e82deb8f9212f623102f92e",
+    "passed": 2075,
+    "unique_recorded_ids_within_each_disjoint_type_group": true,
+    "errors": 0,
+    "failures": 0,
+    "skipped": 0,
+    "not_run": 0,
+    "groups": [
+      {
+        "artifacts/M8-schema-resource-outcomes/correctness.xml": 1530
+      },
+      {
+        "artifacts/M8-schema-resource-outcomes/resolver.xml": 42
+      },
+      {
+        "artifacts/M8-four-repairs-integration/M8XsdComponentMapping.xml": 117
+      },
+      {
+        "artifacts/M8-four-repairs-integration/M8XsdInstanceAssessment.xml": 44
+      },
+      {
+        "artifacts/M8-four-repairs-integration/M8XsdContentFailureAssessment.xml": 39
+      },
+      {
+        "artifacts/M8-four-repairs-integration/M8XsdSchemaSyntax.xml": 33
+      },
+      {
+        "artifacts/M8-four-repairs-integration/M8XsdAttributeFixed.xml": 45
+      },
+      {
+        "artifacts/M8-four-repairs-integration/M8Datatypes.xml": 77
+      },
+      {
+        "artifacts/M8-four-repairs-integration/M8DatatypesTextBinary.xml": 148
+      }
+    ],
+    "frozen_lanes": {
+      "Model": 316,
+      "Regex": 316,
+      "Datatypes": 316,
+      "Facets": 316,
+      "RelaxNg": 444,
+      "Xsd": 615,
+      "Schematron": 479,
+      "Reporting": 319
+    },
+    "resolver_fixture": 46,
+    "public_union": "Passed after own APIfragment correction at corrected_candidate_revision; no runtime/test/sample change.",
+    "driver_failures": "Preserved malformed API fragment failure, invalid uniqueness assumption on truncated display names, and zero-row misspelled TextBinary namespace. Actual test IDs unique; correct namespace148 executed. No passing tests repeated."
+  },
+  "public_union_final": {
+    "revision": "70b63ddd929b6e7db76b663823bab26c1e20c1ae",
+    "command": "python3 docs/reports/M5-validation-model/check_api.py",
+    "result": "passed",
+    "compiled_members": 1430,
+    "old_members_preserved": 1417,
+    "additive_members": 13
+  },
+  "consumers": [
+    "resource normal",
+    "resource true source-linked XML-only",
+    "facade normal",
+    "facade true source-linked XML-only"
+  ],
+  "release_builds": 8,
+  "build_warnings": 0,
+  "build_errors": 0,
+  "planning_tasks": 196,
+  "lifecycle": "Initial driver exited1 for APIfragment; continuation exited1 for display-name uniqueness assumption after its additional tests had passed; remaining driver exited0. All root sessions finished, no active children/logs. No counters, measurements or lease.",
+  "preserved_failures": [
+    "Evaluator empty API fragment had comment-only header. Worker fixed at c7d92f0624b189658fd42d56bf43a537c1f104a5 and API-only check passed; original preparation superseded honestly.",
+    "Root incorrectly required unique truncated xUnit display names; actual xUnit IDs are unique and groups have disjoint test classes. Parsed saved outputs, did not repeat any passing tests.",
+    "Root initial TextBinary namespace selected zero tests; exact M8DatatypesTextBinary namespace then executed148, with exact count verified. Zero-case output retained as driver history, never pass evidence."
+  ],
+  "evidence_policy": "Raw outputs transient; concise real outcomes retained. No task verified or dependent runtime started. Do not repeat passing checks absent relevant changes."
+}

@@ -20,6 +20,13 @@ public abstract class XmlResourceResolver
 {
     public abstract XmlResolvedResource? Resolve(XmlResourceRequest request, CancellationToken cancellationToken);
 
+    public virtual XmlResourceResolution ResolveResult(XmlResourceRequest request, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        var resource = Resolve(request, cancellationToken);
+        return resource is null ? XmlResourceResolution.Denied : XmlResourceResolution.FromResource(resource);
+    }
+
     public virtual ValueTask<XmlResolvedResource?> ResolveAsync(XmlResourceRequest request, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();

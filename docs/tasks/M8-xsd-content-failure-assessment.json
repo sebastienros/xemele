@@ -1,0 +1,174 @@
+{
+  "schema_version": 1,
+  "id": "M8-xsd-content-failure-assessment",
+  "milestone": "M8",
+  "title": "Continue XSD assessment after a content cursor rejects",
+  "kind": "feature",
+  "status": "verified",
+  "owner": "M8 coordinator01a12c6c-b333-71d3-877f-0d186618e21d / assigned isolated worker",
+  "branch": "codex/m8-xsd-content-failure-assessment",
+  "base_revision": "958c5d3a7acd6fb5cb46b1d391f65d190b76923f",
+  "integration_revision": "423da4defd7ec85873f13193dec15cbb4134ae00",
+  "depends_on": [
+    "M8-xsd-facade"
+  ],
+  "goals": [
+    "G14",
+    "G18"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/schemas.md"
+  ],
+  "owns": [
+    "src/Xemele/Validation/Xsd/Evaluation/Evaluator.cs",
+    "tests/Xemele.Tests/M8-xsd-content-failure-assessment/",
+    "tests/fixtures/M8-xsd-content-failure-assessment/",
+    "benchmarks/Xemele.Benchmarks/M8-xsd-content-failure-assessment/",
+    "docs/api/M8-xsd-content-failure-assessment.txt",
+    "samples/M8-xsd-content-failure-assessment/",
+    "docs/reports/M8-xsd-content-failure-assessment/"
+  ],
+  "api_or_output": "Bound repeated content-failure diagnostics while preserving descendant assessment and all refusal semantics",
+  "acceptance": [
+    {
+      "id": "M8-xsd-content-failure-assessment-A1",
+      "description": "Reproduce with the existing verified matcher: a small content model followed by over 1024 harmless unmatched siblings exhausts Diagnostics1024. Repair must finish complete-invalid with one initial content-failure diagnostic, original source location and unchanged limits. Preserve the three actual Z034 diagnostic-limit failures as pending counted-matcher integration evidence, never count standalone witnesses as those original executions.",
+      "status": "passed",
+      "evidence": [
+        "focused-correctness",
+        "root-integrated-verification"
+      ]
+    },
+    {
+      "id": "M8-xsd-content-failure-assessment-A2",
+      "description": "Use per-run per-frame content-fault state separate from validity. On first semantic Accept=false after polling, report content error and disregard both failure-path outputs; later children bypass only that failed cursor and continue global-declaration, xsi:type or open assessment. Do not infer local declarations, skip subtrees or filter diagnostics globally. Suppress only the failed cursor completion duplicate; successful strict wildcard and unfaulted missing-content behavior remain.",
+      "status": "passed",
+      "evidence": [
+        "focused-correctness",
+        "root-integrated-verification"
+      ]
+    },
+    {
+      "id": "M8-xsd-content-failure-assessment-A3",
+      "description": "Prove later datatype/required attribute/fixed/content and strict-wildcard errors, independent parent faults, attribute errors not disabling matching, balanced ordered identity hooks and later key/keyref/ID/IDREF checks. Preserve ordinary independent diagnostic exhaustion, shared work/depth/token/document limits, cancellation including null caps, caller exceptions, DOM mutation detection and repeat/concurrent isolation.",
+      "status": "passed",
+      "evidence": [
+        "focused-correctness",
+        "root-integrated-verification"
+      ]
+    },
+    {
+      "id": "M8-xsd-content-failure-assessment-A4",
+      "description": "Pass focused evaluator/identity/content/facade regressions, unchanged public and frozen APIs, normal and true XML-only consumers, planning validation, and actual bounded allocation evidence using existing infrastructure under a fresh root lease. No matcher/compiler/shared-contract change, raised cap or forced completion.",
+      "status": "passed",
+      "evidence": [
+        "focused-correctness",
+        "missing-focused-checks",
+        "api-fragment-refresh",
+        "root-source-review",
+        "disabled-allocation-preparation",
+        "root-owned-allocation",
+        "root-integrated-verification"
+      ]
+    }
+  ],
+  "implementation": [
+    "src/Xemele/Validation/Xsd/Evaluation/Evaluator.cs: Frame.ContentFaulted, first rejection/global recovery route, failed completion bypass",
+    "tests/Xemele.Tests/M8-xsd-content-failure-assessment/: 39 independent continuation and boundary witnesses",
+    "docs/reports/M8-xsd-content-failure-assessment/check.py: affected correctness/API/normal and XML-only checks",
+    "benchmarks/Xemele.Benchmarks/M8-xsd-content-failure-assessment/: seven owned-output routes with actual root-granted allocation evidence",
+    "docs/reports/M8-xsd-content-failure-assessment/allocations.md: actual seven route aggregates, cold/positive/retained limits and durable cleanup evidence"
+  ],
+  "evidence": [
+    {
+      "id": "verified-matcher-before",
+      "kind": "check",
+      "revision": "279403dad8c229947a802bd70abd47582736fcde",
+      "command": "Pinned .NET10.0.11 Release test assembly -namespace Xemele.Tests.M8XsdContentFailureAssessment -parallelMode none -result-xml artifacts/M8-xsd-content-failure-assessment/baseline-1024.xml",
+      "result": "failed",
+      "summary": "Two independent 1025/2048 unmatched-sibling witnesses each incomplete with 1024 diagnostics and terminal VALIDATION.Limit: Validation diagnostic limit exceeded. Existing verified matcher only. This is not any actual Z034 execution. Prior draft default128 also failed; first build draft corrected invalid XmlLocation.ColumnNumber member.",
+      "artifact": null
+    },
+    {
+      "id": "focused-correctness",
+      "kind": "check",
+      "revision": "eb2dd42c84c560e9d4337befb629c624627e4eb9",
+      "command": "python3 docs/reports/M8-xsd-content-failure-assessment/check.py (initial driver namespace M8DatatypeValues absent); pinned assembly -namespace Xemele.Tests.M8DatatypesTextBinary -method- '*WarmBorrowed*' -parallelMode none",
+      "result": "passed",
+      "summary": "Actual 1152 affected (1113 base +39 own) +42 safe resolver +148 separate TextBinary =1342 pass; 0 fail/errors/skipped/not-run. Both independent Diagnostics1024 cases finish complete-invalid with one initial XSD.Content at original source URI/line/column. Public1417/frozen evaluator2/facade7/compiler257/identity24/content9 matched; normal+true XML-only consumers and five Release builds 0warnings/errors; planning195/diff passed. Existing fixed35 included, no later peer45 consumed. Counters/WarmBorrowed/BDN excluded. Driver now names actual TextBinary for coordinator rerun, no rerun yet claimed.",
+      "artifact": null
+    },
+    {
+      "id": "missing-focused-checks",
+      "kind": "check",
+      "revision": "0388fdd4aedf68f4f0fc368c2f53d0c3532eb00f",
+      "command": "Pinned .NET10.0.11 prebuilt Release test DLL -namespace Xemele.Tests.M8XsdSchemaSyntax -namespace Xemele.Tests.M8XsdAttributeFixed -namespace Xemele.Tests.M8Datatypes -method- '*WarmBorrowed*' -parallelMode none -result-xml artifacts/M8-xsd-content-failure-assessment/missing-namespaces.xml; Python XML assertions",
+      "result": "passed",
+      "summary": "Only missing schema-syntax33/attribute-fixed45/Datatypes77 executed:155 unique IDs,0fail/errors/skipped/not-run, runtime10.0.11. Earlier1152+42+148 retained, no repeats. EvaluatorSHA256ca44f5ca2e559cc17dcbdc1bbc06f3532f91c6c1814052d91c3445de0a1fbe53 and DLLSHA256a75f848d14f7d2c42009182d21dc81d349e4046fb2ceaf5cdb46fc89148c01fb identical before/after. Correctness cumulative1497. Probe bound proposal now30s total/20s work/10s cleanup; no preparation or counters executed.",
+      "artifact": null
+    },
+    {
+      "id": "root-source-review",
+      "kind": "review",
+      "revision": "488d5cb52604d07730b4d3b8e45b31c71ed7db06",
+      "command": "Coordinator source acceptance recorded at ff0751cfaf6625b289b3291b95c7bcd25b493fa9 docs/orchestration/review-M8-xsd-content-failure-assessment.json",
+      "result": "passed",
+      "summary": "Coordinator reports independent XPath reviewer accepted eb2dd42 runtime/tests; root accepted488d5cb probe source/bounds and1497actualchecks. Source review only. Offline preparation released; no allocation grant.",
+      "artifact": null
+    },
+    {
+      "id": "disabled-allocation-preparation",
+      "kind": "check",
+      "revision": "488d5cb52604d07730b4d3b8e45b31c71ed7db06",
+      "command": "python3 docs/reports/M8-xsd-content-failure-assessment/prepare.py; python3 docs/reports/M8-xsd-content-failure-assessment/measure.py --verify-only; python3 docs/reports/M8-xsd-content-failure-assessment/preflight.py; owned probe process inventory",
+      "result": "passed",
+      "summary": "Pinned offline Release build0warnings/errors; actual7route disabled576calls/82992consumed/16retainedresults, all counters/heap fields disabled. Manifest91e27bfdf2352ebedb9196aaeee883492af44c5f0caa727f629a93f34f720f38,448identities before/after matched. Initial sandbox verify-only ps denied before child; elevated verify-only/preflight passed child9401exit0,reaped,groupabsent,logclosed;zeroownedjobs. Frozen source488d5cb,sourceDLL2D20A79635BB972766B84903B5930BD351916391A1D68D94E96EA3689A7EAE51,probeDLL224B77B9566333AC2F5924DC76BE3FAFD2D65D9DD65D4A27863122F55A7917AC.30stotal/20swork/10scleanup; no correctness repeat, counter/heap/BDN/WarmBorrowed/measurement.",
+      "artifact": "docs/reports/M8-xsd-content-failure-assessment/preparation-summary.json"
+    },
+    {
+      "id": "api-fragment-refresh",
+      "kind": "check",
+      "revision": "c7d92f0624b189658fd42d56bf43a537c1f104a5",
+      "command": "python3 docs/reports/M5-validation-model/check_api.py; full448manifestidentity verify-only; fresh disabled preflight; planning validate/diff",
+      "result": "passed",
+      "summary": "Own empty fragment now exact xemele-api-v1 newline,zero publicrows;actualprebuiltAPIunion1417matched. Historic initial1417pass preceded finalfragmentaddition and did not validate its invalid comments. Originalmanifest91e27bfdf2352ebedb9196aaeee883492af44c5f0caa727f629a93f34f720f38 superseded beforeanygrant;preserved preparation-superseded-api-fragment.json plus originalsummary/rawpreflight. Newmanifestbbe7442014d7cba8ec9da3ad4ba514f3547b1e52128a5b22e4f8ef07ad3c54db:448identities,onlyAPIfilehashchanged,sourceRevisionc7d92f0624b189658fd42d56bf43a537c1f104a5;source/runtime/probebinaries/commandsunchanged,no rebuild. Fullverifyonly/freshdisabledpreflight child10009exit0/reaped/groupabsent/logclosed,7routes576calls82992consumed16retainedresults,countersheapdisabled. Bounds30/20/10,latest+60expiry+90 proposal. No correctnessrepeat/counters/grant.",
+      "artifact": "docs/reports/M8-xsd-content-failure-assessment/preparation-summary-v2.json"
+    },
+    {
+      "id": "root-owned-allocation",
+      "kind": "check",
+      "revision": "c7d92f0624b189658fd42d56bf43a537c1f104a5",
+      "command": "Root sole launcher: frozen measure.py --granted bbe7442014d7cba8ec9da3ad4ba514f3547b1e52128a5b22e4f8ef07ad3c54db 2026-10-12T13:38:43.298867+00:00 2026-10-12T13:39:13.298867+00:00; durable RELEASE f42e1a5e8 before inspection",
+      "result": "passed",
+      "summary": "Actual Arm64.NET10.0.11 seven synchronous owned routes16warm+64calls:867840/800256/154416640/307883008/933376/185295072/139279480 aggregatebytes;allpositive. Cold4808136/onefixture;positive1048/one1024bytearray;wholeheap1914392to1919864,delta5472with16results+fixturealive (illustrative). Separate disabledcontrol allcounter/heapfields0,same576calls/82992consumed. Own448/root1358identities matchbeforeafter;ownchildren35330/35332exit0/reaped/groupsabsent/logsclosed,root62384terminalexit0/sixchildrenclean;durableRELEASEf42e1a5e8beforeworkerrawinspectiononce.30/20/10each,global90/latestgrant+60/expirygrant+90,no retries. No zero-validation/throughput/x64/AOT/async/fullcorpus/globalhostidleclaim.",
+      "artifact": "docs/reports/M8-xsd-content-failure-assessment/allocations.md"
+    },
+    {
+      "id": "root-integrated-verification",
+      "kind": "integration",
+      "revision": "423da4defd7ec85873f13193dec15cbb4134ae00",
+      "command": "Combined checks on ff6e042; corrected API-only70b63ddd; git diff --exit-code ff6e042 -- src/Xemele tests/Xemele.Tests samples; python3 tools/planning/tasks.py validate; git diff --check",
+      "result": "passed",
+      "summary": "Integrated reviewed runtime and final branch evidence onto main.2075 distinct actual correctness cases pass,0fail/error/skips/notrun;8Releasebuilds0warnings/errors;1430public=1417preserved+13additive/46resolverfixture/all8frozenlanes/resource+facade normal andtrueXML-only consumers pass. Exact runtime/tests/samples unchanged from testedff6e042 to this integratedrevision; no repeated passing tests. Separate actual source-pinned allocation checks and cleanup passed under fresh Xemele-only windows; task ownership/limits preserved. Full official corpus/gate stillpending.",
+      "artifact": "docs/orchestration/M8-four-repair-integration-precheck.json"
+    }
+  ],
+  "blockers": [],
+  "handoff": {
+    "summary": "Integrated and verified on main; Implemented evaluator-only continuation: one per-frame content fault ignores false outputs, preserves descendant/global/xsi:type/open assessment and independent budgets/identity checks. Correctness1497 plus actual root-granted allocation supported all criteria; own empty API fragment corrected and validated. Worker relinquishes writes for root integration; integration_revision remains unset.",
+    "checks": [
+      "Exact baseline279403dad:1025/2048 independent desired-oracle failures each Diagnostics1024 terminalVALIDATION.Limit; preserved as original failure evidence.",
+      "Runtime/test eb2dd42:39own/1152affected+42resolver+148TextBinary pass; missing-onlySchemaSyntax33/AttributeFixed45/Datatypes77=155uniqueIDs pass; cumulative1497,0fail/errors/skips/notrun;public/frozen/normal/XMLonly/checks pass. No correctness repeated for allocation metadata.",
+      "Invalid final API comments blocked combined union after initialhistoricpass; c7d92f062 emptyvalidfragment corrected,actualprebuilt1417unionpass. Original91e27bfprep receipt preserved as superseded; replacementbbe74420 onlyAPIhashchanged,448identities.",
+      "ActualrootallocationafterRELEASEf42e1a5e8:7ownedpositive routes16warm/64calls,cold4808136/positive1048/wholeheapdelta5472with16results;disabledcontrolfields0/same576calls82992consumed;ownchildren35330/35332exit0/reaped/groupabsent/logclosed,root62384terminal/sixchildcleanup/1358identitiesstable. No new execution.",
+      "Final metadata planning/diff and frozen448identity checks run before handoff."
+    ],
+    "remaining": [
+      "Coordinator integrates and verifies combined code/task record before setting verified.",
+      "Three actual Z034_a2/a3/b counted-matcher diagnostic-limit failures remain pending matcher-owner follow-up after verified integration; independent witnesses do not replace their actual executions.",
+      "Allocation evidence is synchronous Arm64 ownership only, with illustrative process-wide retention; no throughput/x64/AOT/async/fullcorpus/globalhostidle claim."
+    ],
+    "requests": []
+  }
+}

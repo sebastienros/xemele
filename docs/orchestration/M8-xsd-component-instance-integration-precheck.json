@@ -1,0 +1,47 @@
+{
+  "status": "Passed combined correctness; allocation still pending for both tasks. No main runtime merge or verified task claim.",
+  "tested_revision": "e034fbd38470a33cfb1fbdffe3efd1e88d7048eb",
+  "main_base": "f57a493059eea7bcc0b5e6e6a116e935263a65c9",
+  "component_worker": "5fad82a4fd0e73f794ca75249ac422fe02c98eb4",
+  "instance_worker": "4f48e85bf8d45fcf32334a333a67cf718087cb2e",
+  "path": "/Users/sebastienros/.codex/worktrees/m8-component-integration/xemele",
+  "branch": "codex/m8-component-integration",
+  "reason_for_repeat": "Combined new instance runtime repair with previously tested component candidate; prior4278909 results remain historical.",
+  "checks": {
+    "component_syntax_affected": 1263,
+    "safe_resolver": 42,
+    "instance_owned": 44,
+    "attribute_fixed": 45,
+    "datatypes": 77,
+    "total": 1471,
+    "errors": 0,
+    "failures": 0,
+    "skips": 0,
+    "not_run": 0,
+    "public_api": 1417,
+    "frozen_api_counts": [
+      316,
+      139,
+      257,
+      24,
+      9,
+      2,
+      7
+    ],
+    "consumers": [
+      "normal",
+      "true source-linked XML-only"
+    ],
+    "release_builds": 5,
+    "build_warnings": 0,
+    "build_errors": 0,
+    "planning_tasks": 195
+  },
+  "commands": [
+    "python3 docs/reports/M8-xsd-component-mapping/check.py",
+    "Pinned10.0.11 prebuilt test DLL; separate M8XsdInstanceAssessment44, M8XsdAttributeFixed45, M8Datatypes77; -method- *WarmBorrowed* -parallelMode none; accepted instance assert_result plus owned exactcaseinventory.",
+    "python3 tools/planning/tasks.py validate; git diff --check"
+  ],
+  "lifecycle": "Root exec session3432 exited0; no running check processes/session; log file closed. No counters or measurement.",
+  "evidence_policy": "Generated XML/logs transient; preserve concise actual outcomes through cleanup. Repeat only for relevant source/dependency/input change."
+}
