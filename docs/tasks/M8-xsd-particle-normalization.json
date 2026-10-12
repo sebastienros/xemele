@@ -4,11 +4,11 @@
   "milestone": "M8",
   "title": "Correct substitution particle normalization and named-group UPA",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M8 coordinator / assigned isolated M8-xsd-particle-normalization worker",
   "branch": "codex/m8-xsd-particle-normalization",
   "base_revision": "6f5700a94d3fb2f1b0a86e5484a7a00884226ebf",
-  "integration_revision": null,
+  "integration_revision": "b2395ffa3f7cf17da2a9d39d35f1486b536cab6b",
   "depends_on": [
     "M8-xsd-type-relations",
     "M8-xsd-attribute-fixed",
@@ -42,7 +42,8 @@
       "status": "passed",
       "evidence": [
         "batch-owned",
-        "batch-compatibility"
+        "batch-compatibility",
+        "integrated-particle-verification"
       ]
     },
     {
@@ -51,7 +52,8 @@
       "status": "passed",
       "evidence": [
         "batch-owned",
-        "batch-compatibility"
+        "batch-compatibility",
+        "integrated-particle-verification"
       ]
     },
     {
@@ -60,7 +62,8 @@
       "status": "passed",
       "evidence": [
         "batch-owned",
-        "batch-compatibility"
+        "batch-compatibility",
+        "integrated-particle-verification"
       ]
     },
     {
@@ -72,7 +75,8 @@
         "batch-compatibility",
         "allocation-source-review",
         "allocation-preparation",
-        "actual-root-allocations"
+        "actual-root-allocations",
+        "integrated-particle-verification"
       ]
     }
   ],
@@ -190,20 +194,26 @@
       "result": "passed",
       "summary": "Root session90344 terminal0; children77071/77073 completed0/reaped/groupsabsent/logsclosed. 465frozenidentities before/after; single120s bound110work/10cleanup. Cleanup durable cdd93503c748b98b3d44e88e7769802e00021635 before raw inspection; independently checked compact summary3ff6062b4833a0dc046c9821734d61715c837f8b. 24firstcalls/1536warm samples positive, aggregates equal sums; disabledcontrol zeros, consumed45455 match. Cold8830840B/positive1048B/40retained. Negative coarseGCdeltas preserved, no objectsize/negativecost/zero/timing claim. Worker copied compact evidence only; no counters/build/test reruns.",
       "artifact": "docs/reports/M8-xsd-particle-normalization/allocation-summary.json"
+    },
+    {
+      "id": "integrated-particle-verification",
+      "kind": "integration",
+      "revision": "b2395ffa3f7cf17da2a9d39d35f1486b536cab6b",
+      "command": "Root check.py and datatype supplemental on candidate2a8b97d32; final candidate/main git diff --exit-code 2a8b97d32 -- src tests samples; python3 tools/planning/tasks.py validate; git diff --check; root actual measure.py --run 38d3e41c885f9876d528c9b4a3de8908ef530819177306fbc569d4578704ab56",
+      "result": "passed",
+      "summary": "1976 distinct cases passed with no failures/errors/skips;8 Release builds0warnings/errors, public1430/all8frozen/additive46/emittedAPI, normal/XML-only consumers. Finalc764b262 and integratedmain runtime/tests/samples byte-identical to tested2a8. Actual24routes1536positivewarm samples and controls passed;465identities before/after, children77071/77073 completed0/clean, cleanup cdd93503c beforeinspection. No redundant passing rerun.",
+      "artifact": "docs/orchestration/M8-xsd-particle-integration.json"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "All branch criteria passed; implemented with root actual allocation evidence at preparation78c140bdec1fff43c4f19ec7111818f010525843. Runtime15d/probeSOURCEbe7/frozen465 identities unchanged; integration_revision null pending coordinator integration verification.",
+    "summary": "Integrated and verified particle normalization and bounded all-type batching; no public/frozen API change. Original default-limit outcomes and actual owned allocation evidence pass.",
     "checks": [
       "Prior87owned/1622affected/77datatype/42resolver/API/consumer passes and SOURCE reviews preserved; no test/build/counter rerun by worker.",
       "Root24routes/24positive firstcalls/1536positivewarm samples, aggregate sums and disabled control match; cleanup cdd93503c748b98b3d44e88e7769802e00021635 precedes inspection, compact summary3ff6062b4833a0dc046c9821734d61715c837f8b copied bytewise.",
       "Final static465identity/hash check, runtime/test/fixture gitdiff unchanged and compact arithmetic pass. All7 owned process groups absent, zero owned background jobs."
     ],
-    "remaining": [
-      "Coordinator integrates the accepted tested candidate and verifies combined code before setting verified and recording integration_revision.",
-      "Coordinator directs transient raw artifact cleanup; only compact allocation/ownership/lifecycle evidence committed."
-    ],
+    "remaining": [],
     "requests": []
   }
 }
