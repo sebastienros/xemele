@@ -40,7 +40,9 @@ bindings, ancestor registration, bounded deadlines and terminal raw/bin/obj/log
 consumption/deletion. Worker does not import or execute harness sources.
 
 Static checks: task readiness read (claim already serialized); planning validation
-and diff whitespace only. Runtime/build/corpus/consumer/API/lifecycle/allocation are
+(200 tasks) and authored-source whitespace pass. The full staged/source-commit
+whitespace check reports 33 trailing-whitespace findings in 7 copied upstream
+files; exact original bytes/hashes are intentionally preserved. Runtime/build/corpus/consumer/API/lifecycle/allocation are
 UNRUN. Exact source hashes are in source-manifest.json. The coordinator additionally assigned the exact two nullable element-Type
 dictionary keys in content-failure BoundaryTests.cs; only those lookups changed.
 Publication checkpoint declarations are attributes and retain their nonnullable

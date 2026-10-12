@@ -9,7 +9,7 @@ internal sealed partial class XmlFacetEvaluator
         op.ChargeComponents(1, type.Location);
         var counts = new List<(XmlFacet Facet, FacetNumber Number, int Level)>();
         int level = 0;
-        for (var definition = type; definition is not null; definition = definition.BaseType is { } parent ? registry.FindType(parent) : null)
+        for (XmlDatatypeDefinition? definition = type; definition is not null; definition = definition.BaseType is { } parent ? registry.FindType(parent) : null)
         {
             op.Charge(1, definition.Location);
             // Intrinsic definitions have their own complete-plan validation;
