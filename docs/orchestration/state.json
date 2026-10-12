@@ -7,14 +7,14 @@
   "coordination_branch": "main",
   "max_concurrent_workers": 3,
   "last_verified_checkpoint": "M7-gate",
-  "last_verified_task": "M8-sch-corpus",
+  "last_verified_task": "M8-xsd-identity",
   "last_integrated_revision": "483c8f6485fd4b305763e5732aa1d4d57e6b811b",
   "active_assignments": [
     {
       "task_id": "M8-rng-validate",
       "branch": "codex/m8-rng-validate",
       "base_revision": "cdf7a0b148e837e016f874da32b054ab4f25a93e",
-      "stage": "Bounded review requires known instance source URI in context helper; worker correcting during source-only external PARK. Prior checks preserved; recheck/refreeze required.",
+      "stage": "Accepted corrected source; actual combined89owned+1191prior checks/API/consumers passed atb4930ea7; frozen434identities awaiting exact serial grant.",
       "model": "gpt-6.1-sol",
       "thinking": "high",
       "acceptance_before_dispatch": {
@@ -27,29 +27,11 @@
       "host_id": "local",
       "chat_id": "01a12de0-fb87-7b93-9937-b32be47a82b1",
       "worktree_path": "/Users/sebastienros/.codex/worktrees/3538/xemele",
-      "source_revision": "5d69a1361eb55f771a5da428fc67ee7272c47d6a",
-      "manifest_sha256": "6c38cf4809edd1286d2ec42889b1aef4099fe48340d2e6c9d669cd3678efae1f",
-      "review_request": "A1/A2 Evaluator.Context must pass document.ParsedSourceUri independent of XML declaration; known-source relative/inherited xml:base proving cases."
-    },
-    {
-      "task_id": "M8-xsd-identity",
-      "branch": "codex/m8-xsd-identity",
-      "base_revision": "465b9e5544f83e320593218404d29a26dfad8985",
-      "stage": "Bounded review accepted descendant-self semantics; worker correcting unpolled axis lookahead and NCName scalar validation. Revised checks/refreeze pending external RELEASE.",
-      "model": "gpt-6.1-sol",
-      "thinking": "high",
-      "acceptance_before_dispatch": {
-        "mandatory": "Complete frozen XSD unique/key/keyref immutable compiler and per-run identity session through approved hook; restricted XPath scope and typed equality.",
-        "integration": "Independent namespaces/scopes/default typed values/absent and multiple fields/duplicates/references/error and exact work-memory-cancel tests; frozen/public API and XML-only hook consumer; prepared allocation evidence.",
-        "review": "Independent restricted XPath/typed tuple/scoped keyref ownership review; no unmerged evaluator/facade dependency or alternate hook."
-      },
-      "claim_revision": "14d177ab6bbe320f4d1f0fdcf7233f34e01039c6",
-      "host_id": "local",
-      "client_thread_id": "client-new-thread:95ec28ed-fa54-4b07-bd6d-7987404c6066",
-      "chat_id": "01a12de1-4dd2-7361-b83f-c7d7b1b0a945",
-      "worktree_path": "/Users/sebastienros/.codex/worktrees/26b6/xemele",
-      "source_revision": "c3b29efa6066f9a80bbf01dc6bce489b89780d73",
-      "review_request": "A2 charge/poll axis whitespace lookahead including failed lookahead without duplicate charging; owned polled scalar NCName validation and exact boundary/cancellation regressions."
+      "source_revision": "ec0699e10605c1d89eecfdbe192a7150b81fe1be",
+      "manifest_sha256": "5b7d24badda22d79471f6f12ee62684e4e9fb1a159944d36e9186f5c31c1ce9a",
+      "review_request": "A1/A2 Evaluator.Context must pass document.ParsedSourceUri independent of XML declaration; known-source relative/inherited xml:base proving cases.",
+      "integration_worktree": "/private/tmp/xemele-M8-rng-validate-integration",
+      "tested_combination": "b4930ea7c0e30dc0036a290c8726300c6cbf92d5"
     },
     {
       "task_id": "M8-xsd-validate",
@@ -205,7 +187,7 @@
   },
   "current_milestone": "M8",
   "milestone_completion_scope": "Complete integrated verified M8-gate; terminal workers and cleanup; preserve earlier evidence/caches; transfer sole writes to main. Do not create M9.",
-  "milestone_progress": "23 of31 M8 tasks verified; RNG and identity corrections active; XSD core claimed pending external RELEASE before dispatch.",
+  "milestone_progress": "24 of31 M8 tasks verified; core can consume verified identity after dependency update; RNG final integration next.",
   "blockers": [],
   "pending_decisions": [],
   "timing_queue": [],
@@ -592,6 +574,34 @@
       "final_worker_revision": "ea7eeace5819b5bb292422a69b293fd6f0a9d7b4",
       "integration_revision": "483c8f6485fd4b305763e5732aa1d4d57e6b811b",
       "cleanup_record": "docs/orchestration/cleanup-M8-sch-corpus.json"
+    },
+    {
+      "task_id": "M8-xsd-identity",
+      "branch": "codex/m8-xsd-identity",
+      "base_revision": "465b9e5544f83e320593218404d29a26dfad8985",
+      "stage": "Verified; terminal all-write handback; cleanup pending",
+      "model": "gpt-6.1-sol",
+      "thinking": "high",
+      "acceptance_before_dispatch": {
+        "mandatory": "Complete frozen XSD unique/key/keyref immutable compiler and per-run identity session through approved hook; restricted XPath scope and typed equality.",
+        "integration": "Independent namespaces/scopes/default typed values/absent and multiple fields/duplicates/references/error and exact work-memory-cancel tests; frozen/public API and XML-only hook consumer; prepared allocation evidence.",
+        "review": "Independent restricted XPath/typed tuple/scoped keyref ownership review; no unmerged evaluator/facade dependency or alternate hook."
+      },
+      "claim_revision": "14d177ab6bbe320f4d1f0fdcf7233f34e01039c6",
+      "host_id": "local",
+      "client_thread_id": "client-new-thread:95ec28ed-fa54-4b07-bd6d-7987404c6066",
+      "chat_id": "01a12de1-4dd2-7361-b83f-c7d7b1b0a945",
+      "worktree_path": "/Users/sebastienros/.codex/worktrees/26b6/xemele",
+      "source_revision": "36b7f1379988da6b9c1e5915b513ccc33b48a3a4",
+      "review_request": "A2 charge/poll axis whitespace lookahead including failed lookahead without duplicate charging; owned polled scalar NCName validation and exact boundary/cancellation regressions.",
+      "integration_worktree": "/private/tmp/xemele-M8-xsd-identity-integration",
+      "tested_combination": "8ba5a6ca3bfef2e2c6a29bf1dc3151a010f7b224",
+      "prepared_revision": "975d34a72494dc0bdb7b9b939c1b11f243b562cd",
+      "manifest_sha256": "76c69a37314346fb53d98041e0e33113067d9069416d4d8d91afeca1d7b698d3",
+      "implementation_revision": "36b7f1379988da6b9c1e5915b513ccc33b48a3a4",
+      "handoff_revision": "0d580252a41ad900e5de72b7312554f243d416eb",
+      "integration_revision": "8ba5a6ca3bfef2e2c6a29bf1dc3151a010f7b224",
+      "combined_verification": "Actual combined737pass (149owned+546affected+42safe resolver),0errors/failures/skips/not-run/buildwarnings;1403public/24frozen,normal+trueXMLonly consumers,180planning/diff. Terminal metadata-only source/test/build/API/consumer/check identity confirmed; accepted released allocation and independent source review."
     }
   ],
   "measurement_lease_history": [
@@ -864,6 +874,11 @@
       "record": "docs/orchestration/M8-sch-rule-scope-allocation-1.json",
       "grant_revision": "6be0655816726b4dc5acbb6ea2fabd9d67966637",
       "release_revision": "f7ca004bbcbbba505463e47a7c99ce253a03e19b"
+    },
+    {
+      "id": "M8-rng-identity-serial-1",
+      "status": "RELEASED",
+      "record": "docs/orchestration/M8-rng-identity-serial-1.json"
     }
   ],
   "workers": [],
