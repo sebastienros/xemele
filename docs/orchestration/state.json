@@ -182,7 +182,7 @@
   },
   "current_milestone": "M8",
   "milestone_completion_scope": "Complete integrated verified M8-gate; terminal workers and cleanup; preserve earlier evidence/caches; transfer sole writes to main. Do not create M9.",
-  "milestone_progress": "18 of30 M8 tasks verified; SCH/effective-content cleanup pending; content unblocked, facets correcting five review findings.",
+  "milestone_progress": "18 of30 M8 tasks verified and terminally cleaned; content consumes both verified compiler repairs, facets correcting five review findings.",
   "blockers": [
     "M8-xsd-content two mandatory corrected-positive mapping failures pending M8-xsd-effective-content; originalwildcardfailure nowrepaired andverified"
   ],
@@ -656,7 +656,7 @@
     },
     {
       "task_id": "M8-xsd-wildcard-composition",
-      "stage": "Verified; original checkout cleaned; reused integration checkout now awaits effective-content terminal cleanup",
+      "stage": "Verified; original and reused integration checkouts cleaned after effective-content completion",
       "branch": "codex/m8-xsd-wildcard-composition",
       "base_revision": "adf80b989e0389cac3972a3eba974fc8bf911700",
       "scope": "Only Compiler.cs private wildcard composition plus own proving tests/report; no model/API change",
@@ -674,7 +674,7 @@
       "task_id": "M8-sch-validate",
       "branch": "codex/m8-sch-validate",
       "base_revision": "d6d21c40a7dc89c11fc00039a07383f61cfcd48d",
-      "stage": "Verified; terminal worker writes handed back; cleanup pending",
+      "stage": "Verified; terminal checkouts removed, committed evidence preserved",
       "acceptance_before_dispatch": {
         "mandatory": "Frozen public Schematron facade, phase/let/rule evaluation and detached structured results; no SVRL report task overlap.",
         "integration": "Named/#ALL/#DEFAULT phases, scoped typed lets/outer shadow, document/attribute context order/first rule, singleton focus, subject/messages, detached snapshots, concurrency, quotas/cancel, public/frozen/XML-only consumers and owned allocation evidence.",
@@ -692,11 +692,12 @@
       "prepared_revision": "5ed14389fe4df0b5097152239787c7290331df3f",
       "manifest_sha256": "379c2d73c7333031792405f14403b11035806be6175b418ddebc862127bf75be",
       "worker_revision": "663c6b1a082a39156a5c9ed66d8dd3f76a8d8c5a",
-      "integration_revision": "8917aceb24b132e0124405279fe9abd6359bca86"
+      "integration_revision": "8917aceb24b132e0124405279fe9abd6359bca86",
+      "cleanup": "docs/orchestration/cleanup-M8-sch-validate.json"
     },
     {
       "task_id": "M8-xsd-effective-content",
-      "stage": "Verified; terminal cleanup pending",
+      "stage": "Verified; terminal checkouts removed, committed evidence preserved",
       "branch": "codex/m8-xsd-effective-content",
       "base_revision": "f519d8338f42b37193c5664d27540359bd259aec",
       "worktree_path": "/private/tmp/xemele-M8-xsd-wildcard-integration",
@@ -706,7 +707,8 @@
       "prepared_revision": "04b90121",
       "manifest_sha256": "e261323fcd7bb33c3fc3f9ab647d2611592fc7d688dd8a1e27bdbb87575d3580",
       "integration_revision": "8917aceb24b132e0124405279fe9abd6359bca86",
-      "worker_revision": "ca3ce0e8"
+      "worker_revision": "ca3ce0e8",
+      "cleanup": "docs/orchestration/cleanup-M8-xsd-effective-content.json"
     }
   ],
   "measurement_lease_history": [
