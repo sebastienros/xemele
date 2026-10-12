@@ -34,7 +34,7 @@ public sealed class XmlSchema
     private static XmlSchema Compile(XmlDocument source, SchemaCompileContext context)
     {
         long revision = source.ContentRevision;
-        var compiled = new XmlSchemaCompiler().Compile(source, context.Options, context.Operation);
+        var compiled = new XmlSchemaCompiler().Compile(source, context);
         // Compiler builtins are declaration carriers; replace them with executable metadata.
         var definitions = new List<XmlDatatypeDefinition>();
         foreach (var definition in compiled.SimpleTypes)
@@ -54,7 +54,7 @@ public sealed class XmlSchema
         foreach (var type in compiled.Types)
         {
             Tick(context.Operation, type.Location);
-            programs.Add(type.Name, new XsdContentCompiler().Compile(compiled, type, context.Operation));
+            programs.Add(type.Name, new XsdContentCompiler().Compile(compiled, type, context.Operation, facets));
         }
         FinalizeDeclarations(compiled, programs, facets, context.Operation);
         var identity = new XsdIdentityCompiler().Compile(compiled, context.Operation);
