@@ -138,13 +138,23 @@ public sealed class XmlSchema
         foreach (var type in schema.SimpleTypes)
         {
             Tick(op, type.Location);
-            if (type.Name.NamespaceUri != Xs) NotationType(schema, type.Name, op, type.Location);
+            if (type.Name.NamespaceUri != Xs)
+            {
+                NotationType(schema, type.Name, op, type.Location);
+                if (type.ItemType is { } item) NotationType(schema, item, op, type.Location);
+                foreach (var member in type.MemberTypes) { Tick(op, type.Location); NotationType(schema, member, op, type.Location); }
+            }
             foreach (var facet in type.Facets)
             {
                 Tick(op, facet.Location);
                 if (facet.Kind != XmlFacetKind.Enumeration) continue;
                 // Enumeration lexical forms are parsed against the base at their authored context.
                 var basis = schema.Datatypes.FindType(type.BaseType ?? type.Name)!;
+                // Direct list/union construction has anySimpleType as a nominal
+                // base. Parse with its member graph so selected NOTATION values
+                // are retained; omit only this level's authored facets.
+                if (type.Variety != XmlDatatypeVariety.Atomic && basis.Name == new SchemaName(Xs, "anySimpleType"))
+                    basis = type with { Facets = [] };
                 if (!facets.TryValidate(basis, facet.LexicalValue, facet.Context, schema.Datatypes, op, out var value, out var error))
                 {
                     if (op.IsComplete) op.AddDiagnostic(new(error?.Code ?? "XSD.SchemaConstraint", XmlDiagnosticSeverity.Error,
@@ -162,6 +172,7 @@ public sealed class XmlSchema
         foreach (var type in schema.Types)
         {
             int ids = 0;
+            if (type.Name.NamespaceUri != Xs && type.SimpleType is { } simple) NotationType(schema, simple, op, type.Location);
             foreach (var binding in type.Attributes)
             {
                 Tick(op, binding.Location); var attribute = schema.Attributes[binding.DeclarationId];

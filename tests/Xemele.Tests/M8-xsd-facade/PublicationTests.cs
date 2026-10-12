@@ -18,6 +18,20 @@ public sealed class PublicationTests
     [InlineData("<xs:attribute name='a' type='xs:QName' fixed='p:v'/><xs:complexType name='Unused'><xs:attribute ref='a' xmlns:p='urn:other' fixed='p:v'/></xs:complexType>")]
     public void InvalidRetainedDefinitionsRejectBeforePublication(string body)
     { Assert.NotEmpty(Assert.Throws<SchemaCompileException>(() => PublicTests.Compile(body)).Diagnostics); }
+    [Theory]
+    [InlineData("<xs:simpleType name='U'><xs:union memberTypes='xs:NOTATION xs:int'/></xs:simpleType>")]
+    [InlineData("<xs:simpleType name='L'><xs:list itemType='xs:NOTATION'/></xs:simpleType>")]
+    [InlineData("<xs:complexType name='Unused'><xs:simpleContent><xs:extension base='xs:NOTATION'/></xs:simpleContent></xs:complexType>")]
+    [InlineData("<xs:notation name='N' public='n'/><xs:simpleType name='NType'><xs:restriction base='xs:NOTATION'><xs:enumeration value='N'/></xs:restriction></xs:simpleType><xs:simpleType name='U'><xs:union memberTypes='NType xs:int'/></xs:simpleType><xs:simpleType name='Bad'><xs:restriction base='U'><xs:enumeration value='Missing'/></xs:restriction></xs:simpleType>")]
+    public void CompositeNotationDependenciesCannotBypassPublication(string body)
+    { Assert.Throws<SchemaCompileException>(() => PublicTests.Compile(body)); }
+    [Fact]
+    public void DirectListAndUnionEnumerationRetainsRealMembers()
+    {
+        var schema = PublicTests.Compile("<xs:simpleType name='L'><xs:list itemType='xs:int'/></xs:simpleType><xs:simpleType name='LE'><xs:restriction base='L'><xs:enumeration value='1 2'/></xs:restriction></xs:simpleType><xs:simpleType name='U'><xs:union memberTypes='xs:int xs:boolean'/></xs:simpleType><xs:simpleType name='UE'><xs:restriction base='U'><xs:enumeration value='true'/></xs:restriction></xs:simpleType><xs:element name='root' type='UE'/>");
+        PublicTests.AssertResult(schema.Validate("<root>true</root>"), true);
+        PublicTests.AssertResult(schema.Validate("<root>2</root>"), false);
+    }
     [Fact]
     public void EqualQNameBindingFixedUsesDeclarationContexts()
     {

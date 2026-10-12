@@ -27,10 +27,11 @@ public sealed class CompositionTests
         PublicTests.AssertResult(schema.Validate(xml), expected);
     }
     [Fact]
-    public void ComposedAttributeGroupWildcardAcceptsBothNamespaces()
+    public void ComposedAttributeGroupWildcardUsesIntersection()
     {
-        var schema = PublicTests.Compile("<xs:attributeGroup name='A'><xs:anyAttribute namespace='urn:a' processContents='skip'/></xs:attributeGroup><xs:attributeGroup name='B'><xs:anyAttribute namespace='urn:b' processContents='skip'/></xs:attributeGroup><xs:element name='root'><xs:complexType><xs:attributeGroup ref='A'/><xs:attributeGroup ref='B'/></xs:complexType></xs:element>");
-        PublicTests.AssertResult(schema.Validate("<root xmlns:a='urn:a' xmlns:b='urn:b' a:x='1' b:y='2'/>"), true);
+        var schema = PublicTests.Compile("<xs:attributeGroup name='A'><xs:anyAttribute namespace='urn:a urn:b' processContents='skip'/></xs:attributeGroup><xs:attributeGroup name='B'><xs:anyAttribute namespace='urn:b urn:c' processContents='skip'/></xs:attributeGroup><xs:element name='root'><xs:complexType><xs:attributeGroup ref='A'/><xs:attributeGroup ref='B'/></xs:complexType></xs:element>");
+        PublicTests.AssertResult(schema.Validate("<root xmlns:b='urn:b' b:y='2'/>"), true);
+        PublicTests.AssertResult(schema.Validate("<root xmlns:a='urn:a' a:x='1'/>"), false);
         PublicTests.AssertResult(schema.Validate("<root xmlns:c='urn:c' c:x='1'/>"), false);
     }
 }
