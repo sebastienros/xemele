@@ -4,11 +4,11 @@
   "milestone": "M8",
   "title": "XSD content-model compilation",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M8 coordinator01a12c6c-b333-71d3-877f-0d186618e21d / assigned isolated worker",
   "branch": "codex/m8-xsd-content",
   "base_revision": "55a1f72c319b792acc216ca847818aba5ac7cd13",
-  "integration_revision": null,
+  "integration_revision": "223d094fb93e2a454557822818c06baa296e8702",
   "depends_on": [
     "M8-xsd-compile",
     "M8-xsd-wildcard-composition",
@@ -39,7 +39,8 @@
       "evidence": [
         "indexed-wildcard-correctness",
         "indexed-wildcard-review-closure",
-        "measurement-2"
+        "measurement-2",
+        "coordinator-final-integration"
       ]
     },
     {
@@ -49,7 +50,8 @@
       "evidence": [
         "indexed-wildcard-correctness",
         "indexed-wildcard-review-closure",
-        "measurement-2"
+        "measurement-2",
+        "coordinator-final-integration"
       ]
     },
     {
@@ -59,7 +61,8 @@
       "evidence": [
         "indexed-wildcard-correctness",
         "indexed-wildcard-review-closure",
-        "measurement-2"
+        "measurement-2",
+        "coordinator-final-integration"
       ]
     }
   ],
@@ -187,11 +190,20 @@
       "result": "passed",
       "summary": "Actual root serial grantb9e9f7e9/cleanupRELEASEcf39961a before inspection. Content supervisorstatus0 in42.064227083s, both children89193/89195exit0/reaped/groupsabsent/logsclosed,213identities stable. .NET10.0.11 Arm64 macOS15.8.1 AppleM4Pro concurrentworkstationGC.10routes each32warm/64samples: warm5route distributions all0B; owned lazycursor104B, initialization/banks/operation4760B, all-typecompile31080B, realXML/compiler/content177416B, UPA diagnostics27360B per sample (all64equal). Coldfixture340336B; positive1048B. Wholeheap337216->369368 with32programs->661992 with32initializedcursors, aggregateobservations only.5MemoryDiagnoser ShortRun NoEmit cases complete: means27.98/52.78/232.93/1758.57/230.16ns; rawGC totals0/16777216,1968/16777216,1632/4194304,1968/524288,1680/4194304B/ops retained, rounded0B not exactzero proof. Provisional single synchronousArm64 run/no repeatable speed/crossarchitecture claim; future facade/x64 confirmation. Exact identities and histogram/minmax/totals in report; original failure preserved, rawoutputs ignored/notremoved.",
       "artifact": "docs/reports/M8-xsd-content/measurement-2.md"
+    },
+    {
+      "id": "coordinator-final-integration",
+      "kind": "integration",
+      "revision": "223d094fb93e2a454557822818c06baa296e8702",
+      "command": "python3 docs/reports/M8-sch-report/checks.py; python3 docs/reports/M8-xsd-content/check.py; python3 docs/reports/M8-facets/checks.py (serial execution with failure stops)",
+      "result": "passed",
+      "summary": "Actual report546/content285/facets804 suites passed; overlapping prerequisites are not summed. Zero failures/errors/skips/not-run/build warnings/errors. Public1403; frozen reporting3/evaluator9/compiler154/content9/facet316; normal and true XML-only consumers;179-task planning. Final main changes only orchestration and task/report metadata; runtime/tests/benchmarks/build/API/consumer/check inputs identical. Released10-route/5-case measurements independently inspected; first failed attempt remains explicit and has no numeric allocation evidence. No repeatable speed or x64 claim.",
+      "artifact": "docs/reports/M8-xsd-content/integration.md"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Implemented immutable internal XSD content programs, compiler/matcher and isolated cursors with charged, polled work. Verified compiler repairs consumed; bounded reviews accepted; 285 checks, API comparisons and XML-only consumer pass. Actual granted allocation/BDN evidence records owned, cold and retained costs plus nonzero BDN residuals. Earlier failures are preserved. Ready for coordinator integration verification; all owned writes and task JSON handed back at final receipt.",
+    "summary": "Verified integrated immutable XSD content programs and isolated charged/polled cursors; corrected indexed wildcard route, combined checks and released measurements accepted. All owned writes and task record relinquished to coordinator.",
     "checks": [
       "Source 127d15b2: 285 cases (102 owned), zero errors/failures/skips/not-run; 1,400 public and nine frozen members match; true XML-only consumer passes; Release builds zero warnings/errors; planning 179 and diff checks pass.",
       "Read-only original/correction reviews accepted exact hashes. Indexed Allows IL has no interface enumerator; original accounting/order and tests preserved.",
@@ -199,9 +211,7 @@
       "Five ShortRun MemoryDiagnoser NoEmit cases complete. Exact raw GC totals/denominators and provisional Arm64 timing are recorded; no repeatable or cross-architecture speed claim. The first failed attempt has no known numeric bytes."
     ],
     "remaining": [
-      "Coordinator integrates and verifies the unchanged accepted runtime/tests on the combined tree; integration_revision stays null and the worker does not mark verified.",
-      "Keep both raw attempts until coordinator inspection and explicit verified cleanup permission; no further measurements or worker task.",
-      "Later datatype/facet/facade finalization must check typed element fixed/default equality, lexical-value consistency, ID/NOTATION/ENTITY and simple-type/facet validity including unused declarations, using retained IDs/types/contexts/locations. Real facade and x64 release confirmation remain later joins."
+      "Terminal cleanup; mandatory typed fixed/default equality, lexical-value consistency and all retained simple/facet validity remain later XSD facade obligations, with no fallback."
     ],
     "requests": [
       "Preserve the required later datatype/facet/facade obligations; this content task adds no executable fallback or public facade."
