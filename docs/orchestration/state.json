@@ -32,9 +32,9 @@
   ],
   "integration_queue": [],
   "next_actions": [
-    "Integrate and verify final content/facet metadata against already-tested combined223d and completed released measurements; terminal cleanup.",
-    "Activate claimed Schematron corpus worker with frozen profile, provenance and independent expected-results requirements.",
-    "Claim remaining ready M8 tasks only after verified dependencies; complete M8 gate, terminal cleanup and writer transfer; no M9."
+    "Schematron corpus active; independently reconcile exact upstream oracle differences.",
+    "Claim ready RNG evaluator/facade and XSD identity workers; XSD core evaluator next available slot.",
+    "Complete remaining M8 facade/corpora/gate, terminal cleanup and writer transfer only; no M9."
   ],
   "implementation_worker_policy": {
     "model": "gpt-6.1-sol",
@@ -722,7 +722,7 @@
       "task_id": "M8-facets",
       "branch": "codex/m8-facets",
       "base_revision": "adf80b989e0389cac3972a3eba974fc8bf911700",
-      "stage": "Verified; terminal cleanup pending",
+      "stage": "Verified and terminal; worker/integration checkouts removed, chat archived",
       "acceptance_before_dispatch": {
         "mandatory": "Frozen facet compiler/validator and complete composition over verified datatypes+regex; inherited/fixed facets, all45builtins, RNG parameters",
         "integration": "Independent valid/invalid inheritance, bound/length/digits/enum/pattern/whitespace/QName/list/union cases; exact budgets/cancel/concurrency; child/API/XML-only checks and prepared allocation evidence",
@@ -740,13 +740,14 @@
       "integration_candidate": "00f0ab8790c8ba64397133928f8b1409a7d7ac31",
       "manifest_sha256": "d6dc9a15b9a1656deb8f96de8ca1f0475934e28cdfcc36e0f641d1e651754be7",
       "final_worker_revision": "768360258cf893758c29bf7c69770500788712af",
-      "integration_revision": "223d094fb93e2a454557822818c06baa296e8702"
+      "integration_revision": "223d094fb93e2a454557822818c06baa296e8702",
+      "cleanup_record": "docs/orchestration/cleanup-M8-facets.json"
     },
     {
       "task_id": "M8-xsd-content",
       "branch": "codex/m8-xsd-content",
       "base_revision": "55a1f72c319b792acc216ca847818aba5ac7cd13",
-      "stage": "Verified; terminal cleanup pending",
+      "stage": "Verified and terminal; worker/integration checkouts removed, chat archived",
       "acceptance_before_dispatch": {
         "mandatory": "Complete frozen XSD1.0 content compiler/matcher/cursor: particles/compositors/occurrences/wildcards/UPA/element consistency/derivation/substitution; isolated cursor state; no facade.",
         "integration": "Owned independent sequence/choice/all/extension/restriction/wildcard/determinism/boundary tests, true consumers/frozen/public API, exact accounting/cancel and prepared allocation evidence.",
@@ -764,7 +765,8 @@
       "integration_candidate": "bf3629d88eb7756f0401dafd16548b27f6441f07",
       "manifest_sha256": "806a9dc5ad3e673a85ee9093f7da154059bfe172077ffbe6a557e419f2b6aa90",
       "final_worker_revision": "92e876023c32990398dcecbd0ba1a91e7b915545",
-      "integration_revision": "223d094fb93e2a454557822818c06baa296e8702"
+      "integration_revision": "223d094fb93e2a454557822818c06baa296e8702",
+      "cleanup_record": "docs/orchestration/cleanup-M8-xsd-content.json"
     }
   ],
   "measurement_lease_history": [
