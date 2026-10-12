@@ -1,6 +1,6 @@
 {
   "id": "M8-rng-identity-serial-1",
-  "status": "GRANTED",
+  "status": "RELEASED",
   "earliestStartUtc": "2026-10-12T02:56:00Z",
   "latestStartUtc": "2026-10-12T03:06:00Z",
   "hardStopUtc": "2026-10-12T03:08:00Z",
@@ -89,5 +89,68 @@
   "rawInspected": false,
   "actualGrantUtc": "2026-10-12T02:58:14.749336+00:00",
   "actualLatestStartUtc": "2026-10-12T02:58:29.749336+00:00",
-  "actualExpiryUtc": "2026-10-12T02:59:54.749336+00:00"
+  "actualExpiryUtc": "2026-10-12T02:59:54.749336+00:00",
+  "releasedUtc": "2026-10-12T02:58:15.815865+00:00",
+  "allLaunchedChildrenClean": true,
+  "sequencePassed": true,
+  "withinExpiry": true,
+  "results": [
+    {
+      "task": "M8-rng-validate",
+      "supervisorExit": 0,
+      "lifecycle": {
+        "status": 0,
+        "beforeIdentities": true,
+        "afterIdentities": true,
+        "sequence": [
+          {
+            "command": 0,
+            "pid": 8860,
+            "exit": 0,
+            "reason": "completed",
+            "directChildReaped": true,
+            "ownedGroupAbsent": true,
+            "logClosed": true
+          }
+        ],
+        "rawResultsInspected": false,
+        "latestStart": "2026-10-12T02:58:29.749336+00:00",
+        "absoluteExpiry": "2026-10-12T02:59:54.749336+00:00",
+        "beforeMismatches": [],
+        "identityCount": 434,
+        "afterMismatches": [],
+        "elapsedSeconds": 0.5597408330067992
+      },
+      "lifecycleSha256": "b65b1e2b38caea2ce83521b8112bbc43690b5f34c6cac0cd932418f3a9762914"
+    },
+    {
+      "task": "M8-xsd-identity",
+      "supervisorExit": 0,
+      "lifecycle": {
+        "status": 0,
+        "beforeIdentities": true,
+        "afterIdentities": true,
+        "sequence": [
+          {
+            "command": 0,
+            "pid": 8867,
+            "exit": 0,
+            "reason": "completed",
+            "directChildReaped": true,
+            "ownedGroupAbsent": true,
+            "logClosed": true
+          }
+        ],
+        "rawResultsInspected": false,
+        "latestStartUtc": "2026-10-12T02:59:14.749336+00:00",
+        "grantExpiryUtc": "2026-10-12T02:59:54.749336+00:00",
+        "maximumSeconds": 30,
+        "beforeMismatches": [],
+        "identityCount": 199,
+        "afterMismatches": [],
+        "elapsedSeconds": 0.32072516705375165
+      },
+      "lifecycleSha256": "970af48a58858e0d55775f446f84f101ffe8988f98f34a5de40061d0717aaac0"
+    }
+  ]
 }
