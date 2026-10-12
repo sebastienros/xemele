@@ -128,6 +128,7 @@ internal static class Controls
             Require(ThrowsIo(() => new Runner.Resolver().ResolveResult(declaredMissing, default)), "declared missing file remains harness error, never Unavailable");
             Runner.OriginalPaths = null;
             BclEngine.ReferenceControls();
+            InfrastructureFinalObservations();
             return 0;
         }
         finally { Runner.Root = saved; Runner.OriginalPaths = savedPaths; }
@@ -135,6 +136,115 @@ internal static class Controls
     private sealed class LegacyMissing : Xemele.XmlResourceResolver
     {
         public override Xemele.XmlResolvedResource? Resolve(Xemele.XmlResourceRequest request, CancellationToken cancellationToken) => null;
+    }
+    // SOURCE-only until root activation: assertions inspect the final production rows,
+    // not just populated failure trackers. All fixtures live in a unique ignored folder.
+    private static void InfrastructureFinalObservations()
+    {
+        string savedRoot = Runner.Root; var savedPaths = Runner.OriginalPaths;
+        string temporary = Path.GetFullPath(Path.Combine(savedRoot, "../../../../artifacts/M8-xsd-corpus/bcl-infrastructure-controls-" + Guid.NewGuid().ToString("N")));
+        string upstream = Path.Combine(temporary, "upstream"); Directory.CreateDirectory(upstream);
+        const string schema = "<xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema'><xs:element name='r'><xs:complexType><xs:sequence><xs:any minOccurs='0' maxOccurs='unbounded' processContents='lax'/></xs:sequence></xs:complexType></xs:element></xs:schema>";
+        var files = new Dictionary<string, string>
+        {
+            ["hint.xsd"] = schema,
+            ["late.xml"] = "<r xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'><child xsi:noNamespaceSchemaLocation='hint.xsd'/></r>",
+            ["probe.xsd"] = "<xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema'><xs:include schemaLocation='child.xsd'/></xs:schema>",
+            ["child.xsd"] = schema,
+            ["empty-id.xsd"] = "<xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema' id=''/>",
+            ["malformed.xsd"] = "<xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema' xmlns:bad=''/>",
+            ["probe-instance.xml"] = "<r xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xsi:noNamespaceSchemaLocation='malformed.xsd'/>",
+        };
+        foreach (var file in files) File.WriteAllText(Path.Combine(upstream, file.Key), file.Value);
+        File.WriteAllText(Path.Combine(temporary, "external-resources.json"), "[]");
+        Runner.Root = upstream; Runner.OriginalPaths = files.Keys.ToHashSet(StringComparer.Ordinal);
+        System.Text.Json.JsonElement Observe(BclEngine.ControlInputs? inputs = null, string document = "late.xml")
+        {
+            var row = new { id = "controls/infrastructure/" + document, kind = "instance", classification = "applicable", expected = "invalid", documents = new[] { document } };
+            using var group = System.Text.Json.JsonDocument.Parse(System.Text.Json.JsonSerializer.Serialize(new { schema = (object?)null, instances = new[] { row }, supplementalInstances = Array.Empty<object>() }));
+            using var journal = new MemoryStream(); using var output = new StreamWriter(journal, new System.Text.UTF8Encoding(false), 1024, leaveOpen: true);
+            BclEngine.Run(group.RootElement, output, inputs); output.Flush();
+            string text = System.Text.Encoding.UTF8.GetString(journal.ToArray()); Console.WriteLine(text.Trim());
+            using var observed = System.Text.Json.JsonDocument.Parse(text); return observed.RootElement.Clone();
+        }
+        Runner.HintSchemaPreparationException Hint(string name) => new(new(name, "", true, "control", Runner.UriFor(name).AbsoluteUri), new XmlException("control staging failure"));
+        void FinalRow(System.Text.Json.JsonElement row, string tag)
+        {
+            Require(row.GetProperty("actual").GetString() == "harness-exception" && row.GetProperty("passed").ValueKind == System.Text.Json.JsonValueKind.False && row.GetProperty("detail").GetString()!.Contains(tag, StringComparison.Ordinal), "FINAL production infrastructure row; no valid/invalid/unavailable/limitation credit " + tag);
+        }
+        void FinalProbe(Observation observation, string tag)
+        {
+            Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(observation));
+            Require(observation.Outcome == "harness-exception" && Runner.Oracle("invalid", observation.Outcome, "instance") == false && observation.Detail.Contains(tag, StringComparison.Ordinal), "FINAL production hint probe infrastructure; no semantic/preparation credit " + tag);
+        }
+        bool augmentedWarningOrWrapping = false, probeWarningOrWrapping = false, instanceWrapping = false;
+        try
+        {
+            Require(Observe().GetProperty("actual").GetString() == "instance-hint-ordering-limitation", "healthy production path reaches authored late-hint limitation");
+            Require(BclEngine.ProbeHintSchema(Hint("probe.xsd"), new()).Outcome == "instance-hint-preparation-limitation", "healthy production hint probe reaches preparation limitation");
+            Require(BclEngine.ProbeHintSchema(Hint("empty-id.xsd"), new()).Outcome == "harness-exception", "hint probe empty-id exception never uses standalone21 allowance");
+            foreach (bool io in new[] { false, true })
+            {
+                foreach (string mode in new[] { "resolver-acquisition", "resolver-returned-read", "prepared-acquisition", "prepared-caller-read" })
+                {
+                    string tag = "control augmented " + mode + " " + io;
+                    Exception fault = io ? new IOException(tag) : new ArgumentException(tag, "name");
+                    bool invoked = false;
+                    var inputs = new BclEngine.ControlInputs
+                    {
+                        Diagnostic = (_, severity) => augmentedWarningOrWrapping |= severity == XmlSeverityType.Warning,
+                        Caught = (_, error) => { augmentedWarningOrWrapping |= !ReferenceEquals(error, fault) && error is XmlException or XmlSchemaException; Console.WriteLine("augmented caught " + error.GetType().FullName); },
+                    };
+                    if (mode.StartsWith("resolver-", StringComparison.Ordinal)) inputs.InstanceResolver = () => new() { ControlAcquisition = _ => { invoked = true; return mode == "resolver-acquisition" ? throw fault : new FaultRead(fault); } };
+                    else inputs.PreparedPrincipal = _ => { invoked = true; return mode == "prepared-acquisition" ? throw fault : (new FaultRead(fault), Runner.UriFor("__instance_wrapper__.xsd")); };
+                    FinalRow(Observe(inputs), tag); Require(invoked, "production augmented fault seam exercised " + mode);
+                }
+                foreach (string mode in new[] { "resolver-acquisition", "resolver-returned-read", "probe-acquisition", "probe-caller-read" })
+                {
+                    string tag = "control probe " + mode + " " + io;
+                    Exception fault = io ? new IOException(tag) : new ArgumentException(tag, "name");
+                    bool invoked = false; var resolver = new BclEngine.Resolver();
+                    var inputs = new BclEngine.ControlInputs
+                    {
+                        Diagnostic = (_, severity) => probeWarningOrWrapping |= severity == XmlSeverityType.Warning,
+                        Caught = (_, error) => { probeWarningOrWrapping |= !ReferenceEquals(error, fault) && error is XmlException or XmlSchemaException; Console.WriteLine("probe caught " + error.GetType().FullName); },
+                    };
+                    if (mode.StartsWith("resolver-", StringComparison.Ordinal)) resolver.ControlAcquisition = _ => { invoked = true; return mode == "resolver-acquisition" ? throw fault : new FaultRead(fault); };
+                    else inputs.ProbePrincipal = _ => { invoked = true; return mode == "probe-acquisition" ? throw fault : new FaultRead(fault); };
+                    FinalProbe(BclEngine.ProbeHintSchema(Hint("probe.xsd"), resolver, inputs), tag); Require(invoked, "production probe fault seam exercised " + mode);
+                }
+                foreach (string mode in new[] { "instance-acquisition", "instance-caller-read" })
+                {
+                    string tag = "control instance " + mode + " " + io;
+                    Exception fault = io ? new IOException(tag) : new ArgumentException(tag, "name"); bool invoked = false;
+                    var inputs = new BclEngine.ControlInputs
+                    {
+                        InstancePrincipal = _ => { invoked = true; return mode == "instance-acquisition" ? throw fault : new FaultRead(fault); },
+                        Caught = (_, error) => { instanceWrapping |= !ReferenceEquals(error, fault) && error is XmlException or XmlSchemaException; Console.WriteLine("instance caught " + error.GetType().FullName); },
+                    };
+                    FinalRow(Observe(inputs), tag); Require(invoked, "production instance fault seam exercised " + mode);
+                }
+            }
+            Require(augmentedWarningOrWrapping && probeWarningOrWrapping, "actual BCL warning/wrapping paths exercised and FINAL observations remain harness failures");
+            // A caller may itself throw a wrapped XML/schema error. Sticky precedence still wins.
+            foreach (bool schemaError in new[] { false, true })
+            {
+                string tag = "control wrapped caller " + schemaError;
+                Exception fault = schemaError ? new XmlSchemaException(tag, new IOException(tag)) : new XmlException(tag, new IOException(tag));
+                var inputs = new BclEngine.ControlInputs { InstancePrincipal = _ => new FaultRead(fault) };
+                FinalRow(Observe(inputs), tag);
+                FinalProbe(BclEngine.ProbeHintSchema(Hint("probe.xsd"), new(), new() { ProbePrincipal = _ => new FaultRead(fault) }), tag);
+                FinalRow(Observe(new() { PreparedPrincipal = _ => (new FaultRead(fault), Runner.UriFor("__instance_wrapper__.xsd")) }), tag);
+                FinalRow(Observe(new() { ProbePrincipal = _ => new FaultRead(fault) }, "probe-instance.xml"), tag);
+            }
+            Console.WriteLine("BCL instance native wrapping observed: " + instanceWrapping + "; caller-wrapped XML/schema errors FINAL harness assertions required independently");
+        }
+        finally { Runner.Root = savedRoot; Runner.OriginalPaths = savedPaths; Directory.Delete(temporary, true); }
+    }
+    private sealed class FaultRead(Exception failure) : MemoryStream
+    {
+        public override int Read(byte[] buffer, int offset, int count) => throw failure;
+        public override int Read(Span<byte> buffer) => throw failure;
     }
     private static void Require(bool condition, string label) { if (!condition) throw new InvalidOperationException(label); Console.WriteLine("PASS " + label); }
     private static string XmlFailure(string input, long maximum)

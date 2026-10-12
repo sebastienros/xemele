@@ -5,6 +5,41 @@ SOURCE-only change. All new native and reporting controls are UNRUN; no build,
 focused repro, campaign, runtime repair, or new original outcome was executed by
 this worker. The task remains `in_progress`, A1/A3 passed and A2 failed.
 
+Root reviewed63557 and found one P2 blocker: augmented schema compilation and
+hint probes ignored sticky resolver failures, while prepared/probe/instance
+principals bypassed the read tracker. BCL could wrap those failures or report
+warnings, allowing semantic valid, schema-unavailable or preparation-limitation
+output. The exact21 binding/frame/report structure and unchanged supervisor/
+nesting/ten-command preparation were otherwise accepted. That review did not
+authorize execution; it authorized only this narrow SOURCE correction.
+
+The follow-up wraps all three principals and records acquisition/read exceptions
+in a sticky per-operation resolver tracker. Augmented compilation checks the
+tracker after Add and Compile before any schema-unavailable output. Instance
+reading checks it before semantic or late-hint-limitation output. Hint probes
+check it before semantic output and preserve harness failures through their
+preparation-result mapping. Catch branches give infrastructure precedence over
+wrapped XML/schema errors and over the hint-probe path. A standalone harness
+failure also stays a harness failure in dependent observations. The exact21
+reference allowance is still available only at standalone Add/Compile boundaries;
+the probe's ordinary empty-ID exception remains a harness failure.
+
+New native controls call production Run/ProbeHintSchema and assert final harness
+observations, original passed:false and the injected fault's unique detail. Their
+internal injection delegates default to the unchanged original acquisition paths
+and do not alter Runner policy. Twenty acquisition/read cases cover ArgumentException
+and IOException from resolver acquisition/returned streams and prepared/probe/
+instance principals. Eight additional final observations cover caller-wrapped
+XML/schema exceptions, including the complete Run→hint-preparation→probe path.
+Healthy controls establish the production late-hint/probe-limitation branches.
+The augmented/probe controls require an actual BCL warning or a newly wrapped
+exception; tracker population alone cannot pass. Instance native wrapping is
+reported separately; caller-wrapped semantic errors must still yield final harness
+failures. All controls remain UNRUN. Synthetic fixtures/journals stay in memory
+or one uniquely owned ignored artifacts folder, removed by the control's finally.
+No Runner, original metadata, optional mapping, approval guard, runtime/product,
+helper or supervisor code changes are part of this correction.
+
 Root preparation2 on b904bcaab completed all ten commands with 42,793 frozen
 identities; its cleanup was recorded on main56554b6e4 before inspection, with
 summary9023309f5. Root fullcampaign1 on that source stopped at command110,
