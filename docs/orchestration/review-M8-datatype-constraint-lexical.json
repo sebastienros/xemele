@@ -53,5 +53,81 @@
     "check_log_sha256": "1c7aece721c1a4996a4f0cf3118f70d57aa4c6b330fda38e086ed2ece12c6463",
     "test_xml_sha256": "23647a9a1e495b1c5db9e9d882273d09f971111e18fd40299a9d3ae27ef70c9f",
     "notes": "Actual root isolated combined candidate includes lexical repair and all previously integrated M8 runtime. No allocation counters; WarmBorrowed methods excluded explicitly. Source accepted a58 is unchanged; final bench/report/metadata only changes may follow with input identity proof."
+  },
+  "allocation": {
+    "source_revision": "e009c3643258342804d42ddb3c432a0d57c6b209",
+    "runtime": ".NET 10.0.11",
+    "architecture": "Arm64",
+    "os": "macOS 15.8.1",
+    "server_gc": false,
+    "warm_protocol": "16warmups then ONE synchronous counter aggregate of64consumed calls perroute; totals and arithmetic means only. Prepared registry/evaluator/fixtures excluded; owned parsing/formatting/result and actual assessment included.",
+    "rows": [
+      {
+        "name": "owned text constraint",
+        "total_bytes": 13824,
+        "operations": 64,
+        "mean_bytes": 216.0
+      },
+      {
+        "name": "owned int constraint",
+        "total_bytes": 13312,
+        "operations": 64,
+        "mean_bytes": 208.0
+      },
+      {
+        "name": "owned long decimal constraint",
+        "total_bytes": 275968,
+        "operations": 64,
+        "mean_bytes": 4312.0
+      },
+      {
+        "name": "owned double constraint",
+        "total_bytes": 13824,
+        "operations": 64,
+        "mean_bytes": 216.0
+      },
+      {
+        "name": "owned binary constraint",
+        "total_bytes": 192512,
+        "operations": 64,
+        "mean_bytes": 3008.0
+      },
+      {
+        "name": "owned temporal constraint",
+        "total_bytes": 1660928,
+        "operations": 64,
+        "mean_bytes": 25952.0
+      },
+      {
+        "name": "owned QName constraint",
+        "total_bytes": 18432,
+        "operations": 64,
+        "mean_bytes": 288.0
+      },
+      {
+        "name": "owned list/union constraint",
+        "total_bytes": 40448,
+        "operations": 64,
+        "mean_bytes": 632.0
+      },
+      {
+        "name": "actual-type default assessment",
+        "total_bytes": 23552,
+        "operations": 64,
+        "mean_bytes": 368.0
+      }
+    ],
+    "cold_setup_first_result_bytes": 100056,
+    "cold_operations": 1,
+    "positive_array_bytes": 1048,
+    "retained_count": 16,
+    "retained_before": 282416,
+    "retained_after": 429680,
+    "retained_whole_heap_delta": 147264,
+    "limits": "One Arm64 run. Whole-heap retained observation is approximate and process-local. No zero, timing, speed, distribution or cross-architecture claim. Control zeros mean counters disabled.",
+    "allocation_sha256": "6ed3f2387d6b76ac8b4826d8937ea91130333896c6cd4bbbb23da750232f9f6f",
+    "grant_revision": "780bd70f49f97745febda2fc166819ec86ec3d98",
+    "release_revision": "b22333d82fd4a5bc4616337d3e96799ff1410914",
+    "lifecycle": "Two children32885/32887 exit0/reaped/groups absent/logs closed;447identities unchanged;0.664951s. Durable root RELEASE before inspection."
   }
 }
