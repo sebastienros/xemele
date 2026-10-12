@@ -4,11 +4,11 @@
   "milestone": "M8",
   "title": "Schematron conformance",
   "kind": "verification",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M8 coordinator01a12c6c-b333-71d3-877f-0d186618e21d / assigned isolated worker",
   "branch": "codex/m8-sch-corpus",
   "base_revision": "18e0c38701215aa56b0fa8cb2fe5e94df3ffde6a",
-  "integration_revision": null,
+  "integration_revision": "483c8f6485fd4b305763e5732aa1d4d57e6b811b",
   "depends_on": [
     "M8-sch-report",
     "M8-sch-rule-scope"
@@ -33,7 +33,8 @@
       "description": "Integrate declared-binding corpus and upstream regressions, including reports and negative schemas.",
       "status": "passed",
       "evidence": [
-        "final-scoped-checks"
+        "final-scoped-checks",
+        "coordinator-combined-verification"
       ]
     },
     {
@@ -41,7 +42,8 @@
       "description": "All profile cases pass; unsupported bindings remain explicit errors.",
       "status": "passed",
       "evidence": [
-        "final-scoped-checks"
+        "final-scoped-checks",
+        "coordinator-combined-verification"
       ]
     },
     {
@@ -49,7 +51,8 @@
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
       "status": "passed",
       "evidence": [
-        "final-scoped-checks"
+        "final-scoped-checks",
+        "coordinator-combined-verification"
       ]
     }
   ],
@@ -88,11 +91,20 @@
       "result": "passed",
       "summary": "50 upstream testcases/51 variants,19 authored complete-result cases,0 missing.90 conformance checks incl swapped FailedAssert witness/19 negatives;96 differential assertion cases=95 direct agreements+1 pinned BCLUnicode limitation.42 report+504 affected overlapping tests passed. All0 failures/errors/skips/not-run; builds0warnings/errors. Frozen3/9/154/public1403, normal+genuineXMLonly consumers passed; planning180 and whitespace passed. Only verified dependencies incl M8-sch-rule-scope atd4731c53; no benchmarks/counters.",
       "artifact": null
+    },
+    {
+      "id": "coordinator-combined-verification",
+      "kind": "integration",
+      "revision": "483c8f6485fd4b305763e5732aa1d4d57e6b811b",
+      "command": "python3 docs/reports/M8-sch-corpus/checks.py",
+      "result": "passed",
+      "summary": "Actual90conformance and96differential assertions pass plus42report+504affected tests,0failures/errors/skips/notrun/buildwarnings/errors. Differential means95agreements+1explicitBCL10.0.11Unicode-length limitation, not96agreements. Integrity50originals/51variants+19authored/0missing; public1403/frozen3/9/154/normal+trueXMLonly/180planning pass. Finalhandback changes only README/sourcehash/taskmetadata; executed inputs identical. Independent oracle review accepted after fixed independent9report-only kind/validity assertions and swapped witness; reference DLL hashes independently matched.",
+      "artifact": "docs/reports/M8-sch-corpus/integration.md"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Complete declared ISO2016/direct-M4 corpus with real pinned upstream50/51, independently authored19 structured/SVRL cases, reviewed visible oracle/output differences, explicit unsupported errors, BCL32expressions\u00d73inputs. Verified rule-scope prerequisite fixes original runtime blocker. All task-owned writes and task JSON handed back to coordinator.",
+    "summary": "Verified integrated declared-profile Schematron corpus with explicit upstream disagreements, representation difference, unsupported errors and pinned BCL limitation; all owned writes returned to root.",
     "checks": [
       "Exact9cb73e376363df5b527a7c828da4e6021238d80b: python3 docs/reports/M8-sch-corpus/checks.py passes90conformance/96differential assertion cases;95direct agreements+1 documented BCLUnicode limitation, not96agreements.",
       "42report+504affected overlapping preservation tests; frozen3/9/154/public1403; normal/genuineXMLonly consumers;0failures/errors/skips/notrun and0buildwarnings/errors.",
@@ -100,8 +112,7 @@
       "Strict initial88/89 failure and uncommitted95/96BCL failure retained honestly; no timing/allocation counters or benchmarks executed."
     ],
     "remaining": [
-      "Coordinator integrate/recheck exact branch and record verified status.",
-      "Root inspect ignored raw artifacts/M8-sch-corpus and artifacts/M8-sch-report, then terminal cleanup. No active worker processes or lease."
+      "Terminal cleanup of transient output/worker and integration checkout."
     ],
     "requests": []
   }
