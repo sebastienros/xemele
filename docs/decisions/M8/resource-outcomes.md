@@ -25,9 +25,9 @@ out XmlDocument? document) reuses mandatory Load acquisition/parsing/cleanup.
 Only explicit Unavailable returns false/null, after polling the complete shared
 operation. Missing resolver, invalid base, legacy null, default and Denied refuse;
 mandatory Load also refuses Unavailable. Nothing recovers after Refuse or turns
-caller/parser/I/O/quota/cancellation errors into absence. Every valid resolution
+caller/parser/I/O/quota/cancellation errors into absence. Every optional resolution
 attempt charges one shared work unit before the resolver, including unavailable
-attempts. Resource capacity still guards before callback. Absence consumes no
+attempts. Mandatory parsing retains its established scalar debit. Resource capacity still guards before callback. Absence consumes no
 successful external-resource slot or bytes, creates no document/cache entry and
 never resets the shared parsing/work allowance. Inclusion scope balances on all
 paths. Redirected source/base and exactly-once cleanup remain unchanged; cleanup

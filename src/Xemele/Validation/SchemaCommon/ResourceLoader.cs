@@ -44,13 +44,24 @@ internal sealed class SchemaResourceLoader : ISchemaResourceLoader
     // Effective xml:base controls resolution; Referrer identifies the actual source
     // resource. Explicit null means no resolution base, even when options has one.
     internal XmlDocument Load(SchemaResourceReference reference, Uri? effectiveBaseUri, ISchemaOperation operation)
+        => LoadCore(reference, effectiveBaseUri, operation, optional: false)!;
+
+    internal bool TryLoadOptional(SchemaResourceReference reference, Uri? effectiveBaseUri, ISchemaOperation operation, out XmlDocument? document)
+    {
+        document = LoadCore(reference, effectiveBaseUri, operation, optional: true);
+        return document is not null;
+    }
+
+    private XmlDocument? LoadCore(SchemaResourceReference reference, Uri? effectiveBaseUri, ISchemaOperation operation, bool optional)
     {
         ArgumentNullException.ThrowIfNull(reference); ArgumentNullException.ThrowIfNull(operation);
         if (!ReferenceEquals(owner, operation)) throw new ArgumentException("Loader belongs to a different operation.", nameof(operation));
         ArgumentNullException.ThrowIfNull(reference.Href);
         if (!Enum.IsDefined(reference.Purpose) || reference.Referrer is { IsAbsoluteUri: false }) throw new ArgumentException("Invalid schema reference.", nameof(reference));
         if (effectiveBaseUri is { IsAbsoluteUri: false }) throw new ArgumentException("Schema resolution base must be absolute.", nameof(effectiveBaseUri));
-        if (!operation.Charge(0, reference.Location)) throw SchemaSnapshots.Failure(operation);
+        // Optional attempts must make progress through the shared work ledger, even
+        // when unavailable. Keep the established mandatory parsing debit unchanged.
+        if (!operation.Charge(optional ? 1 : 0, reference.Location)) throw SchemaSnapshots.Failure(operation);
         if (!Uri.TryCreate(reference.Href, UriKind.Absolute, out var uri) && (effectiveBaseUri is null || !Uri.TryCreate(effectiveBaseUri, reference.Href, out uri)))
             Fail("SCHEMA.ResourceDenied", "Schema reference has no absolute base URI.", reference.Location);
         if (options.Resolver is null) Fail("SCHEMA.ResourceDenied", "No schema resolver was supplied.", reference.Location);
@@ -59,8 +70,14 @@ internal sealed class SchemaResourceLoader : ISchemaResourceLoader
         operation.CancellationToken.ThrowIfCancellationRequested();
         var request = new XmlResourceRequest(uri!, reference.Referrer ?? options.BaseUri, XmlResourceKind.Schema) { SystemId = reference.Href };
         // Resolver exceptions, including XmlParseException, are never schema syntax errors.
-        var resource = options.Resolver!.Resolve(request, operation.CancellationToken);
-        if (resource is null) Fail("SCHEMA.ResourceDenied", "Schema resolver refused the request.", reference.Location);
+        var resolution = options.Resolver!.ResolveResult(request, operation.CancellationToken);
+        if (optional && resolution.Status == XmlResourceResolutionStatus.Unavailable)
+        {
+            if (!operation.Charge(0, reference.Location)) throw SchemaSnapshots.Failure(operation);
+            return null;
+        }
+        var resource = resolution.Resource;
+        if (resolution.Status != XmlResourceResolutionStatus.Resolved || resource is null) Fail("SCHEMA.ResourceDenied", "Schema resolver refused the request.", reference.Location);
         resources++;
         bool registered = false, disposed = false;
         try
