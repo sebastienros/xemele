@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "id": "M8-xsd-recursive-components",
+  "milestone": "M8",
+  "title": "Separate recursive components from forbidden schema cycles",
+  "kind": "feature",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "depends_on": [
+    "M8-xsd-component-mapping"
+  ],
+  "goals": [
+    "G14",
+    "G18"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/schemas.md"
+  ],
+  "owns": [
+    "src/Xemele/Validation/Xsd/Compilation/Compiler.cs",
+    "tests/Xemele.Tests/M8-xsd-recursive-components/",
+    "tests/fixtures/M8-xsd-recursive-components/",
+    "benchmarks/Xemele.Benchmarks/M8-xsd-recursive-components/",
+    "docs/api/M8-xsd-recursive-components.txt",
+    "samples/M8-xsd-recursive-components/",
+    "docs/reports/M8-xsd-recursive-components/"
+  ],
+  "api_or_output": "Correct existing XSD1.0 component behavior without public or frozen API changes",
+  "acceptance": [
+    {
+      "id": "M8-xsd-recursive-components-A1",
+      "description": "Reproduce and accept unchanged original addB077, particlesZ010 and particlesEb041 schemas. Separate component registration/body completion across element-to-anonymous-type boundaries from circular model-group particle containment and circular base-type chains.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M8-xsd-recursive-components-A2",
+      "description": "Preserve direct/indirect forbidden cycle rejection, declaration-order independence, unused component publication checkpoints, finite nested validation, source provenance, aggregate work/components and cancellation without mutable graph escape.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M8-xsd-recursive-components-A3",
+      "description": "Pass actual original baseline and repaired public outcomes, independently specified recursive/negative neighbors, affected compiler/content/facade checks, public/frozen APIs and normal/XML-only consumers, actual relevant allocation evidence and planning validation.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "Ordered repair planned from unchanged original corpus witnesses and independent source/Second Edition review. Not claimed or implemented; no unverified peer dependency consumption.",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}

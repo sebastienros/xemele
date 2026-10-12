@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "id": "M8-xsd-particle-normalization",
+  "milestone": "M8",
+  "title": "Correct substitution particle normalization and named-group UPA",
+  "kind": "feature",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "depends_on": [
+    "M8-xsd-type-relations",
+    "M8-xsd-attribute-fixed"
+  ],
+  "goals": [
+    "G14",
+    "G18"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/schemas.md"
+  ],
+  "owns": [
+    "src/Xemele/Validation/Xsd/Compilation/Compiler.cs",
+    "src/Xemele/Validation/Xsd/ContentModels/Compiler.cs",
+    "src/Xemele/Validation/Xsd/ContentModels/Derivation.cs",
+    "tests/Xemele.Tests/M8-xsd-particle-normalization/",
+    "tests/fixtures/M8-xsd-particle-normalization/",
+    "benchmarks/Xemele.Benchmarks/M8-xsd-particle-normalization/",
+    "docs/api/M8-xsd-particle-normalization.txt",
+    "samples/M8-xsd-particle-normalization/",
+    "docs/reports/M8-xsd-particle-normalization/"
+  ],
+  "api_or_output": "Correct existing XSD1.0 component behavior without public or frozen API changes",
+  "acceptance": [
+    {
+      "id": "M8-xsd-particle-normalization-A1",
+      "description": "Accept unchanged original elemZ027_e/f by preserving implicit substitution-choice semantics without imposing incompatible head-first ordering. Preserve authored choice order and prove declaration-order permutations and authored-choice negative.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M8-xsd-particle-normalization-A2",
+      "description": "Accept original particlesZ008 by consistently normalizing newly expanded singleton substitution choices before choosing particle relation cases; preserve occurrence bounds and already-expanded guards with non-unit and incompatible neighbors.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M8-xsd-particle-normalization-A3",
+      "description": "Accept unused ambiguous named group in original addB194 while retaining declaration/EDC/redefine checks. Distinguish compiler group checkpoints and enforce UPA when particles enter actual complex-type content; same group referenced by a complex type must reject. Preserve unused EDC/redefine negatives and frozen APIs.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M8-xsd-particle-normalization-A4",
+      "description": "Pass actual original baselines/repaired outcomes, independently specified neighbors, relevant prior suites/APIs/consumers, work/cancellation/source-location boundaries and bounded actual allocation evidence; do not change wildcard cardinality or intensional-subset interpretation under this task.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "Ordered repair planned from unchanged original corpus witnesses and independent source/Second Edition review. Not claimed or implemented; no unverified peer dependency consumption.",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}
