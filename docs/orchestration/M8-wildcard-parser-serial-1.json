@@ -1,0 +1,25 @@
+{
+  "id": "M8-wildcard-parser-serial-1",
+  "status": "PARK_REQUESTED_NOT_GRANTED",
+  "createdUtc": "2026-10-12T00:15:54.924809+00:00",
+  "earliestStart": "2026-10-12T00:17:00Z",
+  "latestStart": "2026-10-12T00:20:00Z",
+  "absoluteExpiry": "2026-10-12T00:34:10Z",
+  "rootPhase": {
+    "task": "M8-xsd-wildcard-composition",
+    "source": "42a93288b8a3b4c2def3be7c5a1183738f9137c6",
+    "manifest": "20a0bf3164bcde3632e0a634310981d6d2067a3e08196e569f0ce78d08042f5e",
+    "seconds": 30,
+    "workSeconds": 20,
+    "cleanupSeconds": 10,
+    "command": "python3 docs/reports/M8-xsd-wildcard-composition/measure.py --granted <manifest> <latest-start> <phase-expiry>",
+    "cwd": "/private/tmp/xemele-M8-xsd-wildcard-composition"
+  },
+  "parserPhase": {
+    "chat": "01a12d64-81ae-79e3-8ba2-b88110af6fdb",
+    "maximumWorkSeconds": 840,
+    "cleanupSeconds": 10,
+    "manifest": "pending; required before grant"
+  },
+  "rules": "Fresh all-known actor ACKs required; root phase first; explicit phase grants; no overlap/build/discovery/retry; immediate durable phase release before inspection; final RELEASE all actors after final child/group cleanup. Expiry does not authorize unreported leftovers."
+}
