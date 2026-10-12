@@ -3,56 +3,33 @@
   "runtime": "10.0.11",
   "sdk": "10.0.400",
   "command": "dotnet --fx-version 10.0.11 tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -namespace Xemele.Tests.M8XsdParticleNormalization -parallelMode none -noLogo -noColor -result-xml artifacts/M8-xsd-particle-normalization/baseline.xml",
-  "rows": [
-    {
-      "name": "Xemele.Tests.M8XsdParticleNormalization.OriginalTests.IndependentBclAcceptsOriginalSchema(file: \\\"msData/element/elemZ027e.xsd\\\")",
-      "result": "Pass",
-      "failure": null
-    },
-    {
-      "name": "Xemele.Tests.M8XsdParticleNormalization.OriginalTests.IndependentBclAcceptsOriginalSchema(file: \\\"msData/element/elemZ027f.xsd\\\")",
-      "result": "Pass",
-      "failure": null
-    },
-    {
-      "name": "Xemele.Tests.M8XsdParticleNormalization.OriginalTests.IndependentBclAcceptsOriginalSchema(file: \\\"msData/particles/particlesZ008.xsd\\\")",
-      "result": "Pass",
-      "failure": null
-    },
-    {
-      "name": "Xemele.Tests.M8XsdParticleNormalization.OriginalTests.IndependentBclAcceptsOriginalSchema(file: \\\"msData/additional/addB194.xsd\\\")",
-      "result": "Pass",
-      "failure": null
-    },
-    {
-      "name": "Xemele.Tests.M8XsdParticleNormalization.OriginalTests.OriginalSourcesCopyrightAndMetadataRemainFrozen",
-      "result": "Pass",
-      "failure": null
-    },
+  "counts": {
+    "originalProductOutcomes": 5,
+    "failedOriginalProductOutcomes": 5,
+    "independentBclSchemas": 4,
+    "acceptedIndependentBclSchemas": 4,
+    "fixtureIdentityCheck": "passed"
+  },
+  "originalProductFailures": [
     {
       "name": "Xemele.Tests.M8XsdParticleNormalization.OriginalTests.UnchangedOriginalMatchesExplicitMetadata(index: 0, identity: \\\"elemZ027_e/elemZ027_e\\\")",
-      "result": "Fail",
-      "failure": "XSD.SchemaRestriction: Content is not a valid restriction of its base type.   at Xemele.Tests.M8XsdParticleNormalization.OriginalTests.UnchangedOriginalMatchesExplicitMetadata(Int32 index, String identity) in /_/tests/Xemele.Tests/M8-xsd-particle-normalization/OriginalTests.cs:line 37\n   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)\n   at System.Reflection.MethodBaseInvoker.InvokeDirectByRefWithFewArgs(Object obj, Span`1 copyOfArgs, BindingFlags invokeAttr)"
+      "diagnostic": "XSD.SchemaRestriction: Content is not a valid restriction of its base type."
     },
     {
       "name": "Xemele.Tests.M8XsdParticleNormalization.OriginalTests.UnchangedOriginalMatchesExplicitMetadata(index: 1, identity: \\\"elemZ027_f/elemZ027_f\\\")",
-      "result": "Fail",
-      "failure": "XSD.SchemaRestriction: Content is not a valid restriction of its base type.   at Xemele.Tests.M8XsdParticleNormalization.OriginalTests.UnchangedOriginalMatchesExplicitMetadata(Int32 index, String identity) in /_/tests/Xemele.Tests/M8-xsd-particle-normalization/OriginalTests.cs:line 37\n   at InvokeStub_OriginalTests.UnchangedOriginalMatchesExplicitMetadata(Object, Span`1)\n   at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)"
+      "diagnostic": "XSD.SchemaRestriction: Content is not a valid restriction of its base type."
     },
     {
       "name": "Xemele.Tests.M8XsdParticleNormalization.OriginalTests.UnchangedOriginalMatchesExplicitMetadata(index: 2, identity: \\\"particlesZ008/particlesZ008\\\")",
-      "result": "Fail",
-      "failure": "XSD.SchemaRestriction: Content is not a valid restriction of its base type.   at Xemele.Tests.M8XsdParticleNormalization.OriginalTests.UnchangedOriginalMatchesExplicitMetadata(Int32 index, String identity) in /_/tests/Xemele.Tests/M8-xsd-particle-normalization/OriginalTests.cs:line 37\n   at InvokeStub_OriginalTests.UnchangedOriginalMatchesExplicitMetadata(Object, Span`1)\n   at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)"
+      "diagnostic": "XSD.SchemaRestriction: Content is not a valid restriction of its base type."
     },
     {
       "name": "Xemele.Tests.M8XsdParticleNormalization.OriginalTests.UnchangedOriginalMatchesExplicitMetadata(index: 3, identity: \\\"particlesZ008/particlesZ008.v\\\")",
-      "result": "Fail",
-      "failure": "XSD.SchemaRestriction: Content is not a valid restriction of its base type.   at Xemele.Tests.M8XsdParticleNormalization.OriginalTests.UnchangedOriginalMatchesExplicitMetadata(Int32 index, String identity) in /_/tests/Xemele.Tests/M8-xsd-particle-normalization/OriginalTests.cs:line 37\n   at InvokeStub_OriginalTests.UnchangedOriginalMatchesExplicitMetadata(Object, Span`1)\n   at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)"
+      "diagnostic": "XSD.SchemaRestriction: Content is not a valid restriction of its base type."
     },
     {
       "name": "Xemele.Tests.M8XsdParticleNormalization.OriginalTests.UnchangedOriginalMatchesExplicitMetadata(index: 4, identity: \\\"addB194/addB194\\\")",
-      "result": "Fail",
-      "failure": "XSD.SchemaRestriction: Content model violates unique particle attribution.   at Xemele.Tests.M8XsdParticleNormalization.OriginalTests.UnchangedOriginalMatchesExplicitMetadata(Int32 index, String identity) in /_/tests/Xemele.Tests/M8-xsd-particle-normalization/OriginalTests.cs:line 37\n   at InvokeStub_OriginalTests.UnchangedOriginalMatchesExplicitMetadata(Object, Span`1)\n   at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)"
+      "diagnostic": "XSD.SchemaRestriction: Content model violates unique particle attribution."
     }
   ]
 }
