@@ -56,11 +56,19 @@ public sealed class ParserBudgetTests
         Assert.Throws<OperationCanceledException>(()=>IdentityXPath.Compile(name,false,Context,cancel,default));Assert.Equal(afterTokenScan,cancel.Calls);Assert.Empty(cancel.Diagnostics);
     }
     [Theory]
-    [InlineData("a\ud800")][InlineData("a\udc00")][InlineData("a\ud800x")]
-    [InlineData("\udc00\ud800")][InlineData("a\u0000")][InlineData("a:b:c")]
+    [InlineData("a\u0000")][InlineData("a:b:c")]
     [InlineData("1a")][InlineData("a!b")][InlineData("a:b")]
     public void MalformedUtf16AndNamesAreStructuredIdentityErrors(string expression)
     {
+        var op=new OperationTests.Ledger();Assert.Throws<SchemaCompileException>(()=>IdentityXPath.Compile(expression,false,Context,op,default));
+        Assert.True(op.IsComplete);Assert.Contains(op.Diagnostics,d=>d.Code=="XSD.Identity");
+    }
+    [Theory]
+    [InlineData("a",0xd800,0)][InlineData("a",0xdc00,0)]
+    [InlineData("a",0xd800,'x')][InlineData("",0xdc00,0xd800)]
+    public void MalformedSurrogatesAreConstructedAfterTestDataTransport(string prefix,int first,int second)
+    {
+        string expression=prefix+(char)first+(second==0?"":new string((char)second,1));
         var op=new OperationTests.Ledger();Assert.Throws<SchemaCompileException>(()=>IdentityXPath.Compile(expression,false,Context,op,default));
         Assert.True(op.IsComplete);Assert.Contains(op.Diagnostics,d=>d.Code=="XSD.Identity");
     }
