@@ -134,9 +134,9 @@ public sealed class AttributeFixedTests
     [Fact]
     public void FacetsReceiveAuthoredLexicalAndSharedOperation()
     {
-        // Canonical 1 also satisfies the pattern, so publication's existing
+        // Canonical decimal 1.0 also satisfies the pattern, so publication's existing
         // canonical-constraint check does not obscure the authored-lexical test.
-        string source = Derivation(Attribute("01.0", "P"), Attribute("001.0", "P"), definitions: "<xs:simpleType name='P'><xs:restriction base='xs:decimal'><xs:pattern value='(0[0-9]+[.]0|1)'/></xs:restriction></xs:simpleType>");
+        string source = Derivation(Attribute("01.0", "P"), Attribute("001.0", "P"), definitions: "<xs:simpleType name='P'><xs:restriction base='xs:decimal'><xs:pattern value='[0-9]+[.]0'/></xs:restriction></xs:simpleType>");
         var graph = Prepare(source); var facets = new RecordingFacets(); var op = new Ledger(); Complete(graph, op, facets);
         Assert.Equal(new[] { "001.0", "01.0" }, facets.Seen.Select(x => x.Lexical)); Assert.All(facets.Seen, x => Assert.Same(op, x.Operation));
         Assert.NotNull(ProductSchema.Compile(source));
