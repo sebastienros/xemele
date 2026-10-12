@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "id": "M8-xsd-schema-syntax",
+  "milestone": "M8",
+  "title": "Enforce XSD schema syntax and restricted identity paths",
+  "kind": "feature",
+  "status": "in_progress",
+  "owner": "M8 coordinator / assigned isolated schema syntax worker",
+  "branch": "codex/m8-xsd-schema-syntax",
+  "base_revision": "ea505cff902482ecabfa04266c353ee455981c78",
+  "integration_revision": null,
+  "depends_on": [
+    "M8-xsd-facade"
+  ],
+  "goals": [
+    "G14",
+    "G18"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/schemas.md"
+  ],
+  "owns": [
+    "src/Xemele/Validation/Xsd/Compilation/Compiler.cs",
+    "src/Xemele/Validation/Xsd/Identity/XPath.cs",
+    "tests/Xemele.Tests/M8-xsd-identity/XPathTests.cs",
+    "tests/Xemele.Tests/M8-xsd-identity/ParserBudgetTests.cs",
+    "tests/Xemele.Tests/M8-xsd-schema-syntax/",
+    "tests/fixtures/M8-xsd-schema-syntax/",
+    "benchmarks/Xemele.Benchmarks/M8-xsd-schema-syntax/",
+    "docs/api/M8-xsd-schema-syntax.txt",
+    "samples/M8-xsd-schema-syntax/",
+    "docs/reports/M8-xsd-schema-syntax/"
+  ],
+  "api_or_output": "Correct XSD1.0 schema grammar rejection through existing internal/public APIs; no new public API",
+  "acceptance": [
+    {
+      "id": "M8-xsd-schema-syntax-A1",
+      "description": "Reject the original accepted W3C invalid schemas annotF001 (empty documentation xml:lang) and groupD001 (global group minOccurs), enforcing contextual schema representation rules and legal neighboring forms without resource or quota false positives.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M8-xsd-schema-syntax-A2",
+      "description": "Reject original idI150 selector self::node() and disallowed explicit self/descendant-or-self spellings while preserving literal dot, leading dot-double-slash, explicit child and field attribute axes, namespace behavior and charged parsing. Correct only the previously mistaken positive axis expectations with documented identity transitions and preserved semantic/cancellation coverage.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M8-xsd-schema-syntax-A3",
+      "description": "Reproduce original failures before repair, prove unchanged independent corpus witnesses and focused valid/invalid/budget controls after repair, preserve affected earlier tests/public1417/frozen internal APIs and normal/true XML-only consumers, and record actual allocation evidence for changed parser/compiler routes.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "Coordinator-created ordered repair from completed official corpus baseline and primary-standards adjudication; corpus task remains active and is not a prerequisite.",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}
