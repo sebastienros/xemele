@@ -37,4 +37,19 @@ class Dispositions(unittest.TestCase):
    with self.subTest(file=name):self.assertEqual(hashlib.sha256((m.ROOT/'tests/corpora/xsd/upstream'/name).read_bytes()).hexdigest(),digest)
   manifest=''.join(f'{digest}  {name}\n' for name,digest in sorted(files.items()))
   self.assertEqual(hashlib.sha256(manifest.encode()).hexdigest(),data['manifest_sha256'])
+ def test_explicit_profile_preserves_original_failures_and_depends_on_actual_rejection(self):
+  self.assertEqual(len(m.EXPLICITCASES),4)
+  for case in m.EXPLICITCASES.values():
+   with self.subTest(id=case['id']):
+    x=m.view({'id':case['id'],'passed':False,'actual':'schema-invalid'});self.assertFalse(x['originalPassed']);self.assertTrue(x['profilePassed']);self.assertFalse(x['approvedException'])
+    self.assertFalse(m.view({'id':case['id'],'passed':False,'actual':'incomplete-refusal'})['profilePassed'])
+    self.assertFalse(m.view({'id':case['id'],'passed':True,'actual':'schema-valid'})['profilePassed'])
+ def test_explicit_profile_sources_are_exact_and_dependencies_unassessed(self):
+  import hashlib
+  self.assertEqual(len(m.EXPLICITDEPS),4)
+  for case in list(m.EXPLICITCASES.values())+list(m.EXPLICITDEPS.values()):
+   for name,digest in case['documents'].items():
+    with self.subTest(file=name):self.assertEqual(hashlib.sha256((m.ROOT/'tests/corpora/xsd/upstream'/name).read_bytes()).hexdigest(),digest)
+  for case in m.EXPLICITDEPS.values():
+   x=m.view({'id':case['id'],'passed':False,'actual':'schema-unavailable'});self.assertIsNone(x['profilePassed']);self.assertTrue(x['notExecutable']);self.assertTrue(x['invalidSchemaDependency'])
 if __name__=='__main__':unittest.main()

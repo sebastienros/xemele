@@ -284,3 +284,10 @@ Likely source / follow-up: Compilation/Compiler.cs / ContentModels/Derivation.cs
 | saxonMeta/VC.testSet#g18/i1:vc024.n1.xml | valid / schema-unavailable | schema-unavailable | unexecuted | saxonData/VC/vc001.n1.xml |
 | saxonMeta/XmlVersions.testSet#g3/i0:xv004.v01.xml | valid / schema-unavailable | schema-unavailable | unassessed invalid-schema dependency | saxonData/XmlVersions/xv004.v01.xml |
 
+
+Later coordinator explicit Second Edition profile adjudication covers the three
+REGEX.Syntax schema-unavailable dependencies and particlesZ007.i's NOTATION
+schema-unavailable prerequisite. All four original expected INVALID/actual
+unexecuted failures remain unchanged; separate profile outcomes are unassessed
+invalid-schema dependencies, never invalid-instance passes. No new full run is
+represented by this annotation.

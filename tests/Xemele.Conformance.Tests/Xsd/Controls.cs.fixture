@@ -70,6 +70,27 @@ internal static class Controls
         }
         finally {Directory.Delete(root,true);Runner.OriginalPaths=null;}
     }
+    private static void ExplicitProfileControls()
+    {
+        static string Pattern(string value) => "<xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema'><xs:element name='r'><xs:simpleType><xs:restriction base='xs:string'><xs:pattern value='"+value+"'/></xs:restriction></xs:simpleType></xs:element></xs:schema>";
+        foreach(string block in new[] {"IsHighSurrogates","IsHighPrivateUseSurrogates","IsLowSurrogates"})
+            foreach(string polarity in new[] {"p","P"})
+            {
+                Observation? failure=null;
+                try { Xemele.Validation.XmlSchema.Compile(Pattern("\\"+polarity+"{"+block+"}")); }
+                catch(Exception e) { failure=Runner.Failure(e,new(),default); }
+                Require(failure?.Outcome=="schema-invalid"&&failure.Codes.Contains("REGEX.Syntax",StringComparer.Ordinal),"Second Edition excluded block \\"+polarity+"{"+block+"} rejects semantically");
+            }
+        foreach(var witness in new[] {("\\p{IsHangulSyllables}","&#xD7A3;"),("\\P{IsHangulSyllables}","&#xE000;"),("\\p{IsPrivateUse}","&#xE000;"),("\\P{IsPrivateUse}","&#xD7A3;")})
+        {
+            var result=Xemele.Validation.XmlSchema.Compile(Pattern(witness.Item1)).Validate("<r>"+witness.Item2+"</r>");
+            Require(result.IsComplete&&result.IsValid,"legal neighboring block "+witness.Item1+" remains valid");
+        }
+        const string notation="<xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema'><xs:notation name='n' public='urn:n'/><xs:simpleType name='N'><xs:restriction base='xs:NOTATION'><xs:enumeration value='n'/></xs:restriction></xs:simpleType><xs:simpleType name='U'><xs:union memberTypes='N xs:integer'/></xs:simpleType><xs:element name='r' type='U'/></xs:schema>";
+        var schema=Xemele.Validation.XmlSchema.Compile(notation);var valid=schema.Validate("<r>n</r>");
+        Require(valid.IsComplete&&valid.IsValid,"enumerated NOTATION union remains valid");
+        var invalid=schema.Validate("<r>undeclared</r>");Require(invalid.IsComplete&&!invalid.IsValid,"enumerated NOTATION union rejects other lexical value completely");
+    }
     internal static int Run()
     {
         const string schema="<xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema'><xs:element name='r'><xs:complexType><xs:sequence><xs:any processContents='lax' minOccurs='0'/></xs:sequence></xs:complexType></xs:element></xs:schema>";
@@ -92,6 +113,7 @@ internal static class Controls
         Require(Runner.Oracle("invalid","incomplete-refusal","schema")==false && Runner.Oracle("invalid","timeout","instance")==false && Runner.Oracle("invalid","harness-exception","schema")==false,"refusal timeout and harness exception cannot satisfy invalid oracle");
         Require(Runner.Oracle("indeterminate","instance-valid","instance") is null && Runner.Oracle("indeterminate","incomplete-refusal","instance")==false,"indeterminate semantic observations and refusal stay separate");
         HintControls();
+        ExplicitProfileControls();
         return 0;
     }
 }

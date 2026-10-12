@@ -8,6 +8,9 @@ ERR='msMeta/Errata10_w3c.xml#g18/s:errF001'
 DEP='msMeta/Errata10_w3c.xml#g18/i0:errF001.i'
 XMLFILE=ROOT/'tests/corpora/xsd/xmlversions-adjudication.json'
 XMLCASES={r['id']:r for r in json.loads(XMLFILE.read_text())['cases']} if XMLFILE.exists() else {}
+EXPLICITFILE=ROOT/'tests/corpora/xsd/explicit-profile-adjudication.json'
+EXPLICITCASES={r['id']:r for r in json.loads(EXPLICITFILE.read_text())['cases']} if EXPLICITFILE.exists() else {}
+EXPLICITDEPS={r['id']:r for c in EXPLICITCASES.values() for r in c['dependent_instances']}
 def view(row):
  result={'originalPassed':row.get('passed'),'profilePassed':row.get('passed'),'approvedException':False,'notExecutable':False,'substrate':False,'invalidSchemaDependency':False}
  if row['id']==TIME:result['approvedException']=row['actual']=='schema-valid' and row.get('passed') is False
@@ -19,6 +22,9 @@ def view(row):
   if case['disposition']=='assess':result['profilePassed']=row['actual']==('schema-' if case['kind']=='schema' else 'instance-')+case['derivedExpected']
   else:
    result['profilePassed']=None;result['substrate']=case['disposition']=='outside-XML-1.0-substrate';result['invalidSchemaDependency']=case['disposition']=='invalid-schema-dependency';result['notExecutable']=row['actual']=='schema-unavailable'
+ if row['id'] in EXPLICITCASES:result['profilePassed']=row['actual']=='schema-'+EXPLICITCASES[row['id']]['profile_expected']
+ if row['id'] in EXPLICITDEPS:
+  result['profilePassed']=None;result['invalidSchemaDependency']=True;result['notExecutable']=row['actual']=='schema-unavailable'
  return result
 
 def main():

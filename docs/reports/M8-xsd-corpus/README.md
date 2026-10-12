@@ -83,7 +83,7 @@ limitation; a precompiled supplemental engine result cannot establish conformanc
 for that case. Per-instance resolver/input journals survive success and exceptions
 and do not accumulate requests from earlier instances.
 
-Twenty-nine runtime harness controls pass, including an otherwise-valid namespace
+Forty-one runtime harness controls pass, including an otherwise-valid namespace
 mismatch witness, nested xml:base descendant hint, early namespace use/late hint
 limitation, and two-instance success/failure journals for both actual engines.
 Six metadata controls and six supervisor controls pass. The bounded core source
@@ -115,7 +115,7 @@ parsed, SHA-bound original namespace facts for thirteen original Saxon schemas.
 Neither engine receives rewritten bytes. That selected set now has no harness
 exceptions: 44 independently adjudicated profile agreements, one component-name
 failure (`xv001.xsd`) and six unassessed substrate/dependency cases. All original
-expectations, outcomes and counts are retained. The report helper has nine controls,
+expectations, outcomes and counts are retained. The report helper has eleven controls,
 including the exact 51 cases / forty-file manifest and nonpass refusal/dependency
 semantics.
 
@@ -154,3 +154,15 @@ ID shape; exact original instance IDs corrected that preparation check.
 source80/source09b overlay. `schema-ambiguity-inputs.md` records twelve original
 schema IDs, seven unchanged schema hashes and nine unexecuted dependent instances
 for focused independent standards review. No product source was edited by this task.
+
+Coordinator explicit profile adjudication is preserved verbatim in
+`tests/corpora/xsd/explicit-profile-adjudication.json`: the original VALID
+HighSurrogates/reM77/reN75 schemas violate the frozen Appendix F exclusions;
+particlesZ007 directly uses NOTATION without its required enumerated restriction.
+Original schema failures and four unexecuted dependent instances remain unchanged.
+Separate derived profile agreement requires actual semantic schema rejection,
+never a refusal. Twelve added runtime controls verify both escape polarities for
+all three excluded blocks, both polarities for legal Hangul/PrivateUse neighbors,
+and valid/complete-invalid instances for an enumerated-NOTATION union. These
+controls pass after joining only verified attribute-fixed main48f394cc; no full
+corpus rerun or anyURI adjudication was made.

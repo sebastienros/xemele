@@ -62,3 +62,10 @@ failure and six unassessed substrate/dependency cases, with zero harness errors.
 Prioritize the compiler cluster: three empty-namespace wildcards `wildK001`, `wildC030`, `wildZ010` (common `Compilation/Compiler.cs:828`); mixed-content/zero-particle `groupN007v.v` (an instance witness); and independently adjudicated component-name schema `xv001.xsd`, whose original VALID expectation remains preserved but frozen Second Edition component-name profile is INVALID. Its product schema acceptance violates the profile and is not waived. The paired `xv004.xsd` already rejects and agrees with the profile.
 
 Resource refusal, work limits, failed-schema instance preconditions, ordered hint limitations and unavailable inputs remain separate. Queried cases require focused standards review rather than blanket removal. No product source was edited by this worker.
+
+Coordinator later explicitly adjudicated HighSurrogates/reM77/reN75 and
+particlesZ007 INVALID under the frozen Second Edition normative profile.
+Their original VALID/schema-invalid failures remain in this table; derived profile
+agreement and the four unassessed invalid-schema dependents are separate. These
+four rows require no runtime repair under that profile. Other disputed rows remain
+pending; the exact approved time case is still the only exception.
