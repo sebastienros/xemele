@@ -1,0 +1,60 @@
+{
+  "lease_name": "M8-rng-lexical-dc3c6e2a-alloc-only",
+  "source_revision": "dc3c6e2a2bd8a5268b708015ed825471fe2e2307",
+  "maximum_seconds": 120,
+  "cleanup_seconds": 10,
+  "supervisor_sha256": "26b3d40a849395ea8415e4adcc1f78e69582dbc257790388b3b8afc74f9bb24b",
+  "inputs": {
+    "src/Xemele/Validation/RelaxNg/Compilation/Compiler.cs": "fe2ea09a62a79c8cff623d821e358abaada447633315430ec072d0f5e3b52ab8",
+    "src/Xemele/Validation/Datatypes/Values/TextBinary/Names.cs": "3191f385de145fc04fe012a06ae26ee8154bfa5183330ce19687044f52e421c5",
+    "src/Xemele/Validation/Datatypes/Values/TextBinary/Uri.cs": "a2161c5b9ac656a9f6c43fd67cc1585e59265cd3c817222dd3ffb7b7b65ff1f7",
+    "src/Xemele/Validation/Datatypes/Values/TextBinary/Provider.cs": "66549b743c49f5d2c302b27f09245e1879252411df74c4d457e6c37d06b8dbc7",
+    "tests/Xemele.Tests/M8-rng-lexical/LexicalTests.cs": "bfa42dfaa3180230d68b0420789fe6bbdaf140648013670c81adf13c2c50da4c",
+    "benchmarks/Xemele.Benchmarks/M8-rng-lexical/Probe.cs.fixture": "7947773d54cd794ad4ad859dec00b3d0d2e6c3207afef4c4a50e02bdf7bca138",
+    "benchmarks/Xemele.Benchmarks/M8-rng-lexical/Lexical.Probe.csproj": "62815fb83b0517b7888fd692644558822648024465e609b4a1ad19896458dbcf",
+    "benchmarks/Xemele.Benchmarks/M8-rng-lexical/bin/Release/net10.0/Xemele.Benchmarks.dll": "1e1cd7916e7edfe756574b8c236c65a710142bd856541678ee9b49d73df586c5",
+    "benchmarks/Xemele.Benchmarks/M8-rng-lexical/bin/Release/net10.0/Xemele.dll": "f5743b7d5b6ee42e9cd57c3091b542197b6011f609b4893a8d107e6a7dbf2084",
+    "benchmarks/Xemele.Benchmarks/M8-rng-lexical/bin/Release/net10.0/Xemele.Benchmarks.runtimeconfig.json": "71d85789e62e55f3664c1b9e7b83665a3ea539d5ac5740bba0d05482f031684f",
+    "benchmarks/Xemele.Benchmarks/M8-rng-lexical/bin/Release/net10.0/Xemele.Benchmarks.deps.json": "342f1962ff86ba5827864eff18fae59e38d2f7bd11102fdf4aabf6426a2e506d"
+  },
+  "environment": {
+    "XEMELE_LEXICAL_REVISION": "dc3c6e2a2bd8a5268b708015ed825471fe2e2307",
+    "DOTNET_TieredCompilation": "0",
+    "DOTNET_gcServer": "0"
+  },
+  "children": [
+    {
+      "name": "control",
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "--fx-version",
+        "10.0.11",
+        "/Users/sebastienros/.codex/worktrees/b0f0/xemele/benchmarks/Xemele.Benchmarks/M8-rng-lexical/bin/Release/net10.0/Xemele.Benchmarks.dll",
+        "--control",
+        "/Users/sebastienros/.codex/worktrees/b0f0/xemele/artifacts/M8-rng-lexical/lease/raw-control.json"
+      ]
+    },
+    {
+      "name": "measure",
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "--fx-version",
+        "10.0.11",
+        "/Users/sebastienros/.codex/worktrees/b0f0/xemele/benchmarks/Xemele.Benchmarks/M8-rng-lexical/bin/Release/net10.0/Xemele.Benchmarks.dll",
+        "--measure",
+        "/Users/sebastienros/.codex/worktrees/b0f0/xemele/artifacts/M8-rng-lexical/lease/raw-measure.json"
+      ]
+    }
+  ],
+  "correctness": {
+    "affected_tests": 405,
+    "lexical_tests": 80,
+    "public_api": 1410,
+    "frozen_rng_api": 444,
+    "consumer_normal": 10,
+    "consumer_xml_only": 10,
+    "task_validation": 181,
+    "disabled_control_routes": 10
+  },
+  "claims": "Allocation only. Ten consumed routes, 16 warm + 64 observations per route; cold setup and 16 retained graphs. No timers, throughput, primitive-zero or cross-architecture claims."
+}
