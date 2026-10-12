@@ -14,7 +14,7 @@ rows = list(tree.iter('test'))
 assert len(rows) == 45 and int(assembly.attrib['passed']) == 45, assembly.attrib
 assert all(int(assembly.attrib[k]) == 0 for k in ['errors', 'failed', 'skipped', 'not-run']), assembly.attrib
 assert '10.0.11' in assembly.attrib['environment'] and all(t.attrib['result'] == 'Pass' for t in rows)
-required = ['OriginalWitnessTests', 'RestrictionUsesActualValuesWithIndependentOracle', 'QNameContextBelongsToEachLocalUse',
+required = ['OriginalWitnessTests', 'RestrictionUsesActualValuesWithIndependentOracle', 'UnboundedDecimalsUseExplicitMathematicalOracle', 'QNameContextBelongsToEachLocalUse',
             'QNameListsRetainAuthoredContexts', 'BothDerivationKindsCheckInheritedFixed', 'FixedDefaultAndAbsentRemainDistinct',
             'ReferencedDeclarationContextSurvivesDifferentlyBoundUse', 'InvalidLocalOverrideCannotBorrowDeclarationContext',
             'FacetsReceiveAuthoredLexicalAndSharedOperation', 'FrozenStructuralLanePreservesLexicalComparison',

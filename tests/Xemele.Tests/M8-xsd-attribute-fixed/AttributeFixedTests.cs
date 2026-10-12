@@ -44,8 +44,6 @@ public sealed class AttributeFixedTests
     [InlineData("xs:int", "-1", "1", false)]
     [InlineData("xs:decimal", "1", "01.00", true)]
     [InlineData("xs:decimal", "-0", "+0.000", true)]
-    [InlineData("xs:decimal", "123456789012345678901234567890", "0123456789012345678901234567890.00", true)]
-    [InlineData("xs:decimal", "123456789012345678901234567890", "123456789012345678901234567891", false)]
     [InlineData("U", "1", "01.00", true)]
     [InlineData("U", "1", "true", false)]
     [InlineData("U", "true", "1", false)]
@@ -53,6 +51,24 @@ public sealed class AttributeFixedTests
     {
         string source = Derivation(Attribute(basis, type), Attribute(derived, type), definitions: Definitions);
         Assert.Equal(valid, BclAccepts(source));
+        if (valid) Assert.NotNull(ProductSchema.Compile(source));
+        else Assert.Contains(Assert.Throws<SchemaCompileException>(() => ProductSchema.Compile(source)).Diagnostics, d => d.Code == "XSD.SchemaRestriction");
+    }
+    [Theory]
+    [InlineData("0123456789012345678901234567890.00", true)]
+    [InlineData("123456789012345678901234567891", false)]
+    public void UnboundedDecimalsUseExplicitMathematicalOracle(string derived, bool valid)
+    {
+        // 100*A = B for the zero-padded scale-2 coefficient, whereas A+1 != A.
+        // This exceeds System.Decimal.MaxValue; BCL range rejection cannot
+        // independently establish equality or inequality in the XSD value space.
+        const string basis = "123456789012345678901234567890";
+        string digits = derived.Replace(".", "", StringComparison.Ordinal);
+        var coefficient = System.Numerics.BigInteger.Parse(digits, System.Globalization.CultureInfo.InvariantCulture);
+        int scale = derived.Contains('.') ? 2 : 0;
+        var integer = System.Numerics.BigInteger.Parse(basis, System.Globalization.CultureInfo.InvariantCulture);
+        Assert.Equal(valid, coefficient == integer * System.Numerics.BigInteger.Pow(10, scale));
+        string source = Derivation(Attribute(basis), Attribute(derived));
         if (valid) Assert.NotNull(ProductSchema.Compile(source));
         else Assert.Contains(Assert.Throws<SchemaCompileException>(() => ProductSchema.Compile(source)).Diagnostics, d => d.Code == "XSD.SchemaRestriction");
     }
