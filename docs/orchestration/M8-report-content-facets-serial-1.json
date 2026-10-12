@@ -1,0 +1,121 @@
+{
+  "id": "M8-report-content-facets-serial-1",
+  "status": "PARK_REQUESTED",
+  "earliestStart": "2026-10-12T01:42:00Z",
+  "latestStart": "2026-10-12T01:50:00Z",
+  "absoluteCleanupCap": "2026-10-12T02:12:00Z",
+  "maximumSeconds": 1250,
+  "sequence": [
+    {
+      "task": "M8-sch-report",
+      "cwd": "/Users/sebastienros/.codex/worktrees/939a/xemele",
+      "sourceRevision": "f6db4e76dca6c57ef97f11149348edc3a6a4272c",
+      "preparedRevision": "5392de21bf27e529e527fba0b18af33be8938b00",
+      "manifestPath": "docs/reports/M8-sch-report/preparation.json",
+      "manifestSha256": "c365cfe33ed4a766dd6018b997c0d77b44e3795290a21704dbf5b19aec8a8d56",
+      "manifestBytes": 96223,
+      "supervisorPath": "docs/reports/M8-sch-report/lease.py",
+      "supervisorSha256": "e882cf3a4d36ea76253e7a55f441813d64d41ec7e3477ab3e8208d70133499ac",
+      "supervisorBytes": 14716,
+      "identities": 418,
+      "commands": [
+        [
+          "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+          "--fx-version",
+          "10.0.11",
+          "/Users/sebastienros/.codex/worktrees/939a/xemele/benchmarks/Xemele.Benchmarks/M8-sch-report/bin/Release/net10.0/Xemele.Benchmarks.dll",
+          "--measure",
+          "/Users/sebastienros/.codex/worktrees/939a/xemele/artifacts/M8-sch-report/allocation.json"
+        ]
+      ],
+      "maximumSeconds": 30,
+      "cleanupSeconds": 10,
+      "latestStart": "2026-10-12T01:50:00Z",
+      "lifecyclePath": "artifacts/M8-sch-report/lifecycle.json"
+    },
+    {
+      "task": "M8-xsd-content",
+      "cwd": "/Users/sebastienros/.codex/worktrees/6729/xemele",
+      "sourceRevision": "127d15b2fedd1675572bad17b4822c80ee94d241",
+      "preparedRevision": "75d796baad6ae6123d2ef973bca6d927c8499dd8",
+      "manifestPath": "docs/reports/M8-xsd-content/preparation.json",
+      "manifestSha256": "8bcc6182e3e89db9f8a3e627cc1f58e3c635b6d89f3a072a352eb7f0d1fb52a9",
+      "manifestBytes": 40775,
+      "supervisorPath": "docs/reports/M8-xsd-content/measure.py",
+      "supervisorSha256": "b77dee00b003416eb10999c2dbe8788619a2dfff6b9c69adeb54d5d4115ca552",
+      "supervisorBytes": 7428,
+      "identities": 213,
+      "commands": [
+        [
+          "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+          "--fx-version",
+          "10.0.11",
+          "/Users/sebastienros/.codex/worktrees/6729/xemele/benchmarks/Xemele.Benchmarks/M8-xsd-content/bin/probe/net10.0/Xemele.Benchmarks.dll",
+          "--measure",
+          "/Users/sebastienros/.codex/worktrees/6729/xemele/artifacts/M8-xsd-content/measurement-2/allocations.json"
+        ],
+        [
+          "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+          "--fx-version",
+          "10.0.11",
+          "/Users/sebastienros/.codex/worktrees/6729/xemele/benchmarks/Xemele.Benchmarks/M8-xsd-content/bin/Release/net10.0/Xemele.Benchmarks.dll",
+          "--benchmark",
+          "/Users/sebastienros/.codex/worktrees/6729/xemele/artifacts/M8-xsd-content/measurement-2/bdn"
+        ]
+      ],
+      "maximumSeconds": 600,
+      "cleanupSeconds": 10,
+      "latestStart": "2026-10-12T01:50:30Z",
+      "lifecyclePath": "artifacts/M8-xsd-content/measurement-2/lifecycle.json"
+    },
+    {
+      "task": "M8-facets",
+      "cwd": "/Users/sebastienros/.codex/worktrees/36d6/xemele",
+      "sourceRevision": "af90e76af1cf78eaa77f91ed69e2440e6890a0f4",
+      "preparedRevision": "0962e4a3",
+      "manifestPath": "docs/reports/M8-facets/preparation.json",
+      "manifestSha256": "d6dc9a15b9a1656deb8f96de8ca1f0475934e28cdfcc36e0f641d1e651754be7",
+      "manifestBytes": 75429,
+      "supervisorPath": "docs/reports/M8-facets/measure.py",
+      "supervisorSha256": "fb5486c298f67451e7c06e05539e35f136c13ed34ec19093377a10f1adc13f8f",
+      "supervisorBytes": 7309,
+      "identities": 462,
+      "commands": [
+        [
+          "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+          "--fx-version",
+          "10.0.11",
+          "/Users/sebastienros/.codex/worktrees/36d6/xemele/benchmarks/Xemele.Benchmarks/M8-facets/bin/probe/net10.0/Xemele.Benchmarks.dll",
+          "--measure",
+          "/Users/sebastienros/.codex/worktrees/36d6/xemele/artifacts/M8-facets/measurement-1/allocations.json"
+        ],
+        [
+          "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+          "--fx-version",
+          "10.0.11",
+          "/Users/sebastienros/.codex/worktrees/36d6/xemele/benchmarks/Xemele.Benchmarks/M8-facets/bin/Release/net10.0/Xemele.Benchmarks.dll",
+          "--benchmark",
+          "/Users/sebastienros/.codex/worktrees/36d6/xemele/artifacts/M8-facets/measurement-1/bdn"
+        ]
+      ],
+      "maximumSeconds": 600,
+      "cleanupSeconds": 10,
+      "latestStart": "2026-10-12T02:00:30Z",
+      "lifecyclePath": "artifacts/M8-facets/measurement-1/lifecycle.json"
+    }
+  ],
+  "preflight": "Accepted source reviews. Actual joint e4bf43e0 report546/facets804 checks and content285 at78051af6, APIs/frozen/trueXMLonly/planning passed. All418+213+462 identities and process permission independently verified. Prebuilt disabled controls and exact5+6NoEmit discovery passed. No measurement yet for these payloads.",
+  "scope": "Root executes report30 then corrected content600 then facets600, strictly serial, stop first failure. Overall bound1250 includes all work, phase cleanup and launch gaps; each phase reserves10 cleanup. Initial START by01:50; phase latest starts01:50/01:50:30/02:00:30 reflect preceding maxima, all bounded by actual grant+1250 and hard cap02:12. No builds/tests/restore/discovery/retry/extension or raw inspection. Each fixed supervisor enforces its shorter bound, late starts and no overwrite; before/after identities, owned groups reaped/absent/logs closed. Immediate durable RELEASE after lifecycle before raw inspection; no repeatable speed claim. Prior failed content attempt preserved. Gregs parser excluded.",
+  "acks": {
+    "root": "All integration jobs complete/reaped, three reviewers completed, zero jobs/new dispatch."
+  },
+  "pendingAcks": [
+    "Xemele main",
+    "content",
+    "facets",
+    "report",
+    "research parser",
+    "GregsEx current aggregate"
+  ],
+  "recordedUtc": "2026-10-12T01:42:29.263266+00:00"
+}
