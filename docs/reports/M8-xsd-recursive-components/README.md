@@ -55,3 +55,17 @@ separate authorized execution. Compilation is an owned-result boundary: pending
 queue storage, component registration, immutable programs and final graph
 snapshots are expected positive allocations; this repair introduces no borrowed
 scan primitive or allocation-free compile claim.
+
+## Reviewed allocation preparation
+
+Runtime source review passed9e376cd98; independent allocation source review
+passed clean822e5a756. Accepted offline prepare.py build/control and elevated
+measure.py --verify-only/--preflight passed. SDK10.0.400/runtime10.0.11 on
+macOS15.8.1 Arm64: zero warnings/errors;13routes,1085calls,26095consumed;
+all allocation/heap fields zero in disabled mode,32retainedobjects.455frozen
+identities match. Disabled preflight child52566 exited0, was reaped, its group
+was absent and its log closed; before/after identities match. See
+allocation-preflight.json and preparation.json for exact source/probe/runtime/
+supervisor hashes. No actual counters have been executed by this worker.
+Root alone launches the accepted payload without an isolation/PARK/ACK/lease
+or exclusive-use gate.

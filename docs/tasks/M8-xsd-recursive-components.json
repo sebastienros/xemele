@@ -63,7 +63,7 @@
     "tests/fixtures/M8-xsd-recursive-components/manifest.json: pinned unchanged W3C originals/copyright/hashes",
     "samples/M8-xsd-recursive-components/: recursive normal and true XML-only consumer",
     "docs/reports/M8-xsd-recursive-components/: counter-disabled bounded checks, independent inventory, historical failures and allocation applicability",
-    "benchmarks/Xemele.Benchmarks/M8-xsd-recursive-components/: 13owned allocation-route source, unbuilt pending independent design review"
+    "benchmarks/Xemele.Benchmarks/M8-xsd-recursive-components/: reviewed and offline-built13owned allocation routes; counters-disabled preparation/manifest/preflight passed, actual counters pending"
   ],
   "evidence": [
     {
@@ -92,21 +92,40 @@
       "result": "passed",
       "summary": "Source-only review: growing deferred-body queue drains before CheckGraphs/publication; identity registration, immutable boundary and forbidden group/attributeGroup/base-type guards preserved; component reserve/charged shared operation/polling/provenance/fixtures meaningful. CompilerSHA25686ec831d782eeea74d938e8bfbefededa7968678a9c55add35a3adf46f9eda24. No execution/allocation claims.",
       "artifact": null
+    },
+    {
+      "id": "independent-allocation-source-review",
+      "kind": "review",
+      "revision": "822e5a756f9d82c5becd14c2ded7c3a9b132ff99",
+      "command": "Coordinator accepted independent model allocation SOURCE PASS at clean822e5a756",
+      "result": "passed",
+      "summary": "13owned semantic routes, disabled controls, separate setup/first/16warm/64samples/positive and4retainedcategories8each accepted. Refusal excluded,32objects reachable, sourceidentity and110work+10cleanup accepted. Runtime/tests unchanged. No execution/counter claim.",
+      "artifact": "docs/reports/M8-xsd-recursive-components/allocation-source.json"
+    },
+    {
+      "id": "allocation-preparation",
+      "kind": "check",
+      "revision": "822e5a756f9d82c5becd14c2ded7c3a9b132ff99",
+      "command": "python3 docs/reports/M8-xsd-recursive-components/prepare.py; actual elevated measure.py --verify-only and --preflight",
+      "result": "passed",
+      "summary": "SDK10.0.400/runtime10.0.11 offline build0warnings/errors;13routes1085calls/26095consumed, all allocation/GC/timing disabled.32retainedobjects/4categories, all counterfields0; owned-only workload, no new primitive0B claim.455identities manifest23968c4c3212300aa6b92f3570f0df00bcd3be077cd71d960910de3cb4ed54c6 match; actual processpermission preflightPID52566exit0/reaped/groupabsent/logclosed, before/after455identities match. No worker measurements or isolation/PARK/exclusive-use gate.",
+      "artifact": "docs/reports/M8-xsd-recursive-components/allocation-preflight.json"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Runtime source independently accepted. Allocation SOURCE/design committed208350093 and sent for focused review before build/freezing; no counters/controls/measurements yet. A1/A2 passed/A3 pending; task remains in_progress.",
+    "summary": "Runtime+allocation source independently accepted; offline build/counter-disabled control/frozen455identities/lifecycle preflight passed. Root sole actual allocation execution pending; A1/A2passed/A3pending, in_progress.",
     "checks": [
       "Actual baseline4failed; original repaired4pass; stable9e376cd98 check1300+42pass,public1430/all8frozen and normal/XML-only consumers pass;6builds0warnings/errors,planning196/diff.",
       "Own recursive consumer normal+trueXML-only precommit snapshot now c5a9392e3 passed2builds0warnings/errors; string/DOM/stream finite recursion+invalid neighbors/open streams. Runtime/tests unchanged from9e376cd98.",
       "Historical expanded build1test compileerror and firstowned35cases32pass/3wrong provenance expectations retained in README/summary, corrected without runtime location changes.",
-      "No allocation counters/heap/timing or measurement preparation run; no allocation-free compilation claim."
+      "No allocation counters/heap/timing or measurement preparation run; no allocation-free compilation claim.",
+      "Allocation prep at822e5a756:13ownedroutes1085calls/26095consumed,32retainedobjects, all counterfields0;build0warnings/errors;455identities;PID52566cleanpreflight. Actual counters still unrun."
     ],
     "remaining": [
-      "Focused allocation-source/design review before build/freezing.",
-      "Accepted offline probe build/control/manifest/preflight; root sole bounded allocation execution without isolation/PARK/ACK/exclusive grant.",
-      "Final actual allocation evidence commit and integrated coordinator verification."
+      "Root-only nonisolated bounded measure.py --run 23968c4c3212300aa6b92f3570f0df00bcd3be077cd71d960910de3cb4ed54c6; exact frozen control then measurement once,120total110work10cleanup.",
+      "Inspect actual raw results after durable lifecycle cleanup; record actual allocation evidence/final handoff.",
+      "Integrated coordinator verification."
     ],
     "requests": []
   }
