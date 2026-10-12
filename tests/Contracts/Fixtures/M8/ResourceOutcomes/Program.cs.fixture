@@ -1,0 +1,18 @@
+using Xemele;
+if (Environment.Version.ToString() != "10.0.11") throw new Exception("Pinned runtime required.");
+XmlResourceResolution result = default;
+if (result.Status != XmlResourceResolutionStatus.Denied || result.Resource is not null) throw new Exception("Default invariant.");
+if (XmlResourceResolution.Unavailable.Status != XmlResourceResolutionStatus.Unavailable || XmlResourceResolution.Unavailable.Resource is not null) throw new Exception("Unavailable invariant.");
+using var resource = new XmlResolvedResource(new MemoryStream(), new Uri("urn:fixture"));
+if (!ReferenceEquals(XmlResourceResolution.FromResource(resource).Resource, resource)) throw new Exception("Identity invariant.");
+try { XmlResourceResolution.FromResource(null!); throw new Exception("Null accepted."); } catch (ArgumentNullException) { }
+var resolver = new Legacy();
+var request = new XmlResourceRequest(new Uri("urn:fixture"), null, XmlResourceKind.Schema);
+if (resolver.ResolveResult(request, default).Status != XmlResourceResolutionStatus.Denied || resolver.Calls != 1) throw new Exception("Legacy adapter.");
+if (resolver.Resolve(request, default) is not null || resolver.ResolveAsync(request, default).Result is not null) throw new Exception("Legacy usage.");
+Console.WriteLine("PASS: additive exact declarations and legacy consumer, runtime 10.0.11; no runtime implementation used.");
+internal sealed class Legacy : XmlResourceResolver
+{
+    internal int Calls;
+    public override XmlResolvedResource? Resolve(XmlResourceRequest request, CancellationToken cancellationToken) { Calls++; return null; }
+}
