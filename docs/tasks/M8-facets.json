@@ -35,19 +35,21 @@
     {
       "id": "M8-facets-A1",
       "description": "Implement facet restrictions and compose datatype library with schema regex and whitespace policies.",
-      "status": "failed",
+      "status": "pending",
       "evidence": [
         "source-correctness",
-        "source-review-1"
+        "source-review-1",
+        "corrected-source-correctness"
       ]
     },
     {
       "id": "M8-facets-A2",
       "description": "Test conflicting/inherited facets, bounds, lengths/enumeration/pattern and RELAX NG datatype usage.",
-      "status": "failed",
+      "status": "pending",
       "evidence": [
         "source-correctness",
-        "source-review-1"
+        "source-review-1",
+        "corrected-source-correctness"
       ]
     },
     {
@@ -66,7 +68,8 @@
     "samples/M8-facets/Consumer.cs.fixture and docs/reports/M8-facets/XmlOnly/: genuine XML-only source-linked consumer",
     "docs/api/M8-facets.txt: canonical empty additive public API fragment",
     "benchmarks/Xemele.Benchmarks/M8-facets/: owned/cold/borrowed/invalid/pooled/retained controls and ShortRun/MemoryDiagnoser NoEmit harness; not measured yet",
-    "docs/reports/M8-facets/facade-join.md: approved internal RNG protocol and required downstream finalization"
+    "docs/reports/M8-facets/facade-join.md: approved internal RNG protocol and required downstream finalization",
+    "src/Xemele/Validation/Datatypes/Facets/Numbers.cs: owned canonical decimal/native count representation with independent actual work/growth accounting"
   ],
   "evidence": [
     {
@@ -86,18 +89,27 @@
       "result": "failed",
       "summary": "Five blockers: retained list/union compiler fields; length/min/max inherited-origin rule; equal exclusive empty range; effective digit facets replacing obsolete scalars; opaque arbitrary facet-number arithmetic/comparison lacking actual bounded work/growth. Prior passing test results preserved; corrections and new witnesses required.",
       "artifact": "docs/reports/M8-facets/review-1.md"
+    },
+    {
+      "id": "corrected-source-correctness",
+      "kind": "check",
+      "revision": "b1bd26fe9a0978b0301ed45383c45f43da4592e3",
+      "command": "python3 docs/reports/M8-facets/checks.py",
+      "result": "passed",
+      "summary": "Actual804 passing tests:303 owned facets plus501 verified predecessors;0failures/errors/skips/not-run, pinned .NET10.0.11 Arm64. Includes6 review witnesses and25 independently calculated count-work tests.316 frozen/1393 preserved public API;normal and genuine XML-only consumers passed;178-task validation and diffcheck passed. Pre-fix5/5review witnesses and test/build setup failures preserved in report. No controls/discovery/measurements executed.",
+      "artifact": "docs/reports/M8-facets/review-1.md"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Source checkpoint exists, but failed bounded review reopened A1/A2. Correcting five concrete witnesses/accounting gaps in owned paths; no implemented/integration claim and no measurements requested.",
+    "summary": "Five failed review findings corrected at b1bd26fe;804 correctness/API/consumer checks passed. Awaiting bounded corrected-source review before refreshed preparation and fresh exclusive measurement grant; remains in_progress.",
     "checks": [
       "Source5cdc839f:772 positive correctness tests,316 frozen/1393 public members,XML-only consumers and178-task planning passed.",
-      "Counters-disabled preparation first failed on propagated output/intermediate flags; owned reference isolation fixed. Next probe/BDN builds passed but control executable output lacked target-framework suffix; owned driver corrected. No control/discovery/allocation/timing run yet."
+      "Counters-disabled preparation first failed on propagated output/intermediate flags; owned reference isolation fixed. Next probe/BDN builds passed but control executable output lacked target-framework suffix; owned driver corrected. No control/discovery/allocation/timing run yet.",
+      "Corrected b1bd26fe:804 passed (303owned/501predecessor),316frozen/1393public,normal+XML-only consumers,178planning,diffcheck; pre-correction5failed/5preserved."
     ],
     "remaining": [
-      "Close five failed source-review witnesses and independent facet-number accounting oracles before accepted measurement preparation.",
-      "Run added RNG/NOTATION test after park release, refresh final correctness evidence.",
+      "Receive corrected-source review acceptance; preserve first failed review and actual pre-fix witnesses.",
       "Build final payload, run counters-disabled controls/discovery,freeze source/binary/runtime manifests and process permission preflight.",
       "Only after fresh all-host PARK/root GRANT: run bounded allocation/BDN measurements; release before raw inspection and preserve all observations.",
       "Coordinator integration verification remains separate."
