@@ -18,6 +18,7 @@ claim is made for complete validation. No BDN/timing/x64/async/full-corpus claim
 
 --control disables all allocation/heap reads. Source hashes freeze runtime, own tests,
 probe/check/supervisor/build inputs, runtime binaries, disabled output and launch commands.
-The unchanged supervisor has 120s maximum, 110s work and 10s cleanup reserve. It checks
+The reused supervisor has 30s maximum, 20s work and 10s cleanup reserve. Root supplies
+a fresh grant with latest start +60s and absolute expiry +90s; a late start never extends it. It checks
 identities before and after, reaps its children, kills/drains owned groups, closes logs,
 and writes durable release before raw result inspection. No retries or output overwrite.
