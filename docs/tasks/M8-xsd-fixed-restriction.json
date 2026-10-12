@@ -4,7 +4,7 @@
   "milestone": "M8",
   "title": "Complete typed fixed-value checks in XSD particle restriction",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M8 coordinator01a12c6c-b333-71d3-877f-0d186618e21d / assigned isolated worker",
   "branch": "codex/m8-xsd-fixed-restriction",
   "base_revision": "d9be8f76bfb128e8f5b8f47046cdd3df2e9a369e",
@@ -34,29 +34,88 @@
     {
       "id": "M8-xsd-fixed-restriction-A1",
       "description": "Provide an explicit additive complete-composition join that compares matched element fixed values under actual XSD datatype equality within the existing particle-restriction relation solver, including retained redefine carriers, without blanket same-name comparisons.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "source-review",
+        "correctness"
+      ]
     },
     {
       "id": "M8-xsd-fixed-restriction-A2",
       "description": "Preserve both authored declaration contexts, typed value identity and the supplied shared operation/facet library; preserve original frozen internal interfaces and all structural branch behavior for earlier callers.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "source-review",
+        "correctness"
+      ]
     },
     {
       "id": "M8-xsd-fixed-restriction-A3",
       "description": "Prove decimal unequal/equivalent lexical fixed values, context-sensitive QName pairs, unions/lists and alternative particle mappings, unused/redefined constraints, limits/cancellation, affected content/core/API/XML-only preservation, and measured owned allocation evidence.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "source-review",
+        "correctness",
+        "prepared-control",
+        "owned-allocation"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Validation/Xsd/ContentModels/Compiler.cs: explicit internal Compile(schema,type,operation,facets) overload preserves frozen structural interface",
+    "src/Xemele/Validation/Xsd/ContentModels/Derivation.cs: FixedEquals/FixedValue in matched relation leaves; authored contexts, shared typed library/op, false OR alternatives",
+    "tests/Xemele.Tests/M8-xsd-fixed-restriction/: 35 independent complete-composition witnesses and operation checks",
+    "samples/M8-xsd-fixed-restriction/: normal and true XML-only complete join; docs/reports/M8-xsd-fixed-restriction/README.md: exact facade call"
+  ],
+  "evidence": [
+    {
+      "id": "source-review",
+      "kind": "review",
+      "revision": "0c54888ba0a4c2c010996eaabfda63c7f6ce8a50",
+      "command": "Bounded source-only model review, coordinator report",
+      "result": "passed",
+      "summary": "Coordinator reported reviewer PASS, no concrete blocker: relation-local typed equality/false alternatives, both contexts, shared facets/registry/operation, no retained operation. Reviewer ran no checks.",
+      "artifact": null
+    },
+    {
+      "id": "correctness",
+      "kind": "check",
+      "revision": "a68d7330fef65d4c72353cd189f5673d375944ff",
+      "command": "python3 docs/reports/M8-xsd-fixed-restriction/check.py",
+      "result": "passed",
+      "summary": "Release .NET SDK10.0.400/runtime10.0.11 Arm64;1314 own/affected pass(35owned)+42safe resolver, zero errors/failures/skips/not-run;public1410;frozen content9/model316/compiler257/identity24/evaluation2 plus316 datatype rows;normal+true XML-only join and earlier declaration-model-only structural consumer pass;planning184;diff clean;builds zero warnings/errors. WarmBorrowed/counter tests excluded.",
+      "artifact": null
+    },
+    {
+      "id": "prepared-control",
+      "kind": "check",
+      "revision": "a68d7330fef65d4c72353cd189f5673d375944ff",
+      "command": "python3 docs/reports/M8-xsd-fixed-restriction/prepare.py; python3 docs/reports/M8-xsd-fixed-restriction/measure.py --verify-only; python3 docs/reports/M8-xsd-fixed-restriction/measure.py --preflight",
+      "result": "passed",
+      "summary": "Counters-disabled control passes6 owned routes(first/16warm/3x64),16retained controls;442 prepared identities match;supervised control exit0, child reaped/process group absent/log closed. ps initially sandbox-denied; escalated read-only/process-group preflight passed. No counters, BDN or benchmark timing executed.",
+      "artifact": null
+    },
+    {
+      "id": "owned-allocation",
+      "kind": "check",
+      "revision": "a68d7330fef65d4c72353cd189f5673d375944ff",
+      "command": "Root: python3 docs/reports/M8-xsd-fixed-restriction/measure.py --granted eda25ac70e83beb757379d7ad05b17b40dbcbb84fcf6d77c4a960a78b8d01c98 2026-10-12T05:19:27.107796+00:00 2026-10-12T05:20:27.107796+00:00",
+      "result": "passed",
+      "summary": "Grant9707173cdaa6ea8720b3831d7b0aa2acefcc01f7/release d1ff39c3b9fb6d53400aae10e7398249ec66b1b6; .NET10.0.11 Arm64 counters-only owned compilation,6routes first/16warm/3x64,16retained controls. Structural median28800B/op;prepareddecimal29040;QNameunionlist30528;freshfacets31016;ownedinvalid30056;realXMLcompose172145. Coldsetup474152B;positive1048B. Retained whole-heap delta-101896B is inconclusive, no savings/bound claim. Both children53265/53267 exit0/reaped/groupsabsent/logsclosed;442 identities before/after match. No BDN/timing/retry or raw inspection before release.",
+      "artifact": "docs/reports/M8-xsd-fixed-restriction/allocations.md"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Ordered repair from facade review; consume only verified predecessors, no active facade dependency.",
-    "checks": [],
+    "summary": "Explicit additive complete-composition typed fixed-value equality runs within existing matched-element restriction relations, including unused/redefined carriers and OR alternatives; frozen structural/public contracts preserved. Source accepted; all criteria implemented on isolated branch, awaiting coordinator integration verification.",
+    "checks": [
+      "1314 own/affected(35owned)+42safe resolver passed;public1410/frozencontent9/model316/compiler257/identity24/evaluation2+datatype316;normal+trueXML-only complete and earlier independent structuralXML-only consumers passed;builds zero warnings/errors;planning184/diff clean",
+      "Granted prepared allocation-only run passed6routes with442identities unchanged;prepareddecimal median29040B/op vs structural28800;realXMLcompose172145B/op;no zero/throughput/cross-architecture claim;retained whole-heap observation inconclusive",
+      "Zero owned active jobs/sessions/cells;accepted runtime/tests/checkinputs unchanged;raw artifacts/logs ignored, not committed"
+    ],
     "remaining": [],
-    "requests": []
+    "requests": [
+      "Facade owner must use XsdContentCompiler.Compile(schema,type,sharedOperation,sharedFacets) with schema.Datatypes replaced by shared executable registry; see docs/reports/M8-xsd-fixed-restriction/README.md. No facade/shared source edited. Coordinator alone integrates, verifies, and cleans."
+    ]
   }
 }

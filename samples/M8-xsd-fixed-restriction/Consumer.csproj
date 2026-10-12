@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><OutputType>Exe</OutputType><AssemblyName>Xemele.Benchmarks</AssemblyName></PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../src/Xemele/Xemele.csproj" Condition="'$(FixedXmlOnly)' != 'true'" />
+    <ProjectReference Include="../../docs/reports/M8-xsd-validate/XmlOnly/XmlOnly.csproj" Condition="'$(FixedXmlOnly)' == 'true'" />
+  </ItemGroup>
+</Project>

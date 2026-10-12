@@ -268,8 +268,9 @@ internal sealed partial class ContentCompilation
             if (d.Nillable && !b.Nillable || b.FixedValue is not null && d.FixedValue is null || !TypeDerives(d.Type, b.Type, true)) return Constant(false);
             foreach (var block in b.Block) { ContentWork.Tick(op, derived.Location); if (!d.Block.Contains(block)) return Constant(false); }
             foreach (int identity in d.IdentityConstraints) { ContentWork.Tick(op, derived.Location); if (!b.IdentityConstraints.Contains(identity)) return Constant(false); }
-            // Typed element fixed-value equality belongs to the real datatype/facet join.
-            return Constant(true);
+            // An unequal pair fails this relation, allowing the solver's other
+            // mappings to succeed. Compare only declarations actually matched.
+            return Constant(b.FixedValue is null || facets is null || FixedEquals(d, b));
         }
         if (basis.Term is XsdWildcardTerm bw)
         {
@@ -345,6 +346,32 @@ internal sealed partial class ContentCompilation
             (previous, next) = (next, previous);
         }
         return previous[bs.Count];
+    }
+    private bool FixedEquals(XsdElementDeclaration derived, XsdElementDeclaration basis)
+    {
+        var left = FixedValue(derived); var right = FixedValue(basis);
+        var library = schema.Datatypes.Find(Xs)
+            ?? throw new ArgumentException("Complete composition requires an executable XSD datatype library.");
+        ContentWork.Tick(op, derived.Location);
+        bool equal = library.ValueEquals(left, right, op);
+        ContentWork.Tick(op, derived.Location, 0);
+        return equal;
+    }
+    private XmlDatatypeValue FixedValue(XsdElementDeclaration declaration)
+    {
+        ContentWork.Tick(op, declaration.Location);
+        // Simple-content complex types use their effective simple type. A
+        // constrained emptiable mixed type has the string value space.
+        var type = types[declaration.Type];
+        var name = type.SimpleType ?? new SchemaName(Xs, "string");
+        var definition = schema.Datatypes.FindType(name)
+            ?? throw new ArgumentException("Complete composition requires the declaration's executable datatype.");
+        bool valid = facets!.TryValidate(definition, declaration.FixedValue.AsSpan(), declaration.Context,
+            schema.Datatypes, op, out var value, out var error);
+        ContentWork.Tick(op, declaration.Location, 0);
+        if (!valid || value is null)
+            ContentWork.Error(op, declaration.Location, error?.Message ?? "Fixed constraint does not satisfy its declaration datatype.");
+        return value!;
     }
     private bool EqualMaximum(BigInteger? a, BigInteger? b, XmlLocation at)
         => a is null ? b is null : b is { } value && ContentIntegers.Compare(a.Value, value, op, at) == 0;
