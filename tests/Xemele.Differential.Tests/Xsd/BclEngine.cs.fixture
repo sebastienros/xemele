@@ -10,41 +10,66 @@ internal static class BclEngine
         internal readonly List<object> Requests = [];
         public override ICredentials? Credentials { set { } }
         public override object GetEntity(Uri uri, string? role, Type? type)
-        { Requests.Add(new { uri = uri.AbsoluteUri, role }); return File.OpenRead(Runner.PathFor(uri)); }
+        { Requests.Add(new { resolution = Runner.AuthoredUnavailable(uri) ? "authored-unavailable" : "pinned-input", uri = uri.AbsoluteUri, role }); if (Runner.AuthoredUnavailable(uri)) throw new FileNotFoundException("Authored unavailable resource: " + uri); return File.OpenRead(Runner.PathFor(uri)); }
+    }
+    internal static string ExceptionOutcome(Exception e, bool schema)
+    {
+        if (e is XmlException && (e.Message.Contains("MaxCharacters", StringComparison.Ordinal) || e.Message.Contains("DTD is prohibited", StringComparison.Ordinal))) return "reference-policy-refusal";
+        return e is XmlSchemaException ? (schema ? "schema-invalid" : "instance-invalid") : e is XmlException ? (schema ? "schema-invalid" : "instance-syntax-error") : "harness-exception";
+    }
+    internal static bool ReadAssessment(XmlReader reader)
+    {
+        bool assessed = false;
+        while (reader.Read())
+            if (reader.Depth == 0 && reader.NodeType is XmlNodeType.Element or XmlNodeType.EndElement)
+                assessed |= reader.SchemaInfo?.SchemaElement is not null || reader.SchemaInfo?.SchemaType is not null;
+        return assessed;
     }
     internal static void Run(JsonElement group, StreamWriter output)
     {
         var row = group.GetProperty("schema"); var resolver = new Resolver(); var schemas = new XmlSchemaSet { XmlResolver = resolver };
-        var errors = new List<string>(); schemas.ValidationEventHandler += (_, e) => { if (e.Severity == XmlSeverityType.Error) errors.Add(e.Message); };
+        var errors = new List<string>(); var warnings = new List<string>(); schemas.ValidationEventHandler += (_, e) => { if (e.Severity == XmlSeverityType.Error) errors.Add(e.Message); else warnings.Add(e.Message); };
         Observation compile;
         try
         {
             var input = Runner.Input(row.ValueKind == JsonValueKind.Null ? [] : Runner.Documents(row)); using var stream = input.Input;
             using var reader = XmlReader.Create(stream, new XmlReaderSettings { DtdProcessing = DtdProcessing.Prohibit, XmlResolver = resolver, CloseInput = false, MaxCharactersInDocument = 67_108_864 }, input.Source.AbsoluteUri);
             schemas.Add(null, reader); schemas.Compile();
-            compile = new(errors.Count > 0 ? "schema-invalid" : "schema-valid", string.Join("; ", errors), [], resolver.Requests.ToArray());
+            compile = new(errors.Count > 0 ? "schema-invalid" : "schema-valid", string.Join("; ", errors.Concat(warnings.Select(w => "warning: " + w))), [], resolver.Requests.ToArray());
         }
-        catch (Exception e) { compile = new(e is XmlSchemaException or XmlException ? "schema-invalid" : "harness-exception", e.GetType().Name + ": " + e.Message, [], resolver.Requests.ToArray()); }
+        catch (Exception e) { compile = new(ExceptionOutcome(e, schema: true), e.GetType().Name + ": " + e.Message, [], resolver.Requests.ToArray()); }
         if (row.ValueKind != JsonValueKind.Null) Runner.Emit(row, compile, "bcl", output);
-        foreach (var instance in group.GetProperty("instances").EnumerateArray())
+        foreach (var instance in Runner.Instances(group))
         {
             if (instance.GetProperty("classification").GetString() != "applicable") { Runner.Emit(instance, new("excluded", instance.GetProperty("reason").GetString()!, [], []), "bcl", output); continue; }
             Observation actual;
             if (compile.Outcome != "schema-valid") actual = new("schema-unavailable", compile.Detail, [], []);
             else
             {
-                errors.Clear();
+                errors.Clear(); warnings.Clear();
                 try
                 {
-                    string path = Runner.PathFor(new Uri(Runner.Origin + Runner.Documents(instance).Single()));
-                    var settings = new XmlReaderSettings { Schemas = schemas, ValidationType = ValidationType.Schema, DtdProcessing = DtdProcessing.Prohibit, XmlResolver = null, MaxCharactersInDocument = 67_108_864 };
+                    string path = Runner.PathFor(Runner.UriFor(Runner.Documents(instance).Single()));
+                    var originals = row.ValueKind == JsonValueKind.Null ? Array.Empty<string>() : Runner.Documents(row);
+                    var inputs = Runner.InstanceInputs(instance, originals); var validationSchemas = schemas;
+                    if (inputs.Length != originals.Length)
+                    {
+                        validationSchemas = new XmlSchemaSet { XmlResolver = resolver };
+                        validationSchemas.ValidationEventHandler += (_, e) => { if (e.Severity == XmlSeverityType.Error) errors.Add(e.Message); else warnings.Add(e.Message); };
+                        var prepared = Runner.Input(inputs); using var preparedStream = prepared.Input;
+                        using var preparedReader = XmlReader.Create(preparedStream, new XmlReaderSettings { DtdProcessing = DtdProcessing.Prohibit, XmlResolver = resolver, MaxCharactersInDocument = 67_108_864 }, prepared.Source.AbsoluteUri);
+                        validationSchemas.Add(null, preparedReader); validationSchemas.Compile();
+                        if (errors.Count > 0) { Runner.Emit(instance, new("schema-unavailable", string.Join("; ", errors), [], resolver.Requests.ToArray()), "bcl", output); continue; }
+                    }
+                    var settings = new XmlReaderSettings { Schemas = validationSchemas, ValidationType = ValidationType.Schema, DtdProcessing = DtdProcessing.Prohibit, XmlResolver = null, MaxCharactersInDocument = 67_108_864 };
                     // Deliberately ignore xsi schema-location hints; use exactly the compiled metadata schema.
                     settings.ValidationFlags = XmlSchemaValidationFlags.ProcessIdentityConstraints | XmlSchemaValidationFlags.AllowXmlAttributes | XmlSchemaValidationFlags.ReportValidationWarnings;
-                    settings.ValidationEventHandler += (_, e) => { if (e.Severity == XmlSeverityType.Error) errors.Add(e.Message); };
-                    using var stream = File.OpenRead(path); using var reader = XmlReader.Create(stream, settings, Runner.Origin + Runner.Documents(instance).Single()); while (reader.Read()) { }
-                    actual = new(errors.Count > 0 ? "instance-invalid" : "instance-valid", string.Join("; ", errors), [], []);
+                    settings.ValidationEventHandler += (_, e) => { if (e.Severity == XmlSeverityType.Error) errors.Add(e.Message); else warnings.Add(e.Message); };
+                    using var stream = File.OpenRead(path); using var reader = XmlReader.Create(stream, settings, Runner.UriFor(Runner.Documents(instance).Single()).AbsoluteUri);
+                    bool assessed = ReadAssessment(reader);
+                    actual = new(errors.Count > 0 ? "instance-invalid" : !assessed ? "instance-unassessed" : "instance-valid", string.Join("; ", errors.Concat(warnings.Select(w => "warning: " + w))), [], [new { kind = "explicit-instance-schema-inputs", inputs }, .. resolver.Requests]);
                 }
-                catch (Exception e) { actual = new(e is XmlSchemaValidationException ? "instance-invalid" : "harness-exception", e.GetType().Name + ": " + e.Message, [], []); }
+                catch (Exception e) { actual = new(ExceptionOutcome(e, schema: false), e.GetType().Name + ": " + e.Message, [], []); }
             }
             Runner.Emit(instance, actual, "bcl", output);
         }

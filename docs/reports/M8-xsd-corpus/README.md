@@ -3,8 +3,8 @@ M8-xsd-corpus is in progress. No full conformance claim is made.
 The original source inventory is 93 sets, 15,433 groups, 15,378 schema tests,
 26,357 instance tests and 93 ordered multi-document schema checks. All 42,270
 tracked upstream files are retained with hashes. Applicability currently yields
-14,405 schemas and 25,072 instances, 973/1,277 exclusions, eight unresolved
-Unicode-dependent instances and five missing references (all excluded 1.1).
+14,405 schemas and 25,079 instances, 973/1,278 exclusions, one supplemental
+Unicode16 instance and five missing references (all excluded 1.1).
 Twelve schema/four instance outcomes are independently marked indeterminate.
 
 The standalone public-API runner and BCL reference adapter compile with:
@@ -28,7 +28,9 @@ instances `schema-unavailable`, explicitly unexecuted.
 
 Reference: independently implemented System.Xml from .NET runtime 10.0.11;
 XmlSchemaSet compiles the same ordered wrapper and metadata resource map.
-XmlReader enforces identity constraints and ignores instance schemaLocation hints.
+XmlReader enforces identity constraints. The harness explicitly compiles metadata
+and instance-hinted inputs before validation, while both validators ignore automatic
+hint fetches. Schema-test outcomes remain independent of instance augmentation.
 No reference outcome rewrites upstream expectations. BCL limitations include its
 Unicode database, decimal precision/range, DTD-prohibited parser and its own XSD
 restriction/composition interpretations. Process watchdog bounds reference work;

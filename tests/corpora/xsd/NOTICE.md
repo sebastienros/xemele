@@ -12,8 +12,10 @@ Reimport with `--source /path/to/clean/pinned/clone`.
 Profile: XSD 1.0 Second Edition, XML 1.0 editions 1–4 datatype grammar; compile-time
 complex-type restriction checking. ANY supported token at each enclosing scope;
 ALL tokens at an expected outcome. Exactly one expected outcome must match.
-The eight Unicode4/6-dependent instances remain unresolved, never inferred from
-the product's runtime Unicode category database. The 12 schema and four instance
+Unicode-dependent oracles use the independent coordinator adjudication and pinned
+Unicode16 source data in unicode-adjudication.json. Seven original instances remain
+applicable; one originally Unicode4-gated instance remains excluded and is executed
+as an additional Unicode16 check. No Unicode4/6 engine claim is made. The 12 schema and four instance
 indeterminate outcomes have no unique validity oracle; report actual semantic
 results separately. Submitted/queried/disputed status and history are retained
 without exclusion. All original tests are enumerated, including inherited 1.1
@@ -23,6 +25,8 @@ Ordered multi-schema documents use the otherwise-unused-namespace import wrapper
 explicitly described by `common/xsts.xsd`. Original document roles and URI
 provenance remain in the inventory. Compilation follows transitive schema
 import/include/redefine references with an exact local HTTPS-origin map; network
-access and unmapped URLs fail visibly. Instance schemaLocation hints are ignored.
+access and unmapped URLs fail visibly. Instance schemaLocation hints are explicitly assembled by the harness before
+validation, separately from the standalone schema predicate. The validator does
+not fetch hints. Each augmented input list and resolver request is journaled.
 Source streams preserve original bytes/encodings and caller ownership. The
 original corpus remains the independent oracle after reference disagreements.

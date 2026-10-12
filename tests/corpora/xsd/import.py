@@ -19,7 +19,7 @@ def classify(nodes):
  for n in nodes:
   ts=n.get('version','').split()
   if ts and not TOKENS.intersection(ts):
-   known={'1.1','1.0-1e','XML-1.1','XML-1.0-5e','full-xpath-in-CTA','restricted-xpath-in-CTA','CTR-all-runtime','CTR-all-idep','comments-and-PIs-excluded','comments-and-PIs-included'}
+   known={'1.1','1.0-1e','XML-1.1','XML-1.0-5e','full-xpath-in-CTA','restricted-xpath-in-CTA','CTR-all-runtime','CTR-all-idep','comments-and-PIs-excluded','comments-and-PIs-included','Unicode_4.0.0','Unicode_6.0.0'}
    if set(ts)<=known:return 'excluded',f"{n.tag.removeprefix(NS)} version={n.get('version')}: none supported"
    return 'unresolved',f"{n.tag.removeprefix(NS)} version={n.get('version')}: profile token requires independent justification"
   if n.get('edition') and n.get('edition') not in ('2','2e','1.0-2e'):return 'excluded',f"edition={n.get('edition')}: not Second Edition"
@@ -28,12 +28,15 @@ def record(test,nodes,p,kind,index,base):
  ex=[dict(e.attrib) for e in test.findall(NS+'expected')]
  selected=[e for e in ex if set(e.get('version','').split())<=TOKENS]
  cl,reason=classify(nodes+[test])
+ adjudications=json.loads((HERE/'unicode-adjudication.json').read_text())['entries'] if (HERE/'unicode-adjudication.json').exists() else []
+ adjudication=next((a for a in adjudications if a['id']==f'{p}#{index}:{test.get("name","")}'),None)
+ if cl=='applicable' and adjudication:selected=[{'validity':adjudication['expected']}]
  if cl=='applicable' and len(selected)!=1:cl='unresolved';reason=f'{len(selected)} applicable expected outcomes'
  refs=[]
  for e in test.findall(NS+('schemaDocument' if kind=='schema' else 'instanceDocument')):
   u=urljoin(urljoin(base,test.get(BASE,'')),e.get(BASE,''));u=urljoin(u,e.get(HREF,''));pu=urlparse(u)
   refs.append(unquote(pu.path).removeprefix('/source/') if pu.scheme=='https' and pu.netloc=='w3c-xsd.test' else u)
- return {'id':f'{p}#{index}:{test.get("name","")}', 'name':test.get('name',''),'kind':kind,'classification':cl,'reason':reason,'scopes':scopes(nodes+[test]),'expected':selected[0]['validity'] if len(selected)==1 else None,'originalExpected':ex,'documents':refs,'documentMetadata':[dict(e.attrib) for e in test.findall(NS+('schemaDocument' if kind=='schema' else 'instanceDocument'))],'attributes':dict(test.attrib),'currentStatus':[dict(e.attrib) for e in test.findall(NS+'current')],'priorStatus':[dict(e.attrib) for e in test.findall(NS+'prior')]}
+ return {'id':f'{p}#{index}:{test.get("name","")}', 'name':test.get('name',''),'kind':kind,'classification':cl,'reason':reason,'scopes':scopes(nodes+[test]),'expected':selected[0]['validity'] if len(selected)==1 else None,'originalExpected':ex,'adjudication':adjudication,'documents':refs,'documentMetadata':[dict(e.attrib) for e in test.findall(NS+('schemaDocument' if kind=='schema' else 'instanceDocument'))],'attributes':dict(test.attrib),'currentStatus':[dict(e.attrib) for e in test.findall(NS+'current')],'priorStatus':[dict(e.attrib) for e in test.findall(NS+'prior')]}
 def generate(root):
  suite=ET.parse(root/'suite.xml').getroot();groups=[];stats=collections.Counter();tokens=collections.Counter();sets=[]
  for ref in suite.findall(NS+'testSetRef'):
@@ -43,7 +46,11 @@ def generate(root):
    nodes=[suite,testset,g];gb=urljoin(b,g.get(BASE,''));sc=g.find(NS+'schemaTest');s=None
    if sc is not None:s=record(sc,nodes,p,'schema',f'g{gi}/s',gb)
    instances=[record(t,nodes,p,'instance',f'g{gi}/i{ii}',gb) for ii,t in enumerate(g.findall(NS+'instanceTest'))]
-   groups.append({'id':f'{p}#g{gi}:{g.get("name","")}', 'metadata':p,'name':g.get('name',''),'attributes':dict(g.attrib),'schema':s,'instances':instances})
+   supplement=[]
+   for instance in instances:
+    if instance['adjudication'] and instance['adjudication']['supplemental']:
+     supp=dict(instance,id=instance['id']+'/unicode16-supplemental',classification='applicable',expected=instance['adjudication']['expected'],reason='Additional Unicode16 check of original Unicode4-gated bytes; excluded original remains excluded');supplement.append(supp)
+   groups.append({'supplementalInstances':supplement,'id':f'{p}#g{gi}:{g.get("name","")}', 'metadata':p,'name':g.get('name',''),'attributes':dict(g.attrib),'schema':s,'instances':instances})
    stats['groups']+=1
    for row in ([s] if s else [])+instances:
     stats[row['kind']+'Tests']+=1;stats[row['kind']+'.'+row['classification']]+=1
@@ -68,6 +75,10 @@ def main():
   assert not missing,missing
   for f in json.loads((HERE/'external-resources.json').read_text()):
    p=HERE/f['path'];assert digest(p)==f['sha256'] and p.stat().st_size==f['bytes'],f['path']
+  for f in json.loads((HERE/'unicode-adjudication.json').read_text())['sources']:
+   assert digest(HERE/f['path'])==f['sha256'],f['path']
+  assert actual['counts'].get('instance.unresolved',0)==0
+  assert sum(len(g['supplementalInstances']) for g in actual['groups'])==1
   refs=[x for g in actual['groups'] for r in ([g['schema']] if g['schema'] else [])+g['instances'] for x in r['documents']]
   missing=actual['missingReferences'];assert all(m['classification']=='excluded' for m in missing),missing
   print(json.dumps(actual['counts'],sort_keys=True));print(f'PASS reproducible metadata, {len(files)} original file hashes, {len(refs)} ordered document references; missing original references={len(missing)} (all excluded), applicable missing=0');return

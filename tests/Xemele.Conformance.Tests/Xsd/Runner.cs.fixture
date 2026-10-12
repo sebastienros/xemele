@@ -9,6 +9,7 @@ internal static class Runner
 {
     internal const string Origin = "https://w3c-xsd.test/source/";
     internal static string Root = "";
+    internal static HashSet<string>? OriginalPaths;
     internal static readonly XmlResourceLimits Limits = new() { DocumentCharacters = 67_108_864, Depth = 1024, AttributesPerElement = 4096, TokenCharacters = 16_777_216, InternedNames = 262144, ExternalBytes = 67_108_864, ExternalResources = 1024, InclusionDepth = 128, Diagnostics = 1024, EvaluationWork = 100_000_000 };
     internal static string PathFor(Uri uri)
     {
@@ -22,16 +23,41 @@ internal static class Runner
         if (!File.Exists(path)) throw new FileNotFoundException("Missing original resource: " + uri, path);
         return path;
     }
+    internal static Uri UriFor(string name) => Uri.TryCreate(name, UriKind.Absolute, out var uri) ? uri : new Uri(Origin + name);
+    internal static IEnumerable<JsonElement> Instances(JsonElement group) => group.GetProperty("instances").EnumerateArray().Concat(group.GetProperty("supplementalInstances").EnumerateArray());
+    internal static string[] InstanceInputs(JsonElement row, string[] originals)
+    {
+        var source = UriFor(Documents(row).Single());
+        using var stream = File.OpenRead(PathFor(source));
+        using var reader = System.Xml.XmlReader.Create(stream, new System.Xml.XmlReaderSettings { DtdProcessing = System.Xml.DtdProcessing.Ignore, XmlResolver = null, MaxCharactersInDocument = 67_108_864 }, source.AbsoluteUri);
+        while (reader.Read() && reader.NodeType != System.Xml.XmlNodeType.Element) { }
+        if (reader.NodeType != System.Xml.XmlNodeType.Element) return originals;
+        string? xb = reader.GetAttribute("base", "http://www.w3.org/XML/1998/namespace");
+        if (xb is not null) source = new Uri(source, xb);
+        const string xsi = "http://www.w3.org/2001/XMLSchema-instance";
+        var inputs = originals.ToList();
+        string? locations = reader.GetAttribute("schemaLocation", xsi);
+        if (locations is not null)
+        {
+            var tokens = locations.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries);
+            if (tokens.Length % 2 != 0) throw new IOException("Odd xsi:schemaLocation hint list");
+            for (int i = 1; i < tokens.Length; i += 2) inputs.Add(new Uri(source, tokens[i]).AbsoluteUri);
+        }
+        if (reader.GetAttribute("noNamespaceSchemaLocation", xsi) is { } unqualified) inputs.Add(new Uri(source, unqualified).AbsoluteUri);
+        var assembled = originals.ToList();
+        foreach (var hint in inputs.Skip(originals.Length)) if (!assembled.Any(n => UriFor(n).AbsoluteUri == UriFor(hint).AbsoluteUri)) assembled.Add(hint);
+        return assembled.ToArray();
+    }
     internal static string[] Documents(JsonElement row) => row.GetProperty("documents").EnumerateArray().Select(e => e.GetString()!).ToArray();
     internal static (Stream Input, Uri Source) Input(string[] documents)
     {
-        if (documents.Length == 1) { var u = new Uri(Origin + documents[0]); return (File.OpenRead(PathFor(u)), u); }
+        if (documents.Length == 1) { var u = UriFor(documents[0]); return (File.OpenRead(PathFor(u)), u); }
         // xsts.xsd explicitly permits ordered imports in an otherwise unused namespace.
         XNamespace xs = "http://www.w3.org/2001/XMLSchema";
         var wrapper = new XElement(xs + "schema", new XAttribute("targetNamespace", "urn:xemele:xsd-corpus:wrapper"));
         foreach (string name in documents)
         {
-            var u = new Uri(Origin + name); string? ns;
+            var u = UriFor(name); string? ns;
             try { using var input = File.OpenRead(PathFor(u)); ns = XDocument.Load(input).Root?.Attribute("targetNamespace")?.Value; }
             catch (System.Xml.XmlException) { return (File.OpenRead(PathFor(u)), u); }
             var import = new XElement(xs + "import", new XAttribute("schemaLocation", u.AbsoluteUri));
@@ -39,14 +65,24 @@ internal static class Runner
         }
         return (new MemoryStream(System.Text.Encoding.UTF8.GetBytes(wrapper.ToString())), new Uri(Origin + "__wrapper__.xsd"));
     }
+    internal static bool AuthoredUnavailable(Uri uri)
+    {
+        if (uri.Scheme != "https" || uri.Host != "w3c-xsd.test" || !uri.AbsolutePath.StartsWith("/source/", StringComparison.Ordinal))
+        {
+            using var map = JsonDocument.Parse(File.ReadAllText(Path.Combine(Path.GetDirectoryName(Root)!, "external-resources.json")));
+            return !map.RootElement.EnumerateArray().Any(r => r.GetProperty("urls").EnumerateArray().Any(u => u.GetString() == uri.AbsoluteUri));
+        }
+        if (OriginalPaths is null) { using var inputs = JsonDocument.Parse(File.ReadAllText(Path.Combine(Path.GetDirectoryName(Root)!, "resources.json"))); OriginalPaths = inputs.RootElement.EnumerateArray().Select(r => r.GetProperty("path").GetString()!).ToHashSet(StringComparer.Ordinal); }
+        return !OriginalPaths.Contains(Uri.UnescapeDataString(uri.AbsolutePath[8..]));
+    }
     internal sealed class Resolver : XmlResourceResolver
     {
         internal readonly List<object> Requests = [];
         public override XmlResolvedResource? Resolve(XmlResourceRequest request, CancellationToken token)
         {
-            token.ThrowIfCancellationRequested(); Requests.Add(new { uri = request.Uri.AbsoluteUri, referrer = request.Referrer?.AbsoluteUri, kind = request.Kind.ToString(), systemId = request.SystemId });
+            token.ThrowIfCancellationRequested(); Requests.Add(new { resolution = AuthoredUnavailable(request.Uri) ? "authored-unavailable" : "pinned-input", uri = request.Uri.AbsoluteUri, referrer = request.Referrer?.AbsoluteUri, kind = request.Kind.ToString(), systemId = request.SystemId });
             if (request.Kind != XmlResourceKind.Schema) throw new IOException("Unexpected resource purpose");
-            return new(File.OpenRead(PathFor(request.Uri)), request.Uri);
+            return AuthoredUnavailable(request.Uri) ? null : new(File.OpenRead(PathFor(request.Uri)), request.Uri);
         }
     }
     internal static Observation Failure(Exception e, Resolver resolver, CancellationToken token)
@@ -70,6 +106,7 @@ internal static class Runner
     };
     public static int Main(string[] args)
     {
+        if (args.Length == 1 && args[0] == "--controls") return Controls.Run();
         Root = Path.GetFullPath(args[0]); using var inventory = JsonDocument.Parse(File.ReadAllText(args[1]));
         string set = args[2], engine = args[3]; using var output = new StreamWriter(args[4], append: true) { AutoFlush = true };
         int from = args.Length > 5 ? int.Parse(args[5], System.Globalization.CultureInfo.InvariantCulture) : 0, index = -1;
@@ -78,10 +115,10 @@ internal static class Runner
             if (group.GetProperty("metadata").GetString() != set) continue; index++; if (index < from) continue;
             Console.WriteLine("START " + index); Console.Out.Flush();
             var schemaRow = group.GetProperty("schema");
-            bool needed = schemaRow.ValueKind != JsonValueKind.Null && schemaRow.GetProperty("classification").GetString() == "applicable" || group.GetProperty("instances").EnumerateArray().Any(r => r.GetProperty("classification").GetString() == "applicable");
+            bool needed = schemaRow.ValueKind != JsonValueKind.Null && schemaRow.GetProperty("classification").GetString() == "applicable" || Instances(group).Any(r => r.GetProperty("classification").GetString() == "applicable");
             if (!needed)
             {
-                foreach (var excluded in (schemaRow.ValueKind == JsonValueKind.Null ? Array.Empty<JsonElement>() : new[] { schemaRow }).Concat(group.GetProperty("instances").EnumerateArray()))
+                foreach (var excluded in (schemaRow.ValueKind == JsonValueKind.Null ? Array.Empty<JsonElement>() : new[] { schemaRow }).Concat(Instances(group)))
                     Emit(excluded, new(excluded.GetProperty("classification").GetString()!, excluded.GetProperty("reason").GetString()!, [], []), engine, output);
                 continue;
             }
@@ -100,9 +137,9 @@ internal static class Runner
                 catch (Exception e) { compile = Failure(e, resolver, timeout.Token); }
             }
             if (sr.ValueKind != JsonValueKind.Null) Emit(sr, compile, engine, output);
-            foreach (var row in group.GetProperty("instances").EnumerateArray())
+            foreach (var row in Instances(group))
             {
-                if (row.GetProperty("classification").GetString() != "applicable") { Emit(row, new("excluded", row.GetProperty("reason").GetString()!, [], []), engine, output); continue; }
+                if (row.GetProperty("classification").GetString() != "applicable") { Emit(row, new(row.GetProperty("classification").GetString()!, row.GetProperty("reason").GetString()!, [], []), engine, output); continue; }
                 Observation actual;
                 if (schema is null) actual = new("schema-unavailable", compile.Outcome + ": " + compile.Detail, compile.Codes, compile.Resources);
                 else
@@ -110,12 +147,19 @@ internal static class Runner
                     using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(30));
                     try
                     {
-                        using var input = File.OpenRead(PathFor(new Uri(Origin + Documents(row).Single())));
-                        var result = schema.Validate(input, new() { Limits = Limits, MaxOperations = 100_000_000, CancellationToken = timeout.Token });
+                        using var input = File.OpenRead(PathFor(UriFor(Documents(row).Single())));
+                        var originals = sr.ValueKind == JsonValueKind.Null ? Array.Empty<string>() : Documents(sr);
+                        var inputs = InstanceInputs(row, originals); var validationSchema = schema; var instanceResolver = new Resolver();
+                        if (inputs.Length != originals.Length)
+                        {
+                            var prepared = Input(inputs); using var preparedStream = prepared.Input;
+                            validationSchema = ProductSchema.Compile(preparedStream, new() { BaseUri = prepared.Source, Resolver = instanceResolver, Limits = Limits, MaxOperations = 100_000_000, MaxComponents = 1_000_000, CancellationToken = timeout.Token });
+                        }
+                        var result = validationSchema.Validate(input, new() { Limits = Limits, MaxOperations = 100_000_000, CancellationToken = timeout.Token });
                         if (!input.CanRead) throw new InvalidOperationException("Validation disposed caller stream");
-                        actual = new(!result.IsComplete ? "incomplete-refusal" : result.IsValid ? "instance-valid" : "instance-invalid", string.Join("; ", result.Diagnostics.Select(d => d.Code + ": " + d.Message)), result.Diagnostics.Select(d => d.Code).ToArray(), []);
+                        actual = new(!result.IsComplete ? "incomplete-refusal" : result.IsValid ? "instance-valid" : "instance-invalid", string.Join("; ", result.Diagnostics.Select(d => d.Code + ": " + d.Message)), result.Diagnostics.Select(d => d.Code).ToArray(), [new { kind = "explicit-instance-schema-inputs", inputs }, .. instanceResolver.Requests]);
                     }
-                    catch (Exception e) { actual = Failure(e, resolver, timeout.Token); }
+                    catch (Exception e) { actual = Failure(e, resolver, timeout.Token); if (actual.Outcome == "schema-invalid") actual = actual with { Outcome = "schema-unavailable" }; }
                 }
                 Emit(row, actual, engine, output);
             }

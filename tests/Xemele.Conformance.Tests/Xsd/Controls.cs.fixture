@@ -1,0 +1,42 @@
+using System.Xml;
+using System.Xml.Schema;
+namespace XsdCorpus;
+internal static class Controls
+{
+    private static void Require(bool condition, string label) { if (!condition) throw new InvalidOperationException(label); Console.WriteLine("PASS " + label); }
+    private static string XmlFailure(string input, long maximum)
+    {
+        try { using var r=XmlReader.Create(new StringReader(input),new XmlReaderSettings { MaxCharactersInDocument=maximum });while(r.Read()) {} return "none"; }
+        catch(Exception e) { return BclEngine.ExceptionOutcome(e,schema:true); }
+    }
+    private static bool Assess(string instance, string schema)
+    {
+        var set=new XmlSchemaSet();using(var r=XmlReader.Create(new StringReader(schema))) set.Add(null,r);set.Compile();
+        var settings=new XmlReaderSettings { Schemas=set,ValidationType=ValidationType.Schema, ValidationFlags=XmlSchemaValidationFlags.ReportValidationWarnings };
+        settings.ValidationEventHandler+=(_,e)=>{ if(e.Severity==XmlSeverityType.Error) throw e.Exception; };
+        using var reader=XmlReader.Create(new StringReader(instance),settings);return BclEngine.ReadAssessment(reader);
+    }
+    internal static int Run()
+    {
+        const string schema="<xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema'><xs:element name='r'><xs:complexType><xs:sequence><xs:any processContents='lax' minOccurs='0'/></xs:sequence></xs:complexType></xs:element></xs:schema>";
+        Require(XmlFailure(schema,2)=="reference-policy-refusal","valid schema tiny document quota is nonsemantic refusal");
+        Require(XmlFailure("<schema><",1000)=="schema-invalid","malformed schema syntax is independently invalid");
+        Require(Assess("<r/>",schema),"known valid root is assessed");
+        Require(!Assess("<unknown xmlns='urn:unknown'/>",schema),"unknown root remains unassessed");
+        Require(Assess("<r><unknown/></r>",schema),"lax unknown child preserves assessed valid root");
+        string root=Path.Combine(Path.GetTempPath(),"xsd-corpus-controls-"+Guid.NewGuid().ToString("N"));Directory.CreateDirectory(Path.Combine(root,"upstream"));
+        Runner.Root=Path.Combine(root,"upstream");Runner.OriginalPaths=new(StringComparer.Ordinal) { "missing.xsd" };File.WriteAllText(Path.Combine(root,"external-resources.json"),"[]");
+        try
+        {
+            var resolver=new Runner.Resolver();
+            Require(resolver.Resolve(new(new Uri("http://foo/foo"),null,Xemele.XmlResourceKind.Schema),default) is null,"authored external nonresolution uses nullable refusal");
+            Require(resolver.Resolve(new(new Uri(Runner.Origin+"not-authored.xsd"),null,Xemele.XmlResourceKind.Schema),default) is null,"authored absent local resource uses nullable refusal");
+            bool missing=false;try { resolver.Resolve(new(new Uri(Runner.Origin+"missing.xsd"),null,Xemele.XmlResourceKind.Schema),default); } catch(FileNotFoundException) { missing=true; }
+            Require(missing,"missing declared imported input remains harness error");
+        }
+        finally { Directory.Delete(root,recursive:true);Runner.OriginalPaths=null; }
+        Require(Runner.Oracle("invalid","incomplete-refusal","schema")==false && Runner.Oracle("invalid","timeout","instance")==false && Runner.Oracle("invalid","harness-exception","schema")==false,"refusal timeout and harness exception cannot satisfy invalid oracle");
+        Require(Runner.Oracle("indeterminate","instance-valid","instance") is null && Runner.Oracle("indeterminate","incomplete-refusal","instance")==false,"indeterminate semantic observations and refusal stay separate");
+        return 0;
+    }
+}
