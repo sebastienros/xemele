@@ -4,11 +4,11 @@
   "milestone": "M8",
   "title": "RELAX NG evaluation and facade",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M8 coordinator01a12c6c-b333-71d3-877f-0d186618e21d / assigned isolated worker",
   "branch": "codex/m8-rng-validate",
   "base_revision": "cdf7a0b148e837e016f874da32b054ab4f25a93e",
-  "integration_revision": null,
+  "integration_revision": "b4930ea7c0e30dc0036a290c8726300c6cbf92d5",
   "depends_on": [
     "M8-rng-compile",
     "M8-facets",
@@ -39,7 +39,8 @@
       "status": "passed",
       "evidence": [
         "branch-correctness-2",
-        "coordinator-source-review-2"
+        "coordinator-source-review-2",
+        "coordinator-integrated-verification"
       ]
     },
     {
@@ -50,7 +51,8 @@
         "branch-correctness-2",
         "coordinator-source-review-2",
         "owned-output-allocations",
-        "allocation-review"
+        "allocation-review",
+        "coordinator-integrated-verification"
       ]
     },
     {
@@ -59,7 +61,8 @@
       "status": "passed",
       "evidence": [
         "branch-correctness-2",
-        "coordinator-source-review-2"
+        "coordinator-source-review-2",
+        "coordinator-integrated-verification"
       ]
     }
   ],
@@ -161,6 +164,15 @@
       "result": "passed",
       "summary": "Committed implemented task metadata validates179tasks; diff-check passes and tracked/untracked nonignored tree clean. Runtime source unchanged from reviewed/tested ec0699e1. All actual test/review/allocation evidence retained; no source edits after freeze.",
       "artifact": "docs/reports/M8-rng-validate/handoff.md"
+    },
+    {
+      "id": "coordinator-integrated-verification",
+      "kind": "integration",
+      "revision": "b4930ea7c0e30dc0036a290c8726300c6cbf92d5",
+      "command": "python3 -B docs/reports/M8-rng-validate/checks.py",
+      "result": "passed",
+      "summary": "Actual combined89owned+1191predecessor=1280pass;0errors/failures/skips/not-run/buildwarnings;1410public/444frozen,normal+trueXMLonly consumers,180planning/diff. Final metadata-only source/test/build/API/consumer/check identity proven. Independent source and released434-identity allocation evidence accepted.",
+      "artifact": "docs/reports/M8-rng-validate/integration.md"
     }
   ],
   "blockers": [],
@@ -172,9 +184,7 @@
       "Grant973968a6/releaseae9cf41e: exact allocation child8860exit0/reaped/groupabsent/logclosed; all434identities stable; raw inspection only after release",
       "Root independently accepted source delta and allocation evidence; reports README.md,readiness.md,measurements.md"
     ],
-    "remaining": [
-      "Coordinator integrate branch and record verified/integration_revision only after integrated checks; worker performs no further writes without focused follow-up"
-    ],
+    "remaining": [],
     "requests": []
   }
 }
