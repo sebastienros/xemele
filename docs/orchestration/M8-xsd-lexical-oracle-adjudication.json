@@ -1,0 +1,88 @@
+{
+  "status": "Coordinator independently reviewed source interpretation; focused execution required",
+  "upstream_revision": "7bc3365c652a322f3d762021b3879eb92dae7e30",
+  "sources": [
+    "https://www.w3.org/TR/2004/REC-xmlschema-2-20041028/#time",
+    "https://www.w3.org/TR/2004/REC-xmlschema-2-20041028/#gMonth",
+    "https://www.w3.org/2001/05/xmlschema-errata#e2-12",
+    "https://www.w3.org/Bugs/Public/show_bug.cgi?id=6901",
+    "https://www.w3.org/TR/2004/REC-xmlschema-1-20041028/#declare-attribute"
+  ],
+  "policy": "Original oracles/results remain unchanged and failures remain visible. Separate profile expected/outcome, no runtime waiver. Time reason is explicitly an inference under frozen Second Edition lexical rules; no extension of the approved time-ordering exception.",
+  "cases": [
+    {
+      "id": "msMeta/Attribute_w3c.xml#g243/i0:attP031.i",
+      "original_expected": "valid",
+      "original_status": [
+        {
+          "status": "accepted",
+          "date": "2011-10-07"
+        }
+      ],
+      "documents": {
+        "msData/attribute/attP031.xml": "c04240f76208182285bcdb30bf3f4feff8e8b863b2a8db05ed89ab7ac0de1898"
+      },
+      "schema_documents": {
+        "msData/attribute/attP031.xsd": "d83cb85380b6e64f3406c099e87d92f458270cc170adf24c72d5d94f07296743"
+      },
+      "profile_expected": "invalid",
+      "reason": "Prohibited use contributes no positive attribute binding. An authored fixed value does not override prohibition; no wildcard admits the supplied attribute."
+    },
+    {
+      "id": "msMeta/DataTypes_w3c.xml#g2024/i0:time016_2024.i",
+      "original_expected": "invalid",
+      "original_status": [
+        {
+          "status": "accepted",
+          "date": "2006-07-16"
+        }
+      ],
+      "documents": {
+        "msData/datatypes/time016.xml": "adb9125f1150502f1eb2c8c55bbc4ffbc780452bde89b3821fca34b9bd18050f"
+      },
+      "schema_documents": {
+        "msData/datatypes/time.xsd": "e281a502a758485b1640bfe4140d636cbf1442231a01b24092c15cd96dbd25d5"
+      },
+      "profile_expected": "valid",
+      "reason": "Second Edition time lexical form incorporates AppendixD.1 seconds60 and optional timezone. Inference for this exact absent-timezone value: a permitted offset can place its minute at UTC23:59, so lexical leap-second acceptance is retained."
+    },
+    {
+      "id": "msMeta/DataTypes_w3c.xml#g2061/i0:gMonth002_2061.v",
+      "original_expected": "valid",
+      "original_status": [
+        {
+          "bugzilla": "http://www.w3.org/Bugs/Public/show_bug.cgi?id=6901",
+          "status": "queried",
+          "date": "2009-05-13"
+        }
+      ],
+      "documents": {
+        "msData/datatypes/gMonth002.xml": "b41afe815b884bce5f012e392be25e6d7b18da6d645a00c96b25d597493c7576"
+      },
+      "schema_documents": {
+        "msData/datatypes/gMonth.xsd": "f08972f04cf7f09c5b6724ccc781a7cfa8b73abb9455f2ccc0013e0ab7cec32f"
+      },
+      "profile_expected": "invalid",
+      "reason": "Second Edition gMonth uses --MM with optional timezone; E2-12 removed legacy trailing hyphens. W3C6901 records exact case correction."
+    },
+    {
+      "id": "msMeta/DataTypes_w3c.xml#g2063/i0:gMonth004_2063.v",
+      "original_expected": "valid",
+      "original_status": [
+        {
+          "bugzilla": "http://www.w3.org/Bugs/Public/show_bug.cgi?id=6901",
+          "status": "queried",
+          "date": "2009-05-13"
+        }
+      ],
+      "documents": {
+        "msData/datatypes/gMonth004.xml": "cdd33adb283fd48fd94ac48568efb0c6f87877fc505db8129867f113e6b6be23"
+      },
+      "schema_documents": {
+        "msData/datatypes/gMonth.xsd": "f08972f04cf7f09c5b6724ccc781a7cfa8b73abb9455f2ccc0013e0ab7cec32f"
+      },
+      "profile_expected": "invalid",
+      "reason": "Second Edition gMonth uses --MM with optional timezone; E2-12 removed legacy trailing hyphens. W3C6901 records exact case correction."
+    }
+  ]
+}

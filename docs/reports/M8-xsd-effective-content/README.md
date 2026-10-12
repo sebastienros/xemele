@@ -37,3 +37,15 @@ suite totals include overlapping predecessors). Frozen119/257/9/154 and
 public1400 members match; both compiler XML-only consumers and both
 Schematron consumers pass. All builds have zero warnings/errors;179-task
 validation and whitespace checks pass. Allocation evidence is now complete; see allocations.md and measurement-summary.json.
+
+## Ordered component mapping correction
+
+The historical results and earlier allocation evidence above are preserved for
+those revisions. M8-xsd-component-mapping supersedes the earlier nonempty0..0
+absence inference specifically for effective mixed=true: validated top-level
+0..0 maps to a charged, source-located 1..1 empty sequence. Mixed=false remains
+empty, including entire-base inheritance for empty effective extensions.
+The three mixed=true MappingTests expectations and probe route3 are corrected.
+Accepted original groupN007 and W3C R-204 justify this bounded mapping-gap
+resolution; it is not an unambiguous published Second Edition erratum.
+See ../M8-xsd-component-mapping/README.md for actual original and profile oracles.

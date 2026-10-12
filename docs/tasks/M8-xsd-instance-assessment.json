@@ -4,11 +4,11 @@
   "milestone": "M8",
   "title": "Correct wildcard and nil identity instance assessment",
   "kind": "feature",
-  "status": "planned",
-  "owner": null,
-  "branch": null,
-  "base_revision": null,
-  "integration_revision": null,
+  "status": "verified",
+  "owner": "M8 coordinator / assigned isolated instance assessment worker",
+  "branch": "codex/m8-xsd-instance-assessment",
+  "base_revision": "bc950104a4f5acce37e3b2b7f71a60f8765e33c6",
+  "integration_revision": "423da4defd7ec85873f13193dec15cbb4134ae00",
   "depends_on": [
     "M8-xsd-schema-syntax"
   ],
@@ -34,30 +34,109 @@
   "acceptance": [
     {
       "id": "M8-xsd-instance-assessment-A1",
-      "description": "Reproduce unchanged original attZ002.v: prohibited attribute bindings contribute no positive instance use; permit assessment through a matching wildcard. Preserve rejection without matching wildcard, strict missing-declaration behavior, matching global datatype/fixed checks, local-use precedence and missing default behavior.",
-      "status": "pending",
-      "evidence": []
+      "description": "Reproduce unchanged original attZ002.v, addB034.v and addB136.v: prohibited attribute bindings contribute no positive instance use; permit assessment through a matching wildcard. Preserve rejection without matching wildcard, strict missing-declaration behavior, matching global datatype/fixed checks, local-use precedence and missing default behavior.",
+      "status": "passed",
+      "evidence": [
+        "branch-correctness",
+        "root-integrated-verification"
+      ]
     },
     {
       "id": "M8-xsd-instance-assessment-A2",
       "description": "Reproduce unchanged original idF018.i: a valid nilled identity field must still have a simple effective type or complex type with simple content. Reject anyType/element-only fields before tuple qualification; preserve unique nil exemption, key/nillable rejection, effective xsi:type and shared charged cancellation/budget behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "branch-correctness",
+        "root-integrated-verification"
+      ]
     },
     {
       "id": "M8-xsd-instance-assessment-A3",
       "description": "Pass exact original baselines and repaired outcomes plus independently specified neighbors, affected evaluator/identity/facade checks, public1417 and frozen APIs, normal/true XML-only consumers, planning validation and bounded actual allocation evidence; no API change or later milestone dependency.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "original-baseline",
+        "branch-correctness",
+        "runtime-source-review",
+        "branch-preparation",
+        "actual-allocations",
+        "root-integrated-verification"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Validation/Xsd/Evaluation/Values.cs: Attributes skips prohibited candidates before wildcard selection; no positive use/default injection",
+    "src/Xemele/Validation/Xsd/Identity/Session.cs: Capture/SimpleFieldType charges effective-type lookup before nil tuple exemption",
+    "tests/Xemele.Tests/M8-xsd-instance-assessment/: unchanged original BCL/public witnesses and independently specified neighbors"
+  ],
+  "evidence": [
+    {
+      "id": "original-baseline",
+      "kind": "check",
+      "revision": "6e03b7b1c1ccb081e3421ffe6da3476e693b19e9",
+      "command": "Pinned dotnet restore/build Release; dotnet --fx-version 10.0.11 tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -namespace Xemele.Tests.M8XsdInstanceAssessment -parallelMode none -noLogo -noColor -result-xml artifacts/M8-xsd-instance-assessment/baseline.xml",
+      "result": "failed",
+      "summary": "All4 BCL original expectations passed; complete product validity wrong in all4:3wildcard valid rejected, idF018 invalid accepted.4tests/4failed/0errors/skips/not-run; build0warnings/errors. Historical failures retained in README.",
+      "artifact": "docs/reports/M8-xsd-instance-assessment/README.md"
+    },
+    {
+      "id": "branch-correctness",
+      "kind": "check",
+      "revision": "16687e8eae341b184f891a1f720e8c29be9e13fc",
+      "command": "python3 docs/reports/M8-xsd-instance-assessment/check.py",
+      "result": "passed",
+      "summary": "Owned44 exact inventory +syntax1146(33+1113affected)+fixed45+safe42;0errors/failures/skips/not-run. Public1417;frozen316+139/257/24/9/2/7;normal+trueXML-only;5builds0warnings/errors;planning188/diff. Omitted-owned-row control rejected; original fixture SHA256 matches.",
+      "artifact": "docs/reports/M8-xsd-instance-assessment/checks.json"
+    },
+    {
+      "id": "runtime-source-review",
+      "kind": "review",
+      "revision": "16687e8eae341b184f891a1f720e8c29be9e13fc",
+      "command": "Coordinator and independent contract source review communicated in worker chat",
+      "result": "passed",
+      "summary": "Root/independent contract accepted Values/Session semantics and all44 inventory/fixtures; A1/A2 accepted. No API change or outside request. This is review evidence, not a test run.",
+      "artifact": null
+    },
+    {
+      "id": "branch-preparation",
+      "kind": "check",
+      "revision": "092a3ba4b4fc513e3439a496fef690a1a0563a99",
+      "command": "python3 docs/reports/M8-xsd-instance-assessment/prepare.py; elevated python3 docs/reports/M8-xsd-instance-assessment/measure.py --verify-only; elevated python3 docs/reports/M8-xsd-instance-assessment/measure.py --preflight",
+      "result": "passed",
+      "summary": "Pinned offline Release build0warnings/errors;16routes/1312calls/1968consumed;all allocation/GC/timing disabled.462frozen identities matched before/after;control childPID291 exit0,reaped/groupabsent/logclosed. No worker measurement.",
+      "artifact": "docs/reports/M8-xsd-instance-assessment/preparation-summary.md"
+    },
+    {
+      "id": "actual-allocations",
+      "kind": "check",
+      "revision": "092a3ba4b4fc513e3439a496fef690a1a0563a99",
+      "command": "Root-only python3 docs/reports/M8-xsd-instance-assessment/measure.py --granted 42cb79cc5bd5626c123e2256b93185ffbc19f5b72650afee3465f23087138312 2026-10-12T13:38:43.298867+00:00 2026-10-12T13:39:13.298867+00:00",
+      "result": "passed",
+      "summary": "After fresh Xemele-only PARK and durable grant, separate control/measure passed16ownedpositive routes/1312calls/1968consumed;control fields0. Warm9,720\u201342,728B/op; coldsetup29,438,480B;positive1,048B;16retained coarseheapdelta240,472B.462own identities unchanged;PID35316/35318exit0/reaped/groupsabsent/logsclosed within30s;root62384terminal, durable RELEASE f42e1a5e8 before inspection. No globalhostidle/throughput/x64/AOT/zero-public-allocation claim.",
+      "artifact": "docs/reports/M8-xsd-instance-assessment/allocations.md"
+    },
+    {
+      "id": "root-integrated-verification",
+      "kind": "integration",
+      "revision": "423da4defd7ec85873f13193dec15cbb4134ae00",
+      "command": "Combined checks on ff6e042; corrected API-only70b63ddd; git diff --exit-code ff6e042 -- src/Xemele tests/Xemele.Tests samples; python3 tools/planning/tasks.py validate; git diff --check",
+      "result": "passed",
+      "summary": "Integrated reviewed runtime and final branch evidence onto main.2075 distinct actual correctness cases pass,0fail/error/skips/notrun;8Releasebuilds0warnings/errors;1430public=1417preserved+13additive/46resolverfixture/all8frozenlanes/resource+facade normal andtrueXML-only consumers pass. Exact runtime/tests/samples unchanged from testedff6e042 to this integratedrevision; no repeated passing tests. Separate actual source-pinned allocation checks and cleanup passed under fresh Xemele-only windows; task ownership/limits preserved. Full official corpus/gate stillpending.",
+      "artifact": "docs/orchestration/M8-four-repair-integration-precheck.json"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Read-only source/Second Edition review confirms both original corpus defects. Claim after a worker slot is released; no competing source owner.",
-    "checks": [],
-    "remaining": [],
+    "summary": "Integrated and verified on main; Implemented unchanged-original wildcard/nil identity repair with independent source review, all correctness/API/consumer checks and actual bounded root allocation evidence. No API changes; integration_revision remains unset for coordinator verification.",
+    "checks": [
+      "Owned44+syntax1146+fixed45+safe42 passed; public/frozen APIs and normal+trueXML-only consumers passed; planning188/diff passed.",
+      "Historical initial test-code build errors, stale-baseline retry, BCL key/nillable assumption and display-name truncation checker failure retained in README.",
+      "Allocation preparation: pinned Release0warnings/errors;16disabledroutes/1312calls/1968consumed;462identities;controlPID291exit0/reaped/groupabsent/logclosed.",
+      "Root actual allocation passed16positive-owned routes, separate control zeros/sameconsumed;462identities unchanged;children35316/35318exit0/reaped/groupsabsent/logsclosed;durable root RELEASE before raw inspection. See allocations.md costs/ownership/limits."
+    ],
+    "remaining": [
+      "Coordinator integrate and rerun applicable combined-tree verification, set integration_revision/verified; preserve raw ignored allocation artifacts until authorized cleanup."
+    ],
     "requests": []
   }
 }

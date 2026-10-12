@@ -1,0 +1,83 @@
+{
+  "scope": "M8-xsd-counted-matcher-186e7d9d-allocation-1",
+  "status": "PARK/exclusivity proposal retired by human before grant or launch; prepared execution may proceed without isolation",
+  "owner_chat": "01a12c6c-b333-71d3-877f-0d186618e21d",
+  "cwd": "/Users/sebastienros/.codex/worktrees/452a/xemele",
+  "manifest": "/Users/sebastienros/.codex/worktrees/452a/xemele/docs/reports/M8-xsd-counted-matcher/preparation.json",
+  "manifest_sha256": "20bc977cba9ac42632200914acb713dbb241e294ddc02f99f9f7ef8cbc4d418d",
+  "supervisor": "/Users/sebastienros/.codex/worktrees/452a/xemele/docs/reports/M8-xsd-counted-matcher/measure.py",
+  "supervisor_sha256": "753954e05f1940edc8515ea3a5683cecdac42bf38feba0bd0d91e8c709cbdaaa",
+  "commands": [
+    [
+      "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+      "--fx-version",
+      "10.0.11",
+      "/Users/sebastienros/.codex/worktrees/452a/xemele/benchmarks/Xemele.Benchmarks/M8-xsd-counted-matcher/bin/probe/net10.0/Xemele.Benchmarks.dll",
+      "--control",
+      "/Users/sebastienros/.codex/worktrees/452a/xemele/artifacts/M8-xsd-counted-matcher/measurement-1/control.json"
+    ],
+    [
+      "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+      "--fx-version",
+      "10.0.11",
+      "/Users/sebastienros/.codex/worktrees/452a/xemele/benchmarks/Xemele.Benchmarks/M8-xsd-counted-matcher/bin/probe/net10.0/Xemele.Benchmarks.dll",
+      "--measure",
+      "/Users/sebastienros/.codex/worktrees/452a/xemele/artifacts/M8-xsd-counted-matcher/measurement-1/allocations.json"
+    ]
+  ],
+  "source_revision": "186e7d9d997546c15583a244e98565fd1f1fa965",
+  "identities": 467,
+  "maximum_seconds": 120,
+  "work_seconds": 110,
+  "cleanup_seconds": 10,
+  "latest_start_rule": "grant+60s every child",
+  "absolute_expiry_rule": "grant+180s; supervisor actual duration min120/remaining, noextension",
+  "routes": "13 total,6 borrowed warmed zero targets/7owned positive costs;32warmups/64 per-route sample distributions,32retainedprograms+32retainedcursors",
+  "roster": "No actor ACK or isolation requirement for allocation-only execution.",
+  "constraints": "No retries/builds required; accepted prebuilt controls/counters and bounded supervisor cleanup retained. Existing legacy --granted CLI token supplies manifest/deadline arguments only, not exclusive-use authorization. No active lease or held threads.",
+  "review": "SourcePASS unchanged8560237 probe/supervisor, source hashes matched. Root verify-only467/ps actualPASS. Disabled preflight43158 clean.",
+  "root_ack": "Prior proposed PARK ended immediately by direct human instruction; zero launched allocation children.",
+  "human_policy": {
+    "instruction": "Allocation evidence don't need to run in isolation and request park and exclusive usage across either threads",
+    "source_thread": "01a12849-d2be-7292-8cd9-27c1c14b5a3d",
+    "source_turn": "01a13064-805d-7400-8239-47df06337ba4",
+    "source_item": "01a13064-80c4-7901-a420-f23292b06005",
+    "verified": "Root inspected actual human userMessage. Allocation-only evidence requires no isolation, PARK, ACKs, exclusive usage or coordination lease.",
+    "retained_controls": "Accepted source/workload identities, meaningful warmup and positive/disabled controls, actual counters, allocation ownership, finite supervision/cleanup and tested revision. No implication for throughput/timing; no foreign communication/synchronization."
+  },
+  "execution_status": "Completed non-isolated allocation-only attempt, terminal exit0; all child cleanup complete, no active lease/held threads",
+  "lifecycle": {
+    "status": 0,
+    "beforeIdentities": true,
+    "afterIdentities": true,
+    "sequence": [
+      {
+        "command": 0,
+        "pid": 47069,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      {
+        "command": 1,
+        "pid": 47071,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      }
+    ],
+    "rawResultsInspected": false,
+    "latestStart": "2026-10-12T13:57:29.349410+00:00",
+    "absoluteExpiry": "2026-10-12T13:59:29.349410+00:00",
+    "beforeMismatches": [],
+    "identityCount": 467,
+    "afterMismatches": [],
+    "elapsedSeconds": 1.0458552500931546
+  }
+}

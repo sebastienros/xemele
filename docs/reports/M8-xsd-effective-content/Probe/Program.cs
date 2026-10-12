@@ -57,7 +57,7 @@ sealed class Fixture
         { if(e.Diagnostics.Count!=1||e.Diagnostics[0].Code!="XSD.SchemaRestriction")throw;return Sink=e; }
         if(route==4)throw new InvalidOperationException("Duplicate body accepted");
         var t=graph.Types.Single(t=>t.Name==new SchemaName("","T"));
-        if(route is 0 or 3){if(t.ContentKind!=XsdContentKind.Empty||t.Particle is not null)throw new Exception("Empty mapping");}
+        if(route==0){if(t.ContentKind!=XsdContentKind.Empty||t.Particle is not null)throw new Exception("Empty mapping");}
         else if(t.ContentKind!=XsdContentKind.Mixed||t.Particle is null)throw new Exception("Mixed mapping");
         if(route==2&&!ReferenceEquals(t.Particle,graph.Types.Single(t=>t.Name==new SchemaName("","B")).Particle))throw new Exception("Inheritance");
         return Sink=graph;

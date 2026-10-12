@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "id": "M8-xsd-instance-hint-ordering",
+  "milestone": "M8",
+  "title": "Validate XSD instance hint order without fetching resources",
+  "kind": "feature",
+  "status": "in_progress",
+  "owner": "M8 coordinator / assigned isolated M8-xsd-instance-hint-ordering worker",
+  "branch": "codex/m8-xsd-instance-hint-ordering",
+  "base_revision": "69691f493fd2b0d5ce382b2f2cbcfb154dd8d202",
+  "integration_revision": null,
+  "depends_on": [
+    "M8-xsd-content-failure-assessment"
+  ],
+  "goals": [
+    "G14",
+    "G18"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/schemas.md"
+  ],
+  "owns": [
+    "src/Xemele/Validation/Xsd/Evaluation/Evaluator.cs",
+    "src/Xemele/Validation/Xsd/Evaluation/SchemaHints.cs",
+    "docs/decisions/M8/instance-hint-ordering.md",
+    "tests/Xemele.Tests/M8-xsd-instance-hint-ordering/",
+    "tests/fixtures/M8-xsd-instance-hint-ordering/",
+    "benchmarks/Xemele.Benchmarks/M8-xsd-instance-hint-ordering/",
+    "docs/api/M8-xsd-instance-hint-ordering.txt",
+    "samples/M8-xsd-instance-hint-ordering/",
+    "docs/reports/M8-xsd-instance-hint-ordering/"
+  ],
+  "api_or_output": "Apply the declared XSD1.0 hint-order profile with no instance resource fetching or API change",
+  "acceptance": [
+    {
+      "id": "M8-xsd-instance-hint-ordering-A1",
+      "description": "Freeze the explicit project interpretation in the owned decision before runtime edits: check global validation-root hint ordering independently of fetching, including skipped subtree names/hints without enabling skipped type/content/lexical assessment. Preserve that this skip corner is a project interpretation, not a W3C-adjudicated oracle. Reproduce and preserve the seven exact original failures/statuses/hashes from the coordinator triage.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M8-xsd-instance-hint-ordering-A2",
+      "description": "Add only SchemaHints.cs and minimal Evaluator.Enter hook. A per-validation ordinal set tracks earlier physical element/attribute namespace names. Check every hint namespace against preceding tags before recording the entire current tag; same-tag order is irrelevant. Empty namespace is real; namespace declarations, QName values and hint tokens/locations do not establish use. Report one source-located ordering error per offending hint attribute, preserve normal typed values/identity hooks, no fetching or document mutation.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M8-xsd-instance-hint-ordering-A3",
+      "description": "Complete all seven unchanged original instances as invalid using explicitly compiled original first-hint schemas. Verify same-tag permutations, first-use and prior attribute-only use, unqualified attributes, repeated/multiple hints, non-use declarations/QName values, explicit skip interpretation and preserved skip behavior, lexical errors, recovery after a content failure and zero resolver calls. No invalid-pass credit from a refusal or missing prerequisite.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M8-xsd-instance-hint-ordering-A4",
+      "description": "Preserve charged borrowed scanning, ordinal comparisons, bounded per-run retention and no global state. Prove exact/one-short work/diagnostic limits, cancellation inside long tokens/comparisons with null caps, source locations, repeat/concurrent isolation and immutability. Pass affected evaluator/identity/facade checks, unchanged public/frozen APIs, normal and true XML-only consumers, planning validation and actual allocation evidence through existing infrastructure under a fresh root lease.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "Planned ordered evaluator-only repair after root/independent source/main scope review. No-fetch suppresses acquisition, not hint-order checking. Exact accepted project interpretation and original pins in coordinator brief/triage. No implementation before verified content-failure prerequisite.",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}

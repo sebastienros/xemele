@@ -7,9 +7,35 @@
   "coordination_branch": "main",
   "max_concurrent_workers": 3,
   "last_verified_checkpoint": "M7-gate",
-  "last_verified_task": "M8-xsd-attribute-fixed",
-  "last_integrated_revision": "72969a5a40794b35975d8b46a07c8252b9da67cb",
+  "last_verified_task": "M8-xsd-counted-matcher",
+  "last_integrated_revision": "590d642da81125cb451a884014532467a73162fb",
   "active_assignments": [
+    {
+      "task_id": "M8-xsd-recursive-components",
+      "branch": "codex/m8-xsd-recursive-components",
+      "base_revision": "69691f493fd2b0d5ce382b2f2cbcfb154dd8d202",
+      "stage": "Activated after verified isolated setup1432684f7; source implementation underway, no measurement grant.",
+      "model": "gpt-6.1-sol",
+      "thinking": "high",
+      "thread_id": "01a1305d-40b6-7c83-97c3-fc39c0edbd24",
+      "client_thread_id": "client-new-thread:e4999247-00ff-4d2f-b7fe-3b7abbc4bea6",
+      "host_id": "local",
+      "path": "/Users/sebastienros/.codex/worktrees/ca9e/xemele",
+      "claim_revision": "b5544af4913420f9e13ba058d6ab65d830d53e0c"
+    },
+    {
+      "task_id": "M8-xsd-instance-hint-ordering",
+      "branch": "codex/m8-xsd-instance-hint-ordering",
+      "base_revision": "69691f493fd2b0d5ce382b2f2cbcfb154dd8d202",
+      "stage": "Activated after verified isolated setup1432684f7; source implementation underway, no measurement grant.",
+      "model": "gpt-6.1-sol",
+      "thinking": "high",
+      "thread_id": "01a1305d-4dd2-7f93-8c9e-ee2e5cfdc8c0",
+      "client_thread_id": "client-new-thread:10287e65-73c7-4b03-8ddd-1e3ab820239d",
+      "host_id": "local",
+      "path": "/Users/sebastienros/.codex/worktrees/a053/xemele",
+      "claim_revision": "b5544af4913420f9e13ba058d6ab65d830d53e0c"
+    },
     {
       "task_id": "M8-xsd-corpus",
       "thread_id": "01a12ea8-7b90-7eb3-b475-b4eccf0b527f",
@@ -19,22 +45,10 @@
       "branch": "codex/m8-xsd-corpus",
       "base_revision": "d63a37316b4a6f8c780df10c6a6911509775a92c",
       "claim_revision": "eff2ace80ff301eb5b74a111b0475966d823b671",
-      "stage": "Accepted full80cd6bac baseline and four09b selected overlays; original39248pass226fail11indeterminate2251excluded (mixed revisions).5boundary/22runtime/9profilecontrols pass; concrete repairs active; no full rerun yet.",
+      "stage": "Focused join of verified five repairs and exact repaired-original overlays; no fullcorpus until remainingrepairsverified.",
       "model": "gpt-6.1-sol",
-      "thinking": "high"
-    },
-    {
-      "task_id": "M8-xsd-component-mapping",
-      "thread_id": "01a12ee7-bf6d-7e50-af30-f555bb9a87ac",
-      "host_id": "local",
-      "title": "Repair M8 XSD component mapping",
-      "path": "/Users/sebastienros/.codex/worktrees/c384/xemele",
-      "branch": "codex/m8-xsd-component-mapping",
-      "base_revision": "41dc2fc60962d7e3afc6a7a494146b63c1919161",
-      "claim_revision": "860c378cf992cb688e842603e8a854e98c5ec54a",
-      "stage": "81focused component cases pass; empty wildcard3 original failures reproduced; bounded amendment2dd3f8a46 authorized; independent source review active.",
-      "model": "gpt-6.1-sol",
-      "thinking": "high"
+      "thinking": "high",
+      "execution_status": "Activated bounded correctness/reporting only; no measurements or privatepeers"
     }
   ],
   "integration_queue": [],
@@ -50,9 +64,9 @@
     "one_task_per_chat": true,
     "isolated_worktree": true,
     "recursive_spawning": false,
-    "communication": "Task-related coordination authorized by human; collect own-chat/durable results if tool enforcement rejects a message.",
+    "communication": "Only Xemele chats and reviewers; never communicate or synchronize other projects, including farewell/cancellation. No globalhostidle claim.",
     "main_orchestrator_chat_id": "01a12849-d2be-7292-8cd9-27c1c14b5a3d",
-    "measurement": "Prepare outside bounded lease; request main PARK; immediately durably RELEASE on lifecycle completion/failure before inspection.",
+    "measurement": "Allocation-only evidence needs no isolation/PARK/exclusive grant. Retain accepted identities, controls, actual counters and bounded cleanup. Timing requirements separate; no foreign coordination.",
     "remote_push_or_publication": false
   },
   "implementation_chat_policy": {
@@ -78,7 +92,7 @@
     "activation_sent": true,
     "transfer_revision": "2ac5a78d92e1ce0cafca317d3b193a475e8ab8bb"
   },
-  "benchmark_policy": "Successful previous measurements retained; future changed runtime measurements require complete preparation and exclusive grant.",
+  "benchmark_policy": "Allocation-only: no isolation, PARK, ACK or exclusivity workflow per direct human instruction. Keep preparation identities, correctness, controls, actual counters and bounded cleanup. Genuine throughput/timing requirements unchanged; foreign communication/synchronization prohibited.",
   "benchmark_class_attributes": "Human requirement: every benchmark class declares [MemoryDiagnoser, ShortRunJob]; no CLI job flags.",
   "benchmark_owner": null,
   "active_measurement_lease": null,
@@ -171,9 +185,27 @@
   },
   "current_milestone": "M8",
   "milestone_completion_scope": "Complete integrated verified M8-gate; terminal workers and cleanup; preserve earlier evidence/caches; transfer sole writes to main. Do not create M9.",
-  "milestone_progress": "34 of39 M8 tasks verified; corpus and component mapping active, instance assessment planned, CLI/gate pending.",
-  "blockers": [],
-  "pending_decisions": [],
+  "milestone_progress": "39 of47 M8 tasks verified. Five runtime repairs integrated with actual combined correctness/API/consumers and allocations. Recursive/hint workers active; corpus may join verifiedmain for bounded fixed-original checks. Compiler type/particle/optionalcomposition, CLI/fullcorpus/gate remain pending.",
+  "blockers": [
+    {
+      "id": "gate-accounting-decisions",
+      "status": "Additional14standards+9dependent request and exact12inputboundary request pending; onlytime119approved. Never credit original failures/unassessed as passes."
+    }
+  ],
+  "pending_decisions": [
+    {
+      "id": "M8-additional-standards-exceptions",
+      "status": "Prepared concrete request; no approval yet",
+      "record": "docs/orchestration/M8-xsd-standards-policy-pending.json",
+      "scope": "13schema+1instance originalfailures,9dependentunassessed; exactIDs/hashes/primaryrules."
+    },
+    {
+      "id": "M8-input-boundaries-gate-accounting",
+      "status": "Human question pending; exact record committed d2dff31e0. No approval yet.",
+      "record": "docs/orchestration/M8-xsd-input-boundaries-policy-pending.json",
+      "scope": "Nine original non-passing instances plus three already-indeterminate schema observations; preserve all original failures, unassessed and indeterminate states; never passes."
+    }
+  ],
   "timing_queue": [],
   "completed_assignments": [
     {
@@ -827,12 +859,114 @@
       "branch": "codex/m8-xsd-attribute-fixed",
       "base_revision": "f965cc948bbfcdb01f5b4bb8a40e36efb8853408",
       "claim_revision": "4f01ce0ccd10b040e1188a48429b6b47b5d0c7ad",
-      "stage": "Integrated verified; terminal worker writes relinquished; cleanup pending",
+      "stage": "Verified and terminal; chat archived and both clean integrated worktrees removed",
       "model": "gpt-6.1-sol",
       "thinking": "high",
       "implementation_revision": "78c44c3728170331c824e1de999ceb46a6dbc5f2",
       "handoff_revision": "9774676260d1b1c6e020e8737efbb5dfd09a8fcd",
-      "integration_revision": "72969a5a40794b35975d8b46a07c8252b9da67cb"
+      "integration_revision": "72969a5a40794b35975d8b46a07c8252b9da67cb",
+      "cleanup_record": "docs/orchestration/cleanup-M8-xsd-attribute-fixed.json"
+    },
+    {
+      "task_id": "M8-xsd-component-mapping",
+      "thread_id": "01a12ee7-bf6d-7e50-af30-f555bb9a87ac",
+      "host_id": "local",
+      "title": "Repair M8 XSD component mapping",
+      "path": "/Users/sebastienros/.codex/worktrees/c384/xemele",
+      "branch": "codex/m8-xsd-component-mapping",
+      "base_revision": "41dc2fc60962d7e3afc6a7a494146b63c1919161",
+      "claim_revision": "860c378cf992cb688e842603e8a854e98c5ec54a",
+      "stage": "Verified and terminal; worker chat archived, clean integrated worker checkout removed, actual summary retained.",
+      "model": "gpt-6.1-sol",
+      "thinking": "high",
+      "execution_status": "Standby: source, correctness and frozen allocation preparation complete; no further writes or execution pending fresh host coordination.",
+      "integration_revision": "423da4defd7ec85873f13193dec15cbb4134ae00",
+      "cleanup_record": "docs/orchestration/cleanup-M8-four-repairs.json"
+    },
+    {
+      "task_id": "M8-xsd-instance-assessment",
+      "thread_id": "01a12f05-4de6-78d0-b7db-0e1c44740bb5",
+      "client_thread_id": "client-new-thread:20345462-b52f-41b4-8dfd-f7d6c0a874d0",
+      "host_id": "local",
+      "title": "Repair M8 instance assessment",
+      "path": "/Users/sebastienros/.codex/worktrees/1156/xemele",
+      "branch": "codex/m8-xsd-instance-assessment",
+      "base_revision": "bc950104a4f5acce37e3b2b7f71a60f8765e33c6",
+      "claim_revision": "7be79c1dcb884c5a627e898f964b0633eb40911a",
+      "stage": "Verified and terminal; worker chat archived, clean integrated worker checkout removed, actual summary retained.",
+      "model": "gpt-6.1-sol",
+      "thinking": "high",
+      "execution_status": "Standby: source, correctness and frozen allocation preparation complete; no further writes or execution pending fresh host coordination.",
+      "integration_revision": "423da4defd7ec85873f13193dec15cbb4134ae00",
+      "cleanup_record": "docs/orchestration/cleanup-M8-four-repairs.json"
+    },
+    {
+      "task_id": "M8-xsd-content-failure-assessment",
+      "thread_id": "01a12f3a-a2e1-70f0-8f01-fc7d48d9ba8b",
+      "branch": "codex/m8-xsd-content-failure-assessment",
+      "base_revision": "958c5d3a7acd6fb5cb46b1d391f65d190b76923f",
+      "stage": "Verified and terminal; worker chat archived, clean integrated worker checkout removed, actual summary retained.",
+      "model": "gpt-6.1-sol",
+      "thinking": "high",
+      "client_thread_id": "client-new-thread:f4ff44d7-7856-4d89-bb75-d6844fecf123",
+      "host_id": "local",
+      "title": "Repair M8 content failure assessment",
+      "path": "/Users/sebastienros/.codex/worktrees/18ab/xemele",
+      "claim_revision": "2e3754f1ee762dc3274c8ff2e7a4d3784e97d042",
+      "execution_status": "Standby: no further writes/build/test/measurement until focused rootfollowup; all frozen preparation preserved, remain fresh ACK actor.",
+      "prepared_allocation": {
+        "head": "afe23a46677f3878bc33ea5908ff4ce45f0b018b",
+        "manifest_sha256": "bbe7442014d7cba8ec9da3ad4ba514f3547b1e52128a5b22e4f8ef07ad3c54db",
+        "identities": 448,
+        "preflight_pid": 10009,
+        "expected_calls": 576,
+        "expected_consumed": 82992,
+        "scope": "sevenowned,16retained; old91e27bf manifest superseded solely for APIfragmentmetadata correction"
+      },
+      "integration_revision": "423da4defd7ec85873f13193dec15cbb4134ae00",
+      "cleanup_record": "docs/orchestration/cleanup-M8-four-repairs.json"
+    },
+    {
+      "task_id": "M8-schema-resource-outcomes",
+      "thread_id": "01a12f35-a4da-7183-9790-7dcb0ecb744d",
+      "branch": "codex/m8-schema-resource-outcomes",
+      "base_revision": "1fb1aa3260ce4df29442b230bf51945dea4b7d71",
+      "stage": "Verified and terminal; worker chat archived, clean integrated worker checkout removed, actual summary retained.",
+      "model": "gpt-6.1-sol",
+      "thinking": "high",
+      "client_thread_id": "client-new-thread:2674e158-8785-4c0a-a493-1096139a770e",
+      "host_id": "local",
+      "title": "Implement M8 resource outcomes",
+      "path": "/Users/sebastienros/.codex/worktrees/d5cc/xemele",
+      "claim_revision": "6d1751ce23b97e325bd723058ddb544c616a4fd2",
+      "execution_status": "Standby: no further writes/build/test/measurement until focused rootfollowup; all frozen preparation preserved, remain fresh ACK actor.",
+      "prepared_allocation": {
+        "head": "75e11fd871457eccc647ff75f4e074ffdd779e96",
+        "manifest_sha256": "e49d010a30b793a277eab3bebdb00ee3148d4fc91bfc4a7794d1a729345ef79b",
+        "identities": 448,
+        "preflight_pid": 9408,
+        "expected_calls": 3536,
+        "expected_consumed": 5616,
+        "scope": "fiveowned/threeprimitive,16retained"
+      },
+      "integration_revision": "55647de5bb866b78abddb0cffd1d10ed9aff95f7",
+      "cleanup_record": "docs/orchestration/cleanup-M8-four-repairs.json"
+    },
+    {
+      "task_id": "M8-xsd-counted-matcher",
+      "thread_id": "01a12f22-e443-7d21-8f53-922235ad6855",
+      "branch": "codex/m8-xsd-counted-matcher",
+      "base_revision": "3aff7cf56226b1b6e7adf6823d5be383bd86e001",
+      "stage": "Integrated verified and terminal; clean checkout/rawoutputs retained pendingcleanup.",
+      "model": "gpt-6.1-sol",
+      "thinking": "high",
+      "claim_revision": "ce3957b93ee50355bae17468a20d696bd82593ec",
+      "client_thread_id": "client-new-thread:c8bbcd4d-cb18-4318-995c-115856ccbcc8",
+      "host_id": "local",
+      "title": "Repair M8 counted matcher",
+      "path": "/Users/sebastienros/.codex/worktrees/452a/xemele",
+      "execution_status": "Standby zerojobs until focused followup",
+      "integration_revision": "590d642da81125cb451a884014532467a73162fb"
     }
   ],
   "measurement_lease_history": [
@@ -1110,6 +1244,401 @@
       "id": "M8-rng-identity-serial-1",
       "status": "RELEASED",
       "record": "docs/orchestration/M8-rng-identity-serial-1.json"
+    },
+    {
+      "scope": "M8-xsd-component-mapping-fe72a347-alloc-2",
+      "status": "RELEASED before raw inspection",
+      "owner_chat": "01a12c6c-b333-71d3-877f-0d186618e21d",
+      "source_revision": "fe72a34773e28a776c223d628fcccbd91f4b9bec",
+      "proposal_revision": "5fad82a4fd0e73f794ca75249ac422fe02c98eb4",
+      "cwd": "/Users/sebastienros/.codex/worktrees/c384/xemele",
+      "manifest": "/Users/sebastienros/.codex/worktrees/c384/xemele/docs/reports/M8-xsd-component-mapping/preparation.json",
+      "manifest_sha256": "25b4d9c5ed5b31ca6f4235bc10f5ef13f82d6adf99ea94a6255f350d9f47dd60",
+      "supervisor": "/Users/sebastienros/.codex/worktrees/c384/xemele/docs/reports/M8-xsd-component-mapping/measure.py",
+      "supervisor_sha256": "aeea1c017c5a879c65f364989e50006796783db807b799c838f63c26b67faf7f",
+      "maximum_seconds": 30,
+      "work_seconds": 20,
+      "cleanup_seconds": 10,
+      "latest_start_rule": "grant+60s",
+      "absolute_expiry_rule": "grant+90s",
+      "commands": [
+        [
+          "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+          "--fx-version",
+          "10.0.11",
+          "/Users/sebastienros/.codex/worktrees/c384/xemele/benchmarks/Xemele.Benchmarks/M8-xsd-component-mapping/bin/probe/net10.0/Xemele.Benchmarks.dll",
+          "--control",
+          "/Users/sebastienros/.codex/worktrees/c384/xemele/artifacts/M8-xsd-component-mapping/measurement-1/control.json"
+        ],
+        [
+          "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+          "--fx-version",
+          "10.0.11",
+          "/Users/sebastienros/.codex/worktrees/c384/xemele/benchmarks/Xemele.Benchmarks/M8-xsd-component-mapping/bin/probe/net10.0/Xemele.Benchmarks.dll",
+          "--measure",
+          "/Users/sebastienros/.codex/worktrees/c384/xemele/artifacts/M8-xsd-component-mapping/measurement-1/allocations.json"
+        ]
+      ],
+      "identity_count": 464,
+      "root_preflight": "Actual elevated verify-only464identities+ps passed. Worker actual elevated disabled supervised preflight96986exit0/reaped/groupabsent/logclosed. Cleanup core reused from accepted syntax supervisor.",
+      "ack_evidence": "docs/orchestration/M8-xsd-component-mapping-allocation-2-acks.json",
+      "roster": "Eleven Xemele actors ONLY: root/main/six workers/three reviewers. No cross-project synchronization.",
+      "constraints": "Root solelauncher2prebuiltcontrol+measure; no retry/extension/build/restore/discovery/newactors/frozenwrites/rawinspection before durablecleanupRELEASE.19routes13ownedpositive6borrowedzero,first+16warm+64aggregate;16retained.",
+      "review": "Independent model reviewer SOURCE PASS atfe72a347, proposal5fad82a4f;19routes1555calls,6borrowedzero targets and13ownedpositive boundaries accepted.",
+      "root_ack": "Fresh root ACK: no owned workload, child, active execution session, open process log or lease. Root will hold all heavy work and frozen writes until durable cleanup RELEASE; only coordination, identity verification and lease metadata permitted.",
+      "human_authorization": "Verified newer human instruction Never communicate or synchronize work with other projects, main turn01a1304d-e146-71d0-94f0-a60d8f0a4311. Removes foreign ACK requirement only; exact commands/manifest/limits/cleanup unchanged. Existing fresh Xemele alloc-2 ACKs still apply.",
+      "isolation_limit": "Only Xemele-owned workloads coordinated; no evidence or claim of globally idle host or cross-project exclusion.",
+      "granted_utc": "2026-10-12T13:32:35.851125+00:00",
+      "latest_start": "2026-10-12T13:33:35.851125+00:00",
+      "absolute_expiry": "2026-10-12T13:34:05.851125+00:00",
+      "released_utc": "2026-10-12T13:33:07.734820+00:00",
+      "lifecycle": {
+        "status": 0,
+        "beforeIdentities": true,
+        "afterIdentities": true,
+        "sequence": [
+          {
+            "command": 0,
+            "pid": 28920,
+            "exit": 0,
+            "reason": "completed",
+            "directChildReaped": true,
+            "ownedGroupAbsent": true,
+            "logClosed": true,
+            "groupMembers": []
+          },
+          {
+            "command": 1,
+            "pid": 28922,
+            "exit": 0,
+            "reason": "completed",
+            "directChildReaped": true,
+            "ownedGroupAbsent": true,
+            "logClosed": true,
+            "groupMembers": []
+          }
+        ],
+        "rawResultsInspected": false,
+        "latestStart": "2026-10-12T13:33:35.851125+00:00",
+        "absoluteExpiry": "2026-10-12T13:34:05.851125+00:00",
+        "beforeMismatches": [],
+        "identityCount": 464,
+        "afterMismatches": [],
+        "elapsedSeconds": 1.2019852499943227
+      },
+      "supervisor_session": "47582 terminal exit0"
+    },
+    {
+      "scope": "M8-three-prepared-repairs-allocation-1",
+      "status": "RELEASED before raw inspection",
+      "owner_chat": "01a12c6c-b333-71d3-877f-0d186618e21d",
+      "sequence": [
+        {
+          "task": "M8-xsd-instance-assessment",
+          "cwd": "/Users/sebastienros/.codex/worktrees/1156/xemele",
+          "manifest": "/Users/sebastienros/.codex/worktrees/1156/xemele/docs/reports/M8-xsd-instance-assessment/preparation.json",
+          "manifest_sha256": "42cb79cc5bd5626c123e2256b93185ffbc19f5b72650afee3465f23087138312",
+          "supervisor": "/Users/sebastienros/.codex/worktrees/1156/xemele/docs/reports/M8-xsd-instance-assessment/measure.py",
+          "supervisor_sha256": "2a74dfa9dd82c398f4a356e1a890ecd7f48af9bc53ce57c067a287361667c7d4",
+          "identities": 462,
+          "source_revision": "092a3ba4b4fc513e3439a496fef690a1a0563a99",
+          "commands": [
+            [
+              "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+              "--fx-version",
+              "10.0.11",
+              "/Users/sebastienros/.codex/worktrees/1156/xemele/benchmarks/Xemele.Benchmarks/M8-xsd-instance-assessment/bin/probe/net10.0/Xemele.Benchmarks.dll",
+              "--control",
+              "/Users/sebastienros/.codex/worktrees/1156/xemele/artifacts/M8-xsd-instance-assessment/measurement-1/control.json"
+            ],
+            [
+              "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+              "--fx-version",
+              "10.0.11",
+              "/Users/sebastienros/.codex/worktrees/1156/xemele/benchmarks/Xemele.Benchmarks/M8-xsd-instance-assessment/bin/probe/net10.0/Xemele.Benchmarks.dll",
+              "--measure",
+              "/Users/sebastienros/.codex/worktrees/1156/xemele/artifacts/M8-xsd-instance-assessment/measurement-1/allocations.json"
+            ]
+          ],
+          "maximum_seconds": 30,
+          "work_seconds": 20,
+          "cleanup_seconds": 10
+        },
+        {
+          "task": "M8-schema-resource-outcomes",
+          "cwd": "/Users/sebastienros/.codex/worktrees/d5cc/xemele",
+          "manifest": "/Users/sebastienros/.codex/worktrees/d5cc/xemele/docs/reports/M8-schema-resource-outcomes/preparation.json",
+          "manifest_sha256": "e49d010a30b793a277eab3bebdb00ee3148d4fc91bfc4a7794d1a729345ef79b",
+          "supervisor": "/Users/sebastienros/.codex/worktrees/d5cc/xemele/docs/reports/M8-schema-resource-outcomes/measure.py",
+          "supervisor_sha256": "18f245d6144b8f8a7fa68ea5fbec2a6e49d42315a4fefe357d7c99eb7acf9021",
+          "identities": 448,
+          "source_revision": "f8e885a08a10df4e208df3fd64d44abaaad6f1a5",
+          "commands": [
+            [
+              "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+              "--fx-version",
+              "10.0.11",
+              "/Users/sebastienros/.codex/worktrees/d5cc/xemele/benchmarks/Xemele.Benchmarks/M8-schema-resource-outcomes/bin/probe/net10.0/Xemele.Benchmarks.dll",
+              "--control",
+              "/Users/sebastienros/.codex/worktrees/d5cc/xemele/artifacts/M8-schema-resource-outcomes/measurement-1/control.json"
+            ],
+            [
+              "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+              "--fx-version",
+              "10.0.11",
+              "/Users/sebastienros/.codex/worktrees/d5cc/xemele/benchmarks/Xemele.Benchmarks/M8-schema-resource-outcomes/bin/probe/net10.0/Xemele.Benchmarks.dll",
+              "--measure",
+              "/Users/sebastienros/.codex/worktrees/d5cc/xemele/artifacts/M8-schema-resource-outcomes/measurement-1/allocations.json"
+            ]
+          ],
+          "maximum_seconds": 30,
+          "work_seconds": 20,
+          "cleanup_seconds": 10
+        },
+        {
+          "task": "M8-xsd-content-failure-assessment",
+          "cwd": "/Users/sebastienros/.codex/worktrees/18ab/xemele",
+          "manifest": "/Users/sebastienros/.codex/worktrees/18ab/xemele/docs/reports/M8-xsd-content-failure-assessment/preparation.json",
+          "manifest_sha256": "bbe7442014d7cba8ec9da3ad4ba514f3547b1e52128a5b22e4f8ef07ad3c54db",
+          "supervisor": "/Users/sebastienros/.codex/worktrees/18ab/xemele/docs/reports/M8-xsd-content-failure-assessment/measure.py",
+          "supervisor_sha256": "bf6cd633fcf06955171cefa0fb73a7ec14f0a716a68bfdea99f6ae42aabb6c9c",
+          "identities": 448,
+          "source_revision": "c7d92f0624b189658fd42d56bf43a537c1f104a5",
+          "commands": [
+            [
+              "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+              "--fx-version",
+              "10.0.11",
+              "/Users/sebastienros/.codex/worktrees/18ab/xemele/benchmarks/Xemele.Benchmarks/M8-xsd-content-failure-assessment/bin/probe/net10.0/Xemele.Benchmarks.dll",
+              "--control",
+              "/Users/sebastienros/.codex/worktrees/18ab/xemele/artifacts/M8-xsd-content-failure-assessment/measurement-1/control.json"
+            ],
+            [
+              "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+              "--fx-version",
+              "10.0.11",
+              "/Users/sebastienros/.codex/worktrees/18ab/xemele/benchmarks/Xemele.Benchmarks/M8-xsd-content-failure-assessment/bin/probe/net10.0/Xemele.Benchmarks.dll",
+              "--measure",
+              "/Users/sebastienros/.codex/worktrees/18ab/xemele/artifacts/M8-xsd-content-failure-assessment/measurement-1/allocations.json"
+            ]
+          ],
+          "maximum_seconds": 30,
+          "work_seconds": 20,
+          "cleanup_seconds": 10
+        }
+      ],
+      "maximum_seconds": 90,
+      "latest_start_rule": "grant+60s for every supervisor/child",
+      "absolute_expiry_rule": "grant+90s global bound; each unchanged supervisor min(30s,remainingglobal) with10s reserve",
+      "launcher": "Root only, serial exact three frozen supervisors, each exact control then measure; stop sequence on first failure/refusal/unclean lifecycle. No retry, build, restore, discovery, newactors, frozenwrites or rawinspection.",
+      "roster": "Eleven Xemele actors only: root/main/six workers/three reviewers, all fresh exact-scope ACKs. Other projects excluded by human instruction; no global host-idle claim.",
+      "release": "Record all actually launched child cleanup and durable root RELEASE before reading raw results or permitting heavy work. Expiry alone insufficient.",
+      "root_ack": "No root-owned workloads/children/groups/active sessions/cells/openlogs. Previous component scope RELEASED e8389790a. Root holds all heavywork until this scope cleanup RELEASE.",
+      "granted_utc": "2026-10-12T13:37:43.298867+00:00",
+      "latest_start": "2026-10-12T13:38:43.298867+00:00",
+      "absolute_expiry": "2026-10-12T13:39:13.298867+00:00",
+      "released_utc": "2026-10-12T13:38:12.017641+00:00",
+      "lifecycle": [
+        {
+          "task": "M8-xsd-instance-assessment",
+          "lifecycle": {
+            "status": 0,
+            "beforeIdentities": true,
+            "afterIdentities": true,
+            "sequence": [
+              {
+                "command": 0,
+                "pid": 35316,
+                "exit": 0,
+                "reason": "completed",
+                "directChildReaped": true,
+                "ownedGroupAbsent": true,
+                "logClosed": true,
+                "groupMembers": []
+              },
+              {
+                "command": 1,
+                "pid": 35318,
+                "exit": 0,
+                "reason": "completed",
+                "directChildReaped": true,
+                "ownedGroupAbsent": true,
+                "logClosed": true,
+                "groupMembers": []
+              }
+            ],
+            "rawResultsInspected": false,
+            "latestStart": "2026-10-12T13:38:43.298867+00:00",
+            "absoluteExpiry": "2026-10-12T13:39:13.298867+00:00",
+            "beforeMismatches": [],
+            "identityCount": 462,
+            "afterMismatches": [],
+            "elapsedSeconds": 0.9484544999431819
+          },
+          "release": {
+            "status": 0,
+            "releasedAt": "2026-10-12T13:37:46.874544+00:00",
+            "rawResultsInspected": false,
+            "sequence": [
+              {
+                "command": 0,
+                "pid": 35316,
+                "exit": 0,
+                "reason": "completed",
+                "directChildReaped": true,
+                "ownedGroupAbsent": true,
+                "logClosed": true,
+                "groupMembers": []
+              },
+              {
+                "command": 1,
+                "pid": 35318,
+                "exit": 0,
+                "reason": "completed",
+                "directChildReaped": true,
+                "ownedGroupAbsent": true,
+                "logClosed": true,
+                "groupMembers": []
+              }
+            ],
+            "beforeIdentities": true,
+            "afterIdentities": true
+          }
+        },
+        {
+          "task": "M8-schema-resource-outcomes",
+          "lifecycle": {
+            "status": 0,
+            "beforeIdentities": true,
+            "afterIdentities": true,
+            "sequence": [
+              {
+                "command": 0,
+                "pid": 35324,
+                "exit": 0,
+                "reason": "completed",
+                "directChildReaped": true,
+                "ownedGroupAbsent": true,
+                "logClosed": true,
+                "groupMembers": []
+              },
+              {
+                "command": 1,
+                "pid": 35326,
+                "exit": 0,
+                "reason": "completed",
+                "directChildReaped": true,
+                "ownedGroupAbsent": true,
+                "logClosed": true,
+                "groupMembers": []
+              }
+            ],
+            "rawResultsInspected": false,
+            "latestStart": "2026-10-12T13:38:43.298867+00:00",
+            "absoluteExpiry": "2026-10-12T13:39:13.298867+00:00",
+            "beforeMismatches": [],
+            "identityCount": 448,
+            "afterMismatches": [],
+            "elapsedSeconds": 0.5044349579839036
+          },
+          "release": {
+            "status": 0,
+            "releasedAt": "2026-10-12T13:37:47.421797+00:00",
+            "rawResultsInspected": false,
+            "sequence": [
+              {
+                "command": 0,
+                "pid": 35324,
+                "exit": 0,
+                "reason": "completed",
+                "directChildReaped": true,
+                "ownedGroupAbsent": true,
+                "logClosed": true,
+                "groupMembers": []
+              },
+              {
+                "command": 1,
+                "pid": 35326,
+                "exit": 0,
+                "reason": "completed",
+                "directChildReaped": true,
+                "ownedGroupAbsent": true,
+                "logClosed": true,
+                "groupMembers": []
+              }
+            ],
+            "beforeIdentities": true,
+            "afterIdentities": true
+          }
+        },
+        {
+          "task": "M8-xsd-content-failure-assessment",
+          "lifecycle": {
+            "status": 0,
+            "beforeIdentities": true,
+            "afterIdentities": true,
+            "sequence": [
+              {
+                "command": 0,
+                "pid": 35330,
+                "exit": 0,
+                "reason": "completed",
+                "directChildReaped": true,
+                "ownedGroupAbsent": true,
+                "logClosed": true,
+                "groupMembers": []
+              },
+              {
+                "command": 1,
+                "pid": 35332,
+                "exit": 0,
+                "reason": "completed",
+                "directChildReaped": true,
+                "ownedGroupAbsent": true,
+                "logClosed": true,
+                "groupMembers": []
+              }
+            ],
+            "rawResultsInspected": false,
+            "latestStart": "2026-10-12T13:38:43.298867+00:00",
+            "absoluteExpiry": "2026-10-12T13:39:13.298867+00:00",
+            "beforeMismatches": [],
+            "identityCount": 448,
+            "afterMismatches": [],
+            "elapsedSeconds": 1.964227291988209
+          },
+          "release": {
+            "status": 0,
+            "releasedAt": "2026-10-12T13:37:49.426886+00:00",
+            "rawResultsInspected": false,
+            "sequence": [
+              {
+                "command": 0,
+                "pid": 35330,
+                "exit": 0,
+                "reason": "completed",
+                "directChildReaped": true,
+                "ownedGroupAbsent": true,
+                "logClosed": true,
+                "groupMembers": []
+              },
+              {
+                "command": 1,
+                "pid": 35332,
+                "exit": 0,
+                "reason": "completed",
+                "directChildReaped": true,
+                "ownedGroupAbsent": true,
+                "logClosed": true,
+                "groupMembers": []
+              }
+            ],
+            "beforeIdentities": true,
+            "afterIdentities": true
+          }
+        }
+      ],
+      "root_session": "62384 terminal exit0"
     }
   ],
   "workers": [],
@@ -1127,7 +1656,16 @@
     "benchmark_class_configuration": "Human reiterated in M4 chat on 2026-10-10: Benchmarks should be created with the [MemoryDiagnoser, ShortRunJob] attributes. Require both attributes on benchmark classes, omit explicit job arguments and job-name narration; preserve completed historical evidence.",
     "task_authority": "User explicitly reinforced on 2026-10-09: chats have explicit permission to do what they need for their tasks. Original assigned scope/ownership and no remote publication remain.",
     "chat_communication_authorization": "Human explicitly authorized on 2026-10-10 in M4 coordinator: All chats do not need to ask permission to communicate with other chats; permission is implicitly granted. Forward this permission to every new chat. Applies to bounded repository coordination and successor chain; no remote publication.",
-    "benchmark_artifact_policy": "Human dad208f instruction: do not commit benchmark result logs and outputs, only summary tables and analysis."
+    "benchmark_artifact_policy": "Human dad208f instruction: do not commit benchmark result logs and outputs, only summary tables and analysis.",
+    "M8-content-failure-assessment": {
+      "decision": "Create independent evaluator-only repair for repeated failure-path default-policy diagnostics; gate requires it and counted matcher consumes only after verified integration. No cap change or invalidity credit for current refused originals.",
+      "record": "docs/orchestration/brief-M8-xsd-content-failure-assessment.md"
+    },
+    "M8-instance-hint-ordering": {
+      "decision": "Root/independent/main source review accepts narrow ordered no-fetch hint checks within complete M8 profile; skipped-subtree global order is explicitly a project interpretation, not an upstream-adjudicated oracle.",
+      "record": "docs/orchestration/brief-M8-xsd-instance-hint-ordering.md",
+      "status": "Planned, blocked by unverified content-failure dependency; no runtime implementation or new worker."
+    }
   },
   "chat_communication_authorization": "Human directly authorized all M8 coordination, remaining M8 worker chats gpt-6.1-sol/high, parser-chat coordination, and GregsEx coordinator/workers host coordination.",
   "coordinator_repair": null,
@@ -1160,11 +1698,17 @@
       "id": "M2-parser-cold-cbd8eca",
       "recordedUtc": "2026-10-12T01:23:59.588386+00:00",
       "lifecycle": "Owner explicitly confirmed abort before grant: aggregate arrived at latest-start boundary. Zero supervisors, children, probes or raw outputs created; no cleanup remains. No ACK reuse or extension."
+    },
+    {
+      "id": "M8-xsd-component-mapping-fe72a347-alloc-only",
+      "revision": "3f3dceaaa",
+      "record": "docs/orchestration/M8-xsd-component-mapping-allocation-1.json",
+      "reason": "No grant/no launch; GregsEx human pause prevents fresh host acknowledgment. All Xemele actors released and ACKs retired."
     }
   ],
   "parser_host_coordination": {
     "chat_id": "01a12d64-81ae-79e3-8ba2-b88110af6fdb",
-    "authorization": "Human explicitly authorized parser-chat coordination in root",
+    "authorization": "Historical only; superseded by newer human no-foreign-project instruction at925defd10. Do not contact, inspect for coordination, synchronize or unarchive.",
     "status": "Archived and terminal; last completed turn confirms zerojobs. Excluded from active actor roster, no unarchive.",
     "gregsex_coordinator": "01a12d32-4b4c-7632-8cae-ac5f5780cc3e",
     "last_release": {
@@ -1187,29 +1731,56 @@
       "01a12c6c-b333-71d3-877f-0d186618e21d",
       "01a12849-d2be-7292-8cd9-27c1c14b5a3d",
       "01a12ea8-7b90-7eb3-b475-b4eccf0b527f",
-      "01a12ed1-f994-76e2-800c-1b33ba1e787b",
-      "01a12ee7-bf6d-7e50-af30-f555bb9a87ac"
-    ],
-    "gregsex": [
-      "01a12c93-ccf1-70f2-907e-73c12eccedcf",
-      "01a12e48-6175-77a2-b4b2-d5d5921b1a1d",
-      "01a12e70-dc8a-7cc2-b267-0b8d7774a263",
-      "01a12ede-f40f-7bc3-8f38-ab0d7972bd8a"
+      "01a12f22-e443-7d21-8f53-922235ad6855",
+      "01a1305d-40b6-7c83-97c3-fc39c0edbd24",
+      "01a1305d-4dd2-7f93-8c9e-ee2e5cfdc8c0"
     ],
     "reviewers": "Three existing source-only reviewers; no host-heavy jobs/new actors.",
-    "lease": {
-      "scope": "M8-xsd-schema-syntax-28e26b68-alloc-only",
-      "status": "RELEASED",
-      "record": "docs/orchestration/M8-xsd-schema-syntax-allocation-1.json",
-      "released_at": "2026-10-12T06:42:46.282798Z"
-    },
-    "gregsex_note": "Four Gregs actors including allocation-policy repair01a12ede at5a16; no activePARK/grant. BDN-only policy applies Gregs only.",
-    "roster_note": "Eight Xemele actors root/main/corpus/attribute-fixed/component-mapping/three reviewers plusfourGregsactors=12. NoactivePARK."
+    "lease": null,
+    "roster_note": "Nine Xemele actors: root/main/corpus/matcher/recursive/hint plus three reviewers. Four verified workers terminal and archived. No foreign actors or globalhostidle claim."
   },
   "suspended_assignments": [],
   "pending_measurement_proposal": null,
   "m8_xsd_standards_dispositions": {
     "time_exception": "Human-approved call_b88f280c431643d2b5b911ee5fb92e63; exact original failure retained, never pass. docs/orchestration/M8-xsd-time-policy-pending.md",
     "errF001": "Independent SecondEdition oracle adjudication; original queried VALID disagreement preserved, dependent instance unexecuted. docs/orchestration/M8-xsd-errF001-adjudication.md"
+  },
+  "gregsex_host_status": "Historical host coordination retired by newer human instruction at925defd10. No foreign project actors, messages, ACK requirements or synchronization in future Xemele work; no globalhostidle claim.",
+  "standby_assignments": [],
+  "live_host_roster_note": "Xemele actors only: root/main/all executing and standby Xemele workers/three reviewers. No foreign actors or synchronization; report host-isolation limits honestly.",
+  "contract_repair_reviews": [
+    {
+      "id": "M8-resource-unavailable",
+      "status": "Accepted compatible design1fb1aa326; claimed6d1751ce2 and active isolated worker01a12f35/d5cc; exact13 additive API fixture frozen/compiled2164e612; runtime/checks pending, no verification or measurements.",
+      "cases": [
+        "anyURI_a002_1337.v",
+        "anyURI_a004_1339.i",
+        "schD7.v",
+        "schG8.v"
+      ],
+      "constraint": "Legacy null remains denial and caller exceptions propagate; no empty-schema fabrication, fatal-refusal catch or original-pass relabel."
+    }
+  ],
+  "host_coordination_authorization": {
+    "status": "Historical approval superseded by newer human prohibition of all foreign-project communication/synchronization; not current authority.",
+    "scope": "GregsEx quiet-window acknowledgments and release notices only; implementation and measurements remain paused",
+    "human_reply": "Approve the request and continue",
+    "context": "Pending GregsEx coordination-only request named in preceding final",
+    "date": "2026-10-12"
+  },
+  "project_communication_policy": {
+    "instruction": "Never communicate or synchronize work with other projects",
+    "source_thread": "01a12849-d2be-7292-8cd9-27c1c14b5a3d",
+    "source_turn": "01a1304d-e146-71d0-94f0-a60d8f0a4311",
+    "source_item": "01a1304d-e19a-7851-a827-2629352ff5a8",
+    "verified": "Root inspected actual human userMessage on2026-10-12. Supersedes prior cross-project coordination authorization. No farewell/cancellation messages. Xemele-only ACKs; unrelated workload evidence unavailable, no global host-idle claim."
+  },
+  "allocation_isolation_policy": {
+    "instruction": "Allocation evidence don't need to run in isolation and request park and exclusive usage across either threads",
+    "source_thread": "01a12849-d2be-7292-8cd9-27c1c14b5a3d",
+    "source_turn": "01a13064-805d-7400-8239-47df06337ba4",
+    "source_item": "01a13064-80c4-7901-a420-f23292b06005",
+    "verified": "Root inspected actual human userMessage. Allocation-only evidence requires no isolation, PARK, ACKs, exclusive usage or coordination lease.",
+    "retained_controls": "Accepted source/workload identities, meaningful warmup and positive/disabled controls, actual counters, allocation ownership, finite supervision/cleanup and tested revision. No implication for throughput/timing; no foreign communication/synchronization."
   }
 }

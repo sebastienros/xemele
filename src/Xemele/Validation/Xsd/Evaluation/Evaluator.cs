@@ -45,7 +45,7 @@ internal sealed partial class XsdValidationRun : ISchemaOperation
         internal readonly XsdTypeDefinition? Type = type;
         internal readonly SchemaNamespaceContext Context = context;
         internal readonly bool Skip = skip, Nil = nil;
-        internal bool Valid = valid, HasChild, HasCharacters;
+        internal bool Valid = valid, ContentFaulted, HasChild, HasCharacters;
         internal readonly IXsdContentCursor? Cursor = cursor;
         internal XmlNode Next = node.FirstChild;
         internal readonly XsdTextBuffer Text = new();
@@ -130,11 +130,22 @@ internal sealed partial class XsdValidationRun : ISchemaOperation
                 if (!skip)
                 {
                     if (frame.Nil) frame.Valid = Error("XSD.Nil", "A nilled element cannot have element content.");
-                    if (frame.Cursor is not null)
+                    if (frame.ContentFaulted)
+                    {
+                        if (schema.GlobalElements.TryGetValue(Name(child), out int global)) matched = schema.Elements[global];
+                    }
+                    else if (frame.Cursor is not null)
                     {
                         bool accepted = frame.Cursor.Accept(Name(child), this, out int? id, out var policy); Poll();
-                        if (!accepted) frame.Valid = Error("XSD.Content", "Child does not match the prepared content model.");
-                        if (id is int known) matched = schema.Elements[known];
+                        if (!accepted)
+                        {
+                            // A rejected cursor has no particle attribution. Its failure
+                            // outputs cannot establish a declaration or wildcard policy.
+                            frame.ContentFaulted = true;
+                            frame.Valid = Error("XSD.Content", "Child does not match the prepared content model.");
+                            if (schema.GlobalElements.TryGetValue(Name(child), out int global)) matched = schema.Elements[global];
+                        }
+                        else if (id is int known) matched = schema.Elements[known];
                         else if (policy == XsdProcessContents.Skip) skip = true;
                         else if (schema.GlobalElements.TryGetValue(Name(child), out int global)) matched = schema.Elements[global];
                         else if (policy == XsdProcessContents.Strict) requireAssessment = true;
@@ -221,7 +232,7 @@ internal sealed partial class XsdValidationRun : ISchemaOperation
     private void Leave(Frame frame)
     {
         current = document.OriginalLocation(frame.Node); Work();
-        if (frame.Cursor is not null && !frame.Nil) { bool complete = frame.Cursor.Complete(this); Poll(); if (!complete) frame.Valid = Error("XSD.Content", "Element content is incomplete."); }
+        if (frame.Cursor is not null && !frame.Nil && !frame.ContentFaulted) { bool complete = frame.Cursor.Complete(this); Poll(); if (!complete) frame.Valid = Error("XSD.Content", "Element content is incomplete."); }
         var typeName = frame.Type?.Name ?? new SchemaName(Xs, "anyType"); XmlDatatypeValue? value = null;
         if (!frame.Skip && !frame.Nil && frame.Type is { } type)
         {
