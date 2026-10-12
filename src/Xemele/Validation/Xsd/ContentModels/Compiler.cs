@@ -273,12 +273,13 @@ internal sealed partial class ContentCompilation
     }
     private void CheckConsistency(ContentNode? root)
     {
+        if (root is null) { ContentWork.Tick(op, default, 0); return; }
+        ContentWork.Retain(op, default, 4);
         var known = new Dictionary<SchemaName, SchemaName>();
         var operands = new Dictionary<SchemaName, List<XsdElementDeclaration>>();
         var visited = new HashSet<int>();
         var pending = new Stack<ContentNode>();
-        ContentWork.Retain(op, default, 4);
-        if (root is not null) { ContentWork.Retain(op, root.Particle.Location); pending.Push(root); }
+        ContentWork.Retain(op, root.Particle.Location); pending.Push(root);
         while (pending.TryPop(out var node))
         {
             ContentWork.Tick(op, node.Particle.Location);

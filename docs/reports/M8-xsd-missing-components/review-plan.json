@@ -223,5 +223,39 @@
       "testsApiConsumersPreparationCounters": "UNRUN",
       "credit": "No promotion; prior failure facts retained; no passing credit carried to corrected source"
     }
+  },
+  "emptyEdcScratchCorrection": {
+    "sourceOnly": true,
+    "scope": "CheckConsistency null root polls zero then returns before EDC scratch allocation; nonnull retains identical EDC/member/availability algorithm and moves existing Retain(4) before four collection allocations. No other runtime/test/API/recipe changes.",
+    "sourceTrace": {
+      "smallGraphBaseTypes": "Both null: CheckDerivation returns without work",
+      "retainedTypeMap": "2work/2components",
+      "outputDictionary": "1work/1component",
+      "perEmptyType": "visit1work; node-list1work/1component; immutable program1work/1component; output entry1work/1component; EDC0/0 cancellation/refusal poll",
+      "twoEmptyTypesTotal": "11work/9components",
+      "priorEmptyScratch": "8work/8components extra;19work/17components total",
+      "caps": "Batch remains byte-identical:11/9 exact,10/9 work-one-under,11/8 component-one-under"
+    },
+    "selectedMethods": 694,
+    "selectedCases": 2206,
+    "currentPacketExecution": "UNRUN; source HOLD; root-only execution/state writer",
+    "priorCoordinatorOutcome": {
+      "sourcePacket": "07ac7e749f1cb450d812175136cb33c5814c4025",
+      "runtimeSourceCommit": "6a1396da9983faf2d2e4161682146767cd7f0201",
+      "failedController": "root-check343d450b6a0e4bfeac8d4e018a4e5925",
+      "restoreBuild": "14 commands PASS",
+      "verifiedCompleteXml": {
+        "cases": 2206,
+        "passed": 2205,
+        "failed": 1,
+        "skipped": 0,
+        "sha256": "not provided to worker"
+      },
+      "onlyFailure": "Xemele.Tests.M8XsdParticleNormalization.BatchTests.SmallGraphQuotasAreDerivedIndependentlyAndEntriesChargeBeforeGrowth",
+      "ownedNewControls": "All new certificate/visibility controls passed actual; overall phase FAILED; no gate credit",
+      "terminal": "16 groups absent;429 raw deleted",
+      "apiConsumersPreparationCounters": "UNRUN",
+      "credit": "No promotion; all prior failures retained; no passing credit carried to corrected source"
+    }
   }
 }
