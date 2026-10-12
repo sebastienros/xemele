@@ -5,7 +5,7 @@ using System.Xml.Schema;
 namespace XsdCorpus;
 internal static class BclEngine
 {
-    private sealed class Resolver : XmlResolver
+    internal sealed class Resolver : XmlResolver
     {
         internal readonly List<object> Requests = [];
         public override ICredentials? Credentials { set { } }
@@ -43,33 +43,37 @@ internal static class BclEngine
         {
             if (instance.GetProperty("classification").GetString() != "applicable") { Runner.Emit(instance, new("excluded", instance.GetProperty("reason").GetString()!, [], []), "bcl", output); continue; }
             Observation actual;
-            if (compile.Outcome != "schema-valid") actual = new("schema-unavailable", compile.Detail, [], []);
+            if (compile.Outcome != "schema-valid") actual = new("schema-unavailable", compile.Detail, [], compile.Resources);
             else
             {
-                errors.Clear(); warnings.Clear();
+                var instanceErrors = new List<string>(); var instanceWarnings = new List<string>();
+                var instanceResolver = new Resolver(); var preparation = new List<object>();
                 try
                 {
                     string path = Runner.PathFor(Runner.UriFor(Runner.Documents(instance).Single()));
                     var originals = row.ValueKind == JsonValueKind.Null ? Array.Empty<string>() : Runner.Documents(row);
-                    var preparation = new List<object>(); var inputs = Runner.TryInstanceInputs(instance, originals, preparation); var validationSchemas = schemas;
-                    if (inputs.Length != originals.Length)
+                    var plan = Runner.InstanceInputs(instance, originals, preparation); var validationSchemas = schemas;
+                    if (plan.Augmented)
                     {
-                        validationSchemas = new XmlSchemaSet { XmlResolver = resolver };
-                        validationSchemas.ValidationEventHandler += (_, e) => { if (e.Severity == XmlSeverityType.Error) errors.Add(e.Message); else warnings.Add(e.Message); };
-                        var prepared = Runner.Input(inputs); using var preparedStream = prepared.Input;
-                        using var preparedReader = XmlReader.Create(preparedStream, new XmlReaderSettings { DtdProcessing = DtdProcessing.Prohibit, XmlResolver = resolver, MaxCharactersInDocument = 67_108_864 }, prepared.Source.AbsoluteUri);
+                        validationSchemas = new XmlSchemaSet { XmlResolver = instanceResolver };
+                        validationSchemas.ValidationEventHandler += (_, e) => { if (e.Severity == XmlSeverityType.Error) instanceErrors.Add(e.Message); else instanceWarnings.Add(e.Message); };
+                        var prepared = Runner.InstanceInput(plan); using var preparedStream = prepared.Input;
+                        using var preparedReader = XmlReader.Create(preparedStream, new XmlReaderSettings { DtdProcessing = DtdProcessing.Prohibit, XmlResolver = instanceResolver, MaxCharactersInDocument = 67_108_864 }, prepared.Source.AbsoluteUri);
                         validationSchemas.Add(null, preparedReader); validationSchemas.Compile();
-                        if (errors.Count > 0) { Runner.Emit(instance, new("schema-unavailable", string.Join("; ", errors), [], resolver.Requests.ToArray()), "bcl", output); continue; }
+                        if (instanceErrors.Count > 0)
+                        {
+                            Runner.Emit(instance, new("schema-unavailable", string.Join("; ", instanceErrors.Concat(instanceWarnings.Select(w => "warning: " + w))), [], [.. preparation, .. instanceResolver.Requests]), "bcl", output); continue;
+                        }
                     }
                     var settings = new XmlReaderSettings { Schemas = validationSchemas, ValidationType = ValidationType.Schema, DtdProcessing = DtdProcessing.Prohibit, XmlResolver = null, MaxCharactersInDocument = 67_108_864 };
-                    // Deliberately ignore xsi schema-location hints; use exactly the compiled metadata schema.
                     settings.ValidationFlags = XmlSchemaValidationFlags.ProcessIdentityConstraints | XmlSchemaValidationFlags.AllowXmlAttributes | XmlSchemaValidationFlags.ReportValidationWarnings;
-                    settings.ValidationEventHandler += (_, e) => { if (e.Severity == XmlSeverityType.Error) errors.Add(e.Message); else warnings.Add(e.Message); };
+                    settings.ValidationEventHandler += (_, e) => { if (e.Severity == XmlSeverityType.Error) instanceErrors.Add(e.Message); else instanceWarnings.Add(e.Message); };
                     using var stream = File.OpenRead(path); using var reader = XmlReader.Create(stream, settings, Runner.UriFor(Runner.Documents(instance).Single()).AbsoluteUri);
                     bool assessed = ReadAssessment(reader);
-                    actual = new(errors.Count > 0 ? "instance-invalid" : !assessed ? "instance-unassessed" : "instance-valid", string.Join("; ", errors.Concat(warnings.Select(w => "warning: " + w))), [], [new { kind = "explicit-instance-schema-inputs", inputs }, .. preparation, .. resolver.Requests]);
+                    actual = new(instanceErrors.Count > 0 ? "instance-invalid" : !assessed ? "instance-unassessed" : "instance-valid", string.Join("; ", instanceErrors.Concat(instanceWarnings.Select(w => "warning: " + w))), [], [.. preparation, .. instanceResolver.Requests]);
+                    if (plan.Limitations.Length > 0) actual = actual with { Outcome = "instance-hint-ordering-limitation", Detail = string.Join("; ", plan.Limitations) + "; supplemental engine result: " + actual.Outcome + ": " + actual.Detail };
                 }
-                catch (Exception e) { actual = new(ExceptionOutcome(e, schema: false), e.GetType().Name + ": " + e.Message, [], []); }
+                catch (Exception e) { actual = new(e is Runner.HintNamespaceException ? "instance-hint-namespace-mismatch" : e is XmlSchemaException and not XmlSchemaValidationException ? "schema-unavailable" : ExceptionOutcome(e, schema: false), e.GetType().Name + ": " + e.Message, [], [.. preparation, .. instanceResolver.Requests]); }
             }
             Runner.Emit(instance, actual, "bcl", output);
         }

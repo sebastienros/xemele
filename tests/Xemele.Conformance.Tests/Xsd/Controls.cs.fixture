@@ -16,6 +16,39 @@ internal static class Controls
         settings.ValidationEventHandler+=(_,e)=>{ if(e.Severity==XmlSeverityType.Error) throw e.Exception; };
         using var reader=XmlReader.Create(new StringReader(instance),settings);return BclEngine.ReadAssessment(reader);
     }
+    private static System.Text.Json.JsonElement Row(string id, string document)
+    {
+        using var row=System.Text.Json.JsonDocument.Parse(System.Text.Json.JsonSerializer.Serialize(new { id, documents=new[] {document}, classification="applicable", expected="valid", kind="instance" }));return row.RootElement.Clone();
+    }
+    private static void HintControls()
+    {
+        string root=Path.Combine(Path.GetTempPath(),"xsd-hint-controls-"+Guid.NewGuid().ToString("N"));string upstream=Path.Combine(root,"upstream");Directory.CreateDirectory(Path.Combine(upstream,"base/child"));
+        File.WriteAllText(Path.Combine(root,"external-resources.json"),"[]");Runner.Root=upstream;
+        const string first="<xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema' targetNamespace='urn:first'><xs:element name='r'/></xs:schema>";
+        string second="<xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema' xmlns:n='urn:second' targetNamespace='urn:second'><xs:include schemaLocation='missing-second-child.xsd'/><xs:element name='r' type='n:MissingType'/></xs:schema>";
+        var files=new Dictionary<string,string> { ["first.xsd"]=first,["second.xsd"]=second,["first.xml"]="<r xmlns='urn:first' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xsi:schemaLocation='urn:first first.xsd'/>",["second.xml"]="<r xmlns='urn:second' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xsi:schemaLocation='urn:second second.xsd'/>",["mismatch.xml"]="<r xmlns='urn:first' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xsi:schemaLocation='urn:wrong first.xsd'/>",["nested.xml"]="<r xml:base='base/' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'><s xml:base='child/' xmlns='urn:second' xsi:schemaLocation='urn:second deep.xsd'/></r>",["base/child/deep.xsd"]="<xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema' targetNamespace='urn:second'><xs:element name='s'/></xs:schema>",["late.xml"]="<r xmlns:q='urn:first' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xsi:type='q:T'><r xmlns='urn:first' xsi:schemaLocation='urn:first first.xsd'/></r>" };
+        foreach(var file in files)File.WriteAllText(Path.Combine(upstream,file.Key),file.Value);
+        Runner.OriginalPaths=files.Keys.Append("missing-second-child.xsd").ToHashSet(StringComparer.Ordinal);
+        try
+        {
+            var valid=Xemele.Validation.XmlSchema.Compile(first).Validate(files["mismatch.xml"]);Require(valid.IsComplete&&valid.IsValid,"namespace mismatch fixture is otherwise valid against explicit original schema");
+            var journal=new List<object>();bool mismatch=false;try { Runner.InstanceInputs(Row("mismatch","mismatch.xml"),[],journal); } catch(Runner.HintNamespaceException) { mismatch=true; }
+            Require(mismatch&&System.Text.Json.JsonSerializer.Serialize(journal).Contains("urn:wrong",StringComparison.Ordinal),"authored namespace mismatch refuses staging and retains original pair");
+            var descendant=Runner.InstanceInputs(Row("nested","nested.xml"),[],new());Require(descendant.Augmented&&descendant.Inputs.Single().Location==Runner.Origin+"base/child/deep.xsd"&&descendant.Inputs.Single().Element.Contains("element[1]",StringComparison.Ordinal),"descendant hint retains inherited xml:base and element provenance");
+            var late=Runner.InstanceInputs(Row("late","late.xml"),[],new());Require(late.Limitations.Length==1,"namespace use before descendant hint remains explicit ordering limitation");
+            var group=new { id="controls",metadata="controls",schema=(object?)null,instances=new[] {Row("first","first.xml"),Row("second","second.xml")},supplementalInstances=Array.Empty<object>() };
+            string inventory=Path.Combine(root,"inventory.json");File.WriteAllText(inventory,System.Text.Json.JsonSerializer.Serialize(new { groups=new[] {group} }));
+            foreach(string engine in new[] {"product","bcl"})
+            {
+                string output=Path.Combine(root,engine+".jsonl");Require(Runner.Main([upstream,inventory,"controls",engine,output])==0,engine+" bounded journal control child completed");
+                var rows=File.ReadAllLines(output);Require(rows.Length==2,engine+" exact two-instance control observations");
+                using var one=System.Text.Json.JsonDocument.Parse(rows[0]);using var two=System.Text.Json.JsonDocument.Parse(rows[1]);
+                string resources=two.RootElement.GetProperty("resources").ToString();
+                Require(one.RootElement.GetProperty("actual").GetString()=="instance-valid"&&two.RootElement.GetProperty("passed").ValueKind==System.Text.Json.JsonValueKind.False&&resources.Contains("second.xsd",StringComparison.Ordinal)&&resources.Contains("missing-second-child.xsd",StringComparison.Ordinal)&&!resources.Contains("first.xsd",StringComparison.Ordinal),engine+" failed second staging retains its own requests without first-instance leakage");
+            }
+        }
+        finally {Directory.Delete(root,true);Runner.OriginalPaths=null;}
+    }
     internal static int Run()
     {
         const string schema="<xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema'><xs:element name='r'><xs:complexType><xs:sequence><xs:any processContents='lax' minOccurs='0'/></xs:sequence></xs:complexType></xs:element></xs:schema>";
@@ -37,6 +70,7 @@ internal static class Controls
         finally { Directory.Delete(root,recursive:true);Runner.OriginalPaths=null; }
         Require(Runner.Oracle("invalid","incomplete-refusal","schema")==false && Runner.Oracle("invalid","timeout","instance")==false && Runner.Oracle("invalid","harness-exception","schema")==false,"refusal timeout and harness exception cannot satisfy invalid oracle");
         Require(Runner.Oracle("indeterminate","instance-valid","instance") is null && Runner.Oracle("indeterminate","incomplete-refusal","instance")==false,"indeterminate semantic observations and refusal stay separate");
+        HintControls();
         return 0;
     }
 }

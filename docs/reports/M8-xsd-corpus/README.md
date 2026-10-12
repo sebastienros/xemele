@@ -72,3 +72,19 @@ attributes), its hint-preparation warning is retained, then each engine receives
 unchanged original bytes against the explicit metadata set. The staging parser's
 limitations cannot suppress execution of the product. BCL XML1.1 rejection is an
 explicit reference policy refusal, separate from schema/instance semantic validity.
+
+Bounded hint review corrections preserve each authored namespace/location pair,
+encounter order, element identity and inherited xml:base. New namespaces use their
+first authored hint; later hints for an already-supplied namespace are retained
+without fetch. A namespace/targetNamespace mismatch is an explicit staging failure,
+never an expected-invalid product pass. Descendant hints are collected. A namespace
+used before its first descendant hint is reported as an ordering adaptation
+limitation; a precompiled supplemental engine result cannot establish conformance
+for that case. Per-instance resolver/input journals survive success and exceptions
+and do not accumulate requests from earlier instances.
+
+Twenty runtime harness controls pass, including an otherwise-valid namespace
+mismatch witness, nested xml:base descendant hint, early namespace use/late hint
+limitation, and two-instance success/failure journals for both actual engines.
+Six metadata controls and six supervisor controls pass. This bounded revision is
+frozen for source review before another full corpus run.

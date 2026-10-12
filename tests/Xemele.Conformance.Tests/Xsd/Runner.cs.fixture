@@ -25,46 +25,83 @@ internal static class Runner
     }
     internal static Uri UriFor(string name) => Uri.TryCreate(name, UriKind.Absolute, out var uri) ? uri : new Uri(Origin + name);
     internal static IEnumerable<JsonElement> Instances(JsonElement group) => group.GetProperty("instances").EnumerateArray().Concat(group.GetProperty("supplementalInstances").EnumerateArray());
-    internal static string[] TryInstanceInputs(JsonElement row, string[] originals, List<object> preparation)
+    internal sealed record SchemaInput(string Location, string Namespace, bool Hint, string Element, string BaseUri);
+    internal sealed record InstancePlan(SchemaInput[] Inputs, bool Augmented, string[] Limitations);
+    internal static InstancePlan InstanceInputs(JsonElement row, string[] originals, List<object> journal)
     {
-        try { return InstanceInputs(row, originals); }
+        var originalInputs = originals.Select(name => new SchemaInput(name, TargetNamespace(UriFor(name)), false, "metadata", UriFor(name).AbsoluteUri)).ToArray();
+        var inputs = originalInputs.ToList(); var known = originalInputs.Select(i => i.Namespace).ToHashSet(StringComparer.Ordinal);
+        var used = new Dictionary<string, int>(StringComparer.Ordinal); var limits = new List<string>();
+        var source = UriFor(Documents(row).Single());
+        try
+        {
+            using var stream = File.OpenRead(PathFor(source));
+            using var reader = System.Xml.XmlReader.Create(stream, new System.Xml.XmlReaderSettings { DtdProcessing = System.Xml.DtdProcessing.Ignore, XmlResolver = null, MaxCharactersInDocument = 67_108_864 }, source.AbsoluteUri);
+            var bases = new Dictionary<int, Uri>(); int index = 0;
+            while (reader.Read())
+            {
+                if (reader.NodeType != System.Xml.XmlNodeType.Element) continue;
+                var basis = reader.Depth == 0 ? source : bases[reader.Depth - 1];
+                if (reader.GetAttribute("base", "http://www.w3.org/XML/1998/namespace") is { } xb) basis = new Uri(basis, xb);
+                bases[reader.Depth] = basis; string element = "element[" + index + "]/{" + reader.NamespaceURI + "}" + reader.LocalName;
+                const string xsi = "http://www.w3.org/2001/XMLSchema-instance";
+                void Hint(string ns, string location)
+                {
+                    var uri = new Uri(basis, location); bool supplied = known.Contains(ns);
+                    journal.Add(new { kind = "authored-instance-hint", namespaceUri = ns, location, uri = uri.AbsoluteUri, element, baseUri = basis.AbsoluteUri, policy = supplied ? "namespace already supplied; hint retained without fetch" : "first hint for namespace; explicit precompilation" });
+                    if (supplied) return;
+                    if (used.TryGetValue(ns, out int previous) && previous < index) limits.Add("Namespace " + ns + " was used at element " + previous + " before hint at " + element + "; explicit precompilation cannot reproduce ordered discovery.");
+                    known.Add(ns); inputs.Add(new(uri.AbsoluteUri, ns, true, element, basis.AbsoluteUri));
+                }
+                if (reader.GetAttribute("schemaLocation", xsi) is { } locations)
+                {
+                    var tokens = locations.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries);
+                    if (tokens.Length % 2 != 0) throw new IOException("Odd xsi:schemaLocation hint list at " + element);
+                    for (int i = 0; i < tokens.Length; i += 2) Hint(tokens[i], tokens[i + 1]);
+                }
+                if (reader.GetAttribute("noNamespaceSchemaLocation", xsi) is { } unqualified) Hint("", unqualified);
+                used.TryAdd(reader.NamespaceURI, index);
+                if (reader.GetAttribute("type", xsi) is { } type)
+                { int colon = type.IndexOf(':'); used.TryAdd(colon < 0 ? reader.LookupNamespace("") ?? "" : reader.LookupNamespace(type[..colon]) ?? "", index); }
+                if (reader.MoveToFirstAttribute())
+                { do { if (reader.NamespaceURI.Length > 0 && reader.NamespaceURI != xsi && reader.NamespaceURI != "http://www.w3.org/2000/xmlns/") used.TryAdd(reader.NamespaceURI, index); } while (reader.MoveToNextAttribute()); reader.MoveToElement(); }
+                index++;
+            }
+        }
         catch (System.Xml.XmlException e)
         {
-            // The staging parser is not the product's XML parser. Preserve its refusal
-            // visibly, then execute the unchanged original bytes against the explicit set.
-            preparation.Add(new { kind = "instance-hint-preparation-warning", detail = e.Message, policy = "unchanged original bytes and metadata schemas" });
-            return originals;
+            journal.Add(new { kind = "instance-hint-preparation-warning", detail = e.Message, policy = "unchanged original bytes and metadata schemas; no partial hint graph" });
+            return new(originalInputs, false, []);
         }
+        var plan = new InstancePlan(inputs.ToArray(), inputs.Count != originalInputs.Length, limits.ToArray());
+        journal.Add(new { kind = "explicit-instance-schema-inputs", inputs = plan.Inputs, limitations = plan.Limitations });
+        foreach (var hint in plan.Inputs.Where(i => i.Hint))
+        {
+            string actual = TargetNamespace(UriFor(hint.Location));
+            if (actual != hint.Namespace) throw new HintNamespaceException("Authored hint namespace '" + hint.Namespace + "' disagrees with original schema targetNamespace '" + actual + "' at " + hint.Location + " (" + hint.Element + ").");
+        }
+        return plan;
     }
-    internal static string[] InstanceInputs(JsonElement row, string[] originals)
+    internal sealed class HintNamespaceException(string message) : Exception(message);
+    internal static string TargetNamespace(Uri source)
     {
-        var source = UriFor(Documents(row).Single());
         using var stream = File.OpenRead(PathFor(source));
-        using var reader = System.Xml.XmlReader.Create(stream, new System.Xml.XmlReaderSettings { DtdProcessing = System.Xml.DtdProcessing.Ignore, XmlResolver = null, MaxCharactersInDocument = 67_108_864 }, source.AbsoluteUri);
+        using var reader = System.Xml.XmlReader.Create(stream, new System.Xml.XmlReaderSettings { DtdProcessing = System.Xml.DtdProcessing.Ignore, XmlResolver = null });
         while (reader.Read() && reader.NodeType != System.Xml.XmlNodeType.Element) { }
-        if (reader.NodeType != System.Xml.XmlNodeType.Element) return originals;
-        string? xb = reader.GetAttribute("base", "http://www.w3.org/XML/1998/namespace");
-        if (xb is not null) source = new Uri(source, xb);
-        const string xsi = "http://www.w3.org/2001/XMLSchema-instance";
-        var inputs = originals.ToList(); var knownNamespaces = new HashSet<string>(StringComparer.Ordinal);
-        foreach (var original in originals)
+        return reader.GetAttribute("targetNamespace") ?? "";
+    }
+    internal static (Stream Input, Uri Source) InstanceInput(InstancePlan plan)
+    {
+        if (!plan.Augmented) return Input(plan.Inputs.Select(i => i.Location).ToArray());
+        XNamespace xs = "http://www.w3.org/2001/XMLSchema";
+        var wrapper = new XElement(xs + "schema", new XAttribute("targetNamespace", "urn:xemele:xsd-corpus:wrapper"));
+        foreach (var input in plan.Inputs)
         {
-            using var originalStream = File.OpenRead(PathFor(UriFor(original)));
-            using var originalReader = System.Xml.XmlReader.Create(originalStream, new System.Xml.XmlReaderSettings { DtdProcessing = System.Xml.DtdProcessing.Ignore, XmlResolver = null });
-            while (originalReader.Read() && originalReader.NodeType != System.Xml.XmlNodeType.Element) { }
-            knownNamespaces.Add(originalReader.GetAttribute("targetNamespace") ?? "");
+            var import = new XElement(xs + "import", new XAttribute("schemaLocation", UriFor(input.Location).AbsoluteUri));
+            if (input.Namespace.Length > 0) import.Add(new XAttribute("namespace", input.Namespace));
+            wrapper.Add(import);
         }
-        string? locations = reader.GetAttribute("schemaLocation", xsi);
-        if (locations is not null)
-        {
-            var tokens = locations.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries);
-            if (tokens.Length % 2 != 0) throw new IOException("Odd xsi:schemaLocation hint list");
-            for (int i = 1; i < tokens.Length; i += 2) if (!knownNamespaces.Contains(tokens[i-1])) inputs.Add(new Uri(source, tokens[i]).AbsoluteUri);
-        }
-        if (!knownNamespaces.Contains("") && reader.GetAttribute("noNamespaceSchemaLocation", xsi) is { } unqualified) inputs.Add(new Uri(source, unqualified).AbsoluteUri);
-        var assembled = originals.ToList();
-        foreach (var hint in inputs.Skip(originals.Length)) if (!assembled.Any(n => UriFor(n).AbsoluteUri == UriFor(hint).AbsoluteUri)) assembled.Add(hint);
-        return assembled.ToArray();
+        return (new MemoryStream(System.Text.Encoding.UTF8.GetBytes(wrapper.ToString())), new Uri(Origin + "__instance_wrapper__.xsd"));
     }
     internal static string[] Documents(JsonElement row) => row.GetProperty("documents").EnumerateArray().Select(e => e.GetString()!).ToArray();
     internal static (Stream Input, Uri Source) Input(string[] documents)
@@ -111,6 +148,7 @@ internal static class Runner
             bool refusal = sc.Diagnostics.Any(d => d.Code.Contains("Limit", StringComparison.OrdinalIgnoreCase) || d.Code.Contains("Resource", StringComparison.OrdinalIgnoreCase));
             return new(refusal ? "incomplete-refusal" : "schema-invalid", string.Join("; ", sc.Diagnostics.Select(d => d.Code + ": " + d.Message)), sc.Diagnostics.Select(d=>d.Code).ToArray(), resolver.Requests.ToArray());
         }
+        if (e is HintNamespaceException) return new("instance-hint-namespace-mismatch", e.Message, [], resolver.Requests.ToArray());
         return new(e is IOException ? "harness-resource-error" : "harness-exception", e.GetType().FullName + ": " + e.Message, [], resolver.Requests.ToArray());
     }
     internal static bool? Oracle(string? expected, string actual, string kind) => expected switch
@@ -164,21 +202,23 @@ internal static class Runner
                 {
                     using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds((row.GetProperty("id").GetString() is "common/introspection.testSet#g0/i1:introspect-testSet-NIST2004-01-14-2" or "common/introspection.testSet#g0/i20:introspect-testSet-MS-DataTypes2006-07-15-21" or "common/introspection.testSet#g0/i28:introspect-testSet-MS-Regex2006-07-15-29") ? 60 : 30));
                     long work = (row.GetProperty("id").GetString() is "common/introspection.testSet#g0/i1:introspect-testSet-NIST2004-01-14-2" or "common/introspection.testSet#g0/i20:introspect-testSet-MS-DataTypes2006-07-15-21" or "common/introspection.testSet#g0/i28:introspect-testSet-MS-Regex2006-07-15-29") ? 20_000_000_000 : 100_000_000;
+                    var instanceResolver = new Resolver(); var preparation = new List<object>();
                     try
                     {
                         using var input = File.OpenRead(PathFor(UriFor(Documents(row).Single())));
                         var originals = sr.ValueKind == JsonValueKind.Null ? Array.Empty<string>() : Documents(sr);
-                        var preparation = new List<object>(); var inputs = TryInstanceInputs(row, originals, preparation); var validationSchema = schema; var instanceResolver = new Resolver();
-                        if (inputs.Length != originals.Length)
+                        var plan = InstanceInputs(row, originals, preparation); var validationSchema = schema;
+                        if (plan.Augmented)
                         {
-                            var prepared = Input(inputs); using var preparedStream = prepared.Input;
+                            var prepared = InstanceInput(plan); using var preparedStream = prepared.Input;
                             validationSchema = ProductSchema.Compile(preparedStream, new() { BaseUri = prepared.Source, Resolver = instanceResolver, Limits = Limits, MaxOperations = 100_000_000, MaxComponents = 1_000_000, CancellationToken = timeout.Token });
                         }
                         var result = validationSchema.Validate(input, new() { Limits = Limits with { EvaluationWork = work }, MaxOperations = work, CancellationToken = timeout.Token });
                         if (!input.CanRead) throw new InvalidOperationException("Validation disposed caller stream");
-                        actual = new(!result.IsComplete ? "incomplete-refusal" : result.IsValid ? "instance-valid" : "instance-invalid", string.Join("; ", result.Diagnostics.Select(d => d.Code + ": " + d.Message)), result.Diagnostics.Select(d => d.Code).ToArray(), [new { kind = "explicit-instance-schema-inputs", inputs }, .. preparation, .. instanceResolver.Requests]);
+                        actual = new(!result.IsComplete ? "incomplete-refusal" : result.IsValid ? "instance-valid" : "instance-invalid", string.Join("; ", result.Diagnostics.Select(d => d.Code + ": " + d.Message)), result.Diagnostics.Select(d => d.Code).ToArray(), [.. preparation, .. instanceResolver.Requests]);
+                        if (plan.Limitations.Length > 0) actual = actual with { Outcome = "instance-hint-ordering-limitation", Detail = string.Join("; ", plan.Limitations) + "; supplemental engine result: " + actual.Outcome + ": " + actual.Detail };
                     }
-                    catch (Exception e) { actual = Failure(e, resolver, timeout.Token); if (actual.Outcome == "schema-invalid") actual = actual with { Outcome = "schema-unavailable" }; }
+                    catch (Exception e) { actual = Failure(e, instanceResolver, timeout.Token); if (actual.Outcome == "schema-invalid") actual = actual with { Outcome = "schema-unavailable" }; actual = actual with { Resources = [.. preparation, .. actual.Resources] }; }
                 }
                 Emit(row, actual, engine, output);
             }
