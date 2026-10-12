@@ -194,14 +194,53 @@ internal static class Runner
         if (OriginalPaths is null) { using var inputs = JsonDocument.Parse(File.ReadAllText(Path.Combine(Path.GetDirectoryName(Root)!, "resources.json"))); OriginalPaths = inputs.RootElement.EnumerateArray().Select(r => r.GetProperty("path").GetString()!).ToHashSet(StringComparer.Ordinal); }
         return !OriginalPaths.Contains(Uri.UnescapeDataString(uri.AbsolutePath[8..]));
     }
+    internal static bool VerifiedOptionalMissing(XmlResourceRequest request)
+    {
+        if (request.Kind != XmlResourceKind.Schema || request.Referrer is null) return false;
+        (string Path, string SystemId, string Sha256)[] originals =
+        [
+            ("msData/datatypes/Facets/anyURI/anyURI_a002.xsd", "名前空間URI", "6fe2295e58bc2c226444741bfb0db225a1903e6a0aadfe87502f5e8fbf095ab7"),
+            ("msData/datatypes/Facets/anyURI/anyURI_a004.xsd", "http://127.0.0.1/must%20not%20resolve.xyzzy", "fba5b2235649ec219bc35c9ecef3d5d54e8876c6146a8b712a1c54537717fa4d"),
+            ("msData/schema/schD7_a.xsd", "not-exist.xsd", "dd187c8233f8eff1af2c5f2624e10120a2763c38b03cef51cb0df7b0767a7e4f"),
+            ("msData/schema/schG8_a.xsd", "not-exist", "f49e2f7bf71f025e46e435f13ad4ca10fb657234805cdb9eacaf8d1e7628cd93")
+        ];
+        foreach (var original in originals)
+        {
+            var principal = UriFor(original.Path);
+            if (request.Referrer != principal || request.SystemId != original.SystemId || request.Uri != new Uri(principal, original.SystemId)) continue;
+            if (!AuthoredUnavailable(request.Uri)) return false;
+            if (AuthoredUnavailable(principal)) throw new IOException("Optional principal absent from original catalog: " + principal);
+            // Catalog absence is distinct from a missing declared file. Never acquire an instance or use the network.
+            if (request.Uri.Scheme == "https" && request.Uri.Host == "w3c-xsd.test" &&
+                File.Exists(Path.Combine(Root, Uri.UnescapeDataString(request.Uri.AbsolutePath[8..]))))
+                throw new IOException("Uncatalogued optional resource exists: " + request.Uri);
+            using var source = File.OpenRead(PathFor(principal));
+            if (Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(source)).ToLowerInvariant() != original.Sha256)
+                throw new IOException("Optional principal differs from pinned original: " + principal);
+            return true;
+        }
+        return false;
+    }
     internal sealed class Resolver : XmlResourceResolver
     {
         internal readonly List<object> Requests = [];
         public override XmlResolvedResource? Resolve(XmlResourceRequest request, CancellationToken token)
         {
-            token.ThrowIfCancellationRequested(); Requests.Add(new { resolution = AuthoredUnavailable(request.Uri) ? "authored-unavailable" : "pinned-input", uri = request.Uri.AbsoluteUri, referrer = request.Referrer?.AbsoluteUri, kind = request.Kind.ToString(), systemId = request.SystemId });
+            token.ThrowIfCancellationRequested();
             if (request.Kind != XmlResourceKind.Schema) throw new IOException("Unexpected resource purpose");
-            return AuthoredUnavailable(request.Uri) ? null : new(File.OpenRead(PathFor(request.Uri)), request.Uri);
+            bool absent = AuthoredUnavailable(request.Uri);
+            Requests.Add(new { resolution = absent ? "legacy-null-denied" : "pinned-input", uri = request.Uri.AbsoluteUri, referrer = request.Referrer?.AbsoluteUri, kind = request.Kind.ToString(), systemId = request.SystemId });
+            return absent ? null : new(File.OpenRead(PathFor(request.Uri)), request.Uri);
+        }
+        public override XmlResourceResolution ResolveResult(XmlResourceRequest request, CancellationToken token)
+        {
+            token.ThrowIfCancellationRequested();
+            if (request.Kind != XmlResourceKind.Schema) throw new IOException("Unexpected resource purpose");
+            bool absent = AuthoredUnavailable(request.Uri);
+            bool optional = absent && VerifiedOptionalMissing(request);
+            Requests.Add(new { resolution = optional ? "explicit-unavailable" : absent ? "denied-unmapped-absence" : "pinned-input", uri = request.Uri.AbsoluteUri, referrer = request.Referrer?.AbsoluteUri, kind = request.Kind.ToString(), systemId = request.SystemId });
+            if (absent) return optional ? XmlResourceResolution.Unavailable : XmlResourceResolution.Denied;
+            return XmlResourceResolution.FromResource(new(File.OpenRead(PathFor(request.Uri)), request.Uri));
         }
     }
     internal static Observation Failure(Exception e, Resolver resolver, CancellationToken token)
@@ -228,6 +267,7 @@ internal static class Runner
     {
         if (args.Length == 1 && args[0] == "--controls") return Controls.Run();
         if (args.Length == 2 && args[0] == "--hint-profile-controls") return Controls.HintProfile(args[1]);
+        if (args.Length == 2 && args[0] == "--optional-profile-controls") return Controls.OptionalProfile(args[1]);
         Root = Path.GetFullPath(args[0]); using var inventory = JsonDocument.Parse(File.ReadAllText(args[1]));
         string set = args[2], engine = args[3]; using var output = new StreamWriter(args[4], append: true) { AutoFlush = true };
         int from = args.Length > 5 ? int.Parse(args[5], System.Globalization.CultureInfo.InvariantCulture) : 0, index = -1;

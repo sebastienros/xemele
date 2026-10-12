@@ -63,10 +63,11 @@ def approved_sources():
 
     for name in ('schema_cases', 'instance_cases'):
         for record in standards[name]:
-            add(record, 'standards-original-disagreement', record['current_product_outcome'])
+            add(record, 'standards-original-disagreement', record['current_product_outcome'],
+                [] if record['current_product_outcome'].endswith('-valid') else ['XSD.SchemaRestriction'])
     for record in standards['dependent_unassessed_instances']:
         assert record['instance_assessed'] is False
-        add(record, 'standards-dependent-unassessed', record['current_product_outcome'])
+        add(record, 'standards-dependent-unassessed', record['current_product_outcome'], ['XSD.SchemaRestriction'])
     for record in limitations['fatal_xml']:
         add(record, 'fatal-XML-unassessed', record['baseline_actual'], ['SCHEMA.Syntax'])
     record = limitations['namespace_guard']
@@ -98,16 +99,8 @@ def gate_disposition(row):
     codes = row.get('codes')
     if not isinstance(codes, list) or any(not isinstance(code, str) for code in codes):
         return None
-    if record['codes'] is not None:
-        if codes != record['codes']:
-            return None
-    elif record['actual'].endswith('-valid'):
-        if codes:
-            return None
-    else:
-        # Semantic schema rejection/dependency only; quotas, syntax and resource failures cannot inherit an exception.
-        if not codes or any(not code.startswith('SCHEMA.') or code == 'SCHEMA.Syntax' or
-                            any(word in code.lower() for word in ('limit', 'resource', 'cancel', 'timeout', 'internal', 'harness'))
-                            for code in codes):
-            return None
+    # All 23 preserved source80 standards witnesses use exactly [] or [XSD.SchemaRestriction].
+    # Exact diagnostic binding also prevents quotas/resources/syntax/harness failures inheriting approval.
+    if codes != record['codes']:
+        return None
     return record['category']

@@ -42,6 +42,98 @@ internal static class Controls
         }
         finally { Runner.Root = saved; if (Directory.Exists(temporary)) Directory.Delete(temporary, true); }
     }
+    internal static int OptionalProfile(string upstream)
+    {
+        string saved = Runner.Root; var savedPaths = Runner.OriginalPaths;
+        Runner.Root = Path.GetFullPath(upstream); Runner.OriginalPaths = null;
+        using var facts = System.Text.Json.JsonDocument.Parse(File.ReadAllText(Path.Combine(Path.GetDirectoryName(upstream)!, "verified-optional-inputs.json")));
+        using var inventory = System.Text.Json.JsonDocument.Parse(File.ReadAllText(Path.Combine(Path.GetDirectoryName(upstream)!, "inventory.json")));
+        var rows = inventory.RootElement.GetProperty("groups").EnumerateArray().SelectMany(g =>
+            (g.GetProperty("schema").ValueKind == System.Text.Json.JsonValueKind.Null ? Array.Empty<System.Text.Json.JsonElement>() : new[] { g.GetProperty("schema") }).Concat(Runner.Instances(g))).ToDictionary(r => r.GetProperty("id").GetString()!);
+        string Hash(string path) => Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(File.ReadAllBytes(Path.Combine(upstream, path)))).ToLowerInvariant();
+        bool ThrowsIo(Action action) { try { action(); return false; } catch (IOException) { return true; } }
+        try
+        {
+            foreach (var original in facts.RootElement.GetProperty("cases").EnumerateArray())
+            {
+                var row = rows[original.GetProperty("id").GetString()!];
+                Require(row.GetProperty("expected").GetString() == original.GetProperty("original_expected").GetString() &&
+                    System.Text.Json.JsonSerializer.Serialize(row.GetProperty("currentStatus")) == System.Text.Json.JsonSerializer.Serialize(original.GetProperty("original_status")), "optional original oracle/status retained " + row.GetProperty("id").GetString());
+                foreach (var pin in original.GetProperty("documents").EnumerateObject())
+                    Require(Hash(pin.Name) == pin.Value.GetString(), "optional unchanged original SHA " + pin.Name);
+            }
+            foreach (var neighbor in facts.RootElement.GetProperty("available_neighbors").EnumerateObject())
+                Require(Hash(neighbor.Name) == neighbor.Value.GetString(), "optional available neighbor SHA " + neighbor.Name);
+            var originals = facts.RootElement.GetProperty("cases").EnumerateArray().ToArray();
+            foreach (var missing in facts.RootElement.GetProperty("missing_requests").EnumerateArray())
+            {
+                string principalPath = missing.GetProperty("principal").GetString()!, systemId = missing.GetProperty("system_id").GetString()!;
+                var principal = Runner.UriFor(principalPath); var request = new Xemele.XmlResourceRequest(new Uri(principal, systemId), principal, Xemele.XmlResourceKind.Schema) { SystemId = systemId };
+                Require(Runner.AuthoredUnavailable(request.Uri) && Runner.VerifiedOptionalMissing(request), "exact catalog absence URI/referrer/systemId binding " + principalPath);
+                var originalSchema = originals.Single(c => c.GetProperty("kind").GetString() == "schema" && c.GetProperty("documents").TryGetProperty(principalPath, out _));
+                string group = originalSchema.GetProperty("id").GetString()!.Split("/s:", StringSplitOptions.None)[0];
+                var originalInstance = originals.Single(c => c.GetProperty("kind").GetString() == "instance" && c.GetProperty("id").GetString()!.StartsWith(group + "/i", StringComparison.Ordinal));
+                string instancePath = originalInstance.GetProperty("documents").EnumerateObject().Single().Name;
+                var resolver = new Runner.Resolver();
+                using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(30));
+                using var source = File.OpenRead(Runner.PathFor(principal));
+                var schema = Xemele.Validation.XmlSchema.Compile(source, new() { BaseUri = principal, Resolver = resolver, Limits = Runner.Limits, MaxOperations = 100_000_000, MaxComponents = 1_000_000, CancellationToken = timeout.Token });
+                Require(source.CanRead, "optional compile preserves caller stream " + principalPath);
+                using var instance = File.OpenRead(Runner.PathFor(Runner.UriFor(instancePath)));
+                var result = schema.Validate(instance, new() { Limits = Runner.Limits, MaxOperations = 100_000_000, CancellationToken = timeout.Token });
+                Require(result.IsComplete && result.IsValid && instance.CanRead, "optional actual complete VALID; caller instance retained " + instancePath);
+                using var journal = System.Text.Json.JsonDocument.Parse(System.Text.Json.JsonSerializer.Serialize(resolver.Requests));
+                Require(journal.RootElement.GetArrayLength() == missing.GetProperty("callback_count").GetInt32() &&
+                    journal.RootElement.EnumerateArray().All(r => r.GetProperty("kind").GetString() == "Schema" && r.GetProperty("referrer").GetString() == principal.AbsoluteUri), "optional exact callback count/kind/referrer; no instance acquisition " + principalPath);
+                var absent = journal.RootElement.EnumerateArray().Where(r => r.GetProperty("resolution").GetString() == "explicit-unavailable").ToArray();
+                Require(absent.Length == (principalPath.Contains("anyURI_", StringComparison.Ordinal) ? 3 : 1) && absent.All(r => r.GetProperty("uri").GetString() == request.Uri.AbsoluteUri && r.GetProperty("systemId").GetString() == systemId), "optional missing callback identities retained " + principalPath);
+                string expected = originalInstance.GetProperty("original_expected").GetString()!;
+                Require(Runner.Oracle(expected, "instance-valid", "instance") == (expected == "valid"), "optional original expected outcome preserved " + instancePath);
+                if (expected == "invalid")
+                    Require(facts.RootElement.GetProperty("derived_a004").GetProperty("source").GetString() == "https://www.w3.org/Bugs/Public/show_bug.cgi?id=4126" &&
+                        Runner.Oracle("invalid", "instance-valid", "instance") == false, "a004 original INVALID mismatch versus separate W3C4126 derived VALID");
+                Require(Hash(principalPath) == missing.GetProperty("principal_sha256").GetString() && Hash(instancePath) == originalInstance.GetProperty("documents").GetProperty(instancePath).GetString(), "optional original bytes unchanged after compile/validate " + principalPath);
+                Require(new Runner.Resolver().Resolve(request, default) is null && new LegacyMissing().ResolveResult(request, default).Status == Xemele.XmlResourceResolutionStatus.Denied, "legacy null remains denial " + principalPath);
+                foreach (var changed in new[] { request with { Referrer = Runner.UriFor("other.xsd") }, request with { SystemId = systemId + "-other" }, request with { Uri = Runner.UriFor("other-absent.xsd") } })
+                    Require(new Runner.Resolver().ResolveResult(changed, default).Status == Xemele.XmlResourceResolutionStatus.Denied, "changed callback binding denied " + principalPath);
+                Require(ThrowsIo(() => new Runner.Resolver().ResolveResult(request with { Kind = Xemele.XmlResourceKind.ExternalEntity }, default)), "non-schema purpose rejected " + principalPath);
+                using var cancelled = new CancellationTokenSource(); cancelled.Cancel(); var cancellationResolver = new Runner.Resolver(); bool stopped = false;
+                try { cancellationResolver.ResolveResult(request, cancelled.Token); } catch (OperationCanceledException) { stopped = true; }
+                Require(stopped && cancellationResolver.Requests.Count == 0, "cancel before resolver acquisition " + principalPath);
+            }
+            string temporary = Path.GetFullPath(Path.Combine(upstream, "../../../../artifacts/M8-xsd-corpus/optional-binding-" + Guid.NewGuid().ToString("N")));
+            string tempUpstream = Path.Combine(temporary, "upstream");
+            var firstMissing = facts.RootElement.GetProperty("missing_requests")[0];
+            string originalPath = firstMissing.GetProperty("principal").GetString()!, authoredMissing = firstMissing.GetProperty("system_id").GetString()!;
+            string copied = Path.Combine(tempUpstream, originalPath); Directory.CreateDirectory(Path.GetDirectoryName(copied)!);
+            try
+            {
+                File.Copy(Path.Combine(upstream, originalPath), copied);
+                foreach (string file in new[] { "resources.json", "external-resources.json" }) File.Copy(Path.Combine(Path.GetDirectoryName(upstream)!, file), Path.Combine(temporary, file));
+                Runner.Root = tempUpstream; Runner.OriginalPaths = null;
+                var principal = Runner.UriFor(originalPath);
+                var callback = new Xemele.XmlResourceRequest(new Uri(principal, authoredMissing), principal, Xemele.XmlResourceKind.Schema) { SystemId = authoredMissing };
+                Require(new Runner.Resolver().ResolveResult(callback, default).Status == Xemele.XmlResourceResolutionStatus.Unavailable, "identical principal/catalog copies preserve exact optional absence");
+                File.AppendAllText(copied, " ");
+                Require(ThrowsIo(() => new Runner.Resolver().ResolveResult(callback, default)), "changed principal SHA is harness error, never Unavailable");
+                File.Copy(Path.Combine(upstream, originalPath), copied, true);
+                string absent = Path.Combine(Path.GetDirectoryName(copied)!, authoredMissing); File.WriteAllText(absent, "<schema/>");
+                Require(ThrowsIo(() => new Runner.Resolver().ResolveResult(callback, default)), "uncatalogued existing dependency is harness error, never Unavailable");
+            }
+            finally { Runner.Root = Path.GetFullPath(upstream); Runner.OriginalPaths = null; Directory.Delete(temporary, true); }
+            // Initialize the original catalog before making an isolated declared-but-missing control entry.
+            Runner.AuthoredUnavailable(Runner.UriFor("declared-but-missing.xsd"));
+            var declaredMissing = new Xemele.XmlResourceRequest(Runner.UriFor("declared-but-missing.xsd"), Runner.UriFor("principal.xsd"), Xemele.XmlResourceKind.Schema) { SystemId = "declared-but-missing.xsd" };
+            Runner.OriginalPaths = new(Runner.OriginalPaths!, StringComparer.Ordinal) { "declared-but-missing.xsd" };
+            Require(ThrowsIo(() => new Runner.Resolver().ResolveResult(declaredMissing, default)), "declared missing file remains harness error, never Unavailable");
+            return 0;
+        }
+        finally { Runner.Root = saved; Runner.OriginalPaths = savedPaths; }
+    }
+    private sealed class LegacyMissing : Xemele.XmlResourceResolver
+    {
+        public override Xemele.XmlResolvedResource? Resolve(Xemele.XmlResourceRequest request, CancellationToken cancellationToken) => null;
+    }
     private static void Require(bool condition, string label) { if (!condition) throw new InvalidOperationException(label); Console.WriteLine("PASS " + label); }
     private static string XmlFailure(string input, long maximum)
     {

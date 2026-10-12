@@ -7,6 +7,7 @@ _spec=importlib.util.spec_from_file_location('approved_dispositions',Path(__file
 _approved=importlib.util.module_from_spec(_spec);_spec.loader.exec_module(_approved)
 approved_sources=_approved.approved_sources
 TIME='msMeta/DataTypes_w3c.xml#g119/s:time_maxInclusive007_119'
+OPTIONAL_A004='msMeta/DataTypes_w3c.xml#g1339/i0:anyURI_a004_1339.i'
 ERR='msMeta/Errata10_w3c.xml#g18/s:errF001'
 DEP='msMeta/Errata10_w3c.xml#g18/i0:errF001.i'
 XMLFILE=ROOT/'tests/corpora/xsd/xmlversions-adjudication.json'
@@ -27,7 +28,7 @@ FATALXML={c['id'] for c in ADAPTER.get('fatal_xml',[])}
 NAMECHAR=ADAPTER.get('namechar_case',{})
 def view(row):
  result={'originalPassed':row.get('passed'),'profilePassed':row.get('passed'),'approvedException':False,'notExecutable':False,'substrate':False,'invalidSchemaDependency':False,'applicationInputUnassessed':False,'adapterUnassessed':False,'fatalXmlUnassessed':False}
- if row['id']==TIME:result['approvedException']=row['actual']=='schema-valid' and row.get('passed') is False
+ if row['id']==TIME:result['approvedException']=row['actual']=='schema-valid' and row.get('passed') is False and row.get('engine') in (None,'product') and row.get('expected','invalid')=='invalid'
  elif row['id']==ERR:result['profilePassed']=row['actual']=='schema-invalid'
  elif row['id']==DEP:
   result['notExecutable']=row['actual']=='schema-unavailable';result['profilePassed']=None if result['notExecutable'] else False
@@ -51,6 +52,9 @@ def view(row):
  if row['id'] in FATALXML:
   fatal=row['actual'] in ['incomplete-refusal','instance-syntax-error']
   result['profilePassed']=None if fatal else False;result['fatalXmlUnassessed']=fatal
+ if row['id']==OPTIONAL_A004 and row.get('engine')=='product':
+  result['profilePassed']=row.get('expected')=='invalid' and row['actual']=='instance-valid' and row.get('codes')==[]
+  result['profileAuthority']='verified optional composition; W3C4126 derived VALID, original INVALID unchanged'
  result['approvedGateDisposition']=_approved.gate_disposition(row)
  return result
 

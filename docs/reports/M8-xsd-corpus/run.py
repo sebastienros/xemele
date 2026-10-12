@@ -93,7 +93,12 @@ def inspect_rows(spec):
         for field in ('classification', 'kind', 'expected'):
             assert row[field] == expected[field], f'{row["id"]}: changed {field}'
         assert row['engine'] == spec['engine'], 'engine identity differs'
+        assert not row['actual'].startswith('harness-'), 'harness observation cannot complete a set'
         assert row['passed'] is None or type(row['passed']) is bool, 'invalid original result'
+        if row['passed'] is True:
+            assert row['actual'] in ('schema-valid', 'schema-invalid', 'instance-valid', 'instance-invalid'), 'refusal cannot be a validity pass'
+            if row['expected'] in ('valid', 'invalid'):
+                assert row['actual'] == row['kind'] + '-' + row['expected'], 'original outcome cannot be promoted'
     return rows
 
 
@@ -123,9 +128,9 @@ def execute_cases(cases, outdir, environment, work_deadline, hard_deadline):
             result['rawResultsInspected'] += len(rows)
             counts = collections.Counter('excluded' if r['classification'] == 'excluded' else
                                          'unresolved' if r['classification'] == 'unresolved' else
-                                         'originalPassed' if r['passed'] is True else
-                                         'originalNonpassed' if r['passed'] is False else
-                                         'originalIndeterminateObserved' for r in rows)
+                                         'observationPassed' if r['passed'] is True else
+                                         'observationNonpassed' if r['passed'] is False else
+                                         'observationIndeterminate' for r in rows)
             total = collections.Counter(result['countsByEngine'].get(spec['engine'], {}))
             total.update(counts)
             result['countsByEngine'][spec['engine']] = dict(total)
@@ -156,9 +161,20 @@ def revision():
     return subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True, timeout=5).strip()
 
 
-def prepare(path):
+def prepare(path, controls_receipt):
     """Freeze only after future verified optional join, fresh build and accepted actual controls."""
     dependencies = verified_dependencies()
+    assert controls_receipt.name == 'controls-cleanup.json' and OUT.resolve() in controls_receipt.resolve().parents, 'owned actual preparation receipt required'
+    controls = json.loads(controls_receipt.read_text())
+    assert controls['completed'] is True and controls['deadlineExceeded'] is False
+    assert controls['sourceRevision'] == controls['currentRevision'] == revision(), 'controls must test this exact source'
+    assert controls['runnerSha256'] == digest(DLL), 'runner must match actual successful fresh-build controls'
+    commands_file = controls_receipt.with_name('commands.json')
+    commands = json.loads(commands_file.read_text())
+    assert commands['sourceRevision'] == revision() and len(controls['sequence']) == len(commands['commands']) == 10
+    for index, record in enumerate(controls['sequence']):
+        assert record['command'] == index and supervision.workload_succeeded(record), 'actual control child failed or unclean'
+    assert commands['commands'][0][1:3] == ['build', 'tests/Xemele.Conformance.Tests/Xsd/Corpus.Runner.csproj']
     assert not subprocess.check_output(['git', 'status', '--porcelain'], cwd=ROOT, text=True, timeout=5).strip(), 'source must be clean'
     inventory = json.loads((CORPUS / 'inventory.json').read_text())
     assert inventory['revision'] == PIN and len(inventory['testSets']) == 93
@@ -185,6 +201,8 @@ def prepare(path):
     for file in runtime.rglob('*'):
         if file.is_file():
             identities[str(file)] = digest(file)
+    for receipt in [controls_receipt, commands_file] + [controls_receipt.with_name(f'lifecycle-{index:03d}.json') for index in range(10)]:
+        identities[str(receipt.relative_to(ROOT))] = digest(receipt)
     assert str(DLL.relative_to(ROOT)) in identities, 'runner absent'
     assert not mismatches(identities), 'input identity changed before freeze'
     manifest = dict(sourceRevision=revision(), upstreamRevision=PIN, runtime=RUNTIME,
@@ -247,11 +265,14 @@ def main():
     group.add_argument('--prepare', type=Path)
     group.add_argument('--manifest', type=Path)
     parser.add_argument('--manifest-sha256')
+    parser.add_argument('--controls-receipt', type=Path)
     args = parser.parse_args()
     if args.prepare:
         assert args.manifest_sha256 is None
-        prepare(args.prepare)
+        assert args.controls_receipt, 'actual bounded preparation receipt required'
+        prepare(args.prepare.resolve(), args.controls_receipt.resolve())
         return 0
+    assert args.controls_receipt is None
     assert args.manifest_sha256, 'explicit frozen manifest hash required'
     return campaign(args.manifest, args.manifest_sha256)
 
