@@ -76,18 +76,36 @@
       "result": "passed",
       "summary": "Actual Arm64 .NET10.0.11: 731 selected tests passed (86 own/645 affected), zero failures/errors/skips/not-run; first count assertion corrected from invented >800 to exact731 without rerunning passing tests. PublicAPI1410 and frozenDatatypes316/Facets316 unchanged; normal/trueXMLonly consumers passed;182 planning and whitespace checks pass. No allocation counters.",
       "artifact": "docs/reports/M8-datatype-constraint-lexical/correctness.md"
+    },
+    {
+      "id": "independent-source-review",
+      "kind": "review",
+      "revision": "a58aed481ea2c6831111b73d037f92d1da21a2c1",
+      "command": null,
+      "result": "passed",
+      "summary": "Coordinator conveyed final source acceptance by existing /root/review_m8_contract and /root/review_m8_model; semantic/normative and accounting/ownership scopes, no blockers. Worker independently matched all five canonical file hashes. This is source review, not test execution.",
+      "artifact": "docs/reports/M8-datatype-constraint-lexical/source-review.md"
+    },
+    {
+      "id": "coordinator-combined-correctness",
+      "kind": "integration",
+      "revision": "e66a40943021b76c57923d3440446c4bfdcb43d0",
+      "command": "python3 docs/reports/M8-datatype-constraint-lexical/checks.py",
+      "result": "passed",
+      "summary": "Root actually executed isolated combined candidate:731=86own+645affected allpassed,0errors/failures/skips/notrun,0buildwarnings/errors, public1410/frozen316each, normal+trueXMLonlyconsumers,182planning/diffcheck. Record65458699 read byworker; sourceaccepted a58 unchanged. No counters.",
+      "artifact": "docs/reports/M8-datatype-constraint-lexical/integration.md"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Helper/source candidate committed; A1\u2013A3 demonstrated on branch, required correctness/API/normal/XML-only checks passed. Source review underway; allocation/integrated verification pending.",
+    "summary": "A1\u2013A3 implemented/tested; two independent source reviewers accept; root combined correctness/API/consumers pass. Owned-result allocation prepared/preflighted (447 frozen identities) awaiting fresh bounded grant. Task/A4 in_progress.",
     "checks": [
       "731 correctness tests (86 own) actual10.0.11; publicAPI1410; frozenDatatype/Facet316 each; both consumers;182planning/diffcheck passed.",
       "Allocation/BDN/timing checks not run; no fresh grant."
     ],
     "remaining": [
-      "Independent source acceptance before allocation preparation/freeze/preflight and a fresh bounded coordinator lease.",
-      "Controlled allocation evidence and coordinator integration checks before A4/task implementation completion."
+      "Fresh bounded allocation-only grant, lifecycle/durable RELEASE before raw inspection and controlled allocation evidence.",
+      "Coordinator final integration metadata/task verification before consumer dependency."
     ],
     "requests": []
   }
