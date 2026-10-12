@@ -69,7 +69,9 @@
       "status": "pending",
       "evidence": [
         "batch-owned",
-        "batch-compatibility"
+        "batch-compatibility",
+        "allocation-source-review",
+        "allocation-preparation"
       ]
     }
   ],
@@ -82,9 +84,10 @@
     "src/Xemele/Validation/Xsd/ContentModels/Compiler.cs: XsdContentCompiler.CompileAll / ContentCompilation.CompileAll invocation-local batch",
     "src/Xemele/Validation/Xsd/XmlSchema.cs: content-program construction loop only",
     "tests/Xemele.Tests/M8-xsd-particle-normalization/BatchTests.cs: preserved old joins, exact keys/programs, typed negatives, independent quota/cancellation controls",
-    "benchmarks/Xemele.Benchmarks/M8-xsd-particle-normalization/: unbuilt24-route allocation SOURCE proposal",
+    "benchmarks/Xemele.Benchmarks/M8-xsd-particle-normalization/: accepted24-route allocation probe; offline preparation built",
     "docs/reports/M8-xsd-particle-normalization/allocation-design.md / allocation-source.json: explicit ownership, controls, bounds and source identities",
-    "docs/reports/M8-xsd-particle-normalization/prepare.py / measure.py / lifecycle-check.py: unexecuted reviewed-supervisor reuse and future source-review/build/identity/lifecycle gates"
+    "docs/reports/M8-xsd-particle-normalization/prepare.py / measure.py / lifecycle-check.py: accepted supervisor reuse; offline build, disabled controls and frozen identity/lifecycle gates passed",
+    "docs/reports/M8-xsd-particle-normalization/preparation.json / preparation-summary.json: 465 frozen identities and disabled-control lifecycle outcomes"
   ],
   "evidence": [
     {
@@ -149,20 +152,47 @@
       "result": "passed",
       "summary": "Source-only proposal24routes/16warmups/64samples/40retained; Python syntax and copied supervisor equality passed; runtime/tests/fixtures unchanged; planning196/whitespace passed. C# uncompiled; no build/disabledcontrol/lifecycle/counterrun. Await independent allocationSOURCE review.",
       "artifact": "docs/reports/M8-xsd-particle-normalization/allocation-source.json"
+    },
+    {
+      "id": "allocation-source-review",
+      "kind": "review",
+      "revision": "be7afddb6a0787e43cedd7768d7e2eadf677f5c0",
+      "command": "Independent coordinator allocation SOURCE review; no executions",
+      "result": "passed",
+      "summary": "Exact be7 SOURCE PASS from /root/review_m8_model, all14 reviewed source identities matched. Runtime/test/fixture sources remain identical to accepted15d. Review permits offline preparation and disabled controls; actual counters reserved to root.",
+      "artifact": "docs/reports/M8-xsd-particle-normalization/allocation-source-review.json"
+    },
+    {
+      "id": "preparation-lifecycle-first",
+      "kind": "check",
+      "revision": "d1a2a452dc1ae7bf561d04c030e6b9918548406f",
+      "command": "python3 docs/reports/M8-xsd-particle-normalization/lifecycle-check.py (sandboxed)",
+      "result": "failed",
+      "summary": "Timeout child74840 exited0 and was reaped/logclosed, but process inspection PermissionError prevented owned-group absence confirmation. Later permitted inspection found group absent; failure preserved and unchanged script rerun.",
+      "artifact": "docs/reports/M8-xsd-particle-normalization/preparation-summary.json"
+    },
+    {
+      "id": "allocation-preparation",
+      "kind": "check",
+      "revision": "d1a2a452dc1ae7bf561d04c030e6b9918548406f",
+      "command": "python3 docs/reports/M8-xsd-particle-normalization/lifecycle-check.py (process-inspection permitted); python3 docs/reports/M8-xsd-particle-normalization/prepare.py; python3 docs/reports/M8-xsd-particle-normalization/measure.py --verify-only; python3 docs/reports/M8-xsd-particle-normalization/measure.py --preflight",
+      "result": "passed",
+      "summary": "Offline SDK10.0.400 Release build0warnings0errors; .NET10.0.11 Arm64 workstationGC. Lifecycle74955 timedout/exited0 remained failure and prevented next child; normal74957 completed. Preparation75079/preflight75849 each passed24routes/1536disabledsamples/40retainedcontrols; all counters/timing disabled, child reaped/groupabsent/logclosed. Manifest38d3e41c885f9876d528c9b4a3de8908ef530819177306fbc569d4578704ab56 freezes465 identities; verify/preflight/final hash check passed. Zero owned jobs; no actual counters.",
+      "artifact": "docs/reports/M8-xsd-particle-normalization/preparation-summary.json"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Runtime SOURCE15d975eba accepted; immutable allocationSOURCE proposalbe7afddb6 ready for independent review. Task remainsin_progress; A4actualallocations pending. No runtime/test/fixturechanges afteracceptance.",
+    "summary": "Runtime SOURCE15d and allocation SOURCEbe7 accepted. Immutable offline preparation complete at sourceRevision d1a2a452dc1ae7bf561d04c030e6b9918548406f; manifest freezes465 identities, SHA25638d3e41c885f9876d528c9b4a3de8908ef530819177306fbc569d4578704ab56. A4 actual allocations pending; no frozen input changes.",
     "checks": [
-      "Prior87owned/1622affected/77datatype/42resolver/APIs/consumerchecks preserved. Runtime reviews PASS.",
-      "AllocationSOURCE only: Python ASTsyntax, byte-identical accepted supervisor body, runtime/test/fixture gitdiff unchanged, planning196/diff passed.",
-      "No probebuild/disabledcontrols/lifecycleregression/preparation/freezing/actualcounters executed; zeroownedbackgroundjobs."
+      "Offline Release build passed0warnings0errors; finite lifecycle regression passed after preserved sandbox process-inspection failure.",
+      "Preparation/preflight disabled controls each24routes/1536samples/40retained; verify-only and final465identity hashes passed; all actual allocation/timing counters disabled.",
+      "Preparation child75079/preflight75849 completed exit0, directchildreaped/ownedgroupabsent/logclosed; final process inventory confirms all5 owned groups absent, zero owned background jobs."
     ],
     "remaining": [
-      "Independent allocationSOURCE acceptance atbe7afddb6; actual reviewedRevision/result SOURCE PASS needed in own allocation-source-review.json beforeprepare.py canrun.",
-      "Then authorizedofflinebuild/disabledcontrol/finite lifecycle regression/freezing/verify/preflight, followedbyroot-onlyactual boundedcounters.",
-      "Compact A4measurementmetadata and integratedverification; integration_revision remainsnull."
+      "Root runs the single bounded actual counter sequence using this immutable manifest and accepted scripts. Worker must not launch --measure/--run or edit frozen inputs.",
+      "Record compact actual measurement evidence and integrated verification before A4/task completion; integration_revision remains null.",
+      "Raw controls/lifecycle/logs remain transient/ignored pending coordinator-directed cleanup."
     ],
     "requests": []
   }
