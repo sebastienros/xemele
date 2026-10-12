@@ -85,3 +85,23 @@ The final upstream validity/kind oracle is independently specified from original
 outcomes and the nine applicable report-only fixture IDs. A swapped failed-assert
 witness must be rejected for every one of those IDs. The earlier result-derived
 validity check was removed following independent review.
+
+## Final branch verification
+
+Exact source `9cb73e376363df5b527a7c828da4e6021238d80b` passed
+`python3 docs/reports/M8-sch-corpus/checks.py`:90 conformance assertion cases,
+96 differential assertion cases (95 direct agreements+1 pinned BCL limitation),
+42 reporting+504 affected predecessor tests, frozen3/9/154 and public1403 API,
+normal and genuine XML-only consumers. All executed suites have0 failures/errors/
+skips/not-run; all builds have0 warnings/errors. Planning180 and whitespace pass.
+The swapped failed-assert witness rejects all nine report-only IDs. Runtime
+reference module digests match `reference-build.json`; exact source/input hashes
+are in `source-hashes.json`. No corpus performance/allocation claim is made.
+
+The strict pre-repair88/89 failure at9cd1dd86 and initial uncommitted95/96 BCL
+observation remain durable in the task evidence/history. Selected applicability
+has0 missing cases/resources; original name/language predicates remain recorded
+differences, and every unsupported construct is an explicit error. Branch status
+is implemented; coordinator owns final integrated verification. All owned paths
+and task JSON are handed back; raw outputs remain in ignored artifacts for root
+review and terminal cleanup, with no active worker process.
