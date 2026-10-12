@@ -61,16 +61,17 @@
     "docs/decisions/M8/missing-components.md: approved nullable internal Type candidate and narrow consumption/deferred-check semantics",
     "tests/Contracts/Fixtures/M8/MissingComponents/: old/new nonpackaged fixture, representative nullable usage, immutable availability snapshot, negative old consumer",
     "docs/reports/M8-xsd-missing-components-contract/: authored exact three-member projection delta, provenance, finite reviewed-SHA offline runner and lifecycle control sources",
-    "docs/reports/M8-xsd-missing-components-contract/runtime-migration.json: exact ordered later ownership and legacy transition requests"
+    "docs/reports/M8-xsd-missing-components-contract/runtime-migration.json: exact ordered later ownership and legacy transition requests",
+    "docs/reports/M8-xsd-missing-components-contract/source-manifest.json: immutable source SHA/path/hash inventory; source-only execution boundary"
   ],
   "evidence": [
     {
       "id": "source-planning",
       "kind": "check",
-      "revision": "d12be860e118b8ce97d383a0511ff1167f8c4bab",
+      "revision": "0ed18306d5efc01b4e21267784ae65251a4e03ba",
       "command": "python3 tools/planning/tasks.py validate",
       "result": "passed",
-      "summary": "Executed on source-only working tree based on this claimed revision: Validated 198 tasks: schema, evidence, acyclic dependencies, additive milestones, and ordered ownership. Does not establish compilation or runtime correctness.",
+      "summary": "Executed again on clean source commit 0ed18306d5efc01b4e21267784ae65251a4e03ba: Validated 198 tasks: schema, evidence, acyclic dependencies, additive milestones, and ordered ownership. Does not establish compilation/lifecycle/runtime correctness.",
       "artifact": null
     },
     {
@@ -85,7 +86,7 @@
   ],
   "blockers": [],
   "handoff": {
-    "summary": "SOURCE-only candidate prepared for coordinator review. Shared fixture, goldens, runtime, corpus and historical counters unchanged; task remains in_progress with all criteria pending.",
+    "summary": "SOURCE snapshot 0ed18306d5efc01b4e21267784ae65251a4e03ba and owned hash manifest prepared for independent coordinator review. Shared fixture/goldens/runtime/corpus/historical counters unchanged; task in_progress/all criteria pending. No restore/build/test jobs launched.",
     "checks": [
       "ready executed: no ready tasks (assigned task already claimed)",
       "Contract restore/build/metadata/lifecycle controls/runtime/corpus/allocation checks UNRUN pending coordinator SOURCE release",
