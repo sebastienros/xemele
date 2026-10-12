@@ -4,11 +4,11 @@
   "milestone": "M8",
   "title": "Apply explicit optional acquisition to XSD composition",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M8 coordinator / assigned isolated M8-xsd-optional-composition worker",
   "branch": "codex/m8-xsd-optional-composition",
   "base_revision": "56318fec819e1bb655b49b00e78bf5766711c547",
-  "integration_revision": null,
+  "integration_revision": "6a3a64fa363edd7c2c7ac1983a2c1f8a1ba50791",
   "depends_on": [
     "M8-schema-resource-outcomes",
     "M8-xsd-particle-normalization"
@@ -38,7 +38,8 @@
       "status": "passed",
       "evidence": [
         "original-baseline",
-        "runtime-correctness"
+        "runtime-correctness",
+        "integrated-optional-verification"
       ]
     },
     {
@@ -47,7 +48,8 @@
       "status": "passed",
       "evidence": [
         "original-baseline",
-        "runtime-correctness"
+        "runtime-correctness",
+        "integrated-optional-verification"
       ]
     },
     {
@@ -60,7 +62,8 @@
         "allocation-source-review",
         "allocation-preparation",
         "root-combined-precheck",
-        "root-actual-allocation"
+        "root-actual-allocation",
+        "integrated-optional-verification"
       ]
     }
   ],
@@ -132,11 +135,20 @@
       "result": "passed",
       "summary": "Root only one120s/work110/cleanup10 bounded run terminal0;24positivefirst+1536positivewarm samples;24aggregates=sumdistributions;positive1048B;setup968416B;40retained/consumed4702match disabledcontrol;471identities before/after;83458/83460completed0/reaped/groupsabsent/logsclosed;durablecleanup2dfb30ab before rawinspection. Owned graph/schema/scratch/request/resource/diagnostic/cancel/result allocations and coarse negativeGCdelta preserved; no zeroallocation/timing/fullgate claim. Worker never reran counters.",
       "artifact": "docs/reports/M8-xsd-optional-composition/allocation-summary.json"
+    },
+    {
+      "id": "integrated-optional-verification",
+      "kind": "integration",
+      "revision": "6a3a64fa363edd7c2c7ac1983a2c1f8a1ba50791",
+      "command": "Root check.py and datatype supplement on075b033958; finalcandidate/main git diff --exit-code 075b033958 -- src tests samples; root measure.py --run 389a172594c545289cff9c51b4894434a9c5600aee520b2a099ee678e4405f5c; python3 tools/planning/tasks.py validate; git diff --check",
+      "result": "passed",
+      "summary": "2044distinct PASS/no failures/errors/skips;8Releasebuilds0warnings/errors;public1430/all8frozen/additive46/emittedAPI,normal/trueXMLonly consumers. Finalb443facf/main src/tests/samples unchanged fromtested075b.24ownedroutes1536positivewarm samples/24first/control/40retained,471identities before/after,83458/83460completed0clean,cleanup2dfb30ab9 beforeinspection;coarse negativeheapdelta and a004 originalINVALID disagreement preserved. No redundant reruns.",
+      "artifact": "docs/orchestration/M8-xsd-optional-integration.json"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Implemented optional XSD composition and independently accepted SOURCE/preparation/root actual allocation evidence. Runtime Compiler.cs only; all original bytes/metadata and a004 authoredINVALID/observedVALID disagreement remain distinct from W3C4126 derivedVALID. Awaiting root integration/verification.",
+    "summary": "Integrated and verified exact optional XSD composition. All original outcomes/denials/standards disagreement preserved separately; no shared/public/frozen API changes.",
     "checks": [
       "Original baseline four refusals/unassessed instances and earlier scaffold/control failures preserved;68owned/1896workerdisjoint rows/APIs/consumers pass.",
       "Root combined075b033958 actual2044distinct cases/eightbuilds0warnings-errors/APIs/normal+trueXMLonly consumers/planning196/diff pass; not worker rerun.",
@@ -144,10 +156,7 @@
       "Root actual d2b4cd848:24first/1536warmpositive aggregates=sum;positive1048/setup968416/consumed4702/retained40;471identities before/after;durablecleanup2dfb30ab precedes rawinspection;root51051 terminal0/83458+83460complete0-reaped-groupsabsent-logsclosed.",
       "Final metadata-only static471identity/hash/arithmetic/planning196/diff; runtime/tests/fixtures/probe/scripts unchanged."
     ],
-    "remaining": [
-      "Root integrates branch and records integrated verification; integration_revision null until root confirms.",
-      "Root cleans ignored raw artifacts/completed worktree after verification; no broader corpus/milestone gate claim."
-    ],
+    "remaining": [],
     "requests": []
   }
 }
