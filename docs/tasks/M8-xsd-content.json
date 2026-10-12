@@ -77,10 +77,20 @@
       "result": "failed",
       "summary": "102 owned cases:101passed,1failed,0skipped. Sole failing requirednegative NonExpressibleIntermediateMustBeRejectedBeforeCompilerDiscardsIt proves the owning declaration compiler erases a non-expressible intermediate wildcard. Other bounded four-finding regressions pass; no exclusion or measurement. Precise retainedgraph/repair request in review-corrections.md.",
       "artifact": "artifacts/M8-xsd-content/review-corrections.xml"
+    },
+    {
+      "id": "corrected-empty-expectations",
+      "kind": "check",
+      "revision": "05a08eaac946552cd1885a779d18d13d8b04021c",
+      "command": "Owned102case selection reported by worker; see review-corrections.md",
+      "result": "failed",
+      "summary": "Actual99passed/3failed/0errors/skips/not-run. Two effective-empty extension positive cases fail at retained compiler ContentKind (Empty/ElementOnly expectedMixed), plus unchanged invalidwildcardintermediate. Prior101/1 run preserved; two incorrect negative expectations corrected after normative review, nonempty element-only extension negative unchanged.",
+      "artifact": null
     }
   ],
   "blockers": [
-    "Compiler discards non-expressible wildcard intermediate; await verified M8-xsd-wildcard-composition. Root owns only this task JSON until dependency handback."
+    "Compiler discards non-expressible wildcard intermediate; await verified M8-xsd-wildcard-composition. Root owns only this task JSON until dependency handback.",
+    "Two corrected positive effective-empty extension cases fail at compiler ContentKind; await verified M8-xsd-effective-content. Runtime content source remains f098; original nonempty extension negative remains required."
   ],
   "handoff": {
     "summary": "Sourcefe30b556 reviewed; bounded four-finding correction sourcef098c72fd2f94bea18c46194de1795ea26439a4d awaits immutable closure review. Required lost-intermediate wildcard negative remains failed pending ordered compiler-owner repair; other102case selection entries pass. No measurements.",

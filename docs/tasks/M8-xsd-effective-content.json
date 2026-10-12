@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "id": "M8-xsd-effective-content",
+  "milestone": "M8",
+  "title": "Map XSD effective empty content before extension composition",
+  "kind": "feature",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "depends_on": [
+    "M8-xsd-wildcard-composition"
+  ],
+  "goals": [
+    "G14"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/schemas.md"
+  ],
+  "owns": [
+    "src/Xemele/Validation/Xsd/Compilation/Compiler.cs",
+    "tests/Xemele.Tests/M8-xsd-effective-content/",
+    "docs/reports/M8-xsd-effective-content/"
+  ],
+  "api_or_output": "Correct private complex content XML-to-component mapping with unchanged public/frozen models",
+  "acceptance": [
+    {
+      "id": "M8-xsd-effective-content-A1",
+      "description": "Apply XSD1.0 Second Edition section3.4.2 effective mixed/content mapping before restriction/extension combination. Effective-empty extension inherits entire base content type; mixed empty syntax synthesizes required1..1empty sequence; preserve valid particle/source/occurrence/duplicate-body distinctions.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M8-xsd-effective-content-A2",
+      "description": "Prove no-body, annotation-only sequence/all, optional empty-choice, explicit/absent/overridden mixed, nonempty/nullable/group-reference controls,0..0 and invalid occurrence cases, duplicate particles, locations and shared quotas/cancellation. Preserve compiler and API/XML-only behavior.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M8-xsd-effective-content-A3",
+      "description": "Independently review, record applicable owned allocation evidence and actual combined checks; unblock content worker only after integrated verification, preserving historical negative-test correction evidence.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "Planned owning repair after independent reviewer corrected earlier empty-extension negative expectation. Active content tests now expose two real compiler mapping failures; no implementation before verified wildcard prerequisite.",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}

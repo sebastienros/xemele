@@ -196,11 +196,12 @@
       "phase_contexts": "Check each activating named phase independently, without unioning names across phases. Universally unresolved references and cycles are compile errors. Phase-dependent references resolving under activating named phases may compile; #ALL injects no phase bindings and a missing variable evaluated there yields incomplete SCH.XPath. This clarifies error timing while preserving TwoPhaseLets and signatures; document in owning compiler handoff for later evaluator.",
       "self_shadow": "Within frozen scope hierarchy initializer self-reference uses visible outer binding; other current-scope names stay local dependency edges. Evaluate initializer before installing replacement. Real cycles/duplicates still reject; reviewer acceptance73ef790. Compiler runtime implementation owns checks."
     },
-    "datatype_list_hash_repair": "Serial-2 datatype probe actually failed zero-allocation route4 before writing bytes; list-hash foreach over IReadOnlyList creates enumerator. Root explicitly authorizes later ordered M8-datatypes owner (entire Values subtree) to replace only traversal with indexed equivalent and preserve all child historical task/evidence. Probe should persist failure distributions; fresh isolated measurement required after correction/review, no automatic retry."
+    "datatype_list_hash_repair": "Serial-2 datatype probe actually failed zero-allocation route4 before writing bytes; list-hash foreach over IReadOnlyList creates enumerator. Root explicitly authorizes later ordered M8-datatypes owner (entire Values subtree) to replace only traversal with indexed equivalent and preserve all child historical task/evidence. Probe should persist failure distributions; fresh isolated measurement required after correction/review, no automatic retry.",
+    "effective_empty_content": "Reviewer corrected earlier tests: \u00a73.4.2 syntactic effective-empty extension inheritsbasecontent evenauthoredmixedfalse. No-body/annotation-onlyseq/all/emptychoicemin0 mapemptyor syntheticemptyseq ifmixedtrue; nonempty/nullable/grouprefs distinct. Contentworker actual99/3 preservesprior101/1; new owningrepair planned, do not weaken nonemptyderivationchecks."
   },
   "current_milestone": "M8",
   "milestone_completion_scope": "Complete integrated verified M8-gate; terminal workers and cleanup; preserve earlier evidence/caches; transfer sole writes to main. Do not create M9.",
-  "milestone_progress": "15 of29 M8 tasks verified and terminally cleaned; content blocked on claimed root wildcard repair, Schematron evaluator active, facets claimed",
+  "milestone_progress": "15 of30 M8tasks verified; wildcardrepair tested/reviewed pendingallocation; effectivecontentrepair planned; threeworkers active or parked",
   "blockers": [
     "M8-xsd-content mandatory negative blocked on M8-xsd-wildcard-composition; no dependency added until repair verified"
   ],
@@ -990,22 +991,24 @@
   "chat_communication_authorization": "Human directly authorized all M8 coordination, remaining M8 worker chats gpt-6.1-sol/high, parser-chat coordination, and GregsEx coordinator/workers host coordination.",
   "coordinator_repair": {
     "task_id": "M8-xsd-wildcard-composition",
-    "stage": "42a93288 independently accepted;254checks and disabled5routepreflight pass; serial30sprobe proposal pendingACK",
+    "stage": "Independent reviewaccepted;254 actual combinedchecks pass at a01f1ca; ownedallocationprobe awaits freshserial2grant",
     "branch": "codex/m8-xsd-wildcard-composition",
     "base_revision": "adf80b989e0389cac3972a3eba974fc8bf911700",
     "scope": "Only Compiler.cs private wildcard composition plus own proving tests/report; no model/API change",
     "reviewer": "/root/review_m8_model",
     "task_record_handback": "Content task JSON explicitly root-owned; other worker paths untouched",
     "claim_revision": "24f0e34fc696acad3ad3cd0dac41c7948592a036",
-    "worktree_path": "/private/tmp/xemele-M8-xsd-wildcard-composition"
+    "worktree_path": "/private/tmp/xemele-M8-xsd-wildcard-composition",
+    "integration_revision": "a01f1ca06b38b0ac3cfcc76d098ddf0d8944dcba",
+    "next_ordered_repair": "M8-xsd-effective-content"
   },
   "external_measurement_park": {
-    "id": "M8-wildcard-parser-serial-1",
-    "status": "ABORTED_BEFORE_GRANT",
-    "createdUtc": "2026-10-12T00:15:54.924809+00:00",
-    "earliestStart": "2026-10-12T00:17:00Z",
-    "latestStart": "2026-10-12T00:20:00Z",
-    "absoluteExpiry": "2026-10-12T00:34:10Z",
+    "id": "M8-wildcard-parser-serial-2",
+    "status": "PARK_REQUESTED_NOT_GRANTED",
+    "createdUtc": "2026-10-12T00:21:23.494253+00:00",
+    "earliestStart": "2026-10-12T00:25:00Z",
+    "latestStart": "2026-10-12T00:29:00Z",
+    "absoluteExpiry": "2026-10-12T00:43:10Z",
     "rootPhase": {
       "task": "M8-xsd-wildcard-composition",
       "source": "42a93288b8a3b4c2def3be7c5a1183738f9137c6",
@@ -1013,7 +1016,7 @@
       "seconds": 30,
       "workSeconds": 20,
       "cleanupSeconds": 10,
-      "command": "python3 docs/reports/M8-xsd-wildcard-composition/measure.py --granted <manifest> <latest-start> <phase-expiry>",
+      "command": "python3 docs/reports/M8-xsd-wildcard-composition/measure.py --granted <manifest> 2026-10-12T00:29:00Z <phase-expiry>",
       "cwd": "/private/tmp/xemele-M8-xsd-wildcard-composition"
     },
     "parserPhase": {
@@ -1029,20 +1032,9 @@
       "driverPid": 60338,
       "caseCount": 120,
       "gate": "closed; explicit parser-phase grant required",
-      "expiryRule": "min actual gate open+14min,00:34UTC;cleanup10s;absolute00:34:10UTC"
+      "expiryRule": "min actual gate open+14min,00:43UTC;cleanup10s;absolute00:43:10UTC"
     },
-    "rules": "Fresh all-known actor ACKs required; root phase first; explicit phase grants; no overlap/build/discovery/retry; immediate durable phase release before inspection; final RELEASE all actors after final child/group cleanup. Expiry does not authorize unreported leftovers.",
-    "acks": {
-      "xemeleMain": "Fresh explicit ACK exactwindow; no jobs/writes",
-      "content": "Fresh ACK at c903d01; nojobs",
-      "schematronEvaluator": "Fresh ACK retrieved through wait_threads final at source2137c73;no jobs",
-      "facets": "Fresh ACK after failedtestbuildcompletedexit1;no jobs",
-      "root": "No heavychild/job; readonlyreview only",
-      "parser": "Fresh explicit ACK; only idle gatedsupervisor60333/driver60338;no measurementchild",
-      "gregsex": "Pending aggregate ACK including main/coordinator/conformance/host/newparser"
-    },
-    "releasedUtc": "2026-10-12T00:20:04.772499+00:00",
-    "releaseReason": "Required GregsEx conformance aggregate ACK not received with enough time for durable phase grants before00:20 start deadline. No phase granted or started; no root raw outputs."
+    "rules": "Fresh all-known actor ACKs required; root phase first; explicit phase grants; no overlap/build/discovery/retry; immediate durable phase release before inspection; final RELEASE all actors after final child/group cleanup. Expiry does not authorize unreported leftovers."
   },
   "measurement_park_aborts": [
     {
