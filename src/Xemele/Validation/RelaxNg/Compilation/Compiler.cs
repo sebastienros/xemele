@@ -1,5 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
-using Xemele.Parsing.Dtd;
+using System.Text;
 
 namespace Xemele.Validation;
 
@@ -20,6 +20,7 @@ internal sealed class RelaxNgCompiler : IRelaxNgCompiler
         private const string XsdLibrary = "http://www.w3.org/2001/XMLSchema-datatypes";
         private readonly SchemaCompileOptions options;
         private readonly ISchemaOperation op;
+        private readonly LexicalOperation lexical;
         private readonly SchemaResourceLoader loader;
         private readonly List<Pattern> patterns = new();
         private readonly List<Pending> pending = new();
@@ -31,7 +32,22 @@ internal sealed class RelaxNgCompiler : IRelaxNgCompiler
         // A conservative finite bound remains even for null/large XML quotas.
         private int MaximumDepth => Math.Min(op.Limits.Depth ?? 256, 256);
         internal Build(SchemaCompileOptions options, ISchemaOperation op)
-        { this.options = options; this.op = op; loader = new(options, op); }
+        { this.options = options; this.op = op; lexical = new(op); loader = new(options, op); }
+
+        // One compiler-owned adapter keeps shared borrowed lexical checks on the
+        // caller's ledger while preserving the schema node's diagnostic location.
+        private sealed class LexicalOperation(ISchemaOperation inner) : ISchemaOperation
+        {
+            public XmlLocation At;
+            public XmlResourceLimits Limits => inner.Limits;
+            public CancellationToken CancellationToken => inner.CancellationToken;
+            public bool IsComplete => inner.IsComplete;
+            public long? RemainingWork => inner.RemainingWork;
+            public bool Charge(long count, XmlLocation at) => inner.Charge(count, At);
+            public bool ChargeComponents(int count, XmlLocation at) => inner.ChargeComponents(count, At);
+            public bool AddDiagnostic(XmlDiagnostic diagnostic) => inner.AddDiagnostic(diagnostic);
+            public void Refuse(string code, string message, XmlLocation at) => inner.Refuse(code, message, At);
+        }
 
         private sealed class Pattern(RngPatternKind kind, Env env)
         {
@@ -99,9 +115,50 @@ internal sealed class RelaxNgCompiler : IRelaxNgCompiler
                 foreach (string name in allowed) found |= attribute.NamespaceUri.Length == 0 && attribute.LocalName == name;
                 if (!found) Fail("Unexpected schema attribute.", env.Scope.Location(attribute));
             }
-            if (library.Length != 0 && (!Uri.TryCreate(library, UriKind.Absolute, out var uri) || uri.Fragment.Length != 0))
-                Fail("datatypeLibrary must be an absolute fragment-free URI or empty.", at);
+            library = Library(library, at);
             return env with { Ns = ns, Library = library };
+        }
+        private string Library(string value, XmlLocation at)
+        {
+            if (value.Length == 0) return value;
+            lexical.At = at;
+            // RELAX NG 2001 sections 3/4.3: XLink escape projection followed
+            // by RFC2396 (+ RFC2732). The shared anyURI checker also permits
+            // relative references/fragments, so enforce both restrictions here.
+            bool scheme = false;
+            for (int i = 0; i < value.Length; i++)
+            {
+                Work(1, at); char c = value[i];
+                if (c == ':') { scheme = i != 0; break; }
+                if (!(TextBinaryDatatypeProvider.Alpha(c) || (i != 0 && c is >= '0' and <= '9' or '+' or '-' or '.')))
+                    Fail("datatypeLibrary must be an absolute fragment-free URI or empty.", at);
+            }
+            if (!scheme) Fail("datatypeLibrary must be an absolute fragment-free URI or empty.", at);
+            foreach (char c in value)
+            { Work(1, at); if (c == '#') Fail("datatypeLibrary must not have a fragment.", at); }
+            if (!TextBinaryUri.Validate(value, lexical, out _))
+            {
+                if (!op.IsComplete) throw SchemaSnapshots.Failure(op);
+                Fail("Invalid datatypeLibrary URI.", at);
+            }
+            // Materialize only at the inherited library identity persistence
+            // boundary. Already escaped ASCII libraries retain their owner.
+            StringBuilder? escaped = null;
+            Span<byte> utf8 = stackalloc byte[4]; int offset = 0;
+            foreach (var rune in value.EnumerateRunes())
+            {
+                Work(1, at); int c = rune.Value;
+                if (c > 127 || c <= 32 || c == 127 || c is '<' or '>' or '"' or '{' or '}' or '|' or '\\' or '^' or '`')
+                {
+                    if (escaped is null) { escaped = new(); escaped.Append(value.AsSpan(0, offset)); }
+                    int count = rune.EncodeToUtf8(utf8);
+                    for (int i = 0; i < count; i++)
+                    { escaped.Append('%'); escaped.Append("0123456789ABCDEF"[utf8[i] >> 4]); escaped.Append("0123456789ABCDEF"[utf8[i] & 15]); }
+                }
+                else if (escaped is not null) escaped.Append((char)c);
+                offset += rune.Utf16SequenceLength;
+            }
+            return escaped?.ToString() ?? value;
         }
         private void Scan(ReadOnlySpan<char> value, XmlLocation at)
         { foreach (var rune in value.EnumerateRunes()) Work(1, at); }
@@ -221,12 +278,16 @@ internal sealed class RelaxNgCompiler : IRelaxNgCompiler
         }
         private void CheckName(ReadOnlySpan<char> value, Env env)
         {
+            var at = env.Scope.Location(env.Node); lexical.At = at;
             bool first = true;
             foreach (var rune in value.EnumerateRunes())
             {
-                Work(1, env.Scope.Location(env.Node));
-                if (rune.Value == ':' || (first ? !ValueSyntax.IsNameStart(rune.Value) : !ValueSyntax.IsNameChar(rune.Value)))
-                    Fail("Invalid NCName.", env.Scope.Location(env.Node));
+                Work(1, at);
+                if (rune.Value == ':' || !TextBinaryNames.Contains(rune.Value, !first, lexical))
+                {
+                    if (!op.IsComplete) throw SchemaSnapshots.Failure(op);
+                    Fail("Invalid NCName.", at);
+                }
                 first = false;
             }
             if (first) Fail("Empty NCName.", env.Scope.Location(env.Node));
