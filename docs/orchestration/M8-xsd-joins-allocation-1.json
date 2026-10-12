@@ -177,5 +177,135 @@
   ],
   "grant_revision": "9707173cdaa6ea8720b3831d7b0aa2acefcc01f7",
   "released_at": "2026-10-12T05:19:26.825152+00:00",
-  "raw_inspected_before_release": false
+  "raw_inspected_before_release": false,
+  "release_revision": "d1ff39c3b9fb6d53400aae10e7398249ec66b1b6",
+  "inspection_after_release": true,
+  "allocation_summaries": [
+    {
+      "task": "M8-xsd-publication-checkpoints",
+      "raw_sha256": "d07b79ae789f0713d68ae3b8ef59bc16216bafad417c939fa12e4587e7b335d0",
+      "control_sha256": "b162f527fe29c6fb2bb0db9e2ad6b71a5d711e129b421adb0d9ba50341eb31ee",
+      "runtime": ".NET 10.0.11",
+      "architecture": "Arm64",
+      "os": "macOS 15.8.1",
+      "cold_setup_bytes": 126952,
+      "positive_1024_bytes": 1048,
+      "retained_before": 166152,
+      "retained_after": 1370808,
+      "retained_results": 16,
+      "rows": [
+        {
+          "name": "legacy-owned-graph",
+          "bytes": 4912128,
+          "operations": 64,
+          "mean_bytes_per_operation": 76752.0
+        },
+        {
+          "name": "shared-principal-owned-graph",
+          "bytes": 5807616,
+          "operations": 64,
+          "mean_bytes_per_operation": 90744.0
+        },
+        {
+          "name": "unused-model-checkpoint",
+          "bytes": 6242816,
+          "operations": 64,
+          "mean_bytes_per_operation": 97544.0
+        },
+        {
+          "name": "unused-attribute-checkpoint",
+          "bytes": 6304256,
+          "operations": 64,
+          "mean_bytes_per_operation": 98504.0
+        },
+        {
+          "name": "zero-self-redefine-checkpoints",
+          "bytes": 11649536,
+          "operations": 64,
+          "mean_bytes_per_operation": 182024.0
+        },
+        {
+          "name": "self-redefine-checkpoints",
+          "bytes": 11824384,
+          "operations": 64,
+          "mean_bytes_per_operation": 184756.0
+        },
+        {
+          "name": "aggregate-scalar-refusal",
+          "bytes": 5381632,
+          "operations": 64,
+          "mean_bytes_per_operation": 84088.0
+        },
+        {
+          "name": "stream-scalar-expansion-exact-cap",
+          "bytes": 13009152,
+          "operations": 64,
+          "mean_bytes_per_operation": 203268.0
+        }
+      ],
+      "claim": "Owned synchronous allocations only;no zero/throughput/x64 claim. Disabledcontrol zero fields are not observations.",
+      "retained_delta": 1204656,
+      "retained_caveat": "Wholeheap approximation while16owned graphs rooted;not exact object-size attribution."
+    },
+    {
+      "task": "M8-xsd-fixed-restriction",
+      "raw_sha256": "415ecf2921c0513865dbeef68eb62a4493bc0c6b51d32e5cb7e42f0b9f0a03bc",
+      "control_sha256": "04ecf56cf7e912d865c4ff7f55989d46d33c131f425b6503ce235de99e5f8aeb",
+      "runtime": ".NET 10.0.11",
+      "architecture": "Arm64",
+      "os": "macOS 15.8.1",
+      "cold_setup_bytes": 474152,
+      "positive_1024_bytes": 1048,
+      "retained_before": 651544,
+      "retained_after": 549648,
+      "retained_results": 16,
+      "rows": [
+        {
+          "name": "structural owned compilation",
+          "bytes": 5529600,
+          "operations": 192,
+          "mean_bytes_per_operation": 28800.0,
+          "first_bytes": 29152
+        },
+        {
+          "name": "complete cold facet plans",
+          "bytes": 5956160,
+          "operations": 192,
+          "mean_bytes_per_operation": 31021.666666666668,
+          "first_bytes": 33000
+        },
+        {
+          "name": "complete prepared decimal",
+          "bytes": 5576240,
+          "operations": 192,
+          "mean_bytes_per_operation": 29042.916666666668,
+          "first_bytes": 30624
+        },
+        {
+          "name": "complete prepared QName union list",
+          "bytes": 5861936,
+          "operations": 192,
+          "mean_bytes_per_operation": 30530.916666666668,
+          "first_bytes": 33904
+        },
+        {
+          "name": "owned unequal fixed diagnostic",
+          "bytes": 5770752,
+          "operations": 192,
+          "mean_bytes_per_operation": 30056.0,
+          "first_bytes": 32344
+        },
+        {
+          "name": "real XML compiler/datatype/facet/content composition",
+          "bytes": 33052928,
+          "operations": 192,
+          "mean_bytes_per_operation": 172150.66666666666,
+          "first_bytes": 172192
+        }
+      ],
+      "claim": "Owned synchronous allocations only;no zero/throughput/x64 claim. Disabledcontrol zero fields are not observations.",
+      "retained_delta": -101896,
+      "retained_caveat": "Wholeheap approximation while16results rooted;negative delta is GC/heap movement, not object size or savings, inconclusive per-result retained size."
+    }
+  ]
 }
