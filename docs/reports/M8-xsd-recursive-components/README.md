@@ -1,0 +1,57 @@
+# Recursive XSD component repair
+
+The unchanged W3C witnesses at pinned xsdtests revision
+`7bc3365c652a322f3d762021b3879eb92dae7e30` distinguish legal recursion across
+element declarations from forbidden group-particle and base-type containment.
+The fixture manifest freezes exact original bytes, hashes, metadata expectations,
+and the original copyright notice. All three schema expectations and
+`particlesEb041.v` are valid. The independent BCL schema/instance checks agree.
+
+At baseline `b2bf28d12f0586e3f02fad6f1b108416ce4c4e77`, all four product cases fail:
+`addB077` and `particlesZ010` reenter the model-group guard; `particlesEb041`
+reenters the type-derivation guard (schema and instance entry points). No original
+is rewritten, excluded, or classified as an expected semantic rejection.
+
+The compiler now reserves the identity of an inline element complex type and
+stores a charged, operation-owned pending-body entry. The containing element,
+group, or type completes first. A dynamically growing completion loop then
+finishes every pending body before graph checks and immutable publication.
+Element terms keep finite declaration IDs; type relationships keep schema names.
+No mutable type stub escapes. Simple-type grammar still completes immediately.
+Direct/indirect model-group, attribute-group and base-type cycle guards are
+unchanged. Unused groups retain their existing publication checkpoints.
+
+At `9e376cd982159b27cbb05c1fa5cf2577bd21e7d2`, the counter-disabled checker passes
+1300 cases (37 owned plus the established 1263 affected set), 42 safe resolver
+cases, all 1430 public members, all eight frozen M8 lanes, the internal compiler,
+content, identity, evaluator and facade surfaces, normal and true source-linked
+XML-only facade consumers, planning validation and diff checks. The six builds
+emit zero warnings/errors. The task consumer additionally exercises recursive
+string, DOM and stream entry points in both normal and source-linked XML-only
+assemblies, and checks complete invalid neighbors and caller stream lifetime.
+
+The owned inventory covers ordered/mutual group and element recursion, enclosing
+base-type restriction/extension, further queued nested types, independent BCL
+negative oracles, unused facet/UPA/content consistency checks, late source
+mutation, owned snapshots, exact aggregate work/component boundaries including
+imported schema parsing, cancellation in an actual deferred body with null caps,
+and character/byte/final-resource provenance. Failed resource/work limits remain
+incomplete refusals, rather than counting as semantic-invalid passes.
+
+Historical transient failures remain visible in `correctness-summary.json`:
+the first expanded build used the nonexistent `XmlLocation.ColumnNumber`
+property (one compile error, no tests executed); it was corrected to
+`LinePosition`. The first owned run had 32 passes/3 failures because the new
+missing-component tests incorrectly expected the reference site's line. Existing
+component lookup diagnostics name the owning complex type. Tests now assert that
+original behavior explicitly and additionally check precise particle occurrence
+sites, including both character and byte input. Runtime location behavior was
+not changed to satisfy the tests.
+
+No allocation counters, heap probes or authored timing measurements ran during
+this correctness phase. Standard build/test duration text is incidental runner
+output. Allocation evidence remains pending independent source acceptance and
+separate authorized execution. Compilation is an owned-result boundary: pending
+queue storage, component registration, immutable programs and final graph
+snapshots are expected positive allocations; this repair introduces no borrowed
+scan primitive or allocation-free compile claim.
