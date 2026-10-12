@@ -191,18 +191,8 @@ internal sealed partial class ContentCompilation
     }
     private bool SubstitutionType(SchemaName candidate, XsdElementDeclaration head)
     {
-        bool restriction = false, extension = false; int steps = 0;
-        while (candidate != head.Type)
-        {
-            ContentWork.Tick(op, head.Location);
-            if (++steps > types.Count || !types.TryGetValue(candidate, out var type) || type.BaseType is not { } parent) return false;
-            restriction |= type.Derivation is XsdDerivation.Restriction or XsdDerivation.List or XsdDerivation.Union;
-            extension |= type.Derivation == XsdDerivation.Extension;
-            if (!types.TryGetValue(parent, out var basis)) return false;
-            if (restriction && basis.Block.Contains(XsdTypeBlock.Restriction) || extension && basis.Block.Contains(XsdTypeBlock.Extension)) return false;
-            candidate = parent;
-        }
-        return !(restriction && head.Block.Contains(XsdElementBlock.Restriction) || extension && head.Block.Contains(XsdElementBlock.Extension));
+        return XsdSubstitutionGroups.TypeRelation(types, null, schema.Datatypes, candidate, head.Type, op, head.Location,
+            true, head.Block.Contains(XsdElementBlock.Restriction), head.Block.Contains(XsdElementBlock.Extension), out _, out _);
     }
     private void Disjoint(ReadOnlySpan<int> left, ReadOnlySpan<int> right, List<ContentNode> nodes, XmlLocation at)
     {
