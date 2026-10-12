@@ -4,11 +4,11 @@
   "milestone": "M8",
   "title": "Correct inherited XSD attributes and type relations",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M8 coordinator / assigned isolated M8-xsd-type-relations worker",
   "branch": "codex/m8-xsd-type-relations",
   "base_revision": "e59e96489f48d4ffb3e1a56a8a916db8e475aaf2",
-  "integration_revision": null,
+  "integration_revision": "e4df6edc81125c87daa704196d9b0c6ab3a29412",
   "depends_on": [
     "M8-xsd-recursive-components",
     "M8-xsd-fixed-restriction",
@@ -41,7 +41,8 @@
       "status": "passed",
       "evidence": [
         "original-baseline",
-        "branch-correctness"
+        "branch-correctness",
+        "combined-integration"
       ]
     },
     {
@@ -50,7 +51,8 @@
       "status": "passed",
       "evidence": [
         "original-baseline",
-        "branch-correctness"
+        "branch-correctness",
+        "combined-integration"
       ]
     },
     {
@@ -59,7 +61,8 @@
       "status": "passed",
       "evidence": [
         "original-baseline",
-        "branch-correctness"
+        "branch-correctness",
+        "combined-integration"
       ]
     },
     {
@@ -68,7 +71,8 @@
       "status": "passed",
       "evidence": [
         "original-baseline",
-        "branch-correctness"
+        "branch-correctness",
+        "combined-integration"
       ]
     },
     {
@@ -81,7 +85,8 @@
         "source-review",
         "allocation-source-review",
         "allocation-disabled-preparation",
-        "actual-allocation"
+        "actual-allocation",
+        "combined-integration"
       ]
     }
   ],
@@ -154,6 +159,15 @@
       "result": "passed",
       "summary": "Root session81416 ran accepted prebuilt control then measure once. Children60436/60438 completed with exit0, reaped/groups absent/logs closed;505 identities matched before/after; cleanup 1932d68760dc57431fd43b5f7874c7f717cd3ad3 durable before raw inspection.25 routes/1600 positive warm samples, all first calls positive, aggregates equal sample sums; cold setup4,187,016 B and positive control1048 B. Control/measure consumption25196 and48 retained objects match. Coarse negative validation heap delta\u221211512 B preserved; no zero-allocation or timing claim. Worker recorded compact root summary only; no rerun.",
       "artifact": "docs/reports/M8-xsd-type-relations/measurement-summary.json"
+    },
+    {
+      "id": "combined-integration",
+      "kind": "integration",
+      "revision": "e4df6edc81125c87daa704196d9b0c6ab3a29412",
+      "command": "python3 docs/reports/M8-xsd-type-relations/check.py; supplementary built-DLL M8Datatypes/M8DatatypesTextBinary tests; exact git diff src/tests/samples between tested e3d064844 and final candidate/main",
+      "result": "passed",
+      "summary": "Tested combined e3d064844 actual1889 distinct cases:1622 affected including85own+42resolver+225datatype,0fail/error/skip;8Releasebuilds0warnings/errors,public1430/all8frozen/additive46/emittedAPIs,normal and trueXML-only facade/type consumers. Final e4fd3aa71 and integrated main src/tests/samples byte-identical to testedcandidate; no redundant passing reruns. Actual root25route allocation/505identities/terminalcleanup accepted separately. Planning196/diff passed on candidate andmain.",
+      "artifact": "docs/orchestration/M8-xsd-type-relations-integration-precheck.json"
     }
   ],
   "blockers": [],
@@ -167,8 +181,7 @@
       "No rebuild/rerun/counter execution by worker after root run; transient raw outputs retained pending explicit cleanup direction; zero owned jobs."
     ],
     "remaining": [
-      "Coordinator integrates and performs integration verification; integration_revision remains unset.",
-      "Await coordinator direction before removing generated transient measurement/preparation outputs."
+      "Terminal chat/checkouts cleanup and root transient output removal; no implementation or verification work remains."
     ],
     "requests": []
   }
