@@ -1,0 +1,11 @@
+using Xemele.Validation;
+var context = new SchemaNamespaceContext(new Dictionary<string,string>{{"p","urn:declaration"}}, "", null);
+var small = new XmlDatatypeDefinition(new("urn:sample","Small"),XmlDatatypeVariety.Atomic,new("http://www.w3.org/2001/XMLSchema","int"),null,[],[new(XmlFacetKind.Pattern,"[0-9]",false,context,default)],[],false,default);
+var registry = new XmlDatatypeRegistry([small], Op()); var facets = new XmlFacetEvaluator();
+var integer = registry.FindType(DatatypeTypes.Name("int"))!; var dec = registry.FindType(DatatypeTypes.Name("decimal"))!;
+if (!DatatypeConstraintRepresentation.TryCreate(integer,"01",context,registry,facets,Op(),out var value,out _) || value!.Lexical != "1") throw new Exception("Canonical integer default failed.");
+if (!facets.TryValidate(small,value.Lexical,value.Context,registry,Op(),out var actual,out _) || actual!.TypeName != small.Name) throw new Exception("Actual pattern assessment failed.");
+if (!DatatypeConstraintRepresentation.TryCreate(dec,"1",context,registry,facets,Op(),out var decimalValue,out _) || decimalValue!.Lexical != "1.0" || facets.TryValidate(integer,decimalValue.Lexical,decimalValue.Context,registry,Op(),out _,out _)) throw new Exception("Decimal lexical grammar witness failed.");
+if (!registry.Find(DatatypeTypes.XsdNamespace)!.ValueEquals(value.DeclaredValue,decimalValue.DeclaredValue,Op())) throw new Exception("Fixed value equality failed.");
+Console.WriteLine("PASS: canonical declaration constraints and actual-type lexical assessment.");
+static SchemaCompileOperation Op() => new(new(){MaxOperations=null,MaxComponents=null,Limits=new(){EvaluationWork=null}});

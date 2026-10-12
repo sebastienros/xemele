@@ -2,7 +2,7 @@ namespace Xemele.Validation;
 
 // The composer supplies one shared immutable provider. Payloads are privately
 // owned arrays; no lexical span, operation or namespace map survives parsing.
-internal sealed class TextBinaryDatatypeProvider : IDatatypeFamilyProvider
+internal sealed partial class TextBinaryDatatypeProvider : IDatatypeFamilyProvider
 {
     public DatatypeFamily Family => DatatypeFamily.TextBinary;
     public bool TryParse(DatatypeMetadata type, ReadOnlySpan<char> normalized, SchemaNamespaceContext context,

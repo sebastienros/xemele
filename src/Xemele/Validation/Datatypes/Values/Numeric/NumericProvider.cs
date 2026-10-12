@@ -4,7 +4,7 @@ namespace Xemele.Validation;
 
 // Canonical decimal digits are private owned storage, never CLR decimal/double.
 // The provider is stateless; final library composition owns its shared instance.
-internal sealed class NumericDatatypeProvider : IDatatypeFamilyProvider
+internal sealed partial class NumericDatatypeProvider : IDatatypeFamilyProvider
 {
     public DatatypeFamily Family => DatatypeFamily.Numeric;
     public bool TryParse(DatatypeMetadata type, ReadOnlySpan<char> normalized, SchemaNamespaceContext context,
