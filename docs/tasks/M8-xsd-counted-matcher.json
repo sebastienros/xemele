@@ -68,7 +68,8 @@
         "affected-correctness",
         "branch-correctness",
         "allocation-source-only",
-        "verified-join-originals"
+        "verified-join-originals",
+        "allocation-preparation"
       ]
     }
   ],
@@ -159,11 +160,20 @@
       "result": "passed",
       "summary": "Coordinator authorized continuation/preparation after verified dependency. Independent sourcePASS matcher4a3a93ee2/runtimeSHA3f20c435 and allocation8560237 recorded in joined main. Owned matcher/tests/fixture/probe/prepare/measure unchanged by join; new main dependencies separately integrated/verified. This is reuse of accepted source with verified joins, not a fresh full joined independent review or execution evidence.",
       "artifact": "docs/orchestration/review-M8-xsd-counted-matcher.json"
+    },
+    {
+      "id": "allocation-preparation",
+      "kind": "check",
+      "revision": "186e7d9d997546c15583a244e98565fd1f1fa965",
+      "command": "python3 docs/reports/M8-xsd-counted-matcher/prepare.py; python3 docs/reports/M8-xsd-counted-matcher/preflight.py; python3 docs/reports/M8-xsd-counted-matcher/measure.py --verify-only",
+      "result": "passed",
+      "summary": "Pinned offline Release probe build0warnings/errors; all13 counter-disabled control routes passed32warm/64samples, all allocation/retention counters and distributions0;32retainedprograms+32cursors constructed with countersdisabled. 467 frozen identities/ps verified. Actual disabledsupervisor child43158exit0/reaped/groupabsent/logclosed. No actualallocation/counter/BDN/throughput execution; fresh root grant remains required.",
+      "artifact": "docs/reports/M8-xsd-counted-matcher/allocation-preflight.json"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Verified main dependency joined; A1-A3 pass including allten unchanged originals. Allocation source accepted; preparing disabled control/frozen manifest/preflight next. A4 pending actual fresh-granted allocation; state in_progress/integrationnull.",
+    "summary": "Verified main joined; A1-A3 pass, alltenunchangedoriginals complete/correct. Accepted allocation probe actualdisabledbuild/control/preflight passed and467identities frozen; A4 pending fresh-root-granted measurement. in_progress/integrationnull.",
     "checks": [
       "115 focused content/owned passed; independent8738word oracle plus existingnullable63word/expandedcounter checks.",
       "1146affected+42resolver/API1417/frozen/normal+XMLonly/planning192/diff passed.",
@@ -171,10 +181,11 @@
       "Initialten100Mrefusals actual, remaininglimitsdefault128; first repaired/default128 failure retained.",
       "Exact historicalpolicy ten:7complete matching,3incomplete diagnostic1024; everychild cleaned.",
       "Allocation source only; build/control/counters/BDN not run.",
-      "Join1fd1b477e: tenoriginalscomplete/correct,1146+42+135+238checks/API1430/frozen/normal+trueXMLonly/planning196 allpass; previous failures retained."
+      "Join1fd1b477e: tenoriginalscomplete/correct,1146+42+135+238checks/API1430/frozen/normal+trueXMLonly/planning196 allpass; previous failures retained.",
+      "Allocation preparation186e7d9d9:0warning/errorbuild,13disabledcontrols,supervised43158exit0/reaped/groupabsent/logclosed,467identities/pspass; allcounterfields0."
     ],
     "remaining": [
-      "Finish counter-disabled accepted allocation preparation/freeze/preflight, then actual counters only under fresh root grant. A4 pending actual allocation."
+      "Fresh root allocation grant for exact frozen two prebuilt controls/measure commands; actual ownership evidence after durable cleanup RELEASE. A4 pendingactualallocation; no retry or grant inferred."
     ],
     "requests": []
   }
