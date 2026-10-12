@@ -4,11 +4,11 @@
   "milestone": "M8",
   "title": "Prepare canonical XSD datatype value-constraint lexical forms",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M8 coordinator01a12c6c-b333-71d3-877f-0d186618e21d / assigned isolated worker",
   "branch": "codex/m8-datatype-constraint-lexical",
   "base_revision": "9e5f4148f655c79faf1ea2fb665577b272c9e0c2",
-  "integration_revision": null,
+  "integration_revision": "e66a40943021b76c57923d3440446c4bfdcb43d0",
   "depends_on": [
     "M8-facets"
   ],
@@ -36,7 +36,8 @@
       "description": "Add a narrowly scoped internal helper that first validates declared authored lexical text through the supplied facet engine and registry, then prepares canonical assessment lexical forms. Keep value/lexical consistency internal; retain the declared typed value, owned assessment lexical string and immutable captured declaration namespace context. Do not add lexical storage to every parsed value or mutate published values. Existing actual-type TryValidate must assess the prepared lexical form, not only typed facets.",
       "status": "passed",
       "evidence": [
-        "candidate-correctness"
+        "candidate-correctness",
+        "root-final-integrated-verification"
       ]
     },
     {
@@ -44,7 +45,8 @@
       "description": "Implement the pinned XSD 1.0 Second Edition canonical mappings wherever specified, including primitive/derived numeric distinctions, booleans, binary, supported date/time forms, and composed list/selected-union values. For types without a prescribed 1.0 canonical mapping, retain a valid whitespace-normalized authored representative and captured context; do not invent QName prefixes or silently import XSD1.1 rules. Handle arbitrary precision and calendar boundaries without narrowing existing supported values.",
       "status": "passed",
       "evidence": [
-        "candidate-correctness"
+        "candidate-correctness",
+        "root-final-integrated-verification"
       ]
     },
     {
@@ -52,7 +54,8 @@
       "description": "Prove declared xs:int default01 becomes1 and satisfies a derived one-digit pattern; declared xs:decimal default1 becomes1.0 and fails actual xs:int lexical grammar. Include exact known outputs, cross-family equality preservation, list/union selected identity, QName declaration-vs-instance context, temporal timezone/year/leap boundaries and cultures; test checked capacities, component reservations, exact work boundaries and cancellation during long operations with null caps.",
       "status": "passed",
       "evidence": [
-        "candidate-correctness"
+        "candidate-correctness",
+        "root-final-integrated-verification"
       ]
     },
     {
@@ -63,7 +66,8 @@
         "candidate-correctness",
         "independent-source-review",
         "coordinator-combined-correctness",
-        "owned-result-allocation"
+        "owned-result-allocation",
+        "root-final-integrated-verification"
       ]
     }
   ],
@@ -108,11 +112,20 @@
       "result": "passed",
       "summary": "Root sole launch under durable grant780bd70f; host RELEASEb22333d8 before raw inspection. Two prebuilt children32885/32887 exit0/reaped/groupsabsent/logsclosed;447identities unchanged. Actual Arm64.NET10.0.11 workstationGC:9 ownedwarmroutes each16warmups+one64callaggregate; exactmeans216/208/4312/216/3008/25952/288/632/368B; cold100056B/1,positive1048B,retainedwholeheap282416\u2192429680B for16results. No zero, distribution, timing, speed, x64 orasync claim. Worker independently validated hashes/control/denominators/lifecycle afterrelease.",
       "artifact": "docs/reports/M8-datatype-constraint-lexical/allocations.md"
+    },
+    {
+      "id": "root-final-integrated-verification",
+      "kind": "integration",
+      "revision": "e66a40943021b76c57923d3440446c4bfdcb43d0",
+      "command": "python3 docs/reports/M8-datatype-constraint-lexical/checks.py; exact prepared allocation supervisor under780bd70f grant and b22333d8 release; checked-input identity diff; python3 tools/planning/tasks.py validate; git diff --check",
+      "result": "passed",
+      "summary": "Actual root731=86own+645affected passed/zeroerrorsfailureskipnotrun,0buildwarnings/errors,public1410/frozenDatatypes316/Facets316,normal+trueXMLonly consumers,182planning. Two independent source reviews accepted a58. Exactly one prepared owned-allocation sequence completed447identities/2cleanchildren, released before inspection; exact nine aggregate64call totals/means, cold/positive/retained accepted. Final3014749a integration plus98774ded metadata leaves runtime/tests/samples/build/API/consumer/checkscript inputs identical to actually checked e66; no false rerun.",
+      "artifact": "docs/orchestration/review-M8-datatype-constraint-lexical.json"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "All A1\u2013A4 implemented: internally validated declared lexical/value/context pair and canonical actual-assessment forms, bounded/cancellable provider formatting; independent source acceptance, worker and root actual731 checks/API/consumers, controlled owned allocations completed once. Public/frozen contracts unchanged. Final clean evidence handoff; relinquish all own writes after commit.",
+    "summary": "Integrated and verified canonical declared-constraint representation. Core may consume only through explicit resumed assignment. Actual-type facet validation must use prepared Lexical/Context and fixed comparison uses DeclaredValue.",
     "checks": [
       "Worker/root combined each731passing (86own/645affected),0failures/errors/skips/notrun,0buildwarnings/errors; public1410/frozen316each; normal+trueXMLonly;182planning/diffcheck.",
       "Two independent source reviewers accepted a58 runtime unchanged; all five hashes matched.",
@@ -120,8 +133,7 @@
       "Root independently accepted exact allocation/control/positive/retained results at aff6a0a3; candidateb91b9d99 bench/report/prep inputs proven unchanged vs actuale66 correctness checks."
     ],
     "remaining": [
-      "Coordinator final integration revision/verified metadata before core consumers add dependency.",
-      "Coordinator retains/inspects ignored raw allocation/control/lifecycle artifacts and owns cleanup. Single-Arm64 allocation observations; cross-architecture release checks remain release responsibility."
+      "Single Arm64 aggregate allocation observations; no zero, speed, distribution or cross-architecture claim."
     ],
     "requests": []
   }
