@@ -8,6 +8,16 @@ internal sealed class XsdContentCompiler : IXsdContentCompiler
         ArgumentNullException.ThrowIfNull(schema); ArgumentNullException.ThrowIfNull(type); ArgumentNullException.ThrowIfNull(operation);
         return new ContentCompilation(schema, operation).Compile(type);
     }
+
+    // Complete composition opts in explicitly. The frozen three-argument lane
+    // remains structural and needs only the declaration-model interfaces.
+    internal XsdContentProgram Compile(XsdCompiledSchema schema, XsdTypeDefinition type,
+        ISchemaOperation operation, IXmlFacetEvaluator facets)
+    {
+        ArgumentNullException.ThrowIfNull(schema); ArgumentNullException.ThrowIfNull(type);
+        ArgumentNullException.ThrowIfNull(operation); ArgumentNullException.ThrowIfNull(facets);
+        return new ContentCompilation(schema, operation, facets).Compile(type);
+    }
 }
 
 internal sealed partial class ContentCompilation
@@ -16,11 +26,12 @@ internal sealed partial class ContentCompilation
     private static readonly SchemaName Any = new(Xs, "anyType");
     private readonly XsdCompiledSchema schema;
     private readonly ISchemaOperation op;
+    private readonly IXmlFacetEvaluator? facets;
     private readonly Dictionary<SchemaName, XsdTypeDefinition> types = new();
     private readonly Dictionary<int, (SchemaName, int)[]> substitutions = new();
-    internal ContentCompilation(XsdCompiledSchema schema, ISchemaOperation op)
+    internal ContentCompilation(XsdCompiledSchema schema, ISchemaOperation op, IXmlFacetEvaluator? facets = null)
     {
-        this.schema = schema; this.op = op;
+        this.schema = schema; this.op = op; this.facets = facets;
         foreach (var type in schema.Types)
         { ContentWork.Retain(op, type.Location); types.Add(type.Name, type); }
     }

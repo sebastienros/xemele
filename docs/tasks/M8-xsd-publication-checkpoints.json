@@ -1,0 +1,136 @@
+{
+  "schema_version": 1,
+  "id": "M8-xsd-publication-checkpoints",
+  "milestone": "M8",
+  "title": "Retain XSD publication checkpoints and shared parsing context",
+  "kind": "feature",
+  "status": "verified",
+  "owner": "M8 coordinator01a12c6c-b333-71d3-877f-0d186618e21d / assigned isolated worker",
+  "branch": "codex/m8-xsd-publication-checkpoints",
+  "base_revision": "c83751ab53eda7702b955ea103115c2159695080",
+  "integration_revision": "5e2dcd18742981d9c9ed4d5a1f82f6d072d95a76",
+  "depends_on": [
+    "M8-xsd-validate",
+    "M8-xsd-effective-content"
+  ],
+  "goals": [
+    "G14"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/schemas.md"
+  ],
+  "owns": [
+    "src/Xemele/Validation/Xsd/Compilation/Compiler.cs",
+    "tests/Xemele.Tests/M8-xsd-publication-checkpoints/",
+    "tests/fixtures/M8-xsd-publication-checkpoints/",
+    "benchmarks/Xemele.Benchmarks/M8-xsd-publication-checkpoints/",
+    "docs/api/M8-xsd-publication-checkpoints.txt",
+    "samples/M8-xsd-publication-checkpoints/",
+    "docs/reports/M8-xsd-publication-checkpoints/"
+  ],
+  "api_or_output": "Explicit internal public-composition seam; existing frozen/public contracts preserved",
+  "acceptance": [
+    {
+      "id": "M8-xsd-publication-checkpoints-A1",
+      "description": "Retain ordinary unused and displaced model/attribute-group checkpoints through existing immutable carriers so downstream content/facet/declaration finalization sees every component; preserve actual source contexts and locations.",
+      "status": "passed",
+      "evidence": [
+        "branch-correctness",
+        "source-review",
+        "owned-allocation",
+        "root-integration"
+      ]
+    },
+    {
+      "id": "M8-xsd-publication-checkpoints-A2",
+      "description": "Provide an explicit additive internal compiler join using the principal SchemaCompileContext resource loader/parser, preserving aggregate DocumentCharacters/ExpandedCharacters/work across principal and external resources; frozen IXsdCompiler and public APIs unchanged.",
+      "status": "passed",
+      "evidence": [
+        "branch-correctness",
+        "source-review",
+        "owned-allocation",
+        "root-integration"
+      ]
+    },
+    {
+      "id": "M8-xsd-publication-checkpoints-A3",
+      "description": "Prove unused fixed-use/ID-count/element-consistency checkpoints and legal neighbors, scalar exact-cap/one-over across principal and includes for string/stream/expansion cases with disposal/cancellation, affected compiler/core/API/XML-only preservation, and measured owned allocation evidence.",
+      "status": "passed",
+      "evidence": [
+        "branch-correctness",
+        "source-review",
+        "allocation-preparation",
+        "owned-allocation",
+        "root-integration"
+      ]
+    }
+  ],
+  "implementation": [
+    "src/Xemele/Validation/Xsd/Compilation/Compiler.cs: XmlSchemaCompiler.Compile(XmlDocument, SchemaCompileContext), RetainGroupCheckpoint, existing RetainGroupRestriction identities",
+    "tests/Xemele.Tests/M8-xsd-publication-checkpoints/: unused/displaced fixed-use/ID/content and aggregate parsing/ownership witnesses",
+    "samples/M8-xsd-publication-checkpoints/: normal and true XML-only real join consumers"
+  ],
+  "evidence": [
+    {
+      "id": "branch-correctness",
+      "kind": "check",
+      "revision": "233aa3cf738ffffe4ae7b52e37e8ddb96eb9c8a7",
+      "command": "python3 docs/reports/M8-xsd-publication-checkpoints/checks.py",
+      "result": "passed",
+      "summary": "SDK10.0.400/runtime10.0.11 Release offline:34owned+894affected+42safe resolver=970 passed;zero failures/errors/skips/not-run;public1410/compiler257/model316 matched;own normal+trueXML-only consumers passed;184planning/diff pass;zero build warnings/errors;counter tests excluded. See owned README for historical initial analyzer/consumer failures.",
+      "artifact": null
+    },
+    {
+      "id": "source-review",
+      "kind": "review",
+      "revision": "233aa3cf738ffffe4ae7b52e37e8ddb96eb9c8a7",
+      "command": "Coordinator-reported bounded contract source-only review",
+      "result": "passed",
+      "summary": "Coordinator reported PASS: all carriers/context/IDs/redefine links and shared-loader ledgers confirmed; no concrete blocker; reviewer did not execute checks. Runtime/tests/fixtures/API/sample/checks.py frozen.",
+      "artifact": null
+    },
+    {
+      "id": "allocation-preparation",
+      "kind": "check",
+      "revision": "d5f1174213c74d2bf5815e3ad683b7527d28b760",
+      "command": "python3 docs/reports/M8-xsd-publication-checkpoints/prepare.py; python3 docs/reports/M8-xsd-publication-checkpoints/measure.py --preflight; python3 docs/reports/M8-xsd-publication-checkpoints/measure.py --verify-only",
+      "result": "passed",
+      "summary": "8disabledcontrolroutes consumed;64calls after16warmups/route;16retainedgraphs;allcounter/heapfields0;444frozen identities matched;childexit0/reaped/groupabsent/logclosed/pspermission;manifest a9cb5fd88f5ad32780c22066c4993511950de73f23f1df8c45baffe91be8f88f;30sbound20swork10scleanup;no counters/BDN/timing run.",
+      "artifact": null
+    },
+    {
+      "id": "owned-allocation",
+      "kind": "check",
+      "revision": "d5f1174213c74d2bf5815e3ad683b7527d28b760",
+      "command": "Root sole launcher: python3 docs/reports/M8-xsd-publication-checkpoints/measure.py --granted a9cb5fd88f5ad32780c22066c4993511950de73f23f1df8c45baffe91be8f88f 2026-10-12T05:19:27.107796+00:00 2026-10-12T05:20:27.107796+00:00",
+      "result": "passed",
+      "summary": "Grant9707173c/durable hostRELEASEd1ff39c3;control+allocation children53246/53248 exit0/reaped/groupsabsent/logsclosed;444beforeafter identitiesmatched;raw unopened before RELEASE. Arm64.NET10.0.11:8ownedroutes\u00d764calls after16warmups,allpositive76752..203268B/call;cold126952/1;positive1048;approxheapdelta1204656/16retainedgraphs;consumed28671. No BDN/timing/borrowedzero/async/crossarch claim. See owned allocations.md.",
+      "artifact": null
+    },
+    {
+      "id": "root-integration",
+      "kind": "integration",
+      "revision": "5e2dcd18742981d9c9ed4d5a1f82f6d072d95a76",
+      "command": "python3 docs/reports/M8-xsd-publication-checkpoints/checks.py",
+      "result": "passed",
+      "summary": "Root actual combined970=34own+894affected+42resolver passed;0fail/errors/skips/notrun;compiledpublic1410/frozen257/316;normal+trueXML-only consumers;fivebuilds0warnings/errors;planning184/diff. Final1112f8bbb40b292ed427f0edb0d6bde1fd850ad5 adds only allocation infrastructure/report/task/coordination metadata;runtime/tests/API/samples/build/tool/check inputs exactly unchanged from actual tested revision, verified gitdiff empty. Allocations separately actual9707173c grant/d1ff39c3 release;no rerun claimed.",
+      "artifact": "docs/orchestration/review-M8-xsd-publication-checkpoints.json"
+    }
+  ],
+  "blockers": [],
+  "handoff": {
+    "summary": "Integrated verified compiler repair:970combined checks and actual owned allocation evidence;facade can consume existing-context compiler join and all retained group carriers.",
+    "checks": [
+      "At233aa3cf:34owned+894affected+42safe resolver=970passed/0failed/errors/skips/not-run;public1410/compiler257/model316matched;normal+trueXML-only real consumers;planning184/diff;allbuilds0warnings/errors.",
+      "Coordinator-reported source-only contract review PASS233aa3cf;accepted runtime/tests/sample/checkinputs remain unchanged.",
+      "Preparedd5f11742:8disabledcontrolroutes/444identities and real elevated cleanup preflight;measurement root sole launcher under9707173c,hostRELEASEd1ff39c3 before rawinspection;2childrenexit0/reaped/groupsabsent/logsclosed;444beforeaftermatched.",
+      "Ownedallocations8routes\u00d764after16warmups allpositive;76752..203268B/call;cold126952/1;positive1048;approxheapdelta1204656/16retainedgraphs;nozero/timingclaim.",
+      "Historical initial build2xUnit1051 omissions corrected;old XML-only sample rejected normal assembly later types;own normal+trueXML-only consumer passed."
+    ],
+    "remaining": [],
+    "requests": [
+      "Facade owner must consume internal XmlSchemaCompiler.Compile(document, context) and finalize every retained group binding for fixed/declaration consistency and ID-count checks after this repair is verified. No unmerged facade/peer source was used."
+    ]
+  }
+}

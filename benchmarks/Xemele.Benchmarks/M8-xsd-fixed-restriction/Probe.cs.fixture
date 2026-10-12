@@ -1,0 +1,96 @@
+using System.Runtime.InteropServices;
+using System.Security.Cryptography;
+using System.Text;
+using System.Text.Json;
+using Xemele.Validation;
+
+if (args is not [var mode, var output] || mode is not ("--control" or "--measure")) throw new ArgumentException();
+if (RuntimeInformation.FrameworkDescription != ".NET 10.0.11") throw new InvalidOperationException();
+bool measure = mode == "--measure";
+long coldStart = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+var fixture = new Fixture();
+long coldSetupBytes = measure ? GC.GetAllocatedBytesForCurrentThread() - coldStart : 0;
+var rows = new List<object>();
+for (int route = 0; route < Fixture.Names.Length; route++)
+{
+    long start = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+    fixture.Run(route);
+    long firstBytes = measure ? GC.GetAllocatedBytesForCurrentThread() - start : 0;
+    for (int warm = 0; warm < 16; warm++) fixture.Run(route);
+    var samples = new long[3];
+    for (int sample = 0; sample < samples.Length; sample++)
+    {
+        start = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+        for (int i = 0; i < 64; i++) fixture.Run(route);
+        samples[sample] = measure ? GC.GetAllocatedBytesForCurrentThread() - start : 0;
+        if (measure && samples[sample] <= 0) throw new InvalidOperationException("Owned allocation route unexpectedly zero.");
+    }
+    rows.Add(new { route, name = Fixture.Names[route], firstBytes, samples, operationsPerSample = 64 });
+}
+long positiveStart = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+var positive = new byte[1024]; GC.KeepAlive(positive);
+long positiveBytes = measure ? GC.GetAllocatedBytesForCurrentThread() - positiveStart : 0;
+if (measure && positiveBytes < 1024) throw new InvalidOperationException("Positive control failed.");
+var retained = new object[16];
+long retainedBefore = measure ? GC.GetTotalMemory(true) : 0;
+for (int i = 0; i < retained.Length; i++) retained[i] = fixture.Run(2);
+long retainedAfter = measure ? GC.GetTotalMemory(true) : 0;
+GC.KeepAlive(retained); GC.KeepAlive(fixture);
+File.WriteAllText(output, JsonSerializer.Serialize(new { mode, runtime = RuntimeInformation.FrameworkDescription,
+    architecture = RuntimeInformation.ProcessArchitecture.ToString(), os = RuntimeInformation.OSDescription,
+    serverGc = System.Runtime.GCSettings.IsServerGC, coldSetupBytes, positiveBytes, retainedBefore, retainedAfter,
+    retainedCount = retained.Length, sourceRevision = Environment.GetEnvironmentVariable("XEMELE_FIXED_REVISION"),
+    runtimeAssemblySha256 = Hash(typeof(SchemaCompileOptions).Assembly.Location), probeSha256 = Hash(typeof(Fixture).Assembly.Location),
+    inputSha256 = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(string.Join("\n", Fixture.Sources)))), rows }, new JsonSerializerOptions { WriteIndented = true }));
+Console.WriteLine($"{mode}:6 consumed owned routes, first/16warm/3x64; counters {(measure ? "enabled" : "disabled")}; no timing");
+static string Hash(string path) => Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(path)));
+
+sealed class Fixture
+{
+    private const string Xs = "http://www.w3.org/2001/XMLSchema";
+    internal static readonly string[] Names = ["structural owned compilation", "complete cold facet plans", "complete prepared decimal", "complete prepared QName union list", "owned unequal fixed diagnostic", "real XML compiler/datatype/facet/content composition"];
+    private static string Source(string type, string basis, string derived, string definitions = "") =>
+        $"<xs:schema xmlns:xs='{Xs}'>{definitions}<xs:complexType name='B'><xs:sequence><xs:element name='v' type='{type}' fixed='{basis}' xmlns:p='urn:one'/></xs:sequence></xs:complexType><xs:complexType name='D'><xs:complexContent><xs:restriction base='B'><xs:sequence><xs:element name='v' type='{type}' fixed='{derived}' xmlns:q='urn:one'/></xs:sequence></xs:restriction></xs:complexContent></xs:complexType></xs:schema>";
+    internal static readonly string[] Sources = [Source("xs:decimal", "1", "01.0"),
+        Source("L", "p:v 1", "q:v 01.0", "<xs:simpleType name='U'><xs:union memberTypes='xs:decimal xs:QName'/></xs:simpleType><xs:simpleType name='L'><xs:list itemType='U'/></xs:simpleType>"),
+        Source("xs:decimal", "1", "2")];
+    private readonly SchemaCompileOptions options = new() { MaxOperations = null, MaxComponents = null, Limits = new() { EvaluationWork = null } };
+    private readonly XsdCompiledSchema[] graphs;
+    private readonly XsdTypeDefinition[] types;
+    private readonly XmlFacetEvaluator facets = new();
+    private object? sink;
+    internal Fixture()
+    {
+        graphs = Sources.Select(Parse).ToArray();
+        types = graphs.Select(g => g.Types.Single(t => t.Name == new SchemaName("", "D"))).ToArray();
+    }
+    private XsdCompiledSchema Parse(string source)
+    {
+        var context = new SchemaCompileContext(options);
+        var declarations = new XmlSchemaCompiler().Compile(context.Parse(source).Document, context.Options, context.Operation);
+        return declarations with { Datatypes = new XmlDatatypeRegistry(declarations.SimpleTypes.Where(t => t.Name.NamespaceUri != Xs), context.Operation) };
+    }
+    internal object Run(int route)
+    {
+        var op = new SchemaCompileOperation(options); var compiler = new XsdContentCompiler();
+        if (route == 0) sink = compiler.Compile(graphs[0], types[0], op);
+        else if (route is 1 or 2 or 3)
+        {
+            int graph = route == 3 ? 1 : 0;
+            sink = compiler.Compile(graphs[graph], types[graph], op, route == 1 ? new XmlFacetEvaluator() : facets);
+        }
+        else if (route == 4)
+        {
+            try { compiler.Compile(graphs[2], types[2], op, facets); throw new InvalidOperationException("Unequal values accepted."); }
+            catch (SchemaCompileException error)
+            { if (!error.Diagnostics.Any(d => d.Code == "XSD.SchemaRestriction")) throw; sink = error; }
+        }
+        else if (route == 5)
+        {
+            var graph = Parse(Sources[0]); var type = graph.Types.Single(t => t.Name == new SchemaName("", "D"));
+            sink = compiler.Compile(graph, type, op, new XmlFacetEvaluator());
+        }
+        else throw new ArgumentOutOfRangeException(nameof(route));
+        GC.KeepAlive(sink); return sink!;
+    }
+}

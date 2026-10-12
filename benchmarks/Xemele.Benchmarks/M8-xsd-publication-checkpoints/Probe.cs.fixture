@@ -1,0 +1,36 @@
+using System.Runtime.InteropServices;
+using System.Security.Cryptography;
+using System.Text.Json;
+using Xemele.Validation;
+using Xemele.Benchmarks.M8XsdPublicationCheckpoints;
+if (args is not [var mode, var output] || mode is not ("--control" or "--measure")) throw new ArgumentException("Use --control|--measure output.");
+if (RuntimeInformation.FrameworkDescription != ".NET 10.0.11") throw new InvalidOperationException("Pinned runtime required.");
+bool measure = mode == "--measure";
+long coldBefore = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+var fixture = new PublicationFixture(); var coldResult = fixture.Run(1);
+long coldSetupBytes = measure ? GC.GetAllocatedBytesForCurrentThread() - coldBefore : 0;
+GC.KeepAlive(coldResult);
+var rows = new List<object>();
+for (int route = 0; route < PublicationFixture.Routes.Length; route++)
+{
+    for (int warm = 0; warm < 16; warm++) fixture.Run(route);
+    long before = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+    for (int i = 0; i < 64; i++) fixture.Run(route);
+    long bytes = measure ? GC.GetAllocatedBytesForCurrentThread() - before : 0;
+    rows.Add(new { route, name = PublicationFixture.Routes[route], operations = 64, bytes });
+    if (measure && bytes <= 0) throw new InvalidOperationException("Owned allocation control failed.");
+}
+long positiveBefore = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+var positive = new byte[1024]; GC.KeepAlive(positive);
+long positiveBytes = measure ? GC.GetAllocatedBytesForCurrentThread() - positiveBefore : 0;
+if (measure && positiveBytes < 1024) throw new InvalidOperationException("Positive control failed.");
+long retainedBefore = measure ? GC.GetTotalMemory(true) : 0;
+var results = new object[16]; for (int i = 0; i < results.Length; i++) results[i] = fixture.Run(2);
+long retainedAfterResults = measure ? GC.GetTotalMemory(true) : 0;
+GC.KeepAlive(results); GC.KeepAlive(fixture);
+File.WriteAllText(output, JsonSerializer.Serialize(new { mode, status = "passed", runtime = RuntimeInformation.FrameworkDescription,
+    architecture = RuntimeInformation.ProcessArchitecture.ToString(), os = RuntimeInformation.OSDescription, serverGc = System.Runtime.GCSettings.IsServerGC,
+    sourceRevision = Environment.GetEnvironmentVariable("XEMELE_PUBLICATION_REVISION"), assemblySha256 = Hash(typeof(SchemaCompileOptions).Assembly.Location), probeSha256 = Hash(typeof(PublicationFixture).Assembly.Location),
+    coldSetupBytes, positiveBytes, retainedBefore, retainedAfterResults, retainedResults = results.Length, consumed = fixture.Consume(), rows }, new JsonSerializerOptions { WriteIndented = true }));
+Console.WriteLine($"{mode}: eight owned compilation routes consumed; counters {(measure ? "enabled" : "disabled")}");
+static string Hash(string path) => Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(path)));
