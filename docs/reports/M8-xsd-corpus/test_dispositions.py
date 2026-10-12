@@ -52,4 +52,11 @@ class Dispositions(unittest.TestCase):
     with self.subTest(file=name):self.assertEqual(hashlib.sha256((m.ROOT/'tests/corpora/xsd/upstream'/name).read_bytes()).hexdigest(),digest)
   for case in m.EXPLICITDEPS.values():
    x=m.view({'id':case['id'],'passed':False,'actual':'schema-unavailable'});self.assertIsNone(x['profilePassed']);self.assertTrue(x['notExecutable']);self.assertTrue(x['invalidSchemaDependency'])
+ def test_supplementary_and_lexical_profiles_preserve_original_mismatches(self):
+  self.assertEqual(len(m.INSTANCEPROFILES),22)
+  for case in m.INSTANCEPROFILES.values():
+   with self.subTest(id=case['id']):
+    x=m.view({'id':case['id'],'passed':False,'actual':'instance-'+case['profile_expected']});self.assertFalse(x['originalPassed']);self.assertTrue(x['profilePassed']);self.assertFalse(x['approvedException'])
+    for refused in ['incomplete-refusal','schema-unavailable','timeout','instance-syntax-error']:
+     self.assertFalse(m.view({'id':case['id'],'passed':False,'actual':refused})['profilePassed'])
 if __name__=='__main__':unittest.main()

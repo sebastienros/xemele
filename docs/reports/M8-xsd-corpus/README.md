@@ -115,7 +115,7 @@ parsed, SHA-bound original namespace facts for thirteen original Saxon schemas.
 Neither engine receives rewritten bytes. That selected set now has no harness
 exceptions: 44 independently adjudicated profile agreements, one component-name
 failure (`xv001.xsd`) and six unassessed substrate/dependency cases. All original
-expectations, outcomes and counts are retained. The report helper has eleven controls,
+expectations, outcomes and counts are retained. The report helper has twelve controls,
 including the exact 51 cases / forty-file manifest and nonpass refusal/dependency
 semantics.
 
@@ -166,3 +166,16 @@ all three excluded blocks, both polarities for legal Hangul/PrivateUse neighbors
 and valid/complete-invalid instances for an enumerated-NOTATION union. These
 controls pass after joining only verified attribute-fixed main48f394cc; no full
 corpus rerun or anyURI adjudication was made.
+
+Two additional coordinator source records are preserved verbatim in owned
+`supplementary-category-adjudication.json` and `lexical-oracle-adjudication.json`.
+The exact eighteen queried supplementary-category originals derive VALID under
+pinned Unicode16. `check-instance-profiles.py` independently verifies all22
+original expected/status/applicability records,43 unchanged schema/instance hashes,
+metadata/UCD hashes, exact patterns and57 decoded scalar categories from original
+UCD rows/ranges (missing values are Cn). No product/reference output is used by
+that derivation check. The four lexical dispositions are source interpretations:
+time016 VALID (explicit absent-timezone leap-second inference), legacy gMonth002/
+004 INVALID, and prohibited/no-wildcard attP031 INVALID. Their original outcomes
+and reference disagreements remain visible. The original time-ordering exception
+is not extended; no new exception or blanket Unicode applicability is introduced.

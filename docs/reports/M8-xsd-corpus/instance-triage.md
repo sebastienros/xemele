@@ -291,3 +291,12 @@ schema-unavailable prerequisite. All four original expected INVALID/actual
 unexecuted failures remain unchanged; separate profile outcomes are unassessed
 invalid-schema dependencies, never invalid-instance passes. No new full run is
 represented by this annotation.
+
+Coordinator later adjudicated all eighteen supplementary-category original
+instance mismatches VALID under exact pinned Unicode16 facts, and the four exact
+lexical cases time016 VALID/gMonth002 INVALID/gMonth004 INVALID/attP031 INVALID.
+These22 rows retain their original failed outcomes and BCL disagreements here;
+separate profile agreement is not a runtime repair waiver. The owned independent
+reproduction check validates original statuses/hashes/patterns and57 exact scalar
+categories, without using product/reference outcomes. Lexical standards reasons
+remain explicitly coordinator source interpretation, including the time inference.
