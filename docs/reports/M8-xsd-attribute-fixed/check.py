@@ -1,10 +1,11 @@
 """Reuse the verified facade check, then require this repair's nonempty owned inventory."""
-import subprocess
+import subprocess, sys
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
 D = '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet'
-subprocess.run(['python3', 'docs/reports/M8-xsd-facade/check.py'], check=True)
+assert sys.argv[1:] in [[], ['--owned-only']]
+if not sys.argv[1:]: subprocess.run(['python3', 'docs/reports/M8-xsd-facade/check.py'], check=True)
 out = Path('artifacts/M8-xsd-attribute-fixed'); out.mkdir(parents=True, exist_ok=True)
 subprocess.run([D, '--fx-version', '10.0.11', 'tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll',
                 '-namespace', 'Xemele.Tests.M8XsdAttributeFixed', '-parallelMode', 'none', '-noLogo', '-noColor',

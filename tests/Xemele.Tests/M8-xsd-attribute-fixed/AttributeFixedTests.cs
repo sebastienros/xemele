@@ -134,11 +134,15 @@ public sealed class AttributeFixedTests
     [Fact]
     public void FacetsReceiveAuthoredLexicalAndSharedOperation()
     {
-        string source = Derivation(Attribute("01.0", "P"), Attribute("001.0", "P"), definitions: "<xs:simpleType name='P'><xs:restriction base='xs:decimal'><xs:pattern value='0[0-9]+[.]0'/></xs:restriction></xs:simpleType>");
+        // Canonical 1 also satisfies the pattern, so publication's existing
+        // canonical-constraint check does not obscure the authored-lexical test.
+        string source = Derivation(Attribute("01.0", "P"), Attribute("001.0", "P"), definitions: "<xs:simpleType name='P'><xs:restriction base='xs:decimal'><xs:pattern value='(0[0-9]+[.]0|1)'/></xs:restriction></xs:simpleType>");
         var graph = Prepare(source); var facets = new RecordingFacets(); var op = new Ledger(); Complete(graph, op, facets);
         Assert.Equal(new[] { "001.0", "01.0" }, facets.Seen.Select(x => x.Lexical)); Assert.All(facets.Seen, x => Assert.Same(op, x.Operation));
         Assert.NotNull(ProductSchema.Compile(source));
-        Assert.Throws<SchemaCompileException>(() => ProductSchema.Compile(source.Replace("001.0", "1", StringComparison.Ordinal)));
+        string bad = source.Replace("001.0", "0001", StringComparison.Ordinal);
+        Assert.Throws<SchemaCompileException>(() => Complete(Prepare(bad)));
+        Assert.Throws<SchemaCompileException>(() => ProductSchema.Compile(bad));
     }
     [Theory]
     [InlineData("1", "01.0", false)] [InlineData("1", "1", true)] [InlineData("1", "2", false)]
