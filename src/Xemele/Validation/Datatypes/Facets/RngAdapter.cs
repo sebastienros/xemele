@@ -11,6 +11,9 @@ internal sealed class RngDatatypeFacetAdapter(IXmlFacetEvaluator evaluator)
         ArgumentNullException.ThrowIfNull(parameters); ArgumentNullException.ThrowIfNull(registry); ArgumentNullException.ThrowIfNull(operation);
         definition = null;
         if (!operation.Charge(1, location)) return false;
+        if (!DatatypeNormalization.TryMeasure(datatype.NamespaceUri, XmlWhitespaceRule.Preserve, operation, out _, out _, out _) ||
+            !DatatypeNormalization.TryMeasure(datatype.LocalName, XmlWhitespaceRule.Preserve, operation, out _, out _, out _))
+            return operation.IsComplete ? Reject(operation, location, "Invalid Unicode in datatype name.") : false;
         var library = datatype.NamespaceUri is "" or DatatypeTypes.RngNamespace ? registry.Find(datatype.NamespaceUri) : null;
         if (library is null || !library.IsDefined(datatype))
             return Reject(operation, location, "Unknown RELAX NG datatype library or datatype.");

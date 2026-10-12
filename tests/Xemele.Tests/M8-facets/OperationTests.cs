@@ -121,6 +121,15 @@ public sealed class OperationTests
         var registry = new XmlDatatypeRegistry(definitions, Op()); var op = Op();
         Assert.False(new XmlFacetEvaluator().ValidateDefinition(definitions[^1], registry, op)); Assert.False(op.IsComplete);
     }
+    [Fact]
+    public void ExplicitRngAdapterSharesExactPreparationQuotasAndReturnsNoPartialDefinition()
+    {
+        var registry=new XmlDatatypeRegistry();var name=new SchemaName(DatatypeTypes.RngNamespace,"decimal");XmlFacet[] facets=[F(XmlFacetKind.MinInclusive,"1")];
+        var count=new Ledger();Assert.True(new RngDatatypeFacetAdapter(new XmlFacetEvaluator()).ValidateParameters(name,facets,default,registry,count,out _));
+        Assert.True(new RngDatatypeFacetAdapter(new XmlFacetEvaluator()).ValidateParameters(name,facets,default,registry,Op(count.Work,count.Components),out _));
+        foreach(var op in new[] {Op(count.Work-1,null),Op(null,count.Components-1)})
+        {Assert.False(new RngDatatypeFacetAdapter(new XmlFacetEvaluator()).ValidateParameters(name,facets,default,registry,op,out var definition));Assert.Null(definition);Assert.False(op.IsComplete);}
+    }
     internal sealed class Ledger(CancellationTokenSource? cancellation = null, long cancelAt = long.MaxValue) : ISchemaOperation
     {
         internal long Work; internal int Components; internal Action? Callback; internal bool Complete = true;

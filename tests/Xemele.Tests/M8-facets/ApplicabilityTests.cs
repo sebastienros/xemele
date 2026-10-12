@@ -94,7 +94,7 @@ public sealed class ApplicabilityTests
     public void RngAliasMarkersRequireMatchingVarietyAndRestrictionOnlyStructure()
     {
         var registry=new XmlDatatypeRegistry();var original=Restrict("string","string") with {Name=new(DatatypeTypes.RngNamespace,"string")};
-        foreach(var bad in new[] {original with {Variety=XmlDatatypeVariety.List},original with {ItemType=DatatypeTypes.Name("integer")},original with {MemberTypes=[DatatypeTypes.Name("integer")]},original with {BaseType=null}})
+        foreach(var bad in new[] {original with {Variety=XmlDatatypeVariety.List},original with {ItemType=DatatypeTypes.Name("integer")},original with {MemberTypes=[DatatypeTypes.Name("integer")]},original with {BaseType=null},original with {Facets=[F(XmlFacetKind.Length,"1",true)]}})
             Assert.False(new XmlFacetEvaluator().ValidateDefinition(bad,registry,Op()));
     }
     [Fact]
