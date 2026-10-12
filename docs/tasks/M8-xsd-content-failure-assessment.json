@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "id": "M8-xsd-content-failure-assessment",
+  "milestone": "M8",
+  "title": "Continue XSD assessment after a content cursor rejects",
+  "kind": "feature",
+  "status": "in_progress",
+  "owner": "M8 coordinator01a12c6c-b333-71d3-877f-0d186618e21d / assigned isolated worker",
+  "branch": "codex/m8-xsd-content-failure-assessment",
+  "base_revision": "958c5d3a7acd6fb5cb46b1d391f65d190b76923f",
+  "integration_revision": null,
+  "depends_on": [
+    "M8-xsd-facade"
+  ],
+  "goals": [
+    "G14",
+    "G18"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/schemas.md"
+  ],
+  "owns": [
+    "src/Xemele/Validation/Xsd/Evaluation/Evaluator.cs",
+    "tests/Xemele.Tests/M8-xsd-content-failure-assessment/",
+    "tests/fixtures/M8-xsd-content-failure-assessment/",
+    "benchmarks/Xemele.Benchmarks/M8-xsd-content-failure-assessment/",
+    "docs/api/M8-xsd-content-failure-assessment.txt",
+    "samples/M8-xsd-content-failure-assessment/",
+    "docs/reports/M8-xsd-content-failure-assessment/"
+  ],
+  "api_or_output": "Bound repeated content-failure diagnostics while preserving descendant assessment and all refusal semantics",
+  "acceptance": [
+    {
+      "id": "M8-xsd-content-failure-assessment-A1",
+      "description": "Reproduce with the existing verified matcher: a small content model followed by over 1024 harmless unmatched siblings exhausts Diagnostics1024. Repair must finish complete-invalid with one initial content-failure diagnostic, original source location and unchanged limits. Preserve the three actual Z034 diagnostic-limit failures as pending counted-matcher integration evidence, never count standalone witnesses as those original executions.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M8-xsd-content-failure-assessment-A2",
+      "description": "Use per-run per-frame content-fault state separate from validity. On first semantic Accept=false after polling, report content error and disregard both failure-path outputs; later children bypass only that failed cursor and continue global-declaration, xsi:type or open assessment. Do not infer local declarations, skip subtrees or filter diagnostics globally. Suppress only the failed cursor completion duplicate; successful strict wildcard and unfaulted missing-content behavior remain.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M8-xsd-content-failure-assessment-A3",
+      "description": "Prove later datatype/required attribute/fixed/content and strict-wildcard errors, independent parent faults, attribute errors not disabling matching, balanced ordered identity hooks and later key/keyref/ID/IDREF checks. Preserve ordinary independent diagnostic exhaustion, shared work/depth/token/document limits, cancellation including null caps, caller exceptions, DOM mutation detection and repeat/concurrent isolation.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M8-xsd-content-failure-assessment-A4",
+      "description": "Pass focused evaluator/identity/content/facade regressions, unchanged public and frozen APIs, normal and true XML-only consumers, planning validation, and actual bounded allocation evidence using existing infrastructure under a fresh root lease. No matcher/compiler/shared-contract change, raised cap or forced completion.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "Claimed independent evaluator-only repair after root and independent contract source review; use verified existing matcher and preserve refused original Z034 outcomes until counted-matcher integrated follow-up.",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}

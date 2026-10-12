@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "id": "M8-schema-resource-outcomes",
+  "milestone": "M8",
+  "title": "Distinguish optional schema resource unavailability from denial",
+  "kind": "feature",
+  "status": "in_progress",
+  "owner": "M8 coordinator01a12c6c-b333-71d3-877f-0d186618e21d / assigned isolated worker",
+  "branch": "codex/m8-schema-resource-outcomes",
+  "base_revision": "1fb1aa3260ce4df29442b230bf51945dea4b7d71",
+  "integration_revision": null,
+  "depends_on": [
+    "M8-xsd-facade",
+    "M8-schema-resource-base",
+    "M8-resource-kind"
+  ],
+  "goals": [
+    "G09",
+    "G14"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/schemas.md"
+  ],
+  "owns": [
+    "src/Xemele/Resolution/Core/Resources.cs",
+    "src/Xemele/Resolution/Core/ResourceResolution.cs",
+    "src/Xemele/Validation/SchemaCommon/ResourceLoader.cs",
+    "docs/specs/schemas.md",
+    "docs/decisions/M8/contracts.md",
+    "docs/decisions/M8/resource-outcomes.md",
+    "tests/Contracts/Fixtures/M8/ResourceOutcomes/",
+    "tests/Xemele.Tests/M8-schema-resource-outcomes/",
+    "tests/fixtures/M8-schema-resource-outcomes/",
+    "benchmarks/Xemele.Benchmarks/M8-schema-resource-outcomes/",
+    "docs/api/M8-schema-resource-outcomes.txt",
+    "samples/M8-schema-resource-outcomes/",
+    "docs/reports/M8-schema-resource-outcomes/"
+  ],
+  "api_or_output": "Distinguish optional schema resource unavailability from denial",
+  "acceptance": [
+    {
+      "id": "M8-schema-resource-outcomes-A1",
+      "description": "Freeze and compile the exact additive result/status/virtual ResolveResult surface in the accepted coordinator brief before runtime implementation. Default result is Denied/null; only a non-null resource factory yields Resolved; legacy Resolve and ResolveAsync declarations and all old API rows remain unchanged. No public stubs.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M8-schema-resource-outcomes-A2",
+      "description": "Implement default synchronous adapter with identical request/token, one legacy callback and null-to-Denied mapping, preserving caller exceptions. Add only a concrete optional loader seam; explicit Unavailable can return absence before Refuse, mandatory Load stays strict, and missing resolver/legacy null/Denied still refuse. Preserve parsing, source identity, quotas/cancellation, ownership and exactly-once disposal. No async or non-schema consumer changes.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M8-schema-resource-outcomes-A3",
+      "description": "Prove default/factory invariants, legacy consumers, explicit unavailable/denied at optional and mandatory sites, exception propagation, cancellation before/after acquisition or unavailable, disposal failures, aggregate resource/work boundaries, redirected bases and shared principal/external parsing. Unavailable cannot create a document/cache entry/fresh budget or evade bounded attempted-work checks.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M8-schema-resource-outcomes-A4",
+      "description": "Pass focused shared-resource and affected validator suites, additive compiled public API and unchanged frozen lane interfaces, normal/true XML-only consumers, task validation and actual bounded allocation evidence using existing infrastructure. Leave XSD directive semantics to the ordered compiler task; no corpus oracle rewriting.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "Claimed compatible additive resource-result repair under accepted bounded design. No runtime implementation or checks claimed. Preserve all legacy resolver and non-schema behavior; compiler semantics remain separately owned.",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}
