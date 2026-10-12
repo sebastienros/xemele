@@ -6,6 +6,19 @@ namespace Xemele.Tests.M8XsdMissingComponents;
 public sealed class ReviewControls
 {
     [Fact]
+    public void DiscardedRestrictionCandidatesCannotPublishMissingDependencies()
+    {
+        const string basis = "<xs:complexType name='B'><xs:sequence><xs:element name='x' type='absent' minOccurs='0'/><xs:element name='s' type='xs:int'/><xs:any processContents='lax' minOccurs='1' maxOccurs='1'/></xs:sequence></xs:complexType>";
+        const string derived = "<xs:complexType name='D'><xs:complexContent><xs:restriction base='B'><xs:sequence><xs:element name='s' type='xs:int'/><xs:element name='x' type='xs:int'/></xs:sequence></xs:restriction></xs:complexContent></xs:complexType><xs:element name='r' type='D'/>";
+        foreach (string definition in new[] { "", "<xs:simpleType name='absent'><xs:restriction base='xs:string'/></xs:simpleType>" })
+        {
+            var schema = XmlSchema.Compile(Wrap(definition + basis + derived));
+            var result = schema.Validate("<r><s>7</s><x>8</x></r>");
+            Assert.True(result.IsComplete); Assert.True(result.IsValid); Assert.Empty(result.Diagnostics);
+            Assert.Throws<SchemaCompileException>(() => XmlSchema.Compile(Wrap(definition + basis + derived.Replace("name='x' type='xs:int'", "name='x' type='xs:int' minOccurs='2' maxOccurs='2'", StringComparison.Ordinal))));
+        }
+    }
+    [Fact]
     public void ExpandedSubstitutionLeavesCannotRematchThroughBlockedAffiliation()
     {
         const string heads = "<xs:element name='h' type='xs:int' block='restriction'/><xs:element name='m' type='xs:int' substitutionGroup='h'/><xs:element name='s' type='xs:short' substitutionGroup='m'/>";

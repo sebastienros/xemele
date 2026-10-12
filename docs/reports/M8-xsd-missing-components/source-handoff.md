@@ -51,3 +51,11 @@ replace, and collapse candidates through enclosing patterns and real complete
 member plans; string-length4 a[space][space]b element-default/attribute-fixed
 neighbors, enclosing-pattern negatives, and completed-list neighbors authored.
 All execution remains UNRUN. Static selected coverage is685 methods/2188 cases.
+
+G03c dependency addendum: candidate links remain provisional in relation leaves.
+Only the final indeterminate proof publishes operand links; False AND / True OR
+paths discard links. Unordered matching retains only its selected potential
+certificate, with2N*N+7N+10 charged matrix storage. Independent Build/UPA/EDC
+links remain unchanged. Optional absent x / s / wildcard original and completed
+string-base neighbors assess r/s=7,x=8; x occurrence2 independently rejects.
+Static selection now686 methods/2189 cases; all execution remains UNRUN.

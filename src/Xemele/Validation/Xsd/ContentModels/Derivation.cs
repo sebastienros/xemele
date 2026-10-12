@@ -225,6 +225,9 @@ internal sealed partial class ContentCompilation
         internal readonly XsdParticle? Derived = derived, Basis = basis;
         internal readonly Rule? Left = left, Right = right;
         internal Rule? Expanded;
+        internal RelationState? Result;
+        internal XsdElementDeclaration? Operand;
+        internal DependencyUse OperandUse;
     }
     private Rule Constant(bool value) { ContentWork.Retain(op, default); return new(RuleKind.Constant, value ? RelationState.True : RelationState.False, null, null, false, false, null, null); }
     private Rule Relation(XsdParticle? d, XsdParticle? b, bool anyType, bool synthesized = false)
@@ -232,7 +235,28 @@ internal sealed partial class ContentCompilation
     private Rule Combine(RuleKind kind, Rule a, Rule b)
     { ContentWork.Retain(op, default, 3); return new(kind, RelationState.False, null, null, false, false, a, b); }
     private bool Restricts(XsdParticle? derived, XsdParticle? basis, bool anyType)
-        => EvaluateRule(Relation(derived, basis, anyType)) != RelationState.False;
+    {
+        var root = Relation(derived, basis, anyType); var result = EvaluateRule(root);
+        if (result == RelationState.Indeterminate) PublishDependencies(root);
+        return result != RelationState.False;
+    }
+    private void PublishDependencies(Rule root)
+    {
+        var pending = new Stack<Rule>(); var visited = new HashSet<Rule>();
+        ContentWork.Retain(op, default); pending.Push(root);
+        while (pending.TryPop(out var rule))
+        {
+            ContentWork.Tick(op, rule.Operand?.Location ?? default);
+            if (rule.Result != RelationState.Indeterminate || visited.Contains(rule)) continue;
+            ContentWork.Retain(op, default); visited.Add(rule);
+            if (rule.Operand is { } operand)
+                availability!.Link(consumer, ComponentAvailability.Element(operand), DependencyUse.TypeAssessment, rule.OperandUse);
+            else if (rule.Kind == RuleKind.Relation)
+            { ContentWork.Retain(op, default); pending.Push(rule.Expanded!); }
+            else if (rule.Kind is RuleKind.And or RuleKind.Or)
+            { ContentWork.Retain(op, default, 2); pending.Push(rule.Left!); pending.Push(rule.Right!); }
+        }
+    }
     private RelationState EvaluateRule(Rule root)
     {
         var results = new Dictionary<Rule, RelationState>();
@@ -241,7 +265,8 @@ internal sealed partial class ContentCompilation
         {
             var rule = frame.Rule; ContentWork.Tick(op, rule.Derived?.Location ?? default);
             if (results.ContainsKey(rule)) continue;
-            if (rule.Kind == RuleKind.Constant) { ContentWork.Retain(op, default); results.Add(rule, rule.Value); continue; }
+            if (rule.Result is { } cached) { ContentWork.Retain(op, default); results.Add(rule, cached); continue; }
+            if (rule.Kind == RuleKind.Constant) { ContentWork.Retain(op, default); results.Add(rule, rule.Value); rule.Result = rule.Value; continue; }
             if (!frame.Ready)
             {
                 ContentWork.Retain(op, default); stack.Push((rule, true));
@@ -254,7 +279,7 @@ internal sealed partial class ContentCompilation
             var result = rule.Kind == RuleKind.Relation ? results[rule.Expanded!] : rule.Kind == RuleKind.And
                 ? (RelationState)Math.Min((int)results[rule.Left!], (int)results[rule.Right!])
                 : (RelationState)Math.Max((int)results[rule.Left!], (int)results[rule.Right!]);
-            ContentWork.Retain(op, default); results.Add(rule, result);
+            ContentWork.Retain(op, default); results.Add(rule, result); rule.Result = result;
         }
         return results[root];
     }
@@ -361,14 +386,14 @@ internal sealed partial class ContentCompilation
         // choices use the existing iterative relation solver for each candidate.
         foreach (var particle in derived)
         { ContentWork.Tick(op, at); if (Normalize(particle)?.Term is not XsdElementTerm) return Constant(false); }
-        long retained = (long)count * count + 7L * count + 10;
+        long retained = 2L * count * count + 7L * count + 10;
         if (retained > int.MaxValue)
         { op.Refuse("SCHEMA.Limit", "Unordered relation representation exceeded.", at); throw SchemaSnapshots.Failure(op); }
         ContentWork.Retain(op, at, (int)retained);
-        var relations = new RelationState[count * count]; var optional = new bool[count];
+        var relations = new RelationState[count * count]; var proofs = new Rule?[count * count]; var optional = new bool[count];
         for (int j = 0; j < count; j++) { ContentWork.Tick(op, at); optional[j] = Nullable(basis[j]); }
         for (int i = 0; i < derived.Count; i++) for (int j = 0; j < count; j++)
-        { ContentWork.Tick(op, at); relations[i * count + j] = EvaluateRule(Relation(derived[i], basis[j], anyType)); }
+        { ContentWork.Tick(op, at); var proof = Relation(derived[i], basis[j], anyType); proofs[i * count + j] = proof; relations[i * count + j] = EvaluateRule(proof); }
         var leftMatch = new int[count]; var rightMatch = new int[count]; var queue = new int[count];
         var seenLeft = new bool[count]; var seenRight = new bool[count]; var parentRight = new int[count];
         bool Matches(bool allowIndeterminate)
@@ -405,14 +430,20 @@ internal sealed partial class ContentCompilation
             return true;
         }
         if (Matches(false)) return State(RelationState.True);
-        return State(Matches(true) ? RelationState.Indeterminate : RelationState.False);
+        if (!Matches(true)) return State(RelationState.False);
+        var required = Constant(true);
+        for (int i = 0; i < derived.Count; i++)
+        {
+            ContentWork.Tick(op, at); int edge = i * count + leftMatch[i];
+            if (relations[edge] == RelationState.Indeterminate) required = Combine(RuleKind.And, required, proofs[edge]!);
+        }
+        return required;
     }
     private Rule Indeterminate(XsdElementDeclaration operand, DependencyUse operandUse = DependencyUse.TypeAssessment)
     {
         if (availability is null) throw new ArgumentException("Complete restriction operands required.", nameof(schema));
-        availability.Link(consumer, ComponentAvailability.Element(operand), DependencyUse.TypeAssessment, operandUse);
         ContentWork.Retain(op, operand.Location);
-        return new(RuleKind.Constant, RelationState.Indeterminate, null, null, false, false, null, null);
+        return new(RuleKind.Constant, RelationState.Indeterminate, null, null, false, false, null, null) { Operand = operand, OperandUse = operandUse };
     }
     private Rule ElementRestriction(XsdParticle derived, XsdParticle basis, int derivedId, int basisId)
     {
@@ -456,7 +487,17 @@ internal sealed partial class ContentCompilation
         }
         foreach (var block in b.Block) { ContentWork.Tick(op, derived.Location); if (!d.Block.Contains(block)) return Constant(false); }
         foreach (int identity in d.IdentityConstraints) { ContentWork.Tick(op, derived.Location); if (!b.IdentityConstraints.Contains(identity)) return Constant(false); }
-        if (b.FixedValue is not null && facets is not null && !FixedEquals(d, b)) return Constant(false);
+        if (b.FixedValue is not null && facets is not null)
+        {
+            bool missingD = availability?.Unavailable(ComponentAvailability.Element(d)) == true;
+            bool missingB = availability?.Unavailable(ComponentAvailability.Element(b)) == true;
+            if (missingD || missingB)
+            {
+                if (missingD) typeRelation = Combine(RuleKind.And, typeRelation, Indeterminate(d));
+                if (missingB) typeRelation = Combine(RuleKind.And, typeRelation, Indeterminate(b));
+            }
+            else if (!FixedEquals(d, b)) return Constant(false);
+        }
         return Combine(RuleKind.And, nameRelation, typeRelation);
     }
     private bool FixedEquals(XsdElementDeclaration derived, XsdElementDeclaration basis)
