@@ -228,7 +228,15 @@ internal sealed class ContentCursor(CompiledContent program) : IXsdContentCursor
                 ContentWork.Tick(op, program.Location);
                 if (existing.Flags[j] != candidate.Flags[j]) { existingDominates = candidateDominates = false; break; }
                 int comparison = existing.Counts[j].Compare(candidate.Counts[j], op, program.Location);
-                if (program.Nodes[j].BodyNullable) { existingDominates &= comparison <= 0; candidateDominates &= comparison >= 0; }
+                var node = program.Nodes[j];
+                // Once both minima are satisfied, the smaller actual count has
+                // every continuation of the larger: it can exit at the same
+                // gate and has at least as much room below the finite maximum.
+                // Below-minimum counts still have different exit obligations.
+                bool ordered = node.BodyNullable || comparison != 0
+                    && existing.Counts[j].AtLeast(node.Particle.MinOccurs, op, program.Location)
+                    && candidate.Counts[j].AtLeast(node.Particle.MinOccurs, op, program.Location);
+                if (ordered) { existingDominates &= comparison <= 0; candidateDominates &= comparison >= 0; }
                 else { existingDominates &= comparison == 0; candidateDominates &= comparison == 0; }
             }
             if (existingDominates) return;
