@@ -25,7 +25,8 @@ nullable XML depth quotas; overflow produces an incomplete VALIDATION.Limit resu
 No matcher recursion can escape as stack overflow. Scratch is bounded by charged
 work/component growth and finite index/counter capacities. Results and schema
 objects necessarily own allocations; no full-validator zero-allocation or speed
-claim is made. Allocation evidence is pending a fresh bounded host grant.
+claim is made. The accepted [allocation evidence](measurements.md) records separate cold, warm
+owned-output and approximate retained/RSS observations from the released window.
 
 The true XML-only project includes foundations plus verified M8 common, regex,
 datatype, facet and RNG compiler source. It excludes XSD, Schematron, HTML, CSS,

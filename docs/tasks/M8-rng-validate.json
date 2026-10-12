@@ -4,7 +4,7 @@
   "milestone": "M8",
   "title": "RELAX NG evaluation and facade",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M8 coordinator01a12c6c-b333-71d3-877f-0d186618e21d / assigned isolated worker",
   "branch": "codex/m8-rng-validate",
   "base_revision": "cdf7a0b148e837e016f874da32b054ab4f25a93e",
@@ -45,8 +45,13 @@
     {
       "id": "M8-rng-validate-A2",
       "description": "Test valid/invalid instances, concurrent compiled schemas, diagnostics and bounded work.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "branch-correctness-2",
+        "coordinator-source-review-2",
+        "owned-output-allocations",
+        "allocation-review"
+      ]
     },
     {
       "id": "M8-rng-validate-A3",
@@ -129,21 +134,38 @@
       "result": "passed",
       "summary": "Rebuilt source-fix probe:10exact counter-disabled controls pass;434new identities verified; actual supervisor child terminated/reaped, group absent, log closed. New manifest SHA5b7d24badda22d79471f6f12ee62684e4e9fb1a159944d36e9186f5c31c1ce9a replaces invalid prior preparation. No allocation counters or BDN run; fresh45sgrant required.",
       "artifact": "docs/reports/M8-rng-validate/readiness.md"
+    },
+    {
+      "id": "owned-output-allocations",
+      "kind": "check",
+      "revision": "ec0699e10605c1d89eecfdbe192a7150b81fe1be",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 /Users/sebastienros/.codex/worktrees/3538/xemele/benchmarks/Xemele.Benchmarks/M8-rng-validate/bin/Release/net10.0/Xemele.Benchmarks.dll --measure /Users/sebastienros/.codex/worktrees/3538/xemele/artifacts/M8-rng-validate/measurement-1/allocations.json",
+      "result": "passed",
+      "summary": "Root supervised exact prebuilt allocation-only child under grant973968a6 and released ae9cf41ea49a87752a8256acedc987ee9e66ae1a before inspection.10positive routes\u00d764samples\u00d716ops=10240ops; raw totals/frequencies verified, cold87208B,positive1048B; approximate16schema retained delta887160B/RSS61505536B separate.434identities stable before/after; child8860exit0/reaped/groupabsent/logclosed;0.559740833s. No full-validator zero/speed claim; rawSHAa5a62c9a69e0265d9c32194b29002dd8ef1cc23274c6e1d7d95c1f745ca0f914.",
+      "artifact": "docs/reports/M8-rng-validate/measurements.md"
+    },
+    {
+      "id": "allocation-review",
+      "kind": "review",
+      "revision": "ec0699e10605c1d89eecfdbe192a7150b81fe1be",
+      "command": "Coordinator independent inspection and acceptance of released allocation raw totals, sample frequencies and lifecycle",
+      "result": "passed",
+      "summary": "All10route sample boundaries/totals/denominators accepted; variable compile/coalesced/interleave frequencies retained without per-operation distribution or zero/speed claims. Raw artifacts preserved for coordinator cleanup.",
+      "artifact": "docs/reports/M8-rng-validate/measurements.md"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Coordinator source fix accepted; new full-revision89owned/1191predecessor/API/consumer checks and refrozen controls pass at ec0699e10605c1d89eecfdbe192a7150b81fe1be. Await fresh bounded allocation-only grant; retain writes until terminal handoff.",
+    "summary": "Implemented on isolated branch at source ec0699e10605c1d89eecfdbe192a7150b81fe1be.89owned/1191predecessor cases, public/frozen contracts, normal/XML-only consumers, source review and released allocation evidence pass. Preparing final metadata validation and terminal all-write relinquishment; integrated verification remains coordinator-owned.",
     "checks": [
-      "89owned/1191predecessor cases pass on ARM.NET10.0.11",
-      "1410public/444frozen RNG members match; normal/XML-only consumers pass",
-      "179task planning/diffcheck pass",
-      "10rebuilt disabledcontrols/434identities/actualcleanup preflight pass"
+      "python3 -B docs/reports/M8-rng-validate/checks.py:89owned/1191predecessor,1410public/444frozen RNG, normal/XML-only consumers,planning179/diffcheck PASS",
+      "10counter-disabled controls/434identities/actualcleanup preflight PASS",
+      "Grant973968a6/releaseae9cf41e: exact allocation child8860exit0/reaped/groupabsent/logclosed; all434identities stable; raw inspection only after release",
+      "Root independently accepted source delta and allocation evidence; reports README.md,readiness.md,measurements.md"
     ],
     "remaining": [
-      "Fresh bounded all-host allocation-only grant for new manifest5b7d24badda22d79471f6f12ee62684e4e9fb1a159944d36e9186f5c31c1ce9a",
-      "Release before raw inspection, summarize compact allocation/retained evidence",
-      "Final checks/task metadata and explicit ownership relinquishment"
+      "Final committed metadata planning validation/diffcheck, then terminal ownership relinquishment",
+      "Coordinator integrate branch and record verified/integration_revision only after integrated checks"
     ],
     "requests": []
   }

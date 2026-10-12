@@ -41,6 +41,11 @@ supervisor SHA256 `bdb51e0d4183cf06eb71f8df1607869021571f52de992146ee492fe3aed72
 preflight terminated/reaped a sleeping child, verified process group absent and
 closed log. Old source5d69preparation is preserved at
 `artifacts/M8-rng-validate/preparation-source5d69/` and INVALID for this source.
-Proposed sole prebuilt child has45s total/35work/10cleanup; requires a fresh
-all-host coordinator grant and explicit RELEASE before raw result inspection.
-No raw logs, sample arrays or result dumps are committed.
+The exact prebuilt child completed under durable grant973968a6 in the coordinated
+M8-rng-identity-serial-1 window. Durable release ae9cf41ea49a87752a8256acedc987ee9e66ae1a
+preceded raw inspection. Root independently accepted exact denominators/totals,
+sample histograms and lifecycle; [measurement summary](measurements.md) retains
+compact evidence. All source/build/semantic/API/consumer/review/allocation work
+is complete on this branch. Integration verification remains the coordinator's
+responsibility. Raw artifacts remain for root cleanup; no raw logs, sample arrays
+or result dumps are committed.
