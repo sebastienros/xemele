@@ -1,0 +1,204 @@
+{
+  "schema_version": 1,
+  "id": "M8-rng-lexical",
+  "milestone": "M8",
+  "title": "Enforce RELAX NG 2001 URI and name lexical rules",
+  "kind": "feature",
+  "status": "verified",
+  "owner": "M8 coordinator01a12c6c-b333-71d3-877f-0d186618e21d / assigned isolated worker",
+  "branch": "codex/m8-rng-lexical",
+  "base_revision": "7e2ce7af9b70aa9216304ce0eb16493805369bf5",
+  "integration_revision": "51550524f0c08647073da7657d4659e5affc78e7",
+  "depends_on": [
+    "M8-rng-validate",
+    "M8-datatypes-text-binary"
+  ],
+  "goals": [
+    "G14"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/schemas.md"
+  ],
+  "owns": [
+    "src/Xemele/Validation/RelaxNg/Compilation/Compiler.cs",
+    "tests/Xemele.Tests/M8-rng-lexical/",
+    "tests/fixtures/M8-rng-lexical/",
+    "benchmarks/Xemele.Benchmarks/M8-rng-lexical/",
+    "docs/reports/M8-rng-lexical/"
+  ],
+  "api_or_output": "Unchanged public/frozen APIs; bounded RELAX NG 2001 lexical checks before schema publication",
+  "acceptance": [
+    {
+      "id": "M8-rng-lexical-A1",
+      "description": "Validate inherited datatypeLibrary with pinned RELAX NG 2001 normative XLink escaping followed by RFC2396 (+ RFC2732) absolute fragment-free URI checks: accept http:ok, reject foo: and malformed percent escapes; preserve source provenance, escaped library identity, and empty-library support. Do not rely on System.Uri per-scheme normalization or bare relative-accepting XSD anyURI validation.",
+      "status": "passed",
+      "evidence": [
+        "affected-correctness",
+        "independent-source-review",
+        "normal-consumer",
+        "xml-only-consumer",
+        "root-integrated-verification"
+      ]
+    },
+    {
+      "id": "M8-rng-lexical-A2",
+      "description": "Use the pinned historical XML name productions for every RELAX NG schema NCName/QName position; reject U+0E35 as a start in element/attribute/name/ref/define and prefixed local names while preserving valid continuation and other historical boundaries.",
+      "status": "passed",
+      "evidence": [
+        "affected-correctness",
+        "independent-source-review",
+        "root-integrated-verification"
+      ]
+    },
+    {
+      "id": "M8-rng-lexical-A3",
+      "description": "Preserve the nine original Jing schema predicates (055,056,057,058,070,072,073,074,079); test independent positive/negative URI/name boundaries, inherited contexts, exact quotas and cancellation, then affected compiler/validator/API and normal/XML-only checks.",
+      "status": "passed",
+      "evidence": [
+        "release-build",
+        "affected-correctness",
+        "public-api",
+        "frozen-rng-api",
+        "normal-consumer",
+        "xml-only-consumer",
+        "combined-check-review",
+        "root-integrated-verification"
+      ]
+    },
+    {
+      "id": "M8-rng-lexical-A4",
+      "description": "Record independent source review, bounded scan/accounting and ownership evidence plus relevant controlled allocation evidence; integrate and actually verify before corpus consumes repair. No oracle changes, public contract changes, or prior-evidence rewriting.",
+      "status": "passed",
+      "evidence": [
+        "independent-source-review",
+        "controlled-allocations",
+        "combined-check-review",
+        "root-integrated-verification"
+      ]
+    }
+  ],
+  "implementation": [
+    "src/Xemele/Validation/RelaxNg/Compilation/Compiler.cs: Build.Library, UriEscape, LexicalOperation and CheckName",
+    "tests/Xemele.Tests/M8-rng-lexical/LexicalTests.cs: 80 owned lexical cases including original Jing predicates, historical names, malformed UTF-16, inherited contexts, source locations, independently derived work/component/output cancellation",
+    "tests/fixtures/M8-rng-lexical/: nine byte-identical schema witnesses plus pinned provenance/expectations/hashes",
+    "benchmarks/Xemele.Benchmarks/M8-rng-lexical/: prebuilt synchronous allocation-only probe with disabled semantic control",
+    "docs/reports/M8-rng-lexical/: normal/XML-only consumer, source review, frozen preparation/lifecycle, aggregate allocation evidence and handoff"
+  ],
+  "evidence": [
+    {
+      "id": "original-witness-regression",
+      "kind": "check",
+      "revision": "83c47475b15663ad0a5a39b3022fee6ac947a6a0",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -namespace Xemele.Tests.M8RngLexical -noColor -noLogo",
+      "result": "failed",
+      "summary": "Pre-fix runtime source at83c47475 plus new uncommitted nine-witness-only owned test harness: all9 original predicates failed as expected (055 rejected, other8 accepted). Original fixture bytes/hashes/expectations preserved; final affected checks pass these same predicates.",
+      "artifact": "docs/reports/M8-rng-lexical/source-review.md"
+    },
+    {
+      "id": "release-build",
+      "kind": "check",
+      "revision": "dc3c6e2a2bd8a5268b708015ed825471fe2e2307",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' build tests/Xemele.Tests/Xemele.Tests.csproj -c Release --disable-build-servers -m:1 -p:RuntimeFrameworkVersion=10.0.11 -p:UseSharedCompilation=false -p:NuGetAudit=false",
+      "result": "passed",
+      "summary": "Final committed runtime/test bytes compiled in pinned Release SDK10.0.400/runtime10.0.11 with0warnings/0errors. Earlier owned test compile failures were corrected, not counted as passing.",
+      "artifact": "docs/reports/M8-rng-lexical/handoff.md"
+    },
+    {
+      "id": "affected-correctness",
+      "kind": "check",
+      "revision": "dc3c6e2a2bd8a5268b708015ed825471fe2e2307",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -class 'Xemele.Tests.M8Rng*' -class 'Xemele.Tests.M8DatatypesTextBinary.*' -noColor -noLogo",
+      "result": "passed",
+      "summary": "405 passed;0errors/failures/skips/notrun:80repair,88compiler,89validator,148textbinary. Includes nine original predicates, raw/escaped URI boundaries, historical names, strict malformed UTF16, provenance, exact independently derived projection budgets and cancellation during output.",
+      "artifact": "docs/reports/M8-rng-lexical/handoff.md"
+    },
+    {
+      "id": "public-api",
+      "kind": "check",
+      "revision": "dc3c6e2a2bd8a5268b708015ed825471fe2e2307",
+      "command": "python3 docs/reports/M5-validation-model/check_api.py",
+      "result": "passed",
+      "summary": "Approved M0 extractor built;1410 compiled public members matched.",
+      "artifact": "docs/reports/M8-rng-lexical/handoff.md"
+    },
+    {
+      "id": "frozen-rng-api",
+      "kind": "check",
+      "revision": "dc3c6e2a2bd8a5268b708015ed825471fe2e2307",
+      "command": "python3 docs/reports/M8-rng-validate/frozen.py",
+      "result": "passed",
+      "summary": "M8 extractor built;444 frozen RELAX NG public/internal contract rows matched actual runtime.",
+      "artifact": "docs/reports/M8-rng-lexical/handoff.md"
+    },
+    {
+      "id": "normal-consumer",
+      "kind": "check",
+      "revision": "dc3c6e2a2bd8a5268b708015ed825471fe2e2307",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 docs/reports/M8-rng-lexical/Consumer/bin/Release/net10.0/Xemele.Benchmarks.dll",
+      "result": "passed",
+      "summary": "After normal owned consumer Release build,10 public compile/validation routes passed;0buildwarnings/errors.",
+      "artifact": "docs/reports/M8-rng-lexical/handoff.md"
+    },
+    {
+      "id": "xml-only-consumer",
+      "kind": "check",
+      "revision": "dc3c6e2a2bd8a5268b708015ed825471fe2e2307",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 docs/reports/M8-rng-lexical/Consumer/bin/Release/net10.0/Xemele.Benchmarks.dll",
+      "result": "passed",
+      "summary": "After owned consumer Release build with-p:LexicalXmlOnly=true,10 public routes passed against true XML-only source assembly;0buildwarnings/errors.",
+      "artifact": "docs/reports/M8-rng-lexical/handoff.md"
+    },
+    {
+      "id": "independent-source-review",
+      "kind": "review",
+      "revision": "dc3c6e2a2bd8a5268b708015ed825471fe2e2307",
+      "command": null,
+      "result": "passed",
+      "summary": "Coordinator and independent reviewer accepted corrected runtime f3e50d9d and test-only dc3 delta. Normative XLink escape correction, historical productions, bounded scans/reserved charged output and owner accounting accepted. Durable review9301cacc99ba37fb01b5e38d737f7b6de59f9bb7; no reviewer executions claimed.",
+      "artifact": "docs/reports/M8-rng-lexical/source-review.md"
+    },
+    {
+      "id": "controlled-allocations",
+      "kind": "check",
+      "revision": "dc3c6e2a2bd8a5268b708015ed825471fe2e2307",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 /Users/sebastienros/.codex/worktrees/b0f0/xemele/benchmarks/Xemele.Benchmarks/M8-rng-lexical/bin/Release/net10.0/Xemele.Benchmarks.dll --measure /Users/sebastienros/.codex/worktrees/b0f0/xemele/artifacts/M8-rng-lexical/allocation.json",
+      "result": "passed",
+      "summary": "Root launched exactly control then measure under419db89c grant; durable host release df4ed510 preceded inspection. Two children28133/28135 exited0/reaped/groupsabsent/logsclosed;497 identities matched. Ten routes (cold+9warm); each warm result one aggregate64-call counter after16warm. Outputidentity5632/64=88B/call; graphs/rejections/setup separately reported. Root independently accepted exact totals/means at9301cacc; no samples/distribution/zero/speed/x64claim.",
+      "artifact": "docs/reports/M8-rng-lexical/allocations.md"
+    },
+    {
+      "id": "combined-check-review",
+      "kind": "review",
+      "revision": "51550524f0c08647073da7657d4659e5affc78e7",
+      "command": null,
+      "result": "passed",
+      "summary": "Coordinator independently executed combined source checks:405tests,1410public,444frozen,normal/XML-only10routes each,182planning anddiffpass. Durable actual review9301cacc99ba37fb01b5e38d737f7b6de59f9bb7. New reusable checks.py arrived after manual equivalent commands and is not claimed executed. Main integration/verified metadata remain coordinator responsibility before corpus consumes repair.",
+      "artifact": "docs/reports/M8-rng-lexical/handoff.md"
+    },
+    {
+      "id": "root-integrated-verification",
+      "kind": "integration",
+      "revision": "51550524f0c08647073da7657d4659e5affc78e7",
+      "command": "Pinned10.0.11 Release build and four selected namespaces (parallelMode none); approved M0/M8 API checkers; normal/XML-only owned consumers; prepared allocation sequence under grant419db89c and release df4ed510; python3 tools/planning/tasks.py validate; git diff --check",
+      "result": "passed",
+      "summary": "Actual root combined405 tests (80 repair,88 compiler,89 validator,148 textbinary) passed/zero errors failures skipped not-run; build0warnings/errors,public1410/frozen444,normal/XMLonly10routes each. Root accepted measured cold+9warm aggregate allocations with497unchangedidentities/2cleanchildren. Final d3a3143f integration and7338caf4 handoff add only reports/task/coordination/preparation; runtime/tests/fixtures/build/API/consumers/checker inputs proven identical to actual515. No tests falsely rerun. All182planning records validate.",
+      "artifact": "docs/orchestration/review-M8-rng-lexical.json"
+    }
+  ],
+  "blockers": [],
+  "handoff": {
+    "summary": "Integrated and verified RELAX NG lexical repair; all nine original Jing predicates preserved. Corpus may consume after explicit resume with this verified checkpoint.",
+    "checks": [
+      "Release405affected tests passed (80repair/88compiler/89validator/148textbinary),0failed/errors/skipped/notrun.",
+      "PublicAPI1410/frozenRNG444 and normal/XML-only10routes each passed.",
+      "Independent source/accounting review accepted; root combined51550524 actual same405/API/consumer checks and182planning passed.",
+      "Controlled root allocation lease completed, released before inspection; exact aggregate totals/64means independently accepted,497 identities unchanged.",
+      "Updated own task metadata and ownership/planning validation run before handoff commit; no correctness or allocation reruns."
+    ],
+    "remaining": [
+      "Allocation evidence is one Arm64 run with aggregate means; no speed, primitive-zero or cross-architecture claim."
+    ],
+    "requests": []
+  }
+}
