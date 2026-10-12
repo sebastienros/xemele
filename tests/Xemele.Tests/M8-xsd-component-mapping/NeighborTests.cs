@@ -139,7 +139,7 @@ public sealed class NeighborTests
     [InlineData("ĳ")] [InlineData("Dĳkstra")] [InlineData("𕀀")] [InlineData("名ĳ")] [InlineData("𰀀")]
     public void ParserAndTreeKeepFifthEditionNameGrammar(string name)
     {
-        var document = XmlDocument.Parse($"<{name}/>"); Assert.Equal(name, document.RootElement.LocalName);
+        var document = XmlDocument.Parse($"<{name}/>", cancellationToken: TestContext.Current.CancellationToken); Assert.Equal(name, document.RootElement.LocalName);
         Assert.Throws<SchemaCompileException>(() => XmlSchema.Compile(Wrap($"<xs:element name='{name}'/>")));
     }
     [Theory]
