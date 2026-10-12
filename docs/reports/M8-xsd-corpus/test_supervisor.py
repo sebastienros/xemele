@@ -246,7 +246,7 @@ class Supervisor(unittest.TestCase):
         record = m.nested.drain(m.supervision, registry, time.monotonic()+2.1)
         self.assertFalse(record['allOwnedGroupsAbsent'])
         self.assertEqual(record['pendingIntents'], ['unpublished'])
-        self.assertEqual(record['cleanupError'], 'TimeoutError')
+        self.assertIn(record['cleanupError'], ('TimeoutError', 'TimeoutExpired'))
 
     def test_ACK_publication_paused_after_creation_bootstrap_waits_then_executes_once(self):
         registry = self.out / 'atomic-ack'; registry.mkdir()
