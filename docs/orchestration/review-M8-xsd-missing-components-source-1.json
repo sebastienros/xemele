@@ -1,0 +1,112 @@
+{
+  "sourceRevision": "1c4521a2ea00efe168ccf19ff99374825c495fbe",
+  "manifestSha256": "fe4828690c1ee0dc73228b625fbaadf4f2b4a7af45bc45cd2e5d86350c74471d",
+  "result": "SOURCE CHANGES REQUIRED; no execution release",
+  "reviewers": [
+    "/root/review_m8_model",
+    "/root/review_m8_xpath",
+    "/root/review_m8_contract"
+  ],
+  "issues": [
+    {
+      "id": "G01",
+      "priority": "P1 (known mismatch); P2 (self-dependency)",
+      "area": "ContentModels/Compiler.cs:287-302",
+      "problem": "First inferred-null EDC operand hides later unequal known types; direct declaration checked again through Members creates a dependency against itself.",
+      "required": "Retain known type representatives separately from unavailable operands; compare every known same-name declaration and avoid duplicate declaration/self comparisons without weakening UPA.",
+      "proof": [
+        "Local m:int/local m:string/ref global inferred-null m must reject under order permutations; known equal neighbors defer genuinely unknown comparison",
+        "Optional sole ref m with absent head and block=substitution: empty root remains complete valid; consuming m refuses at its instance location"
+      ]
+    },
+    {
+      "id": "G02",
+      "priority": "P1",
+      "area": "Facets/Evaluator.cs:33; Definitions.cs:159",
+      "problem": "Partial union facet-only validation omits known invalid member properties.",
+      "required": "Validate independently known member graph/properties without constructing or caching a partial executable plan.",
+      "proof": [
+        "Union(anySimpleType,L missing item) and nested equivalent reject",
+        "Union(string,L missing item) retains unavailable dependency and unrelated root assessment"
+      ]
+    },
+    {
+      "id": "G03",
+      "priority": "P1",
+      "area": "ContentModels/Compiler.cs:236; Derivation.cs:24,211,258",
+      "problem": "Reduced member projections turn an operand-dependent indeterminate restriction into a definite schema error.",
+      "required": "Represent proven true/false/indeterminate restriction relations with precise unavailable operands; never blanket-skip false relations just because consumer has some missing closure.",
+      "proof": [
+        "h:anyType/m:missing-type affiliated h; B ref h/D restricts with ref m publishes then required D use refuses; supplied valid type discharges relation",
+        "h:int/m:int affiliated missing chain; B ref h/D ref m publishes with exact chain dependency; completing chain to h succeeds",
+        "No affiliation remains a definite invalid restriction; independently invalid occurrence/restriction with same unavailable neighbors rejects; unrelated good root stays assessable"
+      ]
+    },
+    {
+      "id": "G04",
+      "priority": "P1",
+      "area": "XmlSchema.cs:122",
+      "problem": "Blanket partial-type Constraint return suppresses independently failing default/fixed pattern/list-cardinality checks.",
+      "required": "Perform decidable lexical/pattern/normalization/list-cardinality constraint checks before deferring item-dependent parsing; no fake typed values or partial executable plan; retain genuinely undecidable operands.",
+      "proof": [
+        "Missing-item list restricted pattern a with default b rejects; known length contradicting token count rejects",
+        "Element and attribute default/fixed negatives plus matching lexical neighbors that still defer actual assessment"
+      ]
+    },
+    {
+      "id": "G05",
+      "priority": "P2",
+      "area": "missing-components/BoundaryTests.cs:10",
+      "problem": "Claimed closure cap test creates references but no Link edges, so no propagation/dedup/cancel witness.",
+      "required": "Add reverse chain and diamond, independently explicit expected closure/usage separation, exact and one-under work/components, cancellation during null-cap propagation walk.",
+      "proof": [
+        "Expected transitive edges/identities and dedup, not merely self-measured success threshold",
+        "Long null-cap propagation polls cancellation and cannot publish a partial snapshot"
+      ]
+    },
+    {
+      "id": "G06",
+      "priority": "P2",
+      "area": "Evaluation/Evaluator.cs:98; strict content compiler entry",
+      "problem": "No-envelope frozen lanes permit explicitly typed missing-affiliation partial graphs.",
+      "required": "Charged completeness guards for all newly permitted missing-reference families at strict evaluator and strict content compiler entry points.",
+      "proof": [
+        "m:int substitutionGroup absent plus good:int: strict evaluator/content compiler reject graph without envelope",
+        "Concrete envelope still permits independently assessable direct roots with unused affiliation; strict legacy compiler/optional benchmarkroute14 unchanged"
+      ]
+    },
+    {
+      "id": "G07",
+      "priority": "P2",
+      "area": "AvailabilityTests.cs:71",
+      "problem": "Permitted include positive has xs:include after a declaration and violates unchanged schema ordering.",
+      "required": "Move include before declaration while preserving resolver/disposal/oracle assertions.",
+      "proof": [
+        "Valid7/invalidbad, exactly one resolver invocation and exactly one disposal"
+      ]
+    },
+    {
+      "id": "G08",
+      "priority": "P2",
+      "area": "InternalApi.Probe.cs.fixture:70",
+      "problem": "Additive projection admits only new types and misses new concrete joins on existing classes.",
+      "required": "Emit exact genuinely added joins/constructors separately: CompileAvailable, availability CompileAll/Validate, ValidateAvailableDefinition and related constructors; keep exact3 frozen changes/public1430/header-only docs API boundary.",
+      "proof": [
+        "Deleted or signature-mutated added join fails separate baseline comparison; no copied old member inflation"
+      ]
+    },
+    {
+      "id": "G09",
+      "priority": "P2",
+      "area": "benchmark Fixture.cs:36; Probe.cs.fixture; review-plan",
+      "problem": "availability-present uses an owner absent from snapshot, so it does not inspect resolved matching entries.",
+      "required": "Populate separate all-resolved64-entry owner for resolved lookup; retain missing final-entry route and retain owner-absence as separate third borrowed route. Update route/output/plan/harness counts consistently (11routes/352 retained warm results if added as proposed).",
+      "proof": [
+        "Independent128 inspections for64 matching edges/entries vs64 owner-absence inspections; expected missing/present identities consumed",
+        "Disabled and positive/cold/first/warm/retained source controls, actual counters still UNRUN; no allocation success claim"
+      ]
+    }
+  ],
+  "evidenceLimit": "All witnesses are static source findings, not executed failures. Existing original bytes/expectations/historical results unchanged.",
+  "release": "Exact source fixes and proving control source within current owns; harness source may continue. No executable imports/builds/restores/tests/controls/consumers/API/preparation/probes/counters. Regenerate source/plan/harness manifests and return immutable hold for fresh source review."
+}
