@@ -1,0 +1,24 @@
+{
+  "sourceRevision": "ce70f5734433c9d5957fd7902d16aa5cb3b2e75a",
+  "result": "SOURCE CHANGES REQUIRED; execution held",
+  "reviewers": ["/root/review_m8_xpath", "/root/review_m8_contract", "/root/review_m8_model"],
+  "acceptedCorrections": ["G03a complete blocked-member and local-leaf restrictions", "G04u member-dependent whitespace and enclosing union patterns", "G03c provisional rule dependencies and selected unordered certificate, charged bounded state and polling"],
+  "issue": {
+    "id": "G03-incomplete-expanded-membership",
+    "priority": "P1",
+    "location": "ContentModels/Derivation.cs:459; ReviewControls.cs:80-88",
+    "problem": "Literal expanded-leaf mismatch is definite false even when the known expansion is an incomplete projection omitting a potentially valid member.",
+    "witness": "Add known global k:int substitutionGroup=h to each existing RestrictionMembershipCanBeIndeterminateWithoutBecomingFalse missing-type/missing-affiliation variant. B known projection becomes {h,k}; D uses m; both literal comparisons become false, but completing missing type/chain makes m a valid substitution member and restriction valid.",
+    "required": "Preserve original head and incomplete-projection information with expanded literals. Derive an indeterminate proof from the specific omitted membership operand; definite known-leaf mismatches remain false and provisional dependency publication remains intact.",
+    "proof": ["Both partial variants with known k publish and permit unrelated complete validation", "D required consumption refuses with MissingComponent", "Completing missing type/chain succeeds", "No-affiliation/range negatives and complete blocked-member rejection remain intact"]
+  },
+  "sourceHashes": {
+    "Derivation.cs": "61df53a29865e1cbc53e57f50d2587fe081dea35a495c34fd423776e2d326a9c",
+    "Definitions.cs": "54649c37702bd65eae278cc57728c3accadc78d0398b84dc94522f502b7d8846",
+    "ReviewControls.cs": "e7312bd22164517e35a1c4c4df4c61121a68b40feb2888766f30f509e21b686a",
+    "source-manifest.json": "37d00d7dc58a7e1a1af826325d6c37d43c1f9309b28c610ba5f27a8337f871e0",
+    "review-plan.json": "cae33a3924960ab99c8be0d4e092112d12018107fa906aec1cb880673dc5df82"
+  },
+  "execution": "Static immutable source review only; no executable checks, API extraction, preparation or counters run.",
+  "release": "Exact incomplete expanded membership correction and owned proving controls authorized; rebind final runtime manifest/plan/selection/harness. Return immutable SOURCE READY/HOLD; no main/task edits or execution release."
+}
