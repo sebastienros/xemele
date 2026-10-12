@@ -1,0 +1,139 @@
+{
+  "task": "M8-xsd-validate",
+  "source_revision": "75d037bcddf3f1515a3ecf48ac524f4a2c6ae74c",
+  "integration_revision": "7c862528d88fb725e322eb53c278efe268b9fac8",
+  "review": {
+    "final_join": "/root/review_m8_contract and /root/review_m8_model accepted narrow canonical/default/fixed join at75d037bc; no blocker. Source review only, no reviewer executions.",
+    "prior_closures": "Earlier independent findings including traversal/xsi/type/ID/hints/accounting/text closed; root direct33bead34 derivation repair independently accepted. Only final canonical#4 remained, now closed without reopening accepted behavior.",
+    "sha256": {
+      "Evaluator.cs": "ca7c7f31f93dc841ee081daa99139ae25eb2e7b36f56c66b8ec8a3fa547f6af8",
+      "Values.cs": "02f23a19d01f9c8438386a9b3ee1abdf4e0cef1bcab16441435bbad97677c49a",
+      "ReviewRegressionTests.cs": "69d0e5048a8a7edfcebf3567e637ece5698fd584454ab5e2411efae9836fc3e5"
+    }
+  },
+  "checks": {
+    "command": "python3 docs/reports/M8-xsd-validate/check.py",
+    "result": "passed",
+    "counts": {
+      "correctness": {
+        "total": 937,
+        "passed": 937,
+        "failed": 0,
+        "errors": 0,
+        "skipped": 0,
+        "not-run": 0
+      },
+      "resolver": {
+        "total": 42,
+        "passed": 42,
+        "failed": 0,
+        "errors": 0,
+        "skipped": 0,
+        "not-run": 0
+      }
+    },
+    "namespace_counts": {
+      "M8XsdValidate": 156,
+      "M8XsdContent": 102,
+      "M8ConstraintLexical": 86,
+      "M8Facets": 303,
+      "M8XsdIdentity": 149,
+      "M8Model": 20,
+      "M8SourceLocations": 10,
+      "M8XsdCompile": 72,
+      "M8XsdWildcardComposition": 11,
+      "M8XsdEffectiveContent": 28
+    },
+    "total_passed": 979,
+    "public_api": 1410,
+    "frozen_core": 2,
+    "normal_and_true_xml_only_consumers": "passed",
+    "planning": 182,
+    "diff_check": "passed",
+    "build_warnings_errors": 0,
+    "test_sha256": {
+      "correctness": "b08e7a3e3121ac25dbc283834bcda721e051415e119b5ef7b571ff50fa55531f",
+      "resolver": "3b92aa91dc4b3d0a5c6a701db13bca8529ea908e958e5a90b0917ff7643ae1b2"
+    },
+    "log_sha256": "2da1cedd70af0ce326686afac9664ef58576d6a10f6c31a85d4bb8cc2463ab84",
+    "limits": "Internal pre-facade composition; no public XSD schema publication claim. WarmBorrowed methods explicitly excluded; no allocation counters."
+  },
+  "allocation": {
+    "result": "passed",
+    "grant_revision": "de7c0ac6c5402019e844683e4c53eb02c86a219b",
+    "release_revision": "84386ee5dd989e3f19743c401a3a8d984887962a",
+    "source_revision": "7b29ab22e478fe6949d75147391fdc5382e00167",
+    "accepted_runtime_revision": "75d037bcddf3f1515a3ecf48ac524f4a2c6ae74c",
+    "manifest_sha256": "829aeeff0b35c30d396d6efbd2fa7655436126a933378a1e349fab2ac8c75746",
+    "raw_sha256": "ae8720835d04212334a2cc3bfffe2400e5f75d784fadba77e75105c1b079a1b9",
+    "runtime": ".NET 10.0.11",
+    "architecture": "Arm64",
+    "cold_setup_bytes": 1810728,
+    "cold_denominator": 1,
+    "positive_control_bytes": 1048,
+    "warmups_per_route": 16,
+    "rows": [
+      {
+        "route": "valid-owned",
+        "bytes": 1685504,
+        "operations": 64,
+        "bytes_per_operation": 26336.0
+      },
+      {
+        "route": "invalid-diagnostic",
+        "bytes": 1174016,
+        "operations": 64,
+        "bytes_per_operation": 18344.0
+      },
+      {
+        "route": "typed-default",
+        "bytes": 1807872,
+        "operations": 64,
+        "bytes_per_operation": 28248.0
+      },
+      {
+        "route": "typed-duplicate",
+        "bytes": 1676072,
+        "operations": 64,
+        "bytes_per_operation": 26188.625
+      },
+      {
+        "route": "document-ids",
+        "bytes": 1778688,
+        "operations": 64,
+        "bytes_per_operation": 27792.0
+      },
+      {
+        "route": "long-owned",
+        "bytes": 30325624,
+        "operations": 64,
+        "bytes_per_operation": 473837.875
+      },
+      {
+        "route": "wildcard-scopes",
+        "bytes": 1063424,
+        "operations": 64,
+        "bytes_per_operation": 16616.0
+      },
+      {
+        "route": "nil-owned",
+        "bytes": 589312,
+        "operations": 64,
+        "bytes_per_operation": 9208.0
+      },
+      {
+        "route": "work-refusal",
+        "bytes": 82432,
+        "operations": 64,
+        "bytes_per_operation": 1288.0
+      }
+    ],
+    "retained": {
+      "results": 16,
+      "before_whole_heap": 442808,
+      "after_whole_heap": 450864,
+      "approximate_delta": 8056
+    },
+    "limits": "Nine owned internal evaluator results, each one64callaggregate; no timing/zero/x64/publicfacade claim. Counterdisabled control zero fields are disabled sentinels, not allocation observations. Cold setup includes compiled/prepared programs and input fixtures. Retained wholeheap delta illustrative, not exact object sizing. Both child lifecycles clean;448identities preserved; durable root RELEASE before raw inspection."
+  }
+}
