@@ -84,8 +84,8 @@ then records64 synchronous per-thread observations; cold fixture setup, positive
 control and whole-heap retention for32 programs/32 initialized sessions are
 separate. No throughput/latency or BDN allocation-dash claim is made; there is no
 optimization or BDN class. Running --measure needs a fresh bounded coordinator
-lease and reviewed fixed identities. Review and allocation evidence remain
-pending; this branch is not implemented/verified yet.
+lease and reviewed fixed identities. Review is accepted; allocation evidence remains
+pending and this branch is not implemented/verified yet.
 
 At tested source36b7f1379988da6b9c1e5915b513ccc33b48a3a4 the revised
 737-case check passed:149owned+546affected+42safe resolver, zero failures/errors/
@@ -94,7 +94,8 @@ all builds had zero warnings/errors. The corrected-source probe rebuilt and all
 nine controls passed with counters disabled. The bounded reviewer accepted
 scope/equality/descendant-self behavior but required axis lookahead and scalar
 validator polling; both fixes and18explicit regression cases are in that tested
-source. Final delta review acceptance remains a coordinator action.
+source. Final delta review was independently accepted at36b7f137, with the four relayed
+review identities checked locally; see review.md.
 
 An initial sandbox cleanup preflight child3760 exited0 and was reaped, but the
 cleanup inspection raised PermissionError. The elevated counter-disabled

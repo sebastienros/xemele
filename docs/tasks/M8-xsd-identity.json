@@ -36,7 +36,8 @@
       "description": "Implement unique/key/keyref scope, restricted XPath selection and typed-value equality using the approved hook.",
       "status": "passed",
       "evidence": [
-        "identity-reviewed-correctness"
+        "identity-reviewed-correctness",
+        "identity-independent-review"
       ]
     },
     {
@@ -44,7 +45,8 @@
       "description": "Test duplicates, absent/multiple fields, references, scope, namespaces and memory/work budgets.",
       "status": "passed",
       "evidence": [
-        "identity-reviewed-correctness"
+        "identity-reviewed-correctness",
+        "identity-independent-review"
       ]
     },
     {
@@ -100,11 +102,20 @@
       "result": "passed",
       "summary": "Rebuilt corrected-source probe with zero warnings/errors; nine consumed32warm+64operation routes passed with all allocation/retention/timing counters disabled. No measurement.",
       "artifact": "docs/reports/M8-xsd-identity/README.md"
+    },
+    {
+      "id": "identity-independent-review",
+      "kind": "review",
+      "revision": "36b7f1379988da6b9c1e5915b513ccc33b48a3a4",
+      "command": "Independent bounded source review relayed by M8 coordinator01a12c6c-b333-71d3-877f-0d186618e21d",
+      "result": "passed",
+      "summary": "Final source36b7f137 accepted with no remaining scoped blockers. Reviewer accepted scope/typed equality/upward conflict/descendant-self behavior; mandatory axis-lookahead and scalar-validator polling fixes accepted. Four relayed compiler/session/XPath/parser-budget SHA256 identities independently match this checkout.",
+      "artifact": "docs/reports/M8-xsd-identity/review.md"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Revised identity source at36b7f137 passed737 total owned/affected correctness cases, exact APIs and both consumers. Final delta review acceptance and prepared bounded allocation evidence remain pending; task in_progress.",
+    "summary": "Final source36b7f137 independently accepted and737correctness/API/consumer checks passed. Measurement preparation underway; A3/task remain pending/in_progress until real bounded allocation evidence and final handoff.",
     "checks": [
       "712 total owned/affected safe correctness cases,24 frozen/1403 public members,both real consumers,planning179/diffcheck passed at c3b29efa6066f9a80bbf01dc6bce489b89780d73.",
       "Nine counter-disabled allocation control routes passed; no measurement launched.",
@@ -112,8 +123,7 @@
       "At36b7f1379988da6b9c1e5915b513ccc33b48a3a4:149owned+546affected+42resolver=737 pass,24frozen/1403public,both real consumers,planning179/diffcheck;zero warnings/errors/failures/skips/not-run. No WarmBorrowed/allocation run."
     ],
     "remaining": [
-      "Final independent parser/immutable-state delta review acceptance.",
-      "Final probe rebuild/control, prepared identities and cleanup preflight.",
+      "Prepared identities and fresh elevated cleanup preflight.",
       "Fresh bounded allocation grant; lifecycle cleanup/release before raw inspection; final implemented evidence/handoff."
     ],
     "requests": []
