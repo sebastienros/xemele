@@ -4,11 +4,11 @@
   "milestone": "M8",
   "title": "XSD content-model compilation",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "verified",
   "owner": "M8 coordinator01a12c6c-b333-71d3-877f-0d186618e21d / assigned isolated worker",
   "branch": "codex/m8-xsd-content",
   "base_revision": "55a1f72c319b792acc216ca847818aba5ac7cd13",
-  "integration_revision": null,
+  "integration_revision": "223d094fb93e2a454557822818c06baa296e8702",
   "depends_on": [
     "M8-xsd-compile",
     "M8-xsd-wildcard-composition",
@@ -37,10 +37,10 @@
       "description": "Compile occurrence/compositor/wildcard constraints and schema content-model restrictions.",
       "status": "passed",
       "evidence": [
-        "verified-repair-focused-checks",
-        "immutable-review-closure",
         "indexed-wildcard-correctness",
-        "indexed-wildcard-review-closure"
+        "indexed-wildcard-review-closure",
+        "measurement-2",
+        "coordinator-final-integration"
       ]
     },
     {
@@ -48,18 +48,21 @@
       "description": "Test sequence/choice/all, extension/restriction, wildcards, determinism and occurrence boundaries.",
       "status": "passed",
       "evidence": [
-        "verified-repair-focused-checks",
-        "immutable-review-closure",
         "indexed-wildcard-correctness",
-        "indexed-wildcard-review-closure"
+        "indexed-wildcard-review-closure",
+        "measurement-2",
+        "coordinator-final-integration"
       ]
     },
     {
       "id": "M8-xsd-content-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "failed",
+      "status": "passed",
       "evidence": [
-        "measurement-1-failed"
+        "indexed-wildcard-correctness",
+        "indexed-wildcard-review-closure",
+        "measurement-2",
+        "coordinator-final-integration"
       ]
     }
   ],
@@ -67,7 +70,8 @@
     "src/Xemele/Validation/Xsd/ContentModels/: XsdContentCompiler, XsdContentMatcher, ContentCursor and immutable CompiledContent; charged/polled integer and namespace derivation helpers",
     "tests/Xemele.Tests/M8-xsd-content/:102 focused cases and63-word independent nullable repetition oracle",
     "docs/reports/M8-xsd-content/content.golden.txt:9 exact unchanged frozen content declarations",
-    "samples/M8-xsd-content/: genuine XML-only compiler/content consumer; no facade or executable datatype fallback"
+    "samples/M8-xsd-content/: genuine XML-only compiler/content consumer; no facade or executable datatype fallback",
+    "benchmarks/Xemele.Benchmarks/M8-xsd-content/: ten-route owned/warm/cold/retained probe and five MemoryDiagnoser ShortRun NoEmit cases; docs/reports/M8-xsd-content/measurement-2.md: actual costs, raw residuals and exact identities"
   ],
   "evidence": [
     {
@@ -177,21 +181,40 @@
       "result": "passed",
       "summary": "Indexed borrowed traversal preserves exact per-item accounting/order/short-circuit semantics; probe persists completed distributions before assertions with unrun fields null; fresh output attempt preserves original failure. No allocation claim. Accepted exactSHA256 Supportfe2eae4e2ace2d86b08ed73a3241cdf49c9fe334e1d5a06c2bb725d01756b1d0, probef68f8e3b650ddcecc3e291f5bdbb6e3a7e7baaff00590632a2df3d06b9366523, supervisorb77dee00b003416eb10999c2dbe8788619a2dfff6b9c69adeb54d5d4115ca552.",
       "artifact": null
+    },
+    {
+      "id": "measurement-2",
+      "kind": "check",
+      "revision": "127d15b2fedd1675572bad17b4822c80ee94d241",
+      "command": "Root: python3 docs/reports/M8-xsd-content/measure.py --granted 8bcc6182e3e89db9f8a3e627cc1f58e3c635b6d89f3a072a352eb7f0d1fb52a9 2026-10-12T01:50:30Z 2026-10-12T02:10:35.992387Z",
+      "result": "passed",
+      "summary": "Actual root serial grantb9e9f7e9/cleanupRELEASEcf39961a before inspection. Content supervisorstatus0 in42.064227083s, both children89193/89195exit0/reaped/groupsabsent/logsclosed,213identities stable. .NET10.0.11 Arm64 macOS15.8.1 AppleM4Pro concurrentworkstationGC.10routes each32warm/64samples: warm5route distributions all0B; owned lazycursor104B, initialization/banks/operation4760B, all-typecompile31080B, realXML/compiler/content177416B, UPA diagnostics27360B per sample (all64equal). Coldfixture340336B; positive1048B. Wholeheap337216->369368 with32programs->661992 with32initializedcursors, aggregateobservations only.5MemoryDiagnoser ShortRun NoEmit cases complete: means27.98/52.78/232.93/1758.57/230.16ns; rawGC totals0/16777216,1968/16777216,1632/4194304,1968/524288,1680/4194304B/ops retained, rounded0B not exactzero proof. Provisional single synchronousArm64 run/no repeatable speed/crossarchitecture claim; future facade/x64 confirmation. Exact identities and histogram/minmax/totals in report; original failure preserved, rawoutputs ignored/notremoved.",
+      "artifact": "docs/reports/M8-xsd-content/measurement-2.md"
+    },
+    {
+      "id": "coordinator-final-integration",
+      "kind": "integration",
+      "revision": "223d094fb93e2a454557822818c06baa296e8702",
+      "command": "python3 docs/reports/M8-sch-report/checks.py; python3 docs/reports/M8-xsd-content/check.py; python3 docs/reports/M8-facets/checks.py (serial execution with failure stops)",
+      "result": "passed",
+      "summary": "Actual report546/content285/facets804 suites passed; overlapping prerequisites are not summed. Zero failures/errors/skips/not-run/build warnings/errors. Public1403; frozen reporting3/evaluator9/compiler154/content9/facet316; normal and true XML-only consumers;179-task planning. Final main changes only orchestration and task/report metadata; runtime/tests/benchmarks/build/API/consumer/check inputs identical. Released10-route/5-case measurements independently inspected; first failed attempt remains explicit and has no numeric allocation evidence. No repeatable speed or x64 claim.",
+      "artifact": "docs/reports/M8-xsd-content/integration.md"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Bounded indexed wildcard/probe correction accepted by independent read-only review;285checks/API/XML-only/IL and disabled controls/discovery pass. Fresh213identity attempt2manifest8bcc6182 verified/frozen; new root/all-host grant pending. First failed measurement preserved, no measured zero/timing claim.",
+    "summary": "Verified integrated immutable XSD content programs and isolated charged/polled cursors; corrected indexed wildcard route, combined checks and released measurements accepted. All owned writes and task record relinquished to coordinator.",
     "checks": [
-      "285 actual .NET10.0.11 cases pass;1400public/9frozen match; actualXML-only consumer; planning179/diff clean; Release builds0warnings/errors.",
-      "10 counter/timer-disabled probe routes and5 semantic BDN controls pass; exactly5 ShortRun MemoryDiagnoser NoEmit cases discovered. No allocation/timing run.",
-      "Prior101/1 and corrected99/3 failures preserved as historical evidence before verified compiler repairs.",
-      "Correction127d15b2:285passed/API1400/frozen9/XML-only/IL noenumerator;10disabledprobe/5BDNcontrols/5NoEmitdiscovery;213preparedidentities verified, no new measurements."
+      "Source 127d15b2: 285 cases (102 owned), zero errors/failures/skips/not-run; 1,400 public and nine frozen members match; true XML-only consumer passes; Release builds zero warnings/errors; planning 179 and diff checks pass.",
+      "Read-only original/correction reviews accepted exact hashes. Indexed Allows IL has no interface enumerator; original accounting/order and tests preserved.",
+      "Granted attempt 2: 213 identities stable; both children exit 0, reaped, groups absent, logs closed. All 64 direct samples on each of five warm routes are 0 B. Owned costs are 104/4,760/31,080/177,416/27,360 B per sample; cold fixture 340,336 B and retained stages are explicit.",
+      "Five ShortRun MemoryDiagnoser NoEmit cases complete. Exact raw GC totals/denominators and provisional Arm64 timing are recorded; no repeatable or cross-architecture speed claim. The first failed attempt has no known numeric bytes."
     ],
     "remaining": [
-      "Obtain fresh root/all-hostPARK grant for frozen attempt2manifest8bcc6182; no oldgrant reuse. Inspect observations only after durable cleanupRELEASE and record actual costs/limitations before implemented status.",
-      "Later facade/facet join MUST discharge typed element fixed/default equality, declaration/binding lexical-value consistency and simple-type/facet validity including unused declarations from retained IDs/types/contexts/locations. No datatype fallback."
+      "Terminal cleanup; mandatory typed fixed/default equality, lexical-value consistency and all retained simple/facet validity remain later XSD facade obligations, with no fallback."
     ],
-    "requests": []
+    "requests": [
+      "Preserve the required later datatype/facet/facade obligations; this content task adds no executable fallback or public facade."
+    ]
   }
 }

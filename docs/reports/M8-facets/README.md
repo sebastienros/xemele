@@ -92,8 +92,10 @@ counters-disabled preparation build forwarded output flags into the referenced
 runtime, corrected in the owned project. Its later output path omitted net10.0,
 corrected before any control execution. The coordinator accepted the corrected
 source review. Subsequent disabled controls/discovery and462-identity process
-preflight passed; see preparation.md. Allocation/timing measurements have not
-run and require a fresh all-host PARK/root grant.
+preflight passed; see preparation.md. The root subsequently ran the frozen payload under a fresh all-host serial
+grant and released it before raw inspection. All17 allocation routes and6
+benchmark cases passed; see measurements.md for every boundary, actual costs
+and limitations. No repeatable timing claim is made.
 
 ## Required XSD publication join
 

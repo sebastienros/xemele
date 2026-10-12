@@ -1,0 +1,134 @@
+{
+  "schema_version": 1,
+  "id": "M8-sch-rule-scope",
+  "milestone": "M8",
+  "title": "Restrict Schematron abstract rule extension to its pattern",
+  "kind": "feature",
+  "status": "verified",
+  "owner": "M8 coordinator bounded shared repair",
+  "branch": "codex/m8-sch-rule-scope",
+  "base_revision": "1bd3ca8345f35c3c0e51f9f3010151bf977c3cc4",
+  "integration_revision": "50f688e82711f5e3ba25dd2bbbbdbd51f8995280",
+  "depends_on": [
+    "M8-sch-compile"
+  ],
+  "goals": [
+    "G15"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/schemas.md"
+  ],
+  "owns": [
+    "src/Xemele/Validation/Schematron/Compilation/SchematronCompiler.cs",
+    "tests/Xemele.Tests/M8-sch-rule-scope/",
+    "benchmarks/Xemele.Benchmarks/M8-sch-rule-scope/",
+    "docs/reports/M8-sch-rule-scope/"
+  ],
+  "api_or_output": "Unchanged public/frozen API; same-pattern abstract-rule reference checking before schema publication",
+  "acceptance": [
+    {
+      "id": "M8-sch-rule-scope-A1",
+      "description": "Reject rule extensions to abstract rules outside the containing pattern, including inactive and uninstantiated authored patterns, with SCH.SchemaRestriction at the extends source. Preserve valid same-pattern chains, abstract-pattern instantiation and external include/body provenance.",
+      "status": "passed",
+      "evidence": [
+        "corrected-checks",
+        "bounded-review",
+        "owned-allocation",
+        "integrated-verification"
+      ]
+    },
+    {
+      "id": "M8-sch-rule-scope-A2",
+      "description": "Reproduce upstream rule-abstract-02 and independent scope witnesses; pass corrected positive/negative/source-location and exact work/cancellation cases plus affected compiler/evaluator/report/API/consumer checks.",
+      "status": "passed",
+      "evidence": [
+        "corrected-checks",
+        "bounded-review",
+        "owned-allocation",
+        "integrated-verification"
+      ]
+    },
+    {
+      "id": "M8-sch-rule-scope-A3",
+      "description": "Record bounded independent review, actual integrated checks and relevant allocation evidence without changing frozen interfaces or earlier evidence. Unblock corpus only after verified repair.",
+      "status": "passed",
+      "evidence": [
+        "owned-allocation",
+        "integrated-verification"
+      ]
+    }
+  ],
+  "implementation": [
+    "src/Xemele/Validation/Schematron/Compilation/SchematronCompiler.cs:CheckAuthoredReferences carries effective containing pattern and charges indexed target-membership checks before template copying.",
+    "tests/Xemele.Tests/M8-sch-rule-scope/RuleScopeTests.cs:11 independent scope, inactive/unused, template, include, provenance, exact budget/cancel cases."
+  ],
+  "evidence": [
+    {
+      "id": "pre-fix-witnesses",
+      "kind": "check",
+      "revision": "46400ede632d169c719a7a18e338a86cc1c8a6b3",
+      "command": "Pinned Release build, then Xemele.Tests.dll -class Xemele.Tests.M8SchRuleScope.RuleScopeTests -result-xml /private/tmp/M8-rule-scope-before.xml",
+      "result": "failed",
+      "summary": "Actual10 cases:7 failures because cross-pattern extensions threw no exception,3 valid cases passed;0errors/skips/not-run. Initial precommit test-only Assertions property typo caused one compiler error, corrected to actual Findings before this witness revision.",
+      "artifact": "docs/reports/M8-sch-rule-scope/README.md"
+    },
+    {
+      "id": "corrected-checks",
+      "kind": "check",
+      "revision": "50f688e82711f5e3ba25dd2bbbbdbd51f8995280",
+      "command": "Pinned Release build and11 RuleScopeTests; python3 docs/reports/M8-sch-report/checks.py",
+      "result": "passed",
+      "summary": "Actual11 repair and546 preserved tests pass,0failures/errors/skips/not-run/buildwarnings/errors. Exact public1403/frozen3/9/154 match, normal and true XML-only consumers pass;180-task planning/diff pass. Owned checker added later reuses these exact commands; no later rerun claimed.",
+      "artifact": "docs/reports/M8-sch-rule-scope/README.md"
+    },
+    {
+      "id": "bounded-review",
+      "kind": "review",
+      "revision": "50f688e82711f5e3ba25dd2bbbbdbd51f8995280",
+      "command": "Independent read-only review_m8_xpath source/test review; no executions",
+      "result": "passed",
+      "summary": "Accepted charged effective-pattern membership validation before template copying; covers inactive/uninstantiated and included/external body references; preserves separate instantiations. CompilerSHA332b47d5264d60bf03c89eaec88b77bef936f8240df4c7d2fb6bb1be76a508f1;testsSHAe4986de48ba981ff8ee54c12ae0d740f1bf14b1406ce74b84c45e8a236f6133a.",
+      "artifact": "docs/reports/M8-sch-rule-scope/README.md"
+    },
+    {
+      "id": "disabled-preparation",
+      "kind": "check",
+      "revision": "96e2bc46456dd164f4fa10d0334a74fea9fa2c49",
+      "command": "Pinned probe restore/build; --control; python3 docs/reports/M8-sch-rule-scope/lease.py --prepare; --verify-only",
+      "result": "passed",
+      "summary": "Six consumed routes with all allocation/retained/RSS counters disabled;425 source/runtime/hostfxr/binary/control/supervisor identities match. Actual prebuilt child cleanup preflight exited0/reaped/groupabsent/logclosed. ManifestSHA986d4b5ae1ea0a3c1c225713324a8ad58641e1758b33daba63b59a03c6777131; no measurement yet.",
+      "artifact": "docs/reports/M8-sch-rule-scope/preparation.json"
+    },
+    {
+      "id": "owned-allocation",
+      "kind": "check",
+      "revision": "96e2bc46456dd164f4fa10d0334a74fea9fa2c49",
+      "command": "python3 docs/reports/M8-sch-rule-scope/lease.py --granted 986d4b5ae1ea0a3c1c225713324a8ad58641e1758b33daba63b59a03c6777131 2026-10-12T02:32:00Z 2026-10-12T02:28:58.484968+00:00",
+      "result": "passed",
+      "summary": "Fresh8actor ACKs and boundedgrant6be06558; solechild99778exit0/reaped/groupabsent/logclosed,425stableidentities,0.451273s. DurableRELEASEf7ca004b before raw inspection. Six consumedroutes: cold43216B,64-call aggregates positive9728/simple1287680/abstract6617896/long1365504/crosspattern878592B; respective means152/20120/103404.625/21336/13728B. Approx retained16graphs181592B and RSS54804480 separately. No individual distributions, zero/timing/speed/x64claim.",
+      "artifact": "docs/reports/M8-sch-rule-scope/allocations.md"
+    },
+    {
+      "id": "integrated-verification",
+      "kind": "integration",
+      "revision": "50f688e82711f5e3ba25dd2bbbbdbd51f8995280",
+      "command": "Pinned Release build and11 RuleScopeTests; python3 docs/reports/M8-sch-report/checks.py; source/check input comparison after main integration",
+      "result": "passed",
+      "summary": "Actual combined repair11+preserved546 tests allpass/0failures/errors/skips/notrun/warnings; public1403/frozen3/9/154 and normal/trueXMLonly consumers pass. Source50f688e8 based on integratedclaim08ac500d mergedmaina722bc2f. Main differences are metadata and separately built/controlled/measured probe; runtime/tests/API/consumer/executedcheck inputs unchanged. No unchanged test rerun claimed. Prepared probe build/control/measurement accepted;180taskgraph validated.",
+      "artifact": "docs/reports/M8-sch-rule-scope/README.md"
+    }
+  ],
+  "blockers": [],
+  "handoff": {
+    "summary": "Verified integrated same-pattern abstract rule extension check; original seven failing witnesses preserved,11corrected+546affected checks and released owned-allocation evidence accepted.",
+    "checks": [
+      "Compiler/evaluator/report preservation, public1403/frozen3/9/154, normal/trueXMLonly,180taskgraph and bounded independent source review passed.",
+      "Six-route owned allocation evidence:425stableidentities,cleanup confirmed,durable release before raw inspection; no speed or x64 claim."
+    ],
+    "remaining": [
+      "Corpus owner must merge verified main checkpoint, add repair dependency and rerun strict original plus corrected independent oracles; terminal root repair cleanup."
+    ],
+    "requests": []
+  }
+}
