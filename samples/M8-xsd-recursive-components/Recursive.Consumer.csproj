@@ -1,0 +1,6 @@
+<Project Sdk="Microsoft.NET.Sdk">
+<PropertyGroup><OutputType>Exe</OutputType><AssemblyName>Xemele.Benchmarks</AssemblyName></PropertyGroup>
+<ItemGroup>
+<ProjectReference Include="../../src/Xemele/Xemele.csproj" Condition="'$(RecursiveXmlOnly)' != 'true'" />
+<ProjectReference Include="../../docs/reports/M8-xsd-facade/XmlOnly/XmlOnly.csproj" Condition="'$(RecursiveXmlOnly)' == 'true'" />
+</ItemGroup></Project>

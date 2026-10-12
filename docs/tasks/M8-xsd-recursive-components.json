@@ -4,7 +4,7 @@
   "milestone": "M8",
   "title": "Separate recursive components from forbidden schema cycles",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M8 coordinator / assigned isolated M8-xsd-recursive-components worker",
   "branch": "codex/m8-xsd-recursive-components",
   "base_revision": "69691f493fd2b0d5ce382b2f2cbcfb154dd8d202",
@@ -34,29 +34,120 @@
     {
       "id": "M8-xsd-recursive-components-A1",
       "description": "Reproduce and accept unchanged original addB077, particlesZ010 and particlesEb041 schemas. Separate component registration/body completion across element-to-anonymous-type boundaries from circular model-group particle containment and circular base-type chains.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "original-baseline",
+        "branch-correctness"
+      ]
     },
     {
       "id": "M8-xsd-recursive-components-A2",
       "description": "Preserve direct/indirect forbidden cycle rejection, declaration-order independence, unused component publication checkpoints, finite nested validation, source provenance, aggregate work/components and cancellation without mutable graph escape.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "branch-correctness"
+      ]
     },
     {
       "id": "M8-xsd-recursive-components-A3",
       "description": "Pass actual original baseline and repaired public outcomes, independently specified recursive/negative neighbors, affected compiler/content/facade checks, public/frozen APIs and normal/XML-only consumers, actual relevant allocation evidence and planning validation.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "original-baseline",
+        "branch-correctness",
+        "independent-runtime-source-review",
+        "independent-allocation-source-review",
+        "allocation-preparation",
+        "supervisor-timeout-amendment",
+        "actual-allocations"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Validation/Xsd/Compilation/Compiler.cs: Anonymous element-boundary registration and prepublication pendingElementTypes drain; unchanged cycle guards",
+    "tests/Xemele.Tests/M8-xsd-recursive-components/: 37 original, independent neighbor and boundary cases",
+    "tests/fixtures/M8-xsd-recursive-components/manifest.json: pinned unchanged W3C originals/copyright/hashes",
+    "samples/M8-xsd-recursive-components/: recursive normal and true XML-only consumer",
+    "docs/reports/M8-xsd-recursive-components/: counter-disabled bounded checks, independent inventory, historical failures and allocation applicability",
+    "benchmarks/Xemele.Benchmarks/M8-xsd-recursive-components/: reviewed and offline-built13owned allocation routes; counters-disabled preparation/manifest/preflight passed, actual counters pending"
+  ],
+  "evidence": [
+    {
+      "id": "original-baseline",
+      "kind": "check",
+      "revision": "b2bf28d12f0586e3f02fad6f1b108416ce4c4e77",
+      "command": "Pinned SDK10.0.400 offline restore/Release build; dotnet --fx-version 10.0.11 Xemele.Tests.dll -namespace Xemele.Tests.M8XsdRecursiveComponents -parallelMode none -result-xml artifacts/M8-xsd-recursive-components/baseline.xml",
+      "result": "failed",
+      "summary": "4original cases all fail,0errors/skips/notrun; BCL3schemas+originalinstance pass before each product failure. addB077/particlesZ010 reenter model-group guard; particlesEb041 schema+instance reenter derivation guard. Build0warnings/errors; exact originals/license/hashmanifest unchanged.",
+      "artifact": "docs/reports/M8-xsd-recursive-components/correctness-summary.json"
+    },
+    {
+      "id": "branch-correctness",
+      "kind": "check",
+      "revision": "9e376cd982159b27cbb05c1fa5cf2577bd21e7d2",
+      "command": "python3 docs/reports/M8-xsd-recursive-components/check.py (initial version at9e376cd98, before additional task consumer); saved-output independent inventory validation and omitted-owned-row negative control",
+      "result": "passed",
+      "summary": "1300=37owned+1263prior affected;42safe resolver,0failed/errors/skips/notrun. Original3schemas+instance pass. Exact work/components including imported parsing, deferred nullcap cancellation/source mutation, order/mutual recursion and negative BCL cycles pass. Public1430,all8frozenlanes/internal compiler/content/identity/evaluator/facade and normal/trueXML-only facade consumers pass.6Release builds0warnings/errors;planning196/diff. Source SDK10.0.400/runtime10.0.11 Arm64, no counters/heap/timing. Omittedowned-row control rejects.",
+      "artifact": "docs/reports/M8-xsd-recursive-components/correctness-summary.json"
+    },
+    {
+      "id": "independent-runtime-source-review",
+      "kind": "review",
+      "revision": "9e376cd982159b27cbb05c1fa5cf2577bd21e7d2",
+      "command": "Coordinator accepted /root/review_m8_model SOURCE PASS; read main:docs/orchestration/review-M8-xsd-recursive-components.json",
+      "result": "passed",
+      "summary": "Source-only review: growing deferred-body queue drains before CheckGraphs/publication; identity registration, immutable boundary and forbidden group/attributeGroup/base-type guards preserved; component reserve/charged shared operation/polling/provenance/fixtures meaningful. CompilerSHA25686ec831d782eeea74d938e8bfbefededa7968678a9c55add35a3adf46f9eda24. No execution/allocation claims.",
+      "artifact": null
+    },
+    {
+      "id": "independent-allocation-source-review",
+      "kind": "review",
+      "revision": "822e5a756f9d82c5becd14c2ded7c3a9b132ff99",
+      "command": "Coordinator accepted independent model allocation SOURCE PASS at clean822e5a756",
+      "result": "passed",
+      "summary": "13owned semantic routes, disabled controls, separate setup/first/16warm/64samples/positive and4retainedcategories8each accepted. Refusal excluded,32objects reachable, sourceidentity and110work+10cleanup accepted. Runtime/tests unchanged. No execution/counter claim.",
+      "artifact": "docs/reports/M8-xsd-recursive-components/allocation-source.json"
+    },
+    {
+      "id": "allocation-preparation",
+      "kind": "check",
+      "revision": "822e5a756f9d82c5becd14c2ded7c3a9b132ff99",
+      "command": "python3 docs/reports/M8-xsd-recursive-components/prepare.py; actual elevated measure.py --verify-only and --preflight",
+      "result": "passed",
+      "summary": "SDK10.0.400/runtime10.0.11 offline build0warnings/errors;13routes1085calls/26095consumed, all allocation/GC/timing disabled.32retainedobjects/4categories, all counterfields0; owned-only workload, no new primitive0B claim.455identities manifest23968c4c3212300aa6b92f3570f0df00bcd3be077cd71d960910de3cb4ed54c6 match; actual processpermission preflightPID52566exit0/reaped/groupabsent/logclosed, before/after455identities match. No worker measurements or isolation/PARK/exclusive-use gate.",
+      "artifact": "docs/reports/M8-xsd-recursive-components/allocation-preflight.json"
+    },
+    {
+      "id": "supervisor-timeout-amendment",
+      "kind": "check",
+      "revision": "e458a2d4b8088fec8e678cd24d242fa2e1316b8d",
+      "command": "Actual elevated python3 docs/reports/M8-xsd-recursive-components/lifecycle-check.py; refreshed measure.py --verify-only",
+      "result": "passed",
+      "summary": "Workload/preflight success now requires reasoncompleted plus exit0/reaping/groupabsent/logclosed. Finite Python timeoutchild52913handlesSIGTERMexit0:reasonTimeoutExpired,cleanupalltrue,workloadfalse,nextchildnotlaunched. Normalchild52915completedexit0/cleanup passes. No counters or benchmark timing. Original455prep/control preserved, no unchanged runtime/probe rebuild/controlrerun. Supervisor-only refreshed457identities+actualpspermission match manifestfe4c11dbee5934ae51cfbbe3b0c4a9dd5cc90985d289372231c6409605fbcad2; supervisorSHAb49f0beefb943c0e531f88235d12d269f671584da0563834a3d41159b1e100e5.",
+      "artifact": "docs/reports/M8-xsd-recursive-components/lifecycle-check.json"
+    },
+    {
+      "id": "actual-allocations",
+      "kind": "check",
+      "revision": "822e5a756f9d82c5becd14c2ded7c3a9b132ff99",
+      "command": "Root elevated python3 docs/reports/M8-xsd-recursive-components/measure.py --run fe4c11dbee5934ae51cfbbe3b0c4a9dd5cc90985d289372231c6409605fbcad2; worker reads preserved raw after durable cleanupcc2f59ce6",
+      "result": "passed",
+      "summary": "Actual nonisolated rootrun terminal0:control53183/measure53185completedexit0,reaped/groupsabsent/logsclosed;before/after457identitiesmatch.13ownedroutes832samplesstrictlypositive,aggregate=sum64samples;control=measure1085calls/26095consumed andbinaryhashesmatch.Cold3452776B,positive1048B;4retainedcategories8each. Heapgraph581672/public2039824B coarse;diagnostic-39688/result-4944B GC/lifetime noise, never negative/zeroownership. First/warm/setup/diagnostic/traversal/retained boundaries separate. Synchronous managedallocationsonly, no zero primitive/throughput/globalidle/x64/AOTclaim. Supervisorfixe458a2d4b included. No workermeasurement/rebuild/repeatedtests during finalmetadata.",
+      "artifact": "docs/reports/M8-xsd-recursive-components/measurement-summary.json"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Ordered repair planned from unchanged original corpus witnesses and independent source/Second Edition review. Not claimed or implemented; no unverified peer dependency consumption.",
-    "checks": [],
-    "remaining": [],
+    "summary": "All A1-A3 implemented on branch: unchanged originals accepted through deferred element-inline complex-body completion, forbidden group/base cycles preserved, complete correctness/API/consumer and actual nonisolated owned-allocation evidence. Await coordinator integration verification; integration_revision remains unset.",
+    "checks": [
+      "Original4baseline failures preserved; repairedoriginals pass;37owned+1263affected=1300pass and42resolverpass,0errors/failures/skips/notrun. Public1430/all8frozen/internal surfaces and normal/trueXML-only consumers pass; ownrecursiveconsumer passes2builds;planning/diff pass.",
+      "Independent runtime/probe sourcePASS;offline build/disabled control/preflight andtimeoutexit0regression pass;no primitivezeroallocationclaim.",
+      "Actualrootallocation13ownedroutes832samplespositive,cold3452776/positive1048B,32retainedcoarseillustrations;457identities,children53183/53185completedandclean,durablecleanupbefore rawinspection.",
+      "Root reports combinedcandidate3735a8e passed1804distinctchecks/7builds/publicall8/facade+recursive normaltrueXML-only; coordinator owns integrated verification. This final update reruns no runtime tests or counters."
+    ],
+    "remaining": [
+      "Coordinator integrates branch and verifies integrated revision."
+    ],
     "requests": []
   }
 }
