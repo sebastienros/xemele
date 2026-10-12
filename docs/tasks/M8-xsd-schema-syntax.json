@@ -37,14 +37,20 @@
     {
       "id": "M8-xsd-schema-syntax-A1",
       "description": "Reject the original accepted W3C invalid schemas annotF001 (empty documentation xml:lang) and groupD001 (global group minOccurs), enforcing contextual schema representation rules and legal neighboring forms without resource or quota false positives.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "branch-correctness",
+        "source-review"
+      ]
     },
     {
       "id": "M8-xsd-schema-syntax-A2",
       "description": "Reject original idI150 selector self::node() and disallowed explicit self/descendant-or-self spellings while preserving literal dot, leading dot-double-slash, explicit child and field attribute axes, namespace behavior and charged parsing. Correct only the previously mistaken positive axis expectations with documented identity transitions and preserved semantic/cancellation coverage.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "branch-correctness",
+        "source-review"
+      ]
     },
     {
       "id": "M8-xsd-schema-syntax-A3",
@@ -68,18 +74,46 @@
       "result": "failed",
       "summary": "Expected pre-repair reproduction: all 3 original-invalid schemas were independently rejected by BCL, then all 3 public facade rejection assertions failed because no exception was thrown. 3 total, 3 failed, 0 errors/skipped/not-run. Build succeeded SDK10.0.400/runtime10.0.11. Raw XML/build log transient ignored.",
       "artifact": null
+    },
+    {
+      "id": "source-review",
+      "kind": "review",
+      "revision": "54468a6a4daff58c4578b5a46fe48116ccd22e18",
+      "command": null,
+      "result": "passed",
+      "summary": "Coordinator reported independent bounded contract/compiler and XPath/parser/exact prior test-transition reviews passed with no P1/P2; accepted compiler SHA256d923d3652da9dc3f1a6922bd287bf00684b031a00bd7c4a7fa19f4b80e874430 and XPath SHA256a49afdeef1912ec8df06b8cac029f707f1903ad664a8f77ca58fe8ff8e735590. Model review accepted six original hashes/provenance, twelve allocation routes/disabled controls and byte-identical cleanup core; bounded checker omission issue corrected at444365439.",
+      "artifact": null
+    },
+    {
+      "id": "branch-correctness",
+      "kind": "check",
+      "revision": "444365439998500d6fac163af1a1c2259ec31168",
+      "command": "python3 docs/reports/M8-xsd-schema-syntax/check.py",
+      "result": "passed",
+      "summary": "Release SDK10.0.400/runtime10.0.11. 1146/1146 affected+owned passed,0 errors/failed/skipped/not-run:33 owned (3 unchanged original BCL/public rejection witnesses+30 neighbors),1113 affected (baseline1110+3 additive self grammar cases). safe resolver42/42. Frozen/public APIs and normal+true source-linked XML-only facade consumers passed. Planning185 tasks and diff check passed. All6 fixture SHA256 hashes match pinned original cache. Initial same-source attempt failed xUnit1051 in new parse call before tests; fixed test cancellation token at tested revision.",
+      "artifact": null
+    },
+    {
+      "id": "checker-omission-control",
+      "kind": "check",
+      "revision": "444365439998500d6fac163af1a1c2259ec31168",
+      "command": "Pure assert_results.assert_tests on actual correctness.xml, then on copied XML with one owned row removed and aggregate passed/total decremented",
+      "result": "passed",
+      "summary": "Actual1146-row report accepted with independent33-case/9-method owned inventory and all14 affected namespaces present. Report omitting one owned case rejected despite adjusted summary. No runtime rerun or counters.",
+      "artifact": null
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Scoped source and controls committed; awaiting coordinator source acceptance/check release. Task remains in_progress; no post-repair checks or allocation claimed.",
+    "summary": "Accepted runtime unchanged; owned/affected correctness passed. Allocation controls preparing; task in_progress until actual granted measurement.",
     "checks": [
-      "Baseline: 3 expected no-exception failures after 3 BCL original-schema rejections.",
-      "Planning validate:185 tasks; git diff --check clean."
+      "1146 correctness tests passed (33 owned+1113 affected); resolver42 passed; exact APIs and normal/XML-only consumers passed.",
+      "Pure checker omitted-owned-case control rejected; all6 original schema bytes match pinned hashes.",
+      "Planning185 tasks/diff check passed."
     ],
     "remaining": [
-      "Source acceptance then owned/affected correctness, safe42resolver, exact APIs and normal/XML-only consumers.",
-      "Prepare/freeze disabled controls, elevated verify-only/supervised cleanup preflight; coordinator-only granted measurement; final evidence."
+      "Frozen controls/manifest, elevated verify-only/actual supervised cleanup preflight.",
+      "Coordinator-only fresh lease allocation measurement; final evidence."
     ],
     "requests": []
   }
