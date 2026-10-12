@@ -113,12 +113,20 @@ def finish_absent_scratch(path,phase,consumed,deadline,deferred):
         raise
     value['terminalCleanup']='passed'
     nested.durable(final,value)
+    # TERM/INT can arrive DURING durable final publication, after the earlier
+    # reconciliation. Withdraw every stored phase-success before propagating it.
+    if deferred:
+        consumed['state']='failed'; consumed['reason']='interruption during terminal cleanup/publication'
+        value['consumed']=concise(consumed); value['deferredInterruptions']=list(deferred)
+        final.unlink(); candidate.unlink(missing_ok=True)
+        final=summary_dir/(stem+'-interrupted.json')
+        nested.durable(final,value)
     if time.monotonic()>=deadline:
         failed=summary_dir/(stem+'-late.json')
         value['terminalCleanup']='failed'; value['reason']='late terminal summary publication'
         nested.durable(failed,value); final.unlink()
         raise TimeoutError(value['reason'])
-    candidate.unlink()
+    candidate.unlink(missing_ok=True)
     if deferred: raise KeyboardInterrupt('terminal cleanup completed after interruption')
     return final
 

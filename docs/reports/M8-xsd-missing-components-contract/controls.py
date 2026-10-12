@@ -132,6 +132,8 @@ def cleanup_fault(case, folder, deadline, environment):
 
 def invariant_case(case, folder, base, expected_plan_sha, deadline, environment):
     folder.mkdir()
+    if case in ('compile-before-controls-gate','compile-caller-recovery'):
+        return compile_ownership_case(case,folder,base,deadline,environment)
     if case.startswith('terminal-'):
         return terminal_case(case,folder,deadline,environment)
     if case in ('inventory-failure','expired-cleanup'):
@@ -198,15 +200,18 @@ def terminal_case(case,folder,deadline,environment):
     def action():
         c.bindings.verify(plan,expected,deadline)
         payload="from pathlib import Path; p=Path("+repr(str(stage))+" ); (p/'bin').mkdir(); (p/'obj').mkdir(); (p/'bin/fake.dll').write_bytes(b'control output'); (p/'obj/scratch').write_text('scratch'); (p/'candidate.actual.txt').write_text('control projection'); (p/'drop-member.txt').write_text('control negative')"
-        code=0 if case in ('terminal-successful-compile','terminal-interrupted') else 7
-        payload+='; raise SystemExit('+str(code)+')'
+        code=0 if case in ('terminal-successful-compile','terminal-interrupted','terminal-unexpected-exit','terminal-publication-term') else 7
+        actual_code=9 if case=='terminal-unexpected-exit' else code
+        payload+='; raise SystemExit('+str(actual_code)+')'
         c.supervision.ARTIFACTS=stage
         record=c.nested.supervise_family_command(c.supervision,[sys.executable,'-c',payload],701,environment,min(time.monotonic()+2,deadline-4),deadline)
-        assert record['directChildReaped'] and record['ownedGroupAbsent'] and record['nestedOwnership']['allOwnedGroupsAbsent']
+        assert record['directChildReaped'] and record['ownedGroupAbsent'] and record['logClosed'] and record['nestedOwnership']['allOwnedGroupsAbsent']
         c.bindings.verify(plan,expected,deadline)
         outputs=c.output_identities(stage)
         assert stage.exists() and (stage/'bin/fake.dll').exists() and outputs
-        captured.update(state='passed' if code==0 else 'failed',inputs=json.loads(plan.read_text())['inputs'],outputs=outputs,commands=[record])
+        captured.update(state='passed' if record['exit']==0 and record['reason']=='completed' else 'failed',inputs=json.loads(plan.read_text())['inputs'],outputs=outputs,commands=[record])
+        assert record['exit']==code, 'unexpected retention child exit'
+        assert record['reason']==('completed' if code==0 else 'failed'), 'unexpected retention completion reason'
         if code: raise RuntimeError('finite seam failed phase')
         return captured
     if case=='terminal-interrupted':
@@ -221,15 +226,95 @@ def terminal_case(case,folder,deadline,environment):
             except KeyboardInterrupt as error: assert 'terminal cleanup completed' in str(error)
             else: raise AssertionError('cleanup interruption lost')
         assert calls[0]>=2 and captured['state']=='failed'
+    elif case=='terminal-publication-term':
+        real=c.terminal.nested.durable; sent=[False]
+        def interrupt_final(path,value):
+            real(path,value)
+            if value.get('terminalCleanup')=='passed' and not sent[0]:
+                sent[0]=True; os.kill(os.getpid(),signal.SIGTERM)
+        with patch.object(c.terminal.nested,'durable',side_effect=interrupt_final):
+            try: c.terminal.attempt(stage,case,action,deadline,lambda:captured)
+            except KeyboardInterrupt as error: assert 'terminal cleanup completed' in str(error)
+            else: raise AssertionError('final publication TERM lost')
+        summaries=[json.loads(p.read_text()) for p in (c.OUT/'summaries').glob('*.json')]
+        retained=[value for value in summaries if value.get('scratchRoot')==str(stage.resolve())]
+        assert sent[0] and retained and all(value['consumed']['state']=='failed' for value in retained), 'retained interrupted phase success'
+    elif case=='terminal-unexpected-exit':
+        rejects(lambda:c.terminal.attempt(stage,case,action,deadline,lambda:captured),'unexpected retention child exit')
+        assert captured['commands'][0]['exit']==9
     elif case=='terminal-successful-compile':
         assert c.terminal.attempt(stage,case,action,deadline,lambda:captured)['state']=='passed'
     else:
         rejects(lambda:c.terminal.attempt(stage,case,action,deadline,lambda:captured),'finite seam failed phase')
+        assert captured['commands'][0]['exit']==7 and captured['commands'][0]['reason']=='failed' and captured['commands'][0]['logClosed']
     assert not stage.exists(), 'terminal phase retained generated output archive'
     assert canonical.read_bytes()==b'preserve canonical input' and cache.read_bytes()==b'preserve cache'
     # Deleted files must not be reused or presented as fresh matching controls.
     rejects(lambda:c.bindings.verify(plan,expected,deadline))
     return {'expectedOutcomeVerified':True,'scratchDeleted':True,'canonicalAndCachePreserved':True}
+
+
+def claim_controls(stage,expected):
+    c.durable(stage/'controls-started.json',{'planSha256':expected})
+
+
+def compile_ownership_case(case,folder,base,deadline,environment):
+    stage=folder/'attempt'; stage.mkdir()
+    project=stage/'Candidate.csproj'; project.write_text('owned project sentinel')
+    plan=stage/'plan.json'
+    # Synthetic gate/recipe is for Python ownership controls only; never used as
+    # compilation evidence or fed to any .NET command.
+    c.durable(plan,{'sourceSha':base['sourceSha'],'dotnet':sys.executable,
+        'inputs':{str(project):c.bindings.digest(project)},'commands':c.compile_commands(sys.executable,stage)})
+    expected=c.bindings.digest(plan)
+    if case=='compile-before-controls-gate':
+        claim_controls(stage,expected)  # Actual controls claim, paused before its first child.
+        before=c.bindings.digest(project)
+        rejects(lambda:c.compile_attempt(plan,expected,None,None,lambda:(_ for _ in ()).throw(AssertionError('premature child'))),
+                'successful matching controls receipt required')
+        assert stage.exists() and not (stage/'compile-started.json').exists() and not (stage/'compile-owned').exists()
+        assert c.bindings.digest(project)==before and (stage/'controls-started.json').exists()
+        c.supervision.ARTIFACTS=stage
+        record=c.nested.supervise_family_command(c.supervision,
+            [sys.executable,'-c',"from pathlib import Path;Path("+repr(str(stage/'continued'))+").write_text('controls continued')"],
+            703,environment,min(deadline-4,time.monotonic()+2),deadline)
+        assert record['exit']==0 and record['reason']=='completed' and record['logClosed'] and record['nestedOwnership']['allOwnedGroupsAbsent']
+        assert (stage/'continued').exists() and c.bindings.digest(project)==before
+        c.terminal.finish(stage,case,{'state':'passed','commands':[record]},deadline)
+    else:
+        gate=stage/'controls-receipt.json'
+        c.publish(gate,{'state':'passed','receiptRole':'active-controls-gate','pendingPhase':'compile','stage':str(stage),
+            'sourceSha':base['sourceSha'],'planSha256':expected,'cases':list(c.ALL_CASES),'outcomes':dict.fromkeys(c.ALL_CASES,True),
+            'independentAbsence':True,'noNextAfterFailure':True,'scope':'synthetic ownership seam only'},deadline)
+        gate_sha=c.bindings.digest(gate); ready=folder/'registered-ready.json'; errors=[]
+        def kill_owner():
+            try:
+                end=min(deadline,time.monotonic()+5)
+                while not ready.exists(): c.checkpoint(end); time.sleep(.01)
+                value=json.loads(ready.read_text()); claim=json.loads((stage/'compile-started.json').read_text())
+                assert claim['ownerPid']==value['ownerPid'] and c.bindings.digest(stage/'compile-started.json')==value['claimSha']
+                registrations=[(p,json.loads(p.read_text())) for p in folder.rglob('group-*.json')]
+                assert any(v['pid']==claim['ownerPid'] for p,v in registrations), 'compile controller not registered'
+                matches=[(p,v) for p,v in registrations if v['pgid']==value['childGroup']]
+                assert matches
+                for path,entry in matches:
+                    assert c.nested.complete_record(path.with_name('ack-'+entry['token']+'.json'),{'token':entry['token'],'pid':entry['pid']})
+                os.kill(claim['ownerPid'],signal.SIGKILL)
+            except BaseException as error: errors.append(repr(error))
+        killer=threading.Thread(target=kill_owner); killer.start()
+        c.supervision.ARTIFACTS=folder
+        try:
+            record=c.nested.supervise_family_command(c.supervision,
+                [sys.executable,str(c.HERE/'retention-caller.py'),str(plan),expected,str(gate),gate_sha,str(ready)],
+                704,environment,min(deadline-6,time.monotonic()+8),deadline)
+        finally: killer.join(timeout=1)
+        assert not killer.is_alive() and not errors, errors
+        assert record['exit']==-signal.SIGKILL and record['directChildReaped'] and record['logClosed'] and record['nestedOwnership']['allOwnedGroupsAbsent']
+        assert stage.exists() and (stage/'bin/sentinel').exists(), 'killed caller unexpectedly ran terminal finally'
+        claim_sha=json.loads(ready.read_text())['claimSha']
+        c.recover_compile(stage,expected,claim_sha,deadline)
+        assert not stage.exists(), 'matched surviving recovery retained compile scratch'
+    return {'expectedOutcomeVerified':True,'stagePreservedUntilGate':case=='compile-before-controls-gate','scratchDeleted':True}
 
 def verify_campaign(plan_path,expected_plan_sha):
     a=argparse.Namespace(plan=plan_path,expected_plan_sha=expected_plan_sha)
@@ -276,7 +361,7 @@ def verify_campaign(plan_path,expected_plan_sha):
 def main():
     p=argparse.ArgumentParser(); p.add_argument('--plan',type=Path,required=True); p.add_argument('--expected-plan-sha',required=True)
     a=p.parse_args(); stage=c.terminal.owned(a.plan.parent)
-    c.durable(stage/'controls-started.json',{'planSha256':a.expected_plan_sha})
+    claim_controls(stage,a.expected_plan_sha)
     result={'state':'failed','planSha256':a.expected_plan_sha}
     terminal_hard_end=time.monotonic()+115
     try:

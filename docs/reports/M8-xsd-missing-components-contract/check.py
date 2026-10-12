@@ -26,7 +26,8 @@ CASES = ('normal', 'descendant', 'timeout', 'late', 'invariant', 'parent-death')
 EXTRA_CASES = ('inventory-failure', 'expired-cleanup', 'delayed-prelaunch', 'delayed-absence',
                'delayed-publication', 'changed-command', 'changed-project', 'changed-source',
                'changed-binary', 'missing-controls', 'mismatched-controls', 'wrong-control-outcome',
-               'terminal-successful-compile', 'terminal-failed-compile', 'terminal-failed-control', 'terminal-interrupted')
+               'terminal-successful-compile', 'terminal-failed-compile', 'terminal-failed-control', 'terminal-interrupted',
+               'compile-before-controls-gate', 'compile-caller-recovery', 'terminal-unexpected-exit', 'terminal-publication-term')
 ALL_CASES = CASES + EXTRA_CASES
 
 
@@ -334,13 +335,66 @@ def prepare_stage(dotnet,sha,artifact,prepare_deadline):
 
 
 
+
+def compile_attempt(plan_path,expected,controls_path,controls_sha,action,capture=None):
+    # Gate rejection owns NO cleanup: a controls controller may still be using the stage.
+    verify_inputs(plan_path,expected,time.monotonic()+5,None,controls_path,controls_sha)
+    stage=terminal.owned(plan_path.parent)
+    claim={'planSha256':expected,'controlsSha256':controls_sha,'ownerPid':os.getpid(),
+           'registry':str(stage/'compile-owned'),'stage':str(stage)}
+    durable(stage/'compile-started.json',claim)
+    registry=stage/'compile-owned'; registry.mkdir()
+    prior=os.environ.get(nested.REGISTRIES)
+    enclosing=nested.registries(os.environ)
+    os.environ[nested.REGISTRIES]=json.dumps([str(p) for p in enclosing+[registry]])
+    try:
+        return terminal.attempt(stage,'compile',action,time.monotonic()+240,capture)
+    finally:
+        if prior is None: os.environ.pop(nested.REGISTRIES,None)
+        else: os.environ[nested.REGISTRIES]=prior
+
+
+def recover_compile(stage,expected_plan,expected_claim,deadline):
+    # Explicit coordinator-owned finite recovery, not an automatic claim that a
+    # SIGKILLed caller's finally ran. No workload is launched and no inputs revalidated.
+    stage=terminal.owned(stage)
+    assert bindings.digest(stage/'plan.json')==expected_plan, 'recovery plan identity differs'
+    assert bindings.digest(stage/'compile-started.json')==expected_claim, 'recovery claim identity differs'
+    claim=json.loads((stage/'compile-started.json').read_text())
+    assert claim['planSha256']==expected_plan and Path(claim['stage']).resolve()==stage
+    assert Path(claim['registry']).resolve()==stage/'compile-owned', 'unmatched recovery registry'
+    assert claim['ownerPid']>1 and claim['ownerPid']!=os.getpid()
+    # Never clean a live caller's stage; PID reuse conservatively refuses recovery.
+    try: os.kill(claim['ownerPid'],0)
+    except ProcessLookupError: pass
+    else: raise AssertionError('compile owner still present; recovery refused')
+    checkpoint(deadline)
+    cleanup=nested.drain(supervision,stage/'compile-owned',deadline) if (stage/'compile-owned').is_dir() else {'allOwnedGroupsAbsent':True,'groups':[],'reason':'caller died before registry creation; no payload launch possible'}
+    assert cleanup['allOwnedGroupsAbsent'], 'recovery could not prove registered family absent'
+    terminal.absence(stage,deadline)
+    consumed={'state':'failed','planSha256':expected_plan,'reason':'compile caller died; explicit coordinator recovery',
+              'commands':[],'recoveryClaimSha256':expected_claim,'cleanup':cleanup}
+    receipt=stage/'receipt.json'
+    if receipt.exists():
+        try:
+            details=load_receipt(receipt,bindings.digest(receipt)); consumed.update(details)
+        except (OSError,ValueError,KeyError,AssertionError) as error:
+            consumed['captureFailure']=str(error)
+        consumed['state']='failed'; consumed['reason']='compile caller died; explicit coordinator recovery'
+    return terminal.finish(stage,'compile-recovery',consumed,deadline)
+
 def main():
     p = argparse.ArgumentParser()
     p.add_argument('--prepare',action='store_true'); p.add_argument('--dotnet'); p.add_argument('--release-sha')
     p.add_argument('--plan',type=Path); p.add_argument('--expected-plan-sha')
     p.add_argument('--guard',type=Path); p.add_argument('--caller-pid',type=int); p.add_argument('--control-case')
     p.add_argument('--controls-receipt',type=Path); p.add_argument('--expected-controls-sha')
+    p.add_argument('--recover-stage',type=Path); p.add_argument('--expected-claim-sha')
     a = p.parse_args()
+    if a.recover_stage:
+        assert a.expected_plan_sha and a.expected_claim_sha
+        summary=recover_compile(a.recover_stage,a.expected_plan_sha,a.expected_claim_sha,time.monotonic()+12)
+        print(json.dumps({'terminalSummary':str(summary),'state':'failed caller; recovered cleanup'})); return 0
     if a.prepare:
         assert a.dotnet and a.release_sha
         plan = prepare(str(Path(a.dotnet).resolve()),a.release_sha)
@@ -352,9 +406,6 @@ def main():
         return guard(a.guard.resolve(),a.expected_plan_sha,a.caller_pid,a.controls_receipt,a.expected_controls_sha,a.control_case)
     assert a.plan and not a.control_case, 'control cases launch only through finite verifier'
     stage=terminal.owned(a.plan.parent)
-    # Exclusive claim prevents a stale second compiler from deleting another active attempt.
-    durable(stage/'compile-started.json',{'planSha256':a.expected_plan_sha,'controlsSha256':a.expected_controls_sha})
-    deadline=time.monotonic()+240
     def compile_action():
         verify_inputs(a.plan,a.expected_plan_sha,time.monotonic()+5,None,a.controls_receipt,a.expected_controls_sha)
         record=run_owned_guard(a.plan,a.expected_plan_sha,a.controls_receipt,a.expected_controls_sha)
@@ -368,7 +419,7 @@ def main():
         receipt=stage/'receipt.json'
         if receipt.exists(): return load_receipt(receipt,bindings.digest(receipt))
         return {'state':'failed','planSha256':a.expected_plan_sha,'reason':'no committed guard receipt'}
-    consumed=terminal.attempt(stage,'compile',compile_action,deadline,capture)
+    consumed=compile_attempt(a.plan,a.expected_plan_sha,a.controls_receipt,a.expected_controls_sha,compile_action,capture)
     return 0 if consumed['state']=='passed' else 1
 
 if __name__ == '__main__':

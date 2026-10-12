@@ -131,3 +131,49 @@ there is no new workload, extended deadline or discarded mutation assertion.
 Failure to prove absence or finish deletion yields a failed cleanup summary, never
 a passing gate. All these controls, and every preparation/compilation phase, remain
 **UNRUN** pending renewed SOURCE review and explicit execution release.
+
+## Four bounded ownership/publication SOURCE fixes
+
+The compile caller now verifies the committed matching controls gate and unchanged
+bound inputs BEFORE acquiring its exclusive cleanup claim. A missing gate grants
+no cleanup ownership; it cannot delete a controls stage paused before its next
+child. The new pause control calls the actual controls-claim helper, attempts the
+production compile-ownership entry, asserts rejection leaves marker/project/stage
+untouched and no compile claim, then proves controls can launch/complete its finite
+Python continuation. All existing mutation checks remain in place.
+
+A SIGKILLed compile caller cannot run terminal finally. This is now an explicit
+coordinator-owned recovery requirement: retain the plan hash and the hash of the
+exclusive compile-started.json claim while active. That claim identifies the owner
+PID, exact stage and compile-owned registry. Every production guard/child session
+registers in that ancestor registry before payload execution. The surviving
+coordinator uses `check.py --recover-stage <stage> --expected-plan-sha <frozen plan>
+--expected-claim-sha <frozen claim>` within the prepared12s recovery bound. Recovery
+refuses a present owner, checks exact plan/claim/stage/registry identity, drains
+registered groups, independently proves whole-family absence, consumes any available
+failure summary, and deletes the whole stage. It launches no workload, revalidates
+no deleted output and grants no compilation/pass credit. This is explicit recovery,
+not a promise of automatic cleanup after an uncatchable caller kill.
+
+The new caller-death control invokes the SAME production compile-ownership and
+terminal path with an owned registered Python payload seam, never .NET. It kills
+that actual cleanup-owning controller only after child registration/ACK/readiness,
+proves the killed caller left physical scratch, then invokes the matched surviving
+recovery and asserts complete deletion. retention-caller.py is only this finite
+control producer; its synthetic gate/command fixture is not compilation evidence.
+
+Retention controls now require actual record.exit, record.reason, direct reap,
+logClosed and registered-group absence. Requested exit7 must be observed as actual7
+with reason failed and a closed log. Another control creates the same sentinels but
+exits9 unexpectedly; it must reject and still delete scratch. Outcome is never
+inferred merely from the exit code the test requested.
+
+Terminal publication rechecks deferred TERM/INT AFTER fsynced final publication.
+If interrupted, it removes both unreconciled phase-success summary and consumed
+candidate, publishes an exclusive interrupted summary with consumed.state=failed,
+then propagates interruption. The new final-publication control sends actual TERM
+during durable final publication and asserts deletion completed, interruption
+propagated and every retained summary for that scratch root reports phase failure.
+All four new controls, every prior control and all preparation/.NET phases remain
+**UNRUN**, with execution release NONE. Semantic candidate and shared baselines are
+unchanged; renewed SOURCE review is still required.
