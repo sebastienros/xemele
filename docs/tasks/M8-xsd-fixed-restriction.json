@@ -4,11 +4,11 @@
   "milestone": "M8",
   "title": "Complete typed fixed-value checks in XSD particle restriction",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M8 coordinator01a12c6c-b333-71d3-877f-0d186618e21d / assigned isolated worker",
   "branch": "codex/m8-xsd-fixed-restriction",
   "base_revision": "d9be8f76bfb128e8f5b8f47046cdd3df2e9a369e",
-  "integration_revision": null,
+  "integration_revision": "de950e817a78f02310696d1e496273fba4f43ed7",
   "depends_on": [
     "M8-xsd-validate"
   ],
@@ -37,7 +37,8 @@
       "status": "passed",
       "evidence": [
         "source-review",
-        "correctness"
+        "correctness",
+        "root-integration"
       ]
     },
     {
@@ -46,7 +47,8 @@
       "status": "passed",
       "evidence": [
         "source-review",
-        "correctness"
+        "correctness",
+        "root-integration"
       ]
     },
     {
@@ -57,7 +59,8 @@
         "source-review",
         "correctness",
         "prepared-control",
-        "owned-allocation"
+        "owned-allocation",
+        "root-integration"
       ]
     }
   ],
@@ -103,11 +106,20 @@
       "result": "passed",
       "summary": "Grant9707173cdaa6ea8720b3831d7b0aa2acefcc01f7/release d1ff39c3b9fb6d53400aae10e7398249ec66b1b6; .NET10.0.11 Arm64 counters-only owned compilation,6routes first/16warm/3x64,16retained controls. Structural median28800B/op;prepareddecimal29040;QNameunionlist30528;freshfacets31016;ownedinvalid30056;realXMLcompose172145. Coldsetup474152B;positive1048B. Retained whole-heap delta-101896B is inconclusive, no savings/bound claim. Both children53265/53267 exit0/reaped/groupsabsent/logsclosed;442 identities before/after match. No BDN/timing/retry or raw inspection before release.",
       "artifact": "docs/reports/M8-xsd-fixed-restriction/allocations.md"
+    },
+    {
+      "id": "root-integration",
+      "kind": "integration",
+      "revision": "de950e817a78f02310696d1e496273fba4f43ed7",
+      "command": "python3 docs/reports/M8-xsd-fixed-restriction/check.py; '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -namespace Xemele.Tests.M8XsdPublicationCheckpoints -parallelMode none -noLogo -noColor -result-xml artifacts/M8-xsd-fixed-restriction/checks/publication.xml",
+      "result": "passed",
+      "summary": "Root combined1314affected+42safe resolver+34newpublicationchecks=1390passed;0fail/errors/skips/notrun. Public1410/frozencontent9/model316/compiler257/identity24/evaluation2/datatype316;normal+trueXML-only complete/earlierindependent structuralXML-only;allbuilds0warnings/errors;planning184/diff. Actualcontrolledallocationsseparately9707173c/d1ff39c3;nozero/timing/x64claim;negativewholeheapdeltainconclusive.",
+      "artifact": "docs/orchestration/review-M8-xsd-fixed-restriction.json"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Explicit additive complete-composition typed fixed-value equality runs within existing matched-element restriction relations, including unused/redefined carriers and OR alternatives; frozen structural/public contracts preserved. Source accepted; all criteria implemented on isolated branch, awaiting coordinator integration verification.",
+    "summary": "Integrated verified typed fixed-value restriction join;1390combinedchecks and actualownedallocationevidence passed. Facade can consume explicit completecompositionoverload.",
     "checks": [
       "1314 own/affected(35owned)+42safe resolver passed;public1410/frozencontent9/model316/compiler257/identity24/evaluation2+datatype316;normal+trueXML-only complete and earlier independent structuralXML-only consumers passed;builds zero warnings/errors;planning184/diff clean",
       "Granted prepared allocation-only run passed6routes with442identities unchanged;prepareddecimal median29040B/op vs structural28800;realXMLcompose172145B/op;no zero/throughput/cross-architecture claim;retained whole-heap observation inconclusive",
