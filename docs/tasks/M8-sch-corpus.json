@@ -4,7 +4,7 @@
   "milestone": "M8",
   "title": "Schematron conformance",
   "kind": "verification",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M8 coordinator01a12c6c-b333-71d3-877f-0d186618e21d / assigned isolated worker",
   "branch": "codex/m8-sch-corpus",
   "base_revision": "18e0c38701215aa56b0fa8cb2fe5e94df3ffde6a",
@@ -31,22 +31,26 @@
     {
       "id": "M8-sch-corpus-A1",
       "description": "Integrate declared-binding corpus and upstream regressions, including reports and negative schemas.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "final-scoped-checks"
+      ]
     },
     {
       "id": "M8-sch-corpus-A2",
       "description": "All profile cases pass; unsupported bindings remain explicit errors.",
-      "status": "failed",
+      "status": "passed",
       "evidence": [
-        "strict-pre-repair"
+        "final-scoped-checks"
       ]
     },
     {
       "id": "M8-sch-corpus-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "final-scoped-checks"
+      ]
     }
   ],
   "implementation": [
@@ -66,22 +70,39 @@
       "result": "failed",
       "summary": "88/89 passed,0 errors/skips/not-run. Original rule-abstract-02 schema-error oracle fails: cross-pattern abstract extension was accepted. Root owns narrow runtime repair; expectations retained.",
       "artifact": null
+    },
+    {
+      "id": "initial-bcl-observation",
+      "kind": "check",
+      "revision": "ac02c26c4224ce9aed6968ce6bdc011f8c6a76de",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 tests/Xemele.Differential.Tests/bin/Release/net10.0/Xemele.Differential.Tests.dll -namespace Xemele.Differential.Tests.Schematron -result-xml artifacts/M8-sch-corpus/differential.xml",
+      "result": "failed",
+      "summary": "Initial uncommitted preparation at this Git base (not an immutable source checkpoint):95/96 agreed; string-length(.) supplementary scalar reference5 vs product4 failed. Original input SHA256 is retained in reference-limitations.json; XPath1 normative4/BCL5 now separately asserted. Not a product defect or excluded case.",
+      "artifact": null
+    },
+    {
+      "id": "final-scoped-checks",
+      "kind": "check",
+      "revision": "9cb73e376363df5b527a7c828da4e6021238d80b",
+      "command": "python3 docs/reports/M8-sch-corpus/checks.py",
+      "result": "passed",
+      "summary": "50 upstream testcases/51 variants,19 authored complete-result cases,0 missing.90 conformance checks incl swapped FailedAssert witness/19 negatives;96 differential assertion cases=95 direct agreements+1 pinned BCLUnicode limitation.42 report+504 affected overlapping tests passed. All0 failures/errors/skips/not-run; builds0warnings/errors. Frozen3/9/154/public1403, normal+genuineXMLonly consumers passed; planning180 and whitespace passed. Only verified dependencies incl M8-sch-rule-scope atd4731c53; no benchmarks/counters.",
+      "artifact": null
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Pinned full original upstream inventory and authored frozen profile/SVRL/BCL differential harness implemented; one actual runtime blocker retained honestly.",
+    "summary": "Complete declared ISO2016/direct-M4 corpus with real pinned upstream50/51, independently authored19 structured/SVRL cases, reviewed visible oracle/output differences, explicit unsupported errors, BCL32expressions\u00d73inputs. Verified rule-scope prerequisite fixes original runtime blocker. All task-owned writes and task JSON handed back to coordinator.",
     "checks": [
-      "Strict exact9cd1dd86 conformance88/89, sole cross-pattern rule error defect;0 errors/skips/not-run.",
-      "Preparation BCL96 assertion cases passed;95 direct agreement and1 observed Unicode reference limitation, not96 differential agreements.",
-      "Preparation preservation42 reporting+504 affected overlapping checks/frozen3/9/154/public1403/normal and genuine XML-only consumers passed; no benchmark/counter.",
-      "Planning179 and whitespace validation passed. Final exact revised checks await integrated repair."
+      "Exact9cb73e376363df5b527a7c828da4e6021238d80b: python3 docs/reports/M8-sch-corpus/checks.py passes90conformance/96differential assertion cases;95direct agreements+1 documented BCLUnicode limitation, not96agreements.",
+      "42report+504affected overlapping preservation tests; frozen3/9/154/public1403; normal/genuineXMLonly consumers;0failures/errors/skips/notrun and0buildwarnings/errors.",
+      "Planning180/whitespace/provenance50/51originals19authored0missing pass; reference-build module hashes match. Source/input hashes in docs/reports/M8-sch-corpus/source-hashes.json.",
+      "Strict initial88/89 failure and uncommitted95/96BCL failure retained honestly; no timing/allocation counters or benchmarks executed."
     ],
     "remaining": [
-      "Merge coordinator-authorized verified M8-sch-rule-scope checkpoint, update dependency if directed, run exact final checks and record tested revision before implemented."
+      "Coordinator integrate/recheck exact branch and record verified status.",
+      "Root inspect ignored raw artifacts/M8-sch-corpus and artifacts/M8-sch-report, then terminal cleanup. No active worker processes or lease."
     ],
-    "requests": [
-      "src/Xemele/Validation/Schematron/Compilation/SchematronCompiler.cs: restrict abstract extends target to same pattern per ISO2016 section5.4.12; root owning M8-sch-rule-scope handles repair."
-    ]
+    "requests": []
   }
 }
