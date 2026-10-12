@@ -34,20 +34,26 @@
     {
       "id": "M8-datatype-constraint-lexical-A1",
       "description": "Add a narrowly scoped internal helper that first validates declared authored lexical text through the supplied facet engine and registry, then prepares canonical assessment lexical forms. Keep value/lexical consistency internal; retain the declared typed value, owned assessment lexical string and immutable captured declaration namespace context. Do not add lexical storage to every parsed value or mutate published values. Existing actual-type TryValidate must assess the prepared lexical form, not only typed facets.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "candidate-correctness"
+      ]
     },
     {
       "id": "M8-datatype-constraint-lexical-A2",
       "description": "Implement the pinned XSD 1.0 Second Edition canonical mappings wherever specified, including primitive/derived numeric distinctions, booleans, binary, supported date/time forms, and composed list/selected-union values. For types without a prescribed 1.0 canonical mapping, retain a valid whitespace-normalized authored representative and captured context; do not invent QName prefixes or silently import XSD1.1 rules. Handle arbitrary precision and calendar boundaries without narrowing existing supported values.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "candidate-correctness"
+      ]
     },
     {
       "id": "M8-datatype-constraint-lexical-A3",
       "description": "Prove declared xs:int default01 becomes1 and satisfies a derived one-digit pattern; declared xs:decimal default1 becomes1.0 and fails actual xs:int lexical grammar. Include exact known outputs, cross-family equality preservation, list/union selected identity, QName declaration-vs-instance context, temporal timezone/year/leap boundaries and cultures; test checked capacities, component reservations, exact work boundaries and cancellation during long operations with null caps.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "candidate-correctness"
+      ]
     },
     {
       "id": "M8-datatype-constraint-lexical-A4",
@@ -56,13 +62,33 @@
       "evidence": []
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Validation/Datatypes/Values/Canonical/Constraint.cs: DatatypeConstraintRepresentation.TryCreate",
+    "src/Xemele/Validation/Datatypes/Values/Canonical/{Writer,Numeric,TextBinary,Temporal}.cs: charged two-pass formatting; existing providers only partial keywords",
+    "tests/Xemele.Tests/M8-datatype-constraint-lexical/: 86 focused cases; samples/M8-datatype-constraint-lexical/Consumer.cs.fixture"
+  ],
+  "evidence": [
+    {
+      "id": "candidate-correctness",
+      "kind": "check",
+      "revision": "a58aed481ea2c6831111b73d037f92d1da21a2c1",
+      "command": "python3 docs/reports/M8-datatype-constraint-lexical/checks.py; python3 docs/reports/M8-datatype-constraint-lexical/checks.py --reuse-tests",
+      "result": "passed",
+      "summary": "Actual Arm64 .NET10.0.11: 731 selected tests passed (86 own/645 affected), zero failures/errors/skips/not-run; first count assertion corrected from invented >800 to exact731 without rerunning passing tests. PublicAPI1410 and frozenDatatypes316/Facets316 unchanged; normal/trueXMLonly consumers passed;182 planning and whitespace checks pass. No allocation counters.",
+      "artifact": "docs/reports/M8-datatype-constraint-lexical/correctness.md"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "",
-    "checks": [],
-    "remaining": [],
+    "summary": "Helper/source candidate committed; A1\u2013A3 demonstrated on branch, required correctness/API/normal/XML-only checks passed. Source review underway; allocation/integrated verification pending.",
+    "checks": [
+      "731 correctness tests (86 own) actual10.0.11; publicAPI1410; frozenDatatype/Facet316 each; both consumers;182planning/diffcheck passed.",
+      "Allocation/BDN/timing checks not run; no fresh grant."
+    ],
+    "remaining": [
+      "Independent source acceptance before allocation preparation/freeze/preflight and a fresh bounded coordinator lease.",
+      "Controlled allocation evidence and coordinator integration checks before A4/task implementation completion."
+    ],
     "requests": []
   }
 }
