@@ -1001,7 +1001,7 @@
   },
   "external_measurement_park": {
     "id": "M8-wildcard-parser-serial-1",
-    "status": "PARK_REQUESTED_NOT_GRANTED",
+    "status": "ABORTED_BEFORE_GRANT",
     "createdUtc": "2026-10-12T00:15:54.924809+00:00",
     "earliestStart": "2026-10-12T00:17:00Z",
     "latestStart": "2026-10-12T00:20:00Z",
@@ -1020,9 +1020,29 @@
       "chat": "01a12d64-81ae-79e3-8ba2-b88110af6fdb",
       "maximumWorkSeconds": 840,
       "cleanupSeconds": 10,
-      "manifest": "pending; required before grant"
+      "manifest": "6b60fa459e59759c7bb2db24336e5bb24796e0b31f311ce5faf0b4f8c3fa7c6f",
+      "manifestPath": "/Users/sebastienros/github/parsers/results/2026-10-11-arm64/run-01/manifest.json",
+      "harnessManifest": "2790515aa26a56356ed961e3a3545cd61a74a227a16bda0e2ef4674dded09d89",
+      "harnessPath": "/Users/sebastienros/github/parsers/results/2026-10-11-arm64/run-01/prepared-harness.json",
+      "command": "dotnet /Users/sebastienros/github/parsers/benchmarks/ParserLab.Benchmarks/bin/Release/net10.0/ParserLab.Benchmarks.dll --filter '*' --artifacts /Users/sebastienros/github/parsers/results/2026-10-11-arm64/run-01/bdn --quick",
+      "supervisorPid": 60333,
+      "driverPid": 60338,
+      "caseCount": 120,
+      "gate": "closed; explicit parser-phase grant required",
+      "expiryRule": "min actual gate open+14min,00:34UTC;cleanup10s;absolute00:34:10UTC"
     },
-    "rules": "Fresh all-known actor ACKs required; root phase first; explicit phase grants; no overlap/build/discovery/retry; immediate durable phase release before inspection; final RELEASE all actors after final child/group cleanup. Expiry does not authorize unreported leftovers."
+    "rules": "Fresh all-known actor ACKs required; root phase first; explicit phase grants; no overlap/build/discovery/retry; immediate durable phase release before inspection; final RELEASE all actors after final child/group cleanup. Expiry does not authorize unreported leftovers.",
+    "acks": {
+      "xemeleMain": "Fresh explicit ACK exactwindow; no jobs/writes",
+      "content": "Fresh ACK at c903d01; nojobs",
+      "schematronEvaluator": "Fresh ACK retrieved through wait_threads final at source2137c73;no jobs",
+      "facets": "Fresh ACK after failedtestbuildcompletedexit1;no jobs",
+      "root": "No heavychild/job; readonlyreview only",
+      "parser": "Fresh explicit ACK; only idle gatedsupervisor60333/driver60338;no measurementchild",
+      "gregsex": "Pending aggregate ACK including main/coordinator/conformance/host/newparser"
+    },
+    "releasedUtc": "2026-10-12T00:20:04.772499+00:00",
+    "releaseReason": "Required GregsEx conformance aggregate ACK not received with enough time for durable phase grants before00:20 start deadline. No phase granted or started; no root raw outputs."
   },
   "measurement_park_aborts": [
     {
