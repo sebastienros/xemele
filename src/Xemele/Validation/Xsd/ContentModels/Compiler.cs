@@ -18,6 +18,15 @@ internal sealed class XsdContentCompiler : IXsdContentCompiler
         ArgumentNullException.ThrowIfNull(operation); ArgumentNullException.ThrowIfNull(facets);
         return new ContentCompilation(schema, operation, facets).Compile(type);
     }
+
+    // The facade consumes every program. Share one invocation-local traversal,
+    // retaining both existing overloads' whole-graph/requested-type contract.
+    internal Dictionary<SchemaName, XsdContentProgram> CompileAll(XsdCompiledSchema schema,
+        ISchemaOperation operation, IXmlFacetEvaluator facets)
+    {
+        ArgumentNullException.ThrowIfNull(schema); ArgumentNullException.ThrowIfNull(operation); ArgumentNullException.ThrowIfNull(facets);
+        return new ContentCompilation(schema, operation, facets).CompileAll();
+    }
 }
 
 internal sealed partial class ContentCompilation
@@ -53,6 +62,22 @@ internal sealed partial class ContentCompilation
         }
         return result!;
     }
+    internal Dictionary<SchemaName, XsdContentProgram> CompileAll()
+    {
+        ContentWork.Retain(op, default);
+        var programs = new Dictionary<SchemaName, XsdContentProgram>();
+        foreach (var type in schema.Types)
+        {
+            ContentWork.Tick(op, type.Location);
+            if (type.AnyAttribute is { } wildcard) ContentNamespaces.Validate(wildcard, op, type.Location);
+            var program = Build(type);
+            CheckDerivation(type);
+            ContentWork.Retain(op, type.Location);
+            programs.Add(type.Name, program);
+        }
+        ContentWork.Tick(op, default, 0);
+        return programs;
+    }
     private sealed class Frame(XsdParticle particle, ContentNode[] children)
     {
         internal readonly XsdParticle Particle = particle;
@@ -61,6 +86,9 @@ internal sealed partial class ContentCompilation
     }
     private CompiledContent Build(XsdTypeDefinition type)
     {
+        // Named-group carriers finalize declarations and redefine relations; UPA
+        // applies when their particles enter a complex type's actual content.
+        bool checkUpa = !type.Anonymous || !type.Name.LocalName.StartsWith("#model-group:", StringComparison.Ordinal);
         var nodes = new List<ContentNode>(); ContentWork.Retain(op, type.Location);
         ContentNode? root = null;
         if (type.Particle is { } particle)
@@ -81,7 +109,7 @@ internal sealed partial class ContentCompilation
                 var frame = stack.Peek(); ContentWork.Tick(op, frame.Particle.Location);
                 if (frame.Next < frame.Children.Length)
                 { Push(((XsdGroupTerm)frame.Particle.Term).Particles[frame.Next]); continue; }
-                var node = Finish(frame.Particle, frame.Children, nodes);
+                var node = Finish(frame.Particle, frame.Children, nodes, checkUpa);
                 stack.Pop();
                 if (stack.TryPeek(out var parent)) parent.Children[parent.Next++] = node; else root = node;
             }
@@ -90,7 +118,7 @@ internal sealed partial class ContentCompilation
         ContentWork.Retain(op, type.Location, checked(nodes.Count + 1));
         return new(root, nodes.ToArray(), type.Location);
     }
-    private ContentNode Finish(XsdParticle p, ContentNode[] children, List<ContentNode> nodes)
+    private ContentNode Finish(XsdParticle p, ContentNode[] children, List<ContentNode> nodes, bool checkUpa)
     {
         int id = nodes.Count; bool bodyNullable = false;
         var first = new HashSet<int>(); var bodyTail = new HashSet<int>();
@@ -131,7 +159,7 @@ internal sealed partial class ContentCompilation
                 { if (suffixNullable) Union(bodyTail, children[i].Tail); suffixNullable &= children[i].Nullable; }
             }
             // Initial choice/all frontiers, or optional paths through sequence.
-            for (int i = 0; i < children.Length; i++)
+            for (int i = 0; checkUpa && i < children.Length; i++)
             {
                 bool betweenNullable = true;
                 for (int j = i + 1; j < children.Length; j++)
@@ -143,7 +171,7 @@ internal sealed partial class ContentCompilation
                 }
             }
             if (bodyNullable) Union(bodyTail, ToArray(first, p.Location));
-            if (p.MaxOccurs is null || p.MaxOccurs > BigInteger.One)
+            if (checkUpa && (p.MaxOccurs is null || p.MaxOccurs > BigInteger.One))
                 Disjoint(ToArray(bodyTail, p.Location), ToArray(first, p.Location), nodes, p.Location);
         }
         else
@@ -167,14 +195,17 @@ internal sealed partial class ContentCompilation
     {
         if (substitutions.TryGetValue(id, out var ready)) return ready;
         var head = schema.Elements[id]; var result = new List<(SchemaName, int)>();
-        if (!head.Abstract) { ContentWork.Retain(op, head.Location); result.Add((head.Name, id)); }
         bool global = schema.GlobalElements.TryGetValue(head.Name, out int globalId) && globalId == id;
         if (global && !head.Block.Contains(XsdElementBlock.Substitution))
         {
+            // Use one declaration order for every implicit substitution choice.
+            // Giving each head priority creates incompatible orders for nested
+            // substitution sets. Authored group particle lists are untouched.
             foreach (int candidate in schema.GlobalElements.Values)
             {
                 ContentWork.Tick(op, head.Location); var element = schema.Elements[candidate];
-                if (candidate == id || element.Abstract) continue;
+                if (element.Abstract) continue;
+                if (candidate == id) { ContentWork.Retain(op, head.Location); result.Add((head.Name, id)); continue; }
                 int current = candidate; bool affiliated = false;
                 for (int steps = 0; steps < schema.Elements.Count; steps++)
                 {
@@ -186,6 +217,7 @@ internal sealed partial class ContentCompilation
                 ContentWork.Retain(op, element.Location); result.Add((element.Name, candidate));
             }
         }
+        else if (!head.Abstract) { ContentWork.Retain(op, head.Location); result.Add((head.Name, id)); }
         ContentWork.Retain(op, head.Location, checked(result.Count + 1));
         ready = result.ToArray(); substitutions.Add(id, ready); return ready;
     }

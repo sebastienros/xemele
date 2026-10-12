@@ -1047,6 +1047,8 @@ internal sealed class XsdCompilation
     {
         // A group can be unused or displaced by redefine. Its immutable program
         // still needs content consistency and declaration/facet finalization.
+        // The #model-group: identity lets the content join defer only UPA until
+        // this particle participates in an actual complex type's content.
         // Share the existing redefine carrier identity: repeated expansion does
         // not publish duplicate checkpoints or overwrite a restriction relation.
         var name = new SchemaName(owner.Source.Target, "#" + kind + ":" + owner.Name.LocalName);

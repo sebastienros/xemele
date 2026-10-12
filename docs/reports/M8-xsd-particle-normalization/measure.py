@@ -1,0 +1,167 @@
+"""Root-only prebuilt allocation lifecycle; no isolation/PARK/grant or workload timing."""
+import hashlib, json, os, signal, subprocess, sys, time
+from datetime import datetime, timezone
+from pathlib import Path
+root = Path(__file__).resolve().parents[3]
+ROOT = root
+net = '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet'
+out = root / 'artifacts/M8-xsd-particle-normalization/measurement-1'
+ARTIFACTS = out
+manifest_path = root / 'docs/reports/M8-xsd-particle-normalization/preparation.json'
+commands = [
+ [net, '--fx-version', '10.0.11', str(root / 'benchmarks/Xemele.Benchmarks/M8-xsd-particle-normalization/bin/probe/net10.0/Xemele.Benchmarks.dll'), '--control', str(out / 'control.json')],
+ [net, '--fx-version', '10.0.11', str(root / 'benchmarks/Xemele.Benchmarks/M8-xsd-particle-normalization/bin/probe/net10.0/Xemele.Benchmarks.dll'), '--measure', str(out / 'allocations.json')]
+]
+def digest(path):
+ with Path(path).open('rb') as stream: return hashlib.file_digest(stream, 'sha256').hexdigest()
+def identities(manifest):
+ mismatches = []
+ for relative, expected in manifest['identities'].items():
+  path = Path(relative); path = path if path.is_absolute() else root / path
+  try:
+   if digest(path) != expected: mismatches.append(relative)
+  except OSError: mismatches.append(relative)
+ return mismatches
+
+def members(group):
+    listing = subprocess.check_output(['ps', '-axo', 'pid,pgid'], text=True, timeout=2)
+    return [int(pid) for pid, pgid in (line.split() for line in listing.splitlines()[1:]) if int(pgid) == group]
+
+
+def kill_group(pid, sig):
+    try:
+        os.killpg(pid, sig)
+    except ProcessLookupError:
+        pass
+
+
+def supervise(argv, environment, work_deadline, hard_deadline, record, log_name="allocation.log"):
+    child = None
+    log = None
+    try:
+        log = (ARTIFACTS / log_name).open('xb')
+        if time.monotonic() >= work_deadline:
+            raise TimeoutError('Work deadline reached')
+        child = subprocess.Popen(argv, cwd=ROOT, env=environment, stdout=log, stderr=subprocess.STDOUT, start_new_session=True)
+        record['pid'] = child.pid
+        record['exit'] = child.wait(timeout=max(.001, work_deadline - time.monotonic()))
+        record['reason'] = 'completed' if record['exit'] == 0 else 'failed'
+    except BaseException as error:
+        record['reason'] = type(error).__name__
+    finally:
+        try:
+            if child is not None:
+                kill_group(child.pid, signal.SIGTERM)
+                try:
+                    child.wait(timeout=max(.001, min(1, hard_deadline - time.monotonic())))
+                except subprocess.TimeoutExpired:
+                    kill_group(child.pid, signal.SIGKILL)
+                    child.wait(timeout=max(.001, min(1, hard_deadline - time.monotonic())))
+                kill_group(child.pid, signal.SIGKILL)
+                record['exit'] = child.returncode
+                record['directChildReaped'] = child.returncode is not None
+                while True:
+                    remaining = members(child.pid)
+                    record['groupMembers'] = remaining
+                    if not remaining:
+                        record['ownedGroupAbsent'] = True
+                        break
+                    if time.monotonic() >= hard_deadline - 2:
+                        raise TimeoutError('Owned group did not drain')
+                    kill_group(child.pid, signal.SIGKILL)
+                    time.sleep(.05)
+        except BaseException as error:
+            record['cleanupError'] = type(error).__name__
+        finally:
+            if log is not None:
+                log.close()
+                record['logClosed'] = log.closed
+            else:
+                record['logClosed'] = True
+            if child is None:
+                record['directChildReaped'] = True
+                record['ownedGroupAbsent'] = True
+
+
+def supervise_command(argv, index, environment, work_deadline, hard_deadline):
+ record = {'command': index, 'pid': None, 'exit': None, 'reason': 'not-started', 'directChildReaped': False,
+           'ownedGroupAbsent': False, 'logClosed': False, 'groupMembers': []}
+ supervise(argv, environment, work_deadline, hard_deadline, record, f'command-{index}.log')
+ return record
+
+def workload_succeeded(record):
+ return (record['reason'] == 'completed' and record['exit'] == 0 and
+         record['directChildReaped'] and record['ownedGroupAbsent'] and record['logClosed'])
+
+def run_commands(argvs, environment, work_deadline, hard_deadline):
+ sequence = []
+ for index, argv in enumerate(argvs):
+  record = supervise_command(argv, index, environment, work_deadline, hard_deadline)
+  sequence.append(record)
+  if not workload_succeeded(record): break
+ return sequence
+
+if sys.argv[1:] == ['--commands']:
+ print(json.dumps(commands, indent=2)); sys.exit(0)
+if sys.argv[1:] == ['--preflight']:
+ manifest = json.loads(manifest_path.read_text())
+ assert not identities(manifest), 'Frozen identity mismatch before preflight.'
+ out = root / 'artifacts/M8-xsd-particle-normalization/preflight'
+ out.mkdir(parents=True, exist_ok=False)
+ ARTIFACTS = out
+ env = os.environ.copy(); env.update(DOTNET_TieredCompilation='0', DOTNET_gcServer='0', DOTNET_GCConcurrent='0')
+ start = time.monotonic()
+ argv = [net, '--fx-version', '10.0.11', str(root / 'benchmarks/Xemele.Benchmarks/M8-xsd-particle-normalization/bin/probe/net10.0/Xemele.Benchmarks.dll'), '--control', str(out / 'control.json')]
+ record = supervise_command(argv, 0, env, start + 30, start + 40)
+ assert not identities(manifest), 'Frozen identity mismatch after preflight.'
+ (out / 'lifecycle.json').write_text(json.dumps(record, indent=2))
+ clean = workload_succeeded(record)
+ print(f"PREFLIGHT: {record}; frozen identities {len(manifest['identities'])} matched; counters and benchmark timing disabled.")
+ sys.exit(0 if clean else 1)
+if sys.argv[1:] == ['--verify-only']:
+ manifest = json.loads(manifest_path.read_text()); mismatches = identities(manifest)
+ assert not mismatches, mismatches
+ assert os.getpid() in members(os.getpgid(os.getpid()))
+ print(f"PASS: {len(manifest['identities'])} prepared identities and ps permission, counters/timing disabled; manifest {digest(manifest_path)}")
+ sys.exit(0)
+if len(sys.argv) != 3 or sys.argv[1] != '--run':
+ raise SystemExit('Root-only --run <reviewed manifest SHA256>; no isolation/PARK/lease gate.')
+remaining = 120
+started = time.monotonic(); hard_deadline = started + remaining; work_deadline = hard_deadline - 10
+# No retry or accidental replacement of preserved raw results.
+out.mkdir(parents=True, exist_ok=False)
+lifecycle = {'status': 1, 'beforeIdentities': False, 'afterIdentities': False, 'sequence': [], 'rawResultsInspected': False}
+manifest = None
+try:
+ if digest(manifest_path) != sys.argv[2]: raise ValueError('Manifest differs from reviewed preparation.')
+ manifest = json.loads(manifest_path.read_text())
+ if manifest['commands'] != commands or manifest['maximumSeconds'] != 120 or manifest['workSeconds'] != 110 or manifest['cleanupReserveSeconds'] != 10: raise ValueError('Command/bound mismatch.')
+ mismatches = identities(manifest)
+ lifecycle['beforeMismatches'] = mismatches
+ if mismatches: raise ValueError('Prepared identities changed before measurement.')
+ lifecycle['beforeIdentities'] = True; lifecycle['identityCount'] = len(manifest['identities'])
+ if os.getpid() not in members(os.getpgid(os.getpid())): raise ValueError('Process permission preflight failed.')
+ env = os.environ.copy(); env['PATH'] = str(Path(net).parent) + os.pathsep + env.get('PATH', '')
+ env['XEMELE_PARTICLES_REVISION'] = manifest['sourceRevision']
+ env['DOTNET_TieredCompilation'] = '0'; env['DOTNET_gcServer'] = '0'; env['DOTNET_GCConcurrent'] = '0'
+ env['NuGetAudit'] = 'false'; env['RuntimeFrameworkVersion'] = '10.0.11'; env['UseSharedCompilation'] = 'false'
+ lifecycle['sequence'] = run_commands(commands, env, work_deadline, hard_deadline)
+ if len(lifecycle['sequence']) == len(commands) and all(workload_succeeded(row) for row in lifecycle['sequence']): lifecycle['status'] = 0
+except BaseException as error:
+ lifecycle['error'] = type(error).__name__
+finally:
+ try:
+  if manifest is not None:
+   mismatches = identities(manifest); lifecycle['afterMismatches'] = mismatches
+   lifecycle['afterIdentities'] = not mismatches and digest(manifest_path) == sys.argv[2]
+  if not lifecycle['afterIdentities']: lifecycle['status'] = 1
+ except BaseException as error:
+  lifecycle['status'] = 1; lifecycle['afterError'] = type(error).__name__
+ lifecycle['elapsedSeconds'] = time.monotonic()-started
+ if lifecycle['elapsedSeconds'] > remaining: lifecycle['status'] = 1; lifecycle['deadlineExceeded'] = True
+ for name, data in [('lifecycle.json', lifecycle), ('release.json', {'status': lifecycle['status'], 'releasedAt': datetime.now(timezone.utc).isoformat(), 'rawResultsInspected': False, 'sequence': lifecycle['sequence'], 'beforeIdentities': lifecycle['beforeIdentities'], 'afterIdentities': lifecycle['afterIdentities']})]:
+  with (out / name).open('x') as stream:
+   stream.write(json.dumps(data, indent=2) + '\n'); stream.flush(); os.fsync(stream.fileno())
+ clean = all(row['directChildReaped'] and row['ownedGroupAbsent'] and row['logClosed'] for row in lifecycle['sequence'])
+ print(f"LIFECYCLE {'RELEASE' if clean else 'CLEANUP FAILURE'}: status={lifecycle['status']}; identityCount={lifecycle.get('identityCount',0)}; children reaped/groups absent/logs closed={clean}; raw results unopened.", flush=True)
+sys.exit(lifecycle['status'])
