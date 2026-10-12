@@ -50,6 +50,10 @@ XML-only sample against the normal assembly and hit its explicit rejection of
 HTML/CSS types. A task-owned consumer now validates both configurations without
 changing the earlier sample or weakening its XML-only assertion.
 
-Source-only review and measured allocation evidence are pending. No timing or
-zero-allocation claim is made. Raw correctness output lives only in ignored
+Coordinator-reported bounded contract source-only review accepted the runtime
+and tests at `233aa3cf` with no concrete blocker; reviewer ran no checks.
+Allocation preparation at `d5f11742` passed: eight disabled-control routes,
+444 frozen identities, and real supervisor TERM/KILL/reap/group/log-close
+preflight. Measured allocation evidence remains pending an exact coordinator
+grant. No timing or zero-allocation claim is made. Raw correctness output lives only in ignored
 `artifacts/M8-xsd-publication-checkpoints/checks/` and temporary logs.

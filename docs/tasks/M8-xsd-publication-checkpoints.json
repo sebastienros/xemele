@@ -36,7 +36,8 @@
       "description": "Retain ordinary unused and displaced model/attribute-group checkpoints through existing immutable carriers so downstream content/facet/declaration finalization sees every component; preserve actual source contexts and locations.",
       "status": "passed",
       "evidence": [
-        "branch-correctness"
+        "branch-correctness",
+        "source-review"
       ]
     },
     {
@@ -44,7 +45,8 @@
       "description": "Provide an explicit additive internal compiler join using the principal SchemaCompileContext resource loader/parser, preserving aggregate DocumentCharacters/ExpandedCharacters/work across principal and external resources; frozen IXsdCompiler and public APIs unchanged.",
       "status": "passed",
       "evidence": [
-        "branch-correctness"
+        "branch-correctness",
+        "source-review"
       ]
     },
     {
@@ -68,18 +70,38 @@
       "result": "passed",
       "summary": "SDK10.0.400/runtime10.0.11 Release offline:34owned+894affected+42safe resolver=970 passed;zero failures/errors/skips/not-run;public1410/compiler257/model316 matched;own normal+trueXML-only consumers passed;184planning/diff pass;zero build warnings/errors;counter tests excluded. See owned README for historical initial analyzer/consumer failures.",
       "artifact": null
+    },
+    {
+      "id": "source-review",
+      "kind": "review",
+      "revision": "233aa3cf738ffffe4ae7b52e37e8ddb96eb9c8a7",
+      "command": "Coordinator-reported bounded contract source-only review",
+      "result": "passed",
+      "summary": "Coordinator reported PASS: all carriers/context/IDs/redefine links and shared-loader ledgers confirmed; no concrete blocker; reviewer did not execute checks. Runtime/tests/fixtures/API/sample/checks.py frozen.",
+      "artifact": null
+    },
+    {
+      "id": "allocation-preparation",
+      "kind": "check",
+      "revision": "d5f1174213c74d2bf5815e3ad683b7527d28b760",
+      "command": "python3 docs/reports/M8-xsd-publication-checkpoints/prepare.py; python3 docs/reports/M8-xsd-publication-checkpoints/measure.py --preflight; python3 docs/reports/M8-xsd-publication-checkpoints/measure.py --verify-only",
+      "result": "passed",
+      "summary": "8disabledcontrolroutes consumed;64calls after16warmups/route;16retainedgraphs;allcounter/heapfields0;444frozen identities matched;childexit0/reaped/groupabsent/logclosed/pspermission;manifest a9cb5fd88f5ad32780c22066c4993511950de73f23f1df8c45baffe91be8f88f;30sbound20swork10scleanup;no counters/BDN/timing run.",
+      "artifact": null
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Branch repair and correctness complete at233aa3cf; source-only review requested; allocation preparation/measurement pending coordinator acceptance and exact grant.",
+    "summary": "Source-reviewed branch repair and970correctness checks complete;8route owned allocation driver/444identities and real disabled-control cleanup prepared. Await exact coordinator measurement grant.",
     "checks": [
       "970 correctness cases passed;public1410/compiler257/model316;normal+trueXML-only;planning184/diff.",
-      "Initial two xUnit1051 omissions corrected. Initial normal execution of old XML-only sample rejected later types; own two-configuration consumer passed."
+      "Initial two xUnit1051 omissions corrected. Initial normal execution of old XML-only sample rejected later types; own two-configuration consumer passed.",
+      "Source-only contract review PASS233aa3cf; runtime/test/sample/check source frozen.",
+      "Allocation preparation/preflight atd5f11742:8counter-disabled routes/444identities;childreaped/groupabsent/logclosed;no measurement."
     ],
     "remaining": [
-      "Source-only review acceptance.",
-      "Prepare then measure owned allocation evidence under exact coordinator lease; A3 remains pending."
+      "Run exact frozen allocation-only sequence after root durable lease grant and report cleanup RELEASE before any raw inspection.",
+      "Assess owned allocation evidence after coordinator host release, then finalize implemented handoff."
     ],
     "requests": [
       "Facade owner must use new internal Compile(document, context) join and finalize retained group bindings/ID counts after this repair is verified; no facade/peer dependency was used."
