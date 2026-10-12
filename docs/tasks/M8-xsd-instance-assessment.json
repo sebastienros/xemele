@@ -35,14 +35,18 @@
     {
       "id": "M8-xsd-instance-assessment-A1",
       "description": "Reproduce unchanged original attZ002.v, addB034.v and addB136.v: prohibited attribute bindings contribute no positive instance use; permit assessment through a matching wildcard. Preserve rejection without matching wildcard, strict missing-declaration behavior, matching global datatype/fixed checks, local-use precedence and missing default behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "branch-correctness"
+      ]
     },
     {
       "id": "M8-xsd-instance-assessment-A2",
       "description": "Reproduce unchanged original idF018.i: a valid nilled identity field must still have a simple effective type or complex type with simple content. Reject anyType/element-only fields before tuple qualification; preserve unique nil exemption, key/nillable rejection, effective xsi:type and shared charged cancellation/budget behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "branch-correctness"
+      ]
     },
     {
       "id": "M8-xsd-instance-assessment-A3",
@@ -51,13 +55,41 @@
       "evidence": []
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Validation/Xsd/Evaluation/Values.cs: Attributes skips prohibited candidates before wildcard selection; no positive use/default injection",
+    "src/Xemele/Validation/Xsd/Identity/Session.cs: Capture/SimpleFieldType charges effective-type lookup before nil tuple exemption",
+    "tests/Xemele.Tests/M8-xsd-instance-assessment/: unchanged original BCL/public witnesses and independently specified neighbors"
+  ],
+  "evidence": [
+    {
+      "id": "original-baseline",
+      "kind": "check",
+      "revision": "6e03b7b1c1ccb081e3421ffe6da3476e693b19e9",
+      "command": "Pinned dotnet restore/build Release; dotnet --fx-version 10.0.11 tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -namespace Xemele.Tests.M8XsdInstanceAssessment -parallelMode none -noLogo -noColor -result-xml artifacts/M8-xsd-instance-assessment/baseline.xml",
+      "result": "failed",
+      "summary": "All4 BCL original expectations passed; complete product validity wrong in all4:3wildcard valid rejected, idF018 invalid accepted.4tests/4failed/0errors/skips/not-run; build0warnings/errors. Historical failures retained in README.",
+      "artifact": "docs/reports/M8-xsd-instance-assessment/README.md"
+    },
+    {
+      "id": "branch-correctness",
+      "kind": "check",
+      "revision": "16687e8eae341b184f891a1f720e8c29be9e13fc",
+      "command": "python3 docs/reports/M8-xsd-instance-assessment/check.py",
+      "result": "passed",
+      "summary": "Owned44 exact inventory +syntax1146(33+1113affected)+fixed45+safe42;0errors/failures/skips/not-run. Public1417;frozen316+139/257/24/9/2/7;normal+trueXML-only;5builds0warnings/errors;planning188/diff. Omitted-owned-row control rejected; original fixture SHA256 matches.",
+      "artifact": "docs/reports/M8-xsd-instance-assessment/checks.json"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Claimed after independent source/Second Edition review and prior worker terminal cleanup. Exactly three prohibited-binding wildcard originals plus nilled identity idF018; compiler attribute inheritance and disputed union xsi:type are separate.",
-    "checks": [],
-    "remaining": [],
+    "summary": "Four unchanged original disagreements repaired with no frozen API change; branch correctness passed. Ready for bounded independent source review.",
+    "checks": [
+      "Owned44+syntax1146+fixed45+safe42 passed; public/frozen APIs and normal+trueXML-only consumers passed; planning188/diff passed.",
+      "Historical initial test-code build errors, stale-baseline retry, BCL key/nillable assumption and display-name truncation checker failure retained in README."
+    ],
+    "remaining": [
+      "A3 allocation evidence: prepare after independent source acceptance; root sole launcher after fresh host-wide PARK and durable lease. No worker counters/BDN."
+    ],
     "requests": []
   }
 }
