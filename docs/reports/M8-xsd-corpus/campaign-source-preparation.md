@@ -37,3 +37,5 @@ PYTHONDONTWRITEBYTECODE=1 python3 docs/reports/M8-xsd-corpus/dispositions.py <ac
 ```
 
 The186official campaign children do not establish a fresh separate explicit-XML application supplement. That current-revision profile build/execution remains a separately authorized follow-up before final gate review. Earlier complete source80, focused overlays, refusal baselines, BCL differences and initial failed controls remain historical evidence; none is replaced by this source proposal.
+
+Immutable payload: `cfa94a86371280cb283da3b96e41ff2b936580fd`; exact15source hashes in campaign-source-identities.json. Actual static-source.py at that committed payload passed15ASTs/6identical functions/4verified ancestors/2approved byte copies/43metadata records+47pins; planning196 and diff passed. All new execution remains UNRUN. Handoff metadata does not modify these payload files. Zero active jobs/sessions.
