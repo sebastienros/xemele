@@ -1,0 +1,128 @@
+using System.Text.Json;
+using System.Xml.Linq;
+using Xemele;
+using Xemele.Validation;
+using ProductSchema = Xemele.Validation.XmlSchema;
+namespace XsdCorpus;
+internal record Observation(string Outcome, string Detail, string[] Codes, object[] Resources);
+internal static class Runner
+{
+    internal const string Origin = "https://w3c-xsd.test/source/";
+    internal static string Root = "";
+    internal static readonly XmlResourceLimits Limits = new() { DocumentCharacters = 67_108_864, Depth = 1024, AttributesPerElement = 4096, TokenCharacters = 16_777_216, InternedNames = 262144, ExternalBytes = 67_108_864, ExternalResources = 1024, InclusionDepth = 128, Diagnostics = 1024, EvaluationWork = 100_000_000 };
+    internal static string PathFor(Uri uri)
+    {
+        if (uri.Scheme != "https" || uri.Host != "w3c-xsd.test" || !uri.AbsolutePath.StartsWith("/source/", StringComparison.Ordinal)) throw new IOException("Unmapped resource URI: " + uri);
+        string path = Path.GetFullPath(Path.Combine(Root, Uri.UnescapeDataString(uri.AbsolutePath[8..])));
+        if (!path.StartsWith(Root + Path.DirectorySeparatorChar, StringComparison.Ordinal)) throw new IOException("Resource escapes root: " + uri);
+        if (!File.Exists(path)) throw new FileNotFoundException("Missing original resource: " + uri, path);
+        return path;
+    }
+    internal static string[] Documents(JsonElement row) => row.GetProperty("documents").EnumerateArray().Select(e => e.GetString()!).ToArray();
+    internal static (Stream Input, Uri Source) Input(string[] documents)
+    {
+        if (documents.Length == 1) { var u = new Uri(Origin + documents[0]); return (File.OpenRead(PathFor(u)), u); }
+        // xsts.xsd explicitly permits ordered imports in an otherwise unused namespace.
+        XNamespace xs = "http://www.w3.org/2001/XMLSchema";
+        var wrapper = new XElement(xs + "schema", new XAttribute("targetNamespace", "urn:xemele:xsd-corpus:wrapper"));
+        foreach (string name in documents)
+        {
+            var u = new Uri(Origin + name); string? ns;
+            try { using var input = File.OpenRead(PathFor(u)); ns = XDocument.Load(input).Root?.Attribute("targetNamespace")?.Value; }
+            catch (System.Xml.XmlException) { return (File.OpenRead(PathFor(u)), u); }
+            var import = new XElement(xs + "import", new XAttribute("schemaLocation", u.AbsoluteUri));
+            if (ns is not null) import.Add(new XAttribute("namespace", ns)); wrapper.Add(import);
+        }
+        return (new MemoryStream(System.Text.Encoding.UTF8.GetBytes(wrapper.ToString())), new Uri(Origin + "__wrapper__.xsd"));
+    }
+    internal sealed class Resolver : XmlResourceResolver
+    {
+        internal readonly List<object> Requests = [];
+        public override XmlResolvedResource? Resolve(XmlResourceRequest request, CancellationToken token)
+        {
+            token.ThrowIfCancellationRequested(); Requests.Add(new { uri = request.Uri.AbsoluteUri, referrer = request.Referrer?.AbsoluteUri, kind = request.Kind.ToString(), systemId = request.SystemId });
+            if (request.Kind != XmlResourceKind.Schema) throw new IOException("Unexpected resource purpose");
+            return new(File.OpenRead(PathFor(request.Uri)), request.Uri);
+        }
+    }
+    internal static Observation Failure(Exception e, Resolver resolver, CancellationToken token)
+    {
+        if (e is OperationCanceledException) return new(token.IsCancellationRequested ? "timeout" : "cancellation", e.Message, [], resolver.Requests.ToArray());
+        if (e is SchemaCompileException sc)
+        {
+            bool refusal = sc.Diagnostics.Any(d => d.Code.Contains("Limit", StringComparison.OrdinalIgnoreCase) || d.Code.Contains("Resource", StringComparison.OrdinalIgnoreCase));
+            return new(refusal ? "incomplete-refusal" : "schema-invalid", string.Join("; ", sc.Diagnostics.Select(d => d.Code + ": " + d.Message)), sc.Diagnostics.Select(d=>d.Code).ToArray(), resolver.Requests.ToArray());
+        }
+        return new(e is IOException ? "harness-resource-error" : "harness-exception", e.GetType().FullName + ": " + e.Message, [], resolver.Requests.ToArray());
+    }
+    internal static bool? Oracle(string? expected, string actual, string kind) => expected switch
+    {
+        "valid" => actual == (kind == "schema" ? "schema-valid" : "instance-valid"),
+        "invalid" => actual == (kind == "schema" ? "schema-invalid" : "instance-invalid"),
+        "invalid-latent" when kind == "schema" => actual is "schema-valid" or "schema-invalid",
+        "runtime-schema-error" => actual == "instance-invalid" || actual == "schema-invalid",
+        "implementation-defined" or "implementation-dependent" or "indeterminate" => actual is "schema-valid" or "schema-invalid" or "instance-valid" or "instance-invalid" ? null : false,
+        _ => false
+    };
+    public static int Main(string[] args)
+    {
+        Root = Path.GetFullPath(args[0]); using var inventory = JsonDocument.Parse(File.ReadAllText(args[1]));
+        string set = args[2], engine = args[3]; using var output = new StreamWriter(args[4], append: true) { AutoFlush = true };
+        int from = args.Length > 5 ? int.Parse(args[5], System.Globalization.CultureInfo.InvariantCulture) : 0, index = -1;
+        foreach (var group in inventory.RootElement.GetProperty("groups").EnumerateArray())
+        {
+            if (group.GetProperty("metadata").GetString() != set) continue; index++; if (index < from) continue;
+            Console.WriteLine("START " + index); Console.Out.Flush();
+            var schemaRow = group.GetProperty("schema");
+            bool needed = schemaRow.ValueKind != JsonValueKind.Null && schemaRow.GetProperty("classification").GetString() == "applicable" || group.GetProperty("instances").EnumerateArray().Any(r => r.GetProperty("classification").GetString() == "applicable");
+            if (!needed)
+            {
+                foreach (var excluded in (schemaRow.ValueKind == JsonValueKind.Null ? Array.Empty<JsonElement>() : new[] { schemaRow }).Concat(group.GetProperty("instances").EnumerateArray()))
+                    Emit(excluded, new(excluded.GetProperty("classification").GetString()!, excluded.GetProperty("reason").GetString()!, [], []), engine, output);
+                continue;
+            }
+            if (engine == "bcl") { BclEngine.Run(group, output); continue; }
+            var sr = group.GetProperty("schema"); var resolver = new Resolver(); ProductSchema? schema = null; Observation compile;
+            using (var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(30)))
+            {
+                try
+                {
+                    var documents = sr.ValueKind == JsonValueKind.Null ? Array.Empty<string>() : Documents(sr);
+                    var input = Input(documents); using var stream = input.Input;
+                    schema = ProductSchema.Compile(stream, new() { BaseUri = input.Source, Resolver = resolver, Limits = Limits, MaxOperations = 100_000_000, MaxComponents = 1_000_000, CancellationToken = timeout.Token });
+                    if (!stream.CanRead) throw new InvalidOperationException("Compile disposed caller stream");
+                    compile = new("schema-valid", "", [], resolver.Requests.ToArray());
+                }
+                catch (Exception e) { compile = Failure(e, resolver, timeout.Token); }
+            }
+            if (sr.ValueKind != JsonValueKind.Null) Emit(sr, compile, engine, output);
+            foreach (var row in group.GetProperty("instances").EnumerateArray())
+            {
+                if (row.GetProperty("classification").GetString() != "applicable") { Emit(row, new("excluded", row.GetProperty("reason").GetString()!, [], []), engine, output); continue; }
+                Observation actual;
+                if (schema is null) actual = new("schema-unavailable", compile.Outcome + ": " + compile.Detail, compile.Codes, compile.Resources);
+                else
+                {
+                    using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(30));
+                    try
+                    {
+                        using var input = File.OpenRead(PathFor(new Uri(Origin + Documents(row).Single())));
+                        var result = schema.Validate(input, new() { Limits = Limits, MaxOperations = 100_000_000, CancellationToken = timeout.Token });
+                        if (!input.CanRead) throw new InvalidOperationException("Validation disposed caller stream");
+                        actual = new(!result.IsComplete ? "incomplete-refusal" : result.IsValid ? "instance-valid" : "instance-invalid", string.Join("; ", result.Diagnostics.Select(d => d.Code + ": " + d.Message)), result.Diagnostics.Select(d => d.Code).ToArray(), []);
+                    }
+                    catch (Exception e) { actual = Failure(e, resolver, timeout.Token); }
+                }
+                Emit(row, actual, engine, output);
+            }
+        }
+        return 0;
+    }
+    internal static void Emit(JsonElement row, Observation actual, string engine, StreamWriter output)
+    {
+        string cl = row.GetProperty("classification").GetString()!, kind = row.GetProperty("kind").GetString()!;
+        string? expected = row.GetProperty("expected").GetString();
+        // Inapplicable metadata never becomes a semantic pass, even if a schema was needed by an instance.
+        output.WriteLine(JsonSerializer.Serialize(new { id = row.GetProperty("id").GetString(), engine, classification = cl, kind, expected, actual = actual.Outcome, detail = actual.Detail, codes = actual.Codes, resources = actual.Resources, passed = cl == "applicable" ? Oracle(expected, actual.Outcome, kind) : (bool?)null }));
+    }
+}

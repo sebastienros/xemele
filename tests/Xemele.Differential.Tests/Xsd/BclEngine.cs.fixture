@@ -1,0 +1,52 @@
+using System.Net;
+using System.Text.Json;
+using System.Xml;
+using System.Xml.Schema;
+namespace XsdCorpus;
+internal static class BclEngine
+{
+    private sealed class Resolver : XmlResolver
+    {
+        internal readonly List<object> Requests = [];
+        public override ICredentials? Credentials { set { } }
+        public override object GetEntity(Uri uri, string? role, Type? type)
+        { Requests.Add(new { uri = uri.AbsoluteUri, role }); return File.OpenRead(Runner.PathFor(uri)); }
+    }
+    internal static void Run(JsonElement group, StreamWriter output)
+    {
+        var row = group.GetProperty("schema"); var resolver = new Resolver(); var schemas = new XmlSchemaSet { XmlResolver = resolver };
+        var errors = new List<string>(); schemas.ValidationEventHandler += (_, e) => { if (e.Severity == XmlSeverityType.Error) errors.Add(e.Message); };
+        Observation compile;
+        try
+        {
+            var input = Runner.Input(row.ValueKind == JsonValueKind.Null ? [] : Runner.Documents(row)); using var stream = input.Input;
+            using var reader = XmlReader.Create(stream, new XmlReaderSettings { DtdProcessing = DtdProcessing.Prohibit, XmlResolver = resolver, CloseInput = false, MaxCharactersInDocument = 67_108_864 }, input.Source.AbsoluteUri);
+            schemas.Add(null, reader); schemas.Compile();
+            compile = new(errors.Count > 0 ? "schema-invalid" : "schema-valid", string.Join("; ", errors), [], resolver.Requests.ToArray());
+        }
+        catch (Exception e) { compile = new(e is XmlSchemaException or XmlException ? "schema-invalid" : "harness-exception", e.GetType().Name + ": " + e.Message, [], resolver.Requests.ToArray()); }
+        if (row.ValueKind != JsonValueKind.Null) Runner.Emit(row, compile, "bcl", output);
+        foreach (var instance in group.GetProperty("instances").EnumerateArray())
+        {
+            if (instance.GetProperty("classification").GetString() != "applicable") { Runner.Emit(instance, new("excluded", instance.GetProperty("reason").GetString()!, [], []), "bcl", output); continue; }
+            Observation actual;
+            if (compile.Outcome != "schema-valid") actual = new("schema-unavailable", compile.Detail, [], []);
+            else
+            {
+                errors.Clear();
+                try
+                {
+                    string path = Runner.PathFor(new Uri(Runner.Origin + Runner.Documents(instance).Single()));
+                    var settings = new XmlReaderSettings { Schemas = schemas, ValidationType = ValidationType.Schema, DtdProcessing = DtdProcessing.Prohibit, XmlResolver = null, MaxCharactersInDocument = 67_108_864 };
+                    // Deliberately ignore xsi schema-location hints; use exactly the compiled metadata schema.
+                    settings.ValidationFlags = XmlSchemaValidationFlags.ProcessIdentityConstraints | XmlSchemaValidationFlags.AllowXmlAttributes | XmlSchemaValidationFlags.ReportValidationWarnings;
+                    settings.ValidationEventHandler += (_, e) => { if (e.Severity == XmlSeverityType.Error) errors.Add(e.Message); };
+                    using var stream = File.OpenRead(path); using var reader = XmlReader.Create(stream, settings, Runner.Origin + Runner.Documents(instance).Single()); while (reader.Read()) { }
+                    actual = new(errors.Count > 0 ? "instance-invalid" : "instance-valid", string.Join("; ", errors), [], []);
+                }
+                catch (Exception e) { actual = new(e is XmlSchemaValidationException ? "instance-invalid" : "harness-exception", e.GetType().Name + ": " + e.Message, [], []); }
+            }
+            Runner.Emit(instance, actual, "bcl", output);
+        }
+    }
+}
