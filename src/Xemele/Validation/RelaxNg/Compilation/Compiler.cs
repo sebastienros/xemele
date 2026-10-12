@@ -32,7 +32,12 @@ internal sealed class RelaxNgCompiler : IRelaxNgCompiler
         // A conservative finite bound remains even for null/large XML quotas.
         private int MaximumDepth => Math.Min(op.Limits.Depth ?? 256, 256);
         internal Build(SchemaCompileOptions options, ISchemaOperation op)
-        { this.options = options; this.op = op; lexical = new(op); loader = new(options, op); }
+        {
+            this.options = options; this.op = op;
+            // One additional owned lexical adapter per compilation.
+            if (!op.ChargeComponents(1, new(options.BaseUri, 0, 0, null))) throw SchemaSnapshots.Failure(op);
+            lexical = new(op); loader = new(options, op);
+        }
 
         // One compiler-owned adapter keeps shared borrowed lexical checks on the
         // caller's ledger while preserving the schema node's diagnostic location.
@@ -143,23 +148,45 @@ internal sealed class RelaxNgCompiler : IRelaxNgCompiler
             }
             // Materialize only at the inherited library identity persistence
             // boundary. Already escaped ASCII libraries retain their owner.
-            StringBuilder? escaped = null;
-            Span<byte> utf8 = stackalloc byte[4]; int offset = 0;
+            int length = 0; bool changed = false;
             foreach (var rune in value.EnumerateRunes())
             {
-                Work(1, at); int c = rune.Value;
-                if (c > 127 || c <= 32 || c == 127 || c is '<' or '>' or '"' or '{' or '}' or '|' or '\\' or '^' or '`')
+                Work(1, at); bool escape = UriEscape(rune.Value); changed |= escape;
+                int count = escape ? 3 * rune.Utf8SequenceLength : rune.Utf16SequenceLength;
+                if (count > int.MaxValue - length)
                 {
-                    if (escaped is null) { escaped = new(); escaped.Append(value.AsSpan(0, offset)); }
-                    int count = rune.EncodeToUtf8(utf8);
-                    for (int i = 0; i < count; i++)
-                    { escaped.Append('%'); escaped.Append("0123456789ABCDEF"[utf8[i] >> 4]); escaped.Append("0123456789ABCDEF"[utf8[i] & 15]); }
+                    op.Refuse("SCHEMA.Limit", "Projected datatype library exceeds string capacity.", at);
+                    throw SchemaSnapshots.Failure(op);
                 }
-                else if (escaped is not null) escaped.Append((char)c);
-                offset += rune.Utf16SequenceLength;
+                length += count;
             }
-            return escaped?.ToString() ?? value;
+            if (!changed) return value;
+            // Same owned-string accounting units as the text datatype provider:
+            // one owner plus one component per 256 UTF-16 output units. Reserve
+            // before allocation, then charge every emitted character, including
+            // the original prefix and all three characters of each %HH byte.
+            int components = 1 + length / 256 + (length % 256 == 0 ? 0 : 1);
+            if (!op.ChargeComponents(components, at)) throw SchemaSnapshots.Failure(op);
+            return string.Create(length, (Source: value, Owner: this, At: at), static (output, state) =>
+            {
+                Span<byte> utf8 = stackalloc byte[4]; int offset = 0;
+                foreach (var rune in state.Source.EnumerateRunes())
+                {
+                    if (UriEscape(rune.Value))
+                    {
+                        int bytes = rune.EncodeToUtf8(utf8);
+                        for (int i = 0; i < bytes; i++)
+                        {
+                            state.Owner.Work(1, state.At); output[offset++] = '%';
+                            state.Owner.Work(1, state.At); output[offset++] = "0123456789ABCDEF"[utf8[i] >> 4];
+                            state.Owner.Work(1, state.At); output[offset++] = "0123456789ABCDEF"[utf8[i] & 15];
+                        }
+                    }
+                    else { state.Owner.Work(1, state.At); output[offset++] = (char)rune.Value; }
+                }
+            });
         }
+        private static bool UriEscape(int c) => c > 127 || c <= 32 || c == 127 || c is '<' or '>' or '"' or '{' or '}' or '|' or '\\' or '^' or '`';
         private void Scan(ReadOnlySpan<char> value, XmlLocation at)
         { foreach (var rune in value.EnumerateRunes()) Work(1, at); }
         private List<Env> Children(Env env, bool text = false)

@@ -1,4 +1,5 @@
 using System.Security.Cryptography;
+using System.Reflection;
 using System.Text.Json;
 using Xemele.Validation;
 using Xunit;
@@ -100,10 +101,13 @@ public sealed class LexicalTests
     [InlineData("foo:%23", "foo:%23")]
     public void InheritedLibraryPersistsNormativeEscapeIdentity(string raw, string expected)
     {
-        var graph = CompileGraph(Root("datatypeLibrary='" + raw + "'", "<group><data type='custom'/><value type='custom'>v</value></group>"));
-        Assert.All(graph.Patterns.Where(p => p.Datatype is not null), p => Assert.Equal(expected, p.Datatype!.Value.NamespaceUri));
-        var escaped = CompileGraph(Root("datatypeLibrary='" + expected + "'", "<data type='custom'/>"));
-        Assert.Equal(expected, Assert.Single(escaped.Patterns, p => p.Datatype is not null).Datatype!.Value.NamespaceUri);
+        var options = new SchemaCompileOptions();
+        var normalize = Normalizer(options, new SchemaCompileOperation(options));
+        Assert.Equal(expected, normalize(raw, default));
+        Assert.Equal(expected, normalize(expected, default));
+        // Unsupported custom libraries still pass lexical checks before the
+        // existing datatype-library restriction; no registry change is implied.
+        Assert.Equal("RNG.Datatype", Assert.Throws<SchemaCompileException>(() => CompileGraph(Root("datatypeLibrary='" + raw + "'", "<data type='custom'/>"))).Diagnostics[0].Code);
         var empty = CompileGraph(Root("datatypeLibrary='" + raw + "'", "<data datatypeLibrary='' type='string'/>"));
         Assert.Equal("", Assert.Single(empty.Patterns, p => p.Datatype is not null).Datatype!.Value.NamespaceUri);
     }
@@ -228,6 +232,62 @@ public sealed class LexicalTests
         Assert.ThrowsAny<OperationCanceledException>(() => new RelaxNgCompiler().Compile(document, cancelOptions, observed));
         canceled.Cancel();
         Assert.ThrowsAny<OperationCanceledException>(() => RelaxNgSchema.Compile(document, cancelOptions));
+    }
+
+
+    [Theory]
+    [InlineData(" ", 1, 1)]
+    [InlineData("é", 1, 2)]
+    [InlineData("😀", 2, 4)]
+    public void ProjectionHasIndependentlyDerivedExactWorkAndOwnedReservation(string escaped, int utf16Units, int utf8Bytes)
+    {
+        string prefix = "foo:" + new string('a', 512);
+        string input = prefix + escaped;
+        int outputLength = prefix.Length + 3 * utf8Bytes;
+        // Four scheme chars, all raw UTF-16 fragment chars, shared URI:
+        // 4 scheme + 1 authority probe + body scalars; length-pass scalars;
+        // exactly outputLength emitted chars. This is not an observed replay.
+        long beforeOutput = 5 + input.Length + 2 * (prefix.Length + 1);
+        long expectedWork = beforeOutput + outputLength;
+        int expectedComponents = 2 + (outputLength + 255) / 256; // adapter + owner + blocks
+        var at = new XmlLocation(new Uri("https://example.test/projected.rng"), 3, 7, 42);
+        var exact = new SchemaCompileOptions { MaxOperations = expectedWork, MaxComponents = expectedComponents };
+        var observed = new Observed(exact);
+        string result = Normalizer(exact, observed)(input, at);
+        Assert.Equal(outputLength, result.Length); Assert.StartsWith(prefix, result);
+        Assert.Equal(expectedWork, observed.Work); Assert.Equal(expectedComponents, observed.Components);
+        foreach (var options in new[] { exact with { MaxOperations = expectedWork - 1 }, exact with { MaxComponents = expectedComponents - 1 } })
+        {
+            var error = Assert.Throws<SchemaCompileException>(() => Normalizer(options, new SchemaCompileOperation(options))(input, at));
+            var diagnostic = Assert.Single(error.Diagnostics);
+            Assert.Equal("SCHEMA.Limit", diagnostic.Code); Assert.Equal(at, diagnostic.Location);
+        }
+        var duringOutput = exact with { MaxOperations = beforeOutput + prefix.Length + 1, MaxComponents = null };
+        var stopped = Assert.Throws<SchemaCompileException>(() => Normalizer(duringOutput, new SchemaCompileOperation(duringOutput))(input, at));
+        Assert.Equal(at, Assert.Single(stopped.Diagnostics).Location);
+        using var canceled = new CancellationTokenSource();
+        var unlimited = new SchemaCompileOptions { MaxOperations = null, MaxComponents = null, Limits = new() { EvaluationWork = null }, CancellationToken = canceled.Token };
+        var cancelOp = new Observed(unlimited, work => { if (work == beforeOutput + prefix.Length + 2) canceled.Cancel(); });
+        Assert.ThrowsAny<OperationCanceledException>(() => Normalizer(unlimited, cancelOp)(input, at));
+        Assert.Equal(beforeOutput + prefix.Length + 1, cancelOp.Work);
+    }
+
+    [Fact]
+    public void AsciiLibraryRetainsItsOwnerWithoutOutputReservation()
+    {
+        string value = "foo:" + new string('a', 512);
+        var options = new SchemaCompileOptions { MaxOperations = 5 + 3 * value.Length, MaxComponents = 1 };
+        var observed = new Observed(options);
+        Assert.Same(value, Normalizer(options, observed)(value, default));
+        Assert.Equal(5 + 3 * value.Length, observed.Work); Assert.Equal(1, observed.Components);
+    }
+
+    private static Func<string, XmlLocation, string> Normalizer(SchemaCompileOptions options, ISchemaOperation operation)
+    {
+        var buildType = typeof(RelaxNgCompiler).GetNestedType("Build", BindingFlags.NonPublic)!;
+        var build = Activator.CreateInstance(buildType, BindingFlags.Instance | BindingFlags.NonPublic, null, [options, operation], null)!;
+        return buildType.GetMethod("Library", BindingFlags.Instance | BindingFlags.NonPublic)!
+            .CreateDelegate<Func<string, XmlLocation, string>>(build);
     }
 
     private sealed class Observed(SchemaCompileOptions options, Action<long>? callback = null) : ISchemaOperation
