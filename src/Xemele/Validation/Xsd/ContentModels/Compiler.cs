@@ -22,10 +22,12 @@ internal sealed class XsdContentCompiler : IXsdContentCompiler
     // The facade consumes every program. Share one invocation-local traversal,
     // retaining both existing overloads' whole-graph/requested-type contract.
     internal Dictionary<SchemaName, XsdContentProgram> CompileAll(XsdCompiledSchema schema,
-        ISchemaOperation operation, IXmlFacetEvaluator facets)
+        ISchemaOperation operation, IXmlFacetEvaluator facets) => CompileAll(schema, operation, facets, null);
+    internal Dictionary<SchemaName, XsdContentProgram> CompileAll(XsdCompiledSchema schema,
+        ISchemaOperation operation, IXmlFacetEvaluator facets, AvailabilityBuilder? availability)
     {
         ArgumentNullException.ThrowIfNull(schema); ArgumentNullException.ThrowIfNull(operation); ArgumentNullException.ThrowIfNull(facets);
-        return new ContentCompilation(schema, operation, facets).CompileAll();
+        return new ContentCompilation(schema, operation, facets, availability).CompileAll();
     }
 }
 
@@ -36,11 +38,16 @@ internal sealed partial class ContentCompilation
     private readonly XsdCompiledSchema schema;
     private readonly ISchemaOperation op;
     private readonly IXmlFacetEvaluator? facets;
+    private readonly AvailabilityBuilder? availability;
+    private ComponentIdentity consumer;
     private readonly Dictionary<SchemaName, XsdTypeDefinition> types = new();
     private readonly Dictionary<int, (SchemaName, int)[]> substitutions = new();
     internal ContentCompilation(XsdCompiledSchema schema, ISchemaOperation op, IXmlFacetEvaluator? facets = null)
+        : this(schema, op, facets, null) { }
+    internal ContentCompilation(XsdCompiledSchema schema, ISchemaOperation op, IXmlFacetEvaluator? facets, AvailabilityBuilder? availability)
     {
-        this.schema = schema; this.op = op; this.facets = facets;
+        this.schema = schema; this.op = op; this.facets = facets; this.availability = availability;
+        if (availability is null) ComponentAvailability.RequireComplete(schema, op);
         foreach (var type in schema.Types)
         { ContentWork.Retain(op, type.Location); types.Add(type.Name, type); }
     }
@@ -56,6 +63,7 @@ internal sealed partial class ContentCompilation
         {
             ContentWork.Tick(op, type.Location);
             if (type.AnyAttribute is { } wildcard) ContentNamespaces.Validate(wildcard, op, type.Location);
+            consumer = ComponentAvailability.Type(type.Name);
             var program = Build(type);
             CheckDerivation(type);
             if (ReferenceEquals(type, requested)) result = program;
@@ -70,8 +78,13 @@ internal sealed partial class ContentCompilation
         {
             ContentWork.Tick(op, type.Location);
             if (type.AnyAttribute is { } wildcard) ContentNamespaces.Validate(wildcard, op, type.Location);
+            consumer = ComponentAvailability.Type(type.Name);
             var program = Build(type);
             CheckDerivation(type);
+            // The known projection is useful for independently decidable checks,
+            // but it is never published as an executable partial program. The
+            // concrete envelope retains its specific unavailable operands.
+            if (availability?.Unavailable(consumer) == true) continue;
             ContentWork.Retain(op, type.Location);
             programs.Add(type.Name, program);
         }
@@ -193,7 +206,7 @@ internal sealed partial class ContentCompilation
     { ContentWork.Retain(op, at, set.Count); var result = new int[set.Count]; set.CopyTo(result); return result; }
     private (SchemaName, int)[] Members(int id)
     {
-        if (substitutions.TryGetValue(id, out var ready)) return ready;
+        if (availability is null && substitutions.TryGetValue(id, out var cached)) return cached;
         var head = schema.Elements[id]; var result = new List<(SchemaName, int)>();
         bool global = schema.GlobalElements.TryGetValue(head.Name, out int globalId) && globalId == id;
         if (global && !head.Block.Contains(XsdElementBlock.Substitution))
@@ -210,20 +223,35 @@ internal sealed partial class ContentCompilation
                 for (int steps = 0; steps < schema.Elements.Count; steps++)
                 {
                     ContentWork.Tick(op, element.Location);
-                    if (schema.Elements[current].SubstitutionGroup is not { } parent || !schema.GlobalElements.TryGetValue(parent, out current)) break;
+                    if (schema.Elements[current].SubstitutionGroup is not { } parent) break;
+                    if (!schema.GlobalElements.TryGetValue(parent, out int next))
+                    {
+                        availability?.Link(consumer, ComponentAvailability.Element(schema.Elements[current]),
+                            operandUse: DependencyUse.SubstitutionSelection);
+                        break;
+                    }
+                    current = next;
                     if (current == id) { affiliated = true; break; }
                 }
-                if (!affiliated || !SubstitutionType(element.Type, head)) continue;
+                if (!affiliated) continue;
+                if (element.Type is not { } candidateType || head.Type is not { } headType || !types.ContainsKey(candidateType) || !types.ContainsKey(headType))
+                {
+                    if (availability is null) throw new ArgumentException("Complete substitution graph required.", nameof(schema));
+                    availability.Link(consumer, ComponentAvailability.Element(element));
+                    availability.Link(consumer, ComponentAvailability.Element(head));
+                    continue;
+                }
+                if (!SubstitutionType(candidateType, head)) continue;
                 ContentWork.Retain(op, element.Location); result.Add((element.Name, candidate));
             }
         }
         else if (!head.Abstract) { ContentWork.Retain(op, head.Location); result.Add((head.Name, id)); }
         ContentWork.Retain(op, head.Location, checked(result.Count + 1));
-        ready = result.ToArray(); substitutions.Add(id, ready); return ready;
+        var ready = result.ToArray(); if (availability is null) substitutions.Add(id, ready); return ready;
     }
     private bool SubstitutionType(SchemaName candidate, XsdElementDeclaration head)
     {
-        return XsdSubstitutionGroups.TypeRelation(types, null, schema.Datatypes, candidate, head.Type, op, head.Location,
+        return XsdSubstitutionGroups.TypeRelation(types, null, schema.Datatypes, candidate, head.Type!.Value, op, head.Location,
             true, head.Block.Contains(XsdElementBlock.Restriction), head.Block.Contains(XsdElementBlock.Extension), out _, out _);
     }
     private void Disjoint(ReadOnlySpan<int> left, ReadOnlySpan<int> right, List<ContentNode> nodes, XmlLocation at)
@@ -245,9 +273,13 @@ internal sealed partial class ContentCompilation
     }
     private void CheckConsistency(ContentNode? root)
     {
-        var declarations = new Dictionary<SchemaName, SchemaName>();
+        if (root is null) { ContentWork.Tick(op, default, 0); return; }
+        ContentWork.Retain(op, default, 4);
+        var known = new Dictionary<SchemaName, SchemaName>();
+        var operands = new Dictionary<SchemaName, List<XsdElementDeclaration>>();
+        var visited = new HashSet<int>();
         var pending = new Stack<ContentNode>();
-        if (root is not null) { ContentWork.Retain(op, root.Particle.Location); pending.Push(root); }
+        ContentWork.Retain(op, root.Particle.Location); pending.Push(root);
         while (pending.TryPop(out var node))
         {
             ContentWork.Tick(op, node.Particle.Location);
@@ -257,9 +289,27 @@ internal sealed partial class ContentCompilation
             void Check(XsdElementDeclaration declaration)
             {
                 ContentWork.Tick(op, node.Particle.Location);
-                if (declarations.TryGetValue(declaration.Name, out var type))
-                { if (type != declaration.Type) ContentWork.Error(op, node.Particle.Location, "Element declarations with one name must have identical types."); }
-                else { ContentWork.Retain(op, node.Particle.Location); declarations.Add(declaration.Name, declaration.Type); }
+                if (visited.Contains(declaration.Id)) return;
+                ContentWork.Retain(op, node.Particle.Location); visited.Add(declaration.Id);
+                // An unavailable first operand must never become the representative
+                // for later independently unequal known declaration types.
+                if (declaration.Type is { } name)
+                {
+                    if (known.TryGetValue(declaration.Name, out var previous) && name != previous)
+                        ContentWork.Error(op, node.Particle.Location, "Element declarations with one name must have identical types.");
+                    if (!known.ContainsKey(declaration.Name)) { ContentWork.Retain(op, node.Particle.Location); known.Add(declaration.Name, name); }
+                }
+                if (!operands.TryGetValue(declaration.Name, out var sameName))
+                { ContentWork.Retain(op, node.Particle.Location, 2); operands.Add(declaration.Name, sameName = new()); }
+                foreach (var other in sameName)
+                {
+                    ContentWork.Tick(op, node.Particle.Location);
+                    if (other.Type is not null && declaration.Type is not null) continue;
+                    if (availability is null) throw new ArgumentException("Complete declaration types required.", nameof(schema));
+                    availability.Link(consumer, ComponentAvailability.Element(declaration));
+                    availability.Link(consumer, ComponentAvailability.Element(other));
+                }
+                ContentWork.Retain(op, node.Particle.Location); sameName.Add(declaration);
             }
             Check(schema.Elements[element.DeclarationId]);
             foreach (var member in Members(element.DeclarationId)) Check(schema.Elements[member.Item2]);

@@ -1,0 +1,86 @@
+diff --git a/src/Xemele/Validation/Xsd/ContentModels/Derivation.cs b/src/Xemele/Validation/Xsd/ContentModels/Derivation.cs
+index 0b965cc62..875c8147e 100644
+--- a/src/Xemele/Validation/Xsd/ContentModels/Derivation.cs
++++ b/src/Xemele/Validation/Xsd/ContentModels/Derivation.cs
+@@ -311,28 +311,46 @@ internal sealed partial class ContentCompilation
+         if (!ordered && !unordered) return Constant(false);
+         if (unordered)
+         {
+-            // All's uniquely attributed element children make the name mapping
+-            // unique. Build a name-based reordering, then use ordered Recurse.
+-            ContentWork.Retain(op, derived.Location, checked(bs.Count + rs.Count));
+-            var reordered = new XsdParticle?[bs.Count];
++            // Missing affiliations remove the proof that name-based mapping is
++            // unique. Evaluate each injective mapping with the same three-valued
++            // relation rules; unknown candidates cannot hide an independent false.
++            ContentWork.Retain(op, derived.Location, 2);
++            var states = new Dictionary<BigInteger, Rule> { [BigInteger.Zero] = Constant(true) };
+             foreach (var r in rs)
+             {
+-                var n = Normalize(r); if (n?.Term is not XsdElementTerm e) return Constant(false);
+-                int found = -1; var name = schema.Elements[e.DeclarationId].Name;
+-                for (int i = 0; i < bs.Count; i++)
++                ContentWork.Retain(op, r.Location); var nextStates = new Dictionary<BigInteger, Rule>();
++                foreach (var state in states)
+                 {
+-                    ContentWork.Tick(op, r.Location);
+-                    if (bs[i].Term is XsdElementTerm b)
++                    BigInteger bit = BigInteger.One;
++                    for (int i = 0; i < bs.Count; i++)
+                     {
+-                        bool match = schema.Elements[b.DeclarationId].Name == name;
+-                        foreach (var member in Members(b.DeclarationId)) { ContentWork.Tick(op, r.Location); match |= member.Item1 == name; }
+-                        if (match) { found = i; break; }
++                        ContentWork.Tick(op, r.Location); ContentWork.Integer(op, r.Location, state.Key);
++                        ContentWork.Integer(op, r.Location, bit);
++                        if ((state.Key & bit).IsZero)
++                        {
++                            var mask = ContentIntegers.Add(state.Key, bit, op, r.Location);
++                            var candidate = Combine(RuleKind.And, state.Value, Relation(r, bs[i], anyType));
++                            if (nextStates.TryGetValue(mask, out var previous)) nextStates[mask] = Combine(RuleKind.Or, previous, candidate);
++                            else { ContentWork.Retain(op, r.Location); nextStates.Add(mask, candidate); }
++                        }
++                        bit = Multiply(bit, 2, r.Location);
+                     }
+                 }
+-                if (found < 0 || reordered[found] is not null) return Constant(false); reordered[found] = r;
++                states = nextStates;
++            }
++            var result = Constant(false);
++            foreach (var state in states)
++            {
++                var candidate = state.Value; BigInteger bit = BigInteger.One;
++                for (int i = 0; i < bs.Count; i++)
++                {
++                    ContentWork.Tick(op, derived.Location); ContentWork.Integer(op, derived.Location, state.Key);
++                    ContentWork.Integer(op, derived.Location, bit);
++                    if ((state.Key & bit).IsZero) candidate = Combine(RuleKind.And, candidate, Constant(Nullable(bs[i])));
++                    bit = Multiply(bit, 2, derived.Location);
++                }
++                result = Combine(RuleKind.Or, result, candidate);
+             }
+-            var result = Constant(true);
+-            for (int i = 0; i < bs.Count; i++) result = Combine(RuleKind.And, result, reordered[i] is { } r ? Relation(r, bs[i], anyType) : Constant(Nullable(bs[i])));
+             return result;
+         }
+         bool lax = rg.Compositor == XsdCompositor.Choice;
+diff --git a/tests/Xemele.Tests/M8-xsd-missing-components/ReviewControls.cs b/tests/Xemele.Tests/M8-xsd-missing-components/ReviewControls.cs
+index de657810f..aea1a651e 100644
+--- a/tests/Xemele.Tests/M8-xsd-missing-components/ReviewControls.cs
++++ b/tests/Xemele.Tests/M8-xsd-missing-components/ReviewControls.cs
+@@ -48,6 +48,15 @@ public sealed class ReviewControls
+         Assert.Throws<SchemaCompileException>(() => XmlSchema.Compile(Wrap(heads.Replace(affiliation ? " substitutionGroup='absent'" : " substitutionGroup='h'", "", StringComparison.Ordinal) + types)));
+         Assert.Throws<SchemaCompileException>(() => XmlSchema.Compile(Wrap(heads + types.Replace("<xs:element ref='m'/>", "<xs:element ref='m' minOccurs='2' maxOccurs='2'/>", StringComparison.Ordinal))));
+     }
++    [Fact]
++    public void UnorderedRestrictionRetainsIndeterminateMembershipAndKnownRangeFailures()
++    {
++        const string heads = "<xs:element name='h' type='xs:int'/><xs:element name='m' type='xs:int' substitutionGroup='absent'/><xs:element name='n' type='xs:int'/>";
++        const string body = "<xs:complexType name='B'><xs:all><xs:element ref='h'/><xs:element ref='n'/></xs:all></xs:complexType><xs:complexType name='D'><xs:complexContent><xs:restriction base='B'><xs:sequence><xs:element ref='n'/><xs:element ref='m'/></xs:sequence></xs:restriction></xs:complexContent></xs:complexType><xs:element name='r' type='D'/><xs:element name='good' type='xs:int'/>";
++        var partial = XmlSchema.Compile(Wrap(heads + body)); Assert.True(partial.Validate("<good>7</good>").IsValid); Missing(partial.Validate("<r><n>7</n><m>7</m></r>"));
++        Assert.True(XmlSchema.Compile(Wrap(heads + "<xs:element name='absent' type='xs:int' substitutionGroup='h'/>" + body)).Validate("<r><n>7</n><m>7</m></r>").IsValid);
++        Assert.Throws<SchemaCompileException>(() => XmlSchema.Compile(Wrap(heads + body.Replace("<xs:element ref='n'/><xs:element ref='m'/>", "<xs:element ref='n' minOccurs='2' maxOccurs='2'/><xs:element ref='m'/>", StringComparison.Ordinal))));
++    }
+     [Theory]
+     [InlineData(false, "default", "<xs:pattern value='a'/>", "b", "a")]
+     [InlineData(false, "fixed", "<xs:length value='2'/>", "a", "a b")]

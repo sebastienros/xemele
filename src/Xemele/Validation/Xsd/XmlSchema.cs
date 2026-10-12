@@ -13,10 +13,11 @@ public sealed class XmlSchema
     private readonly IReadOnlyDictionary<SchemaName, XsdContentProgram> programs;
     private readonly XmlFacetEvaluator facets;
     private readonly XsdIdentityProgram identity;
-    private XmlSchema() { schema = null!; programs = null!; facets = null!; identity = null!; }
-    private XmlSchema(XsdCompiledSchema schema, IReadOnlyDictionary<SchemaName, XsdContentProgram> programs,
+    private readonly ComponentAvailability availability;
+    private XmlSchema() { schema = null!; programs = null!; facets = null!; identity = null!; availability = null!; }
+    private XmlSchema(CompilationEnvelope envelope, IReadOnlyDictionary<SchemaName, XsdContentProgram> programs,
         XmlFacetEvaluator facets, XsdIdentityProgram identity)
-    { this.schema = schema; this.programs = programs; this.facets = facets; this.identity = identity; }
+    { schema = envelope.Components; this.programs = programs; this.facets = facets; this.identity = identity; availability = envelope.Availability; }
 
     public static XmlSchema Compile(XmlDocument schema, SchemaCompileOptions? options = null)
     { ArgumentNullException.ThrowIfNull(schema); return Compile(schema, new SchemaCompileContext(options)); }
@@ -34,7 +35,9 @@ public sealed class XmlSchema
     private static XmlSchema Compile(XmlDocument source, SchemaCompileContext context)
     {
         long revision = source.ContentRevision;
-        var compiled = new XmlSchemaCompiler().Compile(source, context);
+        var availability = new AvailabilityBuilder(context.Operation);
+        var compiled = new XmlSchemaCompiler().CompileAvailable(source, context, availability);
+        availability.Join(compiled);
         // Compiler builtins are declaration carriers; replace them with executable metadata.
         var definitions = new List<XmlDatatypeDefinition>();
         foreach (var definition in compiled.SimpleTypes)
@@ -48,15 +51,16 @@ public sealed class XmlSchema
         foreach (var definition in compiled.SimpleTypes)
         {
             var executable = registry.FindType(definition.Name)!;
-            if (!facets.ValidateDefinition(executable, registry, context.Operation)) throw SchemaSnapshots.Failure(context.Operation);
+            if (!facets.ValidateAvailableDefinition(executable, registry, context.Operation, availability)) throw SchemaSnapshots.Failure(context.Operation);
         }
-        var programs = new XsdContentCompiler().CompileAll(compiled, context.Operation, facets);
-        FinalizeDeclarations(compiled, programs, facets, context.Operation);
+        var programs = new XsdContentCompiler().CompileAll(compiled, context.Operation, facets, availability);
+        FinalizeDeclarations(compiled, programs, facets, context.Operation, availability);
         var identity = new XsdIdentityCompiler().Compile(compiled, context.Operation);
         // The completed backing dictionary is private to this invocation and
         // never mutated again. A wrapper seals it without another traversal/copy.
-        if (!context.Operation.ChargeComponents(2, default)) throw SchemaSnapshots.Failure(context.Operation);
-        var published = new XmlSchema(compiled, new ReadOnlyDictionary<SchemaName, XsdContentProgram>(programs), facets, identity);
+        if (!context.Operation.ChargeComponents(3, default)) throw SchemaSnapshots.Failure(context.Operation);
+        var envelope = new CompilationEnvelope(compiled, availability.Seal());
+        var published = new XmlSchema(envelope, new ReadOnlyDictionary<SchemaName, XsdContentProgram>(programs), facets, identity);
         Tick(context.Operation, default, 0);
         if (revision < 0 || source.ContentRevision != revision) throw new InvalidOperationException("Schema source changed during compilation.");
         return published;
@@ -111,10 +115,16 @@ public sealed class XmlSchema
             Reject(op, at, "NOTATION value must name a declared schema notation.");
     }
     private static DatatypeConstraintRepresentation? Constraint(XsdCompiledSchema schema, XmlFacetEvaluator facets,
-        SchemaName type, string? lexical, SchemaNamespaceContext context, XmlLocation at, ISchemaOperation op)
+        SchemaName type, string? lexical, SchemaNamespaceContext context, XmlLocation at, ISchemaOperation op, AvailabilityBuilder availability)
     {
         if (lexical is null) return null;
         Tick(op, at);
+        if (availability.Unavailable(ComponentAvailability.Simple(type)))
+        {
+            if (!facets.CheckAvailableConstraint(schema.Datatypes.FindType(type)!, lexical, context, schema.Datatypes, op, availability))
+                throw SchemaSnapshots.Failure(op);
+            return null;
+        }
         if (Derived(schema, type, "ID", op)) Reject(op, at, "ID declarations cannot have default or fixed value constraints.");
         if (!DatatypeConstraintRepresentation.TryCreate(schema.Datatypes.FindType(type)!, lexical, context,
             schema.Datatypes, facets, op, out var prepared, out var error))
@@ -136,7 +146,7 @@ public sealed class XmlSchema
         return prepared;
     }
     private static void FinalizeDeclarations(XsdCompiledSchema schema, IReadOnlyDictionary<SchemaName, XsdContentProgram> programs,
-        XmlFacetEvaluator facets, ISchemaOperation op)
+        XmlFacetEvaluator facets, ISchemaOperation op, AvailabilityBuilder availability)
     {
         var types = new Dictionary<SchemaName, XsdTypeDefinition>();
         foreach (var type in schema.Types) { Tick(op, type.Location); types.Add(type.Name, type); }
@@ -153,7 +163,7 @@ public sealed class XmlSchema
             foreach (var facet in type.Facets)
             {
                 Tick(op, facet.Location);
-                if (facet.Kind != XmlFacetKind.Enumeration) continue;
+                if (facet.Kind != XmlFacetKind.Enumeration || availability.Unavailable(ComponentAvailability.Simple(type.Name))) continue;
                 // Enumeration lexical forms are parsed against the base at their authored context.
                 var basis = schema.Datatypes.FindType(type.BaseType ?? type.Name)!;
                 // Direct list/union construction has anySimpleType as a nominal
@@ -173,7 +183,7 @@ public sealed class XmlSchema
         foreach (var attribute in schema.Attributes)
         {
             Tick(op, attribute.Location); NotationType(schema, attribute.Type, op, attribute.Location);
-            Constraint(schema, facets, attribute.Type, attribute.DefaultValue ?? attribute.FixedValue, attribute.Context, attribute.Location, op);
+            Constraint(schema, facets, attribute.Type, attribute.DefaultValue ?? attribute.FixedValue, attribute.Context, attribute.Location, op, availability);
         }
         foreach (var type in schema.Types)
         {
@@ -184,10 +194,10 @@ public sealed class XmlSchema
                 Tick(op, binding.Location); var attribute = schema.Attributes[binding.DeclarationId];
                 if (binding.Use != XsdAttributeUse.Prohibited && Derived(schema, attribute.Type, "ID", op) && ++ids > 1)
                     Reject(op, binding.Location, "A complex type cannot have more than one ID attribute use.");
-                var local = Constraint(schema, facets, attribute.Type, binding.DefaultValue ?? binding.FixedValue, binding.Context, binding.Location, op);
+                var local = Constraint(schema, facets, attribute.Type, binding.DefaultValue ?? binding.FixedValue, binding.Context, binding.Location, op, availability);
                 if (local is not null && binding.FixedValue is not null && attribute.FixedValue is not null)
                 {
-                    var declared = Constraint(schema, facets, attribute.Type, attribute.FixedValue, attribute.Context, attribute.Location, op)!;
+                    var declared = Constraint(schema, facets, attribute.Type, attribute.FixedValue, attribute.Context, attribute.Location, op, availability)!;
                     if (!schema.Datatypes.Find(Xs)!.ValueEquals(local.DeclaredValue, declared.DeclaredValue, op))
                         Reject(op, binding.Location, "Attribute binding changes the referenced typed fixed value.");
                 }
@@ -195,20 +205,21 @@ public sealed class XmlSchema
         }
         foreach (var element in schema.Elements)
         {
-            Tick(op, element.Location); var type = types[element.Type];
+            Tick(op, element.Location);
+            if (element.Type is not { } name || !types.TryGetValue(name, out var type)) continue;
             if (type.SimpleType is { } simple) NotationType(schema, simple, op, element.Location);
             string? lexical = element.DefaultValue ?? element.FixedValue; if (lexical is null) continue;
             if (type.ContentKind is XsdContentKind.Empty or XsdContentKind.ElementOnly ||
-                type.ContentKind == XsdContentKind.Mixed && !new XsdContentMatcher().CreateCursor(programs[type.Name]).Complete(op))
+                type.ContentKind == XsdContentKind.Mixed && programs.TryGetValue(type.Name, out var prepared) && !new XsdContentMatcher().CreateCursor(prepared).Complete(op))
                 Reject(op, element.Location, "Element value constraint requires simple or emptiable mixed content.");
-            Constraint(schema, facets, type.SimpleType ?? new(Xs, "anySimpleType"), lexical, element.Context, element.Location, op);
+            Constraint(schema, facets, type.SimpleType ?? new(Xs, "anySimpleType"), lexical, element.Context, element.Location, op, availability);
         }
     }
     public ValidationResult Validate(XmlDocument document, ValidationOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(document);
         return new XmlSchemaValidator().Validate(schema, document, options ?? new(), programs, new XsdContentMatcher(),
-            facets, new XsdIdentityFactory(), identity);
+            facets, new XsdIdentityFactory(), identity, availability);
     }
     public ValidationResult Validate(string document, ValidationOptions? options = null)
     {
