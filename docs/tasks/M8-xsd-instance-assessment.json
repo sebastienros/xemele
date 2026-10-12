@@ -4,10 +4,10 @@
   "milestone": "M8",
   "title": "Correct wildcard and nil identity instance assessment",
   "kind": "feature",
-  "status": "planned",
-  "owner": null,
-  "branch": null,
-  "base_revision": null,
+  "status": "in_progress",
+  "owner": "M8 coordinator / assigned isolated instance assessment worker",
+  "branch": "codex/m8-xsd-instance-assessment",
+  "base_revision": "bc950104a4f5acce37e3b2b7f71a60f8765e33c6",
   "integration_revision": null,
   "depends_on": [
     "M8-xsd-schema-syntax"
@@ -34,7 +34,7 @@
   "acceptance": [
     {
       "id": "M8-xsd-instance-assessment-A1",
-      "description": "Reproduce unchanged original attZ002.v: prohibited attribute bindings contribute no positive instance use; permit assessment through a matching wildcard. Preserve rejection without matching wildcard, strict missing-declaration behavior, matching global datatype/fixed checks, local-use precedence and missing default behavior.",
+      "description": "Reproduce unchanged original attZ002.v, addB034.v and addB136.v: prohibited attribute bindings contribute no positive instance use; permit assessment through a matching wildcard. Preserve rejection without matching wildcard, strict missing-declaration behavior, matching global datatype/fixed checks, local-use precedence and missing default behavior.",
       "status": "pending",
       "evidence": []
     },
@@ -55,7 +55,7 @@
   "evidence": [],
   "blockers": [],
   "handoff": {
-    "summary": "Read-only source/Second Edition review confirms both original corpus defects. Claim after a worker slot is released; no competing source owner.",
+    "summary": "Claimed after independent source/Second Edition review and prior worker terminal cleanup. Exactly three prohibited-binding wildcard originals plus nilled identity idF018; compiler attribute inheritance and disputed union xsi:type are separate.",
     "checks": [],
     "remaining": [],
     "requests": []
