@@ -20,6 +20,9 @@ count consumed iterations and permit empty padding. Dominance merges only
 otherwise-identical configurations with fewer nullable-body iterations.
 Cold cursor/setup, bank growth, compiler scratch/results and diagnostics are
 explicit owned allocation boundaries; warm allocation evidence is pending.
+XSD intensional subset/representability is checked separately from mathematical
+matching/overlap. Expanded counter arithmetic reserves construction first and
+uses polled byte steps, including the seeded overflow path.
 
 Structural operations, retained elements, traversed edges, state copies and
 integer algebra are charged before their work/persistence, with cancellation
@@ -59,3 +62,30 @@ RecurseAsIfGroup normalization loop and terminated with stack overflow; fixed
 by preserving synthetic groups and implicit substitution members. Subsequent
 81- and 84-case runs passed. XML-only consumer, frozen/public API and affected
 prerequisite checks are being prepared; no unrun checks or measurements pass.
+
+## Current review/harness state
+
+Source correction `f098c72fd2f94bea18c46194de1795ea26439a4d` addresses the
+bounded review batch. Actual 102 owned cases: 101 passed and one required
+negative failed; see [review-corrections.md](review-corrections.md) for the exact
+lost compiler operand and ordered owner request. Source closure review and the
+verified compiler repair remain pending. Task-record writes were transferred
+to the coordinator; source/tests/reports remain worker-owned.
+
+The probe payload and BDN payload build successfully on SDK 10.0.400/runtime
+10.0.11. Counter-disabled control consumed ten routes with 32 warm/64 samples;
+five BDN semantic methods passed without timing/counters, and discovery asserted
+exactly five MemoryDiagnoser ShortRun InProcessNoEmit cases. No allocation or
+timing run occurred. `prepare.py` requires the mandatory negative and all 204
+combined focused cases to pass before freezing; `measure.py` checks exact
+identities/process permissions and absolute grant expiry, reaps every process
+group, closes logs and emits lifecycle RELEASE before any result inspection.
+The ten-route probe distinguishes name lookup/matching and three warmed cursor
+shapes from lazy cursor construction, owned initialization/bank growth, all-type
+compilation, actual XML/compiler/content composition and UPA diagnostics.
+Retained programs and initialized cursors are observed separately. Dictionary
+and borrowed-name methods have the same five-candidate membership/ID semantics;
+cursor workloads have separate grammar semantics, so their baseline ratios are
+not comparative optimizations. No new SearchValues/vocabulary optimization is
+introduced. Real facade composition and x64 confirmation remain later-owner
+release checks; this is provisional synchronous Arm64 evidence preparation.

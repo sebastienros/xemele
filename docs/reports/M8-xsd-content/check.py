@@ -18,7 +18,7 @@ def assert_tests(path,count):
 args=[D,'--fx-version','10.0.11','tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll']
 for ns in ['Xemele.Tests.M8XsdContent','Xemele.Tests.M8XsdCompile','Xemele.Tests.M8Model','Xemele.Tests.M8SourceLocations']:args+=['-namespace',ns]
 args+=['-parallelMode','none','-noLogo','-noColor','-result-xml',str(out/'correctness.xml')]
-subprocess.run(args,check=True);assert_tests(out/'correctness.xml',186)
+subprocess.run(args,check=True);assert_tests(out/'correctness.xml',204)
 resolver=next(r['args'] for r in json.loads(Path('docs/reports/M8-resource-kind/test-commands.json').read_text()) if r['label']=='resolver')
 resolver=resolver[:resolver.index('-result-xml')]+['-result-xml',str(out/'resolver.xml')]
 assert not any('WarmBorrowed' in item for item in resolver)
@@ -32,4 +32,4 @@ subprocess.run([D,'build',project,'-c','Release','--no-restore',*xmlflags],check
 subprocess.run([D,'--fx-version','10.0.11','samples/M8-xsd-content/bin/Release/net10.0/Xemele.Benchmarks.dll'],check=True)
 subprocess.run(['python3','tools/planning/tasks.py','validate'],check=True)
 subprocess.run(['git','diff','--check'],check=True)
-print('228 owned/affected .NET10.0.11 correctness cases; public/frozen API and real XML-only consumer passed.')
+print('246 owned/affected .NET10.0.11 correctness cases; public/frozen API and real XML-only consumer passed.')
