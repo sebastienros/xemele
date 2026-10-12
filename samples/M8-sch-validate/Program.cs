@@ -1,0 +1,23 @@
+using Xemele;
+using Xemele.Validation;
+using Xemele.XPath;
+
+const string source = "<schema xmlns='http://purl.oclc.org/dsdl/schematron' defaultPhase='first'><phase id='first'><let name='v' value='1'/><active pattern='p'/></phase><phase id='second'><let name='v' value='2'/><active pattern='p'/></phase><pattern id='p'><rule context='item' subject='child'><report test='true()' subject='@code'><name/>:<value-of select='$v'/></report></rule></pattern></schema>";
+var schema = SchematronSchema.Compile(source);
+var document = XmlDocument.Parse("<root><item code='x'><child/></item><item code='y'/></root>");
+var result = schema.Validate(document);
+if (!result.Validation.IsComplete || !result.Validation.IsValid || result.Findings.Count != 2 || result.FiredRules.Count != 2 || result.Findings[0].Text != "item:1" || !result.Findings[0].Location.Contains("/@*", StringComparison.Ordinal)) throw new Exception("first phase/subject/focus");
+var second = schema.Validate(document, new() { Phase = "second" });
+if (second.Findings[0].Text != "item:2" || result.Findings[0].Text != "item:1") throw new Exception("phase isolation");
+if (schema.Validate(document, new() { Phase = "#ALL" }).Validation.IsComplete) throw new Exception("missing phase variable");
+if (XPathExpression.Compile("count(/root/item)").Evaluate(document.DocumentNode).AsNumber() != 2) throw new Exception("M4");
+if (!new ValidationResult(true, []).IsValid) throw new Exception("M5");
+using var schemaStream = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(source));
+using var instanceStream = new MemoryStream("<item code='x'/>"u8.ToArray());
+if (SchematronSchema.Compile(schemaStream).Validate(instanceStream).Findings.Count != 1 || !instanceStream.CanRead || !schemaStream.CanRead) throw new Exception("stream lifetime");
+var compiledDocument = SchematronSchema.Compile(XmlDocument.Parse(source));
+if (compiledDocument.Validate("<item code='x'/>").Findings.Count != 1) throw new Exception("remaining overloads");
+document.RootElement.SetTextContent("removed");
+if (result.Findings[0].Text != "item:1" || result.Findings[0].ContextLocation.Length == 0) throw new Exception("detached result");
+if (typeof(XmlDocument).Assembly.GetType("Xemele.Html5.Html5Parser") is null && typeof(XmlDocument).Assembly.GetType("Xemele.Css.CssSelector") is null) Console.WriteLine("PASS XML-only assembly: no HTML/CSS types");
+Console.WriteLine("PASS facade6 / phases / scope / subjects / focus / events / detached result / M4 / M5");
