@@ -38,3 +38,14 @@ all lookup work/refusal to the authored source node. No temporary lexical value
 or datatype payload is constructed. Mixed zero-occurrence synthesis reuses the
 existing charged source-located mapping boundary. Repaired results and allocation
 evidence remain pending.
+
+The coordinator amendment adds A4 on the same owned compiler boundary. At
+92b327ff3 the unchanged wildK001/wildC030/wildZ010 original schema witnesses
+passed independent BCL compilation then failed product compilation: all81
+component regressions passed, the three wildcard witnesses failed (84 total,
+zero errors/skips/not-run). The repair permits an explicit empty namespaceList
+to map to a positive empty set, preserving omitted ##any and all existing tokens.
+Borrowed source-located scalar work is charged before namespace normalization;
+name normalization likewise polls/charges before scanning arbitrary whitespace.
+The original invalid groupH007 restriction witness is also retained to check
+that mixed zero-occurrence synthesis cannot bypass its element-only base.

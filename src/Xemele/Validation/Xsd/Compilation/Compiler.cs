@@ -260,7 +260,9 @@ internal sealed class XsdCompilation
     { var value = node.GetAttribute(attribute); if (value is null) Error("Required schema attribute is missing.", At(source, node)); return value!; }
     private string NCName(string text, Source source, XmlNode node)
     {
-        text = Collapse(text); var at = At(source, node);
+        var at = At(source, node);
+        foreach (var scalar in text.AsSpan().EnumerateRunes()) Tick(at);
+        text = Collapse(text);
         if (nameOperation is null) { Components(at); nameOperation = new(op); }
         nameOperation.Location = at;
         bool valid = ComponentNCName(text.AsSpan(), nameOperation);
@@ -856,11 +858,16 @@ internal sealed class XsdCompilation
         ComposeWildcard(first, second, false, first.ProcessContents, at);
     private XsdWildcard Wildcard(Declaration owner, XmlNode node)
     {
-        var s = owner.Source; string lexical = Collapse(node.GetAttribute("namespace") ?? "##any");
+        var s = owner.Source; var at = At(s, node);
+        string authored = node.GetAttribute("namespace") ?? "##any";
+        foreach (var scalar in authored.AsSpan().EnumerateRunes()) Tick(at);
+        string lexical = Collapse(authored);
         var namespaces = new List<string>(); bool negated = false;
         if (lexical == "##any") negated = true;
         else if (lexical == "##other") { negated = true; namespaces.Add(s.Target); if (s.Target.Length != 0) namespaces.Add(""); }
-        else
+        // namespaceList's unrestricted list alternative permits an empty set.
+        // Omitted namespace remains ##any; explicit empty never means ##local.
+        else if (lexical.Length != 0)
         {
             foreach (var range in lexical.AsSpan().Split(' '))
             {

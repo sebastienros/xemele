@@ -30,6 +30,16 @@ public sealed class OriginalWitnessTests
         Assert.True(child.IsComplete); Assert.False(child.IsValid); Assert.Contains(child.Diagnostics, d => d.Code == "XSD.Content");
     }
     [Fact]
+    public void OriginalGroupH007RejectsMixedRestrictionOfElementOnlyBase()
+    {
+        var bcl = new System.Xml.Schema.XmlSchemaSet { XmlResolver = null };
+        using var reader = System.Xml.XmlReader.Create(Fixture("groupH007.xsd"));
+        Assert.Throws<System.Xml.Schema.XmlSchemaException>(() => { bcl.Add(null, reader); bcl.Compile(); });
+        using var original = File.OpenRead(Fixture("groupH007.xsd"));
+        var error = Assert.Throws<SchemaCompileException>(() => XmlSchema.Compile(original));
+        Assert.Contains(error.Diagnostics, d => d.Code == "XSD.SchemaRestriction");
+    }
+    [Fact]
     public void OriginalGroupN008RejectsForbiddenChildren()
     {
         using var schema = File.OpenRead(Fixture("groupN008.xsd"));
