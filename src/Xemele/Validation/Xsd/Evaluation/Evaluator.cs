@@ -1,4 +1,5 @@
 using System.Text;
+using Xemele.Parsing.Dtd;
 namespace Xemele.Validation;
 
 // The evaluator owns no schema or run state. Prepared content programs are supplied
@@ -235,8 +236,8 @@ internal sealed partial class XsdValidationRun : ISchemaOperation
         }
         identity?.LeaveElement(frame.Node, new(frame.Valid, ActualType(value, typeName), value), this); Poll();
     }
-    private static bool White(ReadOnlySpan<char> text)
-    { foreach (char c in text) if (c is not (' ' or '\t' or '\r' or '\n')) return false; return true; }
+    private bool White(ReadOnlySpan<char> text)
+    { foreach (char c in text) { Work(); if (c is not (' ' or '\t' or '\r' or '\n')) return false; } return true; }
     private static ReadOnlySpan<char> TrimXml(ReadOnlySpan<char> text)
     {
         while (!text.IsEmpty && text[0] is ' ' or '\t' or '\r' or '\n') text = text[1..];

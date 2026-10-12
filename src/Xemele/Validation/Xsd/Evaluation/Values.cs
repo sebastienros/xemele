@@ -9,6 +9,8 @@ internal sealed partial class XsdValidationRun
             current = document.OriginalLocation(attribute); Work(); Retain();
             Text(attribute.LocalName, true); Text(attribute.NamespaceUri, true); Text(attribute.Prefix, true); Text(attribute.Value, true);
             var name = Name(attribute); seen.Add(name);
+            if (frame.Skip)
+            { identity?.Attribute(frame.Node, name, new(true, new(Xs, "anySimpleType"), null), this); Poll(); continue; }
             if (attribute.NamespaceUri == Xsi)
             {
                 bool valid = true; XmlDatatypeValue? value = null;
