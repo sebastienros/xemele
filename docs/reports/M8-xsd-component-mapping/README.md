@@ -49,3 +49,20 @@ Borrowed source-located scalar work is charged before namespace normalization;
 name normalization likewise polls/charges before scanning arbitrary whitespace.
 The original invalid groupH007 restriction witness is also retained to check
 that mixed zero-occurrence synthesis cannot bypass its element-only base.
+
+Actual final correctness at bc8d191609fc48d84ae66d0a42ea8657ecb4a0fe:
+1263 passed =117 owned +33 predecessor syntax +1113 affected;42 safe resolver.
+Zero errors/failures/skips/not-run; public1417, frozen model316+139/compiler257/
+identity24/content9/evaluation2/facade7 match. Normal and true source-linked
+XML-only consumers pass; five Release builds0warnings/errors;planning187/diff
+pass. groupH007 now rejects its mixed restriction without a separate runtime
+change. Initial failed build/checker attempts and pre-normalization pass are
+recorded honestly in task evidence. Distinct malformed-scalar labels prevent
+xUnit's replacement-character rendering from collapsing test identities.
+
+Source review required actual normalization-loop work/cancellation, now addressed
+by ComponentCollapse only for NCName/QName/wildcard namespace inputs. It returns
+the borrowed canonical string; otherwise each actual normalization scalar is
+charged at the authored source. Four independent padding-work formulas and
+null-cap cancellation 128scalars into normalization are asserted. No timing or
+allocation measurement has been launched; A3 stays pending coordinator evidence.
