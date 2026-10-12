@@ -1,0 +1,137 @@
+{
+  "status": "prepared-execution-standby",
+  "sourceRevision": "f8e885a08a10df4e208df3fd64d44abaaad6f1a5",
+  "acceptedRuntimeRevision": "37f8176aa7147135db106d0b817564aa8ac438b1",
+  "sourceReviewCommit": "ff0751cfaf6625b289b3291b95c7bcd25b493fa9",
+  "manifestPath": "docs/reports/M8-schema-resource-outcomes/preparation.json",
+  "manifestSha256": "e49d010a30b793a277eab3bebdb00ee3148d4fc91bfc4a7794d1a729345ef79b",
+  "identityCount": 448,
+  "leaseProposal": {
+    "maximumSeconds": 30,
+    "workSeconds": 20,
+    "cleanupReserveSeconds": 10,
+    "latestStartAfterGrantSeconds": 60,
+    "absoluteExpiryAfterGrantSeconds": 90,
+    "grantExists": false
+  },
+  "offlinePreparationCommand": "python3 docs/reports/M8-schema-resource-outcomes/prepare.py --source-accepted",
+  "buildResult": "Release SDK10.0.400/runtime10.0.11 offline restore/build passed;0warnings/errors;disable-build-servers/m1/UseSharedCompilation=false/NuGetAudit=false",
+  "disabledControl": {
+    "mode": "--control",
+    "status": "passed",
+    "runtime": ".NET 10.0.11",
+    "architecture": "Arm64",
+    "os": "macOS 15.8.1",
+    "serverGc": false,
+    "sourceRevision": "f8e885a08a10df4e208df3fd64d44abaaad6f1a5",
+    "assemblySha256": "2B6782372578E5BEEC901188941DC7F4CF4A0611FA4EA97A81A74DBC932E5BE0",
+    "probeSha256": "94D2466B39C34FEA385C1BB5FB6B84E2022FEC64D3F5A76E210D7EDF0B55D69F",
+    "coldSetupBytes": 0,
+    "positiveBytes": 0,
+    "retainedBefore": 0,
+    "retainedAfterResults": 0,
+    "retainedResults": 16,
+    "consumed": 5616,
+    "rows": [
+      {
+        "route": 0,
+        "name": "optional-unavailable",
+        "operations": 64,
+        "bytes": 0
+      },
+      {
+        "route": 1,
+        "name": "optional-resolved",
+        "operations": 64,
+        "bytes": 0
+      },
+      {
+        "route": 2,
+        "name": "optional-legacy-denied",
+        "operations": 64,
+        "bytes": 0
+      },
+      {
+        "route": 3,
+        "name": "optional-malformed",
+        "operations": 64,
+        "bytes": 0
+      },
+      {
+        "route": 4,
+        "name": "principal-external-shared",
+        "operations": 64,
+        "bytes": 0
+      }
+    ],
+    "primitiveRows": [
+      {
+        "route": 0,
+        "name": "direct-legacy-denied",
+        "operations": 1024,
+        "bytes": 0
+      },
+      {
+        "route": 1,
+        "name": "adapted-denied",
+        "operations": 1024,
+        "bytes": 0
+      },
+      {
+        "route": 2,
+        "name": "result-factory",
+        "operations": 1024,
+        "bytes": 0
+      }
+    ]
+  },
+  "actualTotalRouteCalls": 3536,
+  "actualConsumed": 5616,
+  "actualRetainedDocuments": 16,
+  "placeholderFields": "All row bytes,coldSetupBytes,positiveBytes,retainedBefore/After are zero placeholders with readings disabled;not measured allocation evidence.",
+  "preflightCommand": "python3 docs/reports/M8-schema-resource-outcomes/measure.py --verify-only && python3 docs/reports/M8-schema-resource-outcomes/measure.py --preflight",
+  "preflightResult": {
+    "command": 0,
+    "pid": 9408,
+    "exit": 0,
+    "reason": "completed",
+    "directChildReaped": true,
+    "ownedGroupAbsent": true,
+    "logClosed": true,
+    "groupMembers": []
+  },
+  "preflightControlMatches": "runtime/architecture/binary hashes/route counts/5616consumed/16retained match preparation control;sourceRevision=null because copied disabled preflight does not set revision env;frozen448identities matched before/after",
+  "frozenCommands": [
+    [
+      "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+      "--fx-version",
+      "10.0.11",
+      "/Users/sebastienros/.codex/worktrees/d5cc/xemele/benchmarks/Xemele.Benchmarks/M8-schema-resource-outcomes/bin/probe/net10.0/Xemele.Benchmarks.dll",
+      "--control",
+      "/Users/sebastienros/.codex/worktrees/d5cc/xemele/artifacts/M8-schema-resource-outcomes/measurement-1/control.json"
+    ],
+    [
+      "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+      "--fx-version",
+      "10.0.11",
+      "/Users/sebastienros/.codex/worktrees/d5cc/xemele/benchmarks/Xemele.Benchmarks/M8-schema-resource-outcomes/bin/probe/net10.0/Xemele.Benchmarks.dll",
+      "--measure",
+      "/Users/sebastienros/.codex/worktrees/d5cc/xemele/artifacts/M8-schema-resource-outcomes/measurement-1/allocations.json"
+    ]
+  ],
+  "selectedIdentityHashes": {
+    "benchmarks/Xemele.Benchmarks/M8-schema-resource-outcomes/Fixture.cs": "8fd4f1f90b56737fa311c4d0bc88df76c40880548a6cc3b5336c9c7207dd1ade",
+    "benchmarks/Xemele.Benchmarks/M8-schema-resource-outcomes/Outcomes.Probe.csproj": "4ccbd316c87bbca0c325f4afda22c11829023766f1f50fdcd2717a62518787c9",
+    "benchmarks/Xemele.Benchmarks/M8-schema-resource-outcomes/Probe.cs.fixture": "9974e2662c4c4e54c85923f764aca1f1fcf34ac14774727aa93f5f655e013df2",
+    "benchmarks/Xemele.Benchmarks/M8-schema-resource-outcomes/bin/probe/net10.0/Xemele.Benchmarks.dll": "94d2466b39c34fea385c1bb5fb6b84e2022fec64d3f5a76e210d7edf0b55d69f",
+    "benchmarks/Xemele.Benchmarks/M8-schema-resource-outcomes/bin/probe/net10.0/Xemele.dll": "2b6782372578e5beec901188941dc7f4cf4a0611fa4ea97a81a74dbc932e5be0",
+    "docs/reports/M8-schema-resource-outcomes/measure.py": "18f245d6144b8f8a7fa68ea5fbec2a6e49d42315a4fefe357d7c99eb7acf9021",
+    "docs/reports/M8-schema-resource-outcomes/prepare.py": "9c732525f32bf54df7b9fd03ea82ce0f4dc7a5d13350ae80ed7ccd021b9e4e08",
+    "src/Xemele/bin/Release/net10.0/Xemele.dll": "2b6782372578e5beec901188941dc7f4cf4a0611fa4ea97a81a74dbc932e5be0",
+    "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet": "e86deb33d0dacad9cc1224466df6418149cb8e13cb8afd0dc6815ea6b7807975",
+    "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App/10.0.11/System.Private.CoreLib.dll": "9ed74c2e2efeee87f1f2d7ffe1736b7e9164ce248516ea39402a725eedc87af6",
+    "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/shared/Microsoft.NETCore.App/10.0.11/libcoreclr.dylib": "10b24d0b11c7f6d838114744097bf10df9b08b906afc9016567631a1c009dfd0"
+  },
+  "standby": "Zero owned active jobs;no counters/heap/BDN/WarmBorrowed/measurement;root sole future launcher requires fresh exclusive manifest-bound grant with all host ACKs. Only taskJSON/this summary changed after freeze;all frozen inputs preserved.",
+  "unchangedCorrectness": "38focused+1530affected+42safe resolver/API1430/eightfrozenlanes/normal+trueXMLonly remain actual passed at37f8176;not rerun for proposal/preparation metadata."
+}
