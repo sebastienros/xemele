@@ -77,6 +77,11 @@ def main():
    p=HERE/f['path'];assert digest(p)==f['sha256'] and p.stat().st_size==f['bytes'],f['path']
   for f in json.loads((HERE/'unicode-adjudication.json').read_text())['sources']:
    assert digest(HERE/f['path'])==f['sha256'],f['path']
+  facts=json.loads((HERE/'metadata-namespaces.json').read_text())
+  assert len(facts)==13
+  for name,fact in facts.items():
+   p=root/name;assert digest(p)==fact['sha256'],name
+   assert ET.parse(p).getroot().get('targetNamespace','')==fact['namespace'],name
   assert actual['counts'].get('instance.unresolved',0)==0
   assert sum(len(g['supplementalInstances']) for g in actual['groups'])==1
   refs=[x for g in actual['groups'] for r in ([g['schema']] if g['schema'] else [])+g['instances'] for x in r['documents']]

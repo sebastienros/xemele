@@ -83,8 +83,59 @@ limitation; a precompiled supplemental engine result cannot establish conformanc
 for that case. Per-instance resolver/input journals survive success and exceptions
 and do not accumulate requests from earlier instances.
 
-Twenty runtime harness controls pass, including an otherwise-valid namespace
+Twenty-two runtime harness controls pass, including an otherwise-valid namespace
 mismatch witness, nested xml:base descendant hint, early namespace use/late hint
 limitation, and two-instance success/failure journals for both actual engines.
-Six metadata controls and six supervisor controls pass. This bounded revision is
-frozen for source review before another full corpus run.
+Six metadata controls and six supervisor controls pass. The bounded core source
+`422d85c43d2b560df7af084da7ba3da494658994` passed coordinator source review.
+
+The accepted full run at `80cd6bac0e740947cc3809fef4300068d8b4e51b`
+has 93 product and 93 BCL sets, with all 186 children exiting zero, exact ID
+coverage, and no process failures. Product: 39,233 passes, 241 failures, eleven
+indeterminate observations and 2,251 exclusions. BCL: 37,685 passes, 1,784
+failures, sixteen indeterminate observations and 2,251 exclusions. Both have
+41,736 rows including the one supplemental instance. Engine disagreement is
+triage evidence; it does not change the original oracle.
+
+Verified syntax dependency `745dc3d0` was integrated through main
+`13389a3f284af3975fe3928c1d96aca4a15cd1e0`, merged into this isolated branch
+at `a958276b4f0ad002b78f13b5f491fe720d6dfd44`. Product-only Annotations,
+Group, IdentityConstraint and Saxon XmlVersions observations at
+`09b0f5e54807f99efa94d92cda891f002e8dff4f` have respectively
+76/4, 342/2, 1,062/1 and 34/17 original passes/failures (nine Identity
+exclusions). Exact ID coverage was independently inspected in the saved journals;
+the supervisor's exit-code output was lost at a context boundary, so these saved
+rows alone do not establish child exit codes. No additional full run was done.
+The explicit mixed-revision overlay yields 39,248 passes, 226 failures, eleven
+indeterminate observations and 2,251 exclusions; it is not a new full-run result.
+
+Compatible XML1.1 declarations are handled only as the frozen XML1.0 Fifth
+Edition parser permits. A staging XmlReader version refusal uses independently
+parsed, SHA-bound original namespace facts for thirteen original Saxon schemas.
+Neither engine receives rewritten bytes. That selected set now has no harness
+exceptions: 44 independently adjudicated profile agreements, one component-name
+failure (`xv001.xsd`) and six unassessed substrate/dependency cases. All original
+expectations, outcomes and counts are retained. The report helper has nine controls,
+including the exact 51 cases / forty-file manifest and nonpass refusal/dependency
+semantics.
+
+The exact human-approved `time_maxInclusive007_119` remains an executed original
+failure, separately flagged as an approved exception, never a pass. Independently
+adjudicated `errF001` rejects as required by the effective Second Edition rules;
+its original validity mismatch remains recorded and its dependent instance is
+unexecuted. See the owned `standards-dispositions.json`,
+`xmlversions-adjudication.json` and `unicode-adjudication.json` for source facts.
+
+Five owned boundary tests pass on runtime10.0.11 at source09b. Earlier harness
+build attempts failed with eight duplicate assembly attributes from nested build
+outputs and six xUnit cancellation-token analyzer errors; isolated root artifacts
+outputs and explicit test cancellation tokens corrected these failures. The first
+manifest check incorrectly expected forty unique fixtures; the corrected original
+manifest is thirty-nine unique fixtures plus one metadata file, and its hash passes.
+These failures are retained as check history, not reported as passing attempts.
+
+Remaining applicable failures and original-resource limitations prevent task
+completion. The current schema diagnostic handoff is `schema-triage.md`.
+Two Additional instance hints reference original schemas with malformed namespace
+declarations; namespace preparation still raises a harness exception, and neither
+is counted as an expected-invalid pass. No product source was edited by this task.
