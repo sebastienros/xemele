@@ -38,7 +38,7 @@ def digest(path):
 def key(path): return str(path.relative_to(root)) if path.is_relative_to(root) else str(path)
 manifest = {'sourceRevision': revision, 'maximumSeconds': 60, 'workSeconds': 50, 'cleanupReserveSeconds': 10,
     'routes': 6, 'warmups': 16, 'samples': 3, 'operationsPerSample': 64, 'retainedCount': 16, 'environment': environment,
-    'command': [str(net), '--fx-version', '10.0.11', str(probe), '--measure', str(root / 'artifacts/M8-xsd-fixed-restriction/measurement.json')],
+    'commands': json.loads(subprocess.check_output(['python3', 'docs/reports/M8-xsd-fixed-restriction/measure.py', '--commands'], cwd=root, text=True)),
     'identities': {key(path): digest(path) for path in sorted(paths)}}
 target = root / 'docs/reports/M8-xsd-fixed-restriction/preparation.json'
 target.write_text(json.dumps(manifest, indent=2) + '\n')
