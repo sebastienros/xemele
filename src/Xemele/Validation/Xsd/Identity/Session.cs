@@ -85,7 +85,7 @@ internal sealed class XsdIdentitySession(IdentityProgram program, XmlDocument do
             foreach (int id in declaration.IdentityConstraints)
             {
                 IdentityWork.Retain(op, at, 3);
-                var run = new Run(program.Constraints[id]);
+                var run = new Run(program.Constraint(id));
                 if (run.Constraint.Selector.SelectsNonElements && NonElementDescendant(node, op, at) is { IsDefault: false } unsupported)
                 { run.Valid = false; IdentityWork.Error(op, At(unsupported), "Identity selector selects a non-element node."); }
                 frame.Runs.Add(run);
@@ -98,12 +98,12 @@ internal sealed class XsdIdentitySession(IdentityProgram program, XmlDocument do
             {
                 IdentityWork.Tick(op, at);
                 if (!run.Constraint.Selector.Matches(scope.Node, node, null, op, at)) continue;
-                IdentityWork.Retain(op, at, checked(run.Constraint.Fields.Length + 2));
-                var row = new Row(node, new Cell[run.Constraint.Fields.Length]);
+                IdentityWork.Retain(op, at, checked(run.Constraint.FieldCount + 2));
+                var row = new Row(node, new Cell[run.Constraint.FieldCount]);
                 for (int i = 0; i < row.Cells.Length; i++)
                 {
                     IdentityWork.Tick(op, at);
-                    if (run.Constraint.Fields[i].SelectsNonElements && NonElementDescendant(node, op, at) is { IsDefault: false } unsupported)
+                    if (run.Constraint.Field(i).SelectsNonElements && NonElementDescendant(node, op, at) is { IsDefault: false } unsupported)
                         Bad(run, row, op, At(unsupported), "Identity field selects a node without a simple type.");
                 }
                 run.Pending.Add(row);
@@ -159,7 +159,7 @@ internal sealed class XsdIdentitySession(IdentityProgram program, XmlDocument do
                     for (int i = 0; i < row.Cells.Length; i++)
                     {
                         IdentityWork.Tick(op, at);
-                        if (!run.Constraint.Fields[i].Matches(row.Node, node, attribute, op, at)) continue;
+                        if (!run.Constraint.Field(i).Matches(row.Node, node, attribute, op, at)) continue;
                         ref var cell = ref row.Cells[i];
                         if (cell.Count != 0)
                         { Bad(run, row, op, at, "Identity field selects multiple nodes."); continue; }

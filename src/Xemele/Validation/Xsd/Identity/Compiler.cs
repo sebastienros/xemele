@@ -5,38 +5,40 @@ internal sealed class XsdIdentityCompiler : IXsdIdentityCompiler
     public XsdIdentityProgram Compile(XsdCompiledSchema schema, ISchemaOperation operation)
     {
         ArgumentNullException.ThrowIfNull(schema); ArgumentNullException.ThrowIfNull(operation);
-        IdentityWork.Retain(operation, default);
+        IdentityWork.Retain(operation, default, 4);
         var constraints = new Dictionary<int, IdentityConstraint>();
-        var names = new Dictionary<SchemaName, IdentityConstraint>();
+        var names = new Dictionary<SchemaName, XsdIdentityConstraint>();
+        var ids = new HashSet<int>();
         foreach (var definition in schema.Identities)
         {
-            IdentityWork.Retain(operation, definition.Location, 3);
+            IdentityWork.Retain(operation, definition.Location, 4);
             IdentityWork.Tick(operation, definition.Location, 1L + definition.Name.NamespaceUri.Length + definition.Name.LocalName.Length);
-            if (definition.Id < 0 || constraints.ContainsKey(definition.Id) || names.ContainsKey(definition.Name) ||
+            if (definition.Id < 0 || !ids.Add(definition.Id) || names.ContainsKey(definition.Name) ||
                 !Enum.IsDefined(definition.Kind) || definition.Fields.Count == 0)
                 IdentityWork.Invalid(operation, definition.Location, "Invalid identity constraint definition.");
-            var selector = IdentityXPath.Compile(definition.Selector, false, definition.Context, operation, definition.Location);
-            IdentityWork.Retain(operation, definition.Location, definition.Fields.Count);
-            var fields = new IdentityXPath[definition.Fields.Count];
-            for (int i = 0; i < fields.Length; i++)
-                fields[i] = IdentityXPath.Compile(definition.Fields[i], true, definition.Context, operation, definition.Location);
-            var compiled = new IdentityConstraint(definition, selector, fields);
-            constraints.Add(definition.Id, compiled); names.Add(definition.Name, compiled);
+            names.Add(definition.Name, definition);
         }
-        foreach (var constraint in constraints.Values)
+        foreach (var definition in schema.Identities)
         {
-            var definition = constraint.Definition; IdentityWork.Tick(operation, definition.Location);
+            IdentityWork.Tick(operation, definition.Location);
+            int targetId = -1;
             if (definition.Kind == XsdIdentityKind.KeyRef)
             {
                 if (definition.Refer is { } reference)
                     IdentityWork.Tick(operation, definition.Location, 1L + reference.NamespaceUri.Length + reference.LocalName.Length);
                 if (definition.Refer is not { } refer || !names.TryGetValue(refer, out var target) ||
-                    target.Definition.Kind == XsdIdentityKind.KeyRef || target.Fields.Length != constraint.Fields.Length)
+                    target.Kind == XsdIdentityKind.KeyRef || target.Fields.Count != definition.Fields.Count)
                     IdentityWork.Invalid(operation, definition.Location, "Invalid keyref target or field count.");
-                constraint.Target = names[definition.Refer!.Value].Definition.Id;
+                targetId = names[definition.Refer!.Value].Id;
             }
             else if (definition.Refer is not null)
                 IdentityWork.Invalid(operation, definition.Location, "Only keyref can have a reference.");
+            var selector = IdentityXPath.Compile(definition.Selector, false, definition.Context, operation, definition.Location);
+            IdentityWork.Retain(operation, definition.Location, definition.Fields.Count);
+            var fields = new IdentityXPath[definition.Fields.Count];
+            for (int i = 0; i < fields.Length; i++)
+                fields[i] = IdentityXPath.Compile(definition.Fields[i], true, definition.Context, operation, definition.Location);
+            constraints.Add(definition.Id, new(definition, selector, fields, targetId));
         }
         foreach (var element in schema.Elements)
             foreach (int id in element.IdentityConstraints)
@@ -49,16 +51,16 @@ internal sealed class XsdIdentityCompiler : IXsdIdentityCompiler
     }
 }
 
-internal sealed class IdentityConstraint(XsdIdentityConstraint definition, IdentityXPath selector, IdentityXPath[] fields)
+internal sealed class IdentityConstraint(XsdIdentityConstraint definition, IdentityXPath selector, IdentityXPath[] fields, int target)
 {
     internal XsdIdentityConstraint Definition { get; } = definition;
     internal IdentityXPath Selector { get; } = selector;
-    internal IdentityXPath[] Fields { get; } = fields;
-    // Assigned only during compilation, before the program escapes.
-    internal int Target { get; set; } = -1;
+    internal int FieldCount => fields.Length;
+    internal IdentityXPath Field(int index) => fields[index];
+    internal int Target { get; } = target;
 }
 internal sealed class IdentityProgram(XsdCompiledSchema schema, Dictionary<int, IdentityConstraint> constraints) : XsdIdentityProgram
 {
     internal XsdCompiledSchema Schema { get; } = schema;
-    internal Dictionary<int, IdentityConstraint> Constraints { get; } = constraints;
+    internal IdentityConstraint Constraint(int id) => constraints[id];
 }
