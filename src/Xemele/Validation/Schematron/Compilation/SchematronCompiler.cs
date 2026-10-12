@@ -302,12 +302,29 @@ internal sealed class SchematronCompiler : ISchematronCompiler
             "p" or "active" => child is "emph" or "dir" or "span" ? 0 : -1,
             "title" => child == "dir" ? 0 : -1, _ => -1 };
 
-        private void CheckAuthoredReferences(Node node)
+        private void CheckAuthoredReferences(Node node, Node? pattern = null)
         {
             Work(1, node);
+            if (node.Name == "pattern") pattern = node;
             if (node.Name is "assert" or "report")
             { References(node, "diagnostics", diagnostics); References(node, "properties", properties); }
-            foreach (var child in node.Children) CheckAuthoredReferences(child);
+            if (node.Name == "extends")
+            {
+                // ISO 2016 5.4.12: ID uniqueness is schema-wide, but the referenced
+                // abstract rule must belong to this effective containing pattern.
+                // Check authored nodes before template copying so each valid
+                // instantiation preserves its template's local rule references.
+                string id = Required(node, "rule");
+                bool local = false;
+                if (pattern is not null && abstractRules.TryGetValue(id, out var target))
+                    for (int i = 0; i < pattern.Children.Count; i++)
+                    {
+                        Work(1, node);
+                        if (ReferenceEquals(pattern.Children[i], target)) { local = true; break; }
+                    }
+                if (!local) Fail(node, "SCH.SchemaRestriction", "An extends must reference an abstract rule in the same pattern.");
+            }
+            foreach (var child in node.Children) CheckAuthoredReferences(child, pattern);
         }
         private void Index(Node node)
         {
