@@ -68,7 +68,7 @@ internal static class ProfileChecks
             catch(Exception e) { failure=Runner.Failure(e,new(),deadline.Token); }
             Require(failure?.Outcome=="schema-invalid","unchanged standalone original XML import lacks supplied schema");
             Rows.Add(new { id,kind="original-schema",expected="valid",actual=failure!.Outcome,originalPassed=false });
-            Rows.Add(new { id=instanceId,kind="original-instance",expected="valid",actual="schema-unavailable",originalPassed=false,instanceAssessment="not executed" });
+            // The standalone dependent instance was not assessed; no fabricated result row.
         }
         var suppliedResolver=new Allowlist(original);var schema=Compile([original,XmlUrl],suppliedResolver,deadline.Token,out var wrapper);
         Require(suppliedResolver.Requests.Count==2,"explicit supplied XML schema uses exact two-resource allowlist");
@@ -93,6 +93,8 @@ internal static class ProfileChecks
     public static int Main(string[] args)
     {
         string corpus=Path.Combine(args[0],"tests/corpora/xsd");Runner.Root=Path.Combine(corpus,"upstream");Rows.Clear();
+        if (args[1] == "supplements") return SupplementalProfiles.Run(args[2]);
+        if (args[1] == "supplement-controls") return SupplementalProfiles.Controls(args[2]);
         using var xmlProfile=JsonDocument.Parse(File.ReadAllText(Path.Combine(corpus,"xml-namespace-profile.json")));var captured=xmlProfile.RootElement.GetProperty("resource");
         Require(Hash(Runner.PathFor(new Uri(XmlUrl)))==captured.GetProperty("sha256").GetString()&&new FileInfo(Runner.PathFor(new Uri(XmlUrl))).Length==captured.GetProperty("bytes").GetInt64(),"exact already-pinned XML resource bytes/hash");
         NeighborControls();

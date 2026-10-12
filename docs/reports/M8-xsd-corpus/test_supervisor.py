@@ -341,6 +341,60 @@ class Supervisor(unittest.TestCase):
         self.assertFalse(record['allOwnedGroupsAbsent'])
         self.assertEqual(record['cleanupError'], 'TimeoutError')
 
+    def api_binding_fixture(self):
+        root = self.root / 'api-source'; here = root / 'docs/reports/corpus'
+        here.mkdir(parents=True); api = root / 'docs/api'; api.mkdir(parents=True)
+        fragment = api / 'current.txt'; fragment.write_text('public verified API\n')
+        manifest = root / 'accepted.json'
+        manifest.write_text(json.dumps({'apiInputs': {'docs/api/current.txt': m.digest(fragment)}}))
+        binding = dict(final_freeze_ready=True, verified_integration='verified-fixture',
+                       source_manifest='accepted.json', source_manifest_sha256=m.digest(manifest),
+                       apiInputs={'docs/api/current.txt': m.digest(fragment)})
+        path = here / 'verified-api-preparation.json'; path.write_text(json.dumps(binding))
+        return root, here, fragment, manifest, path, binding
+
+    def test_api_binding_includes_exact_manifest_and_complete_membership(self):
+        root, here, fragment, manifest, path, binding = self.api_binding_fixture()
+        with patch.object(m, 'ROOT', root), patch.object(m, 'HERE', here), patch.object(m.subprocess, 'run') as ancestor:
+            self.assertEqual(m.verified_api_inputs(), {**binding['apiInputs'], 'accepted.json': m.digest(manifest)})
+            self.assertEqual(ancestor.call_args.args[0], ['git', 'merge-base', '--is-ancestor', 'verified-fixture', 'HEAD'])
+            self.assertEqual(ancestor.call_args.kwargs['timeout'], 5)
+
+    def test_api_binding_hold_prevents_final_freeze(self):
+        root, here, fragment, manifest, path, binding = self.api_binding_fixture()
+        binding['final_freeze_ready'] = False; path.write_text(json.dumps(binding))
+        with patch.object(m, 'ROOT', root), patch.object(m, 'HERE', here), patch.object(m.subprocess, 'run') as ancestor:
+            with self.assertRaisesRegex(AssertionError, 'final source/API freeze held'): m.verified_api_inputs()
+            ancestor.assert_not_called()
+
+    def test_api_binding_changed_fragment_fails_with_unchanged_manifest(self):
+        root, here, fragment, manifest, path, binding = self.api_binding_fixture()
+        fragment.write_text('unverified replacement\n')
+        with patch.object(m, 'ROOT', root), patch.object(m, 'HERE', here):
+            with self.assertRaisesRegex(AssertionError, 'verified API fragment changed'): m.verified_api_inputs()
+
+    def test_api_binding_added_or_removed_fragment_fails_membership(self):
+        root, here, fragment, manifest, path, binding = self.api_binding_fixture()
+        extra = fragment.parent / 'unverified.txt'; extra.write_text('unknown addition')
+        with patch.object(m, 'ROOT', root), patch.object(m, 'HERE', here):
+            with self.assertRaisesRegex(AssertionError, 'complete docs/api fragment membership changed'): m.verified_api_inputs()
+            extra.unlink(); fragment.unlink()
+            with self.assertRaisesRegex(AssertionError, 'complete docs/api fragment membership changed'): m.verified_api_inputs()
+
+    def test_api_binding_changed_manifest_or_membership_fails(self):
+        root, here, fragment, manifest, path, binding = self.api_binding_fixture()
+        manifest.write_text(json.dumps({'apiInputs': {}}))
+        with patch.object(m, 'ROOT', root), patch.object(m, 'HERE', here):
+            with self.assertRaisesRegex(AssertionError, 'verified API manifest changed'): m.verified_api_inputs()
+            binding['source_manifest_sha256'] = m.digest(manifest); path.write_text(json.dumps(binding))
+            with self.assertRaisesRegex(AssertionError, 'accepted API membership changed'): m.verified_api_inputs()
+
+    def test_api_binding_unintegrated_manifest_revision_fails(self):
+        root, here, fragment, manifest, path, binding = self.api_binding_fixture()
+        error = m.subprocess.CalledProcessError(1, ['git', 'merge-base'])
+        with patch.object(m, 'ROOT', root), patch.object(m, 'HERE', here), patch.object(m.subprocess, 'run', side_effect=error):
+            with self.assertRaises(m.subprocess.CalledProcessError): m.verified_api_inputs()
+
     def preparation_binding_fixture(self):
         runner = self.out / 'runner.dll'; product = self.out / 'Xemele.dll'
         runner.write_bytes(b'unchanged runner'); product.write_bytes(b'tested product dependency')

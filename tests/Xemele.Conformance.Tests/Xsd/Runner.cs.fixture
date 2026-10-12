@@ -221,7 +221,62 @@ internal static class Runner
         }
         return false;
     }
-    internal sealed class Resolver : XmlResourceResolver
+    internal static string FileHash(string path)
+    {
+        using var stream = File.OpenRead(path);
+        return Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(stream)).ToLowerInvariant();
+    }
+    internal static bool OrdinalExists(string relative)
+    {
+        string current = Root;
+        foreach (string segment in relative.Split('/'))
+        {
+            if (!Directory.Exists(current)) return false;
+            string? exact = Directory.EnumerateFileSystemEntries(current).SingleOrDefault(p => Path.GetFileName(p).Equals(segment, StringComparison.Ordinal));
+            if (exact is null) return false;
+            current = exact;
+        }
+        return true;
+    }
+    internal static bool VerifiedCandidateMissing(XmlResourceRequest request, JsonElement? context)
+    {
+        if (!context.HasValue || context.Value.ValueKind != JsonValueKind.Object) return false;
+        var row = context.Value;
+        if (!row.TryGetProperty("id", out var id)) return false;
+        if (id.GetString() is not ("msMeta/Annotations_w3c.xml#g12/s:annotA013" or "msMeta/Annotations_w3c.xml#g13/s:annotA014" or "msMeta/Annotations_w3c.xml#g47/s:annotB025" or "msMeta/DataTypes_w3c.xml#g1336/s:anyURI_a001_1336" or "msMeta/DataTypes_w3c.xml#g1341/s:anyURI_a006_1341" or "msMeta/DataTypes_w3c.xml#g1343/s:anyURI_a008_1343" or "msMeta/DataTypes_w3c.xml#g1344/s:anyURI_a009_1344" or "msMeta/Schema_w3c.xml#g13/s:schB8" or "msMeta/Schema_w3c.xml#g20/s:schD8" or "msMeta/Schema_w3c.xml#g30/s:schE9" or "msMeta/Schema_w3c.xml#g59/s:schH9" or "msMeta/Schema_w3c.xml#g126/s:schZ012_b" or "msMeta/Schema_w3c.xml#g127/s:schZ012_c")) return false;
+        string corpus = Path.GetDirectoryName(Root)!;
+        string factsPath = Path.Combine(corpus, "optional-adapter-obligations.json");
+        if (FileHash(factsPath) != "818049ca3ef5f29cb83eb8817a1442906a35757342cbf855185b4801f869212f") throw new IOException("Optional obligation facts changed");
+        using var facts = JsonDocument.Parse(File.ReadAllText(factsPath));
+        var binding = facts.RootElement.GetProperty("cases").EnumerateArray().Single(c => c.GetProperty("id").GetString() == id.GetString());
+        if (JsonSerializer.Serialize(row) != JsonSerializer.Serialize(binding.GetProperty("schema_row"))) throw new IOException("Optional schema context differs from exact original: " + id.GetString());
+        foreach (string file in new[] { "inventory", "catalog" })
+            if (FileHash(Path.Combine(corpus, file == "inventory" ? "inventory.json" : "resources.json")) != facts.RootElement.GetProperty(file + "_sha256").GetString()) throw new IOException("Optional " + file + " changed");
+        void Pin(string name, string checksum)
+        {
+            if (FileHash(PathFor(UriFor(name))) != checksum) throw new IOException("Optional original hash changed: " + name);
+        }
+        Pin(binding.GetProperty("metadata").GetString()!, binding.GetProperty("metadata_sha256").GetString()!);
+        foreach (var doc in binding.GetProperty("documents").EnumerateObject()) Pin(doc.Name, doc.Value.GetString()!);
+        // The annotation-rejected a001 obligation remains inactive even for exact 0/123 callbacks.
+        if (!binding.GetProperty("mapping_active").GetBoolean()) return false;
+        foreach (var callback in binding.GetProperty("candidate_absence_bindings").EnumerateArray())
+        {
+            if (request.Kind != XmlResourceKind.Schema || request.Referrer?.AbsoluteUri != callback.GetProperty("referrer").GetString() || request.SystemId != callback.GetProperty("systemId").GetString() || request.Uri.AbsoluteUri != callback.GetProperty("resolvedUri").GetString()) continue;
+            if (callback.GetProperty("substantiveRedefine").GetBoolean() || callback.GetProperty("directive").GetString() is not ("include" or "import" or "redefine")) throw new IOException("Ineligible optional directive");
+            Pin(callback.GetProperty("principal").GetString()!, callback.GetProperty("principal_sha256").GetString()!);
+            if (!AuthoredUnavailable(request.Uri)) throw new IOException("Optional resource no longer absent from exact catalog");
+            if (request.Uri.Scheme == "https" && request.Uri.Host == "w3c-xsd.test" && request.Uri.AbsolutePath.StartsWith("/source/", StringComparison.Ordinal))
+            {
+                string relative = Uri.UnescapeDataString(request.Uri.AbsolutePath[8..]);
+                if (OrdinalExists(relative)) throw new IOException("Uncatalogued exact optional resource exists: " + relative);
+                // An ordinal absent authored name must never open a case-insensitive alias.
+            }
+            return true;
+        }
+        return false;
+    }
+    internal sealed class Resolver(JsonElement? context = null) : XmlResourceResolver
     {
         internal readonly List<object> Requests = [];
         public override XmlResolvedResource? Resolve(XmlResourceRequest request, CancellationToken token)
@@ -237,7 +292,8 @@ internal static class Runner
             token.ThrowIfCancellationRequested();
             if (request.Kind != XmlResourceKind.Schema) throw new IOException("Unexpected resource purpose");
             bool absent = AuthoredUnavailable(request.Uri);
-            bool optional = absent && VerifiedOptionalMissing(request);
+            bool candidate = VerifiedCandidateMissing(request, context);
+            bool optional = absent && (VerifiedOptionalMissing(request) || candidate);
             Requests.Add(new { resolution = optional ? "explicit-unavailable" : absent ? "denied-unmapped-absence" : "pinned-input", uri = request.Uri.AbsoluteUri, referrer = request.Referrer?.AbsoluteUri, kind = request.Kind.ToString(), systemId = request.SystemId });
             if (absent) return optional ? XmlResourceResolution.Unavailable : XmlResourceResolution.Denied;
             return XmlResourceResolution.FromResource(new(File.OpenRead(PathFor(request.Uri)), request.Uri));
@@ -284,7 +340,7 @@ internal static class Runner
                 continue;
             }
             if (engine == "bcl") { BclEngine.Run(group, output); continue; }
-            var sr = group.GetProperty("schema"); var resolver = new Resolver(); ProductSchema? schema = null; Observation compile;
+            var sr = group.GetProperty("schema"); var resolver = new Resolver(sr); ProductSchema? schema = null; Observation compile;
             using (var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(30)))
             {
                 try
@@ -307,7 +363,7 @@ internal static class Runner
                 {
                     using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds((row.GetProperty("id").GetString() is "common/introspection.testSet#g0/i1:introspect-testSet-NIST2004-01-14-2" or "common/introspection.testSet#g0/i20:introspect-testSet-MS-DataTypes2006-07-15-21" or "common/introspection.testSet#g0/i28:introspect-testSet-MS-Regex2006-07-15-29") ? 60 : 30));
                     long work = (row.GetProperty("id").GetString() is "common/introspection.testSet#g0/i1:introspect-testSet-NIST2004-01-14-2" or "common/introspection.testSet#g0/i20:introspect-testSet-MS-DataTypes2006-07-15-21" or "common/introspection.testSet#g0/i28:introspect-testSet-MS-Regex2006-07-15-29") ? 20_000_000_000 : 100_000_000;
-                    var instanceResolver = new Resolver(); var preparation = new List<object>();
+                    var instanceResolver = new Resolver(sr); var preparation = new List<object>();
                     try
                     {
                         using var input = File.OpenRead(PathFor(UriFor(Documents(row).Single())));

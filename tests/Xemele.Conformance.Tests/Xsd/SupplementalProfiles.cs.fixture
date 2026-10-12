@@ -1,0 +1,187 @@
+using System.Text.Json;
+using Xemele;
+using Xemele.Validation;
+using ProductSchema = Xemele.Validation.XmlSchema;
+namespace XsdCorpus;
+// SOURCE preparation only. Root separately builds/launches this profile executable.
+internal static class SupplementalProfiles
+{
+    private const string FactsSha = "dd4d7c529119a5ab0f914f332eccd7c778e48fecb204f76113edb16ccdafa1d4";
+    private const string XmlUrl = "https://www.w3.org/2001/xml.xsd";
+    private static void Check(bool value, string label) { if (!value) throw new IOException(label); }
+    internal static JsonDocument Bindings()
+    {
+        string corpus = Path.GetDirectoryName(Runner.Root)!;
+        string file = Path.Combine(corpus, "application-supplemental-inputs.json");
+        Check(Runner.FileHash(file) == FactsSha, "Supplement facts changed");
+        var facts = JsonDocument.Parse(File.ReadAllText(file));
+        try
+        {
+            var root = facts.RootElement;
+            foreach (var pair in new[] { ("inventory.json", "inventory_sha256"), ("resources.json", "catalog_sha256"), ("xml-namespace-profile.json", "xml_authority_sha256"), ("approved-residual-dispositions.json", "late_authority_sha256") })
+                Check(Runner.FileHash(Path.Combine(corpus, pair.Item1)) == root.GetProperty(pair.Item2).GetString(), "Supplement authority changed: " + pair.Item1);
+            using var inventory = JsonDocument.Parse(File.ReadAllText(Path.Combine(corpus, "inventory.json")));
+            var rows = inventory.RootElement.GetProperty("groups").EnumerateArray().SelectMany(g =>
+                (g.GetProperty("schema").ValueKind == JsonValueKind.Null ? Array.Empty<JsonElement>() : new[] { g.GetProperty("schema") }).Concat(Runner.Instances(g))).ToDictionary(r => r.GetProperty("id").GetString()!);
+            foreach (var group in root.GetProperty("xml_groups").EnumerateArray())
+            {
+                foreach (var row in group.GetProperty("rows").EnumerateArray()) ExactRow(row, rows[row.GetProperty("id").GetString()!]);
+                Pin(group.GetProperty("metadata"));
+                foreach (var doc in group.GetProperty("documents").EnumerateObject()) Pin(doc.Name, doc.Value.GetString()!);
+            }
+            var late = root.GetProperty("late_hint");
+            ExactRow(late.GetProperty("original_row"), rows[late.GetProperty("original_row").GetProperty("id").GetString()!]);
+            Pin(late.GetProperty("metadata")); Pin(late.GetProperty("instance"));
+            foreach (var doc in late.GetProperty("ordered_schema_inputs").EnumerateArray()) Pin(doc);
+            var xml = root.GetProperty("xml_resource");
+            string xmlPath = Path.Combine(corpus, xml.GetProperty("path").GetString()!);
+            Check(Runner.PathFor(new Uri(XmlUrl)) == xmlPath, "XML resource mapping changed");
+            Check(Runner.FileHash(xmlPath) == xml.GetProperty("sha256").GetString() && new FileInfo(xmlPath).Length == xml.GetProperty("bytes").GetInt64(), "Captured XML resource changed");
+            return facts;
+        }
+        catch { facts.Dispose(); throw; }
+    }
+    private static void ExactRow(JsonElement expected, JsonElement actual) => Check(JsonSerializer.Serialize(expected) == JsonSerializer.Serialize(actual), "Supplement original row changed");
+    private static void Pin(string name, string sha) => Check(Runner.FileHash(Runner.PathFor(Runner.UriFor(name))) == sha, "Supplement input changed: " + name);
+    private static void Pin(JsonElement file)
+    {
+        string name = file.GetProperty("path").GetString()!;
+        Pin(name, file.GetProperty("sha256").GetString()!);
+        if (file.TryGetProperty("bytes", out var size)) Check(new FileInfo(Runner.PathFor(Runner.UriFor(name))).Length == size.GetInt64(), "Supplement size changed: " + name);
+    }
+    internal static bool LatePlan(JsonElement row, Runner.InstancePlan plan, JsonElement late)
+    {
+        if (JsonSerializer.Serialize(row) != JsonSerializer.Serialize(late.GetProperty("original_row"))) return false;
+        var documents = late.GetProperty("ordered_schema_inputs").EnumerateArray().ToArray();
+        if (plan.Inputs.Length != 3 || documents.Length != 3 || !plan.Augmented || plan.Limitations.Length == 0) return false;
+        string[] namespaces = ["", "foo", "bar"];
+        for (int i = 0; i < 3; i++)
+        {
+            var input = plan.Inputs[i];
+            if (!input.Hint || input.Namespace != namespaces[i] || Runner.UriFor(input.Location) != Runner.UriFor(documents[i].GetProperty("path").GetString()!)) return false;
+            Pin(documents[i]);
+        }
+        Pin(late.GetProperty("instance"));
+        return true;
+    }
+    private sealed class Allowlist(string[] uris) : XmlResourceResolver
+    {
+        private readonly HashSet<string> Allowed = new(uris, StringComparer.Ordinal);
+        internal readonly List<object> Requests = [];
+        public override XmlResolvedResource? Resolve(XmlResourceRequest request, CancellationToken token) => ResolveResult(request, token).Resource;
+        public override XmlResourceResolution ResolveResult(XmlResourceRequest request, CancellationToken token)
+        {
+            token.ThrowIfCancellationRequested();
+            bool allowed = request.Kind == XmlResourceKind.Schema && Allowed.Contains(request.Uri.AbsoluteUri);
+            Requests.Add(new { uri=request.Uri.AbsoluteUri, referrer=request.Referrer?.AbsoluteUri, systemId=request.SystemId, kind=request.Kind.ToString(), resolution=allowed?"exact-supplied-resource":"denied-outside-allowlist" });
+            return allowed ? XmlResourceResolution.FromResource(new(File.OpenRead(Runner.PathFor(request.Uri)), request.Uri)) : XmlResourceResolution.Denied;
+        }
+    }
+    private static ProductSchema Compile((Stream Input, Uri Source) prepared, XmlResourceResolver resolver, CancellationToken token)
+    {
+        using var stream = prepared.Input;
+        var result = ProductSchema.Compile(stream, new() { BaseUri=prepared.Source, Resolver=resolver, Limits=Runner.Limits, MaxOperations=100_000_000, MaxComponents=1_000_000, CancellationToken=token });
+        Check(stream.CanRead, "Supplement compile disposed caller stream"); return result;
+    }
+    private static object Provenance(JsonElement facts, JsonElement row) => new { originalId=row.GetProperty("id").GetString(), originalExpected=row.GetProperty("expected").GetString(), originalRow=row, upstreamRevision=facts.GetProperty("upstream_revision").GetString(), inventorySha256=facts.GetProperty("inventory_sha256").GetString(), catalogSha256=facts.GetProperty("catalog_sha256").GetString(), factsSha256=FactsSha, originalPassed=(bool?)null, countAsOriginalPass=false, countAsGatePass=false, baseline="Original outcomes remain in campaign journals and exact approved dispositions; this row is a separate executed supplement" };
+    internal static int Controls(string output)
+    {
+        using var bindings=Bindings();var facts=bindings.RootElement;var late=facts.GetProperty("late_hint");var row=late.GetProperty("original_row");
+        var plan=Runner.InstanceInputs(row,[],new());Check(LatePlan(row,plan,late),"exact new late supplement plan");
+        Check(!Runner.VerifiedHintOrdering(row,plan),"new supplement excluded from old seven original markers");
+        foreach(var changed in new[] {plan with {Inputs=plan.Inputs.Reverse().ToArray()},plan with {Inputs=[]},plan with {Inputs=[plan.Inputs[0] with {Namespace="changed"},plan.Inputs[1],plan.Inputs[2]]},plan with {Inputs=[plan.Inputs[0],plan.Inputs[1] with {Location=Runner.Origin+"msData/additional/test93490_2.xsd"},plan.Inputs[2]]},plan with {Inputs=[plan.Inputs[0] with {Hint=false},plan.Inputs[1],plan.Inputs[2]]},plan with {Limitations=[]}})
+            Check(!LatePlan(row,changed,late),"late changed first-schema order/count/namespace/URI/hint/limitation rejected");
+        var node=System.Text.Json.Nodes.JsonNode.Parse(row.GetRawText())!.AsObject();node["expected"]="invalid";
+        using(var changed=JsonDocument.Parse(node.ToJsonString()))Check(!LatePlan(changed.RootElement,plan,late),"late original VALID oracle mutation rejected");
+        var denied=new Allowlist([]);var xmlRequest=new XmlResourceRequest(new Uri(XmlUrl),Runner.UriFor("__wrapper__.xsd"),XmlResourceKind.Schema);
+        Check(denied.ResolveResult(xmlRequest,default).Status==XmlResourceResolutionStatus.Denied,"explicit XML supplied-resource denial remains nonsemantic");
+        var exact=new Allowlist([XmlUrl]);Check(exact.ResolveResult(xmlRequest with {Uri=new Uri("https://unlisted.test/ambient.xsd")},default).Status==XmlResourceResolutionStatus.Denied,"supplement ambient schema denied");
+        Check(exact.ResolveResult(xmlRequest with {Kind=XmlResourceKind.ExternalEntity},default).Status==XmlResourceResolutionStatus.Denied,"supplement nonschema acquisition denied");
+        using(var cancelled=new CancellationTokenSource())
+        {
+            cancelled.Cancel();var resolver=new Allowlist([XmlUrl]);bool stopped=false;
+            try{resolver.ResolveResult(xmlRequest,cancelled.Token);}catch(OperationCanceledException){stopped=true;}
+            Check(stopped&&resolver.Requests.Count==0,"supplement cancellation precedes acquisition");
+        }
+        string saved=Runner.Root,corpus=Path.GetDirectoryName(saved)!,temporary=Path.GetFullPath(Path.Combine(saved,"../../../../artifacts/M8-xsd-corpus/supplement-guards-"+Guid.NewGuid().ToString("N"))),upstream=Path.Combine(temporary,"upstream");Directory.CreateDirectory(upstream);
+        bool ThrowsIo(Action action){try{action();return false;}catch(IOException){return true;}}
+        void Copy(string name)
+        {
+            string source=Path.Combine(corpus,name),target=Path.Combine(temporary,name);Directory.CreateDirectory(Path.GetDirectoryName(target)!);File.Copy(source,target,true);
+        }
+        var originals=new HashSet<string>(StringComparer.Ordinal);
+        foreach(var group in facts.GetProperty("xml_groups").EnumerateArray())
+        {
+            originals.Add(group.GetProperty("metadata").GetProperty("path").GetString()!);
+            foreach(var doc in group.GetProperty("documents").EnumerateObject())originals.Add(doc.Name);
+        }
+        originals.Add(late.GetProperty("metadata").GetProperty("path").GetString()!);originals.Add(late.GetProperty("instance").GetProperty("path").GetString()!);
+        foreach(var doc in late.GetProperty("ordered_schema_inputs").EnumerateArray())originals.Add(doc.GetProperty("path").GetString()!);
+        string[] authorities=["application-supplemental-inputs.json","inventory.json","resources.json","xml-namespace-profile.json","approved-residual-dispositions.json","external-resources.json"];
+        try
+        {
+            foreach(string name in authorities)Copy(name);foreach(string name in originals)Copy("upstream/"+name);Copy("resources/xml.xsd");Runner.Root=upstream;
+            using(var copied=Bindings())Check(copied.RootElement.GetProperty("xml_groups").GetArrayLength()==2,"identical supplement source copies bind two groups/four original IDs");
+            foreach(string name in authorities.Where(n=>n!="external-resources.json").Concat(originals.Select(n=>"upstream/"+n)).Append("resources/xml.xsd"))
+            {
+                File.AppendAllText(Path.Combine(temporary,name)," ");
+                Check(ThrowsIo(()=>{using var changed=Bindings();}),"changed supplement authority/input hash rejected: "+name);Copy(name);
+            }
+            string xmlPath=Path.Combine(temporary,"resources/xml.xsd");File.Delete(xmlPath);
+            Check(ThrowsIo(()=>new Allowlist([XmlUrl]).ResolveResult(xmlRequest,default)),"missing explicitly supplied XML resource remains harness error");
+            Check(ThrowsIo(()=>{using var changed=Bindings();}),"missing captured XML prevents supplement assessment");
+        }
+        finally{Runner.Root=saved;Directory.Delete(temporary,true);}
+        File.WriteAllText(output,JsonSerializer.Serialize(new {kind="supplement-controls",actual="passed",originalPassed=(bool?)null,countAsOriginalPass=false,countAsGatePass=false,scope="two XML groups/four original IDs and addB163.v only; no original result rows"}));return 0;
+    }
+    internal static int Run(string output)
+    {
+        using var bindings = Bindings(); var facts = bindings.RootElement; var rows = new List<object>(); bool agreed = true;
+        foreach (var group in facts.GetProperty("xml_groups").EnumerateArray())
+        {
+            var originals = group.GetProperty("rows").EnumerateArray().ToArray();
+            string schemaPath = Runner.Documents(originals[0]).Single(), instancePath = Runner.Documents(originals[1]).Single();
+            string[] supplied = [Runner.UriFor(schemaPath).AbsoluteUri, XmlUrl]; var resolver = new Allowlist(supplied);
+            using var deadline = new CancellationTokenSource(TimeSpan.FromSeconds(30)); ProductSchema? schema = null; Observation compile;
+            var prepared = Runner.Input([schemaPath, XmlUrl]); Uri wrapper = prepared.Source;
+            try { schema = Compile(prepared, resolver, deadline.Token); compile = new("schema-valid", "", [], []); }
+            catch (Exception e) { compile = Runner.Failure(e, new(), deadline.Token); }
+            bool schemaPass = compile.Outcome == "schema-valid"; agreed &= schemaPass;
+            rows.Add(new { id=group.GetProperty("supplemental_ids")[0].GetString(), engine="product", classification="supplemental", kind="supplemental-schema", profile="Explicit application-supplied XML namespace", expected="valid", actual=compile.Outcome, detail=compile.Detail, codes=compile.Codes, complete=schemaPass, profilePassed=schemaPass, provenance=Provenance(facts, originals[0]), originalPassed=(bool?)null, countAsOriginalPass=false, countAsGatePass=false, wrapperBaseUri=wrapper.AbsoluteUri, orderedInputs=supplied.Select(uri=>new { uri, sha256=Runner.FileHash(Runner.PathFor(new Uri(uri))) }), requests=resolver.Requests });
+            Observation assessment; bool complete=false;
+            if (schema is null) assessment = new("schema-unavailable", compile.Detail, compile.Codes, []);
+            else
+            {
+                try
+                {
+                    using var stream = File.OpenRead(Runner.PathFor(Runner.UriFor(instancePath)));
+                    var result = schema.Validate(stream, new() { Limits=Runner.Limits, MaxOperations=100_000_000, CancellationToken=deadline.Token });
+                    Check(stream.CanRead, "Supplement validation disposed caller stream"); complete=result.IsComplete;
+                    assessment = new(!result.IsComplete?"incomplete-refusal":result.IsValid?"instance-valid":"instance-invalid", string.Join("; ", result.Diagnostics.Select(d=>d.Code+": "+d.Message)), result.Diagnostics.Select(d=>d.Code).ToArray(), []);
+                }
+                catch (Exception e) { assessment = Runner.Failure(e, new(), deadline.Token); }
+            }
+            bool instancePass=complete && assessment.Outcome=="instance-valid"; agreed &= instancePass;
+            rows.Add(new { id=group.GetProperty("supplemental_ids")[1].GetString(), engine="product", classification="supplemental", kind="supplemental-instance", profile="Explicit application-supplied XML namespace", expected="valid", actual=assessment.Outcome, detail=assessment.Detail, codes=assessment.Codes, complete, profilePassed=instancePass, provenance=Provenance(facts, originals[1]), originalPassed=(bool?)null, countAsOriginalPass=false, countAsGatePass=false, instanceOriginalUri=Runner.UriFor(instancePath).AbsoluteUri, instanceSha256=Runner.FileHash(Runner.PathFor(Runner.UriFor(instancePath))), transport="public stream validation; original URI retained as provenance", orderedSchemaInputs=supplied, wrapperBaseUri=wrapper.AbsoluteUri, requests=resolver.Requests });
+        }
+        var late = facts.GetProperty("late_hint"); var row = late.GetProperty("original_row"); var journal = new List<object>(); var lateResolver = new Runner.Resolver(); Observation lateResult; bool lateComplete=false;
+        using (var deadline = new CancellationTokenSource(TimeSpan.FromSeconds(30)))
+        {
+            try
+            {
+                var plan = Runner.InstanceInputs(row, [], journal); Check(LatePlan(row, plan, late), "Late supplement first-authored input binding changed");
+                Check(!Runner.VerifiedHintOrdering(row, plan), "Late supplement must not enter old seven original markers");
+                var prepared = Runner.InstanceInput(plan); journal.Add(new { kind="separate-late-hint-supplement", wrapperBaseUri=prepared.Source.AbsoluteUri, orderedInputs=plan.Inputs, limitations=plan.Limitations, interpretation=late.GetProperty("profile").GetString() });
+                var schema = Compile(prepared, lateResolver, deadline.Token);
+                using var stream = File.OpenRead(Runner.PathFor(Runner.UriFor(Runner.Documents(row).Single())));
+                var result = schema.Validate(stream, new() { Limits=Runner.Limits, MaxOperations=100_000_000, CancellationToken=deadline.Token });
+                Check(stream.CanRead, "Late supplement retains caller instance"); lateComplete=result.IsComplete;
+                lateResult = new(!result.IsComplete?"incomplete-refusal":result.IsValid?"instance-valid":"instance-invalid", string.Join("; ", result.Diagnostics.Select(d=>d.Code+": "+d.Message)), result.Diagnostics.Select(d=>d.Code).ToArray(), []);
+            }
+            catch (Exception e) { lateResult=Runner.Failure(e, lateResolver, deadline.Token); }
+        }
+        bool latePass=lateComplete && lateResult.Outcome=="instance-invalid" && lateResult.Codes.Contains(late.GetProperty("diagnostic").GetString()!, StringComparer.Ordinal); agreed &= latePass;
+        rows.Add(new { id=late.GetProperty("supplemental_id").GetString(), engine="product", classification="supplemental", kind="supplemental-instance", profile=late.GetProperty("profile").GetString(), expected="invalid", actual=lateResult.Outcome, detail=lateResult.Detail, codes=lateResult.Codes, complete=lateComplete, profilePassed=latePass, provenance=Provenance(facts, row), originalObservation=late.GetProperty("original_observation"), originalPassed=(bool?)null, countAsOriginalPass=false, countAsGatePass=false, instance=late.GetProperty("instance"), orderedSchemaInputs=late.GetProperty("ordered_schema_inputs"), preparation=journal, requests=lateResolver.Requests });
+        File.WriteAllText(output, JsonSerializer.Serialize(rows, new JsonSerializerOptions { WriteIndented=true })); return agreed?0:1;
+    }
+}

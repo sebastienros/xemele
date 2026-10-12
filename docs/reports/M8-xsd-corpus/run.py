@@ -182,9 +182,27 @@ def preparation_commands():
     return commands
 
 
+def verified_api_inputs():
+    """Current verified API preparation binding; root replaces only after next verified integration."""
+    binding_path = HERE / 'verified-api-preparation.json'
+    binding = json.loads(binding_path.read_text())
+    assert binding['final_freeze_ready'] is True, 'final source/API freeze held pending root verified integration and accepted manifest'
+    source = ROOT / binding['source_manifest']
+    assert digest(source) == binding['source_manifest_sha256'], 'verified API manifest changed'
+    assert binding['apiInputs'] == json.loads(source.read_text())['apiInputs'], 'accepted API membership changed'
+    paths = {str(p.relative_to(ROOT)) for p in (ROOT / 'docs/api').glob('*.txt')}
+    assert paths == set(binding['apiInputs']), 'complete docs/api fragment membership changed'
+    for name, checksum in binding['apiInputs'].items():
+        assert digest(ROOT / name) == checksum, 'verified API fragment changed: ' + name
+    subprocess.run(['git', 'merge-base', '--is-ancestor', binding['verified_integration'], 'HEAD'],
+                   cwd=ROOT, check=True, timeout=5)
+    return {**binding['apiInputs'], binding['source_manifest']: binding['source_manifest_sha256']}
+
+
 def input_identities(include_binaries=True):
     """Declared complete source/input identities; runtime payload added only after fresh build."""
     dependencies = verified_dependencies()
+    api_inputs = verified_api_inputs()
     identities = {'tests/corpora/xsd/upstream/' + r['path']: r['sha256']
                   for r in json.loads((CORPUS / 'resources.json').read_text())}
     for folder in [CORPUS, HERE, ROOT / 'tests/Xemele.Conformance.Tests/Xsd', ROOT / 'tests/Xemele.Differential.Tests/Xsd']:
@@ -201,6 +219,7 @@ def input_identities(include_binaries=True):
     for name in list(dependencies) + ['M8-xsd-corpus']:
         file = ROOT / f'docs/tasks/{name}.json'
         identities[str(file.relative_to(ROOT))] = digest(file)
+    identities.update(api_inputs)
     if include_binaries:
         for folder in [OUT / 'runner-bin/Release/net10.0', ROOT / 'src/Xemele/bin/Release/net10.0']:
             assert folder.is_dir(), f'missing fresh build folder: {folder}'

@@ -127,11 +127,82 @@ internal static class Controls
             Runner.OriginalPaths = new(Runner.OriginalPaths!, StringComparer.Ordinal) { "declared-but-missing.xsd" };
             Require(ThrowsIo(() => new Runner.Resolver().ResolveResult(declaredMissing, default)), "declared missing file remains harness error, never Unavailable");
             Runner.OriginalPaths = null;
+            CandidateOptionalBindings(upstream);
             BclEngine.ReferenceControls();
             InfrastructureFinalObservations();
             return 0;
         }
         finally { Runner.Root = saved; Runner.OriginalPaths = savedPaths; }
+    }
+    // Root activates inside the existing optional preparation command; worker execution is held.
+    private static void CandidateOptionalBindings(string upstream)
+    {
+        string savedRoot=Runner.Root; var savedPaths=Runner.OriginalPaths;
+        Runner.Root=Path.GetFullPath(upstream); Runner.OriginalPaths=null;
+        using var facts=System.Text.Json.JsonDocument.Parse(File.ReadAllText(Path.Combine(Path.GetDirectoryName(upstream)!,"optional-adapter-obligations.json")));
+        var cases=facts.RootElement.GetProperty("cases").EnumerateArray().ToArray();
+        bool ThrowsIo(Action action) { try { action(); return false; } catch(IOException) { return true; } }
+        System.Text.Json.JsonElement Changed(System.Text.Json.JsonElement row, string field, System.Text.Json.Nodes.JsonNode? value)
+        {
+            var node=System.Text.Json.Nodes.JsonNode.Parse(row.GetRawText())!.AsObject(); node[field]=value;
+            using var changed=System.Text.Json.JsonDocument.Parse(node.ToJsonString()); return changed.RootElement.Clone();
+        }
+        try
+        {
+            Require(cases.Length==13&&cases.Count(c=>c.GetProperty("mapping_active").GetBoolean())==12,"exact thirteen obligations/twelve active optional cases");
+            foreach(var candidate in cases)
+            {
+                var row=candidate.GetProperty("schema_row"); bool active=candidate.GetProperty("mapping_active").GetBoolean();
+                foreach(var binding in candidate.GetProperty("candidate_absence_bindings").EnumerateArray())
+                {
+                    var request=new Xemele.XmlResourceRequest(new Uri(binding.GetProperty("resolvedUri").GetString()!),new Uri(binding.GetProperty("referrer").GetString()!),Xemele.XmlResourceKind.Schema) { SystemId=binding.GetProperty("systemId").GetString() };
+                    Require(Runner.VerifiedCandidateMissing(request,row)==active,"exact optional context callback active="+active+" "+candidate.GetProperty("id").GetString());
+                    Require(new Runner.Resolver(row).ResolveResult(request,default).Status==(active?Xemele.XmlResourceResolutionStatus.Unavailable:Xemele.XmlResourceResolutionStatus.Denied),"exact optional resolution status");
+                    Require(new Runner.Resolver().ResolveResult(request,default).Status==Xemele.XmlResourceResolutionStatus.Denied,"new callback without schema context remains denied");
+                    Require(new Runner.Resolver(row).Resolve(request,default) is null,"new optional legacy null remains denial");
+                    foreach(var changed in new[] { request with { SystemId=request.SystemId+"-neighbor" },request with { Referrer=Runner.UriFor("other-referrer.xsd") },request with { Uri=Runner.UriFor("other-absent.xsd") } })
+                        Require(!Runner.VerifiedCandidateMissing(changed,row)&&new Runner.Resolver(row).ResolveResult(changed,default).Status==Xemele.XmlResourceResolutionStatus.Denied,"changed optional request tuple denied");
+                    Require(ThrowsIo(()=>new Runner.Resolver(row).ResolveResult(request with { Kind=Xemele.XmlResourceKind.ExternalEntity },default)),"new optional nonschema purpose fails closed");
+                    foreach(string field in new[] {"kind","classification","expected","reason"})
+                        Require(ThrowsIo(()=>new Runner.Resolver(Changed(row,field,System.Text.Json.Nodes.JsonValue.Create("changed"))).ResolveResult(request,default)),"known optional context mutation fails closed: "+field);
+                    foreach(string field in new[] {"documents","originalExpected","currentStatus","priorStatus","scopes"})
+                        Require(ThrowsIo(()=>new Runner.Resolver(Changed(row,field,new System.Text.Json.Nodes.JsonArray(System.Text.Json.Nodes.JsonValue.Create("changed")))).ResolveResult(request,default)),"known optional ordered/status context mutation fails closed: "+field);
+                    var neighbor=Changed(row,"id",System.Text.Json.Nodes.JsonValue.Create(candidate.GetProperty("id").GetString()+"-neighbor"));
+                    Require(!Runner.VerifiedCandidateMissing(request,neighbor),"unlisted optional ID grants no mapping");
+                    using var cancelled=new CancellationTokenSource();cancelled.Cancel();var resolver=new Runner.Resolver(row);bool stopped=false;
+                    try {resolver.ResolveResult(request,cancelled.Token);} catch(OperationCanceledException) {stopped=true;}
+                    Require(stopped&&resolver.Requests.Count==0,"new optional cancellation precedes acquisition");
+                    if(request.SystemId is "Schz012_b.xsd" or "Schz012_C.xsd")
+                        Require(!Runner.OrdinalExists(Uri.UnescapeDataString(request.Uri.AbsolutePath[8..]))&&Runner.AuthoredUnavailable(request.Uri),"case-specific authored dependency absent in ordinal catalog/directory; similar filename never opened");
+                }
+            }
+            var first=cases[0];var firstBinding=first.GetProperty("candidate_absence_bindings")[0];var firstRow=first.GetProperty("schema_row");
+            string temporary=Path.GetFullPath(Path.Combine(upstream,"../../../../artifacts/M8-xsd-corpus/candidate-guards-"+Guid.NewGuid().ToString("N"))),tempRoot=Path.Combine(temporary,"upstream"); Directory.CreateDirectory(tempRoot);
+            void Copy(string relative)
+            {
+                string target=Path.Combine(tempRoot,relative);Directory.CreateDirectory(Path.GetDirectoryName(target)!);File.Copy(Path.Combine(upstream,relative),target,true);
+            }
+            try
+            {
+                foreach(string file in new[] {"resources.json","inventory.json","external-resources.json","optional-adapter-obligations.json"}) File.Copy(Path.Combine(Path.GetDirectoryName(upstream)!,file),Path.Combine(temporary,file));
+                Copy(first.GetProperty("metadata").GetString()!);foreach(var d in first.GetProperty("documents").EnumerateObject())Copy(d.Name);
+                var request=new Xemele.XmlResourceRequest(new Uri(firstBinding.GetProperty("resolvedUri").GetString()!),new Uri(firstBinding.GetProperty("referrer").GetString()!),Xemele.XmlResourceKind.Schema) { SystemId=firstBinding.GetProperty("systemId").GetString() };
+                Runner.Root=tempRoot;Runner.OriginalPaths=null;
+                Require(Runner.VerifiedCandidateMissing(request,firstRow),"identical candidate source copies bind");
+                string principal=Path.Combine(tempRoot,firstBinding.GetProperty("principal").GetString()!);File.AppendAllText(principal," ");
+                Require(ThrowsIo(()=>new Runner.Resolver(firstRow).ResolveResult(request,default)),"changed candidate principal SHA fails closed");Copy(firstBinding.GetProperty("principal").GetString()!);
+                string metadata=Path.Combine(tempRoot,first.GetProperty("metadata").GetString()!);File.AppendAllText(metadata," ");
+                Require(ThrowsIo(()=>new Runner.Resolver(firstRow).ResolveResult(request,default)),"changed candidate metadata SHA fails closed");Copy(first.GetProperty("metadata").GetString()!);
+                string absent=Path.Combine(tempRoot,Uri.UnescapeDataString(request.Uri.AbsolutePath[8..]));File.WriteAllText(absent,"<schema/>");
+                Require(ThrowsIo(()=>new Runner.Resolver(firstRow).ResolveResult(request,default)),"uncatalogued exact candidate file fails closed");File.Delete(absent);
+                string catalog=Path.Combine(temporary,"resources.json");File.AppendAllText(catalog," ");
+                Require(ThrowsIo(()=>new Runner.Resolver(firstRow).ResolveResult(request,default)),"changed candidate catalog SHA fails closed");File.Copy(Path.Combine(Path.GetDirectoryName(upstream)!,"resources.json"),catalog,true);
+                string manifest=Path.Combine(temporary,"optional-adapter-obligations.json");File.AppendAllText(manifest," ");
+                Require(ThrowsIo(()=>new Runner.Resolver(firstRow).ResolveResult(request,default)),"changed candidate obligation SHA fails closed");
+            }
+            finally {Runner.Root=Path.GetFullPath(upstream);Runner.OriginalPaths=null;Directory.Delete(temporary,true);}
+        }
+        finally {Runner.Root=savedRoot;Runner.OriginalPaths=savedPaths;}
     }
     private sealed class LegacyMissing : Xemele.XmlResourceResolver
     {
