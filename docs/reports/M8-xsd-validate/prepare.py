@@ -6,7 +6,7 @@ def digest(path):
  with path.open('rb') as stream:return hashlib.file_digest(stream,'sha256').hexdigest()
 prepared_revision=subprocess.check_output(['git','rev-parse','HEAD'],cwd=root,text=True).strip()
 task=json.loads((root/'docs/tasks/M8-xsd-validate.json').read_text())
-revision=prepared_revision
+revision=next(e['revision'] for e in reversed(task['evidence']) if e['id']=='core-correctness' and e['result']=='passed')
 inputs=['src/Xemele','tests/Xemele.Tests/M8-xsd-validate','benchmarks/Xemele.Benchmarks/M8-xsd-validate','samples/M8-xsd-validate','docs/reports/M8-xsd-validate/check.py','docs/reports/M8-xsd-validate/XmlOnly']
 subprocess.run(['git','diff','--exit-code',revision,'--',*inputs],cwd=root,check=True,stdout=subprocess.DEVNULL)
 out=root/'artifacts/M8-xsd-validate/measurement-1'

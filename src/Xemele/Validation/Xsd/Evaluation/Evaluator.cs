@@ -37,7 +37,6 @@ internal sealed partial class XsdValidationRun : ISchemaOperation
     private long characters;
     private HashSet<string>? ids;
     private Dictionary<string, XmlLocation>? references;
-    private sealed class Stopped : Exception { }
     private sealed class Frame(XmlNode node, XsdElementDeclaration? declaration, XsdTypeDefinition? type,
         SchemaNamespaceContext context, bool skip, bool nil, bool valid, IXsdContentCursor? cursor)
     {
@@ -49,8 +48,8 @@ internal sealed partial class XsdValidationRun : ISchemaOperation
         internal bool Valid = valid, HasChild;
         internal readonly IXsdContentCursor? Cursor = cursor;
         internal XmlNode Next = node.FirstChild;
-        internal string? Text;
-        internal StringBuilder? Joined;
+        internal readonly XsdTextBuffer Text = new();
+        internal long TextScalars;
     }
     internal XsdValidationRun(XsdCompiledSchema schema, XmlDocument document, ValidationOptions options,
         IReadOnlyDictionary<SchemaName, XsdContentProgram> programs, IXsdContentMatcher matcher, IXmlFacetEvaluator facets)
@@ -65,19 +64,19 @@ internal sealed partial class XsdValidationRun : ISchemaOperation
     private void Revision()
     { if (revision < 0 || document.ContentRevision != revision) throw new InvalidOperationException("Document changed during XSD validation."); }
     public bool Charge(long work, XmlLocation location)
-    { Revision(); if (!operation.Charge(work, location == default ? current : location)) throw new Stopped(); return true; }
+    { Revision(); if (!operation.Charge(work, location == default ? current : location)) throw new XsdEvaluationStopped(); return true; }
     public bool ChargeComponents(int count, XmlLocation location)
-    { Revision(); if (!operation.ChargeComponents(count, location == default ? current : location)) throw new Stopped(); return true; }
+    { Revision(); if (!operation.ChargeComponents(count, location == default ? current : location)) throw new XsdEvaluationStopped(); return true; }
     public bool AddDiagnostic(XmlDiagnostic diagnostic)
-    { Revision(); if (!operation.AddDiagnostic(diagnostic)) throw new Stopped(); return true; }
+    { Revision(); if (!operation.AddDiagnostic(diagnostic)) throw new XsdEvaluationStopped(); return true; }
     public void Refuse(string code, string message, XmlLocation location)
-    { Revision(); operation.Refuse(code, message, location == default ? current : location); throw new Stopped(); }
-    private void Work(long amount = 1) { if (!Charge(amount, current)) throw new Stopped(); }
-    private void Retain(int count = 1) { if (!ChargeComponents(count, current)) throw new Stopped(); }
+    { Revision(); operation.Refuse(code, message, location == default ? current : location); throw new XsdEvaluationStopped(); }
+    private void Work(long amount = 1) { if (!Charge(amount, current)) throw new XsdEvaluationStopped(); }
+    private void Retain(int count = 1) { if (!ChargeComponents(count, current)) throw new XsdEvaluationStopped(); }
     private void Poll() => Work(0);
     private bool Error(string code, string message, XmlLocation? location = null)
     { AddDiagnostic(new(code, XmlDiagnosticSeverity.Error, message, location ?? current)); Poll(); return false; }
-    private void Limit(string message) { Refuse("VALIDATION.Limit", message, current); throw new Stopped(); }
+    private void Limit(string message) { Refuse("VALIDATION.Limit", message, current); throw new XsdEvaluationStopped(); }
     internal ValidationResult Run(IXsdIdentityFactory? factory, XsdIdentityProgram? program)
     {
         try
@@ -86,7 +85,7 @@ internal sealed partial class XsdValidationRun : ISchemaOperation
             if (!document.SourceInputComplete || document.HasIncompleteAttributes || document.UnresolvedReferences.Count != 0 || document.Dtd?.UnreadParameterLocation is not null)
             { Refuse("XSD.IncompleteInput", "Instance input contains unresolved or incomplete source content.", default); return Finish(); }
             foreach (var type in schema.Types) { Work(); Retain(); types.Add(type.Name, type); }
-            if (factory is not null) { identity = factory.Create(schema, program!, document); Poll(); }
+            if (factory is not null) { identity = factory.Create(schema, program!, document) ?? throw new InvalidOperationException("Identity factory returned no session."); Poll(); }
             var root = document.RootElement;
             if (root.IsDefault) { Error("XSD.Root", "A document element is required."); return Finish(); }
             // Also inspect top-level text and detect multiple elements in a mutable DOM.
@@ -102,7 +101,7 @@ internal sealed partial class XsdValidationRun : ISchemaOperation
             XsdElementDeclaration? declaration = schema.GlobalElements.ContainsKey(Name(root)) ? schema.Elements[rootId] : null;
             var stack = new List<Frame>();
             var empty = new SchemaNamespaceContext(new Dictionary<string, string> { ["xml"] = "http://www.w3.org/XML/1998/namespace" }, "", document.OriginalLocation(root).SourceUri);
-            stack.Add(Enter(root, declaration, empty, false, 1));
+            stack.Add(Enter(root, declaration, empty, false, 1, true));
             while (stack.Count != 0)
             {
                 Work(); var frame = stack[^1]; current = document.OriginalLocation(frame.Node);
@@ -110,23 +109,18 @@ internal sealed partial class XsdValidationRun : ISchemaOperation
                 var child = frame.Next; frame.Next = child.NextSibling; current = document.OriginalLocation(child);
                 if (child.Kind != XmlNodeKind.Element)
                 {
-                    Text(child.Value, false);
+                    int scalars = Text(child.Value, false);
                     if (child.Kind is XmlNodeKind.Text or XmlNodeKind.CData)
                     {
                         if (!frame.Skip && frame.Type is { } t && (frame.Nil && child.Value.Length != 0 ||
                             t.ContentKind == XsdContentKind.Empty && child.Value.Length != 0 || t.ContentKind == XsdContentKind.ElementOnly && !White(child.Value)))
                             frame.Valid = Error("XSD.Content", "Character content is not permitted here.");
-                        if (frame.Type?.ContentKind is XsdContentKind.Simple or XsdContentKind.Mixed)
+                        if (frame.Type?.ContentKind == XsdContentKind.Simple || frame.Type?.ContentKind == XsdContentKind.Mixed && (frame.Declaration?.FixedValue ?? frame.Declaration?.DefaultValue) is not null)
                         {
-                            Work(child.Value.Length);
-                            if (frame.Text is null) frame.Text = child.Value;
-                            else
-                            {
-                                int length = frame.Joined?.Length ?? frame.Text.Length;
-                                if (child.Value.Length > Array.MaxLength - length) Limit("Simple content buffer capacity exceeded.");
-                                if (frame.Joined is null) { Retain(); frame.Joined = new(frame.Text); }
-                                frame.Joined.Append(child.Value);
-                            }
+                            if (scalars > long.MaxValue - frame.TextScalars || Limits.TokenCharacters is int tokenCap && scalars > tokenCap - frame.TextScalars)
+                                Limit("Accumulated simple content token limit exceeded.");
+                            frame.TextScalars += scalars;
+                            frame.Text.Append(child.Value, this, current);
                         }
                     }
                     continue;
@@ -146,20 +140,20 @@ internal sealed partial class XsdValidationRun : ISchemaOperation
                     }
                     else frame.Valid = Error("XSD.Content", "Element children are not permitted here.");
                 }
-                // Unknown lax and skip content remain untyped but still open every hook scope.
-                stack.Add(Enter(child, matched, frame.Context, skip || matched is null, stack.Count + 1));
+                // Lax undeclared nodes use open assessment; actual skip remains subtree skip.
+                stack.Add(Enter(child, matched, frame.Context, skip, stack.Count + 1));
             }
             if (references is not null) foreach (var reference in references)
             { Work(reference.Key.Length + 1L); if (ids?.Contains(reference.Key) != true) Error("XSD.IdRef", "IDREF has no matching ID.", reference.Value); }
             identity?.Complete(this); Poll();
         }
-        catch (Stopped) { }
+        catch (XsdEvaluationStopped) { }
         return Finish();
     }
     private ValidationResult Finish() { Revision(); return operation.Complete(); }
     private static SchemaName Name(XmlNode node) => new(node.NamespaceUri, node.LocalName);
     private static SchemaName Name(XmlAttribute attribute) => new(attribute.NamespaceUri, attribute.LocalName);
-    private Frame Enter(XmlNode node, XsdElementDeclaration? declaration, SchemaNamespaceContext parent, bool skip, int depth)
+    private Frame Enter(XmlNode node, XsdElementDeclaration? declaration, SchemaNamespaceContext parent, bool skip, int depth, bool requireDeclaration = false)
     {
         current = document.OriginalLocation(node); Work();
         if (Limits.Depth is int cap && depth > cap) Limit("Element depth limit exceeded.");
@@ -168,35 +162,40 @@ internal sealed partial class XsdValidationRun : ISchemaOperation
         XsdTypeDefinition? type = null;
         if (!skip)
         {
-            if (declaration is null) valid = Error("XSD.UndeclaredElement", "Element has no declaration.");
+            if (declaration is null)
+            {
+                if (requireDeclaration) valid = Error("XSD.UndeclaredElement", "Element has no declaration.");
+                type = types[new(Xs, "anyType")];
+            }
             else
             {
                 if (declaration.Abstract) valid = Error("XSD.Abstract", "An abstract element cannot be instantiated.");
                 if (!types.TryGetValue(declaration.Type, out type)) throw new ArgumentException("Declared type is missing from the sealed schema.");
-                string? xsiType = Attribute(node, "type", Xsi);
-                if (xsiType is not null)
-                {
-                    Text(xsiType, true);
-                    if (!QName(TrimXml(xsiType), context, out var name) || !types.TryGetValue(name, out var replacement) || replacement.Anonymous)
-                        valid = Error("XSD.Type", "xsi:type does not name a global type.");
-                    else if (!Derived(replacement.Name, type.Name, declaration.Block, type.Block)) valid = Error("XSD.Type", "xsi:type derivation is prohibited.");
-                    else type = replacement;
-                }
-                if (type.Abstract) valid = Error("XSD.Abstract", "An abstract type cannot be instantiated.");
-                if (Attribute(node, "nil", Xsi) is string lexical)
-                {
-                    Text(lexical, true); var collapsed = TrimXml(lexical);
-                    if (collapsed.SequenceEqual("true") || collapsed.SequenceEqual("1")) nil = true;
-                    else if (!collapsed.SequenceEqual("false") && !collapsed.SequenceEqual("0")) valid = Error("XSD.Nil", "xsi:nil must be an XML Schema boolean.");
-                    if (nil && (!declaration.Nillable || declaration.FixedValue is not null)) valid = Error("XSD.Nil", "Element cannot be nilled with this declaration.");
-                }
+            }
+            string? xsiType = Attribute(node, "type", Xsi);
+            if (xsiType is not null)
+            {
+                Text(xsiType, true);
+                if (!QName(XsdEvaluationText.TrimXml(xsiType, this, current), context, out var name) || !types.TryGetValue(name, out var replacement) || replacement.Anonymous)
+                    valid = Error("XSD.Type", "xsi:type does not name a global type.");
+                else if (!Derived(replacement.Name, type.Name, declaration?.Block ?? [], type.Block)) valid = Error("XSD.Type", "xsi:type derivation is prohibited.");
+                else type = replacement;
+            }
+            if (type.Abstract) valid = Error("XSD.Abstract", "An abstract type cannot be instantiated.");
+            if (Attribute(node, "nil", Xsi) is string lexical)
+            {
+                Text(lexical, true); var collapsed = XsdEvaluationText.TrimXml(lexical, this, current);
+                if (declaration is { Nillable: false }) valid = Error("XSD.Nil", "xsi:nil is prohibited on a non-nillable element.");
+                if (collapsed.SequenceEqual("true") || collapsed.SequenceEqual("1")) nil = true;
+                else if (!collapsed.SequenceEqual("false") && !collapsed.SequenceEqual("0")) valid = Error("XSD.Nil", "xsi:nil must be an XML Schema boolean.");
+                if (nil && declaration?.FixedValue is not null) valid = Error("XSD.Nil", "A fixed element cannot be nilled.");
             }
         }
         IXsdContentCursor? cursor = null;
         if (type is not null)
         {
             if (!programs.TryGetValue(type.Name, out var prepared)) throw new ArgumentException("Prepared content program is missing.", "contentPrograms");
-            Retain(); cursor = matcher.CreateCursor(prepared); Poll();
+            Retain(); cursor = matcher.CreateCursor(prepared) ?? throw new InvalidOperationException("Content matcher returned no cursor."); Poll();
         }
         Retain(); var frame = new Frame(node, declaration, type, context, skip, nil, valid, cursor);
         identity?.EnterElement(node, declaration, this); Poll();
@@ -224,7 +223,7 @@ internal sealed partial class XsdValidationRun : ISchemaOperation
         var typeName = frame.Type?.Name ?? new SchemaName(Xs, "anyType"); XmlDatatypeValue? value = null;
         if (!frame.Skip && !frame.Nil && frame.Type is { } type)
         {
-            string lexical = frame.Joined?.ToString() ?? frame.Text ?? "";
+            string lexical = frame.Text.Materialize(this, current);
             SchemaName? simple = type.SimpleType;
             if (simple is not null)
             {
@@ -233,11 +232,12 @@ internal sealed partial class XsdValidationRun : ISchemaOperation
                 string? effective = frame.Declaration?.FixedValue ?? frame.Declaration?.DefaultValue;
                 if (lexical.Length == 0 && !frame.HasChild && effective is not null) { lexical = effective; context = frame.Declaration!.Context; }
                 if (!Value(simple.Value, lexical, context, out value)) frame.Valid = false;
-                if (value is not null && frame.Declaration?.FixedValue is string fixedLexical && !Fixed(simple.Value, value, fixedLexical, frame.Declaration.Context)) frame.Valid = false;
+                if (value is not null && frame.Declaration?.FixedValue is string fixedLexical && !Fixed(types[frame.Declaration.Type].SimpleType ?? new(Xs, "anySimpleType"), value, fixedLexical, frame.Declaration.Context)) frame.Valid = false;
             }
             else if ((frame.Declaration?.FixedValue ?? frame.Declaration?.DefaultValue) is string constraint)
             {
-                if (frame.HasChild && frame.Declaration!.FixedValue is not null) frame.Valid = Error("XSD.Fixed", "A mixed-content fixed constraint cannot have element children.");
+                if (type.ContentKind is XsdContentKind.Empty or XsdContentKind.ElementOnly) frame.Valid = Error("XSD.Default", "Selected type cannot accept a value constraint.");
+                else if (frame.HasChild && frame.Declaration!.FixedValue is not null) frame.Valid = Error("XSD.Fixed", "A mixed-content fixed constraint cannot have element children.");
                 else if (!frame.HasChild)
                 {
                     var stringType = new SchemaName(Xs, "anySimpleType");
@@ -252,13 +252,7 @@ internal sealed partial class XsdValidationRun : ISchemaOperation
     { foreach (var attribute in node.Attributes) { Work(); if (attribute.LocalName == local && attribute.NamespaceUri == uri) return attribute.Value; } return null; }
     private bool White(ReadOnlySpan<char> text)
     { foreach (char c in text) { Work(); if (c is not (' ' or '\t' or '\r' or '\n')) return false; } return true; }
-    private static ReadOnlySpan<char> TrimXml(ReadOnlySpan<char> text)
-    {
-        while (!text.IsEmpty && text[0] is ' ' or '\t' or '\r' or '\n') text = text[1..];
-        while (!text.IsEmpty && text[^1] is ' ' or '\t' or '\r' or '\n') text = text[..^1];
-        return text;
-    }
-    private void Text(ReadOnlySpan<char> text, bool token)
+    private int Text(ReadOnlySpan<char> text, bool token)
     {
         int scalars = 0;
         while (!text.IsEmpty)
@@ -270,5 +264,6 @@ internal sealed partial class XsdValidationRun : ISchemaOperation
             if (status != System.Buffers.OperationStatus.Done || !ValueSyntax.IsXmlScalar(rune.Value)) Error("XSD.Character", "Invalid XML character in instance.");
             text = text[Math.Max(1, consumed)..];
         }
+        return scalars;
     }
 }

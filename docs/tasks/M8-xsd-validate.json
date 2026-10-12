@@ -52,16 +52,28 @@
     }
   ],
   "implementation": [],
-  "evidence": [],
+  "evidence": [
+    {
+      "id": "historical-pre-review-correctness",
+      "kind": "check",
+      "revision": "a5ac4ddaf748ef92a30e052dc299a4f6ef8208a0",
+      "command": "python3 docs/reports/M8-xsd-validate/check.py",
+      "result": "passed",
+      "summary": "779 correctness (84 owned and 695 affected), 42 safe resolver, 1403 public and 2 frozen evaluator API, normal/XML-only consumers, planning180/diff. Consolidated review subsequently identified semantic/accounting gaps; this historical pass is not corrected-source acceptance. Earlier failed attempts: 86506903 1 source compile error; 5e540f5c 7 test compile/analyzer errors; 50b0d8ac 762pass/1 provider-set test error; 650cba39 and c0814edd each 1 variable-scope compile error.",
+      "artifact": null
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Verified identity prerequisite integrated from coordinator main6009cb7b9730d14daf06a59c748edf458943dde2; evaluator draft retained and source implementation resumed. No evaluator checks yet.",
+    "summary": "First consolidated mandatory review correction cycle in progress; all criteria pending and allocation freeze/measurement held.",
     "checks": [
       "Read-only setup verified clean detached starting HEAD and claim/base ancestry; compile/content/facets records verified. git diff --check passed before task record update."
     ],
     "remaining": [
       "All evaluator acceptance criteria pending; complete source/test implementation and revision-stamped checks, then approved allocation evidence."
     ],
-    "requests": []
+    "requests": [
+      "Canonical dynamic default join: existing frozen IXmlDatatypeLibrary and private family value payloads expose no canonical lexical formatting. Please assign an ordered datatype-owner repair providing an internal charged canonical lexical+namespace-context helper for XmlDatatypeValue atomic/list/union values (or an equivalent prepared-constraint validation API) usable from Evaluation without changing frozen interfaces. Required witness: declared xs:int default 01; selected Small restriction xs:int pattern [0-9]; empty xsi:type Small must assess canonical 1, not authored 01. Formatter must preserve numeric arbitrary precision, boolean/float/temporal/duration/binary canonical forms and QName/NOTATION value-space context; caller exception provenance/shared limits. Evaluation can fix declaration-typed fixed comparison independently and retain the dynamic-default regression pending this join."
+    ]
   }
 }
