@@ -153,8 +153,8 @@ class Controls(unittest.TestCase):
         source={'identities':{b.key(test):b.digest(test),b.key(runtime):b.digest(runtime)}}
         manifest=dict(coordinatorReviewSha256='review',harnessSourceSha256=b.digest(b.SOURCE),directory=str(measurement),maximumSeconds=120,workSeconds=100,cleanupReserveSeconds=20,preparationReceipt=str(receipt),identities={b.key(p):b.digest(p) for p in [runtime,probe,dependency,test,receipt]})
         path=fixture/'prepared.json'
-        with patch.object(b,'PROBE',probe),patch.object(b,'review',return_value=source),patch.object(b,'verify_controller',return_value={'completed':True}):
-            manifest['commands']=b.commands(measurement);path.write_text(json.dumps(manifest));sha=b.digest(path)
+        with patch.object(b,'review',return_value=source),patch.object(b,'verify_controller',return_value={'completed':True}),patch.object(b,'binary_identities',side_effect=lambda _: {b.key(p):b.digest(p) for p in [runtime,probe,dependency]}):
+            manifest['probePath']=str(probe);manifest['binaryInputs']={b.key(p):b.digest(p) for p in [runtime,probe,dependency]};manifest['commands']=b.commands(measurement,probe);path.write_text(json.dumps(manifest));sha=b.digest(path)
             b.verify_prepared(path,sha,'review')
             for changed in [test,dependency]:
                 original=changed.read_bytes();changed.write_bytes(b'untested replacement')
@@ -187,6 +187,7 @@ class Controls(unittest.TestCase):
         family=controller/'family-cleanup.json'
         nested.durable(family,dict(completed=True,ownership={'allOwnedGroupsAbsent':True},sequence=[row]))
         nested.durable(candidate,dict(completed=True,sourceSha256=b.digest(b.SOURCE),coordinatorReviewSha256='review',counterEnabled=False))
+        nested.durable(controller/'terminal-cleanup.json',{'completed':True})
         runner=SimpleNamespace(closed=True,stopped=False,receipt={'completed':True},sequence=[row],directory=controller,hard=12.0)
         clock=[10.0];real=nested.durable
         def late(path,value):
@@ -204,7 +205,7 @@ class Controls(unittest.TestCase):
         results=self.out/'results';results.mkdir()
         for name in ['correctness.xml','resolver.xml','datatypes.xml','control.json','internal.txt','public.txt']:(results/name).write_bytes(('frozen '+name).encode())
         identities={b.key(p):b.digest(p) for p in [runtime,test,dependency]}
-        b.archive_execution(self.out,0,['actual-Test.dll'],identities,[b.key(actual)])
+        b.record_execution(self.out,0,['actual-Test.dll'],identities,identities,[b.key(actual)])
         nested.durable(self.out/'lifecycle-000.json',dict(argv=['actual-Test.dll'],reason='completed',exit=0,
             directChildReaped=True,ownedGroupAbsent=True,logClosed=True,nestedOwnership={'allOwnedGroupsAbsent':True}))
         with patch.object(b,'API_ROOT',api):
@@ -220,6 +221,7 @@ class Controls(unittest.TestCase):
                 original=changed.read_bytes();changed.write_bytes(b'untested replacement')
                 self.assertEqual(b.digest(runtime),identities[b.key(runtime)])
                 with self.assertRaises(AssertionError):b.verify_correctness_evidence(evidence)
+                with self.assertRaisesRegex(AssertionError,'rebuild overlap'):b.assert_prior_execution(self.out)
                 changed.write_bytes(original)
             output=results/'correctness.xml';original=output.read_bytes();output.write_bytes(b'replaced result')
             with self.assertRaises(AssertionError):b.verify_correctness_evidence(evidence)
@@ -228,6 +230,27 @@ class Controls(unittest.TestCase):
             output.write_bytes(original);new_result=results/'new-result.xml';new_result.write_bytes(b'new')
             with self.assertRaises(AssertionError):b.verify_correctness_evidence(evidence)
             new_result.unlink();b.verify_correctness_evidence(evidence)
+        # Finite cleanup seams for success, ordinary failure and interruption;
+        # no runtime builds or probe execution in these controls.
+        from types import SimpleNamespace
+        cleanrow=dict(directChildReaped=True,ownedGroupAbsent=True,logClosed=True,nestedOwnership={'allOwnedGroupsAbsent':True})
+        for outcome in ['success','failure','interrupted']:
+            root=self.out/('terminal-'+outcome);binary=root/'checks/active/normal/bin/Test.dll';binary.parent.mkdir(parents=True)
+            binary.write_bytes(b'transient actual payload')
+            raw=root/'checks/results/correctness.xml';raw.parent.mkdir(parents=True);raw.write_bytes(b'transient raw result')
+            log=root/'raw.log';log.write_bytes(b'transient raw log')
+            hashes={b.key(p):b.digest(p) for p in [binary,raw,log]}
+            fake=SimpleNamespace(directory=root,closed=True,sequence=[cleanrow],receipt={'completed':outcome=='success','ownership':{'allOwnedGroupsAbsent':True}})
+            summary=b.terminal_cleanup(fake,'check')
+            self.assertEqual(summary['removedIdentities'],hashes);self.assertTrue(summary['completed'])
+            self.assertTrue(all(not p.exists() for p in [binary,raw,log]))
+            b.verify_live_or_removed(hashes,summary)
+            binary.parent.mkdir(parents=True);binary.write_bytes(b'restored payload cannot reuse')
+            with self.assertRaises(AssertionError):b.verify_live_or_removed(hashes,summary)
+            binary.unlink()
+            blocked=root/'blocked';blocked.mkdir()
+            fake.directory=blocked;fake.receipt['ownership']['allOwnedGroupsAbsent']=False
+            with self.assertRaises(AssertionError):b.terminal_cleanup(fake,'check')
 
     def test_failed_correctness_and_final_diff_cannot_publish_passing_receipt(self):
         from types import SimpleNamespace

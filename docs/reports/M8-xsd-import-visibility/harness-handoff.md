@@ -1,104 +1,92 @@
-# Harness correction — SOURCE ONLY, all execution UNRUN
+# Harness correction — SOURCE ONLY; all execution UNRUN
 
-Runtime/compiler, tests, fixtures, BenchmarkDotNet and 24-route probe payload
-remain exactly at 8cb31895a01fccf945dc2b2ff5a58ef39fd14fab. Original source-identities
-and source handoff are historical immutable records; the replacement harness is
-bound separately in harness-source.json, and does not require the old check.py
-hash. Compiler SHA256 remains 843e59a35be16bd838f31c9b5859223e3043f179a865baf72bbe7d70d566bed3.
+Runtime/compiler, tests, original fixtures, BenchmarkDotNet and the 24-route probe
+remain exactly at 8cb31895a01fccf945dc2b2ff5a58ef39fd14fab. Compiler SHA256 remains
+843e59a35be16bd838f31c9b5859223e3043f179a865baf72bbe7d70d566bed3. Historical
+source-identities and source handoff are immutable. The current owned harness is
+separately pinned in harness-source.json; only the coordinator can create an actual
+harness-review.json with SOURCE PASS and the manifest's exact hash.
 
-The reviewed supervision.py was copied byte-for-byte from corpus source SHA256
-407b228d8b4741445eaf928a44aedd4de85aacaac894e6ad23b8ed8071395903. All six functions
-are unchanged. nested_ownership.py came from fe1db7d70cc4b10a04aaa5ac8107cd69a95f7a16e21a0888892ef70c5f05a128;
-only OUT and REGISTRIES constants now name this task. The functions are unchanged.
-There are no runtime imports or build dependencies on the peer checkout.
+supervision.py is the exact accepted 407b228d8b4741445eaf928a44aedd4de85aacaac894e6ad23b8ed8071395903
+copy. nested_ownership.py retains the fe1db7d70cc4b10a04aaa5ac8107cd69a95f7a16e21a0888892ef70c5f05a128
+template's functions, adapting only OUT and REGISTRIES. No peer checkout dependency.
+Registered sessions publish intent, atomic PID/PGID, and complete ancestor ACK
+before exec. Normal and abnormal child completion reap/drain groups and close logs.
+A lifecycle failure prevents the next command. TERM/INT unwind root cleanup;
+intermediate-parent SIGKILL leaves descendants owned by enclosing registries.
 
-family.py wraps those algorithms with an outer root registry, per-child 10-second
-cleanup reserve inside the child's total bound, a 20-second root drain/receipt
-reserve, deadline checks before launch/after cleanup/before publication, and no
-next command after any lifecycle failure. Every registered new session publishes
-intent to each ancestor before launching, atomic PID/PGID before workload, then
-requires complete parent ACK before exec. All receipts precede raw-result reads.
-Normal exits also reap/drain groups and close logs. TERM/INT unwinds owned cleanup;
-SIGKILL of an intermediate parent leaves groups registered with every ancestor.
+All passing candidates use finite publication: crossing the hard deadline
+quarantines the candidate and removes its acceptance path. Final acceptance also
+requires the enclosing controller-release.json, binding source/review, payload,
+whole-family cleanup and terminal-cleanup receipts. Check has 840 seconds total;
+prepare 440; controls 100; measurement 150 enclosing/120 inner (100 work/20 cleanup).
+Each normal correctness/build child has 180 seconds including 10 cleanup seconds.
+No resume, build overlap exemption, or previously failed attempt reuse.
 
-check.py removes resume entirely. Required restore/build/tests/API/consumer/control/
-planning/diff commands run fresh in one exclusive attempt directory. A source or
-lifecycle failure stops subsequent commands. checks-completed.json is published
-only after every required check and final git diff check succeeds and the owned
-family is clean. Failed attempts retain explicit lifecycle/family error records;
-no passing summary is published for failed correctness or diff. The old top-level
-fixed XML output/resume path is gone. launch.py is the enclosing root controller;
-invoking child scripts directly requires inherited root ownership and review hash.
-Check total root bound is 840 seconds, including all cleanup; each child bound is
-180 seconds including 10 seconds reserved cleanup, rather than 180 plus cleanup.
+## Artifact-policy correction
 
-Eleven SOURCE proving controls in lifecycle-check.py cover normal reaping/group
-absence/log closure, timeout SIGTERM->exit0 with no-next, forced intermediate
-parent SIGKILL with a separate-session grandchild ACK'd in ancestor registries,
-atomic partial ACK bootstrap blocking/exclusive publication, unpublished intents,
-late all-absent process snapshots, changed tests/dependency with unchanged runtime
-and changed exact commands, and failed correctness/final diff refusing success.
-The copied control algorithms use real owned children where lifecycle matters;
-source-only claims do not imply any of these controls passed.
+The content-addressed binary archive is removed. No runtime, host or generated
+binary bytes are copied into evidence. Actual active files are hashed before and
+after execution, with directory membership and fresh argv/lifecycle receipts.
+Every command, including builds, verifies all previously executed binary inputs;
+a later rebuild changing their bytes or membership fails. Test/extractor/probe
+builds and normal/XML-only consumers use distinct active output roots. Restore
+and build receive matching SDK UseArtifactsOutput/ArtifactsPath and global
+OutputPath flags; intermediate directories separate referenced projects. The
+API union uses the same canonical full-row validation as the established M5
+checker, with an actual extractor/runtime in the owned active roots. All 53 API
+files remain bound by membership and hashes. SDK output relocation is source-only,
+unverified; see [SDK artifacts output](https://learn.microsoft.com/en-us/dotnet/core/sdk/artifacts-output).
 
-Readiness sequence, only after independent coordinator SOURCE PASS:
+After verified whole-root group absence and closed logs, terminal_cleanup removes
+owned active bin/obj outputs, raw XML/API/control/counter results, derived union,
+control scratch and raw logs. This runs on success, ordinary failure and signal
+interruption. Canonical sources, original fixtures, package caches and installed
+runtime/host files are preserved. Only concise outcomes, lifecycle receipts and
+hash/membership identities survive. Deleted files cannot be rechecked later:
+terminal receipt consumers explicitly verify recorded deletion and surviving
+inputs; they never interpret summaries as active-byte readiness. Any newly restored
+file at a deleted identity is rejected. Failed or late enclosing controllers still
+cannot authorize a child candidate. Cleanup is refused while any owned group may
+remain. SIGKILL of the outermost controller cannot run a Python finally block;
+the coordinator must recover/drain that root before terminal cleanup. Absence or
+expiry alone never supplies a passing controller receipt.
 
-1. Coordinator writes harness-review.json with result=SOURCE PASS and the exact
-   harness-source.json SHA256. The worker never manufactures this record.
-2. Root runs `launch.py --released REVIEW_SHA controls`. This produces an immutable
-   positive-controls-release.json only after all eleven controls and root family
-   cleanup succeed. It binds semantic and family receipts and source identity.
-3. Root runs `launch.py --released REVIEW_SHA check`; relevant suite/API/normal and
-   true XML-only consumers plus the semantic disabled probe run under family control.
-4. Root runs `launch.py --released REVIEW_SHA prepare POSITIVE_RECEIPT RECEIPT_SHA`.
-   Offline single-node/build-server-disabled preparation builds only the probe,
-   records required commands, pins actual runner/product dependency/runtime/host/
-   interpreter binaries, runs semantic --control with all counters disabled, and
-   freezes source/config/test/dependency/binaries plus successful control/cleanup
-   receipts into an exclusive prepared.json. Missing/changed coverage refuses it.
-5. Root solely runs `launch.py --released REVIEW_SHA measure PREPARED_JSON SHA`.
-   The prebuilt launcher verifies exact disabled/counter commands and whole frozen
-   identities before and after each child. Disabled semantic failure prevents the
-   counter child. It has 120 seconds total, 100 work and 20 root cleanup/receipt
-   reserve; outer root bound is 150 seconds. Counters are synchronous allocation
-   counters only; no isolation/PARK/ACK/lease campaign is required. Bootstrap ACK
-   in process ownership is unrelated to such a campaign. Raw allocation results
-   remain unopened until lifecycle release, then the coordinator inspects them.
+Prepared probe outputs are active only while awaiting their one measurement or
+explicit discard. Preparation deletes its raw disabled-control result after
+publishing a concise semantic summary; binaries remain actual inputs, fully pinned
+with dependency/runtime/host membership. Measurement/discard atomically claim the
+preparation before work; claimed preparations cannot be reused. Root compares
+active identities and membership before and after each disabled/counter child.
+After the entire enclosing family is clean, root alone reads allocation output,
+validates 24 routes/32 operations, positive control, consumption and 28 retained
+results/seven categories, publishes concise cold/first/warm aggregates and retained
+heap deltas, then removes raw output and prepared compiled files. Allocation
+summary and release identities are bound by final controller acceptance. No raw
+allocation distributions or binary payload archives remain.
 
-Python syntax parsing, exact helper-copy comparisons, runtime/control diff and
-source hygiene are source inspection only. Builds/restores/tests/control jobs,
-consumer/API runs, readiness preparation, counter runs and measurements are all
-UNRUN. No claim that the proposed harness works precedes actual released controls.
+## Release sequence
 
+1. Independent coordinator SOURCE PASS for the exact manifest.
+2. Root `launch.py --released REVIEW_SHA controls`: all eleven proposed controls
+   and enclosing cleanup must pass. The controls cover real normal/timeout/forced
+   parent-death families, partial ACK, missing intent, late absence/publication,
+   late enclosing acceptance, source/command/API/binary/result mutations, failed
+   correctness/diff and no-next. Finite source test seams now cover terminal
+   deletion for success/failure/interruption, restored-byte rejection, and refusal
+   while ownership remains uncertain. All controls remain UNRUN.
+3. Root `launch.py --released REVIEW_SHA check`: fresh owned/affected correctness,
+   safe resolver42, datatypes77, full/frozen/additive API checks, normal/true XML-only
+   consumers, disabled probe, planning and final diff. A concise terminal receipt
+   replaces the transient XML/API outputs after their actual validation.
+4. Root `launch.py --released REVIEW_SHA prepare POSITIVE_RECEIPT SHA`: fresh offline
+   single-node probe build and disabled semantic control; active prepared.json.
+5. Root solely invokes `launch.py --released REVIEW_SHA measure PREPARED_JSON SHA`,
+   or `launch.py --released REVIEW_SHA discard PREPARED_JSON SHA` when abandoning
+   prepared outputs. No isolation/PARK/ACK/lease campaign is introduced.
 
-Renewal after two P2 SOURCE findings: every passing publication now goes through
-publish_finite. A write crossing the hard deadline quarantines its bytes and
-removes the acceptance path; family, positive-control, prepared and measurement
-release sites share this behavior. A root controller-release.json is the final
-finite publication, binds the child payload SHA256 and clean enclosing family,
-and is mandatory when positive controls/prepared/correctness/measurement receipts
-are consumed. An existing positive candidate cannot authorize preparation without
-this successful enclosing controller. Late candidates and failed publication are
-never accepted via memory-only changes.
-
-The API union checker reads every docs/api/*.txt, so harness-source.json now pins
-all API membership and byte hashes. Review and correctness acceptance compare the
-whole set, rejecting additions, deletions and replacements. Before every actual
-.NET correctness/API/consumer/control invocation, the harness captures the actual
-entry/test/runtime/dependency directory membership and hashes, preserves exact
-bytes in a content-addressed archive, and checks the actual binaries again after
-execution. Fresh child lifecycle/argv receipts are hash-bound to each binary input
-snapshot. Passing correctness binds the archives, latest actual binaries, all API
-inputs and exact current XML/control/API result membership/hashes. Archive bytes
-preserve earlier normal consumer binaries across deliberate XML-only rebuilds;
-latest actual binaries must still match the most recent observed inputs. Changed
-test/dependency binaries with unchanged runtime, or changed/deleted/added results,
-refuse acceptance. The focused summary also belongs to the exclusive attempt.
-
-Three added SOURCE proving controls cover a real owned child whose actual durable
-passing publication crosses the deadline and exits nonzero with no usable candidate,
-a late enclosing controller refusing an otherwise present positive candidate, and
-API add/remove/change plus test/dependency/result mutations against fresh receipt
-bindings. The original eight finite-family/negative-success controls remain.
-All eleven controls are proposed, UNRUN. No passing review or execution evidence
-is generated by static parsing or hashes.
+Ten Python files parsed statically; planning and diff/source-copy checks only.
+No harness imports, executable controls, builds, restores, tests, consumers,
+extractors, preparation jobs, counters or measurements have run. Runtime and all
+acceptance criteria remain pending integrated verification. Freeze this source
+packet for review; no readiness or control pass is implied by syntax/hash checks.
