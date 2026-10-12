@@ -174,6 +174,9 @@ internal sealed partial class ContentCompilation
         {
             ContentWork.Tick(op, p.Location);
             if (p.MaxOccurs == BigInteger.Zero || group.Particles.Count == 0 && (group.Compositor != XsdCompositor.Choice || p.MinOccurs.IsZero)) return null;
+            // A singleton known projection can still omit a possible member.
+            // Keep its original-head proof until the choice is related.
+            if (substitutionProjections.TryGetValue(group, out var projection) && projection.Incomplete) break;
             if (group.Particles.Count == 1 && (group.Compositor == XsdCompositor.All || p.MinOccurs.IsOne && p.MaxOccurs is { IsOne: true }))
             {
                 var child = group.Particles[0];
@@ -205,15 +208,41 @@ internal sealed partial class ContentCompilation
         return ContentIntegers.Compare(rmin, bmin, op, at) >= 0 && (bmax is null || rmax is { } limit && ContentIntegers.Compare(limit, bmax.Value, op, at) <= 0);
     }
     private readonly HashSet<XsdElementTerm> implicitMembers = new(ReferenceEqualityComparer.Instance);
+    private readonly Dictionary<XsdGroupTerm, (int Head, bool Incomplete)> substitutionProjections = new(ReferenceEqualityComparer.Instance);
     private XsdParticle ExpandSubstitution(XsdParticle p)
     {
         if (p.Term is not XsdElementTerm e || implicitMembers.Contains(e)) return p;
         var members = Members(e.DeclarationId);
         if (members.Length <= 1 && (members.Length == 0 || members[0].Item2 == e.DeclarationId)) return p;
-        ContentWork.Retain(op, p.Location, checked(members.Length * 2 + 2));
+        ContentWork.Retain(op, p.Location, checked(members.Length * 2 + 3));
         var particles = new XsdParticle[members.Length];
         for (int i = 0; i < members.Length; i++) { ContentWork.Tick(op, p.Location); particles[i] = new(new XsdElementTerm(members[i].Item2), 1, 1, p.Location); ContentWork.Retain(op, p.Location); implicitMembers.Add((XsdElementTerm)particles[i].Term); }
-        return p with { Term = new XsdGroupTerm(XsdCompositor.Choice, particles) };
+        var group = new XsdGroupTerm(XsdCompositor.Choice, particles);
+        substitutionProjections.Add(group, (e.DeclarationId, IncompleteProjection(e.DeclarationId)));
+        return p with { Term = group };
+    }
+    private bool IncompleteProjection(int id)
+    {
+        if (availability is null) return false;
+        var head = schema.Elements[id];
+        if (!schema.GlobalElements.TryGetValue(head.Name, out int global) || global != id || head.Block.Contains(XsdElementBlock.Substitution)) return false;
+        foreach (int candidate in schema.GlobalElements.Values)
+        {
+            ContentWork.Tick(op, head.Location); var element = schema.Elements[candidate];
+            if (element.Abstract || candidate == id) continue;
+            int current = candidate;
+            for (int steps = 0; steps < schema.Elements.Count; steps++)
+            {
+                ContentWork.Tick(op, element.Location);
+                if (schema.Elements[current].SubstitutionGroup is not { } parent) break;
+                if (!schema.GlobalElements.TryGetValue(parent, out int next)) return true;
+                current = next;
+                if (current != id) continue;
+                if (element.Type is not { } d || head.Type is not { } b || !types.ContainsKey(d) || !types.ContainsKey(b)) return true;
+                break;
+            }
+        }
+        return false;
     }
     private enum RuleKind { Relation, Constant, And, Or }
     private enum RelationState { False, Indeterminate, True }
@@ -328,7 +357,16 @@ internal sealed partial class ContentCompilation
             if (!Range(Multiply(derived.MinOccurs, rs.Count, derived.Location), derived.MaxOccurs is { } m ? Multiply(m, rs.Count, derived.Location) : null, basis.MinOccurs, basis.MaxOccurs, derived.Location)) return Constant(false);
             var result = Constant(true);
             foreach (var r in rs)
-            { var match = Constant(false); foreach (var b in bs) match = Combine(RuleKind.Or, match, Relation(r, b, anyType)); result = Combine(RuleKind.And, result, match); }
+            {
+                var match = Constant(false);
+                foreach (var b in bs) match = Combine(RuleKind.Or, match, Relation(r, b, anyType));
+                // Literal alternatives remain literal. An incomplete implicit
+                // choice separately preserves its original head, allowing only
+                // a specific missing membership operand to add a possibility.
+                if (substitutionProjections.TryGetValue(bg, out var projection) && projection.Incomplete)
+                    match = Combine(RuleKind.Or, match, OmittedMembership(r, projection.Head));
+                result = Combine(RuleKind.And, result, match);
+            }
             return result;
         }
         if (!Range(derived.MinOccurs, derived.MaxOccurs, basis.MinOccurs, basis.MaxOccurs, derived.Location)) return Constant(false);
@@ -444,6 +482,18 @@ internal sealed partial class ContentCompilation
         if (availability is null) throw new ArgumentException("Complete restriction operands required.", nameof(schema));
         ContentWork.Retain(op, operand.Location);
         return new(RuleKind.Constant, RelationState.Indeterminate, null, null, false, false, null, null) { Operand = operand, OperandUse = operandUse };
+    }
+    private Rule OmittedMembership(XsdParticle candidate, int head)
+    {
+        if (candidate.Term is not XsdElementTerm element) return Constant(false);
+        ContentWork.Retain(op, candidate.Location, 4);
+        var originalCandidate = candidate with { Term = new XsdElementTerm(element.DeclarationId) };
+        var originalHead = new XsdParticle(new XsdElementTerm(head), 1, 1, candidate.Location);
+        var proof = ElementRestriction(originalCandidate, originalHead, element.DeclarationId, head);
+        // A known affiliation cannot rematch a literal projected alternative.
+        // Only the omitted candidate's actual unknown type/chain is preserved;
+        // its links remain provisional until the final relation requires them.
+        return EvaluateRule(proof) == RelationState.Indeterminate ? proof : Constant(false);
     }
     private Rule ElementRestriction(XsdParticle derived, XsdParticle basis, int derivedId, int basisId)
     {

@@ -76,10 +76,12 @@ public sealed class ReviewControls
         Assert.True(valid.Validate("<good>7</good>").IsValid); Missing(valid.Validate("<r>a</r>"));
     }
     [Theory]
-    [InlineData(false)] [InlineData(true)]
-    public void RestrictionMembershipCanBeIndeterminateWithoutBecomingFalse(bool affiliation)
+    [InlineData(false, false)] [InlineData(true, false)]
+    [InlineData(false, true)] [InlineData(true, true)]
+    public void RestrictionMembershipCanBeIndeterminateWithoutBecomingFalse(bool affiliation, bool knownSibling)
     {
         string heads = affiliation ? "<xs:element name='h' type='xs:int'/><xs:element name='m' type='xs:int' substitutionGroup='absent'/>" : "<xs:element name='h'/><xs:element name='m' type='absent' substitutionGroup='h'/>";
+        if (knownSibling) heads += "<xs:element name='k' type='xs:int' substitutionGroup='h'/>";
         const string types = "<xs:complexType name='B'><xs:sequence><xs:element ref='h'/></xs:sequence></xs:complexType><xs:complexType name='D'><xs:complexContent><xs:restriction base='B'><xs:sequence><xs:element ref='m'/></xs:sequence></xs:restriction></xs:complexContent></xs:complexType><xs:element name='r' type='D'/><xs:element name='good' type='xs:int'/>";
         var partial = XmlSchema.Compile(Wrap(heads + types)); Assert.True(partial.Validate("<good>7</good>").IsValid); Missing(partial.Validate("<r><m>7</m></r>"));
         string completed = affiliation ? heads + "<xs:element name='absent' type='xs:int' substitutionGroup='h'/>" : heads + "<xs:simpleType name='absent'><xs:restriction base='xs:int'/></xs:simpleType>";

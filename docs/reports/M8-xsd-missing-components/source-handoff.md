@@ -59,3 +59,11 @@ certificate, with2N*N+7N+10 charged matrix storage. Independent Build/UPA/EDC
 links remain unchanged. Optional absent x / s / wildcard original and completed
 string-base neighbors assess r/s=7,x=8; x occurrence2 independently rejects.
 Static selection now686 methods/2189 cases; all execution remains UNRUN.
+
+Fourth source correction: implicit substitution projections retain their original
+head and incomplete flag through normalization. Known literal alternatives stay
+literal; a separate omitted-membership proof carries only the candidate-specific
+unknown type/chain. Provisional final-proof publication and bounded polling stay
+in place. Both original partial variants now also cover known k:int affiliated h,
+unrelated complete validation, required MissingComponent, completed type/chain,
+and unchanged no-affiliation/range negatives. Static selection686/2191; UNRUN.
