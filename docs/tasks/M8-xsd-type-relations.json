@@ -120,19 +120,40 @@
       "result": "passed",
       "summary": "Coordinator reports independent model reviewer SOURCE PASS: full-chain blocks and effective mixed-content findings resolved; budgets/cancellation/provenance and exactly two amended legacy assertions accepted. Separate A3/A5 contract PASS at522b hunks/tests unchanged. Branch actual1622+42 checks accepted.",
       "artifact": "docs/reports/M8-xsd-type-relations/source-review.json"
+    },
+    {
+      "id": "allocation-source-review",
+      "kind": "review",
+      "revision": "e3a4b91bbe56148c01a2085fc3a19b2a1b0c0d7c",
+      "command": null,
+      "result": "passed",
+      "summary": "Coordinator reports independent allocation SOURCE PASS at exacte3a4:25routes/2073callspermode/16warm/64samples/48retained,ownership/counter boundaries/disabled parity/completed+exit0+cleanup accepted. No runtime/test edit.",
+      "artifact": "docs/reports/M8-xsd-type-relations/allocation-source.json"
+    },
+    {
+      "id": "allocation-disabled-preparation",
+      "kind": "check",
+      "revision": "e3a4b91bbe56148c01a2085fc3a19b2a1b0c0d7c",
+      "command": "python3 docs/reports/M8-xsd-type-relations/lifecycle-check.py; python3 docs/reports/M8-xsd-type-relations/prepare.py; python3 docs/reports/M8-xsd-type-relations/measure.py --verify-only; python3 docs/reports/M8-xsd-type-relations/measure.py --preflight",
+      "result": "passed",
+      "summary": "Offline10.0.400/10.0.11 Release build0warnings/0errors. Regression child60200 timeout/TERMexit0 correctlyfailed/stoppedsequence;60202 normalcompletedexit0. Preparation60224 andpreflight60240 completedexit0,allchildrenreaped/groupsabsent/logsclosed. Two25routecontrols consumed25196/48retained;allallocation/heapfieldsdisabledzero. Frozen505identities verifiedmanifestSHA ae8a7853fe4cb3a8b7f3bd7e43744c1810f1750aabd27788ce5e282995f28da0. No actualcounters;zeroownedjobs.",
+      "artifact": "docs/reports/M8-xsd-type-relations/preparation-outcomes.json"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Accepted runtime/tests2e1619b35 and passing branch evidence5fbac024b. Allocation SOURCE/design/hashes prepared for independent review only; no probe build/control/freezing/counters.",
+    "summary": "Runtime/test source2e accepted; allocation sourcee3a4 accepted; offline build/lifecycle/disabled controls/frozen505identities passed. Actualallocationevidencependingroot-onlylaunch.",
     "checks": [
       "Passed python3 docs/reports/M8-xsd-type-relations/check.py:1622 affected/85 owned+42 resolver,1430 public/all8 frozen API lanes,normal/XML-only consumers,planning and whitespace.",
       "Preserved baseline38 outcomes and earlier failed1612/owned71/75/79 runs;1616 tests allpassed but display-name result-harness false failure corrected.",
-      "No allocation probe source/preparation/build/control/counter jobs started."
+      "No allocation probe source/preparation/build/control/counter jobs started.",
+      "Passed accepted lifecycle regression:timeout60200+TERMexit0isfailure,stopsnextchild;normal60202completed.",
+      "PassedofflineprobeReleasebuild10.0.400/10.0.11anddisabledpreparation60224/preflight60240;allgroupsabsent/logsclosed;505identitiesverified.",
+      "ManifestSHA ae8a7853fe4cb3a8b7f3bd7e43744c1810f1750aabd27788ce5e282995f28da0;no actualallocationcountersrun;zeroownedjobs."
     ],
     "remaining": [
-      "A4: allocation source/design acceptance, then offline build/disabled controls/frozen manifest/finite cleanup checks and root-only actual counter evidence.",
-      "Coordinator integration verification remains separate."
+      "A4: root reviews frozenmanifest and alone launches actualcounterexecution; worker then records durable measured allocation summary and truthful branchcompletion.",
+      "Coordinatorintegrationverificationremainsseparate."
     ],
     "requests": []
   }
