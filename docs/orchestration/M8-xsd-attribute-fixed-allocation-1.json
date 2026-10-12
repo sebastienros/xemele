@@ -1,0 +1,42 @@
+{
+  "scope": "M8-xsd-attribute-fixed-139b9cf9-alloc-only",
+  "status": "PROPOSAL; awaiting fresh actual actor ACKs; no grant",
+  "owner_chat": "01a12c6c-b333-71d3-877f-0d186618e21d",
+  "source_revision": "139b9cf98a66f4a6a42f859a7a1b5360482ed6eb",
+  "proposal_revision": "69b7f976a2ffc20b6eca46946ef8fcfe99e59ab9",
+  "cwd": "/Users/sebastienros/.codex/worktrees/b04b/xemele",
+  "manifest": "/Users/sebastienros/.codex/worktrees/b04b/xemele/docs/reports/M8-xsd-attribute-fixed/preparation.json",
+  "manifest_sha256": "b164cb10b3ce774f1e9472eb7a89d97372ef4a438589bfd4c08597a898429238",
+  "supervisor": "/Users/sebastienros/.codex/worktrees/b04b/xemele/docs/reports/M8-xsd-attribute-fixed/measure.py",
+  "supervisor_sha256": "99bd3834d0a466b058a46c35369068b6181c1ceaf2fd140919063bcd05cf5526",
+  "maximum_seconds": 30,
+  "work_seconds": 20,
+  "cleanup_seconds": 10,
+  "latest_start_rule": "grant+60s",
+  "absolute_expiry_rule": "grant+90s",
+  "commands": [
+    [
+      "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+      "--fx-version",
+      "10.0.11",
+      "/Users/sebastienros/.codex/worktrees/b04b/xemele/benchmarks/Xemele.Benchmarks/M8-xsd-attribute-fixed/bin/probe/net10.0/Xemele.Benchmarks.dll",
+      "--control",
+      "/Users/sebastienros/.codex/worktrees/b04b/xemele/artifacts/M8-xsd-attribute-fixed/measurement-1/control.json"
+    ],
+    [
+      "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+      "--fx-version",
+      "10.0.11",
+      "/Users/sebastienros/.codex/worktrees/b04b/xemele/benchmarks/Xemele.Benchmarks/M8-xsd-attribute-fixed/bin/probe/net10.0/Xemele.Benchmarks.dll",
+      "--measure",
+      "/Users/sebastienros/.codex/worktrees/b04b/xemele/artifacts/M8-xsd-attribute-fixed/measurement-1/allocations.json"
+    ]
+  ],
+  "identity_count": 454,
+  "root_preflight": "Actual elevated verify-only passed454identities and ps; no counters/timing. Worker actual elevated disabled preflight88642 exit0/reaped/groupabsent/logclosed; accepted facade cleanup core identical.",
+  "review": "Independent source PASS review_m8_xpath at69b7f976a;12ownedroutes/1456consumed/coldpositive16retained, counter bounds and454identities verified.",
+  "root_ack": "Fresh exactscope zeroownedjobs/PIDs/sessions/cells/children/openlogs; PARK allheavy/builds/tests/restore/discovery/frozenwrites/newactors/rawinspection until durablecleanupRELEASE; expiry requirescleanupconfirmation.",
+  "ack_evidence": "docs/orchestration/M8-xsd-attribute-fixed-allocation-1-acks.json",
+  "roster": "Xemele8 root/main/corpus/attribute/component/3reviewers; Gregs4 main/coordinator/shared/allocation-policy; total12",
+  "constraints": "Rootsolelauncher2prebuiltcontrol+measure; no retries/extensions/builds/restore/discovery/newactors/frozenwrites/rawinspection before durablecleanupRELEASE."
+}
