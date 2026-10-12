@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "id": "M8-rng-lexical",
+  "milestone": "M8",
+  "title": "Enforce RELAX NG 2001 URI and name lexical rules",
+  "kind": "feature",
+  "status": "in_progress",
+  "owner": "M8 coordinator01a12c6c-b333-71d3-877f-0d186618e21d / assigned isolated worker",
+  "branch": "codex/m8-rng-lexical",
+  "base_revision": "7e2ce7af9b70aa9216304ce0eb16493805369bf5",
+  "integration_revision": null,
+  "depends_on": [
+    "M8-rng-validate",
+    "M8-datatypes-text-binary"
+  ],
+  "goals": [
+    "G14"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/schemas.md"
+  ],
+  "owns": [
+    "src/Xemele/Validation/RelaxNg/Compilation/Compiler.cs",
+    "tests/Xemele.Tests/M8-rng-lexical/",
+    "tests/fixtures/M8-rng-lexical/",
+    "benchmarks/Xemele.Benchmarks/M8-rng-lexical/",
+    "docs/reports/M8-rng-lexical/"
+  ],
+  "api_or_output": "Unchanged public/frozen APIs; bounded RELAX NG 2001 lexical checks before schema publication",
+  "acceptance": [
+    {
+      "id": "M8-rng-lexical-A1",
+      "description": "Validate inherited datatypeLibrary with the pinned RELAX NG 2001 absolute fragment-free URI grammar: accept http:ok, reject foo: and malformed percent escapes; retain proper source provenance and empty-library support. Do not rely on System.Uri per-scheme normalization or an XSD anyURI escape projection.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M8-rng-lexical-A2",
+      "description": "Use the pinned historical XML name productions for every RELAX NG schema NCName/QName position; reject U+0E35 as a start in element/attribute/name/ref/define and prefixed local names while preserving valid continuation and other historical boundaries.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M8-rng-lexical-A3",
+      "description": "Preserve the nine original Jing schema predicates (055,056,057,058,070,072,073,074,079); test independent positive/negative URI/name boundaries, inherited contexts, exact quotas and cancellation, then affected compiler/validator/API and normal/XML-only checks.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M8-rng-lexical-A4",
+      "description": "Record independent source review, bounded scan/accounting and ownership evidence plus relevant controlled allocation evidence; integrate and actually verify before corpus consumes repair. No oracle changes, public contract changes, or prior-evidence rewriting.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}
