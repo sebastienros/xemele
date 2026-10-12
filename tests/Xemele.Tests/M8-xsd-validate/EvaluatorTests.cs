@@ -82,9 +82,9 @@ public sealed class EvaluatorTests
         Assert.False(prepared.Run("<root xmlns:z='urn:p' a='z:v'/>").IsValid);
         var document = XmlDocument.Parse("<root/>", cancellationToken: TestContext.Current.CancellationToken); var hook = new RecordingFactory();
         Assert.True(prepared.Run(document, factory: hook).IsValid); Assert.Equal(0, document.RootElement.Attributes.Count);
-        var expected = new XmlDatatypeRegistry(); var op = new SchemaCompileOperation();
-        Assert.True(expected.Find(Xs)!.TryParse(new(Xs, "QName"), "z:v", new(new Dictionary<string,string> { ["z"]="urn:local" }, "", null), op, out var value, out _));
-        Assert.True(expected.Find(Xs)!.ValueEquals(value!, hook.Attributes.Single().Value!, op));
+        var library = prepared.Schema.Datatypes.Find(Xs)!; var op = new SchemaCompileOperation();
+        Assert.True(library.TryParse(new(Xs, "QName"), "z:v", new(new Dictionary<string,string> { ["z"]="urn:local" }, "", null), op, out var value, out _));
+        Assert.True(library.ValueEquals(value!, hook.Attributes.Single().Value!, op));
     }
     [Theory]
     [InlineData("true", "", true)] [InlineData("1", "", true)] [InlineData("false", "42", true)]
@@ -127,6 +127,41 @@ public sealed class EvaluatorTests
         Assert.True(prepared.Run("<root><row/><row n='2'/></root>").IsValid);
         Assert.False(prepared.Run("<root><row/><row n='01'/></root>").IsValid);
         var invalid = prepared.Run("<root><row n='bad'/></root>"); Assert.False(invalid.IsValid); Assert.Contains(invalid.Diagnostics, d => d.Code.StartsWith("XSD.Datatype", StringComparison.Ordinal));
+    }
+    [Theory]
+    [InlineData("", true)] [InlineData("restriction", false)] [InlineData("#all", false)]
+    public void ElementBlockRejectsRestrictedTypeOverride(string block, bool expected)
+    { Assert.Equal(expected, Prepare($"<xs:element name='root' type='xs:decimal' block='{block}'/>").Run($"<root xmlns:xs='{Xs}' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xsi:type='xs:int'>1</root>").IsValid); }
+    [Theory]
+    [InlineData("", true)] [InlineData("substitution", false)] [InlineData("restriction", false)]
+    public void AbstractHeadSubstitutionClosure(string block, bool expected)
+    {
+        var p = Prepare($"<xs:element name='head' type='xs:string' abstract='true' block='{block}'/><xs:element name='member' type='xs:token' substitutionGroup='head'/><xs:element name='root'><xs:complexType><xs:sequence><xs:element ref='head'/></xs:sequence></xs:complexType></xs:element>");
+        Assert.Equal(expected,p.Run("<root><member>text</member></root>").IsValid); Assert.False(p.Run("<root><head>text</head></root>").IsValid);
+    }
+    [Theory]
+    [InlineData("strict", false)] [InlineData("lax", false)] [InlineData("skip", true)]
+    public void AttributeWildcardKnownDeclaration(string policy,bool expected)
+    { Assert.Equal(expected,Prepare($"<xs:attribute name='n' type='xs:int'/><xs:element name='root'><xs:complexType><xs:anyAttribute processContents='{policy}'/></xs:complexType></xs:element>").Run("<root n='bad'/>").IsValid); }
+    [Fact]
+    public void SkipDoesNotAssessSchemaInstanceAttributes()
+    {
+        var p = Prepare("<xs:element name='root'><xs:complexType><xs:sequence><xs:any processContents='skip'/></xs:sequence></xs:complexType></xs:element>");
+        Assert.True(p.Run("<root><unknown xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xsi:nil='BAD' xsi:type='missing'/></root>").IsValid);
+    }
+    [Fact]
+    public void UnionSelectedTypeReachesHooks()
+    {
+        var p=Prepare("<xs:simpleType name='U'><xs:union memberTypes='xs:int xs:boolean'/></xs:simpleType><xs:element name='root' type='U'/>");
+        var hook = new RecordingFactory(); Assert.True(p.Run("<root>true</root>",factory:hook).IsValid);
+        Assert.Equal(new SchemaName(Xs,"boolean"),Assert.Single(hook.Values).Type);
+    }
+    [Fact]
+    public void XsiLocationsRemainHintsAndValidatePairSyntax()
+    {
+        var p=Prepare("<xs:element name='root'/>");
+        Assert.True(p.Run("<root xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xsi:schemaLocation='urn:unknown https://ungranted.invalid/schema' xsi:noNamespaceSchemaLocation='https://ungranted.invalid/other'/>").IsValid);
+        Assert.False(p.Run("<root xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xsi:schemaLocation='single'/>").IsValid);
     }
     internal sealed class RecordingFactory : IXsdIdentityFactory, IXsdIdentitySession
     {

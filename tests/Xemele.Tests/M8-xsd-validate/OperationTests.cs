@@ -59,6 +59,13 @@ public sealed class OperationTests
         Assert.True(validator.Validate(p.Schema,doc,new(),p.Programs,new XsdContentMatcher(),p.Facets,null,null).IsValid);
     }
     [Fact]
+    public void SharedComponentRepresentationCapIsEnforced()
+    {
+        var p=EvaluatorTests.Prepare("<xs:element name='root'/>");
+        var hook = new EvaluatorTests.RecordingFactory { Callback=op=>op.ChargeComponents(int.MaxValue,default) };
+        var result=p.Run("<root/>",factory:hook); Assert.False(result.IsComplete); Assert.Equal("VALIDATION.Limit",result.Diagnostics[^1].Code);
+    }
+    [Fact]
     public async Task ConcurrentRunsHaveIsolatedIdsAndCursors()
     {
         var p = EvaluatorTests.Prepare("<xs:element name='root'><xs:complexType><xs:sequence><xs:element name='n' type='xs:ID' maxOccurs='unbounded'/></xs:sequence></xs:complexType></xs:element>");
