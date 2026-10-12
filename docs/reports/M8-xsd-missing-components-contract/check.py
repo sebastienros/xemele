@@ -1,234 +1,249 @@
 #!/usr/bin/env python3
-"""SOURCE-only prepared finite offline contract runner. UNRUN until SHA release.
-
-Guard process owns launches and cleanup even if the caller dies. No runtime
-fixture execution, generic runner import, restore source fallback or server reuse.
-"""
+"""Owned source-reviewed contract harness. Every actual check remains UNRUN."""
 import argparse
-import hashlib
 import json
 import os
 from pathlib import Path
 import signal
 import subprocess
 import sys
+import threading
 import time
 import uuid
 import xml.etree.ElementTree as ET
+import bindings
+import supervision
+import nested_ownership as nested
 
 ROOT = Path(__file__).resolve().parents[3]
 HERE = Path(__file__).resolve().parent
 FIXTURE = ROOT / 'tests/Contracts/Fixtures/M8/MissingComponents'
-TOKEN_KEY = 'XEMELE_MISSING_CONTRACT_FAMILY'
-WORK_SECONDS = 180
-CLEANUP_SECONDS = 12
-HARD_SECONDS = 195
-COMMAND_SECONDS = 45
+OUT = ROOT / 'artifacts/M8-xsd-missing-components-contract'
+WORK_SECONDS, CLEANUP_SECONDS, HARD_SECONDS = 180, 12, 195
+# Original six required behavioral scenarios; adversarial invariant controls also required.
+CASES = ('normal', 'descendant', 'timeout', 'late', 'invariant', 'parent-death')
+EXTRA_CASES = ('inventory-failure', 'expired-cleanup', 'delayed-prelaunch', 'delayed-absence',
+               'delayed-publication', 'changed-command', 'changed-project', 'changed-source',
+               'changed-binary', 'missing-controls', 'mismatched-controls', 'wrong-control-outcome')
+ALL_CASES = CASES + EXTRA_CASES
 
 
-def atomic(path, value):
-    temporary = path.with_suffix('.tmp')
-    temporary.write_text(json.dumps(value, indent=2) + '\n')
-    temporary.replace(path)
+def durable(path, value):
+    nested.durable(Path(path), value)
 
 
 def finite_output(argv, deadline):
-    remaining = deadline - time.monotonic()
-    if remaining <= 0:
-        raise TimeoutError('No inventory/receipt budget remains')
-    return subprocess.check_output(argv, cwd=ROOT, text=True, timeout=min(2, remaining))
+    left = deadline - time.monotonic()
+    if left <= 0: raise TimeoutError('receipt budget exhausted')
+    result = subprocess.check_output(argv, cwd=ROOT, text=True, timeout=min(2, left))
+    if time.monotonic() >= deadline: raise TimeoutError('late command output')
+    return result
 
 
-def inventory(token, known, groups, deadline):
-    # Environment marker finds descendants that changed session/group or reparented.
-    # Full host commands are never logged or persisted. Fail closed if unavailable.
-    output = finite_output(['ps', 'eww', '-axo', 'pid,ppid,pgid,command'], deadline)
-    rows = []
-    for line in output.splitlines()[1:]:
-        values = line.strip().split(None, 3)
-        if len(values) == 4:
-            pid, parent, group = map(int, values[:3])
-            rows.append((pid, parent, group, f'{TOKEN_KEY}={token}' in values[3]))
-    found = {pid for pid, parent, group, marked in rows if marked or group in groups or pid in known}
-    while True:
-        extra = {pid for pid, parent, group, marked in rows if parent in found}
-        if extra <= found:
-            break
-        found |= extra
-    # Never infer ownership from dotnet name or kill host-wide services.
-    found.discard(os.getpid())
-    return found
+def checkpoint(deadline, caller_pid=None):
+    if time.monotonic() >= deadline: raise TimeoutError('work deadline')
+    if caller_pid is not None and os.getppid() != caller_pid: raise RuntimeError('caller died')
 
 
-def kill_owned(pids, sig):
-    for pid in pids:
-        try:
-            os.kill(pid, sig)
-        except ProcessLookupError:
-            pass
-
-
-def drain(child, token, known, groups, deadline, record):
-    clean = False
-    # Inventory twice with absence; cleanup is included inside the work envelope.
-    while time.monotonic() < deadline:
-        active = inventory(token, known, groups, deadline)
-        known |= active
-        if not active:
-            if clean:
-                if child is not None:
-                    child.wait(timeout=max(.001, min(.5, deadline - time.monotonic())))
-                record.update(ownedFamilyAbsent=True, directChildReaped=child is None or child.returncode is not None)
-                return
-            clean = True
-        else:
-            clean = False
-            kill_owned(active, signal.SIGKILL)
-        if child is not None:
-            child.poll()  # reap the direct child before checking its absence
-        time.sleep(min(.05, max(0, deadline - time.monotonic())))
-    raise TimeoutError('Owned family did not drain inside reserved cleanup budget')
-
-
-def guard(plan_path, caller_pid):
-    plan = json.loads(plan_path.read_text())
-    started = time.monotonic()
-    control = plan.get('lifecycleControl')
-    if control not in (None, 'normal', 'descendant', 'timeout', 'late', 'invariant', 'parent-death'):
-        raise ValueError('Unknown lifecycle control')
-    work_seconds, cleanup_seconds, hard_seconds, command_seconds = (8, 3, 10, 2) if control else (WORK_SECONDS, CLEANUP_SECONDS, HARD_SECONDS, COMMAND_SECONDS)
-    work_end = started + work_seconds
-    launch_end = work_end - cleanup_seconds
-    hard_end = started + hard_seconds
-    token = uuid.uuid4().hex
-    receipt = {'state': 'running', 'sourceSha': plan['sourceSha'], 'sources': plan['sources'],
-               'sdk': 'UNRUN', 'runtime': 'UNRUN', 'guardPid': os.getpid(), 'familyToken': token, 'commands': [], 'workSeconds': work_seconds,
-               'cleanupReservedInsideWork': cleanup_seconds, 'hardSeconds': hard_seconds,
-               'lifecycleControl': control, 'planSha256': hashlib.sha256(plan_path.read_bytes()).hexdigest(),
-               'fixtureMethodsExecuted': False, 'runtimeTestsExecuted': False}
-    target = plan_path.parent / 'receipt.json'
-    current = None
-    current_log = None
-    known, groups = set(), set()
-    interrupted = False
-
-    def stop(sig, frame):
-        nonlocal interrupted
-        interrupted = True
-    signal.signal(signal.SIGTERM, stop)
-    signal.signal(signal.SIGINT, stop)
-    # The absolute hard timer is a final fail-closed guard, not a new cleanup period.
-    def hard_stop(sig, frame):
-        raise TimeoutError('Absolute hard deadline')
-    signal.signal(signal.SIGALRM, hard_stop)
-    signal.setitimer(signal.ITIMER_REAL, hard_seconds)
+def publish(path, receipt, deadline, caller_pid=None):
+    # A passing candidate is durable first, then committed by a separate exclusive marker.
+    # Slow fsync/absence/verification cannot publish a committed late success.
+    candidate = Path(path).with_name(Path(path).stem + '-candidate.json')
+    checkpoint(deadline, caller_pid)
+    durable(candidate, receipt)
     try:
-        for index, command in enumerate(plan['commands']):
-            if interrupted or os.getppid() != caller_pid:
-                raise RuntimeError('Caller died or stop requested; no next launch')
-            if time.monotonic() >= launch_end:
-                raise TimeoutError('No launch budget; no next command')
-            if inventory(token, known, groups, min(work_end, hard_end)):
-                raise RuntimeError('Previous owned family still present')
-            record = {'argv': command['argv'], 'expectedExit': command.get('expectedExit', 0),
-                      'started': time.monotonic() - started, 'ownedFamilyAbsent': False}
-            receipt['commands'].append(record)
-            atomic(target, receipt)
-            environment = dict(os.environ, **{TOKEN_KEY: token,
-                'DOTNET_CLI_TELEMETRY_OPTOUT': '1', 'DOTNET_SKIP_FIRST_TIME_EXPERIENCE': '1',
-                'DOTNET_CLI_DO_NOT_USE_MSBUILD_SERVER': '1', 'MSBUILDDISABLENODEREUSE': '1',
-                'DOTNET_CLI_HOME': str(plan_path.parent / 'cli-home')})
-            log_path = plan_path.parent / f'{index:02d}.log'
-            command_end = min(launch_end, time.monotonic() + command_seconds)
-            with log_path.open('xb') as log:
-                current_log = log
-                current = subprocess.Popen(command['argv'], cwd=ROOT, env=environment,
-                    stdout=log, stderr=subprocess.STDOUT, start_new_session=True)
-                known.add(current.pid); groups.add(current.pid)
-                record['pid'] = current.pid
-                while current.poll() is None:
-                    if interrupted or os.getppid() != caller_pid:
-                        raise RuntimeError('Caller died or stop requested')
-                    if time.monotonic() >= command_end:
-                        raise TimeoutError('Command deadline; no next command')
-                    known |= inventory(token, known, groups, min(command_end, work_end))
-                    time.sleep(.05)
-                record['exit'] = current.returncode
-                # Completion observed after command/launch deadline cannot earn success.
-                if time.monotonic() >= command_end:
-                    raise TimeoutError('Late completion; no success')
-                drain(current, token, known, groups, min(work_end, hard_end), record)
-                current = None
-                known.clear(); groups.clear()
-            record['logClosed'] = log.closed
-            record['logSha256'] = hashlib.sha256(log_path.read_bytes()).hexdigest()
-            text = log_path.read_text(errors='replace')
-            if record['exit'] != record['expectedExit'] or any(s not in text for s in command.get('contains', [])):
-                raise RuntimeError('Command exit/output invariant failed; no next command')
-            if index == 0:
-                receipt['sdk'] = text.strip()
-                if not control and text.strip() != '10.0.400':
-                    raise RuntimeError('Pinned SDK mismatch')
-            if 'RUNTIME ' in text:
-                runtime = next(line.removeprefix('RUNTIME ') for line in text.splitlines() if line.startswith('RUNTIME '))
-                if runtime != '10.0.11':
-                    raise RuntimeError('Actual extractor runtime mismatch')
-                receipt['runtime'] = runtime
-            record['result'] = 'passed'
-            atomic(target, receipt)
-        # Immutable source and exact old/new projection postconditions share the work deadline.
-        if time.monotonic() >= launch_end or interrupted or os.getppid() != caller_pid:
-            raise TimeoutError('No publication budget or caller died')
-        for relative, expected in plan['sources'].items():
-            if hashlib.sha256((ROOT / relative).read_bytes()).hexdigest() != expected:
-                raise RuntimeError('Reviewed source changed during execution')
-        def rows(path):
-            return {row['id']: row for row in map(json.loads, path.read_text().splitlines()[1:])}
-        if not control:
-            if receipt['runtime'] != '10.0.11':
-                raise RuntimeError('No actual extractor runtime receipt')
-            old = rows(plan_path.parent / 'old.actual.txt')
-            new = rows(plan_path.parent / 'candidate.actual.txt')
-            delta = json.loads((HERE / 'baseline-delta.json').read_text())['changes']
-            expected_old, expected_new = old.copy(), old.copy()
-            for change in delta:
-                if expected_old[change['old']['id']] != change['old']:
-                    raise RuntimeError('Old compiled member differs from frozen source')
-                del expected_new[change['old']['id']]
-                expected_new[change['candidate']['id']] = change['candidate']
-            if new != expected_new:
-                raise RuntimeError('Candidate differs beyond three approved members')
-            receipt['projection'] = 'exactly 3 changed members; public/interface rows unchanged'
-        if time.monotonic() >= launch_end or interrupted or os.getppid() != caller_pid:
-            raise RuntimeError('Caller/deadline changed before publication')
-        receipt['state'] = 'passed'
+        checkpoint(deadline, caller_pid)
+        durable(path, {'candidate': str(candidate), 'sha256': bindings.digest(candidate), 'state': receipt['state']})
+        checkpoint(deadline, caller_pid)
+    except BaseException:
+        # Never overwrite prior evidence. Quarantine candidate/commit and leave failure marker.
+        quarantine = Path(path).with_name(Path(path).stem + '-quarantine')
+        quarantine.mkdir(exist_ok=False)
+        for file in (candidate, Path(path)):
+            if file.exists(): file.rename(quarantine / file.name)
+        durable(quarantine / 'failure.json', {'state': 'failed', 'reason': 'late final publication'})
+        raise
+
+
+def load_receipt(path, expected_sha):
+    assert bindings.digest(path) == expected_sha, 'frozen controls/receipt hash differs'
+    commit = json.loads(Path(path).read_text())
+    candidate = Path(commit['candidate'])
+    assert bindings.digest(candidate) == commit['sha256'], 'receipt candidate changed'
+    value = json.loads(candidate.read_text())
+    assert value['state'] == commit['state'], 'receipt state mismatch'
+    return value
+
+
+def require_controls(path, identity, plan_sha, source_sha):
+    assert path and identity, 'successful matching controls receipt required before compile'
+    receipt = load_receipt(path, identity)
+    assert receipt['state'] == 'passed' and receipt['planSha256'] == plan_sha and receipt['sourceSha'] == source_sha, 'controls receipt mismatch'
+    assert receipt['cases'] == list(ALL_CASES) and all(receipt['outcomes'].values()), 'missing/wrong control outcomes'
+    assert receipt['independentAbsence'] and receipt['noNextAfterFailure'], 'controls lifecycle invariants missing'
+    return receipt
+
+
+def verify_inputs(plan_path, expected_sha, deadline, caller_pid, controls_path=None, controls_sha=None, control=None):
+    checkpoint(deadline, caller_pid)
+    plan = bindings.verify(plan_path, expected_sha, deadline)
+    if control:
+        assert control in ALL_CASES and plan['controlCase'] == control, 'control recipe mismatch'
+        assert plan['commands'] == control_commands(control, plan_path.parent), 'changed required control command'
+    else:
+        assert plan['commands'] == compile_commands(plan['dotnet'], plan_path.parent), 'changed required compile command'
+        require_controls(controls_path, controls_sha, expected_sha, plan['sourceSha'])
+    checkpoint(deadline, caller_pid)
+    return plan
+
+
+def output_identities(folder):
+    # Includes all real compiled dependency assemblies/configuration and emitted API projections.
+    return {str(p): bindings.digest(p) for p in sorted(folder.rglob('*'))
+            if p.is_file() and (('bin' in p.parts and p.suffix in ('.dll', '.json', '.pdb')) or p.name.endswith('.actual.txt'))}
+
+
+def guard(plan_path, expected_sha, caller_pid, controls_path=None, controls_sha=None, control=None):
+    started = time.monotonic()
+    work, cleanup, hard, cap = (10, 4, 14, 2) if control else (WORK_SECONDS, CLEANUP_SECONDS, HARD_SECONDS, 40)
+    work_end, hard_end = started + work, started + hard
+    launch_end = work_end - cleanup
+    def hard_stop(sig,frame): raise TimeoutError('guard absolute hard deadline')
+    signal.signal(signal.SIGALRM,hard_stop); signal.setitimer(signal.ITIMER_REAL,hard)
+    plan = verify_inputs(plan_path, expected_sha, launch_end, caller_pid, controls_path, controls_sha, control)
+    receipt = {'state': 'failed', 'sourceSha': plan['sourceSha'], 'planSha256': expected_sha,
+               'controlCase': control, 'commands': [], 'inputs': plan['inputs'], 'outputs': {},
+               'fixtureMethodsExecuted': False, 'runtimeTestsExecuted': False,
+               'workSeconds': work, 'cleanupReserveInsideWork': cleanup, 'hardSeconds': hard}
+    supervision.ARTIFACTS = plan_path.parent
+    environment = os.environ.copy()
+    for override in ('MSBuildSDKsPath','MSBUILD_EXE_PATH','DOTNET_ROOT','DOTNET_ROOT_ARM64','DOTNET_ROOT_X64',
+                     'DOTNET_ROLL_FORWARD','DOTNET_ROLL_FORWARD_TO_PRERELEASE','MSBuildExtensionsPath',
+                     'MSBuildExtensionsPath32','MSBuildExtensionsPath64','NUGET_PLUGIN_PATHS'):
+        environment.pop(override,None)
+    environment.update(DOTNET_MULTILEVEL_LOOKUP='0', DOTNET_CLI_TELEMETRY_OPTOUT='1', DOTNET_SKIP_FIRST_TIME_EXPERIENCE='1',
+        DOTNET_CLI_DO_NOT_USE_MSBUILD_SERVER='1', MSBUILDDISABLENODEREUSE='1',
+        DOTNET_CLI_HOME=str(plan_path.parent / 'cli-home'))
+    environment[nested.BOUND_PLAN] = str(plan_path); environment[nested.BOUND_HASH] = expected_sha
+    done = threading.Event()
+    def watch_caller():
+        while not done.wait(.05):
+            if os.getppid() != caller_pid or time.monotonic() >= launch_end:
+                os.kill(os.getpid(), signal.SIGTERM); return
+    watcher = threading.Thread(target=watch_caller, daemon=True); watcher.start()
+    def before_launch():
+        verify_inputs(plan_path, expected_sha, launch_end, caller_pid, controls_path, controls_sha, control)
+        for name, digest in receipt['outputs'].items():
+            assert bindings.digest(name) == digest, 'compiled assembly/projection changed'
+        checkpoint(launch_end, caller_pid)
+    nested.PRELAUNCH_HOOK = before_launch
+    try:
+        with nested.interruptions():
+            for index, command in enumerate(plan['commands']):
+                before_launch()
+                launch_inputs = dict(plan['inputs'], **receipt['outputs'])
+                if not control:
+                    commit = json.loads(Path(controls_path).read_text())
+                    launch_inputs[str(controls_path)] = controls_sha
+                    launch_inputs[commit['candidate']] = commit['sha256']
+                snapshot = plan_path.parent / f'launch-inputs-{index:03d}.json'
+                durable(snapshot, {'inputs':launch_inputs, 'planSha256':expected_sha, 'argv':command['argv']})
+                environment[nested.BOUND_PLAN] = str(snapshot)
+                environment[nested.BOUND_HASH] = bindings.digest(snapshot)
+                before_launch()
+                record = nested.supervise_family_command(supervision, command['argv'], index, environment,
+                    min(time.monotonic() + cap, launch_end), min(work_end, hard_end))
+                record.update(argv=command['argv'], expectedExit=command.get('expectedExit', 0), launchInputs=str(snapshot), launchInputsSha256=bindings.digest(snapshot))
+                receipt['commands'].append(record)
+                # Exclusive durable cleanup receipt precedes reading log/output.
+                durable(plan_path.parent / f'lifecycle-{index:03d}.json', record)
+                checkpoint(launch_end, caller_pid)
+                clean = record['directChildReaped'] and record['ownedGroupAbsent'] and record['logClosed'] and record['nestedOwnership']['allOwnedGroupsAbsent']
+                assert clean and record['reason'] in ('completed', 'failed') and record['exit'] == command.get('expectedExit', 0), 'command lifecycle/outcome failed; no next'
+                log = plan_path.parent / f'command-{index}.log'
+                record['logSha256'] = bindings.digest(log)
+                text = log.read_text(errors='replace')
+                assert all(value in text for value in command.get('contains', [])), 'output invariant; no next'
+                if not control and index == 0: assert text.strip() == '10.0.400', 'SDK mismatch'
+                if 'RUNTIME ' in text:
+                    receipt['actualRuntime'] = next(line[8:] for line in text.splitlines() if line.startswith('RUNTIME '))
+                    assert receipt['actualRuntime'] == '10.0.11'
+                receipt['outputs'].update(output_identities(plan_path.parent))
+            before_launch()
+            if not control: verify_projection(plan_path.parent)
+            checkpoint(launch_end, caller_pid)
+            receipt['state'] = 'passed'
     except BaseException as error:
-        receipt['state'] = 'failed'
         receipt['reason'] = type(error).__name__ + ': ' + str(error)
     finally:
-        try:
-            cleanup = {}
-            drain(current, token, known, groups, min(work_end, hard_end), cleanup)
-            receipt['finalCleanup'] = cleanup
-            if receipt['commands']:
-                receipt['commands'][-1]['logClosed'] = current_log is None or current_log.closed
-                if current is not None:
-                    receipt['commands'][-1]['exit'] = current.returncode
-        except BaseException as error:
-            receipt['state'] = 'failed'; receipt['cleanupError'] = type(error).__name__
-        if interrupted or os.getppid() != caller_pid:
-            receipt['state'] = 'failed'
-            receipt.setdefault('reason', 'Caller died or stop requested before final receipt')
+        done.set(); nested.PRELAUNCH_HOOK = None
         receipt['elapsedSeconds'] = time.monotonic() - started
-        if time.monotonic() >= work_end:
-            receipt['state'] = 'failed'; receipt['lateSuccessRejected'] = True
-        atomic(target, receipt)
-        signal.setitimer(signal.ITIMER_REAL, 0)
+        if time.monotonic() >= work_end or os.getppid() != caller_pid:
+            receipt['state'] = 'failed'; receipt.setdefault('reason', 'caller/deadline before final publication')
+        publish(plan_path.parent / 'receipt.json', receipt, work_end, caller_pid if receipt['state']=='passed' else None)
+        signal.setitimer(signal.ITIMER_REAL,0)
     return 0 if receipt['state'] == 'passed' else 1
+
+
+def verify_projection(folder):
+    def rows(path): return {r['id']: r for r in map(json.loads, path.read_text().splitlines()[1:])}
+    old = rows(folder / 'old.actual.txt'); new = rows(folder / 'candidate.actual.txt')
+    expected = old.copy()
+    for change in json.loads((HERE / 'baseline-delta.json').read_text())['changes']:
+        assert expected[change['old']['id']] == change['old']
+        del expected[change['old']['id']]; expected[change['candidate']['id']] = change['candidate']
+    assert new == expected, 'projection differs beyond exactly three approved members'
+
+
+def compile_commands(dotnet, folder):
+    commands = [{'argv': [dotnet, '--version'], 'contains': ['10.0.400']},
+                {'argv': [dotnet, '--list-runtimes'], 'contains': ['Microsoft.NETCore.App 10.0.11 ']}]
+    common = ['--disable-build-servers', '-p:UseSharedCompilation=false', '-p:BuildInParallel=false', '-nodeReuse:false', '-maxcpucount:1', '--verbosity', 'quiet']
+    for name in ('Prerequisites', 'Old', 'Candidate', 'ApiCheck', 'Reject'):
+        p = folder / name / (name + '.csproj')
+        commands.append({'argv': [dotnet, 'restore', str(p), '--configfile', str(folder/'NuGet.Config'), '-p:NuGetAudit=false', *common]})
+        commands.append({'argv': [dotnet, 'build', str(p), '-c', 'Release', '--no-restore', *common], **({'expectedExit':1,'contains':['CS0266']} if name=='Reject' else {})})
+    inspect = [dotnet, '--fx-version', '10.0.11', str(folder/'ApiCheck/bin/Release/net10.0/ApiCheck.dll')]
+    old = str(folder/'Old/bin/Release/net10.0/Old.dll'); new = str(folder/'Candidate/bin/Release/net10.0/Candidate.dll')
+    for mode, assembly, target in [('compare',old,FIXTURE/'old.golden.txt'),('compare',new,FIXTURE/'candidate.golden.txt'),('emit',old,folder/'old.actual.txt'),('emit',new,folder/'candidate.actual.txt')]:
+        commands.append({'argv': [*inspect, mode, assembly, str(target)]})
+    for label in ('drop-member', 'remove-nullable'):
+        commands.append({'argv': [*inspect,'compare',new,str(folder/(label+'.txt'))], 'expectedExit':1,'contains':['API mismatch']})
+    return commands
+
+
+def control_commands(case, folder):
+    return [{'argv': [sys.executable, str(HERE/'lifecycle-hazard.py'), case, str(folder)]},
+            {'argv': [sys.executable, str(HERE/'lifecycle-hazard.py'), 'next', str(folder)]}]
+
+
+def run_owned_guard(plan, expected, controls=None, controls_sha=None, control=None):
+    # Ancestor registry includes guard AND every registered nested command/session.
+    root_registry = plan.parent / ('caller-' + uuid.uuid4().hex); root_registry.mkdir()
+    environment = os.environ.copy()
+    environment[nested.REGISTRIES] = json.dumps([str(p) for p in nested.registries(environment)+[root_registry]])
+    supervision.ARTIFACTS = plan.parent
+    start = time.monotonic(); work_end = start + (24 if control else 200); hard_end = work_end + 14
+    def hard_stop(sig,frame): raise TimeoutError('caller absolute hard deadline')
+    old_alarm=signal.signal(signal.SIGALRM,hard_stop); signal.setitimer(signal.ITIMER_REAL,hard_end-start)
+    argv = [sys.executable,str(HERE/'check.py'),'--guard',str(plan),'--expected-plan-sha',expected,'--caller-pid',str(os.getpid())]
+    if control: argv += ['--control-case',control]
+    else: argv += ['--controls-receipt',str(controls),'--expected-controls-sha',controls_sha]
+    try:
+        with nested.interruptions():
+            return nested.supervise_family_command(supervision, argv, 999, environment, work_end-(8 if control else 16), work_end-4)
+    finally:
+        # Kill registered known groups even when ps fails or budget has expired.
+        cleanup = nested.drain(supervision, root_registry, work_end)
+        durable(plan.parent / 'caller-cleanup.json', cleanup)
+        assert cleanup['allOwnedGroupsAbsent'], 'caller could not prove owned family absent'
+        checkpoint(work_end)
+        signal.setitimer(signal.ITIMER_REAL,0); signal.signal(signal.SIGALRM,old_alarm)
 
 
 def prepare(dotnet, sha):
     # This function runs only after explicit source review release.
+    prepare_deadline = time.monotonic() + 45
     deadline = time.monotonic() + 4
     if finite_output(['git', 'rev-parse', 'HEAD'], deadline).strip() != sha:
         raise RuntimeError('Release SHA must be current HEAD')
@@ -238,7 +253,7 @@ def prepare(dotnet, sha):
     artifact.mkdir(parents=True)
     sources = {}
     def source(path):
-        sources[str(path.relative_to(ROOT))] = hashlib.sha256(path.read_bytes()).hexdigest()
+        sources[str(path.relative_to(ROOT))] = bindings.digest(path)
     for path in [*FIXTURE.iterdir(), *HERE.iterdir()]:
         if path.is_file(): source(path)
     def project(name, includes, references=(), roslyn=False):
@@ -271,69 +286,56 @@ def prepare(dotnet, sha):
     candidate = project('Candidate', shared+[FIXTURE/'Xsd.candidate.cs.fixture',FIXTURE/'Availability.cs.fixture',FIXTURE/'Usage.cs.fixture'], [prereq])
     reject = project('Reject', shared+[FIXTURE/'Xsd.candidate.cs.fixture',FIXTURE/'RejectOldUsage.cs.fixture'], [prereq])
     checker = project('ApiCheck', [HERE/'ApiCheck.cs.fixture'], roslyn=True)
-    commands = [{'argv':[dotnet,'--version'],'contains':['10.0.400']},
-                {'argv':[dotnet,'--list-runtimes'],'contains':['Microsoft.NETCore.App 10.0.11 ']}]
-    common = ['--disable-build-servers','-p:UseSharedCompilation=false','-p:BuildInParallel=false','-nodeReuse:false','-maxcpucount:1','--verbosity','quiet']
-    for p in [prereq, old, candidate, checker, reject]:
-        commands.append({'argv':[dotnet,'restore',str(p),'--source',str(FIXTURE),'-p:NuGetAudit=false',*common]})
-        commands.append({'argv':[dotnet,'build',str(p),'-c','Release','--no-restore',*common],
-                         **({'expectedExit':1,'contains':['CS0266']} if p==reject else {})})
-    inspect = [dotnet,'--fx-version','10.0.11',str(checker.parent/'bin/Release/net10.0/ApiCheck.dll')]
-    olddll = str(old.parent/'bin/Release/net10.0/Old.dll'); newdll = str(candidate.parent/'bin/Release/net10.0/Candidate.dll')
-    commands += [{'argv':[*inspect,'compare',olddll,str(FIXTURE/'old.golden.txt')]},
-                 {'argv':[*inspect,'compare',newdll,str(FIXTURE/'candidate.golden.txt')]},
-                 {'argv':[*inspect,'emit',olddll,str(artifact/'old.actual.txt')]},
-                 {'argv':[*inspect,'emit',newdll,str(artifact/'candidate.actual.txt')]}]
     baseline=(FIXTURE/'candidate.golden.txt').read_text()
     for label, contents in [('drop-member', '\n'.join(baseline.splitlines()[:-1])+'\n'),
                              ('remove-nullable',baseline.replace('SchemaName? Xemele.Validation.XsdElementDeclaration.Type','SchemaName Xemele.Validation.XsdElementDeclaration.Type'))]:
         bad=artifact/(label+'.txt'); bad.write_text(contents)
-        commands.append({'argv':[*inspect,'compare',newdll,str(bad)],'expectedExit':1,'contains':['API mismatch']})
-    plan=artifact/'plan.json'; atomic(plan, {'sourceSha':sha,'sources':sources,'commands':commands})
+    # Offline config clears inherited user sources; config and generated projects are bound.
+    (artifact/'NuGet.Config').write_text('<configuration><packageSources><clear/><add key="local" value="'+str(FIXTURE)+'"/></packageSources></configuration>')
+    (artifact/'Directory.Build.props').write_text('<Project><Import Project="'+str(ROOT/'Directory.Build.props')+'"/></Project>')
+    (artifact/'Directory.Build.targets').write_text('<Project/>')
+    inputs = {str(ROOT/name):identity for name,identity in sources.items()}
+    inputs[str(ROOT/'Directory.Packages.props')] = bindings.digest(ROOT/'Directory.Packages.props')
+    for file in artifact.rglob('*'):
+        if file.is_file() and file.suffix in ('.csproj','.txt','.props','.targets'):
+            inputs[str(file)] = bindings.digest(file)
+    inputs[str(artifact/'NuGet.Config')] = bindings.digest(artifact/'NuGet.Config')
+    toolroot = Path(dotnet).parent
+    # Bind the actual SDK, Roslyn, host and runtime files, not just the dotnet launcher.
+    toolfiles = [Path(dotnet)]
+    for directory in [toolroot/'sdk/10.0.400', toolroot/'shared/Microsoft.NETCore.App/10.0.11', toolroot/'host/fxr']:
+        assert directory.is_dir(), 'pinned SDK/runtime/host path missing'
+        toolfiles += [file for file in directory.rglob('*') if file.is_file() and
+                      (file.suffix in ('.dll','.json','.props','.targets','.dylib') or file.name.startswith('dotnet'))]
+    for file in toolfiles:
+        if time.monotonic() >= prepare_deadline: raise TimeoutError('finite preparation budget')
+        inputs[str(file)] = bindings.digest(file)
+    plan=artifact/'plan.json'; durable(plan, {'sourceSha':sha,'inputs':inputs,'dotnet':dotnet,'commands':compile_commands(dotnet,artifact)})
+    checkpoint(prepare_deadline)
     return plan
 
 
 
-def prepare_controls(released_plan):
-    base = json.loads(released_plan.read_text())
-    hazard = HERE / 'lifecycle-hazard.py'
-    for case in ['normal', 'descendant', 'timeout', 'late', 'invariant', 'parent-death']:
-        folder = released_plan.parent / ('control-' + case)
-        folder.mkdir()
-        next_marker = folder / 'next-command.txt'
-        command = [sys.executable, str(hazard), case, str(folder / 'hazard.json')]
-        commands = [{'argv': command}, {'argv': [sys.executable, str(hazard), 'next', str(next_marker)]}]
-        atomic(folder / 'plan.json', dict(sourceSha=base['sourceSha'], sources=base['sources'],
-               commands=commands, lifecycleControl=case))
-    # No generic harness executes these. Review the control launch/proof recipes first.
-
 def main():
-    p=argparse.ArgumentParser()
-    p.add_argument('--dotnet'); p.add_argument('--release-sha')
-    p.add_argument('--prepare-lifecycle-controls', action='store_true')
-    p.add_argument('--guard',type=Path); p.add_argument('--caller-pid',type=int)
-    a=p.parse_args()
-    if a.guard:
-        return guard(a.guard,a.caller_pid)
-    if not a.dotnet or not a.release_sha:
-        p.error('Explicit coordinator SOURCE release SHA and pinned dotnet are required')
-    plan=prepare(str(Path(a.dotnet).resolve()),a.release_sha)
-    if a.prepare_lifecycle_controls:
-        prepare_controls(plan)
-        print('Lifecycle plans prepared; no controls launched: '+str(plan.parent), flush=True)
+    p = argparse.ArgumentParser()
+    p.add_argument('--prepare',action='store_true'); p.add_argument('--dotnet'); p.add_argument('--release-sha')
+    p.add_argument('--plan',type=Path); p.add_argument('--expected-plan-sha')
+    p.add_argument('--guard',type=Path); p.add_argument('--caller-pid',type=int); p.add_argument('--control-case')
+    p.add_argument('--controls-receipt',type=Path); p.add_argument('--expected-controls-sha')
+    a = p.parse_args()
+    if a.prepare:
+        assert a.dotnet and a.release_sha
+        plan = prepare(str(Path(a.dotnet).resolve()),a.release_sha)
+        print(json.dumps({'plan':str(plan),'sha256':bindings.digest(plan),'state':'prepared only; controls/compile UNRUN'}))
         return 0
-    child=subprocess.Popen([sys.executable,str(Path(__file__).resolve()),'--guard',str(plan),'--caller-pid',str(os.getpid())],start_new_session=True)
-    print('Receipt: '+str(plan.parent/'receipt.json'),flush=True)
-    # Guard handles caller termination itself; forward ordinary signals for prompt cleanup.
-    def forward(sig, frame):
-        try: os.kill(child.pid,signal.SIGTERM)
-        except ProcessLookupError: pass
-    signal.signal(signal.SIGINT,forward); signal.signal(signal.SIGTERM,forward)
-    try:
-        return child.wait(timeout=HARD_SECONDS+2)
-    except subprocess.TimeoutExpired:
-        os.kill(child.pid,signal.SIGKILL); child.wait(timeout=1)
-        return 1  # no late success or subsequent command
+    assert a.expected_plan_sha, '--guard/--plan requires expected plan hash'
+    if a.guard:
+        assert a.caller_pid
+        return guard(a.guard.resolve(),a.expected_plan_sha,a.caller_pid,a.controls_receipt,a.expected_controls_sha,a.control_case)
+    assert a.plan and not a.control_case, 'control cases launch only through finite verifier'
+    verify_inputs(a.plan,a.expected_plan_sha,time.monotonic()+5,None,a.controls_receipt,a.expected_controls_sha)
+    record = run_owned_guard(a.plan,a.expected_plan_sha,a.controls_receipt,a.expected_controls_sha)
+    return 0 if supervision.workload_succeeded(record) else 1
 
-if __name__=='__main__':
+if __name__ == '__main__':
     sys.exit(main())

@@ -27,6 +27,7 @@ internal static class RepresentativeUsage
             new SchemaName("http://www.w3.org/2001/XMLSchema", "anySimpleType"), missing, [], [], [], false, location);
         var owner = new ComponentIdentity(OwnerKind.ElementDeclaration, name, inferred.Id);
         var explicitOwner = new ComponentIdentity(OwnerKind.ElementDeclaration, name, explicitType.Id);
+        var contentOwner = new ComponentIdentity(OwnerKind.TypeDefinition, new SchemaName("urn:test", "viaXsiType"), null);
         var listOwner = new ComponentIdentity(OwnerKind.SimpleType, listName, null);
         var entries = new[] {
             new AvailabilityEntry(0, owner, ReferenceKind.InferredSubstitutionHeadType,
@@ -40,6 +41,8 @@ internal static class RepresentativeUsage
         var edges = new[] { new DependencyEdge(owner, 0, DependencyUse.TypeAssessment),
             new DependencyEdge(listOwner, 1, DependencyUse.TypeAssessment),
             new DependencyEdge(owner, 1, DependencyUse.TypeAssessment),
+            // Complex content may be selected solely by xsi:type, with no declaration ID.
+            new DependencyEdge(contentOwner, 1, DependencyUse.TypeAssessment),
             new DependencyEdge(explicitOwner, 2, DependencyUse.TypeAssessment) };
         var availability = new ComponentAvailability(entries, edges);
         var envelope = new CompilationEnvelope(graph, availability);

@@ -1,0 +1,208 @@
+#!/usr/bin/env python3
+"""Finite SOURCE-prepared independent lifecycle verifier. All actual controls UNRUN."""
+import argparse
+import json
+import os
+from pathlib import Path
+import signal
+import subprocess
+import sys
+import threading
+import time
+from unittest.mock import patch
+import uuid
+import check as c
+
+
+def independent_absence(registries, deadline):
+    groups = set()
+    for registry in registries:
+        for file in registry.rglob('group-*.json'):
+            identity = json.loads(file.read_text())
+            assert identity['pid'] == identity['pgid'] > 1
+            groups.add(identity['pgid'])
+    live = c.nested.group_members_snapshot(groups,min(2,deadline-time.monotonic()))
+    c.checkpoint(deadline)
+    assert not live, 'independent registered-group inventory found live children'
+    return groups
+
+
+def rejects(action, message=None):
+    try: action()
+    except (AssertionError,TimeoutError,RuntimeError,FileNotFoundError) as error:
+        assert message is None or message in str(error), 'wrong rejection reason: '+str(error)
+        return True
+    raise AssertionError('required rejecting control was accepted')
+
+
+def real_case(case, folder, base, deadline, environment):
+    folder.mkdir()
+    # Only harness inputs are executed in these Python controls. SDK compilation is gated later.
+    inputs = {name:identity for name,identity in base['inputs'].items() if str(c.HERE) in name or str(c.FIXTURE) in name}
+    plan = folder/'plan.json'
+    c.durable(plan,{'sourceSha':base['sourceSha'],'inputs':inputs,'controlCase':case,'commands':c.control_commands(case,folder)})
+    expected = c.bindings.digest(plan)
+    errors=[]; killer=None
+    if case == 'parent-death':
+        def kill_after_ACK():
+            try:
+                ready=folder/'descendant-ready.json'; ready_end=min(deadline,time.monotonic()+5)
+                while not ready.exists():
+                    c.checkpoint(ready_end); time.sleep(.01)
+                identity=json.loads(ready.read_text())
+                entries=[(file,json.loads(file.read_text())) for file in folder.parent.rglob('group-*.json')]
+                assert any(entry['pid']==identity['caller'] for file,entry in entries), 'caller not registered'
+                matching=[(file,entry) for file,entry in entries if entry['pgid']==identity['pgid']]
+                assert matching, 'descendant not registered'
+                for file,entry in matching:
+                    assert c.nested.complete_record(file.with_name('ack-'+entry['token']+'.json'),{'token':entry['token'],'pid':entry['pid']}), 'readiness preceded ACK'
+                os.kill(identity['caller'],signal.SIGKILL)
+            except BaseException as error: errors.append(repr(error))
+        killer=threading.Thread(target=kill_after_ACK); killer.start()
+    c.supervision.ARTIFACTS=folder
+    try:
+        record=c.nested.supervise_family_command(c.supervision,
+            [sys.executable,str(c.HERE/'lifecycle-launcher.py'),str(plan),expected,case],
+            888,environment,min(deadline-6,time.monotonic()+20),deadline)
+    finally:
+        if killer is not None: killer.join(timeout=min(1,max(.001,deadline-time.monotonic())))
+    assert not errors and (killer is None or not killer.is_alive()), errors
+    assert record['directChildReaped'] and record['ownedGroupAbsent'] and record['logClosed'] and record['nestedOwnership']['allOwnedGroupsAbsent']
+    groups=independent_absence([folder],deadline)
+    success=case in ('normal','descendant')
+    if case=='parent-death':
+        # The surviving outer owner may kill the guard before it publishes a receipt.
+        # Its registered-group cleanup is authoritative; do not invent a guard outcome.
+        assert len(list(folder.glob('launch-inputs-*.json')))==1, 'parent died after more than one command'
+        guard_identity=c.bindings.digest(folder/'receipt.json') if (folder/'receipt.json').exists() else None
+        if guard_identity: assert c.load_receipt(folder/'receipt.json',guard_identity)['state']=='failed'
+    else:
+        guard_identity=c.bindings.digest(folder/'receipt.json')
+        value=c.load_receipt(folder/'receipt.json',guard_identity)
+        assert value['state']==('passed' if success else 'failed'), 'wrong control outcome'
+        assert len(value['commands'])==(2 if success else 1), 'wrong launch count'
+    assert (folder/'next-command.txt').exists()==success, 'no-next invariant'
+    assert record['exit']==(0 if success else (-signal.SIGKILL if case=='parent-death' else 1))
+    if case in ('descendant','parent-death'):
+        identity=json.loads((folder/'descendant-ready.json').read_text())
+        assert identity['pgid'] in groups, 'registered descendant was not independently inventoried'
+    return {'expectedOutcomeVerified':True,'groups':sorted(groups),'lifecycle':record,'receiptSha256':guard_identity}
+
+
+def cleanup_fault(case, folder, deadline, environment):
+    folder.mkdir(); registry=folder/'owned'; registry.mkdir()
+    env=environment.copy()
+    env[c.nested.REGISTRIES]=json.dumps([str(p) for p in c.nested.registries(env)+[registry]])
+    child=None
+    try:
+        with c.nested.track_launches(c.supervision,env,time.monotonic()+2):
+            child=c.supervision.subprocess.Popen([sys.executable,'-c','import time;time.sleep(30)'],
+                env=env,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL,start_new_session=True)
+        assert child.poll() is None, 'control needs live child'
+        if case=='inventory-failure':
+            with patch.object(c.nested,'group_members_snapshot',side_effect=OSError('injected ps failure')):
+                result=c.nested.drain(c.supervision,registry,time.monotonic()+3)
+        else:
+            # Known groups must receive SIGKILL even when no scan budget remains.
+            result=c.nested.drain(c.supervision,registry,time.monotonic()-1)
+        assert not result['allOwnedGroupsAbsent'] and 'cleanupError' in result
+        child.wait(timeout=min(1,deadline-time.monotonic()))
+        assert child.returncode is not None
+        groups=independent_absence([registry],deadline)
+        return {'expectedOutcomeVerified':True,'groups':sorted(groups),'failure':result}
+    finally:
+        if child is not None:
+            c.supervision.kill_group(child.pid,signal.SIGKILL)
+            child.wait(timeout=max(.001,min(1,deadline-time.monotonic())))
+
+
+def invariant_case(case, folder, base, expected_plan_sha, deadline, environment):
+    folder.mkdir()
+    if case in ('inventory-failure','expired-cleanup'):
+        # Called with an already unique folder by main, use separate fault subfolder.
+        return cleanup_fault(case,folder/'fault',deadline,environment)
+    if case=='delayed-prelaunch':
+        registry=folder/'owned'; registry.mkdir()
+        env=environment.copy(); env[c.nested.REGISTRIES]=json.dumps([str(p) for p in c.nested.registries(env)+[registry]])
+        old=c.nested.PRELAUNCH_HOOK
+        try:
+            c.nested.PRELAUNCH_HOOK=lambda:time.sleep(.15)
+            with c.nested.track_launches(c.supervision,env,time.monotonic()+.1):
+                rejects(lambda:c.supervision.subprocess.Popen([sys.executable,str(c.HERE/'lifecycle-hazard.py'),'next',str(folder)],env=env,start_new_session=True))
+        finally: c.nested.PRELAUNCH_HOOK=old
+        result=c.nested.drain(c.supervision,registry,time.monotonic()+3)
+        assert result['allOwnedGroupsAbsent'] and not (folder/'next-command.txt').exists()
+        independent_absence([registry],deadline)
+    elif case=='delayed-absence':
+        registry=folder/'owned'; registry.mkdir()
+        def late_absence(groups,timeout): time.sleep(.15); return {}
+        with patch.object(c.nested,'group_members_snapshot',side_effect=late_absence):
+            result=c.nested.drain(c.supervision,registry,time.monotonic()+2.1)
+        assert not result['allOwnedGroupsAbsent'] and 'cleanupError' in result
+        independent_absence([registry],deadline)
+    elif case=='delayed-publication':
+        real=c.durable
+        def delayed(path,value):
+            real(path,value)
+            if Path(path).name.endswith('-candidate.json'): time.sleep(.15)
+        with patch.object(c,'durable',side_effect=delayed):
+            rejects(lambda:c.publish(folder/'receipt.json',{'state':'passed'},time.monotonic()+.1))
+        assert not (folder/'receipt.json').exists() and (folder/'receipt-quarantine/failure.json').exists()
+    elif case=='changed-command':
+        plan=folder.parent.parent/('changed-command-'+uuid.uuid4().hex+'.json'); value=dict(base); value['commands']=list(base['commands'])
+        value['commands'][0]={'argv':[sys.executable,'-c','pass']}; c.durable(plan,value)
+        rejects(lambda:c.verify_inputs(plan,c.bindings.digest(plan),deadline,None), 'changed required compile command')
+    elif case in ('changed-project','changed-source','changed-binary'):
+        file=folder/({'changed-project':'Candidate.csproj','changed-source':'Usage.cs.fixture','changed-binary':'dependency.dll'}[case])
+        file.write_bytes(b'bound'); plan=folder/'plan.json'
+        c.durable(plan,{'inputs':{str(file):c.bindings.digest(file)}}); expected=c.bindings.digest(plan)
+        file.write_bytes(b'changed'); rejects(lambda:c.bindings.verify(plan,expected,deadline), 'bound source/project/config/binary changed')
+    elif case=='missing-controls':
+        rejects(lambda:c.require_controls(None,None,expected_plan_sha,base['sourceSha']), 'successful matching controls receipt required')
+    elif case in ('mismatched-controls','wrong-control-outcome'):
+        value={'state':'passed','planSha256':expected_plan_sha,'sourceSha':base['sourceSha'],
+            'cases':list(c.ALL_CASES),'outcomes':dict.fromkeys(c.ALL_CASES,True),'independentAbsence':True,'noNextAfterFailure':True}
+        if case=='mismatched-controls': value['planSha256']='0'*64
+        else: value['outcomes']['normal']=False
+        c.publish(folder/'receipt.json',value,deadline)
+        rejects(lambda:c.require_controls(folder/'receipt.json',c.bindings.digest(folder/'receipt.json'),expected_plan_sha,base['sourceSha']), 'controls receipt mismatch' if case=='mismatched-controls' else 'missing/wrong control outcomes')
+    else: raise AssertionError('unknown invariant control')
+    return {'expectedOutcomeVerified':True}
+
+
+def main():
+    p=argparse.ArgumentParser(); p.add_argument('--plan',type=Path,required=True); p.add_argument('--expected-plan-sha',required=True)
+    a=p.parse_args(); start=time.monotonic(); work_end=start+100; hard_end=start+115
+    def stop_hard(sig,frame): raise TimeoutError('controls absolute hard deadline')
+    signal.signal(signal.SIGALRM,stop_hard); signal.setitimer(signal.ITIMER_REAL,115)
+    base=c.bindings.verify(a.plan,a.expected_plan_sha,work_end-10)
+    assert base['commands']==c.compile_commands(base['dotnet'],a.plan.parent)
+    folder=a.plan.parent/('controls-'+uuid.uuid4().hex); folder.mkdir()
+    registry=folder/'controller-owned'; registry.mkdir()
+    environment=os.environ.copy(); environment[c.nested.REGISTRIES]=json.dumps([str(p) for p in c.nested.registries(environment)+[registry]])
+    result={'state':'failed','sourceSha':base['sourceSha'],'planSha256':a.expected_plan_sha,
+            'cases':list(c.ALL_CASES),'outcomes':{},'records':{},'independentAbsence':False,'noNextAfterFailure':False}
+    try:
+        with c.nested.interruptions():
+            for case in c.ALL_CASES:
+                c.checkpoint(work_end-10)
+                if case in c.CASES: record=real_case(case,folder/case,base,work_end-10,environment)
+                else: record=invariant_case(case,folder/case,base,a.expected_plan_sha,work_end-10,environment)
+                result['records'][case]=record; result['outcomes'][case]=record['expectedOutcomeVerified']
+                c.durable(folder/(case+'-verified.json'),record)
+            c.bindings.verify(a.plan,a.expected_plan_sha,work_end-10)
+            result['state']='passed'; result['noNextAfterFailure']=True
+    except BaseException as error:
+        result['reason']=type(error).__name__+': '+str(error)
+    finally:
+        cleanup=c.nested.drain(c.supervision,registry,work_end)
+        result['cleanup']=cleanup
+        result['independentAbsence']=cleanup['allOwnedGroupsAbsent']
+        if result['independentAbsence']: independent_absence([folder],work_end)
+        else: result['state']='failed'
+        c.publish(folder/'controls-receipt.json',result,work_end)
+        signal.setitimer(signal.ITIMER_REAL,0)
+    print(json.dumps({'receipt':str(folder/'controls-receipt.json'),'sha256':c.bindings.digest(folder/'controls-receipt.json'),'state':result['state']}))
+    return 0 if result['state']=='passed' else 1
+
+if __name__=='__main__': sys.exit(main())

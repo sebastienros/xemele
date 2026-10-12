@@ -5,7 +5,7 @@ namespace Xemele.MissingComponentsContract;
 internal enum ReferenceKind { ExplicitElementType, InferredSubstitutionHeadType, SubstitutionAffiliation, ListItemType }
 internal enum SymbolSpace { Element, Type }
 internal enum AvailabilityState { Resolved, Unavailable }
-internal enum OwnerKind { ElementDeclaration, SimpleType }
+internal enum OwnerKind { ElementDeclaration, SimpleType, TypeDefinition }
 internal enum DependencyUse { TypeAssessment, SubstitutionSelection, SchemaValueConstraint, SchemaDerivation }
 internal readonly record struct ComponentIdentity(OwnerKind Kind, SchemaName Name, int? DeclarationId);
 internal readonly record struct DependencyEdge(ComponentIdentity Consumer, int ReferenceId, DependencyUse Use);

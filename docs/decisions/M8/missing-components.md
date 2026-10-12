@@ -48,7 +48,8 @@ retains XmlDocument/XmlNode, source namespace maps, resolver, operation, mutable
 cache or executable stand-in. Resolved wrong-kind definitions remain errors.
 
 The owned Availability.cs.fixture freezes immutable entries and closure edges:
-reference ID; owner kind/name/stable declaration ID where applicable; reference
+reference ID; owner kind (element declaration, simple type or general type
+definition)/expanded name/stable declaration ID where applicable; reference
 kind; symbol space; authored expanded QName; original source location; and
 Resolved/Unavailable state. ComponentAvailability snapshots entries and closure
 edges into private arrays exposed through read-only wrappers. Entries are sealed,
@@ -80,6 +81,13 @@ required for direct/local/ref and known strict/lax declarations. A lax wildcard
 may skip an actually absent declaration; it must not mistake a present unavailable
 declaration for absence. A true skip wildcard does not consume that declaration's
 type and remains skipped; independent instance processing/quotas still apply.
+After xsi:type selects the actual type, its TypeDefinition availability closure
+must also be checked before consuming any deferred content program, even for an
+undeclared element with no declaration ID. A complex type C with choice h/m can
+have indeterminate substitution overlap and be selected solely through xsi:type;
+that case must stop before the program is consumed, while an unrelated assessable
+root remains valid. This complements the pre-replacement required declaration
+check; xsi:type cannot rescue an unavailable declared type.
 An explicitly typed declaration with absent affiliation can assess its direct
 root if assessment never uses affiliation. Substitution/derivation consumption
 must consult the separate affiliation dependency. No runtime resolver call,

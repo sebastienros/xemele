@@ -1,71 +1,89 @@
-# SOURCE review packet — all contract/lifecycle/runtime checks UNRUN
+# Renewed SOURCE packet — no execution release
 
-The claim checkout was clean at d12be860e118b8ce97d383a0511ff1167f8c4bab;
-private branch codex/m8-xsd-missing-components-contract, worktree
-/Users/sebastienros/.codex/worktrees/45c6/xemele. This worker has launched zero
-restore/build/test jobs. Host-wide dotnet services/build workers exist and are not
-owned or stopped by this task. No source task acceptance is marked passed.
+The previous runner at source0ed18306d / metadata c3898a6c0 was rejected in SOURCE
+review: cleanup could fail before signaling known children; raw fork/setsid closure
+was unproved; deadline/publication and preparation/control identity were incomplete.
+Those revisions are not accepted execution inputs. All contract compilation,
+lifecycle controls, runtime, corpus and allocation checks remain **UNRUN**. Task
+stays in_progress, criteria pending. Zero owned build/test jobs have launched.
 
-Review missing-components.md, runtime-migration.json, baseline-delta.json, the
-old/candidate fixtures, representative usages, and check.py before execution.
-The full candidate projection is authored, not an emitted passing baseline.
-provenance.json attributes/hash-identifies integrated source copies. The attributed
-Roslyn extractor adds only an actual Environment.Version receipt and executes metadata inspection; fixture methods never execute.
-The additional availability model is in a review-only namespace excluded from
-this existing Xemele.Validation fixture projection. Its get-only/value/snapshot
-source contract is frozen separately in the decision; it is not claimed as an
-emitted additive runtime baseline. Later runtime must emit that actual surface.
+This correction uses owned copies of the coordinator-specified accepted corpus
+supervision.py (origin SHA256 407b228d8b4741445eaf928a44aedd4de85aacaac894e6ad23b8ed8071395903)
+and nested_ownership.py (origin SHA256 fe1db7d70cc4b10a04aaa5ac8107cd69a95f7a16e21a0888892ef70c5f05a128).
+Exact read-only copy origins and local hashes are in supervision-provenance.json.
+There are no runtime imports from a peer checkout. The supervision body is copied
+unchanged. Nested ownership changes only owned constants and adjacent prelaunch/
+ACK/exec binding/deadline checks, with adaptation recorded for renewed review.
+The copies' earlier acceptance does not establish this adaptation's behavior.
 
-After coordinator release of a clean committed SHA, the prepared offline command
-is `python3 docs/reports/M8-xsd-missing-components-contract/check.py --dotnet
-<absolute pinned 10.0.400 dotnet> --release-sha <reviewed HEAD>`. Do not run this
-until released. Restore uses only the local fixture source, audit disabled;
-10.0.11 runtime is required. Outputs/projects/CLI-home/receipts stay under ignored
-artifacts/M8-xsd-missing-components-contract; no shared projects or outputs change.
+Known groups receive TERM/KILL before ps; direct child is reaped. Even inventory
+failure or an expired cleanup deadline best-effort KILLs registered groups and
+reports failure without a clean claim. Every new session publishes its PID=PGID in
+ALL ancestor registries and obtains a complete durable ACK before payload exec.
+Intent without registration cannot become a clean result. Closing registries
+prevents late launches. Controllers can signal descendants directly even if the
+intermediate caller's finally cannot run. The descendant and parent-death controls
+now use an explicitly registered/ACKed new session, with readiness after exec.
+There is **no** guarantee for arbitrary unregistered fork/setsid escape.
 
-The guard is a new owned finite supervisor requiring review/control evidence,
-not a reused generic unbounded subprocess helper. Its separate process owns every
-command and monitors caller PPID; caller exit/termination stops launches and
-cleans its family. Each command has a 45s cap and shares one 180s work envelope.
-12s cleanup is reserved INSIDE that envelope (no launches after 168s), with a 195s
-absolute fail-closed hard timer. The caller waits at most 197s as a final guard
-reaping bound, never issuing success after work/hard failure. Failure/timeout/
-late completion/invariant breach stops the sequence. TERM/INT request cleanup;
-SIGKILL of the caller is detected by the surviving guard. Killing the guard itself
-is outside the caller-death guarantee and must not be the lifecycle release test.
+A separate guard monitors caller death, unwinds copied cleanup, and stops subsequent
+commands. An outer registered controller independently drains every registered
+session; fallback never kills only the guard. Immediately before launch and ACK,
+and immediately before child exec, verify deadline, parent/closed-owner and bound
+inputs. Slow all-absent inventory cannot pass its deadline. Failure/timeout/late
+completion/output invariant stops the sequence. No host-wide dotnet signaling.
 
-Unique inherited environment marker plus observed PID/PPID/PGID closure detects
-ordinary descendants, including reparented/setsid descendants; two clean family
-inventories and direct-child reap are required after every command and finally.
-Inventory failure is a failure, never proof of absence. Commands cannot start
-MSBuild/compiler servers: no reuse/shared compilation, maxcpucount1 and disabled
-build servers. No host-wide dotnet kill or full host commands persisted. This
-assumes child tools preserve their inherited marker; a deliberately environment-
-clearing, reparenting adversarial process is not a supported managed tool.
+The inner compile guard has 180s work, reserves 12s INSIDE work (launch cutoff168s),
+195s absolute hard timer, and a40s command cap. Its caller has200s work, reserves
+cleanup before its work end, and214s hard timer. Python lifecycle controls use10s
+work/4s reserved cleanup/14s hard/2s command caps; their caller is24s work/38s hard.
+The independent full verifier has100s work/10s reserved cleanup/115s hard. No passing
+receipt or exit may survive a late work/absence/publication check. Receipts are
+exclusive fsynced atomic publications with file/directory durability. Passing
+candidate receipts require a separate commit marker; late candidates/markers are
+quarantined, never overwritten or accepted. No realtime OS scheduling claim.
 
-The receipt stores reviewed SHA, complete source hashes, plan hash, actual SDK
-output, exact command arrays/expected exits, child IDs, timings, log hashes,
-reap/family/log invariants and final result. Both source identity and exact
-three-member compiled projection are rechecked before success. Old nonnullable
-usage compiles against old; candidate nullable usage compiles; old implicit Type
-conversion rejects with CS0266; dropped member/removed nullable baseline reject.
-Current runtime XsdElementDeclaration and all shared fixtures/goldens stay old.
+The source-reviewed preparation phase launches no .NET workload. It creates fresh
+staged project/config files under ignored task artifacts and binds their hashes,
+commands, source/configuration, actual dotnet/SDK10.0.400/Roslyn/host/runtime10.0.11
+files. Offline NuGet.Config clears user sources. No shared project/output changes.
+The required command recipe is independently regenerated and compared, so editing
+commands and updating the plan hash alone is insufficient. --guard requires the
+expected plan hash and verifies all inputs before any payload launch. Per-command
+bound snapshots add controls receipt/candidate, actual prior compiled assemblies,
+all emitted projections and dependency configs; child bootstrap rechecks snapshot
+before exec. Source/project/binary replacement cannot reuse a prior passing receipt.
 
-Prepare lifecycle plan files with the same released command plus
-`--prepare-lifecycle-controls` (prepares only; no controls launched). The plans
-contain finite 8s work / 3s reserved cleanup / 10s hard / 2s command envelopes.
-Review and then launch `python3 docs/reports/M8-xsd-missing-components-contract/
-lifecycle-launcher.py <control plan>` from an owned finite controller; the prepared
-launcher passes its actual PID to check.py --guard; retain each receipt. The launcher
-must itself have a finite bound and must remain alive for all cases except
-parent-death. The normal and escaped-descendant plans should pass with two command
-records and final absence. timeout/late/invariant should fail with only one
-record, absent next-command.txt, and final absence. For parent-death, launch a
-guard, wait for hazard.json, then terminate/kill ONLY the caller launcher; surviving
-guard must report caller death, one record, absent next-command.txt and final
-absence. Independently inventory the recorded descendant PID, original group and
-marker after each control; receipt flags alone are insufficient. All six controls
-are UNRUN and must pass their expected outcomes before contract compilation.
+controls.py is the supplied finite outer verifier, not a manual launcher recipe.
+It asserts normal/registered-descendant pass and timeout/late/invariant/parent-death
+failure; independently inventories recorded groups; asserts exact launch count and
+no next-command marker. Parent death is forced only after descendant registration,
+all-ancestor ACK and readiness. The outer owner may kill the guard before it can
+publish a receipt; the verifier preserves that absence and uses its own durable
+registered cleanup evidence, never inventing a guard result. Additional required
+controls cover ps failure and expired cleanup with a LIVE child; delayed prelaunch,
+absence and final publication; changed command/project/source/dependency binary;
+missing/mismatched controls receipt; and wrong expected control outcome. Rejections
+must have the expected reason. The compiler requires every expected control and a
+matching frozen successful controls receipt before any restore/build launch.
 
-No actual normal/product consumer, XSD assessment, corpus classification or
-allocation gate runs here. Those checks require the ordered runtime task.
+After a new explicit SOURCE release only, review these prepared phase commands:
+
+1. check.py --prepare --dotnet <pinned absolute launcher> --release-sha <clean HEAD>
+   produces an exclusive plan and its hash; no compilation or controls run.
+2. controls.py --plan <plan.json> --expected-plan-sha <frozen plan hash>
+   runs the finite verifier and emits controls-receipt identity only if all required
+   outcomes and independent cleanup checks match.
+3. check.py --plan <same plan.json> --expected-plan-sha <same frozen hash>
+   --controls-receipt <controls-receipt.json> --expected-controls-sha <frozen receipt hash>
+   compiles old/candidate/reject usages, runs only the attributed Roslyn metadata
+   extractor, and compares the exact three-member delta. Fixture methods NEVER run.
+
+All three phase executions remain unreleased and UNRUN. Review source-manifest,
+baseline-delta, copied fixtures/usages and runtime-migration alongside the harness.
+OwnerKind.TypeDefinition and an xsi:type-only complex-program consumer edge now
+represent the semantic review case. Actual selected-type availability must be
+checked before deferred content-program consumption, independently of declaration
+lookup; pair its later runtime check with an unrelated assessable root. This adds
+no public/frozen-interface or extra nullable baseline change. Facet ownership
+request remains explicit. Runtime/shared goldens/corpus/counters stay unchanged.
