@@ -33,7 +33,8 @@ The counters-disabled allocation control and supervisor preflight pass six owned
 routes and 442 frozen identities. The preflight child exited 0, was reaped, its
 process group is absent, and its log is closed. The sandbox initially denied
 `ps`; the escalated process-membership verification and preflight succeeded.
-Measurements are pending the coordinator's exact grant. Compilation and typed
+The granted measurement completed and is recorded in [allocations.md](allocations.md).
+Compilation and typed
 parse results are owned allocation boundaries; no zero-allocation primitive or
 throughput improvement is claimed by this repair. No scanning/token optimization
 or new SearchValues matcher is introduced.
