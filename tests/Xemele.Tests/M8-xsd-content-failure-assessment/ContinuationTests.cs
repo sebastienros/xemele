@@ -13,7 +13,7 @@ public sealed class ContinuationTests
         var p = P.Prepare(Root);
         var context = new SchemaCompileContext(new() { BaseUri = new("https://example.test/instance.xml") });
         var doc = context.Parse("<r>\n" + string.Concat(Enumerable.Repeat("<u/>\n", count)) + "</r>").Document;
-        var result = p.Run(doc);
+        var result = p.Run(doc, new() { Limits = new() { Diagnostics = 1024 } });
         Assert.True(result.IsComplete, $"diagnostics={result.Diagnostics.Count}; last={result.Diagnostics[^1].Code}: {result.Diagnostics[^1].Message}"); Assert.False(result.IsValid);
         var error = Assert.Single(result.Diagnostics); Assert.Equal("XSD.Content", error.Code);
         Assert.Equal(doc.OriginalLocation(doc.RootElement.FirstChild.NextSibling), error.Location);
