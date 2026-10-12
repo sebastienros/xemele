@@ -1,0 +1,52 @@
+{
+  "result": "SOURCE_PROVEN_EXACT_IDENTITY_CORRECTION",
+  "task": "M8-xsd-missing-components",
+  "packetBefore": "24f3ed28e99e32c41e3e137698e2774e1ee699ce",
+  "selectionBeforeSha256": "7453e073991ef04fe89499593dc8f5c6eb44486663e3b2041ff3eef8affc18eb",
+  "source": "tests/Xemele.Tests/M8-facets/OperationTests.cs",
+  "sourceSha256": "cfe1a7c3c1fe1eaa6095ee71fbc9b66271cad616a94eb696d931441bcaeaa7d7",
+  "reviewer": "/root/review_m8_contract",
+  "rootSourceInspection": true,
+  "cause": "File contains three top-level public classes; initial static collector assigned all methods to first class. Only five keys refer to second/third classes.",
+  "corrections": [
+    {
+      "from": "Xemele.Tests.M8Facets.OperationTests.PreparedLengthHasAnIndependentTenUnitWorkCalculation",
+      "to": "Xemele.Tests.M8Facets.PrimitiveTests.PreparedLengthHasAnIndependentTenUnitWorkCalculation",
+      "cases": 1,
+      "declarationLine": 149
+    },
+    {
+      "from": "Xemele.Tests.M8Facets.OperationTests.MalformedFacetUnicodeRejectsAsSchemaRestrictions",
+      "to": "Xemele.Tests.M8Facets.PrimitiveTests.MalformedFacetUnicodeRejectsAsSchemaRestrictions",
+      "cases": 1,
+      "declarationLine": 160
+    },
+    {
+      "from": "Xemele.Tests.M8Facets.OperationTests.FloatingBoundSpecialValuesRetainTheVerifiedOrder",
+      "to": "Xemele.Tests.M8Facets.PrimitiveTests.FloatingBoundSpecialValuesRetainTheVerifiedOrder",
+      "cases": 4,
+      "declarationLine": 170
+    },
+    {
+      "from": "Xemele.Tests.M8Facets.OperationTests.DecimalPrecisionDoesNotFallThroughClrDecimalOrDouble",
+      "to": "Xemele.Tests.M8Facets.PrimitiveTests.DecimalPrecisionDoesNotFallThroughClrDecimalOrDouble",
+      "cases": 1,
+      "declarationLine": 176
+    },
+    {
+      "from": "Xemele.Tests.M8Facets.OperationTests.CallerRegexEngineSchemaExceptionsRetainTheirProvenance",
+      "to": "Xemele.Tests.M8Facets.CallerEngineTests.CallerRegexEngineSchemaExceptionsRetainTheirProvenance",
+      "cases": 2,
+      "declarationLine": 188
+    }
+  ],
+  "invariants": [
+    "Same694methods/2206cases; exact method names/cardinalities/attribute syntax hashes/source bytes/source hashes preserved.",
+    "No source/test/runtime/oracle-semantic change; exactly five declaring-class prefixes corrected from source independently.",
+    "All90selected source hashes and remaining declaration scopes independently audited; no other identity mismatch found.",
+    "Exact observed-vs-required equality retained, no runtime discovery replaces expectations, no omissions/skips/suppression.",
+    "Priorfailedcoverage7497cab7e and allotherattempts remain unchanged; newexecution mustprove corrected coverage."
+  ],
+  "h19Scope": "Bounded deterministic mismatch diagnostics + existingcontrol14 fixtures, keep15controlmethods/lifecycle/recipes/runtime unchanged. Include multi-class identity fixture without claiming a generic C# source collector if none is installed.",
+  "execution": "Correctedidentity/h19 controls/checks UNRUN; no passbackfill/taskpromotion/gatecredit."
+}
