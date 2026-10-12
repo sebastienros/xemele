@@ -80,6 +80,42 @@ public sealed class RuleScopeTests
         Assert.NotNull(check.Location.ByteOffset);
     }
 
+    [Fact]
+    public void ScopeChecksShareExactWorkBudgetAndCancellation()
+    {
+        string preceding = string.Concat(Enumerable.Repeat("<rule context='other'><assert test='true()'/></rule>", 80));
+        var document = XmlDocument.Parse(Schema(Pattern(preceding + Abstract + Extending)), cancellationToken: TestContext.Current.CancellationToken);
+        var counting = new Counting(new SchemaCompileOperation());
+        new SchematronCompiler().Compile(document, new(), counting);
+        Assert.True(counting.Work > 80);
+        var exact = new SchematronCompileOptions { Schema = new() { MaxOperations = counting.Work } };
+        new SchematronCompiler().Compile(document, exact, new SchemaCompileOperation(exact.Schema));
+        var under = exact with { Schema = exact.Schema with { MaxOperations = counting.Work - 1 } };
+        Assert.Equal("SCHEMA.Limit", Assert.Throws<SchemaCompileException>(() =>
+            new SchematronCompiler().Compile(document, under, new SchemaCompileOperation(under.Schema))).Diagnostics[^1].Code);
+        using var cancellation = new CancellationTokenSource();
+        var stopped = new Counting(new SchemaCompileOperation(new() { CancellationToken = cancellation.Token }), cancellation, counting.Work / 2);
+        Assert.Throws<OperationCanceledException>(() => new SchematronCompiler().Compile(document, new(), stopped));
+    }
+
+    private sealed class Counting(ISchemaOperation inner, CancellationTokenSource? cancellation = null, long stop = long.MaxValue) : ISchemaOperation
+    {
+        internal long Work;
+        public XmlResourceLimits Limits => inner.Limits;
+        public CancellationToken CancellationToken => inner.CancellationToken;
+        public bool IsComplete => inner.IsComplete;
+        public long? RemainingWork => inner.RemainingWork;
+        public bool Charge(long work, XmlLocation location)
+        {
+            Work += work;
+            if (Work >= stop) cancellation?.Cancel();
+            return inner.Charge(work, location);
+        }
+        public bool ChargeComponents(int count, XmlLocation location) => inner.ChargeComponents(count, location);
+        public bool AddDiagnostic(XmlDiagnostic diagnostic) => inner.AddDiagnostic(diagnostic);
+        public void Refuse(string code, string message, XmlLocation location) => inner.Refuse(code, message, location);
+    }
+
     private sealed class Resolver : XmlResourceResolver
     {
         public override XmlResolvedResource? Resolve(XmlResourceRequest request, CancellationToken cancellationToken = default) =>
