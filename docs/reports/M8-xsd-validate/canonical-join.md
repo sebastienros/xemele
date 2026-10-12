@@ -41,3 +41,5 @@ Exact final runtime identities for bounded review:
 All raw check outputs remain ignored/transient. Final source-review acceptance
 and separately granted allocation evidence remain pending. The task is still
 in progress and exposes no public XSD facade or cumulative conformance claim.
+
+Both independent source reviewers accepted `75d037bc` after checking the final canonical join and operation/identity behavior. Coordinator reported actual combined checks at `7c862528d88fb725e322eb53c278efe268b9fac8`: 937 correctness plus 42 resolver tests, all 979 passed, no failures/errors/skips/not-run/build warnings; public 1410 and frozen evaluator 2 matched, normal and true XML-only consumers passed, planning 182 and diff passed. Durable coordinator review: `2afe8aad`, `docs/orchestration/review-M8-xsd-validate.json`. The worker has not rerun correctness for allocation-only scaffolding.

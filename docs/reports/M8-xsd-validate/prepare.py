@@ -1,30 +1,39 @@
-"""Freeze already-built identities; never builds, times, or measures."""
-import hashlib,json,subprocess
+"""After source acceptance and host RELEASE: build/control/freeze; no measurements."""
+import hashlib,json,os,subprocess
 from pathlib import Path
 root=Path(__file__).resolve().parents[3]
-def digest(path):
- with path.open('rb') as stream:return hashlib.file_digest(stream,'sha256').hexdigest()
-prepared_revision=subprocess.check_output(['git','rev-parse','HEAD'],cwd=root,text=True).strip()
+net=Path('/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet')
+flags=['--disable-build-servers','-m:1','-p:RuntimeFrameworkVersion=10.0.11','-p:UseSharedCompilation=false','-p:NuGetAudit=false']
 task=json.loads((root/'docs/tasks/M8-xsd-validate.json').read_text())
-revision=next(e['revision'] for e in reversed(task['evidence']) if e['id']=='core-correctness' and e['result']=='passed')
-inputs=['src/Xemele','tests/Xemele.Tests/M8-xsd-validate','benchmarks/Xemele.Benchmarks/M8-xsd-validate','samples/M8-xsd-validate','docs/reports/M8-xsd-validate/check.py','docs/reports/M8-xsd-validate/XmlOnly']
-subprocess.run(['git','diff','--exit-code',revision,'--',*inputs],cwd=root,check=True,stdout=subprocess.DEVNULL)
-out=root/'artifacts/M8-xsd-validate/measurement-1'
-net='/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet'
-identities={}
-directories=['src/Xemele/Diagnostics','src/Xemele/Internal','src/Xemele/Options','src/Xemele/Parsing','src/Xemele/Resolution/Core','src/Xemele/Serialization','src/Xemele/Streaming','src/Xemele/Tree','src/Xemele/Validation/Common','src/Xemele/Validation/Dtd','src/Xemele/XPath','src/Xemele/Validation/SchemaCommon','src/Xemele/Validation/Datatypes','src/Xemele/Validation/Regex','src/Xemele/Validation/Xsd/Compilation','src/Xemele/Validation/Xsd/Identity','src/Xemele/Validation/Xsd/ContentModels','src/Xemele/Validation/Xsd/Evaluation','tests/Xemele.Tests/M8-xsd-validate','benchmarks/Xemele.Benchmarks/M8-xsd-validate','samples/M8-xsd-validate','docs/reports/M8-xsd-validate']
-for directory in directories:
- for path in (root/directory).rglob('*'):
-  if path.is_file() and not any(part in ['bin','obj','__pycache__'] for part in path.relative_to(root).parts) and path.name!='preparation.json':
-   identities[str(path.relative_to(root))]=digest(path)
-for relative in ['Directory.Build.props','global.json','src/Xemele/Xemele.csproj','docs/api/M8-xsd-validate.txt','tests/Contracts/Fixtures/M8/Xsd.cs.fixture','tests/Contracts/Fixtures/M8/Xsd.golden.txt']:
- path=root/relative
- if path.is_file():identities[relative]=digest(path)
-for relative in ['benchmarks/Xemele.Benchmarks/M8-xsd-validate/bin/probe/net10.0','src/Xemele/bin/Release/net10.0','docs/reports/M8-xsd-validate/XmlOnly/bin/Release/net10.0']:
- for path in (root/relative).iterdir():
-  if path.is_file() and path.suffix in ['.dll','.pdb','.json']:identities[str(path.relative_to(root))]=digest(path)
-identities[net]=digest(Path(net))
-commands=[[net,'--fx-version','10.0.11',str(root/'benchmarks/Xemele.Benchmarks/M8-xsd-validate/bin/probe/net10.0/Xemele.Benchmarks.dll'),'--measure',str(out/'allocations.json')]]
-manifest={'sourceRevision':revision,'preparedRevision':prepared_revision,'maximumSeconds':30,'cleanupReserveSeconds':10,'commands':commands,'environment':{'DOTNET_TieredCompilation':'0','DOTNET_gcServer':'0','DOTNET_GCConcurrent':'0','DOTNET_ROLL_FORWARD':'Disable'},'identities':dict(sorted(identities.items()))}
+accepted=next(e['revision'] for e in reversed(task['evidence']) if e['id']=='core-correctness' and e['result']=='passed')
+subprocess.run(['git','diff','--exit-code',accepted,'--','src/Xemele','tests/Xemele.Tests/M8-xsd-validate'],cwd=root,check=True)
+revision=subprocess.check_output(['git','rev-parse','HEAD'],cwd=root,text=True).strip()
+project='benchmarks/Xemele.Benchmarks/M8-xsd-validate/Evaluation.Probe.csproj'
+for verb in ['restore','build']:
+ args=[str(net),verb,project,*( ['--source','/Users/sebastienros/.nuget/packages'] if verb=='restore' else ['-c','Release','--no-restore']),*flags]
+ subprocess.run(args,cwd=root,check=True)
+out=root/'artifacts/M8-xsd-validate/preparation';out.mkdir(parents=True,exist_ok=True)
+env=os.environ.copy();env.update(DOTNET_TieredCompilation='0',DOTNET_gcServer='0',DOTNET_GCConcurrent='0',XEMELE_EVALUATION_REVISION=revision)
+subprocess.run([str(net),'--fx-version','10.0.11','benchmarks/Xemele.Benchmarks/M8-xsd-validate/bin/probe/net10.0/Xemele.Benchmarks.dll','--control',str(out/'control.json')],cwd=root,env=env,check=True,timeout=40)
+control=json.loads((out/'control.json').read_text())
+assert control['mode']=='--control' and control['status']=='passed' and control['runtime']=='.NET 10.0.11' and len(control['rows'])==9
+assert all(row['bytes']==0 and row['operations']==64 for row in control['rows'])
+assert control['coldSetupBytes']==control['positiveBytes']==control['retainedBefore']==control['retainedAfterResults']==0
+assert control['retainedResults']==16
+paths={net,root/'src/Xemele/bin/Release/net10.0/Xemele.dll',out/'control.json'}
+for folder in [root/'benchmarks/Xemele.Benchmarks/M8-xsd-validate/bin/probe/net10.0',net.parent/'shared/Microsoft.NETCore.App/10.0.11',net.parent/'host/fxr']:
+ for p in folder.rglob('*'):
+  if p.is_file() and (p.suffix in {'.dll','.dylib','.so'} or p.name.endswith(('.deps.json','.runtimeconfig.json'))):paths.add(p)
+for relative in subprocess.check_output(['git','ls-files','src/Xemele'],cwd=root,text=True).splitlines():
+ if relative.endswith(('.cs','.csproj')):paths.add(root/relative)
+for folder in ['tests/Xemele.Tests/M8-xsd-validate','benchmarks/Xemele.Benchmarks/M8-xsd-validate','samples/M8-xsd-validate']:
+ for p in (root/folder).iterdir():
+  if p.is_file():paths.add(p)
+for relative in ['global.json','Directory.Build.props','Directory.Packages.props','docs/reports/M8-xsd-validate/prepare.py','docs/reports/M8-xsd-validate/measure.py','docs/reports/M8-xsd-validate/preflight.py']:
+ paths.add(root/relative)
+def digest(p):
+ with p.open('rb') as s:return hashlib.file_digest(s,'sha256').hexdigest()
+def key(p):return str(p.relative_to(root)) if p.is_relative_to(root) else str(p)
+manifest={'sourceRevision':revision,'acceptedRuntimeRevision':accepted,'maximumSeconds':120,'workSeconds':110,'cleanupReserveSeconds':10,'probeRoutes':9,'zeroAllocationRoutes':0,'warmups':16,'aggregateOperations':64,'retainedCount':16,'environment':{'DOTNET_TieredCompilation':'0','DOTNET_gcServer':'0','DOTNET_GCConcurrent':'0'},'commands':json.loads(subprocess.check_output(['python3','docs/reports/M8-xsd-validate/measure.py','--commands'],cwd=root,text=True)),'identityCount':len(paths),'identities':{key(p):digest(p) for p in sorted(paths)}}
 p=root/'docs/reports/M8-xsd-validate/preparation.json';p.write_text(json.dumps(manifest,indent=2)+'\n')
-print('Prepared',len(identities),'identities; source',revision,'manifest',digest(p))
+print(f'Prepared {len(paths)} identities; manifest {digest(p)}; counters and timing disabled.')

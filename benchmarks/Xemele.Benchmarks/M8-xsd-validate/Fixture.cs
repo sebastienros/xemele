@@ -5,7 +5,7 @@ internal sealed class EvaluationFixture
     internal const string Source = """
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
 <xs:element name="root"><xs:complexType><xs:sequence><xs:element name="row" maxOccurs="unbounded">
-<xs:complexType><xs:attribute name="n" type="xs:int" default="1"/><xs:attribute name="id" type="xs:ID"/><xs:attribute name="ref" type="xs:IDREF"/></xs:complexType>
+<xs:complexType><xs:sequence><xs:element name="value" type="xs:int" default="01" minOccurs="0"/><xs:element name="fixed" type="xs:int" fixed="01" minOccurs="0"/></xs:sequence><xs:attribute name="n" type="xs:int" default="1"/><xs:attribute name="id" type="xs:ID"/><xs:attribute name="ref" type="xs:IDREF"/></xs:complexType>
 </xs:element></xs:sequence></xs:complexType><xs:unique name="U"><xs:selector xpath="row"/><xs:field xpath="@n"/></xs:unique></xs:element>
 <xs:element name="open"/><xs:element name="number" type="xs:int" nillable="true"/>
 </xs:schema>
@@ -29,7 +29,7 @@ internal sealed class EvaluationFixture
         schema=original with { Datatypes=new XmlDatatypeRegistry(original.SimpleTypes.Where(t=>t.Name.NamespaceUri!="http://www.w3.org/2001/XMLSchema"),compile.Operation) };
         foreach (var type in schema.Types) programs.Add(type.Name,new XsdContentCompiler().Compile(schema,type,compile.Operation));
         identity=new XsdIdentityCompiler().Compile(schema,compile.Operation);
-        documents=[XmlDocument.Parse(Instance),XmlDocument.Parse(Invalid),XmlDocument.Parse("<root><row/></root>"),XmlDocument.Parse("<root><row/><row n='01'/></root>"),XmlDocument.Parse("<root><row n='1' id='a'/><row n='2' ref='a'/></root>"),XmlDocument.Parse(LongInstance),XmlDocument.Parse("<open><unknown><nested/></unknown></open>"),XmlDocument.Parse("<number xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xsi:nil='true'/>"),XmlDocument.Parse(Instance)];
+        documents=[XmlDocument.Parse(Instance),XmlDocument.Parse(Invalid),XmlDocument.Parse("<root><row><value/><fixed>1</fixed></row></root>"),XmlDocument.Parse("<root><row/><row n='01'/></root>"),XmlDocument.Parse("<root><row n='1' id='a'/><row n='2' ref='a'/></root>"),XmlDocument.Parse(LongInstance),XmlDocument.Parse("<open><unknown><nested/></unknown></open>"),XmlDocument.Parse("<number xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xsi:nil='true'/>"),XmlDocument.Parse(Instance)];
     }
     internal ValidationResult Run(int route)
     {
