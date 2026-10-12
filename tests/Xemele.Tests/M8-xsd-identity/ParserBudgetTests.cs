@@ -21,11 +21,11 @@ public sealed class ParserBudgetTests
         Assert.Throws<SchemaCompileException>(()=>IdentityXPath.Compile(expression,false,Context,shortWork,default));Assert.False(shortWork.IsComplete);
     }
     [Theory]
-    [InlineData("self", "node()/row")][InlineData("child", "row")]
-    [InlineData("attribute", "id")][InlineData("descendant-or-self", "node()/row")]
+    [InlineData(".", "/row")][InlineData("child", "::row")]
+    [InlineData("attribute", "::id")][InlineData(".", "//row")]
     public void ValidAxesHaveBoundedMidLookaheadCancellationWithNullCaps(string axis,string tail)
     {
-        string expression=axis+new string(' ',16384)+"::"+tail;
+        string expression=axis+new string(' ',16384)+tail;
         using var cts=CancellationTokenSource.CreateLinkedTokenSource(TestContext.Current.CancellationToken);
         var op=new OperationTests.Ledger(token:cts.Token) { OnCharge=n=>{if(n==512)cts.Cancel();},Limits=new() { EvaluationWork=null } };
         Assert.Throws<OperationCanceledException>(()=>IdentityXPath.Compile(expression,axis=="attribute",Context,op,default));

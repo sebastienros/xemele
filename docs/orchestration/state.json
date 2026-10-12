@@ -9,11 +9,51 @@
   "last_verified_checkpoint": "M7-gate",
   "last_verified_task": "M8-xsd-facade",
   "last_integrated_revision": "8e806ecfd8bf29819c0fe034dd9717f4dda26d49",
-  "active_assignments": [],
+  "active_assignments": [
+    {
+      "task_id": "M8-xsd-corpus",
+      "thread_id": "01a12ea8-7b90-7eb3-b475-b4eccf0b527f",
+      "host_id": "local",
+      "title": "Verify M8 XSD corpus",
+      "path": "/Users/sebastienros/.codex/worktrees/a996/xemele",
+      "branch": "codex/m8-xsd-corpus",
+      "base_revision": "d63a37316b4a6f8c780df10c6a6911509775a92c",
+      "claim_revision": "eff2ace80ff301eb5b74a111b0475966d823b671",
+      "stage": "All bounded harness review corrections accepted422d85;fullproduct/BCL rerun; exact standards/profile dispositions tracked separately.",
+      "model": "gpt-6.1-sol",
+      "thinking": "high"
+    },
+    {
+      "task_id": "M8-xsd-schema-syntax",
+      "thread_id": "01a12ebd-a34b-7580-b65f-c5e7d4b3b22d",
+      "host_id": "local",
+      "title": "Repair M8 XSD schema syntax",
+      "path": "/Users/sebastienros/.codex/worktrees/c928/xemele",
+      "branch": "codex/m8-xsd-schema-syntax",
+      "base_revision": "ea505cff902482ecabfa04266c353ee455981c78",
+      "claim_revision": "f70c0ec6f3e55f4fa953bcad04cef69d9611fe14",
+      "stage": "Source accepted;1188 branchchecks pass;actual12route allocation completed/released;finalevidence thenrootintegration.",
+      "model": "gpt-6.1-sol",
+      "thinking": "high"
+    },
+    {
+      "task_id": "M8-xsd-attribute-fixed",
+      "thread_id": "01a12ed1-f994-76e2-800c-1b33ba1e787b",
+      "host_id": "local",
+      "title": "Repair M8 fixed attribute constraints",
+      "path": "/Users/sebastienros/.codex/worktrees/b04b/xemele",
+      "branch": "codex/m8-xsd-attribute-fixed",
+      "base_revision": "f965cc948bbfcdb01f5b4bb8a40e36efb8853408",
+      "claim_revision": "4f01ce0ccd10b040e1188a48429b6b47b5d0c7ad",
+      "stage": "Setup verified; full assignment activated after syntax allocation release; original addB183 witness-first typed fixed attribute repair.",
+      "model": "gpt-6.1-sol",
+      "thinking": "high"
+    }
+  ],
   "integration_queue": [],
   "next_actions": [
-    "Claim and dispatch ready M8-xsd-corpus in setup-only HOLD for fresh GregsEx host coordination.",
-    "Preserve official metadata and oracles; batch concrete product gaps into ordered repairs.",
+    "Run official XSD corpus through verified public facade with original metadata/oracles.",
+    "Batch concrete runtime gaps into ordered repairs; do not hide incomplete checks as invalidity.",
     "Finish CLI, M8 gate and terminal cleanup/sole-writer handoff. No M9."
   ],
   "implementation_worker_policy": {
@@ -144,7 +184,7 @@
   },
   "current_milestone": "M8",
   "milestone_completion_scope": "Complete integrated verified M8-gate; terminal workers and cleanup; preserve earlier evidence/caches; transfer sole writes to main. Do not create M9.",
-  "milestone_progress": "32of35M8tasksverified;officialXSDcorpusready,CLI/gatefollow.",
+  "milestone_progress": "32 of 37 M8 tasks verified; corpus and two owning repairs active; CLI/gate pending.",
   "blockers": [],
   "pending_decisions": [],
   "timing_queue": [],
@@ -1089,12 +1129,13 @@
   "chat_communication_authorization": "Human directly authorized all M8 coordination, remaining M8 worker chats gpt-6.1-sol/high, parser-chat coordination, and GregsEx coordinator/workers host coordination.",
   "coordinator_repair": null,
   "external_measurement_park": {
-    "scope": "GregsEx-M3-shared-prepared-alloc-1",
-    "status": "RELEASED_PRELAUNCH_FAILURE",
-    "record": "docs/orchestration/M8-external-M3-shared-prepared-alloc-1.json",
-    "owner_grant_revision": "ba313797c2577b79a6da9380e181cd6bd979c89a",
-    "latest_start": "2026-10-12T05:27:10.732616+00:00",
-    "absolute_expiry": "2026-10-12T05:36:10.732616+00:00"
+    "scope": "GregsEx-M3-shared-prepared-alloc-2",
+    "status": "RELEASED",
+    "record": "docs/orchestration/M8-external-M3-shared-prepared-alloc-2.json",
+    "owner_grant_revision": "7089bf49407524850332eaf5266d51aef353b546",
+    "latest_start": "2026-10-12T05:53:13.650971+00:00",
+    "absolute_expiry": "2026-10-12T06:02:13.650971+00:00",
+    "release_revision": "496e283368c101e55978f6f524ef0ec7bc7f8a6c"
   },
   "measurement_park_aborts": [
     {
@@ -1141,7 +1182,10 @@
   "current_host_actors": {
     "xemele": [
       "01a12c6c-b333-71d3-877f-0d186618e21d",
-      "01a12849-d2be-7292-8cd9-27c1c14b5a3d"
+      "01a12849-d2be-7292-8cd9-27c1c14b5a3d",
+      "01a12ea8-7b90-7eb3-b475-b4eccf0b527f",
+      "01a12ebd-a34b-7580-b65f-c5e7d4b3b22d",
+      "01a12ed1-f994-76e2-800c-1b33ba1e787b"
     ],
     "gregsex": [
       "01a12c93-ccf1-70f2-907e-73c12eccedcf",
@@ -1150,14 +1194,18 @@
     ],
     "reviewers": "Three existing source-only reviewers; no host-heavy jobs/new actors.",
     "lease": {
-      "scope": "M8-xsd-facade-a75d851d-alloc-only",
+      "scope": "M8-xsd-schema-syntax-28e26b68-alloc-only",
       "status": "RELEASED",
-      "record": "docs/orchestration/M8-xsd-facade-allocation-1.json",
-      "released_at": "2026-10-12T05:39:24.924425+00:00"
+      "record": "docs/orchestration/M8-xsd-schema-syntax-allocation-1.json",
+      "released_at": "2026-10-12T06:42:46.282798Z"
     },
-    "gregsex_note": "XPath+XSDconformance workers verifiedarchivedafterrelease;current3actualactorsrequirefreshACK.",
-    "roster_note": "Facade archived and both clean merged checkouts removed. Corpus not yet created. Root/main and three existing reviewers; no active owned jobs."
+    "gregsex_note": "Three current Gregs actors; managed-only diagnostic scope4 completed and released; no active PARK/lease.",
+    "roster_note": "Eight Xemele actors: root/main/corpus/schema-syntax/attribute-fixed and three existing reviewers. No active PARK or measurement."
   },
   "suspended_assignments": [],
-  "pending_measurement_proposal": null
+  "pending_measurement_proposal": null,
+  "m8_xsd_standards_dispositions": {
+    "time_exception": "Human-approved call_b88f280c431643d2b5b911ee5fb92e63; exact original failure retained, never pass. docs/orchestration/M8-xsd-time-policy-pending.md",
+    "errF001": "Independent SecondEdition oracle adjudication; original queried VALID disagreement preserved, dependent instance unexecuted. docs/orchestration/M8-xsd-errF001-adjudication.md"
+  }
 }

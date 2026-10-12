@@ -51,9 +51,7 @@ internal sealed class IdentityXPath(IdentityPath[] paths, bool selectsNonElement
             {
                 bool descendant = false;
                 var steps = new List<IdentityNameTest>(); IdentityNameTest? attribute = null;
-                if (Axis("descendant-or-self"))
-                { NodeTest(); if (!Take('/')) Bad(); descendant = true; }
-                else if (Take('.'))
+                if (Take('.'))
                 {
                     if (Take('/'))
                     {
@@ -84,7 +82,6 @@ internal sealed class IdentityXPath(IdentityPath[] paths, bool selectsNonElement
         {
             if (Take('.')) return;
             bool attr = Take('@');
-            if (Axis("self")) { if (attr) Bad(); NodeTest(); return; }
             if (Axis("child")) { if (attr) Bad(); }
             else if (Axis("attribute")) { if (attr) Bad(); attr = true; }
             if (attr && !field) Bad();
@@ -140,11 +137,6 @@ internal sealed class IdentityXPath(IdentityPath[] paths, bool selectsNonElement
             IdentityWork.Tick(op, at, 2);
             if (!remaining[stop..].StartsWith("::", StringComparison.Ordinal)) return false;
             position += stop + 2; return true;
-        }
-        private void NodeTest()
-        {
-            Skip(); if (!source.AsSpan(position).StartsWith("node", StringComparison.Ordinal)) Bad();
-            Consume(4); if (!Take('(') || !Take(')')) Bad();
         }
         private void Bad() => IdentityWork.Invalid(op, at, "Invalid XSD identity restricted XPath.");
     }
