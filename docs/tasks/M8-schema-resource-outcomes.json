@@ -4,11 +4,11 @@
   "milestone": "M8",
   "title": "Distinguish optional schema resource unavailability from denial",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M8 coordinator01a12c6c-b333-71d3-877f-0d186618e21d / assigned isolated worker",
   "branch": "codex/m8-schema-resource-outcomes",
   "base_revision": "1fb1aa3260ce4df29442b230bf51945dea4b7d71",
-  "integration_revision": null,
+  "integration_revision": "55647de5bb866b78abddb0cffd1d10ed9aff95f7",
   "depends_on": [
     "M8-xsd-facade",
     "M8-schema-resource-base",
@@ -45,7 +45,8 @@
       "status": "passed",
       "evidence": [
         "contract-fixture",
-        "correctness"
+        "correctness",
+        "root-integrated-verification"
       ]
     },
     {
@@ -54,7 +55,8 @@
       "status": "passed",
       "evidence": [
         "focused",
-        "accounting-compatibility"
+        "accounting-compatibility",
+        "root-integrated-verification"
       ]
     },
     {
@@ -63,7 +65,8 @@
       "status": "passed",
       "evidence": [
         "focused",
-        "correctness"
+        "correctness",
+        "root-integrated-verification"
       ]
     },
     {
@@ -75,7 +78,8 @@
         "source-review",
         "offline-preparation",
         "disabled-preflight",
-        "actual-allocation"
+        "actual-allocation",
+        "root-integrated-verification"
       ]
     }
   ],
@@ -169,11 +173,20 @@
       "result": "passed",
       "summary": "After durable root RELEASE f42e1a5e8abc41ab3a94e080e24d88c9a35e8810, own preserved results inspected once. ReleaseSDK10.0.400/runtime10.0.11 Arm64/macOS15.8.1, tiering/server/concurrentGCdisabled. Fiveowned64ops each:unavailable1416/resolved59304/legacydenied2392/malformed60220/principalexternal70680Bop. Threeprimitives1024ops each:directlegacydenied/adapteddenied/resultfactory0Bop.16warmups;3536calls/5616consumed/16retained matched separate disabledcontrol with zero placeholder fields. Fixturecold4864B,positive1048B,retained130520to196424delta65904B(processwideestimate). Root62384terminal0;ownchildren35324/35326exit0/reaped/groupsabsent/logsclosed;448identities unchanged before/after;all6windowchildrenclean/1358identitiesunchanged. No throughput/globalhostidle/x64/AOT claim;rawpreserved;no new finalization execution.",
       "artifact": "docs/reports/M8-schema-resource-outcomes/allocations.md"
+    },
+    {
+      "id": "root-integrated-verification",
+      "kind": "integration",
+      "revision": "55647de5bb866b78abddb0cffd1d10ed9aff95f7",
+      "command": "Combined checks on ff6e042; corrected API-only70b63ddd; git diff --exit-code ff6e042 -- src/Xemele tests/Xemele.Tests samples; python3 tools/planning/tasks.py validate; git diff --check",
+      "result": "passed",
+      "summary": "Final resource outcome handoff integrated; Integrated reviewed runtime and final branch evidence onto main.2075 distinct actual correctness cases pass,0fail/error/skips/notrun;8Releasebuilds0warnings/errors;1430public=1417preserved+13additive/46resolverfixture/all8frozenlanes/resource+facade normal andtrueXML-only consumers pass. Exact runtime/tests/samples unchanged from testedff6e042 to this integratedrevision; no repeated passing tests. Separate actual source-pinned allocation checks and cleanup passed under fresh Xemele-only windows; task ownership/limits preserved. Full official corpus/gate stillpending.",
+      "artifact": "docs/orchestration/M8-four-repair-integration-precheck.json"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "A1-A4 implemented on isolated branch. Additive result/status/ResolveResult and concrete optional shared loader preserve legacy null/mandatory accounting/frozen interfaces.38focused+1530affected+42resolver/API1430/eightfrozenlanes/normal+trueXMLonly pass. Root-released actual allocation:threeprimitives0Bop,fiveownedpositive,fixturecold4864/positive1048/retained16delta65904;448identities unchanged and bothchildrenclean. Metadata-only finalization;await root integration/verification.",
+    "summary": "Integrated verified on main; A1-A4 implemented on isolated branch. Additive result/status/ResolveResult and concrete optional shared loader preserve legacy null/mandatory accounting/frozen interfaces.38focused+1530affected+42resolver/API1430/eightfrozenlanes/normal+trueXMLonly pass. Root-released actual allocation:threeprimitives0Bop,fiveownedpositive,fixturecold4864/positive1048/retained16delta65904;448identities unchanged and bothchildrenclean. Metadata-only finalization;await root integration/verification.",
     "checks": [
       "Exact fixture compiled/executed before runtime;46compiled rows match.",
       "38focused+1530affected+42resolver allpass at37f8176;1430public=1417old+13additive;all8frozenlaneextracts and normal+trueXMLonly consumers pass.",

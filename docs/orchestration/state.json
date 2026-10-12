@@ -7,16 +7,10 @@
   "coordination_branch": "main",
   "max_concurrent_workers": 3,
   "last_verified_checkpoint": "M7-gate",
-  "last_verified_task": "M8-xsd-content-failure-assessment",
-  "last_integrated_revision": "423da4defd7ec85873f13193dec15cbb4134ae00",
+  "last_verified_task": "M8-schema-resource-outcomes",
+  "last_integrated_revision": "55647de5bb866b78abddb0cffd1d10ed9aff95f7",
   "active_assignments": [],
-  "integration_queue": [
-    {
-      "task": "M8-schema-resource-outcomes",
-      "runtime_integrated_revision": "423da4defd7ec85873f13193dec15cbb4134ae00",
-      "remaining": "Final allocation evidence metadata handoff then integratedverification. Actual probe and combined correctness already pass."
-    }
-  ],
+  "integration_queue": [],
   "next_actions": [
     "Run official XSD corpus through verified public facade with original metadata/oracles.",
     "Batch concrete runtime gaps into ordered repairs; do not hide incomplete checks as invalidity.",
@@ -150,7 +144,7 @@
   },
   "current_milestone": "M8",
   "milestone_completion_scope": "Complete integrated verified M8-gate; terminal workers and cleanup; preserve earlier evidence/caches; transfer sole writes to main. Do not create M9.",
-  "milestone_progress": "37 of47 M8 tasks verified. Three finalized repair handoffs integrated; resource runtime integrated and actual allocations pass, pending final branch metadata. Recursive-components/hint-ordering now ready. Matcher may consume verified content-failure dependency after coordinator amendment.",
+  "milestone_progress": "38 of47 M8 tasks verified. All four reviewed runtime repairs integrated with2075 actual combined checks and separate actual allocation/ownership evidence. Recursive-components/hint-ordering ready; countedmatcher next consumes verified content-failure after explicit dependency amendment. Full official corpus/CLI/gate remain pending.",
   "blockers": [
     {
       "id": "gate-accounting-decisions",
@@ -887,6 +881,31 @@
         "scope": "sevenowned,16retained; old91e27bf manifest superseded solely for APIfragmentmetadata correction"
       },
       "integration_revision": "423da4defd7ec85873f13193dec15cbb4134ae00"
+    },
+    {
+      "task_id": "M8-schema-resource-outcomes",
+      "thread_id": "01a12f35-a4da-7183-9790-7dcb0ecb744d",
+      "branch": "codex/m8-schema-resource-outcomes",
+      "base_revision": "1fb1aa3260ce4df29442b230bf51945dea4b7d71",
+      "stage": "Integrated verified, terminal and writes relinquished; clean checkout/raw evidence retained until focusedcleanup.",
+      "model": "gpt-6.1-sol",
+      "thinking": "high",
+      "client_thread_id": "client-new-thread:2674e158-8785-4c0a-a493-1096139a770e",
+      "host_id": "local",
+      "title": "Implement M8 resource outcomes",
+      "path": "/Users/sebastienros/.codex/worktrees/d5cc/xemele",
+      "claim_revision": "6d1751ce23b97e325bd723058ddb544c616a4fd2",
+      "execution_status": "Standby: no further writes/build/test/measurement until focused rootfollowup; all frozen preparation preserved, remain fresh ACK actor.",
+      "prepared_allocation": {
+        "head": "75e11fd871457eccc647ff75f4e074ffdd779e96",
+        "manifest_sha256": "e49d010a30b793a277eab3bebdb00ee3148d4fc91bfc4a7794d1a729345ef79b",
+        "identities": 448,
+        "preflight_pid": 9408,
+        "expected_calls": 3536,
+        "expected_consumed": 5616,
+        "scope": "fiveowned/threeprimitive,16retained"
+      },
+      "integration_revision": "55647de5bb866b78abddb0cffd1d10ed9aff95f7"
     }
   ],
   "measurement_lease_history": [
@@ -1697,30 +1716,6 @@
       "model": "gpt-6.1-sol",
       "thinking": "high",
       "execution_status": "Standby: zero jobs; no writes/build/test until focused verified repair join or reporting request; remains host ACK actor."
-    },
-    {
-      "task_id": "M8-schema-resource-outcomes",
-      "thread_id": "01a12f35-a4da-7183-9790-7dcb0ecb744d",
-      "branch": "codex/m8-schema-resource-outcomes",
-      "base_revision": "1fb1aa3260ce4df29442b230bf51945dea4b7d71",
-      "stage": "Runtime/source and combined correctness accepted. Offline preparation complete, all448identities + root elevated verify-only passed; disabled preflight exit0/reaped/groupabsent/logclosed. No allocation evidence/grant.",
-      "model": "gpt-6.1-sol",
-      "thinking": "high",
-      "client_thread_id": "client-new-thread:2674e158-8785-4c0a-a493-1096139a770e",
-      "host_id": "local",
-      "title": "Implement M8 resource outcomes",
-      "path": "/Users/sebastienros/.codex/worktrees/d5cc/xemele",
-      "claim_revision": "6d1751ce23b97e325bd723058ddb544c616a4fd2",
-      "execution_status": "Standby: no further writes/build/test/measurement until focused rootfollowup; all frozen preparation preserved, remain fresh ACK actor.",
-      "prepared_allocation": {
-        "head": "75e11fd871457eccc647ff75f4e074ffdd779e96",
-        "manifest_sha256": "e49d010a30b793a277eab3bebdb00ee3148d4fc91bfc4a7794d1a729345ef79b",
-        "identities": 448,
-        "preflight_pid": 9408,
-        "expected_calls": 3536,
-        "expected_consumed": 5616,
-        "scope": "fiveowned/threeprimitive,16retained"
-      }
     }
   ],
   "live_host_roster_note": "Xemele actors only: root/main/all executing and standby Xemele workers/three reviewers. No foreign actors or synchronization; report host-isolation limits honestly.",
