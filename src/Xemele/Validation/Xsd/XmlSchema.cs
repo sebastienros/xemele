@@ -50,12 +50,7 @@ public sealed class XmlSchema
             var executable = registry.FindType(definition.Name)!;
             if (!facets.ValidateDefinition(executable, registry, context.Operation)) throw SchemaSnapshots.Failure(context.Operation);
         }
-        var programs = new Dictionary<SchemaName, XsdContentProgram>();
-        foreach (var type in compiled.Types)
-        {
-            Tick(context.Operation, type.Location);
-            programs.Add(type.Name, new XsdContentCompiler().Compile(compiled, type, context.Operation, facets));
-        }
+        var programs = new XsdContentCompiler().CompileAll(compiled, context.Operation, facets);
         FinalizeDeclarations(compiled, programs, facets, context.Operation);
         var identity = new XsdIdentityCompiler().Compile(compiled, context.Operation);
         // The completed backing dictionary is private to this invocation and
