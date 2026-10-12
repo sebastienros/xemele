@@ -150,3 +150,12 @@ registry factory storage cannot publish a graph; its owned test is UNRUN.
 Final runtime cc01af29 includes the d208 certificate/visibility correction;
 selection694/2206 with original687 entries unchanged. Root reviewers must bind
 this final runtime identity before any new controls/check.
+
+H19 exact source identity addendum (main65591eabf2ca78570977e3c830a7f98aea486153):
+OperationTests.cs contains PrimitiveTests/CallerEngineTests as later top-level
+classes. Exactly five declaring-class keys move to those classes; all values,
+attribute/cardinality/source hashes stay unchanged at694 methods/2206 cases.
+Existing control14 proves bounded deterministic drift and independently specified
+typed identities versus old first-class identities; it tests identity comparison,
+not a generic C# collector. Runtime5ad/source manifest/recipes/probes unchanged.
+Prior failed coverage remains failed; all new control/check execution UNRUN.

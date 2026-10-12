@@ -332,6 +332,28 @@ class Controls(unittest.TestCase):
         self.assertEqual(str(repeated.exception),message)
         self.assertEqual(json.dumps(expectation,sort_keys=True),before)
         self.assertEqual(selection.EXPECTED.read_bytes(),expected_bytes)
+        # Source-proven multi-class fixture: identity comparison, not a C#
+        # collector/parser test. Five exact declarations contribute nine cases.
+        declarations=[('PrimitiveTests','PreparedLengthHasAnIndependentTenUnitWorkCalculation',1),
+                      ('PrimitiveTests','MalformedFacetUnicodeRejectsAsSchemaRestrictions',1),
+                      ('PrimitiveTests','FloatingBoundSpecialValuesRetainTheVerifiedOrder',4),
+                      ('PrimitiveTests','DecimalPrecisionDoesNotFallThroughClrDecimalOrDouble',1),
+                      ('CallerEngineTests','CallerRegexEngineSchemaExceptionsRetainTheirProvenance',2)]
+        namespace='Xemele.Tests.M8Facets.';first_class=[ET.Element('test',**test.attrib) for test in tests]
+        for owner,method,cases in declarations:
+            typed=namespace+owner+'.'+method;legacy=namespace+'OperationTests.'+method
+            self.assertEqual(expectation['methods'][typed]['cases'],cases);self.assertNotIn(legacy,expectation['methods'])
+            matching=[test for test in first_class if test.attrib['type']==namespace+owner and test.attrib['method']==method]
+            self.assertEqual(len(matching),cases)
+            for test in matching:test.attrib['type']=namespace+'OperationTests'
+        selection.validate(tests,expectation) # Exact independently typed source rows accepted.
+        with self.assertRaises(AssertionError) as wrong_class:selection.validate(first_class,expectation)
+        wrong_message=str(wrong_class.exception);self.assertLessEqual(len(wrong_message),700)
+        self.assertIn('missing=5 unexpected=5 countDiff=0',wrong_message)
+        self.assertIn('CallerEngineTests.CallerRegexEngineSchemaExceptionsRetainTheirProvenance',wrong_message)
+        self.assertIn('OperationTests.CallerRegexEngineSchemaExceptionsRetainTheirProvenance',wrong_message)
+        self.assertEqual(json.dumps(expectation,sort_keys=True),before)
+        self.assertEqual(selection.EXPECTED.read_bytes(),expected_bytes)
         self.exercise_failure_diagnostics()
     def exercise_failure_diagnostics(self):
         expected_type='Xemele.Tests.M8XsdMissingComponents.Fixture';expected_method='RejectedSchema'
