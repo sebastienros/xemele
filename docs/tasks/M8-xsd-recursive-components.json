@@ -4,11 +4,11 @@
   "milestone": "M8",
   "title": "Separate recursive components from forbidden schema cycles",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M8 coordinator / assigned isolated M8-xsd-recursive-components worker",
   "branch": "codex/m8-xsd-recursive-components",
   "base_revision": "69691f493fd2b0d5ce382b2f2cbcfb154dd8d202",
-  "integration_revision": null,
+  "integration_revision": "dda9ff6d837aa773193d6185e0f6b4c736aa5021",
   "depends_on": [
     "M8-xsd-component-mapping"
   ],
@@ -37,7 +37,8 @@
       "status": "passed",
       "evidence": [
         "original-baseline",
-        "branch-correctness"
+        "branch-correctness",
+        "integrated-combined-verification"
       ]
     },
     {
@@ -45,7 +46,8 @@
       "description": "Preserve direct/indirect forbidden cycle rejection, declaration-order independence, unused component publication checkpoints, finite nested validation, source provenance, aggregate work/components and cancellation without mutable graph escape.",
       "status": "passed",
       "evidence": [
-        "branch-correctness"
+        "branch-correctness",
+        "integrated-combined-verification"
       ]
     },
     {
@@ -59,7 +61,8 @@
         "independent-allocation-source-review",
         "allocation-preparation",
         "supervisor-timeout-amendment",
-        "actual-allocations"
+        "actual-allocations",
+        "integrated-combined-verification"
       ]
     }
   ],
@@ -134,20 +137,27 @@
       "result": "passed",
       "summary": "Actual nonisolated rootrun terminal0:control53183/measure53185completedexit0,reaped/groupsabsent/logsclosed;before/after457identitiesmatch.13ownedroutes832samplesstrictlypositive,aggregate=sum64samples;control=measure1085calls/26095consumed andbinaryhashesmatch.Cold3452776B,positive1048B;4retainedcategories8each. Heapgraph581672/public2039824B coarse;diagnostic-39688/result-4944B GC/lifetime noise, never negative/zeroownership. First/warm/setup/diagnostic/traversal/retained boundaries separate. Synchronous managedallocationsonly, no zero primitive/throughput/globalidle/x64/AOTclaim. Supervisorfixe458a2d4b included. No workermeasurement/rebuild/repeatedtests during finalmetadata.",
       "artifact": "docs/reports/M8-xsd-recursive-components/measurement-summary.json"
+    },
+    {
+      "id": "integrated-combined-verification",
+      "kind": "integration",
+      "revision": "dda9ff6d837aa773193d6185e0f6b4c736aa5021",
+      "command": "Combined candidate 3735a8e8163d7c59f48968caad25f3abba3dbfdf: hint check.py; separate four owned namespace checks and recursive normal/XML-only consumers; git diff --exit-code 3735a8e8163d7c59f48968caad25f3abba3dbfdf HEAD -- src tests samples; python3 tools/planning/tasks.py validate; git diff --check",
+      "result": "passed",
+      "summary": "1804 distinct actual passing checks (1557+42+205); IDs unique within result, types disjoint across results;0fail/errors/skips/notrun.58hint/37recursive own included.7Releasebuilds0warnings/errors,public1430/all8frozen/emitted APIs,facade+recursive normal andtrueXML-only consumers. Final implemented metadata and main integration have exactly unchanged src/tests/samples from tested candidate; no redundant passing checks rerun. Actual corrected bounded nonisolated allocation evidence preserved in own reports and coordinator summaries; no fullcorpus/timing/globalidle claim.",
+      "artifact": "docs/orchestration/M8-hint-recursive-integration-precheck.json"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "All A1-A3 implemented on branch: unchanged originals accepted through deferred element-inline complex-body completion, forbidden group/base cycles preserved, complete correctness/API/consumer and actual nonisolated owned-allocation evidence. Await coordinator integration verification; integration_revision remains unset.",
+    "summary": "Integrated and verified on main at dda9ff6d837aa773193d6185e0f6b4c736aa5021. All A1-A3 implemented on branch: unchanged originals accepted through deferred element-inline complex-body completion, forbidden group/base cycles preserved, complete correctness/API/consumer and actual nonisolated owned-allocation evidence. Await coordinator integration verification; integration_revision remains unset.",
     "checks": [
       "Original4baseline failures preserved; repairedoriginals pass;37owned+1263affected=1300pass and42resolverpass,0errors/failures/skips/notrun. Public1430/all8frozen/internal surfaces and normal/trueXML-only consumers pass; ownrecursiveconsumer passes2builds;planning/diff pass.",
       "Independent runtime/probe sourcePASS;offline build/disabled control/preflight andtimeoutexit0regression pass;no primitivezeroallocationclaim.",
       "Actualrootallocation13ownedroutes832samplespositive,cold3452776/positive1048B,32retainedcoarseillustrations;457identities,children53183/53185completedandclean,durablecleanupbefore rawinspection.",
       "Root reports combinedcandidate3735a8e passed1804distinctchecks/7builds/publicall8/facade+recursive normaltrueXML-only; coordinator owns integrated verification. This final update reruns no runtime tests or counters."
     ],
-    "remaining": [
-      "Coordinator integrates branch and verifies integrated revision."
-    ],
+    "remaining": [],
     "requests": []
   }
 }

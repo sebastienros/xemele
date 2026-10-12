@@ -4,11 +4,11 @@
   "milestone": "M8",
   "title": "Validate XSD instance hint order without fetching resources",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M8 coordinator / assigned isolated M8-xsd-instance-hint-ordering worker",
   "branch": "codex/m8-xsd-instance-hint-ordering",
   "base_revision": "69691f493fd2b0d5ce382b2f2cbcfb154dd8d202",
-  "integration_revision": null,
+  "integration_revision": "dda9ff6d837aa773193d6185e0f6b4c736aa5021",
   "depends_on": [
     "M8-xsd-content-failure-assessment"
   ],
@@ -39,7 +39,8 @@
       "status": "passed",
       "evidence": [
         "decision-freeze",
-        "original-baseline"
+        "original-baseline",
+        "integrated-combined-verification"
       ]
     },
     {
@@ -48,7 +49,8 @@
       "status": "passed",
       "evidence": [
         "focused-correctness",
-        "independent-runtime-review"
+        "independent-runtime-review",
+        "integrated-combined-verification"
       ]
     },
     {
@@ -58,7 +60,8 @@
       "evidence": [
         "original-baseline",
         "draft-corrections",
-        "focused-correctness"
+        "focused-correctness",
+        "integrated-combined-verification"
       ]
     },
     {
@@ -69,7 +72,8 @@
         "focused-correctness",
         "disabled-preparation",
         "lifecycle-correction",
-        "root-actual-allocation"
+        "root-actual-allocation",
+        "integrated-combined-verification"
       ]
     }
   ],
@@ -154,11 +158,20 @@
       "result": "passed",
       "summary": "Actual nonisolated Arm64.NET10.0.11:6borrowed16warm/64calls each0bytes;7owned aggregate839168/1041408/1061376/895488/5557248/2037808/1137152positive. Coldfixture3120352;positive1024bytearray1048;wholeheap846744to852216delta5472with16results+fixturealive,coarseonly. Separate disabledcontrol13routesallcounter/heapfields0,same657312consumed. Emitted417b46aec is supervisorcorrection,accepted7cb runtime/6eebprobebinariesunchanged.466identitiesbeforeaftermatch;53665control/53667measurecompletedexit0/reaped/groupsabsent/logsclosed,supervisorterminal0,durablecleanup57dcf90ccbeforeinspection.30total/20work/10cleanup,no retries/rebuild/testrepeat;no isolation/PARK/exclusivity/leasegate. No firstcall/distribution/throughput/x64/AOT/async/fullcorpus/globalidleclaim.",
       "artifact": "docs/reports/M8-xsd-instance-hint-ordering/allocations.md"
+    },
+    {
+      "id": "integrated-combined-verification",
+      "kind": "integration",
+      "revision": "dda9ff6d837aa773193d6185e0f6b4c736aa5021",
+      "command": "Combined candidate 3735a8e8163d7c59f48968caad25f3abba3dbfdf: hint check.py; separate four owned namespace checks and recursive normal/XML-only consumers; git diff --exit-code 3735a8e8163d7c59f48968caad25f3abba3dbfdf HEAD -- src tests samples; python3 tools/planning/tasks.py validate; git diff --check",
+      "result": "passed",
+      "summary": "1804 distinct actual passing checks (1557+42+205); IDs unique within result, types disjoint across results;0fail/errors/skips/notrun.58hint/37recursive own included.7Releasebuilds0warnings/errors,public1430/all8frozen/emitted APIs,facade+recursive normal andtrueXML-only consumers. Final implemented metadata and main integration have exactly unchanged src/tests/samples from tested candidate; no redundant passing checks rerun. Actual corrected bounded nonisolated allocation evidence preserved in own reports and coordinator summaries; no fullcorpus/timing/globalidle claim.",
+      "artifact": "docs/orchestration/M8-hint-recursive-integration-precheck.json"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Implemented evaluator-only atomic global hint ordering without fetching. Pre-runtime decision freezes explicit skipped-subtree ordering project interpretation;7unchanged originalINVALID outcomes and1599focusedchecks pass. Independent runtime sourcePASS;allocation supervisorP2 corrected with actual finitecontrol. Root actual nonisolated466identity allocationPASS:6borrowed0/sevenownedpositive,cold/positive/disabled/coarse-retention separate,cleancompletedchildren. All criteria pass on branch; root integration/verification pending. Worker relinquishes writes.",
+    "summary": "Integrated and verified on main at dda9ff6d837aa773193d6185e0f6b4c736aa5021. Implemented evaluator-only atomic global hint ordering without fetching. Pre-runtime decision freezes explicit skipped-subtree ordering project interpretation;7unchanged originalINVALID outcomes and1599focusedchecks pass. Independent runtime sourcePASS;allocation supervisorP2 corrected with actual finitecontrol. Root actual nonisolated466identity allocationPASS:6borrowed0/sevenownedpositive,cold/positive/disabled/coarse-retention separate,cleancompletedchildren. All criteria pass on branch; root integration/verification pending. Worker relinquishes writes.",
     "checks": [
       "Baseline354550f94:seven original complete-valid outcomes fail expected INVALID assertions; unchanged bytes/statuses/hashes and prior adapter history retained.",
       "Runtime/test7cb790009:58own corrected pass;combined1557affected+42resolver1599pass;public1430/all8frozen/emittedAPIs;normal+trueXML-only,fiveReleasebuild0warnings/errors,planning196/diffpass.",
@@ -167,10 +180,7 @@
       "Root actual allocation afterdurablecleanup57dcf90cc:6borrowed0/sevenownedpositive16warm64calls;3120352cold/1048positive/5472coarsewholeheapdelta16results;disabledall0/same657312consumed.466identitiesmatch;53665/53667completedexit0/reaped/groupsabsent/logsclosed;no measurementrepeat/rebuild/testrepeat.",
       "Coordinator separately reportscombinedcandidate3735a8e8163d7c59f48968caad25f3abba3dbfdf:1804distinctchecks/sevenbuild/publicall8/facade+recursive normaltrueXMLonlyPASS;not rerun by worker and not yet taskverified."
     ],
-    "remaining": [
-      "Coordinator integrates reviewed runtime and final metadata,verifies combined code and records integration_revision before setting verified.",
-      "Evidence limits: no throughput/x64/AOT/async/fullcorpus/globalhostidle or independently W3C-adjudicated skipped-corner claim."
-    ],
+    "remaining": [],
     "requests": []
   }
 }
