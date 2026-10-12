@@ -165,15 +165,25 @@ public sealed class LexicalTests
     }
 
     [Theory]
-    [InlineData("datatypeLibrary", "foo:x\ud800")]
-    [InlineData("datatypeLibrary", "foo:x\udc00")]
-    [InlineData("name", "a\ud800")]
-    [InlineData("name", "a\udc00")]
-    public void MalformedUtf16CannotPublishFromDocumentInput(string attribute, string value)
+    [InlineData("datatypeLibrary", 0xD800)]
+    [InlineData("datatypeLibrary", 0xDC00)]
+    [InlineData("name", 0xD800)]
+    [InlineData("name", 0xDC00)]
+    public void MalformedUtf16CannotEnterDocumentsOrPublishSchemas(string attribute, int surrogate)
     {
+        // Metadata string literals cannot preserve an unpaired UTF-16 unit;
+        // construct it at runtime so the test really exercises malformed input.
+        string value = (attribute == "name" ? "a" : "foo:x") + (char)surrogate;
         var document = XmlDocument.Parse(Root(), cancellationToken: TestContext.Current.CancellationToken);
-        document.RootElement.SetAttribute(attribute, value);
-        Assert.Throws<SchemaCompileException>(() => RelaxNgSchema.Compile(document));
+        Assert.ThrowsAny<ArgumentException>(() => document.RootElement.SetAttribute(attribute, value));
+        string source = attribute == "name" ? "<element xmlns='" + Ns + "' name='" + value + "'><empty/></element>" : Root("datatypeLibrary='" + value + "'");
+        Assert.Throws<SchemaCompileException>(() => RelaxNgSchema.Compile(source));
+        if (attribute == "datatypeLibrary")
+        {
+            var options = new SchemaCompileOptions();
+            var error = Assert.Throws<SchemaCompileException>(() => Normalizer(options, new SchemaCompileOperation(options))(value, default));
+            Assert.Equal("RNG.SchemaRestriction", Assert.Single(error.Diagnostics).Code);
+        }
     }
 
     [Fact]
@@ -243,11 +253,12 @@ public sealed class LexicalTests
     {
         string prefix = "foo:" + new string('a', 512);
         string input = prefix + escaped;
+        Assert.Equal(utf16Units, escaped.Length);
         int outputLength = prefix.Length + 3 * utf8Bytes;
         // Four scheme chars, all raw UTF-16 fragment chars, shared URI:
         // 4 scheme + 1 authority probe + body scalars; length-pass scalars;
         // exactly outputLength emitted chars. This is not an observed replay.
-        long beforeOutput = 5 + input.Length + 2 * (prefix.Length + 1);
+        long beforeOutput = 5 + prefix.Length + utf16Units + 2 * (prefix.Length + 1);
         long expectedWork = beforeOutput + outputLength;
         int expectedComponents = 2 + (outputLength + 255) / 256; // adapter + owner + blocks
         var at = new XmlLocation(new Uri("https://example.test/projected.rng"), 3, 7, 42);
