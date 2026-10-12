@@ -4,7 +4,7 @@
   "milestone": "M8",
   "title": "Keep nullable internal candidate out of runtime API union",
   "kind": "contract",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M8 coordinator / isolated API-scope repair",
   "branch": "codex/m8-contract-api-scope",
   "base_revision": "644419ccdbad27d28d1a39ba1d0130ab7ca62ff6",
@@ -30,23 +30,45 @@
     {
       "id": "M8-xsd-contract-api-scope-A1",
       "description": "Global docs/api union contains only shipped runtime API rows; internal nullable candidate rows remain unchanged in contract fixture candidate golden and exact delta. Replace contract runtime fragment with canonical header-only internal-task pattern, without runtime/public API changes.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "branch-publication-proof"
+      ]
     },
     {
       "id": "M8-xsd-contract-api-scope-A2",
       "description": "Refresh only the changed fragment identity in contract source manifest. Prove complete API union membership/canonical rows/no duplicate members and no candidate internal declaration leakage, candidate golden and semantic fixtures unchanged, relevant planning and integrated checks pass.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "branch-publication-proof"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "Header-only runtime API fragment; three nullable internal rows preserved in candidate.golden.txt",
+    "Refreshed exact fragment identity in contract source manifest",
+    "Owned static complete-union/candidate identity proof"
+  ],
+  "evidence": [
+    {
+      "id": "branch-publication-proof",
+      "kind": "check",
+      "revision": "9395c94d55603e18e7504a891662c0965e40111c",
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 docs/reports/M8-xsd-contract-api-scope/check.py; python3 tools/planning/tasks.py validate; git diff --check",
+      "result": "passed",
+      "summary": "54 runtime API fragments,1430 canonical unique public members, no internal candidate leakage; candidate/old projection hashes unchanged; all30 manifest hashes match;199tasks valid. No runtime/compiler launched.",
+      "artifact": null
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Ready scoped publication repair discovered during integrated API-consumer assessment; actual candidate compile proof preserved.",
-    "checks": [],
-    "remaining": [],
+    "summary": "Scoped branch repair implemented; candidate semantic/compiled projection remains unchanged; runtime union publication corrected.",
+    "checks": [
+      "Owned static proof passed; planning199 and whitespace passed"
+    ],
+    "remaining": [
+      "Integrate and run same static boundary proof on combined tree"
+    ],
     "requests": []
   }
 }
