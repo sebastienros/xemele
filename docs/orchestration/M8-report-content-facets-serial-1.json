@@ -1,6 +1,6 @@
 {
   "id": "M8-report-content-facets-serial-1",
-  "status": "PARK_REQUESTED",
+  "status": "GRANTED",
   "earliestStart": "2026-10-12T01:42:00Z",
   "latestStart": "2026-10-12T01:50:00Z",
   "absoluteCleanupCap": "2026-10-12T02:12:00Z",
@@ -107,15 +107,19 @@
   "preflight": "Accepted source reviews. Actual joint e4bf43e0 report546/facets804 checks and content285 at78051af6, APIs/frozen/trueXMLonly/planning passed. All418+213+462 identities and process permission independently verified. Prebuilt disabled controls and exact5+6NoEmit discovery passed. No measurement yet for these payloads.",
   "scope": "Root executes report30 then corrected content600 then facets600, strictly serial, stop first failure. Overall bound1250 includes all work, phase cleanup and launch gaps; each phase reserves10 cleanup. Initial START by01:50; phase latest starts01:50/01:50:30/02:00:30 reflect preceding maxima, all bounded by actual grant+1250 and hard cap02:12. No builds/tests/restore/discovery/retry/extension or raw inspection. Each fixed supervisor enforces its shorter bound, late starts and no overwrite; before/after identities, owned groups reaped/absent/logs closed. Immediate durable RELEASE after lifecycle before raw inspection; no repeatable speed claim. Prior failed content attempt preserved. Gregs parser excluded.",
   "acks": {
-    "root": "All integration jobs complete/reaped, three reviewers completed, zero jobs/new dispatch."
+    "root": "All integration jobs complete/reaped, three reviewers completed, zero jobs/new dispatch.",
+    "Xemele main": "Fresh explicit entire serial scope ACK, zero jobs/PIDs/children/cells/new actors; heavy work/new dispatch parked until cleanup RELEASE/abort.",
+    "content": "Fresh explicit entire serial scope ACK, zero jobs/PIDs/children/cells/new actors; heavy work/new dispatch parked until cleanup RELEASE/abort.",
+    "report": "Fresh explicit entire serial scope ACK, zero jobs/PIDs/children/cells/new actors; heavy work/new dispatch parked until cleanup RELEASE/abort.",
+    "research parser": "Fresh explicit entire serial scope ACK, zero jobs/PIDs/children/cells/new actors; heavy work/new dispatch parked until cleanup RELEASE/abort.",
+    "facets": "Fresh explicit entire serial scope ACK, zero jobs/PIDs/children/cells/new actors; heavy work/new dispatch parked until cleanup RELEASE/abort.",
+    "GregsEx main": "Fresh direct exact full-scope ACK, zero jobs/children/new actors.",
+    "GregsEx parser": "Retrieved completed explicit fresh scope ACK sent to GregsEx coordinator: worker zero jobs/PIDs/children/cells/new actors, no competing launch; pending coordinator reconciliation of temporary parser process/output ownership.",
+    "GregsEx coordinator": "Fresh entire exact serial scope ACK and confirmed THREE aggregate; zero jobs/PIDs/children/cells/new actors. Parser process/output handoff idle, no parser lease/grant/launch; all THREE parked."
   },
-  "pendingAcks": [
-    "Xemele main",
-    "content",
-    "facets",
-    "report",
-    "research parser",
-    "GregsEx current aggregate"
-  ],
-  "recordedUtc": "2026-10-12T01:42:29.263266+00:00"
+  "pendingAcks": [],
+  "recordedUtc": "2026-10-12T01:42:29.263266+00:00",
+  "grantUtc": "2026-10-12T01:49:45.992387+00:00",
+  "expiryUtc": "2026-10-12T02:10:35.992387+00:00",
+  "attempts": 1
 }
