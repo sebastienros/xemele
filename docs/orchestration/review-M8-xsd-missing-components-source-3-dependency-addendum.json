@@ -1,0 +1,27 @@
+{
+  "sourceRevision": "3f26d0a02301f45015d51691bb31ed51d4c448e8",
+  "reviewer": "/root/review_m8_model",
+  "result": "SOURCE CHANGES REQUIRED; execution held",
+  "issue": {
+    "id": "G03c-provisional-dependencies",
+    "priority": "P1 availability correctness",
+    "location": "ContentModels/Derivation.cs:239-260,343,410-416",
+    "problem": "Eager ordered rule evaluation immediately publishes an unavailable dependency from a candidate later discarded by False AND or True OR, making an independently proven restriction unavailable.",
+    "witness": "B sequence(local x type absent min0, required local s:int, any lax min1/max1); D restricts B with sequence(local s:int, local x:int). Valid mapping skips optional base x, maps s to s and x to wildcard. Eager evaluation additionally tests derived x against optional base x behind a False preceding state and immediately links D to that missing type. Base UPA is decidable because required s separates x from wildcard; each model has only one x declaration; D-to-B join does not independently inherit base child assessment.",
+    "required": "Keep restriction candidate dependencies provisional through the rule algebra. Discard irrelevant dependencies under False AND and True OR; publish required dependencies for an indeterminate final relation. Preserve independent Build/UPA/EDC dependencies and charged bounded representation/traversal.",
+    "proof": [
+      "Original schema assesses r/s=7,x=8 complete and valid without consuming absent type",
+      "Add absent as string restriction; same instance remains valid",
+      "Derived x min2/max2 still rejects the independently invalid occurrence restriction",
+      "Earlier genuine partial-restriction refusal and bounded-work/cancellation controls remain intact"
+    ]
+  },
+  "sourceHashes": {
+    "Derivation.cs": "7a17def665e4310402fc97cec3db7337ab66a76619f58404766812acc1ba06b1",
+    "ContentModels/Compiler.cs": "3758a36f321a7f54755312f4070200202d2cc7c57c02f95a79bf601fc15916c8",
+    "Availability.cs": "241ee3a54852797e34061d77d68273c6331277b9b346aaee35e60bcf76c9a558"
+  },
+  "excludedHypothesis": "UnorderedPartial already requires consumer unavailability; unused matrix candidates do not newly introduce that state. Its prior bounded accounting review remains valid.",
+  "execution": "Immutable source deductions only; no executable checks or counters run.",
+  "release": "Exact G03c correction and owned proving controls authorized in addition to source-3 two corrections and H01-H04 harness fixes. Return immutable SOURCE READY/HOLD; no execution or main/task edits."
+}
