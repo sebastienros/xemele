@@ -23,8 +23,8 @@ internal sealed partial class XsdValidationRun
                     while (!remaining.IsEmpty)
                     {
                         Work(); int end = remaining.IndexOf(' '); if (end < 0) end = remaining.Length; tokens++;
-                        bool parsed = library.TryParse(type, remaining[..end], frame.Context, this, out var item, out var error); Poll();
-                        if (!parsed) valid = Error(error!.Code, error.Message); else { Retain(); items.Add(item!); }
+                        bool itemValid = library.TryParse(type, remaining[..end], frame.Context, this, out var item, out var error); Poll();
+                        if (!itemValid) valid = Error(error!.Code, error.Message); else { Retain(); items.Add(item!); }
                         remaining = end == remaining.Length ? [] : remaining[(end + 1)..];
                     }
                     type = new(Xs, "anySimpleType"); value = library.CreateList(type, items, this); Poll();
