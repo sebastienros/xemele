@@ -31,9 +31,10 @@ def main():
             assert case['documents'] == approved['documents'] and case['original_expected'] == 'invalid'
             first = case['first_schema_inputs']
             assert len(first) in [1, 2, 3]
-            for i, item in enumerate(first):
-                assert item['path'] == 'msData/additional/test93490_' + str(1 + 2 * i) + '.xsd'
-                assert item['namespace'] == ['foo', 'bar', ''][i]
+            order = [(5, ''), (1, 'foo'), (3, 'bar')] if len(first) == 3 else [(1, 'foo'), (3, 'bar')][:len(first)]
+            for item, (number, namespace) in zip(first, order):
+                assert item['path'] == 'msData/additional/test93490_' + str(number) + '.xsd'
+                assert item['namespace'] == namespace
                 assert item['sha256'] == hint['authored_schema_pins'][item['path']]
     for name, sha in facts['authored_schema_pins'].items():
         assert sha == hint['authored_schema_pins'][name] == resources[name] == digest(CORPUS / 'upstream' / name)

@@ -40,9 +40,10 @@ internal static class Runner
         using (var input = File.OpenRead(PathFor(UriFor(document))))
             if (Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(input)).ToLowerInvariant() != digest.GetString()) return false;
         string file = Path.GetFileName(document);
-        string[] required = file is "test93490_7.xml" or "test93490_8.xml" or "test93490_10.xml" ? ["test93490_1.xsd", "test93490_3.xsd", "test93490_5.xsd"] :
+        bool unqualifiedFirst = file is "test93490_7.xml" or "test93490_8.xml" or "test93490_10.xml";
+        string[] required = unqualifiedFirst ? ["test93490_5.xsd", "test93490_1.xsd", "test93490_3.xsd"] :
             file is "test93490_4.xml" or "test93490_5.xml" ? ["test93490_1.xsd", "test93490_3.xsd"] : ["test93490_1.xsd"];
-        string[] namespaces = ["foo", "bar", ""];
+        string[] namespaces = unqualifiedFirst ? ["", "foo", "bar"] : ["foo", "bar"];
         if (plan.Inputs.Length != required.Length) return false;
         for (int i = 0; i < required.Length; i++)
         {

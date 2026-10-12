@@ -19,6 +19,8 @@ late-plan result into an unassessed limitation. The bounded update enables actua
 product assessment only for the seven exact hard-coded IDs, original INVALID
 expectations, original document path/SHA and complete ordered first-schema inputs:
 foo/test93490_1, bar/test93490_3 and no-namespace/test93490_5 where originally used.
+In original XML7/8/10, no-namespace5 occurs first at the root, followed by foo1
+and bar3; the guard preserves that authored first-discovery order.
 Every supplied first schema must match its pinned SHA. Missing, changed, reordered,
 wrong-namespace or later-schema inputs cannot enable the profile.
 
@@ -37,3 +39,10 @@ The global ordering interaction under skipped content remains an explicit projec
 interpretation. This focused profile does not label that corner independently
 adjudicated upstream. No XML/schema/instance bytes or original oracle were changed.
 No new semantic original has executed: root source review precedes the exact subset.
+
+Initial preparation b60f42366 built0warnings/errors;45runtime/19report controls
+passed. The new hash guard child56132 exited-6 after three positive cases because
+the preparation incorrectly assumed foo1/bar3/no-namespace5 order for XML7/8/10.
+Unchanged original bytes and immutable12d journals establish no-namespace5 first.
+The guard/source record were corrected; no authored inputs or oracle changed.
+Failed child was reaped with absent group/closed log; no semantic original ran.
