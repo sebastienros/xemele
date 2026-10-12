@@ -17,7 +17,7 @@ public sealed class OperationTests
             case "attributes": limits = limits with { AttributesPerElement = 1 }; xml = "<root a='x' b='y'/>"; break;
             case "token": limits = limits with { TokenCharacters = 2 }; break;
             case "characters": limits = limits with { DocumentCharacters = 3 }; break;
-            case "diagnostics": limits = limits with { Diagnostics = 1 }; xml = "<wrong a='x' b='y'/>"; break;
+            case "diagnostics": limits = limits with { Diagnostics = 1 }; xml = "<wrong xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xsi:unknown='x'/>"; break;
         }
         var result = prepared.Run(xml, options with { Limits = limits });
         Assert.False(result.IsComplete); Assert.False(result.IsValid); Assert.Equal("VALIDATION.Limit", result.Diagnostics[^1].Code);

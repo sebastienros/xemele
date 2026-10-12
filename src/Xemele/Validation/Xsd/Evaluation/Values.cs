@@ -191,6 +191,7 @@ internal sealed partial class XsdValidationRun
     {
         if (schema.Datatypes.FindType(actual) is not null && schema.Datatypes.FindType(declared) is not null)
             return SimpleDerived(actual, declared, elementBlock.Contains(XsdElementBlock.Restriction) || typeBlock.Contains(XsdTypeBlock.Restriction));
+        if (schema.Datatypes.FindType(actual) is not null && declared == new SchemaName(Xs, "anyType") && elementBlock.Contains(XsdElementBlock.Restriction)) return false;
         var visited = new HashSet<SchemaName>(); Retain();
         while (actual != declared)
         {
@@ -232,6 +233,7 @@ internal sealed partial class XsdValidationRun
             Retain(); if (!visited.Add(pair) || restrictionBlocked) continue;
             var source = schema.Datatypes.FindType(pair.Actual); var target = schema.Datatypes.FindType(pair.Declared);
             if (source is null || target is null) continue;
+            if (source.BaseType is { } sourceBase && schema.Datatypes.FindType(sourceBase)?.Final.Contains(XmlDatatypeDerivation.Restriction) == true) continue;
             if (source.BaseType is { } parent)
             {
                 var basis = schema.Datatypes.FindType(parent);
