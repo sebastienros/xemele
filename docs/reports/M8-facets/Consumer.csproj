@@ -1,0 +1,6 @@
+<Project Sdk="Microsoft.NET.Sdk">
+<PropertyGroup><OutputType>Exe</OutputType><AssemblyName>Xemele.Benchmarks</AssemblyName><EnableDefaultCompileItems>false</EnableDefaultCompileItems></PropertyGroup>
+<ItemGroup><Compile Include="../../../samples/M8-facets/Consumer.cs.fixture" />
+<ProjectReference Include="../../../src/Xemele/Xemele.csproj" Condition="'$(FacetsXmlOnly)' != 'true'" />
+<ProjectReference Include="XmlOnly/XmlOnly.csproj" Condition="'$(FacetsXmlOnly)' == 'true'" /></ItemGroup>
+</Project>

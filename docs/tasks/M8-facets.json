@@ -35,14 +35,24 @@
     {
       "id": "M8-facets-A1",
       "description": "Implement facet restrictions and compose datatype library with schema regex and whitespace policies.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "source-correctness",
+        "source-review-1",
+        "corrected-source-correctness",
+        "corrected-source-review"
+      ]
     },
     {
       "id": "M8-facets-A2",
       "description": "Test conflicting/inherited facets, bounds, lengths/enumeration/pattern and RELAX NG datatype usage.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "source-correctness",
+        "source-review-1",
+        "corrected-source-correctness",
+        "corrected-source-review"
+      ]
     },
     {
       "id": "M8-facets-A3",
@@ -51,13 +61,79 @@
       "evidence": []
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Validation/Datatypes/Facets/Evaluator.cs: XmlFacetEvaluator through the exact IXmlFacetEvaluator join and weak immutable prepared plans",
+    "src/Xemele/Validation/Datatypes/Facets/Definitions.cs and Consistency.cs: complete graph/lexical/applicability/fixed/final/inherited restrictions",
+    "src/Xemele/Validation/Datatypes/Facets/Values.cs: borrowed normalization and owned atomic/list/union results with per-level regex/value facets",
+    "src/Xemele/Validation/Datatypes/Facets/RngAdapter.cs: approved explicit known-alias/base/variety parameter protocol; empty library boundary",
+    "tests/Xemele.Tests/M8-facets/: independent facet/definition/composite/budget/cancellation/concurrent/alias tests",
+    "samples/M8-facets/Consumer.cs.fixture and docs/reports/M8-facets/XmlOnly/: genuine XML-only source-linked consumer",
+    "docs/api/M8-facets.txt: canonical empty additive public API fragment",
+    "benchmarks/Xemele.Benchmarks/M8-facets/: owned/cold/borrowed/invalid/pooled/retained controls and ShortRun/MemoryDiagnoser NoEmit harness; not measured yet",
+    "docs/reports/M8-facets/facade-join.md: approved internal RNG protocol and required downstream finalization",
+    "src/Xemele/Validation/Datatypes/Facets/Numbers.cs: owned canonical decimal/native count representation with independent actual work/growth accounting"
+  ],
+  "evidence": [
+    {
+      "id": "source-correctness",
+      "kind": "check",
+      "revision": "5cdc839f597c6f51d0e460688f441057162926c2",
+      "command": "python3 docs/reports/M8-facets/checks.py",
+      "result": "passed",
+      "summary": "Pinned Release .NET10.0.11 Arm64:271 owned facets +501 verified datatype/model/regex regressions=772 passed; zero errors/failures/skips/not-run.316 frozen public/internal facet declarations and1393 preserved public members matched. Regular and real source-linked XML-only consumers passed,178 tasks validated,diff check passed. Allocation assertions/counters/timing not selected. Subsequent preparation-driver output suffix and extra NOTATION test are untested pending park release.",
+      "artifact": "docs/reports/M8-facets/README.md"
+    },
+    {
+      "id": "source-review-1",
+      "kind": "review",
+      "revision": "5cdc839f597c6f51d0e460688f441057162926c2",
+      "command": "Coordinator bounded read-only review of source5ea01779 plus RngAdapter delta5cdc839f; no execution",
+      "result": "failed",
+      "summary": "Five blockers: retained list/union compiler fields; length/min/max inherited-origin rule; equal exclusive empty range; effective digit facets replacing obsolete scalars; opaque arbitrary facet-number arithmetic/comparison lacking actual bounded work/growth. Prior passing test results preserved; corrections and new witnesses required.",
+      "artifact": "docs/reports/M8-facets/review-1.md"
+    },
+    {
+      "id": "corrected-source-correctness",
+      "kind": "check",
+      "revision": "b1bd26fe9a0978b0301ed45383c45f43da4592e3",
+      "command": "python3 docs/reports/M8-facets/checks.py",
+      "result": "passed",
+      "summary": "Actual804 passing tests:303 owned facets plus501 verified predecessors;0failures/errors/skips/not-run, pinned .NET10.0.11 Arm64. Includes6 review witnesses and25 independently calculated count-work tests.316 frozen/1393 preserved public API;normal and genuine XML-only consumers passed;178-task validation and diffcheck passed. Pre-fix5/5review witnesses and test/build setup failures preserved in report. No controls/discovery/measurements executed.",
+      "artifact": "docs/reports/M8-facets/review-1.md"
+    },
+    {
+      "id": "corrected-source-review",
+      "kind": "review",
+      "revision": "b1bd26fe9a0978b0301ed45383c45f43da4592e3",
+      "command": "Coordinator bounded source-only closure review of correction b1bd26fe and metadata-only875fd56; no execution",
+      "result": "passed",
+      "summary": "All five prior blockers closed: compiler retained graph fields/compact RNG marker, ancestor length origin, equal-exclusive empty space, effective scalar replacement with historical fixed/derivation checks, and charged/polled canonical/native facet counts. Independent numeric work/growth/null-cap/caller-exception oracles accepted; aggregate replay considered separately. Source/test SHA identities confirmed; no executable review check claimed.",
+      "artifact": "docs/reports/M8-facets/review-1.md"
+    },
+    {
+      "id": "disabled-preparation",
+      "kind": "check",
+      "revision": "af90e76af1cf78eaa77f91ed69e2440e6890a0f4",
+      "command": "python3 docs/reports/M8-facets/prepare.py; python3 docs/reports/M8-facets/measure.py --verify-only",
+      "result": "passed",
+      "summary": "Both pinned Release builds0warnings/errors;17route controls consumed with counters/timing disabled;3semantic baseline comparisons;6ShortRun launch1/warmup3/iteration3 prebuilt NoEmit cases discovered without BDN execution.462 identities and ps permission verified. Manifestd6dc9a15b9a1656deb8f96de8ca1f0475934e28cdfcc36e0f641d1e651754be7. No measurement yet.",
+      "artifact": "docs/reports/M8-facets/preparation.md"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "",
-    "checks": [],
-    "remaining": [],
-    "requests": []
+    "summary": "Accepted corrected source with804 passing checks;disabled controls/discovery and462-identity manifest/preflight passed. Ready for fresh all-host PARK/root bounded GRANT; no measurement result yet.",
+    "checks": [
+      "Source5cdc839f:772 positive correctness tests,316 frozen/1393 public members,XML-only consumers and178-task planning passed.",
+      "Counters-disabled preparation first failed on propagated output/intermediate flags; owned reference isolation fixed. Next probe/BDN builds passed but control executable output lacked target-framework suffix; owned driver corrected. No control/discovery/allocation/timing run yet.",
+      "Corrected b1bd26fe:804 passed (303owned/501predecessor),316frozen/1393public,normal+XML-only consumers,178planning,diffcheck; pre-correction5failed/5preserved."
+    ],
+    "remaining": [
+      "Only after fresh all-host PARK/root GRANT: run bounded allocation/BDN measurements; release before raw inspection and preserve all observations.",
+      "Coordinator integration verification remains separate."
+    ],
+    "requests": [
+      "Downstream XSD prepublication must reject direct NOTATION use and restrictions lacking effective enumeration,resolve authored/inherited enumeration QNames against compiled notation declarations with captured contexts,and traverse relevant base/item/member references. Generic/RNG NOTATION behavior remains supported."
+    ]
   }
 }

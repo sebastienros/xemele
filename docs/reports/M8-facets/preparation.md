@@ -1,0 +1,9 @@
+# Counters-disabled preparation
+
+Prepared revision: af90e76af1cf78eaa77f91ed69e2440e6890a0f4 (runtime/tests match accepted correction b1bd26fe9a0978b0301ed45383c45f43da4592e3). Manifest SHA256: d6dc9a15b9a1656deb8f96de8ca1f0475934e28cdfcc36e0f641d1e651754be7;462 source, binary, build and pinned host/runtime identities.
+
+Actual prepare.py execution passed both Release builds,0warnings/errors. Probe consumed17 routes,32 warm calls and64 control calls per route with GC counters/timing disabled. Three baseline/composition semantic fixtures passed. Prebuilt BenchmarkConverter discovery confirmed6 ShortRun InProcessNoEmit cases, launch1/warmup3/iteration3, without BDN execution/generation/builds. Read-only measure.py --verify-only confirmed all462 identities and ps inspection permission; no measurement child started.
+
+Proposed sole supervised sequence: prebuilt probe --measure then prebuilt six-case BDN --benchmark (manifest contains exact commands). Maximum600seconds total,590work/10cleanup reserve; fresh absolute latest-start/expiry required. Stop on first command failure; no retry, rebuild, extension or raw overwrite. Supervisor hashes before/after, terminates/reaps owned process groups, drains/closes logs and records lifecycle. Release is reported immediately before allocation/BDN raw results are opened; interpretation requires durable coordinator RELEASE ACK.
+
+Eleven warmed borrowed CheckPreparedValue routes assert zero per-thread allocation; six cold/owned/preparation/stopped routes require positive allocation.64 observations per route retain every sample; positive1024-byte allocation control and32 retained fixtures are separate. Cold/first/warm/pooled/owned/invalid/retained boundaries remain distinct. BDN compares only consumed ASCII pattern fixtures against its explicit ASCII baseline; no whole validator/general throughput claim. No allocation or timing measurement has run yet.

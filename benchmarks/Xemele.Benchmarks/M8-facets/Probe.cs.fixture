@@ -1,0 +1,46 @@
+using System.Runtime.InteropServices;
+using System.Security.Cryptography;
+using System.Text.Json;
+using Xemele.Benchmarks.M8Facets;
+using Xemele.Validation;
+if (args is not [var mode, var output] || mode is not ("--control" or "--measure")) throw new ArgumentException();
+if (RuntimeInformation.FrameworkDescription != ".NET 10.0.11") throw new InvalidOperationException("Pinned runtime required.");
+bool measure = mode == "--measure";
+long cold = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+var fixture = new FacetFixture();
+long coldBytes = measure ? GC.GetAllocatedBytesForCurrentThread()-cold : 0;
+var rows = new List<object>();
+for (int route=0;route<FacetFixture.Names.Length;route++)
+{
+    long first = measure ? GC.GetAllocatedBytesForCurrentThread() : 0; fixture.Run(route);
+    long firstBytes = measure ? GC.GetAllocatedBytesForCurrentThread()-first : 0;
+    for (int warm=1;warm<32;warm++) fixture.Run(route);
+    long[] samples = new long[64];
+    for (int i=0;i<samples.Length;i++)
+    { long before = measure ? GC.GetAllocatedBytesForCurrentThread() : 0; fixture.Run(route); samples[i] = measure ? GC.GetAllocatedBytesForCurrentThread()-before : 0; }
+    rows.Add(new { route, name=FacetFixture.Names[route], firstBytes, samples });
+    if (measure && samples.Any(n=>route<11 ? n!=0 : n<=0))
+    { Save("failed",route); throw new InvalidOperationException("Allocation boundary failed."); }
+}
+long positiveStart = measure ? GC.GetAllocatedBytesForCurrentThread() : 0;
+var positive = new byte[1024]; GC.KeepAlive(positive);
+long positiveBytes = measure ? GC.GetAllocatedBytesForCurrentThread()-positiveStart : 0;
+if (measure && positiveBytes<1024) throw new InvalidOperationException("Positive control failed.");
+long retainedBefore = measure ? GC.GetTotalMemory(true) : 0;
+var retained = new object[32];
+for (int i=0;i<retained.Length;i++) retained[i]=new FacetFixture();
+long retainedAfter = measure ? GC.GetTotalMemory(true) : 0;
+GC.KeepAlive(retained);GC.KeepAlive(fixture);
+File.WriteAllText(output,JsonSerializer.Serialize(new { status="passed", mode, runtime=RuntimeInformation.FrameworkDescription, architecture=RuntimeInformation.ProcessArchitecture.ToString(), os=RuntimeInformation.OSDescription, serverGc=System.Runtime.GCSettings.IsServerGC, tieredCompilation=Environment.GetEnvironmentVariable("DOTNET_TieredCompilation"), concurrentGc=Environment.GetEnvironmentVariable("DOTNET_GCConcurrent"), inputSha256=InputsHash(), coldBytes, positiveBytes, retainedBefore, retainedAfter, retainedCount=32, sourceRevision=Environment.GetEnvironmentVariable("XEMELE_FACETS_REVISION"), assemblySha256=Hash(typeof(XmlFacetEvaluator).Assembly.Location), probeSha256=Hash(typeof(FacetFixture).Assembly.Location), rows }, new JsonSerializerOptions { WriteIndented=true }));
+Console.WriteLine($"{mode}: 17 consumed routes; 32 warm/64 samples; counters {(measure ? "enabled":"disabled")}");
+void Save(string status,int failedRoute) => File.WriteAllText(output,JsonSerializer.Serialize(new { status, mode, failedRoute, coldBytes, rows },new JsonSerializerOptions { WriteIndented=true }));
+static string Hash(string path)=>Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(path)));
+
+static string InputsHash()
+{
+    // Raw UTF-16 code units preserve the intentionally unpaired surrogate route.
+    var bytes=new List<byte>();
+    foreach(string input in FacetFixture.Inputs)
+    { foreach(char c in input) {bytes.Add((byte)c);bytes.Add((byte)(c>>8));} bytes.Add(0);bytes.Add(0); }
+    return Convert.ToHexString(SHA256.HashData(bytes.ToArray()));
+}
