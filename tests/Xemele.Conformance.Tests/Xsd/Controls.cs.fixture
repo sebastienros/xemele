@@ -243,8 +243,9 @@ internal static class Controls
     }
     private sealed class FaultRead(Exception failure) : MemoryStream
     {
-        public override int Read(byte[] buffer, int offset, int count) => throw failure;
-        public override int Read(Span<byte> buffer) => throw failure;
+        public override bool CanSeek => false;
+        public override int Read(byte[] buffer, int offset, int count) { if (count == 0) return 0; throw failure; }
+        public override int Read(Span<byte> buffer) { if (buffer.IsEmpty) return 0; throw failure; }
     }
     private static void Require(bool condition, string label) { if (!condition) throw new InvalidOperationException(label); Console.WriteLine("PASS " + label); }
     private static string XmlFailure(string input, long maximum)

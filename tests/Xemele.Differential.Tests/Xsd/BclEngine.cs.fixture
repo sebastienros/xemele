@@ -123,11 +123,13 @@ internal static class BclEngine
         string module = Path.GetFileName(typeof(XmlSchemaSet).Module.FullyQualifiedName), moduleHash = Hash(typeof(XmlSchemaSet).Module.FullyQualifiedName);
         Require(ReferenceRuntime(facts, Environment.Version.ToString(), module, moduleHash), "actual pinned runtime/module hash");
         Require(!ReferenceRuntime(facts, "changed", module, moduleHash) && !ReferenceRuntime(facts, Environment.Version.ToString(), "changed", moduleHash) && !ReferenceRuntime(facts, Environment.Version.ToString(), module, "changed"), "changed runtime/module/hash rejected");
+        JsonElement? boundOriginal = null;
         foreach (var original in facts.GetProperty("cases").EnumerateArray())
         {
             var row = original.GetProperty("row"); var source = Runner.UriFor(Runner.Documents(row).Single());
             using var input = File.OpenRead(Runner.PathFor(source));
             var binding = BindReferenceInput(row, input, source, ReferencePurpose); var resolver = new Resolver();
+            boundOriginal ??= binding;
             var schemas = new XmlSchemaSet { XmlResolver = resolver }; int diagnostics = 0; schemas.ValidationEventHandler += (_, _) => diagnostics++;
             using var principal = new ReadInput(input);
             using var reader = XmlReader.Create(principal, new XmlReaderSettings { DtdProcessing = DtdProcessing.Prohibit, XmlResolver = resolver, CloseInput = false, MaxCharactersInDocument = 67_108_864 }, source.AbsoluteUri);
@@ -166,7 +168,15 @@ internal static class BclEngine
             using var stream = new ThrowingInput(io); using var principal = new ReadInput(stream);
             try { using var reader = XmlReader.Create(principal); var failure = AddBoundary(new XmlSchemaSet(), reader); thrown = failure; }
             catch (Exception e) { thrown = e; }
-            Require(thrown is not null && principal.Failure is not null && (thrown is not ArgumentException argument || !ReferenceOrigin(argument, "Add")), "actual throwing stream origin rejected " + io);
+            Require(thrown is not null && stream.ReadCalls > 0 && ReferenceEquals(principal.Failure, stream.Error) && (thrown is not ArgumentException argument || !ReferenceOrigin(argument, "Add")), "actual throwing stream origin rejected " + io);
+            if (thrown is ArgumentException apiArgument)
+            {
+                Require(boundOriginal is not null, "known original binding available for stream-origin negative");
+                var rejected = ApiFailure(apiArgument, "Add", boundOriginal, new Resolver());
+                Require(rejected.Outcome == "harness-exception" && Runner.Oracle("invalid", rejected.Outcome, "schema") == false, "FINAL API boundary rejects actual caller-stream origin despite known21 binding " + io);
+            }
+            var finalStream = Infrastructure(principal.Failure!, []);
+            Require(finalStream.Outcome == "harness-exception" && Runner.Oracle("invalid", finalStream.Outcome, "schema") == false, "FINAL production sticky stream observation; original false " + io);
             var resolver = new Resolver { ControlAcquisition = _ => throw (io ? (Exception)new IOException("control resolver") : new ArgumentException("control resolver", "name")) };
             var schemas = new XmlSchemaSet { XmlResolver = resolver }; schemas.ValidationEventHandler += (_, _) => { };
             using var include = XmlReader.Create(new StringReader("<xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema'><xs:include schemaLocation='" + Runner.Origin + "control.xsd'/></xs:schema>"));
@@ -213,9 +223,13 @@ internal static class BclEngine
     private static void CallerEmptyName() => XmlConvert.VerifyNCName("");
     private sealed class ThrowingInput(bool io) : MemoryStream
     {
-        private Exception Failure() => io ? new IOException("control stream") : new ArgumentException("control stream", "name");
-        public override int Read(byte[] buffer, int offset, int count) => throw Failure();
-        public override int Read(Span<byte> buffer) => throw Failure();
+        internal readonly Exception Error = io ? new IOException("control stream") : new ArgumentException("control stream", "name");
+        internal int ReadCalls;
+        // XmlReader sizes seekable buffers from Length; an empty seekable stream
+        // can avoid the intended read fault. Force the actual streaming path.
+        public override bool CanSeek => false;
+        public override int Read(byte[] buffer, int offset, int count) { if (count == 0) return 0; ReadCalls++; throw Error; }
+        public override int Read(Span<byte> buffer) { if (buffer.IsEmpty) return 0; ReadCalls++; throw Error; }
     }
     // Preserve a swallowed/wrapped read failure as infrastructure; never give it INVALID credit.
     internal sealed class ReadInput(Stream source, Action<Exception>? onFailure = null, bool closeSource = false) : Stream

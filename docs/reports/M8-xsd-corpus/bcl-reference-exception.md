@@ -1,9 +1,11 @@
 # BCL reference exception source handoff
 
 The source payload is identified by `campaign-source-identities.json`. This is a
-SOURCE-only change. All new native and reporting controls are UNRUN; no build,
-focused repro, campaign, runtime repair, or new original outcome was executed by
-this worker. The task remains `in_progress`, A1/A3 passed and A2 failed.
+SOURCE-only correction. Corrected throwing-stream controls, auxiliary final-row
+controls and reporting tests remain UNRUN. Root's partial preparation4 on the
+previous source is recorded below; no build, focused repro, campaign, runtime
+repair, or official original outcome was executed by this worker. The task remains
+`in_progress`, A1/A3 passed and A2 failed.
 
 Root reviewed63557 and found one P2 blocker: augmented schema compilation and
 hint probes ignored sticky resolver failures, while prepared/probe/instance
@@ -12,6 +14,39 @@ warnings, allowing semantic valid, schema-unavailable or preparation-limitation
 output. The exact21 binding/frame/report structure and unchanged supervisor/
 nesting/ten-command preparation were otherwise accepted. That review did not
 authorize execution; it authorized only this narrow SOURCE correction.
+
+Root subsequently gave SOURCE PASS to7990809/fdda4e0. Preparation3 failed its
+clean-source check before build because of root-created bytecode cache; root
+removed only that cache. Preparation4 on unchanged fdda/799 passed build, runtime
+controls and hint controls, then aborted optional command3 at ReferenceControls
+line169, `actual throwing stream origin rejected False`. All five owned groups
+were terminal/absent, direct children reaped and logs closed; root committed
+durable cleanup main1cfde7ee3 before inspection. Commands4..9 and the later
+auxiliary final-observation controls were UNRUN. Raw failure log remains ignored
+at `artifacts/M8-xsd-corpus/fdda4e0b5311155fba4abc198a1507e57386c399-controls-a8b7e7e903f14cbaa1d070e1a7b84d45/command-3.log`,
+SHA256 `5de38105e42b07276266ad51fbc800815806f99241b16d282ab4b54269f96978`.
+
+Read-only inspection confirms21 exact original witness/attribution records and21
+actual-stack/original-false PASS markers before the negative failure: all Add,
+runtime10.0.11, pinned module SHA and module MVID
+`66917835-a7e6-4a12-912e-df7f9f705820`. These are root-executed controls at799,
+not a successful preparation, current-source pass or complete corpus campaign.
+The historical source80 harness observations and root stopped campaign survive.
+
+Both fault helpers inherited empty seekable MemoryStreams. Current primary
+[XmlReader source](https://raw.githubusercontent.com/dotnet/runtime/main/src/libraries/System.Private.Xml/src/System/Xml/Core/XmlReader.cs)
+sizes a seekable input buffer from its Length;
+[XmlTextReaderImpl source](https://raw.githubusercontent.com/dotnet/runtime/main/src/libraries/System.Private.Xml/src/System/Xml/Core/XmlTextReaderImpl.cs)
+uses that size during stream initialization. A zero-size buffer bypassing the
+intended read is the source-based diagnosis; the failed assertion did not log
+each predicate, and no worker repro was run. The minimal correction makes only
+the two fault helpers non-seekable and respects zero-length reads. ThrowingInput
+now requires an actual nonempty read count, exact recorded fault identity,
+unknown-origin rejection, a final production sticky harness observation/original
+false, and (for a directly caught ArgumentException) rejection by ApiFailure even
+with a previously validated21 binding. Assertions are stronger, with no allowance,
+production classifier, wrapper, Runner, helper/supervisor or policy change.
+Corrected controls are UNRUN pending renewed source review and root activation.
 
 The follow-up wraps all three principals and records acquisition/read exceptions
 in a sticky per-operation resolver tracker. Augmented compilation checks the
@@ -73,9 +108,9 @@ infrastructure failures reject attribution. Missing frames due to JIT inlining
 also reject it. Exception text alone never allows a result. Current primary source
 [Preprocessor](https://raw.githubusercontent.com/dotnet/runtime/main/src/libraries/System.Private.Xml/src/System/Xml/Schema/Preprocessor.cs)
 and [XmlConvert](https://source.dot.net/System.Private.Xml/System/Xml/XmlConvert.cs.html)
-support this candidate path; they do not prove the pinned runtime's actual stack.
-The actual-stack native controls must establish that path before execution
-evidence can be accepted.
+support this path; root preparation4 supplies actual pinned-runtime frame evidence
+on799. Corrected current-source controls and complete preparation remain pending;
+that partial evidence is never an original pass or full campaign result.
 
 The new outcome is `reference-engine-exception`, a nonassessment with structured
 module/method/operation provenance in `detail`. Original `passed` stays false;
@@ -91,7 +126,9 @@ fixture/stack controls and rejects unknown origins/IDs, changed metadata/hash/
 URI/purpose/runtime, caller XmlConvert exceptions, throwing streams, throwing
 resolver callbacks and returned streams, declared missing inputs, changed catalog
 and authored metadata. Six additional reporting test methods use synthetic data
-only; they cannot substitute for actual native stack evidence. All are UNRUN.
+only; they cannot substitute for actual native stack evidence. Root preparation4
+ran21 witnesses and preceding negatives, then failed the throwing-stream control;
+the corrected stream controls, later negatives and reporting tests remain UNRUN.
 
 The proposed high-level command remains
 `PYTHONDONTWRITEBYTECODE=1 python3 docs/reports/M8-xsd-corpus/controls.py`:
