@@ -40,3 +40,14 @@ The source-only probe has five owned routes, three zero-byte primitive targets,
 cold setup/positive/retained controls, and reused bounded supervisor. See
 `allocation-plan.md`. No allocation measurement is claimed. Compiler directive
 semantics remain with the ordered XSD repair. No outside ownership requests.
+
+## Final branch handoff
+
+Root's released allocation run passed; actual rows and ownership/limits are in
+[allocations.md](allocations.md). Three primitives measured0B/op;fiveowned
+routes positive;fixture setup4864B/positive1048B/retained16documentdelta65904B.
+Both own children exited0/reaped/groupsabsent/logsclosed;448identities unchanged.
+Historical preparation/pending entries above describe those earlier stages.
+A1-A4 now pass on the branch; task is implemented and awaits root integration
+and integrated verification. Original draft failures and passing correctness
+remain recorded. Only metadata/report work occurred after RELEASE.
