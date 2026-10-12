@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "id": "M8-xsd-wildcard-composition",
+  "milestone": "M8",
+  "title": "Reject non-expressible XSD wildcard composition before information loss",
+  "kind": "feature",
+  "status": "in_progress",
+  "owner": "M8 coordinator bounded shared repair",
+  "branch": "codex/m8-xsd-wildcard-composition",
+  "base_revision": "adf80b989e0389cac3972a3eba974fc8bf911700",
+  "integration_revision": null,
+  "depends_on": [
+    "M8-schema-resource-base"
+  ],
+  "goals": [
+    "G14"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/schemas.md"
+  ],
+  "owns": [
+    "src/Xemele/Validation/Xsd/Compilation/Compiler.cs",
+    "tests/Xemele.Tests/M8-xsd-wildcard-composition/",
+    "docs/reports/M8-xsd-wildcard-composition/"
+  ],
+  "api_or_output": "Bounded private XSD namespace constraint composition; unchanged frozen/public models",
+  "acceptance": [
+    {
+      "id": "M8-xsd-wildcard-composition-A1",
+      "description": "Reject each non-expressible XSD1.0 wildcard union/intersection at the composing source location before discarding intermediate operands; retain correct namespace/processContents semantics for legal neighbors.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M8-xsd-wildcard-composition-A2",
+      "description": "Charge and poll every private composition traversal and reserve components before retained growth. Prove intermediate/direct rejection, legal union/intersection, character and redirected byte locations, quota/cancellation and existing compiler/API/XML-only compatibility.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M8-xsd-wildcard-composition-A3",
+      "description": "Review and test integrated repair; preserve previous compiler evidence, record allocation ownership and required measured evidence without optimization claims, then unblock content task through verified dependency.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "Claimed bounded shared compiler repair after actual mandatory content negative failure and accepted repair design.",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}
