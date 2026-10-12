@@ -1,0 +1,56 @@
+{
+  "result": "FAILED",
+  "phase": "fourth actual correctness attempt; certificate source",
+  "runtimeSourceCommit": "cc01af29cefd886e4f054c4448aa6c8c65653999",
+  "harnessSourceCommit": "1f3a7bde23d999dbcd6443df5653ad448f41c65e",
+  "reviewSha256": "2b828ced1967902ea0c7e82b764c346a190309a39a6eddbd90720d0341a6b89b",
+  "restoreBuild": {
+    "restorePassed": 1,
+    "testBuildFailed": 1
+  },
+  "diagnostics": [
+    {
+      "code": "CS1955",
+      "kind": "compiler",
+      "severity": "error",
+      "text": "/Users/sebastienros/.codex/worktrees/4a93/xemele/tests/Xemele.Tests/M8-xsd-missing-components/CompletenessCertificateTests.cs(117,34): error CS1955: Non-invocable member 'CancellationTokenSource.IsCancellationRequested' cannot be used like a method. [/Users/sebastienros/.codex/worktrees/4a93/xemele/tests/Xemele.Tests/Xemele.Tests.csproj]",
+      "textTruncated": false
+    },
+    {
+      "code": "xUnit2031",
+      "kind": "compiler",
+      "severity": "error",
+      "text": "/Users/sebastienros/.codex/worktrees/4a93/xemele/tests/Xemele.Tests/M8-xsd-import-visibility/VisibilityTests.cs(91,25): error xUnit2031: Do not use a Where clause to filter before calling Assert.Single. Use the overload of Assert.Single that accepts a filtering function. (https://xunit.net/xunit.analyzers/rules/xUnit2031) [/Users/sebastienros/.codex/worktrees/4a93/xemele/tests/Xemele.Tests/Xemele.Tests.csproj]",
+      "textTruncated": false
+    }
+  ],
+  "testsApiConsumersPreparationCounters": "UNRUN; test assembly build failed before execution",
+  "allOwnedGroupsAbsent": true,
+  "ownedGroups": 3,
+  "rawRemoved": 66,
+  "activePreparedOutputs": false,
+  "receipts": {
+    "owner.json": {
+      "path": "/Users/sebastienros/.codex/worktrees/4a93/xemele/artifacts/M8-xsd-missing-components/root-check-8c534b7d9ce644f7b0b7a1243a230993/owner.json",
+      "sha256": "b6c8e8f6c813e06521e74fe51f026d1c20c9ac571f3f746e98e51a1c306e09f0"
+    },
+    "family-cleanup.json": {
+      "path": "/Users/sebastienros/.codex/worktrees/4a93/xemele/artifacts/M8-xsd-missing-components/root-check-8c534b7d9ce644f7b0b7a1243a230993/family-cleanup.json",
+      "sha256": "057ff875c2b17da4d2b853c58f894893df599da36743eb8678c85aa9a7e5d611"
+    },
+    "terminal-cleanup.json": {
+      "path": "/Users/sebastienros/.codex/worktrees/4a93/xemele/artifacts/M8-xsd-missing-components/root-check-8c534b7d9ce644f7b0b7a1243a230993/terminal-cleanup.json",
+      "sha256": "a81d28f171e68d5053d863727f6c1fad559ea4647bb6859556eaacdbf1044a3b"
+    },
+    "terminal-outcome.json": {
+      "path": "/Users/sebastienros/.codex/worktrees/4a93/xemele/artifacts/M8-xsd-missing-components/root-check-8c534b7d9ce644f7b0b7a1243a230993/terminal-outcome.json",
+      "sha256": "4939e7fd2ea798c682ea9c4fbbcbaef679f93c27d21b42de9f08a349d19f8e18"
+    },
+    "failure-diagnostics.json": {
+      "path": "/Users/sebastienros/.codex/worktrees/4a93/xemele/artifacts/M8-xsd-missing-components/root-check-8c534b7d9ce644f7b0b7a1243a230993/failure-diagnostics.json",
+      "sha256": "2833d18022229021ae1b29506e92514e90032c2ae1261d97a81c828eaa0762c2"
+    }
+  },
+  "followup": "Source-only two-line compile correction: cancellation property invocation removed and Assert.Single filtering overload replaces Where. Runtime semantics/test identities/cardinalities unchanged; refreeze before fresh controls/check.",
+  "credit": "Prior15controls actual pass historical; failed check earns no task/API/corpus/gate/counter credit; original failures retained."
+}
