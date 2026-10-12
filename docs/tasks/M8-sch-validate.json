@@ -36,7 +36,8 @@
       "description": "Evaluate selected phases/rules and produce structured assertions/reports/diagnostics with source locations.",
       "status": "passed",
       "evidence": [
-        "source-checks"
+        "source-checks",
+        "closure-review"
       ]
     },
     {
@@ -92,11 +93,20 @@
       "result": "passed",
       "summary": "Elevated preparation and verification passed215 identities, actual process-inspection permissions, countersDisabled=true/rawInspected=false. SHA256379c2d73c7333031792405f14403b11035806be6175b418ddebc862127bf75be; maximum30s (20work+10cleanup). No active measurement grant.",
       "artifact": "docs/reports/M8-sch-validate/preparation.json"
+    },
+    {
+      "id": "closure-review",
+      "kind": "review",
+      "revision": "43c6ab4cc789cc1e400dfdb2cea74e3851f681d7",
+      "command": "Coordinator-relayed bounded closure review; no test command executed",
+      "result": "passed",
+      "summary": "Coordinator accepted the exact logical-text location fix with no remaining finding; both context/subject M4 round-trips and per-node charges accepted. Local read-only SHA256 confirmation matches relayed evaluator01532f6938c72704c0476f858b7420397d98545723dbb3c9b3dd886f9696ef2d and location-tests c40aa56f8cee484955d1d96f82ef108282a8a74f8c5e0da76636ac3f7cc94315. Review evidence, not a fresh test run.",
+      "artifact": "docs/reports/M8-sch-validate/README.md"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Runtime and exact API delivered with focused reviewer-requested logical-text location correction.454 tests and both consumers pass; allocation probe prepared/counter-disabled, no measurement. State stays in_progress until allocation evidence and coordinator acceptance.",
+    "summary": "Coordinator closure review accepted43c6ab4 with no remaining finding.454 tests and both consumers passed before park; allocation probe prepared/counter-disabled, no measurement. State stays in_progress pending fresh allocation grant/evidence and coordinator integration.",
     "checks": [
       "python3 docs/reports/M8-sch-validate/checks.py:454 tests, frozen9/compiler154/public1400, both consumers, planning177 and whitespace passed at43c6ab4c",
       "Prebuilt probe control:10 routes passed with counters disabled;215 manifest identities verified"
