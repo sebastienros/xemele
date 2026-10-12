@@ -46,11 +46,24 @@
       "model": "gpt-6.1-sol",
       "thinking": "high",
       "setup": "Full frozen facet/composition/independent tests/accounting/measurement brief delivered"
+    },
+    {
+      "task_id": "M8-sch-report",
+      "branch": "codex/m8-sch-report",
+      "base_revision": "c61f803e18becdf49fe068e8ee91f74628ed0d83",
+      "stage": "Claimed on main; awaiting isolated worker creation/setup verification",
+      "acceptance_before_dispatch": {
+        "mandatory": "Exact frozen SchematronReport SerializeSvrl/SaveSvrl and detached keyed SVRL XML profile; no live document/schema requirement.",
+        "integration": "Golden independent output, explicit key joins with collisions and zero findings, sorted namespaces/null-vs-empty optional metadata, XML escaping/Unicode/UTF8 without BOM/declaration, stream ownership/failure/cancellation, APIs/XML-only and applicable owned output allocation evidence.",
+        "review": "Independent read-only serializer/order/ownership/encoding/cancellation review; actual combined checks after branch handback."
+      },
+      "model": "gpt-6.1-sol",
+      "thinking": "high"
     }
   ],
   "integration_queue": [],
   "next_actions": [
-    "Finish SCH/effective-content terminal cleanup, then claim next ready M8 task within three-worker cap.",
+    "Confirm isolated M8-sch-report checkout/claim, then activate within three-worker cap.",
     "Content worker consumes verified main and reruns required checks/measurement preparation.",
     "Facets correct five bounded review findings; re-review/check before any measurement.",
     "Complete M8 gate and terminal writer transfer only; no M9."
