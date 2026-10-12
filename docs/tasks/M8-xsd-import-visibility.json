@@ -4,11 +4,11 @@
   "milestone": "M8",
   "title": "Correct XSD document-local imports and annotation URI syntax",
   "kind": "feature",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M8 coordinator / assigned isolated import-visibility worker",
   "branch": "codex/m8-xsd-import-visibility",
   "base_revision": "94af9ac36b550e763d92b9d2ab9b19195f8346a2",
-  "integration_revision": null,
+  "integration_revision": "95a48ffa3c0986117990642f4ed7129f24540563",
   "depends_on": [
     "M8-xsd-optional-composition"
   ],
@@ -37,7 +37,8 @@
       "status": "passed",
       "evidence": [
         "root-check-3",
-        "root-allocation-1"
+        "root-allocation-1",
+        "integrated-check-1"
       ]
     },
     {
@@ -46,7 +47,8 @@
       "status": "passed",
       "evidence": [
         "root-check-3",
-        "root-allocation-1"
+        "root-allocation-1",
+        "integrated-check-1"
       ]
     },
     {
@@ -57,7 +59,8 @@
         "root-controls-3",
         "root-check-3",
         "root-preparation-1",
-        "root-allocation-1"
+        "root-allocation-1",
+        "integrated-check-1"
       ]
     },
     {
@@ -66,7 +69,8 @@
       "status": "passed",
       "evidence": [
         "root-check-3",
-        "root-allocation-1"
+        "root-allocation-1",
+        "integrated-check-1"
       ]
     }
   ],
@@ -77,7 +81,8 @@
     "benchmarks/Xemele.Benchmarks/M8-xsd-import-visibility/: unchanged8cb runtime/probe source; root actual24-route disabled and allocation counter runs passed; owned cold/first/warm/retained evidence recorded, BDN/timing remains unrun",
     "docs/reports/M8-xsd-import-visibility/{family,supervision,nested_ownership,launch,bindings,lifecycle-check,diagnostics,check,prepare,measure,discard}.py: reviewed finite ancestor ownership, exact source/binary/result identity binding, bounded failure diagnostics, terminal raw/generated deletion and single-use preparation; root11 controls passed",
     "docs/reports/M8-xsd-import-visibility/harness-source.json:600 source identities/53 worker API fragments at8192f72b, manifest SHA2561ae4f2a7057f1648cdefe948a6a541b5915a69d23725fd1f84b2b7addccf10fd; root will bind integrated54-fragment membership without1430-member runtime API expansion",
-    "docs/reports/M8-xsd-import-visibility/{standards,allocation-design,harness-handoff}.md and historical source-only records: source/review evolution and constraints; current actual outcomes are recorded separately in this task and root orchestration receipts"
+    "docs/reports/M8-xsd-import-visibility/{standards,allocation-design,harness-handoff}.md and historical source-only records: source/review evolution and constraints; current actual outcomes are recorded separately in this task and root orchestration receipts",
+    "Integrated harness-source.json at95a48ffa3:601 identities/54 API fragments, unchanged1430 public members; manifest SHA256 f9ee117ee6fbe4326c7260668ecf67a90d370d185d782acb130dc577c07601a8."
   ],
   "evidence": [
     {
@@ -187,24 +192,31 @@
       "result": "passed",
       "summary": "Root-dispatched bounded actual allocations PASS at8192f72b with runtime/probe source frozen8cb31895: .NET10.0.11 Arm64;24 routes x32=768 warm operations,1012 consumed,28 retained results across7 categories. Cold fixture initialization598880B; positive allocation control1048B. Owned compile/result/diagnostic first-run and warm allocations recorded; aggregate warm total114754928B, route mean range4488..442233.75B/operation. Seven retained-heap category deltas recorded, including -8632B; these are GC observations, no zero-allocation, leak bound, timing or isolation guarantee. Inner120s total/100s work/20s cleanup reserve, enclosing150s. Summary SHA256 b4d465bb417559e236a99fb6533011e672cf7939baa5948dc31213c54fc1c1e9; raw result hash b34dab75ff9e57790e893f005930a8246f18402295fc5b721281771148405c50; raw data deleted. Actual disabled command: '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 /Users/sebastienros/.codex/worktrees/37b6/xemele/artifacts/M8-xsd-import-visibility/root-prepare-7c9176be3d4f4dec97871cb4782c16c5/preparation/active/bin/Xemele.Benchmarks.dll --control /Users/sebastienros/.codex/worktrees/37b6/xemele/artifacts/M8-xsd-import-visibility/measurement-aeeb82b0a0194561a91ef666efa69893/control.json. Actual counter command: '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 /Users/sebastienros/.codex/worktrees/37b6/xemele/artifacts/M8-xsd-import-visibility/root-prepare-7c9176be3d4f4dec97871cb4782c16c5/preparation/active/bin/Xemele.Benchmarks.dll --measure /Users/sebastienros/.codex/worktrees/37b6/xemele/artifacts/M8-xsd-import-visibility/measurement-aeeb82b0a0194561a91ef666efa69893/allocations.json. Whole root cleanup SHA256 1a9f7dee50b8192dddfe68ee2a8138810699c4cbdfdf1901016dfa40dea869ca; terminal SHA256 09f05e267d05f0c92dc300f98137bae8081c40d78f528d302741cee0900f3f0d;52 raw/binary files removed, all owned groups absent/reaped/logs closed, preparation consumed once. Exact root-owned measure child argv appears in command. BDN/timing execution remains unrun.",
       "artifact": "docs/orchestration/M8-xsd-import-visibility-allocation-1.json"
+    },
+    {
+      "id": "integrated-check-1",
+      "kind": "integration",
+      "revision": "95a48ffa3c0986117990642f4ed7129f24540563",
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 docs/reports/M8-xsd-import-visibility/launch.py --released 1285381900982e232ab529a926498e58c38673ce1031836774419a39f960daf1 check",
+      "result": "passed",
+      "summary": "PASSED 1868 affected rows including91 owned;42 resolver+77 datatype;8 frozen/public1430/additive46 APIs;54 bound API fragments;normal/true XML-only consumers;24-route disabled probe;planning/diff; all38 inner commands exit0; 574 transient raw/binary files deleted after all owned groups absent/reaped/logs closed. Current semantic SHA256 be246181629b81d2bfa1cb466c292f0374928a3b61286f7bad77873fe7260832. Prior valid root-allocation-1 remains relevant: runtime compiler/probe bytes unchanged, no counters repeated. Integrated controls11 passed separately. Historical failures unchanged.",
+      "artifact": "docs/orchestration/M8-xsd-import-visibility-integration-check-1.json"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Implemented A1-A4 on isolated codex/m8-xsd-import-visibility at tested source8192f72bfa5d3cb35fd7620a22d9d8f287a856be; criteria passed branch checks. Root actual controls11, fresh combined correctness1868/owned91, resolver42/datatype77, frozen/public1430/additive46, normal/true XML-only consumers and24-route disabled/actual allocations pass. Runtime/compiler/probe source remains8cb31895. No worker execution. Integration revision remains null; coordinator integration/current54 API binding and combined verification required before verified.",
+    "summary": "Integrated and verified import/annotation repair at95a48ffa3 with actual integrated controls11 and38-command correctness/consumer/API run;1868 affected/91 owned rows pass. Prior actual root allocations retained for unchanged runtime/probe. Original INVALID expectations and historical failures preserved.",
     "checks": [
       "Root controls3 PASS11 on exact reviewed8192f72b;239 raw scratch/log files deleted after allgroups absent/reaped/logclosed.",
       "Root check3 PASS1868 affected/91 owned +42resolver +77datatypes;38 inner exits0;8 frozen/public1430/additive46 APIs, normal/trueXML-only consumers,24-route disabled control, planning/diff;574 transient files removed.",
       "Historical check1 failed build without preserved cause; check2 failed xUnit1051. Both restored successfully, stopped before tests/counters, verified family absence and deleted66rawfiles each. They remain separate failed evidence, not relabelled as passes.",
       "Root preparation1 fresh offline restore/build/disabled control passed;203 binaries/812 identities; consumed once by root allocation1; active output removed and manifest not reusable.",
       "Root allocation1 PASS24routes/768warmoperations/1012consumed/28retained/seven categories, positive1048B/cold598880B; summarySHA256 b4d465bb417559e236a99fb6533011e672cf7939baa5948dc31213c54fc1c1e9;52 raw/binary files deleted after verified cleanup. Actual allocation observations only; no timing/isolation/zero-allocation claim.",
-      "Worker metadata-only update: planning validation197 and git diff --check passed. No runtime/harness/manifest/test/probe changes and no worker builds/tests/counters or allocation rerun."
+      "Worker metadata-only update: planning validation197 and git diff --check passed. No runtime/harness/manifest/test/probe changes and no worker builds/tests/counters or allocation rerun.",
+      "PASSED 1868 affected rows including91 owned;42 resolver+77 datatype;8 frozen/public1430/additive46 APIs;54 bound API fragments;normal/true XML-only consumers;24-route disabled probe;planning/diff; all38 inner commands exit0; 574 transient raw/binary files deleted after all owned groups absent/reaped/logs closed. Current semantic SHA256 be246181629b81d2bfa1cb466c292f0374928a3b61286f7bad77873fe7260832. Prior valid root-allocation-1 remains relevant: runtime compiler/probe bytes unchanged, no counters repeated. Integrated controls11 passed separately. Historical failures unchanged."
     ],
     "remaining": [
-      "Coordinator integrates reviewed branch and records full integration revision, binds current main54 API-fragment membership preserving1430runtime members, independently reviews this metadata-only binding, and runs relevant current combined correctness/API/consumer checks before setting verified.",
-      "Preserve root allocation1 evidence without rerunning valid counters if runtime/probe bytes remain unchanged; reassess relevance if executable runtime/probe payload changes. Generated binaries/raw results are deleted; terminal summaries document earlier observations and cannot authorize new measurement.",
-      "Preserve original INVALID expectations and earlier compile-valid/ResourceDenied observations. BDN/timing remain unrun and no timing, isolation, zero-allocation or exact retained-memory bound is claimed.",
-      "Root alone controls execution and integration. Worker holds all source/task/manifest/harness/runtime/probe writes and execution after this metadata commit."
+      "BDN/timing unrun; no timing/isolation or zero-allocation claim. Worker terminal cleanup inventory remains coordinator follow-up."
     ],
     "requests": []
   }
