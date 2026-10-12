@@ -3,7 +3,7 @@ import hashlib, json, os, signal, subprocess, sys, time
 from pathlib import Path
 root = Path(__file__).resolve().parents[3]
 net = '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet'
-out = root / 'artifacts/M8-xsd-content/measurement'
+out = root / 'artifacts/M8-xsd-content/measurement-2'
 manifest_path = root / 'docs/reports/M8-xsd-content/preparation.json'
 commands = [
  [net, '--fx-version', '10.0.11', str(root / 'benchmarks/Xemele.Benchmarks/M8-xsd-content/bin/probe/net10.0/Xemele.Benchmarks.dll'), '--measure', str(out / 'allocations.json')],

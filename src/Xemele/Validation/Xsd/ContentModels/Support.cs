@@ -30,8 +30,9 @@ internal static class ContentNamespaces
     internal static bool Allows(XsdWildcard wildcard, string ns, ISchemaOperation op, XmlLocation at)
     {
         bool found = false;
-        foreach (string item in wildcard.Namespaces)
-        { ContentWork.Tick(op, at); if (StringComparer.Ordinal.Equals(item, ns)) { found = true; break; } }
+        var namespaces = wildcard.Namespaces;
+        for (int i = 0; i < namespaces.Count; i++)
+        { ContentWork.Tick(op, at); if (StringComparer.Ordinal.Equals(namespaces[i], ns)) { found = true; break; } }
         return wildcard.Negated != found;
     }
     internal static bool SetSubset(XsdWildcard a, XsdWildcard b, ISchemaOperation op, XmlLocation at)

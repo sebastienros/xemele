@@ -18,6 +18,7 @@ effective_empty=[t for t in tests.iter('test') if 'EffectiveEmptyExtensionInheri
 assert len(effective_empty)==2 and all(t.attrib['result']=='Pass' for t in effective_empty), 'Both corrected effective-empty mapping positives must pass before preparation.'
 control=json.loads((root/'artifacts/M8-xsd-content/control.json').read_text())
 assert control['mode']=='--control' and control['runtime']=='.NET 10.0.11' and len(control['rows'])==10
+assert control['status']=='passed' and control['failure'] is None and control['failedRoute'] is None
 assert all(row['operations']==64 and row['bytes']==0 and row['distribution']==[0]*64 for row in control['rows'])
 assert all(control[key]==0 for key in ['coldSetupBytes','positiveBytes','retainedBefore','retainedAfterPrograms','retainedAfterCursors'])
 # These zeros explicitly verify disabled control instrumentation; they are NOT allocation evidence.
