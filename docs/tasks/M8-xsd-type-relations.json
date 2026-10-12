@@ -11,7 +11,8 @@
   "integration_revision": null,
   "depends_on": [
     "M8-xsd-recursive-components",
-    "M8-xsd-fixed-restriction"
+    "M8-xsd-fixed-restriction",
+    "M8-xsd-content"
   ],
   "goals": [
     "G14",
@@ -29,7 +30,8 @@
     "benchmarks/Xemele.Benchmarks/M8-xsd-type-relations/",
     "docs/api/M8-xsd-type-relations.txt",
     "samples/M8-xsd-type-relations/",
-    "docs/reports/M8-xsd-type-relations/"
+    "docs/reports/M8-xsd-type-relations/",
+    "tests/Xemele.Tests/M8-xsd-content/DerivationTests.cs"
   ],
   "api_or_output": "Correct existing XSD1.0 component behavior without public or frozen API changes",
   "acceptance": [
@@ -68,7 +70,7 @@
   "evidence": [],
   "blockers": [],
   "handoff": {
-    "summary": "Ordered repair planned from unchanged original corpus witnesses and independent source/Second Edition review. Not claimed or implemented; no unverified peer dependency consumption. Pre-claim ownership review found independent runtime SubstitutionType follows only BaseType; exact ContentModels/Compiler.cs ownership and verified fixed-restriction dependency added before implementation.",
+    "summary": "Ordered repair planned from unchanged original corpus witnesses and independent source/Second Edition review. Not claimed or implemented; no unverified peer dependency consumption. Pre-claim ownership review found independent runtime SubstitutionType follows only BaseType; exact ContentModels/Compiler.cs ownership and verified fixed-restriction dependency added before implementation. Exact prior DerivationTests.cs ownership transferred for two stale A3 assumptions: unmentioned required base use is inherited, and incompatible extension now rejects during schema compilation. Preserve prior observed failures; do not relax semantic rejection.",
     "checks": [],
     "remaining": [],
     "requests": []
