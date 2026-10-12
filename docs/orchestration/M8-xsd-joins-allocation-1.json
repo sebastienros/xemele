@@ -1,0 +1,107 @@
+{
+  "scope": "M8-xsd-joins-233aa3cf-0c54888b-alloc-only",
+  "status": "PARK requested; no grant or launch",
+  "maximum_seconds": 120,
+  "latest_start_rule": "Actual durable grant UTC +60 seconds",
+  "absolute_expiry_rule": "Actual durable grant UTC +120 seconds",
+  "root_only_launcher": true,
+  "sequence": [
+    {
+      "task": "M8-xsd-publication-checkpoints",
+      "worktree": "/Users/sebastienros/.codex/worktrees/f74e/xemele",
+      "evidence_revision": "1c140ea28f29c89860aeb0ac10f5d4671e440b9f",
+      "source_revision": "d5f1174213c74d2bf5815e3ad683b7527d28b760",
+      "manifest_sha256": "a9cb5fd88f5ad32780c22066c4993511950de73f23f1df8c45baffe91be8f88f",
+      "supervisor_sha256": "27974339332b8108d6a248bc0fa1dfaeb8e8f5501bf4e429c783d6cab54a3a9e",
+      "identity_count": 444,
+      "maximum_seconds": 30,
+      "work_seconds": 20,
+      "cleanup_seconds": 10,
+      "preflight": {
+        "command": 0,
+        "pid": 51492,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "commands": [
+        [
+          "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+          "--fx-version",
+          "10.0.11",
+          "/Users/sebastienros/.codex/worktrees/f74e/xemele/benchmarks/Xemele.Benchmarks/M8-xsd-publication-checkpoints/bin/probe/net10.0/Xemele.Benchmarks.dll",
+          "--control",
+          "/Users/sebastienros/.codex/worktrees/f74e/xemele/artifacts/M8-xsd-publication-checkpoints/measurement-1/control.json"
+        ],
+        [
+          "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+          "--fx-version",
+          "10.0.11",
+          "/Users/sebastienros/.codex/worktrees/f74e/xemele/benchmarks/Xemele.Benchmarks/M8-xsd-publication-checkpoints/bin/probe/net10.0/Xemele.Benchmarks.dll",
+          "--measure",
+          "/Users/sebastienros/.codex/worktrees/f74e/xemele/artifacts/M8-xsd-publication-checkpoints/measurement-1/allocations.json"
+        ]
+      ],
+      "root_verify_only": "Passed all identities and ps permission;supervise/members/kill_group AST matches verified core supervisor."
+    },
+    {
+      "task": "M8-xsd-fixed-restriction",
+      "worktree": "/Users/sebastienros/.codex/worktrees/3b7e/xemele",
+      "evidence_revision": "cbaa012e3789b7c07e56b6dd9b804b9c214513da",
+      "source_revision": "a68d7330fef65d4c72353cd189f5673d375944ff",
+      "manifest_sha256": "eda25ac70e83beb757379d7ad05b17b40dbcbb84fcf6d77c4a960a78b8d01c98",
+      "supervisor_sha256": "3dd5f753e20aee0244e926b654509511738392eb8122835909a25625472a3ffb",
+      "identity_count": 442,
+      "maximum_seconds": 60,
+      "work_seconds": 50,
+      "cleanup_seconds": 10,
+      "preflight": {
+        "command": 0,
+        "pid": 51180,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      "commands": [
+        [
+          "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+          "--fx-version",
+          "10.0.11",
+          "/Users/sebastienros/.codex/worktrees/3b7e/xemele/benchmarks/Xemele.Benchmarks/M8-xsd-fixed-restriction/bin/probe/net10.0/Xemele.Benchmarks.dll",
+          "--control",
+          "/Users/sebastienros/.codex/worktrees/3b7e/xemele/artifacts/M8-xsd-fixed-restriction/measurement-1/control.json"
+        ],
+        [
+          "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+          "--fx-version",
+          "10.0.11",
+          "/Users/sebastienros/.codex/worktrees/3b7e/xemele/benchmarks/Xemele.Benchmarks/M8-xsd-fixed-restriction/bin/probe/net10.0/Xemele.Benchmarks.dll",
+          "--measure",
+          "/Users/sebastienros/.codex/worktrees/3b7e/xemele/artifacts/M8-xsd-fixed-restriction/measurement-1/allocations.json"
+        ]
+      ],
+      "root_verify_only": "Passed all identities and ps permission;supervise/members/kill_group AST matches verified core supervisor."
+    }
+  ],
+  "constraints": "Serial four prebuilt children only; no builds/tests/BDN/timing/newactors/frozeninputwrites/rawinspection/retries/extensions. Stopfirstfailure, children reaped/groups absent/logs closed, immediate durable RELEASE before raw.",
+  "fresh_acks": {},
+  "pending_acks": [
+    "main",
+    "facade",
+    "publication",
+    "fixed",
+    "gregs5"
+  ],
+  "reviewers": "All three original fresh scope ACK received; exact text retained before grant.",
+  "retired_actor": {
+    "chat": "01a12d64-81ae-79e3-8ba2-b88110af6fdb",
+    "evidence": "send_message tool returned archived; read_thread latest turn01a12e67-70d1-7601-8479-3217184f631c completed with nojobs/researchcomplete. Excluded; no unarchive."
+  },
+  "root_ack": "Own integrated970checks and two verify-only calls completed. No running jobs/sessions/cells. Root holds work except coordination until release."
+}
