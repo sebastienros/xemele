@@ -120,7 +120,7 @@ latest_start = datetime.fromisoformat(sys.argv[3].replace('Z','+00:00'))
 expiry = datetime.fromisoformat(sys.argv[4].replace('Z','+00:00'))
 if expiry.tzinfo is None or latest_start.tzinfo is None or now > latest_start or expiry <= now:
  raise SystemExit('Lease start deadline/expiry refused; no child or measurement started.')
-remaining = min(120, (expiry-now).total_seconds())
+remaining = min(30, (expiry-now).total_seconds())
 if remaining <= 10: raise SystemExit('Lease cleanup reserve exhausted; no child started.')
 started = time.monotonic(); hard_deadline = started + remaining; work_deadline = hard_deadline - 10
 # No retry or accidental replacement of preserved raw results.
@@ -130,7 +130,7 @@ manifest = None
 try:
  if digest(manifest_path) != sys.argv[2]: raise ValueError('Manifest differs from durable grant.')
  manifest = json.loads(manifest_path.read_text())
- if manifest['commands'] != commands or manifest['maximumSeconds'] != 120 or manifest['workSeconds'] != 110 or manifest['cleanupReserveSeconds'] != 10: raise ValueError('Command/bound mismatch.')
+ if manifest['commands'] != commands or manifest['maximumSeconds'] != 30 or manifest['workSeconds'] != 20 or manifest['cleanupReserveSeconds'] != 10: raise ValueError('Command/bound mismatch.')
  mismatches = identities(manifest)
  lifecycle['beforeMismatches'] = mismatches
  if mismatches: raise ValueError('Prepared identities changed before measurement.')

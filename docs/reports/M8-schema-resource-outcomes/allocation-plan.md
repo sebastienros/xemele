@@ -11,8 +11,9 @@ Release SDK 10.0.400/runtime 10.0.11, Arm64, tiering/server/concurrent GC disabl
 The supervisor is copied with task/project/environment substitutions only; it
 retains process-group termination, direct child reap, group absence, closed logs,
 before/after frozen SHA256 identities and durable release-before-inspection.
-Bounds remain 120 seconds total, 110 work, 10 cleanup reserve. No retries or
-throughput gate. Build/control/freeze/preflight take place outside the lease.
+Proposed lease bounds are 30 seconds total, 20 work, 10 cleanup reserve.
+Latest start is grant +60 seconds; absolute expiry is grant +90 seconds. These
+are proposal bounds only; no grant exists. No retries or throughput gate. Build/control/freeze/preflight take place outside the lease.
 
 Probe source: `benchmarks/Xemele.Benchmarks/M8-schema-resource-outcomes/`.
 Three primitive routes compare direct legacy denial with adapted denial and
