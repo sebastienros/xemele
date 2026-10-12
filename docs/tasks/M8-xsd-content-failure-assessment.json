@@ -34,20 +34,26 @@
     {
       "id": "M8-xsd-content-failure-assessment-A1",
       "description": "Reproduce with the existing verified matcher: a small content model followed by over 1024 harmless unmatched siblings exhausts Diagnostics1024. Repair must finish complete-invalid with one initial content-failure diagnostic, original source location and unchanged limits. Preserve the three actual Z034 diagnostic-limit failures as pending counted-matcher integration evidence, never count standalone witnesses as those original executions.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "focused-correctness"
+      ]
     },
     {
       "id": "M8-xsd-content-failure-assessment-A2",
       "description": "Use per-run per-frame content-fault state separate from validity. On first semantic Accept=false after polling, report content error and disregard both failure-path outputs; later children bypass only that failed cursor and continue global-declaration, xsi:type or open assessment. Do not infer local declarations, skip subtrees or filter diagnostics globally. Suppress only the failed cursor completion duplicate; successful strict wildcard and unfaulted missing-content behavior remain.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "focused-correctness"
+      ]
     },
     {
       "id": "M8-xsd-content-failure-assessment-A3",
       "description": "Prove later datatype/required attribute/fixed/content and strict-wildcard errors, independent parent faults, attribute errors not disabling matching, balanced ordered identity hooks and later key/keyref/ID/IDREF checks. Preserve ordinary independent diagnostic exhaustion, shared work/depth/token/document limits, cancellation including null caps, caller exceptions, DOM mutation detection and repeat/concurrent isolation.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "focused-correctness"
+      ]
     },
     {
       "id": "M8-xsd-content-failure-assessment-A4",
@@ -56,13 +62,53 @@
       "evidence": []
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Validation/Xsd/Evaluation/Evaluator.cs: Frame.ContentFaulted, first rejection/global recovery route, failed completion bypass",
+    "tests/Xemele.Tests/M8-xsd-content-failure-assessment/: 39 independent continuation and boundary witnesses",
+    "docs/reports/M8-xsd-content-failure-assessment/check.py: affected correctness/API/normal and XML-only checks",
+    "benchmarks/Xemele.Benchmarks/M8-xsd-content-failure-assessment/: seven owned-output probe routes; source only, unbuilt"
+  ],
+  "evidence": [
+    {
+      "id": "verified-matcher-before",
+      "kind": "check",
+      "revision": "279403dad8c229947a802bd70abd47582736fcde",
+      "command": "Pinned .NET10.0.11 Release test assembly -namespace Xemele.Tests.M8XsdContentFailureAssessment -parallelMode none -result-xml artifacts/M8-xsd-content-failure-assessment/baseline-1024.xml",
+      "result": "failed",
+      "summary": "Two independent 1025/2048 unmatched-sibling witnesses each incomplete with 1024 diagnostics and terminal VALIDATION.Limit: Validation diagnostic limit exceeded. Existing verified matcher only. This is not any actual Z034 execution. Prior draft default128 also failed; first build draft corrected invalid XmlLocation.ColumnNumber member.",
+      "artifact": null
+    },
+    {
+      "id": "focused-correctness",
+      "kind": "check",
+      "revision": "eb2dd42c84c560e9d4337befb629c624627e4eb9",
+      "command": "python3 docs/reports/M8-xsd-content-failure-assessment/check.py (initial driver namespace M8DatatypeValues absent); pinned assembly -namespace Xemele.Tests.M8DatatypesTextBinary -method- '*WarmBorrowed*' -parallelMode none",
+      "result": "passed",
+      "summary": "Actual 1152 affected (1113 base +39 own) +42 safe resolver +148 separate TextBinary =1342 pass; 0 fail/errors/skipped/not-run. Both independent Diagnostics1024 cases finish complete-invalid with one initial XSD.Content at original source URI/line/column. Public1417/frozen evaluator2/facade7/compiler257/identity24/content9 matched; normal+true XML-only consumers and five Release builds 0warnings/errors; planning195/diff passed. Existing fixed35 included, no later peer45 consumed. Counters/WarmBorrowed/BDN excluded. Driver now names actual TextBinary for coordinator rerun, no rerun yet claimed.",
+      "artifact": null
+    },
+    {
+      "id": "missing-focused-checks",
+      "kind": "check",
+      "revision": "0388fdd4aedf68f4f0fc368c2f53d0c3532eb00f",
+      "command": "Pinned .NET10.0.11 prebuilt Release test DLL -namespace Xemele.Tests.M8XsdSchemaSyntax -namespace Xemele.Tests.M8XsdAttributeFixed -namespace Xemele.Tests.M8Datatypes -method- '*WarmBorrowed*' -parallelMode none -result-xml artifacts/M8-xsd-content-failure-assessment/missing-namespaces.xml; Python XML assertions",
+      "result": "passed",
+      "summary": "Only missing schema-syntax33/attribute-fixed45/Datatypes77 executed:155 unique IDs,0fail/errors/skipped/not-run, runtime10.0.11. Earlier1152+42+148 retained, no repeats. EvaluatorSHA256ca44f5ca2e559cc17dcbdc1bbc06f3532f91c6c1814052d91c3445de0a1fbe53 and DLLSHA256a75f848d14f7d2c42009182d21dc81d349e4046fb2ceaf5cdb46fc89148c01fb identical before/after. Correctness cumulative1497. Probe bound proposal now30s total/20s work/10s cleanup; no preparation or counters executed.",
+      "artifact": null
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Claimed independent evaluator-only repair after root and independent contract source review; use verified existing matcher and preserve refused original Z034 outcomes until counted-matcher integrated follow-up.",
-    "checks": [],
-    "remaining": [],
+    "summary": "Evaluator-only repair implemented at runtime/test revision; source review requested. Keep in_progress pending reviewed probe preparation and fresh root-granted actual allocation.",
+    "checks": [
+      "Exact-policy baseline279403dad: two desired-oracle failures, each1024 terminaldiagnostic refusal.",
+      "Runtime/test eb2dd42c8:39own/1152affected+42resolver+148TextBinary allpass;public/frozen/normal/XMLonly/planning/diff pass. No counters.",
+      "Missing-only155uniquechecks pass at0388fdd4a; no runtime or DLL change, no repeats. Cumulative1497passed. Source-onlyprobe bounds30/20/10."
+    ],
+    "remaining": [
+      "A4 actual allocation requires source review, explicit preparation release, disabled control/freeze/preflight, fresh root lease (latest-start+60/expiry+90, 30s total/20s work/10s cleanup) and actual run.",
+      "Three actual Z034_a2/a3/b counted-matcher original diagnostic-limit failures remain pending integration evidence; independent standalone witnesses do not repair or replace their executions."
+    ],
     "requests": []
   }
 }
