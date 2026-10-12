@@ -53,7 +53,10 @@
         "profile-report-controls",
         "time-human-exception",
         "explicit-profile-review",
-        "explicit-profile-originals"
+        "explicit-profile-originals",
+        "instance-profile-source-review",
+        "instance-profile-originals",
+        "instance-profile-reproduction"
       ]
     },
     {
@@ -77,7 +80,8 @@
     "tests/Xemele.Conformance.Tests/Xsd/BoundaryTests.cs and Controls.cs.fixture: public transport/ownership/cancellation/refusal and authored-hint preparation controls.",
     "tests/corpora/xsd/{unicode-adjudication,xmlversions-adjudication,standards-dispositions,metadata-namespaces}.json: independent source facts; original oracles preserved; exact human-approved time exception remains an executed original failure.",
     "docs/reports/M8-xsd-corpus/{README,schema-triage,instance-triage,schema-ambiguity-inputs}.md: durable concise diagnostic handoffs; no raw journals committed.",
-    "tests/corpora/xsd/explicit-profile-adjudication.json and report views: coordinator frozen Second Edition surrogate-block/NOTATION adjudication, originals unchanged; four semantic schema rejects and four invalid-schema dependents separately reported."
+    "tests/corpora/xsd/explicit-profile-adjudication.json and report views: coordinator frozen Second Edition surrogate-block/NOTATION adjudication, originals unchanged; four semantic schema rejects and four invalid-schema dependents separately reported.",
+    "tests/corpora/xsd/{supplementary-category,lexical-oracle}-adjudication.json and check-instance-profiles.py: coordinator exact22 source dispositions; independent original hashes/statuses/patterns and57 Unicode16 scalar classifications; original expectations unchanged."
   ],
   "evidence": [
     {
@@ -241,6 +245,33 @@
       "result": "passed",
       "summary": "HighSurrogates/reM77/reN75 and particlesZ007 deriveINVALID; four prerequisites unassessed. No exception/runtime waiver/schema rewrite; anyURI and other standards disputes stay pending. Exacttime remains sole human-approved exception.",
       "artifact": "tests/corpora/xsd/explicit-profile-adjudication.json"
+    },
+    {
+      "id": "instance-profile-reproduction",
+      "kind": "check",
+      "revision": "e25e3a2da7537cbf820639b21a53e9d6bb66565f",
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 docs/reports/M8-xsd-corpus/check-instance-profiles.py; PYTHONDONTWRITEBYTECODE=1 python3 docs/reports/M8-xsd-corpus/test_dispositions.py",
+      "result": "passed",
+      "summary": "Independent22original expected/status/applicability records,43unchanged schema/instance hashes plusmetadata/UCD hashes,57decoded scalars across18exact patterns verified from pinned rows/ranges/missingCn. No product/BCLoracle inputs.12report controls pass; derived agreements never rewrite originals or waive refusal/unexecuted results. Lexical interpretations are explicitly coordinator review, not independently proved by this byte/category check.",
+      "artifact": "docs/reports/M8-xsd-corpus/README.md"
+    },
+    {
+      "id": "instance-profile-originals",
+      "kind": "check",
+      "revision": "e25e3a2da7537cbf820639b21a53e9d6bb66565f",
+      "command": "Bounded30s-per-child pinned prebuilt b9d runner against transient exact22instance subset; sequential Attribute, DataTypes, Regex groups",
+      "result": "passed",
+      "summary": "44exact observations:22valid schema predicates and22original failing instances. Eighteen supplementary plus time016 completeVALID, legacygMonth002/004 and attP031 completeINVALID; every original instance passed=false while separate profile agrees. Threechildrenexit0/reaped/logsclosed. Runner63eb6193 SHA/b9d compiled source on VERIFIEDattribute48 runtime unchanged; report/input sourcee25. No fullrun or new BCLexecution; prior reference differences retained.",
+      "artifact": "docs/reports/M8-xsd-corpus/README.md"
+    },
+    {
+      "id": "instance-profile-source-review",
+      "kind": "review",
+      "revision": "e25e3a2da7537cbf820639b21a53e9d6bb66565f",
+      "command": "Coordinator source adjudications copied unchanged from M8-xsd-supplementary-category-adjudication.json and M8-xsd-lexical-oracle-adjudication.json",
+      "result": "passed",
+      "summary": "Exact18queried supplemental-category cases deriveVALID using pinned Unicode16; exact4lexical outcomes independently reviewed: time016VALID(absent-timezone leap inference),gMonth002/004INVALID(6901),attP031INVALID(no wildcard). Original oracles/statuses/results/BCLdifferences retained; no blanket Unicode policy or extension of sole time-ordering exception.",
+      "artifact": "tests/corpora/xsd/supplementary-category-adjudication.json"
     }
   ],
   "blockers": [],
@@ -253,10 +284,11 @@
       "Exact malformed hinted originals1a6 compile-reject in both engines, instances unexecuted/nonpass; twochildrenexit0/reaped/logsclosed.",
       "Initial duplicate build attributes/xUnit cancellation analyzer failures and incorrect manifest/subset selector assertions retained in README history; corrected checks are distinct.",
       "Verifiedattribute main48f394cc joined; committedb9d source rebuilt0warnings0errors,41runtime+11profilecontrols pass; exact4schema rejects/fourunexecuteddeps run in twochildrenexit0/reaped/logclosed; original failures retained.",
-      "python3 tools/planning/tasks.py validate passes188tasks and git diff --check passes after own evidence/dependency updates."
+      "python3 tools/planning/tasks.py validate passes188tasks and git diff --check passes after own evidence/dependency updates.",
+      "Sourcee25: exact22supplementary/lexical instances agree separate profiles; all22original failures retained,22schema predicates valid,44observations/threechildrenexit0/reaped/logsclosed. Independent43hashes/57scalars/12reportcontrols PASS; planning188/diffcheck PASS."
     ],
     "remaining": [
-      "A2: concrete source-backed runtime repairs and standards/adaptation triage;39schema IDs/33fixtures in current schema handoff,136original instance failures in20diagnostic groups. Four surrogate/NOTATION original schema mismatches now separately agree coordinator-derived profile; dependent instance failures remain unassessed.",
+      "A2: concrete source-backed runtime repairs and standards/adaptation triage;39schema IDs/33fixtures in current schema handoff,136original instance failures in20diagnostic groups. Four surrogate/NOTATION original schema mismatches now separately agree coordinator-derived profile; dependent instance failures remain unassessed. Exact22supplementary/lexical original instance mismatches also separately agree approved profiles; original136failure report remains intact.",
       "No repeated full run until coordinator integrates/verifies applicable repairs; final integrated conformance remains pending.",
       "No-location XML namespace imports lack explicit original xml.xsd input; supplemental application-supplied profile proposal pending coordinator decision, no implicit network/builtins."
     ],

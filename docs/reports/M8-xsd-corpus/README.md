@@ -179,3 +179,13 @@ time016 VALID (explicit absent-timezone leap-second inference), legacy gMonth002
 004 INVALID, and prohibited/no-wildcard attP031 INVALID. Their original outcomes
 and reference disagreements remain visible. The original time-ordering exception
 is not extended; no new exception or blanket Unicode applicability is introduced.
+
+Focused original execution at `e25e3a2da7537cbf820639b21a53e9d6bb66565f`
+uses the unchanged prebuilt sourceb9d runner on verified attribute48 runtime.
+Exact44 observations contain22 valid standalone schema predicates and22 original
+failing instances: all eighteen supplementary cases plus time016 completeVALID,
+gMonth002/004 and attP031 completeINVALID, each agreeing with its separate derived
+profile. Original22 instance failures remain false. Three bounded30-second child
+processes (Attribute, DataTypes, Regex) exit zero, are reaped and close logs.
+No full run or additional BCL execution is represented; all earlier reference
+outcomes remain preserved.
