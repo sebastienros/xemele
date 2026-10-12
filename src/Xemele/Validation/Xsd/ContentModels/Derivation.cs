@@ -60,10 +60,12 @@ internal sealed partial class ContentCompilation
             {
                 if (!extension && !TypeDerives(declaration.Type, schema.Attributes[old.DeclarationId].Type, false))
                     ContentWork.Error(op, use.Location, "Restricted attribute type is not derived from its base attribute type.");
-                // Attribute-use restriction is explicitly a string constraint (§3.4.6).
                 string? fixedBase = old.FixedValue ?? schema.Attributes[old.DeclarationId].FixedValue;
                 string? fixedCurrent = use.FixedValue ?? declaration.FixedValue;
-                if (fixedBase is not null && fixedCurrent != fixedBase)
+                // §3.2.2/§3.5 constraints contain actual datatype values. The
+                // frozen structural lane retains its lexical-only comparison.
+                if (fixedBase is not null && (fixedCurrent is null ||
+                    (facets is null ? fixedCurrent != fixedBase : !FixedEquals(use, old))))
                     ContentWork.Error(op, use.Location, "Derivation changes an inherited fixed attribute use.");
             }
             else if (!extension && (basis.AnyAttribute is null || !ContentNamespaces.Allows(basis.AnyAttribute, declaration.Name.NamespaceUri, op, use.Location)))
@@ -349,13 +351,38 @@ internal sealed partial class ContentCompilation
     }
     private bool FixedEquals(XsdElementDeclaration derived, XsdElementDeclaration basis)
     {
-        var left = FixedValue(derived); var right = FixedValue(basis);
+        return FixedEquals(FixedValue(derived), FixedValue(basis), derived.Location);
+    }
+    private bool FixedEquals(XsdAttributeBinding derived, XsdAttributeBinding basis)
+    {
+        return FixedEquals(FixedValue(derived), FixedValue(basis), derived.Location);
+    }
+    private bool FixedEquals(XmlDatatypeValue left, XmlDatatypeValue right, XmlLocation location)
+    {
         var library = schema.Datatypes.Find(Xs)
             ?? throw new ArgumentException("Complete composition requires an executable XSD datatype library.");
-        ContentWork.Tick(op, derived.Location);
+        ContentWork.Tick(op, location);
         bool equal = library.ValueEquals(left, right, op);
-        ContentWork.Tick(op, derived.Location, 0);
+        ContentWork.Tick(op, location, 0);
         return equal;
+    }
+    private XmlDatatypeValue FixedValue(XsdAttributeBinding use)
+    {
+        var declaration = schema.Attributes[use.DeclarationId];
+        bool local = use.FixedValue is not null;
+        var location = local ? use.Location : declaration.Location;
+        ContentWork.Tick(op, location);
+        var definition = schema.Datatypes.FindType(declaration.Type)
+            ?? throw new ArgumentException("Complete composition requires the declaration's executable datatype.");
+        // A local override owns its lexical/context pair; an inherited
+        // declaration constraint keeps the declaration's authored map.
+        bool valid = facets!.TryValidate(definition,
+            (local ? use.FixedValue : declaration.FixedValue).AsSpan(),
+            local ? use.Context : declaration.Context, schema.Datatypes, op, out var value, out var error);
+        ContentWork.Tick(op, location, 0);
+        if (!valid || value is null)
+            ContentWork.Error(op, location, error?.Message ?? "Fixed constraint does not satisfy its declaration datatype.");
+        return value!;
     }
     private XmlDatatypeValue FixedValue(XsdElementDeclaration declaration)
     {

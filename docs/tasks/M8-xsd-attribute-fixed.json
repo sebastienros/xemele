@@ -4,7 +4,7 @@
   "milestone": "M8",
   "title": "Compare inherited fixed attribute constraints as typed values",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M8 coordinator / assigned isolated attribute fixed-value worker",
   "branch": "codex/m8-xsd-attribute-fixed",
   "base_revision": "f965cc948bbfcdb01f5b4bb8a40e36efb8853408",
@@ -34,29 +34,128 @@
     {
       "id": "M8-xsd-attribute-fixed-A1",
       "description": "Reproduce original accepted W3C addB183/test113911.xsd failure before repair, then compile the unchanged original schema through public XmlSchema; compare inherited fixed attribute constraints under actual datatype value equality in the existing complete-composition lane.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "original-baseline",
+        "source-review",
+        "owned-correctness"
+      ]
     },
     {
       "id": "M8-xsd-attribute-fixed-A2",
       "description": "Preserve declaration versus local-use lexical/context provenance and shared operation/facet library. Cover equivalent and unequal list/token/numeric/QName/union values, restriction/extension and fixed/default/absent behavior, budgets/cancellation, and unchanged structural-only legacy behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "source-review",
+        "owned-correctness"
+      ]
     },
     {
       "id": "M8-xsd-attribute-fixed-A3",
       "description": "Pass owned independent witnesses and affected prior facade/content/fixed-restriction/datatype tests, public1417/frozen APIs, normal and true XML-only consumers, actual bounded allocation evidence, and planning validation. Preserve original failures and exact checked revisions.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "affected-correctness",
+        "owned-correctness",
+        "bounded-allocations",
+        "final-planning"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Validation/Xsd/ContentModels/Derivation.cs:CheckAttributes, FixedEquals, FixedValue(XsdAttributeBinding)",
+    "tests/Xemele.Tests/M8-xsd-attribute-fixed/OriginalWitnessTests.cs",
+    "tests/Xemele.Tests/M8-xsd-attribute-fixed/AttributeFixedTests.cs",
+    "tests/fixtures/M8-xsd-attribute-fixed/provenance.json",
+    "docs/reports/M8-xsd-attribute-fixed/checks.json",
+    "docs/reports/M8-xsd-attribute-fixed/allocations.md"
+  ],
+  "evidence": [
+    {
+      "id": "original-baseline",
+      "kind": "check",
+      "revision": "729025dbbbd7553ee57e512800ae5d9e91d9ce7d",
+      "command": "Pinned test build then dotnet --fx-version 10.0.11 tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll -namespace Xemele.Tests.M8XsdAttributeFixed -parallelMode none -noLogo -noColor -result-xml artifacts/M8-xsd-attribute-fixed/baseline/witness-diagnostic.xml",
+      "result": "failed",
+      "summary": "Intentional pre-repair reproduction: BCL original acceptance passes; public facade original acceptance fails XSD.SchemaRestriction inherited fixed attribute. 2rows/1failed; original1765bytes SHAba5b1343bc8f015b7f5bcf951ffb64610a21fcd4741ffa3892408bb0d2a28bb6. docs/reports/M8-xsd-attribute-fixed/baseline.md.",
+      "artifact": null
+    },
+    {
+      "id": "source-review",
+      "kind": "review",
+      "revision": "78c44c3728170331c824e1de999ceb46a6dbc5f2",
+      "command": "Coordinator independent model/contract source-first review",
+      "result": "passed",
+      "summary": "Runtime approved SHA d7445ff8efb48832c47866d4235e20109090febbedaa31b6b3849d7066bb2926. R-217 same-string inconsistency caveat recorded; BCL range limitation corrected with independent mathematical oracle.",
+      "artifact": null
+    },
+    {
+      "id": "affected-correctness",
+      "kind": "check",
+      "revision": "a024304fc82de5bf9cabd4da4252f797c8a0da05",
+      "command": "python3 docs/reports/M8-xsd-attribute-fixed/check.py",
+      "result": "passed",
+      "summary": "The facade/check.py subcommand passed1110 affected +42 safe resolver rows, public1417, evaluation2/facade7/compiler257/identity24/content9, normal and trueXML-only consumer, planning186/diff. Entire parent command failed later owned witness44/45; separate failed evidence retained.",
+      "artifact": null
+    },
+    {
+      "id": "owned-check-1",
+      "kind": "check",
+      "revision": "a024304fc82de5bf9cabd4da4252f797c8a0da05",
+      "command": "python3 docs/reports/M8-xsd-attribute-fixed/check.py",
+      "result": "failed",
+      "summary": "Owned45 executed44passed1failed: authored-only decimal pattern excluded canonical1.0 at publication. Corrected test only; ignored raw preserved.",
+      "artifact": null
+    },
+    {
+      "id": "owned-check-2",
+      "kind": "check",
+      "revision": "0c37571f21f99c9d7f914cd89677d9298437c864",
+      "command": "python3 docs/reports/M8-xsd-attribute-fixed/check.py --owned-only",
+      "result": "failed",
+      "summary": "Owned45 executed44passed1failed: first correction assumed canonical1 rather than decimal1.0. Corrected test only; ignored raw preserved.",
+      "artifact": null
+    },
+    {
+      "id": "owned-correctness",
+      "kind": "check",
+      "revision": "5dfc443663069e7b25fc1817363da50a07bd1d21",
+      "command": "Pinned Release test build; python3 docs/reports/M8-xsd-attribute-fixed/check.py --owned-only",
+      "result": "passed",
+      "summary": "Owned45 and datatype77 actualrows pass; exact inventory and omission guards enforced, zero errors/failures/skips/not-run. Model316+139/planning186/diff passed. Earlier affected evidence reused only after empty src diff from a024304fc. Runtime .NET10.0.11 SDK10.0.400; buildzero warnings/errors; noallocation measurements.",
+      "artifact": null
+    },
+    {
+      "id": "bounded-allocations",
+      "kind": "check",
+      "revision": "139b9cf98a66f4a6a42f859a7a1b5360482ed6eb",
+      "command": "Coordinator root only: python3 /Users/sebastienros/.codex/worktrees/b04b/xemele/docs/reports/M8-xsd-attribute-fixed/measure.py --granted b164cb10b3ce774f1e9472eb7a89d97372ef4a438589bfd4c08597a898429238 2026-10-12T07:18:39.776454+00:00 2026-10-12T07:19:09.776454+00:00",
+      "result": "passed",
+      "summary": "Fresh12actor PARK scope M8-xsd-attribute-fixed-139b9cf9-alloc-only; grantacae324c7/durableRELEASE776fe337b. Root independent and worker post-release validation passed454identities; children90360/90362exit0/reaped/groupsabsent/logsclosed,1.65195s lifecycle. Disabledcontrol thenallocation12routes x64ops/16warm,1456consumed,16retained. Allownedroutespositive; cold1685048B/positive1048B/retainedaggregate755056B. Arm64.NET10.0.11. docs/reports/M8-xsd-attribute-fixed/allocations.md preserves bytes/op and hashes; rawignored. Nozero/throughput/x64claims or workermeasurement.",
+      "artifact": null
+    },
+    {
+      "id": "final-planning",
+      "kind": "check",
+      "revision": "0251d940fceff8a456fa19a447c9889e25373f1f",
+      "command": "python3 tools/planning/tasks.py validate; git diff --check",
+      "result": "passed",
+      "summary": "Actual final report revision validates186tasks; diffcheck clean. Runtime/check inputs unchanged from exact recorded passing correctness/allocation revisions.",
+      "artifact": null
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Ordered repair from original accepted corpus witness addB183 and independent BCL agreement. No dependency on active corpus or schema-syntax peers.",
-    "checks": [],
-    "remaining": [],
+    "summary": "Complete-composition inherited fixed attributes now use actual datatype equality with authored declaration/local-use contexts. Unchanged original accepted addB183 compiles; structural-only legacy lexical comparison and all public APIs preserved. Branch work implemented; integration verification belongs to coordinator.",
+    "checks": [
+      "Reviewed runtime78c44c372; owned45/datatype77 pass at 5dfc443663069e7b25fc1817363da50a07bd1d21",
+      "Affected1110/resolver42/public1417/frozen APIs/normal+trueXML-only consumers passed at a024304fc82de5bf9cabd4da4252f797c8a0da05; unchanged runtime reused; initial owned witness failures recorded",
+      "Planning186/diff pass",
+      "Root bounded allocation:12routes x64operations/16warm,454identities/clean lifecycle, positive/cold/retained reported; durableRELEASE776fe337b; no workermeasurement."
+    ],
+    "remaining": [
+      "Coordinator integrate and rerun relevant combined focused verification; set verified only after integration checks."
+    ],
     "requests": []
   }
 }
