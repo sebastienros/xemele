@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "id": "M8-xsd-counted-matcher",
+  "milestone": "M8",
+  "title": "Bound equivalent XSD counted matcher states",
+  "kind": "feature",
+  "status": "planned",
+  "owner": null,
+  "branch": null,
+  "base_revision": null,
+  "integration_revision": null,
+  "depends_on": [
+    "M8-xsd-facade"
+  ],
+  "goals": [
+    "G14",
+    "G18"
+  ],
+  "specs": [
+    "docs/specs/common.md",
+    "docs/specs/schemas.md"
+  ],
+  "owns": [
+    "src/Xemele/Validation/Xsd/ContentModels/Matcher.cs",
+    "tests/Xemele.Tests/M8-xsd-counted-matcher/",
+    "tests/fixtures/M8-xsd-counted-matcher/",
+    "benchmarks/Xemele.Benchmarks/M8-xsd-counted-matcher/",
+    "docs/api/M8-xsd-counted-matcher.txt",
+    "samples/M8-xsd-counted-matcher/",
+    "docs/reports/M8-xsd-counted-matcher/"
+  ],
+  "api_or_output": "Bound existing counted content matching without changing schema languages or APIs",
+  "acceptance": [
+    {
+      "id": "M8-xsd-counted-matcher-A1",
+      "description": "Reproduce and preserve the ten original corpus VALIDATION.Limit observations listed in docs/orchestration/M8-xsd-counted-matcher-triage.json. Complete their unchanged instances under the existing finite 100,000,000 shared-work/30-second corpus policy, matching original metadata including VALID Z036_b1/b2 despite their .i suffixes and BCL rejection.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M8-xsd-counted-matcher-A2",
+      "description": "Bound equivalent counted-NFA partition state growth in Matcher.cs without changing accepted languages. Extend existing same-PC/same-flags componentwise dominance only where proven safe; smaller non-nullable counters may dominate larger counters after both satisfy the particle minimum. Keep below-minimum distinctions, actual finite counters/maxima, nullable behavior and charged/polled arbitrary-precision comparisons. No compiler or frozen API changes.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M8-xsd-counted-matcher-A3",
+      "description": "Verify an independent finite-language enumeration for nested finite repeats with minima greater than one, alternatives, sequence/all and nullable neighbors; preserve the existing 63-word nullable oracle and arbitrary-precision tests. Include (a{2,3}){2,3} minimum/maximum boundaries, (a+){1,N} state/work growth, exact-work/refusal and cancellation checks. Never treat a refusal as semantic invalidity.",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "M8-xsd-counted-matcher-A4",
+      "description": "Pass relevant content/evaluator/facade checks, public1417 and frozen APIs, normal and true XML-only consumers, planning validation, and bounded actual allocation evidence prepared outside a fresh host lease. Preserve historical results and no throughput claim from correctness deadlines.",
+      "status": "pending",
+      "evidence": []
+    }
+  ],
+  "implementation": [],
+  "evidence": [],
+  "blockers": [],
+  "handoff": {
+    "summary": "Planned from ten actual corpus finite-budget refusals and independent source-derived state-growth analysis; not claimed or implemented. Existing runner policy stays finite and unchanged.",
+    "checks": [],
+    "remaining": [],
+    "requests": []
+  }
+}
