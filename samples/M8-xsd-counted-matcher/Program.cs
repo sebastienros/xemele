@@ -1,0 +1,15 @@
+using System.Text.Json;
+using Xemele;
+using Xemele.Validation;
+if (args is not [var mode, var indexText, var fixtureRoot, var output] || mode is not ("baseline" or "repaired")) throw new ArgumentException("baseline|repaired index fixtures output");
+using var manifest = JsonDocument.Parse(File.ReadAllText(Path.Combine(fixtureRoot, "originals.json")));
+var group = manifest.RootElement.GetProperty("originals")[int.Parse(indexText, System.Globalization.CultureInfo.InvariantCulture)];
+var schemaEntry = group.GetProperty("schema")[0]; var instance = group.GetProperty("instances")[0];
+using var schemaInput = File.OpenRead(Path.Combine(fixtureRoot, schemaEntry.GetProperty("path").GetString()!));
+var schema = XmlSchema.Compile(schemaInput, new() { BaseUri = new Uri("https://counted.test/" + schemaEntry.GetProperty("path").GetString()) });
+using var input = File.OpenRead(Path.Combine(fixtureRoot, instance.GetProperty("path").GetString()!));
+var result = schema.Validate(input, new() { MaxOperations = 100_000_000, Limits = new() { EvaluationWork = 100_000_000 } });
+bool expected = instance.GetProperty("expected")[0].GetProperty("validity").GetString() == "valid";
+File.WriteAllText(output, JsonSerializer.Serialize(new { mode, name = group.GetProperty("name").GetString(), expected, result.IsComplete, result.IsValid, diagnostics = result.Diagnostics.Select(d => new { d.Code, d.Severity, d.Location }) }, new JsonSerializerOptions { WriteIndented = true }));
+if (mode == "baseline" ? result.IsComplete || !result.Diagnostics.Any(d => d.Code == "VALIDATION.Limit") : !result.IsComplete || result.IsValid != expected || result.Diagnostics.Any(d => d.Code == "VALIDATION.Limit")) throw new InvalidOperationException("Original outcome did not match " + mode);
+Console.WriteLine(group.GetProperty("name").GetString() + ": " + (result.IsComplete ? result.IsValid ? "VALID" : "INVALID" : "REFUSAL"));
