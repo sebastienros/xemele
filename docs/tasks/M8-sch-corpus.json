@@ -36,8 +36,10 @@
     {
       "id": "M8-sch-corpus-A2",
       "description": "All profile cases pass; unsupported bindings remain explicit errors.",
-      "status": "pending",
-      "evidence": []
+      "status": "failed",
+      "evidence": [
+        "strict-pre-repair"
+      ]
     },
     {
       "id": "M8-sch-corpus-A3",
@@ -46,13 +48,39 @@
       "evidence": []
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "tests/corpora/schematron/inventory.json: pinned upstream50 cases/51 variants, original bytes and digest/metadata",
+    "tests/corpora/schematron/applicability.json: reviewed explicit profile/oracle/output distinctions",
+    "tests/corpora/schematron/profile.json: independent authored19 structured/SVRL expectations",
+    "tests/Xemele.Conformance.Tests/Schematron/UpstreamTests.cs and ProfileTests.cs: real facade/report corpus transport checks",
+    "tests/Xemele.Differential.Tests/Schematron/XPathReferenceTests.cs: independent BCL XPath/SVRL checks",
+    "docs/reports/M8-sch-corpus/checks.py and verify.py: scoped correctness/provenance/preservation workflow"
+  ],
+  "evidence": [
+    {
+      "id": "strict-pre-repair",
+      "kind": "check",
+      "revision": "9cd1dd86be5bc167decf71a67a31b5ee352a3fec",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 tests/Xemele.Conformance.Tests/bin/Release/net10.0/Xemele.Conformance.Tests.dll -namespace Xemele.Conformance.Tests.Schematron -result-xml artifacts/M8-sch-corpus/pre-repair.xml",
+      "result": "failed",
+      "summary": "88/89 passed,0 errors/skips/not-run. Original rule-abstract-02 schema-error oracle fails: cross-pattern abstract extension was accepted. Root owns narrow runtime repair; expectations retained.",
+      "artifact": null
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "",
-    "checks": [],
-    "remaining": [],
-    "requests": []
+    "summary": "Pinned full original upstream inventory and authored frozen profile/SVRL/BCL differential harness implemented; one actual runtime blocker retained honestly.",
+    "checks": [
+      "Strict exact9cd1dd86 conformance88/89, sole cross-pattern rule error defect;0 errors/skips/not-run.",
+      "Preparation BCL96 assertion cases passed;95 direct agreement and1 observed Unicode reference limitation, not96 differential agreements.",
+      "Preparation preservation42 reporting+504 affected overlapping checks/frozen3/9/154/public1403/normal and genuine XML-only consumers passed; no benchmark/counter.",
+      "Planning179 and whitespace validation passed. Final exact revised checks await integrated repair."
+    ],
+    "remaining": [
+      "Merge coordinator-authorized verified M8-sch-rule-scope checkpoint, update dependency if directed, run exact final checks and record tested revision before implemented."
+    ],
+    "requests": [
+      "src/Xemele/Validation/Schematron/Compilation/SchematronCompiler.cs: restrict abstract extends target to same pattern per ISO2016 section5.4.12; root owning M8-sch-rule-scope handles repair."
+    ]
   }
 }

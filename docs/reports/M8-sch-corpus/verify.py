@@ -15,7 +15,12 @@ def check():
   assert hashlib.sha256((corpus/c['path']).read_bytes()).hexdigest()==c['sha256'],c['id']
  assert {c['id'] for c in cases}=={c['id'] for c in ledger['cases']}
  assert ledger['missingCases']==ledger['missingVariants']==0 and not ledger['fullUpstreamConformanceClaim']
- for c in ledger['cases']:assert c['reason'] and c['classification']
+ for c in ledger['cases']:
+  assert c['reason'] and c['classification']
+  original=next(x for x in cases if x['id']==c['id']);assert c['upstreamExpect']==original['upstreamExpect']
+ limitations=json.loads((corpus/'reference-limitations.json').read_text())['cases'];assert len(limitations)==1
+ limitation=limitations[0];assert limitation['referenceValue']=='5' and limitation['normativeValue']=='4'
+ assert hashlib.sha256(limitation['input'].encode()).hexdigest()==limitation['inputSha256']
  profile=json.loads((corpus/'profile.json').read_text());assert len(profile['cases'])==19
  assert len({c['id'] for c in profile['cases']})==19
  print('Pinned integrity:50 original cases/51 variants;19 authored cases;0 missing resources.',flush=True)
