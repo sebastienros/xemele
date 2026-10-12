@@ -17,7 +17,7 @@ public sealed class ContinuationTests
         Assert.True(result.IsComplete); Assert.False(result.IsValid);
         var error = Assert.Single(result.Diagnostics); Assert.Equal("XSD.Content", error.Code);
         Assert.Equal(doc.OriginalLocation(doc.RootElement.FirstChild.NextSibling), error.Location);
-        Assert.Equal(2, error.Location.LineNumber); Assert.Equal(1, error.Location.ColumnNumber);
+        Assert.Equal(2, error.Location.LineNumber); Assert.Equal(1, error.Location.LinePosition);
         Assert.Equal(new Uri("https://example.test/instance.xml"), error.Location.SourceUri);
     }
 }
