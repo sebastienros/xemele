@@ -35,6 +35,7 @@ def main():
  test('tests/Xemele.Tests/Xemele.Tests.csproj',['Xemele.Tests.M8RngValidate.*'],'rng-owned',89)
  # Only correctness classes; never select WarmBorrowedReadsAllocateNothing.
  test('tests/Xemele.Tests/Xemele.Tests.csproj',['Xemele.Tests.M8RngCompile.*'],'rng-compile',88)
+ test('tests/Xemele.Tests/Xemele.Tests.csproj',['Xemele.Tests.M8RngLexical.*'],'rng-lexical',80)
  if build('docs/reports/M0-contracts/ApiCheck/ApiCheck.csproj'):run('python3','docs/reports/M5-validation-model/check_api.py')
  if build('docs/reports/M8-contracts/ApiCheck/ApiCheck.csproj'):run('python3','docs/reports/M8-rng-validate/frozen.py')
  consumer='samples/M8-rng-validate/Consumer.csproj'
