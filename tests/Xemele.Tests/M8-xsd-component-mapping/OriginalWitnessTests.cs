@@ -40,6 +40,17 @@ public sealed class OriginalWitnessTests
     [Theory]
     [InlineData("xv001.xsd")]
     [InlineData("xv004.xsd")]
+    public void OriginalSaxonComponentCompilerRejectsNames(string file)
+    {
+        var context = new SchemaCompileContext();
+        using var input = File.OpenRead(Fixture(file));
+        var document = context.Parse(input).Document;
+        var error = Assert.Throws<SchemaCompileException>(() => new XmlSchemaCompiler().Compile(document, context.Options, context.Operation));
+        Assert.Contains(error.Diagnostics, d => d.Message == "Invalid NCName.");
+    }
+    [Theory]
+    [InlineData("xv001.xsd")]
+    [InlineData("xv004.xsd")]
     public void OriginalSaxonSchemasRejectUnderApprovedSecondEditionProfile(string file)
     {
         // Original upstream expectation remains VALID. Approved profile is INVALID:
