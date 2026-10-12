@@ -4,11 +4,11 @@
   "milestone": "M8",
   "title": "Reject non-expressible XSD wildcard composition before information loss",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "verified",
   "owner": "M8 coordinator bounded shared repair",
   "branch": "codex/m8-xsd-wildcard-composition",
   "base_revision": "adf80b989e0389cac3972a3eba974fc8bf911700",
-  "integration_revision": null,
+  "integration_revision": "a01f1ca06b38b0ac3cfcc76d098ddf0d8944dcba",
   "depends_on": [
     "M8-schema-resource-base"
   ],
@@ -31,7 +31,10 @@
       "description": "Reject each non-expressible XSD1.0 wildcard union/intersection at the composing source location before discarding intermediate operands; retain correct namespace/processContents semantics for legal neighbors.",
       "status": "passed",
       "evidence": [
-        "branch-checks"
+        "branch-checks",
+        "independent-review",
+        "integrated-checks",
+        "owned-allocation"
       ]
     },
     {
@@ -39,14 +42,22 @@
       "description": "Charge and poll every private composition traversal and reserve components before retained growth. Prove intermediate/direct rejection, legal union/intersection, character and redirected byte locations, quota/cancellation and existing compiler/API/XML-only compatibility.",
       "status": "passed",
       "evidence": [
-        "branch-checks"
+        "branch-checks",
+        "independent-review",
+        "integrated-checks",
+        "owned-allocation"
       ]
     },
     {
       "id": "M8-xsd-wildcard-composition-A3",
       "description": "Review and test integrated repair; preserve previous compiler evidence, record allocation ownership and required measured evidence without optimization claims, then unblock content task through verified dependency.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "branch-checks",
+        "independent-review",
+        "integrated-checks",
+        "owned-allocation"
+      ]
     }
   ],
   "implementation": [
@@ -71,13 +82,46 @@
       "result": "passed",
       "summary": "Prebuilt5routes consumed with counters/timing disabled; all child processes reaped/groups absent. No allocation numbers measured.",
       "artifact": null
+    },
+    {
+      "id": "independent-review",
+      "kind": "review",
+      "revision": "42a93288b8a3b4c2def3be7c5a1183738f9137c6",
+      "command": "Read-only /root/review_m8_model bounded review",
+      "result": "passed",
+      "summary": "Accepted pairwise namespace algebra, every-intermediate rejection, authored-local process precedence, source locations, quotas/polls and162pair oracle plus meaningful integration negatives. CompilerSHA073cd36e7976ec01ad4a2d0da80c397c5a3d217904e24df72183271bac1f26e1; testsSHA42c98a1a2053b073ee73cb012341e07ef0ab39a942c426ea26b3e7a8fbb0075d. Review only, no execution.",
+      "artifact": "docs/reports/M8-xsd-wildcard-composition/README.md"
+    },
+    {
+      "id": "integrated-checks",
+      "kind": "integration",
+      "revision": "a01f1ca06b38b0ac3cfcc76d098ddf0d8944dcba",
+      "command": "python3 docs/reports/M8-xsd-wildcard-composition/checks.py",
+      "result": "passed",
+      "summary": "254 actual combined tests, zero failures/errors/skips/not-run; frozen119+257/public1393 and both real XML-only consumers; Release0warnings/errors;178task validation. Later main metadata merge changes no source/test/benchmark/sample/API/shared-build input; no rerun claimed.",
+      "artifact": "docs/reports/M8-xsd-wildcard-composition/README.md"
+    },
+    {
+      "id": "owned-allocation",
+      "kind": "check",
+      "revision": "42a93288b8a3b4c2def3be7c5a1183738f9137c6",
+      "command": "python3 docs/reports/M8-xsd-wildcard-composition/measure.py --granted 20a0bf3164bcde3632e0a634310981d6d2067a3e08196e569f0ce78d08042f5e 2026-10-12T00:29:00Z 2026-10-12T00:25:43.559649+00:00",
+      "result": "passed",
+      "summary": "Five consumed ownedroutes64samples each:272/272/2384/840/98944B. Cold44144,positive1048,approx inclusive retained33664. No zero/timing claim.410identitiesstable,0.434s,child0/reaped/groupabsent/logclosed; durable release beforeinspection.",
+      "artifact": "docs/reports/M8-xsd-wildcard-composition/allocations.md"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Runtime repair42a93288 actual254branch checks pass; independent review and owned allocation measurement pending before integrated verification.",
-    "checks": [],
+    "summary": "Verified bounded wildcardcomposition: rejects lost invalidintermediates, correct localprocessContents, actualprovenance;254combinedchecks+ownedallocationevidence. Frozenpublicmodelsunchanged.",
+    "checks": [
+      "254integratedtests/frozen119+257/public1393/bothXML-only/0warnings/errors",
+      "Independentreadonlyreviewaccepted",
+      "5ownedallocationroutesunderfreshall-hostgrant; no speedupclaim"
+    ],
     "remaining": [],
-    "requests": []
+    "requests": [
+      "Content worker must consume only verified main; remaining effective-content mapping repair is separate and still blocks fullcontentintegration."
+    ]
   }
 }

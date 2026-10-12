@@ -7,8 +7,8 @@
   "coordination_branch": "main",
   "max_concurrent_workers": 3,
   "last_verified_checkpoint": "M7-gate",
-  "last_verified_task": "M8-datatypes",
-  "last_integrated_revision": "c6da4a5425cbdcd7104330d351f62b59c72fdf2b",
+  "last_verified_task": "M8-xsd-wildcard-composition",
+  "last_integrated_revision": "a01f1ca06b38b0ac3cfcc76d098ddf0d8944dcba",
   "active_assignments": [
     {
       "task_id": "M8-xsd-content",
@@ -125,7 +125,10 @@
       "expiryRule": "min(actualgateopen+14min,00:43UTC), cleanup10s",
       "scope": "Exact frozen120case payload/command/manifests in parserPhase; no builds/discovery/retry; owner confirmscleanup+releasebeforeinspection"
     },
-    "chat_id": "01a12d64-81ae-79e3-8ba2-b88110af6fdb"
+    "chat_id": "01a12d64-81ae-79e3-8ba2-b88110af6fdb",
+    "actualGateOpen": "2026-10-12T00:25:55.044774Z",
+    "actualMeasurementExpiry": "2026-10-12T00:39:55.044774Z",
+    "actualCleanupDeadline": "2026-10-12T00:40:05.044774Z"
   },
   "verification_policy_update": "User convergence discipline: define acceptance/evidence/integration checks before dispatch; batch concrete blockers with criterion, evidence, smallest fix and proving check; preserve valid evidence; offline focused harness repair first; after two cycles coordinator chooses one bounded resolution; reuse infrastructure; build outside one bounded measurement lease with one park acknowledgement collection and prompt release; focused task integration and comprehensive milestone gates. No speculative hardening blocks integration.",
   "cleanup_policy": "Automatically archive completed chats and remove worktrees once merged verified durably summarized and no review/build need. Do not save generated test/benchmark artifacts or ignored-output archives; preserve required implementation/source and concise verification summaries.",
@@ -215,7 +218,7 @@
   },
   "current_milestone": "M8",
   "milestone_completion_scope": "Complete integrated verified M8-gate; terminal workers and cleanup; preserve earlier evidence/caches; transfer sole writes to main. Do not create M9.",
-  "milestone_progress": "15 of30 M8tasks verified; wildcardrepair tested/reviewed pendingallocation; effectivecontentrepair planned; threeworkers active or parked",
+  "milestone_progress": "16 of30 M8tasks verified; wildcardcleanup pendinghostrelease; effectivecontentrepair ready;3workers parked",
   "blockers": [
     "M8-xsd-content mandatory negative blocked on M8-xsd-wildcard-composition; no dependency added until repair verified"
   ],
@@ -1005,7 +1008,7 @@
   "chat_communication_authorization": "Human directly authorized all M8 coordination, remaining M8 worker chats gpt-6.1-sol/high, parser-chat coordination, and GregsEx coordinator/workers host coordination.",
   "coordinator_repair": {
     "task_id": "M8-xsd-wildcard-composition",
-    "stage": "Independent reviewaccepted;254 actual combinedchecks pass at a01f1ca; ownedallocationprobe awaits freshserial2grant",
+    "stage": "Verified; terminal cleanup deferred until external parser phase releases",
     "branch": "codex/m8-xsd-wildcard-composition",
     "base_revision": "adf80b989e0389cac3972a3eba974fc8bf911700",
     "scope": "Only Compiler.cs private wildcard composition plus own proving tests/report; no model/API change",
@@ -1014,7 +1017,8 @@
     "claim_revision": "24f0e34fc696acad3ad3cd0dac41c7948592a036",
     "worktree_path": "/private/tmp/xemele-M8-xsd-wildcard-composition",
     "integration_revision": "a01f1ca06b38b0ac3cfcc76d098ddf0d8944dcba",
-    "next_ordered_repair": "M8-xsd-effective-content"
+    "next_ordered_repair": "M8-xsd-effective-content",
+    "source_revision": "42a93288b8a3b4c2def3be7c5a1183738f9137c6"
   },
   "external_measurement_park": {
     "id": "M8-wildcard-parser-serial-2",
