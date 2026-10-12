@@ -112,7 +112,21 @@
   "benchmark_policy": "Successful previous measurements retained; future changed runtime measurements require complete preparation and exclusive grant.",
   "benchmark_class_attributes": "Human requirement: every benchmark class declares [MemoryDiagnoser, ShortRunJob]; no CLI job flags.",
   "benchmark_owner": null,
-  "active_measurement_lease": null,
+  "active_measurement_lease": {
+    "id": "M8-wildcard-parser-serial-2",
+    "phase": "parser",
+    "grant": {
+      "createdUtc": "2026-10-12T00:25:40.123941+00:00",
+      "rootReleaseRevision": "e8c237f61542d9b1ca9a77286ff1ac570827a724",
+      "maximumWorkSeconds": 840,
+      "cleanupSeconds": 10,
+      "startBy": "2026-10-12T00:29:00Z",
+      "absoluteExpiry": "2026-10-12T00:43:10Z",
+      "expiryRule": "min(actualgateopen+14min,00:43UTC), cleanup10s",
+      "scope": "Exact frozen120case payload/command/manifests in parserPhase; no builds/discovery/retry; owner confirmscleanup+releasebeforeinspection"
+    },
+    "chat_id": "01a12d64-81ae-79e3-8ba2-b88110af6fdb"
+  },
   "verification_policy_update": "User convergence discipline: define acceptance/evidence/integration checks before dispatch; batch concrete blockers with criterion, evidence, smallest fix and proving check; preserve valid evidence; offline focused harness repair first; after two cycles coordinator chooses one bounded resolution; reuse infrastructure; build outside one bounded measurement lease with one park acknowledgement collection and prompt release; focused task integration and comprehensive milestone gates. No speculative hardening blocks integration.",
   "cleanup_policy": "Automatically archive completed chats and remove worktrees once merged verified durably summarized and no review/build need. Do not save generated test/benchmark artifacts or ignored-output archives; preserve required implementation/source and concise verification summaries.",
   "artifact_policy": {
@@ -1004,7 +1018,7 @@
   },
   "external_measurement_park": {
     "id": "M8-wildcard-parser-serial-2",
-    "status": "ROOT_PHASE_RELEASED_PARSER_NOT_GRANTED",
+    "status": "PARSER_PHASE_GRANTED",
     "createdUtc": "2026-10-12T00:21:23.494253+00:00",
     "earliestStart": "2026-10-12T00:25:00Z",
     "latestStart": "2026-10-12T00:29:00Z",
@@ -1059,6 +1073,16 @@
       "supervisorExit": 0,
       "rawInspected": false,
       "grantRevision": "2173e5c8f815c6b54d2dc7c2b7266a569d26efff"
+    },
+    "parserGrant": {
+      "createdUtc": "2026-10-12T00:25:40.123941+00:00",
+      "rootReleaseRevision": "e8c237f61542d9b1ca9a77286ff1ac570827a724",
+      "maximumWorkSeconds": 840,
+      "cleanupSeconds": 10,
+      "startBy": "2026-10-12T00:29:00Z",
+      "absoluteExpiry": "2026-10-12T00:43:10Z",
+      "expiryRule": "min(actualgateopen+14min,00:43UTC), cleanup10s",
+      "scope": "Exact frozen120case payload/command/manifests in parserPhase; no builds/discovery/retry; owner confirmscleanup+releasebeforeinspection"
     }
   },
   "measurement_park_aborts": [

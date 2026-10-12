@@ -1,6 +1,6 @@
 {
   "id": "M8-wildcard-parser-serial-2",
-  "status": "ROOT_PHASE_RELEASED_PARSER_NOT_GRANTED",
+  "status": "PARSER_PHASE_GRANTED",
   "createdUtc": "2026-10-12T00:21:23.494253+00:00",
   "earliestStart": "2026-10-12T00:25:00Z",
   "latestStart": "2026-10-12T00:29:00Z",
@@ -55,5 +55,15 @@
     "supervisorExit": 0,
     "rawInspected": false,
     "grantRevision": "2173e5c8f815c6b54d2dc7c2b7266a569d26efff"
+  },
+  "parserGrant": {
+    "createdUtc": "2026-10-12T00:25:40.123941+00:00",
+    "rootReleaseRevision": "e8c237f61542d9b1ca9a77286ff1ac570827a724",
+    "maximumWorkSeconds": 840,
+    "cleanupSeconds": 10,
+    "startBy": "2026-10-12T00:29:00Z",
+    "absoluteExpiry": "2026-10-12T00:43:10Z",
+    "expiryRule": "min(actualgateopen+14min,00:43UTC), cleanup10s",
+    "scope": "Exact frozen120case payload/command/manifests in parserPhase; no builds/discovery/retry; owner confirmscleanup+releasebeforeinspection"
   }
 }
