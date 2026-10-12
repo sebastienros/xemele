@@ -49,8 +49,8 @@ internal static class Runner
                 {
                     var uri = new Uri(basis, location); bool supplied = known.Contains(ns);
                     journal.Add(new { kind = "authored-instance-hint", namespaceUri = ns, location, uri = uri.AbsoluteUri, element, baseUri = basis.AbsoluteUri, policy = supplied ? "namespace already supplied; hint retained without fetch" : "first hint for namespace; explicit precompilation" });
-                    if (supplied) return;
                     if (used.TryGetValue(ns, out int previous) && previous < index) limits.Add("Namespace " + ns + " was used at element " + previous + " before hint at " + element + "; explicit precompilation cannot reproduce ordered discovery.");
+                    if (supplied) return;
                     known.Add(ns); inputs.Add(new(uri.AbsoluteUri, ns, true, element, basis.AbsoluteUri));
                 }
                 if (reader.GetAttribute("schemaLocation", xsi) is { } locations)

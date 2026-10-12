@@ -1,0 +1,39 @@
+{
+  "upstream_revision": "7bc3365c652a322f3d762021b3879eb92dae7e30",
+  "original_observation_revision": "80cd6bac0e740947cc3809fef4300068d8b4e51b",
+  "policy": "Preserve original metadata, bytes and observations; derived profile results are separate and never turn an original failure or unassessed instance into an original pass.",
+  "status": "Authorize supplemental explicit application-supplied XML namespace profile; original standalone results remain separate",
+  "sources": [
+    "https://www.w3.org/TR/2004/REC-xmlschema-1-20041028/#composition-schemaImport",
+    "https://www.w3.org/TR/2004/REC-xmlschema-1-20041028/#schema_reference"
+  ],
+  "reason": "Both originals import the XML namespace without schemaLocation and reference xml:space or xml:base. Second Edition4.2.3 leaves schema identification to the instance, application or user. The exact upstream inventory has no xml.xsd source; there is no product obligation to synthesize these declarations. Supply the already captured official XML schema explicitly in a separate bounded application profile without editing original inputs.",
+  "resource": {
+    "url": "https://www.w3.org/2001/xml.xsd",
+    "path": "tests/corpora/Xsd/resources/xml.xsd",
+    "sha256": "61960fb3131e38022caad5360e2f33a3382578ab3c80cd58bd74320ede61b20c",
+    "bytes": 8836
+  },
+  "cases": [
+    {
+      "group": "msMeta/Additional_w3c.xml#g273",
+      "schema": "isDefault078",
+      "instance": "isDefault078.v",
+      "documents": {
+        "msData/additional/isdefault078.xsd": "df91143a2b7ce28c003daafa0d27cc9566f730437c95c861aa900fadd31f3c66",
+        "msData/additional/isdefault078.xml": "6238462c4873df4c50bc1a901ece576b2d166b0156802c88a05a85b1f5d511c7"
+      }
+    },
+    {
+      "group": "msMeta/Additional_w3c.xml#g7",
+      "schema": "addC001",
+      "instance": "addC001.v",
+      "documents": {
+        "msData/additional/adhocAddC001.xsd": "d496b02d55b6fbad0160e0a8353e4f33868ac847527a36d1a59219062ac0d57c",
+        "msData/additional/adhocAddC001.xml": "e6c4da3dc310d3dd0bfc47c7394c297ffa0e9da058f5649c88d6b276db12c3ca"
+      }
+    }
+  ],
+  "observations": "Both original schema expectations valid, current product schema-invalid; both original instances valid, product schema-unavailable and not assessed. All originalPassed=false. Supplemental expected schema-valid and complete instance-valid must be actually executed before claiming agreement.",
+  "constraints": "No built-in runtime XML declarations, ambient network or original-file mutation. Explicit supplied-resource list and exact original/root BaseUri provenance must appear in supplemental report. Use existing bounded composition wrapper and exact allowlist resolver; resource-denied/missing controls. No full corpus rerun needed."
+}
