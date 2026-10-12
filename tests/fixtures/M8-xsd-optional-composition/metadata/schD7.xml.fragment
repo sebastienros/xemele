@@ -1,0 +1,17 @@
+<testGroup name="schD7">
+      <annotation>
+         <documentation>TEST :schema collection and schema location : A includes B and C, B is bogus URL, C is valid XSD, test that there is no error and C is included.</documentation>
+      </annotation>
+      <documentationReference
+         xlink:href="http://www.w3.org/TR/2004/REC-xmlschema-1-20041028/#Schemas"/>
+      <schemaTest name="schD7">
+         <schemaDocument xlink:href="../msData/schema/schD7_a.xsd"/>
+         <expected validity="valid"/>
+         <current date="2006-07-16" status="accepted"/>
+      </schemaTest>
+      <instanceTest name="schD7.v">
+         <instanceDocument xlink:href="../msData/schema/schD7.xml"/>
+         <expected validity="valid"/>
+         <current date="2006-07-16" status="accepted"/>
+      </instanceTest>
+   </testGroup>

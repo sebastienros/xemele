@@ -1,0 +1,75 @@
+{
+  "task": "M8-xsd-optional-composition",
+  "tested_candidate": "075b033958f321f0046b5b0996de0cfed8a161b0",
+  "source_revision": "5160cfadb64de8555d58e392df5c949fd465a4a6",
+  "status": "Combined correctness passed; allocation pending; not yet integrated or verified",
+  "root_session": 57682,
+  "root_exit": 0,
+  "lifecycle": {
+    "sequence": [
+      {
+        "command": 0,
+        "pid": 81686,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      },
+      {
+        "command": 1,
+        "pid": 81878,
+        "exit": 0,
+        "reason": "completed",
+        "directChildReaped": true,
+        "ownedGroupAbsent": true,
+        "logClosed": true,
+        "groupMembers": []
+      }
+    ],
+    "commands": [
+      [
+        "python3",
+        "docs/reports/M8-xsd-optional-composition/check.py"
+      ],
+      [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "--fx-version",
+        "10.0.11",
+        "tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll",
+        "-namespace",
+        "Xemele.Tests.M8DatatypesTextBinary",
+        "-method-",
+        "*WarmBorrowed*",
+        "-parallelMode",
+        "none",
+        "-noLogo",
+        "-noColor",
+        "-result-xml",
+        "artifacts/M8-xsd-optional-composition/datatype-supplement.xml"
+      ]
+    ],
+    "maximumSeconds": 900
+  },
+  "raw_results_inspected": true,
+  "checks": {
+    "correctness": 1777,
+    "resolver": 42,
+    "datatypes": 77,
+    "datatype-supplement": 148
+  },
+  "distinct_cases": 2044,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "builds": 8,
+  "warnings": 0,
+  "build_errors": 0,
+  "API": "1430public/all8frozen/additive46/emitted baseline compares passed",
+  "consumers": "Normal and true XML-only facade/type relations passed",
+  "originals": "68owned includes unchanged4schemas and3valid matching instances; a004 originalINVALID/observedVALID disagreement preserved separately derivedVALID",
+  "planning": "196 tasks validated/diff whitespace passed",
+  "runtime_sha256": "88bb317cc79e0646726acc1ae38aee6b9e19ddfe7a9fea833fe006e8dec65357",
+  "limitations": "No allocation/fullcorpus/gate/native/timing/globalidle claim"
+}

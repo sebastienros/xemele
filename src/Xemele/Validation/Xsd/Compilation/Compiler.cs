@@ -162,9 +162,21 @@ internal sealed class XsdCompilation
             }
             else
             {
-                var loaded = loader.Load(new(href!, source.Scope.SourceUri, kind, At(source, node)), context.BaseUri, op);
+                // Second Edition 4.2 permits unavailable composition locations,
+                // except when redefine actually supplies replacement components.
+                // Syntax has already been checked; charge the classification walk
+                // through the same child traversal as the other compiler passes.
+                bool mandatory = false;
+                if (kind == SchemaResourcePurpose.XsdRedefine)
+                    foreach (var child in Children(source, node))
+                        if (child.LocalName != "annotation") { mandatory = true; break; }
+                var reference = new SchemaResourceReference(href!, source.Scope.SourceUri, kind, At(source, node));
+                XmlDocument? loaded;
+                if (mandatory) loaded = loader.Load(reference, context.BaseUri, op);
+                else if (!loader.TryLoadOptional(reference, context.BaseUri, op, out loaded))
+                    continue; // No source/cache/include entry; import permission remains.
                 using var traversal = loader.EnterComposition(At(source, node));
-                imported = Load(new(loaded, op, loader.SourceUri(loaded)), ns, kind);
+                imported = Load(new(loaded!, op, loader.SourceUri(loaded!)), ns, kind);
             }
             if (kind != SchemaResourcePurpose.XsdImport) source.Includes.Add(imported);
             if (kind == SchemaResourcePurpose.XsdRedefine) Redefine(source, node, imported);
