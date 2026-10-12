@@ -57,22 +57,37 @@ internal sealed partial class XmlFacetEvaluator
         }
         finally { active.Remove(type.Name); }
     }
-    // Decidable constraints do not manufacture a typed value or a FacetPlan.
-    // Patterns at one restriction level are alternatives; base levels conjoin.
-    private bool CheckIndependentConstraint(XmlDatatypeDefinition type, ReadOnlySpan<char> lexical,
-        IXmlDatatypeRegistry registry, ISchemaOperation op)
+    // A partial union is impossible only when every branch independently
+    // rejects. Branch failure emits no diagnostic; cancellation/refusal still
+    // propagates immediately. Complete members use their real executable plan.
+    private bool CheckIndependentConstraint(XmlDatatypeDefinition type, ReadOnlySpan<char> lexical, SchemaNamespaceContext context,
+        IXmlDatatypeRegistry registry, ISchemaOperation op, AvailabilityBuilder availability)
     {
+        if (!PotentialValue(type, lexical, context, registry, op, availability, 0))
+            return FacetRules.Reject(op, type.Location, "Value constraint independently fails every available alternative.");
+        return op.Charge(0, type.Location);
+    }
+    private bool PotentialValue(XmlDatatypeDefinition type, ReadOnlySpan<char> lexical, SchemaNamespaceContext context,
+        IXmlDatatypeRegistry registry, ISchemaOperation op, AvailabilityBuilder availability, int depth)
+    {
+        op.Charge(1, type.Location);
+        if (depth >= 256) { op.Refuse("SCHEMA.Limit", "Datatype graph depth exceeded.", type.Location); op.Charge(0, type.Location); return false; }
+        if (!availability.Unavailable(ComponentAvailability.Simple(type.Name)))
+        {
+            bool valid = TryValidate(type, lexical, context, registry, op, out _, out _);
+            op.Charge(0, type.Location); return valid;
+        }
         var library = registry.Find(DatatypeTypes.XsdNamespace)!;
         var text = library.Normalize(lexical, XmlWhitespaceRule.Collapse, op);
         int tokens = 0; bool inToken = false;
         foreach (char c in text)
         { op.Charge(1, type.Location); if (c == ' ') inToken = false; else if (!inToken) { tokens++; inToken = true; } }
         var count = new FacetNumber((ulong)tokens);
-        int depth = 0;
+        int levels = 0;
         for (XmlDatatypeDefinition? level = type; level is not null; level = level.BaseType is { } name ? registry.FindType(name) : null)
         {
             op.Charge(1, level.Location);
-            if (++depth > 256) { op.Refuse("SCHEMA.Limit", "Datatype graph depth exceeded.", level.Location); return false; }
+            if (++levels > 256) { op.Refuse("SCHEMA.Limit", "Datatype graph depth exceeded.", level.Location); op.Charge(0, level.Location); return false; }
             bool hasPattern = false, matched = false;
             foreach (var facet in level.Facets)
             {
@@ -83,12 +98,23 @@ internal sealed partial class XmlFacetEvaluator
                 {
                     if (!ParseNumber(facet.LexicalValue, op, out var bound)) return false;
                     var comparison = count.Compare(bound, op, facet.Location);
-                    if (comparison is null || (facet.Kind == XmlFacetKind.Length ? comparison != 0 : facet.Kind == XmlFacetKind.MinLength ? comparison < 0 : comparison > 0))
-                        return FacetRules.Reject(op, facet.Location, "Value constraint violates list cardinality.");
+                    if (comparison is null || (facet.Kind == XmlFacetKind.Length ? comparison != 0 : facet.Kind == XmlFacetKind.MinLength ? comparison < 0 : comparison > 0)) return false;
                 }
             }
-            if (hasPattern && !matched) return FacetRules.Reject(op, level.Location, "Value constraint violates pattern.");
+            if (hasPattern && !matched) return false;
         }
+        if (type.Variety == XmlDatatypeVariety.Union)
+        {
+            foreach (var name in type.MemberTypes)
+            {
+                op.Charge(1, type.Location);
+                var member = registry.FindType(name)!;
+                if (PotentialValue(member, text.AsSpan(), context, registry, op, availability, depth + 1)) return true;
+            }
+            return false;
+        }
+        // The list item remains unavailable. Decidable grammar/pattern/count
+        // checks passed; no fabricated item value or partial plan is produced.
         return op.Charge(0, type.Location);
     }
     private bool CheckIndependentFacets(XmlDatatypeDefinition type, IXmlDatatypeRegistry registry, ISchemaOperation op)

@@ -121,7 +121,7 @@ public sealed class XmlSchema
         Tick(op, at);
         if (availability.Unavailable(ComponentAvailability.Simple(type)))
         {
-            if (!facets.CheckAvailableConstraint(schema.Datatypes.FindType(type)!, lexical, schema.Datatypes, op))
+            if (!facets.CheckAvailableConstraint(schema.Datatypes.FindType(type)!, lexical, context, schema.Datatypes, op, availability))
                 throw SchemaSnapshots.Failure(op);
             return null;
         }

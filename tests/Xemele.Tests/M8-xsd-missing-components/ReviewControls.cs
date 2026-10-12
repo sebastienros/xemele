@@ -48,6 +48,53 @@ public sealed class ReviewControls
         Assert.Throws<SchemaCompileException>(() => XmlSchema.Compile(Wrap(heads.Replace(affiliation ? " substitutionGroup='absent'" : " substitutionGroup='h'", "", StringComparison.Ordinal) + types)));
         Assert.Throws<SchemaCompileException>(() => XmlSchema.Compile(Wrap(heads + types.Replace("<xs:element ref='m'/>", "<xs:element ref='m' minOccurs='2' maxOccurs='2'/>", StringComparison.Ordinal))));
     }
+    [Fact]
+    public void CompleteSubstitutionChoiceCannotRestrictAnUnrelatedLocalLeaf()
+    {
+        const string head = "<xs:element name='h' type='xs:int'/>";
+        const string body = "<xs:complexType name='B'><xs:sequence><xs:element name='h' type='xs:int'/></xs:sequence></xs:complexType><xs:complexType name='D'><xs:complexContent><xs:restriction base='B'><xs:sequence><xs:element ref='h'/></xs:sequence></xs:restriction></xs:complexContent></xs:complexType><xs:element name='r' type='D'/>";
+        Assert.Throws<SchemaCompileException>(() => XmlSchema.Compile(Wrap(head + "<xs:element name='m' type='xs:int' substitutionGroup='h'/>" + body)));
+        Assert.True(XmlSchema.Compile(Wrap(head + body)).Validate("<r><h>7</h></r>").IsValid);
+    }
+    [Fact]
+    public void UnorderedRestrictionRetainsIndeterminateMembershipAndKnownRangeFailures()
+    {
+        const string heads = "<xs:element name='h' type='xs:int'/><xs:element name='m' type='xs:int' substitutionGroup='absent'/><xs:element name='n' type='xs:int'/>";
+        const string body = "<xs:complexType name='B'><xs:all><xs:element ref='h'/><xs:element ref='n'/></xs:all></xs:complexType><xs:complexType name='D'><xs:complexContent><xs:restriction base='B'><xs:sequence><xs:element ref='n'/><xs:element ref='m'/></xs:sequence></xs:restriction></xs:complexContent></xs:complexType><xs:element name='r' type='D'/><xs:element name='good' type='xs:int'/>";
+        var partial = XmlSchema.Compile(Wrap(heads + body)); Assert.True(partial.Validate("<good>7</good>").IsValid); Missing(partial.Validate("<r><n>7</n><m>7</m></r>"));
+        Assert.True(XmlSchema.Compile(Wrap(heads + "<xs:element name='absent' type='xs:int' substitutionGroup='h'/>" + body)).Validate("<r><n>7</n><m>7</m></r>").IsValid);
+        Assert.Throws<SchemaCompileException>(() => XmlSchema.Compile(Wrap(heads + body.Replace("<xs:element ref='n'/><xs:element ref='m'/>", "<xs:element ref='n' minOccurs='2' maxOccurs='2'/><xs:element ref='m'/>", StringComparison.Ordinal))));
+    }
+    [Fact]
+    public void CompleteTwentyChildUnorderedRestrictionKeepsFiniteUniqueMappingWork()
+    {
+        string children = string.Concat(Enumerable.Range(0, 20).Select(i => "<xs:element name='n" + i + "' type='xs:int'/>"));
+        var (schema, _, _) = Compile("<xs:complexType name='B'><xs:all>" + children + "</xs:all></xs:complexType><xs:complexType name='D'><xs:complexContent><xs:restriction base='B'><xs:sequence>" + children + "</xs:sequence></xs:restriction></xs:complexContent></xs:complexType>");
+        var operation = new Counted { WorkCap = 100_000, ComponentCap = 20_000 };
+        var programs = new XsdContentCompiler().CompileAll(schema, operation, new XmlFacetEvaluator());
+        Assert.True(operation.IsComplete); Assert.True(programs.ContainsKey(new("", "D")));
+        Assert.InRange(operation.Work, 1, 100_000); Assert.InRange(operation.Components, 1, 20_000);
+    }
+    [Theory]
+    [InlineData(false)] [InlineData(true)]
+    public void PartialUnionConstraintRejectsOnlyWhenEveryMemberIndependentlyRejects(bool attribute)
+    {
+        const string types = "<xs:simpleType name='L'><xs:list itemType='absent'/></xs:simpleType><xs:simpleType name='R2'><xs:restriction base='L'><xs:length value='2'/></xs:restriction></xs:simpleType><xs:simpleType name='R3'><xs:restriction base='L'><xs:length value='3'/></xs:restriction></xs:simpleType><xs:simpleType name='U'><xs:union memberTypes='R2 R3'/></xs:simpleType>";
+        string Declaration(string lexical) => attribute ? "<xs:element name='r'><xs:complexType><xs:attribute name='a' type='U' fixed='" + lexical + "'/></xs:complexType></xs:element>" : "<xs:element name='r' type='U' default='" + lexical + "'/>";
+        var failure = Assert.Throws<SchemaCompileException>(() => XmlSchema.Compile(Wrap(types + Declaration("a"))));
+        Assert.Single(failure.Diagnostics);
+        foreach (string lexical in new[] { "a b", "a b c" })
+        {
+            var partial = XmlSchema.Compile(Wrap(types + Declaration(lexical) + "<xs:element name='good' type='xs:int'/>"), new() { Limits = new() { Diagnostics = 1 } });
+            var good = partial.Validate("<good>7</good>"); Assert.True(good.IsComplete); Assert.True(good.IsValid); Assert.Empty(good.Diagnostics);
+            Missing(partial.Validate(attribute ? "<r a='" + lexical + "'/>" : "<r/>"));
+        }
+        // Complete members are checked against the actual authored namespace
+        // context; no fake typed value or speculative branch diagnostic.
+        var qname = XmlSchema.Compile(Wrap(types.Replace("R2 R3", "xs:QName R2", StringComparison.Ordinal) + Declaration("q:n"), "xmlns:q='urn:q'"));
+        Missing(qname.Validate(attribute ? "<r a='q:n' xmlns:q='urn:q'/>" : "<r/>"));
+        Assert.Throws<SchemaCompileException>(() => XmlSchema.Compile(Wrap(types.Replace("R2 R3", "xs:int R2", StringComparison.Ordinal) + Declaration("bad"))));
+    }
     [Theory]
     [InlineData(false, "default", "<xs:pattern value='a'/>", "b", "a")]
     [InlineData(false, "fixed", "<xs:length value='2'/>", "a", "a b")]

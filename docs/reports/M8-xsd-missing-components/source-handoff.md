@@ -10,13 +10,21 @@ proving controls. Findings were static; this packet supplies no executed result.
 | --- | --- | --- |
 | G01 | Keep known EDC representatives separately; compare unique declaration IDs only | Six int/string/inferred-null permutations, equal known neighbors, sole optional blocked ref empty/consumed locations |
 | G02 | Walk known union member graph/properties without a partial FacetPlan | anySimpleType/list-missing direct and nested negatives, string neighbor plus unrelated good root |
-| G03 | Restriction solver true/false/indeterminate algebra, exact missing type/affiliation operands | Two missing-type/chain variants, completed neighbors, no-affiliation and independently invalid occurrence negatives |
-| G04 | Check normalized patterns and list token cardinality before deferring typed constraint parsing | Element/attribute default/fixed pattern/length/min/max negatives and matching partial neighbors |
+| G03 | Restriction solver true/false/indeterminate algebra, exact missing type/affiliation operands | Missing-type/chain variants, complete implicit-choice negative, partial unordered/completed/range neighbors, complete20-child finite-cap control |
+| G04 | Check normalized patterns and list token cardinality before deferring typed constraint parsing | Element/attribute default/fixed pattern/length/min/max and union-all-false negatives; two/three-token/QName-context partial neighbors |
 | G05 | Reverse chain and diamond propagation/dedup/usage controls | Explicit11-edge expected closure, exact/one-under work/components, null-cap cancellation during propagation |
 | G06 | Charged completeness guards on frozen content/evaluation graph-only lanes | Explicit int missing affiliation rejects strict lanes; concrete direct m/good roots remain assessable |
 | G07 | Include precedes the declaration | Existing valid7/invalidbad resolver-one/disposal-one control |
 | G08 | Emit11 new types plus9 concrete joins/constructors | Authored added-joins.golden.txt exact9-row comparison; emitted new-type surface still UNRUN |
 | G09 | Separate resolved64-entry, missing-final64-entry and absent-owner lookups |11 routes/352 retained;128/128/64 lookup work; independent consumed3001/inspections13632 |
+
+Renewed a75 review corrections G03a/G03b/G04u preserve complete substitution
+expansion, retain the unique complete unordered path, and use polynomial bipartite
+matching for partial unordered relations, pruning definite-false traversal edges.
+Partial union constraints combine member possibilities without speculative branch
+diagnostics. Complete members parse real values using authored context; partial
+members produce no fake value or plan. The nine-join authored baseline now includes
+that context and AvailabilityBuilder on the concrete constraint join.
 
 Existing XSD615/compiler257 projections retain only the three approved nullable
 rows; remaining612/254 rows stay unchanged. Public1430 and header-only docs API

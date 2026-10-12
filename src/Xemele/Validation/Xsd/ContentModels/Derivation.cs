@@ -232,9 +232,11 @@ internal sealed partial class ContentCompilation
     private Rule Combine(RuleKind kind, Rule a, Rule b)
     { ContentWork.Retain(op, default, 3); return new(kind, RelationState.False, null, null, false, false, a, b); }
     private bool Restricts(XsdParticle? derived, XsdParticle? basis, bool anyType)
+        => EvaluateRule(Relation(derived, basis, anyType)) != RelationState.False;
+    private RelationState EvaluateRule(Rule root)
     {
-        var root = Relation(derived, basis, anyType); var results = new Dictionary<Rule, RelationState>();
-        var stack = new Stack<(Rule Rule, bool Ready)>(); ContentWork.Retain(op, derived?.Location ?? default); stack.Push((root, false));
+        var results = new Dictionary<Rule, RelationState>();
+        var stack = new Stack<(Rule Rule, bool Ready)>(); ContentWork.Retain(op, root.Derived?.Location ?? default); stack.Push((root, false));
         while (stack.TryPop(out var frame))
         {
             var rule = frame.Rule; ContentWork.Tick(op, rule.Derived?.Location ?? default);
@@ -254,7 +256,7 @@ internal sealed partial class ContentCompilation
                 : (RelationState)Math.Max((int)results[rule.Left!], (int)results[rule.Right!]);
             ContentWork.Retain(op, default); results.Add(rule, result);
         }
-        return results[root] != RelationState.False;
+        return results[root];
     }
     private Rule ExpandRule(Rule rule)
     {
@@ -262,11 +264,6 @@ internal sealed partial class ContentCompilation
         if (derived is null) return Constant(Nullable(basis)); if (basis is null) return Constant(IsPointlessEmpty(derived));
         ContentWork.Tick(op, derived.Location);
         if (SameParticle(derived, basis)) return Constant(true);
-        // Decide element mappings against the actual affiliation graph before
-        // expanding known projections. A missing operand yields indeterminate;
-        // independent occurrence/name/type/constraint failures still yield false.
-        if (derived.Term is XsdElementTerm directD && basis.Term is XsdElementTerm directB)
-            return ElementRestriction(derived, basis, directD.DeclarationId, directB.DeclarationId);
         derived = ExpandSubstitution(derived); basis = ExpandSubstitution(basis);
         // Expansion can introduce a pointless singleton choice. Normalize it
         // before selecting the relation case, preserving non-unit wrappers and
@@ -274,6 +271,10 @@ internal sealed partial class ContentCompilation
         if (!rule.Synthesized) derived = Normalize(derived);
         basis = Normalize(basis);
         if (derived is null) return Constant(Nullable(basis)); if (basis is null) return Constant(IsPointlessEmpty(derived));
+        // Known implicit choices must be expanded before comparing leaf
+        // declarations: ref h can admit a known m that a local h never accepts.
+        if (derived.Term is XsdElementTerm directD && basis.Term is XsdElementTerm directB)
+            return ElementRestriction(derived, basis, directD.DeclarationId, directB.DeclarationId);
         if (basis.Term is XsdWildcardTerm bw)
         {
             if (derived.Term is XsdElementTerm elt)
@@ -311,6 +312,7 @@ internal sealed partial class ContentCompilation
         if (!ordered && !unordered) return Constant(false);
         if (unordered)
         {
+            if (availability?.Unavailable(consumer) == true) return UnorderedPartial(rs, bs, anyType, derived.Location);
             // All's uniquely attributed element children make the name mapping
             // unique. Build a name-based reordering, then use ordered Recurse.
             ContentWork.Retain(op, derived.Location, checked(bs.Count + rs.Count));
@@ -348,6 +350,62 @@ internal sealed partial class ContentCompilation
             (previous, next) = (next, previous);
         }
         return previous[bs.Count];
+    }
+    private Rule State(RelationState value)
+    { ContentWork.Retain(op, default); return new(RuleKind.Constant, value, null, null, false, false, null, null); }
+    private Rule UnorderedPartial(IReadOnlyList<XsdParticle> derived, IReadOnlyList<XsdParticle> basis, bool anyType, XmlLocation at)
+    {
+        int count = basis.Count;
+        if (derived.Count > count) return Constant(false);
+        // This branch contains element children only. Expanded substitution
+        // choices use the existing iterative relation solver for each candidate.
+        foreach (var particle in derived)
+        { ContentWork.Tick(op, at); if (Normalize(particle)?.Term is not XsdElementTerm) return Constant(false); }
+        long retained = (long)count * count + 7L * count + 10;
+        if (retained > int.MaxValue)
+        { op.Refuse("SCHEMA.Limit", "Unordered relation representation exceeded.", at); throw SchemaSnapshots.Failure(op); }
+        ContentWork.Retain(op, at, (int)retained);
+        var relations = new RelationState[count * count]; var optional = new bool[count];
+        for (int j = 0; j < count; j++) { ContentWork.Tick(op, at); optional[j] = Nullable(basis[j]); }
+        for (int i = 0; i < derived.Count; i++) for (int j = 0; j < count; j++)
+        { ContentWork.Tick(op, at); relations[i * count + j] = EvaluateRule(Relation(derived[i], basis[j], anyType)); }
+        var leftMatch = new int[count]; var rightMatch = new int[count]; var queue = new int[count];
+        var seenLeft = new bool[count]; var seenRight = new bool[count]; var parentRight = new int[count];
+        bool Matches(bool allowIndeterminate)
+        {
+            for (int i = 0; i < count; i++) { ContentWork.Tick(op, at); leftMatch[i] = rightMatch[i] = -1; }
+            // Dummy left nodes match only optional base particles. A perfect
+            // injective assignment therefore covers every required base child.
+            for (int root = 0; root < count; root++)
+            {
+                for (int j = 0; j < count; j++) { ContentWork.Tick(op, at); seenLeft[j] = seenRight[j] = false; }
+                int first = 0, last = 1, free = -1; queue[0] = root; seenLeft[root] = true;
+                while (first < last && free < 0)
+                {
+                    int left = queue[first++]; ContentWork.Tick(op, at);
+                    for (int right = 0; right < count; right++)
+                    {
+                        ContentWork.Tick(op, at);
+                        var state = left < derived.Count ? relations[left * count + right] : optional[right] ? RelationState.True : RelationState.False;
+                        // Definite-false candidates never create traversal states.
+                        if (seenRight[right] || state == RelationState.False || !allowIndeterminate && state != RelationState.True) continue;
+                        seenRight[right] = true; parentRight[right] = left;
+                        int next = rightMatch[right];
+                        if (next < 0) { free = right; break; }
+                        if (!seenLeft[next]) { seenLeft[next] = true; queue[last++] = next; }
+                    }
+                }
+                if (free < 0) return false;
+                while (free >= 0)
+                {
+                    ContentWork.Tick(op, at); int left = parentRight[free], previous = leftMatch[left];
+                    leftMatch[left] = free; rightMatch[free] = left; free = previous;
+                }
+            }
+            return true;
+        }
+        if (Matches(false)) return State(RelationState.True);
+        return State(Matches(true) ? RelationState.Indeterminate : RelationState.False);
     }
     private Rule Indeterminate(XsdElementDeclaration operand, DependencyUse operandUse = DependencyUse.TypeAssessment)
     {

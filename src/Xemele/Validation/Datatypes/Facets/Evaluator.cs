@@ -38,10 +38,10 @@ internal sealed partial class XmlFacetEvaluator : IXmlFacetEvaluator
         }
         catch (FacetOperation.Stopped) { return false; }
     }
-    internal bool CheckAvailableConstraint(XmlDatatypeDefinition type, ReadOnlySpan<char> lexical,
-        IXmlDatatypeRegistry registry, ISchemaOperation operation)
+    internal bool CheckAvailableConstraint(XmlDatatypeDefinition type, ReadOnlySpan<char> lexical, SchemaNamespaceContext context,
+        IXmlDatatypeRegistry registry, ISchemaOperation operation, AvailabilityBuilder availability)
     {
-        try { return CheckIndependentConstraint(type, lexical, registry, new FacetOperation(operation)); }
+        try { return CheckIndependentConstraint(type, lexical, context, registry, new FacetOperation(operation), availability); }
         catch (FacetOperation.Stopped) { return false; }
     }
     public bool TryValidate(XmlDatatypeDefinition type, ReadOnlySpan<char> lexical, SchemaNamespaceContext context,
