@@ -38,7 +38,8 @@ original URI is provenance because this transport has no instance BaseUri option
 The global ordering interaction under skipped content remains an explicit project
 interpretation. This focused profile does not label that corner independently
 adjudicated upstream. No XML/schema/instance bytes or original oracle were changed.
-No new semantic original has executed: root source review precedes the exact subset.
+At the preparation checkpoint, no semantic original had executed: root source
+review preceded the exact subset.
 
 Initial preparation b60f42366 built0warnings/errors;45runtime/19report controls
 passed. The new hash guard child56132 exited-6 after three positive cases because
@@ -63,6 +64,69 @@ owned byte-preserved profile580070130972a88e3cc1fde6aa03aa4bae7c044fc15a2acd1c50
 runner DLL803295634bb87b7c8595dd04b2a562a9a0fe9da1dc91412e85bc43c2cb02fa1a;
 product DLL33843c0a0f79bccabfdc42ffc4179dc16e714036191b9098ccd08c2e2364398e.
 Raw controls/logs/subset inventory remain ignored under
-artifacts/M8-xsd-corpus/recursive-hint-preparation. Exact11-target semantic
-execution remains pending root source acceptance; no full suite, counter,
-throughput, optional resource or other open original has run.
+artifacts/M8-xsd-corpus/recursive-hint-preparation. At this checkpoint the exact
+11-target execution awaited root acceptance; no full suite, counter, throughput,
+optional resource or other open original ran.
+
+## Accepted focused original execution
+
+Root accepted clean7f89f35e406e5feb284767e6f03fb4730c7f2c28 after XPath source
+review found no blocker and the root independently passed the source checker.
+That exact source revision and the frozen prebuilt identities above were used for
+the following execution; all five identities matched before and after.
+
+The actual supervisor command was `PYTHONDONTWRITEBYTECODE=1 python3
+artifacts/M8-xsd-corpus/7f89f35e-recursive-hint/execute.py`. Each of ten groups ran
+sequentially for product and BCL through pinned dotnet10.0.11 / XsdCorpus.dll,
+the original upstream root, exact one-group transient inventory, metadata set and
+ignored JSONL output. Twenty children emitted exactly22 rows, eleven IDs per
+engine, with exact coverage/uniqueness assertions. No extra original was added.
+
+Product:11 original passes and11 profile agreements, comprising three schema-valid,
+one complete instance-valid and seven complete instance-invalid observations.
+Every hint case carries its explicit verified profile marker and exactly one
+XSD.HintOrder diagnostic; no refusal or other error was credited semantic invalidity.
+BCL:four original passes plus seven original nonpasses/adapter-unassessed ordering
+limitations. Their supplemental actual BCL observations remain instance-valid;
+they never become declared-profile passes. The copied skipped-content interpretation
+remains labeled a project decision independently of these observations.
+
+| Exact original ID | Original expected | Immutable product80 | Product7f89 | BCL7f89 |
+| --- | --- | --- | --- | --- |
+| msMeta/Additional_w3c.xml#g83/s:addB077 | valid | schema-invalid / nonpass | schema-valid / pass | schema-valid / pass |
+| msMeta/Particles_w3c.xml#g169/s:particlesEb041 | valid | schema-invalid / nonpass | schema-valid / pass | schema-valid / pass |
+| msMeta/Particles_w3c.xml#g169/i0:particlesEb041.v | valid | schema-unavailable / nonpass | complete instance-valid / pass | complete instance-valid / pass |
+| msMeta/Particles_w3c.xml#g815/s:particlesZ010 | valid | schema-invalid / nonpass | schema-valid / pass | schema-valid / pass |
+| msMeta/Additional_w3c.xml#g159/i0:addB156.i | invalid | instance-valid / nonpass | complete instance-invalid / pass | ordering limitation / unassessed |
+| msMeta/Additional_w3c.xml#g161/i0:addB158.i | invalid | instance-valid / nonpass | complete instance-invalid / pass | ordering limitation / unassessed |
+| msMeta/Additional_w3c.xml#g162/i0:addB159.i | invalid | instance-valid / nonpass | complete instance-invalid / pass | ordering limitation / unassessed |
+| msMeta/Additional_w3c.xml#g164/i0:addB161.i | invalid | instance-valid / nonpass | complete instance-invalid / pass | ordering limitation / unassessed |
+| msMeta/Additional_w3c.xml#g165/i0:addB162.i | invalid | instance-valid / nonpass | complete instance-invalid / pass | ordering limitation / unassessed |
+| msMeta/Additional_w3c.xml#g167/i0:addB164.i | invalid | instance-valid / nonpass | complete instance-invalid / pass | ordering limitation / unassessed |
+| msMeta/Additional_w3c.xml#g169/i0:addB166.i | invalid | instance-valid / nonpass | complete instance-invalid / pass | ordering limitation / unassessed |
+
+For each hint case in both engines, the unchanged planning journal records the
+authored namespace/location/element/base and exactly the original first inputs.
+Requests exactly match those input URIs, including no-namespace5 beforefoo1/bar3
+for XML7/8/10. Only schemas1/3/5 are acquired; ignored schemas2/4/6 are never
+requested. Product resolver referrers point to the existing instance wrapper;
+the new profile journal records the original instance URI. No validation-triggered
+hint acquisition occurs. Public stream validation retains original bytes and caller
+ownership; the URI is provenance, not a fabricated instance BaseUri option.
+
+All20 children (PIDs57520 through57539) exited0, were reaped, had absent process
+groups and closed logs; supervisor session77669 ended exit0. Each child had30s
+outer supervision and10s TERM/KILL cleanup, unused. Original public cancellation
+is30s, compile/validation work100million, components1million, diagnostics1024,
+document characters/external bytes67,108,864, depth1024, attributes4096,
+token characters16,777,216, interned names262,144, external resources1024 and
+inclusion depth128. None was raised. Exact-ID/original-profile/request/provenance
+and cleanup assertions passed. Raw journals, subset inventories, commands,
+lifecycle and source80 rows remain ignored under the7f89 artifact directory.
+
+Old source80 failures, source12d product/BCL adapter limitations, earlier guard
+failure and all prior full counts remain historical evidence. This11-target overlay
+is not a new full corpus result. A2 stays failed/in_progress pending the integrated
+full gate and remaining type/particle/optional/standards/input policy work.
+No optional mapping, other open original, full suite, measurement or cross-project
+coordination occurred.
