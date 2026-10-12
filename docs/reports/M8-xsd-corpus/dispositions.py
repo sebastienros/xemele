@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 """Report original oracle, adjudicated profile, and exact exception separately."""
-import argparse, collections, json
+import argparse, collections, importlib.util, json
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[3]
+_spec=importlib.util.spec_from_file_location('approved_dispositions',Path(__file__).with_name('approved_dispositions.py'))
+_approved=importlib.util.module_from_spec(_spec);_spec.loader.exec_module(_approved)
+approved_sources=_approved.approved_sources
 TIME='msMeta/DataTypes_w3c.xml#g119/s:time_maxInclusive007_119'
 ERR='msMeta/Errata10_w3c.xml#g18/s:errF001'
 DEP='msMeta/Errata10_w3c.xml#g18/i0:errF001.i'
@@ -48,12 +51,13 @@ def view(row):
  if row['id'] in FATALXML:
   fatal=row['actual'] in ['incomplete-refusal','instance-syntax-error']
   result['profilePassed']=None if fatal else False;result['fatalXmlUnassessed']=fatal
+ result['approvedGateDisposition']=_approved.gate_disposition(row)
  return result
 
 def main():
  p=argparse.ArgumentParser();p.add_argument('revision');p.add_argument('--engine',default='product',choices=['product','bcl']);a=p.parse_args()
  root=ROOT/'artifacts/M8-xsd-corpus'/a.revision;rows=[r for f in sorted(root.glob(a.engine+'-*.jsonl')) for r in map(json.loads,f.read_text().splitlines())]
- counts=collections.Counter();inventory=json.loads((ROOT/'tests/corpora/xsd/inventory.json').read_text());conditional={r['id'] for g in inventory['groups'] for r in g['instances'] if r['adjudication'] and not r['adjudication']['supplemental']}
+ counts=collections.Counter();uncovered=[];inventory=json.loads((ROOT/'tests/corpora/xsd/inventory.json').read_text());conditional={r['id'] for g in inventory['groups'] for r in g['instances'] if r['adjudication'] and not r['adjudication']['supplemental']}
  for row in rows:
   if row['classification']!='applicable':counts[row['classification']]+=1;continue
   if row['id'].endswith('/unicode16-supplemental'):counts['supplemental']+=1
@@ -62,8 +66,11 @@ def main():
   d=view(row)
   counts['profilePassed' if d['profilePassed'] is True else 'profileFailed' if d['profilePassed'] is False else 'profileApplicationInputUnassessed' if d['applicationInputUnassessed'] else 'profileAdapterUnassessed' if d['adapterUnassessed'] else 'profileFatalXmlUnassessed' if d['fatalXmlUnassessed'] else 'profileSubstrateUnassessed' if d['substrate'] else 'profileInvalidSchemaDependency' if d['invalidSchemaDependency'] else 'profileNotExecutable' if d['notExecutable'] else 'profileIndeterminateObserved']+=1
   if d['approvedException']:counts['approvedExceptionOriginalFailure']+=1
+  if d['approvedGateDisposition']:counts['approvedGateDisposition.'+d['approvedGateDisposition']]+=1
+  elif row['passed'] is not True:
+   uncovered.append({'id':row['id'],'expected':row['expected'],'actual':row['actual'],'codes':row.get('codes',[]),'originalPassed':row['passed'],'profile':d})
  for name in [TIME,ERR,DEP]:
   matches=[r for r in rows if r['id']==name]
   if matches:print(name,'original=',matches[0]['expected'],'actual=',matches[0]['actual'],view(matches[0]))
- print(json.dumps(dict(sorted(counts.items())),sort_keys=True))
+ print(json.dumps({'counts':dict(sorted(counts.items())), 'originalNonpassesWithoutExactGateDisposition':uncovered, 'gateStatus':'pending root review; no automatic conformance pass'},sort_keys=True))
 if __name__=='__main__':main()

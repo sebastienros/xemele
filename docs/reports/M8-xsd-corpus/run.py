@@ -1,47 +1,260 @@
 #!/usr/bin/env python3
-"""Sequential bounded corpus execution; raw journals stay in ignored artifacts."""
-import argparse, collections, hashlib, json, os, signal, subprocess
+"""One bounded two-engine campaign. Exit 0 means harness completion, never conformance."""
+import argparse
+import collections
+import hashlib
+import importlib.util
+import json
+import os
+import subprocess
+import time
+import uuid
 from pathlib import Path
-HERE=Path(__file__).resolve().parent;ROOT=HERE.parents[2]
-D='/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet'
-DLL=ROOT/'artifacts/M8-xsd-corpus/runner-bin/Release/net10.0/XsdCorpus.dll'
-CORPUS=ROOT/'tests/corpora/xsd';OUT=ROOT/'artifacts/M8-xsd-corpus'
-def verify(rows,expected,code):
- assert {r['id'] for r in rows}=={r['id'] for r in expected},'case ID coverage differs'
- assert len(rows)==len({r['id'] for r in rows}),'duplicate observations'
- return code==0
 
-def select_sets(selected,inventory):
- sets=[selected] if selected else inventory['testSets']
- assert all(s in inventory['testSets'] for s in sets),'unknown selected test set'
- return sets
+HERE = Path(__file__).resolve().parent
+ROOT = HERE.parents[2]
+CORPUS = ROOT / 'tests/corpora/xsd'
+OUT = ROOT / 'artifacts/M8-xsd-corpus'
+D = '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet'
+DLL = OUT / 'runner-bin/Release/net10.0/XsdCorpus.dll'
+PIN = '7bc3365c652a322f3d762021b3879eb92dae7e30'
+RUNTIME = '10.0.11'
+CAMPAIGN_SECONDS = 3600
+SET_WORK_SECONDS = 300
+CLEANUP_SECONDS = 10
+CAPS = dict(DocumentCharacters=67108864, ExternalBytes=67108864,
+            Depth=1024, AttributesPerElement=4096, TokenCharacters=16777216,
+            InternedNames=262144, ExternalResources=1024, InclusionDepth=128,
+            Diagnostics=1024, EvaluationWork=100000000, SchemaCompilationMaxOperations=100000000,
+            SchemaCompilationMaxComponents=1000000, ValidationMaxOperations=100000000, OperationSeconds=30)
+INTROSPECTION = {'common/introspection.testSet#g0/i1:introspect-testSet-NIST2004-01-14-2':
+                {'EvaluationWork': 20000000000, 'OperationSeconds': 60, 'ValidationMaxOperations': 20000000000},
+                'common/introspection.testSet#g0/i20:introspect-testSet-MS-DataTypes2006-07-15-21':
+                {'EvaluationWork': 20000000000, 'OperationSeconds': 60, 'ValidationMaxOperations': 20000000000},
+                'common/introspection.testSet#g0/i28:introspect-testSet-MS-Regex2006-07-15-29':
+                {'EvaluationWork': 20000000000, 'OperationSeconds': 60, 'ValidationMaxOperations': 20000000000}}
+
+
+def module(name, path):
+    spec = importlib.util.spec_from_file_location(name, path)
+    value = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(value)
+    return value
+
+
+supervision = module('corpus_supervision', HERE / 'supervision.py')
+
+
+def digest(path):
+    value = hashlib.sha256()
+    with Path(path).open('rb') as source:
+        for block in iter(lambda: source.read(1048576), b''):
+            value.update(block)
+    return value.hexdigest()
+
+
+def durable(path, value):
+    """Exclusive file creation, flushed/fsynced content, then fsynced directory."""
+    with Path(path).open('x') as stream:
+        json.dump(value, stream, sort_keys=True, indent=2)
+        stream.write('\n')
+        stream.flush()
+        os.fsync(stream.fileno())
+    directory = os.open(Path(path).parent, os.O_RDONLY)
+    try:
+        os.fsync(directory)
+    finally:
+        os.close(directory)
+
+
+def verify(rows, expected, code):
+    assert {r['id'] for r in rows} == {r['id'] for r in expected}, 'case ID coverage differs'
+    assert len(rows) == len({r['id'] for r in rows}), 'duplicate observations'
+    return code == 0
+
+
+def select_sets(selected, inventory):
+    sets = [selected] if selected else inventory['testSets']
+    assert all(s in inventory['testSets'] for s in sets), 'unknown selected test set'
+    return sets
+
+
+def expected_rows(inventory, testset):
+    return [r for g in inventory['groups'] if g['metadata'] == testset
+            for r in ([g['schema']] if g['schema'] else []) + g['instances'] + g['supplementalInstances']]
+
+
+def inspect_rows(spec):
+    rows = [json.loads(line) for line in Path(spec['journal']).read_text().splitlines()]
+    verify(rows, spec['expected'], 0)
+    originals = {row['id']: row for row in spec['expected']}
+    for row in rows:
+        expected = originals[row['id']]
+        for field in ('classification', 'kind', 'expected'):
+            assert row[field] == expected[field], f'{row["id"]}: changed {field}'
+        assert row['engine'] == spec['engine'], 'engine identity differs'
+        assert row['passed'] is None or type(row['passed']) is bool, 'invalid original result'
+    return rows
+
+
+def execute_cases(cases, outdir, environment, work_deadline, hard_deadline):
+    """Never inspect a journal before its durable cleanup receipt; stop on infrastructure failure."""
+    supervision.ARTIFACTS = outdir
+    result = {'status': 1, 'exitMeaning': 'harness completion only; no conformance pass',
+              'sequence': [], 'countsByEngine': {}, 'inspectedCases': 0,
+              'rawResultsInspected': 0, 'coverageFailure': None}
+    try:
+        for index, spec in enumerate(cases):
+            now = time.monotonic()
+            child_hard = min(now + spec.get('workSeconds', SET_WORK_SECONDS) + CLEANUP_SECONDS, hard_deadline)
+            child_work = min(now + spec.get('workSeconds', SET_WORK_SECONDS), work_deadline, child_hard - CLEANUP_SECONDS)
+            receipt = supervision.supervise_command(spec['argv'], index, environment, child_work, child_hard)
+            receipt.update(engine=spec['engine'], testSet=spec['testSet'], journal=str(spec['journal']))
+            result['sequence'].append(receipt)
+            durable(outdir / f'lifecycle-{index:03d}.json', receipt)
+            if not supervision.workload_succeeded(receipt):
+                break
+            try:
+                rows = inspect_rows(spec)
+            except Exception as error:
+                result['coverageFailure'] = {'command': index, 'error': str(error), 'type': type(error).__name__}
+                break
+            result['inspectedCases'] += 1
+            result['rawResultsInspected'] += len(rows)
+            counts = collections.Counter('excluded' if r['classification'] == 'excluded' else
+                                         'unresolved' if r['classification'] == 'unresolved' else
+                                         'originalPassed' if r['passed'] is True else
+                                         'originalNonpassed' if r['passed'] is False else
+                                         'originalIndeterminateObserved' for r in rows)
+            total = collections.Counter(result['countsByEngine'].get(spec['engine'], {}))
+            total.update(counts)
+            result['countsByEngine'][spec['engine']] = dict(total)
+            print(spec['engine'], spec['testSet'], 'completed', dict(counts), flush=True)
+        if (result['inspectedCases'] == len(cases) and result['coverageFailure'] is None
+                and all(supervision.workload_succeeded(r) for r in result['sequence'])):
+            result['status'] = 0
+        return result
+    finally:
+        result['allLaunchedChildrenClean'] = all(r['directChildReaped'] and r['ownedGroupAbsent'] and r['logClosed']
+                                               for r in result['sequence'])
+        durable(outdir / 'campaign-cleanup.json', result)
+
+
+def verified_dependencies():
+    own = json.loads((ROOT / 'docs/tasks/M8-xsd-corpus.json').read_text())
+    ids = set(own['depends_on']) | {'M8-xsd-type-relations', 'M8-xsd-particle-normalization', 'M8-xsd-optional-composition'}
+    statuses = {name: json.loads((ROOT / f'docs/tasks/{name}.json').read_text())['status'] for name in sorted(ids)}
+    assert all(s == 'verified' for s in statuses.values()), f'unverified dependency: {statuses}'
+    return statuses
+
+
+def mismatches(identities):
+    return [name for name, sha in identities.items() if not (ROOT / name).is_file() or digest(ROOT / name) != sha]
+
+
+def revision():
+    return subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True, timeout=5).strip()
+
+
+def prepare(path):
+    """Freeze only after future verified optional join, fresh build and accepted actual controls."""
+    dependencies = verified_dependencies()
+    assert not subprocess.check_output(['git', 'status', '--porcelain'], cwd=ROOT, text=True, timeout=5).strip(), 'source must be clean'
+    inventory = json.loads((CORPUS / 'inventory.json').read_text())
+    assert inventory['revision'] == PIN and len(inventory['testSets']) == 93
+    assert sum(len(expected_rows(inventory, s)) for s in inventory['testSets']) == 41736
+    module('corpus_dispositions', HERE / 'dispositions.py').approved_sources()
+    identities = {'tests/corpora/xsd/upstream/' + r['path']: r['sha256']
+                  for r in json.loads((CORPUS / 'resources.json').read_text())}
+    for folder in [CORPUS, HERE, ROOT / 'tests/Xemele.Conformance.Tests/Xsd', ROOT / 'tests/Xemele.Differential.Tests/Xsd']:
+        for file in folder.iterdir():
+            if file.is_file():
+                identities[str(file.relative_to(ROOT))] = digest(file)
+    for name in list(dependencies) + ['M8-xsd-corpus']:
+        file = ROOT / f'docs/tasks/{name}.json'
+        identities[str(file.relative_to(ROOT))] = digest(file)
+    for folder in [OUT / 'runner-bin/Release/net10.0', ROOT / 'src/Xemele/bin/Release/net10.0']:
+        assert folder.is_dir(), f'missing fresh build folder: {folder}'
+        for file in folder.rglob('*'):
+            if file.is_file():
+                identities[str(file.relative_to(ROOT))] = digest(file)
+    host = Path(D)
+    identities[str(host)] = digest(host)
+    runtime = host.parent / 'shared/Microsoft.NETCore.App' / RUNTIME
+    assert runtime.is_dir()
+    for file in runtime.rglob('*'):
+        if file.is_file():
+            identities[str(file)] = digest(file)
+    assert str(DLL.relative_to(ROOT)) in identities, 'runner absent'
+    assert not mismatches(identities), 'input identity changed before freeze'
+    manifest = dict(sourceRevision=revision(), upstreamRevision=PIN, runtime=RUNTIME,
+                    engines=['product', 'bcl'], testSets=inventory['testSets'],
+                    campaignSeconds=CAMPAIGN_SECONDS, setWorkSeconds=SET_WORK_SECONDS,
+                    cleanupSeconds=CLEANUP_SECONDS, effectiveLimits=CAPS, introspectionOverrides=INTROSPECTION,
+                    rowsPerEngine=41736, applicability=inventory['counts'],
+                    verifiedDependencies=dependencies, identities=identities)
+    assert OUT.resolve() in Path(path).resolve().parents, 'manifest belongs in ignored owned artifacts'
+    durable(path, manifest)
+    print(json.dumps({'manifest': str(path), 'sha256': digest(path)}, sort_keys=True), flush=True)
+
+
+def campaign(manifest_path, expected_hash):
+    started = time.monotonic()
+    hard = started + CAMPAIGN_SECONDS
+    work = hard - CLEANUP_SECONDS
+    assert digest(manifest_path) == expected_hash, 'frozen manifest changed'
+    manifest = json.loads(Path(manifest_path).read_text())
+    inventory = json.loads((CORPUS / 'inventory.json').read_text())
+    for key, value in dict(campaignSeconds=CAMPAIGN_SECONDS, setWorkSeconds=SET_WORK_SECONDS,
+                           cleanupSeconds=CLEANUP_SECONDS, effectiveLimits=CAPS,
+                           introspectionOverrides=INTROSPECTION, runtime=RUNTIME, upstreamRevision=PIN,
+                           engines=['product', 'bcl'], testSets=inventory['testSets'],
+                           rowsPerEngine=41736, applicability=inventory['counts'],
+                           verifiedDependencies=verified_dependencies(), sourceRevision=revision()).items():
+        assert manifest[key] == value, f'frozen {key} differs'
+    assert len(manifest['testSets']) == 93 and inventory['revision'] == PIN
+    assert sum(len(expected_rows(inventory, s)) for s in inventory['testSets']) == 41736
+    assert not mismatches(manifest['identities']), 'input identity changed before execution'
+    outdir = OUT / (manifest['sourceRevision'] + '-full-' + uuid.uuid4().hex)
+    outdir.mkdir(parents=True, exist_ok=False)
+    cases = []
+    for engine in manifest['engines']:
+        for testset in manifest['testSets']:
+            journal = outdir / (engine + '-' + testset.replace('/', '_') + '.jsonl')
+            cases.append(dict(engine=engine, testSet=testset, journal=journal,
+                              expected=expected_rows(inventory, testset),
+                              argv=[D, '--fx-version', RUNTIME, str(DLL), str(CORPUS / 'upstream'),
+                                    str(CORPUS / 'inventory.json'), testset, engine, str(journal)]))
+    durable(outdir / 'frozen-campaign.json', {'manifest': str(manifest_path), 'sha256': expected_hash,
+                                            'commands': [c['argv'] for c in cases], 'sourceRevision': manifest['sourceRevision']})
+    result = None
+    try:
+        result = execute_cases(cases, outdir, os.environ.copy(), work, hard)
+    finally:
+        after = mismatches(manifest['identities'])
+        manifest_changed = digest(manifest_path) != expected_hash
+        exceeded = time.monotonic() > hard
+        durable(outdir / 'final-identity-cleanup.json', {'result': result, 'identityChanges': after,
+                                                       'manifestChanged': manifest_changed,
+                                                       'totalDeadlineExceeded': exceeded})
+    print('ARTIFACTS', outdir, 'EXIT 0 MEANS HARNESS COMPLETION ONLY', flush=True)
+    return 0 if result['status'] == 0 and not after and not manifest_changed and not exceeded else 1
+
 
 def main():
- p=argparse.ArgumentParser();p.add_argument('--engine',choices=['product','bcl'],required=True);p.add_argument('--set');a=p.parse_args();OUT.mkdir(parents=True,exist_ok=True)
- inventory=json.loads((CORPUS/'inventory.json').read_text());revision=subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip();outdir=OUT/revision;outdir.mkdir(exist_ok=True);sets=select_sets(a.set,inventory);process_failures=0;total=collections.Counter()
- for testset in sets:
-  name=testset.replace('/','_');journal=outdir/f'{a.engine}-{name}.jsonl';log=outdir/f'{a.engine}-{name}.log';journal.unlink(missing_ok=True)
-  with log.open('w') as output:
-   command=[D,'--fx-version','10.0.11',str(DLL),str(CORPUS/'upstream'),str(CORPUS/'inventory.json'),testset,a.engine,str(journal)]
-   child=subprocess.Popen(command,cwd=ROOT,stdout=output,stderr=subprocess.STDOUT,start_new_session=True)
-   try:code=child.wait(timeout=300)
-   except subprocess.TimeoutExpired:
-    os.killpg(child.pid,signal.SIGTERM)
-    try:child.wait(timeout=10)
-    except subprocess.TimeoutExpired:os.killpg(child.pid,signal.SIGKILL);child.wait()
-    code='timeout'
-  rows=[json.loads(r) for r in journal.read_text().splitlines()] if journal.exists() else []
-  seen={r['id'] for r in rows};expected=[r for g in inventory['groups'] if g['metadata']==testset for r in ([g['schema']] if g['schema'] else [])+g['instances']+g['supplementalInstances']]
-  assert len(seen)==len(rows),'duplicate observations'
-  if len(rows)!=len(expected):
-   with journal.open('a') as out:
-    for row in expected:
-     if row['id'] in seen:continue
-     actual='harness-process-failure' if row['classification']=='applicable' else row['classification']
-     obs={'id':row['id'],'engine':a.engine,'classification':row['classification'],'kind':row['kind'],'expected':row['expected'],'actual':actual,'detail':f'process exit={code}; original case not completed','codes':[],'resources':[],'passed':False if row['classification']=='applicable' else None};rows.append(obs);out.write(json.dumps(obs)+'\n')
-  if not verify(rows,expected,code):process_failures+=1
-  counts=collections.Counter(('excluded' if r['classification']=='excluded' else 'unresolved' if r['classification']=='unresolved' else 'pass' if r['passed'] is True else 'fail' if r['passed'] is False else 'indeterminate-observed') for r in rows)
-  total.update(counts);print(a.engine,testset,'exit',code,dict(counts),flush=True)
- print('TOTAL',dict(total),'process_failures',process_failures,flush=True)
- return 1 if total['fail'] or total['unresolved'] or process_failures else 0
-if __name__=='__main__':raise SystemExit(main())
+    parser = argparse.ArgumentParser(description=__doc__)
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument('--prepare', type=Path)
+    group.add_argument('--manifest', type=Path)
+    parser.add_argument('--manifest-sha256')
+    args = parser.parse_args()
+    if args.prepare:
+        assert args.manifest_sha256 is None
+        prepare(args.prepare)
+        return 0
+    assert args.manifest_sha256, 'explicit frozen manifest hash required'
+    return campaign(args.manifest, args.manifest_sha256)
+
+
+if __name__ == '__main__':
+    raise SystemExit(main())
