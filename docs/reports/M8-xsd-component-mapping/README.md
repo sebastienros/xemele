@@ -23,5 +23,18 @@ and the name productions have no supplementary range. XML parser Fifth Edition
 behavior is preserved. The coordinator-approved adjudication is
 `docs/orchestration/M8-xsd-xmlversions-adjudication.json`.
 
-Baseline and repaired actual results will be recorded after execution; no checks
-or allocation results are claimed yet.
+Actual baseline at 9fcb4a58c: offline restore and Release build passed with
+zero warnings/errors; four public witnesses produced one pass and three expected
+failures. groupN007 was complete-invalid with XSD.Content character-content
+rejection despite BCL validation success. xv001 wrongly published. xv004 already
+rejected at its NCName enumeration facet (line13/column25/byte541), not at its
+component names. At f433b15ca, direct compiler witnesses confirmed both xv001
+and xv004 wrongly compiled: six cases produced one pass/five expected failures.
+Raw output is ignored under artifacts/M8-xsd-component-mapping.
+
+The repair validates borrowed UTF-16 scalars against the verified Second Edition
+TextBinaryNames tables. A single component-charged adapter per compilation maps
+all lookup work/refusal to the authored source node. No temporary lexical value
+or datatype payload is constructed. Mixed zero-occurrence synthesis reuses the
+existing charged source-located mapping boundary. Repaired results and allocation
+evidence remain pending.

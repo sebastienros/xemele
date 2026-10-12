@@ -65,7 +65,9 @@ public sealed class MappingTests
     {
         string prefix = "<xs:group name='g'><xs:sequence/></xs:group>";
         var restriction = Type(Compile(prefix + $"<xs:complexType name='T' mixed='true'>{particle}</xs:complexType>"));
-        Assert.Equal(XsdContentKind.Empty, restriction.ContentKind); Assert.Null(restriction.Particle);
+        Assert.Equal(XsdContentKind.Mixed, restriction.ContentKind); Assert.NotNull(restriction.Particle);
+        Assert.Equal(BigInteger.One, restriction.Particle.MinOccurs); Assert.Equal(BigInteger.One, restriction.Particle.MaxOccurs);
+        var group = Assert.IsType<XsdGroupTerm>(restriction.Particle.Term); Assert.Equal(XsdCompositor.Sequence, group.Compositor); Assert.Empty(group.Particles);
         var graph = Compile(prefix + $"<xs:complexType name='B' mixed='true'/><xs:complexType name='T'><xs:complexContent mixed='false'><xs:extension base='B'>{particle}</xs:extension></xs:complexContent></xs:complexType>");
         Assert.Equal(XsdContentKind.Mixed, Type(graph).ContentKind); Assert.Same(Type(graph, "B").Particle, Type(graph).Particle);
     }
