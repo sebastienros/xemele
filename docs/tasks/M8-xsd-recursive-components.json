@@ -34,29 +34,70 @@
     {
       "id": "M8-xsd-recursive-components-A1",
       "description": "Reproduce and accept unchanged original addB077, particlesZ010 and particlesEb041 schemas. Separate component registration/body completion across element-to-anonymous-type boundaries from circular model-group particle containment and circular base-type chains.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "original-baseline",
+        "branch-correctness"
+      ]
     },
     {
       "id": "M8-xsd-recursive-components-A2",
       "description": "Preserve direct/indirect forbidden cycle rejection, declaration-order independence, unused component publication checkpoints, finite nested validation, source provenance, aggregate work/components and cancellation without mutable graph escape.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "branch-correctness"
+      ]
     },
     {
       "id": "M8-xsd-recursive-components-A3",
       "description": "Pass actual original baseline and repaired public outcomes, independently specified recursive/negative neighbors, affected compiler/content/facade checks, public/frozen APIs and normal/XML-only consumers, actual relevant allocation evidence and planning validation.",
       "status": "pending",
-      "evidence": []
+      "evidence": [
+        "branch-correctness"
+      ]
     }
   ],
-  "implementation": [],
-  "evidence": [],
+  "implementation": [
+    "src/Xemele/Validation/Xsd/Compilation/Compiler.cs: Anonymous element-boundary registration and prepublication pendingElementTypes drain; unchanged cycle guards",
+    "tests/Xemele.Tests/M8-xsd-recursive-components/: 37 original, independent neighbor and boundary cases",
+    "tests/fixtures/M8-xsd-recursive-components/manifest.json: pinned unchanged W3C originals/copyright/hashes",
+    "samples/M8-xsd-recursive-components/: recursive normal and true XML-only consumer",
+    "docs/reports/M8-xsd-recursive-components/: counter-disabled bounded checks, independent inventory, historical failures and allocation applicability"
+  ],
+  "evidence": [
+    {
+      "id": "original-baseline",
+      "kind": "check",
+      "revision": "b2bf28d12f0586e3f02fad6f1b108416ce4c4e77",
+      "command": "Pinned SDK10.0.400 offline restore/Release build; dotnet --fx-version 10.0.11 Xemele.Tests.dll -namespace Xemele.Tests.M8XsdRecursiveComponents -parallelMode none -result-xml artifacts/M8-xsd-recursive-components/baseline.xml",
+      "result": "failed",
+      "summary": "4original cases all fail,0errors/skips/notrun; BCL3schemas+originalinstance pass before each product failure. addB077/particlesZ010 reenter model-group guard; particlesEb041 schema+instance reenter derivation guard. Build0warnings/errors; exact originals/license/hashmanifest unchanged.",
+      "artifact": "docs/reports/M8-xsd-recursive-components/correctness-summary.json"
+    },
+    {
+      "id": "branch-correctness",
+      "kind": "check",
+      "revision": "9e376cd982159b27cbb05c1fa5cf2577bd21e7d2",
+      "command": "python3 docs/reports/M8-xsd-recursive-components/check.py (initial version at9e376cd98, before additional task consumer); saved-output independent inventory validation and omitted-owned-row negative control",
+      "result": "passed",
+      "summary": "1300=37owned+1263prior affected;42safe resolver,0failed/errors/skips/notrun. Original3schemas+instance pass. Exact work/components including imported parsing, deferred nullcap cancellation/source mutation, order/mutual recursion and negative BCL cycles pass. Public1430,all8frozenlanes/internal compiler/content/identity/evaluator/facade and normal/trueXML-only facade consumers pass.6Release builds0warnings/errors;planning196/diff. Source SDK10.0.400/runtime10.0.11 Arm64, no counters/heap/timing. Omittedowned-row control rejects.",
+      "artifact": "docs/reports/M8-xsd-recursive-components/correctness-summary.json"
+    }
+  ],
   "blockers": [],
   "handoff": {
-    "summary": "Ordered repair planned from unchanged original corpus witnesses and independent source/Second Edition review. Not claimed or implemented; no unverified peer dependency consumption.",
-    "checks": [],
-    "remaining": [],
+    "summary": "Branch repair and correctness complete; waiting for independent source review before counter-disabled allocation preparation and separate root execution. Task stays in_progress; A3 actual allocations pending.",
+    "checks": [
+      "Actual baseline4failed; original repaired4pass; stable9e376cd98 check1300+42pass,public1430/all8frozen and normal/XML-only consumers pass;6builds0warnings/errors,planning196/diff.",
+      "Own recursive consumer normal+trueXML-only precommit snapshot now c5a9392e3 passed2builds0warnings/errors; string/DOM/stream finite recursion+invalid neighbors/open streams. Runtime/tests unchanged from9e376cd98.",
+      "Historical expanded build1test compileerror and firstowned35cases32pass/3wrong provenance expectations retained in README/summary, corrected without runtime location changes.",
+      "No allocation counters/heap/timing or measurement preparation run; no allocation-free compilation claim."
+    ],
+    "remaining": [
+      "Independent source review.",
+      "Counter-disabled allocation preparation and actual bounded root-owned execution with source/workload identity, controls and cleanup.",
+      "Final actual evidence commit and integrated coordinator verification."
+    ],
     "requests": []
   }
 }
