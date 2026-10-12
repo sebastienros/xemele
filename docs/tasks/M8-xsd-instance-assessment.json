@@ -78,17 +78,37 @@
       "result": "passed",
       "summary": "Owned44 exact inventory +syntax1146(33+1113affected)+fixed45+safe42;0errors/failures/skips/not-run. Public1417;frozen316+139/257/24/9/2/7;normal+trueXML-only;5builds0warnings/errors;planning188/diff. Omitted-owned-row control rejected; original fixture SHA256 matches.",
       "artifact": "docs/reports/M8-xsd-instance-assessment/checks.json"
+    },
+    {
+      "id": "runtime-source-review",
+      "kind": "review",
+      "revision": "16687e8eae341b184f891a1f720e8c29be9e13fc",
+      "command": "Coordinator and independent contract source review communicated in worker chat",
+      "result": "passed",
+      "summary": "Root/independent contract accepted Values/Session semantics and all44 inventory/fixtures; A1/A2 accepted. No API change or outside request. This is review evidence, not a test run.",
+      "artifact": null
+    },
+    {
+      "id": "branch-preparation",
+      "kind": "check",
+      "revision": "092a3ba4b4fc513e3439a496fef690a1a0563a99",
+      "command": "python3 docs/reports/M8-xsd-instance-assessment/prepare.py; elevated python3 docs/reports/M8-xsd-instance-assessment/measure.py --verify-only; elevated python3 docs/reports/M8-xsd-instance-assessment/measure.py --preflight",
+      "result": "passed",
+      "summary": "Pinned offline Release build0warnings/errors;16routes/1312calls/1968consumed;all allocation/GC/timing disabled.462frozen identities matched before/after;control childPID291 exit0,reaped/groupabsent/logclosed. No worker measurement.",
+      "artifact": "docs/reports/M8-xsd-instance-assessment/preparation-summary.md"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Four unchanged original disagreements repaired with no frozen API change; branch correctness passed. Ready for bounded independent source review.",
+    "summary": "A1/A2 branch correctness and independent runtime review passed. Frozen16route positive-owned-cost allocation payload built and counter-disabled preflight passed; A3 remains pending root allocation grant/run.",
     "checks": [
       "Owned44+syntax1146+fixed45+safe42 passed; public/frozen APIs and normal+trueXML-only consumers passed; planning188/diff passed.",
-      "Historical initial test-code build errors, stale-baseline retry, BCL key/nillable assumption and display-name truncation checker failure retained in README."
+      "Historical initial test-code build errors, stale-baseline retry, BCL key/nillable assumption and display-name truncation checker failure retained in README.",
+      "Allocation preparation: pinned Release0warnings/errors;16disabledroutes/1312calls/1968consumed;462identities;controlPID291exit0/reaped/groupabsent/logclosed."
     ],
     "remaining": [
-      "A3 allocation evidence: prepare after independent source acceptance; root sole launcher after fresh host-wide PARK and durable lease. No worker counters/BDN."
+      "A3: independent allocation payload source review; root fresh verify/preflight, all-actor PARK and durable grant, sole-launch actual bounded allocation, durable cleanup RELEASE, concise raw-result summary. No worker counters/BDN.",
+      "Set implemented only after actual allocation requirement passes; coordinator alone integrates/verifies."
     ],
     "requests": []
   }
