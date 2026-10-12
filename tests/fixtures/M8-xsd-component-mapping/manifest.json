@@ -1,0 +1,77 @@
+{
+  "source_url": "https://github.com/w3c/xsdtests",
+  "source_revision": "7bc3365c652a322f3d762021b3879eb92dae7e30",
+  "files": [
+    {
+      "source": "msData/group/groupN007.xsd",
+      "file": "groupN007.xsd",
+      "sha256": "3dc500d7bddb894867340e53338c3b8dae6f6f0dce14653d773f8227cf381b0d"
+    },
+    {
+      "source": "msData/group/groupN007.xml",
+      "file": "groupN007.xml",
+      "sha256": "e8b27c58f530100bd4392bd839b61ea782f7e0c5e4e50f0785114039f6fcafee"
+    },
+    {
+      "source": "msData/group/groupN008.xsd",
+      "file": "groupN008.xsd",
+      "sha256": "e62a995b00ac1d938fd6320a5e323abb7018f2ad616bb2736755348a04fcc17f"
+    },
+    {
+      "source": "msData/group/groupN008.xml",
+      "file": "groupN008.xml",
+      "sha256": "f3be397438655c8b5e40fc494019628a04fdd2e6d0875029cefb4806f0bf7af5"
+    },
+    {
+      "source": "saxonData/XmlVersions/xv001.xsd",
+      "file": "xv001.xsd",
+      "sha256": "a9cc123c2896520911b32f0ea157fd35402900155df5a200ae857b31fad3665d"
+    },
+    {
+      "source": "saxonData/XmlVersions/xv004.xsd",
+      "file": "xv004.xsd",
+      "sha256": "fe325659bef34ec5d40a043a4d29512df9160b871288f47da73189456b42f71e"
+    },
+    {
+      "source": "00COPYRIGHT",
+      "file": "00COPYRIGHT",
+      "sha256": "7eed412023877d15a3900b6802afb9e6365c0ea0a71a1456c5bf5f3a591e7fb2"
+    }
+  ],
+  "witnesses": [
+    {
+      "id": "msMeta/Group_w3c.xml#g172/i0:groupN007v.v",
+      "originalExpected": "valid",
+      "profileExpected": "valid"
+    },
+    {
+      "id": "msMeta/Group_w3c.xml#g173/i0:groupN008v.i",
+      "originalExpected": "invalid",
+      "profileExpected": "invalid"
+    },
+    {
+      "id": "saxonMeta/XmlVersions.testSet#g0/s:xv001.xsd",
+      "group": "xv001",
+      "name": "xv001.xsd",
+      "kind": "schema",
+      "fixture": "saxonData/XmlVersions/xv001.xsd",
+      "fixture_sha256": "a9cc123c2896520911b32f0ea157fd35402900155df5a200ae857b31fad3665d",
+      "originalExpected": "valid",
+      "disposition": "assess",
+      "derivedExpected": "invalid",
+      "reason": "Component name / xs:NCName facet violates referenced XML Second Edition name productions despite Fifth Edition compatible XML syntax."
+    },
+    {
+      "id": "saxonMeta/XmlVersions.testSet#g3/s:xv004.xsd",
+      "group": "xv004",
+      "name": "xv004.xsd",
+      "kind": "schema",
+      "fixture": "saxonData/XmlVersions/xv004.xsd",
+      "fixture_sha256": "fe325659bef34ec5d40a043a4d29512df9160b871288f47da73189456b42f71e",
+      "originalExpected": "valid",
+      "disposition": "assess",
+      "derivedExpected": "invalid",
+      "reason": "Component name / xs:NCName facet violates referenced XML Second Edition name productions despite Fifth Edition compatible XML syntax."
+    }
+  ]
+}
