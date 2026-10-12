@@ -4,11 +4,11 @@
   "milestone": "M8",
   "title": "Keep nullable internal candidate out of runtime API union",
   "kind": "contract",
-  "status": "implemented",
+  "status": "verified",
   "owner": "M8 coordinator / isolated API-scope repair",
   "branch": "codex/m8-contract-api-scope",
   "base_revision": "644419ccdbad27d28d1a39ba1d0130ab7ca62ff6",
-  "integration_revision": null,
+  "integration_revision": "45cb330478e0f754d7141ed94390eb5fb8bc7dde",
   "depends_on": [
     "M8-xsd-missing-components-contract"
   ],
@@ -32,7 +32,8 @@
       "description": "Global docs/api union contains only shipped runtime API rows; internal nullable candidate rows remain unchanged in contract fixture candidate golden and exact delta. Replace contract runtime fragment with canonical header-only internal-task pattern, without runtime/public API changes.",
       "status": "passed",
       "evidence": [
-        "branch-publication-proof"
+        "branch-publication-proof",
+        "integrated-publication-proof"
       ]
     },
     {
@@ -40,7 +41,8 @@
       "description": "Refresh only the changed fragment identity in contract source manifest. Prove complete API union membership/canonical rows/no duplicate members and no candidate internal declaration leakage, candidate golden and semantic fixtures unchanged, relevant planning and integrated checks pass.",
       "status": "passed",
       "evidence": [
-        "branch-publication-proof"
+        "branch-publication-proof",
+        "integrated-publication-proof"
       ]
     }
   ],
@@ -58,17 +60,24 @@
       "result": "passed",
       "summary": "54 runtime API fragments,1430 canonical unique public members, no internal candidate leakage; candidate/old projection hashes unchanged; all30 manifest hashes match;199tasks valid. No runtime/compiler launched.",
       "artifact": null
+    },
+    {
+      "id": "integrated-publication-proof",
+      "kind": "integration",
+      "revision": "45cb330478e0f754d7141ed94390eb5fb8bc7dde",
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 docs/reports/M8-xsd-contract-api-scope/check.py; python3 tools/planning/tasks.py validate; git diff --check",
+      "result": "passed",
+      "summary": "Integrated54fragments/1430canonical unique public members; no internal candidate leakage; candidate/old hashes unchanged; all30contractmanifest identities matched;199tasks valid. No runtime or compiler launched.",
+      "artifact": null
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Scoped branch repair implemented; candidate semantic/compiled projection remains unchanged; runtime union publication corrected.",
+    "summary": "Integrated verified API publication scope repair; internal candidate compile proof remains unchanged and runtime/public union preserved.",
     "checks": [
       "Owned static proof passed; planning199 and whitespace passed"
     ],
-    "remaining": [
-      "Integrate and run same static boundary proof on combined tree"
-    ],
+    "remaining": [],
     "requests": []
   }
 }
