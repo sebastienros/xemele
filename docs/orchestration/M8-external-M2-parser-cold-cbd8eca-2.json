@@ -1,0 +1,100 @@
+{
+  "id": "M2-parser-cold-cbd8eca-attempt2",
+  "status": "PARK_REQUESTED",
+  "ownerChat": "01a12d32-4b4c-7632-8cae-ac5f5780cc3e",
+  "earliestStart": "2026-10-12T01:29:00Z",
+  "latestStart": "2026-10-12T01:40:00Z",
+  "absoluteCleanupCap": "2026-10-12T01:42:00Z",
+  "maximumSeconds": 120,
+  "cleanupSeconds": 10,
+  "manifestSha256": "7adc5249507ab0be1447dd150fc7fdf89c537c7371e50f0a7955ffb78f4b5770",
+  "supervisorSha256": "8d209ce1276f04c3761496a56c663fedca7ae3968766fb769be097dc5a8807a4",
+  "preflightSha256": "65db369d712f199984e781662977e1e832bab6473aa9d33ad0e7573b290f7d0f",
+  "phases": [
+    {
+      "source_revision": "dad168cd604ca937db958918feedf38beb9199e9",
+      "log": "cold-baseline.log",
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "exec",
+        "--fx-version",
+        "10.0.11",
+        "/Users/sebastienros/.codex/worktrees/d7ea/gregsex/docs/reports/M2-parser/artifacts/baseline/GregsEx.Tests.dll",
+        "--filter-namespace",
+        "GregsEx.Tests.Flavors.EcmaScript.Parsing.Allocation",
+        "--minimum-expected-tests",
+        "2",
+        "--parallel",
+        "none",
+        "--fail-skips",
+        "on",
+        "--fail-warns",
+        "on",
+        "--no-ansi",
+        "--show-live-output",
+        "on"
+      ]
+    },
+    {
+      "source_revision": "cbd8eca8e739835d16cef05803b333c49c512a7c",
+      "log": "cold-repaired.log",
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "exec",
+        "--fx-version",
+        "10.0.11",
+        "/Users/sebastienros/.codex/worktrees/d7ea/gregsex/docs/reports/M2-parser/artifacts/repaired/GregsEx.Tests.dll",
+        "--filter-namespace",
+        "GregsEx.Tests.Flavors.EcmaScript.Parsing.Allocation",
+        "--minimum-expected-tests",
+        "2",
+        "--parallel",
+        "none",
+        "--fail-skips",
+        "on",
+        "--fail-warns",
+        "on",
+        "--no-ansi",
+        "--show-live-output",
+        "on"
+      ]
+    },
+    {
+      "source_revision": "cbd8eca8e739835d16cef05803b333c49c512a7c",
+      "log": "grammar-cold-final.log",
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "exec",
+        "--fx-version",
+        "10.0.11",
+        "/Users/sebastienros/.codex/worktrees/d7ea/gregsex/docs/reports/M2-parser/artifacts/repaired/GregsEx.Tests.dll",
+        "--filter-method",
+        "GregsEx.Tests.Flavors.EcmaScript.Parsing.BoundaryTests.ParserCompilationAllocationsAreExplicitColdOwnedCosts",
+        "--minimum-expected-tests",
+        "1",
+        "--parallel",
+        "none",
+        "--fail-skips",
+        "on",
+        "--fail-warns",
+        "on",
+        "--no-ansi",
+        "--show-live-output",
+        "on"
+      ]
+    }
+  ],
+  "scope": "Three prebuilt cold compilation allocation phases2+2+1, serial, pinned runtime. No BDN/zero/hotmatcher/speed claim. No build/restore/discovery/full-payload-hash/retry/extension underlease; stopfirstfailure, bounded groups cleanup and immediate RELEASE before analysis. Content600 not included.",
+  "acks": {},
+  "pendingAcks": [
+    "root",
+    "Xemele main",
+    "content",
+    "facets",
+    "report",
+    "research parser",
+    "GregsEx THREE"
+  ],
+  "recordedUtc": "2026-10-12T01:30:11.522401+00:00",
+  "payloadLeaseId": "M2-parser-cold-cbd8eca"
+}
