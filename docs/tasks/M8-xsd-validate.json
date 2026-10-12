@@ -4,7 +4,7 @@
   "milestone": "M8",
   "title": "XSD core instance validation",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M8 coordinator01a12c6c-b333-71d3-877f-0d186618e21d / assigned isolated worker",
   "branch": "codex/m8-xsd-validate",
   "base_revision": "06f75fd94392431fb28b8aeac7103c799eb67a51",
@@ -36,20 +36,35 @@
     {
       "id": "M8-xsd-validate-A1",
       "description": "Implement instance traversal, types/facets, xsi:type/nil, attributes/defaults/fixed and operation state through identity hook.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "core-correctness",
+        "canonical-join-source-review",
+        "coordinator-combined-correctness",
+        "owned-allocation"
+      ]
     },
     {
       "id": "M8-xsd-validate-A2",
       "description": "Test valid/invalid instances, detailed diagnostics, resolver grants, no silent DOM mutation and limits.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "core-correctness",
+        "canonical-join-source-review",
+        "coordinator-combined-correctness",
+        "owned-allocation"
+      ]
     },
     {
       "id": "M8-xsd-validate-A3",
       "description": "Demonstrate the deliverable using only verified dependencies and this task; record actual API/output files and checks at the tested revision. Preserve earlier milestone behavior.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "core-correctness",
+        "canonical-join-source-review",
+        "coordinator-combined-correctness",
+        "owned-allocation"
+      ]
     }
   ],
   "implementation": [
@@ -150,19 +165,36 @@
       "result": "passed",
       "summary": "Both reviewers accepted final join: canonical lexical/context assessed against actual type; actual selected value preserved; fixed uses declared value; shared operation budgets/cancellation/caller exceptions and single invalid identity leave preserved. Root independently ran combined937 plus42=979allpass at7c862528d88fb725e322eb53c278efe268b9fac8,0fail/errors/skips/not-run/warnings;1410public/2frozen,normal/trueXML-only,planning182/diffpass. Durable root review2afe8aad. Allocation remains pending.",
       "artifact": "docs/reports/M8-xsd-validate/canonical-join.md"
+    },
+    {
+      "id": "coordinator-combined-correctness",
+      "kind": "check",
+      "revision": "7c862528d88fb725e322eb53c278efe268b9fac8",
+      "command": "Coordinator-reported python3 docs/reports/M8-xsd-validate/check.py execution on combined source; not a worker execution",
+      "result": "passed",
+      "summary": "Root reported actual937correctness(156owned+86helper+695affected)+42resolver=979allpassed,0fail/errors/skips/not-run/buildwarnings/errors;1410public/2frozen,normal+trueXML-only consumers,planning182/diffpassed. Durable root review2afe8aad; final canonical join source accepted by both reviewers.",
+      "artifact": "docs/reports/M8-xsd-validate/canonical-join.md"
+    },
+    {
+      "id": "owned-allocation",
+      "kind": "check",
+      "revision": "7b29ab22e478fe6949d75147391fdc5382e00167",
+      "command": "Coordinator executed python3 docs/reports/M8-xsd-validate/measure.py --granted 829aeeff0b35c30d396d6efbd2fa7655436126a933378a1e349fab2ac8c75746 2026-10-12T04:38:24.244347+00:00 2026-10-12T04:39:24.244347+00:00; exact prebuilt control then measure",
+      "result": "passed",
+      "summary": "Grantde7c0ac6/cleanupRELEASE84386ee5 preceded inspection;children37540/37542exit0/reaped/groupsabsent/logsclosed;448identitiesmatchedbefore/after.9ownedrows each64calls after16warmups,allpositive.Cold1810728/1setup;positive1048bytes/1024bytearray;approximatewholeheapretaineddelta8056/16invalidresults. Per-route numerators/denominators and ownership/JIT/GC limitations in allocation.md; no zero/timing/BDN/publicfacade claim. Acceptedruntime75d037bcunchanged;rawSHAae8720835d04212334a2cc3bfffe2400e5f75d784fadba77e75105c1b079a1b9;no raw files committed.",
+      "artifact": "docs/reports/M8-xsd-validate/allocation.md"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Final canonical join source accepted by both reviewers; worker937/root979combined pass. Preparing nine owned-output allocation routes with counters disabled; no host measurement grant.",
+    "summary": "Implemented internal evaluator at75d037bc; bothsource reviews and requiredallocation accepted. Worker937+42passed; coordinator979combinedpassedat7c862528. Earlierfailurehistorypreserved. Finalhandoff relinquishes ALL task/source/test/report/branchwrites; coordinatoraloneintegrates/verifies.",
     "checks": [
-      "75d037bc:937selected(156owned+86helper+695otheraffected),allpass/0errors/failures/skips/not-run;safe42allpass.",
-      "1410public/2frozen evaluator/316datatype/316facet members matched;normal+trueXML-only consumerspassed;Release0warnings/errors;planning182/diffpass.",
-      "All22assessmentroutesandbothcanonicalwitnessesnowpass;earlierfailure/rootbefore-afterevidencepreserved,nooracleredesign/exclusions."
+      "Worker75d037bc:937correctness(156owned+86helper+695affected) plus42resolverallpassed;1410public/2frozen evaluator/316datatype/316facetmatched;normal+trueXML-only consumerspassed;0warnings/errors;planning182/diffpass.",
+      "Coordinator-reported actualcombined7c862528:937+42=979allpassed/0failerrorsskipsnotrunwarnings;1410public/2frozen/normaltrueXML-only/planning182/diffpass;bothreviewersaccepted75d037bc.",
+      "Releasedallocationat7b29ab22:9ownedroutes\u00d764aggregatecallsafter16warmups,allpositive;cold1810728/1,positive1048,approximateheapdelta8056/16retainedinvalidresults;448identitiesmatch/clean2children;nozero/timingclaim."
     ],
     "remaining": [
-      "Controlledallocation preparation, actual counter-disabled cleanup preflight, frozen identities and fresh exact host grant/evidence; criteria remain pending until required proof is complete.",
-      "Coordinator alone integrates and verifies the final task after terminal handoff."
+      "Coordinator alone integrates final evidence and sets integration_revision/verified metadata; worker relinquishes all task, source, test, report and branch writes."
     ],
     "requests": [
       "Later public facade must finalize every retained definition/constraint including anonymous/redefine carriers, preserve declaration/binding namespaces in typed fixed/default consistency, perform schema-wide ID attribute restrictions, and resolve every NOTATION enumeration/base/item/member join against sealed schema notations before publication. No public facade is delivered by this internal evaluator task."
