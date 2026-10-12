@@ -121,6 +121,8 @@ internal sealed class XsdCompilation
         // imports to bind against the finite in-progress component table.
         foreach (var node in Children(source, root))
         {
+            // Validate annotation wrappers, but their mixed payload stays opaque.
+            if (node.LocalName is "documentation" or "appinfo") return;
             if (node.LocalName == "annotation") continue;
             if (node.LocalName is "include" or "import" or "redefine")
             { if (declarationsStarted) Error("Composition directives precede declarations.", At(source, node)); continue; }
@@ -1114,19 +1116,43 @@ internal sealed class XsdCompilation
             };
             if (allowed == "#invalid") Error("Unknown XSD construct (XSD 1.0 required).", At(source, node));
             bool globalType = !node.Parent.IsDefault && node.Parent.NamespaceUri == Namespace && node.Parent.LocalName is "schema" or "redefine";
+            if (globalType && node.LocalName == "group") allowed = "id name";
             if (!globalType && node.LocalName == "simpleType") allowed = "id";
             if (!globalType && node.LocalName == "complexType") allowed = "id mixed";
             foreach (var attribute in node.Attributes)
             {
                 Tick(At(source, node));
                 if (attribute.NamespaceUri.Length != 0)
-                { if (attribute.NamespaceUri == Namespace) Error("Schema attributes are unqualified.", At(source, node)); continue; }
+                {
+                    if (attribute.NamespaceUri == Namespace) Error("Schema attributes are unqualified.", At(source, node));
+                    if (node.LocalName == "documentation" && attribute.NamespaceUri == "http://www.w3.org/XML/1998/namespace" && attribute.LocalName == "lang")
+                    {
+                        // xs:language collapses XML whitespace. Only surrounding
+                        // whitespace can survive its lexical grammar; borrow the
+                        // value and charge every inspected unit, without a copy.
+                        var text = attribute.Value.AsSpan(); int start = 0, end = text.Length;
+                        while (start < end && text[start] is ' ' or '\t' or '\r' or '\n') { Tick(At(source, node)); start++; }
+                        while (end > start && text[end - 1] is ' ' or '\t' or '\r' or '\n') { Tick(At(source, node)); end--; }
+                        int part = 0; bool first = true;
+                        foreach (char c in text[start..end])
+                        {
+                            Tick(At(source, node));
+                            if (c == '-') { if (part == 0) Error("Invalid documentation xml:lang.", At(source, node)); first = false; part = 0; }
+                            else if (!(c is >= 'A' and <= 'Z' or >= 'a' and <= 'z' || !first && c is >= '0' and <= '9') || ++part > 8)
+                                Error("Invalid documentation xml:lang.", At(source, node));
+                        }
+                        if (part == 0) Error("Invalid documentation xml:lang.", At(source, node));
+                    }
+                    continue;
+                }
                 bool found = false;
                 foreach (var range in allowed.AsSpan().Split(' ')) if (attribute.LocalName.AsSpan().SequenceEqual(allowed.AsSpan()[range])) { found = true; break; }
                 if (!found) Error("Unknown or misplaced schema attribute.", At(source, node));
                 if (attribute.LocalName == "id" && !ids.Add(NCName(attribute.Value, source, node))) Error("Duplicate schema ID.", At(source, node));
                 if (attribute.LocalName is "form" or "elementFormDefault" or "attributeFormDefault" && Collapse(attribute.Value) is not ("qualified" or "unqualified")) Error("Invalid form value.", At(source, node));
             }
+            // Validate annotation wrappers, but their mixed payload stays opaque.
+            if (node.LocalName is "documentation" or "appinfo") return;
             if (node.LocalName == "annotation")
             {
                 foreach (var child in node.Children)
@@ -1134,7 +1160,7 @@ internal sealed class XsdCompilation
                     Tick(At(source, child));
                     if (child.Kind != XmlNodeKind.Element) continue;
                     if (child.NamespaceUri != Namespace || child.LocalName is not ("appinfo" or "documentation")) Error("Invalid annotation body.", At(source, child));
-                    // Annotation content is opaque and cannot execute or add schema components.
+                    Visit(child);
                 }
                 return;
             }

@@ -8,7 +8,7 @@ public sealed class XPathTests
     [InlineData("row")][InlineData("./row")][InlineData(".//row")]
     [InlineData("row/.")][InlineData("././row/.")][InlineData("* | row")]
     [InlineData("child::row")][InlineData(". / child::row / .")]
-    [InlineData(" . // row ")][InlineData("child :: row")][InlineData("descendant-or-self::node()/child::row")][InlineData("row/self::node()")]
+    [InlineData(" . // row ")][InlineData("child :: row")][InlineData(".//child::row")]
     public void SelectorPathsAreUnionSets(string selector)
     { Assert.False(IdentityTests.Run(IdentityTests.Simple(IdentityTests.Constraint(selector:selector)),"<root><row id='a'/><row id='a'/></root>").Complete().IsValid); }
     [Theory]
@@ -42,6 +42,7 @@ public sealed class XPathTests
     [InlineData("row + a")][InlineData("row/parent::a")][InlineData("row/ancestor::a")]
     [InlineData("row/foo()")][InlineData("row/$x")][InlineData("row/@*")]
     [InlineData("row/namespace::*")][InlineData(". / / row")][InlineData("row/self::other()")]
+    [InlineData("descendant-or-self::node()/child::row")][InlineData("row/self::node()")][InlineData("self::node()")]
     public void InvalidSelectorGrammarIsRejectedBeforePublication(string selector)
     {
         var schema=IdentityTests.Simple(IdentityTests.Constraint());
@@ -54,6 +55,7 @@ public sealed class XPathTests
     [InlineData("@id/a")][InlineData("@id/.")][InlineData("row//@id")][InlineData("@id|@")]
     [InlineData("@p:")][InlineData("@p:1bad")][InlineData("row[1]/@id")]
     [InlineData("//row/@id")][InlineData("@id @x")]
+    [InlineData("descendant-or-self::node()/self::node()")][InlineData("self::node()")]
     public void InvalidFieldGrammarRejects(string field)
     {
         var schema=IdentityTests.Simple(IdentityTests.Constraint());
@@ -83,7 +85,7 @@ public sealed class XPathTests
         Assert.False(result.IsValid);Assert.Contains(result.Diagnostics,d=>d.Message.Contains("non-element",StringComparison.Ordinal));
     }
     [Theory]
-    [InlineData(".//.")][InlineData("descendant-or-self::node()/self::node()")][InlineData(".//./.")]
+    [InlineData(".//.")][InlineData(".//./.")]
     public void DescendantSelfFieldsRequireEverySelectedNodeToHaveASimpleType(string field)
     {
         var registry=new XmlDatatypeRegistry();var value=IdentityTests.Valid(IdentityTests.Typed(registry,"string","x"));
