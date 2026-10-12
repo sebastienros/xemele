@@ -4,8 +4,8 @@ SOURCE READY / HOLD. This packet authorizes no execution. Every harness import,
 control, restore, build, test, API emission, consumer, preparation, probe and
 allocation counter remains UNRUN. Root owns review/release and task state.
 
-Runtime binding: `ce70f5734433c9d5957fd7902d16aa5cb3b2e75a`, source manifest
-`37d00d7dc58a7e1a1af826325d6c37d43c1f9309b28c610ba5f27a8337f871e0`.
+Runtime binding: `02de8b717da487f68dd0f3951682f28f1c69bcb6`, source manifest
+`80b583ce58b73eb3b21c87b4dfb9e5b3d47b9a4020a7885406cc86870bede9ba`.
 The runtime includes exact G03a literal substitution leaves, G04u member
 whitespace/enclosing patterns, and G03c provisional dependency proof corrections.
 Runtime bytes remain held for concurrent review.
@@ -16,7 +16,7 @@ of unknown JSON/binary/extensionless payloads, existing/absent root inventories,
 and refusal on any survivor/recreated absent root. Its real command-family
 prepared-discard control deletes retained fixture outputs with an uncreated
 measurement directory, publishes the receipt, then rejects that root's recreation.
-H02 independently binds 686 source-selected methods / 2189 cases in 30 affected
+H02 independently binds 686 source-selected methods / 2191 cases in 30 affected
 namespaces; removed witnesses/namespaces/theory cases, skips and duplicates reject.
 H03 preserves initial birth-inspection exceptions, kills/reaps the exact pre-ACK
 Popen handle without an unverified group signal, and keeps unresolved intents
@@ -66,3 +66,10 @@ and planning validation (200 tasks). Original copied upstream whitespace remains
 the separately reported 33 findings in 7 unchanged originals. All executable
 checks and source proving controls remain UNRUN. Required next step: coordinator
 source review of this final immutable packet and explicit phase release.
+
+Final source correction release: G03 incomplete expanded projections preserve
+the original head and specific omitted membership proof. Known sibling k variants
+and existing complete blocked-head negatives stay bound. Control09 now supplies
+its own exact scratch harness membership and configuration-presence expectations;
+initial success plus independent membership/configuration/source/plan drift
+refusals are authored. Controls count stays15; execution remains UNRUN.

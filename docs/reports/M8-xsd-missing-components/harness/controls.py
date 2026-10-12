@@ -99,14 +99,24 @@ class Controls(unittest.TestCase):
         self.assertFalse(path.exists());self.assertEqual(len(list(self.root.glob('success.json.invalid-*'))),1)
     def test_09_review_source_and_plan_mutations_reject(self):
         source=self.root/'source.json';review=self.root/'review.json';input=self.root/'Source.cs';input.write_text('reviewed source')
+        harness=self.root/'scratch-harness';harness.mkdir();module=harness/'source.py';module.write_text('pass')
+        configuration=self.root/'configuration.props'
         runtime_sha=b.digest(b.REPORT/'source-manifest.json')
         manifest=dict(identities={b.key(input):b.digest(input)},apiInputs={},sourceMembers=[],toolchainDirectories=[],toolchainDirectoryInputs={},
-                      packageDirectories=[],packageInputs={},commandRecipes=[['exact','argv']],runtimeSourceManifestSha256=runtime_sha,runtimeSourceCommit='commit')
+                      packageDirectories=[],packageInputs={},harnessMembers=[b.key(module)],configurationPresence={b.key(configuration):False},
+                      commandRecipes=[['exact','argv']],runtimeSourceManifestSha256=runtime_sha,runtimeSourceCommit='commit')
         manifest['commandRecipesSha256']=b.identity_sha(manifest['commandRecipes']);source.write_text(json.dumps(manifest))
         review.write_text(json.dumps(dict(result='SOURCE PASS',harnessSourceSha256=b.digest(source),runtimeSourceManifestSha256=runtime_sha,runtimeSourceCommit='commit',pythonExecutableSha256=b.digest(sys.executable),allowedActions=['controls'])))
         sha=b.digest(review)
-        with patch.object(b,'SOURCE',source),patch.object(b,'REVIEW',review),patch.object(b,'api_inputs',return_value={}),patch.object(b,'source_members',return_value=[]):
-            b.review(sha);input.write_text('changed source')
+        with patch.object(b,'SOURCE',source),patch.object(b,'REVIEW',review),patch.object(b,'HERE',harness),patch.object(b,'api_inputs',return_value={}),patch.object(b,'source_members',return_value=[]):
+            b.review(sha)
+            extra=harness/'unexpected.txt';extra.write_text('membership drift')
+            with self.assertRaises(AssertionError):b.review(sha)
+            extra.unlink();b.review(sha)
+            configuration.write_text('<Project/>')
+            with self.assertRaises(AssertionError):b.review(sha)
+            configuration.unlink();b.review(sha)
+            input.write_text('changed source')
             with self.assertRaises(AssertionError):b.review(sha)
             input.write_text('reviewed source');manifest['commandRecipes'][0]=['changed','plan'];source.write_text(json.dumps(manifest))
             with self.assertRaises(AssertionError):b.review(sha)
