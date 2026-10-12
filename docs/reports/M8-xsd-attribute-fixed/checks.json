@@ -1,0 +1,43 @@
+{
+  "revision": "5dfc443663069e7b25fc1817363da50a07bd1d21",
+  "runtimeRevision": "78c44c3728170331c824e1de999ceb46a6dbc5f2",
+  "status": "passed",
+  "owned": 45,
+  "datatype": 77,
+  "affected": 1110,
+  "resolver": 42,
+  "publicApi": 1417,
+  "frozenModel": 316,
+  "frozenModelExtension": 139,
+  "frozenCompiler": 257,
+  "frozenIdentity": 24,
+  "frozenContent": 9,
+  "frozenEvaluation": 2,
+  "frozenFacade": 7,
+  "consumers": [
+    "normal",
+    "true XML-only"
+  ],
+  "commands": [
+    {
+      "revision": "a024304fc82de5bf9cabd4da4252f797c8a0da05",
+      "command": "python3 docs/reports/M8-xsd-attribute-fixed/check.py",
+      "result": "failed",
+      "summary": "Facade subcheck passed1110+resolver42/API/consumers/planning; owned44/45, facet witness accidentally excluded canonicaldecimal1.0."
+    },
+    {
+      "revision": "0c37571f21f99c9d7f914cd89677d9298437c864",
+      "command": "python3 docs/reports/M8-xsd-attribute-fixed/check.py --owned-only",
+      "result": "failed",
+      "summary": "Owned44/45; canonical1 assumed instead of1.0. Failure preserved."
+    },
+    {
+      "revision": "5dfc443663069e7b25fc1817363da50a07bd1d21",
+      "command": "python3 docs/reports/M8-xsd-attribute-fixed/check.py --owned-only",
+      "result": "passed",
+      "summary": "Owned45 and datatype77 pass, zero skips/errors/not-run; model316+139/planning/diff pass. Earlier facade subchecks retained at exactprior revision; git diff a024304fc -- src/Xemele empty."
+    }
+  ],
+  "raw": "ignored artifacts/M8-xsd-attribute-fixed/check-1.log,check-2.log,check-3.log,owned-check-1.xml,owned-check-2.xml,owned.xml,datatypes.xml; artifacts/M8-xsd-facade/correctness.xml,resolver.xml",
+  "allocation": "pending; no counters or BDN runs yet"
+}
