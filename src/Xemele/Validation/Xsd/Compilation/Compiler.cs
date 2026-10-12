@@ -37,6 +37,7 @@ internal sealed class XsdCompilation
     private readonly List<Source> allSources = new();
     private readonly Dictionary<(string, SchemaName), Declaration> declarations = new();
     private readonly Dictionary<XmlNode, SchemaName> anonymous = new();
+    private readonly List<SchemaName> pendingElementTypes = new();
     private readonly Dictionary<XmlNode, int> localElements = new(), localAttributes = new();
     private readonly Dictionary<SchemaName, XsdTypeDefinition> types = new();
     private readonly Dictionary<SchemaName, XmlDatatypeDefinition> simple = new();
@@ -83,6 +84,13 @@ internal sealed class XsdCompilation
             else if (declaration.Node.LocalName == "group") Group(declaration, declaration.Node);
             else if (declaration.Node.LocalName == "attributeGroup") AttributeGroup(declaration, new(), out _);
         }
+        // Element terms retain declaration IDs, not their type's expanded body.
+        // Complete those bodies only after the enclosing group/type is complete:
+        // legal recursion can cross an element without recursively containing a
+        // model-group particle or extending a still-incomplete base definition.
+        // Completing one body can register further inline element types.
+        for (int index = 0; index < pendingElementTypes.Count; index++)
+            Type(pendingElementTypes[index]);
         CheckGraphs();
         foreach (var s in allSources) s.Scope.CheckUnchanged();
         Tick(default, 0);
@@ -361,12 +369,19 @@ internal sealed class XsdCompilation
         if (!types.ContainsKey(name) && !simple.ContainsKey(name) && !declarations.ContainsKey(("type", name))) Error("Unknown type definition.", At(owner.Source, node));
         return name;
     }
-    private SchemaName Anonymous(Declaration owner, XmlNode node)
+    private SchemaName Anonymous(Declaration owner, XmlNode node, bool elementBoundary = false)
     {
         if (anonymous.TryGetValue(node, out var name)) return name;
         Components(At(owner.Source, node));
         name = new(owner.Source.Target, "#anonymous" + (++anonymousId).ToString(CultureInfo.InvariantCulture)); anonymous.Add(node, name);
-        var declaration = new Declaration(owner.Source, node, name); Add(declaration, "type"); Type(name, declaration); return name;
+        var declaration = new Declaration(owner.Source, node, name); Add(declaration, "type");
+        if (elementBoundary && node.LocalName == "complexType")
+        {
+            Components(At(owner.Source, node)); // Owned pending-body entry.
+            pendingElementTypes.Add(name);
+        }
+        else Type(name, declaration);
+        return name;
     }
     private static string Form(string? value, XmlNode node, Source source) => value is null ? "unqualified" : Collapse(value);
     private bool Boolean(Source source, XmlNode node, string name)
@@ -778,7 +793,7 @@ internal sealed class XsdCompilation
             if (child.LocalName is "simpleType" or "complexType")
             {
                 if (inline || node.GetAttribute("type") is not null || constraintIds.Count != 0) Error("Element has incompatible inline type.", At(s, child));
-                inline = true; type = Anonymous(owner, child);
+                inline = true; type = Anonymous(owner, child, elementBoundary: true);
             }
             else if (child.LocalName is "unique" or "key" or "keyref") constraintIds.Add(Identity(owner, child));
             else Error("Invalid element declaration child.", At(s, child));
