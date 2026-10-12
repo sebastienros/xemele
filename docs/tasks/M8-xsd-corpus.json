@@ -11,7 +11,8 @@
   "integration_revision": null,
   "depends_on": [
     "M8-xsd-facade",
-    "M8-xsd-schema-syntax"
+    "M8-xsd-schema-syntax",
+    "M8-xsd-attribute-fixed"
   ],
   "goals": [
     "G14",
@@ -50,7 +51,9 @@
         "full-independent-bcl",
         "selected-product-overlay",
         "profile-report-controls",
-        "time-human-exception"
+        "time-human-exception",
+        "explicit-profile-review",
+        "explicit-profile-originals"
       ]
     },
     {
@@ -61,7 +64,9 @@
         "earlier-preservation",
         "verified-syntax-dependency",
         "public-boundaries",
-        "runtime-controls"
+        "runtime-controls",
+        "verified-attribute-dependency",
+        "post-join-profile-controls"
       ]
     }
   ],
@@ -71,7 +76,8 @@
     "tests/Xemele.Differential.Tests/Xsd/BclEngine.cs.fixture: independent pinned System.Xml10.0.11 adapter, exact original streams/ordered inputs and resolver journals.",
     "tests/Xemele.Conformance.Tests/Xsd/BoundaryTests.cs and Controls.cs.fixture: public transport/ownership/cancellation/refusal and authored-hint preparation controls.",
     "tests/corpora/xsd/{unicode-adjudication,xmlversions-adjudication,standards-dispositions,metadata-namespaces}.json: independent source facts; original oracles preserved; exact human-approved time exception remains an executed original failure.",
-    "docs/reports/M8-xsd-corpus/{README,schema-triage,instance-triage,schema-ambiguity-inputs}.md: durable concise diagnostic handoffs; no raw journals committed."
+    "docs/reports/M8-xsd-corpus/{README,schema-triage,instance-triage,schema-ambiguity-inputs}.md: durable concise diagnostic handoffs; no raw journals committed.",
+    "tests/corpora/xsd/explicit-profile-adjudication.json and report views: coordinator frozen Second Edition surrogate-block/NOTATION adjudication, originals unchanged; four semantic schema rejects and four invalid-schema dependents separately reported."
   ],
   "evidence": [
     {
@@ -199,6 +205,42 @@
       "result": "passed",
       "summary": "ONLY msMeta/DataTypes_w3c.xml#g119/s:time_maxInclusive007_119 approved as executed original failure; never counted as passing. errF001 and Saxon independently derived profiles are separately reported, not blanket exceptions. No additional exception approved.",
       "artifact": "docs/reports/M8-xsd-corpus/README.md"
+    },
+    {
+      "id": "verified-attribute-dependency",
+      "kind": "review",
+      "revision": "48f394ccedc4ed9b93b282dd8ba24efdf6d155bf",
+      "command": "Coordinator authorized join of VERIFIED main48f394cc; merged at0e201df6aef777ab1c2598f15bbeafe8b116b5b9",
+      "result": "passed",
+      "summary": "Coordinator combined72969a5a40794b35975d8b46a07c8252b9da67cb verified1310passing rows/API/consumer preservation. Root evidence, not a worker-run1310claim. No unmerged peer prerequisite consumed.",
+      "artifact": "docs/reports/M8-xsd-corpus/README.md"
+    },
+    {
+      "id": "post-join-profile-controls",
+      "kind": "check",
+      "revision": "b9d05eac85d0907ab76119d89cbf73fd4e572084",
+      "command": "'/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' build tests/Xemele.Conformance.Tests/Xsd/Corpus.Runner.csproj -c Release --no-restore --disable-build-servers -m:1 -p:RuntimeFrameworkVersion=10.0.11 -p:UseSharedCompilation=false -p:NuGetAudit=false; '/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet' --fx-version 10.0.11 artifacts/M8-xsd-corpus/runner-bin/Release/net10.0/XsdCorpus.dll --controls; PYTHONDONTWRITEBYTECODE=1 python3 docs/reports/M8-xsd-corpus/test_dispositions.py",
+      "result": "passed",
+      "summary": "Committed source b9d05e rebuilt0warnings0errors after verifiedattribute join;41actual runtime controls and11profile report controls pass. New12 runtime cases: positive/complement escapes for3excluded surrogate blocks semanticREGEX.Syntax, positive/complement Hangul/PrivateUse neighbors completevalid, enumerated-NOTATION union completevalid/invalid. Four original schema+four instance source hashes pass; no product edit. Runner DLL SHA25663eb6193c203458ca8f6db6d8a926ffc105514da56aceec147d6d2d799a0b97d; pinned System.Private.Xml.dll SHA256727ff868991e7b1e0fb56decefa684ef649035b664d0b22f66fd93ad36e1521a.",
+      "artifact": "docs/reports/M8-xsd-corpus/README.md"
+    },
+    {
+      "id": "explicit-profile-originals",
+      "kind": "check",
+      "revision": "b9d05eac85d0907ab76119d89cbf73fd4e572084",
+      "command": "Bounded30s-per-child pinned product runner against transient exact original4schema/4dependent subset; sequential Particles and Regex sets",
+      "result": "passed",
+      "summary": "Exact8original IDs emitted. Four expectedVALID schemas actualschema-invalid/originalPassedfalse; four expectedINVALID dependent instances schema-unavailable/unexecuted/originalPassedfalse. All four actual schema rejects agree independent frozen profile. Both childrenexit0/reaped/logsclosed; original counts unchanged, no full rerun.",
+      "artifact": "docs/reports/M8-xsd-corpus/README.md"
+    },
+    {
+      "id": "explicit-profile-review",
+      "kind": "review",
+      "revision": "b9d05eac85d0907ab76119d89cbf73fd4e572084",
+      "command": "Coordinator explicit independently source-backed Second Edition profile adjudication in M8-xsd-explicit-profile-adjudication.json; owned copy byte-preserved",
+      "result": "passed",
+      "summary": "HighSurrogates/reM77/reN75 and particlesZ007 deriveINVALID; four prerequisites unassessed. No exception/runtime waiver/schema rewrite; anyURI and other standards disputes stay pending. Exacttime remains sole human-approved exception.",
+      "artifact": "tests/corpora/xsd/explicit-profile-adjudication.json"
     }
   ],
   "blockers": [],
@@ -209,10 +251,12 @@
       "Owned5boundary tests pass at09b; earlier facade1152/API/consumer checks pass at422; root verified syntax1188 integration reviewed.",
       "Accepted full80 product39233pass241fail; BCL37685pass1784fail;186childrenexit0/reaped/logsclosed. Four-set09b saved rows analyzed with explicit unavailable exit-output limitation.",
       "Exact malformed hinted originals1a6 compile-reject in both engines, instances unexecuted/nonpass; twochildrenexit0/reaped/logsclosed.",
-      "Initial duplicate build attributes/xUnit cancellation analyzer failures and incorrect manifest/subset selector assertions retained in README history; corrected checks are distinct."
+      "Initial duplicate build attributes/xUnit cancellation analyzer failures and incorrect manifest/subset selector assertions retained in README history; corrected checks are distinct.",
+      "Verifiedattribute main48f394cc joined; committedb9d source rebuilt0warnings0errors,41runtime+11profilecontrols pass; exact4schema rejects/fourunexecuteddeps run in twochildrenexit0/reaped/logclosed; original failures retained.",
+      "python3 tools/planning/tasks.py validate passes188tasks and git diff --check passes after own evidence/dependency updates."
     ],
     "remaining": [
-      "A2: concrete source-backed runtime repairs and standards/adaptation triage;39schema IDs/33fixtures in current schema handoff,136original instance failures in20diagnostic groups.",
+      "A2: concrete source-backed runtime repairs and standards/adaptation triage;39schema IDs/33fixtures in current schema handoff,136original instance failures in20diagnostic groups. Four surrogate/NOTATION original schema mismatches now separately agree coordinator-derived profile; dependent instance failures remain unassessed.",
       "No repeated full run until coordinator integrates/verifies applicable repairs; final integrated conformance remains pending.",
       "No-location XML namespace imports lack explicit original xml.xsd input; supplemental application-supplied profile proposal pending coordinator decision, no implicit network/builtins."
     ],
