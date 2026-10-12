@@ -9,43 +9,18 @@
   "last_verified_checkpoint": "M7-gate",
   "last_verified_task": "M8-xsd-attribute-fixed",
   "last_integrated_revision": "72969a5a40794b35975d8b46a07c8252b9da67cb",
-  "active_assignments": [
-    {
-      "task_id": "M8-schema-resource-outcomes",
-      "thread_id": "01a12f35-a4da-7183-9790-7dcb0ecb744d",
-      "branch": "codex/m8-schema-resource-outcomes",
-      "base_revision": "1fb1aa3260ce4df29442b230bf51945dea4b7d71",
-      "stage": "SOURCE PASS37f8176 runtime/modelreview and f8e885a probe/rootreview; actual38owned+1530affected+42safe/API1430/frozen/consumers passed atworker; offline preparation release follows reviewcommit. No allocationgrant.",
-      "model": "gpt-6.1-sol",
-      "thinking": "high",
-      "client_thread_id": "client-new-thread:2674e158-8785-4c0a-a493-1096139a770e",
-      "host_id": "local",
-      "title": "Implement M8 resource outcomes",
-      "path": "/Users/sebastienros/.codex/worktrees/d5cc/xemele",
-      "claim_revision": "6d1751ce23b97e325bd723058ddb544c616a4fd2"
-    },
-    {
-      "task_id": "M8-xsd-content-failure-assessment",
-      "thread_id": "01a12f3a-a2e1-70f0-8f01-fc7d48d9ba8b",
-      "branch": "codex/m8-xsd-content-failure-assessment",
-      "base_revision": "958c5d3a7acd6fb5cb46b1d391f65d190b76923f",
-      "stage": "SOURCE PASSeb2dd42 runtime/XPathreview and488d5cb probe/rootreview; actual1497combined focused/affected/safe including155missing namespace followup passed; offlinepreparation release follows reviewcommit. No allocationgrant.",
-      "model": "gpt-6.1-sol",
-      "thinking": "high",
-      "client_thread_id": "client-new-thread:f4ff44d7-7856-4d89-bb75-d6844fecf123",
-      "host_id": "local",
-      "title": "Repair M8 content failure assessment",
-      "path": "/Users/sebastienros/.codex/worktrees/18ab/xemele",
-      "claim_revision": "2e3754f1ee762dc3274c8ff2e7a4d3784e97d042"
-    }
-  ],
+  "active_assignments": [],
   "integration_queue": [
     {
-      "task_id": "M8-xsd-component-mapping",
-      "candidate_revision": "4278909b35c676e00bf6a9f1d7c96752ff29723e",
-      "path": "/Users/sebastienros/.codex/worktrees/m8-component-integration/xemele",
-      "branch": "codex/m8-component-integration",
-      "status": "Combined correctness1427/API/consumers passed; awaiting actual allocation before main integration."
+      "candidate": "70b63ddd929b6e7db76b663823bab26c1e20c1ae",
+      "tasks": [
+        "M8-xsd-component-mapping",
+        "M8-xsd-instance-assessment",
+        "M8-schema-resource-outcomes",
+        "M8-xsd-content-failure-assessment"
+      ],
+      "correctness": "2075 checks plus1430public/46resolverfixture/all8frozen/resource+facade normal+trueXMLonly consumers passed; record docs/orchestration/M8-four-repair-integration-precheck.json",
+      "remaining": "Actual allocation under fresh root lease/all livehostACKs, then task implementedhandoffs and serialized integratedverification metadata; main runtime not advanced."
     }
   ],
   "next_actions": [
@@ -181,8 +156,18 @@
   },
   "current_milestone": "M8",
   "milestone_completion_scope": "Complete integrated verified M8-gate; terminal workers and cleanup; preserve earlier evidence/caches; transfer sole writes to main. Do not create M9.",
-  "milestone_progress": "34 of47 M8 tasks verified; resource/evaluator repairs prepare with counters disabled; corpus/component/instance/matcher standby; ordered compiler repairs and hint-ordering/CLI/gate pending.",
-  "blockers": [],
+  "milestone_progress": "34 of47 M8 tasks verified. Four reviewed repairs have passed combined2075 correctness/API/consumer checks and frozen counter-disabled preparation; actual allocation blocked by pending host coordination authorization. Matcher waits on evaluator verification; corpus waits on repairs; seven later planned tasks cannot start before verified prerequisites.",
+  "blockers": [
+    {
+      "id": "fresh-host-coordination",
+      "status": "Pending human authorization for quiet-window ACK/release only while GregsEx implementation/measurements stay paused. GregsEx coordinator explicitly declined fresh ACK under its later pause. No active lease; do not reuse retired ACKs.",
+      "affected": "Four prepared runtime repairs cannot acquire required fresh allhost measurement lease; no independent ready implementation task remains."
+    },
+    {
+      "id": "gate-accounting-decisions",
+      "status": "Additional14standards+9dependent request and exact12inputboundary request pending; onlytime119approved. Never credit original failures/unassessed as passes."
+    }
+  ],
   "pending_decisions": [
     {
       "id": "M8-additional-standards-exceptions",
@@ -1246,7 +1231,7 @@
     "reviewers": "Three existing source-only reviewers; no host-heavy jobs/new actors.",
     "lease": null,
     "gregsex_note": "Four Gregs actors including allocation-policy repair01a12ede at5a16; no activePARK/grant. BDN-only policy applies Gregs only.",
-    "roster_note": "Root, main, resource/evaluator executing workers, corpus/component/instance/matcher standby workers and three reviewers = eleven Xemele actors; four GregsEx paused actors. No active lease, fresh scope ACK required for every live actor."
+    "roster_note": "Root, main, six standby worker chats and three reviewers = eleven Xemele actors; four GregsEx paused actors. Zero executing implementation workers, no root jobs or active lease. Fresh scope ACK required from every live actor."
   },
   "suspended_assignments": [],
   "pending_measurement_proposal": null,
@@ -1313,6 +1298,54 @@
       "model": "gpt-6.1-sol",
       "thinking": "high",
       "execution_status": "Standby: zero jobs; no writes/build/test until focused verified repair join or reporting request; remains host ACK actor."
+    },
+    {
+      "task_id": "M8-schema-resource-outcomes",
+      "thread_id": "01a12f35-a4da-7183-9790-7dcb0ecb744d",
+      "branch": "codex/m8-schema-resource-outcomes",
+      "base_revision": "1fb1aa3260ce4df29442b230bf51945dea4b7d71",
+      "stage": "Runtime/source and combined correctness accepted. Offline preparation complete, all448identities + root elevated verify-only passed; disabled preflight exit0/reaped/groupabsent/logclosed. No allocation evidence/grant.",
+      "model": "gpt-6.1-sol",
+      "thinking": "high",
+      "client_thread_id": "client-new-thread:2674e158-8785-4c0a-a493-1096139a770e",
+      "host_id": "local",
+      "title": "Implement M8 resource outcomes",
+      "path": "/Users/sebastienros/.codex/worktrees/d5cc/xemele",
+      "claim_revision": "6d1751ce23b97e325bd723058ddb544c616a4fd2",
+      "execution_status": "Standby: no further writes/build/test/measurement until focused rootfollowup; all frozen preparation preserved, remain fresh ACK actor.",
+      "prepared_allocation": {
+        "head": "75e11fd871457eccc647ff75f4e074ffdd779e96",
+        "manifest_sha256": "e49d010a30b793a277eab3bebdb00ee3148d4fc91bfc4a7794d1a729345ef79b",
+        "identities": 448,
+        "preflight_pid": 9408,
+        "expected_calls": 3536,
+        "expected_consumed": 5616,
+        "scope": "fiveowned/threeprimitive,16retained"
+      }
+    },
+    {
+      "task_id": "M8-xsd-content-failure-assessment",
+      "thread_id": "01a12f3a-a2e1-70f0-8f01-fc7d48d9ba8b",
+      "branch": "codex/m8-xsd-content-failure-assessment",
+      "base_revision": "958c5d3a7acd6fb5cb46b1d391f65d190b76923f",
+      "stage": "Runtime/source and combined correctness accepted. Offline preparation complete, all448identities + root elevated verify-only passed; disabled preflight exit0/reaped/groupabsent/logclosed. No allocation evidence/grant.",
+      "model": "gpt-6.1-sol",
+      "thinking": "high",
+      "client_thread_id": "client-new-thread:f4ff44d7-7856-4d89-bb75-d6844fecf123",
+      "host_id": "local",
+      "title": "Repair M8 content failure assessment",
+      "path": "/Users/sebastienros/.codex/worktrees/18ab/xemele",
+      "claim_revision": "2e3754f1ee762dc3274c8ff2e7a4d3784e97d042",
+      "execution_status": "Standby: no further writes/build/test/measurement until focused rootfollowup; all frozen preparation preserved, remain fresh ACK actor.",
+      "prepared_allocation": {
+        "head": "afe23a46677f3878bc33ea5908ff4ce45f0b018b",
+        "manifest_sha256": "bbe7442014d7cba8ec9da3ad4ba514f3547b1e52128a5b22e4f8ef07ad3c54db",
+        "identities": 448,
+        "preflight_pid": 10009,
+        "expected_calls": 576,
+        "expected_consumed": 82992,
+        "scope": "sevenowned,16retained; old91e27bf manifest superseded solely for APIfragmentmetadata correction"
+      }
     }
   ],
   "live_host_roster_note": "Include root, main, all executing and standby worker chats, and three reviewers in any fresh measurement roster. Standby frees execution capacity only, never host acknowledgment obligations.",
