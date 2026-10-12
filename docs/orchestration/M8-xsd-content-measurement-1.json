@@ -1,0 +1,39 @@
+{
+  "id": "M8-xsd-content-measurement-1",
+  "status": "PREPARED_NOT_PROPOSED",
+  "sourceRevision": "ccb384811d47099f931854c7b2a79c962d4ba2d1",
+  "runtimeRevision": "f098c72fd2f94bea18c46194de1795ea26439a4d",
+  "preparedRevision": "4637ebe8ae4f23cacf826cfd248c61cb96bee264",
+  "testedIntegration": "bf3629d88eb7756f0401dafd16548b27f6441f07",
+  "cwd": "/Users/sebastienros/.codex/worktrees/6729/xemele",
+  "manifestPath": "docs/reports/M8-xsd-content/preparation.json",
+  "manifestSha256": "806a9dc5ad3e673a85ee9093f7da154059bfe172077ffbe6a557e419f2b6aa90",
+  "manifestBytes": 40771,
+  "supervisorPath": "docs/reports/M8-xsd-content/measure.py",
+  "supervisorSha256": "2693a480eba53de9f6cf51e5dc092cbf16f3f367944b3a4e9ace344820f34aae",
+  "supervisorBytes": 7426,
+  "identities": 213,
+  "maximumSeconds": 600,
+  "workSeconds": 590,
+  "cleanupSeconds": 10,
+  "commands": [
+    [
+      "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+      "--fx-version",
+      "10.0.11",
+      "/Users/sebastienros/.codex/worktrees/6729/xemele/benchmarks/Xemele.Benchmarks/M8-xsd-content/bin/probe/net10.0/Xemele.Benchmarks.dll",
+      "--measure",
+      "/Users/sebastienros/.codex/worktrees/6729/xemele/artifacts/M8-xsd-content/measurement/allocations.json"
+    ],
+    [
+      "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+      "--fx-version",
+      "10.0.11",
+      "/Users/sebastienros/.codex/worktrees/6729/xemele/benchmarks/Xemele.Benchmarks/M8-xsd-content/bin/Release/net10.0/Xemele.Benchmarks.dll",
+      "--benchmark",
+      "/Users/sebastienros/.codex/worktrees/6729/xemele/artifacts/M8-xsd-content/measurement/bdn"
+    ]
+  ],
+  "preflight": "Independent accepted closure of four runtime findings; actual285 combined checks/API1400/frozen9/XML-only pass.10 disabled probe controls and5 NoEmit semantic/discovery cases passed; root213-identity/ps verification passed after late-start/overwrite guards. No measurement yet.",
+  "scope": "One allocation probe then5 declared MemoryDiagnoser ShortRunJob InProcessNoEmit cases, serial, stop firstfailure. No build/restore/tests/discovery/retry/extension. Latest-start/expiry/no-overwrite guards; before/after identities; process groups reaped/absent/logsclosed; immediate durable release before raw inspection. No repeatable timing claim."
+}
