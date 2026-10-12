@@ -16,11 +16,11 @@ def verify(path,expected=None):
 out=Path('artifacts/M8-sch-validate');out.mkdir(parents=True,exist_ok=True)
 build('tests/Xemele.Tests/Xemele.Tests.csproj')
 prefix=[net,'--fx-version','10.0.11','tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll']
-run(*prefix,'-namespace','Xemele.Tests.M8SchValidate','-result-xml',str(out/'focused.xml'));verify(out/'focused.xml',34)
+run(*prefix,'-namespace','Xemele.Tests.M8SchValidate','-result-xml',str(out/'focused.xml'));verify(out/'focused.xml',35)
 a=[]
-for ns in ['Xemele.Tests.M8SchCompile','Xemele.Tests.M8Model','Xemele.Tests.M8SourceLocations','Xemele.Tests.M8XPathAccounting','Xemele.Tests.M8SchemaResourceBase','Xemele.Tests.M4Evaluate','Xemele.Tests.M5ValidationModel','Xemele.Tests.M5DtdValidate']:
+for ns in ['Xemele.Tests.M8SchCompile','Xemele.Tests.M8Model','Xemele.Tests.M8SourceLocations','Xemele.Tests.M8XPathAccounting','Xemele.Tests.M8SchemaResourceBase','Xemele.Tests.M4Evaluate','Xemele.Tests.M5ValidationModel','Xemele.Tests.DtdValidation']:
  a+=['-namespace',ns]
-run(*prefix,*a,'-result-xml',str(out/'prerequisites.xml'));verify(out/'prerequisites.xml',330)
+run(*prefix,*a,'-result-xml',str(out/'prerequisites.xml'));verify(out/'prerequisites.xml',419)
 build('docs/reports/M8-sch-validate/ApiCheck/ApiCheck.csproj')
 run(net,'--fx-version','10.0.11','docs/reports/M8-sch-validate/ApiCheck/bin/Release/net10.0/ApiCheck.dll','compare','src/Xemele/bin/Release/net10.0/Xemele.dll','docs/reports/M8-sch-validate/frozen.txt')
 run(net,'--fx-version','10.0.11','docs/reports/M8-sch-validate/ApiCheck/bin/Release/net10.0/ApiCheck.dll','compare','src/Xemele/bin/Release/net10.0/Xemele.dll','docs/reports/M8-sch-compile/frozen.txt')

@@ -71,4 +71,26 @@ public sealed class LocationTests
         Assert.True(finding.SourceLocation.LinePosition > finding.ContextSourceLocation.LinePosition);
         Assert.Single(XPathExpression.Compile(finding.Location, cancellationToken: TestContext.Current.CancellationToken).Evaluate(document.DocumentNode).AsNodeSet());
     }
+    [Fact]
+    public void EmptyPhysicalTextRunsDoNotConsumeLogicalXPathLocationPositions()
+    {
+        var document = new XmlDocument();
+        var element = document.CreateElement("item"); document.DocumentNode.AppendChild(element);
+        element.AppendChild(document.CreateText("")); element.AppendChild(document.CreateCData(""));
+        element.AppendChild(document.CreateComment("boundary"));
+        var firstLogical = document.CreateCData("A"); element.AppendChild(firstLogical); element.AppendChild(document.CreateText("B"));
+        var expected = XPathItem.FromNode(firstLogical); Assert.Equal("AB", expected.StringValue);
+        var schema = EvaluationTests.Compile("<pattern><rule context='text()'><report test='true()'>text</report></rule>" +
+            "<rule context='item'><report test='true()' subject='text()[1]'>element</report></rule></pattern>");
+        var result = schema.Validate(document); Assert.True(result.Validation.IsValid); Assert.Equal(2, result.Findings.Count);
+        var text = Assert.Single(result.Findings, finding => finding.RuleContext == "text()");
+        var subject = Assert.Single(result.Findings, finding => finding.RuleContext == "item");
+        Assert.EndsWith("/text()[1]", text.ContextLocation); Assert.Equal(text.ContextLocation, text.Location);
+        Assert.Equal(text.Location, subject.Location);
+        foreach (var location in new[] { text.ContextLocation, text.Location, subject.Location })
+        {
+            var selected = XPathExpression.Compile(location, cancellationToken: TestContext.Current.CancellationToken).Evaluate(document.DocumentNode).AsNodeSet();
+            Assert.Equal(expected, Assert.Single(selected));
+        }
+    }
 }

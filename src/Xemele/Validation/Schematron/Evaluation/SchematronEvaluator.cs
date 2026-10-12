@@ -243,12 +243,23 @@ internal sealed class SchematronEvaluator : ISchematronEvaluator
             for (; !node.IsDefault && node.Kind != XmlNodeKind.Document; node = node.Parent)
             {
                 Charge();
-                int position = 1;
+                int position = 1; bool precedingTextHasCharacters = false;
                 for (var prior = node.PreviousSibling; !prior.IsDefault; prior = prior.PreviousSibling)
                 {
                     Charge();
-                    if (node.Kind == XmlNodeKind.Element ? prior.Kind == XmlNodeKind.Element && Compare(prior.LocalName, node.LocalName) == 0 && Compare(prior.NamespaceUri, node.NamespaceUri) == 0 :
-                        XPathItem.IsText(node) ? XPathItem.IsText(prior) && !XPathItem.IsText(prior.PreviousSibling) : prior.Kind == node.Kind) position++;
+                    if (XPathItem.IsText(node))
+                    {
+                        // XPath exposes nonempty maximal text/CDATA runs only. A
+                        // physical empty run separated by a comment consumes no position.
+                        if (!XPathItem.IsText(prior)) continue;
+                        precedingTextHasCharacters |= prior.Value.Length != 0;
+                        if (!XPathItem.IsText(prior.PreviousSibling))
+                        {
+                            if (precedingTextHasCharacters) position++;
+                            precedingTextHasCharacters = false;
+                        }
+                    }
+                    else if (node.Kind == XmlNodeKind.Element ? prior.Kind == XmlNodeKind.Element && Compare(prior.LocalName, node.LocalName) == 0 && Compare(prior.NamespaceUri, node.NamespaceUri) == 0 : prior.Kind == node.Kind) position++;
                 }
                 string step = node.Kind switch
                 {
