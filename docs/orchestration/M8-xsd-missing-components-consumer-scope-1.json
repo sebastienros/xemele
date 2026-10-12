@@ -1,0 +1,13 @@
+{
+  "task": "M8-xsd-missing-components",
+  "approvedScope": {
+    "path": "tests/Xemele.Tests/M8-xsd-content-failure-assessment/BoundaryTests.cs",
+    "edits": "Exactly two p.Programs[p.Schema.Elements[...].Type] keys become .Type!.Value; no semantic assertion changes"
+  },
+  "orderedOwner": "M8-xsd-content-failure-assessment verified transitive dependency",
+  "rejectedAsUnnecessary": {
+    "path": "tests/Xemele.Tests/M8-xsd-publication-checkpoints/CheckpointTests.cs",
+    "reason": "Both requested declaration.Type consumers are graph.Attributes entries; XsdAttributeDeclaration.Type remains nonnullable SchemaName. Nullable migration applies only XsdElementDeclaration; adding .Value would be incorrect."
+  },
+  "checks": "Source inspection and task graph only; runtime compilation unrun"
+}
