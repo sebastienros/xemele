@@ -1,0 +1,95 @@
+{
+  "scope": "GregsEx-M3-shared-prepared-alloc-2",
+  "status": "PARKED",
+  "owner_chat": "01a12e48-6175-77a2-b4b2-d5d5921b1a1d",
+  "proposal_path": "/Users/sebastienros/github/gregsex/docs/orchestration/M3/shared-measurement-2.md",
+  "proposal_sha256_at_review": "aef497ddc0ef1eb3fba0bf56bc95bc9ef8bd4fb7d014baad110f9d1be4b9b669",
+  "maximum_seconds": 600,
+  "cleanup_seconds": 10,
+  "latest_start_rule": "owner grant +60s",
+  "absolute_expiry_rule": "owner grant +600s",
+  "commands": [
+    {
+      "source_revision": "fcd3d80b8ed39d5e07e627f596828312dc018d10",
+      "log": "allocation-jit.log",
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "exec",
+        "--fx-version",
+        "10.0.11",
+        "/Users/sebastienros/.codex/worktrees/3358/gregsex/docs/reports/M3-shared/artifacts/jit/GregsEx.Tests.dll"
+      ],
+      "environment": {
+        "GREGSEX_XML_PHASE": "counters"
+      }
+    },
+    {
+      "source_revision": "fcd3d80b8ed39d5e07e627f596828312dc018d10",
+      "log": "allocation-native.log",
+      "command": [
+        "/usr/bin/time",
+        "-l",
+        "/Users/sebastienros/.codex/worktrees/3358/gregsex/docs/reports/M3-shared/artifacts/native/GregsEx.Tests"
+      ],
+      "environment": {
+        "GREGSEX_XML_PHASE": "counters"
+      }
+    },
+    {
+      "source_revision": "fcd3d80b8ed39d5e07e627f596828312dc018d10",
+      "log": "bdn.log",
+      "command": [
+        "/Users/sebastienros/Library/Application Support/dotnetup/dotnet/dotnet",
+        "exec",
+        "--fx-version",
+        "10.0.11",
+        "/Users/sebastienros/.codex/worktrees/3358/gregsex/docs/reports/M3-shared/artifacts/benchmark/GregsEx.Tests.dll"
+      ],
+      "environment": {
+        "GREGSEX_XML_PHASE": "bdn"
+      }
+    }
+  ],
+  "compiled_test_source_revision": "c8ef7cc6005148fc61c185bcd5dd6b4ac1c69085",
+  "prepared_files": {
+    "prepared-sequence.json": {
+      "path": "/Users/sebastienros/.codex/worktrees/3358/gregsex/docs/reports/M3-shared/prepared-sequence.json",
+      "sha256": "8a865652badb8e30c5ad2ab9e41855b063f9092aa9dfab12b72918576234ae1c"
+    },
+    "run-prepared-sequence.py": {
+      "path": "/Users/sebastienros/.codex/worktrees/3358/gregsex/docs/reports/M3-shared/run-prepared-sequence.py",
+      "sha256": "4cd75ef271c1768bb85706942babb69a70857c3ee53dd5597ebbe89c2b0bc001"
+    },
+    "preflight-receipt.json": {
+      "path": "/Users/sebastienros/.codex/worktrees/3358/gregsex/docs/reports/M3-shared/preflight-receipt.json",
+      "sha256": "cbf33cc24b8bf7f87c71297c2a78a42277a7ede2fb3cb9f5f6c0cfc75b07a63e"
+    },
+    "control-preflight.py": {
+      "path": "/Users/sebastienros/.codex/worktrees/3358/gregsex/docs/reports/M3-shared/control-preflight.py",
+      "sha256": "6dfb4b06b4546d15dc98d2e3e539ea34cf7ec157b8a1f31dec8a32dc1821ee11"
+    },
+    "control-provenance-preflight.log": {
+      "path": "/Users/sebastienros/.codex/worktrees/3358/gregsex/docs/reports/M3-shared/control-provenance-preflight.log",
+      "sha256": "d4735d1771003fe4d420d12e16ce77155a61e874e30f03d7e092eea38080b292"
+    }
+  },
+  "launcher": {
+    "path": "/Users/sebastienros/github/gregsex/docs/orchestration/M3/shared-launch-2.py",
+    "sha256": "7b5e648d9bed8f44f7caac8a8d8a2c424d71bae5e6995779d5cc76da8895e31b",
+    "path_capture": "/private/tmp/gregsex-m3-shared-frozen-path",
+    "path_sha256": "7b1d9e7ca0498bd852769c2458f930c907841bce79ec07ac0d24fc8e19e668ab"
+  },
+  "root_review": "Read exact corrected proposal and independently rehashed all five listed prepared files and launcher; all matched. Owner reports 3381 file rehash, eight negative controls and TERM/KILL controls; actual elevated launcher context reached only expired-grant refusal after guards. Root did not execute workload or measure.",
+  "root_ack": "Fresh exact-scope ACK: zero owned active jobs, PIDs, sessions or cells. Hold host-heavy work and new actors until durable cleanup RELEASE or expiry with cleanup confirmation. No launch, retry, extension, frozen-input writes or raw inspection.",
+  "xemele_actors": [
+    "01a12c6c-b333-71d3-877f-0d186618e21d",
+    "01a12849-d2be-7292-8cd9-27c1c14b5a3d",
+    "01a12ea8-7b90-7eb3-b475-b4eccf0b527f",
+    "review_m8_contract",
+    "review_m8_model",
+    "review_m8_xpath"
+  ],
+  "pending_acks": [],
+  "constraints": "Gregs coordinator sole launcher; three serial prebuilt phases only; stop first failure, no build/restore/discovery/retry/extension/new actors/frozen writes/raw inspection before durable cleanup RELEASE. Fresh acknowledgments only.",
+  "ack_evidence": "docs/orchestration/M8-external-M3-shared-2-ack-evidence.json"
+}
