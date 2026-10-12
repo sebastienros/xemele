@@ -1,0 +1,9 @@
+{
+  "task": "M8-xsd-type-relations",
+  "reviewer": "/root/review_m8_model",
+  "reviewed_revision": "3c22c02305eff0531ce245da6e15dd3c807aa3bb",
+  "result": "Ownership blocker resolved before claim",
+  "finding": "ContentModels/Compiler.cs SubstitutionType independently computes runtime substitution membership using BaseType only; Compilation XsdSubstitutionGroups has no runtime caller. Union(xs:string,xs:int) head with xs:string member requires both compilation and runtime relation fixes.",
+  "amendment": "Add exact ContentModels/Compiler.cs ownership with latest verified fixed-restriction dependency. Existing precomputed arrays/charging/block semantics retained; nested/member-derived/blocked/unrelated/UPA neighbors required. No Matcher/evaluator/model/frozen-interface change. A2/A3/A5 compiler ownership sufficient.",
+  "execution": "Read-only source/task assessment, no implementation/build/checks executed."
+}

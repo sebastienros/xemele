@@ -10,7 +10,8 @@
   "base_revision": null,
   "integration_revision": null,
   "depends_on": [
-    "M8-xsd-recursive-components"
+    "M8-xsd-recursive-components",
+    "M8-xsd-fixed-restriction"
   ],
   "goals": [
     "G14",
@@ -22,6 +23,7 @@
   ],
   "owns": [
     "src/Xemele/Validation/Xsd/Compilation/Compiler.cs",
+    "src/Xemele/Validation/Xsd/ContentModels/Compiler.cs",
     "tests/Xemele.Tests/M8-xsd-type-relations/",
     "tests/fixtures/M8-xsd-type-relations/",
     "benchmarks/Xemele.Benchmarks/M8-xsd-type-relations/",
@@ -33,7 +35,7 @@
   "acceptance": [
     {
       "id": "M8-xsd-type-relations-A1",
-      "description": "Accept original particlesZ012/Z015/Z020 by implementing union-member simple derivation in compiler substitution validation and runtime substitution membership; preserve head block/final and unrelated-type rejection, nested union/member-derived cases and shared work.",
+      "description": "Accept original particlesZ012/Z015/Z020 by implementing union-member simple derivation in compiler substitution validation and runtime substitution membership; preserve head block/final and unrelated-type rejection, nested union/member-derived cases and shared work. Runtime membership must use the union-aware relation in the content-model compiler, retaining existing precomputed member arrays and shared charging; prove newly admitted member UPA participation. No matcher/evaluator/model/API changes.",
       "status": "pending",
       "evidence": []
     },
@@ -66,7 +68,7 @@
   "evidence": [],
   "blockers": [],
   "handoff": {
-    "summary": "Ordered repair planned from unchanged original corpus witnesses and independent source/Second Edition review. Not claimed or implemented; no unverified peer dependency consumption.",
+    "summary": "Ordered repair planned from unchanged original corpus witnesses and independent source/Second Edition review. Not claimed or implemented; no unverified peer dependency consumption. Pre-claim ownership review found independent runtime SubstitutionType follows only BaseType; exact ContentModels/Compiler.cs ownership and verified fixed-restriction dependency added before implementation.",
     "checks": [],
     "remaining": [],
     "requests": []
