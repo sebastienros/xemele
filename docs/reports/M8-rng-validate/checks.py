@@ -13,7 +13,7 @@ out = root / 'artifacts/M8-rng-validate/correctness/focused.xml'; out.parent.mkd
 run(net, '--fx-version', '10.0.11', 'tests/Xemele.Tests/bin/Release/net10.0/Xemele.Tests.dll', '-class', 'Xemele.Tests.M8RngValidate.*', '-result-xml', str(out))
 a = ET.parse(out).getroot().find('assembly')
 assert all(int(a.attrib[k]) == 0 for k in ['failed', 'errors', 'skipped', 'not-run']), a.attrib
-assert int(a.attrib['passed']) == 85 and '10.0.11' in a.attrib['environment'], a.attrib
+assert int(a.attrib['passed']) == 89 and '10.0.11' in a.attrib['environment'], a.attrib
 print('ASSERTED owned counts:', a.attrib)
 arguments = []
 for name in ['M8RngCompile.*', 'M8Facets.*', 'M8Datatypes*', 'M8Regex.*', 'M8Model.*', 'M8SchemaResourceBase.*', 'M8SourceLocations.*', 'M4Evaluate.*', 'M5ValidationModel.*', 'DtdValidation.*']:

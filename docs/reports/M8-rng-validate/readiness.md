@@ -1,3 +1,12 @@
+Current state: coordinator review identified one mandatory instance URI/base
+context fix. The evaluator now passes `document.ParsedSourceUri` to the existing
+namespace-context helper; four owned regression cases cover with/without XML
+declaration and inherited/nested relative `xml:base`. These edits are currently
+unbuilt/untested during the external PARK. All criteria are reopened; the prior
+434-identity preparation below is historical and INVALID for current source.
+After explicit RELEASE, rebuild/check at a new revision and refreeze before any
+fresh measurement grant. No other concrete issue was reported in bounded review.
+
 # Review and allocation preparation
 
 Implementation/check revision: `5d69a1361eb55f771a5da428fc67ee7272c47d6a`.

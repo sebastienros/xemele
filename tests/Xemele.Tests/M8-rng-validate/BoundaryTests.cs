@@ -64,6 +64,33 @@ public sealed class BoundaryTests
         var location = Assert.Single(schema.Validate(instance).Diagnostics).Location;
         Assert.Equal(new Uri("urn:instance"), location.SourceUri); Assert.Equal(2, location.LineNumber); Assert.Equal(1, location.LinePosition); Assert.Equal(23, location.ByteOffset);
     }
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void RetainedInstanceUriResolvesRelativeXmlBaseWithOrWithoutDeclaration(bool declaration)
+    {
+        var schema = EvaluationTests.Schema("<attribute name='xml:base'><text/></attribute><empty/>");
+        string source = (declaration ? "<?xml version='1.0'?>" : "") + "<r xml:base='child/'/>";
+        using var stream = new MemoryStream(Encoding.UTF8.GetBytes(source));
+        var document = XmlDocument.Load(stream, null, new("https://example.test/input.xml"), TestContext.Current.CancellationToken);
+        long revision = document.ContentRevision;
+        var result = schema.Validate(document);
+        Assert.True(result.IsComplete); Assert.True(result.IsValid); Assert.Empty(result.Diagnostics);
+        Assert.Equal(revision, document.ContentRevision);
+    }
+    [Theory]
+    [InlineData("<r xml:base='parent/'><child/></r>")]
+    [InlineData("<r xml:base='parent/'><child xml:base='nested/'/></r>")]
+    public void NestedInstanceContextsResolveInheritedRelativeXmlBase(string source)
+    {
+        var schema = EvaluationTests.Schema("<attribute name='xml:base'><text/></attribute><element name='child'><optional><attribute name='xml:base'><text/></attribute></optional><empty/></element>");
+        using var stream = new MemoryStream(Encoding.UTF8.GetBytes(source));
+        var document = XmlDocument.Load(stream, null, new("https://example.test/input.xml"), TestContext.Current.CancellationToken);
+        long revision = document.ContentRevision;
+        var result = schema.Validate(document);
+        Assert.True(result.IsComplete); Assert.True(result.IsValid); Assert.Empty(result.Diagnostics);
+        Assert.Equal(revision, document.ContentRevision);
+    }
     private sealed class ReadStream(Action action, byte[]? bytes = null) : MemoryStream(bytes ?? [])
     {
         internal int Reads; internal bool Closed;

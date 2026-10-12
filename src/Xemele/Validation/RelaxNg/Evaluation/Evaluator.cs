@@ -264,7 +264,7 @@ internal sealed class RelaxNgEvaluator(RngProgram program) : IRelaxNgEvaluator
         private bool Content(int state, XmlNode element)
         {
             if (!contexts.TryGetValue(element, out var context))
-            { Grow(); context = SchemaSnapshots.Context(element, op); Check(); contexts.Add(element, context); }
+            { Grow(); context = SchemaSnapshots.Context(element, op, document.ParsedSourceUri); Check(); contexts.Add(element, context); }
             foreach (var attribute in element.Attributes)
             {
                 at = document.OriginalLocation(attribute); Work();
