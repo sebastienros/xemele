@@ -1,6 +1,6 @@
 {
   "scope": "M8-xsd-counted-matcher-186e7d9d-allocation-1",
-  "status": "PROPOSED; not granted",
+  "status": "PARK/exclusivity proposal retired by human before grant or launch; prepared execution may proceed without isolation",
   "owner_chat": "01a12c6c-b333-71d3-877f-0d186618e21d",
   "cwd": "/Users/sebastienros/.codex/worktrees/452a/xemele",
   "manifest": "/Users/sebastienros/.codex/worktrees/452a/xemele/docs/reports/M8-xsd-counted-matcher/preparation.json",
@@ -33,8 +33,16 @@
   "latest_start_rule": "grant+60s every child",
   "absolute_expiry_rule": "grant+180s; supervisor actual duration min120/remaining, noextension",
   "routes": "13 total,6 borrowed warmed zero targets/7owned positive costs;32warmups/64 per-route sample distributions,32retainedprograms+32retainedcursors",
-  "roster": "Nine Xemele actors: root/main/corpus/matcher/recursive/hint plus three reviewers. All fresh exactscope ACKs; no foreign communication or synchronization/globalhostidleclaim.",
-  "constraints": "Root solelauncher exact prebuilt control then measure; no retries/builds/restore/discovery/frozenwrites/newactors/rawinspection before durablecleanupRELEASE. Stopfirstfailure; expiry alone not release.",
+  "roster": "No actor ACK or isolation requirement for allocation-only execution.",
+  "constraints": "No retries/builds required; accepted prebuilt controls/counters and bounded supervisor cleanup retained. Existing legacy --granted CLI token supplies manifest/deadline arguments only, not exclusive-use authorization. No active lease or held threads.",
   "review": "SourcePASS unchanged8560237 probe/supervisor, source hashes matched. Root verify-only467/ps actualPASS. Disabled preflight43158 clean.",
-  "root_ack": "No owned workloads/jobs/PIDs/groups/active sessions/cells/children/openlogs; all prior root sessions terminal. Hold heavywork/frozenwrites/newactors/rawinspection until cleanupRELEASE."
+  "root_ack": "Prior proposed PARK ended immediately by direct human instruction; zero launched allocation children.",
+  "human_policy": {
+    "instruction": "Allocation evidence don't need to run in isolation and request park and exclusive usage across either threads",
+    "source_thread": "01a12849-d2be-7292-8cd9-27c1c14b5a3d",
+    "source_turn": "01a13064-805d-7400-8239-47df06337ba4",
+    "source_item": "01a13064-80c4-7901-a420-f23292b06005",
+    "verified": "Root inspected actual human userMessage. Allocation-only evidence requires no isolation, PARK, ACKs, exclusive usage or coordination lease.",
+    "retained_controls": "Accepted source/workload identities, meaningful warmup and positive/disabled controls, actual counters, allocation ownership, finite supervision/cleanup and tested revision. No implication for throughput/timing; no foreign communication/synchronization."
+  }
 }
