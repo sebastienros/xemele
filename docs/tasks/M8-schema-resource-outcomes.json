@@ -4,7 +4,7 @@
   "milestone": "M8",
   "title": "Distinguish optional schema resource unavailability from denial",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M8 coordinator01a12c6c-b333-71d3-877f-0d186618e21d / assigned isolated worker",
   "branch": "codex/m8-schema-resource-outcomes",
   "base_revision": "1fb1aa3260ce4df29442b230bf51945dea4b7d71",
@@ -69,8 +69,14 @@
     {
       "id": "M8-schema-resource-outcomes-A4",
       "description": "Pass focused shared-resource and affected validator suites, additive compiled public API and unchanged frozen lane interfaces, normal/true XML-only consumers, task validation and actual bounded allocation evidence using existing infrastructure. Leave XSD directive semantics to the ordered compiler task; no corpus oracle rewriting.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "correctness",
+        "source-review",
+        "offline-preparation",
+        "disabled-preflight",
+        "actual-allocation"
+      ]
     }
   ],
   "implementation": [
@@ -80,7 +86,7 @@
     "tests/Contracts/Fixtures/M8/ResourceOutcomes/: exact independent compiled fixture and 46-row freeze; docs/api/M8-schema-resource-outcomes.txt adds 13 rows",
     "tests/Xemele.Tests/M8-schema-resource-outcomes/ResourceOutcomeTests.cs: 38 invariant/callback/outcome/cancellation/cleanup/shared-budget witnesses",
     "samples/M8-schema-resource-outcomes/: normal and true XML-only consumers; docs/reports/M8-schema-resource-outcomes/check.py reuses established scoped checks",
-    "benchmarks/Xemele.Benchmarks/M8-schema-resource-outcomes/ and docs/reports/M8-schema-resource-outcomes/{allocation-plan.md,prepare.py,measure.py}: source-reviewed, offline-prepared allocation proposal;disabled control/preflight pass;actual measurement unrun"
+    "benchmarks/Xemele.Benchmarks/M8-schema-resource-outcomes/ and docs/reports/M8-schema-resource-outcomes/{allocation-plan.md,prepare.py,measure.py}: source-reviewed frozen allocation probe;disabled control/preflight and actual root-granted measurement pass, summarized in allocations.md"
   ],
   "evidence": [
     {
@@ -154,22 +160,32 @@
       "result": "passed",
       "summary": "Elevated verify-only448identities/processinspection passed. Countersdisabled supervised control childPID9408 exit0/reapedTrue/groupabsentTrue/logclosedTrue/groupMembers[]. Frozen448identities matched before/after;actualcontrol3536calls/5616consumed/16retained and binaryhashes match. Copied preflightsourceRevision=null;manifest/binaryidentities authoritative. Zeroownedactivejobs;no measurementgrant/counters.",
       "artifact": "docs/reports/M8-schema-resource-outcomes/preparation-summary.json"
+    },
+    {
+      "id": "actual-allocation",
+      "kind": "check",
+      "revision": "f8e885a08a10df4e208df3fd64d44abaaad6f1a5",
+      "command": "Root-only serial M8-three-prepared-repairs-allocation-1: python3 docs/reports/M8-schema-resource-outcomes/measure.py --granted e49d010a30b793a277eab3bebdb00ee3148d4fc91bfc4a7794d1a729345ef79b 2026-10-12T13:38:43.298867+00:00 2026-10-12T13:39:13.298867+00:00; exact prebuilt control then measure, no build/retry",
+      "result": "passed",
+      "summary": "After durable root RELEASE f42e1a5e8abc41ab3a94e080e24d88c9a35e8810, own preserved results inspected once. ReleaseSDK10.0.400/runtime10.0.11 Arm64/macOS15.8.1, tiering/server/concurrentGCdisabled. Fiveowned64ops each:unavailable1416/resolved59304/legacydenied2392/malformed60220/principalexternal70680Bop. Threeprimitives1024ops each:directlegacydenied/adapteddenied/resultfactory0Bop.16warmups;3536calls/5616consumed/16retained matched separate disabledcontrol with zero placeholder fields. Fixturecold4864B,positive1048B,retained130520to196424delta65904B(processwideestimate). Root62384terminal0;ownchildren35324/35326exit0/reaped/groupsabsent/logsclosed;448identities unchanged before/after;all6windowchildrenclean/1358identitiesunchanged. No throughput/globalhostidle/x64/AOT claim;rawpreserved;no new finalization execution.",
+      "artifact": "docs/reports/M8-schema-resource-outcomes/allocations.md"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Source review and authorized offline preparation complete;execution standby. A1-A3passed;A4pending actual allocation.448frozen identities,manifestSHA256=e49d010a30b793a277eab3bebdb00ee3148d4fc91bfc4a7794d1a729345ef79b;5owned+3primitive disabledcontrol3536calls/5616consumed/16retained;preflightPID9408exit0/reaped/groupabsent/logclosed. Earlier38+1530+42/API/frozen/consumerchecks unchanged. No measurement grant.",
+    "summary": "A1-A4 implemented on isolated branch. Additive result/status/ResolveResult and concrete optional shared loader preserve legacy null/mandatory accounting/frozen interfaces.38focused+1530affected+42resolver/API1430/eightfrozenlanes/normal+trueXMLonly pass. Root-released actual allocation:threeprimitives0Bop,fiveownedpositive,fixturecold4864/positive1048/retained16delta65904;448identities unchanged and bothchildrenclean. Metadata-only finalization;await root integration/verification.",
     "checks": [
-      "Exact fixture compiled/executed before runtime;46-row compiled comparison passed again.",
-      "38focused/1530affected/42resolver passed at implementation revision;1430public rows and8frozen lane extracts match;normal+trueXMLonly consumers pass.",
-      "Planning194/diffcheck passed. Initial draft build/check-driver issues fixed and documented;no production failure hidden.",
-      "Actual allocation measurement unrun;no grant exists. Authorized disabled preparation/preflight results recorded below.",
-      "OfflineReleasebuild/disabledcontrol/freeze/verify-only/superviseddisabledpreflight passed atf8e885a;448identities,PID9408clean;zeros are disabled placeholders,not measured."
+      "Exact fixture compiled/executed before runtime;46compiled rows match.",
+      "38focused+1530affected+42resolver allpass at37f8176;1430public=1417old+13additive;all8frozenlaneextracts and normal+trueXMLonly consumers pass.",
+      "Original draft build property/analyzer and schema-only API driver failures fixed and preserved in README;no criteria weakened.",
+      "Offline pinned Release build/disabledcontrol/preflight passed atf8e885a;prepared448identities/manifest e49d010a unchanged.",
+      "Actual root-only control/measure passed;3536calls/5616consumed/16retained;owned1416/59304/2392/60220/70680Bop;threeprimitives0Bop;allallocationlimits/ownership recorded.",
+      "Root RELEASE f42e1a5e8 preceded rawinspection;root62384 terminal0,own35324/35326exit0/reaped/groupsabsent/logsclosed;rawresults/logspreserved.",
+      "Planning validated194tasks and diffcheck passed after final metadata;earlier correctness not rerun because frozen inputs unchanged."
     ],
     "remaining": [
-      "Root obtains all livehostACKs and issues fresh exclusive grant binding e49d010a30b793a277eab3bebdb00ee3148d4fc91bfc4a7794d1a729345ef79b/30total20work10cleanup/latest-start+60/expiry+90;root sole measurementlauncher.",
-      "After durable lifecycle release inspect actual allocation results,record honest evidence/completeA4onlyifactualpass;preserveallfrozeninputs.",
-      "Coordinator integrates/reruns applicable checks and verifies;later ordered compiler task consumes seam."
+      "Root integrates the branch, reruns applicable combined-tree checks and records integrated verification.",
+      "Later ordered XSD compiler task consumes optional seam;compiler/corpus/async/non-schema changes remain outside this task."
     ],
     "requests": []
   }
