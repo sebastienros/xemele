@@ -73,3 +73,13 @@ semantics. Final preparation at fe72a347:19-route disabled control1555calls /
 verify-only and disabled preflightPID96986 exit0/reaped/groupabsent/logclosed.
 See proposal.md and allocation-preflight.json. Cleanup supervision is reused
 unchanged. No worker measurement has run; A3 remains pending root-only grant.
+
+All A1-A4 are now supported on the branch. Actual root alloc-2 passed on unchanged
+fe72a347 payload after Xemele-only coordination; durable releasee8389790a preceded
+raw inspection. Six borrowed first/warm routes report0B;13owned routes positive;
+cold7758800B/positive1048B/16retained delta1133576B. Cleanup/464identities pass.
+See allocations.md and measurement-summary.json for costs and limitations.
+Earlier statements that A3 was pending describe those historical checkpoints.
+No further build/test/probe/measurement was run for this metadata-only follow-up.
+Status is implemented; integrated verification remains the coordinator's action.
+Policy: never communicate or synchronize work with other projects.

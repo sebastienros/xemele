@@ -4,7 +4,7 @@
   "milestone": "M8",
   "title": "Correct XSD effective content and component-name mapping",
   "kind": "feature",
-  "status": "in_progress",
+  "status": "implemented",
   "owner": "M8 coordinator / assigned isolated component mapping worker",
   "branch": "codex/m8-xsd-component-mapping",
   "base_revision": "41dc2fc60962d7e3afc6a7a494146b63c1919161",
@@ -53,8 +53,15 @@
     {
       "id": "M8-xsd-component-mapping-A3",
       "description": "Actual unchanged-original baseline failures and repaired outcomes, independent original/profile oracles, affected facade/compiler/effective-content tests, public1417 and frozen APIs, normal/trueXML-only consumers, planning validation and bounded actual allocation evidence. Preserve original upstream validity disagreements separately from profile adjudication.",
-      "status": "pending",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "original-public-baseline",
+        "original-compiler-baseline",
+        "original-wildcard-baseline",
+        "branch-correctness",
+        "allocation-preparation",
+        "actual-allocations"
+      ]
     },
     {
       "id": "M8-xsd-component-mapping-A4",
@@ -143,18 +150,25 @@
       "result": "passed",
       "summary": "SDK10.0.400/.NET10.0.11:19routes/1555calls/36643consumed, all allocation/GC/timing disabled. Probe build0warnings/errors. Manifest25b4d9c5.../464identities matched; actual ps permission; disabled preflightPID96986 exit0/reaped/groupabsent/logclosed, before/after identities matched.6borrowed0B target routes,13ownedpositive controls prepared; cold/first/positive/retained separate. No worker measurements. Final source review PASS bc8d1916; compiler3f54c130... matches accepted source.",
       "artifact": "docs/reports/M8-xsd-component-mapping/allocation-preflight.json"
+    },
+    {
+      "id": "actual-allocations",
+      "kind": "check",
+      "revision": "fe72a34773e28a776c223d628fcccbd91f4b9bec",
+      "command": "python3 docs/reports/M8-xsd-component-mapping/measure.py --granted 25b4d9c5ed5b31ca6f4235bc10f5ef13f82d6adf99ea94a6255f350d9f47dd60 2026-10-12T13:33:35.851125+00:00 2026-10-12T13:34:05.851125+00:00",
+      "result": "passed",
+      "summary": "Actual coordinator elevated alloc-2 after fresh Xemele-only scope ACKs; worker inspected raw once after durable releasee8389790a. Separate control/measure19routes/36643consumed;13ownedpositive and6borrowedfirst/warm0B. Coldfixture7758800B,positive1048B;16retained liveheapdelta1133576B. Children28920/28922exit0,reaped,groupsabsent,logsclosed;464identitiesunchanged. Synchronous managed allocations only; no globally-idle-host/throughput/optimization-timing/x64/AOT claim. Raw artifacts preserved.",
+      "artifact": "docs/reports/M8-xsd-component-mapping/measurement-summary.json"
     }
   ],
   "blockers": [],
   "handoff": {
-    "summary": "Bounded mixed0..0, Second Edition component-name and empty wildcard mapping fixes; original oracles retained; correctness and compatibility pass. Await final source acceptance/allocation preparation and root-only measurement.",
+    "summary": "Implemented mixed0..0 effective-content synthesis, Second Edition component NCNames with charged actual normalization, and empty wildcard namespace sets; unchanged original/profile oracles and historical corrections preserved. All A1-A4 pass on branch; coordinator integrates/verifies.",
     "checks": [
-      "1263focused correctness +42safe; public1417/frozen APIs; normal/trueXML-only;5builds0warning/error;planning187/diff pass.",
-      "Earlier failed witnesses/build/checker attempts retained as evidence."
+      "1263focused(117owned+33syntax+1113affected)+42safe pass;public1417/frozen316+139/257/24/9/2/7 and normal+trueXML-only consumers pass;5builds0warnings/errors;planning187/diff pass.",
+      "Actual root alloc-2:19routes,6borrowedfirst/warm0B,13ownedpositive;cold/positive/16retained separate;464frozenidentities and cleanup pass. No new runtime checks or measurements during metadata follow-up."
     ],
-    "remaining": [
-      "A3 actual root-only allocation launch under fresh host lease, durable cleanup RELEASE and bounded summary; final evidence/handoff afterward."
-    ],
+    "remaining": [],
     "requests": []
   }
 }
