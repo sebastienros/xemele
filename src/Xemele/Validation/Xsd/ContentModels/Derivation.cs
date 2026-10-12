@@ -260,6 +260,12 @@ internal sealed partial class ContentCompilation
         ContentWork.Tick(op, derived.Location);
         if (SameParticle(derived, basis)) return Constant(true);
         derived = ExpandSubstitution(derived); basis = ExpandSubstitution(basis);
+        // Expansion can introduce a pointless singleton choice. Normalize it
+        // before selecting the relation case, preserving non-unit wrappers and
+        // the RecurseAsIfGroup wrapper that deliberately prevents redispatch.
+        if (!rule.Synthesized) derived = Normalize(derived);
+        basis = Normalize(basis);
+        if (derived is null) return Constant(Nullable(basis)); if (basis is null) return Constant(IsPointlessEmpty(derived));
         if (derived.Term is XsdElementTerm de && basis.Term is XsdElementTerm be)
         {
             var d = schema.Elements[de.DeclarationId]; var b = schema.Elements[be.DeclarationId];
