@@ -1,0 +1,28 @@
+using Xemele;
+using Xemele.Validation;
+var context = new SchemaNamespaceContext(new Dictionary<string, string>(), "", null);
+XmlFacet Facet(XmlFacetKind kind, string text) => new(kind, text, false, context, default);
+var amount = new XmlDatatypeDefinition(new("urn:consumer", "amount"), XmlDatatypeVariety.Atomic,
+    DatatypeTypes.Name("decimal"), null, [], [Facet(XmlFacetKind.MinInclusive,"1"), Facet(XmlFacetKind.MaxExclusive,"100"), Facet(XmlFacetKind.FractionDigits,"2")], [], false, default);
+var list = new XmlDatatypeDefinition(new("urn:consumer", "list"), XmlDatatypeVariety.List,
+    null, amount.Name, [], [Facet(XmlFacetKind.Length,"2")], [], false, default);
+var union = new XmlDatatypeDefinition(new("urn:consumer", "union"), XmlDatatypeVariety.Union,
+    null, null, [list.Name, DatatypeTypes.Name("boolean")], [], [], false, default);
+var registry = new XmlDatatypeRegistry([amount,list,union], new SchemaCompileOperation());
+IXmlFacetEvaluator evaluator = new XmlFacetEvaluator();
+var compile = new SchemaCompileOperation();
+if (!evaluator.ValidateDefinition(union, registry, compile)) throw new InvalidOperationException("Definition failed.");
+var document = XmlDocument.Parse("<amounts>1.00 2.50</amounts>");
+var revision = document.ContentRevision;
+var lexical = document.RootElement.GetTextContent();
+if (!evaluator.TryValidate(union, lexical, context, registry, new SchemaValidationOperation(), out var value, out var error)) throw new InvalidOperationException(error?.Message);
+if (value!.TypeName != union.Name || value.SelectedMember!.TypeName != list.Name || value.SelectedMember.Items!.Count != 2 || document.ContentRevision != revision) throw new InvalidOperationException();
+if (evaluator.TryValidate(union, "1 100", context, registry, new SchemaValidationOperation(), out _, out _)) throw new InvalidOperationException();
+var rngParams = new XmlDatatypeDefinition(new(DatatypeTypes.RngNamespace,"decimal"), XmlDatatypeVariety.Atomic,
+    DatatypeTypes.Name("decimal"), null, [], [Facet(XmlFacetKind.Pattern,"[0-9]+"),Facet(XmlFacetKind.Pattern,"1.*")], [], false, default);
+if (!evaluator.ValidateDefinition(rngParams, registry, new SchemaCompileOperation()) ||
+    !evaluator.TryValidate(rngParams,"12",context,registry,new SchemaValidationOperation(),out _,out _) ||
+    evaluator.TryValidate(rngParams,"22",context,registry,new SchemaValidationOperation(),out _,out _)) throw new InvalidOperationException();
+if (args.Contains("--xml-only") && typeof(XmlDocument).Assembly.GetTypes().Any(t => t.Namespace is string ns &&
+    (ns.Contains("Html",StringComparison.OrdinalIgnoreCase) || ns.StartsWith("Xemele.Css",StringComparison.Ordinal)))) throw new InvalidOperationException();
+Console.WriteLine("PASS: real XML input -> restricted decimal/list/union and conjunctive RNG parameters through frozen evaluator; instance revision preserved.");
