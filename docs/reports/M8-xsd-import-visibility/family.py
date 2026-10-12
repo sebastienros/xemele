@@ -7,6 +7,7 @@ import json
 import os
 import subprocess
 import time
+import uuid
 from pathlib import Path
 import supervision
 import nested_ownership as nested
@@ -19,6 +20,24 @@ def clean(record):
     return (supervision.workload_succeeded(record)
             and record.get('nestedOwnership', {}).get('allOwnedGroupsAbsent') is True
             and not record.get('lateSuccess', False))
+
+
+def publish_finite(path, value, hard_deadline):
+    """Late candidates are quarantined, never left at an acceptance path."""
+    path = Path(path)
+    if time.monotonic() >= hard_deadline - 1:
+        raise TimeoutError('Receipt reserve exhausted before publication')
+    nested.durable(path, value)
+    if time.monotonic() >= hard_deadline:
+        quarantine = path.with_name(path.name + '.invalid-' + uuid.uuid4().hex)
+        try:
+            os.link(path, quarantine)
+        finally:
+            path.unlink(missing_ok=True)
+        nested.durable(path.with_name(path.name + '.deadline-failure.json'),
+                       {'completed': False, 'status': 'failed', 'reason': 'LatePublication', 'candidate': str(quarantine)})
+        raise TimeoutError('Publication crossed hard deadline; candidate invalidated')
+    return value
 
 
 class Runner:
@@ -78,10 +97,12 @@ class Runner:
                      and cleanup['allOwnedGroupsAbsent'] and time.monotonic() < self.hard - 1)
         self.receipt = dict(completed=completed, sequence=self.sequence, ownership=cleanup,
                             error=error, counterLauncher=self.counter_launcher)
-        nested.durable(self.directory / 'family-cleanup.json', self.receipt)
-        if time.monotonic() >= self.hard:
+        try:
+            publish_finite(self.directory / 'family-cleanup.json', self.receipt, self.hard)
+        except TimeoutError:
             self.receipt['completed'] = False
-            nested.durable(self.directory / 'late-publication-failure.json', self.receipt)
+            self.receipt['error'] = 'LatePublication'
+            self.stopped = True
         return self.receipt
 
     def __exit__(self, kind, value, traceback):

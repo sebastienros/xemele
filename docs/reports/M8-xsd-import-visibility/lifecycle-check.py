@@ -153,7 +153,7 @@ class Controls(unittest.TestCase):
         source={'identities':{b.key(test):b.digest(test),b.key(runtime):b.digest(runtime)}}
         manifest=dict(coordinatorReviewSha256='review',harnessSourceSha256=b.digest(b.SOURCE),directory=str(measurement),maximumSeconds=120,workSeconds=100,cleanupReserveSeconds=20,preparationReceipt=str(receipt),identities={b.key(p):b.digest(p) for p in [runtime,probe,dependency,test,receipt]})
         path=fixture/'prepared.json'
-        with patch.object(b,'PROBE',probe),patch.object(b,'review',return_value=source):
+        with patch.object(b,'PROBE',probe),patch.object(b,'review',return_value=source),patch.object(b,'verify_controller',return_value={'completed':True}):
             manifest['commands']=b.commands(measurement);path.write_text(json.dumps(manifest));sha=b.digest(path)
             b.verify_prepared(path,sha,'review')
             for changed in [test,dependency]:
@@ -163,6 +163,71 @@ class Controls(unittest.TestCase):
                 changed.write_bytes(original)
             manifest['commands'][1]=[sys.executable,'-c','pass'];path.write_text(json.dumps(manifest))
             with self.assertRaisesRegex(AssertionError,'Exact required'):b.verify_prepared(path,b.digest(path),'review')
+
+    def test_real_late_publication_nonzero_no_candidate_prepare_refusal(self):
+        candidate=self.out/'positive-controls-release.json'
+        code=("import sys\nsys.path.insert(0,"+repr(str(b.HERE))+")\nimport family as f\nfrom pathlib import Path\n"+
+              "clock=[10.0]\nreal=f.nested.durable\nf.time.monotonic=lambda:clock[0]\n"+
+              "def late(path,value):\n real(path,value)\n clock[0]=13.0\n"+
+              "f.nested.durable=late\n"+
+              f"f.publish_finite(Path({str(candidate)!r}),{{'completed':True}},12.0)\n")
+        runner=self.runner()
+        try:
+            result=runner.run([sys.executable,'-c',code],15,check=False)
+            self.assertNotEqual(result.returncode,0)
+        finally:runner.close('ExpectedLatePublisherFailure')
+        self.assert_clean(runner);self.assertFalse(candidate.exists())
+        self.assertEqual(len(list(self.out.glob(candidate.name+'.invalid-*'))),1)
+        with self.assertRaises((OSError,AssertionError)):b.verify_positive_controls(candidate,'unused','review')
+
+    def test_late_enclosing_controller_cannot_authorize_positive_candidate(self):
+        from types import SimpleNamespace
+        controller=self.out/'controller';controller.mkdir();candidate=controller/'positive-controls-release.json'
+        row=dict(reason='completed',exit=0,directChildReaped=True,ownedGroupAbsent=True,logClosed=True,nestedOwnership={'allOwnedGroupsAbsent':True})
+        family=controller/'family-cleanup.json'
+        nested.durable(family,dict(completed=True,ownership={'allOwnedGroupsAbsent':True},sequence=[row]))
+        nested.durable(candidate,dict(completed=True,sourceSha256=b.digest(b.SOURCE),coordinatorReviewSha256='review',counterEnabled=False))
+        runner=SimpleNamespace(closed=True,stopped=False,receipt={'completed':True},sequence=[row],directory=controller,hard=12.0)
+        clock=[10.0];real=nested.durable
+        def late(path,value):
+            real(path,value)
+            if Path(path).name=='controller-release.json':clock[0]=13.0
+        with patch.object(f.time,'monotonic',side_effect=lambda:clock[0]),patch.object(nested,'durable',side_effect=late):
+            with self.assertRaises(TimeoutError):b.publish_controller(runner,'controls',{b.key(candidate):b.digest(candidate)},'review')
+        self.assertTrue(candidate.exists());self.assertFalse((controller/'controller-release.json').exists())
+        with self.assertRaises((OSError,AssertionError)):b.verify_positive_controls(candidate,b.digest(candidate),'review')
+
+    def test_api_set_test_dependency_and_result_mutations_reject_fresh_receipt(self):
+        api=self.out/'api';api.mkdir();first=api/'a.txt';first.write_bytes(b'API a');second=api/'b.txt';second.write_bytes(b'API b')
+        actual=self.out/'bin';actual.mkdir();runtime=actual/'runtime.dll';runtime.write_bytes(b'unchanged runtime')
+        test=actual/'Test.dll';test.write_bytes(b'actual tests');dependency=actual/'Xemele.dll';dependency.write_bytes(b'actual dependency')
+        results=self.out/'results';results.mkdir()
+        for name in ['correctness.xml','resolver.xml','datatypes.xml','control.json','internal.txt','public.txt']:(results/name).write_bytes(('frozen '+name).encode())
+        identities={b.key(p):b.digest(p) for p in [runtime,test,dependency]}
+        b.archive_execution(self.out,0,['actual-Test.dll'],identities,[b.key(actual)])
+        nested.durable(self.out/'lifecycle-000.json',dict(argv=['actual-Test.dll'],reason='completed',exit=0,
+            directChildReaped=True,ownedGroupAbsent=True,logClosed=True,nestedOwnership={'allOwnedGroupsAbsent':True}))
+        with patch.object(b,'API_ROOT',api):
+            evidence=b.correctness_evidence(self.out);b.verify_correctness_evidence(evidence)
+            first.unlink()
+            with self.assertRaises(AssertionError):b.verify_correctness_evidence(evidence)
+            first.write_bytes(b'API a');first.write_bytes(b'API changed')
+            with self.assertRaises(AssertionError):b.verify_correctness_evidence(evidence)
+            first.write_bytes(b'API a');extra=api/'new.txt';extra.write_bytes(b'API new')
+            with self.assertRaises(AssertionError):b.verify_correctness_evidence(evidence)
+            extra.unlink()
+            for changed in [test,dependency]:
+                original=changed.read_bytes();changed.write_bytes(b'untested replacement')
+                self.assertEqual(b.digest(runtime),identities[b.key(runtime)])
+                with self.assertRaises(AssertionError):b.verify_correctness_evidence(evidence)
+                changed.write_bytes(original)
+            output=results/'correctness.xml';original=output.read_bytes();output.write_bytes(b'replaced result')
+            with self.assertRaises(AssertionError):b.verify_correctness_evidence(evidence)
+            output.write_bytes(original);output.unlink()
+            with self.assertRaises(AssertionError):b.verify_correctness_evidence(evidence)
+            output.write_bytes(original);new_result=results/'new-result.xml';new_result.write_bytes(b'new')
+            with self.assertRaises(AssertionError):b.verify_correctness_evidence(evidence)
+            new_result.unlink();b.verify_correctness_evidence(evidence)
 
     def test_failed_correctness_and_final_diff_cannot_publish_passing_receipt(self):
         from types import SimpleNamespace

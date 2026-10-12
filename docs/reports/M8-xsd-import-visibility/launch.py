@@ -10,7 +10,7 @@ import time
 import uuid
 from pathlib import Path
 import bindings as b
-from family import Runner, nested
+from family import Runner, nested, publish_finite
 
 
 def main():
@@ -39,13 +39,19 @@ def main():
     if action == 'controls':
         raw=directory/'positive-controls.json'
         data=__import__('json').loads(raw.read_text())
-        assert data['completed'] and data['sourceSha256']==b.digest(b.SOURCE) and data['testsRun']==8 and not data['counterEnabled']
+        assert data['completed'] and data['sourceSha256']==b.digest(b.SOURCE) and data['testsRun']==11 and not data['counterEnabled']
         receipt=directory/'family-cleanup.json'
-        nested.durable(directory/'positive-controls-release.json',dict(completed=True,sourceSha256=b.digest(b.SOURCE),
-            coordinatorReviewSha256=reviewed,semanticReceipt=str(raw),semanticSha256=b.digest(raw),familyReceipt=str(receipt),familySha256=b.digest(receipt),counterEnabled=False))
-        assert time.monotonic()<runner.hard,'No late positive-control release'
-    print('ROOT FAMILY CLEAN', directory)
+        publish_finite(directory/'positive-controls-release.json',dict(completed=True,sourceSha256=b.digest(b.SOURCE),
+            coordinatorReviewSha256=reviewed,semanticReceipt=str(raw),semanticSha256=b.digest(raw),familyReceipt=str(receipt),familySha256=b.digest(receipt),counterEnabled=False),runner.hard)
+    if action=='controls':payload=directory/'positive-controls-release.json'
+    elif action=='check':payload=directory/'checks/results/checks-completed.json'
+    elif action=='prepare':payload=directory/'preparation/prepared.json'
+    else:
+        prepared=__import__('json').loads(Path(sys.argv[4]).read_text())
+        payload=Path(prepared['directory'])/'release.json'
+    b.publish_controller(runner,action,{b.key(payload):b.digest(payload)},reviewed)
+    return 0
 
 
 if __name__ == '__main__':
-    with nested.interruptions(): main()
+    with nested.interruptions(): raise SystemExit(main())

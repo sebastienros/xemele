@@ -6,7 +6,7 @@ import os
 import time
 from pathlib import Path
 import bindings as b
-from family import Runner, nested
+from family import Runner, nested, publish_finite
 
 
 def main():
@@ -33,10 +33,8 @@ def main():
     after = b.digest(path) == expected and not b.mismatches(manifest['identities'])
     release = dict(completed=error is None and after and runner.receipt is not None and runner.receipt['completed'] and time.monotonic() < runner.hard - 1,
                    error=error, afterIdentities=after, preparationSha256=expected,
-                   rawAllocationsInspected=False, sequence=runner.sequence)
-    nested.durable(directory / 'release.json', release)
-    if time.monotonic() >= runner.hard: release['completed'] = False
-    print('Root lifecycle release', release['completed'], 'RAW ALLOCATIONS UNOPENED', directory)
+                   rawAllocationsInspected=False,sequence=runner.sequence,controllerReceipt=str(Path(os.environ['XEMELE_IMPORT_RUN_DIRECTORY'])/'controller-release.json'))
+    publish_finite(directory / 'release.json', release,runner.hard)
     return 0 if release['completed'] else 1
 
 

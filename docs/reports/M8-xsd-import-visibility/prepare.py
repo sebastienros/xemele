@@ -7,7 +7,7 @@ import time
 import uuid
 from pathlib import Path
 import bindings as b
-from family import Runner, nested
+from family import Runner, nested, publish_finite
 
 
 def main():
@@ -19,12 +19,7 @@ def main():
     source = None
     with Runner(directory, 400,started=started) as runner:
         source = b.review(review_sha)
-        assert b.OUT.resolve() in positive.parents and positive.name=='positive-controls-release.json' and b.digest(positive)==positive_sha
-        result=json.loads(positive.read_text())
-        assert result['completed'] and not result['counterEnabled'] and result['sourceSha256']==b.digest(b.SOURCE) and result['coordinatorReviewSha256']==review_sha
-        for name in ['semantic','family']:
-            record=Path(result[name+'Receipt']).resolve()
-            assert b.OUT.resolve() in record.parents and b.digest(record)==result[name+'Sha256'] and json.loads(record.read_text())['completed']
+        result=b.verify_positive_controls(positive,positive_sha,review_sha)
         required = b.build_commands()
         nested.durable(directory / 'required-commands.json', {'sourceSha256': b.digest(b.SOURCE), 'commands': required})
         commands_sha = b.digest(directory / 'required-commands.json')
@@ -47,7 +42,7 @@ def main():
     assert runner.receipt['completed']
     measurement = b.OUT / ('measurement-' + uuid.uuid4().hex)
     identities = dict(source['identities'], **binaries)
-    for file in [positive,Path(result['semanticReceipt']),Path(result['familyReceipt']),b.REVIEW,directory / 'control.json', directory / 'tested-inputs.json', directory / 'required-commands.json', directory / 'family-cleanup.json']:
+    for file in [positive,positive.parent/'controller-release.json',Path(result['semanticReceipt']),Path(result['familyReceipt']),b.REVIEW,directory / 'control.json', directory / 'tested-inputs.json', directory / 'required-commands.json', directory / 'family-cleanup.json']:
         identities[b.key(file)] = b.digest(file)
     assert not b.mismatches(identities) and time.monotonic() < runner.hard - 1
     manifest = dict(sourceRevision=source['runtimeControlCommit'], harnessSourceSha256=b.digest(b.SOURCE),
@@ -55,8 +50,7 @@ def main():
                     maximumSeconds=120, workSeconds=100, cleanupReserveSeconds=20,
                     positiveControlsReceipt=str(positive),positiveControlsSha256=positive_sha,preparationReceipt=str(directory / 'family-cleanup.json'), testedInputsSha256=tested_sha,
                     identities=identities, counterEnabled=False, routes=24, warmups=8, operations=32, retainedResults=28)
-    nested.durable(directory / 'prepared.json', manifest)
-    assert time.monotonic() < runner.hard, 'Manifest publication exceeded hard deadline'
+    publish_finite(directory / 'prepared.json', manifest,runner.hard)
     print('Prepared manifest', directory / 'prepared.json', b.digest(directory / 'prepared.json'), 'COUNTERS DISABLED')
 
 

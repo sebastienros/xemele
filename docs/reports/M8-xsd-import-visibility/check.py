@@ -35,7 +35,12 @@ def bounded(*args, **kwargs):
  environment=kwargs.pop('env',None)
  assert not kwargs, 'Unreviewed launch options'
  bindings.review(review_sha)
+ binary_before, binary_folders=bindings.execution_inputs(args[0])
+ if binary_before:bindings.archive_execution(runner.directory,len(runner.sequence),args[0],binary_before,binary_folders)
  r=runner.run(args[0],180,environment=environment,check=True)
+ if binary_before:
+  binary_after, after_folders=bindings.execution_inputs(args[0])
+  assert binary_after==binary_before and after_folders==binary_folders,'Actual execution binaries changed during check'
  commands.append({'command':args[0],'exit':r.returncode})
  bindings.review(review_sha)
  return r
@@ -53,7 +58,7 @@ def assert_tests(path, count=None, correctness=False):
  if path.name=='correctness.xml':
   own=[t for t in tests if t.attrib['type'].startswith('Xemele.Tests.M8XsdImportVisibility.')]
   assert len(own)==91, ('owned rows',len(own))
-  Path('artifacts/M8-xsd-import-visibility/focused-summary.json').write_text(json.dumps({'owned_rows':len(own),'affected_rows':len(tests),'original_expectations':'all three original 1.0 INVALID expectations preserved','identities_sha256':hashlib.sha256('\n'.join(sorted(t.attrib['id'] for t in tests)).encode()).hexdigest()},indent=2)+'\n')
+  (out/'focused-summary.json').write_text(json.dumps({'owned_rows':len(own),'affected_rows':len(tests),'original_expectations':'all three original 1.0 INVALID expectations preserved','identities_sha256':hashlib.sha256('\n'.join(sorted(t.attrib['id'] for t in tests)).encode()).hexdigest()},indent=2)+'\n')
  if count is not None: assert len(tests)==count
  print('PASS test rows',len(tests))
  return len(tests)
