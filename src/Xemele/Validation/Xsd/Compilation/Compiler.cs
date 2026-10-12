@@ -121,8 +121,6 @@ internal sealed class XsdCompilation
         // imports to bind against the finite in-progress component table.
         foreach (var node in Children(source, root))
         {
-            // Validate annotation wrappers, but their mixed payload stays opaque.
-            if (node.LocalName is "documentation" or "appinfo") return;
             if (node.LocalName == "annotation") continue;
             if (node.LocalName is "include" or "import" or "redefine")
             { if (declarationsStarted) Error("Composition directives precede declarations.", At(source, node)); continue; }
